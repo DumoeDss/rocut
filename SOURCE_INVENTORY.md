@@ -42,19 +42,21 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/stickers/providers/index.ts`
 - `apps/web/src/timeline/components/timeline-element.tsx`
 
-**26 file(s) added by this fork.** These are **not** patches and must **not** appear in `PATCHES.md`, which logs modifications to inherited files only.
+**28 file(s) added by this fork.** These are **not** patches and must **not** appear in `PATCHES.md`, which logs modifications to inherited files only.
 
 - `apps/web/src/editor/host/editor-host-context.tsx`
 - `apps/web/src/editor/host/editor-host.ts`
 - `apps/web/src/editor/host/host-image.tsx`
 - `apps/web/src/editor/ports/DECISIONS.md`
 - `apps/web/src/editor/ports/__tests__/conformance.test.ts`
+- `apps/web/src/editor/ports/__tests__/port-roles.compile-guard.ts`
 - `apps/web/src/editor/ports/__tests__/runtime-graphics-query.compile-guard.ts`
 - `apps/web/src/editor/ports/assets.ts`
 - `apps/web/src/editor/ports/conformance/index.ts`
 - `apps/web/src/editor/ports/diagnostics.ts`
 - `apps/web/src/editor/ports/environment.ts`
 - `apps/web/src/editor/ports/export-provider.ts`
+- `apps/web/src/editor/ports/gpu-resources.ts`
 - `apps/web/src/editor/ports/id-generator.ts`
 - `apps/web/src/editor/ports/identity.ts`
 - `apps/web/src/editor/ports/in-memory/host.ts`
