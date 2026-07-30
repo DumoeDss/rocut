@@ -22,7 +22,7 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 
 ## Working-tree drift against the pin
 
-**17 inherited file(s) modified.** Each is expected to carry a `PATCHES.md` row.
+**18 inherited file(s) modified.** Each is expected to carry a `PATCHES.md` row.
 
 - `apps/web/src/actions/definitions.ts`
 - `apps/web/src/actions/keybinding.ts`
@@ -41,11 +41,13 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/stickers/components/assets-view.tsx`
 - `apps/web/src/stickers/providers/index.ts`
 - `apps/web/src/timeline/components/timeline-element.tsx`
+- `rust/wasm/README.md`
 
-**5 file(s) added by this fork.** These are **not** patches and must **not** appear in `PATCHES.md`, which logs modifications to inherited files only.
+**6 file(s) added by this fork.** These are **not** patches and must **not** appear in `PATCHES.md`, which logs modifications to inherited files only.
 
 - `apps/web/src/editor/host/editor-host-context.tsx`
 - `apps/web/src/editor/host/editor-host.ts`
 - `apps/web/src/editor/host/host-image.tsx`
 - `apps/web/src/editor/surface/editor-root.tsx`
 - `apps/web/src/services/storage/browser-host-adapter.ts`
+- `rust/wasm/LICENSE`
