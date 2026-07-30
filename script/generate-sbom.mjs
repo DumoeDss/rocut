@@ -197,10 +197,15 @@ function renderDisposition(d) {
 			d.present ? "yes" : `NO — ${d.error ?? "probe returned false"}`
 		}**`;
 	}
+	const absent = d.error
+		? `NO — the probe threw and proved nothing (${d.error})`
+		: d.present
+			? "NO — the defect is present again"
+			: "yes";
 	return [
 		`Disposition: **repaired**, by ${d.repairedBy}.`,
 		`Evidence: ${d.evidence}.`,
-		`Probe confirms it is absent: **${d.present ? `NO — the defect is present again${d.error ? ` (${d.error})` : ""}` : "yes"}**`,
+		`Probe confirms it is absent: **${absent}**`,
 	].join("\n\n");
 }
 
@@ -228,7 +233,11 @@ const defectResults = UPSTREAM_DEFECTS.map((d) => {
 	} catch (e) {
 		error = e.message;
 	}
-	return { ...d, present, error, matchesDisposition: present === expectedPresence(d) };
+	// A throwing probe is never a pass. Without this, a `repaired` entry whose
+	// probe throws yields `present === false`, which *matches* the expected
+	// absence — so a broken probe would report OK and say nothing. D-5's probe
+	// reads `rust/wasm/Cargo.toml`, which throws if that file is ever moved.
+	return { ...d, present, error, matchesDisposition: error === null && present === expectedPresence(d) };
 });
 
 // --- Rust ---------------------------------------------------------------
@@ -400,7 +409,9 @@ const mismatched = defectResults.filter((d) => !d.matchesDisposition);
 if (mismatched.length > 0) {
 	console.error(`\n${mismatched.length} documented upstream defect(s) do not match their declared disposition.`);
 	for (const d of mismatched) {
-		if (d.disposition === "recorded") {
+		if (d.error) {
+			console.error(`  ${d.id}'s probe threw and therefore proved nothing: ${d.error}`);
+		} else if (d.disposition === "recorded") {
 			console.error(
 				`  ${d.id} is declared \`recorded\` but is no longer detected. Either the repository was repaired ` +
 					`(which must be patch-logged, evidenced, and this entry moved to \`repaired\`) or the probe is stale.`,

@@ -49,6 +49,8 @@ rustup target add wasm32-unknown-unknown
 #    have to live beside the checkout, and a shared path makes later worktrees warm.
 export CARGO_TARGET_DIR=/path/with/room     # PowerShell: $env:CARGO_TARGET_DIR = "..."
 bun run build:wasm       # -> rust/wasm/pkg/  (~5 min warm registry, ~15 min fully cold)
+                         # runs script/build-wasm.mjs, which applies --remap-path-prefix so the
+                         # redistributed binary carries no path from your machine
 
 # 2. install (repo root) — resolves the whole bun workspace, including this example
 bun install
@@ -68,8 +70,18 @@ resolved `.wasm` silently stays at the previous build's pre-`wasm-opt` intermedi
 is fast (< 1 s; it re-links only). Verify with:
 
 ```sh
-node script/check-wasm-source.mjs   # asserts the RESOLVED opencut-wasm is the self-built one
+bun run check:wasm                  # asserts the RESOLVED opencut-wasm is the self-built one
 ```
+
+CI runs that same check immediately after `bun install`, and the check additionally asserts its own
+gate wiring, so removing the CI step makes every local run fail rather than quietly disarming it.
+
+**If you skip step 1 entirely**, `bun install` fails with bun's own
+`opencut-wasm@file:./rust/wasm/pkg failed to resolve` rather than a message naming the build command:
+dependency resolution runs before any `preinstall` hook, so the repository cannot intercept it. The
+ordering above is what avoids it. A *partial* build — the state a failed or interrupted `build:wasm`
+leaves, since wasm-pack writes the manifest before the binary — **is** caught, by the `preinstall`
+guard, with the rebuild command named.
 
 Open http://127.0.0.1:4173/ and you get a project picker; create a project and the editor opens
 inside the bordered box. **Smoke check:** the editor chrome must be *styled* (Tailwind content

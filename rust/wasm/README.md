@@ -50,5 +50,14 @@ bun dev:wasm
 **Re-run `bun install` after each rebuild.** bun installs a `file:` dependency as hard links, and
 `wasm-opt` replaces `opencut_wasm_bg.wasm` instead of rewriting it, so that one file's link breaks
 and the resolved copy silently keeps the previous build's pre-`wasm-opt` intermediate while every
-other file looks current. `node script/check-wasm-source.mjs` asserts the resolved package really is
-the current build output and names the command to run when it is not.
+other file looks current. `bun run check:wasm` asserts the resolved package really is the current
+build output and names the command to run when it is not; CI runs it after every install.
+
+`bun dev:wasm` already does the re-install for you — its watch command is
+`node script/build-wasm.mjs && bun install`, because without the second half every save in the watch
+loop would hand you a stale binary.
+
+Builds go through `script/build-wasm.mjs` rather than calling `wasm-pack` directly. It applies
+`--remap-path-prefix` so the redistributed `.wasm` carries no path from the machine that built it —
+plain `wasm-pack build` embeds the builder's home directory and username, and this artifact ships to
+every user of the web app.

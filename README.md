@@ -137,16 +137,25 @@ export CARGO_TARGET_DIR=/path/with/room  # PowerShell: $env:CARGO_TARGET_DIR = "
    bun dev:wasm
    ```
 
-   **Re-run `bun install` after each rebuild.** bun installs a `file:` dependency as hard links, and
-   `wasm-opt` replaces `opencut_wasm_bg.wasm` rather than rewriting it in place — so that one file's
-   link breaks and the resolved copy silently keeps the previous build's pre-`wasm-opt` intermediate
-   while every other file looks current. The re-install takes under a second.
+   `dev:wasm` re-installs for you on every rebuild. That is not cosmetic: bun installs a `file:`
+   dependency as hard links, and `wasm-opt` replaces `opencut_wasm_bg.wasm` rather than rewriting it
+   in place — so that one file's link breaks and the resolved copy silently keeps the previous
+   build's pre-`wasm-opt` intermediate while every other file looks current. If you invoke
+   `build:wasm` yourself, run `bun install` after it (under a second).
 
 4. Verify that what the build resolves really is your build output:
 
    ```bash
-   node script/check-wasm-source.mjs
+   bun run check:wasm
    ```
+
+   CI runs the same check straight after `bun install`.
+
+> **If you skip step 1**, `bun install` fails with bun's own
+> `opencut-wasm@file:./rust/wasm/pkg failed to resolve`, not a message naming the build command —
+> dependency resolution runs before any `preinstall` hook, so this cannot be intercepted from the
+> repository. Following the ordering above is what avoids it. A *partial* build is caught, with the
+> command named.
 
 ### Self-Hosting with Docker
 

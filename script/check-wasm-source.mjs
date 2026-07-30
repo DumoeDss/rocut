@@ -20,7 +20,12 @@
  * assertion that works on a machine mid-build, and it names the command to run
  * when it fails.
  *
- *   node script/check-wasm-source.mjs
+ * It also asserts **its own wiring**. A check nobody invokes is indistinguishable
+ * from a check that passes, and this one guards a failure mode that is silent by
+ * construction, so the gate wiring is part of what it verifies.
+ *
+ *   node script/check-wasm-source.mjs                    # full check (also `bun run check:wasm`)
+ *   node script/check-wasm-source.mjs --preflight        # `preinstall` guard: is the build output there at all?
  *   node script/check-wasm-source.mjs --resolved <dir>   # negative control
  */
 import { createHash } from "node:crypto";
@@ -31,7 +36,7 @@ import { dirname, join, relative, resolve } from "node:path";
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PKG_DIR = join(REPO_ROOT, "rust", "wasm", "pkg");
-const REBUILD = "bun run build:wasm  (wasm-pack build rust/wasm --target bundler --out-dir pkg), then bun install";
+const REBUILD = "bun run build:wasm   (node script/build-wasm.mjs), then bun install";
 
 /** Hosts that resolve `opencut-wasm` independently. */
 const HOSTS = ["", "apps/web", "apps/vite-example"];
@@ -44,6 +49,38 @@ const rel = (p) => relative(REPO_ROOT, p).replaceAll("\\", "/");
 
 const overrideIndex = process.argv.indexOf("--resolved");
 const override = overrideIndex === -1 ? null : resolve(process.argv[overrideIndex + 1] ?? "");
+const preflight = process.argv.includes("--preflight");
+
+/**
+ * `--preflight` runs as root `preinstall`, BEFORE `bun install` resolves anything.
+ *
+ * Without it, a clean checkout that skipped the wasm build gets
+ * `error: opencut-wasm@file:./rust/wasm/pkg failed to resolve` — an unresolved
+ * module specifier that never names the command that fixes it. That is the exact
+ * outcome `developer-reproducibility` requires the developer path NOT to produce.
+ *
+ * It deliberately asserts only that the build output exists: at `preinstall` time
+ * `node_modules` legitimately does not, so the resolved-content assertions below
+ * would fail for the wrong reason and block a first install.
+ */
+if (preflight) {
+	const emitted = join(PKG_DIR, "opencut_wasm_bg.wasm");
+	if (existsSync(emitted)) process.exit(0);
+	console.error("");
+	console.error("  The wasm artifact has not been built, so `opencut-wasm` cannot resolve.");
+	console.error("");
+	console.error(`  Missing: ${rel(emitted)}`);
+	console.error("");
+	console.error("  This repository builds `opencut-wasm` from its own rust/ sources; there is no");
+	console.error("  published package to fall back on. Build it BEFORE installing dependencies:");
+	console.error("");
+	console.error("      script/setup-rust                      # once per machine (rustup + wasm-pack)");
+	console.error("      rustup target add wasm32-unknown-unknown");
+	console.error("      bun run build:wasm");
+	console.error("      bun install");
+	console.error("");
+	process.exit(1);
+}
 
 if (!existsSync(PKG_DIR)) {
 	console.error(`check-wasm-source: no build output at ${rel(PKG_DIR)}`);
@@ -60,14 +97,18 @@ function packageFiles(dir) {
 const built = new Map(packageFiles(PKG_DIR).map((n) => [n, sha(join(PKG_DIR, n))]));
 
 // --- 1. every location `opencut-wasm` resolves to, per Host -----------------
-/** @returns {string|null} the directory `opencut-wasm` resolves to from `hostDir`. */
+/**
+ * @returns {{dir: string|null, error: string|null}} where `opencut-wasm` resolves
+ * from `hostDir`. A resolution failure is **reported**, never silently treated as
+ * "nothing to check" — a Host whose resolution is broken is a finding, not a pass.
+ */
 function resolveFrom(hostDir) {
 	const from = join(REPO_ROOT, hostDir, "package.json");
-	if (!existsSync(from)) return null;
+	if (!existsSync(from)) return { dir: null, error: null };
 	try {
-		return dirname(createRequire(from).resolve("opencut-wasm"));
-	} catch {
-		return null;
+		return { dir: dirname(createRequire(from).resolve("opencut-wasm")), error: null };
+	} catch (e) {
+		return { dir: null, error: e.message };
 	}
 }
 
@@ -81,10 +122,14 @@ function physicalCopies() {
 	return found;
 }
 
+const failures = [];
+
+const hostResolutions = override ? [] : HOSTS.map((h) => ({ host: h || "<root>", ...resolveFrom(h) }));
+
 const locations = override
 	? [{ label: `--resolved ${rel(override)}`, dir: override }]
 	: [
-			...HOSTS.map((h) => ({ label: `resolved from ${h || "<root>"}`, dir: resolveFrom(h) })),
+			...hostResolutions.filter((r) => r.dir).map((r) => ({ label: `resolved from ${r.host}`, dir: r.dir })),
 			...physicalCopies().map((d) => ({ label: `physical copy ${rel(d)}`, dir: d })),
 		];
 
@@ -98,8 +143,6 @@ for (const loc of locations) {
 	checked.push(loc);
 }
 
-const failures = [];
-
 if (checked.length === 0) {
 	console.error("check-wasm-source: `opencut-wasm` does not resolve from any Host.");
 	console.error(`Produce it with: ${REBUILD}`);
@@ -107,6 +150,15 @@ if (checked.length === 0) {
 }
 
 console.log(`check-wasm-source: build output ${rel(PKG_DIR)} (${built.size} file(s))`);
+
+// A Host whose resolution throws is a finding, not an absence of work to do.
+for (const r of hostResolutions) {
+	if (!r.error) continue;
+	console.log(`  FAIL  resolved from ${r.host} -> \`opencut-wasm\` does not resolve`);
+	console.log(`          ${r.error.split("\n")[0]}`);
+	failures.push(`${r.host}: \`opencut-wasm\` does not resolve`);
+}
+
 for (const loc of checked) {
 	const present = existsSync(loc.dir) ? packageFiles(loc.dir) : [];
 	const mismatches = [];
@@ -128,11 +180,21 @@ for (const loc of checked) {
 
 // --- 2. the build output is not stale relative to its inputs ----------------
 const INPUT_DIRS = [join(REPO_ROOT, "rust", "wasm", "src")];
+const INPUT_FILES = [
+	join(REPO_ROOT, "rust", "wasm", "Cargo.toml"),
+	join(REPO_ROOT, "Cargo.lock"),
+	// The workspace manifest carries `[profile.*]`, which changes codegen.
+	join(REPO_ROOT, "Cargo.toml"),
+];
 for (const crate of readdirSync(join(REPO_ROOT, "rust", "crates"))) {
 	const src = join(REPO_ROOT, "rust", "crates", crate, "src");
 	if (existsSync(src)) INPUT_DIRS.push(src);
+	// Each crate's own manifest too: a feature-flag, `[lints]` or `[profile]`
+	// edit changes the emitted code without necessarily moving `Cargo.lock`,
+	// so manifests-are-not-inputs would leave that class of staleness invisible.
+	const manifest = join(REPO_ROOT, "rust", "crates", crate, "Cargo.toml");
+	if (existsSync(manifest)) INPUT_FILES.push(manifest);
 }
-const INPUT_FILES = [join(REPO_ROOT, "rust", "wasm", "Cargo.toml"), join(REPO_ROOT, "Cargo.lock")];
 
 function walk(dir, out = []) {
 	for (const name of readdirSync(dir)) {
@@ -165,6 +227,37 @@ const rootLicense = join(REPO_ROOT, "LICENSE");
 const licenceOk = existsSync(crateLicense) && sha(crateLicense) === sha(rootLicense);
 console.log(`  ${licenceOk ? "PASS" : "FAIL"}  rust/wasm/LICENSE exists and matches the root LICENSE`);
 if (!licenceOk) failures.push("rust/wasm/LICENSE is missing or differs from the root LICENSE");
+
+// --- 4. this check is actually wired into a gate ----------------------------
+// A check nobody invokes is indistinguishable from a check that passes, and the
+// failure this one guards is silent by construction: a stale-but-valid artifact
+// passes the type baseline, both Host builds and the parity fixture. So the
+// wiring is part of what gets asserted. If someone drops the CI step, every
+// local run says so.
+const SELF = "script/check-wasm-source.mjs";
+const wiringProblems = [];
+
+const rootManifest = JSON.parse(readFileSync(join(REPO_ROOT, "package.json"), "utf8"));
+const scriptEntry = Object.entries(rootManifest.scripts ?? {}).find(([, cmd]) => cmd.includes(SELF));
+if (!scriptEntry) wiringProblems.push(`no root package.json script invokes ${SELF}`);
+
+const workflowPath = join(REPO_ROOT, ".github", "workflows", "bun-ci.yml");
+if (!existsSync(workflowPath)) {
+	wiringProblems.push("no .github/workflows/bun-ci.yml to carry the gate");
+} else {
+	const workflow = readFileSync(workflowPath, "utf8");
+	const gateAt = workflow.indexOf(SELF);
+	// `bun install` is what materialises the resolved copies this check reads, so
+	// running before it would validate a tree nobody consumes.
+	const installAt = workflow.search(/run:\s*bun install/);
+	if (gateAt === -1) wiringProblems.push(`bun-ci.yml has no step running ${SELF}`);
+	else if (installAt === -1) wiringProblems.push("bun-ci.yml no longer runs `bun install`");
+	else if (gateAt < installAt) wiringProblems.push(`bun-ci.yml runs ${SELF} BEFORE \`bun install\`, so it checks an uninstalled tree`);
+}
+
+console.log(`  ${wiringProblems.length === 0 ? "PASS" : "FAIL"}  this check is wired into a gate (npm script + CI step after \`bun install\`)`);
+for (const p of wiringProblems) console.log(`          ${p}`);
+if (wiringProblems.length > 0) failures.push(`gate wiring: ${wiringProblems.join("; ")}`);
 
 if (failures.length > 0) {
 	console.error("\ncheck-wasm-source FAILED:");

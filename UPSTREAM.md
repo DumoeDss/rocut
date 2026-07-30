@@ -208,7 +208,7 @@ them.** The licence addition changed the emitted package by exactly one added fi
 | `opencut_wasm.d.ts` | sha256 `07e195eb…` | sha256 `07e195eb…` | **byte-identical** — 48 of 48 exported declarations match |
 | `opencut_wasm.js` (entry glue) | sha256 `81bbfdfe…` | sha256 `81bbfdfe…` | **byte-identical** |
 | `opencut_wasm_bg.js` | 107,558 B / sha256 `a6830997…` | 107,558 B / sha256 `b0b80cb3…` | Differs. **638 exported symbols, sorted lists identical**; 11 differing lines, **zero** of which touch an `export`. The hash `b0b80cb3…` is the same value S01 recorded, so the glue is reproducible across build environments. |
-| `opencut_wasm_bg.wasm` | 3,037,899 B / sha256 `e7720e0d…` | 3,258,045 B / sha256 `7d8bb28e…` | **Differs, as expected — not the criterion.** ~7% larger. |
+| `opencut_wasm_bg.wasm` | 3,037,899 B / sha256 `e7720e0d…` | 3,253,931 B / sha256 `56cb9ab6…` | **Differs, as expected — not the criterion.** ~7% larger. The whole +216,032 B is accounted for section by section: code +164,500, data +51,466, function +57, elem +8, custom +12, type −9, import −2 — summing exactly to the file delta, with the **export section unchanged at 947 B**. That is what makes "recompiled, not re-specified" a measurement rather than an inference. (Before path remapping the artifact was 3,258,045 B; remapping removed 4,114 B of embedded path strings.) |
 | `README.md` | 1,000 B / sha256 `94acda27…` | 1,045 B / sha256 `c7901645…` | **Differs by line endings only.** Byte-identical after CRLF→LF normalization (45 lines, 45 bytes). Attributed to `core.autocrlf=true` on the Windows checkout, not to a content change. |
 | `LICENSE` | *absent* | present, sha256 `8117f9bb…` | **Added by this change** — see D-5 below. wasm-pack copies a declared licence into the out-dir. |
 | `opencut_wasm_bg.wasm.d.ts` | *absent* | 2,510 B | Emitted by wasm-pack; excluded from the published tarball by the manifest's four-entry `files` allowlist. Not a divergence in the *published* sense. |
@@ -219,13 +219,53 @@ them.** The licence addition changed the emitted package by exactly one added fi
 holds exactly the published four entries. This was an open question, deliberately measured rather
 than assumed, and the answer is why `package.json` stays byte-identical to published `0.2.10`.
 
-**The `.wasm` is not reproducible across build environments, and the reason is now known.** S01's
-build of the same sources produced 3,258,041 B / `32aaffd7…`; this one produces 3,258,045 B /
-`7d8bb28e…`. The binary embeds absolute source paths of the machine that built it — verified by
-finding `E:\…\rocut-wt-c0\rust\crates\gpu\src\context.rs` inside the emitted `.wasm` — so two
-worktrees at different paths cannot produce identical binaries. This is a concrete mechanism behind
-D11's rule that binary hash equality is not the criterion, and it means a future "the wasm changed"
-observation must be read against the exported surface, never against the hash.
+**The binary's own export table was measured too, not inferred from the glue.** Parsing the `.wasm`
+export and import sections directly:
+
+| | published `0.2.10` | self-built |
+| --- | --- | --- |
+| exports | 41 | 41 |
+| kinds | 39 func / 1 table / 1 memory | identical |
+| stably-named exports | 38 | 38 — **identical sets** |
+| `wasm_bindgen__convert__closures_____invoke__h…` trampolines | 3 | 3 — **all three names differ** |
+| imports | 609 | 609 — **identical** |
+| export **section** size | 947 B | 947 B — **unchanged** |
+
+The three differing names are rustc symbol-hash suffixes on compiler-generated closure trampolines;
+**stripping the hash makes the two sets identical**, and they correspond 1:1 to the 11 differing
+lines in `opencut_wasm_bg.js`. That is the named cause. Nothing else in either table differs, the
+export section is byte-for-byte the same size, and the import table — a module's host contract — is
+unchanged. The earlier records stated only the JS-level figures (638 glue symbols, 48 declarations);
+those remain correct but are the *consumed* surface, not the binary's.
+
+**Path remapping: the redistributed binary must not disclose the machine that built it.** Recorded
+because it is a property this Slice deliberately changed, and because the naive comparison misleads:
+
+| | published `0.2.10` | self-built, before the fix | self-built, now |
+| --- | --- | --- | --- |
+| Windows absolute paths | 0 | **286** (285 `C:\Users\<name>\.cargo\registry\…` + 1 worktree path) | **0** |
+| POSIX home-dir paths | **169** (`/home/heart/.cargo/registry/…`) | 0 | **0** |
+| OS username disclosed | **`heart`** | **`Sayo`** | **none** |
+
+**Upstream did not build with path trimming** — a Windows-shaped scan reports zero for it only
+because `0.2.10` was built on Linux. Scanned for both platform shapes, the published artifact
+discloses a home directory and a username just as the unfixed local build did. So this is not a
+property the fork dropped and restored; it is one **neither** artifact had, and the fork now has it
+where the package it replaces does not.
+
+The fix is `--remap-path-prefix`, applied by `script/build-wasm.mjs`, which `bun run build:wasm`,
+`bun dev:wasm` and CI all route through. Cargo's `[profile.release] trim-paths` is the obvious
+alternative and does **not** work here: it is unstable in Cargo 1.88.0 and a manifest carrying it
+fails to parse at all, breaking every cargo invocation. Verified after the fix by scanning for both
+path shapes, with a positive control confirming the remapped `/cargo\…` and `/opencut\…` prefixes are
+present rather than the strings having merely vanished.
+
+**The `.wasm` was not reproducible across build environments, and remapping is also what fixes
+that.** S01's build of the same sources produced 3,258,041 B; the first S02 build produced
+3,258,045 B, differing because each embedded its own worktree path. With both the checkout root and
+`CARGO_HOME` remapped to fixed prefixes, that environment dependence is gone. This remains a concrete
+reason behind D11's rule that binary hash equality is not the correspondence criterion: a future
+"the wasm changed" observation must be read against the exported surface, never against the hash.
 
 **S02 toolchain.** `rustc`/`cargo 1.88.0`, `wasm-pack 0.13.1`, `wasm-bindgen-cli 0.2.116` (matching
 the `wasm-bindgen = "0.2.116"` pin), target `wasm32-unknown-unknown`. Cold build 4 min 49 s with a

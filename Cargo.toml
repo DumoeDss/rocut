@@ -1,5 +1,26 @@
 [workspace]
 resolver = "2"
+
+# The release profile builds the artifact that is now REDISTRIBUTED: since S02 the
+# editor consumes the wasm built from `rust/` rather than the published npm package,
+# so whatever ends up in `opencut_wasm_bg.wasm` ships to every user of the web app.
+#
+# Without this, rustc records absolute source paths of the build machine in the
+# binary. Measured on the S02 build before this setting: **286** absolute paths
+# (285 `C:\Users\<name>\.cargo\registry\src\...` plus the builder's worktree path),
+# disclosing a home directory and an OS username. Published `opencut-wasm@0.2.10`
+# contains **zero** — upstream built with remapping or in a clean environment, and
+# making the fork's artifact canonical silently dropped that property.
+#
+# The fix is `--remap-path-prefix`, applied by `script/build-wasm.mjs`, which is
+# what `bun run build:wasm` and CI both invoke.
+#
+# It is deliberately NOT Cargo's `[profile.release] trim-paths`: that key is still
+# **unstable** on the pinned toolchain and a manifest carrying it does not parse at
+# all — `cargo metadata` fails with "feature `trim-paths` is required … not
+# stabilized in this version of Cargo (1.88.0)", which breaks every cargo
+# invocation, not just release builds. Measured, not assumed. Revisit once
+# `trim-paths` stabilises; until then do not add it here.
 members = [
     "apps/desktop",
     "rust/crates/time",
