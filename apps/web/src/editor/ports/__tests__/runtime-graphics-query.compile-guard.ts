@@ -21,11 +21,23 @@ import type {
 	GraphicsBackend,
 	RuntimeGraphicsQuery,
 } from "../environment";
+import type { GpuHandleId, RuntimeGpuResourceQuery } from "../gpu-resources";
 
 /** The shape C0b owes. Compiles, and is what a correct implementation looks like. */
 export const conformingRuntimeGraphics: RuntimeGraphicsQuery = {
 	selectedBackend: (): GraphicsBackend => "webgpu",
 	concurrentCompositorInstances: () => 2,
+};
+
+/**
+ * A runtime that genuinely has no rasterizer must be expressible. If this
+ * stopped compiling, the report side could no longer say "no rasterizer" and a
+ * GPU-less machine would silently get a fabricated `"gpu"` report.
+ */
+export const noRasterizerRuntimeIsExpressible: RuntimeGraphicsQuery = {
+	selectedBackend: () => null,
+	concurrentCompositorInstances: () => 0,
+	unavailableReason: () => "no adapter",
 };
 
 /**
@@ -56,4 +68,39 @@ export const unknownBackendIsRejected: RuntimeGraphicsQuery = {
 	// @ts-expect-error "vulkan" is not a browser graphics backend this contract knows.
 	selectedBackend: () => "vulkan",
 	concurrentCompositorInstances: () => 1,
+};
+
+// ---------------------------------------------------------------------------
+// The GPU-handle query. Same move, applied to the class the session cannot
+// mediate acquisition of — so the runtime is compelled to expose what disposal
+// reconciles against, rather than the registry being blind the way Elftia's
+// `PluginDisposerRegistry` is.
+// ---------------------------------------------------------------------------
+
+/** The shape the wasm side owes. */
+export const conformingRuntimeGpu: RuntimeGpuResourceQuery = {
+	liveHandles: (): readonly GpuHandleId[] => [1, 2, 3],
+	release: ({ handle }: { handle: GpuHandleId }) => {
+		void handle;
+	},
+};
+
+/**
+ * A runtime that answered "do I still hold anything?" with a flag. A boolean
+ * cannot be reconciled against the registry, so an untracked allocation would
+ * stay invisible — exactly the blindness this query exists to remove.
+ */
+export const booleanLiveHandlesIsRejected: RuntimeGpuResourceQuery = {
+	// @ts-expect-error a boolean cannot be reconciled against tracked handles.
+	liveHandles: () => true,
+	release: () => {},
+};
+
+/** A teardown that is not keyed by the handle is rejected. */
+export const unkeyedTeardownIsRejected: RuntimeGpuResourceQuery = {
+	liveHandles: () => [],
+	// @ts-expect-error teardown must take the runtime's handle, not release everything.
+	release: (all: boolean) => {
+		void all;
+	},
 };

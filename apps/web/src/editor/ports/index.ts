@@ -45,8 +45,19 @@ export type {
 } from "./environment";
 export {
 	deriveGraphicsReport,
+	UNIMPLEMENTED_MARKER,
 	UNIMPLEMENTED_RUNTIME_GRAPHICS,
 } from "./environment";
+export type {
+	GpuHandleId,
+	GpuReconciliation,
+	RuntimeGpuResourceQuery,
+} from "./gpu-resources";
+export {
+	isUnimplementedGpuRuntime,
+	UNIMPLEMENTED_GPU_MARKER,
+	UNIMPLEMENTED_RUNTIME_GPU,
+} from "./gpu-resources";
 export type {
 	ExportOutcome,
 	ExportProvider,
@@ -109,16 +120,31 @@ export interface EditorHostPorts {
 	environment: EnvironmentCapabilities;
 }
 
-/** The port role names, for reporting and for the conformance suite. */
-export const PORT_ROLES = [
-	"store",
-	"assets",
-	"assetLoader",
-	"runtimeResources",
-	"exporter",
-	"diagnostics",
-	"ids",
-	"environment",
-] as const satisfies readonly (keyof EditorHostPorts)[];
+export type PortRole = keyof EditorHostPorts;
 
-export type PortRole = (typeof PORT_ROLES)[number];
+/**
+ * The role register. **Completeness is compile-enforced**, and that is the whole
+ * point of writing it this way.
+ *
+ * `Record<PortRole, true>` fails to compile if a role is missing. The obvious
+ * alternative — `[...] as const satisfies readonly PortRole[]` — checks only
+ * *membership*, so a later child that adds a role to `EditorHostPorts` and
+ * forgets this list compiles clean, and `resolveEditorHost()` silently stops
+ * checking the new role. At a freeze that is the worst available failure shape:
+ * the gate narrows without anything going red.
+ *
+ * The same idiom guards the resource classes in `../session/session-resources.ts`.
+ */
+const PORT_ROLE_REGISTER: Record<PortRole, true> = {
+	store: true,
+	assets: true,
+	assetLoader: true,
+	runtimeResources: true,
+	exporter: true,
+	diagnostics: true,
+	ids: true,
+	environment: true,
+};
+
+/** The port role names, for reporting and for the conformance suite. */
+export const PORT_ROLES = Object.keys(PORT_ROLE_REGISTER) as readonly PortRole[];

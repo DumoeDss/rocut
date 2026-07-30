@@ -79,6 +79,24 @@ measurement, and a forced declaration **short-circuits the runtime entirely** �
 the point of the force is that it works on hardware that would answer
 differently.
 
+**Both sides must be able to say "no rasterizer", and they are not
+interchangeable.** The Host-side *force* satisfies §3.5's **constructibility**
+clause. The **runtime** side must be able to report it independently, because
+§3.6's clause is about **truthfulness**: `selectedBackend()` returns
+`GraphicsBackend | null`, and `null` under `{ mode: "detect" }` produces a
+`rasterizer: "none"` report carrying `source: "runtime"`.
+
+Without the nullable case the detect branch could only ever emit `"gpu"`, so a
+genuinely GPU-less machine would receive a **fabricated** report — silent
+degradation, on the one configuration §3.5 fact 3 records as **never having been
+tried**. A non-nullable `selectedBackend` was the shape shipped first, and it
+made the runtime side structurally incapable of the answer the clause requires.
+
+`source` is derived from a marker on the runtime object itself, not from a
+parameter a caller may pass. The parameter form was an escape hatch: any caller
+could stamp `"runtime"` onto the placeholder, defeating the marker whose only job
+is to stop an un-replaced placeholder from reading as a measurement.
+
 ### 2a. `livePreviewLimit` is a count, and the runtime query is declared here first
 
 Per ruling D9=(B): more than one live preview on WebGPU; one on WebGL, where the
@@ -128,13 +146,40 @@ Mediating acquisition inverts it — a direct `setTimeout`, `new Worker`,
 `new AudioContext` or `URL.createObjectURL` becomes a violation of
 `script/check-port-boundary.mjs` rather than a leak.
 
-**The one asymmetry, stated rather than hidden.** `trackGpuResource` takes a
-release callback, which is the register-after-the-fact shape this decision argues
-against. GPU resources are created *inside the wasm module*, so the session
-cannot be in their construction path at all. What keeps it honest is that the
-tracked id **is** the teardown's parameter under the handle-keyed wasm API — the
-handle and the teardown are one interface — so a tracked resource that cannot be
-released is a compile-time mismatch, not a silent no-op.
+**The one asymmetry, and what actually closes it.** GPU resources are allocated
+*inside the wasm module*, so the session cannot be in their construction path and
+no boundary check can scan for a syntactic form. Tracking alone would leave this
+class as blind as `PluginDisposerRegistry` — and it is the worst class to be
+blind on, being the one the Slice records as **demonstrably created** inside
+packaged Elftia and **never measured for release**.
+
+*An earlier version of this record claimed the asymmetry was already closed
+because "the tracked id is the teardown's parameter". That was false as
+implemented: the id was a session counter (`nextId({scope:"resource:gpuResource"})`)
+with no type relating it to anything in the runtime, and `release` was an opaque
+`() => void`. Nothing could have produced the claimed compile-time mismatch.*
+
+What closes it is **reconciliation**, declared as a type before the
+implementation exists — the same move `RuntimeGraphicsQuery` makes:
+
+```ts
+RuntimeGpuResourceQuery {
+    liveHandles(): readonly GpuHandleId[]
+    release(args: { handle: GpuHandleId }): void
+}
+```
+
+`trackGpuResource({ handle, label })` now takes the **runtime's own key**, and
+release goes through the runtime's teardown rather than an opaque callback.
+`dispose()` then compares the registry against `liveHandles()` and reports
+`untracked` (live in the runtime, never tracked — a forgotten
+`trackGpuResource`) and `leaked` (released by the session, still live — a
+teardown that did not take). A missed acquisition becomes a *reported
+discrepancy* instead of nothing.
+
+The wasm side is compelled to match:
+`__tests__/runtime-graphics-query.compile-guard.ts` asserts that a
+boolean-returning `liveHandles` and an unkeyed `release` both fail to compile.
 
 **Ownership.** The session owns disposal; a Host never releases an individual
 resource, it calls `dispose()`. `dispose()` is idempotent and releases in reverse
@@ -166,6 +211,26 @@ session exists.
 
 **What it rules out.** *Session-owned* migration: a second session would re-run
 migrations against the same store, or race the first.
+
+**A failed migration fails session creation.** Not "logs and proceeds" — that was
+the shape shipped first, and combined with once-per-store memoisation it meant
+the editor ran on data the store itself reported as un-migrated, permanently,
+with only a diagnostics event. Of the two acceptable contracts, refusing can be
+relaxed later without breaking a Host; silently proceeding cannot be tightened
+later without breaking one. A failed run is also **evicted from the memo**, so a
+later session retries rather than inheriting a poisoned store.
+
+**"Once" memoises the promise, not a flag.** A flag set before the `await` lets a
+second concurrent `createEditorSession` on the same store return *while migration
+is still running* — violating "before any project is loaded" in precisely the
+two-sessions-in-one-page case the Slice requires. The second caller awaits the
+first run.
+
+**`from` is `number | null`, never a copy of `to`.** The store optionally
+declares `persistedSchemaVersion()`; when it cannot, `from` is `null` rather than
+defaulted to the target. A frozen event field that is structurally incapable of
+carrying its meaning is worse than an absent one, and the later child repairing
+`MigrationDialog` is the consumer that would have had to render it.
 
 **The consequence a later child depends on.** `MigrationDialog` can only ever
 observe a migration once progress stops being global. The session-scoped
@@ -205,19 +270,51 @@ question with no use case behind it.
 
 ---
 
-## 6. One shape forced by compilation, recorded so it is not mistaken for softness
+## 6. Why the port roles are `Partial` on `EditorHost`
 
-The port roles are declared `Partial` on `EditorHost`. That is **not** the
-contract being optional. Making them required would have broken both Hosts'
-compilation the instant the interface changed, and neither Host's source is in
-this change's write set.
+**The durable reason — the one that does not expire.** Required members would
+force both Host composition roots to construct all eight ports *now*, at a change
+whose entire claim is that it wires nothing. That would pull
+`editor/ports/**` into the production module graph and **destroy this change's
+own central evidence**: the distributable bundle is 2,844 modules / 550 from
+`apps/web/src` / **zero contract modules**, byte-for-byte the recorded baseline.
+It would also drag storage and asset work — later children's, by design — into
+this one, because a Host cannot construct a `ProjectStore` it has not been given
+yet.
 
-The hard gate is one level in: a session is created from `ResolvedEditorHost`,
-where every role is required, and `resolveEditorHost()` **throws, naming the
-missing roles**, rather than defaulting to the in-memory implementation. A silent
-fallback would mean a Host that forgot to supply storage would run, appear to
-work, and lose the user's projects on reload — a failure that surfaces late and
-reads as data loss rather than as a missing port.
+*A weaker reason was recorded here first: "neither Host's source is in this
+change's write set." It is true, but it is a scheduling fact, not a design one —
+there are exactly two construction sites, neither owned by the concurrent child,
+and the argument **expires at the first child permitted to touch a Host**. A
+decision defended by a reason that expires outlives its own justification, which
+at a freeze is expensive.*
 
-So optionality buys exactly one thing: a Host can be widened one role at a time
-while it is being wired. It never buys a session running without a port.
+**Optionality is not softness, and it is guarded three ways.**
+
+1. A session is created only from `ResolvedEditorHost`, where every role is
+   required, and `resolveEditorHost()` **throws, naming the missing roles**. It
+   never falls back to the in-memory implementation: a Host that forgot storage
+   would otherwise run, appear to work, and lose the user's projects on reload —
+   a failure that surfaces late and reads as data loss rather than as a missing
+   port.
+2. **Consumers never see the optional form.** `useEditorHost()` returns
+   `EditorHostBase` — the five long-standing members only — so the port roles are
+   not merely discouraged through context, they are *not visible* there. Ports
+   reach code through the session, which is where later children wire them. A
+   `useEditorPorts()` hook was written and removed: nothing calls it, and it
+   needed the role register at runtime, which pulled `editor/ports/**` into the
+   production bundle and cost this change its zero-contract-modules evidence for
+   a hook with no consumer.
+3. The role register is **compile-enforced complete** (`Record<PortRole, true>`),
+   so the gate cannot silently narrow as roles are added. Proven both ways in
+   `__tests__/port-roles.compile-guard.ts`; the `satisfies readonly PortRole[]`
+   form that was here first checked membership only, and accepted an omission
+   silently.
+
+**Retirement trigger.** When the first child rewires a Host composition root and
+that Host supplies every port, make the roles required on `EditorHost`, delete
+`resolveEditorHost`'s throw, and collapse `EditorHost` into `ResolvedEditorHost`.
+The condition to check at that point is the one the durable reason names: whether
+the ports are by then genuinely consumed at runtime, so that pulling them into
+the module graph is a true statement about the build rather than a regression in
+it.

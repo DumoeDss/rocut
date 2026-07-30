@@ -128,7 +128,10 @@ export class InMemoryRuntimeAssetLoader implements RuntimeAssetLoader {
 	async loadBytes({ ref }: { ref: AssetRef }): Promise<ArrayBuffer> {
 		const found = this.files.get(ref.path);
 		if (!found) throw new Error(`No such asset: ${ref.path}`);
-		return found;
+		// Copied, for the same reason `InMemoryProjectStore.load` clones: handing
+		// back the stored buffer by reference lets a caller that mutates it corrupt
+		// the "file" for every later read.
+		return found.slice(0);
 	}
 
 	async loadJson<T = unknown>({ ref }: { ref: AssetRef }): Promise<T> {

@@ -44,7 +44,14 @@ export type RootState =
 export interface EditorSessionRootHandle {
 	readonly sessionId: SessionId;
 	readonly container: Element;
-	/** Resolves when the root is usable; rejects if mounting failed. */
+	/**
+	 * Resolves when the root is usable.
+	 *
+	 * **Rejects** if mounting failed, or if the root was unmounted before
+	 * mounting completed. It must never resolve in either case: `await
+	 * handle.ready` is the guard a Host puts in front of touching the mounted
+	 * root, and resolving on teardown would walk it straight onto a dead root.
+	 */
 	readonly ready: Promise<void>;
 	readonly state: RootState;
 	/** Idempotent. A second call resolves without error. */

@@ -15,9 +15,13 @@ import type { EditorHostPorts, PortRole } from "../index";
 import { PORT_ROLES } from "../index";
 import { deriveGraphicsReport, UNIMPLEMENTED_RUNTIME_GRAPHICS } from "../environment";
 
+export type ConformanceStatus = "passed" | "failed" | "skipped";
+
 export interface ConformanceCaseResult {
 	readonly port: PortRole;
 	readonly name: string;
+	readonly status: ConformanceStatus;
+	/** `true` only for `"passed"`. A skipped case is not a passing case. */
 	readonly passed: boolean;
 	readonly detail?: string;
 }
@@ -27,8 +31,21 @@ export interface ConformanceReport {
 	readonly passed: boolean;
 	readonly results: readonly ConformanceCaseResult[];
 	readonly byPort: Readonly<
-		Record<PortRole, { passed: number; failed: number }>
+		Record<PortRole, { passed: number; failed: number; skipped: number }>
 	>;
+}
+
+/**
+ * Thrown by a case that does not apply to the implementation under test.
+ *
+ * Reported as `"skipped"`, never as `"passed"`. A case that executed no
+ * assertion and is recorded green is a lie told to whoever reads the report —
+ * and C5's second store and E1 read the report, not this repository's tests.
+ */
+class SkipCase extends Error {}
+
+function skip(reason: string): never {
+	throw new SkipCase(reason);
 }
 
 class Cases {
@@ -39,11 +56,22 @@ class Cases {
 	async check(name: string, run: () => Promise<void> | void): Promise<void> {
 		try {
 			await run();
-			this.results.push({ port: this.port, name, passed: true });
+			this.results.push({ port: this.port, name, status: "passed", passed: true });
 		} catch (error) {
+			if (error instanceof SkipCase) {
+				this.results.push({
+					port: this.port,
+					name,
+					status: "skipped",
+					passed: false,
+					detail: error.message,
+				});
+				return;
+			}
 			this.results.push({
 				port: this.port,
 				name,
+				status: "failed",
 				passed: false,
 				detail: error instanceof Error ? error.message : String(error),
 			});
@@ -70,16 +98,39 @@ export async function runPortConformance(args: {
 	results.push(...(await idCases(ports)));
 	results.push(...(await environmentCases(ports)));
 
-	const byPort = {} as Record<PortRole, { passed: number; failed: number }>;
-	for (const role of PORT_ROLES) byPort[role] = { passed: 0, failed: 0 };
+	const byPort = {} as Record<
+		PortRole,
+		{ passed: number; failed: number; skipped: number }
+	>;
+	for (const role of PORT_ROLES)
+		byPort[role] = { passed: 0, failed: 0, skipped: 0 };
 	for (const result of results) {
-		if (result.passed) byPort[result.port].passed += 1;
-		else byPort[result.port].failed += 1;
+		byPort[result.port][result.status] += 1;
+	}
+
+	// A role with no cases at all is a FAILURE of the suite, not a pass. Adding a
+	// port role and forgetting to write cases for it must go red — the same
+	// growth hazard `PORT_ROLE_REGISTER` guards against on the type side.
+	const uncovered = PORT_ROLES.filter(
+		(role) =>
+			byPort[role].passed + byPort[role].failed + byPort[role].skipped === 0,
+	);
+	for (const role of uncovered) {
+		results.push({
+			port: role,
+			name: "the suite covers this port",
+			status: "failed",
+			passed: false,
+			detail:
+				"no conformance case exercises this port role; a green result here would " +
+				"assert nothing about it",
+		});
+		byPort[role].failed += 1;
 	}
 
 	return {
 		label: args.label ?? "unnamed implementation",
-		passed: results.every((r) => r.passed),
+		passed: results.every((r) => r.status !== "failed"),
 		results,
 		byPort,
 	};
@@ -161,6 +212,38 @@ async function storeCases(
 		assert(missing === null, "expected null for an unknown project");
 	});
 
+	/**
+	 * Migration is a *store* obligation, and a second store implementation is
+	 * required to pass this same suite — so a store could otherwise be fully
+	 * "conformant" with a broken or absent `migrate`.
+	 */
+	await cases.check("declares a migration or declares it has none", async () => {
+		if (!store.migrate)
+			skip("this store declares no migration, which is a conforming answer");
+		const progress: number[] = [];
+		const outcome = await store.migrate!({
+			from: null,
+			to: store.schemaVersion,
+			report: (p) => progress.push(p.completed),
+		});
+		assert(
+			outcome.status === "migrated" ||
+				outcome.status === "not-needed" ||
+				outcome.status === "failed",
+			`unknown migration outcome: ${JSON.stringify(outcome)}`,
+		);
+		if (outcome.status === "migrated") {
+			assert(
+				outcome.to === store.schemaVersion,
+				`migration reported to=${outcome.to} but the store declares ${store.schemaVersion}`,
+			);
+			assert(
+				outcome.recordsMigrated >= 0,
+				"recordsMigrated must not be negative",
+			);
+		}
+	});
+
 	await cases.check("remove deletes the record and the summary", async () => {
 		await store.remove({ id });
 		assert((await store.load({ id })) === null, "record survived remove()");
@@ -187,11 +270,22 @@ async function assetCases(
 			"resolve() must return a non-empty location",
 		);
 	});
-	await resolverCases.check("does not require a root-absolute result", () => {
+	// The name used to promise a root-absoluteness check and the body only
+	// asserted `typeof resolved === "string"`. This is the port E0 named as the
+	// single blocker for embedding, so the case now makes the check its name
+	// claims: a resolver that hard-codes a root-absolute prefix cannot serve a
+	// Host mounted under a sub-path, which is the whole point of the role.
+	await resolverCases.check("does not hard-code a root-absolute location", () => {
 		const resolved = ports.assets.resolve({ ref: { path: "a/b.png" } });
 		assert(
-			typeof resolved === "string",
-			"resolve() must return a string for a nested path",
+			typeof resolved === "string" && resolved.length > 0,
+			"resolve() must return a non-empty string for a nested path",
+		);
+		assert(
+			!resolved.startsWith("/"),
+			`resolve() returned a root-absolute location (${resolved}); a Host served from a ` +
+				"sub-path or a custom scheme cannot satisfy that, which is the assumption this " +
+				"port exists to remove",
 		);
 	});
 
@@ -313,7 +407,8 @@ async function exportCases(
 	});
 
 	await cases.check("an unsupported export says so rather than failing", async () => {
-		if (ports.exporter.canExport({ request })) return;
+		if (ports.exporter.canExport({ request }))
+			skip("this host reports it can export, so the unsupported path is not applicable");
 		const outcome = await ports.exporter.export({ request });
 		assert(
 			outcome.status === "unsupported",
@@ -400,7 +495,8 @@ async function environmentCases(
 	 */
 	await cases.check("a forced no-rasterizer declaration yields a zero limit", () => {
 		const declaration = ports.environment.describeGraphics();
-		if (declaration.mode !== "force") return;
+		if (declaration.mode !== "force")
+			skip("this host declares detect mode, so there is no force to check");
 		const report = deriveGraphicsReport({
 			declaration,
 			runtime: UNIMPLEMENTED_RUNTIME_GRAPHICS,
@@ -426,12 +522,15 @@ export function formatConformanceReport(report: ConformanceReport): string {
 	for (const role of PORT_ROLES) {
 		const tally = report.byPort[role];
 		lines.push(
-			`  ${tally.failed === 0 ? "PASS" : "FAIL"}  ${role}: ${tally.passed} passed, ${tally.failed} failed`,
+			`  ${tally.failed === 0 ? "PASS" : "FAIL"}  ${role}: ${tally.passed} passed, ` +
+				`${tally.failed} failed, ${tally.skipped} skipped`,
 		);
 	}
 	for (const result of report.results) {
-		if (result.passed) continue;
-		lines.push(`    FAIL  ${result.port} / ${result.name}: ${result.detail ?? ""}`);
+		if (result.status === "passed") continue;
+		lines.push(
+			`    ${result.status === "failed" ? "FAIL" : "SKIP"}  ${result.port} / ${result.name}: ${result.detail ?? ""}`,
+		);
 	}
 	return lines.join("\n");
 }

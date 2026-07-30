@@ -119,17 +119,44 @@ const RULES = [
 		id: "no-editor-internal-import",
 		description:
 			"no port module imports an OpenCut schema type, command class, editor store or the storage service",
-		test: (line) => {
+		test: (line, path) => {
 			const match = /from\s+["']([^"']+)["']/.exec(line);
 			if (!match) return false;
 			const spec = match[1];
+			if (spec === "zustand" || spec.startsWith("zustand/")) return true;
+
+			const resolved = resolveSpecifier({ spec, fromFile: path });
+			if (resolved === null) return false;
+
+			// A contract module importing another contract module is not a leak, by
+			// definition. This matters once relative specifiers are resolved: the
+			// contract's own `../project-store` would otherwise look exactly like a
+			// Zustand store to the `-store` rule below.
+			if (isContractPath(resolved)) return false;
+
 			return (
-				/^@\/(project|timeline|commands|core|stores|scenes|effects|masks|media)\//.test(spec) ||
-				/^@\/services\/storage(\/|$)/.test(spec) ||
-				/^@\/[^"']*-store$/.test(spec) ||
-				spec === "zustand" ||
-				spec.startsWith("zustand/")
+				/^apps\/web\/src\/(project|timeline|commands|core|stores|scenes|effects|masks|media)\//.test(
+					resolved,
+				) ||
+				/^apps\/web\/src\/services\/storage(\/|$)/.test(resolved) ||
+				/-store$/.test(resolved)
 			);
+		},
+	},
+	{
+		id: "no-direct-wasm-import",
+		description:
+			"no contract module imports the wasm module directly; GPU resources arrive through the injected runtime query",
+		appliesTo: (path) => !isNonRuntime(path),
+		test: (line) => {
+			const match = /from\s+["']([^"']+)["']/.exec(line);
+			if (!match) return false;
+			// The GPU analogue of `no-direct-resource-acquisition`. There is no
+			// syntactic form for a wasm allocation — it happens inside the module —
+			// so the enforceable rule is that the contract graph never reaches the
+			// module at all: GPU handles arrive through `RuntimeGpuResourceQuery`,
+			// which is what makes disposal reconcilable.
+			return /^opencut-wasm(\/|$)/.test(match[1]);
 		},
 	},
 	{
@@ -171,6 +198,34 @@ function isComment(line) {
 	return /^\s*(?:\/\/|\*|\/\*)/.test(line);
 }
 
+function isContractPath(repoRelative) {
+	return (
+		CONTRACT_FILES.has(repoRelative) ||
+		CONTRACT_AREAS.some((area) => repoRelative.startsWith(area))
+	);
+}
+
+/**
+ * Turn an import specifier into a repo-relative module path.
+ *
+ * Relative specifiers are resolved against the **importing file's directory**
+ * rather than string-rewritten. Rewriting `../../../project/types` to `@/…` by
+ * pattern was the naive version, and it mis-attributed the contract's own
+ * `../project-store` to the editor's store area. Returns `null` for a bare
+ * package specifier, which this rule does not judge.
+ */
+function resolveSpecifier({ spec, fromFile }) {
+	if (spec.startsWith("@/")) return `apps/web/src/${spec.slice(2)}`;
+	if (!spec.startsWith(".")) return null;
+	const parts = fromFile.split("/").slice(0, -1);
+	for (const segment of spec.split("/")) {
+		if (segment === "." || segment === "") continue;
+		if (segment === "..") parts.pop();
+		else parts.push(segment);
+	}
+	return parts.join("/");
+}
+
 function scan({ path, text }) {
 	const violations = [];
 	const lines = text.split(/\r?\n/);
@@ -178,7 +233,7 @@ function scan({ path, text }) {
 		if (rule.appliesTo && !rule.appliesTo(path)) continue;
 		lines.forEach((line, index) => {
 			if (isComment(line)) return;
-			if (!rule.test(line)) return;
+			if (!rule.test(line, path)) return;
 			violations.push({
 				rule: rule.id,
 				path,
@@ -219,6 +274,24 @@ const NEGATIVE_CONTROL_FIXTURES = [
 		rule: "no-editor-internal-import",
 		path: "apps/web/src/editor/ports/violation.ts",
 		text: 'import type { TProject } from "@/project/types";\nexport type X = TProject;\n',
+	},
+	{
+		rule: "no-editor-internal-import",
+		path: "apps/web/src/editor/ports/violation.ts",
+		text: 'import type { TProject } from "../../project/types";\nexport type X = TProject;\n',
+		note: "a relative specifier is caught too, not only the @/ form",
+	},
+	{
+		rule: "no-editor-internal-import",
+		expect: "not-caught",
+		path: "apps/web/src/editor/ports/in-memory/violation.ts",
+		text: 'import type { ProjectStore } from "../project-store";\nexport type X = ProjectStore;\n',
+		note: "a contract module importing another contract module is not a leak",
+	},
+	{
+		rule: "no-direct-wasm-import",
+		path: "apps/web/src/editor/session/violation.ts",
+		text: 'import { create_compositor } from "opencut-wasm";\nexport const c = create_compositor;\n',
 	},
 	{
 		rule: "no-storage-mechanism-literal",

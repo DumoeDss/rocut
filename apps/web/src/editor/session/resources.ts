@@ -14,19 +14,28 @@
  * detectable boundary violation (`script/check-port-boundary.mjs`) rather than a
  * leak, so the blind spot becomes a check failure.
  *
- * ## The one class that cannot be acquisition-mediated, stated plainly
+ * ## The one class that cannot be acquisition-mediated, and what closes it
  *
- * `trackGpuResource` takes a release callback, which is the register-after-the-
- * fact shape this file argues against. That asymmetry is real and is not an
- * oversight: GPU resources are created *inside the wasm module*, so the session
- * cannot be in their construction path at all. What keeps it honest is that the
- * tracked id **is** the teardown's parameter under C0b's handle-keyed API — the
- * handle and the teardown are one interface — so a tracked resource that cannot
- * be released is a compile-time mismatch rather than a silent no-op.
+ * GPU resources are allocated *inside the wasm module*, so the session cannot be
+ * in their construction path and no boundary check can scan for a syntactic
+ * form. Tracking alone would leave this class as blind as
+ * `PluginDisposerRegistry` — and it is the worst class to be blind on, being the
+ * one demonstrably created inside packaged Elftia and never measured for
+ * release.
+ *
+ * What closes it is **reconciliation**, not the tracking call:
+ * `trackGpuResource` takes the runtime's own `GpuHandleId`, and `dispose()`
+ * compares the registry against `RuntimeGpuResourceQuery.liveHandles()`. A
+ * handle the runtime holds that the session never saw is reported as
+ * `untracked`; one the session released that the runtime still holds is reported
+ * as `leaked`. A forgotten `trackGpuResource` therefore becomes a *reported
+ * discrepancy* rather than nothing.
  */
 import type {
 	AudioContextHandle,
 	AudioContextRequest,
+	GpuHandleId,
+	GpuReconciliation,
 	ObjectUrlHandle,
 	ResourceId,
 	WorkerHandle,
@@ -61,6 +70,8 @@ export interface TimerHandle {
 
 export interface GpuResourceHandle {
 	readonly resourceId: ResourceId;
+	/** The runtime's own key. Also the teardown export's parameter. */
+	readonly handle: GpuHandleId;
 	readonly label: string;
 	release(): void;
 }
@@ -93,6 +104,11 @@ export interface DisposalReport {
 	readonly gpuResource: ResourceClassReport;
 	/** What was actually released, in the order it was released. */
 	readonly releaseOrder: readonly SessionResourceRef[];
+	/**
+	 * The registry checked against what the runtime still holds. This is what
+	 * makes the un-mediated GPU class measurable rather than merely tracked.
+	 */
+	readonly gpuReconciliation: GpuReconciliation;
 }
 
 /**
@@ -114,10 +130,14 @@ export interface SessionResources {
 	}): AudioContextHandle;
 	createObjectUrl(args: { blob: Blob }): ObjectUrlHandle;
 
-	/** See this file's header for why this one class is tracked, not mediated. */
+	/**
+	 * See this file's header. The `handle` is the runtime's own key, so release
+	 * goes through the runtime's teardown rather than through an opaque callback
+	 * the session cannot relate to anything.
+	 */
 	trackGpuResource(args: {
+		handle: GpuHandleId;
 		label: string;
-		release: () => void;
 	}): GpuResourceHandle;
 
 	/**

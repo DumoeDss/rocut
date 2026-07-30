@@ -23,9 +23,17 @@ describe("port conformance", () => {
 		// Printed so the recorded evidence is the suite's own output rather than a
 		// paraphrase of it.
 		console.log(formatConformanceReport(report));
-		const failures = report.results.filter((r) => !r.passed);
+		const failures = report.results.filter((r) => r.status === "failed");
 		expect(failures).toEqual([]);
 		expect(report.passed).toBe(true);
+
+		// Skipped cases are reported as skipped and are NOT counted as passing.
+		// Those two are the cases a detecting, migration-free reference host
+		// genuinely cannot exercise; a suite that called them green would be
+		// telling C5 and E1 something untrue.
+		const skipped = report.results.filter((r) => r.status === "skipped");
+		expect(skipped.map((r) => r.port).sort()).toEqual(["environment", "store"]);
+		expect(skipped.every((r) => r.passed === false)).toBe(true);
 	});
 
 	test("a forcing no-rasterizer host runs the no-rasterizer case, not past it", async () => {
@@ -187,6 +195,55 @@ describe("graphics negotiation", () => {
 		expect(consulted).toBe(false);
 	});
 
+	test("a DETECTING host on a GPU-less runtime reports no rasterizer", () => {
+		// The half M5 was missing. A host that asks for detection, running where no
+		// backend can be acquired, must get an honest "none" — not a fabricated
+		// "gpu". A report that can only ever say "gpu" is the silent-degradation
+		// failure D9's honesty clause exists to prevent, and a no-rasterizer
+		// machine is the configuration §3.5 records as never having been tried.
+		const report = deriveGraphicsReport({
+			declaration: { mode: "detect" },
+			runtime: {
+				selectedBackend: () => null,
+				concurrentCompositorInstances: () => 0,
+				unavailableReason: () => "no adapter available",
+			},
+		});
+		expect(report.rasterizer).toBe("none");
+		expect(report.backend).toBeNull();
+		expect(report.livePreviewLimit).toBe(0);
+		expect(report.rasterizer === "none" && report.reason).toBe(
+			"no adapter available",
+		);
+		// Distinguishable from a host-forced none: this one is a measurement.
+		expect(report.source).toBe("runtime");
+	});
+
+	test("a GPU-less runtime still states a reason when it supplies none", () => {
+		const report = deriveGraphicsReport({
+			declaration: { mode: "detect" },
+			runtime: {
+				selectedBackend: () => null,
+				concurrentCompositorInstances: () => 0,
+			},
+		});
+		expect(report.rasterizer).toBe("none");
+		expect(report.rasterizer === "none" && report.reason.length).toBeGreaterThan(
+			0,
+		);
+	});
+
+	test("the unimplemented marker cannot be stamped as a real measurement", () => {
+		// The escape hatch that used to exist: a caller passing runtimeSource could
+		// label the placeholder "runtime". There is no such parameter now, and the
+		// marker travels on the object.
+		const report = deriveGraphicsReport({
+			declaration: { mode: "detect" },
+			runtime: UNIMPLEMENTED_RUNTIME_GRAPHICS,
+		});
+		expect(report.source).toBe("unimplemented");
+	});
+
 	test("the report names the selected backend, as an enumeration", () => {
 		const webgl = deriveGraphicsReport({
 			declaration: { mode: "detect" },
@@ -194,7 +251,6 @@ describe("graphics negotiation", () => {
 				selectedBackend: () => "webgl",
 				concurrentCompositorInstances: () => 1,
 			},
-			runtimeSource: "runtime",
 		});
 		expect(webgl.backend).toBe("webgl");
 		expect(webgl.livePreviewLimit).toBe(1);
@@ -205,7 +261,6 @@ describe("graphics negotiation", () => {
 				selectedBackend: () => "webgpu",
 				concurrentCompositorInstances: () => 2,
 			},
-			runtimeSource: "runtime",
 		});
 		expect(webgpu.backend).toBe("webgpu");
 		expect(webgpu.livePreviewLimit).toBe(2);
@@ -231,7 +286,6 @@ describe("graphics negotiation", () => {
 				selectedBackend: () => "webgpu",
 				concurrentCompositorInstances: () => 3,
 			},
-			runtimeSource: "runtime",
 		});
 		expect(report.livePreviewLimit).toBe(3);
 	});

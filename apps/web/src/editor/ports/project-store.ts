@@ -53,24 +53,37 @@ export interface MigrationProgress {
 }
 
 export interface MigrationContext {
-	/** The version found on disk. */
-	readonly from: number;
+	/**
+	 * The version found on disk, or `null` when the store cannot determine it
+	 * before migrating.
+	 *
+	 * Nullable rather than defaulted to the target version. A `from` that always
+	 * equalled `to` would be structurally incapable of carrying its meaning, and
+	 * a later child has to render exactly this pair in a migration dialog — a
+	 * frozen field that can never be right is worse than an absent one.
+	 */
+	readonly from: number | null;
 	/** The version the store declares. */
 	readonly to: number;
 	report(progress: MigrationProgress): void;
 }
 
+/**
+ * `from` is `number | null` throughout, matching `MigrationContext.from`: a
+ * store that could not determine its on-disk version before migrating cannot
+ * invent one afterwards either.
+ */
 export type MigrationOutcome =
 	| { readonly status: "not-needed" }
 	| {
 			readonly status: "migrated";
-			readonly from: number;
+			readonly from: number | null;
 			readonly to: number;
 			readonly recordsMigrated: number;
 	  }
 	| {
 			readonly status: "failed";
-			readonly from: number;
+			readonly from: number | null;
 			readonly to: number;
 			readonly reason: string;
 	  };
@@ -86,11 +99,23 @@ export interface ProjectStore {
 	readonly schemaVersion: number;
 
 	/**
+	 * The version currently on disk, when the store can determine it without
+	 * migrating. Absent means it cannot, and `MigrationContext.from` is `null`.
+	 *
+	 * This exists so `from` carries a real value. A store that can cheaply read
+	 * its own on-disk version should implement it.
+	 */
+	persistedSchemaVersion?(): Promise<number | null>;
+
+	/**
 	 * Bring persisted data forward. Absent means "no legacy data to migrate",
 	 * which is a conforming answer, not an omission.
 	 *
 	 * Invoked by the session exactly once during `create`, before any project is
-	 * loaded, and never again for the same store instance.
+	 * loaded, and never again for the same store instance. Concurrent creations
+	 * against the same store await the same run rather than starting a second.
+	 *
+	 * A `failed` outcome **fails session creation**; see `DECISIONS.md` §4.
 	 */
 	migrate?(ctx: MigrationContext): Promise<MigrationOutcome>;
 

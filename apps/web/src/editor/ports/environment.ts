@@ -85,9 +85,48 @@ export type GraphicsCapabilityReport =
  *   `livePreviewLimit` is *derived* rather than guessed.
  */
 export interface RuntimeGraphicsQuery {
-	selectedBackend(): GraphicsBackend;
+	/**
+	 * The backend the runtime actually selected, or **`null` when it could not
+	 * acquire a rasterizer at all**.
+	 *
+	 * The nullable case is not defensive typing. Without it the runtime side of
+	 * this contract is *incapable* of reporting "no rasterizer", so a genuinely
+	 * GPU-less machine under `{ mode: "detect" }` would get a fabricated
+	 * `rasterizer: "gpu"` report — silent degradation, which is precisely the
+	 * failure D9's honesty clause exists to prevent. The Host-side *force* covers
+	 * the constructibility half of §3.5; this covers the truthfulness half of
+	 * §3.6, and they are not interchangeable.
+	 *
+	 * Note that a no-rasterizer machine is the one configuration §3.5 fact 3
+	 * records as **never having been tried**, so this branch must exist before
+	 * anyone can try it.
+	 */
+	selectedBackend(): GraphicsBackend | null;
+	/**
+	 * How many compositor instances can be driven concurrently. A **count**.
+	 * Meaningless — and required to be `0` — when `selectedBackend()` is `null`.
+	 */
 	concurrentCompositorInstances(): number;
+	/**
+	 * Why no rasterizer was available, when `selectedBackend()` is `null`.
+	 * Required because a no-rasterizer report must carry a stated reason.
+	 */
+	unavailableReason?(): string;
 }
+
+/**
+ * Marks an implementation as not yet able to answer honestly.
+ *
+ * A brand on the *object* rather than a `runtimeSource` parameter on
+ * `deriveGraphicsReport`. That parameter was an escape hatch: any caller could
+ * stamp `source: "runtime"` onto the placeholder, defeating the marker whose
+ * entire job is to stop an un-replaced placeholder from being mistaken for a
+ * measurement. Reference identity against the placeholder was fragile for the
+ * mirror-image reason — a wrapper or a spread silently reported `"runtime"`.
+ */
+export const UNIMPLEMENTED_MARKER = Symbol.for(
+	"opencut.graphics.unimplemented",
+);
 
 /**
  * The placeholder this change ships so the declaration is not merely aspirational.
@@ -96,7 +135,10 @@ export interface RuntimeGraphicsQuery {
  * marker is what makes an un-replaced placeholder visible in a report rather
  * than indistinguishable from a real measurement of a single-preview machine.
  */
-export const UNIMPLEMENTED_RUNTIME_GRAPHICS: RuntimeGraphicsQuery = {
+export const UNIMPLEMENTED_RUNTIME_GRAPHICS: RuntimeGraphicsQuery & {
+	[UNIMPLEMENTED_MARKER]: true;
+} = {
+	[UNIMPLEMENTED_MARKER]: true,
 	selectedBackend: () => "webgl",
 	concurrentCompositorInstances: () => 1,
 };
@@ -116,6 +158,14 @@ export interface SessionCapabilities {
 	graphics(): Promise<GraphicsCapabilityReport>;
 }
 
+function sourceOf(runtime: RuntimeGraphicsQuery): GraphicsReportSource {
+	return (runtime as { [UNIMPLEMENTED_MARKER]?: boolean })[
+		UNIMPLEMENTED_MARKER
+	] === true
+		? "unimplemented"
+		: "runtime";
+}
+
 /**
  * Derive the report. The only place the two sides meet.
  *
@@ -126,7 +176,6 @@ export interface SessionCapabilities {
 export function deriveGraphicsReport(args: {
 	declaration: GraphicsDeclaration;
 	runtime: RuntimeGraphicsQuery;
-	runtimeSource?: GraphicsReportSource;
 }): GraphicsCapabilityReport {
 	const { declaration, runtime } = args;
 
@@ -140,13 +189,29 @@ export function deriveGraphicsReport(args: {
 		};
 	}
 
-	const instances = runtime.concurrentCompositorInstances();
+	const source = sourceOf(runtime);
+	const backend = runtime.selectedBackend();
+
+	// The detect branch must be able to reach the absent case, or a genuinely
+	// GPU-less machine gets a fabricated "gpu" report.
+	if (backend === null) {
+		return {
+			rasterizer: "none",
+			backend: null,
+			livePreviewLimit: 0,
+			reason:
+				runtime.unavailableReason?.() ??
+				"the runtime reported no available graphics backend",
+			source,
+		};
+	}
+
 	return {
 		rasterizer: "gpu",
-		backend: runtime.selectedBackend(),
-		livePreviewLimit: instances,
-		source:
-			args.runtimeSource ??
-			(runtime === UNIMPLEMENTED_RUNTIME_GRAPHICS ? "unimplemented" : "runtime"),
+		backend,
+		// A rasterizer that can drive zero previews is a contradiction the report
+		// must not carry silently; clamp to at least one and let the count speak.
+		livePreviewLimit: Math.max(1, runtime.concurrentCompositorInstances()),
+		source,
 	};
 }

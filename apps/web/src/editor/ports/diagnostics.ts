@@ -32,10 +32,26 @@ export interface LogRecord {
  * nicety. The dialog's own repair is C3's.
  */
 export type SessionEvent =
-	| { readonly kind: "migration-started"; readonly from: number; readonly to: number }
+	| {
+			readonly kind: "migration-started";
+			/** `null` when the store cannot report its on-disk version yet. */
+			readonly from: number | null;
+			readonly to: number;
+	  }
 	| { readonly kind: "migration-progress"; readonly progress: MigrationProgress }
-	| { readonly kind: "migration-finished"; readonly recordsMigrated: number }
-	| { readonly kind: "migration-failed"; readonly reason: string };
+	| {
+			readonly kind: "migration-finished";
+			/** Taken from the store's own outcome, which is authoritative. */
+			readonly from: number | null;
+			readonly to: number;
+			readonly recordsMigrated: number;
+	  }
+	| {
+			readonly kind: "migration-failed";
+			readonly from: number | null;
+			readonly to: number;
+			readonly reason: string;
+	  };
 
 export interface DiagnosticsPort {
 	log(args: { record: LogRecord }): void;

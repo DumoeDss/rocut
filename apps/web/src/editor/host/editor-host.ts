@@ -79,21 +79,15 @@ export interface EditorHostLinks {
 }
 
 /**
- * The host seam, widened with the port roles.
+ * The five members the host has always supplied, unchanged.
  *
- * The five original members are preserved **verbatim**: both hosts supply them
- * exactly as they did, and every existing consumer keeps working.
- *
- * The port roles are `Partial` at *this* level, and only for one reason: making
- * them required here would break both hosts' compilation the instant this
- * interface changed, and neither host's source is in this change's write set.
- * Optionality here is **not** the contract being soft. A session is created from
- * `ResolvedEditorHost`, where every role is required, and `resolveEditorHost`
- * refuses — by name — to produce one from a host that is missing roles. So the
- * only thing optionality buys is that a host can be widened one role at a time
- * while it is being wired; it never buys a session running without a port.
+ * Named separately so that context consumers can be given *this* rather than
+ * `EditorHost`. Handing them `EditorHost` would put the `Partial` port roles in
+ * front of every component in the editor, and the predictable result is a
+ * codebase full of `host.store?.` with nothing — no check, no lint, no type —
+ * standing between a consumer and an unresolved port.
  */
-export interface EditorHost extends Partial<EditorHostPorts> {
+export interface EditorHostBase {
 	/** The project the editor should open. Was `useParams().project_id`. */
 	projectId: string;
 	navigation: EditorHostNavigation;
@@ -102,8 +96,26 @@ export interface EditorHost extends Partial<EditorHostPorts> {
 	links: EditorHostLinks;
 }
 
+/**
+ * The host seam, widened with the port roles.
+ *
+ * This is the type a **host author** implements. The port roles are `Partial`
+ * here so that a host can be widened one role at a time while it is being wired;
+ * see `apps/web/src/editor/ports/DECISIONS.md` §6 for why that is not the
+ * contract being soft, and for the trigger that retires the optionality.
+ *
+ * It is deliberately **not** the type any consumer reads. Consumers get
+ * `EditorHostBase` (the five members) or `EditorHostPorts` (all eight roles,
+ * required, obtained through `useEditorPorts`). There is no supported path to a
+ * half-resolved host.
+ */
+export interface EditorHost extends EditorHostBase, Partial<EditorHostPorts> {}
+
 /** A host with every port role supplied. What a session is created from. */
-export type ResolvedEditorHost = EditorHost & EditorHostPorts;
+export type ResolvedEditorHost = EditorHostBase & EditorHostPorts;
+
+/** Just the port roles, all required. What `useEditorPorts()` returns. */
+export type ResolvedEditorHostPorts = EditorHostPorts;
 
 /**
  * Narrow a host to one a session can be created from, or throw naming what is

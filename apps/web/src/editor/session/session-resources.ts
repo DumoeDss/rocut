@@ -15,12 +15,16 @@
 import type {
 	AudioContextHandle,
 	AudioContextRequest,
+	GpuHandleId,
+	GpuReconciliation,
 	ObjectUrlHandle,
 	ResourceId,
+	RuntimeGpuResourceQuery,
 	RuntimeResourceHost,
 	WorkerHandle,
 	WorkerRequest,
 } from "@/editor/ports";
+import { isUnimplementedGpuRuntime } from "@/editor/ports";
 import type {
 	DisposalReport,
 	GpuResourceHandle,
@@ -37,6 +41,8 @@ interface TrackedResource {
 	readonly resourceClass: SessionResourceClass;
 	release(): void;
 	released: boolean;
+	/** Set for `gpuResource` entries only; the runtime's own handle key. */
+	gpuHandle?: GpuHandleId;
 }
 
 function emptyCounts(): Record<SessionResourceClass, { created: number; released: number }> {
@@ -74,14 +80,17 @@ function scheduleFrame(handler: (time: number) => void): () => void {
 
 export function createSessionResources(args: {
 	runtimeResources: RuntimeResourceHost;
+	runtimeGpu: RuntimeGpuResourceQuery;
 	nextId: (args: { scope: string }) => string;
 }): SessionResources & { disposeAll(): DisposalReport } {
-	const { runtimeResources, nextId } = args;
+	const { runtimeResources, runtimeGpu, nextId } = args;
 
 	/** Acquisition order. Release walks it backwards. */
 	const acquired: TrackedResource[] = [];
 	const counts = emptyCounts();
 	const releaseOrder: SessionResourceRef[] = [];
+	/** Every GPU handle this session was told about, released or not. */
+	const trackedGpuHandles = new Set<GpuHandleId>();
 	let disposed = false;
 
 	function track(args2: {
@@ -111,6 +120,29 @@ export function createSessionResources(args: {
 		entry.release();
 	}
 
+	/**
+	 * Compare the registry against what the runtime still holds.
+	 *
+	 * This is the only thing that makes the GPU class measurable, because the
+	 * session is not in its acquisition path. `untracked` catches a forgotten
+	 * `trackGpuResource`; `leaked` catches a teardown that did not take.
+	 */
+	function reconcileGpu(): GpuReconciliation {
+		const source = isUnimplementedGpuRuntime(runtimeGpu)
+			? ("unimplemented" as const)
+			: ("runtime" as const);
+		const live = runtimeGpu.liveHandles();
+		const untracked = live.filter((h) => !trackedGpuHandles.has(h));
+		const releasedHandles = new Set(
+			acquired
+				.filter((e) => e.resourceClass === "gpuResource" && e.released)
+				.map((e) => e.gpuHandle)
+				.filter((h): h is GpuHandleId => h !== undefined),
+		);
+		const leaked = live.filter((h) => releasedHandles.has(h));
+		return { source, untracked, leaked };
+	}
+
 	function report(): DisposalReport {
 		const per = {} as Record<SessionResourceClass, ResourceClassReport>;
 		for (const cls of SESSION_RESOURCE_CLASSES) {
@@ -126,6 +158,7 @@ export function createSessionResources(args: {
 			objectUrl: per.objectUrl,
 			gpuResource: per.gpuResource,
 			releaseOrder: [...releaseOrder],
+			gpuReconciliation: reconcileGpu(),
 		};
 	}
 
@@ -266,14 +299,22 @@ export function createSessionResources(args: {
 			};
 		},
 
-		trackGpuResource: ({ label, release: doRelease }): GpuResourceHandle => {
+		trackGpuResource: ({ handle, label }): GpuResourceHandle => {
 			assertLive();
+			trackedGpuHandles.add(handle);
 			const entry = track({
 				resourceClass: "gpuResource",
-				release: doRelease,
+				// Release goes through the runtime's own teardown, keyed by its own
+				// handle — not through an opaque callback the session cannot relate
+				// to anything the runtime reports.
+				release: () => {
+					runtimeGpu.release({ handle });
+				},
 			});
+			entry.gpuHandle = handle;
 			return {
 				resourceId: entry.resourceId,
+				handle,
 				label,
 				release: () => {
 					release(entry);
