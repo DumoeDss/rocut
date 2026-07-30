@@ -13,7 +13,7 @@ Per-file content hashes of the inherited source are in [`SOURCE_INVENTORY.md`](S
 
 | Ecosystem | Count | Source |
 | --- | ---: | --- |
-| npm packages resolved | 1358 | `bun.lock` |
+| npm packages resolved | 1359 | `bun.lock` |
 | bun workspace members | 3 | `bun.lock` (`<root>`, `apps/vite-example`, `apps/web`) |
 | Rust crates in the workspace lockfile | 763 | `Cargo.lock` (includes `apps/desktop`'s `gpui` graph, which is **not** built for wasm) |
 | Rust crates in the `opencut-wasm` wasm32 graph | 80 | `cargo tree -p opencut-wasm --target wasm32-unknown-unknown` |
@@ -32,7 +32,7 @@ workspace member despite the `apps/*` glob. It is excluded from the distributabl
 | `better-auth` | `^1.4.15` |
 | `next` | `^16.1.3` |
 | `opencut` | `.` |
-| `opencut-wasm` | `^0.2.10` |
+| `opencut-wasm` | `file:./rust/wasm/pkg` |
 
 ### Root `package.json` — direct devDependencies
 
@@ -89,7 +89,7 @@ workspace member despite the `apps/*` glob. It is excluded from the distributabl
 | `nanoid` | `^5.1.5` |
 | `next` | `16.1.3` |
 | `next-themes` | `^0.4.4` |
-| `opencut-wasm` | `^0.2.10` |
+| `opencut-wasm` | `file:../../rust/wasm/pkg` |
 | `pg` | `^8.16.2` |
 | `postgres` | `^3.4.5` |
 | `radix-ui` | `^1.4.3` |
@@ -267,15 +267,23 @@ Video and audio decoding otherwise relies on the browser's own WebCodecs and Med
 implementations; no codec binaries are vendored into this repository. GPU rendering goes through
 `wgpu`/`naga` compiled into `opencut-wasm`, targeting WebGPU with a WebGL fallback.
 
-## 4. Known upstream metadata defects — recorded, **not** repaired
+## 4. Known upstream metadata defects — recorded, with a disposition per defect
 
-These are defects in the pinned upstream's own metadata. Repairing them would be an unlogged
-behavioural change to the baseline this Slice exists to compare against, so they are recorded and
-left in place (design D5). The boundary checks operate on the emitted module graph, so a
+These are defects in the pinned upstream's own metadata. The default is that they stay: repairing one
+would be an unlogged behavioural change to the baseline S01 exists to compare against, so they are
+recorded and left in place (design D5). The boundary checks operate on the emitted module graph, so a
 declared-but-unimported package cannot make them pass or fail incorrectly.
 
-Each entry below is verified still present by this generator; if one is ever repaired, regenerating
-this file fails loudly instead of quietly describing a repository that no longer exists.
+**Disposition is stated per defect, not as a blanket claim** (S02 `s02-wasm-self-built-canonical`,
+design D-E). A defect may be repaired only by a change whose own scope makes it a live correctness or
+release gate, and only with the repairing change and the evidence named here. Each entry declares
+either **recorded** — this generator asserts the defect is still present — or **repaired** — this
+generator asserts it is *absent*. Both directions fail loudly: an undocumented repair fails as it
+always did, and a **re**-introduction of a repaired defect now fails the same way, which the old
+one-sided "every defect present" assertion could not detect. Repairing a defect never means deleting
+its entry; the record of what upstream shipped survives the repair.
+
+Current dispositions: D-1, D-2, D-3, D-4 recorded; D-5 repaired.
 
 ### Known before this Slice began
 
@@ -287,7 +295,7 @@ this file fails loudly instead of quietly describing a repository that no longer
 
 The root package (itself named `opencut`) lists itself as a dependency resolving to the repository root. bun installs it as a symlink to the repo root inside `node_modules`.
 
-Still present and unrepaired: **yes**
+Disposition: **recorded, not repaired**. Probe confirms it is still present: **yes**
 
 #### D-2 — Root `package.json` declares application dependencies `next` and `better-auth`
 
@@ -298,7 +306,7 @@ Still present and unrepaired: **yes**
 
 These belong to `apps/web`, which declares its own (exact) `next` pin. The root's caret range floats independently, so the lockfile resolves two different `next` versions and installs a nested copy under `apps/web/node_modules`. This is the direct cause of the dual-`next` type identity clash recorded as patch P-001.
 
-Still present and unrepaired: **yes**
+Disposition: **recorded, not repaired**. Probe confirms it is still present: **yes**
 
 #### D-3 — `rust/wasm/Cargo.toml` `repository` points at a nonexistent GitHub repository
 
@@ -308,7 +316,7 @@ repository = "https://github.com/opencut/opencut"
 
 The real upstream is `OpenCut-app/opencut-classic`. The stale URL is republished in the `opencut-wasm` npm package metadata.
 
-Still present and unrepaired: **yes**
+Disposition: **recorded, not repaired**. Probe confirms it is still present: **yes**
 
 #### D-4 — Published `opencut-wasm` declares `sideEffects` on a nonexistent `./snippets/*`
 
@@ -318,21 +326,27 @@ Still present and unrepaired: **yes**
 
 **Generated, not a publishing accident.** The rebuild-correspondence check (`UPSTREAM.md` § WASM rebuild correspondence) rebuilt this package from `rust/` and got a `package.json` that is *byte-identical* to the published one — which establishes that wasm-pack emits this `sideEffects` entry on every build, rather than it having been introduced when the package was packed. The package's `files` list ships no `snippets/` directory. Harmless — bundlers treat an unmatched glob as an empty set — but it means the published metadata does not describe the published contents, and it will keep doing so for any future build.
 
-Still present and unrepaired: **yes**
+Disposition: **recorded, not repaired**. Probe confirms it is still present: **yes**
 
 ### Discovered during S01
 
 Kept separate from the four above so the pre-known set stays exactly as it was enumerated, and so a
 reader can tell what this work found from what it inherited.
 
-#### D-5 — `rust/wasm` declares `license = "MIT"` but ships no LICENSE file
+#### D-5 — `rust/wasm` declared `license = "MIT"` while shipping no LICENSE file
 
 ```
 license = "MIT"
 ```
 
-`rust/wasm/Cargo.toml` declares the MIT licence, but neither `rust/wasm/` nor the published `opencut-wasm` npm package contains a LICENSE file — the published tarball holds only `opencut_wasm{.d.ts,.js,_bg.js,_bg.wasm}`, `package.json` and `README.md`. wasm-pack warns about this on **every** build (`License key is set in Cargo.toml but no LICENSE file(s) were found`).
+`rust/wasm/Cargo.toml` declares the MIT licence, but at the pin neither `rust/wasm/` nor the published `opencut-wasm` npm package contained a LICENSE file — the published tarball holds only `opencut_wasm{.d.ts,.js,_bg.js,_bg.wasm}`, `package.json` and `README.md`. wasm-pack warned about this on **every** build (`License key is set in Cargo.toml but no LICENSE file(s) were found`).
 
-**Recorded only — deliberately not fixed.** It has zero effect on this Slice's distributable graph, because S01 consumes the *published* package and the repository-root MIT `LICENSE` covers the source. It becomes a genuine release-gate defect at S02, when building the wasm from source becomes the canonical path and the built package would be redistributed without its licence text.
+**Recorded and unrepaired throughout S01, repaired at S02 — deliberately, in the change whose own scope made it a release gate.** S01's reason for leaving it was sound *for S01*: the Slice consumed the *published* package, the repository-root MIT `LICENSE` covered the source, and the defect had zero effect on that Slice's distributable graph. S01's own text named its expiry condition — it "becomes a genuine release-gate defect at S02, when building the wasm from source becomes the canonical path and the built package would be redistributed without its licence text". `s02-wasm-self-built-canonical` is that change, so the condition is met rather than overridden. The repair is the addition of `rust/wasm/LICENSE`, byte-identical to the root `LICENSE`.
 
-Still present and unrepaired: **yes**
+**Why there is no `PATCHES.md` row for the repair itself.** `rust/wasm/LICENSE` is a *new* file, and `PATCHES.md` logs modifications to files inherited at the pin only — it says so in its own header, and `SOURCE_INVENTORY.md` already separates added from modified. The manifest edits that make the licence a release gate (root `package.json` and `apps/web/package.json`, P-021/P-022) are inherited files and are logged there.
+
+Disposition: **repaired**, by change `s02-wasm-self-built-canonical` (S02 C0); patch **P-021**/**P-022** are the manifest edits that force it.
+
+Evidence: `script/check-wasm-source.mjs` asserts `rust/wasm/LICENSE` exists and is byte-identical to the root `LICENSE`; the `License key is set in Cargo.toml but no LICENSE file(s) were found` warning is absent from the build log recorded in `UPSTREAM.md` § WASM rebuild correspondence.
+
+Probe confirms it is absent: **yes**

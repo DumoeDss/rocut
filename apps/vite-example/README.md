@@ -21,9 +21,9 @@ the behavioural reference this example is compared against.
 | bun | install, all builds | `bun@1.2.18` is pinned in the root `packageManager`. **This work ran on bun 1.2.2** — older than the pin. It resolved the committed `bun.lock` without modifying it and both production builds succeed, but prefer 1.2.18; if a resolution difference ever appears, check this first. Recorded in [`../../UPSTREAM.md`](../../UPSTREAM.md) § Toolchain. |
 | Node.js | Vite build, `script/check-*.mjs` | Any version Vite 7 supports; verified on `v24.14.0`. |
 | A working GPU **or** SwiftShader | running the editor at all | Not optional. See "The editor needs a GPU" below. |
-| Rust / cargo + `wasm-pack` | **only** the optional wasm rebuild-correspondence check | cargo ≥ 1.85 (the crate is edition 2024; verified on 1.88.0), `wasm-pack` 0.13.1. Not needed to build or run the editor — it consumes the published npm `opencut-wasm@0.2.10`. |
+| Rust / cargo + `wasm-pack` + the `wasm32-unknown-unknown` target | **required** — building the editor at all | cargo ≥ 1.85 (the crate is edition 2024; verified on 1.88.0), `wasm-pack` 0.13.1. **Since S02 the editor consumes the wasm built from `rust/`**, not the published npm package: `opencut-wasm` is declared as `file:./rust/wasm/pkg`, so `bun install` cannot resolve it until the wasm has been built. `script/setup-rust` (or `script/setup-rust.ps1`) installs rustup and `wasm-pack`. |
 
-### Installing `wasm-pack` (only if you are rebuilding the wasm)
+### Installing `wasm-pack`
 
 Use the **official prebuilt release tarball** and put the binary on your `PATH`, rather than
 `cargo install wasm-pack`: installing from source additionally compiles `wasm-bindgen-cli`, which
@@ -39,15 +39,36 @@ is normal and is not a hang.
 ## From a clean checkout
 
 ```sh
-# 1. install (repo root) — resolves the whole bun workspace, including this example
+# 0. Rust toolchain — once per machine
+script/setup-rust                 # or script/setup-rust.ps1 on Windows
+rustup target add wasm32-unknown-unknown
+
+# 1. build the wasm (repo root) — REQUIRED, and it must come BEFORE `bun install`,
+#    because `opencut-wasm` is declared as `file:./rust/wasm/pkg`.
+#    Point the Rust build directory at a volume with several GB free; it does not
+#    have to live beside the checkout, and a shared path makes later worktrees warm.
+export CARGO_TARGET_DIR=/path/with/room     # PowerShell: $env:CARGO_TARGET_DIR = "..."
+bun run build:wasm       # -> rust/wasm/pkg/  (~5 min warm registry, ~15 min fully cold)
+
+# 2. install (repo root) — resolves the whole bun workspace, including this example
 bun install
 
-# 2. production build of the example
+# 3. production build of the example
 cd apps/vite-example
 bun run build            # -> dist/, plus dist/module-graph.json and dist/asset-manifest.json
 
-# 3. serve the production build
+# 4. serve the production build
 bun run preview --port 4173 --strictPort --host 127.0.0.1
+```
+
+**Re-run `bun install` after every `bun run build:wasm`.** bun installs a `file:` dependency as hard
+links; `wasm-opt` replaces `opencut_wasm_bg.wasm` rather than rewriting it, which breaks the link for
+that one file, so a rebuild propagates *partially* — every other file looks current while the
+resolved `.wasm` silently stays at the previous build's pre-`wasm-opt` intermediate. The re-install
+is fast (< 1 s; it re-links only). Verify with:
+
+```sh
+node script/check-wasm-source.mjs   # asserts the RESOLVED opencut-wasm is the self-built one
 ```
 
 Open http://127.0.0.1:4173/ and you get a project picker; create a project and the editor opens
@@ -67,6 +88,7 @@ node script/check-next-imports.mjs             # no editor-graph file imports ne
 node script/check-storage-boundary.mjs         # host code touches browser storage only through the adapter
 node script/check-reference-boundary.mjs       # the AGPL no-copy boundary
 node script/check-type-baseline.mjs            # no type regression against the pin
+node script/check-wasm-source.mjs              # the resolved opencut-wasm is the self-built artifact
 ```
 
 ---

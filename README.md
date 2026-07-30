@@ -34,9 +34,13 @@ Thanks to [Vercel](https://vercel.com?utm_source=github-opencut&utm_campaign=oss
 ### Prerequisites
 
 - [Bun](https://bun.sh/docs/installation)
+- The Rust toolchain, `wasm-pack`, and the `wasm32-unknown-unknown` target — see
+  ["WASM development"](#wasm-development) below. **Not optional**: the editor's `opencut-wasm`
+  dependency resolves to the artifact built from `rust/`, so the wasm must be built before
+  `bun install` can resolve it.
 - [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/)
 
-> **Note:** Docker is optional but recommended for running the local database and Redis. If you only want to work on frontend features, you can skip it.
+> **Note:** Docker is optional but recommended for running the local database and Redis. If you only want to work on frontend features, you can skip it. The Rust toolchain is **not** in that category — it is required for every build.
 
 ### Setup
 
@@ -58,7 +62,15 @@ Thanks to [Vercel](https://vercel.com?utm_source=github-opencut&utm_campaign=oss
    docker compose up -d db redis serverless-redis-http
    ```
 
-4. Install dependencies and start the dev server:
+4. Build the WASM package — **required, and it must come before `bun install`.** This fork
+   consumes the wasm built from `rust/`, not the published npm package, so `opencut-wasm` cannot
+   resolve until this has run. See "WASM development" below for the one-off toolchain setup.
+
+   ```bash
+   bun run build:wasm
+   ```
+
+5. Install dependencies and start the dev server:
 
    ```bash
    bun install
@@ -75,55 +87,66 @@ Desktop is opt-in. If you're only working on the web app, skip this entirely.
 
 If you want to get ready for `apps/desktop`, see [`apps/desktop/README.md`](apps/desktop/README.md). It's a two-step setup: Rust toolchain first, then desktop native dependencies.
 
-### Local WASM development
+### WASM development
 
-Only needed if you're editing `rust/wasm` and want the web app to use your local build instead of the published package.
+**Required for every contributor, not only those editing `rust/wasm`.** This fork builds
+`opencut-wasm` from its own `rust/` sources: both the root `package.json` and `apps/web/package.json`
+declare it as a `file:` dependency on `rust/wasm/pkg`, so `bun install` resolves the specifier to the
+build output and there is no published-package path to fall back to. Upstream is archived, so the
+registry copy can never gain a function again.
 
-**Prerequisites** — install these once before anything else:
+**Prerequisites** — install these once per machine, before anything else:
 
 ```bash
-# Rust toolchain
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# Rust toolchain and wasm-pack
+script/setup-rust                        # or script/setup-rust.ps1 on Windows
 
-# build the WASM package
-cargo install wasm-pack
+# the wasm compilation target
+rustup target add wasm32-unknown-unknown
 
 # reruns the build on file changes, used by bun dev:wasm
 cargo install cargo-watch
 ```
 
-1. Build the package once from the repo root:
+Point Cargo's build directory somewhere with several GB free. It does not have to sit beside the
+checkout, and a shared path keeps additional worktrees warm:
+
+```bash
+export CARGO_TARGET_DIR=/path/with/room  # PowerShell: $env:CARGO_TARGET_DIR = "..."
+```
+
+1. Build the package from the repo root, **before `bun install`**:
 
    ```bash
    bun run build:wasm
    ```
 
-2. Register the generated package for linking:
+   Budget ~15 minutes fully cold. About **4 of those minutes are completely silent**: the Cargo
+   workspace includes `apps/desktop` (`gpui`), so cargo resolves the whole workspace before compiling
+   only the wasm crate. That silence is not a hang.
+
+2. Install dependencies, which links the build output into `node_modules`:
 
    ```bash
-   cd rust/wasm/pkg
-   bun link
+   bun install
    ```
 
-3. Link `apps/web` to the local package:
-
-   ```bash
-   cd apps/web
-   bun link opencut-wasm
-   ```
-
-4. Rebuild on changes while you work:
+3. Rebuild on changes while you work:
 
    ```bash
    bun dev:wasm
    ```
 
-To switch `apps/web` back to the published package, run:
+   **Re-run `bun install` after each rebuild.** bun installs a `file:` dependency as hard links, and
+   `wasm-opt` replaces `opencut_wasm_bg.wasm` rather than rewriting it in place — so that one file's
+   link breaks and the resolved copy silently keeps the previous build's pre-`wasm-opt` intermediate
+   while every other file looks current. The re-install takes under a second.
 
-```bash
-cd apps/web
-bun add opencut-wasm
-```
+4. Verify that what the build resolves really is your build output:
+
+   ```bash
+   node script/check-wasm-source.mjs
+   ```
 
 ### Self-Hosting with Docker
 
