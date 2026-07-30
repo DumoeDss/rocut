@@ -26,6 +26,7 @@
 		"tests",
 		"vite.config.ts",
 		"playwright.config.ts",
+		"playwright.probe.config.ts",
 		"../web/src/types/**/*.d.ts"
 	]
 }

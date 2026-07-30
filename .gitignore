@@ -53,3 +53,11 @@ apps/vite-example/dist/
 apps/vite-example/tests/parity-artifacts/
 apps/vite-example/tests/.pw-output/
 apps/vite-example/tests/.playwright/
+
+# Migration- and stickers-probe output, the same class of artefact as above but
+# from `playwright.probe.config.ts` rather than the parity run. Left uncovered
+# these were ~18 committable PNG/JSON files, and `probe-<host>.json` carries a
+# verbatim copy of a persisted project record — the exact shape of leak the
+# `.playwright/` rule above exists to prevent.
+apps/vite-example/tests/probe-artifacts/
+apps/vite-example/tests/.pw-output-probe/

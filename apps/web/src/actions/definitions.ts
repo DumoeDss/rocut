@@ -152,6 +152,58 @@ export const ACTIONS = {
 
 export type TAction = keyof typeof ACTIONS;
 
+/**
+ * The actions whose argument is **required** — the complement of
+ * `TActionWithOptionalArgs`. Computed, never listed, so it cannot disagree with
+ * `TActionArgsMap`.
+ *
+ * Note this is *not* `TActionWithArgs`: that also covers the four seek/jump
+ * actions, whose `TActionArgsMap` entries include `undefined` and which are
+ * therefore valid `TActionWithOptionalArgs`.
+ */
+type TActionWithRequiredArgs = Exclude<TAction, TActionWithOptionalArgs>;
+
+/**
+ * Annotated as `Record<TActionWithRequiredArgs, true>` so drift is a **compile**
+ * error in both directions: the moment an action's `TActionArgsMap` entry stops
+ * including `undefined`, that action joins `TActionWithRequiredArgs` and this
+ * object literal no longer type-checks until it is listed here. An unknown key is
+ * rejected too. A `satisfies` on an array would catch only the second, and it is
+ * the first — a new required-args action silently accepted by the guard — that
+ * matters.
+ */
+const ACTIONS_WITH_REQUIRED_ARGS: Record<TActionWithRequiredArgs, true> = {
+	"remove-media-asset": true,
+	"remove-media-assets": true,
+};
+
+const ACTION_SET: ReadonlySet<string> = new Set(Object.keys(ACTIONS));
+
+const REQUIRED_ARGS_ACTION_SET: ReadonlySet<string> = new Set(
+	Object.keys(ACTIONS_WITH_REQUIRED_ARGS),
+);
+
+/**
+ * Whether a string names an action that can be invoked without an argument, and
+ * so may be bound to a keyboard shortcut.
+ *
+ * Derived from the runtime `ACTIONS` table, **not** from
+ * `ACTION_DEFAULT_SHORTCUTS`. The committed test in
+ * `keybindings/__tests__/persistence.test.ts` pins this: `stop-playback` is a
+ * valid `TActionWithOptionalArgs` and is absent from the defaults table, and the
+ * validator must still accept it.
+ *
+ * Answering **OQ1**: the two required-args actions are rejected at runtime, not
+ * merely excluded by the type. Binding `remove-media-asset` to a key would invoke
+ * it with no argument, so accepting it here would persist a shortcut that cannot
+ * work. `ACTIONS_WITH_REQUIRED_ARGS` above makes that decision drift-proof.
+ */
+export function isActionWithOptionalArgs(
+	value: string,
+): value is TActionWithOptionalArgs {
+	return ACTION_SET.has(value) && !REQUIRED_ARGS_ACTION_SET.has(value);
+}
+
 const ACTION_DEFAULT_SHORTCUTS = [
 	["toggle-play", ["space", "k"]],
 	["seek-forward", ["l"]],

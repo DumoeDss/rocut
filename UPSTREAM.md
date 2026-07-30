@@ -139,8 +139,21 @@ the extraction work depends on it. Full evidence, including every command run, i
 
 ## Known upstream defects
 
-Recorded, **not repaired**. Repairing them would be an unlogged behavioural change to the baseline
-that this work exists to compare against.
+**Disposition is per defect, not blanket.** Slice S01 recorded every defect here and repaired none,
+because repairing one inside the Slice would have silently mended the baseline the Slice's parity
+comparison was made *against*. That reasoning expired when S01 was reconciled: the change
+`opencut-next-tracks-defect-repair` is deferred fork maintenance and it **repairs** the code defects
+while leaving the metadata defects recorded and unrepaired. Each entry below states which it is.
+
+| defect | disposition |
+| --- | --- |
+| Five **metadata** defects ([`SBOM.md` §4](SBOM.md)) | **Recorded, not repaired.** Deliberately so — and one of them is the root cause of a type diagnostic that is therefore also left in place; see the type-check section. |
+| The storage migration runner silently migrates nothing | **Repaired** — patches **P-016**, **P-017**. |
+| The six positional-argument call sites | **Repaired** — patches **P-016**, **P-017**, **P-018**. |
+| The two dangling imports in `actions/keybindings/persistence.ts` | **Repaired** — patches **P-019**, **P-020**. |
+| The `next.config.ts` dual-`next` type clash | **Recorded, not repaired.** Its root cause is a metadata defect the provenance record requires to stay unaltered. |
+| The branded-`MediaTime` diagnostics in `src/timeline/**/__tests__/` | **Recorded, not repaired.** Out of scope; no Direction decision yet. |
+| `MigrationDialog` can never render (**found during the repair**) | **Recorded, not repaired.** See the migration-runner section. |
 
 Five metadata defects are documented in [`SBOM.md` §4](SBOM.md), where a generator probe verifies
 each is still present.
@@ -187,10 +200,40 @@ recorded per host in `ledger-<host>.json` → `persistedDatabases`.
 nothing needs migrating and the scenario is unaffected — which is exactly why this defect is silent.
 A user carrying a project written by an older version would not be migrated and would not be told.
 
-**Not repaired**, per the same rule as everything else here: the migration path is upstream
-behaviour at the pin, it is identical in both hosts, and repairing it would silently mend the
-baseline this Slice compares against. It is a Slice finding and an input to whoever owns storage
-next.
+**Not repaired in S01**, per the rule that applied then: the migration path is upstream behaviour at
+the pin, it is identical in both hosts, and repairing it inside the Slice would have silently mended
+the baseline that Slice compared against.
+
+**Repaired afterwards** by the change `opencut-next-tracks-defect-repair`, as patches **P-016** (the
+runner's constructor and its write-back, deliberately one patch) and **P-017** (the three legacy
+reads in `v1-to-v2.ts`). Evidence, all of it runtime:
+
+- The `undefined` database is present in both hosts' pre-repair `ledger-<host>.json` →
+  `persistedDatabases` and absent from both post-repair ledgers, with the real
+  `video-editor-projects` and `video-editor-media-<projectId>` entries unchanged at the same row
+  counts.
+- A seeded-legacy-project probe (`apps/vite-example/tests/probe/legacy-migration.pw.ts`, driven by
+  `playwright.probe.config.ts`) was shown to **fail before** the repair — "Expected 31, Received 1",
+  i.e. nothing migrated — and to pass after it on **both** hosts. It asserts recovered *content*, not
+  the deletion of the legacy databases, because a working delete and a broken read are otherwise
+  indistinguishable. A companion case asserts a project already at the current version comes out
+  byte-unchanged.
+- The parity fixture is **not** evidence here and is not offered as such: its scenario creates a
+  project at the current version, so the runner does no work either before or after. Its snapshots
+  are byte-identical across the repair on both hosts, which is the expected result and speaks only to
+  editing behaviour.
+
+**A second defect found while repairing this one, and left unrepaired.** The sentence above that
+`MigrationProgress` never reports work is true at the pin for a *second, independent* reason, which
+survives the repair: `MigrationDialog` — the only consumer of the progress channel, rendered on the
+editor surface of both hosts — calls `useEditor()` **with no selector**, and that overload subscribes
+with `subscribeNone = () => () => {}` (`src/editor/use-editor.ts`). It therefore reads
+`getMigrationState()` exactly once, at mount, while `isMigrating` is still false, and never
+re-renders. The runner does call `onProgress` with the source version, target version and project
+name, and `ProjectManager` does store it and `notify()` — but no UI can show it. The migration is
+now real and still silent. Out of scope for a positional-argument repair; recorded here as the next
+owner's input, and pinned by an assertion in the probe so that fixing it fails the probe rather than
+passing unnoticed.
 
 ### The pinned baseline does not type-check
 
@@ -200,9 +243,9 @@ it fails for reasons unrelated to this work:
 | Location | Error |
 | --- | --- |
 | `next.config.ts:54` | `NextConfig` type identity clash between `node_modules/next` (16.2.4) and `apps/web/node_modules/next` (16.1.3). Caused directly by upstream defect D-2: the root `package.json`'s stray `next: ^16.1.3` floats to a different minor than `apps/web`'s exact `16.1.3` pin, so `bun.lock` resolves and installs both. |
-| `src/actions/keybindings/persistence.ts` | Imports `isShortcutKey` from `@/actions/keybinding` and `isActionWithOptionalArgs` from `@/actions`. **Neither symbol is defined anywhere in the repository.** Two further errors follow from the resulting `unknown` types. |
-| `src/services/storage/migrations/{runner,v1-to-v2}.ts` | Five call sites passing 2–3 positional arguments to functions that take a single options object — call sites missed when the codebase converted to the options-object convention. |
-| `src/stickers/providers/index.ts:22` | Same: 2 positional arguments to a 1-argument function. |
+| `src/actions/keybindings/persistence.ts` | Imports `isShortcutKey` from `@/actions/keybinding` and `isActionWithOptionalArgs` from `@/actions`. **Neither symbol is defined anywhere in the repository.** Two further errors follow from the resulting `unknown` types. Under bun's ESM loader it is not a soft `undefined` but a hard module-load failure (`SyntaxError: Export named 'isActionWithOptionalArgs' not found`), one of the three errors in the red `bun test` baseline, which means all 9 tests in that module's committed test file never ran. **Repaired: P-019, P-020** — after which those 9 tests load and pass. |
+| `src/services/storage/migrations/{runner,v1-to-v2}.ts` | Five call sites passing 2–3 positional arguments to functions that take a single options object — call sites missed when the codebase converted to the options-object convention. **Repaired: P-016, P-017.** |
+| `src/stickers/providers/index.ts:22` | Same: 2 positional arguments to a 1-argument function. This is the **sixth** such site, and the one the "five call sites" figure below used to drop. **Repaired: P-018.** |
 | `src/timeline/**/__tests__/*.ts` | Raw `number` passed where the branded `MediaTime` type is required. |
 
 Verified under `apps/web`'s own TypeScript 5.9.3, so this is not a toolchain artifact. The
@@ -213,11 +256,32 @@ Upstream CI does not catch this: `.github/workflows/bun-ci.yml` runs `bun instal
 build` with `working-directory: apps/web`, but no `apps/web/bun.lock` exists, so bun walks up to the
 root workspace and produces the same duplicated `next` — meaning CI at this pin was red.
 
-**Handling:** patch **P-001** sets `typescript: { ignoreBuildErrors: true }` in
+**Handling in S01:** patch **P-001** sets `typescript: { ignoreBuildErrors: true }` in
 `apps/web/next.config.ts`. This restores the production build required as the parity reference
-without editing a single line of editor source. Fixing the five defect sites instead would silently
-repair the baseline being compared against, which is the more damaging option. See
+without editing a single line of editor source. Fixing the defect sites instead would have silently
+repaired the baseline being compared against, which was the more damaging option. See
 [`PATCHES.md`](PATCHES.md).
+
+**Count correction — the earlier figure was wrong.** This section previously said "five call sites"
+and "the five defect sites". **The correct number is SIX.** The figure counted the five occurrences
+in `{runner,v1-to-v2}.ts` and dropped the separately-tabled
+`src/stickers/providers/index.ts:22` row — the one site that is *not* on the storage migration path,
+and the only one of the six with a directly user-visible consequence. The authoritative oracle is
+`script/fixtures/type-baseline.json`, captured by `tsc` at the pin: its four `TS2554` entries hold
+six occurrences at six call sites (three occurrences in `v1-to-v2.ts` collapse into one entry because
+the fixture's comparison key is file + code + message). This table and patch P-001's own rationale
+(`~6`) were already consistent with six; only the prose figure was wrong. The same wrong figure
+appears in the Direction-side Slice record and is corrected there separately.
+
+**Handling after the repair:** P-001 **stays, and stays necessary.** The repairs took the diagnostic
+count from **13 to 3**, with `script/check-type-baseline.mjs` passing and enumerating exactly seven
+resolved entries; `script/fixtures/type-baseline.json` is byte-identical and its recorded pin
+unchanged, because the fixture is a record of the pin and regenerating it would re-emit the same 13
+while destroying the resolved-entry signal. The three survivors are all out of scope: the
+`next.config.ts` clash — whose root cause is upstream metadata defect D-2, which the provenance
+record requires to stay unaltered, so repairing the diagnostic would mean repairing a defect that
+must remain — and the two branded-`MediaTime` test diagnostics. Because three diagnostics remain, the
+build's type gate is still red and `ignoreBuildErrors` was **not** removed.
 
 ## Verified baseline build
 

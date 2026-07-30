@@ -63,6 +63,14 @@ const VERIFICATION_FILES = new Map([
 		"apps/vite-example/tests/parity/snapshot.ts",
 		"parity snapshot — reads persisted records directly, by design (task 9.5)",
 	],
+	[
+		"apps/vite-example/tests/probe/seed.ts",
+		"seeded-legacy-project probe — WRITES legacy records directly, by design: it stands in for an older build of the app, and no adapter can produce a v1-shaped record",
+	],
+	[
+		"apps/vite-example/tests/probe/legacy-migration.pw.ts",
+		"seeded-legacy-project probe — reads the migrated record and enumerates indexedDB.databases() directly, by design: the claim under test is what the migration runner wrote, so reading through BrowserHostAdapter would test the adapter instead",
+	],
 ]);
 
 // `--others --exclude-standard` alongside `--cached` because this change is
