@@ -60,7 +60,7 @@ import {
 import { useElementSelection } from "@/timeline/hooks/element/use-element-selection";
 import { resolveStickerId } from "@/stickers";
 import { buildGraphicPreviewUrl } from "@/graphics";
-import Image from "next/image";
+import { HostImage } from "@/editor/host/host-image";
 import {
 	ScissorIcon,
 	Delete02Icon,
@@ -938,7 +938,7 @@ function StickerElementContent({
 }) {
 	return (
 		<div className="flex size-full items-center gap-2 pl-2">
-			<Image
+			<HostImage
 				src={resolveStickerId({
 					stickerId: element.stickerId,
 					options: { width: 20, height: 20 },
@@ -961,7 +961,7 @@ function GraphicElementContent({
 }) {
 	return (
 		<div className="flex size-full items-center gap-2 pl-2">
-			<Image
+			<HostImage
 				src={buildGraphicPreviewUrl({
 					definitionId: element.definitionId,
 					params: element.params,

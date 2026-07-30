@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { HostImage } from "@/editor/host/host-image";
 import type { GuideDefinition } from "@/guides/types";
 import { TikTokLayout } from "./tiktok-layout";
 
@@ -10,7 +10,7 @@ function PlatformLogo({
 	className?: string;
 }) {
 	return (
-		<Image
+		<HostImage
 			src={`https://cdn.brandfetch.io/${domain}/w/64/h/64`}
 			alt=""
 			width={18}

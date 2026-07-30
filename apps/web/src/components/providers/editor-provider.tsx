@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { EditorCore } from "@/core";
+import { useEditorHost } from "@/editor/host/editor-host-context";
 import { useEditor } from "@/editor/use-editor";
 import { useKeybindingsListener } from "@/actions/use-keybindings";
 import { useKeybindingsStore } from "@/actions/keybindings-store";
@@ -16,16 +16,23 @@ import {
 } from "@/services/renderer/gpu-renderer";
 
 interface EditorProviderProps {
-	projectId: string;
 	children: React.ReactNode;
 }
 
-export function EditorProvider({ projectId, children }: EditorProviderProps) {
+export function EditorProvider({ children }: EditorProviderProps) {
 	const activeProject = useEditor((e) => e.project.getActiveOrNull());
-	const router = useRouter();
+	const { projectId, navigation } = useEditorHost();
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const { setLoadingProject } = useKeybindingsStore();
+
+	// Held in a ref so the load effect depends on the project id alone. A host
+	// that rebuilt its navigation object each render would otherwise reload the
+	// project on every render; `useRouter()` used to make that impossible.
+	const navigationRef = useRef(navigation);
+	useEffect(() => {
+		navigationRef.current = navigation;
+	});
 
 	useEffect(() => {
 		setLoadingProject(isLoading);
@@ -59,7 +66,9 @@ export function EditorProvider({ projectId, children }: EditorProviderProps) {
 						const newProjectId = await editor.project.createNewProject({
 							name: "Untitled Project",
 						});
-						router.replace(`/editor/${newProjectId}`);
+						navigationRef.current.onProjectReplaced({
+							projectId: newProjectId,
+						});
 					} catch (_createErr) {
 						setError("Failed to create project");
 						setIsLoading(false);
@@ -85,11 +94,11 @@ export function EditorProvider({ projectId, children }: EditorProviderProps) {
 		return () => {
 			cancelled = true;
 		};
-	}, [projectId, router]);
+	}, [projectId]);
 
 	if (error) {
 		return (
-			<div className="bg-background flex h-screen w-screen items-center justify-center">
+			<div className="bg-background flex size-full items-center justify-center">
 				<div className="flex flex-col items-center gap-4">
 					<p className="text-destructive text-sm">{error}</p>
 				</div>
@@ -99,7 +108,7 @@ export function EditorProvider({ projectId, children }: EditorProviderProps) {
 
 	if (isLoading) {
 		return (
-			<div className="bg-background flex h-screen w-screen items-center justify-center">
+			<div className="bg-background flex size-full items-center justify-center">
 				<div className="flex flex-col items-center gap-4">
 					<Loader2 className="text-muted-foreground size-8 animate-spin" />
 					<p className="text-muted-foreground text-sm">Loading project...</p>
@@ -110,7 +119,7 @@ export function EditorProvider({ projectId, children }: EditorProviderProps) {
 
 	if (!activeProject) {
 		return (
-			<div className="bg-background flex h-screen w-screen items-center justify-center">
+			<div className="bg-background flex size-full items-center justify-center">
 				<div className="flex flex-col items-center gap-4">
 					<Loader2 className="text-muted-foreground size-8 animate-spin" />
 					<p className="text-muted-foreground text-sm">Exiting project...</p>

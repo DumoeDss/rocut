@@ -1,0 +1,114 @@
+import { useCallback, useState } from "react";
+import { ThemeProvider } from "next-themes";
+import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { EditorProvider } from "@/components/providers/editor-provider";
+import { MobileGate } from "@/components/editor/mobile-gate";
+import { EditorRoot } from "@/editor/surface/editor-root";
+import { ViteEditorHost } from "./host/vite-editor-host";
+import { ProjectPicker } from "./project-picker";
+import { EditorErrorBoundary } from "./editor-error-boundary";
+
+function readProjectIdFromUrl(): string | null {
+	return new URLSearchParams(window.location.search).get("project");
+}
+
+export function App() {
+	const [projectId, setProjectId] = useState<string | null>(
+		readProjectIdFromUrl,
+	);
+
+	const openProject = useCallback((id: string) => {
+		setProjectId(id);
+		window.history.replaceState(
+			null,
+			"",
+			`?project=${encodeURIComponent(id)}`,
+		);
+	}, []);
+
+	const exitProject = useCallback(() => {
+		setProjectId(null);
+		window.history.replaceState(null, "", window.location.pathname);
+	}, []);
+
+	return (
+		// Mirrors what `apps/web`'s root layout provides, minus `next/font` and the
+		// analytics scripts — the editor expects a theme, tooltips and a toaster.
+		<ThemeProvider
+			attribute="class"
+			defaultTheme="system"
+			disableTransitionOnChange={true}
+		>
+			<TooltipProvider>
+				<Toaster />
+				<HostChrome>
+					{projectId === null ? (
+						<ProjectPicker onOpen={openProject} />
+					) : (
+						<EditorErrorBoundary>
+							<ViteEditorHost
+								projectId={projectId}
+								onProjectIdChange={setProjectId}
+								onExitProject={exitProject}
+							>
+								<MobileGate>
+									<EditorProvider>
+										<EditorRoot />
+									</EditorProvider>
+								</MobileGate>
+							</ViteEditorHost>
+						</EditorErrorBoundary>
+					)}
+				</HostChrome>
+			</TooltipProvider>
+		</ThemeProvider>
+	);
+}
+
+/**
+ * A bounded container, on purpose.
+ *
+ * The editor is given a box that is deliberately *not* the whole viewport, so
+ * "the editor mounts inside its root container" is actually exercised rather
+ * than accidentally satisfied by it filling the screen anyway. The visible frame
+ * around it is host chrome; anything the editor paints outside it is a bug.
+ */
+function HostChrome({ children }: { children: React.ReactNode }) {
+	return (
+		<div
+			style={{
+				height: "100vh",
+				display: "flex",
+				flexDirection: "column",
+				gap: "12px",
+				padding: "16px",
+				boxSizing: "border-box",
+				background: "#111",
+			}}
+		>
+			<header
+				style={{
+					color: "#eee",
+					font: "13px/1.4 system-ui, sans-serif",
+					flex: "0 0 auto",
+				}}
+			>
+				Host chrome — the editor is embedded in the bordered box below, not in
+				the page.
+			</header>
+			<main
+				id="editor-container"
+				style={{
+					flex: "1 1 auto",
+					minHeight: 0,
+					border: "2px solid #444",
+					borderRadius: "8px",
+					overflow: "hidden",
+				}}
+			>
+				{children}
+			</main>
+		</div>
+	);
+}

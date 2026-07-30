@@ -1,5 +1,15 @@
 import { useEffect } from "react";
 import { useSoundsStore } from "@/sounds/sounds-store";
+import { useEditorHostServices } from "@/editor/host/editor-host-context";
+
+/**
+ * Shown when the host has no sound-search endpoint. Stated rather than
+ * discovered: against a static build with an SPA fallback, requesting a missing
+ * API route returns `index.html` with HTTP 200, so letting the fetch "fail
+ * naturally" surfaces a JSON parse error instead of a usable diagnostic.
+ */
+export const SOUND_SEARCH_UNAVAILABLE_MESSAGE =
+	"Sound search requires a server endpoint, which this host does not provide.";
 
 export function useSoundSearch({
 	query,
@@ -29,9 +39,11 @@ export function useSoundSearch({
 		appendTopSounds,
 		resetPagination,
 	} = useSoundsStore();
+	const { soundSearchEndpoint } = useEditorHostServices();
 
 	const loadMore = async () => {
 		if (isLoadingMore || !hasNextPage) return;
+		if (!soundSearchEndpoint) return;
 
 		try {
 			setLoadingMore({ loading: true });
@@ -48,7 +60,7 @@ export function useSoundSearch({
 
 			searchParams.set("commercial_only", commercialOnly.toString());
 			const response = await fetch(
-				`/api/sounds/search?${searchParams.toString()}`,
+				`${soundSearchEndpoint}?${searchParams.toString()}`,
 			);
 
 			if (response.ok) {
@@ -83,6 +95,12 @@ export function useSoundSearch({
 			return;
 		}
 
+		if (!soundSearchEndpoint) {
+			setSearchResults({ results: [] });
+			setSearchError({ error: SOUND_SEARCH_UNAVAILABLE_MESSAGE });
+			return;
+		}
+
 		if (query === lastSearchQuery && searchResults.length > 0) {
 			return;
 		}
@@ -96,7 +114,7 @@ export function useSoundSearch({
 				resetPagination();
 
 				const response = await fetch(
-					`/api/sounds/search?q=${encodeURIComponent(query)}&type=effects&page=1`,
+					`${soundSearchEndpoint}?q=${encodeURIComponent(query)}&type=effects&page=1`,
 				);
 
 				if (!ignore) {
@@ -130,6 +148,7 @@ export function useSoundSearch({
 		};
 	}, [
 		query,
+		soundSearchEndpoint,
 		lastSearchQuery,
 		searchResults.length,
 		setSearchResults,

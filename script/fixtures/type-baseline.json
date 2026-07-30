@@ -1,0 +1,79 @@
+{
+  "pin": "cf5e79e919144200294fb9fed22a222592a0aeea",
+  "compiler": "5.9.3",
+  "capturedBy": "script/check-type-baseline.mjs --regenerate",
+  "note": "Diagnostics produced by `tsc --noEmit` over apps/web at the pin. These are pre-existing upstream defects, recorded and tolerated — never repaired, because repairing them would alter the baseline this Slice compares against (ruling R1). Line and column are excluded from the comparison key; see the script header.",
+  "totalDiagnostics": 13,
+  "diagnostics": [
+    {
+      "file": "next.config.ts",
+      "severity": "error",
+      "code": "TS2345",
+      "message": "Argument of type 'NextConfig' is not assignable to parameter of type 'NextConfigOrFunction'. Type 'import(\"<repo>/apps/web/node_modules/next/dist/server/config-shared\").NextConfig' is not assignable to type 'import(\"<repo>/node_modules/next/dist/server/config-shared\").NextConfig'. Types of property 'webpack' are incompatible. Type 'import(\"<repo>/apps/web/node_modules/next/dist/server/config-shared\").NextJsWebpackConfig | null | undefined' is not assignable to type 'import(\"<repo>/node_modules/next/dist/server/config-shared\").NextJsWebpackConfig | null | undefined'. Type 'import(\"<repo>/apps/web/node_modules/next/dist/server/config-shared\").NextJsWebpackConfig' is not assignable to type 'import(\"<repo>/node_modules/next/dist/server/config-shared\").NextJsWebpackConfig'. Types of parameters 'context' and 'context' are incompatible. Type 'import(\"<repo>/node_modules/next/dist/server/config-shared\").WebpackConfigContext' is not assignable to type 'import(\"<repo>/apps/web/node_modules/next/dist/server/config-shared\").WebpackConfigContext'. Types of property 'config' are incompatible. Type 'import(\"<repo>/node_modules/next/dist/server/config-shared\").NextConfigComplete' is not assignable to type 'import(\"<repo>/apps/web/node_modules/next/dist/server/config-shared\").NextConfigComplete'. Type 'NextConfigComplete' is not assignable to type 'Required<Omit<NextConfig, \"configFile\">>'. Types of property 'webpack' are incompatible. Type 'import(\"<repo>/node_modules/next/dist/server/config-shared\").NextJsWebpackConfig | null' is not assignable to type 'import(\"<repo>/apps/web/node_modules/next/dist/server/config-shared\").NextJsWebpackConfig | null'. Type 'import(\"<repo>/node_modules/next/dist/server/config-shared\").NextJsWebpackConfig' is not assignable to type 'import(\"<repo>/apps/web/node_modules/next/dist/server/config-shared\").NextJsWebpackConfig'. Types of parameters 'context' and 'context' are incompatible. Type 'import(\"<repo>/apps/web/node_modules/next/dist/server/config-shared\").WebpackConfigContext' is not assignable to type 'import(\"<repo>/node_modules/next/dist/server/config-shared\").WebpackConfigContext'. Types of property 'config' are incompatible. Type 'import(\"<repo>/apps/web/node_modules/next/dist/server/config-shared\").NextConfigComplete' is not assignable to type 'import(\"<repo>/node_modules/next/dist/server/config-shared\").NextConfigComplete'. Property 'adapterPath' is missing in type 'NextConfigComplete' but required in type 'Required<Omit<NextConfig, \"configFile\">>'.",
+      "count": 1
+    },
+    {
+      "file": "src/actions/keybindings/persistence.ts",
+      "severity": "error",
+      "code": "TS2345",
+      "message": "Argument of type 'string' is not assignable to parameter of type 'ShortcutKey'.",
+      "count": 2
+    },
+    {
+      "file": "src/actions/keybindings/persistence.ts",
+      "severity": "error",
+      "code": "TS2724",
+      "message": "'\"@/actions\"' has no exported member named 'isActionWithOptionalArgs'. Did you mean 'TActionWithOptionalArgs'?",
+      "count": 1
+    },
+    {
+      "file": "src/actions/keybindings/persistence.ts",
+      "severity": "error",
+      "code": "TS2724",
+      "message": "'\"@/actions/keybinding\"' has no exported member named 'isShortcutKey'. Did you mean 'ShortcutKey'?",
+      "count": 1
+    },
+    {
+      "file": "src/services/storage/migrations/runner.ts",
+      "severity": "error",
+      "code": "TS2554",
+      "message": "Expected 1 arguments, but got 2.",
+      "count": 1
+    },
+    {
+      "file": "src/services/storage/migrations/runner.ts",
+      "severity": "error",
+      "code": "TS2554",
+      "message": "Expected 1 arguments, but got 3.",
+      "count": 1
+    },
+    {
+      "file": "src/services/storage/migrations/v1-to-v2.ts",
+      "severity": "error",
+      "code": "TS2554",
+      "message": "Expected 1 arguments, but got 3.",
+      "count": 3
+    },
+    {
+      "file": "src/stickers/providers/index.ts",
+      "severity": "error",
+      "code": "TS2554",
+      "message": "Expected 1 arguments, but got 2.",
+      "count": 1
+    },
+    {
+      "file": "src/timeline/__tests__/update-pipeline.test.ts",
+      "severity": "error",
+      "code": "TS2769",
+      "message": "No overload matches this call. Overload 1 of 2, '(expected: MediaTime): void', gave the following error. Argument of type 'number' is not assignable to parameter of type 'MediaTime'. Type 'number' is not assignable to type '{ readonly __mediaTime: unique symbol; }'. Overload 2 of 2, '(expected: NoInfer<MediaTime>): void', gave the following error. Argument of type 'number' is not assignable to parameter of type 'MediaTime'. Type 'number' is not assignable to type '{ readonly __mediaTime: unique symbol; }'.",
+      "count": 1
+    },
+    {
+      "file": "src/timeline/placement/__tests__/resolve.test.ts",
+      "severity": "error",
+      "code": "TS2769",
+      "message": "No overload matches this call. Overload 1 of 2, '(expected: PlacementResult | null): void', gave the following error. Type 'number' is not assignable to type 'MediaTime'. Type 'number' is not assignable to type '{ readonly __mediaTime: unique symbol; }'. Overload 2 of 2, '(expected: NoInfer<PlacementResult | null>): void', gave the following error. Argument of type '{ kind: \"existingTrack\"; trackId: string; trackIndex: number; trackType: \"video\"; adjustedStartTime: number; }' is not assignable to parameter of type 'PlacementResult | null'. Types of property 'adjustedStartTime' are incompatible. Type 'number' is not assignable to type 'MediaTime'. Type 'number' is not assignable to type '{ readonly __mediaTime: unique symbol; }'.",
+      "count": 1
+    }
+  ]
+}

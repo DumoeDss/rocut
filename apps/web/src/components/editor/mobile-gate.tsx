@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { Button } from "../ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
-import { useRouter } from "next/navigation";
+import {
+	useEditorHostLinks,
+	useEditorHostNavigation,
+} from "@/editor/host/editor-host-context";
 
 const STORAGE_KEY = "mobile-acknowledged";
 
@@ -14,7 +16,8 @@ interface MobileGateProps {
 }
 
 export function MobileGate({ children }: MobileGateProps) {
-	const router = useRouter();
+	const navigation = useEditorHostNavigation();
+	const { roadmapUrl } = useEditorHostLinks();
 	const [show, setShow] = useState<boolean | null>(null);
 
 	useEffect(() => {
@@ -32,11 +35,11 @@ export function MobileGate({ children }: MobileGateProps) {
 	};
 
 	const handleGoBack = () => {
-		router.back();
+		navigation.onGoBack();
 	};
 
 	return (
-		<div className="bg-background relative flex h-screen w-screen flex-col overflow-hidden">
+		<div className="bg-background relative flex size-full flex-col overflow-hidden">
 			<Button
 				variant="text"
 				className="absolute top-6 left-6 flex items-center gap-1 text-muted-foreground"
@@ -60,10 +63,15 @@ export function MobileGate({ children }: MobileGateProps) {
 				<div className="flex items-center gap-3">
 					<Button onClick={handleContinue}>Take a look anyway</Button>
 					<Button variant="ghost" asChild>
-						<Link href="/roadmap" className="flex items-center gap-1">
+						<a
+							href={roadmapUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="flex items-center gap-1"
+						>
 							Roadmap
 							<HugeiconsIcon icon={ArrowRight01Icon} size={14} />
-						</Link>
+						</a>
 					</Button>
 				</div>
 			</div>

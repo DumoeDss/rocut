@@ -19,6 +19,7 @@ import {
 	FormControl,
 	clearFormDraft,
 } from "@/components/ui/form";
+import { useEditorHostServices } from "@/editor/host/editor-host-context";
 import type { FeedbackEntry } from "../types";
 
 const PERSIST_KEY = "feedback-draft";
@@ -49,6 +50,7 @@ function writeHistory({ entries }: { entries: FeedbackEntry[] }): void {
 function useFeedback() {
 	const [entries, setEntries] = useState<FeedbackEntry[]>(readHistory);
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const { feedbackEndpoint } = useEditorHostServices();
 
 	async function submit({
 		values,
@@ -58,10 +60,11 @@ function useFeedback() {
 		onSuccess: () => void;
 	}) {
 		if (isSubmitting) return;
+		if (!feedbackEndpoint) return;
 		setIsSubmitting(true);
 
 		try {
-			const res = await fetch("/api/feedback", {
+			const res = await fetch(feedbackEndpoint, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(values),
