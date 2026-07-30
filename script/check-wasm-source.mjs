@@ -234,28 +234,38 @@ if (!licenceOk) failures.push("rust/wasm/LICENSE is missing or differs from the 
 // passes the type baseline, both Host builds and the parity fixture. So the
 // wiring is part of what gets asserted. If someone drops the CI step, every
 // local run says so.
-const SELF = "script/check-wasm-source.mjs";
+// This assertion owns the whole wasm gate set, not just this file: the
+// build-machine-path check has exactly the same "silent unless gated" property,
+// and one place asserting both is what stops the next one being added ungated.
+const GATED = ["script/check-wasm-source.mjs", "script/check-wasm-paths.mjs"];
 const wiringProblems = [];
 
 const rootManifest = JSON.parse(readFileSync(join(REPO_ROOT, "package.json"), "utf8"));
-const scriptEntry = Object.entries(rootManifest.scripts ?? {}).find(([, cmd]) => cmd.includes(SELF));
-if (!scriptEntry) wiringProblems.push(`no root package.json script invokes ${SELF}`);
-
 const workflowPath = join(REPO_ROOT, ".github", "workflows", "bun-ci.yml");
-if (!existsSync(workflowPath)) {
-	wiringProblems.push("no .github/workflows/bun-ci.yml to carry the gate");
-} else {
-	const workflow = readFileSync(workflowPath, "utf8");
-	const gateAt = workflow.indexOf(SELF);
-	// `bun install` is what materialises the resolved copies this check reads, so
-	// running before it would validate a tree nobody consumes.
-	const installAt = workflow.search(/run:\s*bun install/);
-	if (gateAt === -1) wiringProblems.push(`bun-ci.yml has no step running ${SELF}`);
+const workflow = existsSync(workflowPath) ? readFileSync(workflowPath, "utf8") : null;
+// `bun install` is what materialises the resolved copies these checks read, so
+// running before it would validate a tree nobody consumes.
+const installAt = workflow === null ? -1 : workflow.search(/run:\s*bun install/);
+
+for (const gate of GATED) {
+	if (!existsSync(join(REPO_ROOT, gate))) {
+		wiringProblems.push(`${gate} is referenced as a gate but not present in the repository`);
+		continue;
+	}
+	if (!Object.values(rootManifest.scripts ?? {}).some((cmd) => cmd.includes(gate))) {
+		wiringProblems.push(`no root package.json script invokes ${gate}`);
+	}
+	if (workflow === null) {
+		wiringProblems.push("no .github/workflows/bun-ci.yml to carry the gate");
+		continue;
+	}
+	const gateAt = workflow.indexOf(gate);
+	if (gateAt === -1) wiringProblems.push(`bun-ci.yml has no step running ${gate}`);
 	else if (installAt === -1) wiringProblems.push("bun-ci.yml no longer runs `bun install`");
-	else if (gateAt < installAt) wiringProblems.push(`bun-ci.yml runs ${SELF} BEFORE \`bun install\`, so it checks an uninstalled tree`);
+	else if (gateAt < installAt) wiringProblems.push(`bun-ci.yml runs ${gate} BEFORE \`bun install\`, so it checks an uninstalled tree`);
 }
 
-console.log(`  ${wiringProblems.length === 0 ? "PASS" : "FAIL"}  this check is wired into a gate (npm script + CI step after \`bun install\`)`);
+console.log(`  ${wiringProblems.length === 0 ? "PASS" : "FAIL"}  both wasm gates are wired (npm script + CI step after \`bun install\`)`);
 for (const p of wiringProblems) console.log(`          ${p}`);
 if (wiringProblems.length > 0) failures.push(`gate wiring: ${wiringProblems.join("; ")}`);
 

@@ -101,6 +101,7 @@ node script/check-storage-boundary.mjs         # host code touches browser stora
 node script/check-reference-boundary.mjs       # the AGPL no-copy boundary
 node script/check-type-baseline.mjs            # no type regression against the pin
 node script/check-wasm-source.mjs              # the resolved opencut-wasm is the self-built artifact
+node script/check-wasm-paths.mjs               # the redistributed wasm leaks no build-machine path
 ```
 
 ---

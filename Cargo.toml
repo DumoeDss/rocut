@@ -6,11 +6,16 @@ resolver = "2"
 # so whatever ends up in `opencut_wasm_bg.wasm` ships to every user of the web app.
 #
 # Without this, rustc records absolute source paths of the build machine in the
-# binary. Measured on the S02 build before this setting: **286** absolute paths
+# binary. Measured on the S02 build before remapping: **286** absolute paths
 # (285 `C:\Users\<name>\.cargo\registry\src\...` plus the builder's worktree path),
-# disclosing a home directory and an OS username. Published `opencut-wasm@0.2.10`
-# contains **zero** — upstream built with remapping or in a clean environment, and
-# making the fork's artifact canonical silently dropped that property.
+# disclosing a home directory and an OS username.
+#
+# Published `opencut-wasm@0.2.10` is **not** clean either — it carries **169**
+# paths rooted at `/home/heart/`, disclosing that username. It only looks clean to
+# a Windows-shaped scan, because it was built on Linux. So this is not a property
+# the fork dropped and restored: **neither artifact had it**, and the fork now has
+# it where the package it replaces does not. Do not remove the remapping on the
+# belief that upstream ships clean binaries.
 #
 # The fix is `--remap-path-prefix`, applied by `script/build-wasm.mjs`, which is
 # what `bun run build:wasm` and CI both invoke.

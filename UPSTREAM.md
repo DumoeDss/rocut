@@ -229,14 +229,29 @@ export and import sections directly:
 | stably-named exports | 38 | 38 — **identical sets** |
 | `wasm_bindgen__convert__closures_____invoke__h…` trampolines | 3 | 3 — **all three names differ** |
 | imports | 609 | 609 — **identical** |
-| export **section** size | 947 B | 947 B — **unchanged** |
+| export **section** size | 947 B | 947 B — same size, **not byte-identical** |
 
 The three differing names are rustc symbol-hash suffixes on compiler-generated closure trampolines;
 **stripping the hash makes the two sets identical**, and they correspond 1:1 to the 11 differing
-lines in `opencut_wasm_bg.js`. That is the named cause. Nothing else in either table differs, the
-export section is byte-for-byte the same size, and the import table — a module's host contract — is
-unchanged. The earlier records stated only the JS-level figures (638 glue symbols, 48 declarations);
-those remain correct but are the *consumed* surface, not the binary's.
+lines in `opencut_wasm_bg.js`. That is the named cause.
+
+**The export section is the same size; it is NOT byte-identical, and the distinction matters.** 555
+byte positions within it differ, because 38 of the 41 entries carry a different function index — the
+compiler laid the same functions out in a different order. The *set* of exported names, their kinds
+and their count are what is unchanged; their indices are not, and no claim of byte-identity should be
+made about this section. Same-size-with-different-contents is exactly the shape a careless reading
+turns into "identical", so it is stated explicitly here.
+
+The import table — a module's host contract — is unchanged. The earlier records stated only the
+JS-level figures (638 glue symbols, 48 declarations); those remain correct but are the *consumed*
+surface, not the binary's.
+
+**The +164,500 B code-section growth has a named cause: the two artifacts were built by compilers six
+minor versions apart.** The `producers` custom section records it directly — published:
+`rustc 1.94.1 (e408947bf 2026-03-25)`, self-built: `rustc 1.88.0 (6b00bc388 2025-06-23)`. Both report
+`walrus 0.26.1` and `wasm-bindgen 0.2.116`. Until now the size delta was accounted for positionally
+(section by section, summing to the file delta) but not causally; the compiler version is the cause,
+and it is also why binary hash equality was never the correspondence criterion.
 
 **Path remapping: the redistributed binary must not disclose the machine that built it.** Recorded
 because it is a property this Slice deliberately changed, and because the naive comparison misleads:
@@ -260,12 +275,36 @@ fails to parse at all, breaking every cargo invocation. Verified after the fix b
 path shapes, with a positive control confirming the remapped `/cargo\…` and `/opencut\…` prefixes are
 present rather than the strings having merely vanished.
 
-**The `.wasm` was not reproducible across build environments, and remapping is also what fixes
-that.** S01's build of the same sources produced 3,258,041 B; the first S02 build produced
-3,258,045 B, differing because each embedded its own worktree path. With both the checkout root and
-`CARGO_HOME` remapped to fixed prefixes, that environment dependence is gone. This remains a concrete
-reason behind D11's rule that binary hash equality is not the correspondence criterion: a future
-"the wasm changed" observation must be read against the exported surface, never against the hash.
+### Reproducibility of the `.wasm` — what is proven, and what is not
+
+Stated precisely, because a later Slice needs a hash comparison it can trust and an over-broad claim
+here would be worse than none.
+
+**Proven: byte-identity across build locations, on one toolchain.** The same sources were built twice
+— once at `E:\…\rocut-wt-c0` and once at `C:\Users\Sayo\n3-second-location-build-much-longer-path\rocut`
+(different drive, different path length, separate `CARGO_TARGET_DIR`, a genuine 2 m 49 s recompile).
+**All five emitted files are byte-identical**, `.wasm` sha256 `56cb9ab6…` both. Remapping the
+checkout root and `CARGO_HOME` to fixed prefixes is what makes this hold; before it, two checkouts
+could not produce the same bytes.
+
+**NOT proven: byte-identity across machines or toolchains — and this repository pins neither.**
+
+- There is **no `rust-toolchain.toml`**, so `rustc` floats with whatever the developer installed.
+- `wasm-bindgen = "0.2.116"` in `rust/wasm/Cargo.toml` pins the *crate*, **not** the `wasm-bindgen-cli`
+  binary wasm-pack downloads, and that binary's own dependencies are not pinned by anything here.
+
+That gap is **measured, not hypothetical**. S01's surviving artifact and this one were built from the
+same sources with the *same* `rustc 1.88.0` and the *same* `wasm-bindgen 0.2.116`, yet differ — their
+`producers` sections read `walrus 0.26.4` and `walrus 0.26.1` respectively. The 4-byte size difference
+between them is **not** a path effect: the S01 worktree path is one character *longer*, so a
+path-only explanation predicts S01 one byte larger, and it is four bytes **smaller**. The cause is the
+differing `wasm-bindgen-cli` build.
+
+**Consequence for later work.** A hash comparison is meaningful only between builds made on one
+machine with one toolchain. Across machines, compare the exported surface — which is why D11 makes
+binary hash equality explicitly not the correspondence criterion. Closing the gap would mean pinning
+`rustc` via `rust-toolchain.toml` and pinning the `wasm-bindgen-cli` binary; neither is done here, and
+neither is in this change's scope.
 
 **S02 toolchain.** `rustc`/`cargo 1.88.0`, `wasm-pack 0.13.1`, `wasm-bindgen-cli 0.2.116` (matching
 the `wasm-bindgen = "0.2.116"` pin), target `wasm32-unknown-unknown`. Cold build 4 min 49 s with a

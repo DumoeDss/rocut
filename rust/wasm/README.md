@@ -61,3 +61,7 @@ Builds go through `script/build-wasm.mjs` rather than calling `wasm-pack` direct
 `--remap-path-prefix` so the redistributed `.wasm` carries no path from the machine that built it —
 plain `wasm-pack build` embeds the builder's home directory and username, and this artifact ships to
 every user of the web app.
+
+That is **enforced**, not left to habit: `script/check-wasm-paths.mjs` fails on any artifact carrying
+such a path, and CI runs it. Verified against an artifact built by calling `wasm-pack` directly — it
+reports 286 disclosing paths and exits non-zero.

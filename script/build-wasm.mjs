@@ -8,10 +8,13 @@
  * `wasm-pack build` records absolute source paths of the machine that built it:
  * measured at **286** absolute paths in the S02 build (285
  * `C:\\Users\\<name>\\.cargo\\registry\\src\\...` plus the builder's worktree
- * path), disclosing a home directory and an OS username. Published
- * `opencut-wasm@0.2.10` contains **zero** — upstream built with remapping or in a
- * clean environment, and making the fork's artifact canonical silently dropped
- * that property at the exact moment it started shipping.
+ * path), disclosing a home directory and an OS username.
+ *
+ * Published `opencut-wasm@0.2.10` is **not** a clean counter-example: it carries
+ * **169** paths rooted at `/home/heart/` and discloses that username. It merely
+ * looks clean to a Windows-shaped scan, having been built on Linux. So this is not
+ * a property the fork dropped and restored — neither artifact had it, and the fork
+ * now has it where the package it replaces does not.
  *
  * **Why not `[profile.release] trim-paths`.** That is the obvious fix and it does
  * not work on the pinned toolchain: `trim-paths` is still unstable in Cargo
