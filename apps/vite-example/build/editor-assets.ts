@@ -15,8 +15,9 @@ import type { Plugin } from "vite";
  * allowlist *is* the §3.4 manifest.
  *
  * Copying all of `apps/web/public` instead would work in one line and ship
- * 5.4 MB, most of it landing-page screenshots and open-graph images belonging to
- * the marketing site, with no inventory to show for it.
+ * 4.71 MB across 335 files, the extra being landing-page screenshots and
+ * open-graph images belonging to the marketing site, with no inventory to show
+ * for it.
  */
 export interface EditorAsset {
 	/** Path under `apps/web/public`, also the served path. */

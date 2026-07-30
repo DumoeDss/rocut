@@ -223,7 +223,7 @@ repair the baseline being compared against, which is the more damaging option. S
 
 | Step | Result |
 | --- | --- |
-| `bun install` (repository root) | 966 packages, 381 s, on bun 1.2.2. `bun.lock` unmodified. |
+| `bun install` (repository root) | 966 packages, 381 s, on bun 1.2.2. `bun.lock` unmodified. Measured against the **pinned** workspace, before `apps/vite-example` joined it; a root install of this branch now resolves **994** packages (patch P-015). |
 | `bun run build` in `apps/web` (with P-001, CI placeholder env) | **Succeeds.** Compiled in 26.7 s; 18 static pages generated; 21 routes emitted including the dynamic `/editor/[project_id]`. |
 
 Environment variables use the placeholder values from `.github/workflows/bun-ci.yml`.

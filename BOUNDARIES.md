@@ -42,8 +42,8 @@ bundle" and is diffable between builds.
 `apps/web/src/db/`, `apps/web/src/auth/`, `apps/web/src/components/landing/`,
 `changelog-notification`, `content-collections`, and `apps/desktop/`.
 
-Result on the current production build: **2,842 modules, all ten rules pass** — 549 from
-`apps/web/src`, 7 from the example host, 2,282 from dependencies, 4 Vite internals.
+Result on the current production build: **2,844 modules, all ten rules pass** — 550 from
+`apps/web/src`, 8 from the example host, 2,282 from dependencies, 4 Vite internals.
 
 ### `src/site/` — satisfied as written, not relaxed
 
@@ -169,7 +169,9 @@ drift. An asset the editor needs but the list omits fails at runtime instead of 
 
 Copied: `fonts/**` (font atlas + 15 AVIF chunks), `flags/**`, `effects/preview.jpg`,
 `logos/opencut/**`, and `favicon.ico` (host chrome, marked as such in the manifest). **297 files,
-4.27 MB**, against 5.4 MB for all of `public/`.
+4.27 MB**, against 4.71 MB across all 335 files in `public/` — the same total
+[`SOURCE_INVENTORY.md`](SOURCE_INVENTORY.md) records for that directory. Both figures are content
+bytes at 2²⁰ to the MB, which is how `check-asset-manifest.mjs` reports them.
 
 Excluded with recorded reasons: `shapes/` (the shapes sticker provider generates SVG presets in code;
 nothing fetches `/shapes`), `platform-guides/` (guide artwork loads from remote `cdn.brandfetch.io`),

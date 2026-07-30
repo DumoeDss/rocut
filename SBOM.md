@@ -13,7 +13,7 @@ Per-file content hashes of the inherited source are in [`SOURCE_INVENTORY.md`](S
 
 | Ecosystem | Count | Source |
 | --- | ---: | --- |
-| npm packages resolved | 1354 | `bun.lock` |
+| npm packages resolved | 1358 | `bun.lock` |
 | bun workspace members | 3 | `bun.lock` (`<root>`, `apps/vite-example`, `apps/web`) |
 | Rust crates in the workspace lockfile | 763 | `Cargo.lock` (includes `apps/desktop`'s `gpui` graph, which is **not** built for wasm) |
 | Rust crates in the `opencut-wasm` wasm32 graph | 80 | `cargo tree -p opencut-wasm --target wasm32-unknown-unknown` |
