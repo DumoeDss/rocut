@@ -22,8 +22,10 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 
 ## Working-tree drift against the pin
 
-**12 inherited file(s) modified.** Each is expected to carry a `PATCHES.md` row.
+**17 inherited file(s) modified.** Each is expected to carry a `PATCHES.md` row.
 
+- `apps/web/src/actions/definitions.ts`
+- `apps/web/src/actions/keybinding.ts`
 - `apps/web/src/app/editor/[project_id]/page.tsx`
 - `apps/web/src/components/editor/editor-header.tsx`
 - `apps/web/src/components/editor/mobile-gate.tsx`
@@ -32,9 +34,12 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/components/providers/editor-provider.tsx`
 - `apps/web/src/feedback/components/feedback-popover.tsx`
 - `apps/web/src/guides/definitions/platforms.tsx`
+- `apps/web/src/services/storage/migrations/runner.ts`
+- `apps/web/src/services/storage/migrations/v1-to-v2.ts`
 - `apps/web/src/sounds/components/assets-view.tsx`
 - `apps/web/src/sounds/use-sound-search.ts`
 - `apps/web/src/stickers/components/assets-view.tsx`
+- `apps/web/src/stickers/providers/index.ts`
 - `apps/web/src/timeline/components/timeline-element.tsx`
 
 **5 file(s) added by this fork.** These are **not** patches and must **not** appear in `PATCHES.md`, which logs modifications to inherited files only.
