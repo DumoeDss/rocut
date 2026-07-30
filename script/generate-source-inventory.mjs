@@ -112,9 +112,30 @@ const byArea = AREAS.map((area) => {
 });
 
 // Working-tree drift against the pin, so a stale inventory is visible.
-const drift = git(["diff", "--name-only", REF, "--", ...AREAS])
+//
+// `--name-status`, not `--name-only`: a file this fork *adds* is not a patch —
+// `PATCHES.md` logs modifications to inherited files and says so in its own
+// header — so the "expected to carry a PATCHES.md row" claim below must attach
+// to `M` alone. The distinction was invisible before the first commit, because
+// the added files were untracked and `git diff` never reported them; committing
+// is what made a `--name-only` list start conflating the two.
+const driftEntries = git(["diff", "--name-status", REF, "--", ...AREAS])
 	.split("\n")
-	.filter(Boolean);
+	.filter(Boolean)
+	.map((line) => {
+		const fields = line.split("\t");
+		// Renames and copies are `R100 old new` / `C100 old new`; the destination
+		// is always the last field.
+		return { status: fields[0][0], path: fields[fields.length - 1] };
+	});
+
+const pick = (status) =>
+	driftEntries.filter((e) => e.status === status).map((e) => e.path);
+const modified = pick("M");
+const added = pick("A");
+const otherDrift = driftEntries.filter(
+	(e) => e.status !== "M" && e.status !== "A",
+);
 
 const inventory = {
 	ref: git(["rev-parse", REF]).trim(),
@@ -126,7 +147,11 @@ const inventory = {
 		bytes: files.reduce((n, f) => n + f.bytes, 0),
 		sha256: rollup.digest("hex"),
 	},
-	workingTreeDriftAgainstPin: drift,
+	workingTreeDriftAgainstPin: {
+		modified,
+		added,
+		other: otherDrift,
+	},
 	files,
 };
 
@@ -159,9 +184,21 @@ sorted by path. Per-file hash: \`sha256\` over raw file bytes.
 ## Working-tree drift against the pin
 
 ${
-	drift.length === 0
+	driftEntries.length === 0
 		? "None — the inventoried areas are byte-identical to the pin."
-		: `${drift.length} file(s) modified on this branch relative to the pin. Each is expected to carry a \`PATCHES.md\` row.\n\n${drift.map((p) => `- \`${p}\``).join("\n")}`
+		: [
+				modified.length === 0
+					? "No inherited file in the inventoried areas is modified."
+					: `**${modified.length} inherited file(s) modified.** Each is expected to carry a \`PATCHES.md\` row.\n\n${modified.map((p) => `- \`${p}\``).join("\n")}`,
+				added.length === 0
+					? null
+					: `**${added.length} file(s) added by this fork.** These are **not** patches and must **not** appear in \`PATCHES.md\`, which logs modifications to inherited files only.\n\n${added.map((p) => `- \`${p}\``).join("\n")}`,
+				otherDrift.length === 0
+					? null
+					: `**${otherDrift.length} other change(s)** (deleted, renamed or copied). Anything here needs a judgement call about which of the two rules above applies.\n\n${otherDrift.map((e) => `- \`${e.path}\` (\`${e.status}\`)`).join("\n")}`,
+			]
+				.filter(Boolean)
+				.join("\n\n")
 }
 `;
 
@@ -170,4 +207,7 @@ writeFileSync(join(REPO_ROOT, "SOURCE_INVENTORY.md"), md);
 console.log(
 	`inventory: ${inventory.totals.files} files, ${mb(inventory.totals.bytes)}, rollup ${inventory.totals.sha256}`,
 );
-console.log(`drift vs pin: ${drift.length} file(s)`);
+console.log(
+	`drift vs pin: ${modified.length} modified, ${added.length} added` +
+		(otherDrift.length > 0 ? `, ${otherDrift.length} other` : ""),
+);

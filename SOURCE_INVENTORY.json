@@ -27,20 +27,30 @@
     "bytes": 7500075,
     "sha256": "8ce81cbd563de44ca6d99857fa9959feaeae4eb0992656deb1c4a10b7ba168bf"
   },
-  "workingTreeDriftAgainstPin": [
-    "apps/web/src/app/editor/[project_id]/page.tsx",
-    "apps/web/src/components/editor/editor-header.tsx",
-    "apps/web/src/components/editor/mobile-gate.tsx",
-    "apps/web/src/components/editor/onboarding.tsx",
-    "apps/web/src/components/editor/panels/assets/views/assets.tsx",
-    "apps/web/src/components/providers/editor-provider.tsx",
-    "apps/web/src/feedback/components/feedback-popover.tsx",
-    "apps/web/src/guides/definitions/platforms.tsx",
-    "apps/web/src/sounds/components/assets-view.tsx",
-    "apps/web/src/sounds/use-sound-search.ts",
-    "apps/web/src/stickers/components/assets-view.tsx",
-    "apps/web/src/timeline/components/timeline-element.tsx"
-  ],
+  "workingTreeDriftAgainstPin": {
+    "modified": [
+      "apps/web/src/app/editor/[project_id]/page.tsx",
+      "apps/web/src/components/editor/editor-header.tsx",
+      "apps/web/src/components/editor/mobile-gate.tsx",
+      "apps/web/src/components/editor/onboarding.tsx",
+      "apps/web/src/components/editor/panels/assets/views/assets.tsx",
+      "apps/web/src/components/providers/editor-provider.tsx",
+      "apps/web/src/feedback/components/feedback-popover.tsx",
+      "apps/web/src/guides/definitions/platforms.tsx",
+      "apps/web/src/sounds/components/assets-view.tsx",
+      "apps/web/src/sounds/use-sound-search.ts",
+      "apps/web/src/stickers/components/assets-view.tsx",
+      "apps/web/src/timeline/components/timeline-element.tsx"
+    ],
+    "added": [
+      "apps/web/src/editor/host/editor-host-context.tsx",
+      "apps/web/src/editor/host/editor-host.ts",
+      "apps/web/src/editor/host/host-image.tsx",
+      "apps/web/src/editor/surface/editor-root.tsx",
+      "apps/web/src/services/storage/browser-host-adapter.ts"
+    ],
+    "other": []
+  },
   "files": [
     {
       "path": "apps/web/public/_headers",

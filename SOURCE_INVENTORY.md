@@ -22,7 +22,7 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 
 ## Working-tree drift against the pin
 
-12 file(s) modified on this branch relative to the pin. Each is expected to carry a `PATCHES.md` row.
+**12 inherited file(s) modified.** Each is expected to carry a `PATCHES.md` row.
 
 - `apps/web/src/app/editor/[project_id]/page.tsx`
 - `apps/web/src/components/editor/editor-header.tsx`
@@ -36,3 +36,11 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/sounds/use-sound-search.ts`
 - `apps/web/src/stickers/components/assets-view.tsx`
 - `apps/web/src/timeline/components/timeline-element.tsx`
+
+**5 file(s) added by this fork.** These are **not** patches and must **not** appear in `PATCHES.md`, which logs modifications to inherited files only.
+
+- `apps/web/src/editor/host/editor-host-context.tsx`
+- `apps/web/src/editor/host/editor-host.ts`
+- `apps/web/src/editor/host/host-image.tsx`
+- `apps/web/src/editor/surface/editor-root.tsx`
+- `apps/web/src/services/storage/browser-host-adapter.ts`
