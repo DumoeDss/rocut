@@ -5,11 +5,19 @@
  * three uses are now named callbacks supplied by the host, so the editor asserts
  * nothing about URL structure — or about there being a router at all.
  *
- * This is deliberately **not** a Host port contract. It carries the identity,
- * navigation and server-endpoint concerns that block a Next-free build, and
- * nothing else. Storage, media and clock ports are a later concern; when they
- * arrive they widen this one interface rather than scattering new props.
+ * This **is** the Host port contract. It began as the identity, navigation and
+ * server-endpoint concerns that blocked a Next-free build, and its header used
+ * to say storage, media and clock ports were a later concern that would "widen
+ * this one interface rather than scattering new props". They have arrived, and
+ * that is what happened: the port roles are composed in below from
+ * `@/editor/ports`, which is the single entry point for all of them.
+ *
+ * Nothing consumes the ports yet. Wiring is later work; this interface is the
+ * frozen shape it will be wired to.
  */
+
+import { PORT_ROLES } from "@/editor/ports";
+import type { EditorHostPorts } from "@/editor/ports";
 
 export interface EditorHostNavigation {
 	/**
@@ -70,11 +78,51 @@ export interface EditorHostLinks {
 	roadmapUrl: string;
 }
 
-export interface EditorHost {
+/**
+ * The host seam, widened with the port roles.
+ *
+ * The five original members are preserved **verbatim**: both hosts supply them
+ * exactly as they did, and every existing consumer keeps working.
+ *
+ * The port roles are `Partial` at *this* level, and only for one reason: making
+ * them required here would break both hosts' compilation the instant this
+ * interface changed, and neither host's source is in this change's write set.
+ * Optionality here is **not** the contract being soft. A session is created from
+ * `ResolvedEditorHost`, where every role is required, and `resolveEditorHost`
+ * refuses — by name — to produce one from a host that is missing roles. So the
+ * only thing optionality buys is that a host can be widened one role at a time
+ * while it is being wired; it never buys a session running without a port.
+ */
+export interface EditorHost extends Partial<EditorHostPorts> {
 	/** The project the editor should open. Was `useParams().project_id`. */
 	projectId: string;
 	navigation: EditorHostNavigation;
 	services: EditorHostServices;
 	branding: EditorHostBranding;
 	links: EditorHostLinks;
+}
+
+/** A host with every port role supplied. What a session is created from. */
+export type ResolvedEditorHost = EditorHost & EditorHostPorts;
+
+/**
+ * Narrow a host to one a session can be created from, or throw naming what is
+ * missing.
+ *
+ * Throwing beats defaulting to the in-memory reference implementation. A silent
+ * fallback would mean a host that forgot to supply storage would run, appear to
+ * work, and lose the user's projects on reload — a failure that surfaces late
+ * and looks like data loss rather than like a missing port.
+ */
+export function resolveEditorHost(args: {
+	host: EditorHost;
+}): ResolvedEditorHost {
+	const missing = PORT_ROLES.filter((role) => args.host[role] === undefined);
+	if (missing.length > 0) {
+		throw new Error(
+			`EditorHost is missing ${missing.length} port role(s): ${missing.join(", ")}. ` +
+				"A session cannot be created without them — see apps/web/src/editor/ports/index.ts.",
+		);
+	}
+	return args.host as ResolvedEditorHost;
 }

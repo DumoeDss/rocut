@@ -138,19 +138,24 @@ OPFS and the StorageManager quota API are called only from `apps/web/src/service
 code makes no direct browser-storage call; and host code demonstrably goes *through* the adapter,
 because an adapter nothing imports is documentation rather than a seam.
 
-> **No stable storage contract is published by this work.**
+> **The stable storage contract is now published — but not here, and this adapter is not it.**
 >
-> `BrowserHostAdapter` is scaffolding. It is a facade over the existing `storageService` — no new
-> behaviour, no new storage semantics, no inverted dependency. The internal adapters
-> (`indexeddb-adapter.ts`, `opfs-adapter.ts`, `quota.ts`, `service.ts`) are untouched, and editor
-> code still imports `storageService` directly. Only host code is required to come through the
-> facade.
+> The storage port lives at `apps/web/src/editor/ports/project-store.ts`, reachable from the port
+> contract's entry point `apps/web/src/editor/ports/index.ts`, with a working in-memory reference
+> implementation and a conformance suite any adapter author can run. It carries an **opaque** project
+> payload plus a typed summary, so no schema type crosses it. Its shape decisions are recorded in
+> `apps/web/src/editor/ports/DECISIONS.md`.
 >
-> Designing the real Host port, inverting the dependency so the editor *receives* storage instead of
-> importing it, and introducing Sessions are all explicitly out of scope here. Rewiring the fifteen
-> existing `storageService` importers would be that work under another name, and would put the parity
-> baseline at risk for no evidential gain. **Anything built against this interface should expect it
-> to change.**
+> `BrowserHostAdapter` remains scaffolding, and **the provisional label attaches to it**, not to the
+> storage contract. It is a facade over the existing `storageService` — no new behaviour, no new
+> storage semantics, no inverted dependency. The internal adapters (`indexeddb-adapter.ts`,
+> `opfs-adapter.ts`, `quota.ts`, `service.ts`) are untouched, and editor code still imports
+> `storageService` directly. Only host code is required to come through the facade.
+>
+> Inverting the dependency so the editor *receives* storage instead of importing it, and retiring this
+> adapter, remain out of scope for the work that created it and for the change that published the
+> port; nothing is wired to the port yet. **Anything built against `BrowserHostAdapter` should expect
+> it to be retired. Build against the published port instead.**
 
 One shape correction is worth recording, because it was caught by a type check rather than by review:
 `storageService.getStorageInfo()` returns `{ projects, isOPFSSupported, isIndexedDBSupported }` — a
