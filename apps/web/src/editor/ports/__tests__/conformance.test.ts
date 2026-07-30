@@ -28,6 +28,39 @@ describe("port conformance", () => {
 		expect(report.passed).toBe(true);
 	});
 
+	test("a forcing no-rasterizer host runs the no-rasterizer case, not past it", async () => {
+		// The suite's no-rasterizer case returns early for a *detecting* host,
+		// which means the default run above passes it vacuously. This run supplies
+		// a host that actually forces, so the case executes its assertions. §3.5
+		// needs a constructible no-rasterizer Host, and a case that only ever
+		// short-circuits would not establish one.
+		const report = await runPortConformance({
+			ports: createInMemoryPorts({
+				graphics: { mode: "force", rasterizer: "none" },
+			}),
+			label: "in-memory reference, no-rasterizer host",
+		});
+		console.log(formatConformanceReport(report));
+		expect(report.passed).toBe(true);
+		const forced = report.results.find((r) =>
+			r.name.includes("forced no-rasterizer"),
+		);
+		expect(forced?.passed).toBe(true);
+
+		// And the case is not vacuous: a host that forced but whose report claimed
+		// a rasterizer would fail it.
+		const declaration = createInMemoryPorts({
+			graphics: { mode: "force", rasterizer: "none" },
+		}).environment.describeGraphics();
+		expect(declaration).toEqual({ mode: "force", rasterizer: "none" });
+		const derived = deriveGraphicsReport({
+			declaration,
+			runtime: UNIMPLEMENTED_RUNTIME_GRAPHICS,
+		});
+		expect(derived.livePreviewLimit).toBe(0);
+		expect(derived.rasterizer === "none" && derived.reason).toBeTruthy();
+	});
+
 	test("reports pass/fail per port and per case", async () => {
 		const report = await runPortConformance({
 			ports: createInMemoryPorts(),
