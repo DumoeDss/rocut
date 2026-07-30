@@ -86,11 +86,17 @@ function assert(condition: unknown, message: string): asserts condition {
 export async function runPortConformance(args: {
 	ports: EditorHostPorts;
 	label?: string;
+	/**
+	 * Run the store's real `migrate()`. **Destructive** — point it at a disposable
+	 * fixture store, never at one bound to a user's data. Off by default, and the
+	 * case reports `skipped` rather than `passed` when it is off.
+	 */
+	exerciseMigration?: boolean;
 }): Promise<ConformanceReport> {
 	const { ports } = args;
 	const results: ConformanceCaseResult[] = [];
 
-	results.push(...(await storeCases(ports)));
+	results.push(...(await storeCases(ports, args.exerciseMigration === true)));
 	results.push(...(await assetCases(ports)));
 	results.push(...(await runtimeResourceCases(ports)));
 	results.push(...(await exportCases(ports)));
@@ -138,6 +144,7 @@ export async function runPortConformance(args: {
 
 async function storeCases(
 	ports: EditorHostPorts,
+	exerciseMigration: boolean,
 ): Promise<ConformanceCaseResult[]> {
 	const cases = new Cases("store");
 	const store = ports.store;
@@ -216,20 +223,37 @@ async function storeCases(
 	 * Migration is a *store* obligation, and a second store implementation is
 	 * required to pass this same suite — so a store could otherwise be fully
 	 * "conformant" with a broken or absent `migrate`.
+	 *
+	 * **Opt-in, because running it is destructive.** `migrate()` performs a real
+	 * schema transformation against whatever the store is bound to; invoking it
+	 * unconditionally would mean pointing the suite at a browser store and having
+	 * it rewrite the user's persisted projects as a side effect of a conformance
+	 * run. An adapter author enables it against a disposable fixture store.
 	 */
-	await cases.check("declares a migration or declares it has none", async () => {
+	await cases.check("migration brings the store to its declared version", async () => {
 		if (!store.migrate)
 			skip("this store declares no migration, which is a conforming answer");
+		if (!exerciseMigration)
+			skip(
+				"migration is destructive; pass exerciseMigration: true, against a " +
+					"disposable fixture store, to run it",
+			);
+
 		const progress: number[] = [];
 		const outcome = await store.migrate!({
 			from: null,
 			to: store.schemaVersion,
 			report: (p) => progress.push(p.completed),
 		});
+
+		// `failed` is NOT conforming here. Accepting it would let a migration that
+		// always fails pass the suite, which is worse than having no case at all.
 		assert(
-			outcome.status === "migrated" ||
-				outcome.status === "not-needed" ||
-				outcome.status === "failed",
+			outcome.status !== "failed",
+			`migration failed: ${outcome.status === "failed" ? outcome.reason : ""}`,
+		);
+		assert(
+			outcome.status === "migrated" || outcome.status === "not-needed",
 			`unknown migration outcome: ${JSON.stringify(outcome)}`,
 		);
 		if (outcome.status === "migrated") {
@@ -242,6 +266,19 @@ async function storeCases(
 				"recordsMigrated must not be negative",
 			);
 		}
+
+		// Idempotent: a store already at its declared version does not migrate
+		// again. This is what distinguishes a working migration from one that
+		// merely returned a plausible value once.
+		const second = await store.migrate!({
+			from: store.schemaVersion,
+			to: store.schemaVersion,
+			report: () => {},
+		});
+		assert(
+			second.status !== "failed",
+			"a second migration against an already-current store failed",
+		);
 	});
 
 	await cases.check("remove deletes the record and the summary", async () => {

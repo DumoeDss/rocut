@@ -300,11 +300,17 @@ at a freeze is expensive.*
 2. **Consumers never see the optional form.** `useEditorHost()` returns
    `EditorHostBase` — the five long-standing members only — so the port roles are
    not merely discouraged through context, they are *not visible* there. Ports
-   reach code through the session, which is where later children wire them. A
-   `useEditorPorts()` hook was written and removed: nothing calls it, and it
-   needed the role register at runtime, which pulled `editor/ports/**` into the
-   production bundle and cost this change its zero-contract-modules evidence for
-   a hook with no consumer.
+   reach code through the session, which is where later children wire them.
+
+   **Do not add a resolving hook to the host context.** One was written and
+   reverted, and the measurement is recorded here so the next contributor does
+   not re-derive it: such a hook needs the role register at runtime, which pulls
+   `editor/ports/**` into the production module graph — **2,848 modules / 554
+   from `apps/web/src` / 3 contract modules**, against a baseline of
+   **2,844 / 550 / 0**. It cost this change its central evidence to add an
+   accessor with no caller. If a component ever genuinely needs a port before the
+   session provides one, that is a signal the session wiring is late, not that
+   the context should grow an accessor.
 3. The role register is **compile-enforced complete** (`Record<PortRole, true>`),
    so the gate cannot silently narrow as roles are added. Proven both ways in
    `__tests__/port-roles.compile-guard.ts`; the `satisfies readonly PortRole[]`

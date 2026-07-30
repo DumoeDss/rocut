@@ -206,12 +206,13 @@ export function deriveGraphicsReport(args: {
 		};
 	}
 
-	return {
-		rasterizer: "gpu",
-		backend,
-		// A rasterizer that can drive zero previews is a contradiction the report
-		// must not carry silently; clamp to at least one and let the count speak.
-		livePreviewLimit: Math.max(1, runtime.concurrentCompositorInstances()),
-		source,
-	};
+	// Reported verbatim, including zero. Clamping to one was the shape shipped
+	// first, and it is the same fabrication M5 removed one level up, in the more
+	// dangerous direction: a runtime that can drive **no** live preview would be
+	// reported as able to drive one, and a Host that trusted the count would lay
+	// out a surface that cannot render. A rasterizer with a zero preview budget is
+	// a real state — a GPU acquired but no compositor instance available — and the
+	// count exists to carry exactly that answer.
+	const livePreviewLimit = runtime.concurrentCompositorInstances();
+	return { rasterizer: "gpu", backend, livePreviewLimit, source };
 }

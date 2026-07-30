@@ -36,6 +36,63 @@ describe("port conformance", () => {
 		expect(skipped.every((r) => r.passed === false)).toBe(true);
 	});
 
+	test("the migration case runs when opted in, and rejects a permanently-failing migration", async () => {
+		// Opt-in because migrate() is destructive against a real store. Two runs:
+		// one where migration works, one where it always fails. If the suite passed
+		// the second, a store could be "conformant" with a migration that never
+		// succeeds — worse than having no case.
+		const working = new InMemoryProjectStore({
+			schemaVersion: 2,
+			migrate: async (ctx) => ({
+				status: "migrated" as const,
+				from: ctx.from,
+				to: ctx.to,
+				recordsMigrated: 1,
+			}),
+		});
+		const good = await runPortConformance({
+			ports: createInMemoryPorts({ store: working }),
+			label: "working migration",
+			exerciseMigration: true,
+		});
+		const goodCase = good.results.find((r) => r.name.includes("migration"));
+		expect(goodCase?.status).toBe("passed");
+
+		const broken = new InMemoryProjectStore({
+			schemaVersion: 2,
+			migrate: async (ctx) => ({
+				status: "failed" as const,
+				from: ctx.from,
+				to: ctx.to,
+				reason: "always broken",
+			}),
+		});
+		const bad = await runPortConformance({
+			ports: createInMemoryPorts({ store: broken }),
+			label: "permanently failing migration",
+			exerciseMigration: true,
+		});
+		const badCase = bad.results.find((r) => r.name.includes("migration"));
+		expect(badCase?.status).toBe("failed");
+		expect(bad.passed).toBe(false);
+	});
+
+	test("the migration case is skipped, not passed, when it is not opted into", async () => {
+		const store = new InMemoryProjectStore({
+			schemaVersion: 2,
+			migrate: async () => ({ status: "not-needed" as const }),
+		});
+		const report = await runPortConformance({
+			ports: createInMemoryPorts({ store }),
+			label: "migration not opted into",
+		});
+		const migrationCase = report.results.find((r) =>
+			r.name.includes("migration"),
+		);
+		expect(migrationCase?.status).toBe("skipped");
+		expect(migrationCase?.detail).toMatch(/destructive/);
+	});
+
 	test("a forcing no-rasterizer host runs the no-rasterizer case, not past it", async () => {
 		// The suite's no-rasterizer case returns early for a *detecting* host,
 		// which means the default run above passes it vacuously. This run supplies
@@ -231,6 +288,22 @@ describe("graphics negotiation", () => {
 		expect(report.rasterizer === "none" && report.reason.length).toBeGreaterThan(
 			0,
 		);
+	});
+
+	test("a zero preview budget is reported verbatim, not clamped up to one", () => {
+		// The sibling of the M5 fabrication, in the more dangerous direction: a
+		// runtime with a rasterizer but no drivable compositor instance must not be
+		// reported as able to drive one, or a Host trusting the count lays out a
+		// surface that cannot render.
+		const report = deriveGraphicsReport({
+			declaration: { mode: "detect" },
+			runtime: {
+				selectedBackend: () => "webgl",
+				concurrentCompositorInstances: () => 0,
+			},
+		});
+		expect(report.rasterizer).toBe("gpu");
+		expect(report.livePreviewLimit).toBe(0);
 	});
 
 	test("the unimplemented marker cannot be stamped as a real measurement", () => {

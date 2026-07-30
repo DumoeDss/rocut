@@ -481,6 +481,54 @@ describe("migration is owned by the store and run once per store", () => {
 		).rejects.toThrow(/migration failed/i);
 	});
 
+	test("BOTH concurrent creations reject when the shared migration fails, and the memo is evicted", async () => {
+		// The eviction happens inside the memoised promise's own `.catch`, so the
+		// second concurrent awaiter takes a different code path from the sequential
+		// retry below: it is awaiting the *already-stored* promise when that
+		// promise rejects. Both must reject, and the store must still be retryable
+		// afterwards rather than left holding a settled rejected promise.
+		let attempts = 0;
+		let release: () => void = () => {};
+		const gate = new Promise<void>((r) => {
+			release = r;
+		});
+		const store = new InMemoryProjectStore({
+			schemaVersion: 4,
+			migrate: async (ctx): Promise<MigrationOutcome> => {
+				attempts += 1;
+				if (attempts === 1) {
+					await gate;
+					return {
+						status: "failed",
+						from: ctx.from,
+						to: ctx.to,
+						reason: "transient",
+					};
+				}
+				return {
+					status: "migrated",
+					from: ctx.from,
+					to: ctx.to,
+					recordsMigrated: 0,
+				};
+			},
+		});
+
+		const a = createEditorSession({ host: createInMemoryHost({ store }) });
+		const b = createEditorSession({ host: createInMemoryHost({ store }) });
+		release();
+		const settled = await Promise.allSettled([a, b]);
+		expect(settled.map((s) => s.status)).toEqual(["rejected", "rejected"]);
+		expect(attempts).toBe(1);
+
+		// Evicted, so a later session retries and succeeds.
+		const third = await createEditorSession({
+			host: createInMemoryHost({ store }),
+		});
+		expect(attempts).toBe(2);
+		expect(third.state).toBe("created");
+	});
+
 	test("a failed migration is retried by a later session, not poisoned forever", async () => {
 		let attempts = 0;
 		const store = new InMemoryProjectStore({

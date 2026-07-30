@@ -30,13 +30,13 @@ export function EditorHostProvider({
  * Narrowing the return makes the unresolved form **unreachable from context**:
  * the ports are not merely discouraged here, they are not visible.
  *
- * Ports do not arrive through this context at all. They arrive through the
- * session (`createEditorSession` resolves them, or throws naming what is
- * missing), which is where later children wire them. A `useEditorPorts()` hook
- * was written and then removed: nothing calls it, and because it needs the role
- * register at runtime it pulled `editor/ports/**` into the production module
- * graph — costing this change its "zero contract modules in the bundle"
- * evidence to add a hook with no consumer.
+ * **Ports do not arrive through this context, and a resolving hook must not be
+ * added here.** They arrive through the session (`createEditorSession` resolves
+ * them once, or throws naming what is missing), which is where later children
+ * wire them. Such a hook was written and reverted: it needs the role register at
+ * runtime, which pulled `editor/ports/**` into the production module graph —
+ * 2,848 modules / 554 from `apps/web/src` / 3 contract modules, against a
+ * baseline of 2,844 / 550 / 0 — to add an accessor with no caller.
  */
 export function useEditorHost(): EditorHostBase {
 	const host = useContext(EditorHostContext);

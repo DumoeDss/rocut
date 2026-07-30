@@ -104,18 +104,23 @@ export interface EditorHostBase {
  * see `apps/web/src/editor/ports/DECISIONS.md` §6 for why that is not the
  * contract being soft, and for the trigger that retires the optionality.
  *
- * It is deliberately **not** the type any consumer reads. Consumers get
- * `EditorHostBase` (the five members) or `EditorHostPorts` (all eight roles,
- * required, obtained through `useEditorPorts`). There is no supported path to a
- * half-resolved host.
+ * It is deliberately **not** the type any consumer reads. Components read
+ * `EditorHostBase` — the five members — through `useEditorHost()`, which is
+ * narrowed to exactly that so the optional roles are not visible there.
+ *
+ * **Ports do not arrive through React context, and a resolving hook must not be
+ * added.** They arrive through the session: `createEditorSession` calls
+ * `resolveEditorHost` once, and later children wire ports from the session. A
+ * `useEditorPorts()` hook was written and reverted, with the measurement
+ * recorded so it is not re-derived: it needs the role register at runtime, which
+ * pulled `editor/ports/**` into the production module graph — 2,848 modules /
+ * 554 from `apps/web/src` / 3 contract modules, against a baseline of
+ * 2,844 / 550 / 0. See `apps/web/src/editor/ports/DECISIONS.md` §6.
  */
 export interface EditorHost extends EditorHostBase, Partial<EditorHostPorts> {}
 
 /** A host with every port role supplied. What a session is created from. */
 export type ResolvedEditorHost = EditorHostBase & EditorHostPorts;
-
-/** Just the port roles, all required. What `useEditorPorts()` returns. */
-export type ResolvedEditorHostPorts = EditorHostPorts;
 
 /**
  * Narrow a host to one a session can be created from, or throw naming what is

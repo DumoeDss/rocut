@@ -134,8 +134,11 @@ const RULES = [
 			// Zustand store to the `-store` rule below.
 			if (isContractPath(resolved)) return false;
 
+			// `(\/|$)` on every area, not `\/`: a directory-index specifier such as
+			// `@/core` or `../../commands` resolves without a trailing segment and
+			// would otherwise slip past a slash-anchored pattern.
 			return (
-				/^apps\/web\/src\/(project|timeline|commands|core|stores|scenes|effects|masks|media)\//.test(
+				/^apps\/web\/src\/(project|timeline|commands|core|stores|scenes|effects|masks|media)(\/|$)/.test(
 					resolved,
 				) ||
 				/^apps\/web\/src\/services\/storage(\/|$)/.test(resolved) ||
@@ -146,16 +149,23 @@ const RULES = [
 	{
 		id: "no-direct-wasm-import",
 		description:
-			"no contract module imports the wasm module directly; GPU resources arrive through the injected runtime query",
+			"the contract graph does not reach the wasm module; GPU handles arrive through the injected runtime query",
 		appliesTo: (path) => !isNonRuntime(path),
 		test: (line) => {
 			const match = /from\s+["']([^"']+)["']/.exec(line);
 			if (!match) return false;
-			// The GPU analogue of `no-direct-resource-acquisition`. There is no
-			// syntactic form for a wasm allocation — it happens inside the module —
-			// so the enforceable rule is that the contract graph never reaches the
-			// module at all: GPU handles arrive through `RuntimeGpuResourceQuery`,
-			// which is what makes disposal reconcilable.
+			// **A fence, not an acquisition check.** It bans an *import*, which is not
+			// the same thing as banning an allocation: a wasm allocation has no
+			// syntactic form to scan for, because it happens inside the module. What
+			// closes the GPU blind spot is `dispose()` reconciling the registry
+			// against `RuntimeGpuResourceQuery.liveHandles()`; this rule only keeps
+			// the contract graph from acquiring a way to bypass that.
+			//
+			// It is also scoped to ports/session. The three real allocators —
+			// `services/renderer/gpu-renderer.ts`,
+			// `services/renderer/compositor/wasm-compositor.ts` and
+			// `wasm/media-time.ts` — sit outside it, and stay outside until C4/C6
+			// rewire them. Do not read a pass here as a claim about them.
 			return /^opencut-wasm(\/|$)/.test(match[1]);
 		},
 	},
@@ -292,6 +302,12 @@ const NEGATIVE_CONTROL_FIXTURES = [
 		rule: "no-direct-wasm-import",
 		path: "apps/web/src/editor/session/violation.ts",
 		text: 'import { create_compositor } from "opencut-wasm";\nexport const c = create_compositor;\n',
+	},
+	{
+		rule: "no-editor-internal-import",
+		path: "apps/web/src/editor/ports/violation.ts",
+		text: 'import { EditorCore } from "@/core";\nexport type X = EditorCore;\n',
+		note: "a directory-index specifier resolves without a trailing segment and is caught too",
 	},
 	{
 		rule: "no-storage-mechanism-literal",
