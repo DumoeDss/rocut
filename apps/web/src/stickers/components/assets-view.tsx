@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { HostImage } from "@/editor/host/host-image";
 import type { CSSProperties } from "react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -393,7 +393,7 @@ function StickerItem({
 					{displayName}
 				</span>
 			) : (
-				<Image
+				<HostImage
 					src={item.previewUrl}
 					alt={displayName}
 					width={64}

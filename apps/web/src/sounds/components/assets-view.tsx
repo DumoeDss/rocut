@@ -22,7 +22,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
-import { useSoundSearch } from "@/sounds/use-sound-search";
+import {
+	useSoundSearch,
+	SOUND_SEARCH_UNAVAILABLE_MESSAGE,
+} from "@/sounds/use-sound-search";
+import { useEditorHostServices } from "@/editor/host/editor-host-context";
 import { useSoundsStore } from "@/sounds/sounds-store";
 import type { SavedSound, SoundEffect } from "@/sounds/types";
 import { cn } from "@/utils/ui";
@@ -83,6 +87,7 @@ function SoundEffectsView() {
 		setHasNextPage,
 		setTotalCount,
 	} = useSoundsStore();
+	const { soundSearchEndpoint } = useEditorHostServices();
 	const {
 		results: searchResults,
 		isLoading: isSearching,
@@ -114,6 +119,14 @@ function SoundEffectsView() {
 			return;
 		}
 
+		// No endpoint means no server behind this panel. Say so instead of
+		// requesting a route that a static host answers with its SPA fallback.
+		if (!soundSearchEndpoint) {
+			setError({ error: SOUND_SEARCH_UNAVAILABLE_MESSAGE });
+			setLoading({ loading: false });
+			return;
+		}
+
 		let shouldIgnore = false;
 
 		const fetchTopSounds = async () => {
@@ -124,7 +137,7 @@ function SoundEffectsView() {
 				}
 
 				const response = await fetch(
-					"/api/sounds/search?page_size=50&sort=downloads",
+					`${soundSearchEndpoint}?page_size=50&sort=downloads`,
 				);
 
 				if (!shouldIgnore) {
@@ -163,6 +176,7 @@ function SoundEffectsView() {
 		};
 	}, [
 		hasLoaded,
+		soundSearchEndpoint,
 		setTopSoundEffects,
 		setLoading,
 		setError,
@@ -270,6 +284,11 @@ function SoundEffectsView() {
 					onScrollCapture={handleScrollWithPosition}
 				>
 					<div className="flex flex-col gap-4">
+						{soundSearchEndpoint ? null : (
+							<div className="text-muted-foreground text-sm">
+								{SOUND_SEARCH_UNAVAILABLE_MESSAGE}
+							</div>
+						)}
 						{isLoading && !searchQuery && (
 							<div className="text-muted-foreground text-sm">
 								Loading sounds...
@@ -286,11 +305,14 @@ function SoundEffectsView() {
 								onPlay={playSound}
 							/>
 						))}
-						{!isLoading && !isSearching && displayedSounds.length === 0 && (
-							<div className="text-muted-foreground text-sm">
-								{searchQuery ? "No sounds found" : "No sounds available"}
-							</div>
-						)}
+						{soundSearchEndpoint &&
+							!isLoading &&
+							!isSearching &&
+							displayedSounds.length === 0 && (
+								<div className="text-muted-foreground text-sm">
+									{searchQuery ? "No sounds found" : "No sounds available"}
+								</div>
+							)}
 						{isLoadingMore && (
 							<div className="text-muted-foreground py-4 text-center text-sm">
 								Loading more sounds...

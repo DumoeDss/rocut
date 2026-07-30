@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { HostImage } from "@/editor/host/host-image";
 import { useMemo, useState } from "react";
 import { PanelView } from "@/components/editor/panels/assets/views/base-panel";
 import { MediaDragOverlay } from "@/components/editor/panels/assets/drag-overlay";
@@ -446,7 +446,7 @@ function MediaPreview({
 	if (item.type === "image") {
 		return (
 			<div className="relative flex size-full items-center justify-center bg-muted">
-				<Image
+				<HostImage
 					src={item.url ?? ""}
 					alt={item.name}
 					fill
@@ -463,7 +463,7 @@ function MediaPreview({
 		if (item.thumbnailUrl) {
 			return (
 				<div className="relative size-full">
-					<Image
+					<HostImage
 						src={item.thumbnailUrl}
 						alt={item.name}
 						fill

@@ -9,25 +9,29 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import Link from "next/link";
 import { RenameProjectDialog } from "@/project/components/rename-project-dialog";
 import { DeleteProjectDialog } from "@/project/components/delete-project-dialog";
-import { useRouter } from "next/navigation";
+import {
+	useEditorHostBranding,
+	useEditorHostLinks,
+	useEditorHostNavigation,
+	useEditorHostServices,
+} from "@/editor/host/editor-host-context";
 import { FaDiscord } from "react-icons/fa6";
 import { ExportButton } from "./export-button";
 import { FeedbackPopover } from "@/feedback/components/feedback-popover";
 import { ThemeToggle } from "../theme-toggle";
-import { DEFAULT_LOGO_URL } from "@/site/brand";
-import { SOCIAL_LINKS } from "@/site/social";
 import { toast } from "sonner";
 import { useEditor } from "@/editor/use-editor";
 import { CommandIcon, Logout05Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ShortcutsDialog } from "@/actions/components/shortcuts-dialog";
-import Image from "next/image";
+import { HostImage } from "@/editor/host/host-image";
 import { cn } from "@/utils/ui";
 
 export function EditorHeader() {
+	const { feedbackEndpoint } = useEditorHostServices();
+
 	return (
 		<header className="bg-background flex h-[3.4rem] items-center justify-between px-3 pt-0.5">
 			<div className="flex items-center gap-1">
@@ -35,7 +39,9 @@ export function EditorHeader() {
 				<EditableProjectName />
 			</div>
 			<nav className="flex items-center gap-2">
-				<FeedbackPopover />
+				{/* Feedback posts to a server route; a host without one hides it
+				    entirely rather than offering a control that cannot work. */}
+				{feedbackEndpoint ? <FeedbackPopover /> : null}
 				<ExportButton />
 				<ThemeToggle />
 			</nav>
@@ -48,7 +54,9 @@ function ProjectDropdown() {
 		"delete" | "rename" | "shortcuts" | null
 	>(null);
 	const [isExiting, setIsExiting] = useState(false);
-	const router = useRouter();
+	const navigation = useEditorHostNavigation();
+	const { logoUrl } = useEditorHostBranding();
+	const { discordUrl } = useEditorHostLinks();
 	const editor = useEditor();
 	const activeProject = useEditor((e) => e.project.getActive());
 
@@ -63,7 +71,7 @@ function ProjectDropdown() {
 			console.error("Failed to prepare project exit:", error);
 		} finally {
 			editor.project.closeProject();
-			router.push("/projects");
+			navigation.onExitProject();
 		}
 	};
 
@@ -95,7 +103,7 @@ function ProjectDropdown() {
 				await editor.project.deleteProjects({
 					ids: [activeProject.metadata.id],
 				});
-				router.push("/projects");
+				navigation.onExitProject();
 			} catch (error) {
 				toast.error("Failed to delete project", {
 					description:
@@ -112,8 +120,8 @@ function ProjectDropdown() {
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
 					<Button variant="ghost" size="icon" className="p-1 rounded-sm size-8">
-						<Image
-							src={DEFAULT_LOGO_URL}
+						<HostImage
+							src={logoUrl}
 							alt="Project thumbnail"
 							width={32}
 							height={32}
@@ -140,13 +148,13 @@ function ProjectDropdown() {
 					<DropdownMenuSeparator />
 
 					<DropdownMenuItem asChild icon={<FaDiscord className="size-4!" />}>
-						<Link
-							href={SOCIAL_LINKS.discord}
+						<a
+							href={discordUrl}
 							target="_blank"
 							rel="noopener noreferrer"
 						>
 							Discord
-						</Link>
+						</a>
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>
