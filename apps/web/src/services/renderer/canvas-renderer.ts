@@ -36,12 +36,14 @@ export class CanvasRenderer {
 		this.context = surface.context;
 	}
 
-	getOutputCanvas(): HTMLCanvasElement {
-		this.compositor.ensureInitialized({
-			width: this.width,
-			height: this.height,
+	async getOutputCanvas(): Promise<HTMLCanvasElement> {
+		return this.compositor.runExclusive(async () => {
+			this.compositor.ensureInitialized({
+				width: this.width,
+				height: this.height,
+			});
+			return this.compositor.getCanvas();
 		});
-		return this.compositor.getCanvas();
 	}
 
 	setSize({ width, height }: { width: number; height: number }) {

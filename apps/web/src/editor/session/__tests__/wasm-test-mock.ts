@@ -3,9 +3,18 @@ import { mock } from "bun:test";
 const TICKS_PER_SECOND = 120_000;
 let nextCompositorHandle = 1;
 const liveCompositorHandles = new Set<number>();
-const compositorCanvases = new Map<number, object>();
+const compositorCanvases = new Map<
+	number,
+	{ style: Record<string, string>; width: number; height: number }
+>();
 const queuedCompositorHandles: number[] = [];
 const compositorRenderCalls: Array<{
+	handle: number;
+	width: number;
+	height: number;
+}> = [];
+const compositorOperations: Array<{
+	kind: "create" | "resize" | "render";
 	handle: number;
 	width: number;
 	height: number;
@@ -20,6 +29,9 @@ export const wasmTestControl = {
 	},
 	renderCalls() {
 		return [...compositorRenderCalls];
+	},
+	operations() {
+		return [...compositorOperations];
 	},
 };
 
@@ -106,11 +118,13 @@ mock.module("opencut-wasm", () => ({
 	TICKS_PER_SECOND: () => TICKS_PER_SECOND,
 	applyEffectPasses: () => {},
 	applyMaskFeather: () => {},
-	createCompositor: () => {
+	// eslint-disable-next-line opencut/prefer-object-params -- mirrors the positional wasm-bindgen API
+	createCompositor: (width: number, height: number) => {
 		const handle = queuedCompositorHandles.shift() ?? nextCompositorHandle++;
 		if (handle === 0) return 0;
 		liveCompositorHandles.add(handle);
-		compositorCanvases.set(handle, { style: {} });
+		compositorCanvases.set(handle, { style: {}, width, height });
+		compositorOperations.push({ kind: "create", handle, width, height });
 		return handle;
 	},
 	disposeCompositor: (handle: number) => {
@@ -141,9 +155,27 @@ mock.module("opencut-wasm", () => ({
 			width: frame.width,
 			height: frame.height,
 		});
+		compositorOperations.push({
+			kind: "render",
+			handle,
+			width: frame.width,
+			height: frame.height,
+		});
 	},
 	resizeCompositor: () => {},
-	resizeCompositorForHandle: () => {},
+	// eslint-disable-next-line opencut/prefer-object-params -- mirrors the positional wasm-bindgen API
+	resizeCompositorForHandle: (
+		handle: number,
+		width: number,
+		height: number,
+	) => {
+		const canvas = compositorCanvases.get(handle);
+		if (canvas) {
+			canvas.width = width;
+			canvas.height = height;
+		}
+		compositorOperations.push({ kind: "resize", handle, width, height });
+	},
 	roundToFrame: ({ time }: { time: number }) => Math.round(time),
 	snappedSeekTime: ({ time }: { time: number }) => time,
 	uploadTexture: () => {},

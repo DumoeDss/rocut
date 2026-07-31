@@ -518,6 +518,144 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 			cleanupSecondB();
 			expect(disposals.secondB).toBe(1);
 		});
+
+		test("cancelled Host creation settles before freeing its runtime wrappers", async () => {
+			const flushMicrotasks = async () => {
+				for (let index = 0; index < 8; index += 1) {
+					await Promise.resolve();
+				}
+			};
+			let releaseCreation!: () => void;
+			const creationGate = new Promise<void>((resolve) => {
+				releaseCreation = resolve;
+			});
+			let markSessionCreated!: () => void;
+			const sessionCreated = new Promise<void>((resolve) => {
+				markSessionCreated = resolve;
+			});
+			let markRuntimeDisposed!: () => void;
+			const runtimeDisposed = new Promise<void>((resolve) => {
+				markRuntimeDisposed = resolve;
+			});
+			let wrapperFreed = false;
+			let runtimeDisposals = 0;
+			let sessionDisposals = 0;
+			let createdSession: EditorSession | null = null;
+			const runtimeGraphics = {
+				selectedBackend: () => {
+					if (wrapperFreed) throw new Error("graphics wrapper freed");
+					return "webgpu" as const;
+				},
+				concurrentCompositorInstances: () => {
+					if (wrapperFreed) throw new Error("graphics wrapper freed");
+					return 2;
+				},
+			};
+			const runtimeGpu = {
+				liveHandles: () => {
+					if (wrapperFreed) throw new Error("gpu wrapper freed");
+					return [];
+				},
+				release: () => {
+					if (wrapperFreed) throw new Error("gpu wrapper freed");
+				},
+			};
+			const prepareRuntime = async () => ({
+				runtimeGraphics,
+				runtimeGpu,
+				dispose: () => {
+					runtimeDisposals += 1;
+					if (wrapperFreed) throw new Error("runtime disposed twice");
+					wrapperFreed = true;
+					markRuntimeDisposed();
+				},
+			});
+			const controller = createEditorSessionHostController({
+				prepareRuntime,
+				createSession: async (args) => {
+					const session = await createEditorSession(args);
+					createdSession = session;
+					const dispose = session.dispose.bind(session);
+					session.dispose = () => {
+						sessionDisposals += 1;
+						return dispose();
+					};
+					markSessionCreated();
+					await creationGate;
+					return session;
+				},
+				onChange: () => {},
+			});
+
+			const cancel = controller.begin(
+				createInMemoryHost({ projectId: "cancelled-create" }),
+			);
+			await sessionCreated;
+			cancel();
+			expect(runtimeDisposals).toBe(0);
+			expect(runtimeGpu.liveHandles()).toEqual([]);
+			releaseCreation();
+			await runtimeDisposed;
+			await flushMicrotasks();
+			expect(sessionDisposals).toBe(1);
+			expect(runtimeDisposals).toBe(1);
+			expect(() => runtimeGpu.liveHandles()).toThrow("gpu wrapper freed");
+			expect(() => editorForSession(createdSession!)).toThrow(
+				"unknown or disposed",
+			);
+
+			let rejectCreation!: (error: Error) => void;
+			const rejectedCreation = new Promise<EditorSession>((_, reject) => {
+				rejectCreation = reject;
+			});
+			let rejectedWrapperFreed = false;
+			let rejectedRuntimeDisposals = 0;
+			const rejectedRuntimeGraphics = {
+				selectedBackend: () => {
+					if (rejectedWrapperFreed) throw new Error("graphics wrapper freed");
+					return "webgpu" as const;
+				},
+				concurrentCompositorInstances: () => {
+					if (rejectedWrapperFreed) throw new Error("graphics wrapper freed");
+					return 2;
+				},
+			};
+			const rejectedRuntimeGpu = {
+				liveHandles: () => {
+					if (rejectedWrapperFreed) throw new Error("gpu wrapper freed");
+					return [];
+				},
+				release: () => {
+					if (rejectedWrapperFreed) throw new Error("gpu wrapper freed");
+				},
+			};
+			const rejectedController = createEditorSessionHostController({
+				prepareRuntime: async () => ({
+					runtimeGraphics: rejectedRuntimeGraphics,
+					runtimeGpu: rejectedRuntimeGpu,
+					dispose: () => {
+						rejectedRuntimeDisposals += 1;
+						if (rejectedWrapperFreed)
+							throw new Error("rejected runtime disposed twice");
+						rejectedWrapperFreed = true;
+					},
+				}),
+				createSession: () => rejectedCreation,
+				onChange: () => {},
+			});
+			const cancelRejected = rejectedController.begin(
+				createInMemoryHost({ projectId: "cancelled-reject" }),
+			);
+			await flushMicrotasks();
+			cancelRejected();
+			expect(rejectedRuntimeDisposals).toBe(0);
+			rejectCreation(new Error("creation rejected"));
+			await flushMicrotasks();
+			expect(rejectedRuntimeDisposals).toBe(1);
+			expect(() => rejectedRuntimeGpu.liveHandles()).toThrow(
+				"gpu wrapper freed",
+			);
+		});
 	});
 
 	describe("process bootstrap", () => {

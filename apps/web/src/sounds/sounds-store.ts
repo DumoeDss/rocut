@@ -74,7 +74,11 @@ export interface SoundsStore {
 	canPublishRequest: ({ token }: { token: SoundsRequestToken }) => boolean;
 }
 
-export type SoundsRequestChannel = "search" | "loadMore" | "saved" | "timeline";
+export type SoundsRequestChannel =
+	| "search"
+	| "loadMore"
+	| "savedLoad"
+	| "timeline";
 
 export interface SoundsRequestToken {
 	readonly channel: SoundsRequestChannel;
@@ -99,7 +103,7 @@ export function createSoundsStore({
 	const generations: Record<SoundsRequestChannel, number> = {
 		search: 0,
 		loadMore: 0,
-		saved: 0,
+		savedLoad: 0,
 		timeline: 0,
 	};
 	const beginRequest = ({ channel }: { channel: SoundsRequestChannel }) => {
@@ -117,7 +121,14 @@ export function createSoundsStore({
 	const canPublishRequest = ({ token }: { token: SoundsRequestToken }) =>
 		!isDisposed() &&
 		token.owner === owner &&
-		token.generation === generations[token.channel];
+		(token.channel === "timeline" ||
+			token.generation === generations[token.channel]);
+	let savedMutationTail: Promise<void> = Promise.resolve();
+	const serializeSavedMutation = (mutation: () => Promise<void>) => {
+		const result = savedMutationTail.then(mutation);
+		savedMutationTail = result.catch(() => {});
+		return result;
+	};
 
 	return createStore<SoundsStore>()((set, get) => ({
 		beginRequest,
@@ -183,7 +194,7 @@ export function createSoundsStore({
 
 		loadSavedSounds: async () => {
 			if (get().isSavedSoundsLoaded) return;
-			const token = beginRequest({ channel: "saved" });
+			const token = beginRequest({ channel: "savedLoad" });
 
 			try {
 				set({ isLoadingSavedSounds: true, savedSoundsError: null });
@@ -192,7 +203,6 @@ export function createSoundsStore({
 				set({
 					savedSounds: savedSoundsData.sounds,
 					isSavedSoundsLoaded: true,
-					isLoadingSavedSounds: false,
 				});
 			} catch (error) {
 				if (!canPublishRequest({ token })) return;
@@ -202,50 +212,63 @@ export function createSoundsStore({
 						: "Failed to load saved sounds";
 				set({
 					savedSoundsError: errorMessage,
-					isLoadingSavedSounds: false,
 				});
 				console.error("Failed to load saved sounds:", error);
+			} finally {
+				if (canPublishRequest({ token })) {
+					set({ isLoadingSavedSounds: false });
+				}
 			}
 		},
 
-		saveSoundEffect: async ({ soundEffect }) => {
-			const token = beginRequest({ channel: "saved" });
-			try {
-				await storage.saveSoundEffect({ soundEffect });
-				if (!canPublishRequest({ token })) return;
-
-				const savedSoundsData = await storage.loadSavedSounds();
-				if (!canPublishRequest({ token })) return;
-				set({ savedSounds: savedSoundsData.sounds });
-			} catch (error) {
-				if (!canPublishRequest({ token })) return;
-				const errorMessage =
-					error instanceof Error ? error.message : "Failed to save sound";
-				set({ savedSoundsError: errorMessage });
-				toast.error("Failed to save sound");
-				console.error("Failed to save sound:", error);
-			}
+		saveSoundEffect: ({ soundEffect }) => {
+			generations.savedLoad += 1;
+			set({ isLoadingSavedSounds: false });
+			return serializeSavedMutation(async () => {
+				try {
+					await storage.saveSoundEffect({ soundEffect });
+					if (isDisposed()) return;
+					const savedSoundsData = await storage.loadSavedSounds();
+					if (isDisposed()) return;
+					set({
+						savedSounds: savedSoundsData.sounds,
+						isSavedSoundsLoaded: true,
+						savedSoundsError: null,
+					});
+				} catch (error) {
+					if (isDisposed()) return;
+					const errorMessage =
+						error instanceof Error ? error.message : "Failed to save sound";
+					set({ savedSoundsError: errorMessage });
+					toast.error("Failed to save sound");
+					console.error("Failed to save sound:", error);
+				}
+			});
 		},
 
-		removeSavedSound: async ({ soundId }) => {
-			const token = beginRequest({ channel: "saved" });
-			try {
-				await storage.removeSavedSound({ soundId });
-				if (!canPublishRequest({ token })) return;
-
-				set((state) => ({
-					savedSounds: state.savedSounds.filter(
-						(sound) => sound.id !== soundId,
-					),
-				}));
-			} catch (error) {
-				if (!canPublishRequest({ token })) return;
-				const errorMessage =
-					error instanceof Error ? error.message : "Failed to remove sound";
-				set({ savedSoundsError: errorMessage });
-				toast.error("Failed to remove sound");
-				console.error("Failed to remove sound:", error);
-			}
+		removeSavedSound: ({ soundId }) => {
+			generations.savedLoad += 1;
+			set({ isLoadingSavedSounds: false });
+			return serializeSavedMutation(async () => {
+				try {
+					await storage.removeSavedSound({ soundId });
+					if (isDisposed()) return;
+					const savedSoundsData = await storage.loadSavedSounds();
+					if (isDisposed()) return;
+					set({
+						savedSounds: savedSoundsData.sounds,
+						isSavedSoundsLoaded: true,
+						savedSoundsError: null,
+					});
+				} catch (error) {
+					if (isDisposed()) return;
+					const errorMessage =
+						error instanceof Error ? error.message : "Failed to remove sound";
+					set({ savedSoundsError: errorMessage });
+					toast.error("Failed to remove sound");
+					console.error("Failed to remove sound:", error);
+				}
+			});
 		},
 
 		isSoundSaved: ({ soundId }) => {
@@ -263,25 +286,31 @@ export function createSoundsStore({
 			}
 		},
 
-		clearSavedSounds: async () => {
-			const token = beginRequest({ channel: "saved" });
-			try {
-				await storage.clearSavedSounds();
-				if (!canPublishRequest({ token })) return;
-				set({
-					savedSounds: [],
-					savedSoundsError: null,
-				});
-			} catch (error) {
-				if (!canPublishRequest({ token })) return;
-				const errorMessage =
-					error instanceof Error
-						? error.message
-						: "Failed to clear saved sounds";
-				set({ savedSoundsError: errorMessage });
-				toast.error("Failed to clear saved sounds");
-				console.error("Failed to clear saved sounds:", error);
-			}
+		clearSavedSounds: () => {
+			generations.savedLoad += 1;
+			set({ isLoadingSavedSounds: false });
+			return serializeSavedMutation(async () => {
+				try {
+					await storage.clearSavedSounds();
+					if (isDisposed()) return;
+					const savedSoundsData = await storage.loadSavedSounds();
+					if (isDisposed()) return;
+					set({
+						savedSounds: savedSoundsData.sounds,
+						isSavedSoundsLoaded: true,
+						savedSoundsError: null,
+					});
+				} catch (error) {
+					if (isDisposed()) return;
+					const errorMessage =
+						error instanceof Error
+							? error.message
+							: "Failed to clear saved sounds";
+					set({ savedSoundsError: errorMessage });
+					toast.error("Failed to clear saved sounds");
+					console.error("Failed to clear saved sounds:", error);
+				}
+			});
 		},
 
 		addSoundToTimeline: async ({ sound, editor }) => {

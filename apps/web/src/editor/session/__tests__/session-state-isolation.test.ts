@@ -726,6 +726,7 @@ if (process.env.OPENCUT_SESSION_STATE_TEST_ISOLATED !== "1") {
 			).compositor;
 			const originalRunExclusive = compositorA.runExclusive.bind(compositorA);
 			const serializationEvents: string[] = [];
+			const operationStart = wasmTestControl.operations().length;
 			let releaseFirst!: () => void;
 			const firstGate = new Promise<void>((resolve) => {
 				releaseFirst = resolve;
@@ -753,17 +754,46 @@ if (process.env.OPENCUT_SESSION_STATE_TEST_ISOLATED !== "1") {
 				} as never,
 			});
 			await Promise.resolve();
+			const outputCanvas = secondRendererA.getOutputCanvas();
 			const secondRender = secondRendererA.render({ node: treeA, time: 0 });
 			await Promise.resolve();
 			expect(serializationEvents).toEqual(["1:start"]);
+			expect(wasmTestControl.operations().slice(operationStart)).toEqual([]);
 			releaseFirst();
-			await Promise.all([firstRender, secondRender]);
+			const [, resizedCanvas] = await Promise.all([
+				firstRender,
+				outputCanvas,
+				secondRender,
+			]);
 			expect(serializationEvents).toEqual([
 				"1:start",
 				"1:target-draw",
 				"1:end",
 				"2:start",
 				"2:end",
+				"3:start",
+				"3:end",
+			]);
+			expect({
+				width: resizedCanvas.width,
+				height: resizedCanvas.height,
+			}).toEqual({ width: 32, height: 32 });
+			const serializedOperations = wasmTestControl
+				.operations()
+				.slice(operationStart);
+			expect(serializedOperations.map(({ kind }) => kind)).toEqual([
+				"create",
+				"render",
+				"resize",
+				"render",
+			]);
+			expect(
+				serializedOperations.map(({ width, height }) => ({ width, height })),
+			).toEqual([
+				{ width: 64, height: 64 },
+				{ width: 64, height: 64 },
+				{ width: 32, height: 32 },
+				{ width: 32, height: 32 },
 			]);
 			await rendererB.render({ node: treeB, time: 0 });
 			const handleA = editorA.renderer.getCompositorHandle();
@@ -819,7 +849,7 @@ if (process.env.OPENCUT_SESSION_STATE_TEST_ISOLATED !== "1") {
 				leaked: [],
 			});
 			expect(runtimeB.runtimeGpu.liveHandles()).toEqual([handleB]);
-			expect(() => rendererA.getOutputCanvas()).toThrow(/disposed/i);
+			await expect(rendererA.getOutputCanvas()).rejects.toThrow(/disposed/i);
 			await expect(rendererA.render({ node: treeA, time: 0 })).rejects.toThrow(
 				/disposed/i,
 			);

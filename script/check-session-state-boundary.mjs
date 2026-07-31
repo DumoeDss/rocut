@@ -122,6 +122,31 @@ function renderTimeImperativeCalls({ path, source }) {
 		path.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
 	);
 	const failures = [];
+	const canonicalRenderCallbackHooks = new Set([
+		"useMemo",
+		"useState",
+		"useReducer",
+	]);
+	const renderCallbackHooks = new Map(
+		[...canonicalRenderCallbackHooks].map((name) => [name, name]),
+	);
+	for (const statement of sourceFile.statements) {
+		if (
+			!ts.isImportDeclaration(statement) ||
+			!ts.isStringLiteral(statement.moduleSpecifier) ||
+			statement.moduleSpecifier.text !== "react" ||
+			!statement.importClause?.namedBindings ||
+			!ts.isNamedImports(statement.importClause.namedBindings)
+		) {
+			continue;
+		}
+		for (const element of statement.importClause.namedBindings.elements) {
+			const imported = element.propertyName?.text ?? element.name.text;
+			if (canonicalRenderCallbackHooks.has(imported)) {
+				renderCallbackHooks.set(element.name.text, imported);
+			}
+		}
+	}
 
 	const rootIdentifier = (expression) => {
 		let current = expression;
@@ -140,6 +165,64 @@ function renderTimeImperativeCalls({ path, source }) {
 		return current;
 	};
 
+	const unwrapExpression = (node) => {
+		let current = node;
+		while (
+			current.parent &&
+			(ts.isParenthesizedExpression(current.parent) ||
+				ts.isAsExpression(current.parent) ||
+				ts.isTypeAssertionExpression(current.parent) ||
+				ts.isNonNullExpression(current.parent)) &&
+			current.parent.expression === current
+		) {
+			current = current.parent;
+		}
+		return current;
+	};
+
+	const calledName = (expression) => {
+		if (ts.isIdentifier(expression)) return expression.text;
+		if (ts.isPropertyAccessExpression(expression)) return expression.name.text;
+		return null;
+	};
+
+	const executesDuringRender = (node) => {
+		const expression = unwrapExpression(node);
+		const parent = expression.parent;
+		if (!ts.isCallExpression(parent)) return false;
+		if (parent.expression === expression) return true;
+		const hook = calledName(parent.expression);
+		const canonicalHook = hook ? renderCallbackHooks.get(hook) : null;
+		if (!canonicalHook) return false;
+		const argumentIndex = parent.arguments.indexOf(expression);
+		if (canonicalHook === "useReducer") return argumentIndex === 2;
+		return argumentIndex === 0;
+	};
+
+	const propertyPath = (expression) => {
+		const parts = [];
+		let current = expression;
+		while (
+			ts.isPropertyAccessExpression(current) ||
+			ts.isElementAccessExpression(current)
+		) {
+			if (ts.isPropertyAccessExpression(current)) {
+				parts.unshift(current.name.text);
+			} else if (
+				current.argumentExpression &&
+				ts.isStringLiteral(current.argumentExpression)
+			) {
+				parts.unshift(current.argumentExpression.text);
+			} else {
+				return null;
+			}
+			current = current.expression;
+		}
+		if (!ts.isIdentifier(current)) return null;
+		parts.unshift(current.text);
+		return parts;
+	};
+
 	const inspectBinding = (declaration) => {
 		if (
 			!ts.isIdentifier(declaration.name) ||
@@ -155,7 +238,13 @@ function renderTimeImperativeCalls({ path, source }) {
 		if (!owner?.body) return;
 		const binding = declaration.name.text;
 		const scanSameExecutionLayer = (node) => {
-			if (node !== owner && ts.isFunctionLike(node)) return;
+			if (
+				node !== owner &&
+				ts.isFunctionLike(node) &&
+				!executesDuringRender(node)
+			) {
+				return;
+			}
 			if (
 				ts.isCallExpression(node) &&
 				rootIdentifier(node.expression) === binding &&
@@ -165,6 +254,22 @@ function renderTimeImperativeCalls({ path, source }) {
 					node.getStart(sourceFile),
 				);
 				failures.push(`render-time-imperative-editor-call:${path}:${line + 1}`);
+			}
+			if (
+				ts.isPropertyAccessExpression(node) ||
+				ts.isElementAccessExpression(node)
+			) {
+				const parts = propertyPath(node);
+				const isCalled =
+					ts.isCallExpression(node.parent) && node.parent.expression === node;
+				if (parts?.[0] === binding && parts.length >= 3 && !isCalled) {
+					const { line } = sourceFile.getLineAndCharacterOfPosition(
+						node.getStart(sourceFile),
+					);
+					failures.push(
+						`render-time-imperative-editor-read:${path}:${line + 1}`,
+					);
+				}
 			}
 			ts.forEachChild(node, scanSameExecutionLayer);
 		};
@@ -177,6 +282,46 @@ function renderTimeImperativeCalls({ path, source }) {
 	};
 	visit(sourceFile);
 	return [...new Set(failures)];
+}
+
+function serializedCanvasRendererMethods({ path, source }) {
+	const sourceFile = ts.createSourceFile(
+		path,
+		source,
+		ts.ScriptTarget.Latest,
+		true,
+		ts.ScriptKind.TS,
+	);
+	const serialized = new Set();
+	const visit = (node) => {
+		if (
+			ts.isMethodDeclaration(node) &&
+			node.name &&
+			ts.isIdentifier(node.name) &&
+			node.body
+		) {
+			let usesQueue = false;
+			const scan = (child) => {
+				if (
+					ts.isCallExpression(child) &&
+					ts.isPropertyAccessExpression(child.expression) &&
+					child.expression.name.text === "runExclusive" &&
+					ts.isPropertyAccessExpression(child.expression.expression) &&
+					child.expression.expression.name.text === "compositor" &&
+					child.expression.expression.expression.kind ===
+						ts.SyntaxKind.ThisKeyword
+				) {
+					usesQueue = true;
+				}
+				ts.forEachChild(child, scan);
+			};
+			scan(node.body);
+			if (usesQueue) serialized.add(node.name.text);
+		}
+		ts.forEachChild(node, visit);
+	};
+	visit(sourceFile);
+	return serialized;
 }
 
 function zustandReactCreatorAliases(source) {
@@ -426,6 +571,46 @@ function runNegativeControl() {
 			" positive: event-only imperative editor",
 	);
 	clean &&= eventOnlyAccepted;
+	for (const [name, source] of [
+		[
+			"render-time-iife",
+			"function Probe() { const editor = useEditorInstance(); return (() => editor.timeline.getTotalDuration())(); }",
+		],
+		[
+			"render-time-use-memo",
+			'import { useMemo as derive } from "react"; function Probe() { const editor = useEditorInstance(); return derive(() => editor.project.getActive(), [editor]); }',
+		],
+		[
+			"render-time-lazy-initializer",
+			"function Probe() { const editor = useEditorInstance(); const [value] = useState(() => editor.renderer.isDegraded); return value; }",
+		],
+		[
+			"render-time-manager-property",
+			'function Probe() { const editor = useEditorInstance(); return editor.renderer["isDegraded"]; }',
+		],
+	]) {
+		const caught = renderTimeImperativeCalls({
+			path: `${name}.tsx`,
+			source,
+		}).some((failure) => failure.startsWith("render-time-imperative-editor-"));
+		console.log("  " + (caught ? "PASS " : "FAIL ") + name);
+		clean &&= caught;
+	}
+	for (const [name, source] of [
+		[
+			"effect-manager-read",
+			"function Probe() { const editor = useEditorInstance(); useEffect(() => { void editor.renderer.isDegraded; }, [editor]); return null; }",
+		],
+		[
+			"event-manager-read",
+			"function Probe() { const editor = useEditorInstance(); return <button onClick={() => void editor.renderer.isDegraded} />; }",
+		],
+	]) {
+		const accepted =
+			renderTimeImperativeCalls({ path: `${name}.tsx`, source }).length === 0;
+		console.log("  " + (accepted ? "PASS " : "FAIL ") + "positive: " + name);
+		clean &&= accepted;
+	}
 	const missing = inventory.storeKeys.slice(0, 8);
 	const caughtMissing = missing.length !== 9 || new Set(missing).size !== 9;
 	console.log(
@@ -680,10 +865,14 @@ function runCheck() {
 	) {
 		failures.push("scene-exporter-does-not-require-injected-compositor");
 	}
-	if (
-		(canvasRenderer.match(/compositor\.runExclusive\s*\(/g)?.length ?? 0) !== 2
-	) {
-		failures.push("canvas-render-paths-not-fully-serialized");
+	const serializedRendererMethods = serializedCanvasRendererMethods({
+		path: "apps/web/src/services/renderer/canvas-renderer.ts",
+		source: canvasRenderer,
+	});
+	for (const method of ["getOutputCanvas", "render", "renderToCanvas"]) {
+		if (!serializedRendererMethods.has(method)) {
+			failures.push("canvas-render-path-not-serialized:" + method);
+		}
 	}
 
 	const classifiedSymbols = new Set(

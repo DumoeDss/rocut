@@ -74,7 +74,11 @@ export function createEditorSessionHostController({
 			current = null;
 			publish(null);
 		}
-		void disposeOwned(generation);
+		// A generation whose createSession() call is still pending must retain its
+		// query wrappers. The settlement chain below disposes a late-created session
+		// first, while those wrappers are live, and frees them afterwards. A rejected
+		// creation has no session to inspect and can free the wrappers directly.
+		if (generation.session) void disposeOwned(generation);
 	}
 
 	return {

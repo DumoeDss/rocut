@@ -142,7 +142,11 @@ export function createStickersStore({
 					const selectedCategory =
 						category in STICKER_CATEGORIES ? category : "all";
 
-					set({ isSearching: true, viewMode: "search" });
+					set({
+						isSearching: true,
+						isBrowsing: false,
+						viewMode: "search",
+					});
 					try {
 						if (selectedCategory === "all") {
 							const browseContent = await queries.searchAll({
@@ -176,7 +180,11 @@ export function createStickersStore({
 					const selectedCategory =
 						category in STICKER_CATEGORIES ? category : "all";
 
-					set({ isBrowsing: true, viewMode: "browse" });
+					set({
+						isBrowsing: true,
+						isSearching: false,
+						viewMode: "browse",
+					});
 					try {
 						const browseContent =
 							selectedCategory === "all"

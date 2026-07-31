@@ -146,6 +146,7 @@ function PreviewCanvas({
 	const editor = useEditorInstance();
 	const activeProject = useEditor((e) => e.project.getActive());
 	const renderTree = useEditor((e) => e.renderer.getRenderTree());
+	const rendererManager = useEditor((e) => e.renderer);
 	const viewport = usePreviewViewportState({
 		canvasHeight: nativeHeight,
 		canvasWidth: nativeWidth,
@@ -156,12 +157,12 @@ function PreviewCanvas({
 	const { canPan, panByScreenDelta, scaleZoom } = viewport;
 
 	const renderer = useMemo(() => {
-		return editor.renderer.createCanvasRenderer({
+		return rendererManager.createCanvasRenderer({
 			width: nativeWidth,
 			height: nativeHeight,
 			fps: activeProject.settings.fps,
 		});
-	}, [editor, nativeWidth, nativeHeight, activeProject.settings.fps]);
+	}, [rendererManager, nativeWidth, nativeHeight, activeProject.settings.fps]);
 
 	// Mount the compositor's output canvas directly into the preview. wgpu
 	// renders straight into this element, so there is no intermediate copy —
@@ -169,13 +170,24 @@ function PreviewCanvas({
 	useEffect(() => {
 		const mount = canvasMountRef.current;
 		if (!mount) return;
-		const outputCanvas = renderer.getOutputCanvas();
-		outputCanvas.style.display = "block";
-		outputCanvas.style.width = "100%";
-		outputCanvas.style.height = "100%";
-		mount.appendChild(outputCanvas);
+		let outputCanvas: HTMLCanvasElement | null = null;
+		let cancelled = false;
+		void renderer
+			.getOutputCanvas()
+			.then((canvas) => {
+				if (cancelled) return;
+				outputCanvas = canvas;
+				canvas.style.display = "block";
+				canvas.style.width = "100%";
+				canvas.style.height = "100%";
+				mount.appendChild(canvas);
+			})
+			.catch((error: unknown) => {
+				if (!cancelled) console.error("Failed to mount preview canvas:", error);
+			});
 		return () => {
-			if (outputCanvas.parentElement === mount) {
+			cancelled = true;
+			if (outputCanvas?.parentElement === mount) {
 				mount.removeChild(outputCanvas);
 			}
 		};

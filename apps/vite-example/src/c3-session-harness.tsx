@@ -215,7 +215,7 @@ export function C3SessionHarness() {
 						height: 100,
 						fps: { numerator: 30, denominator: 1 },
 					});
-					const canvas = renderer.getOutputCanvas();
+					const canvas = await renderer.getOutputCanvas();
 					const handle = editor.renderer.getCompositorHandle();
 					if (!handle)
 						throw new Error("Session compositor did not publish a handle.");
