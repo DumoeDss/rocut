@@ -8,6 +8,23 @@ import topLevelAwait from "vite-plugin-top-level-await";
 import wasm from "vite-plugin-wasm";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+const EXPECTED_BACKEND = process.env.WASM_EXPECT_BACKEND;
+if (
+	EXPECTED_BACKEND !== undefined &&
+	EXPECTED_BACKEND !== "webgpu" &&
+	EXPECTED_BACKEND !== "webgl"
+) {
+	throw new Error("WASM_EXPECT_BACKEND must be webgpu or webgl");
+}
+const BROWSER_ARGS = JSON.parse(
+	process.env.WASM_RUNTIME_BROWSER_ARGS_JSON ?? "[]",
+);
+if (
+	!Array.isArray(BROWSER_ARGS) ||
+	BROWSER_ARGS.some((argument) => typeof argument !== "string")
+) {
+	throw new Error("WASM_RUNTIME_BROWSER_ARGS_JSON must be a JSON string array");
+}
 const server = await createServer({
 	root: ROOT,
 	logLevel: "error",
@@ -25,7 +42,7 @@ try {
 	) {
 		throw new Error("Vite did not expose a local port");
 	}
-	browser = await chromium.launch();
+	browser = await chromium.launch({ args: BROWSER_ARGS });
 	const page = await browser.newPage();
 	const pageErrors = [];
 	page.on("pageerror", (error) => pageErrors.push(error.message));
@@ -35,6 +52,11 @@ try {
 	await page.waitForFunction(() => "__wasmRuntimeProbe" in globalThis);
 	const result = await page.evaluate(() => globalThis.__wasmRuntimeProbe);
 	if (pageErrors.length > 0) throw new Error(pageErrors.join("\n"));
+	if (EXPECTED_BACKEND !== undefined && result.backend !== EXPECTED_BACKEND) {
+		throw new Error(
+			`expected ${EXPECTED_BACKEND}, runtime selected ${result.backend}`,
+		);
+	}
 	console.log(
 		`test-wasm-runtime-api: ${result.backend}, capacity ${result.capacity}, handles ${result.handles.join(", ")} PASS`,
 	);
