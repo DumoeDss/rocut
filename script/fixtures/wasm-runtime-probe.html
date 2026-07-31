@@ -11,7 +11,10 @@
 		getCompositorCanvasForHandle,
 		initCompositor,
 		initializeGpu,
+		releaseTextureForHandle,
+		renderFrameForHandle,
 		resizeCompositorForHandle,
+		uploadTextureForHandle,
 	} from "/rust/wasm/pkg/opencut_wasm.js";
 
 	const assert = (condition, message) => {
@@ -62,11 +65,48 @@
 
 		const handles = [];
 		const canvases = [];
+		const frames = [];
 		for (let index = 0; index < capacity; index += 1) {
 			const handle = createCompositor(64 + index, 48 + index);
 			handles.push(handle);
 			canvases.push(getCompositorCanvasForHandle(handle));
 			resizeCompositorForHandle(handle, 80 + index, 60 + index);
+			const texture = new OffscreenCanvas(2, 2);
+			const context = texture.getContext("2d");
+			context.fillStyle = index === 0 ? "red" : "blue";
+			context.fillRect(0, 0, 2, 2);
+			uploadTextureForHandle(handle, {
+				id: "shared-texture-id",
+				source: texture,
+				width: 2,
+				height: 2,
+			});
+			const frame = {
+				width: 80 + index,
+				height: 60 + index,
+				clear: { color: [0, 0, 0, 1] },
+				items: [
+					{
+						type: "layer",
+						textureId: "shared-texture-id",
+						transform: {
+							centerX: 40,
+							centerY: 30,
+							width: 2,
+							height: 2,
+							rotationDegrees: 0,
+							flipX: false,
+							flipY: false,
+						},
+						opacity: 1,
+						blendMode: "normal",
+						effectPassGroups: [],
+						mask: null,
+					},
+				],
+			};
+			frames.push(frame);
+			renderFrameForHandle(handle, frame);
 		}
 		assert(
 			new Set(handles).size === capacity,
@@ -78,8 +118,17 @@
 		);
 		if (capacity === 2)
 			assert(canvases[0] !== canvases[1], "WebGPU canvases must be distinct");
+		if (capacity === 2) {
+			releaseTextureForHandle(handles[0], "shared-texture-id");
+			renderFrameForHandle(handles[1], frames[1]);
+		}
 		expectThrow(() => createCompositor(10, 10), "capacity");
 		expectThrow(() => disposeGpu(), "handles are live");
+		resizeCompositorForHandle(handles[0], 96, 72);
+		assert(
+			canvases[0].width === 96 && canvases[0].height === 72,
+			"teardown refusal must leave the compositor usable",
+		);
 
 		resources.release({ handle: handles[0] });
 		resources.release({ handle: handles[0] });
