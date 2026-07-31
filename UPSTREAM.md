@@ -57,7 +57,7 @@ answered mechanically, by asserting over the emitted Rollup module-id set of a p
 | `apps/web/src/services/**` | Storage (IndexedDB/OPFS), renderer, transcription. |
 | `apps/web/src/wasm/**`, `fonts/**`, `stickers/**`, `guides/**`, `sounds/**`, `feedback/**` | Editor-adjacent feature modules. |
 | `apps/web/public/{fonts,flags,effects,logos}` | Runtime assets fetched by absolute path. |
-| `rust/` (7 crates) | Source of the published `opencut-wasm@0.2.10`. |
+| `rust/` (7 crates) | Source of `opencut-wasm`. Since S02 it is built from here and the build output is what the editor consumes; it was the source of the published `0.2.10` at the pin. |
 
 ## Removed / excluded areas
 
@@ -80,15 +80,68 @@ production bundle's module graph.
 | --- | --- | --- | --- |
 | bun | `bun@1.2.18` (pinned via `packageManager`) | **`bun 1.2.2`** | **Discrepancy — recorded, not silently accepted.** The installed bun is *older* than the pin. `bun install` resolved the committed `bun.lock` without modifying it (`git diff bun.lock` is empty), and the Next production build succeeds, so the older bun reproduces the pinned dependency set. Anyone reproducing this work should prefer 1.2.18; if a resolution difference ever appears, this discrepancy is the first thing to check. |
 | Node.js | Any version Vite 7 supports | `v24.14.0` | Used for the Vite build and the check scripts. |
-| Rust / cargo | 1.88+ (the wasm crate is edition 2024) | `cargo 1.88.0 (873a06493 2025-05-10)` | Only needed for the optional wasm rebuild check. |
-| `wasm32-unknown-unknown` target | Required for the wasm rebuild check only | See "WASM rebuild correspondence" below | Not required to build or run the editor. |
-| `wasm-pack` | Required for the wasm rebuild check only | See "WASM rebuild correspondence" below | Not required to build or run the editor. |
+| Rust / cargo | 1.88+ (the wasm crate is edition 2024) | `cargo 1.88.0 (873a06493 2025-05-10)` | **Required prerequisite** since S02 — the editor's `opencut-wasm` dependency resolves to the local build output. |
+| `wasm32-unknown-unknown` target | **Required** | `rustup target add wasm32-unknown-unknown` | **Required prerequisite** since S02. Without it the wasm cannot be built and `bun install` cannot resolve `opencut-wasm`. |
+| `wasm-pack` | **Required** | `wasm-pack 0.13.1` | **Required prerequisite** since S02. `script/setup-rust` / `script/setup-rust.ps1` install it. |
 
-The editor consumes the **published npm `opencut-wasm@0.2.10`**, not a locally built artifact. That
-is deliberate: it keeps the parity baseline free of toolchain variables. Building from `rust/` does
-not become the canonical path in this Slice.
+The editor consumes the artifact **built from this repository's `rust/` sources**. See
+"Canonical wasm artifact" immediately below for what changed, when, and why.
+
+## Canonical wasm artifact
+
+**Since S02 (change `s02-wasm-self-built-canonical`), the canonical `opencut-wasm` is built from
+`rust/`.** `opencut-wasm` is declared as `file:./rust/wasm/pkg` in the root `package.json` and as
+`file:../../rust/wasm/pkg` in `apps/web/package.json`, so `bun install` resolves the specifier to
+the wasm-pack output rather than to the npm registry.
+
+**S01 decided the opposite, and that decision was correct for S01.** Its recorded position was:
+
+> The editor consumes the **published npm `opencut-wasm@0.2.10`**, not a locally built artifact. That
+> is deliberate: it keeps the parity baseline free of toolchain variables. Building from `rust/` does
+> not become the canonical path in this Slice.
+
+That statement is **superseded, not wrong-in-hindsight**, and it is quoted here rather than
+overwritten. It kept S01's parity baseline free of a toolchain variable at a time when nothing needed
+the fork's Rust source to be live.
+
+**What changed.** Upstream `OpenCut-app/opencut-classic` is archived, so `opencut-wasm@0.2.10` can
+never gain a function again. Slice S02 §4.1(c) measured the consequence: the module exports exactly
+ten functions, a case-insensitive search for `dispose|destroy|teardown|shutdown` across
+`rust/wasm/src`, `rust/crates/gpu/src` and `rust/crates/compositor/src` returns **zero** hits, and
+`COMPOSITOR_RUNTIME` / `GPU_RUNTIME` are `thread_local!` singletons. Releasing them requires **new
+Rust exports**, and a registry nobody can publish to can never carry them. The switch is therefore a
+prerequisite of S02's disposal and handle-keyed-graphics work, not a provenance tidy-up.
+
+**This change adds no export.** Its whole claim is that the self-built artifact *corresponds* to the
+package it replaces; adding an export in the same change would make that claim unprovable. The
+teardown and handle-keyed exports are a separate, later change.
+
+**Consequences for the developer path**, recorded so they are not tribal knowledge:
+
+- The Rust wasm toolchain is a **required prerequisite**, not an optional correspondence check. The
+  ordering is `script/setup-rust` → `bun run build:wasm` → `bun install` → Host build. CI already
+  used exactly that order (`.github/workflows/bun-ci.yml` builds the wasm before `bun install` on all
+  three runners); that step was vestigial and is now load-bearing.
+- **`bun install` must be re-run after every wasm rebuild.** Measured on bun 1.2.2: a `file:`
+  dependency is installed as **hard links**, not a symlink and not a plain copy, into both
+  `node_modules/opencut-wasm` and `apps/web/node_modules/opencut-wasm` (verified by inode identity).
+  wasm-bindgen rewrites most emitted files **in place**, so those propagate through the hard link —
+  but `wasm-opt` **replaces** `opencut_wasm_bg.wasm`, which breaks the link for that file alone.
+  Observed directly: after a rebuild, the resolved `node_modules/opencut-wasm/opencut_wasm_bg.wasm`
+  held the **4,272,877-byte pre-`wasm-opt` intermediate** while every other file was current, and
+  nothing at runtime would have surfaced it — the intermediate is a functionally valid module, just
+  ~1 MB larger. `script/check-wasm-source.mjs` exists to make this fail loudly.
+- `CARGO_TARGET_DIR` should point at a volume with several GB free; see the build-cost note below.
 
 ## WASM rebuild correspondence
+
+The correspondence criterion, restated once for both measurements below: **equality of the exported
+symbol set, the emitted type declaration and the reported version.** Binary hash equality of the
+`.wasm` is explicitly **not** the criterion. Every remaining difference is enumerated and attributed
+to a named cause; a difference introduced by a deliberate, in-scope change in this repository is
+attributed to that change rather than treated as a correspondence failure.
+
+### S01 measurement (pin `cf5e79e9`, artifact **not** consumed)
 
 **Verified.** The `rust/` sources in this repository at pin `cf5e79e9` were rebuilt locally with
 `bun run build:wasm` (`wasm-pack build rust/wasm --target bundler --out-dir pkg`) and compared
@@ -132,10 +185,131 @@ silence is not a hang), 3 min 01 s compiling the wasm crate graph, 3 min 17 s bu
 `wasm-bindgen-cli` from source, then `wasm-opt`. Prefer the prebuilt `wasm-pack` tarball over
 `cargo install wasm-pack`, which builds from source and adds several minutes.
 
-Zero compile errors. This check adds provenance assurance only: **published npm
-`opencut-wasm@0.2.10` remains this Slice's parity source regardless of the outcome**, and nothing in
-the extraction work depends on it. Full evidence, including every command run, is in
+Zero compile errors. **In S01 this check added provenance assurance only** — the published npm
+package was that Slice's parity source regardless of the outcome, and nothing in the extraction work
+depended on it. That is no longer true: since S02 the built artifact **is** what ships, so the
+comparison below is a release gate rather than an assurance exercise, and there is no published
+fallback. Full S01 evidence, including every command run, is in
 `work/evidence/wasm-correspondence.md`.
+
+### S02 re-measurement (baseline `49f8a88a`, artifact **actually consumed**)
+
+Re-established rather than carried forward on S01's word, because the artifact is now the one the
+editor loads. Measured **twice**, on both sides of the `rust/wasm/LICENSE` addition, so that any
+manifest perturbation the licence introduces is attributed to it by construction instead of being
+discovered later (design D-C).
+
+**Result: the criterion is MET in both measurements, and every per-file verdict is identical between
+them.** The licence addition changed the emitted package by exactly one added file and nothing else.
+
+| Artifact | Published `opencut-wasm@0.2.10` | Built from `rust/` (S02) | Result |
+| --- | --- | --- | --- |
+| `package.json` (whole file, 499 B) | sha256 `6eab1bdb…` | sha256 `6eab1bdb…` | **byte-identical**, before *and* after the licence addition. 0 differing manifest fields. |
+| `opencut_wasm.d.ts` | sha256 `07e195eb…` | sha256 `07e195eb…` | **byte-identical** — 48 of 48 exported declarations match |
+| `opencut_wasm.js` (entry glue) | sha256 `81bbfdfe…` | sha256 `81bbfdfe…` | **byte-identical** |
+| `opencut_wasm_bg.js` | 107,558 B / sha256 `a6830997…` | 107,558 B / sha256 `b0b80cb3…` | Differs. **638 exported symbols, sorted lists identical**; 11 differing lines, **zero** of which touch an `export`. The hash `b0b80cb3…` is the same value S01 recorded, so the glue is reproducible across build environments. |
+| `opencut_wasm_bg.wasm` | 3,037,899 B / sha256 `e7720e0d…` | 3,253,931 B / sha256 `56cb9ab6…` | **Differs, as expected — not the criterion.** ~7% larger. The whole +216,032 B is accounted for section by section: code +164,500, data +51,466, function +57, elem +8, custom +12, type −9, import −2 — summing exactly to the file delta, with the **export section unchanged at 947 B**. That is what makes "recompiled, not re-specified" a measurement rather than an inference. (Before path remapping the artifact was 3,258,045 B; remapping removed 4,114 B of embedded path strings.) |
+| `README.md` | 1,000 B / sha256 `94acda27…` | 1,045 B / sha256 `c7901645…` | **Differs by line endings only.** Byte-identical after CRLF→LF normalization (45 lines, 45 bytes). Attributed to `core.autocrlf=true` on the Windows checkout, not to a content change. |
+| `LICENSE` | *absent* | present, sha256 `8117f9bb…` | **Added by this change** — see D-5 below. wasm-pack copies a declared licence into the out-dir. |
+| `opencut_wasm_bg.wasm.d.ts` | *absent* | 2,510 B | Emitted by wasm-pack; excluded from the published tarball by the manifest's four-entry `files` allowlist. Not a divergence in the *published* sense. |
+| `.gitignore` | *absent* | 1 B (`*`) | Written into the out-dir by wasm-pack on every build; never packed by npm. |
+
+**Resolved: does wasm-pack list a copied licence in the generated manifest?** **No.** It copies
+`LICENSE` into the out-dir but does **not** add it to `package.json`'s `files` array, which still
+holds exactly the published four entries. This was an open question, deliberately measured rather
+than assumed, and the answer is why `package.json` stays byte-identical to published `0.2.10`.
+
+**The binary's own export table was measured too, not inferred from the glue.** Parsing the `.wasm`
+export and import sections directly:
+
+| | published `0.2.10` | self-built |
+| --- | --- | --- |
+| exports | 41 | 41 |
+| kinds | 39 func / 1 table / 1 memory | identical |
+| stably-named exports | 38 | 38 — **identical sets** |
+| `wasm_bindgen__convert__closures_____invoke__h…` trampolines | 3 | 3 — **all three names differ** |
+| imports | 609 | 609 — **identical** |
+| export **section** size | 947 B | 947 B — same size, **not byte-identical** |
+
+The three differing names are rustc symbol-hash suffixes on compiler-generated closure trampolines;
+**stripping the hash makes the two sets identical**, and they correspond 1:1 to the 11 differing
+lines in `opencut_wasm_bg.js`. That is the named cause.
+
+**The export section is the same size; it is NOT byte-identical, and the distinction matters.** 555
+byte positions within it differ, because 38 of the 41 entries carry a different function index — the
+compiler laid the same functions out in a different order. The *set* of exported names, their kinds
+and their count are what is unchanged; their indices are not, and no claim of byte-identity should be
+made about this section. Same-size-with-different-contents is exactly the shape a careless reading
+turns into "identical", so it is stated explicitly here.
+
+The import table — a module's host contract — is unchanged. The earlier records stated only the
+JS-level figures (638 glue symbols, 48 declarations); those remain correct but are the *consumed*
+surface, not the binary's.
+
+**The +164,500 B code-section growth has a named cause: the two artifacts were built by compilers six
+minor versions apart.** The `producers` custom section records it directly — published:
+`rustc 1.94.1 (e408947bf 2026-03-25)`, self-built: `rustc 1.88.0 (6b00bc388 2025-06-23)`. Both report
+`walrus 0.26.1` and `wasm-bindgen 0.2.116`. Until now the size delta was accounted for positionally
+(section by section, summing to the file delta) but not causally; the compiler version is the cause,
+and it is also why binary hash equality was never the correspondence criterion.
+
+**Path remapping: the redistributed binary must not disclose the machine that built it.** Recorded
+because it is a property this Slice deliberately changed, and because the naive comparison misleads:
+
+| | published `0.2.10` | self-built, before the fix | self-built, now |
+| --- | --- | --- | --- |
+| Windows absolute paths | 0 | **286** (285 `C:\Users\<name>\.cargo\registry\…` + 1 worktree path) | **0** |
+| POSIX home-dir paths | **169** (`/home/heart/.cargo/registry/…`) | 0 | **0** |
+| OS username disclosed | **`heart`** | **`Sayo`** | **none** |
+
+**Upstream did not build with path trimming** — a Windows-shaped scan reports zero for it only
+because `0.2.10` was built on Linux. Scanned for both platform shapes, the published artifact
+discloses a home directory and a username just as the unfixed local build did. So this is not a
+property the fork dropped and restored; it is one **neither** artifact had, and the fork now has it
+where the package it replaces does not.
+
+The fix is `--remap-path-prefix`, applied by `script/build-wasm.mjs`, which `bun run build:wasm`,
+`bun dev:wasm` and CI all route through. Cargo's `[profile.release] trim-paths` is the obvious
+alternative and does **not** work here: it is unstable in Cargo 1.88.0 and a manifest carrying it
+fails to parse at all, breaking every cargo invocation. Verified after the fix by scanning for both
+path shapes, with a positive control confirming the remapped `/cargo\…` and `/opencut\…` prefixes are
+present rather than the strings having merely vanished.
+
+### Reproducibility of the `.wasm` — what is proven, and what is not
+
+Stated precisely, because a later Slice needs a hash comparison it can trust and an over-broad claim
+here would be worse than none.
+
+**Proven: byte-identity across build locations, on one toolchain.** The same sources were built twice
+— once at `E:\…\rocut-wt-c0` and once at `C:\Users\Sayo\n3-second-location-build-much-longer-path\rocut`
+(different drive, different path length, separate `CARGO_TARGET_DIR`, a genuine 2 m 49 s recompile).
+**All five emitted files are byte-identical**, `.wasm` sha256 `56cb9ab6…` both. Remapping the
+checkout root and `CARGO_HOME` to fixed prefixes is what makes this hold; before it, two checkouts
+could not produce the same bytes.
+
+**NOT proven: byte-identity across machines or toolchains — and this repository pins neither.**
+
+- There is **no `rust-toolchain.toml`**, so `rustc` floats with whatever the developer installed.
+- `wasm-bindgen = "0.2.116"` in `rust/wasm/Cargo.toml` pins the *crate*, **not** the `wasm-bindgen-cli`
+  binary wasm-pack downloads, and that binary's own dependencies are not pinned by anything here.
+
+That gap is **measured, not hypothetical**. S01's surviving artifact and this one were built from the
+same sources with the *same* `rustc 1.88.0` and the *same* `wasm-bindgen 0.2.116`, yet differ — their
+`producers` sections read `walrus 0.26.4` and `walrus 0.26.1` respectively. The 4-byte size difference
+between them is **not** a path effect: the S01 worktree path is one character *longer*, so a
+path-only explanation predicts S01 one byte larger, and it is four bytes **smaller**. The cause is the
+differing `wasm-bindgen-cli` build.
+
+**Consequence for later work.** A hash comparison is meaningful only between builds made on one
+machine with one toolchain. Across machines, compare the exported surface — which is why D11 makes
+binary hash equality explicitly not the correspondence criterion. Closing the gap would mean pinning
+`rustc` via `rust-toolchain.toml` and pinning the `wasm-bindgen-cli` binary; neither is done here, and
+neither is in this change's scope.
+
+**S02 toolchain.** `rustc`/`cargo 1.88.0`, `wasm-pack 0.13.1`, `wasm-bindgen-cli 0.2.116` (matching
+the `wasm-bindgen = "0.2.116"` pin), target `wasm32-unknown-unknown`. Cold build 4 min 49 s with a
+warm Cargo registry (4 min 20 s of it compiling); the subsequent rebuild after adding the licence
+took 19 s.
 
 ## Known upstream defects
 
@@ -145,9 +319,14 @@ comparison was made *against*. That reasoning expired when S01 was reconciled: t
 `opencut-next-tracks-defect-repair` is deferred fork maintenance and it **repairs** the code defects
 while leaving the metadata defects recorded and unrepaired. Each entry below states which it is.
 
+A recorded **metadata** defect may be repaired only by a change whose own scope makes it a live
+correctness or release gate, and only with the repair evidenced and its disposition updated here and
+in [`SBOM.md` §4](SBOM.md). One has since met that bar: **D-5**, repaired at S02. The rest stand.
+
 | defect | disposition |
 | --- | --- |
-| Five **metadata** defects ([`SBOM.md` §4](SBOM.md)) | **Recorded, not repaired.** Deliberately so — and one of them is the root cause of a type diagnostic that is therefore also left in place; see the type-check section. |
+| Four **metadata** defects D-1…D-4 ([`SBOM.md` §4](SBOM.md)) | **Recorded, not repaired.** Deliberately so — and one of them is the root cause of a type diagnostic that is therefore also left in place; see the type-check section. |
+| Metadata defect **D-5** — `rust/wasm` declared `license = "MIT"` while shipping no LICENSE file | **Repaired** at S02 by change `s02-wasm-self-built-canonical`, in the change whose own scope made it a release gate. Evidence: `rust/wasm/LICENSE` present and byte-identical to the root `LICENSE` (sha256 `8117f9bb…`), asserted by `script/check-wasm-source.mjs`; the wasm-pack `License key is set in Cargo.toml but no LICENSE file(s) were found` warning is absent from the post-repair build log. The forcing manifest edits are patches **P-021**/**P-022**. |
 | The storage migration runner silently migrates nothing | **Repaired** — patches **P-016**, **P-017**. |
 | The six positional-argument call sites | **Repaired** — patches **P-016**, **P-017**, **P-018**. |
 | The two dangling imports in `actions/keybindings/persistence.ts` | **Repaired** — patches **P-019**, **P-020**. |
@@ -155,19 +334,27 @@ while leaving the metadata defects recorded and unrepaired. Each entry below sta
 | The branded-`MediaTime` diagnostics in `src/timeline/**/__tests__/` | **Recorded, not repaired.** Out of scope; no Direction decision yet. |
 | `MigrationDialog` can never render (**found during the repair**) | **Recorded, not repaired.** See the migration-runner section. |
 
-Five metadata defects are documented in [`SBOM.md` §4](SBOM.md), where a generator probe verifies
-each is still present.
+Five metadata defects are documented in [`SBOM.md` §4](SBOM.md), where a generator probe asserts each
+against its **declared disposition** — `recorded` defects must still be detected as present,
+`repaired` ones must be detected as absent. Both directions fail the generator, so a regression of a
+repaired defect is as loud as an undocumented repair.
 
-Four were known before this work began: the root `package.json` self-dependency `"opencut": "."`;
-the root-level `next` and `better-auth` entries; the `rust/wasm/Cargo.toml` `repository` field
-pointing at a nonexistent repository; and the published `opencut-wasm` `sideEffects` reference to a
-nonexistent `./snippets/*`.
+Four were known before this work began, and all four remain `recorded`: the root `package.json`
+self-dependency `"opencut": "."`; the root-level `next` and `better-auth` entries; the
+`rust/wasm/Cargo.toml` `repository` field pointing at a nonexistent repository; and the published
+`opencut-wasm` `sideEffects` reference to a nonexistent `./snippets/*`. **None of the four is
+repaired by the S02 wasm switch**: the manifest edits touch only the `opencut-wasm` dependency
+source, `Cargo.toml`'s `repository` field is untouched, and the built package's `sideEffects` array
+is byte-identical to the published one.
 
-A fifth was **discovered during this Slice** and is recorded separately: `rust/wasm/Cargo.toml`
-declares `license = "MIT"` but neither the crate directory nor the published npm package ships a
-LICENSE file. It has no effect on this Slice's distributable graph, since the published package is
-what is consumed and the repository-root MIT `LICENSE` covers the source — but it becomes a real
-release-gate defect once building the wasm from source becomes canonical.
+A fifth was **discovered during S01** and is now `repaired`: `rust/wasm/Cargo.toml` declares
+`license = "MIT"` but neither the crate directory nor the published npm package shipped a LICENSE
+file. S01 recorded it and deliberately left it, correctly — the published package was what was
+consumed and the repository-root MIT `LICENSE` covered the source. S01 also named the condition
+under which that would stop holding: it "becomes a real release-gate defect once building the wasm
+from source becomes canonical". S02's `s02-wasm-self-built-canonical` is the change that makes
+building from source canonical, so the condition is met rather than overridden, and the same change
+repairs the defect by adding `rust/wasm/LICENSE`.
 
 ### The storage migration runner silently migrates nothing
 

@@ -45,14 +45,16 @@
       "apps/web/src/sounds/use-sound-search.ts",
       "apps/web/src/stickers/components/assets-view.tsx",
       "apps/web/src/stickers/providers/index.ts",
-      "apps/web/src/timeline/components/timeline-element.tsx"
+      "apps/web/src/timeline/components/timeline-element.tsx",
+      "rust/wasm/README.md"
     ],
     "added": [
       "apps/web/src/editor/host/editor-host-context.tsx",
       "apps/web/src/editor/host/editor-host.ts",
       "apps/web/src/editor/host/host-image.tsx",
       "apps/web/src/editor/surface/editor-root.tsx",
-      "apps/web/src/services/storage/browser-host-adapter.ts"
+      "apps/web/src/services/storage/browser-host-adapter.ts",
+      "rust/wasm/LICENSE"
     ],
     "other": []
   },

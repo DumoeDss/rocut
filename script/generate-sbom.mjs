@@ -5,13 +5,24 @@
  * Reads `bun.lock` and `Cargo.lock` and emits `SBOM.md`, grouped into code
  * dependencies, fonts/assets, and codecs.
  *
- * It also *asserts* that the known upstream metadata defects are still present
- * and unrepaired. Recording them as prose would rot the moment someone "tidied"
+ * It also *asserts* the known upstream metadata defects against their **declared
+ * disposition**. Recording them as prose would rot the moment someone "tidied"
  * one; checking them means the SBOM cannot silently describe a repository that
  * no longer exists.
  *
- * Four were known before this Slice (task 2.6); a fifth was found during it and
- * is rendered under its own heading rather than merged into the original set.
+ * Four were known before S01 (task 2.6); a fifth was found during it and is
+ * rendered under its own heading rather than merged into the original set.
+ *
+ * **Disposition, not a blanket claim (S02 `s02-wasm-self-built-canonical`,
+ * design D-E).** Every entry declares `recorded` (the defect is deliberately
+ * unrepaired — its probe must return **true**) or `repaired` (repaired by a
+ * change whose own scope made it a live release gate — its probe must return
+ * **false**, and the entry carries the repairing change and the evidence). The
+ * exit condition is "every entry matches its declared disposition", so a
+ * *re*-introduction of a repaired defect now fails exactly as loudly as an
+ * undocumented repair always did. Before this, the assertion was one-sided —
+ * "every defect present" — which meant a repair could only ever be expressed by
+ * deleting the record of the defect, erasing the history the record exists for.
  */
 import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync, statSync, readdirSync } from "node:fs";
@@ -86,17 +97,22 @@ const RUNTIME_ASSETS = [
 ];
 
 /**
- * Known upstream metadata defects. Each carries a probe that must return true —
- * i.e. the defect is still present and unrepaired.
+ * Known upstream metadata defects. Each carries a `disposition` and a probe that
+ * must agree with it:
  *
- * D-1..D-4 were known before this Slice began and are enumerated by task 2.6.
- * Anything with `discoveredDuringS01: true` was found while doing the work and
- * is rendered separately, so the pre-known set stays exactly as the task
- * specified it and the new observation is not silently folded in.
+ *   `recorded` — deliberately unrepaired; the probe MUST return true.
+ *   `repaired` — deliberately repaired; the probe MUST return false, and the
+ *                entry names the change that repaired it and the evidence.
+ *
+ * D-1..D-4 were known before S01 began and are enumerated by task 2.6. Anything
+ * with `discoveredDuringS01: true` was found while doing the work and is
+ * rendered separately, so the pre-known set stays exactly as the task specified
+ * it and the new observation is not silently folded in.
  */
 const UPSTREAM_DEFECTS = [
 	{
 		id: "D-1",
+		disposition: "recorded",
 		title: "Root `package.json` declares a self-dependency `\"opencut\": \".\"`",
 		verbatim: '"opencut": "."',
 		detail:
@@ -105,6 +121,7 @@ const UPSTREAM_DEFECTS = [
 	},
 	{
 		id: "D-2",
+		disposition: "recorded",
 		title: "Root `package.json` declares application dependencies `next` and `better-auth`",
 		verbatim: '"better-auth": "^1.4.15",\n"next": "^16.1.3"',
 		detail:
@@ -115,6 +132,7 @@ const UPSTREAM_DEFECTS = [
 	},
 	{
 		id: "D-3",
+		disposition: "recorded",
 		title: "`rust/wasm/Cargo.toml` `repository` points at a nonexistent GitHub repository",
 		verbatim: 'repository = "https://github.com/opencut/opencut"',
 		detail:
@@ -123,6 +141,7 @@ const UPSTREAM_DEFECTS = [
 	},
 	{
 		id: "D-4",
+		disposition: "recorded",
 		title: "Published `opencut-wasm` declares `sideEffects` on a nonexistent `./snippets/*`",
 		verbatim: '"sideEffects": ["./opencut_wasm.js", "./snippets/*"]',
 		detail:
@@ -139,10 +158,14 @@ const UPSTREAM_DEFECTS = [
 	{
 		id: "D-5",
 		discoveredDuringS01: true,
-		title: "`rust/wasm` declares `license = \"MIT\"` but ships no LICENSE file",
+		disposition: "repaired",
+		repairedBy: "change `s02-wasm-self-built-canonical` (S02 C0); patch **P-021**/**P-022** are the manifest edits that force it",
+		evidence:
+			"`script/check-wasm-source.mjs` asserts `rust/wasm/LICENSE` exists and is byte-identical to the root `LICENSE`; the `License key is set in Cargo.toml but no LICENSE file(s) were found` warning is absent from the build log recorded in `UPSTREAM.md` § WASM rebuild correspondence",
+		title: "`rust/wasm` declared `license = \"MIT\"` while shipping no LICENSE file",
 		verbatim: 'license = "MIT"',
 		detail:
-			"`rust/wasm/Cargo.toml` declares the MIT licence, but neither `rust/wasm/` nor the published `opencut-wasm` npm package contains a LICENSE file — the published tarball holds only `opencut_wasm{.d.ts,.js,_bg.js,_bg.wasm}`, `package.json` and `README.md`. wasm-pack warns about this on **every** build (`License key is set in Cargo.toml but no LICENSE file(s) were found`).\n\n**Recorded only — deliberately not fixed.** It has zero effect on this Slice's distributable graph, because S01 consumes the *published* package and the repository-root MIT `LICENSE` covers the source. It becomes a genuine release-gate defect at S02, when building the wasm from source becomes the canonical path and the built package would be redistributed without its licence text.",
+			"`rust/wasm/Cargo.toml` declares the MIT licence, but at the pin neither `rust/wasm/` nor the published `opencut-wasm` npm package contained a LICENSE file — the published tarball holds only `opencut_wasm{.d.ts,.js,_bg.js,_bg.wasm}`, `package.json` and `README.md`. wasm-pack warned about this on **every** build (`License key is set in Cargo.toml but no LICENSE file(s) were found`).\n\n**Recorded and unrepaired throughout S01, repaired at S02 — deliberately, in the change whose own scope made it a release gate.** S01's reason for leaving it was sound *for S01*: the Slice consumed the *published* package, the repository-root MIT `LICENSE` covered the source, and the defect had zero effect on that Slice's distributable graph. S01's own text named its expiry condition — it \"becomes a genuine release-gate defect at S02, when building the wasm from source becomes the canonical path and the built package would be redistributed without its licence text\". `s02-wasm-self-built-canonical` is that change, so the condition is met rather than overridden. The repair is the addition of `rust/wasm/LICENSE`, byte-identical to the root `LICENSE`.\n\n**Why there is no `PATCHES.md` row for the repair itself.** `rust/wasm/LICENSE` is a *new* file, and `PATCHES.md` logs modifications to files inherited at the pin only — it says so in its own header, and `SOURCE_INVENTORY.md` already separates added from modified. The manifest edits that make the licence a release gate (root `package.json` and `apps/web/package.json`, P-021/P-022) are inherited files and are logged there.",
 		probe: () => {
 			const declaresMit = read("rust/wasm/Cargo.toml").includes('license = "MIT"');
 			const crateLicense = ["LICENSE", "LICENSE.md", "LICENSE-MIT", "COPYING"].some((name) =>
@@ -165,6 +188,27 @@ function existsInPackage(rel) {
 	}
 }
 
+/** A `recorded` defect must probe present; a `repaired` one must probe absent. */
+const expectedPresence = (d) => d.disposition === "recorded";
+
+function renderDisposition(d) {
+	if (d.disposition === "recorded") {
+		return `Disposition: **recorded, not repaired**. Probe confirms it is still present: **${
+			d.present ? "yes" : `NO — ${d.error ?? "probe returned false"}`
+		}**`;
+	}
+	const absent = d.error
+		? `NO — the probe threw and proved nothing (${d.error})`
+		: d.present
+			? "NO — the defect is present again"
+			: "yes";
+	return [
+		`Disposition: **repaired**, by ${d.repairedBy}.`,
+		`Evidence: ${d.evidence}.`,
+		`Probe confirms it is absent: **${absent}**`,
+	].join("\n\n");
+}
+
 function renderDefects(entries) {
 	return entries
 		.map(
@@ -176,7 +220,7 @@ ${d.verbatim}
 
 ${d.detail}
 
-Still present and unrepaired: **${d.present ? "yes" : `NO — ${d.error ?? "probe returned false"}`}**`,
+${renderDisposition(d)}`,
 		)
 		.join("\n\n");
 }
@@ -189,7 +233,11 @@ const defectResults = UPSTREAM_DEFECTS.map((d) => {
 	} catch (e) {
 		error = e.message;
 	}
-	return { ...d, present, error };
+	// A throwing probe is never a pass. Without this, a `repaired` entry whose
+	// probe throws yields `present === false`, which *matches* the expected
+	// absence — so a broken probe would report OK and say nothing. D-5's probe
+	// reads `rust/wasm/Cargo.toml`, which throws if that file is ever moved.
+	return { ...d, present, error, matchesDisposition: error === null && present === expectedPresence(d) };
 });
 
 // --- Rust ---------------------------------------------------------------
@@ -317,15 +365,23 @@ Video and audio decoding otherwise relies on the browser's own WebCodecs and Med
 implementations; no codec binaries are vendored into this repository. GPU rendering goes through
 \`wgpu\`/\`naga\` compiled into \`opencut-wasm\`, targeting WebGPU with a WebGL fallback.
 
-## 4. Known upstream metadata defects — recorded, **not** repaired
+## 4. Known upstream metadata defects — recorded, with a disposition per defect
 
-These are defects in the pinned upstream's own metadata. Repairing them would be an unlogged
-behavioural change to the baseline this Slice exists to compare against, so they are recorded and
-left in place (design D5). The boundary checks operate on the emitted module graph, so a
+These are defects in the pinned upstream's own metadata. The default is that they stay: repairing one
+would be an unlogged behavioural change to the baseline S01 exists to compare against, so they are
+recorded and left in place (design D5). The boundary checks operate on the emitted module graph, so a
 declared-but-unimported package cannot make them pass or fail incorrectly.
 
-Each entry below is verified still present by this generator; if one is ever repaired, regenerating
-this file fails loudly instead of quietly describing a repository that no longer exists.
+**Disposition is stated per defect, not as a blanket claim** (S02 \`s02-wasm-self-built-canonical\`,
+design D-E). A defect may be repaired only by a change whose own scope makes it a live correctness or
+release gate, and only with the repairing change and the evidence named here. Each entry declares
+either **recorded** — this generator asserts the defect is still present — or **repaired** — this
+generator asserts it is *absent*. Both directions fail loudly: an undocumented repair fails as it
+always did, and a **re**-introduction of a repaired defect now fails the same way, which the old
+one-sided "every defect present" assertion could not detect. Repairing a defect never means deleting
+its entry; the record of what upstream shipped survives the repair.
+
+Current dispositions: ${defectResults.filter((d) => d.disposition === "recorded").map((d) => d.id).join(", ")} recorded; ${defectResults.filter((d) => d.disposition === "repaired").map((d) => d.id).join(", ") || "none"} repaired.
 
 ### Known before this Slice began
 
@@ -343,14 +399,29 @@ writeFileSync(join(REPO_ROOT, "SBOM.md"), md);
 
 console.log(`SBOM: ${resolvedPackages.length} npm packages, ${wasmCrates.length} wasm crates`);
 for (const d of defectResults) {
-	console.log(`  ${d.present ? "present" : "MISSING"}  ${d.id} — ${d.title}`);
+	const observed = d.present ? "present" : "absent";
+	console.log(
+		`  ${d.matchesDisposition ? "OK  " : "FAIL"}  ${d.id}  disposition=${d.disposition}  observed=${observed}  — ${d.title}`,
+	);
 }
 
-const repaired = defectResults.filter((d) => !d.present);
-if (repaired.length > 0) {
-	console.error(
-		`\n${repaired.length} documented upstream defect(s) no longer detected. Either the repository was ` +
-			`repaired (which must be patch-logged and the SBOM text updated) or the probe is stale.`,
-	);
+const mismatched = defectResults.filter((d) => !d.matchesDisposition);
+if (mismatched.length > 0) {
+	console.error(`\n${mismatched.length} documented upstream defect(s) do not match their declared disposition.`);
+	for (const d of mismatched) {
+		if (d.error) {
+			console.error(`  ${d.id}'s probe threw and therefore proved nothing: ${d.error}`);
+		} else if (d.disposition === "recorded") {
+			console.error(
+				`  ${d.id} is declared \`recorded\` but is no longer detected. Either the repository was repaired ` +
+					`(which must be patch-logged, evidenced, and this entry moved to \`repaired\`) or the probe is stale.`,
+			);
+		} else {
+			console.error(
+				`  ${d.id} is declared \`repaired\` but is detected as present again. The repair has regressed; ` +
+					`restore it rather than re-declaring the defect.`,
+			);
+		}
+	}
 	process.exit(1);
 }
