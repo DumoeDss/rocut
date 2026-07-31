@@ -234,13 +234,20 @@ if (!licenceOk) failures.push("rust/wasm/LICENSE is missing or differs from the 
 // passes the type baseline, both Host builds and the parity fixture. So the
 // wiring is part of what gets asserted. If someone drops the CI step, every
 // local run says so.
-// This explicit list owns the two current wasm gates. A future gate must be
+// This explicit list owns the current wasm gates. A future gate must be
 // added here as well as to the root npm script and CI; this check does not claim
 // to discover arbitrary new `check-wasm-*.mjs` files.
-const GATED = ["script/check-wasm-source.mjs", "script/check-wasm-paths.mjs"];
+const GATED = [
+	"script/check-wasm-source.mjs",
+	"script/check-wasm-paths.mjs",
+	"script/check-wasm-api-surface.mjs",
+];
 const wiringProblems = [];
 
 const rootManifest = JSON.parse(readFileSync(join(REPO_ROOT, "package.json"), "utf8"));
+const aggregateCommands = (rootManifest.scripts?.["check:wasm"] ?? "")
+	.split(/\s*&&\s*/)
+	.map((command) => command.trim());
 const workflowPath = join(REPO_ROOT, ".github", "workflows", "bun-ci.yml");
 const workflow = existsSync(workflowPath) ? readFileSync(workflowPath, "utf8") : null;
 // `bun install` is what materialises the resolved copies these checks read, so
@@ -252,8 +259,8 @@ for (const gate of GATED) {
 		wiringProblems.push(`${gate} is referenced as a gate but not present in the repository`);
 		continue;
 	}
-	if (!Object.values(rootManifest.scripts ?? {}).some((cmd) => cmd.includes(gate))) {
-		wiringProblems.push(`no root package.json script invokes ${gate}`);
+	if (!aggregateCommands.includes(`node ${gate}`)) {
+		wiringProblems.push(`root package.json check:wasm does not invoke node ${gate}`);
 	}
 	if (workflow === null) {
 		wiringProblems.push("no .github/workflows/bun-ci.yml to carry the gate");
@@ -265,7 +272,7 @@ for (const gate of GATED) {
 	else if (gateAt < installAt) wiringProblems.push(`bun-ci.yml runs ${gate} BEFORE \`bun install\`, so it checks an uninstalled tree`);
 }
 
-console.log(`  ${wiringProblems.length === 0 ? "PASS" : "FAIL"}  both wasm gates are wired (npm script + CI step after \`bun install\`)`);
+console.log(`  ${wiringProblems.length === 0 ? "PASS" : "FAIL"}  all wasm gates are wired (npm script + CI step after \`bun install\`)`);
 for (const p of wiringProblems) console.log(`          ${p}`);
 if (wiringProblems.length > 0) failures.push(`gate wiring: ${wiringProblems.join("; ")}`);
 

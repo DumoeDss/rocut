@@ -311,6 +311,44 @@ the `wasm-bindgen = "0.2.116"` pin), target `wasm32-unknown-unknown`. Cold build
 warm Cargo registry (4 min 20 s of it compiling); the subsequent rebuild after adding the licence
 took 19 s.
 
+### C0b deliberate API delta (`s02-wasm-api-surface`)
+
+The C0 result above remains the named before-state: the canonical local artifact corresponded to
+published `opencut-wasm@0.2.10` by exported surface, emitted declaration and version, with binary
+hash equality explicitly outside the criterion. C0b deliberately supersedes only the API-surface
+equality. It does not rewrite that measurement or make the archived registry package a fallback.
+
+The generated comparison is exact and is enforced by `script/check-wasm-api-surface.mjs`:
+
+| surface | C0 before-state | C0b canonical artifact | exact attributed delta |
+| --- | ---: | ---: | --- |
+| public wrapper exports | 28 | 38 | `WasmRuntimeGraphicsQuery`, `WasmRuntimeGpuResourceQuery`, `createCompositor`, `resizeCompositorForHandle`, `getCompositorCanvasForHandle`, `uploadTextureForHandle`, `releaseTextureForHandle`, `renderFrameForHandle`, `disposeCompositor`, `disposeGpu` |
+| top-level TypeScript declarations | 48 | 58 | The same ten names. The provider methods are exactly `selectedBackend(): "webgl" \| "webgpu" \| null`, `concurrentCompositorInstances(): number`, `unavailableReason(): string`, `liveHandles(): readonly number[]`, and `release(input: { handle: number }): void`. |
+| generated glue function exports | 638 | 646 | The eight additive function exports; the two providers are classes in the glue. |
+| binary exports | 41 | 58 | The eight additive functions; two provider free functions; graphics provider constructor plus three methods; GPU-resource provider constructor plus two methods. No C0 binary export was removed. |
+| binary imports | 609 | 609 | **Exact set unchanged** (sorted module/name/kind signature sha256 `2da5921b…`). |
+| generated files | 9 | 9 | `opencut_wasm.d.ts`, `opencut_wasm.js`, `opencut_wasm_bg.js`, `opencut_wasm_bg.wasm`, and `opencut_wasm_bg.wasm.d.ts` changed. `.gitignore`, `LICENSE`, `package.json`, and `README.md` remain byte-identical to C0. |
+
+The declaration moved from sha256 `07e195eb…` to `e7d942d3…`. On this machine the review-clean
+binary moved from 3,253,931 bytes / sha256 `56cb9ab6…` to 3,286,340 bytes / sha256 `15622cf5…`;
+the final bytes include synchronous generation registration plus the initialization-generation ownership added for the C0b review blockers. As above, that binary
+hash is build evidence, not a cross-toolchain correspondence oracle. The committed gate instead
+freezes every JS and binary export, all 609 imports, both declaration files, the generated file set
+and the four files required to remain byte-identical. Fourteen deliberate malformed controls each
+exit non-zero for their own rule, including independent exact-registration controls for the root
+aggregate, CI ordering and `GATED` membership.
+
+Runtime evidence is separate from declaration evidence. The built-package browser probe observes
+an honest pre-initialization `null`/`0`/non-empty-reason state, a real WebGL selection reporting
+capacity one, exact live-handle enumeration, over-capacity refusal, shared-teardown refusal naming
+the live handle, idempotent keyed release, reserved legacy handle `0`, and post-teardown
+`null`/`0`/non-empty-reason. It also repeats concurrent initialization with a live compositor three
+times, proves both zero-yield and yielded dispose-during-init cannot publish late, and coalesces a real disabled-GPU failure for
+both callers. Pure Rust tests cover the WebGPU capacity-two branch, WebGL branch,
+failure and teardown state, default/explicit capacity competition, exact release and checked
+`u32` exhaustion, plus the generation join/cancel rules. A distinct real WebGPU run and a distinct real WebGL run remain the C3 joint-gate
+obligation; C0b does not claim one browser run exercised both backends.
+
 ## Known upstream defects
 
 **Disposition is per defect, not blanket.** Slice S01 recorded every defect here and repaired none,

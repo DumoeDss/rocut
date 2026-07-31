@@ -46,7 +46,10 @@
       "apps/web/src/stickers/components/assets-view.tsx",
       "apps/web/src/stickers/providers/index.ts",
       "apps/web/src/timeline/components/timeline-element.tsx",
-      "rust/wasm/README.md"
+      "rust/wasm/README.md",
+      "rust/wasm/src/compositor.rs",
+      "rust/wasm/src/gpu.rs",
+      "rust/wasm/src/wasm.rs"
     ],
     "added": [
       "apps/web/src/editor/host/editor-host-context.tsx",
@@ -77,7 +80,8 @@
       "apps/web/src/editor/session/session-types.ts",
       "apps/web/src/editor/surface/editor-root.tsx",
       "apps/web/src/services/storage/browser-host-adapter.ts",
-      "rust/wasm/LICENSE"
+      "rust/wasm/LICENSE",
+      "rust/wasm/src/runtime_state.rs"
     ],
     "other": []
   },
