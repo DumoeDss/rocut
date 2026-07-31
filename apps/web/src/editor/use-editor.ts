@@ -1,15 +1,11 @@
 import { useCallback, useMemo, useRef, useSyncExternalStore } from "react";
-import { EditorCore } from "@/core";
+import type { EditorCore } from "@/core";
+import { editorForSession } from "@/editor/runtime/session-core-owner";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 
 const SNAPSHOT_UNSET = Symbol("snapshotUnset");
 
-function isShallowEqual({
-	a,
-	b,
-}: {
-	a: unknown;
-	b: unknown;
-}): boolean {
+function isShallowEqual({ a, b }: { a: unknown; b: unknown }): boolean {
 	if (Object.is(a, b)) return true;
 	if (!Array.isArray(a) || !Array.isArray(b)) return false;
 	if (a.length !== b.length) return false;
@@ -23,7 +19,8 @@ export function useEditor<T>(selector: (editor: EditorCore) => T): T;
 export function useEditor<T>(
 	selector?: (editor: EditorCore) => T,
 ): EditorCore | T {
-	const editor = useMemo(() => EditorCore.getInstance(), []);
+	const session = useEditorSession();
+	const editor = useMemo(() => editorForSession(session), [session]);
 	const snapshotCacheRef = useRef<T | typeof SNAPSHOT_UNSET>(SNAPSHOT_UNSET);
 
 	const subscribeAll = useCallback(

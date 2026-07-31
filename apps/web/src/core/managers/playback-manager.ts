@@ -22,6 +22,7 @@ export class PlaybackManager {
 	private playbackStartWallTime = 0;
 	private playbackStartTime: MediaTime = ZERO_MEDIA_TIME;
 	private timelineScopeBound = false;
+	private timelineScopeUnsubscribers: Array<() => void> = [];
 
 	constructor(private editor: EditorCore) {}
 
@@ -33,10 +34,24 @@ export class PlaybackManager {
 		const reconcile = () => {
 			this.reconcileTimelineScope();
 		};
-		this.editor.timeline.subscribe(reconcile);
-		this.editor.scenes.subscribe(reconcile);
+		this.timelineScopeUnsubscribers = [
+			this.editor.timeline.subscribe(reconcile),
+			this.editor.scenes.subscribe(reconcile),
+		];
 		this.timelineScopeBound = true;
 		this.reconcileTimelineScope();
+	}
+
+	dispose(): void {
+		this.pause();
+		for (const unsubscribe of this.timelineScopeUnsubscribers) {
+			unsubscribe();
+		}
+		this.timelineScopeUnsubscribers = [];
+		this.timelineScopeBound = false;
+		this.listeners.clear();
+		this.updateListeners.clear();
+		this.seekListeners.clear();
 	}
 
 	play(): void {
@@ -227,9 +242,9 @@ export class PlaybackManager {
 			this.pause();
 			this.currentTime = maxTime;
 			this.notify();
-		this.notifySeek(maxTime);
-		this.dispatchSeekEvent(maxTime);
-		return;
+			this.notifySeek(maxTime);
+			this.dispatchSeekEvent(maxTime);
+			return;
 		}
 
 		this.currentTime = newTime;

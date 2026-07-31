@@ -10,12 +10,9 @@ import { AudioManager } from "./managers/audio-manager";
 import { SelectionManager } from "./managers/selection-manager";
 import { ClipboardManager } from "./managers/clipboard-manager";
 import { DiagnosticsManager } from "./managers/diagnostics-manager";
-import { registerDefaultEffects } from "@/effects";
-import { registerDefaultMasks } from "@/masks";
 import { registerTranscriptionDiagnostics } from "@/transcription/diagnostics";
 
 export class EditorCore {
-	private static instance: EditorCore | null = null;
 	public readonly timeline: TimelineManager;
 	public readonly command: CommandManager;
 	public readonly playback: PlaybackManager;
@@ -30,8 +27,6 @@ export class EditorCore {
 	public readonly diagnostics: DiagnosticsManager;
 
 	private constructor() {
-		registerDefaultEffects();
-		registerDefaultMasks();
 		this.command = new CommandManager(this);
 		this.timeline = new TimelineManager(this);
 		this.playback = new PlaybackManager(this);
@@ -68,14 +63,20 @@ export class EditorCore {
 		this.save.start();
 	}
 
-	static getInstance(): EditorCore {
-		if (!EditorCore.instance) {
-			EditorCore.instance = new EditorCore();
-		}
-		return EditorCore.instance;
+	static createSessionOwned(): EditorCore {
+		return new EditorCore();
 	}
 
-	static reset(): void {
-		EditorCore.instance = null;
+	suspend(): void {
+		this.save.pause();
+	}
+
+	resume(): void {
+		this.save.resume();
+	}
+
+	dispose(): void {
+		this.save.stop();
+		this.playback.dispose();
 	}
 }

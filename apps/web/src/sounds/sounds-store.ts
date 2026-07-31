@@ -2,7 +2,7 @@ import { create } from "zustand";
 import type { SoundEffect, SavedSound } from "@/sounds/types";
 import { storageService } from "@/services/storage/service";
 import { toast } from "sonner";
-import { EditorCore } from "@/core";
+import type { EditorCore } from "@/core";
 import { buildLibraryAudioElement } from "@/timeline/element-utils";
 import { mediaTimeFromSeconds } from "@/wasm";
 
@@ -28,7 +28,13 @@ interface SoundsStore {
 	isLoadingSavedSounds: boolean;
 	savedSoundsError: string | null;
 
-	addSoundToTimeline: ({ sound }: { sound: SoundEffect }) => Promise<boolean>;
+	addSoundToTimeline: ({
+		sound,
+		editor,
+	}: {
+		sound: SoundEffect;
+		editor: EditorCore;
+	}) => Promise<boolean>;
 	setTopSoundEffects: ({ sounds }: { sounds: SoundEffect[] }) => void;
 	setLoading: ({ loading }: { loading: boolean }) => void;
 	setError: ({ error }: { error: string | null }) => void;
@@ -206,7 +212,7 @@ export const useSoundsStore = create<SoundsStore>((set, get) => ({
 		}
 	},
 
-	addSoundToTimeline: async ({ sound }) => {
+	addSoundToTimeline: async ({ sound, editor }) => {
 		const audioUrl = sound.previewUrl;
 		if (!audioUrl) {
 			toast.error("Sound file not available");
@@ -214,7 +220,6 @@ export const useSoundsStore = create<SoundsStore>((set, get) => ({
 		}
 
 		try {
-			const editor = EditorCore.getInstance();
 			const currentTime = editor.playback.getCurrentTime();
 
 			const response = await fetch(audioUrl);

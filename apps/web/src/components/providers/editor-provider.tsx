@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
-import { EditorCore } from "@/core";
 import { useEditorHost } from "@/editor/host/editor-host-context";
 import { useEditor } from "@/editor/use-editor";
 import { useKeybindingsListener } from "@/actions/use-keybindings";
@@ -20,6 +19,7 @@ interface EditorProviderProps {
 }
 
 export function EditorProvider({ children }: EditorProviderProps) {
+	const editor = useEditor();
 	const activeProject = useEditor((e) => e.project.getActiveOrNull());
 	const { projectId, navigation } = useEditorHost();
 	const [isLoading, setIsLoading] = useState(true);
@@ -40,7 +40,6 @@ export function EditorProvider({ children }: EditorProviderProps) {
 
 	useEffect(() => {
 		let cancelled = false;
-		const editor = EditorCore.getInstance();
 
 		const loadProject = async () => {
 			try {
@@ -94,7 +93,7 @@ export function EditorProvider({ children }: EditorProviderProps) {
 		return () => {
 			cancelled = true;
 		};
-	}, [projectId]);
+	}, [editor, projectId]);
 
 	if (error) {
 		return (

@@ -1,9 +1,9 @@
 import {
 	Command,
 	createElementSelectionResult,
+	type EditorCommandContext,
 	type CommandResult,
 } from "@/commands/base-command";
-import { EditorCore } from "@/core";
 import type { SceneTracks, TimelineElement } from "@/timeline";
 import type { ElementClipboardItem } from "@/clipboard";
 import { generateUUID } from "@/utils/id";
@@ -39,10 +39,9 @@ export class PasteCommand extends Command {
 		this.clipboardItems = clipboardItems;
 	}
 
-	execute(): CommandResult | undefined {
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		if (this.clipboardItems.length === 0) return undefined;
 
-		const editor = EditorCore.getInstance();
 		this.savedState = editor.scenes.getActiveScene().tracks;
 		this.pastedElements = [];
 
@@ -152,9 +151,8 @@ export class PasteCommand extends Command {
 		return undefined;
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (this.savedState) {
-			const editor = EditorCore.getInstance();
 			editor.timeline.updateTracks(this.savedState);
 		}
 	}

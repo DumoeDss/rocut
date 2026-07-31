@@ -1,8 +1,9 @@
-import { EditorCore } from "@/core";
+import { updateScalarKeyframeCurve } from "@/animation";
 import {
-	updateScalarKeyframeCurve,
-} from "@/animation";
-import { Command, type CommandResult } from "@/commands/base-command";
+	Command,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
 import { updateElementInSceneTracks } from "@/timeline";
 import { resolveAnimationTarget } from "@/timeline/animation-targets";
 import type {
@@ -44,8 +45,7 @@ export class UpdateScalarKeyframeCurveCommand extends Command {
 		this.patch = patch;
 	}
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		this.savedState = editor.scenes.getActiveScene().tracks;
 
 		const updatedTracks = updateElementInSceneTracks({
@@ -74,12 +74,11 @@ export class UpdateScalarKeyframeCurveCommand extends Command {
 		return undefined;
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (!this.savedState) {
 			return;
 		}
 
-		const editor = EditorCore.getInstance();
 		editor.timeline.updateTracks(this.savedState);
 	}
 }

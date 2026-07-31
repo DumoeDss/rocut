@@ -1,7 +1,14 @@
-import { Command, type CommandResult } from "@/commands/base-command";
+import {
+	Command,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
 import type { SceneTracks } from "@/timeline";
-import { EditorCore } from "@/core";
-import { canTrackHaveAudio, findTrackInSceneTracks, updateTrackInSceneTracks } from "@/timeline";
+import {
+	canTrackHaveAudio,
+	findTrackInSceneTracks,
+	updateTrackInSceneTracks,
+} from "@/timeline";
 
 export class ToggleTrackMuteCommand extends Command {
 	private savedState: SceneTracks | null = null;
@@ -10,8 +17,7 @@ export class ToggleTrackMuteCommand extends Command {
 		super();
 	}
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		this.savedState = editor.scenes.getActiveScene().tracks;
 
 		const targetTrack = findTrackInSceneTracks({
@@ -32,9 +38,8 @@ export class ToggleTrackMuteCommand extends Command {
 		editor.timeline.updateTracks(updatedTracks);
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (this.savedState) {
-			const editor = EditorCore.getInstance();
 			editor.timeline.updateTracks(this.savedState);
 		}
 	}

@@ -27,6 +27,7 @@ import {
 	SOUND_SEARCH_UNAVAILABLE_MESSAGE,
 } from "@/sounds/use-sound-search";
 import { useEditorHostServices } from "@/editor/host/editor-host-context";
+import { useEditor } from "@/editor/use-editor";
 import { useSoundsStore } from "@/sounds/sounds-store";
 import type { SavedSound, SoundEffect } from "@/sounds/types";
 import { cn } from "@/utils/ui";
@@ -507,6 +508,7 @@ interface AudioItemProps {
 }
 
 function AudioItem({ sound, isPlaying, onPlay }: AudioItemProps) {
+	const editor = useEditor();
 	const { addSoundToTimeline, isSoundSaved, toggleSavedSound } =
 		useSoundsStore();
 	const isSaved = isSoundSaved({ soundId: sound.id });
@@ -526,7 +528,7 @@ function AudioItem({ sound, isPlaying, onPlay }: AudioItemProps) {
 		stopPropagation,
 	}: React.MouseEvent<HTMLButtonElement>) => {
 		stopPropagation();
-		await addSoundToTimeline({ sound });
+		await addSoundToTimeline({ sound, editor });
 	};
 
 	return (

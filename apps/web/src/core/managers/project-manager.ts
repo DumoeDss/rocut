@@ -15,7 +15,10 @@ import { UpdateProjectSettingsCommand } from "@/commands/project";
 import { DEFAULT_BACKGROUND_COLOR } from "@/background/color";
 import { DEFAULT_CANVAS_SIZE } from "@/canvas/sizes";
 import { DEFAULT_FPS } from "@/fps/defaults";
-import { buildDefaultScene, getProjectDurationFromScenes } from "@/timeline/scenes";
+import {
+	buildDefaultScene,
+	getProjectDurationFromScenes,
+} from "@/timeline/scenes";
 import { buildScene } from "@/services/renderer/scene-builder";
 import { CanvasRenderer } from "@/services/renderer/canvas-renderer";
 import {
@@ -498,7 +501,7 @@ export class ProjectManager {
 			return;
 		}
 
-		command.execute();
+		this.editor.command.executeWithoutHistory({ command });
 	}
 
 	ratchetFpsForImportedMedia({
@@ -514,7 +517,9 @@ export class ProjectManager {
 		});
 		if (nextFps === null) return null;
 
-		new UpdateProjectSettingsCommand({ fps: nextFps }).execute();
+		this.editor.command.executeWithoutHistory({
+			command: new UpdateProjectSettingsCommand({ fps: nextFps }),
+		});
 		return nextFps;
 	}
 

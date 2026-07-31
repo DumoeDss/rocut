@@ -4,10 +4,13 @@
  * Nothing in the running editor imports this yet. That is the point of a freeze:
  * the shape is settled and testable before six children build on it.
  */
-export type {
-	CreateEditorSessionArgs,
-} from "./create-session";
+export type { CreateEditorSessionArgs } from "./create-session";
 export { createEditorSession } from "./create-session";
+export {
+	EditorSessionProvider,
+	useEditorSession,
+} from "./editor-session-provider";
+export { EditorSessionHost } from "./editor-session-host";
 export type {
 	DisposalReport,
 	GpuResourceHandle,
