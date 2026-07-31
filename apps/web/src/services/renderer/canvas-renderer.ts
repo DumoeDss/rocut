@@ -59,6 +59,21 @@ export class CanvasRenderer {
 		await this.compositor.runExclusive(() => this.renderLocked({ node, time }));
 	}
 
+	async renderAndCapture<T>({
+		node,
+		time,
+		capture,
+	}: {
+		node: AnyBaseNode;
+		time: number;
+		capture: (canvas: HTMLCanvasElement) => T | Promise<T>;
+	}): Promise<T> {
+		return this.compositor.runExclusive(async () => {
+			await this.renderLocked({ node, time });
+			return capture(this.compositor.getCanvas());
+		});
+	}
+
 	async renderToCanvas({
 		node,
 		time,

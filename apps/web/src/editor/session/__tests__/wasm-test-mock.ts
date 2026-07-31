@@ -5,7 +5,13 @@ let nextCompositorHandle = 1;
 const liveCompositorHandles = new Set<number>();
 const compositorCanvases = new Map<
 	number,
-	{ style: Record<string, string>; width: number; height: number }
+	{
+		style: Record<string, string>;
+		width: number;
+		height: number;
+		handle: number;
+		content: string;
+	}
 >();
 const queuedCompositorHandles: number[] = [];
 const compositorRenderCalls: Array<{
@@ -14,11 +20,28 @@ const compositorRenderCalls: Array<{
 	height: number;
 }> = [];
 const compositorOperations: Array<{
-	kind: "create" | "resize" | "render";
+	kind: "create" | "resize" | "render" | "capture";
 	handle: number;
 	width: number;
 	height: number;
 }> = [];
+const canvasCaptures: Array<{
+	handle: number;
+	width: number;
+	height: number;
+	content: string;
+	operationIndex: number;
+}> = [];
+let heldCanvasCapture:
+	| {
+			entered: () => void;
+			wait: Promise<void>;
+	  }
+	| undefined;
+let graphicsFreeCalls = 0;
+let gpuFreeCalls = 0;
+const graphicsFreeErrors: unknown[] = [];
+const gpuFreeErrors: unknown[] = [];
 
 export const wasmTestControl = {
 	queueCompositorHandle(handle: number) {
@@ -32,6 +55,34 @@ export const wasmTestControl = {
 	},
 	operations() {
 		return [...compositorOperations];
+	},
+	canvasCaptures() {
+		return [...canvasCaptures];
+	},
+	holdNextCanvasCapture() {
+		let markEntered!: () => void;
+		const entered = new Promise<void>((resolve) => {
+			markEntered = resolve;
+		});
+		let release!: () => void;
+		const wait = new Promise<void>((resolve) => {
+			release = resolve;
+		});
+		heldCanvasCapture = { entered: markEntered, wait };
+		return { entered, release };
+	},
+	queueRuntimeWrapperFreeErrors({
+		graphics,
+		gpu,
+	}: {
+		graphics?: unknown;
+		gpu?: unknown;
+	}) {
+		if (graphics !== undefined) graphicsFreeErrors.push(graphics);
+		if (gpu !== undefined) gpuFreeErrors.push(gpu);
+	},
+	runtimeWrapperFreeCalls() {
+		return { graphics: graphicsFreeCalls, gpu: gpuFreeCalls };
 	},
 };
 
@@ -58,7 +109,34 @@ class MockOutput {
 }
 
 class MockCanvasSource {
-	async add() {}
+	constructor(
+		private readonly canvas: {
+			width: number;
+			height: number;
+			handle: number;
+			content: string;
+		},
+	) {}
+	async add() {
+		const capture = {
+			handle: this.canvas.handle,
+			width: this.canvas.width,
+			height: this.canvas.height,
+			content: this.canvas.content,
+			operationIndex: compositorOperations.length,
+		};
+		canvasCaptures.push(capture);
+		compositorOperations.push({
+			kind: "capture",
+			handle: capture.handle,
+			width: capture.width,
+			height: capture.height,
+		});
+		const held = heldCanvasCapture;
+		heldCanvasCapture = undefined;
+		held?.entered();
+		await held?.wait;
+	}
 	close() {}
 }
 
@@ -100,7 +178,11 @@ class MockRuntimeGraphicsQuery {
 	unavailableReason() {
 		return "";
 	}
-	free() {}
+	free() {
+		graphicsFreeCalls += 1;
+		const error = graphicsFreeErrors.shift();
+		if (error !== undefined) throw error;
+	}
 }
 
 class MockRuntimeGpuQuery {
@@ -111,7 +193,11 @@ class MockRuntimeGpuQuery {
 		liveCompositorHandles.delete(handle);
 		compositorCanvases.delete(handle);
 	}
-	free() {}
+	free() {
+		gpuFreeCalls += 1;
+		const error = gpuFreeErrors.shift();
+		if (error !== undefined) throw error;
+	}
 }
 
 mock.module("opencut-wasm", () => ({
@@ -123,7 +209,13 @@ mock.module("opencut-wasm", () => ({
 		const handle = queuedCompositorHandles.shift() ?? nextCompositorHandle++;
 		if (handle === 0) return 0;
 		liveCompositorHandles.add(handle);
-		compositorCanvases.set(handle, { style: {}, width, height });
+		compositorCanvases.set(handle, {
+			style: {},
+			width,
+			height,
+			handle,
+			content: "unrendered",
+		});
 		compositorOperations.push({ kind: "create", handle, width, height });
 		return handle;
 	},
@@ -146,10 +238,15 @@ mock.module("opencut-wasm", () => ({
 	releaseTexture: () => {},
 	releaseTextureForHandle: () => {},
 	renderFrame: () => {},
+	// eslint-disable-next-line opencut/prefer-object-params -- mirrors the positional wasm-bindgen API
 	renderFrameForHandle: (
 		handle: number,
 		frame: { width: number; height: number },
 	) => {
+		const canvas = compositorCanvases.get(handle);
+		if (canvas) {
+			canvas.content = `handle:${handle}:frame:${compositorRenderCalls.length + 1}`;
+		}
 		compositorRenderCalls.push({
 			handle,
 			width: frame.width,

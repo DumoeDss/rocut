@@ -122,19 +122,41 @@ function renderTimeImperativeCalls({ path, source }) {
 		path.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
 	);
 	const failures = [];
+	const unwrapValue = (expression) => {
+		let current = expression;
+		while (
+			ts.isParenthesizedExpression(current) ||
+			ts.isAsExpression(current) ||
+			ts.isTypeAssertionExpression(current) ||
+			ts.isNonNullExpression(current) ||
+			ts.isSatisfiesExpression(current)
+		) {
+			current = current.expression;
+		}
+		return current;
+	};
 	const canonicalRenderCallbackHooks = new Set([
 		"useMemo",
 		"useState",
 		"useReducer",
 	]);
+	const synchronousCollectionMethods = new Set([
+		"map",
+		"filter",
+		"some",
+		"every",
+		"find",
+		"reduce",
+		"forEach",
+	]);
 	const renderCallbackHooks = new Map(
 		[...canonicalRenderCallbackHooks].map((name) => [name, name]),
 	);
+	const editorHookAliases = new Set(["useEditorInstance"]);
 	for (const statement of sourceFile.statements) {
 		if (
 			!ts.isImportDeclaration(statement) ||
 			!ts.isStringLiteral(statement.moduleSpecifier) ||
-			statement.moduleSpecifier.text !== "react" ||
 			!statement.importClause?.namedBindings ||
 			!ts.isNamedImports(statement.importClause.namedBindings)
 		) {
@@ -142,10 +164,42 @@ function renderTimeImperativeCalls({ path, source }) {
 		}
 		for (const element of statement.importClause.namedBindings.elements) {
 			const imported = element.propertyName?.text ?? element.name.text;
-			if (canonicalRenderCallbackHooks.has(imported)) {
+			if (
+				statement.moduleSpecifier.text === "react" &&
+				canonicalRenderCallbackHooks.has(imported)
+			) {
 				renderCallbackHooks.set(element.name.text, imported);
 			}
+			if (
+				statement.moduleSpecifier.text === "@/editor/use-editor" &&
+				imported === "useEditorInstance"
+			) {
+				editorHookAliases.add(element.name.text);
+			}
 		}
+	}
+	let foundHookAlias = true;
+	while (foundHookAlias) {
+		foundHookAlias = false;
+		const findAliases = (node) => {
+			if (
+				ts.isVariableDeclaration(node) &&
+				ts.isIdentifier(node.name) &&
+				node.initializer
+			) {
+				const initializer = unwrapValue(node.initializer);
+				if (
+					ts.isIdentifier(initializer) &&
+					editorHookAliases.has(initializer.text) &&
+					!editorHookAliases.has(node.name.text)
+				) {
+					editorHookAliases.add(node.name.text);
+					foundHookAlias = true;
+				}
+			}
+			ts.forEachChild(node, findAliases);
+		};
+		findAliases(sourceFile);
 	}
 
 	const rootIdentifier = (expression) => {
@@ -181,22 +235,41 @@ function renderTimeImperativeCalls({ path, source }) {
 	};
 
 	const calledName = (expression) => {
+		expression = unwrapValue(expression);
 		if (ts.isIdentifier(expression)) return expression.text;
 		if (ts.isPropertyAccessExpression(expression)) return expression.name.text;
+		if (
+			ts.isElementAccessExpression(expression) &&
+			expression.argumentExpression &&
+			ts.isStringLiteral(expression.argumentExpression)
+		) {
+			return expression.argumentExpression.text;
+		}
 		return null;
 	};
 
 	const executesDuringRender = (node) => {
+		if (
+			node.modifiers?.some(
+				(modifier) => modifier.kind === ts.SyntaxKind.AsyncKeyword,
+			)
+		) {
+			return false;
+		}
 		const expression = unwrapExpression(node);
 		const parent = expression.parent;
 		if (!ts.isCallExpression(parent)) return false;
 		if (parent.expression === expression) return true;
 		const hook = calledName(parent.expression);
 		const canonicalHook = hook ? renderCallbackHooks.get(hook) : null;
-		if (!canonicalHook) return false;
 		const argumentIndex = parent.arguments.indexOf(expression);
 		if (canonicalHook === "useReducer") return argumentIndex === 2;
-		return argumentIndex === 0;
+		if (canonicalHook) return argumentIndex === 0;
+		return (
+			argumentIndex === 0 &&
+			hook !== null &&
+			synchronousCollectionMethods.has(hook)
+		);
 	};
 
 	const propertyPath = (expression) => {
@@ -224,12 +297,15 @@ function renderTimeImperativeCalls({ path, source }) {
 	};
 
 	const inspectBinding = (declaration) => {
+		const initializer = declaration.initializer
+			? unwrapValue(declaration.initializer)
+			: null;
 		if (
 			!ts.isIdentifier(declaration.name) ||
-			!declaration.initializer ||
-			!ts.isCallExpression(declaration.initializer) ||
-			!ts.isIdentifier(declaration.initializer.expression) ||
-			declaration.initializer.expression.text !== "useEditorInstance"
+			!initializer ||
+			!ts.isCallExpression(initializer) ||
+			!ts.isIdentifier(unwrapValue(initializer.expression)) ||
+			!editorHookAliases.has(unwrapValue(initializer.expression).text)
 		) {
 			return;
 		}
@@ -237,41 +313,154 @@ function renderTimeImperativeCalls({ path, source }) {
 		const owner = nearestFunction(declaration);
 		if (!owner?.body) return;
 		const binding = declaration.name.text;
-		const scanSameExecutionLayer = (node) => {
-			if (
-				node !== owner &&
-				ts.isFunctionLike(node) &&
-				!executesDuringRender(node)
+		const editorBindings = new Set([binding]);
+		let foundEditorAlias = true;
+		while (foundEditorAlias) {
+			foundEditorAlias = false;
+			const collectEditorAliases = (node) => {
+				if (
+					ts.isVariableDeclaration(node) &&
+					ts.isIdentifier(node.name) &&
+					node.initializer
+				) {
+					const value = unwrapValue(node.initializer);
+					if (
+						ts.isIdentifier(value) &&
+						editorBindings.has(value.text) &&
+						!editorBindings.has(node.name.text)
+					) {
+						editorBindings.add(node.name.text);
+						foundEditorAlias = true;
+					}
+				}
+				ts.forEachChild(node, collectEditorAliases);
+			};
+			collectEditorAliases(owner.body);
+		}
+		const managerBindings = new Set();
+		let foundManagerAlias = true;
+		while (foundManagerAlias) {
+			foundManagerAlias = false;
+			const collectManagerAliases = (node) => {
+				if (ts.isVariableDeclaration(node) && node.initializer) {
+					const value = unwrapValue(node.initializer);
+					if (ts.isIdentifier(node.name)) {
+						const parts = propertyPath(value);
+						const aliasesManager =
+							parts && editorBindings.has(parts[0]) && parts.length === 2;
+						const aliasesAlias =
+							ts.isIdentifier(value) && managerBindings.has(value.text);
+						if (
+							(aliasesManager || aliasesAlias) &&
+							!managerBindings.has(node.name.text)
+						) {
+							managerBindings.add(node.name.text);
+							foundManagerAlias = true;
+						}
+					} else if (
+						ts.isObjectBindingPattern(node.name) &&
+						ts.isIdentifier(value) &&
+						editorBindings.has(value.text)
+					) {
+						for (const element of node.name.elements) {
+							if (
+								ts.isIdentifier(element.name) &&
+								!managerBindings.has(element.name.text)
+							) {
+								managerBindings.add(element.name.text);
+								foundManagerAlias = true;
+							}
+						}
+					}
+				}
+				ts.forEachChild(node, collectManagerAliases);
+			};
+			collectManagerAliases(owner.body);
+		}
+
+		const localFunctions = new Map();
+		const collectLocalFunctions = (node) => {
+			if (ts.isFunctionDeclaration(node) && node.name) {
+				localFunctions.set(node.name.text, node);
+			} else if (
+				ts.isVariableDeclaration(node) &&
+				ts.isIdentifier(node.name) &&
+				node.initializer
 			) {
-				return;
+				const value = unwrapValue(node.initializer);
+				if (ts.isArrowFunction(value) || ts.isFunctionExpression(value)) {
+					localFunctions.set(node.name.text, value);
+				}
+			}
+			ts.forEachChild(node, collectLocalFunctions);
+		};
+		collectLocalFunctions(owner.body);
+		const scannedNamedFunctions = new Set();
+
+		const record = (node, kind) => {
+			const { line } = sourceFile.getLineAndCharacterOfPosition(
+				node.getStart(sourceFile),
+			);
+			failures.push(
+				`render-time-imperative-editor-${kind}:${path}:${line + 1}`,
+			);
+		};
+
+		const scanSameExecutionLayer = (node, enteredFunction = false) => {
+			if (ts.isFunctionLike(node) && !enteredFunction) {
+				if (!executesDuringRender(node)) return;
+				if (
+					node.modifiers?.some(
+						(modifier) => modifier.kind === ts.SyntaxKind.AsyncKeyword,
+					)
+				) {
+					return;
+				}
 			}
 			if (
 				ts.isCallExpression(node) &&
-				rootIdentifier(node.expression) === binding &&
-				node !== declaration.initializer
+				(editorBindings.has(rootIdentifier(node.expression)) ||
+					managerBindings.has(rootIdentifier(node.expression))) &&
+				node !== initializer
 			) {
-				const { line } = sourceFile.getLineAndCharacterOfPosition(
-					node.getStart(sourceFile),
-				);
-				failures.push(`render-time-imperative-editor-call:${path}:${line + 1}`);
+				record(node, "call");
+			}
+			if (ts.isCallExpression(node)) {
+				const localName = calledName(node.expression);
+				const localFunction = localName ? localFunctions.get(localName) : null;
+				if (
+					localFunction &&
+					!localFunction.modifiers?.some(
+						(modifier) => modifier.kind === ts.SyntaxKind.AsyncKeyword,
+					) &&
+					!scannedNamedFunctions.has(localFunction)
+				) {
+					scannedNamedFunctions.add(localFunction);
+					scanSameExecutionLayer(localFunction.body, true);
+				}
 			}
 			if (
 				ts.isPropertyAccessExpression(node) ||
 				ts.isElementAccessExpression(node)
 			) {
 				const parts = propertyPath(node);
+				const isNestedRoot =
+					(ts.isPropertyAccessExpression(node.parent) ||
+						ts.isElementAccessExpression(node.parent)) &&
+					node.parent.expression === node;
 				const isCalled =
 					ts.isCallExpression(node.parent) && node.parent.expression === node;
-				if (parts?.[0] === binding && parts.length >= 3 && !isCalled) {
-					const { line } = sourceFile.getLineAndCharacterOfPosition(
-						node.getStart(sourceFile),
-					);
-					failures.push(
-						`render-time-imperative-editor-read:${path}:${line + 1}`,
-					);
+				if (
+					parts &&
+					((editorBindings.has(parts[0]) && parts.length >= 3) ||
+						(managerBindings.has(parts[0]) && parts.length >= 2)) &&
+					!isNestedRoot &&
+					!isCalled
+				) {
+					record(node, "read");
 				}
 			}
-			ts.forEachChild(node, scanSameExecutionLayer);
+			ts.forEachChild(node, (child) => scanSameExecutionLayer(child));
 		};
 		scanSameExecutionLayer(owner.body);
 	};
@@ -588,6 +777,28 @@ function runNegativeControl() {
 			"render-time-manager-property",
 			'function Probe() { const editor = useEditorInstance(); return editor.renderer["isDegraded"]; }',
 		],
+		[
+			"render-time-imported-hook-alias",
+			'import { useEditorInstance as useOwningEditor } from "@/editor/use-editor";\nfunction Probe() { const editor = useOwningEditor?.(); return editor.project.getActive(); }',
+		],
+		[
+			"render-time-local-hook-alias",
+			"function Probe() { const useOwningEditor = useEditorInstance; const editor = useOwningEditor(); return editor.timeline.getTotalDuration(); }",
+		],
+		[
+			"render-time-manager-alias",
+			"function Probe() { const editor = useEditorInstance(); const project = editor.project; return project.getActive(); }",
+		],
+		[
+			"render-time-named-local-call",
+			"function Probe() { const editor = useEditorInstance(); function read() { return editor.project.getActive(); } return read?.(); }",
+		],
+		...["map", "filter", "some", "every", "find", "reduce", "forEach"].map(
+			(method) => [
+				`render-time-collection-${method}`,
+				`function Probe({ values }) {\n  const editor = useEditorInstance();\n  return values?.${method}?.((value) => value && editor.project.getActive());\n}`,
+			],
+		),
 	]) {
 		const caught = renderTimeImperativeCalls({
 			path: `${name}.tsx`,
@@ -604,6 +815,10 @@ function runNegativeControl() {
 		[
 			"event-manager-read",
 			"function Probe() { const editor = useEditorInstance(); return <button onClick={() => void editor.renderer.isDegraded} />; }",
+		],
+		[
+			"async-callback-manager-read",
+			"function Probe() { const editor = useEditorInstance(); queueMicrotask(async () => void editor.renderer.isDegraded); return null; }",
 		],
 	]) {
 		const accepted =
@@ -865,11 +1080,23 @@ function runCheck() {
 	) {
 		failures.push("scene-exporter-does-not-require-injected-compositor");
 	}
+	if (
+		!/renderAndCapture\s*\(\s*\{[\s\S]*?capture\s*:\s*\(\)\s*=>\s*videoSource\.add/.test(
+			sceneExporter,
+		)
+	) {
+		failures.push("scene-export-capture-escapes-compositor-transaction");
+	}
 	const serializedRendererMethods = serializedCanvasRendererMethods({
 		path: "apps/web/src/services/renderer/canvas-renderer.ts",
 		source: canvasRenderer,
 	});
-	for (const method of ["getOutputCanvas", "render", "renderToCanvas"]) {
+	for (const method of [
+		"getOutputCanvas",
+		"render",
+		"renderAndCapture",
+		"renderToCanvas",
+	]) {
 		if (!serializedRendererMethods.has(method)) {
 			failures.push("canvas-render-path-not-serialized:" + method);
 		}

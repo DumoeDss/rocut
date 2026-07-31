@@ -12,7 +12,7 @@ import type {
 export interface PreparedWasmRuntimeProviders {
 	readonly runtimeGraphics: RuntimeGraphicsQuery;
 	readonly runtimeGpu: RuntimeGpuResourceQuery;
-	dispose(): void;
+	dispose(): void | Promise<void>;
 }
 
 /**
@@ -46,8 +46,24 @@ export async function prepareWasmRuntimeProviders(): Promise<PreparedWasmRuntime
 		dispose: () => {
 			if (disposed) return;
 			disposed = true;
-			graphics.free();
-			gpu.free();
+			const errors: unknown[] = [];
+			try {
+				graphics.free();
+			} catch (error) {
+				errors.push(error);
+			}
+			try {
+				gpu.free();
+			} catch (error) {
+				errors.push(error);
+			}
+			if (errors.length === 1) throw errors[0];
+			if (errors.length > 1) {
+				throw new AggregateError(
+					errors,
+					"Failed to dispose WASM runtime query wrappers.",
+				);
+			}
 		},
 	};
 }

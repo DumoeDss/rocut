@@ -824,7 +824,9 @@ if (process.env.OPENCUT_SESSION_STATE_TEST_ISOLATED !== "1") {
 			expect(editorA.project.getActive().metadata.thumbnail).toBe(
 				"data:image/png;base64,YzM=",
 			);
-			const exported = await editorA.renderer.exportProject({
+			const exportCapture = wasmTestControl.holdNextCanvasCapture();
+			const exportOperationStart = wasmTestControl.operations().length;
+			const exportPromise = editorA.renderer.exportProject({
 				options: {
 					format: "mp4",
 					quality: "low",
@@ -832,7 +834,73 @@ if (process.env.OPENCUT_SESSION_STATE_TEST_ISOLATED !== "1") {
 					includeAudio: false,
 				},
 			});
+			await exportCapture.entered;
+			const queuedRendererA = editorA.renderer.createCanvasRenderer({
+				width: 20,
+				height: 12,
+				fps: { numerator: 30, denominator: 1 },
+			});
+			const queuedCanvas = queuedRendererA.getOutputCanvas();
+			const queuedPreview = queuedRendererA.render({
+				node: treeA,
+				time: 1_000,
+			});
+			await Promise.resolve();
+			try {
+				const capture = wasmTestControl.canvasCaptures().at(-1);
+				expect(capture).toMatchObject({
+					handle: handleA,
+					width: 64,
+					height: 64,
+					operationIndex: exportOperationStart + 1,
+				});
+				expect(capture?.content).toMatch(
+					new RegExp(`^handle:${handleA}:frame:\\d+$`),
+				);
+				expect(
+					wasmTestControl
+						.operations()
+						.slice(exportOperationStart)
+						.map(({ kind }) => kind),
+				).toEqual(["render", "capture"]);
+			} finally {
+				exportCapture.release();
+			}
+			const [exported, resizedAfterCapture] = await Promise.all([
+				exportPromise,
+				queuedCanvas,
+				queuedPreview,
+			]);
 			expect(exported).toMatchObject({ success: true });
+			expect({
+				width: resizedAfterCapture.width,
+				height: resizedAfterCapture.height,
+			}).toEqual({ width: 20, height: 12 });
+			expect(
+				wasmTestControl
+					.operations()
+					.slice(exportOperationStart)
+					.map(({ kind }) => kind),
+			).toEqual(["render", "capture", "resize", "render"]);
+			const captureFailure = new Error("capture rejected");
+			const failedCapture = queuedRendererA.renderAndCapture({
+				node: treeA,
+				time: 2_000,
+				capture: async (canvas) => {
+					expect({ width: canvas.width, height: canvas.height }).toEqual({
+						width: 20,
+						height: 12,
+					});
+					throw captureFailure;
+				},
+			});
+			const afterFailedCapture = rendererA.getOutputCanvas();
+			await expect(failedCapture).rejects.toBe(captureFailure);
+			const restoredCanvas = await afterFailedCapture;
+			expect({
+				width: restoredCanvas.width,
+				height: restoredCanvas.height,
+			}).toEqual({ width: 64, height: 64 });
 			expect(editorA.renderer.getCompositorHandle()).toBe(handleA);
 			expect(wasmTestControl.liveHandles()).toEqual([handleA, handleB]);
 			expect(

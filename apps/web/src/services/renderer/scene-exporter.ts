@@ -150,8 +150,11 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 
 			const timeTicks = i * ticksPerFrame;
 			const timeSeconds = mediaTimeToSeconds({ time: timeTicks });
-			await this.renderer.render({ node: rootNode, time: timeTicks });
-			await videoSource.add(timeSeconds, 1 / fpsFloat);
+			await this.renderer.renderAndCapture({
+				node: rootNode,
+				time: timeTicks,
+				capture: () => videoSource.add(timeSeconds, 1 / fpsFloat),
+			});
 
 			this.emit("progress", i / frameCount);
 		}
