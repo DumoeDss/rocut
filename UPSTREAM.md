@@ -330,8 +330,8 @@ The generated comparison is exact and is enforced by `script/check-wasm-api-surf
 | generated files | 9 | 9 | `opencut_wasm.d.ts`, `opencut_wasm.js`, `opencut_wasm_bg.js`, `opencut_wasm_bg.wasm`, and `opencut_wasm_bg.wasm.d.ts` changed. `.gitignore`, `LICENSE`, `package.json`, and `README.md` remain byte-identical to C0. |
 
 The declaration moved from sha256 `07e195eb…` to `e7d942d3…`. On this machine the review-clean
-binary moved from 3,253,931 bytes / sha256 `56cb9ab6…` to 3,283,772 bytes / sha256 `dde1d63f…`;
-the final bytes include the initialization-generation ownership added for the C0b round-1 blocker. As above, that binary
+binary moved from 3,253,931 bytes / sha256 `56cb9ab6…` to 3,286,340 bytes / sha256 `15622cf5…`;
+the final bytes include synchronous generation registration plus the initialization-generation ownership added for the C0b review blockers. As above, that binary
 hash is build evidence, not a cross-toolchain correspondence oracle. The committed gate instead
 freezes every JS and binary export, all 609 imports, both declaration files, the generated file set
 and the four files required to remain byte-identical. Fourteen deliberate malformed controls each
@@ -343,7 +343,7 @@ an honest pre-initialization `null`/`0`/non-empty-reason state, a real WebGL sel
 capacity one, exact live-handle enumeration, over-capacity refusal, shared-teardown refusal naming
 the live handle, idempotent keyed release, reserved legacy handle `0`, and post-teardown
 `null`/`0`/non-empty-reason. It also repeats concurrent initialization with a live compositor three
-times, proves dispose-during-init cannot publish late, and coalesces a real disabled-GPU failure for
+times, proves both zero-yield and yielded dispose-during-init cannot publish late, and coalesces a real disabled-GPU failure for
 both callers. Pure Rust tests cover the WebGPU capacity-two branch, WebGL branch,
 failure and teardown state, default/explicit capacity competition, exact release and checked
 `u32` exhaustion, plus the generation join/cancel rules. A distinct real WebGPU run and a distinct real WebGL run remain the C3 joint-gate

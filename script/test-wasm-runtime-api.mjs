@@ -58,7 +58,7 @@ try {
 		);
 	}
 	console.log(
-		`test-wasm-runtime-api: ${result.backend}, capacity ${result.capacity}, handles ${result.handles.join(", ")} PASS`,
+		`test-wasm-runtime-api: ${result.backend}, capacity ${result.capacity}, handles ${result.handles.join(", ")}, cancellation ${result.cancellationModes.join("+")} PASS`,
 	);
 	await browser.close();
 	browser = await chromium.launch({

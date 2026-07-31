@@ -71,25 +71,38 @@
 			);
 		}
 
-		const abandonedInitialization = initializeGpu();
-		await Promise.resolve();
-		disposeGpu();
-		const abandonedResult = await Promise.allSettled([abandonedInitialization]);
-		assert(
-			abandonedResult[0].status === "rejected" &&
-				String(abandonedResult[0].reason).includes("cancelled"),
-			`disposeGpu must reject the initialization generation it invalidated: ${JSON.stringify(abandonedResult)}`,
-		);
-		assert(
-			graphics.selectedBackend() === null &&
-				graphics.concurrentCompositorInstances() === 0 &&
-				resources.liveHandles().length === 0,
-			"a late initialization result must not resurrect runtime state",
-		);
-		assert(
-			graphics.unavailableReason() === "GPU runtime was disposed.",
-			"late initialization must not overwrite the disposal reason",
-		);
+		const assertCancelledInitialization = async (yieldBeforeDispose) => {
+			const abandonedInitialization = initializeGpu();
+			if (yieldBeforeDispose) await Promise.resolve();
+			disposeGpu();
+			assert(
+				graphics.selectedBackend() === null &&
+					graphics.concurrentCompositorInstances() === 0 &&
+					resources.liveHandles().length === 0,
+				"disposal must synchronously expose null/zero/empty runtime state",
+			);
+			const abandonedResult = await Promise.allSettled([
+				abandonedInitialization,
+			]);
+			assert(
+				abandonedResult[0].status === "rejected" &&
+					String(abandonedResult[0].reason).includes("cancelled"),
+				`disposeGpu must reject the initialization generation it invalidated: ${JSON.stringify(abandonedResult)}`,
+			);
+			assert(
+				graphics.selectedBackend() === null &&
+					graphics.concurrentCompositorInstances() === 0 &&
+					resources.liveHandles().length === 0,
+				"a late initialization result must not resurrect runtime state",
+			);
+			assert(
+				graphics.unavailableReason() === "GPU runtime was disposed.",
+				"late initialization must not overwrite the disposal reason",
+			);
+		};
+
+		await assertCancelledInitialization(false);
+		await assertCancelledInitialization(true);
 
 		await initializeGpu();
 		const backend = graphics.selectedBackend();
@@ -208,6 +221,11 @@
 		disposeCompositor(0);
 		disposeCompositor(0);
 		disposeGpu();
-		return { backend, capacity, handles };
+		return {
+			backend,
+			capacity,
+			handles,
+			cancellationModes: ["zero-yield", "yielded"],
+		};
 	})();
 </script>

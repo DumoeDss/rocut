@@ -8,10 +8,11 @@ use std::task::{Context, Poll, Waker};
 
 use effects::EffectPipeline;
 use gpu::{GpuContext, wgpu};
-use js_sys::{Array, Object, Reflect};
+use js_sys::{Array, Object, Promise, Reflect};
 use masks::MaskFeatherPipeline;
 use serde::Deserialize;
 use wasm_bindgen::{JsCast, JsValue, prelude::wasm_bindgen};
+use wasm_bindgen_futures::future_to_promise;
 
 use crate::compositor::{dispose_compositor, live_compositor_handles, reset_compositor_registry};
 use crate::runtime_state::{
@@ -168,18 +169,7 @@ fn set_panic_hook() {
     });
 }
 
-#[wasm_bindgen(js_name = initializeGpu)]
-pub async fn initialize_gpu() -> Result<(), JsValue> {
-    set_panic_hook();
-
-    let generation = match begin_initialization()? {
-        BeginInitialization::Ready => return Ok(()),
-        BeginInitialization::Wait(wait) => {
-            return wait.await.map_err(|reason| JsValue::from_str(&reason));
-        }
-        BeginInitialization::Start(generation) => generation,
-    };
-
+async fn initialize_generation(generation: u64) -> Result<JsValue, JsValue> {
     let context = match GpuContext::new().await {
         Ok(context) => context,
         Err(error) => {
@@ -219,7 +209,28 @@ pub async fn initialize_gpu() -> Result<(), JsValue> {
     GRAPHICS_STATE.with(|state| state.borrow_mut().select(selected_backend));
     settle_initialization(generation, Ok(()));
 
-    Ok(())
+    Ok(JsValue::UNDEFINED)
+}
+
+#[wasm_bindgen(
+    js_name = initializeGpu,
+    unchecked_return_type = "Promise<void>"
+)]
+pub fn initialize_gpu() -> Promise {
+    set_panic_hook();
+
+    match begin_initialization() {
+        Ok(BeginInitialization::Ready) => future_to_promise(async { Ok(JsValue::UNDEFINED) }),
+        Ok(BeginInitialization::Wait(wait)) => future_to_promise(async move {
+            wait.await
+                .map_err(|reason| JsValue::from_str(&reason))
+                .map(|()| JsValue::UNDEFINED)
+        }),
+        Ok(BeginInitialization::Start(generation)) => {
+            future_to_promise(initialize_generation(generation))
+        }
+        Err(error) => future_to_promise(async move { Err(error) }),
+    }
 }
 
 pub(crate) fn selected_backend() -> Option<SelectedBackend> {

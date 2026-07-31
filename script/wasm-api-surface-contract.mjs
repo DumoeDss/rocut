@@ -38,7 +38,7 @@ export const EXPECTED = {
 	wrapperSha:
 		"19714428b345a2ac128440319ece8a1c7f3c2f0336d454712189445d427c69f1",
 	wasmDtsSha:
-		"7ec60abaf4bc38f73b018f87cf4e80da16b8e414185e2853995187a75e6351bb",
+		"df9ee7494a229fc8762fd332066a98bf32a8cdbe2e42ca7201f9af60076cbca7",
 	wrapperExportSignature:
 		"a9a91d9ad6a8b1a13185e8892a2820752c9be4a2885a18edc71c24ee53769cc9",
 	bgExportSignature:
