@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/tooltip";
 import { DEFAULT_NEW_ELEMENT_DURATION } from "@/timeline/creation";
 import { mediaTimeFromSeconds, type MediaTime } from "@/wasm";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { useFileUpload } from "@/media/use-file-upload";
 import { invokeAction } from "@/actions";
 import { processMediaAssets } from "@/media/processing";
@@ -44,7 +44,7 @@ import {
 	type MediaSortOrder,
 	type MediaViewMode,
 	useAssetsPanelStore,
-} from "@/components/editor/panels/assets/assets-panel-store";
+} from "@/editor/use-session-store";
 import { MASKABLE_ELEMENT_TYPES } from "@/timeline";
 import type { MediaAsset } from "@/media/types";
 import { cn } from "@/utils/ui";
@@ -60,7 +60,7 @@ import {
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
 
 export function MediaView() {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const mediaFiles = useEditor((e) => e.media.getAssets());
 	const activeProject = useEditor((e) => e.project.getActive());
 
@@ -251,7 +251,7 @@ function MediaAssetDraggable({
 	variant: "card" | "compact";
 	isRounded?: boolean;
 }) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 
 	const addElementAtTime = ({
 		asset,

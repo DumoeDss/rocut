@@ -19,6 +19,7 @@ import { frameRateToFloat } from "@/fps/utils";
 import type { RootNode } from "./nodes/root-node";
 import type { ExportFormat, ExportQuality } from "@/export";
 import { CanvasRenderer } from "./canvas-renderer";
+import type { WasmCompositor } from "./compositor/wasm-compositor";
 
 type ExportParams = {
 	width: number;
@@ -28,6 +29,7 @@ type ExportParams = {
 	quality: ExportQuality;
 	shouldIncludeAudio?: boolean;
 	audioBuffer?: AudioBuffer;
+	compositor: WasmCompositor;
 };
 
 const qualityMap = {
@@ -61,12 +63,14 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 		quality,
 		shouldIncludeAudio,
 		audioBuffer,
+		compositor,
 	}: ExportParams) {
 		super();
 		this.renderer = new CanvasRenderer({
 			width,
 			height,
 			fps,
+			compositor,
 		});
 
 		this.format = format;
@@ -99,10 +103,13 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 			target: new BufferTarget(),
 		});
 
-		const videoSource = new CanvasSource(this.renderer.getOutputCanvas(), {
-			codec: this.format === "webm" ? "vp9" : "avc",
-			bitrate: qualityMap[this.quality],
-		});
+		const videoSource = new CanvasSource(
+			await this.renderer.getOutputCanvas(),
+			{
+				codec: this.format === "webm" ? "vp9" : "avc",
+				bitrate: qualityMap[this.quality],
+			},
+		);
 
 		output.addVideoTrack(videoSource, { frameRate: fpsFloat });
 
@@ -143,8 +150,11 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 
 			const timeTicks = i * ticksPerFrame;
 			const timeSeconds = mediaTimeToSeconds({ time: timeTicks });
-			await this.renderer.render({ node: rootNode, time: timeTicks });
-			await videoSource.add(timeSeconds, 1 / fpsFloat);
+			await this.renderer.renderAndCapture({
+				node: rootNode,
+				time: timeTicks,
+				capture: () => videoSource.add(timeSeconds, 1 / fpsFloat),
+			});
 
 			this.emit("progress", i / frameCount);
 		}

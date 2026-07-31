@@ -22,10 +22,15 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 
 ## Working-tree drift against the pin
 
-**75 inherited file(s) modified.** Each is expected to carry a `PATCHES.md` row.
+**142 inherited file(s) modified.** Each is expected to carry a `PATCHES.md` row.
 
+- `apps/web/src/actions/components/shortcuts-dialog.tsx`
 - `apps/web/src/actions/definitions.ts`
 - `apps/web/src/actions/keybinding.ts`
+- `apps/web/src/actions/keybindings-store.ts`
+- `apps/web/src/actions/use-editor-actions.ts`
+- `apps/web/src/actions/use-keybindings.ts`
+- `apps/web/src/actions/use-keyboard-shortcuts-help.ts`
 - `apps/web/src/app/editor/[project_id]/page.tsx`
 - `apps/web/src/app/projects/page.tsx`
 - `apps/web/src/commands/base-command.ts`
@@ -71,36 +76,98 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/commands/timeline/track/toggle-track-visibility.ts`
 - `apps/web/src/commands/timeline/tracks-snapshot.ts`
 - `apps/web/src/components/editor/editor-header.tsx`
+- `apps/web/src/components/editor/export-button.tsx`
 - `apps/web/src/components/editor/mobile-gate.tsx`
 - `apps/web/src/components/editor/onboarding.tsx`
+- `apps/web/src/components/editor/panels/assets/assets-panel-store.tsx`
+- `apps/web/src/components/editor/panels/assets/draggable-item.tsx`
+- `apps/web/src/components/editor/panels/assets/index.tsx`
+- `apps/web/src/components/editor/panels/assets/tabbar.tsx`
 - `apps/web/src/components/editor/panels/assets/views/assets.tsx`
+- `apps/web/src/components/editor/panels/assets/views/settings/background.tsx`
+- `apps/web/src/components/editor/panels/assets/views/settings/index.tsx`
+- `apps/web/src/components/editor/panels/properties/hooks/use-keyframed-param-property.ts`
+- `apps/web/src/components/editor/panels/properties/index.tsx`
+- `apps/web/src/components/editor/panels/properties/stores/properties-store.ts`
+- `apps/web/src/components/editor/scenes-view.tsx`
 - `apps/web/src/components/providers/editor-provider.tsx`
+- `apps/web/src/components/storage-provider.tsx`
+- `apps/web/src/components/ui/use-overlay-open-change.ts`
 - `apps/web/src/core/index.ts`
 - `apps/web/src/core/managers/commands.ts`
 - `apps/web/src/core/managers/playback-manager.ts`
 - `apps/web/src/core/managers/project-manager.ts`
+- `apps/web/src/core/managers/renderer-manager.ts`
 - `apps/web/src/core/managers/timeline-manager.ts`
+- `apps/web/src/editor/cancel-interaction.ts`
+- `apps/web/src/editor/editor-store.ts`
+- `apps/web/src/editor/panel-store.ts`
 - `apps/web/src/editor/use-editor.ts`
+- `apps/web/src/editor/use-menu-preview.ts`
+- `apps/web/src/effects/components/assets-view.tsx`
+- `apps/web/src/effects/components/effects-tab.tsx`
 - `apps/web/src/effects/definitions/index.ts`
 - `apps/web/src/feedback/components/feedback-popover.tsx`
+- `apps/web/src/graphics/components/graphic-tab.tsx`
 - `apps/web/src/graphics/definitions/index.ts`
+- `apps/web/src/guides/definitions/grid.tsx`
 - `apps/web/src/guides/definitions/platforms.tsx`
 - `apps/web/src/masks/builtin/definitions/index.ts`
+- `apps/web/src/masks/components/masks-tab.tsx`
+- `apps/web/src/masks/use-mask-handles.ts`
+- `apps/web/src/media/use-file-upload.ts`
+- `apps/web/src/media/use-paste-media.ts`
 - `apps/web/src/params/registry.ts`
+- `apps/web/src/preview/components/context-menu.tsx`
+- `apps/web/src/preview/components/guide-popover.tsx`
+- `apps/web/src/preview/components/index.tsx`
+- `apps/web/src/preview/components/preview-interaction-overlay.tsx`
+- `apps/web/src/preview/components/text-edit-overlay.tsx`
+- `apps/web/src/preview/components/toolbar.tsx`
+- `apps/web/src/preview/hooks/use-preview-interaction.ts`
+- `apps/web/src/preview/hooks/use-transform-handles.ts`
+- `apps/web/src/preview/preview-store.ts`
+- `apps/web/src/project/components/migration-dialog.tsx`
+- `apps/web/src/services/renderer/canvas-renderer.ts`
+- `apps/web/src/services/renderer/compositor/wasm-compositor.ts`
+- `apps/web/src/services/renderer/gpu-renderer.ts`
+- `apps/web/src/services/renderer/scene-exporter.ts`
 - `apps/web/src/services/storage/migrations/runner.ts`
 - `apps/web/src/services/storage/migrations/v1-to-v2.ts`
 - `apps/web/src/sounds/components/assets-view.tsx`
 - `apps/web/src/sounds/sounds-store.ts`
 - `apps/web/src/sounds/use-sound-search.ts`
+- `apps/web/src/speed/components/speed-tab.tsx`
 - `apps/web/src/stickers/components/assets-view.tsx`
 - `apps/web/src/stickers/providers/index.ts`
+- `apps/web/src/stickers/stickers-store.ts`
+- `apps/web/src/subtitles/components/assets-view.tsx`
+- `apps/web/src/text/components/assets-view.tsx`
+- `apps/web/src/timeline/bookmarks/components/bookmarks.tsx`
+- `apps/web/src/timeline/bookmarks/hooks/use-bookmark-drag.ts`
+- `apps/web/src/timeline/components/audio-volume-line.tsx`
+- `apps/web/src/timeline/components/graph-editor/use-controller.ts`
+- `apps/web/src/timeline/components/index.tsx`
 - `apps/web/src/timeline/components/timeline-element.tsx`
+- `apps/web/src/timeline/components/timeline-playhead.tsx`
+- `apps/web/src/timeline/components/timeline-toolbar.tsx`
+- `apps/web/src/timeline/hooks/element/use-element-interaction.ts`
+- `apps/web/src/timeline/hooks/element/use-element-selection.ts`
+- `apps/web/src/timeline/hooks/element/use-keyframe-drag.ts`
+- `apps/web/src/timeline/hooks/element/use-keyframe-selection.ts`
+- `apps/web/src/timeline/hooks/use-element-preview.ts`
+- `apps/web/src/timeline/hooks/use-timeline-drag-drop.ts`
+- `apps/web/src/timeline/hooks/use-timeline-playhead.ts`
+- `apps/web/src/timeline/hooks/use-timeline-resize.ts`
+- `apps/web/src/timeline/hooks/use-timeline-seek.ts`
+- `apps/web/src/timeline/hooks/use-timeline-zoom.ts`
+- `apps/web/src/timeline/timeline-store.ts`
 - `rust/wasm/README.md`
 - `rust/wasm/src/compositor.rs`
 - `rust/wasm/src/gpu.rs`
 - `rust/wasm/src/wasm.rs`
 
-**37 file(s) added by this fork.** These are **not** patches and must **not** appear in `PATCHES.md`, which logs modifications to inherited files only.
+**44 file(s) added by this fork.** These are **not** patches and must **not** appear in `PATCHES.md`, which logs modifications to inherited files only.
 
 - `apps/web/src/editor/host/editor-host-context.tsx`
 - `apps/web/src/editor/host/editor-host.ts`
@@ -124,9 +191,13 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/editor/ports/runtime-resources.ts`
 - `apps/web/src/editor/runtime/process-bootstrap.ts`
 - `apps/web/src/editor/runtime/session-core-owner.ts`
+- `apps/web/src/editor/runtime/session-stores.ts`
+- `apps/web/src/editor/runtime/wasm-runtime-providers.ts`
 - `apps/web/src/editor/session/__tests__/editor-singleton-boundary.test.ts`
+- `apps/web/src/editor/session/__tests__/session-async-store-isolation.test.ts`
 - `apps/web/src/editor/session/__tests__/session-lifecycle.test.ts`
 - `apps/web/src/editor/session/__tests__/session-runtime-ownership.test.tsx`
+- `apps/web/src/editor/session/__tests__/session-state-isolation.test.ts`
 - `apps/web/src/editor/session/__tests__/wasm-test-mock.ts`
 - `apps/web/src/editor/session/create-session.ts`
 - `apps/web/src/editor/session/editor-session-host.tsx`
@@ -136,6 +207,9 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/editor/session/session-resources.ts`
 - `apps/web/src/editor/session/session-types.ts`
 - `apps/web/src/editor/surface/editor-root.tsx`
+- `apps/web/src/editor/use-session-store.ts`
 - `apps/web/src/services/storage/browser-host-adapter.ts`
+- `apps/web/src/timeline/__tests__/element-with-track-selector.test.ts`
+- `apps/web/src/timeline/element-with-track-selector.ts`
 - `rust/wasm/LICENSE`
 - `rust/wasm/src/runtime_state.rs`

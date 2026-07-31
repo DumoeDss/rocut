@@ -1,12 +1,17 @@
 import {
-	getCompositorCanvas,
+	createCompositor,
+	disposeCompositor,
+	getCompositorCanvasForHandle,
 	getLastFrameProfile,
-	initCompositor,
-	releaseTexture,
-	renderFrame,
-	resizeCompositor,
-	uploadTexture,
+	releaseTextureForHandle,
+	renderFrameForHandle,
+	resizeCompositorForHandle,
+	uploadTextureForHandle,
 } from "opencut-wasm";
+import type {
+	GpuResourceHandle,
+	SessionResources,
+} from "@/editor/session/resources";
 import {
 	incrementCounter,
 	isRenderPerfEnabled,
@@ -39,16 +44,74 @@ type ExternalCacheEntry = {
 	height: number;
 };
 
-class WasmCompositor {
+export class WasmCompositor {
 	private canvas: HTMLCanvasElement | null = null;
 	private initializedSize: { width: number; height: number } | null = null;
 	private cache = new Map<string, RenderedCacheEntry | ExternalCacheEntry>();
+	private resource: GpuResourceHandle | null = null;
+	private disposed = false;
+	private renderTail: Promise<void> = Promise.resolve();
+
+	constructor(private readonly resources: SessionResources) {}
+
+	get handle(): number | null {
+		return this.resource?.handle ?? null;
+	}
+
+	/**
+	 * Every renderer owned by one session shares this compositor. Keep the whole
+	 * resolve/build/upload/render transaction ordered so two preview, snapshot,
+	 * thumbnail, or export callers cannot interleave texture state and publish a
+	 * frame assembled from each other's work.
+	 */
+	async runExclusive<T>(task: () => Promise<T>): Promise<T> {
+		if (this.disposed) {
+			throw new Error("Cannot render with a disposed session compositor.");
+		}
+
+		const previous = this.renderTail;
+		let release!: () => void;
+		this.renderTail = new Promise<void>((resolve) => {
+			release = resolve;
+		});
+
+		await previous;
+		try {
+			if (this.disposed) {
+				throw new Error("Cannot render with a disposed session compositor.");
+			}
+			return await task();
+		} finally {
+			release();
+		}
+	}
 
 	ensureInitialized({ width, height }: { width: number; height: number }) {
+		if (this.disposed) {
+			throw new Error("Cannot initialize a disposed session compositor.");
+		}
 		if (!this.canvas) {
-			initCompositor(width, height);
-			this.canvas = getCompositorCanvas();
-			this.initializedSize = { width, height };
+			const handle = createCompositor(width, height);
+			if (handle === 0) {
+				throw new Error(
+					"The explicit session compositor returned reserved handle 0.",
+				);
+			}
+			let resource: GpuResourceHandle | null = null;
+			try {
+				resource = this.resources.trackGpuResource({
+					handle,
+					label: "session-compositor",
+				});
+				const canvas = getCompositorCanvasForHandle(handle);
+				this.resource = resource;
+				this.canvas = canvas;
+				this.initializedSize = { width, height };
+			} catch (error) {
+				if (resource) resource.release();
+				else disposeCompositor(handle);
+				throw error;
+			}
 			return;
 		}
 
@@ -57,7 +120,7 @@ class WasmCompositor {
 			this.initializedSize.width !== width ||
 			this.initializedSize.height !== height
 		) {
-			resizeCompositor(width, height);
+			resizeCompositorForHandle(this.requireHandle(), width, height);
 			this.initializedSize = { width, height };
 		}
 	}
@@ -73,7 +136,7 @@ class WasmCompositor {
 		const nextIds = new Set(textures.map((texture) => texture.id));
 		for (const previousId of this.cache.keys()) {
 			if (!nextIds.has(previousId)) {
-				releaseTexture(previousId);
+				releaseTextureForHandle(this.requireHandle(), previousId);
 				this.cache.delete(previousId);
 			}
 		}
@@ -88,7 +151,7 @@ class WasmCompositor {
 	}
 
 	render(frame: FrameDescriptor) {
-		renderFrame(frame);
+		renderFrameForHandle(this.requireHandle(), frame);
 		if (isRenderPerfEnabled()) {
 			recordWasmFrameProfile(
 				getLastFrameProfile() as Array<{ name: string; durationMs: number }>,
@@ -113,7 +176,7 @@ class WasmCompositor {
 			name: "textureUploadPixels",
 			by: texture.width * texture.height,
 		});
-		uploadTexture({
+		uploadTextureForHandle(this.requireHandle(), {
 			id: texture.id,
 			source: ensureOffscreenCanvas({
 				source: texture.source,
@@ -166,7 +229,7 @@ class WasmCompositor {
 			name: "textureUploadPixels",
 			by: texture.width * texture.height,
 		});
-		uploadTexture({
+		uploadTextureForHandle(this.requireHandle(), {
 			id: texture.id,
 			source: canvas,
 			width: texture.width,
@@ -180,9 +243,25 @@ class WasmCompositor {
 			height: texture.height,
 		});
 	}
-}
 
-export const wasmCompositor = new WasmCompositor();
+	dispose(): void {
+		if (this.disposed) return;
+		this.disposed = true;
+		this.resource?.release();
+		this.resource = null;
+		this.canvas = null;
+		this.initializedSize = null;
+		this.cache.clear();
+	}
+
+	private requireHandle(): number {
+		const handle = this.resource?.handle;
+		if (!handle) {
+			throw new Error("Session compositor is not initialized.");
+		}
+		return handle;
+	}
+}
 
 function createBackingCanvas({
 	width,

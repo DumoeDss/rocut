@@ -21,7 +21,7 @@ export function EditorSessionProvider({
 }
 
 export function useEditorSession(): EditorSession {
-	const session = useContext(EditorSessionContext);
+	const session = useOptionalEditorSession();
 	if (!session) {
 		throw new Error(
 			"useEditorSession() was called outside an <EditorSessionProvider>. " +
@@ -29,4 +29,9 @@ export function useEditorSession(): EditorSession {
 		);
 	}
 	return session;
+}
+
+/** Generic UI primitives may exist outside an editor tree and simply skip editor tracking. */
+export function useOptionalEditorSession(): EditorSession | null {
+	return useContext(EditorSessionContext);
 }

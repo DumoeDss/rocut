@@ -1,5 +1,5 @@
 import { useEffect, useReducer, useState, type RefObject } from "react";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { useCommittedRef } from "@/hooks/use-committed-ref";
 import {
 	DragDropController,
@@ -19,7 +19,8 @@ export function useTimelineDragDrop({
 	tracksScrollRef,
 	zoomLevel,
 }: UseTimelineDragDropProps) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
+	const dragSource = useEditor((current) => current.timeline.dragSource);
 
 	const config: DragDropConfig = {
 		zoomLevel,
@@ -32,7 +33,7 @@ export function useTimelineDragDrop({
 		getSceneTracks: () => editor.scenes.getActiveScene().tracks,
 		getCurrentPlayheadTime: () => editor.playback.getCurrentTime(),
 		getMediaAssets: () => editor.media.getAssets(),
-		dragSource: editor.timeline.dragSource,
+		dragSource,
 		addMediaAsset: (args) => editor.media.addMediaAsset(args),
 		executeCommand: (command) => editor.command.execute({ command }),
 		insertElement: (args) => editor.timeline.insertElement(args),

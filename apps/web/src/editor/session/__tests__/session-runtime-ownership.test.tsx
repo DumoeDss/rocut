@@ -24,7 +24,7 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 		}
 	});
 } else {
-	await import("./wasm-test-mock");
+	const { wasmTestControl } = await import("./wasm-test-mock");
 	const { effectsRegistry, registerDefaultEffects } = await import("@/effects");
 	const { graphicsRegistry, registerDefaultGraphics } =
 		await import("@/graphics");
@@ -41,12 +41,14 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 	const { EditorSessionProvider } = await import("../editor-session-provider");
 	const { EditorSessionHost, createEditorSessionHostController } =
 		await import("../editor-session-host");
+	const { prepareWasmRuntimeProviders } =
+		await import("@/editor/runtime/wasm-runtime-providers");
 	const { ensureEditorProcessBootstrap } =
 		await import("@/editor/runtime/process-bootstrap");
 	const { createInMemoryHost } = await import("@/editor/ports/in-memory/host");
 	const { RecordingDiagnostics } = await import("@/editor/ports/in-memory");
-	const { useEditor } = await import("@/editor/use-editor");
-	const { useSoundsStore } = await import("@/sounds/sounds-store");
+	const { useEditor, useEditorInstance } = await import("@/editor/use-editor");
+	const { storesForSession } = await import("../../runtime/session-stores");
 
 	const MANAGER_KEYS = [
 		"timeline",
@@ -62,6 +64,12 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 		"clipboard",
 		"diagnostics",
 	] as const;
+	const aggregateErrors = (error: unknown): unknown[] => {
+		if (!(error instanceof AggregateError)) {
+			throw new Error("Expected an AggregateError.");
+		}
+		return error.errors;
+	};
 
 	describe("first process bootstrap collision controls", () => {
 		test("rejects conflicts in all five registry families", () => {
@@ -284,30 +292,32 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 			});
 
 			try {
-				const added = await useSoundsStore.getState().addSoundToTimeline({
-					editor: editorA,
-					sound: {
-						id: 1,
-						name: "session-owned sound",
-						description: "",
-						url: "https://example.test/sound",
-						previewUrl: "https://example.test/sound.mp3",
-						duration: 1,
-						filesize: 8,
-						type: "mp3",
-						channels: 2,
-						bitrate: 128,
-						bitdepth: 16,
-						samplerate: 44_100,
-						username: "test",
-						tags: [],
-						license: "test",
-						created: "2026-07-31",
-						downloads: 0,
-						rating: 0,
-						ratingCount: 0,
-					},
-				});
+				const added = await storesForSession(sessionA)
+					.sounds.getState()
+					.addSoundToTimeline({
+						editor: editorA,
+						sound: {
+							id: 1,
+							name: "session-owned sound",
+							description: "",
+							url: "https://example.test/sound",
+							previewUrl: "https://example.test/sound.mp3",
+							duration: 1,
+							filesize: 8,
+							type: "mp3",
+							channels: 2,
+							bitrate: 128,
+							bitdepth: 16,
+							samplerate: 44_100,
+							username: "test",
+							tags: [],
+							license: "test",
+							created: "2026-07-31",
+							downloads: 0,
+							rating: 0,
+							ratingCount: 0,
+						},
+					});
 				expect(added).toBe(true);
 				expect(insertedA).toHaveLength(1);
 				expect(insertedB).toHaveLength(0);
@@ -370,7 +380,20 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 			const editorB = editorForSession(sessionB);
 
 			function Probe({ expected }: { expected: typeof editorA }) {
-				return createElement("span", null, String(useEditor() === expected));
+				return createElement(
+					"span",
+					null,
+					String(useEditorInstance() === expected),
+				);
+			}
+			function SelectorProbe() {
+				return createElement(
+					"span",
+					null,
+					useEditor(
+						(editor) => editor.project.getActiveOrNull()?.metadata.id ?? "none",
+					),
+				);
 			}
 
 			expect(
@@ -391,15 +414,32 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 					),
 				),
 			).toContain("true");
+			expect(
+				renderToString(
+					createElement(
+						EditorSessionProvider,
+						{ session: sessionA },
+						createElement(SelectorProbe),
+					),
+				),
+			).toContain("none");
 			expect(() =>
 				renderToString(createElement(Probe, { expected: editorA })),
 			).toThrow("outside an <EditorSessionProvider>");
+			expect(() => renderToString(createElement(SelectorProbe))).toThrow(
+				"outside an <EditorSessionProvider>",
+			);
 
 			await sessionA.dispose();
 			await sessionB.dispose();
 		});
 
 		test("deferred Host churn never crosses session or error generations", async () => {
+			const flushMicrotasks = async () => {
+				for (let index = 0; index < 8; index += 1) {
+					await Promise.resolve();
+				}
+			};
 			expect(typeof EditorSessionHost).toBe("function");
 			const hostA = createInMemoryHost({ projectId: "host-a" });
 			const hostB = createInMemoryHost({ projectId: "host-b" });
@@ -430,6 +470,14 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 			const firstB = await trackedSession("firstB");
 			const secondB = await trackedSession("secondB");
 			const controller = createEditorSessionHostController({
+				prepareRuntime: async () => ({
+					runtimeGraphics: {
+						selectedBackend: () => "webgpu",
+						concurrentCompositorInstances: () => 2,
+					},
+					runtimeGpu: { liveHandles: () => [], release: () => {} },
+					dispose: () => {},
+				}),
 				createSession: ({ host }) =>
 					new Promise((resolve, reject) => {
 						requests.push({ host, resolve, reject });
@@ -440,25 +488,28 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 			});
 
 			controller.begin(hostA);
+			await flushMicrotasks();
 			controller.begin(hostB);
+			await flushMicrotasks();
 			requests[0]!.resolve(lateA);
-			await Promise.resolve();
-			await Promise.resolve();
+			await flushMicrotasks();
 			expect(disposals.lateA).toBe(1);
 			expect(controller.currentForHost(hostB)?.session).toBeNull();
 			expect(controller.currentForHost(hostA)).toBeNull();
 
 			requests[1]!.resolve(firstB);
-			await Promise.resolve();
+			await flushMicrotasks();
 			expect(controller.currentForHost(hostB)?.session).toBe(firstB);
 
 			controller.begin(hostA);
+			await flushMicrotasks();
 			const cleanupSecondB = controller.begin(hostB);
+			await flushMicrotasks();
 			requests[2]!.reject(new Error("stale A failure"));
-			await Promise.resolve();
+			await flushMicrotasks();
 			expect(controller.currentForHost(hostB)?.error).toBeNull();
 			requests[3]!.resolve(secondB);
-			await Promise.resolve();
+			await flushMicrotasks();
 			expect(controller.currentForHost(hostB)?.session).toBe(secondB);
 			expect(controller.currentForHost(hostB)?.error).toBeNull();
 			expect(disposals.firstB).toBe(1);
@@ -474,6 +525,347 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 			).toBe(false);
 			cleanupSecondB();
 			expect(disposals.secondB).toBe(1);
+		});
+
+		test("cancelled Host creation settles before freeing its runtime wrappers", async () => {
+			const flushMicrotasks = async () => {
+				for (let index = 0; index < 8; index += 1) {
+					await Promise.resolve();
+				}
+			};
+			let releaseCreation!: () => void;
+			const creationGate = new Promise<void>((resolve) => {
+				releaseCreation = resolve;
+			});
+			let markSessionCreated!: () => void;
+			const sessionCreated = new Promise<void>((resolve) => {
+				markSessionCreated = resolve;
+			});
+			let markRuntimeDisposed!: () => void;
+			const runtimeDisposed = new Promise<void>((resolve) => {
+				markRuntimeDisposed = resolve;
+			});
+			let wrapperFreed = false;
+			let runtimeDisposals = 0;
+			let sessionDisposals = 0;
+			let createdSession: EditorSession | null = null;
+			const runtimeGraphics = {
+				selectedBackend: () => {
+					if (wrapperFreed) throw new Error("graphics wrapper freed");
+					return "webgpu" as const;
+				},
+				concurrentCompositorInstances: () => {
+					if (wrapperFreed) throw new Error("graphics wrapper freed");
+					return 2;
+				},
+			};
+			const runtimeGpu = {
+				liveHandles: () => {
+					if (wrapperFreed) throw new Error("gpu wrapper freed");
+					return [];
+				},
+				release: () => {
+					if (wrapperFreed) throw new Error("gpu wrapper freed");
+				},
+			};
+			const prepareRuntime = async () => ({
+				runtimeGraphics,
+				runtimeGpu,
+				dispose: () => {
+					runtimeDisposals += 1;
+					if (wrapperFreed) throw new Error("runtime disposed twice");
+					wrapperFreed = true;
+					markRuntimeDisposed();
+				},
+			});
+			const controller = createEditorSessionHostController({
+				prepareRuntime,
+				createSession: async (args) => {
+					const session = await createEditorSession(args);
+					createdSession = session;
+					const dispose = session.dispose.bind(session);
+					session.dispose = () => {
+						sessionDisposals += 1;
+						return dispose();
+					};
+					markSessionCreated();
+					await creationGate;
+					return session;
+				},
+				onChange: () => {},
+			});
+
+			const cancel = controller.begin(
+				createInMemoryHost({ projectId: "cancelled-create" }),
+			);
+			await sessionCreated;
+			cancel();
+			expect(runtimeDisposals).toBe(0);
+			expect(runtimeGpu.liveHandles()).toEqual([]);
+			releaseCreation();
+			await runtimeDisposed;
+			await flushMicrotasks();
+			expect(sessionDisposals).toBe(1);
+			expect(runtimeDisposals).toBe(1);
+			expect(() => runtimeGpu.liveHandles()).toThrow("gpu wrapper freed");
+			expect(() => editorForSession(createdSession!)).toThrow(
+				"unknown or disposed",
+			);
+
+			let rejectCreation!: (error: Error) => void;
+			const rejectedCreation = new Promise<EditorSession>((_, reject) => {
+				rejectCreation = reject;
+			});
+			let rejectedWrapperFreed = false;
+			let rejectedRuntimeDisposals = 0;
+			const rejectedRuntimeGraphics = {
+				selectedBackend: () => {
+					if (rejectedWrapperFreed) throw new Error("graphics wrapper freed");
+					return "webgpu" as const;
+				},
+				concurrentCompositorInstances: () => {
+					if (rejectedWrapperFreed) throw new Error("graphics wrapper freed");
+					return 2;
+				},
+			};
+			const rejectedRuntimeGpu = {
+				liveHandles: () => {
+					if (rejectedWrapperFreed) throw new Error("gpu wrapper freed");
+					return [];
+				},
+				release: () => {
+					if (rejectedWrapperFreed) throw new Error("gpu wrapper freed");
+				},
+			};
+			const rejectedController = createEditorSessionHostController({
+				prepareRuntime: async () => ({
+					runtimeGraphics: rejectedRuntimeGraphics,
+					runtimeGpu: rejectedRuntimeGpu,
+					dispose: () => {
+						rejectedRuntimeDisposals += 1;
+						if (rejectedWrapperFreed)
+							throw new Error("rejected runtime disposed twice");
+						rejectedWrapperFreed = true;
+					},
+				}),
+				createSession: () => rejectedCreation,
+				onChange: () => {},
+			});
+			const cancelRejected = rejectedController.begin(
+				createInMemoryHost({ projectId: "cancelled-reject" }),
+			);
+			await flushMicrotasks();
+			cancelRejected();
+			expect(rejectedRuntimeDisposals).toBe(0);
+			rejectCreation(new Error("creation rejected"));
+			await flushMicrotasks();
+			expect(rejectedRuntimeDisposals).toBe(1);
+			expect(() => rejectedRuntimeGpu.liveHandles()).toThrow(
+				"gpu wrapper freed",
+			);
+		});
+
+		test("Host teardown detaches ownership, observes every failure and never retries", async () => {
+			const flushTasks = async () => {
+				for (let index = 0; index < 12; index += 1) {
+					await Promise.resolve();
+				}
+				await new Promise((resolve) => setTimeout(resolve, 0));
+			};
+			const unhandled: unknown[] = [];
+			const onUnhandled = (reason: unknown) => unhandled.push(reason);
+			process.on("unhandledRejection", onUnhandled);
+			try {
+				const lateSessionError = new Error("late session dispose rejected");
+				const lateRuntimeError = new Error("late runtime dispose rejected");
+				let resolveLate!: (session: EditorSession) => void;
+				const lateCreation = new Promise<EditorSession>((resolve) => {
+					resolveLate = resolve;
+				});
+				let lateSessionDisposals = 0;
+				let lateRuntimeDisposals = 0;
+				let reportLateCleanup!: (error: Error) => void;
+				const lateCleanupReported = new Promise<Error>((resolve) => {
+					reportLateCleanup = resolve;
+				});
+				const lateController = createEditorSessionHostController({
+					prepareRuntime: async () => ({
+						runtimeGraphics: {
+							selectedBackend: () => "webgpu",
+							concurrentCompositorInstances: () => 2,
+						},
+						runtimeGpu: { liveHandles: () => [], release: () => {} },
+						dispose: async () => {
+							lateRuntimeDisposals += 1;
+							throw lateRuntimeError;
+						},
+					}),
+					createSession: () => lateCreation,
+					onCleanupError: reportLateCleanup,
+					onChange: () => {},
+				});
+				const lateHost = createInMemoryHost({ projectId: "late-cleanup" });
+				const cancelLate = lateController.begin(lateHost);
+				await flushTasks();
+				cancelLate();
+				const lateSession = await createEditorSession({
+					host: createInMemoryHost({ projectId: "late-rejected-disposal" }),
+				});
+				const disposeLateSession = lateSession.dispose.bind(lateSession);
+				lateSession.dispose = async () => {
+					lateSessionDisposals += 1;
+					await disposeLateSession();
+					throw lateSessionError;
+				};
+				resolveLate(lateSession);
+				const lateCleanupError = await lateCleanupReported;
+				expect(lateCleanupError).toBeInstanceOf(AggregateError);
+				expect(aggregateErrors(lateCleanupError)).toEqual([
+					lateSessionError,
+					lateRuntimeError,
+				]);
+				cancelLate();
+				await flushTasks();
+				expect({ lateSessionDisposals, lateRuntimeDisposals }).toEqual({
+					lateSessionDisposals: 1,
+					lateRuntimeDisposals: 1,
+				});
+				expect(lateController.currentForHost(lateHost)).toBeNull();
+
+				const earlyRuntimeError = new Error("early runtime dispose threw");
+				let resolvePrepared!: (
+					runtime: Awaited<ReturnType<typeof prepareWasmRuntimeProviders>>,
+				) => void;
+				const prepared = new Promise<
+					Awaited<ReturnType<typeof prepareWasmRuntimeProviders>>
+				>((resolve) => {
+					resolvePrepared = resolve;
+				});
+				let earlyRuntimeDisposals = 0;
+				let earlyCreateCalls = 0;
+				let reportEarlyCleanup!: (error: Error) => void;
+				const earlyCleanupReported = new Promise<Error>((resolve) => {
+					reportEarlyCleanup = resolve;
+				});
+				const earlyController = createEditorSessionHostController({
+					prepareRuntime: () => prepared,
+					createSession: async () => {
+						earlyCreateCalls += 1;
+						throw new Error("must not create after cancellation");
+					},
+					onCleanupError: reportEarlyCleanup,
+					onChange: () => {},
+				});
+				const earlyHost = createInMemoryHost({ projectId: "early-cancel" });
+				const cancelEarly = earlyController.begin(earlyHost);
+				cancelEarly();
+				resolvePrepared({
+					runtimeGraphics: {
+						selectedBackend: () => "webgpu",
+						concurrentCompositorInstances: () => 2,
+					},
+					runtimeGpu: { liveHandles: () => [], release: () => {} },
+					dispose: () => {
+						earlyRuntimeDisposals += 1;
+						throw earlyRuntimeError;
+					},
+				});
+				expect(await earlyCleanupReported).toBe(earlyRuntimeError);
+				cancelEarly();
+				await flushTasks();
+				expect({ earlyCreateCalls, earlyRuntimeDisposals }).toEqual({
+					earlyCreateCalls: 0,
+					earlyRuntimeDisposals: 1,
+				});
+				expect(earlyController.currentForHost(earlyHost)).toBeNull();
+
+				const creationError = new Error("active creation rejected");
+				const activeRuntimeError = new Error("active runtime dispose threw");
+				let activeRuntimeDisposals = 0;
+				const activeSnapshots: Array<{ error: Error | null }> = [];
+				const activeController = createEditorSessionHostController({
+					prepareRuntime: async () => ({
+						runtimeGraphics: {
+							selectedBackend: () => "webgpu",
+							concurrentCompositorInstances: () => 2,
+						},
+						runtimeGpu: { liveHandles: () => [], release: () => {} },
+						dispose: () => {
+							activeRuntimeDisposals += 1;
+							throw activeRuntimeError;
+						},
+					}),
+					createSession: async () => {
+						throw creationError;
+					},
+					onCleanupError: () => {
+						throw new Error("active failure must publish through the snapshot");
+					},
+					onChange: (snapshot) => {
+						if (snapshot) activeSnapshots.push(snapshot);
+					},
+				});
+				const activeHost = createInMemoryHost({ projectId: "active-failure" });
+				activeController.begin(activeHost);
+				await flushTasks();
+				const activeError = activeController.currentForHost(activeHost)?.error;
+				expect(activeError).toBeInstanceOf(AggregateError);
+				expect(aggregateErrors(activeError)).toEqual([
+					creationError,
+					activeRuntimeError,
+				]);
+				expect(activeSnapshots.at(-1)?.error).toBe(activeError);
+				expect(activeRuntimeDisposals).toBe(1);
+
+				await flushTasks();
+				expect(unhandled).toEqual([]);
+			} finally {
+				process.off("unhandledRejection", onUnhandled);
+			}
+		});
+
+		test("concrete runtime provider attempts both wrapper frees exactly once", async () => {
+			const before = wasmTestControl.runtimeWrapperFreeCalls();
+			const graphicsError = new Error("graphics free failed");
+			const gpuError = new Error("gpu free failed");
+			wasmTestControl.queueRuntimeWrapperFreeErrors({
+				graphics: graphicsError,
+				gpu: gpuError,
+			});
+			const runtime = await prepareWasmRuntimeProviders();
+			let disposalError: unknown;
+			try {
+				await runtime.dispose();
+			} catch (error) {
+				disposalError = error;
+			}
+			expect(disposalError).toBeInstanceOf(AggregateError);
+			expect(aggregateErrors(disposalError)).toEqual([graphicsError, gpuError]);
+			expect(wasmTestControl.runtimeWrapperFreeCalls()).toEqual({
+				graphics: before.graphics + 1,
+				gpu: before.gpu + 1,
+			});
+			await runtime.dispose();
+			expect(wasmTestControl.runtimeWrapperFreeCalls()).toEqual({
+				graphics: before.graphics + 1,
+				gpu: before.gpu + 1,
+			});
+
+			const singleBefore = wasmTestControl.runtimeWrapperFreeCalls();
+			const singleError = new Error("only graphics free failed");
+			wasmTestControl.queueRuntimeWrapperFreeErrors({ graphics: singleError });
+			const singleFailureRuntime = await prepareWasmRuntimeProviders();
+			let singleDisposalError: unknown;
+			try {
+				await singleFailureRuntime.dispose();
+			} catch (error) {
+				singleDisposalError = error;
+			}
+			expect(singleDisposalError).toBe(singleError);
+			expect(wasmTestControl.runtimeWrapperFreeCalls()).toEqual({
+				graphics: singleBefore.graphics + 1,
+				gpu: singleBefore.gpu + 1,
+			});
 		});
 	});
 

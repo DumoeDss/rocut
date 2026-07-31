@@ -2,11 +2,8 @@
 
 import { useCallback, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useEditor } from "@/editor/use-editor";
-import {
-	getDbFromLinePos,
-	getLinePosFromDb,
-} from "@/timeline/audio-display";
+import { useEditorInstance } from "@/editor/use-editor";
+import { getDbFromLinePos, getLinePosFromDb } from "@/timeline/audio-display";
 import { VOLUME_DB_MAX, VOLUME_DB_MIN } from "@/timeline/audio-constants";
 import { getElementVolume, hasAnimatedVolume } from "@/timeline/audio-state";
 import type { AudioElement } from "@/timeline/types";
@@ -56,7 +53,7 @@ export function AudioVolumeLine({
 	element: AudioElement;
 	trackId: string;
 }) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const surfaceRef = useRef<HTMLDivElement>(null);
 	const activePointerIdRef = useRef<number | null>(null);
 	const startVolumeRef = useRef(getElementVolume({ element }));

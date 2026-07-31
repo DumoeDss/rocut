@@ -24,6 +24,14 @@ import type {
 	WorkerHandle,
 	WorkerRequest,
 } from "@/editor/ports";
+
+/**
+ * Runtime handles are process-global, while reconciliation is per session.
+ * This narrow ownership index prevents session A from reporting session B's
+ * legitimate live handle as A's untracked leak. Handles with no owner remain
+ * visible as untracked, preserving the acquisition-blindness check for C6.
+ */
+const claimedGpuHandles = new Map<GpuHandleId, object>();
 import { isUnimplementedGpuRuntime } from "@/editor/ports";
 import type {
 	DisposalReport,
@@ -45,7 +53,10 @@ interface TrackedResource {
 	gpuHandle?: GpuHandleId;
 }
 
-function emptyCounts(): Record<SessionResourceClass, { created: number; released: number }> {
+function emptyCounts(): Record<
+	SessionResourceClass,
+	{ created: number; released: number }
+> {
 	return {
 		timer: { created: 0, released: 0 },
 		worker: { created: 0, released: 0 },
@@ -91,6 +102,7 @@ export function createSessionResources(args: {
 	const releaseOrder: SessionResourceRef[] = [];
 	/** Every GPU handle this session was told about, released or not. */
 	const trackedGpuHandles = new Set<GpuHandleId>();
+	const gpuOwner = {};
 	let disposed = false;
 
 	function track(args2: {
@@ -132,12 +144,14 @@ export function createSessionResources(args: {
 			? ("unimplemented" as const)
 			: ("runtime" as const);
 		const live = runtimeGpu.liveHandles();
-		const untracked = live.filter((h) => !trackedGpuHandles.has(h));
 		const releasedHandles = new Set(
 			acquired
 				.filter((e) => e.resourceClass === "gpuResource" && e.released)
 				.map((e) => e.gpuHandle)
 				.filter((h): h is GpuHandleId => h !== undefined),
+		);
+		const untracked = live.filter(
+			(h) => !claimedGpuHandles.has(h) && !releasedHandles.has(h),
 		);
 		const leaked = live.filter((h) => releasedHandles.has(h));
 		return { source, untracked, leaked };
@@ -301,14 +315,27 @@ export function createSessionResources(args: {
 
 		trackGpuResource: ({ handle, label }): GpuResourceHandle => {
 			assertLive();
+			const claimedBy = claimedGpuHandles.get(handle);
+			if (claimedBy && claimedBy !== gpuOwner) {
+				throw new Error(
+					`GPU handle ${handle} is already owned by another session.`,
+				);
+			}
 			trackedGpuHandles.add(handle);
+			claimedGpuHandles.set(handle, gpuOwner);
 			const entry = track({
 				resourceClass: "gpuResource",
 				// Release goes through the runtime's own teardown, keyed by its own
 				// handle — not through an opaque callback the session cannot relate
 				// to anything the runtime reports.
 				release: () => {
-					runtimeGpu.release({ handle });
+					try {
+						runtimeGpu.release({ handle });
+					} finally {
+						if (claimedGpuHandles.get(handle) === gpuOwner) {
+							claimedGpuHandles.delete(handle);
+						}
+					}
 				},
 			});
 			entry.gpuHandle = handle;

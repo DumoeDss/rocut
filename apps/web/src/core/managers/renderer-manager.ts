@@ -2,6 +2,8 @@ import type { EditorCore } from "@/core";
 import type { RootNode } from "@/services/renderer/nodes/root-node";
 import type { ExportOptions, ExportResult } from "@/export";
 import { CanvasRenderer } from "@/services/renderer/canvas-renderer";
+import { WasmCompositor } from "@/services/renderer/compositor/wasm-compositor";
+import type { SessionResources } from "@/editor/session/resources";
 import { SceneExporter } from "@/services/renderer/scene-exporter";
 import { buildScene } from "@/services/renderer/scene-builder";
 import { createTimelineAudioBuffer } from "@/media/audio";
@@ -18,7 +20,35 @@ export class RendererManager {
 	private _isDegraded = false;
 	private listeners = new Set<() => void>();
 
-	constructor(private editor: EditorCore) {}
+	private readonly compositor: WasmCompositor;
+
+	constructor(
+		private editor: EditorCore,
+		resources: SessionResources,
+	) {
+		this.compositor = new WasmCompositor(resources);
+	}
+
+	createCanvasRenderer({
+		width,
+		height,
+		fps,
+	}: {
+		width: number;
+		height: number;
+		fps: import("opencut-wasm").FrameRate;
+	}): CanvasRenderer {
+		return new CanvasRenderer({
+			width,
+			height,
+			fps,
+			compositor: this.compositor,
+		});
+	}
+
+	getCompositorHandle(): number | null {
+		return this.compositor.handle;
+	}
 
 	get isDegraded(): boolean {
 		return this._isDegraded;
@@ -98,7 +128,7 @@ export class RendererManager {
 				this.editor.timeline.getLastFrameTime(),
 			);
 
-			const renderer = new CanvasRenderer({
+			const renderer = this.createCanvasRenderer({
 				width: canvasSize.width,
 				height: canvasSize.height,
 				fps,
@@ -122,7 +152,10 @@ export class RendererManager {
 				return { success: false, error: "Failed to create image" };
 			}
 
-			const timecode = formatTimecode({ time: renderTime, rate: fps })!.replace(/:/g, "-");
+			const timecode = formatTimecode({ time: renderTime, rate: fps })!.replace(
+				/:/g,
+				"-",
+			);
 			const safeName =
 				activeProject.metadata.name.replace(/[<>:"/\\|?*]/g, "-").trim() ||
 				"snapshot";
@@ -192,6 +225,7 @@ export class RendererManager {
 				quality,
 				shouldIncludeAudio: !!includeAudio,
 				audioBuffer: audioBuffer || undefined,
+				compositor: this.compositor,
 			});
 
 			exporter.on("progress", (progress) => {
@@ -237,6 +271,11 @@ export class RendererManager {
 				error: error instanceof Error ? error.message : "Unknown export error",
 			};
 		}
+	}
+
+	dispose(): void {
+		this.compositor.dispose();
+		this.listeners.clear();
 	}
 
 	subscribe(listener: () => void): () => void {

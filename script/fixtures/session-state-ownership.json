@@ -1,0 +1,361 @@
+{
+	"storeKeys": [
+		"panel",
+		"editor",
+		"preview",
+		"timeline",
+		"sounds",
+		"stickers",
+		"keybindings",
+		"properties",
+		"assetsPanel"
+	],
+	"imperativeEditorConsumers": [
+		{
+			"path": "apps/vite-example/src/c3-session-harness.tsx",
+			"count": 1,
+			"classification": "browser-fixture"
+		},
+		{
+			"path": "apps/vite-example/src/project-picker.tsx",
+			"count": 1,
+			"classification": "lifecycle-effect"
+		},
+		{
+			"path": "apps/web/src/actions/use-editor-actions.ts",
+			"count": 1,
+			"classification": "controller-or-event"
+		},
+		{
+			"path": "apps/web/src/actions/use-keybindings.ts",
+			"count": 1,
+			"classification": "controller-or-event"
+		},
+		{
+			"path": "apps/web/src/app/projects/page.tsx",
+			"count": 5,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/components/editor/editor-header.tsx",
+			"count": 2,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/components/editor/export-button.tsx",
+			"count": 2,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/components/editor/panels/assets/draggable-item.tsx",
+			"count": 1,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/components/editor/panels/assets/views/assets.tsx",
+			"count": 2,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/components/editor/panels/assets/views/settings/background.tsx",
+			"count": 1,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/components/editor/panels/assets/views/settings/index.tsx",
+			"count": 1,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/components/editor/panels/properties/hooks/use-keyframed-param-property.ts",
+			"count": 1,
+			"classification": "controller-or-event"
+		},
+		{
+			"path": "apps/web/src/components/editor/scenes-view.tsx",
+			"count": 1,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/components/providers/editor-provider.tsx",
+			"count": 2,
+			"classification": "lifecycle-effect"
+		},
+		{
+			"path": "apps/web/src/components/storage-provider.tsx",
+			"count": 1,
+			"classification": "lifecycle-effect"
+		},
+		{
+			"path": "apps/web/src/editor/use-menu-preview.ts",
+			"count": 1,
+			"classification": "controller-or-event"
+		},
+		{
+			"path": "apps/web/src/effects/components/assets-view.tsx",
+			"count": 1,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/effects/components/effects-tab.tsx",
+			"count": 1,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/graphics/components/graphic-tab.tsx",
+			"count": 1,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/masks/components/masks-tab.tsx",
+			"count": 2,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/masks/use-mask-handles.ts",
+			"count": 1,
+			"classification": "controller-or-event"
+		},
+		{
+			"path": "apps/web/src/media/use-file-upload.ts",
+			"count": 1,
+			"classification": "controller-or-event"
+		},
+		{
+			"path": "apps/web/src/media/use-paste-media.ts",
+			"count": 1,
+			"classification": "controller-or-event"
+		},
+		{
+			"path": "apps/web/src/preview/components/context-menu.tsx",
+			"count": 1,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/preview/components/index.tsx",
+			"count": 2,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/preview/components/text-edit-overlay.tsx",
+			"count": 1,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/preview/components/toolbar.tsx",
+			"count": 1,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/preview/hooks/use-preview-interaction.ts",
+			"count": 1,
+			"classification": "controller-or-event"
+		},
+		{
+			"path": "apps/web/src/preview/hooks/use-transform-handles.ts",
+			"count": 1,
+			"classification": "controller-or-event"
+		},
+		{
+			"path": "apps/web/src/sounds/components/assets-view.tsx",
+			"count": 1,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/speed/components/speed-tab.tsx",
+			"count": 1,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/stickers/components/assets-view.tsx",
+			"count": 1,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/subtitles/components/assets-view.tsx",
+			"count": 1,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/text/components/assets-view.tsx",
+			"count": 1,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/timeline/bookmarks/components/bookmarks.tsx",
+			"count": 2,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/timeline/bookmarks/hooks/use-bookmark-drag.ts",
+			"count": 1,
+			"classification": "controller-or-event"
+		},
+		{
+			"path": "apps/web/src/timeline/components/audio-volume-line.tsx",
+			"count": 1,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/timeline/components/graph-editor/use-controller.ts",
+			"count": 1,
+			"classification": "controller-or-event"
+		},
+		{
+			"path": "apps/web/src/timeline/components/index.tsx",
+			"count": 2,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/timeline/components/timeline-element.tsx",
+			"count": 1,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/timeline/components/timeline-playhead.tsx",
+			"count": 1,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/timeline/components/timeline-toolbar.tsx",
+			"count": 1,
+			"classification": "event-handler"
+		},
+		{
+			"path": "apps/web/src/timeline/hooks/element/use-element-interaction.ts",
+			"count": 1,
+			"classification": "controller-or-event"
+		},
+		{
+			"path": "apps/web/src/timeline/hooks/element/use-element-selection.ts",
+			"count": 1,
+			"classification": "controller-or-event"
+		},
+		{
+			"path": "apps/web/src/timeline/hooks/element/use-keyframe-drag.ts",
+			"count": 1,
+			"classification": "controller-or-event"
+		},
+		{
+			"path": "apps/web/src/timeline/hooks/element/use-keyframe-selection.ts",
+			"count": 1,
+			"classification": "controller-or-event"
+		},
+		{
+			"path": "apps/web/src/timeline/hooks/use-element-preview.ts",
+			"count": 1,
+			"classification": "controller-or-event"
+		},
+		{
+			"path": "apps/web/src/timeline/hooks/use-timeline-drag-drop.ts",
+			"count": 1,
+			"classification": "controller-or-event"
+		},
+		{
+			"path": "apps/web/src/timeline/hooks/use-timeline-playhead.ts",
+			"count": 1,
+			"classification": "controller-or-event"
+		},
+		{
+			"path": "apps/web/src/timeline/hooks/use-timeline-resize.ts",
+			"count": 1,
+			"classification": "controller-or-event"
+		},
+		{
+			"path": "apps/web/src/timeline/hooks/use-timeline-seek.ts",
+			"count": 1,
+			"classification": "controller-or-event"
+		},
+		{
+			"path": "apps/web/src/timeline/hooks/use-timeline-zoom.ts",
+			"count": 1,
+			"classification": "controller-or-event"
+		}
+	],
+	"processSharedMutable": [
+		{
+			"path": "apps/web/src/editor/cancel-interaction.ts",
+			"symbol": "cancellersBySession",
+			"classification": "session-owned-weak-index",
+			"reason": "The process index has no current/default route; each mutable Set is reachable only by its explicit EditorSession and is removed on disposal."
+		},
+		{
+			"path": "apps/web/src/editor/runtime/session-core-owner.ts",
+			"symbol": "editorsBySession",
+			"classification": "session-owned-weak-index",
+			"reason": "C2's explicit-session owner map has no default/current accessor and drops the entry on disposal."
+		},
+		{
+			"path": "apps/web/src/editor/runtime/process-bootstrap.ts",
+			"symbol": "bootstrapSnapshot",
+			"classification": "idempotent-definition-bootstrap",
+			"reason": "The snapshot records immutable definition registration identity and never carries session state."
+		},
+		{
+			"path": "apps/web/src/editor/session/create-session.ts",
+			"symbol": "migrationRuns",
+			"classification": "shared-durable-store-migration",
+			"reason": "Migration is serialized by durable ProjectStore identity so two sessions cannot race the same substrate."
+		},
+		{
+			"path": "apps/web/src/editor/runtime/session-stores.ts",
+			"symbol": "storesBySession",
+			"classification": "session-owned-weak-index",
+			"reason": "Every value is one complete nine-store registry keyed only by an explicit EditorSession and removed on disposal."
+		},
+		{
+			"path": "apps/web/src/editor/session/session-resources.ts",
+			"symbol": "claimedGpuHandles",
+			"classification": "deferred-c6-runtime-ownership-index",
+			"reason": "Cross-session reconciliation must distinguish another live owner's handle from a genuinely untracked runtime allocation."
+		},
+		{
+			"path": "apps/web/src/services/renderer/compositor/frame-descriptor.ts",
+			"symbol": "identityKeys",
+			"classification": "content-identity-cache",
+			"reason": "Frame identity is content keyed and contains no session publication state."
+		},
+		{
+			"path": "apps/web/src/services/renderer/compositor/frame-descriptor.ts",
+			"symbol": "nextIdentity",
+			"classification": "content-identity-cache",
+			"reason": "The counter only mints keys for the accompanying WeakMap and cannot publish editor state."
+		},
+		{
+			"path": "apps/web/src/services/renderer/nodes/image-node.ts",
+			"symbol": "imageSourceCache",
+			"classification": "content-keyed-promise-cache",
+			"reason": "Entries are keyed by immutable source URL/size and contain decoded source promises, not session state."
+		},
+		{
+			"path": "apps/web/src/services/renderer/nodes/sticker-node.ts",
+			"symbol": "stickerSourceCache",
+			"classification": "content-keyed-promise-cache",
+			"reason": "Entries are keyed by immutable sticker id and contain decoded source promises, not session state."
+		},
+		{
+			"path": "apps/web/src/graphics/index.ts",
+			"symbol": "graphicPreviewUrlCache",
+			"classification": "content-keyed-url-cache",
+			"reason": "Entries are deterministic preview URLs keyed by definition id and parameter content."
+		},
+		{
+			"path": "apps/web/src/stickers/providers/flags.ts",
+			"symbol": "countriesPromise",
+			"classification": "immutable-content-promise",
+			"reason": "One immutable country definition dataset is shared; request generations and browse publication remain session-local."
+		},
+		{
+			"path": "apps/web/src/stickers/registry.ts",
+			"symbol": "stickersRegistry",
+			"classification": "idempotent-definition-registry",
+			"reason": "Provider definitions are process bootstrap data; query generations remain inside each session store closure."
+		},
+		{
+			"path": "apps/web/src/services/storage/service.ts",
+			"symbol": "storageService",
+			"classification": "shared-user-library-until-c5",
+			"reason": "C5 owns storage inversion; C3 isolates the per-session sounds query/loading/result view over this shared durable substrate."
+		}
+	]
+}

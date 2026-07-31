@@ -22,7 +22,7 @@ import { ExportButton } from "./export-button";
 import { FeedbackPopover } from "@/feedback/components/feedback-popover";
 import { ThemeToggle } from "../theme-toggle";
 import { toast } from "sonner";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { CommandIcon, Logout05Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ShortcutsDialog } from "@/actions/components/shortcuts-dialog";
@@ -57,7 +57,7 @@ function ProjectDropdown() {
 	const navigation = useEditorHostNavigation();
 	const { logoUrl } = useEditorHostBranding();
 	const { discordUrl } = useEditorHostLinks();
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const activeProject = useEditor((e) => e.project.getActive());
 
 	const handleExit = async () => {
@@ -148,11 +148,7 @@ function ProjectDropdown() {
 					<DropdownMenuSeparator />
 
 					<DropdownMenuItem asChild icon={<FaDiscord className="size-4!" />}>
-						<a
-							href={discordUrl}
-							target="_blank"
-							rel="noopener noreferrer"
-						>
+						<a href={discordUrl} target="_blank" rel="noopener noreferrer">
 							Discord
 						</a>
 					</DropdownMenuItem>
@@ -179,7 +175,7 @@ function ProjectDropdown() {
 }
 
 function EditableProjectName() {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const activeProject = useEditor((e) => e.project.getActive());
 	const [isEditing, setIsEditing] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);

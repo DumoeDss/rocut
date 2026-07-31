@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTimelineStore } from "@/timeline/timeline-store";
+import { useTimelineStore } from "@/editor/use-session-store";
 import { useActionHandler } from "@/actions/use-action-handler";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { useElementSelection } from "@/timeline/hooks/element/use-element-selection";
 import {
 	addMediaTime,
@@ -26,9 +26,11 @@ import {
 	type ScopeEntry,
 } from "@/selection/scope";
 import { useCommittedRef } from "@/hooks/use-committed-ref";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 
 export function useEditorActions() {
-	const editor = useEditor();
+	const editor = useEditorInstance();
+	const session = useEditorSession();
 	const { selectedElements, setElementSelection } = useElementSelection();
 	const { selectedKeyframes, clearKeyframeSelection } = useKeyframeSelection();
 	const selectedMaskPointSelection = useEditor((e) =>
@@ -126,9 +128,7 @@ export function useEditorActions() {
 		() => {
 			const fps = editor.project.getActive().settings.fps;
 			const ticksPerFrame = mediaTime({
-				ticks: Math.round(
-					(TICKS_PER_SECOND * fps.denominator) / fps.numerator,
-				),
+				ticks: Math.round((TICKS_PER_SECOND * fps.denominator) / fps.numerator),
 			});
 			editor.playback.seek({
 				time: minMediaTime({
@@ -148,9 +148,7 @@ export function useEditorActions() {
 		() => {
 			const fps = editor.project.getActive().settings.fps;
 			const ticksPerFrame = mediaTime({
-				ticks: Math.round(
-					(TICKS_PER_SECOND * fps.denominator) / fps.numerator,
-				),
+				ticks: Math.round((TICKS_PER_SECOND * fps.denominator) / fps.numerator),
 			});
 			editor.playback.seek({
 				time: maxMediaTime({
@@ -394,7 +392,7 @@ export function useEditorActions() {
 	useActionHandler(
 		"cancel-interaction",
 		() => {
-			if (!cancelInteraction()) {
+			if (!cancelInteraction({ session })) {
 				invokeAction("deselect-all");
 			}
 		},

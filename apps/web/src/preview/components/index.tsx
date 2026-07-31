@@ -2,11 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useDeepCompareEffect from "use-deep-compare-effect";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { useRafLoop } from "@/hooks/use-raf-loop";
 import { useContainerSize } from "@/hooks/use-container-size";
 import { useFullscreen } from "@/hooks/use-fullscreen";
-import { CanvasRenderer } from "@/services/renderer/canvas-renderer";
 import { TICKS_PER_SECOND } from "@/wasm";
 import type { RootNode } from "@/services/renderer/nodes/root-node";
 import { buildScene } from "@/services/renderer/scene-builder";
@@ -93,7 +92,7 @@ export function PreviewPanel({
 }
 
 function RenderTreeController() {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const tracks = useEditor(
 		(e) => e.timeline.getPreviewTracks() ?? e.scenes.getActiveScene().tracks,
 	);
@@ -144,9 +143,10 @@ function PreviewCanvas({
 	const renderingRef = useRef(false);
 	const { width: nativeWidth, height: nativeHeight } = usePreviewSize();
 	const viewportSize = useContainerSize({ containerRef: viewportRef });
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const activeProject = useEditor((e) => e.project.getActive());
 	const renderTree = useEditor((e) => e.renderer.getRenderTree());
+	const rendererManager = useEditor((e) => e.renderer);
 	const viewport = usePreviewViewportState({
 		canvasHeight: nativeHeight,
 		canvasWidth: nativeWidth,
@@ -157,12 +157,12 @@ function PreviewCanvas({
 	const { canPan, panByScreenDelta, scaleZoom } = viewport;
 
 	const renderer = useMemo(() => {
-		return new CanvasRenderer({
+		return rendererManager.createCanvasRenderer({
 			width: nativeWidth,
 			height: nativeHeight,
 			fps: activeProject.settings.fps,
 		});
-	}, [nativeWidth, nativeHeight, activeProject.settings.fps]);
+	}, [rendererManager, nativeWidth, nativeHeight, activeProject.settings.fps]);
 
 	// Mount the compositor's output canvas directly into the preview. wgpu
 	// renders straight into this element, so there is no intermediate copy —
@@ -170,13 +170,24 @@ function PreviewCanvas({
 	useEffect(() => {
 		const mount = canvasMountRef.current;
 		if (!mount) return;
-		const outputCanvas = renderer.getOutputCanvas();
-		outputCanvas.style.display = "block";
-		outputCanvas.style.width = "100%";
-		outputCanvas.style.height = "100%";
-		mount.appendChild(outputCanvas);
+		let outputCanvas: HTMLCanvasElement | null = null;
+		let cancelled = false;
+		void renderer
+			.getOutputCanvas()
+			.then((canvas) => {
+				if (cancelled) return;
+				outputCanvas = canvas;
+				canvas.style.display = "block";
+				canvas.style.width = "100%";
+				canvas.style.height = "100%";
+				mount.appendChild(canvas);
+			})
+			.catch((error: unknown) => {
+				if (!cancelled) console.error("Failed to mount preview canvas:", error);
+			});
 		return () => {
-			if (outputCanvas.parentElement === mount) {
+			cancelled = true;
+			if (outputCanvas?.parentElement === mount) {
 				mount.removeChild(outputCanvas);
 			}
 		};
@@ -194,21 +205,16 @@ function PreviewCanvas({
 		);
 		const frame = Math.floor(renderTime / ticksPerFrame);
 
-		if (
-			frame === lastFrameRef.current &&
-			renderTree === lastSceneRef.current
-		) {
+		if (frame === lastFrameRef.current && renderTree === lastSceneRef.current) {
 			return;
 		}
 
 		renderingRef.current = true;
 		lastSceneRef.current = renderTree;
 		lastFrameRef.current = frame;
-		renderer
-			.render({ node: renderTree, time: renderTime })
-			.then(() => {
-				renderingRef.current = false;
-			});
+		renderer.render({ node: renderTree, time: renderTime }).then(() => {
+			renderingRef.current = false;
+		});
 	}, [renderer, renderTree, editor.playback, editor.timeline]);
 
 	useRafLoop(render);
@@ -308,20 +314,20 @@ function PreviewCanvas({
 								ref={viewportRef}
 								className="relative flex size-full min-h-0 min-w-0 items-center justify-center overflow-hidden"
 							>
-							<div
-								ref={canvasMountRef}
-								className="absolute block border"
-								style={{
-									left: viewport.sceneLeft,
-									top: viewport.sceneTop,
-									width: viewport.sceneWidth,
-									height: viewport.sceneHeight,
-									background:
-										activeProject.settings.background.type === "blur"
-											? "transparent"
-											: activeProject?.settings.background.color,
-								}}
-							/>
+								<div
+									ref={canvasMountRef}
+									className="absolute block border"
+									style={{
+										left: viewport.sceneLeft,
+										top: viewport.sceneTop,
+										width: viewport.sceneWidth,
+										height: viewport.sceneHeight,
+										background:
+											activeProject.settings.background.type === "blur"
+												? "transparent"
+												: activeProject?.settings.background.color,
+									}}
+								/>
 								<PreviewOverlayLayer
 									instances={overlayInstances}
 									plane="under-interaction"

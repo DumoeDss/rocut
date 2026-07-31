@@ -1,10 +1,11 @@
 import { useEffect, useReducer, useState } from "react";
-import { useEditor } from "@/editor/use-editor";
+import { useEditorInstance } from "@/editor/use-editor";
 import { useCommittedRef } from "@/hooks/use-committed-ref";
 import { useShiftKey } from "@/hooks/use-shift-key";
 import { useElementSelection } from "@/timeline/hooks/element/use-element-selection";
-import { useTimelineStore } from "@/timeline/timeline-store";
+import { useTimelineStore } from "@/editor/use-session-store";
 import { registerCanceller } from "@/editor/cancel-interaction";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 import {
 	ResizeController,
 	type ResizeConfig,
@@ -24,7 +25,8 @@ export function useTimelineResize({
 	zoomLevel,
 	onSnapPointChange,
 }: UseTimelineResizeProps) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
+	const session = useEditorSession();
 	const isShiftHeldRef = useShiftKey();
 	const snappingEnabled = useTimelineStore((state) => state.snappingEnabled);
 	const { selectedElements } = useElementSelection();
@@ -64,8 +66,8 @@ export function useTimelineResize({
 
 	useEffect(() => {
 		if (!controller.isResizing) return;
-		return registerCanceller({ fn: () => controller.cancel() });
-	}, [controller.isResizing, controller]);
+		return registerCanceller({ session, fn: () => controller.cancel() });
+	}, [controller.isResizing, controller, session]);
 
 	useEffect(() => () => controller.destroy(), [controller]);
 

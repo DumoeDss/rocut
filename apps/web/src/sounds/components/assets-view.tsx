@@ -27,8 +27,8 @@ import {
 	SOUND_SEARCH_UNAVAILABLE_MESSAGE,
 } from "@/sounds/use-sound-search";
 import { useEditorHostServices } from "@/editor/host/editor-host-context";
-import { useEditor } from "@/editor/use-editor";
-import { useSoundsStore } from "@/sounds/sounds-store";
+import { useEditorInstance } from "@/editor/use-editor";
+import { useSoundsStore } from "@/editor/use-session-store";
 import type { SavedSound, SoundEffect } from "@/sounds/types";
 import { cn } from "@/utils/ui";
 import {
@@ -508,7 +508,7 @@ interface AudioItemProps {
 }
 
 function AudioItem({ sound, isPlaying, onPlay }: AudioItemProps) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const { addSoundToTimeline, isSoundSaved, toggleSavedSound } =
 		useSoundsStore();
 	const isSaved = isSoundSaved({ soundId: sound.id });

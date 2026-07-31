@@ -7,7 +7,7 @@ import {
 	ContextMenuSeparator,
 } from "@/components/ui/context-menu";
 import { usePreviewViewport } from "@/preview/components/preview-viewport";
-import { useEditor } from "@/editor/use-editor";
+import { useEditorInstance } from "@/editor/use-editor";
 import type { PreviewOverlayControl } from "@/preview/overlays";
 import { toast } from "sonner";
 
@@ -25,7 +25,7 @@ export function PreviewContextMenu({
 		isVisible: boolean;
 	}) => void;
 }) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const viewport = usePreviewViewport();
 
 	const handleCopySnapshot = async () => {

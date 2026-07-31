@@ -1,8 +1,8 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import { useEditor } from "@/editor/use-editor";
-import { useAssetsPanelStore } from "@/components/editor/panels/assets/assets-panel-store";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
+import { useAssetsPanelStore } from "@/editor/use-session-store";
 import { AudioWaveform, WAVEFORM_GAIN_SAMPLE_COUNT } from "./audio-waveform";
 import { AudioVolumeLine } from "./audio-volume-line";
 import { useElementPreview } from "@/timeline/hooks/use-element-preview";
@@ -47,7 +47,10 @@ import {
 	getSourceAudioActionLabel,
 	isSourceAudioSeparated,
 } from "@/timeline/audio-separation";
-import { buildWaveformGainSamples, isElementMuted } from "@/timeline/audio-state";
+import {
+	buildWaveformGainSamples,
+	isElementMuted,
+} from "@/timeline/audio-state";
 import { getTimelinePixelsPerSecond } from "@/timeline";
 import { buildWaveformSourceKey } from "@/media/waveform-summary";
 import { addMediaTime, type MediaTime, TICKS_PER_SECOND } from "@/wasm";
@@ -80,9 +83,9 @@ import { uppercase } from "@/utils/string";
 import { useMemo, type ComponentProps, type ReactNode } from "react";
 import type { SelectedKeyframeRef, ElementKeyframe } from "@/animation/types";
 import { cn } from "@/utils/ui";
-import { usePropertiesStore } from "@/components/editor/panels/properties/stores/properties-store";
+import { usePropertiesStore } from "@/editor/use-session-store";
 import { getTrackTypeForElementType } from "@/timeline/placement/compatibility";
-import { useTimelineStore } from "@/timeline/timeline-store";
+import { useTimelineStore } from "@/editor/use-session-store";
 import { KEYFRAME_LANE_HEIGHT_PX } from "./layout";
 import {
 	getExpandedRows,
@@ -909,7 +912,9 @@ function TextElementContent({
 	return (
 		<div className="flex size-full items-center justify-start pl-2">
 			<span className="truncate text-xs text-white">
-				{typeof element.params.content === "string" ? element.params.content : ""}
+				{typeof element.params.content === "string"
+					? element.params.content
+					: ""}
 			</span>
 		</div>
 	);
@@ -1058,7 +1063,7 @@ function EffectsButton({
 	element: VideoElement | ImageElement;
 	track: TimelineTrack;
 }) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const setActiveTab = usePropertiesStore((s) => s.setActiveTab);
 
 	const handleClick = (event: React.MouseEvent) => {

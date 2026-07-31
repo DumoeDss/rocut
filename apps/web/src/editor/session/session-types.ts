@@ -17,17 +17,9 @@ import type { MigrationProgress } from "@/editor/ports";
 import type { ResolvedEditorHost } from "@/editor/host/editor-host";
 import type { DisposalReport, SessionResources } from "./resources";
 
-export type SessionState =
-	| "created"
-	| "mounted"
-	| "suspended"
-	| "disposed";
+export type SessionState = "created" | "mounted" | "suspended" | "disposed";
 
-export type RootState =
-	| "mounting"
-	| "mounted"
-	| "unmounting"
-	| "unmounted";
+export type RootState = "mounting" | "mounted" | "unmounting" | "unmounted";
 
 /**
  * What `mount` returns — **synchronously**.
@@ -82,14 +74,9 @@ export interface SessionSubscription {
  * The session's read surface.
  *
  * There is deliberately **no** member that returns a snapshot without
- * subscribing. `useEditor()` called with no selector currently subscribes with
- * `subscribeNone` (`apps/web/src/editor/use-editor.ts:19,72`), so such a
- * consumer reads once at mount and never re-renders — the mechanism that makes
- * `MigrationDialog` unable to render even now that migration genuinely runs.
- * Repairing that call site is C3's; what this change owes is that the shape
- * cannot be **re-expressed** through the session contract. Reading and
- * subscribing are one operation here, so acquiring a never-updating snapshot is
- * not something a consumer can do by accident.
+ * subscribing. C3 removed the historical no-selector hook and empty subscriber;
+ * reactive reads use `useEditor(selector)`, while event plumbing explicitly
+ * uses the stable `useEditorInstance()`.
  */
 export interface SessionReadSurface {
 	watch<T>(args: {

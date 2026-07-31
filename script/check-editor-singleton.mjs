@@ -30,6 +30,11 @@ const NEGATIVE_FIXTURES = {
 	"construction-outside-owner": "outside-owner-construction.ts.fixture",
 	"owner-wrapper-outside-route": "outside-owner-wrapper.ts.fixture",
 	"session-key-required": "current-session-route.ts.fixture",
+	"use-editor-no-selector": "use-editor-no-selector.ts.fixture",
+	"use-editor-alias": "use-editor-alias.ts.fixture",
+	"use-editor-optional": "use-editor-optional.ts.fixture",
+	"empty-subscriber": "empty-subscriber.ts.fixture",
+	"empty-subscriber-facade": "empty-subscriber-facade.ts.fixture",
 };
 
 function walk(directory) {
@@ -115,6 +120,9 @@ let ownerWrapperRouteCount = 0;
 
 for (const entry of sources) {
 	const { path, source } = entry;
+	const uncommented = source
+		.replace(/\/\*[\s\S]*?\*\//g, " ")
+		.replace(/\/\/.*$/gm, " ");
 	if (/\bEditorCore\s*\.\s*getInstance\s*\(/.test(source)) {
 		violations.push({ rule: "singleton-accessor", path });
 	}
@@ -177,6 +185,35 @@ for (const entry of sources) {
 		/\b(?:getCurrentSession|setCurrentSession)\s*\(/.test(source)
 	) {
 		violations.push({ rule: "session-key-required", path });
+	}
+
+	const editorAliases = new Set(["useEditor"]);
+	for (const match of source.matchAll(
+		/import\s*{([^}]+)}\s*from\s*["']@\/editor\/use-editor["']/g,
+	)) {
+		for (const part of match[1].split(",")) {
+			const alias = /\buseEditor\s+as\s+(\w+)/.exec(part)?.[1];
+			if (alias) editorAliases.add(alias);
+		}
+	}
+	for (const alias of editorAliases) {
+		if (
+			new RegExp("\\b" + alias + "\\s*(?:\\?\\.)?\\s*\\(\\s*\\)").test(
+				uncommented,
+			)
+		) {
+			violations.push({ rule: "use-editor-no-selector", path });
+		}
+	}
+	if (/\bsubscribeNone\b/.test(uncommented)) {
+		violations.push({ rule: "empty-subscriber", path });
+	}
+	if (
+		/useSyncExternalStore\s*\(\s*\(\s*\)\s*=>\s*\(\s*\)\s*=>\s*\{?\s*\}?/s.test(
+			uncommented,
+		)
+	) {
+		violations.push({ rule: "empty-subscriber-facade", path });
 	}
 }
 

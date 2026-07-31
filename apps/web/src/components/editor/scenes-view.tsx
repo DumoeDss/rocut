@@ -23,12 +23,14 @@ import {
 } from "@/components/ui/dialog";
 import { canDeleteScene, getMainScene } from "@/timeline/scenes";
 import { toast } from "sonner";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 
 export function ScenesView({ children }: { children: React.ReactNode }) {
-	const editor = useEditor();
-	const scenes = editor.scenes.getScenes();
-	const currentScene = editor.scenes.getActiveScene();
+	const editor = useEditorInstance();
+	const scenes = useEditor((currentEditor) => currentEditor.scenes.getScenes());
+	const currentScene = useEditor((currentEditor) =>
+		currentEditor.scenes.getActiveScene(),
+	);
 	const [isSelectMode, setIsSelectMode] = useState(false);
 	const [selectedScenes, setSelectedScenes] = useState<Set<string>>(new Set());
 

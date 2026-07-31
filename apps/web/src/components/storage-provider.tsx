@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { useEditor } from "@/editor/use-editor";
+import { useEditorInstance } from "@/editor/use-editor";
 import { storageService } from "@/services/storage/service";
 
 interface StorageContextType {
@@ -34,7 +34,7 @@ export function StorageProvider({ children }: StorageProviderProps) {
 		error: null,
 	});
 
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const hasInitialized = useRef(false);
 
 	useEffect(() => {
@@ -73,7 +73,7 @@ export function StorageProvider({ children }: StorageProviderProps) {
 		};
 
 		initializeStorage();
-	}, [editor.project.loadAllProjects]);
+	}, [editor]);
 
 	return (
 		<StorageContext.Provider value={status}>{children}</StorageContext.Provider>

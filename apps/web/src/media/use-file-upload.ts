@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useEditor } from "@/editor/use-editor";
+import { useEditorInstance } from "@/editor/use-editor";
 
 interface UseFileUploadOptions {
 	accept?: string;
@@ -12,7 +12,7 @@ export function useFileUpload({
 	multiple,
 	onFilesSelected,
 }: UseFileUploadOptions = {}) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const [isDragOver, setIsDragOver] = useState(false);
 	const dragCounterRef = useRef(0);
 	const inputRef = useRef<HTMLInputElement>(null);

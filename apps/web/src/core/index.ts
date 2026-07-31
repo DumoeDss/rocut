@@ -11,6 +11,7 @@ import { SelectionManager } from "./managers/selection-manager";
 import { ClipboardManager } from "./managers/clipboard-manager";
 import { DiagnosticsManager } from "./managers/diagnostics-manager";
 import { registerTranscriptionDiagnostics } from "@/transcription/diagnostics";
+import type { EditorSession } from "@/editor/session/session-types";
 
 export class EditorCore {
 	public readonly timeline: TimelineManager;
@@ -26,14 +27,14 @@ export class EditorCore {
 	public readonly clipboard: ClipboardManager;
 	public readonly diagnostics: DiagnosticsManager;
 
-	private constructor() {
+	private constructor(session: EditorSession) {
 		this.command = new CommandManager(this);
 		this.timeline = new TimelineManager(this);
 		this.playback = new PlaybackManager(this);
 		this.scenes = new ScenesManager(this);
 		this.project = new ProjectManager(this);
 		this.media = new MediaManager(this);
-		this.renderer = new RendererManager(this);
+		this.renderer = new RendererManager(this, session.resources);
 		this.save = new SaveManager({ editor: this });
 		this.audio = new AudioManager(this);
 		this.selection = new SelectionManager(this);
@@ -63,8 +64,12 @@ export class EditorCore {
 		this.save.start();
 	}
 
-	static createSessionOwned(): EditorCore {
-		return new EditorCore();
+	static createSessionOwned({
+		session,
+	}: {
+		session: EditorSession;
+	}): EditorCore {
+		return new EditorCore(session);
 	}
 
 	suspend(): void {
@@ -78,5 +83,6 @@ export class EditorCore {
 	dispose(): void {
 		this.save.stop();
 		this.playback.dispose();
+		this.renderer.dispose();
 	}
 }

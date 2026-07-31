@@ -1,8 +1,9 @@
 import { useEffect, useReducer, useState } from "react";
-import { useEditor } from "@/editor/use-editor";
+import { useEditorInstance } from "@/editor/use-editor";
 import { useCommittedRef } from "@/hooks/use-committed-ref";
 import { useKeyframeSelection } from "./use-keyframe-selection";
 import { registerCanceller } from "@/editor/cancel-interaction";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 import {
 	KeyframeDragController,
 	type KeyframeDragConfig,
@@ -22,7 +23,8 @@ export function useKeyframeDrag({
 	element: TimelineElement;
 	displayedStartTime: MediaTime;
 }) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
+	const session = useEditorSession();
 	const {
 		selectedKeyframes,
 		isKeyframeSelected,
@@ -55,8 +57,8 @@ export function useKeyframeDrag({
 
 	useEffect(() => {
 		if (!controller.isActive) return;
-		return registerCanceller({ fn: () => controller.cancel() });
-	}, [controller.isActive, controller]);
+		return registerCanceller({ session, fn: () => controller.cancel() });
+	}, [controller.isActive, controller, session]);
 
 	useEffect(() => () => controller.destroy(), [controller]);
 

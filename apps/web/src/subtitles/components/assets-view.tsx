@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/select";
 import { useReducer, useRef, useState } from "react";
 import { extractTimelineAudio } from "@/media/mediabunny";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { TRANSCRIPTION_DIAGNOSTICS_SCOPE } from "@/transcription/diagnostics";
 import { DEFAULT_TRANSCRIPTION_SAMPLE_RATE } from "@/transcription/audio";
 import { TRANSCRIPTION_LANGUAGES } from "@/transcription/supported-languages";
@@ -89,7 +89,7 @@ export function Captions() {
 	const [processing, dispatch] = useReducer(processingReducer, IDLE_STATE);
 	const containerRef = useRef<HTMLDivElement>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
-	const editor = useEditor();
+	const editor = useEditorInstance();
 
 	const isProcessing = processing.status === "processing";
 

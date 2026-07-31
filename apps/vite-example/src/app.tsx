@@ -8,12 +8,23 @@ import { EditorRoot } from "@/editor/surface/editor-root";
 import { ViteEditorHost } from "./host/vite-editor-host";
 import { ProjectPicker } from "./project-picker";
 import { EditorErrorBoundary } from "./editor-error-boundary";
+import { C3SessionHarness } from "./c3-session-harness";
 
 function readProjectIdFromUrl(): string | null {
 	return new URLSearchParams(window.location.search).get("project");
 }
 
 export function App() {
+	if (
+		new URLSearchParams(window.location.search).get("c3-session-harness") ===
+		"1"
+	) {
+		return <C3SessionHarness />;
+	}
+	return <EditorApp />;
+}
+
+function EditorApp() {
 	const [projectId, setProjectId] = useState<string | null>(
 		readProjectIdFromUrl,
 	);

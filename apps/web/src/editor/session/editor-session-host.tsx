@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 import type { EditorHost } from "@/editor/host/editor-host";
 import { EditorHostProvider } from "@/editor/host/editor-host-context";
 import {
-	UNIMPLEMENTED_RUNTIME_GPU,
-	UNIMPLEMENTED_RUNTIME_GRAPHICS,
-} from "@/editor/ports";
+	prepareWasmRuntimeProviders,
+	type PreparedWasmRuntimeProviders,
+} from "@/editor/runtime/wasm-runtime-providers";
 
 import {
 	createEditorSession,
@@ -25,14 +25,21 @@ interface HostSessionSnapshot {
 
 interface HostSessionGeneration extends HostSessionSnapshot {
 	active: boolean;
-	disposal: Promise<unknown> | null;
+	disposal: Promise<void> | null;
+	runtime: PreparedWasmRuntimeProviders | null;
 }
 
 export function createEditorSessionHostController({
 	createSession = createEditorSession,
+	prepareRuntime = prepareWasmRuntimeProviders,
+	onCleanupError = (error) => {
+		console.error("Editor session cleanup failed:", error);
+	},
 	onChange,
 }: {
 	createSession?: (args: CreateEditorSessionArgs) => Promise<EditorSession>;
+	prepareRuntime?: () => Promise<PreparedWasmRuntimeProviders>;
+	onCleanupError?: (error: Error) => void;
 	onChange: (snapshot: HostSessionSnapshot | null) => void;
 }) {
 	let nextGeneration = 0;
@@ -51,10 +58,170 @@ export function createEditorSessionHostController({
 		);
 	}
 
-	function disposeOwned(generation: HostSessionGeneration): Promise<unknown> {
-		if (!generation.session) return Promise.resolve();
-		generation.disposal ??= generation.session.dispose();
+	function asError({
+		reason,
+		fallback,
+	}: {
+		reason: unknown;
+		fallback: string;
+	}): Error {
+		return reason instanceof Error ? reason : new Error(fallback, { cause: reason });
+	}
+
+	function cleanupError(errors: Error[]): Error | null {
+		if (errors.length === 0) return null;
+		if (errors.length === 1) return errors[0]!;
+		return new AggregateError(
+			errors,
+			"Failed to dispose editor session owners.",
+		);
+	}
+
+	function reportCleanupError(error: Error): void {
+		try {
+			onCleanupError(error);
+		} catch (reportError) {
+			console.error(
+				"Editor session cleanup error reporter failed:",
+				reportError,
+			);
+		}
+	}
+
+	function disposeOwned(generation: HostSessionGeneration): Promise<void> {
+		if (generation.disposal) return generation.disposal;
+
+		// Claim both owners before invoking either cleanup. A synchronous throw or
+		// re-entrant cancellation can therefore never acquire the same owner twice.
+		const session = generation.session;
+		const runtime = generation.runtime;
+		generation.session = null;
+		generation.runtime = null;
+
+		let resolveDisposal!: () => void;
+		let rejectDisposal!: (reason: unknown) => void;
+		generation.disposal = new Promise<void>((resolve, reject) => {
+			resolveDisposal = resolve;
+			rejectDisposal = reject;
+		});
+		const runDisposal = async () => {
+			const errors: Error[] = [];
+			if (session) {
+				try {
+					await session.dispose();
+				} catch (reason) {
+					errors.push(
+						asError({
+							reason,
+							fallback: "Failed to dispose the editor session.",
+						}),
+					);
+				}
+			}
+			if (runtime) {
+				try {
+					await runtime.dispose();
+				} catch (reason) {
+					errors.push(
+						asError({
+							reason,
+							fallback: "Failed to dispose the WASM runtime.",
+						}),
+					);
+				}
+			}
+			const error = cleanupError(errors);
+			if (error) throw error;
+		};
+		void runDisposal().then(resolveDisposal, rejectDisposal);
 		return generation.disposal;
+	}
+
+	async function settleCancelledCleanup(
+		generation: HostSessionGeneration,
+	): Promise<void> {
+		try {
+			await disposeOwned(generation);
+		} catch (reason) {
+			reportCleanupError(
+				asError({
+					reason,
+					fallback: "Failed to clean up a cancelled editor session.",
+				}),
+			);
+		}
+	}
+
+	async function handleCreationFailure({
+		generation,
+		reason,
+	}: {
+		generation: HostSessionGeneration;
+		reason: unknown;
+	}): Promise<void> {
+		const creationError = asError({
+			reason,
+			fallback: "Failed to create the editor session.",
+		});
+		let teardownError: Error | null = null;
+		try {
+			await disposeOwned(generation);
+		} catch (cleanupReason) {
+			teardownError = asError({
+				reason: cleanupReason,
+				fallback: "Failed to clean up after editor session creation.",
+			});
+		}
+
+		if (!generation.active || current !== generation) {
+			if (teardownError) reportCleanupError(teardownError);
+			return;
+		}
+
+		generation.error = teardownError
+			? new AggregateError(
+					[creationError, teardownError],
+					"Failed to create the editor session and clean up its runtime.",
+				)
+			: creationError;
+		publish(generation);
+	}
+
+	async function runGeneration(
+		generation: HostSessionGeneration,
+	): Promise<void> {
+		let runtime: PreparedWasmRuntimeProviders;
+		try {
+			runtime = await prepareRuntime();
+		} catch (reason) {
+			await handleCreationFailure({ generation, reason });
+			return;
+		}
+
+		generation.runtime = runtime;
+		if (!generation.active || current !== generation) {
+			await settleCancelledCleanup(generation);
+			return;
+		}
+
+		let created: EditorSession;
+		try {
+			created = await createSession({
+				host: generation.host,
+				runtimeGraphics: runtime.runtimeGraphics,
+				runtimeGpu: runtime.runtimeGpu,
+			});
+		} catch (reason) {
+			await handleCreationFailure({ generation, reason });
+			return;
+		}
+
+		generation.session = created;
+		if (!generation.active || current !== generation) {
+			await settleCancelledCleanup(generation);
+			return;
+		}
+		publish(generation);
 	}
 
 	function cancel(generation: HostSessionGeneration): void {
@@ -64,7 +231,11 @@ export function createEditorSessionHostController({
 			current = null;
 			publish(null);
 		}
-		void disposeOwned(generation);
+		// A generation whose createSession() call is still pending must retain its
+		// query wrappers. The settlement chain below disposes a late-created session
+		// first, while those wrappers are live, and frees them afterwards. A rejected
+		// creation has no session to inspect and can free the wrappers directly.
+		if (generation.session) void settleCancelledCleanup(generation);
 	}
 
 	return {
@@ -77,31 +248,19 @@ export function createEditorSessionHostController({
 				error: null,
 				active: true,
 				disposal: null,
+				runtime: null,
 			};
 			current = generation;
 			publish(generation);
 
-			void createSession({
-				host,
-				runtimeGraphics: UNIMPLEMENTED_RUNTIME_GRAPHICS,
-				runtimeGpu: UNIMPLEMENTED_RUNTIME_GPU,
-			})
-				.then(async (created) => {
-					generation.session = created;
-					if (!generation.active || current !== generation) {
-						await disposeOwned(generation);
-						return;
-					}
-					publish(generation);
-				})
-				.catch((reason: unknown) => {
-					if (!generation.active || current !== generation) return;
-					generation.error =
-						reason instanceof Error
-							? reason
-							: new Error("Failed to create the editor session.");
-					publish(generation);
-				});
+			void runGeneration(generation).catch((reason: unknown) => {
+				reportCleanupError(
+					asError({
+						reason,
+						fallback: "Unexpected editor session Host failure.",
+					}),
+				);
+			});
 
 			return () => cancel(generation);
 		},

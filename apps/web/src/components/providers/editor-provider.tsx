@@ -3,23 +3,21 @@
 import { useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useEditorHost } from "@/editor/host/editor-host-context";
-import { useEditor } from "@/editor/use-editor";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { useKeybindingsListener } from "@/actions/use-keybindings";
-import { useKeybindingsStore } from "@/actions/keybindings-store";
-import { useTimelineStore } from "@/timeline/timeline-store";
+import { useKeybindingsStore } from "@/editor/use-session-store";
+import { useTimelineStore } from "@/editor/use-session-store";
 import { useEditorActions } from "@/actions/use-editor-actions";
 import { loadFontAtlas } from "@/fonts/google-fonts";
-import {
-	initializeGpuRenderer,
-	isGpuAvailable,
-} from "@/services/renderer/gpu-renderer";
 
 interface EditorProviderProps {
 	children: React.ReactNode;
 }
 
 export function EditorProvider({ children }: EditorProviderProps) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
+	const session = useEditorSession();
 	const activeProject = useEditor((e) => e.project.getActiveOrNull());
 	const { projectId, navigation } = useEditorHost();
 	const [isLoading, setIsLoading] = useState(true);
@@ -44,8 +42,8 @@ export function EditorProvider({ children }: EditorProviderProps) {
 		const loadProject = async () => {
 			try {
 				setIsLoading(true);
-				await initializeGpuRenderer();
-				editor.renderer.setDegraded(!isGpuAvailable());
+				const graphics = await session.capabilities.graphics();
+				editor.renderer.setDegraded(graphics.rasterizer === "none");
 				await editor.project.loadProject({ id: projectId });
 
 				if (cancelled) return;
@@ -93,7 +91,7 @@ export function EditorProvider({ children }: EditorProviderProps) {
 		return () => {
 			cancelled = true;
 		};
-	}, [editor, projectId]);
+	}, [editor, projectId, session]);
 
 	if (error) {
 		return (
@@ -136,7 +134,7 @@ export function EditorProvider({ children }: EditorProviderProps) {
 }
 
 function EditorRuntimeBindings() {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const rippleEditingEnabled = useTimelineStore(
 		(state) => state.rippleEditingEnabled,
 	);

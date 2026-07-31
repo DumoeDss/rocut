@@ -11,8 +11,9 @@ import { useEditor } from "@/editor/use-editor";
 import { Loader2 } from "lucide-react";
 
 export function MigrationDialog() {
-	const editor = useEditor();
-	const migrationState = editor.project.getMigrationState();
+	const migrationState = useEditor((editor) =>
+		editor.project.getMigrationState(),
+	);
 
 	if (!migrationState.isMigrating) return null;
 

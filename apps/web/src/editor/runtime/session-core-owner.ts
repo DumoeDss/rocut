@@ -17,7 +17,7 @@ export function createOwnedSessionEditor({
 	session: EditorSession;
 }): EditorCore {
 	ensureEditorProcessBootstrap();
-	const editor = EditorCore.createSessionOwned();
+	const editor = EditorCore.createSessionOwned({ session });
 	editorsBySession.set(session, editor);
 	return editor;
 }
