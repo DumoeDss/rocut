@@ -1,0 +1,2 @@
+import { useEditor as readEditor } from "@/editor/use-editor";
+export const value = readEditor?.();

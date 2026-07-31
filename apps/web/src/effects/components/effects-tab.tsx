@@ -5,7 +5,7 @@ import type { ParamValues } from "@/params";
 import type { Effect } from "@/effects/types";
 import type { EffectElement, VisualElement } from "@/timeline";
 import { effectsRegistry } from "@/effects";
-import { useEditor } from "@/editor/use-editor";
+import { useEditorInstance } from "@/editor/use-editor";
 import { useElementPreview } from "@/timeline/hooks/use-element-preview";
 import {
 	Section,
@@ -25,7 +25,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { cn } from "@/utils/ui";
 import { Separator } from "@/components/ui/separator";
-import { useAssetsPanelStore } from "@/components/editor/panels/assets/assets-panel-store";
+import { useAssetsPanelStore } from "@/editor/use-session-store";
 
 export function StandaloneEffectTab({
 	element,
@@ -77,7 +77,7 @@ export function ClipEffectsTab({
 }) {
 	const [dragIndex, setDragIndex] = useState<number | null>(null);
 	const [dropIndex, setDropIndex] = useState<number | null>(null);
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const { renderElement, previewUpdates, commit } = useElementPreview({
 		trackId,
 		elementId: element.id,

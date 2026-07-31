@@ -1,4 +1,4 @@
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { useElementSelection } from "@/timeline/hooks/element/use-element-selection";
 import {
 	TooltipProvider,
@@ -26,7 +26,7 @@ import {
 } from "@/timeline/audio-separation";
 import { hasMediaId } from "@/timeline";
 import { cn } from "@/utils/ui";
-import { useTimelineStore } from "@/timeline/timeline-store";
+import { useTimelineStore } from "@/editor/use-session-store";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
 	Bookmark02Icon,
@@ -49,6 +49,7 @@ import { OcRippleIcon } from "@/components/icons";
 import { GraphEditorPopover } from "./graph-editor/popover";
 import { PopoverTrigger } from "@/components/ui/popover";
 import { useGraphEditorController } from "./graph-editor/use-controller";
+import { selectElementWithTrackTuple } from "@/timeline/element-with-track-selector";
 
 export function TimelineToolbar({
 	zoomLevel,
@@ -86,7 +87,7 @@ export function TimelineToolbar({
 }
 
 function ToolbarLeftSection() {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const mediaAssets = useEditor((currentEditor) =>
 		currentEditor.media.getAssets(),
 	);
@@ -95,37 +96,38 @@ function ToolbarLeftSection() {
 	const isCurrentlyBookmarked = useEditor((e) =>
 		e.scenes.isBookmarked({ time: e.playback.getCurrentTime() }),
 	);
-	const selectedElement =
-		selectedElements.length === 1
-			? (editor.timeline.getElementsWithTracks({
-					elements: selectedElements,
-				})[0] ?? null)
-			: null;
+	const [, selectedElement] = useEditor((currentEditor) =>
+		selectElementWithTrackTuple({
+			editor: currentEditor,
+			elements: selectedElements,
+		}),
+	);
 	const selectedMediaAsset = (() => {
 		if (!selectedElement) {
 			return null;
 		}
 
-		const { element } = selectedElement;
-		if (!hasMediaId(element)) {
+		if (!hasMediaId(selectedElement)) {
 			return null;
 		}
 
-		return mediaAssets.find((asset) => asset.id === element.mediaId) ?? null;
+		return (
+			mediaAssets.find((asset) => asset.id === selectedElement.mediaId) ?? null
+		);
 	})();
 	const canToggleSelectedSourceAudio =
 		!!selectedElement &&
-		canToggleSourceAudio(selectedElement.element, selectedMediaAsset);
+		canToggleSourceAudio(selectedElement, selectedMediaAsset);
 	const sourceAudioLabel =
-		selectedElement?.element.type === "video"
+		selectedElement?.type === "video"
 			? getSourceAudioActionLabel({
-					element: selectedElement.element,
+					element: selectedElement,
 				})
 			: "Extract audio";
 	const isSelectedSourceAudioSeparated =
-		selectedElement?.element.type === "video" &&
+		selectedElement?.type === "video" &&
 		isSourceAudioSeparated({
-			element: selectedElement.element,
+			element: selectedElement,
 		});
 
 	const handleAction = ({
@@ -246,8 +248,7 @@ function ToolbarLeftSection() {
 }
 
 function SceneSelector() {
-	const editor = useEditor();
-	const currentScene = editor.scenes.getActiveScene();
+	const currentScene = useEditor((editor) => editor.scenes.getActiveScene());
 
 	return (
 		<div>

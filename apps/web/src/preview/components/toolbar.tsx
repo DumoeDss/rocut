@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { formatTimecode } from "opencut-wasm";
 import { invokeAction } from "@/actions";
 import { EditableTimecode } from "@/components/editable-timecode";
@@ -23,8 +22,7 @@ import {
 import { PREVIEW_ZOOM_PRESETS } from "@/preview/zoom";
 import { usePreviewViewport } from "./preview-viewport";
 import { GridPopover } from "./guide-popover";
-import { usePreviewStore } from "@/preview/preview-store";
-import type { MediaTime } from "@/wasm";
+import { usePreviewStore } from "@/editor/use-session-store";
 
 export function PreviewToolbar({
 	onToggleFullscreen,
@@ -60,21 +58,10 @@ export function PreviewToolbar({
 }
 
 function TimecodeDisplay() {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const totalDuration = useEditor((e) => e.timeline.getTotalDuration());
 	const fps = useEditor((e) => e.project.getActive().settings.fps);
-	const [currentTime, setCurrentTime] = useState<MediaTime>(() =>
-		editor.playback.getCurrentTime(),
-	);
-
-	useEffect(() => {
-		const unsubscribeUpdate = editor.playback.onUpdate(setCurrentTime);
-		const unsubscribeSeek = editor.playback.onSeek(setCurrentTime);
-		return () => {
-			unsubscribeUpdate();
-			unsubscribeSeek();
-		};
-	}, [editor.playback]);
+	const currentTime = useEditor((e) => e.playback.getCurrentTime());
 
 	return (
 		<div className="flex items-center">

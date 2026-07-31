@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { useCommittedRef } from "@/hooks/use-committed-ref";
 import { useShiftKey } from "@/hooks/use-shift-key";
 import { useEdgeAutoScroll } from "@/timeline/hooks/use-edge-auto-scroll";
@@ -25,15 +25,16 @@ export function useTimelinePlayhead({
 	tracksScrollRef,
 	playheadRef,
 }: UseTimelinePlayheadProps) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const isShiftHeldRef = useShiftKey();
 	// isScrubbing drives useEdgeAutoScroll — the controller sets it on the editor,
 	// so this reactive read naturally reflects whether scrubbing is active.
 	const isScrubbing = useEditor((e) => e.playback.getIsScrubbing());
+	const duration = useEditor((e) => e.timeline.getTotalDuration());
 
 	const config: PlayheadConfig = {
 		zoomLevel,
-		duration: editor.timeline.getTotalDuration(),
+		duration,
 		getActiveProjectFps: () => editor.project.getActive()?.settings.fps ?? null,
 		isShiftHeld: () => isShiftHeldRef.current,
 		getIsPlaying: () => editor.playback.getIsPlaying(),
@@ -86,7 +87,7 @@ export function useTimelinePlayhead({
 		rulerScrollRef,
 		tracksScrollRef,
 		contentWidth: timelineTimeToPixels({
-			time: editor.timeline.getTotalDuration(),
+			time: duration,
 			zoomLevel,
 		}),
 	});

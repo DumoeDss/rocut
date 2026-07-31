@@ -13,7 +13,7 @@ import { PreviewPanel } from "@/preview/components";
 import { EditorHeader } from "@/components/editor/editor-header";
 import { Onboarding } from "@/components/editor/onboarding";
 import { MigrationDialog } from "@/project/components/migration-dialog";
-import { usePanelStore } from "@/editor/panel-store";
+import { usePanelStore } from "@/editor/use-session-store";
 import { usePasteMedia } from "@/media/use-paste-media";
 import { useEditor } from "@/editor/use-editor";
 import { Cancel01Icon } from "@hugeicons/core-free-icons";
@@ -24,7 +24,7 @@ import {
 	isPreviewOverlayVisible,
 	mergePreviewOverlaySources,
 } from "@/preview/overlays";
-import { usePreviewStore } from "@/preview/preview-store";
+import { usePreviewStore } from "@/editor/use-session-store";
 import { getGuidePreviewOverlaySource } from "@/guides";
 import {
 	bookmarkNotesPreviewOverlay,
@@ -34,14 +34,14 @@ import {
 /**
  * The editor surface, sized to fill whatever container the host gives it.
  *
- * It deliberately does **not** claim the viewport — the host supplies the
+ * It deliberately does **not** claim the viewport —the host supplies the
  * viewport-sized wrapper. That containment holds for layout flow; Radix dialogs,
  * dropdowns and toasts still portal to `document.body` with fixed positioning,
  * which is a known and documented deviation.
  *
  * `ChangelogNotification` is *not* rendered here. It is a product-shell
  * announcement with no editor behaviour, and it transitively imports
- * `content-collections` — a Next-build-time virtual module that no other bundler
+ * `content-collections` —a Next-build-time virtual module that no other bundler
  * can resolve. The Next host renders it alongside this component instead.
  */
 export function EditorRoot() {

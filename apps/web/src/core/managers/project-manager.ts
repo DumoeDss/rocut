@@ -20,7 +20,6 @@ import {
 	getProjectDurationFromScenes,
 } from "@/timeline/scenes";
 import { buildScene } from "@/services/renderer/scene-builder";
-import { CanvasRenderer } from "@/services/renderer/canvas-renderer";
 import {
 	CURRENT_PROJECT_VERSION,
 	migrations,
@@ -668,7 +667,7 @@ export class ProjectManager {
 			background,
 		});
 
-		const renderer = new CanvasRenderer({
+		const renderer = this.editor.renderer.createCanvasRenderer({
 			width: canvasSize.width,
 			height: canvasSize.height,
 			fps: this.active.settings.fps,

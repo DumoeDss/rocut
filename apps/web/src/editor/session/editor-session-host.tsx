@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 import type { EditorHost } from "@/editor/host/editor-host";
 import { EditorHostProvider } from "@/editor/host/editor-host-context";
 import {
-	UNIMPLEMENTED_RUNTIME_GPU,
-	UNIMPLEMENTED_RUNTIME_GRAPHICS,
-} from "@/editor/ports";
+	prepareWasmRuntimeProviders,
+	type PreparedWasmRuntimeProviders,
+} from "@/editor/runtime/wasm-runtime-providers";
 
 import {
 	createEditorSession,
@@ -26,13 +26,16 @@ interface HostSessionSnapshot {
 interface HostSessionGeneration extends HostSessionSnapshot {
 	active: boolean;
 	disposal: Promise<unknown> | null;
+	runtime: PreparedWasmRuntimeProviders | null;
 }
 
 export function createEditorSessionHostController({
 	createSession = createEditorSession,
+	prepareRuntime = prepareWasmRuntimeProviders,
 	onChange,
 }: {
 	createSession?: (args: CreateEditorSessionArgs) => Promise<EditorSession>;
+	prepareRuntime?: () => Promise<PreparedWasmRuntimeProviders>;
 	onChange: (snapshot: HostSessionSnapshot | null) => void;
 }) {
 	let nextGeneration = 0;
@@ -52,8 +55,15 @@ export function createEditorSessionHostController({
 	}
 
 	function disposeOwned(generation: HostSessionGeneration): Promise<unknown> {
-		if (!generation.session) return Promise.resolve();
-		generation.disposal ??= generation.session.dispose();
+		if (!generation.session) {
+			generation.runtime?.dispose();
+			generation.runtime = null;
+			return Promise.resolve();
+		}
+		generation.disposal ??= generation.session.dispose().finally(() => {
+			generation.runtime?.dispose();
+			generation.runtime = null;
+		});
 		return generation.disposal;
 	}
 
@@ -77,16 +87,27 @@ export function createEditorSessionHostController({
 				error: null,
 				active: true,
 				disposal: null,
+				runtime: null,
 			};
 			current = generation;
 			publish(generation);
 
-			void createSession({
-				host,
-				runtimeGraphics: UNIMPLEMENTED_RUNTIME_GRAPHICS,
-				runtimeGpu: UNIMPLEMENTED_RUNTIME_GPU,
-			})
+			void prepareRuntime()
+				.then(async (runtime) => {
+					generation.runtime = runtime;
+					if (!generation.active || current !== generation) {
+						runtime.dispose();
+						generation.runtime = null;
+						return null;
+					}
+					return createSession({
+						host,
+						runtimeGraphics: runtime.runtimeGraphics,
+						runtimeGpu: runtime.runtimeGpu,
+					});
+				})
 				.then(async (created) => {
+					if (!created) return;
 					generation.session = created;
 					if (!generation.active || current !== generation) {
 						await disposeOwned(generation);
@@ -95,7 +116,11 @@ export function createEditorSessionHostController({
 					publish(generation);
 				})
 				.catch((reason: unknown) => {
-					if (!generation.active || current !== generation) return;
+					if (!generation.active || current !== generation) {
+						void disposeOwned(generation);
+						return;
+					}
+					void disposeOwned(generation);
 					generation.error =
 						reason instanceof Error
 							? reason

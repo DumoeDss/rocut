@@ -2,12 +2,10 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import { usePreviewViewport } from "@/preview/components/preview-viewport";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import type { TextElement } from "@/timeline";
 import { DEFAULTS } from "@/timeline/defaults";
-import {
-	getElementLocalTime,
-} from "@/animation";
+import { getElementLocalTime } from "@/animation";
 import { resolveTransformAtTime } from "@/rendering/animation-values";
 import { buildTransformFromParams } from "@/rendering";
 import { resolveTextLayout } from "@/text/primitives";
@@ -27,9 +25,13 @@ export function TextEditOverlay({
 	element: TextElement;
 	onCommit: () => void;
 }) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const viewport = usePreviewViewport();
 	const divRef = useRef<HTMLDivElement>(null);
+	const [canvasSize, currentTime] = useEditor((currentEditor) => [
+		currentEditor.project.getActive().settings.canvasSize,
+		currentEditor.playback.getCurrentTime(),
+	]);
 
 	useEffect(() => {
 		const div = divRef.current;
@@ -63,11 +65,7 @@ export function TextEditOverlay({
 		[onCommit],
 	);
 
-	const canvasSize = editor.project.getActive().settings.canvasSize;
-
 	if (!canvasSize) return null;
-
-	const currentTime = editor.playback.getCurrentTime();
 	const localTime = getElementLocalTime({
 		timelineTime: currentTime,
 		elementStartTime: element.startTime,

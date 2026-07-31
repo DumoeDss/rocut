@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useEditor } from "@/editor/use-editor";
+import { useEditorInstance } from "@/editor/use-editor";
 import { processMediaAssets } from "@/media/processing";
 import { showMediaUploadToast } from "@/media/upload-toast";
 import { buildElementFromMedia } from "@/timeline/element-utils";
@@ -36,7 +36,7 @@ function extractMediaFilesFromClipboard({
 }
 
 export function usePasteMedia() {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 
 	useEffect(() => {
 		const handlePaste = async (event: ClipboardEvent) => {

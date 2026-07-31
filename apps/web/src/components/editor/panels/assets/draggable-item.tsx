@@ -10,7 +10,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useEditor } from "@/editor/use-editor";
+import { useEditorInstance } from "@/editor/use-editor";
 import type { TimelineDragData } from "@/timeline/drag";
 import { cn } from "@/utils/ui";
 import type { MediaTime } from "@/wasm";
@@ -49,7 +49,7 @@ export function DraggableItem({
 	const [isDragging, setIsDragging] = useState(false);
 	const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });
 	const dragRef = useRef<HTMLDivElement>(null);
-	const editor = useEditor();
+	const editor = useEditorInstance();
 
 	const handleAddToTimeline = () => {
 		onAddToTimeline?.({ currentTime: editor.playback.getCurrentTime() });

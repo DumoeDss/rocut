@@ -6,7 +6,7 @@ import {
 	type KeyboardShortcut,
 	useKeyboardShortcutsHelp,
 } from "@/actions/use-keyboard-shortcuts-help";
-import { useKeybindingsStore } from "@/actions/keybindings-store";
+import { useKeybindingsStore } from "@/editor/use-session-store";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,

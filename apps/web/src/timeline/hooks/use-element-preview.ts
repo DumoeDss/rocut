@@ -1,4 +1,4 @@
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { findTrackInSceneTracks, type TimelineElement } from "@/timeline";
 
 /**
@@ -17,16 +17,18 @@ export function useElementPreview<T extends TimelineElement>({
 	elementId: string;
 	fallback: T;
 }) {
-	const editor = useEditor();
-	useEditor((e) => e.timeline.getPreviewTracks());
-
-	const previewTracks = editor.timeline.getPreviewTracks();
-	const renderElement =
-		(findTrackInSceneTracks({
-			tracks: previewTracks ?? editor.scenes.getActiveScene().tracks,
-			trackId,
-		})?.elements.find((element) => element.id === elementId) as T | undefined) ??
-		fallback;
+	const editor = useEditorInstance();
+	const renderElement = useEditor((currentEditor) => {
+		const previewTracks = currentEditor.timeline.getPreviewTracks();
+		return (
+			(findTrackInSceneTracks({
+				tracks: previewTracks ?? currentEditor.scenes.getActiveScene().tracks,
+				trackId,
+			})?.elements.find((element) => element.id === elementId) as
+				| T
+				| undefined) ?? fallback
+		);
+	});
 
 	const previewUpdates = (updates: Partial<TimelineElement>) =>
 		editor.timeline.previewElements({

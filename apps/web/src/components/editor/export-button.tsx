@@ -32,7 +32,7 @@ import {
 	SectionHeader,
 	SectionTitle,
 } from "@/components/section";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { DEFAULT_EXPORT_OPTIONS } from "@/export/defaults";
 
 function isExportFormat(value: string): value is ExportFormat {
@@ -45,7 +45,7 @@ function isExportQuality(value: string): value is ExportQuality {
 
 export function ExportButton() {
 	const [isExportPopoverOpen, setIsExportPopoverOpen] = useState(false);
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const activeProject = useEditor((e) => e.project.getActiveOrNull());
 	const hasProject = !!activeProject;
 
@@ -97,7 +97,7 @@ function ExportPopover({
 }: {
 	onOpenChange: (open: boolean) => void;
 }) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const activeProject = useEditor((e) => e.project.getActive());
 	const exportState = useEditor((e) => e.project.getExportState());
 	const { isExporting, progress, result: exportResult } = exportState;

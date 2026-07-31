@@ -45,8 +45,8 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 		await import("@/editor/runtime/process-bootstrap");
 	const { createInMemoryHost } = await import("@/editor/ports/in-memory/host");
 	const { RecordingDiagnostics } = await import("@/editor/ports/in-memory");
-	const { useEditor } = await import("@/editor/use-editor");
-	const { useSoundsStore } = await import("@/sounds/sounds-store");
+	const { useEditor, useEditorInstance } = await import("@/editor/use-editor");
+	const { storesForSession } = await import("../../runtime/session-stores");
 
 	const MANAGER_KEYS = [
 		"timeline",
@@ -284,30 +284,32 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 			});
 
 			try {
-				const added = await useSoundsStore.getState().addSoundToTimeline({
-					editor: editorA,
-					sound: {
-						id: 1,
-						name: "session-owned sound",
-						description: "",
-						url: "https://example.test/sound",
-						previewUrl: "https://example.test/sound.mp3",
-						duration: 1,
-						filesize: 8,
-						type: "mp3",
-						channels: 2,
-						bitrate: 128,
-						bitdepth: 16,
-						samplerate: 44_100,
-						username: "test",
-						tags: [],
-						license: "test",
-						created: "2026-07-31",
-						downloads: 0,
-						rating: 0,
-						ratingCount: 0,
-					},
-				});
+				const added = await storesForSession(sessionA)
+					.sounds.getState()
+					.addSoundToTimeline({
+						editor: editorA,
+						sound: {
+							id: 1,
+							name: "session-owned sound",
+							description: "",
+							url: "https://example.test/sound",
+							previewUrl: "https://example.test/sound.mp3",
+							duration: 1,
+							filesize: 8,
+							type: "mp3",
+							channels: 2,
+							bitrate: 128,
+							bitdepth: 16,
+							samplerate: 44_100,
+							username: "test",
+							tags: [],
+							license: "test",
+							created: "2026-07-31",
+							downloads: 0,
+							rating: 0,
+							ratingCount: 0,
+						},
+					});
 				expect(added).toBe(true);
 				expect(insertedA).toHaveLength(1);
 				expect(insertedB).toHaveLength(0);
@@ -370,7 +372,20 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 			const editorB = editorForSession(sessionB);
 
 			function Probe({ expected }: { expected: typeof editorA }) {
-				return createElement("span", null, String(useEditor() === expected));
+				return createElement(
+					"span",
+					null,
+					String(useEditorInstance() === expected),
+				);
+			}
+			function SelectorProbe() {
+				return createElement(
+					"span",
+					null,
+					useEditor(
+						(editor) => editor.project.getActiveOrNull()?.metadata.id ?? "none",
+					),
+				);
 			}
 
 			expect(
@@ -391,15 +406,32 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 					),
 				),
 			).toContain("true");
+			expect(
+				renderToString(
+					createElement(
+						EditorSessionProvider,
+						{ session: sessionA },
+						createElement(SelectorProbe),
+					),
+				),
+			).toContain("none");
 			expect(() =>
 				renderToString(createElement(Probe, { expected: editorA })),
 			).toThrow("outside an <EditorSessionProvider>");
+			expect(() => renderToString(createElement(SelectorProbe))).toThrow(
+				"outside an <EditorSessionProvider>",
+			);
 
 			await sessionA.dispose();
 			await sessionB.dispose();
 		});
 
 		test("deferred Host churn never crosses session or error generations", async () => {
+			const flushMicrotasks = async () => {
+				for (let index = 0; index < 8; index += 1) {
+					await Promise.resolve();
+				}
+			};
 			expect(typeof EditorSessionHost).toBe("function");
 			const hostA = createInMemoryHost({ projectId: "host-a" });
 			const hostB = createInMemoryHost({ projectId: "host-b" });
@@ -430,6 +462,14 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 			const firstB = await trackedSession("firstB");
 			const secondB = await trackedSession("secondB");
 			const controller = createEditorSessionHostController({
+				prepareRuntime: async () => ({
+					runtimeGraphics: {
+						selectedBackend: () => "webgpu",
+						concurrentCompositorInstances: () => 2,
+					},
+					runtimeGpu: { liveHandles: () => [], release: () => {} },
+					dispose: () => {},
+				}),
 				createSession: ({ host }) =>
 					new Promise((resolve, reject) => {
 						requests.push({ host, resolve, reject });
@@ -440,25 +480,28 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 			});
 
 			controller.begin(hostA);
+			await flushMicrotasks();
 			controller.begin(hostB);
+			await flushMicrotasks();
 			requests[0]!.resolve(lateA);
-			await Promise.resolve();
-			await Promise.resolve();
+			await flushMicrotasks();
 			expect(disposals.lateA).toBe(1);
 			expect(controller.currentForHost(hostB)?.session).toBeNull();
 			expect(controller.currentForHost(hostA)).toBeNull();
 
 			requests[1]!.resolve(firstB);
-			await Promise.resolve();
+			await flushMicrotasks();
 			expect(controller.currentForHost(hostB)?.session).toBe(firstB);
 
 			controller.begin(hostA);
+			await flushMicrotasks();
 			const cleanupSecondB = controller.begin(hostB);
+			await flushMicrotasks();
 			requests[2]!.reject(new Error("stale A failure"));
-			await Promise.resolve();
+			await flushMicrotasks();
 			expect(controller.currentForHost(hostB)?.error).toBeNull();
 			requests[3]!.resolve(secondB);
-			await Promise.resolve();
+			await flushMicrotasks();
 			expect(controller.currentForHost(hostB)?.session).toBe(secondB);
 			expect(controller.currentForHost(hostB)?.error).toBeNull();
 			expect(disposals.firstB).toBe(1);

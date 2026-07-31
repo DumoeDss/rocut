@@ -19,6 +19,7 @@ import { frameRateToFloat } from "@/fps/utils";
 import type { RootNode } from "./nodes/root-node";
 import type { ExportFormat, ExportQuality } from "@/export";
 import { CanvasRenderer } from "./canvas-renderer";
+import type { WasmCompositor } from "./compositor/wasm-compositor";
 
 type ExportParams = {
 	width: number;
@@ -28,6 +29,7 @@ type ExportParams = {
 	quality: ExportQuality;
 	shouldIncludeAudio?: boolean;
 	audioBuffer?: AudioBuffer;
+	compositor: WasmCompositor;
 };
 
 const qualityMap = {
@@ -61,12 +63,14 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 		quality,
 		shouldIncludeAudio,
 		audioBuffer,
+		compositor,
 	}: ExportParams) {
 		super();
 		this.renderer = new CanvasRenderer({
 			width,
 			height,
 			fps,
+			compositor,
 		});
 
 		this.format = format;

@@ -1,10 +1,11 @@
 import { useEffect, useReducer, useState } from "react";
 import { usePreviewViewport } from "@/preview/components/preview-viewport";
 import type { OnSnapLinesChange } from "@/preview/hooks/use-preview-interaction";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { useCommittedRef } from "@/hooks/use-committed-ref";
 import { useShiftKey } from "@/hooks/use-shift-key";
 import { registerCanceller } from "@/editor/cancel-interaction";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 import {
 	TransformHandleController,
 	type TransformHandleDeps,
@@ -16,7 +17,8 @@ export function useTransformHandles({
 	onSnapLinesChange?: OnSnapLinesChange;
 }) {
 	const viewport = usePreviewViewport();
-	const editor = useEditor();
+	const editor = useEditorInstance();
+	const session = useEditorSession();
 	const isShiftHeldRef = useShiftKey();
 	const selectedElements = useEditor((e) => e.selection.getSelectedElements());
 	const tracks = useEditor(
@@ -59,8 +61,8 @@ export function useTransformHandles({
 
 	useEffect(() => {
 		if (!controller.isActive) return;
-		return registerCanceller({ fn: () => controller.cancel() });
-	}, [controller, controller.isActive]);
+		return registerCanceller({ session, fn: () => controller.cancel() });
+	}, [controller, controller.isActive, session]);
 
 	useEffect(() => () => controller.destroy(), [controller]);
 

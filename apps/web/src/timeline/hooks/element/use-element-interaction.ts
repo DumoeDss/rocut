@@ -1,9 +1,10 @@
 import { useEffect, useReducer, useState, type RefObject } from "react";
-import { useEditor } from "@/editor/use-editor";
+import { useEditorInstance } from "@/editor/use-editor";
 import { useCommittedRef } from "@/hooks/use-committed-ref";
 import { useShiftKey } from "@/hooks/use-shift-key";
 import { useElementSelection } from "@/timeline/hooks/element/use-element-selection";
 import { registerCanceller } from "@/editor/cancel-interaction";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 import {
 	ElementInteractionController,
 	type ElementInteractionDeps,
@@ -28,7 +29,8 @@ export function useElementInteraction({
 	snappingEnabled,
 	onSnapPointChange,
 }: UseElementInteractionProps) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
+	const session = useEditorSession();
 	const isShiftHeldRef = useShiftKey();
 	const selection = useElementSelection();
 
@@ -74,8 +76,8 @@ export function useElementInteraction({
 
 	useEffect(() => {
 		if (!controller.isActive) return;
-		return registerCanceller({ fn: () => controller.cancel() });
-	}, [controller.isActive, controller]);
+		return registerCanceller({ session, fn: () => controller.cancel() });
+	}, [controller.isActive, controller, session]);
 
 	useEffect(() => () => controller.destroy(), [controller]);
 

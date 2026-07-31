@@ -8,7 +8,7 @@ import {
 	getMaskDefinition,
 	getMaskDefinitionsForMenu,
 } from "@/masks";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { useElementPreview } from "@/timeline/hooks/use-element-preview";
 import { useMenuPreview } from "@/editor/use-menu-preview";
 import { getVisibleElementsWithBounds } from "@/preview/element-bounds";
@@ -127,7 +127,7 @@ function withPreviewedMaskParam({
 }
 
 export function MasksTab({ element, trackId }: MasksTabProps) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const { renderElement, previewUpdates, commit } =
 		useElementPreview<MaskableElement>({
 			trackId,
@@ -329,7 +329,7 @@ function MaskItem({
 	previewParam,
 	onCommit,
 }: MaskItemProps) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const definition = getMaskDefinition(mask.type);
 
 	return (

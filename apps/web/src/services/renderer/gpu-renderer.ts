@@ -2,29 +2,21 @@ import {
 	applyEffectPasses,
 	applyMaskFeather as applyMaskFeatherWasm,
 	initializeGpu,
+	WasmRuntimeGraphicsQuery,
 } from "opencut-wasm";
 import type { EffectPass, EffectUniformValue } from "@/effects/types";
 
-let gpuAvailable = false;
-let initPromise: Promise<void> | null = null;
-
 export function initializeGpuRenderer(): Promise<void> {
-	if (!initPromise) {
-		initPromise = initializeGpu()
-			.then(() => {
-				gpuAvailable = true;
-			})
-			.catch((error: unknown) => {
-				gpuAvailable = false;
-				const message = error instanceof Error ? error.message : String(error);
-				console.warn(`GPU renderer unavailable: ${message}`);
-			});
-	}
-	return initPromise;
+	return initializeGpu();
 }
 
 export function isGpuAvailable(): boolean {
-	return gpuAvailable;
+	const query = new WasmRuntimeGraphicsQuery();
+	try {
+		return query.selectedBackend() !== null;
+	} finally {
+		query.free();
+	}
 }
 
 export const gpuRenderer = {
@@ -39,7 +31,7 @@ export const gpuRenderer = {
 		height: number;
 		passes: EffectPass[];
 	}): OffscreenCanvas {
-		if (passes.length === 0 || !gpuAvailable) {
+		if (passes.length === 0 || !isGpuAvailable()) {
 			return source;
 		}
 
@@ -62,7 +54,7 @@ export const gpuRenderer = {
 		height: number;
 		feather: number;
 	}): OffscreenCanvas {
-		if (!gpuAvailable) {
+		if (!isGpuAvailable()) {
 			return maskCanvas;
 		}
 

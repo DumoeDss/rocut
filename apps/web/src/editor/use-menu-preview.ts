@@ -1,8 +1,8 @@
 import { useRef } from "react";
-import { useEditor } from "@/editor/use-editor";
+import { useEditorInstance } from "@/editor/use-editor";
 
 export function useMenuPreview() {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const didCommitRef = useRef(false);
 
 	const discard = () => {

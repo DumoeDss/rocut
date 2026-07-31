@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { invokeAction } from "@/actions";
-import { useEditor } from "@/editor/use-editor";
-import { useKeybindingsStore } from "@/actions/keybindings-store";
+import { useEditorInstance } from "@/editor/use-editor";
+import { useKeybindingsStore } from "@/editor/use-session-store";
 import { isTypableDOMElement } from "@/utils/browser";
 
 /**
@@ -10,7 +10,7 @@ import { isTypableDOMElement } from "@/utils/browser";
  * the appropriate actions based on keybindings
  */
 export function useKeybindingsListener() {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const {
 		keybindings,
 		getKeybindingString,

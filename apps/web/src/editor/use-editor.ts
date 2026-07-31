@@ -12,13 +12,8 @@ function isShallowEqual({ a, b }: { a: unknown; b: unknown }): boolean {
 	return a.every((item, i) => Object.is(item, b[i]));
 }
 
-const subscribeNone = () => () => {};
-
-export function useEditor(): EditorCore;
 export function useEditor<T>(selector: (editor: EditorCore) => T): T;
-export function useEditor<T>(
-	selector?: (editor: EditorCore) => T,
-): EditorCore | T {
+export function useEditor<T>(selector: (editor: EditorCore) => T): T {
 	const session = useEditorSession();
 	const editor = useMemo(() => editorForSession(session), [session]);
 	const snapshotCacheRef = useRef<T | typeof SNAPSHOT_UNSET>(SNAPSHOT_UNSET);
@@ -45,11 +40,7 @@ export function useEditor<T>(
 		[editor],
 	);
 
-	const getSnapshot = useCallback((): EditorCore | T => {
-		if (!selector) {
-			return editor;
-		}
-
+	const getSnapshot = useCallback((): T => {
 		const next = selector(editor);
 		if (
 			snapshotCacheRef.current !== SNAPSHOT_UNSET &&
@@ -65,9 +56,14 @@ export function useEditor<T>(
 		return next;
 	}, [editor, selector]);
 
-	return useSyncExternalStore(
-		selector ? subscribeAll : subscribeNone,
-		getSnapshot,
-		getSnapshot,
-	);
+	return useSyncExternalStore(subscribeAll, getSnapshot, getSnapshot);
+}
+
+/**
+ * Explicit stable-core access for event handlers and construction plumbing.
+ * It intentionally has no manager subscription.
+ */
+export function useEditorInstance(): EditorCore {
+	const session = useEditorSession();
+	return useMemo(() => editorForSession(session), [session]);
 }

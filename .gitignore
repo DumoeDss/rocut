@@ -61,3 +61,8 @@ apps/vite-example/tests/.playwright/
 # `.playwright/` rule above exists to prevent.
 apps/vite-example/tests/probe-artifacts/
 apps/vite-example/tests/.pw-output-probe/
+
+# C3 backend-specific session harness output. The test and config are source;
+# traces, reports and any persisted browser profile remain machine-local.
+apps/vite-example/tests/c3-artifacts/
+apps/vite-example/tests/.pw-output-c3/

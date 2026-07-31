@@ -1,5 +1,5 @@
 import { useEffect, useReducer, useState, type RefObject } from "react";
-import { useEditor } from "@/editor/use-editor";
+import { useEditorInstance } from "@/editor/use-editor";
 import { useCommittedRef } from "@/hooks/use-committed-ref";
 import {
 	DragDropController,
@@ -19,7 +19,7 @@ export function useTimelineDragDrop({
 	tracksScrollRef,
 	zoomLevel,
 }: UseTimelineDragDropProps) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 
 	const config: DragDropConfig = {
 		zoomLevel,

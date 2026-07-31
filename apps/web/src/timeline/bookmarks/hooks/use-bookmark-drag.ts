@@ -5,7 +5,7 @@ import {
 	useRef,
 	type RefObject,
 } from "react";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { useShiftKey } from "@/hooks/use-shift-key";
 import { TIMELINE_DRAG_THRESHOLD_PX } from "@/timeline/components/interaction";
 import { getMouseTimeFromClientX } from "@/timeline/drag-utils";
@@ -47,13 +47,19 @@ export function useBookmarkDrag({
 	snappingEnabled,
 	onSnapPointChange,
 }: UseBookmarkDragProps) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const isShiftHeldRef = useShiftKey();
-	const tracks = editor.scenes.getActiveScene().tracks;
-	const activeScene = editor.scenes.getActiveScene();
-	const bookmarks = activeScene?.bookmarks ?? [];
-	const playheadTime = editor.playback.getCurrentTime();
-	const duration = editor.timeline.getTotalDuration();
+	const [tracks, bookmarks, playheadTime, duration] = useEditor(
+		(currentEditor) => {
+			const activeScene = currentEditor.scenes.getActiveScene();
+			return [
+				activeScene.tracks,
+				activeScene.bookmarks,
+				currentEditor.playback.getCurrentTime(),
+				currentEditor.timeline.getTotalDuration(),
+			] as const;
+		},
+	);
 
 	const [dragState, setDragState] = useState<BookmarkDragState>({
 		isDragging: false,
@@ -162,8 +168,7 @@ export function useBookmarkDrag({
 					zoomLevel,
 					scrollLeft,
 				});
-				const clampedTime =
-					mouseTime > duration ? duration : mouseTime;
+				const clampedTime = mouseTime > duration ? duration : mouseTime;
 				const frameSnappedTime = roundFrameTime({
 					time: clampedTime,
 					fps: activeProject.settings.fps,
@@ -194,8 +199,7 @@ export function useBookmarkDrag({
 				zoomLevel,
 				scrollLeft,
 			});
-			const clampedTime =
-				mouseTime > duration ? duration : mouseTime;
+			const clampedTime = mouseTime > duration ? duration : mouseTime;
 			const frameSnappedTime = roundFrameTime({
 				time: clampedTime,
 				fps: activeProject.settings.fps,

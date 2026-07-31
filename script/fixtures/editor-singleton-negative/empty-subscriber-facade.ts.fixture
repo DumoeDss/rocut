@@ -1,0 +1,2 @@
+export const useFacade = () =>
+	useSyncExternalStore(() => () => {}, getSnapshot, getSnapshot);

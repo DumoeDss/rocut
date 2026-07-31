@@ -3,10 +3,10 @@
  * For core logic, use EditorCore instead.
  */
 
-import { create } from "zustand";
+import { createStore } from "zustand/vanilla";
 import { persist } from "zustand/middleware";
 
-interface TimelineStore {
+export interface TimelineStore {
 	snappingEnabled: boolean;
 	toggleSnapping: () => void;
 	rippleEditingEnabled: boolean;
@@ -15,43 +15,45 @@ interface TimelineStore {
 	toggleElementExpanded: (elementId: string) => void;
 }
 
-export const useTimelineStore = create<TimelineStore>()(
-	persist(
-		(set) => ({
-			snappingEnabled: true,
+export function createTimelineStore() {
+	return createStore<TimelineStore>()(
+		persist(
+			(set) => ({
+				snappingEnabled: true,
 
-			toggleSnapping: () => {
-				set((state) => ({ snappingEnabled: !state.snappingEnabled }));
-			},
+				toggleSnapping: () => {
+					set((state) => ({ snappingEnabled: !state.snappingEnabled }));
+				},
 
-			rippleEditingEnabled: false,
+				rippleEditingEnabled: false,
 
-			toggleRippleEditing: () => {
-				set((state) => ({
-					rippleEditingEnabled: !state.rippleEditingEnabled,
-				}));
-			},
+				toggleRippleEditing: () => {
+					set((state) => ({
+						rippleEditingEnabled: !state.rippleEditingEnabled,
+					}));
+				},
 
-			expandedElementIds: new Set<string>(),
+				expandedElementIds: new Set<string>(),
 
-			toggleElementExpanded: (elementId) => {
-				set((state) => {
-					const next = new Set(state.expandedElementIds);
-					if (next.has(elementId)) {
-						next.delete(elementId);
-					} else {
-						next.add(elementId);
-					}
-					return { expandedElementIds: next };
-				});
-			},
-		}),
-		{
-			name: "timeline-store",
-			partialize: (state) => ({
-				snappingEnabled: state.snappingEnabled,
-				rippleEditingEnabled: state.rippleEditingEnabled,
+				toggleElementExpanded: (elementId) => {
+					set((state) => {
+						const next = new Set(state.expandedElementIds);
+						if (next.has(elementId)) {
+							next.delete(elementId);
+						} else {
+							next.add(elementId);
+						}
+						return { expandedElementIds: next };
+					});
+				},
 			}),
-		},
-	),
-);
+			{
+				name: "timeline-store",
+				partialize: (state) => ({
+					snappingEnabled: state.snappingEnabled,
+					rippleEditingEnabled: state.rippleEditingEnabled,
+				}),
+			},
+		),
+	);
+}

@@ -7,7 +7,7 @@
  * touch a manager, a command, a store or a service, and it is called from
  * nothing in the running editor. Replacing the process-global core is C2's;
  * session-scoping the editor's own state is C3's. What this change owes is that
- * their replacement is *expressible* — and that it is expressible without a
+ * their replacement is *expressible* —and that it is expressible without a
  * process-global accessor anywhere in the signature.
  */
 import type {
@@ -34,6 +34,11 @@ import type { EditorHost, ResolvedEditorHost } from "@/editor/host/editor-host";
 import { resolveEditorHost } from "@/editor/host/editor-host";
 import type { DisposalReport } from "./resources";
 import { createSessionResources } from "./session-resources";
+import {
+	bindEditorSessionStores,
+	releaseEditorSessionStores,
+} from "@/editor/runtime/session-stores";
+import { releaseInteractionCancellers } from "@/editor/cancel-interaction";
 import type {
 	EditorSession,
 	EditorSessionRootHandle,
@@ -46,14 +51,14 @@ import type {
  * The migration run in flight, or completed, per store.
  *
  * Migration belongs to the **store**, because only the store knows its own
- * on-disk schema version — C5's second, non-browser implementation has different
+ * on-disk schema version —C5's second, non-browser implementation has different
  * legacy data or none at all. The **session** invokes it, exactly once, during
  * `create` and before any project load. Session-*owned* migration was rejected:
  * a second session would re-run it against the same store, or race the first.
  *
  * It memoises the **promise**, not a "started" flag. A flag set before the await
  * lets a second concurrent `createEditorSession` on the same store return while
- * migration is still running — which violates "before any project is loaded" in
+ * migration is still running —which violates "before any project is loaded" in
  * precisely the two-sessions-in-one-page case the Slice requires. The second
  * caller awaits the first run instead.
  *
@@ -176,7 +181,7 @@ export async function createEditorSession(
 	}
 
 	/**
-	 * Called when a root finishes unmounting, however that was triggered — by
+	 * Called when a root finishes unmounting, however that was triggered —by
 	 * `session.unmount()`, by `dispose()`, or by a Host calling `unmount()` on
 	 * the handle it holds. The handle route is the one that matters: a Host
 	 * racing an unmount against a route change holds only the handle, and the
@@ -232,7 +237,7 @@ export async function createEditorSession(
 		suspend: async () => {
 			assertNotDisposed("suspend");
 			if (state === "suspended") return;
-			// Identity and project state are retained — that is what distinguishes
+			// Identity and project state are retained —that is what distinguishes
 			// suspend from unmount, which releases the mounted root.
 			state = "suspended";
 			ownedEditor().suspend();
@@ -256,13 +261,18 @@ export async function createEditorSession(
 			// Publish one promise before the first await. Concurrent callers therefore
 			// join the same teardown instead of both crossing the unmount boundary.
 			disposalRun = (async () => {
-				// Disposal implies unmount: a Host is never required to sequence them.
-				await unmountRoot();
+				// Publish disposal and close every session-owned publication route before
+				// the first await. A zero-yield renderer/store continuation must not race
+				// through the unmount boundary and publish one last frame or result.
 				state = "disposed";
 				ownedEditor().dispose();
+				releaseInteractionCancellers(session);
+				releaseEditorSessionStores(session);
+				notify();
+				// Disposal implies unmount: a Host is never required to sequence them.
+				await unmountRoot();
 				const report = resources.disposeAll();
 				releaseEditorForSession(session);
-				notify();
 				changeListeners.clear();
 				eventListeners.clear();
 				return report;
@@ -272,7 +282,7 @@ export async function createEditorSession(
 
 		watch: ({ select, onChange }) => {
 			// Read and subscribe are one operation. There is no form that returns a
-			// snapshot without subscribing — see `SessionReadSurface`.
+			// snapshot without subscribing —see `SessionReadSurface`.
 			let previous = select(snapshot());
 			const listener = () => {
 				const next = select(snapshot());
@@ -290,7 +300,13 @@ export async function createEditorSession(
 		},
 	};
 
-	editor = createOwnedSessionEditor({ session });
+	try {
+		bindEditorSessionStores({ session });
+		editor = createOwnedSessionEditor({ session });
+	} catch (error) {
+		releaseEditorSessionStores(session);
+		throw error;
+	}
 	return session;
 }
 
@@ -299,7 +315,7 @@ export async function createEditorSession(
  *
  * Session creation **fails** rather than proceeding. Proceeding would run the
  * editor on data the store itself says is not at the version it expects, with
- * only a diagnostics event to show for it — and, because the run is memoised,
+ * only a diagnostics event to show for it —and, because the run is memoised,
  * no later session would ever retry. Of the two acceptable contracts, refusing
  * is the one that can be relaxed later without breaking a Host; silently
  * proceeding cannot be tightened later without breaking one.

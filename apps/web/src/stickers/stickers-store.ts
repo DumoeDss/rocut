@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import { createStore } from "zustand/vanilla";
 import { persist } from "zustand/middleware";
 import {
 	browseAll,
@@ -14,7 +14,6 @@ import { stickersRegistry } from "@/stickers/registry";
 import { parseStickerId } from "@/stickers/sticker-id";
 
 const MAX_RECENT_STICKERS = 50;
-let browseRequestVersion = 0;
 
 function isValidStickerId(value: unknown): value is string {
 	if (typeof value !== "string") {
@@ -59,7 +58,7 @@ function sanitizeRecentStickers({
 
 type ViewMode = "search" | "browse";
 
-interface StickersStore {
+export interface StickersStore {
 	searchQuery: string;
 	selectedCategory: StickerCategory;
 	viewMode: ViewMode;
@@ -77,162 +76,195 @@ interface StickersStore {
 	clearRecentStickers: () => void;
 }
 
-export const useStickersStore = create<StickersStore>()(
-	persist(
-		(set, get) => ({
-			searchQuery: "",
-			selectedCategory: "all",
-			viewMode: "browse",
+export interface StickerStoreQueries {
+	searchAll: typeof searchAll;
+	searchStickers: typeof searchStickersFromProviders;
+	browseAll: typeof browseAll;
+	browseCategory: typeof browseCategory;
+}
 
-			searchResults: null,
-			browseContent: null,
-			recentStickers: [],
+const DEFAULT_QUERIES: StickerStoreQueries = {
+	searchAll,
+	searchStickers: searchStickersFromProviders,
+	browseAll,
+	browseCategory,
+};
 
-			isSearching: false,
-			isBrowsing: false,
+export function createStickersStore({
+	isDisposed = () => false,
+	queries = DEFAULT_QUERIES,
+}: {
+	isDisposed?: () => boolean;
+	queries?: StickerStoreQueries;
+} = {}) {
+	let requestVersion = 0;
+	return createStore<StickersStore>()(
+		persist(
+			(set, get) => ({
+				searchQuery: "",
+				selectedCategory: "all",
+				viewMode: "browse",
 
-			setSearchQuery: ({ query }) => set({ searchQuery: query }),
-
-		setSelectedCategory: ({ category }) => {
-			set({
-				selectedCategory: category in STICKER_CATEGORIES ? category : "all",
+				searchResults: null,
 				browseContent: null,
-			});
+				recentStickers: [],
 
-			const query = get().searchQuery.trim();
-			if (query) {
-				void get().searchStickers({ query });
-				return;
-			}
+				isSearching: false,
+				isBrowsing: false,
 
-			void get().browseStickers();
-		},
+				setSearchQuery: ({ query }) => set({ searchQuery: query }),
 
-			searchStickers: async ({ query }: { query: string }) => {
-				const trimmedQuery = query.trim();
-				if (!trimmedQuery) {
-					set({ searchResults: null, viewMode: "browse" });
-					await get().browseStickers();
-					return;
-				}
+				setSelectedCategory: ({ category }) => {
+					set({
+						selectedCategory: category in STICKER_CATEGORIES ? category : "all",
+						browseContent: null,
+					});
 
-				const category = get().selectedCategory;
-				const selectedCategory =
-					category in STICKER_CATEGORIES ? category : "all";
-
-				set({ isSearching: true, viewMode: "search" });
-				try {
-					if (selectedCategory === "all") {
-						const browseContent = await searchAll({ query: trimmedQuery });
-						set({ browseContent, searchResults: null });
-					} else {
-						const results = await searchStickersFromProviders({
-							query: trimmedQuery,
-							category: selectedCategory,
-							limit: 100,
-						});
-						set({ searchResults: results });
+					const query = get().searchQuery.trim();
+					if (query) {
+						void get().searchStickers({ query });
+						return;
 					}
-				} catch (error) {
-					console.error("Search failed:", error);
-					set({ searchResults: null });
-				} finally {
-					set({ isSearching: false });
-				}
-			},
 
-		browseStickers: async () => {
-			const version = ++browseRequestVersion;
-			const category = get().selectedCategory;
-			const selectedCategory =
-				category in STICKER_CATEGORIES ? category : "all";
-
-			set({ isBrowsing: true, viewMode: "browse" });
-			try {
-				const browseContent =
-					selectedCategory === "all"
-						? await browseAll({
-								recentStickers: get().recentStickers,
-							})
-						: await browseCategory({
-								category: selectedCategory,
-							});
-
-				if (version !== browseRequestVersion) return;
-				set({ browseContent });
-			} catch (error) {
-				if (version !== browseRequestVersion) return;
-				console.error("Browse failed:", error);
-				set({ browseContent: null });
-			} finally {
-				if (version === browseRequestVersion) {
-					set({ isBrowsing: false });
-				}
-			}
-		},
-
-		addToRecentStickers: ({ stickerId }: { stickerId: string }) => {
-			const sanitizedStickerIds = sanitizeRecentStickers({
-				recentStickers: [stickerId],
-			});
-			if (sanitizedStickerIds.length === 0) {
-				return;
-			}
-
-			set((state) => {
-				const recent = [
-					sanitizedStickerIds[0],
-					...state.recentStickers.filter((s) => s !== sanitizedStickerIds[0]),
-				];
-				return {
-					recentStickers: recent.slice(0, MAX_RECENT_STICKERS),
-				};
-			});
-
-			if (get().viewMode === "browse" && get().selectedCategory === "all") {
-				void get().browseStickers();
-			}
-		},
-
-			clearRecentStickers: () => {
-				set({ recentStickers: [] });
-
-				if (get().viewMode === "browse" && get().selectedCategory === "all") {
 					void get().browseStickers();
-				}
-			},
-		}),
-		{
-			name: "stickers-settings",
-			version: 1,
-			migrate: (persistedState) => {
-				if (
-					typeof persistedState === "object" &&
-					persistedState !== null &&
-					"selectedCategory" in persistedState
-				) {
-					const typedState = persistedState as {
-						selectedCategory?: string;
-						recentStickers?: string[];
-					};
-					const category = typedState.selectedCategory ?? "all";
-					return {
-						...typedState,
-						selectedCategory:
-							category in STICKER_CATEGORIES
-								? (category as StickerCategory)
-								: "all",
-						recentStickers: sanitizeRecentStickers({
-							recentStickers: typedState.recentStickers ?? [],
-						}),
-					};
-				}
-				return persistedState;
-			},
-			partialize: (state) => ({
-				selectedCategory: state.selectedCategory,
-				recentStickers: state.recentStickers,
+				},
+
+				searchStickers: async ({ query }: { query: string }) => {
+					const version = ++requestVersion;
+					const trimmedQuery = query.trim();
+					if (!trimmedQuery) {
+						set({ searchResults: null, viewMode: "browse" });
+						await get().browseStickers();
+						return;
+					}
+
+					const category = get().selectedCategory;
+					const selectedCategory =
+						category in STICKER_CATEGORIES ? category : "all";
+
+					set({ isSearching: true, viewMode: "search" });
+					try {
+						if (selectedCategory === "all") {
+							const browseContent = await queries.searchAll({
+								query: trimmedQuery,
+							});
+							if (isDisposed() || version !== requestVersion) return;
+							set({ browseContent, searchResults: null });
+						} else {
+							const results = await queries.searchStickers({
+								query: trimmedQuery,
+								category: selectedCategory,
+								limit: 100,
+							});
+							if (isDisposed() || version !== requestVersion) return;
+							set({ searchResults: results });
+						}
+					} catch (error) {
+						if (isDisposed() || version !== requestVersion) return;
+						console.error("Search failed:", error);
+						set({ searchResults: null });
+					} finally {
+						if (!isDisposed() && version === requestVersion) {
+							set({ isSearching: false });
+						}
+					}
+				},
+
+				browseStickers: async () => {
+					const version = ++requestVersion;
+					const category = get().selectedCategory;
+					const selectedCategory =
+						category in STICKER_CATEGORIES ? category : "all";
+
+					set({ isBrowsing: true, viewMode: "browse" });
+					try {
+						const browseContent =
+							selectedCategory === "all"
+								? await queries.browseAll({
+										recentStickers: get().recentStickers,
+									})
+								: await queries.browseCategory({
+										category: selectedCategory,
+									});
+
+						if (isDisposed() || version !== requestVersion) return;
+						set({ browseContent });
+					} catch (error) {
+						if (isDisposed() || version !== requestVersion) return;
+						console.error("Browse failed:", error);
+						set({ browseContent: null });
+					} finally {
+						if (!isDisposed() && version === requestVersion) {
+							set({ isBrowsing: false });
+						}
+					}
+				},
+
+				addToRecentStickers: ({ stickerId }: { stickerId: string }) => {
+					const sanitizedStickerIds = sanitizeRecentStickers({
+						recentStickers: [stickerId],
+					});
+					if (sanitizedStickerIds.length === 0) {
+						return;
+					}
+
+					set((state) => {
+						const recent = [
+							sanitizedStickerIds[0],
+							...state.recentStickers.filter(
+								(s) => s !== sanitizedStickerIds[0],
+							),
+						];
+						return {
+							recentStickers: recent.slice(0, MAX_RECENT_STICKERS),
+						};
+					});
+
+					if (get().viewMode === "browse" && get().selectedCategory === "all") {
+						void get().browseStickers();
+					}
+				},
+
+				clearRecentStickers: () => {
+					set({ recentStickers: [] });
+
+					if (get().viewMode === "browse" && get().selectedCategory === "all") {
+						void get().browseStickers();
+					}
+				},
 			}),
-		},
-	),
-);
+			{
+				name: "stickers-settings",
+				version: 1,
+				migrate: (persistedState) => {
+					if (
+						typeof persistedState === "object" &&
+						persistedState !== null &&
+						"selectedCategory" in persistedState
+					) {
+						const typedState = persistedState as {
+							selectedCategory?: string;
+							recentStickers?: string[];
+						};
+						const category = typedState.selectedCategory ?? "all";
+						return {
+							...typedState,
+							selectedCategory:
+								category in STICKER_CATEGORIES
+									? (category as StickerCategory)
+									: "all",
+							recentStickers: sanitizeRecentStickers({
+								recentStickers: typedState.recentStickers ?? [],
+							}),
+						};
+					}
+					return persistedState;
+				},
+				partialize: (state) => ({
+					selectedCategory: state.selectedCategory,
+					recentStickers: state.recentStickers,
+				}),
+			},
+		),
+	);
+}

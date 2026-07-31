@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { useEditor } from "@/editor/use-editor";
+import { useEditorInstance } from "@/editor/use-editor";
 import { NumberField } from "@/components/ui/number-field";
 import { Switch } from "@/components/ui/switch";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -64,7 +64,7 @@ export function SpeedTab({
 	element: AudioElement | VideoElement;
 	trackId: string;
 }) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const rate = clampRetimeRate({
 		rate: element.retime?.rate ?? DEFAULT_RETIME_RATE,
 	});

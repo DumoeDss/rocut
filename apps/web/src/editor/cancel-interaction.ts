@@ -1,8 +1,26 @@
 type CancelFn = () => void;
 
-const cancellers = new Set<CancelFn>();
+import type { EditorSession } from "@/editor/session/session-types";
 
-export function registerCanceller({ fn }: { fn: CancelFn }): () => void {
+const cancellersBySession = new WeakMap<EditorSession, Set<CancelFn>>();
+
+function cancellersFor(session: EditorSession): Set<CancelFn> {
+	let cancellers = cancellersBySession.get(session);
+	if (!cancellers) {
+		cancellers = new Set();
+		cancellersBySession.set(session, cancellers);
+	}
+	return cancellers;
+}
+
+export function registerCanceller({
+	session,
+	fn,
+}: {
+	session: EditorSession;
+	fn: CancelFn;
+}): () => void {
+	const cancellers = cancellersFor(session);
 	cancellers.add(fn);
 
 	return () => {
@@ -10,7 +28,13 @@ export function registerCanceller({ fn }: { fn: CancelFn }): () => void {
 	};
 }
 
-export function cancelInteraction(): boolean {
+export function cancelInteraction({
+	session,
+}: {
+	session: EditorSession;
+}): boolean {
+	const cancellers = cancellersBySession.get(session);
+	if (!cancellers) return false;
 	if (cancellers.size === 0) return false;
 
 	const activeCancellers = Array.from(cancellers);
@@ -21,4 +45,11 @@ export function cancelInteraction(): boolean {
 	}
 
 	return true;
+}
+
+export function releaseInteractionCancellers(session: EditorSession): void {
+	const cancellers = cancellersBySession.get(session);
+	if (!cancellers) return;
+	cancellers.clear();
+	cancellersBySession.delete(session);
 }

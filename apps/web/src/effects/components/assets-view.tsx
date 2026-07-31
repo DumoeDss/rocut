@@ -5,7 +5,7 @@ import { PanelView } from "@/components/editor/panels/assets/views/base-panel";
 import { DraggableItem } from "@/components/editor/panels/assets/draggable-item";
 import { effectsRegistry, EFFECT_TARGET_ELEMENT_TYPES } from "@/effects";
 import { effectPreviewService } from "@/services/renderer/effect-preview";
-import { useEditor } from "@/editor/use-editor";
+import { useEditorInstance } from "@/editor/use-editor";
 import { buildEffectElement } from "@/timeline/element-utils";
 import type { EffectDefinition } from "@/effects/types";
 
@@ -54,7 +54,7 @@ function EffectPreviewCanvas({ effectType }: { effectType: string }) {
 }
 
 function EffectItem({ effect }: { effect: EffectDefinition }) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 
 	const handleAddToTimeline = useCallback(() => {
 		const currentTime = editor.playback.getCurrentTime();
