@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { EditorCore } from "@/core";
+import { useEditor } from "@/editor/use-editor";
 import { BrowserHostAdapter } from "@/services/storage/browser-host-adapter";
 import type { TProjectMetadata } from "@/project/types";
 
@@ -22,6 +22,7 @@ export function ProjectPicker({
 }: {
 	onOpen: (projectId: string) => void;
 }) {
+	const editor = useEditor();
 	const [projects, setProjects] = useState<TProjectMetadata[]>([]);
 	const [storageUsage, setStorageUsage] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
@@ -53,7 +54,6 @@ export function ProjectPicker({
 
 	const handleCreate = async () => {
 		try {
-			const editor = EditorCore.getInstance();
 			const projectId = await editor.project.createNewProject({
 				name: "Untitled Project",
 			});

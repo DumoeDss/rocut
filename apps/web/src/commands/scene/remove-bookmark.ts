@@ -1,5 +1,8 @@
-import { Command, type CommandResult } from "@/commands/base-command";
-import { EditorCore } from "@/core";
+import {
+	Command,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
 import type { TScene } from "@/timeline";
 import { updateSceneInArray } from "@/timeline/scenes";
 import {
@@ -16,8 +19,7 @@ export class RemoveBookmarkCommand extends Command {
 		super();
 	}
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		const activeScene = editor.scenes.getActiveScene();
 		const activeProject = editor.project.getActive();
 
@@ -51,9 +53,8 @@ export class RemoveBookmarkCommand extends Command {
 		editor.scenes.setScenes({ scenes: updatedScenes });
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (this.savedScenes) {
-			const editor = EditorCore.getInstance();
 			editor.scenes.setScenes({ scenes: this.savedScenes });
 		}
 	}

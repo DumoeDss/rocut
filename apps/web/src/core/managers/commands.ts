@@ -1,5 +1,5 @@
 import type { EditorCore } from "@/core";
-import type { Command, CommandResult } from "@/commands";
+import type { Command, CommandResult, EditorCommandContext } from "@/commands";
 import type { EditorSelectionSnapshot } from "@/selection/editor-selection";
 import { applyRippleAdjustments, computeRippleAdjustments } from "@/ripple";
 import type { SceneTracks } from "@/timeline/types";
@@ -15,15 +15,18 @@ export class CommandManager {
 	private history: CommandHistoryEntry[] = [];
 	private redoStack: CommandHistoryEntry[] = [];
 	private reactors: Array<() => void> = [];
+	private readonly context: EditorCommandContext;
 
-	constructor(private editor: EditorCore) {}
+	constructor(private editor: EditorCore) {
+		this.context = { editor };
+	}
 
 	execute({ command }: { command: Command }): Command {
 		const beforeTracks = this.isRippleEnabled
 			? (this.editor.scenes.getActiveSceneOrNull()?.tracks ?? null)
 			: null;
 		const previousSelection = this.getSelectionSnapshot();
-		const result = command.execute();
+		const result = command.execute(this.context);
 		this.applyRippleIfEnabled({ beforeTracks });
 		const selectionOverride = this.applySelectionOverride(result);
 		this.runReactors();
@@ -34,6 +37,14 @@ export class CommandManager {
 		});
 		this.redoStack = [];
 		return command;
+	}
+
+	executeWithoutHistory({
+		command,
+	}: {
+		command: Command;
+	}): CommandResult | undefined {
+		return command.execute(this.context);
 	}
 
 	push({ command }: { command: Command }): void {
@@ -51,7 +62,7 @@ export class CommandManager {
 	undo(): void {
 		if (this.history.length === 0) return;
 		const entry = this.history.pop();
-		entry?.command.undo();
+		entry?.command.undo(this.context);
 		if (entry) {
 			// Only restore selection for commands that explicitly changed it.
 			// Commands without selection intent leave selection untouched,
@@ -78,7 +89,7 @@ export class CommandManager {
 			? (this.editor.scenes.getActiveSceneOrNull()?.tracks ?? null)
 			: null;
 		const previousSelection = this.getSelectionSnapshot();
-		const result = entry.command.redo();
+		const result = entry.command.redo(this.context);
 		this.applyRippleIfEnabled({ beforeTracks });
 		const selectionOverride = this.applySelectionOverride(result);
 		this.runReactors();

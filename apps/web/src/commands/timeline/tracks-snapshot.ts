@@ -1,15 +1,12 @@
-import { Command, type CommandResult } from "@/commands/base-command";
+import {
+	Command,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
 import type { SceneTracks } from "@/timeline";
-import { EditorCore } from "@/core";
 
 export class TracksSnapshotCommand extends Command {
-	constructor({
-		before,
-		after,
-	}: {
-		before: SceneTracks;
-		after: SceneTracks;
-	}) {
+	constructor({ before, after }: { before: SceneTracks; after: SceneTracks }) {
 		super();
 		this.before = before;
 		this.after = after;
@@ -18,12 +15,12 @@ export class TracksSnapshotCommand extends Command {
 	private before: SceneTracks;
 	private after: SceneTracks;
 
-	execute(): CommandResult | undefined {
-		EditorCore.getInstance().timeline.updateTracks(this.after);
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
+		editor.timeline.updateTracks(this.after);
 		return undefined;
 	}
 
-	undo(): void {
-		EditorCore.getInstance().timeline.updateTracks(this.before);
+	undo({ editor }: EditorCommandContext): void {
+		editor.timeline.updateTracks(this.before);
 	}
 }

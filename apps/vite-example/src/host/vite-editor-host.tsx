@@ -1,6 +1,7 @@
 import { useMemo } from "react";
-import { EditorHostProvider } from "@/editor/host/editor-host-context";
 import type { EditorHost } from "@/editor/host/editor-host";
+import { createInMemoryPorts } from "@/editor/ports/in-memory";
+import { EditorSessionHost } from "@/editor/session";
 
 /**
  * This example's implementation of the editor host seam.
@@ -22,6 +23,7 @@ export function ViteEditorHost({
 }) {
 	const host = useMemo<EditorHost>(
 		() => ({
+			...createInMemoryPorts(),
 			projectId,
 			navigation: {
 				// The requested project did not exist and the editor made a new one.
@@ -57,5 +59,5 @@ export function ViteEditorHost({
 		[projectId, onProjectIdChange, onExitProject],
 	);
 
-	return <EditorHostProvider host={host}>{children}</EditorHostProvider>;
+	return <EditorSessionHost host={host}>{children}</EditorSessionHost>;
 }

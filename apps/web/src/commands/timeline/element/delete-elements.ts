@@ -1,6 +1,9 @@
-import { Command, type CommandResult } from "@/commands/base-command";
+import {
+	Command,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
 import type { SceneTracks } from "@/timeline";
-import { EditorCore } from "@/core";
 import type { TimelineTrack } from "@/timeline";
 
 function removeTrackElements<TTrack extends TimelineTrack>({
@@ -34,8 +37,7 @@ export class DeleteElementsCommand extends Command {
 		this.elements = elements;
 	}
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		this.savedState = editor.scenes.getActiveScene().tracks;
 
 		const updatedTracks: SceneTracks = {
@@ -63,9 +65,8 @@ export class DeleteElementsCommand extends Command {
 		};
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (this.savedState) {
-			const editor = EditorCore.getInstance();
 			editor.timeline.updateTracks(this.savedState);
 		}
 	}

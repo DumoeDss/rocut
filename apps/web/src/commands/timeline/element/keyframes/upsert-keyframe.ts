@@ -1,13 +1,13 @@
-import { EditorCore } from "@/core";
-import { Command, type CommandResult } from "@/commands/base-command";
+import {
+	Command,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
 import { upsertPathKeyframe } from "@/animation";
 import { updateElementInSceneTracks } from "@/timeline";
 import type { SceneTracks } from "@/timeline";
 import { resolveAnimationTarget } from "@/timeline/animation-targets";
-import type {
-	AnimationPath,
-	AnimationInterpolation,
-} from "@/animation/types";
+import type { AnimationPath, AnimationInterpolation } from "@/animation/types";
 import type { ParamValue } from "@/params";
 import {
 	type MediaTime,
@@ -53,8 +53,7 @@ export class UpsertKeyframeCommand extends Command {
 		this.keyframeId = keyframeId;
 	}
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		this.savedState = editor.scenes.getActiveScene().tracks;
 
 		const updatedTracks = updateElementInSceneTracks({
@@ -94,12 +93,11 @@ export class UpsertKeyframeCommand extends Command {
 		return undefined;
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (!this.savedState) {
 			return;
 		}
 
-		const editor = EditorCore.getInstance();
 		editor.timeline.updateTracks(this.savedState);
 	}
 }

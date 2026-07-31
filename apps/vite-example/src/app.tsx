@@ -20,11 +20,7 @@ export function App() {
 
 	const openProject = useCallback((id: string) => {
 		setProjectId(id);
-		window.history.replaceState(
-			null,
-			"",
-			`?project=${encodeURIComponent(id)}`,
-		);
+		window.history.replaceState(null, "", `?project=${encodeURIComponent(id)}`);
 	}, []);
 
 	const exitProject = useCallback(() => {
@@ -44,7 +40,13 @@ export function App() {
 				<Toaster />
 				<HostChrome>
 					{projectId === null ? (
-						<ProjectPicker onOpen={openProject} />
+						<ViteEditorHost
+							projectId="project-picker"
+							onProjectIdChange={setProjectId}
+							onExitProject={exitProject}
+						>
+							<ProjectPicker onOpen={openProject} />
+						</ViteEditorHost>
 					) : (
 						<EditorErrorBoundary>
 							<ViteEditorHost

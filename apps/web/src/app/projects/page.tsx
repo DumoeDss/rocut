@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { KeyboardEvent, MouseEvent } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import type { EditorCore } from "@/core";
 import { MigrationDialog } from "@/project/components/migration-dialog";
@@ -15,6 +15,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEditor } from "@/editor/use-editor";
+import type { EditorHost } from "@/editor/host/editor-host";
+import { createInMemoryPorts } from "@/editor/ports/in-memory";
+import { EditorSessionHost } from "@/editor/session";
+import { DEFAULT_LOGO_URL, SITE_URL } from "@/site/brand";
+import { SOCIAL_LINKS } from "@/site/social";
 import { useProjectsStore } from "./store";
 import type {
 	TProjectMetadata,
@@ -87,6 +92,38 @@ const VIEW_MODE_OPTIONS = [
 ];
 
 export default function ProjectsPage() {
+	const router = useRouter();
+	const host = useMemo<EditorHost>(
+		() => ({
+			...createInMemoryPorts(),
+			projectId: "project-picker",
+			navigation: {
+				onProjectReplaced: ({ projectId }) =>
+					router.push(`/editor/${projectId}`),
+				onExitProject: () => {},
+				onGoBack: () => router.back(),
+			},
+			services: {
+				soundSearchEndpoint: "/api/sounds/search",
+				feedbackEndpoint: "/api/feedback",
+			},
+			branding: { logoUrl: DEFAULT_LOGO_URL },
+			links: {
+				discordUrl: SOCIAL_LINKS.discord,
+				roadmapUrl: `${SITE_URL}/roadmap`,
+			},
+		}),
+		[router],
+	);
+
+	return (
+		<EditorSessionHost host={host}>
+			<ProjectsPageContent />
+		</EditorSessionHost>
+	);
+}
+
+function ProjectsPageContent() {
 	const { searchQuery, sortKey, sortOrder, viewMode } = useProjectsStore();
 	const editor = useEditor();
 	const sortOption: TProjectSortOption = `${sortKey}-${sortOrder}`;

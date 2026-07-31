@@ -1,5 +1,8 @@
-import { EditorCore } from "@/core";
-import { Command, type CommandResult } from "@/commands/base-command";
+import {
+	Command,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
 import {
 	getFreeformPathClosedStateAfterPointRemoval,
 	removeFreeformPathPoints,
@@ -89,8 +92,7 @@ export class DeleteFreeformPathMaskPointsCommand extends Command {
 		this.pointIds = pointIds;
 	}
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		this.savedState = editor.scenes.getActiveScene().tracks;
 
 		let didDeletePoints = false;
@@ -123,9 +125,8 @@ export class DeleteFreeformPathMaskPointsCommand extends Command {
 		return undefined;
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (this.savedState) {
-			const editor = EditorCore.getInstance();
 			editor.timeline.updateTracks(this.savedState);
 		}
 	}

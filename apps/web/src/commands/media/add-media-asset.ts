@@ -1,5 +1,8 @@
-import { Command, type CommandResult } from "@/commands/base-command";
-import { EditorCore } from "@/core";
+import {
+	Command,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
 import { toast } from "sonner";
 import type { MediaAsset } from "@/media/types";
 import { generateUUID } from "@/utils/id";
@@ -32,8 +35,7 @@ export class AddMediaAssetCommand extends Command {
 	private projectId: string;
 	private asset: Omit<MediaAsset, "id">;
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		this.savedAssets = [...editor.media.getAssets()];
 
 		this.createdAsset = {
@@ -44,7 +46,8 @@ export class AddMediaAssetCommand extends Command {
 		editor.media.setAssets({
 			assets: [...this.savedAssets, this.createdAsset],
 		});
-		this.previousProjectFps = editor.project.getActiveOrNull()?.settings.fps ?? null;
+		this.previousProjectFps =
+			editor.project.getActiveOrNull()?.settings.fps ?? null;
 		this.appliedProjectFps = editor.project.ratchetFpsForImportedMedia({
 			importedAssets: [this.createdAsset],
 		});
@@ -97,9 +100,8 @@ export class AddMediaAssetCommand extends Command {
 		return undefined;
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (this.savedAssets) {
-			const editor = EditorCore.getInstance();
 			editor.media.setAssets({ assets: this.savedAssets });
 
 			if (this.createdAsset) {
@@ -119,9 +121,10 @@ export class AddMediaAssetCommand extends Command {
 	private restoreProjectFpsAfterFailedSave({
 		editor,
 	}: {
-		editor: EditorCore;
+		editor: EditorCommandContext["editor"];
 	}): void {
-		if (this.previousProjectFps === null || this.appliedProjectFps === null) return;
+		if (this.previousProjectFps === null || this.appliedProjectFps === null)
+			return;
 
 		const activeProject = editor.project.getActiveOrNull();
 		if (!activeProject) return;
@@ -137,7 +140,8 @@ export class AddMediaAssetCommand extends Command {
 		const highestRemainingVideoFps = getHighestImportedVideoFps({
 			mediaAssets: editor.media.getAssets(),
 		});
-		const appliedFpsFloat = this.appliedProjectFps.numerator / this.appliedProjectFps.denominator;
+		const appliedFpsFloat =
+			this.appliedProjectFps.numerator / this.appliedProjectFps.denominator;
 		if (
 			highestRemainingVideoFps !== null &&
 			highestRemainingVideoFps >= appliedFpsFloat
@@ -145,6 +149,10 @@ export class AddMediaAssetCommand extends Command {
 			return;
 		}
 
-		new UpdateProjectSettingsCommand({ fps: this.previousProjectFps }).execute();
+		editor.command.executeWithoutHistory({
+			command: new UpdateProjectSettingsCommand({
+				fps: this.previousProjectFps,
+			}),
+		});
 	}
 }

@@ -1,5 +1,8 @@
-import { Command, type CommandResult } from "@/commands/base-command";
-import { EditorCore } from "@/core";
+import {
+	Command,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
 import type { MediaAsset } from "@/media/types";
 import { buildWaveformSourceKey } from "@/media/waveform-summary";
 import { storageService } from "@/services/storage/service";
@@ -13,13 +16,7 @@ export class RemoveMediaAssetCommand extends Command {
 	private savedTracks: SceneTracks | null = null;
 	private removedAsset: MediaAsset | null = null;
 
-	constructor({
-		projectId,
-		assetId,
-	}: {
-		projectId: string;
-		assetId: string;
-	}) {
+	constructor({ projectId, assetId }: { projectId: string; assetId: string }) {
 		super();
 		this.projectId = projectId;
 		this.assetId = assetId;
@@ -28,8 +25,7 @@ export class RemoveMediaAssetCommand extends Command {
 	private projectId: string;
 	private assetId: string;
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		const assets = editor.media.getAssets();
 
 		this.savedAssets = [...assets];
@@ -87,9 +83,7 @@ export class RemoveMediaAssetCommand extends Command {
 			});
 	}
 
-	undo(): void {
-		const editor = EditorCore.getInstance();
-
+	undo({ editor }: EditorCommandContext): void {
 		if (this.savedAssets && this.removedAsset) {
 			const restoredAsset: MediaAsset = {
 				...this.removedAsset,

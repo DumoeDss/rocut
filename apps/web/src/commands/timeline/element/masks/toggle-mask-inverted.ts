@@ -1,5 +1,8 @@
-import { EditorCore } from "@/core";
-import { Command, type CommandResult } from "@/commands/base-command";
+import {
+	Command,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
 import { isMaskableElement, updateElementInSceneTracks } from "@/timeline";
 import type { Mask } from "@/masks/types";
 import type { SceneTracks, MaskableElement } from "@/timeline";
@@ -47,8 +50,7 @@ export class ToggleMaskInvertedCommand extends Command {
 		this.maskId = maskId;
 	}
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		this.savedState = editor.scenes.getActiveScene().tracks;
 
 		const updatedTracks = updateElementInSceneTracks({
@@ -69,9 +71,8 @@ export class ToggleMaskInvertedCommand extends Command {
 		return undefined;
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (this.savedState) {
-			const editor = EditorCore.getInstance();
 			editor.timeline.updateTracks(this.savedState);
 		}
 	}

@@ -5,8 +5,9 @@ import { useParams, useRouter } from "next/navigation";
 import { EditorProvider } from "@/components/providers/editor-provider";
 import { MobileGate } from "@/components/editor/mobile-gate";
 import { ChangelogNotification } from "@/changelog/components/changelog-notification";
-import { EditorHostProvider } from "@/editor/host/editor-host-context";
 import type { EditorHost } from "@/editor/host/editor-host";
+import { createInMemoryPorts } from "@/editor/ports/in-memory";
+import { EditorSessionHost } from "@/editor/session";
 import { EditorRoot } from "@/editor/surface/editor-root";
 import { DEFAULT_LOGO_URL, SITE_URL } from "@/site/brand";
 import { SOCIAL_LINKS } from "@/site/social";
@@ -25,6 +26,7 @@ export default function Editor() {
 
 	const host = useMemo<EditorHost>(
 		() => ({
+			...createInMemoryPorts(),
 			projectId,
 			navigation: {
 				onProjectReplaced: ({ projectId: newProjectId }) =>
@@ -49,7 +51,7 @@ export default function Editor() {
 	);
 
 	return (
-		<EditorHostProvider host={host}>
+		<EditorSessionHost host={host}>
 			<div className="h-screen w-screen">
 				<MobileGate>
 					<EditorProvider>
@@ -58,6 +60,6 @@ export default function Editor() {
 					</EditorProvider>
 				</MobileGate>
 			</div>
-		</EditorHostProvider>
+		</EditorSessionHost>
 	);
 }

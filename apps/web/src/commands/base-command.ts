@@ -1,5 +1,10 @@
 import type { EditorSelectionPatch } from "@/selection/editor-selection";
 import type { ElementRef } from "@/timeline/types";
+import type { EditorCore } from "@/core";
+
+export interface EditorCommandContext {
+	readonly editor: EditorCore;
+}
 
 export interface CommandResult {
 	selection?: EditorSelectionPatch;
@@ -19,13 +24,13 @@ export function createElementSelectionResult(
 }
 
 export abstract class Command {
-	abstract execute(): CommandResult | undefined;
+	abstract execute(context: EditorCommandContext): CommandResult | undefined;
 
-	undo(): void {
+	undo(_context: EditorCommandContext): void {
 		throw new Error("Undo not implemented for this command");
 	}
 
-	redo(): CommandResult | undefined {
-		return this.execute();
+	redo(context: EditorCommandContext): CommandResult | undefined {
+		return this.execute(context);
 	}
 }

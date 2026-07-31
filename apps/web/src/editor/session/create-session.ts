@@ -26,6 +26,11 @@ import {
 	UNIMPLEMENTED_RUNTIME_GPU,
 	UNIMPLEMENTED_RUNTIME_GRAPHICS,
 } from "@/editor/ports";
+import {
+	bindEditorToSession,
+	createOwnedSessionEditor,
+	releaseEditorForSession,
+} from "@/editor/runtime/session-core-owner";
 import type { EditorHost, ResolvedEditorHost } from "@/editor/host/editor-host";
 import { resolveEditorHost } from "@/editor/host/editor-host";
 import type { DisposalReport } from "./resources";
@@ -59,7 +64,6 @@ import type {
  * poisoned.
  */
 const migrationRuns = new WeakMap<object, Promise<void>>();
-
 export interface CreateEditorSessionArgs {
 	host: EditorHost;
 	/**
@@ -80,7 +84,8 @@ export async function createEditorSession(
 	args: CreateEditorSessionArgs,
 ): Promise<EditorSession> {
 	const host: ResolvedEditorHost = resolveEditorHost({ host: args.host });
-	const runtimeGraphics = args.runtimeGraphics ?? UNIMPLEMENTED_RUNTIME_GRAPHICS;
+	const runtimeGraphics =
+		args.runtimeGraphics ?? UNIMPLEMENTED_RUNTIME_GRAPHICS;
 
 	const id: SessionId = host.ids.next({ scope: "session" });
 	const projectId: ProjectId = host.projectId;
@@ -136,10 +141,15 @@ export async function createEditorSession(
 		},
 	};
 
-	await runMigrationOnce({ host, diagnostics, onProgress: (p) => {
-		migration = p;
-		notify();
-	} });
+	await runMigrationOnce({
+		host,
+		diagnostics,
+		onProgress: (p) => {
+			migration = p;
+			notify();
+		},
+	});
+	const editor = createOwnedSessionEditor();
 
 	function snapshot(): EditorSessionSnapshot {
 		return {
@@ -219,12 +229,14 @@ export async function createEditorSession(
 			// Identity and project state are retained — that is what distinguishes
 			// suspend from unmount, which releases the mounted root.
 			state = "suspended";
+			editor.suspend();
 			notify();
 		},
 
 		resume: async () => {
 			assertNotDisposed("resume");
 			if (state !== "suspended") return;
+			editor.resume();
 			state = root ? "mounted" : "created";
 			notify();
 		},
@@ -238,7 +250,9 @@ export async function createEditorSession(
 			// Disposal implies unmount: a Host is never required to sequence them.
 			await unmountRoot();
 			state = "disposed";
+			editor.dispose();
 			const report = resources.disposeAll();
+			releaseEditorForSession(session);
 			notify();
 			changeListeners.clear();
 			eventListeners.clear();
@@ -265,6 +279,7 @@ export async function createEditorSession(
 		},
 	};
 
+	bindEditorToSession({ session, editor });
 	return session;
 }
 
