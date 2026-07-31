@@ -32,6 +32,41 @@ Slice clause: §3.7.
 
 ---
 
+## Port roles the host seam carries
+
+The seam this record describes used to carry server endpoints and nothing else. It now carries the
+full Host port surface (`apps/web/src/editor/ports/index.ts`), so the record extends to every port
+role: what a Host must supply, and what happens when it supplies nothing.
+
+**The answer to "what happens when it is omitted" is the same for all eight, and it is deliberate.**
+The roles are declared `Partial` on `EditorHost` only so that a Host can be widened one role at a
+time while it is being wired; a session is created from `ResolvedEditorHost`, and
+`resolveEditorHost()` **throws, naming every missing role**. Nothing falls back to the in-memory
+implementation. A silent fallback would let a Host that forgot to supply storage run, appear to work,
+and lose the user's projects on reload — a failure that surfaces late and reads as data loss rather
+than as a missing port.
+
+Nothing is wired to these roles yet: no editor code path consumes them at this commit, so omitting
+one changes nothing about today's behaviour. The column below states what a Host owes once the roles
+are wired.
+
+| Port role | A Host must supply | What happens when it is omitted | Notes |
+| --- | --- | --- | --- |
+| `store` (`ProjectStore`) | **Required.** Persistence, as an opaque payload plus a typed summary, plus its own `schemaVersion` and optional `migrate`. | Session creation throws naming `store`. | The store never sees a schema type. Migration belongs to the store; the session invokes it once per store. |
+| `assets` (`AssetResolver`) | **Required.** Maps a logical, non-root-absolute asset path to a location this Host serves. | Session creation throws naming `assets`. | This is the role that removes the root-absolute assumption. |
+| `assetLoader` (`RuntimeAssetLoader`) | **Required.** Bytes and JSON for a logical asset path. | Session creation throws naming `assetLoader`. | JSON is parsed at the port so a static host answering `200 text/html` to an absent path fails where it is still attributable. |
+| `runtimeResources` (`RuntimeResourceHost`) | **Required.** Constructs workers, audio contexts and object URLs. | Session creation throws naming `runtimeResources`. | The Host constructs; the editor never does. The worker URL the editor supplies is a **request the Host may rewrite** — this is what makes a same-origin-constrained Host implementable at all. |
+| `exporter` (`ExportProvider`) | **Required to be present; permitted to report unsupported.** | Session creation throws naming `exporter`. | `{ status: "unsupported", reason }` is a conforming answer, not a stub — the same reasoning as an absent server endpoint: absence must be *declarable* rather than discovered by a request that appears to succeed. Export semantics are S08's. |
+| `diagnostics` (`DiagnosticsPort`) | **Required.** Log records and session-scoped events. | Session creation throws naming `diagnostics`. | `sessionId` is on the call, not the port, so one Host implementation serves every session and two sessions stay distinguishable in its output. |
+| `ids` (`IdGenerator`) | **Required.** Fresh ids, per scope. | Session creation throws naming `ids`. | Exists so a Host can supply *determinism*; that is what makes a headless or automation run reproducible. |
+| `environment` (`EnvironmentCapabilities`) | **Required.** Declares `{ mode: "detect" }` or `{ mode: "force", rasterizer: "none" }`. | Session creation throws naming `environment`. | The Host **declares**; it never asserts the capability report. The report — rasterizer, selected backend, live-preview count — is produced by the runtime and is not something a Host can fake. |
+
+`navigation` is listed among the port roles in the Target State's role table under the name
+`NavigationHost`, but it is **not** a new port: `EditorHostNavigation` already was one, both Hosts
+already implement it, and it is unchanged. Its handling is the existing rows above.
+
+---
+
 ## What the parity run actually observed
 
 The §3.3 scenario runs with **every non-first-party host blocked** at the browser (task 9.4), and
