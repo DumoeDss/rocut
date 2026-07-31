@@ -27,7 +27,6 @@ import {
 	UNIMPLEMENTED_RUNTIME_GRAPHICS,
 } from "@/editor/ports";
 import {
-	bindEditorToSession,
 	createOwnedSessionEditor,
 	releaseEditorForSession,
 } from "@/editor/runtime/session-core-owner";
@@ -149,7 +148,14 @@ export async function createEditorSession(
 			notify();
 		},
 	});
-	const editor = createOwnedSessionEditor();
+	let editor: ReturnType<typeof createOwnedSessionEditor> | null = null;
+	let disposalRun: Promise<DisposalReport> | null = null;
+	function ownedEditor(): ReturnType<typeof createOwnedSessionEditor> {
+		if (!editor) {
+			throw new Error(`Session ${id} has not finished creating its editor.`);
+		}
+		return editor;
+	}
 
 	function snapshot(): EditorSessionSnapshot {
 		return {
@@ -229,14 +235,14 @@ export async function createEditorSession(
 			// Identity and project state are retained — that is what distinguishes
 			// suspend from unmount, which releases the mounted root.
 			state = "suspended";
-			editor.suspend();
+			ownedEditor().suspend();
 			notify();
 		},
 
 		resume: async () => {
 			assertNotDisposed("resume");
 			if (state !== "suspended") return;
-			editor.resume();
+			ownedEditor().resume();
 			state = root ? "mounted" : "created";
 			notify();
 		},
@@ -245,18 +251,23 @@ export async function createEditorSession(
 			await unmountRoot();
 		},
 
-		dispose: async (): Promise<DisposalReport> => {
-			if (state === "disposed") return resources.inspect();
-			// Disposal implies unmount: a Host is never required to sequence them.
-			await unmountRoot();
-			state = "disposed";
-			editor.dispose();
-			const report = resources.disposeAll();
-			releaseEditorForSession(session);
-			notify();
-			changeListeners.clear();
-			eventListeners.clear();
-			return report;
+		dispose: (): Promise<DisposalReport> => {
+			if (disposalRun) return disposalRun;
+			// Publish one promise before the first await. Concurrent callers therefore
+			// join the same teardown instead of both crossing the unmount boundary.
+			disposalRun = (async () => {
+				// Disposal implies unmount: a Host is never required to sequence them.
+				await unmountRoot();
+				state = "disposed";
+				ownedEditor().dispose();
+				const report = resources.disposeAll();
+				releaseEditorForSession(session);
+				notify();
+				changeListeners.clear();
+				eventListeners.clear();
+				return report;
+			})();
+			return disposalRun;
 		},
 
 		watch: ({ select, onChange }) => {
@@ -279,7 +290,7 @@ export async function createEditorSession(
 		},
 	};
 
-	bindEditorToSession({ session, editor });
+	editor = createOwnedSessionEditor({ session });
 	return session;
 }
 

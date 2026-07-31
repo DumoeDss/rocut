@@ -14,6 +14,11 @@ const defaultGraphicDefinitions = [
 export function registerDefaultGraphics(): void {
 	for (const definition of defaultGraphicDefinitions) {
 		if (graphicsRegistry.has(definition.id)) {
+			if (graphicsRegistry.get(definition.id) !== definition) {
+				throw new Error(
+					`Conflicting default graphic definition at key "${definition.id}".`,
+				);
+			}
 			continue;
 		}
 		graphicsRegistry.register({

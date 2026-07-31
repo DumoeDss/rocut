@@ -11,11 +11,12 @@ const negativeControl =
 	negativeIndex === -1 ? null : (args[negativeIndex + 1] ?? null);
 
 const OWNER = "apps/web/src/editor/runtime/session-core-owner.ts";
+const SESSION_FACTORY = "apps/web/src/editor/session/create-session.ts";
 const REQUIRED = [
 	"apps/web/src/app/editor/[project_id]/page.tsx",
 	"apps/vite-example/src/host/vite-editor-host.tsx",
 	OWNER,
-	"apps/web/src/editor/session/create-session.ts",
+	SESSION_FACTORY,
 	"apps/vite-example/src/project-picker.tsx",
 	"apps/web/src/sounds/sounds-store.ts",
 	"apps/web/src/sounds/components/assets-view.tsx",
@@ -27,6 +28,8 @@ const NEGATIVE_FIXTURES = {
 	"static-core-instance": "static-instance.ts.fixture",
 	"module-scope-construction": "module-scope-construction.ts.fixture",
 	"construction-outside-owner": "outside-owner-construction.ts.fixture",
+	"owner-wrapper-outside-route": "outside-owner-wrapper.ts.fixture",
+	"session-key-required": "current-session-route.ts.fixture",
 };
 
 function walk(directory) {
@@ -108,6 +111,7 @@ const violations = completenessFailures.map((detail) => ({
 	path: detail,
 }));
 let ownerConstructionCount = 0;
+let ownerWrapperRouteCount = 0;
 
 for (const entry of sources) {
 	const { path, source } = entry;
@@ -151,7 +155,27 @@ for (const entry of sources) {
 		violations.push({ rule: "construction-outside-owner", path });
 	}
 
-	if (/\beditorForSession\s*\(\s*\)/.test(source)) {
+	const ownerWrapperCalls = source
+		.split(/\r?\n/)
+		.filter(
+			(line) =>
+				/\bcreateOwnedSessionEditor\s*\(/.test(line) &&
+				!/\bfunction\s+createOwnedSessionEditor\s*\(/.test(line),
+		).length;
+	if (path === SESSION_FACTORY) {
+		ownerWrapperRouteCount += ownerWrapperCalls;
+	} else if (ownerWrapperCalls > 0) {
+		violations.push({ rule: "owner-wrapper-outside-route", path });
+	}
+
+	if (
+		/\beditorForSession\s*\(\s*\)/.test(source) ||
+		/\bcreateOwnedSessionEditor\s*\(\s*\)/.test(source) ||
+		/^(?:export\s+)?(?:const|let|var)\s+(?:currentSession|defaultSession)\b/m.test(
+			source,
+		) ||
+		/\b(?:getCurrentSession|setCurrentSession)\s*\(/.test(source)
+	) {
 		violations.push({ rule: "session-key-required", path });
 	}
 }
@@ -160,6 +184,12 @@ if (ownerConstructionCount !== 1) {
 	violations.push({
 		rule: "session-owner-construction-count",
 		path: `${OWNER}:${ownerConstructionCount}`,
+	});
+}
+if (ownerWrapperRouteCount !== 1) {
+	violations.push({
+		rule: "session-owner-wrapper-route-count",
+		path: `${SESSION_FACTORY}:${ownerWrapperRouteCount}`,
 	});
 }
 

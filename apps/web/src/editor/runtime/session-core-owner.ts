@@ -11,16 +11,15 @@ const editorsBySession = new WeakMap<EditorSession, EditorCore>();
  * session lifecycle delegates ownership here without importing editor
  * internals into C1's Host contract.
  */
-export function createOwnedSessionEditor(): EditorCore {
-	ensureEditorProcessBootstrap();
-	return EditorCore.createSessionOwned();
-}
-
-export function bindEditorToSession(args: {
+export function createOwnedSessionEditor({
+	session,
+}: {
 	session: EditorSession;
-	editor: EditorCore;
-}): void {
-	editorsBySession.set(args.session, args.editor);
+}): EditorCore {
+	ensureEditorProcessBootstrap();
+	const editor = EditorCore.createSessionOwned();
+	editorsBySession.set(session, editor);
+	return editor;
 }
 
 /**

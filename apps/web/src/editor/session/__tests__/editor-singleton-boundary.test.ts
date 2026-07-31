@@ -26,6 +26,8 @@ describe("editor singleton boundary", () => {
 		"static-core-instance",
 		"module-scope-construction",
 		"construction-outside-owner",
+		"owner-wrapper-outside-route",
+		"session-key-required",
 	]) {
 		test(`negative control detects ${rule}`, () => {
 			const result = run("--negative-control", rule);

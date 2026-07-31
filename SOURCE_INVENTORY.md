@@ -22,7 +22,7 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 
 ## Working-tree drift against the pin
 
-**68 inherited file(s) modified.** Each is expected to carry a `PATCHES.md` row.
+**72 inherited file(s) modified.** Each is expected to carry a `PATCHES.md` row.
 
 - `apps/web/src/actions/definitions.ts`
 - `apps/web/src/actions/keybinding.ts`
@@ -81,8 +81,12 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/core/managers/project-manager.ts`
 - `apps/web/src/core/managers/timeline-manager.ts`
 - `apps/web/src/editor/use-editor.ts`
+- `apps/web/src/effects/definitions/index.ts`
 - `apps/web/src/feedback/components/feedback-popover.tsx`
+- `apps/web/src/graphics/definitions/index.ts`
 - `apps/web/src/guides/definitions/platforms.tsx`
+- `apps/web/src/masks/builtin/definitions/index.ts`
+- `apps/web/src/params/registry.ts`
 - `apps/web/src/services/storage/migrations/runner.ts`
 - `apps/web/src/services/storage/migrations/v1-to-v2.ts`
 - `apps/web/src/sounds/components/assets-view.tsx`

@@ -1,7 +1,10 @@
 import { effectsRegistry, registerDefaultEffects } from "@/effects";
 import { graphicsRegistry, registerDefaultGraphics } from "@/graphics";
 import { masksRegistry, registerDefaultMasks } from "@/masks";
-import { elementParamRegistry } from "@/params/registry";
+import {
+	assertCanonicalDefaultElementParams,
+	elementParamRegistry,
+} from "@/params/registry";
 import { registerDefaultStickerProviders } from "@/stickers/providers";
 import { stickersRegistry } from "@/stickers/registry";
 
@@ -50,9 +53,9 @@ export function ensureEditorProcessBootstrap(): void {
 	registerDefaultMasks();
 	registerDefaultGraphics();
 	registerDefaultStickerProviders();
-	// Reading the registry makes the parameter bootstrap explicit instead of an
-	// accidental side effect of constructing an EditorCore.
-	elementParamRegistry.getAll();
+	// Parameters materialize when their module loads; verify every canonical key
+	// before accepting the first process bootstrap snapshot.
+	assertCanonicalDefaultElementParams();
 	bootstrapSnapshot = registryReaders().map(({ name, read }) => ({
 		name,
 		read,
