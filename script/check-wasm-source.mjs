@@ -234,10 +234,14 @@ if (!licenceOk) failures.push("rust/wasm/LICENSE is missing or differs from the 
 // passes the type baseline, both Host builds and the parity fixture. So the
 // wiring is part of what gets asserted. If someone drops the CI step, every
 // local run says so.
-// This explicit list owns the two current wasm gates. A future gate must be
+// This explicit list owns the current wasm gates. A future gate must be
 // added here as well as to the root npm script and CI; this check does not claim
 // to discover arbitrary new `check-wasm-*.mjs` files.
-const GATED = ["script/check-wasm-source.mjs", "script/check-wasm-paths.mjs"];
+const GATED = [
+	"script/check-wasm-source.mjs",
+	"script/check-wasm-paths.mjs",
+	"script/check-wasm-api-surface.mjs",
+];
 const wiringProblems = [];
 
 const rootManifest = JSON.parse(readFileSync(join(REPO_ROOT, "package.json"), "utf8"));
@@ -265,7 +269,7 @@ for (const gate of GATED) {
 	else if (gateAt < installAt) wiringProblems.push(`bun-ci.yml runs ${gate} BEFORE \`bun install\`, so it checks an uninstalled tree`);
 }
 
-console.log(`  ${wiringProblems.length === 0 ? "PASS" : "FAIL"}  both wasm gates are wired (npm script + CI step after \`bun install\`)`);
+console.log(`  ${wiringProblems.length === 0 ? "PASS" : "FAIL"}  all wasm gates are wired (npm script + CI step after \`bun install\`)`);
 for (const p of wiringProblems) console.log(`          ${p}`);
 if (wiringProblems.length > 0) failures.push(`gate wiring: ${wiringProblems.join("; ")}`);
 

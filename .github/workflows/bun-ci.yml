@@ -31,7 +31,7 @@ jobs:
       MARBLE_WORKSPACE_KEY: "placeholder"
       FREESOUND_CLIENT_ID: "placeholder"
       FREESOUND_API_KEY: "placeholder"
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -90,6 +90,9 @@ jobs:
       # remapping build path is convention rather than enforcement.
       - name: Verify the redistributed wasm discloses no build-machine paths
         run: node script/check-wasm-paths.mjs
+
+      - name: Verify the exact additive wasm API surface
+        run: node script/check-wasm-api-surface.mjs
 
       - name: Build
         working-directory: apps/web

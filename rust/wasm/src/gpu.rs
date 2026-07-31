@@ -4,10 +4,13 @@ use std::cell::RefCell;
 
 use effects::EffectPipeline;
 use gpu::{GpuContext, wgpu};
-use js_sys::{Object, Reflect};
+use js_sys::{Array, Object, Reflect};
 use masks::MaskFeatherPipeline;
 use serde::Deserialize;
 use wasm_bindgen::{JsCast, JsValue, prelude::wasm_bindgen};
+
+use crate::compositor::{dispose_compositor, live_compositor_handles, reset_compositor_registry};
+use crate::runtime_state::{RuntimeGraphicsState, SelectedBackend};
 
 pub(crate) struct GpuRuntime {
     pub(crate) context: GpuContext,
@@ -17,6 +20,8 @@ pub(crate) struct GpuRuntime {
 
 thread_local! {
     static GPU_RUNTIME: RefCell<Option<GpuRuntime>> = const { RefCell::new(None) };
+    static GRAPHICS_STATE: RefCell<RuntimeGraphicsState> =
+        RefCell::new(RuntimeGraphicsState::default());
 }
 
 fn set_panic_hook() {
@@ -45,9 +50,19 @@ pub async fn initialize_gpu() -> Result<(), JsValue> {
         return Ok(());
     }
 
-    let context = GpuContext::new()
-        .await
-        .map_err(|error| JsValue::from_str(&error.to_string()))?;
+    let context = match GpuContext::new().await {
+        Ok(context) => context,
+        Err(error) => {
+            let reason = error.to_string();
+            GRAPHICS_STATE.with(|state| state.borrow_mut().mark_unavailable(reason.clone()));
+            return Err(JsValue::from_str(&reason));
+        }
+    };
+    let selected_backend = if context.adapter().get_info().backend == wgpu::Backend::Gl {
+        SelectedBackend::WebGl
+    } else {
+        SelectedBackend::WebGpu
+    };
     let effects = EffectPipeline::new(&context);
     let masks = MaskFeatherPipeline::new(&context);
 
@@ -58,8 +73,119 @@ pub async fn initialize_gpu() -> Result<(), JsValue> {
             masks,
         }));
     });
+    GRAPHICS_STATE.with(|state| state.borrow_mut().select(selected_backend));
 
     Ok(())
+}
+
+pub(crate) fn selected_backend() -> Option<SelectedBackend> {
+    GRAPHICS_STATE.with(|state| state.borrow().selected_backend())
+}
+
+pub(crate) fn compositor_capacity() -> usize {
+    GRAPHICS_STATE.with(|state| state.borrow().compositor_capacity())
+}
+
+pub(crate) fn unavailable_reason() -> String {
+    GRAPHICS_STATE.with(|state| state.borrow().unavailable_reason().to_owned())
+}
+
+#[wasm_bindgen(js_name = disposeGpu)]
+pub fn dispose_gpu() -> Result<(), JsValue> {
+    let handles = live_compositor_handles();
+    if !handles.is_empty() {
+        return Err(JsValue::from_str(&format!(
+            "Cannot dispose GPU while compositor handles are live: {handles:?}"
+        )));
+    }
+
+    GPU_RUNTIME.with(|runtime| {
+        runtime.replace(None);
+    });
+    reset_compositor_registry();
+    GRAPHICS_STATE.with(|state| {
+        state
+            .borrow_mut()
+            .mark_unavailable("GPU runtime was disposed.");
+    });
+    Ok(())
+}
+
+#[wasm_bindgen]
+pub struct WasmRuntimeGraphicsQuery;
+
+#[wasm_bindgen]
+impl WasmRuntimeGraphicsQuery {
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> Self {
+        Self
+    }
+
+    #[wasm_bindgen(
+        js_name = selectedBackend,
+        unchecked_return_type = "\"webgl\" | \"webgpu\" | null"
+    )]
+    pub fn selected_backend(&self) -> JsValue {
+        match selected_backend() {
+            Some(backend) => JsValue::from_str(backend.as_str()),
+            None => JsValue::NULL,
+        }
+    }
+
+    #[wasm_bindgen(js_name = concurrentCompositorInstances)]
+    pub fn concurrent_compositor_instances(&self) -> u32 {
+        compositor_capacity() as u32
+    }
+
+    #[wasm_bindgen(js_name = unavailableReason)]
+    pub fn unavailable_reason(&self) -> String {
+        unavailable_reason()
+    }
+}
+
+impl Default for WasmRuntimeGraphicsQuery {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+#[wasm_bindgen]
+pub struct WasmRuntimeGpuResourceQuery;
+
+#[wasm_bindgen]
+impl WasmRuntimeGpuResourceQuery {
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> Self {
+        Self
+    }
+
+    #[wasm_bindgen(
+        js_name = liveHandles,
+        unchecked_return_type = "readonly number[]"
+    )]
+    pub fn live_handles(&self) -> Array {
+        live_compositor_handles()
+            .into_iter()
+            .map(JsValue::from)
+            .collect()
+    }
+
+    #[wasm_bindgen(js_name = release)]
+    pub fn release(
+        &self,
+        #[wasm_bindgen(unchecked_param_type = "{ handle: number }")] input: JsValue,
+    ) -> Result<(), JsValue> {
+        let object: Object = input.dyn_into().map_err(|_| {
+            JsValue::from_str("WasmRuntimeGpuResourceQuery.release expects { handle: number }")
+        })?;
+        dispose_compositor(read_u32_property(&object, "handle")?)
+    }
+}
+
+impl Default for WasmRuntimeGpuResourceQuery {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 pub(crate) fn with_gpu_runtime<T>(
@@ -120,6 +246,11 @@ pub(crate) fn read_u32_property(object: &Object, name: &str) -> Result<u32, JsVa
             "Property '{name}' must be a number"
         )));
     };
+    if !number.is_finite() || number.fract() != 0.0 || number < 0.0 || number > u32::MAX as f64 {
+        return Err(JsValue::from_str(&format!(
+            "Property '{name}' must be an unsigned 32-bit integer"
+        )));
+    }
     Ok(number as u32)
 }
 

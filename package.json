@@ -8,7 +8,7 @@
   "scripts": {
     "build:tools": "turbo run build --filter=@opencut/tools",
     "build:wasm": "node script/build-wasm.mjs",
-    "check:wasm": "node script/check-wasm-source.mjs && node script/check-wasm-paths.mjs",
+    "check:wasm": "node script/check-wasm-source.mjs && node script/check-wasm-paths.mjs && node script/check-wasm-api-surface.mjs",
     "preinstall": "node script/check-wasm-source.mjs --preflight",
     "build:web": "turbo run build --filter=@opencut/web",
     "deploy:web": "turbo run deploy --filter=@opencut/web",
