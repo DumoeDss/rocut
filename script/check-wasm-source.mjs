@@ -234,9 +234,9 @@ if (!licenceOk) failures.push("rust/wasm/LICENSE is missing or differs from the 
 // passes the type baseline, both Host builds and the parity fixture. So the
 // wiring is part of what gets asserted. If someone drops the CI step, every
 // local run says so.
-// This assertion owns the whole wasm gate set, not just this file: the
-// build-machine-path check has exactly the same "silent unless gated" property,
-// and one place asserting both is what stops the next one being added ungated.
+// This explicit list owns the two current wasm gates. A future gate must be
+// added here as well as to the root npm script and CI; this check does not claim
+// to discover arbitrary new `check-wasm-*.mjs` files.
 const GATED = ["script/check-wasm-source.mjs", "script/check-wasm-paths.mjs"];
 const wiringProblems = [];
 

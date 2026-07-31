@@ -17,10 +17,11 @@
  * now has it where the package it replaces does not.
  *
  * **Why not `[profile.release] trim-paths`.** That is the obvious fix and it does
- * not work on the pinned toolchain: `trim-paths` is still unstable in Cargo
- * 1.88.0, and a manifest carrying it fails to parse at all — `cargo metadata`
- * exits with "feature `trim-paths` is required … not stabilized in this version of
- * Cargo", which breaks every cargo invocation rather than only release builds.
+ * not work on the measured Cargo 1.88.0 toolchain: `trim-paths` is still
+ * unstable there, and a manifest carrying it fails to parse at all —
+ * `cargo metadata` exits with "feature `trim-paths` is required … not stabilized
+ * in this version of Cargo", which breaks every cargo invocation rather than only
+ * release builds.
  * Measured, not assumed. `--remap-path-prefix` is the stable equivalent.
  *
  * **Why a script rather than `.cargo/config.toml`.** The two prefixes that need
