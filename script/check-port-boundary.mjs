@@ -211,7 +211,10 @@ function isComment(line) {
 function isContractPath(repoRelative) {
 	return (
 		CONTRACT_FILES.has(repoRelative) ||
-		CONTRACT_AREAS.some((area) => repoRelative.startsWith(area))
+		CONTRACT_AREAS.some(
+			(area) =>
+				repoRelative === area.slice(0, -1) || repoRelative.startsWith(area),
+		)
 	);
 }
 
@@ -365,9 +368,32 @@ const NEGATIVE_CONTROL_FIXTURES = [
 	},
 ];
 
+const CONTRACT_PATH_CONTROL_FIXTURES = [
+	{
+		path: "apps/web/src/editor/ports",
+		expected: true,
+		note: "the exact contract directory root is part of the contract",
+	},
+	{
+		path: "apps/web/src/editor/ports-extra",
+		expected: false,
+		note: "a neighboring prefix is not mistaken for the contract",
+	},
+];
+
 function runNegativeControl() {
 	console.log("check-port-boundary: negative control");
 	let allAsExpected = true;
+	for (const fixture of CONTRACT_PATH_CONTROL_FIXTURES) {
+		const recognized = isContractPath(fixture.path);
+		const ok = recognized === fixture.expected;
+		if (!ok) allAsExpected = false;
+		console.log(
+			`  ${ok ? "PASS" : "FAIL"}  contract-path — ${recognized ? "recognized" : "not recognized"}` +
+				` (expected ${fixture.expected ? "recognized" : "not recognized"})` +
+				` [${fixture.note}]: ${fixture.path}`,
+		);
+	}
 	for (const fixture of NEGATIVE_CONTROL_FIXTURES) {
 		const expectCaught = (fixture.expect ?? "caught") === "caught";
 		const violations = scan({ path: fixture.path, text: fixture.text });

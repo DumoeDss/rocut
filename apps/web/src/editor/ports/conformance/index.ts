@@ -276,8 +276,8 @@ async function storeCases(
 			report: () => {},
 		});
 		assert(
-			second.status !== "failed",
-			"a second migration against an already-current store failed",
+			second.status === "not-needed",
+			`a second migration against an already-current store must be not-needed, got ${second.status}`,
 		);
 	});
 

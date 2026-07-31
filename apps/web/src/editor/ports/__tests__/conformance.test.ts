@@ -36,19 +36,25 @@ describe("port conformance", () => {
 		expect(skipped.every((r) => r.passed === false)).toBe(true);
 	});
 
-	test("the migration case runs when opted in, and rejects a permanently-failing migration", async () => {
-		// Opt-in because migrate() is destructive against a real store. Two runs:
-		// one where migration works, one where it always fails. If the suite passed
-		// the second, a store could be "conformant" with a migration that never
-		// succeeds — worse than having no case.
+	test("the migration case runs when opted in, rejects failure, and requires idempotence", async () => {
+		// Opt-in because migrate() is destructive against a real store. Three
+		// runs: a working state transition, permanent failure, and a migration
+		// that incorrectly repeats against an already-current store.
+		let migrated = false;
 		const working = new InMemoryProjectStore({
 			schemaVersion: 2,
-			migrate: async (ctx) => ({
-				status: "migrated" as const,
-				from: ctx.from,
-				to: ctx.to,
-				recordsMigrated: 1,
-			}),
+			migrate: async (ctx) => {
+				if (migrated || ctx.from === ctx.to) {
+					return { status: "not-needed" as const };
+				}
+				migrated = true;
+				return {
+					status: "migrated" as const,
+					from: ctx.from,
+					to: ctx.to,
+					recordsMigrated: 1,
+				};
+			},
 		});
 		const good = await runPortConformance({
 			ports: createInMemoryPorts({ store: working }),
@@ -75,6 +81,26 @@ describe("port conformance", () => {
 		const badCase = bad.results.find((r) => r.name.includes("migration"));
 		expect(badCase?.status).toBe("failed");
 		expect(bad.passed).toBe(false);
+
+		const nonIdempotent = new InMemoryProjectStore({
+			schemaVersion: 2,
+			migrate: async (ctx) => ({
+				status: "migrated" as const,
+				from: ctx.from,
+				to: ctx.to,
+				recordsMigrated: 0,
+			}),
+		});
+		const repeated = await runPortConformance({
+			ports: createInMemoryPorts({ store: nonIdempotent }),
+			label: "non-idempotent migration",
+			exerciseMigration: true,
+		});
+		const repeatedCase = repeated.results.find((r) =>
+			r.name.includes("migration"),
+		);
+		expect(repeatedCase?.status).toBe("failed");
+		expect(repeatedCase?.detail).toMatch(/must be not-needed/);
 	});
 
 	test("the migration case is skipped, not passed, when it is not opted into", async () => {

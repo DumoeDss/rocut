@@ -481,7 +481,7 @@ describe("migration is owned by the store and run once per store", () => {
 		).rejects.toThrow(/migration failed/i);
 	});
 
-	test("BOTH concurrent creations reject when the shared migration fails, and the memo is evicted", async () => {
+	test("BOTH concurrent creations reject when migrate throws, and the memo is evicted", async () => {
 		// The eviction happens inside the memoised promise's own `.catch`, so the
 		// second concurrent awaiter takes a different code path from the sequential
 		// retry below: it is awaiting the *already-stored* promise when that
@@ -498,12 +498,7 @@ describe("migration is owned by the store and run once per store", () => {
 				attempts += 1;
 				if (attempts === 1) {
 					await gate;
-					return {
-						status: "failed",
-						from: ctx.from,
-						to: ctx.to,
-						reason: "transient",
-					};
+					throw new Error("transient migrate rejection");
 				}
 				return {
 					status: "migrated",
@@ -526,6 +521,54 @@ describe("migration is owned by the store and run once per store", () => {
 			host: createInMemoryHost({ store }),
 		});
 		expect(attempts).toBe(2);
+		expect(third.state).toBe("created");
+	});
+
+	test("BOTH concurrent creations reject when persistedSchemaVersion throws, and a later creation retries", async () => {
+		let versionReads = 0;
+		let migrationAttempts = 0;
+		let release: () => void = () => {};
+		const gate = new Promise<void>((r) => {
+			release = r;
+		});
+		const store = new InMemoryProjectStore({
+			schemaVersion: 4,
+			migrate: async (ctx): Promise<MigrationOutcome> => {
+				migrationAttempts += 1;
+				return {
+					status: "migrated",
+					from: ctx.from,
+					to: ctx.to,
+					recordsMigrated: 0,
+				};
+			},
+		});
+		(
+			store as InMemoryProjectStore & {
+				persistedSchemaVersion?: () => Promise<number | null>;
+			}
+		).persistedSchemaVersion = async () => {
+			versionReads += 1;
+			if (versionReads === 1) {
+				await gate;
+				throw new Error("transient persisted-version rejection");
+			}
+			return 3;
+		};
+
+		const a = createEditorSession({ host: createInMemoryHost({ store }) });
+		const b = createEditorSession({ host: createInMemoryHost({ store }) });
+		release();
+		const settled = await Promise.allSettled([a, b]);
+		expect(settled.map((s) => s.status)).toEqual(["rejected", "rejected"]);
+		expect(versionReads).toBe(1);
+		expect(migrationAttempts).toBe(0);
+
+		const third = await createEditorSession({
+			host: createInMemoryHost({ store }),
+		});
+		expect(versionReads).toBe(2);
+		expect(migrationAttempts).toBe(1);
 		expect(third.state).toBe("created");
 	});
 
