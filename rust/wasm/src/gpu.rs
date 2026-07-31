@@ -1,6 +1,10 @@
 #![cfg(target_arch = "wasm32")]
 
 use std::cell::RefCell;
+use std::future::Future;
+use std::pin::Pin;
+use std::rc::Rc;
+use std::task::{Context, Poll, Waker};
 
 use effects::EffectPipeline;
 use gpu::{GpuContext, wgpu};
@@ -10,7 +14,9 @@ use serde::Deserialize;
 use wasm_bindgen::{JsCast, JsValue, prelude::wasm_bindgen};
 
 use crate::compositor::{dispose_compositor, live_compositor_handles, reset_compositor_registry};
-use crate::runtime_state::{RuntimeGraphicsState, SelectedBackend};
+use crate::runtime_state::{
+    InitializationAction, InitializationEpoch, RuntimeGraphicsState, SelectedBackend,
+};
 
 pub(crate) struct GpuRuntime {
     pub(crate) context: GpuContext,
@@ -18,10 +24,130 @@ pub(crate) struct GpuRuntime {
     pub(crate) masks: MaskFeatherPipeline,
 }
 
+#[derive(Default)]
+struct InitializationWaitState {
+    result: Option<Result<(), String>>,
+    waker: Option<Waker>,
+}
+
+struct InitializationWait {
+    state: Rc<RefCell<InitializationWaitState>>,
+}
+
+impl Future for InitializationWait {
+    type Output = Result<(), String>;
+
+    fn poll(self: Pin<&mut Self>, context: &mut Context<'_>) -> Poll<Self::Output> {
+        let mut state = self.state.borrow_mut();
+        if let Some(result) = state.result.take() {
+            return Poll::Ready(result);
+        }
+        state.waker = Some(context.waker().clone());
+        Poll::Pending
+    }
+}
+
+struct InitializationWaiter {
+    generation: u64,
+    state: Rc<RefCell<InitializationWaitState>>,
+}
+
+#[derive(Default)]
+struct GpuLifecycle {
+    epoch: InitializationEpoch,
+    waiters: Vec<InitializationWaiter>,
+}
+
 thread_local! {
     static GPU_RUNTIME: RefCell<Option<GpuRuntime>> = const { RefCell::new(None) };
     static GRAPHICS_STATE: RefCell<RuntimeGraphicsState> =
         RefCell::new(RuntimeGraphicsState::default());
+    static GPU_LIFECYCLE: RefCell<GpuLifecycle> = RefCell::new(GpuLifecycle::default());
+}
+
+enum BeginInitialization {
+    Ready,
+    Start(u64),
+    Wait(InitializationWait),
+}
+
+fn begin_initialization() -> Result<BeginInitialization, JsValue> {
+    if GPU_RUNTIME.with(|runtime| runtime.borrow().is_some()) {
+        return Ok(BeginInitialization::Ready);
+    }
+
+    GPU_LIFECYCLE.with(|lifecycle| {
+        let mut lifecycle = lifecycle.borrow_mut();
+        match lifecycle.epoch.begin().map_err(JsValue::from_str)? {
+            InitializationAction::Start(generation) => Ok(BeginInitialization::Start(generation)),
+            InitializationAction::Join(generation) => {
+                let state = Rc::new(RefCell::new(InitializationWaitState::default()));
+                lifecycle.waiters.push(InitializationWaiter {
+                    generation,
+                    state: Rc::clone(&state),
+                });
+                Ok(BeginInitialization::Wait(InitializationWait { state }))
+            }
+        }
+    })
+}
+
+fn is_current_initialization(generation: u64) -> bool {
+    GPU_LIFECYCLE.with(|lifecycle| lifecycle.borrow().epoch.is_current(generation))
+}
+
+fn settle_initialization(generation: u64, result: Result<(), String>) -> bool {
+    let waiters = GPU_LIFECYCLE.with(|lifecycle| {
+        let mut lifecycle = lifecycle.borrow_mut();
+        if !lifecycle.epoch.finish(generation) {
+            return None;
+        }
+
+        let mut matched = Vec::new();
+        let mut retained = Vec::new();
+        for waiter in lifecycle.waiters.drain(..) {
+            if waiter.generation == generation {
+                matched.push(waiter);
+            } else {
+                retained.push(waiter);
+            }
+        }
+        lifecycle.waiters = retained;
+        Some(matched)
+    });
+
+    let Some(waiters) = waiters else {
+        return false;
+    };
+    for waiter in waiters {
+        let waker = {
+            let mut state = waiter.state.borrow_mut();
+            state.result = Some(result.clone());
+            state.waker.take()
+        };
+        if let Some(waker) = waker {
+            waker.wake();
+        }
+    }
+    true
+}
+
+fn cancel_initialization(reason: &str) {
+    let waiters = GPU_LIFECYCLE.with(|lifecycle| {
+        let mut lifecycle = lifecycle.borrow_mut();
+        lifecycle.epoch.cancel();
+        lifecycle.waiters.drain(..).collect::<Vec<_>>()
+    });
+    for waiter in waiters {
+        let waker = {
+            let mut state = waiter.state.borrow_mut();
+            state.result = Some(Err(reason.to_owned()));
+            state.waker.take()
+        };
+        if let Some(waker) = waker {
+            waker.wake();
+        }
+    }
 }
 
 fn set_panic_hook() {
@@ -46,18 +172,35 @@ fn set_panic_hook() {
 pub async fn initialize_gpu() -> Result<(), JsValue> {
     set_panic_hook();
 
-    if GPU_RUNTIME.with(|runtime| runtime.borrow().is_some()) {
-        return Ok(());
-    }
+    let generation = match begin_initialization()? {
+        BeginInitialization::Ready => return Ok(()),
+        BeginInitialization::Wait(wait) => {
+            return wait.await.map_err(|reason| JsValue::from_str(&reason));
+        }
+        BeginInitialization::Start(generation) => generation,
+    };
 
     let context = match GpuContext::new().await {
         Ok(context) => context,
         Err(error) => {
             let reason = error.to_string();
-            GRAPHICS_STATE.with(|state| state.borrow_mut().mark_unavailable(reason.clone()));
-            return Err(JsValue::from_str(&reason));
+            if is_current_initialization(generation) {
+                GRAPHICS_STATE.with(|state| {
+                    state.borrow_mut().mark_unavailable(reason.clone());
+                });
+                settle_initialization(generation, Err(reason.clone()));
+                return Err(JsValue::from_str(&reason));
+            }
+            return Err(JsValue::from_str(
+                "GPU initialization was cancelled before it completed.",
+            ));
         }
     };
+    if !is_current_initialization(generation) {
+        return Err(JsValue::from_str(
+            "GPU initialization was cancelled before it completed.",
+        ));
+    }
     let selected_backend = if context.adapter().get_info().backend == wgpu::Backend::Gl {
         SelectedBackend::WebGl
     } else {
@@ -74,6 +217,7 @@ pub async fn initialize_gpu() -> Result<(), JsValue> {
         }));
     });
     GRAPHICS_STATE.with(|state| state.borrow_mut().select(selected_backend));
+    settle_initialization(generation, Ok(()));
 
     Ok(())
 }
@@ -108,6 +252,7 @@ pub fn dispose_gpu() -> Result<(), JsValue> {
             .borrow_mut()
             .mark_unavailable("GPU runtime was disposed.");
     });
+    cancel_initialization("GPU initialization was cancelled by disposeGpu().");
     Ok(())
 }
 

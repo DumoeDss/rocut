@@ -47,6 +47,50 @@
 			"initial handles must be empty",
 		);
 
+		for (let attempt = 0; attempt < 3; attempt += 1) {
+			const firstInitialization = initializeGpu().then(() => {
+				const handle = createCompositor(16, 16);
+				resizeCompositorForHandle(handle, 20, 20);
+				return handle;
+			});
+			const joinedInitialization = initializeGpu();
+			const [concurrentHandle] = await Promise.all([
+				firstInitialization,
+				joinedInitialization,
+			]);
+			resizeCompositorForHandle(concurrentHandle, 24, 24);
+			assert(
+				resources.liveHandles().includes(concurrentHandle),
+				"concurrent initialization must retain a usable handle on one context",
+			);
+			disposeCompositor(concurrentHandle);
+			disposeGpu();
+			assert(
+				graphics.selectedBackend() === null,
+				"concurrent initialization cleanup must restore a null backend",
+			);
+		}
+
+		const abandonedInitialization = initializeGpu();
+		await Promise.resolve();
+		disposeGpu();
+		const abandonedResult = await Promise.allSettled([abandonedInitialization]);
+		assert(
+			abandonedResult[0].status === "rejected" &&
+				String(abandonedResult[0].reason).includes("cancelled"),
+			`disposeGpu must reject the initialization generation it invalidated: ${JSON.stringify(abandonedResult)}`,
+		);
+		assert(
+			graphics.selectedBackend() === null &&
+				graphics.concurrentCompositorInstances() === 0 &&
+				resources.liveHandles().length === 0,
+			"a late initialization result must not resurrect runtime state",
+		);
+		assert(
+			graphics.unavailableReason() === "GPU runtime was disposed.",
+			"late initialization must not overwrite the disposal reason",
+		);
+
 		await initializeGpu();
 		const backend = graphics.selectedBackend();
 		const capacity = graphics.concurrentCompositorInstances();

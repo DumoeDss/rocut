@@ -329,20 +329,24 @@ The generated comparison is exact and is enforced by `script/check-wasm-api-surf
 | binary imports | 609 | 609 | **Exact set unchanged** (sorted module/name/kind signature sha256 `2da5921b…`). |
 | generated files | 9 | 9 | `opencut_wasm.d.ts`, `opencut_wasm.js`, `opencut_wasm_bg.js`, `opencut_wasm_bg.wasm`, and `opencut_wasm_bg.wasm.d.ts` changed. `.gitignore`, `LICENSE`, `package.json`, and `README.md` remain byte-identical to C0. |
 
-The declaration moved from sha256 `07e195eb…` to `e7d942d3…`. On this machine the binary moved from
-3,253,931 bytes / sha256 `56cb9ab6…` to 3,278,448 bytes / sha256 `5c541b75…`; as above, that binary
+The declaration moved from sha256 `07e195eb…` to `e7d942d3…`. On this machine the review-clean
+binary moved from 3,253,931 bytes / sha256 `56cb9ab6…` to 3,283,772 bytes / sha256 `dde1d63f…`;
+the final bytes include the initialization-generation ownership added for the C0b round-1 blocker. As above, that binary
 hash is build evidence, not a cross-toolchain correspondence oracle. The committed gate instead
 freezes every JS and binary export, all 609 imports, both declaration files, the generated file set
-and the four files required to remain byte-identical. Ten deliberate malformed controls each exit
-non-zero for their own rule.
+and the four files required to remain byte-identical. Fourteen deliberate malformed controls each
+exit non-zero for their own rule, including independent exact-registration controls for the root
+aggregate, CI ordering and `GATED` membership.
 
 Runtime evidence is separate from declaration evidence. The built-package browser probe observes
 an honest pre-initialization `null`/`0`/non-empty-reason state, a real WebGL selection reporting
 capacity one, exact live-handle enumeration, over-capacity refusal, shared-teardown refusal naming
 the live handle, idempotent keyed release, reserved legacy handle `0`, and post-teardown
-`null`/`0`/non-empty-reason. Pure Rust tests cover the WebGPU capacity-two branch, WebGL branch,
+`null`/`0`/non-empty-reason. It also repeats concurrent initialization with a live compositor three
+times, proves dispose-during-init cannot publish late, and coalesces a real disabled-GPU failure for
+both callers. Pure Rust tests cover the WebGPU capacity-two branch, WebGL branch,
 failure and teardown state, default/explicit capacity competition, exact release and checked
-`u32` exhaustion. A distinct real WebGPU run and a distinct real WebGL run remain the C3 joint-gate
+`u32` exhaustion, plus the generation join/cancel rules. A distinct real WebGPU run and a distinct real WebGL run remain the C3 joint-gate
 obligation; C0b does not claim one browser run exercised both backends.
 
 ## Known upstream defects

@@ -245,6 +245,9 @@ const GATED = [
 const wiringProblems = [];
 
 const rootManifest = JSON.parse(readFileSync(join(REPO_ROOT, "package.json"), "utf8"));
+const aggregateCommands = (rootManifest.scripts?.["check:wasm"] ?? "")
+	.split(/\s*&&\s*/)
+	.map((command) => command.trim());
 const workflowPath = join(REPO_ROOT, ".github", "workflows", "bun-ci.yml");
 const workflow = existsSync(workflowPath) ? readFileSync(workflowPath, "utf8") : null;
 // `bun install` is what materialises the resolved copies these checks read, so
@@ -256,8 +259,8 @@ for (const gate of GATED) {
 		wiringProblems.push(`${gate} is referenced as a gate but not present in the repository`);
 		continue;
 	}
-	if (!Object.values(rootManifest.scripts ?? {}).some((cmd) => cmd.includes(gate))) {
-		wiringProblems.push(`no root package.json script invokes ${gate}`);
+	if (!aggregateCommands.includes(`node ${gate}`)) {
+		wiringProblems.push(`root package.json check:wasm does not invoke node ${gate}`);
 	}
 	if (workflow === null) {
 		wiringProblems.push("no .github/workflows/bun-ci.yml to carry the gate");

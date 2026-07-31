@@ -50,10 +50,29 @@ function loadSurface() {
 		wasmImports: WebAssembly.Module.imports(module).map(
 			(entry) => `${entry.module}|${entry.name}|${entry.kind}`,
 		),
-		manifest: readText(join(ROOT, "package.json")),
+		manifest: JSON.parse(readText(join(ROOT, "package.json"))),
 		workflow: readText(join(ROOT, ".github", "workflows", "bun-ci.yml")),
 		sourceGate: readText(join(ROOT, "script", "check-wasm-source.mjs")),
 	};
+}
+
+function aggregateCommands(manifest) {
+	return (manifest.scripts?.["check:wasm"] ?? "")
+		.split(/\s*&&\s*/)
+		.map((command) => command.trim())
+		.filter(Boolean);
+}
+
+function workflowCommandPosition(workflow, command) {
+	for (const match of workflow.matchAll(/^\s*run:\s*(.+?)\s*$/gm)) {
+		if (match[1] === command) return match.index;
+	}
+	return -1;
+}
+
+function registeredSourceGates(sourceGate) {
+	const block = sourceGate.match(/const GATED = \[([\s\S]*?)\];/)?.[1] ?? "";
+	return [...block.matchAll(/"([^"]+)"/g)].map((match) => match[1]);
 }
 
 function classBlock(dts, name) {
@@ -167,17 +186,36 @@ function validate(surface) {
 		}
 	}
 
-	const packageAt = surface.manifest.indexOf(API_GATE);
-	const installAt = surface.workflow.search(/run:\s*bun install/);
-	const workflowAt = surface.workflow.indexOf(API_GATE);
+	const packageRegistered = aggregateCommands(surface.manifest).includes(
+		`node ${API_GATE}`,
+	);
+	const installAt = workflowCommandPosition(surface.workflow, "bun install");
+	const sourceAt = workflowCommandPosition(
+		surface.workflow,
+		"node script/check-wasm-source.mjs",
+	);
+	const pathsAt = workflowCommandPosition(
+		surface.workflow,
+		"node script/check-wasm-paths.mjs",
+	);
+	const workflowAt = workflowCommandPosition(
+		surface.workflow,
+		`node ${API_GATE}`,
+	);
+	const sourceRegistered = registeredSourceGates(surface.sourceGate).includes(
+		API_GATE,
+	);
 	if (
-		packageAt === -1 ||
-		workflowAt < installAt ||
-		!surface.sourceGate.includes(`"${API_GATE}"`)
+		!packageRegistered ||
+		installAt === -1 ||
+		sourceAt <= installAt ||
+		pathsAt <= sourceAt ||
+		workflowAt <= pathsAt ||
+		!sourceRegistered
 	) {
 		fail(
 			"gate-registration",
-			"API gate must be registered in GATED, check:wasm and CI",
+			"API gate must be an exact check:wasm command, an exact GATED entry and the CI command after install/source/path checks",
 		);
 	}
 	return errors;
@@ -219,8 +257,39 @@ function mutate(surface, control) {
 		);
 	}
 	if (control === "truncated-files") copy.files.pop();
-	if (control === "missing-registration") {
-		copy.manifest = copy.manifest.replace(API_GATE, "script/missing-gate.mjs");
+	if (control === "check-wasm-missing-registration") {
+		copy.manifest.scripts["check:wasm"] = copy.manifest.scripts[
+			"check:wasm"
+		].replace(` && node ${API_GATE}`, "");
+	}
+	if (control === "check-wasm-decoy-registration") {
+		copy.manifest.scripts["check:wasm"] = copy.manifest.scripts[
+			"check:wasm"
+		].replace(` && node ${API_GATE}`, "");
+		copy.manifest.scripts.decoy = `node ${API_GATE}`;
+	}
+	if (control === "ci-missing-registration") {
+		copy.workflow = copy.workflow.replace(
+			`run: node ${API_GATE}`,
+			"run: node script/missing-gate.mjs",
+		);
+	}
+	if (control === "ci-before-install-registration") {
+		copy.workflow = copy.workflow.replace(
+			`run: node ${API_GATE}`,
+			"run: node script/registration-swap-sentinel.mjs",
+		);
+		copy.workflow = copy.workflow.replace(
+			"run: bun install",
+			`run: node ${API_GATE}`,
+		);
+		copy.workflow = copy.workflow.replace(
+			"run: node script/registration-swap-sentinel.mjs",
+			"run: bun install",
+		);
+	}
+	if (control === "gated-missing-registration") {
+		copy.sourceGate = copy.sourceGate.replace(`\n\t"${API_GATE}",`, "");
 	}
 	return copy;
 }

@@ -38,7 +38,7 @@ export const EXPECTED = {
 	wrapperSha:
 		"19714428b345a2ac128440319ece8a1c7f3c2f0336d454712189445d427c69f1",
 	wasmDtsSha:
-		"2a3aabbca88918e982be80d92e7ed72ffd9d33e0e5e444e82c0977956f2a5336",
+		"7ec60abaf4bc38f73b018f87cf4e80da16b8e414185e2853995187a75e6351bb",
 	wrapperExportSignature:
 		"a9a91d9ad6a8b1a13185e8892a2820752c9be4a2885a18edc71c24ee53769cc9",
 	bgExportSignature:
@@ -59,5 +59,9 @@ export const CONTROLS = {
 	"provider-any": "gpu-provider",
 	"unkeyed-release": "gpu-provider",
 	"truncated-files": "generated-files",
-	"missing-registration": "gate-registration",
+	"check-wasm-missing-registration": "gate-registration",
+	"check-wasm-decoy-registration": "gate-registration",
+	"ci-missing-registration": "gate-registration",
+	"ci-before-install-registration": "gate-registration",
+	"gated-missing-registration": "gate-registration",
 };

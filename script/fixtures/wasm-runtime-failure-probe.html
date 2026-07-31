@@ -1,0 +1,45 @@
+<!doctype html>
+<meta charset="utf-8" />
+<script type="module">
+	import {
+		WasmRuntimeGpuResourceQuery,
+		WasmRuntimeGraphicsQuery,
+		initializeGpu,
+	} from "/rust/wasm/pkg/opencut_wasm.js";
+
+	const assert = (condition, message) => {
+		if (!condition) throw new Error(message);
+	};
+
+	globalThis.__wasmRuntimeFailureProbe = (async () => {
+		const graphics = new WasmRuntimeGraphicsQuery();
+		const resources = new WasmRuntimeGpuResourceQuery();
+		const results = await Promise.allSettled([
+			initializeGpu(),
+			initializeGpu(),
+		]);
+		assert(
+			results.every((result) => result.status === "rejected"),
+			"every caller joined to a failed initialization must reject",
+		);
+		const reasons = results.map((result) => String(result.reason));
+		assert(
+			reasons[0] === reasons[1] && reasons[0].length > 0,
+			"joined callers must observe the same non-empty failure",
+		);
+		assert(
+			graphics.selectedBackend() === null &&
+				graphics.concurrentCompositorInstances() === 0,
+			"a failed concurrent attempt must retain the no-backend state",
+		);
+		assert(
+			graphics.unavailableReason().length > 0,
+			"a failed concurrent attempt must retain its diagnostic",
+		);
+		assert(
+			resources.liveHandles().length === 0,
+			"a failed concurrent attempt must not publish compositor ownership",
+		);
+		return { reasons };
+	})();
+</script>

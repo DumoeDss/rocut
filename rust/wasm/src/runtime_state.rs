@@ -72,6 +72,52 @@ impl RuntimeGraphicsState {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum InitializationAction {
+    Start(u64),
+    Join(u64),
+}
+
+#[derive(Debug, Default)]
+pub(crate) struct InitializationEpoch {
+    generation: u64,
+    in_flight: Option<u64>,
+}
+
+impl InitializationEpoch {
+    pub(crate) fn begin(&mut self) -> Result<InitializationAction, &'static str> {
+        if let Some(generation) = self.in_flight {
+            return Ok(InitializationAction::Join(generation));
+        }
+
+        self.generation = self
+            .generation
+            .checked_add(1)
+            .ok_or("GPU initialization generation is exhausted.")?;
+        self.in_flight = Some(self.generation);
+        Ok(InitializationAction::Start(self.generation))
+    }
+
+    pub(crate) fn is_current(&self, generation: u64) -> bool {
+        self.in_flight == Some(generation)
+    }
+
+    pub(crate) fn finish(&mut self, generation: u64) -> bool {
+        if !self.is_current(generation) {
+            return false;
+        }
+        self.in_flight = None;
+        true
+    }
+
+    pub(crate) fn cancel(&mut self) {
+        self.in_flight = None;
+        if let Some(next) = self.generation.checked_add(1) {
+            self.generation = next;
+        }
+    }
+}
+
 #[derive(Debug, Eq, PartialEq)]
 pub(crate) enum HandleRegistryError {
     CapacityExceeded { capacity: usize },
@@ -178,6 +224,30 @@ mod tests {
         let mut state = RuntimeGraphicsState::default();
         state.mark_unavailable("");
         assert_eq!(state.unavailable_reason(), "GPU is unavailable.");
+    }
+
+    #[test]
+    fn concurrent_initialization_joins_one_generation() {
+        let mut epoch = InitializationEpoch::default();
+
+        assert_eq!(epoch.begin(), Ok(InitializationAction::Start(1)));
+        assert_eq!(epoch.begin(), Ok(InitializationAction::Join(1)));
+        assert!(epoch.is_current(1));
+        assert!(epoch.finish(1));
+        assert!(!epoch.is_current(1));
+        assert!(!epoch.finish(1));
+        assert_eq!(epoch.begin(), Ok(InitializationAction::Start(2)));
+    }
+
+    #[test]
+    fn disposal_invalidates_a_late_initialization_result() {
+        let mut epoch = InitializationEpoch::default();
+
+        assert_eq!(epoch.begin(), Ok(InitializationAction::Start(1)));
+        epoch.cancel();
+        assert!(!epoch.is_current(1));
+        assert!(!epoch.finish(1));
+        assert_eq!(epoch.begin(), Ok(InitializationAction::Start(3)));
     }
 
     #[test]

@@ -60,6 +60,33 @@ try {
 	console.log(
 		`test-wasm-runtime-api: ${result.backend}, capacity ${result.capacity}, handles ${result.handles.join(", ")} PASS`,
 	);
+	await browser.close();
+	browser = await chromium.launch({
+		args: [
+			...BROWSER_ARGS,
+			"--disable-webgpu",
+			"--disable-webgl",
+			"--disable-software-rasterizer",
+		],
+	});
+	const failurePage = await browser.newPage();
+	const failurePageErrors = [];
+	failurePage.on("pageerror", (error) => failurePageErrors.push(error.message));
+	await failurePage.goto(
+		`http://127.0.0.1:${address.port}/script/fixtures/wasm-runtime-failure-probe.html`,
+	);
+	await failurePage.waitForFunction(
+		() => "__wasmRuntimeFailureProbe" in globalThis,
+	);
+	const failureResult = await failurePage.evaluate(
+		() => globalThis.__wasmRuntimeFailureProbe,
+	);
+	if (failurePageErrors.length > 0) {
+		throw new Error(failurePageErrors.join("\n"));
+	}
+	console.log(
+		`test-wasm-runtime-api: concurrent failure coalesced (${failureResult.reasons[0]}) PASS`,
+	);
 } finally {
 	await browser?.close();
 	await server.close();
