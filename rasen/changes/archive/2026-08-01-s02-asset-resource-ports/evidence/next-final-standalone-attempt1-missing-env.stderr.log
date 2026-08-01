@@ -1,0 +1,150 @@
+⨯ Error [ZodError]: [
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "NEXT_PUBLIC_MARBLE_API_URL"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "DATABASE_URL"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "BETTER_AUTH_SECRET"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "UPSTASH_REDIS_REST_URL"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "UPSTASH_REDIS_REST_TOKEN"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "MARBLE_WORKSPACE_KEY"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "FREESOUND_CLIENT_ID"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "FREESOUND_API_KEY"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  }
+]
+    at module evaluation (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\standalone\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\server\chunks\ssr\[root-of-the-server]__b31f6b11._.js:37:172008)
+    at instantiateModule (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\standalone\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\server\chunks\ssr\[turbopack]_runtime.js:740:9)
+    at getOrInstantiateModuleFromParent (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\standalone\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\server\chunks\ssr\[turbopack]_runtime.js:763:12)
+    at Context.esmImport [as i] (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\standalone\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\server\chunks\ssr\[turbopack]_runtime.js:228:20)
+    at module evaluation (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\standalone\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\server\chunks\ssr\[root-of-the-server]__c7601eaf._.js:1:186)
+    at instantiateModule (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\standalone\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\server\chunks\ssr\[turbopack]_runtime.js:740:9)
+    at getOrInstantiateModuleFromParent (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\standalone\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\server\chunks\ssr\[turbopack]_runtime.js:763:12)
+    at Context.commonJsRequire [as r] (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\standalone\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\server\chunks\ssr\[turbopack]_runtime.js:249:12)
+    at F.layout (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\standalone\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\server\chunks\ssr\elftia__others_rocut-wt-c4_apps_web_68fbe19e._.js:1:787)
+⨯ Error [ZodError]: [
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "NEXT_PUBLIC_MARBLE_API_URL"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "DATABASE_URL"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "BETTER_AUTH_SECRET"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "UPSTASH_REDIS_REST_URL"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "UPSTASH_REDIS_REST_TOKEN"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "MARBLE_WORKSPACE_KEY"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "FREESOUND_CLIENT_ID"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  },
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "FREESOUND_API_KEY"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  }
+]
+    at module evaluation (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\standalone\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\server\chunks\ssr\[root-of-the-server]__b31f6b11._.js:37:172008)
+    at instantiateModule (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\standalone\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\server\chunks\ssr\[turbopack]_runtime.js:740:9)
+    at getOrInstantiateModuleFromParent (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\standalone\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\server\chunks\ssr\[turbopack]_runtime.js:763:12)
+    at Context.esmImport [as i] (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\standalone\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\server\chunks\ssr\[turbopack]_runtime.js:228:20)
+    at module evaluation (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\standalone\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\server\chunks\ssr\[root-of-the-server]__c7601eaf._.js:1:186)
+    at instantiateModule (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\standalone\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\server\chunks\ssr\[turbopack]_runtime.js:740:9)
+    at getOrInstantiateModuleFromParent (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\standalone\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\server\chunks\ssr\[turbopack]_runtime.js:763:12)
+    at Context.commonJsRequire [as r] (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\standalone\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\server\chunks\ssr\[turbopack]_runtime.js:249:12)
+    at F.layout (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\standalone\elftia\_others\rocut-wt-c4\apps\web\.next-c4-final\server\chunks\ssr\elftia__others_rocut-wt-c4_apps_web_68fbe19e._.js:1:787)

@@ -1,0 +1,230 @@
+{
+  "generatedBy": "script/check-emitted-runtime-assets.mjs",
+  "hosts": [
+    {
+      "host": "vite",
+      "base": "/c4-review2-vite/",
+      "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\vite-example\\dist-c4-review2",
+      "manifest": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\vite-example\\dist-c4-review2\\asset-manifest.json",
+      "files": [
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\vite-example\\dist-c4-review2",
+          "file": "assets/index-zmzWNJ6X.js",
+          "layer": "entry",
+          "url": "/c4-review2-vite/assets/index-zmzWNJ6X.js",
+          "bytes": 3999236,
+          "sha256": "84d9d2030ca57a83c140446815fe3999ef5f0bed498653633c0a74cf130a3f5c"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\vite-example\\dist-c4-review2",
+          "file": "assets/worker-JRkjq3jr.js",
+          "layer": "transcription-worker",
+          "url": "/c4-review2-vite/assets/worker-JRkjq3jr.js",
+          "bytes": 868342,
+          "sha256": "30234db068075e385be141b4c15e14cd303e5f51a79606982685f2e09aa7fc95"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\vite-example\\dist-c4-review2",
+          "file": "assets/opencut_wasm_bg-PlMeUgEh.wasm",
+          "layer": "editor-wasm",
+          "url": "/c4-review2-vite/assets/opencut_wasm_bg-PlMeUgEh.wasm",
+          "bytes": 3286340,
+          "sha256": "15622cf5f9852c5238cd8326e67a9ec704450d1101a15f2647998501869af9b1"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\vite-example\\dist-c4-review2",
+          "file": "assets/ort-wasm-simd-threaded.jsep-B0T3yYHD.wasm",
+          "layer": "ort-sidecar",
+          "url": "/c4-review2-vite/assets/ort-wasm-simd-threaded.jsep-B0T3yYHD.wasm",
+          "bytes": 21596019,
+          "sha256": "c46655e8a94afc45338d4cb2b840475f88e5012d524509916e505079c00bfa39"
+        }
+      ]
+    },
+    {
+      "host": "next",
+      "base": "/c4-review2-next/",
+      "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-review2",
+      "manifest": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-review2\\server\\app\\editor\\[project_id]\\page_client-reference-manifest.js",
+      "files": [
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-review2",
+          "file": "static/chunks/53f937be1abc7aa7.js",
+          "layer": "entry",
+          "url": "/c4-review2-next/_next/static/chunks/53f937be1abc7aa7.js",
+          "bytes": 329,
+          "sha256": "ff3646fceede5798e0d4e8e7c603eb731527ac2ad3be0f78594602d8e6163046"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-review2",
+          "file": "static/chunks/3346c876d548c420.js",
+          "layer": "entry",
+          "url": "/c4-review2-next/_next/static/chunks/3346c876d548c420.js",
+          "bytes": 30817,
+          "sha256": "9f2af4a4686ac82aa7b6c43069b337f800f0667428e03a1e590d6d77f6b18fd8"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-review2",
+          "file": "static/chunks/c8208314ebd6ffbc.js",
+          "layer": "entry",
+          "url": "/c4-review2-next/_next/static/chunks/c8208314ebd6ffbc.js",
+          "bytes": 20440,
+          "sha256": "cbd3c7a0820b929df4c9f7bb0fd1c01b3719dbc254fc6453934d5cdb455206d3"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-review2",
+          "file": "static/chunks/8d908153c03903cb.js",
+          "layer": "entry",
+          "url": "/c4-review2-next/_next/static/chunks/8d908153c03903cb.js",
+          "bytes": 76193,
+          "sha256": "dcaee77a92ea5699defc39637625a3c2ae5e6cdc034f3e744dfff1f9541bbb4d"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-review2",
+          "file": "static/chunks/8ab6c8fe61cfe600.js",
+          "layer": "entry",
+          "url": "/c4-review2-next/_next/static/chunks/8ab6c8fe61cfe600.js",
+          "bytes": 36385,
+          "sha256": "20025caaa0c109682ac1c32efde631228504bc083d921e1ed4aeba6a0e110854"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-review2",
+          "file": "static/chunks/5bb08a5d5fa4d346.js",
+          "layer": "entry",
+          "url": "/c4-review2-next/_next/static/chunks/5bb08a5d5fa4d346.js",
+          "bytes": 617693,
+          "sha256": "fa1354bd72c622ecea2f0b6dfdc1fa0257b1363dfc1c5ef7be7ab70fa9b24bd3"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-review2",
+          "file": "static/chunks/8e4be1ab06a32972.js",
+          "layer": "entry",
+          "url": "/c4-review2-next/_next/static/chunks/8e4be1ab06a32972.js",
+          "bytes": 600171,
+          "sha256": "8f1707d1e7f3dd69858aad2d033c10ed3fa8a6fae91122bc1e932ba5feab0b2f"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-review2",
+          "file": "static/chunks/9c0362671954872f.js",
+          "layer": "entry",
+          "url": "/c4-review2-next/_next/static/chunks/9c0362671954872f.js",
+          "bytes": 826662,
+          "sha256": "71a7949daf193ce6aaff4b1cc29136afd4252a2e305d06d2f1346fb90e3f48e6"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-review2",
+          "file": "static/chunks/62eeb3f6e1d249de.js",
+          "layer": "entry",
+          "url": "/c4-review2-next/_next/static/chunks/62eeb3f6e1d249de.js",
+          "bytes": 5884,
+          "sha256": "0048e3370c6a8560e7f24190dffaafcbdaee10b8c941dd85123595bf4cbe2668"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-review2",
+          "file": "static/media/worker.8051bf58.ts",
+          "layer": "transcription-worker",
+          "url": "/c4-review2-next/_next/static/media/worker.8051bf58.ts",
+          "bytes": 4662,
+          "sha256": "d74efdb0e37c4ef562a98fa4a6e36e21c081ccfa1a5d280bdc2e387ae8a3ccf2"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-review2",
+          "file": "static/chunks/27a88e35df72eaf6.wasm",
+          "layer": "editor-wasm",
+          "url": "/c4-review2-next/_next/static/chunks/27a88e35df72eaf6.wasm",
+          "bytes": 3286340,
+          "sha256": "15622cf5f9852c5238cd8326e67a9ec704450d1101a15f2647998501869af9b1"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-review2",
+          "file": "static/chunks/d1a505ec345d9f76.js",
+          "layer": "transcription-worker",
+          "url": "/c4-review2-next/_next/static/chunks/d1a505ec345d9f76.js",
+          "bytes": 869917,
+          "sha256": "81b5e0beca9f96cf82b0c8c12cf4768b5e8e29d8eb8ede00ce80ff603a57443d"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-review2",
+          "file": "static/media/ort-wasm-simd-threaded.jsep.232c7845.wasm",
+          "layer": "ort-sidecar",
+          "url": "/c4-review2-next/_next/static/media/ort-wasm-simd-threaded.jsep.232c7845.wasm",
+          "bytes": 21596019,
+          "sha256": "c46655e8a94afc45338d4cb2b840475f88e5012d524509916e505079c00bfa39"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-review2",
+          "file": "static/media/ort.bundle.min.b4209e00.mjs",
+          "layer": "transcription-worker",
+          "url": "/c4-review2-next/_next/static/media/ort.bundle.min.b4209e00.mjs",
+          "bytes": 398170,
+          "sha256": "96e80b413dda387fbcefbd2bb0015f6708323767cc0dd5383260106582e77781"
+        }
+      ],
+      "edges": [
+        {
+          "from": "static/chunks/8ab6c8fe61cfe600.js",
+          "to": "static/media/worker.8051bf58.ts",
+          "fromLayer": "entry",
+          "toLayer": "transcription-worker",
+          "reference": "static/media/worker.8051bf58.ts"
+        },
+        {
+          "from": "static/chunks/8e4be1ab06a32972.js",
+          "to": "static/chunks/27a88e35df72eaf6.wasm",
+          "fromLayer": "entry",
+          "toLayer": "editor-wasm",
+          "reference": "static/chunks/27a88e35df72eaf6.wasm"
+        },
+        {
+          "from": "static/chunks/9c0362671954872f.js",
+          "to": "static/chunks/a3e1088403a76679.js",
+          "fromLayer": "entry",
+          "toLayer": "entry",
+          "reference": "static/chunks/a3e1088403a76679.js"
+        },
+        {
+          "from": "static/chunks/9c0362671954872f.js",
+          "to": "static/chunks/d1a505ec345d9f76.js",
+          "fromLayer": "entry",
+          "toLayer": "transcription-worker",
+          "reference": "static/chunks/d1a505ec345d9f76.js"
+        },
+        {
+          "from": "static/chunks/9c0362671954872f.js",
+          "to": "static/chunks/turbopack-19489cfafaea2a46.js",
+          "fromLayer": "entry",
+          "toLayer": "entry",
+          "reference": "static/chunks/turbopack-19489cfafaea2a46.js"
+        },
+        {
+          "from": "static/chunks/d1a505ec345d9f76.js",
+          "to": "static/media/ort-wasm-simd-threaded.jsep.232c7845.wasm",
+          "fromLayer": "transcription-worker",
+          "toLayer": "ort-sidecar",
+          "reference": "static/media/ort-wasm-simd-threaded.jsep.232c7845.wasm"
+        },
+        {
+          "from": "static/chunks/d1a505ec345d9f76.js",
+          "to": "static/media/ort.bundle.min.b4209e00.mjs",
+          "fromLayer": "transcription-worker",
+          "toLayer": "transcription-worker",
+          "reference": "static/media/ort.bundle.min.b4209e00.mjs"
+        },
+        {
+          "from": "static/chunks/turbopack-19489cfafaea2a46.js",
+          "to": "static/chunks/a3e1088403a76679.js",
+          "fromLayer": "entry",
+          "toLayer": "entry",
+          "reference": "static/chunks/a3e1088403a76679.js"
+        },
+        {
+          "from": "static/chunks/turbopack-19489cfafaea2a46.js",
+          "to": "static/chunks/d1a505ec345d9f76.js",
+          "fromLayer": "entry",
+          "toLayer": "transcription-worker",
+          "reference": "static/chunks/d1a505ec345d9f76.js"
+        }
+      ]
+    }
+  ]
+}
