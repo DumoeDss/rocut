@@ -265,7 +265,10 @@ async function resolveStickerNode({
 	node: StickerNode;
 	context: ResolveContext;
 }): Promise<ResolvedVisualSourceNodeState | null> {
-	const source = await loadStickerSource({ stickerId: node.params.stickerId });
+	const source = await loadStickerSource({
+		stickerId: node.params.stickerId,
+		assets: node.params.assets,
+	});
 	const sourceWidth = node.params.intrinsicWidth ?? source.width;
 	const sourceHeight = node.params.intrinsicHeight ?? source.height;
 	const visualState = resolveVisualState({

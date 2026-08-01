@@ -2,7 +2,22 @@ import type { NextConfig } from "next";
 import { withBotId } from "botid/next/config";
 import { withContentCollections } from "@content-collections/next";
 
+function normalizedBasePath(value: string | undefined): string {
+	if (!value || value === "/") return "";
+	return `/${value.replace(/^\/+|\/+$/g, "")}`;
+}
+
+const publicBasePath = normalizedBasePath(process.env.OPENCUT_PUBLIC_BASE);
+
 const nextConfig: NextConfig = {
+	distDir: process.env.OPENCUT_NEXT_DIST_DIR || ".next",
+	basePath: publicBasePath,
+	assetPrefix: publicBasePath || undefined,
+	env: {
+		NEXT_PUBLIC_OPENCUT_BASE: `${publicBasePath || ""}/`,
+		NEXT_PUBLIC_C4_BUILD_MARKER:
+			process.env.C4_BUILD_MARKER || "development",
+	},
 	// P-001: the pinned baseline does not type-check (missing exports in
 	// actions/keybinding, stale call arities in services/storage/migrations, and a
 	// dual-`next` type identity clash from the root package.json's stray `next`

@@ -2,6 +2,7 @@
 
 import { createContext, useContext } from "react";
 import { useEditor, useEditorInstance } from "@/editor/use-editor";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 import { useAssetsPanelStore } from "@/editor/use-session-store";
 import { AudioWaveform, WAVEFORM_GAIN_SAMPLE_COUNT } from "./audio-waveform";
 import { AudioVolumeLine } from "./audio-volume-line";
@@ -941,12 +942,14 @@ function StickerElementContent({
 }: {
 	element: Extract<TimelineElementType, { type: "sticker" }>;
 }) {
+	const session = useEditorSession();
 	return (
 		<div className="flex size-full items-center gap-2 pl-2">
 			<HostImage
 				src={resolveStickerId({
 					stickerId: element.stickerId,
 					options: { width: 20, height: 20 },
+					assets: session.host.assets,
 				})}
 				alt={element.name}
 				className="size-4 shrink-0"

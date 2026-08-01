@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
-import { readdirSync, readFileSync, statSync } from "node:fs";
-import { join, posix, relative, resolve } from "node:path";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { extname, join, posix, relative, resolve } from "node:path";
 import type { Plugin } from "vite";
 
 /**
@@ -24,6 +24,9 @@ export interface EditorAsset {
 	path: string;
 	/** Whether `path` names a single file or a directory copied wholesale. */
 	kind: "file" | "directory";
+	category: "fonts" | "flags" | "effects" | "branding" | "favicon" | "worker-fixture";
+	/** Current logical-path consumer description emitted as `requiredBy`. */
+	consumer: string;
 	/** The module that requests it, so a future reader can re-verify the claim. */
 	requiredBy: string;
 }
@@ -32,32 +35,58 @@ export const EDITOR_RUNTIME_ASSETS: EditorAsset[] = [
 	{
 		path: "fonts",
 		kind: "directory",
+		category: "fonts",
+		consumer: "apps/web/src/fonts/google-fonts.ts — Host-loaded logical atlas and chunks",
 		requiredBy: "apps/web/src/fonts/google-fonts.ts — fetches /fonts/font-atlas.json then /fonts/font-chunk-<n>.avif",
 	},
 	{
 		path: "flags",
 		kind: "directory",
+		category: "flags",
+		consumer: "apps/web/src/stickers/providers/flags.ts — Host-resolved logical flag paths",
 		requiredBy: "apps/web/src/stickers/providers/flags.ts — builds /flags/<iso-code>.svg per country",
 	},
 	{
 		path: "effects/preview.jpg",
 		kind: "file",
+		category: "effects",
+		consumer: "apps/web/src/services/renderer/effect-preview.ts — resolver-scoped preview image",
 		requiredBy: "apps/web/src/services/renderer/effect-preview.ts — the effect thumbnail source image",
 	},
 	{
 		path: "logos/opencut",
 		kind: "directory",
+		category: "branding",
+		consumer: "Next and Vite Host composition — resolver-owned branding.logoUrl",
 		requiredBy: "apps/vite-example/src/host/vite-editor-host.tsx — supplies /logos/opencut/svg/logo.svg as branding.logoUrl",
 	},
 	{
 		path: "favicon.ico",
 		kind: "file",
+		category: "favicon",
+		consumer: "apps/vite-example/index.html — base-aware Host favicon",
 		// Not an editor asset. Browsers request it unprompted, and without it the
 		// §3.4 network capture carries a 404 that has to be explained away every
 		// time someone reads it.
 		requiredBy: "apps/vite-example/index.html — host chrome, not an editor runtime asset",
 	},
+	{
+		path: "workers/c4-worker-fixture.js",
+		kind: "file",
+		category: "worker-fixture",
+		consumer: "apps/vite-example/src/c4-worker-harness.tsx — Host rewrite and registry round trip",
+		requiredBy: "C4 production verification fixture",
+	},
 ];
+
+export const REQUIRED_ASSET_CATEGORIES = [
+	"fonts",
+	"flags",
+	"effects",
+	"branding",
+	"favicon",
+	"worker-fixture",
+] as const;
 
 /**
  * Deliberately excluded, recorded so the omission reads as a decision rather
@@ -83,11 +112,44 @@ export const EXCLUDED_PUBLIC_PATHS = [
  * writes, so the copied files are part of the build's own output accounting and
  * land under whatever `outDir` is configured.
  */
+type CopiedManifestEntry = {
+	path: string;
+	category: EditorAsset["category"];
+	expectedMime: string;
+	bytes: number;
+	sha256: string;
+	sourcePath: string;
+	requiredBy: string;
+};
+
 export function editorAssets({ publicRoot, repoRoot }: { publicRoot: string; repoRoot: string }): Plugin {
+	let copiedEntries: CopiedManifestEntry[] = [];
+	const manifestSource = (emitted: ReturnType<typeof summarizeBundle>) =>
+		`${JSON.stringify(
+			{
+				generatedBy: "apps/vite-example/build/editor-assets.ts",
+				build: {
+					marker: process.env.VITE_C4_BUILD_MARKER ?? "development",
+					base: process.env.OPENCUT_PUBLIC_BASE ?? "/",
+				},
+				note:
+					"Two inventories. `files` are copied runtime assets; `emitted` is the distinct bundler graph. " +
+					"Sizes are recorded measurements only; this Slice makes no adequacy claim.",
+				source: relative(repoRoot, publicRoot).split("\\").join("/"),
+				requiredCategories: REQUIRED_ASSET_CATEGORIES,
+				fileCount: copiedEntries.length,
+				totalBytes: copiedEntries.reduce((sum, entry) => sum + entry.bytes, 0),
+				files: copiedEntries,
+				excluded: EXCLUDED_PUBLIC_PATHS,
+				emitted,
+			},
+			null,
+			2,
+		)}\n`;
 	return {
 		name: "opencut-editor-assets",
 		generateBundle(_options, bundle) {
-			const entries: Array<{ path: string; bytes: number; sha256: string; requiredBy: string }> = [];
+			const entries: CopiedManifestEntry[] = [];
 
 			for (const asset of EDITOR_RUNTIME_ASSETS) {
 				const source = resolve(publicRoot, asset.path);
@@ -110,39 +172,41 @@ export function editorAssets({ publicRoot, repoRoot }: { publicRoot: string; rep
 					const contents = readFileSync(file.absolute);
 					this.emitFile({ type: "asset", fileName: file.served, source: contents });
 					entries.push({
-						path: `/${file.served}`,
+						path: file.served,
+						category: asset.category,
+						expectedMime: expectedMime(file.served),
 						bytes: contents.byteLength,
 						sha256: createHash("sha256").update(contents).digest("hex"),
-						requiredBy: asset.requiredBy,
+						sourcePath: relative(repoRoot, file.absolute).split("\\").join("/"),
+						requiredBy: asset.consumer,
 					});
 				}
 			}
 
 			entries.sort((a, b) => a.path.localeCompare(b.path));
+			copiedEntries = entries;
 
 			this.emitFile({
 				type: "asset",
 				fileName: "asset-manifest.json",
-				source: `${JSON.stringify(
-					{
-						generatedBy: "apps/vite-example/build/editor-assets.ts",
-						note:
-							"Two inventories. `files` are runtime assets copied from apps/web/public by the " +
-							"explicit allowlist — the editor fetches them by absolute path, so bundling " +
-							"cannot discover them. `emitted` is what the bundler produced. Sizes are " +
-							"recorded measurements only; this Slice makes no claim that any of them is " +
-							"adequate (spec §5 excludes performance claims).",
-						source: relative(repoRoot, publicRoot).split("\\").join("/"),
-						fileCount: entries.length,
-						totalBytes: entries.reduce((sum, entry) => sum + entry.bytes, 0),
-						files: entries,
-						excluded: EXCLUDED_PUBLIC_PATHS,
-						emitted: summarizeBundle(bundle),
-					},
-					null,
-					2,
-				)}\n`,
+				source: manifestSource(
+					summarizeBundle(bundle, new Set(entries.map((entry) => entry.path))),
+				),
 			});
+		},
+		writeBundle(options, bundle) {
+			if (!options.dir) this.error("editor-assets: Vite output directory is required");
+			const outputDir = resolve(options.dir);
+			writeFileSync(
+				resolve(outputDir, "asset-manifest.json"),
+				manifestSource(
+					summarizeBundle(
+						bundle,
+						new Set(copiedEntries.map((entry) => entry.path)),
+						outputDir,
+					),
+				),
+			);
 		},
 	};
 }
@@ -158,8 +222,12 @@ export function editorAssets({ publicRoot, repoRoot }: { publicRoot: string; rep
  * fetched on load — the Worker is constructed on demand inside
  * `services/transcription/service.ts`. Recorded, not judged.
  */
-function summarizeBundle(bundle: Record<string, unknown>) {
-	const items = Object.values(bundle).map((item) => {
+function summarizeBundle(
+	bundle: Record<string, unknown>,
+	copiedPaths: ReadonlySet<string>,
+	outputDir?: string,
+) {
+	const items = Object.values(bundle).flatMap((item) => {
 		const output = item as {
 			type: string;
 			fileName: string;
@@ -168,25 +236,73 @@ function summarizeBundle(bundle: Record<string, unknown>) {
 			isEntry?: boolean;
 			isDynamicEntry?: boolean;
 		};
+		if (
+			copiedPaths.has(output.fileName) ||
+			output.fileName === "asset-manifest.json" ||
+			output.fileName === "module-graph.json"
+		) {
+			return [];
+		}
 
-		const bytes =
-			output.type === "chunk"
-				? Buffer.byteLength(output.code ?? "")
+		const writtenPath = outputDir ? resolve(outputDir, output.fileName) : null;
+		const contents = writtenPath
+			? readFileSync(writtenPath)
+			: output.type === "chunk"
+				? Buffer.from(output.code ?? "")
 				: typeof output.source === "string"
-					? Buffer.byteLength(output.source)
-					: (output.source?.byteLength ?? 0);
+					? Buffer.from(output.source)
+					: Buffer.from(output.source ?? new Uint8Array());
 
-		return {
-			path: `/${output.fileName}`,
+		return [{
+			path: output.fileName,
 			kind: output.type,
-			bytes,
+			classification: classifyEmitted(output.fileName, output.isEntry === true),
+			expectedMime: expectedMime(output.fileName),
+			bytes: contents.byteLength,
+			sha256: createHash("sha256").update(contents).digest("hex"),
 			isEntry: output.isEntry === true,
 			isDynamicEntry: output.isDynamicEntry === true,
-		};
+		}];
 	});
 
 	items.sort((a, b) => b.bytes - a.bytes);
 	return { fileCount: items.length, totalBytes: items.reduce((sum, i) => sum + i.bytes, 0), files: items };
+}
+
+function expectedMime(path: string): string {
+	switch (extname(path).toLowerCase()) {
+		case ".json":
+			return "application/json";
+		case ".avif":
+			return "image/avif";
+		case ".svg":
+			return "image/svg+xml";
+		case ".jpg":
+		case ".jpeg":
+			return "image/jpeg";
+		case ".ico":
+			return "image/x-icon";
+		case ".js":
+			return "text/javascript|application/javascript";
+		case ".css":
+			return "text/css";
+		case ".html":
+			return "text/html";
+		case ".wasm":
+			return "application/wasm";
+		default:
+			return "application/octet-stream";
+	}
+}
+
+function classifyEmitted(path: string, isEntry: boolean): string {
+	if (isEntry) return "entry";
+	if (/opencut_wasm.*\.wasm$/i.test(path)) return "editor-wasm";
+	if (/ort-wasm.*\.wasm$/i.test(path)) return "ort-sidecar";
+	if (/(?:^|\/)worker-[^/]+\.js$/i.test(path)) return "transcription-worker";
+	if (/\.wasm$/i.test(path)) return "wasm";
+	if (/\.js$/i.test(path)) return "chunk";
+	return "asset";
 }
 
 function listFiles(root: string): string[] {

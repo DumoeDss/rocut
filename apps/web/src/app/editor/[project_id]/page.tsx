@@ -1,16 +1,15 @@
 "use client";
 
 import { useMemo } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { EditorProvider } from "@/components/providers/editor-provider";
 import { MobileGate } from "@/components/editor/mobile-gate";
 import { ChangelogNotification } from "@/changelog/components/changelog-notification";
 import type { EditorHost } from "@/editor/host/editor-host";
-import { createInMemoryPorts } from "@/editor/ports/in-memory";
+import { createNextEditorHost } from "@/editor/host/next-editor-host";
+import { C4NextRuntimeProbe } from "@/editor/host/c4-next-runtime-probe";
 import { EditorSessionHost } from "@/editor/session";
 import { EditorRoot } from "@/editor/surface/editor-root";
-import { DEFAULT_LOGO_URL, SITE_URL } from "@/site/brand";
-import { SOCIAL_LINKS } from "@/site/social";
 
 /**
  * The Next host of the editor.
@@ -22,39 +21,42 @@ import { SOCIAL_LINKS } from "@/site/social";
 export default function Editor() {
 	const params = useParams();
 	const router = useRouter();
+	const searchParams = useSearchParams();
 	const projectId = params.project_id as string;
+	const c4BuildMarker =
+		process.env.NEXT_PUBLIC_C4_BUILD_MARKER ?? "development";
+	const requestedC4Probe = searchParams.get("c4-next-probe");
+	const c4Probe =
+		c4BuildMarker.startsWith("c4-final-commit-") &&
+		(requestedC4Probe === "worker" || requestedC4Probe === "forced-none")
+			? requestedC4Probe
+			: null;
 
 	const host = useMemo<EditorHost>(
-		() => ({
-			...createInMemoryPorts(),
+		() =>
+			createNextEditorHost({
 			projectId,
-			navigation: {
-				onProjectReplaced: ({ projectId: newProjectId }) =>
-					router.replace(`/editor/${newProjectId}`),
-				onExitProject: () => router.push("/projects"),
-				onGoBack: () => router.back(),
-			},
-			services: {
-				soundSearchEndpoint: "/api/sounds/search",
-				feedbackEndpoint: "/api/feedback",
-			},
-			// Supplied from `@/site/*` so these stay single-sourced and this app
-			// renders exactly what it did at the pin. The editor no longer imports
-			// site code itself, which is what keeps the distributable graph clean.
-			branding: { logoUrl: DEFAULT_LOGO_URL },
-			links: {
-				discordUrl: SOCIAL_LINKS.discord,
-				roadmapUrl: `${SITE_URL}/roadmap`,
-			},
+			onProjectReplaced: (newProjectId) =>
+				router.replace(`/editor/${newProjectId}`),
+			onExitProject: () => router.push("/projects"),
+			onGoBack: () => router.back(),
+			forceRendererBackend: c4Probe === "forced-none" ? "none" : undefined,
+			workerFixture: c4Probe === "worker",
 		}),
-		[projectId, router],
+		[projectId, router, c4Probe],
 	);
 
 	return (
 		<EditorSessionHost host={host}>
-			<div className="h-screen w-screen">
+			<div
+				className="h-screen w-screen"
+				data-c4-build-marker={c4BuildMarker}
+			>
 				<MobileGate>
 					<EditorProvider>
+						{c4Probe === "worker" || c4Probe === "forced-none" ? (
+							<C4NextRuntimeProbe mode={c4Probe} />
+						) : null}
 						<EditorRoot />
 						<ChangelogNotification />
 					</EditorProvider>

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { loadFullFont } from "@/fonts/google-fonts";
+import { fontChunkUrl, loadFullFont, quoteCssUrl } from "@/fonts/google-fonts";
 import { SYSTEM_FONTS } from "@/fonts/system-fonts";
 import type { FontAtlas, FontAtlasEntry } from "@/fonts/types";
 import { useFontAtlas } from "@/fonts/use-font-atlas";
@@ -17,6 +17,7 @@ import { cn } from "@/utils/ui";
 import { ChevronDown, Search } from "lucide-react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { TextIcon } from "@hugeicons/core-free-icons";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 
 const FONT_TABS = [
 	{ key: "all", label: "All fonts" },
@@ -187,6 +188,10 @@ export function FontPicker({
 }
 
 function FontSpritePreview({ entry }: { entry: FontAtlasEntry }) {
+	const session = useEditorSession();
+	const maskUrl = quoteCssUrl(
+		fontChunkUrl({ resolver: session.host.assets, chunk: entry.ch }),
+	);
 	return (
 		<div
 			className="shrink-0"
@@ -194,10 +199,10 @@ function FontSpritePreview({ entry }: { entry: FontAtlasEntry }) {
 				width: entry.w,
 				height: ROW_HEIGHT,
 				backgroundColor: "currentColor",
-				WebkitMaskImage: `url(/fonts/font-chunk-${entry.ch}.avif)`,
+				WebkitMaskImage: maskUrl,
 				WebkitMaskPosition: `-${entry.x}px -${entry.y}px`,
 				WebkitMaskRepeat: "no-repeat",
-				maskImage: `url(/fonts/font-chunk-${entry.ch}.avif)`,
+				maskImage: maskUrl,
 				maskPosition: `-${entry.x}px -${entry.y}px`,
 				maskRepeat: "no-repeat",
 				transform: `scale(${PREVIEW_SCALE})`,

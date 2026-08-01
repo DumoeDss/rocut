@@ -147,6 +147,11 @@
 			"classification": "event-handler"
 		},
 		{
+			"path": "apps/web/src/preview/components/use-playback-time.ts",
+			"count": 1,
+			"classification": "external-store-subscription"
+		},
+		{
 			"path": "apps/web/src/preview/hooks/use-preview-interaction.ts",
 			"count": 1,
 			"classification": "controller-or-event"
@@ -331,7 +336,19 @@
 			"path": "apps/web/src/services/renderer/nodes/sticker-node.ts",
 			"symbol": "stickerSourceCache",
 			"classification": "content-keyed-promise-cache",
-			"reason": "Entries are keyed by immutable sticker id and contain decoded source promises, not session state."
+			"reason": "Entries are keyed by the Host-resolved immutable URL plus requested dimensions and contain decoded source promises, not session state."
+		},
+		{
+			"path": "apps/web/src/services/renderer/effect-preview-source.ts",
+			"symbol": "sources",
+			"classification": "host-resolver-owned-weak-index-until-c6",
+			"reason": "Each decoded preview source is keyed only by one immutable Host AssetResolver identity, so bases cannot share mutable path/image state; C6 owns deterministic image/canvas disposal."
+		},
+		{
+			"path": "apps/web/src/services/renderer/effect-preview.ts",
+			"symbol": "services",
+			"classification": "host-resolver-owned-weak-index-until-c6",
+			"reason": "Each service is keyed only by one immutable Host AssetResolver and delegates to that resolver's isolated source; C6 owns deterministic service disposal."
 		},
 		{
 			"path": "apps/web/src/graphics/index.ts",

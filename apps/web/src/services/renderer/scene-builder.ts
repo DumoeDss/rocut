@@ -17,6 +17,7 @@ import {
 	readBlendModeFromParams,
 	readOpacityFromParams,
 } from "@/rendering";
+import type { AssetResolver } from "@/editor/ports";
 
 const PREVIEW_MAX_IMAGE_SIZE = 2048;
 
@@ -35,11 +36,13 @@ function buildTrackNodes({
 	mediaMap,
 	canvasSize,
 	isPreview,
+	assetResolver,
 }: {
 	tracks: TimelineTrack[];
 	mediaMap: Map<string, MediaAsset>;
 	canvasSize: TCanvasSize;
 	isPreview?: boolean;
+	assetResolver: AssetResolver;
 }): AnyBaseNode[] {
 	const nodes: AnyBaseNode[] = [];
 
@@ -128,6 +131,7 @@ function buildTrackNodes({
 						stickerId: element.stickerId,
 						intrinsicWidth: element.intrinsicWidth,
 						intrinsicHeight: element.intrinsicHeight,
+						assets: assetResolver,
 						duration: element.duration,
 						timeOffset: element.startTime,
 						trimStart: element.trimStart,
@@ -221,6 +225,7 @@ export type BuildSceneParams = {
 	duration: number;
 	background: TBackground;
 	isPreview?: boolean;
+	assetResolver: AssetResolver;
 };
 
 export function buildScene({
@@ -230,6 +235,7 @@ export function buildScene({
 	duration,
 	background,
 	isPreview,
+	assetResolver,
 }: BuildSceneParams) {
 	const rootNode = new RootNode({ duration });
 	const mediaMap = new Map(mediaAssets.map((m) => [m.id, m]));
@@ -246,6 +252,7 @@ export function buildScene({
 		mediaMap,
 		canvasSize,
 		isPreview,
+		assetResolver,
 	});
 
 	if (background.type === "blur") {

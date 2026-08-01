@@ -35,6 +35,7 @@ type HarnessState = {
 };
 
 const BUILD_COMMIT = import.meta.env.VITE_C3_BUILD_COMMIT ?? "missing";
+const C4_BUILD_MARKER = import.meta.env.VITE_C4_BUILD_MARKER ?? "development";
 
 function seedEditorState({
 	session,
@@ -130,6 +131,7 @@ async function renderOwnedFrame({
 		duration: editor.timeline.getTotalDuration(),
 		canvasSize: active.settings.canvasSize,
 		background: { type: "color", color },
+		assetResolver: editor.renderer.assetResolver,
 	});
 	editor.renderer.setRenderTree({ renderTree });
 	await renderer.render({
@@ -361,6 +363,7 @@ export function C3SessionHarness() {
 			data-capacity={state.capacity}
 			data-handles={state.sessions.map((entry) => entry.handle).join(",")}
 			data-build-commit={BUILD_COMMIT}
+			data-c4-build-marker={C4_BUILD_MARKER}
 			data-revision={state.revision}
 			style={{
 				minHeight: "100vh",

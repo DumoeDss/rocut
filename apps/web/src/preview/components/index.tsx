@@ -93,6 +93,7 @@ export function PreviewPanel({
 
 function RenderTreeController() {
 	const editor = useEditorInstance();
+	const isDegraded = useEditor((e) => e.renderer.isDegraded);
 	const tracks = useEditor(
 		(e) => e.timeline.getPreviewTracks() ?? e.scenes.getActiveScene().tracks,
 	);
@@ -102,6 +103,10 @@ function RenderTreeController() {
 	const { width, height } = usePreviewSize();
 
 	useDeepCompareEffect(() => {
+		if (isDegraded) {
+			editor.renderer.setRenderTree({ renderTree: null });
+			return;
+		}
 		if (!activeProject) return;
 
 		const duration = editor.timeline.getTotalDuration();
@@ -112,10 +117,18 @@ function RenderTreeController() {
 			canvasSize: { width, height },
 			background: activeProject.settings.background,
 			isPreview: true,
+			assetResolver: editor.renderer.assetResolver,
 		});
 
 		editor.renderer.setRenderTree({ renderTree });
-	}, [tracks, mediaAssets, activeProject?.settings.background, width, height]);
+	}, [
+		tracks,
+		mediaAssets,
+		activeProject?.settings.background,
+		width,
+		height,
+		isDegraded,
+	]);
 
 	return null;
 }
@@ -147,6 +160,7 @@ function PreviewCanvas({
 	const activeProject = useEditor((e) => e.project.getActive());
 	const renderTree = useEditor((e) => e.renderer.getRenderTree());
 	const rendererManager = useEditor((e) => e.renderer);
+	const isDegraded = useEditor((e) => e.renderer.isDegraded);
 	const viewport = usePreviewViewportState({
 		canvasHeight: nativeHeight,
 		canvasWidth: nativeWidth,
@@ -157,19 +171,26 @@ function PreviewCanvas({
 	const { canPan, panByScreenDelta, scaleZoom } = viewport;
 
 	const renderer = useMemo(() => {
+		if (isDegraded) return null;
 		return rendererManager.createCanvasRenderer({
 			width: nativeWidth,
 			height: nativeHeight,
 			fps: activeProject.settings.fps,
 		});
-	}, [rendererManager, nativeWidth, nativeHeight, activeProject.settings.fps]);
+	}, [
+		rendererManager,
+		nativeWidth,
+		nativeHeight,
+		activeProject.settings.fps,
+		isDegraded,
+	]);
 
 	// Mount the compositor's output canvas directly into the preview. wgpu
 	// renders straight into this element, so there is no intermediate copy —
 	// the container div owns positioning/styling, the canvas itself fills it.
 	useEffect(() => {
 		const mount = canvasMountRef.current;
-		if (!mount) return;
+		if (!mount || !renderer) return;
 		let outputCanvas: HTMLCanvasElement | null = null;
 		let cancelled = false;
 		void renderer
@@ -194,7 +215,7 @@ function PreviewCanvas({
 	}, [renderer]);
 
 	const render = useCallback(() => {
-		if (!renderTree || renderingRef.current) return;
+		if (isDegraded || !renderer || !renderTree || renderingRef.current) return;
 
 		const renderTime = Math.min(
 			editor.playback.getCurrentTime(),
@@ -212,10 +233,15 @@ function PreviewCanvas({
 		renderingRef.current = true;
 		lastSceneRef.current = renderTree;
 		lastFrameRef.current = frame;
-		renderer.render({ node: renderTree, time: renderTime }).then(() => {
-			renderingRef.current = false;
-		});
-	}, [renderer, renderTree, editor.playback, editor.timeline]);
+		void renderer
+			.render({ node: renderTree, time: renderTime })
+			.catch((error: unknown) => {
+				console.error("Failed to render preview frame:", error);
+			})
+			.finally(() => {
+				renderingRef.current = false;
+			});
+	}, [isDegraded, renderer, renderTree, editor.playback, editor.timeline]);
 
 	useRafLoop(render);
 
@@ -327,7 +353,16 @@ function PreviewCanvas({
 												? "transparent"
 												: activeProject?.settings.background.color,
 									}}
-								/>
+								>
+									{isDegraded ? (
+										<div
+											role="status"
+											className="bg-muted text-muted-foreground flex size-full items-center justify-center px-6 text-center text-sm"
+										>
+											Preview unavailable: this environment has no rasterizer.
+										</div>
+									) : null}
+								</div>
 								<PreviewOverlayLayer
 									instances={overlayInstances}
 									plane="under-interaction"

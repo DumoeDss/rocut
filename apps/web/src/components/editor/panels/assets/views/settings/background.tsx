@@ -18,8 +18,9 @@ import { patternCraftGradients } from "@/data/colors/pattern-craft";
 import { colors } from "@/data/colors/solid";
 import { syntaxUIGradients } from "@/data/colors/syntax-ui";
 import { useEditor, useEditorInstance } from "@/editor/use-editor";
-import { effectPreviewService } from "@/services/renderer/effect-preview";
+import { getEffectPreviewService } from "@/services/renderer/effect-preview";
 import { cn } from "@/utils/ui";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 
 const BLUR_PREVIEW_UNIFORM_DIMENSIONS = {
 	width: 1920,
@@ -40,6 +41,11 @@ const BlurPreview = memo(
 		onSelect: () => void;
 	}) => {
 		const canvasRef = useRef<HTMLCanvasElement>(null);
+		const session = useEditorSession();
+		const isDegraded = useEditor((state) => state.renderer.isDegraded);
+		const effectPreviewService = getEffectPreviewService({
+			resolver: session.host.assets,
+		});
 
 		useEffect(() => {
 			const renderPreview = () => {
@@ -50,6 +56,7 @@ const BlurPreview = memo(
 					params: { intensity: blur.value },
 					targetCanvas: canvasRef.current,
 					uniformDimensions: BLUR_PREVIEW_UNIFORM_DIMENSIONS,
+					isDegraded,
 				});
 			};
 
@@ -57,7 +64,7 @@ const BlurPreview = memo(
 			return effectPreviewService.onPreviewImageReady({
 				callback: renderPreview,
 			});
-		}, [blur.value]);
+		}, [blur.value, effectPreviewService, isDegraded]);
 
 		return (
 			<button

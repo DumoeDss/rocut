@@ -8,6 +8,7 @@ import { createPreviewStore } from "@/preview/preview-store";
 import { createSoundsStore } from "@/sounds/sounds-store";
 import { createStickersStore } from "@/stickers/stickers-store";
 import { createTimelineStore } from "@/timeline/timeline-store";
+import type { AssetResolver } from "@/editor/ports";
 
 export const EDITOR_SESSION_STORE_KEYS = [
 	"panel",
@@ -54,7 +55,11 @@ type StoresWithLifecycle = EditorSessionStores & {
 	[STORE_LIFECYCLE]?: { disposed: boolean };
 };
 
-export function createEditorSessionStores(): EditorSessionStores {
+export function createEditorSessionStores({
+	assets,
+}: {
+	assets?: AssetResolver;
+} = {}): EditorSessionStores {
 	const lifecycle = { disposed: false };
 	const stores: EditorSessionStores = {
 		panel: createPanelStore(),
@@ -62,7 +67,10 @@ export function createEditorSessionStores(): EditorSessionStores {
 		preview: createPreviewStore(),
 		timeline: createTimelineStore(),
 		sounds: createSoundsStore({ isDisposed: () => lifecycle.disposed }),
-		stickers: createStickersStore({ isDisposed: () => lifecycle.disposed }),
+		stickers: createStickersStore({
+			isDisposed: () => lifecycle.disposed,
+			assets,
+		}),
 		keybindings: createKeybindingsStore(),
 		properties: createPropertiesStore(),
 		assetsPanel: createAssetsPanelStore(),
@@ -93,22 +101,23 @@ export function assertCompleteEditorSessionStores(
 
 export function bindEditorSessionStores({
 	session,
-	stores = createEditorSessionStores(),
+	stores,
 }: {
 	session: EditorSession;
 	stores?: EditorSessionStores;
 }): EditorSessionStores {
-	assertCompleteEditorSessionStores(stores);
+	const ownedStores = stores ?? createEditorSessionStores({ assets: session.host.assets });
+	assertCompleteEditorSessionStores(ownedStores);
 	if (storesBySession.has(session)) {
 		throw new Error(
 			`Session ${session.id} already owns an editor store registry.`,
 		);
 	}
-	const lifecycle = (stores as StoresWithLifecycle)[STORE_LIFECYCLE] ?? {
+	const lifecycle = (ownedStores as StoresWithLifecycle)[STORE_LIFECYCLE] ?? {
 		disposed: false,
 	};
-	storesBySession.set(session, { stores, ...lifecycle });
-	return stores;
+	storesBySession.set(session, { stores: ownedStores, ...lifecycle });
+	return ownedStores;
 }
 
 export function storesForSession(session: EditorSession): EditorSessionStores {

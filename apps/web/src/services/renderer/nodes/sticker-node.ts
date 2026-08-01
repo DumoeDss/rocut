@@ -4,11 +4,14 @@ import {
 	type ResolvedVisualSourceNodeState,
 	type VisualNodeParams,
 } from "./visual-node";
+import type { AssetResolver } from "@/editor/ports";
+import { stickerSourceCacheKey } from "./sticker-cache-key";
 
 export interface StickerNodeParams extends VisualNodeParams {
 	stickerId: string;
 	intrinsicWidth?: number;
 	intrinsicHeight?: number;
+	assets: AssetResolver;
 }
 
 interface CachedStickerSource {
@@ -21,18 +24,25 @@ const stickerSourceCache = new Map<string, Promise<CachedStickerSource>>();
 
 export function loadStickerSource({
 	stickerId,
+	assets,
+	width = 200,
+	height = 200,
 }: {
 	stickerId: string;
+	assets: AssetResolver;
+	width?: number;
+	height?: number;
 }): Promise<CachedStickerSource> {
-	const cached = stickerSourceCache.get(stickerId);
+	const url = resolveStickerId({
+		stickerId,
+		options: { width, height },
+		assets,
+	});
+	const cacheKey = stickerSourceCacheKey({ url, width, height });
+	const cached = stickerSourceCache.get(cacheKey);
 	if (cached) return cached;
 
 	const promise = (async (): Promise<CachedStickerSource> => {
-		const url = resolveStickerId({
-			stickerId,
-			options: { width: 200, height: 200 },
-		});
-
 		const image = new Image();
 
 		await new Promise<void>((resolve, reject) => {
@@ -49,7 +59,7 @@ export function loadStickerSource({
 		};
 	})();
 
-	stickerSourceCache.set(stickerId, promise);
+	stickerSourceCache.set(cacheKey, promise);
 	return promise;
 }
 
