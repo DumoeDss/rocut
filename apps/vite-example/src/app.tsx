@@ -9,12 +9,35 @@ import { ViteEditorHost } from "./host/vite-editor-host";
 import { ProjectPicker } from "./project-picker";
 import { EditorErrorBoundary } from "./editor-error-boundary";
 import { C3SessionHarness } from "./c3-session-harness";
+import { C4ForcedNoneHarness } from "./c4-forced-none-harness";
+import { C4WorkerHarness } from "./c4-worker-harness";
+import { C4SessionHarness } from "./c4-session-harness";
+
+const C4_BUILD_MARKER = import.meta.env.VITE_C4_BUILD_MARKER ?? "development";
 
 function readProjectIdFromUrl(): string | null {
 	return new URLSearchParams(window.location.search).get("project");
 }
 
 export function App() {
+	if (
+		new URLSearchParams(window.location.search).get(
+			"c4-forced-none-harness",
+		) === "1"
+	) {
+		return <C4ForcedNoneHarness />;
+	}
+	if (
+		new URLSearchParams(window.location.search).get("c4-session-harness") ===
+		"1"
+	) {
+		return <C4SessionHarness />;
+	}
+	if (
+		new URLSearchParams(window.location.search).get("c4-worker-harness") === "1"
+	) {
+		return <C4WorkerHarness />;
+	}
 	if (
 		new URLSearchParams(window.location.search).get("c3-session-harness") ===
 		"1"
@@ -90,6 +113,7 @@ function EditorApp() {
 function HostChrome({ children }: { children: React.ReactNode }) {
 	return (
 		<div
+			data-c4-build-marker={C4_BUILD_MARKER}
 			style={{
 				height: "100vh",
 				display: "flex",

@@ -34,7 +34,11 @@ export class EditorCore {
 		this.scenes = new ScenesManager(this);
 		this.project = new ProjectManager(this);
 		this.media = new MediaManager(this);
-		this.renderer = new RendererManager(this, session.resources);
+		this.renderer = new RendererManager(
+			this,
+			session.resources,
+			session.host.assets,
+		);
 		this.save = new SaveManager({ editor: this });
 		this.audio = new AudioManager(this);
 		this.selection = new SelectionManager(this);

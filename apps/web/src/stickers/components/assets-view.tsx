@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEditorInstance } from "@/editor/use-editor";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 import { resolveStickerIntrinsicSize } from "@/stickers";
 import {
 	buildGraphicElement,
@@ -327,6 +328,7 @@ function StickerItem({
 	containerClassName,
 }: StickerItemProps) {
 	const editor = useEditorInstance();
+	const session = useEditorSession();
 	const { addToRecentStickers } = useStickersStore();
 	const [isAdding, setIsAdding] = useState(false);
 	const [hasImageError, setHasImageError] = useState(false);
@@ -362,7 +364,10 @@ function StickerItem({
 				});
 			} else {
 				const { width: intrinsicWidth, height: intrinsicHeight } =
-					await resolveStickerIntrinsicSize({ stickerId: item.id });
+					await resolveStickerIntrinsicSize({
+						stickerId: item.id,
+						assets: session.host.assets,
+					});
 				element = buildStickerElement({
 					stickerId: item.id,
 					name: item.name,

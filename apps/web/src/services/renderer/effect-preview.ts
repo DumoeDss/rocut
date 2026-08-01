@@ -1,26 +1,25 @@
-import { createCanvasSurface } from "./canvas-utils";
 import { effectsRegistry, resolveEffectPasses } from "@/effects";
 import { buildDefaultParamValues } from "@/params/registry";
 import type { ParamValues } from "@/params";
 import { gpuRenderer } from "./gpu-renderer";
+import type { AssetResolver } from "@/editor/ports";
+import {
+	getEffectPreviewSource,
+	type EffectPreviewSource,
+} from "./effect-preview-source";
 
 const PREVIEW_SIZE = 160;
-const PREVIEW_IMAGE_PATH = "/effects/preview.jpg";
-
-class EffectPreviewService {
-	private testSourceCanvas: OffscreenCanvas | null = null;
-	private previewImageElement: HTMLImageElement | null = null;
-	private onReadyCallbacks = new Set<() => void>();
-
+export class EffectPreviewService {
 	readonly PREVIEW_SIZE = PREVIEW_SIZE;
 
-	constructor() {
-		this.loadPreviewImage();
+	constructor(private readonly source: EffectPreviewSource) {}
+
+	get previewImageUrl(): string {
+		return this.source.previewImageUrl;
 	}
 
 	onPreviewImageReady({ callback }: { callback: () => void }): () => void {
-		this.onReadyCallbacks.add(callback);
-		return () => this.onReadyCallbacks.delete(callback);
+		return this.source.onReady({ callback });
 	}
 
 	renderPreview({
@@ -28,11 +27,13 @@ class EffectPreviewService {
 		params,
 		targetCanvas,
 		uniformDimensions,
+		isDegraded = false,
 	}: {
 		effectType: string;
 		params: ParamValues;
 		targetCanvas: HTMLCanvasElement;
 		uniformDimensions?: { width: number; height: number };
+		isDegraded?: boolean;
 	}): void {
 		const size = PREVIEW_SIZE;
 		const targetCtx = targetCanvas.getContext(
@@ -44,8 +45,12 @@ class EffectPreviewService {
 
 		targetCanvas.width = size;
 		targetCanvas.height = size;
+		if (isDegraded) {
+			targetCtx.clearRect(0, 0, size, size);
+			return;
+		}
 
-		const source = this.getTestSource({ width: size, height: size });
+		const source = this.source.getTestSource({ width: size, height: size });
 		if (!source) {
 			targetCtx.clearRect(0, 0, size, size);
 			return;
@@ -79,55 +84,6 @@ class EffectPreviewService {
 		}
 	}
 
-	private loadPreviewImage(): void {
-		if (typeof window === "undefined") return;
-		const image = new Image();
-		image.onload = () => {
-			this.testSourceCanvas = null;
-			for (const callback of this.onReadyCallbacks) {
-				callback();
-			}
-		};
-		image.src = PREVIEW_IMAGE_PATH;
-		this.previewImageElement = image;
-	}
-
-	private createTestSource({
-		width,
-		height,
-	}: {
-		width: number;
-		height: number;
-	}): OffscreenCanvas | null {
-		const isImageReady =
-			this.previewImageElement?.complete &&
-			(this.previewImageElement.naturalWidth ?? 0) > 0;
-		if (!isImageReady || !this.previewImageElement) {
-			return null;
-		}
-
-		const { canvas, context } = createCanvasSurface({ width, height });
-		context.drawImage(this.previewImageElement, 0, 0, width, height);
-		return canvas;
-	}
-
-	private getTestSource({
-		width,
-		height,
-	}: {
-		width: number;
-		height: number;
-	}): OffscreenCanvas | null {
-		if (
-			!this.testSourceCanvas ||
-			this.testSourceCanvas.width !== width ||
-			this.testSourceCanvas.height !== height
-		) {
-			this.testSourceCanvas = this.createTestSource({ width, height });
-		}
-		return this.testSourceCanvas;
-	}
-
 	private applyGpuEffect({
 		source,
 		width,
@@ -148,4 +104,20 @@ class EffectPreviewService {
 	}
 }
 
-export const effectPreviewService = new EffectPreviewService();
+const services = new WeakMap<object, EffectPreviewService>();
+
+export function getEffectPreviewService({
+	resolver,
+}: {
+	resolver: AssetResolver;
+}): EffectPreviewService {
+	let service = services.get(resolver as object);
+	if (!service) {
+		service = new EffectPreviewService(getEffectPreviewSource({ resolver }));
+		services.set(resolver as object, service);
+	}
+	return service;
+}
+
+// C6 owns deterministic image/canvas/service disposal. C4 intentionally limits
+// this cache to resolver identity so one Host base can never poison another.

@@ -12,6 +12,7 @@ import type { StickerCategory } from "@/stickers/types";
 import { registerDefaultStickerProviders } from "@/stickers/providers";
 import { stickersRegistry } from "@/stickers/registry";
 import { parseStickerId } from "@/stickers/sticker-id";
+import type { AssetResolver } from "@/editor/ports";
 
 const MAX_RECENT_STICKERS = 50;
 
@@ -93,9 +94,11 @@ const DEFAULT_QUERIES: StickerStoreQueries = {
 export function createStickersStore({
 	isDisposed = () => false,
 	queries = DEFAULT_QUERIES,
+	assets,
 }: {
 	isDisposed?: () => boolean;
 	queries?: StickerStoreQueries;
+	assets?: AssetResolver;
 } = {}) {
 	let requestVersion = 0;
 	return createStore<StickersStore>()(
@@ -151,6 +154,7 @@ export function createStickersStore({
 						if (selectedCategory === "all") {
 							const browseContent = await queries.searchAll({
 								query: trimmedQuery,
+								assets,
 							});
 							if (isDisposed() || version !== requestVersion) return;
 							set({ browseContent, searchResults: null });
@@ -159,6 +163,7 @@ export function createStickersStore({
 								query: trimmedQuery,
 								category: selectedCategory,
 								limit: 100,
+								assets,
 							});
 							if (isDisposed() || version !== requestVersion) return;
 							set({ searchResults: results });
@@ -190,9 +195,11 @@ export function createStickersStore({
 							selectedCategory === "all"
 								? await queries.browseAll({
 										recentStickers: get().recentStickers,
+										assets,
 									})
 								: await queries.browseCategory({
 										category: selectedCategory,
+										assets,
 									});
 
 						if (isDisposed() || version !== requestVersion) return;

@@ -49,7 +49,10 @@ export function EditorProvider({ children }: EditorProviderProps) {
 				if (cancelled) return;
 
 				setIsLoading(false);
-				loadFontAtlas();
+				void loadFontAtlas({
+					loader: session.host.assetLoader,
+					resolver: session.host.assets,
+				});
 			} catch (err) {
 				if (cancelled) return;
 

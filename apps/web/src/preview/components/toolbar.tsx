@@ -23,6 +23,7 @@ import { PREVIEW_ZOOM_PRESETS } from "@/preview/zoom";
 import { usePreviewViewport } from "./preview-viewport";
 import { GridPopover } from "./guide-popover";
 import { usePreviewStore } from "@/editor/use-session-store";
+import { usePlaybackTime } from "./use-playback-time";
 
 export function PreviewToolbar({
 	onToggleFullscreen,
@@ -61,7 +62,7 @@ function TimecodeDisplay() {
 	const editor = useEditorInstance();
 	const totalDuration = useEditor((e) => e.timeline.getTotalDuration());
 	const fps = useEditor((e) => e.project.getActive().settings.fps);
-	const currentTime = useEditor((e) => e.playback.getCurrentTime());
+	const currentTime = usePlaybackTime();
 
 	return (
 		<div className="flex items-center">

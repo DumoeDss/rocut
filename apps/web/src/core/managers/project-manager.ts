@@ -652,7 +652,7 @@ export class ProjectManager {
 	}
 
 	private async updateThumbnailFromTimeline(): Promise<boolean> {
-		if (!this.active) return false;
+		if (!this.active || this.editor.renderer.isDegraded) return false;
 
 		const tracks = this.editor.scenes.getActiveScene().tracks;
 		const mediaAssets = this.editor.media.getAssets();
@@ -665,6 +665,7 @@ export class ProjectManager {
 			duration: duration || 1,
 			canvasSize,
 			background,
+			assetResolver: this.editor.renderer.assetResolver,
 		});
 
 		const renderer = this.editor.renderer.createCanvasRenderer({

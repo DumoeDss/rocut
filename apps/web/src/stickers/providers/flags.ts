@@ -7,20 +7,23 @@ import type {
 } from "../types";
 import { REGIONS, REGION_GROUPS } from "./countries-data";
 import type { CountryRecord, RegionId } from "./countries-data";
+import type { AssetResolver } from "@/editor/ports";
 
 const FLAGS_PROVIDER_ID = "flags";
 const DEFAULT_SEARCH_LIMIT = 100;
-const DEFAULT_FLAGS_BASE_URL = "/flags";
 
 let countriesPromise: Promise<CountryRecord[]> | null = null;
 
-function getFlagsBaseUrl(): string {
-	return DEFAULT_FLAGS_BASE_URL.replace(/\/$/, "");
-}
-
-function buildFlagUrl({ code }: { code: string }): string {
+export function buildFlagUrl({
+	code,
+	assets,
+}: {
+	code: string;
+	assets?: AssetResolver;
+}): string {
 	const normalizedCode = code.toLowerCase();
-	return `${getFlagsBaseUrl()}/${encodeURIComponent(normalizedCode)}.svg`;
+	const path = `flags/${encodeURIComponent(normalizedCode)}.svg`;
+	return assets ? assets.resolve({ ref: { path } }) : path;
 }
 
 async function loadCountries(): Promise<CountryRecord[]> {
@@ -38,7 +41,13 @@ async function loadCountries(): Promise<CountryRecord[]> {
 	return countriesPromise;
 }
 
-function toStickerItem({ country }: { country: CountryRecord }): StickerItem {
+function toStickerItem({
+	country,
+	assets,
+}: {
+	country: CountryRecord;
+	assets?: AssetResolver;
+}): StickerItem {
 	const normalizedCode = country.code.toUpperCase();
 	return {
 		id: buildStickerId({
@@ -47,7 +56,7 @@ function toStickerItem({ country }: { country: CountryRecord }): StickerItem {
 		}),
 		provider: FLAGS_PROVIDER_ID,
 		name: country.name,
-		previewUrl: buildFlagUrl({ code: normalizedCode }),
+		previewUrl: buildFlagUrl({ code: normalizedCode, assets }),
 		metadata: {
 			code: normalizedCode,
 			region: country.region ?? null,
@@ -149,9 +158,11 @@ export const flagsProvider: StickerProvider = {
 	async search({
 		query,
 		options,
+		assets,
 	}: {
 		query: string;
 		options?: { limit?: number };
+		assets?: AssetResolver;
 	}): Promise<StickerSearchResult> {
 		const countries = await loadCountries();
 		const normalizedQuery = normalizeQuery({ query });
@@ -167,15 +178,17 @@ export const flagsProvider: StickerProvider = {
 			},
 		});
 		return {
-			items: paged.items.map((country) => toStickerItem({ country })),
+			items: paged.items.map((country) => toStickerItem({ country, assets })),
 			total: paged.total,
 			hasMore: paged.hasMore,
 		};
 	},
 	async browse({
 		options,
+		assets,
 	}: {
 		options?: { page?: number; limit?: number };
+		assets?: AssetResolver;
 	}): Promise<StickerBrowseResult> {
 		const countries = await loadCountries();
 		const paged = paginateCountries({ countries, options });
@@ -183,7 +196,7 @@ export const flagsProvider: StickerProvider = {
 			sections: [
 				{
 					id: "all",
-					items: paged.items.map((country) => toStickerItem({ country })),
+					items: paged.items.map((country) => toStickerItem({ country, assets })),
 					hasMore: paged.hasMore,
 					layout: "grid",
 				},
@@ -192,11 +205,13 @@ export const flagsProvider: StickerProvider = {
 	},
 	resolveUrl({
 		stickerId,
+		assets,
 	}: {
 		stickerId: string;
 		options?: { width?: number; height?: number };
+		assets?: AssetResolver;
 	}): string {
 		const { providerValue } = parseStickerId({ stickerId });
-		return buildFlagUrl({ code: providerValue });
+		return buildFlagUrl({ code: providerValue, assets });
 	},
 };

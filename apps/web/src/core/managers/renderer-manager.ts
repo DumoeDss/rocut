@@ -10,10 +10,14 @@ import { createTimelineAudioBuffer } from "@/media/audio";
 import { formatTimecode } from "opencut-wasm";
 import { frameRateToFloat } from "@/fps/utils";
 import { downloadBlob } from "@/utils/browser";
+import type { AssetResolver } from "@/editor/ports";
 
 type SnapshotResult =
 	| { success: true; blob: Blob; filename: string }
 	| { success: false; error: string };
+
+export const RASTERIZER_UNAVAILABLE_ERROR =
+	"Renderer unavailable: this environment has no rasterizer";
 
 export class RendererManager {
 	private renderTree: RootNode | null = null;
@@ -25,6 +29,7 @@ export class RendererManager {
 	constructor(
 		private editor: EditorCore,
 		resources: SessionResources,
+		readonly assetResolver: AssetResolver,
 	) {
 		this.compositor = new WasmCompositor(resources);
 	}
@@ -109,6 +114,10 @@ export class RendererManager {
 	}
 
 	private async createSnapshot(): Promise<SnapshotResult> {
+		if (this.isDegraded) {
+			return { success: false, error: RASTERIZER_UNAVAILABLE_ERROR };
+		}
+
 		try {
 			const renderTree = this.getRenderTree();
 			const activeProject = this.editor.project.getActive();
@@ -180,6 +189,10 @@ export class RendererManager {
 		onProgress?: ({ progress }: { progress: number }) => void;
 		onCancel?: () => boolean;
 	}): Promise<ExportResult> {
+		if (this.isDegraded) {
+			return { success: false, error: RASTERIZER_UNAVAILABLE_ERROR };
+		}
+
 		const { format, quality, fps, includeAudio } = options;
 
 		try {
@@ -215,6 +228,7 @@ export class RendererManager {
 				duration,
 				canvasSize,
 				background: activeProject.settings.background,
+				assetResolver: this.assetResolver,
 			});
 
 			const exporter = new SceneExporter({

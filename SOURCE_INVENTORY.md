@@ -22,8 +22,10 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 
 ## Working-tree drift against the pin
 
-**142 inherited file(s) modified.** Each is expected to carry a `PATCHES.md` row.
+**158 inherited file(s) modified.** Each is expected to carry a `PATCHES.md` row.
 
+- `apps/web/public/browserconfig.xml`
+- `apps/web/public/manifest.json`
 - `apps/web/src/actions/components/shortcuts-dialog.tsx`
 - `apps/web/src/actions/definitions.ts`
 - `apps/web/src/actions/keybinding.ts`
@@ -32,6 +34,7 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/actions/use-keybindings.ts`
 - `apps/web/src/actions/use-keyboard-shortcuts-help.ts`
 - `apps/web/src/app/editor/[project_id]/page.tsx`
+- `apps/web/src/app/metadata.ts`
 - `apps/web/src/app/projects/page.tsx`
 - `apps/web/src/commands/base-command.ts`
 - `apps/web/src/commands/batch-command.ts`
@@ -92,6 +95,7 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/components/editor/scenes-view.tsx`
 - `apps/web/src/components/providers/editor-provider.tsx`
 - `apps/web/src/components/storage-provider.tsx`
+- `apps/web/src/components/ui/font-picker.tsx`
 - `apps/web/src/components/ui/use-overlay-open-change.ts`
 - `apps/web/src/core/index.ts`
 - `apps/web/src/core/managers/commands.ts`
@@ -108,8 +112,11 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/effects/components/effects-tab.tsx`
 - `apps/web/src/effects/definitions/index.ts`
 - `apps/web/src/feedback/components/feedback-popover.tsx`
+- `apps/web/src/fonts/google-fonts.ts`
+- `apps/web/src/fonts/use-font-atlas.ts`
 - `apps/web/src/graphics/components/graphic-tab.tsx`
 - `apps/web/src/graphics/definitions/index.ts`
+- `apps/web/src/graphics/index.ts`
 - `apps/web/src/guides/definitions/grid.tsx`
 - `apps/web/src/guides/definitions/platforms.tsx`
 - `apps/web/src/masks/builtin/definitions/index.ts`
@@ -130,17 +137,26 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/project/components/migration-dialog.tsx`
 - `apps/web/src/services/renderer/canvas-renderer.ts`
 - `apps/web/src/services/renderer/compositor/wasm-compositor.ts`
+- `apps/web/src/services/renderer/effect-preview.ts`
 - `apps/web/src/services/renderer/gpu-renderer.ts`
+- `apps/web/src/services/renderer/nodes/sticker-node.ts`
+- `apps/web/src/services/renderer/resolve.ts`
+- `apps/web/src/services/renderer/scene-builder.ts`
 - `apps/web/src/services/renderer/scene-exporter.ts`
 - `apps/web/src/services/storage/migrations/runner.ts`
 - `apps/web/src/services/storage/migrations/v1-to-v2.ts`
+- `apps/web/src/services/transcription/service.ts`
 - `apps/web/src/sounds/components/assets-view.tsx`
 - `apps/web/src/sounds/sounds-store.ts`
 - `apps/web/src/sounds/use-sound-search.ts`
 - `apps/web/src/speed/components/speed-tab.tsx`
 - `apps/web/src/stickers/components/assets-view.tsx`
+- `apps/web/src/stickers/index.ts`
+- `apps/web/src/stickers/providers/flags.ts`
 - `apps/web/src/stickers/providers/index.ts`
+- `apps/web/src/stickers/resolver.ts`
 - `apps/web/src/stickers/stickers-store.ts`
+- `apps/web/src/stickers/types.ts`
 - `apps/web/src/subtitles/components/assets-view.tsx`
 - `apps/web/src/text/components/assets-view.tsx`
 - `apps/web/src/timeline/bookmarks/components/bookmarks.tsx`

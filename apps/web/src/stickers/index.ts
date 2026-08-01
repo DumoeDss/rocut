@@ -13,6 +13,7 @@ import type {
 	StickerProvider,
 	StickerSearchResult,
 } from "./types";
+import type { AssetResolver } from "@/editor/ports";
 
 const DEFAULT_BROWSE_LIMIT = 12;
 const DEFAULT_SEARCH_LIMIT = 100;
@@ -81,8 +82,10 @@ function getStickerNameFromId({ stickerId }: { stickerId: string }): string {
 
 function toRecentStickerItem({
 	stickerId,
+	assets,
 }: {
 	stickerId: string;
+	assets?: AssetResolver;
 }): StickerItem | null {
 	try {
 		const { providerId } = parseStickerId({ stickerId });
@@ -93,6 +96,7 @@ function toRecentStickerItem({
 			previewUrl: resolveStickerId({
 				stickerId,
 				options: { width: 64, height: 64 },
+				assets,
 			}),
 			metadata: {},
 		};
@@ -105,10 +109,12 @@ export async function searchStickers({
 	query,
 	category,
 	limit = DEFAULT_SEARCH_LIMIT,
+	assets,
 }: {
 	query: string;
 	category: StickerCategory;
 	limit?: number;
+	assets?: AssetResolver;
 }): Promise<StickerSearchResult> {
 	registerDefaultStickerProviders({});
 
@@ -125,6 +131,7 @@ export async function searchStickers({
 		return provider.search({
 			query,
 			options: { limit },
+			assets,
 		});
 	}
 
@@ -143,6 +150,7 @@ export async function searchStickers({
 			provider.search({
 				query,
 				options: { limit: perProviderLimit },
+				assets,
 			}),
 		),
 	);
@@ -162,9 +170,11 @@ export async function searchStickers({
 export async function searchAll({
 	query,
 	limit = DEFAULT_SEARCH_LIMIT,
+	assets,
 }: {
 	query: string;
 	limit?: number;
+	assets?: AssetResolver;
 }): Promise<StickerBrowseResult> {
 	registerDefaultStickerProviders({});
 
@@ -179,6 +189,7 @@ export async function searchAll({
 			const result = await provider.search({
 				query,
 				options: { limit: perProviderLimit },
+				assets,
 			});
 			return { provider, result };
 		}),
@@ -208,8 +219,10 @@ export async function searchAll({
 
 export async function browseCategory({
 	category,
+	assets,
 }: {
 	category: StickerCategory;
+	assets?: AssetResolver;
 }): Promise<StickerBrowseResult> {
 	registerDefaultStickerProviders({});
 
@@ -223,21 +236,23 @@ export async function browseCategory({
 		return getEmptyBrowseResult();
 	}
 
-	return provider.browse({ options: {} });
+	return provider.browse({ options: {}, assets });
 }
 
 export async function browseAll({
 	recentStickers,
 	limit = DEFAULT_BROWSE_LIMIT,
+	assets,
 }: {
 	recentStickers: string[];
 	limit?: number;
+	assets?: AssetResolver;
 }): Promise<StickerBrowseResult> {
 	registerDefaultStickerProviders({});
 
 	const sections: StickerBrowseResult["sections"] = [];
 	const recentItems = recentStickers
-		.map((stickerId) => toRecentStickerItem({ stickerId }))
+		.map((stickerId) => toRecentStickerItem({ stickerId, assets }))
 		.filter((item): item is StickerItem => item !== null);
 
 	if (recentItems.length > 0) {
@@ -254,6 +269,7 @@ export async function browseAll({
 		stickersRegistry.getAll().map(async (provider) => {
 			const browseResult = await provider.browse({
 				options: { limit },
+				assets,
 			});
 			const firstSection = browseResult.sections[0];
 
@@ -287,10 +303,12 @@ export async function browseAll({
 
 export async function resolveStickerIntrinsicSize({
 	stickerId,
+	assets,
 }: {
 	stickerId: string;
+	assets?: AssetResolver;
 }): Promise<{ width: number; height: number }> {
-	const url = resolveStickerId({ stickerId });
+	const url = resolveStickerId({ stickerId, assets });
 	return new Promise((resolve) => {
 		const img = new Image();
 		img.onload = () =>

@@ -16,10 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import type { EditorHost } from "@/editor/host/editor-host";
-import { createInMemoryPorts } from "@/editor/ports/in-memory";
+import { createNextEditorHost } from "@/editor/host/next-editor-host";
 import { EditorSessionHost } from "@/editor/session";
-import { DEFAULT_LOGO_URL, SITE_URL } from "@/site/brand";
-import { SOCIAL_LINKS } from "@/site/social";
 import { useProjectsStore } from "./store";
 import type {
 	TProjectMetadata,
@@ -94,24 +92,12 @@ const VIEW_MODE_OPTIONS = [
 export default function ProjectsPage() {
 	const router = useRouter();
 	const host = useMemo<EditorHost>(
-		() => ({
-			...createInMemoryPorts(),
+		() =>
+			createNextEditorHost({
 			projectId: "project-picker",
-			navigation: {
-				onProjectReplaced: ({ projectId }) =>
-					router.push(`/editor/${projectId}`),
-				onExitProject: () => {},
-				onGoBack: () => router.back(),
-			},
-			services: {
-				soundSearchEndpoint: "/api/sounds/search",
-				feedbackEndpoint: "/api/feedback",
-			},
-			branding: { logoUrl: DEFAULT_LOGO_URL },
-			links: {
-				discordUrl: SOCIAL_LINKS.discord,
-				roadmapUrl: `${SITE_URL}/roadmap`,
-			},
+			onProjectReplaced: (projectId) => router.push(`/editor/${projectId}`),
+			onExitProject: () => {},
+			onGoBack: () => router.back(),
 		}),
 		[router],
 	);

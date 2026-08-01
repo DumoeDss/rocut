@@ -7,7 +7,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { useReducer, useRef, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { extractTimelineAudio } from "@/media/mediabunny";
 import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { TRANSCRIPTION_DIAGNOSTICS_SCOPE } from "@/transcription/diagnostics";
@@ -18,7 +18,8 @@ import type {
 	TranscriptionLanguage,
 	TranscriptionProgress,
 } from "@/transcription/types";
-import { transcriptionService } from "@/services/transcription/service";
+import { createTranscriptionService } from "@/services/transcription/service";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 import { decodeAudioToFloat32 } from "@/media/audio";
 import { buildCaptionChunks } from "@/transcription/caption";
 import { insertCaptionChunksAsTextTrack } from "@/subtitles/insert";
@@ -90,6 +91,18 @@ export function Captions() {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const editor = useEditorInstance();
+	const session = useEditorSession();
+	const transcriptionService = useMemo(
+		() => createTranscriptionService({ resources: session.resources }),
+		[session],
+	);
+
+	useEffect(
+		() => () => {
+			transcriptionService.terminate();
+		},
+		[transcriptionService],
+	);
 
 	const isProcessing = processing.status === "processing";
 
