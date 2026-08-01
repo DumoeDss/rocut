@@ -1,8 +1,5 @@
-# host-port-contract Specification
+## MODIFIED Requirements
 
-## Purpose
-TBD - created by archiving change s02-port-contract-freeze. Update Purpose after archive.
-## Requirements
 ### Requirement: The Host contract is one coherent surface
 
 The editor SHALL obtain everything it needs from its Host through a single composed contract rather
@@ -32,32 +29,6 @@ in-memory reference counterparts for those roles.
   browser implementations configured with that Host's base
 - **AND** a composition/production-graph gate exits non-zero if an in-memory asset loader, default
   `assets/` resolver, or echo Worker satisfies any of those final roles
-
-### Requirement: No port signature exposes an editor-internal or storage-mechanism type
-
-A port signature SHALL NOT reference an OpenCut schema type, a command class, an editor state store,
-an IndexedDB database name or an OPFS path. The mechanism a Host chooses to persist or fetch with
-SHALL NOT be observable in the contract.
-
-#### Scenario: The boundary is enforced by a check, not by review
-
-- **WHEN** the port-boundary check runs over the contract module's public surface and its import
-  graph
-- **THEN** it reports no reference to an editor schema type, command class or state store, and no
-  storage-mechanism name or path literal
-- **AND** it exits non-zero if any is found
-
-#### Scenario: The check is proven able to fail
-
-- **WHEN** the port-boundary check runs against a fixture that deliberately violates each rule
-- **THEN** it reports a failure for each violation
-- **AND** this negative control is recorded, so a passing result is known not to be vacuous
-
-#### Scenario: Persisted project content crosses the boundary opaquely
-
-- **WHEN** the store port carries a project between the editor and a Host implementation
-- **THEN** the project's content is carried as an opaque payload plus a small typed summary, so that
-  fields the Host does not understand survive a save and reopen unchanged
 
 ### Requirement: A worker is expressed so that a same-origin Host can implement it
 
@@ -127,68 +98,3 @@ session compositor.
 - **WHEN** the forced-none Host gate passes
 - **THEN** it proves only that the Host/session/UI contract is constructible without raster work
 - **AND** software-raster timing and an actual no-rasterizer-machine observation remain unclaimed
-
-### Requirement: Preview concurrency is a reported capability, expressed as a count
-
-The capability report SHALL state how many live previews the runtime can drive. It SHALL be a count
-rather than a flag, SHALL be derived from the live C0b runtime rather than asserted by the Host, and
-SHALL be askable before the Host commits to a multi-preview layout. Over-capacity requests SHALL be
-explicitly refused rather than silently degraded or used to replace an existing preview.
-
-#### Scenario: A Host asks before laying out previews
-
-- **WHEN** a Host considers creating a second live preview
-- **THEN** it queries the live capability report before committing that layout
-
-#### Scenario: WebGPU reports and demonstrates capacity two
-
-- **WHEN** the asserted installed-Chrome run selects WebGPU
-- **THEN** the report says 2 and the runtime simultaneously retains two distinct live compositor
-  handles and visible previews
-
-#### Scenario: WebGL reports and enforces capacity one
-
-- **WHEN** the asserted bundled-Chromium run selects WebGL
-- **THEN** the report says 1, the first preview remains live and a second request is explicitly
-  rejected without creating another handle
-
-#### Scenario: Silent degradation does not satisfy the contract
-
-- **WHEN** reported capacity, live-handle count, visible-preview behavior or observed backend differ
-- **THEN** the evidence fails instead of accepting a Host assertion, fallback, replacement or hidden
-  second preview
-
-### Requirement: Every port has an in-memory reference implementation and a conformance suite
-
-The contract SHALL ship a working in-memory implementation of every port, and a conformance suite an
-adapter author can run against any implementation. A port that cannot be implemented twice is not a
-port.
-
-#### Scenario: The reference implementation passes conformance
-
-- **WHEN** the conformance suite is run against the in-memory implementation
-- **THEN** every port's cases pass
-
-#### Scenario: The reference implementation is working, not stubbed
-
-- **WHEN** the in-memory store is exercised through the conformance suite
-- **THEN** it round-trips project content, including fields it does not interpret, rather than
-  returning fixed values
-
-#### Scenario: The suite is runnable by an adapter author outside this change
-
-- **WHEN** an adapter author points the conformance suite at their own implementation
-- **THEN** it runs without modification and reports pass or fail per port and per case
-
-### Requirement: The port-shape decisions are recorded with their forcing evidence
-
-A committed decision record SHALL state how a worker is constructed, how graphics capability is
-negotiated, who owns disposal, and who runs schema migrations — each with the measurement or
-constraint that forced the choice and the alternative that measurement rules out.
-
-#### Scenario: Each decision names what forced it
-
-- **WHEN** a reviewer reads the decision record
-- **THEN** each of the four decisions states the evidence behind it and the alternative shape it
-  rejects, rather than stating a preference
-

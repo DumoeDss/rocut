@@ -1,0 +1,481 @@
+{
+  "generatedBy": "script/check-emitted-runtime-assets.mjs",
+  "hosts": [
+    {
+      "host": "vite",
+      "base": "/c4-strategy1-vite/",
+      "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\vite-example\\dist-c4-strategy1",
+      "manifest": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\vite-example\\dist-c4-strategy1\\asset-manifest.json",
+      "files": [
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\vite-example\\dist-c4-strategy1",
+          "file": "assets/index-4Q-O2MNS.js",
+          "layer": "entry",
+          "url": "/c4-strategy1-vite/assets/index-4Q-O2MNS.js",
+          "bytes": 3999254,
+          "sha256": "fdcc44221d2518e55176e47ab743762f07904f6449027134cc37f19dd97a4f7c"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\vite-example\\dist-c4-strategy1",
+          "file": "assets/worker-6rc6sita.js",
+          "layer": "transcription-worker",
+          "url": "/c4-strategy1-vite/assets/worker-6rc6sita.js",
+          "bytes": 868346,
+          "sha256": "b9b5a4df3a2f57dbcc71412d14f22e632177b73d0e2e1b53947f7b28fb216949"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\vite-example\\dist-c4-strategy1",
+          "file": "assets/opencut_wasm_bg-PlMeUgEh.wasm",
+          "layer": "editor-wasm",
+          "url": "/c4-strategy1-vite/assets/opencut_wasm_bg-PlMeUgEh.wasm",
+          "bytes": 3286340,
+          "sha256": "15622cf5f9852c5238cd8326e67a9ec704450d1101a15f2647998501869af9b1"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\vite-example\\dist-c4-strategy1",
+          "file": "assets/ort-wasm-simd-threaded.jsep-B0T3yYHD.wasm",
+          "layer": "ort-sidecar",
+          "url": "/c4-strategy1-vite/assets/ort-wasm-simd-threaded.jsep-B0T3yYHD.wasm",
+          "bytes": 21596019,
+          "sha256": "c46655e8a94afc45338d4cb2b840475f88e5012d524509916e505079c00bfa39"
+        }
+      ]
+    },
+    {
+      "host": "next",
+      "base": "/c4-strategy1-next/",
+      "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-strategy1",
+      "manifest": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-strategy1\\server\\app\\editor\\[project_id]\\page_client-reference-manifest.js",
+      "files": [
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-strategy1",
+          "file": "static/chunks/53f937be1abc7aa7.js",
+          "layer": "entry",
+          "url": "/c4-strategy1-next/_next/static/chunks/53f937be1abc7aa7.js",
+          "bytes": 329,
+          "sha256": "ff3646fceede5798e0d4e8e7c603eb731527ac2ad3be0f78594602d8e6163046"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-strategy1",
+          "file": "static/chunks/3346c876d548c420.js",
+          "layer": "entry",
+          "url": "/c4-strategy1-next/_next/static/chunks/3346c876d548c420.js",
+          "bytes": 30817,
+          "sha256": "9f2af4a4686ac82aa7b6c43069b337f800f0667428e03a1e590d6d77f6b18fd8"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-strategy1",
+          "file": "static/chunks/c8208314ebd6ffbc.js",
+          "layer": "entry",
+          "url": "/c4-strategy1-next/_next/static/chunks/c8208314ebd6ffbc.js",
+          "bytes": 20440,
+          "sha256": "cbd3c7a0820b929df4c9f7bb0fd1c01b3719dbc254fc6453934d5cdb455206d3"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-strategy1",
+          "file": "static/chunks/8d908153c03903cb.js",
+          "layer": "entry",
+          "url": "/c4-strategy1-next/_next/static/chunks/8d908153c03903cb.js",
+          "bytes": 76193,
+          "sha256": "dcaee77a92ea5699defc39637625a3c2ae5e6cdc034f3e744dfff1f9541bbb4d"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-strategy1",
+          "file": "static/chunks/46076a746839fe9d.js",
+          "layer": "entry",
+          "url": "/c4-strategy1-next/_next/static/chunks/46076a746839fe9d.js",
+          "bytes": 36387,
+          "sha256": "2f5415b09a63d7a2e4d8e0025a278505a51b00951865e4f0227478138980dca0"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-strategy1",
+          "file": "static/chunks/e50c449966646220.js",
+          "layer": "transcription-worker",
+          "url": "/c4-strategy1-next/_next/static/chunks/e50c449966646220.js",
+          "bytes": 617695,
+          "sha256": "e47e58e2b0778ac96f786a578549b7fc8272bbc39b1b82bb586776b0172ce2b5"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-strategy1",
+          "file": "static/chunks/8e4be1ab06a32972.js",
+          "layer": "entry",
+          "url": "/c4-strategy1-next/_next/static/chunks/8e4be1ab06a32972.js",
+          "bytes": 600171,
+          "sha256": "8f1707d1e7f3dd69858aad2d033c10ed3fa8a6fae91122bc1e932ba5feab0b2f"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-strategy1",
+          "file": "static/chunks/ad2e29e5a0ea151f.js",
+          "layer": "transcription-worker",
+          "url": "/c4-strategy1-next/_next/static/chunks/ad2e29e5a0ea151f.js",
+          "bytes": 826664,
+          "sha256": "809eb69330bb26425ae506e95856af399fc925ae813c0d13682d441b0905d33e"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-strategy1",
+          "file": "static/chunks/62eeb3f6e1d249de.js",
+          "layer": "entry",
+          "url": "/c4-strategy1-next/_next/static/chunks/62eeb3f6e1d249de.js",
+          "bytes": 5884,
+          "sha256": "0048e3370c6a8560e7f24190dffaafcbdaee10b8c941dd85123595bf4cbe2668"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-strategy1",
+          "file": "static/media/worker.8051bf58.ts",
+          "layer": "transcription-worker",
+          "url": "/c4-strategy1-next/_next/static/media/worker.8051bf58.ts",
+          "bytes": 4662,
+          "sha256": "d74efdb0e37c4ef562a98fa4a6e36e21c081ccfa1a5d280bdc2e387ae8a3ccf2"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-strategy1",
+          "file": "static/chunks/27a88e35df72eaf6.wasm",
+          "layer": "editor-wasm",
+          "url": "/c4-strategy1-next/_next/static/chunks/27a88e35df72eaf6.wasm",
+          "bytes": 3286340,
+          "sha256": "15622cf5f9852c5238cd8326e67a9ec704450d1101a15f2647998501869af9b1"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-strategy1",
+          "file": "static/chunks/fefc45234332e672.js",
+          "layer": "transcription-worker",
+          "url": "/c4-strategy1-next/_next/static/chunks/fefc45234332e672.js",
+          "bytes": 869921,
+          "sha256": "7345a98a885789e56e51f32fa86a0db41d165ea0e888c92fec896eaea2dc9ad0"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-strategy1",
+          "file": "static/media/ort-wasm-simd-threaded.jsep.232c7845.wasm",
+          "layer": "ort-sidecar",
+          "url": "/c4-strategy1-next/_next/static/media/ort-wasm-simd-threaded.jsep.232c7845.wasm",
+          "bytes": 21596019,
+          "sha256": "c46655e8a94afc45338d4cb2b840475f88e5012d524509916e505079c00bfa39"
+        },
+        {
+          "output": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c4\\apps\\web\\.next-c4-strategy1",
+          "file": "static/media/ort.bundle.min.b4209e00.mjs",
+          "layer": "transcription-worker",
+          "url": "/c4-strategy1-next/_next/static/media/ort.bundle.min.b4209e00.mjs",
+          "bytes": 398170,
+          "sha256": "96e80b413dda387fbcefbd2bb0015f6708323767cc0dd5383260106582e77781"
+        }
+      ],
+      "visitedNodes": [
+        {
+          "file": "static/chunks/53f937be1abc7aa7.js",
+          "url": "/c4-strategy1-next/_next/static/chunks/53f937be1abc7aa7.js",
+          "layer": "entry"
+        },
+        {
+          "file": "static/chunks/3346c876d548c420.js",
+          "url": "/c4-strategy1-next/_next/static/chunks/3346c876d548c420.js",
+          "layer": "entry"
+        },
+        {
+          "file": "static/chunks/c8208314ebd6ffbc.js",
+          "url": "/c4-strategy1-next/_next/static/chunks/c8208314ebd6ffbc.js",
+          "layer": "entry"
+        },
+        {
+          "file": "static/chunks/8d908153c03903cb.js",
+          "url": "/c4-strategy1-next/_next/static/chunks/8d908153c03903cb.js",
+          "layer": "entry"
+        },
+        {
+          "file": "static/chunks/46076a746839fe9d.js",
+          "url": "/c4-strategy1-next/_next/static/chunks/46076a746839fe9d.js",
+          "layer": "entry"
+        },
+        {
+          "file": "static/chunks/e50c449966646220.js",
+          "url": "/c4-strategy1-next/_next/static/chunks/e50c449966646220.js",
+          "layer": "transcription-worker"
+        },
+        {
+          "file": "static/chunks/8e4be1ab06a32972.js",
+          "url": "/c4-strategy1-next/_next/static/chunks/8e4be1ab06a32972.js",
+          "layer": "entry"
+        },
+        {
+          "file": "static/chunks/ad2e29e5a0ea151f.js",
+          "url": "/c4-strategy1-next/_next/static/chunks/ad2e29e5a0ea151f.js",
+          "layer": "transcription-worker"
+        },
+        {
+          "file": "static/chunks/62eeb3f6e1d249de.js",
+          "url": "/c4-strategy1-next/_next/static/chunks/62eeb3f6e1d249de.js",
+          "layer": "entry"
+        },
+        {
+          "file": "static/chunks/787b45cd9ecb737f.css",
+          "url": "/c4-strategy1-next/_next/static/chunks/787b45cd9ecb737f.css",
+          "layer": "browser-chunk"
+        },
+        {
+          "file": "static/media/worker.8051bf58.ts",
+          "url": "/c4-strategy1-next/_next/static/media/worker.8051bf58.ts",
+          "layer": "transcription-worker"
+        },
+        {
+          "file": "static/chunks/27a88e35df72eaf6.wasm",
+          "url": "/c4-strategy1-next/_next/static/chunks/27a88e35df72eaf6.wasm",
+          "layer": "editor-wasm"
+        },
+        {
+          "file": "static/chunks/a3e1088403a76679.js",
+          "url": "/c4-strategy1-next/_next/static/chunks/a3e1088403a76679.js",
+          "layer": "browser-chunk"
+        },
+        {
+          "file": "static/chunks/fefc45234332e672.js",
+          "url": "/c4-strategy1-next/_next/static/chunks/fefc45234332e672.js",
+          "layer": "transcription-worker"
+        },
+        {
+          "file": "static/chunks/turbopack-eda9c4613bf275a2.js",
+          "url": "/c4-strategy1-next/_next/static/chunks/turbopack-eda9c4613bf275a2.js",
+          "layer": "browser-chunk"
+        },
+        {
+          "file": "static/media/2c55a0e60120577a-s.2a48534a.woff2",
+          "url": "/c4-strategy1-next/_next/static/media/2c55a0e60120577a-s.2a48534a.woff2",
+          "layer": "browser-chunk"
+        },
+        {
+          "file": "static/media/9c72aa0f40e4eef8-s.18a48cbc.woff2",
+          "url": "/c4-strategy1-next/_next/static/media/9c72aa0f40e4eef8-s.18a48cbc.woff2",
+          "layer": "browser-chunk"
+        },
+        {
+          "file": "static/media/ad66f9afd8947f86-s.7a40eb73.woff2",
+          "url": "/c4-strategy1-next/_next/static/media/ad66f9afd8947f86-s.7a40eb73.woff2",
+          "layer": "browser-chunk"
+        },
+        {
+          "file": "static/media/5476f68d60460930-s.c995e352.woff2",
+          "url": "/c4-strategy1-next/_next/static/media/5476f68d60460930-s.c995e352.woff2",
+          "layer": "browser-chunk"
+        },
+        {
+          "file": "static/media/2bbe8d2671613f1f-s.76dcb0b2.woff2",
+          "url": "/c4-strategy1-next/_next/static/media/2bbe8d2671613f1f-s.76dcb0b2.woff2",
+          "layer": "browser-chunk"
+        },
+        {
+          "file": "static/media/1bffadaabf893a1e-s.7cd81963.woff2",
+          "url": "/c4-strategy1-next/_next/static/media/1bffadaabf893a1e-s.7cd81963.woff2",
+          "layer": "browser-chunk"
+        },
+        {
+          "file": "static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
+          "url": "/c4-strategy1-next/_next/static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
+          "layer": "browser-chunk"
+        },
+        {
+          "file": "static/media/ort-wasm-simd-threaded.jsep.232c7845.wasm",
+          "url": "/c4-strategy1-next/_next/static/media/ort-wasm-simd-threaded.jsep.232c7845.wasm",
+          "layer": "ort-sidecar"
+        },
+        {
+          "file": "static/media/ort.bundle.min.b4209e00.mjs",
+          "url": "/c4-strategy1-next/_next/static/media/ort.bundle.min.b4209e00.mjs",
+          "layer": "transcription-worker"
+        }
+      ],
+      "edges": [
+        {
+          "from": "static/chunks/46076a746839fe9d.js",
+          "to": "static/media/worker.8051bf58.ts",
+          "fromLayer": "entry",
+          "toLayer": "transcription-worker",
+          "kind": "quoted-url",
+          "ref": "/c4-strategy1-next/_next/static/media/worker.8051bf58.ts",
+          "reference": "/c4-strategy1-next/_next/static/media/worker.8051bf58.ts",
+          "resolvedUrl": "/c4-strategy1-next/_next/static/media/worker.8051bf58.ts"
+        },
+        {
+          "from": "static/chunks/8e4be1ab06a32972.js",
+          "to": "static/chunks/27a88e35df72eaf6.wasm",
+          "fromLayer": "entry",
+          "toLayer": "editor-wasm",
+          "kind": "next-static-root",
+          "ref": "static/chunks/27a88e35df72eaf6.wasm",
+          "reference": "static/chunks/27a88e35df72eaf6.wasm",
+          "resolvedUrl": "/c4-strategy1-next/_next/static/chunks/27a88e35df72eaf6.wasm"
+        },
+        {
+          "from": "static/chunks/ad2e29e5a0ea151f.js",
+          "to": "static/chunks/a3e1088403a76679.js",
+          "fromLayer": "transcription-worker",
+          "toLayer": "browser-chunk",
+          "kind": "next-static-root",
+          "ref": "static/chunks/a3e1088403a76679.js",
+          "reference": "static/chunks/a3e1088403a76679.js",
+          "resolvedUrl": "/c4-strategy1-next/_next/static/chunks/a3e1088403a76679.js"
+        },
+        {
+          "from": "static/chunks/ad2e29e5a0ea151f.js",
+          "to": "static/chunks/fefc45234332e672.js",
+          "fromLayer": "transcription-worker",
+          "toLayer": "transcription-worker",
+          "kind": "next-static-root",
+          "ref": "static/chunks/fefc45234332e672.js",
+          "reference": "static/chunks/fefc45234332e672.js",
+          "resolvedUrl": "/c4-strategy1-next/_next/static/chunks/fefc45234332e672.js"
+        },
+        {
+          "from": "static/chunks/ad2e29e5a0ea151f.js",
+          "to": "static/chunks/turbopack-eda9c4613bf275a2.js",
+          "fromLayer": "transcription-worker",
+          "toLayer": "browser-chunk",
+          "kind": "next-static-root",
+          "ref": "static/chunks/turbopack-eda9c4613bf275a2.js",
+          "reference": "static/chunks/turbopack-eda9c4613bf275a2.js",
+          "resolvedUrl": "/c4-strategy1-next/_next/static/chunks/turbopack-eda9c4613bf275a2.js"
+        },
+        {
+          "from": "static/chunks/787b45cd9ecb737f.css",
+          "to": "static/media/2c55a0e60120577a-s.2a48534a.woff2",
+          "fromLayer": "browser-chunk",
+          "toLayer": "browser-chunk",
+          "kind": "css-url",
+          "ref": "../media/2c55a0e60120577a-s.2a48534a.woff2",
+          "reference": "../media/2c55a0e60120577a-s.2a48534a.woff2",
+          "resolvedUrl": "/c4-strategy1-next/_next/static/media/2c55a0e60120577a-s.2a48534a.woff2"
+        },
+        {
+          "from": "static/chunks/787b45cd9ecb737f.css",
+          "to": "static/media/9c72aa0f40e4eef8-s.18a48cbc.woff2",
+          "fromLayer": "browser-chunk",
+          "toLayer": "browser-chunk",
+          "kind": "css-url",
+          "ref": "../media/9c72aa0f40e4eef8-s.18a48cbc.woff2",
+          "reference": "../media/9c72aa0f40e4eef8-s.18a48cbc.woff2",
+          "resolvedUrl": "/c4-strategy1-next/_next/static/media/9c72aa0f40e4eef8-s.18a48cbc.woff2"
+        },
+        {
+          "from": "static/chunks/787b45cd9ecb737f.css",
+          "to": "static/media/ad66f9afd8947f86-s.7a40eb73.woff2",
+          "fromLayer": "browser-chunk",
+          "toLayer": "browser-chunk",
+          "kind": "css-url",
+          "ref": "../media/ad66f9afd8947f86-s.7a40eb73.woff2",
+          "reference": "../media/ad66f9afd8947f86-s.7a40eb73.woff2",
+          "resolvedUrl": "/c4-strategy1-next/_next/static/media/ad66f9afd8947f86-s.7a40eb73.woff2"
+        },
+        {
+          "from": "static/chunks/787b45cd9ecb737f.css",
+          "to": "static/media/5476f68d60460930-s.c995e352.woff2",
+          "fromLayer": "browser-chunk",
+          "toLayer": "browser-chunk",
+          "kind": "css-url",
+          "ref": "../media/5476f68d60460930-s.c995e352.woff2",
+          "reference": "../media/5476f68d60460930-s.c995e352.woff2",
+          "resolvedUrl": "/c4-strategy1-next/_next/static/media/5476f68d60460930-s.c995e352.woff2"
+        },
+        {
+          "from": "static/chunks/787b45cd9ecb737f.css",
+          "to": "static/media/2bbe8d2671613f1f-s.76dcb0b2.woff2",
+          "fromLayer": "browser-chunk",
+          "toLayer": "browser-chunk",
+          "kind": "css-url",
+          "ref": "../media/2bbe8d2671613f1f-s.76dcb0b2.woff2",
+          "reference": "../media/2bbe8d2671613f1f-s.76dcb0b2.woff2",
+          "resolvedUrl": "/c4-strategy1-next/_next/static/media/2bbe8d2671613f1f-s.76dcb0b2.woff2"
+        },
+        {
+          "from": "static/chunks/787b45cd9ecb737f.css",
+          "to": "static/media/1bffadaabf893a1e-s.7cd81963.woff2",
+          "fromLayer": "browser-chunk",
+          "toLayer": "browser-chunk",
+          "kind": "css-url",
+          "ref": "../media/1bffadaabf893a1e-s.7cd81963.woff2",
+          "reference": "../media/1bffadaabf893a1e-s.7cd81963.woff2",
+          "resolvedUrl": "/c4-strategy1-next/_next/static/media/1bffadaabf893a1e-s.7cd81963.woff2"
+        },
+        {
+          "from": "static/chunks/787b45cd9ecb737f.css",
+          "to": "static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
+          "fromLayer": "browser-chunk",
+          "toLayer": "browser-chunk",
+          "kind": "css-url",
+          "ref": "../media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
+          "reference": "../media/83afe278b6a6bb3c-s.p.3a6ba036.woff2",
+          "resolvedUrl": "/c4-strategy1-next/_next/static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2"
+        },
+        {
+          "from": "static/chunks/fefc45234332e672.js",
+          "to": "static/media/ort-wasm-simd-threaded.jsep.232c7845.wasm",
+          "fromLayer": "transcription-worker",
+          "toLayer": "ort-sidecar",
+          "kind": "quoted-url",
+          "ref": "/c4-strategy1-next/_next/static/media/ort-wasm-simd-threaded.jsep.232c7845.wasm",
+          "reference": "/c4-strategy1-next/_next/static/media/ort-wasm-simd-threaded.jsep.232c7845.wasm",
+          "resolvedUrl": "/c4-strategy1-next/_next/static/media/ort-wasm-simd-threaded.jsep.232c7845.wasm"
+        },
+        {
+          "from": "static/chunks/fefc45234332e672.js",
+          "to": "static/media/ort.bundle.min.b4209e00.mjs",
+          "fromLayer": "transcription-worker",
+          "toLayer": "transcription-worker",
+          "kind": "quoted-url",
+          "ref": "/c4-strategy1-next/_next/static/media/ort.bundle.min.b4209e00.mjs",
+          "reference": "/c4-strategy1-next/_next/static/media/ort.bundle.min.b4209e00.mjs",
+          "resolvedUrl": "/c4-strategy1-next/_next/static/media/ort.bundle.min.b4209e00.mjs"
+        },
+        {
+          "from": "static/chunks/turbopack-eda9c4613bf275a2.js",
+          "to": "static/chunks/a3e1088403a76679.js",
+          "fromLayer": "browser-chunk",
+          "toLayer": "browser-chunk",
+          "kind": "next-static-root",
+          "ref": "static/chunks/a3e1088403a76679.js",
+          "reference": "static/chunks/a3e1088403a76679.js",
+          "resolvedUrl": "/c4-strategy1-next/_next/static/chunks/a3e1088403a76679.js"
+        },
+        {
+          "from": "static/chunks/turbopack-eda9c4613bf275a2.js",
+          "to": "static/chunks/fefc45234332e672.js",
+          "fromLayer": "browser-chunk",
+          "toLayer": "transcription-worker",
+          "kind": "next-static-root",
+          "ref": "static/chunks/fefc45234332e672.js",
+          "reference": "static/chunks/fefc45234332e672.js",
+          "resolvedUrl": "/c4-strategy1-next/_next/static/chunks/fefc45234332e672.js"
+        }
+      ],
+      "topology": [
+        {
+          "requirement": "entry-to-transcription-worker",
+          "fromLayer": "entry",
+          "toLayer": "transcription-worker",
+          "satisfied": true,
+          "path": [
+            "static/chunks/46076a746839fe9d.js",
+            "static/media/worker.8051bf58.ts"
+          ]
+        },
+        {
+          "requirement": "entry-to-editor-wasm",
+          "fromLayer": "entry",
+          "toLayer": "editor-wasm",
+          "satisfied": true,
+          "path": [
+            "static/chunks/8e4be1ab06a32972.js",
+            "static/chunks/27a88e35df72eaf6.wasm"
+          ]
+        },
+        {
+          "requirement": "transcription-worker-to-ort-sidecar",
+          "fromLayer": "transcription-worker",
+          "toLayer": "ort-sidecar",
+          "satisfied": true,
+          "path": [
+            "static/chunks/fefc45234332e672.js",
+            "static/media/ort-wasm-simd-threaded.jsep.232c7845.wasm"
+          ]
+        }
+      ]
+    }
+  ]
+}
