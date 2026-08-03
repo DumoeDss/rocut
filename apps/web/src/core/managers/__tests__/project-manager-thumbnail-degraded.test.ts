@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-type-assertion -- The focused rasterizer boundary test uses branded media time and a deliberately partial EditorCore harness. */
 import { describe, expect, test } from "bun:test";
 import { fileURLToPath } from "node:url";
 import type { EditorCore } from "@/core";
@@ -25,7 +26,9 @@ if (process.env.OPENCUT_PROJECT_THUMBNAIL_TEST_ISOLATED !== "1") {
 } else {
 	await import("@/editor/session/__tests__/wasm-test-mock");
 	const { ProjectManager } = await import("@/core/managers/project-manager");
-	const { storageService } = await import("@/services/storage/service");
+	const { SessionPersistenceCoordinator } =
+		await import("@/editor/persistence");
+	const { InMemoryProjectStore } = await import("@/editor/ports/in-memory");
 
 	const mediaTime = (value: number) => value as MediaTime;
 
@@ -73,6 +76,9 @@ if (process.env.OPENCUT_PROJECT_THUMBNAIL_TEST_ISOLATED !== "1") {
 
 	function createHarness({ degraded }: { degraded: boolean }) {
 		const project = projectWithoutThumbnail();
+		const persistence = new SessionPersistenceCoordinator(
+			new InMemoryProjectStore(),
+		);
 		const calls = {
 			createCanvasRenderer: 0,
 			flush: 0,
@@ -96,6 +102,7 @@ if (process.env.OPENCUT_PROJECT_THUMBNAIL_TEST_ISOLATED !== "1") {
 			isDegraded: degraded,
 		};
 		const editor = {
+			persistence,
 			media: {
 				clearAllAssets: () => {},
 				getAssets: () => [],
@@ -125,28 +132,17 @@ if (process.env.OPENCUT_PROJECT_THUMBNAIL_TEST_ISOLATED !== "1") {
 			},
 		} as unknown as EditorCore;
 		const manager = new ProjectManager(editor);
-		(
-			manager as unknown as {
-				storageMigrationPromise: Promise<void> | null;
-			}
-		).storageMigrationPromise = Promise.resolve();
-		return { calls, manager, project, renderer };
+		return { calls, manager, persistence, project, renderer };
 	}
 
 	describe("project thumbnail rasterizer boundary", () => {
 		test("degraded load and exit skip thumbnail work before scene or renderer acquisition", async () => {
-			const { calls, manager, project, renderer } = createHarness({
+			const { calls, manager, persistence, project, renderer } = createHarness({
 				degraded: true,
 			});
-			const originalLoadProject = storageService.loadProject;
-			storageService.loadProject = async () => ({ project });
-
-			try {
-				await manager.loadProject({ id: project.metadata.id });
-				await manager.prepareExit();
-			} finally {
-				storageService.loadProject = originalLoadProject;
-			}
+			await persistence.saveProject({ project });
+			await manager.loadProject({ id: project.metadata.id });
+			await manager.prepareExit();
 
 			expect(manager.getActive().metadata.thumbnail).toBeUndefined();
 			expect(calls).toEqual({

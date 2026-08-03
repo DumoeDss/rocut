@@ -40,9 +40,12 @@ export function usePasteMedia() {
 
 	useEffect(() => {
 		const handlePaste = async (event: ClipboardEvent) => {
-			const activeElement = document.activeElement as HTMLElement;
+			const activeElement = document.activeElement;
 
-			if (activeElement && isTypableDOMElement({ element: activeElement })) {
+			if (
+				activeElement instanceof HTMLElement &&
+				isTypableDOMElement({ element: activeElement })
+			) {
 				return;
 			}
 
@@ -64,7 +67,12 @@ export function usePasteMedia() {
 				await showMediaUploadToast({
 					filesCount: files.length,
 					promise: async () => {
-						const processedAssets = await processMediaAssets({ files });
+						const processedAssets = await processMediaAssets({
+							files,
+							store: editor.persistence.store,
+							reportPersistenceFailure: (failure) =>
+								editor.reportPersistenceFailure(failure),
+						});
 						const startTime = editor.playback.getCurrentTime();
 
 						for (const asset of processedAssets) {
@@ -105,8 +113,8 @@ export function usePasteMedia() {
 						};
 					},
 				});
-			} catch (error) {
-				console.error("Failed to paste media:", error);
+			} catch {
+				console.error("Failed to paste media");
 			}
 		};
 

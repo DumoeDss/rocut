@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { execFileSync, spawnSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -64,6 +64,7 @@ function productionFiles() {
 	)
 		.split("\0")
 		.filter(Boolean)
+		.filter((path) => existsSync(join(REPO_ROOT, path)))
 		.filter((path) => /\.(?:ts|tsx|css)$/.test(path))
 		.filter(
 			(path) =>
@@ -76,7 +77,9 @@ function productionFiles() {
 
 function withoutComments(text) {
 	return text
-		.replace(/\/\*[\s\S]*?\*\//g, (comment) => "\n".repeat(comment.split("\n").length - 1))
+		.replace(/\/\*[\s\S]*?\*\//g, (comment) =>
+			"\n".repeat(comment.split("\n").length - 1),
+		)
 		.replace(/^\s*\/\/.*$/gm, "");
 }
 
@@ -117,7 +120,7 @@ function checkLayers(files, reads) {
 		return violations;
 	}
 	for (const [layer, path] of REQUIRED_LAYERS) {
-		if (!files.includes(path) || !(reads.get(path)?.trim())) {
+		if (!files.includes(path) || !reads.get(path)?.trim()) {
 			violations.push({ rule: `missing-layer:${layer}`, path });
 		}
 	}
@@ -196,9 +199,13 @@ function runNegativeControl() {
 	console.log("check-runtime-asset-boundary: negative control");
 	let failed = false;
 	for (const fixture of NEGATIVE_FIXTURES) {
-		const result = spawnSync(process.execPath, [fileURLToPath(import.meta.url), "--fixture", fixture.name], {
-			encoding: "utf8",
-		});
+		const result = spawnSync(
+			process.execPath,
+			[fileURLToPath(import.meta.url), "--fixture", fixture.name],
+			{
+				encoding: "utf8",
+			},
+		);
 		const output = `${result.stdout}${result.stderr}`;
 		const named =
 			result.status !== 0 &&
@@ -206,12 +213,18 @@ function runNegativeControl() {
 			output.includes("file=") &&
 			output.includes("layer=") &&
 			output.includes("url=");
-		console.log(`  ${named ? "PASS" : "FAIL"} ${fixture.name}: non-zero [${fixture.rule}] with file/layer/url`);
+		console.log(
+			`  ${named ? "PASS" : "FAIL"} ${fixture.name}: non-zero [${fixture.rule}] with file/layer/url`,
+		);
 		failed ||= !named;
 	}
-	const empty = spawnSync(process.execPath, [fileURLToPath(import.meta.url), "--fixture", "empty-graph"], {
-		encoding: "utf8",
-	});
+	const empty = spawnSync(
+		process.execPath,
+		[fileURLToPath(import.meta.url), "--fixture", "empty-graph"],
+		{
+			encoding: "utf8",
+		},
+	);
 	const emptyOutput = `${empty.stdout}${empty.stderr}`;
 	const emptyNamed =
 		empty.status !== 0 &&
@@ -219,7 +232,9 @@ function runNegativeControl() {
 		emptyOutput.includes("file=<graph>") &&
 		emptyOutput.includes("layer=source-graph") &&
 		emptyOutput.includes("url=<empty>");
-	console.log(`  ${emptyNamed ? "PASS" : "FAIL"} empty graph: non-zero [empty-production-graph] with file/layer/url`);
+	console.log(
+		`  ${emptyNamed ? "PASS" : "FAIL"} empty graph: non-zero [empty-production-graph] with file/layer/url`,
+	);
 	failed ||= !emptyNamed;
 	if (failed) process.exit(1);
 	console.log("negative control clean — every named violation was detected.");
@@ -231,9 +246,14 @@ function runCheck() {
 		files.map((path) => [path, readFileSync(join(REPO_ROOT, path), "utf8")]),
 	);
 	const violations = files.flatMap((path) => scanFile(path, reads.get(path)));
-	violations.push(...checkComposition(files, reads), ...checkLayers(files, reads));
+	violations.push(
+		...checkComposition(files, reads),
+		...checkLayers(files, reads),
+	);
 
-	console.log(`check-runtime-asset-boundary: scanned ${files.length} production source modules`);
+	console.log(
+		`check-runtime-asset-boundary: scanned ${files.length} production source modules`,
+	);
 	console.log(`  Host roots: ${HOST_ROOTS.join(", ")}`);
 	console.log(`  Required layers: ${[...REQUIRED_LAYERS.keys()].join(", ")}`);
 	for (const rule of RULES) {
@@ -246,7 +266,9 @@ function runCheck() {
 		for (const hit of violations) console.error(`  [${hit.rule}] ${hit.path}`);
 		process.exit(1);
 	}
-	console.log("clean — both Hosts and every required asset/Worker layer are present.");
+	console.log(
+		"clean — both Hosts and every required asset/Worker layer are present.",
+	);
 }
 
 const fixtureIndex = process.argv.indexOf("--fixture");

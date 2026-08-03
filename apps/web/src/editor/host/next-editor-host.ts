@@ -3,13 +3,30 @@ import {
 	createBrowserRuntimePorts,
 	resolveHostPath,
 } from "@/editor/host/browser-runtime";
-import { createInMemoryPorts } from "@/editor/ports/in-memory";
+import {
+	createInMemoryPorts,
+	RecordingDiagnostics,
+} from "@/editor/ports/in-memory";
+import { BrowserProjectStore } from "@/services/storage/browser-project-store";
+import {
+	DEFAULT_BROWSER_STORAGE_IDENTITY,
+	browserStoreDiagnosticLogRecord,
+} from "@/services/storage/browser-project-store-internals";
 import { SOCIAL_LINKS } from "@/site/social";
 
 const OPENCUT_SITE_URL = "https://opencut.app";
 
 export const NEXT_PUBLIC_ASSET_BASE =
 	process.env.NEXT_PUBLIC_OPENCUT_BASE || "/";
+
+const nextDiagnostics = new RecordingDiagnostics();
+const nextBrowserProjectStore = new BrowserProjectStore({
+	storageIdentity: DEFAULT_BROWSER_STORAGE_IDENTITY,
+	diagnostic: (diagnostic) =>
+		nextDiagnostics.log({
+			record: browserStoreDiagnosticLogRecord(diagnostic),
+		}),
+});
 
 export function createNextEditorHost({
 	projectId,
@@ -28,6 +45,18 @@ export function createNextEditorHost({
 	forceRendererBackend?: "none";
 	workerFixture?: boolean;
 }): EditorHost {
+	void nextBrowserProjectStore.prepareForSession().catch(() => {
+		nextDiagnostics.log({
+			record: browserStoreDiagnosticLogRecord({
+				level: "warning",
+				phase: "storage-initialization",
+				operation: "inspect",
+				scope: { kind: "store" },
+				code: "unavailable",
+				retryable: true,
+			}),
+		});
+	});
 	const browser = createBrowserRuntimePorts({
 		base,
 		rewriteWorkerUrl: workerFixture
@@ -68,5 +97,7 @@ export function createNextEditorHost({
 		// Unrelated in-memory roles remain for C5/C6. These final overrides make
 		// the three C4 production roles impossible to inherit by spread order.
 		...browser,
+		diagnostics: nextDiagnostics,
+		store: nextBrowserProjectStore,
 	};
 }

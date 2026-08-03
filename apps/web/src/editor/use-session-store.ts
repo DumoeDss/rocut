@@ -17,6 +17,7 @@ import type { PreviewState } from "@/preview/preview-store";
 import type { SoundsStore } from "@/sounds/sounds-store";
 import type { StickersStore } from "@/stickers/stickers-store";
 import type { TimelineStore } from "@/timeline/timeline-store";
+import type { CustomPresetsStore } from "@/timeline/components/graph-editor/custom-presets-store";
 
 export {
 	TAB_KEYS,
@@ -87,6 +88,14 @@ export function useSoundsStore<Selected = SoundsStore>(
 	) => Selected,
 ): Selected {
 	return useOwnedStore({ key: "sounds", selector });
+}
+
+export function useCustomPresetsStore<Selected = CustomPresetsStore>(
+	selector: (state: CustomPresetsStore) => Selected = identity as (
+		state: CustomPresetsStore,
+	) => Selected,
+): Selected {
+	return useOwnedStore({ key: "customPresets", selector });
 }
 
 export function useStickersStore<Selected = StickersStore>(

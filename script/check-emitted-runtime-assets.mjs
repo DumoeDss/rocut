@@ -26,6 +26,7 @@ const REQUIRED_LAYERS = [
 ];
 const FIRST_PARTY_PATH =
 	/^\/(?:_next(?:\/|$)|assets(?:\/|$)|fonts(?:\/|$)|flags(?:\/|$)|effects(?:\/|$)|logos(?:\/|$)|workers(?:\/|$)|favicon(?:\.|\/|$)|api\/(?:sounds\/search|feedback)(?:[/?#]|$))/;
+const PUBLIC_ORIGIN = "https://opencut.invalid";
 
 function digest(bytes) {
 	return createHash("sha256").update(bytes).digest("hex");
@@ -493,10 +494,7 @@ function nextClientGraph(output, seeds, base, entryRoots, violations) {
 		}
 		const text = GRAPH_TEXT_FILE.test(path) ? readFileSync(path, "utf8") : "";
 		const detectedLayer = artifactLayer(path, text);
-		const layer =
-			detectedLayer === "browser-chunk" && entryRoots.has(path)
-				? "entry"
-				: detectedLayer;
+		const layer = entryRoots.has(path) ? "entry" : detectedLayer;
 		const node = { path, url: seed.url, layer };
 		visited.set(path, node);
 		if (!GRAPH_TEXT_FILE.test(path)) continue;
@@ -806,6 +804,19 @@ function quotedPaths(text) {
 	return [...new Set(paths)];
 }
 
+function resolvePublicUrl(url, base) {
+	try {
+		const resolved = new URL(
+			url,
+			`${PUBLIC_ORIGIN}${normalizeBase(base, true)}`,
+		);
+		if (resolved.origin !== PUBLIC_ORIGIN) return null;
+		return resolved.pathname;
+	} catch {
+		return null;
+	}
+}
+
 function scanEscapingUrls({ output, files, base, layersByFile = new Map() }) {
 	const violations = [];
 	const normalizedBase = normalizeBase(base, true);
@@ -820,8 +831,24 @@ function scanEscapingUrls({ output, files, base, layersByFile = new Map() }) {
 			? nextClientManifestReferences(parseNextClientManifest(text) ?? {})
 			: quotedPaths(text);
 		for (const url of urls) {
-			if (!FIRST_PARTY_PATH.test(url)) continue;
-			if (normalizedBase !== "/" && url.startsWith(normalizedBase)) continue;
+			const mountedCandidate =
+				normalizedBase !== "/" && url.startsWith(normalizedBase);
+			const originRelativeCandidate = /^\/\/[^/]/.test(url);
+			if (
+				!FIRST_PARTY_PATH.test(url) &&
+				!mountedCandidate &&
+				!originRelativeCandidate
+			)
+				continue;
+			const canonicalPath = resolvePublicUrl(url, normalizedBase);
+			// A root public base contains every canonical root-relative first-party URL.
+			// For a mounted base, containment follows WHATWG URL resolution so literal
+			// and encoded dot segments cannot hide an escape behind a raw prefix.
+			if (
+				canonicalPath !== null &&
+				(normalizedBase === "/" || canonicalPath.startsWith(normalizedBase))
+			)
+				continue;
 			const detectedLayer = referenceLayer(url, undefined, text);
 			const layer =
 				detectedLayer === "browser-chunk" ? sourceLayer : detectedLayer;
@@ -889,14 +916,21 @@ function writeFixtureFile(root, relativeFile, content = "") {
 }
 
 function runViteParserFixture({
+	dotSegmentEscape,
 	rootEscape,
+	base = "/c4-vite/",
 	empty = false,
 	truncated = false,
 } = {}) {
 	const output = mkdtempSync(join(tmpdir(), "rocut-vite-emitted-"));
-	const base = "/c4-vite/";
-	const assetUrl = (path, layer) =>
-		rootEscape === layer ? `/assets/${path}` : `${base}assets/${path}`;
+	const assetUrl = (path, layer) => {
+		if (rootEscape === layer) return `/assets/${path}`;
+		if (layer === "entry" && dotSegmentEscape) {
+			const segment = dotSegmentEscape === "encoded" ? "%2e%2e" : "..";
+			return `${base}${segment}/assets/${path}`;
+		}
+		return `${base}assets/${path}`;
+	};
 	try {
 		const files = [
 			{
@@ -964,6 +998,7 @@ function runViteParserFixture({
 
 function runNextParserFixture({
 	contained = true,
+	base = "/c4-next/",
 	disconnected = false,
 	deletedReachable = false,
 	deletedRelativeLazy = false,
@@ -974,13 +1009,15 @@ function runNextParserFixture({
 	relativeCssStaticEscape = false,
 	relativeLazyStaticEscape = false,
 	relativeLazyRootEscape = false,
+	sharedEntryWorkerWasm = false,
 	unrelatedEditorWasm = false,
 	rootEscape,
 } = {}) {
 	const output = mkdtempSync(join(tmpdir(), "rocut-next-emitted-"));
+	const mountedPath = (rootPath) => publicPath(base, rootPath);
 	const nextUrl = (rootPath, layer) => {
 		if (!contained || rootEscape === layer) return rootPath;
-		return `/c4-next${rootPath}`;
+		return mountedPath(rootPath);
 	};
 	try {
 		const entryUrl = nextUrl("/_next/static/chunks/good-entry.js", "entry");
@@ -1001,7 +1038,9 @@ function runNextParserFixture({
 			"server/app/editor/[project_id]/page_client-reference-manifest.js",
 			`globalThis.__RSC_MANIFEST = ${JSON.stringify({
 				clientModules: { editor: { chunks: [entryUrl] } },
-				entryCSSFiles: { editor: ["/c4-next/_next/static/css/editor.css"] },
+				entryCSSFiles: {
+					editor: [mountedPath("/_next/static/css/editor.css")],
+				},
 				ssrModuleMapping: {
 					editor: { chunks: ["server/chunks/unrelated.js"] },
 				},
@@ -1010,12 +1049,12 @@ function runNextParserFixture({
 		writeFixtureFile(
 			output,
 			"server/app/editor/[project_id]/page.html",
-			`<script src="${entryUrl}"></script><link rel="stylesheet" href="/c4-next/_next/static/css/editor.css">${!contained ? '<link rel="preload" href="/_next/static/chunks/root-html.js">' : ""}`,
+			`<script src="${entryUrl}"></script><link rel="stylesheet" href="${mountedPath("/_next/static/css/editor.css")}">${!contained ? '<link rel="preload" href="/_next/static/chunks/root-html.js">' : ""}`,
 		);
 		writeFixtureFile(
 			output,
 			"server/app/editor/[project_id]/editor.css",
-			`.root { background: url("${relativeCssEscape ? "../../../../../../flags/relative-root-css.png" : contained ? "/c4-next/flags/editor.svg" : "/flags/root-css.png"}"); }`,
+			`.root { background: url("${relativeCssEscape ? "../../../../../../flags/relative-root-css.png" : contained ? mountedPath("/flags/editor.svg") : "/flags/root-css.png"}"); }`,
 		);
 		writeFixtureFile(
 			output,
@@ -1023,6 +1062,11 @@ function runNextParserFixture({
 			[
 				`import("${relativeLazyStaticEscape ? "../../server/chunks/unrelated.js" : "./lazy-relative.mjs?runtime=1#chunk"}");`,
 				`export const editorWasm = "${editorWasmUrl}";`,
+				...(sharedEntryWorkerWasm
+					? [
+							'const sharedWorkerMarker = "transcription"; postMessage(sharedWorkerMarker);',
+						]
+					: []),
 				...(disconnected
 					? []
 					: [
@@ -1035,7 +1079,7 @@ function runNextParserFixture({
 			writeFixtureFile(
 				output,
 				"static/chunks/lazy-relative.mjs",
-				`export const asset = "${relativeLazyRootEscape || !contained ? "/flags/root-lazy.svg" : "/c4-next/flags/lazy.svg"}";`,
+				`export const asset = "${relativeLazyRootEscape || !contained ? "/flags/root-lazy.svg" : mountedPath("/flags/lazy.svg")}";`,
 			);
 		}
 		if (!deletedReachable) {
@@ -1075,9 +1119,9 @@ function runNextParserFixture({
 
 		const report = {
 			host: "next",
-			base: "/c4-next/",
+			base,
 			output,
-			...nextInventory(output, "/c4-next/"),
+			...nextInventory(output, base),
 		};
 		const violations = acceptanceViolations(report);
 		for (const item of violations) printViolation(item);
@@ -1107,8 +1151,20 @@ function runNextParserFixture({
 }
 
 function runFixture(name) {
+	if (name === "vite-root-base-contained") {
+		runViteParserFixture({ base: "/" });
+		return;
+	}
 	if (name === "vite-entry-root") {
 		runViteParserFixture({ rootEscape: "entry" });
+		return;
+	}
+	if (name === "vite-mounted-dot-segment-literal") {
+		runViteParserFixture({ dotSegmentEscape: "literal" });
+		return;
+	}
+	if (name === "vite-mounted-dot-segment-encoded") {
+		runViteParserFixture({ dotSegmentEscape: "encoded" });
 		return;
 	}
 	if (name === "next-entry-root") {
@@ -1167,6 +1223,10 @@ function runFixture(name) {
 		runNextParserFixture();
 		return;
 	}
+	if (name === "next-root-base-shared-entry") {
+		runNextParserFixture({ base: "/", sharedEntryWorkerWasm: true });
+		return;
+	}
 	if (name === "relative-lazy-deleted") {
 		runNextParserFixture({ deletedRelativeLazy: true });
 		return;
@@ -1208,16 +1268,18 @@ function runFixture(name) {
 
 function runPositiveControl() {
 	console.log("check-emitted-runtime-assets: positive control");
-	const result = spawnSync(
-		process.execPath,
-		[SCRIPT, "--fixture", "next-contained"],
-		{
+	for (const fixture of [
+		"next-contained",
+		"next-root-base-shared-entry",
+		"vite-root-base-contained",
+	]) {
+		const result = spawnSync(process.execPath, [SCRIPT, "--fixture", fixture], {
 			encoding: "utf8",
-		},
-	);
-	process.stdout.write(result.stdout);
-	process.stderr.write(result.stderr);
-	if (result.status !== 0) process.exit(result.status ?? 1);
+		});
+		process.stdout.write(result.stdout);
+		process.stderr.write(result.stderr);
+		if (result.status !== 0) process.exit(result.status ?? 1);
+	}
 	console.log(
 		"positive control clean — a base-contained entry -> Worker -> ORT and entry -> editor-WASM graph passes; unrelated server output is excluded.",
 	);
@@ -1226,6 +1288,16 @@ function runPositiveControl() {
 function runNegativeControl() {
 	const fixtures = [
 		["vite-entry-root", "root-emitted-entry-url"],
+		[
+			"vite-mounted-dot-segment-literal",
+			"root-emitted-entry-url",
+			["file=assets/entry.js", "url=/c4-vite/../assets/entry.js"],
+		],
+		[
+			"vite-mounted-dot-segment-encoded",
+			"root-emitted-entry-url",
+			["file=assets/entry.js", "url=/c4-vite/%2e%2e/assets/entry.js"],
+		],
 		["next-entry-root", "root-next-entry-url"],
 		["worker-root", "root-worker-url"],
 		["editor-wasm-root", "root-editor-wasm-url"],

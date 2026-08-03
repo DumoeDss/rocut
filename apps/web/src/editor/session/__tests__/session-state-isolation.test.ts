@@ -226,7 +226,7 @@ if (process.env.OPENCUT_SESSION_STATE_TEST_ISOLATED !== "1") {
 		return { project, scene };
 	}
 
-	describe("nine-store session ownership", () => {
+	describe("ten-store session ownership", () => {
 		test("registries are exhaustive, distinct and symmetrically isolated", async () => {
 			const sessionA = await createEditorSession({
 				host: createInMemoryHost({ projectId: "state-a" }),
@@ -268,8 +268,8 @@ if (process.env.OPENCUT_SESSION_STATE_TEST_ISOLATED !== "1") {
 
 			expect(
 				Object.keys(a).filter((key) => !key.startsWith("Symbol")),
-			).toHaveLength(9);
-			expect(EDITOR_SESSION_STORE_KEYS).toHaveLength(9);
+			).toHaveLength(10);
+			expect(EDITOR_SESSION_STORE_KEYS).toHaveLength(10);
 			for (const key of EDITOR_SESSION_STORE_KEYS) {
 				expect(a[key]).not.toBe(b[key]);
 				expect(a[key].getState()).not.toBe(b[key].getState());
@@ -488,7 +488,7 @@ if (process.env.OPENCUT_SESSION_STATE_TEST_ISOLATED !== "1") {
 
 		test("incomplete and duplicate registries fail loudly", () => {
 			expect(() => assertCompleteEditorSessionStores({})).toThrow(
-				/nine distinct stores/i,
+				/ten distinct stores/i,
 			);
 			const fake = { getState: () => ({}) };
 			const duplicate = Object.fromEntries(
@@ -498,7 +498,7 @@ if (process.env.OPENCUT_SESSION_STATE_TEST_ISOLATED !== "1") {
 				assertCompleteEditorSessionStores(
 					duplicate as Parameters<typeof assertCompleteEditorSessionStores>[0],
 				),
-			).toThrow(/distinct: 1\/9/i);
+			).toThrow(/distinct: 1\/10/i);
 		});
 	});
 

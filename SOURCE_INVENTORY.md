@@ -22,7 +22,7 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 
 ## Working-tree drift against the pin
 
-**158 inherited file(s) modified.** Each is expected to carry a `PATCHES.md` row.
+**169 inherited file(s) modified.** Each is expected to carry a `PATCHES.md` row.
 
 - `apps/web/public/browserconfig.xml`
 - `apps/web/public/manifest.json`
@@ -99,9 +99,12 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/components/ui/use-overlay-open-change.ts`
 - `apps/web/src/core/index.ts`
 - `apps/web/src/core/managers/commands.ts`
+- `apps/web/src/core/managers/media-manager.ts`
 - `apps/web/src/core/managers/playback-manager.ts`
 - `apps/web/src/core/managers/project-manager.ts`
 - `apps/web/src/core/managers/renderer-manager.ts`
+- `apps/web/src/core/managers/save-manager.ts`
+- `apps/web/src/core/managers/scenes-manager.ts`
 - `apps/web/src/core/managers/timeline-manager.ts`
 - `apps/web/src/editor/cancel-interaction.ts`
 - `apps/web/src/editor/editor-store.ts`
@@ -122,6 +125,7 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/masks/builtin/definitions/index.ts`
 - `apps/web/src/masks/components/masks-tab.tsx`
 - `apps/web/src/masks/use-mask-handles.ts`
+- `apps/web/src/media/processing.ts`
 - `apps/web/src/media/use-file-upload.ts`
 - `apps/web/src/media/use-paste-media.ts`
 - `apps/web/src/params/registry.ts`
@@ -143,8 +147,12 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/services/renderer/resolve.ts`
 - `apps/web/src/services/renderer/scene-builder.ts`
 - `apps/web/src/services/renderer/scene-exporter.ts`
+- `apps/web/src/services/storage/indexeddb-adapter.ts`
+- `apps/web/src/services/storage/migrations/base.ts`
 - `apps/web/src/services/storage/migrations/runner.ts`
+- `apps/web/src/services/storage/migrations/transformers/v1-to-v2.ts`
 - `apps/web/src/services/storage/migrations/v1-to-v2.ts`
+- `apps/web/src/services/storage/service.ts`
 - `apps/web/src/services/transcription/service.ts`
 - `apps/web/src/sounds/components/assets-view.tsx`
 - `apps/web/src/sounds/sounds-store.ts`
@@ -162,11 +170,14 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/timeline/bookmarks/components/bookmarks.tsx`
 - `apps/web/src/timeline/bookmarks/hooks/use-bookmark-drag.ts`
 - `apps/web/src/timeline/components/audio-volume-line.tsx`
+- `apps/web/src/timeline/components/graph-editor/custom-presets-store.ts`
+- `apps/web/src/timeline/components/graph-editor/popover.tsx`
 - `apps/web/src/timeline/components/graph-editor/use-controller.ts`
 - `apps/web/src/timeline/components/index.tsx`
 - `apps/web/src/timeline/components/timeline-element.tsx`
 - `apps/web/src/timeline/components/timeline-playhead.tsx`
 - `apps/web/src/timeline/components/timeline-toolbar.tsx`
+- `apps/web/src/timeline/controllers/drag-drop-controller.ts`
 - `apps/web/src/timeline/hooks/element/use-element-interaction.ts`
 - `apps/web/src/timeline/hooks/element/use-element-selection.ts`
 - `apps/web/src/timeline/hooks/element/use-keyframe-drag.ts`
@@ -183,11 +194,29 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `rust/wasm/src/gpu.rs`
 - `rust/wasm/src/wasm.rs`
 
-**44 file(s) added by this fork.** These are **not** patches and must **not** appear in `PATCHES.md`, which logs modifications to inherited files only.
+**97 file(s) added by this fork.** These are **not** patches and must **not** appear in `PATCHES.md`, which logs modifications to inherited files only.
 
+- `apps/web/public/workers/c4-worker-fixture.js`
+- `apps/web/src/components/__tests__/storage-provider-operations.test.ts`
+- `apps/web/src/components/storage-provider-operations.ts`
+- `apps/web/src/core/managers/__tests__/media-persistence-rewire.test.ts`
+- `apps/web/src/core/managers/__tests__/project-manager-thumbnail-degraded.test.ts`
+- `apps/web/src/core/managers/__tests__/project-persistence-rewire.test.ts`
+- `apps/web/src/core/managers/__tests__/save-manager-persistence-failure.test.ts`
+- `apps/web/src/editor/host/__tests__/branding-assets.test.ts`
+- `apps/web/src/editor/host/__tests__/browser-runtime.test.ts`
+- `apps/web/src/editor/host/__tests__/production-composition.test.ts`
+- `apps/web/src/editor/host/browser-runtime.ts`
+- `apps/web/src/editor/host/c4-next-runtime-probe.tsx`
 - `apps/web/src/editor/host/editor-host-context.tsx`
 - `apps/web/src/editor/host/editor-host.ts`
 - `apps/web/src/editor/host/host-image.tsx`
+- `apps/web/src/editor/host/next-editor-host.ts`
+- `apps/web/src/editor/persistence/__tests__/opaque-roundtrip.test.ts`
+- `apps/web/src/editor/persistence/index.ts`
+- `apps/web/src/editor/persistence/opaque-value.ts`
+- `apps/web/src/editor/persistence/project-codec.ts`
+- `apps/web/src/editor/persistence/session-persistence-coordinator.ts`
 - `apps/web/src/editor/ports/DECISIONS.md`
 - `apps/web/src/editor/ports/__tests__/conformance.test.ts`
 - `apps/web/src/editor/ports/__tests__/port-roles.compile-guard.ts`
@@ -224,7 +253,42 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/editor/session/session-types.ts`
 - `apps/web/src/editor/surface/editor-root.tsx`
 - `apps/web/src/editor/use-session-store.ts`
-- `apps/web/src/services/storage/browser-host-adapter.ts`
+- `apps/web/src/fonts/__tests__/host-font-assets.test.ts`
+- `apps/web/src/graphics/generated-preview.ts`
+- `apps/web/src/media/__tests__/persistence.test.ts`
+- `apps/web/src/media/__tests__/processing-capacity.test.ts`
+- `apps/web/src/media/persistence.ts`
+- `apps/web/src/preview/components/__tests__/timecode-playback-subscription.test.ts`
+- `apps/web/src/preview/components/playback-time-subscription.ts`
+- `apps/web/src/preview/components/use-playback-time.ts`
+- `apps/web/src/services/renderer/__tests__/host-effect-preview.test.ts`
+- `apps/web/src/services/renderer/effect-preview-source.ts`
+- `apps/web/src/services/renderer/nodes/sticker-cache-key.ts`
+- `apps/web/src/services/storage/__tests__/browser-project-store-cascade-topology.test.ts`
+- `apps/web/src/services/storage/__tests__/browser-project-store-media-topology.test.ts`
+- `apps/web/src/services/storage/__tests__/browser-project-store-migration-topology.test.ts`
+- `apps/web/src/services/storage/__tests__/browser-project-store-records.test.ts`
+- `apps/web/src/services/storage/__tests__/browser-project-store-topology.test.ts`
+- `apps/web/src/services/storage/__tests__/c5-storage-red-controls.test.ts`
+- `apps/web/src/services/storage/__tests__/migration-provider-private.test.ts`
+- `apps/web/src/services/storage/browser-project-store-cascade-manager.ts`
+- `apps/web/src/services/storage/browser-project-store-cascade-probes.ts`
+- `apps/web/src/services/storage/browser-project-store-cascade-round2-probes.ts`
+- `apps/web/src/services/storage/browser-project-store-cascade.ts`
+- `apps/web/src/services/storage/browser-project-store-conformance.ts`
+- `apps/web/src/services/storage/browser-project-store-control.ts`
+- `apps/web/src/services/storage/browser-project-store-internals.ts`
+- `apps/web/src/services/storage/browser-project-store-library-clear-bindings.ts`
+- `apps/web/src/services/storage/browser-project-store-media-ownership.ts`
+- `apps/web/src/services/storage/browser-project-store-migration-round2-probes.ts`
+- `apps/web/src/services/storage/browser-project-store-migration.ts`
+- `apps/web/src/services/storage/browser-project-store-records.ts`
+- `apps/web/src/services/storage/browser-project-store-residual-probes.ts`
+- `apps/web/src/services/storage/browser-project-store-topology.ts`
+- `apps/web/src/services/storage/browser-project-store.ts`
+- `apps/web/src/services/storage/browser-storage-mechanisms.ts`
+- `apps/web/src/services/transcription/__tests__/session-service.test.ts`
+- `apps/web/src/stickers/__tests__/host-assets.test.ts`
 - `apps/web/src/timeline/__tests__/element-with-track-selector.test.ts`
 - `apps/web/src/timeline/element-with-track-selector.ts`
 - `rust/wasm/LICENSE`

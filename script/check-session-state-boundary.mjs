@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, posix } from "node:path";
 import { fileURLToPath } from "node:url";
 import ts from "typescript";
@@ -34,6 +34,11 @@ const STORE_MODULES = [
 		"apps/web/src/sounds/sounds-store.ts",
 		"createSoundsStore",
 		"useSoundsStore",
+	],
+	[
+		"apps/web/src/timeline/components/graph-editor/custom-presets-store.ts",
+		"createCustomPresetsStore",
+		"useCustomPresetsStore",
 	],
 	[
 		"apps/web/src/stickers/stickers-store.ts",
@@ -74,6 +79,7 @@ function trackedSources() {
 		.split("\0")
 		.filter((path) => /\.(ts|tsx)$/.test(path))
 		.filter((path) => !path.includes("/__tests__/"))
+		.filter((path) => existsSync(join(ROOT, path)))
 		.map((path) => ({ path, source: readFileSync(join(ROOT, path), "utf8") }));
 }
 
@@ -934,8 +940,8 @@ function runCheck() {
 		(match) => match[1],
 	);
 	if (
-		keys.length !== 9 ||
-		new Set(keys).size !== 9 ||
+		keys.length !== inventory.storeKeys.length ||
+		new Set(keys).size !== inventory.storeKeys.length ||
 		JSON.stringify(keys) !== JSON.stringify(inventory.storeKeys)
 	) {
 		failures.push("incomplete-or-duplicate-registry:" + keys.join(","));
@@ -1133,9 +1139,9 @@ function runCheck() {
 	console.log(
 		"check-session-state-boundary: PASS " +
 			STORE_MODULES.length +
-			"/9 factories, " +
+			`/${inventory.storeKeys.length} factories, ` +
 			keys.length +
-			"/9 registry keys, " +
+			`/${inventory.storeKeys.length} registry keys, ` +
 			actualImperative.size +
 			" classified imperative modules, no default/handle-0/unimplemented production path",
 	);

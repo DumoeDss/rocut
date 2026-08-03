@@ -5,11 +5,12 @@ import {
 } from "@/commands/base-command";
 import type { MediaAsset } from "@/media/types";
 import { buildWaveformSourceKey } from "@/media/waveform-summary";
-import { storageService } from "@/services/storage/service";
+import { savePersistedMediaAsset } from "@/media/persistence";
 import { videoCache } from "@/services/video-cache/service";
 import { waveformCache } from "@/services/waveform-cache/service";
 import { hasMediaId } from "@/timeline/element-utils";
 import type { SceneTracks } from "@/timeline";
+import { toast } from "sonner";
 
 export class RemoveMediaAssetCommand extends Command {
 	private savedAssets: MediaAsset[] | null = null;
@@ -35,7 +36,9 @@ export class RemoveMediaAssetCommand extends Command {
 			assets.find((media) => media.id === this.assetId) ?? null;
 
 		if (!this.removedAsset) {
-			console.error("Media asset not found:", this.assetId);
+			console.error(
+				"Media asset could not be removed because it was not found",
+			);
 			return;
 		}
 
@@ -43,7 +46,9 @@ export class RemoveMediaAssetCommand extends Command {
 			URL.revokeObjectURL(this.removedAsset.url);
 		}
 		if (this.removedAsset.thumbnailUrl) {
-			URL.revokeObjectURL(this.removedAsset.thumbnailUrl);
+			if (this.removedAsset.thumbnailUrl.startsWith("blob:")) {
+				URL.revokeObjectURL(this.removedAsset.thumbnailUrl);
+			}
 		}
 
 		videoCache.clearVideo({ mediaId: this.assetId });
@@ -76,38 +81,60 @@ export class RemoveMediaAssetCommand extends Command {
 			editor.timeline.deleteElements({ elements: elementsToRemove });
 		}
 
-		storageService
-			.deleteMediaAsset({ projectId: this.projectId, id: this.assetId })
+		editor.persistence
+			.removeAttachment({
+				projectId: this.projectId,
+				key: this.assetId,
+			})
 			.catch((error) => {
-				console.error("Failed to delete media item:", error);
+				editor.reportPersistenceFailure({
+					operation: "command-remove-media",
+					error,
+				});
+				this.restoreLiveState({ editor });
+				toast.error("Failed to remove media item", {
+					description: "The media item was restored. Please try again.",
+				});
 			});
 	}
 
 	undo({ editor }: EditorCommandContext): void {
 		if (this.savedAssets && this.removedAsset) {
-			const restoredAsset: MediaAsset = {
-				...this.removedAsset,
-				url: URL.createObjectURL(this.removedAsset.file),
-			};
+			const restoredAsset = this.restoreLiveState({ editor });
 
-			editor.media.setAssets({
-				assets: this.savedAssets.map((a) =>
-					a.id === this.assetId ? restoredAsset : a,
-				),
-			});
-
-			storageService
-				.saveMediaAsset({
+			if (restoredAsset)
+				savePersistedMediaAsset({
+					persistence: editor.persistence,
 					projectId: this.projectId,
-					mediaAsset: restoredAsset,
-				})
-				.catch((error) => {
-					console.error("Failed to restore media item on undo:", error);
+					asset: restoredAsset,
+				}).catch((error) => {
+					editor.reportPersistenceFailure({
+						operation: "command-undo-remove-media",
+						error,
+					});
+					toast.error("Failed to restore media item", {
+						description: "The media item could not be saved again.",
+					});
 				});
 		}
+	}
 
-		if (this.savedTracks) {
-			editor.timeline.updateTracks(this.savedTracks);
-		}
+	private restoreLiveState({
+		editor,
+	}: {
+		editor: EditorCommandContext["editor"];
+	}): MediaAsset | null {
+		if (!this.savedAssets || !this.removedAsset) return null;
+		const restoredAsset: MediaAsset = {
+			...this.removedAsset,
+			url: URL.createObjectURL(this.removedAsset.file),
+		};
+		editor.media.setAssets({
+			assets: this.savedAssets.map((asset) =>
+				asset.id === this.assetId ? restoredAsset : asset,
+			),
+		});
+		if (this.savedTracks) editor.timeline.updateTracks(this.savedTracks);
+		return restoredAsset;
 	}
 }

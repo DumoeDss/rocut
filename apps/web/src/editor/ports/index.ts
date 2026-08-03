@@ -22,11 +22,7 @@ import type { IdGenerator } from "./id-generator";
 import type { ProjectStore } from "./project-store";
 import type { RuntimeResourceHost } from "./runtime-resources";
 
-export type {
-	AssetRef,
-	AssetResolver,
-	RuntimeAssetLoader,
-} from "./assets";
+export type { AssetRef, AssetResolver, RuntimeAssetLoader } from "./assets";
 export type {
 	DiagnosticsPort,
 	LogLevel,
@@ -66,13 +62,22 @@ export type {
 export type { IdGenerator } from "./id-generator";
 export type { ProjectId, ResourceId, SessionId, WorkerId } from "./identity";
 export type {
+	LibraryRecord,
 	MigrationContext,
 	MigrationOutcome,
 	MigrationProgress,
+	ProjectAttachment,
 	ProjectRecord,
 	ProjectStore,
+	ProjectStoreCapacity,
+	ProjectStoreClearScope,
+	ProjectStoreErrorCode,
+	ProjectStoreErrorScope,
+	ProjectStoreInspection,
+	ProjectStoreOperation,
 	ProjectSummary,
 } from "./project-store";
+export { ProjectStoreError } from "./project-store";
 export type {
 	AudioContextHandle,
 	AudioContextRequest,
@@ -129,9 +134,9 @@ export type PortRole = keyof EditorHostPorts;
  * `Record<PortRole, true>` fails to compile if a role is missing. The obvious
  * alternative — `[...] as const satisfies readonly PortRole[]` — checks only
  * *membership*, so a later child that adds a role to `EditorHostPorts` and
- * forgets this list compiles clean, and `resolveEditorHost()` silently stops
- * checking the new role. At a freeze that is the worst available failure shape:
- * the gate narrows without anything going red.
+ * forgets this list compiles clean. The Host itself remains complete through
+ * direct interface extension; this register independently keeps reporting and
+ * conformance membership from narrowing silently.
  *
  * The same idiom guards the resource classes in `../session/session-resources.ts`.
  */
@@ -147,4 +152,6 @@ const PORT_ROLE_REGISTER: Record<PortRole, true> = {
 };
 
 /** The port role names, for reporting and for the conformance suite. */
-export const PORT_ROLES = Object.keys(PORT_ROLE_REGISTER) as readonly PortRole[];
+export const PORT_ROLES = Object.keys(
+	PORT_ROLE_REGISTER,
+) as readonly PortRole[];

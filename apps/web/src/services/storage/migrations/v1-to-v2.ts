@@ -1,7 +1,4 @@
-import {
-	IndexedDBAdapter,
-	deleteDatabase,
-} from "@/services/storage/indexeddb-adapter";
+import { IndexedDBAdapter } from "@/services/storage/indexeddb-adapter";
 import type { MediaAssetData } from "@/services/storage/types";
 import { StorageMigration, type StorageMigrationRunArgs } from "./base";
 import type { MigrationResult, ProjectRecord } from "./transformers/types";
@@ -23,39 +20,35 @@ export class V1toV2Migration extends StorageMigration {
 	async run({
 		projectId,
 		project,
+		assertLegacyTarget,
 	}: StorageMigrationRunArgs): Promise<MigrationResult<ProjectRecord>> {
-		const context = await loadV1ToV2Context({ projectId, project });
-		const result = transformProjectV1ToV2({ project, context });
-
-		if (!result.skipped) {
-			try {
-				await deleteLegacyTimelineDbs({ projectId, project: result.project });
-			} catch (error) {
-				console.error(
-					`V1→V2 migration cleanup failed for project ${projectId}:`,
-					error,
-				);
-			}
-		}
-
-		return result;
+		const context = await loadV1ToV2Context({
+			projectId,
+			project,
+			assertLegacyTarget,
+		});
+		return transformProjectV1ToV2({ project, context });
 	}
 }
 
 async function loadV1ToV2Context({
 	projectId,
 	project,
+	assertLegacyTarget,
 }: {
 	projectId: string;
 	project: ProjectRecord;
+	assertLegacyTarget?: StorageMigrationRunArgs["assertLegacyTarget"];
 }): Promise<V1ToV2Context> {
 	const legacyTracksBySceneId = await loadLegacyTracksBySceneId({
 		projectId,
 		project,
+		assertLegacyTarget,
 	});
 	const mediaTypesById = await loadMediaTypesById({
 		projectId,
 		legacyTracksBySceneId,
+		assertLegacyTarget,
 	});
 
 	return {
@@ -67,9 +60,11 @@ async function loadV1ToV2Context({
 async function loadLegacyTracksBySceneId({
 	projectId,
 	project,
+	assertLegacyTarget,
 }: {
 	projectId: string;
 	project: ProjectRecord;
+	assertLegacyTarget?: StorageMigrationRunArgs["assertLegacyTarget"];
 }): Promise<V1ToV2Context["legacyTracksBySceneId"]> {
 	const scenes = project.scenes;
 	if (!Array.isArray(scenes)) {
@@ -91,6 +86,7 @@ async function loadLegacyTracksBySceneId({
 				projectId,
 				sceneId,
 				isMain: scene.isMain === true,
+				assertLegacyTarget,
 			});
 
 			return [sceneId, tracks] as const;
@@ -113,13 +109,25 @@ async function loadLegacyTracksForScene({
 	projectId,
 	sceneId,
 	isMain,
+	assertLegacyTarget,
 }: {
 	projectId: string;
 	sceneId: string;
 	isMain: boolean;
+	assertLegacyTarget?: StorageMigrationRunArgs["assertLegacyTarget"];
 }): Promise<unknown[]> {
 	const sceneDbName = `video-editor-timelines-${projectId}-${sceneId}`;
 	const projectDbName = `video-editor-timelines-${projectId}`;
+	assertLegacyTarget?.({
+		kind: "database",
+		name: sceneDbName,
+		projectId,
+	});
+	assertLegacyTarget?.({
+		kind: "database",
+		name: projectDbName,
+		projectId,
+	});
 
 	const adapter = new IndexedDBAdapter<LegacyTimelineData>({
 		dbName: sceneDbName,
@@ -148,17 +156,25 @@ async function loadLegacyTracksForScene({
 async function loadMediaTypesById({
 	projectId,
 	legacyTracksBySceneId,
+	assertLegacyTarget,
 }: {
 	projectId: string;
 	legacyTracksBySceneId: V1ToV2Context["legacyTracksBySceneId"];
+	assertLegacyTarget?: StorageMigrationRunArgs["assertLegacyTarget"];
 }): Promise<V1ToV2Context["mediaTypesById"]> {
 	const mediaIds = collectLegacyMediaIds({ legacyTracksBySceneId });
 	if (mediaIds.length === 0) {
 		return {};
 	}
 
+	const mediaDatabase = `video-editor-media-${projectId}`;
+	assertLegacyTarget?.({
+		kind: "database",
+		name: mediaDatabase,
+		projectId,
+	});
 	const mediaMetadataAdapter = new IndexedDBAdapter<MediaAssetData>({
-		dbName: `video-editor-media-${projectId}`,
+		dbName: mediaDatabase,
 		storeName: "media-metadata",
 		version: 1,
 	});
@@ -225,18 +241,7 @@ function collectLegacyMediaIds({
 	return Array.from(mediaIds);
 }
 
-async function deleteLegacyTimelineDbs({
-	projectId,
-	project,
-}: {
-	projectId: string;
-	project: ProjectRecord;
-}): Promise<void> {
-	const dbNames = getLegacyTimelineDbNames({ projectId, project });
-	await Promise.all(dbNames.map((dbName) => deleteDatabase({ dbName })));
-}
-
-function getLegacyTimelineDbNames({
+export function getLegacyTimelineDbNames({
 	projectId,
 	project,
 }: {

@@ -22,17 +22,40 @@ if (process.env.OPENCUT_SESSION_ASYNC_STORE_TEST_ISOLATED !== "1") {
 } else {
 	await import("./wasm-test-mock");
 	const { createSoundsStore } = await import("@/sounds/sounds-store");
+	const { createCustomPresetsStore } =
+		await import("@/timeline/components/graph-editor/custom-presets-store");
 	const { createStickersStore } = await import("@/stickers/stickers-store");
 	const { createInMemoryHost } = await import("@/editor/ports/in-memory/host");
+	const {
+		InMemoryProjectStore,
+		InMemoryProjectStoreControl,
+		RecordingDiagnostics,
+	} = await import("@/editor/ports/in-memory");
+	const { SessionPersistenceCoordinator } =
+		await import("@/editor/persistence");
+	const { storesForSession } = await import("@/editor/runtime/session-stores");
 	const { editorForSession } =
 		await import("@/editor/runtime/session-core-owner");
 	const { createEditorSession } = await import("../create-session");
 	type SavedSoundsData = import("@/sounds/types").SavedSoundsData;
+	type SavedSound = import("@/sounds/types").SavedSound;
 	type SoundEffect = import("@/sounds/types").SoundEffect;
+	type EasingPreset =
+		import("@/timeline/components/graph-editor/easing-presets").EasingPreset;
 	type StickerBrowseResult = import("@/stickers").StickerBrowseResult;
 	type StickerSearchResult = import("@/stickers").StickerSearchResult;
 	type StickerStoreQueries =
 		import("@/stickers/stickers-store").StickerStoreQueries;
+	type FakeSavedSoundsMutationArgs = {
+		mutate: (
+			current: SavedSound[] | null,
+		) => SavedSound[] | Promise<SavedSound[]>;
+	};
+	type FakeCustomPresetMutationArgs = {
+		mutate: (
+			current: EasingPreset[] | null,
+		) => EasingPreset[] | Promise<EasingPreset[]>;
+	};
 
 	function deferred<Value>() {
 		let resolve!: (value: Value) => void;
@@ -44,7 +67,7 @@ if (process.env.OPENCUT_SESSION_ASYNC_STORE_TEST_ISOLATED !== "1") {
 		return { promise, resolve, reject };
 	}
 
-	const savedSound = (id: number) => ({
+	const savedSound = (id: number): SavedSound => ({
 		id,
 		name: `sound-${id}`,
 		username: "tester",
@@ -74,26 +97,90 @@ if (process.env.OPENCUT_SESSION_ASYNC_STORE_TEST_ISOLATED !== "1") {
 		rating: 0,
 		ratingCount: 0,
 	});
+	const customPreset = ({
+		id,
+		value,
+	}: {
+		id: string;
+		value: EasingPreset["value"];
+	}): EasingPreset => ({
+		id,
+		label: id,
+		value,
+		isCustom: true,
+	});
+	function createDelayedPresetPersistence(initial: EasingPreset[]) {
+		const staleLoad = deferred<{ data: EasingPreset[] } | null>();
+		let durable = [...initial];
+		let loadCalls = 0;
+		return {
+			staleLoad,
+			staleSnapshot: [...initial],
+			readDurable: () => [...durable],
+			persistence: {
+				loadLibraryRecord: () => {
+					loadCalls += 1;
+					return loadCalls === 1
+						? staleLoad.promise
+						: Promise.resolve({ data: [...durable] });
+				},
+				mutateLibraryRecord: async ({
+					mutate,
+				}: FakeCustomPresetMutationArgs) => {
+					const next = await mutate([...durable]);
+					durable = next;
+					return [...next];
+				},
+			},
+		};
+	}
+	async function createSharedLibrarySessions() {
+		const control = new InMemoryProjectStoreControl();
+		const durable = new InMemoryProjectStore({ control });
+		const host = createInMemoryHost({
+			projectId: "shared-library-concurrency",
+			store: durable,
+		});
+		const sessionA = await createEditorSession({ host });
+		const sessionB = await createEditorSession({ host });
+		return {
+			control,
+			durable,
+			sessionA,
+			sessionB,
+			storesA: storesForSession(sessionA),
+			storesB: storesForSession(sessionB),
+			async dispose() {
+				await sessionA.dispose();
+				await sessionB.dispose();
+			},
+		};
+	}
 
 	describe("sounds request generations", () => {
 		test("rejects stale, disposed and foreign request publication", async () => {
 			let disposedA = false;
 			const pendingA: Array<ReturnType<typeof deferred<SavedSoundsData>>> = [];
-			const storageA = {
-				loadSavedSounds: () => {
+			const persistenceA = {
+				loadLibraryRecord: () => {
 					const next = deferred<SavedSoundsData>();
 					pendingA.push(next);
-					return next.promise;
+					return next.promise.then((data) => ({
+						namespace: "saved-sounds",
+						key: "user-sounds",
+						schemaVersion: 1,
+						data: data.sounds,
+					}));
 				},
-				saveSoundEffect: async () => {},
-				removeSavedSound: async () => {},
-				clearSavedSounds: async () => {},
+				mutateLibraryRecord: async ({ mutate }: FakeSavedSoundsMutationArgs) =>
+					mutate(null),
+				clearLibraryNamespace: async () => {},
 			};
 			const a = createSoundsStore({
 				isDisposed: () => disposedA,
-				storage: storageA,
+				getPersistence: () => persistenceA,
 			});
-			const b = createSoundsStore({ storage: storageA });
+			const b = createSoundsStore({ getPersistence: () => persistenceA });
 			const foreign = a.getState().beginRequest({ channel: "search" });
 			expect(b.getState().canPublishRequest({ token: foreign })).toBe(false);
 			const loadMoreToken = a.getState().beginRequest({ channel: "loadMore" });
@@ -128,31 +215,35 @@ if (process.env.OPENCUT_SESSION_ASYNC_STORE_TEST_ISOLATED !== "1") {
 			const staleLoad = deferred<SavedSoundsData>();
 			let durable = [savedSound(2)];
 			let loadCalls = 0;
-			const storage = {
-				loadSavedSounds: () => {
+			const persistence = {
+				loadLibraryRecord: () => {
 					loadCalls += 1;
-					return loadCalls === 1
-						? staleLoad.promise
-						: Promise.resolve({
-								sounds: [...durable],
-								lastModified: `load-${loadCalls}`,
-							});
+					const value =
+						loadCalls === 1
+							? staleLoad.promise
+							: Promise.resolve({
+									sounds: [...durable],
+									lastModified: `load-${loadCalls}`,
+								});
+					return value.then((data) => ({
+						namespace: "saved-sounds",
+						key: "user-sounds",
+						schemaVersion: 1,
+						data: data.sounds,
+					}));
 				},
-				saveSoundEffect: async ({
-					soundEffect: sound,
-				}: {
-					soundEffect: SoundEffect;
-				}) => {
-					durable = [savedSound(sound.id)];
+				mutateLibraryRecord: async ({
+					mutate,
+				}: FakeSavedSoundsMutationArgs) => {
+					const next = await mutate([...durable]);
+					durable = next;
+					return next;
 				},
-				removeSavedSound: async ({ soundId }: { soundId: number }) => {
-					durable = durable.filter((sound) => sound.id !== soundId);
-				},
-				clearSavedSounds: async () => {
+				clearLibraryNamespace: async () => {
 					durable = [];
 				},
 			};
-			const store = createSoundsStore({ storage });
+			const store = createSoundsStore({ getPersistence: () => persistence });
 			const loading = store.getState().loadSavedSounds();
 			expect(store.getState().isLoadingSavedSounds).toBe(true);
 			await store.getState().saveSoundEffect({ soundEffect: soundEffect(2) });
@@ -179,37 +270,39 @@ if (process.env.OPENCUT_SESSION_ASYNC_STORE_TEST_ISOLATED !== "1") {
 			const saveGate = deferred<void>();
 			const removeGate = deferred<void>();
 			const events: string[] = [];
-			const serializedStorage = {
-				loadSavedSounds: async () => ({
-					sounds: [...durable],
-					lastModified: "serialized",
+			let mutationCalls = 0;
+			const firstMutationStarted = deferred<void>();
+			const serializedPersistence = {
+				loadLibraryRecord: async () => ({
+					namespace: "saved-sounds",
+					key: "user-sounds",
+					schemaVersion: 1,
+					data: [...durable],
 				}),
-				saveSoundEffect: async ({
-					soundEffect: sound,
-				}: {
-					soundEffect: SoundEffect;
-				}) => {
-					events.push("save:start");
-					await saveGate.promise;
-					durable = [savedSound(sound.id)];
-					events.push("save:end");
+				mutateLibraryRecord: async ({
+					mutate,
+				}: FakeSavedSoundsMutationArgs) => {
+					const next = await mutate([...durable]);
+					const isRemove = mutationCalls++ > 0;
+					events.push(isRemove ? "remove:start" : "save:start");
+					if (!isRemove) firstMutationStarted.resolve();
+					await (isRemove ? removeGate.promise : saveGate.promise);
+					durable = next;
+					events.push(isRemove ? "remove:end" : "save:end");
+					return next;
 				},
-				removeSavedSound: async ({ soundId }: { soundId: number }) => {
-					events.push("remove:start");
-					await removeGate.promise;
-					durable = durable.filter((sound) => sound.id !== soundId);
-					events.push("remove:end");
-				},
-				clearSavedSounds: async () => {
+				clearLibraryNamespace: async () => {
 					durable = [];
 				},
 			};
-			const serialized = createSoundsStore({ storage: serializedStorage });
+			const serialized = createSoundsStore({
+				getPersistence: () => serializedPersistence,
+			});
 			const save = serialized
 				.getState()
 				.saveSoundEffect({ soundEffect: soundEffect(3) });
 			const remove = serialized.getState().removeSavedSound({ soundId: 3 });
-			await Promise.resolve();
+			await firstMutationStarted.promise;
 			expect(events).toEqual(["save:start"]);
 			removeGate.resolve();
 			expect(events).toEqual(["save:start"]);
@@ -302,6 +395,435 @@ if (process.env.OPENCUT_SESSION_ASYNC_STORE_TEST_ISOLATED !== "1") {
 				}
 				await session.dispose();
 			}
+		});
+	});
+
+	describe("session-owned durable libraries", () => {
+		test("an older preset load cannot overwrite a later successful save", async () => {
+			const fixture = createDelayedPresetPersistence([]);
+			const store = createCustomPresetsStore({
+				getPersistence: () => fixture.persistence,
+			});
+
+			const olderLoad = store.getState().load();
+			await store.getState().savePreset({ value: [0.15, 0.25, 0.35, 0.45] });
+			const committed = fixture.readDurable();
+			expect(committed).toHaveLength(1);
+			expect(store.getState().presets).toEqual(committed);
+
+			fixture.staleLoad.resolve({ data: fixture.staleSnapshot });
+			await olderLoad;
+			expect(store.getState().presets).toEqual(committed);
+			expect(store.getState().hasLoaded).toBe(true);
+
+			await store.getState().load();
+			expect(store.getState().presets).toEqual(committed);
+		});
+
+		test("an older preset load cannot restore a preset removed later", async () => {
+			const removed = customPreset({
+				id: "remove-me",
+				value: [0.1, 0.2, 0.3, 0.4],
+			});
+			const kept = customPreset({
+				id: "keep-me",
+				value: [0.5, 0.6, 0.7, 0.8],
+			});
+			const fixture = createDelayedPresetPersistence([removed, kept]);
+			const store = createCustomPresetsStore({
+				getPersistence: () => fixture.persistence,
+			});
+
+			const olderLoad = store.getState().load();
+			await store.getState().removePreset({ id: removed.id });
+			expect(fixture.readDurable()).toEqual([kept]);
+			expect(store.getState().presets).toEqual([kept]);
+
+			fixture.staleLoad.resolve({ data: fixture.staleSnapshot });
+			await olderLoad;
+			expect(store.getState().presets).toEqual([kept]);
+
+			await store.getState().load();
+			expect(store.getState().presets).toEqual([kept]);
+		});
+
+		test("two complete sessions preserve concurrent saved-sound updates and reload the union", async () => {
+			const shared = await createSharedLibrarySessions();
+			const paused = shared.control.pauseNext({
+				operation: "save-library-record",
+			});
+			try {
+				const first = shared.storesA.sounds
+					.getState()
+					.saveSoundEffect({ soundEffect: soundEffect(201) });
+				await paused.entered;
+				const second = shared.storesB.sounds
+					.getState()
+					.saveSoundEffect({ soundEffect: soundEffect(202) });
+				paused.release();
+				await Promise.all([first, second]);
+
+				shared.storesA.sounds.setState({ isSavedSoundsLoaded: false });
+				shared.storesB.sounds.setState({ isSavedSoundsLoaded: false });
+				await Promise.all([
+					shared.storesA.sounds.getState().loadSavedSounds(),
+					shared.storesB.sounds.getState().loadSavedSounds(),
+				]);
+				const expected = [201, 202];
+				expect(
+					shared.storesA.sounds
+						.getState()
+						.savedSounds.map(({ id }) => id)
+						.toSorted(),
+				).toEqual(expected);
+				expect(
+					shared.storesB.sounds
+						.getState()
+						.savedSounds.map(({ id }) => id)
+						.toSorted(),
+				).toEqual(expected);
+			} finally {
+				paused.release();
+				await shared.dispose();
+			}
+		});
+
+		test("two complete sessions preserve concurrent custom presets and reload the union", async () => {
+			const shared = await createSharedLibrarySessions();
+			const paused = shared.control.pauseNext({
+				operation: "save-library-record",
+			});
+			const firstValue = [0.11, 0.22, 0.33, 0.44] as const;
+			const secondValue = [0.55, 0.66, 0.77, 0.88] as const;
+			try {
+				const first = shared.storesA.customPresets
+					.getState()
+					.savePreset({ value: [...firstValue] });
+				await paused.entered;
+				const second = shared.storesB.customPresets
+					.getState()
+					.savePreset({ value: [...secondValue] });
+				paused.release();
+				await Promise.all([first, second]);
+
+				await Promise.all([
+					shared.storesA.customPresets.getState().load(),
+					shared.storesB.customPresets.getState().load(),
+				]);
+				const expected = [firstValue.join(","), secondValue.join(",")];
+				for (const stores of [shared.storesA, shared.storesB]) {
+					expect(
+						stores.customPresets
+							.getState()
+							.presets.map(({ value }) => value.join(","))
+							.toSorted(),
+					).toEqual(expected);
+				}
+			} finally {
+				paused.release();
+				await shared.dispose();
+			}
+		});
+
+		test("a failed shared library mutation does not poison either session's next update", async () => {
+			const shared = await createSharedLibrarySessions();
+			try {
+				shared.control.failNext({
+					operation: "save-library-record",
+					code: "quota-exceeded",
+				});
+				const failedSound = shared.storesA.sounds
+					.getState()
+					.saveSoundEffect({ soundEffect: soundEffect(301) });
+				const recoveredSound = shared.storesB.sounds
+					.getState()
+					.saveSoundEffect({ soundEffect: soundEffect(302) });
+				await expect(failedSound).rejects.toThrow("quota-exceeded");
+				await recoveredSound;
+
+				shared.control.failNext({
+					operation: "save-library-record",
+					code: "conflict",
+				});
+				const failedPreset = shared.storesA.customPresets
+					.getState()
+					.savePreset({ value: [0.1, 0.2, 0.3, 0.4] });
+				const recoveredPreset = shared.storesB.customPresets
+					.getState()
+					.savePreset({ value: [0.5, 0.6, 0.7, 0.8] });
+				await expect(failedPreset).rejects.toThrow("conflict");
+				await recoveredPreset;
+
+				shared.storesA.sounds.setState({ isSavedSoundsLoaded: false });
+				shared.storesB.sounds.setState({ isSavedSoundsLoaded: false });
+				await Promise.all([
+					shared.storesA.sounds.getState().loadSavedSounds(),
+					shared.storesB.sounds.getState().loadSavedSounds(),
+					shared.storesA.customPresets.getState().load(),
+					shared.storesB.customPresets.getState().load(),
+				]);
+				for (const stores of [shared.storesA, shared.storesB]) {
+					expect(
+						stores.sounds.getState().savedSounds.map(({ id }) => id),
+					).toEqual([302]);
+					expect(
+						stores.customPresets.getState().presets.map(({ value }) => value),
+					).toEqual([[0.5, 0.6, 0.7, 0.8]]);
+				}
+			} finally {
+				await shared.dispose();
+			}
+		});
+
+		test("a paused saved-sound mutation does not lock the preset namespace", async () => {
+			const shared = await createSharedLibrarySessions();
+			const paused = shared.control.pauseNext({
+				operation: "save-library-record",
+			});
+			let soundMutation: Promise<void> | undefined;
+			let presetMutation: Promise<void> | undefined;
+			try {
+				soundMutation = shared.storesA.sounds
+					.getState()
+					.saveSoundEffect({ soundEffect: soundEffect(401) });
+				await paused.entered;
+				presetMutation = shared.storesB.customPresets
+					.getState()
+					.savePreset({ value: [0.4, 0.3, 0.2, 0.1] });
+				const outcome = await Promise.race([
+					presetMutation.then(() => "preset-committed" as const),
+					Bun.sleep(1_000).then(() => "blocked" as const),
+				]);
+				expect(outcome).toBe("preset-committed");
+			} finally {
+				paused.release();
+				await Promise.allSettled(
+					[soundMutation, presetMutation].filter(
+						(value): value is Promise<void> => value !== undefined,
+					),
+				);
+				await shared.dispose();
+			}
+		});
+
+		test("custom presets share committed durability but not live StoreApi state", async () => {
+			const durable = new InMemoryProjectStore();
+			const coordinatorA = new SessionPersistenceCoordinator(durable);
+			const coordinatorB = new SessionPersistenceCoordinator(durable);
+			const a = createCustomPresetsStore({
+				getPersistence: () => coordinatorA,
+			});
+			const b = createCustomPresetsStore({
+				getPersistence: () => coordinatorB,
+			});
+
+			const first = a.getState().savePreset({ value: [0.1, 0.2, 0.3, 0.4] });
+			const second = a.getState().savePreset({ value: [0.2, 0.3, 0.4, 0.5] });
+			await Promise.all([first, second]);
+			expect(a.getState().presets).toHaveLength(2);
+			expect(b.getState().presets).toEqual([]);
+
+			await b.getState().load();
+			expect(b.getState().presets.map((preset) => preset.value)).toEqual([
+				[0.1, 0.2, 0.3, 0.4],
+				[0.2, 0.3, 0.4, 0.5],
+			]);
+			expect(b).not.toBe(a);
+
+			const soundsA = createSoundsStore({
+				getPersistence: () => coordinatorA,
+			});
+			const soundsB = createSoundsStore({
+				getPersistence: () => coordinatorB,
+			});
+			await soundsA
+				.getState()
+				.saveSoundEffect({ soundEffect: soundEffect(41) });
+			expect(soundsA.getState().savedSounds.map((sound) => sound.id)).toEqual([
+				41,
+			]);
+			expect(soundsB.getState().savedSounds).toEqual([]);
+			await soundsB.getState().loadSavedSounds();
+			expect(soundsB.getState().savedSounds.map((sound) => sound.id)).toEqual([
+				41,
+			]);
+			const events: string[] = [];
+			coordinatorA.subscribe((event) =>
+				events.push(`${event.kind}:${event.key}`),
+			);
+			await soundsA.getState().clearSavedSounds();
+			expect(
+				await durable.loadLibraryRecord({
+					namespace: "saved-sounds",
+					key: "user-sounds",
+				}),
+			).toBeNull();
+			expect(
+				await durable.loadLibraryRecord({
+					namespace: "graph-editor-presets",
+					key: "user-presets",
+				}),
+			).not.toBeNull();
+			expect(events).toContain("clear:saved-sounds");
+			coordinatorA.destroy();
+			coordinatorB.destroy();
+		});
+
+		test("library failures reject, stay visible, and report no payload", async () => {
+			const reports: unknown[] = [];
+			const secret = "SECRET-SAVED-SOUND-PAYLOAD";
+			const persistence = {
+				loadLibraryRecord: async () => null,
+				mutateLibraryRecord: async () => {
+					throw Object.assign(new Error(secret), { code: "quota-exceeded" });
+				},
+				clearLibraryNamespace: async () => {},
+			};
+			const store = createSoundsStore({
+				getPersistence: () => persistence,
+				reportPersistenceFailure: (failure) => reports.push(failure),
+			});
+
+			await expect(
+				store.getState().saveSoundEffect({ soundEffect: soundEffect(99) }),
+			).rejects.toThrow(secret);
+			expect(store.getState().savedSounds).toEqual([]);
+			expect(store.getState().savedSoundsError).toMatch(/retry/i);
+			expect(JSON.stringify(reports)).not.toContain(secret);
+			expect(reports).toEqual([
+				{
+					library: "saved-sounds",
+					operation: "save",
+					code: "quota-exceeded",
+				},
+			]);
+
+			const presetReports: unknown[] = [];
+			const presetStore = createCustomPresetsStore({
+				getPersistence: () => ({
+					loadLibraryRecord: async () => ({
+						namespace: "graph-editor-presets",
+						key: "user-presets",
+						schemaVersion: 1,
+						data: [],
+					}),
+					mutateLibraryRecord: async () => {
+						throw Object.assign(new Error(secret), { code: "conflict" });
+					},
+				}),
+				reportPersistenceFailure: (failure) => presetReports.push(failure),
+			});
+			await expect(
+				presetStore.getState().savePreset({ value: [0.1, 0.2, 0.3, 0.4] }),
+			).rejects.toThrow(secret);
+			expect(presetStore.getState().presets).toEqual([]);
+			expect(presetStore.getState().error).toMatch(/retry/i);
+			expect(JSON.stringify(presetReports)).not.toContain(secret);
+			expect(presetReports).toEqual([
+				{
+					library: "graph-editor-presets",
+					operation: "save",
+					code: "conflict",
+				},
+			]);
+		});
+
+		test("library failures reach the owning session diagnostics channel", async () => {
+			const control = new InMemoryProjectStoreControl();
+			const durable = new InMemoryProjectStore({ control });
+			const host = createInMemoryHost({ store: durable });
+			if (!(host.diagnostics instanceof RecordingDiagnostics)) {
+				throw new Error("in-memory Host diagnostics are not inspectable");
+			}
+			const session = await createEditorSession({ host });
+
+			try {
+				const stores = storesForSession(session);
+				control.failNext({
+					operation: "save-library-record",
+					code: "quota-exceeded",
+				});
+				await expect(
+					stores.sounds
+						.getState()
+						.saveSoundEffect({ soundEffect: soundEffect(100) }),
+				).rejects.toThrow("quota-exceeded");
+				expect(stores.sounds.getState().savedSounds).toEqual([]);
+				expect(stores.sounds.getState().savedSoundsError).toMatch(/retry/i);
+
+				control.failNext({
+					operation: "save-library-record",
+					code: "conflict",
+				});
+				await expect(
+					stores.customPresets
+						.getState()
+						.savePreset({ value: [0.1, 0.2, 0.3, 0.4] }),
+				).rejects.toThrow("conflict");
+				expect(stores.customPresets.getState().presets).toEqual([]);
+				expect(stores.customPresets.getState().error).toMatch(/retry/i);
+
+				expect(host.diagnostics.logs.slice(-2)).toEqual([
+					{
+						level: "error",
+						message: "Durable editor library operation failed",
+						context: {
+							library: "saved-sounds",
+							operation: "save",
+							code: "quota-exceeded",
+						},
+					},
+					{
+						level: "error",
+						message: "Durable editor library operation failed",
+						context: {
+							library: "graph-editor-presets",
+							operation: "save",
+							code: "conflict",
+						},
+					},
+				]);
+			} finally {
+				await session.dispose();
+			}
+		});
+
+		test("namespace clear waits for prior records and does not block another library", async () => {
+			const control = new InMemoryProjectStoreControl();
+			const durable = new InMemoryProjectStore({ control });
+			const coordinator = new SessionPersistenceCoordinator(durable);
+			const paused = control.pauseNext({ operation: "save-library-record" });
+			const saveSound = coordinator.saveLibraryRecord({
+				namespace: "saved-sounds",
+				key: "user-sounds",
+				schemaVersion: 1,
+				data: { sounds: [savedSound(7)] },
+			});
+			await paused.entered;
+			const clearSounds = coordinator.clearLibraryNamespace({
+				namespace: "saved-sounds",
+			});
+			await coordinator.saveLibraryRecord({
+				namespace: "graph-editor-presets",
+				key: "user-presets",
+				schemaVersion: 1,
+				data: { presets: [] },
+			});
+			expect(
+				await durable.loadLibraryRecord({
+					namespace: "graph-editor-presets",
+					key: "user-presets",
+				}),
+			).not.toBeNull();
+			paused.release();
+			await Promise.all([saveSound, clearSounds]);
+			expect(
+				await durable.loadLibraryRecord({
+					namespace: "saved-sounds",
+					key: "user-sounds",
+				}),
+			).toBeNull();
+			coordinator.destroy();
 		});
 	});
 

@@ -31,6 +31,7 @@ import type { TimelineDragData } from "@/timeline/drag";
 import type { MediaAsset } from "@/media/types";
 import type { ProcessedMediaAsset } from "@/media/processing";
 import { roundFrameTime, type MediaTime } from "@/wasm";
+import type { ProjectStore } from "@/editor/ports";
 
 // --- Config ---
 
@@ -44,6 +45,11 @@ export interface DragDropConfig {
 	getSceneTracks: () => SceneTracks;
 	getCurrentPlayheadTime: () => MediaTime;
 	getMediaAssets: () => MediaAsset[];
+	getStore: () => Pick<ProjectStore, "inspect">;
+	reportPersistenceFailure: (args: {
+		operation: string;
+		error: unknown;
+	}) => void;
 	dragSource: TimelineDragSource;
 	addMediaAsset: (args: {
 		projectId: string;
@@ -266,11 +272,11 @@ export class DragDropController {
 				files: Array.from(event.dataTransfer.files),
 				mouseX: coords.mouseX,
 				mouseY: coords.mouseY,
-			}).catch((error) => {
-				console.error("Failed to process file drop:", error);
+			}).catch(() => {
+				console.error("Failed to process file drop");
 			});
-		} catch (error) {
-			console.error("Failed to process drop:", error);
+		} catch {
+			console.error("Failed to process drop");
 		}
 	}
 
@@ -505,7 +511,11 @@ export class DragDropController {
 		await showMediaUploadToast({
 			filesCount: files.length,
 			promise: async () => {
-				const processedAssets = await processMediaAssets({ files });
+				const processedAssets = await processMediaAssets({
+					files,
+					store: this.config.getStore(),
+					reportPersistenceFailure: this.config.reportPersistenceFailure,
+				});
 
 				// Sequential on purpose: each iteration reads getSceneTracks()
 				// to decide placement (reuse empty main vs new track) and that

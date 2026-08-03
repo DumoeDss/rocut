@@ -5,6 +5,7 @@ import {
 } from "../conformance";
 import {
 	createInMemoryPorts,
+	createInMemoryProjectStoreFixture,
 	InMemoryProjectStore,
 	InMemoryRuntimeResourceHost,
 } from "../in-memory";
@@ -13,11 +14,32 @@ import {
 	UNIMPLEMENTED_RUNTIME_GRAPHICS,
 } from "../environment";
 import type { RuntimeGraphicsQuery } from "../environment";
+import { ProjectStoreError } from "../project-store";
+import type { LibraryRecord, ProjectAttachment } from "../project-store";
+
+function disposableMigrationBinding({
+	store,
+	identity,
+	prefix = "c5-disposable-",
+}: {
+	store: InMemoryProjectStore;
+	identity: string;
+	prefix?: string;
+}) {
+	return {
+		identity,
+		prefix,
+		store,
+		cleanup: { identity, store, run: async () => {} },
+	};
+}
 
 describe("port conformance", () => {
 	test("the in-memory reference implementation passes every case", async () => {
+		const fixture = createInMemoryProjectStoreFixture();
 		const report = await runPortConformance({
-			ports: createInMemoryPorts(),
+			ports: createInMemoryPorts({ store: fixture.store }),
+			storeFixture: fixture,
 			label: "in-memory reference",
 		});
 		// Printed so the recorded evidence is the suite's own output rather than a
@@ -48,6 +70,7 @@ describe("port conformance", () => {
 					return { status: "not-needed" as const };
 				}
 				migrated = true;
+				ctx.report({ completed: 1, total: 1, label: "in-memory fixture" });
 				return {
 					status: "migrated" as const,
 					from: ctx.from,
@@ -58,6 +81,13 @@ describe("port conformance", () => {
 		});
 		const good = await runPortConformance({
 			ports: createInMemoryPorts({ store: working }),
+			storeFixture: {
+				store: working,
+				disposableMigration: disposableMigrationBinding({
+					store: working,
+					identity: "c5-disposable-working",
+				}),
+			},
 			label: "working migration",
 			exerciseMigration: true,
 		});
@@ -75,6 +105,13 @@ describe("port conformance", () => {
 		});
 		const bad = await runPortConformance({
 			ports: createInMemoryPorts({ store: broken }),
+			storeFixture: {
+				store: broken,
+				disposableMigration: disposableMigrationBinding({
+					store: broken,
+					identity: "c5-disposable-broken",
+				}),
+			},
 			label: "permanently failing migration",
 			exerciseMigration: true,
 		});
@@ -84,15 +121,25 @@ describe("port conformance", () => {
 
 		const nonIdempotent = new InMemoryProjectStore({
 			schemaVersion: 2,
-			migrate: async (ctx) => ({
-				status: "migrated" as const,
-				from: ctx.from,
-				to: ctx.to,
-				recordsMigrated: 0,
-			}),
+			migrate: async (ctx) => {
+				ctx.report({ completed: 1, total: 1 });
+				return {
+					status: "migrated" as const,
+					from: ctx.from,
+					to: ctx.to,
+					recordsMigrated: 0,
+				};
+			},
 		});
 		const repeated = await runPortConformance({
 			ports: createInMemoryPorts({ store: nonIdempotent }),
+			storeFixture: {
+				store: nonIdempotent,
+				disposableMigration: disposableMigrationBinding({
+					store: nonIdempotent,
+					identity: "c5-disposable-non-idempotent",
+				}),
+			},
 			label: "non-idempotent migration",
 			exerciseMigration: true,
 		});
@@ -117,6 +164,28 @@ describe("port conformance", () => {
 		);
 		expect(migrationCase?.status).toBe("skipped");
 		expect(migrationCase?.detail).toMatch(/destructive/);
+	});
+
+	test("migration opt-in rejects an identity outside its disposable prefix", async () => {
+		const store = new InMemoryProjectStore({
+			migrate: async () => ({ status: "not-needed" as const }),
+		});
+		const report = await runPortConformance({
+			ports: createInMemoryPorts({ store }),
+			storeFixture: {
+				store,
+				disposableMigration: disposableMigrationBinding({
+					store,
+					identity: "production-profile",
+				}),
+			},
+			exerciseMigration: true,
+		});
+		const migrationCase = report.results.find((result) =>
+			result.name.includes("migration"),
+		);
+		expect(migrationCase?.status).toBe("failed");
+		expect(migrationCase?.detail).toMatch(/outside disposable prefix/);
 	});
 
 	test("a forcing no-rasterizer host runs the no-rasterizer case, not past it", async () => {
@@ -197,7 +266,300 @@ describe("port conformance", () => {
 		expect(report.passed).toBe(false);
 		expect(
 			report.results.some(
-				(r) => r.port === "store" && !r.passed && r.name.includes("round-trips"),
+				(r) =>
+					r.port === "store" && !r.passed && r.name.includes("round-trips"),
+			),
+		).toBe(true);
+	});
+});
+
+describe("C5 contract-review regression controls", () => {
+	test("an earlier attachment write cannot outlive a later project removal", async () => {
+		const { store, control } = createInMemoryProjectStoreFixture();
+		const id = "review-project";
+		await store.save({
+			record: { id, schemaVersion: 1, data: {} },
+			summary: {
+				id,
+				name: id,
+				createdAt: "2026-08-01T00:00:00.000Z",
+				updatedAt: "2026-08-01T00:00:00.000Z",
+			},
+		});
+		const gate = control.pauseNext({ operation: "save-attachment" });
+		const earlier = store.saveAttachment({
+			projectId: id,
+			key: "late",
+			metadata: {},
+			body: new Uint8Array([1]).buffer,
+		});
+		await gate.entered;
+		let removalDone = false;
+		const later = store.remove({ id }).then(() => {
+			removalDone = true;
+		});
+		try {
+			await Promise.resolve();
+			expect(removalDone).toBe(false);
+		} finally {
+			gate.release();
+			await Promise.all([earlier, later]);
+		}
+		expect(await store.load({ id })).toBeNull();
+		expect(await store.loadAttachment({ projectId: id, key: "late" })).toBeNull();
+	});
+
+	test("hierarchical clear waits for earlier affected writes", async () => {
+		const { store, control } = createInMemoryProjectStoreFixture();
+		const projectGate = control.pauseNext({ operation: "save-attachment" });
+		const attachment = store.saveAttachment({
+			projectId: "clear-project",
+			key: "media",
+			metadata: {},
+			body: new Uint8Array([1]).buffer,
+		});
+		await projectGate.entered;
+		let projectsCleared = false;
+		const clearProjects = store
+			.clear({ scope: { kind: "projects" } })
+			.then(() => {
+				projectsCleared = true;
+			});
+		await Promise.resolve();
+		expect(projectsCleared).toBe(false);
+		projectGate.release();
+		await Promise.all([attachment, clearProjects]);
+		expect(
+			await store.loadAttachment({ projectId: "clear-project", key: "media" }),
+		).toBeNull();
+
+		const libraryGate = control.pauseNext({ operation: "save-library-record" });
+		const library = store.saveLibraryRecord({
+			namespace: "review-library",
+			key: "item",
+			schemaVersion: 1,
+			data: {},
+		});
+		await libraryGate.entered;
+		let namespaceCleared = false;
+		const clearNamespace = store
+			.clear({ scope: { kind: "library", namespace: "review-library" } })
+			.then(() => {
+				namespaceCleared = true;
+			});
+		await Promise.resolve();
+		expect(namespaceCleared).toBe(false);
+		libraryGate.release();
+		await Promise.all([library, clearNamespace]);
+		expect(
+			await store.loadLibraryRecord({
+				namespace: "review-library",
+				key: "item",
+			}),
+		).toBeNull();
+	});
+
+	test("collision-shaped attachment identities progress independently", async () => {
+		const { store, control } = createInMemoryProjectStoreFixture();
+		const gate = control.pauseNext({ operation: "save-attachment" });
+		const first = store.saveAttachment({
+			projectId: "a:b",
+			key: "c",
+			metadata: {},
+			body: new Uint8Array([1]).buffer,
+		});
+		await gate.entered;
+		let distinctDone = false;
+		const distinct = store
+			.saveAttachment({
+				projectId: "a",
+				key: "b:c",
+				metadata: {},
+				body: new Uint8Array([2]).buffer,
+			})
+			.then(() => {
+				distinctDone = true;
+			});
+		try {
+			await Promise.race([
+				distinct,
+				new Promise<void>((resolve) => setTimeout(resolve, 50)),
+			]);
+			expect(distinctDone).toBe(true);
+		} finally {
+			gate.release();
+			await Promise.all([first, distinct]);
+		}
+	});
+
+	test("complete-browser profile rejects every required skip", async () => {
+		const store = new InMemoryProjectStore();
+		const profileArgs = {
+			ports: createInMemoryPorts({ store }),
+			storeFixture: { store },
+			storeConformanceProfile: "complete-browser" as const,
+		};
+		const report = await runPortConformance(profileArgs);
+		expect(report.passed).toBe(false);
+		expect(
+			report.results.some(
+				(result) => result.port === "store" && result.status === "skipped",
+			),
+		).toBe(false);
+	});
+
+	test("disposable migration binding rejects a different store and cleanup", async () => {
+		const store = new InMemoryProjectStore({
+			migrate: async () => ({ status: "not-needed" as const }),
+		});
+		const otherStore = new InMemoryProjectStore();
+		const disposableMigration = {
+			identity: "c5-disposable-bound",
+			prefix: "c5-disposable-",
+			store: otherStore,
+			cleanup: {
+				identity: "c5-disposable-other",
+				store: otherStore,
+				run: async () => {},
+			},
+		};
+		const report = await runPortConformance({
+			ports: createInMemoryPorts({ store }),
+			storeFixture: { store, disposableMigration },
+			exerciseMigration: true,
+		});
+		const migration = report.results.find((result) =>
+			result.name.includes("migration"),
+		);
+		expect(migration?.status).toBe("failed");
+		expect(migration?.detail).toMatch(/bound/i);
+	});
+
+	test("a migrated outcome without progress is rejected", async () => {
+		const store = new InMemoryProjectStore({
+			schemaVersion: 2,
+			migrate: async (ctx) => {
+				if (ctx.from === ctx.to) return { status: "not-needed" as const };
+				return {
+					status: "migrated" as const,
+					from: ctx.from,
+					to: ctx.to,
+					recordsMigrated: 1,
+				};
+			},
+		});
+		const report = await runPortConformance({
+			ports: createInMemoryPorts({ store }),
+			storeFixture: {
+				store,
+				disposableMigration: disposableMigrationBinding({
+					store,
+					identity: "c5-disposable-silent",
+				}),
+			},
+			exerciseMigration: true,
+		});
+		const migration = report.results.find((result) =>
+			result.name.includes("migration"),
+		);
+		expect(migration?.status).toBe("failed");
+		expect(migration?.detail).toMatch(/progress/i);
+	});
+
+	test("public store errors retain no raw platform cause", async () => {
+		const store = new InMemoryProjectStore();
+		let thrown: unknown;
+		try {
+			await store.saveLibraryRecord({
+				namespace: "review",
+				key: "uncloneable",
+				schemaVersion: 1,
+				data: { callback: () => undefined },
+			});
+		} catch (error) {
+			thrown = error;
+		}
+		expect(thrown).toBeInstanceOf(ProjectStoreError);
+		expect(thrown).not.toHaveProperty("cause");
+		expect(String(thrown)).not.toMatch(/DataClone|path|database/i);
+	});
+
+	test("record and summary identity mismatch fails before commit", async () => {
+		const store = new InMemoryProjectStore();
+		await expect(
+			store.save({
+				record: { id: "record", schemaVersion: 1, data: {} },
+				summary: {
+					id: "summary",
+					name: "mismatch",
+					createdAt: "2026-08-01T00:00:00.000Z",
+					updatedAt: "2026-08-01T00:00:00.000Z",
+				},
+			}),
+		).rejects.toMatchObject({ code: "conflict", operation: "save-project" });
+		expect(await store.load({ id: "record" })).toBeNull();
+		expect((await store.list()).some((item) => item.id === "summary")).toBe(false);
+	});
+
+	test("the shared matrix rejects aliased attachment and library list values", async () => {
+		class AliasingListStore extends InMemoryProjectStore {
+			private attachmentAliases: ProjectAttachment[] = [];
+			private libraryAliases: LibraryRecord[] = [];
+
+			override async listAttachments(args: {
+				projectId: string;
+				signal?: AbortSignal;
+			}) {
+				this.attachmentAliases = [
+					...(await super.listAttachments(args)),
+				];
+				return this.attachmentAliases;
+			}
+
+			override async loadAttachment(args: {
+				projectId: string;
+				key: string;
+				signal?: AbortSignal;
+			}) {
+				return (
+					this.attachmentAliases.find(
+						(item) => item.projectId === args.projectId && item.key === args.key,
+					) ?? super.loadAttachment(args)
+				);
+			}
+
+			override async listLibraryRecords(args: {
+				namespace: string;
+				signal?: AbortSignal;
+			}) {
+				this.libraryAliases = [...(await super.listLibraryRecords(args))];
+				return this.libraryAliases;
+			}
+
+			override async loadLibraryRecord(args: {
+				namespace: string;
+				key: string;
+				signal?: AbortSignal;
+			}) {
+				return (
+					this.libraryAliases.find(
+						(item) =>
+							item.namespace === args.namespace && item.key === args.key,
+					) ?? super.loadLibraryRecord(args)
+				);
+			}
+		}
+
+		const store = new AliasingListStore();
+		const report = await runPortConformance({
+			ports: createInMemoryPorts({ store }),
+		});
+		expect(
+			report.results.some(
+				(result) =>
+					result.port === "store" &&
+					result.status === "failed" &&
+					/list.*alias|alias.*list/i.test(`${result.name} ${result.detail}`),
 			),
 		).toBe(true);
 	});

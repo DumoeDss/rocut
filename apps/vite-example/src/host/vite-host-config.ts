@@ -3,7 +3,24 @@ import {
 	createBrowserRuntimePorts,
 	type BrowserWorkerUrlRewriter,
 } from "@/editor/host/browser-runtime";
-import { createInMemoryPorts } from "@/editor/ports/in-memory";
+import {
+	createInMemoryPorts,
+	RecordingDiagnostics,
+} from "@/editor/ports/in-memory";
+import { BrowserProjectStore } from "@/services/storage/browser-project-store";
+import {
+	DEFAULT_BROWSER_STORAGE_IDENTITY,
+	browserStoreDiagnosticLogRecord,
+} from "@/services/storage/browser-project-store-internals";
+
+const viteDiagnostics = new RecordingDiagnostics();
+const viteBrowserProjectStore = new BrowserProjectStore({
+	storageIdentity: DEFAULT_BROWSER_STORAGE_IDENTITY,
+	diagnostic: (diagnostic) =>
+		viteDiagnostics.log({
+			record: browserStoreDiagnosticLogRecord(diagnostic),
+		}),
+});
 
 export function createViteEditorHost({
 	projectId,
@@ -22,6 +39,18 @@ export function createViteEditorHost({
 	transcriptionWorkerUrl?: string;
 	forceRendererBackend?: "none";
 }): EditorHost {
+	void viteBrowserProjectStore.prepareForSession().catch(() => {
+		viteDiagnostics.log({
+			record: browserStoreDiagnosticLogRecord({
+				level: "warning",
+				phase: "storage-initialization",
+				operation: "inspect",
+				scope: { kind: "store" },
+				code: "unavailable",
+				retryable: true,
+			}),
+		});
+	});
 	const browser = createBrowserRuntimePorts({
 		base,
 		rewriteWorkerUrl:
@@ -67,5 +96,9 @@ export function createViteEditorHost({
 			roadmapUrl: "https://opencut.app/roadmap",
 		},
 		...browser,
+		// Final override: production sessions intentionally share durable state,
+		// never the reference store created by createInMemoryPorts().
+		diagnostics: viteDiagnostics,
+		store: viteBrowserProjectStore,
 	};
 }

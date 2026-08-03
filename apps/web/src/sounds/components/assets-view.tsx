@@ -112,7 +112,9 @@ function SoundEffectsView() {
 	});
 
 	useEffect(() => {
-		loadSavedSounds();
+		void loadSavedSounds().catch(() => {
+			// The session store publishes the recoverable error and diagnostics.
+		});
 	}, [loadSavedSounds]);
 
 	useEffect(() => {
@@ -201,12 +203,11 @@ function SoundEffectsView() {
 		return () => clearTimeout(timeoutId);
 	}, [scrollPosition, scrollAreaRef]);
 
-	const handleScrollWithPosition = ({
-		currentTarget,
-	}: React.UIEvent<HTMLDivElement>) => {
+	const handleScrollWithPosition = (event: React.UIEvent<HTMLDivElement>) => {
+		const { currentTarget } = event;
 		const { scrollTop } = currentTarget;
 		setScrollPosition({ position: scrollTop });
-		handleScroll({ currentTarget } as React.UIEvent<HTMLDivElement>);
+		handleScroll(event);
 	};
 
 	const displayedSounds = searchQuery ? searchResults : topSoundEffects;
@@ -343,7 +344,9 @@ function SavedSoundsView() {
 	const [showClearDialog, setShowClearDialog] = useState(false);
 
 	useEffect(() => {
-		loadSavedSounds();
+		void loadSavedSounds().catch(() => {
+			// The session store publishes the recoverable error and diagnostics.
+		});
 	}, [loadSavedSounds]);
 
 	const playSound = ({ sound }: { sound: SoundEffect }) => {
@@ -472,8 +475,12 @@ function SavedSoundsView() {
 									stopPropagation,
 								}: React.MouseEvent<HTMLButtonElement>) => {
 									stopPropagation();
-									await clearSavedSounds();
-									setShowClearDialog(false);
+									try {
+										await clearSavedSounds();
+										setShowClearDialog(false);
+									} catch {
+										// Keep the dialog open; the store renders a retryable error.
+									}
 								}}
 							>
 								Clear all sounds
@@ -521,7 +528,9 @@ function AudioItem({ sound, isPlaying, onPlay }: AudioItemProps) {
 		stopPropagation,
 	}: React.MouseEvent<HTMLButtonElement>) => {
 		stopPropagation();
-		toggleSavedSound({ soundEffect: sound });
+		void toggleSavedSound({ soundEffect: sound }).catch(() => {
+			// The session store publishes the recoverable error and diagnostics.
+		});
 	};
 
 	const handleAddToTimeline = async ({

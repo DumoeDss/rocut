@@ -1,7 +1,12 @@
 import type { EditorCore } from "@/core";
 import { toast } from "sonner";
 import type { MediaAsset } from "@/media/types";
-import { storageService } from "@/services/storage/service";
+import {
+	decodePersistedMediaMetadata,
+	isStorageQuotaExceeded,
+	mediaAssetFromAttachment,
+	savePersistedMediaAsset,
+} from "@/media/persistence";
 import { generateUUID } from "@/utils/id";
 import { videoCache } from "@/services/video-cache/service";
 import { waveformCache } from "@/services/waveform-cache/service";
@@ -26,23 +31,30 @@ export class MediaManager {
 			id: generateUUID(),
 		};
 
-		this.assets = [...this.assets, newAsset];
-		this.notify();
-
 		try {
-			await storageService.saveMediaAsset({ projectId, mediaAsset: newAsset });
+			await savePersistedMediaAsset({
+				persistence: this.editor.persistence,
+				projectId,
+				asset: newAsset,
+			});
+			this.assets = [...this.assets, newAsset];
+			this.notify();
 			this.editor.project.ratchetFpsForImportedMedia({
 				importedAssets: [newAsset],
 			});
 			return newAsset;
 		} catch (error) {
-			console.error("Failed to save media asset:", error);
-			this.assets = this.assets.filter((asset) => asset.id !== newAsset.id);
-			this.notify();
-
-			if (storageService.isQuotaExceededError({ error })) {
+			this.editor.reportPersistenceFailure({
+				operation: "save-media-attachment",
+				error,
+			});
+			if (isStorageQuotaExceeded(error)) {
 				toast.error("Not enough browser storage", {
-					description: error instanceof Error ? error.message : undefined,
+					description: "Free some space, then try importing this file again.",
+				});
+			} else {
+				toast.error("Failed to save media", {
+					description: "The media item was not added. Please try again.",
 				});
 			}
 
@@ -73,11 +85,12 @@ export class MediaManager {
 						assetId: uniqueIds[0],
 					})
 				: new BatchCommand(
-						uniqueIds.map((id) =>
-							new RemoveMediaAssetCommand({
-								projectId,
-								assetId: id,
-							}),
+						uniqueIds.map(
+							(id) =>
+								new RemoveMediaAssetCommand({
+									projectId,
+									assetId: id,
+								}),
 						),
 					);
 
@@ -89,13 +102,26 @@ export class MediaManager {
 		this.notify();
 
 		try {
-			const mediaAssets = await storageService.loadAllMediaAssets({
+			const attachments = await this.editor.persistence.listAttachments({
 				projectId,
+				decodeMetadata: decodePersistedMediaMetadata,
 			});
+			const mediaAssets = await Promise.all(
+				attachments.map((attachment) =>
+					mediaAssetFromAttachment({ attachment }),
+				),
+			);
 			this.assets = mediaAssets;
 			this.notify();
 		} catch (error) {
-			console.error("Failed to load media assets:", error);
+			this.editor.reportPersistenceFailure({
+				operation: "load-media-attachments",
+				error,
+			});
+			toast.error("Failed to load project media", {
+				description: "Your stored media was not changed. Please try again.",
+			});
+			throw error;
 		} finally {
 			this.isLoading = false;
 			this.notify();
@@ -103,9 +129,29 @@ export class MediaManager {
 	}
 
 	async clearProjectMedia({ projectId }: { projectId: string }): Promise<void> {
-		waveformCache.clearAll();
+		const assetsToClear = [...this.assets];
+		try {
+			await Promise.all(
+				assetsToClear.map(({ id }) =>
+					this.editor.persistence.removeAttachment({
+						projectId,
+						key: id,
+					}),
+				),
+			);
+		} catch (error) {
+			this.editor.reportPersistenceFailure({
+				operation: "clear-media-attachments",
+				error,
+			});
+			toast.error("Failed to clear project media", {
+				description: "Your stored media was not cleared. Please try again.",
+			});
+			throw error;
+		}
 
-		this.assets.forEach((asset) => {
+		waveformCache.clearAll();
+		assetsToClear.forEach((asset) => {
 			if (asset.url) {
 				URL.revokeObjectURL(asset.url);
 			}
@@ -114,19 +160,8 @@ export class MediaManager {
 			}
 		});
 
-		const mediaIds = this.assets.map((asset) => asset.id);
 		this.assets = [];
 		this.notify();
-
-		try {
-			await Promise.all(
-				mediaIds.map((id) =>
-					storageService.deleteMediaAsset({ projectId, id }),
-				),
-			);
-		} catch (error) {
-			console.error("Failed to clear media assets from storage:", error);
-		}
 	}
 
 	clearAllAssets(): void {

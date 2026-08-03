@@ -1,10 +1,40 @@
 import { createStore } from "zustand/vanilla";
 import type { SoundEffect, SavedSound } from "@/sounds/types";
-import { storageService } from "@/services/storage/service";
 import { toast } from "sonner";
 import type { EditorCore } from "@/core";
 import { buildLibraryAudioElement } from "@/timeline/element-utils";
 import { mediaTimeFromSeconds } from "@/wasm";
+
+const SAVED_SOUNDS_NAMESPACE = "saved-sounds";
+const SAVED_SOUNDS_KEY = "user-sounds";
+const SAVED_SOUNDS_SCHEMA_VERSION = 1;
+
+export interface LibraryPersistenceFailure {
+	readonly library: "saved-sounds";
+	readonly operation: "load" | "save" | "remove" | "clear";
+	readonly code: string;
+}
+
+interface SavedSoundsPersistence {
+	loadLibraryRecord(args: {
+		namespace: string;
+		key: string;
+		decode: (data: unknown) => SavedSound[];
+	}): Promise<{ data: SavedSound[] } | null>;
+	mutateLibraryRecord(args: {
+		namespace: string;
+		key: string;
+		schemaVersion: number;
+		decode: (data: unknown) => SavedSound[];
+		encode: (data: SavedSound[]) => unknown;
+		mutate: (
+			current: SavedSound[] | null,
+		) => SavedSound[] | Promise<SavedSound[]>;
+	}): Promise<SavedSound[]>;
+	clearLibraryNamespace(args: { namespace: string }): Promise<void>;
+}
+
+type PersistenceGetter = () => SavedSoundsPersistence;
 
 export interface SoundsStore {
 	topSoundEffects: SoundEffect[];
@@ -88,16 +118,12 @@ export interface SoundsRequestToken {
 
 export function createSoundsStore({
 	isDisposed = () => false,
-	storage = storageService,
+	getPersistence,
+	reportPersistenceFailure = () => {},
 }: {
 	isDisposed?: () => boolean;
-	storage?: Pick<
-		typeof storageService,
-		| "loadSavedSounds"
-		| "saveSoundEffect"
-		| "removeSavedSound"
-		| "clearSavedSounds"
-	>;
+	getPersistence?: PersistenceGetter;
+	reportPersistenceFailure?: (failure: LibraryPersistenceFailure) => void;
 } = {}) {
 	const owner = Symbol("soundsStoreRequestOwner");
 	const generations: Record<SoundsRequestChannel, number> = {
@@ -128,6 +154,59 @@ export function createSoundsStore({
 		const result = savedMutationTail.then(mutation);
 		savedMutationTail = result.catch(() => {});
 		return result;
+	};
+	const persistence = () => {
+		if (!getPersistence) {
+			throw new Error(
+				"Saved sounds require the owning session persistence coordinator",
+			);
+		}
+		return getPersistence();
+	};
+	const decodeSavedSounds = (data: unknown): SavedSound[] => {
+		if (typeof data !== "object" || data === null || !("sounds" in data)) {
+			return [];
+		}
+		const sounds = (data as { sounds?: unknown }).sounds;
+		if (!Array.isArray(sounds)) return [];
+		return sounds.filter(isSavedSound);
+	};
+	const loadSavedSoundsRecord = async (): Promise<SavedSound[]> => {
+		const record = await persistence().loadLibraryRecord({
+			namespace: SAVED_SOUNDS_NAMESPACE,
+			key: SAVED_SOUNDS_KEY,
+			decode: decodeSavedSounds,
+		});
+		return record?.data ?? [];
+	};
+	const mutateSavedSoundsRecord = (
+		mutate: (current: SavedSound[]) => SavedSound[],
+	) =>
+		persistence().mutateLibraryRecord({
+			namespace: SAVED_SOUNDS_NAMESPACE,
+			key: SAVED_SOUNDS_KEY,
+			schemaVersion: SAVED_SOUNDS_SCHEMA_VERSION,
+			decode: decodeSavedSounds,
+			encode: (sounds) => ({
+				sounds,
+				lastModified: new Date().toISOString(),
+			}),
+			mutate: (current) => mutate(current ?? []),
+		});
+	const publishFailure = ({
+		operation,
+		error,
+	}: {
+		operation: LibraryPersistenceFailure["operation"];
+		error: unknown;
+	}) => {
+		const code = readFailureCode(error);
+		reportPersistenceFailure({
+			library: "saved-sounds",
+			operation,
+			code,
+		});
+		return "Saved sounds could not be persisted. Retry the operation.";
 	};
 
 	return createStore<SoundsStore>()((set, get) => ({
@@ -198,22 +277,21 @@ export function createSoundsStore({
 
 			try {
 				set({ isLoadingSavedSounds: true, savedSoundsError: null });
-				const savedSoundsData = await storage.loadSavedSounds();
+				const savedSounds = await loadSavedSoundsRecord();
 				if (!canPublishRequest({ token })) return;
 				set({
-					savedSounds: savedSoundsData.sounds,
+					savedSounds,
 					isSavedSoundsLoaded: true,
 				});
 			} catch (error) {
-				if (!canPublishRequest({ token })) return;
-				const errorMessage =
-					error instanceof Error
-						? error.message
-						: "Failed to load saved sounds";
-				set({
-					savedSoundsError: errorMessage,
-				});
-				console.error("Failed to load saved sounds:", error);
+				if (canPublishRequest({ token })) {
+					const errorMessage = publishFailure({ operation: "load", error });
+					set({
+						savedSoundsError: errorMessage,
+					});
+					toast.error(errorMessage);
+				}
+				throw error;
 			} finally {
 				if (canPublishRequest({ token })) {
 					set({ isLoadingSavedSounds: false });
@@ -226,22 +304,25 @@ export function createSoundsStore({
 			set({ isLoadingSavedSounds: false });
 			return serializeSavedMutation(async () => {
 				try {
-					await storage.saveSoundEffect({ soundEffect });
-					if (isDisposed()) return;
-					const savedSoundsData = await storage.loadSavedSounds();
+					const savedSound = toSavedSound(soundEffect);
+					const savedSounds = await mutateSavedSoundsRecord((current) =>
+						current.some((sound) => sound.id === soundEffect.id)
+							? current
+							: [...current, savedSound],
+					);
 					if (isDisposed()) return;
 					set({
-						savedSounds: savedSoundsData.sounds,
+						savedSounds,
 						isSavedSoundsLoaded: true,
 						savedSoundsError: null,
 					});
 				} catch (error) {
-					if (isDisposed()) return;
-					const errorMessage =
-						error instanceof Error ? error.message : "Failed to save sound";
-					set({ savedSoundsError: errorMessage });
-					toast.error("Failed to save sound");
-					console.error("Failed to save sound:", error);
+					if (!isDisposed()) {
+						const errorMessage = publishFailure({ operation: "save", error });
+						set({ savedSoundsError: errorMessage });
+						toast.error(errorMessage);
+					}
+					throw error;
 				}
 			});
 		},
@@ -251,22 +332,22 @@ export function createSoundsStore({
 			set({ isLoadingSavedSounds: false });
 			return serializeSavedMutation(async () => {
 				try {
-					await storage.removeSavedSound({ soundId });
-					if (isDisposed()) return;
-					const savedSoundsData = await storage.loadSavedSounds();
+					const savedSounds = await mutateSavedSoundsRecord((current) =>
+						current.filter((sound) => sound.id !== soundId),
+					);
 					if (isDisposed()) return;
 					set({
-						savedSounds: savedSoundsData.sounds,
+						savedSounds,
 						isSavedSoundsLoaded: true,
 						savedSoundsError: null,
 					});
 				} catch (error) {
-					if (isDisposed()) return;
-					const errorMessage =
-						error instanceof Error ? error.message : "Failed to remove sound";
-					set({ savedSoundsError: errorMessage });
-					toast.error("Failed to remove sound");
-					console.error("Failed to remove sound:", error);
+					if (!isDisposed()) {
+						const errorMessage = publishFailure({ operation: "remove", error });
+						set({ savedSoundsError: errorMessage });
+						toast.error(errorMessage);
+					}
+					throw error;
 				}
 			});
 		},
@@ -291,24 +372,22 @@ export function createSoundsStore({
 			set({ isLoadingSavedSounds: false });
 			return serializeSavedMutation(async () => {
 				try {
-					await storage.clearSavedSounds();
-					if (isDisposed()) return;
-					const savedSoundsData = await storage.loadSavedSounds();
+					await persistence().clearLibraryNamespace({
+						namespace: SAVED_SOUNDS_NAMESPACE,
+					});
 					if (isDisposed()) return;
 					set({
-						savedSounds: savedSoundsData.sounds,
+						savedSounds: [],
 						isSavedSoundsLoaded: true,
 						savedSoundsError: null,
 					});
 				} catch (error) {
-					if (isDisposed()) return;
-					const errorMessage =
-						error instanceof Error
-							? error.message
-							: "Failed to clear saved sounds";
-					set({ savedSoundsError: errorMessage });
-					toast.error("Failed to clear saved sounds");
-					console.error("Failed to clear saved sounds:", error);
+					if (!isDisposed()) {
+						const errorMessage = publishFailure({ operation: "clear", error });
+						set({ savedSoundsError: errorMessage });
+						toast.error(errorMessage);
+					}
+					throw error;
 				}
 			});
 		},
@@ -361,4 +440,49 @@ export function createSoundsStore({
 			}
 		},
 	}));
+}
+
+function isSavedSound(value: unknown): value is SavedSound {
+	if (typeof value !== "object" || value === null) return false;
+	const sound = value as Partial<SavedSound>;
+	return (
+		typeof sound.id === "number" &&
+		typeof sound.name === "string" &&
+		typeof sound.username === "string" &&
+		typeof sound.duration === "number" &&
+		Array.isArray(sound.tags) &&
+		sound.tags.every((tag) => typeof tag === "string") &&
+		typeof sound.license === "string" &&
+		typeof sound.savedAt === "string"
+	);
+}
+
+function toSavedSound(soundEffect: SoundEffect): SavedSound {
+	return {
+		id: soundEffect.id,
+		name: soundEffect.name,
+		username: soundEffect.username,
+		previewUrl: soundEffect.previewUrl,
+		downloadUrl: soundEffect.downloadUrl,
+		duration: soundEffect.duration,
+		tags: [...soundEffect.tags],
+		license: soundEffect.license,
+		savedAt: new Date().toISOString(),
+	};
+}
+
+function readFailureCode(error: unknown): string {
+	if (typeof error !== "object" || error === null || !("code" in error)) {
+		return "unknown";
+	}
+	switch (error.code) {
+		case "aborted":
+		case "quota-exceeded":
+		case "unavailable":
+		case "corrupt":
+		case "conflict":
+			return error.code;
+		default:
+			return "unknown";
+	}
 }

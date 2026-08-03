@@ -45,6 +45,110 @@ export interface ProjectRecord {
 	readonly data: unknown;
 }
 
+/** A project-owned opaque binary value. Neither metadata nor bytes are decoded. */
+export interface ProjectAttachment {
+	readonly projectId: ProjectId;
+	readonly key: string;
+	readonly metadata: unknown;
+	readonly body: ArrayBuffer;
+}
+
+/** A durable opaque value in a caller-selected logical namespace. */
+export interface LibraryRecord {
+	readonly namespace: string;
+	readonly key: string;
+	readonly schemaVersion: number;
+	readonly data: unknown;
+}
+
+/** Capacity is meaningful even when `remainingBytes` is exactly zero. */
+export interface ProjectStoreCapacity {
+	readonly usedBytes: number;
+	readonly totalBytes: number;
+	readonly remainingBytes: number;
+}
+
+/**
+ * A mechanism-neutral availability report.
+ *
+ * `capacity: null` means the store is usable but cannot estimate bytes. It is
+ * deliberately different from both a zero-byte estimate and an unavailable
+ * store.
+ */
+export type ProjectStoreInspection =
+	| {
+			readonly availability: "available";
+			readonly capacity: ProjectStoreCapacity | null;
+	  }
+	| {
+			readonly availability: "unsupported" | "unavailable";
+			readonly capacity: null;
+			readonly reason: string;
+	  };
+
+export type ProjectStoreErrorCode =
+	| "aborted"
+	| "quota-exceeded"
+	| "unavailable"
+	| "corrupt"
+	| "conflict";
+
+export type ProjectStoreOperation =
+	| "list-projects"
+	| "load-project"
+	| "save-project"
+	| "remove-project"
+	| "list-attachments"
+	| "load-attachment"
+	| "save-attachment"
+	| "remove-attachment"
+	| "list-library-records"
+	| "load-library-record"
+	| "save-library-record"
+	| "remove-library-record"
+	| "inspect"
+	| "clear";
+
+/** Logical context only: never a database name, path, or payload value. */
+export type ProjectStoreErrorScope =
+	| { readonly kind: "store" }
+	| { readonly kind: "project"; readonly projectId: ProjectId }
+	| {
+			readonly kind: "attachment";
+			readonly projectId: ProjectId;
+			readonly key: string;
+	  }
+	| {
+			readonly kind: "library";
+			readonly namespace: string;
+			readonly key?: string;
+	  };
+
+/** Stable failure shape shared by every Host implementation. */
+export class ProjectStoreError extends Error {
+	readonly code: ProjectStoreErrorCode;
+	readonly operation: ProjectStoreOperation;
+	readonly scope: ProjectStoreErrorScope;
+
+	constructor(args: {
+		code: ProjectStoreErrorCode;
+		operation: ProjectStoreOperation;
+		scope: ProjectStoreErrorScope;
+		message?: string;
+	}) {
+		super(args.message ?? `Project store ${args.operation} failed: ${args.code}`);
+		this.name = "ProjectStoreError";
+		this.code = args.code;
+		this.operation = args.operation;
+		this.scope = args.scope;
+	}
+}
+
+export type ProjectStoreClearScope =
+	| { readonly kind: "projects" }
+	| { readonly kind: "library"; readonly namespace: string }
+	| { readonly kind: "all" };
+
 /** Progress from a migration in flight, delivered on the diagnostics channel. */
 export interface MigrationProgress {
 	readonly completed: number;
@@ -119,11 +223,66 @@ export interface ProjectStore {
 	 */
 	migrate?(ctx: MigrationContext): Promise<MigrationOutcome>;
 
-	list(): Promise<readonly ProjectSummary[]>;
-	load(args: { id: ProjectId }): Promise<ProjectRecord | null>;
+	list(args?: { signal?: AbortSignal }): Promise<readonly ProjectSummary[]>;
+	load(args: {
+		id: ProjectId;
+		signal?: AbortSignal;
+	}): Promise<ProjectRecord | null>;
+	/** `record.id` and `summary.id` must match; mismatch is a pre-commit conflict. */
 	save(args: {
 		record: ProjectRecord;
 		summary: ProjectSummary;
+		signal?: AbortSignal;
 	}): Promise<void>;
-	remove(args: { id: ProjectId }): Promise<void>;
+	remove(args: { id: ProjectId; signal?: AbortSignal }): Promise<void>;
+
+	listAttachments(args: {
+		projectId: ProjectId;
+		signal?: AbortSignal;
+	}): Promise<readonly ProjectAttachment[]>;
+	loadAttachment(args: {
+		projectId: ProjectId;
+		key: string;
+		signal?: AbortSignal;
+	}): Promise<ProjectAttachment | null>;
+	saveAttachment(args: {
+		projectId: ProjectId;
+		key: string;
+		metadata: unknown;
+		body: ArrayBuffer;
+		signal?: AbortSignal;
+	}): Promise<void>;
+	removeAttachment(args: {
+		projectId: ProjectId;
+		key: string;
+		signal?: AbortSignal;
+	}): Promise<void>;
+
+	listLibraryRecords(args: {
+		namespace: string;
+		signal?: AbortSignal;
+	}): Promise<readonly LibraryRecord[]>;
+	loadLibraryRecord(args: {
+		namespace: string;
+		key: string;
+		signal?: AbortSignal;
+	}): Promise<LibraryRecord | null>;
+	saveLibraryRecord(args: {
+		namespace: string;
+		key: string;
+		schemaVersion: number;
+		data: unknown;
+		signal?: AbortSignal;
+	}): Promise<void>;
+	removeLibraryRecord(args: {
+		namespace: string;
+		key: string;
+		signal?: AbortSignal;
+	}): Promise<void>;
+
+	inspect(args?: { signal?: AbortSignal }): Promise<ProjectStoreInspection>;
+	clear(args: {
+		scope: ProjectStoreClearScope;
+		signal?: AbortSignal;
+	}): Promise<void>;
 }

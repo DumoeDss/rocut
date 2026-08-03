@@ -5,6 +5,7 @@
 		"preview",
 		"timeline",
 		"sounds",
+		"customPresets",
 		"stickers",
 		"keybindings",
 		"properties",
@@ -79,11 +80,6 @@
 		{
 			"path": "apps/web/src/components/providers/editor-provider.tsx",
 			"count": 2,
-			"classification": "lifecycle-effect"
-		},
-		{
-			"path": "apps/web/src/components/storage-provider.tsx",
-			"count": 1,
 			"classification": "lifecycle-effect"
 		},
 		{
@@ -303,10 +299,16 @@
 			"reason": "Migration is serialized by durable ProjectStore identity so two sessions cannot race the same substrate."
 		},
 		{
+			"path": "apps/web/src/editor/persistence/session-persistence-coordinator.ts",
+			"symbol": "libraryArbitrationByStore",
+			"classification": "shared-durable-store-operation-arbitration",
+			"reason": "The WeakMap is keyed only by an explicitly injected ProjectStore identity and holds bounded in-flight Promise tails per logical library key, never library payload or live session state; each key and the weak entry are removed after settlement."
+		},
+		{
 			"path": "apps/web/src/editor/runtime/session-stores.ts",
 			"symbol": "storesBySession",
 			"classification": "session-owned-weak-index",
-			"reason": "Every value is one complete nine-store registry keyed only by an explicit EditorSession and removed on disposal."
+			"reason": "Every value is one complete ten-store registry keyed only by an explicit EditorSession and removed on disposal."
 		},
 		{
 			"path": "apps/web/src/editor/session/session-resources.ts",

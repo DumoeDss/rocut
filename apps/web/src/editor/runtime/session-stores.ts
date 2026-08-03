@@ -8,7 +8,10 @@ import { createPreviewStore } from "@/preview/preview-store";
 import { createSoundsStore } from "@/sounds/sounds-store";
 import { createStickersStore } from "@/stickers/stickers-store";
 import { createTimelineStore } from "@/timeline/timeline-store";
+import { createCustomPresetsStore } from "@/timeline/components/graph-editor/custom-presets-store";
 import type { AssetResolver } from "@/editor/ports";
+import type { SessionPersistenceCoordinator } from "@/editor/persistence";
+import { editorForSession } from "./session-core-owner";
 
 export const EDITOR_SESSION_STORE_KEYS = [
 	"panel",
@@ -16,6 +19,7 @@ export const EDITOR_SESSION_STORE_KEYS = [
 	"preview",
 	"timeline",
 	"sounds",
+	"customPresets",
 	"stickers",
 	"keybindings",
 	"properties",
@@ -37,6 +41,7 @@ export interface EditorSessionStores {
 	preview: ReturnType<typeof createPreviewStore>;
 	timeline: ReturnType<typeof createTimelineStore>;
 	sounds: ReturnType<typeof createSoundsStore>;
+	customPresets: ReturnType<typeof createCustomPresetsStore>;
 	stickers: ReturnType<typeof createStickersStore>;
 	keybindings: ReturnType<typeof createKeybindingsStore>;
 	properties: ReturnType<typeof createPropertiesStore>;
@@ -57,8 +62,20 @@ type StoresWithLifecycle = EditorSessionStores & {
 
 export function createEditorSessionStores({
 	assets,
+	getPersistence = () => {
+		throw new Error(
+			"Session persistence is unavailable before editor ownership",
+		);
+	},
+	reportPersistenceFailure = () => {},
 }: {
 	assets?: AssetResolver;
+	getPersistence?: () => SessionPersistenceCoordinator;
+	reportPersistenceFailure?: (failure: {
+		library: "saved-sounds" | "graph-editor-presets";
+		operation: string;
+		code: string;
+	}) => void;
 } = {}): EditorSessionStores {
 	const lifecycle = { disposed: false };
 	const stores: EditorSessionStores = {
@@ -66,7 +83,16 @@ export function createEditorSessionStores({
 		editor: createEditorStore(),
 		preview: createPreviewStore(),
 		timeline: createTimelineStore(),
-		sounds: createSoundsStore({ isDisposed: () => lifecycle.disposed }),
+		sounds: createSoundsStore({
+			isDisposed: () => lifecycle.disposed,
+			getPersistence,
+			reportPersistenceFailure,
+		}),
+		customPresets: createCustomPresetsStore({
+			isDisposed: () => lifecycle.disposed,
+			getPersistence,
+			reportPersistenceFailure,
+		}),
 		stickers: createStickersStore({
 			isDisposed: () => lifecycle.disposed,
 			assets,
@@ -93,8 +119,8 @@ export function assertCompleteEditorSessionStores(
 		distinct.size !== EDITOR_SESSION_STORE_KEYS.length
 	) {
 		throw new Error(
-			"Editor session store registry must contain nine distinct stores. " +
-				`Missing: ${missing.join(", ") || "none"}; distinct: ${distinct.size}/9.`,
+			"Editor session store registry must contain ten distinct stores. " +
+				`Missing: ${missing.join(", ") || "none"}; distinct: ${distinct.size}/10.`,
 		);
 	}
 }
@@ -106,7 +132,21 @@ export function bindEditorSessionStores({
 	session: EditorSession;
 	stores?: EditorSessionStores;
 }): EditorSessionStores {
-	const ownedStores = stores ?? createEditorSessionStores({ assets: session.host.assets });
+	const ownedStores =
+		stores ??
+		createEditorSessionStores({
+			assets: session.host.assets,
+			getPersistence: () => editorForSession(session).persistence,
+			reportPersistenceFailure: ({ library, operation, code }) => {
+				session.diagnostics.log({
+					record: {
+						level: "error",
+						message: "Durable editor library operation failed",
+						context: { library, operation, code },
+					},
+				});
+			},
+		});
 	assertCompleteEditorSessionStores(ownedStores);
 	if (storesBySession.has(session)) {
 		throw new Error(

@@ -164,6 +164,7 @@ function migrateProject({
 
 	const metadata = isRecord(metadataValue)
 		? {
+				...metadataValue,
 				id: getStringValue({ value: metadataValue.id, fallback: projectId }),
 				name: getStringValue({ value: metadataValue.name, fallback: "" }),
 				thumbnail: getStringValue({ value: metadataValue.thumbnail }),
@@ -222,6 +223,7 @@ function migrateProject({
 	const settingsValue = project.settings;
 	const settings = isRecord(settingsValue)
 		? {
+				...settingsValue,
 				fps: getNumberValue({
 					value: settingsValue.fps,
 					fallback: DEFAULT_FPS,
@@ -347,6 +349,7 @@ function transformMediaTrack({
 
 		if (mediaType === "image") {
 			const imageElement: V2ImageElement = {
+				...element,
 				id: getStringValue({ value: element.id, fallback: "" }),
 				name: getStringValue({ value: element.name, fallback: "" }),
 				type: "image",
@@ -369,6 +372,7 @@ function transformMediaTrack({
 		}
 
 		const videoElement: V2VideoElement = {
+			...element,
 			id: getStringValue({ value: element.id, fallback: "" }),
 			name: getStringValue({ value: element.name, fallback: "" }),
 			type: "video",
@@ -390,6 +394,7 @@ function transformMediaTrack({
 	);
 
 	return {
+		...track,
 		id: getStringValue({ value: track.id, fallback: "" }),
 		name: getStringValue({ value: track.name, fallback: "" }),
 		type: "video",
@@ -431,6 +436,7 @@ function transformTextTrack({
 			};
 
 			return {
+				...element,
 				id: getStringValue({ value: element.id, fallback: "" }),
 				name: getStringValue({ value: element.name, fallback: "" }),
 				type: "text",
@@ -491,6 +497,7 @@ function transformTextTrack({
 		.filter((element): element is V2TextElement => element !== null);
 
 	return {
+		...track,
 		id: getStringValue({ value: track.id, fallback: "" }),
 		name: getStringValue({ value: track.name, fallback: "" }),
 		type: "text",
@@ -518,6 +525,7 @@ function transformAudioTrack({
 			}
 
 			return {
+				...element,
 				id: getStringValue({ value: element.id, fallback: "" }),
 				name: getStringValue({ value: element.name, fallback: "" }),
 				type: "audio",
@@ -533,6 +541,7 @@ function transformAudioTrack({
 		.filter((element): element is V2AudioElement => element !== null);
 
 	return {
+		...track,
 		id: getStringValue({ value: track.id, fallback: "" }),
 		name: getStringValue({ value: track.name, fallback: "" }),
 		type: "audio",

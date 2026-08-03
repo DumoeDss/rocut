@@ -22,12 +22,20 @@ import type { ExportProvider } from "../export-provider";
 import type { IdGenerator } from "../id-generator";
 import type { ProjectId, SessionId } from "../identity";
 import type {
+	LibraryRecord,
 	MigrationContext,
 	MigrationOutcome,
+	ProjectAttachment,
 	ProjectRecord,
 	ProjectStore,
+	ProjectStoreClearScope,
+	ProjectStoreErrorCode,
+	ProjectStoreErrorScope,
+	ProjectStoreInspection,
+	ProjectStoreOperation,
 	ProjectSummary,
 } from "../project-store";
+import { ProjectStoreError } from "../project-store";
 import type {
 	AudioContextHandle,
 	AudioContextRequest,
@@ -48,15 +56,233 @@ import type { EditorHostPorts } from "../index";
  * caller's object by reference would also let a later mutation change what was
  * "persisted", which would make a passing round-trip test meaningless.
  */
-function clonePayload(value: unknown): unknown {
-	if (typeof structuredClone === "function") return structuredClone(value);
-	return JSON.parse(JSON.stringify(value ?? null)) as unknown;
+function clonePayload<Value>({
+	value,
+	failure,
+}: {
+	value: Value;
+	failure?: {
+		operation: ProjectStoreOperation;
+		scope: ProjectStoreErrorScope;
+	};
+}): Value {
+	try {
+		if (typeof structuredClone !== "function") {
+			throw new Error("This Host does not provide structured cloning");
+		}
+		return structuredClone(value);
+	} catch {
+		if (!failure) {
+			throw new Error("Project store value cannot be cloned");
+		}
+		throw new ProjectStoreError({
+			code: "corrupt",
+			operation: failure.operation,
+			scope: failure.scope,
+			message: `Project store ${failure.operation} received an invalid opaque value`,
+		});
+	}
 }
 
 export interface InMemoryProjectStoreOptions {
 	schemaVersion?: number;
 	/** Supply to exercise the migration path; omit for a store with no legacy data. */
 	migrate?: (ctx: MigrationContext) => Promise<MigrationOutcome>;
+	/** Test/adapter conformance control; it is never visible through ProjectStore. */
+	control?: InMemoryProjectStoreControl;
+}
+
+export interface InMemoryMutationPause {
+	readonly entered: Promise<void>;
+	release(): void;
+}
+
+interface PendingMutationPause {
+	readonly operation: ProjectStoreOperation;
+	readonly entered: () => void;
+	readonly wait: Promise<void>;
+}
+
+/**
+ * Fault and scheduling control for the reusable conformance matrix.
+ *
+ * This object is deliberately beside the implementation, not a member of the
+ * public port. A real adapter fixture can offer the same structural controls by
+ * instrumenting its own backing store without leaking them to editor callers.
+ */
+export class InMemoryProjectStoreControl {
+	private inspection: ProjectStoreInspection = {
+		availability: "available",
+		capacity: null,
+	};
+	private readonly failures: Array<{
+		operation: ProjectStoreOperation;
+		code: ProjectStoreErrorCode;
+	}> = [];
+	private readonly pauses: PendingMutationPause[] = [];
+
+	setInspection(inspection: ProjectStoreInspection): void {
+		this.inspection = clonePayload({ value: inspection });
+	}
+
+	readInspection(): ProjectStoreInspection {
+		return clonePayload({ value: this.inspection });
+	}
+
+	failNext(args: {
+		operation: ProjectStoreOperation;
+		code: ProjectStoreErrorCode;
+	}): void {
+		this.failures.push(args);
+	}
+
+	pauseNext(args: { operation: ProjectStoreOperation }): InMemoryMutationPause {
+		let markEntered!: () => void;
+		const entered = new Promise<void>((resolve) => {
+			markEntered = resolve;
+		});
+		let release!: () => void;
+		const wait = new Promise<void>((resolve) => {
+			release = resolve;
+		});
+		this.pauses.push({ operation: args.operation, entered: markEntered, wait });
+		return { entered, release };
+	}
+
+	async beforeCommit(args: {
+		operation: ProjectStoreOperation;
+		scope: ProjectStoreErrorScope;
+		signal?: AbortSignal;
+	}): Promise<void> {
+		throwIfAborted(args);
+		const failureIndex = this.failures.findIndex(
+			(item) => item.operation === args.operation,
+		);
+		if (failureIndex >= 0) {
+			const [failure] = this.failures.splice(failureIndex, 1);
+			throw new ProjectStoreError({
+				code: failure.code,
+				operation: args.operation,
+				scope: args.scope,
+			});
+		}
+		const pauseIndex = this.pauses.findIndex(
+			(item) => item.operation === args.operation,
+		);
+		if (pauseIndex >= 0) {
+			const [pause] = this.pauses.splice(pauseIndex, 1);
+			pause.entered();
+			await pause.wait;
+			throwIfAborted(args);
+		}
+	}
+}
+
+function throwIfAborted(args: {
+	operation: ProjectStoreOperation;
+	scope: ProjectStoreErrorScope;
+	signal?: AbortSignal;
+}): void {
+	if (!args.signal?.aborted) return;
+	throw new ProjectStoreError({
+		code: "aborted",
+		operation: args.operation,
+		scope: args.scope,
+	});
+}
+
+type MutationIdentity =
+	| { readonly kind: "project-record"; readonly projectId: ProjectId }
+	| {
+			readonly kind: "attachment";
+			readonly projectId: ProjectId;
+			readonly key: string;
+	  }
+	| { readonly kind: "project-tree"; readonly projectId: ProjectId }
+	| { readonly kind: "all-projects" }
+	| {
+			readonly kind: "library-record";
+			readonly namespace: string;
+			readonly key: string;
+	  }
+	| { readonly kind: "library-namespace"; readonly namespace: string }
+	| { readonly kind: "all" };
+
+interface PendingMutation {
+	readonly identity: MutationIdentity;
+	readonly completion: Promise<void>;
+}
+
+type ProjectMutationIdentity = Extract<
+	MutationIdentity,
+	{ kind: "project-record" | "attachment" | "project-tree" | "all-projects" }
+>;
+
+type LibraryMutationIdentity = Extract<
+	MutationIdentity,
+	{ kind: "library-record" | "library-namespace" }
+>;
+
+function isProjectMutation(
+	identity: MutationIdentity,
+): identity is ProjectMutationIdentity {
+	return (
+		identity.kind === "project-record" ||
+		identity.kind === "attachment" ||
+		identity.kind === "project-tree" ||
+		identity.kind === "all-projects"
+	);
+}
+
+function isLibraryMutation(
+	identity: MutationIdentity,
+): identity is LibraryMutationIdentity {
+	return (
+		identity.kind === "library-record" ||
+		identity.kind === "library-namespace"
+	);
+}
+
+function mutationIdentitiesConflict(args: {
+	left: MutationIdentity;
+	right: MutationIdentity;
+}): boolean {
+	const { left, right } = args;
+	if (left.kind === "all" || right.kind === "all") return true;
+	if (left.kind === "all-projects" || right.kind === "all-projects") {
+		return isProjectMutation(left) && isProjectMutation(right);
+	}
+	if (left.kind === "project-tree") {
+		return (
+			(right.kind === "project-record" ||
+				right.kind === "attachment" ||
+				right.kind === "project-tree") &&
+			right.projectId === left.projectId
+		);
+	}
+	if (right.kind === "project-tree") {
+		return (
+			(left.kind === "project-record" ||
+				left.kind === "attachment") &&
+			left.projectId === right.projectId
+		);
+	}
+	if (left.kind === "project-record" && right.kind === "project-record") {
+		return left.projectId === right.projectId;
+	}
+	if (left.kind === "attachment" && right.kind === "attachment") {
+		return left.projectId === right.projectId && left.key === right.key;
+	}
+	if (left.kind === "library-namespace") {
+		return isLibraryMutation(right) && left.namespace === right.namespace;
+	}
+	if (right.kind === "library-namespace") {
+		return isLibraryMutation(left) && left.namespace === right.namespace;
+	}
+	if (left.kind === "library-record" && right.kind === "library-record") {
+		return left.namespace === right.namespace && left.key === right.key;
+	}
+	return false;
 }
 
 export class InMemoryProjectStore implements ProjectStore {
@@ -65,43 +291,486 @@ export class InMemoryProjectStore implements ProjectStore {
 
 	private readonly records = new Map<ProjectId, ProjectRecord>();
 	private readonly summaries = new Map<ProjectId, ProjectSummary>();
+	private readonly attachments = new Map<
+		ProjectId,
+		Map<string, ProjectAttachment>
+	>();
+	private readonly libraries = new Map<string, Map<string, LibraryRecord>>();
+	private readonly pendingMutations = new Set<PendingMutation>();
+	private readonly control: InMemoryProjectStoreControl;
 
 	constructor(options: InMemoryProjectStoreOptions = {}) {
 		this.schemaVersion = options.schemaVersion ?? 1;
 		if (options.migrate) this.migrate = options.migrate;
+		this.control = options.control ?? new InMemoryProjectStoreControl();
+		// Adapter callers frequently pass operations as callbacks. Keep the new
+		// call families safe under the same ordinary JavaScript usage.
+		this.loadAttachment = this.loadAttachment.bind(this);
+		this.saveAttachment = this.saveAttachment.bind(this);
+		this.loadLibraryRecord = this.loadLibraryRecord.bind(this);
+		this.saveLibraryRecord = this.saveLibraryRecord.bind(this);
 	}
 
-	async list(): Promise<readonly ProjectSummary[]> {
-		return [...this.summaries.values()].sort((a, b) =>
-			b.updatedAt.localeCompare(a.updatedAt),
-		);
+	async list(
+		args: { signal?: AbortSignal } = {},
+	): Promise<readonly ProjectSummary[]> {
+		throwIfAborted({
+			operation: "list-projects",
+			scope: { kind: "store" },
+			signal: args.signal,
+		});
+		return [...this.summaries.values()]
+			.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+			.map((summary) =>
+				clonePayload({
+					value: summary,
+					failure: {
+						operation: "list-projects",
+						scope: { kind: "store" },
+					},
+				}),
+			);
 	}
 
-	async load({ id }: { id: ProjectId }): Promise<ProjectRecord | null> {
+	async load({
+		id,
+		signal,
+	}: {
+		id: ProjectId;
+		signal?: AbortSignal;
+	}): Promise<ProjectRecord | null> {
+		throwIfAborted({
+			operation: "load-project",
+			scope: { kind: "project", projectId: id },
+			signal,
+		});
 		const found = this.records.get(id);
 		if (!found) return null;
-		return { ...found, data: clonePayload(found.data) };
+		return clonePayload({
+			value: found,
+			failure: {
+				operation: "load-project",
+				scope: { kind: "project", projectId: id },
+			},
+		});
 	}
 
 	async save({
 		record,
 		summary,
+		signal,
 	}: {
 		record: ProjectRecord;
 		summary: ProjectSummary;
+		signal?: AbortSignal;
 	}): Promise<void> {
-		this.records.set(record.id, {
-			id: record.id,
-			schemaVersion: record.schemaVersion,
-			data: clonePayload(record.data),
+		const scope = { kind: "project", projectId: record.id } as const;
+		throwIfAborted({ operation: "save-project", scope, signal });
+		if (record.id !== summary.id) {
+			throw new ProjectStoreError({
+				code: "conflict",
+				operation: "save-project",
+				scope,
+				message: "Project record and summary identities do not match",
+			});
+		}
+		const copiedRecord = clonePayload({
+			value: record,
+			failure: { operation: "save-project", scope },
 		});
-		this.summaries.set(summary.id, { ...summary });
+		const copiedSummary = clonePayload({
+			value: summary,
+			failure: { operation: "save-project", scope },
+		});
+		await this.enqueue({
+			identity: { kind: "project-record", projectId: record.id },
+			operation: async () => {
+				await this.control.beforeCommit({
+					operation: "save-project",
+					scope,
+					signal,
+				});
+				this.records.set(record.id, copiedRecord);
+				this.summaries.set(summary.id, copiedSummary);
+			},
+		});
 	}
 
-	async remove({ id }: { id: ProjectId }): Promise<void> {
-		this.records.delete(id);
-		this.summaries.delete(id);
+	async remove({
+		id,
+		signal,
+	}: {
+		id: ProjectId;
+		signal?: AbortSignal;
+	}): Promise<void> {
+		const scope = { kind: "project", projectId: id } as const;
+		throwIfAborted({ operation: "remove-project", scope, signal });
+		await this.enqueue({
+			identity: { kind: "project-tree", projectId: id },
+			operation: async () => {
+				await this.control.beforeCommit({
+					operation: "remove-project",
+					scope,
+					signal,
+				});
+				this.records.delete(id);
+				this.summaries.delete(id);
+				this.attachments.delete(id);
+			},
+		});
 	}
+
+	async listAttachments(args: {
+		projectId: ProjectId;
+		signal?: AbortSignal;
+	}): Promise<readonly ProjectAttachment[]> {
+		throwIfAborted({
+			operation: "list-attachments",
+			scope: { kind: "project", projectId: args.projectId },
+			signal: args.signal,
+		});
+		return [...(this.attachments.get(args.projectId)?.values() ?? [])]
+			.sort((a, b) => a.key.localeCompare(b.key))
+			.map((attachment) =>
+				clonePayload({
+					value: attachment,
+					failure: {
+						operation: "list-attachments",
+						scope: { kind: "project", projectId: args.projectId },
+					},
+				}),
+			);
+	}
+
+	async loadAttachment(args: {
+		projectId: ProjectId;
+		key: string;
+		signal?: AbortSignal;
+	}): Promise<ProjectAttachment | null> {
+		const scope = {
+			kind: "attachment",
+			projectId: args.projectId,
+			key: args.key,
+		} as const;
+		throwIfAborted({
+			operation: "load-attachment",
+			scope,
+			signal: args.signal,
+		});
+		const found = this.attachments.get(args.projectId)?.get(args.key);
+		return found
+			? clonePayload({
+					value: found,
+					failure: { operation: "load-attachment", scope },
+				})
+			: null;
+	}
+
+	async saveAttachment(args: {
+		projectId: ProjectId;
+		key: string;
+		metadata: unknown;
+		body: ArrayBuffer;
+		signal?: AbortSignal;
+	}): Promise<void> {
+		const scope = {
+			kind: "attachment",
+			projectId: args.projectId,
+			key: args.key,
+		} as const;
+		throwIfAborted({
+			operation: "save-attachment",
+			scope,
+			signal: args.signal,
+		});
+		const attachment = clonePayload({
+			value: {
+				projectId: args.projectId,
+				key: args.key,
+				metadata: args.metadata,
+				body: args.body,
+			},
+			failure: { operation: "save-attachment", scope },
+		});
+		await this.enqueue({
+			identity: {
+				kind: "attachment",
+				projectId: args.projectId,
+				key: args.key,
+			},
+			operation: async () => {
+				await this.control.beforeCommit({
+					operation: "save-attachment",
+					scope,
+					signal: args.signal,
+				});
+				const inspection = this.control.readInspection();
+				if (
+					inspection.availability === "available" &&
+					inspection.capacity !== null &&
+					attachment.body.byteLength > inspection.capacity.remainingBytes
+				) {
+					throw new ProjectStoreError({
+						code: "quota-exceeded",
+						operation: "save-attachment",
+						scope,
+					});
+				}
+				let projectAttachments = this.attachments.get(args.projectId);
+				if (!projectAttachments) {
+					projectAttachments = new Map();
+					this.attachments.set(args.projectId, projectAttachments);
+				}
+				projectAttachments.set(args.key, attachment);
+			},
+		});
+	}
+
+	async removeAttachment(args: {
+		projectId: ProjectId;
+		key: string;
+		signal?: AbortSignal;
+	}): Promise<void> {
+		const scope = {
+			kind: "attachment",
+			projectId: args.projectId,
+			key: args.key,
+		} as const;
+		throwIfAborted({
+			operation: "remove-attachment",
+			scope,
+			signal: args.signal,
+		});
+		await this.enqueue({
+			identity: {
+				kind: "attachment",
+				projectId: args.projectId,
+				key: args.key,
+			},
+			operation: async () => {
+				await this.control.beforeCommit({
+					operation: "remove-attachment",
+					scope,
+					signal: args.signal,
+				});
+				this.attachments.get(args.projectId)?.delete(args.key);
+			},
+		});
+	}
+
+	async listLibraryRecords(args: {
+		namespace: string;
+		signal?: AbortSignal;
+	}): Promise<readonly LibraryRecord[]> {
+		throwIfAborted({
+			operation: "list-library-records",
+			scope: { kind: "library", namespace: args.namespace },
+			signal: args.signal,
+		});
+		return [...(this.libraries.get(args.namespace)?.values() ?? [])]
+			.sort((a, b) => a.key.localeCompare(b.key))
+			.map((record) =>
+				clonePayload({
+					value: record,
+					failure: {
+						operation: "list-library-records",
+						scope: { kind: "library", namespace: args.namespace },
+					},
+				}),
+			);
+	}
+
+	async loadLibraryRecord(args: {
+		namespace: string;
+		key: string;
+		signal?: AbortSignal;
+	}): Promise<LibraryRecord | null> {
+		const scope = {
+			kind: "library",
+			namespace: args.namespace,
+			key: args.key,
+		} as const;
+		throwIfAborted({
+			operation: "load-library-record",
+			scope,
+			signal: args.signal,
+		});
+		const found = this.libraries.get(args.namespace)?.get(args.key);
+		return found
+			? clonePayload({
+					value: found,
+					failure: { operation: "load-library-record", scope },
+				})
+			: null;
+	}
+
+	async saveLibraryRecord(args: {
+		namespace: string;
+		key: string;
+		schemaVersion: number;
+		data: unknown;
+		signal?: AbortSignal;
+	}): Promise<void> {
+		const scope = {
+			kind: "library",
+			namespace: args.namespace,
+			key: args.key,
+		} as const;
+		throwIfAborted({
+			operation: "save-library-record",
+			scope,
+			signal: args.signal,
+		});
+		const record = clonePayload({
+			value: {
+				namespace: args.namespace,
+				key: args.key,
+				schemaVersion: args.schemaVersion,
+				data: args.data,
+			},
+			failure: { operation: "save-library-record", scope },
+		});
+		await this.enqueue({
+			identity: {
+				kind: "library-record",
+				namespace: args.namespace,
+				key: args.key,
+			},
+			operation: async () => {
+				await this.control.beforeCommit({
+					operation: "save-library-record",
+					scope,
+					signal: args.signal,
+				});
+				let namespace = this.libraries.get(args.namespace);
+				if (!namespace) {
+					namespace = new Map();
+					this.libraries.set(args.namespace, namespace);
+				}
+				namespace.set(args.key, record);
+			},
+		});
+	}
+
+	async removeLibraryRecord(args: {
+		namespace: string;
+		key: string;
+		signal?: AbortSignal;
+	}): Promise<void> {
+		const scope = {
+			kind: "library",
+			namespace: args.namespace,
+			key: args.key,
+		} as const;
+		throwIfAborted({
+			operation: "remove-library-record",
+			scope,
+			signal: args.signal,
+		});
+		await this.enqueue({
+			identity: {
+				kind: "library-record",
+				namespace: args.namespace,
+				key: args.key,
+			},
+			operation: async () => {
+				await this.control.beforeCommit({
+					operation: "remove-library-record",
+					scope,
+					signal: args.signal,
+				});
+				this.libraries.get(args.namespace)?.delete(args.key);
+			},
+		});
+	}
+
+	async inspect(
+		args: { signal?: AbortSignal } = {},
+	): Promise<ProjectStoreInspection> {
+		throwIfAborted({
+			operation: "inspect",
+			scope: { kind: "store" },
+			signal: args.signal,
+		});
+		return this.control.readInspection();
+	}
+
+	async clear(args: {
+		scope: ProjectStoreClearScope;
+		signal?: AbortSignal;
+	}): Promise<void> {
+		const scope =
+			args.scope.kind === "library"
+				? ({ kind: "library", namespace: args.scope.namespace } as const)
+				: ({ kind: "store" } as const);
+		throwIfAborted({ operation: "clear", scope, signal: args.signal });
+		const identity: MutationIdentity =
+			args.scope.kind === "projects"
+				? { kind: "all-projects" }
+				: args.scope.kind === "library"
+					? { kind: "library-namespace", namespace: args.scope.namespace }
+					: { kind: "all" };
+		await this.enqueue({
+			identity,
+			operation: async () => {
+				await this.control.beforeCommit({
+					operation: "clear",
+					scope,
+					signal: args.signal,
+				});
+				if (args.scope.kind === "projects" || args.scope.kind === "all") {
+					this.records.clear();
+					this.summaries.clear();
+					this.attachments.clear();
+				}
+				if (args.scope.kind === "library") {
+					this.libraries.delete(args.scope.namespace);
+				} else if (args.scope.kind === "all") {
+					this.libraries.clear();
+				}
+			},
+		});
+	}
+
+	private async enqueue<Result>({
+		identity,
+		operation,
+	}: {
+		identity: MutationIdentity;
+		operation: () => Promise<Result>;
+	}): Promise<Result> {
+		const blockers = [...this.pendingMutations]
+			.filter((pending) =>
+				mutationIdentitiesConflict({ left: pending.identity, right: identity }),
+			)
+			.map((pending) => pending.completion);
+		let complete!: () => void;
+		const completion = new Promise<void>((resolve) => {
+			complete = resolve;
+		});
+		const pending = { identity, completion };
+		this.pendingMutations.add(pending);
+		try {
+			await Promise.all(blockers);
+			return await operation();
+		} finally {
+			this.pendingMutations.delete(pending);
+			complete();
+		}
+	}
+}
+
+export function createInMemoryProjectStoreFixture(
+	options: Omit<InMemoryProjectStoreOptions, "control"> = {},
+): {
+	store: InMemoryProjectStore;
+	control: InMemoryProjectStoreControl;
+} {
+	const control = new InMemoryProjectStoreControl();
+	return {
+		store: new InMemoryProjectStore({ ...options, control }),
+		control,
+	};
 }
 
 export class InMemoryAssetResolver implements AssetResolver {

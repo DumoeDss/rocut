@@ -92,6 +92,9 @@ export function MediaView() {
 				promise: async () => {
 					const processedAssets = await processMediaAssets({
 						files,
+						store: editor.persistence.store,
+						reportPersistenceFailure: (failure) =>
+							editor.reportPersistenceFailure(failure),
 						onProgress: (progress: { progress: number }) =>
 							setProgress(progress.progress),
 					});
@@ -107,8 +110,8 @@ export function MediaView() {
 					};
 				},
 			});
-		} catch (error) {
-			console.error("Error processing files:", error);
+		} catch {
+			console.error("Failed to process media files");
 		} finally {
 			setIsProcessing(false);
 			setProgress(0);

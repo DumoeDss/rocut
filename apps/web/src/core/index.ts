@@ -12,6 +12,8 @@ import { ClipboardManager } from "./managers/clipboard-manager";
 import { DiagnosticsManager } from "./managers/diagnostics-manager";
 import { registerTranscriptionDiagnostics } from "@/transcription/diagnostics";
 import type { EditorSession } from "@/editor/session/session-types";
+import { SessionPersistenceCoordinator } from "@/editor/persistence";
+import { ProjectStoreError } from "@/editor/ports";
 
 export class EditorCore {
 	public readonly timeline: TimelineManager;
@@ -26,8 +28,12 @@ export class EditorCore {
 	public readonly selection: SelectionManager;
 	public readonly clipboard: ClipboardManager;
 	public readonly diagnostics: DiagnosticsManager;
+	public readonly persistence: SessionPersistenceCoordinator;
+	private readonly sessionDiagnostics: EditorSession["diagnostics"];
 
 	private constructor(session: EditorSession) {
+		this.sessionDiagnostics = session.diagnostics;
+		this.persistence = new SessionPersistenceCoordinator(session.host.store);
 		this.command = new CommandManager(this);
 		this.timeline = new TimelineManager(this);
 		this.playback = new PlaybackManager(this);
@@ -68,6 +74,25 @@ export class EditorCore {
 		this.save.start();
 	}
 
+	reportPersistenceFailure({
+		operation,
+		error,
+	}: {
+		operation: string;
+		error: unknown;
+	}): void {
+		this.sessionDiagnostics.log({
+			record: {
+				level: "error",
+				message: "Durable editor operation failed",
+				context: {
+					operation,
+					code: error instanceof ProjectStoreError ? error.code : "unknown",
+				},
+			},
+		});
+	}
+
 	static createSessionOwned({
 		session,
 	}: {
@@ -88,5 +113,6 @@ export class EditorCore {
 		this.save.stop();
 		this.playback.dispose();
 		this.renderer.dispose();
+		this.persistence.destroy();
 	}
 }

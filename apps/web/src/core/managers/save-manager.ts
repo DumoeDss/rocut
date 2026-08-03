@@ -77,7 +77,10 @@ export class SaveManager {
 			clearTimeout(this.saveTimer);
 		}
 		this.saveTimer = setTimeout(() => {
-			void this.saveNow();
+			void this.saveNow().catch(() => {
+				// ProjectManager already reports the durable failure and keeps the
+				// pending flag set for an explicit retry.
+			});
 		}, this.debounceMs);
 	}
 
@@ -93,12 +96,17 @@ export class SaveManager {
 		this.isSaving = true;
 		this.hasPendingSave = false;
 		this.clearTimer();
+		let didFail = false;
 
 		try {
 			await this.editor.project.saveCurrentProject();
+		} catch (error) {
+			didFail = true;
+			this.hasPendingSave = true;
+			throw error;
 		} finally {
 			this.isSaving = false;
-			if (this.hasPendingSave) {
+			if (this.hasPendingSave && !didFail) {
 				this.queueSave();
 			}
 		}

@@ -23,7 +23,6 @@ import { EditorRoot } from "@/editor/surface/editor-root";
 import { DEFAULT_FPS } from "@/fps/defaults";
 import type { TProject } from "@/project/types";
 import { CURRENT_PROJECT_VERSION } from "@/services/storage/migrations";
-import { storageService } from "@/services/storage/service";
 import {
 	buildDefaultScene,
 	getProjectDurationFromScenes,
@@ -180,7 +179,9 @@ export function C4ForcedNoneHarness() {
 					runtimeGraphics,
 					runtimeGpu,
 				});
-				await storageService.saveProject({ project: createFixtureProject() });
+				await editorForSession(ownedSession).persistence.saveProject({
+					project: createFixtureProject(),
+				});
 				storesForSession(ownedSession).assetsPanel.setState({
 					activeTab: "effects",
 				});

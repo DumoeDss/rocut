@@ -5,9 +5,7 @@ import {
 	InMemoryProjectStore,
 	RecordingDiagnostics,
 } from "@/editor/ports/in-memory";
-import { resolveEditorHost } from "@/editor/host/editor-host";
-
-import type { MigrationOutcome } from "@/editor/ports";
+import { PORT_ROLES, type MigrationOutcome } from "@/editor/ports";
 
 if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 	test("session lifecycle suite runs in an isolated wasm-mock process", () => {
@@ -64,13 +62,9 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 			expect(a.resources).not.toBe(b.resources);
 		});
 
-		test("a host missing port roles is refused by name, not defaulted", () => {
+		test("the in-memory Host factory explicitly supplies every required role", () => {
 			const host = createInMemoryHost();
-			// Legal, because the port roles are `Partial` on `EditorHost` so that both
-			// hosts keep compiling while they are wired one role at a time. The gate is
-			// one level in: `resolveEditorHost` refuses, by name.
-			delete host.store;
-			expect(() => resolveEditorHost({ host })).toThrow(/store/);
+			expect(PORT_ROLES.every((role) => host[role] !== undefined)).toBe(true);
 		});
 	});
 

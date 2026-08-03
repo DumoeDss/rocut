@@ -1,11 +1,9 @@
 /**
  * The compile-time guard on **role completeness**.
  *
- * `resolveEditorHost()` checks exactly the roles named in `PORT_ROLES`. If that
- * register can fall behind `EditorHostPorts`, then a later child adds a role,
- * forgets the register, and the gate silently stops checking the new role — with
- * nothing going red. At a freeze that is the worst available failure shape,
- * because six children build on the gate.
+ * Reporting and conformance enumerate exactly the roles named in `PORT_ROLES`.
+ * If that register can fall behind `EditorHostPorts`, a later child can add a
+ * required role while those gates silently stop exercising it.
  *
  * `PORT_ROLES` is therefore derived from `Record<PortRole, true>`, which fails to
  * compile on omission. This file proves that in **both** directions, the same way
@@ -62,9 +60,10 @@ export const inventedRoleIsRejected: Record<PortRole, true> = {
  * And the register's key type really is the interface's key set, not a
  * hand-maintained union that could drift from it.
  */
-export type RegisterKeysAreInterfaceKeys = PortRole extends keyof EditorHostPorts
-	? keyof EditorHostPorts extends PortRole
-		? true
-		: never
-	: never;
+export type RegisterKeysAreInterfaceKeys =
+	PortRole extends keyof EditorHostPorts
+		? keyof EditorHostPorts extends PortRole
+			? true
+			: never
+		: never;
 export const registerKeysMatchInterface: RegisterKeysAreInterfaceKeys = true;

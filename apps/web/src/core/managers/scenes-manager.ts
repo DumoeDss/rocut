@@ -1,6 +1,5 @@
 import type { EditorCore } from "@/core";
 import type { Bookmark, SceneTracks, TScene } from "@/timeline";
-import { storageService } from "@/services/storage/service";
 import {
 	getMainScene,
 	ensureMainScene,
@@ -22,6 +21,7 @@ import {
 	UpdateBookmarkCommand,
 } from "@/commands/scene";
 import type { MediaTime } from "@/wasm";
+import { toast } from "sonner";
 
 export class ScenesManager {
 	private active: TScene | null = null;
@@ -175,12 +175,14 @@ export class ScenesManager {
 
 	async loadProjectScenes({ projectId }: { projectId: string }): Promise<void> {
 		try {
-			const result = await storageService.loadProject({ id: projectId });
-			if (result?.project.scenes) {
-				const ensuredScenes = result.project.scenes ?? [];
+			const project = await this.editor.persistence.loadProject({
+				id: projectId,
+			});
+			if (project?.scenes) {
+				const ensuredScenes = project.scenes ?? [];
 				const currentScene = findCurrentScene({
 					scenes: ensuredScenes,
-					currentSceneId: result.project.currentSceneId,
+					currentSceneId: project.currentSceneId,
 				});
 
 				this.list = ensuredScenes;
@@ -188,10 +190,14 @@ export class ScenesManager {
 				this.notify();
 			}
 		} catch (error) {
-			console.error("Failed to load project scenes:", error);
-			this.list = [];
-			this.active = null;
-			this.notify();
+			this.editor.reportPersistenceFailure({
+				operation: "load-project-scenes",
+				error,
+			});
+			toast.error("Failed to load project scenes", {
+				description: "Your project data was not changed. Please try again.",
+			});
+			throw error;
 		}
 	}
 

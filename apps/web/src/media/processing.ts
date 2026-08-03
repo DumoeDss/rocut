@@ -1,13 +1,31 @@
 import { toast } from "sonner";
 import { getMediaTypeFromFile } from "@/media/media-utils";
 import { formatStorageBytes } from "@/services/storage/quota";
-import { storageService } from "@/services/storage/service";
 import type { MediaAsset } from "@/media/types";
+import type { ProjectStore } from "@/editor/ports";
 import { readVideoFile } from "./mediabunny";
 import type { VideoFileData } from "./mediabunny";
 import { renderThumbnailDataUrl } from "./thumbnail";
 
-export interface ProcessedMediaAsset extends Omit<MediaAsset, "id"> {}
+export type ProcessedMediaAsset = Omit<MediaAsset, "id">;
+
+export async function inspectMediaCapacity({
+	store,
+	requiredBytes,
+}: {
+	store: Pick<ProjectStore, "inspect">;
+	requiredBytes: number;
+}): Promise<{ canStore: boolean; availableBytes: number | null }> {
+	const inspection = await store.inspect();
+	if (inspection.availability !== "available") {
+		return { canStore: false, availableBytes: null };
+	}
+	const availableBytes = inspection.capacity?.remainingBytes ?? null;
+	return {
+		canStore: availableBytes === null || requiredBytes <= availableBytes,
+		availableBytes,
+	};
+}
 
 const getUnsupportedVideoDescription = ({
 	codec,
@@ -84,9 +102,16 @@ async function generateImageThumbnail({
 
 export async function processMediaAssets({
 	files,
+	store,
+	reportPersistenceFailure,
 	onProgress,
 }: {
 	files: FileList | File[];
+	store: Pick<ProjectStore, "inspect">;
+	reportPersistenceFailure: (args: {
+		operation: string;
+		error: unknown;
+	}) => void;
 	onProgress?: ({ progress }: { progress: number }) => void;
 }): Promise<ProcessedMediaAsset[]> {
 	const fileArray = Array.from(files);
@@ -103,15 +128,26 @@ export async function processMediaAssets({
 			continue;
 		}
 
-		const storageCheck = await storageService.canStoreFile({
-			size: file.size,
-		});
+		let capacity: Awaited<ReturnType<typeof inspectMediaCapacity>>;
+		try {
+			capacity = await inspectMediaCapacity({
+				store,
+				requiredBytes: file.size,
+			});
+		} catch (error) {
+			reportPersistenceFailure({ operation: "inspect-media-capacity", error });
+			toast.error("Could not check storage capacity", {
+				description: "The media file was not imported. Please try again.",
+			});
+			throw error;
+		}
+		const { canStore, availableBytes } = capacity;
 
-		if (!storageCheck.canStore) {
+		if (!canStore) {
 			toast.error(`Not enough browser storage for ${file.name}`, {
 				description: getStorageLimitDescription({
 					fileSize: file.size,
-					availableBytes: storageCheck.availableBytes,
+					availableBytes,
 				}),
 			});
 			continue;
@@ -152,9 +188,7 @@ export async function processMediaAssets({
 					}
 				} catch (error) {
 					const message =
-						error instanceof Error
-							? error.message
-							: "Could not process video";
+						error instanceof Error ? error.message : "Could not process video";
 
 					toast.error(`Couldn't process ${file.name}`, {
 						description: message,
@@ -184,8 +218,8 @@ export async function processMediaAssets({
 				const percent = Math.round((completed / total) * 100);
 				onProgress({ progress: percent });
 			}
-		} catch (error) {
-			console.error("Error processing file:", file.name, error);
+		} catch {
+			console.error("Failed to process media file");
 			toast.error(`Failed to process ${file.name}`);
 			URL.revokeObjectURL(url);
 		}
@@ -196,9 +230,9 @@ export async function processMediaAssets({
 
 const getMediaDuration = ({ file }: { file: File }): Promise<number> => {
 	return new Promise((resolve, reject) => {
-		const element = document.createElement(
-			file.type.startsWith("video/") ? "video" : "audio",
-		) as HTMLVideoElement;
+		const element = file.type.startsWith("video/")
+			? document.createElement("video")
+			: document.createElement("audio");
 		const objectUrl = URL.createObjectURL(file);
 
 		element.addEventListener("loadedmetadata", () => {

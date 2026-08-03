@@ -100,19 +100,16 @@ function isMemberDeclaration(line) {
 	);
 }
 
-/**
- * Storage-mechanism spellings, assembled from fragments rather than written out.
- *
- * Not obfuscation: `check-storage-boundary.mjs` scans every `.mjs` under
- * `script/` for these exact literals on non-comment lines and would report this
- * file as a direct storage call. Adding this path to *that* script's policy list
- * would be the tidier fix, but that file belongs to no change in flight and this
- * one's write set is what the C0 ∥ C1 concurrency edge rests on. Fragments keep
- * the write set honest.
- */
+/** Shared spellings keep the rule and its targeted negative fixtures identical. */
 const IDB_NAME = ["indexed", "DB"].join("");
 const OPFS_CALL = ["navigator", "storage", "getDirectory"].join(".");
 const QUOTA_CALL = ["navigator", "storage", "estimate"].join(".");
+const IDB_TYPES =
+	/\b(?:IDBFactory|IDBDatabase|IDBObjectStore|IDBTransaction|IDBRequest)\b/;
+const OPFS_TYPES =
+	/\b(?:FileSystemDirectoryHandle|FileSystemFileHandle|FileSystemHandle)\b/;
+const PHYSICAL_STORAGE_FIELD =
+	/\b(?:databaseName|databasePath|objectStoreName|opfsPath|storagePath)\??\s*:/;
 
 const RULES = [
 	{
@@ -172,11 +169,15 @@ const RULES = [
 	{
 		id: "no-storage-mechanism-literal",
 		description:
-			"no port module names a database, an object-store prefix or an origin-private filesystem call",
+			"no public port signature names a browser database/store/path type, identity or API",
 		test: (line) =>
 			new RegExp(`\\b${IDB_NAME}\\b`).test(line) ||
 			line.includes(OPFS_CALL) ||
 			line.includes(QUOTA_CALL) ||
+			/\bnavigator\s*\.\s*storage\b/.test(line) ||
+			IDB_TYPES.test(line) ||
+			OPFS_TYPES.test(line) ||
+			PHYSICAL_STORAGE_FIELD.test(line) ||
 			/["'`]video-editor-/.test(line),
 	},
 	{
@@ -313,6 +314,24 @@ const NEGATIVE_CONTROL_FIXTURES = [
 		note: "a directory-index specifier resolves without a trailing segment and is caught too",
 	},
 	{
+		rule: "no-editor-internal-import",
+		path: "apps/web/src/editor/ports/project-store.ts",
+		text: 'import type { AddMediaAssetCommand } from "@/commands/media/add-media-asset";\nexport type X = AddMediaAssetCommand;\n',
+		note: "a command class cannot become part of the public storage contract",
+	},
+	{
+		rule: "no-editor-internal-import",
+		path: "apps/web/src/editor/ports/project-store.ts",
+		text: 'import type { ProjectState } from "@/stores/project-store";\nexport type X = ProjectState;\n',
+		note: "an editor state-store import cannot become part of the public storage contract",
+	},
+	{
+		rule: "no-editor-internal-import",
+		path: "apps/web/src/editor/ports/project-store.ts",
+		text: 'import { storageService } from "@/services/storage/service";\nexport const X = storageService;\n',
+		note: "the public port cannot import its browser implementation or singleton",
+	},
+	{
 		rule: "no-storage-mechanism-literal",
 		path: "apps/web/src/editor/ports/violation.ts",
 		text: `export const db = ${IDB_NAME}.open("video-editor-projects");\n`,
@@ -321,6 +340,24 @@ const NEGATIVE_CONTROL_FIXTURES = [
 		rule: "no-storage-mechanism-literal",
 		path: "apps/web/src/editor/ports/violation.ts",
 		text: `export const root = await ${OPFS_CALL}();\n`,
+	},
+	{
+		rule: "no-storage-mechanism-literal",
+		path: "apps/web/src/editor/ports/project-store.ts",
+		text: "export interface ProjectStore { open(): Promise<IDBDatabase>; }\n",
+		note: "an IndexedDB type in a public signature is a mechanism leak",
+	},
+	{
+		rule: "no-storage-mechanism-literal",
+		path: "apps/web/src/editor/ports/project-store.ts",
+		text: "export interface ProjectStore { root(): Promise<FileSystemDirectoryHandle>; }\n",
+		note: "an OPFS handle type in a public signature is a mechanism leak",
+	},
+	{
+		rule: "no-storage-mechanism-literal",
+		path: "apps/web/src/editor/ports/project-store.ts",
+		text: "export interface ProjectStore { databaseName: string; objectStoreName: string; opfsPath: string; }\n",
+		note: "physical database/store/path fields are not mechanism-neutral",
 	},
 	{
 		rule: "no-direct-resource-acquisition",
