@@ -1,0 +1,21 @@
+schema: spec-driven
+created: 2026-08-01
+quality:
+  files:
+    - evidence/contract-review.md
+    - evidence/handoff/final-docs-scope-audit.md
+    - evidence/review-cycle-report.md
+    - evidence/review-report.md
+    - evidence/strategy-attempt-1-review.md
+    - evidence/strategy-attempt-2-review.md
+    - evidence/strategy-attempt-3-review.md
+    - evidence/strategy-attempt-4-topology-audit.md
+  metrics:
+    evidence/contract-review.md: 0
+    evidence/handoff/final-docs-scope-audit.md: 1
+    evidence/review-cycle-report.md: 0
+    evidence/review-report.md: 0
+    evidence/strategy-attempt-1-review.md: 0
+    evidence/strategy-attempt-2-review.md: 0
+    evidence/strategy-attempt-3-review.md: 0
+    evidence/strategy-attempt-4-topology-audit.md: 0
