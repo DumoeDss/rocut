@@ -1,0 +1,696 @@
+{
+  "change": "s02-storage-port",
+  "archivedAt": "2026-08-03T22:09:23.456Z",
+  "codeCommit": "4c54b2fd332809c31cc12666010af9afc35b4732",
+  "planningBranch": "main",
+  "planningTreeState": "dirty",
+  "evidence": [
+    {
+      "path": "evidence/boundaries.md",
+      "sha256": "6c77b8b1e88ff1273abdda5ff22ac19c2251aa88f4563da72e1f19afb111e36e"
+    },
+    {
+      "path": "evidence/cleanup.md",
+      "sha256": "91d54287e55e05962684adbb7af210acc21109e2bc3ae4b0fd524e92f6797156"
+    },
+    {
+      "path": "evidence/conformance-browser.md",
+      "sha256": "73241faeb72288f0751f741f056f98bc3a9e8b94c8afdb82d77e00f472609a09"
+    },
+    {
+      "path": "evidence/conformance-in-memory.md",
+      "sha256": "bef61b1299cf819639125c98ff211f48321971c74dd349bad5eb3ebb807381ec"
+    },
+    {
+      "path": "evidence/consumer-integration.md",
+      "sha256": "89420156a23ed2fd0cda2132145b7fa5caf4c36cd4ab787d01c2bf3a0ce628c9"
+    },
+    {
+      "path": "evidence/contract-implementation.md",
+      "sha256": "22a1175bae9030c8f3dae1ec1786a827b4dcd9648a6159aabac84b12f7bfbb8a"
+    },
+    {
+      "path": "evidence/contract-review-round2.md",
+      "sha256": "382ea34c8b55424dfbd5d7132c64a330272d483dd1d62db107e0add7075dca17"
+    },
+    {
+      "path": "evidence/contract-review.md",
+      "sha256": "cb2e946c3572ce3856cbcc329ac1db0c9849ab36189fdc9620d075c1c088c86a"
+    },
+    {
+      "path": "evidence/failing-controls.md",
+      "sha256": "5662c60fa8a4dca58ac702b4857bab1147095bf47f926b2fa4d6f0c2dbcc8dcf"
+    },
+    {
+      "path": "evidence/final-parity-sidecar-cascade-orphans.md",
+      "sha256": "475d70dfb8b2ebe3b59937d5e7b3b87f337ebccc361aee340f95d94c5124611b"
+    },
+    {
+      "path": "evidence/final-parity-sidecar-codec.md",
+      "sha256": "cf452175ed0e80e59bea38e6a34465b72bcc9258db9cc0c31d6fa86e61fe5d93"
+    },
+    {
+      "path": "evidence/final-parity-sidecar-migration-recovery.md",
+      "sha256": "35c84890c975f09d35a4687bca8abca7057c75f3ee82c28af5971aace6747500"
+    },
+    {
+      "path": "evidence/final-parity-sidecar-ordinary-pairs.md",
+      "sha256": "023ec2174c986b9464bad75ad5bd1523ab6b943fd5b92e046101542c906753e4"
+    },
+    {
+      "path": "evidence/final-parity-sidecar-protected-tail.md",
+      "sha256": "8d8ef4af8316fa790f990df09d110022dd363c0388986df6d42531c34ec93d66"
+    },
+    {
+      "path": "evidence/final-parity-sidecar-topology-chromium.md",
+      "sha256": "07f7302bdc8af79b815b3439f62760dbbb807f23d0d8f1103cd6f2510bff0a9a"
+    },
+    {
+      "path": "evidence/final-scope-scenario-map.md",
+      "sha256": "149634b380469c33522278907f4e77444597dc622804d2639d7d95bef99fa04f"
+    },
+    {
+      "path": "evidence/final-verification-phase-a.md",
+      "sha256": "a54e65af931a855780c47ba42f68045e399c861d8e1d068df4a20bc2947e36ef"
+    },
+    {
+      "path": "evidence/fix-cascade-round1.md",
+      "sha256": "602c6a8027acc6e2733cfd026063e2ac98654e8ac21be2cac6969a52ba9351e4"
+    },
+    {
+      "path": "evidence/fix-cascade-round2.md",
+      "sha256": "efac84fe3cbd8097a583be86d4e274efe402f3145f65ccdb7b88e2914ac6c7e5"
+    },
+    {
+      "path": "evidence/fix-integration-round1.md",
+      "sha256": "5454542b05eb43c32b958988002dc3db502d4e3d1514fc2c25e21f6429d45868"
+    },
+    {
+      "path": "evidence/fix-integration-round2.md",
+      "sha256": "8f602c997079f32c4c694adee4386f53bbc9d7630d449165a30f69e663ad0166"
+    },
+    {
+      "path": "evidence/fix-library-concurrency-round1.md",
+      "sha256": "41aacd6d3f6a514da42713f1d46888aa169a45bb20bd1db4fc34db645670cb9c"
+    },
+    {
+      "path": "evidence/fix-migration-round1.md",
+      "sha256": "2fa2db642800163945064bb980132fcbc4e7dfa6172ed165d5218448b33faf8c"
+    },
+    {
+      "path": "evidence/fix-migration-round2.md",
+      "sha256": "c49654d3d95643b69af957cd48c4b634c5f1c662f75dfd67ef55fcc385c777bc"
+    },
+    {
+      "path": "evidence/fix-preset-round2.md",
+      "sha256": "f0024b73498b4f2653cd28c22abfbc30f2c2f7c402834b98cb61a7afa4f97537"
+    },
+    {
+      "path": "evidence/fix-residual-round1.md",
+      "sha256": "43a8624f109daf86cf9bc5de34ca8c286113cd8b632a12b38cc964bd041e4ea6"
+    },
+    {
+      "path": "evidence/handoff/browser-store.md",
+      "sha256": "85f1dc46ed29e17fdac09458706212b51e9e0b27ce5704a773e0c80966af1bdd"
+    },
+    {
+      "path": "evidence/handoff/canonical-docs-update.md",
+      "sha256": "6140ca2f25dcdb21058fc36ab1d12c18760cb7e446135920cd10e065e558a22f"
+    },
+    {
+      "path": "evidence/handoff/consumer-finalizer.md",
+      "sha256": "f0dfb954565fda8dde75da494c882ac85fbf794459879a3729b2b95127602944"
+    },
+    {
+      "path": "evidence/handoff/contract-fixer-round1.md",
+      "sha256": "6744c6b5275e3a1091c0f56bd6b7d0f64e70a5a3d11651ff0b986b4aaaf4cada"
+    },
+    {
+      "path": "evidence/handoff/contract-implementer.md",
+      "sha256": "3bc948ce5505ff8ba1ef0de11e66cffc7d7b361a980c50d8ff1cda1c271e7f44"
+    },
+    {
+      "path": "evidence/handoff/coordinator.md",
+      "sha256": "27c75439a6fba0b0c32cc8129ebd289cedb8eab789b96310c8a260260dbd00e4"
+    },
+    {
+      "path": "evidence/handoff/escalation.md",
+      "sha256": "881b0b4cd75a837076d427c79ce39fab8d083c55f15c62ec55784c8ee5ff1bbc"
+    },
+    {
+      "path": "evidence/handoff/final-docs-scope-audit.md",
+      "sha256": "d56456b1bb21307b0a285b2732e5ec883cf50c6e26c44bc72a3325dc001e2c1d"
+    },
+    {
+      "path": "evidence/handoff/final-parity-sidecar-design.md",
+      "sha256": "fd0c62ffa4ba8f8c9c6137e9c654c2e6c4778a876581c893fdfce74363c64836"
+    },
+    {
+      "path": "evidence/handoff/final-verification-plan.md",
+      "sha256": "00b34b5cc6eca3583fcf8601e2b93c459250e5bc5a1e909b95f05e842c36db44"
+    },
+    {
+      "path": "evidence/handoff/fix-cascade-round1.md",
+      "sha256": "0188895f13932cf666c8cb95fafd2f740c879b0551148a0626623e2f7d8d5011"
+    },
+    {
+      "path": "evidence/handoff/fix-cascade-round2.md",
+      "sha256": "230ee1987772044b21ebc44fd5b91422339309bff34658c5bd75593e72d803ff"
+    },
+    {
+      "path": "evidence/handoff/fix-integration-verifier-round1.md",
+      "sha256": "493c5902f9362c6d313d7062d92186691a09203dd8db947403f2838d233dbfd1"
+    },
+    {
+      "path": "evidence/handoff/fix-integration-verifier-round2.md",
+      "sha256": "b7df393294f2a3cfcbc8b44c6b381c4abceed88d82ead430474880366c8f8646"
+    },
+    {
+      "path": "evidence/handoff/fix-library-concurrency-round1.md",
+      "sha256": "9d3480aeee4fc56dad97ee7e340f185aa25a8f27482ef3b3c7c0be5a1886a821"
+    },
+    {
+      "path": "evidence/handoff/fix-migration-round1.md",
+      "sha256": "4d545395759efa50b5f5985796d73c61bbc032e7f732cd837c625101daf0401e"
+    },
+    {
+      "path": "evidence/handoff/fix-migration-round2.md",
+      "sha256": "808985d7e98a4a064bb312fd3f293a2c6eb4f5dd77da573011d486d5f040c29f"
+    },
+    {
+      "path": "evidence/handoff/fix-preset-round2.md",
+      "sha256": "aa295b8d8cc9a3e995c100baccb28dca9a9a77c2bf0ed957c5d97644044b75e1"
+    },
+    {
+      "path": "evidence/handoff/fix-residual-round1.md",
+      "sha256": "bca6542542cddd0ac5a976529831a9b91de16b050fbb8e99080ecf5b2bd3f90b"
+    },
+    {
+      "path": "evidence/handoff/host-composition.md",
+      "sha256": "d1f32767cab66b4b5f0c05f6aa522d8a8b2ef914ed0f1492aeba347c416b4519"
+    },
+    {
+      "path": "evidence/handoff/implementation.md",
+      "sha256": "06a93b34de22399de2fec3e7c1d232bbed1a8b4632e30d1d2105086a9193488c"
+    },
+    {
+      "path": "evidence/handoff/legacy-clear-regression.md",
+      "sha256": "7dfaea54ca166f652d356c5f443124549e74d5b7309326503b2eb7eda4f43ba5"
+    },
+    {
+      "path": "evidence/handoff/planner.md",
+      "sha256": "61ffab8e7e6140d1d6abaa15d23a0bf8383fec25498f5052bf1995fbcf306c24"
+    },
+    {
+      "path": "evidence/handoff/reviewer-round1.md",
+      "sha256": "a4fc1641f7e76414fddb21fdb6f04a69058c375f82568c1d7c85ab88ade8a983"
+    },
+    {
+      "path": "evidence/handoff/reviewer-round2.md",
+      "sha256": "10ce500453cfb1432a2b634f9b169c5e8829479feccae07674c2ffa7bce83712"
+    },
+    {
+      "path": "evidence/handoff/reviewer-round3.md",
+      "sha256": "65c92f2b2d48203afd219dccc91d569c18e427bf3fb4c3fee20856e5a1f29bca"
+    },
+    {
+      "path": "evidence/handoff/rewire-core.md",
+      "sha256": "d488710b181a7c7dc00c638ae857b941ba0976431c3239e0d590268bba4fd065"
+    },
+    {
+      "path": "evidence/handoff/rewire-libraries.md",
+      "sha256": "a86a499d67a3bdeca14b7d4180e2831592b5fb3295c78b1c0dae98f2a33bda74"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-1-m1.md",
+      "sha256": "a4a9fef78ca035725f3e33fdcf21773573141366abc8ffc0d3525b79ebb9b846"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-1-m2.md",
+      "sha256": "87050a69ba34a3d5f2f86e2df0d60fbfbb62816aee9e27baac18b1c0f78ca000"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-1-planner.md",
+      "sha256": "cd9234428c0fd46b9d3f631b107c564e7f70ae08efcad887d512640527ca1a7b"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-1-reviewer.md",
+      "sha256": "09cfb729a85bae15aee6f97da502c6d369973d3c156974ca2728bedd2fa61191"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-1-verifier.md",
+      "sha256": "14f2dff32a177e2a390a32751a9f87d3aab13326f84077bbef86e8186e419f6d"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-2-m1.md",
+      "sha256": "2b8a1b52e8326a789d4fd3bfaeb45f386ef47fa74b85778bc62481b985bf20fc"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-2-m2.md",
+      "sha256": "bbe5542aea6651b2e6c65bb85c418b25e66d9894692047d16825b996914968c5"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-2-planner.md",
+      "sha256": "608b77f89f47eb517e571d297f946b43faf8faf0003968c3eda0cc670b5648d8"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-2-reviewer.md",
+      "sha256": "09c3c377bd944791df7b770b18bbac08b14463de623377bb364a75ebec693f98"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-2-verifier.md",
+      "sha256": "64cf04dfc6174a0d9e67ae25583760afe697d5cda84bea705020ded07ef32b42"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-3-implementation.md",
+      "sha256": "fa997386724936d73c6a61f809aeb6a320dbf335a4f603cf47390e3381a12d03"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-3-planner.md",
+      "sha256": "60e4987ecd58861ca0a5096a34dbfb2f3ab1cb6504b33bc8b78eba6fdca5218f"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-3-reviewer.md",
+      "sha256": "408bed96baa92a2fecbd39cd060b3b29232c31e28487d8ec45ca5ebf92610356"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-3-verifier.md",
+      "sha256": "14827a172c067dabf7625e271527d1410d48c1a499723b98d425ba3622b7c502"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-4-fixer-1.md",
+      "sha256": "7c0161acdf5367f0964e72b570cd78b6a864ba61f5916984f246238e300bbde4"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-4-fixer-11.md",
+      "sha256": "216b1c290b76a44fcd87264082d4b0f4dffbc156bb2f9bd071707a9031a5868c"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-4-fixer-2.md",
+      "sha256": "cf13aa5f79d10179c50e1caabe0198376cce3a4580d9bfea079f0857e6a985eb"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-4-fixer-3.md",
+      "sha256": "6565a4250e130a71d5c65cedb9771297fe65368b500d2769516e4a313d82f43c"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-4-fixer-6.md",
+      "sha256": "0a84d48c386138bebd603950eb31f8ae5b0a89f16a5e723cc1a95be85c578caa"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-4-fixer-8.md",
+      "sha256": "22676793c268fff3f52b852e78ffe65db5beae620eb48ac6d2cc8d7dd6f2053e"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-4-implementation.md",
+      "sha256": "4a758f25f841a4de1dc1980924bdc8e3a9060816af50d6c6666cc9effa8b09f4"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-4-planner-2.md",
+      "sha256": "a9faa8b0cdeca0b95b6a9452928904114ab3efb5dbe8e3c7c38186e6972b7dd9"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-4-planner.md",
+      "sha256": "c9376fcd989c84ac5cc21eb695f66302ed81bf65ba22ef6e3220a645b6156757"
+    },
+    {
+      "path": "evidence/handoff/strategy-attempt-4-reviewer-1.md",
+      "sha256": "f95ab4304d2775fdca95aea073285f404c2445cbe7984ffbd0a0270cb58b6f38"
+    },
+    {
+      "path": "evidence/handoff/topology-artifact-update.md",
+      "sha256": "4c9eac38b495e83bc7c82f017e07a04e790074f285792ce5dc14c28ab5a4c5c1"
+    },
+    {
+      "path": "evidence/handoff/verifier-round1.md",
+      "sha256": "9a429e21153c791cfe308a0c1dc8867c3399c833afb80f5213671d00b0d9a5b6"
+    },
+    {
+      "path": "evidence/host-composition.md",
+      "sha256": "5a067ecd99ed1fefec8cf7970162e383acb95a9dd7803a2313766eb38b3b7922"
+    },
+    {
+      "path": "evidence/luna-max-phase6-implementer-evaluation.md",
+      "sha256": "cbb66d38938387c5584d0c26dce9857e9df3e3c0491ad42c56eda6d45f9600fd"
+    },
+    {
+      "path": "evidence/luna-max-phase7-implementer-evaluation.md",
+      "sha256": "22a9d7e8ea01c30d8e215fe33583a17b11c45b5156b63ecf54ca2a5a382aa95f"
+    },
+    {
+      "path": "evidence/migration.md",
+      "sha256": "5eb511a73a4e4048d2e36463a6438536e014a98a98d6b898e5a65d92477b334e"
+    },
+    {
+      "path": "evidence/opaque-roundtrip.md",
+      "sha256": "f1c421f6b9e8c480bd980de90bad8a96d1106ba8280401fca77aa3c3d06bd6ee"
+    },
+    {
+      "path": "evidence/parity-final-diff.md",
+      "sha256": "247bd7b7122d31caee0a885dd74e404a56b36f3c3b41c00a51d82f97a40ecf10"
+    },
+    {
+      "path": "evidence/preflight.md",
+      "sha256": "db87ff70136e867e72116570744aeb0c9ee7e4d3c77a34ff33e03f880ee2e4f3"
+    },
+    {
+      "path": "evidence/regression.md",
+      "sha256": "b28f7044650c4b12f2cd3e9d35f3039c765ae4285d39456d10fd00cc80c193b9"
+    },
+    {
+      "path": "evidence/review-cycle-report.md",
+      "sha256": "2f3370a747db3819750066570f88d0341e6828b6b6be87ea5359b7c2ba93d42d"
+    },
+    {
+      "path": "evidence/review-report.md",
+      "sha256": "96e5285acbe5db7f8a5b1918c0e8a8529409f413726b935d6e43a8fb818493b8"
+    },
+    {
+      "path": "evidence/review-round1.md",
+      "sha256": "1f576a2586868d628507957579d176dd65ac7644c6c30ca496b47f1ed9d774a9"
+    },
+    {
+      "path": "evidence/review-round2.md",
+      "sha256": "ba8491ba98f70f8a4efdb3068ae9fb5358abc75577845ae0e04d90c4f1500bb1"
+    },
+    {
+      "path": "evidence/review-round3.md",
+      "sha256": "f892f5447e34a57241f7a3b12bc68615c4326f67e9267cce9e5c1f8ed9c01565"
+    },
+    {
+      "path": "evidence/review.md",
+      "sha256": "85966de69041aeece18f2f8d4f471f56f2ad0a4ab5c59216e3c56ac46cc2f3ae"
+    },
+    {
+      "path": "evidence/rewire-core.md",
+      "sha256": "81c98273aa84a01be1011ab656362aebec16c3c8693fa5a1a4ead5c7f6b2a7ec"
+    },
+    {
+      "path": "evidence/rewire-libraries.md",
+      "sha256": "3e20f664a03639dea977ece4520af752fe05ec7fbe41e2a2370aa0fc140b0780"
+    },
+    {
+      "path": "evidence/ship-log.md",
+      "sha256": "85cca773e52ff8fd203a747ad935392379f4ed3dd503214d813f52416cdb43ea"
+    },
+    {
+      "path": "evidence/strategy-attempt-1-design.md",
+      "sha256": "e917e3f8c051d77583d189dbaca316e30b6d58c1187b78e2c1dc1bfe828b1539"
+    },
+    {
+      "path": "evidence/strategy-attempt-1-m1.md",
+      "sha256": "661673ee4405306a585585b2d4010d3e038b8303b8bc40452c9a61345cb03fb4"
+    },
+    {
+      "path": "evidence/strategy-attempt-1-m2.md",
+      "sha256": "d31bc3411a7de4e68f302eb957a9a5959970b5a6d08a0eb54c269cd2cb01f73e"
+    },
+    {
+      "path": "evidence/strategy-attempt-1-review.md",
+      "sha256": "ac92e90af3ac7061ceffe979abcc0b9dafadbac0ec004b3343dd04dac696be50"
+    },
+    {
+      "path": "evidence/strategy-attempt-1-verification.md",
+      "sha256": "5c64d9a52b027aae643cb6a48cb2e588c660d91b91387c94452510b72adef32a"
+    },
+    {
+      "path": "evidence/strategy-attempt-2-design.md",
+      "sha256": "f5bd92abaa5cdd78905598e9dcf094990887c0b2f4076c4f150ba32b48c6ca44"
+    },
+    {
+      "path": "evidence/strategy-attempt-2-m1.md",
+      "sha256": "e20411a809ad5d41776ce3e0463915777a69b9df27f45b3b9b550d9270c86885"
+    },
+    {
+      "path": "evidence/strategy-attempt-2-m2.md",
+      "sha256": "fa2583ebe16c744b323a50d52673fe5a764f5eebeab78cee4d23fdf6bf907b05"
+    },
+    {
+      "path": "evidence/strategy-attempt-2-review.md",
+      "sha256": "6970e9c5c125ab69365e46440aad62d1c604a6adfdf5df1924a935ab6b2a1049"
+    },
+    {
+      "path": "evidence/strategy-attempt-2-verification.md",
+      "sha256": "41abb7cf054637f80dcd748aaecc25beffe0d4708115b34586a92f3596baeb2f"
+    },
+    {
+      "path": "evidence/strategy-attempt-3-design.md",
+      "sha256": "8b2a4839d00e55e304c1721ad4a68c84ba93fbff724b360544c942ce0b883584"
+    },
+    {
+      "path": "evidence/strategy-attempt-3-implementation.md",
+      "sha256": "465aa6b6a054937a6776d843427755dd0efa39c9442de13a4518db82ea607855"
+    },
+    {
+      "path": "evidence/strategy-attempt-3-review.md",
+      "sha256": "f28bef8c4df50b36c985b4cf62d366ca225d2ffc8418a083b9409848dac6e35c"
+    },
+    {
+      "path": "evidence/strategy-attempt-3-verification.md",
+      "sha256": "651af267064719c9aecf3558bc3b0f2e76043140a25e2fbd80b737672625276b"
+    },
+    {
+      "path": "evidence/strategy-attempt-4-design.md",
+      "sha256": "6a2ee2fa7e9307fab312117077887739f8d6639821a53ddd8b3224bcfd97e93d"
+    },
+    {
+      "path": "evidence/strategy-attempt-4-implementation.md",
+      "sha256": "6baf8c79627c2bf1d19c5d608cce40db3fa5630877f89e1e4e5347a4297ffdce"
+    },
+    {
+      "path": "evidence/strategy-attempt-4-review-fixes.md",
+      "sha256": "ba18951c587645bff6b787e133214a2e05e7290848eb57ade5803e038b937140"
+    },
+    {
+      "path": "evidence/strategy-attempt-4-topology-audit.md",
+      "sha256": "5ef04afbde07f6a69269deac70ef2dd0372b1df4daa1b44c3d45ba8021a83cb1"
+    },
+    {
+      "path": "evidence/strategy-attempt-4-v1-transformer-preauth-fix.md",
+      "sha256": "7050958e78815404493c7b693addab6baeb10a37d0bee9521972258983a16e9f"
+    }
+  ],
+  "probes": [],
+  "handoffAbsorbed": [
+    {
+      "file": "handoff/browser-store.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/canonical-docs-update.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/consumer-finalizer.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/contract-fixer-round1.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/contract-implementer.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/coordinator.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/escalation.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/final-docs-scope-audit.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/final-parity-sidecar-design.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/final-verification-plan.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/fix-cascade-round1.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/fix-cascade-round2.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/fix-integration-verifier-round1.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/fix-integration-verifier-round2.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/fix-library-concurrency-round1.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/fix-migration-round1.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/fix-migration-round2.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/fix-preset-round2.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/fix-residual-round1.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/host-composition.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/implementation.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/legacy-clear-regression.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/planner.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/reviewer-round1.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/reviewer-round2.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/reviewer-round3.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/rewire-core.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/rewire-libraries.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-1-m1.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-1-m2.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-1-planner.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-1-reviewer.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-1-verifier.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-2-m1.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-2-m2.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-2-planner.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-2-reviewer.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-2-verifier.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-3-implementation.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-3-planner.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-3-reviewer.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-3-verifier.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-4-fixer-1.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-4-fixer-11.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-4-fixer-2.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-4-fixer-3.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-4-fixer-6.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-4-fixer-8.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-4-implementation.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-4-planner-2.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-4-planner.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/strategy-attempt-4-reviewer-1.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/topology-artifact-update.md",
+      "outcome": "preserved"
+    },
+    {
+      "file": "handoff/verifier-round1.md",
+      "outcome": "preserved"
+    }
+  ],
+  "ephemeraDiscarded": [],
+  "missing": [
+    "verification-report"
+  ]
+}

@@ -1,8 +1,5 @@
-# browser-persistence-boundary Specification
+## MODIFIED Requirements
 
-## Purpose
-TBD - created by archiving change s01-vite-portability-baseline. Update Purpose after archive.
-## Requirements
 ### Requirement: A single named boundary owns browser persistence
 
 Browser-storage use by the editor SHALL be implemented by the production browser `ProjectStore`
@@ -73,22 +70,6 @@ object URLs.
 - **THEN** every imported media asset is available and renders in the media panel and on the
   timeline
 - **AND** an asset with the same attachment key in another project remains isolated
-
-### Requirement: Transient object URLs are never persisted as canonical locators
-
-No persisted record SHALL store a `blob:` or otherwise session-scoped URL as the canonical locator
-for a media asset or thumbnail.
-
-#### Scenario: Persisted records contain no blob URL
-
-- **WHEN** the persisted project and media metadata records are inspected directly after a save
-- **THEN** no stored string value begins with `blob:`
-
-#### Scenario: Playable URLs are regenerated on load
-
-- **WHEN** a project is loaded
-- **THEN** playable media URLs are regenerated from the persisted binary content rather than read
-  from a stored URL string
 
 ### Requirement: The migration runner operates on the real projects database
 
@@ -189,6 +170,8 @@ legacy source only after the current representation has committed successfully.
   result
 - **AND** failure or cancellation before commit leaves those legacy sources intact
 
+## ADDED Requirements
+
 ### Requirement: Physical cleanup authority is topology-safe
 
 The browser store SHALL centrally authorize every current or historical physical operation at its
@@ -270,3 +253,14 @@ SHALL fail closed without widening the public store contract or persisted journa
 - **AND** unrelated current and retained project, library, media, stage, and OPFS state remains
   unchanged
 
+## REMOVED Requirements
+
+### Requirement: The persistence boundary is explicitly provisional
+
+**Reason**: C5 replaces the provisional `BrowserHostAdapter` with the production browser
+`ProjectStore`; retaining a provisional label or adapter would describe a false architecture and
+leave a second persistence path available.
+
+**Migration**: Host composition roots supply `BrowserProjectStore` through the existing
+`EditorHost.store` role. All former adapter/service consumers use the owning session's store path,
+and the boundary documentation points to `editor/ports/project-store.ts` as the public contract.
