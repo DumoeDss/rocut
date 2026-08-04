@@ -36,6 +36,7 @@ export function useTimelineDragDrop({
 		getStore: () => editor.persistence.store,
 		reportPersistenceFailure: (failure) =>
 			editor.reportPersistenceFailure(failure),
+		resources: editor.resources,
 		dragSource,
 		addMediaAsset: (args) => editor.media.addMediaAsset(args),
 		executeCommand: (command) => editor.command.execute({ command }),

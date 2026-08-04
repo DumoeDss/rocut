@@ -5,6 +5,7 @@ import {
 } from "@/editor/host/browser-runtime";
 import {
 	createInMemoryPorts,
+	DeterministicIdGenerator,
 	RecordingDiagnostics,
 } from "@/editor/ports/in-memory";
 import { BrowserProjectStore } from "@/services/storage/browser-project-store";
@@ -20,6 +21,7 @@ export const NEXT_PUBLIC_ASSET_BASE =
 	process.env.NEXT_PUBLIC_OPENCUT_BASE || "/";
 
 const nextDiagnostics = new RecordingDiagnostics();
+const nextIds = new DeterministicIdGenerator();
 const nextBrowserProjectStore = new BrowserProjectStore({
 	storageIdentity: DEFAULT_BROWSER_STORAGE_IDENTITY,
 	diagnostic: (diagnostic) =>
@@ -98,6 +100,7 @@ export function createNextEditorHost({
 		// the three C4 production roles impossible to inherit by spread order.
 		...browser,
 		diagnostics: nextDiagnostics,
+		ids: nextIds,
 		store: nextBrowserProjectStore,
 	};
 }

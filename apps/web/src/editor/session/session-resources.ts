@@ -7,7 +7,7 @@
  * than exempting a directory, so a second file cannot quietly inherit the
  * allowance.
  *
- * Workers, audio contexts and object URLs are **not** constructed here either —
+ * Workers, audio contexts and object URLs are **not** constructed here either 鈥?
  * they are delegated to the Host's `RuntimeResourceHost`, because who constructs
  * them is an origin decision that belongs to whoever owns the origin. This
  * registry's job is that nothing comes into existence unobserved.
@@ -42,15 +42,83 @@ import type {
 	SessionResources,
 	TimerHandle,
 } from "./resources";
-import { SESSION_RESOURCE_CLASSES } from "./resources";
 
 interface TrackedResource {
 	readonly resourceId: ResourceId;
 	readonly resourceClass: SessionResourceClass;
-	release(): void;
+	release(): void | Promise<void>;
+	/** Once set, a terminal operation will never be invoked again. */
+	releaseStarted: boolean;
 	released: boolean;
+	releaseError?: unknown;
+	releasePromise?: Promise<void>;
 	/** Set for `gpuResource` entries only; the runtime's own handle key. */
 	gpuHandle?: GpuHandleId;
+}
+
+/**
+ * Internal lifecycle controls used by the owning session.  These methods are
+ * deliberately separate from `SessionResources`: callers can acquire and
+ * release resources through the public surface, while only the session can
+ * close the activity gate during a suspended dwell.
+ */
+export interface SessionResourceLifecycle {
+	setActivityAdmission(admitted: boolean): void;
+	beginActivitySuspend(): void;
+	drainActivityResources(): Promise<void>;
+	prepareActivityResume(): void;
+	publishActivityResume(): void;
+	subscribeActivityLifecycle(listener: {
+		onSuspend?: (args: { generation: number }) => void;
+		onResume?: (args: { generation: number }) => void;
+	}): () => void;
+	isActivityAdmitted(): boolean;
+	getActivityGeneration(): number;
+	assertActivityGeneration(args: { generation: number }): void;
+}
+
+export class SessionActivityGenerationError extends Error {
+	readonly expectedGeneration: number;
+	readonly actualGeneration: number;
+
+	constructor({
+		expectedGeneration,
+		actualGeneration,
+	}: {
+		expectedGeneration: number;
+		actualGeneration: number;
+	}) {
+		super(
+			`Session activity generation ${expectedGeneration} is stale because the session was suspended, replaced, or disposed; the live generation is ${actualGeneration}.`,
+		);
+		this.name = "SessionActivityGenerationError";
+		this.expectedGeneration = expectedGeneration;
+		this.actualGeneration = actualGeneration;
+	}
+}
+
+export class SessionResourceReleaseError extends Error {
+	readonly resourceClass: SessionResourceClass;
+	readonly resourceId: ResourceId;
+	readonly cause: unknown;
+
+	constructor({
+		resourceClass,
+		resourceId,
+		cause,
+	}: {
+		resourceClass: SessionResourceClass;
+		resourceId: ResourceId;
+		cause: unknown;
+	}) {
+		super(`Failed to release ${resourceClass} resource ${resourceId}.`, {
+			cause,
+		});
+		this.name = "SessionResourceReleaseError";
+		this.resourceClass = resourceClass;
+		this.resourceId = resourceId;
+		this.cause = cause;
+	}
 }
 
 function emptyCounts(): Record<
@@ -67,7 +135,7 @@ function emptyCounts(): Record<
 }
 
 /**
- * `requestAnimationFrame` is absent outside a browser — a headless run (C7) and
+ * `requestAnimationFrame` is absent outside a browser 鈥?a headless run (C7) and
  * the test runner both lack it. Falling back to a timer keeps the registry's
  * accounting identical in both environments, which is what the disposal evidence
  * depends on; the frame callback's timing fidelity is not what is under test
@@ -93,7 +161,10 @@ export function createSessionResources(args: {
 	runtimeResources: RuntimeResourceHost;
 	runtimeGpu: RuntimeGpuResourceQuery;
 	nextId: (args: { scope: string }) => string;
-}): SessionResources & { disposeAll(): DisposalReport } {
+}): SessionResources &
+	SessionResourceLifecycle & {
+		disposeAll(): Promise<DisposalReport>;
+	} {
 	const { runtimeResources, runtimeGpu, nextId } = args;
 
 	/** Acquisition order. Release walks it backwards. */
@@ -104,16 +175,24 @@ export function createSessionResources(args: {
 	const trackedGpuHandles = new Set<GpuHandleId>();
 	const gpuOwner = {};
 	let disposed = false;
+	let activityAdmitted = true;
+	let activityGeneration = 0;
+	const activityLifecycleListeners = new Set<{
+		onSuspend?: (args: { generation: number }) => void;
+		onResume?: (args: { generation: number }) => void;
+	}>();
+	const pendingActivityListenerErrors: unknown[] = [];
 
 	function track(args2: {
 		resourceClass: SessionResourceClass;
-		release: () => void;
+		release: () => void | Promise<void>;
 	}): TrackedResource {
 		const resourceId = nextId({ scope: `resource:${args2.resourceClass}` });
 		const entry: TrackedResource = {
 			resourceId,
 			resourceClass: args2.resourceClass,
 			release: args2.release,
+			releaseStarted: false,
 			released: false,
 		};
 		acquired.push(entry);
@@ -121,15 +200,71 @@ export function createSessionResources(args: {
 		return entry;
 	}
 
-	function release(entry: TrackedResource): void {
+	async function release(entry: TrackedResource): Promise<void> {
 		if (entry.released) return;
-		entry.released = true;
-		counts[entry.resourceClass].released += 1;
-		releaseOrder.push({
-			resourceId: entry.resourceId,
-			resourceClass: entry.resourceClass,
+		if (entry.releasePromise) return entry.releasePromise;
+		entry.releaseStarted = true;
+		entry.releasePromise = (async () => {
+			try {
+				await entry.release();
+				entry.released = true;
+				counts[entry.resourceClass].released += 1;
+				releaseOrder.push({
+					resourceId: entry.resourceId,
+					resourceClass: entry.resourceClass,
+				});
+			} catch (cause) {
+				const error = new SessionResourceReleaseError({
+					resourceClass: entry.resourceClass,
+					resourceId: entry.resourceId,
+					cause,
+				});
+				entry.releaseError = error;
+				throw error;
+			}
+		})();
+		return entry.releasePromise;
+	}
+
+	function throwReleaseErrors({
+		errors,
+		message,
+	}: {
+		errors: unknown[];
+		message: string;
+	}): void {
+		if (errors.length === 1) throw errors[0];
+		if (errors.length > 1) throw new AggregateError(errors, message);
+	}
+
+	async function drainEntries({
+		activityOnly,
+	}: {
+		activityOnly: boolean;
+	}): Promise<void> {
+		const errors: unknown[] = [];
+		for (let index = acquired.length - 1; index >= 0; index -= 1) {
+			const entry = acquired[index];
+			if (!entry) continue;
+			if (
+				activityOnly &&
+				entry.resourceClass !== "timer" &&
+				entry.resourceClass !== "worker"
+			) {
+				continue;
+			}
+			try {
+				await release(entry);
+			} catch (error) {
+				errors.push(error);
+			}
+		}
+		throwReleaseErrors({
+			errors,
+			message: activityOnly
+				? "Failed to suspend session activity resources."
+				: "Failed to dispose session resources.",
 		});
-		entry.release();
 	}
 
 	/**
@@ -158,13 +293,28 @@ export function createSessionResources(args: {
 	}
 
 	function report(): DisposalReport {
-		const per = {} as Record<SessionResourceClass, ResourceClassReport>;
-		for (const cls of SESSION_RESOURCE_CLASSES) {
-			per[cls] = {
-				created: counts[cls].created,
-				released: counts[cls].released,
-			};
-		}
+		const per = {
+			timer: {
+				created: counts.timer.created,
+				released: counts.timer.released,
+			},
+			worker: {
+				created: counts.worker.created,
+				released: counts.worker.released,
+			},
+			audioContext: {
+				created: counts.audioContext.created,
+				released: counts.audioContext.released,
+			},
+			objectUrl: {
+				created: counts.objectUrl.created,
+				released: counts.objectUrl.released,
+			},
+			gpuResource: {
+				created: counts.gpuResource.created,
+				released: counts.gpuResource.released,
+			},
+		} satisfies Record<SessionResourceClass, ResourceClassReport>;
 		return {
 			timer: per.timer,
 			worker: per.worker,
@@ -185,6 +335,80 @@ export function createSessionResources(args: {
 		}
 	}
 
+	function assertActivityLive(): void {
+		assertLive();
+		if (!activityAdmitted) {
+			throw new Error(
+				"Session activity admission is closed while suspended; resume the session " +
+					"before acquiring or publishing activity.",
+			);
+		}
+	}
+
+	function isActivityGenerationCurrent(generation: number): boolean {
+		return activityAdmitted && !disposed && generation === activityGeneration;
+	}
+
+	function assertActivityGeneration(generation: number): void {
+		if (generation !== activityGeneration) {
+			throw new SessionActivityGenerationError({
+				expectedGeneration: generation,
+				actualGeneration: activityGeneration,
+			});
+		}
+		assertActivityLive();
+	}
+
+	function beginActivitySuspend(): void {
+		if (!activityAdmitted) return;
+		activityAdmitted = false;
+		activityGeneration += 1;
+		for (const listener of activityLifecycleListeners) {
+			try {
+				listener.onSuspend?.({ generation: activityGeneration });
+			} catch (error) {
+				pendingActivityListenerErrors.push(error);
+			}
+		}
+		// Timer and Worker terminators are invoked synchronously by `release`; the
+		// returned drain lets the session await accounting and any attributed error.
+		void drainEntries({ activityOnly: true }).catch(() => {});
+	}
+
+	function prepareActivityResume(): void {
+		assertLive();
+		activityAdmitted = true;
+	}
+
+	function publishActivityResume(): void {
+		assertActivityLive();
+		const errors: unknown[] = [];
+		for (const listener of activityLifecycleListeners) {
+			try {
+				listener.onResume?.({ generation: activityGeneration });
+			} catch (error) {
+				errors.push(error);
+			}
+		}
+		throwReleaseErrors({
+			errors,
+			message: "Failed to publish resumed session activity.",
+		});
+	}
+
+	async function drainActivityResources(): Promise<void> {
+		const errors = pendingActivityListenerErrors.splice(0);
+		try {
+			await drainEntries({ activityOnly: true });
+		} catch (error) {
+			errors.push(error);
+		}
+		throwReleaseErrors({
+			errors,
+			message: "Failed to suspend session activity.",
+		});
+	}
+
 	function makeTimer(args2: {
 		kind: TimerHandle["kind"];
 		cancel: () => void;
@@ -194,18 +418,46 @@ export function createSessionResources(args: {
 			resourceId: entry.resourceId,
 			kind: args2.kind,
 			cancel: () => {
-				release(entry);
+				void release(entry).catch(() => {});
 			},
 		};
 	}
 
 	return {
+		setActivityAdmission: (admitted: boolean) => {
+			if (admitted) {
+				if (activityAdmitted) return;
+				prepareActivityResume();
+				publishActivityResume();
+				return;
+			}
+			beginActivitySuspend();
+		},
+		beginActivitySuspend,
+		drainActivityResources,
+		prepareActivityResume,
+		publishActivityResume,
+		subscribeActivityLifecycle: (listener) => {
+			activityLifecycleListeners.add(listener);
+			return () => {
+				activityLifecycleListeners.delete(listener);
+			};
+		},
+		isActivityAdmitted: () => activityAdmitted && !disposed,
+		getActivityGeneration: () => activityGeneration,
+		assertActivityGeneration: ({ generation }) => {
+			assertActivityGeneration(generation);
+		},
+
 		setTimeout: ({ handler, ms }) => {
-			assertLive();
+			assertActivityLive();
+			const generation = activityGeneration;
 			let id: ReturnType<typeof setTimeout> | null = null;
+			let active = true;
 			const entry = track({
 				resourceClass: "timer",
 				release: () => {
+					active = false;
 					if (id !== null) clearTimeout(id);
 				},
 			});
@@ -213,54 +465,119 @@ export function createSessionResources(args: {
 			// resource, and counting it as one would make every disposal report of a
 			// healthy session look like a leak.
 			id = setTimeout(() => {
-				release(entry);
+				if (!active) return;
+				active = false;
+				void release(entry).catch(() => {});
+				if (!isActivityGenerationCurrent(generation)) return;
 				handler();
 			}, ms);
 			return {
 				resourceId: entry.resourceId,
 				kind: "timeout",
 				cancel: () => {
-					release(entry);
+					void release(entry).catch(() => {});
 				},
 			};
 		},
 
 		setInterval: ({ handler, ms }) => {
-			assertLive();
-			const id = setInterval(handler, ms);
+			assertActivityLive();
+			const generation = activityGeneration;
+			let active = true;
+			const id = setInterval(() => {
+				if (!active) return;
+				if (!isActivityGenerationCurrent(generation)) return;
+				handler();
+			}, ms);
 			return makeTimer({
 				kind: "interval",
 				cancel: () => {
+					active = false;
 					clearInterval(id);
 				},
 			});
 		},
 
 		requestAnimationFrame: ({ handler }) => {
-			assertLive();
-			const cancel = scheduleFrame(handler);
-			return makeTimer({ kind: "animationFrame", cancel });
+			assertActivityLive();
+			const generation = activityGeneration;
+			let cancel = () => {};
+			let active = true;
+			const entry = track({
+				resourceClass: "timer",
+				release: () => {
+					active = false;
+					cancel();
+				},
+			});
+			cancel = scheduleFrame((time) => {
+				if (!active) return;
+				active = false;
+				void release(entry).catch(() => {});
+				if (!isActivityGenerationCurrent(generation)) return;
+				handler(time);
+			});
+			return {
+				resourceId: entry.resourceId,
+				kind: "animationFrame",
+				cancel: () => {
+					void release(entry).catch(() => {});
+				},
+			};
 		},
 
 		createWorker: ({ request }: { request: WorkerRequest }): WorkerHandle => {
-			assertLive();
+			assertActivityLive();
+			const generation = activityGeneration;
 			const handle = runtimeResources.createWorker({ request });
+			const listenerReleases = new Set<() => void>();
+			const releaseListeners = () => {
+				for (const unsubscribe of [...listenerReleases]) unsubscribe();
+			};
+			const subscribe = <Event>({
+				register,
+				listener,
+			}: {
+				register: (listener: (event: Event) => void) => () => void;
+				listener: (event: Event) => void;
+			}) => {
+				const releaseHostListener = register((event) => {
+					if (!isActivityGenerationCurrent(generation)) return;
+					listener(event);
+				});
+				let active = true;
+				const unsubscribe = () => {
+					if (!active) return;
+					active = false;
+					listenerReleases.delete(unsubscribe);
+					releaseHostListener();
+				};
+				listenerReleases.add(unsubscribe);
+				return unsubscribe;
+			};
 			const entry = track({
 				resourceClass: "worker",
 				release: () => {
-					handle.terminate();
+					try {
+						releaseListeners();
+					} finally {
+						handle.terminate();
+					}
 				},
 			});
 			return {
 				...handle,
 				resourceId: entry.resourceId,
 				postMessage: (a) => {
+					if (!isActivityGenerationCurrent(generation)) return;
 					handle.postMessage(a);
 				},
-				onMessage: (l) => handle.onMessage(l),
-				onError: (l) => handle.onError(l),
+				onMessage: (listener) =>
+					subscribe({ register: handle.onMessage.bind(handle), listener }),
+				onError: (listener) =>
+					subscribe({ register: handle.onError.bind(handle), listener }),
 				terminate: () => {
-					release(entry);
+					void release(entry).catch(() => {});
 				},
 			};
 		},
@@ -270,15 +587,13 @@ export function createSessionResources(args: {
 		}: {
 			request?: AudioContextRequest;
 		}): AudioContextHandle => {
-			assertLive();
+			assertActivityLive();
 			const handle = runtimeResources.createAudioContext({
 				request: request ?? {},
 			});
 			const entry = track({
 				resourceClass: "audioContext",
-				release: () => {
-					void handle.close();
-				},
+				release: () => handle.close(),
 			});
 			return {
 				get state() {
@@ -290,13 +605,13 @@ export function createSessionResources(args: {
 				sampleRate: handle.sampleRate,
 				resourceId: entry.resourceId,
 				close: async () => {
-					release(entry);
+					await release(entry);
 				},
 			};
 		},
 
 		createObjectUrl: ({ blob }): ObjectUrlHandle => {
-			assertLive();
+			assertActivityLive();
 			const handle = runtimeResources.createObjectUrl({ blob });
 			const entry = track({
 				resourceClass: "objectUrl",
@@ -308,13 +623,13 @@ export function createSessionResources(args: {
 				resourceId: entry.resourceId,
 				url: handle.url,
 				revoke: () => {
-					release(entry);
+					void release(entry).catch(() => {});
 				},
 			};
 		},
 
 		trackGpuResource: ({ handle, label }): GpuResourceHandle => {
-			assertLive();
+			assertActivityLive();
 			const claimedBy = claimedGpuHandles.get(handle);
 			if (claimedBy && claimedBy !== gpuOwner) {
 				throw new Error(
@@ -326,7 +641,7 @@ export function createSessionResources(args: {
 			const entry = track({
 				resourceClass: "gpuResource",
 				// Release goes through the runtime's own teardown, keyed by its own
-				// handle — not through an opaque callback the session cannot relate
+				// handle 鈥?not through an opaque callback the session cannot relate
 				// to anything the runtime reports.
 				release: () => {
 					try {
@@ -344,24 +659,39 @@ export function createSessionResources(args: {
 				handle,
 				label,
 				release: () => {
-					release(entry);
+					void release(entry).catch(() => {});
 				},
 			};
 		},
 
 		inspect: report,
 
-		disposeAll: () => {
-			if (!disposed) {
+		disposeAll: (() => {
+			let disposal: Promise<DisposalReport> | null = null;
+			return (): Promise<DisposalReport> => {
+				if (disposal) return disposal;
+				beginActivitySuspend();
 				disposed = true;
-				// Reverse acquisition order: a resource acquired later may depend on
-				// one acquired earlier, never the other way round.
-				for (let i = acquired.length - 1; i >= 0; i -= 1) {
-					const entry = acquired[i];
-					if (entry) release(entry);
-				}
-			}
-			return report();
-		},
+				activityAdmitted = false;
+				disposal = (async () => {
+					let drainError: unknown;
+					try {
+						await drainEntries({ activityOnly: false });
+					} catch (error) {
+						drainError = error;
+					}
+					const finalReport = report();
+					if (drainError !== undefined) {
+						const attributed =
+							drainError instanceof Error
+								? drainError
+								: new Error(String(drainError));
+						throw Object.assign(attributed, { report: finalReport });
+					}
+					return finalReport;
+				})();
+				return disposal;
+			};
+		})(),
 	};
 }

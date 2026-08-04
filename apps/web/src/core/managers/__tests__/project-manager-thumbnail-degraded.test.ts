@@ -102,7 +102,9 @@ if (process.env.OPENCUT_PROJECT_THUMBNAIL_TEST_ISOLATED !== "1") {
 			isDegraded: degraded,
 		};
 		const editor = {
+			drainProjectLiveState: async () => {},
 			persistence,
+			reportPersistenceFailure: () => {},
 			media: {
 				clearAllAssets: () => {},
 				getAssets: () => [],

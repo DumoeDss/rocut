@@ -5,6 +5,7 @@ import {
 } from "@/editor/host/browser-runtime";
 import {
 	createInMemoryPorts,
+	DeterministicIdGenerator,
 	RecordingDiagnostics,
 } from "@/editor/ports/in-memory";
 import { BrowserProjectStore } from "@/services/storage/browser-project-store";
@@ -14,6 +15,7 @@ import {
 } from "@/services/storage/browser-project-store-internals";
 
 const viteDiagnostics = new RecordingDiagnostics();
+const viteIds = new DeterministicIdGenerator();
 const viteBrowserProjectStore = new BrowserProjectStore({
 	storageIdentity: DEFAULT_BROWSER_STORAGE_IDENTITY,
 	diagnostic: (diagnostic) =>
@@ -97,8 +99,10 @@ export function createViteEditorHost({
 		},
 		...browser,
 		// Final override: production sessions intentionally share durable state,
-		// never the reference store created by createInMemoryPorts().
+		// and one process-lifetime ID sequence, never the per-call reference roles
+		// created by createInMemoryPorts().
 		diagnostics: viteDiagnostics,
+		ids: viteIds,
 		store: viteBrowserProjectStore,
 	};
 }

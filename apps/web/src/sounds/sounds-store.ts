@@ -394,6 +394,28 @@ export function createSoundsStore({
 
 		addSoundToTimeline: async ({ sound, editor }) => {
 			const token = beginRequest({ channel: "timeline" });
+			const lifecycle = editor.resources as typeof editor.resources & {
+				getActivityGeneration?: () => number;
+				assertActivityGeneration?: (args: { generation: number }) => void;
+			};
+			const activityGeneration = lifecycle.getActivityGeneration?.();
+			const canPublishActivity = () => {
+				if (!canPublishRequest({ token })) return false;
+				if (
+					activityGeneration === undefined ||
+					!lifecycle.assertActivityGeneration
+				) {
+					return true;
+				}
+				try {
+					lifecycle.assertActivityGeneration({
+						generation: activityGeneration,
+					});
+					return true;
+				} catch {
+					return false;
+				}
+			};
 			const audioUrl = sound.previewUrl;
 			if (!audioUrl) {
 				toast.error("Sound file not available");
@@ -404,15 +426,24 @@ export function createSoundsStore({
 				const currentTime = editor.playback.getCurrentTime();
 
 				const response = await fetch(audioUrl);
-				if (!canPublishRequest({ token })) return false;
+				if (!canPublishActivity()) return false;
 				if (!response.ok)
 					throw new Error(`Failed to download audio: ${response.statusText}`);
 
 				const arrayBuffer = await response.arrayBuffer();
-				if (!canPublishRequest({ token })) return false;
-				const audioContext = new AudioContext();
-				const buffer = await audioContext.decodeAudioData(arrayBuffer);
-				if (!canPublishRequest({ token })) return false;
+				if (!canPublishActivity()) return false;
+				const audioHandle = editor.resources.createAudioContext({});
+				if (!audioHandle.context) {
+					await audioHandle.close();
+					throw new Error("Sound decoding is unavailable on this Host.");
+				}
+				let buffer: AudioBuffer;
+				try {
+					buffer = await audioHandle.context.decodeAudioData(arrayBuffer);
+				} finally {
+					await audioHandle.close();
+				}
+				if (!canPublishActivity()) return false;
 
 				const element = buildLibraryAudioElement({
 					sourceUrl: audioUrl,
@@ -428,7 +459,7 @@ export function createSoundsStore({
 				});
 				return true;
 			} catch (error) {
-				if (!canPublishRequest({ token })) return false;
+				if (!canPublishActivity()) return false;
 				console.error("Failed to add sound to timeline:", error);
 				toast.error(
 					error instanceof Error

@@ -28,6 +28,7 @@ import {
 } from "@/sounds/use-sound-search";
 import { useEditorHostServices } from "@/editor/host/editor-host-context";
 import { useEditorInstance } from "@/editor/use-editor";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 import { useSoundsStore } from "@/editor/use-session-store";
 import type { SavedSound, SoundEffect } from "@/sounds/types";
 import { cn } from "@/utils/ui";
@@ -89,6 +90,7 @@ function SoundEffectsView() {
 		setTotalCount,
 	} = useSoundsStore();
 	const { soundSearchEndpoint } = useEditorHostServices();
+	const { resources } = useEditorSession();
 	const {
 		results: searchResults,
 		isLoading: isSearching,
@@ -171,11 +173,14 @@ function SoundEffectsView() {
 			}
 		};
 
-		const timeoutId = setTimeout(fetchTopSounds, 100, {});
+		const timeoutHandle = resources.setTimeout({
+			handler: fetchTopSounds,
+			ms: 100,
+		});
 
 		return () => {
 			shouldIgnore = true;
-			clearTimeout(timeoutId);
+			timeoutHandle.cancel();
 		};
 	}, [
 		hasLoaded,
@@ -187,6 +192,7 @@ function SoundEffectsView() {
 		setCurrentPage,
 		setHasNextPage,
 		setTotalCount,
+		resources,
 	]);
 
 	useEffect(() => {
@@ -198,10 +204,13 @@ function SoundEffectsView() {
 			scrollAreaRef.current?.scrollTo({ top: scrollPosition });
 		};
 
-		const timeoutId = setTimeout(restoreScrollPosition, 100, {});
+		const timeoutHandle = resources.setTimeout({
+			handler: restoreScrollPosition,
+			ms: 100,
+		});
 
-		return () => clearTimeout(timeoutId);
-	}, [scrollPosition, scrollAreaRef]);
+		return () => timeoutHandle.cancel();
+	}, [resources, scrollPosition, scrollAreaRef]);
 
 	const handleScrollWithPosition = (event: React.UIEvent<HTMLDivElement>) => {
 		const { currentTarget } = event;

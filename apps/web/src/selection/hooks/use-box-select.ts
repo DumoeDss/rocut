@@ -6,6 +6,7 @@ import type {
 	ResolveIntersections,
 	SelectionBoxBounds,
 } from "@/selection/types";
+import { useOptionalEditorSession } from "@/editor/session/editor-session-provider";
 
 interface SelectionBoxState<TId> extends BoxSelectionSnapshot<TId> {
 	startPos: { x: number; y: number };
@@ -65,6 +66,8 @@ export function useBoxSelect<TId>({
 	const [selectionBox, setSelectionBox] =
 		useState<SelectionBoxState<TId> | null>(null);
 	const justFinishedSelectingRef = useRef(false);
+	const session = useOptionalEditorSession();
+	const resources = session?.resources;
 
 	const handleMouseDown = useCallback(
 		(event: React.MouseEvent<Element>) => {
@@ -162,9 +165,17 @@ export function useBoxSelect<TId>({
 		const handleMouseUp = () => {
 			if (selectionBox.isActive) {
 				justFinishedSelectingRef.current = true;
-				requestAnimationFrame(() => {
-					justFinishedSelectingRef.current = false;
-				});
+				if (resources) {
+					resources.requestAnimationFrame({
+						handler: () => {
+							justFinishedSelectingRef.current = false;
+						},
+					});
+				} else {
+					queueMicrotask(() => {
+						justFinishedSelectingRef.current = false;
+					});
+				}
 			}
 
 			setSelectionBox(null);
@@ -177,7 +188,7 @@ export function useBoxSelect<TId>({
 			window.removeEventListener("mousemove", handleMouseMove);
 			window.removeEventListener("mouseup", handleMouseUp);
 		};
-	}, [containerRef, selectionBox, updateSelection]);
+	}, [containerRef, resources, selectionBox, updateSelection]);
 
 	useEffect(() => {
 		if (!selectionBox) {

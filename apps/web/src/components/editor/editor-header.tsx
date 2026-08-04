@@ -66,11 +66,11 @@ function ProjectDropdown() {
 
 		try {
 			await editor.project.prepareExit();
-			editor.project.closeProject();
+			await editor.project.closeProject();
 		} catch (error) {
 			console.error("Failed to prepare project exit:", error);
 		} finally {
-			editor.project.closeProject();
+			await editor.project.closeProject();
 			navigation.onExitProject();
 		}
 	};
@@ -188,8 +188,10 @@ function EditableProjectName() {
 		originalNameRef.current = projectName;
 		setIsEditing(true);
 
-		requestAnimationFrame(() => {
-			inputRef.current?.select();
+		editor.resources.requestAnimationFrame({
+			handler: () => {
+				inputRef.current?.select();
+			},
 		});
 	};
 

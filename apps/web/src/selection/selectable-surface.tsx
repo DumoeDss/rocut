@@ -14,12 +14,10 @@ import {
 	selectRange,
 	toggleSelection,
 } from "@/selection/state";
-import type {
-	SelectableSurfaceProps,
-	SelectionState,
-} from "@/selection/types";
+import type { SelectableSurfaceProps, SelectionState } from "@/selection/types";
 import { useBoxSelect } from "@/selection/hooks/use-box-select";
 import { cn } from "@/utils/ui";
+import { useOptionalEditorSession } from "@/editor/session/editor-session-provider";
 
 export function SelectableSurface({
 	orderedIds,
@@ -34,8 +32,13 @@ export function SelectableSurface({
 		clearSelection(),
 	);
 	const [highlightedId, setHighlightedId] = useState<string | null>(null);
+	const visibleSelectionState = useMemo(
+		() => pruneSelection({ state: selectionState, orderedIds }),
+		[orderedIds, selectionState],
+	);
 	const containerRef = useRef<HTMLDivElement>(null);
 	const itemElementsRef = useRef<Map<string, HTMLElement>>(new Map());
+	const session = useOptionalEditorSession();
 
 	const registerItem = useCallback(
 		(id: string, element: HTMLElement | null) => {
@@ -86,8 +89,8 @@ export function SelectableSurface({
 	}, []);
 
 	const selectedIdSet = useMemo(
-		() => new Set(selectionState.selectedIds),
-		[selectionState.selectedIds],
+		() => new Set(visibleSelectionState.selectedIds),
+		[visibleSelectionState.selectedIds],
 	);
 
 	const isSelected = useCallback(
@@ -106,11 +109,12 @@ export function SelectableSurface({
 			id: string;
 		}) => {
 			setSelectionState((state) => {
+				const currentState = pruneSelection({ state, orderedIds });
 				const isToggleSelection = event.ctrlKey || event.metaKey;
 
 				if (event.shiftKey) {
 					return selectRange({
-						state,
+						state: currentState,
 						orderedIds,
 						targetId: id,
 						isAdditive: isToggleSelection,
@@ -119,7 +123,7 @@ export function SelectableSurface({
 
 				if (isToggleSelection) {
 					return toggleSelection({
-						state,
+						state: currentState,
 						id,
 					});
 				}
@@ -133,15 +137,19 @@ export function SelectableSurface({
 		[orderedIds],
 	);
 
-	const selectUnselectedItem = useCallback((id: string) => {
-		setSelectionState((state) => {
-			if (getIsSelected({ state, id })) {
-				return state;
-			}
+	const selectUnselectedItem = useCallback(
+		(id: string) => {
+			setSelectionState((state) => {
+				const currentState = pruneSelection({ state, orderedIds });
+				if (getIsSelected({ state: currentState, id })) {
+					return currentState;
+				}
 
-			return replaceSelection({ ids: [id], anchorId: id });
-		});
-	}, []);
+				return replaceSelection({ ids: [id], anchorId: id });
+			});
+		},
+		[orderedIds],
+	);
 
 	const handleItemMouseDown = useCallback(
 		({
@@ -171,8 +179,8 @@ export function SelectableSurface({
 		useBoxSelect({
 			containerRef,
 			resolveIntersections,
-			selectedIds: selectionState.selectedIds,
-			anchorId: selectionState.anchorId,
+			selectedIds: visibleSelectionState.selectedIds,
+			anchorId: visibleSelectionState.anchorId,
 			onSelectionChange: handleBoxSelectionChange,
 			shouldStartSelection,
 		});
@@ -198,7 +206,11 @@ export function SelectableSurface({
 				return;
 			}
 
-			if (event.key !== "Enter" && event.key !== " " && event.key !== "Escape") {
+			if (
+				event.key !== "Enter" &&
+				event.key !== " " &&
+				event.key !== "Escape"
+			) {
 				return;
 			}
 
@@ -209,40 +221,46 @@ export function SelectableSurface({
 	);
 
 	useEffect(() => {
-		setSelectionState((state) =>
-			pruneSelection({
-				state,
-				orderedIds,
-			}),
-		);
-	}, [orderedIds]);
-
-	useEffect(() => {
-		onSelectionChange?.(selectionState);
-	}, [onSelectionChange, selectionState]);
+		onSelectionChange?.(visibleSelectionState);
+	}, [onSelectionChange, visibleSelectionState]);
 
 	useEffect(() => {
 		if (!revealId) {
 			return;
 		}
 
+		// eslint-disable-next-line react-hooks/set-state-in-effect -- a reveal prop transition intentionally starts a new timed highlight.
 		setHighlightedId(revealId);
 		getItemElement(revealId)?.scrollIntoView({ block: "center" });
 
-		const timer = setTimeout(() => {
-			setHighlightedId(null);
-			onRevealComplete?.();
-		}, 1500);
+		const timer = session?.resources.setTimeout({
+			handler: () => {
+				setHighlightedId(null);
+				onRevealComplete?.();
+			},
+			ms: 1500,
+		});
+		if (!timer) {
+			let cancelled = false;
+			queueMicrotask(() => {
+				if (cancelled) return;
+				setHighlightedId(null);
+				onRevealComplete?.();
+			});
+			return () => {
+				cancelled = true;
+			};
+		}
 
-		return () => clearTimeout(timer);
-	}, [getItemElement, onRevealComplete, revealId]);
+		return () => timer.cancel();
+	}, [getItemElement, onRevealComplete, revealId, session]);
 
 	const isBoxSelecting = isSelecting;
 
 	const contextValue = useMemo(() => {
 		return {
-			selectedIds: selectionState.selectedIds,
-			anchorId: selectionState.anchorId,
+			selectedIds: visibleSelectionState.selectedIds,
+			anchorId: visibleSelectionState.anchorId,
 			highlightedId,
 			isBoxSelecting,
 			isSelected,
@@ -259,8 +277,8 @@ export function SelectableSurface({
 		isBoxSelecting,
 		isSelected,
 		registerItem,
-		selectionState.anchorId,
-		selectionState.selectedIds,
+		visibleSelectionState.anchorId,
+		visibleSelectionState.selectedIds,
 	]);
 
 	return (

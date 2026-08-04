@@ -21,10 +21,8 @@ import { mediaSupportsAudio } from "@/media/media-utils";
 import { getSourceTimeAtClipTime, renderRetimedBuffer } from "@/retime";
 import { Input, ALL_FORMATS, BlobSource, AudioBufferSink } from "mediabunny";
 import { TICKS_PER_SECOND } from "@/wasm";
-import {
-	computeRmsBuckets,
-	type SampleBucket,
-} from "@/media/waveform-summary";
+import type { SessionResources } from "@/editor/session/resources";
+import { computeRmsBuckets, type SampleBucket } from "@/media/waveform-summary";
 
 const MAX_AUDIO_CHANNELS = 2;
 const EXPORT_SAMPLE_RATE = 44100;
@@ -41,49 +39,80 @@ export interface CollectedAudioElement {
 	retime?: RetimeConfig;
 }
 
-export function createAudioContext({
-	sampleRate,
-}: {
-	sampleRate?: number;
-} = {}): AudioContext {
-	const AudioContextConstructor =
-		window.AudioContext ||
-		(window as typeof window & { webkitAudioContext?: typeof AudioContext })
-			.webkitAudioContext;
-
-	return new AudioContextConstructor(sampleRate ? { sampleRate } : undefined);
-}
-
 export interface DecodedAudio {
 	samples: Float32Array;
 	sampleRate: number;
 }
 
+type DecodeOperationOutcome =
+	| { status: "succeeded"; value: DecodedAudio }
+	| { status: "failed"; error: unknown };
+
 export async function decodeAudioToFloat32({
 	audioBlob,
 	sampleRate,
+	resources,
 }: {
 	audioBlob: Blob;
 	sampleRate?: number;
+	resources: SessionResources;
 }): Promise<DecodedAudio> {
-	const audioContext = createAudioContext({ sampleRate });
-	const arrayBuffer = await audioBlob.arrayBuffer();
-	const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-
-	// mix down to mono
-	const numChannels = audioBuffer.numberOfChannels;
-	const length = audioBuffer.length;
-	const samples = new Float32Array(length);
-
-	for (let i = 0; i < length; i++) {
-		let sum = 0;
-		for (let channel = 0; channel < numChannels; channel++) {
-			sum += audioBuffer.getChannelData(channel)[i];
+	const audioHandle = resources.createAudioContext({
+		request: sampleRate === undefined ? undefined : { sampleRate },
+	});
+	let operationOutcome: DecodeOperationOutcome | undefined;
+	let closeFailed = false;
+	let closeError: unknown;
+	try {
+		const audioContext = audioHandle.context;
+		if (!audioContext) {
+			throw new Error("Audio decoding is unavailable on this Host.");
 		}
-		samples[i] = sum / numChannels;
+		const arrayBuffer = await audioBlob.arrayBuffer();
+		const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+		// mix down to mono
+		const numChannels = audioBuffer.numberOfChannels;
+		const length = audioBuffer.length;
+		const samples = new Float32Array(length);
+
+		for (let i = 0; i < length; i++) {
+			let sum = 0;
+			for (let channel = 0; channel < numChannels; channel++) {
+				sum += audioBuffer.getChannelData(channel)[i];
+			}
+			samples[i] = sum / numChannels;
+		}
+
+		operationOutcome = {
+			status: "succeeded",
+			value: { samples, sampleRate: audioBuffer.sampleRate },
+		};
+	} catch (error) {
+		operationOutcome = { status: "failed", error };
+	} finally {
+		try {
+			await audioHandle.close();
+		} catch (error) {
+			closeFailed = true;
+			closeError = error;
+		}
 	}
 
-	return { samples, sampleRate: audioBuffer.sampleRate };
+	if (!operationOutcome) {
+		throw new Error("Audio decoding completed without a result.");
+	}
+	if (operationOutcome.status === "failed") {
+		if (closeFailed) {
+			throw new AggregateError(
+				[operationOutcome.error, closeError],
+				"Failed to decode audio and close its context.",
+			);
+		}
+		throw operationOutcome.error;
+	}
+	if (closeFailed) throw closeError;
+	return operationOutcome.value;
 }
 
 export interface AudibleElementCandidate {
@@ -628,61 +657,74 @@ export async function createTimelineAudioBuffer({
 	duration,
 	sampleRate = EXPORT_SAMPLE_RATE,
 	audioContext,
+	resources,
 }: {
 	tracks: SceneTracks;
 	mediaAssets: MediaAsset[];
 	duration: number;
 	sampleRate?: number;
 	audioContext?: AudioContext;
+	resources: SessionResources;
 }): Promise<AudioBuffer | null> {
-	const context = audioContext ?? createAudioContext({ sampleRate });
+	const contextHandle = audioContext
+		? null
+		: resources.createAudioContext({ request: { sampleRate } });
+	if (contextHandle && !contextHandle.context) {
+		await contextHandle.close();
+		throw new Error("Timeline audio is unavailable on this Host.");
+	}
+	const context = audioContext ?? contextHandle!.context!;
 
-	const audioElements = await collectAudioElements({
-		tracks,
-		mediaAssets,
-		audioContext: context,
-	});
+	try {
+		const audioElements = await collectAudioElements({
+			tracks,
+			mediaAssets,
+			audioContext: context,
+		});
 
-	if (audioElements.length === 0) return null;
+		if (audioElements.length === 0) return null;
 
-	const outputChannels = 2;
-	const durationSeconds = duration / TICKS_PER_SECOND;
-	const outputLength = Math.ceil(durationSeconds * sampleRate);
-	const outputBuffer = context.createBuffer(
-		outputChannels,
-		outputLength,
-		sampleRate,
-	);
-
-	for (const element of audioElements) {
-		if (element.muted) continue;
-
-		const renderedBuffer = shouldMaintainPitch({
-			rate: element.retime?.rate ?? 1,
-			maintainPitch: element.retime?.maintainPitch,
-		})
-			? await renderRetimedBuffer({
-					audioContext: context,
-					sourceBuffer: element.buffer,
-					trimStart: element.trimStart,
-					clipDuration: element.duration,
-					retime: element.retime,
-					maintainPitch: true,
-				})
-			: undefined;
-
-		mixAudioChannels({
-			element,
-			buffer: renderedBuffer ?? element.buffer,
-			trimStart: renderedBuffer ? 0 : element.trimStart,
-			retime: renderedBuffer ? undefined : element.retime,
-			outputBuffer,
+		const outputChannels = 2;
+		const durationSeconds = duration / TICKS_PER_SECOND;
+		const outputLength = Math.ceil(durationSeconds * sampleRate);
+		const outputBuffer = context.createBuffer(
+			outputChannels,
 			outputLength,
 			sampleRate,
-		});
-	}
+		);
 
-	return await applyAudioMasteringToBuffer({ audioBuffer: outputBuffer });
+		for (const element of audioElements) {
+			if (element.muted) continue;
+
+			const renderedBuffer = shouldMaintainPitch({
+				rate: element.retime?.rate ?? 1,
+				maintainPitch: element.retime?.maintainPitch,
+			})
+				? await renderRetimedBuffer({
+						audioContext: context,
+						sourceBuffer: element.buffer,
+						trimStart: element.trimStart,
+						clipDuration: element.duration,
+						retime: element.retime,
+						maintainPitch: true,
+					})
+				: undefined;
+
+			mixAudioChannels({
+				element,
+				buffer: renderedBuffer ?? element.buffer,
+				trimStart: renderedBuffer ? 0 : element.trimStart,
+				retime: renderedBuffer ? undefined : element.retime,
+				outputBuffer,
+				outputLength,
+				sampleRate,
+			});
+		}
+
+		return await applyAudioMasteringToBuffer({ audioBuffer: outputBuffer });
+	} finally {
+		if (contextHandle) await contextHandle.close();
+	}
 }
 
 function collectPeakRange({

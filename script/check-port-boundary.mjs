@@ -502,4 +502,15 @@ function runCheck() {
 }
 
 if (process.argv.includes("--negative-control")) runNegativeControl();
-else runCheck();
+else {
+	runCheck();
+	try {
+		execFileSync(
+			process.execPath,
+			[join(REPO_ROOT, "script", "check-session-resource-boundary.mjs")],
+			{ cwd: REPO_ROOT, stdio: "inherit" },
+		);
+	} catch {
+		process.exit(1);
+	}
+}

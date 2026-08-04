@@ -6,8 +6,6 @@ import {
 import type { MediaAsset } from "@/media/types";
 import { buildWaveformSourceKey } from "@/media/waveform-summary";
 import { savePersistedMediaAsset } from "@/media/persistence";
-import { videoCache } from "@/services/video-cache/service";
-import { waveformCache } from "@/services/waveform-cache/service";
 import { hasMediaId } from "@/timeline/element-utils";
 import type { SceneTracks } from "@/timeline";
 import { toast } from "sonner";
@@ -42,7 +40,9 @@ export class RemoveMediaAssetCommand extends Command {
 			return;
 		}
 
-		if (this.removedAsset.url) {
+		if (this.removedAsset.urlHandle) {
+			this.removedAsset.urlHandle.revoke();
+		} else if (this.removedAsset.url) {
 			URL.revokeObjectURL(this.removedAsset.url);
 		}
 		if (this.removedAsset.thumbnailUrl) {
@@ -51,13 +51,18 @@ export class RemoveMediaAssetCommand extends Command {
 			}
 		}
 
-		videoCache.clearVideo({ mediaId: this.assetId });
-		waveformCache.clearSource({
-			sourceKey: buildWaveformSourceKey({
-				kind: "media",
-				id: this.assetId,
-			}),
+		const cacheClear = editor.media.clearCachedMedia?.({
+			mediaId: this.assetId,
+			sourceKey: buildWaveformSourceKey({ kind: "media", id: this.assetId }),
 		});
+		if (cacheClear) {
+			void cacheClear.catch((error) => {
+				editor.reportPersistenceFailure({
+					operation: "command-remove-media-cache",
+					error,
+				});
+			});
+		}
 
 		editor.media.setAssets({
 			assets: assets.filter((media) => media.id !== this.assetId),
@@ -127,8 +132,20 @@ export class RemoveMediaAssetCommand extends Command {
 		if (!this.savedAssets || !this.removedAsset) return null;
 		const restoredAsset: MediaAsset = {
 			...this.removedAsset,
-			url: URL.createObjectURL(this.removedAsset.file),
 		};
+		// Production sessions always provide the mediated URL seam. Narrow command
+		// harnesses may intentionally omit it; restore their prior URL without
+		// widening the test double or reaching for a new global URL.
+		const urlHandle = editor.resources?.createObjectUrl?.({
+			blob: this.removedAsset.file,
+		});
+		if (urlHandle) {
+			restoredAsset.url = urlHandle.url;
+			restoredAsset.urlHandle = urlHandle;
+		} else {
+			restoredAsset.urlHandle = undefined;
+			restoredAsset.url = this.removedAsset.url;
+		}
 		editor.media.setAssets({
 			assets: this.savedAssets.map((asset) =>
 				asset.id === this.assetId ? restoredAsset : asset,

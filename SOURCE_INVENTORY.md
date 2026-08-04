@@ -22,7 +22,7 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 
 ## Working-tree drift against the pin
 
-**169 inherited file(s) modified.** Each is expected to carry a `PATCHES.md` row.
+**186 inherited file(s) modified.** Each is expected to carry a `PATCHES.md` row.
 
 - `apps/web/public/browserconfig.xml`
 - `apps/web/public/manifest.json`
@@ -98,6 +98,7 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/components/ui/font-picker.tsx`
 - `apps/web/src/components/ui/use-overlay-open-change.ts`
 - `apps/web/src/core/index.ts`
+- `apps/web/src/core/managers/audio-manager.ts`
 - `apps/web/src/core/managers/commands.ts`
 - `apps/web/src/core/managers/media-manager.ts`
 - `apps/web/src/core/managers/playback-manager.ts`
@@ -114,6 +115,7 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/effects/components/assets-view.tsx`
 - `apps/web/src/effects/components/effects-tab.tsx`
 - `apps/web/src/effects/definitions/index.ts`
+- `apps/web/src/export/index.ts`
 - `apps/web/src/feedback/components/feedback-popover.tsx`
 - `apps/web/src/fonts/google-fonts.ts`
 - `apps/web/src/fonts/use-font-atlas.ts`
@@ -122,10 +124,15 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/graphics/index.ts`
 - `apps/web/src/guides/definitions/grid.tsx`
 - `apps/web/src/guides/definitions/platforms.tsx`
+- `apps/web/src/hooks/use-raf-loop.ts`
 - `apps/web/src/masks/builtin/definitions/index.ts`
 - `apps/web/src/masks/components/masks-tab.tsx`
 - `apps/web/src/masks/use-mask-handles.ts`
+- `apps/web/src/media/audio.ts`
+- `apps/web/src/media/mediabunny.ts`
 - `apps/web/src/media/processing.ts`
+- `apps/web/src/media/types.ts`
+- `apps/web/src/media/upload-toast.ts`
 - `apps/web/src/media/use-file-upload.ts`
 - `apps/web/src/media/use-paste-media.ts`
 - `apps/web/src/params/registry.ts`
@@ -139,6 +146,9 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/preview/hooks/use-transform-handles.ts`
 - `apps/web/src/preview/preview-store.ts`
 - `apps/web/src/project/components/migration-dialog.tsx`
+- `apps/web/src/retime/audio-stretch.ts`
+- `apps/web/src/selection/hooks/use-box-select.ts`
+- `apps/web/src/selection/selectable-surface.tsx`
 - `apps/web/src/services/renderer/canvas-renderer.ts`
 - `apps/web/src/services/renderer/compositor/wasm-compositor.ts`
 - `apps/web/src/services/renderer/effect-preview.ts`
@@ -154,6 +164,8 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/services/storage/migrations/v1-to-v2.ts`
 - `apps/web/src/services/storage/service.ts`
 - `apps/web/src/services/transcription/service.ts`
+- `apps/web/src/services/video-cache/service.ts`
+- `apps/web/src/services/waveform-cache/service.ts`
 - `apps/web/src/sounds/components/assets-view.tsx`
 - `apps/web/src/sounds/sounds-store.ts`
 - `apps/web/src/sounds/use-sound-search.ts`
@@ -170,6 +182,7 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/timeline/bookmarks/components/bookmarks.tsx`
 - `apps/web/src/timeline/bookmarks/hooks/use-bookmark-drag.ts`
 - `apps/web/src/timeline/components/audio-volume-line.tsx`
+- `apps/web/src/timeline/components/audio-waveform.tsx`
 - `apps/web/src/timeline/components/graph-editor/custom-presets-store.ts`
 - `apps/web/src/timeline/components/graph-editor/popover.tsx`
 - `apps/web/src/timeline/components/graph-editor/use-controller.ts`
@@ -178,25 +191,30 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/timeline/components/timeline-playhead.tsx`
 - `apps/web/src/timeline/components/timeline-toolbar.tsx`
 - `apps/web/src/timeline/controllers/drag-drop-controller.ts`
+- `apps/web/src/timeline/controllers/zoom-controller.ts`
 - `apps/web/src/timeline/hooks/element/use-element-interaction.ts`
 - `apps/web/src/timeline/hooks/element/use-element-selection.ts`
 - `apps/web/src/timeline/hooks/element/use-keyframe-drag.ts`
 - `apps/web/src/timeline/hooks/element/use-keyframe-selection.ts`
+- `apps/web/src/timeline/hooks/use-edge-auto-scroll.ts`
 - `apps/web/src/timeline/hooks/use-element-preview.ts`
+- `apps/web/src/timeline/hooks/use-scroll-position.ts`
 - `apps/web/src/timeline/hooks/use-timeline-drag-drop.ts`
 - `apps/web/src/timeline/hooks/use-timeline-playhead.ts`
 - `apps/web/src/timeline/hooks/use-timeline-resize.ts`
 - `apps/web/src/timeline/hooks/use-timeline-seek.ts`
 - `apps/web/src/timeline/hooks/use-timeline-zoom.ts`
 - `apps/web/src/timeline/timeline-store.ts`
+- `apps/web/src/utils/browser.ts`
 - `rust/wasm/README.md`
 - `rust/wasm/src/compositor.rs`
 - `rust/wasm/src/gpu.rs`
 - `rust/wasm/src/wasm.rs`
 
-**97 file(s) added by this fork.** These are **not** patches and must **not** appear in `PATCHES.md`, which logs modifications to inherited files only.
+**114 file(s) added by this fork.** These are **not** patches and must **not** appear in `PATCHES.md`, which logs modifications to inherited files only.
 
 - `apps/web/public/workers/c4-worker-fixture.js`
+- `apps/web/src/app/c6-disposal/page.tsx`
 - `apps/web/src/components/__tests__/storage-provider-operations.test.ts`
 - `apps/web/src/components/storage-provider-operations.ts`
 - `apps/web/src/core/managers/__tests__/media-persistence-rewire.test.ts`
@@ -238,15 +256,26 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/editor/runtime/session-core-owner.ts`
 - `apps/web/src/editor/runtime/session-stores.ts`
 - `apps/web/src/editor/runtime/wasm-runtime-providers.ts`
+- `apps/web/src/editor/session/__tests__/c6-durable-reopen.test.ts`
+- `apps/web/src/editor/session/__tests__/c6-test-audio-context.ts`
+- `apps/web/src/editor/session/__tests__/disposal-oracle.test.ts`
 - `apps/web/src/editor/session/__tests__/editor-singleton-boundary.test.ts`
+- `apps/web/src/editor/session/__tests__/independent-timer-ledger.test.ts`
 - `apps/web/src/editor/session/__tests__/session-async-store-isolation.test.ts`
+- `apps/web/src/editor/session/__tests__/session-disposal-c6.test.ts`
 - `apps/web/src/editor/session/__tests__/session-lifecycle.test.ts`
 - `apps/web/src/editor/session/__tests__/session-runtime-ownership.test.tsx`
 - `apps/web/src/editor/session/__tests__/session-state-isolation.test.ts`
+- `apps/web/src/editor/session/__tests__/session-timer-matrix.test.ts`
 - `apps/web/src/editor/session/__tests__/wasm-test-mock.ts`
+- `apps/web/src/editor/session/c6-disposal-harness.tsx`
+- `apps/web/src/editor/session/c6-durable-reopen-browser.ts`
+- `apps/web/src/editor/session/c6-durable-reopen.ts`
 - `apps/web/src/editor/session/create-session.ts`
+- `apps/web/src/editor/session/disposal-oracle.ts`
 - `apps/web/src/editor/session/editor-session-host.tsx`
 - `apps/web/src/editor/session/editor-session-provider.tsx`
+- `apps/web/src/editor/session/independent-timer-ledger.ts`
 - `apps/web/src/editor/session/index.ts`
 - `apps/web/src/editor/session/resources.ts`
 - `apps/web/src/editor/session/session-resources.ts`
@@ -255,12 +284,14 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/editor/use-session-store.ts`
 - `apps/web/src/fonts/__tests__/host-font-assets.test.ts`
 - `apps/web/src/graphics/generated-preview.ts`
+- `apps/web/src/media/__tests__/audio-resource-lifecycle.test.ts`
 - `apps/web/src/media/__tests__/persistence.test.ts`
 - `apps/web/src/media/__tests__/processing-capacity.test.ts`
 - `apps/web/src/media/persistence.ts`
 - `apps/web/src/preview/components/__tests__/timecode-playback-subscription.test.ts`
 - `apps/web/src/preview/components/playback-time-subscription.ts`
 - `apps/web/src/preview/components/use-playback-time.ts`
+- `apps/web/src/services/renderer/__tests__/effect-preview-ownership.test.ts`
 - `apps/web/src/services/renderer/__tests__/host-effect-preview.test.ts`
 - `apps/web/src/services/renderer/effect-preview-source.ts`
 - `apps/web/src/services/renderer/nodes/sticker-cache-key.ts`
@@ -288,8 +319,11 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/services/storage/browser-project-store.ts`
 - `apps/web/src/services/storage/browser-storage-mechanisms.ts`
 - `apps/web/src/services/transcription/__tests__/session-service.test.ts`
+- `apps/web/src/services/video-cache/__tests__/service-ownership.test.ts`
+- `apps/web/src/services/waveform-cache/__tests__/service-ownership.test.ts`
 - `apps/web/src/stickers/__tests__/host-assets.test.ts`
 - `apps/web/src/timeline/__tests__/element-with-track-selector.test.ts`
 - `apps/web/src/timeline/element-with-track-selector.ts`
+- `apps/web/src/utils/__tests__/browser-resource-lifecycle.test.ts`
 - `rust/wasm/LICENSE`
 - `rust/wasm/src/runtime_state.rs`

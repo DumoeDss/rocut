@@ -46,6 +46,7 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 	const { ensureEditorProcessBootstrap } =
 		await import("@/editor/runtime/process-bootstrap");
 	const { createInMemoryHost } = await import("@/editor/ports/in-memory/host");
+	const { C6TestAudioContext } = await import("./c6-test-audio-context");
 	const { RecordingDiagnostics } = await import("@/editor/ports/in-memory");
 	const { useEditor, useEditorInstance } = await import("@/editor/use-editor");
 	const { storesForSession } = await import("../../runtime/session-stores");
@@ -142,6 +143,12 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 			for (const key of MANAGER_KEYS) {
 				expect(editorA[key]).not.toBe(editorB[key]);
 			}
+			expect(editorA.media.getVideoCache()).not.toBe(
+				editorB.media.getVideoCache(),
+			);
+			expect(editorA.media.getWaveformCache()).not.toBe(
+				editorB.media.getWaveformCache(),
+			);
 
 			editorA.command.execute({
 				command: {
@@ -259,11 +266,26 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 		});
 
 		test("adding a sound targets only the supplied live session", async () => {
+			const hostA = createInMemoryHost({ projectId: "sound-a" });
+			const hostB = createInMemoryHost({ projectId: "sound-b" });
+			// The protected in-memory port intentionally has no ambient Web Audio
+			// implementation. Supply the test's decoder through the owning Host seam
+			// instead of mutating globalThis.AudioContext.
+			const createAudioContext = hostA.runtimeResources.createAudioContext.bind(
+				hostA.runtimeResources,
+			);
+			hostA.runtimeResources.createAudioContext = (args) => {
+				const handle = createAudioContext(args);
+				return {
+					...handle,
+					context: new C6TestAudioContext(),
+				};
+			};
 			const sessionA = await createEditorSession({
-				host: createInMemoryHost({ projectId: "sound-a" }),
+				host: hostA,
 			});
 			const sessionB = await createEditorSession({
-				host: createInMemoryHost({ projectId: "sound-b" }),
+				host: hostB,
 			});
 			const editorA = editorForSession(sessionA);
 			const editorB = editorForSession(sessionB);
@@ -273,23 +295,10 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 			editorB.timeline.insertElement = (args) => insertedB.push(args);
 
 			const originalFetch = globalThis.fetch;
-			const audioContextDescriptor = Object.getOwnPropertyDescriptor(
-				globalThis,
-				"AudioContext",
-			);
 			globalThis.fetch = Object.assign(
 				async () => new Response(new ArrayBuffer(8)),
 				{ preconnect: () => {} },
 			);
-			Object.defineProperty(globalThis, "AudioContext", {
-				configurable: true,
-				writable: true,
-				value: class {
-					async decodeAudioData() {
-						return { duration: 1 };
-					}
-				},
-			});
 
 			try {
 				const added = await storesForSession(sessionA)
@@ -323,15 +332,6 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 				expect(insertedB).toHaveLength(0);
 			} finally {
 				globalThis.fetch = originalFetch;
-				if (audioContextDescriptor) {
-					Object.defineProperty(
-						globalThis,
-						"AudioContext",
-						audioContextDescriptor,
-					);
-				} else {
-					Reflect.deleteProperty(globalThis, "AudioContext");
-				}
 				await sessionA.dispose();
 				await sessionB.dispose();
 			}
@@ -824,48 +824,103 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 			}
 		});
 
-		test("concrete runtime provider attempts both wrapper frees exactly once", async () => {
-			const before = wasmTestControl.runtimeWrapperFreeCalls();
+		test("a failed GPU teardown keeps both query wrappers live for retry", async () => {
+			const freeBefore = wasmTestControl.runtimeWrapperFreeCalls();
+			const disposeGpuBefore = wasmTestControl.disposeGpuCalls();
+			const teardownError = new Error("GPU teardown failed");
+			wasmTestControl.queueDisposeGpuError(teardownError);
+			const runtime = await prepareWasmRuntimeProviders();
+
+			await expect(runtime.dispose()).rejects.toBe(teardownError);
+			expect(wasmTestControl.runtimeWrapperFreeCalls()).toEqual(freeBefore);
+			expect(runtime.runtimeGpu.liveHandles()).toEqual([]);
+			await runtime.dispose();
+			expect(wasmTestControl.disposeGpuCalls()).toBe(disposeGpuBefore + 2);
+			expect(wasmTestControl.runtimeWrapperFreeCalls()).toEqual({
+				graphics: freeBefore.graphics + 1,
+				gpu: freeBefore.gpu + 1,
+			});
+		});
+
+		test("a wrapper-free retry skips GPU teardown and already-freed wrappers", async () => {
+			const freeBefore = wasmTestControl.runtimeWrapperFreeCalls();
+			const disposeGpuBefore = wasmTestControl.disposeGpuCalls();
 			const graphicsError = new Error("graphics free failed");
-			const gpuError = new Error("gpu free failed");
 			wasmTestControl.queueRuntimeWrapperFreeErrors({
 				graphics: graphicsError,
-				gpu: gpuError,
 			});
 			const runtime = await prepareWasmRuntimeProviders();
-			let disposalError: unknown;
-			try {
-				await runtime.dispose();
-			} catch (error) {
-				disposalError = error;
-			}
-			expect(disposalError).toBeInstanceOf(AggregateError);
-			expect(aggregateErrors(disposalError)).toEqual([graphicsError, gpuError]);
+
+			await expect(runtime.dispose()).rejects.toBe(graphicsError);
 			expect(wasmTestControl.runtimeWrapperFreeCalls()).toEqual({
-				graphics: before.graphics + 1,
-				gpu: before.gpu + 1,
+				graphics: freeBefore.graphics + 1,
+				gpu: freeBefore.gpu + 1,
 			});
 			await runtime.dispose();
+			expect(wasmTestControl.disposeGpuCalls()).toBe(disposeGpuBefore + 1);
 			expect(wasmTestControl.runtimeWrapperFreeCalls()).toEqual({
-				graphics: before.graphics + 1,
-				gpu: before.gpu + 1,
+				graphics: freeBefore.graphics + 2,
+				gpu: freeBefore.gpu + 1,
+			});
+		});
+
+		test("a wrapper constructor failure rolls back without acquiring an owner", async () => {
+			const freeBefore = wasmTestControl.runtimeWrapperFreeCalls();
+			const constructorBefore =
+				wasmTestControl.runtimeWrapperConstructorCalls();
+			const disposeGpuBefore = wasmTestControl.disposeGpuCalls();
+			const constructorError = new Error("GPU query constructor failed");
+			wasmTestControl.queueRuntimeWrapperConstructorErrors({
+				gpu: constructorError,
 			});
 
-			const singleBefore = wasmTestControl.runtimeWrapperFreeCalls();
-			const singleError = new Error("only graphics free failed");
-			wasmTestControl.queueRuntimeWrapperFreeErrors({ graphics: singleError });
-			const singleFailureRuntime = await prepareWasmRuntimeProviders();
-			let singleDisposalError: unknown;
-			try {
-				await singleFailureRuntime.dispose();
-			} catch (error) {
-				singleDisposalError = error;
-			}
-			expect(singleDisposalError).toBe(singleError);
-			expect(wasmTestControl.runtimeWrapperFreeCalls()).toEqual({
-				graphics: singleBefore.graphics + 1,
-				gpu: singleBefore.gpu + 1,
+			await expect(prepareWasmRuntimeProviders()).rejects.toBe(
+				constructorError,
+			);
+			expect(wasmTestControl.runtimeWrapperConstructorCalls()).toEqual({
+				graphics: constructorBefore.graphics + 1,
+				gpu: constructorBefore.gpu + 1,
 			});
+			expect(wasmTestControl.runtimeWrapperFreeCalls()).toEqual({
+				graphics: freeBefore.graphics + 1,
+				gpu: freeBefore.gpu,
+			});
+
+			const runtime = await prepareWasmRuntimeProviders();
+			await runtime.dispose();
+			expect(wasmTestControl.disposeGpuCalls()).toBe(disposeGpuBefore + 1);
+		});
+
+		test("concurrent owners and repeated dispose calls release one process generation", async () => {
+			const freeBefore = wasmTestControl.runtimeWrapperFreeCalls();
+			const disposeGpuBefore = wasmTestControl.disposeGpuCalls();
+			const ownerA = await prepareWasmRuntimeProviders();
+			const ownerB = await prepareWasmRuntimeProviders();
+
+			await ownerA.dispose();
+			expect(wasmTestControl.disposeGpuCalls()).toBe(disposeGpuBefore);
+			expect(wasmTestControl.runtimeWrapperFreeCalls()).toEqual({
+				graphics: freeBefore.graphics + 1,
+				gpu: freeBefore.gpu + 1,
+			});
+			await Promise.all([ownerB.dispose(), ownerB.dispose()]);
+			expect(wasmTestControl.disposeGpuCalls()).toBe(disposeGpuBefore + 1);
+			expect(wasmTestControl.runtimeWrapperFreeCalls()).toEqual({
+				graphics: freeBefore.graphics + 2,
+				gpu: freeBefore.gpu + 2,
+			});
+		});
+
+		test("a successful teardown permits a fresh independently disposed generation", async () => {
+			const disposeGpuBefore = wasmTestControl.disposeGpuCalls();
+			const first = await prepareWasmRuntimeProviders();
+			expect(first.runtimeGraphics.selectedBackend()).toBe("webgpu");
+			await first.dispose();
+
+			const second = await prepareWasmRuntimeProviders();
+			expect(second.runtimeGraphics.selectedBackend()).toBe("webgpu");
+			await second.dispose();
+			expect(wasmTestControl.disposeGpuCalls()).toBe(disposeGpuBefore + 2);
 		});
 	});
 

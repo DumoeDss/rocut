@@ -317,6 +317,24 @@
 			"reason": "Cross-session reconciliation must distinguish another live owner's handle from a genuinely untracked runtime allocation."
 		},
 		{
+			"path": "apps/web/src/editor/runtime/wasm-runtime-providers.ts",
+			"symbol": "sharedLease",
+			"classification": "shared-runtime-final-owner-lease",
+			"reason": "The process-wide WASM lease only counts explicit session owners and is released by the final owner after exact live-handle reconciliation; it carries no editor state or default session."
+		},
+		{
+			"path": "apps/web/src/editor/runtime/wasm-runtime-providers.ts",
+			"symbol": "generation",
+			"classification": "shared-runtime-final-owner-lease",
+			"reason": "The monotonic generation distinguishes serialized runtime lease instances and cannot publish session state."
+		},
+		{
+			"path": "apps/web/src/editor/runtime/wasm-runtime-providers.ts",
+			"symbol": "transitionTail",
+			"classification": "shared-runtime-final-owner-lease",
+			"reason": "The promise tail serializes acquire/release transitions for the shared WASM lease; it contains only operation ordering, never project or editor state."
+		},
+		{
 			"path": "apps/web/src/services/renderer/compositor/frame-descriptor.ts",
 			"symbol": "identityKeys",
 			"classification": "content-identity-cache",

@@ -89,9 +89,11 @@ export function MediaView() {
 		try {
 			await showMediaUploadToast({
 				filesCount: files.length,
+				resources: editor.resources,
 				promise: async () => {
 					const processedAssets = await processMediaAssets({
 						files,
+						resources: editor.resources,
 						store: editor.persistence.store,
 						reportPersistenceFailure: (failure) =>
 							editor.reportPersistenceFailure(failure),

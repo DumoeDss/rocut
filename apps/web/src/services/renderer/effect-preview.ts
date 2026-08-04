@@ -5,6 +5,7 @@ import { gpuRenderer } from "./gpu-renderer";
 import type { AssetResolver } from "@/editor/ports";
 import {
 	getEffectPreviewSource,
+	releaseEffectPreviewSource,
 	type EffectPreviewSource,
 } from "./effect-preview-source";
 
@@ -13,6 +14,14 @@ export class EffectPreviewService {
 	readonly PREVIEW_SIZE = PREVIEW_SIZE;
 
 	constructor(private readonly source: EffectPreviewSource) {}
+
+	dispose(): void {
+		this.source.dispose();
+	}
+
+	reset(): void {
+		this.source.reset();
+	}
 
 	get previewImageUrl(): string {
 		return this.source.previewImageUrl;
@@ -104,19 +113,53 @@ export class EffectPreviewService {
 	}
 }
 
-const services = new WeakMap<object, EffectPreviewService>();
+interface EffectPreviewEntry {
+	readonly service: EffectPreviewService;
+	readonly source: EffectPreviewSource;
+	owners: number;
+}
 
-export function getEffectPreviewService({
+const services = new WeakMap<object, EffectPreviewEntry>();
+
+export function acquireEffectPreviewService({
 	resolver,
 }: {
 	resolver: AssetResolver;
 }): EffectPreviewService {
-	let service = services.get(resolver as object);
-	if (!service) {
-		service = new EffectPreviewService(getEffectPreviewSource({ resolver }));
-		services.set(resolver as object, service);
+	let entry = services.get(resolver as object);
+	if (!entry) {
+		const source = getEffectPreviewSource({ resolver });
+		entry = {
+			service: new EffectPreviewService(source),
+			source,
+			owners: 0,
+		};
+		services.set(resolver as object, entry);
 	}
-	return service;
+	entry.owners += 1;
+	return entry.service;
+}
+
+export function releaseEffectPreviewService({
+	resolver,
+}: {
+	resolver: AssetResolver;
+}): void {
+	const key = resolver as object;
+	const entry = services.get(key);
+	if (!entry) return;
+	entry.owners = Math.max(0, entry.owners - 1);
+	if (entry.owners !== 0) return;
+	services.delete(key);
+	releaseEffectPreviewSource({ resolver, source: entry.source });
+}
+
+export function resetEffectPreviewService({
+	resolver,
+}: {
+	resolver: AssetResolver;
+}): void {
+	services.get(resolver as object)?.service.reset();
 }
 
 // C6 owns deterministic image/canvas/service disposal. C4 intentionally limits

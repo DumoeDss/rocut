@@ -1000,6 +1000,7 @@ function AudioElementContent({
 		);
 	}
 	const mediaAssets = useEditor((e) => e.media.getAssets());
+	const waveformCache = useEditor((e) => e.media.getWaveformCache());
 	const mediaAsset =
 		element.sourceType === "upload"
 			? (mediaAssets.find((asset) => asset.id === element.mediaId) ?? null)
@@ -1030,6 +1031,7 @@ function AudioElementContent({
 				<MediaElementHeader name={mediaLabel} hasFade={false} />
 				<div className="absolute inset-x-0 top-5 bottom-0 overflow-hidden">
 					<AudioWaveform
+						cache={waveformCache}
 						sourceKey={sourceKey}
 						sourceFile={sourceFile}
 						audioBuffer={audioBuffer}

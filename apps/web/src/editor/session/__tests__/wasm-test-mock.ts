@@ -40,8 +40,32 @@ let heldCanvasCapture:
 	| undefined;
 let graphicsFreeCalls = 0;
 let gpuFreeCalls = 0;
+let disposeGpuCalls = 0;
+let graphicsConstructorCalls = 0;
+let gpuConstructorCalls = 0;
 const graphicsFreeErrors: unknown[] = [];
 const gpuFreeErrors: unknown[] = [];
+const disposeGpuErrors: unknown[] = [];
+const graphicsConstructorErrors: unknown[] = [];
+const gpuConstructorErrors: unknown[] = [];
+const mediaInputs: MockMediaInput[] = [];
+const queuedPrimaryVideoTracks: Array<{
+	entered: () => void;
+	wait: Promise<MockVideoTrack | null>;
+}> = [];
+const queuedPrimaryAudioTrackOutcomes: Array<
+	| { kind: "track" }
+	| { kind: "null" }
+	| { kind: "reject"; error: unknown }
+	| {
+			kind: "held";
+			entered: () => void;
+			wait: Promise<MockAudioTrack | null>;
+	  }
+> = [];
+const audioBufferSinkConstructorErrors: unknown[] = [];
+const outputCancelErrors: unknown[] = [];
+let outputCancelCalls = 0;
 
 export const wasmTestControl = {
 	queueCompositorHandle(handle: number) {
@@ -81,8 +105,86 @@ export const wasmTestControl = {
 		if (graphics !== undefined) graphicsFreeErrors.push(graphics);
 		if (gpu !== undefined) gpuFreeErrors.push(gpu);
 	},
+	queueRuntimeWrapperConstructorErrors({
+		graphics,
+		gpu,
+	}: {
+		graphics?: unknown;
+		gpu?: unknown;
+	}) {
+		if (graphics !== undefined) graphicsConstructorErrors.push(graphics);
+		if (gpu !== undefined) gpuConstructorErrors.push(gpu);
+	},
+	queueDisposeGpuError(error: unknown) {
+		disposeGpuErrors.push(error);
+	},
 	runtimeWrapperFreeCalls() {
 		return { graphics: graphicsFreeCalls, gpu: gpuFreeCalls };
+	},
+	runtimeWrapperConstructorCalls() {
+		return { graphics: graphicsConstructorCalls, gpu: gpuConstructorCalls };
+	},
+	disposeGpuCalls() {
+		return disposeGpuCalls;
+	},
+	holdNextPrimaryVideoTrack() {
+		let markEntered!: () => void;
+		const entered = new Promise<void>((resolve) => {
+			markEntered = resolve;
+		});
+		let resolveTrack!: (track: MockVideoTrack | null) => void;
+		const wait = new Promise<MockVideoTrack | null>((resolve) => {
+			resolveTrack = resolve;
+		});
+		queuedPrimaryVideoTracks.push({ entered: markEntered, wait });
+		return {
+			entered,
+			release: ({ canDecode = true }: { canDecode?: boolean } = {}) => {
+				resolveTrack(new MockVideoTrack(canDecode));
+			},
+		};
+	},
+	mediaInputs() {
+		return [...mediaInputs];
+	},
+	queuePrimaryAudioTrackSuccess() {
+		queuedPrimaryAudioTrackOutcomes.push({ kind: "track" });
+	},
+	queuePrimaryAudioTrackNull() {
+		queuedPrimaryAudioTrackOutcomes.push({ kind: "null" });
+	},
+	queuePrimaryAudioTrackError(error: unknown) {
+		queuedPrimaryAudioTrackOutcomes.push({ kind: "reject", error });
+	},
+	holdNextPrimaryAudioTrack() {
+		let markEntered!: () => void;
+		const entered = new Promise<void>((resolve) => {
+			markEntered = resolve;
+		});
+		let resolveTrack!: (track: MockAudioTrack | null) => void;
+		const wait = new Promise<MockAudioTrack | null>((resolve) => {
+			resolveTrack = resolve;
+		});
+		queuedPrimaryAudioTrackOutcomes.push({
+			kind: "held",
+			entered: markEntered,
+			wait,
+		});
+		return {
+			entered,
+			release: ({ hasTrack = true }: { hasTrack?: boolean } = {}) => {
+				resolveTrack(hasTrack ? new MockAudioTrack() : null);
+			},
+		};
+	},
+	queueAudioBufferSinkConstructorError(error: unknown) {
+		audioBufferSinkConstructorErrors.push(error);
+	},
+	queueOutputCancelError(error: unknown) {
+		outputCancelErrors.push(error);
+	},
+	outputCancelCalls() {
+		return outputCancelCalls;
 	},
 };
 
@@ -102,7 +204,11 @@ class MockOutput {
 	addVideoTrack() {}
 	addAudioTrack() {}
 	async start() {}
-	async cancel() {}
+	async cancel() {
+		outputCancelCalls += 1;
+		const error = outputCancelErrors.shift();
+		if (error !== undefined) throw error;
+	}
 	async finalize() {
 		this.target.buffer = new ArrayBuffer(8);
 	}
@@ -145,9 +251,55 @@ class MockAudioBufferSource {
 	close() {}
 }
 
-class MockMediaInput {}
+class MockVideoTrack {
+	constructor(private readonly decodable = true) {}
+
+	async canDecode() {
+		return this.decodable;
+	}
+}
+
+class MockAudioTrack {}
+
+class MockMediaInput {
+	disposeCalls = 0;
+
+	constructor() {
+		mediaInputs.push(this);
+	}
+
+	async getPrimaryVideoTrack() {
+		const held = queuedPrimaryVideoTracks.shift();
+		if (!held) return new MockVideoTrack();
+		held.entered();
+		return held.wait;
+	}
+
+	async getPrimaryAudioTrack() {
+		const outcome = queuedPrimaryAudioTrackOutcomes.shift();
+		if (outcome?.kind === "reject") throw outcome.error;
+		if (outcome?.kind === "null") return null;
+		if (outcome?.kind === "held") {
+			outcome.entered();
+			return outcome.wait;
+		}
+		return new MockAudioTrack();
+	}
+
+	dispose() {
+		this.disposeCalls += 1;
+	}
+}
 class MockMediaSource {}
 class MockMediaSink {}
+class MockAudioBufferSink {
+	constructor() {
+		const error = audioBufferSinkConstructorErrors.shift();
+		if (error !== undefined) throw error;
+	}
+
+	async *buffers() {}
+}
 
 mock.module("mediabunny", () => ({
 	Output: MockOutput,
@@ -158,7 +310,7 @@ mock.module("mediabunny", () => ({
 	AudioBufferSource: MockAudioBufferSource,
 	Input: MockMediaInput,
 	BlobSource: MockMediaSource,
-	AudioBufferSink: MockMediaSink,
+	AudioBufferSink: MockAudioBufferSink,
 	CanvasSink: MockMediaSink,
 	VideoSampleSink: MockMediaSink,
 	ALL_FORMATS: [],
@@ -169,34 +321,67 @@ mock.module("mediabunny", () => ({
 }));
 
 class MockRuntimeGraphicsQuery {
+	private freed = false;
+
+	constructor() {
+		graphicsConstructorCalls += 1;
+		const error = graphicsConstructorErrors.shift();
+		if (error !== undefined) throw error;
+	}
+
+	private assertLive() {
+		if (this.freed) throw new Error("graphics query was already freed");
+	}
+
 	selectedBackend() {
+		this.assertLive();
 		return "webgpu" as const;
 	}
 	concurrentCompositorInstances() {
+		this.assertLive();
 		return 2;
 	}
 	unavailableReason() {
+		this.assertLive();
 		return "";
 	}
 	free() {
+		this.assertLive();
 		graphicsFreeCalls += 1;
 		const error = graphicsFreeErrors.shift();
 		if (error !== undefined) throw error;
+		this.freed = true;
 	}
 }
 
 class MockRuntimeGpuQuery {
+	private freed = false;
+
+	constructor() {
+		gpuConstructorCalls += 1;
+		const error = gpuConstructorErrors.shift();
+		if (error !== undefined) throw error;
+	}
+
+	private assertLive() {
+		if (this.freed) throw new Error("GPU query was already freed");
+	}
+
 	liveHandles() {
+		this.assertLive();
 		return [...liveCompositorHandles];
 	}
 	release({ handle }: { handle: number }) {
+		this.assertLive();
 		liveCompositorHandles.delete(handle);
 		compositorCanvases.delete(handle);
 	}
 	free() {
+		this.assertLive();
 		gpuFreeCalls += 1;
 		const error = gpuFreeErrors.shift();
 		if (error !== undefined) throw error;
+		this.freed = true;
 	}
 }
 
@@ -230,6 +415,13 @@ mock.module("opencut-wasm", () => ({
 	getLastFrameProfile: () => null,
 	initCompositor: () => {},
 	initializeGpu: async () => false,
+	disposeGpu: () => {
+		disposeGpuCalls += 1;
+		const error = disposeGpuErrors.shift();
+		if (error !== undefined) throw error;
+		liveCompositorHandles.clear();
+		compositorCanvases.clear();
+	},
 	lastFrameTime: ({ duration }: { duration: number }) => duration,
 	mediaTimeFromSeconds: ({ seconds }: { seconds: number }) =>
 		Math.round(seconds * TICKS_PER_SECOND),

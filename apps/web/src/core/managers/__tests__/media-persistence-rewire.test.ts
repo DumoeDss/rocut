@@ -223,4 +223,98 @@ if (process.env.OPENCUT_MEDIA_PERSISTENCE_TEST_ISOLATED !== "1") {
 			await store.loadAttachment({ projectId: "project", key: "remove-me" }),
 		).not.toBeNull();
 	});
+
+	test("remove, undo, redo, and second undo transfer URL ownership exactly once", async () => {
+		const file = new File([Uint8Array.of(1)], "owned.png", {
+			type: "image/png",
+		});
+		const handles: Array<{ url: string; revokeCalls: number }> = [];
+		const createObjectUrl = () => {
+			const entry = {
+				url: `blob:owned-${handles.length + 1}`,
+				revokeCalls: 0,
+			};
+			handles.push(entry);
+			return {
+				resourceId: `owned-${handles.length}`,
+				url: entry.url,
+				revoke: () => {
+					entry.revokeCalls += 1;
+				},
+			};
+		};
+		const initialHandle = createObjectUrl();
+		let assets = [
+			{
+				id: "owned-media",
+				name: file.name,
+				type: "image" as const,
+				file,
+				url: initialHandle.url,
+				urlHandle: initialHandle,
+			},
+		];
+		const tracks = {
+			overlay: [],
+			main: {
+				id: "main",
+				name: "Main",
+				type: "video" as const,
+				elements: [],
+				muted: false,
+				hidden: false,
+			},
+			audio: [],
+		};
+		const persistenceCalls: string[] = [];
+		const editor = {
+			resources: { createObjectUrl },
+			persistence: {
+				removeAttachment: async () => {
+					persistenceCalls.push("remove");
+				},
+				saveAttachment: async () => {
+					persistenceCalls.push("save");
+				},
+			},
+			reportPersistenceFailure: () => {},
+			media: {
+				getAssets: () => assets,
+				setAssets: ({ assets: next }: { assets: typeof assets }) => {
+					assets = next;
+				},
+			},
+			scenes: { getActiveScene: () => ({ tracks }) },
+			timeline: {
+				deleteElements: () => {},
+				updateTracks: () => {},
+			},
+		} as unknown as EditorCore;
+		const command = new RemoveMediaAssetCommand({
+			projectId: "owned-project",
+			assetId: "owned-media",
+		});
+
+		command.execute({ editor });
+		await Promise.resolve();
+		expect(assets).toEqual([]);
+		expect(handles[0]?.revokeCalls).toBe(1);
+
+		command.undo({ editor });
+		await Promise.resolve();
+		expect(assets[0]?.url).toBe("blob:owned-2");
+		expect(handles[1]?.revokeCalls).toBe(0);
+
+		command.execute({ editor });
+		await Promise.resolve();
+		expect(assets).toEqual([]);
+		expect(handles[0]?.revokeCalls).toBe(1);
+		expect(handles[1]?.revokeCalls).toBe(1);
+
+		command.undo({ editor });
+		await Promise.resolve();
+		expect(assets[0]?.url).toBe("blob:owned-3");
+		expect(handles[2]?.revokeCalls).toBe(0);
+		expect(persistenceCalls).toEqual(["remove", "save", "remove", "save"]);
+	});
 }

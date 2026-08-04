@@ -35,6 +35,7 @@ if (process.env.OPENCUT_C5_HOST_TEST_ISOLATED !== "1") {
 		{ createInMemoryHost },
 		{ InMemoryProjectStore },
 		{ editorForSession },
+		{ captureDurableBrowserStoreAttribution },
 	] = await Promise.all([
 		import("../next-editor-host"),
 		import("../../../../../vite-example/src/host/vite-host-config"),
@@ -43,6 +44,7 @@ if (process.env.OPENCUT_C5_HOST_TEST_ISOLATED !== "1") {
 		import("../../ports/in-memory/host"),
 		import("../../ports/in-memory"),
 		import("../../runtime/session-core-owner"),
+		import("../../session/c6-durable-reopen"),
 	]);
 
 	function expectBrowserRoles(host: EditorHost): void {
@@ -98,6 +100,81 @@ if (process.env.OPENCUT_C5_HOST_TEST_ISOLATED !== "1") {
 			expect(nextA.store).toBe(nextB.store);
 			expect(viteA.store).toBe(viteB.store);
 			expect(nextA.store).not.toBe(viteA.store);
+		});
+
+		test("durable attribution ignores a minified constructor name", () => {
+			class fQe extends storage.BrowserProjectStore {}
+			const attribution = captureDurableBrowserStoreAttribution({
+				store: new fQe(),
+				isDurableBrowserStore: (store) =>
+					store instanceof storage.BrowserProjectStore,
+			});
+
+			expect(attribution.instanceOfBrowserProjectStore).toBe(true);
+			expect(attribution.constructorName).toBe("fQe");
+		});
+
+		test("durable attribution rejects the reference store", () => {
+			const attribution = captureDurableBrowserStoreAttribution({
+				store: new InMemoryProjectStore(),
+				isDurableBrowserStore: (store) =>
+					store instanceof storage.BrowserProjectStore,
+			});
+
+			expect(attribution.instanceOfBrowserProjectStore).toBe(false);
+			expect(attribution.constructorName).toBe("InMemoryProjectStore");
+		});
+
+		test("fresh Host factories allocate distinct process-lifetime session IDs", async () => {
+			const nextHosts = [nextHost("next-id-a"), nextHost("next-id-b")];
+			const viteHosts = [viteHost("vite-id-a"), viteHost("vite-id-b")];
+			const nextSessions = await Promise.all(
+				nextHosts.map((host) =>
+					createEditorSession({
+						host: { ...host, store: new InMemoryProjectStore() },
+					}),
+				),
+			);
+			const viteSessions = await Promise.all(
+				viteHosts.map((host) =>
+					createEditorSession({
+						host: { ...host, store: new InMemoryProjectStore() },
+					}),
+				),
+			);
+			try {
+				expect(nextSessions[0]!.id).not.toBe(nextSessions[1]!.id);
+				expect(viteSessions[0]!.id).not.toBe(viteSessions[1]!.id);
+			} finally {
+				await Promise.all(
+					[...nextSessions, ...viteSessions].map((session) =>
+						session.dispose(),
+					),
+				);
+			}
+		});
+
+		test("stabilizes only ids alongside the established store policy", () => {
+			for (const hosts of [
+				[nextHost("next-role-a"), nextHost("next-role-b")],
+				[viteHost("vite-role-a"), viteHost("vite-role-b")],
+			]) {
+				const [first, second] = hosts;
+				expect(first!.ids).toBe(second!.ids);
+				expect(first!.store).toBe(second!.store);
+				// Diagnostics is an existing module-stable production channel. Every
+				// other reference role remains fresh per Host composition.
+				expect(first!.diagnostics).toBe(second!.diagnostics);
+				for (const role of [
+					"assets",
+					"assetLoader",
+					"runtimeResources",
+					"exporter",
+					"environment",
+				] as const) {
+					expect(first![role]).not.toBe(second![role]);
+				}
+			}
 		});
 
 		test("two sessions share committed storage but not coordinators or caches", async () => {

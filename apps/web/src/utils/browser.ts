@@ -1,18 +1,31 @@
+import type { SessionResources } from "@/editor/session/resources";
+
 export function downloadBlob({
 	blob,
 	filename,
+	resources,
 }: {
 	blob: Blob;
 	filename: string;
+	resources: Pick<SessionResources, "createObjectUrl">;
 }): void {
-	const url = URL.createObjectURL(blob);
-	const anchor = document.createElement("a");
-	anchor.href = url;
-	anchor.download = filename;
-	document.body.appendChild(anchor);
-	anchor.click();
-	document.body.removeChild(anchor);
-	URL.revokeObjectURL(url);
+	const urlHandle = resources.createObjectUrl({ blob });
+	let anchor: HTMLAnchorElement | null = null;
+	try {
+		anchor = document.createElement("a");
+		anchor.href = urlHandle.url;
+		anchor.download = filename;
+		document.body.appendChild(anchor);
+		anchor.click();
+	} finally {
+		try {
+			if (anchor?.parentNode === document.body) {
+				document.body.removeChild(anchor);
+			}
+		} finally {
+			urlHandle.revoke();
+		}
+	}
 }
 
 export function findScrollParent({
@@ -36,12 +49,8 @@ export function isTypableDOMElement({
 }): boolean {
 	if (element.isContentEditable) return true;
 
-	if (element.tagName === "INPUT") {
-		return !(element as HTMLInputElement).disabled;
-	}
-
-	if (element.tagName === "TEXTAREA") {
-		return !(element as HTMLTextAreaElement).disabled;
+	if (element.tagName === "INPUT" || element.tagName === "TEXTAREA") {
+		return !element.matches(":disabled");
 	}
 
 	return false;

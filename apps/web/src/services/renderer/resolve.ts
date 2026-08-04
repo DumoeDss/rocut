@@ -19,7 +19,7 @@ import {
 } from "@/text/measure-element";
 import { resolveColorAtTime, resolveOpacityAtTime } from "@/animation/values";
 import { resolveTransformAtTime } from "@/rendering/animation-values";
-import { videoCache } from "@/services/video-cache/service";
+import type { VideoCache } from "@/services/video-cache/service";
 import type { CanvasRenderer } from "./canvas-renderer";
 import type { AnyBaseNode } from "./nodes/base-node";
 import {
@@ -48,22 +48,26 @@ import type {
 type ResolveContext = {
 	renderer: CanvasRenderer;
 	time: number;
+	videoCache: VideoCache;
 };
 
 export async function resolveRenderTree({
 	node,
 	renderer,
 	time,
+	videoCache,
 }: {
 	node: AnyBaseNode;
 	renderer: CanvasRenderer;
 	time: number;
+	videoCache: VideoCache;
 }): Promise<void> {
 	await resolveNode({
 		node,
 		context: {
 			renderer,
 			time,
+			videoCache,
 		},
 	});
 }
@@ -202,10 +206,12 @@ async function resolveVideoNode({
 			clipTime,
 			retime: node.params.retime,
 		});
-	const frame = await videoCache.getFrameAt({
+	const frame = await context.videoCache.getFrameAt({
 		mediaId: node.params.mediaId,
 		file: node.params.file,
-		time: mediaTimeToSeconds({ time: roundMediaTime({ time: sourceTimeTicks }) }),
+		time: mediaTimeToSeconds({
+			time: roundMediaTime({ time: sourceTimeTicks }),
+		}),
 	});
 	if (!frame) {
 		return null;
@@ -390,7 +396,11 @@ async function resolveBlurBackgroundNode({
 		return null;
 	}
 
-	const backdropSource = await resolveBackdropSource({ node, clipTime });
+	const backdropSource = await resolveBackdropSource({
+		node,
+		clipTime,
+		context,
+	});
 	if (!backdropSource) {
 		return null;
 	}
@@ -415,9 +425,11 @@ async function resolveBlurBackgroundNode({
 async function resolveBackdropSource({
 	node,
 	clipTime,
+	context,
 }: {
 	node: BlurBackgroundNode;
 	clipTime: number;
+	context: ResolveContext;
 }): Promise<BackdropSource | null> {
 	if (node.params.mediaType === "video") {
 		const sourceTimeTicks =
@@ -426,10 +438,12 @@ async function resolveBackdropSource({
 				clipTime,
 				retime: node.params.retime,
 			});
-		const frame = await videoCache.getFrameAt({
+		const frame = await context.videoCache.getFrameAt({
 			mediaId: node.params.mediaId,
 			file: node.params.file,
-			time: mediaTimeToSeconds({ time: roundMediaTime({ time: sourceTimeTicks }) }),
+			time: mediaTimeToSeconds({
+				time: roundMediaTime({ time: sourceTimeTicks }),
+			}),
 		});
 		if (!frame) {
 			return null;

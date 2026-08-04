@@ -4,6 +4,7 @@ import { timelineTimeToPixels } from "@/timeline/pixel-utils";
 import { TIMELINE_ZOOM_MAX } from "@/timeline/scale";
 import { zoomToSlider } from "@/timeline/zoom-utils";
 import type { MediaTime } from "@/wasm";
+import type { SessionResources, TimerHandle } from "@/editor/session/resources";
 
 type ZoomUpdater = number | ((prev: number) => number);
 
@@ -19,6 +20,7 @@ export interface ZoomConfig {
 		scrollLeft: number;
 		playheadTime: MediaTime;
 	}) => void;
+	resources: SessionResources;
 }
 
 export interface ZoomConfigRef {
@@ -47,7 +49,7 @@ export class ZoomController {
 	private preZoomScrollLeft = 0;
 	private prePlayheadAnchorScrollLeft = 0;
 	private isInPlayheadAnchorMode = false;
-	private scrollSaveTimeout: ReturnType<typeof setTimeout> | null = null;
+	private scrollSaveTimeout: TimerHandle | null = null;
 
 	constructor(deps: { configRef: ZoomConfigRef; initialZoom?: number }) {
 		this.configRef = deps.configRef;
@@ -80,7 +82,7 @@ export class ZoomController {
 
 	destroy(): void {
 		if (this.scrollSaveTimeout) {
-			clearTimeout(this.scrollSaveTimeout);
+			this.scrollSaveTimeout.cancel();
 			this.scrollSaveTimeout = null;
 		}
 	}
@@ -216,19 +218,22 @@ export class ZoomController {
 
 	saveScrollPosition(): void {
 		if (this.scrollSaveTimeout) {
-			clearTimeout(this.scrollSaveTimeout);
+			this.scrollSaveTimeout.cancel();
 		}
 
-		this.scrollSaveTimeout = setTimeout(() => {
-			const scrollElement = this.config.getTracksScrollEl();
-			if (!scrollElement) return;
+		this.scrollSaveTimeout = this.config.resources.setTimeout({
+			handler: () => {
+				const scrollElement = this.config.getTracksScrollEl();
+				if (!scrollElement) return;
 
-			this.config.setTimelineViewState({
-				zoomLevel: this.zoomLevelValue,
-				scrollLeft: scrollElement.scrollLeft,
-				playheadTime: this.config.getCurrentPlayheadTime(),
-			});
-		}, 300);
+				this.config.setTimelineViewState({
+					zoomLevel: this.zoomLevelValue,
+					scrollLeft: scrollElement.scrollLeft,
+					playheadTime: this.config.getCurrentPlayheadTime(),
+				});
+			},
+			ms: 300,
+		});
 	}
 
 	restoreInitialScrollIfNeeded(
@@ -277,7 +282,9 @@ export class ZoomController {
 		const preventZoom = (event: WheelEvent) => {
 			const isZoomKeyPressed = event.ctrlKey || event.metaKey;
 			const container = this.config.getContainerEl();
-			const isInContainer = container?.contains(event.target as Node) ?? false;
+			const isInContainer =
+				event.target instanceof Node &&
+				(container?.contains(event.target) ?? false);
 			if (isZoomKeyPressed && isInContainer) {
 				event.preventDefault();
 			}

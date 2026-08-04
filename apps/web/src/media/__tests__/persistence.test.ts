@@ -1,6 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import { SessionPersistenceCoordinator } from "@/editor/persistence";
-import { InMemoryProjectStore } from "@/editor/ports/in-memory";
+import {
+	InMemoryProjectStore,
+	InMemoryRuntimeResourceHost,
+} from "@/editor/ports/in-memory";
+import { createInMemoryHost } from "@/editor/ports/in-memory/host";
+import { UNIMPLEMENTED_RUNTIME_GPU } from "@/editor/ports/gpu-resources";
+import { createSessionResources } from "@/editor/session/session-resources";
 import {
 	decodePersistedMediaMetadata,
 	mediaAssetFromAttachment,
@@ -8,8 +14,50 @@ import {
 } from "../persistence";
 
 describe("session-owned media persistence", () => {
+	test("legacy SVG replacement revokes the sniff URL once and retains the replacement handle", async () => {
+		const runtimeResources = new InMemoryRuntimeResourceHost();
+		const objectUrls = runtimeResources.objectUrls;
+		let sequence = 0;
+		const resources = createSessionResources({
+			runtimeResources,
+			runtimeGpu: UNIMPLEMENTED_RUNTIME_GPU,
+			nextId: ({ scope }) => `${scope}-${++sequence}`,
+		});
+		const asset = await mediaAssetFromAttachment({
+			attachment: {
+				projectId: "svg-project",
+				key: "legacy-svg",
+				metadata: {
+					id: "legacy-svg",
+					name: "legacy.svg",
+					type: "image",
+					mimeType: "",
+					lastModified: 1,
+				},
+				body: new TextEncoder().encode("<svg viewBox='0 0 1 1'></svg>").buffer,
+			},
+			resources,
+		});
+
+		expect(objectUrls).toHaveLength(2);
+		expect(objectUrls[0]?.revoked).toBe(true);
+		expect(objectUrls[1]?.revoked).toBe(false);
+		expect(asset.url).toBe(objectUrls[1]?.url);
+		expect(asset.urlHandle).toBeDefined();
+
+		await resources.disposeAll();
+		expect(objectUrls[0]?.revoked).toBe(true);
+		expect(objectUrls[1]?.revoked).toBe(true);
+	});
+
 	test("round-trips attachment bytes and metadata with project isolation", async () => {
 		const store = new InMemoryProjectStore();
+		const host = createInMemoryHost();
+		const resources = createSessionResources({
+			runtimeResources: host.runtimeResources,
+			runtimeGpu: UNIMPLEMENTED_RUNTIME_GPU,
+			nextId: ({ scope }) => scope,
+		});
 		const persistence = new SessionPersistenceCoordinator(store);
 		const fileA = new File([new Uint8Array([1, 2, 3])], "clip-a.mp4", {
 			type: "video/mp4",
@@ -49,6 +97,7 @@ describe("session-owned media persistence", () => {
 		});
 		const loadedA = await mediaAssetFromAttachment({
 			attachment: attachmentA,
+			resources,
 		});
 		const loadedB = await store.loadAttachment({
 			projectId: "project-b",
@@ -65,6 +114,7 @@ describe("session-owned media persistence", () => {
 			hasAudio: true,
 		});
 		expect([...new Uint8Array(loadedB!.body)]).toEqual([9, 8]);
+		await resources.disposeAll();
 	});
 
 	test("retains private attachment metadata after a known update", async () => {

@@ -2,6 +2,7 @@ import type { ProjectAttachment } from "@/editor/ports";
 import { ProjectStoreError } from "@/editor/ports";
 import type { SessionPersistenceCoordinator } from "@/editor/persistence";
 import type { MediaAsset, MediaType } from "@/media/types";
+import type { SessionResources } from "@/editor/session/resources";
 
 interface PersistedMediaMetadata {
 	readonly id: string;
@@ -117,24 +118,29 @@ export async function savePersistedMediaAsset({
 
 export async function mediaAssetFromAttachment({
 	attachment,
+	resources,
 }: {
 	attachment: Omit<ProjectAttachment, "metadata"> & {
 		metadata: PersistedMediaMetadata;
 	};
+	resources: SessionResources;
 }): Promise<MediaAsset> {
 	const { metadata } = attachment;
 	const file = new File([attachment.body], metadata.name, {
 		type: metadata.mimeType,
 		lastModified: metadata.lastModified,
 	});
-	let url = URL.createObjectURL(file);
+	let urlHandle = resources.createObjectUrl({ blob: file });
+	let url = urlHandle.url;
 
 	if (metadata.type === "image" && !metadata.mimeType) {
 		try {
 			const text = await file.text();
 			if (text.trim().startsWith("<svg")) {
-				URL.revokeObjectURL(url);
-				url = URL.createObjectURL(new Blob([text], { type: "image/svg+xml" }));
+				urlHandle.revoke();
+				const svgBlob = new Blob([text], { type: "image/svg+xml" });
+				urlHandle = resources.createObjectUrl({ blob: svgBlob });
+				url = urlHandle.url;
 			}
 		} catch {
 			// The original file URL remains valid when legacy SVG sniffing fails.
@@ -147,6 +153,7 @@ export async function mediaAssetFromAttachment({
 		type: metadata.type,
 		file,
 		url,
+		urlHandle,
 		width: metadata.width,
 		height: metadata.height,
 		duration: metadata.duration,

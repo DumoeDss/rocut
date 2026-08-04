@@ -1,4 +1,5 @@
 import type { EditorCore } from "@/core";
+import type { TimerHandle } from "@/editor/session/resources";
 import {
 	addMediaTime,
 	clampMediaTime,
@@ -18,9 +19,10 @@ export class PlaybackManager {
 	private listeners = new Set<() => void>();
 	private updateListeners = new Set<(time: MediaTime) => void>();
 	private seekListeners = new Set<(time: MediaTime) => void>();
-	private playbackTimer: number | null = null;
+	private playbackTimer: TimerHandle | null = null;
 	private playbackStartWallTime = 0;
 	private playbackStartTime: MediaTime = ZERO_MEDIA_TIME;
+	private resumePlaybackAfterSuspend = false;
 	private timelineScopeBound = false;
 	private timelineScopeUnsubscribers: Array<() => void> = [];
 
@@ -43,6 +45,7 @@ export class PlaybackManager {
 	}
 
 	dispose(): void {
+		this.resumePlaybackAfterSuspend = false;
 		this.pause();
 		for (const unsubscribe of this.timelineScopeUnsubscribers) {
 			unsubscribe();
@@ -70,9 +73,23 @@ export class PlaybackManager {
 	}
 
 	pause(): void {
+		this.resumePlaybackAfterSuspend = false;
 		this.isPlaying = false;
 		this.stopTimer();
 		this.notify();
+	}
+
+	suspend(): void {
+		this.resumePlaybackAfterSuspend = this.isPlaying;
+		this.isPlaying = false;
+		this.stopTimer();
+		this.notify();
+	}
+
+	resume(): void {
+		const shouldResume = this.resumePlaybackAfterSuspend;
+		this.resumePlaybackAfterSuspend = false;
+		if (shouldResume) this.play();
 	}
 
 	toggle(): void {
@@ -210,7 +227,7 @@ export class PlaybackManager {
 
 	private startTimer(): void {
 		if (this.playbackTimer) {
-			cancelAnimationFrame(this.playbackTimer);
+			this.playbackTimer.cancel();
 		}
 
 		this.playbackStartWallTime = performance.now();
@@ -220,7 +237,7 @@ export class PlaybackManager {
 
 	private stopTimer(): void {
 		if (this.playbackTimer) {
-			cancelAnimationFrame(this.playbackTimer);
+			this.playbackTimer.cancel();
 			this.playbackTimer = null;
 		}
 	}
@@ -250,7 +267,9 @@ export class PlaybackManager {
 		this.currentTime = newTime;
 		this.notifyUpdate(newTime);
 		this.dispatchUpdateEvent(newTime);
-		this.playbackTimer = requestAnimationFrame(this.updateTime);
+		this.playbackTimer = this.editor.resources.requestAnimationFrame({
+			handler: this.updateTime,
+		});
 	};
 
 	private clampTimeToTimeline(time: MediaTime): MediaTime {
@@ -258,13 +277,13 @@ export class PlaybackManager {
 		return clampMediaTime({ time, min: ZERO_MEDIA_TIME, max: maxTime });
 	}
 
-	private dispatchSeekEvent(time: MediaTime): void {
+	private dispatchSeekEvent(_time: MediaTime): void {
 		if (typeof window === "undefined") {
 			return;
 		}
 	}
 
-	private dispatchUpdateEvent(time: MediaTime): void {
+	private dispatchUpdateEvent(_time: MediaTime): void {
 		if (typeof window === "undefined") {
 			return;
 		}

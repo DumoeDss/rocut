@@ -87,6 +87,7 @@ import { DragLine } from "./drag-line";
 import { invokeAction } from "@/actions";
 import { resolveTimelineElementIntersections } from "./selection-hit-testing";
 import { cn } from "@/utils/ui";
+import type { TimerHandle } from "@/editor/session/resources";
 
 const TRACKS_CONTAINER_MAX_HEIGHT = 800;
 const FALLBACK_CONTAINER_WIDTH = 1000;
@@ -239,7 +240,7 @@ export function Timeline() {
 		if (!container) return;
 
 		let pendingZoomDelta = 0;
-		let zoomRafId: ReturnType<typeof requestAnimationFrame> | null = null;
+		let zoomRafId: TimerHandle | null = null;
 
 		const onWheel = (e: WheelEvent) => {
 			const isZoom = e.ctrlKey || e.metaKey;
@@ -250,14 +251,17 @@ export function Timeline() {
 				pendingZoomDelta += normalizedDelta;
 
 				if (zoomRafId === null) {
-					zoomRafId = requestAnimationFrame(() => {
-						const frameRawDelta = pendingZoomDelta;
-						const cappedDelta =
-							Math.sign(frameRawDelta) * Math.min(Math.abs(frameRawDelta), 30);
-						const zoomFactor = Math.exp(-cappedDelta / 300);
-						setZoomLevelRef.current((prev) => prev * zoomFactor);
-						pendingZoomDelta = 0;
-						zoomRafId = null;
+					zoomRafId = editor.resources.requestAnimationFrame({
+						handler: () => {
+							const frameRawDelta = pendingZoomDelta;
+							const cappedDelta =
+								Math.sign(frameRawDelta) *
+								Math.min(Math.abs(frameRawDelta), 30);
+							const zoomFactor = Math.exp(-cappedDelta / 300);
+							setZoomLevelRef.current((prev) => prev * zoomFactor);
+							pendingZoomDelta = 0;
+							zoomRafId = null;
+						},
 					});
 				}
 				return;
@@ -292,9 +296,9 @@ export function Timeline() {
 		});
 		return () => {
 			container.removeEventListener("wheel", onWheel, { capture: true });
-			if (zoomRafId !== null) cancelAnimationFrame(zoomRafId);
+			if (zoomRafId !== null) zoomRafId.cancel();
 		};
-	}, [syncFollowers]);
+	}, [editor.resources, syncFollowers]);
 
 	useInitialScrollBottom({
 		tracksScrollRef,

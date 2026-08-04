@@ -11,7 +11,7 @@ import {
 } from "@/media/waveform-summary";
 import type { RetimeConfig } from "@/timeline";
 import { getBarFractionFromOutputAmplitude } from "@/timeline/audio-display";
-import { waveformCache } from "@/services/waveform-cache/service";
+import type { WaveformCache } from "@/services/waveform-cache/service";
 import { findScrollParent } from "@/utils/browser";
 import { cn } from "@/utils/ui";
 
@@ -42,6 +42,7 @@ function sampleGainAtClipTime({
 }
 
 interface AudioWaveformProps {
+	cache: WaveformCache;
 	sourceKey: string;
 	sourceFile?: File;
 	audioUrl?: string;
@@ -57,6 +58,7 @@ interface AudioWaveformProps {
 }
 
 export function AudioWaveform({
+	cache,
 	sourceKey,
 	sourceFile,
 	audioUrl,
@@ -274,7 +276,7 @@ export function AudioWaveform({
 		summaryRef.current = null;
 		clearCanvas();
 
-		void waveformCache
+		void cache
 			.getSourceSummary({
 				sourceKey,
 				audioBuffer,
@@ -299,7 +301,15 @@ export function AudioWaveform({
 		return () => {
 			isCancelled = true;
 		};
-	}, [audioBuffer, audioUrl, clearCanvas, drawVisible, sourceFile, sourceKey]);
+	}, [
+		audioBuffer,
+		audioUrl,
+		cache,
+		clearCanvas,
+		drawVisible,
+		sourceFile,
+		sourceKey,
+	]);
 
 	useLayoutEffect(() => {
 		drawVisible();

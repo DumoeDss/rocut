@@ -6,12 +6,15 @@ import { EditorProvider } from "@/components/providers/editor-provider";
 import { MobileGate } from "@/components/editor/mobile-gate";
 import { EditorRoot } from "@/editor/surface/editor-root";
 import { ViteEditorHost } from "./host/vite-editor-host";
+import { createViteEditorHost } from "./host/vite-host-config";
 import { ProjectPicker } from "./project-picker";
 import { EditorErrorBoundary } from "./editor-error-boundary";
 import { C3SessionHarness } from "./c3-session-harness";
 import { C4ForcedNoneHarness } from "./c4-forced-none-harness";
 import { C4WorkerHarness } from "./c4-worker-harness";
 import { C4SessionHarness } from "./c4-session-harness";
+import { C6DisposalHarness } from "@/editor/session/c6-disposal-harness";
+import { BrowserProjectStore } from "@/services/storage/browser-project-store";
 
 const C4_BUILD_MARKER = import.meta.env.VITE_C4_BUILD_MARKER ?? "development";
 
@@ -43,6 +46,24 @@ export function App() {
 		"1"
 	) {
 		return <C3SessionHarness />;
+	}
+	if (
+		new URLSearchParams(window.location.search).get("c6-disposal-harness") ===
+		"1"
+	) {
+		return (
+			<C6DisposalHarness
+				createHost={({ projectId, onProjectReplaced, onExitProject }) =>
+					createViteEditorHost({
+						projectId,
+						onProjectIdChange: onProjectReplaced,
+						onExitProject,
+					})
+				}
+				isDurableBrowserStore={(store) => store instanceof BrowserProjectStore}
+				buildMarker={import.meta.env.VITE_C6_BUILD_MARKER ?? "development"}
+			/>
+		);
 	}
 	return <EditorApp />;
 }

@@ -32,6 +32,7 @@ import type { MediaAsset } from "@/media/types";
 import type { ProcessedMediaAsset } from "@/media/processing";
 import { roundFrameTime, type MediaTime } from "@/wasm";
 import type { ProjectStore } from "@/editor/ports";
+import type { SessionResources } from "@/editor/session/resources";
 
 // --- Config ---
 
@@ -50,6 +51,7 @@ export interface DragDropConfig {
 		operation: string;
 		error: unknown;
 	}) => void;
+	resources: SessionResources;
 	dragSource: TimelineDragSource;
 	addMediaAsset: (args: {
 		projectId: string;
@@ -510,9 +512,11 @@ export class DragDropController {
 
 		await showMediaUploadToast({
 			filesCount: files.length,
+			resources: this.config.resources,
 			promise: async () => {
 				const processedAssets = await processMediaAssets({
 					files,
+					resources: this.config.resources,
 					store: this.config.getStore(),
 					reportPersistenceFailure: this.config.reportPersistenceFailure,
 				});

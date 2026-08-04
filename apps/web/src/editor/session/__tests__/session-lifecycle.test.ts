@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-type-assertion -- lifecycle fixtures intentionally inspect private ownership seams and construct minimal DOM/runtime doubles. */
 import { beforeEach, describe, expect, test } from "bun:test";
 import { fileURLToPath } from "node:url";
 import { createInMemoryHost } from "@/editor/ports/in-memory/host";
@@ -28,6 +29,8 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 } else {
 	await import("./wasm-test-mock");
 	const { createEditorSession } = await import("../create-session");
+	const { editorForSession } =
+		await import("@/editor/runtime/session-core-owner");
 
 	/**
 	 * A stand-in for a mounted container.
@@ -175,6 +178,97 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 	});
 
 	describe("disposal", () => {
+		test("dispose wins while a queued resume is preparing managers", async () => {
+			const session = await createEditorSession({ host: createInMemoryHost() });
+			await session.suspend();
+			const editor = editorForSession(session);
+			const lifecycleResources =
+				session.resources as typeof session.resources & {
+					isActivityAdmitted(): boolean;
+				};
+			const originalPrepare = editor.prepareActivityResume.bind(editor);
+			let releasePrepare!: () => void;
+			const prepareGate = new Promise<void>((resolve) => {
+				releasePrepare = resolve;
+			});
+			let prepareEntered = false;
+			editor.prepareActivityResume = async () => {
+				prepareEntered = true;
+				await prepareGate;
+				await originalPrepare();
+			};
+
+			const resume = session.resume();
+			for (let index = 0; index < 4 && !prepareEntered; index += 1) {
+				await Promise.resolve();
+			}
+			expect(prepareEntered).toBe(true);
+			const disposal = session.dispose();
+			expect(session.state).toBe("disposed");
+			expect(lifecycleResources.isActivityAdmitted()).toBe(false);
+			releasePrepare();
+			await resume;
+			expect(lifecycleResources.isActivityAdmitted()).toBe(false);
+			await disposal;
+			expect(() =>
+				session.resources.setTimeout({ handler: () => {}, ms: 1 }),
+			).toThrow(/disposed/i);
+		});
+
+		test("mount during a suspended dwell stays suspended until resume publishes the root", async () => {
+			const session = await createEditorSession({ host: createInMemoryHost() });
+			const lifecycleResources = session.resources;
+			if (
+				!("isActivityAdmitted" in lifecycleResources) ||
+				typeof lifecycleResources.isActivityAdmitted !== "function"
+			) {
+				throw new Error("Session resource lifecycle controls are unavailable.");
+			}
+			await session.suspend();
+			expect(session.state).toBe("suspended");
+			expect(lifecycleResources.isActivityAdmitted()).toBe(false);
+
+			const handle = session.mount({ target: fakeElement("DIV") });
+			await handle.ready;
+			expect(handle.state).toBe("mounted");
+			expect(session.state).toBe("suspended");
+			expect(lifecycleResources.isActivityAdmitted()).toBe(false);
+
+			await session.resume();
+			expect(session.state).toBe("mounted");
+			expect(lifecycleResources.isActivityAdmitted()).toBe(true);
+			await session.dispose();
+		});
+
+		test("suspend settles an audio catch-up waiter whose interval is terminally drained", async () => {
+			const session = await createEditorSession({ host: createInMemoryHost() });
+			const editor = editorForSession(session);
+			const audio = editor.audio as unknown as {
+				waitUntilCaughtUp(args: {
+					timelineTime: number;
+					targetAhead: number;
+				}): Promise<void>;
+			};
+			const waiting = audio.waitUntilCaughtUp({
+				timelineTime: 10,
+				targetAhead: 1,
+			});
+			let settled = false;
+			void waiting.then(() => {
+				settled = true;
+			});
+
+			await session.suspend();
+			await waiting;
+			expect(settled).toBe(true);
+			expect(session.resources.inspect().timer).toEqual({
+				created: 1,
+				released: 1,
+			});
+			await session.resume();
+			await session.dispose();
+		});
+
 		test("disposal implies unmount", async () => {
 			const session = await createEditorSession({ host: createInMemoryHost() });
 			const handle = session.mount({ target: fakeElement("DIV") });

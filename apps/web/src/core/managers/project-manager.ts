@@ -83,8 +83,8 @@ export class ProjectManager {
 
 		try {
 			await this.editor.persistence.saveProject({ project: newProject });
+			await this.editor.media.clearAllAssets();
 			this.active = newProject;
-			this.editor.media.clearAllAssets();
 			this.editor.scenes.initializeScenes({
 				scenes: newProject.scenes,
 				currentSceneId: newProject.currentSceneId,
@@ -127,6 +127,7 @@ export class ProjectManager {
 					),
 				],
 			});
+			await this.editor.drainProjectLiveState();
 			await this.editor.media.loadProjectMedia({ projectId: id });
 
 			this.active = project;
@@ -279,8 +280,8 @@ export class ProjectManager {
 				this.active && idSet.has(this.active.metadata.id);
 
 			if (shouldClearActive) {
+				await this.editor.media.clearAllAssets();
 				this.active = null;
-				this.editor.media.clearAllAssets();
 				this.editor.scenes.clearScenes();
 			}
 
@@ -298,11 +299,10 @@ export class ProjectManager {
 		}
 	}
 
-	closeProject(): void {
+	async closeProject(): Promise<void> {
+		await this.editor.media.clearAllAssets();
 		this.active = null;
 		this.notify();
-
-		this.editor.media.clearAllAssets();
 		this.editor.scenes.clearScenes();
 	}
 

@@ -18,7 +18,10 @@ import { patternCraftGradients } from "@/data/colors/pattern-craft";
 import { colors } from "@/data/colors/solid";
 import { syntaxUIGradients } from "@/data/colors/syntax-ui";
 import { useEditor, useEditorInstance } from "@/editor/use-editor";
-import { getEffectPreviewService } from "@/services/renderer/effect-preview";
+import {
+	acquireEffectPreviewService,
+	releaseEffectPreviewService,
+} from "@/services/renderer/effect-preview";
 import { cn } from "@/utils/ui";
 import { useEditorSession } from "@/editor/session/editor-session-provider";
 
@@ -43,9 +46,19 @@ const BlurPreview = memo(
 		const canvasRef = useRef<HTMLCanvasElement>(null);
 		const session = useEditorSession();
 		const isDegraded = useEditor((state) => state.renderer.isDegraded);
-		const effectPreviewService = getEffectPreviewService({
-			resolver: session.host.assets,
-		});
+		const effectPreviewService = useMemo(
+			() =>
+				acquireEffectPreviewService({
+					resolver: session.host.assets,
+				}),
+			[session],
+		);
+
+		useEffect(
+			() => () =>
+				releaseEffectPreviewService({ resolver: session.host.assets }),
+			[session],
+		);
 
 		useEffect(() => {
 			const renderPreview = () => {
@@ -241,16 +254,16 @@ export function BackgroundContent() {
 		[editor.project],
 	);
 
-	const isBlurBackground = activeProject.settings.background.type === "blur";
-	const isColorBackground = activeProject.settings.background.type === "color";
+	const background = activeProject.settings.background;
+	const isBlurBackground = background.type === "blur";
+	const isColorBackground = background.type === "color";
 
 	const currentBlurIntensity = isBlurBackground
-		? (activeProject.settings.background as { blurIntensity: number })
-				.blurIntensity
+		? background.blurIntensity
 		: DEFAULT_BACKGROUND_BLUR_INTENSITY;
 
 	const currentBackgroundColor = isColorBackground
-		? (activeProject.settings.background as { color: string }).color
+		? background.color
 		: DEFAULT_BACKGROUND_COLOR;
 
 	const hasPresetColorMatch = colors.some(

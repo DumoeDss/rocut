@@ -1,4 +1,5 @@
 import type { EditorCore } from "@/core";
+import type { TimerHandle } from "@/editor/session/resources";
 
 type SaveManagerOptions = {
 	debounceMs?: number;
@@ -9,8 +10,9 @@ export class SaveManager {
 	private isPaused = false;
 	private isSaving = false;
 	private hasPendingSave = false;
-	private saveTimer: ReturnType<typeof setTimeout> | null = null;
+	private saveTimer: TimerHandle | null = null;
 	private unsubscribeHandlers: Array<() => void> = [];
+	private publicationListeners = new Set<() => void>();
 
 	constructor({
 		editor,
@@ -46,6 +48,7 @@ export class SaveManager {
 	}
 
 	pause(): void {
+		this.clearTimer();
 		this.isPaused = true;
 	}
 
@@ -71,20 +74,46 @@ export class SaveManager {
 		return this.hasPendingSave || this.isSaving;
 	}
 
+	/** Observe successful durable-save publications (used by lifecycle probes). */
+	observePublications(listener: () => void): () => void {
+		this.publicationListeners.add(listener);
+		return () => {
+			this.publicationListeners.delete(listener);
+		};
+	}
+
 	private queueSave(): void {
+		if (this.isPaused) return;
 		if (this.isSaving) return;
 		if (this.saveTimer) {
-			clearTimeout(this.saveTimer);
+			this.saveTimer.cancel();
 		}
-		this.saveTimer = setTimeout(() => {
-			void this.saveNow().catch(() => {
-				// ProjectManager already reports the durable failure and keeps the
-				// pending flag set for an explicit retry.
+		// Focused persistence harnesses may provide only the ProjectManager
+		// collaborator. Production EditorCore instances always have the session
+		// resource registry; this microtask fallback keeps those narrow harnesses
+		// observable without reintroducing a direct platform timer here.
+		if (!this.editor.resources) {
+			queueMicrotask(() => {
+				void this.saveNow().catch(() => {
+					// Keep the pending flag set for an explicit retry.
+				});
 			});
-		}, this.debounceMs);
+			return;
+		}
+		this.saveTimer = this.editor.resources.setTimeout({
+			handler: () => {
+				this.saveTimer = null;
+				void this.saveNow().catch(() => {
+					// ProjectManager already reports the durable failure and keeps the
+					// pending flag set for an explicit retry.
+				});
+			},
+			ms: this.debounceMs,
+		});
 	}
 
 	private async saveNow(): Promise<void> {
+		if (this.isPaused) return;
 		if (this.isSaving) return;
 		if (!this.hasPendingSave) return;
 
@@ -100,13 +129,21 @@ export class SaveManager {
 
 		try {
 			await this.editor.project.saveCurrentProject();
+			for (const listener of this.publicationListeners) {
+				try {
+					listener();
+				} catch {
+					// Observers are diagnostics only and must never make a durable save
+					// appear to have failed.
+				}
+			}
 		} catch (error) {
 			didFail = true;
 			this.hasPendingSave = true;
 			throw error;
 		} finally {
 			this.isSaving = false;
-			if (this.hasPendingSave && !didFail) {
+			if (this.hasPendingSave && !didFail && !this.isPaused) {
 				this.queueSave();
 			}
 		}
@@ -114,7 +151,7 @@ export class SaveManager {
 
 	private clearTimer(): void {
 		if (!this.saveTimer) return;
-		clearTimeout(this.saveTimer);
+		this.saveTimer.cancel();
 		this.saveTimer = null;
 	}
 }

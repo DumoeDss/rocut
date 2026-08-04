@@ -57,6 +57,7 @@ export function useTimelineZoom({
 					playheadTime,
 				},
 			}),
+		resources: editor.resources,
 	};
 	const configRef = useCommittedRef(config);
 	const [controller] = useState(

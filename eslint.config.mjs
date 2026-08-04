@@ -9,6 +9,7 @@ import tseslint from "typescript-eslint";
 import preferObjectParams from "./eslint/rules/prefer-object-params.mjs";
 
 const webFiles = ["apps/web/src/**/*.{ts,tsx}"];
+const frontendFiles = [webFiles[0], "apps/vite-example/src/**/*.{ts,tsx}"];
 
 const opencutEslintPlugin = {
 	meta: {
@@ -20,10 +21,10 @@ const opencutEslintPlugin = {
 	},
 };
 
-function scopeToWebFiles(config) {
+function scopeToFiles(config, files) {
 	return {
 		...config,
-		files: webFiles,
+		files,
 	};
 }
 
@@ -32,7 +33,7 @@ export default [
 		ignores: ["**/.next/**", "**/node_modules/**", "**/dist/**", "**/build/**"],
 	},
 	{
-		files: webFiles,
+		files: frontendFiles,
 		languageOptions: {
 			ecmaVersion: "latest",
 			sourceType: "module",
@@ -57,19 +58,24 @@ export default [
 			},
 		},
 	},
-	scopeToWebFiles(js.configs.recommended),
-	...tseslint.configs.recommended.map(scopeToWebFiles),
-	scopeToWebFiles(react.configs.flat.recommended),
-	scopeToWebFiles(react.configs.flat["jsx-runtime"]),
-	scopeToWebFiles(reactHooks.configs.flat["recommended-latest"]),
-	scopeToWebFiles(jsxA11y.flatConfigs.recommended),
-	scopeToWebFiles(next.configs["core-web-vitals"]),
+	scopeToFiles(js.configs.recommended, frontendFiles),
+	...tseslint.configs.recommended.map((config) =>
+		scopeToFiles(config, frontendFiles),
+	),
+	scopeToFiles(react.configs.flat.recommended, frontendFiles),
+	scopeToFiles(react.configs.flat["jsx-runtime"], frontendFiles),
+	scopeToFiles(reactHooks.configs.flat["recommended-latest"], frontendFiles),
+	scopeToFiles(jsxA11y.flatConfigs.recommended, frontendFiles),
+	scopeToFiles(next.configs["core-web-vitals"], webFiles),
 	{
-		files: webFiles,
+		files: frontendFiles,
 		plugins: {
 			opencut: opencutEslintPlugin,
 		},
 		rules: {
+			// The web host is App Router-only, so there is no Pages directory for
+			// this legacy rule to resolve.
+			"@next/next/no-html-link-for-pages": "off",
 			"@typescript-eslint/no-empty-object-type": "warn",
 			"@typescript-eslint/no-unsafe-type-assertion": "error",
 			"@typescript-eslint/no-unused-vars": [
@@ -83,7 +89,7 @@ export default [
 			],
 			"no-empty": "warn",
 			"opencut/prefer-object-params": "error",
-			
+
 			// `react/prop-types` is for the JS-era React workflow where runtime
 			// `propTypes` declarations are the prop contract. In this TS-only
 			// scope the prop types already are the contract; the rule's only
@@ -92,5 +98,5 @@ export default [
 			"react/prop-types": "off",
 		},
 	},
-	scopeToWebFiles(eslintConfigPrettier),
+	scopeToFiles(eslintConfigPrettier, frontendFiles),
 ];

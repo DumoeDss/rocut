@@ -239,7 +239,7 @@ workspace member despite the `apps/*` glob. It is excluded from the distributabl
 
 ### Runtime assets served from `apps/web/public`
 
-Present directories: `browserconfig.xml`, `effects`, `favicon.ico`, `flags`, `fonts`, `icons`, `landing-page-dark.png`, `logos`, `manifest.json`, `open-graph`, `platform-guides`, `shapes`, `_headers`.
+Present directories: `browserconfig.xml`, `effects`, `favicon.ico`, `flags`, `fonts`, `icons`, `landing-page-dark.png`, `logos`, `manifest.json`, `open-graph`, `platform-guides`, `shapes`, `workers`, `_headers`.
 
 | Asset | Provenance | Fetched from |
 | --- | --- | --- |

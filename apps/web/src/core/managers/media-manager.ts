@@ -8,16 +8,21 @@ import {
 	savePersistedMediaAsset,
 } from "@/media/persistence";
 import { generateUUID } from "@/utils/id";
-import { videoCache } from "@/services/video-cache/service";
-import { waveformCache } from "@/services/waveform-cache/service";
+import { VideoCache } from "@/services/video-cache/service";
+import { WaveformCache } from "@/services/waveform-cache/service";
 import { BatchCommand, RemoveMediaAssetCommand } from "@/commands";
 
 export class MediaManager {
+	private readonly videoCache: VideoCache;
+	private readonly waveformCache: WaveformCache;
 	private assets: MediaAsset[] = [];
 	private isLoading = false;
 	private listeners = new Set<() => void>();
 
-	constructor(private editor: EditorCore) {}
+	constructor(private editor: EditorCore) {
+		this.videoCache = new VideoCache();
+		this.waveformCache = new WaveformCache(editor.resources);
+	}
 
 	async addMediaAsset({
 		projectId,
@@ -108,7 +113,10 @@ export class MediaManager {
 			});
 			const mediaAssets = await Promise.all(
 				attachments.map((attachment) =>
-					mediaAssetFromAttachment({ attachment }),
+					mediaAssetFromAttachment({
+						attachment,
+						resources: this.editor.resources,
+					}),
 				),
 			);
 			this.assets = mediaAssets;
@@ -150,9 +158,14 @@ export class MediaManager {
 			throw error;
 		}
 
-		waveformCache.clearAll();
+		await Promise.all([
+			this.videoCache.clearAll(),
+			this.waveformCache.clearAll(),
+		]);
 		assetsToClear.forEach((asset) => {
-			if (asset.url) {
+			if (asset.urlHandle) {
+				asset.urlHandle.revoke();
+			} else if (asset.url) {
 				URL.revokeObjectURL(asset.url);
 			}
 			if (asset.thumbnailUrl) {
@@ -164,12 +177,16 @@ export class MediaManager {
 		this.notify();
 	}
 
-	clearAllAssets(): void {
-		videoCache.clearAll();
-		waveformCache.clearAll();
+	async clearAllAssets(): Promise<void> {
+		await Promise.all([
+			this.videoCache.clearAll(),
+			this.waveformCache.clearAll(),
+		]);
 
 		this.assets.forEach((asset) => {
-			if (asset.url) {
+			if (asset.urlHandle) {
+				asset.urlHandle.revoke();
+			} else if (asset.url) {
 				URL.revokeObjectURL(asset.url);
 			}
 			if (asset.thumbnailUrl) {
@@ -185,9 +202,37 @@ export class MediaManager {
 		return this.assets;
 	}
 
+	getVideoCache(): VideoCache {
+		return this.videoCache;
+	}
+
+	getWaveformCache(): WaveformCache {
+		return this.waveformCache;
+	}
+
 	setAssets({ assets }: { assets: MediaAsset[] }): void {
 		this.assets = assets;
 		this.notify();
+	}
+
+	async clearCachedMedia({
+		sourceKey,
+		mediaId,
+	}: {
+		sourceKey?: string;
+		mediaId?: string;
+	}): Promise<void> {
+		await Promise.all([
+			...(mediaId ? [this.videoCache.clearVideo({ mediaId })] : []),
+			...(sourceKey ? [this.waveformCache.clearSource({ sourceKey })] : []),
+		]);
+	}
+
+	async dispose(): Promise<void> {
+		await Promise.all([
+			this.videoCache.dispose(),
+			this.waveformCache.dispose(),
+		]);
 	}
 
 	isLoadingMedia(): boolean {

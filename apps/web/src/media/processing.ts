@@ -3,11 +3,39 @@ import { getMediaTypeFromFile } from "@/media/media-utils";
 import { formatStorageBytes } from "@/services/storage/quota";
 import type { MediaAsset } from "@/media/types";
 import type { ProjectStore } from "@/editor/ports";
+import type { SessionResources } from "@/editor/session/resources";
 import { readVideoFile } from "./mediabunny";
 import type { VideoFileData } from "./mediabunny";
 import { renderThumbnailDataUrl } from "./thumbnail";
 
 export type ProcessedMediaAsset = Omit<MediaAsset, "id">;
+
+function captureActivityPublication(resources: SessionResources): {
+	isCurrent(): boolean;
+} {
+	const lifecycle = resources as SessionResources & {
+		getActivityGeneration?: () => number;
+		assertActivityGeneration?: (args: { generation: number }) => void;
+	};
+	const generation =
+		typeof lifecycle.getActivityGeneration === "function" &&
+		typeof lifecycle.assertActivityGeneration === "function"
+			? lifecycle.getActivityGeneration()
+			: null;
+	return {
+		isCurrent: () => {
+			if (generation === null || !lifecycle.assertActivityGeneration) {
+				return true;
+			}
+			try {
+				lifecycle.assertActivityGeneration({ generation });
+				return true;
+			} catch {
+				return false;
+			}
+		},
+	};
+}
 
 export async function inspectMediaCapacity({
 	store,
@@ -59,12 +87,14 @@ const getStorageLimitDescription = ({
 
 async function generateImageThumbnail({
 	imageFile,
+	resources,
 }: {
 	imageFile: File;
+	resources: SessionResources;
 }): Promise<{ thumbnailUrl: string; width: number; height: number }> {
 	return new Promise((resolve, reject) => {
 		const image = new window.Image();
-		const objectUrl = URL.createObjectURL(imageFile);
+		const urlHandle = resources.createObjectUrl({ blob: imageFile });
 
 		image.addEventListener("load", () => {
 			try {
@@ -85,35 +115,39 @@ async function generateImageThumbnail({
 					error instanceof Error ? error : new Error("Could not render image"),
 				);
 			} finally {
-				URL.revokeObjectURL(objectUrl);
+				urlHandle.revoke();
 				image.remove();
 			}
 		});
 
 		image.addEventListener("error", () => {
-			URL.revokeObjectURL(objectUrl);
+			urlHandle.revoke();
 			image.remove();
 			reject(new Error("Could not load image"));
 		});
 
-		image.src = objectUrl;
+		image.src = urlHandle.url;
 	});
 }
 
 export async function processMediaAssets({
 	files,
 	store,
+	resources,
 	reportPersistenceFailure,
 	onProgress,
 }: {
 	files: FileList | File[];
 	store: Pick<ProjectStore, "inspect">;
+	resources: SessionResources;
 	reportPersistenceFailure: (args: {
 		operation: string;
 		error: unknown;
 	}) => void;
 	onProgress?: ({ progress }: { progress: number }) => void;
 }): Promise<ProcessedMediaAsset[]> {
+	const publication = captureActivityPublication(resources);
+	if (!publication.isCurrent()) return [];
 	const fileArray = Array.from(files);
 	const processedAssets: ProcessedMediaAsset[] = [];
 
@@ -121,6 +155,7 @@ export async function processMediaAssets({
 	let completed = 0;
 
 	for (const file of fileArray) {
+		if (!publication.isCurrent()) return [];
 		const fileType = getMediaTypeFromFile({ file });
 
 		if (!fileType) {
@@ -135,12 +170,14 @@ export async function processMediaAssets({
 				requiredBytes: file.size,
 			});
 		} catch (error) {
+			if (!publication.isCurrent()) return [];
 			reportPersistenceFailure({ operation: "inspect-media-capacity", error });
 			toast.error("Could not check storage capacity", {
 				description: "The media file was not imported. Please try again.",
 			});
 			throw error;
 		}
+		if (!publication.isCurrent()) return [];
 		const { canStore, availableBytes } = capacity;
 
 		if (!canStore) {
@@ -153,7 +190,8 @@ export async function processMediaAssets({
 			continue;
 		}
 
-		const url = URL.createObjectURL(file);
+		const urlHandle = resources.createObjectUrl({ blob: file });
+		const url = urlHandle.url;
 		let thumbnailUrl: string | undefined;
 		let duration: number | undefined;
 		let width: number | undefined;
@@ -163,13 +201,21 @@ export async function processMediaAssets({
 
 		try {
 			if (fileType === "image") {
-				const result = await generateImageThumbnail({ imageFile: file });
+				const result = await generateImageThumbnail({
+					imageFile: file,
+					resources,
+				});
 				thumbnailUrl = result.thumbnailUrl;
 				width = result.width;
 				height = result.height;
 			} else if (fileType === "video") {
 				try {
 					const videoData = await readVideoFile({ file });
+					if (!publication.isCurrent()) {
+						throw new Error(
+							"Video processing activity generation was invalidated.",
+						);
+					}
 					duration = videoData.duration;
 					width = videoData.width;
 					height = videoData.height;
@@ -187,6 +233,7 @@ export async function processMediaAssets({
 						});
 					}
 				} catch (error) {
+					if (!publication.isCurrent()) throw error;
 					const message =
 						error instanceof Error ? error.message : "Could not process video";
 
@@ -195,7 +242,12 @@ export async function processMediaAssets({
 					});
 				}
 			} else if (fileType === "audio") {
-				duration = await getMediaDuration({ file });
+				duration = await getMediaDuration({ file, resources });
+			}
+			if (!publication.isCurrent()) {
+				throw new Error(
+					"Media processing activity generation was invalidated.",
+				);
 			}
 
 			processedAssets.push({
@@ -203,6 +255,7 @@ export async function processMediaAssets({
 				type: fileType,
 				file,
 				url,
+				urlHandle,
 				thumbnailUrl,
 				duration,
 				width,
@@ -211,7 +264,13 @@ export async function processMediaAssets({
 				hasAudio,
 			});
 
-			await new Promise((resolve) => setTimeout(resolve, 0));
+			await new Promise<void>((resolve) => queueMicrotask(resolve));
+			if (!publication.isCurrent()) {
+				processedAssets.pop();
+				throw new Error(
+					"Media processing activity generation was invalidated.",
+				);
+			}
 
 			completed += 1;
 			if (onProgress) {
@@ -219,35 +278,43 @@ export async function processMediaAssets({
 				onProgress({ progress: percent });
 			}
 		} catch {
-			console.error("Failed to process media file");
-			toast.error(`Failed to process ${file.name}`);
-			URL.revokeObjectURL(url);
+			if (publication.isCurrent()) {
+				console.error("Failed to process media file");
+				toast.error(`Failed to process ${file.name}`);
+			}
+			urlHandle.revoke();
 		}
 	}
 
-	return processedAssets;
+	return publication.isCurrent() ? processedAssets : [];
 }
 
-const getMediaDuration = ({ file }: { file: File }): Promise<number> => {
+const getMediaDuration = ({
+	file,
+	resources,
+}: {
+	file: File;
+	resources: SessionResources;
+}): Promise<number> => {
 	return new Promise((resolve, reject) => {
 		const element = file.type.startsWith("video/")
 			? document.createElement("video")
 			: document.createElement("audio");
-		const objectUrl = URL.createObjectURL(file);
+		const urlHandle = resources.createObjectUrl({ blob: file });
 
 		element.addEventListener("loadedmetadata", () => {
 			resolve(element.duration);
-			URL.revokeObjectURL(objectUrl);
+			urlHandle.revoke();
 			element.remove();
 		});
 
 		element.addEventListener("error", () => {
 			reject(new Error("Could not load media"));
-			URL.revokeObjectURL(objectUrl);
+			urlHandle.revoke();
 			element.remove();
 		});
 
-		element.src = objectUrl;
+		element.src = urlHandle.url;
 		element.load();
 	});
 };

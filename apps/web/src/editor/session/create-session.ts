@@ -68,6 +68,20 @@ import type {
  * poisoned.
  */
 const migrationRuns = new WeakMap<object, Promise<void>>();
+
+function isDisposalReport(value: unknown): value is DisposalReport {
+	if (typeof value !== "object" || value === null) return false;
+	return (
+		"timer" in value &&
+		"worker" in value &&
+		"audioContext" in value &&
+		"objectUrl" in value &&
+		"gpuResource" in value &&
+		"releaseOrder" in value &&
+		"gpuReconciliation" in value
+	);
+}
+
 export interface CreateEditorSessionArgs {
 	host: EditorHost;
 	/**
@@ -98,6 +112,8 @@ export async function createEditorSession(
 	let root: SessionRoot | null = null;
 	let graphicsReport: GraphicsCapabilityReport | null = null;
 	let migration: MigrationProgress | null = null;
+	let admissionOpen = true;
+	let transitionTail: Promise<void> = Promise.resolve();
 
 	const eventListeners = new Set<(event: SessionEvent) => void>();
 	const changeListeners = new Set<() => void>();
@@ -155,6 +171,8 @@ export async function createEditorSession(
 	});
 	let editor: ReturnType<typeof createOwnedSessionEditor> | null = null;
 	let disposalRun: Promise<DisposalReport> | null = null;
+	let suspensionRun: Promise<void> | null = null;
+	let suspendRequested = false;
 	function ownedEditor(): ReturnType<typeof createOwnedSessionEditor> {
 		if (!editor) {
 			throw new Error(`Session ${id} has not finished creating its editor.`);
@@ -173,11 +191,24 @@ export async function createEditorSession(
 	}
 
 	function assertNotDisposed(operation: string): void {
-		if (state === "disposed") {
+		if (!admissionOpen || state === "disposed") {
 			throw new Error(
 				`Cannot ${operation} a disposed session (${id}). Create a new session instead.`,
 			);
 		}
+	}
+
+	function isTransitionClosed(): boolean {
+		return !admissionOpen || state === "disposed";
+	}
+
+	function enqueueTransition<T>(operation: () => Promise<T> | T): Promise<T> {
+		const run = transitionTail.then(operation, operation);
+		transitionTail = run.then(
+			() => undefined,
+			() => undefined,
+		);
+		return run;
 	}
 
 	/**
@@ -189,11 +220,12 @@ export async function createEditorSession(
 	 */
 	function onRootUnmounted(): void {
 		root = null;
-		// From `suspended` too, not only from `mounted`: mount -> suspend ->
-		// unmount is reachable, and the contract says unmount leaves the session
-		// `created`. Leaving it `suspended` with no root was a state the documented
-		// lifecycle does not describe.
-		if (state === "mounted" || state === "suspended") state = "created";
+		// A suspended session stays suspended when its retained root is removed.
+		// `resume()` then returns it to `created`; reopening here would publish the
+		// new generation before the core managers have completed their resume phase.
+		if (state === "mounted") {
+			state = "created";
+		}
 		notify();
 	}
 
@@ -229,27 +261,89 @@ export async function createEditorSession(
 				onUnmounted: onRootUnmounted,
 			});
 			root = created;
-			state = "mounted";
+			// A retained root may be attached during a suspended dwell, but attaching
+			// it must not publish a mounted/live session while activity admission is
+			// still closed. `resume()` performs the manager-ready phase and then
+			// publishes `mounted` once the retained root is safe to use.
+			if (state !== "suspended" && !suspendRequested) {
+				state = "mounted";
+			}
 			notify();
 			return created.handle;
 		},
 
-		suspend: async () => {
+		suspend: () => {
 			assertNotDisposed("suspend");
-			if (state === "suspended") return;
+			if (state === "suspended") return Promise.resolve();
+			if (suspensionRun) return suspensionRun;
 			// Identity and project state are retained —that is what distinguishes
 			// suspend from unmount, which releases the mounted root.
-			state = "suspended";
-			ownedEditor().suspend();
-			notify();
+			// Close the acquisition/publication gate synchronously before any
+			// asynchronous owner is asked to pause.
+			resources.beginActivitySuspend();
+			suspendRequested = true;
+			const run = enqueueTransition(async () => {
+				if (isTransitionClosed()) return;
+				const results = await Promise.allSettled([
+					Promise.resolve().then(() => ownedEditor().suspend()),
+					Promise.resolve().then(() => resources.drainActivityResources()),
+				]);
+				const errors = results.flatMap((result) =>
+					result.status === "rejected" ? [result.reason] : [],
+				);
+				if (errors.length === 1) throw errors[0];
+				if (errors.length > 1) {
+					throw new AggregateError(
+						errors,
+						"Failed to suspend editor session activity.",
+					);
+				}
+				if (isTransitionClosed()) return;
+				state = "suspended";
+				notify();
+			}).finally(() => {
+				suspendRequested = false;
+				if (suspensionRun === run) suspensionRun = null;
+			});
+			suspensionRun = run;
+			return run;
 		},
 
-		resume: async () => {
+		resume: () => {
 			assertNotDisposed("resume");
-			if (state !== "suspended") return;
-			ownedEditor().resume();
-			state = root ? "mounted" : "created";
-			notify();
+			if (state !== "suspended" && !suspendRequested) {
+				return Promise.resolve();
+			}
+			return enqueueTransition(async () => {
+				if (isTransitionClosed()) return;
+				if (state !== "suspended") return;
+				// The first core phase prepares managers without acquisition. Admission
+				// opens only before the second phase, which may lazily reacquire work.
+				try {
+					await ownedEditor().prepareActivityResume();
+					if (isTransitionClosed()) return;
+					resources.prepareActivityResume();
+					await ownedEditor().resume();
+					if (isTransitionClosed()) return;
+					resources.publishActivityResume();
+				} catch (error) {
+					// A failed resume must not leave a suspended session admitting
+					// activity. Dispose/unmount may have advanced the state while Core
+					// was awaiting, in which case its synchronous gate already wins.
+					resources.beginActivitySuspend();
+					try {
+						await resources.drainActivityResources();
+					} catch (drainError) {
+						throw new AggregateError(
+							[error, drainError],
+							"Failed to resume and requiesce editor session activity.",
+						);
+					}
+					throw error;
+				}
+				state = root ? "mounted" : "created";
+				notify();
+			});
 		},
 
 		unmount: async () => {
@@ -260,23 +354,49 @@ export async function createEditorSession(
 			if (disposalRun) return disposalRun;
 			// Publish one promise before the first await. Concurrent callers therefore
 			// join the same teardown instead of both crossing the unmount boundary.
-			disposalRun = (async () => {
-				// Publish disposal and close every session-owned publication route before
-				// the first await. A zero-yield renderer/store continuation must not race
-				// through the unmount boundary and publish one last frame or result.
-				state = "disposed";
-				ownedEditor().dispose();
-				releaseInteractionCancellers(session);
-				releaseEditorSessionStores(session);
-				notify();
+			admissionOpen = false;
+			state = "disposed";
+			resources.beginActivitySuspend();
+			notify();
+			disposalRun = enqueueTransition(async () => {
+				const errors: unknown[] = [];
+				let report: DisposalReport | null = null;
+				const attempt = async (operation: () => void | Promise<void>) => {
+					try {
+						await operation();
+					} catch (error) {
+						errors.push(error);
+					}
+				};
+				// Close all publication routes before the first asynchronous owner can
+				// settle. The transition state above is already synchronously visible.
+				await attempt(() => ownedEditor().dispose());
+				await attempt(() => releaseInteractionCancellers(session));
+				await attempt(() => releaseEditorSessionStores(session));
 				// Disposal implies unmount: a Host is never required to sequence them.
-				await unmountRoot();
-				const report = resources.disposeAll();
-				releaseEditorForSession(session);
+				await attempt(unmountRoot);
+				try {
+					report = await resources.disposeAll();
+				} catch (error) {
+					errors.push(error);
+					const attached =
+						typeof error === "object" && error !== null && "report" in error
+							? error.report
+							: undefined;
+					report = isDisposalReport(attached) ? attached : resources.inspect();
+				}
+				await attempt(() => releaseEditorForSession(session));
 				changeListeners.clear();
 				eventListeners.clear();
-				return report;
-			})();
+				if (errors.length === 1) throw errors[0];
+				if (errors.length > 1) {
+					throw Object.assign(
+						new AggregateError(errors, "Failed to dispose editor session."),
+						{ report },
+					);
+				}
+				return report ?? resources.inspect();
+			});
 			return disposalRun;
 		},
 
@@ -321,11 +441,15 @@ export async function createEditorSession(
  * proceeding cannot be tightened later without breaking one.
  */
 export class MigrationFailedError extends Error {
-	constructor(
-		readonly from: number | null,
-		readonly to: number,
-		readonly reason: string,
-	) {
+	constructor({
+		from,
+		to,
+		reason,
+	}: {
+		from: number | null;
+		to: number;
+		reason: string;
+	}) {
 		super(
 			`The project store's migration failed (${from ?? "unknown"} -> ${to}): ${reason}. ` +
 				"The session was not created; the editor must not run against data the store " +
@@ -373,7 +497,11 @@ function runMigrationOnce(args: {
 					reason: outcome.reason,
 				},
 			});
-			throw new MigrationFailedError(outcome.from, outcome.to, outcome.reason);
+			throw new MigrationFailedError({
+				from: outcome.from,
+				to: outcome.to,
+				reason: outcome.reason,
+			});
 		}
 
 		diagnostics.event({

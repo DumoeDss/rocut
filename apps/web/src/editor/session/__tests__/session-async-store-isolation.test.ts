@@ -18,7 +18,7 @@ if (process.env.OPENCUT_SESSION_ASYNC_STORE_TEST_ISOLATED !== "1") {
 				`isolated async-store suite failed:\n${result.stdout.toString()}\n${result.stderr.toString()}`,
 			);
 		}
-	});
+	}, 15_000);
 } else {
 	await import("./wasm-test-mock");
 	const { createSoundsStore } = await import("@/sounds/sounds-store");
@@ -26,6 +26,8 @@ if (process.env.OPENCUT_SESSION_ASYNC_STORE_TEST_ISOLATED !== "1") {
 		await import("@/timeline/components/graph-editor/custom-presets-store");
 	const { createStickersStore } = await import("@/stickers/stickers-store");
 	const { createInMemoryHost } = await import("@/editor/ports/in-memory/host");
+	const { C6TestAudioBuffer, C6TestAudioContext } =
+		await import("./c6-test-audio-context");
 	const {
 		InMemoryProjectStore,
 		InMemoryProjectStoreControl,
@@ -326,18 +328,25 @@ if (process.env.OPENCUT_SESSION_ASYNC_STORE_TEST_ISOLATED !== "1") {
 			const store = createSoundsStore({ isDisposed: () => disposed });
 			const fetches = new Map<string, ReturnType<typeof deferred<Response>>>();
 			const inserted: string[] = [];
+			const host = createInMemoryHost({ projectId: "overlapping-sounds" });
+			const createAudioContext = host.runtimeResources.createAudioContext.bind(
+				host.runtimeResources,
+			);
+			host.runtimeResources.createAudioContext = (args) => {
+				const handle = createAudioContext(args);
+				return {
+					...handle,
+					context: new C6TestAudioContext(),
+				};
+			};
 			const session = await createEditorSession({
-				host: createInMemoryHost({ projectId: "overlapping-sounds" }),
+				host,
 			});
 			const editor = editorForSession(session);
 			editor.timeline.insertElement = ({ element }) => {
 				inserted.push(element.name);
 			};
 			const originalFetch = globalThis.fetch;
-			const audioContextDescriptor = Object.getOwnPropertyDescriptor(
-				globalThis,
-				"AudioContext",
-			);
 			globalThis.fetch = Object.assign(
 				async (input: string | URL | Request) => {
 					const url = String(input);
@@ -347,15 +356,6 @@ if (process.env.OPENCUT_SESSION_ASYNC_STORE_TEST_ISOLATED !== "1") {
 				},
 				{ preconnect: () => {} },
 			) as typeof fetch;
-			Object.defineProperty(globalThis, "AudioContext", {
-				configurable: true,
-				writable: true,
-				value: class {
-					async decodeAudioData() {
-						return { duration: 1 };
-					}
-				},
-			});
 
 			try {
 				const first = store
@@ -384,15 +384,71 @@ if (process.env.OPENCUT_SESSION_ASYNC_STORE_TEST_ISOLATED !== "1") {
 				expect(inserted.toSorted()).toEqual(["sound-1", "sound-2"]);
 			} finally {
 				globalThis.fetch = originalFetch;
-				if (audioContextDescriptor) {
-					Object.defineProperty(
-						globalThis,
-						"AudioContext",
-						audioContextDescriptor,
-					);
-				} else {
-					Reflect.deleteProperty(globalThis, "AudioContext");
+				await session.dispose();
+			}
+		});
+
+		test("a delayed sound decode cannot publish across suspend and a resumed generation inserts freshly", async () => {
+			const store = createSoundsStore();
+			const inserted: string[] = [];
+			const decodeEntered = deferred<void>();
+			const heldDecode = deferred<AudioBuffer>();
+			class HeldDecodeAudioContext extends C6TestAudioContext {
+				// eslint-disable-next-line opencut/prefer-object-params -- implements the Web Audio API
+				override async decodeAudioData(
+					_audioData: ArrayBuffer,
+					_successCallback?: DecodeSuccessCallback | null,
+					_errorCallback?: DecodeErrorCallback | null,
+				): Promise<AudioBuffer> {
+					decodeEntered.resolve();
+					return heldDecode.promise;
 				}
+			}
+
+			const host = createInMemoryHost({ projectId: "sound-audio-generation" });
+			const createAudioContext = host.runtimeResources.createAudioContext.bind(
+				host.runtimeResources,
+			);
+			let audioContextCount = 0;
+			host.runtimeResources.createAudioContext = (args) => {
+				const handle = createAudioContext(args);
+				const context =
+					audioContextCount++ === 0
+						? new HeldDecodeAudioContext()
+						: new C6TestAudioContext();
+				return { ...handle, context };
+			};
+			const session = await createEditorSession({ host });
+			const editor = editorForSession(session);
+			editor.timeline.insertElement = ({ element }) => {
+				inserted.push(element.name);
+			};
+			const originalFetch = globalThis.fetch;
+			globalThis.fetch = Object.assign(
+				async () => new Response(new ArrayBuffer(8)),
+				{ preconnect: () => {} },
+			) as typeof fetch;
+
+			try {
+				const stale = store
+					.getState()
+					.addSoundToTimeline({ sound: soundEffect(51), editor });
+				await decodeEntered.promise;
+				await session.suspend();
+				heldDecode.resolve(new C6TestAudioBuffer());
+				expect(await stale).toBe(false);
+				expect(inserted).toEqual([]);
+
+				await session.resume();
+				expect(
+					await store
+						.getState()
+						.addSoundToTimeline({ sound: soundEffect(52), editor }),
+				).toBe(true);
+				expect(inserted).toEqual(["sound-52"]);
+			} finally {
+				globalThis.fetch = originalFetch;
+				heldDecode.resolve(new C6TestAudioBuffer());
 				await session.dispose();
 			}
 		});

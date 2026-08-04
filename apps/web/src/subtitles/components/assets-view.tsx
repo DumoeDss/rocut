@@ -7,7 +7,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useReducer, useRef, useState } from "react";
 import { extractTimelineAudio } from "@/media/mediabunny";
 import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { TRANSCRIPTION_DIAGNOSTICS_SCOPE } from "@/transcription/diagnostics";
@@ -18,8 +18,6 @@ import type {
 	TranscriptionLanguage,
 	TranscriptionProgress,
 } from "@/transcription/types";
-import { createTranscriptionService } from "@/services/transcription/service";
-import { useEditorSession } from "@/editor/session/editor-session-provider";
 import { decodeAudioToFloat32 } from "@/media/audio";
 import { buildCaptionChunks } from "@/transcription/caption";
 import { insertCaptionChunksAsTextTrack } from "@/subtitles/insert";
@@ -40,6 +38,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { DiagnosticSeverity } from "@/diagnostics/types";
+import type { SessionResources } from "@/editor/session/resources";
 
 const DIAGNOSTIC_BUTTON_VARIANT: Record<
 	DiagnosticSeverity,
@@ -64,6 +63,29 @@ const IDLE_STATE: ProcessingState = {
 	error: null,
 	warnings: [],
 };
+
+function captureActivityPublication(resources: SessionResources): {
+	isCurrent(): boolean;
+} {
+	const lifecycle = resources as SessionResources & {
+		getActivityGeneration?: () => number;
+		assertActivityGeneration?: (args: { generation: number }) => void;
+	};
+	const generation = lifecycle.getActivityGeneration?.();
+	return {
+		isCurrent: () => {
+			if (generation === undefined || !lifecycle.assertActivityGeneration) {
+				return true;
+			}
+			try {
+				lifecycle.assertActivityGeneration({ generation });
+				return true;
+			} catch {
+				return false;
+			}
+		},
+	};
+}
 
 /* eslint-disable opencut/prefer-object-params -- React reducers must accept (state, action). */
 function processingReducer(
@@ -91,18 +113,7 @@ export function Captions() {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const editor = useEditorInstance();
-	const session = useEditorSession();
-	const transcriptionService = useMemo(
-		() => createTranscriptionService({ resources: session.resources }),
-		[session],
-	);
-
-	useEffect(
-		() => () => {
-			transcriptionService.terminate();
-		},
-		[transcriptionService],
-	);
+	const transcriptionService = editor.transcription;
 
 	const isProcessing = processing.status === "processing";
 
@@ -131,29 +142,39 @@ export function Captions() {
 	};
 
 	const handleGenerateTranscript = async () => {
+		const publication = captureActivityPublication(editor.resources);
+		if (!publication.isCurrent()) return;
 		dispatch({ type: "start", step: "Extracting audio..." });
 		try {
 			const audioBlob = await extractTimelineAudio({
 				tracks: editor.scenes.getActiveScene().tracks,
 				mediaAssets: editor.media.getAssets(),
 				totalDuration: editor.timeline.getTotalDuration(),
+				resources: editor.resources,
 			});
+			if (!publication.isCurrent()) return;
 
 			dispatch({ type: "update_step", step: "Preparing audio..." });
 			const { samples } = await decodeAudioToFloat32({
 				audioBlob,
 				sampleRate: DEFAULT_TRANSCRIPTION_SAMPLE_RATE,
+				resources: editor.resources,
 			});
+			if (!publication.isCurrent()) return;
 
 			const result = await transcriptionService.transcribe({
 				audioData: samples,
 				language: selectedLanguage === "auto" ? undefined : selectedLanguage,
-				onProgress: handleProgress,
+				onProgress: (progress) => {
+					if (publication.isCurrent()) handleProgress(progress);
+				},
 			});
+			if (!publication.isCurrent()) return;
 
 			dispatch({ type: "update_step", step: "Generating captions..." });
 			const captionChunks = buildCaptionChunks({ segments: result.segments });
 
+			if (!publication.isCurrent()) return;
 			if (!insertCaptions({ captions: captionChunks })) {
 				dispatch({ type: "fail", error: "No captions were generated" });
 				return;
@@ -161,6 +182,7 @@ export function Captions() {
 
 			dispatch({ type: "succeed", warnings: [] });
 		} catch (error) {
+			if (!publication.isCurrent()) return;
 			console.error("Transcription failed:", error);
 			dispatch({
 				type: "fail",
