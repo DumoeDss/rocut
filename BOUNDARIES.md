@@ -317,3 +317,49 @@ Two things remain unverified and should not be read as passing:
 - **The `window.__wasmPanic` channel has never been triggered.** It was readable throughout (value
   `null`), but this failure is a WebGPU _surface_ error, not a Rust panic, so nothing ever wrote to
   it. The channel's plumbing is intact; its end-to-end behaviour is untested.
+
+---
+
+## 6. Provider-private headless editing and attributable proof builds
+
+The observed C7 headless owner is a provider-private session path at
+`apps/web/src/editor/session/headless.ts`. It is not re-exported from the public session barrel and
+accepts one already-complete `EditorHost`; there is no partial-Host cast or fallback store. Its
+surface is deliberately limited to `load`, `save`, and asynchronous `dispose`. Each owner creates
+one `SessionPersistenceCoordinator`, scopes operations to the Host project ID, serializes admitted
+work, closes admission synchronously on first disposal, and returns one stable terminal disposal
+promise. The ordinary full-session factory and the headless factory both call the same
+`migration-gate.ts` promise memo, so same-store callers join one migration while a failed attempt is
+removed for retry.
+
+The two proof Hosts use one shared graph-envelope checker, but their producer facts are different:
+
+- Vite builds a dedicated `headless.html` facade. Rollup records the exact entry's outgoing closure
+  and emitted chunk membership during `generateBundle`; `writeBundle` then reads the final HTML and
+  output bytes from disk. The envelope carries the HTML digest, every observed script link, and the
+  exact entry chunks. The checker re-reads the HTML and rejects missing or altered bytes, scripts
+  outside the output, and a module script that does not load the exact entry chunk.
+- Next uses explicit Webpack only when `OPENCUT_C7_HEADLESS_PROOF=1`. The ordinary configuration has
+  no Webpack callback, retains standalone output, and was observed selecting Next 16.1.3 Turbopack.
+  The proof collector locates `app/c7-headless/route` exactly once, requires actual chunk-graph
+  membership from that module or its concatenated owner, intersects those chunks with the named
+  Webpack entrypoint, and traverses outgoing dependency edges while retaining only modules with
+  emitted ownership. Entry-point filenames alone are not accepted as root membership. Compiler-
+  emitted server WASM is copied only within the validated proof output root to the runtime lookup
+  location, and the mirror records the identical byte digest.
+
+Both executable entries install `headless-runtime-probe/v1` before dynamically loading the semantic
+fixture. The probe records ordered install/load/bind/finish/restore events; exact Host, project and
+store-instance binding; global timer/RAF/Worker/AudioContext/object-URL/WebGPU/WASM calls; Host
+resource-factory and graphics calls; final in-memory resource counts; and React DOM mutations/root
+markers (or the explicit server-no-DOM observation). The semantic evaluator derives its zero-use
+claims from that attributed snapshot and rejects missing observations, reordered provenance,
+fallback stores, fabricated summaries, or Host/result/graph identity reuse.
+
+`SOURCE_INVENTORY.md` and `SOURCE_INVENTORY.json` are intentionally not regenerated in the
+uncommitted implementer tree. Their generator obtains fork additions with `git diff --name-status`
+against the upstream pin; C7's new files are still untracked and would therefore be omitted. The
+local Luna ship leaf must first create the reviewed child commit, then regenerate and verify the
+official inventory against that committed tree. Until that leaf completes, the authored-path
+manifest and content digest in the C7 evidence are the truthful pre-commit inventory; no official
+source-inventory pass is claimed.

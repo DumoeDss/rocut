@@ -46,28 +46,9 @@ import type {
 	RootState,
 	SessionState,
 } from "./session-types";
+import { runStoreMigrationOnce } from "./migration-gate";
 
-/**
- * The migration run in flight, or completed, per store.
- *
- * Migration belongs to the **store**, because only the store knows its own
- * on-disk schema version —C5's second, non-browser implementation has different
- * legacy data or none at all. The **session** invokes it, exactly once, during
- * `create` and before any project load. Session-*owned* migration was rejected:
- * a second session would re-run it against the same store, or race the first.
- *
- * It memoises the **promise**, not a "started" flag. A flag set before the await
- * lets a second concurrent `createEditorSession` on the same store return while
- * migration is still running —which violates "before any project is loaded" in
- * precisely the two-sessions-in-one-page case the Slice requires. The second
- * caller awaits the first run instead.
- *
- * A `WeakMap`, so "once" means once per store across every session that shares
- * it, and a discarded store does not keep an entry alive. A **failed** run is
- * deleted from the map, so a later attempt retries rather than being permanently
- * poisoned.
- */
-const migrationRuns = new WeakMap<object, Promise<void>>();
+export { MigrationFailedError } from "./migration-gate";
 
 function isDisposalReport(value: unknown): value is DisposalReport {
 	if (typeof value !== "object" || value === null) return false;
@@ -161,7 +142,7 @@ export async function createEditorSession(
 		},
 	};
 
-	await runMigrationOnce({
+	await runStoreMigrationOnce({
 		host,
 		diagnostics,
 		onProgress: (p) => {
@@ -428,105 +409,6 @@ export async function createEditorSession(
 		throw error;
 	}
 	return session;
-}
-
-/**
- * Raised when the store's migration reported `failed`.
- *
- * Session creation **fails** rather than proceeding. Proceeding would run the
- * editor on data the store itself says is not at the version it expects, with
- * only a diagnostics event to show for it —and, because the run is memoised,
- * no later session would ever retry. Of the two acceptable contracts, refusing
- * is the one that can be relaxed later without breaking a Host; silently
- * proceeding cannot be tightened later without breaking one.
- */
-export class MigrationFailedError extends Error {
-	constructor({
-		from,
-		to,
-		reason,
-	}: {
-		from: number | null;
-		to: number;
-		reason: string;
-	}) {
-		super(
-			`The project store's migration failed (${from ?? "unknown"} -> ${to}): ${reason}. ` +
-				"The session was not created; the editor must not run against data the store " +
-				"reports as un-migrated.",
-		);
-		this.name = "MigrationFailedError";
-	}
-}
-
-function runMigrationOnce(args: {
-	host: ResolvedEditorHost;
-	diagnostics: SessionDiagnostics;
-	onProgress: (progress: MigrationProgress) => void;
-}): Promise<void> {
-	const { host, diagnostics, onProgress } = args;
-	const store = host.store;
-	if (!store.migrate) return Promise.resolve();
-
-	const existing = migrationRuns.get(store);
-	// The second concurrent caller awaits the first run rather than starting a
-	// second one, and rather than returning before it finishes.
-	if (existing) return existing;
-
-	const run = (async () => {
-		const to = store.schemaVersion;
-		const from = (await store.persistedSchemaVersion?.()) ?? null;
-
-		diagnostics.event({ event: { kind: "migration-started", from, to } });
-
-		const outcome = await store.migrate!({
-			from,
-			to,
-			report: (progress) => {
-				onProgress(progress);
-				diagnostics.event({ event: { kind: "migration-progress", progress } });
-			},
-		});
-
-		if (outcome.status === "failed") {
-			diagnostics.event({
-				event: {
-					kind: "migration-failed",
-					from: outcome.from,
-					to: outcome.to,
-					reason: outcome.reason,
-				},
-			});
-			throw new MigrationFailedError({
-				from: outcome.from,
-				to: outcome.to,
-				reason: outcome.reason,
-			});
-		}
-
-		diagnostics.event({
-			event: {
-				kind: "migration-finished",
-				// From the store's own outcome, which is authoritative about what it
-				// actually moved.
-				from: outcome.status === "migrated" ? outcome.from : from,
-				to: outcome.status === "migrated" ? outcome.to : to,
-				recordsMigrated:
-					outcome.status === "migrated" ? outcome.recordsMigrated : 0,
-			},
-		});
-	})();
-
-	migrationRuns.set(
-		store,
-		run.catch((error: unknown) => {
-			// A failed run must not poison the store forever: drop the memo so a
-			// later attempt retries. The rejection still propagates to this caller.
-			migrationRuns.delete(store);
-			throw error;
-		}),
-	);
-	return migrationRuns.get(store)!;
 }
 
 interface SessionRoot {

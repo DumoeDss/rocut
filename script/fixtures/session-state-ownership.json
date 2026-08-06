@@ -293,7 +293,7 @@
 			"reason": "The snapshot records immutable definition registration identity and never carries session state."
 		},
 		{
-			"path": "apps/web/src/editor/session/create-session.ts",
+			"path": "apps/web/src/editor/session/migration-gate.ts",
 			"symbol": "migrationRuns",
 			"classification": "shared-durable-store-migration",
 			"reason": "Migration is serialized by durable ProjectStore identity so two sessions cannot race the same substrate."

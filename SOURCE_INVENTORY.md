@@ -211,10 +211,11 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `rust/wasm/src/gpu.rs`
 - `rust/wasm/src/wasm.rs`
 
-**114 file(s) added by this fork.** These are **not** patches and must **not** appear in `PATCHES.md`, which logs modifications to inherited files only.
+**127 file(s) added by this fork.** These are **not** patches and must **not** appear in `PATCHES.md`, which logs modifications to inherited files only.
 
 - `apps/web/public/workers/c4-worker-fixture.js`
 - `apps/web/src/app/c6-disposal/page.tsx`
+- `apps/web/src/app/c7-headless/route.ts`
 - `apps/web/src/components/__tests__/storage-provider-operations.test.ts`
 - `apps/web/src/components/storage-provider-operations.ts`
 - `apps/web/src/core/managers/__tests__/media-persistence-rewire.test.ts`
@@ -260,6 +261,11 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/editor/session/__tests__/c6-test-audio-context.ts`
 - `apps/web/src/editor/session/__tests__/disposal-oracle.test.ts`
 - `apps/web/src/editor/session/__tests__/editor-singleton-boundary.test.ts`
+- `apps/web/src/editor/session/__tests__/headless-browser-boundary.test.ts`
+- `apps/web/src/editor/session/__tests__/headless-migration.test.ts`
+- `apps/web/src/editor/session/__tests__/headless-runtime-probe.test.ts`
+- `apps/web/src/editor/session/__tests__/headless-semantic-fixture.test.ts`
+- `apps/web/src/editor/session/__tests__/headless-session.test.ts`
 - `apps/web/src/editor/session/__tests__/independent-timer-ledger.test.ts`
 - `apps/web/src/editor/session/__tests__/session-async-store-isolation.test.ts`
 - `apps/web/src/editor/session/__tests__/session-disposal-c6.test.ts`
@@ -275,8 +281,15 @@ sorted by path. Per-file hash: `sha256` over raw file bytes.
 - `apps/web/src/editor/session/disposal-oracle.ts`
 - `apps/web/src/editor/session/editor-session-host.tsx`
 - `apps/web/src/editor/session/editor-session-provider.tsx`
+- `apps/web/src/editor/session/headless-proof-control-react-browser.ts`
+- `apps/web/src/editor/session/headless-proof-control-react.ts`
+- `apps/web/src/editor/session/headless-proof-control.ts`
+- `apps/web/src/editor/session/headless-runtime-probe.ts`
+- `apps/web/src/editor/session/headless-semantic-fixture.ts`
+- `apps/web/src/editor/session/headless.ts`
 - `apps/web/src/editor/session/independent-timer-ledger.ts`
 - `apps/web/src/editor/session/index.ts`
+- `apps/web/src/editor/session/migration-gate.ts`
 - `apps/web/src/editor/session/resources.ts`
 - `apps/web/src/editor/session/session-resources.ts`
 - `apps/web/src/editor/session/session-types.ts`

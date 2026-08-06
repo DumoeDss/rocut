@@ -25,6 +25,7 @@
 		"build",
 		"tests",
 		"vite.config.ts",
+		"vite.headless.config.ts",
 		"playwright.config.ts",
 		"playwright.probe.config.ts",
 		"../web/src/types/**/*.d.ts"
