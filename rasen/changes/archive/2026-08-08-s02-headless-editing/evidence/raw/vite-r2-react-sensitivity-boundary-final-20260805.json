@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "host": "vite",
+  "status": "failed",
+  "marker": "c7-vite-r2-headless-react-control-20260805-9",
+  "acceptedBase": {
+    "head": "a9dbae62573af5877b440ecf9cb2b8a0d4f1dbbf",
+    "tree": "885d307814260b77397c2c2677b9361fdfc5f5e2"
+  },
+  "entry": "apps/vite-example/src/headless-entry.ts",
+  "proofControl": "react",
+  "output": "apps/vite-example/dist-c7-r2-headless-react-control-20260805-9",
+  "base": "/c7-vite-r2-headless-react-control-9",
+  "startedAt": "2026-08-05T01:08:59.902Z",
+  "errors": [
+    "ENOENT: no such file or directory, open 'E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c7\\apps\\vite-example\\dist-c7-r2-headless-react-control-20260805-9\\c7-headless-graph.json'"
+  ],
+  "processes": {
+    "server": {
+      "pid": null,
+      "port": null
+    },
+    "browser": {
+      "pid": null,
+      "port": null
+    }
+  },
+  "logs": {
+    "stdout": "",
+    "stderr": ""
+  },
+  "cleanup": {
+    "server": {
+      "pid": null,
+      "stopped": true,
+      "forced": false
+    },
+    "browser": {
+      "pid": null,
+      "stopped": true,
+      "forced": false
+    },
+    "serverPortReleased": true,
+    "browserPortReleased": true,
+    "browserProfileRemoved": true
+  },
+  "endedAt": "2026-08-05T01:08:59.904Z"
+}

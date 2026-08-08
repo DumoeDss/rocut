@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "host": "vite",
+  "status": "passed",
+  "marker": "c7-vite-r1-headless-clean-20260805-3",
+  "acceptedBase": {
+    "head": "a9dbae62573af5877b440ecf9cb2b8a0d4f1dbbf",
+    "tree": "885d307814260b77397c2c2677b9361fdfc5f5e2"
+  },
+  "entry": "apps/vite-example/src/headless-entry.ts",
+  "output": "apps/vite-example/dist-c7-r1-headless-clean-20260805-3",
+  "base": "/c7-vite-r1-headless-clean-3",
+  "startedAt": "2026-08-04T23:03:25.275Z",
+  "errors": [],
+  "graph": {
+    "path": "apps/vite-example/dist-c7-r1-headless-clean-20260805-3/c7-headless-graph.json",
+    "sha256": "eeda71ecf1217b0f287765333a16d78f757b60bb910ce4b2f8a39bb7810d8932",
+    "buildId": "vite:c7-vite-r1-headless-clean-20260805-3:1bd1cb6537f02324",
+    "moduleCount": 14,
+    "moduleSetSha256": "e350c199c5d210efde3f670c10a22f2ae40f3f8baa2a4a86fe901abf23c951d4",
+    "fileSetSha256": "1bd1cb6537f02324fe392a4645805db2c75e91151966a1eb5120717255f1fabe"
+  },
+  "runtime": {
+    "semantic": {
+      "schemaVersion": 1,
+      "host": "vite",
+      "buildMarker": "c7-vite-r1-headless-clean-20260805-3",
+      "acceptedHead": "a9dbae62573af5877b440ecf9cb2b8a0d4f1dbbf",
+      "acceptedTree": "885d307814260b77397c2c2677b9361fdfc5f5e2",
+      "entry": "apps/vite-example/src/headless-entry.ts",
+      "storeIdentity": "InMemoryProjectStore",
+      "storeRunIdentity": "vite:c7-vite-r1-headless-clean-20260805-3:InMemoryProjectStore:c7-headless-project",
+      "hostFallback": false,
+      "projectId": "c7-headless-project",
+      "firstOwnerId": "session-1",
+      "secondOwnerId": "session-2",
+      "ownersDistinct": true,
+      "seededName": "C7 seeded project",
+      "editedName": "C7 headless edit",
+      "reopenedName": "C7 headless edit",
+      "seededUpdatedAt": "2026-08-05T01:00:00.000Z",
+      "editedUpdatedAt": "2026-08-05T02:00:00.000Z",
+      "reopenedUpdatedAt": "2026-08-05T02:00:00.000Z",
+      "seededProjectDigest": "00c2c698060ad8f6913a7e866e0f6898171562f8442005cf97f2ae68de0a23be",
+      "firstLoadDigest": "46d06aa4045343edf7bcb48889cc26ffa3afe0671683e5d71c1a26d91eac81fb",
+      "savedProjectDigest": "8122d2010df79eac9d961343821fe9f0b4c27a49f1f3b9d13f725ceddc587edf",
+      "reopenedProjectDigest": "8122d2010df79eac9d961343821fe9f0b4c27a49f1f3b9d13f725ceddc587edf",
+      "reopenedLoadDigest": "e0435b1bd554f5cb4121cc7ab5e7e39fea4829e863aec828221a5aa58f383c5b",
+      "seededOpaqueDigest": "7e16df1d84cf3587875e5668827d346a9f518fa476b516dfaea4d58760837f8d",
+      "reopenedOpaqueDigest": "7e16df1d84cf3587875e5668827d346a9f518fa476b516dfaea4d58760837f8d",
+      "opaquePreserved": true,
+      "attachmentKey": "provider-attachment.bin",
+      "attachmentSchemaVersion": 7,
+      "seededAttachmentDigest": "303a8e31a794d85676bb25634ae0a87b307e0a1cb09c53ad1f4dc6a2d327e792",
+      "reopenedAttachmentDigest": "303a8e31a794d85676bb25634ae0a87b307e0a1cb09c53ad1f4dc6a2d327e792",
+      "seededAttachmentMetadataDigest": "3ed388ed68f0340fbb44bd8f7cf1dca3a1da646655e1a410ca832e41c0bd9ff7",
+      "reopenedAttachmentMetadataDigest": "3ed388ed68f0340fbb44bd8f7cf1dca3a1da646655e1a410ca832e41c0bd9ff7",
+      "attachmentPreserved": true,
+      "durableProjectPresent": true,
+      "durableAttachmentPresent": true,
+      "firstDisposal": "fulfilled",
+      "secondDisposal": "fulfilled",
+      "postDisposeWriteRejected": true,
+      "postDisposeStoreUntouched": true,
+      "reactMountAttempts": 0,
+      "navigationAttempts": 0,
+      "runtimeResourceCounts": {
+        "timers": 0,
+        "animationFrames": 0,
+        "workers": 0,
+        "audioContexts": 0,
+        "objectUrls": 0,
+        "compositorGpuOwners": 0
+      },
+      "runtimeProbe": {
+        "schemaVersion": 1,
+        "implementation": "headless-runtime-probe/v1",
+        "probeId": "c7-runtime-probe:vite:c7-vite-r1-headless-clean-20260805-3:apps/vite-example/src/headless-entry.ts",
+        "host": "vite",
+        "environment": "browser",
+        "buildMarker": "c7-vite-r1-headless-clean-20260805-3",
+        "entry": "apps/vite-example/src/headless-entry.ts",
+        "events": [
+          {
+            "sequence": 1,
+            "kind": "probe-installed"
+          },
+          {
+            "sequence": 2,
+            "kind": "subject-load-started"
+          },
+          {
+            "sequence": 3,
+            "kind": "host-bound"
+          },
+          {
+            "sequence": 4,
+            "kind": "subject-completed"
+          },
+          {
+            "sequence": 5,
+            "kind": "probe-restored"
+          }
+        ],
+        "hostBinding": {
+          "source": "fixture-explicit-createInMemoryHost",
+          "expectedProjectId": "c7-headless-project",
+          "actualProjectId": "c7-headless-project",
+          "projectMatches": true,
+          "intendedStoreIdentity": "InMemoryProjectStore",
+          "actualStoreIdentity": "InMemoryProjectStore",
+          "sameStoreInstance": true,
+          "fallbackUsed": false
+        },
+        "globalCalls": {
+          "timeouts": 0,
+          "intervals": 0,
+          "animationFrames": 0,
+          "workers": 0,
+          "audioContexts": 0,
+          "objectUrls": 0,
+          "webGpuAdapterRequests": 0,
+          "wasmInstantiations": 0
+        },
+        "hostCalls": {
+          "workers": 0,
+          "audioContexts": 0,
+          "objectUrls": 0,
+          "graphicsQueries": 0
+        },
+        "hostResourceState": {
+          "workers": 0,
+          "audioContexts": 0,
+          "objectUrls": 0
+        },
+        "react": {
+          "strategy": "mutation-observer+react-container-markers",
+          "domAvailable": true,
+          "mutationRecords": 0,
+          "rootMarkersBefore": 0,
+          "rootMarkersAfter": 0,
+          "mountAttempts": 0
+        },
+        "compositorGpu": {
+          "strategy": "host-graphics+webgpu+wasm-construction",
+          "hostGraphicsQueries": 0,
+          "webGpuAdapterRequests": 0,
+          "wasmInstantiations": 0,
+          "ownershipAttempts": 0
+        }
+      },
+      "errors": []
+    },
+    "proofControl": "neutral"
+  },
+  "observations": {
+    "consoleErrors": [],
+    "pageErrors": [],
+    "requestFailures": [],
+    "httpErrors": []
+  },
+  "processes": {
+    "server": {
+      "pid": 68420,
+      "port": 64919
+    },
+    "browser": {
+      "pid": 57808,
+      "port": 64920
+    }
+  },
+  "logs": {
+    "stdout": "  \u001b[32m➜\u001b[39m  \u001b[1mLocal\u001b[22m:   \u001b[36mhttp://127.0.0.1:\u001b[1m64919\u001b[22m/c7-vite-r1-headless-clean-3\u001b[39m\n",
+    "stderr": ""
+  },
+  "cleanup": {
+    "server": {
+      "pid": 68420,
+      "stopped": true,
+      "forced": false,
+      "exitCode": null
+    },
+    "browser": {
+      "pid": 57808,
+      "stopped": true,
+      "forced": false,
+      "exitCode": null
+    },
+    "serverPortReleased": true,
+    "browserPortReleased": true,
+    "browserProfileRemoved": true
+  },
+  "endedAt": "2026-08-04T23:03:28.243Z"
+}

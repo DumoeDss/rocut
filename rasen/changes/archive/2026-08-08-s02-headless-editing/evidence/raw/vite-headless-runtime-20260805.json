@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "host": "vite",
+  "status": "failed",
+  "marker": "c7-vite-headless-clean-20260805-1",
+  "acceptedBase": {
+    "head": "a9dbae62573af5877b440ecf9cb2b8a0d4f1dbbf",
+    "tree": "885d307814260b77397c2c2677b9361fdfc5f5e2"
+  },
+  "entry": "apps/vite-example/src/headless-entry.ts",
+  "output": "apps/vite-example/dist-c7-headless-clean-20260805-1",
+  "base": "/c7-vite-headless-clean",
+  "startedAt": "2026-08-04T20:34:22.224Z",
+  "errors": [
+    "Vite browser observations contain errors: {\"consoleErrors\":[\"Failed to load resource: the server responded with a status of 404 (Not Found)\"],\"pageErrors\":[],\"requestFailures\":[],\"httpErrors\":[]}"
+  ],
+  "graph": {
+    "path": "apps/vite-example/dist-c7-headless-clean-20260805-1/c7-headless-graph.json",
+    "sha256": "7d130f1192658258f286df376edf93f89240473a19b6b8fa5555d7f322effad4",
+    "buildId": "vite:c7-vite-headless-clean-20260805-1:f429c5edff0d957d",
+    "moduleCount": 12,
+    "moduleSetSha256": "f9c6d97e8dc4e5fbf53d666de544a7d8e33af622a6a25ad28f9968525cdf23a1",
+    "fileSetSha256": "f429c5edff0d957dd88150bb0a6d546bd02e7fb9734d86ee02b2845dac5e4876"
+  },
+  "processes": {
+    "server": {
+      "pid": 39232,
+      "port": 61655
+    },
+    "browser": {
+      "pid": 50056,
+      "port": 61656
+    }
+  },
+  "logs": {
+    "stdout": "  \u001b[32m➜\u001b[39m  \u001b[1mLocal\u001b[22m:   \u001b[36mhttp://127.0.0.1:\u001b[1m61655\u001b[22m/c7-vite-headless-clean\u001b[39m\n",
+    "stderr": ""
+  },
+  "cleanup": {
+    "server": {
+      "pid": 39232,
+      "stopped": true,
+      "forced": false,
+      "exitCode": null
+    },
+    "browser": {
+      "pid": 50056,
+      "stopped": true,
+      "forced": false,
+      "exitCode": null
+    },
+    "serverPortReleased": true,
+    "browserPortReleased": true,
+    "browserProfileRemoved": true
+  },
+  "endedAt": "2026-08-04T20:34:26.194Z"
+}

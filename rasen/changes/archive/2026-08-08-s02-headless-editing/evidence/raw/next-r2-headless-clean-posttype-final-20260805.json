@@ -1,0 +1,302 @@
+{
+  "schemaVersion": 1,
+  "host": "next",
+  "status": "passed",
+  "marker": "c7-next-r2-headless-clean-20260805-2",
+  "acceptedBase": {
+    "head": "a9dbae62573af5877b440ecf9cb2b8a0d4f1dbbf",
+    "tree": "885d307814260b77397c2c2677b9361fdfc5f5e2"
+  },
+  "entry": "apps/web/src/app/c7-headless/route.ts",
+  "proofControl": "neutral",
+  "output": "apps/web/.next-c7-r2-headless-clean-20260805-2",
+  "base": "/c7-next-r2-headless-clean-2",
+  "startedAt": "2026-08-05T00:54:16.461Z",
+  "errors": [],
+  "graph": {
+    "path": "apps/web/.next-c7-r2-headless-clean-20260805-2/c7-headless-graph.json",
+    "sha256": "5890c9f9bb939ad72ae2f2ccd29a227fd69bc1b4b0976ebc1ebcf37c26730f5b",
+    "buildId": "next-webpack:17dd4669485db998",
+    "moduleCount": 15,
+    "moduleSetSha256": "222f23ee598144eb64f2897e04b520353c34dec9ba6f9a979b3149f803d942a4",
+    "fileSetSha256": "99e4640469e9a4e7231aee9848c9b78d20f3ce41c0376651ced26ce3d4529d63"
+  },
+  "runtime": {
+    "semantic": {
+      "schemaVersion": 1,
+      "host": "next",
+      "buildMarker": "c7-next-r2-headless-clean-20260805-2",
+      "acceptedHead": "a9dbae62573af5877b440ecf9cb2b8a0d4f1dbbf",
+      "acceptedTree": "885d307814260b77397c2c2677b9361fdfc5f5e2",
+      "entry": "apps/web/src/app/c7-headless/route.ts",
+      "storeIdentity": "InMemoryProjectStore",
+      "storeRunIdentity": "next:c7-next-r2-headless-clean-20260805-2:InMemoryProjectStore:c7-headless-project",
+      "hostFallback": false,
+      "projectId": "c7-headless-project",
+      "firstOwnerId": "session-1",
+      "secondOwnerId": "session-2",
+      "ownersDistinct": true,
+      "seededName": "C7 seeded project",
+      "editedName": "C7 headless edit",
+      "reopenedName": "C7 headless edit",
+      "seededUpdatedAt": "2026-08-05T01:00:00.000Z",
+      "editedUpdatedAt": "2026-08-05T02:00:00.000Z",
+      "reopenedUpdatedAt": "2026-08-05T02:00:00.000Z",
+      "seededProjectDigest": "00c2c698060ad8f6913a7e866e0f6898171562f8442005cf97f2ae68de0a23be",
+      "firstLoadDigest": "46d06aa4045343edf7bcb48889cc26ffa3afe0671683e5d71c1a26d91eac81fb",
+      "savedProjectDigest": "8122d2010df79eac9d961343821fe9f0b4c27a49f1f3b9d13f725ceddc587edf",
+      "reopenedProjectDigest": "8122d2010df79eac9d961343821fe9f0b4c27a49f1f3b9d13f725ceddc587edf",
+      "reopenedLoadDigest": "e0435b1bd554f5cb4121cc7ab5e7e39fea4829e863aec828221a5aa58f383c5b",
+      "seededOpaqueDigest": "7e16df1d84cf3587875e5668827d346a9f518fa476b516dfaea4d58760837f8d",
+      "reopenedOpaqueDigest": "7e16df1d84cf3587875e5668827d346a9f518fa476b516dfaea4d58760837f8d",
+      "opaquePreserved": true,
+      "attachmentKey": "provider-attachment.bin",
+      "attachmentSchemaVersion": 7,
+      "seededAttachmentDigest": "303a8e31a794d85676bb25634ae0a87b307e0a1cb09c53ad1f4dc6a2d327e792",
+      "reopenedAttachmentDigest": "303a8e31a794d85676bb25634ae0a87b307e0a1cb09c53ad1f4dc6a2d327e792",
+      "seededAttachmentMetadataDigest": "3ed388ed68f0340fbb44bd8f7cf1dca3a1da646655e1a410ca832e41c0bd9ff7",
+      "reopenedAttachmentMetadataDigest": "3ed388ed68f0340fbb44bd8f7cf1dca3a1da646655e1a410ca832e41c0bd9ff7",
+      "attachmentPreserved": true,
+      "durableProjectPresent": true,
+      "durableAttachmentPresent": true,
+      "firstDisposal": "fulfilled",
+      "secondDisposal": "fulfilled",
+      "postDisposeWriteRejected": true,
+      "postDisposeStoreUntouched": true,
+      "reactMountAttempts": 0,
+      "navigationAttempts": 0,
+      "runtimeResourceCounts": {
+        "timers": 0,
+        "animationFrames": 0,
+        "workers": 0,
+        "audioContexts": 0,
+        "objectUrls": 0,
+        "compositorGpuOwners": 0
+      },
+      "runtimeProbe": {
+        "schemaVersion": 1,
+        "implementation": "headless-runtime-probe/v1",
+        "probeId": "c7-runtime-probe:next:c7-next-r2-headless-clean-20260805-2:apps/web/src/app/c7-headless/route.ts",
+        "host": "next",
+        "environment": "server",
+        "buildMarker": "c7-next-r2-headless-clean-20260805-2",
+        "entry": "apps/web/src/app/c7-headless/route.ts",
+        "events": [
+          {
+            "sequence": 1,
+            "kind": "probe-installed"
+          },
+          {
+            "sequence": 2,
+            "kind": "subject-load-started"
+          },
+          {
+            "sequence": 3,
+            "kind": "host-bound"
+          },
+          {
+            "sequence": 4,
+            "kind": "subject-completed"
+          },
+          {
+            "sequence": 5,
+            "kind": "probe-restored"
+          }
+        ],
+        "hostBinding": {
+          "source": "fixture-explicit-createInMemoryHost",
+          "expectedProjectId": "c7-headless-project",
+          "actualProjectId": "c7-headless-project",
+          "projectMatches": true,
+          "intendedStoreIdentity": "InMemoryProjectStore",
+          "actualStoreIdentity": "InMemoryProjectStore",
+          "sameStoreInstance": true,
+          "fallbackUsed": false
+        },
+        "globalCalls": {
+          "timeouts": 0,
+          "intervals": 0,
+          "animationFrames": 0,
+          "workers": 0,
+          "audioContexts": 0,
+          "audioContextConstructions": 0,
+          "webkitAudioContextConstructions": 0,
+          "objectUrls": 0,
+          "webGpuAdapterRequests": 0,
+          "wasmInstantiations": 0,
+          "wasmInstantiateCalls": 0,
+          "wasmInstantiateStreamingCalls": 0
+        },
+        "hostCalls": {
+          "workers": 0,
+          "audioContexts": 0,
+          "objectUrls": 0,
+          "graphicsQueries": 0
+        },
+        "hookProvenance": {
+          "global": {
+            "strategy": "pre-load-callable-proxy/v1",
+            "hooks": [
+              {
+                "path": "globalThis.setTimeout",
+                "status": "installed",
+                "detail": "globalThis.setTimeout wrapped"
+              },
+              {
+                "path": "globalThis.setInterval",
+                "status": "installed",
+                "detail": "globalThis.setInterval wrapped"
+              },
+              {
+                "path": "globalThis.requestAnimationFrame",
+                "status": "absent",
+                "detail": "typeof globalThis.requestAnimationFrame is undefined"
+              },
+              {
+                "path": "globalThis.Worker",
+                "status": "absent",
+                "detail": "typeof globalThis.Worker is undefined"
+              },
+              {
+                "path": "globalThis.AudioContext",
+                "status": "absent",
+                "detail": "typeof globalThis.AudioContext is undefined"
+              },
+              {
+                "path": "globalThis.webkitAudioContext",
+                "status": "absent",
+                "detail": "typeof globalThis.webkitAudioContext is undefined"
+              },
+              {
+                "path": "URL.createObjectURL",
+                "status": "installed",
+                "detail": "URL.createObjectURL wrapped"
+              },
+              {
+                "path": "navigator.gpu.requestAdapter",
+                "status": "absent",
+                "detail": "navigator.gpu.requestAdapter owner is absent"
+              },
+              {
+                "path": "WebAssembly.instantiate",
+                "status": "installed",
+                "detail": "WebAssembly.instantiate wrapped"
+              },
+              {
+                "path": "WebAssembly.instantiateStreaming",
+                "status": "installed",
+                "detail": "WebAssembly.instantiateStreaming wrapped"
+              }
+            ]
+          },
+          "host": {
+            "strategy": "post-bind-host-callable-proxy/v1",
+            "hooks": [
+              {
+                "path": "host.runtimeResources.createWorker",
+                "status": "installed",
+                "detail": "host.runtimeResources.createWorker wrapped"
+              },
+              {
+                "path": "host.runtimeResources.createAudioContext",
+                "status": "installed",
+                "detail": "host.runtimeResources.createAudioContext wrapped"
+              },
+              {
+                "path": "host.runtimeResources.createObjectUrl",
+                "status": "installed",
+                "detail": "host.runtimeResources.createObjectUrl wrapped"
+              },
+              {
+                "path": "host.environment.describeGraphics",
+                "status": "installed",
+                "detail": "host.environment.describeGraphics wrapped"
+              }
+            ]
+          },
+          "react": {
+            "strategy": "server-no-dom/v1",
+            "hooks": [
+              {
+                "path": "document.reactRootMarkers",
+                "status": "absent",
+                "detail": "server environment has no DOM document"
+              },
+              {
+                "path": "globalThis.MutationObserver",
+                "status": "absent",
+                "detail": "server environment has no DOM MutationObserver"
+              }
+            ]
+          },
+          "compositorGpu": {
+            "strategy": "derived-host-webgpu-wasm/v1",
+            "fields": [
+              "hostGraphicsQueries",
+              "webGpuAdapterRequests",
+              "wasmInstantiations",
+              "ownershipAttempts"
+            ]
+          }
+        },
+        "hostResourceState": {
+          "workers": 0,
+          "audioContexts": 0,
+          "objectUrls": 0
+        },
+        "react": {
+          "strategy": "server-no-dom",
+          "domAvailable": false,
+          "mutationRecords": 0,
+          "rootMarkersBefore": 0,
+          "rootMarkersAfter": 0,
+          "mountAttempts": 0
+        },
+        "compositorGpu": {
+          "strategy": "host-graphics+webgpu+wasm-construction",
+          "hostGraphicsQueries": 0,
+          "webGpuAdapterRequests": 0,
+          "wasmInstantiations": 0,
+          "ownershipAttempts": 0
+        }
+      },
+      "errors": []
+    },
+    "proofControl": "neutral"
+  },
+  "observations": {
+    "httpStatus": 200,
+    "contentType": "application/json"
+  },
+  "processes": {
+    "server": {
+      "pid": 35488,
+      "port": 60807
+    },
+    "browser": {
+      "pid": null,
+      "port": null
+    }
+  },
+  "logs": {
+    "stdout": "▲ Next.js 16.1.3\n- Local:         http://127.0.0.1:60807\n- Network:       http://127.0.0.1:60807\n\n✓ Starting...\n✓ Ready in 880ms\n",
+    "stderr": "⚠ Warning: Next.js inferred your workspace root, but it may not be correct.\n We detected multiple lockfiles and selected the directory of E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\pnpm-lock.yaml as the root directory.\n To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.\n   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.\n Detected additional lockfiles: \n   * E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c7\\bun.lock\n   * E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\package-lock.json\n\n2026-08-05T00:54:17.955Z WARN [Better Auth]: [better-auth] Warning: your BETTER_AUTH_SECRET should be at least 32 characters long for adequate security. Generate one with `npx auth secret` or `openssl rand -base64 32`.\n2026-08-05T00:54:17.957Z WARN [Better Auth]: [better-auth] Warning: your BETTER_AUTH_SECRET appears low-entropy. Use a randomly generated secret for production.\n"
+  },
+  "cleanup": {
+    "server": {
+      "pid": 35488,
+      "stopped": true,
+      "forced": false,
+      "exitCode": null
+    },
+    "browser": {
+      "pid": null,
+      "stopped": true,
+      "forced": false
+    },
+    "serverPortReleased": true,
+    "browserPortReleased": true,
+    "browserProfileRemoved": true
+  },
+  "endedAt": "2026-08-05T00:54:18.167Z"
+}

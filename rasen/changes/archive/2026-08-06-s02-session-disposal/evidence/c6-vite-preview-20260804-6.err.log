@@ -1,0 +1,2 @@
+$ vite preview --host "127.0.0.1" --port "4179" --strictPort
+error: script "preview" exited with code 255

@@ -1,0 +1,13 @@
+$ next start --hostname "127.0.0.1" --port "4199"
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of E:\AI\ChatAI\Agents\VibeCodingProjects\pnpm-lock.yaml as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-c6\bun.lock
+   * E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\package-lock.json
+
+⚠ "next start" does not work with "output: standalone" configuration. Use "node .next/standalone/server.js" instead.
+2026-08-04T01:18:19.627Z WARN [Better Auth]: [better-auth] Warning: your BETTER_AUTH_SECRET should be at least 32 characters long for adequate security. Generate one with `npx auth secret` or `openssl rand -base64 32`.
+2026-08-04T01:18:19.634Z WARN [Better Auth]: [better-auth] Warning: your BETTER_AUTH_SECRET appears low-entropy. Use a randomly generated secret for production.
+error: script "start" exited with code 255
