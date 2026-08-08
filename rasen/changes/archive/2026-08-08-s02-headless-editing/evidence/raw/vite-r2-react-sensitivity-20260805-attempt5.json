@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "host": "vite",
+  "status": "failed",
+  "marker": "c7-vite-r2-headless-react-control-20260805-4",
+  "acceptedBase": {
+    "head": "a9dbae62573af5877b440ecf9cb2b8a0d4f1dbbf",
+    "tree": "885d307814260b77397c2c2677b9361fdfc5f5e2"
+  },
+  "entry": "apps/vite-example/src/headless-entry.ts",
+  "proofControl": "react",
+  "output": "apps/vite-example/dist-c7-r2-headless-react-control-20260805-4",
+  "base": "/c7-vite-r2-headless-react-control-4",
+  "startedAt": "2026-08-05T00:28:41.205Z",
+  "errors": [
+    "Vite browser control did not complete: page.waitForFunction: Timeout 30000ms exceeded.; observations={\"consoleErrors\":[],\"pageErrors\":[],\"requestFailures\":[],\"httpErrors\":[]}; page={\"complete\":null,\"resultPublished\":false,\"bodyText\":\"\\n\\t\\tpending\\n\\t\\n\\n\"}"
+  ],
+  "graph": {
+    "path": "apps/vite-example/dist-c7-r2-headless-react-control-20260805-4/c7-headless-graph.json",
+    "sha256": "aec64a0d1e5f8275dd3d15b180992cb5f8b1b7e4c2a218f8e56d9de9dc548a61",
+    "buildId": "vite:c7-vite-r2-headless-react-control-20260805-4:447d75a0562ee2bc",
+    "moduleCount": 34,
+    "moduleSetSha256": "ea250fafea349e825687bfc8958becac5d43075087e0584720a03b6ba315d77d",
+    "fileSetSha256": "447d75a0562ee2bc080d6811a9f30767d816464ff4c190c4743dc5f15ccd67df",
+    "negativeControl": {
+      "status": "expected-rejection",
+      "rule": "forbidden.react-family",
+      "issueCount": 19
+    }
+  },
+  "observations": {
+    "consoleErrors": [],
+    "pageErrors": [],
+    "requestFailures": [],
+    "httpErrors": []
+  },
+  "processes": {
+    "server": {
+      "pid": 34668,
+      "port": 61479
+    },
+    "browser": {
+      "pid": 46744,
+      "port": 61482
+    }
+  },
+  "logs": {
+    "stdout": "  \u001b[32m➜\u001b[39m  \u001b[1mLocal\u001b[22m:   \u001b[36mhttp://127.0.0.1:\u001b[1m61479\u001b[22m/c7-vite-r2-headless-react-control-4\u001b[39m\n",
+    "stderr": ""
+  },
+  "cleanup": {
+    "server": {
+      "pid": 34668,
+      "stopped": true,
+      "forced": false,
+      "exitCode": null
+    },
+    "browser": {
+      "pid": 46744,
+      "stopped": true,
+      "forced": false,
+      "exitCode": null
+    },
+    "serverPortReleased": true,
+    "browserPortReleased": true,
+    "browserProfileRemoved": true
+  },
+  "endedAt": "2026-08-05T00:29:15.042Z"
+}

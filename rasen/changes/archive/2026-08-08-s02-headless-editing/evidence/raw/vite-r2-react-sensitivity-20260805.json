@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "host": "vite",
+  "status": "failed",
+  "marker": "c7-vite-r2-headless-react-control-20260805-1",
+  "acceptedBase": {
+    "head": "a9dbae62573af5877b440ecf9cb2b8a0d4f1dbbf",
+    "tree": "885d307814260b77397c2c2677b9361fdfc5f5e2"
+  },
+  "entry": "apps/vite-example/src/headless-entry.ts",
+  "proofControl": "react",
+  "output": "apps/vite-example/dist-c7-r2-headless-react-control-20260805-1",
+  "base": "/c7-vite-r2-headless-react-control-1",
+  "startedAt": "2026-08-05T00:24:13.845Z",
+  "errors": [
+    "page.waitForFunction: Timeout 30000ms exceeded."
+  ],
+  "graph": {
+    "path": "apps/vite-example/dist-c7-r2-headless-react-control-20260805-1/c7-headless-graph.json",
+    "sha256": "9dc5f3ac493d2b0d196a99176abce8dfee3bb88247fd9eec947ca41298c160cd",
+    "buildId": "vite:c7-vite-r2-headless-react-control-20260805-1:485a66d3f6d599a1",
+    "moduleCount": 34,
+    "moduleSetSha256": "453aa2b85275ce9ca631090c7b031a628e146179ae9e1849bce3929cf287854f",
+    "fileSetSha256": "485a66d3f6d599a1deb4d0921e8d030977f9587497708f14c2f44d0f1b7beadf",
+    "negativeControl": {
+      "status": "expected-rejection",
+      "rule": "forbidden.react-family",
+      "issueCount": 19
+    }
+  },
+  "processes": {
+    "server": {
+      "pid": 37052,
+      "port": 61818
+    },
+    "browser": {
+      "pid": 9908,
+      "port": 61819
+    }
+  },
+  "logs": {
+    "stdout": "  \u001b[32m➜\u001b[39m  \u001b[1mLocal\u001b[22m:   \u001b[36mhttp://127.0.0.1:\u001b[1m61818\u001b[22m/c7-vite-r2-headless-react-control-1\u001b[39m\n",
+    "stderr": ""
+  },
+  "cleanup": {
+    "server": {
+      "pid": 37052,
+      "stopped": true,
+      "forced": false,
+      "exitCode": null
+    },
+    "browser": {
+      "pid": 9908,
+      "stopped": true,
+      "forced": false,
+      "exitCode": null
+    },
+    "serverPortReleased": true,
+    "browserPortReleased": true,
+    "browserProfileRemoved": true
+  },
+  "endedAt": "2026-08-05T00:24:48.245Z"
+}

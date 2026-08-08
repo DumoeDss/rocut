@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "host": "next",
+  "status": "passed",
+  "marker": "c7-next-headless-clean-20260805-1",
+  "acceptedBase": {
+    "head": "a9dbae62573af5877b440ecf9cb2b8a0d4f1dbbf",
+    "tree": "885d307814260b77397c2c2677b9361fdfc5f5e2"
+  },
+  "entry": "apps/web/src/app/c7-headless/route.ts",
+  "output": "apps/web/.next-c7-headless-clean-20260805-1",
+  "base": "/c7-next-headless-clean",
+  "startedAt": "2026-08-04T20:35:18.620Z",
+  "errors": [],
+  "graph": {
+    "path": "apps/web/.next-c7-headless-clean-20260805-1/c7-headless-graph.json",
+    "sha256": "2f5e3d8bbd21f3c2095606ef995dd6958ecaae4f5026c8759f0258e708b2e062",
+    "buildId": "next-webpack:0e4af95144cec01c",
+    "moduleCount": 13,
+    "moduleSetSha256": "d9408bc2d030431e957cac1b76f4e37b2ef2a43409e4d4656b15fceb37f38d04",
+    "fileSetSha256": "10de56ce48f21f47ea1d4bf08a393ee44bb1e63ba14523501ec7c7f61b44ace7"
+  },
+  "runtime": {
+    "semantic": {
+      "schemaVersion": 1,
+      "host": "next",
+      "buildMarker": "c7-next-headless-clean-20260805-1",
+      "acceptedHead": "a9dbae62573af5877b440ecf9cb2b8a0d4f1dbbf",
+      "acceptedTree": "885d307814260b77397c2c2677b9361fdfc5f5e2",
+      "entry": "apps/web/src/app/c7-headless/route.ts",
+      "storeIdentity": "InMemoryProjectStore",
+      "storeRunIdentity": "next:c7-next-headless-clean-20260805-1:InMemoryProjectStore:c7-headless-project",
+      "hostFallback": false,
+      "projectId": "c7-headless-project",
+      "firstOwnerId": "session-1",
+      "secondOwnerId": "session-2",
+      "ownersDistinct": true,
+      "seededName": "C7 seeded project",
+      "editedName": "C7 headless edit",
+      "reopenedName": "C7 headless edit",
+      "seededUpdatedAt": "2026-08-05T01:00:00.000Z",
+      "editedUpdatedAt": "2026-08-05T02:00:00.000Z",
+      "reopenedUpdatedAt": "2026-08-05T02:00:00.000Z",
+      "seededProjectDigest": "00c2c698060ad8f6913a7e866e0f6898171562f8442005cf97f2ae68de0a23be",
+      "firstLoadDigest": "46d06aa4045343edf7bcb48889cc26ffa3afe0671683e5d71c1a26d91eac81fb",
+      "savedProjectDigest": "8122d2010df79eac9d961343821fe9f0b4c27a49f1f3b9d13f725ceddc587edf",
+      "reopenedProjectDigest": "8122d2010df79eac9d961343821fe9f0b4c27a49f1f3b9d13f725ceddc587edf",
+      "reopenedLoadDigest": "e0435b1bd554f5cb4121cc7ab5e7e39fea4829e863aec828221a5aa58f383c5b",
+      "seededOpaqueDigest": "7e16df1d84cf3587875e5668827d346a9f518fa476b516dfaea4d58760837f8d",
+      "reopenedOpaqueDigest": "7e16df1d84cf3587875e5668827d346a9f518fa476b516dfaea4d58760837f8d",
+      "opaquePreserved": true,
+      "attachmentKey": "provider-attachment.bin",
+      "attachmentSchemaVersion": 7,
+      "seededAttachmentDigest": "303a8e31a794d85676bb25634ae0a87b307e0a1cb09c53ad1f4dc6a2d327e792",
+      "reopenedAttachmentDigest": "303a8e31a794d85676bb25634ae0a87b307e0a1cb09c53ad1f4dc6a2d327e792",
+      "seededAttachmentMetadataDigest": "3ed388ed68f0340fbb44bd8f7cf1dca3a1da646655e1a410ca832e41c0bd9ff7",
+      "reopenedAttachmentMetadataDigest": "3ed388ed68f0340fbb44bd8f7cf1dca3a1da646655e1a410ca832e41c0bd9ff7",
+      "attachmentPreserved": true,
+      "durableProjectPresent": true,
+      "durableAttachmentPresent": true,
+      "firstDisposal": "fulfilled",
+      "secondDisposal": "fulfilled",
+      "postDisposeWriteRejected": true,
+      "postDisposeStoreUntouched": true,
+      "reactMountAttempts": 0,
+      "navigationAttempts": 0,
+      "runtimeResourceCounts": {
+        "workers": 0,
+        "audioContexts": 0,
+        "objectUrls": 0
+      },
+      "errors": []
+    },
+    "proofControl": "neutral"
+  },
+  "observations": {
+    "httpStatus": 200,
+    "contentType": "application/json"
+  },
+  "processes": {
+    "server": {
+      "pid": 3084,
+      "port": 60802
+    },
+    "browser": {
+      "pid": null,
+      "port": null
+    }
+  },
+  "logs": {
+    "stdout": "▲ Next.js 16.1.3\n- Local:         http://127.0.0.1:60802\n- Network:       http://127.0.0.1:60802\n\n✓ Starting...\n✓ Ready in 861ms\n",
+    "stderr": "⚠ Warning: Next.js inferred your workspace root, but it may not be correct.\n We detected multiple lockfiles and selected the directory of E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\pnpm-lock.yaml as the root directory.\n To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.\n   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.\n Detected additional lockfiles: \n   * E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut-wt-c7\\bun.lock\n   * E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\package-lock.json\n\n2026-08-04T20:35:20.107Z WARN [Better Auth]: [better-auth] Warning: your BETTER_AUTH_SECRET should be at least 32 characters long for adequate security. Generate one with `npx auth secret` or `openssl rand -base64 32`.\n2026-08-04T20:35:20.109Z WARN [Better Auth]: [better-auth] Warning: your BETTER_AUTH_SECRET appears low-entropy. Use a randomly generated secret for production.\n"
+  },
+  "cleanup": {
+    "server": {
+      "pid": 3084,
+      "stopped": true,
+      "forced": false,
+      "exitCode": null
+    },
+    "browser": {
+      "pid": null,
+      "stopped": true,
+      "forced": false
+    },
+    "serverPortReleased": true,
+    "browserPortReleased": true,
+    "browserProfileRemoved": true
+  },
+  "endedAt": "2026-08-04T20:35:20.308Z"
+}

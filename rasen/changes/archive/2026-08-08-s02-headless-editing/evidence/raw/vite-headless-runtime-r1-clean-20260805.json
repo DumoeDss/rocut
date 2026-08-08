@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "host": "vite",
+  "status": "failed",
+  "marker": "c7-vite-r1-headless-clean-20260805-1",
+  "acceptedBase": {
+    "head": "a9dbae62573af5877b440ecf9cb2b8a0d4f1dbbf",
+    "tree": "885d307814260b77397c2c2677b9361fdfc5f5e2"
+  },
+  "entry": "apps/vite-example/src/headless-entry.ts",
+  "output": "apps/vite-example/dist-c7-r1-headless-clean-20260805-1",
+  "base": "/c7-vite-r1-headless-clean",
+  "startedAt": "2026-08-04T22:49:12.755Z",
+  "errors": [
+    "C7 headless semantic result rejected: headless run must use the explicit in-memory store; runtime probe observed Host/store fallback or an unattributed store"
+  ],
+  "graph": {
+    "path": "apps/vite-example/dist-c7-r1-headless-clean-20260805-1/c7-headless-graph.json",
+    "sha256": "29538ca0fcfd71f8b102e8ff18531566804c37731917d8f0474aad7e3e3bf43f",
+    "buildId": "vite:c7-vite-r1-headless-clean-20260805-1:64a9793654f1b34b",
+    "moduleCount": 14,
+    "moduleSetSha256": "b473f80e901014c31ce2d9733ce01f60e1320b77393e13b2d84a9aaaaddb6cb4",
+    "fileSetSha256": "64a9793654f1b34b4a98c254c5464e682229a4e7d5044403f8fcdb338c77984f"
+  },
+  "observations": {
+    "consoleErrors": [],
+    "pageErrors": [],
+    "requestFailures": [],
+    "httpErrors": []
+  },
+  "processes": {
+    "server": {
+      "pid": 43772,
+      "port": 60006
+    },
+    "browser": {
+      "pid": 10844,
+      "port": 60007
+    }
+  },
+  "logs": {
+    "stdout": "  \u001b[32m➜\u001b[39m  \u001b[1mLocal\u001b[22m:   \u001b[36mhttp://127.0.0.1:\u001b[1m60006\u001b[22m/c7-vite-r1-headless-clean\u001b[39m\n",
+    "stderr": ""
+  },
+  "cleanup": {
+    "server": {
+      "pid": 43772,
+      "stopped": true,
+      "forced": false,
+      "exitCode": null
+    },
+    "browser": {
+      "pid": 10844,
+      "stopped": true,
+      "forced": false,
+      "exitCode": null
+    },
+    "serverPortReleased": true,
+    "browserPortReleased": true,
+    "browserProfileRemoved": true
+  },
+  "endedAt": "2026-08-04T22:49:15.803Z"
+}

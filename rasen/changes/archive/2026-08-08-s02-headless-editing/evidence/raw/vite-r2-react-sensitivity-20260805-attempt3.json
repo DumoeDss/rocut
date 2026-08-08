@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "host": "vite",
+  "status": "failed",
+  "marker": "c7-vite-r2-headless-react-control-20260805-2",
+  "acceptedBase": {
+    "head": "a9dbae62573af5877b440ecf9cb2b8a0d4f1dbbf",
+    "tree": "885d307814260b77397c2c2677b9361fdfc5f5e2"
+  },
+  "entry": "apps/vite-example/src/headless-entry.ts",
+  "proofControl": "react",
+  "output": "apps/vite-example/dist-c7-r2-headless-react-control-20260805-2",
+  "base": "/c7-vite-r2-headless-react-control-2",
+  "startedAt": "2026-08-05T00:26:19.699Z",
+  "errors": [
+    "C7 headless graph integrity rejected: output.digest: canonical output-set digest does not match"
+  ],
+  "processes": {
+    "server": {
+      "pid": null,
+      "port": null
+    },
+    "browser": {
+      "pid": null,
+      "port": null
+    }
+  },
+  "logs": {
+    "stdout": "",
+    "stderr": ""
+  },
+  "cleanup": {
+    "server": {
+      "pid": null,
+      "stopped": true,
+      "forced": false
+    },
+    "browser": {
+      "pid": null,
+      "stopped": true,
+      "forced": false
+    },
+    "serverPortReleased": true,
+    "browserPortReleased": true,
+    "browserProfileRemoved": true
+  },
+  "endedAt": "2026-08-05T00:26:19.735Z"
+}

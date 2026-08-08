@@ -1,0 +1,305 @@
+{
+  "schemaVersion": 1,
+  "host": "vite",
+  "status": "passed",
+  "marker": "c7-vite-r2-headless-clean-20260805-3",
+  "acceptedBase": {
+    "head": "a9dbae62573af5877b440ecf9cb2b8a0d4f1dbbf",
+    "tree": "885d307814260b77397c2c2677b9361fdfc5f5e2"
+  },
+  "entry": "apps/vite-example/src/headless-entry.ts",
+  "proofControl": "neutral",
+  "output": "apps/vite-example/dist-c7-r2-headless-clean-20260805-3",
+  "base": "/c7-vite-r2-headless-clean-3",
+  "startedAt": "2026-08-05T01:10:11.992Z",
+  "errors": [],
+  "graph": {
+    "path": "apps/vite-example/dist-c7-r2-headless-clean-20260805-3/c7-headless-graph.json",
+    "sha256": "6eaf3a78e5ef8a01b0b2fd3d46f6892637e9ee058bfe65ff3c266d19f1e6338c",
+    "buildId": "vite:c7-vite-r2-headless-clean-20260805-3:2e9fd3540b26640b",
+    "moduleCount": 15,
+    "moduleSetSha256": "9b7ee2fe4bed41de04759fdd69c4f6fc074531958379328343ab7842b96e0e6b",
+    "fileSetSha256": "2e9fd3540b26640bff2f90531999a5cfbd316d14979ad1b67d2075601ae85ec3"
+  },
+  "runtime": {
+    "semantic": {
+      "schemaVersion": 1,
+      "host": "vite",
+      "buildMarker": "c7-vite-r2-headless-clean-20260805-3",
+      "acceptedHead": "a9dbae62573af5877b440ecf9cb2b8a0d4f1dbbf",
+      "acceptedTree": "885d307814260b77397c2c2677b9361fdfc5f5e2",
+      "entry": "apps/vite-example/src/headless-entry.ts",
+      "storeIdentity": "InMemoryProjectStore",
+      "storeRunIdentity": "vite:c7-vite-r2-headless-clean-20260805-3:InMemoryProjectStore:c7-headless-project",
+      "hostFallback": false,
+      "projectId": "c7-headless-project",
+      "firstOwnerId": "session-1",
+      "secondOwnerId": "session-2",
+      "ownersDistinct": true,
+      "seededName": "C7 seeded project",
+      "editedName": "C7 headless edit",
+      "reopenedName": "C7 headless edit",
+      "seededUpdatedAt": "2026-08-05T01:00:00.000Z",
+      "editedUpdatedAt": "2026-08-05T02:00:00.000Z",
+      "reopenedUpdatedAt": "2026-08-05T02:00:00.000Z",
+      "seededProjectDigest": "00c2c698060ad8f6913a7e866e0f6898171562f8442005cf97f2ae68de0a23be",
+      "firstLoadDigest": "46d06aa4045343edf7bcb48889cc26ffa3afe0671683e5d71c1a26d91eac81fb",
+      "savedProjectDigest": "8122d2010df79eac9d961343821fe9f0b4c27a49f1f3b9d13f725ceddc587edf",
+      "reopenedProjectDigest": "8122d2010df79eac9d961343821fe9f0b4c27a49f1f3b9d13f725ceddc587edf",
+      "reopenedLoadDigest": "e0435b1bd554f5cb4121cc7ab5e7e39fea4829e863aec828221a5aa58f383c5b",
+      "seededOpaqueDigest": "7e16df1d84cf3587875e5668827d346a9f518fa476b516dfaea4d58760837f8d",
+      "reopenedOpaqueDigest": "7e16df1d84cf3587875e5668827d346a9f518fa476b516dfaea4d58760837f8d",
+      "opaquePreserved": true,
+      "attachmentKey": "provider-attachment.bin",
+      "attachmentSchemaVersion": 7,
+      "seededAttachmentDigest": "303a8e31a794d85676bb25634ae0a87b307e0a1cb09c53ad1f4dc6a2d327e792",
+      "reopenedAttachmentDigest": "303a8e31a794d85676bb25634ae0a87b307e0a1cb09c53ad1f4dc6a2d327e792",
+      "seededAttachmentMetadataDigest": "3ed388ed68f0340fbb44bd8f7cf1dca3a1da646655e1a410ca832e41c0bd9ff7",
+      "reopenedAttachmentMetadataDigest": "3ed388ed68f0340fbb44bd8f7cf1dca3a1da646655e1a410ca832e41c0bd9ff7",
+      "attachmentPreserved": true,
+      "durableProjectPresent": true,
+      "durableAttachmentPresent": true,
+      "firstDisposal": "fulfilled",
+      "secondDisposal": "fulfilled",
+      "postDisposeWriteRejected": true,
+      "postDisposeStoreUntouched": true,
+      "reactMountAttempts": 0,
+      "navigationAttempts": 0,
+      "runtimeResourceCounts": {
+        "timers": 0,
+        "animationFrames": 0,
+        "workers": 0,
+        "audioContexts": 0,
+        "objectUrls": 0,
+        "compositorGpuOwners": 0
+      },
+      "runtimeProbe": {
+        "schemaVersion": 1,
+        "implementation": "headless-runtime-probe/v1",
+        "probeId": "c7-runtime-probe:vite:c7-vite-r2-headless-clean-20260805-3:apps/vite-example/src/headless-entry.ts",
+        "host": "vite",
+        "environment": "browser",
+        "buildMarker": "c7-vite-r2-headless-clean-20260805-3",
+        "entry": "apps/vite-example/src/headless-entry.ts",
+        "events": [
+          {
+            "sequence": 1,
+            "kind": "probe-installed"
+          },
+          {
+            "sequence": 2,
+            "kind": "subject-load-started"
+          },
+          {
+            "sequence": 3,
+            "kind": "host-bound"
+          },
+          {
+            "sequence": 4,
+            "kind": "subject-completed"
+          },
+          {
+            "sequence": 5,
+            "kind": "probe-restored"
+          }
+        ],
+        "hostBinding": {
+          "source": "fixture-explicit-createInMemoryHost",
+          "expectedProjectId": "c7-headless-project",
+          "actualProjectId": "c7-headless-project",
+          "projectMatches": true,
+          "intendedStoreIdentity": "InMemoryProjectStore",
+          "actualStoreIdentity": "InMemoryProjectStore",
+          "sameStoreInstance": true,
+          "fallbackUsed": false
+        },
+        "globalCalls": {
+          "timeouts": 0,
+          "intervals": 0,
+          "animationFrames": 0,
+          "workers": 0,
+          "audioContexts": 0,
+          "audioContextConstructions": 0,
+          "webkitAudioContextConstructions": 0,
+          "objectUrls": 0,
+          "webGpuAdapterRequests": 0,
+          "wasmInstantiations": 0,
+          "wasmInstantiateCalls": 0,
+          "wasmInstantiateStreamingCalls": 0
+        },
+        "hostCalls": {
+          "workers": 0,
+          "audioContexts": 0,
+          "objectUrls": 0,
+          "graphicsQueries": 0
+        },
+        "hookProvenance": {
+          "global": {
+            "strategy": "pre-load-callable-proxy/v1",
+            "hooks": [
+              {
+                "path": "globalThis.setTimeout",
+                "status": "installed",
+                "detail": "globalThis.setTimeout wrapped"
+              },
+              {
+                "path": "globalThis.setInterval",
+                "status": "installed",
+                "detail": "globalThis.setInterval wrapped"
+              },
+              {
+                "path": "globalThis.requestAnimationFrame",
+                "status": "installed",
+                "detail": "globalThis.requestAnimationFrame wrapped"
+              },
+              {
+                "path": "globalThis.Worker",
+                "status": "installed",
+                "detail": "globalThis.Worker wrapped"
+              },
+              {
+                "path": "globalThis.AudioContext",
+                "status": "installed",
+                "detail": "globalThis.AudioContext wrapped"
+              },
+              {
+                "path": "globalThis.webkitAudioContext",
+                "status": "absent",
+                "detail": "typeof globalThis.webkitAudioContext is undefined"
+              },
+              {
+                "path": "URL.createObjectURL",
+                "status": "installed",
+                "detail": "URL.createObjectURL wrapped"
+              },
+              {
+                "path": "navigator.gpu.requestAdapter",
+                "status": "installed",
+                "detail": "navigator.gpu.requestAdapter wrapped"
+              },
+              {
+                "path": "WebAssembly.instantiate",
+                "status": "installed",
+                "detail": "WebAssembly.instantiate wrapped"
+              },
+              {
+                "path": "WebAssembly.instantiateStreaming",
+                "status": "installed",
+                "detail": "WebAssembly.instantiateStreaming wrapped"
+              }
+            ]
+          },
+          "host": {
+            "strategy": "post-bind-host-callable-proxy/v1",
+            "hooks": [
+              {
+                "path": "host.runtimeResources.createWorker",
+                "status": "installed",
+                "detail": "host.runtimeResources.createWorker wrapped"
+              },
+              {
+                "path": "host.runtimeResources.createAudioContext",
+                "status": "installed",
+                "detail": "host.runtimeResources.createAudioContext wrapped"
+              },
+              {
+                "path": "host.runtimeResources.createObjectUrl",
+                "status": "installed",
+                "detail": "host.runtimeResources.createObjectUrl wrapped"
+              },
+              {
+                "path": "host.environment.describeGraphics",
+                "status": "installed",
+                "detail": "host.environment.describeGraphics wrapped"
+              }
+            ]
+          },
+          "react": {
+            "strategy": "browser-mutation-observer+root-marker-scan/v1",
+            "hooks": [
+              {
+                "path": "document.reactRootMarkers",
+                "status": "installed",
+                "detail": "document root-marker scan installed"
+              },
+              {
+                "path": "globalThis.MutationObserver",
+                "status": "installed",
+                "detail": "MutationObserver is observing document.documentElement"
+              }
+            ]
+          },
+          "compositorGpu": {
+            "strategy": "derived-host-webgpu-wasm/v1",
+            "fields": [
+              "hostGraphicsQueries",
+              "webGpuAdapterRequests",
+              "wasmInstantiations",
+              "ownershipAttempts"
+            ]
+          }
+        },
+        "hostResourceState": {
+          "workers": 0,
+          "audioContexts": 0,
+          "objectUrls": 0
+        },
+        "react": {
+          "strategy": "mutation-observer+react-container-markers",
+          "domAvailable": true,
+          "mutationRecords": 0,
+          "rootMarkersBefore": 0,
+          "rootMarkersAfter": 0,
+          "mountAttempts": 0
+        },
+        "compositorGpu": {
+          "strategy": "host-graphics+webgpu+wasm-construction",
+          "hostGraphicsQueries": 0,
+          "webGpuAdapterRequests": 0,
+          "wasmInstantiations": 0,
+          "ownershipAttempts": 0
+        }
+      },
+      "errors": []
+    },
+    "proofControl": "neutral"
+  },
+  "observations": {
+    "consoleErrors": [],
+    "pageErrors": [],
+    "requestFailures": [],
+    "httpErrors": []
+  },
+  "processes": {
+    "server": {
+      "pid": 44732,
+      "port": 60431
+    },
+    "browser": {
+      "pid": 22824,
+      "port": 60432
+    }
+  },
+  "logs": {
+    "stdout": "  \u001b[32m➜\u001b[39m  \u001b[1mLocal\u001b[22m:   \u001b[36mhttp://127.0.0.1:\u001b[1m60431\u001b[22m/c7-vite-r2-headless-clean-3\u001b[39m\n",
+    "stderr": ""
+  },
+  "cleanup": {
+    "server": {
+      "pid": 44732,
+      "stopped": true,
+      "forced": false,
+      "exitCode": null
+    },
+    "browser": {
+      "pid": 22824,
+      "stopped": true,
+      "forced": false,
+      "exitCode": null
+    },
+    "serverPortReleased": true,
+    "browserPortReleased": true,
+    "browserProfileRemoved": true
+  },
+  "endedAt": "2026-08-05T01:10:14.447Z"
+}
