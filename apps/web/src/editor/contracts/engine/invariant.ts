@@ -29,7 +29,7 @@ function isPositiveNumber(value: unknown): value is number {
 
 export function isValidProject(
 	value: unknown,
-	projectId: ProjectId,
+	projectId: string,
 ): value is Project {
 	if (!isRecord(value) || !isRecord(value.frameRate)) return false;
 	if (

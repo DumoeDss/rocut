@@ -44,6 +44,38 @@ function project(): Project {
 	};
 }
 
+function adversarialFrameRates(): readonly {
+	readonly name: string;
+	readonly value: unknown;
+}[] {
+	const symbolValue = { numerator: 30, denominator: 1 } as Record<
+		PropertyKey,
+		unknown
+	>;
+	symbolValue[Symbol("provider-private")] = true;
+	const accessorValue: Record<string, unknown> = { denominator: 1 };
+	Object.defineProperty(accessorValue, "numerator", {
+		enumerable: true,
+		get() {
+			throw new Error("frame-rate accessors must not be invoked");
+		},
+	});
+	const nonEnumerableValue: Record<string, unknown> = { numerator: 30 };
+	Object.defineProperty(nonEnumerableValue, "denominator", {
+		enumerable: false,
+		value: 1,
+	});
+	return [
+		{
+			name: "provider-private excess key",
+			value: { numerator: 30, denominator: 1, providerPrivate: "smuggle" },
+		},
+		{ name: "symbol key", value: symbolValue },
+		{ name: "accessor", value: accessorValue },
+		{ name: "non-enumerable field", value: nonEnumerableValue },
+	];
+}
+
 type FactoryFeature = "provider-ripple-edit";
 const FACTORY_OPTIONAL_FEATURES = { "provider-ripple-edit": true } as const;
 
@@ -345,7 +377,7 @@ describe("ProjectStore-backed transaction engine", () => {
 
 		for (const report of reports) {
 			expect(report.passed).toBe(true);
-			expect(report.summary).toEqual({ passed: 32, failed: 0, skipped: 2 });
+			expect(report.summary).toEqual({ passed: 36, failed: 0, skipped: 2 });
 			expect(
 				report.results.map(({ name, status }) => ({ name, status })),
 			).toEqual(expectedStatuses);
@@ -379,7 +411,7 @@ describe("ProjectStore-backed transaction engine", () => {
 			)?.status,
 		).toBe("passed");
 		expect(report.passed).toBe(true);
-		expect(report.summary).toEqual({ passed: 32, failed: 0, skipped: 2 });
+		expect(report.summary).toEqual({ passed: 36, failed: 0, skipped: 2 });
 		expect(
 			report.results.find(
 				(entry) =>
@@ -604,6 +636,447 @@ describe("ProjectStore-backed transaction engine", () => {
 			expect(fixture.saveCount(), scenario.name).toBe(0);
 			await fixture.reopen();
 		}
+	});
+
+	test("validates the closed Project patch surface without publishing failures", async () => {
+		const symbolPatch = { name: "symbol" } as Record<PropertyKey, unknown>;
+		symbolPatch[Symbol("private")] = true;
+		const invalidPatches: readonly unknown[] = [
+			{},
+			{ id: projectId("smuggled-project") },
+			{ providerPrivate: true },
+			symbolPatch,
+			{ name: "" },
+			{ canvasWidth: 0 },
+			{ canvasWidth: Number.NaN },
+			{ canvasHeight: Number.POSITIVE_INFINITY },
+			{ canvasHeight: -1 },
+			{ frameRate: { numerator: 0, denominator: 1 } },
+			{ frameRate: { numerator: 90, denominator: 1 } },
+			{ frameRate: { numerator: 30, denominator: 0 } },
+		];
+		for (const patch of invalidPatches) {
+			const fixture = await createFactory()({ profile: "engine" });
+			const before = await fixture.engine.project();
+			const validation = await fixture.engine.validate({
+				operations: [
+					{
+						kind: "update-project",
+						projectId: projectId(PROJECT_ID),
+						patch,
+					} as never,
+				],
+			});
+			expect(validation.valid, JSON.stringify(patch)).toBe(false);
+			if (!validation.valid) {
+				expect(validation.issues[0]?.code).toBe("invalid-entity");
+				expect(validation.issues[0]?.operationIndex).toBe(0);
+			}
+			const dry = await fixture.engine.dryRun({
+				operations: [
+					{
+						kind: "update-project",
+						projectId: projectId(PROJECT_ID),
+						patch,
+					} as never,
+				],
+			});
+			expect(dry.accepted, JSON.stringify(patch)).toBe(false);
+			let failure: unknown;
+			try {
+				await fixture.engine.apply({
+					operations: [
+						{
+							kind: "update-project",
+							projectId: projectId(PROJECT_ID),
+							patch,
+						} as never,
+					],
+				});
+			} catch (error) {
+				failure = error;
+			}
+			expect(failure).toBeInstanceOf(TransactionError);
+			expect((failure as TransactionError).code).toBe("validation");
+			expect((failure as TransactionError).operationIndex).toBe(0);
+			expect(await fixture.engine.project()).toEqual(before);
+			expect(Number(await fixture.engine.revision())).toBe(0);
+			expect(fixture.saveCount()).toBe(0);
+		}
+
+		const mismatch = await createFactory()({ profile: "engine" });
+		let mismatchFailure: unknown;
+		try {
+			await mismatch.engine.apply({
+				operations: [
+					{
+						kind: "update-project",
+						projectId: projectId("another-project"),
+						patch: { name: "Mismatch" },
+					},
+				],
+			});
+		} catch (error) {
+			mismatchFailure = error;
+		}
+		expect(mismatchFailure).toMatchObject({
+			code: "not-found",
+			operationIndex: 0,
+		});
+		expect(mismatch.saveCount()).toBe(0);
+
+		const sameValue = await createFactory()({ profile: "engine" });
+		const sameValueWatch: number[] = [];
+		sameValue.engine.watch((next) => sameValueWatch.push(Number(next)));
+		const sameValueResult = await sameValue.engine.apply({
+			operations: [
+				{
+					kind: "update-project",
+					projectId: projectId(PROJECT_ID),
+					patch: { name: project().name },
+				},
+			],
+		});
+		expect(sameValueResult.changedIds).toEqual([projectId(PROJECT_ID)]);
+		expect(Number(sameValueResult.revision)).toBe(1);
+		expect(sameValue.saveCount()).toBe(1);
+		expect(sameValueWatch).toEqual([1]);
+		expect(await sameValue.engine.project()).toEqual(project());
+
+		const { store } = createInMemoryProjectStoreFixture();
+		await store.save(
+			createTransactionNativeProjectSeed({ projectId: PROJECT_ID }),
+		);
+		const projectless = await openTransactionEngine({
+			store,
+			projectId: PROJECT_ID,
+			documentAdapter: createTransactionNativeDocumentAdapter(),
+		});
+		await expect(
+			projectless.apply({
+				operations: [
+					{
+						kind: "update-project",
+						projectId: projectId(PROJECT_ID),
+						patch: { name: "Missing" },
+					},
+				],
+			}),
+		).rejects.toMatchObject({ code: "not-found", operationIndex: 0 });
+	});
+
+	test("rejects nested frame-rate payloads before live, persisted, or reopened state", async () => {
+		for (const scenario of adversarialFrameRates()) {
+			const fixture = await createFactory()({ profile: "engine" });
+			const before = await fixture.engine.project();
+			const operation = {
+				kind: "update-project" as const,
+				projectId: projectId(PROJECT_ID),
+				patch: {},
+			};
+			Reflect.set(operation.patch, "frameRate", scenario.value);
+			const batch: TransactionBatch = { operations: [operation] };
+			const validation = await fixture.engine.validate(batch);
+			expect(validation.valid, scenario.name).toBe(false);
+			if (!validation.valid) {
+				expect(validation.issues[0]?.code, scenario.name).toBe(
+					"invalid-entity",
+				);
+				expect(validation.issues[0]?.operationIndex, scenario.name).toBe(0);
+			}
+			const dryRun = await fixture.engine.dryRun(batch);
+			expect(dryRun.accepted, scenario.name).toBe(false);
+			await expect(
+				fixture.engine.apply(batch),
+				scenario.name,
+			).rejects.toMatchObject({
+				code: "validation",
+				operationIndex: 0,
+			});
+			expect(await fixture.engine.project(), scenario.name).toEqual(before);
+			expect(Number(await fixture.engine.revision()), scenario.name).toBe(0);
+			expect(fixture.saveCount(), scenario.name).toBe(0);
+
+			const persisted = await fixture.readPersistedRecord();
+			if (
+				!isRecord(persisted.data) ||
+				!isRecord(persisted.data.transactionEngine) ||
+				!isRecord(persisted.data.transactionEngine.project) ||
+				!isRecord(persisted.data.transactionEngine.project.frameRate)
+			) {
+				throw new Error(
+					`persisted Project was malformed after ${scenario.name}`,
+				);
+			}
+			expect(
+				Reflect.ownKeys(persisted.data.transactionEngine.project.frameRate),
+				scenario.name,
+			).toEqual(["numerator", "denominator"]);
+			const reopened = await fixture.reopen();
+			expect(await reopened.project(), scenario.name).toEqual(before);
+		}
+	});
+
+	test("checks keyed Project identity before serializable patch validation and aggregates normal issues", async () => {
+		const fixture = await createFactory()({ profile: "engine" });
+		const committed = await fixture.engine.apply({
+			operations: [
+				{
+					kind: "update-project",
+					projectId: projectId(PROJECT_ID),
+					patch: { name: "Keyed Project" },
+				},
+			],
+			idempotencyKey: "project-invalid-collision-key",
+		});
+		for (const patch of [{}, { providerPrivate: true }]) {
+			const operation = {
+				kind: "update-project" as const,
+				projectId: projectId(PROJECT_ID),
+				patch: {},
+			};
+			for (const [key, value] of Object.entries(patch)) {
+				Reflect.set(operation.patch, key, value);
+			}
+			const collisionBatch: TransactionBatch = {
+				operations: [operation],
+				idempotencyKey: "project-invalid-collision-key",
+			};
+			const dryRun = await fixture.engine.dryRun(collisionBatch);
+			expect(dryRun.accepted).toBe(false);
+			if (!dryRun.accepted) {
+				expect(dryRun.issues.map(({ code }) => code)).toEqual([
+					"idempotency-conflict",
+				]);
+			}
+			await expect(fixture.engine.apply(collisionBatch)).rejects.toMatchObject({
+				code: "duplicate",
+			});
+		}
+		expect(fixture.saveCount()).toBe(1);
+		expect(await fixture.engine.revision()).toBe(committed.revision);
+		expect((await fixture.engine.project())?.name).toBe("Keyed Project");
+
+		const aggregateFixture = await createFactory()({ profile: "engine" });
+		const excessOperation = {
+			kind: "update-project" as const,
+			projectId: projectId(PROJECT_ID),
+			patch: {},
+		};
+		Reflect.set(excessOperation.patch, "providerPrivate", true);
+		const aggregate = await aggregateFixture.engine.validate({
+			operations: [
+				{
+					kind: "update-project",
+					projectId: projectId(PROJECT_ID),
+					patch: {},
+				},
+				excessOperation,
+			],
+		});
+		expect(aggregate.valid).toBe(false);
+		if (!aggregate.valid) {
+			expect(
+				aggregate.issues
+					.filter(({ code }) => code === "invalid-entity")
+					.map(({ operationIndex }) => operationIndex),
+			).toEqual([0, 1]);
+		}
+		expect(aggregateFixture.saveCount()).toBe(0);
+	});
+
+	test("attributes untouched clip and marker timebase failures to the Project FPS operation", async () => {
+		const fixture = await createFactory()({ profile: "engine" });
+		await fixture.engine.apply({
+			operations: [
+				{ kind: "create-track", track: textTrack("fps-attribution-track") },
+				{
+					kind: "create-clip",
+					clip: clip({
+						id: "fps-attribution-clip",
+						track: "fps-attribution-track",
+					}),
+				},
+				{
+					kind: "create-marker",
+					marker: {
+						id: markerId("fps-attribution-marker"),
+						time: mediaTime({ ticks: 4_000 }),
+					},
+				},
+			],
+		});
+		const invalidBatch: TransactionBatch = {
+			operations: [
+				{
+					kind: "update-track",
+					trackId: trackId("fps-attribution-track"),
+					patch: { name: "fps-attribution-track" },
+				},
+				{
+					kind: "update-project",
+					projectId: projectId(PROJECT_ID),
+					patch: { frameRate: { numerator: 24, denominator: 1 } },
+				},
+				{
+					kind: "update-project",
+					projectId: projectId(PROJECT_ID),
+					patch: { name: "Later non-timebase Project patch" },
+				},
+			],
+		};
+		const validation = await fixture.engine.validate(invalidBatch);
+		expect(validation.valid).toBe(false);
+		if (!validation.valid) {
+			const clipIssue = validation.issues.find(
+				({ code, entityIds }) =>
+					code === "timebase-misaligned" &&
+					entityIds?.includes(clipId("fps-attribution-clip")),
+			);
+			const markerIssue = validation.issues.find(
+				({ code, entityIds }) =>
+					code === "timebase-misaligned" &&
+					entityIds?.includes(markerId("fps-attribution-marker")),
+			);
+			expect(clipIssue).toMatchObject({
+				operationIndex: 1,
+				entityIds: [clipId("fps-attribution-clip")],
+			});
+			expect(markerIssue).toMatchObject({
+				operationIndex: 1,
+				entityIds: [markerId("fps-attribution-marker")],
+			});
+		}
+		await expect(fixture.engine.apply(invalidBatch)).rejects.toMatchObject({
+			code: "validation",
+			operationIndex: 1,
+		});
+		expect((await fixture.engine.project())?.frameRate.numerator).toBe(30);
+
+		const repaired = await fixture.engine.apply({
+			operations: [
+				{
+					kind: "update-project",
+					projectId: projectId(PROJECT_ID),
+					patch: { frameRate: { numerator: 24, denominator: 1 } },
+				},
+				{
+					kind: "update-clip",
+					clipId: clipId("fps-attribution-clip"),
+					patch: { duration: mediaTime({ ticks: 5_000 }) },
+				},
+				{
+					kind: "update-marker",
+					markerId: markerId("fps-attribution-marker"),
+					patch: { time: mediaTime({ ticks: 5_000 }) },
+				},
+			],
+		});
+		expect(repaired.changedIds).toEqual([
+			projectId(PROJECT_ID),
+			clipId("fps-attribution-clip"),
+			markerId("fps-attribution-marker"),
+		]);
+		expect((await fixture.engine.project())?.frameRate.numerator).toBe(24);
+		expect(Number((await fixture.engine.clips())[0]?.duration)).toBe(5_000);
+		expect(Number((await fixture.engine.markers())[0]?.time)).toBe(5_000);
+	});
+
+	test("native adapter commits every Project field, summary, opaque sibling, and keyed reopen state exactly", async () => {
+		const { store } = createInMemoryProjectStoreFixture();
+		const seed = createTransactionNativeProjectSeed({
+			projectId: PROJECT_ID,
+			project: project(),
+			opaque: { unrelatedOpaque: { retained: "yes" } },
+		});
+		await store.save(seed);
+		let saves = 0;
+		const originalSave = store.save.bind(store);
+		store.save = async (args) => {
+			saves += 1;
+			return originalSave(args);
+		};
+		const adapter = createTransactionNativeDocumentAdapter({
+			now: () => "2026-08-10T00:00:00.000Z",
+		});
+		const engine = await openTransactionEngine({
+			store,
+			projectId: PROJECT_ID,
+			documentAdapter: adapter,
+		});
+		const watched: number[] = [];
+		engine.watch((next) => watched.push(Number(next)));
+		const expectedProject: Project = {
+			...project(),
+			name: "Native Project renamed",
+			frameRate: { numerator: 24, denominator: 1 },
+			canvasWidth: 1280,
+			canvasHeight: 720,
+		};
+		const batch: TransactionBatch = {
+			operations: [
+				{
+					kind: "update-project",
+					projectId: projectId(PROJECT_ID),
+					patch: {
+						name: expectedProject.name,
+						frameRate: expectedProject.frameRate,
+						canvasWidth: expectedProject.canvasWidth,
+						canvasHeight: expectedProject.canvasHeight,
+					},
+				},
+			],
+			idempotencyKey: "native-project-key",
+		};
+		const dry = await engine.dryRun(batch);
+		expect(dry.accepted).toBe(true);
+		expect(saves).toBe(0);
+		const result = await engine.apply(batch);
+		expect(result.changedIds).toEqual([projectId(PROJECT_ID)]);
+		expect(result.createdIds).toEqual([]);
+		expect(saves).toBe(1);
+		expect(watched).toEqual([1]);
+		expect(await engine.project()).toEqual(expectedProject);
+		const summaries = await store.list();
+		expect(summaries).toHaveLength(1);
+		expect(summaries[0]?.name).toBe(expectedProject.name);
+		const persisted = await store.load({ id: PROJECT_ID });
+		if (!persisted || !isRecord(persisted.data)) {
+			throw new Error("native Project record disappeared");
+		}
+		expect(persisted.data.unrelatedOpaque).toEqual({ retained: "yes" });
+		const decoded = adapter.decode({
+			projectId: PROJECT_ID,
+			record: persisted,
+		});
+		expect(decoded.project).toEqual(expectedProject);
+		expect(Number(decoded.revision)).toBe(1);
+		expect(decoded.idempotency).toHaveLength(1);
+
+		const reopened = await openTransactionEngine({
+			store,
+			projectId: PROJECT_ID,
+			documentAdapter: adapter,
+		});
+		expect(await reopened.project()).toEqual(expectedProject);
+		expect(Number(await reopened.revision())).toBe(1);
+		const replay = await reopened.apply({
+			operations: [
+				{
+					patch: {
+						canvasHeight: 720,
+						canvasWidth: 1280,
+						frameRate: { denominator: 1, numerator: 24 },
+						name: "Native Project renamed",
+					},
+					projectId: projectId(PROJECT_ID),
+					kind: "update-project",
+				},
+			],
+			idempotencyKey: "native-project-key",
+		});
+		expect(replay).toEqual(result);
+		expect(saves).toBe(1);
 	});
 
 	test("projectless documents enforce base placement and require a frame rate", async () => {

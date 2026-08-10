@@ -1,4 +1,5 @@
 import type {
+	ProjectPatch,
 	TransactionBatch,
 	TransactionOperation,
 	TransactionResult,
@@ -13,6 +14,7 @@ import {
 	isValidAsset,
 	isValidClip,
 	isValidMarker,
+	isValidProject,
 	isValidTrack,
 	validateTransactionDocument,
 } from "./invariant";
@@ -22,6 +24,14 @@ import type {
 	TransactionEngineIssue,
 	TransactionPlacementPolicy,
 } from "./types";
+
+const PROJECT_PATCH_KEYS = new Set([
+	"name",
+	"frameRate",
+	"canvasWidth",
+	"canvasHeight",
+]);
+const FRAME_RATE_KEYS = ["numerator", "denominator"] as const;
 
 export type TransactionEvaluation =
 	| {
@@ -50,6 +60,121 @@ function issue(args: {
 	return args;
 }
 
+function readProjectPatch(args: {
+	readonly value: unknown;
+	readonly operationIndex: number;
+}):
+	| { readonly valid: true; readonly patch: ProjectPatch }
+	| { readonly valid: false; readonly issue: TransactionEngineIssue } {
+	const { value, operationIndex } = args;
+	if (value === null || typeof value !== "object" || Array.isArray(value)) {
+		return {
+			valid: false,
+			issue: issue({
+				code: "invalid-entity",
+				message: "Project patch must be an object",
+				operationIndex,
+			}),
+		};
+	}
+	const keys = Reflect.ownKeys(value);
+	if (keys.length === 0) {
+		return {
+			valid: false,
+			issue: issue({
+				code: "invalid-entity",
+				message: "Project patch must not be empty",
+				operationIndex,
+			}),
+		};
+	}
+	const patch: Record<string, unknown> = {};
+	for (const key of keys) {
+		if (typeof key !== "string" || !PROJECT_PATCH_KEYS.has(key)) {
+			return {
+				valid: false,
+				issue: issue({
+					code: "invalid-entity",
+					message: `Project patch contains unsupported key ${String(key)}`,
+					operationIndex,
+				}),
+			};
+		}
+		const descriptor = Object.getOwnPropertyDescriptor(value, key);
+		if (!descriptor?.enumerable || !("value" in descriptor)) {
+			return {
+				valid: false,
+				issue: issue({
+					code: "invalid-entity",
+					message: "Project patch requires enumerable data properties",
+					operationIndex,
+				}),
+			};
+		}
+		if (key !== "frameRate") {
+			patch[key] = descriptor.value;
+			continue;
+		}
+		const frameRate = descriptor.value;
+		if (
+			frameRate === null ||
+			typeof frameRate !== "object" ||
+			Array.isArray(frameRate)
+		) {
+			return {
+				valid: false,
+				issue: issue({
+					code: "invalid-entity",
+					message: "Project frame rate must be an object",
+					operationIndex,
+				}),
+			};
+		}
+		const frameRateKeys = Reflect.ownKeys(frameRate);
+		if (
+			frameRateKeys.length !== FRAME_RATE_KEYS.length ||
+			frameRateKeys.some(
+				(frameRateKey) =>
+					typeof frameRateKey !== "string" ||
+					!FRAME_RATE_KEYS.some((expectedKey) => expectedKey === frameRateKey),
+			)
+		) {
+			return {
+				valid: false,
+				issue: issue({
+					code: "invalid-entity",
+					message:
+						"Project frame rate must contain only numerator and denominator",
+					operationIndex,
+				}),
+			};
+		}
+		const normalizedFrameRate: Record<string, unknown> = {};
+		for (const frameRateKey of FRAME_RATE_KEYS) {
+			const frameRateDescriptor = Object.getOwnPropertyDescriptor(
+				frameRate,
+				frameRateKey,
+			);
+			if (
+				!frameRateDescriptor?.enumerable ||
+				!("value" in frameRateDescriptor)
+			) {
+				return {
+					valid: false,
+					issue: issue({
+						code: "invalid-entity",
+						message: "Project frame rate requires enumerable data properties",
+						operationIndex,
+					}),
+				};
+			}
+			normalizedFrameRate[frameRateKey] = frameRateDescriptor.value;
+		}
+		patch.frameRate = normalizedFrameRate;
+	}
+	return { valid: true, patch: patch as ProjectPatch };
+}
+
 function entityExists(args: {
 	readonly document: TransactionEngineDocument;
 	readonly id: string;
@@ -61,6 +186,28 @@ function entityExists(args: {
 		document.assets.some((entry) => entry.id === id) ||
 		document.markers.some((entry) => entry.id === id)
 	);
+}
+
+function findProjectOperationIndex(
+	operations: readonly TransactionOperation[],
+): number {
+	for (
+		let operationIndex = 0;
+		operationIndex < operations.length;
+		operationIndex += 1
+	) {
+		const operation = operations[operationIndex];
+		if (operation === null || typeof operation !== "object") continue;
+		try {
+			const kind = Object.getOwnPropertyDescriptor(operation, "kind");
+			if (kind && "value" in kind && kind.value === "update-project") {
+				return operationIndex;
+			}
+		} catch {
+			// The canonicalization failure remains the authoritative structured issue.
+		}
+	}
+	return -1;
 }
 
 function mutateOperations(args: {
@@ -83,6 +230,7 @@ function mutateOperations(args: {
 	const markers = new Map(
 		args.document.markers.map((entry) => [entry.id, entry]),
 	);
+	let project = args.document.project;
 	const createdIds: string[] = [];
 	const changedIds: string[] = [];
 	const issues: TransactionEngineIssue[] = [];
@@ -90,6 +238,7 @@ function mutateOperations(args: {
 
 	const currentDocument = (): TransactionEngineDocument => ({
 		...args.document,
+		project,
 		tracks: [...tracks.values()],
 		clips: [...clips.values()],
 		assets: [...assets.values()],
@@ -108,6 +257,52 @@ function mutateOperations(args: {
 		};
 		const rawOperationKind = Reflect.get(operation, "kind");
 		switch (operation.kind) {
+			case "update-project": {
+				if (project === null || project.id !== operation.projectId) {
+					issues.push(
+						issue({
+							code: "not-found",
+							message: `Project ${operation.projectId} not found`,
+							operationIndex,
+							entityIds: [operation.projectId],
+						}),
+					);
+					break;
+				}
+				const parsed = readProjectPatch({
+					value: operation.patch,
+					operationIndex,
+				});
+				if (!parsed.valid) {
+					issues.push(parsed.issue);
+					break;
+				}
+				const updated = {
+					...project,
+					...parsed.patch,
+					id: project.id,
+				};
+				if (!isValidProject(updated, project.id)) {
+					issues.push(
+						issue({
+							code: "invalid-entity",
+							message: `Invalid Project ${operation.projectId}`,
+							operationIndex,
+							entityIds: [operation.projectId],
+						}),
+					);
+					break;
+				}
+				const frameRateChanged =
+					updated.frameRate.numerator !== project.frameRate.numerator ||
+					updated.frameRate.denominator !== project.frameRate.denominator;
+				project = updated;
+				changedIds.push(operation.projectId);
+				if (frameRateChanged) {
+					origins.set(operation.projectId, operationIndex);
+				}
+				break;
+			}
 			case "create-track": {
 				if (!isValidTrack(operation.track)) {
 					issues.push(
@@ -135,7 +330,7 @@ function mutateOperations(args: {
 					);
 					break;
 				}
-				tracks.set(operation.track.id, cloneTransactionValue(operation.track));
+				tracks.set(operation.track.id, operation.track);
 				createdIds.push(operation.track.id);
 				origins.set(operation.track.id, operationIndex);
 				break;
@@ -165,7 +360,7 @@ function mutateOperations(args: {
 					);
 					break;
 				}
-				tracks.set(operation.trackId, cloneTransactionValue(updated));
+				tracks.set(operation.trackId, updated);
 				changedIds.push(operation.trackId);
 				origins.set(operation.trackId, operationIndex);
 				break;
@@ -245,7 +440,7 @@ function mutateOperations(args: {
 					);
 					break;
 				}
-				clips.set(operation.clip.id, cloneTransactionValue(operation.clip));
+				clips.set(operation.clip.id, operation.clip);
 				createdIds.push(operation.clip.id);
 				origins.set(operation.clip.id, operationIndex);
 				break;
@@ -297,7 +492,7 @@ function mutateOperations(args: {
 					);
 					break;
 				}
-				clips.set(operation.clipId, cloneTransactionValue(updated));
+				clips.set(operation.clipId, updated);
 				changedIds.push(operation.clipId);
 				origins.set(operation.clipId, operationIndex);
 				break;
@@ -346,7 +541,7 @@ function mutateOperations(args: {
 					);
 					break;
 				}
-				assets.set(operation.asset.id, cloneTransactionValue(operation.asset));
+				assets.set(operation.asset.id, operation.asset);
 				createdIds.push(operation.asset.id);
 				origins.set(operation.asset.id, operationIndex);
 				break;
@@ -412,10 +607,7 @@ function mutateOperations(args: {
 					);
 					break;
 				}
-				markers.set(
-					operation.marker.id,
-					cloneTransactionValue(operation.marker),
-				);
+				markers.set(operation.marker.id, operation.marker);
 				createdIds.push(operation.marker.id);
 				origins.set(operation.marker.id, operationIndex);
 				break;
@@ -445,7 +637,7 @@ function mutateOperations(args: {
 					);
 					break;
 				}
-				markers.set(operation.markerId, cloneTransactionValue(updated));
+				markers.set(operation.markerId, updated);
 				changedIds.push(operation.markerId);
 				origins.set(operation.markerId, operationIndex);
 				break;
@@ -496,9 +688,17 @@ export async function evaluateTransactionBatch(args: {
 	const document = cloneTransactionValue(args.document);
 	const baseRevision = document.revision;
 	let fingerprint: string;
+	let operations: readonly TransactionOperation[];
 	try {
 		fingerprint = canonicalOperationFingerprint(args.batch.operations);
+		// Clone the complete operation array once. Per-operation or per-entity
+		// cloning destroys aliases intentionally shared by patches in one atomic
+		// batch and makes exact provider-private restoration impossible.
+		operations = cloneTransactionValue(args.batch.operations);
 	} catch {
+		const projectOperationIndex = findProjectOperationIndex(
+			args.batch.operations,
+		);
 		return {
 			accepted: false,
 			baseRevision,
@@ -506,6 +706,9 @@ export async function evaluateTransactionBatch(args: {
 				issue({
 					code: "invalid-entity",
 					message: "Operations are not canonically serializable",
+					...(projectOperationIndex < 0
+						? {}
+						: { operationIndex: projectOperationIndex }),
 				}),
 			],
 		};
@@ -591,7 +794,7 @@ export async function evaluateTransactionBatch(args: {
 
 	const reduced = mutateOperations({
 		document,
-		operations: args.batch.operations,
+		operations,
 	});
 	const candidateRevision = revisionOf(Number(baseRevision) + 1);
 	const candidate: TransactionEngineDocument = {
@@ -612,7 +815,7 @@ export async function evaluateTransactionBatch(args: {
 	);
 	const placementContext = {
 		document: candidate,
-		batch: args.batch,
+		batch: { ...args.batch, operations },
 		operationIndexByEntityId: reduced.operationIndexByEntityId,
 	};
 	const placementIssues = evaluateBasePlacementPolicy(placementContext);

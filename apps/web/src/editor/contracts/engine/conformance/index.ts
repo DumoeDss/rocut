@@ -10,6 +10,7 @@ import {
 	clipId,
 	mediaTime,
 	markerId,
+	OPERATION_KINDS,
 	projectId,
 	revisionOf,
 	trackId,
@@ -92,6 +93,32 @@ class Cases {
 
 function isRecord(value: unknown): value is Readonly<Record<string, unknown>> {
 	return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function adversarialFrameRates(): readonly unknown[] {
+	const symbolValue = { numerator: 30, denominator: 1 } as Record<
+		PropertyKey,
+		unknown
+	>;
+	symbolValue[Symbol("provider-private")] = true;
+	const accessorValue: Record<string, unknown> = { denominator: 1 };
+	Object.defineProperty(accessorValue, "numerator", {
+		enumerable: true,
+		get() {
+			throw new Error("frame-rate accessors must not be invoked");
+		},
+	});
+	const nonEnumerableValue: Record<string, unknown> = { numerator: 30 };
+	Object.defineProperty(nonEnumerableValue, "denominator", {
+		enumerable: false,
+		value: 1,
+	});
+	return [
+		{ numerator: 30, denominator: 1, providerPrivate: "smuggle" },
+		symbolValue,
+		accessorValue,
+		nonEnumerableValue,
+	];
 }
 
 function makeProject(id = "engine-project"): Project {
@@ -558,6 +585,369 @@ export async function runTransactionEngineConformance<
 	);
 
 	await cases.check(
+		"T1: Project dry-run/apply/replay/reopen preserves one durable candidate",
+		async (assert: CaseAssert) => {
+			const fixture = await factory({
+				profile: "engine",
+				opaque: { projectOpaqueSentinel: { retained: true } },
+			});
+			const current = await fixture.engine.project();
+			assert(current !== null, "engine conformance Project seed was missing");
+			if (current === null) return;
+			const batch: TransactionBatch = {
+				operations: [
+					{
+						kind: "update-project",
+						projectId: current.id,
+						patch: {
+							name: "Updated engine conformance",
+							canvasWidth: 1280,
+							canvasHeight: 720,
+						},
+					},
+				],
+				idempotencyKey: "project-conformance-key",
+			};
+			const beforeSaves = fixture.saveCount();
+			const dry = await fixture.engine.dryRun(batch);
+			assert(dry.accepted, "valid Project dry-run was rejected");
+			assert(
+				fixture.saveCount() === beforeSaves &&
+					Number(await fixture.engine.revision()) === 0,
+				"Project dry-run changed durable state",
+			);
+			const watched: number[] = [];
+			fixture.engine.watch((next) => watched.push(Number(next)));
+			const applied = await fixture.engine.apply(batch);
+			assert(
+				dry.accepted && JSON.stringify(dry.result) === JSON.stringify(applied),
+				"Project dry-run did not equal apply",
+			);
+			assert(
+				fixture.saveCount() === beforeSaves + 1 && watched.length === 1,
+				"Project apply did not save and notify exactly once",
+			);
+			assert(
+				applied.changedIds.length === 1 &&
+					applied.changedIds[0] === current.id &&
+					applied.createdIds.length === 0,
+				"Project apply result ids were incorrect",
+			);
+			const expectedProject = {
+				...current,
+				name: "Updated engine conformance",
+				canvasWidth: 1280,
+				canvasHeight: 720,
+			};
+			for (const frameRate of adversarialFrameRates()) {
+				const operation = {
+					kind: "update-project" as const,
+					projectId: current.id,
+					patch: {},
+				};
+				Reflect.set(operation.patch, "frameRate", frameRate);
+				const rejectedBatch: TransactionBatch = { operations: [operation] };
+				const rejected = await fixture.engine.dryRun(rejectedBatch);
+				assert(
+					!rejected.accepted &&
+						rejected.issues[0]?.code === "invalid-entity" &&
+						rejected.issues[0]?.operationIndex === 0,
+					"nested frame-rate payload did not reject structurally",
+				);
+				let failure: unknown;
+				try {
+					await fixture.engine.apply(rejectedBatch);
+				} catch (error) {
+					failure = error;
+				}
+				assert(
+					failure instanceof TransactionError &&
+						failure.code === "validation" &&
+						failure.operationIndex === 0 &&
+						fixture.saveCount() === beforeSaves + 1 &&
+						JSON.stringify(await fixture.engine.project()) ===
+							JSON.stringify(expectedProject),
+					"nested frame-rate payload entered live or durable Project state",
+				);
+			}
+			const persisted = await fixture.readPersistedRecord();
+			const data = persisted.data;
+			assert(
+				isRecord(data) &&
+					isRecord(data.projectOpaqueSentinel) &&
+					data.projectOpaqueSentinel.retained === true,
+				"Project apply lost an opaque sibling",
+			);
+			assert(
+				isRecord(data) &&
+					isRecord(data.transactionEngine) &&
+					JSON.stringify(data.transactionEngine.project) ===
+						JSON.stringify(expectedProject),
+				"persisted Project did not equal the committed candidate",
+			);
+			assert(
+				isRecord(data) &&
+					isRecord(data.transactionEngine) &&
+					isRecord(data.transactionEngine.project) &&
+					isRecord(data.transactionEngine.project.frameRate) &&
+					JSON.stringify(
+						Reflect.ownKeys(data.transactionEngine.project.frameRate),
+					) === JSON.stringify(["numerator", "denominator"]),
+				"persisted Project frame rate retained a nested payload key",
+			);
+			const reopened = await fixture.reopen();
+			assert(
+				JSON.stringify(await reopened.project()) ===
+					JSON.stringify(expectedProject),
+				"reopened Project did not equal the committed candidate",
+			);
+			const savesAfterApply = fixture.saveCount();
+			const replayWatch: number[] = [];
+			reopened.watch((next) => replayWatch.push(Number(next)));
+			const replay = await reopened.apply({
+				operations: [
+					{
+						patch: {
+							canvasHeight: 720,
+							canvasWidth: 1280,
+							name: "Updated engine conformance",
+						},
+						projectId: current.id,
+						kind: "update-project",
+					},
+				],
+				idempotencyKey: "project-conformance-key",
+			});
+			assert(
+				JSON.stringify(replay) === JSON.stringify(applied) &&
+					fixture.saveCount() === savesAfterApply &&
+					replayWatch.length === 0,
+				"canonical Project replay mutated durable state",
+			);
+			for (const patch of [
+				{ canvasWidth: 640 },
+				{},
+				{ providerPrivate: true },
+			]) {
+				const operation = {
+					kind: "update-project" as const,
+					projectId: current.id,
+					patch: {},
+				};
+				for (const [key, value] of Object.entries(patch)) {
+					Reflect.set(operation.patch, key, value);
+				}
+				const collisionBatch: TransactionBatch = {
+					operations: [operation],
+					idempotencyKey: "project-conformance-key",
+				};
+				const collisionDryRun = await reopened.dryRun(collisionBatch);
+				let collision: unknown;
+				try {
+					await reopened.apply(collisionBatch);
+				} catch (error) {
+					collision = error;
+				}
+				assert(
+					!collisionDryRun.accepted &&
+						collisionDryRun.issues[0]?.code === "idempotency-conflict" &&
+						collision instanceof TransactionError &&
+						collision.code === "duplicate",
+					"different serializable Project patch did not collide before validation",
+				);
+			}
+		},
+	);
+
+	await cases.check(
+		"T1: Project frame-rate validates the complete final placement",
+		async (assert: CaseAssert) => {
+			const fixture = await factory({ profile: "engine" });
+			const current = await fixture.engine.project();
+			assert(current !== null, "engine conformance Project seed was missing");
+			if (current === null) return;
+			await fixture.engine.apply({
+				operations: [
+					{ kind: "create-track", track: textTrack("fps-track") },
+					{
+						kind: "create-clip",
+						clip: clip({ id: "fps-clip", trackId: "fps-track" }),
+					},
+					{
+						kind: "create-marker",
+						marker: {
+							id: markerId("fps-marker"),
+							time: mediaTime({ ticks: 4_000 }),
+						},
+					},
+				],
+			});
+			const invalid = await fixture.engine.validate({
+				operations: [
+					{
+						kind: "update-track",
+						trackId: trackId("fps-track"),
+						patch: { name: "fps-track" },
+					},
+					{
+						kind: "update-project",
+						projectId: current.id,
+						patch: { frameRate: { numerator: 24, denominator: 1 } },
+					},
+					{
+						kind: "update-project",
+						projectId: current.id,
+						patch: { name: "Later non-timebase Project patch" },
+					},
+				],
+			});
+			const clipIssue = invalid.valid
+				? undefined
+				: invalid.issues.find(
+						(entry) =>
+							entry.code === "timebase-misaligned" &&
+							entry.entityIds?.includes(clipId("fps-clip")),
+					);
+			const markerIssue = invalid.valid
+				? undefined
+				: invalid.issues.find(
+						(entry) =>
+							entry.code === "timebase-misaligned" &&
+							entry.entityIds?.includes(markerId("fps-marker")),
+					);
+			assert(
+				!invalid.valid &&
+					clipIssue?.operationIndex === 1 &&
+					JSON.stringify(clipIssue.entityIds) ===
+						JSON.stringify([clipId("fps-clip")]) &&
+					markerIssue?.operationIndex === 1 &&
+					JSON.stringify(markerIssue.entityIds) ===
+						JSON.stringify([markerId("fps-marker")]),
+				"frame-rate update lost causal attribution for untouched placement",
+			);
+			const repaired = await fixture.engine.apply({
+				operations: [
+					{
+						kind: "update-project",
+						projectId: current.id,
+						patch: { frameRate: { numerator: 24, denominator: 1 } },
+					},
+					{
+						kind: "update-clip",
+						clipId: clipId("fps-clip"),
+						patch: { duration: mediaTime({ ticks: 5_000 }) },
+					},
+					{
+						kind: "update-marker",
+						markerId: markerId("fps-marker"),
+						patch: { time: mediaTime({ ticks: 5_000 }) },
+					},
+				],
+			});
+			assert(
+				JSON.stringify(repaired.changedIds) ===
+					JSON.stringify([
+						current.id,
+						clipId("fps-clip"),
+						markerId("fps-marker"),
+					]),
+				"same-batch Project and clip repair lost operation order",
+			);
+			assert(
+				(await fixture.engine.project())?.frameRate.numerator === 24 &&
+					Number((await fixture.engine.clips())[0]?.duration) === 5_000 &&
+					Number((await fixture.engine.markers())[0]?.time) === 5_000,
+				"same-batch final-timebase repair did not commit",
+			);
+		},
+	);
+
+	await cases.check(
+		"T1: queued and failed Project saves remain atomic",
+		async (assert: CaseAssert) => {
+			const fixture = await factory({ profile: "engine" });
+			const current = await fixture.engine.project();
+			assert(current !== null, "engine conformance Project seed was missing");
+			if (current === null) return;
+			const pause = fixture.pauseNextSave();
+			const first = fixture.engine.apply({
+				operations: [
+					{
+						kind: "update-project",
+						projectId: current.id,
+						patch: { name: "Queued Project" },
+					},
+				],
+			});
+			await pause.entered;
+			const second = fixture.engine.apply({
+				operations: [
+					{
+						kind: "update-project",
+						projectId: current.id,
+						patch: { canvasWidth: 1600 },
+					},
+				],
+			});
+			await Promise.resolve();
+			assert(fixture.saveCount() === 1, "second Project patch saved early");
+			pause.release();
+			const [firstResult, secondResult] = await Promise.all([first, second]);
+			assert(
+				Number(firstResult.revision) === 1 &&
+					Number(secondResult.revision) === 2,
+				"queued Project revisions were not ordered",
+			);
+
+			const beforeFailure = await fixture.engine.project();
+			const revisionBeforeFailure = await fixture.engine.revision();
+			const watched: number[] = [];
+			fixture.engine.watch((next) => watched.push(Number(next)));
+			fixture.failNextSave();
+			let failure: unknown;
+			try {
+				await fixture.engine.apply({
+					operations: [
+						{
+							kind: "update-project",
+							projectId: current.id,
+							patch: { name: "Must not publish" },
+						},
+					],
+					idempotencyKey: "failed-project-key",
+				});
+			} catch (error) {
+				failure = error;
+			}
+			assert(
+				failure instanceof ProjectStoreError,
+				"failed Project save changed error ownership",
+			);
+			assert(
+				JSON.stringify(await fixture.engine.project()) ===
+					JSON.stringify(beforeFailure) &&
+					(await fixture.engine.revision()) === revisionBeforeFailure &&
+					watched.length === 0,
+				"failed Project save published content, revision, or watch",
+			);
+			const recovered = await fixture.engine.apply({
+				operations: [
+					{
+						kind: "update-project",
+						projectId: current.id,
+						patch: { name: "Recovered Project" },
+					},
+				],
+				idempotencyKey: "failed-project-key",
+			});
+			assert(
+				Number(recovered.revision) === Number(revisionBeforeFailure) + 1,
+				"failed Project key was reserved or queue remained poisoned",
+			);
+		},
+	);
+
+	await cases.check(
 		"T1: base and configured optional capabilities are honest",
 		async (assert: CaseAssert) => {
 			const fixture = await factory({
@@ -589,8 +979,9 @@ export async function runTransactionEngineConformance<
 				);
 			}
 			assert(
-				(await fixture.engine.supportedOperations()).length === 11,
-				"supported operation probe changed",
+				JSON.stringify(await fixture.engine.supportedOperations()) ===
+					JSON.stringify(OPERATION_KINDS),
+				"supported operation probe did not advertise the complete inventory",
 			);
 		},
 	);

@@ -18,13 +18,14 @@ function issue(args: {
 	readonly message: string;
 	readonly context: PlacementPolicyContext;
 	readonly entityIds: readonly string[];
+	readonly attributionIds?: readonly string[];
 }): TransactionEngineIssue {
 	return {
 		code: args.code,
 		message: args.message,
 		operationIndex: operationIndexFor({
 			context: args.context,
-			ids: args.entityIds,
+			ids: args.attributionIds ?? args.entityIds,
 		}),
 		entityIds: args.entityIds,
 	};
@@ -43,6 +44,10 @@ function assertAligned(args: {
 		message: `${args.field} on ${args.entityId} is not aligned to ${args.ticksPerFrame} ticks per frame`,
 		context: args.context,
 		entityIds: [args.entityId],
+		attributionIds:
+			args.context.document.project === null
+				? [args.entityId]
+				: [args.entityId, args.context.document.project.id],
 	});
 }
 
