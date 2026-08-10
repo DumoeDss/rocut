@@ -39,8 +39,14 @@ identity is exact rather than self-referential.
 
 Status: Not requested (local delivery is deferred to the portfolio/parent level).
 
-## Archive
+## Pre-Archive Decision
 
 - Timing: on-merge.
 - Status: Not archived. No PR, push, merge, or archive was performed in this local child ship stage.
 - Lifecycle note: retention and archive remain later portfolio/parent-level actions after delivery.
+
+## Archive
+**Date:** 2026-08-10T10:36:34.813Z
+**Ship commit:** 545dc1f97a50920faa0e6f6a68139c9740c8a38d
+**Outcome:** archived at E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\rasen\changes\archive\2026-08-10-s0304-ui-commit-routing
+**Transaction:** fd1db41b-363f-4144-a12a-ce075c2fd9ed
