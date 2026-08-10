@@ -25,6 +25,8 @@ function removeTrackElements<TTrack extends TimelineTrack>({
 }
 
 export class DeleteElementsCommand extends Command {
+	readonly routingClass = "transaction" as const;
+
 	private savedState: SceneTracks | null = null;
 	private readonly elements: { trackId: string; elementId: string }[];
 

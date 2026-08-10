@@ -6,6 +6,8 @@ import {
 import type { SceneTracks } from "@/timeline";
 
 export class RemoveTrackCommand extends Command {
+	readonly routingClass = "transaction" as const;
+
 	private savedState: SceneTracks | null = null;
 
 	constructor(private trackId: string) {

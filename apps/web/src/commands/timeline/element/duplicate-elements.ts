@@ -15,6 +15,8 @@ interface DuplicateElementsParams {
 }
 
 export class DuplicateElementsCommand extends Command {
+	readonly routingClass = "transaction" as const;
+
 	private duplicatedElements: { trackId: string; elementId: string }[] = [];
 	private savedState: SceneTracks | null = null;
 	private elements: DuplicateElementsParams["elements"];

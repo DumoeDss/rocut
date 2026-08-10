@@ -20,6 +20,8 @@ function addEffectToElement({
 }
 
 export class AddClipEffectCommand extends Command {
+	readonly routingClass = "provider-private" as const;
+
 	private savedState: SceneTracks | null = null;
 	private effectId: string | null = null;
 	private readonly trackId: string;

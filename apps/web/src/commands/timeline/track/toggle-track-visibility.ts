@@ -11,6 +11,8 @@ import {
 } from "@/timeline";
 
 export class ToggleTrackVisibilityCommand extends Command {
+	readonly routingClass = "transaction" as const;
+
 	private savedState: SceneTracks | null = null;
 
 	constructor(private trackId: string) {

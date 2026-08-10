@@ -12,6 +12,8 @@ import {
 import type { MediaTime } from "@/wasm";
 
 export class UpdateBookmarkCommand extends Command {
+	readonly routingClass = "transaction" as const;
+
 	private savedScenes: TScene[] | null = null;
 
 	constructor({

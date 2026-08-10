@@ -13,6 +13,7 @@ export class SaveManager {
 	private saveTimer: TimerHandle | null = null;
 	private unsubscribeHandlers: Array<() => void> = [];
 	private publicationListeners = new Set<() => void>();
+	private alreadyDurablePublicationDepth = 0;
 
 	constructor({
 		editor,
@@ -60,9 +61,19 @@ export class SaveManager {
 	}
 
 	markDirty({ force = false }: { force?: boolean } = {}): void {
+		if (this.alreadyDurablePublicationDepth > 0) return;
 		if (this.isPaused && !force) return;
 		this.hasPendingSave = true;
 		this.queueSave();
+	}
+
+	publishAlreadyDurable<Result>(operation: () => Result): Result {
+		this.alreadyDurablePublicationDepth += 1;
+		try {
+			return operation();
+		} finally {
+			this.alreadyDurablePublicationDepth -= 1;
+		}
 	}
 
 	async flush(): Promise<void> {

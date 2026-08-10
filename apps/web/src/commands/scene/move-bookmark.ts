@@ -9,6 +9,8 @@ import { getFrameTime, moveBookmarkInArray } from "@/timeline/bookmarks/index";
 import type { MediaTime } from "@/wasm";
 
 export class MoveBookmarkCommand extends Command {
+	readonly routingClass = "transaction" as const;
+
 	private savedScenes: TScene[] | null = null;
 
 	constructor({

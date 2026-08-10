@@ -1,5 +1,6 @@
 import {
 	Command,
+	type CommandRoutingClass,
 	type EditorCommandContext,
 	type CommandResult,
 } from "@/commands/base-command";
@@ -14,6 +15,21 @@ export class UpdateElementsCommand extends Command {
 		elementId: string;
 		patch: Partial<TimelineElement>;
 	}>;
+
+	get routingClass(): CommandRoutingClass {
+		const publicKeys = new Set([
+			"startTime",
+			"duration",
+			"trimStart",
+			"trimEnd",
+			"mediaId",
+		]);
+		return this.updates.some(({ patch }) =>
+			Object.keys(patch).some((key) => publicKeys.has(key)),
+		)
+			? "transaction"
+			: "provider-private";
+	}
 
 	constructor({
 		updates,

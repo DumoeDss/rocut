@@ -13,6 +13,8 @@ import type {
 import type { SceneTracks } from "@/timeline";
 
 export class UpdateScalarKeyframeCurveCommand extends Command {
+	readonly routingClass = "provider-private" as const;
+
 	private savedState: SceneTracks | null = null;
 	private readonly trackId: string;
 	private readonly elementId: string;

@@ -42,7 +42,7 @@ export class ScenesManager {
 		}
 
 		const command = new CreateSceneCommand({ name, isMain });
-		this.editor.command.execute({ command });
+		await this.editor.command.execute({ command });
 		return command.getSceneId();
 	}
 
@@ -63,7 +63,7 @@ export class ScenesManager {
 		}
 
 		const command = new DeleteSceneCommand(sceneId);
-		this.editor.command.execute({ command });
+		await this.editor.command.execute({ command });
 	}
 
 	async renameScene({
@@ -81,7 +81,7 @@ export class ScenesManager {
 			sceneId,
 			newName: name,
 		});
-		this.editor.command.execute({ command });
+		await this.editor.command.execute({ command });
 	}
 
 	async switchToScene({ sceneId }: { sceneId: string }): Promise<void> {
@@ -112,7 +112,7 @@ export class ScenesManager {
 
 	async toggleBookmark({ time }: { time: MediaTime }): Promise<void> {
 		const command = new ToggleBookmarkCommand(time);
-		this.editor.command.execute({ command });
+		await this.editor.command.execute({ command });
 	}
 
 	isBookmarked({ time }: { time: MediaTime }): boolean {
@@ -131,7 +131,7 @@ export class ScenesManager {
 
 	async removeBookmark({ time }: { time: MediaTime }): Promise<void> {
 		const command = new RemoveBookmarkCommand(time);
-		this.editor.command.execute({ command });
+		await this.editor.command.execute({ command });
 	}
 
 	async updateBookmark({
@@ -142,7 +142,7 @@ export class ScenesManager {
 		updates: Partial<Omit<Bookmark, "time">>;
 	}): Promise<void> {
 		const command = new UpdateBookmarkCommand({ time, updates });
-		this.editor.command.execute({ command });
+		await this.editor.command.execute({ command });
 	}
 
 	async moveBookmark({
@@ -153,7 +153,7 @@ export class ScenesManager {
 		toTime: MediaTime;
 	}): Promise<void> {
 		const command = new MoveBookmarkCommand({ fromTime, toTime });
-		this.editor.command.execute({ command });
+		await this.editor.command.execute({ command });
 	}
 
 	getBookmarkAtTime({ time }: { time: MediaTime }) {
@@ -237,6 +237,20 @@ export class ScenesManager {
 				this.editor.save.markDirty({ force: true });
 			}
 		}
+	}
+
+	adoptCommittedScenes({
+		scenes,
+		currentSceneId,
+	}: {
+		scenes: TScene[];
+		currentSceneId: string;
+	}): void {
+		this.list = scenes;
+		this.active =
+			scenes.find((scene) => scene.id === currentSceneId) ??
+			getMainScene({ scenes });
+		this.notify();
 	}
 
 	clearScenes(): void {

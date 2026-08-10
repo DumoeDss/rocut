@@ -19,6 +19,8 @@ function removeEffectFromElement({
 }
 
 export class RemoveClipEffectCommand extends Command {
+	readonly routingClass = "provider-private" as const;
+
 	private savedState: SceneTracks | null = null;
 	private readonly trackId: string;
 	private readonly elementId: string;

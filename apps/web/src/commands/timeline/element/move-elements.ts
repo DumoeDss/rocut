@@ -16,6 +16,8 @@ import type {
 import { findTrackInSceneTracks } from "@/timeline/track-element-update";
 
 export class MoveElementCommand extends Command {
+	readonly routingClass = "transaction" as const;
+
 	private savedState: SceneTracks | null = null;
 
 	constructor({

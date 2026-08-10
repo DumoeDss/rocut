@@ -1028,6 +1028,7 @@ if (process.env.OPENCUT_SESSION_STATE_TEST_ISOLATED !== "1") {
 
 			const names = { before: "core-a", after: "core-a edited" };
 			const renameA = {
+				routingClass: "provider-private" as const,
 				execute: ({ editor }: { editor: typeof editorA }) => {
 					const active = editor.project.getActive();
 					editor.project.setActiveProject({
@@ -1051,14 +1052,14 @@ if (process.env.OPENCUT_SESSION_STATE_TEST_ISOLATED !== "1") {
 					this.execute(context);
 				},
 			};
-			editorA.command.execute({ command: renameA as never });
+			await editorA.command.execute({ command: renameA as never });
 			expect(editorA.project.getActive().metadata.name).toBe(names.after);
 			expect(editorB.project.getActive().metadata.name).toBe("core-b");
 			expect(editorA.command.canUndo()).toBe(true);
 			expect(editorB.command.canUndo()).toBe(false);
-			editorA.command.undo();
+			await editorA.command.undo();
 			expect(editorA.project.getActive().metadata.name).toBe(names.before);
-			editorA.command.redo();
+			await editorA.command.redo();
 			expect(editorA.project.getActive().metadata.name).toBe(names.after);
 
 			let savesA = 0;
@@ -1113,6 +1114,7 @@ if (process.env.OPENCUT_SESSION_STATE_TEST_ISOLATED !== "1") {
 			]);
 			expect(editorB.playback.getCurrentTime()).toBe(mediaTime(2_000));
 			const renameB = {
+				routingClass: "provider-private" as const,
 				execute: ({ editor }: { editor: typeof editorB }) => {
 					const active = editor.project.getActive();
 					editor.project.setActiveProject({
@@ -1135,12 +1137,12 @@ if (process.env.OPENCUT_SESSION_STATE_TEST_ISOLATED !== "1") {
 					this.execute(context);
 				},
 			};
-			editorB.command.execute({ command: renameB as never });
+			await editorB.command.execute({ command: renameB as never });
 			expect(editorB.project.getActive().metadata.name).toBe(
 				"core-b commanded",
 			);
 			expect(editorA.project.getActive().metadata.name).toBe(names.after);
-			editorB.command.undo();
+			await editorB.command.undo();
 			expect(editorB.project.getActive().metadata.name).toBe("core-b edited");
 			await rendererB.render({ node: treeB, time: 3_000 });
 			await editorB.save.flush();

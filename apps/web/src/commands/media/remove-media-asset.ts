@@ -11,6 +11,8 @@ import type { SceneTracks } from "@/timeline";
 import { toast } from "sonner";
 
 export class RemoveMediaAssetCommand extends Command {
+	readonly routingClass = "immediate" as const;
+
 	private savedAssets: MediaAsset[] | null = null;
 	private savedTracks: SceneTracks | null = null;
 	private removedAsset: MediaAsset | null = null;

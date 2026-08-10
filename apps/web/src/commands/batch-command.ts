@@ -5,8 +5,14 @@ import {
 } from "./base-command";
 
 export class BatchCommand extends Command {
+	readonly routingClass = "transaction" as const;
+
 	constructor(private commands: Command[]) {
 		super();
+	}
+
+	getCommands(): readonly Command[] {
+		return this.commands;
 	}
 
 	execute(context: EditorCommandContext): CommandResult | undefined {

@@ -11,6 +11,8 @@ import {
 } from "@/timeline";
 
 export class ToggleTrackMuteCommand extends Command {
+	readonly routingClass = "provider-private" as const;
+
 	private savedState: SceneTracks | null = null;
 
 	constructor(private trackId: string) {

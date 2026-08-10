@@ -12,6 +12,8 @@ import {
 import { type MediaTime, ZERO_MEDIA_TIME } from "@/wasm";
 
 export class RemoveBookmarkCommand extends Command {
+	readonly routingClass = "transaction" as const;
+
 	private savedScenes: TScene[] | null = null;
 	private frameTime: MediaTime = ZERO_MEDIA_TIME;
 

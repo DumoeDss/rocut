@@ -17,6 +17,8 @@ import {
 } from "@/wasm";
 
 export class SplitElementsCommand extends Command {
+	readonly routingClass = "transaction" as const;
+
 	private savedState: SceneTracks | null = null;
 	private rightSideElements: { trackId: string; elementId: string }[] = [];
 	private readonly elements: { trackId: string; elementId: string }[];

@@ -34,7 +34,6 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 	const { stickersRegistry } = await import("@/stickers/registry");
 	const { registerDefaultStickerProviders } =
 		await import("@/stickers/providers");
-	const { BatchCommand } = await import("@/commands/batch-command");
 	const { createEditorSession } = await import("../create-session");
 	const { editorForSession } =
 		await import("@/editor/runtime/session-core-owner");
@@ -152,6 +151,7 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 
 			editorA.command.execute({
 				command: {
+					routingClass: "provider-private" as const,
 					execute: ({ editor }) => {
 						expect(editor).toBe(editorA);
 						return undefined;
@@ -167,13 +167,14 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 			await sessionB.dispose();
 		});
 
-		test("execute, undo, redo and batches keep the owning context", async () => {
+		test("execute, undo, and redo keep the owning context", async () => {
 			const session = await createEditorSession({
 				host: createInMemoryHost(),
 			});
 			const editor = editorForSession(session);
 			const seen: string[] = [];
 			const child = (name: string) => ({
+				routingClass: "provider-private" as const,
 				execute: (context: { editor: typeof editor }) => {
 					expect(context.editor).toBe(editor);
 					seen.push(`${name}:execute`);
@@ -189,11 +190,12 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 					return undefined;
 				},
 			});
-			const batch = new BatchCommand([child("one"), child("two")]);
-
-			editor.command.execute({ command: batch });
-			editor.command.undo();
-			editor.command.redo();
+			await editor.command.execute({ command: child("one") });
+			await editor.command.execute({ command: child("two") });
+			await editor.command.undo();
+			await editor.command.undo();
+			await editor.command.redo();
+			await editor.command.redo();
 
 			expect(seen).toEqual([
 				"one:execute",

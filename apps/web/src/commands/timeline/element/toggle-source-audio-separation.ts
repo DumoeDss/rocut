@@ -18,6 +18,8 @@ import type {
 import { generateUUID } from "@/utils/id";
 
 export class ToggleSourceAudioSeparationCommand extends Command {
+	readonly routingClass = "provider-private" as const;
+
 	private savedState: SceneTracks | null = null;
 
 	constructor(

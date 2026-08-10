@@ -10,7 +10,7 @@ import {
 import { generateUUID } from "@/utils/id";
 import { VideoCache } from "@/services/video-cache/service";
 import { WaveformCache } from "@/services/waveform-cache/service";
-import { BatchCommand, RemoveMediaAssetCommand } from "@/commands";
+import { RemoveMediaAssetCommand } from "@/commands";
 
 export class MediaManager {
 	private readonly videoCache: VideoCache;
@@ -83,23 +83,11 @@ export class MediaManager {
 			return;
 		}
 
-		const command =
-			uniqueIds.length === 1
-				? new RemoveMediaAssetCommand({
-						projectId,
-						assetId: uniqueIds[0],
-					})
-				: new BatchCommand(
-						uniqueIds.map(
-							(id) =>
-								new RemoveMediaAssetCommand({
-									projectId,
-									assetId: id,
-								}),
-						),
-					);
-
-		this.editor.command.execute({ command });
+		for (const assetId of uniqueIds) {
+			void this.editor.command.execute({
+				command: new RemoveMediaAssetCommand({ projectId, assetId }),
+			});
+		}
 	}
 
 	async loadProjectMedia({ projectId }: { projectId: string }): Promise<void> {

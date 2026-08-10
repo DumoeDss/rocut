@@ -11,6 +11,8 @@ import {
 } from "@/timeline/placement";
 
 export class AddTrackCommand extends Command {
+	readonly routingClass = "transaction" as const;
+
 	private trackId: string;
 	private savedState: SceneTracks | null = null;
 

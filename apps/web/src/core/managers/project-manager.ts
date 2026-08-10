@@ -84,6 +84,12 @@ export class ProjectManager {
 		try {
 			await this.editor.persistence.saveProject({ project: newProject });
 			await this.editor.media.clearAllAssets();
+			if (this.editor.transactions) {
+				await this.editor.transactions.open({
+					projectId: newProject.metadata.id,
+					assets: [],
+				});
+			}
 			this.active = newProject;
 			this.editor.scenes.initializeScenes({
 				scenes: newProject.scenes,
@@ -111,6 +117,7 @@ export class ProjectManager {
 		}
 
 		this.editor.save.pause();
+		await this.editor.transactions?.retire();
 
 		try {
 			const project = await this.editor.persistence.loadProject({ id });
@@ -129,6 +136,12 @@ export class ProjectManager {
 			});
 			await this.editor.drainProjectLiveState();
 			await this.editor.media.loadProjectMedia({ projectId: id });
+			if (this.editor.transactions) {
+				await this.editor.transactions.open({
+					projectId: id,
+					assets: this.editor.media.getAssets(),
+				});
+			}
 
 			this.active = project;
 			this.notify();
@@ -153,6 +166,7 @@ export class ProjectManager {
 				}
 			}
 		} catch (error) {
+			await this.editor.transactions?.retire();
 			this.editor.reportPersistenceFailure({
 				operation: "load-project",
 				error,
@@ -280,6 +294,7 @@ export class ProjectManager {
 				this.active && idSet.has(this.active.metadata.id);
 
 			if (shouldClearActive) {
+				await this.editor.transactions?.retire();
 				await this.editor.media.clearAllAssets();
 				this.active = null;
 				this.editor.scenes.clearScenes();
@@ -300,6 +315,7 @@ export class ProjectManager {
 	}
 
 	async closeProject(): Promise<void> {
+		await this.editor.transactions?.retire();
 		await this.editor.media.clearAllAssets();
 		this.active = null;
 		this.notify();
@@ -498,7 +514,7 @@ export class ProjectManager {
 
 		const command = new UpdateProjectSettingsCommand(settings);
 		if (pushHistory) {
-			this.editor.command.execute({ command });
+			await this.editor.command.execute({ command });
 			return;
 		}
 
@@ -650,6 +666,18 @@ export class ProjectManager {
 
 	setActiveProject({ project }: { project: TProject }): void {
 		this.active = project;
+		this.notify();
+	}
+
+	adoptCommittedProject({ project }: { project: TProject }): void {
+		this.active = project;
+		const index = this.savedProjects.findIndex(
+			(candidate) => candidate.id === project.metadata.id,
+		);
+		this.savedProjects =
+			index === -1
+				? [project.metadata, ...this.savedProjects]
+				: this.savedProjects.with(index, project.metadata);
 		this.notify();
 	}
 

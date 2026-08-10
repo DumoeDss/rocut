@@ -7,6 +7,8 @@ import type { TScene } from "@/timeline";
 import { canDeleteScene, getFallbackSceneAfterDelete } from "@/timeline/scenes";
 
 export class DeleteSceneCommand extends Command {
+	readonly routingClass = "provider-private" as const;
+
 	private savedScenes: TScene[] | null = null;
 	private savedActiveSceneId: string | null = null;
 	private deletedScene: TScene | null = null;

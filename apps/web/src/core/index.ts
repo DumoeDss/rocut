@@ -20,6 +20,7 @@ import { SessionPersistenceCoordinator } from "@/editor/persistence";
 import { ProjectStoreError } from "@/editor/ports";
 import type { AssetResolver } from "@/editor/ports";
 import type { SessionResources } from "@/editor/session/resources";
+import { SessionOpenCutTransactions } from "@/editor/transactions/opencut";
 
 function throwSettledErrors({
 	results,
@@ -51,6 +52,7 @@ export class EditorCore {
 	public readonly transcription: TranscriptionService;
 	public readonly persistence: SessionPersistenceCoordinator;
 	public readonly resources: SessionResources;
+	public readonly transactions: SessionOpenCutTransactions;
 	private readonly sessionDiagnostics: EditorSession["diagnostics"];
 	private readonly hostAssets: AssetResolver;
 
@@ -76,6 +78,19 @@ export class EditorCore {
 		this.selection = new SelectionManager(this);
 		this.clipboard = new ClipboardManager(this);
 		this.diagnostics = new DiagnosticsManager(this);
+		this.transactions = new SessionOpenCutTransactions({
+			persistence: this.persistence,
+			arbiter: this.persistence.projectMutationArbiter,
+			publish: (draft) => {
+				this.save.publishAlreadyDurable(() => {
+					this.project.adoptCommittedProject({ project: draft.project });
+					this.scenes.adoptCommittedScenes({
+						scenes: draft.project.scenes,
+						currentSceneId: draft.project.currentSceneId,
+					});
+				});
+			},
+		});
 		const lifecycleResources = this.resources as SessionResources & {
 			isActivityAdmitted?: () => boolean;
 		};
@@ -86,8 +101,8 @@ export class EditorCore {
 		});
 		registerTranscriptionDiagnostics({ diagnostics: this.diagnostics });
 		this.playback.bindTimelineScope();
-		this.command.registerReactor(() => {
-			const activeScene = this.scenes.getActiveSceneOrNull();
+		this.command.registerReactor(({ editor }) => {
+			const activeScene = editor.scenes.getActiveSceneOrNull();
 			if (!activeScene) {
 				return;
 			}
@@ -102,7 +117,7 @@ export class EditorCore {
 				prunedTracks.overlay.length !== tracks.overlay.length ||
 				prunedTracks.audio.length !== tracks.audio.length
 			) {
-				this.timeline.updateTracks(prunedTracks);
+				editor.timeline.updateTracks(prunedTracks);
 			}
 		});
 		this.save.start();
@@ -203,6 +218,7 @@ export class EditorCore {
 		await attempt(() => this.media.dispose());
 		await attempt(() => this.transcription.terminate());
 		await attempt(() => this.audio.dispose());
+		await attempt(() => this.transactions.dispose());
 		await attempt(() => this.persistence.destroy());
 
 		if (errors.length === 1) throw errors[0];

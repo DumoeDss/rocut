@@ -3,9 +3,7 @@ import { useEditorInstance } from "@/editor/use-editor";
 import { processMediaAssets } from "@/media/processing";
 import { showMediaUploadToast } from "@/media/upload-toast";
 import { buildElementFromMedia } from "@/timeline/element-utils";
-import { AddMediaAssetCommand } from "@/commands/media";
 import { InsertElementCommand } from "@/commands/timeline";
-import { BatchCommand } from "@/commands";
 import { DEFAULT_NEW_ELEMENT_DURATION } from "@/timeline/creation";
 import { mediaTimeFromSeconds } from "@/wasm";
 import { isTypableDOMElement } from "@/utils/browser";
@@ -78,11 +76,12 @@ export function usePasteMedia() {
 						const startTime = editor.playback.getCurrentTime();
 
 						for (const asset of processedAssets) {
-							const addMediaCmd = new AddMediaAssetCommand({
+							const addedAsset = await editor.media.addMediaAsset({
 								projectId: activeProject.metadata.id,
 								asset,
 							});
-							const assetId = addMediaCmd.getAssetId();
+							if (!addedAsset) continue;
+							const assetId = addedAsset.id;
 							const duration =
 								asset.duration != null
 									? mediaTimeFromSeconds({ seconds: asset.duration })
@@ -105,8 +104,7 @@ export function usePasteMedia() {
 								element,
 								placement: { mode: "auto", trackType },
 							});
-							const batchCmd = new BatchCommand([addMediaCmd, insertCmd]);
-							editor.command.execute({ command: batchCmd });
+							await editor.command.execute({ command: insertCmd });
 						}
 
 						return {

@@ -6,6 +6,8 @@ import {
 import type { SceneTracks } from "@/timeline";
 
 export class TracksSnapshotCommand extends Command {
+	readonly routingClass = "transaction" as const;
+
 	constructor({ before, after }: { before: SceneTracks; after: SceneTracks }) {
 		super();
 		this.before = before;

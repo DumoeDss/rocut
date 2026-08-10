@@ -33,6 +33,8 @@ export interface InsertElementParams {
 }
 
 export class InsertElementCommand extends Command {
+	readonly routingClass = "transaction" as const;
+
 	private elementId: string;
 	private savedState: SceneTracks | null = null;
 	private targetTrackId: string | null = null;

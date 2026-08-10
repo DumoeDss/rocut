@@ -28,7 +28,6 @@ import {
 	resolveAnimationPathValueAtTime,
 } from "@/animation";
 import { resolveAnimationTarget } from "@/timeline/animation-targets";
-import { BatchCommand } from "@/commands";
 import {
 	AddTrackCommand,
 	RemoveTrackCommand,
@@ -515,9 +514,9 @@ export class TimelineManager {
 					keyframeId,
 				}),
 		);
-		const command =
-			commands.length === 1 ? commands[0] : new BatchCommand(commands);
-		this.editor.command.execute({ command });
+		for (const command of commands) {
+			void this.editor.command.execute({ command });
+		}
 	}
 
 	removeKeyframes({
@@ -584,9 +583,9 @@ export class TimelineManager {
 						valueAtPlayheadMap.get(`${elementId}:${propertyPath}`) ?? null,
 				}),
 		);
-		const command =
-			commands.length === 1 ? commands[0] : new BatchCommand(commands);
-		this.editor.command.execute({ command });
+		for (const command of commands) {
+			void this.editor.command.execute({ command });
+		}
 	}
 
 	retimeKeyframe({
@@ -639,9 +638,9 @@ export class TimelineManager {
 					patch,
 				}),
 		);
-		const command =
-			commands.length === 1 ? commands[0] : new BatchCommand(commands);
-		this.editor.command.execute({ command });
+		for (const command of commands) {
+			void this.editor.command.execute({ command });
+		}
 	}
 
 	upsertEffectParamKeyframe({
@@ -741,11 +740,11 @@ export class TimelineManager {
 		this.notify();
 	}
 
-	commitPreview(): void {
-		if (this.previewOverlay.size === 0) return;
+	async commitPreview(): Promise<boolean> {
+		if (this.previewOverlay.size === 0) return false;
 		const committedTracks = this.editor.scenes.getActiveSceneOrNull()?.tracks;
 		if (!committedTracks) {
-			return;
+			return false;
 		}
 		const afterTracks =
 			this.previewTracks ?? this.applyPreviewOverlay(committedTracks);
@@ -753,10 +752,17 @@ export class TimelineManager {
 			before: committedTracks,
 			after: afterTracks,
 		});
-		this.editor.command.push({ command });
-		this.previewOverlay.clear();
-		this.previewTracks = null;
-		this.updateTracks(afterTracks);
+		try {
+			await this.editor.command.execute({ command });
+			this.previewOverlay.clear();
+			this.previewTracks = null;
+			this.notify();
+			return true;
+		} catch {
+			// The committed project/history remain unchanged and the overlay is
+			// intentionally retained for retry or explicit discard.
+			return false;
+		}
 	}
 
 	discardPreview(): void {

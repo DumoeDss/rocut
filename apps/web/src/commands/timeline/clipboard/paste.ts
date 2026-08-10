@@ -22,6 +22,8 @@ import {
 } from "@/wasm";
 
 export class PasteCommand extends Command {
+	readonly routingClass = "transaction" as const;
+
 	private savedState: SceneTracks | null = null;
 	private pastedElements: { trackId: string; elementId: string }[] = [];
 	private readonly time: MediaTime;

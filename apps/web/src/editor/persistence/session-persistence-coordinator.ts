@@ -2,9 +2,11 @@ import type { TProject, TProjectMetadata } from "@/project/types";
 import type {
 	LibraryRecord,
 	ProjectAttachment,
+	ProjectRecord,
 	ProjectStore,
 	ProjectSummary,
 } from "@/editor/ports";
+import { ProjectMutationArbiter } from "@/editor/transactions/opencut/arbiter";
 import { cloneOpaque, overlayOpaque } from "./opaque-value";
 import { decodeProject, encodeProject } from "./project-codec";
 
@@ -12,6 +14,8 @@ type MutationListener = (event: {
 	readonly kind: "project" | "attachment" | "library" | "remove" | "clear";
 	readonly key: string;
 }) => void;
+
+type ProjectRecordListener = (record: ProjectRecord) => void;
 
 interface DurableLibraryArbitration {
 	readonly pending: Map<string, Promise<void>>;
@@ -49,14 +53,24 @@ export class SessionPersistenceCoordinator {
 	private readonly projectCache = new Map<string, TProject>();
 	private readonly pending = new Map<string, Promise<void>>();
 	private readonly listeners = new Set<MutationListener>();
+	private readonly projectRecordListeners = new Set<ProjectRecordListener>();
 	private destroyed = false;
 
-	constructor(readonly store: ProjectStore) {}
+	constructor(
+		readonly store: ProjectStore,
+		readonly projectMutationArbiter = new ProjectMutationArbiter(),
+	) {}
 
 	subscribe(listener: MutationListener): () => void {
 		this.assertAlive();
 		this.listeners.add(listener);
 		return () => this.listeners.delete(listener);
+	}
+
+	subscribeProjectRecords(listener: ProjectRecordListener): () => void {
+		this.assertAlive();
+		this.projectRecordListeners.add(listener);
+		return () => this.projectRecordListeners.delete(listener);
 	}
 
 	async listProjects(
@@ -77,17 +91,23 @@ export class SessionPersistenceCoordinator {
 		signal?: AbortSignal;
 	}): Promise<TProject | null> {
 		this.assertAlive();
-		const record = await this.store.load(args);
-		if (!record) {
-			this.projectSnapshots.delete(args.id);
-			this.projectCache.delete(args.id);
-			return null;
-		}
-		const retained = cloneOpaque(record.data);
-		const decoded = decodeProject(cloneOpaque(record.data));
-		this.projectSnapshots.set(args.id, retained);
-		this.projectCache.set(args.id, cloneOpaque(decoded));
-		return cloneOpaque(decoded);
+		return this.projectMutationArbiter.run({
+			projectId: args.id,
+			operation: async () => {
+				const record = await this.store.load(args);
+				if (!record) {
+					this.projectSnapshots.delete(args.id);
+					this.projectCache.delete(args.id);
+					return null;
+				}
+				const retained = cloneOpaque(record.data);
+				const decoded = decodeProject(cloneOpaque(record.data));
+				this.projectSnapshots.set(args.id, retained);
+				this.projectCache.set(args.id, cloneOpaque(decoded));
+				this.emitProjectRecord(record);
+				return cloneOpaque(decoded);
+			},
+		});
 	}
 
 	readCachedProject({ id }: { id: string }): TProject | null {
@@ -109,23 +129,50 @@ export class SessionPersistenceCoordinator {
 			? cloneOpaque(args.summary)
 			: undefined;
 		const defaultSummary = this.summaryFor(args.project);
-		return this.enqueue({
-			key: `project:${id}`,
-			operation: async () => {
-				const retained = this.projectSnapshots.get(id) ?? {};
-				const data = overlayOpaque({ retained, known });
-				const summary = summaryOverride ?? defaultSummary;
-				await this.store.save({
-					record: { id, schemaVersion, data },
-					summary,
-					signal: args.signal,
-				});
-				// No observable session success is published before the durable call.
-				this.projectSnapshots.set(id, cloneOpaque(data));
-				this.projectCache.set(id, decodeProject(data));
-				this.emit({ kind: "project", key: id });
-			},
+		return this.projectMutationArbiter.run({
+			projectId: id,
+			operation: () =>
+				this.enqueue({
+					key: `project:${id}`,
+					operation: async () => {
+						const retained = this.projectSnapshots.get(id) ?? {};
+						const data = overlayOpaque({ retained, known });
+						const summary = summaryOverride ?? defaultSummary;
+						const record = { id, schemaVersion, data };
+						await this.store.save({
+							record,
+							summary,
+							signal: args.signal,
+						});
+						// No observable session success is published before the durable call.
+						this.projectSnapshots.set(id, cloneOpaque(data));
+						this.projectCache.set(id, decodeProject(data));
+						this.emitProjectRecord(record);
+						this.emit({ kind: "project", key: id });
+					},
+				}),
 		});
+	}
+
+	async adoptCommittedProjectRecord({
+		record,
+	}: {
+		record: ProjectRecord;
+	}): Promise<TProject> {
+		this.assertAlive();
+		if (!record.id || !Number.isInteger(record.schemaVersion)) {
+			throw new Error("Invalid committed project record identity or schema version");
+		}
+		const retained = cloneOpaque(record.data);
+		const decoded = decodeProject(cloneOpaque(record.data));
+		if (decoded.metadata.id !== record.id) {
+			throw new Error("Committed project record identity does not match its payload");
+		}
+		this.projectSnapshots.set(record.id, retained);
+		this.projectCache.set(record.id, cloneOpaque(decoded));
+		this.emitProjectRecord(record);
+		this.emit({ kind: "project", key: record.id });
+		return cloneOpaque(decoded);
 	}
 
 	async removeProject(args: {
@@ -436,6 +483,7 @@ export class SessionPersistenceCoordinator {
 		this.librarySnapshots.clear();
 		this.projectCache.clear();
 		this.listeners.clear();
+		this.projectRecordListeners.clear();
 	}
 
 	private summaryFor(project: TProject): ProjectSummary {
@@ -539,6 +587,13 @@ export class SessionPersistenceCoordinator {
 
 	private emit(event: Parameters<MutationListener>[0]): void {
 		this.listeners.forEach((listener) => listener(event));
+	}
+
+	private emitProjectRecord(record: ProjectRecord): void {
+		const snapshot = cloneOpaque(record);
+		this.projectRecordListeners.forEach((listener) =>
+			listener(cloneOpaque(snapshot)),
+		);
 	}
 
 	private assertAlive(): void {

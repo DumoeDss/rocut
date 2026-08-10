@@ -16,6 +16,8 @@ import { frameRatesEqual, getHighestImportedVideoFps } from "@/fps/utils";
 import { UpdateProjectSettingsCommand } from "@/commands/project";
 
 export class AddMediaAssetCommand extends Command {
+	readonly routingClass = "immediate" as const;
+
 	private assetId: string;
 	private savedAssets: MediaAsset[] | null = null;
 	private createdAsset: MediaAsset | null = null;

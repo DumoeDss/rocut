@@ -6,6 +6,8 @@ import {
 import type { TProject, TProjectSettings } from "@/project/types";
 
 export class UpdateProjectSettingsCommand extends Command {
+	readonly routingClass = "provider-private" as const;
+
 	private savedSettings: TProjectSettings | null = null;
 	private savedUpdatedAt: Date | null = null;
 
