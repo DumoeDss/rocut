@@ -77,7 +77,7 @@ export interface FrameRate {
  *
  * `TICKS_PER_SECOND / (numerator / denominator)` must be a positive integer.
  * For example, 30/1 fps yields `120000 / 30 = 4000` ticks per frame (accepted),
- * but 30000/1001 fps yields `4000.1333...` (rejected).
+ * but 90/1 fps yields `120000 / 90 = 1333.333...` (rejected).
  *
  * @throws {RangeError} if the rate does not produce an integer ticks-per-frame,
  *   or if numerator/denominator are not positive integers.

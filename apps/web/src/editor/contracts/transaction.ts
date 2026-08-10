@@ -23,7 +23,7 @@ export type Revision = number & { readonly [__revisionBrand]: true };
 
 /**
  * Construct a {@link Revision} from a plain number.
- * @internal
+ * Exported so callers can supply typed `expectedRevision` values.
  */
 export function revisionOf(value: number): Revision {
 	return value as Revision;

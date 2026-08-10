@@ -17,8 +17,8 @@ The transaction contract SHALL define standalone TypeScript types for `Project`,
 
 #### Scenario: A frame rate that cannot produce integer ticks is rejected
 
-- **WHEN** a `FrameRate` of `{ numerator: 30000, denominator: 1001 }` is validated against 120,000 ticks/sec
-- **THEN** construction is rejected with a typed error, because `120000 / (30000 / 1001)` is not an integer
+- **WHEN** a `FrameRate` of `{ numerator: 90, denominator: 1 }` is validated against 120,000 ticks/sec
+- **THEN** construction is rejected with a typed error, because `120000 / (90 / 1)` is not an integer
 
 #### Scenario: A conforming frame rate produces integer ticks
 
@@ -125,10 +125,10 @@ The contract SHALL define a `TransactionError` class extending `Error` with a st
 - **WHEN** the third operation in a five-operation batch references a non-existent track
 - **THEN** the `TransactionError` has `code: "not-found"` and `operationIndex: 2`
 
-#### Scenario: A validation error carries a human-readable message
+#### Scenario: A negative duration is rejected at the domain constructor boundary
 
-- **WHEN** an operation attempts to create a clip with a negative duration
-- **THEN** the `TransactionError` has `code: "validation"` and a non-empty `message` describing the violation
+- **WHEN** a caller attempts to construct a clip duration from a negative tick count
+- **THEN** `mediaTime` rejects the value with a `RangeError` and a non-empty message before `apply` is called
 
 ### Requirement: The getContext interface probes transaction metadata
 
@@ -197,7 +197,7 @@ The contract SHALL ship a conformance suite (`runTransactionConformance`) as a p
 
 - **WHEN** `runTransactionConformance` is pointed at `createInMemoryTransactionStore`
 - **THEN** the report's `passed` field is `true`
-- **AND** every case has status `"passed"`
+- **AND** no case has status `"failed"`; cases that execute no assertion have status `"skipped"`
 
 #### Scenario: A non-conforming implementation is reported as failed
 

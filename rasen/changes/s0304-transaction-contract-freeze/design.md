@@ -39,7 +39,7 @@ Structural compatibility (same tick rate) means T1/T3 bridge between contract `M
 
 **Alternative considered**: re-export `MediaTime` from `@/wasm`. Rejected: it would create a contract dependency on the wasm module, and the boundary check exists precisely to prevent that.
 
-**Structured rejection**: `FrameRate` must produce an integer ticks/frame (Target State §5.1, locked decision 4). `120000 / (numerator / denominator)` must be a positive integer. A rate that cannot produce one (e.g., 30000/1001 at 120,000 ticks/sec yields 4000.1333...) is rejected with a typed error at construction time. The contract's `mediaTime` constructor takes `{ ticks }` and enforces non-negative integers.
+**Structured rejection**: `FrameRate` must produce an integer ticks/frame (Target State §5.1, locked decision 4). `120000 / (numerator / denominator)` must be a positive integer. A rate that cannot produce one (e.g., 90/1 at 120,000 ticks/sec yields 1333.333...) is rejected with a typed error at construction time. The contract's `mediaTime` constructor takes `{ ticks }` and enforces non-negative integers.
 
 ### D2: Domain entity types as minimal Host-neutral interfaces
 
