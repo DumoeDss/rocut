@@ -25,8 +25,8 @@ import { cloneOpaque } from "@/editor/persistence/opaque-value";
 
 interface TransactionCommandHistoryEntry {
 	readonly kind: "transaction";
-	readonly before: OpenCutProjectDraft;
-	readonly after: OpenCutProjectDraft;
+	readonly undoTarget: OpenCutProjectDraft;
+	readonly redoTarget: OpenCutProjectDraft;
 	readonly forwardOperations: ReturnType<typeof diffOpenCutProjection>;
 	readonly inverseOperations: ReturnType<typeof diffOpenCutProjection>;
 	previousSelection: EditorSelectionSnapshot;
@@ -49,8 +49,8 @@ type CommandHistoryEntry =
 type CommandReactor = (context: EditorCommandContext) => void;
 
 interface PreparedCommandPayload {
-	readonly before: OpenCutProjectDraft;
-	readonly after: OpenCutProjectDraft;
+	readonly undoTarget: OpenCutProjectDraft;
+	readonly redoTarget: OpenCutProjectDraft;
 	readonly result: CommandResult | undefined;
 	readonly forwardOperations: ReturnType<typeof diffOpenCutProjection>;
 	readonly inverseOperations: ReturnType<typeof diffOpenCutProjection>;
@@ -63,6 +63,26 @@ function activeTracks(draft: OpenCutProjectDraft): SceneTracks | null {
 			(scene) => scene.id === draft.project.currentSceneId,
 		)?.tracks ?? null
 	);
+}
+
+function historyUndoTarget({
+	before,
+	after,
+	historylessProjectSettingKeys,
+}: {
+	before: OpenCutProjectDraft;
+	after: OpenCutProjectDraft;
+	historylessProjectSettingKeys: ReadonlySet<
+		keyof OpenCutProjectDraft["project"]["settings"]
+	>;
+}): OpenCutProjectDraft {
+	const target = cloneOpenCutDraft(before);
+	for (const key of historylessProjectSettingKeys) {
+		Object.assign(target.project.settings, {
+			[key]: cloneOpaque(after.project.settings[key]),
+		});
+	}
+	return target;
 }
 
 export class CommandManager {
@@ -100,7 +120,25 @@ export class CommandManager {
 		if (routing === "preview") {
 			throw new Error("Preview commands must use local preview state");
 		}
+		return this.executeRouted({ command, recordHistory: true });
+	}
 
+	executeSystem({ command }: { command: Command }): Promise<Command> {
+		if (this.routingForRoot(command) !== "transaction") {
+			throw new Error(
+				"System transaction execution requires transaction-routable work",
+			);
+		}
+		return this.executeRouted({ command, recordHistory: false });
+	}
+
+	private executeRouted({
+		command,
+		recordHistory,
+	}: {
+		command: Command;
+		recordHistory: boolean;
+	}): Promise<Command> {
 		const liveAssets = [...this.editor.media.getAssets()];
 		const routed = this.editor.transactions
 			.commitUi<PreparedCommandPayload>({
@@ -116,16 +154,22 @@ export class CommandManager {
 						draft,
 						assets: liveAssets,
 					});
-					const result = command.execute(detached);
+					const result = command.execute(detached.context);
 					this.applyRippleToDraft({ beforeTracks, draft });
-					this.runReactors(detached);
+					this.runReactors(detached.context);
 					ensureDraftMarkerIds(draft);
 					const after = cloneOpenCutDraft(draft);
+					const undoTarget = historyUndoTarget({
+						before,
+						after,
+						historylessProjectSettingKeys:
+							detached.historylessProjectSettingKeys,
+					});
 					const afterProjection = projectOpenCutDraft(after, {
 						revision: baseRevision,
 						idempotency: [],
 					});
-					const beforeProjection = projectOpenCutDraft(before, {
+					const undoProjection = projectOpenCutDraft(undoTarget, {
 						revision: baseRevision,
 						idempotency: [],
 					});
@@ -135,14 +179,14 @@ export class CommandManager {
 					});
 					const inverseOperations = diffOpenCutProjection({
 						before: afterProjection,
-						after: beforeProjection,
+						after: undoProjection,
 					});
 					return {
 						draft: after,
 						operations: forwardOperations,
 						payload: {
-							before,
-							after,
+							undoTarget,
+							redoTarget: after,
 							result,
 							forwardOperations,
 							inverseOperations,
@@ -151,11 +195,12 @@ export class CommandManager {
 					};
 				},
 				finalize: ({ payload }) => {
+					if (!recordHistory) return;
 					const selectionOverride = this.applySelectionOverride(payload.result);
 					this.history.push({
 						kind: "transaction",
-						before: payload.before,
-						after: payload.after,
+						undoTarget: payload.undoTarget,
+						redoTarget: payload.redoTarget,
 						forwardOperations: payload.forwardOperations,
 						inverseOperations: payload.inverseOperations,
 						previousSelection: payload.previousSelection,
@@ -180,7 +225,11 @@ export class CommandManager {
 		return routed;
 	}
 
-	executeWithoutHistory({ command }: { command: Command }): CommandResult | undefined {
+	executeWithoutHistory({
+		command,
+	}: {
+		command: Command;
+	}): CommandResult | undefined {
 		const routing = this.routingForRoot(command);
 		if (routing === "transaction" || routing === "preview") {
 			throw new Error(
@@ -192,7 +241,9 @@ export class CommandManager {
 
 	push({ command }: { command: Command }): void {
 		if (this.routingForRoot(command) === "transaction") {
-			throw new Error("Transaction history is published only by a durable routed commit");
+			throw new Error(
+				"Transaction history is published only by a durable routed commit",
+			);
 		}
 		this.history.push({
 			kind: "provider-private",
@@ -213,7 +264,9 @@ export class CommandManager {
 			entry.command.undo(this.context);
 			this.history.pop();
 			if (entry.selectionOverride !== undefined) {
-				this.editor.selection.restoreSnapshot({ snapshot: entry.previousSelection });
+				this.editor.selection.restoreSnapshot({
+					snapshot: entry.previousSelection,
+				});
 			}
 			this.redoStack.push(entry);
 			return;
@@ -264,21 +317,17 @@ export class CommandManager {
 		entry: TransactionCommandHistoryEntry;
 		direction: "undo" | "redo";
 	}): Promise<void> {
-		const target = direction === "undo" ? entry.before : entry.after;
+		const target = direction === "undo" ? entry.undoTarget : entry.redoTarget;
 		const previousSelection = this.getSelectionSnapshot();
 		await this.editor.transactions.commitUi({
 			baseDraft: () => this.captureLiveDraft(),
-			prepare: ({ baseDocument, baseRevision }) => {
-				const targetProjection = projectOpenCutDraft(target, {
-					revision: baseRevision,
-					idempotency: [],
-				});
+			prepare: () => {
 				return {
 					draft: cloneOpenCutDraft(target),
-					operations: diffOpenCutProjection({
-						before: baseDocument,
-						after: targetProjection,
-					}),
+					operations:
+						direction === "undo"
+							? entry.inverseOperations
+							: entry.forwardOperations,
 					payload: undefined,
 				};
 			},
@@ -286,14 +335,18 @@ export class CommandManager {
 				if (direction === "undo") {
 					this.history.pop();
 					if (entry.selectionOverride !== undefined) {
-						this.editor.selection.restoreSnapshot({ snapshot: entry.previousSelection });
+						this.editor.selection.restoreSnapshot({
+							snapshot: entry.previousSelection,
+						});
 					}
 					this.redoStack.push(entry);
 					return;
 				}
 				this.redoStack.pop();
 				const selectionOverride = entry.selectionPatch
-					? this.editor.selection.applySelectionPatch({ patch: entry.selectionPatch })
+					? this.editor.selection.applySelectionPatch({
+							patch: entry.selectionPatch,
+						})
 					: undefined;
 				this.history.push({
 					...entry,
@@ -318,9 +371,13 @@ export class CommandManager {
 	private routingForRoot(command: Command) {
 		if (command instanceof BatchCommand) {
 			const children = command.getCommands();
-			if (children.length === 0) throw new Error("BatchCommand must not be empty");
+			if (children.length === 0)
+				throw new Error("BatchCommand must not be empty");
 			for (const child of children) {
-				if (child instanceof BatchCommand || classifyCommand(child) !== "transaction") {
+				if (
+					child instanceof BatchCommand ||
+					classifyCommand(child) !== "transaction"
+				) {
 					throw new Error(
 						"BatchCommand accepts only directly registered transaction children",
 					);
@@ -339,7 +396,9 @@ export class CommandManager {
 		result: CommandResult | undefined,
 	): EditorSelectionSnapshot | undefined {
 		if (!result?.selection) return undefined;
-		return this.editor.selection.applySelectionPatch({ patch: result.selection });
+		return this.editor.selection.applySelectionPatch({
+			patch: result.selection,
+		});
 	}
 
 	private runReactors(context: EditorCommandContext): void {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-type-assertion, opencut/prefer-object-params -- Focused fixtures intentionally construct branded donor times, opaque records, and an instrumented store. */
 import type { ProjectRecord, ProjectStore } from "@/editor/ports";
 import { createInMemoryProjectStoreFixture } from "@/editor/ports/in-memory";
 import { encodeProject } from "@/editor/persistence/project-codec";

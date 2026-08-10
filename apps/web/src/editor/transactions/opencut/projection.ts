@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-type-assertion, opencut/prefer-object-params -- This is the concrete donor/opaque projection boundary; its small pure mappers intentionally mirror array callback signatures. */
 import type {
 	Asset,
 	Clip,
 	Marker,
 	Project,
+	ProjectPatch,
 	Track,
 	TransactionOperation,
 } from "@/editor/contracts";
@@ -17,10 +19,7 @@ import type { TransactionEngineDocument } from "@/editor/contracts/engine";
 import { canonicalOperationFingerprint } from "@/editor/contracts/engine";
 import type { Bookmark, TimelineElement, TimelineTrack } from "@/timeline";
 import { cloneOpaque } from "@/editor/persistence/opaque-value";
-import type {
-	OpenCutAssetCatalogEntry,
-	OpenCutProjectDraft,
-} from "./types";
+import type { OpenCutAssetCatalogEntry, OpenCutProjectDraft } from "./types";
 
 const MARKER_ID_KEY = "__opencutTransactionMarkerId";
 
@@ -31,7 +30,11 @@ function contractTime(value: number) {
 	return value as Clip["startTime"];
 }
 
-function markerIdentity(sceneId: string, bookmark: Bookmark, index: number): string {
+function markerIdentity(
+	sceneId: string,
+	bookmark: Bookmark,
+	index: number,
+): string {
 	const stored = (bookmark as BookmarkWithMarkerId)[MARKER_ID_KEY];
 	return stored ?? `${sceneId}:marker:${index}`;
 }
@@ -188,7 +191,9 @@ function changedPatch<Value extends object>(
 	return patch;
 }
 
-function mapById<Value extends { readonly id: string }>(values: readonly Value[]) {
+function mapById<Value extends { readonly id: string }>(
+	values: readonly Value[],
+) {
 	return new Map(values.map((value) => [value.id, value]));
 }
 
@@ -197,7 +202,10 @@ function sortedIds(values: Iterable<string>): string[] {
 }
 
 export class OpenCutProjectionError extends Error {
-	constructor(readonly code: "empty" | "unrepresentable", message: string) {
+	constructor(
+		readonly code: "empty" | "unrepresentable",
+		message: string,
+	) {
 		super(message);
 		this.name = "OpenCutProjectionError";
 	}
@@ -210,10 +218,14 @@ export function diffOpenCutProjection({
 	before: TransactionEngineDocument;
 	after: TransactionEngineDocument;
 }): TransactionOperation[] {
-	if (!same(before.project, after.project)) {
+	if (
+		!before.project ||
+		!after.project ||
+		before.project.id !== after.project.id
+	) {
 		throw new OpenCutProjectionError(
 			"unrepresentable",
-			"The frozen operation union cannot represent project metadata changes",
+			"The selected OpenCut project identity cannot change inside a transaction",
 		);
 	}
 	const beforeTracks = mapById(before.tracks);
@@ -225,18 +237,35 @@ export function diffOpenCutProjection({
 	const beforeMarkers = mapById(before.markers);
 	const afterMarkers = mapById(after.markers);
 	const operations: TransactionOperation[] = [];
+	const projectPatch = changedPatch(before.project, after.project, [
+		"name",
+		"frameRate",
+		"canvasWidth",
+		"canvasHeight",
+	]) as ProjectPatch;
+	if (Object.keys(projectPatch).length > 0) {
+		operations.push({
+			kind: "update-project",
+			projectId: before.project.id,
+			patch: projectPatch,
+		});
+	}
 
 	for (const id of sortedIds(beforeClips.keys())) {
-		if (!afterClips.has(id)) operations.push({ kind: "delete-clip", clipId: clipId(id) });
+		if (!afterClips.has(id))
+			operations.push({ kind: "delete-clip", clipId: clipId(id) });
 	}
 	for (const id of sortedIds(beforeMarkers.keys())) {
-		if (!afterMarkers.has(id)) operations.push({ kind: "delete-marker", markerId: markerId(id) });
+		if (!afterMarkers.has(id))
+			operations.push({ kind: "delete-marker", markerId: markerId(id) });
 	}
 	for (const id of sortedIds(beforeTracks.keys())) {
-		if (!afterTracks.has(id)) operations.push({ kind: "delete-track", trackId: trackId(id) });
+		if (!afterTracks.has(id))
+			operations.push({ kind: "delete-track", trackId: trackId(id) });
 	}
 	for (const id of sortedIds(beforeAssets.keys())) {
-		if (!afterAssets.has(id)) operations.push({ kind: "delete-asset", assetId: assetId(id) });
+		if (!afterAssets.has(id))
+			operations.push({ kind: "delete-asset", assetId: assetId(id) });
 	}
 
 	for (const id of sortedIds(afterAssets.keys())) {
@@ -253,15 +282,18 @@ export function diffOpenCutProjection({
 	}
 	for (const id of sortedIds(afterTracks.keys())) {
 		const current = afterTracks.get(id);
-		if (current && !beforeTracks.has(id)) operations.push({ kind: "create-track", track: current });
+		if (current && !beforeTracks.has(id))
+			operations.push({ kind: "create-track", track: current });
 	}
 	for (const id of sortedIds(afterClips.keys())) {
 		const current = afterClips.get(id);
-		if (current && !beforeClips.has(id)) operations.push({ kind: "create-clip", clip: current });
+		if (current && !beforeClips.has(id))
+			operations.push({ kind: "create-clip", clip: current });
 	}
 	for (const id of sortedIds(afterMarkers.keys())) {
 		const current = afterMarkers.get(id);
-		if (current && !beforeMarkers.has(id)) operations.push({ kind: "create-marker", marker: current });
+		if (current && !beforeMarkers.has(id))
+			operations.push({ kind: "create-marker", marker: current });
 	}
 
 	for (const id of sortedIds(afterTracks.keys())) {
@@ -269,7 +301,8 @@ export function diffOpenCutProjection({
 		const previous = beforeTracks.get(id);
 		if (!current || !previous) continue;
 		const patch = changedPatch(previous, current, ["kind", "name", "hidden"]);
-		if (Object.keys(patch).length > 0) operations.push({ kind: "update-track", trackId: trackId(id), patch });
+		if (Object.keys(patch).length > 0)
+			operations.push({ kind: "update-track", trackId: trackId(id), patch });
 	}
 	for (const id of sortedIds(afterClips.keys())) {
 		const current = afterClips.get(id);
@@ -283,14 +316,16 @@ export function diffOpenCutProjection({
 			"trimEnd",
 			"assetId",
 		]);
-		if (Object.keys(patch).length > 0) operations.push({ kind: "update-clip", clipId: clipId(id), patch });
+		if (Object.keys(patch).length > 0)
+			operations.push({ kind: "update-clip", clipId: clipId(id), patch });
 	}
 	for (const id of sortedIds(afterMarkers.keys())) {
 		const current = afterMarkers.get(id);
 		const previous = beforeMarkers.get(id);
 		if (!current || !previous) continue;
 		const patch = changedPatch(previous, current, ["time", "note", "color"]);
-		if (Object.keys(patch).length > 0) operations.push({ kind: "update-marker", markerId: markerId(id), patch });
+		if (Object.keys(patch).length > 0)
+			operations.push({ kind: "update-marker", markerId: markerId(id), patch });
 	}
 
 	if (operations.length === 0) {
@@ -322,10 +357,7 @@ export function publicDocumentsEqual(
 		revision: 0,
 		idempotency: [],
 	});
-	return same(
-		normalized(left),
-		normalized(right),
-	);
+	return same(normalized(left), normalized(right));
 }
 
 export const OPEN_CUT_MARKER_ID_KEY = MARKER_ID_KEY;

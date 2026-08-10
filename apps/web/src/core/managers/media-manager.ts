@@ -42,12 +42,6 @@ export class MediaManager {
 				projectId,
 				asset: newAsset,
 			});
-			this.assets = [...this.assets, newAsset];
-			this.notify();
-			this.editor.project.ratchetFpsForImportedMedia({
-				importedAssets: [newAsset],
-			});
-			return newAsset;
 		} catch (error) {
 			this.editor.reportPersistenceFailure({
 				operation: "save-media-attachment",
@@ -65,6 +59,20 @@ export class MediaManager {
 
 			return null;
 		}
+
+		this.assets = [...this.assets, newAsset];
+		this.notify();
+		try {
+			await this.editor.project.ratchetFpsForImportedMedia({
+				importedAssets: [newAsset],
+			});
+		} catch (error) {
+			this.editor.reportPersistenceFailure({
+				operation: "ratchet-imported-media-fps",
+				error,
+			});
+		}
+		return newAsset;
 	}
 
 	removeMediaAsset({ projectId, id }: { projectId: string; id: string }): void {

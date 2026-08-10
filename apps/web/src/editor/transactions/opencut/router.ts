@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-type-assertion, opencut/prefer-object-params -- The branded commit token and private orchestration helpers remain inside this concrete donor router. */
 import type {
 	Asset,
 	Clip,
@@ -21,7 +22,6 @@ import {
 import type { SessionPersistenceCoordinator } from "@/editor/persistence";
 import type { ProjectId as PortProjectId, ProjectRecord } from "@/editor/ports";
 import type { MediaAsset } from "@/media/types";
-import { cloneOpaque } from "@/editor/persistence/opaque-value";
 import { createOpenCutTransactionDocumentAdapter } from "./adapter";
 import { ProjectMutationArbiter } from "./arbiter";
 import { cloneOpenCutDraft, projectOpenCutDraft } from "./projection";
@@ -70,14 +70,13 @@ export class SessionOpenCutTransactions {
 			readonly publish: (draft: OpenCutProjectDraft) => void;
 		},
 	) {
-		this.unsubscribeProjectRecords = options.persistence.subscribeProjectRecords(
-			(record) => {
+		this.unsubscribeProjectRecords =
+			options.persistence.subscribeProjectRecords((record) => {
 				const active = this.active;
 				if (active && !active.disposed && active.projectId === record.id) {
 					active.adapter.adoptCommittedRecord(record);
 				}
-			},
-		);
+			});
 	}
 
 	async open({
@@ -93,7 +92,9 @@ export class SessionOpenCutTransactions {
 			projectId,
 			operation: async () => {
 				const portProjectId = projectId as PortProjectId;
-				const record = await this.options.persistence.store.load({ id: portProjectId });
+				const record = await this.options.persistence.store.load({
+					id: portProjectId,
+				});
 				if (!record) throw new Error(`Project ${projectId} no longer exists`);
 				const adapter = createOpenCutTransactionDocumentAdapter({
 					initialRecord: record,
@@ -171,7 +172,9 @@ export class SessionOpenCutTransactions {
 					});
 					const receipt = active.adapter.consumeReceipt();
 					if (!receipt || receipt.token !== token) {
-						throw new Error("The durable OpenCut publication receipt is missing");
+						throw new Error(
+							"The durable OpenCut publication receipt is missing",
+						);
 					}
 					await this.adoptAndPublish(active, receipt.record, receipt.draft);
 					const committed = {
@@ -194,12 +197,17 @@ export class SessionOpenCutTransactions {
 			projectId: active.projectId,
 			operation: async () => {
 				this.assertCurrent(active);
-				const result = await active.engine.apply(batch);
-				const receipt = active.adapter.consumeReceipt();
-				if (receipt) {
-					await this.adoptAndPublish(active, receipt.record, receipt.draft);
+				try {
+					const result = await active.engine.apply(batch);
+					const receipt = active.adapter.consumeReceipt();
+					if (receipt) {
+						await this.adoptAndPublish(active, receipt.record, receipt.draft);
+					}
+					return result;
+				} catch (error) {
+					active.adapter.consumeReceipt();
+					throw error;
 				}
-				return result;
 			},
 		});
 	}
@@ -315,7 +323,8 @@ export class SessionOpenCutTransactions {
 	private requireActive(): ActiveOpenCutRouter {
 		this.assertAlive();
 		const active = this.active;
-		if (!active || active.disposed) throw new Error("No OpenCut transaction router is open");
+		if (!active || active.disposed)
+			throw new Error("No OpenCut transaction router is open");
 		return active;
 	}
 
@@ -326,6 +335,7 @@ export class SessionOpenCutTransactions {
 	}
 
 	private assertAlive(): void {
-		if (this.disposed) throw new Error("OpenCut transaction facade has been disposed");
+		if (this.disposed)
+			throw new Error("OpenCut transaction facade has been disposed");
 	}
 }

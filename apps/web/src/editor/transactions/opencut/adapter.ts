@@ -1,10 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-type-assertion -- This is the concrete donor/opaque translation boundary. */
-import type {
-	Asset,
-	Clip,
-	Marker,
-	Track,
-} from "@/editor/contracts";
+/* eslint-disable @typescript-eslint/no-unsafe-type-assertion, opencut/prefer-object-params -- This is the concrete donor/opaque translation boundary; its private mapping helpers are not public APIs. */
+import type { Asset, Clip, Marker, Track } from "@/editor/contracts";
 import { revisionOf } from "@/editor/contracts";
 import type {
 	TransactionDocumentAdapter,
@@ -17,7 +12,10 @@ import type {
 	ProjectSummary,
 } from "@/editor/ports";
 import { cloneOpaque } from "@/editor/persistence/opaque-value";
-import { decodeProject, encodeProject } from "@/editor/persistence/project-codec";
+import {
+	decodeProject,
+	encodeProject,
+} from "@/editor/persistence/project-codec";
 import type { TProject } from "@/project/types";
 import type {
 	Bookmark,
@@ -75,17 +73,23 @@ function canonical(value: unknown, seen = new Set<object>()): string {
 	if (value === null) return "null";
 	if (value === undefined) return "undefined";
 	if (typeof value === "string") return `string:${JSON.stringify(value)}`;
-	if (typeof value === "number") return `number:${Object.is(value, -0) ? "-0" : String(value)}`;
+	if (typeof value === "number")
+		return `number:${Object.is(value, -0) ? "-0" : String(value)}`;
 	if (typeof value === "boolean") return `boolean:${String(value)}`;
 	if (typeof value !== "object") return `${typeof value}:${String(value)}`;
-	if (seen.has(value)) throw new TypeError("Opaque project records must not contain cycles");
+	if (seen.has(value))
+		throw new TypeError("Opaque project records must not contain cycles");
 	seen.add(value);
 	try {
 		if (value instanceof Date) return `date:${value.toISOString()}`;
-		if (Array.isArray(value)) return `array:[${value.map((entry) => canonical(entry, seen)).join(",")}]`;
+		if (Array.isArray(value))
+			return `array:[${value.map((entry) => canonical(entry, seen)).join(",")}]`;
 		return `object:{${Object.keys(value)
 			.sort()
-			.map((key) => `${JSON.stringify(key)}:${canonical((value as Record<string, unknown>)[key], seen)}`)
+			.map(
+				(key) =>
+					`${JSON.stringify(key)}:${canonical((value as Record<string, unknown>)[key], seen)}`,
+			)
 			.join(",")}}`;
 	} finally {
 		seen.delete(value);
@@ -132,13 +136,22 @@ function donorElementById(project: TProject): Map<string, TimelineElement> {
 }
 
 function newTrack(track: Track): TimelineTrack {
-	const base = { id: track.id, name: track.name, type: track.kind, elements: [] };
+	const base = {
+		id: track.id,
+		name: track.name,
+		type: track.kind,
+		elements: [],
+	};
 	if (track.kind === "audio") return { ...base, type: "audio", muted: false };
-	if (track.kind === "video") return { ...base, type: "video", muted: false, hidden: track.hidden };
+	if (track.kind === "video")
+		return { ...base, type: "video", muted: false, hidden: track.hidden };
 	return { ...base, type: track.kind, hidden: track.hidden } as TimelineTrack;
 }
 
-function overlayTrack(track: Track, previous: TimelineTrack | undefined): TimelineTrack {
+function overlayTrack(
+	track: Track,
+	previous: TimelineTrack | undefined,
+): TimelineTrack {
 	const base = previous ?? newTrack(track);
 	return {
 		...base,
@@ -173,9 +186,17 @@ function newElement(clip: Clip, asset: Asset | undefined): TimelineElement {
 		} as unknown as TimelineElement;
 	}
 	if (asset?.kind === "image")
-		return { ...base, type: "image", mediaId: asset.id } as unknown as TimelineElement;
+		return {
+			...base,
+			type: "image",
+			mediaId: asset.id,
+		} as unknown as TimelineElement;
 	if (asset?.kind === "video")
-		return { ...base, type: "video", mediaId: asset.id } as unknown as TimelineElement;
+		return {
+			...base,
+			type: "video",
+			mediaId: asset.id,
+		} as unknown as TimelineElement;
 	return {
 		...base,
 		type: "text",
@@ -213,13 +234,16 @@ function overlayMarkers(
 			bookmark,
 		]),
 	);
-	return markers.map((marker) => ({
-		...(byId.get(marker.id) ?? {}),
-		time: marker.time as unknown as Bookmark["time"],
-		...(marker.note !== undefined && { note: marker.note }),
-		...(marker.color !== undefined && { color: marker.color }),
-		[OPEN_CUT_MARKER_ID_KEY]: marker.id,
-	}) as Bookmark);
+	return markers.map(
+		(marker) =>
+			({
+				...(byId.get(marker.id) ?? {}),
+				time: marker.time as unknown as Bookmark["time"],
+				...(marker.note !== undefined && { note: marker.note }),
+				...(marker.color !== undefined && { color: marker.color }),
+				[OPEN_CUT_MARKER_ID_KEY]: marker.id,
+			}) as Bookmark,
+	);
 }
 
 function applyPublicDocument({
@@ -229,7 +253,8 @@ function applyPublicDocument({
 	base: OpenCutProjectDraft;
 	document: TransactionEngineDocument;
 }): OpenCutProjectDraft {
-	if (!document.project) throw new Error("OpenCut projects require transaction project metadata");
+	if (!document.project)
+		throw new Error("OpenCut projects require transaction project metadata");
 	const project = cloneOpaque(base.project);
 	project.metadata = { ...project.metadata, name: document.project.name };
 	project.settings = {
@@ -240,50 +265,72 @@ function applyPublicDocument({
 			height: document.project.canvasHeight,
 		},
 	};
-	const activeScene = project.scenes.find((scene) => scene.id === project.currentSceneId);
+	const activeScene = project.scenes.find(
+		(scene) => scene.id === project.currentSceneId,
+	);
 	if (!activeScene) throw new Error("OpenCut project has no active scene");
 
 	const previousTracks = donorTrackById(project);
 	const previousElements = donorElementById(project);
 	const assets = assetById(document);
 	const tracks = new Map<string, TimelineTrack>(
-		document.tracks.map((track) => [track.id, overlayTrack(track, previousTracks.get(track.id))]),
+		document.tracks.map((track) => [
+			track.id,
+			overlayTrack(track, previousTracks.get(track.id)),
+		]),
 	);
 	for (const track of tracks.values()) {
 		track.elements = document.clips
 			.filter((clip) => String(clip.trackId) === track.id)
-			.map((clip) => overlayElement(clip, previousElements.get(clip.id), clip.assetId ? assets.get(clip.assetId) : undefined)) as TimelineTrack["elements"];
+			.map((clip) =>
+				overlayElement(
+					clip,
+					previousElements.get(clip.id),
+					clip.assetId ? assets.get(clip.assetId) : undefined,
+				),
+			) as TimelineTrack["elements"];
 	}
 	const previousMainId = activeScene.tracks.main.id;
 	const main = tracks.get(previousMainId);
-	if (!main || main.type !== "video") throw new Error("The canonical main track cannot be removed or retyped");
+	if (!main || main.type !== "video")
+		throw new Error("The canonical main track cannot be removed or retyped");
 	activeScene.tracks = {
 		main,
 		overlay: document.tracks
 			.filter((track) => track.id !== previousMainId && track.kind !== "audio")
 			.map((track) => tracks.get(track.id))
-			.filter((track): track is SceneTracks["overlay"][number] => track !== undefined && track.type !== "audio"),
+			.filter(
+				(track): track is SceneTracks["overlay"][number] =>
+					track !== undefined && track.type !== "audio",
+			),
 		audio: document.tracks
 			.filter((track) => track.kind === "audio")
 			.map((track) => tracks.get(track.id))
-			.filter((track): track is SceneTracks["audio"][number] => track?.type === "audio"),
+			.filter(
+				(track): track is SceneTracks["audio"][number] =>
+					track?.type === "audio",
+			),
 	};
-	activeScene.bookmarks = overlayMarkers(activeScene.bookmarks, document.markers);
+	activeScene.bookmarks = overlayMarkers(
+		activeScene.bookmarks,
+		document.markers,
+	);
 	return {
 		project,
 		assetCatalog: document.assets.map((asset) => ({
 			id: asset.id,
 			name: asset.name,
 			type: asset.kind,
-			...(asset.duration !== undefined && { duration: asset.duration / 120_000 }),
+			...(asset.duration !== undefined && {
+				duration: asset.duration / 120_000,
+			}),
 			...(asset.width !== undefined && { width: asset.width }),
 			...(asset.height !== undefined && { height: asset.height }),
 		})),
 	};
 }
 
-export interface OpenCutTransactionDocumentAdapter
-	extends TransactionDocumentAdapter {
+export interface OpenCutTransactionDocumentAdapter extends TransactionDocumentAdapter {
 	stage(candidate: StagedOpenCutCandidate): void;
 	clear(token: OpenCutCommitToken): void;
 	consumeReceipt(): EncodedOpenCutPublicationReceipt | null;
@@ -320,7 +367,8 @@ export function createOpenCutTransactionDocumentAdapter({
 	): ProjectRecord {
 		const retained = previousRecord.data;
 		const knownProject = encodeProject({ project: draft.project, retained });
-		if (!isRecord(knownProject)) throw new Error("Encoded OpenCut project must be an object");
+		if (!isRecord(knownProject))
+			throw new Error("Encoded OpenCut project must be an object");
 		return {
 			id: projectId,
 			schemaVersion: previousRecord.schemaVersion,
@@ -346,10 +394,14 @@ export function createOpenCutTransactionDocumentAdapter({
 			});
 		},
 		encode({ projectId, previousRecord, document }) {
-			const baseRecord = latestRecord.id === projectId ? latestRecord : previousRecord;
+			const baseRecord =
+				latestRecord.id === projectId ? latestRecord : previousRecord;
 			const lastKey = document.idempotency.at(-1)?.key;
 			const token = lastKey as OpenCutCommitToken | undefined;
 			const registered = token ? staged.get(token) : undefined;
+			if (!registered && staged.size > 0) {
+				throw new Error("Staged OpenCut candidate token mismatch");
+			}
 			let draft: OpenCutProjectDraft;
 			if (registered) {
 				if (
@@ -368,7 +420,10 @@ export function createOpenCutTransactionDocumentAdapter({
 					throw new Error("Staged OpenCut candidate projection mismatch");
 				}
 			} else {
-				draft = applyPublicDocument({ base: decodeDraft(baseRecord), document });
+				draft = applyPublicDocument({
+					base: decodeDraft(baseRecord),
+					document,
+				});
 			}
 			const record = encodedRecord(projectId, baseRecord, draft, document);
 			latestReceipt = {
@@ -379,7 +434,8 @@ export function createOpenCutTransactionDocumentAdapter({
 			return { record, summary: summaryFor(draft.project) };
 		},
 		stage(candidate) {
-			if (staged.has(candidate.token)) throw new Error("Duplicate OpenCut commit token");
+			if (staged.has(candidate.token))
+				throw new Error("Duplicate OpenCut commit token");
 			staged.set(candidate.token, cloneOpaque(candidate));
 		},
 		clear(token) {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-type-assertion -- Focused persistence harnesses intentionally inspect opaque records and provide narrowed EditorCore collaborators. */
 import { describe, expect, test } from "bun:test";
 import { trackId } from "@/editor/contracts";
 import type { EditorCore } from "@/core";
@@ -23,7 +24,8 @@ describe("transaction persistence coordination", () => {
 		const data = {
 			...(record.data as Record<string, unknown>),
 			metadata: {
-				...((record.data as { metadata: Record<string, unknown> }).metadata ?? {}),
+				...((record.data as { metadata: Record<string, unknown> }).metadata ??
+					{}),
 				name: "Adopted",
 			},
 		};
@@ -84,7 +86,10 @@ describe("transaction persistence coordination", () => {
 		test(`serializes ${order} without losing metadata or opaque siblings`, async () => {
 			const fixture = await storeFixture();
 			const arbiter = new ProjectMutationArbiter();
-			const persistence = new SessionPersistenceCoordinator(fixture.store, arbiter);
+			const persistence = new SessionPersistenceCoordinator(
+				fixture.store,
+				arbiter,
+			);
 			await persistence.loadProject({ id: TEST_PROJECT_ID });
 			const facade = new SessionOpenCutTransactions({
 				persistence,

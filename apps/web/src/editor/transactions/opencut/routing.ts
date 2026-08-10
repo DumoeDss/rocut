@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-type-assertion -- Runtime membership in the frozen routing-class tuple proves the returned discriminated type. */
 import {
 	COMMAND_ROUTING_CLASSES,
 	type Command,
@@ -58,5 +59,7 @@ export function classifyCommand(command: Command): CommandRoutingClass {
 		return explicit as CommandRoutingClass;
 	}
 	const name = command.constructor.name;
-	throw new Error(`Command ${name || "<anonymous>"} has no routing registration`);
+	throw new Error(
+		`Command ${name || "<anonymous>"} has no routing registration`,
+	);
 }

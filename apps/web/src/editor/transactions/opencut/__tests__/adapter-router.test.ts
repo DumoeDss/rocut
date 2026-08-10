@@ -1,5 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unsafe-type-assertion -- Focused adapter fixtures intentionally construct branded donor/contract identifiers and inspect opaque records. */
 import { describe, expect, test } from "bun:test";
-import { assetId, clipId, revisionOf, trackId } from "@/editor/contracts";
+import {
+	assetId,
+	clipId,
+	projectId,
+	revisionOf,
+	trackId,
+} from "@/editor/contracts";
 import { openTransactionEngine } from "@/editor/contracts/engine";
 import { validateTransactionDocument } from "@/editor/contracts/engine/invariant";
 import { SessionPersistenceCoordinator } from "@/editor/persistence";
@@ -15,7 +22,12 @@ import {
 	type OpenCutProjectDraft,
 } from "@/editor/transactions/opencut";
 import { cloneOpaque } from "@/editor/persistence/opaque-value";
-import { projectFixture, recordFixture, storeFixture, TEST_PROJECT_ID } from "./fixture";
+import {
+	projectFixture,
+	recordFixture,
+	storeFixture,
+	TEST_PROJECT_ID,
+} from "./fixture";
 
 describe("OpenCut transaction projection and router", () => {
 	test("audio donor candidates encode into a valid reopenable document", async () => {
@@ -85,10 +97,12 @@ describe("OpenCut transaction projection and router", () => {
 			projectId: TEST_PROJECT_ID,
 			record: encoded.record,
 		});
-		expect(validateTransactionDocument({
-			projectId: TEST_PROJECT_ID,
-			document: decoded,
-		})).toEqual([]);
+		expect(
+			validateTransactionDocument({
+				projectId: TEST_PROJECT_ID,
+				document: decoded,
+			}),
+		).toEqual([]);
 		expect(publicDocumentsEqual(decoded, document)).toBe(true);
 	});
 
@@ -128,6 +142,7 @@ describe("OpenCut transaction projection and router", () => {
 			time: 4_000 as never,
 			note: "marker",
 		});
+		afterDraft.project.settings.canvasSize = { width: 320, height: 180 };
 		const before = projectOpenCutDraft(beforeDraft, {
 			revision: revisionOf(0),
 			idempotency: [],
@@ -140,6 +155,7 @@ describe("OpenCut transaction projection and router", () => {
 		const second = diffOpenCutProjection({ before, after });
 		expect(first).toEqual(second);
 		expect(first.map((operation) => operation.kind)).toEqual([
+			"update-project",
 			"create-asset",
 			"create-track",
 			"create-clip",
@@ -148,6 +164,143 @@ describe("OpenCut transaction projection and router", () => {
 		expect(() => diffOpenCutProjection({ before, after: before })).toThrow(
 			"non-empty",
 		);
+	});
+
+	test("typed Project updates cover UI/automation ordering, replay, collision, failure, and reopen", async () => {
+		const fixture = await storeFixture();
+		const arbiter = new ProjectMutationArbiter();
+		const persistence = new SessionPersistenceCoordinator(
+			fixture.store,
+			arbiter,
+		);
+		await persistence.loadProject({ id: TEST_PROJECT_ID });
+		const publications: Array<{ name: string; width: number }> = [];
+		const facade = new SessionOpenCutTransactions({
+			persistence,
+			arbiter,
+			publish: (draft) => {
+				publications.push({
+					name: draft.project.metadata.name,
+					width: draft.project.settings.canvasSize.width,
+				});
+			},
+		});
+		await facade.open({ projectId: TEST_PROJECT_ID, assets: [] });
+		let watchCount = 0;
+		facade.watch(() => watchCount++);
+
+		const ui = facade.commitUi({
+			baseDraft: () => ({ project: projectFixture(), assetCatalog: [] }),
+			prepare: ({ draft, baseDocument, baseRevision }) => {
+				draft.project.settings.canvasSize = { width: 640, height: 360 };
+				const after = projectOpenCutDraft(draft, {
+					revision: baseRevision,
+					idempotency: [],
+				});
+				return {
+					draft,
+					operations: diffOpenCutProjection({ before: baseDocument, after }),
+					payload: undefined,
+				};
+			},
+		});
+		const automationBatch = {
+			operations: [
+				{
+					kind: "update-project" as const,
+					projectId: projectId(TEST_PROJECT_ID),
+					patch: { name: "Automation project" },
+				},
+			],
+			idempotencyKey: "automation-project-update",
+		};
+		const automation = facade.apply(automationBatch);
+		const [uiResult, automationResult] = await Promise.all([ui, automation]);
+		expect(
+			[uiResult.transaction.revision, automationResult.revision].map(Number),
+		).toEqual([1, 2]);
+		expect(fixture.getSaveCount()).toBe(2);
+		expect(watchCount).toBe(2);
+		expect(publications).toEqual([
+			{ name: "OpenCut routing", width: 640 },
+			{ name: "Automation project", width: 640 },
+		]);
+		expect(await facade.project()).toMatchObject({
+			name: "Automation project",
+			canvasWidth: 640,
+			canvasHeight: 360,
+		});
+
+		const replay = await facade.apply({
+			idempotencyKey: automationBatch.idempotencyKey,
+			operations: [
+				{
+					kind: "update-project",
+					projectId: projectId(TEST_PROJECT_ID),
+					patch: { name: "Automation project" },
+				},
+			],
+		});
+		expect(Number(replay.revision)).toBe(2);
+		expect(fixture.getSaveCount()).toBe(2);
+		expect(watchCount).toBe(2);
+		await expect(
+			facade.apply({
+				idempotencyKey: automationBatch.idempotencyKey,
+				operations: [
+					{
+						kind: "update-project",
+						projectId: projectId(TEST_PROJECT_ID),
+						patch: { name: "Collision" },
+					},
+				],
+			}),
+		).rejects.toMatchObject({ code: "duplicate" });
+		await expect(
+			facade.apply({
+				operations: [
+					{
+						kind: "update-project",
+						projectId: projectId(TEST_PROJECT_ID),
+						patch: { canvasWidth: 0 },
+					},
+				],
+			}),
+		).rejects.toMatchObject({ code: "validation" });
+
+		fixture.control.failNext({
+			operation: "save-project",
+			code: "unavailable",
+		});
+		await expect(
+			facade.apply({
+				operations: [
+					{
+						kind: "update-project",
+						projectId: projectId(TEST_PROJECT_ID),
+						patch: { canvasHeight: 400 },
+					},
+				],
+			}),
+		).rejects.toMatchObject({ code: "unavailable" });
+		expect(Number(await facade.revision())).toBe(2);
+		expect(watchCount).toBe(2);
+		expect(await facade.project()).toMatchObject({ canvasHeight: 360 });
+
+		await facade.dispose();
+		const reopened = new SessionOpenCutTransactions({
+			persistence,
+			arbiter,
+			publish: () => undefined,
+		});
+		await reopened.open({ projectId: TEST_PROJECT_ID, assets: [] });
+		expect(Number(await reopened.revision())).toBe(2);
+		expect(await reopened.project()).toMatchObject({
+			name: "Automation project",
+			canvasWidth: 640,
+			canvasHeight: 360,
+		});
+		await reopened.dispose();
 	});
 
 	test("staged binding rejects a wrong record digest before save", async () => {
@@ -191,6 +344,58 @@ describe("OpenCut transaction projection and router", () => {
 		expect(fixture.getSaveCount()).toBe(0);
 		expect(Number(await engine.revision())).toBe(0);
 	});
+
+	for (const mismatch of ["token", "base-revision", "projection"] as const) {
+		test(`staged binding rejects a ${mismatch} mismatch before save`, async () => {
+			const fixture = await storeFixture();
+			const initialRecord = await fixture.store.load({ id: TEST_PROJECT_ID });
+			if (!initialRecord) throw new Error("missing fixture record");
+			const adapter = createOpenCutTransactionDocumentAdapter({
+				initialRecord,
+				initialAssets: [],
+			});
+			const engine = await openTransactionEngine({
+				store: fixture.store,
+				projectId: TEST_PROJECT_ID,
+				documentAdapter: adapter,
+			});
+			const draft = { project: projectFixture(), assetCatalog: [] };
+			draft.project.scenes[0].tracks.main.name = "Candidate";
+			const stagedToken = "opencut-ui:staged" as OpenCutCommitToken;
+			const appliedToken =
+				mismatch === "token"
+					? ("opencut-ui:other" as OpenCutCommitToken)
+					: stagedToken;
+			const projectedDraft =
+				mismatch === "projection"
+					? { project: projectFixture(), assetCatalog: [] }
+					: draft;
+			adapter.stage({
+				token: stagedToken,
+				baseRevision: mismatch === "base-revision" ? 1 : 0,
+				previousRecordDigest: digestProjectRecord(initialRecord),
+				draft,
+				projectedDocument: projectOpenCutDraft(projectedDraft, {
+					revision: revisionOf(1),
+					idempotency: [],
+				}),
+			});
+			await expect(
+				engine.apply({
+					operations: [
+						{
+							kind: "update-track",
+							trackId: trackId("main-track"),
+							patch: { name: "Candidate" },
+						},
+					],
+					idempotencyKey: appliedToken,
+				}),
+			).rejects.toMatchObject({ operation: "save-project" });
+			expect(fixture.getSaveCount()).toBe(0);
+			expect(Number(await engine.revision())).toBe(0);
+		});
+	}
 
 	test("UI and automation share invocation order, exact adoption, and opaque overlay", async () => {
 		const fixture = await storeFixture();
@@ -239,9 +444,7 @@ describe("OpenCut transaction projection and router", () => {
 		const [uiResult, automationResult] = await Promise.all([ui, automation]);
 		expect(
 			[uiResult.transaction.revision, automationResult.revision].map(Number),
-		).toEqual([
-			1, 2,
-		]);
+		).toEqual([1, 2]);
 		expect(watched.map(Number)).toEqual([1, 2]);
 		expect(publications).toEqual(["UI", "Automation"]);
 		expect(fixture.getSaveCount()).toBe(2);
@@ -250,9 +453,9 @@ describe("OpenCut transaction projection and router", () => {
 				.main.name,
 		).toBe("Automation");
 		const record = await fixture.store.load({ id: TEST_PROJECT_ID });
-		expect(
-			(record?.data as { nestedOpaque?: unknown }).nestedOpaque,
-		).toEqual({ sentinel: ["keep", { value: 42 }] });
+		expect((record?.data as { nestedOpaque?: unknown }).nestedOpaque).toEqual({
+			sentinel: ["keep", { value: 42 }],
+		});
 		await facade.dispose();
 		const reopened = new SessionOpenCutTransactions({
 			persistence,
@@ -268,7 +471,10 @@ describe("OpenCut transaction projection and router", () => {
 	test("durable failure publishes nothing and leaves the shared queue usable", async () => {
 		const fixture = await storeFixture();
 		const arbiter = new ProjectMutationArbiter();
-		const persistence = new SessionPersistenceCoordinator(fixture.store, arbiter);
+		const persistence = new SessionPersistenceCoordinator(
+			fixture.store,
+			arbiter,
+		);
 		await persistence.loadProject({ id: TEST_PROJECT_ID });
 		let publications = 0;
 		const facade = new SessionOpenCutTransactions({
@@ -277,7 +483,10 @@ describe("OpenCut transaction projection and router", () => {
 			publish: () => publications++,
 		});
 		await facade.open({ projectId: TEST_PROJECT_ID, assets: [] });
-		fixture.control.failNext({ operation: "save-project", code: "unavailable" });
+		fixture.control.failNext({
+			operation: "save-project",
+			code: "unavailable",
+		});
 		await expect(
 			facade.apply({
 				operations: [

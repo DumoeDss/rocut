@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-type-assertion -- The registered element predicate establishes the VisualElement narrowing used by the update callback. */
 import {
 	Command,
 	type EditorCommandContext,

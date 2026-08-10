@@ -1,3 +1,4 @@
+/* eslint-disable opencut/prefer-object-params -- The existing positional store constructor is a session-internal compatibility seam; T3 only adds its optional shared arbiter. */
 import type { TProject, TProjectMetadata } from "@/project/types";
 import type {
 	LibraryRecord,
@@ -161,12 +162,16 @@ export class SessionPersistenceCoordinator {
 	}): Promise<TProject> {
 		this.assertAlive();
 		if (!record.id || !Number.isInteger(record.schemaVersion)) {
-			throw new Error("Invalid committed project record identity or schema version");
+			throw new Error(
+				"Invalid committed project record identity or schema version",
+			);
 		}
 		const retained = cloneOpaque(record.data);
 		const decoded = decodeProject(cloneOpaque(record.data));
 		if (decoded.metadata.id !== record.id) {
-			throw new Error("Committed project record identity does not match its payload");
+			throw new Error(
+				"Committed project record identity does not match its payload",
+			);
 		}
 		this.projectSnapshots.set(record.id, retained);
 		this.projectCache.set(record.id, cloneOpaque(decoded));

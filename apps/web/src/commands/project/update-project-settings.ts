@@ -6,7 +6,12 @@ import {
 import type { TProject, TProjectSettings } from "@/project/types";
 
 export class UpdateProjectSettingsCommand extends Command {
-	readonly routingClass = "provider-private" as const;
+	get routingClass(): "transaction" | "provider-private" {
+		return Object.prototype.hasOwnProperty.call(this.updates, "fps") ||
+			Object.prototype.hasOwnProperty.call(this.updates, "canvasSize")
+			? "transaction"
+			: "provider-private";
+	}
 
 	private savedSettings: TProjectSettings | null = null;
 	private savedUpdatedAt: Date | null = null;

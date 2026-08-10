@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-type-assertion, opencut/prefer-object-params -- This deliberately narrow testable donor facade adapts a detached draft to the concrete EditorCore shape. */
 import type { Command, EditorCommandContext } from "@/commands/base-command";
 import type { EditorCore } from "@/core";
 import type { MediaAsset } from "@/media/types";
@@ -5,6 +6,11 @@ import type { TProjectSettings } from "@/project/types";
 import type { SceneTracks, TScene } from "@/timeline";
 import { cloneOpaque } from "@/editor/persistence/opaque-value";
 import type { OpenCutProjectDraft } from "./types";
+
+export interface DetachedCommandContext {
+	readonly context: EditorCommandContext;
+	readonly historylessProjectSettingKeys: ReadonlySet<keyof TProjectSettings>;
+}
 
 function activeScene(draft: OpenCutProjectDraft): TScene {
 	const scene = draft.project.scenes.find(
@@ -30,27 +36,37 @@ export function createDetachedCommandContext({
 }: {
 	draft: OpenCutProjectDraft;
 	assets: readonly MediaAsset[];
-}): EditorCommandContext {
-	let context: EditorCommandContext;
+}): DetachedCommandContext {
+	const historylessProjectSettingKeys = new Set<keyof TProjectSettings>();
 	const project = {
 		getActive: () => draft.project,
 		getActiveOrNull: () => draft.project,
-		setActiveProject: ({ project: next }: { project: typeof draft.project }) => {
+		setActiveProject: ({
+			project: next,
+		}: {
+			project: typeof draft.project;
+		}) => {
 			draft.project = cloneOpaque(next);
 		},
 		updateSettings: ({
 			settings,
+			pushHistory = true,
 		}: {
 			settings: Partial<TProjectSettings>;
 			pushHistory?: boolean;
 		}) => {
-			const { fps: _fps, canvasSize: _canvasSize, ...providerPrivate } =
-				settings;
+			if (!pushHistory) {
+				for (const key of Object.keys(settings) as Array<
+					keyof TProjectSettings
+				>) {
+					historylessProjectSettingKeys.add(key);
+				}
+			}
 			draft.project = {
 				...draft.project,
 				settings: {
 					...draft.project.settings,
-					...cloneOpaque(providerPrivate),
+					...cloneOpaque(settings),
 				},
 			};
 		},
@@ -80,7 +96,7 @@ export function createDetachedCommandContext({
 		executeWithoutHistory: ({ command: nested }: { command: Command }) =>
 			nested.execute(context),
 	};
-	context = {
+	const context: EditorCommandContext = {
 		editor: {
 			project,
 			scenes,
@@ -90,5 +106,5 @@ export function createDetachedCommandContext({
 			command,
 		} as unknown as EditorCore,
 	};
-	return context;
+	return { context, historylessProjectSettingKeys };
 }

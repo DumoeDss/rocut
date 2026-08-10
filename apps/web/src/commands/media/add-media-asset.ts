@@ -10,10 +10,7 @@ import {
 	isStorageQuotaExceeded,
 	savePersistedMediaAsset,
 } from "@/media/persistence";
-import type { FrameRate } from "opencut-wasm";
 import { hasMediaId } from "@/timeline/element-utils";
-import { frameRatesEqual, getHighestImportedVideoFps } from "@/fps/utils";
-import { UpdateProjectSettingsCommand } from "@/commands/project";
 
 export class AddMediaAssetCommand extends Command {
 	readonly routingClass = "immediate" as const;
@@ -21,8 +18,6 @@ export class AddMediaAssetCommand extends Command {
 	private assetId: string;
 	private savedAssets: MediaAsset[] | null = null;
 	private createdAsset: MediaAsset | null = null;
-	private previousProjectFps: FrameRate | null = null;
-	private appliedProjectFps: FrameRate | null = null;
 
 	constructor({
 		projectId,
@@ -51,62 +46,76 @@ export class AddMediaAssetCommand extends Command {
 		editor.media.setAssets({
 			assets: [...this.savedAssets, this.createdAsset],
 		});
-		this.previousProjectFps =
-			editor.project.getActiveOrNull()?.settings.fps ?? null;
-		this.appliedProjectFps = editor.project.ratchetFpsForImportedMedia({
-			importedAssets: [this.createdAsset],
-		});
-
 		savePersistedMediaAsset({
 			persistence: editor.persistence,
 			projectId: this.projectId,
 			asset: this.createdAsset,
-		}).catch((error) => {
-			editor.reportPersistenceFailure({
-				operation: "command-add-media",
-				error,
-			});
+		})
+			.then(() => {
+				const createdAsset = this.createdAsset;
+				if (
+					!createdAsset ||
+					!editor.media
+						.getAssets()
+						.some((asset) => asset.id === createdAsset.id)
+				) {
+					return;
+				}
+				return Promise.resolve(
+					editor.project.ratchetFpsForImportedMedia({
+						importedAssets: [createdAsset],
+					}),
+				).catch((error) => {
+					editor.reportPersistenceFailure({
+						operation: "command-ratchet-imported-media-fps",
+						error,
+					});
+				});
+			})
+			.catch((error) => {
+				editor.reportPersistenceFailure({
+					operation: "command-add-media",
+					error,
+				});
 
-			const currentAssets = editor.media.getAssets();
-			editor.media.setAssets({
-				assets: currentAssets.filter((asset) => asset.id !== this.assetId),
-			});
+				const currentAssets = editor.media.getAssets();
+				editor.media.setAssets({
+					assets: currentAssets.filter((asset) => asset.id !== this.assetId),
+				});
 
-			const currentTracks = editor.scenes.getActiveScene().tracks;
-			const orphanedElements: Array<{ trackId: string; elementId: string }> =
-				[];
+				const currentTracks = editor.scenes.getActiveScene().tracks;
+				const orphanedElements: Array<{ trackId: string; elementId: string }> =
+					[];
 
-			for (const track of [
-				...currentTracks.overlay,
-				currentTracks.main,
-				...currentTracks.audio,
-			]) {
-				for (const element of track.elements) {
-					if (hasMediaId(element) && element.mediaId === this.assetId) {
-						orphanedElements.push({
-							trackId: track.id,
-							elementId: element.id,
-						});
+				for (const track of [
+					...currentTracks.overlay,
+					currentTracks.main,
+					...currentTracks.audio,
+				]) {
+					for (const element of track.elements) {
+						if (hasMediaId(element) && element.mediaId === this.assetId) {
+							orphanedElements.push({
+								trackId: track.id,
+								elementId: element.id,
+							});
+						}
 					}
 				}
-			}
 
-			if (orphanedElements.length > 0) {
-				editor.timeline.deleteElements({ elements: orphanedElements });
-			}
+				if (orphanedElements.length > 0) {
+					editor.timeline.deleteElements({ elements: orphanedElements });
+				}
 
-			this.restoreProjectFpsAfterFailedSave({ editor });
-
-			if (isStorageQuotaExceeded(error)) {
-				toast.error("Not enough browser storage", {
-					description: "Free some space, then try importing this file again.",
-				});
-			} else {
-				toast.error("Failed to add media", {
-					description: "The media item was removed from the editor.",
-				});
-			}
-		});
+				if (isStorageQuotaExceeded(error)) {
+					toast.error("Not enough browser storage", {
+						description: "Free some space, then try importing this file again.",
+					});
+				} else {
+					toast.error("Failed to add media", {
+						description: "The media item was removed from the editor.",
+					});
+				}
+			});
 
 		return undefined;
 	}
@@ -136,43 +145,5 @@ export class AddMediaAssetCommand extends Command {
 
 	getAssetId(): string {
 		return this.assetId;
-	}
-
-	private restoreProjectFpsAfterFailedSave({
-		editor,
-	}: {
-		editor: EditorCommandContext["editor"];
-	}): void {
-		if (this.previousProjectFps === null || this.appliedProjectFps === null)
-			return;
-
-		const activeProject = editor.project.getActiveOrNull();
-		if (!activeProject) return;
-		if (
-			!this.appliedProjectFps ||
-			!frameRatesEqual({
-				a: activeProject.settings.fps,
-				b: this.appliedProjectFps,
-			})
-		)
-			return;
-
-		const highestRemainingVideoFps = getHighestImportedVideoFps({
-			mediaAssets: editor.media.getAssets(),
-		});
-		const appliedFpsFloat =
-			this.appliedProjectFps.numerator / this.appliedProjectFps.denominator;
-		if (
-			highestRemainingVideoFps !== null &&
-			highestRemainingVideoFps >= appliedFpsFloat
-		) {
-			return;
-		}
-
-		editor.command.executeWithoutHistory({
-			command: new UpdateProjectSettingsCommand({
-				fps: this.previousProjectFps,
-			}),
-		});
 	}
 }

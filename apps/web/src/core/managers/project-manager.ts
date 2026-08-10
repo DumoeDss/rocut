@@ -518,14 +518,18 @@ export class ProjectManager {
 			return;
 		}
 
+		if (command.routingClass === "transaction") {
+			await this.editor.command.executeSystem({ command });
+			return;
+		}
 		this.editor.command.executeWithoutHistory({ command });
 	}
 
-	ratchetFpsForImportedMedia({
+	async ratchetFpsForImportedMedia({
 		importedAssets,
 	}: {
 		importedAssets: Array<Pick<MediaAsset, "type" | "fps">>;
-	}): import("opencut-wasm").FrameRate | null {
+	}): Promise<import("opencut-wasm").FrameRate | null> {
 		if (!this.active) return null;
 
 		const nextFps = getRaisedProjectFpsForImportedMedia({
@@ -534,7 +538,7 @@ export class ProjectManager {
 		});
 		if (nextFps === null) return null;
 
-		this.editor.command.executeWithoutHistory({
+		await this.editor.command.executeSystem({
 			command: new UpdateProjectSettingsCommand({ fps: nextFps }),
 		});
 		return nextFps;

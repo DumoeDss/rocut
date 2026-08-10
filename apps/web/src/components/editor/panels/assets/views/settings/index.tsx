@@ -151,15 +151,17 @@ export function SettingsView() {
 			return;
 		}
 
-		editor.project.updateSettings({
-			settings: {
-				...(shouldUpdateCanvasSize ? { canvasSize } : {}),
-				...(shouldUpdateCanvasSizeMode
-					? { canvasSizeMode: "custom" as const }
-					: {}),
-				lastCustomCanvasSize: canvasSize,
-			},
-		});
+		void editor.project
+			.updateSettings({
+				settings: {
+					...(shouldUpdateCanvasSize ? { canvasSize } : {}),
+					...(shouldUpdateCanvasSizeMode
+						? { canvasSizeMode: "custom" as const }
+						: {}),
+					lastCustomCanvasSize: canvasSize,
+				},
+			})
+			.catch(() => undefined);
 	};
 
 	const selectPresetCanvasSize = ({
@@ -175,14 +177,16 @@ export function SettingsView() {
 
 		if (!shouldUpdateCanvasSize && !shouldUpdateCanvasSizeMode) return;
 
-		editor.project.updateSettings({
-			settings: {
-				...(shouldUpdateCanvasSize ? { canvasSize } : {}),
-				...(shouldUpdateCanvasSizeMode
-					? { canvasSizeMode: "preset" as const }
-					: {}),
-			},
-		});
+		void editor.project
+			.updateSettings({
+				settings: {
+					...(shouldUpdateCanvasSize ? { canvasSize } : {}),
+					...(shouldUpdateCanvasSizeMode
+						? { canvasSizeMode: "preset" as const }
+						: {}),
+				},
+			})
+			.catch(() => undefined);
 	};
 
 	const selectCustomCanvasSize = () => {
@@ -248,7 +252,9 @@ export function SettingsView() {
 								)}
 								onValueChange={(value) => {
 									const fps = floatToFrameRate(parseFloat(value));
-									editor.project.updateSettings({ settings: { fps } });
+									void editor.project
+										.updateSettings({ settings: { fps } })
+										.catch(() => undefined);
 								}}
 							>
 								<SelectTrigger className="bg-transparent border-none p-1 h-auto">

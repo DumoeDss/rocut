@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-type-assertion, opencut/prefer-object-params -- Focused command harnesses intentionally supply narrowed EditorCore collaborators and branded media times. */
 import { describe, expect, test } from "bun:test";
 import type { EditorCore } from "@/core";
 import type { MediaAsset } from "@/media/types";
@@ -22,12 +23,10 @@ const { TimelineManager } = await import("@/core/managers/timeline-manager");
 const { buildElementFromMedia } = await import("@/timeline/element-utils");
 const { SessionPersistenceCoordinator } = await import("@/editor/persistence");
 const { cloneOpaque } = await import("@/editor/persistence/opaque-value");
-const { ProjectMutationArbiter, SessionOpenCutTransactions } = await import(
-	"@/editor/transactions/opencut"
-);
-const { projectFixture, storeFixture, TEST_PROJECT_ID } = await import(
-	"@/editor/transactions/opencut/__tests__/fixture"
-);
+const { ProjectMutationArbiter, SessionOpenCutTransactions } =
+	await import("@/editor/transactions/opencut");
+const { projectFixture, storeFixture, TEST_PROJECT_ID } =
+	await import("@/editor/transactions/opencut/__tests__/fixture");
 
 async function commandHarness(
 	project = projectFixture(),
@@ -39,6 +38,7 @@ async function commandHarness(
 	await persistence.loadProject({ id: TEST_PROJECT_ID });
 	let liveProject = cloneOpaque(project);
 	let liveScenes = cloneOpaque(project.scenes);
+	let dirtySignals = 0;
 	const failures: unknown[] = [];
 	const editor = {} as EditorCore;
 	Object.assign(editor, {
@@ -46,6 +46,9 @@ async function commandHarness(
 		project: {
 			getActive: () => liveProject,
 			getActiveOrNull: () => liveProject,
+			setActiveProject: ({ project: next }: { project: TProject }) => {
+				liveProject = cloneOpaque(next);
+			},
 			adoptCommittedProject: ({ project: next }: { project: TProject }) => {
 				liveProject = cloneOpaque(next);
 			},
@@ -55,13 +58,16 @@ async function commandHarness(
 			getActiveScene: () =>
 				liveScenes.find((scene) => scene.id === liveProject.currentSceneId)!,
 			getActiveSceneOrNull: () =>
-				liveScenes.find((scene) => scene.id === liveProject.currentSceneId) ?? null,
+				liveScenes.find((scene) => scene.id === liveProject.currentSceneId) ??
+				null,
 			adoptCommittedScenes: ({ scenes }: { scenes: TScene[] }) => {
 				liveScenes = cloneOpaque(scenes);
 			},
 		},
 		media: { getAssets: () => assets },
-		reportPersistenceFailure: ({ error }: { error: unknown }) => failures.push(error),
+		save: { markDirty: () => dirtySignals++ },
+		reportPersistenceFailure: ({ error }: { error: unknown }) =>
+			failures.push(error),
 	});
 	const selection = new SelectionManager(editor);
 	Object.assign(editor, { selection });
@@ -102,6 +108,7 @@ async function commandHarness(
 		failures,
 		getProject: () => liveProject,
 		getScenes: () => liveScenes,
+		getDirtySignals: () => dirtySignals,
 	};
 }
 
@@ -130,6 +137,235 @@ describe("transaction-routed command manager", () => {
 		expect(harness.getScenes()[0].tracks.audio).toHaveLength(1);
 		expect(harness.getScenes()[0].tracks.audio[0].elements).toHaveLength(1);
 		expect(harness.fixture.getSaveCount()).toBe(1);
+	});
+
+	test("first image commits canvas and clip once while undo preserves historyless canvas ownership", async () => {
+		const asset: MediaAsset = {
+			id: "first-image",
+			name: "first.png",
+			type: "image",
+			width: 320,
+			height: 180,
+			file: new File([], "first.png", { type: "image/png" }),
+		};
+		const harness = await commandHarness(projectFixture(), [asset]);
+		let watchCount = 0;
+		harness.transactions.watch(() => watchCount++);
+
+		await harness.command.execute({
+			command: new InsertElementCommand({
+				placement: { mode: "auto" },
+				element: buildElementFromMedia({
+					mediaId: asset.id,
+					mediaType: asset.type,
+					name: asset.name,
+					duration: 240_000 as never,
+					startTime: 0 as never,
+				}),
+			}),
+		});
+
+		expect(harness.fixture.getSaveCount()).toBe(1);
+		expect(Number(await harness.transactions.revision())).toBe(1);
+		expect(watchCount).toBe(1);
+		expect(harness.command.getHistoryCount()).toBe(1);
+		expect(
+			harness.editor.selection.getSnapshot().selectedElements,
+		).toHaveLength(1);
+		expect(harness.getProject().settings.canvasSize).toEqual({
+			width: 320,
+			height: 180,
+		});
+		expect(harness.getProject().settings.originalCanvasSize).toEqual({
+			width: 320,
+			height: 180,
+		});
+		expect(await harness.transactions.project()).toMatchObject({
+			canvasWidth: 320,
+			canvasHeight: 180,
+		});
+		expect(
+			harness.editor.persistence.readCachedProject({ id: TEST_PROJECT_ID })
+				?.settings.canvasSize,
+		).toEqual({ width: 320, height: 180 });
+		const record = await harness.fixture.store.load({ id: TEST_PROJECT_ID });
+		expect(
+			(record?.data as { settings: { canvasSize: unknown } }).settings
+				.canvasSize,
+		).toEqual({ width: 320, height: 180 });
+
+		await harness.transactions.retire();
+		await harness.transactions.open({
+			projectId: TEST_PROJECT_ID,
+			assets: [asset],
+		});
+		expect(await harness.transactions.project()).toMatchObject({
+			canvasWidth: 320,
+			canvasHeight: 180,
+		});
+
+		await harness.command.undo();
+		expect(harness.fixture.getSaveCount()).toBe(2);
+		expect(harness.getProject().settings.canvasSize).toEqual({
+			width: 320,
+			height: 180,
+		});
+		expect(harness.getProject().settings.originalCanvasSize).toEqual({
+			width: 320,
+			height: 180,
+		});
+		expect(harness.getScenes()[0].tracks.overlay).toHaveLength(0);
+		expect(harness.editor.selection.getSnapshot().selectedElements).toEqual([]);
+	});
+
+	test("failed first-image save leaves every public and donor surface at the base canvas", async () => {
+		const asset: MediaAsset = {
+			id: "failed-image",
+			name: "failed.png",
+			type: "image",
+			width: 320,
+			height: 180,
+			file: new File([], "failed.png", { type: "image/png" }),
+		};
+		const harness = await commandHarness(projectFixture(), [asset]);
+		let watchCount = 0;
+		harness.transactions.watch(() => watchCount++);
+		harness.fixture.control.failNext({
+			operation: "save-project",
+			code: "unavailable",
+		});
+
+		await expect(
+			harness.command.execute({
+				command: new InsertElementCommand({
+					placement: { mode: "auto" },
+					element: buildElementFromMedia({
+						mediaId: asset.id,
+						mediaType: asset.type,
+						name: asset.name,
+						duration: 240_000 as never,
+						startTime: 0 as never,
+					}),
+				}),
+			}),
+		).rejects.toMatchObject({ code: "unavailable" });
+
+		expect(harness.fixture.getSaveCount()).toBe(1);
+		expect(Number(await harness.transactions.revision())).toBe(0);
+		expect(watchCount).toBe(0);
+		expect(harness.command.getHistoryCount()).toBe(0);
+		expect(harness.getProject().settings.canvasSize).toEqual({
+			width: 1920,
+			height: 1080,
+		});
+		expect(harness.getScenes()[0].tracks.overlay).toHaveLength(0);
+		expect(await harness.transactions.project()).toMatchObject({
+			canvasWidth: 1920,
+			canvasHeight: 1080,
+		});
+		expect(
+			harness.editor.persistence.readCachedProject({ id: TEST_PROJECT_ID })
+				?.settings.canvasSize,
+		).toEqual({ width: 1920, height: 1080 });
+		const record = await harness.fixture.store.load({ id: TEST_PROJECT_ID });
+		expect(
+			(record?.data as { settings: { canvasSize: unknown } }).settings
+				.canvasSize,
+		).toEqual({ width: 1920, height: 1080 });
+	});
+
+	test("settings patches classify per field and mixed public/private state commits in one record", async () => {
+		const publicHarness = await commandHarness();
+		await publicHarness.command.execute({
+			command: new UpdateProjectSettingsCommand({
+				canvasSize: { width: 1280, height: 720 },
+			}),
+		});
+		expect(publicHarness.fixture.getSaveCount()).toBe(1);
+		expect(await publicHarness.transactions.project()).toMatchObject({
+			canvasWidth: 1280,
+			canvasHeight: 720,
+		});
+
+		const mixedHarness = await commandHarness();
+		await mixedHarness.command.execute({
+			command: new UpdateProjectSettingsCommand({
+				canvasSize: { width: 640, height: 360 },
+				background: { type: "color", color: "#123456" },
+			}),
+		});
+		expect(mixedHarness.fixture.getSaveCount()).toBe(1);
+		expect(mixedHarness.getProject().settings.background).toEqual({
+			type: "color",
+			color: "#123456",
+		});
+		const mixedRecord = await mixedHarness.fixture.store.load({
+			id: TEST_PROJECT_ID,
+		});
+		expect(
+			(mixedRecord?.data as { settings: { background: unknown } }).settings
+				.background,
+		).toEqual({ type: "color", color: "#123456" });
+
+		const privateHarness = await commandHarness();
+		await privateHarness.command.execute({
+			command: new UpdateProjectSettingsCommand({
+				background: { type: "color", color: "#abcdef" },
+			}),
+		});
+		expect(privateHarness.fixture.getSaveCount()).toBe(0);
+		expect(Number(await privateHarness.transactions.revision())).toBe(0);
+		expect(privateHarness.getDirtySignals()).toBe(1);
+	});
+
+	test("historyless public FPS work uses the engine and final-document placement rejects old-only grids", async () => {
+		const systemHarness = await commandHarness();
+		await systemHarness.command.executeSystem({
+			command: new UpdateProjectSettingsCommand({
+				fps: { numerator: 60, denominator: 1 },
+			}),
+		});
+		expect(systemHarness.fixture.getSaveCount()).toBe(1);
+		expect(Number(await systemHarness.transactions.revision())).toBe(1);
+		expect(systemHarness.command.getHistoryCount()).toBe(0);
+		expect(systemHarness.getProject().settings.fps).toEqual({
+			numerator: 60,
+			denominator: 1,
+		});
+
+		const placed = projectFixture();
+		placed.scenes[0].tracks.overlay.push({
+			id: "old-grid-track",
+			name: "Old grid",
+			type: "text",
+			hidden: false,
+			elements: [
+				{
+					id: "old-grid-clip",
+					name: "Old grid clip",
+					type: "text",
+					startTime: 0 as never,
+					duration: 4_000 as never,
+					trimStart: 0 as never,
+					trimEnd: 0 as never,
+					params: { content: "old grid" },
+				},
+			],
+		});
+		const rejectedHarness = await commandHarness(placed);
+		await expect(
+			rejectedHarness.command.executeSystem({
+				command: new UpdateProjectSettingsCommand({
+					fps: { numerator: 24, denominator: 1 },
+				}),
+			}),
+		).rejects.toMatchObject({ code: "validation" });
+		expect(Number(await rejectedHarness.transactions.revision())).toBe(0);
+		expect(rejectedHarness.command.getHistoryCount()).toBe(0);
+		expect(rejectedHarness.getProject().settings.fps).toEqual({
+			numerator: 30,
+			denominator: 1,
+		});
 	});
 
 	test("Batch commits once and undo/redo each commit once after durability", async () => {
@@ -227,6 +463,38 @@ describe("transaction-routed command manager", () => {
 		expect(harness.command.getHistoryCount()).toBe(0);
 	});
 
+	test("a later failing Batch child discards preparation and leaves the queue usable", async () => {
+		const harness = await commandHarness();
+		class FailingTransactionCommand extends Command {
+			readonly routingClass = "transaction" as const;
+
+			execute(): undefined {
+				throw new Error("prepared child failed");
+			}
+		}
+		await expect(
+			harness.command.execute({
+				command: new BatchCommand([
+					new AddTrackCommand({ type: "text" }),
+					new FailingTransactionCommand(),
+				]),
+			}),
+		).rejects.toThrow("prepared child failed");
+		expect(harness.fixture.getSaveCount()).toBe(0);
+		expect(Number(await harness.transactions.revision())).toBe(0);
+		expect(harness.command.getHistoryCount()).toBe(0);
+		expect(harness.getScenes()[0].tracks.overlay).toHaveLength(0);
+
+		await harness.command.execute({
+			command: new UpdateProjectSettingsCommand({
+				canvasSize: { width: 1280, height: 720 },
+			}),
+		});
+		expect(harness.fixture.getSaveCount()).toBe(1);
+		expect(Number(await harness.transactions.revision())).toBe(1);
+		expect(harness.command.getHistoryCount()).toBe(1);
+	});
+
 	test("failed undo preserves live state and both history stacks", async () => {
 		const harness = await commandHarness();
 		const track = new AddTrackCommand({ type: "text" });
@@ -259,6 +527,36 @@ describe("transaction-routed command manager", () => {
 		expect(harness.command.getHistoryCount()).toBe(1);
 		expect(harness.command.canRedo()).toBe(false);
 		expect(Number(await harness.transactions.revision())).toBe(1);
+	});
+
+	test("failed redo preserves the undone state and retries at the next revision", async () => {
+		const harness = await commandHarness();
+		await harness.command.execute({
+			command: new UpdateProjectSettingsCommand({
+				canvasSize: { width: 1280, height: 720 },
+			}),
+		});
+		await harness.command.undo();
+		expect(harness.command.getHistoryCount()).toBe(0);
+		expect(harness.command.canRedo()).toBe(true);
+		expect(harness.getProject().settings.canvasSize.width).toBe(1920);
+		harness.fixture.control.failNext({
+			operation: "save-project",
+			code: "unavailable",
+		});
+		await expect(harness.command.redo()).rejects.toMatchObject({
+			code: "unavailable",
+		});
+		expect(Number(await harness.transactions.revision())).toBe(2);
+		expect(harness.command.getHistoryCount()).toBe(0);
+		expect(harness.command.canRedo()).toBe(true);
+		expect(harness.getProject().settings.canvasSize.width).toBe(1920);
+
+		await harness.command.redo();
+		expect(Number(await harness.transactions.revision())).toBe(3);
+		expect(harness.command.getHistoryCount()).toBe(1);
+		expect(harness.command.canRedo()).toBe(false);
+		expect(harness.getProject().settings.canvasSize.width).toBe(1280);
 	});
 
 	test("multi-child Batch, ripple, and empty-track reactor publish one root", async () => {
@@ -308,9 +606,38 @@ describe("transaction-routed command manager", () => {
 		expect(Number(await harness.transactions.revision())).toBe(1);
 		expect(harness.command.getHistoryCount()).toBe(1);
 		expect(
-			harness.getScenes()[0].tracks.overlay.some(
-				(track) => track.id === "remove-track",
+			harness
+				.getScenes()[0]
+				.tracks.overlay.some((track) => track.id === "remove-track"),
+		).toBe(false);
+		expect(
+			Number(harness.getScenes()[0].tracks.overlay[0].elements[0].startTime),
+		).toBe(4_000);
+
+		await harness.command.undo();
+		expect(harness.fixture.getSaveCount()).toBe(2);
+		expect(Number(await harness.transactions.revision())).toBe(2);
+		expect(
+			harness
+				.getScenes()[0]
+				.tracks.overlay.some((track) => track.id === "remove-track"),
+		).toBe(true);
+		expect(
+			Number(
+				harness
+					.getScenes()[0]
+					.tracks.overlay.find((track) => track.id === "ripple-track")!
+					.elements[1].startTime,
 			),
+		).toBe(8_000);
+
+		await harness.command.redo();
+		expect(harness.fixture.getSaveCount()).toBe(3);
+		expect(Number(await harness.transactions.revision())).toBe(3);
+		expect(
+			harness
+				.getScenes()[0]
+				.tracks.overlay.some((track) => track.id === "remove-track"),
 		).toBe(false);
 		expect(
 			Number(harness.getScenes()[0].tracks.overlay[0].elements[0].startTime),

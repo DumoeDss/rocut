@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-type-assertion -- Preview overlays intentionally merge partial fields back into the donor TimelineElement discriminated union. */
 import type { EditorCore } from "@/core";
 import type { ElementBounds } from "@/preview/element-bounds";
 import type { ParamValues } from "@/params";
