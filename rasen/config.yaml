@@ -1,0 +1,28 @@
+schema: spec-driven
+tools: []
+
+# Project context (optional)
+# This is shown to AI when creating artifacts.
+# Add your tech stack, conventions, style guides, domain knowledge, etc.
+# Example:
+#   context: |
+#     Tech stack: TypeScript, React, Node.js
+#     We use conventional commits
+#     Domain: e-commerce platform
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+projectId: e1bca41c-14f2-4daa-a592-00fdcb56ee2c
+storeMemberships:
+  - uid: a9da9342-9665-49d7-b7bc-5ef020844acb
+    id: elftia-store
+store:
+  uid: a9da9342-9665-49d7-b7bc-5ef020844acb
+  id: elftia-store
