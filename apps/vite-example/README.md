@@ -126,16 +126,19 @@ bun run test:parity
 
 # Next host — production build + `next start`, never `next dev --turbopack`
 cd ../web
-DATABASE_URL="postgresql://opencut:opencut@localhost:5432/opencut" \
-BETTER_AUTH_SECRET="supersecret" \
-NEXT_PUBLIC_SITE_URL="http://localhost:3000" \
-UPSTASH_REDIS_REST_URL="https://your-upstash-redis-url" \
-UPSTASH_REDIS_REST_TOKEN="your-upstash-redis-token" \
-NEXT_PUBLIC_MARBLE_API_URL="https://placeholder.example.com" \
-MARBLE_WORKSPACE_KEY="placeholder" \
-FREESOUND_CLIENT_ID="placeholder" \
-FREESOUND_API_KEY="placeholder" \
-bun run build && bun run start &
+(
+  export DATABASE_URL="postgresql://opencut:opencut@localhost:5432/opencut"
+  export BETTER_AUTH_SECRET="supersecret"
+  export NEXT_PUBLIC_SITE_URL="http://localhost:3000"
+  export UPSTASH_REDIS_REST_URL="https://your-upstash-redis-url"
+  export UPSTASH_REDIS_REST_TOKEN="your-upstash-redis-token"
+  export NEXT_PUBLIC_MARBLE_API_URL="https://placeholder.example.com"
+  export MARBLE_WORKSPACE_KEY="placeholder"
+  export FREESOUND_CLIENT_ID="placeholder"
+  export FREESOUND_API_KEY="placeholder"
+  bun run build
+  exec bun run start
+) &
 
 cd ../vite-example
 PARITY_HOST=next PARITY_BASE_URL=http://127.0.0.1:3000 bun run test:parity
