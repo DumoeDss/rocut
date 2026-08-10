@@ -1,0 +1,37 @@
+{
+  "change": "s0304-surface-embedding-contract-freeze",
+  "archivedAt": "2026-08-10T12:51:26.732Z",
+  "codeCommit": "f9b65297b3e70cefe6553b936958c19b83657f49",
+  "planningBranch": "recovery/s0304-ui-commit-routing-final",
+  "planningTreeState": "dirty",
+  "evidence": [
+    {
+      "path": "evidence/implementation-report.md",
+      "sha256": "89bb55c42e40f143d8c476ac699b5342444353831502562aa8a0dec92b45c3c7"
+    },
+    {
+      "path": "evidence/recovery-provenance.md",
+      "sha256": "009da7c562919b036bc2f03bd17b39408b0eb809022da5e9d387c6a71b5c2018"
+    },
+    {
+      "path": "evidence/review-report.md",
+      "sha256": "543feac3253264ab5c0661ac979d690047975fa22ff6b74d12120e0af67e1225"
+    },
+    {
+      "path": "evidence/ship-log.md",
+      "sha256": "7053bfff1acb3c8fc33c742aa1cc2cd247bbd09ac8eb1225da3d148b4d6e2c6c"
+    },
+    {
+      "path": "evidence/spec-falsification-sweep.md",
+      "sha256": "db5e5a98158174dfc8fba092bb0578194da91f6d2a1160ac181db8b6f1f9ddb6"
+    }
+  ],
+  "probes": [],
+  "handoffAbsorbed": [],
+  "ephemeraDiscarded": [
+    "auto-run.json"
+  ],
+  "missing": [
+    "verification-report"
+  ]
+}

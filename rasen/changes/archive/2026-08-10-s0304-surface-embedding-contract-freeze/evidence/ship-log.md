@@ -96,3 +96,9 @@ check is clean; no product or planning-contract byte was rewritten during ship.
   the responsibility of the portfolio/parent workflow after local delivery.
 - LEAD-owned `.rasen/changes/**/ephemera/auto-run.json` and
   `portfolio-run.json` were not edited.
+
+## Archive
+**Date:** 2026-08-10T12:51:26.732Z
+**Ship commit:** 11dd2cb4b29b8bf1b7efa7c3e87c013a6a85b8ff
+**Outcome:** archived at E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\rasen\changes\archive\2026-08-10-s0304-surface-embedding-contract-freeze
+**Transaction:** 0216ff67-d1c3-4a99-a22e-e9ce85c48aeb
