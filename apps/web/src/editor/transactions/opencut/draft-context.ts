@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-type-assertion, opencut/prefer-object-params -- This deliberately narrow testable donor facade adapts a detached draft to the concrete EditorCore shape. */
+import { BatchCommand } from "@/commands/batch-command";
 import type { Command, EditorCommandContext } from "@/commands/base-command";
 import type { EditorCore } from "@/core";
 import type { MediaAsset } from "@/media/types";
 import type { TProjectSettings } from "@/project/types";
 import type { SceneTracks, TScene } from "@/timeline";
 import { cloneOpaque } from "@/editor/persistence/opaque-value";
+import { classifyCommand } from "./routing";
 import type { OpenCutProjectDraft } from "./types";
 
 export interface DetachedCommandContext {
@@ -28,6 +30,22 @@ function replaceActiveTracks(
 	draft.project.scenes = draft.project.scenes.map((scene) =>
 		scene.id === active.id ? { ...scene, tracks: cloneOpaque(tracks) } : scene,
 	);
+}
+
+function assertNestedTransaction(command: Command): void {
+	if (command instanceof BatchCommand) {
+		const children = command.getCommands();
+		if (children.length === 0) {
+			throw new Error("Detached nested batches must not be empty");
+		}
+		for (const child of children) assertNestedTransaction(child);
+		return;
+	}
+	if (classifyCommand(command) !== "transaction") {
+		throw new Error(
+			"Detached nested execution accepts only transaction commands",
+		);
+	}
 }
 
 export function createDetachedCommandContext({
@@ -93,8 +111,10 @@ export function createDetachedCommandContext({
 		updateTracks: (tracks: SceneTracks) => replaceActiveTracks(draft, tracks),
 	};
 	const command = {
-		executeWithoutHistory: ({ command: nested }: { command: Command }) =>
-			nested.execute(context),
+		executeWithoutHistory: ({ command: nested }: { command: Command }) => {
+			assertNestedTransaction(nested);
+			return nested.execute(context);
+		},
 	};
 	const context: EditorCommandContext = {
 		editor: {

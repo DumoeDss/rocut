@@ -27,6 +27,7 @@ import { ProjectMutationArbiter } from "./arbiter";
 import { cloneOpenCutDraft, projectOpenCutDraft } from "./projection";
 import {
 	assetCatalogFromMedia,
+	type OpenCutAssetCatalogEntry,
 	type OpenCutCommitToken,
 	type OpenCutProjectDraft,
 } from "./types";
@@ -55,6 +56,20 @@ function commitToken(): OpenCutCommitToken {
 	const random = globalThis.crypto?.randomUUID?.();
 	const fallback = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 	return `opencut-ui:${random ?? fallback}` as OpenCutCommitToken;
+}
+
+function mergeAssetCatalogs({
+	committed,
+	live,
+}: {
+	committed: readonly OpenCutAssetCatalogEntry[];
+	live: readonly OpenCutAssetCatalogEntry[];
+}): OpenCutAssetCatalogEntry[] {
+	const merged = new Map(
+		committed.map((asset) => [asset.id, { ...asset }] as const),
+	);
+	for (const asset of live) merged.set(asset.id, { ...asset });
+	return [...merged.values()];
 }
 
 export class SessionOpenCutTransactions {
@@ -147,6 +162,11 @@ export class SessionOpenCutTransactions {
 				const revision = await active.engine.revision();
 				const baseDocument = await this.readDocument(active.engine, revision);
 				const draft = cloneOpenCutDraft(baseDraft());
+				const committedDraft = active.adapter.currentDraft();
+				draft.assetCatalog = mergeAssetCatalogs({
+					committed: committedDraft.assetCatalog,
+					live: draft.assetCatalog,
+				});
 				const prepared = prepare({
 					draft,
 					baseRevision: revision,

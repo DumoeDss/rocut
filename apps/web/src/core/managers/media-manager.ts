@@ -10,7 +10,7 @@ import {
 import { generateUUID } from "@/utils/id";
 import { VideoCache } from "@/services/video-cache/service";
 import { WaveformCache } from "@/services/waveform-cache/service";
-import { RemoveMediaAssetCommand } from "@/commands";
+import { buildWaveformSourceKey } from "@/media/waveform-summary";
 
 export class MediaManager {
 	private readonly videoCache: VideoCache;
@@ -75,25 +75,104 @@ export class MediaManager {
 		return newAsset;
 	}
 
-	removeMediaAsset({ projectId, id }: { projectId: string; id: string }): void {
-		this.removeMediaAssets({ projectId, ids: [id] });
+	async removeMediaAsset({
+		projectId,
+		id,
+	}: {
+		projectId: string;
+		id: string;
+	}): Promise<void> {
+		await this.removeMediaAssets({ projectId, ids: [id] });
 	}
 
-	removeMediaAssets({
+	async removeMediaAssets({
 		projectId,
 		ids,
 	}: {
 		projectId: string;
 		ids: string[];
-	}): void {
+	}): Promise<void> {
 		const uniqueIds = [...new Set(ids)];
 		if (uniqueIds.length === 0) {
 			return;
 		}
 
 		for (const assetId of uniqueIds) {
-			void this.editor.command.execute({
-				command: new RemoveMediaAssetCommand({ projectId, assetId }),
+			await this.removeMediaAssetAtomically({ projectId, assetId });
+		}
+	}
+
+	private async removeMediaAssetAtomically({
+		projectId,
+		assetId,
+	}: {
+		projectId: string;
+		assetId: string;
+	}): Promise<void> {
+		const asset = this.assets.find((candidate) => candidate.id === assetId);
+		if (!asset) return;
+
+		try {
+			await this.editor.persistence.removeAttachment({
+				projectId,
+				key: assetId,
+			});
+		} catch (error) {
+			this.editor.reportPersistenceFailure({
+				operation: "command-remove-media-attachment",
+				error,
+			});
+			toast.error("Failed to remove media item", {
+				description: "The media item and its timeline clips were not changed.",
+			});
+			throw error;
+		}
+
+		try {
+			await this.editor.command.removeMediaAssetReferences({ assetId });
+		} catch (error) {
+			try {
+				await savePersistedMediaAsset({
+					persistence: this.editor.persistence,
+					projectId,
+					asset,
+				});
+			} catch (restoreError) {
+				this.editor.reportPersistenceFailure({
+					operation: "command-restore-media-after-project-failure",
+					error: restoreError,
+				});
+				throw new AggregateError(
+					[error, restoreError],
+					"Project media removal failed and its attachment could not be restored",
+				);
+			}
+			this.editor.reportPersistenceFailure({
+				operation: "command-remove-media-project",
+				error,
+			});
+			toast.error("Failed to remove media item", {
+				description: "The media item and its timeline clips were restored.",
+			});
+			throw error;
+		}
+
+		this.assets = this.assets.filter((candidate) => candidate.id !== assetId);
+		this.notify();
+		if (asset.urlHandle) asset.urlHandle.revoke();
+		else if (asset.url) URL.revokeObjectURL(asset.url);
+		if (asset.thumbnailUrl?.startsWith("blob:")) {
+			URL.revokeObjectURL(asset.thumbnailUrl);
+		}
+		try {
+			await this.clearCachedMedia({
+				mediaId: assetId,
+				sourceKey: buildWaveformSourceKey({ kind: "media", id: assetId }),
+			});
+		} catch (error) {
+			this.editor.reportPersistenceFailure({
+				operation: "command-remove-media-cache",
+				error,
 			});
 		}
 	}

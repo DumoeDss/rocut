@@ -259,15 +259,6 @@ export function diffOpenCutProjection({
 		if (!afterMarkers.has(id))
 			operations.push({ kind: "delete-marker", markerId: markerId(id) });
 	}
-	for (const id of sortedIds(beforeTracks.keys())) {
-		if (!afterTracks.has(id))
-			operations.push({ kind: "delete-track", trackId: trackId(id) });
-	}
-	for (const id of sortedIds(beforeAssets.keys())) {
-		if (!afterAssets.has(id))
-			operations.push({ kind: "delete-asset", assetId: assetId(id) });
-	}
-
 	for (const id of sortedIds(afterAssets.keys())) {
 		const current = afterAssets.get(id);
 		const previous = beforeAssets.get(id);
@@ -318,6 +309,16 @@ export function diffOpenCutProjection({
 		]);
 		if (Object.keys(patch).length > 0)
 			operations.push({ kind: "update-clip", clipId: clipId(id), patch });
+	}
+	// Existing clips must leave a soon-to-be-deleted parent (or asset) before
+	// the evaluator applies the parent's cascading deletion.
+	for (const id of sortedIds(beforeTracks.keys())) {
+		if (!afterTracks.has(id))
+			operations.push({ kind: "delete-track", trackId: trackId(id) });
+	}
+	for (const id of sortedIds(beforeAssets.keys())) {
+		if (!afterAssets.has(id))
+			operations.push({ kind: "delete-asset", assetId: assetId(id) });
 	}
 	for (const id of sortedIds(afterMarkers.keys())) {
 		const current = afterMarkers.get(id);

@@ -335,6 +335,7 @@ export interface OpenCutTransactionDocumentAdapter extends TransactionDocumentAd
 	clear(token: OpenCutCommitToken): void;
 	consumeReceipt(): EncodedOpenCutPublicationReceipt | null;
 	currentRecordDigest(): string;
+	currentDraft(): OpenCutProjectDraft;
 	adoptCommittedRecord(record: ProjectRecord): void;
 }
 
@@ -449,6 +450,9 @@ export function createOpenCutTransactionDocumentAdapter({
 		},
 		currentRecordDigest() {
 			return digestProjectRecord(latestRecord);
+		},
+		currentDraft() {
+			return cloneOpenCutDraft(decodeDraft(latestRecord));
 		},
 		adoptCommittedRecord(record) {
 			latestRecord = cloneOpaque(record);

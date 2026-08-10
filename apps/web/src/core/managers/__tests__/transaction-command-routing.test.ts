@@ -12,6 +12,8 @@ const {
 	Command,
 	DeleteElementsCommand,
 	InsertElementCommand,
+	MoveElementCommand,
+	ProviderPrivateCompositeCommand,
 	RemoveMediaAssetCommand,
 	TracksSnapshotCommand,
 	UpdateElementsCommand,
@@ -20,7 +22,9 @@ const {
 const { CommandManager } = await import("@/core/managers/commands");
 const { SelectionManager } = await import("@/core/managers/selection-manager");
 const { TimelineManager } = await import("@/core/managers/timeline-manager");
+const { MediaManager } = await import("@/core/managers/media-manager");
 const { buildElementFromMedia } = await import("@/timeline/element-utils");
+const { savePersistedMediaAsset } = await import("@/media/persistence");
 const { SessionPersistenceCoordinator } = await import("@/editor/persistence");
 const { cloneOpaque } = await import("@/editor/persistence/opaque-value");
 const { ProjectMutationArbiter, SessionOpenCutTransactions } =
@@ -63,8 +67,16 @@ async function commandHarness(
 			adoptCommittedScenes: ({ scenes }: { scenes: TScene[] }) => {
 				liveScenes = cloneOpaque(scenes);
 			},
+			updateSceneTracks: ({ tracks }: { tracks: TScene["tracks"] }) => {
+				liveScenes = liveScenes.map((scene) =>
+					scene.id === liveProject.currentSceneId
+						? { ...scene, tracks: cloneOpaque(tracks) }
+						: scene,
+				);
+			},
 		},
 		media: { getAssets: () => assets },
+		playback: { getCurrentTime: () => 0 as never },
 		save: { markDirty: () => dirtySignals++ },
 		reportPersistenceFailure: ({ error }: { error: unknown }) =>
 			failures.push(error),
@@ -463,6 +475,165 @@ describe("transaction-routed command manager", () => {
 		expect(harness.command.getHistoryCount()).toBe(0);
 	});
 
+	test("detached nested dispatch rejects immediate work before any side effect", async () => {
+		const harness = await commandHarness();
+		let externalEffects = 0;
+		class ImmediateProbeCommand extends Command {
+			readonly routingClass = "immediate" as const;
+
+			execute() {
+				externalEffects += 1;
+				return undefined;
+			}
+		}
+		class NestedTransactionCommand extends Command {
+			readonly routingClass = "transaction" as const;
+
+			execute({ editor }: { editor: EditorCore }) {
+				editor.command.executeWithoutHistory({
+					command: new ImmediateProbeCommand(),
+				});
+				editor.project.setActiveProject({
+					project: {
+						...editor.project.getActive(),
+						metadata: {
+							...editor.project.getActive().metadata,
+							name: "must-not-publish",
+						},
+					},
+				});
+				return undefined;
+			}
+		}
+
+		await expect(
+			harness.command.execute({ command: new NestedTransactionCommand() }),
+		).rejects.toThrow("only transaction commands");
+		expect(externalEffects).toBe(0);
+		expect(harness.fixture.getSaveCount()).toBe(0);
+		expect(Number(await harness.transactions.revision())).toBe(0);
+		expect(harness.command.getHistoryCount()).toBe(0);
+		expect(harness.getProject().metadata.name).toBe("OpenCut routing");
+	});
+
+	test("provider-private composites publish one history entry and one undo gesture", async () => {
+		const harness = await commandHarness();
+		let value = 0;
+		class ProviderPrivateProbeCommand extends Command {
+			readonly routingClass = "provider-private" as const;
+
+			constructor(private readonly delta: number) {
+				super();
+			}
+
+			execute() {
+				value += this.delta;
+				return undefined;
+			}
+
+			undo() {
+				value -= this.delta;
+			}
+		}
+
+		await harness.command.execute({
+			command: new ProviderPrivateCompositeCommand([
+				new ProviderPrivateProbeCommand(1),
+				new ProviderPrivateProbeCommand(2),
+				new ProviderPrivateProbeCommand(4),
+			]),
+		});
+		expect(value).toBe(7);
+		expect(harness.command.getHistoryCount()).toBe(1);
+
+		await harness.command.undo();
+		expect(value).toBe(0);
+		expect(harness.command.getHistoryCount()).toBe(0);
+		expect(harness.command.canRedo()).toBe(true);
+
+		await harness.command.redo();
+		expect(value).toBe(7);
+		expect(harness.command.getHistoryCount()).toBe(1);
+	});
+
+	test("all multi-keyframe APIs keep one history entry per user action", async () => {
+		const project = projectFixture();
+		project.scenes[0].tracks.overlay.push({
+			id: "keyframe-track",
+			name: "Keyframes",
+			type: "text",
+			hidden: false,
+			elements: [
+				{
+					id: "keyframe-element",
+					name: "Keyframes",
+					type: "text",
+					startTime: 0 as never,
+					duration: 8_000 as never,
+					trimStart: 0 as never,
+					trimEnd: 0 as never,
+					params: { content: "keyframes", opacity: 1 },
+				},
+			],
+		});
+		const harness = await commandHarness(project);
+		const keyframes = [
+			{
+				trackId: "keyframe-track",
+				elementId: "keyframe-element",
+				propertyPath: "opacity",
+				time: 2_000 as never,
+				value: 0.25,
+				keyframeId: "opacity-1",
+			},
+			{
+				trackId: "keyframe-track",
+				elementId: "keyframe-element",
+				propertyPath: "opacity",
+				time: 6_000 as never,
+				value: 0.75,
+				keyframeId: "opacity-2",
+			},
+		];
+
+		harness.timeline.upsertKeyframes({ keyframes });
+		expect(harness.command.getHistoryCount()).toBe(1);
+		await harness.command.undo();
+		expect(harness.command.getHistoryCount()).toBe(0);
+		await harness.command.redo();
+		expect(harness.command.getHistoryCount()).toBe(1);
+
+		harness.timeline.removeKeyframes({
+			keyframes: keyframes.map(
+				({ trackId, elementId, propertyPath, keyframeId }) => ({
+					trackId,
+					elementId,
+					propertyPath,
+					keyframeId,
+				}),
+			),
+		});
+		expect(harness.command.getHistoryCount()).toBe(2);
+		await harness.command.undo();
+		expect(harness.command.getHistoryCount()).toBe(1);
+
+		harness.timeline.updateKeyframeCurves({
+			keyframes: keyframes.map(
+				({ trackId, elementId, propertyPath, keyframeId }) => ({
+					trackId,
+					elementId,
+					propertyPath,
+					componentKey: "value",
+					keyframeId,
+					patch: { tangentMode: "flat" as const },
+				}),
+			),
+		});
+		expect(harness.command.getHistoryCount()).toBe(2);
+		await harness.command.undo();
+		expect(harness.command.getHistoryCount()).toBe(1);
+	});
+
 	test("a later failing Batch child discards preparation and leaves the queue usable", async () => {
 		const harness = await commandHarness();
 		class FailingTransactionCommand extends Command {
@@ -642,6 +813,274 @@ describe("transaction-routed command manager", () => {
 		expect(
 			Number(harness.getScenes()[0].tracks.overlay[0].elements[0].startTime),
 		).toBe(4_000);
+	});
+
+	test("moving the last clip updates it before the empty source track is pruned", async () => {
+		const project = projectFixture();
+		const element = {
+			id: "moving-clip",
+			name: "Moving clip",
+			type: "text" as const,
+			startTime: 0 as never,
+			duration: 4_000 as never,
+			trimStart: 0 as never,
+			trimEnd: 0 as never,
+			params: { content: "move" },
+		};
+		project.scenes[0].tracks.overlay.push(
+			{
+				id: "source-track",
+				name: "Source",
+				type: "text",
+				hidden: false,
+				elements: [element],
+			},
+			{
+				id: "target-track",
+				name: "Target",
+				type: "text",
+				hidden: false,
+				elements: [],
+			},
+		);
+		const harness = await commandHarness(project);
+
+		await harness.command.execute({
+			command: new MoveElementCommand({
+				moves: [
+					{
+						elementId: "moving-clip",
+						sourceTrackId: "source-track",
+						targetTrackId: "target-track",
+						newStartTime: 4_000 as never,
+					},
+				],
+			}),
+		});
+
+		expect(harness.fixture.getSaveCount()).toBe(1);
+		expect(Number(await harness.transactions.revision())).toBe(1);
+		expect(harness.command.getHistoryCount()).toBe(1);
+		expect(
+			harness
+				.getScenes()[0]
+				.tracks.overlay.some((track) => track.id === "source-track"),
+		).toBe(false);
+		expect(
+			harness
+				.getScenes()[0]
+				.tracks.overlay.find((track) => track.id === "target-track")
+				?.elements.map((candidate) => candidate.id),
+		).toEqual(["moving-clip"]);
+	});
+
+	test("automation-only assets survive an unrelated UI commit and reopen", async () => {
+		const harness = await commandHarness();
+		await harness.transactions.apply({
+			operations: [
+				{
+					kind: "create-asset",
+					asset: {
+						id: "automation-asset" as never,
+						kind: "image",
+						name: "Automation image",
+						width: 320,
+						height: 180,
+					},
+				},
+			],
+			idempotencyKey: "automation-asset-create",
+		});
+
+		await harness.command.execute({
+			command: new UpdateProjectSettingsCommand({
+				canvasSize: { width: 1280, height: 720 },
+			}),
+		});
+		expect(
+			(await harness.transactions.assets()).map((asset) => String(asset.id)),
+		).toEqual(["automation-asset"]);
+
+		await harness.transactions.retire();
+		await harness.transactions.open({ projectId: TEST_PROJECT_ID, assets: [] });
+		expect(
+			(await harness.transactions.assets()).map((asset) => String(asset.id)),
+		).toEqual(["automation-asset"]);
+	});
+
+	test("referenced media removal compensates attachment and project failures atomically", async () => {
+		const file = new File([Uint8Array.of(1, 2, 3)], "referenced.png", {
+			type: "image/png",
+		});
+		const asset: MediaAsset = {
+			id: "referenced-asset",
+			name: file.name,
+			type: "image",
+			file,
+			width: 320,
+			height: 180,
+		};
+		const project = projectFixture();
+		project.scenes[0].tracks.overlay.push({
+			id: "asset-track",
+			name: "Asset",
+			type: "video",
+			hidden: false,
+			muted: false,
+			elements: [
+				{
+					id: "asset-clip",
+					name: file.name,
+					type: "image",
+					mediaId: asset.id,
+					startTime: 0 as never,
+					duration: 4_000 as never,
+					trimStart: 0 as never,
+					trimEnd: 0 as never,
+					params: {},
+				},
+			],
+		});
+		const harness = await commandHarness(project, [asset]);
+		const media = new MediaManager(harness.editor);
+		media.setAssets({ assets: [asset] });
+		Object.assign(harness.editor, { media });
+		await savePersistedMediaAsset({
+			persistence: harness.editor.persistence,
+			projectId: TEST_PROJECT_ID,
+			asset,
+		});
+
+		harness.fixture.control.failNext({
+			operation: "remove-attachment",
+			code: "unavailable",
+		});
+		await expect(
+			media.removeMediaAsset({ projectId: TEST_PROJECT_ID, id: asset.id }),
+		).rejects.toMatchObject({ code: "unavailable" });
+		expect(media.getAssets()).toHaveLength(1);
+		expect(await harness.transactions.clips()).toHaveLength(1);
+		expect(Number(await harness.transactions.revision())).toBe(0);
+		expect(
+			await harness.fixture.store.loadAttachment({
+				projectId: TEST_PROJECT_ID,
+				key: asset.id,
+			}),
+		).not.toBeNull();
+
+		harness.fixture.control.failNext({
+			operation: "save-project",
+			code: "unavailable",
+		});
+		await expect(
+			media.removeMediaAsset({ projectId: TEST_PROJECT_ID, id: asset.id }),
+		).rejects.toMatchObject({ code: "unavailable" });
+		expect(media.getAssets()).toHaveLength(1);
+		expect(await harness.transactions.clips()).toHaveLength(1);
+		expect(
+			(await harness.transactions.assets()).map((entry) => String(entry.id)),
+		).toEqual([asset.id]);
+		expect(Number(await harness.transactions.revision())).toBe(0);
+		expect(
+			await harness.fixture.store.loadAttachment({
+				projectId: TEST_PROJECT_ID,
+				key: asset.id,
+			}),
+		).not.toBeNull();
+
+		await media.removeMediaAsset({ projectId: TEST_PROJECT_ID, id: asset.id });
+		expect(media.getAssets()).toEqual([]);
+		expect(await harness.transactions.clips()).toEqual([]);
+		expect(await harness.transactions.assets()).toEqual([]);
+		expect(Number(await harness.transactions.revision())).toBe(1);
+		expect(
+			await harness.fixture.store.loadAttachment({
+				projectId: TEST_PROJECT_ID,
+				key: asset.id,
+			}),
+		).toBeNull();
+	});
+
+	test("undo and redo rebase their owned delta over a disjoint automation commit", async () => {
+		const harness = await commandHarness();
+		await harness.command.execute({
+			command: new UpdateProjectSettingsCommand({
+				canvasSize: { width: 1280, height: 720 },
+			}),
+		});
+		await harness.transactions.apply({
+			operations: [
+				{
+					kind: "create-track",
+					track: {
+						id: "automation-track" as never,
+						kind: "text",
+						name: "Automation track",
+						hidden: false,
+					},
+				},
+			],
+			idempotencyKey: "automation-track-create",
+		});
+
+		await harness.command.undo();
+		expect(harness.getProject().settings.canvasSize).toEqual({
+			width: 1920,
+			height: 1080,
+		});
+		expect(
+			(await harness.transactions.tracks()).map((track) => String(track.id)),
+		).toContain("automation-track");
+		expect(harness.command.canRedo()).toBe(true);
+
+		await harness.command.redo();
+		expect(harness.getProject().settings.canvasSize).toEqual({
+			width: 1280,
+			height: 720,
+		});
+		expect(
+			(await harness.transactions.tracks()).map((track) => String(track.id)),
+		).toContain("automation-track");
+		expect(Number(await harness.transactions.revision())).toBe(4);
+	});
+
+	test("split and duplicate return command-produced references after durable completion", async () => {
+		const project = projectFixture();
+		project.scenes[0].tracks.overlay.push({
+			id: "text-track",
+			name: "Text",
+			type: "text",
+			hidden: false,
+			elements: [
+				{
+					id: "text-clip",
+					name: "Text",
+					type: "text",
+					startTime: 0 as never,
+					duration: 8_000 as never,
+					trimStart: 0 as never,
+					trimEnd: 0 as never,
+					params: { content: "text" },
+				},
+			],
+		});
+		const harness = await commandHarness(project);
+
+		const right = await harness.timeline.splitElements({
+			elements: [{ trackId: "text-track", elementId: "text-clip" }],
+			splitTime: 4_000 as never,
+			retainSide: "right",
+		});
+		expect(right).toHaveLength(1);
+		expect(
+			harness.timeline.getElementsWithTracks({ elements: right }),
+		).toHaveLength(1);
+
+		const duplicated = await harness.timeline.duplicateElements({
+			elements: right,
+		});
+		expect(duplicated).toHaveLength(1);
+		expect(Number(await harness.transactions.revision())).toBe(2);
 	});
 
 	test("a public clip update carries its provider-private sibling in the same record", async () => {

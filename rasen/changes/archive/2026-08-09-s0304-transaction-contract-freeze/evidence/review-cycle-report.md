@@ -1,8 +1,8 @@
 # Review Cycle Report: s0304-transaction-contract-freeze T0 Remediation
 
-**Reviewer:** Codex (independent dispatched reviewer, report-only)  
-**Branch:** `feat/s0304-transaction-contract-freeze`  
-**Range:** `6d603adb..da530fba`  
+**Reviewer:** Codex (independent dispatched reviewer, report-only)
+**Branch:** `feat/s0304-transaction-contract-freeze`
+**Range:** `6d603adb..da530fba`
 **Date:** 2026-08-09
 
 ## Verdict

@@ -63,6 +63,7 @@ import type {
 	PlannedElementMove,
 	PlannedTrackCreation,
 } from "@/timeline/group-move";
+import { ProviderPrivateCompositeCommand } from "@/commands/provider-private-composite";
 
 export class TimelineManager {
 	private listeners = new Set<() => void>();
@@ -192,14 +193,15 @@ export class TimelineManager {
 		elements: { trackId: string; elementId: string }[];
 		splitTime: MediaTime;
 		retainSide?: "both" | "left" | "right";
-	}): { trackId: string; elementId: string }[] {
+	}): Promise<{ trackId: string; elementId: string }[]> {
 		const command = new SplitElementsCommand({
 			elements,
 			splitTime,
 			retainSide,
 		});
-		this.editor.command.execute({ command });
-		return command.getRightSideElements();
+		return this.editor.command
+			.execute({ command })
+			.then(() => command.getRightSideElements());
 	}
 
 	getTotalDuration(): MediaTime {
@@ -515,9 +517,9 @@ export class TimelineManager {
 					keyframeId,
 				}),
 		);
-		for (const command of commands) {
-			void this.editor.command.execute({ command });
-		}
+		void this.editor.command.execute({
+			command: new ProviderPrivateCompositeCommand(commands),
+		});
 	}
 
 	removeKeyframes({
@@ -584,9 +586,9 @@ export class TimelineManager {
 						valueAtPlayheadMap.get(`${elementId}:${propertyPath}`) ?? null,
 				}),
 		);
-		for (const command of commands) {
-			void this.editor.command.execute({ command });
-		}
+		void this.editor.command.execute({
+			command: new ProviderPrivateCompositeCommand(commands),
+		});
 	}
 
 	retimeKeyframe({
@@ -639,9 +641,9 @@ export class TimelineManager {
 					patch,
 				}),
 		);
-		for (const command of commands) {
-			void this.editor.command.execute({ command });
-		}
+		void this.editor.command.execute({
+			command: new ProviderPrivateCompositeCommand(commands),
+		});
 	}
 
 	upsertEffectParamKeyframe({
@@ -807,10 +809,11 @@ export class TimelineManager {
 		elements,
 	}: {
 		elements: { trackId: string; elementId: string }[];
-	}): { trackId: string; elementId: string }[] {
+	}): Promise<{ trackId: string; elementId: string }[]> {
 		const command = new DuplicateElementsCommand({ elements });
-		this.editor.command.execute({ command });
-		return command.getDuplicatedElements();
+		return this.editor.command
+			.execute({ command })
+			.then(() => command.getDuplicatedElements());
 	}
 
 	toggleElementsVisibility({

@@ -230,10 +230,12 @@ export function useEditorActions() {
 
 			if (elementsToSplit.length === 0) return;
 
-			editor.timeline.splitElements({
-				elements: elementsToSplit,
-				splitTime: currentTime,
-			});
+			void editor.timeline
+				.splitElements({
+					elements: elementsToSplit,
+					splitTime: currentTime,
+				})
+				.catch(() => undefined);
 		},
 		undefined,
 	);
@@ -253,20 +255,24 @@ export function useEditorActions() {
 
 			if (elementsToSplit.length === 0) return;
 
-			const rightSideElements = editor.timeline.splitElements({
-				elements: elementsToSplit,
-				splitTime: currentTime,
-				retainSide: "right",
-			});
-
-			if (rippleEditingEnabled && rightSideElements.length > 0) {
-				const firstRightElement = editor.timeline.getElementsWithTracks({
-					elements: [rightSideElements[0]],
-				})[0];
-				if (firstRightElement) {
-					editor.playback.seek({ time: firstRightElement.element.startTime });
-				}
-			}
+			void editor.timeline
+				.splitElements({
+					elements: elementsToSplit,
+					splitTime: currentTime,
+					retainSide: "right",
+				})
+				.then((rightSideElements) => {
+					if (!rippleEditingEnabled || rightSideElements.length === 0) return;
+					const firstRightElement = editor.timeline.getElementsWithTracks({
+						elements: [rightSideElements[0]],
+					})[0];
+					if (firstRightElement) {
+						editor.playback.seek({
+							time: firstRightElement.element.startTime,
+						});
+					}
+				})
+				.catch(() => undefined);
 		},
 		undefined,
 	);
@@ -286,11 +292,13 @@ export function useEditorActions() {
 
 			if (elementsToSplit.length === 0) return;
 
-			editor.timeline.splitElements({
-				elements: elementsToSplit,
-				splitTime: currentTime,
-				retainSide: "left",
-			});
+			void editor.timeline
+				.splitElements({
+					elements: elementsToSplit,
+					splitTime: currentTime,
+					retainSide: "left",
+				})
+				.catch(() => undefined);
 		},
 		undefined,
 	);
@@ -412,9 +420,11 @@ export function useEditorActions() {
 	useActionHandler(
 		"duplicate-selected",
 		() => {
-			editor.timeline.duplicateElements({
-				elements: selectedElements,
-			});
+			void editor.timeline
+				.duplicateElements({
+					elements: selectedElements,
+				})
+				.catch(() => undefined);
 		},
 		undefined,
 	);
@@ -496,10 +506,12 @@ export function useEditorActions() {
 		"remove-media-asset",
 		(args) => {
 			if (!args) return;
-			editor.media.removeMediaAsset({
-				projectId: args.projectId,
-				id: args.assetId,
-			});
+			void editor.media
+				.removeMediaAsset({
+					projectId: args.projectId,
+					id: args.assetId,
+				})
+				.catch(() => undefined);
 		},
 		undefined,
 	);
@@ -508,10 +520,12 @@ export function useEditorActions() {
 		"remove-media-assets",
 		(args) => {
 			if (!args) return;
-			editor.media.removeMediaAssets({
-				projectId: args.projectId,
-				ids: args.assetIds,
-			});
+			void editor.media
+				.removeMediaAssets({
+					projectId: args.projectId,
+					ids: args.assetIds,
+				})
+				.catch(() => undefined);
 		},
 		undefined,
 	);

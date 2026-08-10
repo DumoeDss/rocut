@@ -694,4 +694,3 @@ The transaction contract SHALL add `ProjectPatch = Partial<Pick<Project, "name" 
 - **WHEN** T4 publishes transaction vectors and runs its third-party Agent scenario
 - **THEN** the vectors advertise all twelve kinds and the Agent performs at least one typed Project patch, observes one revision/save/watch result, and verifies save/reopen Project equality
 - **AND** same-key replay is mutation-free, same-key/different-patch reuse is rejected, and no donor inference or provider-private command is required
-

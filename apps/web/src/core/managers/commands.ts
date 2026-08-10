@@ -10,7 +10,8 @@ import type {
 	EditorSelectionSnapshot,
 } from "@/selection/editor-selection";
 import { applyRippleAdjustments, computeRippleAdjustments } from "@/ripple";
-import type { SceneTracks } from "@/timeline/types";
+import type { SceneTracks, TimelineTrack } from "@/timeline/types";
+import { hasMediaId } from "@/timeline/element-utils";
 import {
 	assetCatalogFromMedia,
 	classifyCommand,
@@ -19,6 +20,7 @@ import {
 	diffOpenCutProjection,
 	ensureDraftMarkerIds,
 	projectOpenCutDraft,
+	rebaseOpenCutHistoryDraft,
 	type OpenCutProjectDraft,
 } from "@/editor/transactions/opencut";
 import { cloneOpaque } from "@/editor/persistence/opaque-value";
@@ -130,6 +132,56 @@ export class CommandManager {
 			);
 		}
 		return this.executeRouted({ command, recordHistory: false });
+	}
+
+	async removeMediaAssetReferences({
+		assetId,
+	}: {
+		assetId: string;
+	}): Promise<void> {
+		await this.editor.transactions.commitUi({
+			baseDraft: () => this.captureLiveDraft(),
+			prepare: ({ draft, baseRevision, baseDocument }) => {
+				draft.assetCatalog = draft.assetCatalog.filter(
+					(asset) => asset.id !== assetId,
+				);
+				const scene = draft.project.scenes.find(
+					(candidate) => candidate.id === draft.project.currentSceneId,
+				);
+				if (!scene) {
+					throw new Error("The active scene is unavailable for media removal");
+				}
+				const withoutAsset = <Track extends TimelineTrack>(
+					track: Track,
+				): Track => ({
+					...track,
+					elements: track.elements.filter(
+						(element) => !hasMediaId(element) || element.mediaId !== assetId,
+					),
+				});
+				scene.tracks = {
+					main: withoutAsset(scene.tracks.main),
+					overlay: scene.tracks.overlay
+						.map((track) => withoutAsset(track))
+						.filter((track) => track.elements.length > 0),
+					audio: scene.tracks.audio
+						.map((track) => withoutAsset(track))
+						.filter((track) => track.elements.length > 0),
+				};
+				const projected = projectOpenCutDraft(draft, {
+					revision: baseRevision,
+					idempotency: [],
+				});
+				return {
+					draft,
+					operations: diffOpenCutProjection({
+						before: baseDocument,
+						after: projected,
+					}),
+					payload: undefined,
+				};
+			},
+		});
 	}
 
 	private executeRouted({
@@ -317,17 +369,28 @@ export class CommandManager {
 		entry: TransactionCommandHistoryEntry;
 		direction: "undo" | "redo";
 	}): Promise<void> {
-		const target = direction === "undo" ? entry.undoTarget : entry.redoTarget;
+		const from = direction === "undo" ? entry.redoTarget : entry.undoTarget;
+		const to = direction === "undo" ? entry.undoTarget : entry.redoTarget;
 		const previousSelection = this.getSelectionSnapshot();
 		await this.editor.transactions.commitUi({
 			baseDraft: () => this.captureLiveDraft(),
-			prepare: () => {
+			prepare: ({ draft, baseRevision, baseDocument }) => {
+				const rebased = rebaseOpenCutHistoryDraft({
+					current: draft,
+					from,
+					to,
+				});
+				ensureDraftMarkerIds(rebased);
+				const projected = projectOpenCutDraft(rebased, {
+					revision: baseRevision,
+					idempotency: [],
+				});
 				return {
-					draft: cloneOpenCutDraft(target),
-					operations:
-						direction === "undo"
-							? entry.inverseOperations
-							: entry.forwardOperations,
+					draft: rebased,
+					operations: diffOpenCutProjection({
+						before: baseDocument,
+						after: projected,
+					}),
 					payload: undefined,
 				};
 			},
