@@ -9,6 +9,7 @@ export function cloneTransactionValue<Value>(value: Value): Value {
 
 export function deepFreezeTransactionValue<Value>(
 	value: Value,
+	seen: WeakSet<object> = new WeakSet(),
 ): Readonly<Value> {
 	if (
 		value === null ||
@@ -16,18 +17,20 @@ export function deepFreezeTransactionValue<Value>(
 	) {
 		return value;
 	}
+	if (seen.has(value)) return value;
+	seen.add(value);
 	if (value instanceof Map) {
 		for (const [key, entry] of value) {
-			deepFreezeTransactionValue(key);
-			deepFreezeTransactionValue(entry);
+			deepFreezeTransactionValue(key, seen);
+			deepFreezeTransactionValue(entry, seen);
 		}
 	} else if (value instanceof Set) {
-		for (const entry of value) deepFreezeTransactionValue(entry);
+		for (const entry of value) deepFreezeTransactionValue(entry, seen);
 	} else {
 		for (const key of Reflect.ownKeys(value)) {
 			const descriptor = Object.getOwnPropertyDescriptor(value, key);
 			if (descriptor && "value" in descriptor) {
-				deepFreezeTransactionValue(descriptor.value);
+				deepFreezeTransactionValue(descriptor.value, seen);
 			}
 		}
 	}

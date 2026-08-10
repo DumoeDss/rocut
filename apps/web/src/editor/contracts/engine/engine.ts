@@ -17,6 +17,7 @@ import type { TransactionDocumentAdapter } from "./adapter";
 import { cloneTransactionValue } from "./clone";
 import { evaluateTransactionBatch } from "./evaluator";
 import { transactionDocumentInvariantIssue } from "./invariant";
+import { projectCommittedTransactionDocument } from "./projection";
 import { TRANSACTION_ENGINE_BASE_FEATURES } from "./types";
 import type {
 	TransactionDryRunOutcome,
@@ -38,6 +39,47 @@ export interface OpenTransactionEngineOptions<
 	readonly placementPolicies?: readonly TransactionPlacementPolicy[];
 	readonly optionalFeatures?: TransactionEngineOptionalFeatures<FeatureName>;
 	readonly signal?: AbortSignal;
+}
+
+interface NativeCommittedTransactionStateCapture {
+	readonly capture: () => Promise<TransactionEngineDocument>;
+}
+
+const nativeCommittedStateCaptures = new WeakMap<
+	TransactionEngine,
+	() => TransactionEngineDocument | Promise<TransactionEngineDocument>
+>();
+
+function registerNativeCommittedStateCapture(args: {
+	readonly engine: TransactionEngine;
+	readonly capture: () =>
+		| TransactionEngineDocument
+		| Promise<TransactionEngineDocument>;
+}): void {
+	if (nativeCommittedStateCaptures.has(args.engine)) {
+		throw new TypeError("Native committed-state capture is already registered");
+	}
+	nativeCommittedStateCaptures.set(args.engine, args.capture);
+}
+
+/**
+ * Bind the construction-owned native capture into a detached, read-only port.
+ *
+ * The registry writer is a private closure in this construction module. This
+ * read-only binder cannot register, replace, or copy a capability onto a
+ * wrapper: a wrapper is a distinct object and must pass an explicit provider
+ * port directly to the Draft manager.
+ */
+export function bindNativeCommittedTransactionStateCapture(
+	engine: TransactionEngine,
+): NativeCommittedTransactionStateCapture | undefined {
+	const capture = nativeCommittedStateCaptures.get(engine);
+	if (capture === undefined) return undefined;
+	return Object.freeze({
+		async capture(): Promise<TransactionEngineDocument> {
+			return cloneTransactionValue(await capture());
+		},
+	});
 }
 
 function assertOptionalFeatureNames(
@@ -223,20 +265,12 @@ export async function openTransactionEngine<FeatureName extends string = never>(
 				if (!evaluated.accepted) throw issueToError(evaluated.issues[0]);
 				if (evaluated.replayed) return cloneTransactionValue(evaluated.result);
 
-				const candidate: TransactionEngineDocument = {
-					...evaluated.document,
-					idempotency:
-						batch.idempotencyKey === undefined
-							? evaluated.document.idempotency
-							: [
-									...evaluated.document.idempotency,
-									{
-										key: batch.idempotencyKey,
-										fingerprint: evaluated.fingerprint,
-										result: cloneTransactionValue(evaluated.result),
-									},
-								],
-				};
+				const candidate = projectCommittedTransactionDocument({
+					evaluatedDocument: evaluated.document,
+					batch,
+					result: evaluated.result,
+					fingerprint: evaluated.fingerprint,
+				});
 				const candidateIssue = transactionDocumentInvariantIssue({
 					projectId: options.projectId,
 					document: candidate,
@@ -313,6 +347,10 @@ export async function openTransactionEngine<FeatureName extends string = never>(
 			});
 		},
 	};
+	registerNativeCommittedStateCapture({
+		engine,
+		capture: () => enqueue(async () => committed),
+	});
 
 	return engine;
 }

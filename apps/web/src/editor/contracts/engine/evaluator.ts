@@ -135,7 +135,7 @@ function mutateOperations(args: {
 					);
 					break;
 				}
-				tracks.set(operation.track.id, cloneTransactionValue(operation.track));
+				tracks.set(operation.track.id, operation.track);
 				createdIds.push(operation.track.id);
 				origins.set(operation.track.id, operationIndex);
 				break;
@@ -165,7 +165,7 @@ function mutateOperations(args: {
 					);
 					break;
 				}
-				tracks.set(operation.trackId, cloneTransactionValue(updated));
+				tracks.set(operation.trackId, updated);
 				changedIds.push(operation.trackId);
 				origins.set(operation.trackId, operationIndex);
 				break;
@@ -245,7 +245,7 @@ function mutateOperations(args: {
 					);
 					break;
 				}
-				clips.set(operation.clip.id, cloneTransactionValue(operation.clip));
+				clips.set(operation.clip.id, operation.clip);
 				createdIds.push(operation.clip.id);
 				origins.set(operation.clip.id, operationIndex);
 				break;
@@ -297,7 +297,7 @@ function mutateOperations(args: {
 					);
 					break;
 				}
-				clips.set(operation.clipId, cloneTransactionValue(updated));
+				clips.set(operation.clipId, updated);
 				changedIds.push(operation.clipId);
 				origins.set(operation.clipId, operationIndex);
 				break;
@@ -346,7 +346,7 @@ function mutateOperations(args: {
 					);
 					break;
 				}
-				assets.set(operation.asset.id, cloneTransactionValue(operation.asset));
+				assets.set(operation.asset.id, operation.asset);
 				createdIds.push(operation.asset.id);
 				origins.set(operation.asset.id, operationIndex);
 				break;
@@ -412,10 +412,7 @@ function mutateOperations(args: {
 					);
 					break;
 				}
-				markers.set(
-					operation.marker.id,
-					cloneTransactionValue(operation.marker),
-				);
+				markers.set(operation.marker.id, operation.marker);
 				createdIds.push(operation.marker.id);
 				origins.set(operation.marker.id, operationIndex);
 				break;
@@ -445,7 +442,7 @@ function mutateOperations(args: {
 					);
 					break;
 				}
-				markers.set(operation.markerId, cloneTransactionValue(updated));
+				markers.set(operation.markerId, updated);
 				changedIds.push(operation.markerId);
 				origins.set(operation.markerId, operationIndex);
 				break;
@@ -496,8 +493,13 @@ export async function evaluateTransactionBatch(args: {
 	const document = cloneTransactionValue(args.document);
 	const baseRevision = document.revision;
 	let fingerprint: string;
+	let operations: readonly TransactionOperation[];
 	try {
 		fingerprint = canonicalOperationFingerprint(args.batch.operations);
+		// Clone the complete operation array once. Per-operation or per-entity
+		// cloning destroys aliases intentionally shared by patches in one atomic
+		// batch and makes exact provider-private restoration impossible.
+		operations = cloneTransactionValue(args.batch.operations);
 	} catch {
 		return {
 			accepted: false,
@@ -591,7 +593,7 @@ export async function evaluateTransactionBatch(args: {
 
 	const reduced = mutateOperations({
 		document,
-		operations: args.batch.operations,
+		operations,
 	});
 	const candidateRevision = revisionOf(Number(baseRevision) + 1);
 	const candidate: TransactionEngineDocument = {
@@ -612,7 +614,7 @@ export async function evaluateTransactionBatch(args: {
 	);
 	const placementContext = {
 		document: candidate,
-		batch: args.batch,
+		batch: { ...args.batch, operations },
 		operationIndexByEntityId: reduced.operationIndexByEntityId,
 	};
 	const placementIssues = evaluateBasePlacementPolicy(placementContext);
