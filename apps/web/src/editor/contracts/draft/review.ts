@@ -9,6 +9,8 @@ export interface DraftJournalCall {
 
 function affectedEntityIds(operation: TransactionOperation): readonly string[] {
 	switch (operation.kind) {
+		case "update-project":
+			return [operation.projectId];
 		case "create-track":
 			return [operation.track.id];
 		case "update-track":

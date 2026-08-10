@@ -13,6 +13,7 @@ import {
 	mediaTime,
 	markerId,
 	projectId,
+	OPERATION_KINDS,
 	revisionOf,
 	trackId,
 	TransactionError,
@@ -1004,6 +1005,171 @@ export async function runDraftEditingConformance<
 	);
 
 	await cases.check(
+		"T2: Project patches review, roll back, apply once, compensate, and reject stale or invalid timebases",
+		async (assert) => {
+			const seed: TransactionOperation[] = [
+				{ kind: "create-track", track: graphicTrack("project-track") },
+				{
+					kind: "create-clip",
+					clip: clip({ id: "project-clip", track: "project-track" }),
+				},
+			];
+			const fixture = await factory({ optionalFeatures, seedOperations: seed });
+			const before = await readContent(fixture.engine);
+			const draft = await open(fixture.manager, "project-draft");
+			const named = await draft.stage({
+				operations: [
+					{
+						kind: "update-project",
+						projectId: projectId("draft-project"),
+						patch: { name: "Draft Project renamed" },
+					},
+				],
+			});
+			assert(named.accepted, "valid Project patch was not Draft-safe");
+			const beforeRejectedCall = draft.snapshot();
+			const beforeRejectedReview = draft.review();
+			const rejectedCall = await draft.stage({
+				operations: [
+					{
+						kind: "update-project",
+						projectId: projectId("draft-project"),
+						patch: { canvasWidth: 640 },
+					},
+					{ kind: "delete-clip", clipId: clipId("missing-project-call") },
+				],
+			});
+			assert(
+				!rejectedCall.accepted &&
+					rejectedCall.error.kind === "evaluation-rejected",
+				"mixed Project/entity failure was not rejected",
+			);
+			assert(
+				hasSameOwnStructure(draft.snapshot(), beforeRejectedCall) &&
+					hasSameOwnStructure(draft.review(), beforeRejectedReview),
+				"mixed Project/entity failure changed the savepoint or journal",
+			);
+			const repaired = await draft.stage({
+				operations: [
+					{
+						kind: "update-project",
+						projectId: projectId("draft-project"),
+						patch: { frameRate: { numerator: 24, denominator: 1 } },
+					},
+					{
+						kind: "update-clip",
+						clipId: clipId("project-clip"),
+						patch: { duration: mediaTime({ ticks: 5_000 }) },
+					},
+				],
+			});
+			assert(
+				repaired.accepted,
+				"same-call Project timebase repair was rejected",
+			);
+			const review = draft.review();
+			assert(
+				review.counts.byKind["update-project"] === 2 &&
+					review.counts.byKind["update-clip"] === 1 &&
+					review.entries
+						.map(
+							(entry) => `${entry.kind}:${entry.affectedEntityIds.join("+")}`,
+						)
+						.join(",") ===
+						"update-project:draft-project,update-project:draft-project,update-clip:project-clip",
+				"Project review counts or stable affected-id order were wrong",
+			);
+			const application = await draft.approve();
+			assert(application.applied, "mixed Project+clip Draft did not apply");
+			if (!application.applied) return;
+			assert(
+				fixture.applyCount() === 1 &&
+					fixture.saveCount() === 1 &&
+					fixture.watchCount() === 1,
+				"mixed Project+clip Draft was not one parent apply/save/watch",
+			);
+			const inverse = application.receipt.undoPlan.batch.operations;
+			assert(
+				inverse.length === 2 &&
+					inverse[0]?.kind === "update-project" &&
+					Object.keys(inverse[0].patch).sort().join(",") === "frameRate,name" &&
+					inverse[1]?.kind === "update-clip",
+				"Project compensation was not minimal or composition-stable",
+			);
+			await fixture.engine.apply(application.receipt.undoPlan.batch);
+			assert(
+				hasSameOwnStructure(await readContent(fixture.engine), before),
+				"Project compensation did not restore the exact base",
+			);
+
+			const invalidFixture = await factory({
+				optionalFeatures,
+				seedOperations: seed,
+			});
+			const invalidDraft = await open(
+				invalidFixture.manager,
+				"invalid-project-timebase",
+			);
+			const invalidBefore = invalidDraft.snapshot();
+			const invalidTimebase = await invalidDraft.stage({
+				operations: [
+					{
+						kind: "update-project",
+						projectId: projectId("draft-project"),
+						patch: { frameRate: { numerator: 24, denominator: 1 } },
+					},
+				],
+			});
+			assert(
+				!invalidTimebase.accepted &&
+					invalidTimebase.error.kind === "evaluation-rejected" &&
+					invalidTimebase.error.issues.some(
+						(entry) => entry.code === "timebase-misaligned",
+					),
+				"Draft accepted an unrepaired final Project timebase",
+			);
+			assert(
+				hasSameOwnStructure(invalidDraft.snapshot(), invalidBefore) &&
+					invalidFixture.saveCount() === 0,
+				"invalid Project timebase changed Draft or durable state",
+			);
+
+			const staleFixture = await factory({ optionalFeatures });
+			const staleDraft = await open(staleFixture.manager, "stale-project");
+			await staleDraft.stage({
+				operations: [
+					{
+						kind: "update-project",
+						projectId: projectId("draft-project"),
+						patch: { canvasHeight: 720 },
+					},
+				],
+			});
+			await staleFixture.engine.apply({
+				operations: [
+					{
+						kind: "update-project",
+						projectId: projectId("draft-project"),
+						patch: { name: "intervening Project work" },
+					},
+				],
+			});
+			const stale = await staleDraft.approve();
+			assert(
+				!stale.applied &&
+					"engineError" in stale &&
+					stale.engineError instanceof TransactionError &&
+					stale.engineError.code === "conflict",
+				"stale Project Draft rebased or overwrote later work",
+			);
+			assert(
+				(await staleFixture.engine.project())?.canvasHeight === 1080,
+				"stale Project Draft published its canvas patch",
+			);
+		},
+	);
+
+	await cases.check(
 		"T2: every operation kind has an inverse and track cascades restore",
 		async (assert) => {
 			const seed: TransactionOperation[] = [
@@ -1035,6 +1201,11 @@ export async function runDraftEditingConformance<
 			const draft = await open(fixture.manager, "all-inverses");
 			await draft.stage({
 				operations: [
+					{
+						kind: "update-project",
+						projectId: projectId("draft-project"),
+						patch: { canvasWidth: 1280 },
+					},
 					{
 						kind: "update-track",
 						trackId: trackId("existing-track"),
@@ -1086,7 +1257,7 @@ export async function runDraftEditingConformance<
 			if (!application.applied) return;
 			assert(
 				new Set(application.receipt.review.entries.map((entry) => entry.kind))
-					.size === 11,
+					.size === OPERATION_KINDS.length,
 				"not every operation kind entered the journal",
 			);
 			await fixture.engine.apply(application.receipt.undoPlan.batch);
@@ -1301,7 +1472,8 @@ export async function runDraftEditingConformance<
 		"T2: classification is exhaustive and immediate input is rejected before mutation",
 		async (assert) => {
 			assert(
-				Object.keys(DRAFT_OPERATION_CLASSIFICATION).length === 11,
+				JSON.stringify(Object.keys(DRAFT_OPERATION_CLASSIFICATION)) ===
+					JSON.stringify(OPERATION_KINDS),
 				"Draft-safe register is incomplete",
 			);
 			assert(

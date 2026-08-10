@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { Project, Revision, TransactionBatch } from "../..";
+import type { Project, ProjectPatch, Revision, TransactionBatch } from "../..";
 import {
 	assetId,
 	clipId,
@@ -8,6 +8,7 @@ import {
 	projectId,
 	revisionOf,
 	trackId,
+	TransactionError,
 } from "../..";
 import type {
 	TransactionEngine,
@@ -268,7 +269,7 @@ describe("Draft editing sessions", () => {
 					.join("\n"),
 			);
 		}
-		expect(report.summary).toEqual({ passed: 20, failed: 0, skipped: 1 });
+		expect(report.summary).toEqual({ passed: 21, failed: 0, skipped: 1 });
 	});
 
 	test("keeps repeated and concurrent conformance accounting run-local", async () => {
@@ -279,7 +280,7 @@ describe("Draft editing sessions", () => {
 		]);
 		for (const report of reports) {
 			expect(report.passed).toBe(true);
-			expect(report.summary).toEqual({ passed: 20, failed: 0, skipped: 1 });
+			expect(report.summary).toEqual({ passed: 21, failed: 0, skipped: 1 });
 			expect(
 				report.results.find(
 					(result) => result.name === "T2: zero-assertion control is skipped",
@@ -340,7 +341,7 @@ describe("Draft editing sessions", () => {
 			OPTIONAL_FEATURES,
 		);
 		expect(report.passed).toBe(true);
-		expect(report.summary).toEqual({ passed: 20, failed: 0, skipped: 1 });
+		expect(report.summary).toEqual({ passed: 21, failed: 0, skipped: 1 });
 	});
 
 	test("names deliberate protocol violations instead of passing vacuously", async () => {
@@ -1061,6 +1062,167 @@ describe("Draft editing sessions", () => {
 		expect(restored[0]?.id).toBe(markers[0]?.id);
 		expect(restored[4_000]?.note).toBe("base");
 		expect(restored[7_999]?.id).toBe(markers[7_999]?.id);
+	});
+
+	test("keeps one-to-four-field Project inverses constant-sized, exact, restorable, stale-safe, and preflight-closed", async () => {
+		const markers = Array.from({ length: 8_000 }, (_, index) => ({
+			id: markerId(`project-large-marker-${index.toString().padStart(4, "0")}`),
+			time: mediaTime({ ticks: 0 }),
+		}));
+		const baseProject = project();
+		const base = {
+			project: baseProject,
+			tracks: [],
+			clips: [],
+			assets: [],
+			markers,
+			revision: revisionOf(0),
+		};
+		const patches: readonly ProjectPatch[] = [
+			{ name: "One field" },
+			{ name: "Two fields", canvasWidth: 1280 },
+			{ name: "Three fields", canvasWidth: 1280, canvasHeight: 720 },
+			{
+				name: "Four fields",
+				frameRate: { numerator: 24, denominator: 1 },
+				canvasWidth: 1280,
+				canvasHeight: 720,
+			},
+		];
+		for (const patch of patches) {
+			const candidate = { ...base, project: { ...baseProject, ...patch } };
+			const forward = {
+				kind: "update-project" as const,
+				projectId: baseProject.id,
+				patch,
+			};
+			const inverse = planDraftCompensatingOperations({
+				base,
+				candidate,
+				operations: [forward],
+			});
+			expect(inverse).toHaveLength(1);
+			expect(inverse[0]?.kind).toBe("update-project");
+			if (inverse[0]?.kind !== "update-project") continue;
+			expect(Object.keys(inverse[0].patch).sort()).toEqual(
+				Object.keys(patch).sort(),
+			);
+			for (const key of Object.keys(inverse[0].patch)) {
+				expect(Reflect.get(inverse[0].patch, key)).toEqual(
+					Reflect.get(baseProject, key),
+				);
+			}
+		}
+		const sameValueForward = {
+			kind: "update-project" as const,
+			projectId: baseProject.id,
+			patch: { name: baseProject.name },
+		};
+		expect(
+			planDraftCompensatingOperations({
+				base,
+				candidate: base,
+				operations: [sameValueForward],
+			}),
+		).toEqual([sameValueForward]);
+
+		const fixture = await createFactory()();
+		const opened = await fixture.manager.open({
+			id: "project-undo-integration",
+			approvalMode: "manual",
+		});
+		if (!opened.opened) throw new Error(opened.error.message);
+		const beforeProject = await fixture.engine.project();
+		await opened.session.stage({
+			operations: [
+				{
+					kind: "update-project",
+					projectId: projectId(PROJECT_ID),
+					patch: { name: "Forward Project", canvasWidth: 1280 },
+				},
+			],
+		});
+		const applied = await opened.session.approve();
+		expect(applied.applied).toBe(true);
+		if (!applied.applied) return;
+		expect(applied.receipt.undoPlan.batch.operations).toHaveLength(1);
+		await fixture.engine.apply(applied.receipt.undoPlan.batch);
+		expect(await fixture.engine.project()).toEqual(beforeProject);
+
+		const stale = await fixture.manager.open({
+			id: "project-stale-undo",
+			approvalMode: "manual",
+		});
+		if (!stale.opened) throw new Error(stale.error.message);
+		await stale.session.stage({
+			operations: [
+				{
+					kind: "update-project",
+					projectId: projectId(PROJECT_ID),
+					patch: { canvasHeight: 720 },
+				},
+			],
+		});
+		const staleApplied = await stale.session.approve();
+		expect(staleApplied.applied).toBe(true);
+		if (!staleApplied.applied) return;
+		await fixture.engine.apply({
+			operations: [
+				{
+					kind: "update-project",
+					projectId: projectId(PROJECT_ID),
+					patch: { name: "Later Project work" },
+				},
+			],
+		});
+		await expect(
+			fixture.engine.apply(staleApplied.receipt.undoPlan.batch),
+		).rejects.toMatchObject({
+			code: "conflict",
+		} satisfies Partial<TransactionError>);
+
+		const inverseRejectingPolicy: TransactionPlacementPolicy = {
+			evaluate({ batch }) {
+				return batch.idempotencyKey?.endsWith(":undo") &&
+					batch.operations.some(
+						(operation) =>
+							operation.kind === "update-project" &&
+							operation.patch.name === project().name,
+					)
+					? [
+							{
+								code: "provider:project-inverse-rejected" as const,
+								message: "Project inverse rejected",
+							},
+						]
+					: [];
+			},
+		};
+		const rejectedFixture = await createFactory()({
+			placementPolicies: [inverseRejectingPolicy],
+		});
+		const rejectedOpen = await rejectedFixture.manager.open({
+			id: "project-preflight-rejected",
+			approvalMode: "manual",
+		});
+		if (!rejectedOpen.opened) throw new Error(rejectedOpen.error.message);
+		await rejectedOpen.session.stage({
+			operations: [
+				{
+					kind: "update-project",
+					projectId: projectId(PROJECT_ID),
+					patch: { name: "Rejected forward Project" },
+				},
+			],
+		});
+		const rejected = await rejectedOpen.session.approve();
+		expect(rejected.applied).toBe(false);
+		if (!rejected.applied && "draftError" in rejected) {
+			expect(rejected.draftError.kind).toBe("compensation-rejected");
+		}
+		expect(rejectedFixture.applyCount()).toBe(0);
+		expect(rejectedFixture.saveCount()).toBe(0);
+		expect((await rejectedFixture.engine.project())?.name).toBe(project().name);
 	});
 
 	test("traverses first-seen identical containers before rejecting nested alias collapse", () => {

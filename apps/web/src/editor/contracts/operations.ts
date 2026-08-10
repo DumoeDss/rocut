@@ -13,9 +13,23 @@ import type {
 	ClipId,
 	Marker,
 	MarkerId,
+	Project,
+	ProjectId,
 	Track,
 	TrackId,
 } from "./domain";
+
+/** The public, Host-neutral Project fields that a transaction may update. */
+export type ProjectPatch = Partial<
+	Pick<Project, "name" | "frameRate" | "canvasWidth" | "canvasHeight">
+>;
+
+/** Update the selected Project without exposing provider-private settings. */
+export interface UpdateProjectOperation {
+	readonly kind: "update-project";
+	readonly projectId: ProjectId;
+	readonly patch: ProjectPatch;
+}
 
 /**
  * The discriminated union of operations an `apply` batch may contain.
@@ -48,7 +62,8 @@ export type TransactionOperation =
 			readonly markerId: MarkerId;
 			readonly patch: Partial<Omit<Marker, "id">>;
 	  }
-	| { readonly kind: "delete-marker"; readonly markerId: MarkerId };
+	| { readonly kind: "delete-marker"; readonly markerId: MarkerId }
+	| UpdateProjectOperation;
 
 /** The set of all operation kind strings, for runtime checks. */
 export const OPERATION_KINDS = [
@@ -63,6 +78,7 @@ export const OPERATION_KINDS = [
 	"create-marker",
 	"update-marker",
 	"delete-marker",
+	"update-project",
 ] as const;
 
 /** A single operation kind string. */

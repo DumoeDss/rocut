@@ -18,7 +18,12 @@ import type {
 	Track,
 	TrackId,
 } from "../domain";
-import type { OperationKind, TransactionOperation } from "../operations";
+import { validateFrameRate } from "../domain";
+import type {
+	OperationKind,
+	ProjectPatch,
+	TransactionOperation,
+} from "../operations";
 import { OPERATION_KINDS } from "../operations";
 import type {
 	Revision,
@@ -35,7 +40,8 @@ import type {
 
 /** The combined interface returned by {@link createInMemoryTransactionStore}. */
 export interface InMemoryTransactionStore
-	extends TransactionRead,
+	extends
+		TransactionRead,
 		TransactionApply,
 		TransactionGetContext,
 		TransactionWatch {}
@@ -43,8 +49,205 @@ export interface InMemoryTransactionStore
 /** A stored entry in the idempotency cache. */
 interface IdempotencyEntry {
 	readonly key: string;
-	readonly operations: readonly TransactionOperation[];
+	readonly fingerprint: string;
 	readonly result: TransactionResult;
+}
+
+const PROJECT_PATCH_KEYS = new Set([
+	"name",
+	"frameRate",
+	"canvasWidth",
+	"canvasHeight",
+]);
+const FRAME_RATE_KEYS = ["numerator", "denominator"] as const;
+
+function invalidProjectPatch(message: string, operationIndex: number): never {
+	throw new TransactionError({
+		code: "validation",
+		message,
+		operationIndex,
+	});
+}
+
+function readProjectPatch(
+	value: unknown,
+	operationIndex: number,
+): ProjectPatch {
+	if (value === null || typeof value !== "object" || Array.isArray(value)) {
+		return invalidProjectPatch(
+			"Project patch must be an object",
+			operationIndex,
+		);
+	}
+	const keys = Reflect.ownKeys(value);
+	if (keys.length === 0) {
+		return invalidProjectPatch(
+			"Project patch must not be empty",
+			operationIndex,
+		);
+	}
+	const patch: Record<string, unknown> = {};
+	for (const key of keys) {
+		if (typeof key !== "string" || !PROJECT_PATCH_KEYS.has(key)) {
+			return invalidProjectPatch(
+				`Project patch contains unsupported key ${String(key)}`,
+				operationIndex,
+			);
+		}
+		const descriptor = Object.getOwnPropertyDescriptor(value, key);
+		if (!descriptor?.enumerable || !("value" in descriptor)) {
+			return invalidProjectPatch(
+				"Project patch requires enumerable data properties",
+				operationIndex,
+			);
+		}
+		if (key !== "frameRate") {
+			patch[key] = descriptor.value;
+			continue;
+		}
+		const frameRate = descriptor.value;
+		if (
+			frameRate === null ||
+			typeof frameRate !== "object" ||
+			Array.isArray(frameRate)
+		) {
+			return invalidProjectPatch(
+				"Project frame rate must be an object",
+				operationIndex,
+			);
+		}
+		const frameRateKeys = Reflect.ownKeys(frameRate);
+		if (
+			frameRateKeys.length !== FRAME_RATE_KEYS.length ||
+			frameRateKeys.some(
+				(frameRateKey) =>
+					typeof frameRateKey !== "string" ||
+					!FRAME_RATE_KEYS.some((expectedKey) => expectedKey === frameRateKey),
+			)
+		) {
+			return invalidProjectPatch(
+				"Project frame rate must contain only numerator and denominator",
+				operationIndex,
+			);
+		}
+		const normalizedFrameRate: Record<string, unknown> = {};
+		for (const frameRateKey of FRAME_RATE_KEYS) {
+			const frameRateDescriptor = Object.getOwnPropertyDescriptor(
+				frameRate,
+				frameRateKey,
+			);
+			if (
+				!frameRateDescriptor?.enumerable ||
+				!("value" in frameRateDescriptor)
+			) {
+				return invalidProjectPatch(
+					"Project frame rate requires enumerable data properties",
+					operationIndex,
+				);
+			}
+			normalizedFrameRate[frameRateKey] = frameRateDescriptor.value;
+		}
+		patch.frameRate = normalizedFrameRate;
+	}
+	return patch as ProjectPatch;
+}
+
+function isValidProject(
+	value: unknown,
+	expectedId: ProjectId,
+): value is Project {
+	if (value === null || typeof value !== "object" || Array.isArray(value)) {
+		return false;
+	}
+	const candidate = value as Readonly<Record<string, unknown>>;
+	if (
+		candidate.id !== expectedId ||
+		typeof candidate.name !== "string" ||
+		candidate.name.length === 0 ||
+		typeof candidate.canvasWidth !== "number" ||
+		!Number.isFinite(candidate.canvasWidth) ||
+		candidate.canvasWidth <= 0 ||
+		typeof candidate.canvasHeight !== "number" ||
+		!Number.isFinite(candidate.canvasHeight) ||
+		candidate.canvasHeight <= 0 ||
+		candidate.frameRate === null ||
+		typeof candidate.frameRate !== "object" ||
+		Array.isArray(candidate.frameRate)
+	) {
+		return false;
+	}
+	const frameRate = candidate.frameRate as Readonly<Record<string, unknown>>;
+	if (
+		typeof frameRate.numerator !== "number" ||
+		typeof frameRate.denominator !== "number"
+	) {
+		return false;
+	}
+	try {
+		validateFrameRate({
+			numerator: frameRate.numerator,
+			denominator: frameRate.denominator,
+		});
+		return true;
+	} catch {
+		return false;
+	}
+}
+
+type CanonicalValue =
+	| readonly ["null"]
+	| readonly ["undefined"]
+	| readonly ["boolean", boolean]
+	| readonly ["number", string]
+	| readonly ["string", string]
+	| readonly ["array", readonly CanonicalValue[]]
+	| readonly ["object", readonly (readonly [string, CanonicalValue])[]];
+
+function canonicalize(value: unknown, seen: Set<object>): CanonicalValue {
+	if (value === null) return ["null"];
+	if (value === undefined) return ["undefined"];
+	if (typeof value === "boolean") return ["boolean", value];
+	if (typeof value === "string") return ["string", value];
+	if (typeof value === "number") {
+		if (!Number.isFinite(value)) {
+			throw new TypeError("Transaction operations require finite numbers");
+		}
+		return ["number", Object.is(value, -0) ? "-0" : String(value)];
+	}
+	if (typeof value !== "object") {
+		throw new TypeError(
+			`Transaction operations do not support ${typeof value}`,
+		);
+	}
+	if (seen.has(value)) {
+		throw new TypeError("Transaction operations must not contain cycles");
+	}
+	seen.add(value);
+	try {
+		if (Array.isArray(value)) {
+			return ["array", value.map((entry) => canonicalize(entry, seen))];
+		}
+		const entries: Array<readonly [string, CanonicalValue]> = [];
+		for (const key of Reflect.ownKeys(value)) {
+			if (typeof key !== "string") {
+				throw new TypeError(
+					"Transaction operations do not support symbol keys",
+				);
+			}
+			const descriptor = Object.getOwnPropertyDescriptor(value, key);
+			if (!descriptor?.enumerable || !("value" in descriptor)) {
+				throw new TypeError(
+					"Transaction operations require enumerable data properties",
+				);
+			}
+		}
+		for (const key of Object.keys(value).sort()) {
+			entries.push([key, canonicalize(Reflect.get(value, key), seen)]);
+		}
+		return ["object", entries];
+	} finally {
+		seen.delete(value);
+	}
 }
 
 /**
@@ -90,9 +293,7 @@ export function createInMemoryTransactionStore(): InMemoryTransactionStore {
 
 	/** Stable serialization for idempotency comparison (ignores key/provenance). */
 	function serializeOps(ops: readonly TransactionOperation[]): string {
-		return JSON.stringify(
-			ops.map((op) => ({ ...op })),
-		);
+		return JSON.stringify(canonicalize(ops, new Set()));
 	}
 
 	function processBatch(
@@ -103,6 +304,7 @@ export function createInMemoryTransactionStore(): InMemoryTransactionStore {
 		const workClips = new Map(clips);
 		const workAssets = new Map(assets);
 		const workMarkers = new Map(markers);
+		let workProject = project === null ? null : deepClone(project);
 
 		const createdIds: string[] = [];
 		const changedIds: string[] = [];
@@ -110,6 +312,31 @@ export function createInMemoryTransactionStore(): InMemoryTransactionStore {
 		for (let i = 0; i < operations.length; i++) {
 			const op = operations[i];
 			switch (op.kind) {
+				case "update-project": {
+					if (workProject === null || workProject.id !== op.projectId) {
+						throw new TransactionError({
+							code: "not-found",
+							message: `Project ${op.projectId} not found`,
+							operationIndex: i,
+						});
+					}
+					const patch = readProjectPatch(op.patch, i);
+					const updated = {
+						...workProject,
+						...patch,
+						id: workProject.id,
+					};
+					if (!isValidProject(updated, workProject.id)) {
+						throw new TransactionError({
+							code: "validation",
+							message: `Invalid Project ${op.projectId}`,
+							operationIndex: i,
+						});
+					}
+					workProject = deepClone(updated);
+					changedIds.push(op.projectId);
+					break;
+				}
 				case "create-track": {
 					if (workTracks.has(op.track.id)) {
 						throw new TransactionError({
@@ -273,6 +500,7 @@ export function createInMemoryTransactionStore(): InMemoryTransactionStore {
 		for (const [k, v] of workAssets) assets.set(k, v);
 		markers.clear();
 		for (const [k, v] of workMarkers) markers.set(k, v);
+		project = workProject;
 
 		revision = revisionOf(revision + 1);
 		return { revision, createdIds, changedIds };
@@ -310,13 +538,19 @@ export function createInMemoryTransactionStore(): InMemoryTransactionStore {
 		// -- TransactionApply ----------------------------------------------
 		async apply(batch: TransactionBatch): Promise<TransactionResult> {
 			// Idempotency check: same key + same ops = replay result
+			let fingerprint: string | undefined;
 			if (batch.idempotencyKey !== undefined) {
+				try {
+					fingerprint = serializeOps(batch.operations);
+				} catch {
+					throw new TransactionError({
+						code: "validation",
+						message: "Operations are not canonically serializable",
+					});
+				}
 				const existing = idempotencyCache.get(batch.idempotencyKey);
 				if (existing) {
-					if (
-						serializeOps(existing.operations) !==
-						serializeOps(batch.operations)
-					) {
+					if (existing.fingerprint !== fingerprint) {
 						throw new TransactionError({
 							code: "duplicate",
 							message: `Idempotency key "${batch.idempotencyKey}" was already used with different operations`,
@@ -356,7 +590,7 @@ export function createInMemoryTransactionStore(): InMemoryTransactionStore {
 			if (batch.idempotencyKey !== undefined) {
 				idempotencyCache.set(batch.idempotencyKey, {
 					key: batch.idempotencyKey,
-					operations: batch.operations,
+					fingerprint: fingerprint!,
 					result,
 				});
 			}
@@ -393,9 +627,11 @@ export function createInMemoryTransactionStore(): InMemoryTransactionStore {
 
 	// Allow setting the project from outside (for test setup). Not part of the
 	// public interface contract — it's a convenience on the fake.
-	(store as InMemoryTransactionStore & {
-		_setProject(p: Project): void;
-	})._setProject = (p: Project) => {
+	(
+		store as InMemoryTransactionStore & {
+			_setProject(p: Project): void;
+		}
+	)._setProject = (p: Project) => {
 		project = deepClone(p);
 	};
 

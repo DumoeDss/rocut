@@ -45,7 +45,12 @@ export {
 	projectId,
 } from "./domain";
 
-export type { TransactionOperation, OperationKind } from "./operations";
+export type {
+	ProjectPatch,
+	UpdateProjectOperation,
+	TransactionOperation,
+	OperationKind,
+} from "./operations";
 export { OPERATION_KINDS } from "./operations";
 
 export type {
@@ -54,11 +59,7 @@ export type {
 	TransactionResult,
 	TransactionErrorCode,
 } from "./transaction";
-export {
-	TransactionError,
-	revisionOf,
-	INITIAL_REVISION,
-} from "./transaction";
+export { TransactionError, revisionOf, INITIAL_REVISION } from "./transaction";
 
 export type {
 	TransactionRead,

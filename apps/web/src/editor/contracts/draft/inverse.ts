@@ -3,6 +3,7 @@ import type {
 	AssetId,
 	Clip,
 	Marker,
+	ProjectPatch,
 	Track,
 	TransactionOperation,
 } from "..";
@@ -11,6 +12,13 @@ import { cloneDraftValue } from "./immutable";
 import type { DraftContentSnapshot } from "./types";
 
 type OrderedEntity = Track | Clip | Asset | Marker;
+
+const PROJECT_PATCH_KEYS = [
+	"name",
+	"frameRate",
+	"canvasWidth",
+	"canvasHeight",
+] as const satisfies readonly (keyof ProjectPatch)[];
 
 interface EntityRepair {
 	readonly replace: boolean;
@@ -507,6 +515,47 @@ function planCollectionCompensation<Entity extends OrderedEntity>(args: {
 	return { deletes, creates, updates, recreatedIds };
 }
 
+function planProjectCompensation(args: {
+	readonly base: DraftContentSnapshot["project"];
+	readonly candidate: DraftContentSnapshot["project"];
+}): TransactionOperation | undefined {
+	if (args.base === null && args.candidate === null) return undefined;
+	if (
+		args.base === null ||
+		args.candidate === null ||
+		args.base.id !== args.candidate.id
+	) {
+		throw new Error(
+			"Draft Project creation, deletion, or identity changes cannot be compensated",
+		);
+	}
+	const patch: ProjectPatch = {};
+	for (const key of PROJECT_PATCH_KEYS) {
+		if (!sameDraftData(args.base[key], args.candidate[key])) {
+			(patch as Record<string, unknown>)[key] = args.base[key];
+		}
+	}
+	if (Object.keys(patch).length === 0) {
+		if (sameDraftData(args.base, args.candidate)) return undefined;
+		throw new Error(
+			"Draft changed non-patchable Project metadata and cannot be compensated",
+		);
+	}
+	const restored = {
+		...args.candidate,
+		...patch,
+		id: args.candidate.id,
+	};
+	if (!sameDraftData(restored, args.base)) {
+		throw new Error("Project inverse does not restore the exact base Project");
+	}
+	return {
+		kind: "update-project",
+		projectId: args.base.id,
+		patch,
+	};
+}
+
 /**
  * Plan the smallest suffix-based compensation expressible by T1's frozen
  * operation union. Entities that can be restored by update stay in place;
@@ -520,9 +569,10 @@ export function planDraftCompensatingOperations(args: {
 	readonly candidate: DraftContentSnapshot;
 	readonly operations: readonly TransactionOperation[];
 }): readonly TransactionOperation[] {
-	if (!sameDraftData(args.base.project, args.candidate.project)) {
-		throw new Error("Draft operations unexpectedly changed project metadata");
-	}
+	const projectCompensation = planProjectCompensation({
+		base: args.base.project,
+		candidate: args.candidate.project,
+	});
 	const aliasRepairIds = collectDocumentAliasRepairIds(args);
 
 	const trackPlan = planCollectionCompensation({
@@ -572,6 +622,7 @@ export function planDraftCompensatingOperations(args: {
 	});
 
 	const planned: TransactionOperation[] = [
+		...(projectCompensation === undefined ? [] : [projectCompensation]),
 		...trackPlan.updates,
 		...clipPlan.updates,
 		...markerPlan.updates,
