@@ -43,3 +43,9 @@ Status: Not requested. No push, PR, publish, merge, or parent portfolio delivery
 - Timing: separate child archive stage.
 - Status: Not archived in ship.
 - The archive stage must preserve the explicit 28/19/9 reconciliation above.
+
+## Archive
+**Date:** 2026-08-11T12:15:48.148Z
+**Ship commit:** fb14b5b1f15f46b557dedf7ab463a73233b5eff5
+**Outcome:** archived at E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\rasen\changes\archive\2026-08-11-s0304-surface-mount-focus-lifecycle
+**Transaction:** 674a2851-3605-4daa-b8d9-ed42e3b394c8
