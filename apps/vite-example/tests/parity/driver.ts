@@ -13,16 +13,15 @@ import type { Page } from "@playwright/test";
  * Two gotchas are encoded here rather than left to be rediscovered:
  * clip drag/trim is `mousedown` + document-level `mousemove` (so it needs real
  * stepped mouse movement, not `dragTo`), and keyboard shortcuts must be sent
- * with nothing focused, because clicking a clip leaves focus on a `<button>`
- * that would swallow Space as an activation.
+ * with focus inside `[data-editor-surface]`. R1 deliberately removed document
+ * capture; blurring to body would now test the Host rather than the Surface.
  */
 
 export const MAIN_TRACK = 'button[aria-label="Select Main Track track"]';
 export const RULER = '[aria-label="Timeline ruler"]';
 export const TIMECODE = 'button[title="Click to edit time"]';
 export const SNAP_INDICATOR = 'div[class*="bg-primary/40"]';
-const TRACK_BUTTON =
-	'button[aria-label^="Select "][aria-label$=" track"]';
+const TRACK_BUTTON = 'button[aria-label^="Select "][aria-label$=" track"]';
 const ELEMENT_WRAPPER =
 	'div[class~="absolute"][class~="top-0"][class~="select-none"]';
 
@@ -254,12 +253,17 @@ export async function readTimecode(page: Page): Promise<string> {
 	return (await page.locator(TIMECODE).first().textContent())?.trim() ?? "";
 }
 
-/** Send a shortcut with nothing focused, so no button eats the key. */
+/** Focus the Surface root before every editor shortcut. */
 export async function pressShortcut(page: Page, key: string): Promise<void> {
-	await page.evaluate(() => {
-		const active = document.activeElement;
-		if (active instanceof HTMLElement) active.blur();
-	});
+	const surface = page.locator("[data-editor-surface]").first();
+	await surface.focus();
+	const ownsFocus = await surface.evaluate(
+		(root) =>
+			document.activeElement === root ||
+			(root instanceof HTMLElement && root.contains(document.activeElement)),
+	);
+	if (!ownsFocus)
+		throw new Error("Editor Surface did not accept shortcut focus");
 	await page.keyboard.press(key);
 	await page.waitForTimeout(300);
 }

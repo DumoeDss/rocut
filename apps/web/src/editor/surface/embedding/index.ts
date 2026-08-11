@@ -15,3 +15,4 @@ export type {
 } from "./types";
 
 export { SurfaceLifecycleBinding } from "./types";
+export { EditorSurface } from "./editor-surface";

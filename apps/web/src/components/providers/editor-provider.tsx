@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { Loader2 } from "lucide-react";
 import { useEditorHost } from "@/editor/host/editor-host-context";
 import { useEditorSession } from "@/editor/session/editor-session-provider";
@@ -13,9 +13,16 @@ import { loadFontAtlas } from "@/fonts/google-fonts";
 
 interface EditorProviderProps {
 	children: React.ReactNode;
+	keybindingScope?: {
+		readonly targetRef: RefObject<HTMLElement | null>;
+		readonly enabled: boolean;
+	};
 }
 
-export function EditorProvider({ children }: EditorProviderProps) {
+export function EditorProvider({
+	children,
+	keybindingScope,
+}: EditorProviderProps) {
 	const editor = useEditorInstance();
 	const session = useEditorSession();
 	const activeProject = useEditor((e) => e.project.getActiveOrNull());
@@ -130,13 +137,15 @@ export function EditorProvider({ children }: EditorProviderProps) {
 
 	return (
 		<>
-			<EditorRuntimeBindings />
+			<EditorRuntimeBindings keybindingScope={keybindingScope} />
 			{children}
 		</>
 	);
 }
 
-function EditorRuntimeBindings() {
+function EditorRuntimeBindings({
+	keybindingScope,
+}: Pick<EditorProviderProps, "keybindingScope">) {
 	const editor = useEditorInstance();
 	const rippleEditingEnabled = useTimelineStore(
 		(state) => state.rippleEditingEnabled,
@@ -158,6 +167,6 @@ function EditorRuntimeBindings() {
 	}, [editor]);
 
 	useEditorActions();
-	useKeybindingsListener();
+	useKeybindingsListener(keybindingScope);
 	return null;
 }

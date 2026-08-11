@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { editorForSession } from "@/editor/runtime/session-core-owner";
 import { storesForSession } from "@/editor/runtime/session-stores";
 import { useEditorSession } from "@/editor/session";
+import { useEditor } from "@/editor/use-editor";
+import { isC4ProjectLoadComplete } from "./c4-project-load";
 
 type ProbeMode = "worker" | "forced-none";
 
@@ -19,9 +21,12 @@ function errorText(value: unknown): string {
 
 export function C4NextRuntimeProbe({ mode }: { mode: ProbeMode }) {
 	const session = useEditorSession();
+	const projectLoaded = useEditor(isC4ProjectLoadComplete);
 	const [state, setState] = useState<ProbeState>({ status: "starting" });
 
 	useEffect(() => {
+		if (!projectLoaded) return;
+
 		let cancelled = false;
 		const pageErrors: string[] = [];
 		const unhandledRejections: string[] = [];
@@ -60,6 +65,9 @@ export function C4NextRuntimeProbe({ mode }: { mode: ProbeMode }) {
 						});
 					});
 					worker.terminate();
+					// SessionResources publishes release counts after its async release
+					// continuation, even when the underlying Worker terminates synchronously.
+					await Promise.resolve();
 					const resources = session.resources.inspect();
 					if (!cancelled) {
 						setState({
@@ -129,15 +137,23 @@ export function C4NextRuntimeProbe({ mode }: { mode: ProbeMode }) {
 			window.removeEventListener("error", onError);
 			window.removeEventListener("unhandledrejection", onUnhandled);
 		};
-	}, [mode, session]);
+	}, [mode, projectLoaded, session]);
+
+	const visibleState: ProbeState = projectLoaded
+		? state
+		: { status: "starting" };
 
 	return (
 		<output
 			data-testid="c4-next-runtime-probe"
 			data-mode={mode}
-			data-status={state.status}
-			data-result={state.status === "ready" ? JSON.stringify(state.result) : ""}
-			data-error={state.status === "error" ? state.error : ""}
+			data-status={visibleState.status}
+			data-result={
+				visibleState.status === "ready"
+					? JSON.stringify(visibleState.result)
+					: ""
+			}
+			data-error={visibleState.status === "error" ? visibleState.error : ""}
 			className="sr-only"
 		/>
 	);

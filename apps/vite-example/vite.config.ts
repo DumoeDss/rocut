@@ -45,6 +45,12 @@ export default defineConfig({
 		outDir: outputDirectory,
 		// Required by top-level await in the wasm glue.
 		target: "esnext",
+		rollupOptions: {
+			input: {
+				app: resolve(here, "index.html"),
+				"surface-evidence": resolve(here, "surface-evidence.html"),
+			},
+		},
 	},
 	// Runtime assets are copied by an explicit allowlist rather than by shipping
 	// all 5.4 MB of `apps/web/public`. See design D7.

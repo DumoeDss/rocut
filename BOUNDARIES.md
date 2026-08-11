@@ -42,8 +42,10 @@ bundle" and is diffable between builds.
 `apps/web/src/db/`, `apps/web/src/auth/`, `apps/web/src/components/landing/`,
 `changelog-notification`, `content-collections`, and `apps/desktop/`.
 
-Result on the current production build: **2,844 modules, all ten rules pass** — 550 from
-`apps/web/src`, 8 from the example host, 2,282 from dependencies, 4 Vite internals.
+Result on the current production build: **2,931 modules, all ten rules pass** — 630 from
+`apps/web/src`, 15 from the example host, 2,282 from dependencies, 4 other/Vite modules. This is
+the final two-entry graph described below; the evidence-only entry is counted because Rollup emits
+it in the same build, even though the ordinary app does not link to it.
 
 ### `src/site/` — satisfied as written, not relaxed
 
@@ -91,24 +93,42 @@ will see dialogs centred on the browser window, not on that panel.
 
 ---
 
-## 2. Export inventory
+## 2. Entry and editor-source import inventory
 
-Everything `apps/vite-example` imports from the editor source. Eleven modules — the surface a host
-actually needs is small, which is the useful result here.
+The final Vite build has two explicit Rollup HTML entries. `index.html` → `src/main.tsx` is the
+normal app entry. `surface-evidence.html` → `src/surface-evidence-main.tsx` is an evidence-only
+entry used by the dual-Host browser matrix; the normal app does not link to or navigate to it.
+`dist/module-graph.json` records the union of both entries, so the measured count above is honest
+about verification code that the build emitted.
 
-| Module                                               | Imported                           | Role                                                  |
-| ---------------------------------------------------- | ---------------------------------- | ----------------------------------------------------- |
-| `@/core`                                             | `EditorCore`                       | Session-owned editor core; create/open projects       |
-| `@/editor/host/editor-host`                          | `EditorHost` (type)                | The host contract                                     |
-| `@/editor/host/editor-host-context`                  | `EditorHostProvider`               | Supplies the host to the tree                         |
-| `@/editor/surface/editor-root`                       | `EditorRoot`                       | The editor surface                                    |
-| `@/components/providers/editor-provider`             | `EditorProvider`                   | Bootstrap: GPU, project load, font atlas              |
-| `@/components/editor/mobile-gate`                    | `MobileGate`                       | Small-viewport gate                                   |
-| `@/components/ui/tooltip`                            | `TooltipProvider`                  | Context the editor expects from its host              |
-| `@/components/ui/sonner`                             | `Toaster`                          | Toast host the editor expects                         |
-| `@/project/types`                                    | `TProjectMetadata` (type)          | Project list rendering                                |
-| `@/services/storage/browser-project-store`           | `BrowserProjectStore`              | Production browser `ProjectStore` implementation (§3) |
-| `@/services/storage/browser-project-store-internals` | `DEFAULT_BROWSER_STORAGE_IDENTITY` | Explicit durable identity selected by the Host (§3)   |
+The ordinary editor route imports twelve editor-source modules through `app.tsx`, the project
+picker, and the Vite Host composition chain:
+
+| Module                                               | Imported                                      | Role                                                  |
+| ---------------------------------------------------- | --------------------------------------------- | ----------------------------------------------------- |
+| `@/components/editor/mobile-gate`                    | `MobileGate`                                  | Small-viewport gate                                   |
+| `@/components/ui/sonner`                             | `Toaster`                                     | Toast host the editor expects                         |
+| `@/components/ui/tooltip`                            | `TooltipProvider`                             | Context the editor expects from its host              |
+| `@/editor/host/browser-runtime`                      | `createBrowserRuntimePorts` and worker types  | Browser-owned runtime ports                           |
+| `@/editor/host/editor-host`                          | `EditorHost` (type)                           | The host contract                                     |
+| `@/editor/ports/in-memory`                           | reference ports, diagnostics, and IDs         | Non-browser reference ports selected by the Host      |
+| `@/editor/session`                                   | `EditorSessionHost`                           | Creates and owns the Host-bound session               |
+| `@/editor/surface/embedding/session-surface-bridge`  | `SessionEditorSurface`                        | Binds the existing session to the embeddable Surface  |
+| `@/editor/use-editor`                                | `useEditorInstance`                           | Project-list access through the current session       |
+| `@/project/types`                                    | `TProjectMetadata` (type)                     | Project list rendering                                |
+| `@/services/storage/browser-project-store`           | `BrowserProjectStore`                         | Production browser `ProjectStore` implementation (§3) |
+| `@/services/storage/browser-project-store-internals` | storage identity and diagnostic normalization | Explicit durable identity selected by the Host (§3)   |
+
+The evidence-only entry shares the two UI providers and `vite-host-config.ts` with the normal Host,
+and adds exactly one editor-source root that is exclusive to that entry:
+
+| Evidence entry          | Exclusive editor-source root                                      | Role                                                        |
+| ----------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------- |
+| `surface-evidence.html` | `@/editor/surface/evidence/surface-evidence-harness`              | Controlled focus, visibility, lifecycle, style, and ledger proof |
+
+The pre-existing query-gated C3/C4/C6 proof branches remain statically attached to `app.tsx`, so
+their modules also appear in the emitted union graph. They are verification routes, not additions
+to the ordinary Host API or to the evidence-only Surface entry above.
 
 **This is not a published API.** There is no `exports` map, no entry point and no stability promise;
 the example reaches in through a path alias. Designing the real export surface is later work.

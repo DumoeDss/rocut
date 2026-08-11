@@ -84,7 +84,7 @@ import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { useScrollPosition } from "@/timeline/hooks/use-scroll-position";
 import { useTimelinePlayhead } from "@/timeline/hooks/use-timeline-playhead";
 import { DragLine } from "./drag-line";
-import { invokeAction } from "@/actions";
+import { useActionInvoker } from "@/actions/action-scope";
 import { resolveTimelineElementIntersections } from "./selection-hit-testing";
 import { cn } from "@/utils/ui";
 import type { TimerHandle } from "@/editor/session/resources";
@@ -756,6 +756,7 @@ function TimelineTrackRows({
 	isDragOver: boolean;
 	dropTarget: DropTarget | null;
 }) {
+	const invokeAction = useActionInvoker();
 	const timeline = useEditor((e) => e.timeline);
 	const scene = useEditor((e) => e.scenes.getActiveSceneOrNull());
 	const tracks = useMemo<TimelineTrack[]>(

@@ -29,7 +29,7 @@ import { DEFAULT_NEW_ELEMENT_DURATION } from "@/timeline/creation";
 import { mediaTimeFromSeconds, type MediaTime } from "@/wasm";
 import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { useFileUpload } from "@/media/use-file-upload";
-import { invokeAction } from "@/actions";
+import { useActionInvoker } from "@/actions/action-scope";
 import { processMediaAssets } from "@/media/processing";
 import { showMediaUploadToast } from "@/media/upload-toast";
 import {
@@ -60,6 +60,7 @@ import {
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
 
 export function MediaView() {
+	const invokeAction = useActionInvoker();
 	const editor = useEditorInstance();
 	const mediaFiles = useEditor((e) => e.media.getAssets());
 	const activeProject = useEditor((e) => e.project.getActive());

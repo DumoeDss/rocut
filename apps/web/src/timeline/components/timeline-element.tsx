@@ -59,8 +59,8 @@ import {
 	getActionDefinition,
 	type TAction,
 	type TActionWithOptionalArgs,
-	invokeAction,
 } from "@/actions";
+import { useActionInvoker } from "@/actions/action-scope";
 import { useElementSelection } from "@/timeline/hooks/element/use-element-selection";
 import { resolveStickerId } from "@/stickers";
 import { buildGraphicPreviewUrl } from "@/graphics";
@@ -234,6 +234,7 @@ export function TimelineElement({
 	dragView,
 	isDropTarget = false,
 }: TimelineElementProps) {
+	const invokeAction = useActionInvoker();
 	const mediaAssets = useEditor((e) => e.media.getAssets());
 	const { selectedElements } = useElementSelection();
 	const requestRevealMedia = useAssetsPanelStore((s) => s.requestRevealMedia);
@@ -1293,6 +1294,7 @@ function ActionMenuItem({
 	action: TActionWithOptionalArgs;
 	children: ReactNode;
 }) {
+	const invokeAction = useActionInvoker();
 	return (
 		<ContextMenuItem
 			onClick={(event: React.MouseEvent) => {

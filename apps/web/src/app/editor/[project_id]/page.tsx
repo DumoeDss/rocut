@@ -2,14 +2,13 @@
 
 import { useMemo } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { EditorProvider } from "@/components/providers/editor-provider";
 import { MobileGate } from "@/components/editor/mobile-gate";
 import { ChangelogNotification } from "@/changelog/components/changelog-notification";
 import type { EditorHost } from "@/editor/host/editor-host";
 import { createNextEditorHost } from "@/editor/host/next-editor-host";
 import { C4NextRuntimeProbe } from "@/editor/host/c4-next-runtime-probe";
 import { EditorSessionHost } from "@/editor/session";
-import { EditorRoot } from "@/editor/surface/editor-root";
+import { SessionEditorSurface } from "@/editor/surface/embedding/session-surface-bridge";
 
 /**
  * The Next host of the editor.
@@ -35,31 +34,26 @@ export default function Editor() {
 	const host = useMemo<EditorHost>(
 		() =>
 			createNextEditorHost({
-			projectId,
-			onProjectReplaced: (newProjectId) =>
-				router.replace(`/editor/${newProjectId}`),
-			onExitProject: () => router.push("/projects"),
-			onGoBack: () => router.back(),
-			forceRendererBackend: c4Probe === "forced-none" ? "none" : undefined,
-			workerFixture: c4Probe === "worker",
-		}),
+				projectId,
+				onProjectReplaced: (newProjectId) =>
+					router.replace(`/editor/${newProjectId}`),
+				onExitProject: () => router.push("/projects"),
+				onGoBack: () => router.back(),
+				forceRendererBackend: c4Probe === "forced-none" ? "none" : undefined,
+				workerFixture: c4Probe === "worker",
+			}),
 		[projectId, router, c4Probe],
 	);
 
 	return (
 		<EditorSessionHost host={host}>
-			<div
-				className="h-screen w-screen"
-				data-c4-build-marker={c4BuildMarker}
-			>
+			<div className="h-screen w-screen" data-c4-build-marker={c4BuildMarker}>
 				<MobileGate>
-					<EditorProvider>
-						{c4Probe === "worker" || c4Probe === "forced-none" ? (
-							<C4NextRuntimeProbe mode={c4Probe} />
-						) : null}
-						<EditorRoot />
-						<ChangelogNotification />
-					</EditorProvider>
+					{c4Probe === "worker" || c4Probe === "forced-none" ? (
+						<C4NextRuntimeProbe mode={c4Probe} />
+					) : null}
+					<SessionEditorSurface focusMode="focused" />
+					<ChangelogNotification />
 				</MobileGate>
 			</div>
 		</EditorSessionHost>

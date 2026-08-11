@@ -2,7 +2,7 @@
 
 import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { formatTimecode } from "opencut-wasm";
-import { invokeAction } from "@/actions";
+import { useActionInvoker } from "@/actions/action-scope";
 import { EditableTimecode } from "@/components/editable-timecode";
 import { Button } from "@/components/ui/button";
 import {
@@ -120,6 +120,7 @@ function ZoomSelect() {
 }
 
 function PlayPauseButton() {
+	const invokeAction = useActionInvoker();
 	const isPlaying = useEditor((e) => e.playback.getIsPlaying());
 
 	return (

@@ -2,9 +2,8 @@ import { useCallback, useState } from "react";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { EditorProvider } from "@/components/providers/editor-provider";
 import { MobileGate } from "@/components/editor/mobile-gate";
-import { EditorRoot } from "@/editor/surface/editor-root";
+import { SessionEditorSurface } from "@/editor/surface/embedding/session-surface-bridge";
 import { ViteEditorHost } from "./host/vite-editor-host";
 import { createViteEditorHost } from "./host/vite-host-config";
 import { ProjectPicker } from "./project-picker";
@@ -110,9 +109,7 @@ function EditorApp() {
 								onExitProject={exitProject}
 							>
 								<MobileGate>
-									<EditorProvider>
-										<EditorRoot />
-									</EditorProvider>
+									<SessionEditorSurface focusMode="focused" />
 								</MobileGate>
 							</ViteEditorHost>
 						</EditorErrorBoundary>

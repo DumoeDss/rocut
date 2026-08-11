@@ -18,7 +18,8 @@ import { TIMELINE_ZOOM_BUTTON_FACTOR } from "./interaction";
 import { TIMELINE_ZOOM_MAX } from "@/timeline/scale";
 import { sliderToZoom, zoomToSlider } from "@/timeline/zoom-utils";
 import { ScenesView } from "@/components/editor/scenes-view";
-import { type TActionWithOptionalArgs, invokeAction } from "@/actions";
+import { type TActionWithOptionalArgs } from "@/actions";
+import { useActionInvoker } from "@/actions/action-scope";
 import {
 	canToggleSourceAudio,
 	getSourceAudioActionLabel,
@@ -87,6 +88,7 @@ export function TimelineToolbar({
 }
 
 function ToolbarLeftSection() {
+	const invokeAction = useActionInvoker();
 	const editor = useEditorInstance();
 	const mediaAssets = useEditor((currentEditor) =>
 		currentEditor.media.getAssets(),

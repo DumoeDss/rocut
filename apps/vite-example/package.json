@@ -9,7 +9,8 @@
 		"build:headless": "vite build --config vite.headless.config.ts",
 		"preview": "vite preview",
 		"typecheck": "tsc --noEmit -p tsconfig.json",
-		"test:parity": "playwright test"
+		"test:parity": "playwright test",
+		"test:surface": "playwright test --config playwright.surface.config.ts"
 	},
 	"dependencies": {
 		"@opencut/web": "workspace:*",
