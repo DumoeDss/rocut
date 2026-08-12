@@ -10,6 +10,8 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useSurfaceDragCoordinator } from "@/editor/surface/embedding/surface-drag-coordinator";
+import { useSurfacePortalOwner } from "@/editor/surface/embedding/surface-portal";
 import { useEditorInstance } from "@/editor/use-editor";
 import type { TimelineDragData } from "@/timeline/drag";
 import { cn } from "@/utils/ui";
@@ -49,6 +51,8 @@ export function DraggableItem({
 	const [isDragging, setIsDragging] = useState(false);
 	const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });
 	const dragRef = useRef<HTMLDivElement>(null);
+	const dragCoordinator = useSurfaceDragCoordinator();
+	const portalOwner = useSurfacePortalOwner();
 	const editor = useEditorInstance();
 
 	const handleAddToTimeline = () => {
@@ -61,17 +65,12 @@ export function DraggableItem({
 
 	useEffect(() => {
 		if (!isDragging) return;
-
-		const handleDragOver = (e: DragEvent) => {
-			setDragPosition({ x: e.clientX, y: e.clientY });
-		};
-
-		document.addEventListener("dragover", handleDragOver);
-
-		return () => {
-			document.removeEventListener("dragover", handleDragOver);
-		};
-	}, [isDragging]);
+		return dragCoordinator.start({
+			kind: "native",
+			move: (event) => setDragPosition({ x: event.clientX, y: event.clientY }),
+			cancel: () => setIsDragging(false),
+		});
+	}, [dragCoordinator, isDragging]);
 
 	const handleDragStart = (event: React.DragEvent) => {
 		event.dataTransfer.setDragImage(emptyImg, 0, 0);
@@ -167,7 +166,7 @@ export function DraggableItem({
 
 			{isDraggable &&
 				isDragging &&
-				typeof document !== "undefined" &&
+				portalOwner &&
 				createPortal(
 					<div
 						className="pointer-events-none fixed z-9999"
@@ -193,7 +192,7 @@ export function DraggableItem({
 							</AspectRatio>
 						</div>
 					</div>,
-					document.body,
+					portalOwner,
 				)}
 		</>
 	);

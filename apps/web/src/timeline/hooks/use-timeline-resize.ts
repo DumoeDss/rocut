@@ -6,6 +6,7 @@ import { useElementSelection } from "@/timeline/hooks/element/use-element-select
 import { useTimelineStore } from "@/editor/use-session-store";
 import { registerCanceller } from "@/editor/cancel-interaction";
 import { useEditorSession } from "@/editor/session/editor-session-provider";
+import { useSurfaceDragCoordinator } from "@/editor/surface/embedding/surface-drag-coordinator";
 import {
 	ResizeController,
 	type ResizeConfig,
@@ -27,6 +28,7 @@ export function useTimelineResize({
 }: UseTimelineResizeProps) {
 	const editor = useEditorInstance();
 	const session = useEditorSession();
+	const dragCoordinator = useSurfaceDragCoordinator();
 	const isShiftHeldRef = useShiftKey();
 	const snappingEnabled = useTimelineStore((state) => state.snappingEnabled);
 	const { selectedElements } = useElementSelection();
@@ -34,7 +36,7 @@ export function useTimelineResize({
 	const config: ResizeConfig = {
 		zoomLevel,
 		snappingEnabled,
-		isShiftHeld: () => isShiftHeldRef.current,
+		isShiftHeld: () => isShiftHeldRef.current ?? false,
 		getSceneTracks: () => editor.scenes.getActiveScene().tracks,
 		getCurrentPlayheadTime: () => editor.playback.getCurrentTime(),
 		getActiveProjectFps: () => editor.project.getActive()?.settings.fps ?? null,
@@ -57,6 +59,8 @@ export function useTimelineResize({
 				})),
 			}),
 		onSnapPointChange,
+		startMouseDrag: ({ move, finish, cancel }) =>
+			dragCoordinator.start({ kind: "mouse", move, finish, cancel }),
 	};
 	const configRef = useCommittedRef(config);
 	const [controller] = useState(() => new ResizeController({ configRef }));

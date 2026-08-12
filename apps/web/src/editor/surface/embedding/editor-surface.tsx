@@ -10,8 +10,12 @@ import { EditorRoot } from "@/editor/surface/editor-root";
 import { cn } from "@/utils/ui";
 
 import { SurfaceCommitProvider } from "./surface-commit-context";
+import { SurfaceDragProvider } from "./surface-drag-coordinator";
+import { SurfaceErrorBoundary } from "./surface-error-boundary";
+import { SurfaceEvidenceSeams } from "./surface-evidence-seams";
 import { FOCUS_MODE_MATRIX, installSurfaceFocusScope } from "./surface-focus";
 import { createSurfaceLifecycleController } from "./surface-lifecycle";
+import { SurfacePortalProvider } from "./surface-portal";
 import type { EditorSurfaceProps, FocusMode } from "./types";
 
 export function EditorSurface({
@@ -77,25 +81,42 @@ export function EditorSurface({
 		<div
 			ref={rootRef}
 			data-editor-surface={cssNamespace}
+			role="region"
+			aria-label="Video editor"
 			tabIndex={FOCUS_MODE_MATRIX[focusMode].tabIndex}
 			className={cn("size-full", className)}
 		>
-			<ActionScopeProvider scope={actionScope}>
-				<EditorHostProvider host={session.host}>
-					<EditorSessionProvider session={session}>
-						<SurfaceCommitProvider binding={commitBinding ?? null}>
-							<EditorProvider
-								keybindingScope={{
-									targetRef: rootRef,
-									enabled: FOCUS_MODE_MATRIX[focusMode].keyboard,
-								}}
-							>
-								<EditorRoot />
-							</EditorProvider>
-						</SurfaceCommitProvider>
-					</EditorSessionProvider>
-				</EditorHostProvider>
-			</ActionScopeProvider>
+			{/*
+			 * Provider ORDER IS load-bearing: `SurfaceDragProvider` must stay an
+			 * ancestor of `EditorSessionProvider`. Its unmount cleanup cancels any
+			 * live drag, and cancel now commits (number-field `onScrubEnd`,
+			 * color-picker `onChangeEnd`, playhead view state), so that commit must
+			 * dispatch while the session below is still alive. Swapping these two
+			 * would route a teardown commit into a disposed session.
+			 */}
+			<SurfaceErrorBoundary onError={(error) => onErrorRef.current?.(error)}>
+				<SurfacePortalProvider namespace={cssNamespace}>
+					<SurfaceDragProvider>
+						<SurfaceEvidenceSeams namespace={cssNamespace} />
+						<ActionScopeProvider scope={actionScope}>
+							<EditorHostProvider host={session.host}>
+								<EditorSessionProvider session={session}>
+									<SurfaceCommitProvider binding={commitBinding ?? null}>
+										<EditorProvider
+											keybindingScope={{
+												targetRef: rootRef,
+												enabled: FOCUS_MODE_MATRIX[focusMode].keyboard,
+											}}
+										>
+											<EditorRoot />
+										</EditorProvider>
+									</SurfaceCommitProvider>
+								</EditorSessionProvider>
+							</EditorHostProvider>
+						</ActionScopeProvider>
+					</SurfaceDragProvider>
+				</SurfacePortalProvider>
+			</SurfaceErrorBoundary>
 		</div>
 	);
 }

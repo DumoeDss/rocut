@@ -31,7 +31,7 @@ export function usePreviewInteraction({
 			screenPixelsToLogicalThreshold: viewport.screenPixelsToLogicalThreshold,
 		},
 		input: {
-			isShiftHeld: () => isShiftHeldRef.current,
+			isShiftHeld: () => isShiftHeldRef.current ?? false,
 		},
 		scene: {
 			getTracks: () => editor.scenes.getActiveScene().tracks,

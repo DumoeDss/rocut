@@ -173,7 +173,7 @@ describe("Surface focus scope", () => {
 		cleanup();
 	});
 
-	test("focused pointer and non-passive wheel stay inside their root", () => {
+	test("focused root pointer stays local without blocking descendant React handlers", () => {
 		const document = { activeElement: null as FakeElement | null };
 		const root = new FakeRoot(document, "root");
 		const child = new FakeElement(document, "child");
@@ -185,7 +185,7 @@ describe("Surface focus scope", () => {
 
 		const childPointer = new FakeEvent(child);
 		root.dispatch("pointerdown", childPointer);
-		expect(childPointer.propagationStopped).toBe(true);
+		expect(childPointer.propagationStopped).toBe(false);
 		expect(root.focusCount).toBe(0);
 
 		const backgroundPointer = new FakeEvent(root);

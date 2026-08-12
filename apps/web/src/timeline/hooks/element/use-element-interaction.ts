@@ -5,6 +5,7 @@ import { useShiftKey } from "@/hooks/use-shift-key";
 import { useElementSelection } from "@/timeline/hooks/element/use-element-selection";
 import { registerCanceller } from "@/editor/cancel-interaction";
 import { useEditorSession } from "@/editor/session/editor-session-provider";
+import { useSurfaceDragCoordinator } from "@/editor/surface/embedding/surface-drag-coordinator";
 import {
 	ElementInteractionController,
 	type ElementInteractionDeps,
@@ -31,10 +32,13 @@ export function useElementInteraction({
 }: UseElementInteractionProps) {
 	const editor = useEditorInstance();
 	const session = useEditorSession();
+	const dragCoordinator = useSurfaceDragCoordinator();
 	const isShiftHeldRef = useShiftKey();
 	const selection = useElementSelection();
 
 	const deps: ElementInteractionDeps = {
+		startMouseDrag: ({ move, finish, cancel }) =>
+			dragCoordinator.start({ kind: "mouse", move, finish, cancel }),
 		viewport: {
 			getZoomLevel: () => zoomLevel,
 			getTracksScrollEl: () => tracksScrollRef.current,
@@ -42,7 +46,7 @@ export function useElementInteraction({
 			getHeaderEl: () => headerRef?.current ?? null,
 		},
 		input: {
-			isShiftHeld: () => isShiftHeldRef.current,
+			isShiftHeld: () => isShiftHeldRef.current ?? false,
 		},
 		scene: {
 			getTracks: () => editor.scenes.getActiveScene().tracks,

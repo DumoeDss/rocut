@@ -1,0 +1,2166 @@
+{
+  "schema": "c6-session-disposal-v1",
+  "clean": true,
+  "cycles": [
+    {
+      "cycle": 1,
+      "beforeDispose": {
+        "timer": {
+          "created": 43
+        },
+        "worker": {
+          "created": 1
+        },
+        "audioContext": {
+          "created": 1
+        },
+        "objectUrl": {
+          "created": 1
+        },
+        "gpuResource": {
+          "created": 1
+        }
+      },
+      "report": {
+        "timer": {
+          "created": 43,
+          "released": 43
+        },
+        "worker": {
+          "created": 1,
+          "released": 1
+        },
+        "audioContext": {
+          "created": 1,
+          "released": 1
+        },
+        "objectUrl": {
+          "created": 1,
+          "released": 1
+        },
+        "gpuResource": {
+          "created": 1,
+          "released": 1
+        },
+        "releaseOrder": [
+          {
+            "resourceId": "resource:timer-2",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-4",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-5",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-6",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-7",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-8",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-9",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-10",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-11",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-12",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-13",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-14",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-15",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-16",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-17",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-18",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-19",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-20",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-21",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-22",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-23",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-24",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-25",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-26",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-27",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-28",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-29",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-30",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-31",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-32",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-33",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-34",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-35",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-36",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-37",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-38",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-3",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:worker-1",
+            "resourceClass": "worker"
+          },
+          {
+            "resourceId": "resource:timer-1",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-40",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-41",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-42",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-43",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-39",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:gpuResource-1",
+            "resourceClass": "gpuResource"
+          },
+          {
+            "resourceId": "resource:objectUrl-1",
+            "resourceClass": "objectUrl"
+          },
+          {
+            "resourceId": "resource:audioContext-1",
+            "resourceClass": "audioContext"
+          }
+        ],
+        "gpuReconciliation": {
+          "source": "runtime",
+          "untracked": [],
+          "leaked": []
+        }
+      },
+      "platform": {
+        "timer": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "worker": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "audioContext": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "objectUrl": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "gpuResource": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "runtime liveHandles() is empty"
+        }
+      },
+      "independentPlatform": {
+        "timer": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "worker": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "audioContext": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "objectUrl": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "gpuResource": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "runtime liveHandles() is empty"
+        }
+      },
+      "lifecycle": {
+        "projectIdBefore": "c6-disposal-ordinary-1",
+        "projectIdAfter": "c6-disposal-ordinary-1",
+        "rootMountedDuringSuspend": true,
+        "rootMountedAfterResume": true,
+        "sameEditor": true,
+        "postResumeOperation": true
+      },
+      "platformProof": {
+        "timerCallbacksBeforeDispose": 46,
+        "timerCallbacksAfterDispose": 46,
+        "timerTerminal": true,
+        "workerMessagesBeforeDispose": 1,
+        "workerMessagesAfterDispose": 1,
+        "workerErrorsBeforeDispose": 0,
+        "workerErrorsAfterDispose": 0,
+        "workerTerminal": true,
+        "audioStateBeforeDispose": "running",
+        "audioStateAfterDispose": "closed",
+        "audioTerminal": true,
+        "objectUrlFetchedBeforeDispose": true,
+        "objectUrlFetchAfterDispose": false,
+        "objectUrlTerminal": true,
+        "gpuTerminal": true,
+        "suspendedDwell": {
+          "timerCallbacksBefore": 46,
+          "timerCallbacksAfter": 46,
+          "workerMessagesBefore": 1,
+          "workerMessagesAfter": 1,
+          "workerErrorsBefore": 0,
+          "workerErrorsAfter": 0,
+          "savePublicationsBefore": 0,
+          "savePublicationsAfter": 0,
+          "renderPublicationsBefore": 34,
+          "renderPublicationsAfter": 34,
+          "timerResourcesCreatedBefore": 38,
+          "timerResourcesCreatedAfter": 38,
+          "rendererBeforeSuspend": {
+            "publications": 34,
+            "generation": 0,
+            "resourceId": "resource:timer-37"
+          },
+          "rendererDwellAfter": {
+            "publications": 34,
+            "generation": 0,
+            "resourceId": "resource:timer-37"
+          },
+          "rendererAfterResume": {
+            "publications": 36,
+            "generation": 1,
+            "resourceId": "resource:timer-42"
+          },
+          "acquisitionRefused": true,
+          "postResumeActivity": true
+        }
+      },
+      "runtime": {
+        "selectedBackend": "webgl",
+        "concurrentCompositorInstances": 1,
+        "compositorHandle": 1,
+        "liveHandlesBeforeDispose": [
+          1
+        ],
+        "liveHandlesAfterDispose": [],
+        "disposeError": null
+      }
+    },
+    {
+      "cycle": 2,
+      "beforeDispose": {
+        "timer": {
+          "created": 44
+        },
+        "worker": {
+          "created": 1
+        },
+        "audioContext": {
+          "created": 1
+        },
+        "objectUrl": {
+          "created": 1
+        },
+        "gpuResource": {
+          "created": 1
+        }
+      },
+      "report": {
+        "timer": {
+          "created": 44,
+          "released": 44
+        },
+        "worker": {
+          "created": 1,
+          "released": 1
+        },
+        "audioContext": {
+          "created": 1,
+          "released": 1
+        },
+        "objectUrl": {
+          "created": 1,
+          "released": 1
+        },
+        "gpuResource": {
+          "created": 1,
+          "released": 1
+        },
+        "releaseOrder": [
+          {
+            "resourceId": "resource:timer-45",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-47",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-48",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-49",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-50",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-51",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-52",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-53",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-54",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-55",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-56",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-57",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-58",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-59",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-60",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-61",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-62",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-63",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-64",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-65",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-66",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-67",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-68",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-69",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-70",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-71",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-72",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-73",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-74",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-75",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-76",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-77",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-78",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-79",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-80",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-81",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-46",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:worker-2",
+            "resourceClass": "worker"
+          },
+          {
+            "resourceId": "resource:timer-44",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-83",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-84",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-85",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-86",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-87",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-82",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:gpuResource-2",
+            "resourceClass": "gpuResource"
+          },
+          {
+            "resourceId": "resource:objectUrl-2",
+            "resourceClass": "objectUrl"
+          },
+          {
+            "resourceId": "resource:audioContext-2",
+            "resourceClass": "audioContext"
+          }
+        ],
+        "gpuReconciliation": {
+          "source": "runtime",
+          "untracked": [],
+          "leaked": []
+        }
+      },
+      "platform": {
+        "timer": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "worker": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "audioContext": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "objectUrl": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "gpuResource": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "runtime liveHandles() is empty"
+        }
+      },
+      "independentPlatform": {
+        "timer": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "worker": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "audioContext": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "objectUrl": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "gpuResource": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "runtime liveHandles() is empty"
+        }
+      },
+      "lifecycle": {
+        "projectIdBefore": "c6-disposal-ordinary-2",
+        "projectIdAfter": "c6-disposal-ordinary-2",
+        "rootMountedDuringSuspend": true,
+        "rootMountedAfterResume": true,
+        "sameEditor": true,
+        "postResumeOperation": true
+      },
+      "platformProof": {
+        "timerCallbacksBeforeDispose": 45,
+        "timerCallbacksAfterDispose": 45,
+        "timerTerminal": true,
+        "workerMessagesBeforeDispose": 1,
+        "workerMessagesAfterDispose": 1,
+        "workerErrorsBeforeDispose": 0,
+        "workerErrorsAfterDispose": 0,
+        "workerTerminal": true,
+        "audioStateBeforeDispose": "running",
+        "audioStateAfterDispose": "closed",
+        "audioTerminal": true,
+        "objectUrlFetchedBeforeDispose": true,
+        "objectUrlFetchAfterDispose": false,
+        "objectUrlTerminal": true,
+        "gpuTerminal": true,
+        "suspendedDwell": {
+          "timerCallbacksBefore": 45,
+          "timerCallbacksAfter": 45,
+          "workerMessagesBefore": 1,
+          "workerMessagesAfter": 1,
+          "workerErrorsBefore": 0,
+          "workerErrorsAfter": 0,
+          "savePublicationsBefore": 0,
+          "savePublicationsAfter": 0,
+          "renderPublicationsBefore": 34,
+          "renderPublicationsAfter": 34,
+          "timerResourcesCreatedBefore": 38,
+          "timerResourcesCreatedAfter": 38,
+          "rendererBeforeSuspend": {
+            "publications": 34,
+            "generation": 0,
+            "resourceId": "resource:timer-80"
+          },
+          "rendererDwellAfter": {
+            "publications": 34,
+            "generation": 0,
+            "resourceId": "resource:timer-80"
+          },
+          "rendererAfterResume": {
+            "publications": 37,
+            "generation": 1,
+            "resourceId": "resource:timer-86"
+          },
+          "acquisitionRefused": true,
+          "postResumeActivity": true
+        }
+      },
+      "runtime": {
+        "selectedBackend": "webgl",
+        "concurrentCompositorInstances": 1,
+        "compositorHandle": 1,
+        "liveHandlesBeforeDispose": [
+          1
+        ],
+        "liveHandlesAfterDispose": [],
+        "disposeError": null
+      }
+    },
+    {
+      "cycle": 3,
+      "beforeDispose": {
+        "timer": {
+          "created": 41
+        },
+        "worker": {
+          "created": 1
+        },
+        "audioContext": {
+          "created": 1
+        },
+        "objectUrl": {
+          "created": 1
+        },
+        "gpuResource": {
+          "created": 1
+        }
+      },
+      "report": {
+        "timer": {
+          "created": 41,
+          "released": 41
+        },
+        "worker": {
+          "created": 1,
+          "released": 1
+        },
+        "audioContext": {
+          "created": 1,
+          "released": 1
+        },
+        "objectUrl": {
+          "created": 1,
+          "released": 1
+        },
+        "gpuResource": {
+          "created": 1,
+          "released": 1
+        },
+        "releaseOrder": [
+          {
+            "resourceId": "resource:timer-89",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-91",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-92",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-93",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-94",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-95",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-96",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-97",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-98",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-99",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-100",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-101",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-102",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-103",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-104",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-105",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-106",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-107",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-108",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-109",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-110",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-111",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-112",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-113",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-114",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-115",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-116",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-117",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-118",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-119",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-120",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-121",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-122",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-90",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:worker-3",
+            "resourceClass": "worker"
+          },
+          {
+            "resourceId": "resource:timer-88",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-124",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-125",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-126",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-127",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-128",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-123",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:gpuResource-3",
+            "resourceClass": "gpuResource"
+          },
+          {
+            "resourceId": "resource:objectUrl-3",
+            "resourceClass": "objectUrl"
+          },
+          {
+            "resourceId": "resource:audioContext-3",
+            "resourceClass": "audioContext"
+          }
+        ],
+        "gpuReconciliation": {
+          "source": "runtime",
+          "untracked": [],
+          "leaked": []
+        }
+      },
+      "platform": {
+        "timer": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "worker": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "audioContext": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "objectUrl": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "gpuResource": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "runtime liveHandles() is empty"
+        }
+      },
+      "independentPlatform": {
+        "timer": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "worker": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "audioContext": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "objectUrl": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "gpuResource": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "runtime liveHandles() is empty"
+        }
+      },
+      "lifecycle": {
+        "projectIdBefore": "c6-disposal-ordinary-3",
+        "projectIdAfter": "c6-disposal-ordinary-3",
+        "rootMountedDuringSuspend": true,
+        "rootMountedAfterResume": true,
+        "sameEditor": true,
+        "postResumeOperation": true
+      },
+      "platformProof": {
+        "timerCallbacksBeforeDispose": 41,
+        "timerCallbacksAfterDispose": 41,
+        "timerTerminal": true,
+        "workerMessagesBeforeDispose": 1,
+        "workerMessagesAfterDispose": 1,
+        "workerErrorsBeforeDispose": 0,
+        "workerErrorsAfterDispose": 0,
+        "workerTerminal": true,
+        "audioStateBeforeDispose": "running",
+        "audioStateAfterDispose": "closed",
+        "audioTerminal": true,
+        "objectUrlFetchedBeforeDispose": true,
+        "objectUrlFetchAfterDispose": false,
+        "objectUrlTerminal": true,
+        "gpuTerminal": true,
+        "suspendedDwell": {
+          "timerCallbacksBefore": 41,
+          "timerCallbacksAfter": 41,
+          "workerMessagesBefore": 1,
+          "workerMessagesAfter": 1,
+          "workerErrorsBefore": 0,
+          "workerErrorsAfter": 0,
+          "savePublicationsBefore": 0,
+          "savePublicationsAfter": 0,
+          "renderPublicationsBefore": 31,
+          "renderPublicationsAfter": 31,
+          "timerResourcesCreatedBefore": 35,
+          "timerResourcesCreatedAfter": 35,
+          "rendererBeforeSuspend": {
+            "publications": 31,
+            "generation": 0,
+            "resourceId": "resource:timer-121"
+          },
+          "rendererDwellAfter": {
+            "publications": 31,
+            "generation": 0,
+            "resourceId": "resource:timer-121"
+          },
+          "rendererAfterResume": {
+            "publications": 34,
+            "generation": 1,
+            "resourceId": "resource:timer-127"
+          },
+          "acquisitionRefused": true,
+          "postResumeActivity": true
+        }
+      },
+      "runtime": {
+        "selectedBackend": "webgl",
+        "concurrentCompositorInstances": 1,
+        "compositorHandle": 1,
+        "liveHandlesBeforeDispose": [
+          1
+        ],
+        "liveHandlesAfterDispose": [],
+        "disposeError": null
+      }
+    },
+    {
+      "cycle": 4,
+      "beforeDispose": {
+        "timer": {
+          "created": 40
+        },
+        "worker": {
+          "created": 1
+        },
+        "audioContext": {
+          "created": 1
+        },
+        "objectUrl": {
+          "created": 1
+        },
+        "gpuResource": {
+          "created": 1
+        }
+      },
+      "report": {
+        "timer": {
+          "created": 40,
+          "released": 40
+        },
+        "worker": {
+          "created": 1,
+          "released": 1
+        },
+        "audioContext": {
+          "created": 1,
+          "released": 1
+        },
+        "objectUrl": {
+          "created": 1,
+          "released": 1
+        },
+        "gpuResource": {
+          "created": 1,
+          "released": 1
+        },
+        "releaseOrder": [
+          {
+            "resourceId": "resource:timer-130",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-132",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-133",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-134",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-135",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-136",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-137",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-138",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-139",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-140",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-141",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-142",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-143",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-144",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-145",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-146",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-147",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-148",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-149",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-150",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-151",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-152",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-153",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-154",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-155",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-156",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-157",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-158",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-159",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-160",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-161",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-162",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-131",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:worker-4",
+            "resourceClass": "worker"
+          },
+          {
+            "resourceId": "resource:timer-129",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-164",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-165",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-166",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-167",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-168",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-163",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:gpuResource-4",
+            "resourceClass": "gpuResource"
+          },
+          {
+            "resourceId": "resource:objectUrl-4",
+            "resourceClass": "objectUrl"
+          },
+          {
+            "resourceId": "resource:audioContext-4",
+            "resourceClass": "audioContext"
+          }
+        ],
+        "gpuReconciliation": {
+          "source": "runtime",
+          "untracked": [],
+          "leaked": []
+        }
+      },
+      "platform": {
+        "timer": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "worker": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "audioContext": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "objectUrl": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "gpuResource": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "runtime liveHandles() is empty"
+        }
+      },
+      "independentPlatform": {
+        "timer": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "worker": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "audioContext": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "objectUrl": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "gpuResource": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "runtime liveHandles() is empty"
+        }
+      },
+      "lifecycle": {
+        "projectIdBefore": "c6-disposal-ordinary-4",
+        "projectIdAfter": "c6-disposal-ordinary-4",
+        "rootMountedDuringSuspend": true,
+        "rootMountedAfterResume": true,
+        "sameEditor": true,
+        "postResumeOperation": true
+      },
+      "platformProof": {
+        "timerCallbacksBeforeDispose": 40,
+        "timerCallbacksAfterDispose": 40,
+        "timerTerminal": true,
+        "workerMessagesBeforeDispose": 1,
+        "workerMessagesAfterDispose": 1,
+        "workerErrorsBeforeDispose": 0,
+        "workerErrorsAfterDispose": 0,
+        "workerTerminal": true,
+        "audioStateBeforeDispose": "running",
+        "audioStateAfterDispose": "closed",
+        "audioTerminal": true,
+        "objectUrlFetchedBeforeDispose": true,
+        "objectUrlFetchAfterDispose": false,
+        "objectUrlTerminal": true,
+        "gpuTerminal": true,
+        "suspendedDwell": {
+          "timerCallbacksBefore": 40,
+          "timerCallbacksAfter": 40,
+          "workerMessagesBefore": 1,
+          "workerMessagesAfter": 1,
+          "workerErrorsBefore": 0,
+          "workerErrorsAfter": 0,
+          "savePublicationsBefore": 0,
+          "savePublicationsAfter": 0,
+          "renderPublicationsBefore": 30,
+          "renderPublicationsAfter": 30,
+          "timerResourcesCreatedBefore": 34,
+          "timerResourcesCreatedAfter": 34,
+          "rendererBeforeSuspend": {
+            "publications": 30,
+            "generation": 0,
+            "resourceId": "resource:timer-161"
+          },
+          "rendererDwellAfter": {
+            "publications": 30,
+            "generation": 0,
+            "resourceId": "resource:timer-161"
+          },
+          "rendererAfterResume": {
+            "publications": 33,
+            "generation": 1,
+            "resourceId": "resource:timer-167"
+          },
+          "acquisitionRefused": true,
+          "postResumeActivity": true
+        }
+      },
+      "runtime": {
+        "selectedBackend": "webgl",
+        "concurrentCompositorInstances": 1,
+        "compositorHandle": 1,
+        "liveHandlesBeforeDispose": [
+          1
+        ],
+        "liveHandlesAfterDispose": [],
+        "disposeError": null
+      }
+    },
+    {
+      "cycle": 5,
+      "beforeDispose": {
+        "timer": {
+          "created": 41
+        },
+        "worker": {
+          "created": 1
+        },
+        "audioContext": {
+          "created": 1
+        },
+        "objectUrl": {
+          "created": 1
+        },
+        "gpuResource": {
+          "created": 1
+        }
+      },
+      "report": {
+        "timer": {
+          "created": 41,
+          "released": 41
+        },
+        "worker": {
+          "created": 1,
+          "released": 1
+        },
+        "audioContext": {
+          "created": 1,
+          "released": 1
+        },
+        "objectUrl": {
+          "created": 1,
+          "released": 1
+        },
+        "gpuResource": {
+          "created": 1,
+          "released": 1
+        },
+        "releaseOrder": [
+          {
+            "resourceId": "resource:timer-170",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-172",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-173",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-174",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-175",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-176",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-177",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-178",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-179",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-180",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-181",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-182",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-183",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-184",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-185",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-186",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-187",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-188",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-189",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-190",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-191",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-192",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-193",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-194",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-195",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-196",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-197",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-198",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-199",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-200",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-201",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-202",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-203",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-171",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:worker-5",
+            "resourceClass": "worker"
+          },
+          {
+            "resourceId": "resource:timer-169",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-205",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-206",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-207",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-208",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-209",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-204",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:gpuResource-5",
+            "resourceClass": "gpuResource"
+          },
+          {
+            "resourceId": "resource:objectUrl-5",
+            "resourceClass": "objectUrl"
+          },
+          {
+            "resourceId": "resource:audioContext-5",
+            "resourceClass": "audioContext"
+          }
+        ],
+        "gpuReconciliation": {
+          "source": "runtime",
+          "untracked": [],
+          "leaked": []
+        }
+      },
+      "platform": {
+        "timer": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "worker": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "audioContext": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "objectUrl": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "gpuResource": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "runtime liveHandles() is empty"
+        }
+      },
+      "independentPlatform": {
+        "timer": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "worker": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "audioContext": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "objectUrl": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "gpuResource": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "runtime liveHandles() is empty"
+        }
+      },
+      "lifecycle": {
+        "projectIdBefore": "c6-disposal-ordinary-5",
+        "projectIdAfter": "c6-disposal-ordinary-5",
+        "rootMountedDuringSuspend": true,
+        "rootMountedAfterResume": true,
+        "sameEditor": true,
+        "postResumeOperation": true
+      },
+      "platformProof": {
+        "timerCallbacksBeforeDispose": 42,
+        "timerCallbacksAfterDispose": 42,
+        "timerTerminal": true,
+        "workerMessagesBeforeDispose": 1,
+        "workerMessagesAfterDispose": 1,
+        "workerErrorsBeforeDispose": 0,
+        "workerErrorsAfterDispose": 0,
+        "workerTerminal": true,
+        "audioStateBeforeDispose": "running",
+        "audioStateAfterDispose": "closed",
+        "audioTerminal": true,
+        "objectUrlFetchedBeforeDispose": true,
+        "objectUrlFetchAfterDispose": false,
+        "objectUrlTerminal": true,
+        "gpuTerminal": true,
+        "suspendedDwell": {
+          "timerCallbacksBefore": 42,
+          "timerCallbacksAfter": 42,
+          "workerMessagesBefore": 1,
+          "workerMessagesAfter": 1,
+          "workerErrorsBefore": 0,
+          "workerErrorsAfter": 0,
+          "savePublicationsBefore": 0,
+          "savePublicationsAfter": 0,
+          "renderPublicationsBefore": 31,
+          "renderPublicationsAfter": 31,
+          "timerResourcesCreatedBefore": 35,
+          "timerResourcesCreatedAfter": 35,
+          "rendererBeforeSuspend": {
+            "publications": 31,
+            "generation": 0,
+            "resourceId": "resource:timer-202"
+          },
+          "rendererDwellAfter": {
+            "publications": 31,
+            "generation": 0,
+            "resourceId": "resource:timer-202"
+          },
+          "rendererAfterResume": {
+            "publications": 34,
+            "generation": 1,
+            "resourceId": "resource:timer-208"
+          },
+          "acquisitionRefused": true,
+          "postResumeActivity": true
+        }
+      },
+      "runtime": {
+        "selectedBackend": "webgl",
+        "concurrentCompositorInstances": 1,
+        "compositorHandle": 1,
+        "liveHandlesBeforeDispose": [
+          1
+        ],
+        "liveHandlesAfterDispose": [],
+        "disposeError": null
+      }
+    },
+    {
+      "cycle": 6,
+      "beforeDispose": {
+        "timer": {
+          "created": 41
+        },
+        "worker": {
+          "created": 1
+        },
+        "audioContext": {
+          "created": 1
+        },
+        "objectUrl": {
+          "created": 1
+        },
+        "gpuResource": {
+          "created": 1
+        }
+      },
+      "report": {
+        "timer": {
+          "created": 41,
+          "released": 41
+        },
+        "worker": {
+          "created": 1,
+          "released": 1
+        },
+        "audioContext": {
+          "created": 1,
+          "released": 1
+        },
+        "objectUrl": {
+          "created": 1,
+          "released": 1
+        },
+        "gpuResource": {
+          "created": 1,
+          "released": 1
+        },
+        "releaseOrder": [
+          {
+            "resourceId": "resource:timer-211",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-213",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-214",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-215",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-216",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-217",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-218",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-219",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-220",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-221",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-222",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-223",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-224",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-225",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-226",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-227",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-228",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-229",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-230",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-231",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-232",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-233",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-234",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-235",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-236",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-237",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-238",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-239",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-240",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-241",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-242",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-243",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-244",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-212",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:worker-6",
+            "resourceClass": "worker"
+          },
+          {
+            "resourceId": "resource:timer-210",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-246",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-247",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-248",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-249",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-250",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:timer-245",
+            "resourceClass": "timer"
+          },
+          {
+            "resourceId": "resource:gpuResource-6",
+            "resourceClass": "gpuResource"
+          },
+          {
+            "resourceId": "resource:objectUrl-6",
+            "resourceClass": "objectUrl"
+          },
+          {
+            "resourceId": "resource:audioContext-6",
+            "resourceClass": "audioContext"
+          }
+        ],
+        "gpuReconciliation": {
+          "source": "runtime",
+          "untracked": [],
+          "leaked": []
+        }
+      },
+      "platform": {
+        "timer": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "worker": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "audioContext": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "objectUrl": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "registry count is terminal"
+        },
+        "gpuResource": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "runtime liveHandles() is empty"
+        }
+      },
+      "independentPlatform": {
+        "timer": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "worker": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "audioContext": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "objectUrl": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "independent Host/global ledger is terminal"
+        },
+        "gpuResource": {
+          "residual": 0,
+          "terminal": true,
+          "detail": "runtime liveHandles() is empty"
+        }
+      },
+      "lifecycle": {
+        "projectIdBefore": "c6-disposal-ordinary-6",
+        "projectIdAfter": "c6-disposal-ordinary-6",
+        "rootMountedDuringSuspend": true,
+        "rootMountedAfterResume": true,
+        "sameEditor": true,
+        "postResumeOperation": true
+      },
+      "platformProof": {
+        "timerCallbacksBeforeDispose": 41,
+        "timerCallbacksAfterDispose": 41,
+        "timerTerminal": true,
+        "workerMessagesBeforeDispose": 1,
+        "workerMessagesAfterDispose": 1,
+        "workerErrorsBeforeDispose": 0,
+        "workerErrorsAfterDispose": 0,
+        "workerTerminal": true,
+        "audioStateBeforeDispose": "running",
+        "audioStateAfterDispose": "closed",
+        "audioTerminal": true,
+        "objectUrlFetchedBeforeDispose": true,
+        "objectUrlFetchAfterDispose": false,
+        "objectUrlTerminal": true,
+        "gpuTerminal": true,
+        "suspendedDwell": {
+          "timerCallbacksBefore": 41,
+          "timerCallbacksAfter": 41,
+          "workerMessagesBefore": 1,
+          "workerMessagesAfter": 1,
+          "workerErrorsBefore": 0,
+          "workerErrorsAfter": 0,
+          "savePublicationsBefore": 0,
+          "savePublicationsAfter": 0,
+          "renderPublicationsBefore": 31,
+          "renderPublicationsAfter": 31,
+          "timerResourcesCreatedBefore": 35,
+          "timerResourcesCreatedAfter": 35,
+          "rendererBeforeSuspend": {
+            "publications": 31,
+            "generation": 0,
+            "resourceId": "resource:timer-243"
+          },
+          "rendererDwellAfter": {
+            "publications": 31,
+            "generation": 0,
+            "resourceId": "resource:timer-243"
+          },
+          "rendererAfterResume": {
+            "publications": 34,
+            "generation": 1,
+            "resourceId": "resource:timer-249"
+          },
+          "acquisitionRefused": true,
+          "postResumeActivity": true
+        }
+      },
+      "runtime": {
+        "selectedBackend": "webgl",
+        "concurrentCompositorInstances": 1,
+        "compositorHandle": 1,
+        "liveHandlesBeforeDispose": [
+          1
+        ],
+        "liveHandlesAfterDispose": [],
+        "disposeError": null
+      }
+    }
+  ],
+  "residualSeries": {
+    "timer": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "worker": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "audioContext": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "objectUrl": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "gpuResource": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "monotonicGrowth": {
+    "timer": true,
+    "worker": true,
+    "audioContext": true,
+    "objectUrl": true,
+    "gpuResource": true
+  },
+  "failures": []
+}

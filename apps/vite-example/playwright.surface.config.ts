@@ -25,6 +25,8 @@ const nextPlaceholderEnvironment = {
 	FREESOUND_CLIENT_ID: "build-placeholder",
 	FREESOUND_API_KEY: "build-placeholder",
 	NEXT_TELEMETRY_DISABLED: "1",
+	NEXT_PUBLIC_R2_BUILD_MARKER:
+		process.env.NEXT_PUBLIC_R2_BUILD_MARKER ?? "missing-next-marker",
 };
 
 export default defineConfig({
@@ -46,7 +48,7 @@ export default defineConfig({
 			{
 				outputFile:
 					spec === "surface" || spec === "c4-next"
-						? `../../rasen/changes/s0304-surface-mount-focus-lifecycle/evidence/browser-surface/results-${host}${spec === "c4-next" ? "-c4" : ""}.json`
+						? `../../rasen/changes/${spec === "c4-next" ? "s0304-surface-mount-focus-lifecycle" : "s0304-surface-css-react-a11y"}/evidence/browser-surface/results-${host}${spec === "c4-next" ? "-c4" : ""}.json`
 						: `tests/parity-artifacts/results-${host}.json`,
 			},
 		],
@@ -60,5 +62,14 @@ export default defineConfig({
 					timeout: 120_000,
 					env: nextPlaceholderEnvironment,
 				}
-			: parityConfig.webServer,
+			: {
+					command: "bun run preview --port 4173 --strictPort --host 127.0.0.1",
+					url: "http://127.0.0.1:4173/surface-evidence.html",
+					reuseExistingServer: false,
+					timeout: 120_000,
+					env: {
+						VITE_R2_BUILD_MARKER:
+							process.env.VITE_R2_BUILD_MARKER ?? "missing-vite-marker",
+					},
+				},
 });

@@ -6,12 +6,13 @@ import { expect, test, type Page } from "@playwright/test";
 import type { DisposalReport } from "@/editor/session";
 
 import { HOST } from "./host-profile";
+import { runR2Evidence } from "./surface-r2-evidence";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(HERE, "../../../..");
 const EVIDENCE_DIR = resolve(
 	REPO_ROOT,
-	"rasen/changes/s0304-surface-mount-focus-lifecycle/evidence/browser-surface",
+	"rasen/changes/s0304-surface-css-react-a11y/evidence/browser-surface",
 	HOST,
 );
 
@@ -170,7 +171,7 @@ async function dispatchProbe(
 			const target =
 				targetName === "surface"
 					? document.querySelector<HTMLElement>(
-							'[data-editor-surface="r1-evidence-primary"]',
+							'[data-editor-surface="r1-evidence-primary"]:not([data-editor-surface-portal])',
 						)
 					: document.querySelector<HTMLElement>(
 							'[data-testid="outside-before"]',
@@ -253,7 +254,9 @@ test(`Surface matrix and lifecycle — ${HOST} host`, async ({ page }) => {
 			await expect(harness).toHaveAttribute("data-status", "ready", {
 				timeout: 180_000,
 			});
-			await expect(page.locator("[data-editor-surface]")).toHaveCount(0);
+			await expect(
+				page.locator("[data-editor-surface]:not([data-editor-surface-portal])"),
+			).toHaveCount(0);
 			measurements.beforeMount = await outsideSnapshot(page);
 			boot.asserted.push(
 				"shared harness loaded with a real prepared session and no mounted Surface",
@@ -265,7 +268,7 @@ test(`Surface matrix and lifecycle — ${HOST} host`, async ({ page }) => {
 		await runStep(slowReady, async () => {
 			await page.getByTestId("mount-primary").click();
 			const surface = page.locator(
-				'[data-editor-surface="r1-evidence-primary"]',
+				'[data-editor-surface="r1-evidence-primary"]:not([data-editor-surface-portal])',
 			);
 			await expect(surface).toBeVisible();
 			let ledger = await waitForCall(page, "underlying-ready");
@@ -321,7 +324,7 @@ test(`Surface matrix and lifecycle — ${HOST} host`, async ({ page }) => {
 					'[data-testid="primary-container"]',
 				);
 				const surface = document.querySelector<HTMLElement>(
-					'[data-editor-surface="r1-evidence-primary"]',
+					'[data-editor-surface="r1-evidence-primary"]:not([data-editor-surface-portal])',
 				);
 				if (!container || !surface)
 					throw new Error("Missing bounded Surface nodes.");
@@ -379,7 +382,7 @@ test(`Surface matrix and lifecycle — ${HOST} host`, async ({ page }) => {
 		const passive = begin("passive-controlled-request");
 		await runStep(passive, async () => {
 			const surface = page.locator(
-				'[data-editor-surface="r1-evidence-primary"]',
+				'[data-editor-surface="r1-evidence-primary"]:not([data-editor-surface-portal])',
 			);
 			await expect(surface).toHaveAttribute("tabindex", "-1");
 			const pointer = await dispatchProbe(page, "surface", "pointerdown");
@@ -401,7 +404,7 @@ test(`Surface matrix and lifecycle — ${HOST} host`, async ({ page }) => {
 		await runStep(focused, async () => {
 			await page.getByTestId("mode-focused").click();
 			const surface = page.locator(
-				'[data-editor-surface="r1-evidence-primary"]',
+				'[data-editor-surface="r1-evidence-primary"]:not([data-editor-surface-portal])',
 			);
 			await expect(surface).toHaveAttribute("tabindex", "0");
 			await expect(surface.getByText("Loading project...")).toHaveCount(0, {
@@ -434,7 +437,7 @@ test(`Surface matrix and lifecycle — ${HOST} host`, async ({ page }) => {
 		await runStep(full, async () => {
 			await page.getByTestId("mode-full").click();
 			const surface = page.locator(
-				'[data-editor-surface="r1-evidence-primary"]',
+				'[data-editor-surface="r1-evidence-primary"]:not([data-editor-surface-portal])',
 			);
 			await surface.evaluate((root) => {
 				for (const child of [...root.children]) child.setAttribute("inert", "");
@@ -484,6 +487,12 @@ test(`Surface matrix and lifecycle — ${HOST} host`, async ({ page }) => {
 			await expect(
 				page.locator('[data-surface-tab-probe="first"]'),
 			).toBeFocused();
+			await surface.evaluate((root) => {
+				for (const probe of root.querySelectorAll("[data-surface-tab-probe]")) {
+					probe.remove();
+				}
+				for (const child of [...root.children]) child.removeAttribute("inert");
+			});
 			full.asserted.push(
 				"full mode cycled the current eligible descendants and excluded disabled/hidden/negative controls",
 			);
@@ -493,10 +502,12 @@ test(`Surface matrix and lifecycle — ${HOST} host`, async ({ page }) => {
 		const multiple = begin("two-sessions-two-roots");
 		await runStep(multiple, async () => {
 			await page.getByTestId("mount-secondary").click();
-			await expect(page.locator("[data-editor-surface]")).toHaveCount(2);
+			await expect(
+				page.locator("[data-editor-surface]:not([data-editor-surface-portal])"),
+			).toHaveCount(2);
 			await waitForCall(page, "on-ready", 2);
 			const secondarySurface = page.locator(
-				'[data-editor-surface="r1-evidence-secondary"]',
+				'[data-editor-surface="r1-evidence-secondary"]:not([data-editor-surface-portal])',
 			);
 			await expect(
 				secondarySurface.getByText("Loading project..."),
@@ -548,6 +559,26 @@ test(`Surface matrix and lifecycle — ${HOST} host`, async ({ page }) => {
 				"an effectful Space shortcut changed only the focused real session; the other session state and handler count stayed unchanged",
 			);
 		});
+		const r2 = begin("r2-css-portal-react-a11y-error-resize-drag");
+		await runStep(r2, async () => {
+			const result = await runR2Evidence(page);
+			expect(result.assertions.length).toBeGreaterThan(0);
+			measurements.r2 = result;
+			measurements.afterR2 = await outsideSnapshot(page);
+			expect(measurements.afterR2).toEqual(measurements.beforeMount);
+			r2.asserted.push(...result.assertions);
+			r2.asserted.push(
+				"html/body/chrome/sentinels retained their declared styles and bounds after portal, resize, drag, and error phases",
+			);
+		});
+		const residualDialog = page.getByTestId(
+			"r2-owned-dialog-r1-evidence-primary",
+		);
+		if ((await residualDialog.count()) > 0) {
+			await page.keyboard.press("Escape");
+			await expect(residualDialog).toHaveCount(0);
+		}
+		await capture(page, r2, "04-r2-final-evidence");
 		await page.getByTestId("unmount-secondary").click();
 
 		const visibilityStep = begin("visibility-resource-ledger");
@@ -593,7 +624,7 @@ test(`Surface matrix and lifecycle — ${HOST} host`, async ({ page }) => {
 		const cleanup = begin("listener-cleanup-and-host-disposal-cycles");
 		await runStep(cleanup, async () => {
 			const surface = page.locator(
-				'[data-editor-surface="r1-evidence-primary"]',
+				'[data-editor-surface="r1-evidence-primary"]:not([data-editor-surface-portal])',
 			);
 			await surface.evaluate((node) => {
 				Reflect.set(window, "__r1RetiredSurface", node);
@@ -695,6 +726,13 @@ test(`Surface matrix and lifecycle — ${HOST} host`, async ({ page }) => {
 	expect(
 		failed.map((step) => `${step.id}: ${step.error}`),
 		"no Surface matrix/lifecycle step may fail",
+	).toEqual([]);
+	const unexpectedConsoleErrors = consoleErrors.filter(
+		(message) => !message.includes("R2 deterministic render failure"),
+	);
+	expect(
+		unexpectedConsoleErrors,
+		"no unexpected browser console/page error may survive R2 evidence",
 	).toEqual([]);
 });
 

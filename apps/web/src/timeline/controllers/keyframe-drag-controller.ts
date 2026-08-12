@@ -73,6 +73,11 @@ export interface KeyframeDragConfig {
 	executeCommand: (command: Command) => void;
 	seek: (args: { time: MediaTime }) => void;
 	getTotalDuration: () => MediaTime;
+	startMouseDrag: (registration: {
+		move: (event: MouseEvent) => void;
+		finish: (event: MouseEvent) => void;
+		cancel: () => void;
+	}) => () => void;
 }
 
 export interface KeyframeDragConfigRef {
@@ -87,6 +92,7 @@ export class KeyframeDragController {
 	private mouseDownX: number | null = null;
 	private readonly subscribers = new Set<() => void>();
 	private readonly configRef: KeyframeDragConfigRef;
+	private stopDrag: (() => void) | null = null;
 
 	constructor(deps: { configRef: KeyframeDragConfigRef }) {
 		this.configRef = deps.configRef;
@@ -242,13 +248,17 @@ export class KeyframeDragController {
 	}
 
 	private activate(): void {
-		document.addEventListener("mousemove", this.handleMouseMove);
-		document.addEventListener("mouseup", this.handleMouseUp);
+		this.stopDrag = this.config.startMouseDrag({
+			move: this.handleMouseMove,
+			finish: this.handleMouseUp,
+			cancel: () => this.cancel(),
+		});
 	}
 
 	private deactivate(): void {
-		document.removeEventListener("mousemove", this.handleMouseMove);
-		document.removeEventListener("mouseup", this.handleMouseUp);
+		const stopDrag = this.stopDrag;
+		this.stopDrag = null;
+		stopDrag?.();
 	}
 
 	private notify(): void {
@@ -282,14 +292,14 @@ export class KeyframeDragController {
 					elementId: ref.elementId,
 					propertyPath: ref.propertyPath,
 					keyframeId: ref.keyframeId,
-				nextTime: clampMediaTime({
-					time: addMediaTime({
-						a: keyframe.time,
-						b: mediaTime({ ticks: deltaTicks }),
+					nextTime: clampMediaTime({
+						time: addMediaTime({
+							a: keyframe.time,
+							b: mediaTime({ ticks: deltaTicks }),
+						}),
+						min: ZERO_MEDIA_TIME,
+						max: element.duration,
 					}),
-					min: ZERO_MEDIA_TIME,
-					max: element.duration,
-				}),
 				}),
 			];
 		});

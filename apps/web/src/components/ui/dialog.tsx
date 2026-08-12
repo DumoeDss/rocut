@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { X } from "lucide-react";
+import { useSurfacePortalContainer } from "@/editor/surface/embedding/surface-portal";
 import { cn } from "@/utils/ui";
 import { useOverlayOpenChange } from "./use-overlay-open-change";
 
@@ -26,7 +27,12 @@ function Dialog({
 
 const DialogTrigger = DialogPrimitive.Trigger;
 
-const DialogPortal = DialogPrimitive.Portal;
+function DialogPortal(
+	props: React.ComponentProps<typeof DialogPrimitive.Portal>,
+) {
+	const container = useSurfacePortalContainer(props.container);
+	return <DialogPrimitive.Portal {...props} container={container} />;
+}
 
 const DialogClose = DialogPrimitive.Close;
 
@@ -54,13 +60,9 @@ const DialogContent = React.forwardRef<
 		<DialogPrimitive.Content
 			ref={ref}
 			className={cn(
-				"bg-popover fixed top-[50%] left-[50%] z-250 grid w-[calc(100%-2rem)] max-w-lg translate-x-[-50%] translate-y-[-50%] rounded-lg border shadow-lg duration-200",
+				"bg-popover text-popover-foreground fixed top-[50%] left-[50%] z-250 grid w-[calc(100%-2rem)] max-w-lg translate-x-[-50%] translate-y-[-50%] rounded-lg border shadow-lg duration-200",
 				className,
 			)}
-			onCloseAutoFocus={(e) => {
-				e.stopPropagation();
-				e.preventDefault();
-			}}
 			{...props}
 		>
 			{children}

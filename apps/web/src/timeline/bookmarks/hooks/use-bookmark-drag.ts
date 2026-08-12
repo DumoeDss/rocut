@@ -7,6 +7,7 @@ import {
 } from "react";
 import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { useShiftKey } from "@/hooks/use-shift-key";
+import { useSurfaceDragCoordinator } from "@/editor/surface/embedding/surface-drag-coordinator";
 import { TIMELINE_DRAG_THRESHOLD_PX } from "@/timeline/components/interaction";
 import { getMouseTimeFromClientX } from "@/timeline/drag-utils";
 import {
@@ -48,6 +49,7 @@ export function useBookmarkDrag({
 	onSnapPointChange,
 }: UseBookmarkDragProps) {
 	const editor = useEditorInstance();
+	const dragCoordinator = useSurfaceDragCoordinator();
 	const isShiftHeldRef = useShiftKey();
 	const [tracks, bookmarks, playheadTime, duration] = useEditor(
 		(currentEditor) => {
@@ -150,7 +152,6 @@ export function useBookmarkDrag({
 					pendingDragRef.current;
 				const deltaX = Math.abs(event.clientX - startMouseX);
 				const deltaY = Math.abs(event.clientY - startMouseY);
-
 				if (
 					deltaX <= TIMELINE_DRAG_THRESHOLD_PX &&
 					deltaY <= TIMELINE_DRAG_THRESHOLD_PX
@@ -160,123 +161,88 @@ export function useBookmarkDrag({
 
 				const activeProject = editor.project.getActive();
 				if (!activeProject) return;
-
-				const scrollLeft = scrollContainer.scrollLeft;
 				const mouseTime = getMouseTimeFromClientX({
 					clientX: event.clientX,
 					containerRect: scrollContainer.getBoundingClientRect(),
 					zoomLevel,
-					scrollLeft,
+					scrollLeft: scrollContainer.scrollLeft,
 				});
-				const clampedTime = mouseTime > duration ? duration : mouseTime;
 				const frameSnappedTime = roundFrameTime({
-					time: clampedTime,
+					time: mouseTime > duration ? duration : mouseTime,
 					fps: activeProject.settings.fps,
 				});
 				const { snappedTime: initialTime } = getSnapResult({
 					rawTime: frameSnappedTime,
 					excludeBookmarkTime: bookmarkTime,
 				});
-
-				startDrag({
-					bookmarkTime,
-					initialCurrentTime: initialTime,
-				});
+				startDrag({ bookmarkTime, initialCurrentTime: initialTime });
 				pendingDragRef.current = null;
 				setIsPendingDrag(false);
 				return;
 			}
 
 			if (!dragState.isDragging || dragState.bookmarkTime === null) return;
-
 			const activeProject = editor.project.getActive();
 			if (!activeProject) return;
-
-			const scrollLeft = scrollContainer.scrollLeft;
 			const mouseTime = getMouseTimeFromClientX({
 				clientX: event.clientX,
 				containerRect: scrollContainer.getBoundingClientRect(),
 				zoomLevel,
-				scrollLeft,
+				scrollLeft: scrollContainer.scrollLeft,
 			});
-			const clampedTime = mouseTime > duration ? duration : mouseTime;
 			const frameSnappedTime = roundFrameTime({
-				time: clampedTime,
+				time: mouseTime > duration ? duration : mouseTime,
 				fps: activeProject.settings.fps,
 			});
 			const snapResult = getSnapResult({
 				rawTime: frameSnappedTime,
 				excludeBookmarkTime: dragState.bookmarkTime,
 			});
-
-			setDragState((previousDragState) => ({
-				...previousDragState,
+			setDragState((previous) => ({
+				...previous,
 				currentTime: snapResult.snappedTime,
 			}));
 			onSnapPointChange?.(snapResult.snapPoint);
 		};
 
-		document.addEventListener("mousemove", handleMouseMove);
-		return () => document.removeEventListener("mousemove", handleMouseMove);
-	}, [
-		dragState.isDragging,
-		dragState.bookmarkTime,
-		zoomLevel,
-		duration,
-		editor.project,
-		scrollRef,
-		isPendingDrag,
-		startDrag,
-		getSnapResult,
-		onSnapPointChange,
-	]);
-
-	useEffect(() => {
-		if (!dragState.isDragging) return;
-
-		const handleMouseUp = () => {
-			if (dragState.bookmarkTime === null) {
-				endDrag();
-				onSnapPointChange?.(null);
-				return;
-			}
-
-			const clampedTime =
-				dragState.currentTime > duration ? duration : dragState.currentTime;
-
-			editor.scenes.moveBookmark({
-				fromTime: dragState.bookmarkTime,
-				toTime: clampedTime,
-			});
-
+		const clear = () => {
+			pendingDragRef.current = null;
+			setIsPendingDrag(false);
 			endDrag();
 			onSnapPointChange?.(null);
 		};
 
-		document.addEventListener("mouseup", handleMouseUp);
-		return () => document.removeEventListener("mouseup", handleMouseUp);
+		return dragCoordinator.start({
+			kind: "mouse",
+			move: handleMouseMove,
+			finish: () => {
+				if (dragState.isDragging && dragState.bookmarkTime !== null) {
+					editor.scenes.moveBookmark({
+						fromTime: dragState.bookmarkTime,
+						toTime:
+							dragState.currentTime > duration
+								? duration
+								: dragState.currentTime,
+					});
+				}
+				clear();
+			},
+			cancel: clear,
+		});
 	}, [
-		dragState.isDragging,
-		dragState.bookmarkTime,
-		dragState.currentTime,
+		dragCoordinator,
+		dragState,
 		duration,
-		endDrag,
-		onSnapPointChange,
+		editor.project,
 		editor.scenes,
+		endDrag,
+		getSnapResult,
+		isPendingDrag,
+		onSnapPointChange,
+		scrollRef,
+		startDrag,
+		zoomLevel,
 	]);
-
-	useEffect(() => {
-		if (!isPendingDrag) return;
-
-		const handleMouseUp = () => {
-			pendingDragRef.current = null;
-			setIsPendingDrag(false);
-			onSnapPointChange?.(null);
-		};
-
-		document.addEventListener("mouseup", handleMouseUp);
-		return () => document.removeEventListener("mouseup", handleMouseUp);
-	}, [isPendingDrag, onSnapPointChange]);
 
 	const handleBookmarkMouseDown = useCallback(
 		({ event, bookmark }: { event: React.MouseEvent; bookmark: Bookmark }) => {

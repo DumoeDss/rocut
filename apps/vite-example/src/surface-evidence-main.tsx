@@ -1,3 +1,4 @@
+import * as React from "react";
 import { createRoot } from "react-dom/client";
 import { ThemeProvider } from "next-themes";
 
@@ -33,7 +34,14 @@ createRoot(container).render(
 	>
 		<TooltipProvider>
 			<Toaster />
-			<SurfaceEvidenceHarness hostName="vite" createHost={createEvidenceHost} />
+			<SurfaceEvidenceHarness
+				hostName="vite"
+				hostReactIdentity={React}
+				buildMarker={
+					import.meta.env.VITE_R2_BUILD_MARKER ?? "missing-vite-marker"
+				}
+				createHost={createEvidenceHost}
+			/>
 		</TooltipProvider>
 	</ThemeProvider>,
 );

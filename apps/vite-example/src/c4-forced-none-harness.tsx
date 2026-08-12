@@ -19,6 +19,8 @@ import {
 	type EditorSession,
 	useEditorSession,
 } from "@/editor/session";
+import { SurfaceDragProvider } from "@/editor/surface/embedding/surface-drag-coordinator";
+import { SurfacePortalProvider } from "@/editor/surface/embedding/surface-portal";
 import { EditorRoot } from "@/editor/surface/editor-root";
 import { DEFAULT_FPS } from "@/fps/defaults";
 import type { TProject } from "@/project/types";
@@ -263,13 +265,42 @@ export function C4ForcedNoneHarness() {
 						<EditorErrorBoundary>
 							<EditorHostProvider host={session.host}>
 								<EditorSessionProvider session={session}>
-									<EditorProvider>
-										<C4ForcedNoneSurfaceProbe
-											onObservation={handleObservation}
-											graphicsQueryCalls={graphicsQueryCalls.current}
-										/>
-										<EditorRoot />
-									</EditorProvider>
+									{/*
+									 * `EditorRoot` renders the Timeline, whose interaction hooks
+									 * resolve the Surface-owned portal and drag owners. In the
+									 * product both come from `EditorSurface`; this harness renders
+									 * `EditorRoot` directly to isolate the C4 forced-`none`
+									 * rasterizer question, so it must supply the same two owners
+									 * itself. Without them `useSurfaceDragCoordinator()` throws
+									 * during render and the probe below never commits.
+									 */}
+									{/*
+									 * `SurfacePortalProvider` renders the portal host as a
+									 * SIBLING of `children`, so its `data-editor-surface`
+									 * attribute does NOT scope tokens for the editor tree — in
+									 * the product that scope comes from `EditorSurface`'s own
+									 * root div. R2 moved every editor token out of `:root` and
+									 * under `:where([data-editor-surface])`, so without this
+									 * attribute `EditorRoot` here would resolve
+									 * `--background`/`--foreground`/`--border` as undefined and
+									 * render token-less.
+									 */}
+									<div
+										data-editor-surface="c4-forced-none"
+										style={{ height: "100%" }}
+									>
+										<SurfacePortalProvider namespace="c4-forced-none">
+											<SurfaceDragProvider>
+												<EditorProvider>
+													<C4ForcedNoneSurfaceProbe
+														onObservation={handleObservation}
+														graphicsQueryCalls={graphicsQueryCalls.current}
+													/>
+													<EditorRoot />
+												</EditorProvider>
+											</SurfaceDragProvider>
+										</SurfacePortalProvider>
+									</div>
 								</EditorSessionProvider>
 							</EditorHostProvider>
 						</EditorErrorBoundary>

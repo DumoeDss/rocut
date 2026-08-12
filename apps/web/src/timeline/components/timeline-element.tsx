@@ -772,7 +772,7 @@ function ExpandedKeyframeLanes({
 		event: React.MouseEvent;
 		keyframes: SelectedKeyframeRef[];
 	}) => void;
-	containerRef: React.RefObject<HTMLDivElement | null>;
+	containerRef: React.RefObject<HTMLDivElement>;
 	onLaneMouseDown: (event: React.MouseEvent) => void;
 	onLaneClick: (event: React.MouseEvent) => void;
 	selectionBox: {

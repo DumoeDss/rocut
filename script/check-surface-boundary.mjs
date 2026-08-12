@@ -18,6 +18,19 @@ const PUBLIC_CONTRACT = new Set([
 	`${SURFACE_ROOT}embedding/types.ts`,
 	`${SURFACE_ROOT}embedding/index.ts`,
 ]);
+const COORDINATOR_PATH = `${SURFACE_ROOT}embedding/surface-drag-coordinator.tsx`;
+/**
+ * The only global input events the private drag coordinator may own, and only
+ * while a drag is live. `dragover`/`dragend`/`drop` are absent because the
+ * `no-global-input-listener` pattern never matches them in the first place.
+ */
+const COORDINATOR_CONTINUATION_EVENTS = new Set([
+	"mousemove",
+	"mouseup",
+	"pointermove",
+	"pointerup",
+	"pointercancel",
+]);
 
 function isRuntimeSurfacePath(path) {
 	return (
@@ -70,10 +83,27 @@ const RULES = [
 		id: "no-global-input-listener",
 		description:
 			"Surface modules add no keyboard, pointer, wheel, mouse, or touch listener to window/document",
-		test: ({ code }) =>
-			/\b(?:window|document)\s*\.\s*addEventListener\s*\(\s*["'](?:key(?:down|up|press)|pointer(?:down|up|move|cancel)|wheel|mouse(?:down|up|move)|touch(?:start|end|move|cancel))["']/.test(
-				code,
-			),
+		// The private drag coordinator is the one allowlisted owner of document-level
+		// continuation listeners (design.md D7), but the allowance is scoped to the
+		// exact events it installs. A whole-file exemption would also wave through a
+		// `keydown`, `wheel`, `mousedown` or `touchstart` added to that file later,
+		// which is precisely the global input ownership this rule exists to forbid.
+		test: ({ path, code }) => {
+			const matches = code.matchAll(
+				/\b(window|document)\s*\.\s*addEventListener\s*\(\s*["'](key(?:down|up|press)|pointer(?:down|up|move|cancel)|wheel|mouse(?:down|up|move)|touch(?:start|end|move|cancel))["']/g,
+			);
+			for (const [, target, event] of matches) {
+				if (
+					path === COORDINATOR_PATH &&
+					target === "document" &&
+					COORDINATOR_CONTINUATION_EVENTS.has(event)
+				) {
+					continue;
+				}
+				return true;
+			}
+			return false;
+		},
 	},
 ];
 
@@ -127,6 +157,18 @@ const NEGATIVE_FIXTURES = [
 		rule: "no-global-input-listener",
 		path: `${SURFACE_ROOT}embedding/surface-focus.ts`,
 		source: 'document.addEventListener("keydown", handleKeyDown);',
+	},
+	{
+		rule: "no-global-input-listener",
+		path: COORDINATOR_PATH,
+		source: 'document.addEventListener("keydown", handleKeyDown);',
+		note: "the coordinator's allowance is per-event, so a non-drag listener in that same file still fails",
+	},
+	{
+		rule: "no-global-input-listener",
+		path: COORDINATOR_PATH,
+		source: 'window.addEventListener("mousemove", handleMouseMove);',
+		note: "…and window-scoped ownership is refused even for an allowed drag event",
 	},
 ];
 

@@ -1,0 +1,163 @@
+{
+  "config": {
+    "argv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.surface.config.ts"
+    ],
+    "configFile": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\vite-example\\playwright.surface.config.ts",
+    "rootDir": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/apps/vite-example/tests/parity",
+    "failOnFlakyTests": false,
+    "forbidOnly": true,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/apps/vite-example/tests/.pw-output",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/apps/vite-example/tests/parity",
+        "testIgnore": [],
+        "testMatch": [
+          "/surface\\.pw\\.ts$/"
+        ],
+        "timeout": 900000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "../../rasen/changes/s0304-surface-css-react-a11y/evidence/browser-surface/results-vite.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.0",
+    "workers": 1,
+    "webServer": {
+      "command": "bun run preview --port 4173 --strictPort --host 127.0.0.1",
+      "url": "http://127.0.0.1:4173/surface-evidence.html",
+      "reuseExistingServer": false,
+      "timeout": 120000,
+      "env": {
+        "VITE_R2_BUILD_MARKER": "r2-final-source-20260812-aa"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "surface.pw.ts",
+      "file": "surface.pw.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "Surface matrix and lifecycle — vite host",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 900000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10664,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-08-12T12:50:20.541Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "440aaf6434b5ba5d811b-8b101eb794bfdc8ebaf5",
+          "file": "surface.pw.ts",
+          "line": 231,
+          "column": 1
+        },
+        {
+          "title": "S02 disposal oracle remains green — vite host",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 900000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4860,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-08-12T12:50:31.882Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "440aaf6434b5ba5d811b-c93dcbf7cc7e290c6754",
+          "file": "surface.pw.ts",
+          "line": 739,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-08-12T12:50:18.539Z",
+    "duration": 19400.797,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

@@ -1,5 +1,7 @@
 "use client";
 
+import * as React from "react";
+
 import { createNextEditorHost } from "@/editor/host/next-editor-host";
 import { SurfaceEvidenceHarness } from "@/editor/surface/evidence/surface-evidence-harness";
 
@@ -21,6 +23,13 @@ const createEvidenceHost = ({
 
 export default function SurfaceEvidencePage() {
 	return (
-		<SurfaceEvidenceHarness hostName="next" createHost={createEvidenceHost} />
+		<SurfaceEvidenceHarness
+			hostName="next"
+			hostReactIdentity={React}
+			buildMarker={
+				process.env.NEXT_PUBLIC_R2_BUILD_MARKER ?? "missing-next-marker"
+			}
+			createHost={createEvidenceHost}
+		/>
 	);
 }

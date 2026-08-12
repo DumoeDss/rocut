@@ -23,12 +23,18 @@ import { buildEmptyTrack } from "@/timeline/placement";
 import { mediaTimeFromSeconds, ZERO_MEDIA_TIME } from "@/wasm";
 
 import { EditorSurface } from "../embedding/editor-surface";
+import {
+	SurfaceReactIdentityProbe,
+	type SurfaceReactIdentityResult,
+} from "../embedding/surface-react-identity-probe";
 import type { FocusMode } from "../embedding/types";
 
 type SurfaceVisibility = "visible" | "hidden";
 
 export interface SurfaceEvidenceHarnessProps {
 	readonly hostName: "next" | "vite";
+	readonly hostReactIdentity: typeof import("react");
+	readonly buildMarker: string;
 	readonly createHost: (args: {
 		readonly projectId: string;
 		readonly onProjectReplaced: (projectId: string) => void;
@@ -59,8 +65,10 @@ interface PreparedSurfaceSession {
 }
 
 interface HarnessLedger {
-	readonly schema: "r1-surface-evidence-v1";
+	readonly schema: "r2-surface-evidence-v1";
 	readonly host: "next" | "vite";
+	readonly buildMarker: string;
+	readonly reactIdentity: SurfaceReactIdentityResult | null;
 	readonly actionStates: {
 		readonly primaryPlaying: boolean | null;
 		readonly secondaryPlaying: boolean | null;
@@ -403,6 +411,8 @@ async function prepareSurfaceSession({
 
 export function SurfaceEvidenceHarness({
 	hostName,
+	hostReactIdentity,
+	buildMarker,
 	createHost,
 }: SurfaceEvidenceHarnessProps) {
 	const sequence = useRef(0);
@@ -417,6 +427,12 @@ export function SurfaceEvidenceHarness({
 	const [mounted, setMounted] = useState(false);
 	const [secondaryMounted, setSecondaryMounted] = useState(false);
 	const [focusMode, setFocusMode] = useState<FocusMode>("passive");
+	const [reactIdentity, setReactIdentity] =
+		useState<SurfaceReactIdentityResult | null>(null);
+	const [containerSize, setContainerSize] = useState({
+		width: 720,
+		height: 420,
+	});
 	const [visibility, setVisibility] = useState<SurfaceVisibility>("visible");
 	const [cycle, setCycle] = useState(1);
 	const [status, setStatus] = useState<"starting" | "ready" | "error">(
@@ -539,8 +555,10 @@ export function SurfaceEvidenceHarness({
 	};
 
 	const ledger: HarnessLedger = {
-		schema: "r1-surface-evidence-v1",
+		schema: "r2-surface-evidence-v1",
 		host: hostName,
+		buildMarker,
+		reactIdentity,
 		actionStates: {
 			primaryPlaying: primary?.action.playing ?? null,
 			secondaryPlaying: secondary?.action.playing ?? null,
@@ -561,6 +579,7 @@ export function SurfaceEvidenceHarness({
 			data-status={status}
 			data-host={hostName}
 			data-cycle={cycle}
+			data-build-marker={buildMarker}
 			style={{
 				minHeight: "100vh",
 				padding: "20px",
@@ -584,7 +603,11 @@ export function SurfaceEvidenceHarness({
 					background: "rgb(15 23 42)",
 				}}
 			>
-				<h1>R1 Surface evidence — {hostName}</h1>
+				<h1>R2 Surface evidence — {hostName}</h1>
+				<SurfaceReactIdentityProbe
+					hostReactIdentity={hostReactIdentity}
+					onResult={setReactIdentity}
+				/>
 				<nav
 					data-testid="surface-controls"
 					style={{ display: "flex", gap: 6, flexWrap: "wrap" }}
@@ -652,6 +675,34 @@ export function SurfaceEvidenceHarness({
 					>
 						Unmount second
 					</button>
+					{[
+						["compact", 420, 260],
+						["wide", 900, 320],
+						["tall", 520, 620],
+						["original", 720, 420],
+					].map(([name, width, height]) => (
+						<button
+							key={name}
+							data-testid={`resize-${name}`}
+							type="button"
+							onClick={() => {
+								setContainerSize({
+									width: Number(width),
+									height: Number(height),
+								});
+								append("harness", "resize-request", { name, width, height });
+							}}
+						>
+							Resize {name}
+						</button>
+					))}
+					<button
+						data-testid="host-toaster-sentinel"
+						type="button"
+						onClick={() => append("harness", "host-control-activated")}
+					>
+						Host control sentinel
+					</button>
 					<button
 						data-testid="dispose-primary"
 						type="button"
@@ -661,7 +712,15 @@ export function SurfaceEvidenceHarness({
 						Host dispose + replace
 					</button>
 				</nav>
-				<div data-testid="primary-container" style={CONTAINER_STYLE}>
+				<div
+					data-testid="primary-container"
+					data-size={`${containerSize.width}x${containerSize.height}`}
+					style={{
+						...CONTAINER_STYLE,
+						width: containerSize.width,
+						height: containerSize.height,
+					}}
+				>
 					{mounted && primary ? (
 						<EditorSurface
 							session={primary.session}

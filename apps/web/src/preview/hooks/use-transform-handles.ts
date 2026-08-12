@@ -32,7 +32,7 @@ export function useTransformHandles({
 	const deps: TransformHandleDeps = {
 		viewport,
 		input: {
-			isShiftHeld: () => isShiftHeldRef.current,
+			isShiftHeld: () => isShiftHeldRef.current ?? false,
 		},
 		scene: {
 			getSelectedElements: () => selectedElements,

@@ -111,8 +111,8 @@ export function installSurfaceFocusScope({
 
 		if (event.target === root && isPrimaryPointer(event)) {
 			focusWithoutScroll(root);
+			event.stopPropagation();
 		}
-		event.stopPropagation();
 	};
 	root.addEventListener("pointerdown", onPointerDown);
 	cleanups.push(() => root.removeEventListener("pointerdown", onPointerDown));

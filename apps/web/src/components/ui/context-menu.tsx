@@ -3,6 +3,7 @@
 import * as React from "react";
 import { ContextMenu as ContextMenuPrimitive } from "radix-ui";
 import { cva, type VariantProps } from "class-variance-authority";
+import { useSurfacePortalContainer } from "@/editor/surface/embedding/surface-portal";
 import { cn } from "@/utils/ui";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -28,7 +29,12 @@ const ContextMenuTrigger = ContextMenuPrimitive.Trigger;
 
 const ContextMenuGroup = ContextMenuPrimitive.Group;
 
-const ContextMenuPortal = ContextMenuPrimitive.Portal;
+function ContextMenuPortal(
+	props: React.ComponentProps<typeof ContextMenuPrimitive.Portal>,
+) {
+	const container = useSurfacePortalContainer(props.container);
+	return <ContextMenuPrimitive.Portal {...props} container={container} />;
+}
 
 const ContextMenuSub = ContextMenuPrimitive.Sub;
 
@@ -107,7 +113,7 @@ const ContextMenuContent = React.forwardRef<
 		container?: HTMLElement | null;
 	}
 >(({ className, container, ...props }, ref) => (
-	<ContextMenuPrimitive.Portal container={container ?? undefined}>
+	<ContextMenuPortal container={container ?? undefined}>
 		<ContextMenuPrimitive.Content
 			ref={ref}
 			className={cn(
@@ -116,7 +122,7 @@ const ContextMenuContent = React.forwardRef<
 			)}
 			{...props}
 		/>
-	</ContextMenuPrimitive.Portal>
+	</ContextMenuPortal>
 ));
 ContextMenuContent.displayName = ContextMenuPrimitive.Content.displayName;
 

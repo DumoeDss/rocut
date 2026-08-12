@@ -1,11 +1,19 @@
+@import "tailwindcss/theme.css";
+@import "tailwindcss/preflight.css";
+@import "../../web/src/editor/surface/surface.css";
+
 /*
- * The editor's stylesheet, reused rather than reimplemented.
- *
- * A relative path is used instead of the `@` alias because Tailwind's PostCSS
- * plugin inlines `@import` itself and does not know about Vite's resolver
- * aliases. This file is `apps/vite-example/src/styles.css`.
+ * The editor's stylesheet is reused rather than reimplemented. The relative
+ * path is required because Tailwind's PostCSS importer does not know Vite aliases.
  */
-@import "../../web/src/app/globals.css";
+
+/* Vite Host-owned reset; editor styles remain Surface-scoped. */
+html,
+body,
+#root {
+	min-height: 100%;
+	margin: 0;
+}
 
 /*
  * Tailwind 4 detects sources relative to the CSS file that imports it. Without

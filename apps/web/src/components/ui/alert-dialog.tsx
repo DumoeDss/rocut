@@ -3,6 +3,7 @@
 import * as React from "react";
 import { AlertDialog as AlertDialogPrimitive } from "radix-ui";
 
+import { useSurfacePortalContainer } from "@/editor/surface/embedding/surface-portal";
 import { cn } from "@/utils/ui";
 import { buttonVariants } from "./button";
 
@@ -10,7 +11,12 @@ const AlertDialog = AlertDialogPrimitive.Root;
 
 const AlertDialogTrigger = AlertDialogPrimitive.Trigger;
 
-const AlertDialogPortal = AlertDialogPrimitive.Portal;
+function AlertDialogPortal(
+	props: React.ComponentProps<typeof AlertDialogPrimitive.Portal>,
+) {
+	const container = useSurfacePortalContainer(props.container);
+	return <AlertDialogPrimitive.Portal {...props} container={container} />;
+}
 
 const AlertDialogOverlay = React.forwardRef<
 	React.ElementRef<typeof AlertDialogPrimitive.Overlay>,

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Popover as PopoverPrimitive } from "radix-ui";
+import { useSurfacePortalContainer } from "@/editor/surface/embedding/surface-portal";
 import { cn } from "@/utils/ui";
 import { useOverlayOpenChange } from "./use-overlay-open-change";
 
@@ -29,11 +30,18 @@ const PopoverAnchor = PopoverPrimitive.Anchor;
 
 const PopoverClose = PopoverPrimitive.Close;
 
+function PopoverPortal(
+	props: React.ComponentProps<typeof PopoverPrimitive.Portal>,
+) {
+	const container = useSurfacePortalContainer(props.container);
+	return <PopoverPrimitive.Portal {...props} container={container} />;
+}
+
 const PopoverContent = React.forwardRef<
 	React.ElementRef<typeof PopoverPrimitive.Content>,
 	React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
 >(({ className, align = "center", sideOffset = 4, ...props }, ref) => (
-	<PopoverPrimitive.Portal>
+	<PopoverPortal>
 		<PopoverPrimitive.Content
 			ref={ref}
 			align={align}
@@ -44,7 +52,7 @@ const PopoverContent = React.forwardRef<
 			)}
 			{...props}
 		/>
-	</PopoverPrimitive.Portal>
+	</PopoverPortal>
 ));
 PopoverContent.displayName = PopoverPrimitive.Content.displayName;
 

@@ -104,7 +104,7 @@ export function PreviewPanel({
 		isVisible: boolean;
 	}) => void;
 }) {
-	const containerRef = useRef<HTMLDivElement>(null);
+	const containerRef = useRef<HTMLDivElement | null>(null);
 	const [container, setContainer] = useState<HTMLDivElement | null>(null);
 	const { toggleFullscreen } = useFullscreen({ containerRef });
 	const handleContainerRef = useCallback((node: HTMLDivElement | null) => {

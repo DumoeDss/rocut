@@ -4,6 +4,7 @@ import * as React from "react";
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
 import { Check, ChevronRight, Circle } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { useSurfacePortalContainer } from "@/editor/surface/embedding/surface-portal";
 import { cn } from "@/utils/ui";
 import { useOverlayOpenChange } from "./use-overlay-open-change";
 
@@ -29,7 +30,12 @@ const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
 
 const DropdownMenuGroup = DropdownMenuPrimitive.Group;
 
-const DropdownMenuPortal = DropdownMenuPrimitive.Portal;
+function DropdownMenuPortal(
+	props: React.ComponentProps<typeof DropdownMenuPrimitive.Portal>,
+) {
+	const container = useSurfacePortalContainer(props.container);
+	return <DropdownMenuPrimitive.Portal {...props} container={container} />;
+}
 
 const DropdownMenuSub = DropdownMenuPrimitive.Sub;
 
@@ -95,21 +101,17 @@ const DropdownMenuContent = React.forwardRef<
 	React.ElementRef<typeof DropdownMenuPrimitive.Content>,
 	React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
 >(({ className, sideOffset = 4, ...props }, ref) => (
-	<DropdownMenuPrimitive.Portal>
+	<DropdownMenuPortal>
 		<DropdownMenuPrimitive.Content
 			ref={ref}
 			sideOffset={sideOffset}
-			onCloseAutoFocus={(e) => {
-				e.stopPropagation();
-				e.preventDefault();
-			}}
 			className={cn(
 				"group/menu bg-popover text-popover-foreground z-50 min-w-32 overflow-hidden rounded-md border p-1 shadow-lg",
 				className,
 			)}
 			{...props}
 		/>
-	</DropdownMenuPrimitive.Portal>
+	</DropdownMenuPortal>
 ));
 DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName;
 

@@ -4,6 +4,7 @@ import { useCommittedRef } from "@/hooks/use-committed-ref";
 import { useKeyframeSelection } from "./use-keyframe-selection";
 import { registerCanceller } from "@/editor/cancel-interaction";
 import { useEditorSession } from "@/editor/session/editor-session-provider";
+import { useSurfaceDragCoordinator } from "@/editor/surface/embedding/surface-drag-coordinator";
 import {
 	KeyframeDragController,
 	type KeyframeDragConfig,
@@ -25,6 +26,7 @@ export function useKeyframeDrag({
 }) {
 	const editor = useEditorInstance();
 	const session = useEditorSession();
+	const dragCoordinator = useSurfaceDragCoordinator();
 	const {
 		selectedKeyframes,
 		isKeyframeSelected,
@@ -46,6 +48,8 @@ export function useKeyframeDrag({
 		executeCommand: (command) => editor.command.execute({ command }),
 		seek: ({ time }) => editor.playback.seek({ time }),
 		getTotalDuration: () => editor.timeline.getTotalDuration(),
+		startMouseDrag: ({ move, finish, cancel }) =>
+			dragCoordinator.start({ kind: "mouse", move, finish, cancel }),
 	};
 	const configRef = useCommittedRef(config);
 	const [controller] = useState(
