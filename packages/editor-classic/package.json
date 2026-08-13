@@ -1,0 +1,34 @@
+{
+  "name": "@opencut/editor-classic",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The OpenCut Classic provider and its React editor, including the embeddable Surface. Depends on @opencut/editor-ports and @opencut/editor-contracts.",
+  "dependencies": {
+    "@opencut/editor-ports": "workspace:*",
+    "@opencut/editor-contracts": "workspace:*"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./surface": "./src/surface/index.ts",
+    "./surface.css": "./src/surface/surface.css",
+    "./session": "./src/session/index.ts",
+    "./runtime": "./src/runtime/index.ts",
+    "./browser": "./src/browser/index.ts",
+    "./storage": "./src/storage/index.ts",
+    "./project": "./src/project/index.ts",
+    "./timeline": "./src/timeline/index.ts",
+    "./renderer": "./src/renderer/index.ts",
+    "./media": "./src/media/index.ts",
+    "./fonts": "./src/fonts/index.ts",
+    "./ui": "./src/ui/index.ts",
+    "./evidence": "./src/evidence/index.ts",
+    "./package.json": "./package.json"
+  }
+}

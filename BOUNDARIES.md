@@ -383,3 +383,147 @@ local Luna ship leaf must first create the reviewed child commit, then regenerat
 official inventory against that committed tree. Until that leaf completes, the authored-path
 manifest and content digest in the C7 evidence are the truthful pre-commit inventory; no official
 source-inventory pass is claimed.
+
+---
+
+## 7. Package boundary (S05 P0)
+
+`packages/` declares three publishable packages and holds no source yet — `apps/web/src` still owns
+every module, through the existing `@` path alias. This section is that declaration, the measurement
+that forced its shape, and what it does not yet cover. Implementation (moving source, publishing) is
+later work; this is the freeze the later work is held to.
+
+### Three packages, ports at the bottom
+
+```
+0  @opencut/editor-ports        editor/ports/** and editor/host/editor-host.ts — no dependencies
+1  @opencut/editor-contracts    editor/contracts/** — depends on layer 0 only
+2  @opencut/editor-classic      everything else under apps/web/src — depends on layers 0 and 1
+—  apps/web, apps/vite-example, P2's second Host   consumers; not packages; may depend on any layer
+```
+
+The intuitive reading of "contracts / ports / surface" puts contracts underneath ports. The measured
+import graph (948 source files under `apps/web/src` and `apps/vite-example`, parsed for every
+`import` / `export … from` / `require()` / dynamic `import()` specifier) says the opposite: **8**
+production edges run `editor/contracts/**` → `editor/ports/**`, and **0** run the other way.
+`contracts/engine` and three other contracts modules consume `IdGenerator` and `DiagnosticsPort` from
+ports; nothing in ports needs a domain type. Ports sits at the bottom because it is the one complete
+surface a Host author implements — zero dependencies, no React, no DOM (spec §3.5, mechanically) —
+and contracts is the one thing that depends on it, not the reverse.
+
+Above that two-layer base, the rest of the tree is one dense mutual-recursion knot in production
+code, measured the same way:
+
+| candidate seam | A→B (prod) | B→A (prod) |
+| --- | ---: | ---: |
+| Classic provider ↔ editor UI | 228 | 293 |
+| editor UI ↔ session/runtime | 95 | 17 |
+| session/runtime ↔ Classic provider | 64 | 31 |
+| editor UI ↔ `editor/surface` | 19 | 16 |
+| `editor/surface` ↔ Classic provider | 5 | 1 |
+
+Every one of those five seams is bidirectional in production source, including the smallest —
+`editor/surface` ↔ UI is two layers wearing one name, not an accident. Cutting any of them apart
+requires inverting production dependencies, which is a rewrite, not an extraction: P1 is constrained
+to a behaviour-preserving move whose oracle is the parity fixture, and a rewrite would trade that
+guarantee for a diagram. So everything above the ports/contracts base is one package,
+`@opencut/editor-classic`, split internally by `exports` subpath rather than by package.
+
+### `editor/host/editor-host.ts` belongs to ports, and resolves a live cycle
+
+`ports/index.ts` re-exports `EditorHostNavigation` from `../host/editor-host` under the frozen name
+`NavigationHost`, while `editor-host.ts` itself imports `@/editor/ports` — a live module cycle today,
+harmless only because both directions are type-only. Splitting `editor/ports/` and `editor/host/`
+into different packages would turn that into a package cycle, which is exactly what the
+`acyclic-direction` rule below forbids. `editor-host.ts` is 118 lines, imports nothing but
+`@/editor/ports`, contains no React and no DOM, and is in substance a ports module; assigning it to
+`@opencut/editor-ports` resolves the cycle without editing the frozen `NavigationHost` re-export. The
+rest of `editor/host/` does not follow it — browser and React modules go to `@opencut/editor-classic`,
+Next-Host composition stays in `apps/web`.
+
+### The checker: `script/check-package-boundary.mjs`
+
+Five rules, three live today and two dormant until `packages/` gains source:
+
+| rule | status | what it asserts |
+| --- | --- | --- |
+| `acyclic-direction` | live | every cross-package edge points to a strictly lower declared layer |
+| `no-elftia-import` | live | no package, Host or example imports an Elftia package, protocol identifier or runtime object |
+| `react-free-base` | live | `editor-ports` and `editor-contracts` import no React, no DOM global, and no `editor-classic` module |
+| `public-entry-only` | dormant, `0 files scanned` | a specifier into a package resolves only to a declared `exports` subpath |
+| `no-internal-reexport` | dormant, `0 files scanned` | no declared entry re-exports another package's undeclared internals |
+
+Ownership is resolved from `packages/boundary.json`, a committed, longest-prefix-wins map from path
+to package with a required `why` per entry — the same self-guard idiom `check-next-imports.mjs`
+applies to its own allowlist: the checker refuses to run if any declared consumer path (`app/`,
+`site/`, `blog/`, `db/`, `auth/`, `components/landing/`) resolves to a package instead of a consumer,
+and refuses to run if any tracked file under `apps/web/src` resolves to no owner at all. Both dormant
+rules report their `0 files scanned` census as explicit output, not a silent `PASS` — a check that is
+green because it inspected nothing is not the same claim as a check that is green because it looked.
+
+**The Elftia rule matches specifiers, dependency names and identifiers — never raw file text.** A
+substring scan over `elftia` is wrong in this repository in both directions: eight tracked files
+(`editor/ports/DECISIONS.md`, `apps/vite-example/README.md`, `editor/session/resources.ts`, three
+`ports/*.ts` compile-guard/documentation files, and `script/check-port-boundary.mjs`) contain the
+word `elftia` in prose, all of it explaining *why the ports are Elftia-neutral* — a text scan would
+flag the documents that record the boundary. So the rule matches only: import specifiers (`elftia`,
+`elftia/*`, `@elftia/*`, `^elftia-plugin-`); dependency names in every `package.json` and package
+identifiers in `bun.lock`; the protocol literals `plugin://` and `elftia://`; and the runtime
+identifiers `window.elftia`, `globalThis.elftia`, `window.native`, `window.api`, `CapabilityBroker`,
+`ArtifactRuntime`, `ArtifactRef`. There is no `adapter-elftia` exception: it does not exist in this
+repository, and housing one here would make the portable SDK depend on its largest consumer.
+
+The DOM check inside `react-free-base` is identifier-level for the same reason a text scan would be
+wrong: `document` is a domain term throughout `editor/contracts` (a local draft-document value in
+`draft` and `engine`, a parameter name across `vectors/**`, and the family literal
+`"document" | "scenario"` in `vectors/schema.ts`) — the exact package this rule protects. A file that
+visibly declares `document` as a local name has its bare `document` references read as that local,
+not the DOM global; `document` inside a quoted string is never an identifier at all. `window.document`
+still fires regardless, since `window` alone triggers the match.
+
+Both `--negative-control` (synthesises one violation per rule and asserts it is caught) and
+`--converse-control` (synthesises a legal case per rule and asserts it stays silent) run the same pure
+`scan()` against in-memory fixtures, so every rule — including the two dormant ones — is fully
+control-tested today, before `packages/` holds a single real file.
+
+### What this does not cover
+
+- **"Delete `adapter-elftia` and both Hosts still work"** is not tested here. `adapter-elftia` does
+  not exist in this repository; that removal test belongs to Elftia-side integration CI in the E5/S07
+  era, once such an adapter exists to remove.
+- **Installed-tarball resolution** — whether `exports` behaves correctly for a consumer that installed
+  these packages from a published tarball rather than the workspace — is P3's pack-and-install harness,
+  not this check. `npm pack --dry-run` was run for all three manifests as a narrower assumption check
+  (recorded in the change's evidence directory); it is not a substitute for P3's harness.
+- **No behavioural or parity claim is made here.** This section proves the *source graph* obeys the
+  declared package shape; it does not run or compare the editor.
+
+### Specifier rewrites P1 owes
+
+The declared `exports` maps were derived from every specifier that currently crosses into
+`editor/ports` or `editor/contracts` from outside, and cover all of them except three deep imports —
+of which two are pure specifier rewrites P1 owes, recorded here as a closed list:
+
+- `@/editor/ports/project-store` (4 uses) and `@/editor/ports/gpu-resources` (3 uses) — both resolve
+  to symbols (`ProjectStore`, `ProjectStoreError`, `UNIMPLEMENTED_RUNTIME_GPU`) the package root
+  (`.`) already exports. P1 rewrites the specifier; nothing else changes.
+- The four test-file relocations from task 1.3 —
+  `contracts/vectors/__tests__/agent-opencut-projection.test.ts` to `@opencut/editor-classic`, and
+  `editor/host/__tests__/{branding-assets,production-composition}.test.ts` plus
+  `services/storage/__tests__/c5-storage-red-controls.test.ts` to `apps/web` — are ownership
+  placements already reflected in `boundary.json`, not specifier edits; P1 moves the files to match.
+
+The third deep import, `@/editor/contracts/engine/invariant` (2 uses, `validateTransactionDocument`
+consumed in production by `surface/embedding/surface-transaction-binding.ts`), is **not** a rewrite
+P1 owes — `engine/index.ts` does not re-export `invariant` and never will without an additive edit to
+a frozen barrel, so `./engine/invariant` is declared as its own public entry instead.
+
+### Finding: the four-package split in Target State §4 is not reachable by extraction alone
+
+Target State §4 draws `provider-opencut-classic` and `react-editor` as siblings. The measured edge
+counts above — 228/293 between the provider and the UI, 19/16 between the UI and `editor/surface`,
+64/31 between session/runtime and the provider — show that split requires inverting production
+dependencies, which P1's parity-fixture oracle cannot absorb as a "behaviour-preserving move." This
+is recorded as a Direction-level finding, not resolved here: the split needs a Slice of its own,
+and Roadmap M9/S09 ("provider evolution") is its natural home. It does not block P1 — the three-package
+split above is complete and executable without an answer to it.

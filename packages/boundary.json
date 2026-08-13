@@ -1,0 +1,142 @@
+{
+  "$comment": "Source-ownership declaration for the S05 P0 package-boundary freeze. Read by script/check-package-boundary.mjs. Matching is longest-prefix-wins over POSIX repo-relative paths; a directory entry can be overridden by a file entry beneath it. See rasen/changes/s05-package-boundary-freeze/design.md D2/D3/D4 for the measurements that produced this map.",
+  "layers": [
+    "@opencut/editor-ports",
+    "@opencut/editor-contracts",
+    "@opencut/editor-classic"
+  ],
+  "consumers": [
+    "apps/web",
+    "apps/vite-example"
+  ],
+  "shellPaths": [
+    "apps/web/src/app",
+    "apps/web/src/site",
+    "apps/web/src/blog",
+    "apps/web/src/db",
+    "apps/web/src/auth",
+    "apps/web/src/components/landing"
+  ],
+  "ownership": [
+    {
+      "path": "apps/web/src/editor/ports",
+      "owner": "@opencut/editor-ports",
+      "why": "The one complete surface a Host author implements. Zero dependencies, no React, no DOM — spec §3.5's install, mechanically (design D1)."
+    },
+    {
+      "path": "apps/web/src/editor/host/editor-host.ts",
+      "owner": "@opencut/editor-ports",
+      "why": "D3: ports/index.ts re-exports EditorHostNavigation from this module as the frozen name NavigationHost, and this module imports @/editor/ports — a live type-only module cycle today. Splitting the two directories into different packages would turn it into a package cycle. Assigning this file to editor-ports resolves the cycle without editing the frozen re-export."
+    },
+    {
+      "path": "apps/web/src/editor/contracts",
+      "owner": "@opencut/editor-contracts",
+      "why": "Domain, operations, transactions, draft sessions, the engine, four of the five conformance suites and the vector corpus. Depends only on @opencut/editor-ports (8 production edges contracts→ports, 0 the other way — design D2/Fact 1)."
+    },
+    {
+      "path": "apps/web/src/editor/contracts/vectors/__tests__/agent-opencut-projection.test.ts",
+      "owner": "@opencut/editor-classic",
+      "why": "Tests the Classic projection, not the contract. Ownership follows the subject, not the directory (design D4) — this removes any need for a 'tests may point upward' exemption."
+    },
+    {
+      "path": "apps/web/src/editor/host/__tests__/branding-assets.test.ts",
+      "owner": "apps/web",
+      "why": "Tests the Next Host composition. Ownership follows the subject, not the directory (design D4)."
+    },
+    {
+      "path": "apps/web/src/editor/host/__tests__/production-composition.test.ts",
+      "owner": "apps/web",
+      "why": "Tests the Next Host composition. Ownership follows the subject, not the directory (design D4)."
+    },
+    {
+      "path": "apps/web/src/services/storage/__tests__/c5-storage-red-controls.test.ts",
+      "owner": "apps/web",
+      "why": "Tests the Next Host composition. Ownership follows the subject, not the directory (design D4)."
+    },
+    {
+      "path": "apps/web/src/editor/host/next-editor-host.ts",
+      "owner": "apps/web",
+      "why": "Next-Host composition — stays with the Next shell rather than following editor-host.ts into ports (design D3)."
+    },
+    {
+      "path": "apps/web/src/editor/host/c4-next-runtime-probe.tsx",
+      "owner": "apps/web",
+      "why": "Next-Host composition probe — stays with the Next shell (design D3)."
+    },
+    {
+      "path": "apps/web/src/feedback/index.ts",
+      "owner": "apps/web",
+      "why": "Imports @/db (Drizzle + Postgres) and is reached only from app/api/feedback/route.ts — shell, not editor chrome (design D4)."
+    },
+    {
+      "path": "apps/web/src/feedback/queries.ts",
+      "owner": "apps/web",
+      "why": "Imports @/db (Drizzle + Postgres) and is reached only from app/api/feedback/route.ts — shell, not editor chrome (design D4)."
+    },
+    {
+      "path": "apps/web/src/feedback/types.ts",
+      "owner": "@opencut/editor-classic",
+      "why": "Editor chrome, not shell — components/feedback-popover.tsx imports this file directly, not the feedback/ index (design D4)."
+    },
+    {
+      "path": "apps/web/src/feedback/components",
+      "owner": "@opencut/editor-classic",
+      "why": "feedback-popover.tsx is editor chrome imported by components/editor/editor-header.tsx, and imports ../types, not the feedback/ index — the boundary runs through this directory, not around it (design D4)."
+    },
+    {
+      "path": "apps/web/src/app",
+      "owner": "apps/web",
+      "why": "The Next app router — routes, layouts, metadata and API handlers. A Host-shell root; no package may claim it."
+    },
+    {
+      "path": "apps/web/src/site",
+      "owner": "apps/web",
+      "why": "Marketing site source. A Host-shell root; no package may claim it."
+    },
+    {
+      "path": "apps/web/src/blog",
+      "owner": "apps/web",
+      "why": "Blog source. A Host-shell root; no package may claim it."
+    },
+    {
+      "path": "apps/web/src/db",
+      "owner": "apps/web",
+      "why": "Database access (Drizzle + Postgres). A Host-shell root; no package may claim it."
+    },
+    {
+      "path": "apps/web/src/auth",
+      "owner": "apps/web",
+      "why": "Authentication. A Host-shell root; no package may claim it."
+    },
+    {
+      "path": "apps/web/src/components/landing",
+      "owner": "apps/web",
+      "why": "Marketing landing-page components. A Host-shell root; no package may claim it."
+    },
+    {
+      "path": "apps/web/src/components/header.tsx",
+      "owner": "apps/web",
+      "why": "Site header, not the editor header."
+    },
+    {
+      "path": "apps/web/src/components/footer.tsx",
+      "owner": "apps/web",
+      "why": "Site footer."
+    },
+    {
+      "path": "apps/web/src/components/gitHub-contribute-section.tsx",
+      "owner": "apps/web",
+      "why": "Marketing section on the landing page."
+    },
+    {
+      "path": "apps/web/src/changelog/components",
+      "owner": "apps/web",
+      "why": "Changelog UI, rendered only by the Next shell (see P-010). It transitively imports content-collections, a Next-build-time virtual module."
+    },
+    {
+      "path": "apps/web/src",
+      "owner": "@opencut/editor-classic",
+      "why": "Catch-all: everything under apps/web/src not otherwise assigned above is the OpenCut Classic provider and its React editor, including the embeddable Surface (design D1 layer 2). apps/desktop is deliberately never referenced here — see spec 'Existing boundaries survive'."
+    }
+  ]
+}
