@@ -79,14 +79,15 @@ import {
 import { useEdgeAutoScroll } from "@/timeline/hooks/use-edge-auto-scroll";
 import { useInitialScrollBottom } from "@/timeline/hooks/use-initial-scroll-bottom";
 import { useTimelineResize } from "@/timeline/hooks/use-timeline-resize";
-import { useTimelineStore } from "@/timeline/timeline-store";
-import { useEditor } from "@/editor/use-editor";
+import { useTimelineStore } from "@/editor/use-session-store";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { useScrollPosition } from "@/timeline/hooks/use-scroll-position";
 import { useTimelinePlayhead } from "@/timeline/hooks/use-timeline-playhead";
 import { DragLine } from "./drag-line";
-import { invokeAction } from "@/actions";
+import { useActionInvoker } from "@/actions/action-scope";
 import { resolveTimelineElementIntersections } from "./selection-hit-testing";
 import { cn } from "@/utils/ui";
+import type { TimerHandle } from "@/editor/session/resources";
 
 const TRACKS_CONTAINER_MAX_HEIGHT = 800;
 const FALLBACK_CONTAINER_WIDTH = 1000;
@@ -122,10 +123,12 @@ export function Timeline() {
 		setElementSelection,
 		mergeElementsIntoSelection,
 	} = useElementSelection();
-	const editor = useEditor();
-	const timeline = editor.timeline;
+	const editor = useEditorInstance();
 	const scene = useEditor((currentEditor) =>
 		currentEditor.scenes.getActiveSceneOrNull(),
+	);
+	const timelineDuration = useEditor((currentEditor) =>
+		currentEditor.timeline.getTotalDuration(),
 	);
 	const tracks = useMemo<TimelineTrack[]>(
 		() =>
@@ -164,14 +167,15 @@ export function Timeline() {
 		setCurrentSnapPoint(snapPoint);
 	}, []);
 
-	const timelineDuration = timeline.getTotalDuration() || 0;
 	const containerWidth = tracksContainerWidth || FALLBACK_CONTAINER_WIDTH;
 	const minZoomLevel = getTimelineZoomMin({
 		duration: timelineDuration,
 		containerWidth,
 	});
 
-	const savedViewState = editor.project.getTimelineViewState();
+	const savedViewState = useEditor((currentEditor) =>
+		currentEditor.project.getTimelineViewState(),
+	);
 
 	const { zoomLevel, setZoomLevel, handleWheel, saveScrollPosition } =
 		useTimelineZoom({
@@ -236,7 +240,7 @@ export function Timeline() {
 		if (!container) return;
 
 		let pendingZoomDelta = 0;
-		let zoomRafId: ReturnType<typeof requestAnimationFrame> | null = null;
+		let zoomRafId: TimerHandle | null = null;
 
 		const onWheel = (e: WheelEvent) => {
 			const isZoom = e.ctrlKey || e.metaKey;
@@ -247,14 +251,17 @@ export function Timeline() {
 				pendingZoomDelta += normalizedDelta;
 
 				if (zoomRafId === null) {
-					zoomRafId = requestAnimationFrame(() => {
-						const frameRawDelta = pendingZoomDelta;
-						const cappedDelta =
-							Math.sign(frameRawDelta) * Math.min(Math.abs(frameRawDelta), 30);
-						const zoomFactor = Math.exp(-cappedDelta / 300);
-						setZoomLevelRef.current((prev) => prev * zoomFactor);
-						pendingZoomDelta = 0;
-						zoomRafId = null;
+					zoomRafId = editor.resources.requestAnimationFrame({
+						handler: () => {
+							const frameRawDelta = pendingZoomDelta;
+							const cappedDelta =
+								Math.sign(frameRawDelta) *
+								Math.min(Math.abs(frameRawDelta), 30);
+							const zoomFactor = Math.exp(-cappedDelta / 300);
+							setZoomLevelRef.current((prev) => prev * zoomFactor);
+							pendingZoomDelta = 0;
+							zoomRafId = null;
+						},
 					});
 				}
 				return;
@@ -289,9 +296,9 @@ export function Timeline() {
 		});
 		return () => {
 			container.removeEventListener("wheel", onWheel, { capture: true });
-			if (zoomRafId !== null) cancelAnimationFrame(zoomRafId);
+			if (zoomRafId !== null) zoomRafId.cancel();
 		};
-	}, [syncFollowers]);
+	}, [editor.resources, syncFollowers]);
 
 	useInitialScrollBottom({
 		tracksScrollRef,
@@ -302,12 +309,12 @@ export function Timeline() {
 
 	const { dragView, handleElementMouseDown, handleElementClick } =
 		useElementInteraction({
-		zoomLevel,
-		tracksContainerRef,
-		tracksScrollRef,
-		snappingEnabled,
-		onSnapPointChange: handleSnapPointChange,
-	});
+			zoomLevel,
+			tracksContainerRef,
+			tracksScrollRef,
+			snappingEnabled,
+			onSnapPointChange: handleSnapPointChange,
+		});
 	const isElementDragging = dragView.kind === "dragging";
 
 	const {
@@ -419,7 +426,7 @@ export function Timeline() {
 		rulerScrollRef,
 		tracksScrollRef,
 		zoomLevel,
-		duration: timeline.getTotalDuration(),
+		duration: timelineDuration,
 		isSelecting,
 		clearSelectedElements: clearElementSelection,
 		seek,
@@ -455,9 +462,7 @@ export function Timeline() {
 					className="relative isolate flex flex-1 flex-col overflow-hidden"
 					ref={tracksContainerRef}
 				>
-					<SelectionBox
-						bounds={selectionBox?.bounds ?? null}
-					/>
+					<SelectionBox bounds={selectionBox?.bounds ?? null} />
 					<DragLine
 						dropTarget={dropTarget}
 						tracks={tracks}
@@ -604,13 +609,13 @@ function TrackLabelsPanel({
 	hasHorizontalScrollbar,
 	getTrackExpansionHeight,
 }: {
-	trackLabelsRef: React.RefObject<HTMLDivElement | null>;
-	trackLabelsScrollRef: React.RefObject<HTMLDivElement | null>;
+	trackLabelsRef: React.RefObject<HTMLDivElement>;
+	trackLabelsScrollRef: React.RefObject<HTMLDivElement>;
 	timelineHeaderHeight: number;
 	hasHorizontalScrollbar: boolean;
 	getTrackExpansionHeight: (trackIndex: number) => number;
 }) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const scene = useEditor((e) => e.scenes.getActiveSceneOrNull());
 	const tracks = useMemo<TimelineTrack[]>(
 		() =>
@@ -751,6 +756,7 @@ function TimelineTrackRows({
 	isDragOver: boolean;
 	dropTarget: DropTarget | null;
 }) {
+	const invokeAction = useActionInvoker();
 	const timeline = useEditor((e) => e.timeline);
 	const scene = useEditor((e) => e.scenes.getActiveSceneOrNull());
 	const tracks = useMemo<TimelineTrack[]>(
@@ -780,8 +786,8 @@ function TimelineTrackRows({
 	const draggingElementIds = useMemo(
 		() =>
 			dragView.kind === "dragging"
-			? dragView.memberTimeOffsets
-			: (null as ReadonlyMap<string, MediaTime> | null),
+				? dragView.memberTimeOffsets
+				: (null as ReadonlyMap<string, MediaTime> | null),
 		[dragView],
 	);
 	const sortedTracks = useMemo(() => {

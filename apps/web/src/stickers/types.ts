@@ -1,4 +1,5 @@
 import type { STICKER_CATEGORIES } from "@/stickers/categories";
+import type { AssetResolver } from "@/editor/ports";
 
 export type StickerCategory = keyof typeof STICKER_CATEGORIES;
 
@@ -55,11 +56,13 @@ export interface StickerProvider {
 	}: {
 		query: string;
 		options?: StickerProviderSearchOptions;
+		assets?: AssetResolver;
 	}): Promise<StickerSearchResult>;
 	browse({
 		options,
 	}: {
 		options?: StickerProviderBrowseOptions;
+		assets?: AssetResolver;
 	}): Promise<StickerBrowseResult>;
 	resolveUrl({
 		stickerId,
@@ -67,5 +70,6 @@ export interface StickerProvider {
 	}: {
 		stickerId: string;
 		options?: StickerResolveOptions;
+		assets?: AssetResolver;
 	}): string;
 }

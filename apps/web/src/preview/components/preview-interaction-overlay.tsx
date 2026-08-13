@@ -6,25 +6,25 @@ import { TransformHandles } from "./transform-handles";
 import { MaskHandles } from "./mask-handles";
 import { SnapGuides } from "./snap-guides";
 import { TextEditOverlay } from "./text-edit-overlay";
-import { usePropertiesStore } from "@/components/editor/panels/properties/stores/properties-store";
+import { usePropertiesStore } from "@/editor/use-session-store";
 import { useEditor } from "@/editor/use-editor";
 
 export function PreviewInteractionOverlay() {
 	const [snapLines, setSnapLines] = useState<SnapLine[]>([]);
-	const editor = useEditor();
 	const viewport = usePreviewViewport();
-	const selectedElements = useEditor((e) => e.selection.getSelectedElements());
+	const [selectedRef, activeElement] = useEditor((editor) => {
+		const selectedElements = editor.selection.getSelectedElements();
+		const selected = selectedElements.length === 1 ? selectedElements[0] : null;
+		const activeTrack = selected
+			? editor.timeline.getTrackById({ trackId: selected.trackId })
+			: null;
+		const element =
+			activeTrack?.elements.find(
+				(candidate) => candidate.id === selected?.elementId,
+			) ?? null;
+		return [selected, element] as const;
+	});
 	const activeTabPerType = usePropertiesStore((s) => s.activeTabPerType);
-
-	const selectedRef =
-		selectedElements.length === 1 ? selectedElements[0] : null;
-	const activeTrack = selectedRef
-		? editor.timeline.getTrackById({ trackId: selectedRef.trackId })
-		: null;
-	const activeElement =
-		activeTrack?.elements.find(
-			(element) => element.id === selectedRef?.elementId,
-		) ?? null;
 	const isMaskMode = activeElement
 		? activeTabPerType[activeElement.type] === "masks"
 		: false;

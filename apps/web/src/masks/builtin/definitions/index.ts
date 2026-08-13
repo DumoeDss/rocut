@@ -1,7 +1,9 @@
 import {
+	BASE_MASK_PARAM_DEFINITIONS,
 	masksRegistry,
 	type MaskDefinitionForRegistration,
 	type MaskIconProps,
+	type RegisteredMaskDefinition,
 } from "../../registry";
 import { cinematicBarsMaskDefinition } from "./cinematic-bars";
 import { diamondMaskDefinition } from "./diamond";
@@ -24,6 +26,50 @@ import {
 	PenToolAddIcon,
 } from "@hugeicons/core-free-icons";
 
+const defaultMasks = [
+	{
+		definition: splitMaskDefinition,
+		icon: { icon: PanelRightDashedIcon, strokeWidth: 1 },
+	},
+	{ definition: cinematicBarsMaskDefinition, icon: { icon: MinusSignIcon } },
+	{ definition: rectangleMaskDefinition, icon: { icon: SquareIcon } },
+	{ definition: ellipseMaskDefinition, icon: { icon: CircleIcon } },
+	{ definition: heartMaskDefinition, icon: { icon: FavouriteIcon } },
+	{ definition: diamondMaskDefinition, icon: { icon: DiamondIcon } },
+	{ definition: starMaskDefinition, icon: { icon: StarsIcon } },
+	{ definition: textMaskDefinition, icon: { icon: TextFontIcon } },
+	{ definition: freeformMaskDefinition, icon: { icon: PenToolAddIcon } },
+] satisfies ReadonlyArray<{
+	definition: MaskDefinitionForRegistration;
+	icon: MaskIconProps;
+}>;
+
+function isCanonicalDefaultMask({
+	registered,
+	definition,
+	icon,
+}: {
+	registered: RegisteredMaskDefinition;
+	definition: MaskDefinitionForRegistration;
+	icon: MaskIconProps;
+}): boolean {
+	const params = [...definition.params, ...BASE_MASK_PARAM_DEFINITIONS];
+	return (
+		registered.type === definition.type &&
+		registered.name === definition.name &&
+		registered.features === definition.features &&
+		registered.renderer === definition.renderer &&
+		registered.interaction === definition.interaction &&
+		registered.isActive === definition.isActive &&
+		registered.buildDefault === definition.buildDefault &&
+		registered.computeParamUpdate === definition.computeParamUpdate &&
+		registered.icon.icon === icon.icon &&
+		registered.icon.strokeWidth === icon.strokeWidth &&
+		registered.params.length === params.length &&
+		registered.params.every((param, index) => param === params[index])
+	);
+}
+
 function registerDefaultMask({
 	definition,
 	icon,
@@ -32,6 +78,17 @@ function registerDefaultMask({
 	icon: MaskIconProps;
 }) {
 	if (masksRegistry.has(definition.type)) {
+		if (
+			!isCanonicalDefaultMask({
+				registered: masksRegistry.get(definition.type),
+				definition,
+				icon,
+			})
+		) {
+			throw new Error(
+				`Conflicting default mask definition at key "${definition.type}".`,
+			);
+		}
 		return;
 	}
 
@@ -39,40 +96,5 @@ function registerDefaultMask({
 }
 
 export function registerDefaultMasks(): void {
-	registerDefaultMask({
-		definition: splitMaskDefinition,
-		icon: { icon: PanelRightDashedIcon, strokeWidth: 1 },
-	});
-	registerDefaultMask({
-		definition: cinematicBarsMaskDefinition,
-		icon: { icon: MinusSignIcon },
-	});
-	registerDefaultMask({
-		definition: rectangleMaskDefinition,
-		icon: { icon: SquareIcon },
-	});
-	registerDefaultMask({
-		definition: ellipseMaskDefinition,
-		icon: { icon: CircleIcon },
-	});
-	registerDefaultMask({
-		definition: heartMaskDefinition,
-		icon: { icon: FavouriteIcon },
-	});
-	registerDefaultMask({
-		definition: diamondMaskDefinition,
-		icon: { icon: DiamondIcon },
-	});
-	registerDefaultMask({
-		definition: starMaskDefinition,
-		icon: { icon: StarsIcon },
-	});
-	registerDefaultMask({
-		definition: textMaskDefinition,
-		icon: { icon: TextFontIcon },
-	});
-	registerDefaultMask({
-		definition: freeformMaskDefinition,
-		icon: { icon: PenToolAddIcon },
-	});
+	for (const entry of defaultMasks) registerDefaultMask(entry);
 }

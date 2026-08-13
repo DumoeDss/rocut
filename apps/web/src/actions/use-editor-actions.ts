@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTimelineStore } from "@/timeline/timeline-store";
+import { useTimelineStore } from "@/editor/use-session-store";
 import { useActionHandler } from "@/actions/use-action-handler";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { useElementSelection } from "@/timeline/hooks/element/use-element-selection";
 import {
 	addMediaTime,
@@ -26,9 +26,11 @@ import {
 	type ScopeEntry,
 } from "@/selection/scope";
 import { useCommittedRef } from "@/hooks/use-committed-ref";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 
 export function useEditorActions() {
-	const editor = useEditor();
+	const editor = useEditorInstance();
+	const session = useEditorSession();
 	const { selectedElements, setElementSelection } = useElementSelection();
 	const { selectedKeyframes, clearKeyframeSelection } = useKeyframeSelection();
 	const selectedMaskPointSelection = useEditor((e) =>
@@ -126,9 +128,7 @@ export function useEditorActions() {
 		() => {
 			const fps = editor.project.getActive().settings.fps;
 			const ticksPerFrame = mediaTime({
-				ticks: Math.round(
-					(TICKS_PER_SECOND * fps.denominator) / fps.numerator,
-				),
+				ticks: Math.round((TICKS_PER_SECOND * fps.denominator) / fps.numerator),
 			});
 			editor.playback.seek({
 				time: minMediaTime({
@@ -148,9 +148,7 @@ export function useEditorActions() {
 		() => {
 			const fps = editor.project.getActive().settings.fps;
 			const ticksPerFrame = mediaTime({
-				ticks: Math.round(
-					(TICKS_PER_SECOND * fps.denominator) / fps.numerator,
-				),
+				ticks: Math.round((TICKS_PER_SECOND * fps.denominator) / fps.numerator),
 			});
 			editor.playback.seek({
 				time: maxMediaTime({
@@ -232,10 +230,12 @@ export function useEditorActions() {
 
 			if (elementsToSplit.length === 0) return;
 
-			editor.timeline.splitElements({
-				elements: elementsToSplit,
-				splitTime: currentTime,
-			});
+			void editor.timeline
+				.splitElements({
+					elements: elementsToSplit,
+					splitTime: currentTime,
+				})
+				.catch(() => undefined);
 		},
 		undefined,
 	);
@@ -255,20 +255,24 @@ export function useEditorActions() {
 
 			if (elementsToSplit.length === 0) return;
 
-			const rightSideElements = editor.timeline.splitElements({
-				elements: elementsToSplit,
-				splitTime: currentTime,
-				retainSide: "right",
-			});
-
-			if (rippleEditingEnabled && rightSideElements.length > 0) {
-				const firstRightElement = editor.timeline.getElementsWithTracks({
-					elements: [rightSideElements[0]],
-				})[0];
-				if (firstRightElement) {
-					editor.playback.seek({ time: firstRightElement.element.startTime });
-				}
-			}
+			void editor.timeline
+				.splitElements({
+					elements: elementsToSplit,
+					splitTime: currentTime,
+					retainSide: "right",
+				})
+				.then((rightSideElements) => {
+					if (!rippleEditingEnabled || rightSideElements.length === 0) return;
+					const firstRightElement = editor.timeline.getElementsWithTracks({
+						elements: [rightSideElements[0]],
+					})[0];
+					if (firstRightElement) {
+						editor.playback.seek({
+							time: firstRightElement.element.startTime,
+						});
+					}
+				})
+				.catch(() => undefined);
 		},
 		undefined,
 	);
@@ -288,11 +292,13 @@ export function useEditorActions() {
 
 			if (elementsToSplit.length === 0) return;
 
-			editor.timeline.splitElements({
-				elements: elementsToSplit,
-				splitTime: currentTime,
-				retainSide: "left",
-			});
+			void editor.timeline
+				.splitElements({
+					elements: elementsToSplit,
+					splitTime: currentTime,
+					retainSide: "left",
+				})
+				.catch(() => undefined);
 		},
 		undefined,
 	);
@@ -394,7 +400,7 @@ export function useEditorActions() {
 	useActionHandler(
 		"cancel-interaction",
 		() => {
-			if (!cancelInteraction()) {
+			if (!cancelInteraction({ session })) {
 				invokeAction("deselect-all");
 			}
 		},
@@ -414,9 +420,11 @@ export function useEditorActions() {
 	useActionHandler(
 		"duplicate-selected",
 		() => {
-			editor.timeline.duplicateElements({
-				elements: selectedElements,
-			});
+			void editor.timeline
+				.duplicateElements({
+					elements: selectedElements,
+				})
+				.catch(() => undefined);
 		},
 		undefined,
 	);
@@ -480,7 +488,7 @@ export function useEditorActions() {
 	useActionHandler(
 		"undo",
 		() => {
-			editor.command.undo();
+			void editor.command.undo().catch(() => undefined);
 		},
 		undefined,
 	);
@@ -488,7 +496,7 @@ export function useEditorActions() {
 	useActionHandler(
 		"redo",
 		() => {
-			editor.command.redo();
+			void editor.command.redo().catch(() => undefined);
 		},
 		undefined,
 	);
@@ -498,10 +506,12 @@ export function useEditorActions() {
 		"remove-media-asset",
 		(args) => {
 			if (!args) return;
-			editor.media.removeMediaAsset({
-				projectId: args.projectId,
-				id: args.assetId,
-			});
+			void editor.media
+				.removeMediaAsset({
+					projectId: args.projectId,
+					id: args.assetId,
+				})
+				.catch(() => undefined);
 		},
 		undefined,
 	);
@@ -510,10 +520,12 @@ export function useEditorActions() {
 		"remove-media-assets",
 		(args) => {
 			if (!args) return;
-			editor.media.removeMediaAssets({
-				projectId: args.projectId,
-				ids: args.assetIds,
-			});
+			void editor.media
+				.removeMediaAssets({
+					projectId: args.projectId,
+					ids: args.assetIds,
+				})
+				.catch(() => undefined);
 		},
 		undefined,
 	);

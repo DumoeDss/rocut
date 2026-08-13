@@ -1,13 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { PanelView } from "@/components/editor/panels/assets/views/base-panel";
 import { DraggableItem } from "@/components/editor/panels/assets/draggable-item";
 import { effectsRegistry, EFFECT_TARGET_ELEMENT_TYPES } from "@/effects";
-import { effectPreviewService } from "@/services/renderer/effect-preview";
-import { useEditor } from "@/editor/use-editor";
+import {
+	acquireEffectPreviewService,
+	releaseEffectPreviewService,
+} from "@/services/renderer/effect-preview";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { buildEffectElement } from "@/timeline/element-utils";
 import type { EffectDefinition } from "@/effects/types";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 
 export function EffectsView() {
 	const effects = effectsRegistry.getAll();
@@ -34,6 +38,20 @@ function EffectsGrid({ effects }: { effects: EffectDefinition[] }) {
 
 function EffectPreviewCanvas({ effectType }: { effectType: string }) {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
+	const session = useEditorSession();
+	const isDegraded = useEditor((state) => state.renderer.isDegraded);
+	const effectPreviewService = useMemo(
+		() =>
+			acquireEffectPreviewService({
+				resolver: session.host.assets,
+			}),
+		[session],
+	);
+
+	useEffect(
+		() => () => releaseEffectPreviewService({ resolver: session.host.assets }),
+		[session],
+	);
 
 	useEffect(() => {
 		const render = () => {
@@ -42,19 +60,20 @@ function EffectPreviewCanvas({ effectType }: { effectType: string }) {
 					effectType,
 					params: {},
 					targetCanvas: canvasRef.current,
+					isDegraded,
 				});
 			}
 		};
 
 		render();
 		return effectPreviewService.onPreviewImageReady({ callback: render });
-	}, [effectType]);
+	}, [effectPreviewService, effectType, isDegraded]);
 
 	return <canvas ref={canvasRef} className="size-full" />;
 }
 
 function EffectItem({ effect }: { effect: EffectDefinition }) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 
 	const handleAddToTimeline = useCallback(() => {
 		const currentTime = editor.playback.getCurrentTime();

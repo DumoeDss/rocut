@@ -1,0 +1,56 @@
+{
+	"schemaVersion": 1,
+	"policy": "Review this file independently from checker and mutable closure fixture changes.",
+	"closure": {
+		"canonicalPayloadSha256": "433314cfb301b3b30781151255d36a4d6a7893032b6d7cbf7a7280a34665dd99",
+		"commonSourceCount": 257,
+		"sourceClosureCount": 266,
+		"sourceClosureSha256": "c94d2126b82aae7c40a5edeec5193da2576b0fdea977a9b014e037c04bf9923a"
+	},
+	"artifacts": {
+		"vite": {
+			"dist": "apps/vite-example/dist-c6-s52-final3-vite-20260804-1",
+			"moduleGraph": "apps/vite-example/dist-c6-s52-final3-vite-20260804-1/module-graph.json",
+			"moduleGraphSha256": "3d785a494c298830b6986d4f17ad61f272d3638f63d994d654836393afcf8812",
+			"assetManifest": "apps/vite-example/dist-c6-s52-final3-vite-20260804-1/asset-manifest.json",
+			"assetManifestSha256": "09dfeefbe34b2a8549960541357d1244675322aaf7ed6b050f169bbec477c24a",
+			"moduleIds": {
+				"count": 2892,
+				"sha256": "95651cbd8327753892525a4176be0d7b3a4ccbfc519283db8549d9e882d66dc0"
+			},
+			"webSourceModuleIds": {
+				"count": 593,
+				"sha256": "5153b056765b38ee27106ac4d5649ed70c7e496243a4296a9098e9eb411d1d06"
+			},
+			"attributableSourceModuleIds": {
+				"count": 604,
+				"sha256": "a245b2bf75f0ec25ba57ddb15b31cba87fd257ece930f4f2c62b1d5661b97074"
+			}
+		},
+		"next": {
+			"dist": "apps/web/.next-c6-s52-final3-next-20260804-1",
+			"nft": "apps/web/.next-c6-s52-final3-next-20260804-1/server/app/editor/[project_id]/page.js.nft.json",
+			"nftSha256": "203ca9063d36939bd6bd67f2e148e40120d862f7f729009c41e7c2f006ab6817",
+			"routePageSha256": "aff1e85c085f2195381bc871613361e92375d1c365037a18f43d09ae2904845f",
+			"routeManifestSha256": "d3fc95cc0f16823a50b440673e6459155d80b4db4f8d7cd50ab15af0a4f2b071",
+			"routeFiles": {
+				"count": 82,
+				"sha256": "da5dd87c3f5ac7900d5d9085e01a0e9ce1a6d2b324c9c2c5670273178f70b2f4"
+			},
+			"sourceMaps": {
+				"count": 78,
+				"sha256": "51c9396e6358c2fd86770df200cf8b5a503be95b68c270829eb8d46460684d45"
+			},
+			"moduleIds": {
+				"count": 2557,
+				"sha256": "16acff9dac139fe3546afcbde778ec972012ed14a7f4d8b839ae05d677469d77"
+			},
+			"sourceModuleIds": {
+				"count": 596,
+				"sha256": "d9d45357e1ab7e7833b59a1d0cece92e0f67e6e9ec3ef2e2db09bfc99319d11a"
+			},
+			"observedBuildId": "bkdPLKJK7Ps0LPLLDcsZf",
+			"buildIdSha256": "22092b333316ef945ccce4fa76c3bcb1d554fb9158533e390c25a06dfa107503"
+		}
+	}
+}

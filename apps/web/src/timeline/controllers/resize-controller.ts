@@ -61,6 +61,11 @@ export interface ResizeConfig {
 	previewElements: (updates: GroupResizeUpdate[]) => void;
 	commitElements: (updates: GroupResizeUpdate[]) => void;
 	onSnapPointChange?: (snapPoint: SnapPoint | null) => void;
+	startMouseDrag: (registration: {
+		move: (event: MouseEvent) => void;
+		finish: (event: MouseEvent) => void;
+		cancel: () => void;
+	}) => () => void;
 }
 
 export interface ResizeConfigRef {
@@ -112,7 +117,8 @@ export function buildResizeMembers({
 		const rightNeighborBound = otherElements
 			.filter(
 				(el) =>
-					el.startTime >= addMediaTime({ a: element.startTime, b: element.duration }),
+					el.startTime >=
+					addMediaTime({ a: element.startTime, b: element.duration }),
 			)
 			.reduce<MediaTime | null>(
 				(bound, el) =>
@@ -163,6 +169,7 @@ export class ResizeController {
 	private session: Session = { kind: "idle" };
 	private readonly subscribers = new Set<() => void>();
 	private readonly configRef: ResizeConfigRef;
+	private stopDrag: (() => void) | null = null;
 
 	constructor(deps: { configRef: ResizeConfigRef }) {
 		this.configRef = deps.configRef;
@@ -243,13 +250,17 @@ export class ResizeController {
 	}
 
 	private activate(): void {
-		document.addEventListener("mousemove", this.handleMouseMove);
-		document.addEventListener("mouseup", this.handleMouseUp);
+		this.stopDrag = this.config.startMouseDrag({
+			move: this.handleMouseMove,
+			finish: this.handleMouseUp,
+			cancel: () => this.cancel(),
+		});
 	}
 
 	private deactivate(): void {
-		document.removeEventListener("mousemove", this.handleMouseMove);
-		document.removeEventListener("mouseup", this.handleMouseUp);
+		const stopDrag = this.stopDrag;
+		this.stopDrag = null;
+		stopDrag?.();
 	}
 
 	private notify(): void {
@@ -314,7 +325,10 @@ export class ResizeController {
 			) {
 				closestSnapDistance = snapResult.snapDistance;
 				closestSnapPoint = snapResult.snapPoint;
-				deltaTime = subMediaTime({ a: snapResult.snappedTime, b: baseEdgeTime });
+				deltaTime = subMediaTime({
+					a: snapResult.snappedTime,
+					b: baseEdgeTime,
+				});
 			}
 		}
 

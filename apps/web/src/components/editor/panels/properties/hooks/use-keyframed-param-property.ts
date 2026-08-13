@@ -1,16 +1,13 @@
 "use client";
 
-import { useEditor } from "@/editor/use-editor";
+import { useEditorInstance } from "@/editor/use-editor";
 import {
 	buildGraphicParamPath,
 	getKeyframeAtTime,
 	hasKeyframesForPath,
 	upsertPathKeyframe,
 } from "@/animation";
-import type {
-	AnimationPath,
-	ElementAnimations,
-} from "@/animation/types";
+import type { AnimationPath, ElementAnimations } from "@/animation/types";
 import {
 	coerceParamValue,
 	getParamChannelLayout,
@@ -53,7 +50,7 @@ export function useKeyframedParamProperty({
 		value: number | string | boolean;
 	}) => Partial<TimelineElement>;
 }): KeyframedParamPropertyResult {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const resolvedPropertyPath =
 		propertyPath ?? buildGraphicParamPath({ paramKey: param.key });
 	const hasAnimatedKeyframes = hasKeyframesForPath({

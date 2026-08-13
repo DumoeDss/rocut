@@ -1,4 +1,6 @@
 import { useEffect, useState, useRef } from "react";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
+import type { TimerHandle } from "@/editor/session/resources";
 
 interface UseScrollPositionReturn {
 	scrollLeft: number;
@@ -12,21 +14,24 @@ export function useScrollPosition({
 }): UseScrollPositionReturn {
 	const [scrollLeft, setScrollLeft] = useState(0);
 	const [viewportWidth, setViewportWidth] = useState(0);
-	const rafIdRef = useRef<number | null>(null);
+	const { resources } = useEditorSession();
+	const rafRef = useRef<TimerHandle | null>(null);
 
 	useEffect(() => {
 		const scrollElement = scrollRef.current;
 		if (!scrollElement) return;
 
 		const updatePosition = () => {
-			if (rafIdRef.current !== null) {
-				cancelAnimationFrame(rafIdRef.current);
+			if (rafRef.current !== null) {
+				rafRef.current.cancel();
 			}
 
-			rafIdRef.current = requestAnimationFrame(() => {
-				setScrollLeft(scrollElement.scrollLeft);
-				setViewportWidth(scrollElement.clientWidth);
-				rafIdRef.current = null;
+			rafRef.current = resources.requestAnimationFrame({
+				handler: () => {
+					setScrollLeft(scrollElement.scrollLeft);
+					setViewportWidth(scrollElement.clientWidth);
+					rafRef.current = null;
+				},
 			});
 		};
 
@@ -42,11 +47,11 @@ export function useScrollPosition({
 		return () => {
 			scrollElement.removeEventListener("scroll", updatePosition);
 			resizeObserver.disconnect();
-			if (rafIdRef.current !== null) {
-				cancelAnimationFrame(rafIdRef.current);
+			if (rafRef.current !== null) {
+				rafRef.current.cancel();
 			}
 		};
-	}, [scrollRef]);
+	}, [resources, scrollRef]);
 
 	return { scrollLeft, viewportWidth };
 }

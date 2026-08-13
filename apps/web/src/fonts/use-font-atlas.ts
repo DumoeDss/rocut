@@ -6,22 +6,26 @@ import {
 } from "@/fonts/google-fonts";
 import type { FontAtlas } from "@/fonts/types";
 import { SYSTEM_FONTS } from "@/fonts/system-fonts";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 
 type Status = "idle" | "loading" | "error";
 
 export function useFontAtlas({ open }: { open: boolean }) {
+	const session = useEditorSession();
+	const loader = session.host.assetLoader;
+	const resolver = session.host.assets;
 	const [atlas, setAtlas] = useState<FontAtlas | null>(() =>
-		getCachedFontAtlas(),
+		getCachedFontAtlas({ loader }),
 	);
 	const [status, setStatus] = useState<Status>(() =>
-		getCachedFontAtlas() ? "idle" : "loading",
+		getCachedFontAtlas({ loader }) ? "idle" : "loading",
 	);
 
 	useEffect(() => {
 		if (!open || atlas) return;
 
 		setStatus("loading");
-		loadFontAtlas().then((data) => {
+		loadFontAtlas({ loader, resolver }).then((data) => {
 			if (data) {
 				setAtlas(data);
 				setStatus("idle");
@@ -29,12 +33,12 @@ export function useFontAtlas({ open }: { open: boolean }) {
 				setStatus("error");
 			}
 		});
-	}, [open, atlas]);
+	}, [open, atlas, loader, resolver]);
 
 	const retry = useCallback(() => {
-		clearFontAtlasCache();
+		clearFontAtlasCache({ loader });
 		setStatus("loading");
-		loadFontAtlas().then((data) => {
+		loadFontAtlas({ loader, resolver }).then((data) => {
 			if (data) {
 				setAtlas(data);
 				setStatus("idle");
@@ -42,7 +46,7 @@ export function useFontAtlas({ open }: { open: boolean }) {
 				setStatus("error");
 			}
 		});
-	}, []);
+	}, [loader, resolver]);
 
 	const fontNames = useMemo(() => {
 		if (!atlas) return [];

@@ -1,0 +1,11 @@
+schema: spec-driven
+created: 2026-08-09
+quality:
+  files:
+    - evidence/implementation-report.md
+    - evidence/review-cycle-report.md
+    - evidence/review-report.md
+  metrics:
+    evidence/implementation-report.md: 0
+    evidence/review-cycle-report.md: 0
+    evidence/review-report.md: 0

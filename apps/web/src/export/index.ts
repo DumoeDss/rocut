@@ -1,4 +1,5 @@
 import type { FrameRate } from "opencut-wasm";
+import type { SessionResources } from "@/editor/session/resources";
 import { EXPORT_MIME_TYPES } from "./mime-types";
 
 export const EXPORT_QUALITY_VALUES = [
@@ -53,18 +54,29 @@ export function downloadBuffer({
 	buffer,
 	filename,
 	mimeType,
+	resources,
 }: {
 	buffer: ArrayBuffer;
 	filename: string;
 	mimeType: string;
+	resources: Pick<SessionResources, "createObjectUrl">;
 }): void {
 	const blob = new Blob([buffer], { type: mimeType });
-	const url = URL.createObjectURL(blob);
-	const downloadLink = document.createElement("a");
-	downloadLink.href = url;
-	downloadLink.download = filename;
-	document.body.appendChild(downloadLink);
-	downloadLink.click();
-	document.body.removeChild(downloadLink);
-	URL.revokeObjectURL(url);
+	const urlHandle = resources.createObjectUrl({ blob });
+	let downloadLink: HTMLAnchorElement | null = null;
+	try {
+		downloadLink = document.createElement("a");
+		downloadLink.href = urlHandle.url;
+		downloadLink.download = filename;
+		document.body.appendChild(downloadLink);
+		downloadLink.click();
+	} finally {
+		try {
+			if (downloadLink?.parentNode === document.body) {
+				document.body.removeChild(downloadLink);
+			}
+		} finally {
+			urlHandle.revoke();
+		}
+	}
 }

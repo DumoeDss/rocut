@@ -331,25 +331,38 @@ export const elementParamRegistry = new DefinitionRegistry<
 	readonly ElementParamDefinition[]
 >("element params");
 
-elementParamRegistry.register({
-	key: "video",
-	definition: [...visualElementParams, ...audioElementParams],
-});
-elementParamRegistry.register({ key: "image", definition: visualElementParams });
-elementParamRegistry.register({
-	key: "text",
-	definition: [...textElementParams, ...visualElementParams],
-});
-elementParamRegistry.register({
-	key: "sticker",
-	definition: visualElementParams,
-});
-elementParamRegistry.register({
-	key: "graphic",
-	definition: visualElementParams,
-});
-elementParamRegistry.register({ key: "audio", definition: audioElementParams });
-elementParamRegistry.register({ key: "effect", definition: [] });
+const defaultElementParamDefinitions = [
+	{
+		key: "video",
+		definition: [...visualElementParams, ...audioElementParams],
+	},
+	{ key: "image", definition: visualElementParams },
+	{
+		key: "text",
+		definition: [...textElementParams, ...visualElementParams],
+	},
+	{ key: "sticker", definition: visualElementParams },
+	{ key: "graphic", definition: visualElementParams },
+	{ key: "audio", definition: audioElementParams },
+	{ key: "effect", definition: [] },
+] as const satisfies ReadonlyArray<{
+	key: ElementType;
+	definition: readonly ElementParamDefinition[];
+}>;
+
+for (const entry of defaultElementParamDefinitions) {
+	elementParamRegistry.register(entry);
+}
+
+export function assertCanonicalDefaultElementParams(): void {
+	for (const entry of defaultElementParamDefinitions) {
+		if (elementParamRegistry.get(entry.key) !== entry.definition) {
+			throw new Error(
+				`Conflicting default parameter definition at key "${entry.key}".`,
+			);
+		}
+	}
+}
 
 export function getElementParams({
 	element,
@@ -435,4 +448,3 @@ export function buildElementParamValues({
 	}
 	return values;
 }
-

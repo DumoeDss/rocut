@@ -1,0 +1,330 @@
+{
+  "host": "next",
+  "generatedAt": "2026-08-13T03:14:02.588Z",
+  "declaredSteps": [
+    "build-structure",
+    "move-clip",
+    "trim-clip",
+    "split-clip",
+    "patch-project",
+    "keyed-commit",
+    "keyed-replay",
+    "keyed-reuse-different-payload",
+    "stale-expected-revision"
+  ],
+  "apply": {
+    "schema": "t4-agent-evidence-run-v1",
+    "host": "next",
+    "buildMarker": "t4-final-source-20260813-a",
+    "phase": "apply",
+    "attachmentBytesClaimed": false,
+    "projectId": "756db22d-076e-454a-a8be-edff50209265",
+    "ledger": {
+      "schema": "t4-agent-evidence-v1",
+      "scenarioId": "scenario/agent-transaction-walk",
+      "driver": "browser/session-transactions",
+      "host": "next",
+      "buildMarker": "t4-final-source-20260813-a",
+      "declaredSteps": [
+        "build-structure",
+        "move-clip",
+        "trim-clip",
+        "split-clip",
+        "patch-project",
+        "keyed-commit",
+        "keyed-replay",
+        "keyed-reuse-different-payload",
+        "stale-expected-revision"
+      ],
+      "executedSteps": [
+        "build-structure",
+        "move-clip",
+        "trim-clip",
+        "split-clip",
+        "patch-project",
+        "keyed-commit",
+        "keyed-replay",
+        "keyed-reuse-different-payload",
+        "stale-expected-revision"
+      ],
+      "steps": [
+        {
+          "id": "build-structure",
+          "intent": "create two lanes, one asset and two clips in one atomic batch",
+          "baseRevision": 0,
+          "resultRevision": 1,
+          "revisionDelta": 1,
+          "applyCount": 1,
+          "durableSaves": 1,
+          "watcherCount": 1,
+          "assertionCount": 23,
+          "verdict": "passed",
+          "failures": []
+        },
+        {
+          "id": "move-clip",
+          "intent": "move the caption clip along its own lane",
+          "baseRevision": 1,
+          "resultRevision": 2,
+          "revisionDelta": 1,
+          "applyCount": 1,
+          "durableSaves": 1,
+          "watcherCount": 1,
+          "assertionCount": 8,
+          "verdict": "passed",
+          "failures": []
+        },
+        {
+          "id": "trim-clip",
+          "intent": "trim the score clip inside its source bounds",
+          "baseRevision": 2,
+          "resultRevision": 3,
+          "revisionDelta": 1,
+          "applyCount": 1,
+          "durableSaves": 1,
+          "watcherCount": 1,
+          "assertionCount": 9,
+          "verdict": "passed",
+          "failures": []
+        },
+        {
+          "id": "split-clip",
+          "intent": "split the caption clip into a head and a tail in one atomic batch",
+          "baseRevision": 3,
+          "resultRevision": 4,
+          "revisionDelta": 1,
+          "applyCount": 1,
+          "durableSaves": 1,
+          "watcherCount": 1,
+          "assertionCount": 12,
+          "verdict": "passed",
+          "failures": []
+        },
+        {
+          "id": "patch-project",
+          "intent": "submit one typed Project patch",
+          "baseRevision": 4,
+          "resultRevision": 5,
+          "revisionDelta": 1,
+          "applyCount": 1,
+          "durableSaves": 1,
+          "watcherCount": 1,
+          "assertionCount": 9,
+          "verdict": "passed",
+          "failures": []
+        },
+        {
+          "id": "keyed-commit",
+          "intent": "commit a keyed batch that the next step replays",
+          "baseRevision": 5,
+          "resultRevision": 6,
+          "revisionDelta": 1,
+          "applyCount": 1,
+          "durableSaves": 1,
+          "watcherCount": 1,
+          "assertionCount": 8,
+          "verdict": "passed",
+          "failures": []
+        },
+        {
+          "id": "keyed-replay",
+          "intent": "replay the keyed batch unchanged",
+          "baseRevision": 6,
+          "resultRevision": 6,
+          "revisionDelta": 0,
+          "applyCount": 1,
+          "durableSaves": 0,
+          "watcherCount": 0,
+          "assertionCount": 6,
+          "verdict": "passed",
+          "failures": []
+        },
+        {
+          "id": "keyed-reuse-different-payload",
+          "intent": "reuse the key with a different payload",
+          "baseRevision": 6,
+          "resultRevision": null,
+          "revisionDelta": 0,
+          "applyCount": 1,
+          "durableSaves": 0,
+          "watcherCount": 0,
+          "assertionCount": 5,
+          "verdict": "passed",
+          "failures": []
+        },
+        {
+          "id": "stale-expected-revision",
+          "intent": "submit a stale expected revision",
+          "baseRevision": 6,
+          "resultRevision": null,
+          "revisionDelta": 0,
+          "applyCount": 1,
+          "durableSaves": 0,
+          "watcherCount": 0,
+          "assertionCount": 7,
+          "verdict": "passed",
+          "failures": []
+        }
+      ],
+      "totalAssertions": 87,
+      "commitment": {
+        "revision": 6,
+        "projectId": "756db22d-076e-454a-a8be-edff50209265",
+        "project": {
+          "id": "756db22d-076e-454a-a8be-edff50209265",
+          "name": "Agent transaction walk",
+          "frameRate": {
+            "numerator": 30,
+            "denominator": 1
+          },
+          "canvasWidth": 1280,
+          "canvasHeight": 720
+        },
+        "tracks": [
+          {
+            "id": "agent-track-audio",
+            "kind": "audio",
+            "name": "Agent audio",
+            "hidden": false
+          },
+          {
+            "id": "agent-track-caption",
+            "kind": "text",
+            "name": "Agent captions",
+            "hidden": false
+          }
+        ],
+        "clips": [
+          {
+            "id": "agent-clip-caption",
+            "trackId": "agent-track-caption",
+            "startTime": 80000,
+            "duration": 20000,
+            "trimStart": 0,
+            "trimEnd": 0
+          },
+          {
+            "id": "agent-clip-caption-tail",
+            "trackId": "agent-track-caption",
+            "startTime": 100000,
+            "duration": 20000,
+            "trimStart": 20000,
+            "trimEnd": 0
+          },
+          {
+            "id": "agent-clip-score",
+            "trackId": "agent-track-audio",
+            "assetId": "agent-asset-score",
+            "startTime": 0,
+            "duration": 80000,
+            "trimStart": 4000,
+            "trimEnd": 0
+          }
+        ],
+        "assets": [
+          {
+            "id": "agent-asset-score",
+            "kind": "audio",
+            "name": "Agent score",
+            "duration": 480000
+          }
+        ],
+        "markers": [
+          {
+            "id": "agent-marker-cue",
+            "time": 40000,
+            "note": "cue"
+          }
+        ]
+      },
+      "verdict": "passed",
+      "failureCodes": []
+    },
+    "reopen": null,
+    "assetMetadata": [
+      {
+        "id": "agent-asset-score",
+        "kind": "audio",
+        "name": "Agent score",
+        "duration": 480000
+      }
+    ],
+    "error": null
+  },
+  "reopen": {
+    "schema": "t4-agent-evidence-run-v1",
+    "host": "next",
+    "buildMarker": "t4-final-source-20260813-a",
+    "phase": "reopen",
+    "attachmentBytesClaimed": false,
+    "projectId": "756db22d-076e-454a-a8be-edff50209265",
+    "ledger": null,
+    "reopen": {
+      "assertionCount": 48,
+      "observedRevision": 6,
+      "expectedRevision": 6,
+      "verdict": "passed",
+      "failures": []
+    },
+    "assetMetadata": [
+      {
+        "id": "agent-asset-score",
+        "kind": "audio",
+        "name": "Agent score",
+        "duration": 480000
+      }
+    ],
+    "error": null
+  },
+  "staleControl": {
+    "schema": "t4-agent-evidence-run-v1",
+    "host": "next",
+    "buildMarker": "t4-final-source-20260813-a",
+    "phase": "reopen",
+    "attachmentBytesClaimed": false,
+    "projectId": "756db22d-076e-454a-a8be-edff50209265",
+    "ledger": null,
+    "reopen": {
+      "assertionCount": 48,
+      "observedRevision": 6,
+      "expectedRevision": 5,
+      "verdict": "failed",
+      "failures": [
+        "reopened revision 6 != committed 5"
+      ]
+    },
+    "assetMetadata": [
+      {
+        "id": "agent-asset-score",
+        "kind": "audio",
+        "name": "Agent score",
+        "duration": 480000
+      }
+    ],
+    "error": null
+  },
+  "steps": [
+    {
+      "id": "apply-phase",
+      "asserted": [
+        "apply phase committed revision 6 across 9 declared steps with 87 assertions"
+      ],
+      "error": null
+    },
+    {
+      "id": "reload-and-reopen",
+      "asserted": [
+        "a fresh session over the same durable store reported revision 6 and matched 48 committed values"
+      ],
+      "error": null
+    },
+    {
+      "id": "stale-reopen-control",
+      "asserted": [
+        "asserting one revision lower than committed failed the reopen step, so the assertion is bound to the observed value"
+      ],
+      "error": null
+    }
+  ],
+  "consoleErrors": []
+}

@@ -2,6 +2,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { Tooltip as TooltipPrimitive } from "radix-ui";
 import * as React from "react";
 
+import { useSurfacePortalContainer } from "@/editor/surface/embedding/surface-portal";
 import { cn } from "@/utils/ui";
 
 const TooltipProvider = TooltipPrimitive.Provider;
@@ -45,32 +46,37 @@ interface TooltipContentProps
 const TooltipContent = React.forwardRef<
 	React.ElementRef<typeof TooltipPrimitive.Content>,
 	TooltipContentProps
->(({ className, sideOffset = 4, variant, ...props }, ref) => (
-	<TooltipPrimitive.Content
-		ref={ref}
-		sideOffset={sideOffset}
-		className={cn(tooltipVariants({ variant }), className)}
-		{...props}
-	>
-		{variant === "sidebar" && (
-			<svg
-				width="6"
-				height="10"
-				viewBox="0 0 6 10"
-				fill="none"
-				xmlns="http://www.w3.org/2000/svg"
-				className="absolute top-1/2 left-[-6px] -translate-y-1/2"
-				aria-hidden="true"
+>(({ className, sideOffset = 4, variant, ...props }, ref) => {
+	const container = useSurfacePortalContainer();
+	return (
+		<TooltipPrimitive.Portal container={container}>
+			<TooltipPrimitive.Content
+				ref={ref}
+				sideOffset={sideOffset}
+				className={cn(tooltipVariants({ variant }), className)}
+				{...props}
 			>
-				<path
-					d="M6 0L0 5L6 10V0Z"
-					className="fill-white/80 dark:fill-[#413F3E]"
-				/>
-			</svg>
-		)}
-		{props.children}
-	</TooltipPrimitive.Content>
-));
+				{variant === "sidebar" && (
+					<svg
+						width="6"
+						height="10"
+						viewBox="0 0 6 10"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+						className="absolute top-1/2 left-[-6px] -translate-y-1/2"
+						aria-hidden="true"
+					>
+						<path
+							d="M6 0L0 5L6 10V0Z"
+							className="fill-white/80 dark:fill-[#413F3E]"
+						/>
+					</svg>
+				)}
+				{props.children}
+			</TooltipPrimitive.Content>
+		</TooltipPrimitive.Portal>
+	);
+});
 TooltipContent.displayName = TooltipPrimitive.Content.displayName;
 
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider };

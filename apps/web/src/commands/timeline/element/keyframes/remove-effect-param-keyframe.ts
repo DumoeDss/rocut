@@ -1,11 +1,16 @@
-import { EditorCore } from "@/core";
-import { Command, type CommandResult } from "@/commands/base-command";
+import {
+	Command,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
 import { removeEffectParamKeyframe } from "@/animation/effect-param-channel";
 import { updateElementInSceneTracks } from "@/timeline";
 import { isVisualElement } from "@/timeline/element-utils";
 import type { SceneTracks } from "@/timeline";
 
 export class RemoveEffectParamKeyframeCommand extends Command {
+	readonly routingClass = "provider-private" as const;
+
 	private savedState: SceneTracks | null = null;
 	private readonly trackId: string;
 	private readonly elementId: string;
@@ -34,8 +39,7 @@ export class RemoveEffectParamKeyframeCommand extends Command {
 		this.keyframeId = keyframeId;
 	}
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		this.savedState = editor.scenes.getActiveScene().tracks;
 
 		const updatedTracks = updateElementInSceneTracks({
@@ -58,12 +62,11 @@ export class RemoveEffectParamKeyframeCommand extends Command {
 		return undefined;
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (!this.savedState) {
 			return;
 		}
 
-		const editor = EditorCore.getInstance();
 		editor.timeline.updateTracks(this.savedState);
 	}
 }

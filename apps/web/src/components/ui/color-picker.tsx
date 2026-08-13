@@ -1,4 +1,10 @@
-import { type ComponentProps, forwardRef, useEffect, useRef, useState } from "react";
+import {
+	type ComponentProps,
+	forwardRef,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import { cn } from "@/utils/ui";
 import { Input } from "./input";
 import {
@@ -17,6 +23,7 @@ import {
 import { Button } from "./button";
 import { Cancel01Icon, ColorPickerIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { useSurfaceDragCoordinator } from "@/editor/surface/embedding/surface-drag-coordinator";
 import {
 	type ColorFormat,
 	appendAlpha,
@@ -66,6 +73,7 @@ function ColorPickerContent({
 	const hueRef = useRef<HTMLButtonElement>(null);
 	const opacityRef = useRef<HTMLButtonElement>(null);
 	const latestDragColorRef = useRef<string | null>(null);
+	const dragCoordinator = useSurfaceDragCoordinator();
 
 	const isEyeDropperSupported =
 		typeof window !== "undefined" && "EyeDropper" in window;
@@ -142,14 +150,29 @@ function ColorPickerContent({
 		};
 
 		if (isDragging) {
-			document.addEventListener("mousemove", handleMouseMove);
-			document.addEventListener("mouseup", handleMouseUp);
-			return () => {
-				document.removeEventListener("mousemove", handleMouseMove);
-				document.removeEventListener("mouseup", handleMouseUp);
-			};
+			return dragCoordinator.start({
+				kind: "mouse",
+				move: handleMouseMove,
+				// Cancel commits through the same path as mouse-up: `onChange` has
+				// already pushed each intermediate colour, so ending without
+				// `onChangeEnd` would strand the last previewed value uncommitted.
+				// Reachable because the per-Surface coordinator pre-empts an
+				// in-flight drag when another one starts on the same Surface.
+				finish: handleMouseUp,
+				cancel: handleMouseUp,
+			});
 		}
-	}, [isDragging, displayHue, s, v, alpha, rgbValue, onChange, onChangeEnd]);
+	}, [
+		isDragging,
+		displayHue,
+		s,
+		v,
+		alpha,
+		rgbValue,
+		onChange,
+		onChangeEnd,
+		dragCoordinator,
+	]);
 
 	const handleEyeDropper = async () => {
 		if (!isEyeDropperSupported || !EyeDropper) return;
@@ -171,8 +194,14 @@ function ColorPickerContent({
 		if (!saturationElement) return;
 		setIsDragging("saturation");
 		const rect = saturationElement.getBoundingClientRect();
-		const x = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
-		const y = Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
+		const x = Math.max(
+			0,
+			Math.min(1, (event.clientX - rect.left) / rect.width),
+		);
+		const y = Math.max(
+			0,
+			Math.min(1, (event.clientY - rect.top) / rect.height),
+		);
 		const newHex = appendAlpha({
 			rgbHex: hsvToHex({ h: displayHue, s: x, v: 1 - y }),
 			alpha,
@@ -187,7 +216,10 @@ function ColorPickerContent({
 		if (!hueElement) return;
 		setIsDragging("hue");
 		const rect = hueElement.getBoundingClientRect();
-		const x = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+		const x = Math.max(
+			0,
+			Math.min(1, (event.clientX - rect.left) / rect.width),
+		);
 		const newH = x * 360;
 		setInternalHue(newH);
 		if (s > 0) {
@@ -206,7 +238,10 @@ function ColorPickerContent({
 		if (!opacityElement) return;
 		setIsDragging("opacity");
 		const rect = opacityElement.getBoundingClientRect();
-		const x = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+		const x = Math.max(
+			0,
+			Math.min(1, (event.clientX - rect.left) / rect.width),
+		);
 		const newHex = appendAlpha({ rgbHex: rgbValue, alpha: x });
 		latestDragColorRef.current = newHex;
 		onChange?.(newHex);
@@ -353,7 +388,10 @@ function ColorPickerContent({
 					type="button"
 					onMouseDown={handleOpacityMouseDown}
 				>
-					<div className="absolute inset-0 dark:invert" style={CHECKERBOARD_STYLE} />
+					<div
+						className="absolute inset-0 dark:invert"
+						style={CHECKERBOARD_STYLE}
+					/>
 					<div
 						className="absolute inset-0 rounded-lg"
 						style={{

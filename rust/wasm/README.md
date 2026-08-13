@@ -25,17 +25,20 @@ Functions are implemented in Rust under [`rust/crates/`](../crates/). This packa
 
 ## Local development
 
-The web app depends on the published `opencut-wasm` package by default. If you are editing the WASM source in this repo and want `apps/web` to use your local build instead:
+**This fork builds the package from source; the published npm `opencut-wasm` is not consumed.**
+Both the root `package.json` and `apps/web/package.json` declare `opencut-wasm` as a `file:`
+dependency on `rust/wasm/pkg`, so `bun install` resolves the specifier to the build output. No
+`bun link` step is involved, and building the wasm is a required step **before** `bun install`
+rather than an opt-in for wasm contributors.
 
 ```bash
-# From the repo root
+# From the repo root, once per machine
+script/setup-rust                        # or script/setup-rust.ps1 on Windows
+rustup target add wasm32-unknown-unknown
+
+# Then, before installing dependencies
 bun run build:wasm
-
-cd rust/wasm/pkg
-bun link
-
-cd ../../../apps/web
-bun link opencut-wasm
+bun install
 ```
 
 While you work, rebuild on changes from the repo root:
@@ -43,3 +46,22 @@ While you work, rebuild on changes from the repo root:
 ```bash
 bun dev:wasm
 ```
+
+**Re-run `bun install` after each rebuild.** bun installs a `file:` dependency as hard links, and
+`wasm-opt` replaces `opencut_wasm_bg.wasm` instead of rewriting it, so that one file's link breaks
+and the resolved copy silently keeps the previous build's pre-`wasm-opt` intermediate while every
+other file looks current. `bun run check:wasm` asserts the resolved package really is the current
+build output and names the command to run when it is not; CI runs it after every install.
+
+`bun dev:wasm` already does the re-install for you — its watch command is
+`node script/build-wasm.mjs && bun install`, because without the second half every save in the watch
+loop would hand you a stale binary.
+
+Builds go through `script/build-wasm.mjs` rather than calling `wasm-pack` directly. It applies
+`--remap-path-prefix` so the redistributed `.wasm` carries no path from the machine that built it —
+plain `wasm-pack build` embeds the builder's home directory and username, and this artifact ships to
+every user of the web app.
+
+That is **enforced**, not left to habit: `script/check-wasm-paths.mjs` fails on any artifact carrying
+such a path, and CI runs it. Verified against an artifact built by calling `wasm-pack` directly — it
+reports 286 disclosing paths and exits non-zero.

@@ -8,22 +8,18 @@ import type {
 	TTimelineViewState,
 } from "@/project/types";
 import type { ExportOptions, ExportResult, ExportState } from "@/export";
-import { storageService } from "@/services/storage/service";
 import { toast } from "sonner";
 import { generateUUID } from "@/utils/id";
 import { UpdateProjectSettingsCommand } from "@/commands/project";
 import { DEFAULT_BACKGROUND_COLOR } from "@/background/color";
 import { DEFAULT_CANVAS_SIZE } from "@/canvas/sizes";
 import { DEFAULT_FPS } from "@/fps/defaults";
-import { buildDefaultScene, getProjectDurationFromScenes } from "@/timeline/scenes";
-import { buildScene } from "@/services/renderer/scene-builder";
-import { CanvasRenderer } from "@/services/renderer/canvas-renderer";
 import {
-	CURRENT_PROJECT_VERSION,
-	migrations,
-	runStorageMigrations,
-	type MigrationProgress,
-} from "@/services/storage/migrations";
+	buildDefaultScene,
+	getProjectDurationFromScenes,
+} from "@/timeline/scenes";
+import { buildScene } from "@/services/renderer/scene-builder";
+import { CURRENT_PROJECT_VERSION } from "@/services/storage/migrations";
 import { loadFonts } from "@/fonts/google-fonts";
 import { DEFAULTS } from "@/timeline/defaults";
 import { getElementFontFamilies } from "@/timeline/element-utils";
@@ -43,7 +39,6 @@ export class ProjectManager {
 	private isLoading = true;
 	private isInitialized = false;
 	private invalidProjectIds = new Set<string>();
-	private storageMigrationPromise: Promise<void> | null = null;
 	private listeners = new Set<() => void>();
 	private migrationState: MigrationState = {
 		isMigrating: false,
@@ -59,25 +54,6 @@ export class ProjectManager {
 	private exportCancelRequested = false;
 
 	constructor(private editor: EditorCore) {}
-
-	private async ensureStorageMigrations(): Promise<void> {
-		if (this.storageMigrationPromise) {
-			await this.storageMigrationPromise;
-			return;
-		}
-
-		this.storageMigrationPromise = (async () => {
-			await runStorageMigrations({
-				migrations,
-				onProgress: (progress: MigrationProgress) => {
-					this.migrationState = progress;
-					this.notify();
-				},
-			});
-		})();
-
-		await this.storageMigrationPromise;
-	}
 
 	async createNewProject({ name }: { name: string }): Promise<string> {
 		const mainScene = buildDefaultScene({ name: "Main scene", isMain: true });
@@ -105,22 +81,31 @@ export class ProjectManager {
 			version: CURRENT_PROJECT_VERSION,
 		};
 
-		this.active = newProject;
-		this.notify();
-
-		this.editor.media.clearAllAssets();
-		this.editor.scenes.initializeScenes({
-			scenes: newProject.scenes,
-			currentSceneId: newProject.currentSceneId,
-		});
-
 		try {
-			await storageService.saveProject({ project: newProject });
+			await this.editor.persistence.saveProject({ project: newProject });
+			await this.editor.media.clearAllAssets();
+			if (this.editor.transactions) {
+				await this.editor.transactions.open({
+					projectId: newProject.metadata.id,
+					assets: [],
+				});
+			}
+			this.active = newProject;
+			this.editor.scenes.initializeScenes({
+				scenes: newProject.scenes,
+				currentSceneId: newProject.currentSceneId,
+			});
 			this.updateMetadata(newProject);
 
 			return newProject.metadata.id;
 		} catch (error) {
-			toast.error("Failed to save new project");
+			this.editor.reportPersistenceFailure({
+				operation: "create-project",
+				error,
+			});
+			toast.error("Failed to save new project", {
+				description: "The project was not opened. Please try again.",
+			});
 			throw error;
 		}
 	}
@@ -132,29 +117,13 @@ export class ProjectManager {
 		}
 
 		this.editor.save.pause();
-		await this.ensureStorageMigrations();
-		this.editor.media.clearAllAssets();
-		this.editor.scenes.clearScenes();
+		await this.editor.transactions?.retire();
 
 		try {
-			const result = await storageService.loadProject({ id });
-			if (!result) {
+			const project = await this.editor.persistence.loadProject({ id });
+			if (!project) {
 				throw new Error(`Project with id ${id} not found`);
 			}
-
-			const project = result.project;
-
-			this.active = project;
-			this.notify();
-
-			if (project.scenes && project.scenes.length > 0) {
-				this.editor.scenes.initializeScenes({
-					scenes: project.scenes,
-					currentSceneId: project.currentSceneId,
-				});
-			}
-
-			await this.editor.media.loadProjectMedia({ projectId: id });
 
 			await loadFonts({
 				families: [
@@ -165,6 +134,26 @@ export class ProjectManager {
 					),
 				],
 			});
+			await this.editor.drainProjectLiveState();
+			await this.editor.media.loadProjectMedia({ projectId: id });
+			if (this.editor.transactions) {
+				await this.editor.transactions.open({
+					projectId: id,
+					assets: this.editor.media.getAssets(),
+				});
+			}
+
+			this.active = project;
+			this.notify();
+
+			if (project.scenes && project.scenes.length > 0) {
+				this.editor.scenes.initializeScenes({
+					scenes: project.scenes,
+					currentSceneId: project.currentSceneId,
+				});
+			} else {
+				this.editor.scenes.clearScenes();
+			}
 
 			if (!project.metadata.thumbnail) {
 				try {
@@ -172,12 +161,19 @@ export class ProjectManager {
 					if (didUpdateThumbnail) {
 						await this.saveCurrentProject();
 					}
-				} catch (error) {
-					console.error("Failed to generate project thumbnail:", error);
+				} catch {
+					console.error("Failed to generate project thumbnail");
 				}
 			}
 		} catch (error) {
-			console.error("Failed to load project:", error);
+			await this.editor.transactions?.retire();
+			this.editor.reportPersistenceFailure({
+				operation: "load-project",
+				error,
+			});
+			toast.error("Failed to load project", {
+				description: "Your project data was not changed. Please try again.",
+			});
 			throw error;
 		} finally {
 			this.isLoading = false;
@@ -201,11 +197,18 @@ export class ProjectManager {
 				},
 			};
 
-			await storageService.saveProject({ project: updatedProject });
+			await this.editor.persistence.saveProject({ project: updatedProject });
 			this.active = updatedProject;
 			this.updateMetadata(updatedProject);
 		} catch (error) {
-			console.error("Failed to save project:", error);
+			this.editor.reportPersistenceFailure({
+				operation: "save-project",
+				error,
+			});
+			toast.error("Failed to save project", {
+				description: "Your latest changes are still open. Please try again.",
+			});
+			throw error;
 		}
 	}
 
@@ -253,20 +256,20 @@ export class ProjectManager {
 		}
 
 		try {
-			await this.ensureStorageMigrations();
-			try {
-				const metadata = await storageService.loadAllProjectsMetadata();
-				this.savedProjects = metadata;
-				this.notify();
-			} catch (error) {
-				console.error("Failed to load projects:", error);
-			} finally {
-				this.isLoading = false;
-				this.isInitialized = true;
-				this.notify();
-			}
+			const metadata = await this.editor.persistence.listProjects();
+			this.savedProjects = metadata;
+			this.notify();
 		} catch (error) {
-			console.error("Failed to run migrations:", error);
+			this.editor.reportPersistenceFailure({
+				operation: "list-projects",
+				error,
+			});
+			toast.error("Failed to load projects", {
+				description:
+					"Your project list could not be refreshed. Please try again.",
+			});
+			throw error;
+		} finally {
 			this.isLoading = false;
 			this.isInitialized = true;
 			this.notify();
@@ -279,12 +282,7 @@ export class ProjectManager {
 
 		try {
 			await Promise.all(
-				uniqueIds.map((id) =>
-					Promise.all([
-						storageService.deleteProjectMedia({ projectId: id }),
-						storageService.deleteProject({ id }),
-					]),
-				),
+				uniqueIds.map((id) => this.editor.persistence.removeProject({ id })),
 			);
 
 			const idSet = new Set(uniqueIds);
@@ -296,22 +294,31 @@ export class ProjectManager {
 				this.active && idSet.has(this.active.metadata.id);
 
 			if (shouldClearActive) {
+				await this.editor.transactions?.retire();
+				await this.editor.media.clearAllAssets();
 				this.active = null;
-				this.editor.media.clearAllAssets();
 				this.editor.scenes.clearScenes();
 			}
 
 			this.notify();
 		} catch (error) {
-			console.error("Failed to delete projects:", error);
+			this.editor.reportPersistenceFailure({
+				operation: "delete-projects",
+				error,
+			});
+			toast.error("Failed to delete projects", {
+				description:
+					"Some project data could not be removed. Please try again.",
+			});
+			throw error;
 		}
 	}
 
-	closeProject(): void {
+	async closeProject(): Promise<void> {
+		await this.editor.transactions?.retire();
+		await this.editor.media.clearAllAssets();
 		this.active = null;
 		this.notify();
-
-		this.editor.media.clearAllAssets();
 		this.editor.scenes.clearScenes();
 	}
 
@@ -323,24 +330,21 @@ export class ProjectManager {
 		name: string;
 	}): Promise<void> {
 		try {
-			const result = await storageService.loadProject({ id });
-			if (!result) {
-				toast.error("Project not found", {
-					description: "Please try again",
-				});
-				return;
+			const project = await this.editor.persistence.loadProject({ id });
+			if (!project) {
+				throw new Error("Project not found");
 			}
 
 			const updatedProject: TProject = {
-				...result.project,
+				...project,
 				metadata: {
-					...result.project.metadata,
+					...project.metadata,
 					name,
 					updatedAt: new Date(),
 				},
 			};
 
-			await storageService.saveProject({ project: updatedProject });
+			await this.editor.persistence.saveProject({ project: updatedProject });
 
 			if (this.active?.metadata.id === id) {
 				this.active = updatedProject;
@@ -349,17 +353,21 @@ export class ProjectManager {
 
 			this.updateMetadata(updatedProject);
 		} catch (error) {
-			console.error("Failed to rename project:", error);
-			toast.error("Failed to rename project", {
-				description:
-					error instanceof Error ? error.message : "Please try again",
+			this.editor.reportPersistenceFailure({
+				operation: "rename-project",
+				error,
 			});
+			toast.error("Failed to rename project", {
+				description: "The previous name is still saved. Please try again.",
+			});
+			throw error;
 		}
 	}
 
 	async duplicateProjects({ ids }: { ids: string[] }): Promise<string[]> {
 		const uniqueIds = Array.from(new Set(ids));
 		if (uniqueIds.length === 0) return [];
+		const committedDuplicateIds: string[] = [];
 
 		try {
 			const getDuplicateBaseName = ({ name }: { name: string }) => {
@@ -371,8 +379,10 @@ export class ProjectManager {
 
 			const loadResults = await Promise.all(
 				uniqueIds.map(async (projectId) => {
-					const result = await storageService.loadProject({ id: projectId });
-					return { projectId, project: result?.project ?? null };
+					const project = await this.editor.persistence.loadProject({
+						id: projectId,
+					});
+					return { projectId, project };
 				}),
 			);
 
@@ -381,17 +391,6 @@ export class ProjectManager {
 				.map((result) => result.projectId);
 
 			if (missingProjectIds.length > 0) {
-				toast.error(
-					missingProjectIds.length === 1
-						? "Project not found"
-						: "Projects not found",
-					{
-						description:
-							missingProjectIds.length === 1
-								? "Please try again"
-								: "Some projects could not be found",
-					},
-				);
 				throw new Error(`Projects not found: ${missingProjectIds.join(", ")}`);
 			}
 
@@ -445,23 +444,37 @@ export class ProjectManager {
 				};
 			});
 
-			await Promise.all(
-				duplicationPlans.map(({ newProject }) =>
-					storageService.saveProject({ project: newProject }),
-				),
+			const creationResults = await Promise.allSettled(
+				duplicationPlans.map(async ({ newProjectId, newProject }) => {
+					await this.editor.persistence.saveProject({ project: newProject });
+					return newProjectId;
+				}),
 			);
+			for (const result of creationResults) {
+				if (result.status === "fulfilled") {
+					committedDuplicateIds.push(result.value);
+				}
+			}
+			const creationFailure = creationResults.find(
+				(result): result is PromiseRejectedResult =>
+					result.status === "rejected",
+			);
+			if (creationFailure) throw creationFailure.reason;
 
 			await Promise.all(
 				duplicationPlans.map(async ({ sourceProjectId, newProjectId }) => {
-					const sourceMediaAssets = await storageService.loadAllMediaAssets({
-						projectId: sourceProjectId,
-					});
+					const sourceAttachments =
+						await this.editor.persistence.listAttachments({
+							projectId: sourceProjectId,
+						});
 
 					await Promise.all(
-						sourceMediaAssets.map((mediaAsset) =>
-							storageService.saveMediaAsset({
+						sourceAttachments.map((attachment) =>
+							this.editor.persistence.saveAttachment({
 								projectId: newProjectId,
-								mediaAsset,
+								key: attachment.key,
+								metadata: attachment.metadata,
+								body: attachment.body,
 							}),
 						),
 					);
@@ -474,10 +487,17 @@ export class ProjectManager {
 
 			return duplicationPlans.map((plan) => plan.newProjectId);
 		} catch (error) {
-			console.error("Failed to duplicate projects:", error);
+			await Promise.allSettled(
+				committedDuplicateIds.map((id) =>
+					this.editor.persistence.removeProject({ id }),
+				),
+			);
+			this.editor.reportPersistenceFailure({
+				operation: "duplicate-projects",
+				error,
+			});
 			toast.error("Failed to duplicate projects", {
-				description:
-					error instanceof Error ? error.message : "Please try again",
+				description: "No incomplete duplicate was kept. Please try again.",
 			});
 			throw error;
 		}
@@ -494,18 +514,22 @@ export class ProjectManager {
 
 		const command = new UpdateProjectSettingsCommand(settings);
 		if (pushHistory) {
-			this.editor.command.execute({ command });
+			await this.editor.command.execute({ command });
 			return;
 		}
 
-		command.execute();
+		if (command.routingClass === "transaction") {
+			await this.editor.command.executeSystem({ command });
+			return;
+		}
+		this.editor.command.executeWithoutHistory({ command });
 	}
 
-	ratchetFpsForImportedMedia({
+	async ratchetFpsForImportedMedia({
 		importedAssets,
 	}: {
 		importedAssets: Array<Pick<MediaAsset, "type" | "fps">>;
-	}): import("opencut-wasm").FrameRate | null {
+	}): Promise<import("opencut-wasm").FrameRate | null> {
 		if (!this.active) return null;
 
 		const nextFps = getRaisedProjectFpsForImportedMedia({
@@ -514,7 +538,9 @@ export class ProjectManager {
 		});
 		if (nextFps === null) return null;
 
-		new UpdateProjectSettingsCommand({ fps: nextFps }).execute();
+		await this.editor.command.executeSystem({
+			command: new UpdateProjectSettingsCommand({ fps: nextFps }),
+		});
 		return nextFps;
 	}
 
@@ -540,7 +566,8 @@ export class ProjectManager {
 				await this.editor.save.flush();
 			}
 		} catch (error) {
-			console.error("Failed to generate project thumbnail on exit:", error);
+			console.error("Failed to prepare project exit");
+			throw error;
 		}
 	}
 
@@ -555,10 +582,14 @@ export class ProjectManager {
 			project.name.toLowerCase().includes(searchQuery.toLowerCase()),
 		);
 
-		const [key, order] = sortOption.split("-") as [
-			TProjectSortKey,
-			"asc" | "desc",
-		];
+		const key: TProjectSortKey = sortOption.startsWith("createdAt-")
+			? "createdAt"
+			: sortOption.startsWith("updatedAt-")
+				? "updatedAt"
+				: sortOption.startsWith("duration-")
+					? "duration"
+					: "name";
+		const order = sortOption.endsWith("-asc") ? "asc" : "desc";
 
 		const sortedProjects = [...filteredProjects].sort((a, b) => {
 			const aValue = a[key];
@@ -642,13 +673,25 @@ export class ProjectManager {
 		this.notify();
 	}
 
+	adoptCommittedProject({ project }: { project: TProject }): void {
+		this.active = project;
+		const index = this.savedProjects.findIndex(
+			(candidate) => candidate.id === project.metadata.id,
+		);
+		this.savedProjects =
+			index === -1
+				? [project.metadata, ...this.savedProjects]
+				: this.savedProjects.with(index, project.metadata);
+		this.notify();
+	}
+
 	subscribe(listener: () => void): () => void {
 		this.listeners.add(listener);
 		return () => this.listeners.delete(listener);
 	}
 
 	private async updateThumbnailFromTimeline(): Promise<boolean> {
-		if (!this.active) return false;
+		if (!this.active || this.editor.renderer.isDegraded) return false;
 
 		const tracks = this.editor.scenes.getActiveScene().tracks;
 		const mediaAssets = this.editor.media.getAssets();
@@ -661,9 +704,10 @@ export class ProjectManager {
 			duration: duration || 1,
 			canvasSize,
 			background,
+			assetResolver: this.editor.renderer.assetResolver,
 		});
 
-		const renderer = new CanvasRenderer({
+		const renderer = this.editor.renderer.createCanvasRenderer({
 			width: canvasSize.width,
 			height: canvasSize.height,
 			fps: this.active.settings.fps,

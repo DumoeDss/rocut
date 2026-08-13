@@ -8,9 +8,13 @@ import {
 } from "@/components/editor/panels/properties/hooks/use-keyframed-param-property";
 import type { ParamDefinition, ParamValues } from "@/params";
 import type { GraphicElement } from "@/timeline";
-import { graphicsRegistry, registerDefaultGraphics, resolveGraphicElementParamsAtTime } from "@/graphics";
+import {
+	graphicsRegistry,
+	registerDefaultGraphics,
+	resolveGraphicElementParamsAtTime,
+} from "@/graphics";
 import { useElementPreview } from "@/timeline/hooks/use-element-preview";
-import { useEditor } from "@/editor/use-editor";
+import { useEditorInstance } from "@/editor/use-editor";
 import {
 	Section,
 	SectionContent,
@@ -90,7 +94,7 @@ function StrokeSection({
 	element: GraphicElement;
 	trackId: string;
 }) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const definition = graphicsRegistry.get(element.definitionId);
 	const { localTime, isPlayheadWithinElementRange } = useElementPlayhead({
 		startTime: element.startTime,

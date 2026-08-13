@@ -2,11 +2,16 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useDeepCompareEffect from "use-deep-compare-effect";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 import { useRafLoop } from "@/hooks/use-raf-loop";
+import type { SessionResources, TimerHandle } from "@/editor/session/resources";
+import {
+	SessionActivityGenerationError,
+	type SessionResourceLifecycle,
+} from "@/editor/session/session-resources";
 import { useContainerSize } from "@/hooks/use-container-size";
 import { useFullscreen } from "@/hooks/use-fullscreen";
-import { CanvasRenderer } from "@/services/renderer/canvas-renderer";
 import { TICKS_PER_SECOND } from "@/wasm";
 import type { RootNode } from "@/services/renderer/nodes/root-node";
 import { buildScene } from "@/services/renderer/scene-builder";
@@ -23,6 +28,38 @@ import {
 	PreviewViewportProvider,
 	usePreviewViewportState,
 } from "./preview-viewport";
+
+type PreviewActivityLifecycle = Pick<
+	SessionResourceLifecycle,
+	| "assertActivityGeneration"
+	| "getActivityGeneration"
+	| "isActivityAdmitted"
+	| "subscribeActivityLifecycle"
+>;
+
+function hasPreviewActivityLifecycle(
+	resources: SessionResources,
+): resources is SessionResources & PreviewActivityLifecycle {
+	return (
+		"assertActivityGeneration" in resources &&
+		typeof resources.assertActivityGeneration === "function" &&
+		"getActivityGeneration" in resources &&
+		typeof resources.getActivityGeneration === "function" &&
+		"isActivityAdmitted" in resources &&
+		typeof resources.isActivityAdmitted === "function" &&
+		"subscribeActivityLifecycle" in resources &&
+		typeof resources.subscribeActivityLifecycle === "function"
+	);
+}
+
+function resolvePreviewActivityLifecycle(
+	resources: SessionResources,
+): PreviewActivityLifecycle {
+	if (!hasPreviewActivityLifecycle(resources)) {
+		throw new Error("Preview rendering requires session activity lifecycle.");
+	}
+	return resources;
+}
 
 function usePreviewSize() {
 	const canvasSize = useEditor(
@@ -67,7 +104,7 @@ export function PreviewPanel({
 		isVisible: boolean;
 	}) => void;
 }) {
-	const containerRef = useRef<HTMLDivElement>(null);
+	const containerRef = useRef<HTMLDivElement | null>(null);
 	const [container, setContainer] = useState<HTMLDivElement | null>(null);
 	const { toggleFullscreen } = useFullscreen({ containerRef });
 	const handleContainerRef = useCallback((node: HTMLDivElement | null) => {
@@ -93,7 +130,8 @@ export function PreviewPanel({
 }
 
 function RenderTreeController() {
-	const editor = useEditor();
+	const editor = useEditorInstance();
+	const isDegraded = useEditor((e) => e.renderer.isDegraded);
 	const tracks = useEditor(
 		(e) => e.timeline.getPreviewTracks() ?? e.scenes.getActiveScene().tracks,
 	);
@@ -103,6 +141,10 @@ function RenderTreeController() {
 	const { width, height } = usePreviewSize();
 
 	useDeepCompareEffect(() => {
+		if (isDegraded) {
+			editor.renderer.setRenderTree({ renderTree: null });
+			return;
+		}
 		if (!activeProject) return;
 
 		const duration = editor.timeline.getTotalDuration();
@@ -113,10 +155,18 @@ function RenderTreeController() {
 			canvasSize: { width, height },
 			background: activeProject.settings.background,
 			isPreview: true,
+			assetResolver: editor.renderer.assetResolver,
 		});
 
 		editor.renderer.setRenderTree({ renderTree });
-	}, [tracks, mediaAssets, activeProject?.settings.background, width, height]);
+	}, [
+		tracks,
+		mediaAssets,
+		activeProject?.settings.background,
+		width,
+		height,
+		isDegraded,
+	]);
 
 	return null;
 }
@@ -144,9 +194,16 @@ function PreviewCanvas({
 	const renderingRef = useRef(false);
 	const { width: nativeWidth, height: nativeHeight } = usePreviewSize();
 	const viewportSize = useContainerSize({ containerRef: viewportRef });
-	const editor = useEditor();
+	const editor = useEditorInstance();
+	const session = useEditorSession();
+	const activityLifecycle = resolvePreviewActivityLifecycle(session.resources);
+	const [activityGeneration, setActivityGeneration] = useState(() =>
+		activityLifecycle.getActivityGeneration(),
+	);
 	const activeProject = useEditor((e) => e.project.getActive());
 	const renderTree = useEditor((e) => e.renderer.getRenderTree());
+	const rendererManager = useEditor((e) => e.renderer);
+	const isDegraded = useEditor((e) => e.renderer.isDegraded);
 	const viewport = usePreviewViewportState({
 		canvasHeight: nativeHeight,
 		canvasWidth: nativeWidth,
@@ -156,34 +213,72 @@ function PreviewCanvas({
 	});
 	const { canPan, panByScreenDelta, scaleZoom } = viewport;
 
+	useEffect(
+		() =>
+			activityLifecycle.subscribeActivityLifecycle({
+				onResume: ({ generation }) => {
+					setActivityGeneration(generation);
+				},
+			}),
+		[activityLifecycle],
+	);
+
 	const renderer = useMemo(() => {
-		return new CanvasRenderer({
+		if (isDegraded) return null;
+		return rendererManager.createCanvasRenderer({
 			width: nativeWidth,
 			height: nativeHeight,
 			fps: activeProject.settings.fps,
 		});
-	}, [nativeWidth, nativeHeight, activeProject.settings.fps]);
+	}, [
+		rendererManager,
+		nativeWidth,
+		nativeHeight,
+		activeProject.settings.fps,
+		isDegraded,
+	]);
 
 	// Mount the compositor's output canvas directly into the preview. wgpu
 	// renders straight into this element, so there is no intermediate copy —
 	// the container div owns positioning/styling, the canvas itself fills it.
 	useEffect(() => {
 		const mount = canvasMountRef.current;
-		if (!mount) return;
-		const outputCanvas = renderer.getOutputCanvas();
-		outputCanvas.style.display = "block";
-		outputCanvas.style.width = "100%";
-		outputCanvas.style.height = "100%";
-		mount.appendChild(outputCanvas);
+		if (!mount || !renderer) return;
+		let outputCanvas: HTMLCanvasElement | null = null;
+		let cancelled = false;
+		void renderer
+			.getOutputCanvas()
+			.then((canvas) => {
+				if (cancelled) return;
+				try {
+					activityLifecycle.assertActivityGeneration({
+						generation: activityGeneration,
+					});
+				} catch (error) {
+					if (error instanceof SessionActivityGenerationError) return;
+					throw error;
+				}
+				outputCanvas = canvas;
+				canvas.style.display = "block";
+				canvas.style.width = "100%";
+				canvas.style.height = "100%";
+				mount.appendChild(canvas);
+			})
+			.catch((error: unknown) => {
+				if (!cancelled && !(error instanceof SessionActivityGenerationError)) {
+					console.error("Failed to mount preview canvas:", error);
+				}
+			});
 		return () => {
-			if (outputCanvas.parentElement === mount) {
+			cancelled = true;
+			if (outputCanvas?.parentElement === mount) {
 				mount.removeChild(outputCanvas);
 			}
 		};
-	}, [renderer]);
+	}, [activityGeneration, activityLifecycle, renderer]);
 
 	const render = useCallback(() => {
-		if (!renderTree || renderingRef.current) return;
+		if (isDegraded || !renderer || !renderTree || renderingRef.current) return;
 
 		const renderTime = Math.min(
 			editor.playback.getCurrentTime(),
@@ -194,24 +289,26 @@ function PreviewCanvas({
 		);
 		const frame = Math.floor(renderTime / ticksPerFrame);
 
-		if (
-			frame === lastFrameRef.current &&
-			renderTree === lastSceneRef.current
-		) {
+		if (frame === lastFrameRef.current && renderTree === lastSceneRef.current) {
 			return;
 		}
 
 		renderingRef.current = true;
 		lastSceneRef.current = renderTree;
 		lastFrameRef.current = frame;
-		renderer
+		void renderer
 			.render({ node: renderTree, time: renderTime })
-			.then(() => {
+			.catch((error: unknown) => {
+				if (!(error instanceof SessionActivityGenerationError)) {
+					console.error("Failed to render preview frame:", error);
+				}
+			})
+			.finally(() => {
 				renderingRef.current = false;
 			});
-	}, [renderer, renderTree, editor.playback, editor.timeline]);
+	}, [isDegraded, renderer, renderTree, editor.playback, editor.timeline]);
 
-	useRafLoop(render);
+	useRafLoop({ callback: render, resources: editor.resources });
 
 	useEffect(() => {
 		const container = viewportRef.current;
@@ -220,10 +317,30 @@ function PreviewCanvas({
 		let pendingZoomDelta = 0;
 		let pendingPanDeltaX = 0;
 		let pendingPanDeltaY = 0;
-		let zoomRafId: ReturnType<typeof requestAnimationFrame> | null = null;
-		let panRafId: ReturnType<typeof requestAnimationFrame> | null = null;
+		let zoomRafId: TimerHandle | null = null;
+		let panRafId: TimerHandle | null = null;
+		let eventGeneration = activityLifecycle.getActivityGeneration();
+		let listening = false;
+
+		const cancelPendingFrames = () => {
+			zoomRafId?.cancel();
+			panRafId?.cancel();
+			zoomRafId = null;
+			panRafId = null;
+			pendingZoomDelta = 0;
+			pendingPanDeltaX = 0;
+			pendingPanDeltaY = 0;
+		};
 
 		const onWheel = (event: WheelEvent) => {
+			try {
+				activityLifecycle.assertActivityGeneration({
+					generation: eventGeneration,
+				});
+			} catch (error) {
+				if (error instanceof SessionActivityGenerationError) return;
+				throw error;
+			}
 			const normalizedDeltaX = normalizeWheelDelta({
 				delta: event.deltaX,
 				deltaMode: event.deltaMode,
@@ -240,15 +357,17 @@ function PreviewCanvas({
 				pendingZoomDelta += normalizedDeltaY;
 
 				if (zoomRafId === null) {
-					zoomRafId = requestAnimationFrame(() => {
-						const cappedDelta =
-							Math.sign(pendingZoomDelta) *
-							Math.min(Math.abs(pendingZoomDelta), 30);
-						const zoomFactor = Math.exp(-cappedDelta / 300);
+					zoomRafId = editor.resources.requestAnimationFrame({
+						handler: () => {
+							const cappedDelta =
+								Math.sign(pendingZoomDelta) *
+								Math.min(Math.abs(pendingZoomDelta), 30);
+							const zoomFactor = Math.exp(-cappedDelta / 300);
 
-						scaleZoom({ factor: zoomFactor });
-						pendingZoomDelta = 0;
-						zoomRafId = null;
+							scaleZoom({ factor: zoomFactor });
+							pendingZoomDelta = 0;
+							zoomRafId = null;
+						},
 					});
 				}
 
@@ -268,35 +387,57 @@ function PreviewCanvas({
 			pendingPanDeltaY += normalizedDeltaY;
 
 			if (panRafId === null) {
-				panRafId = requestAnimationFrame(() => {
-					panByScreenDelta({
-						deltaX: pendingPanDeltaX,
-						deltaY: pendingPanDeltaY,
-					});
-					pendingPanDeltaX = 0;
-					pendingPanDeltaY = 0;
-					panRafId = null;
+				panRafId = editor.resources.requestAnimationFrame({
+					handler: () => {
+						panByScreenDelta({
+							deltaX: pendingPanDeltaX,
+							deltaY: pendingPanDeltaY,
+						});
+						pendingPanDeltaX = 0;
+						pendingPanDeltaY = 0;
+						panRafId = null;
+					},
 				});
 			}
 		};
 
-		container.addEventListener("wheel", onWheel, {
-			capture: true,
-			passive: false,
+		const attach = () => {
+			if (listening || !activityLifecycle.isActivityAdmitted()) return;
+			container.addEventListener("wheel", onWheel, {
+				capture: true,
+				passive: false,
+			});
+			listening = true;
+		};
+		const detach = () => {
+			if (!listening) return;
+			container.removeEventListener("wheel", onWheel, { capture: true });
+			listening = false;
+		};
+		const unsubscribe = activityLifecycle.subscribeActivityLifecycle({
+			onSuspend: () => {
+				detach();
+				cancelPendingFrames();
+			},
+			onResume: ({ generation }) => {
+				eventGeneration = generation;
+				attach();
+			},
 		});
+		attach();
 
 		return () => {
-			container.removeEventListener("wheel", onWheel, {
-				capture: true,
-			});
-			if (zoomRafId !== null) {
-				cancelAnimationFrame(zoomRafId);
-			}
-			if (panRafId !== null) {
-				cancelAnimationFrame(panRafId);
-			}
+			unsubscribe();
+			detach();
+			cancelPendingFrames();
 		};
-	}, [canPan, panByScreenDelta, scaleZoom]);
+	}, [
+		activityLifecycle,
+		canPan,
+		editor.resources,
+		panByScreenDelta,
+		scaleZoom,
+	]);
 
 	return (
 		<PreviewViewportProvider value={viewport}>
@@ -308,20 +449,29 @@ function PreviewCanvas({
 								ref={viewportRef}
 								className="relative flex size-full min-h-0 min-w-0 items-center justify-center overflow-hidden"
 							>
-							<div
-								ref={canvasMountRef}
-								className="absolute block border"
-								style={{
-									left: viewport.sceneLeft,
-									top: viewport.sceneTop,
-									width: viewport.sceneWidth,
-									height: viewport.sceneHeight,
-									background:
-										activeProject.settings.background.type === "blur"
-											? "transparent"
-											: activeProject?.settings.background.color,
-								}}
-							/>
+								<div
+									ref={canvasMountRef}
+									className="absolute block border"
+									style={{
+										left: viewport.sceneLeft,
+										top: viewport.sceneTop,
+										width: viewport.sceneWidth,
+										height: viewport.sceneHeight,
+										background:
+											activeProject.settings.background.type === "blur"
+												? "transparent"
+												: activeProject?.settings.background.color,
+									}}
+								>
+									{isDegraded ? (
+										<div
+											role="status"
+											className="bg-muted text-muted-foreground flex size-full items-center justify-center px-6 text-center text-sm"
+										>
+											Preview unavailable: this environment has no rasterizer.
+										</div>
+									) : null}
+								</div>
 								<PreviewOverlayLayer
 									instances={overlayInstances}
 									plane="under-interaction"

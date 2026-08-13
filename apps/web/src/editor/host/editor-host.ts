@@ -5,11 +5,18 @@
  * three uses are now named callbacks supplied by the host, so the editor asserts
  * nothing about URL structure — or about there being a router at all.
  *
- * This is deliberately **not** a Host port contract. It carries the identity,
- * navigation and server-endpoint concerns that block a Next-free build, and
- * nothing else. Storage, media and clock ports are a later concern; when they
- * arrive they widen this one interface rather than scattering new props.
+ * This **is** the Host port contract. It began as the identity, navigation and
+ * server-endpoint concerns that blocked a Next-free build, and its header used
+ * to say storage, media and clock ports were a later concern that would "widen
+ * this one interface rather than scattering new props". They have arrived, and
+ * that is what happened: the port roles are composed in below from
+ * `@/editor/ports`, which is the single entry point for all of them.
+ *
+ * Runtime consumers receive this complete Host through session composition;
+ * this interface is the frozen, platform-neutral shape they are wired to.
  */
+
+import type { EditorHostPorts } from "@/editor/ports";
 
 export interface EditorHostNavigation {
 	/**
@@ -70,11 +77,42 @@ export interface EditorHostLinks {
 	roadmapUrl: string;
 }
 
-export interface EditorHost {
+/**
+ * The five shell-facing members the host has always supplied, unchanged.
+ * Named separately because ordinary UI context consumers need only this subset;
+ * port-bearing runtime code receives the complete Host through its session.
+ */
+export interface EditorHostBase {
 	/** The project the editor should open. Was `useParams().project_id`. */
 	projectId: string;
 	navigation: EditorHostNavigation;
 	services: EditorHostServices;
 	branding: EditorHostBranding;
 	links: EditorHostLinks;
+}
+
+/**
+ * The host seam, widened with the port roles.
+ *
+ * This is the one complete surface a **host author** implements. Every port is
+ * required: production composition is complete, so there is no partial form to
+ * resolve, cast, or silently replace with an in-memory fallback.
+ *
+ * UI components still read `EditorHostBase` through `useEditorHost()`. Runtime
+ * consumers obtain the complete Host through the owning session; no parallel
+ * port context or factory argument exists.
+ */
+export interface EditorHost extends EditorHostBase, EditorHostPorts {}
+
+/**
+ * Compatibility name retained for the protected session surface. Since
+ * `EditorHost` already requires every role, resolution cannot narrow or fill it.
+ */
+export type ResolvedEditorHost = EditorHost;
+
+/** Identity compatibility seam; no optional check, cast, or fallback remains. */
+export function resolveEditorHost(args: {
+	host: EditorHost;
+}): ResolvedEditorHost {
+	return args.host;
 }

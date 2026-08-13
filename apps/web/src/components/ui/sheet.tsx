@@ -4,6 +4,7 @@ import * as React from "react";
 import { Dialog as SheetPrimitive } from "radix-ui";
 import { cva, type VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
+import { useSurfacePortalContainer } from "@/editor/surface/embedding/surface-portal";
 import { cn } from "@/utils/ui";
 import { useOverlayOpenChange } from "./use-overlay-open-change";
 
@@ -29,7 +30,12 @@ const SheetTrigger = SheetPrimitive.Trigger;
 
 const SheetClose = SheetPrimitive.Close;
 
-const SheetPortal = SheetPrimitive.Portal;
+function SheetPortal(
+	props: React.ComponentProps<typeof SheetPrimitive.Portal>,
+) {
+	const container = useSurfacePortalContainer(props.container);
+	return <SheetPrimitive.Portal {...props} container={container} />;
+}
 
 const SheetOverlay = React.forwardRef<
 	React.ElementRef<typeof SheetPrimitive.Overlay>,
@@ -66,7 +72,8 @@ const sheetVariants = cva(
 );
 
 interface SheetContentProps
-	extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
+	extends
+		React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
 		VariantProps<typeof sheetVariants> {}
 
 const SheetContent = React.forwardRef<
@@ -78,10 +85,6 @@ const SheetContent = React.forwardRef<
 		<SheetPrimitive.Content
 			ref={ref}
 			className={cn(sheetVariants({ side }), className)}
-			onOpenAutoFocus={(e) => {
-				e.preventDefault();
-				e.stopPropagation();
-			}}
 			{...props}
 		>
 			<SheetPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-4 right-4 cursor-pointer rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none">

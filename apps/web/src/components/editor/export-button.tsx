@@ -32,7 +32,8 @@ import {
 	SectionHeader,
 	SectionTitle,
 } from "@/components/section";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 import { DEFAULT_EXPORT_OPTIONS } from "@/export/defaults";
 
 function isExportFormat(value: string): value is ExportFormat {
@@ -45,7 +46,7 @@ function isExportQuality(value: string): value is ExportQuality {
 
 export function ExportButton() {
 	const [isExportPopoverOpen, setIsExportPopoverOpen] = useState(false);
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const activeProject = useEditor((e) => e.project.getActiveOrNull());
 	const hasProject = !!activeProject;
 
@@ -97,7 +98,7 @@ function ExportPopover({
 }: {
 	onOpenChange: (open: boolean) => void;
 }) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const activeProject = useEditor((e) => e.project.getActive());
 	const exportState = useEditor((e) => e.project.getExportState());
 	const { isExporting, progress, result: exportResult } = exportState;
@@ -133,6 +134,7 @@ function ExportPopover({
 				buffer: result.buffer,
 				filename: `${activeProject.metadata.name}${getExportFileExtension({ format })}`,
 				mimeType: getExportMimeType({ format }),
+				resources: editor.resources,
 			});
 
 			editor.project.clearExportState();
@@ -297,11 +299,15 @@ function ExportError({
 	onRetry: () => void;
 }) {
 	const [copied, setCopied] = useState(false);
+	const { resources } = useEditorSession();
 
 	const handleCopy = async () => {
 		await navigator.clipboard.writeText(error);
 		setCopied(true);
-		setTimeout(() => setCopied(false), 1000);
+		resources.setTimeout({
+			handler: () => setCopied(false),
+			ms: 1000,
+		});
 	};
 
 	return (

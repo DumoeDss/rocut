@@ -6,7 +6,7 @@ import {
 	useReducer,
 	useState,
 } from "react";
-import { useEditor } from "@/editor/use-editor";
+import { useEditorInstance } from "@/editor/use-editor";
 import { useCommittedRef } from "@/hooks/use-committed-ref";
 import { TIMELINE_ZOOM_MIN } from "@/timeline/scale";
 import {
@@ -41,7 +41,7 @@ export function useTimelineZoom({
 	tracksScrollRef,
 	rulerScrollRef,
 }: UseTimelineZoomProps): UseTimelineZoomReturn {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const config: ZoomConfig = {
 		minZoom,
 		getContainerEl: () => containerRef.current,
@@ -57,6 +57,7 @@ export function useTimelineZoom({
 					playheadTime,
 				},
 			}),
+		resources: editor.resources,
 	};
 	const configRef = useCommittedRef(config);
 	const [controller] = useState(

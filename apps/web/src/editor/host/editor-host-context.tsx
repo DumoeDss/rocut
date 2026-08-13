@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import type { EditorHost } from "@/editor/host/editor-host";
+import type { EditorHost, EditorHostBase } from "@/editor/host/editor-host";
 
 const EditorHostContext = createContext<EditorHost | null>(null);
 
@@ -22,8 +22,12 @@ export function EditorHostProvider({
 /**
  * Read the host contract. Consumers sit three levels below the root (page →
  * provider → header), which is why this is a context rather than props.
+ *
+ * Returns the shell-facing subset deliberately. Runtime ports remain available
+ * from the owning session's complete Host, so presentation components do not
+ * acquire a second dependency path through React context.
  */
-export function useEditorHost(): EditorHost {
+export function useEditorHost(): EditorHostBase {
 	const host = useContext(EditorHostContext);
 	if (!host) {
 		throw new Error(

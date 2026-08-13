@@ -1,0 +1,5 @@
+import { createOwnedSessionEditor } from "@/editor/runtime/session-core-owner";
+
+export function createEditorOutsideSessionFactory(session) {
+	return createOwnedSessionEditor({ session });
+}

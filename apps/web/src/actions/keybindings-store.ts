@@ -1,6 +1,6 @@
 "use client";
 
-import { create } from "zustand";
+import { createStore } from "zustand/vanilla";
 import { persist } from "zustand/middleware";
 import type { TActionWithOptionalArgs } from "@/actions";
 import { getDefaultShortcuts } from "@/actions";
@@ -21,7 +21,7 @@ export interface KeybindingConflict {
 	newAction: TActionWithOptionalArgs;
 }
 
-interface KeybindingsState {
+export interface KeybindingsState {
 	keybindings: Map<ShortcutKey, TActionWithOptionalArgs>;
 	isCustomized: boolean;
 	overlayDepth: number;
@@ -69,142 +69,144 @@ function isPersistedState(value: unknown): value is PersistedState {
 	);
 }
 
-export const useKeybindingsStore = create<KeybindingsState>()(
-	persist(
-		(set, get) => ({
-			keybindings: getDefaultShortcuts(),
-			isCustomized: false,
-			overlayDepth: 0,
-			openOverlayIds: [],
-			isLoadingProject: false,
-			isRecording: false,
+export function createKeybindingsStore() {
+	return createStore<KeybindingsState>()(
+		persist(
+			(set, get) => ({
+				keybindings: getDefaultShortcuts(),
+				isCustomized: false,
+				overlayDepth: 0,
+				openOverlayIds: [],
+				isLoadingProject: false,
+				isRecording: false,
 
-			openOverlay: (overlayId) =>
-				set((s) => {
-					const openOverlayIds = s.openOverlayIds.includes(overlayId)
-						? s.openOverlayIds
-						: [...s.openOverlayIds, overlayId];
-					return {
-						openOverlayIds,
-						overlayDepth: openOverlayIds.length,
-					};
-				}),
-			closeOverlay: (overlayId) =>
-				set((s) => {
-					const openOverlayIds = s.openOverlayIds.filter(
-						(id) => id !== overlayId,
-					);
-					return {
-						openOverlayIds,
-						overlayDepth: openOverlayIds.length,
-					};
-				}),
-			setLoadingProject: (loading) => {
-				set({ isLoadingProject: loading });
-			},
+				openOverlay: (overlayId) =>
+					set((s) => {
+						const openOverlayIds = s.openOverlayIds.includes(overlayId)
+							? s.openOverlayIds
+							: [...s.openOverlayIds, overlayId];
+						return {
+							openOverlayIds,
+							overlayDepth: openOverlayIds.length,
+						};
+					}),
+				closeOverlay: (overlayId) =>
+					set((s) => {
+						const openOverlayIds = s.openOverlayIds.filter(
+							(id) => id !== overlayId,
+						);
+						return {
+							openOverlayIds,
+							overlayDepth: openOverlayIds.length,
+						};
+					}),
+				setLoadingProject: (loading) => {
+					set({ isLoadingProject: loading });
+				},
 
-			updateKeybinding: ({ key, action }) => {
-				set((state) => {
-					const next = new Map(state.keybindings);
-					next.set(key, action);
-					return {
+				updateKeybinding: ({ key, action }) => {
+					set((state) => {
+						const next = new Map(state.keybindings);
+						next.set(key, action);
+						return {
+							keybindings: next,
+							isCustomized: true,
+						};
+					});
+				},
+
+				removeKeybinding: (key) => {
+					set((state) => {
+						const next = new Map(state.keybindings);
+						next.delete(key);
+						return {
+							keybindings: next,
+							isCustomized: true,
+						};
+					});
+				},
+
+				resetToDefaults: () => {
+					set({
+						keybindings: getDefaultShortcuts(),
+						isCustomized: false,
+					});
+				},
+
+				importKeybindings: (config) => {
+					const next = new Map<ShortcutKey, TActionWithOptionalArgs>();
+					for (const [key, action] of Object.entries(config)) {
+						if (typeof key !== "string" || key.length === 0) {
+							throw new Error(`Invalid key format: ${key}`);
+						}
+						if (action !== undefined) {
+							// Public type's keys are `ShortcutKey`; trust the caller's typing.
+							// eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+							next.set(key as ShortcutKey, action);
+						}
+					}
+					set({
 						keybindings: next,
 						isCustomized: true,
-					};
-				});
-			},
+					});
+				},
 
-			removeKeybinding: (key) => {
-				set((state) => {
-					const next = new Map(state.keybindings);
-					next.delete(key);
-					return {
-						keybindings: next,
-						isCustomized: true,
-					};
-				});
-			},
+				exportKeybindings: () => {
+					return Object.fromEntries(get().keybindings);
+				},
 
-			resetToDefaults: () => {
-				set({
-					keybindings: getDefaultShortcuts(),
-					isCustomized: false,
-				});
-			},
-
-			importKeybindings: (config) => {
-				const next = new Map<ShortcutKey, TActionWithOptionalArgs>();
-				for (const [key, action] of Object.entries(config)) {
-					if (typeof key !== "string" || key.length === 0) {
-						throw new Error(`Invalid key format: ${key}`);
+				validateKeybinding: ({ key, action }) => {
+					const existingAction = get().keybindings.get(key);
+					if (existingAction && existingAction !== action) {
+						return {
+							key,
+							existingAction,
+							newAction: action,
+						};
 					}
-					if (action !== undefined) {
-						// Public type's keys are `ShortcutKey`; trust the caller's typing.
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-						next.set(key as ShortcutKey, action);
+					return null;
+				},
+				setIsRecording: (isRecording) => {
+					set({ isRecording });
+				},
+
+				getKeybindingsForAction: (action) => {
+					const result: ShortcutKey[] = [];
+					for (const [key, mapped] of get().keybindings) {
+						if (mapped === action) result.push(key);
 					}
-				}
-				set({
-					keybindings: next,
-					isCustomized: true,
-				});
-			},
+					return result;
+				},
 
-			exportKeybindings: () => {
-				return Object.fromEntries(get().keybindings);
-			},
-
-			validateKeybinding: ({ key, action }) => {
-				const existingAction = get().keybindings.get(key);
-				if (existingAction && existingAction !== action) {
-					return {
-						key,
-						existingAction,
-						newAction: action,
-					};
-				}
-				return null;
-			},
-			setIsRecording: (isRecording) => {
-				set({ isRecording });
-			},
-
-			getKeybindingsForAction: (action) => {
-				const result: ShortcutKey[] = [];
-				for (const [key, mapped] of get().keybindings) {
-					if (mapped === action) result.push(key);
-				}
-				return result;
-			},
-
-			getKeybindingString: (ev) => generateKeybindingString(ev),
-		}),
-		{
-			name: "opencut-keybindings",
-			version: CURRENT_VERSION,
-			partialize: (state): PersistedState => ({
-				keybindings: Object.fromEntries(state.keybindings),
-				isCustomized: state.isCustomized,
+				getKeybindingString: (ev) => generateKeybindingString(ev),
 			}),
-			migrate: (persisted, version) =>
-				runMigrations({ state: persisted, fromVersion: version }),
-			merge: (persisted, current) => {
-				if (!isPersistedState(persisted)) return current;
-				const entries = Object.entries(persisted.keybindings);
-				// Persistence boundary: keys are normalized by the migration chain.
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-				const typedEntries = entries as Array<
-					[ShortcutKey, TActionWithOptionalArgs]
-				>;
-				return {
-					...current,
-					keybindings: new Map(typedEntries),
-					isCustomized: persisted.isCustomized,
-				};
+			{
+				name: "opencut-keybindings",
+				version: CURRENT_VERSION,
+				partialize: (state): PersistedState => ({
+					keybindings: Object.fromEntries(state.keybindings),
+					isCustomized: state.isCustomized,
+				}),
+				migrate: (persisted, version) =>
+					runMigrations({ state: persisted, fromVersion: version }),
+				merge: (persisted, current) => {
+					if (!isPersistedState(persisted)) return current;
+					const entries = Object.entries(persisted.keybindings);
+					// Persistence boundary: keys are normalized by the migration chain.
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+					const typedEntries = entries as Array<
+						[ShortcutKey, TActionWithOptionalArgs]
+					>;
+					return {
+						...current,
+						keybindings: new Map(typedEntries),
+						isCustomized: persisted.isCustomized,
+					};
+				},
 			},
-		},
-	),
-);
+		),
+	);
+}
 
 function generateKeybindingString(ev: KeyboardEvent): ShortcutKey | null {
 	const target = ev.target;

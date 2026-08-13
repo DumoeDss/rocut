@@ -1,0 +1,4511 @@
+{
+  "schemaVersion": 2,
+  "transactionId": "0216ff67-d1c3-4a99-a22e-e9ce85c48aeb",
+  "planHash": "14c0ca7d8433dd76f43d46acd96b1afac13f0b8e5c81d29ae4d0f34c0e73c833",
+  "change": "s0304-surface-embedding-contract-freeze",
+  "phase": "complete",
+  "activePath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\s0304-surface-embedding-contract-freeze",
+  "stagePath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\archive\\.rasen-archive-stage-0216ff67-d1c3-4a99-a22e-e9ce85c48aeb",
+  "finalPath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\archive\\2026-08-10-s0304-surface-embedding-contract-freeze",
+  "ephemeraDisposed": [
+    "auto-run.json"
+  ],
+  "phaseFingerprints": {
+    "payload-copied": {
+      "state": "verified",
+      "scope": "stage",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "9275d708301bdef31710a81f4fd1e18667afba54d78bece25dfbab332cf1f2d2",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "f41f2bc28ec1d7aab73d26bb7222e7e03ea9138b5ac97f86aa97812e52abbef3"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12677",
+            "sha256": "bf14db11d4548c22a293857d1defafbf4bd959e4d468fdd9a88062ebbcff0b65"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6566",
+            "sha256": "89bb55c42e40f143d8c476ac699b5342444353831502562aa8a0dec92b45c3c7"
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9130",
+            "sha256": "009da7c562919b036bc2f03bd17b39408b0eb809022da5e9d387c6a71b5c2018"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14647",
+            "sha256": "543feac3253264ab5c0661ac979d690047975fa22ff6b74d12120e0af67e1225"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5160",
+            "sha256": "41d27790ba5db7355d96d533b4f5492322c1c18384f5f56011d7d2a1b998e2bf"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4325",
+            "sha256": "db5e5a98158174dfc8fba092bb0578194da91f6d2a1160ac181db8b6f1f9ddb6"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3328",
+            "sha256": "8f389e31a24aa26619745de0e3f2d6c918626ac3d8a4d52663e5099784ee07fb"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "176",
+            "sha256": "24c33953ae09ae899e553a0688c9933e890cdf2d3ea8d64d76a9538ec873b680"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10010",
+            "sha256": "6616ad46a7b0c3656e536925d227f94db0f73f9fa16eacf7d98f29ea0f1a529c"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2689",
+            "sha256": "6a419c7eaede9fb709fe6a96419e7e35e65101a2fe50bf59b06a4c3379456fde"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "14073748839791865",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "849e5180915a3f63264935ae27cbc62c63481a68df3eb434b6d646022e64a884",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "14355223816502519",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786358621264362900",
+              "ctimeNs": "1786358621308067400"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "15199648746634494",
+              "mode": "33206",
+              "size": "12677",
+              "mtimeNs": "1786359024367654300",
+              "ctimeNs": "1786359024367654300"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324847671747",
+              "mode": "33206",
+              "size": "6566",
+              "mtimeNs": "1786362784881637700",
+              "ctimeNs": "1786362784881637700"
+            }
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849871064082",
+              "mode": "33206",
+              "size": "9130",
+              "mtimeNs": "1786362822260333400",
+              "ctimeNs": "1786362822260333400"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2533274801213882",
+              "mode": "33206",
+              "size": "14647",
+              "mtimeNs": "1786365344006993700",
+              "ctimeNs": "1786365344006993700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "12103424009255534",
+              "mode": "33206",
+              "size": "5160",
+              "mtimeNs": "1786365894858490200",
+              "ctimeNs": "1786365894858490200"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "19421773403732109",
+              "mode": "33206",
+              "size": "4325",
+              "mtimeNs": "1786362340825691500",
+              "ctimeNs": "1786362340825691500"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649677224822",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4785074614871966",
+              "mode": "33206",
+              "size": "3328",
+              "mtimeNs": "1786358959453127400",
+              "ctimeNs": "1786358959453127400"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "14073748839791864",
+              "mode": "33206",
+              "size": "176",
+              "mtimeNs": "1786358621265360700",
+              "ctimeNs": "1786358621310067800"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "14355223816502530",
+              "mode": "33206",
+              "size": "10010",
+              "mtimeNs": "1786359024374681700",
+              "ctimeNs": "1786359024374681700"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "14355223816502529",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "17732923537030400",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849871059169",
+              "mode": "33206",
+              "size": "2689",
+              "mtimeNs": "1786362356890011900",
+              "ctimeNs": "1786362356890011900"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "9275d708301bdef31710a81f4fd1e18667afba54d78bece25dfbab332cf1f2d2",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "f41f2bc28ec1d7aab73d26bb7222e7e03ea9138b5ac97f86aa97812e52abbef3"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12677",
+            "sha256": "bf14db11d4548c22a293857d1defafbf4bd959e4d468fdd9a88062ebbcff0b65"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6566",
+            "sha256": "89bb55c42e40f143d8c476ac699b5342444353831502562aa8a0dec92b45c3c7"
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9130",
+            "sha256": "009da7c562919b036bc2f03bd17b39408b0eb809022da5e9d387c6a71b5c2018"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14647",
+            "sha256": "543feac3253264ab5c0661ac979d690047975fa22ff6b74d12120e0af67e1225"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5160",
+            "sha256": "41d27790ba5db7355d96d533b4f5492322c1c18384f5f56011d7d2a1b998e2bf"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4325",
+            "sha256": "db5e5a98158174dfc8fba092bb0578194da91f6d2a1160ac181db8b6f1f9ddb6"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3328",
+            "sha256": "8f389e31a24aa26619745de0e3f2d6c918626ac3d8a4d52663e5099784ee07fb"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "176",
+            "sha256": "24c33953ae09ae899e553a0688c9933e890cdf2d3ea8d64d76a9538ec873b680"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10010",
+            "sha256": "6616ad46a7b0c3656e536925d227f94db0f73f9fa16eacf7d98f29ea0f1a529c"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2689",
+            "sha256": "6a419c7eaede9fb709fe6a96419e7e35e65101a2fe50bf59b06a4c3379456fde"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1970324847798165",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "aa7b5d7c91d78ba48bed06aa7a88cb06d9cbad5aca95829496bd9156883a90c0",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899917668068",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786358621264362900",
+              "ctimeNs": "1786358621308067400"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246759",
+              "mode": "33206",
+              "size": "12677",
+              "mtimeNs": "1786359024367654300",
+              "ctimeNs": "1786359024367654300"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246761",
+              "mode": "33206",
+              "size": "6566",
+              "mtimeNs": "1786362784881637700",
+              "ctimeNs": "1786362784881637700"
+            }
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246762",
+              "mode": "33206",
+              "size": "9130",
+              "mtimeNs": "1786362822260333400",
+              "ctimeNs": "1786362822260333400"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246763",
+              "mode": "33206",
+              "size": "14647",
+              "mtimeNs": "1786365344006993700",
+              "ctimeNs": "1786365344006993700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246764",
+              "mode": "33206",
+              "size": "5160",
+              "mtimeNs": "1786365894858490200",
+              "ctimeNs": "1786365894858490200"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957421",
+              "mode": "33206",
+              "size": "4325",
+              "mtimeNs": "1786362340825691500",
+              "ctimeNs": "1786362340825691500"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246760",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246766",
+              "mode": "33206",
+              "size": "3328",
+              "mtimeNs": "1786358959453127400",
+              "ctimeNs": "1786358959453127400"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246767",
+              "mode": "33206",
+              "size": "176",
+              "mtimeNs": "1786358621265360700",
+              "ctimeNs": "1786358621310067800"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246770",
+              "mode": "33206",
+              "size": "10010",
+              "mtimeNs": "1786359024374681700",
+              "ctimeNs": "1786359024374681700"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246769",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246768",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246771",
+              "mode": "33206",
+              "size": "2689",
+              "mtimeNs": "1786362356890011900",
+              "ctimeNs": "1786362356890011900"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "9275d708301bdef31710a81f4fd1e18667afba54d78bece25dfbab332cf1f2d2",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "f41f2bc28ec1d7aab73d26bb7222e7e03ea9138b5ac97f86aa97812e52abbef3"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12677",
+            "sha256": "bf14db11d4548c22a293857d1defafbf4bd959e4d468fdd9a88062ebbcff0b65"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6566",
+            "sha256": "89bb55c42e40f143d8c476ac699b5342444353831502562aa8a0dec92b45c3c7"
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9130",
+            "sha256": "009da7c562919b036bc2f03bd17b39408b0eb809022da5e9d387c6a71b5c2018"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14647",
+            "sha256": "543feac3253264ab5c0661ac979d690047975fa22ff6b74d12120e0af67e1225"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5160",
+            "sha256": "41d27790ba5db7355d96d533b4f5492322c1c18384f5f56011d7d2a1b998e2bf"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4325",
+            "sha256": "db5e5a98158174dfc8fba092bb0578194da91f6d2a1160ac181db8b6f1f9ddb6"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3328",
+            "sha256": "8f389e31a24aa26619745de0e3f2d6c918626ac3d8a4d52663e5099784ee07fb"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "176",
+            "sha256": "24c33953ae09ae899e553a0688c9933e890cdf2d3ea8d64d76a9538ec873b680"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10010",
+            "sha256": "6616ad46a7b0c3656e536925d227f94db0f73f9fa16eacf7d98f29ea0f1a529c"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2689",
+            "sha256": "6a419c7eaede9fb709fe6a96419e7e35e65101a2fe50bf59b06a4c3379456fde"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1970324847798165",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "aa7b5d7c91d78ba48bed06aa7a88cb06d9cbad5aca95829496bd9156883a90c0",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899917668068",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786358621264362900",
+              "ctimeNs": "1786358621308067400"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246759",
+              "mode": "33206",
+              "size": "12677",
+              "mtimeNs": "1786359024367654300",
+              "ctimeNs": "1786359024367654300"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246761",
+              "mode": "33206",
+              "size": "6566",
+              "mtimeNs": "1786362784881637700",
+              "ctimeNs": "1786362784881637700"
+            }
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246762",
+              "mode": "33206",
+              "size": "9130",
+              "mtimeNs": "1786362822260333400",
+              "ctimeNs": "1786362822260333400"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246763",
+              "mode": "33206",
+              "size": "14647",
+              "mtimeNs": "1786365344006993700",
+              "ctimeNs": "1786365344006993700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246764",
+              "mode": "33206",
+              "size": "5160",
+              "mtimeNs": "1786365894858490200",
+              "ctimeNs": "1786365894858490200"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957421",
+              "mode": "33206",
+              "size": "4325",
+              "mtimeNs": "1786362340825691500",
+              "ctimeNs": "1786362340825691500"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246760",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246766",
+              "mode": "33206",
+              "size": "3328",
+              "mtimeNs": "1786358959453127400",
+              "ctimeNs": "1786358959453127400"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246767",
+              "mode": "33206",
+              "size": "176",
+              "mtimeNs": "1786358621265360700",
+              "ctimeNs": "1786358621310067800"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246770",
+              "mode": "33206",
+              "size": "10010",
+              "mtimeNs": "1786359024374681700",
+              "ctimeNs": "1786359024374681700"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246769",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246768",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246771",
+              "mode": "33206",
+              "size": "2689",
+              "mtimeNs": "1786362356890011900",
+              "ctimeNs": "1786362356890011900"
+            }
+          }
+        ]
+      }
+    },
+    "handoff-finalized": {
+      "state": "verified",
+      "scope": "stage",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "9275d708301bdef31710a81f4fd1e18667afba54d78bece25dfbab332cf1f2d2",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "f41f2bc28ec1d7aab73d26bb7222e7e03ea9138b5ac97f86aa97812e52abbef3"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12677",
+            "sha256": "bf14db11d4548c22a293857d1defafbf4bd959e4d468fdd9a88062ebbcff0b65"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6566",
+            "sha256": "89bb55c42e40f143d8c476ac699b5342444353831502562aa8a0dec92b45c3c7"
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9130",
+            "sha256": "009da7c562919b036bc2f03bd17b39408b0eb809022da5e9d387c6a71b5c2018"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14647",
+            "sha256": "543feac3253264ab5c0661ac979d690047975fa22ff6b74d12120e0af67e1225"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5160",
+            "sha256": "41d27790ba5db7355d96d533b4f5492322c1c18384f5f56011d7d2a1b998e2bf"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4325",
+            "sha256": "db5e5a98158174dfc8fba092bb0578194da91f6d2a1160ac181db8b6f1f9ddb6"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3328",
+            "sha256": "8f389e31a24aa26619745de0e3f2d6c918626ac3d8a4d52663e5099784ee07fb"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "176",
+            "sha256": "24c33953ae09ae899e553a0688c9933e890cdf2d3ea8d64d76a9538ec873b680"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10010",
+            "sha256": "6616ad46a7b0c3656e536925d227f94db0f73f9fa16eacf7d98f29ea0f1a529c"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2689",
+            "sha256": "6a419c7eaede9fb709fe6a96419e7e35e65101a2fe50bf59b06a4c3379456fde"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1970324847798165",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "aa7b5d7c91d78ba48bed06aa7a88cb06d9cbad5aca95829496bd9156883a90c0",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899917668068",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786358621264362900",
+              "ctimeNs": "1786358621308067400"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246759",
+              "mode": "33206",
+              "size": "12677",
+              "mtimeNs": "1786359024367654300",
+              "ctimeNs": "1786359024367654300"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246761",
+              "mode": "33206",
+              "size": "6566",
+              "mtimeNs": "1786362784881637700",
+              "ctimeNs": "1786362784881637700"
+            }
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246762",
+              "mode": "33206",
+              "size": "9130",
+              "mtimeNs": "1786362822260333400",
+              "ctimeNs": "1786362822260333400"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246763",
+              "mode": "33206",
+              "size": "14647",
+              "mtimeNs": "1786365344006993700",
+              "ctimeNs": "1786365344006993700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246764",
+              "mode": "33206",
+              "size": "5160",
+              "mtimeNs": "1786365894858490200",
+              "ctimeNs": "1786365894858490200"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957421",
+              "mode": "33206",
+              "size": "4325",
+              "mtimeNs": "1786362340825691500",
+              "ctimeNs": "1786362340825691500"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246760",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246766",
+              "mode": "33206",
+              "size": "3328",
+              "mtimeNs": "1786358959453127400",
+              "ctimeNs": "1786358959453127400"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246767",
+              "mode": "33206",
+              "size": "176",
+              "mtimeNs": "1786358621265360700",
+              "ctimeNs": "1786358621310067800"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246770",
+              "mode": "33206",
+              "size": "10010",
+              "mtimeNs": "1786359024374681700",
+              "ctimeNs": "1786359024374681700"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246769",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246768",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246771",
+              "mode": "33206",
+              "size": "2689",
+              "mtimeNs": "1786362356890011900",
+              "ctimeNs": "1786362356890011900"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "9275d708301bdef31710a81f4fd1e18667afba54d78bece25dfbab332cf1f2d2",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "f41f2bc28ec1d7aab73d26bb7222e7e03ea9138b5ac97f86aa97812e52abbef3"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12677",
+            "sha256": "bf14db11d4548c22a293857d1defafbf4bd959e4d468fdd9a88062ebbcff0b65"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6566",
+            "sha256": "89bb55c42e40f143d8c476ac699b5342444353831502562aa8a0dec92b45c3c7"
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9130",
+            "sha256": "009da7c562919b036bc2f03bd17b39408b0eb809022da5e9d387c6a71b5c2018"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14647",
+            "sha256": "543feac3253264ab5c0661ac979d690047975fa22ff6b74d12120e0af67e1225"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5160",
+            "sha256": "41d27790ba5db7355d96d533b4f5492322c1c18384f5f56011d7d2a1b998e2bf"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4325",
+            "sha256": "db5e5a98158174dfc8fba092bb0578194da91f6d2a1160ac181db8b6f1f9ddb6"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3328",
+            "sha256": "8f389e31a24aa26619745de0e3f2d6c918626ac3d8a4d52663e5099784ee07fb"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "176",
+            "sha256": "24c33953ae09ae899e553a0688c9933e890cdf2d3ea8d64d76a9538ec873b680"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10010",
+            "sha256": "6616ad46a7b0c3656e536925d227f94db0f73f9fa16eacf7d98f29ea0f1a529c"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2689",
+            "sha256": "6a419c7eaede9fb709fe6a96419e7e35e65101a2fe50bf59b06a4c3379456fde"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1970324847798165",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "aa7b5d7c91d78ba48bed06aa7a88cb06d9cbad5aca95829496bd9156883a90c0",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899917668068",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786358621264362900",
+              "ctimeNs": "1786358621308067400"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246759",
+              "mode": "33206",
+              "size": "12677",
+              "mtimeNs": "1786359024367654300",
+              "ctimeNs": "1786359024367654300"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246761",
+              "mode": "33206",
+              "size": "6566",
+              "mtimeNs": "1786362784881637700",
+              "ctimeNs": "1786362784881637700"
+            }
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246762",
+              "mode": "33206",
+              "size": "9130",
+              "mtimeNs": "1786362822260333400",
+              "ctimeNs": "1786362822260333400"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246763",
+              "mode": "33206",
+              "size": "14647",
+              "mtimeNs": "1786365344006993700",
+              "ctimeNs": "1786365344006993700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246764",
+              "mode": "33206",
+              "size": "5160",
+              "mtimeNs": "1786365894858490200",
+              "ctimeNs": "1786365894858490200"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957421",
+              "mode": "33206",
+              "size": "4325",
+              "mtimeNs": "1786362340825691500",
+              "ctimeNs": "1786362340825691500"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246760",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246766",
+              "mode": "33206",
+              "size": "3328",
+              "mtimeNs": "1786358959453127400",
+              "ctimeNs": "1786358959453127400"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246767",
+              "mode": "33206",
+              "size": "176",
+              "mtimeNs": "1786358621265360700",
+              "ctimeNs": "1786358621310067800"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246770",
+              "mode": "33206",
+              "size": "10010",
+              "mtimeNs": "1786359024374681700",
+              "ctimeNs": "1786359024374681700"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246769",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246768",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246771",
+              "mode": "33206",
+              "size": "2689",
+              "mtimeNs": "1786362356890011900",
+              "ctimeNs": "1786362356890011900"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "9275d708301bdef31710a81f4fd1e18667afba54d78bece25dfbab332cf1f2d2",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "f41f2bc28ec1d7aab73d26bb7222e7e03ea9138b5ac97f86aa97812e52abbef3"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12677",
+            "sha256": "bf14db11d4548c22a293857d1defafbf4bd959e4d468fdd9a88062ebbcff0b65"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6566",
+            "sha256": "89bb55c42e40f143d8c476ac699b5342444353831502562aa8a0dec92b45c3c7"
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9130",
+            "sha256": "009da7c562919b036bc2f03bd17b39408b0eb809022da5e9d387c6a71b5c2018"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14647",
+            "sha256": "543feac3253264ab5c0661ac979d690047975fa22ff6b74d12120e0af67e1225"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5160",
+            "sha256": "41d27790ba5db7355d96d533b4f5492322c1c18384f5f56011d7d2a1b998e2bf"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4325",
+            "sha256": "db5e5a98158174dfc8fba092bb0578194da91f6d2a1160ac181db8b6f1f9ddb6"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3328",
+            "sha256": "8f389e31a24aa26619745de0e3f2d6c918626ac3d8a4d52663e5099784ee07fb"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "176",
+            "sha256": "24c33953ae09ae899e553a0688c9933e890cdf2d3ea8d64d76a9538ec873b680"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10010",
+            "sha256": "6616ad46a7b0c3656e536925d227f94db0f73f9fa16eacf7d98f29ea0f1a529c"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2689",
+            "sha256": "6a419c7eaede9fb709fe6a96419e7e35e65101a2fe50bf59b06a4c3379456fde"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1970324847798165",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "aa7b5d7c91d78ba48bed06aa7a88cb06d9cbad5aca95829496bd9156883a90c0",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899917668068",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786358621264362900",
+              "ctimeNs": "1786358621308067400"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246759",
+              "mode": "33206",
+              "size": "12677",
+              "mtimeNs": "1786359024367654300",
+              "ctimeNs": "1786359024367654300"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246761",
+              "mode": "33206",
+              "size": "6566",
+              "mtimeNs": "1786362784881637700",
+              "ctimeNs": "1786362784881637700"
+            }
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246762",
+              "mode": "33206",
+              "size": "9130",
+              "mtimeNs": "1786362822260333400",
+              "ctimeNs": "1786362822260333400"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246763",
+              "mode": "33206",
+              "size": "14647",
+              "mtimeNs": "1786365344006993700",
+              "ctimeNs": "1786365344006993700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246764",
+              "mode": "33206",
+              "size": "5160",
+              "mtimeNs": "1786365894858490200",
+              "ctimeNs": "1786365894858490200"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957421",
+              "mode": "33206",
+              "size": "4325",
+              "mtimeNs": "1786362340825691500",
+              "ctimeNs": "1786362340825691500"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246760",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246766",
+              "mode": "33206",
+              "size": "3328",
+              "mtimeNs": "1786358959453127400",
+              "ctimeNs": "1786358959453127400"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246767",
+              "mode": "33206",
+              "size": "176",
+              "mtimeNs": "1786358621265360700",
+              "ctimeNs": "1786358621310067800"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246770",
+              "mode": "33206",
+              "size": "10010",
+              "mtimeNs": "1786359024374681700",
+              "ctimeNs": "1786359024374681700"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246769",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246768",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246771",
+              "mode": "33206",
+              "size": "2689",
+              "mtimeNs": "1786362356890011900",
+              "ctimeNs": "1786362356890011900"
+            }
+          }
+        ]
+      }
+    },
+    "evidence-finalized": {
+      "state": "verified",
+      "scope": "stage",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "9275d708301bdef31710a81f4fd1e18667afba54d78bece25dfbab332cf1f2d2",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "f41f2bc28ec1d7aab73d26bb7222e7e03ea9138b5ac97f86aa97812e52abbef3"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12677",
+            "sha256": "bf14db11d4548c22a293857d1defafbf4bd959e4d468fdd9a88062ebbcff0b65"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6566",
+            "sha256": "89bb55c42e40f143d8c476ac699b5342444353831502562aa8a0dec92b45c3c7"
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9130",
+            "sha256": "009da7c562919b036bc2f03bd17b39408b0eb809022da5e9d387c6a71b5c2018"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14647",
+            "sha256": "543feac3253264ab5c0661ac979d690047975fa22ff6b74d12120e0af67e1225"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5160",
+            "sha256": "41d27790ba5db7355d96d533b4f5492322c1c18384f5f56011d7d2a1b998e2bf"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4325",
+            "sha256": "db5e5a98158174dfc8fba092bb0578194da91f6d2a1160ac181db8b6f1f9ddb6"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3328",
+            "sha256": "8f389e31a24aa26619745de0e3f2d6c918626ac3d8a4d52663e5099784ee07fb"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "176",
+            "sha256": "24c33953ae09ae899e553a0688c9933e890cdf2d3ea8d64d76a9538ec873b680"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10010",
+            "sha256": "6616ad46a7b0c3656e536925d227f94db0f73f9fa16eacf7d98f29ea0f1a529c"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2689",
+            "sha256": "6a419c7eaede9fb709fe6a96419e7e35e65101a2fe50bf59b06a4c3379456fde"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1970324847798165",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "aa7b5d7c91d78ba48bed06aa7a88cb06d9cbad5aca95829496bd9156883a90c0",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899917668068",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786358621264362900",
+              "ctimeNs": "1786358621308067400"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246759",
+              "mode": "33206",
+              "size": "12677",
+              "mtimeNs": "1786359024367654300",
+              "ctimeNs": "1786359024367654300"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246761",
+              "mode": "33206",
+              "size": "6566",
+              "mtimeNs": "1786362784881637700",
+              "ctimeNs": "1786362784881637700"
+            }
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246762",
+              "mode": "33206",
+              "size": "9130",
+              "mtimeNs": "1786362822260333400",
+              "ctimeNs": "1786362822260333400"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246763",
+              "mode": "33206",
+              "size": "14647",
+              "mtimeNs": "1786365344006993700",
+              "ctimeNs": "1786365344006993700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246764",
+              "mode": "33206",
+              "size": "5160",
+              "mtimeNs": "1786365894858490200",
+              "ctimeNs": "1786365894858490200"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957421",
+              "mode": "33206",
+              "size": "4325",
+              "mtimeNs": "1786362340825691500",
+              "ctimeNs": "1786362340825691500"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246760",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246766",
+              "mode": "33206",
+              "size": "3328",
+              "mtimeNs": "1786358959453127400",
+              "ctimeNs": "1786358959453127400"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246767",
+              "mode": "33206",
+              "size": "176",
+              "mtimeNs": "1786358621265360700",
+              "ctimeNs": "1786358621310067800"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246770",
+              "mode": "33206",
+              "size": "10010",
+              "mtimeNs": "1786359024374681700",
+              "ctimeNs": "1786359024374681700"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246769",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246768",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246771",
+              "mode": "33206",
+              "size": "2689",
+              "mtimeNs": "1786362356890011900",
+              "ctimeNs": "1786362356890011900"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "31e358ad26709e6884fe61f88c29f0b87f2b59924aedd265661f96c2300f8a7e",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "215",
+            "sha256": "c7c1cc1822878042a73ec96228f06e4231a5f12f5b382c92c15f899c83ffd467"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12677",
+            "sha256": "bf14db11d4548c22a293857d1defafbf4bd959e4d468fdd9a88062ebbcff0b65"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6566",
+            "sha256": "89bb55c42e40f143d8c476ac699b5342444353831502562aa8a0dec92b45c3c7"
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9130",
+            "sha256": "009da7c562919b036bc2f03bd17b39408b0eb809022da5e9d387c6a71b5c2018"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14647",
+            "sha256": "543feac3253264ab5c0661ac979d690047975fa22ff6b74d12120e0af67e1225"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5477",
+            "sha256": "7053bfff1acb3c8fc33c742aa1cc2cd247bbd09ac8eb1225da3d148b4d6e2c6c"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4325",
+            "sha256": "db5e5a98158174dfc8fba092bb0578194da91f6d2a1160ac181db8b6f1f9ddb6"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3328",
+            "sha256": "8f389e31a24aa26619745de0e3f2d6c918626ac3d8a4d52663e5099784ee07fb"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "176",
+            "sha256": "24c33953ae09ae899e553a0688c9933e890cdf2d3ea8d64d76a9538ec873b680"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10010",
+            "sha256": "6616ad46a7b0c3656e536925d227f94db0f73f9fa16eacf7d98f29ea0f1a529c"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2689",
+            "sha256": "6a419c7eaede9fb709fe6a96419e7e35e65101a2fe50bf59b06a4c3379456fde"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1970324847798165",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "6044bb5a1fdaad85afd43c2d05aedc33f7fa9cf77b0be68cf9aa9c596ccfaf6d",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899917668068",
+              "mode": "33206",
+              "size": "215",
+              "mtimeNs": "1786366347675633700",
+              "ctimeNs": "1786366347675633700"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246759",
+              "mode": "33206",
+              "size": "12677",
+              "mtimeNs": "1786359024367654300",
+              "ctimeNs": "1786359024367654300"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246761",
+              "mode": "33206",
+              "size": "6566",
+              "mtimeNs": "1786362784881637700",
+              "ctimeNs": "1786362784881637700"
+            }
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246762",
+              "mode": "33206",
+              "size": "9130",
+              "mtimeNs": "1786362822260333400",
+              "ctimeNs": "1786362822260333400"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246763",
+              "mode": "33206",
+              "size": "14647",
+              "mtimeNs": "1786365344006993700",
+              "ctimeNs": "1786365344006993700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246764",
+              "mode": "33206",
+              "size": "5477",
+              "mtimeNs": "1786366347609169000",
+              "ctimeNs": "1786366347609169000"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957421",
+              "mode": "33206",
+              "size": "4325",
+              "mtimeNs": "1786362340825691500",
+              "ctimeNs": "1786362340825691500"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246760",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246766",
+              "mode": "33206",
+              "size": "3328",
+              "mtimeNs": "1786358959453127400",
+              "ctimeNs": "1786358959453127400"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246767",
+              "mode": "33206",
+              "size": "176",
+              "mtimeNs": "1786358621265360700",
+              "ctimeNs": "1786358621310067800"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246770",
+              "mode": "33206",
+              "size": "10010",
+              "mtimeNs": "1786359024374681700",
+              "ctimeNs": "1786359024374681700"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246769",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246768",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246771",
+              "mode": "33206",
+              "size": "2689",
+              "mtimeNs": "1786362356890011900",
+              "ctimeNs": "1786362356890011900"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "31e358ad26709e6884fe61f88c29f0b87f2b59924aedd265661f96c2300f8a7e",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "215",
+            "sha256": "c7c1cc1822878042a73ec96228f06e4231a5f12f5b382c92c15f899c83ffd467"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12677",
+            "sha256": "bf14db11d4548c22a293857d1defafbf4bd959e4d468fdd9a88062ebbcff0b65"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6566",
+            "sha256": "89bb55c42e40f143d8c476ac699b5342444353831502562aa8a0dec92b45c3c7"
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9130",
+            "sha256": "009da7c562919b036bc2f03bd17b39408b0eb809022da5e9d387c6a71b5c2018"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14647",
+            "sha256": "543feac3253264ab5c0661ac979d690047975fa22ff6b74d12120e0af67e1225"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5477",
+            "sha256": "7053bfff1acb3c8fc33c742aa1cc2cd247bbd09ac8eb1225da3d148b4d6e2c6c"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4325",
+            "sha256": "db5e5a98158174dfc8fba092bb0578194da91f6d2a1160ac181db8b6f1f9ddb6"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3328",
+            "sha256": "8f389e31a24aa26619745de0e3f2d6c918626ac3d8a4d52663e5099784ee07fb"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "176",
+            "sha256": "24c33953ae09ae899e553a0688c9933e890cdf2d3ea8d64d76a9538ec873b680"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10010",
+            "sha256": "6616ad46a7b0c3656e536925d227f94db0f73f9fa16eacf7d98f29ea0f1a529c"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2689",
+            "sha256": "6a419c7eaede9fb709fe6a96419e7e35e65101a2fe50bf59b06a4c3379456fde"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1970324847798165",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "6044bb5a1fdaad85afd43c2d05aedc33f7fa9cf77b0be68cf9aa9c596ccfaf6d",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899917668068",
+              "mode": "33206",
+              "size": "215",
+              "mtimeNs": "1786366347675633700",
+              "ctimeNs": "1786366347675633700"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246759",
+              "mode": "33206",
+              "size": "12677",
+              "mtimeNs": "1786359024367654300",
+              "ctimeNs": "1786359024367654300"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246761",
+              "mode": "33206",
+              "size": "6566",
+              "mtimeNs": "1786362784881637700",
+              "ctimeNs": "1786362784881637700"
+            }
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246762",
+              "mode": "33206",
+              "size": "9130",
+              "mtimeNs": "1786362822260333400",
+              "ctimeNs": "1786362822260333400"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246763",
+              "mode": "33206",
+              "size": "14647",
+              "mtimeNs": "1786365344006993700",
+              "ctimeNs": "1786365344006993700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246764",
+              "mode": "33206",
+              "size": "5477",
+              "mtimeNs": "1786366347609169000",
+              "ctimeNs": "1786366347609169000"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957421",
+              "mode": "33206",
+              "size": "4325",
+              "mtimeNs": "1786362340825691500",
+              "ctimeNs": "1786362340825691500"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246760",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246766",
+              "mode": "33206",
+              "size": "3328",
+              "mtimeNs": "1786358959453127400",
+              "ctimeNs": "1786358959453127400"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246767",
+              "mode": "33206",
+              "size": "176",
+              "mtimeNs": "1786358621265360700",
+              "ctimeNs": "1786358621310067800"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246770",
+              "mode": "33206",
+              "size": "10010",
+              "mtimeNs": "1786359024374681700",
+              "ctimeNs": "1786359024374681700"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246769",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246768",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246771",
+              "mode": "33206",
+              "size": "2689",
+              "mtimeNs": "1786362356890011900",
+              "ctimeNs": "1786362356890011900"
+            }
+          }
+        ]
+      }
+    },
+    "final-reserved": {
+      "state": "verified",
+      "scope": "final",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "31e358ad26709e6884fe61f88c29f0b87f2b59924aedd265661f96c2300f8a7e",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "215",
+            "sha256": "c7c1cc1822878042a73ec96228f06e4231a5f12f5b382c92c15f899c83ffd467"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12677",
+            "sha256": "bf14db11d4548c22a293857d1defafbf4bd959e4d468fdd9a88062ebbcff0b65"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6566",
+            "sha256": "89bb55c42e40f143d8c476ac699b5342444353831502562aa8a0dec92b45c3c7"
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9130",
+            "sha256": "009da7c562919b036bc2f03bd17b39408b0eb809022da5e9d387c6a71b5c2018"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14647",
+            "sha256": "543feac3253264ab5c0661ac979d690047975fa22ff6b74d12120e0af67e1225"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5477",
+            "sha256": "7053bfff1acb3c8fc33c742aa1cc2cd247bbd09ac8eb1225da3d148b4d6e2c6c"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4325",
+            "sha256": "db5e5a98158174dfc8fba092bb0578194da91f6d2a1160ac181db8b6f1f9ddb6"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3328",
+            "sha256": "8f389e31a24aa26619745de0e3f2d6c918626ac3d8a4d52663e5099784ee07fb"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "176",
+            "sha256": "24c33953ae09ae899e553a0688c9933e890cdf2d3ea8d64d76a9538ec873b680"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10010",
+            "sha256": "6616ad46a7b0c3656e536925d227f94db0f73f9fa16eacf7d98f29ea0f1a529c"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2689",
+            "sha256": "6a419c7eaede9fb709fe6a96419e7e35e65101a2fe50bf59b06a4c3379456fde"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1970324847798165",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "6044bb5a1fdaad85afd43c2d05aedc33f7fa9cf77b0be68cf9aa9c596ccfaf6d",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899917668068",
+              "mode": "33206",
+              "size": "215",
+              "mtimeNs": "1786366347675633700",
+              "ctimeNs": "1786366347675633700"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246759",
+              "mode": "33206",
+              "size": "12677",
+              "mtimeNs": "1786359024367654300",
+              "ctimeNs": "1786359024367654300"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246761",
+              "mode": "33206",
+              "size": "6566",
+              "mtimeNs": "1786362784881637700",
+              "ctimeNs": "1786362784881637700"
+            }
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246762",
+              "mode": "33206",
+              "size": "9130",
+              "mtimeNs": "1786362822260333400",
+              "ctimeNs": "1786362822260333400"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246763",
+              "mode": "33206",
+              "size": "14647",
+              "mtimeNs": "1786365344006993700",
+              "ctimeNs": "1786365344006993700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246764",
+              "mode": "33206",
+              "size": "5477",
+              "mtimeNs": "1786366347609169000",
+              "ctimeNs": "1786366347609169000"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957421",
+              "mode": "33206",
+              "size": "4325",
+              "mtimeNs": "1786362340825691500",
+              "ctimeNs": "1786362340825691500"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246760",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246766",
+              "mode": "33206",
+              "size": "3328",
+              "mtimeNs": "1786358959453127400",
+              "ctimeNs": "1786358959453127400"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246767",
+              "mode": "33206",
+              "size": "176",
+              "mtimeNs": "1786358621265360700",
+              "ctimeNs": "1786358621310067800"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246770",
+              "mode": "33206",
+              "size": "10010",
+              "mtimeNs": "1786359024374681700",
+              "ctimeNs": "1786359024374681700"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246769",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246768",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964246771",
+              "mode": "33206",
+              "size": "2689",
+              "mtimeNs": "1786362356890011900",
+              "ctimeNs": "1786362356890011900"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "31e358ad26709e6884fe61f88c29f0b87f2b59924aedd265661f96c2300f8a7e",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "215",
+            "sha256": "c7c1cc1822878042a73ec96228f06e4231a5f12f5b382c92c15f899c83ffd467"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12677",
+            "sha256": "bf14db11d4548c22a293857d1defafbf4bd959e4d468fdd9a88062ebbcff0b65"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6566",
+            "sha256": "89bb55c42e40f143d8c476ac699b5342444353831502562aa8a0dec92b45c3c7"
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9130",
+            "sha256": "009da7c562919b036bc2f03bd17b39408b0eb809022da5e9d387c6a71b5c2018"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14647",
+            "sha256": "543feac3253264ab5c0661ac979d690047975fa22ff6b74d12120e0af67e1225"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5477",
+            "sha256": "7053bfff1acb3c8fc33c742aa1cc2cd247bbd09ac8eb1225da3d148b4d6e2c6c"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4325",
+            "sha256": "db5e5a98158174dfc8fba092bb0578194da91f6d2a1160ac181db8b6f1f9ddb6"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3328",
+            "sha256": "8f389e31a24aa26619745de0e3f2d6c918626ac3d8a4d52663e5099784ee07fb"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "176",
+            "sha256": "24c33953ae09ae899e553a0688c9933e890cdf2d3ea8d64d76a9538ec873b680"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10010",
+            "sha256": "6616ad46a7b0c3656e536925d227f94db0f73f9fa16eacf7d98f29ea0f1a529c"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2689",
+            "sha256": "6a419c7eaede9fb709fe6a96419e7e35e65101a2fe50bf59b06a4c3379456fde"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1688849871089398",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "fd8f312bd133746ae0fa3c0841efd60b6e455cf8d60fc46d33d2e6a22bfe043e",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378745",
+              "mode": "33206",
+              "size": "215",
+              "mtimeNs": "1786366347675633700",
+              "ctimeNs": "1786366347675633700"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378746",
+              "mode": "33206",
+              "size": "12677",
+              "mtimeNs": "1786359024367654300",
+              "ctimeNs": "1786359024367654300"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849871089404",
+              "mode": "33206",
+              "size": "6566",
+              "mtimeNs": "1786362784881637700",
+              "ctimeNs": "1786362784881637700"
+            }
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378749",
+              "mode": "33206",
+              "size": "9130",
+              "mtimeNs": "1786362822260333400",
+              "ctimeNs": "1786362822260333400"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378750",
+              "mode": "33206",
+              "size": "14647",
+              "mtimeNs": "1786365344006993700",
+              "ctimeNs": "1786365344006993700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378751",
+              "mode": "33206",
+              "size": "5477",
+              "mtimeNs": "1786366347609169000",
+              "ctimeNs": "1786366347609169000"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378752",
+              "mode": "33206",
+              "size": "4325",
+              "mtimeNs": "1786362340825691500",
+              "ctimeNs": "1786362340825691500"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378747",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378753",
+              "mode": "33206",
+              "size": "3328",
+              "mtimeNs": "1786358959453127400",
+              "ctimeNs": "1786358959453127400"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378754",
+              "mode": "33206",
+              "size": "176",
+              "mtimeNs": "1786358621265360700",
+              "ctimeNs": "1786358621310067800"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957445",
+              "mode": "33206",
+              "size": "10010",
+              "mtimeNs": "1786359024374681700",
+              "ctimeNs": "1786359024374681700"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957444",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899917668099",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957446",
+              "mode": "33206",
+              "size": "2689",
+              "mtimeNs": "1786362356890011900",
+              "ctimeNs": "1786362356890011900"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "31e358ad26709e6884fe61f88c29f0b87f2b59924aedd265661f96c2300f8a7e",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "215",
+            "sha256": "c7c1cc1822878042a73ec96228f06e4231a5f12f5b382c92c15f899c83ffd467"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12677",
+            "sha256": "bf14db11d4548c22a293857d1defafbf4bd959e4d468fdd9a88062ebbcff0b65"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6566",
+            "sha256": "89bb55c42e40f143d8c476ac699b5342444353831502562aa8a0dec92b45c3c7"
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9130",
+            "sha256": "009da7c562919b036bc2f03bd17b39408b0eb809022da5e9d387c6a71b5c2018"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14647",
+            "sha256": "543feac3253264ab5c0661ac979d690047975fa22ff6b74d12120e0af67e1225"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5477",
+            "sha256": "7053bfff1acb3c8fc33c742aa1cc2cd247bbd09ac8eb1225da3d148b4d6e2c6c"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4325",
+            "sha256": "db5e5a98158174dfc8fba092bb0578194da91f6d2a1160ac181db8b6f1f9ddb6"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3328",
+            "sha256": "8f389e31a24aa26619745de0e3f2d6c918626ac3d8a4d52663e5099784ee07fb"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "176",
+            "sha256": "24c33953ae09ae899e553a0688c9933e890cdf2d3ea8d64d76a9538ec873b680"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10010",
+            "sha256": "6616ad46a7b0c3656e536925d227f94db0f73f9fa16eacf7d98f29ea0f1a529c"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2689",
+            "sha256": "6a419c7eaede9fb709fe6a96419e7e35e65101a2fe50bf59b06a4c3379456fde"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1688849871089398",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "fd8f312bd133746ae0fa3c0841efd60b6e455cf8d60fc46d33d2e6a22bfe043e",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378745",
+              "mode": "33206",
+              "size": "215",
+              "mtimeNs": "1786366347675633700",
+              "ctimeNs": "1786366347675633700"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378746",
+              "mode": "33206",
+              "size": "12677",
+              "mtimeNs": "1786359024367654300",
+              "ctimeNs": "1786359024367654300"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849871089404",
+              "mode": "33206",
+              "size": "6566",
+              "mtimeNs": "1786362784881637700",
+              "ctimeNs": "1786362784881637700"
+            }
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378749",
+              "mode": "33206",
+              "size": "9130",
+              "mtimeNs": "1786362822260333400",
+              "ctimeNs": "1786362822260333400"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378750",
+              "mode": "33206",
+              "size": "14647",
+              "mtimeNs": "1786365344006993700",
+              "ctimeNs": "1786365344006993700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378751",
+              "mode": "33206",
+              "size": "5477",
+              "mtimeNs": "1786366347609169000",
+              "ctimeNs": "1786366347609169000"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378752",
+              "mode": "33206",
+              "size": "4325",
+              "mtimeNs": "1786362340825691500",
+              "ctimeNs": "1786362340825691500"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378747",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378753",
+              "mode": "33206",
+              "size": "3328",
+              "mtimeNs": "1786358959453127400",
+              "ctimeNs": "1786358959453127400"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378754",
+              "mode": "33206",
+              "size": "176",
+              "mtimeNs": "1786358621265360700",
+              "ctimeNs": "1786358621310067800"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957445",
+              "mode": "33206",
+              "size": "10010",
+              "mtimeNs": "1786359024374681700",
+              "ctimeNs": "1786359024374681700"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957444",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899917668099",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957446",
+              "mode": "33206",
+              "size": "2689",
+              "mtimeNs": "1786362356890011900",
+              "ctimeNs": "1786362356890011900"
+            }
+          }
+        ]
+      }
+    },
+    "accounting-finalized": {
+      "state": "verified",
+      "scope": "final",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "31e358ad26709e6884fe61f88c29f0b87f2b59924aedd265661f96c2300f8a7e",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "215",
+            "sha256": "c7c1cc1822878042a73ec96228f06e4231a5f12f5b382c92c15f899c83ffd467"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12677",
+            "sha256": "bf14db11d4548c22a293857d1defafbf4bd959e4d468fdd9a88062ebbcff0b65"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6566",
+            "sha256": "89bb55c42e40f143d8c476ac699b5342444353831502562aa8a0dec92b45c3c7"
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9130",
+            "sha256": "009da7c562919b036bc2f03bd17b39408b0eb809022da5e9d387c6a71b5c2018"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14647",
+            "sha256": "543feac3253264ab5c0661ac979d690047975fa22ff6b74d12120e0af67e1225"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5477",
+            "sha256": "7053bfff1acb3c8fc33c742aa1cc2cd247bbd09ac8eb1225da3d148b4d6e2c6c"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4325",
+            "sha256": "db5e5a98158174dfc8fba092bb0578194da91f6d2a1160ac181db8b6f1f9ddb6"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3328",
+            "sha256": "8f389e31a24aa26619745de0e3f2d6c918626ac3d8a4d52663e5099784ee07fb"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "176",
+            "sha256": "24c33953ae09ae899e553a0688c9933e890cdf2d3ea8d64d76a9538ec873b680"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10010",
+            "sha256": "6616ad46a7b0c3656e536925d227f94db0f73f9fa16eacf7d98f29ea0f1a529c"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2689",
+            "sha256": "6a419c7eaede9fb709fe6a96419e7e35e65101a2fe50bf59b06a4c3379456fde"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1688849871089398",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "fd8f312bd133746ae0fa3c0841efd60b6e455cf8d60fc46d33d2e6a22bfe043e",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378745",
+              "mode": "33206",
+              "size": "215",
+              "mtimeNs": "1786366347675633700",
+              "ctimeNs": "1786366347675633700"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378746",
+              "mode": "33206",
+              "size": "12677",
+              "mtimeNs": "1786359024367654300",
+              "ctimeNs": "1786359024367654300"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849871089404",
+              "mode": "33206",
+              "size": "6566",
+              "mtimeNs": "1786362784881637700",
+              "ctimeNs": "1786362784881637700"
+            }
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378749",
+              "mode": "33206",
+              "size": "9130",
+              "mtimeNs": "1786362822260333400",
+              "ctimeNs": "1786362822260333400"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378750",
+              "mode": "33206",
+              "size": "14647",
+              "mtimeNs": "1786365344006993700",
+              "ctimeNs": "1786365344006993700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378751",
+              "mode": "33206",
+              "size": "5477",
+              "mtimeNs": "1786366347609169000",
+              "ctimeNs": "1786366347609169000"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378752",
+              "mode": "33206",
+              "size": "4325",
+              "mtimeNs": "1786362340825691500",
+              "ctimeNs": "1786362340825691500"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378747",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378753",
+              "mode": "33206",
+              "size": "3328",
+              "mtimeNs": "1786358959453127400",
+              "ctimeNs": "1786358959453127400"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378754",
+              "mode": "33206",
+              "size": "176",
+              "mtimeNs": "1786358621265360700",
+              "ctimeNs": "1786358621310067800"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957445",
+              "mode": "33206",
+              "size": "10010",
+              "mtimeNs": "1786359024374681700",
+              "ctimeNs": "1786359024374681700"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957444",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899917668099",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957446",
+              "mode": "33206",
+              "size": "2689",
+              "mtimeNs": "1786362356890011900",
+              "ctimeNs": "1786362356890011900"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "afd3b1959bf1f8959906ac55e3029473e490574eadc4d8cf57df677e7fe1f9c6",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "215",
+            "sha256": "c7c1cc1822878042a73ec96228f06e4231a5f12f5b382c92c15f899c83ffd467"
+          },
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "executable": false,
+            "size": "1128",
+            "sha256": "95996a31eec2a41617cc0a1c5484c2a45934ab20ac94611951c4ff01849d2dcf"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12677",
+            "sha256": "bf14db11d4548c22a293857d1defafbf4bd959e4d468fdd9a88062ebbcff0b65"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6566",
+            "sha256": "89bb55c42e40f143d8c476ac699b5342444353831502562aa8a0dec92b45c3c7"
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9130",
+            "sha256": "009da7c562919b036bc2f03bd17b39408b0eb809022da5e9d387c6a71b5c2018"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14647",
+            "sha256": "543feac3253264ab5c0661ac979d690047975fa22ff6b74d12120e0af67e1225"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5477",
+            "sha256": "7053bfff1acb3c8fc33c742aa1cc2cd247bbd09ac8eb1225da3d148b4d6e2c6c"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4325",
+            "sha256": "db5e5a98158174dfc8fba092bb0578194da91f6d2a1160ac181db8b6f1f9ddb6"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3328",
+            "sha256": "8f389e31a24aa26619745de0e3f2d6c918626ac3d8a4d52663e5099784ee07fb"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "176",
+            "sha256": "24c33953ae09ae899e553a0688c9933e890cdf2d3ea8d64d76a9538ec873b680"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10010",
+            "sha256": "6616ad46a7b0c3656e536925d227f94db0f73f9fa16eacf7d98f29ea0f1a529c"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2689",
+            "sha256": "6a419c7eaede9fb709fe6a96419e7e35e65101a2fe50bf59b06a4c3379456fde"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1688849871089398",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "6ee6616f30fc09ba5bd39f3c0b382e5d69b30caa683f6c9cf63dc9ac769ead2a",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378745",
+              "mode": "33206",
+              "size": "215",
+              "mtimeNs": "1786366347675633700",
+              "ctimeNs": "1786366347675633700"
+            }
+          },
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "14918173769923830",
+              "mode": "33206",
+              "size": "1128",
+              "mtimeNs": "1786366355543370300",
+              "ctimeNs": "1786366355544639500"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378746",
+              "mode": "33206",
+              "size": "12677",
+              "mtimeNs": "1786359024367654300",
+              "ctimeNs": "1786359024367654300"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849871089404",
+              "mode": "33206",
+              "size": "6566",
+              "mtimeNs": "1786362784881637700",
+              "ctimeNs": "1786362784881637700"
+            }
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378749",
+              "mode": "33206",
+              "size": "9130",
+              "mtimeNs": "1786362822260333400",
+              "ctimeNs": "1786362822260333400"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378750",
+              "mode": "33206",
+              "size": "14647",
+              "mtimeNs": "1786365344006993700",
+              "ctimeNs": "1786365344006993700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378751",
+              "mode": "33206",
+              "size": "5477",
+              "mtimeNs": "1786366347609169000",
+              "ctimeNs": "1786366347609169000"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378752",
+              "mode": "33206",
+              "size": "4325",
+              "mtimeNs": "1786362340825691500",
+              "ctimeNs": "1786362340825691500"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378747",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378753",
+              "mode": "33206",
+              "size": "3328",
+              "mtimeNs": "1786358959453127400",
+              "ctimeNs": "1786358959453127400"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378754",
+              "mode": "33206",
+              "size": "176",
+              "mtimeNs": "1786358621265360700",
+              "ctimeNs": "1786358621310067800"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957445",
+              "mode": "33206",
+              "size": "10010",
+              "mtimeNs": "1786359024374681700",
+              "ctimeNs": "1786359024374681700"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957444",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899917668099",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957446",
+              "mode": "33206",
+              "size": "2689",
+              "mtimeNs": "1786362356890011900",
+              "ctimeNs": "1786362356890011900"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "afd3b1959bf1f8959906ac55e3029473e490574eadc4d8cf57df677e7fe1f9c6",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "215",
+            "sha256": "c7c1cc1822878042a73ec96228f06e4231a5f12f5b382c92c15f899c83ffd467"
+          },
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "executable": false,
+            "size": "1128",
+            "sha256": "95996a31eec2a41617cc0a1c5484c2a45934ab20ac94611951c4ff01849d2dcf"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12677",
+            "sha256": "bf14db11d4548c22a293857d1defafbf4bd959e4d468fdd9a88062ebbcff0b65"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6566",
+            "sha256": "89bb55c42e40f143d8c476ac699b5342444353831502562aa8a0dec92b45c3c7"
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9130",
+            "sha256": "009da7c562919b036bc2f03bd17b39408b0eb809022da5e9d387c6a71b5c2018"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14647",
+            "sha256": "543feac3253264ab5c0661ac979d690047975fa22ff6b74d12120e0af67e1225"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5477",
+            "sha256": "7053bfff1acb3c8fc33c742aa1cc2cd247bbd09ac8eb1225da3d148b4d6e2c6c"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4325",
+            "sha256": "db5e5a98158174dfc8fba092bb0578194da91f6d2a1160ac181db8b6f1f9ddb6"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3328",
+            "sha256": "8f389e31a24aa26619745de0e3f2d6c918626ac3d8a4d52663e5099784ee07fb"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "176",
+            "sha256": "24c33953ae09ae899e553a0688c9933e890cdf2d3ea8d64d76a9538ec873b680"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10010",
+            "sha256": "6616ad46a7b0c3656e536925d227f94db0f73f9fa16eacf7d98f29ea0f1a529c"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2689",
+            "sha256": "6a419c7eaede9fb709fe6a96419e7e35e65101a2fe50bf59b06a4c3379456fde"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1688849871089398",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "6ee6616f30fc09ba5bd39f3c0b382e5d69b30caa683f6c9cf63dc9ac769ead2a",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378745",
+              "mode": "33206",
+              "size": "215",
+              "mtimeNs": "1786366347675633700",
+              "ctimeNs": "1786366347675633700"
+            }
+          },
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "14918173769923830",
+              "mode": "33206",
+              "size": "1128",
+              "mtimeNs": "1786366355543370300",
+              "ctimeNs": "1786366355544639500"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378746",
+              "mode": "33206",
+              "size": "12677",
+              "mtimeNs": "1786359024367654300",
+              "ctimeNs": "1786359024367654300"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849871089404",
+              "mode": "33206",
+              "size": "6566",
+              "mtimeNs": "1786362784881637700",
+              "ctimeNs": "1786362784881637700"
+            }
+          },
+          {
+            "path": "evidence/recovery-provenance.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378749",
+              "mode": "33206",
+              "size": "9130",
+              "mtimeNs": "1786362822260333400",
+              "ctimeNs": "1786362822260333400"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378750",
+              "mode": "33206",
+              "size": "14647",
+              "mtimeNs": "1786365344006993700",
+              "ctimeNs": "1786365344006993700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378751",
+              "mode": "33206",
+              "size": "5477",
+              "mtimeNs": "1786366347609169000",
+              "ctimeNs": "1786366347609169000"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378752",
+              "mode": "33206",
+              "size": "4325",
+              "mtimeNs": "1786362340825691500",
+              "ctimeNs": "1786362340825691500"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378747",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378753",
+              "mode": "33206",
+              "size": "3328",
+              "mtimeNs": "1786358959453127400",
+              "ctimeNs": "1786358959453127400"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894378754",
+              "mode": "33206",
+              "size": "176",
+              "mtimeNs": "1786358621265360700",
+              "ctimeNs": "1786358621310067800"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957445",
+              "mode": "33206",
+              "size": "10010",
+              "mtimeNs": "1786359024374681700",
+              "ctimeNs": "1786359024374681700"
+            }
+          },
+          {
+            "path": "specs/embeddable-react-surface",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957444",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899917668099",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940957446",
+              "mode": "33206",
+              "size": "2689",
+              "mtimeNs": "1786362356890011900",
+              "ctimeNs": "1786362356890011900"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "finalReservation": {
+    "identity": {
+      "dev": "3122291782",
+      "ino": "1688849871089398",
+      "mode": "16822",
+      "size": "0",
+      "mtimeNs": "0",
+      "ctimeNs": "0"
+    },
+    "entries": [
+      {
+        "path": ".openspec.yaml",
+        "kind": "file",
+        "expected": {
+          "path": ".openspec.yaml",
+          "kind": "file",
+          "executable": false,
+          "size": "215",
+          "sha256": "c7c1cc1822878042a73ec96228f06e4231a5f12f5b382c92c15f899c83ffd467"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1407374894378745",
+          "mode": "33206",
+          "size": "215",
+          "mtimeNs": "1786366347675633700",
+          "ctimeNs": "1786366347675633700"
+        }
+      },
+      {
+        "path": "design.md",
+        "kind": "file",
+        "expected": {
+          "path": "design.md",
+          "kind": "file",
+          "executable": false,
+          "size": "12677",
+          "sha256": "bf14db11d4548c22a293857d1defafbf4bd959e4d468fdd9a88062ebbcff0b65"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1407374894378746",
+          "mode": "33206",
+          "size": "12677",
+          "mtimeNs": "1786359024367654300",
+          "ctimeNs": "1786359024367654300"
+        }
+      },
+      {
+        "path": "evidence",
+        "kind": "directory",
+        "expected": {
+          "path": "evidence",
+          "kind": "directory"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1407374894378747",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        }
+      },
+      {
+        "path": "evidence/implementation-report.md",
+        "kind": "file",
+        "expected": {
+          "path": "evidence/implementation-report.md",
+          "kind": "file",
+          "executable": false,
+          "size": "6566",
+          "sha256": "89bb55c42e40f143d8c476ac699b5342444353831502562aa8a0dec92b45c3c7"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1688849871089404",
+          "mode": "33206",
+          "size": "6566",
+          "mtimeNs": "1786362784881637700",
+          "ctimeNs": "1786362784881637700"
+        }
+      },
+      {
+        "path": "evidence/recovery-provenance.md",
+        "kind": "file",
+        "expected": {
+          "path": "evidence/recovery-provenance.md",
+          "kind": "file",
+          "executable": false,
+          "size": "9130",
+          "sha256": "009da7c562919b036bc2f03bd17b39408b0eb809022da5e9d387c6a71b5c2018"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1407374894378749",
+          "mode": "33206",
+          "size": "9130",
+          "mtimeNs": "1786362822260333400",
+          "ctimeNs": "1786362822260333400"
+        }
+      },
+      {
+        "path": "evidence/review-report.md",
+        "kind": "file",
+        "expected": {
+          "path": "evidence/review-report.md",
+          "kind": "file",
+          "executable": false,
+          "size": "14647",
+          "sha256": "543feac3253264ab5c0661ac979d690047975fa22ff6b74d12120e0af67e1225"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1407374894378750",
+          "mode": "33206",
+          "size": "14647",
+          "mtimeNs": "1786365344006993700",
+          "ctimeNs": "1786365344006993700"
+        }
+      },
+      {
+        "path": "evidence/ship-log.md",
+        "kind": "file",
+        "expected": {
+          "path": "evidence/ship-log.md",
+          "kind": "file",
+          "executable": false,
+          "size": "5477",
+          "sha256": "7053bfff1acb3c8fc33c742aa1cc2cd247bbd09ac8eb1225da3d148b4d6e2c6c"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1407374894378751",
+          "mode": "33206",
+          "size": "5477",
+          "mtimeNs": "1786366347609169000",
+          "ctimeNs": "1786366347609169000"
+        }
+      },
+      {
+        "path": "evidence/spec-falsification-sweep.md",
+        "kind": "file",
+        "expected": {
+          "path": "evidence/spec-falsification-sweep.md",
+          "kind": "file",
+          "executable": false,
+          "size": "4325",
+          "sha256": "db5e5a98158174dfc8fba092bb0578194da91f6d2a1160ac181db8b6f1f9ddb6"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1407374894378752",
+          "mode": "33206",
+          "size": "4325",
+          "mtimeNs": "1786362340825691500",
+          "ctimeNs": "1786362340825691500"
+        }
+      },
+      {
+        "path": "proposal.md",
+        "kind": "file",
+        "expected": {
+          "path": "proposal.md",
+          "kind": "file",
+          "executable": false,
+          "size": "3328",
+          "sha256": "8f389e31a24aa26619745de0e3f2d6c918626ac3d8a4d52663e5099784ee07fb"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1407374894378753",
+          "mode": "33206",
+          "size": "3328",
+          "mtimeNs": "1786358959453127400",
+          "ctimeNs": "1786358959453127400"
+        }
+      },
+      {
+        "path": "README.md",
+        "kind": "file",
+        "expected": {
+          "path": "README.md",
+          "kind": "file",
+          "executable": false,
+          "size": "176",
+          "sha256": "24c33953ae09ae899e553a0688c9933e890cdf2d3ea8d64d76a9538ec873b680"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1407374894378754",
+          "mode": "33206",
+          "size": "176",
+          "mtimeNs": "1786358621265360700",
+          "ctimeNs": "1786358621310067800"
+        }
+      },
+      {
+        "path": "specs",
+        "kind": "directory",
+        "expected": {
+          "path": "specs",
+          "kind": "directory"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1125899917668099",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        }
+      },
+      {
+        "path": "specs/embeddable-react-surface",
+        "kind": "directory",
+        "expected": {
+          "path": "specs/embeddable-react-surface",
+          "kind": "directory"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "844424940957444",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        }
+      },
+      {
+        "path": "specs/embeddable-react-surface/spec.md",
+        "kind": "file",
+        "expected": {
+          "path": "specs/embeddable-react-surface/spec.md",
+          "kind": "file",
+          "executable": false,
+          "size": "10010",
+          "sha256": "6616ad46a7b0c3656e536925d227f94db0f73f9fa16eacf7d98f29ea0f1a529c"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "844424940957445",
+          "mode": "33206",
+          "size": "10010",
+          "mtimeNs": "1786359024374681700",
+          "ctimeNs": "1786359024374681700"
+        }
+      },
+      {
+        "path": "tasks.md",
+        "kind": "file",
+        "expected": {
+          "path": "tasks.md",
+          "kind": "file",
+          "executable": false,
+          "size": "2689",
+          "sha256": "6a419c7eaede9fb709fe6a96419e7e35e65101a2fe50bf59b06a4c3379456fde"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "844424940957446",
+          "mode": "33206",
+          "size": "2689",
+          "mtimeNs": "1786362356890011900",
+          "ctimeNs": "1786362356890011900"
+        }
+      }
+    ]
+  },
+  "specProgress": [
+    {
+      "actionId": "c71be15d6c80f98a52242167fa6c3d2ceda4b08c24ee07fa18f8f8566c838895",
+      "action": "create",
+      "target": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\specs\\embeddable-react-surface\\spec.md",
+      "backupOrQuarantine": null,
+      "temporary": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\specs\\embeddable-react-surface\\.rasen-archive-spec-0216ff67-d1c3-4a99-a22e-e9ce85c48aeb-c71be15d6c80\\result.tmp",
+      "state": "complete",
+      "claimIdentity": {
+        "dev": "3122291782",
+        "ino": "1125899917668086",
+        "mode": "16822",
+        "size": "0",
+        "mtimeNs": "0",
+        "ctimeNs": "0"
+      },
+      "temporaryIdentity": {
+        "dev": "3122291782",
+        "ino": "2251799824510669",
+        "mode": "33206",
+        "size": "10162",
+        "mtimeNs": "1786366348775751500",
+        "ctimeNs": "1786366348775751500"
+      },
+      "publishedIdentity": {
+        "dev": "3122291782",
+        "ino": "2251799824510669",
+        "mode": "33206",
+        "size": "10162",
+        "mtimeNs": "1786366348775751500",
+        "ctimeNs": "1786366348918550600"
+      }
+    }
+  ],
+  "cleanerProgress": [
+    {
+      "path": "auto-run.json",
+      "state": "deleted"
+    }
+  ],
+  "sourceProgress": {
+    "state": "removed",
+    "quarantine": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\.rasen-archive-source-0216ff67-d1c3-4a99-a22e-e9ce85c48aeb\\s0304-surface-embedding-contract-freeze"
+  },
+  "updatedAt": "2026-08-10T12:52:35.955Z"
+}

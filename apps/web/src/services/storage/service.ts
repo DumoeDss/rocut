@@ -23,32 +23,55 @@ import {
 } from "@/services/storage/migrations";
 import type { Bookmark, SceneTracks, TScene } from "@/timeline";
 import { roundMediaTime } from "@/wasm";
+import type { SessionResources } from "@/editor/session/resources";
 
 function normalizeBookmarks({ raw }: { raw: unknown }): Bookmark[] {
 	if (!Array.isArray(raw)) return [];
 	return raw
 		.map((item): Bookmark | null => {
-			if (typeof item === "number") {
-				return { time: roundMediaTime({ time: item }) };
+			const value: unknown = item;
+			if (typeof value === "number") {
+				return { time: roundMediaTime({ time: value }) };
 			}
-			const obj = item as Record<string, unknown>;
 			if (
-				typeof obj !== "object" ||
-				obj === null ||
-				typeof obj.time !== "number"
+				typeof value !== "object" ||
+				value === null ||
+				!("time" in value) ||
+				typeof value.time !== "number"
 			) {
 				return null;
 			}
 			return {
-				time: roundMediaTime({ time: obj.time }),
-				...(typeof obj.note === "string" && { note: obj.note }),
-				...(typeof obj.color === "string" && { color: obj.color }),
-				...(typeof obj.duration === "number" && {
-					duration: roundMediaTime({ time: obj.duration }),
-				}),
+				time: roundMediaTime({ time: value.time }),
+				...("note" in value &&
+					typeof value.note === "string" && { note: value.note }),
+				...("color" in value &&
+					typeof value.color === "string" && { color: value.color }),
+				...("duration" in value &&
+					typeof value.duration === "number" && {
+						duration: roundMediaTime({ time: value.duration }),
+					}),
 			};
 		})
 		.filter((b): b is Bookmark => b !== null);
+}
+
+function deserializeScenes({
+	serializedScenes,
+}: {
+	serializedScenes: readonly SerializedScene[] | undefined;
+}): TScene[] {
+	return (
+		serializedScenes?.map((scene) => ({
+			id: scene.id,
+			name: scene.name,
+			isMain: scene.isMain,
+			tracks: scene.tracks,
+			bookmarks: normalizeBookmarks({ raw: scene.bookmarks }),
+			createdAt: new Date(scene.createdAt),
+			updatedAt: new Date(scene.updatedAt),
+		})) ?? []
+	);
 }
 
 class StorageService {
@@ -190,16 +213,9 @@ class StorageService {
 			return null;
 		}
 
-		const scenes =
-			serializedProject.scenes?.map((scene) => ({
-				id: scene.id,
-				name: scene.name,
-				isMain: scene.isMain,
-				tracks: scene.tracks,
-				bookmarks: normalizeBookmarks({ raw: scene.bookmarks }),
-				createdAt: new Date(scene.createdAt),
-				updatedAt: new Date(scene.updatedAt),
-			})) ?? [];
+		const scenes = deserializeScenes({
+			serializedScenes: serializedProject.scenes,
+		});
 
 		const project: TProject = {
 			metadata: {
@@ -267,7 +283,9 @@ class StorageService {
 					time:
 						serializedProject.metadata.duration ??
 						getProjectDurationFromScenes({
-							scenes: (serializedProject.scenes ?? []) as unknown as TScene[],
+							scenes: deserializeScenes({
+								serializedScenes: serializedProject.scenes,
+							}),
 						}),
 				}),
 				createdAt: new Date(serializedProject.metadata.createdAt),
@@ -336,9 +354,11 @@ class StorageService {
 	async loadMediaAsset({
 		projectId,
 		id,
+		resources,
 	}: {
 		projectId: string;
 		id: string;
+		resources: SessionResources;
 	}): Promise<MediaAsset | null> {
 		const { mediaMetadataAdapter, mediaAssetsAdapter } =
 			this.getProjectMediaAdapters({ projectId });
@@ -350,21 +370,22 @@ class StorageService {
 
 		if (!file || !metadata) return null;
 
-		let url: string;
+		let urlHandle = resources.createObjectUrl({ blob: file });
+		let url = urlHandle.url;
 		if (metadata.type === "image" && (!file.type || file.type === "")) {
 			try {
 				const text = await file.text();
 				if (text.trim().startsWith("<svg")) {
 					const svgBlob = new Blob([text], { type: "image/svg+xml" });
-					url = URL.createObjectURL(svgBlob);
+					urlHandle.revoke();
+					urlHandle = resources.createObjectUrl({ blob: svgBlob });
+					url = urlHandle.url;
 				} else {
-					url = URL.createObjectURL(file);
+					url = urlHandle.url;
 				}
 			} catch {
-				url = URL.createObjectURL(file);
+				url = urlHandle.url;
 			}
-		} else {
-			url = URL.createObjectURL(file);
 		}
 
 		return {
@@ -373,6 +394,7 @@ class StorageService {
 			type: metadata.type,
 			file,
 			url,
+			urlHandle,
 			width: metadata.width,
 			height: metadata.height,
 			duration: metadata.duration,
@@ -383,8 +405,10 @@ class StorageService {
 
 	async loadAllMediaAssets({
 		projectId,
+		resources,
 	}: {
 		projectId: string;
+		resources: SessionResources;
 	}): Promise<MediaAsset[]> {
 		const { mediaMetadataAdapter } = this.getProjectMediaAdapters({
 			projectId,
@@ -394,7 +418,7 @@ class StorageService {
 		const mediaItems: MediaAsset[] = [];
 
 		for (const id of mediaIds) {
-			const item = await this.loadMediaAsset({ projectId, id });
+			const item = await this.loadMediaAsset({ projectId, id, resources });
 			if (item) {
 				mediaItems.push(item);
 			}
@@ -571,5 +595,4 @@ class StorageService {
 	}
 }
 
-export const storageService = new StorageService();
 export { StorageService };

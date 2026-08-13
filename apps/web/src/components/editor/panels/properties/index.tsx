@@ -10,15 +10,20 @@ import {
 } from "@/components/ui/tooltip";
 import { useEditor } from "@/editor/use-editor";
 import { useElementSelection } from "@/timeline/hooks/element/use-element-selection";
-import { usePropertiesStore } from "./stores/properties-store";
+import { usePropertiesStore } from "@/editor/use-session-store";
 import { getPropertiesConfig } from "./registry";
 import { cn } from "@/utils/ui";
 import { EmptyView } from "./empty-view";
+import { selectElementWithTrackTuple } from "@/timeline/element-with-track-selector";
 
 export function PropertiesPanel() {
-	const editor = useEditor();
-	useEditor((e) => e.scenes.getActiveSceneOrNull());
-	useEditor((e) => e.media.getAssets());
+	const mediaAssets = useEditor((e) => e.media.getAssets());
+	const [selectedTrack, selectedElement] = useEditor((editor) =>
+		selectElementWithTrackTuple({
+			editor,
+			elements: editor.selection.getSelectedElements(),
+		}),
+	);
 	const { selectedElements } = useElementSelection();
 	const { activeTabPerType, setActiveTab } = usePropertiesStore();
 
@@ -40,16 +45,10 @@ export function PropertiesPanel() {
 		);
 	}
 
-	const mediaAssets = editor.media.getAssets();
+	if (!selectedTrack || !selectedElement) return null;
 
-	const elementsWithTracks = editor.timeline.getElementsWithTracks({
-		elements: selectedElements,
-	});
-	const elementWithTrack = elementsWithTracks[0];
-
-	if (!elementWithTrack) return null;
-
-	const { element, track } = elementWithTrack;
+	const element = selectedElement;
+	const track = selectedTrack;
 	const config = getPropertiesConfig({ element, mediaAssets });
 	const visibleTabs = config.tabs;
 

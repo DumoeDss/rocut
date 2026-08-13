@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { registerCanceller } from "@/editor/cancel-interaction";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 import type { NormalizedCubicBezier } from "@/animation/types";
 import { useKeyframeSelection } from "@/timeline/hooks/element/use-keyframe-selection";
 import {
@@ -13,7 +14,8 @@ import {
 } from "./session";
 
 export function useGraphEditorController() {
-	const editor = useEditor();
+	const editor = useEditorInstance();
+	const session = useEditorSession();
 	const renderTracks = useEditor(
 		(currentEditor) =>
 			currentEditor.timeline.getPreviewTracks() ??
@@ -70,6 +72,7 @@ export function useGraphEditorController() {
 		}
 
 		return registerCanceller({
+			session,
 			fn: () => {
 				discardPreview();
 				setOpen(false);

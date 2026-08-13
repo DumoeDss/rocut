@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { FPS_PRESETS } from "@/fps/presets";
 import { floatToFrameRate, frameRateToFloat } from "@/fps/utils";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import {
 	Section,
 	SectionContent,
@@ -22,7 +22,7 @@ import { BackgroundContent } from "./background";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { NumberField } from "@/components/ui/number-field";
-import { useEditorStore } from "@/editor/editor-store";
+import { useEditorStore } from "@/editor/use-session-store";
 import { usePropertyDraft } from "@/components/editor/panels/properties/hooks/use-property-draft";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Tick02Icon } from "@hugeicons/core-free-icons";
@@ -98,7 +98,7 @@ function useCanvasDimensionDraft({
 
 export function SettingsView() {
 	const [view, setView] = useState<SettingsView>("project-info");
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const activeProject = useEditor((e) => e.project.getActive());
 	const { canvasPresets } = useEditorStore();
 	const currentCanvasSize = activeProject.settings.canvasSize;
@@ -116,14 +116,15 @@ export function SettingsView() {
 		};
 	});
 
-	const selectedPresetId = canvasSizeMode === "preset"
-		? (presetItems.find((preset) =>
-				areCanvasSizesEqual({
-					left: preset.canvasSize,
-					right: currentCanvasSize,
-				}),
-			)?.id ?? null)
-		: null;
+	const selectedPresetId =
+		canvasSizeMode === "preset"
+			? (presetItems.find((preset) =>
+					areCanvasSizesEqual({
+						left: preset.canvasSize,
+						right: currentCanvasSize,
+					}),
+				)?.id ?? null)
+			: null;
 
 	const updateCustomCanvasSize = ({
 		canvasSize,
@@ -150,15 +151,17 @@ export function SettingsView() {
 			return;
 		}
 
-		editor.project.updateSettings({
-			settings: {
-				...(shouldUpdateCanvasSize ? { canvasSize } : {}),
-				...(shouldUpdateCanvasSizeMode
-					? { canvasSizeMode: "custom" as const }
-					: {}),
-				lastCustomCanvasSize: canvasSize,
-			},
-		});
+		void editor.project
+			.updateSettings({
+				settings: {
+					...(shouldUpdateCanvasSize ? { canvasSize } : {}),
+					...(shouldUpdateCanvasSizeMode
+						? { canvasSizeMode: "custom" as const }
+						: {}),
+					lastCustomCanvasSize: canvasSize,
+				},
+			})
+			.catch(() => undefined);
 	};
 
 	const selectPresetCanvasSize = ({
@@ -174,14 +177,16 @@ export function SettingsView() {
 
 		if (!shouldUpdateCanvasSize && !shouldUpdateCanvasSizeMode) return;
 
-		editor.project.updateSettings({
-			settings: {
-				...(shouldUpdateCanvasSize ? { canvasSize } : {}),
-				...(shouldUpdateCanvasSizeMode
-					? { canvasSizeMode: "preset" as const }
-					: {}),
-			},
-		});
+		void editor.project
+			.updateSettings({
+				settings: {
+					...(shouldUpdateCanvasSize ? { canvasSize } : {}),
+					...(shouldUpdateCanvasSizeMode
+						? { canvasSizeMode: "preset" as const }
+						: {}),
+				},
+			})
+			.catch(() => undefined);
 	};
 
 	const selectCustomCanvasSize = () => {
@@ -241,12 +246,16 @@ export function SettingsView() {
 					<Section showTopBorder={false}>
 						<SectionHeader className="justify-between">
 							<SectionTitle className="flex-1">Frame rate</SectionTitle>
-					<Select
-							value={String(Math.round(frameRateToFloat(activeProject.settings.fps)))}
-							onValueChange={(value) => {
-								const fps = floatToFrameRate(parseFloat(value));
-								editor.project.updateSettings({ settings: { fps } });
-							}}
+							<Select
+								value={String(
+									Math.round(frameRateToFloat(activeProject.settings.fps)),
+								)}
+								onValueChange={(value) => {
+									const fps = floatToFrameRate(parseFloat(value));
+									void editor.project
+										.updateSettings({ settings: { fps } })
+										.catch(() => undefined);
+								}}
 							>
 								<SelectTrigger className="bg-transparent border-none p-1 h-auto">
 									<SelectValue placeholder="Select a frame rate" />

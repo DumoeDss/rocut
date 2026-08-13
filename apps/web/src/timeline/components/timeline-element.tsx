@@ -1,8 +1,9 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import { useEditor } from "@/editor/use-editor";
-import { useAssetsPanelStore } from "@/components/editor/panels/assets/assets-panel-store";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
+import { useAssetsPanelStore } from "@/editor/use-session-store";
 import { AudioWaveform, WAVEFORM_GAIN_SAMPLE_COUNT } from "./audio-waveform";
 import { AudioVolumeLine } from "./audio-volume-line";
 import { useElementPreview } from "@/timeline/hooks/use-element-preview";
@@ -47,7 +48,10 @@ import {
 	getSourceAudioActionLabel,
 	isSourceAudioSeparated,
 } from "@/timeline/audio-separation";
-import { buildWaveformGainSamples, isElementMuted } from "@/timeline/audio-state";
+import {
+	buildWaveformGainSamples,
+	isElementMuted,
+} from "@/timeline/audio-state";
 import { getTimelinePixelsPerSecond } from "@/timeline";
 import { buildWaveformSourceKey } from "@/media/waveform-summary";
 import { addMediaTime, type MediaTime, TICKS_PER_SECOND } from "@/wasm";
@@ -55,8 +59,8 @@ import {
 	getActionDefinition,
 	type TAction,
 	type TActionWithOptionalArgs,
-	invokeAction,
 } from "@/actions";
+import { useActionInvoker } from "@/actions/action-scope";
 import { useElementSelection } from "@/timeline/hooks/element/use-element-selection";
 import { resolveStickerId } from "@/stickers";
 import { buildGraphicPreviewUrl } from "@/graphics";
@@ -80,9 +84,9 @@ import { uppercase } from "@/utils/string";
 import { useMemo, type ComponentProps, type ReactNode } from "react";
 import type { SelectedKeyframeRef, ElementKeyframe } from "@/animation/types";
 import { cn } from "@/utils/ui";
-import { usePropertiesStore } from "@/components/editor/panels/properties/stores/properties-store";
+import { usePropertiesStore } from "@/editor/use-session-store";
 import { getTrackTypeForElementType } from "@/timeline/placement/compatibility";
-import { useTimelineStore } from "@/timeline/timeline-store";
+import { useTimelineStore } from "@/editor/use-session-store";
 import { KEYFRAME_LANE_HEIGHT_PX } from "./layout";
 import {
 	getExpandedRows,
@@ -230,6 +234,7 @@ export function TimelineElement({
 	dragView,
 	isDropTarget = false,
 }: TimelineElementProps) {
+	const invokeAction = useActionInvoker();
 	const mediaAssets = useEditor((e) => e.media.getAssets());
 	const { selectedElements } = useElementSelection();
 	const requestRevealMedia = useAssetsPanelStore((s) => s.requestRevealMedia);
@@ -767,7 +772,7 @@ function ExpandedKeyframeLanes({
 		event: React.MouseEvent;
 		keyframes: SelectedKeyframeRef[];
 	}) => void;
-	containerRef: React.RefObject<HTMLDivElement | null>;
+	containerRef: React.RefObject<HTMLDivElement>;
 	onLaneMouseDown: (event: React.MouseEvent) => void;
 	onLaneClick: (event: React.MouseEvent) => void;
 	selectionBox: {
@@ -909,7 +914,9 @@ function TextElementContent({
 	return (
 		<div className="flex size-full items-center justify-start pl-2">
 			<span className="truncate text-xs text-white">
-				{typeof element.params.content === "string" ? element.params.content : ""}
+				{typeof element.params.content === "string"
+					? element.params.content
+					: ""}
 			</span>
 		</div>
 	);
@@ -936,12 +943,14 @@ function StickerElementContent({
 }: {
 	element: Extract<TimelineElementType, { type: "sticker" }>;
 }) {
+	const session = useEditorSession();
 	return (
 		<div className="flex size-full items-center gap-2 pl-2">
 			<HostImage
 				src={resolveStickerId({
 					stickerId: element.stickerId,
 					options: { width: 20, height: 20 },
+					assets: session.host.assets,
 				})}
 				alt={element.name}
 				className="size-4 shrink-0"
@@ -992,6 +1001,7 @@ function AudioElementContent({
 		);
 	}
 	const mediaAssets = useEditor((e) => e.media.getAssets());
+	const waveformCache = useEditor((e) => e.media.getWaveformCache());
 	const mediaAsset =
 		element.sourceType === "upload"
 			? (mediaAssets.find((asset) => asset.id === element.mediaId) ?? null)
@@ -1022,6 +1032,7 @@ function AudioElementContent({
 				<MediaElementHeader name={mediaLabel} hasFade={false} />
 				<div className="absolute inset-x-0 top-5 bottom-0 overflow-hidden">
 					<AudioWaveform
+						cache={waveformCache}
 						sourceKey={sourceKey}
 						sourceFile={sourceFile}
 						audioBuffer={audioBuffer}
@@ -1058,7 +1069,7 @@ function EffectsButton({
 	element: VideoElement | ImageElement;
 	track: TimelineTrack;
 }) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const setActiveTab = usePropertiesStore((s) => s.setActiveTab);
 
 	const handleClick = (event: React.MouseEvent) => {
@@ -1283,6 +1294,7 @@ function ActionMenuItem({
 	action: TActionWithOptionalArgs;
 	children: ReactNode;
 }) {
+	const invokeAction = useActionInvoker();
 	return (
 		<ContextMenuItem
 			onClick={(event: React.MouseEvent) => {

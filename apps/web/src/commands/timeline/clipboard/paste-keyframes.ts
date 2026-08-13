@@ -1,10 +1,13 @@
-import { EditorCore } from "@/core";
 import {
 	getKeyframeAtTime,
 	updateScalarKeyframeCurve,
 	upsertPathKeyframe,
 } from "@/animation";
-import { Command, type CommandResult } from "@/commands/base-command";
+import {
+	Command,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
 import type { KeyframeClipboardItem } from "@/clipboard";
 import type { SceneTracks, TimelineElement } from "@/timeline";
 import { updateElementInSceneTracks } from "@/timeline";
@@ -85,6 +88,8 @@ function pasteKeyframesIntoElement({
 }
 
 export class PasteKeyframesCommand extends Command {
+	readonly routingClass = "provider-private" as const;
+
 	private savedState: SceneTracks | null = null;
 	private readonly trackId: string;
 	private readonly elementId: string;
@@ -109,12 +114,11 @@ export class PasteKeyframesCommand extends Command {
 		this.clipboardItems = clipboardItems;
 	}
 
-	execute(): CommandResult | undefined {
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		if (this.clipboardItems.length === 0) {
 			return undefined;
 		}
 
-		const editor = EditorCore.getInstance();
 		this.savedState = editor.scenes.getActiveScene().tracks;
 
 		const updatedTracks = updateElementInSceneTracks({
@@ -133,12 +137,11 @@ export class PasteKeyframesCommand extends Command {
 		return undefined;
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (!this.savedState) {
 			return;
 		}
 
-		const editor = EditorCore.getInstance();
 		editor.timeline.updateTracks(this.savedState);
 	}
 }

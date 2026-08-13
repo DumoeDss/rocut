@@ -1,10 +1,11 @@
 import { useEffect, useReducer, useState } from "react";
-import { useEditor } from "@/editor/use-editor";
+import { useEditorInstance } from "@/editor/use-editor";
 import { useCommittedRef } from "@/hooks/use-committed-ref";
 import { useShiftKey } from "@/hooks/use-shift-key";
 import { usePreviewViewport } from "@/preview/components/preview-viewport";
 import type { SnapLine } from "@/preview/preview-snap";
 import { registerCanceller } from "@/editor/cancel-interaction";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 import {
 	PreviewInteractionController,
 	type PreviewInteractionDeps,
@@ -20,7 +21,8 @@ export function usePreviewInteraction({
 	onSnapLinesChange?: OnSnapLinesChange;
 	isMaskMode?: boolean;
 }) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
+	const session = useEditorSession();
 	const isShiftHeldRef = useShiftKey();
 	const viewport = usePreviewViewport();
 	const deps: PreviewInteractionDeps = {
@@ -29,7 +31,7 @@ export function usePreviewInteraction({
 			screenPixelsToLogicalThreshold: viewport.screenPixelsToLogicalThreshold,
 		},
 		input: {
-			isShiftHeld: () => isShiftHeldRef.current,
+			isShiftHeld: () => isShiftHeldRef.current ?? false,
 		},
 		scene: {
 			getTracks: () => editor.scenes.getActiveScene().tracks,
@@ -66,15 +68,12 @@ export function usePreviewInteraction({
 	);
 
 	const [, rerender] = useReducer((n: number) => n + 1, 0);
-	useEffect(
-		() => controller.subscribe({ listener: rerender }),
-		[controller],
-	);
+	useEffect(() => controller.subscribe({ listener: rerender }), [controller]);
 
 	useEffect(() => {
 		if (!controller.isDragging) return;
-		return registerCanceller({ fn: () => controller.cancel() });
-	}, [controller.isDragging, controller]);
+		return registerCanceller({ session, fn: () => controller.cancel() });
+	}, [controller.isDragging, controller, session]);
 
 	useEffect(() => () => controller.destroy(), [controller]);
 

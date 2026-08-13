@@ -27,7 +27,9 @@ import {
 	SOUND_SEARCH_UNAVAILABLE_MESSAGE,
 } from "@/sounds/use-sound-search";
 import { useEditorHostServices } from "@/editor/host/editor-host-context";
-import { useSoundsStore } from "@/sounds/sounds-store";
+import { useEditorInstance } from "@/editor/use-editor";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
+import { useSoundsStore } from "@/editor/use-session-store";
 import type { SavedSound, SoundEffect } from "@/sounds/types";
 import { cn } from "@/utils/ui";
 import {
@@ -88,6 +90,7 @@ function SoundEffectsView() {
 		setTotalCount,
 	} = useSoundsStore();
 	const { soundSearchEndpoint } = useEditorHostServices();
+	const { resources } = useEditorSession();
 	const {
 		results: searchResults,
 		isLoading: isSearching,
@@ -111,7 +114,9 @@ function SoundEffectsView() {
 	});
 
 	useEffect(() => {
-		loadSavedSounds();
+		void loadSavedSounds().catch(() => {
+			// The session store publishes the recoverable error and diagnostics.
+		});
 	}, [loadSavedSounds]);
 
 	useEffect(() => {
@@ -168,11 +173,14 @@ function SoundEffectsView() {
 			}
 		};
 
-		const timeoutId = setTimeout(fetchTopSounds, 100, {});
+		const timeoutHandle = resources.setTimeout({
+			handler: fetchTopSounds,
+			ms: 100,
+		});
 
 		return () => {
 			shouldIgnore = true;
-			clearTimeout(timeoutId);
+			timeoutHandle.cancel();
 		};
 	}, [
 		hasLoaded,
@@ -184,6 +192,7 @@ function SoundEffectsView() {
 		setCurrentPage,
 		setHasNextPage,
 		setTotalCount,
+		resources,
 	]);
 
 	useEffect(() => {
@@ -195,17 +204,19 @@ function SoundEffectsView() {
 			scrollAreaRef.current?.scrollTo({ top: scrollPosition });
 		};
 
-		const timeoutId = setTimeout(restoreScrollPosition, 100, {});
+		const timeoutHandle = resources.setTimeout({
+			handler: restoreScrollPosition,
+			ms: 100,
+		});
 
-		return () => clearTimeout(timeoutId);
-	}, [scrollPosition, scrollAreaRef]);
+		return () => timeoutHandle.cancel();
+	}, [resources, scrollPosition, scrollAreaRef]);
 
-	const handleScrollWithPosition = ({
-		currentTarget,
-	}: React.UIEvent<HTMLDivElement>) => {
+	const handleScrollWithPosition = (event: React.UIEvent<HTMLDivElement>) => {
+		const { currentTarget } = event;
 		const { scrollTop } = currentTarget;
 		setScrollPosition({ position: scrollTop });
-		handleScroll({ currentTarget } as React.UIEvent<HTMLDivElement>);
+		handleScroll(event);
 	};
 
 	const displayedSounds = searchQuery ? searchResults : topSoundEffects;
@@ -342,7 +353,9 @@ function SavedSoundsView() {
 	const [showClearDialog, setShowClearDialog] = useState(false);
 
 	useEffect(() => {
-		loadSavedSounds();
+		void loadSavedSounds().catch(() => {
+			// The session store publishes the recoverable error and diagnostics.
+		});
 	}, [loadSavedSounds]);
 
 	const playSound = ({ sound }: { sound: SoundEffect }) => {
@@ -471,8 +484,12 @@ function SavedSoundsView() {
 									stopPropagation,
 								}: React.MouseEvent<HTMLButtonElement>) => {
 									stopPropagation();
-									await clearSavedSounds();
-									setShowClearDialog(false);
+									try {
+										await clearSavedSounds();
+										setShowClearDialog(false);
+									} catch {
+										// Keep the dialog open; the store renders a retryable error.
+									}
 								}}
 							>
 								Clear all sounds
@@ -507,6 +524,7 @@ interface AudioItemProps {
 }
 
 function AudioItem({ sound, isPlaying, onPlay }: AudioItemProps) {
+	const editor = useEditorInstance();
 	const { addSoundToTimeline, isSoundSaved, toggleSavedSound } =
 		useSoundsStore();
 	const isSaved = isSoundSaved({ soundId: sound.id });
@@ -519,14 +537,16 @@ function AudioItem({ sound, isPlaying, onPlay }: AudioItemProps) {
 		stopPropagation,
 	}: React.MouseEvent<HTMLButtonElement>) => {
 		stopPropagation();
-		toggleSavedSound({ soundEffect: sound });
+		void toggleSavedSound({ soundEffect: sound }).catch(() => {
+			// The session store publishes the recoverable error and diagnostics.
+		});
 	};
 
 	const handleAddToTimeline = async ({
 		stopPropagation,
 	}: React.MouseEvent<HTMLButtonElement>) => {
 		stopPropagation();
-		await addSoundToTimeline({ sound });
+		await addSoundToTimeline({ sound, editor });
 	};
 
 	return (

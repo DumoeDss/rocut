@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-type-assertion -- Preview overlays intentionally merge partial fields back into the donor TimelineElement discriminated union. */
 import type { EditorCore } from "@/core";
 import type { ElementBounds } from "@/preview/element-bounds";
 import type { ParamValues } from "@/params";
@@ -28,7 +29,6 @@ import {
 	resolveAnimationPathValueAtTime,
 } from "@/animation";
 import { resolveAnimationTarget } from "@/timeline/animation-targets";
-import { BatchCommand } from "@/commands";
 import {
 	AddTrackCommand,
 	RemoveTrackCommand,
@@ -63,6 +63,7 @@ import type {
 	PlannedElementMove,
 	PlannedTrackCreation,
 } from "@/timeline/group-move";
+import { ProviderPrivateCompositeCommand } from "@/commands/provider-private-composite";
 
 export class TimelineManager {
 	private listeners = new Set<() => void>();
@@ -192,14 +193,15 @@ export class TimelineManager {
 		elements: { trackId: string; elementId: string }[];
 		splitTime: MediaTime;
 		retainSide?: "both" | "left" | "right";
-	}): { trackId: string; elementId: string }[] {
+	}): Promise<{ trackId: string; elementId: string }[]> {
 		const command = new SplitElementsCommand({
 			elements,
 			splitTime,
 			retainSide,
 		});
-		this.editor.command.execute({ command });
-		return command.getRightSideElements();
+		return this.editor.command
+			.execute({ command })
+			.then(() => command.getRightSideElements());
 	}
 
 	getTotalDuration(): MediaTime {
@@ -293,7 +295,7 @@ export class TimelineManager {
 		if (pushHistory) {
 			this.editor.command.execute({ command });
 		} else {
-			command.execute();
+			this.editor.command.executeWithoutHistory({ command });
 		}
 	}
 
@@ -420,7 +422,7 @@ export class TimelineManager {
 		if (pushHistory) {
 			this.editor.command.execute({ command });
 		} else {
-			command.execute();
+			this.editor.command.executeWithoutHistory({ command });
 		}
 	}
 
@@ -515,9 +517,9 @@ export class TimelineManager {
 					keyframeId,
 				}),
 		);
-		const command =
-			commands.length === 1 ? commands[0] : new BatchCommand(commands);
-		this.editor.command.execute({ command });
+		void this.editor.command.execute({
+			command: new ProviderPrivateCompositeCommand(commands),
+		});
 	}
 
 	removeKeyframes({
@@ -584,9 +586,9 @@ export class TimelineManager {
 						valueAtPlayheadMap.get(`${elementId}:${propertyPath}`) ?? null,
 				}),
 		);
-		const command =
-			commands.length === 1 ? commands[0] : new BatchCommand(commands);
-		this.editor.command.execute({ command });
+		void this.editor.command.execute({
+			command: new ProviderPrivateCompositeCommand(commands),
+		});
 	}
 
 	retimeKeyframe({
@@ -639,9 +641,9 @@ export class TimelineManager {
 					patch,
 				}),
 		);
-		const command =
-			commands.length === 1 ? commands[0] : new BatchCommand(commands);
-		this.editor.command.execute({ command });
+		void this.editor.command.execute({
+			command: new ProviderPrivateCompositeCommand(commands),
+		});
 	}
 
 	upsertEffectParamKeyframe({
@@ -741,11 +743,11 @@ export class TimelineManager {
 		this.notify();
 	}
 
-	commitPreview(): void {
-		if (this.previewOverlay.size === 0) return;
+	async commitPreview(): Promise<boolean> {
+		if (this.previewOverlay.size === 0) return false;
 		const committedTracks = this.editor.scenes.getActiveSceneOrNull()?.tracks;
 		if (!committedTracks) {
-			return;
+			return false;
 		}
 		const afterTracks =
 			this.previewTracks ?? this.applyPreviewOverlay(committedTracks);
@@ -753,10 +755,17 @@ export class TimelineManager {
 			before: committedTracks,
 			after: afterTracks,
 		});
-		this.editor.command.push({ command });
-		this.previewOverlay.clear();
-		this.previewTracks = null;
-		this.updateTracks(afterTracks);
+		try {
+			await this.editor.command.execute({ command });
+			this.previewOverlay.clear();
+			this.previewTracks = null;
+			this.notify();
+			return true;
+		} catch {
+			// The committed project/history remain unchanged and the overlay is
+			// intentionally retained for retry or explicit discard.
+			return false;
+		}
 	}
 
 	discardPreview(): void {
@@ -800,10 +809,11 @@ export class TimelineManager {
 		elements,
 	}: {
 		elements: { trackId: string; elementId: string }[];
-	}): { trackId: string; elementId: string }[] {
+	}): Promise<{ trackId: string; elementId: string }[]> {
 		const command = new DuplicateElementsCommand({ elements });
-		this.editor.command.execute({ command });
-		return command.getDuplicatedElements();
+		return this.editor.command
+			.execute({ command })
+			.then(() => command.getDuplicatedElements());
 	}
 
 	toggleElementsVisibility({
@@ -841,7 +851,9 @@ export class TimelineManager {
 	}): void {
 		const shouldMute = elements.some(({ trackId, elementId }) => {
 			const element = this.getElementByRef({ trackId, elementId });
-			return element && canElementHaveAudio(element) && !isElementMuted({ element });
+			return (
+				element && canElementHaveAudio(element) && !isElementMuted({ element })
+			);
 		});
 
 		const nextUpdates = elements.flatMap(({ trackId, elementId }) => {

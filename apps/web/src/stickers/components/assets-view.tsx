@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useEditor } from "@/editor/use-editor";
+import { useEditorInstance } from "@/editor/use-editor";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 import { resolveStickerIntrinsicSize } from "@/stickers";
 import {
 	buildGraphicElement,
@@ -24,11 +25,9 @@ import type {
 	StickerCategory,
 	StickerItem as StickerData,
 } from "@/stickers";
-import { useStickersStore } from "@/stickers/stickers-store";
+import { useStickersStore } from "@/editor/use-session-store";
 import { cn } from "@/utils/ui";
-import {
-	HappyIcon,
-} from "@hugeicons/core-free-icons";
+import { HappyIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
 export function StickersView() {
@@ -213,7 +212,7 @@ function StickersContentView() {
 			);
 		}
 
-		// "all" tab search — sections are in browseContent, fall through to section rendering below
+		// "all" tab search —sections are in browseContent, fall through to section rendering below
 		if (selectedCategory !== "all" && searchQuery) {
 			return <EmptyView message={`No stickers found for "${searchQuery}"`} />;
 		}
@@ -328,7 +327,8 @@ function StickerItem({
 	shouldCapSize = false,
 	containerClassName,
 }: StickerItemProps) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
+	const session = useEditorSession();
 	const { addToRecentStickers } = useStickersStore();
 	const [isAdding, setIsAdding] = useState(false);
 	const [hasImageError, setHasImageError] = useState(false);
@@ -343,7 +343,9 @@ function StickerItem({
 
 	const displayName = item.name;
 	const shapePreset =
-		item.provider === "shapes" ? parseShapeStickerId({ stickerId: item.id }) : null;
+		item.provider === "shapes"
+			? parseShapeStickerId({ stickerId: item.id })
+			: null;
 
 	const handleAdd = async () => {
 		setIsAdding(true);
@@ -362,7 +364,10 @@ function StickerItem({
 				});
 			} else {
 				const { width: intrinsicWidth, height: intrinsicHeight } =
-					await resolveStickerIntrinsicSize({ stickerId: item.id });
+					await resolveStickerIntrinsicSize({
+						stickerId: item.id,
+						assets: session.host.assets,
+					});
 				element = buildStickerElement({
 					stickerId: item.id,
 					name: item.name,

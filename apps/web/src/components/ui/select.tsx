@@ -5,6 +5,7 @@ import { Select as SelectPrimitive } from "radix-ui";
 import { Check } from "lucide-react";
 import { ArrowUpIcon, ArrowDownIcon } from "@hugeicons/core-free-icons";
 import { cva, type VariantProps } from "class-variance-authority";
+import { useSurfacePortalContainer } from "@/editor/surface/embedding/surface-portal";
 import { cn } from "@/utils/ui";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useOverlayOpenChange } from "./use-overlay-open-change";
@@ -28,6 +29,13 @@ function Select({
 }
 
 const SelectGroup = SelectPrimitive.Group;
+
+function SelectPortal(
+	props: React.ComponentProps<typeof SelectPrimitive.Portal>,
+) {
+	const container = useSurfacePortalContainer(props.container);
+	return <SelectPrimitive.Portal {...props} container={container} />;
+}
 
 const SelectValue = SelectPrimitive.Value;
 
@@ -133,7 +141,7 @@ const SelectContent = React.forwardRef<
 	React.ElementRef<typeof SelectPrimitive.Content>,
 	React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
 >(({ className, children, position = "popper", ...props }, ref) => (
-	<SelectPrimitive.Portal>
+	<SelectPortal>
 		<SelectPrimitive.Content
 			ref={ref}
 			className={cn(
@@ -141,10 +149,6 @@ const SelectContent = React.forwardRef<
 				className,
 			)}
 			position={position}
-			onCloseAutoFocus={(e) => {
-				e.preventDefault();
-				e.stopPropagation();
-			}}
 			{...props}
 		>
 			<SelectScrollUpButton />
@@ -158,7 +162,7 @@ const SelectContent = React.forwardRef<
 			</SelectPrimitive.Viewport>
 			<SelectScrollDownButton />
 		</SelectPrimitive.Content>
-	</SelectPrimitive.Portal>
+	</SelectPortal>
 ));
 SelectContent.displayName = SelectPrimitive.Content.displayName;
 

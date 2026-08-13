@@ -1,20 +1,23 @@
-import { Command, type CommandResult } from "@/commands/base-command";
-import { EditorCore } from "@/core";
+import {
+	Command,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
 import { toast } from "sonner";
 import type { MediaAsset } from "@/media/types";
 import { generateUUID } from "@/utils/id";
-import { storageService } from "@/services/storage/service";
-import type { FrameRate } from "opencut-wasm";
+import {
+	isStorageQuotaExceeded,
+	savePersistedMediaAsset,
+} from "@/media/persistence";
 import { hasMediaId } from "@/timeline/element-utils";
-import { frameRatesEqual, getHighestImportedVideoFps } from "@/fps/utils";
-import { UpdateProjectSettingsCommand } from "@/commands/project";
 
 export class AddMediaAssetCommand extends Command {
+	readonly routingClass = "immediate" as const;
+
 	private assetId: string;
 	private savedAssets: MediaAsset[] | null = null;
 	private createdAsset: MediaAsset | null = null;
-	private previousProjectFps: FrameRate | null = null;
-	private appliedProjectFps: FrameRate | null = null;
 
 	constructor({
 		projectId,
@@ -32,8 +35,7 @@ export class AddMediaAssetCommand extends Command {
 	private projectId: string;
 	private asset: Omit<MediaAsset, "id">;
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		this.savedAssets = [...editor.media.getAssets()];
 
 		this.createdAsset = {
@@ -44,18 +46,37 @@ export class AddMediaAssetCommand extends Command {
 		editor.media.setAssets({
 			assets: [...this.savedAssets, this.createdAsset],
 		});
-		this.previousProjectFps = editor.project.getActiveOrNull()?.settings.fps ?? null;
-		this.appliedProjectFps = editor.project.ratchetFpsForImportedMedia({
-			importedAssets: [this.createdAsset],
-		});
-
-		storageService
-			.saveMediaAsset({
-				projectId: this.projectId,
-				mediaAsset: this.createdAsset,
+		savePersistedMediaAsset({
+			persistence: editor.persistence,
+			projectId: this.projectId,
+			asset: this.createdAsset,
+		})
+			.then(() => {
+				const createdAsset = this.createdAsset;
+				if (
+					!createdAsset ||
+					!editor.media
+						.getAssets()
+						.some((asset) => asset.id === createdAsset.id)
+				) {
+					return;
+				}
+				return Promise.resolve(
+					editor.project.ratchetFpsForImportedMedia({
+						importedAssets: [createdAsset],
+					}),
+				).catch((error) => {
+					editor.reportPersistenceFailure({
+						operation: "command-ratchet-imported-media-fps",
+						error,
+					});
+				});
 			})
 			.catch((error) => {
-				console.error("Failed to save media item:", error);
+				editor.reportPersistenceFailure({
+					operation: "command-add-media",
+					error,
+				});
 
 				const currentAssets = editor.media.getAssets();
 				editor.media.setAssets({
@@ -85,11 +106,13 @@ export class AddMediaAssetCommand extends Command {
 					editor.timeline.deleteElements({ elements: orphanedElements });
 				}
 
-				this.restoreProjectFpsAfterFailedSave({ editor });
-
-				if (storageService.isQuotaExceededError({ error })) {
+				if (isStorageQuotaExceeded(error)) {
 					toast.error("Not enough browser storage", {
-						description: error instanceof Error ? error.message : undefined,
+						description: "Free some space, then try importing this file again.",
+					});
+				} else {
+					toast.error("Failed to add media", {
+						description: "The media item was removed from the editor.",
 					});
 				}
 			});
@@ -97,16 +120,24 @@ export class AddMediaAssetCommand extends Command {
 		return undefined;
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (this.savedAssets) {
-			const editor = EditorCore.getInstance();
 			editor.media.setAssets({ assets: this.savedAssets });
 
 			if (this.createdAsset) {
-				storageService
-					.deleteMediaAsset({ projectId: this.projectId, id: this.assetId })
+				editor.persistence
+					.removeAttachment({
+						projectId: this.projectId,
+						key: this.assetId,
+					})
 					.catch((error) => {
-						console.error("Failed to delete media item on undo:", error);
+						editor.reportPersistenceFailure({
+							operation: "command-undo-add-media",
+							error,
+						});
+						toast.error("Failed to undo media import", {
+							description: "The stored media item could not be removed.",
+						});
 					});
 			}
 		}
@@ -114,37 +145,5 @@ export class AddMediaAssetCommand extends Command {
 
 	getAssetId(): string {
 		return this.assetId;
-	}
-
-	private restoreProjectFpsAfterFailedSave({
-		editor,
-	}: {
-		editor: EditorCore;
-	}): void {
-		if (this.previousProjectFps === null || this.appliedProjectFps === null) return;
-
-		const activeProject = editor.project.getActiveOrNull();
-		if (!activeProject) return;
-		if (
-			!this.appliedProjectFps ||
-			!frameRatesEqual({
-				a: activeProject.settings.fps,
-				b: this.appliedProjectFps,
-			})
-		)
-			return;
-
-		const highestRemainingVideoFps = getHighestImportedVideoFps({
-			mediaAssets: editor.media.getAssets(),
-		});
-		const appliedFpsFloat = this.appliedProjectFps.numerator / this.appliedProjectFps.denominator;
-		if (
-			highestRemainingVideoFps !== null &&
-			highestRemainingVideoFps >= appliedFpsFloat
-		) {
-			return;
-		}
-
-		new UpdateProjectSettingsCommand({ fps: this.previousProjectFps }).execute();
 	}
 }

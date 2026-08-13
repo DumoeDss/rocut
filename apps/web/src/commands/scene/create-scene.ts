@@ -1,19 +1,18 @@
-import { Command, type CommandResult } from "@/commands/base-command";
-import { EditorCore } from "@/core";
+import {
+	Command,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
 import type { TScene } from "@/timeline";
 import { buildDefaultScene } from "@/timeline/scenes";
 
 export class CreateSceneCommand extends Command {
+	readonly routingClass = "provider-private" as const;
+
 	private savedScenes: TScene[] | null = null;
 	private createdScene: TScene | null = null;
 
-	constructor({
-		name,
-		isMain = false,
-	}: {
-		name: string;
-		isMain?: boolean;
-	}) {
+	constructor({ name, isMain = false }: { name: string; isMain?: boolean }) {
 		super();
 		this.name = name;
 		this.isMain = isMain;
@@ -22,8 +21,7 @@ export class CreateSceneCommand extends Command {
 	private name: string;
 	private isMain: boolean;
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		this.savedScenes = [...editor.scenes.getScenes()];
 
 		this.createdScene = buildDefaultScene({
@@ -36,9 +34,8 @@ export class CreateSceneCommand extends Command {
 		return undefined;
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (this.savedScenes) {
-			const editor = EditorCore.getInstance();
 			editor.scenes.setScenes({ scenes: this.savedScenes });
 		}
 	}

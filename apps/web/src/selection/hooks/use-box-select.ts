@@ -6,6 +6,8 @@ import type {
 	ResolveIntersections,
 	SelectionBoxBounds,
 } from "@/selection/types";
+import { useOptionalEditorSession } from "@/editor/session/editor-session-provider";
+import { useOptionalSurfaceDragCoordinator } from "@/editor/surface/embedding/surface-drag-coordinator";
 
 interface SelectionBoxState<TId> extends BoxSelectionSnapshot<TId> {
 	startPos: { x: number; y: number };
@@ -65,6 +67,9 @@ export function useBoxSelect<TId>({
 	const [selectionBox, setSelectionBox] =
 		useState<SelectionBoxState<TId> | null>(null);
 	const justFinishedSelectingRef = useRef(false);
+	const session = useOptionalEditorSession();
+	const dragCoordinator = useOptionalSurfaceDragCoordinator();
+	const resources = session?.resources;
 
 	const handleMouseDown = useCallback(
 		(event: React.MouseEvent<Element>) => {
@@ -162,13 +167,35 @@ export function useBoxSelect<TId>({
 		const handleMouseUp = () => {
 			if (selectionBox.isActive) {
 				justFinishedSelectingRef.current = true;
-				requestAnimationFrame(() => {
-					justFinishedSelectingRef.current = false;
-				});
+				if (resources) {
+					resources.requestAnimationFrame({
+						handler: () => {
+							justFinishedSelectingRef.current = false;
+						},
+					});
+				} else {
+					queueMicrotask(() => {
+						justFinishedSelectingRef.current = false;
+					});
+				}
 			}
 
 			setSelectionBox(null);
 		};
+
+		// Inside a Surface the box-select continuation is owned by the per-Surface
+		// coordinator, so it is torn down with that Surface and cannot deliver to a
+		// retired session. The `window` pair remains only for callers that render
+		// this hook outside a Surface, which is why the optional coordinator is used
+		// here (mirroring `useOptionalEditorSession` above).
+		if (dragCoordinator) {
+			return dragCoordinator.start({
+				kind: "mouse",
+				move: handleMouseMove,
+				finish: handleMouseUp,
+				cancel: () => setSelectionBox(null),
+			});
+		}
 
 		window.addEventListener("mousemove", handleMouseMove);
 		window.addEventListener("mouseup", handleMouseUp);
@@ -177,7 +204,13 @@ export function useBoxSelect<TId>({
 			window.removeEventListener("mousemove", handleMouseMove);
 			window.removeEventListener("mouseup", handleMouseUp);
 		};
-	}, [containerRef, selectionBox, updateSelection]);
+	}, [
+		containerRef,
+		dragCoordinator,
+		resources,
+		selectionBox,
+		updateSelection,
+	]);
 
 	useEffect(() => {
 		if (!selectionBox) {

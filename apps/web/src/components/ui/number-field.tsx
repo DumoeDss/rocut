@@ -7,6 +7,7 @@ import { useFocusLock } from "@/hooks/use-focus-lock";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowTurnBackwardIcon } from "@hugeicons/core-free-icons";
+import { useOptionalSurfaceDragCoordinator } from "@/editor/surface/embedding/surface-drag-coordinator";
 
 const SUFFIX_GAP_PX = 6;
 
@@ -139,6 +140,7 @@ function NumberField({
 	const ghostRef = useRef<HTMLSpanElement>(null);
 	const startValueRef = useRef(0);
 	const cumulativeDeltaRef = useRef(0);
+	const dragCoordinator = useOptionalSurfaceDragCoordinator();
 	const [isInputFocused, setIsInputFocused] = useState(false);
 	const [suffixLeft, setSuffixLeft] = useState(0);
 	const ghostValue = Array.isArray(value) ? value.join(", ") : String(value ?? "");
@@ -170,9 +172,11 @@ function NumberField({
 		startValueRef.current = Number.isNaN(parsed) ? 0 : parsed;
 		cumulativeDeltaRef.current = 0;
 		let hasReceivedFirstMove = false;
+		const pointerId = event.pointerId;
 		iconRef.current?.requestPointerLock();
 
 		const handlePointerMove = (moveEvent: PointerEvent) => {
+			if (moveEvent.pointerId !== pointerId) return;
 			// first movementX after pointer lock often contains a bogus warp delta
 			if (!hasReceivedFirstMove) {
 				hasReceivedFirstMove = true;
@@ -192,15 +196,55 @@ function NumberField({
 			onScrub(newValue);
 		};
 
-		const handlePointerUp = () => {
+		const removeFallbackListeners = () => {
 			document.removeEventListener("pointermove", handlePointerMove);
 			document.removeEventListener("pointerup", handlePointerUp);
+			document.removeEventListener("pointercancel", handlePointerCancel);
+		};
+		const handlePointerUp = (upEvent: PointerEvent) => {
+			if (upEvent.pointerId !== pointerId) return;
+			removeFallbackListeners();
+			document.exitPointerLock();
+			onScrubEnd?.();
+		};
+		// Cancel commits. `onScrub` has already applied each intermediate value to
+		// the model, so ending without the paired `onScrubEnd` would leave that
+		// applied value with no commit closing it. R2 makes this newly reachable:
+		// the per-Surface coordinator holds one drag, so another drag starting on
+		// the same Surface pre-empts an in-flight scrub through `cancel`, and
+		// Surface unmount cancels too.
+		//
+		// KNOWN LIMITATION: this handler also serves the DOM `pointercancel`
+		// fallback below, and the two triggers want different endings. For a
+		// genuine OS-level `pointercancel` — touch reinterpreted as a scroll, palm
+		// rejection, capture stolen — the platform convention is to REVERT, because
+		// the interaction is being declared not to have happened. Committing is
+		// chosen here only because the alternative available today is worse (an
+		// applied mutation with no commit at all), and it is not a regression: at
+		// HEAD there was no `pointercancel` handler and the next stray `pointerup`
+		// committed anyway. Distinguishing them needs a reason discriminator on the
+		// coordinator's `cancel`, which R2 does not add.
+		const handlePointerCancel = (cancelEvent?: PointerEvent) => {
+			if (cancelEvent && cancelEvent.pointerId !== pointerId) return;
+			removeFallbackListeners();
 			document.exitPointerLock();
 			onScrubEnd?.();
 		};
 
+		if (dragCoordinator) {
+			dragCoordinator.start({
+				kind: "pointer",
+				pointerId,
+				move: handlePointerMove,
+				finish: handlePointerUp,
+				cancel: handlePointerCancel,
+			});
+			return;
+		}
+
 		document.addEventListener("pointermove", handlePointerMove);
 		document.addEventListener("pointerup", handlePointerUp);
+		document.addEventListener("pointercancel", handlePointerCancel);
 	};
 
 	const canScrub = Boolean(icon && onScrub);

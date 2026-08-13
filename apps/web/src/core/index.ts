@@ -10,12 +10,33 @@ import { AudioManager } from "./managers/audio-manager";
 import { SelectionManager } from "./managers/selection-manager";
 import { ClipboardManager } from "./managers/clipboard-manager";
 import { DiagnosticsManager } from "./managers/diagnostics-manager";
-import { registerDefaultEffects } from "@/effects";
-import { registerDefaultMasks } from "@/masks";
 import { registerTranscriptionDiagnostics } from "@/transcription/diagnostics";
+import {
+	createTranscriptionService,
+	type TranscriptionService,
+} from "@/services/transcription/service";
+import type { EditorSession } from "@/editor/session/session-types";
+import { SessionPersistenceCoordinator } from "@/editor/persistence";
+import { ProjectStoreError } from "@/editor/ports";
+import type { AssetResolver } from "@/editor/ports";
+import type { SessionResources } from "@/editor/session/resources";
+import { SessionOpenCutTransactions } from "@/editor/transactions/opencut";
+
+function throwSettledErrors({
+	results,
+	message,
+}: {
+	results: PromiseSettledResult<unknown>[];
+	message: string;
+}): void {
+	const errors = results.flatMap((result) =>
+		result.status === "rejected" ? [result.reason] : [],
+	);
+	if (errors.length === 1) throw errors[0];
+	if (errors.length > 1) throw new AggregateError(errors, message);
+}
 
 export class EditorCore {
-	private static instance: EditorCore | null = null;
 	public readonly timeline: TimelineManager;
 	public readonly command: CommandManager;
 	public readonly playback: PlaybackManager;
@@ -28,26 +49,60 @@ export class EditorCore {
 	public readonly selection: SelectionManager;
 	public readonly clipboard: ClipboardManager;
 	public readonly diagnostics: DiagnosticsManager;
+	public readonly transcription: TranscriptionService;
+	public readonly persistence: SessionPersistenceCoordinator;
+	public readonly resources: SessionResources;
+	public readonly transactions: SessionOpenCutTransactions;
+	private readonly sessionDiagnostics: EditorSession["diagnostics"];
+	private readonly hostAssets: AssetResolver;
 
-	private constructor() {
-		registerDefaultEffects();
-		registerDefaultMasks();
+	private constructor(session: EditorSession) {
+		this.sessionDiagnostics = session.diagnostics;
+		this.resources = session.resources;
+		this.hostAssets = session.host.assets;
+		this.persistence = new SessionPersistenceCoordinator(session.host.store);
 		this.command = new CommandManager(this);
 		this.timeline = new TimelineManager(this);
 		this.playback = new PlaybackManager(this);
 		this.scenes = new ScenesManager(this);
 		this.project = new ProjectManager(this);
 		this.media = new MediaManager(this);
-		this.renderer = new RendererManager(this);
+		this.renderer = new RendererManager({
+			editor: this,
+			resources: this.resources,
+			assetResolver: session.host.assets,
+			videoCache: this.media.getVideoCache(),
+		});
 		this.save = new SaveManager({ editor: this });
 		this.audio = new AudioManager(this);
 		this.selection = new SelectionManager(this);
 		this.clipboard = new ClipboardManager(this);
 		this.diagnostics = new DiagnosticsManager(this);
+		this.transactions = new SessionOpenCutTransactions({
+			persistence: this.persistence,
+			arbiter: this.persistence.projectMutationArbiter,
+			publish: (draft) => {
+				this.save.publishAlreadyDurable(() => {
+					this.project.adoptCommittedProject({ project: draft.project });
+					this.scenes.adoptCommittedScenes({
+						scenes: draft.project.scenes,
+						currentSceneId: draft.project.currentSceneId,
+					});
+				});
+			},
+		});
+		const lifecycleResources = this.resources as SessionResources & {
+			isActivityAdmitted?: () => boolean;
+		};
+		this.transcription = createTranscriptionService({
+			resources: this.resources,
+			activityAdmission: () =>
+				lifecycleResources.isActivityAdmitted?.() ?? true,
+		});
 		registerTranscriptionDiagnostics({ diagnostics: this.diagnostics });
 		this.playback.bindTimelineScope();
-		this.command.registerReactor(() => {
-			const activeScene = this.scenes.getActiveSceneOrNull();
+		this.command.registerReactor(({ editor }) => {
+			const activeScene = editor.scenes.getActiveSceneOrNull();
 			if (!activeScene) {
 				return;
 			}
@@ -62,20 +117,113 @@ export class EditorCore {
 				prunedTracks.overlay.length !== tracks.overlay.length ||
 				prunedTracks.audio.length !== tracks.audio.length
 			) {
-				this.timeline.updateTracks(prunedTracks);
+				editor.timeline.updateTracks(prunedTracks);
 			}
 		});
 		this.save.start();
 	}
 
-	static getInstance(): EditorCore {
-		if (!EditorCore.instance) {
-			EditorCore.instance = new EditorCore();
-		}
-		return EditorCore.instance;
+	reportPersistenceFailure({
+		operation,
+		error,
+	}: {
+		operation: string;
+		error: unknown;
+	}): void {
+		this.sessionDiagnostics.log({
+			record: {
+				level: "error",
+				message: "Durable editor operation failed",
+				context: {
+					operation,
+					code: error instanceof ProjectStoreError ? error.code : "unknown",
+				},
+			},
+		});
 	}
 
-	static reset(): void {
-		EditorCore.instance = null;
+	static createSessionOwned({
+		session,
+	}: {
+		session: EditorSession;
+	}): EditorCore {
+		return new EditorCore(session);
+	}
+
+	async drainProjectLiveState(): Promise<void> {
+		const results = await Promise.allSettled([
+			Promise.resolve().then(() => this.playback.pause()),
+			Promise.resolve().then(() => this.audio.suspend()),
+			Promise.resolve().then(() => this.media.clearAllAssets()),
+			Promise.resolve().then(() => this.renderer.drainProjectLiveState()),
+			Promise.resolve().then(() => this.transcription.terminate()),
+		]);
+		throwSettledErrors({
+			results,
+			message: "Failed to drain the previous project's live state.",
+		});
+	}
+
+	async suspend(): Promise<void> {
+		const results = await Promise.allSettled([
+			Promise.resolve().then(() => this.save.pause()),
+			Promise.resolve().then(() => this.playback.suspend()),
+			Promise.resolve().then(() => this.audio.suspend()),
+			Promise.resolve().then(() => this.renderer.suspend()),
+			Promise.resolve().then(() => this.transcription.terminate()),
+		]);
+		throwSettledErrors({
+			results,
+			message: "Failed to suspend editor activity.",
+		});
+	}
+
+	async prepareActivityResume(): Promise<void> {
+		const results = await Promise.allSettled([
+			Promise.resolve().then(() => this.audio.resume()),
+			Promise.resolve().then(() => this.renderer.resume()),
+		]);
+		throwSettledErrors({
+			results,
+			message: "Failed to prepare editor activity for resume.",
+		});
+	}
+
+	async resume(): Promise<void> {
+		const results = await Promise.allSettled([
+			Promise.resolve().then(() => this.save.resume()),
+			Promise.resolve().then(() => this.playback.resume()),
+		]);
+		throwSettledErrors({
+			results,
+			message: "Failed to resume editor activity.",
+		});
+	}
+
+	async dispose(): Promise<void> {
+		const errors: unknown[] = [];
+		const attempt = async (operation: () => void | Promise<void>) => {
+			try {
+				await operation();
+			} catch (error) {
+				errors.push(error);
+			}
+		};
+
+		await attempt(() => this.save.stop());
+		await attempt(() => this.playback.dispose());
+		await attempt(() => this.renderer.dispose());
+		// Cache teardown is asynchronous: wait for in-flight decode/iterator work
+		// before the session resource registry closes its platform handles.
+		await attempt(() => this.media.dispose());
+		await attempt(() => this.transcription.terminate());
+		await attempt(() => this.audio.dispose());
+		await attempt(() => this.transactions.dispose());
+		await attempt(() => this.persistence.destroy());
+
+		if (errors.length === 1) throw errors[0];
+		if (errors.length > 1) {
+			throw new AggregateError(errors, "Failed to dispose editor core.");
+		}
 	}
 }

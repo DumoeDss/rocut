@@ -1,4 +1,6 @@
 import { useEffect, useRef } from "react";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
+import type { TimerHandle } from "@/editor/session/resources";
 
 interface UseEdgeAutoScrollParams {
 	isActive: boolean;
@@ -19,12 +21,13 @@ export function useEdgeAutoScroll({
 	edgeThreshold = 100,
 	maxScrollSpeed = 15,
 }: UseEdgeAutoScrollParams): void {
-	const rafRef = useRef<number | null>(null);
+	const { resources } = useEditorSession();
+	const rafRef = useRef<TimerHandle | null>(null);
 
 	useEffect(() => {
 		if (!isActive) {
 			if (rafRef.current) {
-				cancelAnimationFrame(rafRef.current);
+				rafRef.current.cancel();
 				rafRef.current = null;
 			}
 			return;
@@ -34,7 +37,9 @@ export function useEdgeAutoScroll({
 			const rulerViewport = rulerScrollRef.current;
 			const tracksViewport = tracksScrollRef.current;
 			if (!rulerViewport || !tracksViewport) {
-				rafRef.current = requestAnimationFrame(step);
+				rafRef.current = resources.requestAnimationFrame({
+					handler: step,
+				});
 				return;
 			}
 
@@ -74,14 +79,16 @@ export function useEdgeAutoScroll({
 				tracksViewport.scrollLeft = newScrollLeft;
 			}
 
-			rafRef.current = requestAnimationFrame(step);
+			rafRef.current = resources.requestAnimationFrame({
+				handler: step,
+			});
 		};
 
-		rafRef.current = requestAnimationFrame(step);
+		rafRef.current = resources.requestAnimationFrame({ handler: step });
 
 		return () => {
 			if (rafRef.current) {
-				cancelAnimationFrame(rafRef.current);
+				rafRef.current.cancel();
 				rafRef.current = null;
 			}
 		};
@@ -93,5 +100,6 @@ export function useEdgeAutoScroll({
 		contentWidth,
 		edgeThreshold,
 		maxScrollSpeed,
+		resources,
 	]);
 }

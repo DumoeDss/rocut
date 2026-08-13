@@ -27,9 +27,9 @@ import {
 } from "@/components/ui/tooltip";
 import { DEFAULT_NEW_ELEMENT_DURATION } from "@/timeline/creation";
 import { mediaTimeFromSeconds, type MediaTime } from "@/wasm";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { useFileUpload } from "@/media/use-file-upload";
-import { invokeAction } from "@/actions";
+import { useActionInvoker } from "@/actions/action-scope";
 import { processMediaAssets } from "@/media/processing";
 import { showMediaUploadToast } from "@/media/upload-toast";
 import {
@@ -44,7 +44,7 @@ import {
 	type MediaSortOrder,
 	type MediaViewMode,
 	useAssetsPanelStore,
-} from "@/components/editor/panels/assets/assets-panel-store";
+} from "@/editor/use-session-store";
 import { MASKABLE_ELEMENT_TYPES } from "@/timeline";
 import type { MediaAsset } from "@/media/types";
 import { cn } from "@/utils/ui";
@@ -60,7 +60,8 @@ import {
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
 
 export function MediaView() {
-	const editor = useEditor();
+	const invokeAction = useActionInvoker();
+	const editor = useEditorInstance();
 	const mediaFiles = useEditor((e) => e.media.getAssets());
 	const activeProject = useEditor((e) => e.project.getActive());
 
@@ -89,9 +90,14 @@ export function MediaView() {
 		try {
 			await showMediaUploadToast({
 				filesCount: files.length,
+				resources: editor.resources,
 				promise: async () => {
 					const processedAssets = await processMediaAssets({
 						files,
+						resources: editor.resources,
+						store: editor.persistence.store,
+						reportPersistenceFailure: (failure) =>
+							editor.reportPersistenceFailure(failure),
 						onProgress: (progress: { progress: number }) =>
 							setProgress(progress.progress),
 					});
@@ -107,8 +113,8 @@ export function MediaView() {
 					};
 				},
 			});
-		} catch (error) {
-			console.error("Error processing files:", error);
+		} catch {
+			console.error("Failed to process media files");
 		} finally {
 			setIsProcessing(false);
 			setProgress(0);
@@ -251,7 +257,7 @@ function MediaAssetDraggable({
 	variant: "card" | "compact";
 	isRounded?: boolean;
 }) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 
 	const addElementAtTime = ({
 		asset,

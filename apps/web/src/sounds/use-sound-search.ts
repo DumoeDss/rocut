@@ -1,6 +1,7 @@
 import { useEffect } from "react";
-import { useSoundsStore } from "@/sounds/sounds-store";
+import { useSoundsStore } from "@/editor/use-session-store";
 import { useEditorHostServices } from "@/editor/host/editor-host-context";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 
 /**
  * Shown when the host has no sound-search endpoint. Stated rather than
@@ -38,12 +39,16 @@ export function useSoundSearch({
 		appendSearchResults,
 		appendTopSounds,
 		resetPagination,
+		beginRequest,
+		canPublishRequest,
 	} = useSoundsStore();
 	const { soundSearchEndpoint } = useEditorHostServices();
+	const { resources } = useEditorSession();
 
 	const loadMore = async () => {
 		if (isLoadingMore || !hasNextPage) return;
 		if (!soundSearchEndpoint) return;
+		const token = beginRequest({ channel: "loadMore" });
 
 		try {
 			setLoadingMore({ loading: true });
@@ -62,9 +67,11 @@ export function useSoundSearch({
 			const response = await fetch(
 				`${soundSearchEndpoint}?${searchParams.toString()}`,
 			);
+			if (!canPublishRequest({ token })) return;
 
 			if (response.ok) {
 				const data = await response.json();
+				if (!canPublishRequest({ token })) return;
 
 				if (query.trim()) {
 					appendSearchResults(data.results);
@@ -74,21 +81,23 @@ export function useSoundSearch({
 
 				setCurrentPage({ page: nextPage });
 				setHasNextPage({ hasNext: !!data.next });
-				setTotalCount(data.count);
+				setTotalCount({ count: data.count });
 			} else {
 				setSearchError({ error: `Load more failed: ${response.status}` });
 			}
 		} catch (err) {
+			if (!canPublishRequest({ token })) return;
 			setSearchError({
 				error: err instanceof Error ? err.message : "Load more failed",
 			});
 		} finally {
-			setLoadingMore({ loading: false });
+			if (canPublishRequest({ token })) setLoadingMore({ loading: false });
 		}
 	};
 
 	useEffect(() => {
 		if (!query.trim()) {
+			beginRequest({ channel: "search" });
 			setSearchResults({ results: [] });
 			setSearchError({ error: null });
 			setLastSearchQuery({ query: "" });
@@ -96,6 +105,7 @@ export function useSoundSearch({
 		}
 
 		if (!soundSearchEndpoint) {
+			beginRequest({ channel: "search" });
 			setSearchResults({ results: [] });
 			setSearchError({ error: SOUND_SEARCH_UNAVAILABLE_MESSAGE });
 			return;
@@ -106,44 +116,49 @@ export function useSoundSearch({
 		}
 
 		let ignore = false;
+		const token = beginRequest({ channel: "search" });
 
-		const timeoutId = setTimeout(async () => {
-			try {
-				setSearching({ searching: true });
-				setSearchError({ error: null });
-				resetPagination();
+		const timeoutHandle = resources.setTimeout({
+			ms: 300,
+			handler: async () => {
+				try {
+					setSearching({ searching: true });
+					setSearchError({ error: null });
+					resetPagination();
 
-				const response = await fetch(
-					`${soundSearchEndpoint}?q=${encodeURIComponent(query)}&type=effects&page=1`,
-				);
+					const response = await fetch(
+						`${soundSearchEndpoint}?q=${encodeURIComponent(query)}&type=effects&page=1`,
+					);
 
-				if (!ignore) {
-					if (response.ok) {
-						const data = await response.json();
-						setSearchResults({ results: data.results });
-						setLastSearchQuery({ query: query });
-						setHasNextPage({ hasNext: !!data.next });
-						setTotalCount({ count: data.count });
-						setCurrentPage({ page: 1 });
-					} else {
-						setSearchError({ error: `Search failed: ${response.status}` });
+					if (!ignore && canPublishRequest({ token })) {
+						if (response.ok) {
+							const data = await response.json();
+							if (ignore || !canPublishRequest({ token })) return;
+							setSearchResults({ results: data.results });
+							setLastSearchQuery({ query: query });
+							setHasNextPage({ hasNext: !!data.next });
+							setTotalCount({ count: data.count });
+							setCurrentPage({ page: 1 });
+						} else {
+							setSearchError({ error: `Search failed: ${response.status}` });
+						}
+					}
+				} catch (err) {
+					if (!ignore && canPublishRequest({ token })) {
+						setSearchError({
+							error: err instanceof Error ? err.message : "Search failed",
+						});
+					}
+				} finally {
+					if (!ignore && canPublishRequest({ token })) {
+						setSearching({ searching: false });
 					}
 				}
-			} catch (err) {
-				if (!ignore) {
-					setSearchError({
-						error: err instanceof Error ? err.message : "Search failed",
-					});
-				}
-			} finally {
-				if (!ignore) {
-					setSearching({ searching: false });
-				}
-			}
-		}, 300);
+			},
+		});
 
 		return () => {
-			clearTimeout(timeoutId);
+			timeoutHandle.cancel();
 			ignore = true;
 		};
 	}, [
@@ -159,6 +174,9 @@ export function useSoundSearch({
 		setHasNextPage,
 		setTotalCount,
 		resetPagination,
+		beginRequest,
+		canPublishRequest,
+		resources,
 	]);
 
 	return {

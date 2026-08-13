@@ -1,11 +1,11 @@
 import {
 	Command,
 	createElementSelectionResult,
+	type EditorCommandContext,
 	type CommandResult,
 } from "@/commands/base-command";
 import type { SceneTracks, TimelineElement } from "@/timeline";
 import { generateUUID } from "@/utils/id";
-import { EditorCore } from "@/core";
 import { applyPlacement, resolveTrackPlacement } from "@/timeline/placement";
 import { cloneAnimations } from "@/animation";
 import type { MediaTime } from "@/wasm";
@@ -15,6 +15,8 @@ interface DuplicateElementsParams {
 }
 
 export class DuplicateElementsCommand extends Command {
+	readonly routingClass = "transaction" as const;
+
 	private duplicatedElements: { trackId: string; elementId: string }[] = [];
 	private savedState: SceneTracks | null = null;
 	private elements: DuplicateElementsParams["elements"];
@@ -24,8 +26,7 @@ export class DuplicateElementsCommand extends Command {
 		this.elements = elements;
 	}
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		this.savedState = editor.scenes.getActiveScene().tracks;
 		this.duplicatedElements = [];
 
@@ -101,9 +102,8 @@ export class DuplicateElementsCommand extends Command {
 		return undefined;
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (this.savedState) {
-			const editor = EditorCore.getInstance();
 			editor.timeline.updateTracks(this.savedState);
 		}
 	}

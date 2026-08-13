@@ -1,0 +1,47 @@
+# Source manifest for the T4 dual-Host Agent browser cycle.
+#
+# The exact bytes of the 31-path write set as they stood when the final-source
+# cycle started. The same paths are re-hashed after the browser runs and
+# required equal, so this file is a freeze of what produced the artifacts in
+# browser-agent/ — not a description of the working tree at any later moment.
+# A re-freeze without a re-run would silently change that meaning, so both are
+# always done together.
+#
+# Frozen 2026-08-13 for build marker t4-final-source-20260813-a, superseding
+# the 2026-08-12 freeze after the review fixes to runner.ts, index.ts,
+# runner.test.ts, mutation-matrix.test.ts, agent-drivers.test.ts,
+# surface-evidence-harness.tsx, playwright.surface.config.ts and
+# check-agent-evidence.mjs.
+#
+# Verify: sha256sum -c pre-browser-source-hashes.sha256
+347f8257077bb5fc3df44d60568e7d4f8a5720d23fb1ad1f897757d2f3ece44d  apps/vite-example/playwright.surface.config.ts
+9d72af798082d55f3c95ff42b0c49414eed82b27a53cf7a9d4eb0c5bf2564489  apps/vite-example/tests/parity/agent.pw.ts
+cf1cf1cf2e283e0c9af0a0c7d5369d3315f0a9a14135267d01d74a9e5033403f  apps/web/src/editor/contracts/vectors/__tests__/agent-drivers.test.ts
+9a6603f2560903161fd2bdddcb185c04d27fc17789ab5e2e8c220f345aef2c6e  apps/web/src/editor/contracts/vectors/__tests__/agent-opencut-projection.test.ts
+0bfeb1657d7ab22ba8f5bce7a4157f028dda75e79cb7638fe3d7b5d3e469efaa  apps/web/src/editor/contracts/vectors/__tests__/agent-scenario.test.ts
+9bfb507cf419b3de850baee3dcbce366161e73f54110c6a6f7fadf48e49178d5  apps/web/src/editor/contracts/vectors/__tests__/contract-surface.test.ts
+7428c6be6e2f950d0ab36b67e86943819bac63ac320cb130df5907acff10abbd  apps/web/src/editor/contracts/vectors/__tests__/corpus-fixture.ts
+3fa0064cf1cb169f5a43f4103daba5831697decb924dc3db541df8a0e11fce33  apps/web/src/editor/contracts/vectors/__tests__/corpus-isolation.test.ts
+d8bb99001848fa36e38a09b02f8b9101aaf771cea214aab1f8be8d488800ae5d  apps/web/src/editor/contracts/vectors/__tests__/coverage.test.ts
+ddc57bcf681f9bc29ba4340085aa519f7e4380d83c92186a4452c0e2c0126d78  apps/web/src/editor/contracts/vectors/__tests__/loader.test.ts
+b3ec08f91710d6ba28f7cf106672a6df4e252c566eccfb925490bacc762a8222  apps/web/src/editor/contracts/vectors/__tests__/mutation-matrix.test.ts
+8c5b5a5f93b322348cbf4949e2015940c6acd2486a4f405767e859e1191b8c2d  apps/web/src/editor/contracts/vectors/__tests__/mutation-targets.ts
+0c9b5d43468d406227bf25a4ac0736166143a6b2364947b74a26370e7a9c1072  apps/web/src/editor/contracts/vectors/__tests__/runner.test.ts
+ec09365e04bab81985c90ba2680cb59a56334ceb87e15624885c0c3f844a0ce4  apps/web/src/editor/contracts/vectors/agent-scenario.ts
+2d12d6e3c7b7cc5b9cea7007920b18788057233f54b0457ccb512a79b2200005  apps/web/src/editor/contracts/vectors/contract-surface.ts
+109d8e0e9f7823ca8e8793c54b89e3c152385882b7364ff59ad4886e9eb67314  apps/web/src/editor/contracts/vectors/corpus/document-vectors.json
+1775c60c8fc0e723b96450b57be93aa1937671921f29942ccbfb6d8b495bac62  apps/web/src/editor/contracts/vectors/corpus/manifest.json
+8e6d6d8925cc5ca1d6628fa365522d21443b0648c634742ffadafcce6b925424  apps/web/src/editor/contracts/vectors/corpus/scenario-vectors.json
+a7a8591f9dd8087069bce174ef6a65bfc1eba2d9f5eeb1d1c6b1308759c8cef9  apps/web/src/editor/contracts/vectors/coverage.ts
+988ba3c61a98f740ca5b5f4910cdc945fe65f2ab0a73a63435045d9f46b2986d  apps/web/src/editor/contracts/vectors/drivers/durable.ts
+b54ffa186d5e3c6517b9f523a5cc817aaae9d262f1a82d30f9ff106a23fcc85f  apps/web/src/editor/contracts/vectors/drivers/in-memory.ts
+78549a5df73ff3086d3d7c1ada7f921f8fe1272bf2985c648310b6aaa15f6ae1  apps/web/src/editor/contracts/vectors/index.ts
+75396cb61bce740f3e30fef1a26777a9ab829a4721f86a4020feea864665d253  apps/web/src/editor/contracts/vectors/loader.ts
+4eabc4237d39aa1779a0062f284906ad11f96e5ed37a49ec034e97ba40896d8a  apps/web/src/editor/contracts/vectors/runner.ts
+7d33482b9a39287e401430e7720452aee8890d528a35bce28b89a8f8056fa0ef  apps/web/src/editor/contracts/vectors/schema.ts
+8b2812e6da4529cddc491fc7d06a368dbb9ded1ec1164e9a361eed8497307861  apps/web/src/editor/contracts/vectors/sha256.ts
+1bd927368e4510113a4fa9886309ee2bee73c013b16a72421331b8305f9e3ba2  apps/web/src/editor/surface/evidence/agent-evidence-run.ts
+5ade87f4a35d5d87424f61165c7b46b85f17a850974432823e7b44a17cd38fbd  apps/web/src/editor/surface/evidence/surface-evidence-harness.tsx
+730ba8522c76b97510209697d627b6b8c0a0a07c79df00a21adb30a670ec31f2  script/check-agent-evidence.mjs
+13272588aac98e39f485cad476d6b1741a85bdba28c75b192e123c1d4ec71da9  script/check-transaction-boundary.mjs
+3e17ef121f848465c124653b8f69d4bb04aab9569913e3ba6946479df5cb9545  script/generate-vector-manifest.mjs

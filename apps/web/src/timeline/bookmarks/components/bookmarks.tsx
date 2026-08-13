@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { EditorCore } from "@/core";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import type { BookmarkDragState } from "../hooks/use-bookmark-drag";
 import { DEFAULT_TIMELINE_BOOKMARK_COLOR } from "@/timeline/components/theme";
 import { TIMELINE_BOOKMARK_ROW_HEIGHT_PX } from "@/timeline/components/layout";
@@ -133,8 +133,10 @@ function TimelineBookmark({
 		bookmark: Bookmark;
 	}) => void;
 }) {
-	const editor = useEditor();
-	const duration = editor.timeline.getTotalDuration();
+	const editor = useEditorInstance();
+	const duration = useEditor((currentEditor) =>
+		currentEditor.timeline.getTotalDuration(),
+	);
 	const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
 	const isDragging =
@@ -297,7 +299,7 @@ function BookmarkPopoverContent({
 	timelineDuration: MediaTime;
 	onPopoverClose: () => void;
 }) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const [draftColorHex, setDraftColorHex] = useState(
 		(bookmark.color ?? DEFAULT_TIMELINE_BOOKMARK_COLOR)
 			.replace("#", "")

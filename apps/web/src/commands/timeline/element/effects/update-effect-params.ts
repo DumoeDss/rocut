@@ -1,5 +1,9 @@
-import { Command, type CommandResult } from "@/commands/base-command";
-import { EditorCore } from "@/core";
+/* eslint-disable @typescript-eslint/no-unsafe-type-assertion -- The registered element predicate establishes the VisualElement narrowing used by the update callback. */
+import {
+	Command,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
 import { isVisualElement, updateElementInSceneTracks } from "@/timeline";
 import type { ParamValues } from "@/params";
 import type { SceneTracks, VisualElement } from "@/timeline";
@@ -32,6 +36,8 @@ function updateEffectParamsOnElement({
 }
 
 export class UpdateClipEffectParamsCommand extends Command {
+	readonly routingClass = "provider-private" as const;
+
 	private savedState: SceneTracks | null = null;
 	private readonly trackId: string;
 	private readonly elementId: string;
@@ -56,8 +62,7 @@ export class UpdateClipEffectParamsCommand extends Command {
 		this.params = params;
 	}
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		this.savedState = editor.scenes.getActiveScene().tracks;
 
 		const updatedTracks = updateElementInSceneTracks({
@@ -78,9 +83,8 @@ export class UpdateClipEffectParamsCommand extends Command {
 		return undefined;
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (this.savedState) {
-			const editor = EditorCore.getInstance();
 			editor.timeline.updateTracks(this.savedState);
 		}
 	}

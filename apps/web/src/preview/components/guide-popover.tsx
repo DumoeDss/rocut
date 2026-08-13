@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { GUIDE_REGISTRY, getGuideById } from "@/guides";
-import { usePreviewStore } from "@/preview/preview-store";
+import { usePreviewStore } from "@/editor/use-session-store";
 import {
 	Popover,
 	PopoverContent,

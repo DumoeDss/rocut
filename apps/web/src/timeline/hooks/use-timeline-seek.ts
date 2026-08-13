@@ -1,5 +1,5 @@
 import { useEffect, useState, type RefObject } from "react";
-import { useEditor } from "@/editor/use-editor";
+import { useEditorInstance } from "@/editor/use-editor";
 import { useCommittedRef } from "@/hooks/use-committed-ref";
 import {
 	SeekController,
@@ -30,7 +30,7 @@ export function useTimelineSeek({
 	clearSelectedElements,
 	seek,
 }: UseTimelineSeekProps) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const config: SeekConfig = {
 		zoomLevel,
 		duration,

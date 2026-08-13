@@ -1,16 +1,30 @@
-import { useEffect } from "react";
-import { invokeAction } from "@/actions";
-import { useEditor } from "@/editor/use-editor";
-import { useKeybindingsStore } from "@/actions/keybindings-store";
+import { useEffect, type RefObject } from "react";
+import { useActionInvoker } from "@/actions/action-scope";
+import { useEditorInstance } from "@/editor/use-editor";
+import { useKeybindingsStore } from "@/editor/use-session-store";
 import { isTypableDOMElement } from "@/utils/browser";
+import {
+	installScopedKeydownListener,
+	resolveKeybindingEventTarget,
+} from "./keybinding-target";
 
 /**
  * a composable that hooks to the caller component's
  * lifecycle and hooks to the keyboard events to fire
  * the appropriate actions based on keybindings
  */
-export function useKeybindingsListener() {
-	const editor = useEditor();
+export interface KeybindingsListenerOptions {
+	/** An explicit Surface ref never falls back to document while it is null. */
+	readonly targetRef?: RefObject<HTMLElement | null>;
+	readonly enabled?: boolean;
+}
+
+export function useKeybindingsListener({
+	targetRef,
+	enabled = true,
+}: KeybindingsListenerOptions = {}) {
+	const invokeAction = useActionInvoker();
+	const editor = useEditorInstance();
 	const {
 		keybindings,
 		getKeybindingString,
@@ -20,7 +34,12 @@ export function useKeybindingsListener() {
 	} = useKeybindingsStore();
 
 	useEffect(() => {
-		const eventOptions: AddEventListenerOptions = { capture: true };
+		if (!enabled) return;
+		const target = resolveKeybindingEventTarget({
+			targetRef,
+			fallbackDocument: document,
+		});
+		if (!target) return;
 		const handleKeyDown = (ev: KeyboardEvent) => {
 			const normalizedKey = (ev.key ?? "").toLowerCase();
 
@@ -29,7 +48,10 @@ export function useKeybindingsListener() {
 			}
 
 			const binding = getKeybindingString(ev);
-			const activeElement = document.activeElement;
+			const activeElement =
+				target instanceof HTMLElement
+					? target.ownerDocument.activeElement
+					: target.activeElement;
 			const isTextInput =
 				activeElement instanceof HTMLElement &&
 				isTypableDOMElement({ element: activeElement });
@@ -71,17 +93,16 @@ export function useKeybindingsListener() {
 			}
 		};
 
-		document.addEventListener("keydown", handleKeyDown, eventOptions);
-
-		return () => {
-			document.removeEventListener("keydown", handleKeyDown, eventOptions);
-		};
+		return installScopedKeydownListener({ target, listener: handleKeyDown });
 	}, [
+		enabled,
+		targetRef,
 		keybindings,
 		getKeybindingString,
 		overlayDepth,
 		isLoadingProject,
 		isRecording,
 		editor,
+		invokeAction,
 	]);
 }

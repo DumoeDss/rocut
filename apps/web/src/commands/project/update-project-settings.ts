@@ -1,8 +1,18 @@
-import { Command, type CommandResult } from "@/commands/base-command";
-import { EditorCore } from "@/core";
+import {
+	Command,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
 import type { TProject, TProjectSettings } from "@/project/types";
 
 export class UpdateProjectSettingsCommand extends Command {
+	get routingClass(): "transaction" | "provider-private" {
+		return Object.prototype.hasOwnProperty.call(this.updates, "fps") ||
+			Object.prototype.hasOwnProperty.call(this.updates, "canvasSize")
+			? "transaction"
+			: "provider-private";
+	}
+
 	private savedSettings: TProjectSettings | null = null;
 	private savedUpdatedAt: Date | null = null;
 
@@ -10,8 +20,7 @@ export class UpdateProjectSettingsCommand extends Command {
 		super();
 	}
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		const activeProject = editor.project.getActive();
 		if (!activeProject) return;
 
@@ -28,9 +37,8 @@ export class UpdateProjectSettingsCommand extends Command {
 		editor.save.markDirty();
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (!this.savedSettings || !this.savedUpdatedAt) return;
-		const editor = EditorCore.getInstance();
 		const activeProject = editor.project.getActive();
 		if (!activeProject) return;
 

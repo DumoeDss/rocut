@@ -1,9 +1,9 @@
 import {
 	Command,
 	createElementSelectionResult,
+	type EditorCommandContext,
 	type CommandResult,
 } from "@/commands/base-command";
-import { EditorCore } from "@/core";
 import type { SceneTracks, TimelineElement, TimelineTrack } from "@/timeline";
 import {
 	buildEmptyTrack,
@@ -16,6 +16,8 @@ import type {
 import { findTrackInSceneTracks } from "@/timeline/track-element-update";
 
 export class MoveElementCommand extends Command {
+	readonly routingClass = "transaction" as const;
+
 	private savedState: SceneTracks | null = null;
 
 	constructor({
@@ -33,8 +35,7 @@ export class MoveElementCommand extends Command {
 	private readonly moves: PlannedElementMove[];
 	private readonly createTracks: PlannedTrackCreation[];
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		this.savedState = editor.scenes.getActiveScene().tracks;
 
 		let tracksToUpdate = this.savedState;
@@ -122,9 +123,8 @@ export class MoveElementCommand extends Command {
 		);
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (this.savedState) {
-			const editor = EditorCore.getInstance();
 			editor.timeline.updateTracks(this.savedState);
 		}
 	}

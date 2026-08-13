@@ -1,10 +1,11 @@
-import { EditorCore } from "@/core";
-import { Command, type CommandResult } from "@/commands/base-command";
-import type { SceneTracks, TimelineElement } from "@/timeline";
 import {
-	findTrackInSceneTracks,
-	updateElementInSceneTracks,
-} from "@/timeline";
+	Command,
+	type CommandRoutingClass,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
+import type { SceneTracks, TimelineElement } from "@/timeline";
+import { findTrackInSceneTracks, updateElementInSceneTracks } from "@/timeline";
 import { applyElementUpdate } from "@/timeline/update-pipeline";
 
 export class UpdateElementsCommand extends Command {
@@ -14,6 +15,21 @@ export class UpdateElementsCommand extends Command {
 		elementId: string;
 		patch: Partial<TimelineElement>;
 	}>;
+
+	get routingClass(): CommandRoutingClass {
+		const publicKeys = new Set([
+			"startTime",
+			"duration",
+			"trimStart",
+			"trimEnd",
+			"mediaId",
+		]);
+		return this.updates.some(({ patch }) =>
+			Object.keys(patch).some((key) => publicKeys.has(key)),
+		)
+			? "transaction"
+			: "provider-private";
+	}
 
 	constructor({
 		updates,
@@ -28,8 +44,7 @@ export class UpdateElementsCommand extends Command {
 		this.updates = updates;
 	}
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		this.savedState = editor.scenes.getActiveScene().tracks;
 		let updatedTracks = this.savedState;
 
@@ -66,9 +81,8 @@ export class UpdateElementsCommand extends Command {
 		return undefined;
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (this.savedState) {
-			const editor = EditorCore.getInstance();
 			editor.timeline.updateTracks(this.savedState);
 		}
 	}

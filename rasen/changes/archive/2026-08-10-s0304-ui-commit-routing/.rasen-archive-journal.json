@@ -1,0 +1,4727 @@
+{
+  "schemaVersion": 2,
+  "transactionId": "fd1db41b-363f-4144-a12a-ce075c2fd9ed",
+  "planHash": "9d66632fc2a6f34127c3f05b946651772b5c4f97f86990437987876bd7aadc9b",
+  "change": "s0304-ui-commit-routing",
+  "phase": "complete",
+  "activePath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\s0304-ui-commit-routing",
+  "stagePath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\archive\\.rasen-archive-stage-fd1db41b-363f-4144-a12a-ce075c2fd9ed",
+  "finalPath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\archive\\2026-08-10-s0304-ui-commit-routing",
+  "ephemeraDisposed": [
+    "auto-run.json"
+  ],
+  "phaseFingerprints": {
+    "payload-copied": {
+      "state": "verified",
+      "scope": "stage",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "8736d748a7a51fd7604d72876158dd1bac17fdf716deba288b1905b63504e816",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "21399",
+            "sha256": "3d99efb65372d2f6709f9ede9e67eeefd57ac3ee0a2e4edaae8b08d9e44d688d"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9781",
+            "sha256": "12cde815158a79171a4e908ac67ee57a5766c4a70014f895ba75b8286a5551e7"
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3708",
+            "sha256": "847c7441cf6e79e95b16398a651bb3275de6eec7c6bcff959b6d1febfd5b214c"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "22554",
+            "sha256": "8a97acf8ae242701ad737f4d12b0674f58fe118e3c6a8624c6c5bf2bca3689bb"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4013",
+            "sha256": "492feea2517b67b7edff14ee55c36b09e2b95dfeddb4d267c609369783467d87"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "19587",
+            "sha256": "50ade313af690cdc08990b884510e259af1ef537f8e64b35a2fa1ba89cfecf09"
+          },
+          {
+            "path": "handoff",
+            "kind": "directory"
+          },
+          {
+            "path": "handoff/design-audit-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "22000",
+            "sha256": "817fba07e55b29092dbf46552ad24a7055e5808762f8ead84f975f960860e668"
+          },
+          {
+            "path": "handoff/implementer-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14025",
+            "sha256": "ea54b5320502e90e8d1587973c768fa4bb51e1c9597b33da303c328dde1dabc8"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4067",
+            "sha256": "42d9292b53ce3abc39e1ea3a57a4d40b40317dd50f748a2cdef969dd5975091d"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "200",
+            "sha256": "183140c25015fe59bd91278570812984ce1f09b4dca97ea1291e01755a3eed30"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14808",
+            "sha256": "40b1a5520af35470fe47ae24ba19a546212f309b0c3ef2f7f092b658be297c54"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10547",
+            "sha256": "be33df1709cb8b67f458e7ca344e2a648c43b35d54a013daa3457efc767fe158"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "3659174707577699",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "87c322655139924f1dc49d895c08424b6c91ed01e5758d7157f1d6d3261b6e64",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699730867044",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786333899308592800",
+              "ctimeNs": "1786333899308592800"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699730867045",
+              "mode": "33206",
+              "size": "21399",
+              "mtimeNs": "1786330831518885000",
+              "ctimeNs": "1786330831518885000"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699730867050",
+              "mode": "33206",
+              "size": "9781",
+              "mtimeNs": "1786333801919911700",
+              "ctimeNs": "1786333801919911700"
+            }
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699731218475",
+              "mode": "33206",
+              "size": "3708",
+              "mtimeNs": "1786346791638404900",
+              "ctimeNs": "1786346791638404900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "11821949023163231",
+              "mode": "33206",
+              "size": "22554",
+              "mtimeNs": "1786346699953438900",
+              "ctimeNs": "1786346699953438900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799824475833",
+              "mode": "33206",
+              "size": "4013",
+              "mtimeNs": "1786358171518377700",
+              "ctimeNs": "1786358171518377700"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174707577707",
+              "mode": "33206",
+              "size": "19587",
+              "mtimeNs": "1786333741542442000",
+              "ctimeNs": "1786333741542442000"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699730867049",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "handoff/design-audit-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224754156397",
+              "mode": "33206",
+              "size": "22000",
+              "mtimeNs": "1786333899312184400",
+              "ctimeNs": "1786333899312184400"
+            }
+          },
+          {
+            "path": "handoff/implementer-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224754156398",
+              "mode": "33206",
+              "size": "14025",
+              "mtimeNs": "1786333899313392000",
+              "ctimeNs": "1786333899313392000"
+            }
+          },
+          {
+            "path": "handoff",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224754156396",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699730867046",
+              "mode": "33206",
+              "size": "4067",
+              "mtimeNs": "1786330831419655800",
+              "ctimeNs": "1786330831419655800"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699730867047",
+              "mode": "33206",
+              "size": "200",
+              "mtimeNs": "1786333899309807800",
+              "ctimeNs": "1786333899309807800"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224754156401",
+              "mode": "33206",
+              "size": "14808",
+              "mtimeNs": "1786330831654380600",
+              "ctimeNs": "1786330831654380600"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699730867056",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174707577711",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699730867048",
+              "mode": "33206",
+              "size": "10547",
+              "mtimeNs": "1786333820306117000",
+              "ctimeNs": "1786333820306117000"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "8736d748a7a51fd7604d72876158dd1bac17fdf716deba288b1905b63504e816",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "21399",
+            "sha256": "3d99efb65372d2f6709f9ede9e67eeefd57ac3ee0a2e4edaae8b08d9e44d688d"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9781",
+            "sha256": "12cde815158a79171a4e908ac67ee57a5766c4a70014f895ba75b8286a5551e7"
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3708",
+            "sha256": "847c7441cf6e79e95b16398a651bb3275de6eec7c6bcff959b6d1febfd5b214c"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "22554",
+            "sha256": "8a97acf8ae242701ad737f4d12b0674f58fe118e3c6a8624c6c5bf2bca3689bb"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4013",
+            "sha256": "492feea2517b67b7edff14ee55c36b09e2b95dfeddb4d267c609369783467d87"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "19587",
+            "sha256": "50ade313af690cdc08990b884510e259af1ef537f8e64b35a2fa1ba89cfecf09"
+          },
+          {
+            "path": "handoff",
+            "kind": "directory"
+          },
+          {
+            "path": "handoff/design-audit-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "22000",
+            "sha256": "817fba07e55b29092dbf46552ad24a7055e5808762f8ead84f975f960860e668"
+          },
+          {
+            "path": "handoff/implementer-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14025",
+            "sha256": "ea54b5320502e90e8d1587973c768fa4bb51e1c9597b33da303c328dde1dabc8"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4067",
+            "sha256": "42d9292b53ce3abc39e1ea3a57a4d40b40317dd50f748a2cdef969dd5975091d"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "200",
+            "sha256": "183140c25015fe59bd91278570812984ce1f09b4dca97ea1291e01755a3eed30"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14808",
+            "sha256": "40b1a5520af35470fe47ae24ba19a546212f309b0c3ef2f7f092b658be297c54"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10547",
+            "sha256": "be33df1709cb8b67f458e7ca344e2a648c43b35d54a013daa3457efc767fe158"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2814749777897216",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "443b208ee5d240f9facef289e95d1b6ac4165d56b5b44c111208664125cf6615",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940922626",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786333899308592800",
+              "ctimeNs": "1786333899308592800"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211972",
+              "mode": "33206",
+              "size": "21399",
+              "mtimeNs": "1786330831518885000",
+              "ctimeNs": "1786330831518885000"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211974",
+              "mode": "33206",
+              "size": "9781",
+              "mtimeNs": "1786333801919911700",
+              "ctimeNs": "1786333801919911700"
+            }
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211975",
+              "mode": "33206",
+              "size": "3708",
+              "mtimeNs": "1786346791638404900",
+              "ctimeNs": "1786346791638404900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211976",
+              "mode": "33206",
+              "size": "22554",
+              "mtimeNs": "1786346699953438900",
+              "ctimeNs": "1786346699953438900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211977",
+              "mode": "33206",
+              "size": "4013",
+              "mtimeNs": "1786358171518377700",
+              "ctimeNs": "1786358171518377700"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211978",
+              "mode": "33206",
+              "size": "19587",
+              "mtimeNs": "1786333741542442000",
+              "ctimeNs": "1786333741542442000"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211973",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "handoff/design-audit-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211980",
+              "mode": "33206",
+              "size": "22000",
+              "mtimeNs": "1786333899312184400",
+              "ctimeNs": "1786333899312184400"
+            }
+          },
+          {
+            "path": "handoff/implementer-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211981",
+              "mode": "33206",
+              "size": "14025",
+              "mtimeNs": "1786333899313392000",
+              "ctimeNs": "1786333899313392000"
+            }
+          },
+          {
+            "path": "handoff",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211979",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211982",
+              "mode": "33206",
+              "size": "4067",
+              "mtimeNs": "1786330831419655800",
+              "ctimeNs": "1786330831419655800"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211983",
+              "mode": "33206",
+              "size": "200",
+              "mtimeNs": "1786333899309807800",
+              "ctimeNs": "1786333899309807800"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211986",
+              "mode": "33206",
+              "size": "14808",
+              "mtimeNs": "1786330831654380600",
+              "ctimeNs": "1786330831654380600"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211985",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211984",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211987",
+              "mode": "33206",
+              "size": "10547",
+              "mtimeNs": "1786333820306117000",
+              "ctimeNs": "1786333820306117000"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "8736d748a7a51fd7604d72876158dd1bac17fdf716deba288b1905b63504e816",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "21399",
+            "sha256": "3d99efb65372d2f6709f9ede9e67eeefd57ac3ee0a2e4edaae8b08d9e44d688d"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9781",
+            "sha256": "12cde815158a79171a4e908ac67ee57a5766c4a70014f895ba75b8286a5551e7"
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3708",
+            "sha256": "847c7441cf6e79e95b16398a651bb3275de6eec7c6bcff959b6d1febfd5b214c"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "22554",
+            "sha256": "8a97acf8ae242701ad737f4d12b0674f58fe118e3c6a8624c6c5bf2bca3689bb"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4013",
+            "sha256": "492feea2517b67b7edff14ee55c36b09e2b95dfeddb4d267c609369783467d87"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "19587",
+            "sha256": "50ade313af690cdc08990b884510e259af1ef537f8e64b35a2fa1ba89cfecf09"
+          },
+          {
+            "path": "handoff",
+            "kind": "directory"
+          },
+          {
+            "path": "handoff/design-audit-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "22000",
+            "sha256": "817fba07e55b29092dbf46552ad24a7055e5808762f8ead84f975f960860e668"
+          },
+          {
+            "path": "handoff/implementer-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14025",
+            "sha256": "ea54b5320502e90e8d1587973c768fa4bb51e1c9597b33da303c328dde1dabc8"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4067",
+            "sha256": "42d9292b53ce3abc39e1ea3a57a4d40b40317dd50f748a2cdef969dd5975091d"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "200",
+            "sha256": "183140c25015fe59bd91278570812984ce1f09b4dca97ea1291e01755a3eed30"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14808",
+            "sha256": "40b1a5520af35470fe47ae24ba19a546212f309b0c3ef2f7f092b658be297c54"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10547",
+            "sha256": "be33df1709cb8b67f458e7ca344e2a648c43b35d54a013daa3457efc767fe158"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2814749777897216",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "443b208ee5d240f9facef289e95d1b6ac4165d56b5b44c111208664125cf6615",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940922626",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786333899308592800",
+              "ctimeNs": "1786333899308592800"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211972",
+              "mode": "33206",
+              "size": "21399",
+              "mtimeNs": "1786330831518885000",
+              "ctimeNs": "1786330831518885000"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211974",
+              "mode": "33206",
+              "size": "9781",
+              "mtimeNs": "1786333801919911700",
+              "ctimeNs": "1786333801919911700"
+            }
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211975",
+              "mode": "33206",
+              "size": "3708",
+              "mtimeNs": "1786346791638404900",
+              "ctimeNs": "1786346791638404900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211976",
+              "mode": "33206",
+              "size": "22554",
+              "mtimeNs": "1786346699953438900",
+              "ctimeNs": "1786346699953438900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211977",
+              "mode": "33206",
+              "size": "4013",
+              "mtimeNs": "1786358171518377700",
+              "ctimeNs": "1786358171518377700"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211978",
+              "mode": "33206",
+              "size": "19587",
+              "mtimeNs": "1786333741542442000",
+              "ctimeNs": "1786333741542442000"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211973",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "handoff/design-audit-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211980",
+              "mode": "33206",
+              "size": "22000",
+              "mtimeNs": "1786333899312184400",
+              "ctimeNs": "1786333899312184400"
+            }
+          },
+          {
+            "path": "handoff/implementer-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211981",
+              "mode": "33206",
+              "size": "14025",
+              "mtimeNs": "1786333899313392000",
+              "ctimeNs": "1786333899313392000"
+            }
+          },
+          {
+            "path": "handoff",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211979",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211982",
+              "mode": "33206",
+              "size": "4067",
+              "mtimeNs": "1786330831419655800",
+              "ctimeNs": "1786330831419655800"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211983",
+              "mode": "33206",
+              "size": "200",
+              "mtimeNs": "1786333899309807800",
+              "ctimeNs": "1786333899309807800"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211986",
+              "mode": "33206",
+              "size": "14808",
+              "mtimeNs": "1786330831654380600",
+              "ctimeNs": "1786330831654380600"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211985",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211984",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211987",
+              "mode": "33206",
+              "size": "10547",
+              "mtimeNs": "1786333820306117000",
+              "ctimeNs": "1786333820306117000"
+            }
+          }
+        ]
+      }
+    },
+    "handoff-finalized": {
+      "state": "verified",
+      "scope": "stage",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "8736d748a7a51fd7604d72876158dd1bac17fdf716deba288b1905b63504e816",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "21399",
+            "sha256": "3d99efb65372d2f6709f9ede9e67eeefd57ac3ee0a2e4edaae8b08d9e44d688d"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9781",
+            "sha256": "12cde815158a79171a4e908ac67ee57a5766c4a70014f895ba75b8286a5551e7"
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3708",
+            "sha256": "847c7441cf6e79e95b16398a651bb3275de6eec7c6bcff959b6d1febfd5b214c"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "22554",
+            "sha256": "8a97acf8ae242701ad737f4d12b0674f58fe118e3c6a8624c6c5bf2bca3689bb"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4013",
+            "sha256": "492feea2517b67b7edff14ee55c36b09e2b95dfeddb4d267c609369783467d87"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "19587",
+            "sha256": "50ade313af690cdc08990b884510e259af1ef537f8e64b35a2fa1ba89cfecf09"
+          },
+          {
+            "path": "handoff",
+            "kind": "directory"
+          },
+          {
+            "path": "handoff/design-audit-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "22000",
+            "sha256": "817fba07e55b29092dbf46552ad24a7055e5808762f8ead84f975f960860e668"
+          },
+          {
+            "path": "handoff/implementer-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14025",
+            "sha256": "ea54b5320502e90e8d1587973c768fa4bb51e1c9597b33da303c328dde1dabc8"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4067",
+            "sha256": "42d9292b53ce3abc39e1ea3a57a4d40b40317dd50f748a2cdef969dd5975091d"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "200",
+            "sha256": "183140c25015fe59bd91278570812984ce1f09b4dca97ea1291e01755a3eed30"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14808",
+            "sha256": "40b1a5520af35470fe47ae24ba19a546212f309b0c3ef2f7f092b658be297c54"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10547",
+            "sha256": "be33df1709cb8b67f458e7ca344e2a648c43b35d54a013daa3457efc767fe158"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2814749777897216",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "443b208ee5d240f9facef289e95d1b6ac4165d56b5b44c111208664125cf6615",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940922626",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786333899308592800",
+              "ctimeNs": "1786333899308592800"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211972",
+              "mode": "33206",
+              "size": "21399",
+              "mtimeNs": "1786330831518885000",
+              "ctimeNs": "1786330831518885000"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211974",
+              "mode": "33206",
+              "size": "9781",
+              "mtimeNs": "1786333801919911700",
+              "ctimeNs": "1786333801919911700"
+            }
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211975",
+              "mode": "33206",
+              "size": "3708",
+              "mtimeNs": "1786346791638404900",
+              "ctimeNs": "1786346791638404900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211976",
+              "mode": "33206",
+              "size": "22554",
+              "mtimeNs": "1786346699953438900",
+              "ctimeNs": "1786346699953438900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211977",
+              "mode": "33206",
+              "size": "4013",
+              "mtimeNs": "1786358171518377700",
+              "ctimeNs": "1786358171518377700"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211978",
+              "mode": "33206",
+              "size": "19587",
+              "mtimeNs": "1786333741542442000",
+              "ctimeNs": "1786333741542442000"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211973",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "handoff/design-audit-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211980",
+              "mode": "33206",
+              "size": "22000",
+              "mtimeNs": "1786333899312184400",
+              "ctimeNs": "1786333899312184400"
+            }
+          },
+          {
+            "path": "handoff/implementer-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211981",
+              "mode": "33206",
+              "size": "14025",
+              "mtimeNs": "1786333899313392000",
+              "ctimeNs": "1786333899313392000"
+            }
+          },
+          {
+            "path": "handoff",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211979",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211982",
+              "mode": "33206",
+              "size": "4067",
+              "mtimeNs": "1786330831419655800",
+              "ctimeNs": "1786330831419655800"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211983",
+              "mode": "33206",
+              "size": "200",
+              "mtimeNs": "1786333899309807800",
+              "ctimeNs": "1786333899309807800"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211986",
+              "mode": "33206",
+              "size": "14808",
+              "mtimeNs": "1786330831654380600",
+              "ctimeNs": "1786330831654380600"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211985",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211984",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211987",
+              "mode": "33206",
+              "size": "10547",
+              "mtimeNs": "1786333820306117000",
+              "ctimeNs": "1786333820306117000"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "4f5ac8b316a59ac7cc8ddebc44f6583451c506fbe41bcb3c4e7783773686c69d",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "21399",
+            "sha256": "3d99efb65372d2f6709f9ede9e67eeefd57ac3ee0a2e4edaae8b08d9e44d688d"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9781",
+            "sha256": "12cde815158a79171a4e908ac67ee57a5766c4a70014f895ba75b8286a5551e7"
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3708",
+            "sha256": "847c7441cf6e79e95b16398a651bb3275de6eec7c6bcff959b6d1febfd5b214c"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "22554",
+            "sha256": "8a97acf8ae242701ad737f4d12b0674f58fe118e3c6a8624c6c5bf2bca3689bb"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4013",
+            "sha256": "492feea2517b67b7edff14ee55c36b09e2b95dfeddb4d267c609369783467d87"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "19587",
+            "sha256": "50ade313af690cdc08990b884510e259af1ef537f8e64b35a2fa1ba89cfecf09"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4067",
+            "sha256": "42d9292b53ce3abc39e1ea3a57a4d40b40317dd50f748a2cdef969dd5975091d"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "200",
+            "sha256": "183140c25015fe59bd91278570812984ce1f09b4dca97ea1291e01755a3eed30"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14808",
+            "sha256": "40b1a5520af35470fe47ae24ba19a546212f309b0c3ef2f7f092b658be297c54"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10547",
+            "sha256": "be33df1709cb8b67f458e7ca344e2a648c43b35d54a013daa3457efc767fe158"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2814749777897216",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "fb18206faab77c9c04b4d65ef2bfffc192bd638d5e62fddabc33e63273985d8e",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940922626",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786333899308592800",
+              "ctimeNs": "1786333899308592800"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211972",
+              "mode": "33206",
+              "size": "21399",
+              "mtimeNs": "1786330831518885000",
+              "ctimeNs": "1786330831518885000"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211974",
+              "mode": "33206",
+              "size": "9781",
+              "mtimeNs": "1786333801919911700",
+              "ctimeNs": "1786333801919911700"
+            }
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211975",
+              "mode": "33206",
+              "size": "3708",
+              "mtimeNs": "1786346791638404900",
+              "ctimeNs": "1786346791638404900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211976",
+              "mode": "33206",
+              "size": "22554",
+              "mtimeNs": "1786346699953438900",
+              "ctimeNs": "1786346699953438900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211977",
+              "mode": "33206",
+              "size": "4013",
+              "mtimeNs": "1786358171518377700",
+              "ctimeNs": "1786358171518377700"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211978",
+              "mode": "33206",
+              "size": "19587",
+              "mtimeNs": "1786333741542442000",
+              "ctimeNs": "1786333741542442000"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211973",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211982",
+              "mode": "33206",
+              "size": "4067",
+              "mtimeNs": "1786330831419655800",
+              "ctimeNs": "1786330831419655800"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211983",
+              "mode": "33206",
+              "size": "200",
+              "mtimeNs": "1786333899309807800",
+              "ctimeNs": "1786333899309807800"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211986",
+              "mode": "33206",
+              "size": "14808",
+              "mtimeNs": "1786330831654380600",
+              "ctimeNs": "1786330831654380600"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211985",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211984",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211987",
+              "mode": "33206",
+              "size": "10547",
+              "mtimeNs": "1786333820306117000",
+              "ctimeNs": "1786333820306117000"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "4f5ac8b316a59ac7cc8ddebc44f6583451c506fbe41bcb3c4e7783773686c69d",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "21399",
+            "sha256": "3d99efb65372d2f6709f9ede9e67eeefd57ac3ee0a2e4edaae8b08d9e44d688d"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9781",
+            "sha256": "12cde815158a79171a4e908ac67ee57a5766c4a70014f895ba75b8286a5551e7"
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3708",
+            "sha256": "847c7441cf6e79e95b16398a651bb3275de6eec7c6bcff959b6d1febfd5b214c"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "22554",
+            "sha256": "8a97acf8ae242701ad737f4d12b0674f58fe118e3c6a8624c6c5bf2bca3689bb"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4013",
+            "sha256": "492feea2517b67b7edff14ee55c36b09e2b95dfeddb4d267c609369783467d87"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "19587",
+            "sha256": "50ade313af690cdc08990b884510e259af1ef537f8e64b35a2fa1ba89cfecf09"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4067",
+            "sha256": "42d9292b53ce3abc39e1ea3a57a4d40b40317dd50f748a2cdef969dd5975091d"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "200",
+            "sha256": "183140c25015fe59bd91278570812984ce1f09b4dca97ea1291e01755a3eed30"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14808",
+            "sha256": "40b1a5520af35470fe47ae24ba19a546212f309b0c3ef2f7f092b658be297c54"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10547",
+            "sha256": "be33df1709cb8b67f458e7ca344e2a648c43b35d54a013daa3457efc767fe158"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2814749777897216",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "fb18206faab77c9c04b4d65ef2bfffc192bd638d5e62fddabc33e63273985d8e",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940922626",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786333899308592800",
+              "ctimeNs": "1786333899308592800"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211972",
+              "mode": "33206",
+              "size": "21399",
+              "mtimeNs": "1786330831518885000",
+              "ctimeNs": "1786330831518885000"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211974",
+              "mode": "33206",
+              "size": "9781",
+              "mtimeNs": "1786333801919911700",
+              "ctimeNs": "1786333801919911700"
+            }
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211975",
+              "mode": "33206",
+              "size": "3708",
+              "mtimeNs": "1786346791638404900",
+              "ctimeNs": "1786346791638404900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211976",
+              "mode": "33206",
+              "size": "22554",
+              "mtimeNs": "1786346699953438900",
+              "ctimeNs": "1786346699953438900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211977",
+              "mode": "33206",
+              "size": "4013",
+              "mtimeNs": "1786358171518377700",
+              "ctimeNs": "1786358171518377700"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211978",
+              "mode": "33206",
+              "size": "19587",
+              "mtimeNs": "1786333741542442000",
+              "ctimeNs": "1786333741542442000"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211973",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211982",
+              "mode": "33206",
+              "size": "4067",
+              "mtimeNs": "1786330831419655800",
+              "ctimeNs": "1786330831419655800"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211983",
+              "mode": "33206",
+              "size": "200",
+              "mtimeNs": "1786333899309807800",
+              "ctimeNs": "1786333899309807800"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211986",
+              "mode": "33206",
+              "size": "14808",
+              "mtimeNs": "1786330831654380600",
+              "ctimeNs": "1786330831654380600"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211985",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211984",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211987",
+              "mode": "33206",
+              "size": "10547",
+              "mtimeNs": "1786333820306117000",
+              "ctimeNs": "1786333820306117000"
+            }
+          }
+        ]
+      }
+    },
+    "evidence-finalized": {
+      "state": "verified",
+      "scope": "stage",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "4f5ac8b316a59ac7cc8ddebc44f6583451c506fbe41bcb3c4e7783773686c69d",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "21399",
+            "sha256": "3d99efb65372d2f6709f9ede9e67eeefd57ac3ee0a2e4edaae8b08d9e44d688d"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9781",
+            "sha256": "12cde815158a79171a4e908ac67ee57a5766c4a70014f895ba75b8286a5551e7"
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3708",
+            "sha256": "847c7441cf6e79e95b16398a651bb3275de6eec7c6bcff959b6d1febfd5b214c"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "22554",
+            "sha256": "8a97acf8ae242701ad737f4d12b0674f58fe118e3c6a8624c6c5bf2bca3689bb"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4013",
+            "sha256": "492feea2517b67b7edff14ee55c36b09e2b95dfeddb4d267c609369783467d87"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "19587",
+            "sha256": "50ade313af690cdc08990b884510e259af1ef537f8e64b35a2fa1ba89cfecf09"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4067",
+            "sha256": "42d9292b53ce3abc39e1ea3a57a4d40b40317dd50f748a2cdef969dd5975091d"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "200",
+            "sha256": "183140c25015fe59bd91278570812984ce1f09b4dca97ea1291e01755a3eed30"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14808",
+            "sha256": "40b1a5520af35470fe47ae24ba19a546212f309b0c3ef2f7f092b658be297c54"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10547",
+            "sha256": "be33df1709cb8b67f458e7ca344e2a648c43b35d54a013daa3457efc767fe158"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2814749777897216",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "fb18206faab77c9c04b4d65ef2bfffc192bd638d5e62fddabc33e63273985d8e",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940922626",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786333899308592800",
+              "ctimeNs": "1786333899308592800"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211972",
+              "mode": "33206",
+              "size": "21399",
+              "mtimeNs": "1786330831518885000",
+              "ctimeNs": "1786330831518885000"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211974",
+              "mode": "33206",
+              "size": "9781",
+              "mtimeNs": "1786333801919911700",
+              "ctimeNs": "1786333801919911700"
+            }
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211975",
+              "mode": "33206",
+              "size": "3708",
+              "mtimeNs": "1786346791638404900",
+              "ctimeNs": "1786346791638404900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211976",
+              "mode": "33206",
+              "size": "22554",
+              "mtimeNs": "1786346699953438900",
+              "ctimeNs": "1786346699953438900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211977",
+              "mode": "33206",
+              "size": "4013",
+              "mtimeNs": "1786358171518377700",
+              "ctimeNs": "1786358171518377700"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211978",
+              "mode": "33206",
+              "size": "19587",
+              "mtimeNs": "1786333741542442000",
+              "ctimeNs": "1786333741542442000"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211973",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211982",
+              "mode": "33206",
+              "size": "4067",
+              "mtimeNs": "1786330831419655800",
+              "ctimeNs": "1786330831419655800"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211983",
+              "mode": "33206",
+              "size": "200",
+              "mtimeNs": "1786333899309807800",
+              "ctimeNs": "1786333899309807800"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211986",
+              "mode": "33206",
+              "size": "14808",
+              "mtimeNs": "1786330831654380600",
+              "ctimeNs": "1786330831654380600"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211985",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211984",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211987",
+              "mode": "33206",
+              "size": "10547",
+              "mtimeNs": "1786333820306117000",
+              "ctimeNs": "1786333820306117000"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "4b6b9e6a32c392cd78986dd21bb622f7bfbb621e20d9a353a1655a28e4469d2b",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "292",
+            "sha256": "fbe0ae4291702ae384faa2cb172e2e120dafbdbf3c3078060b2d6de807872e96"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "21399",
+            "sha256": "3d99efb65372d2f6709f9ede9e67eeefd57ac3ee0a2e4edaae8b08d9e44d688d"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9781",
+            "sha256": "12cde815158a79171a4e908ac67ee57a5766c4a70014f895ba75b8286a5551e7"
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3708",
+            "sha256": "847c7441cf6e79e95b16398a651bb3275de6eec7c6bcff959b6d1febfd5b214c"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "22554",
+            "sha256": "8a97acf8ae242701ad737f4d12b0674f58fe118e3c6a8624c6c5bf2bca3689bb"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4314",
+            "sha256": "c664596cf49a9742683d1902e1ce6041d55050601e363f5ac456f49e8ff97eb2"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "19587",
+            "sha256": "50ade313af690cdc08990b884510e259af1ef537f8e64b35a2fa1ba89cfecf09"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4067",
+            "sha256": "42d9292b53ce3abc39e1ea3a57a4d40b40317dd50f748a2cdef969dd5975091d"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "200",
+            "sha256": "183140c25015fe59bd91278570812984ce1f09b4dca97ea1291e01755a3eed30"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14808",
+            "sha256": "40b1a5520af35470fe47ae24ba19a546212f309b0c3ef2f7f092b658be297c54"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10547",
+            "sha256": "be33df1709cb8b67f458e7ca344e2a648c43b35d54a013daa3457efc767fe158"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2814749777897216",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "559568424d343c58780f14c03e415166f71c23ba8971744b968fb847e661edc0",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940922626",
+              "mode": "33206",
+              "size": "292",
+              "mtimeNs": "1786358208981609600",
+              "ctimeNs": "1786358208981609600"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211972",
+              "mode": "33206",
+              "size": "21399",
+              "mtimeNs": "1786330831518885000",
+              "ctimeNs": "1786330831518885000"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211974",
+              "mode": "33206",
+              "size": "9781",
+              "mtimeNs": "1786333801919911700",
+              "ctimeNs": "1786333801919911700"
+            }
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211975",
+              "mode": "33206",
+              "size": "3708",
+              "mtimeNs": "1786346791638404900",
+              "ctimeNs": "1786346791638404900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211976",
+              "mode": "33206",
+              "size": "22554",
+              "mtimeNs": "1786346699953438900",
+              "ctimeNs": "1786346699953438900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211977",
+              "mode": "33206",
+              "size": "4314",
+              "mtimeNs": "1786358208975179400",
+              "ctimeNs": "1786358208975179400"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211978",
+              "mode": "33206",
+              "size": "19587",
+              "mtimeNs": "1786333741542442000",
+              "ctimeNs": "1786333741542442000"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211973",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211982",
+              "mode": "33206",
+              "size": "4067",
+              "mtimeNs": "1786330831419655800",
+              "ctimeNs": "1786330831419655800"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211983",
+              "mode": "33206",
+              "size": "200",
+              "mtimeNs": "1786333899309807800",
+              "ctimeNs": "1786333899309807800"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211986",
+              "mode": "33206",
+              "size": "14808",
+              "mtimeNs": "1786330831654380600",
+              "ctimeNs": "1786330831654380600"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211985",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211984",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211987",
+              "mode": "33206",
+              "size": "10547",
+              "mtimeNs": "1786333820306117000",
+              "ctimeNs": "1786333820306117000"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "4b6b9e6a32c392cd78986dd21bb622f7bfbb621e20d9a353a1655a28e4469d2b",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "292",
+            "sha256": "fbe0ae4291702ae384faa2cb172e2e120dafbdbf3c3078060b2d6de807872e96"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "21399",
+            "sha256": "3d99efb65372d2f6709f9ede9e67eeefd57ac3ee0a2e4edaae8b08d9e44d688d"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9781",
+            "sha256": "12cde815158a79171a4e908ac67ee57a5766c4a70014f895ba75b8286a5551e7"
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3708",
+            "sha256": "847c7441cf6e79e95b16398a651bb3275de6eec7c6bcff959b6d1febfd5b214c"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "22554",
+            "sha256": "8a97acf8ae242701ad737f4d12b0674f58fe118e3c6a8624c6c5bf2bca3689bb"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4314",
+            "sha256": "c664596cf49a9742683d1902e1ce6041d55050601e363f5ac456f49e8ff97eb2"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "19587",
+            "sha256": "50ade313af690cdc08990b884510e259af1ef537f8e64b35a2fa1ba89cfecf09"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4067",
+            "sha256": "42d9292b53ce3abc39e1ea3a57a4d40b40317dd50f748a2cdef969dd5975091d"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "200",
+            "sha256": "183140c25015fe59bd91278570812984ce1f09b4dca97ea1291e01755a3eed30"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14808",
+            "sha256": "40b1a5520af35470fe47ae24ba19a546212f309b0c3ef2f7f092b658be297c54"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10547",
+            "sha256": "be33df1709cb8b67f458e7ca344e2a648c43b35d54a013daa3457efc767fe158"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2814749777897216",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "559568424d343c58780f14c03e415166f71c23ba8971744b968fb847e661edc0",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940922626",
+              "mode": "33206",
+              "size": "292",
+              "mtimeNs": "1786358208981609600",
+              "ctimeNs": "1786358208981609600"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211972",
+              "mode": "33206",
+              "size": "21399",
+              "mtimeNs": "1786330831518885000",
+              "ctimeNs": "1786330831518885000"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211974",
+              "mode": "33206",
+              "size": "9781",
+              "mtimeNs": "1786333801919911700",
+              "ctimeNs": "1786333801919911700"
+            }
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211975",
+              "mode": "33206",
+              "size": "3708",
+              "mtimeNs": "1786346791638404900",
+              "ctimeNs": "1786346791638404900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211976",
+              "mode": "33206",
+              "size": "22554",
+              "mtimeNs": "1786346699953438900",
+              "ctimeNs": "1786346699953438900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211977",
+              "mode": "33206",
+              "size": "4314",
+              "mtimeNs": "1786358208975179400",
+              "ctimeNs": "1786358208975179400"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211978",
+              "mode": "33206",
+              "size": "19587",
+              "mtimeNs": "1786333741542442000",
+              "ctimeNs": "1786333741542442000"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211973",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211982",
+              "mode": "33206",
+              "size": "4067",
+              "mtimeNs": "1786330831419655800",
+              "ctimeNs": "1786330831419655800"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211983",
+              "mode": "33206",
+              "size": "200",
+              "mtimeNs": "1786333899309807800",
+              "ctimeNs": "1786333899309807800"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211986",
+              "mode": "33206",
+              "size": "14808",
+              "mtimeNs": "1786330831654380600",
+              "ctimeNs": "1786330831654380600"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211985",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211984",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211987",
+              "mode": "33206",
+              "size": "10547",
+              "mtimeNs": "1786333820306117000",
+              "ctimeNs": "1786333820306117000"
+            }
+          }
+        ]
+      }
+    },
+    "final-reserved": {
+      "state": "verified",
+      "scope": "final",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "4b6b9e6a32c392cd78986dd21bb622f7bfbb621e20d9a353a1655a28e4469d2b",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "292",
+            "sha256": "fbe0ae4291702ae384faa2cb172e2e120dafbdbf3c3078060b2d6de807872e96"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "21399",
+            "sha256": "3d99efb65372d2f6709f9ede9e67eeefd57ac3ee0a2e4edaae8b08d9e44d688d"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9781",
+            "sha256": "12cde815158a79171a4e908ac67ee57a5766c4a70014f895ba75b8286a5551e7"
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3708",
+            "sha256": "847c7441cf6e79e95b16398a651bb3275de6eec7c6bcff959b6d1febfd5b214c"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "22554",
+            "sha256": "8a97acf8ae242701ad737f4d12b0674f58fe118e3c6a8624c6c5bf2bca3689bb"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4314",
+            "sha256": "c664596cf49a9742683d1902e1ce6041d55050601e363f5ac456f49e8ff97eb2"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "19587",
+            "sha256": "50ade313af690cdc08990b884510e259af1ef537f8e64b35a2fa1ba89cfecf09"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4067",
+            "sha256": "42d9292b53ce3abc39e1ea3a57a4d40b40317dd50f748a2cdef969dd5975091d"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "200",
+            "sha256": "183140c25015fe59bd91278570812984ce1f09b4dca97ea1291e01755a3eed30"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14808",
+            "sha256": "40b1a5520af35470fe47ae24ba19a546212f309b0c3ef2f7f092b658be297c54"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10547",
+            "sha256": "be33df1709cb8b67f458e7ca344e2a648c43b35d54a013daa3457efc767fe158"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2814749777897216",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "559568424d343c58780f14c03e415166f71c23ba8971744b968fb847e661edc0",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "844424940922626",
+              "mode": "33206",
+              "size": "292",
+              "mtimeNs": "1786358208981609600",
+              "ctimeNs": "1786358208981609600"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211972",
+              "mode": "33206",
+              "size": "21399",
+              "mtimeNs": "1786330831518885000",
+              "ctimeNs": "1786330831518885000"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211974",
+              "mode": "33206",
+              "size": "9781",
+              "mtimeNs": "1786333801919911700",
+              "ctimeNs": "1786333801919911700"
+            }
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211975",
+              "mode": "33206",
+              "size": "3708",
+              "mtimeNs": "1786346791638404900",
+              "ctimeNs": "1786346791638404900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211976",
+              "mode": "33206",
+              "size": "22554",
+              "mtimeNs": "1786346699953438900",
+              "ctimeNs": "1786346699953438900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211977",
+              "mode": "33206",
+              "size": "4314",
+              "mtimeNs": "1786358208975179400",
+              "ctimeNs": "1786358208975179400"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211978",
+              "mode": "33206",
+              "size": "19587",
+              "mtimeNs": "1786333741542442000",
+              "ctimeNs": "1786333741542442000"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211973",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211982",
+              "mode": "33206",
+              "size": "4067",
+              "mtimeNs": "1786330831419655800",
+              "ctimeNs": "1786330831419655800"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211983",
+              "mode": "33206",
+              "size": "200",
+              "mtimeNs": "1786333899309807800",
+              "ctimeNs": "1786333899309807800"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211986",
+              "mode": "33206",
+              "size": "14808",
+              "mtimeNs": "1786330831654380600",
+              "ctimeNs": "1786330831654380600"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211985",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211984",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949964211987",
+              "mode": "33206",
+              "size": "10547",
+              "mtimeNs": "1786333820306117000",
+              "ctimeNs": "1786333820306117000"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "4b6b9e6a32c392cd78986dd21bb622f7bfbb621e20d9a353a1655a28e4469d2b",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "292",
+            "sha256": "fbe0ae4291702ae384faa2cb172e2e120dafbdbf3c3078060b2d6de807872e96"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "21399",
+            "sha256": "3d99efb65372d2f6709f9ede9e67eeefd57ac3ee0a2e4edaae8b08d9e44d688d"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9781",
+            "sha256": "12cde815158a79171a4e908ac67ee57a5766c4a70014f895ba75b8286a5551e7"
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3708",
+            "sha256": "847c7441cf6e79e95b16398a651bb3275de6eec7c6bcff959b6d1febfd5b214c"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "22554",
+            "sha256": "8a97acf8ae242701ad737f4d12b0674f58fe118e3c6a8624c6c5bf2bca3689bb"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4314",
+            "sha256": "c664596cf49a9742683d1902e1ce6041d55050601e363f5ac456f49e8ff97eb2"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "19587",
+            "sha256": "50ade313af690cdc08990b884510e259af1ef537f8e64b35a2fa1ba89cfecf09"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4067",
+            "sha256": "42d9292b53ce3abc39e1ea3a57a4d40b40317dd50f748a2cdef969dd5975091d"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "200",
+            "sha256": "183140c25015fe59bd91278570812984ce1f09b4dca97ea1291e01755a3eed30"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14808",
+            "sha256": "40b1a5520af35470fe47ae24ba19a546212f309b0c3ef2f7f092b658be297c54"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10547",
+            "sha256": "be33df1709cb8b67f458e7ca344e2a648c43b35d54a013daa3457efc767fe158"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "3940649684288377",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "e61482c93020bb647776b2a106b7d981d4dc1650990bd66d866573af73ad91ef",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324847765261",
+              "mode": "33206",
+              "size": "292",
+              "mtimeNs": "1786358208981609600",
+              "ctimeNs": "1786358208981609600"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343956",
+              "mode": "33206",
+              "size": "21399",
+              "mtimeNs": "1786330831518885000",
+              "ctimeNs": "1786330831518885000"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343958",
+              "mode": "33206",
+              "size": "9781",
+              "mtimeNs": "1786333801919911700",
+              "ctimeNs": "1786333801919911700"
+            }
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343959",
+              "mode": "33206",
+              "size": "3708",
+              "mtimeNs": "1786346791638404900",
+              "ctimeNs": "1786346791638404900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343960",
+              "mode": "33206",
+              "size": "22554",
+              "mtimeNs": "1786346699953438900",
+              "ctimeNs": "1786346699953438900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343961",
+              "mode": "33206",
+              "size": "4314",
+              "mtimeNs": "1786358208975179400",
+              "ctimeNs": "1786358208975179400"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343962",
+              "mode": "33206",
+              "size": "19587",
+              "mtimeNs": "1786333741542442000",
+              "ctimeNs": "1786333741542442000"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343957",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343963",
+              "mode": "33206",
+              "size": "4067",
+              "mtimeNs": "1786330831419655800",
+              "ctimeNs": "1786330831419655800"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343964",
+              "mode": "33206",
+              "size": "200",
+              "mtimeNs": "1786333899309807800",
+              "ctimeNs": "1786333899309807800"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343967",
+              "mode": "33206",
+              "size": "14808",
+              "mtimeNs": "1786330831654380600",
+              "ctimeNs": "1786330831654380600"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343966",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343965",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899917633312",
+              "mode": "33206",
+              "size": "10547",
+              "mtimeNs": "1786333820306117000",
+              "ctimeNs": "1786333820306117000"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "4b6b9e6a32c392cd78986dd21bb622f7bfbb621e20d9a353a1655a28e4469d2b",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "292",
+            "sha256": "fbe0ae4291702ae384faa2cb172e2e120dafbdbf3c3078060b2d6de807872e96"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "21399",
+            "sha256": "3d99efb65372d2f6709f9ede9e67eeefd57ac3ee0a2e4edaae8b08d9e44d688d"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9781",
+            "sha256": "12cde815158a79171a4e908ac67ee57a5766c4a70014f895ba75b8286a5551e7"
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3708",
+            "sha256": "847c7441cf6e79e95b16398a651bb3275de6eec7c6bcff959b6d1febfd5b214c"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "22554",
+            "sha256": "8a97acf8ae242701ad737f4d12b0674f58fe118e3c6a8624c6c5bf2bca3689bb"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4314",
+            "sha256": "c664596cf49a9742683d1902e1ce6041d55050601e363f5ac456f49e8ff97eb2"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "19587",
+            "sha256": "50ade313af690cdc08990b884510e259af1ef537f8e64b35a2fa1ba89cfecf09"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4067",
+            "sha256": "42d9292b53ce3abc39e1ea3a57a4d40b40317dd50f748a2cdef969dd5975091d"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "200",
+            "sha256": "183140c25015fe59bd91278570812984ce1f09b4dca97ea1291e01755a3eed30"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14808",
+            "sha256": "40b1a5520af35470fe47ae24ba19a546212f309b0c3ef2f7f092b658be297c54"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10547",
+            "sha256": "be33df1709cb8b67f458e7ca344e2a648c43b35d54a013daa3457efc767fe158"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "3940649684288377",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "e61482c93020bb647776b2a106b7d981d4dc1650990bd66d866573af73ad91ef",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324847765261",
+              "mode": "33206",
+              "size": "292",
+              "mtimeNs": "1786358208981609600",
+              "ctimeNs": "1786358208981609600"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343956",
+              "mode": "33206",
+              "size": "21399",
+              "mtimeNs": "1786330831518885000",
+              "ctimeNs": "1786330831518885000"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343958",
+              "mode": "33206",
+              "size": "9781",
+              "mtimeNs": "1786333801919911700",
+              "ctimeNs": "1786333801919911700"
+            }
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343959",
+              "mode": "33206",
+              "size": "3708",
+              "mtimeNs": "1786346791638404900",
+              "ctimeNs": "1786346791638404900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343960",
+              "mode": "33206",
+              "size": "22554",
+              "mtimeNs": "1786346699953438900",
+              "ctimeNs": "1786346699953438900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343961",
+              "mode": "33206",
+              "size": "4314",
+              "mtimeNs": "1786358208975179400",
+              "ctimeNs": "1786358208975179400"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343962",
+              "mode": "33206",
+              "size": "19587",
+              "mtimeNs": "1786333741542442000",
+              "ctimeNs": "1786333741542442000"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343957",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343963",
+              "mode": "33206",
+              "size": "4067",
+              "mtimeNs": "1786330831419655800",
+              "ctimeNs": "1786330831419655800"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343964",
+              "mode": "33206",
+              "size": "200",
+              "mtimeNs": "1786333899309807800",
+              "ctimeNs": "1786333899309807800"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343967",
+              "mode": "33206",
+              "size": "14808",
+              "mtimeNs": "1786330831654380600",
+              "ctimeNs": "1786330831654380600"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343966",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343965",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899917633312",
+              "mode": "33206",
+              "size": "10547",
+              "mtimeNs": "1786333820306117000",
+              "ctimeNs": "1786333820306117000"
+            }
+          }
+        ]
+      }
+    },
+    "accounting-finalized": {
+      "state": "verified",
+      "scope": "final",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "4b6b9e6a32c392cd78986dd21bb622f7bfbb621e20d9a353a1655a28e4469d2b",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "292",
+            "sha256": "fbe0ae4291702ae384faa2cb172e2e120dafbdbf3c3078060b2d6de807872e96"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "21399",
+            "sha256": "3d99efb65372d2f6709f9ede9e67eeefd57ac3ee0a2e4edaae8b08d9e44d688d"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9781",
+            "sha256": "12cde815158a79171a4e908ac67ee57a5766c4a70014f895ba75b8286a5551e7"
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3708",
+            "sha256": "847c7441cf6e79e95b16398a651bb3275de6eec7c6bcff959b6d1febfd5b214c"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "22554",
+            "sha256": "8a97acf8ae242701ad737f4d12b0674f58fe118e3c6a8624c6c5bf2bca3689bb"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4314",
+            "sha256": "c664596cf49a9742683d1902e1ce6041d55050601e363f5ac456f49e8ff97eb2"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "19587",
+            "sha256": "50ade313af690cdc08990b884510e259af1ef537f8e64b35a2fa1ba89cfecf09"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4067",
+            "sha256": "42d9292b53ce3abc39e1ea3a57a4d40b40317dd50f748a2cdef969dd5975091d"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "200",
+            "sha256": "183140c25015fe59bd91278570812984ce1f09b4dca97ea1291e01755a3eed30"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14808",
+            "sha256": "40b1a5520af35470fe47ae24ba19a546212f309b0c3ef2f7f092b658be297c54"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10547",
+            "sha256": "be33df1709cb8b67f458e7ca344e2a648c43b35d54a013daa3457efc767fe158"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "3940649684288377",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "e61482c93020bb647776b2a106b7d981d4dc1650990bd66d866573af73ad91ef",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324847765261",
+              "mode": "33206",
+              "size": "292",
+              "mtimeNs": "1786358208981609600",
+              "ctimeNs": "1786358208981609600"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343956",
+              "mode": "33206",
+              "size": "21399",
+              "mtimeNs": "1786330831518885000",
+              "ctimeNs": "1786330831518885000"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343958",
+              "mode": "33206",
+              "size": "9781",
+              "mtimeNs": "1786333801919911700",
+              "ctimeNs": "1786333801919911700"
+            }
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343959",
+              "mode": "33206",
+              "size": "3708",
+              "mtimeNs": "1786346791638404900",
+              "ctimeNs": "1786346791638404900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343960",
+              "mode": "33206",
+              "size": "22554",
+              "mtimeNs": "1786346699953438900",
+              "ctimeNs": "1786346699953438900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343961",
+              "mode": "33206",
+              "size": "4314",
+              "mtimeNs": "1786358208975179400",
+              "ctimeNs": "1786358208975179400"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343962",
+              "mode": "33206",
+              "size": "19587",
+              "mtimeNs": "1786333741542442000",
+              "ctimeNs": "1786333741542442000"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343957",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343963",
+              "mode": "33206",
+              "size": "4067",
+              "mtimeNs": "1786330831419655800",
+              "ctimeNs": "1786330831419655800"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343964",
+              "mode": "33206",
+              "size": "200",
+              "mtimeNs": "1786333899309807800",
+              "ctimeNs": "1786333899309807800"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343967",
+              "mode": "33206",
+              "size": "14808",
+              "mtimeNs": "1786330831654380600",
+              "ctimeNs": "1786330831654380600"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343966",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343965",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899917633312",
+              "mode": "33206",
+              "size": "10547",
+              "mtimeNs": "1786333820306117000",
+              "ctimeNs": "1786333820306117000"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "2a7842114cc6c541738d41bd634b29122338930e28161e16ece0fbf55ec0952d",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "292",
+            "sha256": "fbe0ae4291702ae384faa2cb172e2e120dafbdbf3c3078060b2d6de807872e96"
+          },
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "executable": false,
+            "size": "1281",
+            "sha256": "2512801e7b7da9a8a01db0c65765bb5e1a5e06957b1ec040fdd48fa0f61aff6b"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "21399",
+            "sha256": "3d99efb65372d2f6709f9ede9e67eeefd57ac3ee0a2e4edaae8b08d9e44d688d"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9781",
+            "sha256": "12cde815158a79171a4e908ac67ee57a5766c4a70014f895ba75b8286a5551e7"
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3708",
+            "sha256": "847c7441cf6e79e95b16398a651bb3275de6eec7c6bcff959b6d1febfd5b214c"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "22554",
+            "sha256": "8a97acf8ae242701ad737f4d12b0674f58fe118e3c6a8624c6c5bf2bca3689bb"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4314",
+            "sha256": "c664596cf49a9742683d1902e1ce6041d55050601e363f5ac456f49e8ff97eb2"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "19587",
+            "sha256": "50ade313af690cdc08990b884510e259af1ef537f8e64b35a2fa1ba89cfecf09"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4067",
+            "sha256": "42d9292b53ce3abc39e1ea3a57a4d40b40317dd50f748a2cdef969dd5975091d"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "200",
+            "sha256": "183140c25015fe59bd91278570812984ce1f09b4dca97ea1291e01755a3eed30"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14808",
+            "sha256": "40b1a5520af35470fe47ae24ba19a546212f309b0c3ef2f7f092b658be297c54"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10547",
+            "sha256": "be33df1709cb8b67f458e7ca344e2a648c43b35d54a013daa3457efc767fe158"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "3940649684288377",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "dd6fe73531ed2d37e4454bff47da97cd3762d404d8f5be26e524c1d9ea6638ca",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324847765261",
+              "mode": "33206",
+              "size": "292",
+              "mtimeNs": "1786358208981609600",
+              "ctimeNs": "1786358208981609600"
+            }
+          },
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7318349405201226",
+              "mode": "33206",
+              "size": "1281",
+              "mtimeNs": "1786358209623562100",
+              "ctimeNs": "1786358209625370600"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343956",
+              "mode": "33206",
+              "size": "21399",
+              "mtimeNs": "1786330831518885000",
+              "ctimeNs": "1786330831518885000"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343958",
+              "mode": "33206",
+              "size": "9781",
+              "mtimeNs": "1786333801919911700",
+              "ctimeNs": "1786333801919911700"
+            }
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343959",
+              "mode": "33206",
+              "size": "3708",
+              "mtimeNs": "1786346791638404900",
+              "ctimeNs": "1786346791638404900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343960",
+              "mode": "33206",
+              "size": "22554",
+              "mtimeNs": "1786346699953438900",
+              "ctimeNs": "1786346699953438900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343961",
+              "mode": "33206",
+              "size": "4314",
+              "mtimeNs": "1786358208975179400",
+              "ctimeNs": "1786358208975179400"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343962",
+              "mode": "33206",
+              "size": "19587",
+              "mtimeNs": "1786333741542442000",
+              "ctimeNs": "1786333741542442000"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343957",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343963",
+              "mode": "33206",
+              "size": "4067",
+              "mtimeNs": "1786330831419655800",
+              "ctimeNs": "1786330831419655800"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343964",
+              "mode": "33206",
+              "size": "200",
+              "mtimeNs": "1786333899309807800",
+              "ctimeNs": "1786333899309807800"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343967",
+              "mode": "33206",
+              "size": "14808",
+              "mtimeNs": "1786330831654380600",
+              "ctimeNs": "1786330831654380600"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343966",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343965",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899917633312",
+              "mode": "33206",
+              "size": "10547",
+              "mtimeNs": "1786333820306117000",
+              "ctimeNs": "1786333820306117000"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "2a7842114cc6c541738d41bd634b29122338930e28161e16ece0fbf55ec0952d",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "292",
+            "sha256": "fbe0ae4291702ae384faa2cb172e2e120dafbdbf3c3078060b2d6de807872e96"
+          },
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "executable": false,
+            "size": "1281",
+            "sha256": "2512801e7b7da9a8a01db0c65765bb5e1a5e06957b1ec040fdd48fa0f61aff6b"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "21399",
+            "sha256": "3d99efb65372d2f6709f9ede9e67eeefd57ac3ee0a2e4edaae8b08d9e44d688d"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9781",
+            "sha256": "12cde815158a79171a4e908ac67ee57a5766c4a70014f895ba75b8286a5551e7"
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3708",
+            "sha256": "847c7441cf6e79e95b16398a651bb3275de6eec7c6bcff959b6d1febfd5b214c"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "22554",
+            "sha256": "8a97acf8ae242701ad737f4d12b0674f58fe118e3c6a8624c6c5bf2bca3689bb"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4314",
+            "sha256": "c664596cf49a9742683d1902e1ce6041d55050601e363f5ac456f49e8ff97eb2"
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "executable": false,
+            "size": "19587",
+            "sha256": "50ade313af690cdc08990b884510e259af1ef537f8e64b35a2fa1ba89cfecf09"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "4067",
+            "sha256": "42d9292b53ce3abc39e1ea3a57a4d40b40317dd50f748a2cdef969dd5975091d"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "200",
+            "sha256": "183140c25015fe59bd91278570812984ce1f09b4dca97ea1291e01755a3eed30"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "14808",
+            "sha256": "40b1a5520af35470fe47ae24ba19a546212f309b0c3ef2f7f092b658be297c54"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10547",
+            "sha256": "be33df1709cb8b67f458e7ca344e2a648c43b35d54a013daa3457efc767fe158"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "3940649684288377",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "dd6fe73531ed2d37e4454bff47da97cd3762d404d8f5be26e524c1d9ea6638ca",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324847765261",
+              "mode": "33206",
+              "size": "292",
+              "mtimeNs": "1786358208981609600",
+              "ctimeNs": "1786358208981609600"
+            }
+          },
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7318349405201226",
+              "mode": "33206",
+              "size": "1281",
+              "mtimeNs": "1786358209623562100",
+              "ctimeNs": "1786358209625370600"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343956",
+              "mode": "33206",
+              "size": "21399",
+              "mtimeNs": "1786330831518885000",
+              "ctimeNs": "1786330831518885000"
+            }
+          },
+          {
+            "path": "evidence/implementation-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343958",
+              "mode": "33206",
+              "size": "9781",
+              "mtimeNs": "1786333801919911700",
+              "ctimeNs": "1786333801919911700"
+            }
+          },
+          {
+            "path": "evidence/review-cycle-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343959",
+              "mode": "33206",
+              "size": "3708",
+              "mtimeNs": "1786346791638404900",
+              "ctimeNs": "1786346791638404900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343960",
+              "mode": "33206",
+              "size": "22554",
+              "mtimeNs": "1786346699953438900",
+              "ctimeNs": "1786346699953438900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343961",
+              "mode": "33206",
+              "size": "4314",
+              "mtimeNs": "1786358208975179400",
+              "ctimeNs": "1786358208975179400"
+            }
+          },
+          {
+            "path": "evidence/spec-falsification-sweep.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343962",
+              "mode": "33206",
+              "size": "19587",
+              "mtimeNs": "1786333741542442000",
+              "ctimeNs": "1786333741542442000"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343957",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343963",
+              "mode": "33206",
+              "size": "4067",
+              "mtimeNs": "1786330831419655800",
+              "ctimeNs": "1786330831419655800"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343964",
+              "mode": "33206",
+              "size": "200",
+              "mtimeNs": "1786333899309807800",
+              "ctimeNs": "1786333899309807800"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343967",
+              "mode": "33206",
+              "size": "14808",
+              "mtimeNs": "1786330831654380600",
+              "ctimeNs": "1786330831654380600"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343966",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894343965",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899917633312",
+              "mode": "33206",
+              "size": "10547",
+              "mtimeNs": "1786333820306117000",
+              "ctimeNs": "1786333820306117000"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "finalReservation": {
+    "identity": {
+      "dev": "3122291782",
+      "ino": "3940649684288377",
+      "mode": "16822",
+      "size": "0",
+      "mtimeNs": "0",
+      "ctimeNs": "0"
+    },
+    "entries": [
+      {
+        "path": ".openspec.yaml",
+        "kind": "file",
+        "expected": {
+          "path": ".openspec.yaml",
+          "kind": "file",
+          "executable": false,
+          "size": "292",
+          "sha256": "fbe0ae4291702ae384faa2cb172e2e120dafbdbf3c3078060b2d6de807872e96"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1970324847765261",
+          "mode": "33206",
+          "size": "292",
+          "mtimeNs": "1786358208981609600",
+          "ctimeNs": "1786358208981609600"
+        }
+      },
+      {
+        "path": "design.md",
+        "kind": "file",
+        "expected": {
+          "path": "design.md",
+          "kind": "file",
+          "executable": false,
+          "size": "21399",
+          "sha256": "3d99efb65372d2f6709f9ede9e67eeefd57ac3ee0a2e4edaae8b08d9e44d688d"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1407374894343956",
+          "mode": "33206",
+          "size": "21399",
+          "mtimeNs": "1786330831518885000",
+          "ctimeNs": "1786330831518885000"
+        }
+      },
+      {
+        "path": "evidence",
+        "kind": "directory",
+        "expected": {
+          "path": "evidence",
+          "kind": "directory"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1407374894343957",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        }
+      },
+      {
+        "path": "evidence/implementation-report.md",
+        "kind": "file",
+        "expected": {
+          "path": "evidence/implementation-report.md",
+          "kind": "file",
+          "executable": false,
+          "size": "9781",
+          "sha256": "12cde815158a79171a4e908ac67ee57a5766c4a70014f895ba75b8286a5551e7"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1407374894343958",
+          "mode": "33206",
+          "size": "9781",
+          "mtimeNs": "1786333801919911700",
+          "ctimeNs": "1786333801919911700"
+        }
+      },
+      {
+        "path": "evidence/review-cycle-report.md",
+        "kind": "file",
+        "expected": {
+          "path": "evidence/review-cycle-report.md",
+          "kind": "file",
+          "executable": false,
+          "size": "3708",
+          "sha256": "847c7441cf6e79e95b16398a651bb3275de6eec7c6bcff959b6d1febfd5b214c"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1407374894343959",
+          "mode": "33206",
+          "size": "3708",
+          "mtimeNs": "1786346791638404900",
+          "ctimeNs": "1786346791638404900"
+        }
+      },
+      {
+        "path": "evidence/review-report.md",
+        "kind": "file",
+        "expected": {
+          "path": "evidence/review-report.md",
+          "kind": "file",
+          "executable": false,
+          "size": "22554",
+          "sha256": "8a97acf8ae242701ad737f4d12b0674f58fe118e3c6a8624c6c5bf2bca3689bb"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1407374894343960",
+          "mode": "33206",
+          "size": "22554",
+          "mtimeNs": "1786346699953438900",
+          "ctimeNs": "1786346699953438900"
+        }
+      },
+      {
+        "path": "evidence/ship-log.md",
+        "kind": "file",
+        "expected": {
+          "path": "evidence/ship-log.md",
+          "kind": "file",
+          "executable": false,
+          "size": "4314",
+          "sha256": "c664596cf49a9742683d1902e1ce6041d55050601e363f5ac456f49e8ff97eb2"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1407374894343961",
+          "mode": "33206",
+          "size": "4314",
+          "mtimeNs": "1786358208975179400",
+          "ctimeNs": "1786358208975179400"
+        }
+      },
+      {
+        "path": "evidence/spec-falsification-sweep.md",
+        "kind": "file",
+        "expected": {
+          "path": "evidence/spec-falsification-sweep.md",
+          "kind": "file",
+          "executable": false,
+          "size": "19587",
+          "sha256": "50ade313af690cdc08990b884510e259af1ef537f8e64b35a2fa1ba89cfecf09"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1407374894343962",
+          "mode": "33206",
+          "size": "19587",
+          "mtimeNs": "1786333741542442000",
+          "ctimeNs": "1786333741542442000"
+        }
+      },
+      {
+        "path": "proposal.md",
+        "kind": "file",
+        "expected": {
+          "path": "proposal.md",
+          "kind": "file",
+          "executable": false,
+          "size": "4067",
+          "sha256": "42d9292b53ce3abc39e1ea3a57a4d40b40317dd50f748a2cdef969dd5975091d"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1407374894343963",
+          "mode": "33206",
+          "size": "4067",
+          "mtimeNs": "1786330831419655800",
+          "ctimeNs": "1786330831419655800"
+        }
+      },
+      {
+        "path": "README.md",
+        "kind": "file",
+        "expected": {
+          "path": "README.md",
+          "kind": "file",
+          "executable": false,
+          "size": "200",
+          "sha256": "183140c25015fe59bd91278570812984ce1f09b4dca97ea1291e01755a3eed30"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1407374894343964",
+          "mode": "33206",
+          "size": "200",
+          "mtimeNs": "1786333899309807800",
+          "ctimeNs": "1786333899309807800"
+        }
+      },
+      {
+        "path": "specs",
+        "kind": "directory",
+        "expected": {
+          "path": "specs",
+          "kind": "directory"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1407374894343965",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        }
+      },
+      {
+        "path": "specs/transaction-automation-api",
+        "kind": "directory",
+        "expected": {
+          "path": "specs/transaction-automation-api",
+          "kind": "directory"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1407374894343966",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        }
+      },
+      {
+        "path": "specs/transaction-automation-api/spec.md",
+        "kind": "file",
+        "expected": {
+          "path": "specs/transaction-automation-api/spec.md",
+          "kind": "file",
+          "executable": false,
+          "size": "14808",
+          "sha256": "40b1a5520af35470fe47ae24ba19a546212f309b0c3ef2f7f092b658be297c54"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1407374894343967",
+          "mode": "33206",
+          "size": "14808",
+          "mtimeNs": "1786330831654380600",
+          "ctimeNs": "1786330831654380600"
+        }
+      },
+      {
+        "path": "tasks.md",
+        "kind": "file",
+        "expected": {
+          "path": "tasks.md",
+          "kind": "file",
+          "executable": false,
+          "size": "10547",
+          "sha256": "be33df1709cb8b67f458e7ca344e2a648c43b35d54a013daa3457efc767fe158"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "1125899917633312",
+          "mode": "33206",
+          "size": "10547",
+          "mtimeNs": "1786333820306117000",
+          "ctimeNs": "1786333820306117000"
+        }
+      }
+    ]
+  },
+  "specProgress": [
+    {
+      "actionId": "83ce3f81833e039dfba7e7a734e786433516fafcfd86648cd0969b6be4890c9d",
+      "action": "update",
+      "target": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\specs\\transaction-automation-api\\spec.md",
+      "backupOrQuarantine": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\specs\\transaction-automation-api\\.rasen-archive-spec-fd1db41b-363f-4144-a12a-ce075c2fd9ed-83ce3f81833e\\original",
+      "temporary": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\specs\\transaction-automation-api\\.rasen-archive-spec-fd1db41b-363f-4144-a12a-ce075c2fd9ed-83ce3f81833e\\result.tmp",
+      "state": "complete",
+      "claimIdentity": {
+        "dev": "3122291782",
+        "ino": "1407374894343947",
+        "mode": "16822",
+        "size": "0",
+        "mtimeNs": "0",
+        "ctimeNs": "0"
+      },
+      "temporaryIdentity": {
+        "dev": "3122291782",
+        "ino": "2251799824475907",
+        "mode": "33206",
+        "size": "63309",
+        "mtimeNs": "1786358209045792600",
+        "ctimeNs": "1786358209045792600"
+      },
+      "publishedIdentity": {
+        "dev": "3122291782",
+        "ino": "2251799824475907",
+        "mode": "33206",
+        "size": "63309",
+        "mtimeNs": "1786358209045792600",
+        "ctimeNs": "1786358209067897400"
+      }
+    }
+  ],
+  "cleanerProgress": [
+    {
+      "path": "auto-run.json",
+      "state": "deleted"
+    }
+  ],
+  "sourceProgress": {
+    "state": "removed",
+    "quarantine": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\.rasen-archive-source-fd1db41b-363f-4144-a12a-ce075c2fd9ed\\s0304-ui-commit-routing"
+  },
+  "updatedAt": "2026-08-10T10:36:49.801Z"
+}

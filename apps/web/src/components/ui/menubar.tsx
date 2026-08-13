@@ -4,13 +4,19 @@ import * as React from "react";
 import { Menubar as MenubarPrimitive } from "radix-ui";
 import { Check, ChevronRight, Circle } from "lucide-react";
 
+import { useSurfacePortalContainer } from "@/editor/surface/embedding/surface-portal";
 import { cn } from "@/utils/ui";
 
 const MenubarMenu = MenubarPrimitive.Menu;
 
 const MenubarGroup = MenubarPrimitive.Group;
 
-const MenubarPortal = MenubarPrimitive.Portal;
+function MenubarPortal(
+	props: React.ComponentProps<typeof MenubarPrimitive.Portal>,
+) {
+	const container = useSurfacePortalContainer(props.container);
+	return <MenubarPrimitive.Portal {...props} container={container} />;
+}
 
 const MenubarSub = MenubarPrimitive.Sub;
 
@@ -90,7 +96,7 @@ const MenubarContent = React.forwardRef<
 		{ className, align = "start", alignOffset = -4, sideOffset = 8, ...props },
 		ref,
 	) => (
-		<MenubarPrimitive.Portal>
+		<MenubarPortal>
 			<MenubarPrimitive.Content
 				ref={ref}
 				align={align}
@@ -102,7 +108,7 @@ const MenubarContent = React.forwardRef<
 				)}
 				{...props}
 			/>
-		</MenubarPrimitive.Portal>
+		</MenubarPortal>
 	),
 );
 MenubarContent.displayName = MenubarPrimitive.Content.displayName;

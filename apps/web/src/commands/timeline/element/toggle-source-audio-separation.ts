@@ -1,14 +1,14 @@
-import { EditorCore } from "@/core";
-import { Command, type CommandResult } from "@/commands/base-command";
+import {
+	Command,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
 import {
 	buildSeparatedAudioElement,
 	canExtractSourceAudio,
 	isSourceAudioSeparated,
 } from "@/timeline/audio-separation";
-import {
-	applyPlacement,
-	resolveTrackPlacement,
-} from "@/timeline/placement";
+import { applyPlacement, resolveTrackPlacement } from "@/timeline/placement";
 import { updateElementInSceneTracks } from "@/timeline/track-element-update";
 import type {
 	SceneTracks,
@@ -18,6 +18,8 @@ import type {
 import { generateUUID } from "@/utils/id";
 
 export class ToggleSourceAudioSeparationCommand extends Command {
+	readonly routingClass = "provider-private" as const;
+
 	private savedState: SceneTracks | null = null;
 
 	constructor(
@@ -29,8 +31,7 @@ export class ToggleSourceAudioSeparationCommand extends Command {
 		super();
 	}
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		this.savedState = editor.scenes.getActiveScene().tracks;
 
 		const sourceTrack = [
@@ -110,12 +111,11 @@ export class ToggleSourceAudioSeparationCommand extends Command {
 		);
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (!this.savedState) {
 			return;
 		}
 
-		const editor = EditorCore.getInstance();
 		editor.timeline.updateTracks(this.savedState);
 	}
 }

@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { formatTimecode } from "opencut-wasm";
-import { invokeAction } from "@/actions";
+import { useActionInvoker } from "@/actions/action-scope";
 import { EditableTimecode } from "@/components/editable-timecode";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,8 +22,8 @@ import {
 import { PREVIEW_ZOOM_PRESETS } from "@/preview/zoom";
 import { usePreviewViewport } from "./preview-viewport";
 import { GridPopover } from "./guide-popover";
-import { usePreviewStore } from "@/preview/preview-store";
-import type { MediaTime } from "@/wasm";
+import { usePreviewStore } from "@/editor/use-session-store";
+import { usePlaybackTime } from "./use-playback-time";
 
 export function PreviewToolbar({
 	onToggleFullscreen,
@@ -60,21 +59,10 @@ export function PreviewToolbar({
 }
 
 function TimecodeDisplay() {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const totalDuration = useEditor((e) => e.timeline.getTotalDuration());
 	const fps = useEditor((e) => e.project.getActive().settings.fps);
-	const [currentTime, setCurrentTime] = useState<MediaTime>(() =>
-		editor.playback.getCurrentTime(),
-	);
-
-	useEffect(() => {
-		const unsubscribeUpdate = editor.playback.onUpdate(setCurrentTime);
-		const unsubscribeSeek = editor.playback.onSeek(setCurrentTime);
-		return () => {
-			unsubscribeUpdate();
-			unsubscribeSeek();
-		};
-	}, [editor.playback]);
+	const currentTime = usePlaybackTime();
 
 	return (
 		<div className="flex items-center">
@@ -132,6 +120,7 @@ function ZoomSelect() {
 }
 
 function PlayPauseButton() {
+	const invokeAction = useActionInvoker();
 	const isPlaying = useEditor((e) => e.playback.getIsPlaying());
 
 	return (

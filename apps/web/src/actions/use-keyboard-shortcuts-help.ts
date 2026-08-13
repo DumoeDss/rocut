@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useKeybindingsStore } from "@/actions/keybindings-store";
+import { useKeybindingsStore } from "@/editor/use-session-store";
 import { ACTIONS, type TActionWithOptionalArgs } from "@/actions";
 import {
 	getPlatformAlternateKey,

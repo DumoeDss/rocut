@@ -2,29 +2,79 @@ import { useCallback, useState } from "react";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { EditorProvider } from "@/components/providers/editor-provider";
 import { MobileGate } from "@/components/editor/mobile-gate";
-import { EditorRoot } from "@/editor/surface/editor-root";
+import { SessionEditorSurface } from "@/editor/surface/embedding/session-surface-bridge";
 import { ViteEditorHost } from "./host/vite-editor-host";
+import { createViteEditorHost } from "./host/vite-host-config";
 import { ProjectPicker } from "./project-picker";
 import { EditorErrorBoundary } from "./editor-error-boundary";
+import { C3SessionHarness } from "./c3-session-harness";
+import { C4ForcedNoneHarness } from "./c4-forced-none-harness";
+import { C4WorkerHarness } from "./c4-worker-harness";
+import { C4SessionHarness } from "./c4-session-harness";
+import { C6DisposalHarness } from "@/editor/session/c6-disposal-harness";
+import { BrowserProjectStore } from "@/services/storage/browser-project-store";
+
+const C4_BUILD_MARKER = import.meta.env.VITE_C4_BUILD_MARKER ?? "development";
 
 function readProjectIdFromUrl(): string | null {
 	return new URLSearchParams(window.location.search).get("project");
 }
 
 export function App() {
+	if (
+		new URLSearchParams(window.location.search).get(
+			"c4-forced-none-harness",
+		) === "1"
+	) {
+		return <C4ForcedNoneHarness />;
+	}
+	if (
+		new URLSearchParams(window.location.search).get("c4-session-harness") ===
+		"1"
+	) {
+		return <C4SessionHarness />;
+	}
+	if (
+		new URLSearchParams(window.location.search).get("c4-worker-harness") === "1"
+	) {
+		return <C4WorkerHarness />;
+	}
+	if (
+		new URLSearchParams(window.location.search).get("c3-session-harness") ===
+		"1"
+	) {
+		return <C3SessionHarness />;
+	}
+	if (
+		new URLSearchParams(window.location.search).get("c6-disposal-harness") ===
+		"1"
+	) {
+		return (
+			<C6DisposalHarness
+				createHost={({ projectId, onProjectReplaced, onExitProject }) =>
+					createViteEditorHost({
+						projectId,
+						onProjectIdChange: onProjectReplaced,
+						onExitProject,
+					})
+				}
+				isDurableBrowserStore={(store) => store instanceof BrowserProjectStore}
+				buildMarker={import.meta.env.VITE_C6_BUILD_MARKER ?? "development"}
+			/>
+		);
+	}
+	return <EditorApp />;
+}
+
+function EditorApp() {
 	const [projectId, setProjectId] = useState<string | null>(
 		readProjectIdFromUrl,
 	);
 
 	const openProject = useCallback((id: string) => {
 		setProjectId(id);
-		window.history.replaceState(
-			null,
-			"",
-			`?project=${encodeURIComponent(id)}`,
-		);
+		window.history.replaceState(null, "", `?project=${encodeURIComponent(id)}`);
 	}, []);
 
 	const exitProject = useCallback(() => {
@@ -44,7 +94,13 @@ export function App() {
 				<Toaster />
 				<HostChrome>
 					{projectId === null ? (
-						<ProjectPicker onOpen={openProject} />
+						<ViteEditorHost
+							projectId="project-picker"
+							onProjectIdChange={setProjectId}
+							onExitProject={exitProject}
+						>
+							<ProjectPicker onOpen={openProject} />
+						</ViteEditorHost>
 					) : (
 						<EditorErrorBoundary>
 							<ViteEditorHost
@@ -53,9 +109,7 @@ export function App() {
 								onExitProject={exitProject}
 							>
 								<MobileGate>
-									<EditorProvider>
-										<EditorRoot />
-									</EditorProvider>
+									<SessionEditorSurface focusMode="focused" />
 								</MobileGate>
 							</ViteEditorHost>
 						</EditorErrorBoundary>
@@ -77,6 +131,7 @@ export function App() {
 function HostChrome({ children }: { children: React.ReactNode }) {
 	return (
 		<div
+			data-c4-build-marker={C4_BUILD_MARKER}
 			style={{
 				height: "100vh",
 				display: "flex",

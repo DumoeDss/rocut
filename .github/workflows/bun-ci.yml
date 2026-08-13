@@ -31,7 +31,7 @@ jobs:
       MARBLE_WORKSPACE_KEY: "placeholder"
       FREESOUND_CLIENT_ID: "placeholder"
       FREESOUND_API_KEY: "placeholder"
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -53,8 +53,13 @@ jobs:
             target
           key: ${{ runner.os }}-cargo-${{ hashFiles('Cargo.lock') }}
 
+      # Routed through the script rather than calling wasm-pack directly, so CI
+      # builds the artifact the same way `bun run build:wasm` does. The script
+      # applies `--remap-path-prefix`, which keeps the runner's absolute paths out
+      # of a binary that is now redistributed. Calling wasm-pack here directly
+      # would silently produce a differently-provenanced artifact from the local one.
       - name: Build WASM
-        run: wasm-pack build rust/wasm --target bundler --out-dir pkg
+        run: node script/build-wasm.mjs
 
       - name: Install Bun
         uses: oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76
@@ -70,6 +75,24 @@ jobs:
       - name: Install dependencies
         working-directory: apps/web
         run: bun install
+
+      # MUST stay after "Install dependencies": it asserts what the install
+      # actually RESOLVED, not what the manifests declare. A stale or registry
+      # copy of `opencut-wasm` passes every other gate in this workflow — the
+      # type baseline, both Host builds and the parity fixture all succeed
+      # against the wrong artifact — so this is the only step that can catch it.
+      - name: Verify the resolved wasm is the self-built artifact
+        run: node script/check-wasm-source.mjs
+
+      # An unremapped artifact is behaviourally perfect — it passes the type
+      # baseline, both Host builds, the parity fixture and the check above. This
+      # is the only step that can tell the difference, so without it the single
+      # remapping build path is convention rather than enforcement.
+      - name: Verify the redistributed wasm discloses no build-machine paths
+        run: node script/check-wasm-paths.mjs
+
+      - name: Verify the exact additive wasm API surface
+        run: node script/check-wasm-api-surface.mjs
 
       - name: Build
         working-directory: apps/web

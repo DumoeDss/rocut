@@ -1,0 +1,46 @@
+{
+  "change": "s0304-ui-commit-routing",
+  "archivedAt": "2026-08-10T10:36:34.813Z",
+  "codeCommit": "e244262538262cc84eae8bb81e9b4de542ed630f",
+  "planningBranch": "recovery/s0304-ui-commit-routing-final",
+  "planningTreeState": "dirty",
+  "evidence": [
+    {
+      "path": "evidence/implementation-report.md",
+      "sha256": "12cde815158a79171a4e908ac67ee57a5766c4a70014f895ba75b8286a5551e7"
+    },
+    {
+      "path": "evidence/review-cycle-report.md",
+      "sha256": "847c7441cf6e79e95b16398a651bb3275de6eec7c6bcff959b6d1febfd5b214c"
+    },
+    {
+      "path": "evidence/review-report.md",
+      "sha256": "8a97acf8ae242701ad737f4d12b0674f58fe118e3c6a8624c6c5bf2bca3689bb"
+    },
+    {
+      "path": "evidence/ship-log.md",
+      "sha256": "c664596cf49a9742683d1902e1ce6041d55050601e363f5ac456f49e8ff97eb2"
+    },
+    {
+      "path": "evidence/spec-falsification-sweep.md",
+      "sha256": "50ade313af690cdc08990b884510e259af1ef537f8e64b35a2fa1ba89cfecf09"
+    }
+  ],
+  "probes": [],
+  "handoffAbsorbed": [
+    {
+      "file": "handoff/design-audit-1.md",
+      "outcome": "absorbed"
+    },
+    {
+      "file": "handoff/implementer-1.md",
+      "outcome": "absorbed"
+    }
+  ],
+  "ephemeraDiscarded": [
+    "auto-run.json"
+  ],
+  "missing": [
+    "verification-report"
+  ]
+}

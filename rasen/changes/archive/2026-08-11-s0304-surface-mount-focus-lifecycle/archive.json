@@ -1,0 +1,137 @@
+{
+  "change": "s0304-surface-mount-focus-lifecycle",
+  "archivedAt": "2026-08-11T12:15:48.148Z",
+  "codeCommit": "a239a86fbc4787bcd44a7291acb3bfa53f285728",
+  "planningBranch": "recovery/s0304-ui-commit-routing-final",
+  "planningTreeState": "dirty",
+  "evidence": [
+    {
+      "path": "evidence/artifact-hashes.sha256",
+      "sha256": "5fcc164278edd57388c9b70cb8eff6e52d8ba94611d07f30e20f25da19299b51"
+    },
+    {
+      "path": "evidence/browser-surface/next/01-unmounted-baseline.png",
+      "sha256": "d36da1f24a31a55ff768120cce7698f0051a8f332addf6c7c87982d4bcbc0a78"
+    },
+    {
+      "path": "evidence/browser-surface/next/02-remounted-ready.png",
+      "sha256": "9e7dfba06d3ad74fb7ddf93d9b8d628f756e671a6608827bac86c3c85a0be2df"
+    },
+    {
+      "path": "evidence/browser-surface/next/03-focus-matrix.png",
+      "sha256": "f3487dc285b8e7d017ba7a6f33c082849e82080108b996c78b381bb851ac921c"
+    },
+    {
+      "path": "evidence/browser-surface/next/04-visible-after-resource-resume.png",
+      "sha256": "3854b950d59247141d76c95f18fee79b6e62887f119b3d13c6c6c0cd831133d9"
+    },
+    {
+      "path": "evidence/browser-surface/next/05-host-disposal-cycles.png",
+      "sha256": "d36da1f24a31a55ff768120cce7698f0051a8f332addf6c7c87982d4bcbc0a78"
+    },
+    {
+      "path": "evidence/browser-surface/next/06-s02-disposal-oracle.png",
+      "sha256": "3cd83495bc8653ff4bf7d4d262abfd564b17ecf24a1a63ed0dd987883c6b74fa"
+    },
+    {
+      "path": "evidence/browser-surface/next/07-c4-worker-post-load.png",
+      "sha256": "41240b102c23ea5fe26fa6298fecb67445c20903809aaa3393b570f4be6292d4"
+    },
+    {
+      "path": "evidence/browser-surface/next/08-c4-forced-none-post-load.png",
+      "sha256": "fa7d71b02478e6ab8fa4acd1fb83745897f5cde2d6223775b8709816a0ddd271"
+    },
+    {
+      "path": "evidence/browser-surface/next/ledger-next.json",
+      "sha256": "9d20e68c0bdd5a6cb462c37b00278be7637a6ee609896f58f47b61901dae4f6b"
+    },
+    {
+      "path": "evidence/browser-surface/next/measurements-next.json",
+      "sha256": "7d698a11f3fdf4cc93c5068827a22f0968416baa1d04a86b2bb3d84cdb44fdbc"
+    },
+    {
+      "path": "evidence/browser-surface/next/s02-disposal-oracle-next.json",
+      "sha256": "e85a80e1d3904d91f10b93f693cccff97d9652cb6c36f75e608570602c2cdbb1"
+    },
+    {
+      "path": "evidence/browser-surface/results-next-c4.json",
+      "sha256": "a78c0194f85aadca2cd6eb49177402baf56bb53ca8d687eef686440012ecf555"
+    },
+    {
+      "path": "evidence/browser-surface/results-next.json",
+      "sha256": "ec7f4cfb842d8dc5d6221f7cd59a220bc4446eb62ec08a84c67bd180f465ec4c"
+    },
+    {
+      "path": "evidence/browser-surface/results-vite.json",
+      "sha256": "fdf1149354e4610c917ed75468bc0acd23c19f61a9ce4709d73f92f4157f4868"
+    },
+    {
+      "path": "evidence/browser-surface/vite/01-unmounted-baseline.png",
+      "sha256": "3bb9e19bbf1b4ade9ec546e2d15022bdf6a5b46a6f9091f144091f6bc3ae7a2e"
+    },
+    {
+      "path": "evidence/browser-surface/vite/02-remounted-ready.png",
+      "sha256": "9a40964829606a7fd97dd13049dd21264b5818a7f9521ca040d0143f6ef6c5c2"
+    },
+    {
+      "path": "evidence/browser-surface/vite/03-focus-matrix.png",
+      "sha256": "5a5f753594bfee6a0b9c1bccf949a9078cea78e7414a5927b90d271ec22864e5"
+    },
+    {
+      "path": "evidence/browser-surface/vite/04-visible-after-resource-resume.png",
+      "sha256": "bd99aaee7ec5ccf20c73ede9c71ea22eea8873dc80a03dbfee71b0d4281ab4f3"
+    },
+    {
+      "path": "evidence/browser-surface/vite/05-host-disposal-cycles.png",
+      "sha256": "3bb9e19bbf1b4ade9ec546e2d15022bdf6a5b46a6f9091f144091f6bc3ae7a2e"
+    },
+    {
+      "path": "evidence/browser-surface/vite/06-s02-disposal-oracle.png",
+      "sha256": "455c1a9f60a012cc2f2ee558fe2bfc24cfa029e34895c54f82de2954768be7aa"
+    },
+    {
+      "path": "evidence/browser-surface/vite/ledger-vite.json",
+      "sha256": "b737457af5998da465dd9842e68b2eadc2866781096450ed62d6c15f01facdd3"
+    },
+    {
+      "path": "evidence/browser-surface/vite/measurements-vite.json",
+      "sha256": "d1aa6c25edbc839128b785c3c237bcc918469bbb683595d9487e7a6df2723d54"
+    },
+    {
+      "path": "evidence/browser-surface/vite/s02-disposal-oracle-vite.json",
+      "sha256": "b0b980ef97326da932867e5d582d91a6a0227de910f43df01609ce0e36d622ac"
+    },
+    {
+      "path": "evidence/implementation-report.md",
+      "sha256": "4d7931eda8d55cdfd76317bd331429fb89c1e0fb4872eb9e6500af644ca92d46"
+    },
+    {
+      "path": "evidence/parity-comparison.md",
+      "sha256": "637c2866c39d354ef00e3524a09f3c3ac45b0fc76f6d00f732747f877396be50"
+    },
+    {
+      "path": "evidence/review-cycle-report.md",
+      "sha256": "6e33e71c2581222376afb89fe5eda4f4e226e53127db4d7ac5c792a2ee12679b"
+    },
+    {
+      "path": "evidence/review-report.md",
+      "sha256": "789a5619e936c1d3bd3d61c4faee307d972f4564ef4eee12c789a1d33187ed04"
+    },
+    {
+      "path": "evidence/ship-log.md",
+      "sha256": "e7988d14a7b94460e3b0ab2e73cefec791001b58d1c23a77303db16ee0ed5e9f"
+    },
+    {
+      "path": "evidence/spec-falsification-sweep.md",
+      "sha256": "70062a6e14ffb21fc044919b7b849183e2664be477ea88246578dcf1fdd0ba62"
+    }
+  ],
+  "probes": [],
+  "handoffAbsorbed": null,
+  "ephemeraDiscarded": [
+    "auto-run.json"
+  ],
+  "missing": [
+    "verification-report"
+  ]
+}

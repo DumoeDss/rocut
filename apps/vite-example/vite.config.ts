@@ -11,8 +11,11 @@ const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "../..");
 const webSrc = resolve(repoRoot, "apps/web/src");
 const webPublic = resolve(repoRoot, "apps/web/public");
+const publicBase = process.env.OPENCUT_PUBLIC_BASE || "/";
+const outputDirectory = process.env.C4_VITE_OUT_DIR || "dist";
 
 export default defineConfig({
+	base: publicBase,
 	plugins: [
 		react(),
 		// The published `opencut-wasm` is wasm-pack `--target bundler` output: its
@@ -39,8 +42,15 @@ export default defineConfig({
 		dedupe: ["react", "react-dom"],
 	},
 	build: {
+		outDir: outputDirectory,
 		// Required by top-level await in the wasm glue.
 		target: "esnext",
+		rollupOptions: {
+			input: {
+				app: resolve(here, "index.html"),
+				"surface-evidence": resolve(here, "surface-evidence.html"),
+			},
+		},
 	},
 	// Runtime assets are copied by an explicit allowlist rather than by shipping
 	// all 5.4 MB of `apps/web/public`. See design D7.

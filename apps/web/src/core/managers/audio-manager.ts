@@ -1,8 +1,10 @@
 import type { EditorCore } from "@/core";
+import type { AudioContextHandle } from "@/editor/ports";
+import type { TimerHandle } from "@/editor/session/resources";
 import { TICKS_PER_SECOND } from "@/wasm";
 import { clampRetimeRate, shouldMaintainPitch } from "@/retime/rate";
 import type { AudioClipSource } from "@/media/audio";
-import { createAudioContext, collectAudioClips } from "@/media/audio";
+import { collectAudioClips } from "@/media/audio";
 import {
 	buildAudioGainAutomation,
 	hasAnimatedVolume,
@@ -23,10 +25,11 @@ import {
 
 export class AudioManager {
 	private audioContext: AudioContext | null = null;
+	private audioContextHandle: AudioContextHandle | null = null;
 	private masterGain: GainNode | null = null;
 	private playbackStartTime = 0;
 	private playbackStartContextTime = 0;
-	private scheduleTimer: number | null = null;
+	private scheduleTimer: TimerHandle | null = null;
 	private lookaheadSeconds = 2;
 	private scheduleIntervalMs = 500;
 	private clips: AudioClipSource[] = [];
@@ -45,6 +48,7 @@ export class AudioManager {
 	private lastVolume = 1;
 	private playbackLatencyCompensationSeconds = 0;
 	private unsubscribers: Array<() => void> = [];
+	private playbackWaiters = new Set<() => void>();
 
 	constructor(private editor: EditorCore) {
 		this.lastVolume = this.editor.playback.getVolume();
@@ -57,7 +61,7 @@ export class AudioManager {
 		);
 	}
 
-	dispose(): void {
+	async dispose(): Promise<void> {
 		this.stopPlayback();
 		for (const unsub of this.unsubscribers) {
 			unsub();
@@ -66,11 +70,19 @@ export class AudioManager {
 		this.disposeSinks();
 		this.preparedClipBuffers.clear();
 		this.decodedBuffers.clear();
-		if (this.audioContext) {
-			void this.audioContext.close();
-			this.audioContext = null;
-			this.masterGain = null;
-		}
+		const handle = this.audioContextHandle;
+		this.audioContextHandle = null;
+		this.audioContext = null;
+		this.masterGain = null;
+		if (handle) await handle.close();
+	}
+
+	suspend(): void {
+		this.stopPlayback();
+	}
+
+	resume(): void {
+		// Playback is demand-driven; no activity is recreated until the user plays.
 	}
 
 	private handlePlaybackChange = (): void => {
@@ -124,10 +136,17 @@ export class AudioManager {
 		if (this.audioContext) return this.audioContext;
 		if (typeof window === "undefined") return null;
 
-		this.audioContext = createAudioContext();
+		const handle = this.editor.resources.createAudioContext({});
+		const context = handle.context;
+		if (!context) {
+			void handle.close().catch(() => {});
+			return null;
+		}
+		this.audioContextHandle = handle;
+		this.audioContext = context;
 		const { input } = createAudioMasteringChain({
-			audioContext: this.audioContext,
-			destination: this.audioContext.destination,
+			audioContext: context,
+			destination: context.destination,
 		});
 		this.masterGain = input;
 		this.masterGain.gain.value = this.lastVolume;
@@ -151,7 +170,7 @@ export class AudioManager {
 		if (!audioContext) return;
 
 		this.stopPlayback();
-		this.playbackSessionId++;
+		const sessionId = this.playbackSessionId;
 		this.playbackLatencyCompensationSeconds = 0;
 
 		const tracks = this.editor.scenes.getActiveScene().tracks;
@@ -162,10 +181,16 @@ export class AudioManager {
 
 		if (audioContext.state === "suspended") {
 			await audioContext.resume();
+			if (sessionId !== this.playbackSessionId) return;
 		}
 
 		this.clips = await collectAudioClips({ tracks, mediaAssets });
-		if (!this.editor.playback.getIsPlaying()) return;
+		if (
+			sessionId !== this.playbackSessionId ||
+			!this.editor.playback.getIsPlaying()
+		) {
+			return;
+		}
 
 		this.playbackStartTime = time;
 		this.playbackStartContextTime = audioContext.currentTime;
@@ -173,9 +198,12 @@ export class AudioManager {
 		this.scheduleUpcomingClips();
 
 		if (typeof window !== "undefined") {
-			this.scheduleTimer = window.setInterval(() => {
-				this.scheduleUpcomingClips();
-			}, this.scheduleIntervalMs);
+			this.scheduleTimer = this.editor.resources.setInterval({
+				handler: () => {
+					this.scheduleUpcomingClips();
+				},
+				ms: this.scheduleIntervalMs,
+			});
 		}
 	}
 
@@ -211,10 +239,10 @@ export class AudioManager {
 	}
 
 	private stopPlayback(): void {
-		if (this.scheduleTimer && typeof window !== "undefined") {
-			window.clearInterval(this.scheduleTimer);
-		}
+		this.playbackSessionId += 1;
+		if (this.scheduleTimer) this.scheduleTimer.cancel();
 		this.scheduleTimer = null;
+		for (const settle of [...this.playbackWaiters]) settle();
 
 		for (const iterator of this.clipIterators.values()) {
 			void iterator.return();
@@ -225,7 +253,9 @@ export class AudioManager {
 		for (const source of this.queuedSources) {
 			try {
 				source.stop();
-			} catch {}
+			} catch {
+				// A source that reached its natural end is already stopped.
+			}
 			source.disconnect();
 		}
 		this.queuedSources.clear();
@@ -243,7 +273,7 @@ export class AudioManager {
 		const audioContext = this.ensureAudioContext();
 		if (!audioContext) return;
 
-		const sink = await this.getAudioSink({ clip });
+		const sink = await this.getAudioSink({ clip, sessionId });
 		if (!sink || !this.editor.playback.getIsPlaying()) return;
 		if (sessionId !== this.playbackSessionId) return;
 
@@ -424,19 +454,35 @@ export class AudioManager {
 		targetAhead: number;
 	}): Promise<void> {
 		return new Promise((resolve) => {
-			const checkInterval = setInterval(() => {
-				if (!this.editor.playback.getIsPlaying()) {
-					clearInterval(checkInterval);
-					resolve();
-					return;
-				}
+			let settled = false;
+			let checkInterval: TimerHandle | null = null;
+			const finish = () => {
+				if (settled) return;
+				settled = true;
+				this.playbackWaiters.delete(finish);
+				checkInterval?.cancel();
+				resolve();
+			};
+			this.playbackWaiters.add(finish);
+			try {
+				checkInterval = this.editor.resources.setInterval({
+					handler: () => {
+						if (!this.editor.playback.getIsPlaying()) {
+							finish();
+							return;
+						}
 
-				const playbackTime = this.getPlaybackTime();
-				if (timelineTime - playbackTime < targetAhead) {
-					clearInterval(checkInterval);
-					resolve();
-				}
-			}, 100);
+						const playbackTime = this.getPlaybackTime();
+						if (timelineTime - playbackTime < targetAhead) finish();
+					},
+					ms: 100,
+				});
+			} catch {
+				// The activity gate can close between an async clip continuation and
+				// timer acquisition. Quiescence settles the waiter instead of leaving a
+				// promise that no platform callback can ever resolve.
+				finish();
+			}
 		});
 	}
 
@@ -470,8 +516,13 @@ export class AudioManager {
 	}
 
 	private hasCurveRetime({ clip }: { clip: AudioClipSource }): boolean {
-		const mode = (clip.retime as { mode?: unknown } | undefined)?.mode;
-		return mode === "curve";
+		const retime = clip.retime;
+		return (
+			typeof retime === "object" &&
+			retime !== null &&
+			"mode" in retime &&
+			retime.mode === "curve"
+		);
 	}
 
 	private scheduleClipGainAutomation({
@@ -671,30 +722,43 @@ export class AudioManager {
 
 	private async getAudioSink({
 		clip,
+		sessionId,
 	}: {
 		clip: AudioClipSource;
+		sessionId: number;
 	}): Promise<AudioBufferSink | null> {
+		if (sessionId !== this.playbackSessionId) return null;
 		const existingSink = this.sinks.get(clip.sourceKey);
 		if (existingSink) return existingSink;
 
+		let input: Input | null = null;
+		let ownershipTransferred = false;
 		try {
-			const input = new Input({
+			input = new Input({
 				source: new BlobSource(clip.file),
 				formats: ALL_FORMATS,
 			});
 			const audioTrack = await input.getPrimaryAudioTrack();
+			if (sessionId !== this.playbackSessionId) {
+				return null;
+			}
 			if (!audioTrack) {
-				input.dispose();
 				return null;
 			}
 
 			const sink = new AudioBufferSink(audioTrack);
+			if (sessionId !== this.playbackSessionId) {
+				return null;
+			}
 			this.inputs.set(clip.sourceKey, input);
 			this.sinks.set(clip.sourceKey, sink);
+			ownershipTransferred = true;
 			return sink;
 		} catch (error) {
 			console.warn("Failed to initialize audio sink:", error);
 			return null;
+		} finally {
+			if (input && !ownershipTransferred) input.dispose();
 		}
 	}
 }

@@ -1,0 +1,42 @@
+{
+  "change": "s0304-project-settings-transaction-operation",
+  "archivedAt": "2026-08-10T02:34:06.506Z",
+  "codeCommit": "da00b625ef9838a076fb590ce7ec2ed783e8ee29",
+  "planningBranch": "feat/s0304-project-settings-transaction-operation",
+  "planningTreeState": "dirty",
+  "evidence": [
+    {
+      "path": "evidence/handoff/downstream-recovery.md",
+      "sha256": "2a01144e7ff9a33598785013f644b907b4ef67944b13d7c4dc372ffc805f1cf6"
+    },
+    {
+      "path": "evidence/implementation-report.md",
+      "sha256": "94fc3fec151d68e3c8c57ade2285de4fcbeb8f2c9f8b8bf945bd46ea453977fa"
+    },
+    {
+      "path": "evidence/review-cycle-report.md",
+      "sha256": "864abeb2fcb15d828e42e621ac8cfbd9056b769aa0f31a88683474f39dab35be"
+    },
+    {
+      "path": "evidence/review-report.md",
+      "sha256": "7d4d12fde483dcab264ebbe183f88218c9446fe495f4bb741e858f36783fffd4"
+    },
+    {
+      "path": "evidence/ship-log.md",
+      "sha256": "4db8a75ba57b0dad9badc180dfe8e5cb7633e9dbdedf651a5d3c399acbcfb677"
+    }
+  ],
+  "probes": [],
+  "handoffAbsorbed": [
+    {
+      "file": "handoff/downstream-recovery.md",
+      "outcome": "preserved"
+    }
+  ],
+  "ephemeraDiscarded": [
+    "auto-run.json"
+  ],
+  "missing": [
+    "verification-report"
+  ]
+}

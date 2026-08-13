@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { KeyboardEvent, MouseEvent } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import type { EditorCore } from "@/core";
 import { MigrationDialog } from "@/project/components/migration-dialog";
@@ -14,7 +14,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
+import type { EditorHost } from "@/editor/host/editor-host";
+import { createNextEditorHost } from "@/editor/host/next-editor-host";
+import { EditorSessionHost } from "@/editor/session";
 import { useProjectsStore } from "./store";
 import type {
 	TProjectMetadata,
@@ -87,8 +90,28 @@ const VIEW_MODE_OPTIONS = [
 ];
 
 export default function ProjectsPage() {
+	const router = useRouter();
+	const host = useMemo<EditorHost>(
+		() =>
+			createNextEditorHost({
+			projectId: "project-picker",
+			onProjectReplaced: (projectId) => router.push(`/editor/${projectId}`),
+			onExitProject: () => {},
+			onGoBack: () => router.back(),
+		}),
+		[router],
+	);
+
+	return (
+		<EditorSessionHost host={host}>
+			<ProjectsPageContent />
+		</EditorSessionHost>
+	);
+}
+
+function ProjectsPageContent() {
 	const { searchQuery, sortKey, sortOrder, viewMode } = useProjectsStore();
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const sortOption: TProjectSortOption = `${sortKey}-${sortOrder}`;
 
 	const isLoading = useEditor((e) => e.project.getIsLoading());
@@ -391,11 +414,13 @@ async function renameProject({
 }
 
 function ProjectActions() {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const { selectedProjectIds, clearSelectedProjects } = useProjectsStore();
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-	const savedProjects = editor.project.getSavedProjects();
+	const savedProjects = useEditor((currentEditor) =>
+		currentEditor.project.getSavedProjects(),
+	);
 	const selectedProjectNames = savedProjects
 		.filter((project) => selectedProjectIds.includes(project.id))
 		.map((project) => project.name);
@@ -505,7 +530,7 @@ function SortDropdown({ children }: { children: React.ReactNode }) {
 }
 
 function NewProjectButton() {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const router = useRouter();
 
 	const handleCreateProject = async () => {
@@ -547,7 +572,7 @@ function ProjectItem({
 	const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 	const [isInfoDialogOpen, setIsInfoDialogOpen] = useState(false);
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const durationLabel = formatProjectDuration({ duration: project.duration });
 	const isMultiSelect = selectedProjectCount > 1;
 	const isGridView = viewMode === "grid";
@@ -950,8 +975,10 @@ function ProjectsSkeleton() {
 function EmptyState() {
 	const { searchQuery, setSearchQuery } = useProjectsStore();
 	const router = useRouter();
-	const editor = useEditor();
-	const savedProjects = editor.project.getSavedProjects();
+	const editor = useEditorInstance();
+	const savedProjects = useEditor((currentEditor) =>
+		currentEditor.project.getSavedProjects(),
+	);
 
 	const handleCreateProject = async () => {
 		try {

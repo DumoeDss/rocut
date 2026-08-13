@@ -1,5 +1,8 @@
-import { Command, type CommandResult } from "@/commands/base-command";
-import { EditorCore } from "@/core";
+import {
+	Command,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
 import type {
 	CreateTimelineElement,
 	SceneTracks,
@@ -30,6 +33,8 @@ export interface InsertElementParams {
 }
 
 export class InsertElementCommand extends Command {
+	readonly routingClass = "transaction" as const;
+
 	private elementId: string;
 	private savedState: SceneTracks | null = null;
 	private targetTrackId: string | null = null;
@@ -44,8 +49,7 @@ export class InsertElementCommand extends Command {
 	private element: CreateTimelineElement;
 	private placement: InsertElementPlacement;
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		this.savedState = editor.scenes.getActiveScene().tracks;
 
 		if (!this.validateElementBasics({ element: this.element })) {
@@ -124,9 +128,8 @@ export class InsertElementCommand extends Command {
 		};
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (this.savedState) {
-			const editor = EditorCore.getInstance();
 			editor.timeline.updateTracks(this.savedState);
 		}
 	}

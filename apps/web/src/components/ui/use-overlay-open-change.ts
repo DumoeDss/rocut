@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useId, useRef } from "react";
-import { useKeybindingsStore } from "@/actions/keybindings-store";
+import { storesForSession } from "@/editor/runtime/session-stores";
+import { useOptionalEditorSession } from "@/editor/session/editor-session-provider";
 
 export function useOverlayOpenChange({
 	open,
@@ -8,7 +9,16 @@ export function useOverlayOpenChange({
 	open?: boolean;
 	onOpenChange?: (open: boolean) => void;
 }) {
-	const { openOverlay, closeOverlay } = useKeybindingsStore();
+	const session = useOptionalEditorSession();
+	const keybindings = session ? storesForSession(session).keybindings : null;
+	const openOverlay = useCallback(
+		(overlayId: string) => keybindings?.getState().openOverlay(overlayId),
+		[keybindings],
+	);
+	const closeOverlay = useCallback(
+		(overlayId: string) => keybindings?.getState().closeOverlay(overlayId),
+		[keybindings],
+	);
 	const isTrackedRef = useRef(false);
 	const isControlled = typeof open === "boolean";
 	const overlayId = useId();

@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import { createStore } from "zustand/vanilla";
 import { persist } from "zustand/middleware";
 import { isGuideId, type GuideId } from "@/guides";
 import { DEFAULT_GRID_CONFIG } from "@/guides/grid";
@@ -15,7 +15,7 @@ interface PersistedPreviewState {
 	gridConfig?: GridConfig;
 }
 
-interface PreviewState {
+export interface PreviewState {
 	activeGuide: GuideId | null;
 	overlays: PreviewOverlaysState;
 	gridConfig: GridConfig;
@@ -46,59 +46,61 @@ function getPersistedActiveGuide(
 	return isGuideId(persistedGuide) ? persistedGuide : null;
 }
 
-export const usePreviewStore = create<PreviewState>()(
-	persist(
-		(set) => ({
-			activeGuide: null,
-			overlays: DEFAULT_PREVIEW_OVERLAYS,
-			gridConfig: DEFAULT_GRID_CONFIG,
-			toggleGuide: (guideId) => {
-				set((state) => ({
-					activeGuide: state.activeGuide === guideId ? null : guideId,
-				}));
-			},
-			setGridConfig: (config) => {
-				set((state) => ({
-					gridConfig: { ...state.gridConfig, ...config },
-				}));
-			},
-			setOverlayVisibility: ({ overlayId, isVisible }) => {
-				set((state) => ({
-					overlays: {
-						...state.overlays,
-						[overlayId]: isVisible,
-					},
-				}));
-			},
-			toggleOverlayVisibility: ({ overlayId }) => {
-				set((state) => ({
-					overlays: {
-						...state.overlays,
-						[overlayId]: !state.overlays[overlayId],
-					},
-				}));
-			},
-		}),
-		{
-			name: "preview-settings",
-			version: 6,
-			migrate: (persistedState) => {
-				const state = persistedState as PersistedPreviewState | undefined;
-
-				return {
-					activeGuide: getPersistedActiveGuide(state),
-					overlays: DEFAULT_PREVIEW_OVERLAYS,
-					gridConfig: {
-						rows: state?.gridConfig?.rows ?? DEFAULT_GRID_CONFIG.rows,
-						cols: state?.gridConfig?.cols ?? DEFAULT_GRID_CONFIG.cols,
-					},
-				};
-			},
-			partialize: (state) => ({
-				activeGuide: state.activeGuide,
-				overlays: state.overlays,
-				gridConfig: state.gridConfig,
+export function createPreviewStore() {
+	return createStore<PreviewState>()(
+		persist(
+			(set) => ({
+				activeGuide: null,
+				overlays: { ...DEFAULT_PREVIEW_OVERLAYS },
+				gridConfig: { ...DEFAULT_GRID_CONFIG },
+				toggleGuide: (guideId) => {
+					set((state) => ({
+						activeGuide: state.activeGuide === guideId ? null : guideId,
+					}));
+				},
+				setGridConfig: (config) => {
+					set((state) => ({
+						gridConfig: { ...state.gridConfig, ...config },
+					}));
+				},
+				setOverlayVisibility: ({ overlayId, isVisible }) => {
+					set((state) => ({
+						overlays: {
+							...state.overlays,
+							[overlayId]: isVisible,
+						},
+					}));
+				},
+				toggleOverlayVisibility: ({ overlayId }) => {
+					set((state) => ({
+						overlays: {
+							...state.overlays,
+							[overlayId]: !state.overlays[overlayId],
+						},
+					}));
+				},
 			}),
-		},
-	),
-);
+			{
+				name: "preview-settings",
+				version: 6,
+				migrate: (persistedState) => {
+					const state = persistedState as PersistedPreviewState | undefined;
+
+					return {
+						activeGuide: getPersistedActiveGuide(state),
+						overlays: DEFAULT_PREVIEW_OVERLAYS,
+						gridConfig: {
+							rows: state?.gridConfig?.rows ?? DEFAULT_GRID_CONFIG.rows,
+							cols: state?.gridConfig?.cols ?? DEFAULT_GRID_CONFIG.cols,
+						},
+					};
+				},
+				partialize: (state) => ({
+					activeGuide: state.activeGuide,
+					overlays: state.overlays,
+					gridConfig: state.gridConfig,
+				}),
+			},
+		),
+	);
+}

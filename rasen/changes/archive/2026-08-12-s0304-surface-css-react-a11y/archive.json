@@ -1,0 +1,229 @@
+{
+  "change": "s0304-surface-css-react-a11y",
+  "archivedAt": "2026-08-12T12:58:51.135Z",
+  "codeCommit": "fd805714f5479a2a416248c8bc2edeb91e919de9",
+  "planningBranch": "recovery/s0304-ui-commit-routing-final",
+  "planningTreeState": "dirty",
+  "evidence": [
+    {
+      "path": "evidence/artifact-hashes.sha256",
+      "sha256": "1aec28403bd2cfdda944b4f2d413680f5c384f7cfb0fb7c5f63f2dbc4c1b4731"
+    },
+    {
+      "path": "evidence/browser-surface/next/01-unmounted-baseline.png",
+      "sha256": "6223d4c7a77a54e92afa8b889dec699617443b70a1e18be02fb43d8123dbae9a"
+    },
+    {
+      "path": "evidence/browser-surface/next/02-remounted-ready.png",
+      "sha256": "2117b28009e702301dff18a2b43a511baaa9f31aa3e636a0a4a4aa2553d86f47"
+    },
+    {
+      "path": "evidence/browser-surface/next/03-focus-matrix.png",
+      "sha256": "4c129b8c59930fb78355b1259a54bf2dd2a859e330f3a00c9760fb799f0ac07d"
+    },
+    {
+      "path": "evidence/browser-surface/next/04-r2-final-evidence.png",
+      "sha256": "809b0318d101777b3a30aa971f50f65a8def171d6f6a43a6803d593440642a7f"
+    },
+    {
+      "path": "evidence/browser-surface/next/04-visible-after-resource-resume.png",
+      "sha256": "728e89741a7412fb87894ab49ec641ddcb75bc6e153ab1a7e665f62c867637c3"
+    },
+    {
+      "path": "evidence/browser-surface/next/05-host-disposal-cycles.png",
+      "sha256": "6223d4c7a77a54e92afa8b889dec699617443b70a1e18be02fb43d8123dbae9a"
+    },
+    {
+      "path": "evidence/browser-surface/next/06-s02-disposal-oracle.png",
+      "sha256": "de0fb29ad3a44f77f5afcfd24032f0285d051819a28e6546ff0ee779ef694398"
+    },
+    {
+      "path": "evidence/browser-surface/next/ledger-next.json",
+      "sha256": "38adde9e008cc24f98d4a2feea40e8ab165b8dc8ad31db397b984f3c6fdd8aed"
+    },
+    {
+      "path": "evidence/browser-surface/next/measurements-next.json",
+      "sha256": "2af3deb1f7a4cbcf79b8dcdb40243d2e9350783b533f0dfaeb82a808251e8fb9"
+    },
+    {
+      "path": "evidence/browser-surface/next/s02-disposal-oracle-next.json",
+      "sha256": "2e10a97ef5b2707b35680da1bf3b0a0327d66c858c04110c00e7e8adacdd5fd9"
+    },
+    {
+      "path": "evidence/browser-surface/results-next.json",
+      "sha256": "8bef369192ff11ecca22e26e85ffb1b2a79d6dd3f1111e2dab779f01bad855bd"
+    },
+    {
+      "path": "evidence/browser-surface/results-vite.json",
+      "sha256": "c5cbdae28ece19345f8bb7ee5bdfcefe91bed49a69402f8ae4bc2980de70c01e"
+    },
+    {
+      "path": "evidence/browser-surface/vite/01-unmounted-baseline.png",
+      "sha256": "8e13cee757f72299834495f1f531b13160fd5de9a35e3ba15e6db5c25e6f9e87"
+    },
+    {
+      "path": "evidence/browser-surface/vite/02-remounted-ready.png",
+      "sha256": "e7d0e184555a7e730ee07955a9713092f58a38d152a3f0c695271375d4659eb1"
+    },
+    {
+      "path": "evidence/browser-surface/vite/03-focus-matrix.png",
+      "sha256": "4f56bf6a88ff3a60d08c391d43996b90f8f6378cfe4b7bdefda163e3bfe052cd"
+    },
+    {
+      "path": "evidence/browser-surface/vite/04-r2-final-evidence.png",
+      "sha256": "b0663341a3a41871d1170ce243b1cbf4158926afae6551184075b487499d5631"
+    },
+    {
+      "path": "evidence/browser-surface/vite/04-visible-after-resource-resume.png",
+      "sha256": "a9a0585268502a2ad60f973ae29c88c020d15705eda2b6cc17b96c1ae829afbf"
+    },
+    {
+      "path": "evidence/browser-surface/vite/05-host-disposal-cycles.png",
+      "sha256": "8e13cee757f72299834495f1f531b13160fd5de9a35e3ba15e6db5c25e6f9e87"
+    },
+    {
+      "path": "evidence/browser-surface/vite/06-s02-disposal-oracle.png",
+      "sha256": "3d9051035acc16bccd73492043aacb7b5f70f9f3906ca609d1f9a1ad3b195946"
+    },
+    {
+      "path": "evidence/browser-surface/vite/ledger-vite.json",
+      "sha256": "1777e851b7352937a6b82c63024df1760e6cd26dc3b9e8dbcde92664625fcce2"
+    },
+    {
+      "path": "evidence/browser-surface/vite/measurements-vite.json",
+      "sha256": "c60cc94348b3e08de47adeaffd036bd304a0afd78b984c79521560a2ab3eff3d"
+    },
+    {
+      "path": "evidence/browser-surface/vite/s02-disposal-oracle-vite.json",
+      "sha256": "297c36bec1e00f9c3a6bc1935e3990eefc6efcb44e7ab003fdb40d3b2c7ba5ea"
+    },
+    {
+      "path": "evidence/implementation-report.md",
+      "sha256": "683124643e5bd663b2d880487c7c2a7251577d7de6ff61d02868abae0c2f4526"
+    },
+    {
+      "path": "evidence/parity-comparison.md",
+      "sha256": "891bb7e47c1014095237f41208cae64f1b8d7fff723a5dc5810afe13fff7c093"
+    },
+    {
+      "path": "evidence/parity-nondeterminism-control.md",
+      "sha256": "5a011193495ea7f4da027e33e5c4d753e868279246134a658c971ac148247d07"
+    },
+    {
+      "path": "evidence/pre-browser-source-hashes.sha256",
+      "sha256": "e30a62a35d40cc062ea199380e3cd680f4895a202dbe6f66852b2819cc81f15e"
+    },
+    {
+      "path": "evidence/ship-log.md",
+      "sha256": "1186867625acdfdae0def719c9ac9d6b07c76689ed732556405a8e902cefc451"
+    },
+    {
+      "path": "evidence/spec-falsification-sweep.md",
+      "sha256": "0510149ae63ae7bb2661be8b6e692006d3839f8af2c8a4540132163346d8f7e4"
+    }
+  ],
+  "probes": [],
+  "handoffAbsorbed": null,
+  "ephemeraDiscarded": [
+    "auto-run.json",
+    "b1-repro-after.log",
+    "b1-repro-before.log",
+    "c5-storage-aa.log",
+    "c5-storage-w.log",
+    "c5-storage-x.log",
+    "c5-storage-y.log",
+    "c5-storage-z.log",
+    "eslint-changed-t.log",
+    "final-gates-t.log",
+    "final-gates-v.log",
+    "final-gates-w.log",
+    "final-gates-y.log",
+    "focused-suites-t.log",
+    "next-final-build-aa.log",
+    "next-final-build-b.log",
+    "next-final-build-c.log",
+    "next-final-build-d.log",
+    "next-final-build-e.log",
+    "next-final-build-f.log",
+    "next-final-build-g.log",
+    "next-final-build-h.log",
+    "next-final-build-i.log",
+    "next-final-build-j.log",
+    "next-final-build-k.log",
+    "next-final-build-l.log",
+    "next-final-build-m.log",
+    "next-final-build-n.log",
+    "next-final-build-o.log",
+    "next-final-build-p.log",
+    "next-final-build-q.log",
+    "next-final-build-t.log",
+    "next-final-build-u.log",
+    "next-final-build-v.log",
+    "next-final-build-w.log",
+    "next-final-build-x.log",
+    "next-final-build-y.log",
+    "next-final-build-z.log",
+    "next-final-build.log",
+    "next-surface-matrix-aa.log",
+    "next-surface-matrix-t.log",
+    "next-surface-matrix-v.log",
+    "next-surface-matrix-w.log",
+    "next-surface-matrix-x.log",
+    "next-surface-matrix-y.log",
+    "next-surface-matrix-z.log",
+    "parity-next-aa.log",
+    "parity-next-t.log",
+    "parity-next-v.log",
+    "parity-next-w.log",
+    "parity-next-x.log",
+    "parity-next-y.log",
+    "parity-next-z.log",
+    "parity-vite-aa.log",
+    "parity-vite-t-run2.log",
+    "parity-vite-t.log",
+    "parity-vite-v.log",
+    "parity-vite-w.log",
+    "parity-vite-x.log",
+    "parity-vite-y.log",
+    "parity-vite-z.log",
+    "vite-build.log",
+    "vite-final-build-aa.log",
+    "vite-final-build-b.log",
+    "vite-final-build-c.log",
+    "vite-final-build-d.log",
+    "vite-final-build-e.log",
+    "vite-final-build-f.log",
+    "vite-final-build-g.log",
+    "vite-final-build-h.log",
+    "vite-final-build-i.log",
+    "vite-final-build-j.log",
+    "vite-final-build-k.log",
+    "vite-final-build-l.log",
+    "vite-final-build-m.log",
+    "vite-final-build-n.log",
+    "vite-final-build-o.log",
+    "vite-final-build-p.log",
+    "vite-final-build-q.log",
+    "vite-final-build-r.log",
+    "vite-final-build-s.log",
+    "vite-final-build-t.log",
+    "vite-final-build-u.log",
+    "vite-final-build-v.log",
+    "vite-final-build-w.log",
+    "vite-final-build-x.log",
+    "vite-final-build-y.log",
+    "vite-final-build-z.log",
+    "vite-final-build.log",
+    "vite-surface-matrix-aa.log",
+    "vite-surface-matrix-t.log",
+    "vite-surface-matrix-v.log",
+    "vite-surface-matrix-w.log",
+    "vite-surface-matrix-x.log",
+    "vite-surface-matrix-y.log",
+    "vite-surface-matrix-z.log",
+    "vite-typecheck-t.log"
+  ],
+  "missing": [
+    "verification-report"
+  ]
+}

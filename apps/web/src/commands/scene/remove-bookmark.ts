@@ -1,5 +1,8 @@
-import { Command, type CommandResult } from "@/commands/base-command";
-import { EditorCore } from "@/core";
+import {
+	Command,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
 import type { TScene } from "@/timeline";
 import { updateSceneInArray } from "@/timeline/scenes";
 import {
@@ -9,6 +12,8 @@ import {
 import { type MediaTime, ZERO_MEDIA_TIME } from "@/wasm";
 
 export class RemoveBookmarkCommand extends Command {
+	readonly routingClass = "transaction" as const;
+
 	private savedScenes: TScene[] | null = null;
 	private frameTime: MediaTime = ZERO_MEDIA_TIME;
 
@@ -16,8 +21,7 @@ export class RemoveBookmarkCommand extends Command {
 		super();
 	}
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		const activeScene = editor.scenes.getActiveScene();
 		const activeProject = editor.project.getActive();
 
@@ -51,9 +55,8 @@ export class RemoveBookmarkCommand extends Command {
 		editor.scenes.setScenes({ scenes: updatedScenes });
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (this.savedScenes) {
-			const editor = EditorCore.getInstance();
 			editor.scenes.setScenes({ scenes: this.savedScenes });
 		}
 	}

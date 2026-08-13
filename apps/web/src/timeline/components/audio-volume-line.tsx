@@ -2,11 +2,9 @@
 
 import { useCallback, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useEditor } from "@/editor/use-editor";
-import {
-	getDbFromLinePos,
-	getLinePosFromDb,
-} from "@/timeline/audio-display";
+import { useSurfacePortalOwner } from "@/editor/surface/embedding/surface-portal";
+import { useEditorInstance } from "@/editor/use-editor";
+import { getDbFromLinePos, getLinePosFromDb } from "@/timeline/audio-display";
 import { VOLUME_DB_MAX, VOLUME_DB_MIN } from "@/timeline/audio-constants";
 import { getElementVolume, hasAnimatedVolume } from "@/timeline/audio-state";
 import type { AudioElement } from "@/timeline/types";
@@ -56,7 +54,8 @@ export function AudioVolumeLine({
 	element: AudioElement;
 	trackId: string;
 }) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
+	const portalOwner = useSurfacePortalOwner();
 	const surfaceRef = useRef<HTMLDivElement>(null);
 	const activePointerIdRef = useRef<number | null>(null);
 	const startVolumeRef = useRef(getElementVolume({ element }));
@@ -254,6 +253,7 @@ export function AudioVolumeLine({
 				/>
 				{isDragging &&
 					tooltipClientPos &&
+					portalOwner &&
 					createPortal(
 						<div
 							className="pointer-events-none fixed left-0 top-0 z-50 -translate-y-full rounded bg-black/75 px-1.5 py-0.5 text-[10px] font-medium text-white whitespace-nowrap"
@@ -263,7 +263,7 @@ export function AudioVolumeLine({
 						>
 							{volumeLabel}
 						</div>,
-						document.body,
+						portalOwner,
 					)}
 			</div>
 		</div>

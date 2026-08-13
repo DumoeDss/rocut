@@ -73,6 +73,11 @@ export interface SnapConfig {
 }
 
 export interface ElementInteractionDeps {
+	startMouseDrag: (registration: {
+		move: (event: MouseEvent) => void;
+		finish: (event: MouseEvent) => void;
+		cancel: () => void;
+	}) => () => void;
 	viewport: ViewportAdapter;
 	input: InputAdapter;
 	scene: SceneReader;
@@ -298,6 +303,7 @@ export class ElementInteractionController {
 
 	private readonly subscribers = new Set<() => void>();
 	private readonly depsRef: ElementInteractionDepsRef;
+	private stopDrag: (() => void) | null = null;
 
 	constructor(args: { depsRef: ElementInteractionDepsRef }) {
 		this.depsRef = args.depsRef;
@@ -430,13 +436,17 @@ export class ElementInteractionController {
 	};
 
 	private activate(): void {
-		document.addEventListener("mousemove", this.handleMouseMove);
-		document.addEventListener("mouseup", this.handleMouseUp);
+		this.stopDrag = this.deps.startMouseDrag({
+			move: this.handleMouseMove,
+			finish: this.handleMouseUp,
+			cancel: () => this.cancel(),
+		});
 	}
 
 	private deactivate(): void {
-		document.removeEventListener("mousemove", this.handleMouseMove);
-		document.removeEventListener("mouseup", this.handleMouseUp);
+		const stopDrag = this.stopDrag;
+		this.stopDrag = null;
+		stopDrag?.();
 	}
 
 	private notify(): void {

@@ -1,19 +1,18 @@
-import { Command, type CommandResult } from "@/commands/base-command";
-import { EditorCore } from "@/core";
+import {
+	Command,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
 import type { TScene } from "@/timeline";
 import { updateSceneInArray } from "@/timeline/scenes";
 
 export class RenameSceneCommand extends Command {
+	readonly routingClass = "provider-private" as const;
+
 	private savedScenes: TScene[] | null = null;
 	private previousName: string | null = null;
 
-	constructor({
-		sceneId,
-		newName,
-	}: {
-		sceneId: string;
-		newName: string;
-	}) {
+	constructor({ sceneId, newName }: { sceneId: string; newName: string }) {
 		super();
 		this.sceneId = sceneId;
 		this.newName = newName;
@@ -22,8 +21,7 @@ export class RenameSceneCommand extends Command {
 	private sceneId: string;
 	private newName: string;
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		const scenes = editor.scenes.getScenes();
 
 		this.savedScenes = [...scenes];
@@ -45,9 +43,8 @@ export class RenameSceneCommand extends Command {
 		editor.scenes.setScenes({ scenes: updatedScenes });
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (this.savedScenes && this.previousName !== null) {
-			const editor = EditorCore.getInstance();
 			editor.scenes.setScenes({ scenes: this.savedScenes });
 		}
 	}

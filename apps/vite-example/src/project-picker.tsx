@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { EditorCore } from "@/core";
-import { BrowserHostAdapter } from "@/services/storage/browser-host-adapter";
+import { useEditorInstance } from "@/editor/use-editor";
 import type { TProjectMetadata } from "@/project/types";
 
 /**
@@ -11,17 +10,17 @@ import type { TProjectMetadata } from "@/project/types";
  * reachable without hand-crafting a project id, which means the identity seam
  * gets exercised honestly rather than bypassed.
  *
- * Persistence goes through `BrowserHostAdapter`, never IndexedDB or OPFS
- * directly — that is the §3.5 provisional boundary, and
- * `script/check-storage-boundary.mjs` enforces it. Creating and opening still go
- * through `EditorCore`, because those load a project *into the editor* rather
- * than merely reading storage.
+ * Persistence is acquired from the session-owned editor coordinator, whose
+ * store is the stable browser implementation configured by the Vite Host.
+ * Creating and opening still go through `EditorCore`, because those load a
+ * project *into the editor* rather than merely reading storage.
  */
 export function ProjectPicker({
 	onOpen,
 }: {
 	onOpen: (projectId: string) => void;
 }) {
+	const editor = useEditorInstance();
 	const [projects, setProjects] = useState<TProjectMetadata[]>([]);
 	const [storageUsage, setStorageUsage] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
@@ -30,14 +29,21 @@ export function ProjectPicker({
 	const refresh = useCallback(async () => {
 		try {
 			setIsLoading(true);
-			setProjects(await BrowserHostAdapter.listProjects());
-			const info = await BrowserHostAdapter.getStorageInfo();
-			// `usageBytes` is null when the browser declines to estimate. Say so
-			// rather than rendering a confident 0 MB.
+			const summaries = await editor.persistence.listProjects();
+			setProjects(
+				summaries.map((project) => ({
+					...project,
+					createdAt: new Date(project.createdAt),
+					updatedAt: new Date(project.updatedAt),
+				})),
+			);
+			const info = await editor.persistence.store.inspect();
+			// Capacity is null when the browser declines to estimate. Say so rather
+			// than rendering a confident 0 MB.
 			setStorageUsage(
-				info.usageBytes === null
+				info.availability !== "available" || info.capacity === null
 					? "unknown (browser gave no estimate)"
-					: `${(info.usageBytes / 1048576).toFixed(1)} MB`,
+					: `${(info.capacity.usedBytes / 1048576).toFixed(1)} MB`,
 			);
 			setError(null);
 		} catch (err) {
@@ -45,7 +51,7 @@ export function ProjectPicker({
 		} finally {
 			setIsLoading(false);
 		}
-	}, []);
+	}, [editor.persistence]);
 
 	useEffect(() => {
 		refresh();
@@ -53,7 +59,6 @@ export function ProjectPicker({
 
 	const handleCreate = async () => {
 		try {
-			const editor = EditorCore.getInstance();
 			const projectId = await editor.project.createNewProject({
 				name: "Untitled Project",
 			});

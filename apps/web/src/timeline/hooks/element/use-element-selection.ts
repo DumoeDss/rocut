@@ -1,9 +1,9 @@
 import { useCallback } from "react";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import type { ElementRef } from "@/timeline/types";
 
 export function useElementSelection() {
-	const editor = useEditor();
+	const editor = useEditorInstance();
 	const selectedElements = useEditor((e) => e.selection.getSelectedElements());
 
 	const isElementSelected = useCallback(
@@ -78,7 +78,6 @@ export function useElementSelection() {
 		[editor],
 	);
 
-
 	/**
 	 * Merges elements into the current selection, deduplicating by identity.
 	 * Used for additive box-select where the pre-drag selection is preserved.
@@ -100,7 +99,6 @@ export function useElementSelection() {
 		},
 		[selectedElements, editor],
 	);
-
 
 	/**
 	 * Handles click interaction on an element.

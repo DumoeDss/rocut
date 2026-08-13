@@ -1,0 +1,31 @@
+{
+  "change": "s0304-transaction-engine",
+  "archivedAt": "2026-08-09T13:54:32.776Z",
+  "codeCommit": "c2e7124e82be063728a6de84c88723878ddf7e3f",
+  "planningBranch": "feat/s0304-transaction-engine",
+  "planningTreeState": "dirty",
+  "evidence": [
+    {
+      "path": "evidence/implementation-report.md",
+      "sha256": "96fd1d6cb4a9a096b7b485e5c1dbffe4782933a2679339364b5bc3a81c228324"
+    },
+    {
+      "path": "evidence/review-cycle-report.md",
+      "sha256": "f2fcc12919acbb9b2c5694c6ae19efa53545472c8f39f64f78e1e6e93bcff02f"
+    },
+    {
+      "path": "evidence/review-report.md",
+      "sha256": "c786f12c81b5cc78ed10c7dc9687ed4d6cb12c944e7ea6528a5e44a400130fd9"
+    },
+    {
+      "path": "evidence/ship-log.md",
+      "sha256": "c8b2d0f8924d21d93e3419270630a0d152bed1d2c9dd1e25c1e3b97dd05eeaf6"
+    }
+  ],
+  "probes": [],
+  "handoffAbsorbed": [],
+  "ephemeraDiscarded": [],
+  "missing": [
+    "verification-report"
+  ]
+}

@@ -1,0 +1,7 @@
+import { editorForSession } from "@/editor/runtime/session-core-owner";
+
+let currentSession;
+
+export function editorForCurrentSession() {
+	return currentSession ? editorForSession(currentSession) : editorForSession();
+}

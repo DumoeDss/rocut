@@ -1,0 +1,1215 @@
+{
+	"schema": "transaction-vectors/v1",
+	"corpusVersion": 1,
+	"family": "document",
+	"vectors": [
+		{
+			"id": "document/create-track-and-clone",
+			"title": "Creating a track advances the revision, notifies once, and hands back a defensive copy",
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-video", "kind": "video", "name": "Video lane", "hidden": false },
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [
+					{
+						"id": "clip-caption",
+						"trackId": "track-text",
+						"startTime": 0,
+						"duration": 40000,
+						"trimStart": 0,
+						"trimEnd": 0
+					}
+				],
+				"assets": [
+					{
+						"id": "asset-reel",
+						"kind": "video",
+						"name": "Reel",
+						"duration": 1200000,
+						"width": 1920,
+						"height": 1080
+					}
+				],
+				"markers": [{ "id": "marker-open", "time": 0, "note": "open" }]
+			},
+			"batch": {
+				"operations": [
+					{
+						"kind": "create-track",
+						"track": {
+							"id": "track-graphic",
+							"kind": "graphic",
+							"name": "Graphic lane",
+							"hidden": false
+						}
+					}
+				]
+			},
+			"expect": {
+				"outcome": "accepted",
+				"revisionDelta": 1,
+				"watchDelta": 1,
+				"createdIds": ["track-graphic"],
+				"changedIds": [],
+				"reads": [
+					{
+						"entity": "track",
+						"id": "track-graphic",
+						"fields": { "kind": "graphic", "name": "Graphic lane", "hidden": false }
+					}
+				],
+				"clones": [
+					{
+						"entity": "track",
+						"id": "track-graphic",
+						"field": "name",
+						"mutateTo": "mutated by the caller"
+					}
+				]
+			}
+		},
+		{
+			"id": "document/update-track",
+			"title": "Updating a track patches only the named fields",
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-video", "kind": "video", "name": "Video lane", "hidden": false },
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [
+					{
+						"id": "clip-caption",
+						"trackId": "track-text",
+						"startTime": 0,
+						"duration": 40000,
+						"trimStart": 0,
+						"trimEnd": 0
+					}
+				],
+				"assets": [],
+				"markers": []
+			},
+			"batch": {
+				"operations": [
+					{
+						"kind": "update-track",
+						"trackId": "track-text",
+						"patch": { "name": "Renamed caption lane", "hidden": true }
+					}
+				]
+			},
+			"expect": {
+				"outcome": "accepted",
+				"revisionDelta": 1,
+				"watchDelta": 1,
+				"createdIds": [],
+				"changedIds": ["track-text"],
+				"reads": [
+					{
+						"entity": "track",
+						"id": "track-text",
+						"fields": { "kind": "text", "name": "Renamed caption lane", "hidden": true }
+					}
+				]
+			}
+		},
+		{
+			"id": "document/delete-track-cascade",
+			"title": "Deleting a track removes the clips it carried",
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-video", "kind": "video", "name": "Video lane", "hidden": false },
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [
+					{
+						"id": "clip-caption",
+						"trackId": "track-text",
+						"startTime": 0,
+						"duration": 40000,
+						"trimStart": 0,
+						"trimEnd": 0
+					}
+				],
+				"assets": [],
+				"markers": []
+			},
+			"batch": {
+				"operations": [{ "kind": "delete-track", "trackId": "track-text" }]
+			},
+			"expect": {
+				"outcome": "accepted",
+				"revisionDelta": 1,
+				"watchDelta": 1,
+				"createdIds": [],
+				"changedIds": ["clip-caption", "track-text"],
+				"reads": [
+					{ "entity": "track", "id": "track-text", "absent": true },
+					{ "entity": "clip", "id": "clip-caption", "absent": true },
+					{ "entity": "track", "id": "track-video", "fields": { "kind": "video" } }
+				]
+			}
+		},
+		{
+			"id": "document/create-asset-track-and-clip",
+			"title": "One batch creates an asset, its lane and a clip that references both",
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-video", "kind": "video", "name": "Video lane", "hidden": false }
+				],
+				"clips": [],
+				"assets": [],
+				"markers": []
+			},
+			"batch": {
+				"operations": [
+					{
+						"kind": "create-track",
+						"track": {
+							"id": "track-audio",
+							"kind": "audio",
+							"name": "Audio lane",
+							"hidden": false
+						}
+					},
+					{
+						"kind": "create-asset",
+						"asset": {
+							"id": "asset-score",
+							"kind": "audio",
+							"name": "Score",
+							"duration": 240000
+						}
+					},
+					{
+						"kind": "create-clip",
+						"clip": {
+							"id": "clip-score",
+							"trackId": "track-audio",
+							"assetId": "asset-score",
+							"startTime": 0,
+							"duration": 120000,
+							"trimStart": 0,
+							"trimEnd": 0
+						}
+					}
+				]
+			},
+			"expect": {
+				"outcome": "accepted",
+				"revisionDelta": 1,
+				"watchDelta": 1,
+				"createdIds": ["track-audio", "asset-score", "clip-score"],
+				"changedIds": [],
+				"reads": [
+					{
+						"entity": "asset",
+						"id": "asset-score",
+						"fields": { "kind": "audio", "name": "Score", "duration": 240000 }
+					},
+					{
+						"entity": "clip",
+						"id": "clip-score",
+						"fields": {
+							"trackId": "track-audio",
+							"assetId": "asset-score",
+							"startTime": 0,
+							"duration": 120000,
+							"trimStart": 0,
+							"trimEnd": 0
+						}
+					}
+				]
+			}
+		},
+		{
+			"id": "document/update-clip-move",
+			"title": "Moving a clip changes its start time and nothing else",
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-video", "kind": "video", "name": "Video lane", "hidden": false },
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [
+					{
+						"id": "clip-caption",
+						"trackId": "track-text",
+						"startTime": 0,
+						"duration": 40000,
+						"trimStart": 0,
+						"trimEnd": 0
+					}
+				],
+				"assets": [],
+				"markers": []
+			},
+			"batch": {
+				"operations": [
+					{
+						"kind": "update-clip",
+						"clipId": "clip-caption",
+						"patch": { "startTime": 80000 }
+					}
+				]
+			},
+			"expect": {
+				"outcome": "accepted",
+				"revisionDelta": 1,
+				"watchDelta": 1,
+				"createdIds": [],
+				"changedIds": ["clip-caption"],
+				"reads": [
+					{
+						"entity": "clip",
+						"id": "clip-caption",
+						"fields": {
+							"startTime": 80000,
+							"duration": 40000,
+							"trimStart": 0,
+							"trimEnd": 0,
+							"trackId": "track-text"
+						}
+					}
+				]
+			}
+		},
+		{
+			"id": "document/delete-clip",
+			"title": "Deleting a clip leaves its lane in place",
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [
+					{
+						"id": "clip-caption",
+						"trackId": "track-text",
+						"startTime": 0,
+						"duration": 40000,
+						"trimStart": 0,
+						"trimEnd": 0
+					}
+				],
+				"assets": [],
+				"markers": []
+			},
+			"batch": {
+				"operations": [{ "kind": "delete-clip", "clipId": "clip-caption" }]
+			},
+			"expect": {
+				"outcome": "accepted",
+				"revisionDelta": 1,
+				"watchDelta": 1,
+				"createdIds": [],
+				"changedIds": ["clip-caption"],
+				"reads": [
+					{ "entity": "clip", "id": "clip-caption", "absent": true },
+					{ "entity": "track", "id": "track-text", "fields": { "kind": "text" } }
+				]
+			}
+		},
+		{
+			"id": "document/delete-asset",
+			"title": "Deleting an unreferenced asset removes it from the catalog",
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [],
+				"assets": [
+					{
+						"id": "asset-reel",
+						"kind": "video",
+						"name": "Reel",
+						"duration": 1200000,
+						"width": 1920,
+						"height": 1080
+					}
+				],
+				"markers": []
+			},
+			"batch": {
+				"operations": [{ "kind": "delete-asset", "assetId": "asset-reel" }]
+			},
+			"expect": {
+				"outcome": "accepted",
+				"revisionDelta": 1,
+				"watchDelta": 1,
+				"createdIds": [],
+				"changedIds": ["asset-reel"],
+				"reads": [{ "entity": "asset", "id": "asset-reel", "absent": true }]
+			}
+		},
+		{
+			"id": "document/create-marker",
+			"title": "Creating a marker records its time, note and colour",
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [],
+				"assets": [],
+				"markers": []
+			},
+			"batch": {
+				"operations": [
+					{
+						"kind": "create-marker",
+						"marker": {
+							"id": "marker-beat",
+							"time": 8000,
+							"note": "beat",
+							"color": "#ff8800"
+						}
+					}
+				]
+			},
+			"expect": {
+				"outcome": "accepted",
+				"revisionDelta": 1,
+				"watchDelta": 1,
+				"createdIds": ["marker-beat"],
+				"changedIds": [],
+				"reads": [
+					{
+						"entity": "marker",
+						"id": "marker-beat",
+						"fields": { "time": 8000, "note": "beat", "color": "#ff8800" }
+					}
+				]
+			}
+		},
+		{
+			"id": "document/update-marker",
+			"title": "Updating a marker patches the named fields",
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [],
+				"assets": [],
+				"markers": [{ "id": "marker-open", "time": 0, "note": "open" }]
+			},
+			"batch": {
+				"operations": [
+					{
+						"kind": "update-marker",
+						"markerId": "marker-open",
+						"patch": { "note": "revised", "time": 4000 }
+					}
+				]
+			},
+			"expect": {
+				"outcome": "accepted",
+				"revisionDelta": 1,
+				"watchDelta": 1,
+				"createdIds": [],
+				"changedIds": ["marker-open"],
+				"reads": [
+					{
+						"entity": "marker",
+						"id": "marker-open",
+						"fields": { "time": 4000, "note": "revised" }
+					}
+				]
+			}
+		},
+		{
+			"id": "document/delete-marker",
+			"title": "Deleting a marker removes it",
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [],
+				"assets": [],
+				"markers": [{ "id": "marker-open", "time": 0, "note": "open" }]
+			},
+			"batch": {
+				"operations": [{ "kind": "delete-marker", "markerId": "marker-open" }]
+			},
+			"expect": {
+				"outcome": "accepted",
+				"revisionDelta": 1,
+				"watchDelta": 1,
+				"createdIds": [],
+				"changedIds": ["marker-open"],
+				"reads": [{ "entity": "marker", "id": "marker-open", "absent": true }]
+			}
+		},
+		{
+			"id": "document/update-project",
+			"title": "A typed Project patch changes only the public Project fields",
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [],
+				"assets": [],
+				"markers": []
+			},
+			"batch": {
+				"operations": [
+					{
+						"kind": "update-project",
+						"projectId": "vector-project",
+						"patch": {
+							"name": "Renamed corpus project",
+							"canvasWidth": 1280,
+							"canvasHeight": 720
+						}
+					}
+				]
+			},
+			"expect": {
+				"outcome": "accepted",
+				"revisionDelta": 1,
+				"watchDelta": 1,
+				"createdIds": [],
+				"changedIds": ["vector-project"],
+				"reads": [
+					{
+						"entity": "project",
+						"id": "vector-project",
+						"fields": {
+							"name": "Renamed corpus project",
+							"canvasWidth": 1280,
+							"canvasHeight": 720,
+							"frameRate": { "numerator": 30, "denominator": 1 }
+						}
+					}
+				]
+			}
+		},
+		{
+			"id": "document/atomic-batch-rejection",
+			"title": "A batch whose second operation fails leaves the first unapplied",
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [
+					{
+						"id": "clip-caption",
+						"trackId": "track-text",
+						"startTime": 0,
+						"duration": 40000,
+						"trimStart": 0,
+						"trimEnd": 0
+					}
+				],
+				"assets": [],
+				"markers": []
+			},
+			"batch": {
+				"operations": [
+					{
+						"kind": "create-track",
+						"track": {
+							"id": "track-late",
+							"kind": "text",
+							"name": "Late lane",
+							"hidden": false
+						}
+					},
+					{
+						"kind": "create-clip",
+						"clip": {
+							"id": "clip-orphan",
+							"trackId": "track-absent",
+							"startTime": 0,
+							"duration": 40000,
+							"trimStart": 0,
+							"trimEnd": 0
+						}
+					}
+				]
+			},
+			"expect": {
+				"outcome": "rejected",
+				"errorCode": "validation",
+				"revisionDelta": 0,
+				"watchDelta": 0,
+				"reads": [
+					{ "entity": "track", "id": "track-late", "absent": true },
+					{ "entity": "clip", "id": "clip-orphan", "absent": true },
+					{
+						"entity": "clip",
+						"id": "clip-caption",
+						"fields": { "startTime": 0, "duration": 40000 }
+					}
+				]
+			}
+		},
+		{
+			"id": "document/stale-expected-revision",
+			"title": "A stale expected revision is rejected as a conflict and moves nothing",
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [],
+				"assets": [],
+				"markers": []
+			},
+			"batch": {
+				"expectedRevisionOffset": -1,
+				"operations": [
+					{
+						"kind": "update-track",
+						"trackId": "track-text",
+						"patch": { "name": "Must not apply" }
+					}
+				]
+			},
+			"expect": {
+				"outcome": "rejected",
+				"errorCode": "conflict",
+				"revisionDelta": 0,
+				"watchDelta": 0,
+				"reads": [
+					{
+						"entity": "track",
+						"id": "track-text",
+						"fields": { "name": "Caption lane" }
+					}
+				]
+			}
+		},
+		{
+			"id": "document/not-found-apply",
+			"title": "Updating an entity that does not exist is a not-found rejection",
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [],
+				"assets": [],
+				"markers": []
+			},
+			"batch": {
+				"operations": [
+					{
+						"kind": "update-track",
+						"trackId": "track-missing",
+						"patch": { "name": "Nowhere" }
+					}
+				]
+			},
+			"expect": {
+				"outcome": "rejected",
+				"errorCode": "not-found",
+				"revisionDelta": 0,
+				"watchDelta": 0
+			}
+		},
+		{
+			"id": "document/validation-not-found-issue",
+			"title": "Validation reports not-found for a missing clip without applying anything",
+			"requires": ["validation"],
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [],
+				"assets": [],
+				"markers": []
+			},
+			"batch": {
+				"operations": [
+					{
+						"kind": "update-clip",
+						"clipId": "clip-missing",
+						"patch": { "startTime": 4000 }
+					}
+				]
+			},
+			"expect": {
+				"outcome": "rejected",
+				"errorCode": "not-found",
+				"valid": false,
+				"issueCodes": ["not-found"],
+				"revisionDelta": 0,
+				"watchDelta": 0
+			}
+		},
+		{
+			"id": "document/validation-duplicate-id",
+			"title": "Re-creating an existing identity is a duplicate-id issue",
+			"requires": ["validation"],
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [],
+				"assets": [],
+				"markers": []
+			},
+			"batch": {
+				"operations": [
+					{
+						"kind": "create-track",
+						"track": {
+							"id": "track-text",
+							"kind": "text",
+							"name": "Duplicate lane",
+							"hidden": false
+						}
+					}
+				]
+			},
+			"expect": {
+				"outcome": "rejected",
+				"errorCode": "validation",
+				"valid": false,
+				"issueCodes": ["duplicate-id"],
+				"revisionDelta": 0,
+				"watchDelta": 0,
+				"reads": [
+					{
+						"entity": "track",
+						"id": "track-text",
+						"fields": { "name": "Caption lane" }
+					}
+				]
+			}
+		},
+		{
+			"id": "document/validation-missing-relation",
+			"title": "A clip referencing a missing lane is a missing-relation issue",
+			"requires": ["validation"],
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [],
+				"assets": [],
+				"markers": []
+			},
+			"batch": {
+				"operations": [
+					{
+						"kind": "create-clip",
+						"clip": {
+							"id": "clip-orphan",
+							"trackId": "track-absent",
+							"startTime": 0,
+							"duration": 40000,
+							"trimStart": 0,
+							"trimEnd": 0
+						}
+					}
+				]
+			},
+			"expect": {
+				"outcome": "rejected",
+				"errorCode": "validation",
+				"valid": false,
+				"issueCodes": ["missing-relation"],
+				"revisionDelta": 0,
+				"watchDelta": 0
+			}
+		},
+		{
+			"id": "document/validation-invalid-entity",
+			"title": "An empty Project patch is an invalid-entity issue",
+			"requires": ["validation"],
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [],
+				"assets": [],
+				"markers": []
+			},
+			"batch": {
+				"operations": [
+					{ "kind": "update-project", "projectId": "vector-project", "patch": {} }
+				]
+			},
+			"expect": {
+				"outcome": "rejected",
+				"errorCode": "validation",
+				"valid": false,
+				"issueCodes": ["invalid-entity"],
+				"revisionDelta": 0,
+				"watchDelta": 0,
+				"reads": [
+					{
+						"entity": "project",
+						"id": "vector-project",
+						"fields": { "name": "Vector corpus project" }
+					}
+				]
+			}
+		},
+		{
+			"id": "document/validation-empty-batch",
+			"title": "An empty batch is an empty-batch issue, not a silent no-op",
+			"requires": ["validation"],
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [],
+				"assets": [],
+				"markers": []
+			},
+			"batch": { "operations": [] },
+			"expect": {
+				"outcome": "rejected",
+				"errorCode": "validation",
+				"valid": false,
+				"issueCodes": ["empty-batch"],
+				"revisionDelta": 0,
+				"watchDelta": 0
+			}
+		},
+		{
+			"id": "document/validation-unsupported-operation",
+			"title": "A kind outside the frozen union is refused as unsupported",
+			"requires": ["validation"],
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [],
+				"assets": [],
+				"markers": []
+			},
+			"batch": { "operations": [], "unknownKindProbe": "reticulate-splines" },
+			"expect": {
+				"outcome": "rejected",
+				"errorCode": "unsupported",
+				"valid": false,
+				"issueCodes": ["unsupported-operation"],
+				"revisionDelta": 0,
+				"watchDelta": 0
+			}
+		},
+		{
+			"id": "document/validation-expected-revision-conflict",
+			"title": "Validation names the expected-revision conflict before apply is attempted",
+			"requires": ["validation"],
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [],
+				"assets": [],
+				"markers": []
+			},
+			"batch": {
+				"expectedRevisionOffset": -1,
+				"operations": [
+					{
+						"kind": "update-track",
+						"trackId": "track-text",
+						"patch": { "hidden": true }
+					}
+				]
+			},
+			"expect": {
+				"outcome": "rejected",
+				"errorCode": "conflict",
+				"valid": false,
+				"issueCodes": ["expected-revision-conflict"],
+				"revisionDelta": 0,
+				"watchDelta": 0
+			}
+		},
+		{
+			"id": "document/placement-collision",
+			"title": "Two clips overlapping on one lane collide",
+			"requires": ["validation", "placement-policy"],
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [
+					{
+						"id": "clip-caption",
+						"trackId": "track-text",
+						"startTime": 0,
+						"duration": 40000,
+						"trimStart": 0,
+						"trimEnd": 0
+					}
+				],
+				"assets": [],
+				"markers": []
+			},
+			"batch": {
+				"operations": [
+					{
+						"kind": "create-clip",
+						"clip": {
+							"id": "clip-overlap",
+							"trackId": "track-text",
+							"startTime": 20000,
+							"duration": 40000,
+							"trimStart": 0,
+							"trimEnd": 0
+						}
+					}
+				]
+			},
+			"expect": {
+				"outcome": "rejected",
+				"errorCode": "validation",
+				"valid": false,
+				"issueCodes": ["collision"],
+				"revisionDelta": 0,
+				"watchDelta": 0,
+				"reads": [{ "entity": "clip", "id": "clip-overlap", "absent": true }]
+			}
+		},
+		{
+			"id": "document/placement-lane-incompatible",
+			"title": "A video-backed clip is incompatible with a caption lane",
+			"requires": ["validation", "placement-policy"],
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [],
+				"assets": [
+					{
+						"id": "asset-reel",
+						"kind": "video",
+						"name": "Reel",
+						"duration": 1200000,
+						"width": 1920,
+						"height": 1080
+					}
+				],
+				"markers": []
+			},
+			"batch": {
+				"operations": [
+					{
+						"kind": "create-clip",
+						"clip": {
+							"id": "clip-mislaned",
+							"trackId": "track-text",
+							"assetId": "asset-reel",
+							"startTime": 400000,
+							"duration": 40000,
+							"trimStart": 0,
+							"trimEnd": 0
+						}
+					}
+				]
+			},
+			"expect": {
+				"outcome": "rejected",
+				"errorCode": "validation",
+				"valid": false,
+				"issueCodes": ["lane-incompatible"],
+				"revisionDelta": 0,
+				"watchDelta": 0
+			}
+		},
+		{
+			"id": "document/placement-non-positive-duration",
+			"title": "A zero-length clip is refused",
+			"requires": ["validation", "placement-policy"],
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [],
+				"assets": [],
+				"markers": []
+			},
+			"batch": {
+				"operations": [
+					{
+						"kind": "create-clip",
+						"clip": {
+							"id": "clip-zero",
+							"trackId": "track-text",
+							"startTime": 800000,
+							"duration": 0,
+							"trimStart": 0,
+							"trimEnd": 0
+						}
+					}
+				]
+			},
+			"expect": {
+				"outcome": "rejected",
+				"errorCode": "validation",
+				"valid": false,
+				"issueCodes": ["non-positive-duration"],
+				"revisionDelta": 0,
+				"watchDelta": 0
+			}
+		},
+		{
+			"id": "document/placement-timebase-misaligned",
+			"title": "A clip that does not land on a frame boundary is refused",
+			"requires": ["validation", "placement-policy"],
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-text", "kind": "text", "name": "Caption lane", "hidden": false }
+				],
+				"clips": [],
+				"assets": [],
+				"markers": []
+			},
+			"batch": {
+				"operations": [
+					{
+						"kind": "create-clip",
+						"clip": {
+							"id": "clip-offbeat",
+							"trackId": "track-text",
+							"startTime": 400001,
+							"duration": 40000,
+							"trimStart": 0,
+							"trimEnd": 0
+						}
+					}
+				]
+			},
+			"expect": {
+				"outcome": "rejected",
+				"errorCode": "validation",
+				"valid": false,
+				"issueCodes": ["timebase-misaligned"],
+				"revisionDelta": 0,
+				"watchDelta": 0
+			}
+		},
+		{
+			"id": "document/placement-source-out-of-bounds",
+			"title": "A clip longer than its source is refused",
+			"requires": ["validation", "placement-policy"],
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{ "id": "track-video", "kind": "video", "name": "Video lane", "hidden": false }
+				],
+				"clips": [],
+				"assets": [
+					{
+						"id": "asset-reel",
+						"kind": "video",
+						"name": "Reel",
+						"duration": 1200000,
+						"width": 1920,
+						"height": 1080
+					}
+				],
+				"markers": []
+			},
+			"batch": {
+				"operations": [
+					{
+						"kind": "create-clip",
+						"clip": {
+							"id": "clip-overrun",
+							"trackId": "track-video",
+							"assetId": "asset-reel",
+							"startTime": 0,
+							"duration": 1600000,
+							"trimStart": 0,
+							"trimEnd": 0
+						}
+					}
+				]
+			},
+			"expect": {
+				"outcome": "rejected",
+				"errorCode": "validation",
+				"valid": false,
+				"issueCodes": ["source-out-of-bounds"],
+				"revisionDelta": 0,
+				"watchDelta": 0
+			}
+		}
+	]
+}

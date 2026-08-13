@@ -1,15 +1,25 @@
-import { Command, type CommandResult } from "./base-command";
+import {
+	Command,
+	type CommandResult,
+	type EditorCommandContext,
+} from "./base-command";
 
 export class BatchCommand extends Command {
+	readonly routingClass = "transaction" as const;
+
 	constructor(private commands: Command[]) {
 		super();
 	}
 
-	execute(): CommandResult | undefined {
+	getCommands(): readonly Command[] {
+		return this.commands;
+	}
+
+	execute(context: EditorCommandContext): CommandResult | undefined {
 		let latestSelectionResult: CommandResult | undefined;
 
 		for (const command of this.commands) {
-			const result = command.execute();
+			const result = command.execute(context);
 			if (result?.selection !== undefined) {
 				latestSelectionResult = result;
 			}
@@ -18,17 +28,17 @@ export class BatchCommand extends Command {
 		return latestSelectionResult;
 	}
 
-	undo(): void {
+	undo(context: EditorCommandContext): void {
 		for (const command of [...this.commands].reverse()) {
-			command.undo();
+			command.undo(context);
 		}
 	}
 
-	redo(): CommandResult | undefined {
+	redo(context: EditorCommandContext): CommandResult | undefined {
 		let latestSelectionResult: CommandResult | undefined;
 
 		for (const command of this.commands) {
-			const result = command.redo();
+			const result = command.redo(context);
 			if (result?.selection !== undefined) {
 				latestSelectionResult = result;
 			}

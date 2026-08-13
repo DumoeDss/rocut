@@ -1,23 +1,22 @@
-import { Command, type CommandResult } from "@/commands/base-command";
+import {
+	Command,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
 import type { SceneTracks, TrackType } from "@/timeline";
 import { generateUUID } from "@/utils/id";
-import { EditorCore } from "@/core";
 import {
 	buildEmptyTrack,
 	getDefaultInsertIndexForTrack,
 } from "@/timeline/placement";
 
 export class AddTrackCommand extends Command {
+	readonly routingClass = "transaction" as const;
+
 	private trackId: string;
 	private savedState: SceneTracks | null = null;
 
-	constructor({
-		type,
-		index,
-	}: {
-		type: TrackType;
-		index?: number;
-	}) {
+	constructor({ type, index }: { type: TrackType; index?: number }) {
 		super();
 		this.type = type;
 		this.index = index;
@@ -27,8 +26,7 @@ export class AddTrackCommand extends Command {
 	private type: TrackType;
 	private index?: number;
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		this.savedState = editor.scenes.getActiveScene().tracks;
 
 		const insertIndex =
@@ -56,9 +54,8 @@ export class AddTrackCommand extends Command {
 		return undefined;
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (this.savedState) {
-			const editor = EditorCore.getInstance();
 			editor.timeline.updateTracks(this.savedState);
 		}
 	}

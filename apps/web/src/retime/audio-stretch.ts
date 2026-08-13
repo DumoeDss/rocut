@@ -124,10 +124,7 @@ async function buildPitchPreservedBuffer({
 	resampleSourceNode.start(0);
 	const resampledBuffer = await resampleCtx.startRendering();
 
-	const outputSamples = Math.max(
-		1,
-		Math.ceil(clipDuration * targetSampleRate),
-	);
+	const outputSamples = Math.max(1, Math.ceil(clipDuration * targetSampleRate));
 	const stretchCtx = new OfflineAudioContext(
 		numChannels,
 		outputSamples,
@@ -137,7 +134,7 @@ async function buildPitchPreservedBuffer({
 	shifter.tempo = rate;
 	shifter.pitch = 1;
 	shifter.connect(stretchCtx.destination);
-	return stretchCtx.startRendering();
+	return await stretchCtx.startRendering();
 }
 
 export async function renderRetimedBuffer({

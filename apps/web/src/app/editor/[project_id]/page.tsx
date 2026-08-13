@@ -1,15 +1,14 @@
 "use client";
 
 import { useMemo } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { EditorProvider } from "@/components/providers/editor-provider";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { MobileGate } from "@/components/editor/mobile-gate";
 import { ChangelogNotification } from "@/changelog/components/changelog-notification";
-import { EditorHostProvider } from "@/editor/host/editor-host-context";
 import type { EditorHost } from "@/editor/host/editor-host";
-import { EditorRoot } from "@/editor/surface/editor-root";
-import { DEFAULT_LOGO_URL, SITE_URL } from "@/site/brand";
-import { SOCIAL_LINKS } from "@/site/social";
+import { createNextEditorHost } from "@/editor/host/next-editor-host";
+import { C4NextRuntimeProbe } from "@/editor/host/c4-next-runtime-probe";
+import { EditorSessionHost } from "@/editor/session";
+import { SessionEditorSurface } from "@/editor/surface/embedding/session-surface-bridge";
 
 /**
  * The Next host of the editor.
@@ -21,43 +20,42 @@ import { SOCIAL_LINKS } from "@/site/social";
 export default function Editor() {
 	const params = useParams();
 	const router = useRouter();
+	const searchParams = useSearchParams();
 	const projectId = params.project_id as string;
+	const c4BuildMarker =
+		process.env.NEXT_PUBLIC_C4_BUILD_MARKER ?? "development";
+	const requestedC4Probe = searchParams.get("c4-next-probe");
+	const c4Probe =
+		c4BuildMarker.startsWith("c4-final-commit-") &&
+		(requestedC4Probe === "worker" || requestedC4Probe === "forced-none")
+			? requestedC4Probe
+			: null;
 
 	const host = useMemo<EditorHost>(
-		() => ({
-			projectId,
-			navigation: {
-				onProjectReplaced: ({ projectId: newProjectId }) =>
+		() =>
+			createNextEditorHost({
+				projectId,
+				onProjectReplaced: (newProjectId) =>
 					router.replace(`/editor/${newProjectId}`),
 				onExitProject: () => router.push("/projects"),
 				onGoBack: () => router.back(),
-			},
-			services: {
-				soundSearchEndpoint: "/api/sounds/search",
-				feedbackEndpoint: "/api/feedback",
-			},
-			// Supplied from `@/site/*` so these stay single-sourced and this app
-			// renders exactly what it did at the pin. The editor no longer imports
-			// site code itself, which is what keeps the distributable graph clean.
-			branding: { logoUrl: DEFAULT_LOGO_URL },
-			links: {
-				discordUrl: SOCIAL_LINKS.discord,
-				roadmapUrl: `${SITE_URL}/roadmap`,
-			},
-		}),
-		[projectId, router],
+				forceRendererBackend: c4Probe === "forced-none" ? "none" : undefined,
+				workerFixture: c4Probe === "worker",
+			}),
+		[projectId, router, c4Probe],
 	);
 
 	return (
-		<EditorHostProvider host={host}>
-			<div className="h-screen w-screen">
+		<EditorSessionHost host={host}>
+			<div className="h-screen w-screen" data-c4-build-marker={c4BuildMarker}>
 				<MobileGate>
-					<EditorProvider>
-						<EditorRoot />
-						<ChangelogNotification />
-					</EditorProvider>
+					{c4Probe === "worker" || c4Probe === "forced-none" ? (
+						<C4NextRuntimeProbe mode={c4Probe} />
+					) : null}
+					<SessionEditorSurface focusMode="focused" />
+					<ChangelogNotification />
 				</MobileGate>
 			</div>
-		</EditorHostProvider>
+		</EditorSessionHost>
 	);
 }

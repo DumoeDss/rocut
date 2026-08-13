@@ -26,8 +26,8 @@ export class IndexedDBAdapter<T> implements StorageAdapter<T> {
 			request.onerror = () => reject(request.error);
 			request.onsuccess = () => resolve(request.result);
 
-			request.onupgradeneeded = (event) => {
-				const db = (event.target as IDBOpenDBRequest).result;
+			request.onupgradeneeded = () => {
+				const db = request.result;
 				if (!db.objectStoreNames.contains(this.storeName)) {
 					db.createObjectStore(this.storeName, { keyPath: "id" });
 				}
@@ -42,26 +42,32 @@ export class IndexedDBAdapter<T> implements StorageAdapter<T> {
 
 		return new Promise((resolve, reject) => {
 			const request = store.get(key);
-			request.onerror = () => reject(request.error);
-			request.onsuccess = () => resolve(request.result || null);
+			request.onerror = () => {
+				db.close();
+				reject(request.error);
+			};
+			request.onsuccess = () => {
+				db.close();
+				resolve(request.result || null);
+			};
 		});
 	}
 
-	async set({
-		key,
-		value,
-	}: {
-		key: string;
-		value: T;
-	}): Promise<void> {
+	async set({ key, value }: { key: string; value: T }): Promise<void> {
 		const db = await this.getDB();
 		const transaction = db.transaction([this.storeName], "readwrite");
 		const store = transaction.objectStore(this.storeName);
 
 		return new Promise((resolve, reject) => {
 			const request = store.put({ id: key, ...value });
-			request.onerror = () => reject(request.error);
-			request.onsuccess = () => resolve();
+			request.onerror = () => {
+				db.close();
+				reject(request.error);
+			};
+			request.onsuccess = () => {
+				db.close();
+				resolve();
+			};
 		});
 	}
 
@@ -72,8 +78,14 @@ export class IndexedDBAdapter<T> implements StorageAdapter<T> {
 
 		return new Promise((resolve, reject) => {
 			const request = store.delete(key);
-			request.onerror = () => reject(request.error);
-			request.onsuccess = () => resolve();
+			request.onerror = () => {
+				db.close();
+				reject(request.error);
+			};
+			request.onsuccess = () => {
+				db.close();
+				resolve();
+			};
 		});
 	}
 
@@ -84,8 +96,18 @@ export class IndexedDBAdapter<T> implements StorageAdapter<T> {
 
 		return new Promise((resolve, reject) => {
 			const request = store.getAllKeys();
-			request.onerror = () => reject(request.error);
-			request.onsuccess = () => resolve(request.result as string[]);
+			request.onerror = () => {
+				db.close();
+				reject(request.error);
+			};
+			request.onsuccess = () => {
+				db.close();
+				resolve(
+					request.result.filter(
+						(key): key is string => typeof key === "string",
+					),
+				);
+			};
 		});
 	}
 
@@ -96,8 +118,14 @@ export class IndexedDBAdapter<T> implements StorageAdapter<T> {
 
 		return new Promise((resolve, reject) => {
 			const request = store.getAll();
-			request.onerror = () => reject(request.error);
-			request.onsuccess = () => resolve(request.result || []);
+			request.onerror = () => {
+				db.close();
+				reject(request.error);
+			};
+			request.onsuccess = () => {
+				db.close();
+				resolve(request.result || []);
+			};
 		});
 	}
 
@@ -108,8 +136,14 @@ export class IndexedDBAdapter<T> implements StorageAdapter<T> {
 
 		return new Promise((resolve, reject) => {
 			const request = store.clear();
-			request.onerror = () => reject(request.error);
-			request.onsuccess = () => resolve();
+			request.onerror = () => {
+				db.close();
+				reject(request.error);
+			};
+			request.onsuccess = () => {
+				db.close();
+				resolve();
+			};
 		});
 	}
 }
@@ -123,5 +157,7 @@ export async function deleteDatabase({
 		const request = indexedDB.deleteDatabase(dbName);
 		request.onsuccess = () => resolve();
 		request.onerror = () => reject(request.error);
+		request.onblocked = () =>
+			reject(new Error("IndexedDB deletion was blocked"));
 	});
 }

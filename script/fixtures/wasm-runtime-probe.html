@@ -1,0 +1,231 @@
+<!doctype html>
+<meta charset="utf-8" />
+<script type="module">
+	import {
+		WasmRuntimeGpuResourceQuery,
+		WasmRuntimeGraphicsQuery,
+		createCompositor,
+		disposeCompositor,
+		disposeGpu,
+		getCompositorCanvas,
+		getCompositorCanvasForHandle,
+		initCompositor,
+		initializeGpu,
+		releaseTextureForHandle,
+		renderFrameForHandle,
+		resizeCompositorForHandle,
+		uploadTextureForHandle,
+	} from "/rust/wasm/pkg/opencut_wasm.js";
+
+	const assert = (condition, message) => {
+		if (!condition) throw new Error(message);
+	};
+	const expectThrow = (action, text) => {
+		try {
+			action();
+		} catch (error) {
+			assert(String(error).includes(text), `expected "${text}" in ${error}`);
+			return String(error);
+		}
+		throw new Error(`expected an error containing "${text}"`);
+	};
+
+	globalThis.__wasmRuntimeProbe = (async () => {
+		const graphics = new WasmRuntimeGraphicsQuery();
+		const resources = new WasmRuntimeGpuResourceQuery();
+		assert(graphics.selectedBackend() === null, "backend must begin null");
+		assert(
+			graphics.concurrentCompositorInstances() === 0,
+			"initial capacity must be zero",
+		);
+		assert(
+			graphics.unavailableReason().length > 0,
+			"initial reason must be non-empty",
+		);
+		assert(
+			resources.liveHandles().length === 0,
+			"initial handles must be empty",
+		);
+
+		for (let attempt = 0; attempt < 3; attempt += 1) {
+			const firstInitialization = initializeGpu().then(() => {
+				const handle = createCompositor(16, 16);
+				resizeCompositorForHandle(handle, 20, 20);
+				return handle;
+			});
+			const joinedInitialization = initializeGpu();
+			const [concurrentHandle] = await Promise.all([
+				firstInitialization,
+				joinedInitialization,
+			]);
+			resizeCompositorForHandle(concurrentHandle, 24, 24);
+			assert(
+				resources.liveHandles().includes(concurrentHandle),
+				"concurrent initialization must retain a usable handle on one context",
+			);
+			disposeCompositor(concurrentHandle);
+			disposeGpu();
+			assert(
+				graphics.selectedBackend() === null,
+				"concurrent initialization cleanup must restore a null backend",
+			);
+		}
+
+		const assertCancelledInitialization = async (yieldBeforeDispose) => {
+			const abandonedInitialization = initializeGpu();
+			if (yieldBeforeDispose) await Promise.resolve();
+			disposeGpu();
+			assert(
+				graphics.selectedBackend() === null &&
+					graphics.concurrentCompositorInstances() === 0 &&
+					resources.liveHandles().length === 0,
+				"disposal must synchronously expose null/zero/empty runtime state",
+			);
+			const abandonedResult = await Promise.allSettled([
+				abandonedInitialization,
+			]);
+			assert(
+				abandonedResult[0].status === "rejected" &&
+					String(abandonedResult[0].reason).includes("cancelled"),
+				`disposeGpu must reject the initialization generation it invalidated: ${JSON.stringify(abandonedResult)}`,
+			);
+			assert(
+				graphics.selectedBackend() === null &&
+					graphics.concurrentCompositorInstances() === 0 &&
+					resources.liveHandles().length === 0,
+				"a late initialization result must not resurrect runtime state",
+			);
+			assert(
+				graphics.unavailableReason() === "GPU runtime was disposed.",
+				"late initialization must not overwrite the disposal reason",
+			);
+		};
+
+		await assertCancelledInitialization(false);
+		await assertCancelledInitialization(true);
+
+		await initializeGpu();
+		const backend = graphics.selectedBackend();
+		const capacity = graphics.concurrentCompositorInstances();
+		assert(
+			backend === "webgpu" || backend === "webgl",
+			`invalid backend ${backend}`,
+		);
+		assert(
+			capacity === (backend === "webgpu" ? 2 : 1),
+			"capacity disagrees with backend",
+		);
+		assert(
+			graphics.unavailableReason() === "",
+			"selected backend must have no failure reason",
+		);
+
+		const handles = [];
+		const canvases = [];
+		const frames = [];
+		for (let index = 0; index < capacity; index += 1) {
+			const handle = createCompositor(64 + index, 48 + index);
+			handles.push(handle);
+			canvases.push(getCompositorCanvasForHandle(handle));
+			resizeCompositorForHandle(handle, 80 + index, 60 + index);
+			const texture = new OffscreenCanvas(2, 2);
+			const context = texture.getContext("2d");
+			context.fillStyle = index === 0 ? "red" : "blue";
+			context.fillRect(0, 0, 2, 2);
+			uploadTextureForHandle(handle, {
+				id: "shared-texture-id",
+				source: texture,
+				width: 2,
+				height: 2,
+			});
+			const frame = {
+				width: 80 + index,
+				height: 60 + index,
+				clear: { color: [0, 0, 0, 1] },
+				items: [
+					{
+						type: "layer",
+						textureId: "shared-texture-id",
+						transform: {
+							centerX: 40,
+							centerY: 30,
+							width: 2,
+							height: 2,
+							rotationDegrees: 0,
+							flipX: false,
+							flipY: false,
+						},
+						opacity: 1,
+						blendMode: "normal",
+						effectPassGroups: [],
+						mask: null,
+					},
+				],
+			};
+			frames.push(frame);
+			renderFrameForHandle(handle, frame);
+		}
+		assert(
+			new Set(handles).size === capacity,
+			"explicit handles must be distinct",
+		);
+		assert(
+			JSON.stringify(resources.liveHandles()) === JSON.stringify(handles),
+			"live handle enumeration must be ascending and complete",
+		);
+		if (capacity === 2)
+			assert(canvases[0] !== canvases[1], "WebGPU canvases must be distinct");
+		if (capacity === 2) {
+			releaseTextureForHandle(handles[0], "shared-texture-id");
+			renderFrameForHandle(handles[1], frames[1]);
+		}
+		expectThrow(() => createCompositor(10, 10), "capacity");
+		expectThrow(() => disposeGpu(), "handles are live");
+		resizeCompositorForHandle(handles[0], 96, 72);
+		assert(
+			canvases[0].width === 96 && canvases[0].height === 72,
+			"teardown refusal must leave the compositor usable",
+		);
+
+		resources.release({ handle: handles[0] });
+		resources.release({ handle: handles[0] });
+		assert(
+			!resources.liveHandles().includes(handles[0]),
+			"double release must keep the named handle absent",
+		);
+		for (const handle of handles.slice(1)) disposeCompositor(handle);
+		disposeGpu();
+		assert(
+			graphics.selectedBackend() === null,
+			"teardown must restore null backend",
+		);
+		assert(
+			graphics.concurrentCompositorInstances() === 0,
+			"teardown capacity must be zero",
+		);
+		assert(
+			graphics.unavailableReason().length > 0,
+			"teardown reason must be non-empty",
+		);
+
+		await initializeGpu();
+		initCompositor(32, 32);
+		assert(
+			resources.liveHandles()[0] === 0,
+			"legacy compositor must own reserved handle zero",
+		);
+		assert(
+			getCompositorCanvas() === getCompositorCanvasForHandle(0),
+			"legacy canvas must delegate",
+		);
+		disposeCompositor(0);
+		disposeCompositor(0);
+		disposeGpu();
+		return {
+			backend,
+			capacity,
+			handles,
+			cancellationModes: ["zero-yield", "yielded"],
+		};
+	})();
+</script>

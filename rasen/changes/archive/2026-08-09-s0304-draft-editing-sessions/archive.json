@@ -1,0 +1,41 @@
+{
+  "change": "s0304-draft-editing-sessions",
+  "archivedAt": "2026-08-09T20:52:00.914Z",
+  "codeCommit": "04e481cd33928d4076a9a104c633d3099de55fb8",
+  "planningBranch": "feat/s0304-draft-editing-sessions",
+  "planningTreeState": "dirty",
+  "evidence": [
+    {
+      "path": "evidence/implementation-report.md",
+      "sha256": "f295eabf74d3c616ecd172d3109f321fd28e118e77885119064c0a388ef6e660"
+    },
+    {
+      "path": "evidence/review-cycle-report.md",
+      "sha256": "dc0124564eedc3b656f8e325b4ef7d4c25d25bebd6e079d2f7c6dde0e57ef55a"
+    },
+    {
+      "path": "evidence/review-report.md",
+      "sha256": "663f332bcd2334697582ffde1709550d0136a3bf32acd0189ceca88486e0f455"
+    },
+    {
+      "path": "evidence/ship-log.md",
+      "sha256": "e4dd9eaf05cb4426fb2243a21b031df8b39b4f6dc5d44f80f4eb1203b1f0f5e8"
+    }
+  ],
+  "probes": [
+    {
+      "path": ".rasen/changes/s0304-draft-editing-sessions/ephemera/parity-runner",
+      "codeCommit": "cbfb4f6852f30baff4427fac0df1486a9db53b1a"
+    }
+  ],
+  "handoffAbsorbed": [
+    {
+      "file": "handoff/implementer-1.md",
+      "outcome": "absorbed"
+    }
+  ],
+  "ephemeraDiscarded": [],
+  "missing": [
+    "verification-report"
+  ]
+}

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePreviewViewport } from "@/preview/components/preview-viewport";
-import { useEditor } from "@/editor/use-editor";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { useShiftKey } from "@/hooks/use-shift-key";
 import { getMaskDefinition } from "@/masks";
 import { appendPointToFreeformPathMask } from "@/masks/freeform/definition";
@@ -17,6 +17,7 @@ import type { Mask, MaskHandleId, MaskInteractionResult } from "@/masks/types";
 import type { MaskableElement } from "@/timeline";
 import { isMaskableElement } from "@/timeline/element-utils";
 import { registerCanceller } from "@/editor/cancel-interaction";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 
 interface DragState {
 	trackId: string;
@@ -93,10 +94,13 @@ export function useMaskHandles({
 }: {
 	onSnapLinesChange?: (lines: SnapLine[]) => void;
 }) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
+	const session = useEditorSession();
 	const isShiftHeldRef = useShiftKey();
 	const viewport = usePreviewViewport();
-	const [activeHandleId, setActiveHandleId] = useState<MaskHandleId | null>(null);
+	const [activeHandleId, setActiveHandleId] = useState<MaskHandleId | null>(
+		null,
+	);
 	const dragStateRef = useRef<DragState | null>(null);
 	const pendingSegmentInsertRef = useRef<PendingSegmentInsertState | null>(
 		null,
@@ -322,6 +326,7 @@ export function useMaskHandles({
 		if (!activeHandleId) return;
 
 		return registerCanceller({
+			session,
 			fn: () => {
 				editor.timeline.discardPreview();
 				clearMaskHandleState();

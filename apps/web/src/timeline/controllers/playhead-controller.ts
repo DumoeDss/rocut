@@ -57,6 +57,17 @@ export interface PlayheadConfig {
 		scrollLeft: number;
 		playheadTime: MediaTime;
 	}) => void;
+	/**
+	 * Registers the scrub's document-level continuation with the Surface-owned
+	 * private drag coordinator and returns its detach handle. Scrubbing beyond the
+	 * Surface bounds is one of the continuations the R2 owner protocol governs, so
+	 * this controller must not attach `window`/`document` listeners itself.
+	 */
+	startMouseDrag: (registration: {
+		move: (event: MouseEvent) => void;
+		finish: (event: MouseEvent) => void;
+		cancel: () => void;
+	}) => () => void;
 }
 
 export interface PlayheadConfigRef {
@@ -99,6 +110,7 @@ export class PlayheadController {
 
 	private session: Session = { kind: "idle" };
 	private readonly configRef: PlayheadConfigRef;
+	private stopDrag: (() => void) | null = null;
 
 	constructor(deps: { configRef: PlayheadConfigRef }) {
 		this.configRef = deps.configRef;
@@ -215,13 +227,38 @@ export class PlayheadController {
 	// --- Private ---
 
 	private activate(): void {
-		window.addEventListener("mousemove", this.handleMouseMove);
-		window.addEventListener("mouseup", this.handleMouseUp);
+		this.stopDrag = this.config.startMouseDrag({
+			move: this.handleMouseMove,
+			finish: this.handleMouseUp,
+			// Cancel commits the scrub position, for the same reason number-field
+			// and color-picker do: `scrub()` has already called `seek()` on every
+			// move, so the playhead is ALREADY at the new time. Ending without
+			// persisting `timelineViewState.playheadTime` would leave the visible
+			// playhead and the saved view state disagreeing, and a reload would
+			// snap it back. Reachable because the per-Surface coordinator holds one
+			// drag and pre-empts an in-flight scrub through `cancel`.
+			cancel: () => {
+				const session = this.session;
+				if (session.kind !== "idle" && session.currentTime !== null) {
+					this.config.seek(session.currentTime);
+					this.config.setTimelineViewState({
+						zoomLevel: this.config.zoomLevel,
+						scrollLeft: this.config.getTracksScrollEl()?.scrollLeft ?? 0,
+						playheadTime: session.currentTime,
+					});
+				}
+				this.session = { kind: "idle" };
+				this.config.setScrubbing(false);
+			},
+		});
 	}
 
 	private deactivate(): void {
-		window.removeEventListener("mousemove", this.handleMouseMove);
-		window.removeEventListener("mouseup", this.handleMouseUp);
+		// Null first, then detach — matching element-interaction, keyframe-drag and
+		// resize controllers, so re-entry through the detach cannot see a stale handle.
+		const stop = this.stopDrag;
+		this.stopDrag = null;
+		stop?.();
 	}
 
 	/**

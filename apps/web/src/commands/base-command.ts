@@ -1,5 +1,19 @@
 import type { EditorSelectionPatch } from "@/selection/editor-selection";
 import type { ElementRef } from "@/timeline/types";
+import type { EditorCore } from "@/core";
+
+export const COMMAND_ROUTING_CLASSES = [
+	"transaction",
+	"preview",
+	"provider-private",
+	"immediate",
+] as const;
+
+export type CommandRoutingClass = (typeof COMMAND_ROUTING_CLASSES)[number];
+
+export interface EditorCommandContext {
+	readonly editor: EditorCore;
+}
 
 export interface CommandResult {
 	selection?: EditorSelectionPatch;
@@ -19,13 +33,15 @@ export function createElementSelectionResult(
 }
 
 export abstract class Command {
-	abstract execute(): CommandResult | undefined;
+	abstract readonly routingClass: CommandRoutingClass;
 
-	undo(): void {
+	abstract execute(context: EditorCommandContext): CommandResult | undefined;
+
+	undo(_context: EditorCommandContext): void {
 		throw new Error("Undo not implemented for this command");
 	}
 
-	redo(): CommandResult | undefined {
-		return this.execute();
+	redo(context: EditorCommandContext): CommandResult | undefined {
+		return this.execute(context);
 	}
 }

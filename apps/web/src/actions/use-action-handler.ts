@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-type-assertion -- The generic hook deliberately preserves conditional per-action signatures across a stable ref wrapper. */
 import { useCallback, useEffect, useRef } from "react";
 import type {
 	TAction,
@@ -7,6 +8,7 @@ import type {
 	TInvocationTrigger,
 } from "@/actions";
 import { bindAction, unbindAction } from "@/actions";
+import { useActionScope } from "@/actions/action-scope";
 
 // eslint-disable-next-line opencut/prefer-object-params -- action subscriptions read best as (action, handler, isActive).
 export function useActionHandler<A extends TAction>(
@@ -14,6 +16,7 @@ export function useActionHandler<A extends TAction>(
 	handler: TActionFunc<A>,
 	isActive: TActionHandlerOptions,
 ) {
+	const scope = useActionScope();
 	const handlerRef = useRef<TActionFunc<A>>(handler);
 	const isBoundRef = useRef(false);
 
@@ -38,16 +41,16 @@ export function useActionHandler<A extends TAction>(
 			(typeof isActive === "boolean" ? isActive : isActive.current);
 
 		if (shouldBind && !isBoundRef.current) {
-			bindAction(action, stableHandler);
+			bindAction(action, stableHandler, scope);
 			isBoundRef.current = true;
 		} else if (!shouldBind && isBoundRef.current) {
-			unbindAction(action, stableHandler);
+			unbindAction(action, stableHandler, scope);
 			isBoundRef.current = false;
 		}
 
 		return () => {
-			unbindAction(action, stableHandler);
+			unbindAction(action, stableHandler, scope);
 			isBoundRef.current = false;
 		};
-	}, [action, stableHandler, isActive]);
+	}, [action, stableHandler, isActive, scope]);
 }

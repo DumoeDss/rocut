@@ -1,0 +1,27 @@
+{
+  "change": "s0304-transaction-contract-freeze",
+  "archivedAt": "2026-08-09T10:18:53.689Z",
+  "codeCommit": "da530fba90d54055380f67500dc44cbcac1bc7d2",
+  "planningBranch": "feat/s0304-transaction-contract-freeze",
+  "planningTreeState": "dirty",
+  "evidence": [
+    {
+      "path": "evidence/review-cycle-report.md",
+      "sha256": "f8326873d252a43c31a1020802684c15ab1b8cfc43e86c0a8bf5d4f1c4853cbd"
+    },
+    {
+      "path": "evidence/review-report.md",
+      "sha256": "0506a601d20a656df7019ac47b6d4a1676a4c143439790257d41513f892c355a"
+    },
+    {
+      "path": "evidence/ship-log.md",
+      "sha256": "980843f41197daa868f39fba36a910006f34a0818db31a225bed6d87e9320ff6"
+    }
+  ],
+  "probes": [],
+  "handoffAbsorbed": [],
+  "ephemeraDiscarded": [],
+  "missing": [
+    "verification-report"
+  ]
+}

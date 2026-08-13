@@ -1,9 +1,14 @@
-import { Command, type CommandResult } from "@/commands/base-command";
-import { EditorCore } from "@/core";
+import {
+	Command,
+	type EditorCommandContext,
+	type CommandResult,
+} from "@/commands/base-command";
 import type { TScene } from "@/timeline";
 import { canDeleteScene, getFallbackSceneAfterDelete } from "@/timeline/scenes";
 
 export class DeleteSceneCommand extends Command {
+	readonly routingClass = "provider-private" as const;
+
 	private savedScenes: TScene[] | null = null;
 	private savedActiveSceneId: string | null = null;
 	private deletedScene: TScene | null = null;
@@ -12,8 +17,7 @@ export class DeleteSceneCommand extends Command {
 		super();
 	}
 
-	execute(): CommandResult | undefined {
-		const editor = EditorCore.getInstance();
+	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		const scenes = editor.scenes.getScenes();
 		const activeScene = editor.scenes.getActiveScene();
 
@@ -47,9 +51,8 @@ export class DeleteSceneCommand extends Command {
 		});
 	}
 
-	undo(): void {
+	undo({ editor }: EditorCommandContext): void {
 		if (this.savedScenes && this.deletedScene) {
-			const editor = EditorCore.getInstance();
 			editor.scenes.setScenes({
 				scenes: this.savedScenes,
 				activeSceneId: this.savedActiveSceneId ?? undefined,

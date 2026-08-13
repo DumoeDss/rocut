@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Popover, PopoverContent } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ import {
 	PRESET_MATCH_TOLERANCE,
 	type EasingPreset,
 } from "./easing-presets";
-import { removePreset, savePreset, useCustomPresets } from "./custom-presets-store";
+import { useCustomPresetsStore } from "@/editor/use-session-store";
 import { BezierGraph, BEZIER_GRAPH_MIN_HEIGHT } from "./bezier-graph";
 
 const COLLAPSED_MAX = 6;
@@ -59,7 +59,27 @@ export function GraphEditorPopover({
 	onCancelPreview?: () => void;
 }) {
 	const [isExpanded, setIsExpanded] = useState(false);
-	const custom = useCustomPresets();
+	const {
+		presets: custom,
+		hasLoaded: hasLoadedCustomPresets,
+		isLoading: isLoadingCustomPresets,
+		error: customPresetsError,
+		load: loadCustomPresets,
+		savePreset,
+		removePreset,
+	} = useCustomPresetsStore();
+	useEffect(() => {
+		if (hasLoadedCustomPresets || isLoadingCustomPresets || customPresetsError)
+			return;
+		void loadCustomPresets().catch(() => {
+			// The session store publishes a recoverable error and diagnostics record.
+		});
+	}, [
+		customPresetsError,
+		hasLoadedCustomPresets,
+		isLoadingCustomPresets,
+		loadCustomPresets,
+	]);
 	const allPresets = [...BUILTIN_PRESETS, ...custom];
 	const canEdit = value !== null;
 	const activePresetId =
@@ -123,7 +143,11 @@ export function GraphEditorPopover({
 					)}
 				</div>
 
-				<Tabs variant="underline" defaultValue="presets" className="flex flex-col gap-2">
+				<Tabs
+					variant="underline"
+					defaultValue="presets"
+					className="flex flex-col gap-2"
+				>
 					<TabsList className="px-3">
 						<TabsTrigger value="presets" className="text-xs">
 							Presets
@@ -150,6 +174,21 @@ export function GraphEditorPopover({
 						</ExpandableGrid>
 					</TabsContent>
 					<TabsContent value="saved" className="px-3">
+						{customPresetsError && (
+							<div
+								className="text-destructive mb-2 flex items-center gap-2 text-xs"
+								role="alert"
+							>
+								<span>{customPresetsError}</span>
+								<Button
+									variant="text"
+									size="sm"
+									onClick={() => void loadCustomPresets().catch(() => {})}
+								>
+									Retry
+								</Button>
+							</div>
+						)}
 						<div className="grid grid-cols-3 gap-1">
 							{custom.map((preset) => (
 								<PresetItem
@@ -158,12 +197,17 @@ export function GraphEditorPopover({
 									isActive={activePresetId === preset.id}
 									disabled={!canEdit}
 									onSelect={() => onCommitValue?.(preset.value)}
-									onDelete={() => removePreset({ id: preset.id })}
+									onDelete={() => {
+										void removePreset({ id: preset.id }).catch(() => {});
+									}}
 								/>
 							))}
 							<button
 								type="button"
-								onClick={() => value && savePreset({ value })}
+								onClick={() => {
+									if (!value) return;
+									void savePreset({ value }).catch(() => {});
+								}}
 								disabled={!canEdit}
 								className={cn(
 									"text-muted-foreground flex flex-col items-center justify-center gap-1 rounded-sm px-1 py-1",
@@ -311,8 +355,24 @@ function CurveThumb({ value }: { value: NormalizedCubicBezier }) {
 	const points: string[] = [];
 	for (let i = 0; i <= THUMB_SEGMENTS; i++) {
 		const progress = i / THUMB_SEGMENTS;
-		const x = toThumbX({ value: getBezierPoint({ progress, p0: 0, p1: value[0], p2: value[2], p3: 1 }) });
-		const y = toThumbY({ value: getBezierPoint({ progress, p0: 0, p1: value[1], p2: value[3], p3: 1 }) });
+		const x = toThumbX({
+			value: getBezierPoint({
+				progress,
+				p0: 0,
+				p1: value[0],
+				p2: value[2],
+				p3: 1,
+			}),
+		});
+		const y = toThumbY({
+			value: getBezierPoint({
+				progress,
+				p0: 0,
+				p1: value[1],
+				p2: value[3],
+				p3: 1,
+			}),
+		});
 		points.push(`${x},${y}`);
 	}
 	return (

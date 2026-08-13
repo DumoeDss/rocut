@@ -1,10 +1,12 @@
 import { useEffect, useReducer, useState } from "react";
-import { useEditor } from "@/editor/use-editor";
+import { useEditorInstance } from "@/editor/use-editor";
 import { useCommittedRef } from "@/hooks/use-committed-ref";
 import { useShiftKey } from "@/hooks/use-shift-key";
 import { useElementSelection } from "@/timeline/hooks/element/use-element-selection";
-import { useTimelineStore } from "@/timeline/timeline-store";
+import { useTimelineStore } from "@/editor/use-session-store";
 import { registerCanceller } from "@/editor/cancel-interaction";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
+import { useSurfaceDragCoordinator } from "@/editor/surface/embedding/surface-drag-coordinator";
 import {
 	ResizeController,
 	type ResizeConfig,
@@ -24,7 +26,9 @@ export function useTimelineResize({
 	zoomLevel,
 	onSnapPointChange,
 }: UseTimelineResizeProps) {
-	const editor = useEditor();
+	const editor = useEditorInstance();
+	const session = useEditorSession();
+	const dragCoordinator = useSurfaceDragCoordinator();
 	const isShiftHeldRef = useShiftKey();
 	const snappingEnabled = useTimelineStore((state) => state.snappingEnabled);
 	const { selectedElements } = useElementSelection();
@@ -32,7 +36,7 @@ export function useTimelineResize({
 	const config: ResizeConfig = {
 		zoomLevel,
 		snappingEnabled,
-		isShiftHeld: () => isShiftHeldRef.current,
+		isShiftHeld: () => isShiftHeldRef.current ?? false,
 		getSceneTracks: () => editor.scenes.getActiveScene().tracks,
 		getCurrentPlayheadTime: () => editor.playback.getCurrentTime(),
 		getActiveProjectFps: () => editor.project.getActive()?.settings.fps ?? null,
@@ -55,6 +59,8 @@ export function useTimelineResize({
 				})),
 			}),
 		onSnapPointChange,
+		startMouseDrag: ({ move, finish, cancel }) =>
+			dragCoordinator.start({ kind: "mouse", move, finish, cancel }),
 	};
 	const configRef = useCommittedRef(config);
 	const [controller] = useState(() => new ResizeController({ configRef }));
@@ -64,8 +70,8 @@ export function useTimelineResize({
 
 	useEffect(() => {
 		if (!controller.isResizing) return;
-		return registerCanceller({ fn: () => controller.cancel() });
-	}, [controller.isResizing, controller]);
+		return registerCanceller({ session, fn: () => controller.cancel() });
+	}, [controller.isResizing, controller, session]);
 
 	useEffect(() => () => controller.destroy(), [controller]);
 

@@ -1,25 +1,30 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { Loader2 } from "lucide-react";
-import { EditorCore } from "@/core";
 import { useEditorHost } from "@/editor/host/editor-host-context";
-import { useEditor } from "@/editor/use-editor";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
+import { useEditor, useEditorInstance } from "@/editor/use-editor";
 import { useKeybindingsListener } from "@/actions/use-keybindings";
-import { useKeybindingsStore } from "@/actions/keybindings-store";
-import { useTimelineStore } from "@/timeline/timeline-store";
+import { useKeybindingsStore } from "@/editor/use-session-store";
+import { useTimelineStore } from "@/editor/use-session-store";
 import { useEditorActions } from "@/actions/use-editor-actions";
 import { loadFontAtlas } from "@/fonts/google-fonts";
-import {
-	initializeGpuRenderer,
-	isGpuAvailable,
-} from "@/services/renderer/gpu-renderer";
 
 interface EditorProviderProps {
 	children: React.ReactNode;
+	keybindingScope?: {
+		readonly targetRef: RefObject<HTMLElement | null>;
+		readonly enabled: boolean;
+	};
 }
 
-export function EditorProvider({ children }: EditorProviderProps) {
+export function EditorProvider({
+	children,
+	keybindingScope,
+}: EditorProviderProps) {
+	const editor = useEditorInstance();
+	const session = useEditorSession();
 	const activeProject = useEditor((e) => e.project.getActiveOrNull());
 	const { projectId, navigation } = useEditorHost();
 	const [isLoading, setIsLoading] = useState(true);
@@ -40,19 +45,21 @@ export function EditorProvider({ children }: EditorProviderProps) {
 
 	useEffect(() => {
 		let cancelled = false;
-		const editor = EditorCore.getInstance();
 
 		const loadProject = async () => {
 			try {
 				setIsLoading(true);
-				await initializeGpuRenderer();
-				editor.renderer.setDegraded(!isGpuAvailable());
+				const graphics = await session.capabilities.graphics();
+				editor.renderer.setDegraded(graphics.rasterizer === "none");
 				await editor.project.loadProject({ id: projectId });
 
 				if (cancelled) return;
 
 				setIsLoading(false);
-				loadFontAtlas();
+				void loadFontAtlas({
+					loader: session.host.assetLoader,
+					resolver: session.host.assets,
+				});
 			} catch (err) {
 				if (cancelled) return;
 
@@ -94,7 +101,7 @@ export function EditorProvider({ children }: EditorProviderProps) {
 		return () => {
 			cancelled = true;
 		};
-	}, [projectId]);
+	}, [editor, projectId, session]);
 
 	if (error) {
 		return (
@@ -130,14 +137,16 @@ export function EditorProvider({ children }: EditorProviderProps) {
 
 	return (
 		<>
-			<EditorRuntimeBindings />
+			<EditorRuntimeBindings keybindingScope={keybindingScope} />
 			{children}
 		</>
 	);
 }
 
-function EditorRuntimeBindings() {
-	const editor = useEditor();
+function EditorRuntimeBindings({
+	keybindingScope,
+}: Pick<EditorProviderProps, "keybindingScope">) {
+	const editor = useEditorInstance();
 	const rippleEditingEnabled = useTimelineStore(
 		(state) => state.rippleEditingEnabled,
 	);
@@ -158,6 +167,6 @@ function EditorRuntimeBindings() {
 	}, [editor]);
 
 	useEditorActions();
-	useKeybindingsListener();
+	useKeybindingsListener(keybindingScope);
 	return null;
 }

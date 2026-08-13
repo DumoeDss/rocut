@@ -1,29 +1,21 @@
 import { useCallback, useMemo, useRef, useSyncExternalStore } from "react";
-import { EditorCore } from "@/core";
+import type { EditorCore } from "@/core";
+import { editorForSession } from "@/editor/runtime/session-core-owner";
+import { useEditorSession } from "@/editor/session/editor-session-provider";
 
 const SNAPSHOT_UNSET = Symbol("snapshotUnset");
 
-function isShallowEqual({
-	a,
-	b,
-}: {
-	a: unknown;
-	b: unknown;
-}): boolean {
+function isShallowEqual({ a, b }: { a: unknown; b: unknown }): boolean {
 	if (Object.is(a, b)) return true;
 	if (!Array.isArray(a) || !Array.isArray(b)) return false;
 	if (a.length !== b.length) return false;
 	return a.every((item, i) => Object.is(item, b[i]));
 }
 
-const subscribeNone = () => () => {};
-
-export function useEditor(): EditorCore;
 export function useEditor<T>(selector: (editor: EditorCore) => T): T;
-export function useEditor<T>(
-	selector?: (editor: EditorCore) => T,
-): EditorCore | T {
-	const editor = useMemo(() => EditorCore.getInstance(), []);
+export function useEditor<T>(selector: (editor: EditorCore) => T): T {
+	const session = useEditorSession();
+	const editor = useMemo(() => editorForSession(session), [session]);
 	const snapshotCacheRef = useRef<T | typeof SNAPSHOT_UNSET>(SNAPSHOT_UNSET);
 
 	const subscribeAll = useCallback(
@@ -48,11 +40,7 @@ export function useEditor<T>(
 		[editor],
 	);
 
-	const getSnapshot = useCallback((): EditorCore | T => {
-		if (!selector) {
-			return editor;
-		}
-
+	const getSnapshot = useCallback((): T => {
 		const next = selector(editor);
 		if (
 			snapshotCacheRef.current !== SNAPSHOT_UNSET &&
@@ -68,9 +56,14 @@ export function useEditor<T>(
 		return next;
 	}, [editor, selector]);
 
-	return useSyncExternalStore(
-		selector ? subscribeAll : subscribeNone,
-		getSnapshot,
-		getSnapshot,
-	);
+	return useSyncExternalStore(subscribeAll, getSnapshot, getSnapshot);
+}
+
+/**
+ * Explicit stable-core access for event handlers and construction plumbing.
+ * It intentionally has no manager subscription.
+ */
+export function useEditorInstance(): EditorCore {
+	const session = useEditorSession();
+	return useMemo(() => editorForSession(session), [session]);
 }
