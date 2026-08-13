@@ -38,25 +38,62 @@
 
 ## 2. Teach the oracles to see `packages/` before source lands there
 
-- [ ] 2.1 Extend `ownerOfPath()` in `script/check-package-boundary.mjs` with a `packages/<dir>/src/`
+- [x] 2.1 Extend `ownerOfPath()` in `script/check-package-boundary.mjs` with a `packages/<dir>/src/`
       branch resolved through the **discovered** manifest names — never a hardcoded package list,
       matching the `discoverPackageDirs` precedent P0 set under BLOCKER-2.
-- [ ] 2.2 Extend `resolveSpecifier()` to resolve `@opencut/<pkg>` and `@opencut/<pkg>/<subpath>`
+      Done — new `PACKAGE_SOURCE_PATH_PATTERN` regex + `ownerOfPath()` branch resolves through
+      `manifests.find((m) => m.dir === match[1])`, never a literal package list.
+- [x] 2.2 Extend `resolveSpecifier()` to resolve `@opencut/<pkg>` and `@opencut/<pkg>/<subpath>`
       through the declared `exports` maps to a repo-relative path, and to resolve the chosen
       package-local alias form against the owning package's `src`.
-- [ ] 2.3 Extend `guardUnownedFiles()` so a `.ts`/`.tsx` file under `packages/*/src` that resolves to
+      Done — new `@opencut/*` branch resolves through each manifest's declared `exports` map. The
+      "package-local alias form" half is moot: gate-1 rejected `#/` in favour of relative-path
+      rewrite (tasks.md 1.2), and the existing relative-path branch already resolves correctly
+      against any `fromFile` root, including `packages/<dir>/src/**`, with zero code change needed.
+- [x] 2.3 Extend `guardUnownedFiles()` so a `.ts`/`.tsx` file under `packages/*/src` that resolves to
       no owner is refused (`exit 2`) exactly as an unowned `apps/web/src` file is today.
-- [ ] 2.4 Audit **all 22 runnable static checkers** for `apps/web/src`-scoped scan sets. Produce a
+      Done — `guardUnownedFiles()` now also collects `packages/*/src` `.ts`/`.tsx` files and refuses
+      any that resolve to no owner via `ownerOfPath()`.
+      2.1-2.3 verified together: live run + `--negative-control` (15/15) + `--converse-control`
+      (12/12) all byte-identical to the 1.4 baseline (949/341/0/dormant/1031/68) — `packages/*/src`
+      is currently empty, so widening the scope changed nothing observable yet, as expected.
+- [x] 2.4 Audit **all 22 runnable static checkers** for `apps/web/src`-scoped scan sets. Produce a
       table listing each with either "scope follows the source" plus the edit made, or
       "deliberately Host-scoped" plus the reason. `check-next-imports.mjs` is expected to be the
       latter; do not leave any checker unlisted.
-- [ ] 2.5 Re-scope `check-type-baseline.mjs` so the moved sources stay inside a type-checked
+      Done — repo now has 26 `check-*.mjs` files, not 22 (a sibling change, `check-agent-evidence.mjs`,
+      landed in the shared trunk after this count was written); audited all 26 rather than force-fit
+      the stale count. Full table, a third classification bucket added for literal-path checkers
+      whose fix is untestable before the corresponding move and is deferred to that task, and a
+      cross-cutting finding (4 checkers independently reimplement `@/` resolution):
+      `evidence/group-2-checker-scope-audit.md`.
+- [x] 2.5 Re-scope `check-type-baseline.mjs` so the moved sources stay inside a type-checked
       program, and make the run print the number of files it type-checked. Settle the open question
       first: does `tsc` under `apps/web` still reach package sources through the workspace symlink,
       or must the program be widened explicitly? Record the measurement.
-- [ ] 2.6 **Control:** re-run the boundary checker and the type baseline with nothing moved. Both
+      Done — settled empirically (same discipline as gate-1): a deliberate `TS2322` planted in a
+      throwaway `packages/editor-ports/src/index.ts`, imported from a reachable `apps/web/src`
+      module, surfaced as a live regression with **zero** `apps/web/tsconfig.json` changes — the
+      workspace symlink + declared `exports` map already puts package sources inside the program.
+      No widening needed, now or for Stage B/C. Added `countTypeCheckedFiles()` (a dedicated
+      `tsc --listFilesOnly` run, `node_modules` excluded from the headline count) wired into both
+      the `--regenerate` and normal comparison branches. Measured: **941 repo file(s) type-checked
+      now (4328 total)**, 0 new diagnostics (3 now / 13 at pin, same 7 resolved entries as 1.4).
+      Full spike transcript and measurement: `evidence/group-2-type-baseline-reach.md`.
+- [x] 2.6 **Control:** re-run the boundary checker and the type baseline with nothing moved. Both
       must produce output identical to task 1.4's baseline. A difference here means the scope change
       was not behaviour-preserving, and it must be resolved before any file moves.
+      Done — boundary checker byte-identical to 1.4 (949/341/0/dormant/1031/68), both controls
+      re-verified (14/14 negative, 12/12 converse — a correction to 1.4's "15/15" prose, not a live
+      regression; see evidence). Type baseline: diagnostic counts unchanged (3/13, same 7 resolved),
+      new file-count line is additive only. One real finding surfaced and contained: a stray
+      `--regenerate` run (checking whether the fixture should carry a pin-side file count) produced
+      32 diagnostics instead of the committed 13, root-caused to gitignored `apps/web/.next` being
+      built from HEAD and linked wholesale into the reconstructed pin, whose source predates three
+      routes those `.next/types` validators reference — pre-existing `reconstructPin()` fragility,
+      unrelated to this group's edits. The regenerated fixture was reverted immediately
+      (`git checkout -- script/fixtures/type-baseline.json`, confirmed clean) and never used for any
+      recorded measurement. Full account: `evidence/group-2-control-rerun.md`.
 
 ## 3. Stage A — extract `@opencut/editor-ports` (18 files)
 

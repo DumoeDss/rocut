@@ -383,22 +383,50 @@ function extractSpecifier(line) {
 
 /**
  * Turn an import specifier into a repo-relative module path. Relative specifiers
- * are resolved against the **importing file's directory**, not string-rewritten.
+ * are resolved against the **importing file's directory**, not string-rewritten
+ * — this is pure path arithmetic against `fromFile` and never inspects which
+ * root `fromFile` lives under, so it already resolves correctly for a file
+ * under `packages/<dir>/src/**` exactly as it does for `apps/web/src/**`. That
+ * is what makes gate-1's fallback decision (relative-path rewrite, rejecting
+ * the originally-planned `#/` wildcard subpath form —
+ * `evidence/gate-1-alias-resolution.md`) free here: there is no separate
+ * "package-local alias form" left for this function to learn, only the
+ * ordinary relative branch below. (Design E3(a) anticipated resolving `#/`
+ * against the owning package's `src`; that form was rejected at the gate, so
+ * this half of E3(a) is moot, not unaddressed — task 2.2.)
+ *
  * `@/` is the one alias both consumers share (`apps/web`'s own convention, and
- * `apps/vite-example`'s tsconfig/vite alias `@` → `../web/src`). Returns `null` for
- * a bare package specifier, which acyclic-direction and react-free-base do not
- * judge (no-elftia-import judges bare specifiers separately, on its own terms).
+ * `apps/vite-example`'s tsconfig/vite alias `@` → `../web/src`). A bare
+ * `@opencut/<pkg>[/<subpath>]` specifier resolves through that package's
+ * **declared** `exports` map to its target file when `manifests` is supplied
+ * (task 2.2) — an undeclared subpath returns `null` here exactly like any
+ * other unresolved bare specifier, since judging an undeclared subpath is
+ * `public-entry-only`'s job (it already does that judgment independently, via
+ * `packageSpecifierPattern`), not this resolver's. Returns `null` for any
+ * other bare package specifier, which acyclic-direction and react-free-base do
+ * not judge (no-elftia-import judges bare specifiers separately, on its own
+ * terms).
  */
-function resolveSpecifier({ spec, fromFile }) {
+function resolveSpecifier({ spec, fromFile, manifests }) {
 	if (spec.startsWith("@/")) return `apps/web/src/${spec.slice(2)}`;
-	if (!spec.startsWith(".")) return null;
-	const parts = fromFile.split("/").slice(0, -1);
-	for (const segment of spec.split("/")) {
-		if (segment === "." || segment === "") continue;
-		if (segment === "..") parts.pop();
-		else parts.push(segment);
+	if (spec.startsWith(".")) {
+		const parts = fromFile.split("/").slice(0, -1);
+		for (const segment of spec.split("/")) {
+			if (segment === "." || segment === "") continue;
+			if (segment === "..") parts.pop();
+			else parts.push(segment);
+		}
+		return parts.join("/");
 	}
-	return parts.join("/");
+	if (manifests && manifests.length > 0) {
+		const match = packageSpecifierPattern(manifests).exec(spec);
+		if (match) {
+			const manifest = manifests.find((m) => m.name === match[1]);
+			const target = manifest?.exports?.[subpathOf(match)];
+			if (target) return `packages/${manifest.dir}/${target.replace(/^\.\//, "")}`;
+		}
+	}
+	return null;
 }
 
 function candidatePaths(base) {
@@ -424,11 +452,31 @@ function resolveOwner(resolvedPath, boundary) {
 	return best ? best.owner : null;
 }
 
-/** `apps/vite-example` files are consumer-owned by construction; `apps/web/src`
- * files resolve through `boundary.json`. Anything else is out of scope. */
-function ownerOfPath(path, boundary) {
+/**
+ * Task 2.1 / design E3(a): the `packages/<dir>/src/` branch, matching every
+ * path this checker needs to recognize once package source exists. Captures
+ * `<dir>` so `ownerOfPath` can resolve it against a discovered manifest
+ * without repeating this regex at each call site.
+ */
+const PACKAGE_SOURCE_PATH_PATTERN = /^packages\/([^/]+)\/src\//;
+
+/**
+ * `apps/vite-example` files are consumer-owned by construction; `apps/web/src`
+ * files resolve through `boundary.json`. A `packages/<dir>/src/` file is
+ * owned by whichever **discovered** manifest's `dir` matches — never a
+ * hardcoded package list, the same discover-don't-hardcode move
+ * `discoverPackageDirs` already makes (BLOCKER-2), so a `packages/` file
+ * whose directory carries no manifest is correctly unowned, not silently
+ * assigned. Anything else is out of scope. (Task 2.1 / design E3(a).)
+ */
+function ownerOfPath(path, boundary, manifests) {
 	if (path.startsWith("apps/vite-example/")) return "apps/vite-example";
 	if (path.startsWith("apps/web/src/")) return resolveOwner(path, boundary);
+	const packageMatch = PACKAGE_SOURCE_PATH_PATTERN.exec(path);
+	if (packageMatch) {
+		const manifest = manifests?.find((m) => m.dir === packageMatch[1]);
+		return manifest ? manifest.name : null;
+	}
 	return null;
 }
 
@@ -459,24 +507,35 @@ function isElftiaSpecifier(spec) {
  * `check-host-composition.mjs` already owns that seam (design D2): "App↔app edges
  * are out of this checker's scope."
  */
-function acyclicDirectionRule({ files, boundary }) {
+function acyclicDirectionRule({ files, boundary, manifests }) {
 	const violations = [];
+	// Task 2.1 (design E3(a)): scope widened with the `packages/<dir>/src/`
+	// branch — before any file moves this adds zero files (packages/ has no
+	// source yet), which is exactly what task 2.6's control re-run proves.
 	const scope = files.filter(
-		(f) => f.path.startsWith("apps/web/src/") || f.path.startsWith("apps/vite-example/"),
+		(f) =>
+			f.path.startsWith("apps/web/src/") ||
+			f.path.startsWith("apps/vite-example/") ||
+			PACKAGE_SOURCE_PATH_PATTERN.test(f.path),
 	);
 	let edgesExamined = 0;
 	for (const file of scope) {
-		const sourceOwner = ownerOfPath(file.path, boundary);
+		const sourceOwner = ownerOfPath(file.path, boundary, manifests);
 		if (sourceOwner === null) continue; // unowned files are refused earlier by the self-guard
 		const lines = file.text.split(/\r?\n/);
 		lines.forEach((line, index) => {
 			if (isComment(line)) return;
 			const spec = extractSpecifier(line);
 			if (!spec) return;
-			const resolved = resolveSpecifier({ spec, fromFile: file.path });
+			const resolved = resolveSpecifier({ spec, fromFile: file.path, manifests });
 			if (resolved === null) return;
-			if (!resolved.startsWith("apps/web/src/") && !resolved.startsWith("apps/vite-example/")) return;
-			const targetOwner = ownerOfPath(resolved, boundary);
+			if (
+				!resolved.startsWith("apps/web/src/") &&
+				!resolved.startsWith("apps/vite-example/") &&
+				!PACKAGE_SOURCE_PATH_PATTERN.test(resolved)
+			)
+				return;
+			const targetOwner = ownerOfPath(resolved, boundary, manifests);
 			if (targetOwner === null) return;
 			if (sourceOwner === targetOwner) return; // internal edge
 			if (boundary.consumers.includes(sourceOwner) && boundary.consumers.includes(targetOwner)) return;
@@ -669,8 +728,10 @@ function reactFreeBaseRule({ files, boundary, manifests }) {
 			checkManifestReactFree(file, violations, boundary);
 			continue;
 		}
-		if (!file.path.startsWith("apps/web/src/")) continue;
-		const owner = ownerOfPath(file.path, boundary);
+		// Task 2.1 (design E3(a)): widened the same way acyclic-direction's scope
+		// was — adds zero files before any move, per task 2.6's control re-run.
+		if (!file.path.startsWith("apps/web/src/") && !PACKAGE_SOURCE_PATH_PATTERN.test(file.path)) continue;
+		const owner = ownerOfPath(file.path, boundary, manifests);
 		if (!baseLayerNames.has(owner)) continue;
 		scanned += 1;
 		file.text.split(/\r?\n/).forEach((line, index) => {
@@ -718,15 +779,18 @@ function reactFreeBaseRule({ files, boundary, manifests }) {
 				return;
 			}
 			if (spec) {
-				const resolved = resolveSpecifier({ spec, fromFile: file.path });
-				if (resolved && resolved.startsWith("apps/web/src/")) {
+				const resolved = resolveSpecifier({ spec, fromFile: file.path, manifests });
+				// Task 2.1 (design E3(a)): also follows a resolved target that lands
+				// in packages/, not only apps/web/src — adds zero reach before any
+				// move, per task 2.6's control re-run.
+				if (resolved && (resolved.startsWith("apps/web/src/") || PACKAGE_SOURCE_PATH_PATTERN.test(resolved))) {
 					// D-6 (review round 3): was `=== boundary.layers[2]`, a single
 					// index literal that missed a legally-declared fourth layer's
 					// upward import from a manifest-clean base file. Now membership
 					// in the same `forbiddenLayerNames` set `checkManifestReactFree`
 					// uses, and the detail message names the actual resolved owner
 					// instead of repeating the `boundary.layers[2]` literal.
-					const resolvedOwner = ownerOfPath(resolved, boundary);
+					const resolvedOwner = ownerOfPath(resolved, boundary, manifests);
 					if (forbiddenLayerNames.has(resolvedOwner)) {
 						violations.push({
 							rule: "react-free-base",
@@ -906,7 +970,7 @@ function noInternalReexportRule({ files, manifests }) {
 // ---------------------------------------------------------------------------
 
 function scan({ files, boundary, manifests }) {
-	const acyclic = acyclicDirectionRule({ files, boundary });
+	const acyclic = acyclicDirectionRule({ files, boundary, manifests });
 	const elftia = noElftiaImportRule({ files });
 	const reactFree = reactFreeBaseRule({ files, boundary, manifests });
 	const publicEntry = publicEntryOnlyRule({ files, manifests });
@@ -1041,12 +1105,25 @@ function guardSelfConsistency(boundary) {
 	}
 }
 
-/** "An unowned file causes the check to fail rather than to be skipped" (spec). */
-function guardUnownedFiles(files, boundary) {
+/**
+ * "An unowned file causes the check to fail rather than to be skipped" (spec).
+ * Task 2.3: extended to also refuse an unowned `packages/*\/src` `.ts`/`.tsx`
+ * file — exactly the same fail-closed idiom, applied to the branch
+ * `ownerOfPath` gained in task 2.1. Before any file moves this adds zero
+ * files (packages/ has no source yet), which task 2.6's control re-run
+ * proves does not change the guard's behaviour today.
+ */
+function guardUnownedFiles(files, boundary, manifests) {
 	const webFiles = files.filter((f) => f.path.startsWith("apps/web/src/") && /\.(?:ts|tsx)$/.test(f.path));
-	const unowned = webFiles.filter((f) => resolveOwner(f.path, boundary) === null);
+	const packageFiles = files.filter((f) => PACKAGE_SOURCE_PATH_PATTERN.test(f.path) && /\.(?:ts|tsx)$/.test(f.path));
+	const unowned = [
+		...webFiles.filter((f) => resolveOwner(f.path, boundary) === null),
+		...packageFiles.filter((f) => ownerOfPath(f.path, boundary, manifests) === null),
+	];
 	if (unowned.length > 0) {
-		console.error(`check-package-boundary: ${unowned.length} file(s) under apps/web/src resolve to no owner, refusing to scan:`);
+		console.error(
+			`check-package-boundary: ${unowned.length} file(s) under apps/web/src or packages/*/src resolve to no owner, refusing to scan:`,
+		);
 		for (const f of unowned.slice(0, 20)) console.error(`  ${f.path}`);
 		if (unowned.length > 20) console.error(`  ... and ${unowned.length - 20} more`);
 		process.exit(2);
@@ -1058,7 +1135,7 @@ function runCheck() {
 	guardSelfConsistency(boundary);
 	const manifests = loadManifests(boundary);
 	const files = collectRepoFiles();
-	guardUnownedFiles(files, boundary);
+	guardUnownedFiles(files, boundary, manifests);
 	const { violations, census } = scan({ files, boundary, manifests });
 
 	console.log(`check-package-boundary: scanned ${files.length} repo file(s) (tracked + uncommitted)`);
