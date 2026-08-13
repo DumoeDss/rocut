@@ -12,20 +12,20 @@ function source(path: string) {
 describe("Surface drag integrations", () => {
 	test("all concrete Surface continuations register with the coordinator", () => {
 		for (const path of [
-			"apps/web/src/components/ui/number-field.tsx",
-			"apps/web/src/components/ui/color-picker.tsx",
-			"apps/web/src/components/editor/panels/assets/draggable-item.tsx",
-			"apps/web/src/timeline/bookmarks/hooks/use-bookmark-drag.ts",
-			"apps/web/src/timeline/hooks/use-timeline-resize.ts",
-			"apps/web/src/timeline/hooks/element/use-element-interaction.ts",
-			"apps/web/src/timeline/hooks/element/use-keyframe-drag.ts",
+			"packages/editor-classic/src/components/ui/number-field.tsx",
+			"packages/editor-classic/src/components/ui/color-picker.tsx",
+			"packages/editor-classic/src/components/editor/panels/assets/draggable-item.tsx",
+			"packages/editor-classic/src/timeline/bookmarks/hooks/use-bookmark-drag.ts",
+			"packages/editor-classic/src/timeline/hooks/use-timeline-resize.ts",
+			"packages/editor-classic/src/timeline/hooks/element/use-element-interaction.ts",
+			"packages/editor-classic/src/timeline/hooks/element/use-keyframe-drag.ts",
 		]) {
 			expect(source(path)).toContain("dragCoordinator.start(");
 		}
 	});
 
 	test("number scrub preserves pointer ownership and finish/cancel semantics", () => {
-		const numberField = source("apps/web/src/components/ui/number-field.tsx");
+		const numberField = source("packages/editor-classic/src/components/ui/number-field.tsx");
 		expect(numberField).toContain("useOptionalSurfaceDragCoordinator()");
 		expect(numberField).toContain("const pointerId = event.pointerId;");
 		expect(numberField).toMatch(
@@ -56,9 +56,9 @@ describe("Surface drag integrations", () => {
 
 	test("controller finish paths preserve their established mouse-up commit handlers", () => {
 		for (const path of [
-			"apps/web/src/timeline/controllers/element-interaction-controller.ts",
-			"apps/web/src/timeline/controllers/keyframe-drag-controller.ts",
-			"apps/web/src/timeline/controllers/resize-controller.ts",
+			"packages/editor-classic/src/timeline/controllers/element-interaction-controller.ts",
+			"packages/editor-classic/src/timeline/controllers/keyframe-drag-controller.ts",
+			"packages/editor-classic/src/timeline/controllers/resize-controller.ts",
 		]) {
 			const controller = source(path);
 			expect(controller).toContain("startMouseDrag({");
@@ -69,7 +69,7 @@ describe("Surface drag integrations", () => {
 
 	test("bookmark commits only from coordinator finish and cancellation only clears state", () => {
 		const bookmark = source(
-			"apps/web/src/timeline/bookmarks/hooks/use-bookmark-drag.ts",
+			"packages/editor-classic/src/timeline/bookmarks/hooks/use-bookmark-drag.ts",
 		);
 		expect(bookmark.match(/moveBookmark\(/g)).toHaveLength(1);
 		expect(bookmark).toContain("finish: () => {");

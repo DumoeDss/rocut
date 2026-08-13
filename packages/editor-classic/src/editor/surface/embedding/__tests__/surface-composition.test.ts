@@ -19,7 +19,7 @@ function withoutComments(value: string): string {
 describe("public Surface composition", () => {
 	test("renders one bounded root in the caller tree and binds the exact target", () => {
 		const runtime = withoutComments(
-			source("apps/web/src/editor/surface/embedding/editor-surface.tsx"),
+			source("packages/editor-classic/src/editor/surface/embedding/editor-surface.tsx"),
 		);
 		expect(runtime.match(/data-editor-surface=/g)).toHaveLength(1);
 		expect(runtime).toContain('className={cn("size-full", className)}');
@@ -30,7 +30,7 @@ describe("public Surface composition", () => {
 
 	test("derives providers from session and keeps EditorRoot inside the public component", () => {
 		const runtime = source(
-			"apps/web/src/editor/surface/embedding/editor-surface.tsx",
+			"packages/editor-classic/src/editor/surface/embedding/editor-surface.tsx",
 		);
 		const hostProvider = runtime.indexOf(
 			"<EditorHostProvider host={session.host}>",
@@ -49,10 +49,10 @@ describe("public Surface composition", () => {
 	});
 
 	test("exports the runtime while public props and commit payload stay frozen", () => {
-		const barrel = source("apps/web/src/editor/surface/embedding/index.ts");
-		const types = source("apps/web/src/editor/surface/embedding/types.ts");
+		const barrel = source("packages/editor-classic/src/editor/surface/embedding/index.ts");
+		const types = source("packages/editor-classic/src/editor/surface/embedding/types.ts");
 		const assertions = source(
-			"apps/web/src/editor/surface/embedding/surface-contract.assertions.ts",
+			"packages/editor-classic/src/editor/surface/embedding/surface-contract.assertions.ts",
 		);
 		expect(barrel).toContain(
 			'export { EditorSurface } from "./editor-surface";',
@@ -68,7 +68,7 @@ describe("public Surface composition", () => {
 	test("session bridge reuses one canonical facade without an engine or event path", () => {
 		const bridge = withoutComments(
 			source(
-				"apps/web/src/editor/surface/embedding/session-surface-bridge.tsx",
+				"packages/editor-classic/src/editor/surface/embedding/session-surface-bridge.tsx",
 			),
 		);
 		expect(bridge).toContain("editorForSession(session).transactions");
@@ -100,7 +100,7 @@ describe("public Surface composition", () => {
 			source("apps/web/src/editor/host/c4-next-runtime-probe.tsx"),
 		);
 		const gate = withoutComments(
-			source("apps/web/src/editor/host/c4-project-load.ts"),
+			source("packages/editor-classic/src/editor/host/c4-project-load.ts"),
 		);
 		expect(page).toContain("<C4NextRuntimeProbe");
 		expect(page).toContain('<SessionEditorSurface focusMode="focused" />');

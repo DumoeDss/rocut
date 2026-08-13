@@ -481,7 +481,98 @@
       — the corrected files' shell-caller edges no longer cross a package boundary). The 4
       corrections' physical consequence (excluding these files from 5.1's move) is recorded in 5.1's
       annotation above.
-- [ ] 5.7 Full verification pass, as 3.5.
+- [x] 5.7 Full verification pass, as 3.5.
+      Done, four legs run; three green, one N/A by design:
+      - boundary checker: 5/5 rules PASS (1045 files scanned, 329 cross-package edges, 192
+        `@opencut/*` specifiers, 861 files checked for internal re-export, 68 ports/contracts files
+        checked React-free).
+      - type baseline: 20 diagnostics, 0 new. All attributed: 18 to the still-pending Group 6
+        consumer rewrite (apps/web `@/` specifiers reaching into now-moved editor-classic content —
+        `next-editor-host.ts`, `feedback/queries.ts`, `project/components/project-info-dialog.tsx`,
+        `services/storage/components/storage-persistence-dialog.tsx`, `site/external-tools.ts`, and
+        `services/storage/__tests__/c5-storage-red-controls.test.ts`, the exact files 5.4 already
+        flagged as its scope, not this task's), 2 the pre-existing `MediaTime`-vs-`number` defect 5.4
+        already named at `timeline/__tests__/update-pipeline.test.ts:69` and
+        `timeline/placement/__tests__/resolve.test.ts:646`.
+      - `bun test packages/editor-classic/src`: 375 pass, 10 fail, 3 errors, 1396 `expect()` calls
+        (385 tests, 87 files) — up from 364 pass / 21 fail / 3 errors before this task's fixes below
+        (net +11 pass / -11 fail, exactly the tests those fixes touch). Every remaining fail/error
+        traced to a named cause, none new: 1 unhandled `TypeError: wasm.__wbindgen_start is not a
+        function` + 2 unhandled `ReferenceError`s (`DEFAULTS`, `textMaskDefinition`, both
+        before-initialization TDZ crashes) = the 3 errors; 6 `resolveTrackPlacement` fails, 5 via an
+        identical `ReferenceError: Cannot access 'ZERO_MEDIA_TIME' before initialization` TDZ crash
+        and 1 (`batch time spans reject tracks when any span overlaps`) independent of it; 1
+        `editor singleton boundary` fail, now isolated to exactly its one pre-existing stale-string
+        assertion (see below). All ten cross-checked against the decisive pre-move/post-move,
+        with/without-preload experiment from task 5.6's investigation — identical signatures on both
+        sides of the move, confirmed pre-existing, disclosed and not fixed here.
+      - resolution-equivalence check: **N/A, by design, not a gap.** The script's own header states
+        its scope as "everything currently staged (`git diff --staged`)" — it diffs a specifier
+        rewrite that is still staged against HEAD, and is meant to run once per stage while that
+        stage's rewrite sits staged, before the stage's commit (as 3.5 did mid-Stage-A). Stage C's
+        rewrite (5.1-5.4) already committed as `c234042e` before this task ran, so there is no staged
+        specifier-rewrite diff left for it to examine; running it now correctly reports "0 rewritten
+        specifier(s) examined" rather than silently passing over nothing. 5.4 independently verified
+        the same invariant via its own codemod's dry-run/apply symmetry (1863/1863 resolved, 0
+        unresolved) plus the boundary checker's unchanged 5/5 immediately after. The script is
+        unmodified and still correct for its designed use at Group 6's full-scope rewrite.
+
+      **Fixes made to reach the above** (5 files, all move-introduced, all verified individually
+      before this pass): four test files carried hardcoded pre-move `apps/web/src/...` /
+      `apps/vite-example/src/...` string-literal paths into `readFileSync`/`Bun.Glob` calls, unreached
+      by 5.4's specifier-rewrite codemod because it only rewrites `import`/`require` forms, not
+      arbitrary string arguments — `editor/transactions/opencut/__tests__/routing-registry.test.ts`
+      (1 path), `editor/surface/embedding/__tests__/surface-composition.test.ts` (7 paths across 5
+      call sites, 3 more left correctly unchanged — genuine Host-shell files that never moved),
+      `editor/surface/embedding/__tests__/surface-drag-integrations.test.ts` (10 paths, one shared
+      prefix mapping), `editor/surface/embedding/__tests__/surface-portal.test.ts` (2 paths; a third
+      candidate left unchanged — it resolves relative to the test's own moved-together sibling, not
+      `repoRoot`). Fifth instance found while root-causing `editor-singleton-boundary.test.ts`'s
+      `exitCode` failure: `script/check-editor-singleton.mjs` had the same defect in four places (its
+      `REQUIRED`/`OWNER`/`SESSION_FACTORY` constants, its `sourceFilesUnder()` scan roots — which
+      never included `packages/editor-classic/src` at all, silently under-collecting rather than
+      erroring — its `commandDirectory`, and one inline exception string
+      `path !== "apps/web/src/core/index.ts"` only exposed once the scan-root fix let the walk reach
+      that far). Fixed all four; the script now reports "40 command module(s)" (matching its own
+      `EXPECTED_COMMAND_MODULES`) and exit 0. Deliberately left untouched: the test's own
+      `.toContain("39 command module(s)")` assertion at line 19 — an unrelated, pre-existing defect
+      dated by the script's own in-line comment to 2026-08-10, predating this task. Post-fix,
+      `editor-singleton-boundary.test.ts` fails on that one line alone (7 pass / 1 fail), the
+      surgically-correct outcome once the move-introduced layer is removed from under the
+      pre-existing one.
+
+      **Sibling-instance sweep (per design's "check other levels of abstraction: fixtures, snapshots,
+      config, docs, generated manifests").** Doc-comment instances of the same stale-literal-path
+      pattern, fixed for accuracy (non-functional, no test depended on these): `ContractSurfaceSources`
+      in `editor-contracts/src/vectors/contract-surface.ts` (3 field comments pointed at the deleted
+      `apps/web/src/editor/contracts/*`; corrected to the flattened `packages/editor-contracts/src/*`
+      / `.../engine/types.ts` locations confirmed on disk — the real runtime consumer,
+      `vectors/__tests__/corpus-fixture.ts`, computes its path relatively and was never stale);
+      `editor-ports/src/index.ts`'s module doc (named `apps/web/src/editor/session/`, corrected to
+      `packages/editor-classic/src/editor/session/`, confirmed via a fresh grep of every current
+      `@opencut/editor-ports` importer). `editor-classic/src/{project,fonts,media}/index.ts`'s barrel
+      comments were **not** stale in the way they first appeared: `apps/web/src/{project,fonts,media}`
+      still physically exist, but as near-empty leftovers (0-1 files), not real mirrors — so their
+      present-tense "mirrors apps/web/src/X/**" claim was corrected to past-tense "was extracted from"
+      (accurate provenance) rather than deleted; deleting those old directories outright is Group 6's
+      job, not this sweep's.
+
+      **Finding carried forward for Group 8 (bucket-C checker repair), not fixed here.** The sweep
+      surfaced a much larger instance of the same underlying pattern one level up: of the 19 other
+      runnable checkers under `script/` (everything except `check-package-boundary.mjs` and
+      `check-type-baseline.mjs`, the two task 2.1-2.5 already taught about `packages/`),
+      **all 19 are still hardcoded to pre-move `apps/web/src`/`apps/vite-example/src` paths** — scan
+      roots, rule constants (e.g. `check-port-boundary.mjs`'s `CONTRACT_FILES`, `REGISTRY_MODULE`,
+      consumer-root prefixes, all still `apps/web/src/editor/{ports,session}/...`), and
+      `generate-source-inventory.mjs`'s `AREAS`. Unlike `check-editor-singleton.mjs`, none of these
+      were fixed in this pass: task 2.4 already produced the audit of all 22 checkers' scan sets
+      up front, and fixing this class correctly needs the same census/parity methodology Group 7
+      ("prove the two vacuous rules now fire") and Group 8.5 ("run every runnable static checker")
+      already exist to apply — a script whose rule references a path the move emptied could now be
+      silently vacuous (false PASS) rather than loudly broken, which is exactly what task 7's
+      REVERT-run proofs are built to catch. Fixing 19 rule-bearing scripts blind, especially
+      `check-port-boundary.mjs` given the frozen S03+S04 port-contract signature, risks masking
+      that exact failure mode instead of proving it either way.
 
 ## 6. Rewire the consumers and delete the alias
 

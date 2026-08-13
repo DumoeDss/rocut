@@ -7,8 +7,9 @@
  * them.
  *
  * **Nothing in this module is wired.** It is consumed by
- * `apps/web/src/editor/session/`, its in-memory reference implementation and its
- * conformance suite, and by nothing else. `EditorCore` is untouched.
+ * `packages/editor-classic/src/editor/session/`, its in-memory reference
+ * implementation and its conformance suite, and by nothing else. `EditorCore`
+ * is untouched.
  *
  * The boundary rule, enforced by `script/check-port-boundary.mjs` rather than by
  * review: no port signature references an OpenCut schema type, a command class,

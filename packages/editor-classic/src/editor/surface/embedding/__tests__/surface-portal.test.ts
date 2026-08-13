@@ -55,7 +55,7 @@ describe("Surface portal ownership", () => {
 			"tooltip.tsx",
 		]) {
 			const wrapper = readFileSync(
-				resolve(repoRoot, "apps/web/src/components/ui", file),
+				resolve(repoRoot, "packages/editor-classic/src/components/ui", file),
 				"utf8",
 			);
 			expect(wrapper).toContain("useSurfacePortalContainer");
@@ -63,7 +63,7 @@ describe("Surface portal ownership", () => {
 		const direct = readFileSync(
 			resolve(
 				repoRoot,
-				"apps/web/src/components/editor/panels/assets/draggable-item.tsx",
+				"packages/editor-classic/src/components/editor/panels/assets/draggable-item.tsx",
 			),
 			"utf8",
 		);

@@ -25,11 +25,11 @@ export interface ContractSurface {
 }
 
 export interface ContractSurfaceSources {
-	/** `apps/web/src/editor/contracts/operations.ts` */
+	/** `packages/editor-contracts/src/operations.ts` */
 	readonly operations: string;
-	/** `apps/web/src/editor/contracts/transaction.ts` */
+	/** `packages/editor-contracts/src/transaction.ts` */
 	readonly transaction: string;
-	/** `apps/web/src/editor/contracts/engine/types.ts` */
+	/** `packages/editor-contracts/src/engine/types.ts` */
 	readonly engineTypes: string;
 }
 

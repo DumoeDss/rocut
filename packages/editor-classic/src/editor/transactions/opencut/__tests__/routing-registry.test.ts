@@ -4,7 +4,7 @@ import { classifyCommand, REGISTERED_COMMAND_NAMES } from "../routing";
 
 test("every concrete command module has one exhaustive routing registration", async () => {
 	const discovered: string[] = [];
-	const glob = new Bun.Glob("apps/web/src/commands/**/*.ts");
+	const glob = new Bun.Glob("packages/editor-classic/src/commands/**/*.ts");
 	for await (const path of glob.scan({ cwd: process.cwd(), onlyFiles: true })) {
 		const source = await Bun.file(path).text();
 		for (const match of source.matchAll(/^export class (\w+Command) /gm)) {
