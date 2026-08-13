@@ -12,12 +12,13 @@ a genuine filesystem injection, not a fixture, reverted immediately after captur
 
 ## Why this can't be a `scan()` fixture
 
-`loadManifests` runs at `runCheck()`/`runNegativeControl()`/`runConverseControl()` startup, before
-`scan()` is ever called — it reads `packages/` off the real filesystem via `discoverPackageDirs()`
-(`readdirSync`, not `git ls-files`, not the in-memory fixture file lists `fixtureScan` accepts). No
-fixture list can exercise it; the fixture plumbing is downstream of this guard, not upstream. The
-only honest way to prove it fires is to make the real condition true on disk, run the real command,
-and observe the real exit code — exactly as this file does.
+`loadManifests` runs at `runCheck()` startup, before `scan()` is ever called — it reads `packages/`
+off the real filesystem via `discoverPackageDirs()` (`readdirSync`, not `git ls-files`, not the
+in-memory fixture file lists `fixtureScan` accepts). `runNegativeControl()`/`runConverseControl()`
+never call it at all. No fixture list can exercise it; the fixture plumbing is downstream of this
+guard, not upstream of it, and only reachable from the branch that never calls it. The only honest
+way to prove it fires is to make the real condition true on disk, run the real command, and observe
+the real exit code — exactly as this file does.
 
 ## Before (baseline)
 
@@ -63,22 +64,10 @@ check-package-boundary: packages/ contains a manifest not declared in boundary.j
 Exit code: `2`
 
 No rule output printed at all — the guard exits before `scan()` runs, confirming this is a load-time
-gate, not a rule result. `--negative-control` and `--converse-control` were also each run with the
-injected manifest present; both hit the identical guard and `exit 2` before reaching either control
-loop, for the same reason (`loadManifests` runs unconditionally at the top of `main()`, ahead of the
-`--negative-control`/`--converse-control` branch):
-
-```
-$ node script/check-package-boundary.mjs --negative-control
-check-package-boundary: packages/ contains a manifest not declared in boundary.json's layer order, refusing to scan:
-  packages/editor-undeclared-probe/package.json declares "@opencut/editor-undeclared-probe", which boundary.json.layers does not include
-EXIT=2
-
-$ node script/check-package-boundary.mjs --converse-control
-check-package-boundary: packages/ contains a manifest not declared in boundary.json's layer order, refusing to scan:
-  packages/editor-undeclared-probe/package.json declares "@opencut/editor-undeclared-probe", which boundary.json.layers does not include
-EXIT=2
-```
+gate, not a rule result. `--negative-control` and `--converse-control` are pure in-memory fixture runs
+(`fixtureScan` over `NEGATIVE_FIXTURES`/`CONVERSE_FIXTURES`) that deliberately never call
+`loadManifests` or read `packages/` at all, so this proof is scoped to the plain invocation only —
+it says nothing about, and does not need to say anything about, either control mode.
 
 ## Revert and re-run
 
@@ -107,9 +96,11 @@ Exit code: `0`
 The guard is not self-referential: a real, untracked `package.json` placed on disk with a `name`
 absent from `boundary.json.layers` is refused by name and path
 (`packages/editor-undeclared-probe/package.json declares "@opencut/editor-undeclared-probe"`),
-`exit 2`, before any of the five rules runs — proven identically across the live run and both control
-modes, since all three share the same `loadManifests` call ahead of their branch point. Removing the
-injected directory restores the exact pre-injection clean run (`341` edges, `949` files, `0`
-specifiers examined — unchanged from `inverted-import-proof.md`'s baseline), confirming the guard
-adds no side effect beyond the refusal itself. `git status --porcelain -- packages/` was empty both
-before injection and after cleanup, so no trace of the probe remains in the working tree.
+`exit 2`, before any of the five rules runs. This is proven for the plain invocation only —
+`loadManifests` is called exclusively from `runCheck()`; `runNegativeControl()` and
+`runConverseControl()` never call it and never touch `packages/`, so they are out of scope for this
+guard and correctly exit `0` regardless of what is injected on disk. Removing the injected directory
+restores the exact pre-injection clean run (`341` edges, `949` files, `0` specifiers examined —
+unchanged from `inverted-import-proof.md`'s baseline), confirming the guard adds no side effect
+beyond the refusal itself. `git status --porcelain -- packages/` was empty both before injection and
+after cleanup, so no trace of the probe remains in the working tree.

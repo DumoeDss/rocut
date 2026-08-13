@@ -240,7 +240,7 @@ it (`c6-disposal-harness`, `headless-*`, `surface-evidence-harness`) are exactly
 to be distinguishable from a frozen contract. A separate subpath is the strongest possible label and
 costs P5 nothing.
 
-### D6 — The checker runs two rules over the present and three over the future, and says which
+### D6 — The checker runs four rules over the present and one over the future, and says which
 
 Everything under `packages/` is asserted, and `packages/` has no source yet. Rather than ship a
 check that is green because it inspects nothing, `check-package-boundary.mjs` splits its rules by
@@ -270,7 +270,7 @@ what it can honestly assert today:
   re-export needs a declared entry file to re-export FROM, and none exists until P1 places one.
 
 The run prints a scan census for every rule (`scanned N files` / `N edges`), and **refuses to report
-a pass on an empty scan** for the three live rules — the fail-closed idiom
+a pass on an empty scan** for the four live rules — the fail-closed idiom
 `check-surface-portal-boundary.mjs` and `check-next-imports.mjs` already use (`exit 2`, not `exit
 0`). Reporting `0 files scanned` for the two dormant rules is a deliberate visible statement of what
 is not yet covered, not an omission.

@@ -109,6 +109,39 @@
  * BLOCKER-2's fail-closed `loadManifests` guard is now independently proven in
  * `evidence/load-time-guard-proof.md`, not only by inspection.
  *
+ * **Review round 3 (the delta after `95779c07`) closed one Blocker, one further
+ * finding of the same class as D-1, one structural-list finding, and two trivials.**
+ * BLOCKER (D-8): `evidence/load-time-guard-proof.md` had claimed `--negative-control`
+ * and `--converse-control` also hit the `loadManifests` guard, citing a `main()`
+ * function this file has never had — `loadManifests` runs only inside `runCheck()`;
+ * the two control modes never call it and never touch `packages/` at all. The false
+ * claim and its fabricated transcripts are gone; the file now says only what the code
+ * can actually do. D-6: the SAME "assume a hardcoded triple until you have looked"
+ * pattern D-1 closed for NAMES turned out to still hold one layer deeper, for ARITY —
+ * `checkManifestReactFree`'s forbidden-dependency set and `reactFreeBaseRule`'s
+ * resolved-owner check both hardcoded the single index `boundary.layers[2]`, so a
+ * legally-declared FOURTH layer's upward import from a manifest-clean base file went
+ * uncaught. Now `boundary.layers.slice(2)` throughout (every layer above the two base
+ * layers, not only index 2), and `RULES[4].description` is a `(boundary) => string`
+ * function (`reactFreeBaseDescription`) rather than a string hardcoding the three
+ * layer names, so a renamed or added layer shows up in the printed line too. D-7:
+ * `DOM_DOCUMENT_MEMBER_PATTERN` was still a DENYLIST after D-2's 50-member widening —
+ * the reviewer reproduced 13+ further real DOM members it missed and judged a
+ * denylist here structurally uncompletable (the real DOM surface only grows). Inverted
+ * to an ALLOWLIST of the seven domain `document` member names actually read across all
+ * 68 layer-0/1 files today (`DOMAIN_DOCUMENT_MEMBERS`, see that pattern's own doc
+ * comment) — `document.<member>` is now flagged whenever `<member>` is not on that
+ * short list, DOM or not, trading a small, known, self-correcting false-positive
+ * surface (a future real domain member needs a one-line addition) for closing an
+ * open-ended false-negative one. D-9: `packageSpecifierPattern([])` degenerated to
+ * `^()(\/.*)?$` (matches almost any absolute-looking specifier) on an empty manifest
+ * list — unreachable in practice today, but now fails closed with a `throw` (not
+ * `process.exit`, since this function is shared with the pure fixture-scan path) rather
+ * than silently building a near-universal pattern. D-10: a second, separate instance of
+ * the stale "24-name alternation" figure (D-2's JSDoc already carried the correct "18"
+ * before this round; a `NEGATIVE_FIXTURES` entry's own `note` field, printed on every
+ * `--negative-control` run, still read "24") is now also "18".
+ *
  *   node script/check-package-boundary.mjs
  *   node script/check-package-boundary.mjs --negative-control
  *   node script/check-package-boundary.mjs --converse-control
@@ -144,10 +177,31 @@ const RULES = [
 	},
 	{
 		id: "react-free-base",
-		description: "editor-ports and editor-contracts import no React, no DOM global, and no editor-classic module",
+		// D-6 (review round 3): was a static string hardcoding the three layer
+		// names; now derived from `boundary.layers` so a renamed or added layer
+		// is reflected in the printed description automatically. See
+		// `layerShortName`/`reactFreeBaseDescription` below and the two render
+		// sites in runCheck() that resolve a function-typed description.
+		description: reactFreeBaseDescription,
 		why: "spec §3.5 — a third-party adapter author must implement ports and run conformance without pulling React or the editor UI.",
 	},
 ];
+
+/**
+ * D-6 (review round 3): short display name for a layer, stripping the npm
+ * scope so printed text reads "editor-ports" rather than "@opencut/editor-ports",
+ * matching the pre-fix literal's style without hardcoding it.
+ */
+function layerShortName(name) {
+	return name.split("/").pop();
+}
+
+function reactFreeBaseDescription(boundary) {
+	const [base0, base1] = boundary.layers.slice(0, 2).map(layerShortName);
+	const forbiddenNames = boundary.layers.slice(2).map(layerShortName);
+	const forbiddenText = forbiddenNames.length > 0 ? forbiddenNames.join("/") : "any higher-layer";
+	return `${base0} and ${base1} import no React, no DOM global, and no ${forbiddenText} module`;
+}
 // public-entry-only joined the live set in review round 1 (BLOCKER-1): its
 // scope now reaches every file outside a package's own src/, and that set is
 // never empty while apps/web/src has any tracked source at all.
@@ -211,50 +265,70 @@ const DOM_GLOBAL_PATTERN =
 	/\bwindow\b|\blocalStorage\b|\bsessionStorage\b|\bnavigator\b|\bHTMLElement\b|\bHTMLCanvasElement\b|\bCustomEvent\b|\bMutationObserver\b|\bResizeObserver\b|\bIntersectionObserver\b/;
 
 /**
- * `document` matches ONLY as a member access against a fixed list of names no
- * domain "document" value in this codebase has — never as a bare identifier.
+ * `document` matches ONLY as a member access, never as a bare identifier.
  * Review round 1 (MAJOR-1) found the previous bare-identifier match, combined
  * with a whole-file "does this file declare a local `document`" exemption,
  * let a single unrelated parameter blind detection of a real
  * `document.createElement(...)` call anywhere else in that file. Matching the
- * member access instead removes the need for scope tracking entirely: a
- * local `document` value (the draft document, `VectorSeedDocument`, …) is
- * never going to expose `.createElement`/`.querySelector`/etc, so there is no
- * ambiguity left to resolve by tracking declarations. `xxx.document` (a
- * property literally named `document` on some other object, e.g.
- * `context.document` in editor/contracts/engine/conformance) still never
- * matches, because the member checked is on `document` itself, not on
- * whatever precedes it.
+ * member access instead removes the need for scope tracking entirely.
+ * `xxx.document` (a property literally named `document` on some other
+ * object, e.g. `context.document` in editor/contracts/engine/conformance)
+ * still never matches, because the member checked is on `document` itself,
+ * not on whatever precedes it.
  *
- * D-2 (review round 2): the original 18-name alternation missed 17 real DOM
- * accesses the reviewer probed individually and reproduced as silently
- * missed — most commonly `document.addEventListener`, the single most
- * common DOM idiom in editor code. The reviewer's "Fix" section additionally
- * prescribed 15 further member names not individually reproduced but of the
- * same class (`dispatchEvent`, `writeln`, `adoptedStyleSheets`,
- * `currentScript`, `forms`, `images`, `links`, `scripts`, `exitPointerLock`,
- * `createAttribute`, `createTreeWalker`, `createNodeIterator`, `importNode`,
- * `adoptNode`, `evaluate`) — all 32 total are added below (18 → 50), not only
- * the 17 individually reproduced, since leaving the un-reproduced 15 for a
- * future round would repeat the exact "incomplete fix" pattern this very
- * review round caught round 1 making. Widened to the fuller real
- * `document.*` surface below; live-verified (not just inspected) by the
- * same method MAJOR-1's own no-collision claim was upgraded with —
- * `react-free-base` still passes cleanly over all 68 real layer-0/1 files
- * with every added name active, so nothing already in the tree collides.
+ * D-2 (review round 2, superseded by D-7 below): widened the original
+ * 18-name DOM-member denylist to 50 after the reviewer reproduced 17 real
+ * DOM accesses (most commonly `document.addEventListener`) silently missed
+ * by it, plus 15 further members of the same class prescribed but not
+ * individually reproduced.
+ *
+ * D-7 (review round 3): the round-2 denylist was still a fixed, finite list
+ * matched against the infinite, ever-growing real DOM `document` surface —
+ * the reviewer reproduced 13 MORE real members it missed (`hasFocus`,
+ * `caretRangeFromPoint`, `caretPositionFromPoint`, `getAnimations`,
+ * `timeline`, `scrollingElement`, `onkeydown`, `startViewTransition`,
+ * `getElementsByName`, `open`, `close`, `URL`, `referrer`, `baseURI`,
+ * `fullscreenEnabled`, `pictureInPictureElement`, `replaceChildren` — 16
+ * names, the reviewer's finding rounds this to "13+"), and concluded a
+ * denylist here is structurally uncompletable: there will always be a next
+ * DOM member nobody enumerated yet. A local `document` VALUE (the draft
+ * document, `VectorSeedDocument`, …), by contrast, is a small, closed,
+ * enumerable surface — this codebase only ever reads a handful of its own
+ * property names off one. So the check is inverted to an ALLOWLIST of those
+ * domain member names (`DOMAIN_DOCUMENT_MEMBERS` below): `document.<member>`
+ * is now flagged whenever `<member>` is NOT on that short list, DOM or not.
+ * This flips which failure is silent. Before: an unenumerated real DOM
+ * member (e.g. `hasFocus`) passed silently — the exact hole this review
+ * round found. After: an unenumerated real DOMAIN member (e.g. a future
+ * `document.duration`) is flagged and needs a one-line addition to
+ * `DOMAIN_DOCUMENT_MEMBERS` to go silent again — loud and self-correcting,
+ * not silent and permanent, which is the direction a boundary-freeze checker
+ * should err in.
+ *
+ * `DOMAIN_DOCUMENT_MEMBERS` was built by enumerating every real
+ * `document.<member>` access across all 68 files `react-free-base` scans
+ * today (`apps/web/src/editor/ports/**`, `apps/web/src/editor/host/
+ * editor-host.ts`, `apps/web/src/editor/contracts/**` minus the one file
+ * `boundary.json` reassigns to editor-classic) — seven names, every one a
+ * read on a local "document" value, never `globalThis.document`:
+ * `revision`, `tracks`, `clips`, `assets`, `markers`, `idempotency`,
+ * `project`. `editor/ports` and `editor-host.ts` contain zero `document.*`
+ * accesses of either kind (`react-free-base` still passes with 68 files
+ * scanned, matching every prior round's count). MAJOR-1's own converse
+ * fixture (`document: { tracks: unknown[] }`) already exercises `tracks`
+ * from this exact list, so review round 3 changed no fixture expectation to
+ * keep it silent.
  *
  * **Known, accepted regression, recorded rather than silently absorbed:**
  * matching member access instead of a bare identifier (MAJOR-1) means
  * `document["createElement"]` (computed member access) no longer matches —
- * the pre-MAJOR-1 bare-identifier pattern caught it, this one does not. That
- * is a deliberate trade against the whole-file exemption hole the
- * member-access redesign closed (15 of 69 layer-0/1 files were exempt
- * outright), not an oversight; nothing in the current scan set uses computed
+ * unchanged by D-7, still nothing in the current scan set uses computed
  * access on `document`, and adding `document\s*\[` back is a straightforward
  * follow-up if that ever changes.
  */
-const DOM_DOCUMENT_MEMBER_PATTERN =
-	/\bdocument\s*\.\s*(?:createElement|createElementNS|createTextNode|createDocumentFragment|createRange|createEvent|createComment|createAttribute|createTreeWalker|createNodeIterator|importNode|adoptNode|evaluate|querySelector|querySelectorAll|getElementById|getElementsByClassName|getElementsByTagName|getElementsByTagNameNS|elementFromPoint|elementsFromPoint|execCommand|documentElement|activeElement|body|head|addEventListener|removeEventListener|dispatchEvent|cookie|readyState|visibilityState|hidden|fonts|styleSheets|adoptedStyleSheets|getSelection|write|writeln|location|defaultView|currentScript|forms|images|links|scripts|exitFullscreen|fullscreenElement|exitPointerLock|pointerLockElement)\b/;
+const DOMAIN_DOCUMENT_MEMBERS = ["revision", "tracks", "clips", "assets", "markers", "idempotency", "project"];
+
+const DOM_DOCUMENT_MEMBER_PATTERN = new RegExp(`\\bdocument\\s*\\.\\s*(?!(?:${DOMAIN_DOCUMENT_MEMBERS.join("|")})\\b)\\w+`);
 
 /**
  * MAJOR-2 (review round 1): `globalThis.localStorage` and
@@ -515,10 +589,13 @@ function noElftiaImportRule({ files }) {
 
 /**
  * Bonus fix from the D-1 hardcoded-triple audit (review round 2): the
- * forbidden-name literal `"@opencut/editor-classic"` is now `boundary.layers[2]`
- * — see the caller for the matching manifest-gate fix. Same failure shape as
- * D-1, one layer up: a hardcoded name that cannot track a renamed or
- * differently-scoped layer-2 package.
+ * forbidden-name literal `"@opencut/editor-classic"` became `boundary.layers[2]`
+ * — see the caller for the matching manifest-gate fix. D-6 (review round 3)
+ * found that fix carried the identical failure shape one arity notch further
+ * in: a single index literal still assumed exactly three layers, so a
+ * legally-declared fourth layer's dependency on it went uncaught. Now
+ * `boundary.layers.slice(2)` — every layer above the two base layers,
+ * structurally, for any layer count ≥ 2.
  */
 function checkManifestReactFree(file, violations, boundary) {
 	let data;
@@ -527,7 +604,7 @@ function checkManifestReactFree(file, violations, boundary) {
 	} catch {
 		return;
 	}
-	const forbidden = new Set(["react", "react-dom", boundary.layers[2]]);
+	const forbidden = new Set(["react", "react-dom", ...boundary.layers.slice(2)]);
 	for (const field of ["dependencies", "devDependencies", "peerDependencies", "optionalDependencies"]) {
 		const deps = data[field];
 		if (!deps) continue;
@@ -552,12 +629,14 @@ function checkManifestReactFree(file, violations, boundary) {
  * for `PACKAGE_SPECIFIER_PATTERN`, one layer up. A base-layer package whose
  * directory doesn't literally read "editor-ports"/"editor-contracts" (a
  * rename, or a second Host's own base package under a different name) was
- * invisible to the manifest-level forbidden-dependency check. Now derived
- * from `boundary.layers[0]`/`[1]` matched against the discovered manifest
- * list's declared `name`, not the directory string.
+ * invisible to the manifest-level forbidden-dependency check. D-6 (review
+ * round 3): the original fix derived this from `boundary.layers[0]`/`[1]`
+ * as two positional literals — now `boundary.layers.slice(0, 2)`, "the two
+ * base layers" as a structural slice rather than two index literals that
+ * happen to total two.
  */
 function baseLayerManifestPaths(boundary, manifests) {
-	const baseLayerNames = new Set([boundary.layers[0], boundary.layers[1]]);
+	const baseLayerNames = new Set(boundary.layers.slice(0, 2));
 	return new Set(
 		manifests.filter((m) => baseLayerNames.has(m.name)).map((m) => `packages/${m.dir}/package.json`),
 	);
@@ -567,6 +646,10 @@ function reactFreeBaseRule({ files, boundary, manifests }) {
 	const violations = [];
 	let scanned = 0;
 	const baseManifestPaths = baseLayerManifestPaths(boundary, manifests);
+	// D-6 (review round 3): base/forbidden layer sets, computed once per run
+	// from `boundary.layers` rather than as index literals at each use site.
+	const baseLayerNames = new Set(boundary.layers.slice(0, 2));
+	const forbiddenLayerNames = new Set(boundary.layers.slice(2));
 	for (const file of files) {
 		if (baseManifestPaths.has(file.path)) {
 			checkManifestReactFree(file, violations, boundary);
@@ -574,7 +657,7 @@ function reactFreeBaseRule({ files, boundary, manifests }) {
 		}
 		if (!file.path.startsWith("apps/web/src/")) continue;
 		const owner = ownerOfPath(file.path, boundary);
-		if (owner !== boundary.layers[0] && owner !== boundary.layers[1]) continue;
+		if (!baseLayerNames.has(owner)) continue;
 		scanned += 1;
 		file.text.split(/\r?\n/).forEach((line, index) => {
 			if (isComment(line)) return;
@@ -604,13 +687,22 @@ function reactFreeBaseRule({ files, boundary, manifests }) {
 			}
 			if (spec) {
 				const resolved = resolveSpecifier({ spec, fromFile: file.path });
-				if (resolved && resolved.startsWith("apps/web/src/") && ownerOfPath(resolved, boundary) === boundary.layers[2]) {
-					violations.push({
-						rule: "react-free-base",
-						path: file.path,
-						line: index + 1,
-						detail: `imports a module owned by ${boundary.layers[2]} via "${spec}"`,
-					});
+				if (resolved && resolved.startsWith("apps/web/src/")) {
+					// D-6 (review round 3): was `=== boundary.layers[2]`, a single
+					// index literal that missed a legally-declared fourth layer's
+					// upward import from a manifest-clean base file. Now membership
+					// in the same `forbiddenLayerNames` set `checkManifestReactFree`
+					// uses, and the detail message names the actual resolved owner
+					// instead of repeating the `boundary.layers[2]` literal.
+					const resolvedOwner = ownerOfPath(resolved, boundary);
+					if (forbiddenLayerNames.has(resolvedOwner)) {
+						violations.push({
+							rule: "react-free-base",
+							path: file.path,
+							line: index + 1,
+							detail: `imports a module owned by ${resolvedOwner} via "${spec}"`,
+						});
+					}
 				}
 			}
 		});
@@ -643,6 +735,18 @@ function reactFreeBaseRule({ files, boundary, manifests }) {
  * future manifest name cannot corrupt the alternation.
  */
 function packageSpecifierPattern(manifests) {
+	// D-9 (review round 3): an empty manifest list degenerates the
+	// alternation to `^()(/.*)?$`, which matches any specifier beginning
+	// with "/" against a blank captured package name — reproduced: a file
+	// importing `"/abs/path"` would be flagged as an undeclared subpath
+	// "of " with no owner named. Nothing else in this file guards against
+	// zero manifests reaching here, so fail closed here directly with a
+	// comprehensible message instead of building a near-universal pattern.
+	if (manifests.length === 0) {
+		throw new Error(
+			"check-package-boundary: packageSpecifierPattern requires at least one manifest — refusing to build a pattern that would match almost any specifier",
+		);
+	}
 	const names = manifests.map((m) => m.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
 	return new RegExp(`^(${names.join("|")})(/.*)?$`);
 }
@@ -938,8 +1042,11 @@ function runCheck() {
 	for (const rule of RULES) {
 		const hits = violations.filter((v) => v.rule === rule.id);
 		const c = census[rule.id];
+		// D-6 (review round 3): description may be a string or a
+		// `(boundary) => string` function (react-free-base's is now derived).
+		const description = typeof rule.description === "function" ? rule.description(boundary) : rule.description;
 		if (DORMANT_RULE_IDS.includes(rule.id) && c.filesScanned === 0) {
-			console.log(`  ....  ${rule.id}: 0 files scanned — packages/ holds no source yet (${rule.description})`);
+			console.log(`  ....  ${rule.id}: 0 files scanned — packages/ holds no source yet (${description})`);
 			continue;
 		}
 		const extra =
@@ -948,7 +1055,7 @@ function runCheck() {
 				: rule.id === "public-entry-only"
 					? `, ${c.specifiersExamined} @opencut/* specifier(s) examined`
 					: "";
-		console.log(`  ${hits.length === 0 ? "PASS" : "FAIL"}  ${rule.id}: ${rule.description} (${c.filesScanned} file(s) scanned${extra})`);
+		console.log(`  ${hits.length === 0 ? "PASS" : "FAIL"}  ${rule.id}: ${description} (${c.filesScanned} file(s) scanned${extra})`);
 	}
 
 	if (violations.length > 0) {
@@ -1010,9 +1117,11 @@ const FOURTH_PACKAGE_MANIFESTS = [
  * D-1 audit-bonus fixture (review round 2): a base-layer package whose
  * directory name does not literally read "editor-ports" — proves
  * `react-free-base`'s manifest gate now matches on the manifest's declared
- * `name` against `boundary.layers[0]`, not a hardcoded directory path. Also
- * renames the layer-2 package so its forbidden-dependency name must come
- * from `boundary.layers[2]`, not the literal string `"@opencut/editor-classic"`.
+ * `name` against `boundary.layers.slice(0, 2)` (D-6, review round 3 —
+ * originally `boundary.layers[0]`/`[1]`), not a hardcoded directory path.
+ * Also renames the layer-2 package so its forbidden-dependency name must
+ * come from `boundary.layers.slice(2)` (D-6; originally the single literal
+ * `boundary.layers[2]`), not the literal string `"@opencut/editor-classic"`.
  */
 const RENAMED_DIR_BOUNDARY = { ...FIXTURE_BOUNDARY, layers: ["@opencut/editor-ports", "@opencut/editor-contracts", "@opencut/editor-classic-v2"] };
 const RENAMED_DIR_MANIFESTS = [
@@ -1122,7 +1231,7 @@ const NEGATIVE_FIXTURES = [
 	},
 	{
 		rule: "react-free-base",
-		note: 'D-1 audit bonus: a base-layer package manifest is still checked for a forbidden dependency even when its directory name doesn\'t literally read "editor-ports", and the forbidden layer-2 name is read from boundary.layers[2] rather than the literal string "@opencut/editor-classic"',
+		note: 'D-1 audit bonus: a base-layer package manifest is still checked for a forbidden dependency even when its directory name doesn\'t literally read "editor-ports", and the forbidden layer-2 name is read from boundary.layers.slice(2) (D-6, review round 3) rather than the literal string "@opencut/editor-classic"',
 		boundary: RENAMED_DIR_BOUNDARY,
 		manifests: RENAMED_DIR_MANIFESTS,
 		files: [
@@ -1134,7 +1243,19 @@ const NEGATIVE_FIXTURES = [
 	},
 	{
 		rule: "react-free-base",
-		note: "D-2: document.addEventListener — the single most common DOM idiom in editor code per the reviewer's own probe — is now caught; it was silently missed by the pre-fix 24-name alternation",
+		note: "D-6: a base-layer manifest depending on a legally-declared FOURTH layer (index 3, above the old boundary.layers[2] literal's reach) is caught — the forbidden set must be every layer above the two base layers, not only index 2",
+		boundary: FOURTH_PACKAGE_BOUNDARY,
+		manifests: FOURTH_PACKAGE_MANIFESTS,
+		files: [
+			{
+				path: "packages/editor-ports/package.json",
+				text: JSON.stringify({ name: "@opencut/editor-ports", dependencies: { "@opencut/editor-extra": "workspace:*" } }),
+			},
+		],
+	},
+	{
+		rule: "react-free-base",
+		note: "D-2: document.addEventListener — the single most common DOM idiom in editor code per the reviewer's own probe — is now caught; it was silently missed by the pre-fix 18-name alternation",
 		files: [
 			{
 				path: "apps/web/src/editor/ports/violation8.ts",
@@ -1149,6 +1270,16 @@ const NEGATIVE_FIXTURES = [
 			{
 				path: "apps/web/src/editor/ports/violation9.ts",
 				text: 'export function check(): boolean {\n  return typeof window.document.createElement === "function";\n}\n',
+			},
+		],
+	},
+	{
+		rule: "react-free-base",
+		note: "D-7: document.hasFocus() — one of the 13+ real DOM members the round-2 denylist still missed (reviewer's finding) — is caught under the round-3 allowlist inversion without needing its own name added anywhere, because 'hasFocus' was never going to be on DOMAIN_DOCUMENT_MEMBERS in the first place",
+		files: [
+			{
+				path: "apps/web/src/editor/ports/violation10.ts",
+				text: "export function isFocused(): boolean {\n  return document.hasFocus();\n}\n",
 			},
 		],
 	},
@@ -1256,6 +1387,18 @@ const CONVERSE_FIXTURES = [
 			{
 				path: "packages/host-ports/package.json",
 				text: JSON.stringify({ name: "@opencut/editor-ports", dependencies: { "@opencut/editor-contracts": "workspace:*" } }),
+			},
+		],
+	},
+	{
+		rule: "react-free-base",
+		label: "D-6: a base-layer manifest's dependency on the OTHER base layer (contracts→ports, the real declared relationship) stays silent in a legally-declared four-layer boundary — the widened forbidden set (boundary.layers.slice(2)) must not swallow the base layers themselves",
+		boundary: FOURTH_PACKAGE_BOUNDARY,
+		manifests: FOURTH_PACKAGE_MANIFESTS,
+		files: [
+			{
+				path: "packages/editor-contracts/package.json",
+				text: JSON.stringify({ name: "@opencut/editor-contracts", dependencies: { "@opencut/editor-ports": "workspace:*" } }),
 			},
 		],
 	},

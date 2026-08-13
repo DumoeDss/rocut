@@ -871,3 +871,367 @@ Two of them are now cheaper or more relevant than they were: **MINOR-4** should 
 same pass as any doc edit, since `BOUNDARIES.md` was already touched here; and **MINOR-7** is now
 more load-bearing, because `public-entry-only` going live changes what P1 inherits while
 `planning-context.md` still describes it as dormant.
+
+---
+---
+
+# ROUND-2 RE-REVIEW — delta `95779c07`
+
+Appended 2026-08-13 by the same independent non-author reviewer. **Everything above this line —
+the round-1 report against `5e3fc7cb` and the round-2 re-review of `bea59790` — is left
+unaltered.**
+
+Scope: **commit `95779c07` only**. Hygiene was independently confirmed by the LEAD (all 9 touched
+files `i/lf w/lf`, 0 CR bytes across the P0 tree, 0 `.rasen/` paths) and is not re-checked.
+
+**Delta verdict: `findings` — 1 new Blocker, 0 new Majors, 3 new Minors, 2 new Trivials.**
+
+All six routed findings (D-1, D-2, D-3, D-4, D-5, MINOR-4) plus the audit-bonus fix are
+**confirmed resolved**, every one reproduced rather than read. The Blocker is not in the code: it
+is in `evidence/load-time-guard-proof.md`, which records two command transcripts the shipped code
+cannot produce.
+
+## Method (round 3)
+
+Live runs against the real repo, plus 40 probes against a sandbox replica built from the delta's
+checker, the real `boundary.json` and the real manifests, in its own git repo outside rocut. rocut's
+working tree was not modified. Round-3 probe ids continue the `D-*` series.
+
+Independently reproduced at `95779c07`:
+
+```
+PASS  acyclic-direction   (949 files, 341 cross-package edges)
+PASS  public-entry-only   (949 files, 0 @opencut/* specifier(s) examined)
+....  no-internal-reexport (0 files scanned)
+PASS  no-elftia-import    (1031 files)
+PASS  react-free-base     (68 files)
+exit 0
+```
+
+`--negative-control`: **12/12 caught**, exit 0. `--converse-control`: **11/11 silent**, exit 0.
+Fixture-array counts independently parsed from source: 12 negative, 11 converse. All claimed totals
+verified, none accepted.
+
+---
+
+## Per-finding dispositions
+
+### D-1 — **RESOLVED (confirmed)**
+
+`packageSpecifierPattern(manifests)` (`script/check-package-boundary.mjs:640-643`) builds the
+alternation from the discovered, boundary-validated manifest list, with regex-metacharacter escaping
+that npm names do not currently need but a future name might. Both consumers (`publicEntryOnlyRule`,
+`noInternalReexportRule`) call it.
+
+**Reproduced live — my own D-B2b reproduction, re-run against the new checker.** A fourth package
+declared in `boundary.json.layers` with a real manifest on disk, plus a consumer deep-importing its
+internals:
+
+```
+FAIL  public-entry-only: … (5 file(s) scanned, 1 @opencut/* specifier(s) examined)
+  [public-entry-only] apps/web/src/editor/surface/deep-extra.ts:1: imports undeclared subpath
+  "@opencut/editor-extra/internal/secret" of @opencut/editor-extra
+EXIT=1
+```
+
+The same file importing the fourth package's **declared** entry stays silent while still reporting
+`1 @opencut/* specifier(s) examined` — which incidentally demonstrates D-3's counter doing exactly
+the job it was added for. The `FOURTH_PACKAGE_BOUNDARY` / `FOURTH_PACKAGE_MANIFESTS` fixture pair is
+a clean design: a dedicated boundary/manifest pair rather than a mutation of the shared fixtures, so
+the other ten fixtures keep asserting against the unmodified three-package shape.
+
+### D-2 — **RESOLVED (confirmed)** — see `D-7` for the residual, which is the approach, not this list
+
+Counted mechanically from source rather than trusted: the alternation went from **18 members at
+`bea59790` to 50 at `95779c07`, exactly 32 added**. Cross-checked against my round-2 report:
+
+- **17 / 17** of the members I individually reproduced as missed are present.
+- **15 / 15** of the additional members my Fix section prescribed are present.
+
+The reasoning for adding the un-reproduced 15 rather than deferring them — that deferring would
+repeat the incomplete-fix pattern round 1 was caught making — is right, and is the correct
+generalisation to draw from a review finding.
+
+**Computed access is genuinely recorded, not silently dropped.** The pattern's doc comment carries a
+titled paragraph, *"Known, accepted regression, recorded rather than silently absorbed"*, stating
+that `document["createElement"]` no longer matches, that the pre-MAJOR-1 bare-identifier pattern did
+catch it, that this is a deliberate trade against the whole-file exemption hole, and that
+`document\s*\[` is a straightforward follow-up. That is exactly the disclosure I asked for.
+Independently confirmed still missed by probe.
+
+### D-3 — **RESOLVED (confirmed)**
+
+`public-entry-only` now prints `N @opencut/* specifier(s) examined`. Live output reads
+`949 file(s) scanned, 0 @opencut/* specifier(s) examined` — honestly 0, exactly as predicted, and
+the sandbox run above shows it moving to 1 when a candidate exists. The counter increments before
+the self-exemption and before the pass/fail branch (`:713-718`), so it counts what was *looked at*,
+not what was judged — the right semantics for this purpose.
+
+### D-4 — **RESOLVED (confirmed); I re-ran all seven probes rather than accepting the hand-trace**
+
+`TYPEOF_GUARD_PATTERN` is now `/\btypeof\s+(?:globalThis|window)\b(?:\s*\.\s*\w+\b(?!\s*\.))?/g`.
+The negative lookahead is the load-bearing part: it strips one member and stops, so a chained access
+survives.
+
+| probe | must | observed |
+| --- | --- | --- |
+| D-M2a guard + live access, one line, `globalThis` | FIRE | **FIRED** |
+| D-M2b guard + live access, one line, `window` | FIRE | **FIRED** |
+| D-M2c `typeof window` guard then bare `document.createElement` | FIRE | **FIRED** |
+| D-M2d `typeof window.document.createElement` | FIRE | **FIRED** |
+| D-M2e `const d = globalThis.document` | FIRE | **FIRED** |
+| D-M2f `typeof globalThis.document === "undefined"` | silent | **silent** |
+| D-M2g `globalThis.crypto.getRandomValues(...)` | silent | **silent** |
+
+**7/7, no regressions.** Five further cases probed for the generalisation itself:
+`typeof window.localStorage`, `typeof window.navigator` and `typeof globalThis.localStorage` are now
+silent (the D-4 target), while `typeof window.localStorage !== "undefined" ? window.localStorage.getItem(...)`
+and `typeof globalThis.document === "undefined" ? … : document.querySelector(...)` both still fire.
+The guard exempts detection and nothing else.
+
+### D-5 — **RESOLVED in substance (confirmed), but the artifact carries a Blocker — see `D-8`**
+
+The core claim is true and I have now reproduced it in two independent rounds: a real, untracked
+`packages/editor-undeclared-probe/package.json` on disk produces the exact recorded message and
+`exit 2` before any rule runs. `evidence/load-time-guard-proof.md`'s "Why this can't be a `scan()`
+fixture" section is correct and well-argued, and the live-run before/injection/after/revert sequence
+is genuine. **The finding D-5 raised is closed.** What the file additionally asserts about the two
+control modes is not true — filed as `D-8` below rather than as a reopening of D-5, because the
+proof D-5 asked for does exist.
+
+### MINOR-4 (round 1) — **RESOLVED (confirmed); both calls correct**
+
+- **138 → 341**: correct, and the added parenthetical is the right kind of correction — it says the
+  number is a live measurement restated for orientation and that the checker, not the document, is
+  the source of truth. That prevents the same drift recurring.
+- **The second stale claim, corrected on the implementer's own initiative**: `design.md` D6 still
+  listed `public-entry-only` under "live from the first module P1 places under `packages/`". False
+  since `bea59790`. Moving it into the live list with a dated note is right, and catching it
+  unprompted is the correct instinct — a doc edit that fixes one stale sentence and leaves its
+  neighbour is how documents rot.
+- **Leaving `no-internal-reexport`'s dormancy claim alone**: correct. Its scope is still
+  `packages/*/src/**` only, `packages/` still holds no source, and the live run still prints
+  `0 files scanned` for it. The added sentence explaining *why* that one is genuinely different — a
+  re-export needs a declared entry file to re-export from, and none exists until P1 places one — is
+  a real improvement over simply leaving it.
+
+### Audit bonus (`checkManifestReactFree`) — **CONFIRMED complete for the name and path literals; the renamed-dir fixture does prove what it claims**
+
+`baseLayerManifestPaths(boundary, manifests)` (`:558-563`) derives the gate from
+`boundary.layers[0]`/`[1]` matched against each manifest's declared `name`, building the path from
+the discovered `dir`. `checkManifestReactFree` takes `boundary` and reads the forbidden layer-2 name
+from `boundary.layers[2]`.
+
+**Does the renamed-dir fixture prove directory-name independence?** Yes — and I verified it a second
+way, end-to-end against the real filesystem rather than in-memory, which is a stronger test than the
+fixture itself:
+
+- Renamed `packages/editor-ports` → `packages/host-ports` **on disk** (manifest `name` unchanged),
+  added a forbidden `@opencut/editor-classic` dependency:
+  `[react-free-base] packages/host-ports/package.json: manifest declares forbidden dependency
+  "@opencut/editor-classic" in dependencies`, exit 1. The pre-fix literal-path gate would have
+  skipped this file entirely.
+- Same renamed directory without the forbidden dependency: silent, exit 0.
+
+That exercises `discoverPackageDirs` → `loadManifests` → `baseLayerManifestPaths` as a chain, not
+just the last link. The fixture's choice of a deliberately non-matching directory name is the right
+call — re-testing `packages/editor-ports/` would have proven nothing, since that path passes under
+both the old and new gate.
+
+**The "only remaining 3-name literal" claim: verified, with one addition the claim did not mention.**
+I grepped every occurrence of the three package names in the checker. Everything found is a fixture
+(`FIXTURE_BOUNDARY.layers`, `FIXTURE_MANIFESTS`, `RENAMED_DIR_*`, and fixture file bodies) —
+except one: `RULES[4].description` (`:147`) reads *"editor-ports and editor-contracts import no
+React, no DOM global, and no editor-classic module"*. That is user-facing output, not a gate, so it
+cannot cause a miss; but if the layers were renamed it would print names that no longer exist.
+Folded into `D-6` rather than raised separately.
+
+---
+
+## New findings from the delta
+
+### D-8 (Blocker) — `evidence/load-time-guard-proof.md` records two command transcripts the shipped code cannot produce, and cites a function that does not exist
+
+**Where:** `rasen/changes/s05-package-boundary-freeze/evidence/load-time-guard-proof.md:66-81`.
+
+The file states:
+
+> `--negative-control` and `--converse-control` were also each run with the injected manifest
+> present; both hit the identical guard and `exit 2` before reaching either control loop, for the
+> same reason (`loadManifests` runs unconditionally at the top of `main()`, ahead of the
+> `--negative-control`/`--converse-control` branch)
+
+…followed by two transcript blocks each showing the guard message and `EXIT=2`, and a "Reading"
+sentence: *"proven identically across the live run and both control modes, since all three share the
+same `loadManifests` call ahead of their branch point."*
+
+**None of that is true of the shipped code.**
+
+1. **There is no `main()`.** `grep -n "function main"` over the file returns nothing. The entrypoint
+   is unchanged from the original commit:
+   ```js
+   if (process.argv.includes("--negative-control")) runNegativeControl();
+   else if (process.argv.includes("--converse-control")) runConverseControl();
+   else runCheck();
+   ```
+2. **`loadManifests` is called only inside `runCheck()`** (`:807`). Neither control function calls
+   `loadBoundary`, `loadManifests`, `collectRepoFiles` or `gitLsFiles`; both call `fixtureScan` with
+   in-memory fixtures and do no repository I/O at all. An injected directory on disk is invisible to
+   them by construction.
+3. **Reproduced.** I recreated the exact injection —
+   `packages/editor-undeclared-probe/package.json` with the same name and shape — and ran all three
+   commands:
+
+   | command | recorded in the evidence file | actually observed |
+   | --- | --- | --- |
+   | `check-package-boundary.mjs` | guard message, `exit 2` | guard message, **exit 2** ✔ |
+   | `--negative-control` | guard message, `EXIT=2` | runs all 12 fixtures, **exit 0** ✗ |
+   | `--converse-control` | guard message, `EXIT=2` | runs all 11 fixtures, **exit 0** ✗ |
+
+**Why this is a Blocker rather than a documentation nit.** This artifact exists *because* D-5 said
+the guard's proof could not live only in a reviewer's report; it is delivered with the Archive and
+consumed by the ship pre-flight and the Direction reconcile as evidence. Roughly a third of it is
+command output attributed to commands that never produced it. A change whose entire premise is
+"mechanically proven, not asserted", and whose MAJOR-3 was specifically about evidence that was
+claimed but not recorded, cannot ship an evidence file containing invented transcripts — that is
+strictly worse than the missing-evidence state MAJOR-3 described, because a missing file is visibly
+missing while a false one reads as proof.
+
+I make no claim about intent: this is equally consistent with fabrication and with mis-transcribing
+the live run's output under two extra headings. Either way the record is false and must be
+corrected. I checked whether some earlier commit could have produced it — `loadManifests` has only
+ever been called inside `runCheck`, and `main()` has never existed in any of the three commits — so
+there is no revision at which that output was producible.
+
+**Fix — either is acceptable, and both are small:**
+- **(a)** Delete the control-mode section (lines 66-81) and the "across the live run and both
+  control modes" clause in the Reading. The remaining live-run proof is genuine and sufficient for
+  D-5. Add one sentence stating the truth: the controls are pure in-memory fixture runs and
+  deliberately do not consult `packages/`, so the guard does not and need not apply to them.
+- **(b)** Make the claim true: hoist `loadBoundary` + `loadManifests` above the argv branch so all
+  three modes share the guard, then re-run and re-record. This is a real behaviour change and would
+  need its own fixture reasoning; **(a)** is the honest minimal fix.
+
+**Confidence: high** — reproduced all three commands, and the absence of `main()` is mechanically
+verifiable.
+
+### D-6 (Minor) — the audit removed the *name* literals but left the *arity-3 index* literals
+
+**Where:** `:530` (`boundary.layers[2]`), `:560` (`layers[0]`/`[1]`), `:577`, `:607`, `:612`, plus
+the description string at `:147`.
+
+The audit's theory — "two hardcoded triples found, assume a third" — was right and found the third.
+But the fix expresses the same assumption one notch further in: `react-free-base` now derives names
+from `boundary.layers`, while still hardcoding that **there are exactly three layers**, that base =
+`[0]` and `[1]`, and that the forbidden top layer = `[2]`.
+
+**Reproduced.** With a legally-declared fourth layer (`@opencut/editor-experimental` appended to
+`boundary.layers`, manifest on disk — the path BLOCKER-2's guard now admits),
+`packages/editor-ports/package.json` declaring `"@opencut/editor-experimental": "workspace:*"` is
+**not caught**: exit 0. `forbidden` is `{react, react-dom, layers[2]}`, so a base package may
+declare a dependency on any layer above index 2 freely. The source-import counterpart at `:607` has
+the same shape (`ownerOfPath(resolved) === boundary.layers[2]`), though there `acyclic-direction`
+catches the upward edge independently, so only the manifest path is uncovered.
+
+**Fix:** `boundary.layers.slice(2)` for the forbidden set and `slice(0, 2)` — or better, "every
+layer above the base" — for the gate. Conditional on a fourth package existing, hence Minor rather
+than Major, but it is the same failure shape the audit was run to eliminate and it should not need a
+fourth review round to find. **Confidence: high** (reproduced).
+
+### D-7 (Minor) — the DOM member denylist still misses real accesses; the remedy is to invert its polarity, not to lengthen it again
+
+**This does not reopen D-2**, which is closed: every name I named is in. But you asked me to probe
+for a 51st, and there are at least thirteen more, several of them specific to what this repository
+actually is:
+
+| still missed | why it matters here |
+| --- | --- |
+| `document.hasFocus()` | the repo has a `surface-focus` module |
+| `document.caretRangeFromPoint(...)` / `caretPositionFromPoint` | text-editing surface |
+| `document.getAnimations()` / `document.timeline` | a timeline/animation editor |
+| `document.scrollingElement` | scroll management |
+| `document.onkeydown = fn` (handler-property assignment) | keyboard handling without `addEventListener` |
+| `document.startViewTransition(...)` | modern UI transitions |
+| `document.getElementsByName(...)`, `document.open()` / `close()` | legacy DOM |
+| `document.URL` / `referrer` / `baseURI` | environment reads |
+| `document.fullscreenEnabled`, `document.pictureInPictureElement` | preview/fullscreen |
+| `document.replaceChildren()` | DOM mutation |
+
+`document.title` is also missed and that one is **correct** — the change's own MAJOR-1 negative
+fixture uses `document: { title: string }` as a domain value, so `title` genuinely collides and must
+stay off.
+
+That last row is the point. A denylist of DOM members can never be complete, and the members that
+*must* be excluded are exactly the ones that collide with domain vocabulary — a small, knowable set.
+**Recommendation: invert the polarity.** Flag `document.<member>` for any member NOT on a short
+domain-member allowlist (`title`, `tracks`, `scenes`, … whatever the 68 layer-0/1 files actually
+use, which `react-free-base`'s current clean pass makes enumerable today). That is complete by
+construction, fails loud on an unrecognised member, and moves the maintenance burden onto adding a
+*domain* term — a visible, reviewed event — instead of onto remembering a DOM API. Adding more names
+to the denylist is the strictly weaker fix and will be re-found in some later round.
+**Confidence: high** (13 misses reproduced).
+
+### D-9 (Trivial) — `packageSpecifierPattern([])` matches any absolute specifier
+
+If `packages/` holds `boundary.json` but no package directories, `discoverPackageDirs()` returns `[]`
+and the pattern becomes `^()(/.*)?$`, which matches any specifier beginning with `/`. Reproduced: a
+file importing `"/abs/path"` yields
+`[public-entry-only] …: imports undeclared subpath "/abs/path" of ` — a violation with an empty
+package name. Practically unreachable (the design's own rollback deletes all of `packages/`, which
+fails earlier in `loadBoundary`), but a one-line fail-closed guard on an empty manifest list would
+match the file's existing idiom and produce a comprehensible message instead of a blank one.
+
+### D-10 (Trivial) — the D-2 negative fixture's note says "24-name alternation"; it was 18
+
+`:1119`. The doc comment, the commit message and my count all say 18 → 50 with 32 added; the fixture
+note is the only place that says 24. Cosmetic, but the note is printed in `--negative-control` output
+every run.
+
+### D-11 (Minor) — `design.md` D6's heading has been inverted since the first commit, and this round made it doubly wrong
+
+`design.md:243`: *"### D6 — The checker runs two rules over the present and three over the future,
+and says which"*. Verified byte-identical at `5e3fc7cb`, so it is genuinely pre-existing: even then
+the body listed **three** rules live over the present and **two** over the future — the heading had
+the numbers the wrong way round from day one. After this round's MINOR-4 correction the body reads
+four and one, so the heading is now wrong in both directions.
+
+**The implementer's decision to flag rather than fix was the right scope call** — it is unrelated to
+D-1..D-5 and outside the authorization for this round. Filing it here so it stops being an unfiled
+known issue: it is a one-word-pair edit ("four rules over the present and one over the future"),
+and D6 is the section a P1 planner reads to learn which rules are live.
+
+---
+
+## Process note — the "310 CR bytes" is arithmetic, not a discrepancy
+
+Recorded so it does not read as an unresolved contradiction between me and the implementer. Both
+observations are correct and they are the same number for a mechanical reason: the scratch file I
+wrote contained exactly the 310 lines that were appended, and a 310-line file with CRLF endings has
+exactly 310 CR bytes. The implementer could not reproduce the count because I stripped the file with
+`tr -d '\r'` and deleted it in the same command, so it never existed on disk in CRLF form for anyone
+else to scan. Nothing is in dispute: the Write tool emitted CRLF, the strip removed it, and the
+committed file has 0 CR bytes — independently confirmed by the LEAD across the whole P0 tree and by
+a byte scan here. The durable lesson is the tooling one already recorded above: verify with
+`git ls-files --eol` or a byte scan, never with `grep -c $'\r'`, which returned 873 on a file with
+zero CR bytes.
+
+---
+
+## Standing summary after three rounds
+
+| round | found | closed by the next delta |
+| --- | --- | --- |
+| 1 (`5e3fc7cb`) | 2 Blockers, 3 Majors, 9 Minors, 2 Trivials | 2B + 3M + MINOR-3 |
+| 2 (`bea59790`) | 0 Blockers, 2 Majors, 3 Minors | 2M + 3M(inor) + MINOR-4 |
+| 3 (`95779c07`) | **1 Blocker, 0 Majors, 3 Minors, 2 Trivials** | — |
+
+Every routed finding across all three rounds has been closed by the following delta, and no fix has
+regressed a previously-closed one — I re-ran the round-2 probe set in full against this delta and
+all seven behaved as required. The single Blocker is not in the checker, which is now in good shape;
+it is in an evidence artifact, and the honest minimal fix is to delete fifteen lines.
+
+**Still open from round 1** (out of scope for both deltas, unchanged): MINOR-1, MINOR-2, MINOR-5,
+MINOR-6, MINOR-7, MINOR-8, MINOR-9, TRIVIAL-1, TRIVIAL-2. MINOR-4 is now closed. **MINOR-7 is the
+one worth acting on before P1** — `planning-context.md` still describes `public-entry-only` as
+dormant, which has been false since `bea59790` and is now also contradicted by the corrected
+`design.md`.
