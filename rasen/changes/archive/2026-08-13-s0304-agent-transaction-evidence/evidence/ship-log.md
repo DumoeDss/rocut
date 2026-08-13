@@ -92,7 +92,13 @@ no-ops, exactly four tests fail and no others.
 the `check-storage-boundary` classification — was authored and verified by the same actor. The
 prior review covered the 08-12 bytes.
 
-## Archive
+## Archiving
 
-`rasen archive s0304-agent-transaction-evidence` at 48/48, followed by a pathspec commit —
-`rasen archive` does not self-commit.
+`rasen archive s0304-agent-transaction-evidence --yes` at 48/48, followed by a pathspec commit —
+`rasen archive` does not self-commit. The `## Archive` heading below is written by the archive
+transaction itself and is reserved for it.
+
+## Archive
+**Date:** 2026-08-13T04:15:58.277Z
+**Outcome:** archived at E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\rasen\changes\archive\2026-08-13-s0304-agent-transaction-evidence
+**Transaction:** f4270bd3-30a0-4918-876f-77713571c384
