@@ -1544,3 +1544,50 @@ Recorded as accepted-known: **D-13**, **D-14**, **D-15**, and the round-1 remain
 under the catch-all), **MINOR-8** (task counts: the artifact is 29 boxes / 27 ticked), **MINOR-9**
 (`bun.lock` not regenerated for the three workspace members), **TRIVIAL-1** (`apps/desktop` named in
 `boundary.json` prose), **TRIVIAL-2** (`*`-leading continuation line).
+
+---
+
+## Round-4 note — delta `2a6c889d` (D-12, message split only) — **CONFIRMED, behaviour unchanged**
+
+Fast confirm, appended by the same non-author reviewer. Rounds 1-4 above unaltered.
+
+**Flagging behaviour is provably unchanged — verified by differential run, not by argument.** I ran
+the `2782d1a3` checker and the `2a6c889d` checker over the same 11-line probe corpus exercising every
+arm and every mixed combination (member-only, DOM-global-only, `globalThis`-only, member+global,
+member+`globalThis`, allowlisted member, both `typeof` guard shapes, `globalThis.crypto`), and
+compared the set of flagged `file:line` with the detail strings stripped:
+
+```
+flagged line set pre vs post: IDENTICAL — 7 flagged lines in both versions
+```
+
+The structural argument matches the measurement: pre-D-12 a line was flagged iff `A || B || C` with
+one violation pushed and an early `return`; post-D-12 it is `if (B) {push; return}` then
+`if (A || C) {push; return}`, which flags iff `B || (A || C)` — the same predicate, still exactly one
+violation per line, still returning before the layer-2 import check that the single pre-D-12 branch
+also skipped. **No check lost a contribution to the early return**, because both branches return
+exactly where the one branch did.
+
+Unchanged and re-verified: `node --check` SYNTAX_OK; live run exit 0 at 949/341, 949/0, dormant,
+1031, 68; `--negative-control` 14/14; `--converse-control` 12/12 — same counts over the same fixture
+sets.
+
+**Precedence on a line matching more than one arm: the member message wins.** Observed:
+`globalThis.document.createElement("div")`, `window.name + document.title`, and
+`navigator.userAgent + document.summary` all report the allowlist message rather than
+"references a DOM global". That is acceptable and mildly preferable — the new message explicitly
+begins "either a real DOM access, or …", so it is never *wrong*, and it names the offending member,
+which is the actionable half. For the mixed shapes the older wording was marginally more pointed,
+but such a line has to be fixed for both reasons anyway, and these shapes are rare. No finding; if
+anyone ever wants to tune it, checking the global arm first would give the more precise diagnosis on
+mixed lines at the cost of the more useful one on the common case.
+
+**`DOM_GLOBAL_PATTERN` / `GLOBALTHIS_DOM_PATTERN` keeping the old wording is justified**, with one
+pre-existing caveat unchanged by this delta: both match a bare token anywhere on the line, so a
+property or local named `window` / `navigator` (e.g. `someObj.navigator`) would also report
+"references a DOM global". No domain vocabulary in this repository collides with those names, so the
+wording is accurate for every case those arms can realistically hit.
+
+**D-12 resolved. No new findings.** The accepted-known set recorded at the end of the round-3
+confirmation stands unchanged, minus D-12; **MINOR-7** (`planning-context.md` still calls
+`public-entry-only` dormant) remains the one item recommended fixed before P1.
