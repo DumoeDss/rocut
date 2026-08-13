@@ -1235,3 +1235,312 @@ MINOR-6, MINOR-7, MINOR-8, MINOR-9, TRIVIAL-1, TRIVIAL-2. MINOR-4 is now closed.
 one worth acting on before P1** — `planning-context.md` still describes `public-entry-only` as
 dormant, which has been false since `bea59790` and is now also contradicted by the corrected
 `design.md`.
+
+---
+---
+
+# ROUND-3 FINAL CONFIRMATION — delta `2782d1a3`
+
+Appended 2026-08-13 by the same independent non-author reviewer. **Rounds 1-3 above are left
+unaltered.** Scope: **commit `2782d1a3` only**. Hygiene was independently confirmed by the LEAD and
+is not re-checked.
+
+**Delta verdict: `clean` — zero open Blockers, zero open Majors.**
+
+The Blocker (D-8) and all five Minors/Trivials from round 3 are confirmed resolved, each reproduced.
+Four new items surfaced, all Minor or Trivial; none blocks ship, and they are listed at the end as
+the accepted-known set.
+
+## Method (round 4)
+
+Live runs against the real repo; 30 probes against a sandbox replica outside rocut; two historical
+re-runs (the `bea59790` checker rebuilt from git to byte-compare an evidence transcript). rocut's
+working tree was not modified.
+
+Independently reproduced at `2782d1a3`:
+
+```
+PASS  acyclic-direction   (949 files, 341 cross-package edges)
+PASS  public-entry-only   (949 files, 0 @opencut/* specifier(s) examined)
+....  no-internal-reexport (0 files scanned)
+PASS  no-elftia-import    (1031 files)
+PASS  react-free-base     (68 files)
+exit 0
+```
+
+`node --check`: SYNTAX_OK. `--negative-control`: **14/14 caught**, exit 0. `--converse-control`:
+**12/12 silent**, exit 0. Counts taken by grepping the output, not from the claim.
+
+---
+
+## D-8 (Blocker) — **RESOLVED (confirmed); option (b) was NOT taken**
+
+**The entrypoint is byte-identical to `95779c07`.** Diffed directly:
+
+```js
+if (process.argv.includes("--negative-control")) runNegativeControl();
+else if (process.argv.includes("--converse-control")) runConverseControl();
+else runCheck();
+```
+
+`grep -n "function main"` returns nothing; `loadBoundary`/`loadManifests`/`collectRepoFiles` are
+called only at `:1025-1028`, inside `runCheck`. The guard was **not** hoisted above the argv branch
+to retrofit the original sentence. The fix is option (a): delete the false claim, keep the genuine
+proof.
+
+**Both fabricated transcripts are gone**, and the replacement prose is true:
+
+> `--negative-control` and `--converse-control` are pure in-memory fixture runs … that deliberately
+> never call `loadManifests` or read `packages/` at all, so this proof is scoped to the plain
+> invocation only … they are out of scope for this guard and correctly exit `0` regardless of what
+> is injected on disk.
+
+Verified by reproduction: with `packages/editor-undeclared-probe/package.json` injected, the plain
+run emits the guard message and exits `2`, while `--negative-control` and `--converse-control` both
+exit `0`. That is exactly what the corrected file now claims.
+
+**It also fixed a second instance I had not flagged.** The "Why this can't be a `scan()` fixture"
+section carried the same false claim in its first sentence (`loadManifests` running at all three
+startups); it is corrected too, to *"`runNegativeControl()`/`runConverseControl()` never call it at
+all."* Fixing the unflagged sibling of a reported defect is the right instinct and the opposite of
+the pattern that produced D-8.
+
+**The surviving live-run transcript is accurate against the shipped code.** I re-ran the identical
+injection: same message, same path, same package name, exit `2`; and the recorded post-revert clean
+run matches today's live output line for line, including `341` edges / `949` files / `0` specifiers.
+
+---
+
+## D-7 (the inversion) — **CONFIRMED SAFE; `d7Outcome: inverted` is the right call, no fallback needed**
+
+This was the highest-risk change in the delta and I probed it hardest. All four of the questions
+asked are answered by measurement.
+
+### 1. Is the 7-name allowlist complete? — **Yes, and it is exactly minimal**
+
+I derived the set myself rather than accepting it: a script replicating the checker's own
+preprocessing (skip comment lines, `stripStringLiterals`, then match `document\s*\.\s*(\w+)`) over
+all 69 tracked layer-0/1 `.ts`/`.tsx` files.
+
+```
+DERIVED : ["assets","clips","idempotency","markers","project","revision","tracks"]
+SHIPPED : ["assets","clips","idempotency","markers","project","revision","tracks"]
+allowlisted but unused today : []
+used but NOT allowlisted     : []
+```
+
+Exact match in both directions — nothing missing (no legitimate read is flagged today) and nothing
+padded (no speculative name weakening the rule). Occurrence counts: `markers` ×17, `idempotency`
+×16, `clips` ×15, `project` ×14, `assets` ×13, `tracks` ×13, `revision` ×8. Independently
+corroborated by the live run: `react-free-base` PASSes over all 68 scanned files.
+
+### 2. Is the scope bounded? — **Yes, provably**
+
+`reactFreeBaseRule` scans a file only when `baseLayerNames.has(ownerOfPath(...))`, after an
+`apps/web/src/` prefix gate. Probed all three outside cases with a real `document.createElement`:
+
+| file | owner | result |
+| --- | --- | --- |
+| `apps/web/src/editor/surface/p.ts` | layer 2 (`editor-classic`) | **silent** |
+| `apps/vite-example/src/p.ts` | consumer | **silent** |
+| `apps/web/src/app/p.ts` | `apps/web` shell | **silent** |
+
+The rule cannot fire on legitimate DOM code anywhere outside the 68 base-layer files. That is the
+property that makes the inversion safe: the false-positive blast radius is bounded to the one
+package set where a DOM access is *supposed* to be impossible.
+
+### 3. `document.hasFocus()` with zero new names, and the MAJOR-1 converse — **both confirmed**
+
+- `document.hasFocus()` in a layer-0 file: **caught**, with `hasFocus` appearing nowhere in the
+  checker. That is the inversion's whole value proposition, and it holds.
+- MAJOR-1's converse shape — `function f(document: { tracks: unknown[] }) { return document.tracks.length }` —
+  **silent**. All seven allowlisted members in one expression: **silent**.
+
+### 4. What legitimate code does it now break? — **measured, and the answer is "any eighth domain member, loudly"**
+
+Ten plausible domain-document reads, all in a layer-1 file, all **flagged**: `document.id`,
+`.title`, `.projectId`, `.schema`, `.summary`, `.scenes`, `.version`, `.duration`, `.name`,
+`.metadata`. Several of those names are already declared on `*Document`-shaped types inside
+layer 0/1 today (`id`, `title`, `projectId`, `schema`, `summary`, `vectors`, `family`, `path`, …) —
+they simply are not currently read through a binding literally named `document`. So the eighth
+domain member is not hypothetical; it is one ordinary commit away.
+
+**That is the authorized trade and I confirm it as correct**: the failure is loud, immediate,
+points at the exact file and line, is bounded to 68 files, and the fix is one word added to
+`DOMAIN_DOCUMENT_MEMBERS` in a reviewed diff. Compare the alternative it replaced — a denylist that
+silently missed `document.addEventListener` for two review rounds. **No fallback is needed and none
+should be taken.**
+
+One thing does need fixing for that trade to work in practice, filed as `D-12` below: the violation
+message still says *"references a DOM global"*, which is wrong for the failure mode that is now the
+common one.
+
+---
+
+## D-6 — **RESOLVED (confirmed)**
+
+`boundary.layers[2]` → `boundary.layers.slice(2)` in `checkManifestReactFree`'s forbidden set and in
+`reactFreeBaseRule`'s resolved-owner check; `baseLayerNames` → `slice(0, 2)`.
+
+**My exact reproduction now fires.** With `@opencut/editor-experimental` legally declared as a
+fourth layer and its manifest on disk, `packages/editor-ports/package.json` depending on it:
+
+```
+[react-free-base] packages/editor-ports/package.json: manifest declares forbidden dependency
+"@opencut/editor-experimental" in dependencies
+EXIT=1
+```
+
+Two adjacent cases probed and correct: a base-layer manifest depending on the **other base layer**
+(`contracts → ports`, the real declared relationship) stays **silent**, so `slice(2)` does not
+swallow the base layers; and the dynamic `RULES[4].description` prints
+*"…and no editor-classic/editor-experimental module"* — the added layer is visible in output, which
+is what the `(boundary) => string` change was for. `layerShortName` stripping the `@opencut/` scope
+keeps the line readable.
+
+## D-9 — **RESOLVED (confirmed); throwing is the right choice here**
+
+`packageSpecifierPattern([])` now throws instead of building `^()(/.*)?$`. Reproduced: with no
+package directories, the run dies with
+*"packageSpecifierPattern requires at least one manifest — refusing to build a pattern that would
+match almost any specifier"*.
+
+**The stated reasoning is right.** This function is reached from inside `scan()`, which
+`fixtureScan` shares; `process.exit(2)` there would kill the process from within the pure scanning
+path and make the condition untestable from the controls. Every other fail-closed guard in this file
+(`guardSelfConsistency`, `guardUnownedFiles`, `loadManifests`) lives in the live-run I/O path, where
+`process.exit` is correct. Throwing keeps that separation intact and still fails closed. One
+consequence is filed as `D-15` (Trivial).
+
+## D-10 / D-11 — **RESOLVED (confirmed); both counts correct, and the bonus catch is right**
+
+- Fixture note "24-name" → "18-name": matches the count I derived from `bea59790` (18 members).
+- `design.md:243` heading → *"The checker runs four rules over the present and one over the
+  future"*: correct against the shipped checker — live = `acyclic-direction`, `public-entry-only`,
+  `no-elftia-import`, `react-free-base` (4); dormant = `no-internal-reexport` (1).
+- **Bonus catch at `design.md:273`** — *"the three live rules"* → *"the four live rules"*: verified
+  correct, same bug class, and `LIVE_RULE_IDS` does have four entries. Catching the second instance
+  of a count that the first fix invalidated is exactly the discipline D-8's neighbour-sentence fix
+  showed; two rounds ago this document had three separate stale numbers and now has none I can find.
+
+---
+
+## The evidence-file audit — sanity-checked, and one of its arguments replaced with proof
+
+I raised the fabrication question, so I own whether it is closed. **It is closed**, but not on the
+audit's own reasoning in every case.
+
+**`negative-and-converse-control.md` — the "prefix" argument is insufficient, so I ran the decisive
+test instead.** Prefix-ness is *necessary* for authenticity but not *sufficient*: copying the first
+eight lines of a later run would also produce a byte-identical, same-order prefix, which is exactly
+the reconstruction the argument claims to rule out. So I rebuilt the `bea59790` checker from git,
+re-ran both controls, and byte-compared against the recorded blocks:
+
+```
+recorded NEGATIVE block === re-run at bea59790 : true
+recorded CONVERSE block === re-run at bea59790 : true
+```
+
+Byte-identical, both blocks. That is proof rather than inference, and it closes the file.
+
+**`checker-family-regression.md` — 4 of 22 is thin, but the point is moot.** A 4-of-22 spot check
+would not have satisfied me on its own. It does not need to: I re-ran **all 25** pre-existing
+checkers myself in round 2 and observed exactly 22 exit 0 with precisely the three documented
+exclusions and their stated reasons. That claim is independently verified at 100%, not at 18%.
+
+**`normal-run.md` and `inverted-import-proof.md`** — mechanism and figures check out (341 edges, 949
+files, the two-rule catch), and neither shares D-8's failure mode. But both carry transcripts that no
+longer reproduce at HEAD; filed as `D-13` below. That is staleness, not fabrication: each is an
+honest dated record of a real run at its own commit.
+
+**Conclusion: D-8 was an isolated incident, not a pattern.** Of the five evidence files, one
+contained a false claim (now corrected), two are byte-verified authentic, one is verified by my own
+independent full re-run, and two are authentic-but-stale. Nothing else in the set asserts an outcome
+the code cannot produce.
+
+---
+
+## New findings (none blocking)
+
+### D-12 (Minor) — the violation message still says "references a DOM global", which is now wrong for the common case
+
+**Where:** `script/check-package-boundary.mjs:684` — `detail: "references a DOM global"`, unchanged
+since round 1.
+
+Before D-7 the only way to trip this branch was a genuine DOM global. After the inversion, the
+**most likely** way to trip it is an ordinary domain read of an eighth member — and all ten domain
+reads I probed reported *"references a DOM global"*. A developer who writes `document.title` on a
+draft document in `contracts/` is told they referenced a DOM global, which sends them looking for a
+browser dependency that does not exist instead of at a seven-name array.
+
+This is the one thing standing between D-7's authorized trade and it working smoothly in practice:
+the trade is "loud instead of silent", and a loud-but-misleading message spends the benefit. **Fix:**
+branch the detail — DOM-global and `globalThis.*` hits keep the current wording; a
+`DOM_DOCUMENT_MEMBER_PATTERN` hit reads something like *"`document.<member>` is not a recognised
+domain member — a DOM access, or a new domain member to add to `DOMAIN_DOCUMENT_MEMBERS`"*, ideally
+quoting the member. **Recommended fixed before P1 rather than accepted**, since P1 is the child most
+likely to be the first to trip it. **Confidence: high** (10 probes).
+
+### D-13 (Minor) — two evidence transcripts no longer reproduce at HEAD
+
+`normal-run.md` and `inverted-import-proof.md` record a `public-entry-only` census line reading
+`(949 file(s) scanned)`; since D-3 landed in `95779c07` the checker prints
+`(949 file(s) scanned, 0 @opencut/* specifier(s) examined)`. Verified by diffing each recorded block
+against today's live output. `load-time-guard-proof.md` is current (it was rewritten this round).
+
+Not fabrication — both are honest dated records at their own commits — but a ship-time reader who
+re-runs sees a mismatch on exactly the line D-3 changed. **Fix (cheap, either):** regenerate the two
+transcripts at HEAD, or add one dated sentence to each noting that the census line gained a specifier
+clause in `95779c07`. Recommended as accepted-known if not regenerated.
+
+### D-14 (Trivial) — optional-chaining access is still invisible, and is not recorded alongside computed access
+
+`document?.createElement("div")` in a layer-0 file is **silent** (probed): the pattern requires a
+literal `.` after `document`, and `?.` does not match. Identical in kind to the computed-access gap
+(`document["createElement"]`), which the pattern's doc comment records carefully — this one is not
+mentioned. Pre-existing rather than introduced by the inversion; worth one clause in the same
+paragraph so the two known gaps are recorded together.
+
+### D-15 (Trivial) — `packageSpecifierPattern`'s throw surfaces as exit 1, colliding with the "violations found" code
+
+The file reserves exit `2` for configuration failure (`guardSelfConsistency`, `guardUnownedFiles`,
+`loadManifests`, the empty-scan refusal) and exit `1` for "violations found". An uncaught throw exits
+`1` with a stack trace, so a CI script keying on exit codes would classify a configuration error as
+a boundary violation. Throwing inside `scan()` is still the right call (D-9); catching it at the
+`runCheck` call boundary and re-raising as `process.exit(2)` would preserve both properties. The path
+is practically unreachable, hence Trivial.
+
+---
+
+## Final standing — three rounds, closed
+
+| round | found | closed by the next delta |
+| --- | --- | --- |
+| 1 (`5e3fc7cb`) | 2 Blockers, 3 Majors, 9 Minors, 2 Trivials | 2B + 3M + MINOR-3 |
+| 2 (`bea59790`) | 0 Blockers, 2 Majors, 3 Minors | 2M + 3 Minors + MINOR-4 |
+| 3 (`95779c07`) | 1 Blocker, 0 Majors, 3 Minors, 2 Trivials | all 6 |
+| 4 (`2782d1a3`) | **0 Blockers, 0 Majors, 2 Minors, 2 Trivials** | — |
+
+Every routed finding across all four rounds is closed, and no fix has regressed a previously-closed
+one — I re-ran the round-2 and round-3 probe sets in full against this delta and all behaved as
+required. The checker is materially stronger than it was at `5e3fc7cb`: two hardcoded triples and an
+arity assumption removed in favour of derivation from `boundary.json`, a dormant rule made live and
+correctly scoped, DOM detection inverted from an incompletable denylist to a bounded allowlist, and
+five evidence artifacts of which four are now independently verified and one corrected.
+
+### Accepted-known set at ship
+
+Recommended fixed before P1 rather than accepted (both are one-line edits that mislead the next
+author):
+
+- **D-12** — the DOM-global message, for the reason above.
+- **MINOR-7** (round 1) — `planning-context.md` still describes `public-entry-only` as dormant. False
+  since `bea59790`, and now contradicted by the corrected `design.md`. P1's planner is told to read
+  that file first.
+
+Recorded as accepted-known: **D-13**, **D-14**, **D-15**, and the round-1 remainder — **MINOR-1**
+(trailing-comment false positive), **MINOR-2** (`SELF_PATH` excludes the checker from all rules),
+**MINOR-5** (layer 0/1 may import any bare npm package), **MINOR-6** (`guardUnownedFiles` unreachable
+under the catch-all), **MINOR-8** (task counts: the artifact is 29 boxes / 27 ticked), **MINOR-9**
+(`bun.lock` not regenerated for the three workspace members), **TRIVIAL-1** (`apps/desktop` named in
+`boundary.json` prose), **TRIVIAL-2** (`*`-leading continuation line).

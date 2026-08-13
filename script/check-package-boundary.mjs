@@ -142,6 +142,20 @@
  * before this round; a `NEGATIVE_FIXTURES` entry's own `note` field, printed on every
  * `--negative-control` run, still read "24") is now also "18".
  *
+ * **D-12 (review round 4, the last item before ship): the shared violation message
+ * for this rule's DOM block still read "references a DOM global" for all three
+ * matcher arms.** That stayed true for `DOM_GLOBAL_PATTERN` and
+ * `GLOBALTHIS_DOM_PATTERN` — both only ever match an actual DOM global name — but
+ * D-7's allowlist inversion means `DOM_DOCUMENT_MEMBER_PATTERN` now fires on ANY
+ * `document.<member>` outside `DOMAIN_DOCUMENT_MEMBERS`, DOM or not, and an ordinary
+ * eighth domain member is the likelier real-world trigger than an actual browser
+ * dependency. `DOM_DOCUMENT_MEMBER_PATTERN` now gets its own detail message, naming
+ * `DOMAIN_DOCUMENT_MEMBERS` and stating the fix may be adding the member there —
+ * `DOM_GLOBAL_PATTERN`/`GLOBALTHIS_DOM_PATTERN` keep the original wording, since it
+ * remains accurate for them. Message text only; the set of flagged lines is
+ * unchanged (still the same three-arm OR, just evaluated as two sequential checks
+ * instead of one combined condition).
+ *
  *   node script/check-package-boundary.mjs
  *   node script/check-package-boundary.mjs --negative-control
  *   node script/check-package-boundary.mjs --converse-control
@@ -672,11 +686,29 @@ function reactFreeBaseRule({ files, boundary, manifests }) {
 				return;
 			}
 			const codeOnly = stripTypeofGuards(stripStringLiterals(line));
-			if (
-				DOM_GLOBAL_PATTERN.test(codeOnly) ||
-				DOM_DOCUMENT_MEMBER_PATTERN.test(codeOnly) ||
-				GLOBALTHIS_DOM_PATTERN.test(codeOnly)
-			) {
+			// D-12 (review round 3): DOM_DOCUMENT_MEMBER_PATTERN's match gets its own
+			// detail message, distinct from DOM_GLOBAL_PATTERN's and
+			// GLOBALTHIS_DOM_PATTERN's. Those two only ever match a name that IS a DOM
+			// global (`window`, `navigator`, `globalThis.document`, …), so "references
+			// a DOM global" stays accurate for them. But since D-7's allowlist
+			// inversion, DOM_DOCUMENT_MEMBER_PATTERN fires on ANY `document.<member>`
+			// not in `DOMAIN_DOCUMENT_MEMBERS` — the reviewer found the single shared
+			// message misleads on the MOST LIKELY trigger: an ordinary eighth domain
+			// member (e.g. `document.title`), not a browser dependency at all. This
+			// branch is checked first but does not change which lines violate —
+			// DOM_DOCUMENT_MEMBER_PATTERN is still one arm of the same OR the pre-D-12
+			// code tested, so the set of flagged lines is unchanged; only which detail
+			// string a flagged line gets can differ.
+			if (DOM_DOCUMENT_MEMBER_PATTERN.test(codeOnly)) {
+				violations.push({
+					rule: "react-free-base",
+					path: file.path,
+					line: index + 1,
+					detail: `document.<member> not in the domain allowlist (DOMAIN_DOCUMENT_MEMBERS: ${DOMAIN_DOCUMENT_MEMBERS.join(", ")}) — either a real DOM access, or an ordinary domain member that just needs adding there`,
+				});
+				return;
+			}
+			if (DOM_GLOBAL_PATTERN.test(codeOnly) || GLOBALTHIS_DOM_PATTERN.test(codeOnly)) {
 				violations.push({
 					rule: "react-free-base",
 					path: file.path,
