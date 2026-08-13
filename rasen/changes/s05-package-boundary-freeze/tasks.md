@@ -119,8 +119,8 @@
 
 ## 6. Ship
 
-- [ ] 6.1 Stage explicit pathspecs only. Assert
+- [x] 6.1 Stage explicit pathspecs only. Assert
       `git diff --cached --name-only | grep -c '^\.rasen/'` is `0` before committing — `.rasen/` is
       not gitignored in this repository.
-- [ ] 6.2 Commit locally. **Ship mode is local (commit only); do not push.** The portfolio delivers
+- [x] 6.2 Commit locally. **Ship mode is local (commit only); do not push.** The portfolio delivers
       once, at the parent, after all seven children complete.
