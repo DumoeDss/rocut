@@ -51,6 +51,23 @@ const CANDIDATE_SUFFIXES = ["", ".ts", ".tsx", "/index.ts", "/index.tsx"];
 const KNOWN_BARREL_COLLAPSES = new Map([
 	["packages/editor-ports/src/project-store.ts", "packages/editor-ports/src/index.ts"],
 	["packages/editor-ports/src/gpu-resources.ts", "packages/editor-ports/src/index.ts"],
+	// Stage C (task 5.7): design-system atoms and editor-chrome components
+	// consumed directly via a relative path before the move now resolve
+	// through the "./ui" barrel (packages/editor-classic/src/ui/index.ts),
+	// which re-exports them by design (task 5.3) rather than moving every
+	// individual atom to its own declared entry.
+	["packages/editor-classic/src/components/ui/sonner.tsx", "packages/editor-classic/src/ui/index.ts"],
+	["packages/editor-classic/src/components/ui/button.tsx", "packages/editor-classic/src/ui/index.ts"],
+	// Same pattern for the "./browser" barrel (task 5.3): browser-runtime and
+	// c4-project-load are two of its curated re-export targets.
+	["packages/editor-classic/src/editor/host/browser-runtime.ts", "packages/editor-classic/src/browser/index.ts"],
+	["packages/editor-classic/src/editor/host/c4-project-load.ts", "packages/editor-classic/src/browser/index.ts"],
+	// The package root barrel (packages/editor-classic/src/index.ts) re-exports
+	// "./feedback/types" at top level (`export * from "./feedback/types"`), so
+	// apps/web/src/feedback/queries.ts's old direct "./types" import correctly
+	// collapses onto the package root rather than a dedicated feedback subpath
+	// — this consumer only ever needed the two exported types, not a scoped entry.
+	["packages/editor-classic/src/feedback/types.ts", "packages/editor-classic/src/index.ts"],
 ]);
 
 /**

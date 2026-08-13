@@ -1,6 +1,6 @@
 @import "tailwindcss/theme.css";
 @import "tailwindcss/preflight.css";
-@import "../editor/surface/surface.css";
+@import "../../../../packages/editor-classic/src/surface/surface.css";
 
 /* Next Host-owned page normalization. The distributable Surface does not import this file. */
 @layer base {

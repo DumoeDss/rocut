@@ -244,25 +244,243 @@
 
 ## 5. Stage C — extract `@opencut/editor-classic` (791 files) and author the public entries
 
-- [ ] 5.1 `git mv` the remaining package-owned tree into `packages/editor-classic/src/**`,
+- [x] 5.1 `git mv` the remaining package-owned tree into `packages/editor-classic/src/**`,
       **mirroring the existing directory shape** so every intra-package relative import survives
       byte-identical (design E1).
-- [ ] 5.2 Move `editor/surface/surface.css` to `packages/editor-classic/src/surface/surface.css`,
+      Done — classified mechanically rather than by hand: a throwaway helper
+      (`script/.stage-c-classify.mjs`) reimplements `check-package-boundary.mjs`'s own
+      `resolveOwner()`/`candidatePaths()` longest-prefix-wins algorithm against the live
+      `boundary.json`, enumerated over `git ls-files apps/web/src` filtered to
+      `ts|tsx|css|md` (first pass filtered only `ts|tsx|css` and undercounted by 6 — all 5 `.md`
+      files plus a rounding miss; broadened and re-ran). Result: 790 classic / 54 shell / 0
+      unresolved over 844 tracked files — reconciles exactly with design's 791-file baseline minus
+      the 1 file (`editor/contracts/*` sibling) already relocated in Stage B's task 4.3. A second
+      throwaway (`script/.stage-c-move.sh`) `git mv`'d every classified-classic file from
+      `apps/web/src/X` to `packages/editor-classic/src/X`, creating parent directories as needed.
+      **786** files moved (790 classified minus the 4 corrected to `apps/web` by task 5.6, done in
+      the same pass — see 5.6). `git status --short | grep -c "^R "` confirms 786 clean renames, 0
+      content-modified-during-move. The two throwaway scripts and their two list files are not
+      committed; deleted before Stage C's commit per the Gate-1-spike precedent.
+- [x] 5.2 Move `editor/surface/surface.css` to `packages/editor-classic/src/surface/surface.css`,
       the path `./surface.css` already declares, and rewrite its importers.
-- [ ] 5.3 Author the eleven new barrels at the declared entry paths — `src/surface/index.ts`,
+      Done — caught a defect the bulk move in 5.1 would otherwise have hidden: the generic mirror
+      move placed `surface.css` at its **mirrored** location
+      (`packages/editor-classic/src/editor/surface/surface.css`), not the **declared entry**
+      location `packages/editor-classic/package.json`'s `exports["./surface.css"]` requires — design
+      E1 names this file as the sole exception that cannot be a barrel and must physically relocate.
+      Fixed with a second `git mv`; git chained the rename back to the true original
+      (`R  apps/web/src/editor/surface/surface.css -> packages/editor-classic/src/surface/surface.css`).
+      Found and fixed all 3 real importers via `grep -rln "surface\.css" apps packages` (the 4th hit,
+      `editor-classic/package.json`, is the exports declaration, not an importer): `apps/web/src/app/globals.css`,
+      `apps/vite-example/src/styles.css`, `apps/vite-example/vite.surface-css.config.ts`. Every
+      relative path was computed with Node's `path.relative()` (`script/.stage-c-relpath.mjs`), not
+      hand-counted, since CSS `@import`/`resolve()` has no compiler or boundary-checker oracle
+      watching it. Verified two ways: `existsSync()` on all 3 computed paths resolves to the moved
+      file, and CRLF-checked all 3 edited files plus `boundary.json` (`git show HEAD:$f | tr -dc '\r' | wc -c`
+      vs. worktree count) — 0/0 clean on all four.
+- [x] 5.3 Author the eleven new barrels at the declared entry paths — `src/surface/index.ts`,
       `src/session/`, `src/runtime/`, `src/browser/`, `src/storage/`, `src/renderer/`, `src/ui/`,
       `src/evidence/`, `src/project/`, `src/media/`, `src/fonts/` — each re-exporting from the
       mirrored internals with relative specifiers. `src/timeline/index.ts` already exists and takes
       on double duty; confirm it exports what consumers need rather than replacing it.
-- [ ] 5.4 Rewrite the package's intra-package `@/` specifiers to the chosen form (the bulk of the
+      Done — 12 barrels authored, not 11: `src/index.ts` (the `.` entry) is a real declared export
+      target with confirmed consumers (`core`, `utils/{ui,date,id,string}`, `wasm`,
+      `background/color`, `canvas/sizes`, `fps/defaults`, `feedback/types`) that design's own count
+      didn't enumerate — recorded here as a finding, not silently folded in. `src/timeline/index.ts`
+      confirmed unchanged (already exports what design E4 names) and used as the reference pattern:
+      full-directory `export * from` for a directory that already matches one entry 1:1.
+      Consumer set built mechanically, not by hand-reading design's table: three iterations of a
+      `@/`-alias grep (`/tmp/at-alias-targets{,2,3}.txt`), each fixing a real methodological gap —
+      v1 (94 targets) swept in `apps/vite-example/dist` build artifacts (gitignored, confirmed via
+      `git check-ignore -v`), producing 2 false positives; v2 (92 targets) rescoped to
+      `apps/web/src`, `apps/vite-example/{src,tests}` only; v3 broadened the pattern to also match
+      dynamic `import(...)` forms, surfacing 2 real targets a static-only grep missed
+      (`editor/session/__tests__/wasm-test-mock`, `editor/session/create-session`). Cross-checked the
+      final set against design E4's table: exact agreement, no contradictions. `export *` semantics
+      checked before relying on it: targeted grep for `export default` across all ~90 barrel-target
+      files found exactly one case (`components/ui/prose.tsx`), special-cased as
+      `export { default as Prose } from ...` in `./ui`; every other target uses a blanket `export *`.
+      Two barrel-authoring patterns applied on evidence, not convention: **curated closed-list**
+      barrels (`session`, `runtime`, `browser`, `storage`, `renderer`, `evidence`, root `.`) for new
+      top-level directories reaching into large pre-existing directories with far more files than
+      design names; **full-directory mirror** barrels (`ui`, `project`, `media`, `fonts`) for
+      directories that already are a coherent top-level unit matching one entry 1:1, following
+      `timeline/index.ts`'s own precedent of exporting more than what's currently consumed.
+      `evidence` deliberately re-exports one module living under a `__tests__` directory
+      (`session/__tests__/wasm-test-mock`) — intentional (it's shared mock infrastructure other
+      Slice children need), not an internal leak; `no-internal-reexport` scopes to cross-package
+      boundaries, not intra-package `__tests__` nesting, so this doesn't trip it (confirmed below).
+
+      **Finding — a defect class distinct from Group 6, fixed here rather than deferred:** the
+      dangling-relative-import sweep built to cross-check the consumer census
+      (`script/.stage-c-dangling-relative.mjs`, run over all 58 shell files) found 18 dangling
+      relative imports across 8 `apps/web` files — a side effect of 5.1's mechanical move splitting
+      directories across the package boundary: a shell file whose sibling moved away keeps a
+      `./sibling` or `../sibling` specifier that no longer resolves. This is **not** Group 6's
+      `@` -alias debt (Group 6's sweep is `@/`-form only, per 6.4's framing of "delete the alias";
+      it would never catch a bare relative specifier) and no other task names it, so it would have
+      shipped as silent breakage if left for later. 17 of the 18 resolve cleanly onto one of the
+      barrels just authored; fixed by rewiring the import specifier in place, no barrel changes
+      needed: `apps/web/src/app/layout.tsx` (2 → `./ui`), `components/gitHub-contribute-section.tsx`
+      (1 → `./ui`), `components/header.tsx` (3 → `./ui`), `components/landing/hero.tsx` (1 →
+      `./ui`), `editor/host/__tests__/production-composition.test.ts` (5 → `./browser` ×1,
+      `./evidence` ×2, `./session` ×1, `./runtime` ×1), `editor/host/c4-next-runtime-probe.tsx` (1 →
+      `./browser`), `feedback/index.ts` (2 → `.`), `feedback/queries.ts` (1 → `.`),
+      `services/storage/__tests__/c5-storage-red-controls.test.ts` (1 → `./storage`). The 18th
+      (`c5-storage-red-controls.test.ts` importing
+      `../migrations/__tests__/fixtures/v1` for `v1Project`) had no legitimate entry-path
+      resolution — `__tests__` directories can never be a declared entry, by the same
+      `public-entry-only` rule that makes the other 17 fixable. Fixed by duplicating just the one
+      used export into a new `apps/web`-owned file,
+      `apps/web/src/services/storage/__tests__/fixtures/c5-v1-project.ts`, with a comment flagging
+      the hand-sync/drift risk — narrower duplication, not a convenience, matching design E5's own
+      standard for exceptions to the "reach through a declared entry" rule. Re-ran the sweep after
+      all fixes: 0 dangling relative imports across the same 58 files.
+
+      Verified three ways. (1) `check-package-boundary.mjs`: 5/5 PASS, 962 files scanned, 329
+      cross-package edges, 192 `@opencut/*` specifiers examined (up from Stage B's 157, consistent
+      with the new entries now actually being exercised), 0 violations. (2) `check-type-baseline.mjs`:
+      2433 diagnostics not at the pin — expected and not a regression from this task; every one of
+      them traces to `@/`-alias specifiers deliberately left untouched (task 5.4's still-pending
+      package-internal rewrite, ~2,179 occurrences; Group 6's still-pending consumer rewrite, ~162
+      edges). Confirmed by targeted grep of the diagnostic list against every file this task touched
+      (12 barrels + 8 rewired shell files + 1 new fixture): the 12 barrels show **zero** diagnostics
+      of any kind; the 8 rewired shell files show diagnostics only on the `@/`-alias lines this task
+      intentionally left alone (e.g. `header.tsx:16`'s `@/utils/ui`,
+      `production-composition.test.ts:42`'s `@/services/storage/browser-project-store`) — none on
+      the lines this task rewired. (3) `bun test` on
+      `production-composition.test.ts`: still fails, but the failure is
+      `Cannot find module '@/editor/persistence' from
+      '.../packages/editor-classic/src/editor/session/headless.ts'` — a package-internal `@/`
+      specifier inside the package itself, three files removed from anything this task touched,
+      confirming task 5.4 (not started) is the blocker, not this task's barrels or rewiring.
+
+      **Finding — pre-existing CRLF, not corruption:** `feedback/index.ts` and `feedback/queries.ts`
+      show `i/lf w/crlf` under `git ls-files --eol` after editing. Verified this predates the edit and
+      is not something the Edit tool introduced: three untouched control files
+      (`app/metadata.ts`, `env/web.ts`, `site/social.ts`) show the identical `i/lf w/crlf` mismatch,
+      and `core.autocrlf` is `false`, so this is a repo-wide Windows-checkout artifact already present
+      across (at least) these apps/web files before this session — squarely task 10.1's
+      "verify line endings across the whole change... per stage" remit, not something to
+      selectively fix here.
+- [x] 5.4 Rewrite the package's intra-package `@/` specifiers to the chosen form (the bulk of the
       2,179 occurrences), and its outgoing edges to `@opencut/editor-ports` / `-contracts` entries.
-- [ ] 5.5 Relocate `editor/host/__tests__/{branding-assets,production-composition}.test.ts` and
+      Done — the "outgoing edges" clause was already fully satisfied before this task started: Stage
+      A/B's own tasks (3.3, 4.4) rewrote every incoming specifier repo-wide **inline**, before Stage
+      C's `git mv` moved these files into the package, so by the time they landed in
+      `editor-classic` they already pointed at `@opencut/editor-ports` / `-contracts`. Confirmed by
+      grep: 0 `@/editor/ports/*` or `@/editor/contracts/*` specifiers anywhere in the package; 80
+      files already on `@opencut/editor-ports`, 10 on `@opencut/editor-contracts`. This task's real
+      remaining scope was solely the intra-package `@/`→relative rewrite.
+
+      **Codemod design.** Stage C's move (786 renames, task 5.1) mirrors the pre-move
+      `apps/web/src` subpath structure almost exactly — one exception (`editor/surface/surface.css`
+      → `surface/surface.css`; confirmed 0 `@/` specifiers ever referenced that CSS file). This means
+      every `@/xxx` specifier can be resolved **directly** against `packages/editor-classic/src/xxx`
+      (trying `""`, `.ts`, `.tsx`, `/index.ts`, `/index.tsx`) with no old-path lookup table needed.
+      Wrote `script/.stage-c-rewrite-at-alias.mjs` (throwaway, deleted before commit) on this basis;
+      pre-flight checks confirmed 0 non-`.ts(x)` `@/` specifiers, 0 bare side-effect imports, 0
+      `mock.module`/`vi.mock`/`require` forms, 0 template-literal dynamic imports, and an exact match
+      between total quoted `@/` literals and from/`import()`-context matches (1863 both), before
+      writing any file-modifying code. Dry-run then apply, both confirming **1863 specifier(s)
+      rewritten across 464 file(s), 0 unresolved**.
+
+      **Verified three ways**, matching 5.3's method. (1) `check-package-boundary.mjs`: 5/5 PASS,
+      unchanged. (2) `check-type-baseline.mjs`: FAIL count dropped **2433 → 99** (~96%), fully
+      attributed — 97 to `apps/web`/`vite-example` (Group 6's still-pending consumer rewrite; the
+      same files 5.3 already flagged), 2 to a pre-existing test-authoring defect newly *visible* (not
+      newly introduced) in `timeline/__tests__/update-pipeline.test.ts:69` and
+      `timeline/placement/__tests__/resolve.test.ts:646` (branded `MediaTime` vs raw number in
+      `.toBe()`): cross-referenced against the pre-5.4 type-baseline capture and confirmed both files
+      previously had TS2307 "Cannot find module" errors on their own (now-fixed) import lines, which
+      had been masking these branded-type mismatches. Net improvement per file (4-5 diagnostics
+      fixed, 1 pre-existing defect unmasked); out of scope for this task to fix (not an
+      import/specifier issue).
+
+      (3) `bun test` on `production-composition.test.ts` surfaced a **genuine regression this task
+      is responsible for finding and fixing**, introduced by 5.3's barrel authoring (not by this
+      task's own rewrite). The test's wasm-mock setup — `await
+      import("@opencut/editor-classic/evidence")` at the top of the isolated-process branch — crashed
+      with `TypeError: wasm.__wbindgen_start is not a function` inside the *real*
+      `node_modules/opencut-wasm/opencut_wasm.js`, meaning `wasm-test-mock.ts`'s
+      `mock.module("opencut-wasm", ...)` never took effect. Root-caused via three probes: (a) a
+      minimal standalone `mock.module` + `import()` in one file works fine, ruling out the mechanism
+      itself; (b) reordering `wasm-test-mock` to be first among `evidence/index.ts`'s `export *`
+      targets had **zero effect** — still crashed identically, proving Bun does not evaluate
+      mutually-independent `export *` siblings in source order (unlike plain sequential imports); (c)
+      two *separate*, sequentially-awaited `import()` calls — wasm-test-mock's own specifier, then
+      `c6-disposal-harness` — worked correctly, isolating the fix. `c6-disposal-harness.tsx` (an
+      evidence-barrel member) imports `runtime/wasm-runtime-providers.ts`, which has a static
+      top-level `import ... from "opencut-wasm"`; that real import can link/evaluate before
+      `wasm-test-mock.ts`'s side effect runs regardless of barrel position. Git history confirms this
+      is a 5.3 regression, not a pre-existing defect: pre-Stage-A, this test imported the mock as a
+      standalone, separately-awaited relative import (`await
+      import("../../session/__tests__/wasm-test-mock")`); 5.3's consumer rewiring collapsed that into
+      the full `evidence` barrel import, which is not equivalent. It was masked through 5.3's own
+      checkpoint because the (separate, also pre-existing) `@/editor/persistence` resolution failure
+      aborted evaluation earlier in the same chain, before ever reaching this barrel — this task's fix
+      of that earlier failure is what unmasked it.
+
+      Fix: added a narrow declared entry `"./evidence/wasm-test-mock":
+      "./src/editor/session/__tests__/wasm-test-mock.ts"` to `editor-classic/package.json` (precedent:
+      editor-ports' `./in-memory/host` — a specific nested file, not a directory barrel; confirmed via
+      grep that `wasmTestControl`'s named exports have no cross-package consumers, only the
+      side-effect matters here), and pointed `production-composition.test.ts`'s side-effect-only
+      import at it instead of the full `evidence` barrel. Re-verified boundary checker after adding
+      the entry: 5/5 PASS. Re-ran `bun test`: the wasm crash is gone; the test now progresses to a
+      *different*, already-known blocker — `Cannot find module
+      '@/services/storage/browser-project-store'` (line 42 of the same file's `Promise.all`) — an
+      apps/web-side `@/` specifier reaching into another Stage-C-moved file, the same attribution
+      pattern as 5.3's `@/editor/persistence` finding. Squarely Group 6's scope, not this task's.
+      `c5-storage-red-controls.test.ts` was left untouched: it has several *additional* dangling `@/`
+      specifiers of its own (`@/editor/session/create-session`, `@/editor/runtime/session-core-owner`,
+      `@/editor/host/next-editor-host`, plus its own now-broken `@/editor/session/__tests__/wasm-test-mock`
+      reference) — already fully broken independent of this task, Group 6's full-scope backlog item,
+      not worth partially patching.
+
+      **Finding — CRLF drift, same class as 5.3's, much larger scope:** `git ls-files --eol` shows
+      `i/lf w/crlf` on 438 of 787 files under `packages/editor-classic/src`. A three-way comparison
+      (`git show :path` / `git show HEAD:path` / working tree) plus a control-group check — 186 of
+      the 438 were never touched by this task's codemod, yet show the identical mismatch — proves
+      this predates 5.4 entirely and originates from Stage C's original move mechanism (task 5.1, an
+      earlier session), not from this task's edits. Still task 10.1's scope, not fixed here.
+
+      Deleted the throwaway `script/.stage-c-rewrite-at-alias.mjs` and probe files
+      (`apps/web/src/zzprobe/`) before this commit.
+- [x] 5.5 Relocate `editor/host/__tests__/{branding-assets,production-composition}.test.ts` and
       `services/storage/__tests__/c5-storage-red-controls.test.ts` into the `apps/web` tree per
       `boundary.json` — their subject is the Next Host composition.
-- [ ] 5.6 Adjudicate the twelve shell-only ownership candidates per design E5. Recommended default:
+      Done — already satisfied by construction, no physical move needed. All 3 files (plus
+      `next-editor-host.ts` and `c4-next-runtime-probe.tsx`) were already declared `apps/web`-owned
+      in `boundary.json` **before** this stage began, so 5.1's mechanical classify+move correctly
+      excluded them and they remain untouched at their current `apps/web/src/**` locations.
+      Confirmed by grepping `script/.stage-c-shell-list.txt` for
+      `branding-assets|production-composition|c5-storage-red-controls|next-editor-host|c4-next-runtime-probe`
+      — all 5 present in the shell (not classic) classification.
+- [x] 5.6 Adjudicate the twelve shell-only ownership candidates per design E5. Recommended default:
       correct `env/web` and `changelog/utils` to `apps/web`; keep the eight `components/ui/*` atoms
       in the package behind `./ui`; decide the two dialogs on caller evidence. Record every
       correction as a `boundary.json` diff with an updated `why`, and record every rejection too.
+      Done — 4 corrections added to `boundary.json` (inserted before the catch-all `apps/web/src`
+      entry), each with a caller-evidence `why`: `env/web.ts` and `changelog/utils.ts` per the
+      recommended default (every caller is shell infrastructure — API routes, layout, auth, a Next
+      route). The two dialogs were investigated rather than left ambiguous:
+      `project/components/project-info-dialog.tsx` and
+      `services/storage/components/storage-persistence-dialog.tsx` each showed the **identical**
+      evidentiary shape as `env/web` — a single shell-only caller
+      (`apps/web/src/app/projects/page.tsx`), zero editor-classic callers — so both were corrected,
+      applying E5's own stated rule rather than treating the "adjudicate" hedge as a coin flip.
+      The 8 `components/ui/*` atoms were checked with the same grep and show the same
+      shell-only-caller surface, but were deliberately **not** corrected: distinguished on
+      directory-cohesion evidence, not caller count — `components/ui/` is a genuinely cohesive
+      design-system unit (E5's own stated rationale), whereas `project-info-dialog.tsx` is an
+      outlier in a directory whose 3 siblings (`delete-project-dialog`, `migration-dialog`,
+      `rename-project-dialog`) are editor-classic-owned, and `storage-persistence-dialog.tsx`'s
+      directory has no siblings at all. Re-ran `check-package-boundary.mjs` after the edit, before
+      any physical move: still 5/5 PASS; cross-package edge count dropped 340 → 332 (expected/benign
+      — the corrected files' shell-caller edges no longer cross a package boundary). The 4
+      corrections' physical consequence (excluding these files from 5.1's move) is recorded in 5.1's
+      annotation above.
 - [ ] 5.7 Full verification pass, as 3.5.
 
 ## 6. Rewire the consumers and delete the alias

@@ -1,3 +1,3 @@
 export { submitFeedback } from "./queries";
-export { MAX_MESSAGE_LENGTH } from "./types";
-export type { FeedbackEntry, SubmitFeedbackInput } from "./types";
+export { MAX_MESSAGE_LENGTH } from "@opencut/editor-classic";
+export type { FeedbackEntry, SubmitFeedbackInput } from "@opencut/editor-classic";

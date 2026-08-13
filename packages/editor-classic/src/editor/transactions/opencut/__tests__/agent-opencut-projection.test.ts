@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unsafe-type-assertion -- The session transaction facade satisfies the vector target structurally, and the donor fixture builds branded times. */
 import { describe, expect, test } from "bun:test";
 
-import { SessionPersistenceCoordinator } from "@/editor/persistence";
+import { SessionPersistenceCoordinator } from "../../../persistence";
 import {
 	SessionOpenCutTransactions,
 	type OpenCutProjectDraft,
-} from "@/editor/transactions/opencut";
+} from "..";
 import {
 	projectFixture,
 	storeFixture,
 	TEST_PROJECT_ID,
-} from "@/editor/transactions/opencut/__tests__/fixture";
+} from "./fixture";
 
 import {
 	AGENT_SCENARIO,

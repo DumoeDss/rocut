@@ -1,0 +1,181 @@
+import { createKeybindingsStore } from "../../actions/keybindings-store";
+import { createAssetsPanelStore } from "../../components/editor/panels/assets/assets-panel-store";
+import { createPropertiesStore } from "../../components/editor/panels/properties/stores/properties-store";
+import { createEditorStore } from "../editor-store";
+import { createPanelStore } from "../panel-store";
+import type { EditorSession } from "../session/session-types";
+import { createPreviewStore } from "../../preview/preview-store";
+import { createSoundsStore } from "../../sounds/sounds-store";
+import { createStickersStore } from "../../stickers/stickers-store";
+import { createTimelineStore } from "../../timeline/timeline-store";
+import { createCustomPresetsStore } from "../../timeline/components/graph-editor/custom-presets-store";
+import type { AssetResolver } from "@opencut/editor-ports";
+import type { SessionPersistenceCoordinator } from "../persistence";
+import { editorForSession } from "./session-core-owner";
+
+export const EDITOR_SESSION_STORE_KEYS = [
+	"panel",
+	"editor",
+	"preview",
+	"timeline",
+	"sounds",
+	"customPresets",
+	"stickers",
+	"keybindings",
+	"properties",
+	"assetsPanel",
+] as const;
+
+export type EditorSessionStoreKey = (typeof EDITOR_SESSION_STORE_KEYS)[number];
+
+/**
+ * Private live-state boundary for one editor session.
+ *
+ * Durable preference substrates may be shared, but every StoreApi below is
+ * constructed once per session. Keep this exhaustive object as the only
+ * registry construction route so a tenth store cannot silently be omitted.
+ */
+export interface EditorSessionStores {
+	panel: ReturnType<typeof createPanelStore>;
+	editor: ReturnType<typeof createEditorStore>;
+	preview: ReturnType<typeof createPreviewStore>;
+	timeline: ReturnType<typeof createTimelineStore>;
+	sounds: ReturnType<typeof createSoundsStore>;
+	customPresets: ReturnType<typeof createCustomPresetsStore>;
+	stickers: ReturnType<typeof createStickersStore>;
+	keybindings: ReturnType<typeof createKeybindingsStore>;
+	properties: ReturnType<typeof createPropertiesStore>;
+	assetsPanel: ReturnType<typeof createAssetsPanelStore>;
+}
+
+interface OwnedStores {
+	readonly stores: EditorSessionStores;
+	disposed: boolean;
+}
+
+const storesBySession = new WeakMap<EditorSession, OwnedStores>();
+const STORE_LIFECYCLE = Symbol("editorSessionStoreLifecycle");
+
+type StoresWithLifecycle = EditorSessionStores & {
+	[STORE_LIFECYCLE]?: { disposed: boolean };
+};
+
+export function createEditorSessionStores({
+	assets,
+	getPersistence = () => {
+		throw new Error(
+			"Session persistence is unavailable before editor ownership",
+		);
+	},
+	reportPersistenceFailure = () => {},
+}: {
+	assets?: AssetResolver;
+	getPersistence?: () => SessionPersistenceCoordinator;
+	reportPersistenceFailure?: (failure: {
+		library: "saved-sounds" | "graph-editor-presets";
+		operation: string;
+		code: string;
+	}) => void;
+} = {}): EditorSessionStores {
+	const lifecycle = { disposed: false };
+	const stores: EditorSessionStores = {
+		panel: createPanelStore(),
+		editor: createEditorStore(),
+		preview: createPreviewStore(),
+		timeline: createTimelineStore(),
+		sounds: createSoundsStore({
+			isDisposed: () => lifecycle.disposed,
+			getPersistence,
+			reportPersistenceFailure,
+		}),
+		customPresets: createCustomPresetsStore({
+			isDisposed: () => lifecycle.disposed,
+			getPersistence,
+			reportPersistenceFailure,
+		}),
+		stickers: createStickersStore({
+			isDisposed: () => lifecycle.disposed,
+			assets,
+		}),
+		keybindings: createKeybindingsStore(),
+		properties: createPropertiesStore(),
+		assetsPanel: createAssetsPanelStore(),
+	};
+
+	assertCompleteEditorSessionStores(stores);
+	return Object.assign(stores, {
+		[STORE_LIFECYCLE]: lifecycle,
+	});
+}
+
+export function assertCompleteEditorSessionStores(
+	stores: Partial<EditorSessionStores>,
+): asserts stores is EditorSessionStores {
+	const entries = EDITOR_SESSION_STORE_KEYS.map((key) => stores[key]);
+	const missing = EDITOR_SESSION_STORE_KEYS.filter((key) => !stores[key]);
+	const distinct = new Set(entries.filter(Boolean));
+	if (
+		missing.length > 0 ||
+		distinct.size !== EDITOR_SESSION_STORE_KEYS.length
+	) {
+		throw new Error(
+			"Editor session store registry must contain ten distinct stores. " +
+				`Missing: ${missing.join(", ") || "none"}; distinct: ${distinct.size}/10.`,
+		);
+	}
+}
+
+export function bindEditorSessionStores({
+	session,
+	stores,
+}: {
+	session: EditorSession;
+	stores?: EditorSessionStores;
+}): EditorSessionStores {
+	const ownedStores =
+		stores ??
+		createEditorSessionStores({
+			assets: session.host.assets,
+			getPersistence: () => editorForSession(session).persistence,
+			reportPersistenceFailure: ({ library, operation, code }) => {
+				session.diagnostics.log({
+					record: {
+						level: "error",
+						message: "Durable editor library operation failed",
+						context: { library, operation, code },
+					},
+				});
+			},
+		});
+	assertCompleteEditorSessionStores(ownedStores);
+	if (storesBySession.has(session)) {
+		throw new Error(
+			`Session ${session.id} already owns an editor store registry.`,
+		);
+	}
+	const lifecycle = (ownedStores as StoresWithLifecycle)[STORE_LIFECYCLE] ?? {
+		disposed: false,
+	};
+	storesBySession.set(session, { stores: ownedStores, ...lifecycle });
+	return ownedStores;
+}
+
+export function storesForSession(session: EditorSession): EditorSessionStores {
+	const owned = storesBySession.get(session);
+	if (!owned || owned.disposed || session.state === "disposed") {
+		throw new Error(
+			`No live editor store registry is owned by session ${session.id}. ` +
+				"The session is unknown or disposed.",
+		);
+	}
+	return owned.stores;
+}
+
+export function releaseEditorSessionStores(session: EditorSession): void {
+	const owned = storesBySession.get(session);
+	if (!owned) return;
+	owned.disposed = true;
+	const lifecycle = (owned.stores as StoresWithLifecycle)[STORE_LIFECYCLE];
+	if (lifecycle) lifecycle.disposed = true;
+	storesBySession.delete(session);
+}

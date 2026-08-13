@@ -6,7 +6,7 @@ import { editorForSession } from "@/editor/runtime/session-core-owner";
 import { storesForSession } from "@/editor/runtime/session-stores";
 import { useEditorSession } from "@/editor/session";
 import { useEditor } from "@/editor/use-editor";
-import { isC4ProjectLoadComplete } from "./c4-project-load";
+import { isC4ProjectLoadComplete } from "@opencut/editor-classic/browser";
 
 type ProbeMode = "worker" | "forced-none";
 

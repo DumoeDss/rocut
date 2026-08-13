@@ -1,6 +1,6 @@
 @import "tailwindcss/theme.css";
 @import "tailwindcss/preflight.css";
-@import "../../web/src/editor/surface/surface.css";
+@import "../../../packages/editor-classic/src/surface/surface.css";
 
 /*
  * The editor's stylesheet is reused rather than reimplemented. The relative

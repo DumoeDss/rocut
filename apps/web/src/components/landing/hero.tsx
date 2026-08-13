@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "../ui/button";
+import { Button } from "@opencut/editor-classic/ui";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { Handlebars } from "./handlebars";

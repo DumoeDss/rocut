@@ -134,6 +134,26 @@
       "why": "Changelog UI, rendered only by the Next shell (see P-010). It transitively imports content-collections, a Next-build-time virtual module."
     },
     {
+      "path": "apps/web/src/env/web.ts",
+      "owner": "apps/web",
+      "why": "S05 P1 task 5.6 (design E5): a shell-only ownership candidate — no editor-classic or vite-example module imports it. Every caller (app/api/sounds/search/route.ts, app/layout.tsx, auth/{client,rate-limit,server}.ts, db/index.ts) is shell infrastructure. Corrected per E5's recommended default."
+    },
+    {
+      "path": "apps/web/src/changelog/utils.ts",
+      "owner": "apps/web",
+      "why": "S05 P1 task 5.6 (design E5): a shell-only ownership candidate — no editor-classic or vite-example module imports it. Every caller (app/changelog/page.tsx, app/changelog/[version]/page.tsx) is a Next shell route. Corrected per E5's recommended default."
+    },
+    {
+      "path": "apps/web/src/project/components/project-info-dialog.tsx",
+      "owner": "apps/web",
+      "why": "S05 P1 task 5.6 (design E5): adjudicated on caller evidence. Sole caller is app/projects/page.tsx — no editor-classic or vite-example module imports it. Same evidentiary shape as env/web, so it follows the same correction."
+    },
+    {
+      "path": "apps/web/src/services/storage/components/storage-persistence-dialog.tsx",
+      "owner": "apps/web",
+      "why": "S05 P1 task 5.6 (design E5): adjudicated on caller evidence. Sole caller is app/projects/page.tsx — no editor-classic or vite-example module imports it. Same evidentiary shape as env/web, so it follows the same correction."
+    },
+    {
       "path": "apps/web/src",
       "owner": "@opencut/editor-classic",
       "why": "Catch-all: everything under apps/web/src not otherwise assigned above is the OpenCut Classic provider and its React editor, including the embeddable Surface (design D1 layer 2). apps/desktop is deliberately never referenced here — see spec 'Existing boundaries survive'."

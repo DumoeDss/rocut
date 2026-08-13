@@ -115,8 +115,8 @@ if (process.env.OPENCUT_C5_STORAGE_RED_ISOLATED !== "1") {
 		await import("@/editor/host/next-editor-host");
 	const { createViteEditorHost } =
 		await import("../../../../../vite-example/src/host/vite-host-config");
-	const { V1toV2Migration } = await import("../migrations/v1-to-v2");
-	const { v1Project } = await import("../migrations/__tests__/fixtures/v1");
+	const { V1toV2Migration } = await import("@opencut/editor-classic/storage");
+	const { v1Project } = await import("./fixtures/c5-v1-project");
 
 	function futureMethod<Name extends string>(store: object, name: Name) {
 		const method = (store as Record<string, unknown>)[name];
