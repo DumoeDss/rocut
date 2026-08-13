@@ -21,7 +21,13 @@ const REQUIRED = [
 	"apps/web/src/sounds/sounds-store.ts",
 	"apps/web/src/sounds/components/assets-view.tsx",
 ];
-const EXPECTED_COMMAND_MODULES = 39;
+// 39 inherited from the donor refactor, plus T3's ProviderPrivateCompositeCommand
+// (`commands/provider-private-composite.ts`, added by 545dc1f9 "route UI commits
+// through transactions"). T3 added the module without moving this constant, so
+// the gate has been red since 2026-08-10 — through R2 and T4, neither of whose
+// gate lists included it. The count is a tripwire against the walk silently
+// under-collecting, not a budget: move it when a command module is added.
+const EXPECTED_COMMAND_MODULES = 40;
 const NEGATIVE_FIXTURES = {
 	"singleton-accessor": "get-instance.ts.fixture",
 	"singleton-reset": "reset.ts.fixture",

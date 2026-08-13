@@ -699,6 +699,69 @@ function productionGraphFailures({ modules, roots = PRODUCTION_ROOTS }) {
 	return [...new Set(failures)];
 }
 
+const SINGLETON_SCOPE =
+	/^apps\/web\/src\/(editor|services\/renderer|effects|masks|graphics|stickers)\//;
+
+const SINGLETON_MUTATORS = [
+	"set",
+	"add",
+	"delete",
+	"clear",
+	"push",
+	"pop",
+	"shift",
+	"unshift",
+	"splice",
+	"sort",
+	"reverse",
+	"fill",
+	"copyWithin",
+];
+
+/**
+ * Module-level bindings two sessions in one process would share *and write*.
+ *
+ * This rule used to match on shape — any top-level `new Map/Set/WeakMap`, or
+ * any `let` — which cannot tell a frozen lookup table from live session state.
+ * Eleven of the thirteen it flagged were module-local `const X = new Set([...])`
+ * constants that are never written and never leave their file; adding them to
+ * the ownership inventory would have grown it by eleven entries without making
+ * anything safer, and would have taught the next author that the inventory is
+ * a formality.
+ *
+ * It now matches on behaviour. A binding is in scope when it is declared `let`,
+ * reassigned, written through a mutating method, or exported — exported stays
+ * in scope because one file cannot prove another module does not write it.
+ *
+ * Residual, stated rather than papered over: a frozen local collection handed
+ * out by reference could still be mutated through the alias by its caller. That
+ * is invisible to a per-file scan; catching it needs real symbol resolution.
+ */
+function mutableSingletonSymbols(source) {
+	const found = [];
+	for (const line of source.split(/\r?\n/)) {
+		const declaredLet = /^(?:export\s+)?let\s+(\w+)\b/.exec(line)?.[1];
+		if (declaredLet !== undefined) {
+			found.push(declaredLet);
+			continue;
+		}
+		const symbol =
+			/^(?:export\s+)?const\s+(\w+)[^=]*=\s*new\s+(?:Map|Set|WeakMap|WeakSet)/.exec(
+				line,
+			)?.[1];
+		if (symbol === undefined) continue;
+		const exported = new RegExp(`^export\\s+const\\s+${symbol}\\b`, "m").test(
+			source,
+		);
+		const mutated = SINGLETON_MUTATORS.some((method) =>
+			new RegExp(`\\b${symbol}\\s*\\.\\s*${method}\\s*\\(`).test(source),
+		);
+		const reassigned = new RegExp(`^\\s*${symbol}\\s*=[^=]`, "m").test(source);
+		if (exported || mutated || reassigned) found.push(symbol);
+	}
+	return found;
+}
+
 function runNegativeControl() {
 	const fixtures = [
 		[
@@ -740,6 +803,33 @@ function runNegativeControl() {
 		const accepted = forbiddenEditorAccess(source).length === 0;
 		console.log("  " + (accepted ? "PASS" : "FAIL") + " positive: " + source);
 		clean &&= accepted;
+	}
+
+	// The mutable-singleton rule, proven to fire on every way a binding becomes
+	// writable, and proven not to fire on a frozen module-local lookup table.
+	for (const [name, source] of [
+		["written-map", "const byId = new Map();\nbyId.set(k, v);"],
+		["written-set", "const seen = new Set();\nseen.add(k);"],
+		["cleared", "const cache = new Map();\ncache.clear();"],
+		["exported", "export const shared = new Set();"],
+		["let-binding", "let current = null;"],
+		["reassigned", "const box = new Map();\nbox = other;"],
+		[
+			"weakmap-written",
+			"const perEngine = new WeakMap();\nperEngine.set(engine, capture);",
+		],
+	]) {
+		const caught = mutableSingletonSymbols(source).length > 0;
+		console.log("  " + (caught ? "PASS " : "FAIL ") + "singleton/" + name);
+		clean &&= caught;
+	}
+	for (const [name, source] of [
+		["frozen-local-set", 'const KEYS = new Set(["a", "b"]);\nif (KEYS.has(x)) run();'],
+		["frozen-local-map", "const LABELS = new Map([[1, 'a']]);\nLABELS.get(1);"],
+	]) {
+		const quiet = mutableSingletonSymbols(source).length === 0;
+		console.log("  " + (quiet ? "PASS " : "FAIL ") + "singleton-positive/" + name);
+		clean &&= quiet;
 	}
 	const renderTimeCaught = renderTimeImperativeCalls({
 		path: "render-time.tsx",
@@ -1114,19 +1204,9 @@ function runCheck() {
 		),
 	);
 	for (const { path, source } of sources) {
-		if (
-			!/^apps\/web\/src\/(editor|services\/renderer|effects|masks|graphics|stickers)\//.test(
-				path,
-			)
-		) {
-			continue;
-		}
-		for (const line of source.split(/\r?\n/)) {
-			const symbol =
-				/^(?:export\s+)?const\s+(\w+)[^=]*=\s*new\s+(?:Map|Set|WeakMap)/.exec(
-					line,
-				)?.[1] ?? /^(?:export\s+)?let\s+(\w+)\b/.exec(line)?.[1];
-			if (symbol && !classifiedSymbols.has(path + ":" + symbol)) {
+		if (!SINGLETON_SCOPE.test(path)) continue;
+		for (const symbol of mutableSingletonSymbols(source)) {
+			if (!classifiedSymbols.has(path + ":" + symbol)) {
 				failures.push("unclassified-mutable-singleton:" + path + ":" + symbol);
 			}
 		}

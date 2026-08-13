@@ -393,6 +393,18 @@
 			"symbol": "storageService",
 			"classification": "shared-user-library-until-c5",
 			"reason": "C5 owns storage inversion; C3 isolates the per-session sounds query/loading/result view over this shared durable substrate."
+		},
+		{
+			"path": "apps/web/src/editor/contracts/engine/engine.ts",
+			"symbol": "nativeCommittedStateCaptures",
+			"classification": "session-owned-weak-index",
+			"reason": "A WeakMap keyed only by the explicit engine instance, with no current/default route; the capture is unreachable without that engine and dies with it."
+		},
+		{
+			"path": "apps/web/src/editor/surface/embedding/surface-evidence-seams.tsx",
+			"symbol": "dragTallies",
+			"classification": "evidence-only-process-counter",
+			"reason": "R2 drag counters for the evidence harness, partitioned by an explicit namespace string and holding integers only, never session state or user content. Known and accepted limits: the map is never pruned, and two Surfaces sharing one namespace would share counters — acceptable because nothing in the product reads it, but it is a process-global the seam owns rather than a session does."
 		}
 	]
 }
