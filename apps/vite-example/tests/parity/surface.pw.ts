@@ -5,16 +5,17 @@ import { expect, test, type Page } from "@playwright/test";
 
 import type { DisposalReport } from "@/editor/session";
 
+import { evidenceDestination } from "./evidence-path";
 import { HOST } from "./host-profile";
 import { runR2Evidence } from "./surface-r2-evidence";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(HERE, "../../../..");
-const EVIDENCE_DIR = resolve(
-	REPO_ROOT,
-	"rasen/changes/s0304-surface-css-react-a11y/evidence/browser-surface",
-	HOST,
-);
+const EVIDENCE_DIR = evidenceDestination({
+	repoRoot: REPO_ROOT,
+	change: "s0304-surface-css-react-a11y",
+	leaf: `browser-surface/${HOST}`,
+}).dir;
 
 interface StepEvidence {
 	readonly id: string;

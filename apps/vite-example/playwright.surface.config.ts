@@ -1,6 +1,11 @@
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "@playwright/test";
 
 import parityConfig from "./playwright.config";
+import { evidenceOutputFile } from "./tests/parity/evidence-path";
+
+const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 
 const host = process.env.PARITY_HOST === "next" ? "next" : "vite";
 
@@ -63,11 +68,27 @@ export default defineConfig({
 		[
 			"json",
 			{
+				// Resolved, never frozen: once a change is archived its evidence
+				// directory is gone, and writing to the old path would recreate the
+				// shipped change as a live one. See tests/parity/evidence-path.ts.
 				outputFile:
 					spec === "agent"
-						? `../../rasen/changes/s0304-agent-transaction-evidence/evidence/browser-agent/${host}/results-${host}.json`
+						? evidenceOutputFile({
+								repoRoot: REPO_ROOT,
+								change: "s0304-agent-transaction-evidence",
+								leaf: `browser-agent/${host}`,
+								file: `results-${host}.json`,
+							})
 						: spec === "surface" || spec === "c4-next"
-							? `../../rasen/changes/${spec === "c4-next" ? "s0304-surface-mount-focus-lifecycle" : "s0304-surface-css-react-a11y"}/evidence/browser-surface/results-${host}${spec === "c4-next" ? "-c4" : ""}.json`
+							? evidenceOutputFile({
+									repoRoot: REPO_ROOT,
+									change:
+										spec === "c4-next"
+											? "s0304-surface-mount-focus-lifecycle"
+											: "s0304-surface-css-react-a11y",
+									leaf: "browser-surface",
+									file: `results-${host}${spec === "c4-next" ? "-c4" : ""}.json`,
+								})
 							: `tests/parity-artifacts/results-${host}.json`,
 			},
 		],

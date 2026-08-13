@@ -25,15 +25,17 @@ import {
 	type AgentReopenResult,
 } from "@/editor/contracts/vectors";
 
+import { evidenceDestination } from "./evidence-path";
 import { HOST } from "./host-profile";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(HERE, "../../../..");
-const EVIDENCE_DIR = resolve(
-	REPO_ROOT,
-	"rasen/changes/s0304-agent-transaction-evidence/evidence/browser-agent",
-	HOST,
-);
+const EVIDENCE = evidenceDestination({
+	repoRoot: REPO_ROOT,
+	change: "s0304-agent-transaction-evidence",
+	leaf: `browser-agent/${HOST}`,
+});
+const EVIDENCE_DIR = EVIDENCE.dir;
 const COMMITMENT_KEY = "t4-agent-evidence-commitment";
 const ENTRY = HOST === "next" ? "/surface-evidence" : "/surface-evidence.html";
 const APPLY_URL = `${ENTRY}?scenario=agent`;
@@ -107,6 +109,12 @@ test.describe.configure({ mode: "serial" });
 
 test(`Agent transaction evidence — ${HOST} host`, async ({ page }) => {
 	mkdirSync(EVIDENCE_DIR, { recursive: true });
+	if (EVIDENCE.archived) {
+		console.log(
+			`[agent] the change has shipped; this run is regression output at ${EVIDENCE_DIR}, ` +
+				"not evidence for the archived change.",
+		);
+	}
 	steps.length = 0;
 	const consoleErrors: string[] = [];
 	page.on("console", (message) => {

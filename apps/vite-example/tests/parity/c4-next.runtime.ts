@@ -4,13 +4,15 @@ import { fileURLToPath } from "node:url";
 import { expect, test, type Page } from "@playwright/test";
 
 import { waitForEditor } from "./driver";
+import { evidenceDestination } from "./evidence-path";
 import { HOST_PROFILE } from "./host-profile";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const EVIDENCE_DIR = resolve(
-	HERE,
-	"../../../../rasen/changes/s0304-surface-mount-focus-lifecycle/evidence/browser-surface/next",
-);
+const EVIDENCE_DIR = evidenceDestination({
+	repoRoot: resolve(HERE, "../../../.."),
+	change: "s0304-surface-mount-focus-lifecycle",
+	leaf: "browser-surface/next",
+}).dir;
 
 async function readProbeResult(page: Page): Promise<Record<string, unknown>> {
 	const probe = page.getByTestId("c4-next-runtime-probe");

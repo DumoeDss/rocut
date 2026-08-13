@@ -12,15 +12,45 @@
  *   node script/check-agent-evidence.mjs --negative-control
  *   node script/check-agent-evidence.mjs --converse-control
  */
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const EVIDENCE_DIR = join(
-	REPO_ROOT,
-	"rasen/changes/s0304-agent-transaction-evidence/evidence/browser-agent",
-);
+const CHANGE = "s0304-agent-transaction-evidence";
+
+/**
+ * The evidence this gate judges moves when the change ships.
+ *
+ * While the change is active it lives under `rasen/changes/<change>/`; after
+ * `rasen archive` the committed record is under
+ * `rasen/changes/archive/<date>-<change>/`. Reading only the active path made
+ * this gate go red the instant its own change archived — and red for the wrong
+ * reason, because "the evidence moved" would have been reported as "no Host
+ * executed". The rule that a missing Host is a failure is right; it must fire
+ * on missing evidence, not on a stale path.
+ */
+function resolveEvidenceDir() {
+	const active = join(REPO_ROOT, "rasen/changes", CHANGE, "evidence/browser-agent");
+	if (existsSync(active)) return { dir: active, source: "active change" };
+	const archiveRoot = join(REPO_ROOT, "rasen/changes/archive");
+	const matches = existsSync(archiveRoot)
+		? readdirSync(archiveRoot)
+				.filter((entry) => entry.endsWith(`-${CHANGE}`))
+				.sort()
+		: [];
+	// Newest wins if a change were ever archived twice; naming is date-prefixed.
+	const newest = matches.at(-1);
+	if (newest !== undefined) {
+		return {
+			dir: join(archiveRoot, newest, "evidence/browser-agent"),
+			source: `archive ${newest}`,
+		};
+	}
+	return { dir: active, source: "active change (absent)" };
+}
+
+const { dir: EVIDENCE_DIR, source: EVIDENCE_SOURCE } = resolveEvidenceDir();
 const HOSTS = ["next", "vite"];
 
 /**
@@ -167,7 +197,9 @@ function evaluate(artifact) {
 }
 
 function runCheck() {
-	console.log("check-agent-evidence: dual-Host agent transaction evidence");
+	console.log(
+		`check-agent-evidence: dual-Host agent transaction evidence (${EVIDENCE_SOURCE})`,
+	);
 	let ok = true;
 	const plans = new Map();
 	let executed = 0;
