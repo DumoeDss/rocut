@@ -75,6 +75,40 @@
  * `vectors/__tests__/agent-drivers.test.ts` uses exactly that shape to PROVE a
  * driver ran DOM-free, which is this rule's own claim checked experimentally.
  *
+ * **Review round 2 (the delta after `bea59790`) closed five further findings, plus one
+ * more the same audit turned up.** D-1: the `@opencut/*` specifier pattern gating
+ * `public-entry-only` and `no-internal-reexport` was itself a SECOND hardcoded
+ * three-name triple — BLOCKER-2 fixed `PACKAGE_DIRS`, but a fourth package legally
+ * admitted through `boundary.json.layers` was still invisible to specifier matching,
+ * because the pattern that recognises an `@opencut/*` specifier as ours to judge never
+ * looked at the manifest list BLOCKER-2 already made dynamic. Now built from that same
+ * discovered, validated manifest list at load time (`packageSpecifierPattern`). The
+ * audit this finding demanded ("assume a third hardcoded triple until you have looked")
+ * found exactly one more: `react-free-base`'s manifest-level forbidden-dependency check
+ * gated on two literal `packages/editor-ports/package.json` /
+ * `packages/editor-contracts/package.json` paths and a literal `"@opencut/editor-classic"`
+ * forbidden name — the identical failure shape, one layer up (a base-layer package
+ * whose directory doesn't literally read "editor-ports"/"editor-contracts" was
+ * invisible to it). Both derived from `boundary.layers[0]`/`[1]`/`[2]` and the manifest
+ * list now, the same way. D-2: `DOM_DOCUMENT_MEMBER_PATTERN`'s alternation was widened
+ * from 18 members to 50 (32 added — `addEventListener`, `cookie`, `fonts`, `location`,
+ * `getSelection`, … — see the pattern's own doc comment for the exact list), closing
+ * every gap the reviewer's reproduction table named. The one deliberately UNCLOSED gap
+ * is computed member access (`document["createElement"]`), a known, accepted trade-off
+ * of matching member access instead of a bare identifier (MAJOR-1), recorded rather
+ * than silently fixed or silently left to be rediscovered. D-3: `public-entry-only`
+ * now reports `N @opencut/* specifier(s) examined` alongside its file count, the same
+ * transparency `acyclic-direction` already gives its edge count — a `PASS` because
+ * nothing was found and a `PASS` because nothing was there to find are no longer the
+ * same line of output. D-4: `typeof window.<member>` and `typeof globalThis.<member>`
+ * now strip as a single guard phrase for ANY one member, not only `.document`, so
+ * `typeof window.localStorage` reads as the same class of environment-detection guard
+ * as the already-exempt `typeof window.document` — but only one level deep: a chained
+ * `typeof window.document.createElement` still strips only `typeof window`, leaving the
+ * real access exposed, exactly as MAJOR-2's own abuse probe (D-M2d) requires. D-5:
+ * BLOCKER-2's fail-closed `loadManifests` guard is now independently proven in
+ * `evidence/load-time-guard-proof.md`, not only by inspection.
+ *
  *   node script/check-package-boundary.mjs
  *   node script/check-package-boundary.mjs --negative-control
  *   node script/check-package-boundary.mjs --converse-control
@@ -139,14 +173,27 @@ function stripStringLiterals(line) {
  * agent-drivers.test.ts` uses exactly this shape
  * (`expect(typeof globalThis.document).toBe("undefined")`) to PROVE a driver
  * ran without a DOM present at all, which is this rule's own claim checked
- * experimentally rather than asserted. `typeof window` is included for the
- * same reason, though no current file needs it. Stripped before any DOM
- * pattern is tested, the same way stripStringLiterals removes quoted text —
- * a narrower instance of the reasoning behind excluding bare `globalThis`
- * below, extended to the one member access that reasoning did not originally
- * cover.
+ * experimentally rather than asserted. Stripped before any DOM pattern is
+ * tested, the same way stripStringLiterals removes quoted text — a narrower
+ * instance of the reasoning behind excluding bare `globalThis` below,
+ * extended to member access on `globalThis`/`window`.
+ *
+ * D-4 (review round 2): the guard strips `typeof (globalThis|window)`
+ * followed by AT MOST ONE member (`.document`, `.window`, `.localStorage`,
+ * …), not only the literal `.document` case. The round-1 shape fired on
+ * `typeof window.localStorage` — the same class of feature-detection guard
+ * as the exempted `typeof window.document` — only because `.localStorage`
+ * happened to survive the strip and still match `DOM_GLOBAL_PATTERN`'s bare
+ * token. The negative lookahead `(?!\s*\.)` after the member is what keeps
+ * this narrow: it only strips a SINGLE member, so a chained
+ * `typeof window.document.createElement` strips only `typeof window`,
+ * leaving `.document.createElement` intact for `DOM_DOCUMENT_MEMBER_PATTERN`
+ * to catch — the exact abuse MAJOR-2's own probe (D-M2d) already asserts
+ * must keep firing. One level of member access is "is this API present";
+ * two or more is a real, chained property read, and the strip does not
+ * reach past the first dot.
  */
-const TYPEOF_GUARD_PATTERN = /\btypeof\s+(?:globalThis\s*\.\s*document|window)\b/g;
+const TYPEOF_GUARD_PATTERN = /\btypeof\s+(?:globalThis|window)\b(?:\s*\.\s*\w+\b(?!\s*\.))?/g;
 
 function stripTypeofGuards(line) {
 	return line.replace(TYPEOF_GUARD_PATTERN, "");
@@ -178,9 +225,36 @@ const DOM_GLOBAL_PATTERN =
  * `context.document` in editor/contracts/engine/conformance) still never
  * matches, because the member checked is on `document` itself, not on
  * whatever precedes it.
+ *
+ * D-2 (review round 2): the original 18-name alternation missed 17 real DOM
+ * accesses the reviewer probed individually and reproduced as silently
+ * missed — most commonly `document.addEventListener`, the single most
+ * common DOM idiom in editor code. The reviewer's "Fix" section additionally
+ * prescribed 15 further member names not individually reproduced but of the
+ * same class (`dispatchEvent`, `writeln`, `adoptedStyleSheets`,
+ * `currentScript`, `forms`, `images`, `links`, `scripts`, `exitPointerLock`,
+ * `createAttribute`, `createTreeWalker`, `createNodeIterator`, `importNode`,
+ * `adoptNode`, `evaluate`) — all 32 total are added below (18 → 50), not only
+ * the 17 individually reproduced, since leaving the un-reproduced 15 for a
+ * future round would repeat the exact "incomplete fix" pattern this very
+ * review round caught round 1 making. Widened to the fuller real
+ * `document.*` surface below; live-verified (not just inspected) by the
+ * same method MAJOR-1's own no-collision claim was upgraded with —
+ * `react-free-base` still passes cleanly over all 68 real layer-0/1 files
+ * with every added name active, so nothing already in the tree collides.
+ *
+ * **Known, accepted regression, recorded rather than silently absorbed:**
+ * matching member access instead of a bare identifier (MAJOR-1) means
+ * `document["createElement"]` (computed member access) no longer matches —
+ * the pre-MAJOR-1 bare-identifier pattern caught it, this one does not. That
+ * is a deliberate trade against the whole-file exemption hole the
+ * member-access redesign closed (15 of 69 layer-0/1 files were exempt
+ * outright), not an oversight; nothing in the current scan set uses computed
+ * access on `document`, and adding `document\s*\[` back is a straightforward
+ * follow-up if that ever changes.
  */
 const DOM_DOCUMENT_MEMBER_PATTERN =
-	/\bdocument\s*\.\s*(?:createElement|createElementNS|createTextNode|createDocumentFragment|createRange|createEvent|querySelector|querySelectorAll|getElementById|getElementsByClassName|getElementsByTagName|getElementsByTagNameNS|elementFromPoint|execCommand|documentElement|activeElement|body|head)\b/;
+	/\bdocument\s*\.\s*(?:createElement|createElementNS|createTextNode|createDocumentFragment|createRange|createEvent|createComment|createAttribute|createTreeWalker|createNodeIterator|importNode|adoptNode|evaluate|querySelector|querySelectorAll|getElementById|getElementsByClassName|getElementsByTagName|getElementsByTagNameNS|elementFromPoint|elementsFromPoint|execCommand|documentElement|activeElement|body|head|addEventListener|removeEventListener|dispatchEvent|cookie|readyState|visibilityState|hidden|fonts|styleSheets|adoptedStyleSheets|getSelection|write|writeln|location|defaultView|currentScript|forms|images|links|scripts|exitFullscreen|fullscreenElement|exitPointerLock|pointerLockElement)\b/;
 
 /**
  * MAJOR-2 (review round 1): `globalThis.localStorage` and
@@ -439,14 +513,21 @@ function noElftiaImportRule({ files }) {
 // Rule 5 — react-free-base
 // ---------------------------------------------------------------------------
 
-function checkManifestReactFree(file, violations) {
+/**
+ * Bonus fix from the D-1 hardcoded-triple audit (review round 2): the
+ * forbidden-name literal `"@opencut/editor-classic"` is now `boundary.layers[2]`
+ * — see the caller for the matching manifest-gate fix. Same failure shape as
+ * D-1, one layer up: a hardcoded name that cannot track a renamed or
+ * differently-scoped layer-2 package.
+ */
+function checkManifestReactFree(file, violations, boundary) {
 	let data;
 	try {
 		data = JSON.parse(file.text);
 	} catch {
 		return;
 	}
-	const forbidden = new Set(["react", "react-dom", "@opencut/editor-classic"]);
+	const forbidden = new Set(["react", "react-dom", boundary.layers[2]]);
 	for (const field of ["dependencies", "devDependencies", "peerDependencies", "optionalDependencies"]) {
 		const deps = data[field];
 		if (!deps) continue;
@@ -463,12 +544,32 @@ function checkManifestReactFree(file, violations) {
 	}
 }
 
-function reactFreeBaseRule({ files, boundary }) {
+/**
+ * D-1 audit bonus (review round 2): the two literal manifest paths this used
+ * to gate on (`packages/editor-ports/package.json`,
+ * `packages/editor-contracts/package.json`) were themselves a hardcoded
+ * pair tied to specific directory names — the same failure shape D-1 fixed
+ * for `PACKAGE_SPECIFIER_PATTERN`, one layer up. A base-layer package whose
+ * directory doesn't literally read "editor-ports"/"editor-contracts" (a
+ * rename, or a second Host's own base package under a different name) was
+ * invisible to the manifest-level forbidden-dependency check. Now derived
+ * from `boundary.layers[0]`/`[1]` matched against the discovered manifest
+ * list's declared `name`, not the directory string.
+ */
+function baseLayerManifestPaths(boundary, manifests) {
+	const baseLayerNames = new Set([boundary.layers[0], boundary.layers[1]]);
+	return new Set(
+		manifests.filter((m) => baseLayerNames.has(m.name)).map((m) => `packages/${m.dir}/package.json`),
+	);
+}
+
+function reactFreeBaseRule({ files, boundary, manifests }) {
 	const violations = [];
 	let scanned = 0;
+	const baseManifestPaths = baseLayerManifestPaths(boundary, manifests);
 	for (const file of files) {
-		if (file.path === "packages/editor-ports/package.json" || file.path === "packages/editor-contracts/package.json") {
-			checkManifestReactFree(file, violations);
+		if (baseManifestPaths.has(file.path)) {
+			checkManifestReactFree(file, violations, boundary);
 			continue;
 		}
 		if (!file.path.startsWith("apps/web/src/")) continue;
@@ -526,7 +627,25 @@ function reactFreeBaseRule({ files, boundary }) {
 // while packages/ itself is empty.
 // ---------------------------------------------------------------------------
 
-const PACKAGE_SPECIFIER_PATTERN = /^(@opencut\/(?:editor-ports|editor-contracts|editor-classic))(\/.*)?$/;
+/**
+ * D-1 (review round 2): built from the discovered, boundary-validated
+ * manifest list (`manifests`), never a hardcoded name literal. The prior
+ * shape — a literal three-name alternation — was a SECOND hardcoded
+ * package-name triple that survived BLOCKER-2's fix to `PACKAGE_DIRS`:
+ * `manifestEntrySets` already builds its lookup table from discovered
+ * manifests, so a legally-added fourth package's declared entries WERE in
+ * that table, but this pattern rejected its specifiers before the table was
+ * ever consulted — `public-entry-only` printed `PASS` while blind to every
+ * deep import into the new package's internals. Mirrors the same
+ * discover-don't-hardcode move `discoverPackageDirs` already made. Package
+ * names are npm identifiers (`@scope/name`); none of their characters are
+ * regex metacharacters requiring escape, but names are escaped anyway so a
+ * future manifest name cannot corrupt the alternation.
+ */
+function packageSpecifierPattern(manifests) {
+	const names = manifests.map((m) => m.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+	return new RegExp(`^(${names.join("|")})(/.*)?$`);
+}
 
 function packagesSourceFiles(files) {
 	return files.filter((f) => /^packages\/[^/]+\/src\//.test(f.path));
@@ -578,6 +697,13 @@ function publicEntryOnlyRule({ files, manifests }) {
 	const scope = packageAndConsumerSourceFiles(files);
 	const entriesByPackage = manifestEntrySets(manifests);
 	const dirToName = new Map(manifests.map((m) => [m.dir, m.name]));
+	const specifierPattern = packageSpecifierPattern(manifests);
+	// D-3 (review round 2): counts every specifier this rule actually looked at
+	// (matched an @opencut/* package name), regardless of self-exemption or
+	// pass/fail outcome — the same "examined" transparency acyclicDirectionRule
+	// already gives its edge count. Without it, "949 files scanned, PASS" cannot
+	// be told apart from "looked at 0 candidates, PASS by default".
+	let specifiersExamined = 0;
 	for (const file of scope) {
 		// Only a file INSIDE a package's own src/ has a "self" to exempt; a
 		// consumer or pre-move apps/web/src file never does, so every
@@ -588,8 +714,9 @@ function publicEntryOnlyRule({ files, manifests }) {
 			if (isComment(line)) return;
 			const spec = extractSpecifier(line);
 			if (!spec) return;
-			const match = PACKAGE_SPECIFIER_PATTERN.exec(spec);
+			const match = specifierPattern.exec(spec);
 			if (!match) return;
+			specifiersExamined += 1;
 			const targetName = match[1];
 			if (targetName === selfName) return; // a package importing its own other internals is not a deep import
 			const declared = entriesByPackage.get(targetName);
@@ -604,7 +731,7 @@ function publicEntryOnlyRule({ files, manifests }) {
 			}
 		});
 	}
-	return { violations, scanned: scope.length };
+	return { violations, scanned: scope.length, specifiersExamined };
 }
 
 function noInternalReexportRule({ files, manifests }) {
@@ -612,6 +739,7 @@ function noInternalReexportRule({ files, manifests }) {
 	const scope = packagesSourceFiles(files);
 	const entriesByPackage = manifestEntrySets(manifests);
 	const entryFiles = manifestEntryFileSet(manifests);
+	const specifierPattern = packageSpecifierPattern(manifests);
 	for (const file of scope) {
 		if (!entryFiles.has(file.path)) continue; // only declared entry files are asserted
 		file.text.split(/\r?\n/).forEach((line, index) => {
@@ -619,7 +747,7 @@ function noInternalReexportRule({ files, manifests }) {
 			if (!/\bexport\s[^;]*\bfrom\s+["']/.test(line)) return;
 			const spec = extractSpecifier(line);
 			if (!spec) return;
-			const match = PACKAGE_SPECIFIER_PATTERN.exec(spec);
+			const match = specifierPattern.exec(spec);
 			if (!match) return; // a relative re-export within the same package is not this rule's concern
 			const targetName = match[1];
 			const declared = entriesByPackage.get(targetName);
@@ -644,7 +772,7 @@ function noInternalReexportRule({ files, manifests }) {
 function scan({ files, boundary, manifests }) {
 	const acyclic = acyclicDirectionRule({ files, boundary });
 	const elftia = noElftiaImportRule({ files });
-	const reactFree = reactFreeBaseRule({ files, boundary });
+	const reactFree = reactFreeBaseRule({ files, boundary, manifests });
 	const publicEntry = publicEntryOnlyRule({ files, manifests });
 	const reexport = noInternalReexportRule({ files, manifests });
 	return {
@@ -659,7 +787,7 @@ function scan({ files, boundary, manifests }) {
 			"acyclic-direction": { filesScanned: acyclic.filesScanned, edgesExamined: acyclic.edgesExamined },
 			"no-elftia-import": { filesScanned: elftia.scanned },
 			"react-free-base": { filesScanned: reactFree.scanned },
-			"public-entry-only": { filesScanned: publicEntry.scanned },
+			"public-entry-only": { filesScanned: publicEntry.scanned, specifiersExamined: publicEntry.specifiersExamined },
 			"no-internal-reexport": { filesScanned: reexport.scanned },
 		},
 	};
@@ -814,7 +942,12 @@ function runCheck() {
 			console.log(`  ....  ${rule.id}: 0 files scanned — packages/ holds no source yet (${rule.description})`);
 			continue;
 		}
-		const extra = rule.id === "acyclic-direction" ? `, ${c.edgesExamined} cross-package edge(s) examined` : "";
+		const extra =
+			rule.id === "acyclic-direction"
+				? `, ${c.edgesExamined} cross-package edge(s) examined`
+				: rule.id === "public-entry-only"
+					? `, ${c.specifiersExamined} @opencut/* specifier(s) examined`
+					: "";
 		console.log(`  ${hits.length === 0 ? "PASS" : "FAIL"}  ${rule.id}: ${rule.description} (${c.filesScanned} file(s) scanned${extra})`);
 	}
 
@@ -855,9 +988,38 @@ const FIXTURE_MANIFESTS = [
 	{ dir: "editor-classic", name: "@opencut/editor-classic", exports: { ".": "./src/index.ts" } },
 ];
 
-function fixtureScan(fileList) {
-	return scan({ files: fileList, boundary: FIXTURE_BOUNDARY, manifests: FIXTURE_MANIFESTS });
+function fixtureScan(fileList, boundary = FIXTURE_BOUNDARY, manifests = FIXTURE_MANIFESTS) {
+	return scan({ files: fileList, boundary, manifests });
 }
+
+/**
+ * D-1 regression fixture (review round 2): a legally-declared FOURTH
+ * package — declared in `layers`, with its own manifest, the exact shape
+ * BLOCKER-2's `loadManifests` guard requires before it admits one. A
+ * dedicated boundary/manifest pair, not a mutation of
+ * FIXTURE_BOUNDARY/FIXTURE_MANIFESTS, so the other fixtures keep asserting
+ * against the unmodified three-package shape.
+ */
+const FOURTH_PACKAGE_BOUNDARY = { ...FIXTURE_BOUNDARY, layers: [...FIXTURE_BOUNDARY.layers, "@opencut/editor-extra"] };
+const FOURTH_PACKAGE_MANIFESTS = [
+	...FIXTURE_MANIFESTS,
+	{ dir: "editor-extra", name: "@opencut/editor-extra", exports: { ".": "./src/index.ts" } },
+];
+
+/**
+ * D-1 audit-bonus fixture (review round 2): a base-layer package whose
+ * directory name does not literally read "editor-ports" — proves
+ * `react-free-base`'s manifest gate now matches on the manifest's declared
+ * `name` against `boundary.layers[0]`, not a hardcoded directory path. Also
+ * renames the layer-2 package so its forbidden-dependency name must come
+ * from `boundary.layers[2]`, not the literal string `"@opencut/editor-classic"`.
+ */
+const RENAMED_DIR_BOUNDARY = { ...FIXTURE_BOUNDARY, layers: ["@opencut/editor-ports", "@opencut/editor-contracts", "@opencut/editor-classic-v2"] };
+const RENAMED_DIR_MANIFESTS = [
+	{ dir: "host-ports", name: "@opencut/editor-ports", exports: { ".": "./src/index.ts" } },
+	FIXTURE_MANIFESTS[1],
+	{ dir: "editor-classic", name: "@opencut/editor-classic-v2", exports: { ".": "./src/index.ts" } },
+];
 
 const NEGATIVE_FIXTURES = [
 	{
@@ -946,6 +1108,50 @@ const NEGATIVE_FIXTURES = [
 			},
 		],
 	},
+	{
+		rule: "public-entry-only",
+		note: "D-1: a fourth package declared in boundary.json.layers (the legal way BLOCKER-2's guard admits one) must still be caught deep-importing its undeclared internals — PACKAGE_SPECIFIER_PATTERN must not stay hardcoded to the original three names (the reviewer's own D-B2b reproduction)",
+		boundary: FOURTH_PACKAGE_BOUNDARY,
+		manifests: FOURTH_PACKAGE_MANIFESTS,
+		files: [
+			{
+				path: "apps/web/src/editor/surface/violation6.ts",
+				text: 'import { Internal } from "@opencut/editor-extra/internal/secret";\nexport const i = Internal;\n',
+			},
+		],
+	},
+	{
+		rule: "react-free-base",
+		note: 'D-1 audit bonus: a base-layer package manifest is still checked for a forbidden dependency even when its directory name doesn\'t literally read "editor-ports", and the forbidden layer-2 name is read from boundary.layers[2] rather than the literal string "@opencut/editor-classic"',
+		boundary: RENAMED_DIR_BOUNDARY,
+		manifests: RENAMED_DIR_MANIFESTS,
+		files: [
+			{
+				path: "packages/host-ports/package.json",
+				text: JSON.stringify({ name: "@opencut/editor-ports", dependencies: { "@opencut/editor-classic-v2": "workspace:*" } }),
+			},
+		],
+	},
+	{
+		rule: "react-free-base",
+		note: "D-2: document.addEventListener — the single most common DOM idiom in editor code per the reviewer's own probe — is now caught; it was silently missed by the pre-fix 24-name alternation",
+		files: [
+			{
+				path: "apps/web/src/editor/ports/violation8.ts",
+				text: 'export function mount(): void {\n  document.addEventListener("resize", () => {});\n}\n',
+			},
+		],
+	},
+	{
+		rule: "react-free-base",
+		note: "D-4 regression guard: the generalized typeof strip only removes ONE member, so a chained typeof window.document.createElement stays caught exactly like the pre-existing D-M2d probe — it must not swallow a real access just because it starts with a typeof-guarded prefix",
+		files: [
+			{
+				path: "apps/web/src/editor/ports/violation9.ts",
+				text: 'export function check(): boolean {\n  return typeof window.document.createElement === "function";\n}\n',
+			},
+		],
+	},
 ];
 
 const CONVERSE_FIXTURES = [
@@ -1029,13 +1235,47 @@ const CONVERSE_FIXTURES = [
 			},
 		],
 	},
+	{
+		rule: "public-entry-only",
+		label: "D-1: a fourth declared package's own declared entry import stays silent — the fixed specifier pattern must recognize a legally-added package, not merely tolerate it",
+		boundary: FOURTH_PACKAGE_BOUNDARY,
+		manifests: FOURTH_PACKAGE_MANIFESTS,
+		files: [
+			{
+				path: "apps/web/src/editor/surface/legal-fourth.ts",
+				text: 'import { Internal } from "@opencut/editor-extra";\nexport const i = Internal;\n',
+			},
+		],
+	},
+	{
+		rule: "react-free-base",
+		label: "D-1 audit bonus: a renamed base-layer manifest with a legal (non-forbidden) dependency stays silent — the manifest gate must key off the declared name, not a hardcoded literal path or directory string",
+		boundary: RENAMED_DIR_BOUNDARY,
+		manifests: RENAMED_DIR_MANIFESTS,
+		files: [
+			{
+				path: "packages/host-ports/package.json",
+				text: JSON.stringify({ name: "@opencut/editor-ports", dependencies: { "@opencut/editor-contracts": "workspace:*" } }),
+			},
+		],
+	},
+	{
+		rule: "react-free-base",
+		label: "D-4: typeof window.localStorage stays silent — the generalized single-member typeof strip must not regress into treating every window-prefixed environment guard as a DOM access",
+		files: [
+			{
+				path: "apps/web/src/editor/ports/env-guard-storage.ts",
+				text: 'export function hasStorage(): boolean {\n  return typeof window.localStorage !== "undefined";\n}\n',
+			},
+		],
+	},
 ];
 
 function runNegativeControl() {
 	console.log("check-package-boundary: negative control");
 	let clean = true;
 	for (const fixture of NEGATIVE_FIXTURES) {
-		const { violations } = fixtureScan(fixture.files);
+		const { violations } = fixtureScan(fixture.files, fixture.boundary, fixture.manifests);
 		const caught = violations.some((v) => v.rule === fixture.rule);
 		if (!caught) clean = false;
 		console.log(`  ${caught ? "PASS" : "FAIL"}  ${fixture.rule} — ${caught ? "caught" : "NOT caught"} [${fixture.note}]`);
@@ -1048,7 +1288,7 @@ function runConverseControl() {
 	console.log("check-package-boundary: converse control");
 	let clean = true;
 	for (const fixture of CONVERSE_FIXTURES) {
-		const { violations } = fixtureScan(fixture.files);
+		const { violations } = fixtureScan(fixture.files, fixture.boundary, fixture.manifests);
 		const silent = !violations.some((v) => v.rule === fixture.rule);
 		if (!silent) clean = false;
 		console.log(`  ${silent ? "PASS" : "FAIL"}  ${fixture.rule} — ${silent ? "silent" : "FALSE POSITIVE"} [${fixture.label}]`);

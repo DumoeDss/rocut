@@ -561,3 +561,313 @@ same line is never examined. I measured the real-world exposure: of 50 tracked J
 exactly **one** contains a line with two specifiers — `check-package-boundary.mjs` itself, in its
 fixture strings. Nothing in this repo is minified or bundled into tracked source. Folded into
 MINOR-1's fix rather than raised separately.
+
+---
+---
+
+# ROUND-1 RE-REVIEW — delta `bea59790`
+
+Appended 2026-08-13 by the same independent non-author reviewer. **Everything above this line is
+the round-1 report against `5e3fc7cb` and is left unaltered — the history is the evidence.**
+
+Scope of this pass: **commit `bea59790` only** (the fix delta), judged against the round-1 findings
+above. The base commit is not re-reviewed and nothing confirmed clean in round 1 is reopened.
+Hygiene was independently confirmed by the LEAD and is not re-checked here.
+
+**Delta verdict: `findings` — 0 new Blockers, 2 new Majors, 3 new Minors.**
+All five routed findings (BLOCKER-1, BLOCKER-2, MAJOR-1, MAJOR-2, MAJOR-3) plus the bundled
+MINOR-3 are **confirmed resolved**. Two of the fixes carry a residual gap of the same shape as the
+finding they closed; those are raised fresh as `D-1` and `D-2` rather than as reopened findings,
+because the reported defects genuinely are gone.
+
+## Method (round 2)
+
+Same discipline as round 1. Live runs against the real repo; every adversarial probe against a
+**sandbox replica** built from the delta's `check-package-boundary.mjs`, the real
+`packages/boundary.json` and the real manifests, in its own git repo outside rocut. rocut's
+working tree was not modified by this review. Round-2 probe ids are `D-*`.
+
+Independently reproduced at `bea59790`:
+
+```
+PASS  acyclic-direction   (949 files, 341 cross-package edges)
+PASS  public-entry-only   (949 files)          <- was "0 files scanned" dormant
+....  no-internal-reexport (0 files scanned)   <- still honestly dormant
+PASS  no-elftia-import    (1031 files)
+PASS  react-free-base     (68 files)
+exit 0
+```
+
+`--negative-control`: **8/8 caught**, exit 0. `--converse-control`: **8/8 silent**, exit 0.
+All three claimed counts verified, not accepted.
+
+---
+
+## Per-finding dispositions
+
+### BLOCKER-1 — **RESOLVED (confirmed)**
+
+`packageAndConsumerSourceFiles` (`script/check-package-boundary.mjs:549-556`) now scans
+`packages/*/src/**` + `apps/web/src/**` + `apps/vite-example/**`, and `selfName` is set only for
+files physically inside `packages/` (`:580-583`), so a consumer-side file has no self-exemption at
+all. `public-entry-only` moved to `LIVE_RULE_IDS` (`:120`), which also puts it under the
+empty-scan fail-closed guard. The new negative fixture uses my own P-E shape
+(`apps/web/src/editor/surface/violation5.ts`) and is caught; the paired converse fixture at the
+same kind of path stays silent. Both reproduced.
+
+**Judging the stated reasoning specifically, as asked.** The conclusion is right; the justification
+defeats a weaker alternative than the strongest one.
+
+- **True:** gating on *"scan only files whose `ownerOfPath` is a declared consumer entity"* would
+  have missed my reproduction. `apps/web/src/editor/surface/consumer.ts` is assigned to
+  `@opencut/editor-classic` by `boundary.json`'s catch-all, not to `apps/web`. That variant is
+  correctly rejected.
+- **But that is not the strongest ownership-aware alternative.** "Scan every file, and use
+  `ownerOfPath` only to decide what counts as *self*" would have caught my case too — owner
+  `editor-classic` is not the target `editor-ports`, so it is judged. The fix is therefore not the
+  only correct design; it is a *stricter* one.
+- **Is path-based right?** For the **scope**, yes, unambiguously — scanning by path is simpler, has
+  no dependence on the ownership map being correct, and cannot be silently narrowed by a
+  `boundary.json` edit. For the **self** determination, path-based is strictly stricter than
+  ownership-based, and that strictness is where any false-positive surface lives.
+
+**False-positive surface, measured (D-B1a/b/c).** Exactly one shape exists: a pre-move file that
+`boundary.json` already assigns to `@opencut/editor-classic` importing
+`@opencut/editor-classic/<undeclared subpath>` **is flagged**, though post-P1 the same import would
+be an exempt self-import. Reproduced. I judge this **benign, arguably beneficial** — a file that
+will *become* editor-classic has no reason to reach itself through its own package name and an
+undeclared subpath; a relative import is the correct form, and flagging it steers P1 right. The two
+adjacent legal cases stay silent, both reproduced: the same file importing a **declared** entry
+(`@opencut/editor-classic/surface`), and an import of a non-editor workspace package
+(`@opencut/tools/x`, ignored by `PACKAGE_SPECIFIER_PATTERN`). **No live false positive exists
+today** — nothing in the tree imports a bare `@opencut/editor-*` specifier at all
+(grep over `apps/**` is empty).
+
+### BLOCKER-2 — **RESOLVED (confirmed), and now proven rather than inspected**
+
+`discoverPackageDirs()` (`:681-694`) enumerates `packages/*` from disk; `loadManifests(boundary)`
+(`:700-717`) exits `2` on any discovered manifest whose `name` is absent from
+`boundary.json.layers`.
+
+**Reproduced (D-B2a).** Adding `packages/editor-extra/package.json`:
+
+```
+check-package-boundary: packages/ contains a manifest not declared in boundary.json's layer order,
+refusing to scan:
+  packages/editor-extra/package.json declares "@opencut/editor-extra", which
+  boundary.json.layers does not include
+EXIT=2
+```
+
+The spec scenario `spec.md:35-39` is now implemented **and** demonstrated.
+
+**On "no fixture needed" — I accept it, with one caveat.** The guard is a load-time configuration
+check that runs *outside* the pure `scan()` both controls exercise; there is no honest way to make
+it a `scan()` fixture, and `guardSelfConsistency` — the idiom it is modelled on — has no fixture
+either, so the codebase is internally consistent. What I do not accept is the epistemic status it
+shipped with: "verified by inspection" is precisely the class of claim MAJOR-3 existed to reject.
+That status is now upgraded — this review reproduced it — but the proof lives only in this report.
+Recorded as `D-5` (Minor): one line in an evidence file, or a `--config-control` mode alongside the
+two existing controls, would make it survive independently of me.
+
+### MAJOR-1 — **RESOLVED (confirmed)** — see `D-2` for a residual gap of a different shape
+
+`hasLocalDocumentBinding` and `DOCUMENT_DECLARATION_PATTERN` are **fully removed** — I grepped the
+delta file for every identifier and found no dangling reference and no dead code. There is no
+whole-file exemption left in the checker, so the mechanism I reported (one unrelated parameter
+blinding an entire file, 15 of 69 layer-0/1 files already in that state) cannot recur.
+
+**The implementer's no-collision claim is verified, and by something stronger than its own grep.**
+`react-free-base` passes over **68 real layer-0/1 files** with the new member pattern active. That
+is a live proof that no domain `document` value in the tree exposes a listed DOM member name — a
+superset of the 15 files the implementer checked. Confirmed. Both on-list controls fire
+(`document.createElement`, `document.body`), reproduced.
+
+### MAJOR-2 — **RESOLVED (confirmed); the typeof strip cannot be abused**
+
+`GLOBALTHIS_DOM_PATTERN` (`:190`) closes the hole. I probed the typeof-strip specifically for the
+abuse asked about — a line carrying both a guard and a live access — and **could not construct one
+that hides a real access**:
+
+| probe | line | result |
+| --- | --- | --- |
+| D-M2a | guard + live access, one line, `globalThis` form | **FIRED** |
+| D-M2b | guard + live access, one line, `window` form | **FIRED** |
+| D-M2c | `typeof window` guard then bare `document.createElement` on the same line | **FIRED** |
+| D-M2d | `typeof window.document.createElement === "function"` | **FIRED** |
+| D-M2e | `const d = globalThis.document;` (alias entry point, no member) | **FIRED** |
+| D-M2f | `typeof globalThis.document === "undefined"` (the real idiom) | silent |
+| D-M2g | `globalThis.crypto.getRandomValues(...)` (must stay legal) | silent |
+
+`stripTypeofGuards` removes only the literal `typeof globalThis.document` / `typeof window` token
+pair, so any second occurrence — which is what a real access needs — survives the strip and is
+matched. D-M2e is a genuine improvement over the round-1 checker: the aliasing entry point
+`const d = globalThis.document` now fires on the assignment line.
+
+One asymmetry, recorded as `D-4` (Minor): `typeof window.localStorage` — the same class of
+environment guard — **fires**, because stripping `typeof window` leaves `.localStorage`, which
+`DOM_GLOBAL_PATTERN` still matches at the word boundary. Reproduced. A future env guard for
+`localStorage` or `navigator` in ports or contracts will be a false positive while the `document`
+form is exempt.
+
+### MAJOR-3 — **RESOLVED (confirmed)**
+
+All four evidence files exist and are substantive, not placeholders.
+
+**22/25 spot-check: accurate.** I re-ran all 25 pre-existing `check-*.mjs` myself, bare invocation,
+capturing exit codes. **Exactly 22 exit 0.** The 3 failures are exactly the three named, for
+exactly the reasons given:
+
+| checker | exit | first line |
+| --- | ---: | --- |
+| `check-asset-manifest.mjs` | 2 | `no preview server at http://127.0.0.1:4173/ — fetch failed` |
+| `check-headless-graph.mjs` | 2 | `usage: … <envelope> --host <host> --producer <producer>` |
+| `check-headless-semantic-result.mjs` | 2 | `usage: … --vite <report JSON> --next <report JSON>` |
+
+The correction from "19 green" to an enumerated 22/25 is right, and so is the sharper reason: these
+3 need a **live server or capture artifacts**, not merely a build. `check-distributable-boundary.mjs`
+in particular runs clean (exit 0) because it reads the committed `dist/module-graph.json` — which is
+why "build-dependent" was the wrong category for the exclusion.
+
+**The live inverted-import proof is genuine.** A real edge in a real tracked file
+(`apps/web/src/editor/contracts/index.ts:84` reaching `../surface/editor-root`), caught by *two*
+rules at once, cross-package edge count moving 341 to 342 (proving the walk is real, not cached),
+reverted with `git checkout --` and re-run clean. This is stronger evidence than my round-1 sandbox
+P-A, and it correctly notes that P-A was my sandbox rather than the change's own record. The
+appended process note about `/tmp` `cp` reintroducing CRLF is a real hazard on this machine and
+worth keeping.
+
+### Bundled MINOR-3 — **RESOLVED (confirmed)**
+
+`no-internal-reexport` has a converse fixture re-exporting a **declared** subpath
+(`@opencut/editor-ports/host`) from a declared entry file, correctly distinguished from the
+existing negative fixture's `/internal/secret`. 5 of 5 rules now carry one. Counts verified: 8
+negative, 8 converse, all clean.
+
+---
+
+## New findings from the delta
+
+### D-1 (Major) — `PACKAGE_SPECIFIER_PATTERN` still hardcodes the triple, so `public-entry-only` is blind to exactly the fourth package BLOCKER-2's fix legalises
+
+**Where:** `script/check-package-boundary.mjs:529`
+
+```js
+const PACKAGE_SPECIFIER_PATTERN = /^(@opencut\/(?:editor-ports|editor-contracts|editor-classic))(\/.*)?$/;
+```
+
+BLOCKER-2 removed the hardcoded `PACKAGE_DIRS` triple and replaced it with disk enumeration. The
+*other* hardcoded triple — the one that gates which specifiers `public-entry-only` and
+`no-internal-reexport` will even look at — was left behind. `manifestEntrySets` is now built from
+discovered manifests, so a fourth package's entries **are** in the lookup table; the regex rejects
+its specifiers before that table is ever consulted.
+
+**Reproduced (D-B2b).** Fourth package declared in `boundary.json.layers` (so BLOCKER-2's new guard
+is satisfied — this is now the *legal* way to add one), plus a consumer file importing
+`@opencut/editor-extra/internal/secret`:
+
+```
+PASS  public-entry-only: … (5 file(s) scanned)
+EXIT=0
+```
+
+The deep import into the new package's internals is invisible. `acyclic-direction` cannot see it
+either (a bare specifier resolves to `null`), so nothing covers it.
+
+**Failure scenario.** P5 (versioning) or P2 (second Host) adds a fourth package the correct way —
+directory, manifest, entry in `boundary.json.layers`. BLOCKER-2's guard passes. From that moment
+`public-entry-only`, the rule BLOCKER-1 just made live, silently exempts every deep import into the
+new package, while still printing `PASS`.
+
+**Fix (small):** derive the pattern from `boundary.layers` at load time instead of hardcoding it —
+the same move BLOCKER-2 already made for `PACKAGE_DIRS`. **Confidence: high** (reproduced).
+
+### D-2 (Major) — the fixed DOM member list misses 17 probed real DOM accesses, including `document.addEventListener`
+
+**Where:** `script/check-package-boundary.mjs:181-182` (`DOM_DOCUMENT_MEMBER_PATTERN`).
+
+MAJOR-1's fix trades a *file-wide exemption* hole for an *enumeration* hole. The enumeration is
+short and misses the most common DOM idiom in editor code. Every row below was run against a
+layer-1 file in the sandbox; **all 17 returned exit 0 (silent)**, while the two on-list controls
+fired:
+
+| probed access | result |
+| --- | --- |
+| `document.addEventListener(...)` / `removeEventListener` | **MISSED** |
+| `document.cookie` | **MISSED** |
+| `document.readyState` | **MISSED** |
+| `document.fonts.load(...)` — this repo has a whole `fonts` module | **MISSED** |
+| `document.exitFullscreen()` / `document.fullscreenElement` | **MISSED** |
+| `document.getSelection()` | **MISSED** |
+| `document.hidden` / `document.visibilityState` | **MISSED** |
+| `document.styleSheets` | **MISSED** |
+| `document.createComment(...)` | **MISSED** |
+| `document.write(...)` | **MISSED** |
+| `document.location.href` | **MISSED** |
+| `document.defaultView` | **MISSED** |
+| `document.elementsFromPoint(...)` (plural; only the singular is listed) | **MISSED** |
+| `document.pointerLockElement` | **MISSED** |
+| `document["createElement"]("div")` (computed member) | **MISSED** |
+| `document.createElement("div")` (control) | caught |
+| `document.body` (control) | caught |
+
+None of these is ambiguous against a domain document: a draft document or `VectorSeedDocument` has
+no `.cookie`, `.readyState`, `.fonts` or `.addEventListener`. The list can be widened substantially
+with no new false-positive risk.
+
+Note the computed-member row is a small **regression** in one dimension: pre-fix, a non-exempt file
+doing `document["createElement"]` matched the bare-identifier pattern; post-fix nothing matches it.
+That is a fair trade against the 22%-of-files exemption hole it replaced, but it should be recorded
+rather than discovered later.
+
+**Fix:** add the missing members to the alternation (`addEventListener`, `removeEventListener`,
+`dispatchEvent`, `cookie`, `readyState`, `visibilityState`, `hidden`, `fonts`, `styleSheets`,
+`adoptedStyleSheets`, `getSelection`, `write`, `writeln`, `location`, `defaultView`,
+`currentScript`, `forms`, `images`, `links`, `scripts`, `elementsFromPoint`, `exitFullscreen`,
+`fullscreenElement`, `exitPointerLock`, `pointerLockElement`, `createComment`, `createAttribute`,
+`createTreeWalker`, `createNodeIterator`, `importNode`, `adoptNode`, `evaluate`), and optionally
+match `document\s*\[` to cover computed access. **Confidence: high** (all 17 reproduced).
+
+### D-3 (Minor) — `public-entry-only`'s census counts files, not candidate specifiers, so "949 files scanned, PASS" overstates what was checked
+
+`acyclic-direction` reports `341 cross-package edge(s) examined` alongside its file count, which is
+what makes its `PASS` meaningful. `public-entry-only` reports only `949 file(s) scanned`, and there
+are currently **zero** `@opencut/editor-*` specifiers anywhere in `apps/**` (verified by grep). So
+the rule is live and looking, exactly as claimed — but a reader of the output cannot distinguish
+"examined 341 candidates, all legal" from "examined 0 candidates". That distinction is the change's
+own stated standard ("a check that is green because it inspected nothing is not the same claim as a
+check that is green because it looked"), applied one level down. **Fix:** report
+`N @opencut/* specifier(s) examined` the way `acyclic-direction` reports edges — today that number
+is 0, which is both honest and informative. **Confidence: high.**
+
+### D-4 (Minor) — `typeof window.localStorage` fires while `typeof window.document` is exempt
+
+Detailed under MAJOR-2 above. Same class of environment-detection guard, opposite outcome, because
+the strip removes `typeof window` and leaves `.localStorage` matching at the word boundary.
+Reproduced. Low impact today (no such guard exists in layer 0/1), and the safe direction to err in,
+but it will read as arbitrary to whoever hits it. **Confidence: high.**
+
+### D-5 (Minor) — BLOCKER-2's guard shipped proven only by inspection
+
+Detailed under BLOCKER-2 above. Accepted as a design choice (a load-time guard cannot be a `scan()`
+fixture, and `guardSelfConsistency` sets the same precedent), but the demonstration currently
+exists only in this report. One line in an evidence file, or a `--config-control` mode, would make
+it durable. **Confidence: high.**
+
+---
+
+## Round-1 findings NOT addressed by this delta (still open, unchanged)
+
+The delta closed the 2 Blockers, 3 Majors and MINOR-3. These round-1 items were not in its scope
+and remain exactly as reported above — listed so the record is complete, not re-argued:
+
+MINOR-1 (trailing-comment false positive), MINOR-2 (`SELF_PATH` excludes the checker from all
+rules), MINOR-4 (`design.md:251`'s "138 edges" vs the shipped 341), MINOR-5 (layer-0/1 may import
+any bare npm package), MINOR-6 (`guardUnownedFiles` unreachable under the catch-all), MINOR-7
+(dormancy carry-forward absent from `planning-context.md`), MINOR-8 (task counts), MINOR-9
+(`bun.lock` not regenerated), TRIVIAL-1, TRIVIAL-2.
+
+Two of them are now cheaper or more relevant than they were: **MINOR-4** should be corrected in the
+same pass as any doc edit, since `BOUNDARIES.md` was already touched here; and **MINOR-7** is now
+more load-bearing, because `public-entry-only` going live changes what P1 inherits while
+`planning-context.md` still describes it as dormant.

@@ -248,18 +248,26 @@ what it can honestly assert today:
 
 **Live from this commit, over `apps/web/src` and `apps/vite-example` via `boundary.json`:**
 
-- `acyclic-direction` — 138 real cross-package edges today, all downward. A single upward edge fails.
+- `acyclic-direction` — 341 real cross-package edges today, all downward. A single upward edge fails.
+  (MINOR-4, review round 1: this was recorded as 138 at proposal time; 341 is the measured count as
+  of review round 2, `apps/web/src` and `apps/vite-example` having grown since. The number is a
+  live measurement restated here for orientation, not a frozen target — the checker itself, not this
+  document, is the source of truth.)
 - `no-elftia-import` — over every source file and every manifest in the repository.
 - `react-free-base` — no file owned by layer 0 or 1 imports `react`, `react-dom`, a DOM global, or
   any file owned by layer 2.
+- `public-entry-only` — a specifier crossing into a package must resolve to a declared `exports`
+  subpath. (MINOR-4, review round 1: this was dormant at proposal time and described as such below;
+  BLOCKER-1's review-round-1 fix widened its scope to `apps/web/src` and `apps/vite-example` — the
+  scenario spec.md:108-111 actually names — so it has been live since commit `bea59790`, scanning 949
+  files, 0 `@opencut/*` specifiers examined today.)
 
 **Live from the first module P1 places under `packages/`, and reported explicitly as
 `0 files scanned` until then:**
 
-- `public-entry-only` — a specifier crossing into a package must resolve to a declared `exports`
-  subpath.
 - `no-internal-reexport` — a package's declared entry may not re-export a module owned by another
-  package's internals.
+  package's internals. This one rule's scope is genuinely still `packages/*/src/**` only, because a
+  re-export needs a declared entry file to re-export FROM, and none exists until P1 places one.
 
 The run prints a scan census for every rule (`scanned N files` / `N edges`), and **refuses to report
 a pass on an empty scan** for the three live rules — the fail-closed idiom
