@@ -22,6 +22,11 @@ import { buildTextElement } from "@/timeline";
 import { buildEmptyTrack } from "@/timeline/placement";
 import { mediaTimeFromSeconds, ZERO_MEDIA_TIME } from "@/wasm";
 
+import {
+	runAgentEvidence,
+	type AgentEvidenceOutcome,
+	type AgentEvidencePhase,
+} from "./agent-evidence-run";
 import { EditorSurface } from "../embedding/editor-surface";
 import {
 	SurfaceReactIdentityProbe,
@@ -30,6 +35,31 @@ import {
 import type { FocusMode } from "../embedding/types";
 
 type SurfaceVisibility = "visible" | "hidden";
+
+/**
+ * Which evidence scenario this mount runs (S03 T4, design D6).
+ *
+ * Read from the query string, and read the way `c6-disposal-harness` already
+ * reads its own control: guarded for the server, surfaced as an attribute, and
+ * acted on inside the effect. The rendered tree is identical for both scenarios
+ * on the first paint, so the default Surface path — which later gates re-run —
+ * is behaviourally unchanged and nothing about hydration moves.
+ */
+type EvidenceScenario = "surface" | "agent";
+
+function readEvidenceScenario(): EvidenceScenario {
+	if (typeof window === "undefined") return "surface";
+	return new URLSearchParams(window.location.search).get("scenario") === "agent"
+		? "agent"
+		: "surface";
+}
+
+function readEvidencePhase(): AgentEvidencePhase {
+	if (typeof window === "undefined") return "apply";
+	return new URLSearchParams(window.location.search).get("phase") === "reopen"
+		? "reopen"
+		: "apply";
+}
 
 export interface SurfaceEvidenceHarnessProps {
 	readonly hostName: "next" | "vite";
@@ -439,6 +469,25 @@ export function SurfaceEvidenceHarness({
 		"starting",
 	);
 	const [fatalError, setFatalError] = useState<string | null>(null);
+	// Read once per mount, never per render, and never during the server render:
+	// the *rendered* scenario below starts at the default on both sides and is
+	// published from the effect, so the first paint is byte-identical whatever
+	// the query string says and hydration has nothing to reconcile.
+	const [requested] = useState<{
+		scenario: EvidenceScenario;
+		phase: AgentEvidencePhase;
+	}>(() => ({ scenario: readEvidenceScenario(), phase: readEvidencePhase() }));
+	const { scenario, phase } = requested;
+	// Null until a run publishes it, and published by both branches — so
+	// `data-scenario`/`data-phase` are always a fact the run asserted about
+	// itself, never a default that happens to read correctly.
+	const [reported, setReported] = useState<{
+		scenario: EvidenceScenario;
+		phase: AgentEvidencePhase;
+	} | null>(null);
+	const [agentOutcome, setAgentOutcome] = useState<AgentEvidenceOutcome | null>(
+		null,
+	);
 
 	const append = useCallback(
 		(surface: LedgerEntry["surface"], kind: string, detail: unknown = null) => {
@@ -476,6 +525,39 @@ export function SurfaceEvidenceHarness({
 	useEffect(() => {
 		let cancelled = false;
 		const active = live.current;
+		if (scenario === "agent") {
+			// The agent run owns its own session; the Surface matrix prepares none,
+			// so nothing here mounts a Surface or seeds a Surface project.
+			const running = runAgentEvidence({
+				hostName,
+				buildMarker,
+				phase,
+				createHost,
+			});
+			void running
+				.then((run) => {
+					if (cancelled) {
+						void run.dispose();
+						return;
+					}
+					setReported({ scenario, phase });
+					setAgentOutcome(run.outcome);
+					setStatus(run.outcome.error === null ? "ready" : "error");
+					if (run.outcome.error !== null) setFatalError(run.outcome.error);
+					append("harness", "agent-evidence-complete", { phase });
+				})
+				.catch((error: unknown) => {
+					if (cancelled) return;
+					setReported({ scenario, phase });
+					setFatalError(errorMessage(error));
+					setStatus("error");
+					append("harness", "error", { message: errorMessage(error) });
+				});
+			return () => {
+				cancelled = true;
+				void running.then((run) => run.dispose()).catch(() => {});
+			};
+		}
 		void Promise.all([
 			prepare({
 				surface: "primary",
@@ -493,11 +575,13 @@ export function SurfaceEvidenceHarness({
 				if (cancelled) return;
 				setPrimary(nextPrimary);
 				setSecondary(nextSecondary);
+				setReported({ scenario, phase });
 				setStatus("ready");
 				append("harness", "ready", { hostName });
 			})
 			.catch((error: unknown) => {
 				if (cancelled) return;
+				setReported({ scenario, phase });
 				setFatalError(errorMessage(error));
 				setStatus("error");
 				append("harness", "error", { message: errorMessage(error) });
@@ -514,7 +598,7 @@ export function SurfaceEvidenceHarness({
 			);
 			active.clear();
 		};
-	}, [append, hostName, prepare]);
+	}, [append, buildMarker, createHost, hostName, phase, prepare, scenario]);
 
 	const releaseReadiness = () => {
 		primaryGate.current.release();
@@ -580,6 +664,8 @@ export function SurfaceEvidenceHarness({
 			data-host={hostName}
 			data-cycle={cycle}
 			data-build-marker={buildMarker}
+			data-scenario={reported?.scenario}
+			data-phase={reported?.phase}
 			style={{
 				minHeight: "100vh",
 				padding: "20px",
@@ -770,6 +856,9 @@ export function SurfaceEvidenceHarness({
 			) : null}
 			<output data-testid="surface-evidence-ledger" style={{ display: "none" }}>
 				{JSON.stringify(ledger)}
+			</output>
+			<output data-testid="agent-evidence-ledger" style={{ display: "none" }}>
+				{agentOutcome === null ? "" : JSON.stringify(agentOutcome)}
 			</output>
 		</main>
 	);

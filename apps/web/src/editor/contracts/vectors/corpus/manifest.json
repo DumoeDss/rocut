@@ -1,0 +1,21 @@
+{
+	"schema": "transaction-vectors/v1",
+	"corpusVersion": 1,
+	"generatedBy": "script/generate-vector-manifest.mjs",
+	"declaredVectorCount": 29,
+	"files": [
+		{
+			"path": "document-vectors.json",
+			"sha256": "109d8e0e9f7823ca8e8793c54b89e3c152385882b7364ff59ad4886e9eb67314",
+			"family": "document",
+			"vectorCount": 26
+		},
+		{
+			"path": "scenario-vectors.json",
+			"sha256": "8e6d6d8925cc5ca1d6628fa365522d21443b0648c634742ffadafcce6b925424",
+			"family": "scenario",
+			"vectorCount": 3
+		}
+	],
+	"corpusDigest": "cc0ef80b4341288ccd01e14bf48dcba76270e6d4374fcd266e951fa6722db282"
+}

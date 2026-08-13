@@ -15,12 +15,29 @@
  *    types, no `navigator.storage` calls, no physical storage fields in public
  *    signatures.
  *
+ * It also scans the **published vector corpus** (S03 T4) — the `.json` data
+ * under `contracts/vectors/corpus/` — with rules the import-shaped ones cannot
+ * express, because a donor name arriving as a JSON string value is invisible to
+ * them:
+ *
+ * 3. no donor schema field name, 4. no command-class name, 5. no editor state
+ * store, 6. no browser database/object-store/file-handle identity, 7. no
+ * provider-namespaced key, 8. no physical storage path.
+ *
  * **Negative control.** The `--negative-control` mode materialises a fixture
- * violating each rule and asserts each is caught — because a check that cannot
- * fail is not evidence.
+ * violating each rule and asserts each is caught — and, for the data rules,
+ * that each fixture trips *only* its own rule and that the contract's public
+ * vocabulary (`track`, `clip`, `asset`, `marker`, `project`, a `video`-kind
+ * asset, the closed code sets) trips none. A check that cannot fail is not
+ * evidence; a check that fires on the vocabulary it exists to protect is
+ * unusable.
+ *
+ * **Empty-scan control.** `--empty-scan-control` proves that zero contract
+ * modules or zero corpus files is a refusal rather than a clean scan.
  *
  *   node script/check-transaction-boundary.mjs
  *   node script/check-transaction-boundary.mjs --negative-control
+ *   node script/check-transaction-boundary.mjs --empty-scan-control
  */
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
@@ -91,6 +108,77 @@ const RULES = [
 	},
 ];
 
+/**
+ * Rules over **published vector data** (S03 T4, design D5).
+ *
+ * The import-shaped rules above cannot see a donor name that arrives as a JSON
+ * string, so the corpus needs its own rules. They are written to discriminate
+ * provider identity from the contract's public vocabulary: `track`, `clip`,
+ * `asset`, `marker`, `project` and a `video`-kind asset are the corpus's own
+ * words and must never fire, which the converse control below enforces.
+ */
+const DONOR_SCHEMA_FIELDS =
+	/\b(?:timelineElement|TimelineElement|TimelineTrack|mediaId|bookmarks|currentSceneId|sceneId|canvasSize|sourceType|trimReference|elements|retime)\b/;
+const COMMAND_CLASS_NAME = /\b[A-Z][A-Za-z0-9]*Command\b|\bcommitUi\b|\bProjectMutationArbiter\b/;
+const STATE_STORE_NAME =
+	/\buse[A-Z][A-Za-z0-9]*Store\b|\bzustand\b|\b[a-z][a-z0-9]*-store\b|\bEditorCore\b/;
+const STORAGE_IDENTITY = new RegExp(
+	`\\b${IDB_NAME}\\b|\\bIDB[A-Z][A-Za-z]*\\b|\\bobjectStore[A-Za-z]*\\b|\\bFileSystem(?:Directory|File)?Handle\\b|video-editor-`,
+	"i",
+);
+const PROVIDER_NAMESPACED_KEY = /opencut/i;
+const PHYSICAL_STORAGE_PATH =
+	/[A-Za-z]:\\\\|\/(?:var|usr|home|tmp|opt|Users)\/|\.(?:sqlite|idb|leveldb)\b|opfs:/;
+
+const DATA_RULES = [
+	{
+		id: "no-donor-schema-field",
+		description:
+			"no published vector key or value names a donor schema field",
+		test: (line) => DONOR_SCHEMA_FIELDS.test(line),
+	},
+	{
+		id: "no-command-class-name",
+		description: "no published vector names a command class or its commit path",
+		test: (line) => COMMAND_CLASS_NAME.test(line),
+	},
+	{
+		id: "no-editor-state-store",
+		description: "no published vector names an editor state store",
+		test: (line) => STATE_STORE_NAME.test(line),
+	},
+	{
+		id: "no-storage-identity",
+		description:
+			"no published vector names a browser database, object store or file-system handle",
+		test: (line) => STORAGE_IDENTITY.test(line),
+	},
+	{
+		id: "no-provider-namespaced-key",
+		description: "no published vector carries a provider-namespaced key",
+		test: (line) => PROVIDER_NAMESPACED_KEY.test(line),
+	},
+	{
+		id: "no-physical-storage-path",
+		description: "no published vector carries a physical storage path",
+		test: (line) => PHYSICAL_STORAGE_PATH.test(line),
+	},
+];
+
+/**
+ * The refusal both scans share: a check that matched nothing has not passed.
+ * Returned rather than thrown so `--empty-scan-control` can prove it.
+ */
+function emptyScanRefusal({ modules, corpus }) {
+	if (modules === 0) {
+		return "No contract module found. A check that scanned nothing has not passed.";
+	}
+	if (corpus === 0) {
+		return "No published vector file found. The data rules scanned nothing, and a scan of nothing has not passed.";
+	}
+	return null;
+}
+
 /** A comment naming a rule is not a violation of it. */
 function isComment(line) {
 	return /^\s*(?:\/\/|\*|\/\*)/.test(line);
@@ -119,10 +207,10 @@ function resolveSpecifier({ spec, fromFile }) {
 	return parts.join("/");
 }
 
-function scan({ path, text }) {
+function scan({ path, text, rules = RULES }) {
 	const violations = [];
 	const lines = text.split(/\r?\n/);
-	for (const rule of RULES) {
+	for (const rule of rules) {
 		lines.forEach((line, index) => {
 			if (isComment(line)) return;
 			if (!rule.test(line, path)) return;
@@ -137,7 +225,8 @@ function scan({ path, text }) {
 	return violations;
 }
 
-function contractFiles() {
+/** Every tracked-or-uncommitted file under the contract area. */
+function contractArea() {
 	return execFileSync(
 		"git",
 		["ls-files", "-z", "--cached", "--others", "--exclude-standard", "apps"],
@@ -145,8 +234,18 @@ function contractFiles() {
 	)
 		.split("\0")
 		.filter(Boolean)
-		.filter((path) => path.startsWith(CONTRACT_AREA))
-		.filter((path) => /\.(ts|tsx)$/.test(path));
+		.filter((path) => path.startsWith(CONTRACT_AREA));
+}
+
+function contractFiles() {
+	return contractArea().filter((path) => /\.(ts|tsx)$/.test(path));
+}
+
+/** The published corpus: data, judged by the data rules. */
+function corpusFiles() {
+	return contractArea().filter((path) =>
+		/^apps\/web\/src\/editor\/contracts\/vectors\/corpus\/.+\.json$/.test(path),
+	);
 }
 
 /**
@@ -246,6 +345,71 @@ const NEGATIVE_CONTROL_FIXTURES = [
 	},
 ];
 
+/**
+ * One fixture per data rule, each violating exactly one, plus converse fixtures
+ * built from the corpus's own public vocabulary. A rule that fires on `track`,
+ * `clip`, `asset`, `marker`, `project` or a `video`-kind asset is unusable, so
+ * the converse fixtures are part of the check rather than part of a review.
+ */
+const CORPUS_CONTROL_FIXTURES = [
+	{
+		rule: "no-donor-schema-field",
+		path: "apps/web/src/editor/contracts/vectors/corpus/violation.json",
+		text: '{ "clip": { "timelineElement": "el-1" } }\n',
+	},
+	{
+		rule: "no-donor-schema-field",
+		path: "apps/web/src/editor/contracts/vectors/corpus/violation.json",
+		text: '{ "clip": { "mediaId": "asset-1" } }\n',
+		note: "a donor relation field is caught in a value position too",
+	},
+	{
+		rule: "no-command-class-name",
+		path: "apps/web/src/editor/contracts/vectors/corpus/violation.json",
+		text: '{ "title": "applied by MoveElementCommand" }\n',
+	},
+	{
+		rule: "no-editor-state-store",
+		path: "apps/web/src/editor/contracts/vectors/corpus/violation.json",
+		text: '{ "title": "read through useTimelineStore" }\n',
+	},
+	{
+		rule: "no-storage-identity",
+		path: "apps/web/src/editor/contracts/vectors/corpus/violation.json",
+		text: '{ "title": "objectStoreName video-editor-projects" }\n',
+	},
+	{
+		rule: "no-provider-namespaced-key",
+		path: "apps/web/src/editor/contracts/vectors/corpus/violation.json",
+		text: '{ "__opencutTransaction": { "revision": 1 } }\n',
+	},
+	{
+		rule: "no-physical-storage-path",
+		path: "apps/web/src/editor/contracts/vectors/corpus/violation.json",
+		text: '{ "title": "/var/lib/projects.sqlite" }\n',
+	},
+	{
+		rule: "*",
+		expect: "not-caught",
+		path: "apps/web/src/editor/contracts/vectors/corpus/converse.json",
+		text:
+			'{ "vectors": [ { "id": "document/public-vocabulary", "title": "track, clip, asset, marker and project are the public vocabulary",' +
+			' "batch": { "operations": [ { "kind": "create-track", "track": { "id": "track-video", "kind": "video", "name": "Video lane", "hidden": false } },' +
+			' { "kind": "create-asset", "asset": { "id": "asset-reel", "kind": "video", "name": "Reel", "duration": 1200000 } },' +
+			' { "kind": "create-clip", "clip": { "id": "clip-caption", "trackId": "track-text", "assetId": "asset-reel", "startTime": 0, "duration": 40000, "trimStart": 0, "trimEnd": 0 } },' +
+			' { "kind": "create-marker", "marker": { "id": "marker-open", "time": 0, "note": "open" } },' +
+			' { "kind": "update-project", "projectId": "vector-project", "patch": { "name": "Renamed", "canvasWidth": 1280, "canvasHeight": 720 } } ] } } ] }\n',
+		note: "the contract's public vocabulary must survive every data rule",
+	},
+	{
+		rule: "*",
+		expect: "not-caught",
+		path: "apps/web/src/editor/contracts/vectors/corpus/converse.json",
+		text: '{ "expect": { "outcome": "rejected", "errorCode": "conflict", "issueCodes": ["collision", "lane-incompatible"] } }\n',
+		note: "closed error and issue codes are public vocabulary too",
+	},
+];
+
 function runNegativeControl() {
 	console.log("check-transaction-boundary: negative control");
 	let allAsExpected = true;
@@ -263,6 +427,32 @@ function runNegativeControl() {
 		);
 	}
 
+	for (const fixture of CORPUS_CONTROL_FIXTURES) {
+		const expectCaught = (fixture.expect ?? "caught") === "caught";
+		const violations = scan({
+			path: fixture.path,
+			text: fixture.text,
+			rules: DATA_RULES,
+		});
+		const caught =
+			fixture.rule === "*"
+				? violations.length > 0
+				: violations.some((v) => v.rule === fixture.rule);
+		// A targeted fixture must trip its own rule and no other, so a caught
+		// violation attributes to the rule that caught it.
+		const onlyItsOwn =
+			fixture.rule === "*" ||
+			violations.every((v) => v.rule === fixture.rule);
+		const ok = caught === expectCaught && onlyItsOwn;
+		if (!ok) allAsExpected = false;
+		console.log(
+			`  ${ok ? "PASS" : "FAIL"}  ${fixture.rule} — ${caught ? "caught" : "not caught"}` +
+				`${expectCaught ? "" : " (expected not caught)"}` +
+				`${onlyItsOwn ? "" : ` [also tripped ${[...new Set(violations.map((v) => v.rule))].join(", ")}]`}` +
+				`${fixture.note ? ` [${fixture.note}]` : ""}`,
+		);
+	}
+
 	console.log(
 		`\n  ${allAsExpected ? "PASS" : "FAIL"}  every rule is proven able to fail, and proven not to fire indiscriminately`,
 	);
@@ -272,6 +462,7 @@ function runNegativeControl() {
 
 function runCheck() {
 	const files = contractFiles();
+	const corpus = corpusFiles();
 	const violations = [];
 	for (const path of files) {
 		let text;
@@ -282,11 +473,21 @@ function runCheck() {
 		}
 		violations.push(...scan({ path, text }));
 	}
+	for (const path of corpus) {
+		let text;
+		try {
+			text = readFileSync(join(REPO_ROOT, path), "utf8");
+		} catch {
+			continue;
+		}
+		violations.push(...scan({ path, text, rules: DATA_RULES }));
+	}
 
 	console.log(
-		`check-transaction-boundary: scanned ${files.length} contract module(s) (tracked + uncommitted)`,
+		`check-transaction-boundary: scanned ${files.length} contract module(s) and ` +
+			`${corpus.length} published vector file(s) (tracked + uncommitted)`,
 	);
-	for (const rule of RULES) {
+	for (const rule of [...RULES, ...DATA_RULES]) {
 		const hits = violations.filter((v) => v.rule === rule.id);
 		console.log(
 			`  ${hits.length === 0 ? "PASS" : "FAIL"}  ${rule.id}: ${rule.description}`,
@@ -301,10 +502,12 @@ function runCheck() {
 		process.exit(1);
 	}
 
-	if (files.length === 0) {
-		console.error(
-			"\nNo contract modules found. A check that scanned nothing has not passed.",
-		);
+	const refusal = emptyScanRefusal({
+		modules: files.length,
+		corpus: corpus.length,
+	});
+	if (refusal) {
+		console.error(`\n${refusal}`);
 		process.exit(1);
 	}
 
@@ -313,5 +516,50 @@ function runCheck() {
 	);
 }
 
+/**
+ * Prove the zero-match refusals, and prove they do not fire on a real scan.
+ * Without this, "0 files scanned, clean" would read exactly like a pass.
+ */
+function runEmptyScanControl() {
+	console.log("check-transaction-boundary: empty-scan control");
+	const cases = [
+		{ name: "zero contract modules", modules: 0, corpus: 3, refuse: true },
+		{ name: "zero published vector files", modules: 50, corpus: 0, refuse: true },
+		{ name: "a real scan", modules: 50, corpus: 3, refuse: false },
+	];
+	let allAsExpected = true;
+	for (const testCase of cases) {
+		const refusal = emptyScanRefusal(testCase);
+		const ok = (refusal !== null) === testCase.refuse;
+		if (!ok) allAsExpected = false;
+		console.log(
+			`  ${ok ? "PASS" : "FAIL"}  ${testCase.name} — ${refusal ?? "no refusal"}`,
+		);
+	}
+	const live = { modules: contractFiles().length, corpus: corpusFiles().length };
+	const liveOk = live.modules > 0 && live.corpus > 0;
+	if (!liveOk) allAsExpected = false;
+	console.log(
+		`  ${liveOk ? "PASS" : "FAIL"}  the live scan matches ${live.modules} module(s) and ${live.corpus} vector file(s)`,
+	);
+	if (!allAsExpected) process.exit(1);
+	console.log("\nempty-scan control clean.");
+}
+
+// An unrecognised flag is refused rather than treated as "run the normal
+// scan": a mistyped control that prints a clean scan is worse than no control.
+const KNOWN_FLAGS = new Set(["--negative-control", "--empty-scan-control"]);
+const unknownFlags = process.argv
+	.slice(2)
+	.filter((flag) => !KNOWN_FLAGS.has(flag));
+if (unknownFlags.length > 0) {
+	console.error(
+		`check-transaction-boundary: unknown flag(s) ${unknownFlags.join(", ")}. ` +
+			`Known: ${[...KNOWN_FLAGS].join(", ")}.`,
+	);
+	process.exit(2);
+}
+
 if (process.argv.includes("--negative-control")) runNegativeControl();
+else if (process.argv.includes("--empty-scan-control")) runEmptyScanControl();
 else runCheck();

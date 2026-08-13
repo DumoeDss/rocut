@@ -83,6 +83,24 @@ const LOCAL_PREFERENCE_FILES = new Map([
 	],
 ]);
 
+/**
+ * Evidence-route state, kept separate from the preference list because it is
+ * not a preference and must not be read as one.
+ *
+ * An entry here is reachable only from `/surface-evidence`, holds no user
+ * content, and exists because the evidence it carries must survive a real page
+ * reload *without* being read back out of the store under test — recording the
+ * committed revision in that store would make the reopen assertion circular.
+ * The classification is exact per file; every other localStorage use, on this
+ * route or any other, is still refused.
+ */
+const EVIDENCE_LOCALSTORAGE_FILES = new Map([
+	[
+		"apps/web/src/editor/surface/evidence/agent-evidence-run.ts",
+		"T4 agent commitment carried across the reopen reload, independent of the store being verified",
+	],
+]);
+
 const STORAGE_APIS = [
 	{
 		id: "indexeddb",
@@ -324,7 +342,10 @@ for (const path of files) {
 			const hits = preferenceHits.get(path) ?? [];
 			hits.push({ line: lineNumber, text: line.trim() });
 			preferenceHits.set(path, hits);
-			if (!LOCAL_PREFERENCE_FILES.has(path)) {
+			if (
+				!LOCAL_PREFERENCE_FILES.has(path) &&
+				!EVIDENCE_LOCALSTORAGE_FILES.has(path)
+			) {
 				const durableLibrary =
 					/sounds-store|custom-presets-store/.test(path) ||
 					/(?:saved sounds|custom graph presets)/i.test(line);
@@ -434,8 +455,14 @@ const exercisedVerificationFiles = new Set(
 	verificationMechanisms.map((hit) => hit.path),
 );
 const unexpectedPreferences = [...preferenceHits.keys()].filter(
-	(path) => !LOCAL_PREFERENCE_FILES.has(path),
+	(path) =>
+		!LOCAL_PREFERENCE_FILES.has(path) &&
+		!EVIDENCE_LOCALSTORAGE_FILES.has(path),
 );
+// A classification that stopped being exercised is a stale exemption, so both
+// lists are reported with whether anything actually matched them.
+const staleEvidenceClassifications = [...EVIDENCE_LOCALSTORAGE_FILES.keys()]
+	.filter((path) => !preferenceHits.has(path));
 
 console.log(
 	`check-storage-boundary: scanned ${files.length} source module(s) ` +
@@ -452,6 +479,11 @@ if (!fixtureRoot) {
 	for (const [path, why] of LOCAL_PREFERENCE_FILES) {
 		console.log(
 			`  PREFERENCE  ${path} — ${why}${preferenceHits.has(path) ? " [observed]" : " [not used]"}`,
+		);
+	}
+	for (const [path, why] of EVIDENCE_LOCALSTORAGE_FILES) {
+		console.log(
+			`  EVIDENCE  ${path} — ${why}${preferenceHits.has(path) ? " [observed]" : " [NOT OBSERVED]"}`,
 		);
 	}
 }
@@ -475,6 +507,13 @@ const summaries = [
 	{
 		ok: unexpectedPreferences.length === 0,
 		text: `unclassified persistence localStorage files: ${unexpectedPreferences.length}`,
+	},
+	{
+		ok: staleEvidenceClassifications.length === 0,
+		text:
+			`evidence-route localStorage classifications, all exercised: ` +
+			`${EVIDENCE_LOCALSTORAGE_FILES.size - staleEvidenceClassifications.length}` +
+			`/${EVIDENCE_LOCALSTORAGE_FILES.size}`,
 	},
 	{
 		ok: !violations.some((hit) =>

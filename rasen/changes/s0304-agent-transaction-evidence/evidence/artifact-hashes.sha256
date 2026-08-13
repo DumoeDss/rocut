@@ -1,0 +1,11 @@
+# SHA-256 of every artifact the T4 dual-Host Agent cycle emitted.
+# Build marker t4-final-source-20260813-a; sources frozen in
+# pre-browser-source-hashes.sha256 and re-verified 31/31 equal after these ran.
+6223d4c7a77a54e92afa8b889dec699617443b70a1e18be02fb43d8123dbae9a  browser-agent/next/01-agent-apply.png
+6223d4c7a77a54e92afa8b889dec699617443b70a1e18be02fb43d8123dbae9a  browser-agent/next/02-agent-reopen.png
+4e737187fbceb460ce6a1b1559f0d3104e35cdbaa94f8a43515cc4f05c48f9fc  browser-agent/next/ledger-next.json
+0845535753cd4050810342a31195e9e364e052497e5fb4535160af4ce71e1538  browser-agent/next/results-next.json
+8e13cee757f72299834495f1f531b13160fd5de9a35e3ba15e6db5c25e6f9e87  browser-agent/vite/01-agent-apply.png
+8e13cee757f72299834495f1f531b13160fd5de9a35e3ba15e6db5c25e6f9e87  browser-agent/vite/02-agent-reopen.png
+a48c8cf2ebe1142d5547caa0a844b7a3c94d21dba2b61a4c17db7deae264f303  browser-agent/vite/ledger-vite.json
+7148e8d12123ba0c626a0c7affc653ca333340882dfc8d503d0a362514d6b2a4  browser-agent/vite/results-vite.json

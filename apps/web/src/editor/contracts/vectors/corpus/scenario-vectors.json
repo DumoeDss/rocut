@@ -1,0 +1,497 @@
+{
+	"schema": "transaction-vectors/v1",
+	"corpusVersion": 1,
+	"family": "scenario",
+	"vectors": [
+		{
+			"id": "scenario/keyed-replay-and-reuse",
+			"title": "A keyed batch replays without mutating, and the same key with a different payload is refused",
+			"steps": [
+				{
+					"id": "commit",
+					"intent": "commit one keyed batch",
+					"batch": {
+						"idempotencyKey": "vector-key-alpha",
+						"operations": [
+							{
+								"kind": "create-track",
+								"track": {
+									"id": "key-track",
+									"kind": "text",
+									"name": "Keyed lane",
+									"hidden": false
+								}
+							}
+						]
+					},
+					"expect": {
+						"outcome": "accepted",
+						"revisionDelta": 1,
+						"watchDelta": 1,
+						"createdIds": ["key-track"],
+						"changedIds": [],
+						"reads": [
+							{
+								"entity": "track",
+								"id": "key-track",
+								"fields": { "name": "Keyed lane", "kind": "text" }
+							}
+						]
+					}
+				},
+				{
+					"id": "replay",
+					"intent": "replay the same key with canonically equivalent operations",
+					"batch": {
+						"idempotencyKey": "vector-key-alpha",
+						"operations": [
+							{
+								"kind": "create-track",
+								"track": {
+									"id": "key-track",
+									"kind": "text",
+									"name": "Keyed lane",
+									"hidden": false
+								}
+							}
+						]
+					},
+					"expect": {
+						"outcome": "replayed",
+						"revisionDelta": 0,
+						"watchDelta": 0,
+						"createdIds": ["key-track"],
+						"changedIds": []
+					}
+				},
+				{
+					"id": "reuse",
+					"intent": "reuse the key with a different payload",
+					"batch": {
+						"idempotencyKey": "vector-key-alpha",
+						"operations": [
+							{
+								"kind": "create-track",
+								"track": {
+									"id": "key-track-other",
+									"kind": "text",
+									"name": "Other lane",
+									"hidden": false
+								}
+							}
+						]
+					},
+					"expect": {
+						"outcome": "rejected",
+						"errorCode": "duplicate",
+						"revisionDelta": 0,
+						"watchDelta": 0,
+						"reads": [{ "entity": "track", "id": "key-track-other", "absent": true }]
+					}
+				}
+			]
+		},
+		{
+			"id": "scenario/keyed-reuse-issue",
+			"title": "Validation names the idempotency conflict for a reused key",
+			"requires": ["validation"],
+			"steps": [
+				{
+					"id": "commit",
+					"intent": "commit one keyed batch",
+					"batch": {
+						"idempotencyKey": "vector-key-beta",
+						"operations": [
+							{
+								"kind": "create-track",
+								"track": {
+									"id": "beta-track",
+									"kind": "text",
+									"name": "Beta lane",
+									"hidden": false
+								}
+							}
+						]
+					},
+					"expect": {
+						"outcome": "accepted",
+						"revisionDelta": 1,
+						"watchDelta": 1,
+						"createdIds": ["beta-track"],
+						"changedIds": []
+					}
+				},
+				{
+					"id": "conflict",
+					"intent": "validate a different payload under the used key",
+					"batch": {
+						"idempotencyKey": "vector-key-beta",
+						"operations": [
+							{
+								"kind": "create-marker",
+								"marker": { "id": "beta-marker", "time": 4000 }
+							}
+						]
+					},
+					"expect": {
+						"outcome": "rejected",
+						"errorCode": "duplicate",
+						"valid": false,
+						"issueCodes": ["idempotency-conflict"],
+						"revisionDelta": 0,
+						"watchDelta": 0,
+						"reads": [{ "entity": "marker", "id": "beta-marker", "absent": true }]
+					}
+				}
+			]
+		},
+		{
+			"id": "scenario/agent-transaction-walk",
+			"title": "The Host-neutral agent walk: build, move, trim, split, patch the Project, replay, reuse, conflict",
+			"steps": [
+				{
+					"id": "build-structure",
+					"intent": "create two lanes, one asset and two clips in one atomic batch",
+					"batch": {
+						"operations": [
+							{
+								"kind": "create-track",
+								"track": {
+									"id": "agent-track-caption",
+									"kind": "text",
+									"name": "Agent captions",
+									"hidden": false
+								}
+							},
+							{
+								"kind": "create-track",
+								"track": {
+									"id": "agent-track-audio",
+									"kind": "audio",
+									"name": "Agent audio",
+									"hidden": false
+								}
+							},
+							{
+								"kind": "create-asset",
+								"asset": {
+									"id": "agent-asset-score",
+									"kind": "audio",
+									"name": "Agent score",
+									"duration": 480000
+								}
+							},
+							{
+								"kind": "create-clip",
+								"clip": {
+									"id": "agent-clip-caption",
+									"trackId": "agent-track-caption",
+									"startTime": 0,
+									"duration": 40000,
+									"trimStart": 0,
+									"trimEnd": 0
+								}
+							},
+							{
+								"kind": "create-clip",
+								"clip": {
+									"id": "agent-clip-score",
+									"trackId": "agent-track-audio",
+									"assetId": "agent-asset-score",
+									"startTime": 0,
+									"duration": 120000,
+									"trimStart": 0,
+									"trimEnd": 0
+								}
+							}
+						]
+					},
+					"expect": {
+						"outcome": "accepted",
+						"revisionDelta": 1,
+						"watchDelta": 1,
+						"createdIds": [
+							"agent-track-caption",
+							"agent-track-audio",
+							"agent-asset-score",
+							"agent-clip-caption",
+							"agent-clip-score"
+						],
+						"changedIds": [],
+						"reads": [
+							{
+								"entity": "track",
+								"id": "agent-track-caption",
+								"fields": { "kind": "text", "name": "Agent captions", "hidden": false }
+							},
+							{
+								"entity": "track",
+								"id": "agent-track-audio",
+								"fields": { "kind": "audio", "name": "Agent audio" }
+							},
+							{
+								"entity": "asset",
+								"id": "agent-asset-score",
+								"fields": { "kind": "audio", "name": "Agent score", "duration": 480000 }
+							},
+							{
+								"entity": "clip",
+								"id": "agent-clip-caption",
+								"fields": {
+									"trackId": "agent-track-caption",
+									"startTime": 0,
+									"duration": 40000,
+									"trimStart": 0,
+									"trimEnd": 0
+								}
+							},
+							{
+								"entity": "clip",
+								"id": "agent-clip-score",
+								"fields": {
+									"trackId": "agent-track-audio",
+									"assetId": "agent-asset-score",
+									"startTime": 0,
+									"duration": 120000
+								}
+							}
+						]
+					}
+				},
+				{
+					"id": "move-clip",
+					"intent": "move the caption clip along its own lane",
+					"batch": {
+						"operations": [
+							{
+								"kind": "update-clip",
+								"clipId": "agent-clip-caption",
+								"patch": { "startTime": 80000 }
+							}
+						]
+					},
+					"expect": {
+						"outcome": "accepted",
+						"revisionDelta": 1,
+						"watchDelta": 1,
+						"createdIds": [],
+						"changedIds": ["agent-clip-caption"],
+						"reads": [
+							{
+								"entity": "clip",
+								"id": "agent-clip-caption",
+								"fields": { "startTime": 80000, "duration": 40000 }
+							}
+						]
+					}
+				},
+				{
+					"id": "trim-clip",
+					"intent": "trim the score clip inside its source bounds",
+					"batch": {
+						"operations": [
+							{
+								"kind": "update-clip",
+								"clipId": "agent-clip-score",
+								"patch": { "duration": 80000, "trimStart": 4000 }
+							}
+						]
+					},
+					"expect": {
+						"outcome": "accepted",
+						"revisionDelta": 1,
+						"watchDelta": 1,
+						"createdIds": [],
+						"changedIds": ["agent-clip-score"],
+						"reads": [
+							{
+								"entity": "clip",
+								"id": "agent-clip-score",
+								"fields": { "duration": 80000, "trimStart": 4000, "trimEnd": 0 }
+							}
+						]
+					}
+				},
+				{
+					"id": "split-clip",
+					"intent": "split the caption clip into a head and a tail in one atomic batch",
+					"batch": {
+						"operations": [
+							{
+								"kind": "update-clip",
+								"clipId": "agent-clip-caption",
+								"patch": { "duration": 20000 }
+							},
+							{
+								"kind": "create-clip",
+								"clip": {
+									"id": "agent-clip-caption-tail",
+									"trackId": "agent-track-caption",
+									"startTime": 100000,
+									"duration": 20000,
+									"trimStart": 20000,
+									"trimEnd": 0
+								}
+							}
+						]
+					},
+					"expect": {
+						"outcome": "accepted",
+						"revisionDelta": 1,
+						"watchDelta": 1,
+						"createdIds": ["agent-clip-caption-tail"],
+						"changedIds": ["agent-clip-caption"],
+						"reads": [
+							{
+								"entity": "clip",
+								"id": "agent-clip-caption",
+								"fields": { "startTime": 80000, "duration": 20000 }
+							},
+							{
+								"entity": "clip",
+								"id": "agent-clip-caption-tail",
+								"fields": {
+									"startTime": 100000,
+									"duration": 20000,
+									"trimStart": 20000,
+									"trackId": "agent-track-caption"
+								}
+							}
+						]
+					}
+				},
+				{
+					"id": "patch-project",
+					"intent": "submit one typed Project patch",
+					"batch": {
+						"operations": [
+							{
+								"kind": "update-project",
+								"projectId": "$project",
+								"patch": {
+									"name": "Agent transaction walk",
+									"canvasWidth": 1280,
+									"canvasHeight": 720
+								}
+							}
+						]
+					},
+					"expect": {
+						"outcome": "accepted",
+						"revisionDelta": 1,
+						"watchDelta": 1,
+						"createdIds": [],
+						"changedIds": ["$project"],
+						"reads": [
+							{
+								"entity": "project",
+								"id": "$project",
+								"fields": {
+									"name": "Agent transaction walk",
+									"canvasWidth": 1280,
+									"canvasHeight": 720
+								}
+							}
+						]
+					}
+				},
+				{
+					"id": "keyed-commit",
+					"intent": "commit a keyed batch that the next step replays",
+					"batch": {
+						"idempotencyKey": "agent-walk-key",
+						"operations": [
+							{
+								"kind": "create-marker",
+								"marker": { "id": "agent-marker-cue", "time": 40000, "note": "cue" }
+							}
+						]
+					},
+					"expect": {
+						"outcome": "accepted",
+						"revisionDelta": 1,
+						"watchDelta": 1,
+						"createdIds": ["agent-marker-cue"],
+						"changedIds": [],
+						"reads": [
+							{
+								"entity": "marker",
+								"id": "agent-marker-cue",
+								"fields": { "time": 40000, "note": "cue" }
+							}
+						]
+					}
+				},
+				{
+					"id": "keyed-replay",
+					"intent": "replay the keyed batch unchanged",
+					"batch": {
+						"idempotencyKey": "agent-walk-key",
+						"operations": [
+							{
+								"kind": "create-marker",
+								"marker": { "id": "agent-marker-cue", "time": 40000, "note": "cue" }
+							}
+						]
+					},
+					"expect": {
+						"outcome": "replayed",
+						"revisionDelta": 0,
+						"watchDelta": 0,
+						"createdIds": ["agent-marker-cue"],
+						"changedIds": []
+					}
+				},
+				{
+					"id": "keyed-reuse-different-payload",
+					"intent": "reuse the key with a different payload",
+					"batch": {
+						"idempotencyKey": "agent-walk-key",
+						"operations": [
+							{
+								"kind": "create-marker",
+								"marker": { "id": "agent-marker-other", "time": 44000 }
+							}
+						]
+					},
+					"expect": {
+						"outcome": "rejected",
+						"errorCode": "duplicate",
+						"revisionDelta": 0,
+						"watchDelta": 0,
+						"reads": [
+							{ "entity": "marker", "id": "agent-marker-other", "absent": true }
+						]
+					}
+				},
+				{
+					"id": "stale-expected-revision",
+					"intent": "submit a stale expected revision",
+					"batch": {
+						"expectedRevisionOffset": -1,
+						"operations": [
+							{
+								"kind": "update-clip",
+								"clipId": "agent-clip-caption",
+								"patch": { "startTime": 160000 }
+							}
+						]
+					},
+					"expect": {
+						"outcome": "rejected",
+						"errorCode": "conflict",
+						"revisionDelta": 0,
+						"watchDelta": 0,
+						"reads": [
+							{
+								"entity": "clip",
+								"id": "agent-clip-caption",
+								"fields": { "startTime": 80000, "duration": 20000 }
+							}
+						]
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,139 @@
+{
+  "config": {
+    "argv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.surface.config.ts"
+    ],
+    "configFile": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\vite-example\\playwright.surface.config.ts",
+    "rootDir": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/apps/vite-example/tests/parity",
+    "failOnFlakyTests": false,
+    "forbidOnly": true,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/apps/vite-example/tests/.pw-output",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/apps/vite-example/tests/parity",
+        "testIgnore": [],
+        "testMatch": [
+          "/agent\\.pw\\.ts$/"
+        ],
+        "timeout": 900000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "../../rasen/changes/s0304-agent-transaction-evidence/evidence/browser-agent/next/results-next.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.0",
+    "workers": 1,
+    "webServer": {
+      "command": "bun run --cwd ../web start -- -H 127.0.0.1 -p 3017",
+      "url": "http://127.0.0.1:3017/surface-evidence",
+      "reuseExistingServer": false,
+      "timeout": 120000,
+      "env": {
+        "DATABASE_URL": "postgresql://opencut:opencut@localhost:5432/opencut",
+        "BETTER_AUTH_SECRET": "build-placeholder-secret-32-characters",
+        "NEXT_PUBLIC_SITE_URL": "http://localhost:3000",
+        "NEXT_PUBLIC_MARBLE_API_URL": "https://placeholder.example.com",
+        "UPSTASH_REDIS_REST_URL": "https://placeholder.example.com",
+        "UPSTASH_REDIS_REST_TOKEN": "build-placeholder-token",
+        "MARBLE_WORKSPACE_KEY": "build-placeholder",
+        "FREESOUND_CLIENT_ID": "build-placeholder",
+        "FREESOUND_API_KEY": "build-placeholder",
+        "NEXT_TELEMETRY_DISABLED": "1",
+        "NEXT_PUBLIC_R2_BUILD_MARKER": "missing-next-marker"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "agent.pw.ts",
+      "file": "agent.pw.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "Agent transaction evidence — next host",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 900000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2636,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-08-13T03:13:59.178Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "5e0eb9f6fd82e46bfc72-fcbe7d0f61b2a439862e",
+          "file": "agent.pw.ts",
+          "line": 108,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-08-13T03:13:55.570Z",
+    "duration": 8330.458,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

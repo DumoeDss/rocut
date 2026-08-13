@@ -3,12 +3,27 @@ import { defineConfig } from "@playwright/test";
 import parityConfig from "./playwright.config";
 
 const host = process.env.PARITY_HOST === "next" ? "next" : "vite";
-const spec =
-	process.env.PARITY_SPEC === "parity"
-		? "parity"
-		: process.env.PARITY_SPEC === "c4-next"
-			? "c4-next"
-			: "surface";
+
+const PARITY_SPECS = ["surface", "parity", "c4-next", "agent"] as const;
+type ParitySpec = (typeof PARITY_SPECS)[number];
+
+/**
+ * Unset means the default Surface matrix; anything else must be a spelled
+ * member. Falling back for an unrecognised value would run one slice's matrix
+ * under another slice's name and overwrite its committed evidence — a typo'd
+ * `PARITY_SPEC=agnet` would silently rewrite `browser-surface/`.
+ */
+function resolveSpec(value: string | undefined): ParitySpec {
+	if (value === undefined || value === "") return "surface";
+	for (const candidate of PARITY_SPECS) {
+		if (candidate === value) return candidate;
+	}
+	throw new Error(
+		`Unrecognised PARITY_SPEC="${value}". Expected one of: ${PARITY_SPECS.join(", ")}.`,
+	);
+}
+
+const spec = resolveSpec(process.env.PARITY_SPEC);
 if (spec === "c4-next" && host !== "next") {
 	throw new Error("The C4 Next runtime gate requires PARITY_HOST=next.");
 }
@@ -36,7 +51,9 @@ export default defineConfig({
 			? /parity\.pw\.ts$/
 			: spec === "c4-next"
 				? /c4-next\.runtime\.ts$/
-				: /surface\.pw\.ts$/,
+				: spec === "agent"
+					? /agent\.pw\.ts$/
+					: /surface\.pw\.ts$/,
 	use: {
 		...parityConfig.use,
 		baseURL: host === "next" ? nextBaseUrl : parityConfig.use?.baseURL,
@@ -47,9 +64,11 @@ export default defineConfig({
 			"json",
 			{
 				outputFile:
-					spec === "surface" || spec === "c4-next"
-						? `../../rasen/changes/${spec === "c4-next" ? "s0304-surface-mount-focus-lifecycle" : "s0304-surface-css-react-a11y"}/evidence/browser-surface/results-${host}${spec === "c4-next" ? "-c4" : ""}.json`
-						: `tests/parity-artifacts/results-${host}.json`,
+					spec === "agent"
+						? `../../rasen/changes/s0304-agent-transaction-evidence/evidence/browser-agent/${host}/results-${host}.json`
+						: spec === "surface" || spec === "c4-next"
+							? `../../rasen/changes/${spec === "c4-next" ? "s0304-surface-mount-focus-lifecycle" : "s0304-surface-css-react-a11y"}/evidence/browser-surface/results-${host}${spec === "c4-next" ? "-c4" : ""}.json`
+							: `tests/parity-artifacts/results-${host}.json`,
 			},
 		],
 	],
