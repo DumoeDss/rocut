@@ -10,8 +10,8 @@ import type {
 	ProjectStoreInspection,
 	ProjectStoreOperation,
 	ProjectSummary,
-} from "@/editor/ports";
-import { ProjectStoreError } from "@/editor/ports";
+} from "@opencut/editor-ports";
+import { ProjectStoreError } from "@opencut/editor-ports";
 import {
 	ATTACHMENT_BODY_PREFIX,
 	ATTACHMENT_STAGE_PREFIX,

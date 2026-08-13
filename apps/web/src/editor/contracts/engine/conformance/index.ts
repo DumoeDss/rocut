@@ -16,8 +16,8 @@ import {
 	trackId,
 	TransactionError,
 } from "../..";
-import type { ProjectRecord } from "@/editor/ports";
-import { ProjectStoreError } from "@/editor/ports";
+import type { ProjectRecord } from "@opencut/editor-ports";
+import { ProjectStoreError } from "@opencut/editor-ports";
 import type {
 	TransactionEngine,
 	TransactionEngineOptionalFeatures,

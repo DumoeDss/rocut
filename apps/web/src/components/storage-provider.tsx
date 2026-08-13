@@ -14,7 +14,7 @@ import type {
 	ProjectStore,
 	ProjectStoreCapacity,
 	ProjectStoreInspection,
-} from "@/editor/ports";
+} from "@opencut/editor-ports";
 import { useEditor } from "@/editor/use-editor";
 import { useEditorSession } from "@/editor/session/editor-session-provider";
 import {

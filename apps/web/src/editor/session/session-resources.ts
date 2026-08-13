@@ -23,7 +23,7 @@ import type {
 	RuntimeResourceHost,
 	WorkerHandle,
 	WorkerRequest,
-} from "@/editor/ports";
+} from "@opencut/editor-ports";
 
 /**
  * Runtime handles are process-global, while reconciliation is per session.
@@ -32,7 +32,7 @@ import type {
  * visible as untracked, preserving the acquisition-blindness check for C6.
  */
 const claimedGpuHandles = new Map<GpuHandleId, object>();
-import { isUnimplementedGpuRuntime } from "@/editor/ports";
+import { isUnimplementedGpuRuntime } from "@opencut/editor-ports";
 import type {
 	DisposalReport,
 	GpuResourceHandle,

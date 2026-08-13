@@ -30,13 +30,13 @@ if (process.env.OPENCUT_PROJECT_PERSISTENCE_TEST_ISOLATED !== "1") {
 	const { ProjectManager } = await import("../project-manager");
 	const { SessionPersistenceCoordinator } =
 		await import("@/editor/persistence");
-	const { ProjectStoreError } = await import("@/editor/ports");
+	const { ProjectStoreError } = await import("@opencut/editor-ports");
 	const {
 		InMemoryProjectStore,
 		InMemoryProjectStoreControl,
 		InMemoryRuntimeResourceHost,
-	} = await import("@/editor/ports/in-memory");
-	const { createInMemoryHost } = await import("@/editor/ports/in-memory/host");
+	} = await import("@opencut/editor-ports/in-memory");
+	const { createInMemoryHost } = await import("@opencut/editor-ports/in-memory/host");
 	const { createEditorSession } =
 		await import("@/editor/session/create-session");
 	const { editorForSession } =

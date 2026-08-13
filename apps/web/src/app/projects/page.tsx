@@ -15,7 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEditor, useEditorInstance } from "@/editor/use-editor";
-import type { EditorHost } from "@/editor/host/editor-host";
+import type { EditorHost } from "@opencut/editor-ports/host";
 import { createNextEditorHost } from "@/editor/host/next-editor-host";
 import { EditorSessionHost } from "@/editor/session";
 import { useProjectsStore } from "./store";

@@ -1,4 +1,4 @@
-import type { ProjectStore } from "@/editor/ports";
+import type { ProjectStore } from "@opencut/editor-ports";
 
 import {
 	DISPOSAL_ORACLE_CLASSES,

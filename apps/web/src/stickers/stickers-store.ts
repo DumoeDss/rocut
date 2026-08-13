@@ -12,7 +12,7 @@ import type { StickerCategory } from "@/stickers/types";
 import { registerDefaultStickerProviders } from "@/stickers/providers";
 import { stickersRegistry } from "@/stickers/registry";
 import { parseStickerId } from "@/stickers/sticker-id";
-import type { AssetResolver } from "@/editor/ports";
+import type { AssetResolver } from "@opencut/editor-ports";
 
 const MAX_RECENT_STICKERS = 50;
 

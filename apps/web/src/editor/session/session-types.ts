@@ -12,9 +12,9 @@ import type {
 	SessionCapabilities,
 	SessionDiagnostics,
 	SessionId,
-} from "@/editor/ports";
-import type { MigrationProgress } from "@/editor/ports";
-import type { ResolvedEditorHost } from "@/editor/host/editor-host";
+} from "@opencut/editor-ports";
+import type { MigrationProgress } from "@opencut/editor-ports";
+import type { ResolvedEditorHost } from "@opencut/editor-ports/host";
 import type { DisposalReport, SessionResources } from "./resources";
 
 export type SessionState = "created" | "mounted" | "suspended" | "disposed";

@@ -6,8 +6,8 @@ import type {
 	TransactionResult,
 } from "..";
 import { OPERATION_KINDS, TransactionError } from "..";
-import type { ProjectId, ProjectRecord, ProjectStore } from "@/editor/ports";
-import { ProjectStoreError } from "@/editor/ports";
+import type { ProjectId, ProjectRecord, ProjectStore } from "@opencut/editor-ports";
+import { ProjectStoreError } from "@opencut/editor-ports";
 import {
 	assertDecodedTransactionDocument,
 	assertEncodedTransactionDocument,

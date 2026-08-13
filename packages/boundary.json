@@ -19,14 +19,14 @@
   ],
   "ownership": [
     {
-      "path": "apps/web/src/editor/ports",
+      "path": "packages/editor-ports/src",
       "owner": "@opencut/editor-ports",
-      "why": "The one complete surface a Host author implements. Zero dependencies, no React, no DOM — spec §3.5's install, mechanically (design D1)."
+      "why": "The one complete surface a Host author implements. Zero dependencies, no React, no DOM — spec §3.5's install, mechanically (design D1). Moved from apps/web/src/editor/ports by S05 P1 task 3.1; this entry is now vestigial against the generic packages/*/src rule (task 2.1) and kept only so the why below stays attached to the file."
     },
     {
-      "path": "apps/web/src/editor/host/editor-host.ts",
+      "path": "packages/editor-ports/src/host/index.ts",
       "owner": "@opencut/editor-ports",
-      "why": "D3: ports/index.ts re-exports EditorHostNavigation from this module as the frozen name NavigationHost, and this module imports @/editor/ports — a live type-only module cycle today. Splitting the two directories into different packages would turn it into a package cycle. Assigning this file to editor-ports resolves the cycle without editing the frozen re-export."
+      "why": "D3: ports/index.ts re-exports EditorHostNavigation from this module as the frozen name NavigationHost, and this module imports @/editor/ports — a live type-only module cycle today. Splitting the two directories into different packages would turn it into a package cycle. Assigning this file to editor-ports resolves the cycle without editing the frozen re-export. Moved from apps/web/src/editor/host/editor-host.ts by S05 P1 task 3.1."
     },
     {
       "path": "apps/web/src/editor/contracts",

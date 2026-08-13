@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { ProjectRecord, ProjectSummary } from "@/editor/ports";
+import type { ProjectRecord, ProjectSummary } from "@opencut/editor-ports";
 
 await import("@/editor/session/__tests__/wasm-test-mock");
 const records = await import("../browser-project-store-records");

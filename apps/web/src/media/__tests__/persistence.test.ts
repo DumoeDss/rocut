@@ -3,9 +3,9 @@ import { SessionPersistenceCoordinator } from "@/editor/persistence";
 import {
 	InMemoryProjectStore,
 	InMemoryRuntimeResourceHost,
-} from "@/editor/ports/in-memory";
-import { createInMemoryHost } from "@/editor/ports/in-memory/host";
-import { UNIMPLEMENTED_RUNTIME_GPU } from "@/editor/ports/gpu-resources";
+} from "@opencut/editor-ports/in-memory";
+import { createInMemoryHost } from "@opencut/editor-ports/in-memory/host";
+import { UNIMPLEMENTED_RUNTIME_GPU } from "@opencut/editor-ports";
 import { createSessionResources } from "@/editor/session/session-resources";
 import {
 	decodePersistedMediaMetadata,

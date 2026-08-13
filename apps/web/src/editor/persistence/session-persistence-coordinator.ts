@@ -6,7 +6,7 @@ import type {
 	ProjectRecord,
 	ProjectStore,
 	ProjectSummary,
-} from "@/editor/ports";
+} from "@opencut/editor-ports";
 import { ProjectMutationArbiter } from "@/editor/transactions/opencut/arbiter";
 import { cloneOpaque, overlayOpaque } from "./opaque-value";
 import { decodeProject, encodeProject } from "./project-codec";

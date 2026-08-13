@@ -2,7 +2,7 @@ import { effectsRegistry, resolveEffectPasses } from "@/effects";
 import { buildDefaultParamValues } from "@/params/registry";
 import type { ParamValues } from "@/params";
 import { gpuRenderer } from "./gpu-renderer";
-import type { AssetResolver } from "@/editor/ports";
+import type { AssetResolver } from "@opencut/editor-ports";
 import {
 	getEffectPreviewSource,
 	releaseEffectPreviewSource,

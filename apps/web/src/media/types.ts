@@ -1,5 +1,5 @@
 import type { MediaAssetData } from "@/services/storage/types";
-import type { ObjectUrlHandle } from "@/editor/ports";
+import type { ObjectUrlHandle } from "@opencut/editor-ports";
 
 export type MediaType = "image" | "video" | "audio";
 

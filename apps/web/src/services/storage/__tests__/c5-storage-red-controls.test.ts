@@ -105,8 +105,8 @@ if (process.env.OPENCUT_C5_STORAGE_RED_ISOLATED !== "1") {
 		},
 	}));
 
-	const { InMemoryProjectStore } = await import("@/editor/ports/in-memory");
-	const { createInMemoryHost } = await import("@/editor/ports/in-memory/host");
+	const { InMemoryProjectStore } = await import("@opencut/editor-ports/in-memory");
+	const { createInMemoryHost } = await import("@opencut/editor-ports/in-memory/host");
 	const { createEditorSession } =
 		await import("@/editor/session/create-session");
 	const { editorForSession } =

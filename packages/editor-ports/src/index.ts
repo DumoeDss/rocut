@@ -97,7 +97,7 @@ export type {
  * names it — structurally identical, so no Host code changes. Renaming the
  * interface itself would have been a rename for the sake of a table.
  */
-export type { EditorHostNavigation as NavigationHost } from "../host/editor-host";
+export type { EditorHostNavigation as NavigationHost } from "./host";
 
 /**
  * The port roles, as one object.

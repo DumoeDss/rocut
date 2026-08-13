@@ -1,5 +1,5 @@
-import type { ResolvedEditorHost } from "@/editor/host/editor-host";
-import type { MigrationProgress, SessionDiagnostics } from "@/editor/ports";
+import type { ResolvedEditorHost } from "@opencut/editor-ports/host";
+import type { MigrationProgress, SessionDiagnostics } from "@opencut/editor-ports";
 
 /** One in-flight or completed migration promise per injected store identity. */
 const migrationRuns = new WeakMap<object, Promise<void>>();

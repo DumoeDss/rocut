@@ -1,4 +1,4 @@
-import type { AssetResolver, RuntimeAssetLoader } from "@/editor/ports";
+import type { AssetResolver, RuntimeAssetLoader } from "@opencut/editor-ports";
 import type { FontAtlas, FontAtlasEntry } from "@/fonts/types";
 import { SYSTEM_FONTS } from "@/fonts/system-fonts";
 

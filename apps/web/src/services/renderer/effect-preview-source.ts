@@ -1,4 +1,4 @@
-import type { AssetResolver } from "@/editor/ports";
+import type { AssetResolver } from "@opencut/editor-ports";
 import { createCanvasSurface } from "./canvas-utils";
 
 const PREVIEW_IMAGE_REF = { path: "effects/preview.jpg" } as const;

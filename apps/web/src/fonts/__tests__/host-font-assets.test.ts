@@ -5,7 +5,7 @@ import {
 	BrowserAssetResolver,
 	BrowserRuntimeAssetLoader,
 } from "@/editor/host/browser-runtime";
-import type { RuntimeAssetLoader } from "@/editor/ports";
+import type { RuntimeAssetLoader } from "@opencut/editor-ports";
 import {
 	clearFontAtlasCache,
 	fontChunkUrl,

@@ -2,7 +2,7 @@ import type {
 	ProjectAttachment,
 	ProjectRecord,
 	ProjectStore,
-} from "@/editor/ports";
+} from "@opencut/editor-ports";
 import { editorForSession } from "@/editor/runtime/session-core-owner";
 import { prepareWasmRuntimeProviders } from "@/editor/runtime/wasm-runtime-providers";
 import { createEditorSession, type EditorSession } from "@/editor/session";

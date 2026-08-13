@@ -9,7 +9,7 @@ import { createSoundsStore } from "@/sounds/sounds-store";
 import { createStickersStore } from "@/stickers/stickers-store";
 import { createTimelineStore } from "@/timeline/timeline-store";
 import { createCustomPresetsStore } from "@/timeline/components/graph-editor/custom-presets-store";
-import type { AssetResolver } from "@/editor/ports";
+import type { AssetResolver } from "@opencut/editor-ports";
 import type { SessionPersistenceCoordinator } from "@/editor/persistence";
 import { editorForSession } from "./session-core-owner";
 

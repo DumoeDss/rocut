@@ -3,8 +3,8 @@ import type {
 	ProjectStoreErrorScope,
 	ProjectStoreInspection,
 	ProjectStoreOperation,
-} from "@/editor/ports";
-import { ProjectStoreError } from "@/editor/ports";
+} from "@opencut/editor-ports";
+import { ProjectStoreError } from "@opencut/editor-ports";
 import {
 	cloneBrowserValue,
 	throwIfBrowserStoreAborted,

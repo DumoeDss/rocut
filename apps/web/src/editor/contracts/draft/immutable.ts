@@ -1,5 +1,5 @@
 import { TransactionError } from "..";
-import { ProjectStoreError } from "@/editor/ports";
+import { ProjectStoreError } from "@opencut/editor-ports";
 
 export function cloneDraftValue<Value>(value: Value): Value {
 	if (typeof structuredClone !== "function") {

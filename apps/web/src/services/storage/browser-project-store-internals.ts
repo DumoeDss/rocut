@@ -3,8 +3,8 @@ import type {
 	ProjectStoreErrorCode,
 	ProjectStoreErrorScope,
 	ProjectStoreOperation,
-} from "@/editor/ports";
-import { ProjectStoreError } from "@/editor/ports";
+} from "@opencut/editor-ports";
+import { ProjectStoreError } from "@opencut/editor-ports";
 import { CURRENT_PROJECT_VERSION } from "./migrations";
 
 export const BROWSER_STORE_SCHEMA_VERSION = CURRENT_PROJECT_VERSION;

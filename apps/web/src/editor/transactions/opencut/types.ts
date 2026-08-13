@@ -1,5 +1,5 @@
 import type { TransactionEngineDocument } from "@/editor/contracts/engine";
-import type { ProjectRecord } from "@/editor/ports";
+import type { ProjectRecord } from "@opencut/editor-ports";
 import type { MediaAsset } from "@/media/types";
 import type { TProject } from "@/project/types";
 

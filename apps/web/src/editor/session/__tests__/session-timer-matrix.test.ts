@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 
-import { InMemoryRuntimeResourceHost } from "@/editor/ports/in-memory";
+import { InMemoryRuntimeResourceHost } from "@opencut/editor-ports/in-memory";
 import { createSessionResources } from "../session-resources";
 
 type ScheduledKind = "timeout" | "interval" | "animationFrame";

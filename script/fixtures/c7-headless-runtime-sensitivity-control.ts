@@ -1,4 +1,4 @@
-import type { createInMemoryHost } from "@/editor/ports/in-memory/host";
+import type { createInMemoryHost } from "@opencut/editor-ports/in-memory/host";
 
 const EMPTY_WASM_MODULE = new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0]);
 

@@ -29,7 +29,7 @@ if (process.env.OPENCUT_MEDIA_PERSISTENCE_TEST_ISOLATED !== "1") {
 	const { SessionPersistenceCoordinator } =
 		await import("@/editor/persistence");
 	const { InMemoryProjectStore, InMemoryProjectStoreControl } =
-		await import("@/editor/ports/in-memory");
+		await import("@opencut/editor-ports/in-memory");
 
 	test("media manager commits before publication and preserves project isolation", async () => {
 		const control = new InMemoryProjectStoreControl();

@@ -1,4 +1,4 @@
-import type { ProjectStoreErrorScope } from "@/editor/ports";
+import type { ProjectStoreErrorScope } from "@opencut/editor-ports";
 import {
 	cloneBrowserValue,
 	isRecord,

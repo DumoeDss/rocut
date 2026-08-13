@@ -20,18 +20,18 @@ import type {
 	SessionId,
 	RuntimeGraphicsQuery,
 	RuntimeGpuResourceQuery,
-} from "@/editor/ports";
+} from "@opencut/editor-ports";
 import {
 	deriveGraphicsReport,
 	UNIMPLEMENTED_RUNTIME_GPU,
 	UNIMPLEMENTED_RUNTIME_GRAPHICS,
-} from "@/editor/ports";
+} from "@opencut/editor-ports";
 import {
 	createOwnedSessionEditor,
 	releaseEditorForSession,
 } from "@/editor/runtime/session-core-owner";
-import type { EditorHost, ResolvedEditorHost } from "@/editor/host/editor-host";
-import { resolveEditorHost } from "@/editor/host/editor-host";
+import type { EditorHost, ResolvedEditorHost } from "@opencut/editor-ports/host";
+import { resolveEditorHost } from "@opencut/editor-ports/host";
 import type { DisposalReport } from "./resources";
 import { createSessionResources } from "./session-resources";
 import {

@@ -1,6 +1,6 @@
 import type { Project, Revision } from "..";
 import { INITIAL_REVISION, revisionOf } from "..";
-import type { ProjectId, ProjectRecord, ProjectSummary } from "@/editor/ports";
+import type { ProjectId, ProjectRecord, ProjectSummary } from "@opencut/editor-ports";
 import { cloneTransactionValue } from "./clone";
 import type { TransactionDocumentAdapter } from "./adapter";
 import { isTransactionEngineDocument } from "./invariant";

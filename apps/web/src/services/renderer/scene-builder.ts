@@ -17,7 +17,7 @@ import {
 	readBlendModeFromParams,
 	readOpacityFromParams,
 } from "@/rendering";
-import type { AssetResolver } from "@/editor/ports";
+import type { AssetResolver } from "@opencut/editor-ports";
 
 const PREVIEW_MAX_IMAGE_SIZE = 2048;
 

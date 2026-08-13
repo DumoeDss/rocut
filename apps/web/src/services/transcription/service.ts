@@ -1,4 +1,4 @@
-import type { WorkerHandle, WorkerId } from "@/editor/ports";
+import type { WorkerHandle, WorkerId } from "@opencut/editor-ports";
 import type { SessionResources } from "@/editor/session/resources";
 import type {
 	TranscriptionLanguage,

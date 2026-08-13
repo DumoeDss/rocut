@@ -10,9 +10,9 @@ import {
 	trackId,
 	TransactionError,
 } from "../..";
-import type { ProjectRecord } from "@/editor/ports";
-import { ProjectStoreError } from "@/editor/ports";
-import { createInMemoryProjectStoreFixture } from "@/editor/ports/in-memory";
+import type { ProjectRecord } from "@opencut/editor-ports";
+import { ProjectStoreError } from "@opencut/editor-ports";
+import { createInMemoryProjectStoreFixture } from "@opencut/editor-ports/in-memory";
 import type { TransactionDocumentAdapter } from "../adapter";
 import type {
 	TransactionEngineConformanceFactory,

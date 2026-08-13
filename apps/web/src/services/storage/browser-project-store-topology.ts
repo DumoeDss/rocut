@@ -1,7 +1,7 @@
 import type {
 	ProjectStoreErrorScope,
 	ProjectStoreOperation,
-} from "@/editor/ports";
+} from "@opencut/editor-ports";
 import {
 	projectAuthorityStoreName,
 	type BrowserStorageIdentity,

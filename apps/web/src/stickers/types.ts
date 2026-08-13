@@ -1,5 +1,5 @@
 import type { STICKER_CATEGORIES } from "@/stickers/categories";
-import type { AssetResolver } from "@/editor/ports";
+import type { AssetResolver } from "@opencut/editor-ports";
 
 export type StickerCategory = keyof typeof STICKER_CATEGORIES;
 

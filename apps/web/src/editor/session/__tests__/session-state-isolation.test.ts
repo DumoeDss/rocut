@@ -142,9 +142,9 @@ if (process.env.OPENCUT_SESSION_STATE_TEST_ISOLATED !== "1") {
 	const { WasmRuntimeGpuResourceQuery, WasmRuntimeGraphicsQuery } =
 		await import("opencut-wasm");
 	const { createEditorSession } = await import("../create-session");
-	const { createInMemoryHost } = await import("@/editor/ports/in-memory/host");
+	const { createInMemoryHost } = await import("@opencut/editor-ports/in-memory/host");
 	const { InMemoryRuntimeResourceHost } =
-		await import("@/editor/ports/in-memory");
+		await import("@opencut/editor-ports/in-memory");
 	const { editorForSession } =
 		await import("@/editor/runtime/session-core-owner");
 	const {

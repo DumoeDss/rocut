@@ -4,8 +4,8 @@ import {
 	createInMemoryProjectStoreFixture,
 	InMemoryProjectStore,
 	type InMemoryRuntimeResourceHost,
-} from "@/editor/ports/in-memory";
-import { createInMemoryHost } from "@/editor/ports/in-memory/host";
+} from "@opencut/editor-ports/in-memory";
+import { createInMemoryHost } from "@opencut/editor-ports/in-memory/host";
 import {
 	createHeadlessEditorSession,
 	type HeadlessEditorSession,

@@ -13,7 +13,7 @@ import { buildScene } from "@/services/renderer/scene-builder";
 import { createTimelineAudioBuffer } from "@/media/audio";
 import { formatTimecode } from "opencut-wasm";
 import { downloadBlob } from "@/utils/browser";
-import type { AssetResolver } from "@/editor/ports";
+import type { AssetResolver } from "@opencut/editor-ports";
 import type { VideoCache } from "@/services/video-cache/service";
 import { resetEffectPreviewService } from "@/services/renderer/effect-preview";
 import { SessionActivityGenerationError } from "@/editor/session/session-resources";

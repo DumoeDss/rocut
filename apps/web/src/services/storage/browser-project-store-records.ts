@@ -3,8 +3,8 @@ import type {
 	ProjectAttachment,
 	ProjectRecord,
 	ProjectSummary,
-} from "@/editor/ports";
-import { ProjectStoreError } from "@/editor/ports/project-store";
+} from "@opencut/editor-ports";
+import { ProjectStoreError } from "@opencut/editor-ports";
 import {
 	ATTACHMENT_ENVELOPE_KEY,
 	LIBRARY_ENVELOPE_KEY,

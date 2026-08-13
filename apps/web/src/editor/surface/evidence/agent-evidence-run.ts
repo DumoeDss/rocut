@@ -25,7 +25,7 @@ import {
 	type AgentReopenResult,
 	type VectorTarget,
 } from "@/editor/contracts/vectors";
-import type { EditorHost } from "@/editor/host/editor-host";
+import type { EditorHost } from "@opencut/editor-ports/host";
 import { editorForSession } from "@/editor/runtime/session-core-owner";
 import { prepareWasmRuntimeProviders } from "@/editor/runtime/wasm-runtime-providers";
 import { createEditorSession, type EditorSession } from "@/editor/session";

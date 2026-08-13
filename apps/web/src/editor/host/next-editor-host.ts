@@ -1,4 +1,4 @@
-import type { EditorHost } from "@/editor/host/editor-host";
+import type { EditorHost } from "@opencut/editor-ports/host";
 import {
 	createBrowserRuntimePorts,
 	resolveHostPath,
@@ -7,7 +7,7 @@ import {
 	createInMemoryPorts,
 	DeterministicIdGenerator,
 	RecordingDiagnostics,
-} from "@/editor/ports/in-memory";
+} from "@opencut/editor-ports/in-memory";
 import { BrowserProjectStore } from "@/services/storage/browser-project-store";
 import {
 	DEFAULT_BROWSER_STORAGE_IDENTITY,

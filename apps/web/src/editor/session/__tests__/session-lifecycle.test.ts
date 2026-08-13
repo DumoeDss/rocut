@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-type-assertion -- lifecycle fixtures intentionally inspect private ownership seams and construct minimal DOM/runtime doubles. */
 import { beforeEach, describe, expect, test } from "bun:test";
 import { fileURLToPath } from "node:url";
-import { createInMemoryHost } from "@/editor/ports/in-memory/host";
+import { createInMemoryHost } from "@opencut/editor-ports/in-memory/host";
 import {
 	InMemoryProjectStore,
 	RecordingDiagnostics,
-} from "@/editor/ports/in-memory";
-import { PORT_ROLES, type MigrationOutcome } from "@/editor/ports";
+} from "@opencut/editor-ports/in-memory";
+import { PORT_ROLES, type MigrationOutcome } from "@opencut/editor-ports";
 
 if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 	test("session lifecycle suite runs in an isolated wasm-mock process", () => {

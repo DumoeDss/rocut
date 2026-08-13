@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import type { EditorHost } from "@/editor/host/editor-host";
+import type { EditorHost } from "@opencut/editor-ports/host";
 import { EditorHostProvider } from "@/editor/host/editor-host-context";
 import {
 	prepareWasmRuntimeProviders,

@@ -1,5 +1,5 @@
-import type { ProjectAttachment } from "@/editor/ports";
-import { ProjectStoreError } from "@/editor/ports";
+import type { ProjectAttachment } from "@opencut/editor-ports";
+import { ProjectStoreError } from "@opencut/editor-ports";
 import type { SessionPersistenceCoordinator } from "@/editor/persistence";
 import type { MediaAsset, MediaType } from "@/media/types";
 import type { SessionResources } from "@/editor/session/resources";

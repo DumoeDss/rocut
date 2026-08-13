@@ -21,8 +21,8 @@ if (process.env.OPENCUT_HEADLESS_MIGRATION_ISOLATED !== "1") {
 	});
 } else {
 	await import("./wasm-test-mock");
-	const { createInMemoryHost } = await import("@/editor/ports/in-memory/host");
-	const { InMemoryProjectStore } = await import("@/editor/ports/in-memory");
+	const { createInMemoryHost } = await import("@opencut/editor-ports/in-memory/host");
+	const { InMemoryProjectStore } = await import("@opencut/editor-ports/in-memory");
 	const { createEditorSession, MigrationFailedError } =
 		await import("../create-session");
 	const { createHeadlessEditorSession } = await import("../headless");

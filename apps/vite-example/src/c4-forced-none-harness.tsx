@@ -12,7 +12,7 @@ import type {
 	GraphicsCapabilityReport,
 	RuntimeGpuResourceQuery,
 	RuntimeGraphicsQuery,
-} from "@/editor/ports";
+} from "@opencut/editor-ports";
 import {
 	createEditorSession,
 	EditorSessionProvider,

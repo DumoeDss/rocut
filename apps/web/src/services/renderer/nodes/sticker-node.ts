@@ -4,7 +4,7 @@ import {
 	type ResolvedVisualSourceNodeState,
 	type VisualNodeParams,
 } from "./visual-node";
-import type { AssetResolver } from "@/editor/ports";
+import type { AssetResolver } from "@opencut/editor-ports";
 import { stickerSourceCacheKey } from "./sticker-cache-key";
 
 export interface StickerNodeParams extends VisualNodeParams {

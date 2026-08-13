@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { ProjectStoreErrorScope } from "@/editor/ports";
+import type { ProjectStoreErrorScope } from "@opencut/editor-ports";
 import type { BrowserStorageIdentity } from "../browser-project-store-internals";
 import type {
 	BrowserStorageTopology,

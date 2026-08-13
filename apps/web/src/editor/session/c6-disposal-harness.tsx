@@ -8,8 +8,8 @@ import type {
 	RuntimeGpuResourceQuery,
 	RuntimeResourceHost,
 	WorkerHandle,
-} from "@/editor/ports";
-import type { EditorHost } from "@/editor/host/editor-host";
+} from "@opencut/editor-ports";
+import type { EditorHost } from "@opencut/editor-ports/host";
 import { editorForSession } from "@/editor/runtime/session-core-owner";
 import { prepareWasmRuntimeProviders } from "@/editor/runtime/wasm-runtime-providers";
 import { createRafLoop } from "@/hooks/use-raf-loop";

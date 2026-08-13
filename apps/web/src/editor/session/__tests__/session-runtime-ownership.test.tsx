@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { fileURLToPath } from "node:url";
 import { createElement } from "react";
 import { renderToString } from "react-dom/server";
-import type { EditorHost } from "@/editor/host/editor-host";
+import type { EditorHost } from "@opencut/editor-ports/host";
 import type { EditorSession } from "../session-types";
 
 if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
@@ -44,9 +44,9 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 		await import("@/editor/runtime/wasm-runtime-providers");
 	const { ensureEditorProcessBootstrap } =
 		await import("@/editor/runtime/process-bootstrap");
-	const { createInMemoryHost } = await import("@/editor/ports/in-memory/host");
+	const { createInMemoryHost } = await import("@opencut/editor-ports/in-memory/host");
 	const { C6TestAudioContext } = await import("./c6-test-audio-context");
-	const { RecordingDiagnostics } = await import("@/editor/ports/in-memory");
+	const { RecordingDiagnostics } = await import("@opencut/editor-ports/in-memory");
 	const { useEditor, useEditorInstance } = await import("@/editor/use-editor");
 	const { storesForSession } = await import("../../runtime/session-stores");
 

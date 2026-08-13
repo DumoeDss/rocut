@@ -2,7 +2,7 @@ import type {
 	LogRecord,
 	ProjectStore,
 	ProjectStoreInspection,
-} from "@/editor/ports";
+} from "@opencut/editor-ports";
 
 export type StorageProviderOperation =
 	| "initialize"

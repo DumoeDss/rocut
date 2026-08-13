@@ -1,5 +1,5 @@
 import type { EditorCore } from "@/core";
-import type { AudioContextHandle } from "@/editor/ports";
+import type { AudioContextHandle } from "@opencut/editor-ports";
 import type { TimerHandle } from "@/editor/session/resources";
 import { TICKS_PER_SECOND } from "@/wasm";
 import { clampRetimeRate, shouldMaintainPitch } from "@/retime/rate";

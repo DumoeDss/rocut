@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { fileURLToPath } from "node:url";
-import type { RuntimeResourceHost } from "@/editor/ports";
+import type { RuntimeResourceHost } from "@opencut/editor-ports";
 
 if (process.env.OPENCUT_AUDIO_RESOURCE_TEST_ISOLATED !== "1") {
 	test("finite audio resource lifecycle runs in an isolated WASM mock process", () => {
@@ -25,7 +25,7 @@ if (process.env.OPENCUT_AUDIO_RESOURCE_TEST_ISOLATED !== "1") {
 	const { C6TestAudioBuffer, C6TestAudioContext } =
 		await import("@/editor/session/__tests__/c6-test-audio-context");
 	const { UNIMPLEMENTED_RUNTIME_GPU } =
-		await import("@/editor/ports/gpu-resources");
+		await import("@opencut/editor-ports");
 	const { createSessionResources, SessionResourceReleaseError } =
 		await import("@/editor/session/session-resources");
 	const { decodeAudioToFloat32 } = await import("../audio");

@@ -10,7 +10,7 @@ import type {
 	ProjectId as PortProjectId,
 	ProjectRecord,
 	ProjectSummary,
-} from "@/editor/ports";
+} from "@opencut/editor-ports";
 import { cloneOpaque } from "@/editor/persistence/opaque-value";
 import {
 	decodeProject,

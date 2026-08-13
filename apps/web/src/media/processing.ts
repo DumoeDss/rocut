@@ -2,7 +2,7 @@ import { toast } from "sonner";
 import { getMediaTypeFromFile } from "@/media/media-utils";
 import { formatStorageBytes } from "@/services/storage/quota";
 import type { MediaAsset } from "@/media/types";
-import type { ProjectStore } from "@/editor/ports";
+import type { ProjectStore } from "@opencut/editor-ports";
 import type { SessionResources } from "@/editor/session/resources";
 import { readVideoFile } from "./mediabunny";
 import type { VideoFileData } from "./mediabunny";

@@ -10,7 +10,7 @@ import type {
 	WorkerHandle,
 	WorkerMessageEvent,
 	WorkerRequest,
-} from "@/editor/ports";
+} from "@opencut/editor-ports";
 
 function assertLogicalPath(path: string): void {
 	if (!path || path.startsWith("/") || path.startsWith("\\")) {

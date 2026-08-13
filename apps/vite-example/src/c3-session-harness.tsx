@@ -8,7 +8,7 @@ import {
 	type EditorSession,
 } from "@/editor/session";
 import { useEditor, useEditorInstance } from "@/editor/use-editor";
-import { createInMemoryHost } from "@/editor/ports/in-memory/host";
+import { createInMemoryHost } from "@opencut/editor-ports/in-memory/host";
 import { MigrationDialog } from "@/project/components/migration-dialog";
 import { IndexedDBAdapter } from "@/services/storage/indexeddb-adapter";
 import type { CanvasRenderer } from "@/services/renderer/canvas-renderer";

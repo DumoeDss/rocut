@@ -1,4 +1,4 @@
-import { ProjectStoreError } from "@/editor/ports";
+import { ProjectStoreError } from "@opencut/editor-ports";
 
 import {
 	createDisposableBrowserStorageIdentity,

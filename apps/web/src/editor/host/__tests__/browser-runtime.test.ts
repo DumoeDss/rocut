@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { WorkerRequest } from "@/editor/ports";
+import type { WorkerRequest } from "@opencut/editor-ports";
 import {
 	BrowserAssetResolver,
 	BrowserRuntimeAssetLoader,

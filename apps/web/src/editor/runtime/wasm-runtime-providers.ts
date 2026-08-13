@@ -8,7 +8,7 @@ import {
 import type {
 	RuntimeGpuResourceQuery,
 	RuntimeGraphicsQuery,
-} from "@/editor/ports";
+} from "@opencut/editor-ports";
 
 export interface PreparedWasmRuntimeProviders {
 	readonly runtimeGraphics: RuntimeGraphicsQuery;

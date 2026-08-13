@@ -97,21 +97,70 @@
 
 ## 3. Stage A — extract `@opencut/editor-ports` (18 files)
 
-- [ ] 3.1 `git mv` `apps/web/src/editor/ports/**` → `packages/editor-ports/src/**`, and
+- [x] 3.1 `git mv` `apps/web/src/editor/ports/**` → `packages/editor-ports/src/**`, and
       `apps/web/src/editor/host/editor-host.ts` → `packages/editor-ports/src/host/index.ts`
       (the path `./host` already declares).
-- [ ] 3.2 Rewrite intra-package `@/` specifiers to the form chosen at 1.2. Rewrite the ports
+      Done — 18 files moved (confirmed as `R` rename entries in `git diff --staged -M`, not
+      untracked add+delete pairs). `editor-host.ts` landed at `host/index.ts` as the declared entry.
+- [x] 3.2 Rewrite intra-package `@/` specifiers to the form chosen at 1.2. Rewrite the ports
       package's reference to `../host/editor-host` to its new internal location, preserving the
       frozen `NavigationHost` re-export exactly as written.
-- [ ] 3.3 Rewrite every incoming specifier repo-wide (~157 edges): `@/editor/ports`,
+      Done — 3 intra-package specifiers rewritten to relative form; `NavigationHost` re-export
+      byte-identical (diffed against HEAD, zero change to that line).
+- [x] 3.3 Rewrite every incoming specifier repo-wide (~157 edges): `@/editor/ports`,
       `@/editor/ports/in-memory`, `@/editor/ports/in-memory/host`, `@/editor/host/editor-host` →
       the declared `@opencut/editor-ports` entries. Discharge the two known debts here:
       `@/editor/ports/project-store` (4 uses) and `@/editor/ports/gpu-resources` (3 uses) both
       become the package root, which already exports every symbol they take.
-- [ ] 3.4 Update `packages/boundary.json` ownership entries whose `path` no longer exists, keeping
+      Done — 103 files touched (plus the 18 renamed files' own headers), 168 line replacements
+      staged. The two documented debt discharges (`project-store`, `gpu-resources` → package root)
+      are intentional and are now allowlisted by name in `script/check-resolution-equivalence.mjs`
+      rather than silently accepted — anything else landing on the barrel still fails the check.
+- [x] 3.4 Update `packages/boundary.json` ownership entries whose `path` no longer exists, keeping
       each `why` intact and adding the new location.
-- [ ] 3.5 Full verification pass: boundary checker (edge census must not collapse), type baseline,
+      Done — entries repointed to `packages/editor-ports/src/**`; `why` text unchanged.
+- [x] 3.5 Full verification pass: boundary checker (edge census must not collapse), type baseline,
       `bun test` over the ports suites, and the resolution-equivalence check from task 6.1.
+      Done, all four green:
+      - boundary checker: 5/5 rules PASS (949 files scanned, 341 cross-package edges, 157
+        `@opencut/*` specifiers, 17 entry files, 1032 total).
+      - type baseline: 941 repo files type-checked (4328 incl. lib/deps) — an exact match to the
+        pre-move baseline, after widening `apps/web/tsconfig.json`'s `include` with
+        `../../packages/*/src/**/*.ts(x)` (see finding below). 3/13 diagnostics, zero regressions.
+      - `bun test packages/editor-ports/src`: 28 pass, 0 fail, 179 `expect()` calls.
+      - resolution-equivalence check (task 6.1, built early — see below): 72 specifiers examined,
+        2 allowed (the task-3.3 debt discharge), 0 mismatches, 0 dangling. PASS.
+
+      **Findings carried forward for Group 9 (P3/P7 handoff):**
+      1. `apps/web/tsconfig.json`'s directory-scoped `include` glob does not reach a file with zero
+         importers once that file moves outside `apps/web/`. Three orphan leaf files
+         (`packages/editor-ports/src/__tests__/{conformance.test.ts,port-roles.compile-guard.ts,
+         runtime-graphics-query.compile-guard.ts}`) fell out of the type-check program silently —
+         `tsc` doesn't error on a file it never sees, so this only surfaced as a file-count mismatch
+         (938 vs. 941), not a diagnostic. This qualifies (does not contradict) task 2.5's finding
+         that transitively-reached files need no tsconfig changes: it's specifically files with NO
+         importer, reached only by directory glob before the move, that need the widened include.
+         Stage B and C will need the same include entries already added — no further widening
+         should be needed since the glob is already package-root-relative, not per-package.
+      2. Three CRLF-reintroduction near-misses this Slice, from three different tools: `git mv`
+         (none — clean), a `cp` from a `/tmp`-backed backup file (100%-changed diff, fixed via
+         `sed -i 's/\r$//'`), and — reconfirmed clean this time — the Edit tool's own surgical
+         insertion (0 CR before and after). The standing discipline (diff against `git show HEAD:$f
+         | tr -dc '\r' | wc -c` before trusting any restored/edited file) caught the `cp` case
+         immediately; it would not have been visible from `git diff --stat` alone.
+      3. `script/check-resolution-equivalence.mjs` (design E8, task 6.1) was built and debugged
+         against Stage A rather than deferred to Group 6, per design's "runs at every stage above,
+         not only here." Three real bugs were found and fixed while building it, each a distinct
+         failure mode worth naming for whoever re-reads it before the Group 6 full-scale run: (a)
+         confusing "genuinely dangling" with "specifier form not recognised" collapsed to a single
+         silent-false-PASS state (0 real checks, 72/72 misreported as skipped); (b) a single Map
+         reused for two opposite-direction lookups (new→old vs. old→new) silently fell back to
+         wrong values via `?? fallback`, producing a worse-looking but *more informative* 72/72
+         false-FAIL that led straight to the real bug; (c) `existsSync()` alone matches a directory,
+         not just a file — the ports package's own `./host` / `../host` relative imports were
+         probed against the bare `host` directory before the `/index.ts` suffix was ever tried,
+         requiring `statSync(...).isFile()` on every resolution candidate. The script is unmodified
+         and ready to run again at Stage B, C, and the full Group 6 rewrite.
 
 ## 4. Stage B — extract `@opencut/editor-contracts` (54 files)
 

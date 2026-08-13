@@ -1,6 +1,6 @@
 import type { Asset, Clip, Marker, Project, Track } from "..";
 import { validateFrameRate } from "..";
-import type { ProjectId } from "@/editor/ports";
+import type { ProjectId } from "@opencut/editor-ports";
 import type {
 	TransactionEngineDocument,
 	TransactionIdempotencyEntry,

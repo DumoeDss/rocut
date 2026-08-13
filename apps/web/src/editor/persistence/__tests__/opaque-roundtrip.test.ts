@@ -24,9 +24,9 @@ if (process.env.OPENCUT_C5_COORDINATOR_ISOLATED !== "1") {
 	await import("@/editor/session/__tests__/wasm-test-mock");
 	const { createEditorSession } =
 		await import("@/editor/session/create-session");
-	const { createInMemoryHost } = await import("@/editor/ports/in-memory/host");
+	const { createInMemoryHost } = await import("@opencut/editor-ports/in-memory/host");
 	const { createInMemoryProjectStoreFixture, InMemoryProjectStore } =
-		await import("@/editor/ports/in-memory");
+		await import("@opencut/editor-ports/in-memory");
 	const { SessionPersistenceCoordinator } = await import("../index");
 
 	type Raw = Record<string, unknown>;

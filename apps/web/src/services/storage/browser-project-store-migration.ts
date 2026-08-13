@@ -3,8 +3,8 @@ import type {
 	MigrationOutcome,
 	ProjectSummary,
 	ProjectStoreErrorScope,
-} from "@/editor/ports";
-import { ProjectStoreError } from "@/editor/ports";
+} from "@opencut/editor-ports";
+import { ProjectStoreError } from "@opencut/editor-ports";
 import { migrations } from "./migrations";
 import type { LegacyStorageTarget } from "./migrations/base";
 import { getLegacyTimelineDbNames } from "./migrations/v1-to-v2";

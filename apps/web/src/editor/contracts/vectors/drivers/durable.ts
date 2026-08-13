@@ -19,8 +19,8 @@ import {
 	openTransactionEngine,
 	type TransactionEngine,
 } from "../../engine";
-import type { ProjectId, ProjectRecord, ProjectSummary } from "@/editor/ports";
-import { InMemoryProjectStore } from "@/editor/ports/in-memory";
+import type { ProjectId, ProjectRecord, ProjectSummary } from "@opencut/editor-ports";
+import { InMemoryProjectStore } from "@opencut/editor-ports/in-memory";
 import type { VectorTargetFactory, VectorTargetHandle } from "../runner";
 import type { VectorSeedDocument } from "../schema";
 

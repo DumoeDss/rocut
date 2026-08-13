@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-type-assertion -- This proof probe must wrap heterogeneous platform constructors and methods without importing them. */
-import type { EditorHost } from "@/editor/host/editor-host";
-import type { ProjectStore } from "@/editor/ports/project-store";
+import type { EditorHost } from "@opencut/editor-ports/host";
+import type { ProjectStore } from "@opencut/editor-ports";
 
 type ProbeHost = "node" | "vite" | "next";
 type ProbeEnvironment = "browser" | "server" | "node";

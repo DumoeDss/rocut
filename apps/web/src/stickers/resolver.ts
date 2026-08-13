@@ -2,7 +2,7 @@ import { stickersRegistry } from "./registry";
 import { parseStickerId } from "./sticker-id";
 import { registerDefaultStickerProviders } from "./providers";
 import type { StickerResolveOptions } from "@/stickers/types";
-import type { AssetResolver } from "@/editor/ports";
+import type { AssetResolver } from "@opencut/editor-ports";
 
 export function resolveStickerId({
 	stickerId,

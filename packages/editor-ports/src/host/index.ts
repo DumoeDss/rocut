@@ -16,7 +16,7 @@
  * this interface is the frozen, platform-neutral shape they are wired to.
  */
 
-import type { EditorHostPorts } from "@/editor/ports";
+import type { EditorHostPorts } from "..";
 
 export interface EditorHostNavigation {
 	/**

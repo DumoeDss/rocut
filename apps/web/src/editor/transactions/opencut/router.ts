@@ -20,7 +20,7 @@ import {
 	type TransactionValidationOutcome,
 } from "@/editor/contracts/engine";
 import type { SessionPersistenceCoordinator } from "@/editor/persistence";
-import type { ProjectId as PortProjectId, ProjectRecord } from "@/editor/ports";
+import type { ProjectId as PortProjectId, ProjectRecord } from "@opencut/editor-ports";
 import type { MediaAsset } from "@/media/types";
 import { createOpenCutTransactionDocumentAdapter } from "./adapter";
 import { ProjectMutationArbiter } from "./arbiter";

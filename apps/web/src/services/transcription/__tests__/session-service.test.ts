@@ -4,7 +4,7 @@ import type {
 	WorkerHandle,
 	WorkerMessageEvent,
 	WorkerRequest,
-} from "@/editor/ports";
+} from "@opencut/editor-ports";
 import { createTranscriptionService } from "../service";
 
 class FakeHandle implements WorkerHandle {

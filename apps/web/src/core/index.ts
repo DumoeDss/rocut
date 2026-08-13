@@ -17,8 +17,8 @@ import {
 } from "@/services/transcription/service";
 import type { EditorSession } from "@/editor/session/session-types";
 import { SessionPersistenceCoordinator } from "@/editor/persistence";
-import { ProjectStoreError } from "@/editor/ports";
-import type { AssetResolver } from "@/editor/ports";
+import { ProjectStoreError } from "@opencut/editor-ports";
+import type { AssetResolver } from "@opencut/editor-ports";
 import type { SessionResources } from "@/editor/session/resources";
 import { SessionOpenCutTransactions } from "@/editor/transactions/opencut";
 

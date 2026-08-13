@@ -24,8 +24,8 @@ import {
 import * as engineImplementation from "../../engine/engine";
 import { bindNativeCommittedTransactionStateCapture } from "../../engine/engine";
 import * as projectionImplementation from "../../engine/projection";
-import { createInMemoryProjectStoreFixture } from "@/editor/ports/in-memory";
-import { ProjectStoreError } from "@/editor/ports";
+import { createInMemoryProjectStoreFixture } from "@opencut/editor-ports/in-memory";
+import { ProjectStoreError } from "@opencut/editor-ports";
 import type {
 	DraftEditingConformanceFactory,
 	DraftEditingConformanceFactoryOptions,

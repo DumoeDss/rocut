@@ -1,9 +1,9 @@
-import type { ProjectStoreConformanceFixture } from "@/editor/ports/conformance";
-import type { EditorHost } from "@/editor/host/editor-host";
+import type { ProjectStoreConformanceFixture } from "@opencut/editor-ports/conformance";
+import type { EditorHost } from "@opencut/editor-ports/host";
 import {
 	createInMemoryPorts,
 	RecordingDiagnostics,
-} from "@/editor/ports/in-memory";
+} from "@opencut/editor-ports/in-memory";
 import { createEditorSession } from "@/editor/session/create-session";
 import {
 	BrowserProjectStore,

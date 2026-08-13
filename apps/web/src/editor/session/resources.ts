@@ -40,7 +40,7 @@ import type {
 	ResourceId,
 	WorkerHandle,
 	WorkerRequest,
-} from "@/editor/ports";
+} from "@opencut/editor-ports";
 
 /**
  * The five classes, named. Not a generic `Disposable[]`: a class with no entries

@@ -31,7 +31,7 @@ import type { TimelineDragData } from "@/timeline/drag";
 import type { MediaAsset } from "@/media/types";
 import type { ProcessedMediaAsset } from "@/media/processing";
 import { roundFrameTime, type MediaTime } from "@/wasm";
-import type { ProjectStore } from "@/editor/ports";
+import type { ProjectStore } from "@opencut/editor-ports";
 import type { SessionResources } from "@/editor/session/resources";
 
 // --- Config ---

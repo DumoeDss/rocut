@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import type { EditorHost, EditorHostBase } from "@/editor/host/editor-host";
+import type { EditorHost, EditorHostBase } from "@opencut/editor-ports/host";
 
 const EditorHostContext = createContext<EditorHost | null>(null);
 
@@ -33,7 +33,7 @@ export function useEditorHost(): EditorHostBase {
 		throw new Error(
 			"useEditorHost() was called outside an <EditorHostProvider>. The editor " +
 				"requires a host to supply its project id, navigation callbacks and " +
-				"service endpoints — see apps/web/src/editor/host/editor-host.ts.",
+				"service endpoints — see packages/editor-ports/src/host/index.ts.",
 		);
 	}
 	return host;

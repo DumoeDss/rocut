@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import type { WorkerRequest } from "@/editor/ports";
+import type { WorkerRequest } from "@opencut/editor-ports";
 import { createEditorSession } from "@/editor/session";
 import { createViteEditorHost } from "./host/vite-host-config";
 

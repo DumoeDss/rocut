@@ -25,14 +25,14 @@ if (process.env.OPENCUT_SESSION_ASYNC_STORE_TEST_ISOLATED !== "1") {
 	const { createCustomPresetsStore } =
 		await import("@/timeline/components/graph-editor/custom-presets-store");
 	const { createStickersStore } = await import("@/stickers/stickers-store");
-	const { createInMemoryHost } = await import("@/editor/ports/in-memory/host");
+	const { createInMemoryHost } = await import("@opencut/editor-ports/in-memory/host");
 	const { C6TestAudioBuffer, C6TestAudioContext } =
 		await import("./c6-test-audio-context");
 	const {
 		InMemoryProjectStore,
 		InMemoryProjectStoreControl,
 		RecordingDiagnostics,
-	} = await import("@/editor/ports/in-memory");
+	} = await import("@opencut/editor-ports/in-memory");
 	const { SessionPersistenceCoordinator } =
 		await import("@/editor/persistence");
 	const { storesForSession } = await import("@/editor/runtime/session-stores");

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
-import { ProjectStoreError } from "@/editor/ports/project-store";
+import { ProjectStoreError } from "@opencut/editor-ports";
 import type {
 	BrowserMediaBinding,
 	BrowserStorageIdentity,

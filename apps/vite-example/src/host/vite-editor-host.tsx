@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { EditorHost } from "@/editor/host/editor-host";
+import type { EditorHost } from "@opencut/editor-ports/host";
 import { EditorSessionHost } from "@/editor/session";
 import { createViteEditorHost } from "./vite-host-config";
 

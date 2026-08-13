@@ -22,10 +22,10 @@ if (process.env.OPENCUT_PROCESSING_CAPACITY_TEST_ISOLATED !== "1") {
 } else {
 	await import("@/editor/session/__tests__/wasm-test-mock");
 	const { InMemoryProjectStore, InMemoryProjectStoreControl } =
-		await import("@/editor/ports/in-memory");
-	const { createInMemoryHost } = await import("@/editor/ports/in-memory/host");
+		await import("@opencut/editor-ports/in-memory");
+	const { createInMemoryHost } = await import("@opencut/editor-ports/in-memory/host");
 	const { UNIMPLEMENTED_RUNTIME_GPU } =
-		await import("@/editor/ports/gpu-resources");
+		await import("@opencut/editor-ports");
 	const { createSessionResources } =
 		await import("@/editor/session/session-resources");
 	const { inspectMediaCapacity, processMediaAssets } =

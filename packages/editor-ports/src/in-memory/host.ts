@@ -6,7 +6,7 @@
  * adapter author who implements one port should not have to construct a host to
  * exercise it.
  */
-import type { EditorHost } from "../../host/editor-host";
+import type { EditorHost } from "../host";
 import type { GraphicsDeclaration } from "../environment";
 import type { ProjectStore } from "../project-store";
 import { createInMemoryPorts } from "./index";

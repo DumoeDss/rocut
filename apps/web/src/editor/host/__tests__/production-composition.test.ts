@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { fileURLToPath } from "node:url";
-import type { EditorHost } from "../editor-host";
+import type { EditorHost } from "@opencut/editor-ports/host";
 import {
 	BrowserAssetResolver,
 	BrowserRuntimeAssetLoader,
@@ -41,8 +41,8 @@ if (process.env.OPENCUT_C5_HOST_TEST_ISOLATED !== "1") {
 		import("../../../../../vite-example/src/host/vite-host-config"),
 		import("@/services/storage/browser-project-store"),
 		import("../../session/create-session"),
-		import("../../ports/in-memory/host"),
-		import("../../ports/in-memory"),
+		import("@opencut/editor-ports/in-memory/host"),
+		import("@opencut/editor-ports/in-memory"),
 		import("../../runtime/session-core-owner"),
 		import("../../session/c6-durable-reopen"),
 	]);

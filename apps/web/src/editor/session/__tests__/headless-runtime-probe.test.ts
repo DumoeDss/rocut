@@ -107,9 +107,9 @@ test("pre-load probe proves every global and Host sensitivity path", async () =>
 		});
 		runtimeProbe.markSubjectLoadStarted();
 		const { InMemoryProjectStore, InMemoryRuntimeResourceHost } =
-			await import("@/editor/ports/in-memory");
+			await import("@opencut/editor-ports/in-memory");
 		const { createInMemoryHost } =
-			await import("@/editor/ports/in-memory/host");
+			await import("@opencut/editor-ports/in-memory/host");
 		const store = new InMemoryProjectStore();
 		const runtime = new InMemoryRuntimeResourceHost();
 		const host = {

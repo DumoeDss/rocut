@@ -1,11 +1,11 @@
-import type { EditorHost } from "@/editor/host/editor-host";
-import { resolveEditorHost } from "@/editor/host/editor-host";
+import type { EditorHost } from "@opencut/editor-ports/host";
+import { resolveEditorHost } from "@opencut/editor-ports/host";
 import type {
 	ProjectId,
 	SessionDiagnostics,
 	SessionEvent,
 	SessionId,
-} from "@/editor/ports";
+} from "@opencut/editor-ports";
 import { SessionPersistenceCoordinator } from "@/editor/persistence";
 import { runStoreMigrationOnce } from "./migration-gate";
 

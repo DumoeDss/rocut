@@ -28,7 +28,7 @@ if (process.env.OPENCUT_PROJECT_THUMBNAIL_TEST_ISOLATED !== "1") {
 	const { ProjectManager } = await import("@/core/managers/project-manager");
 	const { SessionPersistenceCoordinator } =
 		await import("@/editor/persistence");
-	const { InMemoryProjectStore } = await import("@/editor/ports/in-memory");
+	const { InMemoryProjectStore } = await import("@opencut/editor-ports/in-memory");
 
 	const mediaTime = (value: number) => value as MediaTime;
 

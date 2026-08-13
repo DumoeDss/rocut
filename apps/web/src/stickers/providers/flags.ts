@@ -7,7 +7,7 @@ import type {
 } from "../types";
 import { REGIONS, REGION_GROUPS } from "./countries-data";
 import type { CountryRecord, RegionId } from "./countries-data";
-import type { AssetResolver } from "@/editor/ports";
+import type { AssetResolver } from "@opencut/editor-ports";
 
 const FLAGS_PROVIDER_ID = "flags";
 const DEFAULT_SEARCH_LIMIT = 100;

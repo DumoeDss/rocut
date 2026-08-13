@@ -13,7 +13,7 @@ import type {
 	StickerProvider,
 	StickerSearchResult,
 } from "./types";
-import type { AssetResolver } from "@/editor/ports";
+import type { AssetResolver } from "@opencut/editor-ports";
 
 const DEFAULT_BROWSE_LIMIT = 12;
 const DEFAULT_SEARCH_LIMIT = 100;
