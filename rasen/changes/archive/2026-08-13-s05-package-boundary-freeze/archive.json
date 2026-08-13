@@ -1,0 +1,49 @@
+{
+  "change": "s05-package-boundary-freeze",
+  "archivedAt": "2026-08-13T14:54:41.837Z",
+  "codeCommit": "4f72dcefeead4f989b8334ff2ed3dda7270ba81b",
+  "planningBranch": "feat/s05-community-beta",
+  "planningTreeState": "dirty",
+  "evidence": [
+    {
+      "path": "evidence/checker-family-regression.md",
+      "sha256": "b632ee1fcb525a7137660d93523e411cea19b3e70aaefcddc746b93950144067"
+    },
+    {
+      "path": "evidence/inverted-import-proof.md",
+      "sha256": "36329276557fc87d58855c19a49ccf5728ffc7395ed6cfc72b10f599ea9d9b69"
+    },
+    {
+      "path": "evidence/load-time-guard-proof.md",
+      "sha256": "5a2bab5786e1bfbe4aea28decb44dd032cda8e0f8d49a3ec58a09d5182e68263"
+    },
+    {
+      "path": "evidence/negative-and-converse-control.md",
+      "sha256": "55ece5c840610e7f02eb4d7f2a9f76a2f4583a19d08da21dd19ceffa3dfd83ac"
+    },
+    {
+      "path": "evidence/normal-run.md",
+      "sha256": "69cd7b34a2f17d4663b2dd2a8b40ee4a19f8d6d7eed8eee3cb8cc6448e4a0ffb"
+    },
+    {
+      "path": "evidence/npm-pack-dry-run.md",
+      "sha256": "a62c17476fb3408ee6c2aed1dff6006be47f7a691d2ce78505b9ad0ebb0c38b3"
+    },
+    {
+      "path": "evidence/review-report.md",
+      "sha256": "fc00d0fd4d41f30b9482f6b6c17ec876cf177531e1dda2be5878d3f50bc3954e"
+    },
+    {
+      "path": "evidence/ship-log.md",
+      "sha256": "df0d68fd7b542eb7b9c20eb2e352efdf896a5f486b0d17cfbb5ef85b24c28f41"
+    }
+  ],
+  "probes": [],
+  "handoffAbsorbed": [],
+  "ephemeraDiscarded": [
+    "auto-run.json"
+  ],
+  "missing": [
+    "verification-report"
+  ]
+}

@@ -1,0 +1,5772 @@
+{
+  "schemaVersion": 2,
+  "transactionId": "feed4c39-03c0-4877-98ed-269cb22f4e8a",
+  "planHash": "5c4c41d58281789b1b0ad5c3ae9724cba2b2b2b65868f0153dccdaf586f71d67",
+  "change": "s05-package-boundary-freeze",
+  "phase": "complete",
+  "activePath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\s05-package-boundary-freeze",
+  "stagePath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\archive\\.rasen-archive-stage-feed4c39-03c0-4877-98ed-269cb22f4e8a",
+  "finalPath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\archive\\2026-08-13-s05-package-boundary-freeze",
+  "ephemeraDisposed": [
+    "auto-run.json"
+  ],
+  "phaseFingerprints": {
+    "payload-copied": {
+      "state": "verified",
+      "scope": "stage",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "6d3c256c44cef452c49e38c848fba28f937a57f7e50511ae161ceb172e473f93",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "f740855436b3c2a28e0536ca9061ceca2f40e0f98cc324b643527bc63b0d9ae2"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "25481",
+            "sha256": "82e209bb5dc4edee78cfaf78b3eda5cbd51cb5e2b55fef1e609bee27b24d2b2a"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5163",
+            "sha256": "b632ee1fcb525a7137660d93523e411cea19b3e70aaefcddc746b93950144067"
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5183",
+            "sha256": "36329276557fc87d58855c19a49ccf5728ffc7395ed6cfc72b10f599ea9d9b69"
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5470",
+            "sha256": "5a2bab5786e1bfbe4aea28decb44dd032cda8e0f8d49a3ec58a09d5182e68263"
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5011",
+            "sha256": "55ece5c840610e7f02eb4d7f2a9f76a2f4583a19d08da21dd19ceffa3dfd83ac"
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2265",
+            "sha256": "69cd7b34a2f17d4663b2dd2a8b40ee4a19f8d6d7eed8eee3cb8cc6448e4a0ffb"
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2630",
+            "sha256": "a62c17476fb3408ee6c2aed1dff6006be47f7a691d2ce78505b9ad0ebb0c38b3"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "91087",
+            "sha256": "fc00d0fd4d41f30b9482f6b6c17ec876cf177531e1dda2be5878d3f50bc3954e"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12198",
+            "sha256": "973e7669d9235fadfe98cba6913ea20e166030042341ef6de397bef1ac1f413d"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6277",
+            "sha256": "4dde4ca29982a1006168cc3dbafa076b2a492dc60e3408d98c67406d5dbba0dc"
+          },
+          {
+            "path": "signals",
+            "kind": "directory"
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10104",
+            "sha256": "787e4b3636ee91b1a222245119826448b93db932c38ed6ae55ac37051dd50722"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9191",
+            "sha256": "2f5b944b13d325838ce501c31ec007f0df6849050400e1c2c5edf8655a95b306"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "281474988385450",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "89d82257daf51f480f5408a72b81f3faf74006d4d62e6ed701df7868ca7ac185",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "281474988385449",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786617543407348900",
+              "ctimeNs": "1786617543703153900"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174708934779",
+              "mode": "33206",
+              "size": "25481",
+              "mtimeNs": "1786629930929402000",
+              "ctimeNs": "1786629930935663100"
+            }
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899918194529",
+              "mode": "33206",
+              "size": "5163",
+              "mtimeNs": "1786624706682066600",
+              "ctimeNs": "1786624706683067500"
+            }
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899918194481",
+              "mode": "33206",
+              "size": "5183",
+              "mtimeNs": "1786624706600120600",
+              "ctimeNs": "1786624706603278900"
+            }
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "16607023637604278",
+              "mode": "33206",
+              "size": "5470",
+              "mtimeNs": "1786628545538773700",
+              "ctimeNs": "1786628545602041600"
+            }
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899918194442",
+              "mode": "33206",
+              "size": "5011",
+              "mtimeNs": "1786624706525563900",
+              "ctimeNs": "1786624706527716700"
+            }
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894905073",
+              "mode": "33206",
+              "size": "2265",
+              "mtimeNs": "1786624706453254600",
+              "ctimeNs": "1786624706458007800"
+            }
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949965107847",
+              "mode": "33206",
+              "size": "2630",
+              "mtimeNs": "1786620769785410300",
+              "ctimeNs": "1786620769791059900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324848668908",
+              "mode": "33206",
+              "size": "91087",
+              "mtimeNs": "1786631345864778700",
+              "ctimeNs": "1786631345864778700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "381117118467733086",
+              "mode": "33206",
+              "size": "12198",
+              "mtimeNs": "1786631850327865100",
+              "ctimeNs": "1786631850334313000"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949965107845",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599638323669",
+              "mode": "33206",
+              "size": "6277",
+              "mtimeNs": "1786619173950763200",
+              "ctimeNs": "1786619173956681000"
+            }
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649685633579",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "signals",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324848658993",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2814749778789547",
+              "mode": "33206",
+              "size": "10104",
+              "mtimeNs": "1786619497833693700",
+              "ctimeNs": "1786619497840105200"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "562949965104265",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899918525576",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706937107",
+              "mode": "33206",
+              "size": "9191",
+              "mtimeNs": "1786631890277881300",
+              "ctimeNs": "1786631890283922300"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "6d3c256c44cef452c49e38c848fba28f937a57f7e50511ae161ceb172e473f93",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "f740855436b3c2a28e0536ca9061ceca2f40e0f98cc324b643527bc63b0d9ae2"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "25481",
+            "sha256": "82e209bb5dc4edee78cfaf78b3eda5cbd51cb5e2b55fef1e609bee27b24d2b2a"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5163",
+            "sha256": "b632ee1fcb525a7137660d93523e411cea19b3e70aaefcddc746b93950144067"
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5183",
+            "sha256": "36329276557fc87d58855c19a49ccf5728ffc7395ed6cfc72b10f599ea9d9b69"
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5470",
+            "sha256": "5a2bab5786e1bfbe4aea28decb44dd032cda8e0f8d49a3ec58a09d5182e68263"
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5011",
+            "sha256": "55ece5c840610e7f02eb4d7f2a9f76a2f4583a19d08da21dd19ceffa3dfd83ac"
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2265",
+            "sha256": "69cd7b34a2f17d4663b2dd2a8b40ee4a19f8d6d7eed8eee3cb8cc6448e4a0ffb"
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2630",
+            "sha256": "a62c17476fb3408ee6c2aed1dff6006be47f7a691d2ce78505b9ad0ebb0c38b3"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "91087",
+            "sha256": "fc00d0fd4d41f30b9482f6b6c17ec876cf177531e1dda2be5878d3f50bc3954e"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12198",
+            "sha256": "973e7669d9235fadfe98cba6913ea20e166030042341ef6de397bef1ac1f413d"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6277",
+            "sha256": "4dde4ca29982a1006168cc3dbafa076b2a492dc60e3408d98c67406d5dbba0dc"
+          },
+          {
+            "path": "signals",
+            "kind": "directory"
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10104",
+            "sha256": "787e4b3636ee91b1a222245119826448b93db932c38ed6ae55ac37051dd50722"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9191",
+            "sha256": "2f5b944b13d325838ce501c31ec007f0df6849050400e1c2c5edf8655a95b306"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2533274800937712",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "1baf607dbc948e9bbb2a36fb5e4c9e6a8a2f896cedbde6b544d32deed0694418",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095185",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786632885062696400",
+              "ctimeNs": "1786632885062696400"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805842",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786617543407348900",
+              "ctimeNs": "1786617543703153900"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324847516500",
+              "mode": "33206",
+              "size": "25481",
+              "mtimeNs": "1786629930929402000",
+              "ctimeNs": "1786629930935663100"
+            }
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805846",
+              "mode": "33206",
+              "size": "5163",
+              "mtimeNs": "1786624706682066600",
+              "ctimeNs": "1786624706683067500"
+            }
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805847",
+              "mode": "33206",
+              "size": "5183",
+              "mtimeNs": "1786624706600120600",
+              "ctimeNs": "1786624706603278900"
+            }
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095192",
+              "mode": "33206",
+              "size": "5470",
+              "mtimeNs": "1786628545538773700",
+              "ctimeNs": "1786628545602041600"
+            }
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095193",
+              "mode": "33206",
+              "size": "5011",
+              "mtimeNs": "1786624706525563900",
+              "ctimeNs": "1786624706527716700"
+            }
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095194",
+              "mode": "33206",
+              "size": "2265",
+              "mtimeNs": "1786624706453254600",
+              "ctimeNs": "1786624706458007800"
+            }
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095195",
+              "mode": "33206",
+              "size": "2630",
+              "mtimeNs": "1786620769785410300",
+              "ctimeNs": "1786620769791059900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095196",
+              "mode": "33206",
+              "size": "91087",
+              "mtimeNs": "1786631345864778700",
+              "ctimeNs": "1786631345864778700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095197",
+              "mode": "33206",
+              "size": "12198",
+              "mtimeNs": "1786631850327865100",
+              "ctimeNs": "1786631850334313000"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805845",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095198",
+              "mode": "33206",
+              "size": "6277",
+              "mtimeNs": "1786619173950763200",
+              "ctimeNs": "1786619173956681000"
+            }
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095200",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "signals",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095199",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095203",
+              "mode": "33206",
+              "size": "10104",
+              "mtimeNs": "1786619497833693700",
+              "ctimeNs": "1786619497840105200"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095202",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095201",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095204",
+              "mode": "33206",
+              "size": "9191",
+              "mtimeNs": "1786631890277881300",
+              "ctimeNs": "1786631890283922300"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "6d3c256c44cef452c49e38c848fba28f937a57f7e50511ae161ceb172e473f93",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "f740855436b3c2a28e0536ca9061ceca2f40e0f98cc324b643527bc63b0d9ae2"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "25481",
+            "sha256": "82e209bb5dc4edee78cfaf78b3eda5cbd51cb5e2b55fef1e609bee27b24d2b2a"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5163",
+            "sha256": "b632ee1fcb525a7137660d93523e411cea19b3e70aaefcddc746b93950144067"
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5183",
+            "sha256": "36329276557fc87d58855c19a49ccf5728ffc7395ed6cfc72b10f599ea9d9b69"
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5470",
+            "sha256": "5a2bab5786e1bfbe4aea28decb44dd032cda8e0f8d49a3ec58a09d5182e68263"
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5011",
+            "sha256": "55ece5c840610e7f02eb4d7f2a9f76a2f4583a19d08da21dd19ceffa3dfd83ac"
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2265",
+            "sha256": "69cd7b34a2f17d4663b2dd2a8b40ee4a19f8d6d7eed8eee3cb8cc6448e4a0ffb"
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2630",
+            "sha256": "a62c17476fb3408ee6c2aed1dff6006be47f7a691d2ce78505b9ad0ebb0c38b3"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "91087",
+            "sha256": "fc00d0fd4d41f30b9482f6b6c17ec876cf177531e1dda2be5878d3f50bc3954e"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12198",
+            "sha256": "973e7669d9235fadfe98cba6913ea20e166030042341ef6de397bef1ac1f413d"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6277",
+            "sha256": "4dde4ca29982a1006168cc3dbafa076b2a492dc60e3408d98c67406d5dbba0dc"
+          },
+          {
+            "path": "signals",
+            "kind": "directory"
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10104",
+            "sha256": "787e4b3636ee91b1a222245119826448b93db932c38ed6ae55ac37051dd50722"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9191",
+            "sha256": "2f5b944b13d325838ce501c31ec007f0df6849050400e1c2c5edf8655a95b306"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2533274800937712",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "1baf607dbc948e9bbb2a36fb5e4c9e6a8a2f896cedbde6b544d32deed0694418",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095185",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786632885062696400",
+              "ctimeNs": "1786632885062696400"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805842",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786617543407348900",
+              "ctimeNs": "1786617543703153900"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324847516500",
+              "mode": "33206",
+              "size": "25481",
+              "mtimeNs": "1786629930929402000",
+              "ctimeNs": "1786629930935663100"
+            }
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805846",
+              "mode": "33206",
+              "size": "5163",
+              "mtimeNs": "1786624706682066600",
+              "ctimeNs": "1786624706683067500"
+            }
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805847",
+              "mode": "33206",
+              "size": "5183",
+              "mtimeNs": "1786624706600120600",
+              "ctimeNs": "1786624706603278900"
+            }
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095192",
+              "mode": "33206",
+              "size": "5470",
+              "mtimeNs": "1786628545538773700",
+              "ctimeNs": "1786628545602041600"
+            }
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095193",
+              "mode": "33206",
+              "size": "5011",
+              "mtimeNs": "1786624706525563900",
+              "ctimeNs": "1786624706527716700"
+            }
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095194",
+              "mode": "33206",
+              "size": "2265",
+              "mtimeNs": "1786624706453254600",
+              "ctimeNs": "1786624706458007800"
+            }
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095195",
+              "mode": "33206",
+              "size": "2630",
+              "mtimeNs": "1786620769785410300",
+              "ctimeNs": "1786620769791059900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095196",
+              "mode": "33206",
+              "size": "91087",
+              "mtimeNs": "1786631345864778700",
+              "ctimeNs": "1786631345864778700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095197",
+              "mode": "33206",
+              "size": "12198",
+              "mtimeNs": "1786631850327865100",
+              "ctimeNs": "1786631850334313000"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805845",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095198",
+              "mode": "33206",
+              "size": "6277",
+              "mtimeNs": "1786619173950763200",
+              "ctimeNs": "1786619173956681000"
+            }
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095200",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "signals",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095199",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095203",
+              "mode": "33206",
+              "size": "10104",
+              "mtimeNs": "1786619497833693700",
+              "ctimeNs": "1786619497840105200"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095202",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095201",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095204",
+              "mode": "33206",
+              "size": "9191",
+              "mtimeNs": "1786631890277881300",
+              "ctimeNs": "1786631890283922300"
+            }
+          }
+        ]
+      }
+    },
+    "handoff-finalized": {
+      "state": "verified",
+      "scope": "stage",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "6d3c256c44cef452c49e38c848fba28f937a57f7e50511ae161ceb172e473f93",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "f740855436b3c2a28e0536ca9061ceca2f40e0f98cc324b643527bc63b0d9ae2"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "25481",
+            "sha256": "82e209bb5dc4edee78cfaf78b3eda5cbd51cb5e2b55fef1e609bee27b24d2b2a"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5163",
+            "sha256": "b632ee1fcb525a7137660d93523e411cea19b3e70aaefcddc746b93950144067"
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5183",
+            "sha256": "36329276557fc87d58855c19a49ccf5728ffc7395ed6cfc72b10f599ea9d9b69"
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5470",
+            "sha256": "5a2bab5786e1bfbe4aea28decb44dd032cda8e0f8d49a3ec58a09d5182e68263"
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5011",
+            "sha256": "55ece5c840610e7f02eb4d7f2a9f76a2f4583a19d08da21dd19ceffa3dfd83ac"
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2265",
+            "sha256": "69cd7b34a2f17d4663b2dd2a8b40ee4a19f8d6d7eed8eee3cb8cc6448e4a0ffb"
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2630",
+            "sha256": "a62c17476fb3408ee6c2aed1dff6006be47f7a691d2ce78505b9ad0ebb0c38b3"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "91087",
+            "sha256": "fc00d0fd4d41f30b9482f6b6c17ec876cf177531e1dda2be5878d3f50bc3954e"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12198",
+            "sha256": "973e7669d9235fadfe98cba6913ea20e166030042341ef6de397bef1ac1f413d"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6277",
+            "sha256": "4dde4ca29982a1006168cc3dbafa076b2a492dc60e3408d98c67406d5dbba0dc"
+          },
+          {
+            "path": "signals",
+            "kind": "directory"
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10104",
+            "sha256": "787e4b3636ee91b1a222245119826448b93db932c38ed6ae55ac37051dd50722"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9191",
+            "sha256": "2f5b944b13d325838ce501c31ec007f0df6849050400e1c2c5edf8655a95b306"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2533274800937712",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "1baf607dbc948e9bbb2a36fb5e4c9e6a8a2f896cedbde6b544d32deed0694418",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095185",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786632885062696400",
+              "ctimeNs": "1786632885062696400"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805842",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786617543407348900",
+              "ctimeNs": "1786617543703153900"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324847516500",
+              "mode": "33206",
+              "size": "25481",
+              "mtimeNs": "1786629930929402000",
+              "ctimeNs": "1786629930935663100"
+            }
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805846",
+              "mode": "33206",
+              "size": "5163",
+              "mtimeNs": "1786624706682066600",
+              "ctimeNs": "1786624706683067500"
+            }
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805847",
+              "mode": "33206",
+              "size": "5183",
+              "mtimeNs": "1786624706600120600",
+              "ctimeNs": "1786624706603278900"
+            }
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095192",
+              "mode": "33206",
+              "size": "5470",
+              "mtimeNs": "1786628545538773700",
+              "ctimeNs": "1786628545602041600"
+            }
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095193",
+              "mode": "33206",
+              "size": "5011",
+              "mtimeNs": "1786624706525563900",
+              "ctimeNs": "1786624706527716700"
+            }
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095194",
+              "mode": "33206",
+              "size": "2265",
+              "mtimeNs": "1786624706453254600",
+              "ctimeNs": "1786624706458007800"
+            }
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095195",
+              "mode": "33206",
+              "size": "2630",
+              "mtimeNs": "1786620769785410300",
+              "ctimeNs": "1786620769791059900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095196",
+              "mode": "33206",
+              "size": "91087",
+              "mtimeNs": "1786631345864778700",
+              "ctimeNs": "1786631345864778700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095197",
+              "mode": "33206",
+              "size": "12198",
+              "mtimeNs": "1786631850327865100",
+              "ctimeNs": "1786631850334313000"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805845",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095198",
+              "mode": "33206",
+              "size": "6277",
+              "mtimeNs": "1786619173950763200",
+              "ctimeNs": "1786619173956681000"
+            }
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095200",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "signals",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095199",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095203",
+              "mode": "33206",
+              "size": "10104",
+              "mtimeNs": "1786619497833693700",
+              "ctimeNs": "1786619497840105200"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095202",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095201",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095204",
+              "mode": "33206",
+              "size": "9191",
+              "mtimeNs": "1786631890277881300",
+              "ctimeNs": "1786631890283922300"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "6d3c256c44cef452c49e38c848fba28f937a57f7e50511ae161ceb172e473f93",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "f740855436b3c2a28e0536ca9061ceca2f40e0f98cc324b643527bc63b0d9ae2"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "25481",
+            "sha256": "82e209bb5dc4edee78cfaf78b3eda5cbd51cb5e2b55fef1e609bee27b24d2b2a"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5163",
+            "sha256": "b632ee1fcb525a7137660d93523e411cea19b3e70aaefcddc746b93950144067"
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5183",
+            "sha256": "36329276557fc87d58855c19a49ccf5728ffc7395ed6cfc72b10f599ea9d9b69"
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5470",
+            "sha256": "5a2bab5786e1bfbe4aea28decb44dd032cda8e0f8d49a3ec58a09d5182e68263"
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5011",
+            "sha256": "55ece5c840610e7f02eb4d7f2a9f76a2f4583a19d08da21dd19ceffa3dfd83ac"
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2265",
+            "sha256": "69cd7b34a2f17d4663b2dd2a8b40ee4a19f8d6d7eed8eee3cb8cc6448e4a0ffb"
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2630",
+            "sha256": "a62c17476fb3408ee6c2aed1dff6006be47f7a691d2ce78505b9ad0ebb0c38b3"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "91087",
+            "sha256": "fc00d0fd4d41f30b9482f6b6c17ec876cf177531e1dda2be5878d3f50bc3954e"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12198",
+            "sha256": "973e7669d9235fadfe98cba6913ea20e166030042341ef6de397bef1ac1f413d"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6277",
+            "sha256": "4dde4ca29982a1006168cc3dbafa076b2a492dc60e3408d98c67406d5dbba0dc"
+          },
+          {
+            "path": "signals",
+            "kind": "directory"
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10104",
+            "sha256": "787e4b3636ee91b1a222245119826448b93db932c38ed6ae55ac37051dd50722"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9191",
+            "sha256": "2f5b944b13d325838ce501c31ec007f0df6849050400e1c2c5edf8655a95b306"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2533274800937712",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "1baf607dbc948e9bbb2a36fb5e4c9e6a8a2f896cedbde6b544d32deed0694418",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095185",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786632885062696400",
+              "ctimeNs": "1786632885062696400"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805842",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786617543407348900",
+              "ctimeNs": "1786617543703153900"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324847516500",
+              "mode": "33206",
+              "size": "25481",
+              "mtimeNs": "1786629930929402000",
+              "ctimeNs": "1786629930935663100"
+            }
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805846",
+              "mode": "33206",
+              "size": "5163",
+              "mtimeNs": "1786624706682066600",
+              "ctimeNs": "1786624706683067500"
+            }
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805847",
+              "mode": "33206",
+              "size": "5183",
+              "mtimeNs": "1786624706600120600",
+              "ctimeNs": "1786624706603278900"
+            }
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095192",
+              "mode": "33206",
+              "size": "5470",
+              "mtimeNs": "1786628545538773700",
+              "ctimeNs": "1786628545602041600"
+            }
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095193",
+              "mode": "33206",
+              "size": "5011",
+              "mtimeNs": "1786624706525563900",
+              "ctimeNs": "1786624706527716700"
+            }
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095194",
+              "mode": "33206",
+              "size": "2265",
+              "mtimeNs": "1786624706453254600",
+              "ctimeNs": "1786624706458007800"
+            }
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095195",
+              "mode": "33206",
+              "size": "2630",
+              "mtimeNs": "1786620769785410300",
+              "ctimeNs": "1786620769791059900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095196",
+              "mode": "33206",
+              "size": "91087",
+              "mtimeNs": "1786631345864778700",
+              "ctimeNs": "1786631345864778700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095197",
+              "mode": "33206",
+              "size": "12198",
+              "mtimeNs": "1786631850327865100",
+              "ctimeNs": "1786631850334313000"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805845",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095198",
+              "mode": "33206",
+              "size": "6277",
+              "mtimeNs": "1786619173950763200",
+              "ctimeNs": "1786619173956681000"
+            }
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095200",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "signals",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095199",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095203",
+              "mode": "33206",
+              "size": "10104",
+              "mtimeNs": "1786619497833693700",
+              "ctimeNs": "1786619497840105200"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095202",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095201",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095204",
+              "mode": "33206",
+              "size": "9191",
+              "mtimeNs": "1786631890277881300",
+              "ctimeNs": "1786631890283922300"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "6d3c256c44cef452c49e38c848fba28f937a57f7e50511ae161ceb172e473f93",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "f740855436b3c2a28e0536ca9061ceca2f40e0f98cc324b643527bc63b0d9ae2"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "25481",
+            "sha256": "82e209bb5dc4edee78cfaf78b3eda5cbd51cb5e2b55fef1e609bee27b24d2b2a"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5163",
+            "sha256": "b632ee1fcb525a7137660d93523e411cea19b3e70aaefcddc746b93950144067"
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5183",
+            "sha256": "36329276557fc87d58855c19a49ccf5728ffc7395ed6cfc72b10f599ea9d9b69"
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5470",
+            "sha256": "5a2bab5786e1bfbe4aea28decb44dd032cda8e0f8d49a3ec58a09d5182e68263"
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5011",
+            "sha256": "55ece5c840610e7f02eb4d7f2a9f76a2f4583a19d08da21dd19ceffa3dfd83ac"
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2265",
+            "sha256": "69cd7b34a2f17d4663b2dd2a8b40ee4a19f8d6d7eed8eee3cb8cc6448e4a0ffb"
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2630",
+            "sha256": "a62c17476fb3408ee6c2aed1dff6006be47f7a691d2ce78505b9ad0ebb0c38b3"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "91087",
+            "sha256": "fc00d0fd4d41f30b9482f6b6c17ec876cf177531e1dda2be5878d3f50bc3954e"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12198",
+            "sha256": "973e7669d9235fadfe98cba6913ea20e166030042341ef6de397bef1ac1f413d"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6277",
+            "sha256": "4dde4ca29982a1006168cc3dbafa076b2a492dc60e3408d98c67406d5dbba0dc"
+          },
+          {
+            "path": "signals",
+            "kind": "directory"
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10104",
+            "sha256": "787e4b3636ee91b1a222245119826448b93db932c38ed6ae55ac37051dd50722"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9191",
+            "sha256": "2f5b944b13d325838ce501c31ec007f0df6849050400e1c2c5edf8655a95b306"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2533274800937712",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "1baf607dbc948e9bbb2a36fb5e4c9e6a8a2f896cedbde6b544d32deed0694418",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095185",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786632885062696400",
+              "ctimeNs": "1786632885062696400"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805842",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786617543407348900",
+              "ctimeNs": "1786617543703153900"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324847516500",
+              "mode": "33206",
+              "size": "25481",
+              "mtimeNs": "1786629930929402000",
+              "ctimeNs": "1786629930935663100"
+            }
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805846",
+              "mode": "33206",
+              "size": "5163",
+              "mtimeNs": "1786624706682066600",
+              "ctimeNs": "1786624706683067500"
+            }
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805847",
+              "mode": "33206",
+              "size": "5183",
+              "mtimeNs": "1786624706600120600",
+              "ctimeNs": "1786624706603278900"
+            }
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095192",
+              "mode": "33206",
+              "size": "5470",
+              "mtimeNs": "1786628545538773700",
+              "ctimeNs": "1786628545602041600"
+            }
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095193",
+              "mode": "33206",
+              "size": "5011",
+              "mtimeNs": "1786624706525563900",
+              "ctimeNs": "1786624706527716700"
+            }
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095194",
+              "mode": "33206",
+              "size": "2265",
+              "mtimeNs": "1786624706453254600",
+              "ctimeNs": "1786624706458007800"
+            }
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095195",
+              "mode": "33206",
+              "size": "2630",
+              "mtimeNs": "1786620769785410300",
+              "ctimeNs": "1786620769791059900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095196",
+              "mode": "33206",
+              "size": "91087",
+              "mtimeNs": "1786631345864778700",
+              "ctimeNs": "1786631345864778700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095197",
+              "mode": "33206",
+              "size": "12198",
+              "mtimeNs": "1786631850327865100",
+              "ctimeNs": "1786631850334313000"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805845",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095198",
+              "mode": "33206",
+              "size": "6277",
+              "mtimeNs": "1786619173950763200",
+              "ctimeNs": "1786619173956681000"
+            }
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095200",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "signals",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095199",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095203",
+              "mode": "33206",
+              "size": "10104",
+              "mtimeNs": "1786619497833693700",
+              "ctimeNs": "1786619497840105200"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095202",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095201",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095204",
+              "mode": "33206",
+              "size": "9191",
+              "mtimeNs": "1786631890277881300",
+              "ctimeNs": "1786631890283922300"
+            }
+          }
+        ]
+      }
+    },
+    "evidence-finalized": {
+      "state": "verified",
+      "scope": "stage",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "6d3c256c44cef452c49e38c848fba28f937a57f7e50511ae161ceb172e473f93",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "f740855436b3c2a28e0536ca9061ceca2f40e0f98cc324b643527bc63b0d9ae2"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "25481",
+            "sha256": "82e209bb5dc4edee78cfaf78b3eda5cbd51cb5e2b55fef1e609bee27b24d2b2a"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5163",
+            "sha256": "b632ee1fcb525a7137660d93523e411cea19b3e70aaefcddc746b93950144067"
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5183",
+            "sha256": "36329276557fc87d58855c19a49ccf5728ffc7395ed6cfc72b10f599ea9d9b69"
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5470",
+            "sha256": "5a2bab5786e1bfbe4aea28decb44dd032cda8e0f8d49a3ec58a09d5182e68263"
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5011",
+            "sha256": "55ece5c840610e7f02eb4d7f2a9f76a2f4583a19d08da21dd19ceffa3dfd83ac"
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2265",
+            "sha256": "69cd7b34a2f17d4663b2dd2a8b40ee4a19f8d6d7eed8eee3cb8cc6448e4a0ffb"
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2630",
+            "sha256": "a62c17476fb3408ee6c2aed1dff6006be47f7a691d2ce78505b9ad0ebb0c38b3"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "91087",
+            "sha256": "fc00d0fd4d41f30b9482f6b6c17ec876cf177531e1dda2be5878d3f50bc3954e"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12198",
+            "sha256": "973e7669d9235fadfe98cba6913ea20e166030042341ef6de397bef1ac1f413d"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6277",
+            "sha256": "4dde4ca29982a1006168cc3dbafa076b2a492dc60e3408d98c67406d5dbba0dc"
+          },
+          {
+            "path": "signals",
+            "kind": "directory"
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10104",
+            "sha256": "787e4b3636ee91b1a222245119826448b93db932c38ed6ae55ac37051dd50722"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9191",
+            "sha256": "2f5b944b13d325838ce501c31ec007f0df6849050400e1c2c5edf8655a95b306"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2533274800937712",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "1baf607dbc948e9bbb2a36fb5e4c9e6a8a2f896cedbde6b544d32deed0694418",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095185",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786632885062696400",
+              "ctimeNs": "1786632885062696400"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805842",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786617543407348900",
+              "ctimeNs": "1786617543703153900"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324847516500",
+              "mode": "33206",
+              "size": "25481",
+              "mtimeNs": "1786629930929402000",
+              "ctimeNs": "1786629930935663100"
+            }
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805846",
+              "mode": "33206",
+              "size": "5163",
+              "mtimeNs": "1786624706682066600",
+              "ctimeNs": "1786624706683067500"
+            }
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805847",
+              "mode": "33206",
+              "size": "5183",
+              "mtimeNs": "1786624706600120600",
+              "ctimeNs": "1786624706603278900"
+            }
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095192",
+              "mode": "33206",
+              "size": "5470",
+              "mtimeNs": "1786628545538773700",
+              "ctimeNs": "1786628545602041600"
+            }
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095193",
+              "mode": "33206",
+              "size": "5011",
+              "mtimeNs": "1786624706525563900",
+              "ctimeNs": "1786624706527716700"
+            }
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095194",
+              "mode": "33206",
+              "size": "2265",
+              "mtimeNs": "1786624706453254600",
+              "ctimeNs": "1786624706458007800"
+            }
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095195",
+              "mode": "33206",
+              "size": "2630",
+              "mtimeNs": "1786620769785410300",
+              "ctimeNs": "1786620769791059900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095196",
+              "mode": "33206",
+              "size": "91087",
+              "mtimeNs": "1786631345864778700",
+              "ctimeNs": "1786631345864778700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095197",
+              "mode": "33206",
+              "size": "12198",
+              "mtimeNs": "1786631850327865100",
+              "ctimeNs": "1786631850334313000"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805845",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095198",
+              "mode": "33206",
+              "size": "6277",
+              "mtimeNs": "1786619173950763200",
+              "ctimeNs": "1786619173956681000"
+            }
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095200",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "signals",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095199",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095203",
+              "mode": "33206",
+              "size": "10104",
+              "mtimeNs": "1786619497833693700",
+              "ctimeNs": "1786619497840105200"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095202",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095201",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095204",
+              "mode": "33206",
+              "size": "9191",
+              "mtimeNs": "1786631890277881300",
+              "ctimeNs": "1786631890283922300"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "2d1b5d07721fcfbea244dcfc9d2169eb2e4d8b3b08baf3db0372a5744bfd940e",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "134",
+            "sha256": "535813cc45ead078acbc6536a4057e46b3f27ed79770b76909f8e38dffb0e05d"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "25481",
+            "sha256": "82e209bb5dc4edee78cfaf78b3eda5cbd51cb5e2b55fef1e609bee27b24d2b2a"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5163",
+            "sha256": "b632ee1fcb525a7137660d93523e411cea19b3e70aaefcddc746b93950144067"
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5183",
+            "sha256": "36329276557fc87d58855c19a49ccf5728ffc7395ed6cfc72b10f599ea9d9b69"
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5470",
+            "sha256": "5a2bab5786e1bfbe4aea28decb44dd032cda8e0f8d49a3ec58a09d5182e68263"
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5011",
+            "sha256": "55ece5c840610e7f02eb4d7f2a9f76a2f4583a19d08da21dd19ceffa3dfd83ac"
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2265",
+            "sha256": "69cd7b34a2f17d4663b2dd2a8b40ee4a19f8d6d7eed8eee3cb8cc6448e4a0ffb"
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2630",
+            "sha256": "a62c17476fb3408ee6c2aed1dff6006be47f7a691d2ce78505b9ad0ebb0c38b3"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "91087",
+            "sha256": "fc00d0fd4d41f30b9482f6b6c17ec876cf177531e1dda2be5878d3f50bc3954e"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12445",
+            "sha256": "df0d68fd7b542eb7b9c20eb2e352efdf896a5f486b0d17cfbb5ef85b24c28f41"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6277",
+            "sha256": "4dde4ca29982a1006168cc3dbafa076b2a492dc60e3408d98c67406d5dbba0dc"
+          },
+          {
+            "path": "signals",
+            "kind": "directory"
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10104",
+            "sha256": "787e4b3636ee91b1a222245119826448b93db932c38ed6ae55ac37051dd50722"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9191",
+            "sha256": "2f5b944b13d325838ce501c31ec007f0df6849050400e1c2c5edf8655a95b306"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2533274800937712",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "43463729a45ff6ca2812e7d401516b63d7b177eec4f41986f4326450c88ce4fa",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095185",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786632885062696400",
+              "ctimeNs": "1786632885062696400"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805842",
+              "mode": "33206",
+              "size": "134",
+              "mtimeNs": "1786632885671509300",
+              "ctimeNs": "1786632885671509300"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324847516500",
+              "mode": "33206",
+              "size": "25481",
+              "mtimeNs": "1786629930929402000",
+              "ctimeNs": "1786629930935663100"
+            }
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805846",
+              "mode": "33206",
+              "size": "5163",
+              "mtimeNs": "1786624706682066600",
+              "ctimeNs": "1786624706683067500"
+            }
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805847",
+              "mode": "33206",
+              "size": "5183",
+              "mtimeNs": "1786624706600120600",
+              "ctimeNs": "1786624706603278900"
+            }
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095192",
+              "mode": "33206",
+              "size": "5470",
+              "mtimeNs": "1786628545538773700",
+              "ctimeNs": "1786628545602041600"
+            }
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095193",
+              "mode": "33206",
+              "size": "5011",
+              "mtimeNs": "1786624706525563900",
+              "ctimeNs": "1786624706527716700"
+            }
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095194",
+              "mode": "33206",
+              "size": "2265",
+              "mtimeNs": "1786624706453254600",
+              "ctimeNs": "1786624706458007800"
+            }
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095195",
+              "mode": "33206",
+              "size": "2630",
+              "mtimeNs": "1786620769785410300",
+              "ctimeNs": "1786620769791059900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095196",
+              "mode": "33206",
+              "size": "91087",
+              "mtimeNs": "1786631345864778700",
+              "ctimeNs": "1786631345864778700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095197",
+              "mode": "33206",
+              "size": "12445",
+              "mtimeNs": "1786632885664411600",
+              "ctimeNs": "1786632885664411600"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805845",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095198",
+              "mode": "33206",
+              "size": "6277",
+              "mtimeNs": "1786619173950763200",
+              "ctimeNs": "1786619173956681000"
+            }
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095200",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "signals",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095199",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095203",
+              "mode": "33206",
+              "size": "10104",
+              "mtimeNs": "1786619497833693700",
+              "ctimeNs": "1786619497840105200"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095202",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095201",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095204",
+              "mode": "33206",
+              "size": "9191",
+              "mtimeNs": "1786631890277881300",
+              "ctimeNs": "1786631890283922300"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "2d1b5d07721fcfbea244dcfc9d2169eb2e4d8b3b08baf3db0372a5744bfd940e",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "134",
+            "sha256": "535813cc45ead078acbc6536a4057e46b3f27ed79770b76909f8e38dffb0e05d"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "25481",
+            "sha256": "82e209bb5dc4edee78cfaf78b3eda5cbd51cb5e2b55fef1e609bee27b24d2b2a"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5163",
+            "sha256": "b632ee1fcb525a7137660d93523e411cea19b3e70aaefcddc746b93950144067"
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5183",
+            "sha256": "36329276557fc87d58855c19a49ccf5728ffc7395ed6cfc72b10f599ea9d9b69"
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5470",
+            "sha256": "5a2bab5786e1bfbe4aea28decb44dd032cda8e0f8d49a3ec58a09d5182e68263"
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5011",
+            "sha256": "55ece5c840610e7f02eb4d7f2a9f76a2f4583a19d08da21dd19ceffa3dfd83ac"
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2265",
+            "sha256": "69cd7b34a2f17d4663b2dd2a8b40ee4a19f8d6d7eed8eee3cb8cc6448e4a0ffb"
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2630",
+            "sha256": "a62c17476fb3408ee6c2aed1dff6006be47f7a691d2ce78505b9ad0ebb0c38b3"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "91087",
+            "sha256": "fc00d0fd4d41f30b9482f6b6c17ec876cf177531e1dda2be5878d3f50bc3954e"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12445",
+            "sha256": "df0d68fd7b542eb7b9c20eb2e352efdf896a5f486b0d17cfbb5ef85b24c28f41"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6277",
+            "sha256": "4dde4ca29982a1006168cc3dbafa076b2a492dc60e3408d98c67406d5dbba0dc"
+          },
+          {
+            "path": "signals",
+            "kind": "directory"
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10104",
+            "sha256": "787e4b3636ee91b1a222245119826448b93db932c38ed6ae55ac37051dd50722"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9191",
+            "sha256": "2f5b944b13d325838ce501c31ec007f0df6849050400e1c2c5edf8655a95b306"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2533274800937712",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "43463729a45ff6ca2812e7d401516b63d7b177eec4f41986f4326450c88ce4fa",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095185",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786632885062696400",
+              "ctimeNs": "1786632885062696400"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805842",
+              "mode": "33206",
+              "size": "134",
+              "mtimeNs": "1786632885671509300",
+              "ctimeNs": "1786632885671509300"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324847516500",
+              "mode": "33206",
+              "size": "25481",
+              "mtimeNs": "1786629930929402000",
+              "ctimeNs": "1786629930935663100"
+            }
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805846",
+              "mode": "33206",
+              "size": "5163",
+              "mtimeNs": "1786624706682066600",
+              "ctimeNs": "1786624706683067500"
+            }
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805847",
+              "mode": "33206",
+              "size": "5183",
+              "mtimeNs": "1786624706600120600",
+              "ctimeNs": "1786624706603278900"
+            }
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095192",
+              "mode": "33206",
+              "size": "5470",
+              "mtimeNs": "1786628545538773700",
+              "ctimeNs": "1786628545602041600"
+            }
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095193",
+              "mode": "33206",
+              "size": "5011",
+              "mtimeNs": "1786624706525563900",
+              "ctimeNs": "1786624706527716700"
+            }
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095194",
+              "mode": "33206",
+              "size": "2265",
+              "mtimeNs": "1786624706453254600",
+              "ctimeNs": "1786624706458007800"
+            }
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095195",
+              "mode": "33206",
+              "size": "2630",
+              "mtimeNs": "1786620769785410300",
+              "ctimeNs": "1786620769791059900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095196",
+              "mode": "33206",
+              "size": "91087",
+              "mtimeNs": "1786631345864778700",
+              "ctimeNs": "1786631345864778700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095197",
+              "mode": "33206",
+              "size": "12445",
+              "mtimeNs": "1786632885664411600",
+              "ctimeNs": "1786632885664411600"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805845",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095198",
+              "mode": "33206",
+              "size": "6277",
+              "mtimeNs": "1786619173950763200",
+              "ctimeNs": "1786619173956681000"
+            }
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095200",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "signals",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095199",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095203",
+              "mode": "33206",
+              "size": "10104",
+              "mtimeNs": "1786619497833693700",
+              "ctimeNs": "1786619497840105200"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095202",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095201",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095204",
+              "mode": "33206",
+              "size": "9191",
+              "mtimeNs": "1786631890277881300",
+              "ctimeNs": "1786631890283922300"
+            }
+          }
+        ]
+      }
+    },
+    "final-reserved": {
+      "state": "verified",
+      "scope": "final",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "2d1b5d07721fcfbea244dcfc9d2169eb2e4d8b3b08baf3db0372a5744bfd940e",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "134",
+            "sha256": "535813cc45ead078acbc6536a4057e46b3f27ed79770b76909f8e38dffb0e05d"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "25481",
+            "sha256": "82e209bb5dc4edee78cfaf78b3eda5cbd51cb5e2b55fef1e609bee27b24d2b2a"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5163",
+            "sha256": "b632ee1fcb525a7137660d93523e411cea19b3e70aaefcddc746b93950144067"
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5183",
+            "sha256": "36329276557fc87d58855c19a49ccf5728ffc7395ed6cfc72b10f599ea9d9b69"
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5470",
+            "sha256": "5a2bab5786e1bfbe4aea28decb44dd032cda8e0f8d49a3ec58a09d5182e68263"
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5011",
+            "sha256": "55ece5c840610e7f02eb4d7f2a9f76a2f4583a19d08da21dd19ceffa3dfd83ac"
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2265",
+            "sha256": "69cd7b34a2f17d4663b2dd2a8b40ee4a19f8d6d7eed8eee3cb8cc6448e4a0ffb"
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2630",
+            "sha256": "a62c17476fb3408ee6c2aed1dff6006be47f7a691d2ce78505b9ad0ebb0c38b3"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "91087",
+            "sha256": "fc00d0fd4d41f30b9482f6b6c17ec876cf177531e1dda2be5878d3f50bc3954e"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12445",
+            "sha256": "df0d68fd7b542eb7b9c20eb2e352efdf896a5f486b0d17cfbb5ef85b24c28f41"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6277",
+            "sha256": "4dde4ca29982a1006168cc3dbafa076b2a492dc60e3408d98c67406d5dbba0dc"
+          },
+          {
+            "path": "signals",
+            "kind": "directory"
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10104",
+            "sha256": "787e4b3636ee91b1a222245119826448b93db932c38ed6ae55ac37051dd50722"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9191",
+            "sha256": "2f5b944b13d325838ce501c31ec007f0df6849050400e1c2c5edf8655a95b306"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2533274800937712",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "43463729a45ff6ca2812e7d401516b63d7b177eec4f41986f4326450c88ce4fa",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095185",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786632885062696400",
+              "ctimeNs": "1786632885062696400"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805842",
+              "mode": "33206",
+              "size": "134",
+              "mtimeNs": "1786632885671509300",
+              "ctimeNs": "1786632885671509300"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324847516500",
+              "mode": "33206",
+              "size": "25481",
+              "mtimeNs": "1786629930929402000",
+              "ctimeNs": "1786629930935663100"
+            }
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805846",
+              "mode": "33206",
+              "size": "5163",
+              "mtimeNs": "1786624706682066600",
+              "ctimeNs": "1786624706683067500"
+            }
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805847",
+              "mode": "33206",
+              "size": "5183",
+              "mtimeNs": "1786624706600120600",
+              "ctimeNs": "1786624706603278900"
+            }
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095192",
+              "mode": "33206",
+              "size": "5470",
+              "mtimeNs": "1786628545538773700",
+              "ctimeNs": "1786628545602041600"
+            }
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095193",
+              "mode": "33206",
+              "size": "5011",
+              "mtimeNs": "1786624706525563900",
+              "ctimeNs": "1786624706527716700"
+            }
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095194",
+              "mode": "33206",
+              "size": "2265",
+              "mtimeNs": "1786624706453254600",
+              "ctimeNs": "1786624706458007800"
+            }
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095195",
+              "mode": "33206",
+              "size": "2630",
+              "mtimeNs": "1786620769785410300",
+              "ctimeNs": "1786620769791059900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095196",
+              "mode": "33206",
+              "size": "91087",
+              "mtimeNs": "1786631345864778700",
+              "ctimeNs": "1786631345864778700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095197",
+              "mode": "33206",
+              "size": "12445",
+              "mtimeNs": "1786632885664411600",
+              "ctimeNs": "1786632885664411600"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849870805845",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095198",
+              "mode": "33206",
+              "size": "6277",
+              "mtimeNs": "1786619173950763200",
+              "ctimeNs": "1786619173956681000"
+            }
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095200",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "signals",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095199",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095203",
+              "mode": "33206",
+              "size": "10104",
+              "mtimeNs": "1786619497833693700",
+              "ctimeNs": "1786619497840105200"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095202",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095201",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374894095204",
+              "mode": "33206",
+              "size": "9191",
+              "mtimeNs": "1786631890277881300",
+              "ctimeNs": "1786631890283922300"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "2d1b5d07721fcfbea244dcfc9d2169eb2e4d8b3b08baf3db0372a5744bfd940e",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "134",
+            "sha256": "535813cc45ead078acbc6536a4057e46b3f27ed79770b76909f8e38dffb0e05d"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "25481",
+            "sha256": "82e209bb5dc4edee78cfaf78b3eda5cbd51cb5e2b55fef1e609bee27b24d2b2a"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5163",
+            "sha256": "b632ee1fcb525a7137660d93523e411cea19b3e70aaefcddc746b93950144067"
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5183",
+            "sha256": "36329276557fc87d58855c19a49ccf5728ffc7395ed6cfc72b10f599ea9d9b69"
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5470",
+            "sha256": "5a2bab5786e1bfbe4aea28decb44dd032cda8e0f8d49a3ec58a09d5182e68263"
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5011",
+            "sha256": "55ece5c840610e7f02eb4d7f2a9f76a2f4583a19d08da21dd19ceffa3dfd83ac"
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2265",
+            "sha256": "69cd7b34a2f17d4663b2dd2a8b40ee4a19f8d6d7eed8eee3cb8cc6448e4a0ffb"
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2630",
+            "sha256": "a62c17476fb3408ee6c2aed1dff6006be47f7a691d2ce78505b9ad0ebb0c38b3"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "91087",
+            "sha256": "fc00d0fd4d41f30b9482f6b6c17ec876cf177531e1dda2be5878d3f50bc3954e"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12445",
+            "sha256": "df0d68fd7b542eb7b9c20eb2e352efdf896a5f486b0d17cfbb5ef85b24c28f41"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6277",
+            "sha256": "4dde4ca29982a1006168cc3dbafa076b2a492dc60e3408d98c67406d5dbba0dc"
+          },
+          {
+            "path": "signals",
+            "kind": "directory"
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10104",
+            "sha256": "787e4b3636ee91b1a222245119826448b93db932c38ed6ae55ac37051dd50722"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9191",
+            "sha256": "2f5b944b13d325838ce501c31ec007f0df6849050400e1c2c5edf8655a95b306"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "5066549591333735",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "724bc8acc23690be7891f480bff797dc0e5c35ebf70512014fc509fbc41b0102",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912426",
+              "mode": "33206",
+              "size": "134",
+              "mtimeNs": "1786632885671509300",
+              "ctimeNs": "1786632885671509300"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5066549591333739",
+              "mode": "33206",
+              "size": "25481",
+              "mtimeNs": "1786629930929402000",
+              "ctimeNs": "1786629930935663100"
+            }
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491117",
+              "mode": "33206",
+              "size": "5163",
+              "mtimeNs": "1786624706682066600",
+              "ctimeNs": "1786624706683067500"
+            }
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912430",
+              "mode": "33206",
+              "size": "5183",
+              "mtimeNs": "1786624706600120600",
+              "ctimeNs": "1786624706603278900"
+            }
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912431",
+              "mode": "33206",
+              "size": "5470",
+              "mtimeNs": "1786628545538773700",
+              "ctimeNs": "1786628545602041600"
+            }
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912432",
+              "mode": "33206",
+              "size": "5011",
+              "mtimeNs": "1786624706525563900",
+              "ctimeNs": "1786624706527716700"
+            }
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912433",
+              "mode": "33206",
+              "size": "2265",
+              "mtimeNs": "1786624706453254600",
+              "ctimeNs": "1786624706458007800"
+            }
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912434",
+              "mode": "33206",
+              "size": "2630",
+              "mtimeNs": "1786620769785410300",
+              "ctimeNs": "1786620769791059900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912435",
+              "mode": "33206",
+              "size": "91087",
+              "mtimeNs": "1786631345864778700",
+              "ctimeNs": "1786631345864778700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912436",
+              "mode": "33206",
+              "size": "12445",
+              "mtimeNs": "1786632885664411600",
+              "ctimeNs": "1786632885664411600"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124661201772",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912437",
+              "mode": "33206",
+              "size": "6277",
+              "mtimeNs": "1786619173950763200",
+              "ctimeNs": "1786619173956681000"
+            }
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912439",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "signals",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912438",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491130",
+              "mode": "33206",
+              "size": "10104",
+              "mtimeNs": "1786619497833693700",
+              "ctimeNs": "1786619497840105200"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491129",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491128",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491131",
+              "mode": "33206",
+              "size": "9191",
+              "mtimeNs": "1786631890277881300",
+              "ctimeNs": "1786631890283922300"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "2d1b5d07721fcfbea244dcfc9d2169eb2e4d8b3b08baf3db0372a5744bfd940e",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "134",
+            "sha256": "535813cc45ead078acbc6536a4057e46b3f27ed79770b76909f8e38dffb0e05d"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "25481",
+            "sha256": "82e209bb5dc4edee78cfaf78b3eda5cbd51cb5e2b55fef1e609bee27b24d2b2a"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5163",
+            "sha256": "b632ee1fcb525a7137660d93523e411cea19b3e70aaefcddc746b93950144067"
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5183",
+            "sha256": "36329276557fc87d58855c19a49ccf5728ffc7395ed6cfc72b10f599ea9d9b69"
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5470",
+            "sha256": "5a2bab5786e1bfbe4aea28decb44dd032cda8e0f8d49a3ec58a09d5182e68263"
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5011",
+            "sha256": "55ece5c840610e7f02eb4d7f2a9f76a2f4583a19d08da21dd19ceffa3dfd83ac"
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2265",
+            "sha256": "69cd7b34a2f17d4663b2dd2a8b40ee4a19f8d6d7eed8eee3cb8cc6448e4a0ffb"
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2630",
+            "sha256": "a62c17476fb3408ee6c2aed1dff6006be47f7a691d2ce78505b9ad0ebb0c38b3"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "91087",
+            "sha256": "fc00d0fd4d41f30b9482f6b6c17ec876cf177531e1dda2be5878d3f50bc3954e"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12445",
+            "sha256": "df0d68fd7b542eb7b9c20eb2e352efdf896a5f486b0d17cfbb5ef85b24c28f41"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6277",
+            "sha256": "4dde4ca29982a1006168cc3dbafa076b2a492dc60e3408d98c67406d5dbba0dc"
+          },
+          {
+            "path": "signals",
+            "kind": "directory"
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10104",
+            "sha256": "787e4b3636ee91b1a222245119826448b93db932c38ed6ae55ac37051dd50722"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9191",
+            "sha256": "2f5b944b13d325838ce501c31ec007f0df6849050400e1c2c5edf8655a95b306"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "5066549591333735",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "724bc8acc23690be7891f480bff797dc0e5c35ebf70512014fc509fbc41b0102",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912426",
+              "mode": "33206",
+              "size": "134",
+              "mtimeNs": "1786632885671509300",
+              "ctimeNs": "1786632885671509300"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5066549591333739",
+              "mode": "33206",
+              "size": "25481",
+              "mtimeNs": "1786629930929402000",
+              "ctimeNs": "1786629930935663100"
+            }
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491117",
+              "mode": "33206",
+              "size": "5163",
+              "mtimeNs": "1786624706682066600",
+              "ctimeNs": "1786624706683067500"
+            }
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912430",
+              "mode": "33206",
+              "size": "5183",
+              "mtimeNs": "1786624706600120600",
+              "ctimeNs": "1786624706603278900"
+            }
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912431",
+              "mode": "33206",
+              "size": "5470",
+              "mtimeNs": "1786628545538773700",
+              "ctimeNs": "1786628545602041600"
+            }
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912432",
+              "mode": "33206",
+              "size": "5011",
+              "mtimeNs": "1786624706525563900",
+              "ctimeNs": "1786624706527716700"
+            }
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912433",
+              "mode": "33206",
+              "size": "2265",
+              "mtimeNs": "1786624706453254600",
+              "ctimeNs": "1786624706458007800"
+            }
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912434",
+              "mode": "33206",
+              "size": "2630",
+              "mtimeNs": "1786620769785410300",
+              "ctimeNs": "1786620769791059900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912435",
+              "mode": "33206",
+              "size": "91087",
+              "mtimeNs": "1786631345864778700",
+              "ctimeNs": "1786631345864778700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912436",
+              "mode": "33206",
+              "size": "12445",
+              "mtimeNs": "1786632885664411600",
+              "ctimeNs": "1786632885664411600"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124661201772",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912437",
+              "mode": "33206",
+              "size": "6277",
+              "mtimeNs": "1786619173950763200",
+              "ctimeNs": "1786619173956681000"
+            }
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912439",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "signals",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912438",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491130",
+              "mode": "33206",
+              "size": "10104",
+              "mtimeNs": "1786619497833693700",
+              "ctimeNs": "1786619497840105200"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491129",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491128",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491131",
+              "mode": "33206",
+              "size": "9191",
+              "mtimeNs": "1786631890277881300",
+              "ctimeNs": "1786631890283922300"
+            }
+          }
+        ]
+      }
+    },
+    "accounting-finalized": {
+      "state": "verified",
+      "scope": "final",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "2d1b5d07721fcfbea244dcfc9d2169eb2e4d8b3b08baf3db0372a5744bfd940e",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "134",
+            "sha256": "535813cc45ead078acbc6536a4057e46b3f27ed79770b76909f8e38dffb0e05d"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "25481",
+            "sha256": "82e209bb5dc4edee78cfaf78b3eda5cbd51cb5e2b55fef1e609bee27b24d2b2a"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5163",
+            "sha256": "b632ee1fcb525a7137660d93523e411cea19b3e70aaefcddc746b93950144067"
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5183",
+            "sha256": "36329276557fc87d58855c19a49ccf5728ffc7395ed6cfc72b10f599ea9d9b69"
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5470",
+            "sha256": "5a2bab5786e1bfbe4aea28decb44dd032cda8e0f8d49a3ec58a09d5182e68263"
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5011",
+            "sha256": "55ece5c840610e7f02eb4d7f2a9f76a2f4583a19d08da21dd19ceffa3dfd83ac"
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2265",
+            "sha256": "69cd7b34a2f17d4663b2dd2a8b40ee4a19f8d6d7eed8eee3cb8cc6448e4a0ffb"
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2630",
+            "sha256": "a62c17476fb3408ee6c2aed1dff6006be47f7a691d2ce78505b9ad0ebb0c38b3"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "91087",
+            "sha256": "fc00d0fd4d41f30b9482f6b6c17ec876cf177531e1dda2be5878d3f50bc3954e"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12445",
+            "sha256": "df0d68fd7b542eb7b9c20eb2e352efdf896a5f486b0d17cfbb5ef85b24c28f41"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6277",
+            "sha256": "4dde4ca29982a1006168cc3dbafa076b2a492dc60e3408d98c67406d5dbba0dc"
+          },
+          {
+            "path": "signals",
+            "kind": "directory"
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10104",
+            "sha256": "787e4b3636ee91b1a222245119826448b93db932c38ed6ae55ac37051dd50722"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9191",
+            "sha256": "2f5b944b13d325838ce501c31ec007f0df6849050400e1c2c5edf8655a95b306"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "5066549591333735",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "724bc8acc23690be7891f480bff797dc0e5c35ebf70512014fc509fbc41b0102",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912426",
+              "mode": "33206",
+              "size": "134",
+              "mtimeNs": "1786632885671509300",
+              "ctimeNs": "1786632885671509300"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5066549591333739",
+              "mode": "33206",
+              "size": "25481",
+              "mtimeNs": "1786629930929402000",
+              "ctimeNs": "1786629930935663100"
+            }
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491117",
+              "mode": "33206",
+              "size": "5163",
+              "mtimeNs": "1786624706682066600",
+              "ctimeNs": "1786624706683067500"
+            }
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912430",
+              "mode": "33206",
+              "size": "5183",
+              "mtimeNs": "1786624706600120600",
+              "ctimeNs": "1786624706603278900"
+            }
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912431",
+              "mode": "33206",
+              "size": "5470",
+              "mtimeNs": "1786628545538773700",
+              "ctimeNs": "1786628545602041600"
+            }
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912432",
+              "mode": "33206",
+              "size": "5011",
+              "mtimeNs": "1786624706525563900",
+              "ctimeNs": "1786624706527716700"
+            }
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912433",
+              "mode": "33206",
+              "size": "2265",
+              "mtimeNs": "1786624706453254600",
+              "ctimeNs": "1786624706458007800"
+            }
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912434",
+              "mode": "33206",
+              "size": "2630",
+              "mtimeNs": "1786620769785410300",
+              "ctimeNs": "1786620769791059900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912435",
+              "mode": "33206",
+              "size": "91087",
+              "mtimeNs": "1786631345864778700",
+              "ctimeNs": "1786631345864778700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912436",
+              "mode": "33206",
+              "size": "12445",
+              "mtimeNs": "1786632885664411600",
+              "ctimeNs": "1786632885664411600"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124661201772",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912437",
+              "mode": "33206",
+              "size": "6277",
+              "mtimeNs": "1786619173950763200",
+              "ctimeNs": "1786619173956681000"
+            }
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912439",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "signals",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912438",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491130",
+              "mode": "33206",
+              "size": "10104",
+              "mtimeNs": "1786619497833693700",
+              "ctimeNs": "1786619497840105200"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491129",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491128",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491131",
+              "mode": "33206",
+              "size": "9191",
+              "mtimeNs": "1786631890277881300",
+              "ctimeNs": "1786631890283922300"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "9c3a44f37c2fcfded3bed7a064c471be1a30183c005fdf052c02fc998a7d0e7d",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "134",
+            "sha256": "535813cc45ead078acbc6536a4057e46b3f27ed79770b76909f8e38dffb0e05d"
+          },
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "executable": false,
+            "size": "1537",
+            "sha256": "967bfb2d91adbcc6b4aba3cd7bc238a0befcdf5ee005e86a09992b964ff62efd"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "25481",
+            "sha256": "82e209bb5dc4edee78cfaf78b3eda5cbd51cb5e2b55fef1e609bee27b24d2b2a"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5163",
+            "sha256": "b632ee1fcb525a7137660d93523e411cea19b3e70aaefcddc746b93950144067"
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5183",
+            "sha256": "36329276557fc87d58855c19a49ccf5728ffc7395ed6cfc72b10f599ea9d9b69"
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5470",
+            "sha256": "5a2bab5786e1bfbe4aea28decb44dd032cda8e0f8d49a3ec58a09d5182e68263"
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5011",
+            "sha256": "55ece5c840610e7f02eb4d7f2a9f76a2f4583a19d08da21dd19ceffa3dfd83ac"
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2265",
+            "sha256": "69cd7b34a2f17d4663b2dd2a8b40ee4a19f8d6d7eed8eee3cb8cc6448e4a0ffb"
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2630",
+            "sha256": "a62c17476fb3408ee6c2aed1dff6006be47f7a691d2ce78505b9ad0ebb0c38b3"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "91087",
+            "sha256": "fc00d0fd4d41f30b9482f6b6c17ec876cf177531e1dda2be5878d3f50bc3954e"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12445",
+            "sha256": "df0d68fd7b542eb7b9c20eb2e352efdf896a5f486b0d17cfbb5ef85b24c28f41"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6277",
+            "sha256": "4dde4ca29982a1006168cc3dbafa076b2a492dc60e3408d98c67406d5dbba0dc"
+          },
+          {
+            "path": "signals",
+            "kind": "directory"
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10104",
+            "sha256": "787e4b3636ee91b1a222245119826448b93db932c38ed6ae55ac37051dd50722"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9191",
+            "sha256": "2f5b944b13d325838ce501c31ec007f0df6849050400e1c2c5edf8655a95b306"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "5066549591333735",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "f293884c58b7d600677e8d4b9ed15feb2d87d1ef8cae556e00f5ab895dc62403",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912426",
+              "mode": "33206",
+              "size": "134",
+              "mtimeNs": "1786632885671509300",
+              "ctimeNs": "1786632885671509300"
+            }
+          },
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2814749777648279",
+              "mode": "33206",
+              "size": "1537",
+              "mtimeNs": "1786632888473882600",
+              "ctimeNs": "1786632888530053400"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5066549591333739",
+              "mode": "33206",
+              "size": "25481",
+              "mtimeNs": "1786629930929402000",
+              "ctimeNs": "1786629930935663100"
+            }
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491117",
+              "mode": "33206",
+              "size": "5163",
+              "mtimeNs": "1786624706682066600",
+              "ctimeNs": "1786624706683067500"
+            }
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912430",
+              "mode": "33206",
+              "size": "5183",
+              "mtimeNs": "1786624706600120600",
+              "ctimeNs": "1786624706603278900"
+            }
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912431",
+              "mode": "33206",
+              "size": "5470",
+              "mtimeNs": "1786628545538773700",
+              "ctimeNs": "1786628545602041600"
+            }
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912432",
+              "mode": "33206",
+              "size": "5011",
+              "mtimeNs": "1786624706525563900",
+              "ctimeNs": "1786624706527716700"
+            }
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912433",
+              "mode": "33206",
+              "size": "2265",
+              "mtimeNs": "1786624706453254600",
+              "ctimeNs": "1786624706458007800"
+            }
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912434",
+              "mode": "33206",
+              "size": "2630",
+              "mtimeNs": "1786620769785410300",
+              "ctimeNs": "1786620769791059900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912435",
+              "mode": "33206",
+              "size": "91087",
+              "mtimeNs": "1786631345864778700",
+              "ctimeNs": "1786631345864778700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912436",
+              "mode": "33206",
+              "size": "12445",
+              "mtimeNs": "1786632885664411600",
+              "ctimeNs": "1786632885664411600"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124661201772",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912437",
+              "mode": "33206",
+              "size": "6277",
+              "mtimeNs": "1786619173950763200",
+              "ctimeNs": "1786619173956681000"
+            }
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912439",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "signals",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912438",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491130",
+              "mode": "33206",
+              "size": "10104",
+              "mtimeNs": "1786619497833693700",
+              "ctimeNs": "1786619497840105200"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491129",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491128",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491131",
+              "mode": "33206",
+              "size": "9191",
+              "mtimeNs": "1786631890277881300",
+              "ctimeNs": "1786631890283922300"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "9c3a44f37c2fcfded3bed7a064c471be1a30183c005fdf052c02fc998a7d0e7d",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "134",
+            "sha256": "535813cc45ead078acbc6536a4057e46b3f27ed79770b76909f8e38dffb0e05d"
+          },
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "executable": false,
+            "size": "1537",
+            "sha256": "967bfb2d91adbcc6b4aba3cd7bc238a0befcdf5ee005e86a09992b964ff62efd"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "25481",
+            "sha256": "82e209bb5dc4edee78cfaf78b3eda5cbd51cb5e2b55fef1e609bee27b24d2b2a"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5163",
+            "sha256": "b632ee1fcb525a7137660d93523e411cea19b3e70aaefcddc746b93950144067"
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5183",
+            "sha256": "36329276557fc87d58855c19a49ccf5728ffc7395ed6cfc72b10f599ea9d9b69"
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5470",
+            "sha256": "5a2bab5786e1bfbe4aea28decb44dd032cda8e0f8d49a3ec58a09d5182e68263"
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5011",
+            "sha256": "55ece5c840610e7f02eb4d7f2a9f76a2f4583a19d08da21dd19ceffa3dfd83ac"
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2265",
+            "sha256": "69cd7b34a2f17d4663b2dd2a8b40ee4a19f8d6d7eed8eee3cb8cc6448e4a0ffb"
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2630",
+            "sha256": "a62c17476fb3408ee6c2aed1dff6006be47f7a691d2ce78505b9ad0ebb0c38b3"
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "executable": false,
+            "size": "91087",
+            "sha256": "fc00d0fd4d41f30b9482f6b6c17ec876cf177531e1dda2be5878d3f50bc3954e"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12445",
+            "sha256": "df0d68fd7b542eb7b9c20eb2e352efdf896a5f486b0d17cfbb5ef85b24c28f41"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6277",
+            "sha256": "4dde4ca29982a1006168cc3dbafa076b2a492dc60e3408d98c67406d5dbba0dc"
+          },
+          {
+            "path": "signals",
+            "kind": "directory"
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10104",
+            "sha256": "787e4b3636ee91b1a222245119826448b93db932c38ed6ae55ac37051dd50722"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9191",
+            "sha256": "2f5b944b13d325838ce501c31ec007f0df6849050400e1c2c5edf8655a95b306"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "5066549591333735",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "f293884c58b7d600677e8d4b9ed15feb2d87d1ef8cae556e00f5ab895dc62403",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912426",
+              "mode": "33206",
+              "size": "134",
+              "mtimeNs": "1786632885671509300",
+              "ctimeNs": "1786632885671509300"
+            }
+          },
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2814749777648279",
+              "mode": "33206",
+              "size": "1537",
+              "mtimeNs": "1786632888473882600",
+              "ctimeNs": "1786632888530053400"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5066549591333739",
+              "mode": "33206",
+              "size": "25481",
+              "mtimeNs": "1786629930929402000",
+              "ctimeNs": "1786629930935663100"
+            }
+          },
+          {
+            "path": "evidence/checker-family-regression.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491117",
+              "mode": "33206",
+              "size": "5163",
+              "mtimeNs": "1786624706682066600",
+              "ctimeNs": "1786624706683067500"
+            }
+          },
+          {
+            "path": "evidence/inverted-import-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912430",
+              "mode": "33206",
+              "size": "5183",
+              "mtimeNs": "1786624706600120600",
+              "ctimeNs": "1786624706603278900"
+            }
+          },
+          {
+            "path": "evidence/load-time-guard-proof.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912431",
+              "mode": "33206",
+              "size": "5470",
+              "mtimeNs": "1786628545538773700",
+              "ctimeNs": "1786628545602041600"
+            }
+          },
+          {
+            "path": "evidence/negative-and-converse-control.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912432",
+              "mode": "33206",
+              "size": "5011",
+              "mtimeNs": "1786624706525563900",
+              "ctimeNs": "1786624706527716700"
+            }
+          },
+          {
+            "path": "evidence/normal-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912433",
+              "mode": "33206",
+              "size": "2265",
+              "mtimeNs": "1786624706453254600",
+              "ctimeNs": "1786624706458007800"
+            }
+          },
+          {
+            "path": "evidence/npm-pack-dry-run.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912434",
+              "mode": "33206",
+              "size": "2630",
+              "mtimeNs": "1786620769785410300",
+              "ctimeNs": "1786620769791059900"
+            }
+          },
+          {
+            "path": "evidence/review-report.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912435",
+              "mode": "33206",
+              "size": "91087",
+              "mtimeNs": "1786631345864778700",
+              "ctimeNs": "1786631345864778700"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912436",
+              "mode": "33206",
+              "size": "12445",
+              "mtimeNs": "1786632885664411600",
+              "ctimeNs": "1786632885664411600"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124661201772",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912437",
+              "mode": "33206",
+              "size": "6277",
+              "mtimeNs": "1786619173950763200",
+              "ctimeNs": "1786619173956681000"
+            }
+          },
+          {
+            "path": "signals/.state",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912439",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "signals",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599637912438",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491130",
+              "mode": "33206",
+              "size": "10104",
+              "mtimeNs": "1786619497833693700",
+              "ctimeNs": "1786619497840105200"
+            }
+          },
+          {
+            "path": "specs/sdk-package-boundary",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491129",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491128",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649684491131",
+              "mode": "33206",
+              "size": "9191",
+              "mtimeNs": "1786631890277881300",
+              "ctimeNs": "1786631890283922300"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "finalReservation": {
+    "state": "owned",
+    "identity": {
+      "dev": "3122291782",
+      "ino": "5066549591333735",
+      "mode": "16822",
+      "size": "0",
+      "mtimeNs": "0",
+      "ctimeNs": "0"
+    },
+    "entries": [
+      {
+        "path": ".openspec.yaml",
+        "kind": "file",
+        "expected": {
+          "path": ".openspec.yaml",
+          "kind": "file",
+          "executable": false,
+          "size": "134",
+          "sha256": "535813cc45ead078acbc6536a4057e46b3f27ed79770b76909f8e38dffb0e05d"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "4503599637912426",
+          "mode": "33206",
+          "size": "134",
+          "mtimeNs": "1786632885671509300",
+          "ctimeNs": "1786632885671509300"
+        }
+      },
+      {
+        "path": ".rasen-archive-owner.json",
+        "kind": "file",
+        "state": "copied",
+        "expected": {
+          "path": ".rasen-archive-owner.json",
+          "kind": "file",
+          "executable": false,
+          "size": "318",
+          "sha256": "23dfe09d1bbfd58fb7104e71029e8c67e36a83a369e269699fa63aca30d0ff13"
+        },
+        "identity": {
+          "dev": "3122291782",
+          "ino": "5066549591333736",
+          "mode": "33206",
+          "size": "318",
+          "mtimeNs": "1786632886144355100",
+          "ctimeNs": "1786632886144355100"
+        }
+      },
+      {
+        "path": "design.md",
+        "kind": "file",
+        "expected": {
+          "path": "design.md",
+          "kind": "file",
+          "executable": false,
+          "size": "25481",
+          "sha256": "82e209bb5dc4edee78cfaf78b3eda5cbd51cb5e2b55fef1e609bee27b24d2b2a"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "5066549591333739",
+          "mode": "33206",
+          "size": "25481",
+          "mtimeNs": "1786629930929402000",
+          "ctimeNs": "1786629930935663100"
+        }
+      },
+      {
+        "path": "evidence",
+        "kind": "directory",
+        "expected": {
+          "path": "evidence",
+          "kind": "directory"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "4222124661201772",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        }
+      },
+      {
+        "path": "evidence/checker-family-regression.md",
+        "kind": "file",
+        "expected": {
+          "path": "evidence/checker-family-regression.md",
+          "kind": "file",
+          "executable": false,
+          "size": "5163",
+          "sha256": "b632ee1fcb525a7137660d93523e411cea19b3e70aaefcddc746b93950144067"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3940649684491117",
+          "mode": "33206",
+          "size": "5163",
+          "mtimeNs": "1786624706682066600",
+          "ctimeNs": "1786624706683067500"
+        }
+      },
+      {
+        "path": "evidence/inverted-import-proof.md",
+        "kind": "file",
+        "expected": {
+          "path": "evidence/inverted-import-proof.md",
+          "kind": "file",
+          "executable": false,
+          "size": "5183",
+          "sha256": "36329276557fc87d58855c19a49ccf5728ffc7395ed6cfc72b10f599ea9d9b69"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "4503599637912430",
+          "mode": "33206",
+          "size": "5183",
+          "mtimeNs": "1786624706600120600",
+          "ctimeNs": "1786624706603278900"
+        }
+      },
+      {
+        "path": "evidence/load-time-guard-proof.md",
+        "kind": "file",
+        "expected": {
+          "path": "evidence/load-time-guard-proof.md",
+          "kind": "file",
+          "executable": false,
+          "size": "5470",
+          "sha256": "5a2bab5786e1bfbe4aea28decb44dd032cda8e0f8d49a3ec58a09d5182e68263"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "4503599637912431",
+          "mode": "33206",
+          "size": "5470",
+          "mtimeNs": "1786628545538773700",
+          "ctimeNs": "1786628545602041600"
+        }
+      },
+      {
+        "path": "evidence/negative-and-converse-control.md",
+        "kind": "file",
+        "expected": {
+          "path": "evidence/negative-and-converse-control.md",
+          "kind": "file",
+          "executable": false,
+          "size": "5011",
+          "sha256": "55ece5c840610e7f02eb4d7f2a9f76a2f4583a19d08da21dd19ceffa3dfd83ac"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "4503599637912432",
+          "mode": "33206",
+          "size": "5011",
+          "mtimeNs": "1786624706525563900",
+          "ctimeNs": "1786624706527716700"
+        }
+      },
+      {
+        "path": "evidence/normal-run.md",
+        "kind": "file",
+        "expected": {
+          "path": "evidence/normal-run.md",
+          "kind": "file",
+          "executable": false,
+          "size": "2265",
+          "sha256": "69cd7b34a2f17d4663b2dd2a8b40ee4a19f8d6d7eed8eee3cb8cc6448e4a0ffb"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "4503599637912433",
+          "mode": "33206",
+          "size": "2265",
+          "mtimeNs": "1786624706453254600",
+          "ctimeNs": "1786624706458007800"
+        }
+      },
+      {
+        "path": "evidence/npm-pack-dry-run.md",
+        "kind": "file",
+        "expected": {
+          "path": "evidence/npm-pack-dry-run.md",
+          "kind": "file",
+          "executable": false,
+          "size": "2630",
+          "sha256": "a62c17476fb3408ee6c2aed1dff6006be47f7a691d2ce78505b9ad0ebb0c38b3"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "4503599637912434",
+          "mode": "33206",
+          "size": "2630",
+          "mtimeNs": "1786620769785410300",
+          "ctimeNs": "1786620769791059900"
+        }
+      },
+      {
+        "path": "evidence/review-report.md",
+        "kind": "file",
+        "expected": {
+          "path": "evidence/review-report.md",
+          "kind": "file",
+          "executable": false,
+          "size": "91087",
+          "sha256": "fc00d0fd4d41f30b9482f6b6c17ec876cf177531e1dda2be5878d3f50bc3954e"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "4503599637912435",
+          "mode": "33206",
+          "size": "91087",
+          "mtimeNs": "1786631345864778700",
+          "ctimeNs": "1786631345864778700"
+        }
+      },
+      {
+        "path": "evidence/ship-log.md",
+        "kind": "file",
+        "expected": {
+          "path": "evidence/ship-log.md",
+          "kind": "file",
+          "executable": false,
+          "size": "12445",
+          "sha256": "df0d68fd7b542eb7b9c20eb2e352efdf896a5f486b0d17cfbb5ef85b24c28f41"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "4503599637912436",
+          "mode": "33206",
+          "size": "12445",
+          "mtimeNs": "1786632885664411600",
+          "ctimeNs": "1786632885664411600"
+        }
+      },
+      {
+        "path": "proposal.md",
+        "kind": "file",
+        "expected": {
+          "path": "proposal.md",
+          "kind": "file",
+          "executable": false,
+          "size": "6277",
+          "sha256": "4dde4ca29982a1006168cc3dbafa076b2a492dc60e3408d98c67406d5dbba0dc"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "4503599637912437",
+          "mode": "33206",
+          "size": "6277",
+          "mtimeNs": "1786619173950763200",
+          "ctimeNs": "1786619173956681000"
+        }
+      },
+      {
+        "path": "signals",
+        "kind": "directory",
+        "expected": {
+          "path": "signals",
+          "kind": "directory"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "4503599637912438",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        }
+      },
+      {
+        "path": "signals/.state",
+        "kind": "directory",
+        "expected": {
+          "path": "signals/.state",
+          "kind": "directory"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "4503599637912439",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        }
+      },
+      {
+        "path": "specs",
+        "kind": "directory",
+        "expected": {
+          "path": "specs",
+          "kind": "directory"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3940649684491128",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        }
+      },
+      {
+        "path": "specs/sdk-package-boundary",
+        "kind": "directory",
+        "expected": {
+          "path": "specs/sdk-package-boundary",
+          "kind": "directory"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3940649684491129",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        }
+      },
+      {
+        "path": "specs/sdk-package-boundary/spec.md",
+        "kind": "file",
+        "expected": {
+          "path": "specs/sdk-package-boundary/spec.md",
+          "kind": "file",
+          "executable": false,
+          "size": "10104",
+          "sha256": "787e4b3636ee91b1a222245119826448b93db932c38ed6ae55ac37051dd50722"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3940649684491130",
+          "mode": "33206",
+          "size": "10104",
+          "mtimeNs": "1786619497833693700",
+          "ctimeNs": "1786619497840105200"
+        }
+      },
+      {
+        "path": "tasks.md",
+        "kind": "file",
+        "expected": {
+          "path": "tasks.md",
+          "kind": "file",
+          "executable": false,
+          "size": "9191",
+          "sha256": "2f5b944b13d325838ce501c31ec007f0df6849050400e1c2c5edf8655a95b306"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3940649684491131",
+          "mode": "33206",
+          "size": "9191",
+          "mtimeNs": "1786631890277881300",
+          "ctimeNs": "1786631890283922300"
+        }
+      }
+    ]
+  },
+  "specProgress": [
+    {
+      "actionId": "8931fbd6f2e644404a0e12d2347954c6e6b587b1a12a76bb9516bf1b6b1dd744",
+      "action": "create",
+      "target": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\specs\\sdk-package-boundary\\spec.md",
+      "backupOrQuarantine": null,
+      "temporary": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\specs\\sdk-package-boundary\\.rasen-archive-spec-feed4c39-03c0-4877-98ed-269cb22f4e8a-8931fbd6f2e6\\result.tmp",
+      "state": "complete",
+      "claimIdentity": {
+        "dev": "3122291782",
+        "ino": "3659174707780454",
+        "mode": "16822",
+        "size": "0",
+        "mtimeNs": "0",
+        "ctimeNs": "0"
+      },
+      "temporaryIdentity": {
+        "dev": "3122291782",
+        "ino": "3377699731069779",
+        "mode": "33206",
+        "size": "10240",
+        "mtimeNs": "1786632885833060800",
+        "ctimeNs": "1786632885833060800"
+      },
+      "publishedIdentity": {
+        "dev": "3122291782",
+        "ino": "3377699731069779",
+        "mode": "33206",
+        "size": "10240",
+        "mtimeNs": "1786632885833060800",
+        "ctimeNs": "1786632885891849900"
+      }
+    }
+  ],
+  "cleanerProgress": [
+    {
+      "path": "auto-run.json",
+      "state": "deleted"
+    }
+  ],
+  "sourceProgress": {
+    "state": "removed",
+    "quarantine": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\.rasen-archive-source-feed4c39-03c0-4877-98ed-269cb22f4e8a\\s05-package-boundary-freeze",
+    "claimIdentity": {
+      "dev": "3122291782",
+      "ino": "12666373962521449",
+      "mode": "16822",
+      "size": "0",
+      "mtimeNs": "0",
+      "ctimeNs": "0"
+    }
+  },
+  "updatedAt": "2026-08-13T14:54:49.051Z"
+}
