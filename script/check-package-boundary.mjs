@@ -28,12 +28,20 @@
  *                           import no React, no DOM global, and no module owned by
  *                           `@opencut/editor-classic` (spec §3.5, mechanically).
  *
- * Rules 1, 4 and 5 are LIVE today, over `apps/web/src` and `apps/vite-example` via
- * `boundary.json`. Rules 2 and 3 are asserted over `packages/**\/src`, which holds no
- * source at this commit — they report `0 files scanned` honestly rather than a
- * `PASS` that inspected nothing (design D6). All five are still fully control-tested
- * today: both `--negative-control` and `--converse-control` run the same pure
- * `scan()` against in-memory fixtures, so a dormant rule's ability to fire is proven
+ * Rules 1, 2, 4 and 5 are LIVE today. Rule 3 (`no-internal-reexport`) is asserted
+ * only over `packages/**\/src`, which holds no source at this commit — it reports
+ * `0 files scanned` honestly rather than a `PASS` that inspected nothing (design
+ * D6). Rule 2 (`public-entry-only`) was scoped to `packages/**\/src` only through
+ * the first commit; review round 1 (BLOCKER-1) found that left every consumer
+ * invisible to it even after `packages/` gains source — a consumer deep-import
+ * is exactly the scenario spec §3.1 names, and it survives dormancy. The fix
+ * widens rule 2's scope to every file outside a package's own `src/`: both
+ * declared consumers and the not-yet-moved `apps/web/src` source that will
+ * become `@opencut/editor-classic`. That makes it genuinely live today —
+ * nothing currently imports a bare `@opencut/*` specifier, so it passes, but it
+ * is now actually looking. All five rules are still fully control-tested: both
+ * `--negative-control` and `--converse-control` run the same pure `scan()`
+ * against in-memory fixtures, so a dormant rule's ability to fire is proven
  * before it ever sees real source.
  *
  * **The Elftia rule matches specifiers, dependency names and identifiers — never raw
@@ -46,28 +54,38 @@
  * only `.ts/.tsx/.js/.jsx/.mjs/.cjs` source (never `.md`) and skips comment lines,
  * so prose is out of scope by construction, not by exemption.
  *
- * **The DOM check is identifier-level, not a `document.` text scan.** `document` is
- * a domain term throughout `editor/contracts` — not just a local variable in
- * `draft` and `engine`, but a parameter name across `vectors/**` and the family
- * literal `"document" | "scenario"` in `vectors/schema.ts` — the exact package
- * this rule protects. A file that visibly declares `document` as a local name
- * (parameter, destructured binding, `const`/`let`) has its bare `document`
- * references treated as that local; `document` inside a quoted string is never
- * an identifier at all, so it never counts, declared or not. `window.document`
- * still fires regardless, since `window` alone triggers the DOM-global match.
+ * **The DOM check matches `document` only through its own member accesses, not
+ * as a bare identifier.** `document` is a domain term throughout
+ * `editor/contracts` — not just a local variable in `draft` and `engine`, but a
+ * parameter name across `vectors/**` and the family literal
+ * `"document" | "scenario"` in `vectors/schema.ts` — the exact package this
+ * rule protects. An earlier version of this check exempted a whole file the
+ * moment ANY line declared a local `document`, which review round 1 (MAJOR-1)
+ * found let a real `document.createElement(...)` elsewhere in that same file
+ * pass silently — 15 of 69 layer-0/1 files, including all nine
+ * `contracts/engine/*` files, were already exempt this way. The fix drops
+ * bare-identifier matching (and the whole-file exemption it required)
+ * entirely: only `document.<domMember>` against a fixed list of names no
+ * domain "document" value in this codebase has (`createElement`,
+ * `querySelector`, `body`, `head`, …) counts, so no scope tracking is needed —
+ * a local `document` parameter never collides with a DOM member name. `window.
+ * document` and `globalThis.document` both still fire — the latter via an
+ * explicit pattern added alongside this fix (MAJOR-2) — except
+ * `typeof globalThis.document`, the one carved-out exception:
+ * `vectors/__tests__/agent-drivers.test.ts` uses exactly that shape to PROVE a
+ * driver ran DOM-free, which is this rule's own claim checked experimentally.
  *
  *   node script/check-package-boundary.mjs
  *   node script/check-package-boundary.mjs --negative-control
  *   node script/check-package-boundary.mjs --converse-control
  */
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const BOUNDARY_PATH = join(REPO_ROOT, "packages", "boundary.json");
-const PACKAGE_DIRS = ["editor-ports", "editor-contracts", "editor-classic"];
 
 const RULES = [
 	{
@@ -96,34 +114,14 @@ const RULES = [
 		why: "spec §3.5 — a third-party adapter author must implement ports and run conformance without pulling React or the editor UI.",
 	},
 ];
-const LIVE_RULE_IDS = ["acyclic-direction", "no-elftia-import", "react-free-base"];
-const DORMANT_RULE_IDS = ["public-entry-only", "no-internal-reexport"];
+// public-entry-only joined the live set in review round 1 (BLOCKER-1): its
+// scope now reaches every file outside a package's own src/, and that set is
+// never empty while apps/web/src has any tracked source at all.
+const LIVE_RULE_IDS = ["acyclic-direction", "no-elftia-import", "react-free-base", "public-entry-only"];
+const DORMANT_RULE_IDS = ["no-internal-reexport"];
 
 /**
- * `document` is a domain term throughout `editor/contracts` — not just in
- * `draft` and `engine` (a local variable, the draft document) but also across
- * `vectors/**` (`function seedOperations(document: VectorSeedDocument)`, a
- * `"document" | "scenario"` family-name string literal in schema.ts, and the
- * same parameter name in drivers/loader/runner and their tests). A hardcoded
- * directory list undercounts this; a raw `\bdocument\b` scan overcounts by
- * matching the family literal `"document"` too. So this is genuinely
- * identifier-level in two ways: (1) a file that visibly DECLARES `document` as
- * a local name — a typed/untyped parameter, a destructured binding, or a
- * `const`/`let` — has every bare `document` in that file treated as that local,
- * not the DOM global; (2) `document` inside a quoted string is never an
- * identifier reference at all, so it is excluded everywhere, declaration or
- * not. `window.document` still fires regardless of either, since it is
- * `window` — never exempted — doing the matching.
- */
-const DOCUMENT_DECLARATION_PATTERN =
-	/\bdocument\s*\??\s*:\s*[A-Za-z_$]|\{\s*document\s*[,}:]|\(\s*document\s*[,):]|\b(?:const|let)\s+document\b/;
-
-function hasLocalDocumentBinding(text) {
-	return DOCUMENT_DECLARATION_PATTERN.test(text);
-}
-
-/**
- * Removes quoted-string contents before either DOM pattern is tested, so a
+ * Removes quoted-string contents before any DOM pattern is tested, so a
  * filename or family literal like `"document-vectors.json"` or `"document"`
  * never reads as the identifier `document` — only real code does. Import
  * specifiers are extracted from the ORIGINAL line before this runs; this is
@@ -135,18 +133,63 @@ function stripStringLiterals(line) {
 	return line.replace(/"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`/g, "");
 }
 
-// `globalThis` is deliberately absent: it is the standard cross-runtime global
-// (Node included, ES2020) that `editor/contracts/draft/manager.ts` uses for
+/**
+ * `typeof globalThis.document === "undefined"` is an environment-detection
+ * guard, not DOM consumption — `editor/contracts/vectors/__tests__/
+ * agent-drivers.test.ts` uses exactly this shape
+ * (`expect(typeof globalThis.document).toBe("undefined")`) to PROVE a driver
+ * ran without a DOM present at all, which is this rule's own claim checked
+ * experimentally rather than asserted. `typeof window` is included for the
+ * same reason, though no current file needs it. Stripped before any DOM
+ * pattern is tested, the same way stripStringLiterals removes quoted text —
+ * a narrower instance of the reasoning behind excluding bare `globalThis`
+ * below, extended to the one member access that reasoning did not originally
+ * cover.
+ */
+const TYPEOF_GUARD_PATTERN = /\btypeof\s+(?:globalThis\s*\.\s*document|window)\b/g;
+
+function stripTypeofGuards(line) {
+	return line.replace(TYPEOF_GUARD_PATTERN, "");
+}
+
+// `globalThis` is deliberately absent as a BARE token: it is the standard
+// cross-runtime global (Node included, ES2020) that
+// `editor/contracts/draft/manager.ts` uses for
 // `globalThis.crypto.getRandomValues` — a Web Crypto call, not a DOM access.
-// Flagging it would make every isomorphic API reach for a runtime primitive
-// look like a browser dependency.
+// Flagging it bare would make every isomorphic API reach for a runtime
+// primitive look like a browser dependency. Reaching a DOM global THROUGH
+// `globalThis` is still exactly the DOM dependency this rule exists to catch
+// (see GLOBALTHIS_DOM_PATTERN below).
 const DOM_GLOBAL_PATTERN =
 	/\bwindow\b|\blocalStorage\b|\bsessionStorage\b|\bnavigator\b|\bHTMLElement\b|\bHTMLCanvasElement\b|\bCustomEvent\b|\bMutationObserver\b|\bResizeObserver\b|\bIntersectionObserver\b/;
-// Excludes `xxx.document` (a property literally named `document` on some other
-// object, e.g. `context.document` in editor/contracts/engine/conformance) —
-// only a bare reference or `document.xxx` member access can be the DOM global.
-// A `window.document` access is still caught, just via the `window` hit above.
-const DOCUMENT_PATTERN = /(?<!\.)\bdocument\b/;
+
+/**
+ * `document` matches ONLY as a member access against a fixed list of names no
+ * domain "document" value in this codebase has — never as a bare identifier.
+ * Review round 1 (MAJOR-1) found the previous bare-identifier match, combined
+ * with a whole-file "does this file declare a local `document`" exemption,
+ * let a single unrelated parameter blind detection of a real
+ * `document.createElement(...)` call anywhere else in that file. Matching the
+ * member access instead removes the need for scope tracking entirely: a
+ * local `document` value (the draft document, `VectorSeedDocument`, …) is
+ * never going to expose `.createElement`/`.querySelector`/etc, so there is no
+ * ambiguity left to resolve by tracking declarations. `xxx.document` (a
+ * property literally named `document` on some other object, e.g.
+ * `context.document` in editor/contracts/engine/conformance) still never
+ * matches, because the member checked is on `document` itself, not on
+ * whatever precedes it.
+ */
+const DOM_DOCUMENT_MEMBER_PATTERN =
+	/\bdocument\s*\.\s*(?:createElement|createElementNS|createTextNode|createDocumentFragment|createRange|createEvent|querySelector|querySelectorAll|getElementById|getElementsByClassName|getElementsByTagName|getElementsByTagNameNS|elementFromPoint|execCommand|documentElement|activeElement|body|head)\b/;
+
+/**
+ * MAJOR-2 (review round 1): `globalThis.localStorage` and
+ * `globalThis.navigator` already fired via DOM_GLOBAL_PATTERN (no lookbehind
+ * ever guarded those tokens); `globalThis.document` and `globalThis.window`
+ * were the one path the bare-`globalThis` exclusion above left open. Two
+ * explicit tokens, no loss of the `crypto` exemption.
+ */
+const GLOBALTHIS_DOM_PATTERN = /\bglobalThis\s*\.\s*(?:document|window)\b/;
 
 const ELFTIA_PROTOCOL_PATTERN = /["'`](?:plugin|elftia):\/\//;
 const ELFTIA_RUNTIME_PATTERN =
@@ -432,7 +475,6 @@ function reactFreeBaseRule({ files, boundary }) {
 		const owner = ownerOfPath(file.path, boundary);
 		if (owner !== boundary.layers[0] && owner !== boundary.layers[1]) continue;
 		scanned += 1;
-		const documentExempt = hasLocalDocumentBinding(file.text);
 		file.text.split(/\r?\n/).forEach((line, index) => {
 			if (isComment(line)) return;
 			const spec = extractSpecifier(line);
@@ -445,9 +487,12 @@ function reactFreeBaseRule({ files, boundary }) {
 				});
 				return;
 			}
-			const codeOnly = stripStringLiterals(line);
-			const documentHit = !documentExempt && DOCUMENT_PATTERN.test(codeOnly);
-			if (DOM_GLOBAL_PATTERN.test(codeOnly) || documentHit) {
+			const codeOnly = stripTypeofGuards(stripStringLiterals(line));
+			if (
+				DOM_GLOBAL_PATTERN.test(codeOnly) ||
+				DOM_DOCUMENT_MEMBER_PATTERN.test(codeOnly) ||
+				GLOBALTHIS_DOM_PATTERN.test(codeOnly)
+			) {
 				violations.push({
 					rule: "react-free-base",
 					path: file.path,
@@ -473,14 +518,41 @@ function reactFreeBaseRule({ files, boundary }) {
 }
 
 // ---------------------------------------------------------------------------
-// Rules 2 & 3 — public-entry-only, no-internal-reexport (dormant: packages/ has
-// no source at this commit; both report 0 files scanned honestly, per D6).
+// Rules 2 & 3 — public-entry-only, no-internal-reexport. Rule 3 is dormant
+// (packages/ has no source at this commit; reports 0 files scanned honestly,
+// per D6). Rule 2 is live — its scope was widened in review round 1
+// (BLOCKER-1) to cover every file outside a package's own src/, not only
+// packages/**\/src, so a consumer or pre-move deep import is caught even
+// while packages/ itself is empty.
 // ---------------------------------------------------------------------------
 
 const PACKAGE_SPECIFIER_PATTERN = /^(@opencut\/(?:editor-ports|editor-contracts|editor-classic))(\/.*)?$/;
 
 function packagesSourceFiles(files) {
 	return files.filter((f) => /^packages\/[^/]+\/src\//.test(f.path));
+}
+
+/**
+ * Every file that could reach INTO a package from outside that package's own
+ * `src/`: the three packages' own source (self-imports are exempted below by
+ * name) plus every file under either consumer root, `apps/web/src/**` and
+ * `apps/vite-example/**`. BLOCKER-1 (review round 1): the previous scope
+ * (`packages/*\/src/**` only) could never see a consumer's deep import, which
+ * is precisely the scenario spec.md:108-111 names ("WHEN a consumer imports a
+ * subpath ... THEN the check reports it"). This deliberately covers ALL of
+ * `apps/web/src`, not only the Next-shell paths `boundary.json` assigns to
+ * the `apps/web` consumer itself — a not-yet-moved `editor/surface/**` file
+ * (destined for `@opencut/editor-classic`) is ALREADY reaching into another
+ * package the same way it will post-move, and the reviewer's own
+ * reproduction used exactly such a file.
+ */
+function packageAndConsumerSourceFiles(files) {
+	return files.filter(
+		(f) =>
+			/^packages\/[^/]+\/src\//.test(f.path) ||
+			f.path.startsWith("apps/web/src/") ||
+			f.path.startsWith("apps/vite-example/"),
+	);
 }
 
 function manifestEntrySets(manifests) {
@@ -503,12 +575,15 @@ function subpathOf(match) {
 
 function publicEntryOnlyRule({ files, manifests }) {
 	const violations = [];
-	const scope = packagesSourceFiles(files);
+	const scope = packageAndConsumerSourceFiles(files);
 	const entriesByPackage = manifestEntrySets(manifests);
 	const dirToName = new Map(manifests.map((m) => [m.dir, m.name]));
 	for (const file of scope) {
-		const selfDir = /^packages\/([^/]+)\//.exec(file.path)[1];
-		const selfName = dirToName.get(selfDir);
+		// Only a file INSIDE a package's own src/ has a "self" to exempt; a
+		// consumer or pre-move apps/web/src file never does, so every
+		// @opencut/* deep import from there is judged, full stop.
+		const packageMatch = /^packages\/([^/]+)\//.exec(file.path);
+		const selfName = packageMatch ? dirToName.get(packageMatch[1]) : undefined;
 		file.text.split(/\r?\n/).forEach((line, index) => {
 			if (isComment(line)) return;
 			const spec = extractSpecifier(line);
@@ -598,11 +673,48 @@ function loadBoundary() {
 	return JSON.parse(readFileSync(BOUNDARY_PATH, "utf8"));
 }
 
-function loadManifests() {
-	return PACKAGE_DIRS.map((dir) => {
+/**
+ * Enumerate every `packages/*` directory that carries a `package.json`, rather
+ * than trusting a hardcoded list. BLOCKER-2 (review round 1): a hardcoded
+ * triple made spec.md:35-39's "a [fourth] package is not silently introduced"
+ * scenario unimplemented — a fourth `packages/*\/package.json` was invisible
+ * to the whole checker.
+ */
+function discoverPackageDirs() {
+	return readdirSync(join(REPO_ROOT, "packages"), { withFileTypes: true })
+		.filter((entry) => entry.isDirectory())
+		.map((entry) => entry.name)
+		.filter((name) => {
+			try {
+				readFileSync(join(REPO_ROOT, "packages", name, "package.json"), "utf8");
+				return true;
+			} catch {
+				return false;
+			}
+		})
+		.sort();
+}
+
+/** Exits `2`, the same fail-closed idiom `guardSelfConsistency` already uses,
+ * on any discovered manifest whose `name` is absent from `boundary.json`'s
+ * declared layer order — a package that exists on disk but has no declared
+ * layer is refused outright, never silently skipped. */
+function loadManifests(boundary) {
+	const manifests = discoverPackageDirs().map((dir) => {
 		const data = JSON.parse(readFileSync(join(REPO_ROOT, "packages", dir, "package.json"), "utf8"));
 		return { dir, name: data.name, exports: data.exports ?? {} };
 	});
+	const undeclared = manifests.filter((m) => !boundary.layers.includes(m.name));
+	if (undeclared.length > 0) {
+		console.error(
+			"check-package-boundary: packages/ contains a manifest not declared in boundary.json's layer order, refusing to scan:",
+		);
+		for (const m of undeclared) {
+			console.error(`  packages/${m.dir}/package.json declares "${m.name}", which boundary.json.layers does not include`);
+		}
+		process.exit(2);
+	}
+	return manifests;
 }
 
 function gitLsFiles() {
@@ -680,9 +792,9 @@ function guardUnownedFiles(files, boundary) {
 function runCheck() {
 	const boundary = loadBoundary();
 	guardSelfConsistency(boundary);
+	const manifests = loadManifests(boundary);
 	const files = collectRepoFiles();
 	guardUnownedFiles(files, boundary);
-	const manifests = loadManifests();
 	const { violations, census } = scan({ files, boundary, manifests });
 
 	console.log(`check-package-boundary: scanned ${files.length} repo file(s) (tracked + uncommitted)`);
@@ -798,6 +910,42 @@ const NEGATIVE_FIXTURES = [
 			},
 		],
 	},
+	{
+		rule: "public-entry-only",
+		note: "BLOCKER-1 regression: a consumer-side file outside packages/ deep-importing an undeclared subpath — invisible to the pre-fix packages/**/src-only scan set (the reviewer's own P-E reproduction used exactly this shape)",
+		files: [
+			{
+				path: "apps/web/src/editor/surface/violation5.ts",
+				text: 'import { Internal } from "@opencut/editor-ports/internal/secret";\nexport const i = Internal;\n',
+			},
+		],
+	},
+	{
+		rule: "react-free-base",
+		note: "MAJOR-1 regression: a document-named parameter used only as a domain value no longer blinds detection of a real document.createElement(...) call elsewhere in the same file",
+		files: [
+			{
+				path: "apps/web/src/editor/ports/violation3.ts",
+				text:
+					"export function bind(document: { title: string }): string {\n" +
+					"  return document.title;\n" +
+					"}\n" +
+					"export function mount(): unknown {\n" +
+					'  return document.createElement("div");\n' +
+					"}\n",
+			},
+		],
+	},
+	{
+		rule: "react-free-base",
+		note: "MAJOR-2 regression: globalThis.document reaching a DOM member is caught, closing the globalThis-prefixed hole the bare-globalThis exemption previously left open",
+		files: [
+			{
+				path: "apps/web/src/editor/ports/violation4.ts",
+				text: 'export function mount(): unknown {\n  return globalThis.document.createElement("div");\n}\n',
+			},
+		],
+	},
 ];
 
 const CONVERSE_FIXTURES = [
@@ -838,6 +986,46 @@ const CONVERSE_FIXTURES = [
 			{
 				path: "apps/web/src/editor/surface/component.tsx",
 				text: 'import { useState } from "react";\nexport const s = useState;\n',
+			},
+		],
+	},
+	{
+		rule: "public-entry-only",
+		label: "a consumer-side (non-packages/) import of a declared entry — the widened BLOCKER-1 scope must not misfire on a legal import",
+		files: [
+			{
+				path: "apps/web/src/editor/surface/consumer-ok.ts",
+				text: 'import { Host } from "@opencut/editor-ports/host";\nexport const h = Host;\n',
+			},
+		],
+	},
+	{
+		rule: "no-internal-reexport",
+		label: "a declared entry re-exporting a DECLARED subpath of another package (not an undeclared internal)",
+		files: [
+			{
+				path: "packages/editor-contracts/src/index.ts",
+				text: 'export { Host } from "@opencut/editor-ports/host";\n',
+			},
+		],
+	},
+	{
+		rule: "react-free-base",
+		label: "a local document parameter used only as a domain value (no DOM member access) — the MAJOR-1 fix must not misclassify a domain document",
+		files: [
+			{
+				path: "apps/web/src/editor/ports/document-param.ts",
+				text: "export function trackCount(document: { tracks: unknown[] }): number {\n  return document.tracks.length;\n}\n",
+			},
+		],
+	},
+	{
+		rule: "react-free-base",
+		label: "a typeof globalThis.document environment-detection guard (agent-drivers.test.ts's own idiom) — not DOM consumption",
+		files: [
+			{
+				path: "apps/web/src/editor/ports/env-guard.ts",
+				text: 'export function isNode(): boolean {\n  return typeof globalThis.document === "undefined";\n}\n',
 			},
 		],
 	},

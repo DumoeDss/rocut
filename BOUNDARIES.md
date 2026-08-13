@@ -443,23 +443,36 @@ Next-Host composition stays in `apps/web`.
 
 ### The checker: `script/check-package-boundary.mjs`
 
-Five rules, three live today and two dormant until `packages/` gains source:
+Five rules, four live today and one dormant until `packages/` gains source:
 
 | rule | status | what it asserts |
 | --- | --- | --- |
 | `acyclic-direction` | live | every cross-package edge points to a strictly lower declared layer |
 | `no-elftia-import` | live | no package, Host or example imports an Elftia package, protocol identifier or runtime object |
 | `react-free-base` | live | `editor-ports` and `editor-contracts` import no React, no DOM global, and no `editor-classic` module |
-| `public-entry-only` | dormant, `0 files scanned` | a specifier into a package resolves only to a declared `exports` subpath |
+| `public-entry-only` | live | a specifier into a package resolves only to a declared `exports` subpath |
 | `no-internal-reexport` | dormant, `0 files scanned` | no declared entry re-exports another package's undeclared internals |
+
+`public-entry-only` moved from dormant to live in review round 1 (BLOCKER-1): its scan set was
+originally `packages/**/src` only, which starts empty, so the rule could never see a consumer's
+deep import — exactly the scenario spec.md names, and it survived the dormancy period unenforced.
+The fix widened the scope to every file outside a package's own `src/`: both declared consumers
+(`apps/vite-example`) and the not-yet-moved `apps/web/src` source that will become
+`@opencut/editor-classic` once P1 runs. That source already exists, so the rule is genuinely
+live today — nothing currently imports a bare `@opencut/*` specifier, so it passes, but it is
+actually looking, and `inverted-import-proof.md` / the widened `--negative-control` fixture set
+prove it (see the change's evidence directory). `no-internal-reexport` is unaffected — it is
+asserted only over `packages/**/src`, which still holds no source until P1 moves files there
+(design D6), so it still reports `0 files scanned` honestly.
 
 Ownership is resolved from `packages/boundary.json`, a committed, longest-prefix-wins map from path
 to package with a required `why` per entry — the same self-guard idiom `check-next-imports.mjs`
 applies to its own allowlist: the checker refuses to run if any declared consumer path (`app/`,
 `site/`, `blog/`, `db/`, `auth/`, `components/landing/`) resolves to a package instead of a consumer,
-and refuses to run if any tracked file under `apps/web/src` resolves to no owner at all. Both dormant
-rules report their `0 files scanned` census as explicit output, not a silent `PASS` — a check that is
-green because it inspected nothing is not the same claim as a check that is green because it looked.
+and refuses to run if any tracked file under `apps/web/src` resolves to no owner at all. The one
+dormant rule reports its `0 files scanned` census as explicit output, not a silent `PASS` — a check
+that is green because it inspected nothing is not the same claim as a check that is green because it
+looked.
 
 **The Elftia rule matches specifiers, dependency names and identifiers — never raw file text.** A
 substring scan over `elftia` is wrong in this repository in both directions: eight tracked files
@@ -473,18 +486,31 @@ identifiers `window.elftia`, `globalThis.elftia`, `window.native`, `window.api`,
 `ArtifactRuntime`, `ArtifactRef`. There is no `adapter-elftia` exception: it does not exist in this
 repository, and housing one here would make the portable SDK depend on its largest consumer.
 
-The DOM check inside `react-free-base` is identifier-level for the same reason a text scan would be
-wrong: `document` is a domain term throughout `editor/contracts` (a local draft-document value in
-`draft` and `engine`, a parameter name across `vectors/**`, and the family literal
-`"document" | "scenario"` in `vectors/schema.ts`) — the exact package this rule protects. A file that
-visibly declares `document` as a local name has its bare `document` references read as that local,
-not the DOM global; `document` inside a quoted string is never an identifier at all. `window.document`
-still fires regardless, since `window` alone triggers the match.
+The DOM check inside `react-free-base` matches `document` only through its own member accesses
+(`document.createElement`, `.querySelector`, `.body`, `.head`, …), never as a bare identifier —
+`document` is a domain term throughout `editor/contracts` (a local draft-document value in `draft`
+and `engine`, a parameter name across `vectors/**`, and the family literal
+`"document" | "scenario"` in `vectors/schema.ts`) — the exact package this rule protects. An
+earlier version matched the bare identifier and exempted a whole file the moment any line declared
+a local `document`; review round 1 (MAJOR-1) found that let a real `document.createElement(...)`
+call elsewhere in that same file pass silently — 15 of 69 tracked layer-0/1 files were already
+exempt this way, including all nine `contracts/engine/*` files. Matching the member access instead
+needs no scope tracking at all: no domain `document` value in this codebase exposes a DOM member
+name, so there is no ambiguity left to resolve by tracking declarations. `window.document` and
+`globalThis.document` both fire — the latter via an explicit `globalThis.(document|window)` pattern
+added in the same round (MAJOR-2; bare `globalThis` alone stays unflagged, since
+`editor/contracts/draft/manager.ts` reaches `globalThis.crypto` for Web Crypto, not a DOM access) —
+except `typeof globalThis.document`, one carved-out exception:
+`vectors/__tests__/agent-drivers.test.ts` uses exactly that shape to prove a driver ran DOM-free,
+which is this rule's own claim checked experimentally rather than asserted, and must keep passing
+unmodified.
 
 Both `--negative-control` (synthesises one violation per rule and asserts it is caught) and
 `--converse-control` (synthesises a legal case per rule and asserts it stays silent) run the same pure
-`scan()` against in-memory fixtures, so every rule — including the two dormant ones — is fully
-control-tested today, before `packages/` holds a single real file.
+`scan()` against in-memory fixtures, so every rule — including the one still-dormant rule — is fully
+control-tested today, before `packages/` holds a single real file. Review round 1 added regression
+fixtures for each of BLOCKER-1/MAJOR-1/MAJOR-2 to both control lists, and gave
+`no-internal-reexport` its first converse fixture (MINOR-3) — all five rules now have one.
 
 ### What this does not cover
 
