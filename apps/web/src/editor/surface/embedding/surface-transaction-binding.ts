@@ -3,14 +3,14 @@ import {
 	type TransactionApply,
 	type TransactionBatch,
 	type TransactionResult,
-} from "@/editor/contracts";
+} from "@opencut/editor-contracts";
 import {
 	isValidAsset,
 	isValidClip,
 	isValidMarker,
 	isValidProject,
 	isValidTrack,
-} from "@/editor/contracts/engine/invariant";
+} from "@opencut/editor-contracts/engine/invariant";
 
 import type { SurfaceCommitBinding } from "./types";
 

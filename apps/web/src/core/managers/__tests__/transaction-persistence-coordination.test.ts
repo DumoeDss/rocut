@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-type-assertion -- Focused persistence harnesses intentionally inspect opaque records and provide narrowed EditorCore collaborators. */
 import { describe, expect, test } from "bun:test";
-import { trackId } from "@/editor/contracts";
+import { trackId } from "@opencut/editor-contracts";
 import type { EditorCore } from "@/core";
 import { SaveManager } from "@/core/managers/save-manager";
 import { SessionPersistenceCoordinator } from "@/editor/persistence";

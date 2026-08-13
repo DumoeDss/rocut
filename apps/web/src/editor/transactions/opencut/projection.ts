@@ -7,16 +7,16 @@ import type {
 	ProjectPatch,
 	Track,
 	TransactionOperation,
-} from "@/editor/contracts";
+} from "@opencut/editor-contracts";
 import {
 	assetId,
 	clipId,
 	markerId,
 	projectId,
 	trackId,
-} from "@/editor/contracts";
-import type { TransactionEngineDocument } from "@/editor/contracts/engine";
-import { canonicalOperationFingerprint } from "@/editor/contracts/engine";
+} from "@opencut/editor-contracts";
+import type { TransactionEngineDocument } from "@opencut/editor-contracts/engine";
+import { canonicalOperationFingerprint } from "@opencut/editor-contracts/engine";
 import type { Bookmark, TimelineElement, TimelineTrack } from "@/timeline";
 import { cloneOpaque } from "@/editor/persistence/opaque-value";
 import type { OpenCutAssetCatalogEntry, OpenCutProjectDraft } from "./types";

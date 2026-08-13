@@ -16,8 +16,8 @@ import {
 	AGENT_SCENARIO,
 	runAgentScenario,
 	verifyAgentReopen,
-} from "../agent-scenario";
-import type { VectorTarget } from "../runner";
+	type VectorTarget,
+} from "@opencut/editor-contracts/vectors";
 
 /**
  * The Node-observable half of driver 3.

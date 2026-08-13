@@ -164,20 +164,83 @@
 
 ## 4. Stage B — extract `@opencut/editor-contracts` (54 files)
 
-- [ ] 4.1 `git mv` `apps/web/src/editor/contracts/**` → `packages/editor-contracts/src/**`,
+- [x] 4.1 `git mv` `apps/web/src/editor/contracts/**` → `packages/editor-contracts/src/**`,
       matching the declared entry paths (`./conformance`, `./draft`, `./draft/conformance`,
       `./engine`, `./engine/invariant`, `./engine/conformance`, `./vectors`, `./vectors/drivers`).
-- [ ] 4.2 Rewrite the 16 contracts→ports edges to `@opencut/editor-ports` entries, and the intra-
+      Done — 55 files moved via `git mv` (confirmed as `R` rename entries in `git diff --staged -M`);
+      1 of the 55 (`agent-opencut-projection.test.ts`) relocated onward to editor-classic per 4.3,
+      landing 54 in `packages/editor-contracts/src`.
+      **Finding:** the `./vectors/drivers` declared export (`./src/vectors/drivers/index.ts`) has no
+      backing barrel — the directory holds only `durable.ts` and `in-memory.ts`, no `index.ts`. This
+      predates this Slice (P0's declaration, unchanged since) and has zero live consumers repo-wide
+      (`grep -rn "editor-contracts/vectors/drivers"` — no hits), so it is not a Stage B regression,
+      but it is a real gap against the declared surface. Recorded for Group 9 (P3/P7) rather than
+      authored here, since inventing the barrel's contents is a design decision, not a mechanical move.
+- [x] 4.2 Rewrite the 16 contracts→ports edges to `@opencut/editor-ports` entries, and the intra-
       package aliases to the chosen form.
-- [ ] 4.3 Relocate `contracts/vectors/__tests__/agent-opencut-projection.test.ts` to the
+      Done — already satisfied by Stage A's repo-wide rewrite (task 3.3): the contracts→ports edges
+      were `@/editor/ports/*` specifiers, rewritten to `@opencut/editor-ports` when Stage A ran, before
+      the contracts tree itself ever moved. Confirmed via `grep -rn "@/editor/ports" packages/editor-contracts`
+      → no hits. No additional edits needed at this task.
+- [x] 4.3 Relocate `contracts/vectors/__tests__/agent-opencut-projection.test.ts` to the
       `@opencut/editor-classic` tree per `boundary.json`, since its subject is the Classic
       projection. It cannot stay in the contracts package without making an upward edge.
-- [ ] 4.4 Rewrite incoming specifiers repo-wide: `@/editor/contracts`, `@/editor/contracts/engine`,
+      Done — `git mv` to `packages/editor-classic/src/editor/transactions/opencut/__tests__/`.
+      **This relocation broke the file's own relative imports** (`../agent-scenario`, `../runner`,
+      correct at the old sibling location, dangling at the new one) — fixed by rewriting to the
+      declared `@opencut/editor-contracts/vectors` entry, following the precedent already in
+      `apps/web/src/editor/surface/evidence/agent-evidence-run.ts`. Confirmed via `check-type-baseline.mjs`:
+      the 4 diagnostics this broke (2× TS2307, 2× TS7006 cascade) are gone.
+      **Finding, not fixed here:** the file's remaining `@/editor/persistence` etc. specifiers (pointing
+      at not-yet-moved editor-classic siblings) type-check fine — `tsc` pulls the file into
+      `apps/web/tsconfig.json`'s program via the widened `include` glob (task 2.5) — but fail `bun test`
+      run in isolation on this one file (`Cannot find module '@/editor/persistence'`). Root cause: bun
+      resolves `@/` path aliases by walking up from the *importing file's own directory* to its nearest
+      tsconfig, not via `tsc`'s shared-program `include` matching; `packages/editor-classic` has no
+      tsconfig of its own, so the walk lands on the repo-root `tsconfig.json`, which declares no `paths`
+      at all (confirmed by reading it). This is expected to self-resolve at Stage C (5.1 moves the
+      sibling files into the same package, 5.4 rewrites their `@/` specifiers to intra-package relative
+      form), not a Stage B defect — task 4.5's bun-test criterion is scoped to the four contracts
+      conformance suites, which do not include this classic-owned exception file, so it is not gating
+      this task. Flagged here so whoever runs 5.1-5.4 knows this file's isolated `bun test` result
+      flips green as a side effect, not something to separately debug.
+- [x] 4.4 Rewrite incoming specifiers repo-wide: `@/editor/contracts`, `@/editor/contracts/engine`,
       `@/editor/contracts/vectors` and `@/editor/contracts/engine/invariant` → the declared entries.
       **`engine/invariant` is a declared entry, not a rewrite to the root** — `engine/index.ts` does
       not re-export it and `surface-transaction-binding.ts` consumes `validateTransactionDocument`
       in production.
-- [ ] 4.5 Full verification pass, as 3.5, plus the four contracts conformance suites.
+      Done — 10 files rewritten (sed-based specifier substitution, CRLF-verified clean before/after
+      on every touched file): `apps/vite-example/tests/parity/agent.pw.ts`,
+      `apps/web/src/core/managers/__tests__/transaction-persistence-coordination.test.ts`,
+      `apps/web/src/editor/surface/embedding/{__tests__/surface-transaction-binding.test.ts,surface-transaction-binding.ts}`,
+      `apps/web/src/editor/surface/evidence/agent-evidence-run.ts`,
+      `apps/web/src/editor/transactions/opencut/{__tests__/adapter-router.test.ts,adapter.ts,projection.ts,router.ts,types.ts}`.
+      `engine/invariant` confirmed landed on the dedicated entry, not the root, at every use site.
+      **Two findings surfaced by the broader verification sweep this task's scope triggered, both
+      already handled:** (a) `packages/editor-contracts/src/vectors/__tests__/corpus-isolation.test.ts`
+      had a self-inflicted bug from a doc-comment edit — the literal text `packages/*/src` inside a
+      `/** */` block comment contains an embedded `*/` that prematurely closed the comment, corrupting
+      the rest of the file's parse; fixed by rewording, re-verified via `bun test` (3 pass, 0 fail).
+      (b) three bucket-C checkers from `evidence/group-2-checker-scope-audit.md` — `check-port-boundary.mjs`
+      (chains into a hard FAIL via `check-session-resource-boundary.mjs`, both carry stale
+      `apps/web/src/editor/ports/*` and `apps/web/src/editor/host/editor-host.ts` literals from
+      Stage A's move) and `check-host-composition.mjs` (crashes: `Error: ENOENT ... editor-host.ts`,
+      reads the moved file directly with no existence check) — are confirmed red right now. This is
+      exactly the risk the audit named and explicitly deferred to "Group 3 (ports)/5 (classic)"; the
+      literal-path repair itself is intentionally left for task 8.5, which is where the audit schedules
+      it and where it can be done once (after Stage C's session-area moves and Group 6's `@/`-alias
+      deletion, rather than three partial touches). Confirmed neither checker is wired into
+      `package.json` or CI, so this red state blocks nothing in the interim.
+- [x] 4.5 Full verification pass, as 3.5, plus the four contracts conformance suites.
+      Done, all four green:
+      - boundary checker: 5/5 rules PASS (949 files scanned, 340 cross-package edges, 178
+        `@opencut/*` specifiers, 69 entry files, 1032 total).
+      - type baseline: 941 repo files type-checked (4328 incl. lib/deps), no diagnostic outside the
+        pinned baseline set, zero regressions.
+      - `bun test packages/editor-contracts/src` (the four conformance suites — `draft/__tests__`,
+        `engine/__tests__`, `in-memory/__tests__`, `vectors/__tests__`): 110 pass, 0 fail, 1306
+        `expect()` calls, 11 files.
+      - resolution-equivalence check (task 6.1): 10 specifiers examined, 0 dangling, 0 mismatches. PASS.
 
 ## 5. Stage C — extract `@opencut/editor-classic` (791 files) and author the public entries
 

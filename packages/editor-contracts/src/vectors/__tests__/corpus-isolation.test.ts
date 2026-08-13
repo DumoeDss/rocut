@@ -6,13 +6,21 @@ import { fileURLToPath } from "node:url";
 
 const REPO_ROOT = join(
 	dirname(fileURLToPath(import.meta.url)),
-	"../../../../../../..",
+	"../../../../..",
 );
 
+/**
+ * Scoped to `apps` and `packages`, not the whole repo: this is an editor/Host
+ * module-graph invariant, and `script/` fixtures are proof-only harness code
+ * that never enters a distributable bundle (S05 P1 design). Both roots are
+ * scanned — not just `apps` — since editor-ports and editor-contracts now
+ * live under each package's `src` tree under `packages/` after S05 P1
+ * Stages A and B; editor-classic joins them at Stage C.
+ */
 function trackedSources(): string[] {
 	return execFileSync(
 		"git",
-		["ls-files", "--cached", "--others", "--exclude-standard", "apps"],
+		["ls-files", "--cached", "--others", "--exclude-standard", "apps", "packages"],
 		{ cwd: REPO_ROOT, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
 	)
 		.split("\n")
@@ -53,7 +61,7 @@ describe("corpus isolation", () => {
 		const fixture = readFileSync(
 			join(
 				REPO_ROOT,
-				"apps/web/src/editor/contracts/vectors/__tests__/corpus-fixture.ts",
+				"packages/editor-contracts/src/vectors/__tests__/corpus-fixture.ts",
 			),
 			"utf8",
 		);

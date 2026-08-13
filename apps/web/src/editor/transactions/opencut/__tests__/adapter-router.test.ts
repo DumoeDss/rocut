@@ -6,9 +6,9 @@ import {
 	projectId,
 	revisionOf,
 	trackId,
-} from "@/editor/contracts";
-import { openTransactionEngine } from "@/editor/contracts/engine";
-import { validateTransactionDocument } from "@/editor/contracts/engine/invariant";
+} from "@opencut/editor-contracts";
+import { openTransactionEngine } from "@opencut/editor-contracts/engine";
+import { validateTransactionDocument } from "@opencut/editor-contracts/engine/invariant";
 import { SessionPersistenceCoordinator } from "@/editor/persistence";
 import {
 	createOpenCutTransactionDocumentAdapter,

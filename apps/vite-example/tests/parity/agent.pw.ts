@@ -23,7 +23,7 @@ import {
 	AGENT_SCENARIO,
 	type AgentLedger,
 	type AgentReopenResult,
-} from "@/editor/contracts/vectors";
+} from "@opencut/editor-contracts/vectors";
 
 import { evidenceDestination } from "./evidence-path";
 import { HOST } from "./host-profile";

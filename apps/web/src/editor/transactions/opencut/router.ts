@@ -9,8 +9,8 @@ import type {
 	TrackId,
 	TransactionBatch,
 	TransactionResult,
-} from "@/editor/contracts";
-import { revisionOf } from "@/editor/contracts";
+} from "@opencut/editor-contracts";
+import { revisionOf } from "@opencut/editor-contracts";
 import {
 	openTransactionEngine,
 	type TransactionDryRunOutcome,
@@ -18,7 +18,7 @@ import {
 	type TransactionEngineCapabilities,
 	type TransactionEngineDocument,
 	type TransactionValidationOutcome,
-} from "@/editor/contracts/engine";
+} from "@opencut/editor-contracts/engine";
 import type { SessionPersistenceCoordinator } from "@/editor/persistence";
 import type { ProjectId as PortProjectId, ProjectRecord } from "@opencut/editor-ports";
 import type { MediaAsset } from "@/media/types";

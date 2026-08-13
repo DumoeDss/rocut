@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-type-assertion, opencut/prefer-object-params -- This is the concrete donor/opaque translation boundary; its private mapping helpers are not public APIs. */
-import type { Asset, Clip, Marker, Track } from "@/editor/contracts";
-import { revisionOf } from "@/editor/contracts";
+import type { Asset, Clip, Marker, Track } from "@opencut/editor-contracts";
+import { revisionOf } from "@opencut/editor-contracts";
 import type {
 	TransactionDocumentAdapter,
 	TransactionEngineDocument,
 	TransactionIdempotencyEntry,
-} from "@/editor/contracts/engine";
+} from "@opencut/editor-contracts/engine";
 import type {
 	ProjectId as PortProjectId,
 	ProjectRecord,

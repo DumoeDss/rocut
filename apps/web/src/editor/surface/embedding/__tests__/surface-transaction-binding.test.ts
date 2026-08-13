@@ -6,7 +6,7 @@ import {
 	type TransactionApply,
 	type TransactionBatch,
 	type TransactionResult,
-} from "@/editor/contracts";
+} from "@opencut/editor-contracts";
 
 import {
 	SurfaceCommitAdapterError,
