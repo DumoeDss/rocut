@@ -1002,13 +1002,17 @@ the capture site in `evidence/gate-1-desktop-substrate.md`.
   `rasen validate s05-second-host --strict --project rocut --json` green
   (1/1 passed, REAL_EXIT_CODE:0). The spec file remains untracked (lead's
   sync domain).
-- **F5 (Trivial) — accepted-known, with the existing comment as
-  justification.** The single-cast form (`"electron" as "next" | "vite"`)
-  does not compile — disjoint literal unions require the `as unknown as`
-  crossing (TS2352 otherwise) — and widening the harness union would modify
-  the file task 6.1 freezes unmodified. The cast is value-truthful (the
-  ledger records `host: "electron"`; the harness does not branch on the
-  prop). Typecheck green either way (REAL_EXIT_CODE:0).
+- **F5 (Trivial) — accepted-known; the double cast simplified to a
+  single cast in round 2 (F8).** The justification is the frozen harness
+  (task 6.1 forbids widening the union in the harness file) plus a
+  value-truthful label — the prop is recorded verbatim into the ledger
+  (`host: "electron"`) and the harness does not branch on it, comment in
+  place. Round 1's claim that the single-cast form does not compile
+  (TS2352) was **false** — the reviewer reproduced `"electron" as
+  "next" | "vite"` compiling clean under both the app's TS 5.9.3 and the
+  root 6.0.3 — so the `as unknown as` crossing was never compile-required;
+  `surface-evidence-main.tsx` now carries the single cast, typecheck
+  REAL_EXIT_CODE:0 (`evidence/logs/review-r2-typecheck.log`).
 - **F6 (Trivial) — fixed.** CSP header added to the scheme handler's 404
   (`notFound()`) and 403 responses in `electron/main.cjs`; boot gate re-run:
   `BOOT PROOF PASSED`, `REAL_EXIT_CODE:0`, zero console errors
@@ -1018,3 +1022,25 @@ the capture site in `evidence/gate-1-desktop-substrate.md`.
   `group-5-composition-evidence.log` §[C-retry] for the asset-manifest
   exit-0 evidence; the two asset-manifest exit-2 lines are named as the
   disclosed no-server attempts.
+
+### Review round 2 (micro-fixes F8/F9)
+
+- **F8 (Minor) — fixed both halves.** The false sentence ("the single-cast
+  form … does not compile — TS2352 otherwise") is deleted from the F5
+  disposition above, which now records the true justification alone (frozen
+  harness per task 6.1, value-truthful label, comment in place) and notes
+  the round-1 claim as disproven — the single cast compiles clean under
+  both the app's TS 5.9.3 and the root 6.0.3. And since the double cast was
+  never compile-required, `surface-evidence-main.tsx:57` now carries the
+  single `as` cast; typecheck REAL_EXIT_CODE:0
+  (`evidence/logs/review-r2-typecheck.log`).
+- **F9 (Trivial) — fixed.** BOUNDARIES §12's census now names its method
+  (`git ls-tree -r <commit> --name-only | wc -l`) and its measurement point
+  (the change's close-out commit, the method these census paragraphs use)
+  and is aligned to that commit's count: 2299 → 2384, +85, 0 removed —
+  the figure deliberately includes the review-round artifacts, so a later
+  child reconciling against §12 inherits a number whose measurement point
+  is stated rather than guessed.
+- The reviewer's own round-1 re-review section (appended to
+  `review-report.md` after the fix commit) is committed alongside these
+  micro-fixes, unmodified.

@@ -851,9 +851,11 @@ runs, not discovered by a second round of test failures after.
 
 `apps/electron-host` is now the third declared consumer of the package layers, beside the vite
 example and the Next app. Its owned surface is 33 tracked files (18 under `src/`, 15 scaffolding
-and proof scripts), all-additive: the repo census moves 2299 → 2380 tracked files across this
-change (+81, 0 removed — the Group 1 spike was deleted before any commit, so nothing was ever
-subtracted). The Host owns, and nothing else owns: its composition root
+and proof scripts), all-additive: the repo census moves 2299 → 2384 tracked files across this
+change (+85, 0 removed — counted with `git ls-tree -r <commit> --name-only | wc -l`
+at the change's close-out commit, the method the implementation report's census
+paragraphs use, so the figure includes the review-round artifacts; the Group 1
+spike was deleted before any commit, so nothing was ever subtracted). The Host owns, and nothing else owns: its composition root
 (`host/electron-host-config.ts`, which constructs one module-stable `FilesystemProjectStore` over
 an IPC store bridge and final-overrides the inherited reference store), its viewport wrapper
 (`host/electron-editor-host.tsx`, Host-owned exactly like the vite/next wrappers, outside the

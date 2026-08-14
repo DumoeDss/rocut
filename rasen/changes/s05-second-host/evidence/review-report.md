@@ -284,3 +284,99 @@ F2 (the missing report-flag, Major) below.
   (`tr -dc '\r' | wc -c` = 0) per the repo's LF-in-worktree discipline.
 - Reviewer scratch: `E:\ai-scratch-s05p2-review\` (outside the repo). No repo source was
   modified; no commits were made; the only repo write is this file.
+
+---
+
+## Round 1 re-review (fix delta, 2026-08-15)
+
+Reviewer: `reviewer-s05-p2` (same non-author reviewer). Delta: history rewrite (cb70b8c5+e226b109
+collapsed to N1 `8d3de9c6`, 10 commits replayed to `485eafdb`) + fix commit `f09063e0`. Every
+claim below was reproduced by me, not read from the implementer's record. Read-only; the only
+repo write is this appended section.
+
+### Per-finding verdicts
+
+- **F1 (Blocker) — FIXED, verified.** `git rev-list --objects --all | grep 81cbbc85` → **0**
+  (reproduced myself; the credential blob is unreachable from every ref). N1's tree equals old
+  e226b109's tree (`git diff --stat e226b109 8d3de9c6` → 0 lines) and carries the natively
+  redacted blob `c44c0c94`. The replay is content-identical: `git diff 9ab57cc7 485eafdb` →
+  **empty** (final tree unchanged pre-fix). The fix commit (`485eafdb..f09063e0`) touches
+  exactly the fix surfaces (8 files, all expected; no drive-by edits). N1's message is honest —
+  it describes the env-dump mechanism, states the redaction is native to the commit, contains
+  no credential content, and makes no "never happened" claim (the full incident is recorded in
+  rewrite-record.md, implementation-report.md, gate-1-desktop-substrate.md, and BOUNDARIES.md).
+  Masked credential scan over **all** objects reachable from HEAD-not-base: the only hit is
+  this report's own method line naming the pattern classes (lines 31-32) — zero credential
+  values anywhere. No remote ref contains any pre-rewrite commit (checked cb70b8c5 and
+  9ab57cc7). The blob survives locally via reflog until expiry — disclosed in the record,
+  unreachable by any push. `check-package-boundary.mjs` green at fix HEAD with the census
+  unchanged from round 1 (1078/982-360/982-359/863/1078/68). Screenshots blob-identical
+  pre/post rewrite (tree-equality corollary, spot-checked on 3 of 5).
+- **F2 (Major) — FIXED.** Incident section in implementation-report.md with all **seven** key
+  names (`ANTHROPIC_API_KEY#`, `ANTHROPIC_API_KEY2`, `ANTHROPIC_AUTH_TOKEN`,
+  `ANTHROPIC_AUTH_TOKEN#`, `ANTHROPIC_AUTH_TOKEN3`, `OPENAI_API_KEY`, `FIRECRAWL_API_KEY`),
+  honest framing (admits the original capture wrote live values, admits the follow-up-redaction
+  left the blob reachable, points at rewrite-record.md), plus the incident note in
+  gate-1-desktop-substrate.md and the capture rule in BOUNDARIES.md §12.
+- **F3 (Minor) — FIXED.** BOUNDARIES.md §12 + implementation-report §9.5 now read 2299 →
+  **2380**, **+81**, 0 removed. Verified by my own count: 2380 at `485eafdb` (the close-out
+  commit the documented method names); 2383 at fix HEAD, the +3 being the review-round
+  artifacts themselves. See F9 for the method-annotation nit.
+- **F4 (Minor) — FIXED.** The delta spec's migration requirement and its scenario THEN-clause
+  are restated to the actual mechanism ("the store sequencing the published migration transform
+  chain, all-or-nothing", with the IndexedDB constraint named) — matching what the code does
+  and what round 1 verified. All 19 scenario headings are verbatim against my pre-fix read.
+  `rasen validate s05-second-host --strict --project rocut --json` → valid, 0 issues
+  (reproduced). The spec file is untracked by design (lead's sync domain) — noted, not a
+  defect.
+- **F5 (Trivial) — NOT FIXED AS CLAIMED (new F8).** The accepted-known disposition stands (the
+  cast is value-truthful, the harness is frozen by task 6.1, the code comment at the call site
+  makes no false claim), **but the justification added to the implementation report is
+  technically false**: it claims the single-cast form (`"electron" as "next" | "vite"`) "does
+  not compile — TS2352 otherwise". I reproduced under the app's own TypeScript 5.9.3
+  (`apps/electron-host/node_modules/typescript`) and the root 6.0.3: the single cast compiles
+  **clean** (REAL_EXIT_CODE:0, no diagnostics) — as does even the fully disjoint
+  `"electron" as "next"`. Literal-to-literal assertions pass TS's comparability check in these
+  versions; the `as unknown as` crossing is not required for compilation. The true
+  justification (frozen harness + value-truthful label) was already sufficient.
+- **F6 (Trivial) — FIXED.** `electron/main.cjs` now attaches the CSP header to the 404
+  (`notFound()`) and 403 responses (diff read; trivially correct — same `CSP` constant as the
+  200 path). Boot gate re-run: `BOOT PROOF PASSED`, `REAL_EXIT_CODE:0`, `cspViolations: []`,
+  `consoleErrors: []` (`evidence/logs/review-r1-boot-gate-csp-error-responses.log`). Note the
+  log is a happy-path regression proof, not an error-path header probe — proportionate for a
+  Trivial whose fix is verifiable by inspection.
+- **F7 (Trivial) — FIXED.** §9.3 now tallies "23 zero / 7 nonzero across the 30 EXIT lines" —
+  matching my own round-1 count exactly — and points explicitly at
+  `group-5-composition-evidence.log` §[C-retry] for the asset-manifest exit-0 evidence, naming
+  the two exit-2s as the disclosed no-server attempts.
+
+### New findings this round
+
+- **F8 — Minor — false TS2352 claim in the F5 disposition** (see above). The evidence record
+  now contains a compile-necessity claim that is false under both compilers this repo uses; a
+  future maintainer reading it would believe the double cast is load-bearing when a single
+  `as` compiles fine. Fix: delete the "does not compile — TS2352 otherwise" sentence from
+  implementation-report.md's F5 bullet (the remaining justification is true), optionally
+  simplifying the cast at `surface-evidence-main.tsx:57` to a single `as`.
+- **F9 — Trivial — BOUNDARIES' census figure carries no method annotation.** §12 states
+  "2299 → 2380 (+81)" without saying the count is taken at the change's close-out commit; the
+  ship HEAD is 2383 (+84 with the review artifacts). The method is documented only in the
+  implementation report. One clause in BOUNDARIES ("at the change's close-out commit") makes
+  the figure audit-proof against the next post-close-out addition.
+
+### Sweep of the fix delta for new defects
+
+Fix commit touches 8 files, all in scope. Stale-hash sweep across all tracked files: the only
+pre-rewrite shas remaining anywhere live in the three deliberate historical records
+(review-report.md, rewrite-record.md, and the implementation report's incident/disposition
+sections, which cite them as history) — exactly matching the disposition's own claim;
+`frozen-signature/README.md`'s one live reference was updated to `8d3de9c6`. The dispatch's
+"restored screenshot claim" has no referent in this delta — no restore/screenshot text appears
+in the fix diff or the evidence markdowns, and the screenshots are blob-identical across the
+rewrite. Boundary checker green at HEAD. No new defects found beyond F8/F9.
+
+### Round 1 verdict
+
+**FINDINGS — F1/F2/F3/F4/F6/F7 verified fixed; F5's disposition carries one false sub-claim
+(new F8, Minor); one Trivial method-annotation nit (F9).** F8 is a two-line evidence-text
+correction; nothing this round blocks ship once it lands.

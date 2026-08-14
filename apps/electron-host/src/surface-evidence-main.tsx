@@ -54,7 +54,7 @@ createRoot(container).render(
 				 * union lags. Widening the union instead would modify the harness
 				 * this change's own task text forbids touching.
 				 */
-				hostName={"electron" as unknown as "next" | "vite"}
+				hostName={"electron" as "next" | "vite"}
 				hostReactIdentity={React}
 				buildMarker={
 					import.meta.env.VITE_R2_BUILD_MARKER ?? "missing-electron-marker"
