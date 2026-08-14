@@ -1142,9 +1142,34 @@
 
 ## 9. Documentation and hand-forward
 
-- [ ] 9.1 Update `BOUNDARIES.md`: replace §2's "not a published API / reaches in through a path
+- [x] 9.1 Update `BOUNDARIES.md`: replace §2's "not a published API / reaches in through a path
       alias" statement, add the entry-mapping table from 6.6, and record the checker-scope audit
       from 2.4.
+      Done — three changes: (1) §2's twelve-row table rewritten from stale `@/` path aliases to the
+      current declared specifiers, live-verified against `apps/vite-example/src` (grep of every
+      `from "@opencut/...")` import in `app.tsx`, `project-picker.tsx`, `host/vite-editor-host.tsx`,
+      `host/vite-host-config.ts` — eleven rows resolve through `@opencut/editor-classic`'s entries,
+      one (`EditorHost`) through `@opencut/editor-ports/host`, called out explicitly since it is a
+      cross-package fact easy to lose in a same-shaped table; the evidence-only-entry table updated
+      the same way. The false "not a published API" sentence replaced with the current truth (all
+      three packages declare `exports`, frozen at P0/§7) plus a pointer to §8 as the authoritative,
+      continuously-measured full edge census, framing §2's table as the narrower per-symbol
+      walkthrough rather than a duplicate of §8. (2) The "entry-mapping table from 6.6" clause is
+      already satisfied — task 6.6 added it as §8 before this task ran; confirmed by reading §8 in
+      full rather than assuming, so this is a verified no-op on that clause, not a skip. (3) Added a
+      new §9 "Static checker scope audit (S05 P1)" recording 2.4's full 26-checker table (bucket
+      A/B/C/N-A classification, the bucket-C-is-not-a-silent-gap closing argument, and the
+      cross-cutting finding that `check-session-state-boundary.mjs`, `check-storage-boundary.mjs`,
+      `check-transaction-boundary.mjs`, and `check-port-boundary.mjs` each independently reimplement
+      `@/` specifier resolution — named as a duplication liability for **P2**, since a fifth Host is
+      a fifth chance for the five independent implementations to drift), with a pointer to
+      `evidence/group-2-checker-scope-audit.md` for the full task-2.4 narrative (count-discrepancy
+      account, classification-scheme rationale). **Drive-by fix, adjacent to the edit region, not
+      separately scoped:** §8's closing paragraph was a byte-identical copy of §7's "four-package
+      split" finding paragraph (minus the heading) — a copy-paste artifact from whoever wrote §8 at
+      6.6. Replaced with a one-sentence cross-reference so a reader does not mistake it for an
+      independently-derived second finding. Line endings verified clean (0 CR, `i/lf w/lf`) after
+      each of the two edits.
 - [ ] 9.2 Record for **P7** that 863 `git mv` renames restate `SOURCE_INVENTORY.{md,json}`
       wholesale — the generator derives fork additions from `git diff --name-status` against the
       upstream pin, so its output after this child bears no resemblance to its output before.

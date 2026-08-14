@@ -101,37 +101,47 @@ entry used by the dual-Host browser matrix; the normal app does not link to or n
 `dist/module-graph.json` records the union of both entries, so the measured count above is honest
 about verification code that the build emitted.
 
-The ordinary editor route imports twelve editor-source modules through `app.tsx`, the project
-picker, and the Vite Host composition chain:
+The ordinary editor route imports twelve editor-package symbols through `app.tsx`, the project
+picker, and the Vite Host composition chain — eleven through `@opencut/editor-classic`'s declared
+entries, one (`EditorHost`) through `@opencut/editor-ports`'s frozen `./host` entry, since the host
+contract itself is an L0 port-package concern, not a Classic-package one:
 
-| Module                                               | Imported                                      | Role                                                  |
-| ---------------------------------------------------- | --------------------------------------------- | ----------------------------------------------------- |
-| `@/components/editor/mobile-gate`                    | `MobileGate`                                  | Small-viewport gate                                   |
-| `@/components/ui/sonner`                             | `Toaster`                                     | Toast host the editor expects                         |
-| `@/components/ui/tooltip`                            | `TooltipProvider`                             | Context the editor expects from its host              |
-| `@/editor/host/browser-runtime`                      | `createBrowserRuntimePorts` and worker types  | Browser-owned runtime ports                           |
-| `@/editor/host/editor-host`                          | `EditorHost` (type)                           | The host contract                                     |
-| `@/editor/ports/in-memory`                           | reference ports, diagnostics, and IDs         | Non-browser reference ports selected by the Host      |
-| `@/editor/session`                                   | `EditorSessionHost`                           | Creates and owns the Host-bound session               |
-| `@/editor/surface/embedding/session-surface-bridge`  | `SessionEditorSurface`                        | Binds the existing session to the embeddable Surface  |
-| `@/editor/use-editor`                                | `useEditorInstance`                           | Project-list access through the current session       |
-| `@/project/types`                                    | `TProjectMetadata` (type)                     | Project list rendering                                |
-| `@/services/storage/browser-project-store`           | `BrowserProjectStore`                         | Production browser `ProjectStore` implementation (§3) |
-| `@/services/storage/browser-project-store-internals` | storage identity and diagnostic normalization | Explicit durable identity selected by the Host (§3)   |
+| Declared specifier                | Imported                                      | Role                                                  |
+| ---------------------------------- | ---------------------------------------------- | ----------------------------------------------------- |
+| `@opencut/editor-classic/ui`       | `MobileGate`                                  | Small-viewport gate                                   |
+| `@opencut/editor-classic/ui`       | `Toaster`                                     | Toast host the editor expects                         |
+| `@opencut/editor-classic/ui`       | `TooltipProvider`                             | Context the editor expects from its host              |
+| `@opencut/editor-classic/browser`  | `createBrowserRuntimePorts` and worker types  | Browser-owned runtime ports                           |
+| `@opencut/editor-ports/host`       | `EditorHost` (type)                           | The host contract                                     |
+| `@opencut/editor-ports/in-memory`  | reference ports, diagnostics, and IDs         | Non-browser reference ports selected by the Host      |
+| `@opencut/editor-classic/session`  | `EditorSessionHost`                           | Creates and owns the Host-bound session               |
+| `@opencut/editor-classic/surface`  | `SessionEditorSurface`                        | Binds the existing session to the embeddable Surface  |
+| `@opencut/editor-classic/session`  | `useEditorInstance`                           | Project-list access through the current session       |
+| `@opencut/editor-classic/project`  | `TProjectMetadata` (type)                     | Project list rendering                                |
+| `@opencut/editor-classic/storage`  | `BrowserProjectStore`                         | Production browser `ProjectStore` implementation (§3) |
+| `@opencut/editor-classic/storage`  | storage identity and diagnostic normalization | Explicit durable identity selected by the Host (§3)   |
 
 The evidence-only entry shares the two UI providers and `vite-host-config.ts` with the normal Host,
-and adds exactly one editor-source root that is exclusive to that entry:
+and adds exactly one declared specifier that is exclusive to that entry:
 
-| Evidence entry          | Exclusive editor-source root                                      | Role                                                        |
-| ----------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------- |
-| `surface-evidence.html` | `@/editor/surface/evidence/surface-evidence-harness`              | Controlled focus, visibility, lifecycle, style, and ledger proof |
+| Evidence entry          | Exclusive declared specifier                                   | Role                                                              |
+| ------------------------ | ----------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `surface-evidence.html` | `@opencut/editor-classic/evidence` (`SurfaceEvidenceHarness`)  | Controlled focus, visibility, lifecycle, style, and ledger proof |
 
 The pre-existing query-gated C3/C4/C6 proof branches remain statically attached to `app.tsx`, so
 their modules also appear in the emitted union graph. They are verification routes, not additions
 to the ordinary Host API or to the evidence-only Surface entry above.
 
-**This is not a published API.** There is no `exports` map, no entry point and no stability promise;
-the example reaches in through a path alias. Designing the real export surface is later work.
+**This table predates S05 P1's package extraction** — it was written for the S01 Vite-portability
+baseline, when the editor still lived at `apps/web/src/editor/**` and this example reached in
+through a bare `@/` path alias with no `exports` map, no entry point and no stability promise. It is
+restated above against the current, post-move tree. **This is now a published API.** All three
+`@opencut/*` packages declare an `exports` map, frozen at P0 (§7); every row above resolves through
+a declared entry, not a source-relative reach-in. §8 records the complete entry-mapping across both
+consumer apps — every edge, not only the twelve routed through the ordinary route — and is the
+authoritative, continuously-measured view; the table above stays as the narrower "which symbol,
+which role" walkthrough for the ordinary route specifically, and is not a duplicate of §8's edge
+census.
 
 ### Dependencies the example had to declare explicitly
 
@@ -614,10 +624,81 @@ Net effect: 14 declared entries → 15. `./evidence` itself did not grow; a seco
 added beside it specifically so a Bun-test-only side-effect module never has to be reachable through
 a barrel that any production bundler must evaluate in full.
 
-Target State §4 draws `provider-opencut-classic` and `react-editor` as siblings. The measured edge
-counts above — 228/293 between the provider and the UI, 19/16 between the UI and `editor/surface`,
-64/31 between session/runtime and the provider — show that split requires inverting production
-dependencies, which P1's parity-fixture oracle cannot absorb as a "behaviour-preserving move." This
-is recorded as a Direction-level finding, not resolved here: the split needs a Slice of its own,
-and Roadmap M9/S09 ("provider evolution") is its natural home. It does not block P1 — the three-package
-split above is complete and executable without an answer to it.
+The four-package split finding above (§7) is unchanged by these entry-mapping measurements: nothing
+measured in this section narrows or widens the case that `provider-opencut-classic`/`react-editor`
+requires inverting production dependencies, so it is not restated here a second time.
+
+---
+
+## 9. Static checker scope audit (S05 P1)
+
+Task 2.4 audited every `script/check-*.mjs` for `apps/web/src`-scoped scan sets, per design E3's
+generalisation that any checker whose scan scope is written as a literal `apps/web/src` string has
+this bug latent: once editor source left that directory, such a checker either goes silently
+vacuous (0 files matched, still prints PASS) or fails loudly the moment its literal path stops
+resolving. 26 `check-*.mjs` files existed at audit time (not the 22 named when design.md was
+written — `check-agent-evidence.mjs` landed from an unrelated sibling change in the interim);
+all 26 were audited rather than force-fitting the stale count. `check-type-baseline.mjs` has its
+own dedicated task (2.5) and is excluded from the table below for that reason, not because it was
+skipped.
+
+Three buckets, plus the checkers with no `apps/web/src` vs. `packages/*/src` distinction at all:
+
+- **A — scope follows the source, fixed at audit time.** A general discovery mechanism
+  (glob/prefix over a package registry), so it could be taught `packages/*/src` immediately and
+  verified against the (then-empty) tree.
+- **B — deliberately Host-scoped.** The checker's subject is genuinely the Host/shell, not the
+  editor package, so `apps/web/src` (or `apps/vite-example/src`) is the correct permanent scope.
+- **C — literal-path tracker, fixed at the move that made it testable.** Enumerates specific files
+  or directories editor-owned code would occupy; could not be corrected before the corresponding
+  `git mv` actually happened, since there was nothing yet to verify against.
+- **N/A — not applicable.** No `apps/web/src` vs. `packages/*/src` distinction exists for this
+  checker's subject (wasm artifacts, build output, evidence for an unrelated change, a JSON
+  payload shape).
+
+| Checker | Bucket | Notes |
+| --- | --- | --- |
+| `check-package-boundary.mjs` | A | `ownerOfPath()` gained a `packages/<dir>/src/` branch; `resolveSpecifier()` gained `@opencut/<pkg>[/<subpath>]` resolution through declared `exports`; `guardUnownedFiles()` now refuses unowned `packages/*/src` files. |
+| `check-reference-boundary.mjs` | A (no edit needed) | Already repo-wide with no directory argument; only a `POLICY_DOCS`/`rasen/` exclusion filter. |
+| `check-next-imports.mjs` | B | Guards `apps/web/src` source-level Next imports by design; the bundle-level counterpart is `check-distributable-boundary.mjs`. Named in tasks.md 2.4 itself as the expected Host-scoped example. |
+| `check-distributable-boundary.mjs` | B | All ten `RULES` test shell-owned prefixes or dependency/virtual-module substrings; none reference editor-owned paths. |
+| `check-agent-evidence.mjs` | N/A | Reads a sibling change's evidence directory (`s0304-agent-transaction-evidence`); no relationship to editor source location. |
+| `check-asset-manifest.mjs` | N/A | Operates on build output (`dist/asset-manifest.json`) and static assets (`apps/web/public`), not TS source. |
+| `check-emitted-runtime-assets.mjs` | N/A | Operates on emitted Next build output layers; source-level counterpart is `check-runtime-asset-boundary.mjs` (bucket C). |
+| `check-headless-semantic-result.mjs` | N/A | Validates a JSON payload shape passed as a CLI argument; no filesystem path scope. |
+| `check-wasm-api-surface.mjs` | N/A | Scans `rust/wasm/pkg`'s built surface; unrelated to editor TS source. |
+| `check-wasm-paths.mjs` | N/A | Scans the built `.wasm` binary for leaked build-machine paths; unrelated to editor TS source. |
+| `check-wasm-source.mjs` | N/A | Verifies `opencut-wasm` module resolution points at the repo-built artifact; unrelated to editor TS source. |
+| `check-editor-singleton.mjs` | C | Hardcoded `OWNER`/`SESSION_FACTORY`/`REQUIRED` literals and a literal `"@/editor/use-editor"` specifier match, both under `apps/web/src/editor/**`; fails loudly (`missing-required-root`) once the move happens. |
+| `check-host-composition.mjs` | C | `HOST_ROOTS`, `HOST_CONTRACT = .../editor-host.ts`, `RETIRED_ADAPTER`, all editor-owned; `HOST_CONTRACT` was task 3.1's move target specifically. |
+| `check-port-boundary.mjs` | C + `@/`-resolution duplication | `CONTRACT_AREAS`/`NON_RUNTIME_AREAS` are used as **filters**, not existence-asserted lists — the one bucket-C checker that risked a silent vacuous pass rather than a loud failure, the same failure shape 2.1-2.3 fixed in `check-package-boundary.mjs`. Also independently reimplemented `@/` specifier resolution. |
+| `check-react-singleton.mjs` | C | `PROBE` literal under `editor/surface/embedding/**`; `MANIFESTS` needed widening to the three new package manifests once `editor-classic` declared its own React/UI dependencies, to keep the exact-version pin enforced. |
+| `check-runtime-asset-boundary.mjs` | C | `BROWSER_ADAPTER`, two Host-config literals, 5 producer-file literals, plus a directory walk over both Hosts' `src`. |
+| `check-session-resource-boundary.mjs` | C | `SOURCE_ROOT`, `REGISTRY`, `SHARED_SESSION_ENTRY`, per-Host entries, ~5 more literal editor-owned paths. |
+| `check-session-state-boundary.mjs` | C + `@/`-resolution duplication | ~10 hardcoded store-file literals; independently reimplemented `@/` alias resolution (manual duplicate of `check-package-boundary.mjs`'s `resolveSpecifier()`). |
+| `check-storage-boundary.mjs` | C + `@/`-resolution duplication | `SOURCE_ROOTS`, `STORAGE_AREA`, `PUBLIC_PORT_AREA`, `HOST_CONTRACT`; independently reimplemented `@/` resolution. |
+| `check-transaction-boundary.mjs` | C + `@/`-resolution duplication | `CONTRACT_AREA` — task 4.1's Stage B move target specifically; independently reimplemented `@/` resolution plus ~7 fixture-path literals. |
+| `check-surface-boundary.mjs` | C | `SURFACE_ROOT`, plus a page-route literal. |
+| `check-surface-css-boundary.mjs` | C | `SOURCE = .../surface.css` — the exact file task 5.2 moved. Narrowest-scope entry in the audit: one file. |
+| `check-surface-portal-boundary.mjs` | C | `REQUIRED` lists 11 literals overlapping task 5.6's `components/ui/*` atom adjudication; the discrepancy in count (9 vs. "eight") was resolved with evidence at 5.6, not assumed. |
+| `check-surface-private-drag.mjs` | C | `COORDINATOR` plus 2 more `editor/surface/embedding/**` literals, plus Host-owned shell-exclusion prefixes that needed no change. |
+| `check-headless-graph.mjs` | C | ~10+ module-id literals asserted against a headless bundle's module graph; needed updating once the bundler resolved moved sources to new module ids. |
+
+**Every bucket-C checker was either asserted-existence (fails loudly the moment its literal path
+stops resolving) or swept by task 8.5's "run every runnable static checker, confirm all green,"**
+which cannot pass while any checker still points at a pre-move path — so bucket C was never a
+silent gap, only a deferred one, and 8.5's full sweep is the closing proof it was actually cleared.
+
+### Cross-cutting finding: four checkers reimplement `@/` specifier resolution
+
+Four checkers besides `check-package-boundary.mjs` itself independently reimplemented `@/`
+specifier resolution rather than importing a shared helper: `check-session-state-boundary.mjs`,
+`check-storage-boundary.mjs`, `check-transaction-boundary.mjs`, `check-port-boundary.mjs`. All four
+were updated to the chosen relative-path rewrite form (gate-1's decision) at the same time their
+literal path lists were corrected. **Not extracted into a shared module in this Slice** — doing so
+before Group 6 confirmed the exact rewritten form in practice across ~2,179 real specifiers risked
+building the wrong abstraction before the shape was known. This is a real duplication liability
+carried forward for **P2**: a fifth Host means a fifth opportunity for one of these five
+independent implementations to drift from the others, and the shared-helper extraction is now
+buildable against a settled, proven form. Full per-checker audit narrative and the count-discrepancy
+account: `rasen/changes/s05-package-extraction/evidence/group-2-checker-scope-audit.md`.
