@@ -41,7 +41,7 @@
 
 ## 3. The Host skeleton: a Vite renderer that boots the real editor
 
-- [ ] 3.1 Author `apps/electron-host` (package `@opencut/electron-host`, private, exact-pinned
+- [x] 3.1 Author `apps/electron-host` (package `@opencut/electron-host`, private, exact-pinned
       `electron` dev dep, `react`/`react-dom` 18.3.1, `typecheck` script): Vite config with
       `react()`, `wasm()`, `topLevelAwait()`, `target: "esnext"`, React `dedupe`, `publicDir:
       false`, and the `editorAssets` + `moduleGraph` plugins imported from
@@ -49,28 +49,28 @@
       `EDITOR_RUNTIME_ASSETS`); stylesheet mirroring the Vite example's (`@source` over the
       package tree and the app — the P1 Blocker was a stale scan scope producing a silently
       unstyled, non-interactive editor).
-- [ ] 3.2 Author the renderer skeleton mirroring `apps/vite-example/src`: `app.tsx` with the
+- [x] 3.2 Author the renderer skeleton mirroring `apps/vite-example/src`: `app.tsx` with the
       project picker recording `?project=<id>`, `EditorErrorBoundary`, an
       `electron-host-config.ts` composition root that spreads `createInMemoryPorts()` and
       final-overrides nothing yet (in-memory store is correct for this stage), and the
       `EditorSessionHost`-wrapped editor. `next-themes` and everything else the app imports is
       declared in its own manifest — no hoisting-by-accident.
-- [ ] 3.3 Author the real Electron main + preload for the skeleton: privileged scheme + handler
+- [x] 3.3 Author the real Electron main + preload for the skeleton: privileged scheme + handler
       serving the built renderer (`opencut://app/…`) and the copied asset directory
       (`opencut://assets/…`), `contextIsolation` + `sandbox` on, `nodeIntegration` off, preload
       exposing nothing yet (the bridge lands in Group 4), and `--opencut-entry=<name>` /
       `OPENCUT_ENTRY` selecting the start entry. Build the renderer, launch the app, and prove the
       editor boots to an interactive timeline from the scheme origin with the in-memory store.
-- [ ] 3.4 Census reconciliation now that source has landed: re-run the boundary checker; files
+- [x] 3.4 Census reconciliation now that source has landed: re-run the boundary checker; files
       scanned must have grown by the app's scanned-file count, `@opencut/*` specifiers examined
       and cross-package edges must both be non-zero-additive, and the numbers must reconcile
       against the app's actual files (the 7.5 precedent — a hold or collapse is a scope failure at
       `PASS`). Record before/after side by side in the evidence.
-- [ ] 3.5 Deep-import probe, violation-and-revert, from a real `apps/electron-host/**/*.tsx`
+- [x] 3.5 Deep-import probe, violation-and-revert, from a real `apps/electron-host/**/*.tsx`
       file: an undeclared `@opencut/editor-classic/src/…` import must fail `public-entry-only`
       live (exit 1, the file and specifier named); revert must return exit 0 with the enlarged
       census intact. Record both runs.
-- [ ] 3.6 `bun run --cwd apps/electron-host typecheck` passes; `check-type-baseline.mjs` is
+- [x] 3.6 `bun run --cwd apps/electron-host typecheck` passes; `check-type-baseline.mjs` is
       unchanged from 2.1's baseline (the electron app is outside its `apps/web` program by design
       — record that decision in the Group 9 audit table, do not widen the baseline).
 

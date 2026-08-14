@@ -1,0 +1,11 @@
+check-package-boundary: scanned 1063 repo file(s) (tracked + uncommitted)
+  PASS  acyclic-direction: every cross-package edge points to a strictly lower declared layer (970 file(s) scanned, 339 cross-package edge(s) examined)
+  FAIL  public-entry-only: a specifier crossing into a package resolves only to a declared exports subpath (970 file(s) scanned, 339 @opencut/* specifier(s) examined)
+  PASS  no-internal-reexport: no package's declared entry re-exports a module owned by another package's undeclared internals (863 file(s) scanned)
+  PASS  no-elftia-import: no package, Host or example imports an Elftia package, protocol identifier or runtime object (1063 file(s) scanned)
+  PASS  react-free-base: editor-ports and editor-contracts import no React, no DOM global, and no editor-classic module (68 file(s) scanned)
+
+Package-boundary violations:
+  [public-entry-only] apps/electron-host/src/host/electron-editor-host.tsx:32: imports undeclared subpath "@opencut/editor-classic/src/session/session-editor-host" of @opencut/editor-classic
+      why: the exports map is itself the enforcement Node and every bundler already give an installed consumer (design D5); this rule is the source-level pre-image of that guarantee.
+REAL_EXIT_CODE:1

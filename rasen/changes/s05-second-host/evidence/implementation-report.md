@@ -103,3 +103,83 @@ REAL_EXIT_CODE 0 each), and the live checker re-diffed byte-identical after
 the fixture additions (fixtures are in-memory control-mode data; the live
 path never touches them).
 
+## Group 3 — the Host skeleton: a Vite renderer that boots the real editor
+
+**3.1 — manifest + Vite config.** `apps/electron-host/package.json` extends the
+1.1 manifest with `react`/`react-dom` 18.3.1, `next-themes ^0.4.4`
+(apps/web's pin), `@opencut/editor-classic` + `@opencut/editor-ports`
+workspace deps, and the build toolchain (`vite ^7`,
+`@vitejs/plugin-react`, `vite-plugin-wasm`, `vite-plugin-top-level-await`,
+`@tailwindcss/postcss`/`postcss`/`tailwindcss`, `typescript ^5.8.3`,
+`@types/react{,-dom}`, `@types/bun`) plus `typecheck`/`build`/`start` scripts
+— everything the app imports is declared, no hoisting-by-accident.
+`vite.config.ts`: `react()`, `wasm()`, `topLevelAwait()`, `target: "esnext"`,
+`dedupe: ["react","react-dom"]`, `publicDir: false`, and the `editorAssets` +
+`moduleGraph` plugins imported from `../vite-example/build/` (single-source
+allowlist, design E5 — the cross-app build-tool import the design itself
+prescribes). Stylesheet mirrors the Vite example's (`@source` over the package
+tree and the app; same repo depth, same relative paths). tsconfig mirrors the
+Vite example's (`types: ["vite/client","bun"]`, package ambient types only).
+
+**3.2 — renderer skeleton.** `src/app.tsx` (picker recording `?project=<id>`,
+error boundary, `EditorSessionHost`-wrapped editor, no harness dispatches
+yet), `src/project-picker.tsx`, `src/editor-error-boundary.tsx`,
+`src/host/electron-editor-host.tsx`, and the composition root
+`src/host/electron-host-config.ts`. One real defect was found and fixed while
+proving 3.3: "final-overrides nothing" cannot mean "per-call reference
+roles" — `createInMemoryPorts()` mints a fresh store per host object, so the
+editor branch mounted against a store that never saw the project the picker
+created and the timeline never appeared. The vite config's own shape is the
+answer: module-lifetime `InMemoryProjectStore` /
+`DeterministicIdGenerator` / `RecordingDiagnostics` instances, final-overridden
+exactly as `vite-host-config.ts` overrides with its browser store. The
+Group-4 store swap replaces one of these named overrides.
+
+**3.3 — real main + preload + boot proof.** `electron/main.cjs`: privileged
+scheme registered before app-ready (`standard/secure/supportFetchAPI/stream`),
+`protocol.handle` mapping `opencut://app/<path>` onto `dist/` with traversal
+guard, MIME map, CSP response header, `--opencut-entry=<name>`/`OPENCUT_ENTRY`
+entry selection (validated name), 1440×900 window with `contextIsolation` +
+`sandbox` on and `nodeIntegration` off; `electron/preload.cjs` deliberately
+exposes nothing. A first-run CSP bug (stray trailing quotes in four
+`blob:`/`data:` tokens made Chromium drop four directives — caught by the
+proof's own console-error gate) was fixed before the clean run.
+
+Boot proof (`scripts/boot-proof.mjs`, gate-1 launch config verbatim):
+**BOOT PROOF PASSED, REAL_EXIT_CODE:0** — origin `opencut://app`;
+`?project=3e57f193-…` recorded through the picker; main track + timecode
+visible; the first-run onboarding dialog dismissed and reported; **0 CSP
+violations, 0 console errors**. Screenshot:
+`evidence/screenshots/group-3-boot-proof.png`; transcript:
+`evidence/logs/group-3-boot-proof.log` (+ `group-3-build.log` for the build,
+exit 0, 298 runtime assets / 3789 modules emitted).
+
+**3.4 — census reconciliation** (baseline → post-source, both in
+`evidence/census/`):
+
+| measure | baseline | post-source | delta | reconciles as |
+| --- | --- | --- | --- | --- |
+| repo files scanned | 1049 | 1063 | +14 | 6 src ts/tsx + index.html + vite.config.ts + package.json + tsconfig.json + postcss.config.mjs + scripts/boot-proof.mjs + electron/main.cjs + preload.cjs = 14 |
+| acyclic-direction files / edges | 964 / 329 | 970 / 339 | +6 / +10 | the 6 src files / their 10 `@opencut/*` imports |
+| public-entry-only files / specifiers | 964 / 328 | 970 / 338 | +6 / +10 | app.tsx 4 + picker 2 + editor-host 2 + host-config 2 = 10 |
+| no-internal-reexport | 863 | 863 | 0 | packages-only rule; the app owns no package entry |
+| no-elftia-import | 1049 | 1063 | +14 | repo-wide enumeration auto-covers the new app |
+| react-free-base | 68 | 68 | 0 | base layers untouched |
+
+Every number reconciles exactly against the app's actual files — additive,
+no hold, no collapse.
+
+**3.5 — deep-import probe.** Appended a
+`@opencut/editor-classic/src/session/session-editor-host` import to
+`src/host/electron-editor-host.tsx`: checker **exit 1**,
+`[public-entry-only] apps/electron-host/src/host/electron-editor-host.tsx:32`
+naming the exact specifier (`evidence/census/group-3-deep-import-probe.txt`).
+Reverted: checker exit 0 and the post-source census byte-identical
+(`group-3-post-revert.txt` diff exit 0 vs `group-3-post-source.txt`).
+
+**3.6 — typecheck + type-baseline.** `bun run --cwd apps/electron-host
+typecheck` REAL_EXIT_CODE:0. `check-type-baseline.mjs` output byte-identical
+to the 2.1 baseline capture (`group-3-type-baseline.txt`, diff exit 0) — the
+pre-existing RED is unchanged; the electron app is outside its `apps/web`
+program by design (decision to be recorded in the Group 9 audit table).
+
