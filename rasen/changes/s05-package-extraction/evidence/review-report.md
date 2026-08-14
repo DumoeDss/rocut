@@ -425,3 +425,319 @@ answered **yes, twice**, and neither is reachable by that instrument.
    Both conditions held for task 8.1 (spec §3.2 and `design.md` Goals both predate; the stale §E8
    has a dated provenance showing it predated `__opencutTransaction` by six days). Inherit the test,
    not the precedent.
+
+---
+---
+
+# ROUND-1 RE-REVIEW — delta `af0a52ba..1e5a337c` (9 commits)
+
+Appended 2026-08-14 by the same independent non-author reviewer. **Round 1 above is unaltered.**
+Scope: the 9 fix commits only; the 21 already passed are not re-reviewed.
+
+**Delta verdict: `clean` — 0 open Blockers, 0 open Majors.**
+
+Both Majors, sweep bug #3, all four Minors and both Trivials are **confirmed resolved**, each
+reproduced. Four new items surfaced, all Minor or Trivial. The C7 proof is now genuine — this is the
+finding that mattered most and it is the one most convincingly closed.
+
+## Method (round 2)
+
+Live runs against the real repo; field-level diffs of all four C7 evidence files; three test runs;
+one re-derivation of the pre-move parity diff from committed bytes; a post-fix repeat of the
+whole-tree `apps/web/src` sweep with an existence check on every hit. rocut's working tree was not
+modified — only this report file is written.
+
+---
+
+## Priority 1 — the C7 proof — **GENUINE. The arms differ in substance, not in a label.**
+
+My round-1 MAJOR-1 was that the react-control injection was inert, so both arms resolved the same
+module while the run read as passing. I diffed all four evidence files field by field, ignoring
+timestamps, ports, digests and paths.
+
+**Vite: 37 substantive fields differ between neutral and react.** Not a label — causal work:
+
+| field | neutral | react |
+| --- | ---: | ---: |
+| `graph.moduleCount` | 16 | **33** |
+| `runtimeProbe.react.mountAttempts` | 0 | **3** |
+| `runtimeProbe.react.mutationRecords` | 0 | **2** |
+| `runtimeResourceCounts.workers` / `.audioContexts` / `.timers` / `.animationFrames` | 0 / 0 / 0 / 0 | **2 / 2 / 2 / 1** |
+| `compositorGpu.ownershipAttempts` / `.webGpuAdapterRequests` / `.wasmInstantiations` | 0 / 0 / 0 | **4 / 1 / 2** |
+| `graph.negativeControl.status` | *(absent)* | **`expected-rejection`** |
+| `graph.negativeControl.rule` / `.issueCount` | *(absent)* | **`forbidden.react-family` / 17** |
+
+Seventeen extra modules, three mount attempts, two observed DOM mutations, a spawned worker, an
+AudioContext, a WebGPU adapter request and four compositor-GPU ownership attempts are not
+producible by relabelling a build. **(a) is answered: the injected React is doing observable work.**
+
+**(b) The Next explanation is sound, and it is corroborated rather than asserted.** The Next react
+arm does show `mountAttempts: 0`, `mutationRecords: 0`, `rootMarkersAfter: 0` — but it is not
+indistinguishable from its neutral arm: **24 substantive fields differ**, including
+`moduleCount` 18 → 22, `hostResourceState.workers` 0 → 1, `.audioContexts` 0 → 1,
+`runtimeResourceCounts.timers` 0 → 2, `compositorGpu.ownershipAttempts` 0 → 4,
+`.wasmInstantiations` 0 → 3, and `negativeControl: expected-rejection` with 1
+`forbidden.react-family` issue. The zero-DOM result is also *self-describing* rather than
+unexplained: the probe records the mount mode in the label itself —
+`react:19.3.0-canary-…:server-no-dom` against Vite's `react:18.3.1:browser-mounted`. A server-side
+route has no DOM to mutate, so sensitivity has to surface in host-resource and compositor-GPU
+fields, and it does. If the Next injection were inert, all 24 of those fields would match, as they
+do between the two neutral arms.
+
+**One boundary worth writing down so nobody over-reads it later:** the Next arm proves *the injected
+React module is loaded and does work*; it does **not** demonstrate DOM-mutation sensitivity, and
+cannot, by construction. The Vite arm is what demonstrates that. The pair covers both properties;
+neither arm covers both alone.
+
+**(c) The negative control is genuine on both hosts.** Each react arm's graph is **rejected** —
+`status: expected-rejection`, `rule: forbidden.react-family`, 17 issues (Vite) and 1 (Next). The
+asymmetry tracks the bundlers: Vite folds the react-family closure into a browser graph, Next's
+server route pulls one. Both non-zero, both rejected, and neither neutral arm carries a
+`negativeControl` block at all.
+
+**MAJOR-1 resolved.** The React version asymmetry (18.3.1 vs 19.3.0-canary) is itself corroborating:
+each arm is resolving React from its own host's dependency graph, exactly as `BOUNDARIES.md`'s
+dedupe note predicts, which a shared or faked control could not produce.
+
+## Priority 2 — the second C7 defect — **diagnosis correct, fix correct, neutral arm not weakened**
+
+**The diagnosis is right.** Pre-fix, `@opencut/editor-classic/evidence` was imported *statically as
+values* (`runHeadlessProofControl`, `installHeadlessRuntimeProbe`) and *dynamically* from the same
+entry files. Rollup folds a specifier reachable both ways into the entry chunk, and the folded chunk
+emits a `modulepreload` link — a DOM mutation the runtime probe's MutationObserver correctly
+recorded. So the neutral arm was failing its own zero-mutation bar on a **bundler artifact**: a false
+positive on the exact control meant to prove zero React-family side effects. That is a nastier bug
+than it looks, because it makes the clean arm look dirty and invites someone to relax the bar.
+
+**The fix is the right shape.** `1770d9b0` splits the barrel into two declared subpaths —
+`./evidence/headless` (value statics) and `./evidence/headless-semantic-fixture` (the dynamic
+import) — so no specifier is both a static *value* import and a dynamic import.
+
+**It does not weaken what the neutral arm asserts, and there is a decisive control for that.** The
+fix removed the spurious mutation's *cause*, not the observer: `vite-neutral.json` reports
+`mutationRecords: 0`, `mountAttempts: 0`, `rootMarkers 0/0` and all resource counts 0, while
+`vite-react.json` reports **2 mutation records** from the same probe in the same session. Had the fix
+disabled DOM-mutation detection, the react arm would read 0 too. It reads 2. **The observer is live
+and the neutral zero is a real zero.**
+
+**Unprompted bonus, worth crediting:** the same commit added `wasm()` and `topLevelAwait()` to
+`vite.headless.config.ts`, closing the plugin-asymmetry gap this child had *disclosed but not fixed*
+at task 6.5 — a disclosed limitation actually retired rather than carried.
+
+See `N-3` for a residual fragility in how the fix is held in place.
+
+## Priority 3 — MAJOR-1's fix shape — **deletion is the right call, and nothing depended on it**
+
+`d8159157` deletes `const webSrc = resolve(repoRoot, "apps/web/src")` and its
+`{ find: "@", replacement: webSrc }` alias outright, rather than repointing it, and repoints the
+control alias's `find` to `../editor/session/headless-proof-control` — the specifier the entry chain
+actually emits.
+
+**Deletion is right.** A repointed catch-all would silently resolve any future stray `@/…` into
+whichever tree it pointed at; deleting it makes that a hard resolution failure. That is the same
+fail-loudly principle the rest of this checker family is built on.
+
+**Nothing depended on it**, measured three ways: `git grep` for `from "@/` returns **0 files** under
+`apps/vite-example/**` and **0** under `packages/**`, and `apps/vite-example/tsconfig.json` declares
+no `@` path mapping. There is no consumer to strand.
+
+**The repointed `find` resolves correctly.** Exactly two files emit that relative specifier —
+`packages/editor-classic/src/evidence/headless.ts:51` and `evidence/index.ts:37` — and both sit at
+the same depth, so rewriting both to the same absolute control path is correct rather than a
+collision. (A relative string as an alias key is unusual and would be fragile if a module at a
+*different* depth ever emitted the same text; none does today. Noted, not a finding.)
+
+## Priority 4 — the c5 scope fix — **817 confirmed; your instruction really would have been vacuous**
+
+**Your warning is confirmed by direct measurement.** `git ls-files "packages/*/src"` passed as a
+literal pathspec returns **0 files**. Implementing the instruction literally would have produced a
+guard scanning nothing — a vacuous fix for a vacuity, which is the failure mode this whole portfolio
+keeps circling.
+
+The implementation avoids it correctly: `readdirSync` over `packages/`, filtered to directories that
+exist, each passed as its own literal pathspec.
+
+**817 reproduces exactly.** Running the test's own filter chain — `git ls-files` over
+`apps/web/src`, `apps/vite-example/src` and the three enumerated package src dirs, then
+`/\.(ts|tsx)$/`, excluding `/__tests__/`, requiring `existsSync` — yields **817**. (The raw
+unfiltered pathspec result is 947; 817 is the post-filter figure the test actually scans.)
+
+**No false positives introduced**: the test passes, which is only possible with zero violations
+found across the widened 817-file scope. `bun test ./apps/web/src/services/storage/__tests__/c5-storage-red-controls.test.ts`
+→ **1 pass / 0 fail**.
+
+**Best part of this fix, and the reason it should be copied:** it added
+`expect(files.length, "persistence-importer scan must not be vacuous").toBeGreaterThan(0)`. That is
+P0's "refuse a pass on an empty scan" idiom applied to a test rather than a checker, and it is
+exactly the guard that would have caught the literal-instruction version. See `N-4` on the "9 tests"
+count.
+
+## Priority 5 — the sweep triage — **category 4 correct; category 3 contains one real miss**
+
+I re-ran the sweep post-fix and added an existence check the triage did not: for every
+`apps/web/src/...` path still referenced in live code, does the target exist? **60 references point
+at now-missing paths.** I triaged all 60 and all but one bucket is correctly classified.
+
+**Category 4 — correct, verified mechanically.** `headless-webpack-graph-plugin.test.ts` builds its
+own world: `mkdtempSync(join(tmpdir(), "opencut-c7-next-graph-"))`, then `writeFileSync` under that
+temp root. The `apps/web/src/...` strings are synthetic graph-node identifiers written *into* the
+fixture, never resolved against the real repo. The test passes (**5 pass / 0 fail**). The triage
+claim is exactly right.
+
+**Category 3 — correct for the documentation and vestigial cases, wrong for one.** Correctly
+triaged: `legacy-migration.pw.ts:47-49` (a comment that explicitly documents the old→new move),
+`apps/vite-example/tsconfig.json:22` (comment), `packages/boundary.json` entries (deliberately kept
+with new "vestigial against the generic `packages/*/src` rule" notes added by `df3bf7ff` — good, that
+also closes a gap I had noticed in round 1), `check-host-composition.mjs:22` (references
+`browser-host-adapter.ts`, which is *intentionally* absent), and the various checker allowlist
+strings. **The miss is `package.json` — see `N-1`.**
+
+## Priority 6 — M-1..M-4 and TRIVIAL-2
+
+- **M-1 resolved.** `implementation-report.md:28` now reads `14/14 caught (5 rules)`, matching the
+  live 14 negative fixtures.
+- **M-2 resolved.** The report now says §E8 *"was subsequently restated too, in commit …"* instead of
+  claiming it remains stale.
+- **M-3 resolved, and resolved well.** The report now names the seven persistent failures correctly
+  — *"one C5 dot-segment case + one editor-singleton case + **five** `resolveTrackPlacement` cases
+  (measured from JUnit; not six…)"* — and replaces the bad stability argument with the right one:
+  *"console-vs-JUnit is not a valid [comparison]"*, backed by committed
+  `head-stability-recheck/{console-run1,console-run2,junit-run1.xml,junit-run2.xml,junit-diff.mjs}`.
+  It states plainly that the earlier draft "got backwards". That is the correct repair.
+- **M-4 resolved.** Census figures now carry both readings with commit attribution:
+  *"963 files / 329 edges (as of HEAD `af0a52ba`; task-time Group 7 reading was 962/329)"*, and the
+  same treatment for 328/862 vs 329/861. Naming the commit a census was taken at is precisely the
+  remedy round 1 recommended. (Those figures now read 964/863 at the newer tip — correctly, since
+  they are attributed to a named commit rather than presented as current.)
+- **TRIVIAL-1 resolved.** `find apps/web/src -type d -empty` → **0**.
+- **TRIVIAL-2 resolved in substance, with one wrinkle — see `N-2`.** The artifacts are real and the
+  cheap checkability I said was lost **is restored**: I re-derived the pre-move parity diff from the
+  committed snapshots with the unmodified classifier and got
+  **`29 difference(s): 20 semantic, 9 incidental. 275 leaf values compared.`** — task 8.1's figure,
+  reproduced by me in seconds rather than by an expensive rebuild. That was the point of the ask and
+  it is met.
+
+**Regression check across all nine commits:** the boundary checker is still green at the new tip —
+`acyclic-direction` 964 files / 329 edges, `public-entry-only` 964 / **328 specifiers**,
+`no-internal-reexport` **863 files** and no dormant marker, `no-elftia-import` 1048,
+`react-free-base` 68, exit 0. `generate-vector-manifest.mjs` runs clean (exit 0). No
+`apps/web/tsconfig.json` residue in the delta.
+
+## Priority 7 — category 6 left unfixed — **acceptable, with one condition I'd attach**
+
+Flagging rather than fixing is the right call here, for three reasons: it is a genuinely *different*
+test (a violation-scan, not the scan-scope guard `8389be4e` fixed); the child verified by whole-tree
+grep that no live violations are currently hidden; and widening a RED-control's scope inside a commit
+that fixed a different scope bug would blend two changes in a control test, which is the last place
+you want an unattributed edit.
+
+**The condition:** `8389be4e` gave the scan it fixed a fail-closed
+`expect(files.length).toBeGreaterThan(0)`. The violation-scan test has **no equivalent guard**, so if
+*its* scope silently goes vacuous — the exact failure mode that produced this whole thread — nothing
+catches it. The cheap, correct action for P2 is not to widen the scope but to **add the same
+non-vacuity assertion**, which converts a latent silent risk into a loud one without touching
+classification. I would treat that as the accepted-known's stated remedy rather than "revisit later".
+
+---
+
+# New findings (round 2)
+
+## N-1 (Minor) — `package.json` scripts point into the emptied tree; one fails, two silently lose 93% of their scope
+
+**Where:** `package.json:19`, `:21`, `:22`.
+
+```json
+"format:web": "prettier apps/web/src/services/renderer --write",
+"lint:web":   "eslint apps/web/src --ext .ts,.tsx",
+"lint:web:fix": "eslint apps/web/src --ext .ts,.tsx --fix",
+```
+
+`apps/web/src/services/renderer` **does not exist** (verified); the renderer is now
+`packages/editor-classic/src/services/renderer`. So `format:web` targets a deleted path and fails.
+
+The two `lint:web` scripts are the more insidious half: `apps/web/src` still resolves, so they do not
+error — they now lint **59 tracked files instead of roughly 800**. A ~93% silent coverage loss, with
+no packages-side equivalent script to pick up the remainder (`grep '"lint' package.json` returns only
+these three).
+
+**Failure scenario.** A contributor runs `bun run lint:web` before pushing, sees it pass, and
+concludes the editor source is lint-clean. It was never looked at. Same shape as the `@source`
+Blocker: a green run over a scope that quietly stopped containing the thing it was meant to check.
+
+**This is a sweep category-3 mis-triage** — `apps/web/src` is still live *as a path*, so the hits
+landed in the "legitimate still-live" bucket, but these scripts' *intent* is no longer served by it.
+That is exactly the risk you asked me to probe in that bucket. **Confidence: high** (path existence
+and file counts both measured). Minor, not Major: developer tooling, not a gate or shipped code.
+
+## N-2 (Minor) — the premove artifacts restore the *numbers* but not the *documented command*
+
+`evidence/premove-baseline/README.md` says `parity-diff-premove.md` is the unmodified classifier
+*"re-run against the two snapshots above"* and calls it *"a live re-derivation (run this session)"*.
+Running exactly that on the committed filenames **crashes**:
+
+```
+TypeError: Cannot read properties of undefined (reading 'entries')
+  at script/diff-parity-snapshots.mjs:292   // ledgers.vite.interactions.entries()
+```
+
+**Mechanism, traced.** The tool derives its optional interaction-ledger path with
+`file.replace(/snapshot-\w+\.json$/, "ledger-<host>.json")` (`:273`). The committed names are
+`snapshot-vite-premove.json` / `snapshot-next-premove.json`; `\w+` does not match the hyphen in
+`vite-premove`, so the regex misses, `replace` returns the path unchanged, the tool reads **each
+snapshot as its own ledger**, finds it truthy, and dereferences a `.interactions` that does not
+exist.
+
+**Proof it is only the filename.** Copying the same bytes to `snapshot-vite.json` /
+`snapshot-next.json` and re-running reproduces
+**`29 difference(s): 20 semantic, 9 incidental. 275 leaf values compared.`** — exactly task 8.1's
+pre-move figure. So the substance is genuinely restored and the inheritance claim is verified; what
+is not restored is the ability of the *next* reader to run the documented command and see it.
+
+**Fix (choose one, all trivial):** rename the two files to the conventional
+`snapshot-{vite,next}.json`; or commit the two `ledger-*.json` files beside them; or add one line to
+the README giving the working invocation. **Confidence: high** (crash and success both reproduced).
+
+## N-3 (Trivial) — the C7 fix's correctness now rests on an unpinned `import type`
+
+After `1770d9b0`, `@opencut/editor-classic/evidence/headless-semantic-fixture` is **still** imported
+both statically and dynamically. It is safe only because the static one is
+`import type { HeadlessSemanticResult }`, which TypeScript erases before Rollup sees an edge.
+
+Nothing pins that. If someone later drops the `type` keyword, or imports any *value* from that
+subpath statically, the exact folding recurs — and its symptom is a spurious DOM mutation on the
+neutral arm, i.e. a false positive on the cleanliness control, which is precisely the failure that
+was hard to find the first time. A one-line comment at the import, or `verbatimModuleSyntax` /
+`importsNotUsedAsValues` in the relevant tsconfig, would make the constraint explicit rather than
+incidental. **Confidence: high** (scanned all `packages/editor-classic/src` and
+`apps/vite-example/src` for static/dynamic specifier collisions; this is the only one whose safety
+depends on type-erasure).
+
+## N-4 (Trivial) — the c5 file carries 10 tests, not 9
+
+`apps/web/src/services/storage/__tests__/c5-storage-red-controls.test.ts` contains **10** `test(`
+declarations; the brief says 9. All pass. Cosmetic count correction only, recorded so the number does
+not propagate.
+
+---
+
+## Standing summary — P1 across two rounds
+
+| round | found | closed by the next delta |
+| --- | --- | --- |
+| 1 (`8437084b..af0a52ba`) | 0 Blockers, 2 Majors, 4 Minors, 2 Trivials | **all 8** |
+| 2 (`af0a52ba..1e5a337c`) | **0 Blockers, 0 Majors, 2 Minors, 2 Trivials** | — |
+
+Every round-1 finding is closed and no fix regressed anything previously passing — I re-ran the
+boundary checker, the vector-manifest generator, the c5 suite and the webpack-graph suite against the
+new tip. Two of the fixes went beyond the finding in the right way: the `webSrc` deletion chose
+fail-loudly over repoint, and `8389be4e` added a non-vacuity assertion the finding did not ask for.
+
+**Accepted-known at ship:** N-1, N-2, N-3, N-4, plus sweep category 6 with the condition in Priority
+7 above (add the non-vacuity assertion rather than widen the scope). None blocks.
+
+**One durable addition for P2-P7**, complementing round 1's three: **an existence check belongs in
+the path sweep.** Round 1's durable finding said to grep the old path prefix after a move; this round
+showed that grepping alone under-delivers, because the majority bucket is "still-live path" and a
+dead *target* hides inside a live *prefix*. `git grep -oE '<old-prefix>/[A-Za-z0-9_./-]+'` piped
+through an `existsSync` filter turned 300 raw hits into 60 real candidates and surfaced N-1 in one
+pass — the sweep's own triage, done by hand, put that one in the bucket labelled fine.
