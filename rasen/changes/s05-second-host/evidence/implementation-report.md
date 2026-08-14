@@ -338,3 +338,129 @@ leading `event` parameter, so every arg-taking channel received an
 empty `attachments/` directory legitimately remains after `removeAttachment`
 unlinks its files). Both are recorded in the log's run sequence; the final
 run is REAL_EXIT_CODE:0.
+
+## Group 5 — the desktop composition: assets, workers, CSP (tasks 5.1–5.4)
+
+### 5.1 The composition root names every decision
+
+`apps/electron-host/src/host/electron-host-config.ts` follows the
+`vite-host-config.ts` module-lifetime pattern: `electronDiagnostics`
+(`RecordingDiagnostics`), `electronIds` (`DeterministicIdGenerator`) and
+`electronFilesystemStore` (`new FilesystemProjectStore(new IpcStoreBridge(),
+{ identity: DEFAULT_FILESYSTEM_STORE_IDENTITY })`) are module-level
+singletons, so the store/ID/diagnostics survive the host object being
+recreated on every project-id change. `createElectronEditorHost` then composes
+off `createInMemoryPorts()` with each override named at its site:
+
+- **owned roles** — `assets: new BrowserAssetResolver("/")`,
+  `assetLoader: new BrowserRuntimeAssetLoader(assets,
+  globalThis.fetch.bind(globalThis))`, `runtimeResources: new
+  ElectronRuntimeResources(workerUrlRewriter)`;
+- **the desktop substitution** — `store: electronFilesystemStore` (durable
+  projects on disk through the production preload bridge, not IndexedDB, not
+  in-memory);
+- **reference roles, process-lifetime by decision** — `diagnostics`, `ids`;
+- **visibly NOT overridden** — `environment` and `exporter` stay the
+  in-memory reference implementations `createInMemoryPorts()` provides;
+- plumbing for the Group 6/7 evidence entries rides the same seam
+  (`workerUrlRewriter`, `forceRendererBackend: "none"`), and the branding
+  logo goes through the asset role (`assets.resolve`) rather than a
+  hand-built URL.
+
+`ElectronRuntimeResources` (`electron-runtime-resources.ts`) is the one port
+role this Host owns outright, per design E3. `createWorker` rewrites the
+request onto the renderer's own scheme origin (design E6): a URL already on
+`opencut://app` passes through untouched; any other origin keeps its path and
+query but is served from `location.origin` — same-origin by construction,
+which is what a `file://` page can never offer. An explicit rewriter (the
+evidence harnesses) takes precedence. `createAudioContext` and
+`createObjectUrl` re-implement the browser reference semantics
+(`electron-audio:` / `electron-object-url:` resource ids) rather than
+delegating, so the owned role owns all three decisions.
+
+**Single-origin deviation from design E2's two-host sketch (recorded here as
+the Group 3 decision reached, now proven live):** the design sketch drew
+assets on a second `opencut://assets` host. The build's allowlist copy lives
+in the same `opencut://app` tree the protocol handler already serves, so the
+composition resolves assets against base `"/"` — one origin, one handler, and
+the CSP's `'self'` covers page, fonts, workers and fetch identically. A
+second host would have been ceremony, not isolation. The live proof below
+exercises this end to end (page, atlas, 15 font chunks, the worker fixture —
+all `opencut://app`, zero foreign requests).
+
+### 5.2 Runtime assets end to end — static and live
+
+Static: the build copies the allowlist and emits the electron
+`asset-manifest.json` (298 copied files / 4,481,207 bytes; 7 emitted /
+30,111,668 bytes). `check-asset-manifest.mjs` was invoked with its existing
+`--manifest` parameter against the electron dist — no checker fork, no
+checker edit. Node cannot fetch Electron's custom scheme, so the checker's
+served-bytes leg ran against a trivial read-only stand-in
+(`apps/electron-host/scripts/serve-dist.mjs`, rooted at the same `dist/`,
+byte- and MIME-identical) — the scheme serving itself is proven live below.
+Result: `PASS MIME + bytes + SHA-256 + category/graph completeness`, `PASS
+excluded paths remain absent below the tested base`, REAL_EXIT_CODE:0.
+
+Live: in the same production launch as the boot gate, the booted editor
+(picker → New project → interactive timeline) fetched
+`opencut://app/fonts/font-atlas.json` and fifteen
+`opencut://app/fonts/font-chunk-*.avif` entries through the composition's
+resolver+loader — recorded from the request stream, not inferred.
+
+### 5.3 Worker construction through the port at the scheme origin
+
+The vite example's `?c4-worker-harness=1` pattern, mirrored as
+`apps/electron-host/src/c4-worker-harness.tsx` + the dispatch branch in
+`src/app.tsx` (dispatch split into `App`/`EditorApp` exactly like the vite
+example, so the hooks rules hold). The harness requests a worker at
+`https://request.invalid/original-worker.js` (type `module`, name `OpenCut C4
+Worker fixture`); the Host rewriter serves `opencut://app/workers/
+c4-worker-fixture.js`. Live verdict, all attributes read from the settled
+DOM:
+
+- request observed by the rewriter: id `c4-round-trip`, the exact foreign
+  URL, type, name;
+- rewritten URL `opencut://app/workers/c4-worker-fixture.js`;
+- ping-pong with a transferred 4-byte buffer: `{"kind":"pong","byteLength":4}`;
+- session resource report: worker created/released `1`/`1`;
+- `request.invalid` never reached the network; the whole run recorded **zero
+  foreign requests**.
+
+No worker form resisted scheme serving — the `blob:` fallback (design E6's
+blessed escape) was not needed and is not implemented; its trigger condition
+therefore never fired.
+
+### 5.4 The boot gate: narrow CSP, zero violations, zero console errors
+
+The CSP (design E7's starting set, unchanged from Group 3 — no relaxation was
+forced, so none is named) is committed in both places the task requires: the
+scheme handler's `Content-Security-Policy` response header
+(`electron/main.cjs`) and the identical `<meta>` in `index.html`, which the
+build carries into `dist/index.html`.
+
+The gate ran as the first leg of `scripts/desktop-composition-proof.mjs`:
+production renderer at `opencut://app`, project created through the picker
+(identity seam), editor to the interactive timeline (main-track ARIA label +
+timecode title, the parity harness's own selectors), onboarding dialog
+dismissed, 3s settle. Result: **zero CSP violation reports, zero console
+errors** (both `securitypolicyviolation` instrumentation and console/pageerror
+capture; the worker-harness leg ran under the same instrumentation with the
+same zero). REAL_EXIT_CODE:0, self-logged. Screenshots:
+`evidence/screenshots/group-5-boot-gate.png`,
+`group-5-worker-harness.png`.
+
+### Findings from this group
+
+- **The session's `released` bookkeeping settles a microtask after
+  `terminate()`.** Proof run 1 failed only on `created/released = 1/0`:
+  `SessionResources.release()` (session-resources.ts) defers its
+  `released += 1` behind an `await`, so a report read synchronously after
+  `terminate()` sees the mid-flight value. The archived S02 vite evidence
+  recorded `1/1` because the S02-era release path was synchronous; the
+  *current* vite harness would also report `0` today (it reads the report in
+  the same synchronous spot — left untouched here, vite is not this change's
+  scope). The electron harness now lets the bookkeeping settle (one
+  macrotask) before reading the report; run 2 recorded `1/1`.
+- The asset checker's served leg needs an HTTP base; on a custom-scheme host
+  a rooted stand-in server is the honest bridge, with the live scheme run in
+  the same group covering what the stand-in cannot (the scheme itself).

@@ -7,6 +7,7 @@ import { SessionEditorSurface } from "@opencut/editor-classic/surface";
 import { ElectronEditorHost } from "./host/electron-editor-host";
 import { ProjectPicker } from "./project-picker";
 import { EditorErrorBoundary } from "./editor-error-boundary";
+import { C4WorkerHarness } from "./c4-worker-harness";
 
 function readProjectIdFromUrl(): string | null {
 	return new URLSearchParams(window.location.search).get("project");
@@ -14,14 +15,25 @@ function readProjectIdFromUrl(): string | null {
 
 /**
  * The Electron host's app entry — the Vite example's `app.tsx` mirrored, minus
- * the C3/C4 harness dispatches (those land with their groups) and minus the
- * bounding HostChrome: a desktop window is the container, so the editor fills
- * the window rather than a bordered box inside a page.
- *
+ * the bounding HostChrome: a desktop window is the container, so the editor
+ * fills the window rather than a bordered box inside a page. The C4 worker
+ * harness dispatch is the vite example's own pattern (`?c4-worker-harness=1`,
+ * task 5.3); the remaining evidence harnesses land with their groups.
+ */
+export function App() {
+	if (
+		new URLSearchParams(window.location.search).get("c4-worker-harness") === "1"
+	) {
+		return <C4WorkerHarness />;
+	}
+	return <EditorApp />;
+}
+
+/**
  * The project picker records `?project=<id>` the same way, so the identity
  * seam is exercised identically across hosts.
  */
-export function App() {
+function EditorApp() {
 	const [projectId, setProjectId] = useState<string | null>(readProjectIdFromUrl);
 
 	const openProject = useCallback((id: string) => {

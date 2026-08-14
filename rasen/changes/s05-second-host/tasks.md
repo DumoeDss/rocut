@@ -107,24 +107,24 @@
 
 ## 5. The desktop composition: assets, workers, CSP
 
-- [ ] 5.1 Swap the composition root to the desktop ports: `store` final-override
+- [x] 5.1 Swap the composition root to the desktop ports: `store` final-override
       `FilesystemProjectStore` (via `IpcStoreBridge`), `assets`/`assetLoader` over
       `opencut://assets/` (reusing `BrowserAssetResolver`/`BrowserRuntimeAssetLoader` from
       `@opencut/editor-classic/browser`), Host `runtimeResources` with scheme-rewriting worker
       construction, process-lifetime `DeterministicIdGenerator` + `RecordingDiagnostics`.
       `diagnostics`/`ids`/`environment`/`exporter` stay visibly the in-memory reference roles —
       the composition names each decision.
-- [ ] 5.2 Prove runtime assets end-to-end: the build copies the allowlist and emits the electron
+- [x] 5.2 Prove runtime assets end-to-end: the build copies the allowlist and emits the electron
       `asset-manifest.json`; the booted editor fetches `fonts/font-atlas.json` and a font chunk
       through the scheme (resolver + loader, not a URL the editor built itself). Run
       `check-asset-manifest.mjs` against the electron `dist` (parameterize its manifest path or
       invoke it twice — do not fork a second checker).
-- [ ] 5.3 Prove worker construction: the C4 worker fixture starts through the runtime-resource
+- [x] 5.3 Prove worker construction: the C4 worker fixture starts through the runtime-resource
       port at the scheme origin and exchanges a message (the vite example's `?c4-worker-harness=1`
       pattern is the model; a minimal equivalent harness page or entry in the electron app is
       acceptable). If any worker form resists scheme serving, the `blob:` fallback is implemented
       and the fallback's trigger recorded.
-- [ ] 5.4 Commit the narrow CSP (design E7's starting set) as the scheme handler's response header
+- [x] 5.4 Commit the narrow CSP (design E7's starting set) as the scheme handler's response header
       plus the identical `<meta>` in the built HTML, and run the **boot gate**: production
       renderer under the scheme, editor to interactive timeline, **zero CSP violation reports and
       zero console errors** — violations are failures, not warnings. Any relaxation of the

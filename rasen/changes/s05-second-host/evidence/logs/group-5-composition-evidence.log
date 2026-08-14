@@ -1,0 +1,89 @@
+=== [A] electron-host build (renderer + dist-main seam) ===
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 25.41s
+
+  main-store-ipc.cjs  14.11 KB
+
+[29ms] bundle 3 modules
+REAL_EXIT_CODE:0
+
+=== [B] store tests regression ===
+(pass) main.cjs resolves the design-E4 root and requires the compiled seam
+
+ 6 pass
+ 0 fail
+ 16 expect() calls
+Ran 6 tests across 3 files. [790.00ms]
+
+=== [C] check-asset-manifest --manifest apps/electron-host/dist/asset-manifest.json ===
+check-asset-manifest: no preview server at http://127.0.0.1:4173/ — fetch failed
+REAL_EXIT_CODE:2
+=== [C-retry] serve-dist stand-in (pid 23532, port 4199) + check-asset-manifest --manifest electron dist --base http://127.0.0.1:4199/ ===
+check-asset-manifest: 298 copied entries against http://127.0.0.1:4199/
+  manifest: E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\apps\electron-host\dist\asset-manifest.json
+  marker: development; public base: /
+  PASS MIME + bytes + SHA-256 + category/graph completeness
+  PASS excluded paths remain absent below the tested base
+  totals: 298 copied / 4481207 bytes; 7 emitted / 30111668 bytes
+clean
+REAL_EXIT_CODE:0
+
+=== [D] desktop-composition-proof run 1 (released-count finding) ===
+DESKTOP COMPOSITION PROOF FAILED: created/released is 1/0
+(all other assertions passed; run 1 verdict JSON omitted from this line-level record — see report)
+
+=== [E] harness settle fix + rebuild ===
+✓ built in 24.79s
+REAL_EXIT_CODE:0
+
+=== [F] desktop-composition-proof run 2 (tasks 5.2 runtime + 5.3 + 5.4 boot gate) ===
+{
+  "origin": "opencut://app",
+  "boot": {
+    "atlasFetched": true,
+    "chunkFetched": true,
+    "atlasUrls": [
+      "opencut://app/fonts/font-atlas.json"
+    ],
+    "chunkUrls": [
+      "opencut://app/fonts/font-chunk-0.avif",
+      "opencut://app/fonts/font-chunk-1.avif",
+      "opencut://app/fonts/font-chunk-2.avif",
+      "opencut://app/fonts/font-chunk-3.avif",
+      "opencut://app/fonts/font-chunk-4.avif",
+      "opencut://app/fonts/font-chunk-5.avif",
+      "opencut://app/fonts/font-chunk-6.avif",
+      "opencut://app/fonts/font-chunk-7.avif",
+      "opencut://app/fonts/font-chunk-8.avif",
+      "opencut://app/fonts/font-chunk-9.avif",
+      "opencut://app/fonts/font-chunk-10.avif",
+      "opencut://app/fonts/font-chunk-11.avif",
+      "opencut://app/fonts/font-chunk-12.avif",
+      "opencut://app/fonts/font-chunk-13.avif",
+      "opencut://app/fonts/font-chunk-14.avif"
+    ],
+    "cspViolations": [],
+    "consoleErrors": []
+  },
+  "harness": {
+    "attrs": {
+      "status": "ready",
+      "requestId": "c4-round-trip",
+      "requestUrl": "https://request.invalid/original-worker.js",
+      "requestType": "module",
+      "requestName": "OpenCut C4 Worker fixture",
+      "rewrittenUrl": "opencut://app/workers/c4-worker-fixture.js",
+      "created": "1",
+      "released": "1",
+      "result": "{\"kind\":\"pong\",\"byteLength\":4}",
+      "buildMarker": "development"
+    },
+    "cspViolations": [],
+    "requestInvalidNeverRequested": true
+  },
+  "foreignRequests": [],
+  "schemeRequestCount": 28
+}
+DESKTOP COMPOSITION PROOF PASSED
+REAL_EXIT_CODE:0
