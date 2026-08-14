@@ -85,42 +85,28 @@ PASS  public-entry-only     949 files scanned, 0 @opencut/* specifiers examined
 PASS  no-elftia-import      1031 files scanned
 PASS  react-free-base       68 files scanned
 ```
-This is two distinct achievements, not one:
+This is two distinct outcomes, not one:
 
-1. **Two rules went from genuinely vacuous to substantive.**
-   `no-internal-reexport`: P0's scan set itself was empty (0 files — `packages/`
-   held no source at all) → P1 now scans 863 files, dormant marker gone.
-   `public-entry-only`: P0's file-scan already covered real source (949 files,
-   widened during P0's own round-1 review fix for BLOCKER-1) but its
-   *substantive* count — `@opencut/*` specifiers actually crossing into a
-   package — was 0, because no package existed yet to import from. P0's own
-   ship-log states this outright: "public-entry-only currently PASSes
-   trivially... P1 writes the tree's first such specifiers, which is where
-   this rule stops being vacuous." P1 now: 964 files scanned, **328
-   specifiers examined** — the rule's core assertion has real work to check
-   for the first time.
+1. **Two rules went from vacuous to substantive** — `public-entry-only`
+   (0 → 328 specifiers examined) and `no-internal-reexport` (0 → 863 files,
+   dormant marker gone). Neither had ever fired on real source. This is P1's
+   central claim and it is fully earned.
+2. **Three rules were preserved through a move that would otherwise have
+   silently blinded them** — which is what Group 1 existed to do. Left
+   un-widened, `acyclic-direction` would have kept scanning `apps/web/src`,
+   watched its edge census collapse toward zero, and **still printed PASS**
+   (it fails open); `react-free-base` would have hit 0 and exited 2 (it
+   fails closed). Holding 964/329 and 68 across an 863-file move is the
+   evidence the widening worked — a preserved oracle looks like nothing
+   happening, which is exactly why it needs stating.
 
-2. **Three rules were already substantively live at P0 and had to be
-   preserved through a move that could otherwise have silently blinded them.**
-   `acyclic-direction`: 949 files/341 edges → 964 files/329 edges.
-   `no-elftia-import`: 1031 files → 1048 files. `react-free-base`: 68 files →
-   68 files (unchanged count, same significance — the files it governs did
-   not move). Left with an unwidened scope, these three would have kept
-   scanning the pre-move `apps/web/src` tree after ~863 files moved out of
-   it: `acyclic-direction` and `no-elftia-import` fail open (an emptied scan
-   set still prints PASS, silently proving nothing), `react-free-base` fails
-   closed (would have exited 2 against files that had simply moved, not
-   files that violate anything). Holding real, non-collapsed counts across
-   the move (964/329, 1048, 68) is the evidence the widening actually
-   followed the source, not a rounding artifact.
-
-| Rule | P0 baseline (commit `8437084b`) | P1 now (HEAD `bad9ce3b`) |
-|---|---|---|
-| acyclic-direction | 949 files, 341 edges (live) | 964 files, 329 edges (live) |
-| public-entry-only | 949 files scanned, 0 specifiers (vacuous assertion) | 964 files, 328 specifiers (now live) |
-| no-internal-reexport | 0 files scanned (vacuous) | 863 files (now live) |
-| no-elftia-import | 1031 files (live) | 1048 files (live) |
-| react-free-base | 68 files (live) | 68 files (live) |
+| Rule | P0 baseline (pre-extraction) | P1 now (HEAD `e2169f81`) | Outcome |
+|---|---|---|---|
+| `acyclic-direction` | 949 files, 341 edges | 964 files, 329 edges | **scope preserved** across the move |
+| `public-entry-only` | 949 files, **0 specifiers** | 964 files, **328 specifiers** | **activated** — was vacuous |
+| `no-internal-reexport` | **0 files** (dormant) | **863 files** | **activated** — was dormant |
+| `no-elftia-import` | 1031 files | 1048 files | scope preserved |
+| `react-free-base` | 68 files | 68 files | scope preserved |
 
 **Edge-census as-of note.** 329 edges / 964 files is the figure this
 correction independently re-ran live just now (`node script/check-package-
