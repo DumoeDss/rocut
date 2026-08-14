@@ -1170,14 +1170,123 @@
       6.6. Replaced with a one-sentence cross-reference so a reader does not mistake it for an
       independently-derived second finding. Line endings verified clean (0 CR, `i/lf w/lf`) after
       each of the two edits.
-- [ ] 9.2 Record for **P7** that 863 `git mv` renames restate `SOURCE_INVENTORY.{md,json}`
+- [x] 9.2 Record for **P7** that 863 `git mv` renames restate `SOURCE_INVENTORY.{md,json}`
       wholesale — the generator derives fork additions from `git diff --name-status` against the
       upstream pin, so its output after this child bears no resemblance to its output before.
-- [ ] 9.3 Record for **P3** the exact form the packages ship in (TypeScript from `./src`, no build
+      Done — mechanism confirmed by reading `script/generate-source-inventory.mjs`: `AREAS =
+      ["apps/web/src", "rust", "apps/web/public"]` (line 19, unchanged since S01, does not include
+      `packages/`), and `workingTreeDriftAgainstPin` (lines 116-136) is computed as
+      `git diff --name-status <upstream-pin-ref> -- ...AREAS`, bucketed into `modified`/`added`/
+      `other` by status letter. Every file this Slice `git mv`'d out of `apps/web/src` into
+      `packages/*/src` now resolves as **status `D`** in that diff — the destination path is outside
+      the pathspec `AREAS` scans, so git cannot report it as a detected rename, only as "gone from
+      the scanned tree." This is true regardless of whether the file was originally
+      upstream-pinned content (a false "removed from the fork" signal) or itself a fork addition
+      later moved (a false "the addition was reverted" signal) — the generator cannot distinguish
+      the two once the destination falls outside `AREAS`.
+      **Live-measured, not just reasoned about:** ran the generator against the current tree
+      (`node script/generate-source-inventory.mjs`, reverted immediately after with
+      `git checkout -- SOURCE_INVENTORY.json SOURCE_INVENTORY.md`, confirmed clean — same
+      run-then-revert discipline as task 2.6's stray `--regenerate`). Output: `1069 files, 7.15 MB`,
+      `drift vs pin: 34 modified, 12 added, 641 other`. `git diff --stat` against the committed
+      files: `SOURCE_INVENTORY.json | 3005 ++++---, SOURCE_INVENTORY.md | 1086 +++---` (3262
+      insertions / 829 deletions combined) — a rewrite of the majority of both files' lines, not an
+      incremental delta. The 641-entry "other" bucket is not the same count as the 863 `git mv`
+      total this task's own text cites (863 spans every rename across Groups 3-7 including files
+      outside `SOURCE_INVENTORY`'s three-area scope and non-`git-mv` structural changes; 641 is
+      specifically this generator's own pathspec-scoped fallout) — both numbers point at the same
+      root cause and neither should be read as a correction of the other.
+      **Recorded for P7:** before P7 regenerates `SOURCE_INVENTORY.{md,json}` for the beta-closure
+      provenance record, `AREAS` must be widened to include `packages/*/src` (mirroring the same
+      widening `check-package-boundary.mjs` and `check-type-baseline.mjs` already needed), and the
+      `git diff --name-status` comparison rethought so a `git mv`-only relocation (upstream-pinned
+      content moved, byte-identical) is not misreported as either a deletion or a fresh "fork
+      addition" once it lands back inside the widened scope — the destination's blob hash is
+      identical to the source's, so a hash-equality check against the pin's own tree (not just a
+      path-based `git diff`) is the more robust fix than widening `AREAS` alone.
+- [x] 9.3 Record for **P3** the exact form the packages ship in (TypeScript from `./src`, no build
       step, package-local alias declared in the manifest), since that is what `npm pack` will place
       in the tarball and what must resolve in a scratch project outside the monorepo.
-- [ ] 9.4 Record any ownership corrections and any export-map additions as findings, with the
+      Done — with one correction to this task's own premise, same pattern as design.md §E8's
+      staleness fixed earlier this session: **"package-local alias declared in the manifest" no
+      longer describes reality.** Gate-1 (task 1.2, decided before this task's text was written or
+      not carried forward into it) rejected the package.json `imports`-map alias form (`#/*`) after
+      3 of 4 resolvers failed it, in favour of computed relative-path rewrites for every intra-
+      package specifier. **No manifest in any of the three packages declares an `imports` field**
+      (confirmed: `grep -l '"imports"' packages/*/package.json` — zero hits). What ships is:
+      - **All three manifests are `"private": true`**, declare no `scripts`, no `main`/`module`/
+        `types` field, and an `exports` map pointing straight at `./src/**/*.ts` for every entry
+        (verified by reading all three: `editor-ports` 6 entries, `editor-contracts` 9,
+        `editor-classic` 16). `"files"` lists `dist` first even though no package has ever had a
+        build step and no `dist/` directory exists on disk for any of them — a dead entry, not a
+        broken one (an absent glob is silently skipped by `npm pack`, confirmed below).
+      - **Live-verified with `npm pack --dry-run`** (not just read from the manifest) in
+        `packages/editor-ports/`: tarball contains exactly `package.json` + 18 files under `src/`
+        — every `.ts` source file including `__tests__/*.test.ts` and `.compile-guard.ts` files and
+        `DECISIONS.md`, nothing compiled, nothing excluded, no `.npmignore` present anywhere in the
+        three packages. `private: true` did **not** block the dry-run — confirms BOUNDARIES.md §7's
+        prior "`npm pack --dry-run` was run for all three manifests" note was exercising the real
+        gate, not a moot one; `npm pack` (unlike `npm publish`) does not refuse a private package.
+        No `.tgz` was written to disk by the dry-run (confirmed, nothing to clean up).
+      **Recorded for P3:** a scratch project outside the monorepo receives raw, untranspiled
+      TypeScript (including test files) with zero `.d.ts`/`.js` output anywhere in the tarball; its
+      own bundler/type-checker must resolve `.ts` imports directly (exactly like the workspace does
+      today, via `exports` map + a TS-aware resolver — there is no separate "consumer sees compiled
+      JS" mode to conformance-test). The `dist` entry in `"files"` is inert today and P3 does not
+      need to explain it; P5 (versioning/experimental-labeling) or P6 (published examples) is the
+      more natural owner if a real build step is ever added, since that changes what ships.
+- [x] 9.4 Record any ownership corrections and any export-map additions as findings, with the
       evidence that forced each.
+      Done — confirmed complete by re-checking every `boundary.json` mention across this file
+      (`grep -n "boundary\.json" tasks.md`, 8 hits: 119, 186, 253, 279, 452, 455, 463, 464) rather
+      than trusting recall:
+
+      **Ownership corrections — exactly four, all at task 5.6, none elsewhere.** `env/web.ts` and
+      `changelog/utils.ts` corrected to `apps/web` per design E5's recommended default (every caller
+      is shell infrastructure); `project/components/project-info-dialog.tsx` and
+      `services/storage/components/storage-persistence-dialog.tsx` corrected on investigated caller
+      evidence — identical shape to the two defaults (single shell-only caller, zero editor-classic
+      callers). 8 `components/ui/*` atoms showed the same shell-only-caller surface but were
+      deliberately **not** corrected, distinguished on directory-cohesion grounds, not caller count.
+      Effect: cross-package edge count 340 → 332, `check-package-boundary.mjs` still 5/5 PASS after.
+      The other 7 `boundary.json` hits are **not** corrections in this sense and are excluded on
+      inspection, not assumption: 3.4 (line 119) is a mechanical repoint of `path` values that no
+      longer exist after a `git mv`, `why` text left untouched — no ownership question was
+      adjudicated, only a stale pointer was fixed. 4.3 (line 186) relocates a file to match an
+      ownership determination `boundary.json` **already recorded**, not a change to the determination
+      itself. 5.1 (line 253) and 5.5 (lines 452/455) both reference the same 5.6 corrections or
+      pre-existing entries (3 files — `branding-assets`/`production-composition` tests,
+      `c5-storage-red-controls.test.ts` — were already `apps/web`-owned in `boundary.json` **before**
+      this Slice began, confirmed by 5.1's classify step correctly excluding them without any edit).
+      Line 279 is a CRLF-cleanliness check, unrelated to ownership content.
+
+      **Export-map additions — exactly one, forced twice, already fully written up at 6.6 and in
+      `BOUNDARIES.md` §8.** `./evidence/wasm-test-mock` → `src/editor/session/__tests__/wasm-test-mock.ts`,
+      added to `editor-classic/package.json` (14 declared entries → 15). Forced by two independent
+      consumers hitting the same root cause (a `bun:test`-only side effect reachable through the wide
+      `./evidence` barrel that any production bundler must evaluate in full, absent a `sideEffects:
+      false` declaration): `production-composition.test.ts`'s `bun test` crash (task 5.4) and
+      `apps/web`'s production `next build` Turbopack crash (task 6.5). Contra design E4's own "no
+      entry needs to be added" expectation. No other export-map entry was added or removed by this
+      Slice in any of the three packages' manifests (P0's pre-existing `engine/invariant` entry does
+      not count — declared before P1 started).
+
+      **Third item folded in here, not a separate task slot:** team-lead's Group-9 hand-forward list
+      also named the `git archive <sha> | tar -x` pre/post-move comparison recipe (no worktree,
+      branch/HEAD untouched) as a reusable P2/P3 method. It has no dedicated Group-9 checkbox, and by
+      9.4's position as the last Group 9 task before Ship, this is the correct place to give it an
+      explicit landing spot rather than let it live only implicitly inside 8.1/8.6's prose. It is
+      **not** re-derived here — it is already written up in full, twice, at its point of use: the
+      parity-envelope comparison (task 8.1, `git archive 8437084b | tar -x` into a temp directory,
+      same CI placeholder env, same parity spec, same unmodified diff tool) and the `bun test`
+      pre-move baseline (task 8.6, same `git archive <sha> | tar -x` mechanism into a scratch tree).
+      Both runs deliberately avoided a second worktree (forbidden by this Slice's standing
+      constraints) and avoided touching the working branch's HEAD. The reusable shape for P2/P3: pin
+      a commit SHA, `git archive <sha> | tar -x` into a plain temp directory (not a worktree, not a
+      checkout), build/run there with the same tool and env as the post-change measurement, diff the
+      two result sets. This sidesteps the gitignored `rust/wasm/pkg/` build-artifact problem entirely
+      — `git archive` only extracts tracked content, so the wasm build step re-runs identically in
+      both trees rather than one side silently reusing a stale local `pkg/` directory.
 
 ## 10. Ship
 
