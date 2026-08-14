@@ -80,6 +80,12 @@ discovered manifests rather than from a hardcoded package list. The run SHALL re
 cross-package edges examined, so that a collapse in coverage is visible even when the rule reports a
 pass.
 
+Consumer source roots SHALL be derived from the consumer list declared in `packages/boundary.json`
+rather than hardcoded path prefixes. Files under any declared consumer root SHALL resolve to that
+consumer as their owner, and their package specifiers SHALL be examined as edges like any other
+consumer's, so that a consumer declared after the freeze is inside the scan by construction rather
+than by a later repair. Adding a consumer root with source under it SHALL grow the reported census.
+
 #### Scenario: The current source graph is acyclic under the declared ownership
 
 - **WHEN** `node script/check-package-boundary.mjs` runs at the ship commit
@@ -111,6 +117,14 @@ pass.
 - **THEN** the specifier resolves to the module the manifest's `exports` map names
 - **AND** the resulting edge is judged for direction like any other cross-package edge
 
+#### Scenario: A consumer added after the freeze is scanned rather than invisible
+
+- **WHEN** a consumer root declared in `packages/boundary.json` after the initial freeze holds
+  source files that import `@opencut/*` packages
+- **THEN** those files resolve to that consumer as owner without any further checker edit
+- **AND** their package imports appear in the examined-edge census, which grows relative to the
+  census before the consumer held source
+
 ### Requirement: Public entry points and no deep imports
 
 Each package's public surface SHALL be exactly the subpaths its `exports` map declares. No consumer
@@ -124,6 +138,11 @@ required it.
 Both rules SHALL be live once `packages/` holds source: `no-internal-reexport` SHALL report a
 non-zero scan rather than its dormant zero-file line, and a pass reported by either rule over a zero
 examined count SHALL NOT be treated as evidence.
+
+The no-deep-import guarantee SHALL hold for source files under every consumer root declared in
+`packages/boundary.json`, including consumers declared after the freeze: such files SHALL be inside
+`public-entry-only`'s scan set by construction, and declaring a consumer that holds package imports
+SHALL grow the rule's examined-specifier count rather than leave the consumer unexamined.
 
 #### Scenario: Declared entries cover every existing cross-package consumer
 
@@ -148,6 +167,14 @@ examined count SHALL NOT be treated as evidence.
 - **WHEN** the check runs at the ship commit
 - **THEN** `public-entry-only` reports a non-zero count of package specifiers examined
 - **AND** `no-internal-reexport` reports a non-zero count of files scanned
+
+#### Scenario: A deep import from a consumer declared after the freeze is caught
+
+- **WHEN** a source file under a consumer root declared after the initial freeze imports an
+  undeclared subpath of a package
+- **THEN** `public-entry-only` reports that file and specifier and the check exits non-zero
+- **AND** after the import is reverted the check exits zero with an examined-specifier count that
+  still covers that consumer's files
 
 ### Requirement: Elftia-absence import rule
 
@@ -233,4 +260,31 @@ the owner of each excluded claim, so that silence is not read as coverage.
 - **AND** it states that resolution from an installed tarball is not asserted here and is owned by
   the third-party-conformance child
 - **AND** it states that no behavioural or parity claim is made by this boundary
+
+### Requirement: Consumer roots are declared, derived, and visible
+
+`packages/boundary.json` SHALL declare every consumer application's source root in its consumer
+list, and the boundary check SHALL derive its consumer scan roots from that list rather than from
+path prefixes written into the script. A change that adds or moves a consumer root SHALL be a
+`boundary.json` diff, and the check's reported census SHALL make the consumer's presence visible:
+the file counts it reports SHALL include every declared consumer's source files.
+
+#### Scenario: The consumer list is the single source of scan roots
+
+- **WHEN** the boundary check's consumer-root handling is inspected
+- **THEN** every consumer root it scans traces to `packages/boundary.json`'s consumer list
+- **AND** no consumer root is reachable only through a literal prefix inside the check script
+
+#### Scenario: Declaring a consumer without source changes nothing observable
+
+- **WHEN** a consumer root is added to the declaration while holding no scanned source files
+- **THEN** the check's output is identical to its output before the declaration
+- **AND** that control run is recorded as the proof the scope change is behaviour-preserving
+
+#### Scenario: The census reflects every declared consumer
+
+- **WHEN** the check runs with source files present under every declared consumer root
+- **THEN** the per-rule file counts reconcile with the files each consumer root actually holds
+- **AND** a consumer whose files are absent from a rule's count while present on disk is a scope
+  failure even when the rule prints a pass
 

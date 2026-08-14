@@ -1,0 +1,229 @@
+{
+  "change": "s05-second-host",
+  "archivedAt": "2026-08-14T23:30:11.391Z",
+  "codeCommit": "1f3634e7d4697c6f6e24e10166f3817c534bdb94",
+  "planningBranch": "feat/s05-community-beta",
+  "planningTreeState": "dirty",
+  "evidence": [
+    {
+      "path": "evidence/agent-ledger-electron.json",
+      "sha256": "29f71194c30f4d96efd76a95f4b9f04f6b5233e057cd612c444fb89cf978dd54"
+    },
+    {
+      "path": "evidence/census/baseline-checker.txt",
+      "sha256": "1f532218a162c2204393e93da5fff9e0c45dbf97032fcb27ee27af3511cbb8e4"
+    },
+    {
+      "path": "evidence/census/baseline-converse-control.txt",
+      "sha256": "47f23df71caa53f917719090bbbeb55cc8a11fdec50778427f675865588f7cac"
+    },
+    {
+      "path": "evidence/census/baseline-negative-control.txt",
+      "sha256": "83657baf0c35944db452bef04a04eb4fa2db194667ad8c97c4bc611cedeea6bc"
+    },
+    {
+      "path": "evidence/census/baseline-type-baseline.txt",
+      "sha256": "4049563dfee6ded33a5ca57d83da5d9b926c09ad73985aea0682781ef27dc93c"
+    },
+    {
+      "path": "evidence/census/control-converse-post-edit.txt",
+      "sha256": "47f23df71caa53f917719090bbbeb55cc8a11fdec50778427f675865588f7cac"
+    },
+    {
+      "path": "evidence/census/control-converse-with-electron.txt",
+      "sha256": "9522577a2466aa54fe7758857b562b1c82fde1e24a42c5f14137ca9dc7663f64"
+    },
+    {
+      "path": "evidence/census/control-negative-post-edit.txt",
+      "sha256": "83657baf0c35944db452bef04a04eb4fa2db194667ad8c97c4bc611cedeea6bc"
+    },
+    {
+      "path": "evidence/census/control-negative-with-electron.txt",
+      "sha256": "828d4e42f330b894b5b6cfcb50aca10cc6112a4b3fd11b3a49e5dd1bed6d7e6c"
+    },
+    {
+      "path": "evidence/census/control-post-edit.txt",
+      "sha256": "d453dccdcadccc9c069fc1ab5b72bb0be2dfebb62b00916eda03b22ac6c561f7"
+    },
+    {
+      "path": "evidence/census/control-pre-edit.txt",
+      "sha256": "d453dccdcadccc9c069fc1ab5b72bb0be2dfebb62b00916eda03b22ac6c561f7"
+    },
+    {
+      "path": "evidence/census/group-3-deep-import-probe.txt",
+      "sha256": "26b29dc4dbf0e909b59c1ad48ae21da638b753c590dbc9449e5b04735b0a3b7c"
+    },
+    {
+      "path": "evidence/census/group-3-post-revert.txt",
+      "sha256": "b1303f2f76abdec52af290734381a87208c82b5a30dfa26a9be02a6cbc1a4ef2"
+    },
+    {
+      "path": "evidence/census/group-3-post-source.txt",
+      "sha256": "b1303f2f76abdec52af290734381a87208c82b5a30dfa26a9be02a6cbc1a4ef2"
+    },
+    {
+      "path": "evidence/census/group-3-type-baseline.txt",
+      "sha256": "4049563dfee6ded33a5ca57d83da5d9b926c09ad73985aea0682781ef27dc93c"
+    },
+    {
+      "path": "evidence/frozen-signature/README.md",
+      "sha256": "5f30f028f12bbad147cda4e3faa7b256b642d805505d36583d7b7c1e68b12d80"
+    },
+    {
+      "path": "evidence/gate-1-desktop-substrate.md",
+      "sha256": "1a13cf0486a54d73699fecaa51364c54799fe53a415d4fe7e5bd3fc29a62c310"
+    },
+    {
+      "path": "evidence/group-8-agent-ledger-predicates.md",
+      "sha256": "e604d740a8af8fe57022ff0c28ccb756d06091055daf4447fdd9efe9ddb2f612"
+    },
+    {
+      "path": "evidence/group-9-checker-scope-audit.md",
+      "sha256": "990517f32d1dc888a1f26bf6f5e0ebfddb1a8010eb130642caef5a2a6c1d17e9"
+    },
+    {
+      "path": "evidence/implementation-report.md",
+      "sha256": "c30b55d3ace3f6943239d5443dff5e2ffa925be21e6a01893efb81a95974c271"
+    },
+    {
+      "path": "evidence/logs/gate-1-diagnostic-dryrun.txt",
+      "sha256": "d784c44b299e018a8bce29a78db05b42a781904cff73be32356a6e72c4d43f22"
+    },
+    {
+      "path": "evidence/logs/gate-1-electron-postinstall.log",
+      "sha256": "d8fff800e0eb34d98d8acae52ca153a261843a7271beeca87127da16d9dc07e6"
+    },
+    {
+      "path": "evidence/logs/gate-1-install.log",
+      "sha256": "9f775ab4a82833f38dd9490ab05c8c4bb3d8857c7ae9a9a68a545299cd87eec9"
+    },
+    {
+      "path": "evidence/logs/gate-1-launch-check.log",
+      "sha256": "07b1b2e352cb59c9f7d9515ba6dbdd42ce3572a76518c133c7cf4a58e8f86fde"
+    },
+    {
+      "path": "evidence/logs/gate-1-launch-debug.log",
+      "sha256": "71502af1da3bd55ef0d0f7ad56438fc255309e26294d418752bd327b3e34b2ce"
+    },
+    {
+      "path": "evidence/logs/gate-1-spike-run.log",
+      "sha256": "e2890f2329d9348837753ec9709217a2897805e220f9ae3817a90beca43a1291"
+    },
+    {
+      "path": "evidence/logs/group-10-c6-oracle-rebuilt-dist.log",
+      "sha256": "007720a2c1e58f52ce2d013551be1859f13c0159cc5638e2745d6c352ecbcda5"
+    },
+    {
+      "path": "evidence/logs/group-3-boot-proof.log",
+      "sha256": "c0be7323eb4079497cda85b538aa81fd0ea7eeaceb3f6c65054571db26aaee70"
+    },
+    {
+      "path": "evidence/logs/group-3-build.log",
+      "sha256": "7d5fc478ad94f97e72f6b93f841ccbe2cd1e205c81f3e9207ce9826bb87527a6"
+    },
+    {
+      "path": "evidence/logs/group-4-bridge-production.log",
+      "sha256": "ee0b8c95cab0438713477b4404d0b1afbe79ab0330cbee0f3cee8740d1655ab8"
+    },
+    {
+      "path": "evidence/logs/group-4-store-evidence.log",
+      "sha256": "7677aae1eb1431c284fc8255998b6e40a945d3555b26003243570bbb1a7b3281"
+    },
+    {
+      "path": "evidence/logs/group-5-composition-evidence.log",
+      "sha256": "f0e2f115845a9c8792892fce8d354ea175d23647d96a110db7ed08ddff841ad5"
+    },
+    {
+      "path": "evidence/logs/group-6-evidence-entries.log",
+      "sha256": "a590307e62ff4351851a6fe1f90bf7542e9a9b009eccdfb4f192f0c1a834d6c3"
+    },
+    {
+      "path": "evidence/logs/group-7-parity-electron-run4.log",
+      "sha256": "03136b2a201d536238754d82a228a276bb8373044f157a2b33b3cc1d9580dd4d"
+    },
+    {
+      "path": "evidence/logs/group-7-parity-next-regression.log",
+      "sha256": "386c826b869ed3f8abe2f0f312452b849f184ead877319910d0a93b6e975224e"
+    },
+    {
+      "path": "evidence/logs/group-7-parity-vite-regression.log",
+      "sha256": "9bf4f1f0bf763f00396f7999bea627648c86470da1f41dc569d0bf2f85a89f17"
+    },
+    {
+      "path": "evidence/logs/group-8-agent-electron.log",
+      "sha256": "b0e1603c1901604f30226aa673f3384c0aa3d1fe1c79bf2f7638f5340ec58d68"
+    },
+    {
+      "path": "evidence/logs/group-8-c6-oracle.log",
+      "sha256": "007720a2c1e58f52ce2d013551be1859f13c0159cc5638e2745d6c352ecbcda5"
+    },
+    {
+      "path": "evidence/logs/group-9-all-checkers.log",
+      "sha256": "de2230373b66770ae2e93083161a1040b6b1dd768e81dd1c69d62b0c3d7d2042"
+    },
+    {
+      "path": "evidence/logs/review-r1-boot-gate-csp-error-responses.log",
+      "sha256": "1c4cfb3f4f8ea7e6eb63228e3f5b22a1b7473cff41096815ecaac9510e2b3f18"
+    },
+    {
+      "path": "evidence/logs/review-r2-typecheck.log",
+      "sha256": "dfe403d3114af49fe8bf2b187dd77943ab89263a2729bc21082c6129e5776a14"
+    },
+    {
+      "path": "evidence/logs/ship-gate-boundary-checker.log",
+      "sha256": "d0f5eb2db95bd5bb8febf75dac35a8ede228cdf95894ad85797dc3533efd1c33"
+    },
+    {
+      "path": "evidence/logs/ship-gate-typecheck.log",
+      "sha256": "2db82f2b200a6adf0320f716e9200183a7458b58506192c8fb7f1e5bbdd2b5b9"
+    },
+    {
+      "path": "evidence/parity-electron-vs-vite-20260815.md",
+      "sha256": "5db12b89e167deac6c898963e92137b2ea9090fc72d8cd57546d0e73dbeb5d4a"
+    },
+    {
+      "path": "evidence/parity-vite-vs-next-regression-20260815.md",
+      "sha256": "7bd9fc10e795caf55f9b0dda92b206c4fa35526044378a47859478e025b59997"
+    },
+    {
+      "path": "evidence/review-report.md",
+      "sha256": "70260f8245bd41114b2b5ca77b3a3251a00ddb084dce2d1bc25192d33320734b"
+    },
+    {
+      "path": "evidence/rewrite-record.md",
+      "sha256": "0106d4358f8d4cd54414a304453156b39e8ecb878005d67f6f80a47773bd119d"
+    },
+    {
+      "path": "evidence/screenshots/group-3-boot-proof.png",
+      "sha256": "5efa00b6cbdf06131faca41a835c2da4a75ad3867781dae5a5a5f6ebf7d27cea"
+    },
+    {
+      "path": "evidence/screenshots/group-5-boot-gate.png",
+      "sha256": "5efa00b6cbdf06131faca41a835c2da4a75ad3867781dae5a5a5f6ebf7d27cea"
+    },
+    {
+      "path": "evidence/screenshots/group-5-worker-harness.png",
+      "sha256": "0039ed5faf28e340774177f66d5aecdd3d754bbf2694199489305920f187b3b4"
+    },
+    {
+      "path": "evidence/screenshots/group-8-agent-apply.png",
+      "sha256": "d95573c40933a7037c132283f8c9c7843af2bcf260eacc37328f84855a265331"
+    },
+    {
+      "path": "evidence/screenshots/group-8-agent-reopen.png",
+      "sha256": "d95573c40933a7037c132283f8c9c7843af2bcf260eacc37328f84855a265331"
+    },
+    {
+      "path": "evidence/ship-log.md",
+      "sha256": "4bda9d97b4e80563724d0a0cffc7d6f5dcb58fb332aa5004eea89339f7e3af0f"
+    }
+  ],
+  "probes": [],
+  "handoffAbsorbed": [],
+  "ephemeraDiscarded": [
+    "auto-run.json"
+  ],
+  "missing": [
+    "verification-report"
+  ]
+}
