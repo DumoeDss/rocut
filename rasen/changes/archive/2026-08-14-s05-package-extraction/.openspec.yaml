@@ -1,0 +1,11 @@
+schema: spec-driven
+created: 2026-08-13
+quality:
+  files:
+    - evidence/group-2-checker-scope-audit.md
+    - evidence/implementation-report.md
+    - evidence/review-report.md
+  metrics:
+    evidence/group-2-checker-scope-audit.md: 0
+    evidence/implementation-report.md: 0
+    evidence/review-report.md: 0

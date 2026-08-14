@@ -1,0 +1,133 @@
+{
+  "change": "s05-package-extraction",
+  "archivedAt": "2026-08-14T13:20:02.625Z",
+  "codeCommit": "74182a3e403aa166e796aeb5d2ff66f89724b15a",
+  "planningBranch": "feat/s05-community-beta",
+  "planningTreeState": "dirty",
+  "evidence": [
+    {
+      "path": "evidence/c7-dual-arm/next-neutral.json",
+      "sha256": "d7a3e8b50f176a1b10742b8873363136a0e848353807f83efe9335ae3b2815b0"
+    },
+    {
+      "path": "evidence/c7-dual-arm/next-react.json",
+      "sha256": "4ed883e33b90e4979d9f24196f2bf1f30c2599d6dab0c8cd82f9aa4c5c720b65"
+    },
+    {
+      "path": "evidence/c7-dual-arm/vite-neutral.json",
+      "sha256": "6f7b9cdce3f4fa776a944c0d584a946118c434009a2ffcba913e87fe39f1960c"
+    },
+    {
+      "path": "evidence/c7-dual-arm/vite-react.json",
+      "sha256": "47dfb65ff3947c6346037018a7fb53e96126007faa0199654b0b01645530df0a"
+    },
+    {
+      "path": "evidence/gate-1-alias-resolution.md",
+      "sha256": "36c933481caf8e303dfc3edf82a00117ece7c67da4c9c06cbcfeaea6c5a22326"
+    },
+    {
+      "path": "evidence/gate-1-pre-move-baseline.md",
+      "sha256": "52a50467bf4246e100fedf68f26c6e845034840c16f775f3b6cd73d1e2ca0e5e"
+    },
+    {
+      "path": "evidence/group-2-checker-scope-audit.md",
+      "sha256": "12fe108d21b20c6bb7f319a1544bbaac9e015882e4f264c729ced31df944d96a"
+    },
+    {
+      "path": "evidence/group-2-control-rerun.md",
+      "sha256": "59e92cac045b1700f533d6b966f653a720a843d98f11905b629fcb2b58740781"
+    },
+    {
+      "path": "evidence/group-2-type-baseline-reach.md",
+      "sha256": "5912bf68e4c1f356f637f87701e96123b3049b6e51f6a4755a1a4132f3fa365c"
+    },
+    {
+      "path": "evidence/head-stability-recheck/console-run1.log",
+      "sha256": "d4a688ebb27d5ac2c13bc2c4e8e8de59c183d551c2ea4da3d9e9f2f19816dfd7"
+    },
+    {
+      "path": "evidence/head-stability-recheck/console-run2.log",
+      "sha256": "b434937cba2d26c92f75268f107ced17c8950901f8a8b8487d01e6c7f01d17f7"
+    },
+    {
+      "path": "evidence/head-stability-recheck/junit-diff.mjs",
+      "sha256": "76ba9eb90500ca6edc2e79aeccde5790354feb5bb79bd8d237cd87bf7fb4ab2f"
+    },
+    {
+      "path": "evidence/head-stability-recheck/junit-run1.xml",
+      "sha256": "82892e61e4b90173845d9e140c7e90fea44b5d1999e34df75f504bded227a4c8"
+    },
+    {
+      "path": "evidence/head-stability-recheck/junit-run2.xml",
+      "sha256": "e003711288669aae376f5b99f22ab04979b91e09947abc88723e684e88ca057d"
+    },
+    {
+      "path": "evidence/implementation-report.md",
+      "sha256": "848844f00fdad4ba8a7a8c4c4c42a3221e9233674f4dac9da2ee2502c7c6d9db"
+    },
+    {
+      "path": "evidence/premove-baseline/bun-test-full-premove.log",
+      "sha256": "cc74888efc136f13d5d59e2f5d0e1ba60de060a8ec0ebcbbc3b866d8f00681bd"
+    },
+    {
+      "path": "evidence/premove-baseline/frozen-signature-engine.diff",
+      "sha256": "5d7e87859584b3008bcd5e56dec594fd383e00aa6ad4e9926434da0bc9e69ba4"
+    },
+    {
+      "path": "evidence/premove-baseline/frozen-signature-ports-barrel.diff",
+      "sha256": "a623f8e45ef9b11f18a3d3d41b8f54970316cf465120c15a7bda5c2f0d9acffa"
+    },
+    {
+      "path": "evidence/premove-baseline/frozen-signature-surface-embedding-types.diff",
+      "sha256": "c287821a985419137ea438d7a4ffe28c13df91bf00ce7fa6c4514c2c69156dfa"
+    },
+    {
+      "path": "evidence/premove-baseline/ledger-next.json",
+      "sha256": "e2b345489462fe6e29f3c40fe44a018f6a4f2338b241f3de477d90391e74d371"
+    },
+    {
+      "path": "evidence/premove-baseline/ledger-vite.json",
+      "sha256": "1bc5977bb505341b07358174d4ab0ae09e0a4ddd0197675bc1bbe3eddbd38a7b"
+    },
+    {
+      "path": "evidence/premove-baseline/parity-diff-premove.md",
+      "sha256": "16719f103d0c22cad3744bb7fa0bd0afd573de2bebb4e708ac13dea3bf27eb90"
+    },
+    {
+      "path": "evidence/premove-baseline/parity-playwright-next-premove.log",
+      "sha256": "e3ce7f0e0517ea7ae98421e5fffc454eedb4ee704c1dd6c54ac28f61f39ad9dc"
+    },
+    {
+      "path": "evidence/premove-baseline/parity-playwright-vite-premove.log",
+      "sha256": "362c3f96a7299f29f43803178ecc65c7a59a371ae7b1830968cbd61d2cb14565"
+    },
+    {
+      "path": "evidence/premove-baseline/README.md",
+      "sha256": "bb78f0796c228111513a4392edf2006bf009ac0fe89d76da1a026cd348c6e496"
+    },
+    {
+      "path": "evidence/premove-baseline/snapshot-next.json",
+      "sha256": "6781c1aed664018ada30fe87d4a0b3c85299e62d1a9fae0a6e5b3eb2361245a8"
+    },
+    {
+      "path": "evidence/premove-baseline/snapshot-vite.json",
+      "sha256": "cead65899cdb97e97ebc46fe74262c69afc9b5262105269a60129da3fbc695c6"
+    },
+    {
+      "path": "evidence/review-report.md",
+      "sha256": "23fc0cb6eafcec347b48a5b3ae0c58e8d2b9ef326553349a85c8edf78da5fc8c"
+    },
+    {
+      "path": "evidence/ship-log.md",
+      "sha256": "da5ede701e8e2f4a39bf5455382677dcdbb58e4538da447eb336e72940d83123"
+    }
+  ],
+  "probes": [],
+  "handoffAbsorbed": [],
+  "ephemeraDiscarded": [
+    "auto-run.json"
+  ],
+  "missing": [
+    "verification-report"
+  ]
+}
