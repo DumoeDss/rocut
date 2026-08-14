@@ -25,9 +25,9 @@ session, not carried forward from an earlier draft.
 | gate | result |
 | --- | --- |
 | `check-package-boundary.mjs`, 5 rules | all PASS; `public-entry-only` and `no-internal-reexport` now examine a non-zero, non-vacuous scope for the first time (see spec-falsification sweep, §3.1) |
-| Negative controls | 15/15 caught (5 rules) |
+| Negative controls | 14/14 caught (5 rules) |
 | Converse controls | 12/12 accepted the legal case |
-| `acyclic-direction` edge census | 949 files / 341 edges (pre-move, design.md line 21) → 962 files / 329 edges (post-move) — same order of magnitude, 12-edge shrink fully attributed to task 5.6's four ownership corrections, not a scope collapse |
+| `acyclic-direction` edge census | 949 files / 341 edges (pre-move, design.md line 21) → 963 files / 329 edges (as of HEAD `af0a52ba`; task-time Group 7 reading was 962/329) — same order of magnitude, 12-edge shrink fully attributed to task 5.6's four ownership corrections, not a scope collapse |
 | `check-type-baseline.mjs` | 933 repo files type-checked (4321 total) vs. 941 (4328) baseline; 2 pre-existing TS2769 diagnostics, byte-identical file:line:code to task 5.4's already-recorded finding, zero new diagnostics |
 | All 27 `script/check-*.mjs` checkers | 25 green in task 8.5's direct sweep + type-baseline (8.4) + `check-asset-manifest.mjs` (N/A, needs a live server, matches its 2.4 classification) = 27 accounted for |
 | `check-distributable-boundary.mjs` on a real production build | 3842 modules, all 10 rules PASS, composition 683 editor-package + 15 example-host + 3140 dependency + 4 other |
@@ -144,7 +144,7 @@ for this section rather than restated from an earlier summary.
 ### Advanced
 
 - **§3.2 "Both Hosts consume packages, and behaviour does not move" — this child's chief target, and satisfied.** Both `apps/vite-example` and `apps/web` now consume the three published-shape packages rather than a path alias into another app's source (Stage-C/6 rewiring). The editing-parity fixture — spec §3.2's own named oracle — was run before and after extraction and shows zero semantic rows outside the already-documented `__opencutTransaction.idempotency` envelope (task 8.1/8.3). The type baseline did not grow (933 vs. 941 files checked, 2 pre-existing diagnostics, zero new). The alias removal is visible directly in the Stage-C/6 diff.
-- **§3.1 "Package boundaries are declared, frozen, and enforced before anything consumes them" — P0 built this; P1 is the first real exercise of two of its five rules, closing a vacuity the portfolio's own tracking file names explicitly.** `.rasen/changes/s05-community-beta-second-host/ephemera/portfolio-run.json`'s P0 result record states: *"public-entry-only passes TRIVIALLY (zero @opencut/* specifiers exist); no-internal-reexport has scanned 0 files. P1 writes the first real consumers and is the first genuine exercise of both rules."* Tasks 7.1-7.4 proved exactly that transition by direct experiment: forcing a synthetic violation of each rule now produces a real `FAIL` over a non-zero scan (329 specifiers examined; 861 files scanned), and reverting produces a real `PASS` over that same non-zero scope — never the dormant zero-scan state either rule could previously only report. §3.1's other three rules (`acyclic-direction`, `react-free-base`, and the deliberate-inversion negative control referenced in its own Evidence line) were already non-vacuous under P0 and remain PASS; this child did not newly activate them, only re-verified they still hold at the larger post-move scan scope (7.5, 7.6, 8.8).
+- **§3.1 "Package boundaries are declared, frozen, and enforced before anything consumes them" — P0 built this; P1 is the first real exercise of two of its five rules, closing a vacuity the portfolio's own tracking file names explicitly.** `.rasen/changes/s05-community-beta-second-host/ephemera/portfolio-run.json`'s P0 result record states: *"public-entry-only passes TRIVIALLY (zero @opencut/* specifiers exist); no-internal-reexport has scanned 0 files. P1 writes the first real consumers and is the first genuine exercise of both rules."* Tasks 7.1-7.4 proved exactly that transition by direct experiment: forcing a synthetic violation of each rule now produces a real `FAIL` over a non-zero scan (task-time Group 7 reading: 329 specifiers examined; 861 files scanned — as of HEAD `af0a52ba`: 328 specifiers; 862 files), and reverting produces a real `PASS` over that same non-zero scope — never the dormant zero-scan state either rule could previously only report. §3.1's other three rules (`acyclic-direction`, `react-free-base`, and the deliberate-inversion negative control referenced in its own Evidence line) were already non-vacuous under P0 and remain PASS; this child did not newly activate them, only re-verified they still hold at the larger post-move scan scope (7.5, 7.6, 8.8).
 
 ### Left untouched
 
@@ -198,9 +198,12 @@ All eight are boundary-checker and corpus-placement tests — exactly the class 
 `no-internal-reexport` had scanned zero `@opencut/*` specifiers). This child writes the first real
 consumers; these eight going green is that rule finally being exercised for real, not noise. This
 closes the arithmetic exactly: 650 baseline-pass + 8 = 658 HEAD-pass; 15 baseline-fail − 8 = 7
-HEAD-fail; zero residue. The seven tests still FAIL at both endpoints
-(`editor singleton boundary > ...`, six `resolveTrackPlacement > ...` cases) are pre-existing and
-unrelated to the move.
+HEAD-fail; zero residue. The seven tests still FAIL at both endpoints are **one C5 dot-segment case
++ one editor-singleton case + five `resolveTrackPlacement` cases** (measured from JUnit; not six
+`resolveTrackPlacement` cases as an earlier draft of this section stated) —
+`C5 mounted-base dot-segment emitted-asset RED controls > rejects literal and encoded dot-segment
+escapes after URL canonicalization`, one `editor singleton boundary > ...` case, and five
+`resolveTrackPlacement > ...` cases — pre-existing and unrelated to the move.
 
 **The informal "+9/-9" vs. this "+8/-8": one named flake, isolated by same-tree rerun.** The
 baseline scratch tree was run twice with no code change between runs (console log, then JUnit).
@@ -216,22 +219,52 @@ top-level `error:` lines in run 1 that simply do not occur in run 2, and the pre
 5000ms timeout plus a secondary assertion error in run 1, vs. a fast 782ms single assertion mismatch
 in run 2) — still FAIL both times, unrelated to the move, just noisier under one run's timing.
 
-**HEAD-side stability, checked the same way.** HEAD was also run twice (console, then JUnit; no code
-change between runs). FAIL-title sets matched exactly — zero difference. The PASS-title sets
-initially looked like an 88/89-line mismatch, fully chased down to two artifacts of the *extraction
-method*, not the tests: (1) bun's own JUnit writer double-escapes and reverses the join order for
-`classname` on any 2+-level nested `describe` (raw XML: `classname="getProjectId &amp;gt; V0 to V1
-Migration"`, i.e. inner-before-outer with a literally double-escaped separator) — every nested-
-describe test's JUnit-derived title string differs cosmetically from its console-derived title
-string, which is a representation difference, not an existence difference; (2) one legitimate test
-(`invalid > prefer-object-params > function f(...)`) has a title containing literal embedded
-newlines and a tab (it is a lint-rule fixture whose test name is a source-code snippet), which a
-line-oriented text file splits into extra physical lines, inflating a raw line count by one without
-adding a real test. Both are cosmetic artifacts of turning JUnit XML into sorted text files; neither
-changes which tests pass. HEAD has zero run-to-run instability on either side of the comparison.
-Because the cross-endpoint decomposition above used the identical JUnit-based method on both
-endpoints, both artifacts apply symmetrically to matching tests at both ends and cancel out in that
-`comm` diff — they do not put the eight-test finding in question.
+**HEAD-side stability — corrected.** An earlier draft of this section claimed HEAD was run twice
+(console, then JUnit) with FAIL-title sets matching exactly, and concluded "HEAD has zero run-to-run
+instability." That comparison and that conclusion were both wrong, on two separate points, one
+representational and one real.
+
+First, the representational point (still valid, kept from the earlier draft): the PASS-title sets
+between a console run and a JUnit run at the same tree do differ by line count — an 88/89-line
+mismatch — but that mismatch is a rendering artifact, not an existence difference, and is fully
+accounted for by two effects: (1) bun's own JUnit writer double-escapes and reverses the join order
+for `classname` on any 2+-level nested `describe` (raw XML: `classname="getProjectId &amp;gt; V0 to
+V1 Migration"`, i.e. inner-before-outer with a literally double-escaped separator) — every
+nested-describe test's JUnit-derived title string differs cosmetically from its console-derived title
+string; (2) one legitimate test (`invalid > prefer-object-params > function f(...)`) has a title
+containing literal embedded newlines and a tab (it is a lint-rule fixture whose test name is a
+source-code snippet), which a line-oriented text file splits into extra physical lines, inflating a
+raw line count by one without adding a real test.
+
+Second, the real point, which the earlier draft got backwards: **console-vs-JUnit is not a valid
+stability control at all**, because switching reporters changes representation *and* is two separate
+process invocations — it cannot distinguish "the tests are stable" from "the tests are flaky and I
+happened to compare two different runs." The control that actually licenses a stability claim is
+JUnit-to-JUnit, same reporter, two runs, at the same HEAD commit — and that control was run for this
+correction (`bun test --reporter=junit`, twice, no code change between runs, at HEAD `af0a52ba`; the
+two raw runs and the diff script that compared them are committed at
+`evidence/head-stability-recheck/`). Result: the seven named pre-existing failures (one
+C5 dot-segment case, one editor-singleton case, five `resolveTrackPlacement` cases) were byte-identical
+in both runs — this is what licenses treating them as stable and unrelated to the move, not the
+console-vs-JUnit comparison the earlier draft cited. But the two JUnit runs were **not** otherwise
+identical: run 1 reported 8 failing testcases, run 2 reported 10, with exactly two testcases failing
+in run 2 only — `C5 storage RED controls run in an isolated process` and `production Host composition
+runs in an isolated wasm-mock process`. Both fail with a bare `AssertionError`, zero assertions
+recorded, at ~5.0s — the same subprocess-spawn-timeout signature already documented above for the
+baseline endpoint's own flake (`project persistence rewiring runs with the wasm test double`, a
+5000ms timeout). These are wrapper tests that spawn a child `bun test` process each; that spawn is
+timing-sensitive under system load and is a real, separate source of run-to-run instability at HEAD,
+not a representational artifact and not a regression. **"HEAD has zero run-to-run instability" is
+therefore not a true blanket claim and is withdrawn.** The narrower claim that does hold: the seven
+named persistent failures are stable across same-reporter reruns at HEAD, and the cross-endpoint
+8-flip decomposition above used the identical JUnit-based method on both endpoints, so the two
+representational artifacts described above apply symmetrically to matching tests at both ends and
+cancel out in that `comm` diff. One caveat on that 8-flip list follows directly from this
+correction: `C5 storage RED controls run in an isolated process` — one of the eight named
+baseline-FAIL → HEAD-PASS flips — is itself a member of the same flaky isolated-process-wrapper class
+just found unstable at HEAD, so that one flip should be read as "usually PASS at HEAD, occasionally
+times out under subprocess-spawn load," not as an unconditionally deterministic result. The other
+seven flips are not isolated-process wrappers and are not implicated by this finding.
 
 ## The C6 catch, and the sibling-sweep lesson it is one instance of
 
@@ -310,8 +343,13 @@ naming explicitly rather than left implicit in that count:
 - Task 8.1's acceptance line was corrected in place, not silently reworded, to match spec.md's
   actual envelope-aware bar rather than a stricter envelope-free bar copied from a stale line in
   `design.md`'s Decisions §E8 (design.md's own Goals section already had the correct, envelope-aware
-  wording — only §E8 was stale). `design.md` §E8 itself is flagged as needing the same refresh but
-  was not edited here, since this child's brief is `tasks.md`/`PARITY.md`, not `design.md`.
+  wording — only §E8 was stale). `design.md` §E8 itself was subsequently restated too, in commit
+  `6c4a4421`: it now reads "29 differences — 20 semantic, 9 incidental — across 275 leaf values" with
+  the same idempotency-envelope language the Goals section already carried, plus an inline note
+  explaining why the old "9 differences, 0 semantic, 195 leaf values" figure went stale (it predated
+  the `__opencutTransaction` subtree landing six days after it was written). This was not this
+  child's stated brief — `tasks.md`/`PARITY.md` was — but the correction was made anyway once the
+  staleness was identified, so it is no longer an open item.
 - Task 9.2 and 9.3 are explicitly forward-recording tasks for P7 and P3 respectively, not closures
   of §3.8/§3.5 — see the spec-falsification sweep above for why recording a fact for a later child
   is not counted as advancing that child's requirement.
@@ -328,7 +366,5 @@ naming explicitly rather than left implicit in that count:
 - **The two TS2769 diagnostics** on `update-pipeline.test.ts`/`resolve.test.ts` are a pre-existing
   test-authoring defect, byte-identical to task 5.4's already-recorded finding, and are not fixed
   here for the reason 5.4 already gave.
-- **`design.md`'s Decisions §E8 remains stale** relative to its own Goals section; flagged, not
-  edited, per this child's stated brief.
 - **§3.4's Elftia-absence rule was re-verified but not newly exercised** by this child in the way
   the two §3.1 rules were — see the spec-falsification sweep's "left untouched" reasoning for §3.4.
