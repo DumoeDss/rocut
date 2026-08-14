@@ -36,22 +36,22 @@ export const EDITOR_RUNTIME_ASSETS: EditorAsset[] = [
 		path: "fonts",
 		kind: "directory",
 		category: "fonts",
-		consumer: "apps/web/src/fonts/google-fonts.ts — Host-loaded logical atlas and chunks",
-		requiredBy: "apps/web/src/fonts/google-fonts.ts — fetches /fonts/font-atlas.json then /fonts/font-chunk-<n>.avif",
+		consumer: "packages/editor-classic/src/fonts/google-fonts.ts — Host-loaded logical atlas and chunks",
+		requiredBy: "packages/editor-classic/src/fonts/google-fonts.ts — fetches /fonts/font-atlas.json then /fonts/font-chunk-<n>.avif",
 	},
 	{
 		path: "flags",
 		kind: "directory",
 		category: "flags",
-		consumer: "apps/web/src/stickers/providers/flags.ts — Host-resolved logical flag paths",
-		requiredBy: "apps/web/src/stickers/providers/flags.ts — builds /flags/<iso-code>.svg per country",
+		consumer: "packages/editor-classic/src/stickers/providers/flags.ts — Host-resolved logical flag paths",
+		requiredBy: "packages/editor-classic/src/stickers/providers/flags.ts — builds /flags/<iso-code>.svg per country",
 	},
 	{
 		path: "effects/preview.jpg",
 		kind: "file",
 		category: "effects",
-		consumer: "apps/web/src/services/renderer/effect-preview.ts — resolver-scoped preview image",
-		requiredBy: "apps/web/src/services/renderer/effect-preview.ts — the effect thumbnail source image",
+		consumer: "packages/editor-classic/src/services/renderer/effect-preview.ts — resolver-scoped preview image",
+		requiredBy: "packages/editor-classic/src/services/renderer/effect-preview.ts — the effect thumbnail source image",
 	},
 	{
 		path: "logos/opencut",
@@ -90,8 +90,10 @@ export const REQUIRED_ASSET_CATEGORIES = [
 
 /**
  * Deliberately excluded, recorded so the omission reads as a decision rather
- * than an oversight. Confirmed unreferenced by scanning `apps/web/src` for
- * absolute paths, and re-confirmed by the network capture of the served build.
+ * than an oversight. Confirmed unreferenced by scanning `packages/editor-
+ * classic/src` (where fonts/flags/effects moved under the package extraction,
+ * Stage C) for absolute paths, and re-confirmed by the network capture of the
+ * served build.
  */
 export const EXCLUDED_PUBLIC_PATHS = [
 	{ path: "shapes", reason: "The shapes sticker provider generates SVG presets in code (stickers/providers/shapes.ts); nothing fetches /shapes." },
