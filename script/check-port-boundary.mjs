@@ -44,17 +44,18 @@ const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 /** The contract graph: the port surface, the session runtime, and the seam. */
 const CONTRACT_AREAS = [
-	"apps/web/src/editor/ports/",
-	"apps/web/src/editor/session/",
+	"packages/editor-ports/src/",
+	"packages/editor-classic/src/editor/session/",
 ];
-const CONTRACT_FILES = new Set(["apps/web/src/editor/host/editor-host.ts"]);
+const CONTRACT_FILES = new Set(["packages/editor-ports/src/host/index.ts"]);
 
 /**
  * The single module allowed to reach the platform's timer functions, because it
  * is the thing that makes every other call site unnecessary. Named as one file
  * rather than as a directory, so a second file cannot quietly inherit it.
  */
-const REGISTRY_MODULE = "apps/web/src/editor/session/session-resources.ts";
+const REGISTRY_MODULE =
+	"packages/editor-classic/src/editor/session/session-resources.ts";
 
 /**
  * Areas that are not editor runtime code, each with the reason it is not subject
@@ -63,19 +64,19 @@ const REGISTRY_MODULE = "apps/web/src/editor/session/session-resources.ts";
  */
 const NON_RUNTIME_AREAS = [
 	{
-		prefix: "apps/web/src/editor/ports/in-memory/",
+		prefix: "packages/editor-ports/src/in-memory/",
 		why: "a Host implementation — constructing runtime resources is what a Host is for, and forbidding it here would forbid the one thing this code exists to demonstrate (D2)",
 	},
 	{
-		prefix: "apps/web/src/editor/ports/conformance/",
+		prefix: "packages/editor-ports/src/conformance/",
 		why: "an adapter author's harness — it exercises ports directly, with no session in existence, so no registry can be reachable from it by construction",
 	},
 	{
-		prefix: "apps/web/src/editor/ports/__tests__/",
+		prefix: "packages/editor-ports/src/__tests__/",
 		why: "tests",
 	},
 	{
-		prefix: "apps/web/src/editor/session/__tests__/",
+		prefix: "packages/editor-classic/src/editor/session/__tests__/",
 		why: "tests",
 	},
 ];
@@ -135,10 +136,12 @@ const RULES = [
 			// `@/core` or `../../commands` resolves without a trailing segment and
 			// would otherwise slip past a slash-anchored pattern.
 			return (
-				/^apps\/web\/src\/(project|timeline|commands|core|stores|scenes|effects|masks|media)(\/|$)/.test(
+				/^(?:apps\/web\/src|packages\/editor-classic\/src)\/(project|timeline|commands|core|stores|scenes|effects|masks|media)(\/|$)/.test(
 					resolved,
 				) ||
-				/^apps\/web\/src\/services\/storage(\/|$)/.test(resolved) ||
+				/^(?:apps\/web\/src|packages\/editor-classic\/src)\/services\/storage(\/|$)/.test(
+					resolved,
+				) ||
 				/-store$/.test(resolved)
 			);
 		},
@@ -227,9 +230,12 @@ function isContractPath(repoRelative) {
  * pattern was the naive version, and it mis-attributed the contract's own
  * `../project-store` to the editor's store area. Returns `null` for a bare
  * package specifier, which this rule does not judge.
+ *
+ * No `@/`-alias branch: Group 6 (s05-package-extraction) rewrote every
+ * contract-graph specifier from the alias form to intra-package relative
+ * imports, so the relative walk below is the only form this graph uses now.
  */
 function resolveSpecifier({ spec, fromFile }) {
-	if (spec.startsWith("@/")) return `apps/web/src/${spec.slice(2)}`;
 	if (!spec.startsWith(".")) return null;
 	const parts = fromFile.split("/").slice(0, -1);
 	for (const segment of spec.split("/")) {
@@ -265,7 +271,15 @@ function contractFiles() {
 	// see the files the change adds, or it reports a pass on an empty set.
 	return execFileSync(
 		"git",
-		["ls-files", "-z", "--cached", "--others", "--exclude-standard", "apps"],
+		[
+			"ls-files",
+			"-z",
+			"--cached",
+			"--others",
+			"--exclude-standard",
+			"apps",
+			"packages",
+		],
 		{ cwd: REPO_ROOT, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
 	)
 		.split("\0")
@@ -286,97 +300,97 @@ function contractFiles() {
 const NEGATIVE_CONTROL_FIXTURES = [
 	{
 		rule: "no-editor-internal-import",
-		path: "apps/web/src/editor/ports/violation.ts",
-		text: 'import type { TProject } from "@/project/types";\nexport type X = TProject;\n',
+		path: "packages/editor-ports/src/violation.ts",
+		text: 'import type { TProject } from "../../editor-classic/src/project/types";\nexport type X = TProject;\n',
 	},
 	{
 		rule: "no-editor-internal-import",
-		path: "apps/web/src/editor/ports/violation.ts",
-		text: 'import type { TProject } from "../../project/types";\nexport type X = TProject;\n',
-		note: "a relative specifier is caught too, not only the @/ form",
+		path: "packages/editor-ports/src/violation.ts",
+		text: 'import type { TProject } from "../../../packages/editor-classic/src/project/types";\nexport type X = TProject;\n',
+		note: "a longer relative specifier resolving to the same area is caught too, not only the shortest form",
 	},
 	{
 		rule: "no-editor-internal-import",
 		expect: "not-caught",
-		path: "apps/web/src/editor/ports/in-memory/violation.ts",
+		path: "packages/editor-ports/src/in-memory/violation.ts",
 		text: 'import type { ProjectStore } from "../project-store";\nexport type X = ProjectStore;\n',
 		note: "a contract module importing another contract module is not a leak",
 	},
 	{
 		rule: "no-direct-wasm-import",
-		path: "apps/web/src/editor/session/violation.ts",
+		path: "packages/editor-classic/src/editor/session/violation.ts",
 		text: 'import { create_compositor } from "opencut-wasm";\nexport const c = create_compositor;\n',
 	},
 	{
 		rule: "no-editor-internal-import",
-		path: "apps/web/src/editor/ports/violation.ts",
-		text: 'import { EditorCore } from "@/core";\nexport type X = EditorCore;\n',
+		path: "packages/editor-ports/src/violation.ts",
+		text: 'import { EditorCore } from "../../editor-classic/src/core";\nexport type X = EditorCore;\n',
 		note: "a directory-index specifier resolves without a trailing segment and is caught too",
 	},
 	{
 		rule: "no-editor-internal-import",
-		path: "apps/web/src/editor/ports/project-store.ts",
-		text: 'import type { AddMediaAssetCommand } from "@/commands/media/add-media-asset";\nexport type X = AddMediaAssetCommand;\n',
+		path: "packages/editor-ports/src/project-store.ts",
+		text: 'import type { AddMediaAssetCommand } from "../../editor-classic/src/commands/media/add-media-asset";\nexport type X = AddMediaAssetCommand;\n',
 		note: "a command class cannot become part of the public storage contract",
 	},
 	{
 		rule: "no-editor-internal-import",
-		path: "apps/web/src/editor/ports/project-store.ts",
-		text: 'import type { ProjectState } from "@/stores/project-store";\nexport type X = ProjectState;\n',
+		path: "packages/editor-ports/src/project-store.ts",
+		text: 'import type { ProjectState } from "../../editor-classic/src/stores/project-store";\nexport type X = ProjectState;\n',
 		note: "an editor state-store import cannot become part of the public storage contract",
 	},
 	{
 		rule: "no-editor-internal-import",
-		path: "apps/web/src/editor/ports/project-store.ts",
-		text: 'import { storageService } from "@/services/storage/service";\nexport const X = storageService;\n',
+		path: "packages/editor-ports/src/project-store.ts",
+		text: 'import { storageService } from "../../editor-classic/src/services/storage/service";\nexport const X = storageService;\n',
 		note: "the public port cannot import its browser implementation or singleton",
 	},
 	{
 		rule: "no-storage-mechanism-literal",
-		path: "apps/web/src/editor/ports/violation.ts",
+		path: "packages/editor-ports/src/violation.ts",
 		text: `export const db = ${IDB_NAME}.open("video-editor-projects");\n`,
 	},
 	{
 		rule: "no-storage-mechanism-literal",
-		path: "apps/web/src/editor/ports/violation.ts",
+		path: "packages/editor-ports/src/violation.ts",
 		text: `export const root = await ${OPFS_CALL}();\n`,
 	},
 	{
 		rule: "no-storage-mechanism-literal",
-		path: "apps/web/src/editor/ports/project-store.ts",
+		path: "packages/editor-ports/src/project-store.ts",
 		text: "export interface ProjectStore { open(): Promise<IDBDatabase>; }\n",
 		note: "an IndexedDB type in a public signature is a mechanism leak",
 	},
 	{
 		rule: "no-storage-mechanism-literal",
-		path: "apps/web/src/editor/ports/project-store.ts",
+		path: "packages/editor-ports/src/project-store.ts",
 		text: "export interface ProjectStore { root(): Promise<FileSystemDirectoryHandle>; }\n",
 		note: "an OPFS handle type in a public signature is a mechanism leak",
 	},
 	{
 		rule: "no-storage-mechanism-literal",
-		path: "apps/web/src/editor/ports/project-store.ts",
+		path: "packages/editor-ports/src/project-store.ts",
 		text: "export interface ProjectStore { databaseName: string; objectStoreName: string; opfsPath: string; }\n",
 		note: "physical database/store/path fields are not mechanism-neutral",
 	},
 	{
 		rule: "no-direct-resource-acquisition",
-		path: "apps/web/src/editor/ports/violation.ts",
+		path: "packages/editor-ports/src/violation.ts",
 		text: 'export const w = new Worker(new URL("./worker.ts", import.meta.url));\n',
 	},
 	{
 		rule: "no-direct-resource-acquisition",
-		path: "apps/web/src/editor/session/violation.ts",
+		path: "packages/editor-classic/src/editor/session/violation.ts",
 		text: "export const url = URL.createObjectURL(blob);\n",
 	},
 	{
 		rule: "no-direct-resource-acquisition",
-		path: "apps/web/src/editor/session/violation.ts",
+		path: "packages/editor-classic/src/editor/session/violation.ts",
 		text: "export const ctx = new AudioContext();\n",
 	},
 	{
 		rule: "no-direct-timer-acquisition",
-		path: "apps/web/src/editor/ports/violation.ts",
+		path: "packages/editor-ports/src/violation.ts",
 		text: "export const t = setTimeout(() => {}, 10);\n",
 	},
 	// The discriminators must not be blanket holes. These assert the *converse*:
@@ -385,21 +399,21 @@ const NEGATIVE_CONTROL_FIXTURES = [
 	{
 		rule: "no-direct-timer-acquisition",
 		expect: "not-caught",
-		path: "apps/web/src/editor/session/resources.ts",
+		path: "packages/editor-classic/src/editor/session/resources.ts",
 		text: "	setTimeout(args: { handler: () => void; ms: number }): TimerHandle;\n",
 		note: "a member declaration is not a call",
 	},
 	{
 		rule: "no-direct-timer-acquisition",
 		expect: "caught",
-		path: "apps/web/src/editor/ports/violation.ts",
+		path: "packages/editor-ports/src/violation.ts",
 		text: "	setTimeout(handler, 10);\n",
 		note: "a call at the head of a line is still a call",
 	},
 	{
 		rule: "no-direct-resource-acquisition",
 		expect: "not-caught",
-		path: "apps/web/src/editor/ports/in-memory/violation.ts",
+		path: "packages/editor-ports/src/in-memory/violation.ts",
 		text: "export const w = new Worker(new URL('./worker.ts', import.meta.url));\n",
 		note: "a Host implementation may construct — that is what a Host is for",
 	},
@@ -407,12 +421,12 @@ const NEGATIVE_CONTROL_FIXTURES = [
 
 const CONTRACT_PATH_CONTROL_FIXTURES = [
 	{
-		path: "apps/web/src/editor/ports",
+		path: "packages/editor-ports/src",
 		expected: true,
 		note: "the exact contract directory root is part of the contract",
 	},
 	{
-		path: "apps/web/src/editor/ports-extra",
+		path: "packages/editor-ports/src-extra",
 		expected: false,
 		note: "a neighboring prefix is not mistaken for the contract",
 	},

@@ -18,7 +18,7 @@ const HOST_ROOTS = [
 	"apps/vite-example/src/host/vite-host-config.ts",
 	"apps/web/src/editor/host/next-editor-host.ts",
 ];
-const HOST_CONTRACT = "apps/web/src/editor/host/editor-host.ts";
+const HOST_CONTRACT = "packages/editor-ports/src/host/index.ts";
 const RETIRED_ADAPTER = "apps/web/src/services/storage/browser-host-adapter.ts";
 
 function sourceFiles() {
@@ -32,6 +32,9 @@ function sourceFiles() {
 			"--exclude-standard",
 			"apps/web/src",
 			"apps/vite-example/src",
+			"packages/editor-classic/src",
+			"packages/editor-ports/src",
+			"packages/editor-contracts/src",
 		],
 		{ cwd: REPO_ROOT, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
 	)
@@ -195,7 +198,7 @@ function checkGraph({ files }) {
 			});
 		}
 		if (
-			!path.startsWith("apps/web/src/services/storage/") &&
+			!path.startsWith("packages/editor-classic/src/services/storage/") &&
 			/\b(?:interface|type|class)\s+(?:StoragePort|MediaStore|MediaPort|MediaStoragePort)\b/.test(
 				code,
 			)
@@ -207,7 +210,7 @@ function checkGraph({ files }) {
 					"ProjectStore is the only storage/media persistence port in the production graph",
 			});
 		}
-		if (path === "apps/web/src/editor/ports/index.ts") {
+		if (path === "packages/editor-ports/src/index.ts") {
 			const portBody =
 				/interface\s+EditorHostPorts\s*\{([\s\S]*?)\}/.exec(code)?.[1] ?? "";
 			if (

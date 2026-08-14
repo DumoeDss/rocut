@@ -7,21 +7,21 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const REQUIRED = [
-	"apps/web/src/components/ui/alert-dialog.tsx",
-	"apps/web/src/components/ui/context-menu.tsx",
-	"apps/web/src/components/ui/dialog.tsx",
-	"apps/web/src/components/ui/dropdown-menu.tsx",
-	"apps/web/src/components/ui/menubar.tsx",
-	"apps/web/src/components/ui/popover.tsx",
-	"apps/web/src/components/ui/select.tsx",
-	"apps/web/src/components/ui/sheet.tsx",
-	"apps/web/src/components/ui/tooltip.tsx",
-	"apps/web/src/components/editor/panels/assets/draggable-item.tsx",
-	"apps/web/src/timeline/components/audio-volume-line.tsx",
+	"packages/editor-classic/src/components/ui/alert-dialog.tsx",
+	"packages/editor-classic/src/components/ui/context-menu.tsx",
+	"packages/editor-classic/src/components/ui/dialog.tsx",
+	"packages/editor-classic/src/components/ui/dropdown-menu.tsx",
+	"packages/editor-classic/src/components/ui/menubar.tsx",
+	"packages/editor-classic/src/components/ui/popover.tsx",
+	"packages/editor-classic/src/components/ui/select.tsx",
+	"packages/editor-classic/src/components/ui/sheet.tsx",
+	"packages/editor-classic/src/components/ui/tooltip.tsx",
+	"packages/editor-classic/src/components/editor/panels/assets/draggable-item.tsx",
+	"packages/editor-classic/src/timeline/components/audio-volume-line.tsx",
 ];
 
 function files() {
-	return execFileSync("git", ["ls-files", "-z", "--cached", "--others", "--exclude-standard", "apps/web/src"], {
+	return execFileSync("git", ["ls-files", "-z", "--cached", "--others", "--exclude-standard", "apps/web/src", "packages/editor-classic/src"], {
 		cwd: ROOT,
 		encoding: "utf8",
 	}).split("\0").filter(Boolean).map((path) => path.replaceAll("\\", "/"));

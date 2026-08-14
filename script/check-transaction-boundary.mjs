@@ -3,7 +3,7 @@
  * Transaction contract boundary check (S03 T0, design D9).
  *
  * Modelled on S02's `check-port-boundary.mjs`. Scans every module under
- * `apps/web/src/editor/contracts/` and rejects:
+ * `packages/editor-contracts/src/` and rejects:
  *
  * 1. **No editor-internal imports**: no import from `@/project`, `@/timeline`,
  *    `@/commands`, `@/core`, `@/stores`, `@/scenes`, `@/effects`, `@/masks`,
@@ -47,7 +47,7 @@ import { dirname, join } from "node:path";
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 /** The contract graph. */
-const CONTRACT_AREA = "apps/web/src/editor/contracts/";
+const CONTRACT_AREA = "packages/editor-contracts/src/";
 
 /** Shared spellings — keep the rule and its targeted negative fixtures identical. */
 const IDB_NAME = ["indexed", "DB"].join("");
@@ -80,14 +80,15 @@ const RULES = [
 			if (isContractPath(resolved)) return false;
 
 			// `(\/|$)` on every area, not `\/`: a directory-index specifier such
-			// as `@/core` resolves without a trailing segment.
+			// as `../../commands` resolves without a trailing segment and would
+			// otherwise slip past a slash-anchored pattern.
 			return (
-				/^apps\/web\/src\/(project|timeline|commands|core|stores|scenes|effects|masks|media)(\/|$)/.test(
+				/^(?:apps\/web\/src|packages\/editor-classic\/src)\/(project|timeline|commands|core|stores|scenes|effects|masks|media)(\/|$)/.test(
 					resolved,
 				) ||
-				/^apps\/web\/src\/services\/storage(\/|$)/.test(resolved) ||
+				/^(?:apps\/web\/src|packages\/editor-classic\/src)\/services\/storage(\/|$)/.test(resolved) ||
 				/-store$/.test(resolved) ||
-				/^apps\/web\/src\/wasm(\/|$)/.test(resolved) ||
+				/^(?:apps\/web\/src|packages\/editor-classic\/src)\/wasm(\/|$)/.test(resolved) ||
 				/^opencut-wasm(\/|$)/.test(spec)
 			);
 		},
@@ -194,9 +195,12 @@ function isContractPath(repoRelative) {
 /**
  * Turn an import specifier into a repo-relative module path. Returns `null` for
  * a bare package specifier that this rule does not judge.
+ *
+ * No `@/`-alias branch: Group 6 (s05-package-extraction) rewrote every
+ * contract-graph specifier from the alias form to intra-package relative
+ * imports, so the relative walk below is the only form this graph uses now.
  */
 function resolveSpecifier({ spec, fromFile }) {
-	if (spec.startsWith("@/")) return `apps/web/src/${spec.slice(2)}`;
 	if (!spec.startsWith(".")) return null;
 	const parts = fromFile.split("/").slice(0, -1);
 	for (const segment of spec.split("/")) {
@@ -229,7 +233,7 @@ function scan({ path, text, rules = RULES }) {
 function contractArea() {
 	return execFileSync(
 		"git",
-		["ls-files", "-z", "--cached", "--others", "--exclude-standard", "apps"],
+		["ls-files", "-z", "--cached", "--others", "--exclude-standard", "apps", "packages"],
 		{ cwd: REPO_ROOT, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
 	)
 		.split("\0")
@@ -244,7 +248,7 @@ function contractFiles() {
 /** The published corpus: data, judged by the data rules. */
 function corpusFiles() {
 	return contractArea().filter((path) =>
-		/^apps\/web\/src\/editor\/contracts\/vectors\/corpus\/.+\.json$/.test(path),
+		/^packages\/editor-contracts\/src\/vectors\/corpus\/.+\.json$/.test(path),
 	);
 }
 
@@ -256,90 +260,90 @@ function corpusFiles() {
 const NEGATIVE_CONTROL_FIXTURES = [
 	{
 		rule: "no-editor-internal-import",
-		path: "apps/web/src/editor/contracts/violation.ts",
-		text: 'import type { TProject } from "@/project/types";\nexport type X = TProject;\n',
+		path: "packages/editor-contracts/src/violation.ts",
+		text: 'import type { TProject } from "../../editor-classic/src/project/types";\nexport type X = TProject;\n',
 	},
 	{
 		rule: "no-editor-internal-import",
-		path: "apps/web/src/editor/contracts/violation.ts",
-		text: 'import type { TProject } from "../../project/types";\nexport type X = TProject;\n',
-		note: "a relative specifier is caught too",
+		path: "packages/editor-contracts/src/violation.ts",
+		text: 'import type { TProject } from "../../../packages/editor-classic/src/project/types";\nexport type X = TProject;\n',
+		note: "a longer relative specifier resolving to the same area is caught too, not only the shortest form",
 	},
 	{
 		rule: "no-editor-internal-import",
-		path: "apps/web/src/editor/contracts/violation.ts",
-		text: 'import { EditorCore } from "@/core";\nexport type X = EditorCore;\n',
+		path: "packages/editor-contracts/src/violation.ts",
+		text: 'import { EditorCore } from "../../editor-classic/src/core";\nexport type X = EditorCore;\n',
 		note: "a directory-index specifier is caught",
 	},
 	{
 		rule: "no-editor-internal-import",
-		path: "apps/web/src/editor/contracts/violation.ts",
-		text: 'import { MediaTime } from "@/wasm/media-time";\nexport type X = MediaTime;\n',
+		path: "packages/editor-contracts/src/violation.ts",
+		text: 'import { MediaTime } from "../../editor-classic/src/wasm/media-time";\nexport type X = MediaTime;\n',
 		note: "wasm imports are banned — the contract defines its own MediaTime",
 	},
 	{
 		rule: "no-editor-internal-import",
-		path: "apps/web/src/editor/contracts/violation.ts",
+		path: "packages/editor-contracts/src/violation.ts",
 		text: 'import { create_compositor } from "opencut-wasm";\nexport const c = create_compositor;\n',
 		note: "bare-package wasm import is caught",
 	},
 	{
 		rule: "no-editor-internal-import",
-		path: "apps/web/src/editor/contracts/violation.ts",
-		text: 'import type { ProjectState } from "@/stores/project-store";\nexport type X = ProjectState;\n',
+		path: "packages/editor-contracts/src/violation.ts",
+		text: 'import type { ProjectState } from "../../editor-classic/src/stores/project-store";\nexport type X = ProjectState;\n',
 		note: "an editor state-store import is caught",
 	},
 	{
 		rule: "no-editor-internal-import",
-		path: "apps/web/src/editor/contracts/violation.ts",
-		text: 'import { storageService } from "@/services/storage/service";\nexport const X = storageService;\n',
+		path: "packages/editor-contracts/src/violation.ts",
+		text: 'import { storageService } from "../../editor-classic/src/services/storage/service";\nexport const X = storageService;\n',
 		note: "the storage service singleton is caught",
 	},
 	{
 		rule: "no-editor-internal-import",
-		path: "apps/web/src/editor/contracts/violation.ts",
+		path: "packages/editor-contracts/src/violation.ts",
 		text: 'import { useStore } from "zustand";\nexport const X = useStore;\n',
 		note: "zustand is caught",
 	},
 	{
 		rule: "no-editor-internal-import",
 		expect: "not-caught",
-		path: "apps/web/src/editor/contracts/violation.ts",
+		path: "packages/editor-contracts/src/violation.ts",
 		text: 'import type { MediaTime } from "./domain";\nexport type X = MediaTime;\n',
 		note: "a contract module importing another contract module is not a leak",
 	},
 	{
 		rule: "no-storage-mechanism-literal",
-		path: "apps/web/src/editor/contracts/violation.ts",
+		path: "packages/editor-contracts/src/violation.ts",
 		text: `export const db = ${IDB_NAME}.open("video-editor-projects");\n`,
 	},
 	{
 		rule: "no-storage-mechanism-literal",
-		path: "apps/web/src/editor/contracts/violation.ts",
+		path: "packages/editor-contracts/src/violation.ts",
 		text: `export const root = await ${OPFS_CALL}();\n`,
 	},
 	{
 		rule: "no-storage-mechanism-literal",
-		path: "apps/web/src/editor/contracts/interfaces.ts",
+		path: "packages/editor-contracts/src/interfaces.ts",
 		text: "export interface TransactionRead { open(): Promise<IDBDatabase>; }\n",
 		note: "an IndexedDB type in a public signature is a mechanism leak",
 	},
 	{
 		rule: "no-storage-mechanism-literal",
-		path: "apps/web/src/editor/contracts/interfaces.ts",
+		path: "packages/editor-contracts/src/interfaces.ts",
 		text: "export interface TransactionRead { root(): Promise<FileSystemDirectoryHandle>; }\n",
 		note: "an OPFS handle type in a public signature is a mechanism leak",
 	},
 	{
 		rule: "no-storage-mechanism-literal",
-		path: "apps/web/src/editor/contracts/interfaces.ts",
+		path: "packages/editor-contracts/src/interfaces.ts",
 		text: "export interface TransactionRead { databaseName: string; opfsPath: string; }\n",
 		note: "physical storage fields are not mechanism-neutral",
 	},
 	{
 		rule: "no-storage-mechanism-literal",
 		expect: "not-caught",
-		path: "apps/web/src/editor/contracts/violation.ts",
+		path: "packages/editor-contracts/src/violation.ts",
 		text: "export interface TransactionRead { id: string; name: string; }\n",
 		note: "plain fields do not trigger the storage-mechanism rule",
 	},
@@ -354,38 +358,38 @@ const NEGATIVE_CONTROL_FIXTURES = [
 const CORPUS_CONTROL_FIXTURES = [
 	{
 		rule: "no-donor-schema-field",
-		path: "apps/web/src/editor/contracts/vectors/corpus/violation.json",
+		path: "packages/editor-contracts/src/vectors/corpus/violation.json",
 		text: '{ "clip": { "timelineElement": "el-1" } }\n',
 	},
 	{
 		rule: "no-donor-schema-field",
-		path: "apps/web/src/editor/contracts/vectors/corpus/violation.json",
+		path: "packages/editor-contracts/src/vectors/corpus/violation.json",
 		text: '{ "clip": { "mediaId": "asset-1" } }\n',
 		note: "a donor relation field is caught in a value position too",
 	},
 	{
 		rule: "no-command-class-name",
-		path: "apps/web/src/editor/contracts/vectors/corpus/violation.json",
+		path: "packages/editor-contracts/src/vectors/corpus/violation.json",
 		text: '{ "title": "applied by MoveElementCommand" }\n',
 	},
 	{
 		rule: "no-editor-state-store",
-		path: "apps/web/src/editor/contracts/vectors/corpus/violation.json",
+		path: "packages/editor-contracts/src/vectors/corpus/violation.json",
 		text: '{ "title": "read through useTimelineStore" }\n',
 	},
 	{
 		rule: "no-storage-identity",
-		path: "apps/web/src/editor/contracts/vectors/corpus/violation.json",
+		path: "packages/editor-contracts/src/vectors/corpus/violation.json",
 		text: '{ "title": "objectStoreName video-editor-projects" }\n',
 	},
 	{
 		rule: "no-provider-namespaced-key",
-		path: "apps/web/src/editor/contracts/vectors/corpus/violation.json",
+		path: "packages/editor-contracts/src/vectors/corpus/violation.json",
 		text: '{ "__opencutTransaction": { "revision": 1 } }\n',
 	},
 	{
 		rule: "no-physical-storage-path",
-		path: "apps/web/src/editor/contracts/vectors/corpus/violation.json",
+		path: "packages/editor-contracts/src/vectors/corpus/violation.json",
 		text: '{ "title": "/var/lib/projects.sqlite" }\n',
 	},
 	{

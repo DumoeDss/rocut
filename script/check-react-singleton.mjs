@@ -8,7 +8,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const EXACT = { react: "18.3.1", "react-dom": "18.3.1", "@types/react": "18.3.28", "@types/react-dom": "18.3.7" };
 const MANIFESTS = ["package.json", "apps/web/package.json", "apps/vite-example/package.json"];
 const GRAPH = "apps/vite-example/dist/module-graph.json";
-const PROBE = "apps/web/src/editor/surface/embedding/surface-react-identity-probe.tsx";
+const PROBE = "packages/editor-classic/src/editor/surface/embedding/surface-react-identity-probe.tsx";
 
 function manifestHits(path, manifest) {
 	const hits = [];

@@ -14,49 +14,53 @@ const inventory = JSON.parse(
 	),
 );
 const STORE_MODULES = [
-	["apps/web/src/editor/panel-store.ts", "createPanelStore", "usePanelStore"],
 	[
-		"apps/web/src/editor/editor-store.ts",
+		"packages/editor-classic/src/editor/panel-store.ts",
+		"createPanelStore",
+		"usePanelStore",
+	],
+	[
+		"packages/editor-classic/src/editor/editor-store.ts",
 		"createEditorStore",
 		"useEditorStore",
 	],
 	[
-		"apps/web/src/preview/preview-store.ts",
+		"packages/editor-classic/src/preview/preview-store.ts",
 		"createPreviewStore",
 		"usePreviewStore",
 	],
 	[
-		"apps/web/src/timeline/timeline-store.ts",
+		"packages/editor-classic/src/timeline/timeline-store.ts",
 		"createTimelineStore",
 		"useTimelineStore",
 	],
 	[
-		"apps/web/src/sounds/sounds-store.ts",
+		"packages/editor-classic/src/sounds/sounds-store.ts",
 		"createSoundsStore",
 		"useSoundsStore",
 	],
 	[
-		"apps/web/src/timeline/components/graph-editor/custom-presets-store.ts",
+		"packages/editor-classic/src/timeline/components/graph-editor/custom-presets-store.ts",
 		"createCustomPresetsStore",
 		"useCustomPresetsStore",
 	],
 	[
-		"apps/web/src/stickers/stickers-store.ts",
+		"packages/editor-classic/src/stickers/stickers-store.ts",
 		"createStickersStore",
 		"useStickersStore",
 	],
 	[
-		"apps/web/src/actions/keybindings-store.ts",
+		"packages/editor-classic/src/actions/keybindings-store.ts",
 		"createKeybindingsStore",
 		"useKeybindingsStore",
 	],
 	[
-		"apps/web/src/components/editor/panels/properties/stores/properties-store.ts",
+		"packages/editor-classic/src/components/editor/panels/properties/stores/properties-store.ts",
 		"createPropertiesStore",
 		"usePropertiesStore",
 	],
 	[
-		"apps/web/src/components/editor/panels/assets/assets-panel-store.tsx",
+		"packages/editor-classic/src/components/editor/panels/assets/assets-panel-store.tsx",
 		"createAssetsPanelStore",
 		"useAssetsPanelStore",
 	],
@@ -73,6 +77,9 @@ function trackedSources() {
 			"--exclude-standard",
 			"apps/web/src",
 			"apps/vite-example/src",
+			"packages/editor-classic/src",
+			"packages/editor-ports/src",
+			"packages/editor-contracts/src",
 		],
 		{ cwd: ROOT, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
 	)
@@ -83,11 +90,24 @@ function trackedSources() {
 		.map((path) => ({ path, source: readFileSync(join(ROOT, path), "utf8") }));
 }
 
+/**
+ * No `@/`-alias branch: Group 6/8 (s05-package-extraction) moved the editor
+ * runtime into `packages/editor-classic` and rewrote every internal specifier
+ * from the alias form to intra-package relative imports, so a relative walk
+ * of any depth ending in `editor/use-editor` is the only form this graph
+ * uses now. `editor/use-editor.ts` is the one file with that exact suffix,
+ * so matching on it (rather than resolving each import against the
+ * importing file's own path) stays precise without a full resolver here.
+ */
+const USE_EDITOR_SPECIFIER_SOURCE = String.raw`(?:\.\.?\/)+editor\/use-editor`;
+
 function editorAliases(source) {
 	const aliases = new Set(["useEditor"]);
-	for (const match of source.matchAll(
-		/import\s*{([^}]+)}\s*from\s*["']@\/editor\/use-editor["']/g,
-	)) {
+	const pattern = new RegExp(
+		`import\\s*{([^}]+)}\\s*from\\s*["']${USE_EDITOR_SPECIFIER_SOURCE}["']`,
+		"g",
+	);
+	for (const match of source.matchAll(pattern)) {
 		for (const part of match[1].split(",")) {
 			const alias = /\buseEditor\s+as\s+(\w+)/.exec(part)?.[1];
 			if (alias) aliases.add(alias);
@@ -177,7 +197,9 @@ function renderTimeImperativeCalls({ path, source }) {
 				renderCallbackHooks.set(element.name.text, imported);
 			}
 			if (
-				statement.moduleSpecifier.text === "@/editor/use-editor" &&
+				new RegExp(`^${USE_EDITOR_SPECIFIER_SOURCE}$`).test(
+					statement.moduleSpecifier.text,
+				) &&
 				imported === "useEditorInstance"
 			) {
 				editorHookAliases.add(element.name.text);
@@ -532,16 +554,27 @@ function zustandReactCreatorAliases(source) {
 	return aliases;
 }
 
-function forbiddenStaticStoreAccess(source) {
+/**
+ * `moduleSpec` used to be built as `@/` + the STORE_MODULES path stripped of
+ * its `apps/web/src/` prefix, because every store consumer imported through
+ * that alias. Group 6/8 moved the stores into `packages/editor-classic` and
+ * rewrote every internal specifier to an intra-package relative import, so a
+ * consumer's specifier now has to be resolved against ITS OWN path (like
+ * `resolveModule()` below does for the graph walk) rather than compared
+ * against a single alias string.
+ */
+function forbiddenStaticStoreAccess({ path, source }) {
 	const failures = [];
-	for (const [path, , legacyHook] of STORE_MODULES) {
-		const moduleSpec =
-			"@/" + path.replace("apps/web/src/", "").replace(/\.[^.]+$/, "");
+	for (const [modulePath, , legacyHook] of STORE_MODULES) {
+		const moduleBase = modulePath.replace(/\.[^./]+$/, "");
+		const resolvesToModule = (spec) =>
+			spec.startsWith(".") &&
+			posix.normalize(posix.join(posix.dirname(path), spec)) === moduleBase;
 		for (const imported of source.matchAll(
 			/import\s*{([\s\S]*?)}\s*from\s*["']([^"']+)["']/g,
 		)) {
 			if (
-				imported[2] === moduleSpec &&
+				resolvesToModule(imported[2]) &&
 				new RegExp("\\b" + legacyHook + "\\b").test(imported[1])
 			) {
 				failures.push("direct-static-store-consumer:" + legacyHook);
@@ -551,7 +584,7 @@ function forbiddenStaticStoreAccess(source) {
 			/import\s*\*\s*as\s*(\w+)\s*from\s*["']([^"']+)["']/g,
 		)) {
 			if (
-				imported[2] === moduleSpec &&
+				resolvesToModule(imported[2]) &&
 				new RegExp(
 					"\\b" + imported[1] + "\\s*\\.\\s*" + legacyHook + "\\b",
 				).test(source)
@@ -578,6 +611,92 @@ function importedSpecifiers(source) {
 	return specs;
 }
 
+/**
+ * Group 6/8 extracted the port contract, the transaction/engine layer, and
+ * the classic provider itself into their own npm workspace packages, and
+ * every one of them — including the Next and Vite Hosts reaching INTO
+ * `editor-classic` — is now imported by bare specifier
+ * (`@opencut/editor-ports`, `@opencut/editor-ports/host`,
+ * `@opencut/editor-classic/session`, …) rather than by `@/`-alias or
+ * relative path. Without resolving those specifiers, `reachableModules()`
+ * cannot cross a package boundary at all, which would make both
+ * `CONTRACT_FALLBACK_DEFINITIONS`'s `editor-ports` entries AND every
+ * `PRODUCTION_ROOTS` walk unreachable no matter how their paths are
+ * spelled — a production reachability check that cannot follow a
+ * production import is not exercising the boundary it claims to guard.
+ * This mirrors each package's own `package.json#exports` map, so it only
+ * resolves subpaths the package actually publishes.
+ */
+const PACKAGE_EXPORTS = new Map([
+	[
+		"@opencut/editor-ports",
+		{
+			root: "packages/editor-ports/src",
+			exports: new Map([
+				[".", "index.ts"],
+				["./host", "host/index.ts"],
+				["./in-memory", "in-memory/index.ts"],
+				["./in-memory/host", "in-memory/host.ts"],
+				["./conformance", "conformance/index.ts"],
+			]),
+		},
+	],
+	[
+		"@opencut/editor-contracts",
+		{
+			root: "packages/editor-contracts/src",
+			exports: new Map([
+				[".", "index.ts"],
+				["./conformance", "conformance/index.ts"],
+				["./draft", "draft/index.ts"],
+				["./draft/conformance", "draft/conformance/index.ts"],
+				["./engine", "engine/index.ts"],
+				["./engine/invariant", "engine/invariant.ts"],
+				["./engine/conformance", "engine/conformance/index.ts"],
+				["./vectors", "vectors/index.ts"],
+				["./vectors/drivers", "vectors/drivers/index.ts"],
+			]),
+		},
+	],
+	[
+		"@opencut/editor-classic",
+		{
+			root: "packages/editor-classic/src",
+			exports: new Map([
+				[".", "index.ts"],
+				["./surface", "surface/index.ts"],
+				["./surface.css", "surface/surface.css"],
+				["./session", "session/index.ts"],
+				["./runtime", "runtime/index.ts"],
+				["./browser", "browser/index.ts"],
+				["./storage", "storage/index.ts"],
+				["./storage/conformance", "storage/conformance.ts"],
+				["./project", "project/index.ts"],
+				["./timeline", "timeline/index.ts"],
+				["./renderer", "renderer/index.ts"],
+				["./media", "media/index.ts"],
+				["./fonts", "fonts/index.ts"],
+				["./ui", "ui/index.ts"],
+				["./evidence", "evidence/index.ts"],
+				[
+					"./evidence/wasm-test-mock",
+					"editor/session/__tests__/wasm-test-mock.ts",
+				],
+			]),
+		},
+	],
+]);
+
+function resolvePackageSpecifier(spec) {
+	for (const [name, pkg] of PACKAGE_EXPORTS) {
+		if (spec !== name && !spec.startsWith(name + "/")) continue;
+		const subpath = spec === name ? "." : "." + spec.slice(name.length);
+		const target = pkg.exports.get(subpath);
+		return target ? posix.join(pkg.root, target) : null;
+	}
+	return null;
+}
+
 function resolveModule({ from, spec, modules }) {
 	let base;
 	if (spec.startsWith("@/")) {
@@ -585,7 +704,8 @@ function resolveModule({ from, spec, modules }) {
 	} else if (spec.startsWith(".")) {
 		base = posix.normalize(posix.join(posix.dirname(from), spec));
 	} else {
-		return null;
+		const resolved = resolvePackageSpecifier(spec);
+		return resolved && modules.has(resolved) ? resolved : null;
 	}
 	for (const candidate of [
 		base,
@@ -621,16 +741,20 @@ const PRODUCTION_ROOTS = [
 ];
 
 const REQUIRED_PRODUCTION_MODULES = [
-	"apps/web/src/editor/session/editor-session-host.tsx",
-	"apps/web/src/editor/session/create-session.ts",
-	"apps/web/src/editor/runtime/wasm-runtime-providers.ts",
-	"apps/web/src/services/renderer/compositor/wasm-compositor.ts",
+	"packages/editor-classic/src/editor/session/editor-session-host.tsx",
+	"packages/editor-classic/src/editor/session/create-session.ts",
+	"packages/editor-classic/src/editor/runtime/wasm-runtime-providers.ts",
+	"packages/editor-classic/src/services/renderer/compositor/wasm-compositor.ts",
 ];
 
+// The first two used to nest under `apps/web/src/editor/ports/`; the
+// extracted `@opencut/editor-ports` package flattened that `editor/ports/`
+// segment away, so the package root's `index.ts`/`environment.ts` are the
+// direct equivalents, not `packages/editor-ports/src/editor/ports/…`.
 const CONTRACT_FALLBACK_DEFINITIONS = new Set([
-	"apps/web/src/editor/ports/index.ts",
-	"apps/web/src/editor/ports/environment.ts",
-	"apps/web/src/editor/session/create-session.ts",
+	"packages/editor-ports/src/index.ts",
+	"packages/editor-ports/src/environment.ts",
+	"packages/editor-classic/src/editor/session/create-session.ts",
 ]);
 
 const HANDLE_ZERO_CALL =
@@ -685,7 +809,7 @@ function productionGraphFailures({ modules, roots = PRODUCTION_ROOTS }) {
 			}
 		}
 		const hostSource = modules.get(
-			"apps/web/src/editor/session/editor-session-host.tsx",
+			"packages/editor-classic/src/editor/session/editor-session-host.tsx",
 		);
 		if (
 			!hostSource ||
@@ -699,8 +823,12 @@ function productionGraphFailures({ modules, roots = PRODUCTION_ROOTS }) {
 	return [...new Set(failures)];
 }
 
+// Both prefixes, not just one: `apps/web/src/editor/host/` still holds the
+// Host's own session-host wiring (real content, not a stale leftover — see
+// the file-count check this rule's fix relied on), while the runtime content
+// of every one of these six areas now lives under `packages/editor-classic/src/`.
 const SINGLETON_SCOPE =
-	/^apps\/web\/src\/(editor|services\/renderer|effects|masks|graphics|stickers)\//;
+	/^(?:apps\/web\/src|packages\/editor-classic\/src)\/(editor|services\/renderer|effects|masks|graphics|stickers)\//;
 
 const SINGLETON_MUTATORS = [
 	"set",
@@ -766,17 +894,17 @@ function runNegativeControl() {
 	const fixtures = [
 		[
 			"direct",
-			'import { useEditor } from "@/editor/use-editor";\nuseEditor();',
+			'import { useEditor } from "../editor/use-editor";\nuseEditor();',
 			"no-selector-editor-hook",
 		],
 		[
 			"alias",
-			'import { useEditor as readCore } from "@/editor/use-editor";\nreadCore ( /* gap */ );',
+			'import { useEditor as readCore } from "../editor/use-editor";\nreadCore ( /* gap */ );',
 			"no-selector-editor-hook",
 		],
 		[
 			"optional",
-			'import { useEditor as readCore } from "@/editor/use-editor";\nreadCore?.();',
+			'import { useEditor as readCore } from "../editor/use-editor";\nreadCore?.();',
 			"no-selector-editor-hook",
 		],
 		[
@@ -875,7 +1003,7 @@ function runNegativeControl() {
 		],
 		[
 			"render-time-imported-hook-alias",
-			'import { useEditorInstance as useOwningEditor } from "@/editor/use-editor";\nfunction Probe() { const editor = useOwningEditor?.(); return editor.project.getActive(); }',
+			'import { useEditorInstance as useOwningEditor } from "../../editor/use-editor";\nfunction Probe() { const editor = useOwningEditor?.(); return editor.project.getActive(); }',
 		],
 		[
 			"render-time-local-hook-alias",
@@ -928,6 +1056,10 @@ function runNegativeControl() {
 		"  " + (caughtMissing ? "PASS" : "FAIL") + " missing-ninth-store",
 	);
 	clean &&= caughtMissing;
+	// A fixture consumer directly under `packages/editor-classic/src/`, so a
+	// specifier of `./editor/panel-store` and `./preview/preview-store` each
+	// resolve to exactly the STORE_MODULES entry they are meant to trip.
+	const staticStoreConsumerPath = "packages/editor-classic/src/fixture-consumer.ts";
 	for (const [name, source, expected] of [
 		[
 			"aliased-zustand-creator",
@@ -936,26 +1068,27 @@ function runNegativeControl() {
 		],
 		[
 			"renamed-static-store-import",
-			'import { usePanelStore as readPanel } from "@/editor/panel-store";\nreadPanel();',
+			'import { usePanelStore as readPanel } from "./editor/panel-store";\nreadPanel();',
 			"direct-static-store-consumer",
 		],
 		[
 			"comment-whitespace-static-store-import",
-			'import { /* old */ usePreviewStore   as readPreview } from "@/preview/preview-store";\nreadPreview();',
+			'import { /* old */ usePreviewStore   as readPreview } from "./preview/preview-store";\nreadPreview();',
 			"direct-static-store-consumer",
 		],
 		[
 			"namespace-static-store-import",
-			'import * as panelState from "@/editor/panel-store";\npanelState.usePanelStore();',
+			'import * as panelState from "./editor/panel-store";\npanelState.usePanelStore();',
 			"direct-static-store-consumer",
 		],
 	]) {
 		const caught =
 			expected === "module-created-react-store"
 				? zustandReactCreatorAliases(source).size > 0
-				: forbiddenStaticStoreAccess(source).some((failure) =>
-						failure.startsWith(expected),
-					);
+				: forbiddenStaticStoreAccess({
+						path: staticStoreConsumerPath,
+						source,
+					}).some((failure) => failure.startsWith(expected));
 		console.log("  " + (caught ? "PASS " : "FAIL ") + name + ": " + expected);
 		clean &&= caught;
 	}
@@ -1021,7 +1154,8 @@ function runCheck() {
 	}
 
 	const registry =
-		byPath.get("apps/web/src/editor/runtime/session-stores.ts") ?? "";
+		byPath.get("packages/editor-classic/src/editor/runtime/session-stores.ts") ??
+		"";
 	const registryBlock =
 		/EDITOR_SESSION_STORE_KEYS\s*=\s*\[([\s\S]*?)]\s*as const/.exec(
 			registry,
@@ -1042,14 +1176,14 @@ function runCheck() {
 			failures.push(rule + ":" + path);
 		}
 		failures.push(...renderTimeImperativeCalls({ path, source }));
-		for (const failure of forbiddenStaticStoreAccess(source)) {
+		for (const failure of forbiddenStaticStoreAccess({ path, source })) {
 			failures.push(failure + ":" + path);
 		}
 	}
 
 	const actualImperative = new Map();
 	for (const { path, source } of sources) {
-		if (path === "apps/web/src/editor/use-editor.ts") continue;
+		if (path === "packages/editor-classic/src/editor/use-editor.ts") continue;
 		const scanned = source
 			.replace(/\/\*[\s\S]*?\*\//g, " ")
 			.replace(/\/\/.*$/gm, " ");
@@ -1092,7 +1226,7 @@ function runCheck() {
 
 	const compositor =
 		byPath.get(
-			"apps/web/src/services/renderer/compositor/wasm-compositor.ts",
+			"packages/editor-classic/src/services/renderer/compositor/wasm-compositor.ts",
 		) ?? "";
 	if (/\bwasmCompositor\b/.test(compositor))
 		failures.push("default-compositor");
@@ -1121,24 +1255,32 @@ function runCheck() {
 	}
 
 	const gpuRenderer =
-		byPath.get("apps/web/src/services/renderer/gpu-renderer.ts") ?? "";
+		byPath.get("packages/editor-classic/src/services/renderer/gpu-renderer.ts") ??
+		"";
 	if (/\b(?:gpuAvailable|initPromise)\b/.test(gpuRenderer)) {
 		failures.push("module-gpu-readiness-singleton");
 	}
 	const canceller =
-		byPath.get("apps/web/src/editor/cancel-interaction.ts") ?? "";
+		byPath.get("packages/editor-classic/src/editor/cancel-interaction.ts") ?? "";
 	if (!/WeakMap<EditorSession,\s*Set<CancelFn>>/.test(canceller)) {
 		failures.push("interaction-canceller-not-session-keyed");
 	}
 
 	const rendererManager =
-		byPath.get("apps/web/src/core/managers/renderer-manager.ts") ?? "";
+		byPath.get(
+			"packages/editor-classic/src/core/managers/renderer-manager.ts",
+		) ?? "";
 	const projectManager =
-		byPath.get("apps/web/src/core/managers/project-manager.ts") ?? "";
+		byPath.get("packages/editor-classic/src/core/managers/project-manager.ts") ??
+		"";
 	const canvasRenderer =
-		byPath.get("apps/web/src/services/renderer/canvas-renderer.ts") ?? "";
+		byPath.get(
+			"packages/editor-classic/src/services/renderer/canvas-renderer.ts",
+		) ?? "";
 	const sceneExporter =
-		byPath.get("apps/web/src/services/renderer/scene-exporter.ts") ?? "";
+		byPath.get(
+			"packages/editor-classic/src/services/renderer/scene-exporter.ts",
+		) ?? "";
 	if (
 		(rendererManager.match(/new\s+WasmCompositor\s*\(/g)?.length ?? 0) !== 1
 	) {
@@ -1184,7 +1326,7 @@ function runCheck() {
 		failures.push("scene-export-capture-escapes-compositor-transaction");
 	}
 	const serializedRendererMethods = serializedCanvasRendererMethods({
-		path: "apps/web/src/services/renderer/canvas-renderer.ts",
+		path: "packages/editor-classic/src/services/renderer/canvas-renderer.ts",
 		source: canvasRenderer,
 	});
 	for (const method of [

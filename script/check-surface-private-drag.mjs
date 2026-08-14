@@ -6,10 +6,10 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const COORDINATOR = "apps/web/src/editor/surface/embedding/surface-drag-coordinator.tsx";
+const COORDINATOR = "packages/editor-classic/src/editor/surface/embedding/surface-drag-coordinator.tsx";
 const PUBLIC = new Set([
-	"apps/web/src/editor/surface/embedding/index.ts",
-	"apps/web/src/editor/surface/embedding/types.ts",
+	"packages/editor-classic/src/editor/surface/embedding/index.ts",
+	"packages/editor-classic/src/editor/surface/embedding/types.ts",
 ]);
 const EVENTS = ["mousemove", "mouseup", "pointermove", "pointerup", "pointercancel", "dragover", "dragend", "drop"];
 /**
@@ -20,8 +20,8 @@ const EVENTS = ["mousemove", "mouseup", "pointermove", "pointerup", "pointercanc
  * so a new ungoverned global listener anywhere else still fails.
  */
 const FALLBACK_ALLOWED = new Set([
-	"apps/web/src/components/ui/number-field.tsx",
-	"apps/web/src/selection/hooks/use-box-select.ts",
+	"packages/editor-classic/src/components/ui/number-field.tsx",
+	"packages/editor-classic/src/selection/hooks/use-box-select.ts",
 ]);
 /**
  * Host and product-shell surfaces, which are outside the editor claim entirely —
@@ -37,7 +37,7 @@ const HOST_OWNED_PREFIXES = [
 ];
 
 function files() {
-	return execFileSync("git", ["ls-files", "-z", "--cached", "--others", "--exclude-standard", "apps/web/src"], {
+	return execFileSync("git", ["ls-files", "-z", "--cached", "--others", "--exclude-standard", "apps/web/src", "packages/editor-classic/src"], {
 		cwd: ROOT,
 		encoding: "utf8",
 	}).split("\0").filter(Boolean).map((path) => path.replaceAll("\\", "/"));

@@ -121,11 +121,17 @@ for (const rule of RULES) {
 
 // A quick shape report, so a passing run still shows what the bundle is made of
 // rather than only what it lacks.
-const editorModules = modules.filter((id) => id.startsWith("apps/web/src/")).length;
+const editorModules = modules.filter(
+	(id) =>
+		id.startsWith("apps/web/src/") ||
+		id.startsWith("packages/editor-classic/src/") ||
+		id.startsWith("packages/editor-contracts/src/") ||
+		id.startsWith("packages/editor-ports/src/"),
+).length;
 const exampleModules = modules.filter((id) => id.startsWith("apps/vite-example/")).length;
 const dependencyModules = modules.filter((id) => id.includes("node_modules/")).length;
 console.log(
-	`\nComposition: ${editorModules} from apps/web/src, ${exampleModules} from the example host, ` +
+	`\nComposition: ${editorModules} from the editor packages, ${exampleModules} from the example host, ` +
 		`${dependencyModules} from dependencies, ${modules.length - editorModules - exampleModules - dependencyModules} other.`,
 );
 

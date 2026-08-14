@@ -66,17 +66,37 @@ function parseRouteManifest(text) {
 	}
 }
 
+/**
+ * Matches a repository-relative editor source path at the end of a sourcemap
+ * `source` entry: either a Host's own apps/*\/src tree, or (post S05 P1
+ * Stage C) one of the shared editor packages the runtime graph moved into.
+ */
+const EDITOR_SOURCE_SUFFIX =
+	/(?:^|\/)((?:apps\/(?:web|vite-example)\/src|packages\/editor-(?:classic|ports|contracts)\/src)\/[^?#]+)$/;
+
+/**
+ * Turbopack appends this literal segment to a "use client" boundary file's own
+ * path to name the internal proxy module it synthesizes for that boundary —
+ * it is not a second file on disk. Left unstripped, it would mint a distinct,
+ * untracked module ID for a file the inventory already attributes correctly
+ * under its real path, and the emitted-graph check would reject it as a
+ * closure entry with no backing tracked file.
+ */
+const NEXT_INTERNAL_PROXY_SUFFIX = "/__nextjs-internal-proxy.mjs";
+
+function stripNextInternalProxySuffix(moduleId) {
+	return moduleId.endsWith(NEXT_INTERNAL_PROXY_SUFFIX)
+		? moduleId.slice(0, -NEXT_INTERNAL_PROXY_SUFFIX.length)
+		: moduleId;
+}
+
 function sourceModuleId(source, mapPath, repositoryRoot) {
 	const raw = slash(String(source));
-	const appMatch = raw.match(
-		/(?:^|\/)(apps\/(?:web|vite-example)\/src\/[^?#]+)$/,
-	);
-	if (appMatch) return appMatch[1];
+	const appMatch = raw.match(EDITOR_SOURCE_SUFFIX);
+	if (appMatch) return stripNextInternalProxySuffix(appMatch[1]);
 
 	const absolute = resolve(dirname(mapPath), raw);
 	const repoRelative = slash(relative(repositoryRoot, absolute));
-	if (repoRelative.startsWith("apps/web/src/")) return repoRelative;
-	if (repoRelative.startsWith("apps/vite-example/src/")) return repoRelative;
 	return repoRelative;
 }
 
@@ -245,10 +265,8 @@ export function collectNextEditorModuleIds({ distDir, repositoryRoot }) {
 	const moduleIds = new Set();
 	for (const moduleId of Object.keys(manifest.clientModules ?? {})) {
 		const normalized = moduleId.replace(/ <module evaluation>$/, "");
-		const appMatch = normalized.match(
-			/(?:^|\/)(apps\/(?:web|vite-example)\/src\/[^?#]+)$/,
-		);
-		if (appMatch) moduleIds.add(appMatch[1]);
+		const appMatch = normalized.match(EDITOR_SOURCE_SUFFIX);
+		if (appMatch) moduleIds.add(stripNextInternalProxySuffix(appMatch[1]));
 	}
 	for (const filePath of files) {
 		if (filePath.endsWith(".js")) {
@@ -265,7 +283,10 @@ export function collectNextEditorModuleIds({ distDir, repositoryRoot }) {
 	const sourceModuleIds = [...moduleIds].filter(
 		(moduleId) =>
 			moduleId.startsWith("apps/web/src/") ||
-			moduleId.startsWith("apps/vite-example/src/"),
+			moduleId.startsWith("apps/vite-example/src/") ||
+			moduleId.startsWith("packages/editor-classic/src/") ||
+			moduleId.startsWith("packages/editor-ports/src/") ||
+			moduleId.startsWith("packages/editor-contracts/src/"),
 	);
 	return {
 		absoluteDist,

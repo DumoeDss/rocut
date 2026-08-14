@@ -5,7 +5,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const BROWSER_ADAPTER = "apps/web/src/editor/host/browser-runtime.ts";
+const BROWSER_ADAPTER = "packages/editor-classic/src/editor/host/browser-runtime.ts";
 const HOST_ROOTS = [
 	"apps/web/src/editor/host/next-editor-host.ts",
 	"apps/vite-example/src/host/vite-host-config.ts",
@@ -14,11 +14,11 @@ const REQUIRED_LAYERS = new Map([
 	["next-host", HOST_ROOTS[0]],
 	["vite-host", HOST_ROOTS[1]],
 	["browser-worker-adapter", BROWSER_ADAPTER],
-	["font-assets", "apps/web/src/fonts/google-fonts.ts"],
-	["flags", "apps/web/src/stickers/providers/flags.ts"],
-	["stickers", "apps/web/src/services/renderer/nodes/sticker-node.ts"],
-	["effect-preview", "apps/web/src/services/renderer/effect-preview.ts"],
-	["transcription-worker", "apps/web/src/services/transcription/service.ts"],
+	["font-assets", "packages/editor-classic/src/fonts/google-fonts.ts"],
+	["flags", "packages/editor-classic/src/stickers/providers/flags.ts"],
+	["stickers", "packages/editor-classic/src/services/renderer/nodes/sticker-node.ts"],
+	["effect-preview", "packages/editor-classic/src/services/renderer/effect-preview.ts"],
+	["transcription-worker", "packages/editor-classic/src/services/transcription/service.ts"],
 ]);
 
 const RULES = [
@@ -59,6 +59,9 @@ function productionFiles() {
 			"--exclude-standard",
 			"apps/web/src",
 			"apps/vite-example/src",
+			"packages/editor-classic/src",
+			"packages/editor-ports/src",
+			"packages/editor-contracts/src",
 		],
 		{ cwd: REPO_ROOT, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
 	)

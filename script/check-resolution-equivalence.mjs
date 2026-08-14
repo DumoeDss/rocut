@@ -20,6 +20,14 @@
  * and the specifier edits from the diff itself rather than from a hardcoded
  * per-stage list.
  *
+ * Group 6 breaks one assumption Stage A/B/C never exercised: a rewritten
+ * specifier's *target* file may already have been moved by an earlier,
+ * separately committed stage, so the move and the rewrite no longer share one
+ * staged diff. `resolveOld` and the old-target rename lookup in `main()` each
+ * fall back to committed history (`loadPreSliceFileSet`,
+ * `loadHistoricalRenameMap`) only when the staged-diff-only path (`HEAD`,
+ * `oldToNew`) misses — Stage A/B/C's own behaviour is unchanged.
+ *
  *   node script/check-resolution-equivalence.mjs
  */
 import { execFileSync } from "node:child_process";
@@ -68,6 +76,42 @@ const KNOWN_BARREL_COLLAPSES = new Map([
 	// collapses onto the package root rather than a dedicated feedback subpath
 	// — this consumer only ever needed the two exported types, not a scoped entry.
 	["packages/editor-classic/src/feedback/types.ts", "packages/editor-classic/src/index.ts"],
+	// Group 6 (task 6.1): the consumer rewrite over apps/web and apps/vite-example
+	// necessarily produces this same class of collapse at far larger scale than
+	// Stage C did, because every declared entry barrel curates several
+	// previously-separately-imported files into one `export *` surface. Each
+	// pair below was independently verified two ways before being allowed here:
+	// (1) cross-referenced against the historical rename map to confirm the old
+	// target's current location sits inside the barrel's own source directory;
+	// (2) confirmed reachable by walking the barrel's `export *` chain from its
+	// index.ts to the specific old-target file. See task 6.1's done-note.
+	//
+	// "./ui" (packages/editor-classic/src/ui/index.ts):
+	["packages/editor-classic/src/components/editor/mobile-gate.tsx", "packages/editor-classic/src/ui/index.ts"],
+	["packages/editor-classic/src/components/icons/index.tsx", "packages/editor-classic/src/ui/index.ts"],
+	["packages/editor-classic/src/components/ui/breadcrumb.tsx", "packages/editor-classic/src/ui/index.ts"],
+	["packages/editor-classic/src/components/ui/card.tsx", "packages/editor-classic/src/ui/index.ts"],
+	["packages/editor-classic/src/components/ui/context-menu.tsx", "packages/editor-classic/src/ui/index.ts"],
+	["packages/editor-classic/src/components/ui/separator.tsx", "packages/editor-classic/src/ui/index.ts"],
+	// "./evidence" (packages/editor-classic/src/evidence/index.ts):
+	["packages/editor-classic/src/editor/session/c6-disposal-harness.tsx", "packages/editor-classic/src/evidence/index.ts"],
+	["packages/editor-classic/src/editor/surface/evidence/surface-evidence-harness.tsx", "packages/editor-classic/src/evidence/index.ts"],
+	// "./session" (packages/editor-classic/src/session/index.ts):
+	["packages/editor-classic/src/editor/session/index.ts", "packages/editor-classic/src/session/index.ts"],
+	// "./project" (packages/editor-classic/src/project/index.ts):
+	["packages/editor-classic/src/project/types.ts", "packages/editor-classic/src/project/index.ts"],
+	// "./storage" (packages/editor-classic/src/storage/index.ts):
+	["packages/editor-classic/src/services/storage/browser-project-store-conformance.ts", "packages/editor-classic/src/storage/index.ts"],
+	["packages/editor-classic/src/services/storage/browser-project-store-internals.ts", "packages/editor-classic/src/storage/index.ts"],
+	["packages/editor-classic/src/services/storage/browser-project-store.ts", "packages/editor-classic/src/storage/index.ts"],
+	["packages/editor-classic/src/services/storage/browser-storage-mechanisms.ts", "packages/editor-classic/src/storage/index.ts"],
+	// "./timeline" (packages/editor-classic/src/timeline/index.ts):
+	["packages/editor-classic/src/timeline/scenes.ts", "packages/editor-classic/src/timeline/index.ts"],
+	// "." package root (packages/editor-classic/src/index.ts):
+	["packages/editor-classic/src/utils/date.ts", "packages/editor-classic/src/index.ts"],
+	["packages/editor-classic/src/utils/id.ts", "packages/editor-classic/src/index.ts"],
+	["packages/editor-classic/src/utils/string.ts", "packages/editor-classic/src/index.ts"],
+	["packages/editor-classic/src/utils/ui.ts", "packages/editor-classic/src/index.ts"],
 ]);
 
 /**
@@ -85,6 +129,61 @@ function loadHeadFileSet() {
 		maxBuffer: 64 * 1024 * 1024,
 	});
 	return new Set(raw.split(/\r?\n/).filter(Boolean));
+}
+
+/**
+ * Stage A's own first commit — the earliest point any file this Slice moves
+ * still sits at its *original* pre-Slice path. Anchors the two fallbacks
+ * below, needed once move and specifier-rewrite stop sharing a commit.
+ */
+const SLICE_FIRST_COMMIT = "772e6ca50858de06590d10f40137e4c92b547deb"; // refactor(editor-ports): extract Stage A of s05-package-extraction
+
+/**
+ * Group 6 rewrites specifiers in files this Slice never itself moves (e.g.
+ * apps/vite-example's Host wiring), pointing at targets that Stage A, B or C
+ * already moved — in an earlier, separately committed diff. `HEAD` is no
+ * longer "before the rewrite" for those targets; they are only findable at
+ * their true original path in the tree from just before Stage A's first
+ * commit. `resolveOld` tries `HEAD` first (unchanged behaviour for Stage
+ * A/B/C, where move and rewrite share one staged diff and `HEAD` already *is*
+ * "before") and falls back to this tree only when that misses.
+ */
+function loadPreSliceFileSet() {
+	const raw = execFileSync("git", ["ls-tree", "-r", "--name-only", `${SLICE_FIRST_COMMIT}^`], {
+		cwd: REPO_ROOT,
+		encoding: "utf8",
+		maxBuffer: 64 * 1024 * 1024,
+	});
+	return new Set(raw.split(/\r?\n/).filter(Boolean));
+}
+
+/**
+ * Mirrors `loadPreSliceFileSet`'s reasoning for the *other* half of the same
+ * gap: once a target's pre-Slice identity is found there, translating it
+ * forward to where it lives now needs the rename that moved it — and for a
+ * Group 6-style rewrite that rename is committed history, not part of the
+ * currently staged diff (`oldToNew`, built in `main()`, only sees staged
+ * renames). Reconstructed from `git`'s own rename detection across every
+ * commit this Slice has made, rather than from the untracked
+ * `rename-map.json` scratch file the Stage A-C codemod happens to leave on
+ * disk — so this check has no dependency on an intentionally-gitignored
+ * artifact and still works from a fresh clone or in CI. Cross-checked once
+ * against `rename-map.json` while building this: both agree on all 858
+ * entries.
+ */
+function loadHistoricalRenameMap() {
+	const raw = execFileSync(
+		"git",
+		["diff", `${SLICE_FIRST_COMMIT}^..HEAD`, "--name-status", "-M", "-C"],
+		{ cwd: REPO_ROOT, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
+	);
+	const map = new Map();
+	for (const line of raw.split(/\r?\n/)) {
+		if (!line.startsWith("R")) continue; // A/M/D/C never relevant to a specifier's identity
+		const [, oldPath, newPath] = line.split("\t");
+		if (oldPath && newPath) map.set(oldPath, newPath);
+	}
+	return map;
 }
 
 /** A line that imports or re-exports through a string-literal specifier:
@@ -157,15 +256,20 @@ function splitPackageSpecifier(spec) {
 }
 
 /** Resolve one specifier as it stood *before* the rewrite, from the file's old
- * location (post rename-map, i.e. where this file used to live), against
- * `HEAD`. Returns a repo-relative path, `null` (genuinely dangling), or
+ * location (post rename-map, i.e. where this file used to live). Tries `HEAD`
+ * first — correct and sufficient whenever move and rewrite share one staged
+ * diff (Stage A/B/C) — then falls back to the pre-Stage-A tree for a target
+ * this Slice already moved in an earlier, separate commit (Group 6). Returns
+ * a repo-relative path, `null` (genuinely dangling in both trees), or
  * `undefined` (specifier form not recognised — not in scope for this check). */
-function resolveOld(spec, oldFileRepoPath, headFiles) {
+function resolveOld(spec, oldFileRepoPath, headFiles, preSliceFiles) {
 	if (spec.startsWith("@/")) {
-		return probeHead(posix.join(OLD_ALIAS_ROOT, spec.slice(2)), headFiles);
+		const candidate = posix.join(OLD_ALIAS_ROOT, spec.slice(2));
+		return probeHead(candidate, headFiles) ?? probeHead(candidate, preSliceFiles);
 	}
 	if (spec.startsWith("./") || spec.startsWith("../")) {
-		return probeHead(posix.normalize(posix.join(posix.dirname(oldFileRepoPath), spec)), headFiles);
+		const candidate = posix.normalize(posix.join(posix.dirname(oldFileRepoPath), spec));
+		return probeHead(candidate, headFiles) ?? probeHead(candidate, preSliceFiles);
 	}
 	return undefined; // e.g. an old bare-package specifier — none expected pre-move
 }
@@ -266,6 +370,8 @@ function parseStagedHunks() {
 function main() {
 	const packages = loadPackageExports();
 	const headFiles = loadHeadFileSet();
+	const preSliceFiles = loadPreSliceFileSet();
+	const historicalRenames = loadHistoricalRenameMap();
 	const files = parseStagedHunks();
 
 	// Two directions, kept separate rather than reused, because the two lookups
@@ -299,7 +405,7 @@ function main() {
 
 			examined += 1;
 
-			const oldResolved = resolveOld(oldSpec, oldFileRepoPath, headFiles);
+			const oldResolved = resolveOld(oldSpec, oldFileRepoPath, headFiles, preSliceFiles);
 			const newResolved = resolveNew(newSpec, file.newPath, packages);
 
 			if (oldResolved === undefined || newResolved === undefined) {
@@ -313,8 +419,12 @@ function main() {
 
 			// Map the old target through the rename map: if the file the old
 			// specifier pointed at was itself moved, its post-move location is
-			// what the new specifier must agree with.
-			const oldTargetMapped = oldToNew.get(oldResolved) ?? oldResolved;
+			// what the new specifier must agree with. `oldToNew` (this staged
+			// diff's own renames) takes priority; `historicalRenames` (every
+			// rename this Slice has committed so far) covers a target moved by
+			// an earlier, separate stage — see `loadHistoricalRenameMap`.
+			const oldTargetMapped =
+				oldToNew.get(oldResolved) ?? historicalRenames.get(oldResolved) ?? oldResolved;
 
 			if (
 				oldTargetMapped !== newResolved &&
