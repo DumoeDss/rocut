@@ -804,3 +804,43 @@ this same failing run as exit code 0 (a separately-tracked harness defect, not a
 This is the concrete, measured justification for spec §3.2 naming the parity fixture as *the*
 oracle for this child, not one signal among several: every other signal available to P1 was green
 at the same moment the editor was entirely non-interactive.
+
+## 11. Finding: some fixture siblings must move together, some are deliberately anchored — a
+    uniform sweep trades one mismatch for another
+
+Surfaced by task 8.6's mid-task C6 regeneration (`script/__tests__/c6-session-resource-boundary.test.mjs`).
+Regenerating `script/fixtures/c6-session-resource-closure-anchor.json`'s build-provenance fields
+(`assetManifestSha256`, `observedBuildId`, `buildIdSha256`) via the repo's existing non-destructive
+`script/generate-session-resource-closure.mjs` is correct and expected after a real rebuild — but
+updating that fixture alone broke the checker's own cross-fixture consistency check (1 fail → 5
+fail), because the anchor and its sibling `c6-session-resource-expected-closure.json` are **a
+matched pair produced by one regeneration run**, not two independent files: the checker requires
+`artifacts.next.observedBuildId` in one to equal `provenance.next.buildId` in the other, exactly.
+
+A third, easy-to-miss value in the same provenance block must **not** move with the rest:
+`provenance.baseCommit` is a hardcoded literal pinned to the last **reviewed** source-closure audit,
+not to "whenever the fixture was last regenerated." A uniform overwrite of the whole block — the
+instinctive fix once the pair-consistency requirement is known — would have traded the original
+mismatch for a new one against `baseCommit`. The correct fix touched exactly
+`provenance.next.buildId` and left `baseCommit`, `baseTree`, and both `sha256` fields alone, since
+the same rebuild confirmed those digests were unchanged.
+
+**The general shape, stated once so it does not have to be re-derived per fixture family:** a
+sibling-fixture sweep is not "update every field that looks related." Each field is either (a) tied
+to its sibling and must move in lockstep with it, or (b) deliberately anchored to a separate,
+slower-moving reference point and must **not** move just because a neighboring field did. Treating
+the whole block as one undifferentiated unit — moving everything, or moving nothing — is wrong in
+both directions; the fix requires knowing, per field, which of the two rules it follows.
+
+This is one instance of a pattern that recurred four times across this child — package names fixed
+while an arity literal beside them was left, matching logic fixed while its message text was left,
+a `@import` fixed while the sibling `@source` beside it was left (§10 above), and a `.scratch-*`
+cleanup that left four same-class, differently-named siblings behind (see
+`evidence/implementation-report.md`'s housekeeping disclosure for the full four-instance account).
+Recorded here because it is the instance with the sharpest general lesson, and because it is
+directly relevant to **P2** (which will regenerate provenance-adjacent surfaces for a second Host)
+and **P7** (which regenerates the entire `SOURCE_INVENTORY` provenance record for beta closure): a
+provenance/fixture regeneration script's output should be diffed field-by-field against what
+changed and what didn't, not applied as a single trusted block, and any field with an explicit
+pinning rationale (like `baseCommit` here) should be called out by name before the regeneration
+runs, not discovered by a second round of test failures after.

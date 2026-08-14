@@ -163,31 +163,75 @@ Being explicit about what P1 did *not* advance is, per team-lead's stated ration
 this section, as valuable as what it did — it is what stops a later reader assuming coverage that
 was never claimed.
 
-## The +9/-9/-2 attribution: a disclosed, unresolved complication
+## The +9/-9/-2 attribution: resolved by per-test title diff
 
-Team-lead asked whether task 5.7's literal-path fix class (11 instances) explains most of task
-8.6's full-suite delta. Re-examined against the primary source rather than re-asserted from the
-earlier chat message:
+Team-lead rejected leaving this as a disclosed-but-unresolved residual and specified the method:
+capture the per-test pass/fail title list at both endpoints and diff by title, sorted, either to a
+stable named-test attribution or to an explicitly recorded flake set. Done below; both branches of
+that method fired, on two different slices of the discrepancy.
 
-Task 8.6 compares two **outer endpoints** — the `8437084b` pre-move baseline against final HEAD.
-Task 5.7's fix and the task 5.4 wasm-crash-masking fix are each a Slice-**introduced**-then-Slice-
-**fixed** regression: a defect that did not exist at `8437084b`, was introduced by an earlier stage
-of this same child, and was repaired by a later stage of the same child, all before 8.6 ever took
-its "after" measurement. Compared only at the two outer endpoints, a dip-and-recovery of that shape
-contributes close to zero net delta to that specific comparison, even though it produces a large
-delta when measured at its own narrower before/after checkpoint (5.7's own text records "net +11
-pass / -11 fail, exactly the tests those fixes touch," scoped to `packages/editor-classic/src`
-mid-Slice — a different, non-summable measurement from 8.6's baseline-to-HEAD comparison).
+**Method.** Console-log scraping was tried first and abandoned: a wrapper test
+("C5 storage RED controls run in an isolated process") spawns a child `bun test` process, and when
+that child fails unexpectedly bun embeds the child's own raw stdout — its own file-header and
+`(pass)`/`(fail)` lines — inline inside the parent's `error:` diagnostic. A naive line-scraper reads
+that nested dump as nine fresh top-level tests, producing a false "9 tests vanished" reading that
+cost real time before being disproved by checking the file exists identically at both endpoints.
+Switched to `bun test --reporter=junit`, which sources titles from bun's own test registry rather
+than scraped console text and is immune to this contamination.
 
-This means the two most obvious candidate explanations for 8.6's +9/-9/-2 likely do **not** cleanly
-account for it, contrary to the intuitive reading that a Slice fixing a Slice-introduced regression
-should show up directly in the Slice's own before/after delta. Two honest alternatives, neither
-confirmed: an untraced third contributor somewhere else in the 20-commit range, or ordinary
-measurement variance between two `bun test` runs captured under different conditions (fresh
-archive-extracted tree vs. long-lived working tree, ~90.68s vs. ~50.68s wall time). Reported here as
-what it is — an unreconciled residual, not forced into a false-precision account — consistent with
-this Slice's standing discipline that a total which does not cleanly add up gets disclosed rather
-than smoothed over.
+**Cross-endpoint result (`8437084b` baseline vs. current HEAD, JUnit-to-JUnit, one run each side).**
+665 test cases at both endpoints — `comm` on the sorted full title sets shows **zero titles unique
+to either side**: the move added, removed, and renamed nothing. Diffing the sorted FAIL-title sets:
+zero titles newly failing at HEAD, and **exactly eight named tests flip FAIL(baseline) → PASS(HEAD)**:
+
+- `C5 runtime asset boundary deleted-file regression > ignores deleted cached paths but still scans an existing production file`
+- `C5 storage RED controls run in an isolated process`
+- `C6 emitted boundary rejects a non-empty truncated Vite graph`
+- `C6 emitted boundary rejects a padded graph that truncates each attributable root`
+- `C6 resource boundary negative controls prove every rule can fail`
+- `C6 resource boundary scans a non-empty inventory and stays clean`
+- `corpus isolation > no module imports the committed corpus`
+- `corpus isolation > no source imports a corpus JSON file by any relative path`
+
+All eight are boundary-checker and corpus-placement tests — exactly the class P0's own
+`vacuityCaveat` flagged as passing trivially before real consumers existed (`public-entry-only` and
+`no-internal-reexport` had scanned zero `@opencut/*` specifiers). This child writes the first real
+consumers; these eight going green is that rule finally being exercised for real, not noise. This
+closes the arithmetic exactly: 650 baseline-pass + 8 = 658 HEAD-pass; 15 baseline-fail − 8 = 7
+HEAD-fail; zero residue. The seven tests still FAIL at both endpoints
+(`editor singleton boundary > ...`, six `resolveTrackPlacement > ...` cases) are pre-existing and
+unrelated to the move.
+
+**The informal "+9/-9" vs. this "+8/-8": one named flake, isolated by same-tree rerun.** The
+baseline scratch tree was run twice with no code change between runs (console log, then JUnit).
+Run 1: 649 pass / 19 fail / 5 errors. Run 2: 650 pass / 18 fail / 3 errors. Diffing those two runs'
+FAIL sets against each other isolates exactly one title:
+`project persistence rewiring runs with the wasm test double` — FAIL in run 1 (a 5000ms
+subprocess-spawn timeout), PASS in run 2, same commit, same tree. That is the entire off-by-one: it
+is a flaky test at the baseline endpoint, not a fixed-then-refound regression and not a third
+untraced contributor. The baseline errors-count delta (5 → 3 across its own two runs) is fully
+explained by two effects, not a new one: this same flaky test's timeout cascades into two distinct
+top-level `error:` lines in run 1 that simply do not occur in run 2, and the pre-existing
+`editor singleton boundary` failure changes **failure mode, not status** between the two runs (a
+5000ms timeout plus a secondary assertion error in run 1, vs. a fast 782ms single assertion mismatch
+in run 2) — still FAIL both times, unrelated to the move, just noisier under one run's timing.
+
+**HEAD-side stability, checked the same way.** HEAD was also run twice (console, then JUnit; no code
+change between runs). FAIL-title sets matched exactly — zero difference. The PASS-title sets
+initially looked like an 88/89-line mismatch, fully chased down to two artifacts of the *extraction
+method*, not the tests: (1) bun's own JUnit writer double-escapes and reverses the join order for
+`classname` on any 2+-level nested `describe` (raw XML: `classname="getProjectId &amp;gt; V0 to V1
+Migration"`, i.e. inner-before-outer with a literally double-escaped separator) — every nested-
+describe test's JUnit-derived title string differs cosmetically from its console-derived title
+string, which is a representation difference, not an existence difference; (2) one legitimate test
+(`invalid > prefer-object-params > function f(...)`) has a title containing literal embedded
+newlines and a tab (it is a lint-rule fixture whose test name is a source-code snippet), which a
+line-oriented text file splits into extra physical lines, inflating a raw line count by one without
+adding a real test. Both are cosmetic artifacts of turning JUnit XML into sorted text files; neither
+changes which tests pass. HEAD has zero run-to-run instability on either side of the comparison.
+Because the cross-endpoint decomposition above used the identical JUnit-based method on both
+endpoints, both artifacts apply symmetrically to matching tests at both ends and cancel out in that
+`comm` diff — they do not put the eight-test finding in question.
 
 ## The C6 catch, and the sibling-sweep lesson it is one instance of
 
@@ -274,8 +318,6 @@ naming explicitly rather than left implicit in that count:
 
 ## Limitations retained
 
-- **The +9/-9/-2 full-suite attribution is not fully reconciled** — see the dedicated section
-  above. This is reported as an open residual, not resolved by this report.
 - **Bucket-C checkers** from task 2.4's audit (`check-session-state-boundary.mjs`,
   `check-storage-boundary.mjs`, `check-transaction-boundary.mjs`, `check-port-boundary.mjs`) each
   independently reimplement `@/` specifier resolution — flagged in `BOUNDARIES.md` §9 as a
