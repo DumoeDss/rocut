@@ -1,0 +1,5 @@
+
+(electron) 'console-message' arguments are deprecated and will be removed. Please use Event<WebContentsConsoleMessageEventParams> object instead.
+[page] Loading the image 'opencut://spike/pixel.png' violates the following Content Security Policy directive: "img-src 'none'". The action has been blocked.
+[page] __SPIKE_RESULT__ {"origin":"opencut://spike","fetchStatus":200,"fetchText":"scheme-served asset bytes","violation":{"effectiveDirective":"img-src","blockedURI":"opencut","policy":"default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'none'"}}
+REAL_EXIT_CODE:0

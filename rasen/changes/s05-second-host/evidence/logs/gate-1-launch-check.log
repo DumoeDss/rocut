@@ -1,0 +1,29 @@
+{
+  "launchConfig": {
+    "executablePath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\node_modules\\electron\\dist\\electron.exe",
+    "args": [
+      "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\apps\\electron-host\\spike\\main.cjs",
+      "--use-angle=swiftshader",
+      "--enable-unsafe-swiftshader"
+    ],
+    "gpuFlags": [
+      "--use-angle=swiftshader",
+      "--enable-unsafe-swiftshader"
+    ]
+  },
+  "origin": "opencut://spike",
+  "fetchStatus": 200,
+  "fetchText": "scheme-served asset bytes",
+  "cspViolation": {
+    "effectiveDirective": "img-src",
+    "blockedURI": "opencut",
+    "policy": "default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'none'"
+  },
+  "evaluateRoundTrip": 42,
+  "consoleMessages": [
+    "error: Loading the image 'opencut://spike/pixel.png' violates the following Content Security Policy directive: \"img-src 'none'\". The action has been blocked.",
+    "log: __SPIKE_RESULT__ {\"origin\":\"opencut://spike\",\"fetchStatus\":200,\"fetchText\":\"scheme-served asset bytes\",\"violation\":{\"effectiveDirective\":\"img-src\",\"blockedURI\":\"opencut\",\"policy\":\"default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'none'\"}}"
+  ]
+}
+SPIKE PASSED
+REAL_EXIT_CODE:0
