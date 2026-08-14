@@ -1118,10 +1118,27 @@
       Every difference across all four surfaces is import-specifier/doc-comment churn consistent
       with the physical relocation itself; no exported name, type shape, or member composition
       changed on any of them.
-- [ ] 8.8 Handle `DOMAIN_DOCUMENT_MEMBERS` additions per design E7's decision procedure. Every added
+- [x] 8.8 Handle `DOMAIN_DOCUMENT_MEMBERS` additions per design E7's decision procedure. Every added
       member is committed with the member name, the file that forced it, and the `*Document` type
       that proves the identifier is the domain document rather than the DOM one. An identifier whose
       type cannot be named is a DOM leak, and the fix is renaming the binding.
+      Done — **zero additions.** `node script/check-package-boundary.mjs` against the moved tree:
+      `PASS react-free-base: editor-ports and editor-contracts import no React, no DOM global, and
+      no editor-classic module (68 file(s) scanned)`. The scan count (68) matches the pre-move
+      figure `check-package-boundary.mjs`'s own P0 doc comment recorded for `DOMAIN_DOCUMENT_MEMBERS`
+      construction (`apps/web/src/editor/ports/**` + `editor-host.ts` + `apps/web/src/editor/
+      contracts/**`) exactly, which is the non-vacuous-scan check E7's own rule needs before "clean"
+      can be trusted — a checker still pointed at the old, now-empty `apps/web/src/editor/ports`
+      and `apps/web/src/editor/contracts` paths would print the same PASS over zero files scanned,
+      and 68≠0 rules that out. `react-free-base` fires on any `document.<member>` outside the
+      existing seven-name allowlist (`revision`, `tracks`, `clips`, `assets`, `markers`,
+      `idempotency`, `project`); with 68 files re-scanned at their new package locations and the
+      rule still green, no line anywhere in `editor-ports` or `editor-contracts` reads a `document`
+      member outside that list — this Slice moves files, it does not add code, so E7's decision
+      procedure has nothing to apply to. Confirmed independently by task 8.5's aggregate sweep,
+      which already counted this checker among its "25 green" and would have surfaced a violation
+      as a checker-level failure requiring its own writeup, the way it did for
+      `check-emitted-runtime-assets.mjs` and the C6 fixtures.
 
 ## 9. Documentation and hand-forward
 
