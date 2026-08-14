@@ -133,16 +133,16 @@
 
 ## 6. Evidence entries: surface-evidence and disposal dispatch
 
-- [ ] 6.1 Author the `surface-evidence` entry: a second built HTML entry mounting
+- [x] 6.1 Author the `surface-evidence` entry: a second built HTML entry mounting
       `SurfaceEvidenceHarness` with `hostName: "electron"`, the electron composition
       (`forceRendererBackend: "none"`, fs store over the bridge), and a build-marker env —
       selected via `--opencut-entry=surface-evidence`. No change to the harness itself.
-- [ ] 6.2 Author the disposal dispatch: `?c6-disposal-harness=1` on the app entry mounts
+- [x] 6.2 Author the disposal dispatch: `?c6-disposal-harness=1` on the app entry mounts
       `C6DisposalHarness` (from `@opencut/editor-classic/evidence`, unmodified) with the electron
       `createHost`, `isDurableBrowserStore: (store) => store instanceof FilesystemProjectStore`,
       and a build-marker env. Confirm the harness renders and its ordinary control completes one
       cycle — the full oracle run is Group 8.
-- [ ] 6.3 Wire disposable roots: every evidence entry (disposal, surface-evidence, parity runs)
+- [x] 6.3 Wire disposable roots: every evidence entry (disposal, surface-evidence, parity runs)
       accepts `OPENCUT_STORE_ROOT` and documents it — the disposal harness runs many cycles and
       the parity run must start from empty; nothing in an evidence run writes toward
       `userData` by accident.

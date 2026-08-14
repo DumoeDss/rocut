@@ -464,3 +464,131 @@ same zero). REAL_EXIT_CODE:0, self-logged. Screenshots:
 - The asset checker's served leg needs an HTTP base; on a custom-scheme host
   a rooted stand-in server is the honest bridge, with the live scheme run in
   the same group covering what the stand-in cannot (the scheme itself).
+
+## Group 6 — Evidence entries: surface-evidence and disposal dispatch
+
+Task text: `rasen/changes/s05-second-host/tasks.md` §6. Proof script:
+`apps/electron-host/scripts/evidence-entries-proof.mjs` (both entries in one
+run). Log: `evidence/logs/group-6-evidence-entries.log`.
+
+### 6.1 The `surface-evidence` entry
+
+A second built HTML entry — `apps/electron-host/surface-evidence.html` →
+`dist/surface-evidence.html` — selected with the entry seam from Group 3
+(`--opencut-entry=surface-evidence`; `main.cjs` validates the name and loads
+`opencut://app/surface-evidence.html`). The vite config gains the second
+rollup input (`vite.config.ts` `rollupOptions.input["surface-evidence"]`),
+mirroring the vite example's own multi-entry shape. The mount
+(`src/surface-evidence-main.tsx`) mirrors
+`apps/vite-example/src/surface-evidence-main.tsx`: the electron composition
+(`createElectronEditorHost` with `forceRendererBackend: "none"`, the fs store
+over the bridge, module-lifetime store/ids/diagnostics), the R2 build marker
+(`VITE_R2_BUILD_MARKER`, fallback `"missing-electron-marker"`), and the
+harness imported **unmodified** from `@opencut/editor-classic/evidence`.
+
+**The `hostName` cast — a frozen-dual prop crossed by a third host.**
+`SurfaceEvidenceHarness` declares `hostName: "next" | "vite"`: it was born
+dual, and the S03 extraction froze its public signature. The extraction audit
+(`2026-08-14-s05-package-extraction`) lists exactly four frozen surfaces —
+the transaction-contract barrel, the engine, the ports barrel, and the
+Surface embedding types — and the evidence harness is **not** among them;
+but task 6.1 ("No change to the harness itself") and the spec's
+harness-sharing requirement ("through the same harnesses rather than
+Host-private copies") both freeze the harness for this change anyway.
+Crossing the union would therefore need either a harness edit (forbidden
+here) or a host-side lie. The mount passes
+`{"electron" as unknown as "next" | "vite"}` at the call site with a comment
+naming this exact reasoning: the prop is a *label recorded verbatim into the
+evidence ledger* — the runtime ledger entries carry `host: "electron"`
+truthfully — and the harness does not branch on it. If the union is widened
+later, the cast deletes cleanly. Flagged in the final report as a deviation.
+
+**Proof (final run, log [E]).** The proof launches the app with
+`--opencut-entry=surface-evidence`, a `mkdtemp` `OPENCUT_STORE_ROOT`, and an
+`addInitScript` CSP listener, then asserts: `data-host === "electron"` (the
+label the harness itself rendered), `data-status === "ready"`, the R2 ledger
+present, **zero CSP violation reports, zero console errors**. Verdict JSON +
+`EVIDENCE ENTRIES PROOF PASSED`, `REAL_EXIT_CODE:0`.
+
+### 6.2 The disposal dispatch and the attributed CSP relaxation
+
+`src/app.tsx` gains the dispatch branch `?c6-disposal-harness=1` →
+`<C6DisposalHarness>` imported **unmodified** from
+`@opencut/editor-classic/evidence`, wired with the electron `createHost`
+(store over the bridge — no `forceRendererBackend` override here; the
+disposal cycle exercises the default backend path),
+`isDurableBrowserStore: (store) => store instanceof FilesystemProjectStore`,
+and the C6 build marker (`VITE_C6_BUILD_MARKER`). The proof reaches it by
+in-page navigation
+(`location.href = "opencut://app/index.html?c6-disposal-harness=1"`) on the
+main entry.
+
+**The relaxation, by design E7's own mechanism.** Run 1 (log [C]) completed
+all six cycles but recorded **six object-URL terminality failures** plus
+**24 CSP violation reports**, every one `connect-src`/`blob:`. Root cause:
+the C6 oracle's object-URL terminality probe *fetches the `blob:` URL it
+creates* — `createObjectURL` → fetch → `revokeObjectURL` → fetch must fail.
+Under the design-E7 starting policy `connect-src 'self'` the probe's *first*
+fetch is blocked, terminality is "not proven", and the oracle fails every
+cycle. Design E7 pre-declares this exact situation — the starting set "is a
+hypothesis, not a decision"; any relaxation must name the feature that
+forced it. `connect-src 'self' blob:` is therefore added in all three places
+the policy lives (the scheme handler's response header in
+`electron/main.cjs`, the `<meta>` in `index.html`, the `<meta>` in
+`surface-evidence.html`), each with a comment naming the forcing feature.
+Post-relaxation (log [E]): object-URL failures gone, **zero CSP
+violations**. This is an attributed hypothesis update per design E7,
+recorded here rather than as a deviation.
+
+**Expected console noise.** The final run logs six
+`Failed to load resource: net::ERR_FILE_NOT_FOUND` console lines — one per
+cycle, each the oracle's *post-revoke* fetch failing exactly as the probe
+intends. That is the proof working, not a defect; the vite standing test
+gates `report.clean` and `failures`, not console noise. Group 8's gate
+mirrors that.
+
+**The cycle-1 independent-timer race (open, non-blocking).** The final run
+records one failure: `cycle 1 timer independent platform residual 1`. Facts
+established: (1) it appears **only at cycle 1**, never cycles 2–6, in any
+run — counts recover immediately, so there is no monotonic growth and no
+leak (the oracle's own leak predicate never fires); (2) it is
+timing-sensitive — present in both gated proof runs ([C]/[E]), absent in the
+instrumented diagnostic run ([D]); (3) the independent ledger's timer
+population around cycle 1 was captured by stack diagnostics: a
+session-mediated 5 ms `setInterval` plus 800 ms `queueSave` debounces
+scheduled by `markDirty` (first mutation) and `resume` — all editor-package
+code this change freezes. The independent ledger wraps the window timer APIs
+globally and counts a session-mediated timer exactly once when it bottoms
+out at the window API, so a first-cycle debounce still pending at the ledger
+snapshot (the snapshot lands after `dispose()` + a 60 ms yield + the awaited
+terminality fetch) reads as residual 1 on the slower first cycle. No
+legitimate composition-side fix exists — the timer lifecycle is frozen
+harness/editor code, and the host adds no timers of its own. **Group 8
+plan:** run the gated oracle; if the race recurs, rerun a bounded number of
+times and record the distribution alongside the clean run.
+
+### 6.3 Disposable roots
+
+`main.cjs`'s `storeRoot()` (Group 4) honors `OPENCUT_STORE_ROOT` globally —
+every entry inherits it, since the store installs once per process at boot.
+Both proof launches use `mkdtempSync` roots and remove them on exit
+(`rmSync recursive force`); nothing in either run writes toward `userData`
+(the override short-circuits the `userData` path entirely). The parity runs
+(Group 7) use the same seam and will start from empty roots. Documented in
+`main.cjs` at `storeRoot()` and in both proof-script headers.
+
+### Findings from this group
+
+- The frozen-dual `hostName` prop is crossed by a documented call-site cast
+  (see 6.1) — the honest option among forbidden ones; widens cleanly if the
+  harness union ever gains `"electron"`.
+- The C6 oracle's object-URL terminality probe is CSP-load-bearing: it
+  *fetches* the `blob:` URL it creates, so any host running the disposal
+  oracle needs `connect-src blob:`. Recorded via design E7's attribution
+  mechanism; the vite/next hosts run under `http(s)` origins where blob:
+  fetches are same-origin and never noticed.
+- The independent timer ledger is a *global* wrap: session-mediated timers
+  that legitimately bottom out at window timers are counted once by it, so a
+  first-cycle debounce pending at the snapshot reads as platform residual on
+  a slow host — intermittent, cycle-1 only, non-cumulative (details 6.2).
+  Known consequence, not fixed here; Group 8 records the distribution.

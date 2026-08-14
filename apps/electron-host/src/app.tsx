@@ -4,10 +4,13 @@ import { Toaster } from "@opencut/editor-classic/ui";
 import { TooltipProvider } from "@opencut/editor-classic/ui";
 import { MobileGate } from "@opencut/editor-classic/ui";
 import { SessionEditorSurface } from "@opencut/editor-classic/surface";
+import { C6DisposalHarness } from "@opencut/editor-classic/evidence";
 import { ElectronEditorHost } from "./host/electron-editor-host";
 import { ProjectPicker } from "./project-picker";
 import { EditorErrorBoundary } from "./editor-error-boundary";
 import { C4WorkerHarness } from "./c4-worker-harness";
+import { FilesystemProjectStore } from "./store/filesystem-project-store";
+import { createElectronEditorHost } from "./host/electron-host-config";
 
 function readProjectIdFromUrl(): string | null {
 	return new URLSearchParams(window.location.search).get("project");
@@ -18,13 +21,29 @@ function readProjectIdFromUrl(): string | null {
  * the bounding HostChrome: a desktop window is the container, so the editor
  * fills the window rather than a bordered box inside a page. The C4 worker
  * harness dispatch is the vite example's own pattern (`?c4-worker-harness=1`,
- * task 5.3); the remaining evidence harnesses land with their groups.
+ * task 5.3), and the C6 disposal dispatch mirrors the vite example's own
+ * (`?c6-disposal-harness=1`, task 6.2). Evidence dispatches run against a
+ * disposable `OPENCUT_STORE_ROOT` (main.cjs honors it) — never `userData`.
  */
 export function App() {
-	if (
-		new URLSearchParams(window.location.search).get("c4-worker-harness") === "1"
-	) {
+	const query = new URLSearchParams(window.location.search);
+	if (query.get("c4-worker-harness") === "1") {
 		return <C4WorkerHarness />;
+	}
+	if (query.get("c6-disposal-harness") === "1") {
+		return (
+			<C6DisposalHarness
+				createHost={({ projectId, onProjectReplaced, onExitProject }) =>
+					createElectronEditorHost({
+						projectId,
+						onProjectIdChange: onProjectReplaced,
+						onExitProject,
+					})
+				}
+				isDurableBrowserStore={(store) => store instanceof FilesystemProjectStore}
+				buildMarker={import.meta.env.VITE_C6_BUILD_MARKER ?? "development"}
+			/>
+		);
 	}
 	return <EditorApp />;
 }

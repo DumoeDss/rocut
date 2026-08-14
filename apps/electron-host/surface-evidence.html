@@ -4,20 +4,18 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<!-- Design E7: identical to the Content-Security-Policy response header
-		     the scheme handler sets, carried in the artifact so the policy is
-		     visible in the built HTML itself. Any relaxation names the feature
-		     that forced it, in a comment here and in the evidence.
-		     `connect-src blob:` — the C6 disposal oracle's object-URL
+		     the scheme handler sets on every response under this scheme; carried
+		     here too so the policy is visible in the built evidence entry
+		     itself. `connect-src blob:` — the C6 disposal oracle's object-URL
 		     terminality probe (Group 6 evidence). -->
 		<meta
 			http-equiv="Content-Security-Policy"
 			content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob: data:; font-src 'self' data:; connect-src 'self' blob:"
 		/>
-		<link rel="icon" href="/favicon.ico" />
-		<title>OpenCut editor — Electron host</title>
+		<title>OpenCut R1 Surface evidence — Electron host</title>
 	</head>
 	<body>
 		<div id="root"></div>
-		<script type="module" src="/src/main.tsx"></script>
+		<script type="module" src="/src/surface-evidence-main.tsx"></script>
 	</body>
 </html>

@@ -46,7 +46,12 @@ export default defineConfig({
 		target: "esnext",
 		rollupOptions: {
 			input: {
+				// Multi-entry parity with the Vite example (design E2): the
+				// evidence entry is selected at launch via `--opencut-entry=
+				// surface-evidence` — the argv equivalent of the example's
+				// separate HTML files.
 				app: resolve(here, "index.html"),
+				"surface-evidence": resolve(here, "surface-evidence.html"),
 			},
 		},
 	},

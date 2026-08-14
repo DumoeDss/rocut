@@ -27,6 +27,15 @@ const APP_HOST = "app";
  * names the feature that forced it, here and in the evidence. The identical
  * policy rides along in index.html as a <meta> so it is visible in the
  * artifact.
+ *
+ * One attributed relaxation from the starting set (Group 6, task 5.4's own
+ * mechanism): `connect-src` gains `blob:` — forced by the C6 disposal
+ * oracle's object-URL terminality probe, which fetches the `blob:` URL it
+ * created to prove revoke semantics (`URL.createObjectURL` → fetch →
+ * revoke → fetch must fail). Under `connect-src 'self'` alone the probe's
+ * first fetch is blocked, the terminality is "not proven", and the oracle
+ * fails all six cycles. Recorded in the Group 6 evidence with the violation
+ * reports that demonstrated it.
  */
 const CSP = [
 	"default-src 'none'",
@@ -36,7 +45,7 @@ const CSP = [
 	"img-src 'self' data: blob:",
 	"media-src 'self' blob: data:",
 	"font-src 'self' data:",
-	"connect-src 'self'",
+	"connect-src 'self' blob:",
 ].join("; ");
 
 const MIME_BY_EXTENSION = {
