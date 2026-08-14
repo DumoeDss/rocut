@@ -13,7 +13,7 @@
 			"moduleGraph": "apps/vite-example/dist/module-graph.json",
 			"moduleGraphSha256": "5d100d2aaa142589b9a327fbf7fda56aa1fa025efe43b110afb00cbbd77ae58e",
 			"assetManifest": "apps/vite-example/dist/asset-manifest.json",
-			"assetManifestSha256": "7c83b3c97abea10438e3a658c1dd83288a7dca7cebeed7ea78b0a8be21f0f302",
+			"assetManifestSha256": "9c911619661c0ed39a5d058e339123454bd87d2367e622b417267cdbdf174769",
 			"moduleIds": {
 				"count": 3842,
 				"sha256": "994c078838ef63d8ae7b97eabbb0ab254c2c9e11b09da041744e5bc91fb823af"
@@ -49,8 +49,8 @@
 				"count": 659,
 				"sha256": "b289315931860b94756a3ed3eb048ab2bf9b8b1842ceb4f587bd4fd95b8e6507"
 			},
-			"observedBuildId": "zD7j1fYlQ8MshUii6t1NU",
-			"buildIdSha256": "daa830171d06fe04342ee8481f7f17718ff7ce5a70dac78f1ab8998b8433ddf5"
+			"observedBuildId": "Vl-7_95JN5T6995Qxo-vK",
+			"buildIdSha256": "f08241d0de95ebcf9beb9a2846265de848b914351258f5e9c994bd052f658c8c"
 		}
 	}
 }

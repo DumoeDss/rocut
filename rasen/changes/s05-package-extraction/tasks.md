@@ -1041,7 +1041,57 @@
       expected `console.error` output from other, already-passing negative-control tests
       (`rejects a non-empty truncated Vite graph`, `generator keeps closure stable across distinct Next
       build IDs`) deliberately exercising the checker's own rejection paths — not a second failure.
-- [ ] 8.6 Run `bun test` across all suites and record the result against the pre-move baseline.
+- [x] 8.6 Run `bun test` across all suites and record the result against the pre-move baseline.
+      Done — Full suite at the current tree: `658 pass / 10 fail / 3 errors / 3082 expect() calls`,
+      `668 tests across 110 files [50.68s]`, self-logged `REAL_EXIT_CODE:1` (the background task's
+      own completion notification again reported "exit code 0" for this run — same harness
+      discrepancy already on record in this Slice's memory, caught the same way: trust the
+      self-logged status in the file, not the notification). Pre-move baseline: the same 668 tests
+      across 110 files at commit `8437084b`, captured via `git archive <sha> | tar -x` into a
+      scratch tree so the working branch/HEAD stayed untouched: `649 pass / 19 fail / 5 errors /
+      3039 expect() calls [90.68s]`. Net: **+9 pass, -9 fail, -2 errors, +43 `expect()` calls**,
+      identical total test count both times — a strict aggregate improvement, not a like-for-like
+      "did the move alone break anything" check (that narrower question is already answered
+      per-item at 5.6/8.4/8.5 by signature-matching against the pre-move state); the baseline
+      predates every fix this Slice landed, so cumulative Slice work correctly shows as net
+      positive rather than neutral.
+
+      Every one of the 10 post-move fails is attributable to a pre-existing, unrelated cause:
+      - 7 are named in bun's own `(fail)` list — `editor singleton boundary > the complete
+        runtime graph has no implicit editor owner` and 6 `resolveTrackPlacement` sub-tests —
+        and appear **by the identical name** in the pre-move fail list at `8437084b`. The
+        runtime errors underneath them (`TypeError: wasm.__wbindgen_start is not a function`,
+        `ReferenceError: Cannot access 'DEFAULTS'/'textMaskDefinition'/'ZERO_MEDIA_TIME' before
+        initialization`) are present verbatim in both the pre-move and post-move logs — grep-
+        confirmed, not inferred from the name match alone.
+      - The remaining 3 (bun's "10 tests failed" header exceeds its 7 named lines by exactly 3,
+        matching the separate "3 errors" tally) are the same bun reporter quirk already accepted
+        without further chase at task 5.6 (there: 10 reported vs. 7 named, gap 3). The gap size
+        is stable across both instances in this codebase and no 8th–10th failing test name exists
+        anywhere in the log to chase further.
+
+      One genuine regression was found and fixed mid-task, self-inflicted while regenerating the
+      C6 build-provenance fixtures: `apps/vite-example/dist/asset-manifest.json`'s live SHA-256 no
+      longer matched the value pinned in `script/fixtures/c6-session-resource-closure-anchor.json`
+      (confirmed stable via rebuild, not flakiness), so the anchor's `assetManifestSha256`,
+      `observedBuildId` and `buildIdSha256` were regenerated via the repo's existing non-
+      destructive `script/generate-session-resource-closure.mjs`. Updating the anchor alone broke
+      `check-session-resource-boundary.mjs`'s cross-fixture consistency check (1 fail → 5 fail):
+      lines 440–453 require the anchor's `artifacts.next.observedBuildId` and the sibling
+      `c6-session-resource-expected-closure.json`'s `provenance.next.buildId` to match exactly —
+      the two fixtures are a matched pair from one regeneration run, not independent. A third,
+      easy-to-miss piece must NOT move with them: line 417–418 hardcodes a literal expected
+      `provenance.baseCommit` (`488a8a8d3ded082813ff4636469e83c6a190a30a`) that a freshly
+      generated candidate's own `baseCommit` does *not* match — `baseCommit`/`baseTree` are
+      pinned to the last reviewed source-closure audit, not to "whenever the fixture was last
+      regenerated," so a naive full-provenance-block overwrite would have traded one mismatch for
+      another. Fixed by updating only `provenance.next.buildId` to match the anchor, leaving
+      `baseCommit`/`baseTree` and both `sha256` fields (`vite.sha256`/`moduleGraph.sha256`,
+      `next.sha256`/`nftSha256`) untouched, since the same rebuild confirmed those digests are
+      unchanged. `bun test script/__tests__/c6-session-resource-boundary.test.mjs`: `18 pass / 0
+      fail` after the fix. Task 8.5's combined four-suite count (`109 pass, 0 fail`, C5/C6/C7
+      together) already reflected this file's own pre-drift-discovery clean state; the digest
+      drift was introduced by the live rebuild this task ran, not present when 8.5 last measured.
 - [x] 8.7 **Frozen-signature audit:** compare the public surfaces S03+S04 froze — the transaction
       contract barrel, the engine, the ports barrel and the Surface embedding types — before and
       after. If any differs, **stop**: that is a `failed` condition for the Slice and a finding
