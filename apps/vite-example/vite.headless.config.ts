@@ -5,10 +5,19 @@ import { headlessModuleGraph } from "./build/headless-module-graph";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "../..");
-const webSrc = resolve(repoRoot, "apps/web/src");
 // headless-proof-control moved under the package extraction (Stage C) from
 // "apps/web/src/editor/session/..." to
-// "packages/editor-classic/src/editor/session/...".
+// "packages/editor-classic/src/editor/session/...". The swap must key on the
+// specifier the entry chain actually emits today, which is the evidence
+// barrel's relative "../editor/session/headless-proof-control" (packages/
+// editor-classic/src/evidence/index.ts), not a "@/..." alias — no "@/"
+// specifier survives anywhere under packages/ (verified: `git grep -l 'from
+// "@/' -- 'packages/**'` returns zero files) or under this app's own `src/`
+// (it has no "@/" path mapping in tsconfig.json either). The old `webSrc`
+// generic "@" -> "apps/web/src" catch-all alias is deleted rather than
+// repointed: that directory was emptied by the move, and re-pointing it
+// would silently paper over any future "@/" specifier that should instead
+// be a hard resolution failure.
 const editorClassicSrc = resolve(repoRoot, "packages/editor-classic/src");
 const outputDirectory = process.env.C7_VITE_HEADLESS_OUT_DIR;
 const marker = process.env.OPENCUT_C7_BUILD_MARKER;
@@ -44,10 +53,9 @@ export default defineConfig({
 	resolve: {
 		alias: [
 			{
-				find: "@/editor/session/headless-proof-control",
+				find: "../editor/session/headless-proof-control",
 				replacement: reactControl ? injectedControl : neutralControl,
 			},
-			{ find: "@", replacement: webSrc },
 		],
 	},
 	define: {
