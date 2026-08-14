@@ -6,14 +6,23 @@ import { fileURLToPath } from "node:url";
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const BROWSER_ADAPTER = "packages/editor-classic/src/editor/host/browser-runtime.ts";
+// s05-second-host: the desktop Host's owned runtime-resource adapter holds the
+// same architectural position as the browser adapter — the one place platform
+// Worker construction is allowed to live for that Host.
+const ELECTRON_ADAPTER =
+	"apps/electron-host/src/host/electron-runtime-resources.ts";
+const WORKER_ADAPTERS = new Set([BROWSER_ADAPTER, ELECTRON_ADAPTER]);
 const HOST_ROOTS = [
 	"apps/web/src/editor/host/next-editor-host.ts",
 	"apps/vite-example/src/host/vite-host-config.ts",
+	"apps/electron-host/src/host/electron-host-config.ts",
 ];
 const REQUIRED_LAYERS = new Map([
 	["next-host", HOST_ROOTS[0]],
 	["vite-host", HOST_ROOTS[1]],
+	["electron-host", HOST_ROOTS[2]],
 	["browser-worker-adapter", BROWSER_ADAPTER],
+	["electron-worker-adapter", ELECTRON_ADAPTER],
 	["font-assets", "packages/editor-classic/src/fonts/google-fonts.ts"],
 	["flags", "packages/editor-classic/src/stickers/providers/flags.ts"],
 	["stickers", "packages/editor-classic/src/services/renderer/nodes/sticker-node.ts"],
@@ -44,7 +53,7 @@ const RULES = [
 	{
 		id: "direct-platform-worker",
 		test: (text, path) =>
-			path !== BROWSER_ADAPTER && /\bnew\s+Worker\s*\(/.test(text),
+			!WORKER_ADAPTERS.has(path) && /\bnew\s+Worker\s*\(/.test(text),
 	},
 ];
 
@@ -59,6 +68,7 @@ function productionFiles() {
 			"--exclude-standard",
 			"apps/web/src",
 			"apps/vite-example/src",
+			"apps/electron-host/src",
 			"packages/editor-classic/src",
 			"packages/editor-ports/src",
 			"packages/editor-contracts/src",
@@ -103,9 +113,19 @@ function checkComposition(files, reads) {
 		}
 		const text = reads.get(path) ?? "";
 		const referenceSpread = text.search(/\.\.\.createInMemoryPorts\s*\(/);
-		const browserOverride = text.lastIndexOf("...browser");
-		if (referenceSpread < 0 || browserOverride < referenceSpread) {
+		if (referenceSpread < 0) {
 			violations.push({ rule: "c4-role-reference-fallback", path });
+			continue;
+		}
+		// A Host that spreads the browser adapter must place that spread after
+		// the reference bundle. The desktop Host composes its owned roles as
+		// explicit keys instead (no `...browser` at all) — its role presence is
+		// asserted by the loop below, which requires every role named.
+		if (text.includes("...browser")) {
+			const browserOverride = text.lastIndexOf("...browser");
+			if (browserOverride < referenceSpread) {
+				violations.push({ rule: "c4-role-reference-fallback", path });
+			}
 		}
 		for (const role of ["assets", "assetLoader", "runtimeResources"]) {
 			if (!text.includes(role) && !text.includes("...browser")) {
@@ -133,6 +153,15 @@ function checkLayers(files, reads) {
 		violations.push({
 			rule: "missing-browser-worker-constructor",
 			path: BROWSER_ADAPTER,
+		});
+	}
+	const electronAdapter = withoutComments(reads.get(ELECTRON_ADAPTER) ?? "");
+	const electronConstructors =
+		electronAdapter.match(/\bnew\s+Worker\s*\(/g)?.length ?? 0;
+	if (electronConstructors < 1) {
+		violations.push({
+			rule: "missing-electron-worker-constructor",
+			path: ELECTRON_ADAPTER,
 		});
 	}
 	return violations;
@@ -270,7 +299,7 @@ function runCheck() {
 		process.exit(1);
 	}
 	console.log(
-		"clean — both Hosts and every required asset/Worker layer are present.",
+		"clean — every Host and every required asset/Worker layer are present.",
 	);
 }
 

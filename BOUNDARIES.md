@@ -844,3 +844,53 @@ provenance/fixture regeneration script's output should be diffed field-by-field 
 changed and what didn't, not applied as a single trusted block, and any field with an explicit
 pinning rationale (like `baseCommit` here) should be called out by name before the regeneration
 runs, not discovered by a second round of test failures after.
+
+---
+
+## 12. The third consumer: the electron Host (S05 P2)
+
+`apps/electron-host` is now the third declared consumer of the package layers, beside the vite
+example and the Next app. Its owned surface is 33 tracked files (18 under `src/`, 15 scaffolding
+and proof scripts), all-additive: the repo census moves 2299 → 2376 tracked files across this
+change (+77, 0 removed — the Group 1 spike was deleted before any commit, so nothing was ever
+subtracted). The Host owns, and nothing else owns: its composition root
+(`host/electron-host-config.ts`, which constructs one module-stable `FilesystemProjectStore` over
+an IPC store bridge and final-overrides the inherited reference store), its viewport wrapper
+(`host/electron-editor-host.tsx`, Host-owned exactly like the vite/next wrappers, outside the
+Surface scan by that checker's own scoping note), its resource adapter (`host/electron-runtime-resources.ts`, the
+desktop twin of the browser Worker/audio/object-URL adapter, exempted construct-by-construct in
+`check-session-resource-boundary.mjs` with reasons), the filesystem store stack
+(`store/filesystem-project-store.ts` + bridge + IPC + file layout, with conformance, migration
+and bridge tests), and the Electron scaffolding (`electron/main.cjs` + `preload.cjs`, window,
+single-instance lock, CSP). It owns no port: the frozen ports barrel is byte-identical to this
+change's base commit (`66add22f`, verified by `cmp` per surface —
+`evidence/frozen-signature/README.md`), and the electron Host reaches the editor only through the
+same declared package entries the browser Hosts use — which is the point of a third consumer: the
+package boundary held without reopening a single export.
+
+The static checkers now judge the third consumer where their scope follows the source, and stay
+deliberately scoped where it doesn't: the per-checker verdict for all 27 `script/check-*.mjs`
+live in `rasen/changes/s05-second-host/evidence/group-9-checker-scope-audit.md` (12 edited to
+learn the third Host, 3 nonzero exits each dispositioned with a named pre-existing cause, 2
+usage-gated harnesses whose duties are gated elsewhere). Two findings from that audit are worth
+the boundary document's memory. First, widening `check-runtime-asset-boundary.mjs`'s Host roots
+made its root-css-url rule catch a real defect in this change's own mirror
+(`c4-worker-harness.tsx` built its fixture URL from a root-absolute literal; fixed to the vite
+twin's BASE_URL-composed form) — the rule's regex matches `new URL("/...` case-insensitively,
+which is not a false positive but the rule enforcing the composition discipline it exists for.
+Second, `check-type-baseline.mjs`'s two S01-regression FAIL rows are P1's move artifact, not
+regressions: the checker keys on file+code+message, and its own "present at the pin, absent now"
+list shows the identical TS2769s at their pre-move `apps/web/src/timeline/...` paths — both files
+byte-identical since this change's base.
+
+**Non-coverage, stated plainly rather than discovered later:** this change ships no CI leg (P3/P6
+own CI); no installer, code signing, or auto-update (the Host boots from a dev-mode
+`electron .` and a built `dist/`, nothing more); no tarball/packed-install distribution (P3);
+the transcription Worker runs on the Host but the **browser migration probes are not claimed**
+(Assets find the transcription worker on the electron Host; the migration-probe suite that proves
+browser-stored projects migrate forward is a browser-store duty, exercised where the browser store
+lives); and **C7 headless parity is not ported** — `check-headless-semantic-result.mjs` has no
+electron leg and none was pretended at. What is claimed for the third Host is what the oracles
+actually ran: boot, store conformance and migrations, desktop composition, surface evidence,
+disposal dispatch, full parity, the agent ledger, and the C6 durable-reopen oracle — each with a
+self-logged exit code under `rasen/changes/s05-second-host/evidence/`.

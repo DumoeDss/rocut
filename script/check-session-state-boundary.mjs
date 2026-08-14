@@ -77,6 +77,7 @@ function trackedSources() {
 			"--exclude-standard",
 			"apps/web/src",
 			"apps/vite-example/src",
+			"apps/electron-host/src",
 			"packages/editor-classic/src",
 			"packages/editor-ports/src",
 			"packages/editor-contracts/src",
@@ -738,6 +739,10 @@ const PRODUCTION_ROOTS = [
 	"apps/web/src/app/editor/[project_id]/page.tsx",
 	"apps/web/src/app/projects/page.tsx",
 	"apps/vite-example/src/host/vite-editor-host.tsx",
+	// s05-second-host: the desktop Host's editor wrapper is a third production
+	// entry of the same class — its reachable graph must reach every required
+	// production module and stay clean of the same ownership regressions.
+	"apps/electron-host/src/host/electron-editor-host.tsx",
 ];
 
 const REQUIRED_PRODUCTION_MODULES = [

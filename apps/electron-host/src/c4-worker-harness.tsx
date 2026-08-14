@@ -46,8 +46,13 @@ export function C4WorkerHarness() {
 				onExitProject: () => {},
 				workerUrlRewriter: ({ request }) => {
 					observedRequest = request;
+					// Base-relative, the vite harness's own form: a root-absolute
+					// literal here trips check-runtime-asset-boundary's
+					// root-css-url rule (its `url(` pattern also matches
+					// `new URL(`), and composing from BASE_URL is the discipline
+					// that rule exists to keep anyway.
 					const fixtureUrl = new URL(
-						"/workers/c4-worker-fixture.js",
+						`${import.meta.env.BASE_URL}workers/c4-worker-fixture.js`,
 						window.location.origin,
 					);
 					rewrittenUrl = fixtureUrl.toString();

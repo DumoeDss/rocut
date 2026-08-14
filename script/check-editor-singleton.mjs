@@ -60,6 +60,9 @@ function sourceFilesUnder(directory) {
 const files = [
 	...sourceFilesUnder("apps/web/src"),
 	...sourceFilesUnder("apps/vite-example/src"),
+	// s05-second-host: the desktop Host's renderer is a third consumer of the
+	// session graph and is policed by the same singleton/construction rules.
+	...sourceFilesUnder("apps/electron-host/src"),
 	// S05 P1 Stage C moved the editor runtime graph (session owner, session
 	// factory, and everything else that used to live under apps/web/src/editor
 	// and its sibling domain folders) into @opencut/editor-classic. Without this

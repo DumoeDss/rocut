@@ -203,7 +203,7 @@
 
 ## 9. Checker audit close-out and documentation
 
-- [ ] 9.1 Produce the per-checker audit table (P1 task 2.4 precedent) covering **every runnable
+- [x] 9.1 Produce the per-checker audit table (P1 task 2.4 precedent) covering **every runnable
       `script/check-*.mjs`**: "scope follows the source" + the edit made, or "deliberately
       Host-scoped" + the reason. Predicted classifications to verify, not assume:
       `no-elftia-import` auto-covers (its enumeration is repo-wide — confirm its file count grew
@@ -212,23 +212,23 @@
       (the app's own `typecheck` is its gate); singleton/runtime-asset/headless checkers audited
       individually. Silence per checker is not acceptable. Commit as
       `evidence/group-9-checker-scope-audit.md`.
-- [ ] 9.2 Extend `check-host-composition.mjs` with the third composition root: assert the electron
+- [x] 9.2 Extend `check-host-composition.mjs` with the third composition root: assert the electron
       root constructs one stable `FilesystemProjectStore` and final-overrides the inherited
       reference store — the rule's intent ("each production Host constructs one stable durable
       store") generalized past `BrowserProjectStore`. Re-run green.
-- [ ] 9.3 Run **every runnable static checker** and confirm all green, including
+- [x] 9.3 Run **every runnable static checker** and confirm all green, including
       `check-distributable-boundary.mjs` with `no-desktop-app` intact and both boundary controls.
       Any red is either fixed or recorded with a named pre-existing cause — none is silently
       waived.
-- [ ] 9.4 Frozen-signature control: diff the public surfaces frozen by S03+S04 (the
+- [x] 9.4 Frozen-signature control: diff the public surfaces frozen by S03+S04 (the
       premove-baseline `frozen-signature-*.diff` method from P1's evidence) against this change's
       base — zero differences. Pressure to change one would have been a `failed` finding returned
       to the contract, not a patch.
-- [ ] 9.5 Update `BOUNDARIES.md`: a third-consumer section (the electron Host, its owned ports,
+- [x] 9.5 Update `BOUNDARIES.md`: a third-consumer section (the electron Host, its owned ports,
       the census before/after), the checker audit table's summary, and the non-coverage statement
       (no CI leg — P3/P6; no installer/signing; no tarball install — P3; transcription worker and
       browser migration probes not claimed; C7 headless not ported).
-- [ ] 9.6 Spec-falsification sweep: name which governance-spec §3 groups this change advanced
+- [x] 9.6 Spec-falsification sweep: name which governance-spec §3 groups this change advanced
       (§3.3 fully; §3.9's `apps/desktop` exclusion and frozen-signature survival re-proven;
       §3.2's harness widened to a third Host without moving behaviour) and which it deliberately
       left untouched, in the honest register prior children used.

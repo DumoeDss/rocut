@@ -23,6 +23,11 @@
 			"classification": "lifecycle-effect"
 		},
 		{
+			"path": "apps/electron-host/src/project-picker.tsx",
+			"count": 1,
+			"classification": "lifecycle-effect"
+		},
+		{
 			"path": "packages/editor-classic/src/actions/use-editor-actions.ts",
 			"count": 1,
 			"classification": "controller-or-event"

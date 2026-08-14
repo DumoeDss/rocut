@@ -62,6 +62,13 @@ function isEditorPackageModule(moduleId) {
  */
 const SCAN_ROOTS = [
 	"apps/web/src",
+	// s05-second-host: the desktop Host's renderer owns its runtime-resource
+	// adapter in Host territory (apps/electron-host/src/host/
+	// electron-runtime-resources.ts) rather than through a package-side
+	// adapter, so the direct-acquisition scan must walk that root too; the
+	// adapter carries the same exact construct exemptions browser-runtime.ts
+	// holds, for the same reason.
+	"apps/electron-host/src",
 	"packages/editor-classic/src",
 	"packages/editor-ports/src",
 ];
@@ -221,12 +228,50 @@ const CONSTRUCT_EXEMPTIONS = new Map([
 		],
 	],
 	[
+		// s05-second-host: the desktop Host's owned adapter holds the same
+		// three constructs with the same meaning — the Worker/AudioContext/
+		// object URL this Host owns are constructed by its own runtime role,
+		// not acquired around the session seam.
+		"apps/electron-host/src/host/electron-runtime-resources.ts",
+		[
+			{
+				rule: "no-direct-worker",
+				match: "new Worker(",
+				why: "the desktop Host's runtime constructs the Worker it owns",
+			},
+			{
+				rule: "no-direct-audio",
+				match: "new AudioContext(",
+				why: "the desktop Host's runtime constructs the AudioContext it owns",
+			},
+			{
+				rule: "no-direct-object-url",
+				match: "URL.createObjectURL(",
+				why: "the desktop Host's runtime owns its object URL construction",
+			},
+		],
+	],
+	[
 		"apps/web/src/editor/host/c4-next-runtime-probe.tsx",
 		[
 			{
 				rule: "no-direct-timer",
 				match: "window.setTimeout(",
 				why: "Host-only readiness probe outside the editor session graph",
+			},
+		],
+	],
+	[
+		// s05-second-host: the desktop C4 evidence harness waits one macrotask
+		// before reading session.resources.inspect() because release()
+		// bookkeeping defers its increment behind an await; the exemption is
+		// this exact settle, not a licence for harness timers generally.
+		"apps/electron-host/src/c4-worker-harness.tsx",
+		[
+			{
+				rule: "no-direct-timer",
+				match: "setTimeout(",
+				why: "evidence harness settles the release bookkeeping's deferred increment before reading the durable report",
 			},
 		],
 	],

@@ -792,3 +792,112 @@ over-strict `constructorName` equality the contract explicitly deprecates)
 — each fixed against observed evidence, never by weakening a check below the
 vite gate's own bar. The passing run is the seventh; its log is the committed
 one.
+
+## Group 9 — Checker audit close-out, frozen signatures, documentation (tasks 9.1–9.6)
+
+**9.2 — host-composition generalized before the audit that cites it.** The
+checker's HOST_ROOTS string list became a HOSTS array of
+`{path, durableStore, identityKey}`; the two rules parameterized to
+`stable-explicit-durable-store` / `explicit-durable-identity`; three desktop
+negative-control fixtures added (let-instead-of-const, identity removed,
+final-override). The rule's intent — each production Host constructs one
+stable durable store and final-overrides the inherited reference store — now
+reads class-agnostic and is proven for `BrowserProjectStore`/`storageIdentity`
+twice and `FilesystemProjectStore`/`identity` once. 3 roots, 831 production
+modules, negative control 15/15.
+
+**9.3 — the sweep, with every nonzero dispositioned by name.** 27 checkers +
+type-baseline, each with a logged exit code
+(`evidence/logs/group-9-all-checkers.log`), plus the follow-ups the sweep
+could not carry: `check-asset-manifest.mjs` against a live IPv4-bound preview
+server (298 entries, MIME + bytes + SHA-256, exit 0 — note the first attempt
+exited 2 twice: vite preview binds `[::1]` only by default and the checker
+fetches `127.0.0.1`), and `check-package-boundary.mjs`'s both controls
+(negative 14/14 including the electron-root deep-import probe, converse 13/13
+including the legal electron-root entry import). Green: 22. Nonzero, each
+with a named cause:
+
+- `check-type-baseline` (1): the two S01-regression FAIL rows are P1's move
+  artifact. The checker keys on file+code+message; its own "present at the
+  pin, absent now" list shows the identical TS2769s at their pre-move
+  `apps/web/src/timeline/...` paths (pin `cf5e79e9`). Both files
+  byte-identical since this change's base — `git diff 66add22f` is empty on
+  them. This change cannot have produced them and does not pretend to fix
+  them.
+- `check-emitted-runtime-assets` (1): Next-output red
+  (`relative-next-static-escape` in `static/media/worker.dd71b7fd.ts`). The
+  `.next` tree was built 2026-08-14 12:23, nine hours before this change's
+  base commit `66add22f` (21:24); the checker is byte-unchanged since base;
+  this change never builds `apps/web`. The red existed at the branch point
+  with the same bytes.
+- `check-resolution-equivalence` (1): fail-closed by design — it verifies
+  staged import-specifier rewrites and exits 1 ("nothing was verified") when
+  the staged diff contains none. This change is all-additive (+77 tracked
+  files, 0 removed) and rewrites no specifier.
+- `check-headless-graph` / `check-headless-semantic-result` (2 each):
+  usage-gated harnesses (explicit build coordinates; two headless report
+  JSONs). No bare form exists to sweep; their duties are gated at
+  check-build-structure (electron graph, 23 assertions, Group 8) and are
+  explicitly not claimed for C7 headless respectively.
+
+**The widening caught a defect in this change's own mirror.** Adding the
+electron Host root to `check-runtime-asset-boundary.mjs` made its root-css-url
+rule fire on `apps/electron-host/src/c4-worker-harness.tsx`: the harness built
+its fixture URL from a root-absolute literal
+(`new URL("/workers/c4-worker-fixture.js", window.location.origin)`). The
+rule's regex matches `new URL(` case-insensitively — not a false positive but
+the composition discipline the rule exists to keep. Fixed to the vite twin's
+form (`${import.meta.env.BASE_URL}workers/c4-worker-fixture.js` composed
+against `window.location.origin`), dist rebuilt
+(`VITE_R2_BUILD_MARKER=s05-electron-20260815`, REAL_EXIT_CODE:0). The fix was
+made in the source, not by weakening the rule.
+
+**9.4 — frozen signatures: zero differences.** All four surfaces frozen by
+S03+S04 (transaction contract barrel, engine, ports barrel, Surface embedding
+types) byte-compared against this change's base `66add22f` via
+`git show | cmp` (stat-cache-immune). All four IDENTICAL — no diff artifacts
+exist because there are no diffs. See
+`evidence/frozen-signature/README.md`. The `failed` condition never arose.
+
+**9.1 — the audit.** All 27 checkers classified, no silence:
+`evidence/group-9-checker-scope-audit.md`. Task 9.1's three predictions
+verified rather than assumed (no-elftia-import auto-cover via census growth;
+distributable stays Vite-graph-scoped with the electron graph gated by
+check-build-structure; type-baseline stays apps/web-scoped).
+
+**9.5 — BOUNDARIES.md §12.** Third-consumer section: the electron Host's
+owned surface (33 files), the census (2299 → 2376 tracked, +77, 0 removed),
+the audit summary, and the non-coverage statement (no CI leg — P3/P6; no
+installer/signing; no tarball install — P3; browser migration probes not
+claimed; C7 headless not ported).
+
+**9.6 — spec-falsification sweep.** Which governance-spec §3 groups this
+change advanced, and which it deliberately left untouched:
+
+- **§3.3 advanced fully** — a third Host now consumes the frozen packages
+  through their declared entries alone; the store seam proved composable past
+  the browser mechanism (a filesystem-backed `ProjectStore` behind the same
+  conformance suite), and the census numbers moved for the last time in this
+  Slice's direction.
+- **§3.9 re-proven, not merely remembered** — `apps/desktop` remains excluded
+  (never referenced by the new Host), and the frozen-signature survival is
+  now proven at a second base: the four surfaces byte-identical after a
+  whole Host was added on top of them.
+- **§3.2's harness widened without moving behaviour** — the parity
+  classifier, the C6 gate, and the agent-ledger rules all ran on the third
+  Host with their bars unchanged; the only edits to harness-adjacent code
+  were the page seam (Group 8's four parity hunks, assertions untouched) and
+  checker scan-set widening, never a threshold or a rule's string.
+- **Deliberately untouched:** §3.4/§3.5's CI and distribution stories (no CI
+  leg, no installer, no tarball — P3/P6); C7's headless parity (not ported,
+  not claimed); the browser migration probes (a browser-store duty); the
+  Surface's own sources (the third Host embeds the Surface, it does not edit
+  it); and the parity classifier (untouchable by dispatch, and untouched —
+  the electron's parity rows came out semantically clean, no envelope
+  entries needed).
+
+Also worth recording from this group: the sweep's first incarnation as a
+`/tmp` script file vanished entirely (exit 0, no log anywhere — script-file
+execution resolves `/tmp` differently than inline commands on this machine);
+the rerun was inline with a repo-local log, which is the form the evidence
+file preserves.

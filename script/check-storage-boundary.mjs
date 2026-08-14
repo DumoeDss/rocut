@@ -19,6 +19,13 @@ const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SOURCE_ROOTS = [
 	"apps/web/src",
 	"apps/vite-example/src",
+	// The desktop Host's renderer is in the browser-mechanism inventory too
+	// (s05-second-host): its durable store is IPC-to-main by design, so the
+	// scan today finds nothing there — but a future localStorage/indexedDB use
+	// in that renderer must fail here exactly as it would in a browser Host.
+	// Its store *composition* rules live in check-host-composition.mjs, whose
+	// durable-store rule was generalized past BrowserProjectStore.
+	"apps/electron-host/src",
 	"packages/editor-classic/src",
 	"packages/editor-ports/src",
 ];
