@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useEffect, useId, useRef } from "react";
 import { storesForSession } from "../../editor/runtime/session-stores";
 import { useOptionalEditorSession } from "../../editor/session/editor-session-provider";

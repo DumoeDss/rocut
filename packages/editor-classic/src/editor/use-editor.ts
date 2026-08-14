@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useMemo, useRef, useSyncExternalStore } from "react";
 import type { EditorCore } from "../core";
 import { editorForSession } from "./runtime/session-core-owner";

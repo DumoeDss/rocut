@@ -22,6 +22,7 @@
     "./runtime": "./src/runtime/index.ts",
     "./browser": "./src/browser/index.ts",
     "./storage": "./src/storage/index.ts",
+    "./storage/conformance": "./src/storage/conformance.ts",
     "./project": "./src/project/index.ts",
     "./timeline": "./src/timeline/index.ts",
     "./renderer": "./src/renderer/index.ts",
