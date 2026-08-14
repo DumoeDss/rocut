@@ -642,6 +642,21 @@ all 26 were audited rather than force-fitting the stale count. `check-type-basel
 own dedicated task (2.5) and is excluded from the table below for that reason, not because it was
 skipped.
 
+**The count is 27 as of HEAD, not 26 — two different, both-correct measurements at two different
+timestamps, not a contradiction.** Task 2.4's audit ran before Stage A (Group 3) moved any source.
+Stage A's own commit (`772e6ca5`) added `script/check-resolution-equivalence.mjs` — the design-E8
+specifier-rewrite oracle task 6.1 exercises — which did not exist yet when 2.4 counted 26. Task
+8.5's later full-sweep explicitly recorded "all 27 `script/check-*.mjs` checkers accounted for",
+and `ls script/check-*.mjs` against the current tree still returns 27. `check-resolution-
+equivalence.mjs` is deliberately absent from the table below: it was never in 2.4's audited set,
+and its scan mechanism (probing `HEAD` for a rewritten specifier's pre-rewrite target) has no
+`apps/web/src`-vs-`packages/*/src` literal-path scope of the kind this table classifies — it is
+closer to bucket A in spirit (its subject follows whatever is currently staged, not a hardcoded
+root) but was not run through 2.4's classification process, so it is recorded here rather than
+silently folded into a bucket count it was never audited into. State one number with its as-of
+point: **26 at task 2.4 (pre-Stage-A), 27 at task 8.5 and at HEAD.** The table below is the 2.4
+snapshot and is not restated for the 27th checker; treat 27 as the ship-relevant figure.
+
 Three buckets, plus the checkers with no `apps/web/src` vs. `packages/*/src` distinction at all:
 
 - **A — scope follows the source, fixed at audit time.** A general discovery mechanism
@@ -702,3 +717,90 @@ carried forward for **P2**: a fifth Host means a fifth opportunity for one of th
 independent implementations to drift from the others, and the shared-helper extraction is now
 buildable against a settled, proven form. Full per-checker audit narrative and the count-discrepancy
 account: `rasen/changes/s05-package-extraction/evidence/group-2-checker-scope-audit.md`.
+
+---
+
+## 10. Blocker: the vite Host was non-interactive, and every gate this child has said green
+
+This is **P1's own Blocker** — distinct from and unrelated to P0's D-8 (a fabricated evidence-file
+transcript in P0's own review record, archived separately at
+`rasen/changes/archive/2026-08-13-s05-package-boundary-freeze/evidence/review-report.md`). D-8
+belongs to P0's record and is not restated here; this section is what actually blocked P1.
+
+### Symptom
+
+The parity spec's editing scenario, run against the post-move vite Host: **all ten interactions
+failed**, a 12.2-minute run, against the Next Host's 41.0-second pass on the identical scenario.
+The `Select Main Track track` button resolved to `HIDDEN` 589 times across the run; the timeline
+reported empty (`no timeline clip whose label contains ... (found: )`); the timecode never left
+`00:00:00:00`. This is not a partial or flaky result — the editor could not be interacted with at
+all.
+
+### Root cause
+
+The Tailwind utility `.right-0{right:0}` was **entirely absent** from the CSS bundle the vite
+example builds and serves, confirmed by an exhaustive literal search of the served file, content-
+hash matched to the `<head>` captured in the failing run's Playwright trace.
+
+**Mechanism:** the Main Track row div carries an inline height but no inline width — its width
+comes solely from `right:0; left:0` stretch-to-fill (CSS2.1 §10.3.7). With `right` never applying,
+the box degrades to shrink-to-fit sizing, whose only in-flow content is a `width:100%` child; that
+circular percentage resolves to ~0 and cascades into the button as a 0×0 box, which Playwright's
+actionability check correctly reports as hidden. The failure is row-scoped rather than wholesale
+because every ancestor above that row takes its critical dimension from a React inline style
+(JS-computed, CSS-independent), while this one div depends entirely on a Tailwind class that had
+silently stopped compiling.
+
+**Actual cause:** `apps/vite-example/src/styles.css` line 25, `@source "../../web/src"` — correct
+before this child (all 863 editor files lived there) — was invalidated the moment Stage C's
+`git mv` relocated the source to `packages/editor-classic/src`. The sibling `@import` for
+`surface.css` on line 3 of the same file *was* updated for the move; the `@source` on line 25 was
+not. Tailwind v4's stale-`@source` failure mode is **partial, not total**: content still reachable
+through the working `@import` chain kept compiling, so most utilities were unaffected and the gap
+was invisible until a utility whose only occurrence sat outside that reachable route was dropped —
+`right-0` (used at `packages/editor-classic/src/timeline/components/index.tsx:818`, among other
+call sites) was that utility.
+
+**Attribution correction, recorded honestly:** the line predates this child (traced to `05befb57`),
+and it is tempting to frame this as a pre-existing defect the move only surfaced. That framing is
+wrong. The line is old; the *wrongness* is new, and it is this child's — a previously-correct
+`@source` directive that this child's own `git mv` invalidated, missed because the adjacent
+`@import` in the same file was updated and this directive was not.
+
+**Pattern instance:** the third occurrence in this child of the predecessor's (P0's) parting
+lesson — "after any structural fix, sweep for sibling assumptions at every level of abstraction,
+not just the one call site." The prior two: package names updated with arity literals left behind,
+and matching logic updated with its message text left behind (both in Group 8's checker-triage
+work). This third instance sits one level of abstraction further out than the first two — not a
+literal inside a script, but a directive inside a CSS file — and is the reason the "sweep siblings"
+discipline has to include build-pipeline configuration, not only source and test literals.
+
+### Fix
+
+Commit `84dfc088` — one line, `@source "../../web/src"` → `@source
+"../../../packages/editor-classic/src"`. Rejected alternatives, both wrong-layer: `inset-x-0` in
+the failing `className` (fixes the one test and leaves 7+ other `right-0` call sites silently
+broken, and is a source edit a behaviour-preserving refactor must not make) and a Tailwind
+safelist (papers over a build defect this child introduced rather than fixing it).
+
+### Fix verified
+
+Rebuilt bundle grew **35,916 → 123,113 bytes (3.4×)** — independently confirmed twice (the
+diagnosis record and a second read by another reviewer), superseding this child's own commit
+message, which recorded 123,105 and is the less-corroborated of the two figures.
+`.right-0{right:calc(var(--spacing,.25rem) * 0)}` now present, 3 occurrences. A full utility-set
+diff against the Next Host's production bundle found **918 vs. 1063 classes**, exactly one
+asymmetric entry (a `next/font` CSS-module artifact expected to differ between the two Hosts) —
+confirming `right-0` was not the only utility the coverage gap had been dropping, and that the fix
+closed the gap rather than papering over its one detected symptom.
+
+### The finding that must not get lost
+
+This defect was **invisible to every gate this child has**: all 27 static checkers (§9), the type
+baseline, `check-resolution-equivalence.mjs`, and `bun test` were green over a Host whose editor
+could not be clicked at all. Only the browser-level parity oracle caught it — and only because the
+run's own log was read instead of the harness's background-task completion status, which reported
+this same failing run as exit code 0 (a separately-tracked harness defect, not a project defect).
+This is the concrete, measured justification for spec §3.2 naming the parity fixture as *the*
+oracle for this child, not one signal among several: every other signal available to P1 was green
+at the same moment the editor was entirely non-interactive.
