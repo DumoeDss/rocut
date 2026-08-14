@@ -1335,7 +1335,15 @@
       local-only, consistent with the standing constraint that the portfolio delivers once, at the
       parent, after P2-P7 also complete. The exact resulting commit hash is recorded in the final
       report to team-lead rather than here, to avoid a self-referential edit.
-- [ ] 10.5 The moment the review loop goes clean, write `{"kind":"standDown"}` to every parked
+- [x] 10.5 The moment the review loop goes clean, write `{"kind":"standDown"}` to every parked
       worker's `<changeRoot>/signals/<role>.json` and confirm `signals/.state/` is empty **before**
       planning the archive. A live heartbeat inside the change directory makes archive ESTALE
       failures unrecoverable by retry.
+      Done — verified no-op, not skipped: `rasen status --project rocut --change s05-package-extraction
+      --json` resolves `changeRoot` to `rasen/changes/s05-package-extraction`; `ls` of that directory
+      shows no `signals/` subdirectory at all (only `.openspec.yaml`, `design.md`, `evidence/`,
+      `proposal.md`, `specs/`, `tasks.md`). This whole Slice was implemented solo, without spawning
+      or parking any sub-worker against this change, so no `signals/<role>.json` was ever written and
+      there is nothing to stand down. `signals/.state/` is trivially empty because the parent
+      directory doesn't exist — no live heartbeat is sitting in the change directory to cause an
+      archive ESTALE failure.
