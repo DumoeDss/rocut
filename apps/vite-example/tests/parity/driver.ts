@@ -87,7 +87,7 @@ export async function importFixtures(
 		// flow, unchanged.
 		const input = page.locator('input[type="file"]').first();
 		await input.evaluate((el) => {
-			el.multiple = true;
+			(el as HTMLInputElement).multiple = true;
 		});
 		await input.setInputFiles(files);
 		return;
