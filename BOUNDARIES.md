@@ -851,8 +851,8 @@ runs, not discovered by a second round of test failures after.
 
 `apps/electron-host` is now the third declared consumer of the package layers, beside the vite
 example and the Next app. Its owned surface is 33 tracked files (18 under `src/`, 15 scaffolding
-and proof scripts), all-additive: the repo census moves 2299 → 2376 tracked files across this
-change (+77, 0 removed — the Group 1 spike was deleted before any commit, so nothing was ever
+and proof scripts), all-additive: the repo census moves 2299 → 2380 tracked files across this
+change (+81, 0 removed — the Group 1 spike was deleted before any commit, so nothing was ever
 subtracted). The Host owns, and nothing else owns: its composition root
 (`host/electron-host-config.ts`, which constructs one module-stable `FilesystemProjectStore` over
 an IPC store bridge and final-overrides the inherited reference store), its viewport wrapper
@@ -894,3 +894,14 @@ electron leg and none was pretended at. What is claimed for the third Host is wh
 actually ran: boot, store conformance and migrations, desktop composition, surface evidence,
 disposal dispatch, full parity, the agent ledger, and the C6 durable-reopen oracle — each with a
 self-logged exit code under `rasen/changes/s05-second-host/evidence/`.
+
+**Capture rule (learned the hard way, review round 1):** Playwright's
+`_electron.launch` under `DEBUG=pw:channel` echoes its full launch message —
+including **the entire inherited process environment** — into the debug
+transcript. The Group 1 capture inherited the env wholesale and committed the
+transcript; the redacted follow-up commit fixed the file but not the history,
+and remediating that took a history rewrite (`evidence/rewrite-record.md`)
+before anything could ever be pushed. Two rules fall out: **future Electron
+evidence captures pass an explicit minimal `env` to `_electron.launch`**, and
+**a redaction commit never redacts history** — if credential bytes reach a
+commit, the fix is a rewrite (or rotation), not an amended file.

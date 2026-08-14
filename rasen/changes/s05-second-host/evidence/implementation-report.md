@@ -809,13 +809,17 @@ modules, negative control 15/15.
 **9.3 — the sweep, with every nonzero dispositioned by name.** 27 checkers +
 type-baseline, each with a logged exit code
 (`evidence/logs/group-9-all-checkers.log`), plus the follow-ups the sweep
-could not carry: `check-asset-manifest.mjs` against a live IPv4-bound preview
-server (298 entries, MIME + bytes + SHA-256, exit 0 — note the first attempt
-exited 2 twice: vite preview binds `[::1]` only by default and the checker
-fetches `127.0.0.1`), and `check-package-boundary.mjs`'s both controls
-(negative 14/14 including the electron-root deep-import probe, converse 13/13
-including the legal electron-root entry import). Green: 22. Nonzero, each
-with a named cause:
+could not carry: `check-package-boundary.mjs`'s both controls (negative
+14/14 including the electron-root deep-import probe, converse 13/13
+including the legal electron-root entry import) and a live
+`check-asset-manifest.mjs` attempt. The committed log's 30 EXIT lines tally
+**23 zero / 7 nonzero**, each nonzero with a named cause below. The two
+`asset-manifest` exit-2 lines are the disclosed no-server attempts (vite
+preview binds `[::1]` only by default and the checker fetches
+`127.0.0.1`); the checker's committed exit-0 evidence is
+`evidence/logs/group-5-composition-evidence.log` §[C-retry] — the
+serve-dist stand-in on port 4199, 298 entries, PASS MIME + bytes +
+SHA-256, REAL_EXIT_CODE:0. The remaining nonzero:
 
 - `check-type-baseline` (1): the two S01-regression FAIL rows are P1's move
   artifact. The checker keys on file+code+message; its own "present at the
@@ -866,7 +870,7 @@ distributable stays Vite-graph-scoped with the electron graph gated by
 check-build-structure; type-baseline stays apps/web-scoped).
 
 **9.5 — BOUNDARIES.md §12.** Third-consumer section: the electron Host's
-owned surface (33 files), the census (2299 → 2376 tracked, +77, 0 removed),
+owned surface (33 files), the census (2299 → 2380 tracked, +81, 0 removed — corrected in review round 1, F3: the figure was captured at the Group 8 commit and went stale by its own landing),
 the audit summary, and the non-coverage statement (no CI leg — P3/P6; no
 installer/signing; no tarball install — P3; browser migration probes not
 claimed; C7 headless not ported).
@@ -941,3 +945,76 @@ minified-constructor diagnostic reads `Tet` and the host-label diagnostic
 subagents, no `rasen agent wait`), so there is no signal file of mine to
 write and `signals/.state/` concerns only workers the lead parked. The box
 is left for the lead.
+
+## Security incident — credential capture in the Group 1 debug log (disclosed per review round 1, F2)
+
+What happened: the Group 1 launch-debug transcript was captured under
+`DEBUG=pw:channel`, and Playwright's channel debug echoes the full
+`SEND> electron.launch` message including **the entire inherited process
+environment**. The committed copy was redacted to diagnostic content only,
+but the redaction landed as a follow-up commit (originally `e226b109`), so
+the unredacted blob — carrying at least seven live values under the keys
+`ANTHROPIC_API_KEY#`, `ANTHROPIC_API_KEY2`, `ANTHROPIC_AUTH_TOKEN`,
+`ANTHROPIC_AUTH_TOKEN#`, `ANTHROPIC_AUTH_TOKEN3`, `OPENAI_API_KEY`,
+`FIRECRAWL_API_KEY` — remained reachable in local history (blob `81cbbc85`,
+`evidence/logs/gate-1-launch-debug.log` at the original first commit). The
+branch was never pushed (verified: no remote ref contained the commit), so
+nothing left this machine.
+
+Remediation: review round 1's F1 — a content-identical history rewrite
+collapsing the first commit and its redaction into one clean commit whose
+blob is natively redacted. All four mandated post-verifications passed and
+are recorded verbatim in `evidence/rewrite-record.md`: final tree unchanged
+(empty diff against the pre-rewrite head), the credential blob unreachable
+from any ref, commit count 12 → 11 beyond base, boundary checker green.
+
+Root cause and the rule that falls out: `_electron.launch` with an inherited
+env under a channel debug flag dumps the whole environment into the
+transcript. **Future Electron evidence captures pass an explicit minimal
+`env` to `_electron.launch`, and a redaction commit never redacts history** —
+if credential bytes reach a commit, the remediation is a rewrite or rotation,
+not an amended file. The rule is also recorded in BOUNDARIES.md §12 and at
+the capture site in `evidence/gate-1-desktop-substrate.md`.
+
+## Review round 1 fixes (per-finding disposition)
+
+- **F1 (Blocker) — fixed by history rewrite.** cb70b8c5+e226b109 collapsed
+  into `8d3de9c6` (parent `66add22f`, tree identical to the redacted state,
+  natively-redacted blob `c44c0c94`); the ten later commits replayed
+  content-identically (zero conflicts). Verifications (a)-(d) recorded in
+  `evidence/rewrite-record.md`; the one stale hash reference outside
+  historical documents (`frozen-signature/README.md`) updated to the new
+  first-commit hash. `review-report.md` and `rewrite-record.md` retain their
+  old hashes deliberately — they are historical records of the pre-rewrite
+  delta and the rewrite itself.
+- **F2 (Major) — fixed.** Incident section above; capture rule added to
+  BOUNDARIES.md §12; incident note added to
+  `evidence/gate-1-desktop-substrate.md`.
+- **F3 (Minor) — fixed.** Census re-derived with the documented method at the
+  rewritten HEAD: 2299 → 2380 tracked files, +81, 0 removed (matches the
+  reviewer's measurement). BOUNDARIES.md §12 and this report's §9.5 echo both
+  corrected; per-commit additivity unchanged.
+- **F4 (Minor) — fixed.** `specs/sdk-desktop-reference-host/spec.md`'s
+  migration requirement and its scenario THEN-clause restated to the actual
+  mechanism: the store sequences the runner's published transform chain and
+  version constant itself, all-or-nothing (the published runner opens Indexed
+  directly and cannot run against a filesystem). Scenario headings verbatim;
+  `rasen validate s05-second-host --strict --project rocut --json` green
+  (1/1 passed, REAL_EXIT_CODE:0). The spec file remains untracked (lead's
+  sync domain).
+- **F5 (Trivial) — accepted-known, with the existing comment as
+  justification.** The single-cast form (`"electron" as "next" | "vite"`)
+  does not compile — disjoint literal unions require the `as unknown as`
+  crossing (TS2352 otherwise) — and widening the harness union would modify
+  the file task 6.1 freezes unmodified. The cast is value-truthful (the
+  ledger records `host: "electron"`; the harness does not branch on the
+  prop). Typecheck green either way (REAL_EXIT_CODE:0).
+- **F6 (Trivial) — fixed.** CSP header added to the scheme handler's 404
+  (`notFound()`) and 403 responses in `electron/main.cjs`; boot gate re-run:
+  `BOOT PROOF PASSED`, `REAL_EXIT_CODE:0`, zero console errors
+  (`evidence/logs/review-r1-boot-gate-csp-error-responses.log`).
+- **F7 (Trivial) — fixed.** §9.3's headline now tallies with its own log
+  (23 zero / 7 nonzero across the 30 EXIT lines) and points explicitly at
+  `group-5-composition-evidence.log` §[C-retry] for the asset-manifest
+  exit-0 evidence; the two asset-manifest exit-2 lines are named as the
+  disclosed no-server attempts.

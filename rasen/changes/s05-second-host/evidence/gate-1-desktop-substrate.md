@@ -107,3 +107,19 @@ manifest; tracked-tree deltas are exactly `package.json` (trustedDependencies)
 and `bun.lock` — both 1.1 artifacts, not spike artifacts. Verified with
 `git status --porcelain` (only ` M bun.lock` outside untracked paths) and
 `ls -R apps/electron-host`.
+
+## Incident note (review round 1, F1/F2 — added post-review)
+
+`gate-1-launch-debug.log` was captured under `DEBUG=pw:channel`, and
+Playwright's channel debug echoes the full `SEND> electron.launch` message —
+including **the whole inherited process environment**. The original capture
+therefore wrote live credential values (`ANTHROPIC_API_KEY#`,
+`ANTHROPIC_API_KEY2`, `ANTHROPIC_AUTH_TOKEN`, `ANTHROPIC_AUTH_TOKEN#`,
+`ANTHROPIC_AUTH_TOKEN3`, `OPENAI_API_KEY`, `FIRECRAWL_API_KEY`) into the log
+before it was committed. The committed copy is redacted to the diagnostic
+content only (executablePath, args); the redaction originally landed as a
+follow-up commit, which left the unredacted blob reachable in local history —
+remediated by the review-round-1 history rewrite (see
+`evidence/rewrite-record.md`; the first commit now carries the redacted bytes
+natively). Nothing was ever pushed. **Future Electron evidence captures pass
+an explicit minimal `env` to `_electron.launch`** — never the inherited one.

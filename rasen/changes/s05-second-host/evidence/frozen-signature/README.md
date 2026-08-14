@@ -8,7 +8,7 @@ diffs contain import-specifier rewrites). This change moved nothing, so the
 bar here is stricter: **zero differences**, byte-for-byte.
 
 Base commit: `66add22f` ("chore(rasen): archive s05-package-extraction") —
-the parent of this change's first commit `cb70b8c5`, i.e. the branch point of
+the parent of this change's first commit `8d3de9c6`, i.e. the branch point of
 `feat/s05-community-beta` before any s05-second-host work.
 
 Procedure (stat-cache-immune per the standing git lesson — `git diff` alone

@@ -93,7 +93,12 @@ function selectedEntry() {
 }
 
 function notFound() {
-	return new Response("not found", { status: 404 });
+	// Every scheme response carries the committed policy, including errors
+	// (spec: "every response under that scheme SHALL carry...").
+	return new Response("not found", {
+		status: 404,
+		headers: { "Content-Security-Policy": CSP },
+	});
 }
 
 /** `opencut://app/<path>` → the built renderer output (design E2/E5). */
@@ -115,7 +120,10 @@ function schemeHandler(request) {
 	const target = relative === "" ? "index.html" : relative;
 	const resolved = path.resolve(DIST_ROOT, target);
 	if (resolved !== DIST_ROOT && !resolved.startsWith(DIST_ROOT + path.sep)) {
-		return new Response("forbidden", { status: 403 });
+		return new Response("forbidden", {
+			status: 403,
+			headers: { "Content-Security-Policy": CSP },
+		});
 	}
 
 	let stat;
