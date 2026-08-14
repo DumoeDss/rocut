@@ -1,13 +1,14 @@
 {
-  "$comment": "Source-ownership declaration for the S05 P0 package-boundary freeze. Read by script/check-package-boundary.mjs. Matching is longest-prefix-wins over POSIX repo-relative paths; a directory entry can be overridden by a file entry beneath it. See rasen/changes/s05-package-boundary-freeze/design.md D2/D3/D4 for the measurements that produced this map.",
+  "$comment": "Source-ownership declaration for the S05 P0 package-boundary freeze. Read by script/check-package-boundary.mjs. Matching is longest-prefix-wins over POSIX repo-relative paths; a directory entry can be overridden by a file entry beneath it. See rasen/changes/s05-package-boundary-freeze/design.md D2/D3/D4 for the measurements that produced this map. Consumers (s05-second-host task 2.2) are objects { id, root, ownership? }: root is the POSIX repo-relative scan root (longest wins), and ownership \"map\" means files under the root are still resolved through the ownership map below (the web arrangement); without it, every file under the root belongs to the consumer id outright.",
   "layers": [
     "@opencut/editor-ports",
     "@opencut/editor-contracts",
     "@opencut/editor-classic"
   ],
   "consumers": [
-    "apps/web",
-    "apps/vite-example"
+    { "id": "apps/web", "root": "apps/web/src", "ownership": "map" },
+    { "id": "apps/vite-example", "root": "apps/vite-example" },
+    { "id": "apps/electron-host", "root": "apps/electron-host/src" }
   ],
   "shellPaths": [
     "apps/web/src/app",

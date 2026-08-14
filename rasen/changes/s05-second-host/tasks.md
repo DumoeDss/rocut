@@ -21,20 +21,20 @@
 
 ## 2. Oracle first: the boundary checker sees a third consumer before source lands
 
-- [ ] 2.1 Re-capture the live baseline census (design Context warns the P1-close figures may have
+- [x] 2.1 Re-capture the live baseline census (design Context warns the P1-close figures may have
       drifted): full `node script/check-package-boundary.mjs` output — files scanned, per-rule
       file counts, cross-package edges, `@opencut/*` specifiers examined — plus
       `--negative-control` and `--converse-control` results, and the type-baseline result. This is
       the before-half of every census comparison in this change.
-- [ ] 2.2 Add `apps/electron-host` to `packages/boundary.json`'s `consumers`, and change
+- [x] 2.2 Add `apps/electron-host` to `packages/boundary.json`'s `consumers`, and change
       `ownerOfPath()` / `packageAndConsumerSourceFiles()` / the edge-exclusion predicate in
       `script/check-package-boundary.mjs` to derive consumer root prefixes from the declared
       consumer list instead of the two hardcoded strings. No other behaviour change.
-- [ ] 2.3 Control run, before any Host source exists: the checker output must be byte-identical to
+- [x] 2.3 Control run, before any Host source exists: the checker output must be byte-identical to
       2.1's baseline (a declared consumer holding no files changes nothing observable), and both
       controls must still pass. Record the diff-proving transcript. A difference here means the
       derivation is not behaviour-preserving and blocks Group 3.
-- [ ] 2.4 Add an electron-consumer case to the in-memory control fixtures: the negative control
+- [x] 2.4 Add an electron-consumer case to the in-memory control fixtures: the negative control
       gains a deep import from a file under an (fixture) electron root that must fire
       `public-entry-only`; the converse control gains a declared-entry import from the same root
       that must stay silent. Re-run both controls.

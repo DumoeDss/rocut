@@ -43,7 +43,8 @@ In progress. Install transcript with REAL_EXIT_CODE: `evidence/logs/gate-1-insta
 
 ## Group 2 — oracle first: boundary checker sees a third consumer
 
-Baseline census captured before any checker edit or Host source (2026-08-15):
+**2.1 — baseline census** captured before any checker edit or Host source
+(2026-08-15):
 
 | measure | value |
 | --- | --- |
@@ -61,3 +62,44 @@ Transcripts: `evidence/census/baseline-*.txt`.
 Note: 1051/964/329/328/863 match the P1-close figures the handoff recorded; the
 handoff's no-elftia figure (1048) has drifted +3 with unrelated tree growth —
 recaptured live here, as the design's Context section instructed.
+
+**2.2 — consumer-root derivation.** `boundary.json`'s `consumers` are now
+objects `{ id, root, ownership? }`; `electron-host` is declared with root
+`apps/electron-host/src`. In `script/check-package-boundary.mjs` every literal
+consumer-root prefix was replaced by derivation from the declared list:
+`consumerEntries` / `consumerIds` / `consumerRootEntryOf` (longest-root-wins)
+/ `isUnderConsumerRoot` drive `ownerOfPath` (an `ownership: "map"` consumer
+keeps map resolution — web's arrangement unchanged; otherwise the consumer id
+owns its root outright), `layerIndex` (a consumer sits above every package
+layer), `acyclicDirectionRule`'s scope / resolved-target filter /
+consumer↔consumer exclusion, `reactFreeBaseRule`'s scope and resolved-target
+check, `packageAndConsumerSourceFiles` (threaded through
+`publicEntryOnlyRule` and `scan()`), `guardSelfConsistency`, and
+`guardUnownedFiles` (every declared consumer root's `.ts`/`.tsx` files must
+resolve to an owner; a directly-owned root never produces an unowned file, so
+the guard's bite is web-unchanged and new-consumer-neutral). The two control
+fixtures' boundaries (`FOURTH_PACKAGE_BOUNDARY`, `RENAMED_DIR_BOUNDARY`)
+spread `FIXTURE_BOUNDARY` and override only `layers`, so they inherit the
+object form automatically.
+
+**2.3 — byte-identity control, before any Host source exists.** Captured on
+the same tree immediately before the first checker edit
+(`evidence/census/control-pre-edit.txt`, 1049 files — the 2.1 baseline minus
+the two deleted gate-1 spike files, the only tree delta between the two
+captures) and immediately after the last edit
+(`control-post-edit.txt`): `diff` exit 0 — **byte-identical**, and both
+controls clean (`control-negative-post-edit.txt`, `control-converse-post-edit.txt`,
+REAL_EXIT_CODE 0 each). A declared consumer holding no files changed nothing
+observable; the derivation is behaviour-preserving.
+
+**2.4 — electron fixture cases.** `FIXTURE_BOUNDARY` consumers became the
+three objects (web map-owned; vite-example and electron-host direct). New
+negative case: `apps/electron-host/src/violation11.ts` deep-importing
+`@opencut/editor-ports/internal/secret` — `public-entry-only` **caught**. New
+converse case: `apps/electron-host/src/consumer-ok.ts` importing the declared
+`@opencut/editor-ports/host` — **silent**. Both controls re-run clean
+(`control-negative-with-electron.txt`, `control-converse-with-electron.txt`,
+REAL_EXIT_CODE 0 each), and the live checker re-diffed byte-identical after
+the fixture additions (fixtures are in-memory control-mode data; the live
+path never touches them).
+

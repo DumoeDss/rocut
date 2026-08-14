@@ -461,17 +461,73 @@ function resolveOwner(resolvedPath, boundary) {
 const PACKAGE_SOURCE_PATH_PATTERN = /^packages\/([^/]+)\/src\//;
 
 /**
- * `apps/vite-example` files are consumer-owned by construction; `apps/web/src`
- * files resolve through `boundary.json`. A `packages/<dir>/src/` file is
- * owned by whichever **discovered** manifest's `dir` matches — never a
- * hardcoded package list, the same discover-don't-hardcode move
- * `discoverPackageDirs` already makes (BLOCKER-2), so a `packages/` file
- * whose directory carries no manifest is correctly unowned, not silently
- * assigned. Anything else is out of scope. (Task 2.1 / design E3(a).)
+ * Consumer roots are declared, not hardcoded (spec "Consumer roots are
+ * declared, derived, and visible"; s05-second-host task 2.2 / design E9).
+ * Each entry in `boundary.json`'s `consumers` names its own source root, and
+ * every consumer scan scope below traces to that list — adding a consumer is
+ * a boundary.json diff, after which its files are inside the scan by
+ * construction rather than by a later checker repair. A root declared with
+ * `"ownership": "map"` (web's pre-move source) resolves each file through
+ * the ownership map instead of claiming the root outright, exactly as the
+ * previous `apps/web/src/` literal did; every other root resolves directly
+ * to its consumer, as the previous `apps/vite-example/` literal did.
+ */
+function consumerEntries(boundary) {
+	const entries = [];
+	for (const consumer of boundary.consumers) {
+		if (typeof consumer !== "object" || consumer === null) {
+			throw new Error(
+				"check-package-boundary: boundary.json consumers entries must be objects { id, root } — refusing to guess a scan root",
+			);
+		}
+		const { id, root } = consumer;
+		if (typeof id !== "string" || typeof root !== "string" || !id || !root || root.startsWith("/")) {
+			throw new Error(
+				`check-package-boundary: consumer entry ${JSON.stringify(consumer)} needs a string id and a POSIX-relative root`,
+			);
+		}
+		entries.push({ id, root, ownership: consumer.ownership });
+	}
+	return entries;
+}
+
+function consumerIds(boundary) {
+	return consumerEntries(boundary).map((entry) => entry.id);
+}
+
+/** Longest declared root wins, mirroring `resolveOwner`'s prefix rule. */
+function consumerRootEntryOf(path, boundary) {
+	let best = null;
+	for (const entry of consumerEntries(boundary)) {
+		if (
+			(path === entry.root || path.startsWith(`${entry.root}/`)) &&
+			(best === null || entry.root.length > best.root.length)
+		) {
+			best = entry;
+		}
+	}
+	return best;
+}
+
+function isUnderConsumerRoot(path, boundary) {
+	return consumerRootEntryOf(path, boundary) !== null;
+}
+
+/**
+ * A file under a declared consumer root is owned by that consumer (a
+ * map-resolved root may still answer `null`, which the unowned-file guard
+ * refuses). A `packages/<dir>/src/` file is owned by whichever **discovered**
+ * manifest's `dir` matches — never a hardcoded package list, the same
+ * discover-don't-hardcode move `discoverPackageDirs` already makes
+ * (BLOCKER-2), so a `packages/` file whose directory carries no manifest is
+ * correctly unowned, not silently assigned. Anything else is out of scope.
+ * (Task 2.1 / design E3(a); root derivation per s05-second-host task 2.2.)
  */
 function ownerOfPath(path, boundary, manifests) {
-	if (path.startsWith("apps/vite-example/")) return "apps/vite-example";
-	if (path.startsWith("apps/web/src/")) return resolveOwner(path, boundary);
+	const consumer = consumerRootEntryOf(path, boundary);
+	if (consumer !== null) {
+		return consumer.ownership === "map" ? resolveOwner(path, boundary) : consumer.id;
+	}
 	const packageMatch = PACKAGE_SOURCE_PATH_PATTERN.exec(path);
 	if (packageMatch) {
 		const manifest = manifests?.find((m) => m.dir === packageMatch[1]);
@@ -484,7 +540,7 @@ function ownerOfPath(path, boundary, manifests) {
 function layerIndex(owner, boundary) {
 	const idx = boundary.layers.indexOf(owner);
 	if (idx !== -1) return idx;
-	if (boundary.consumers.includes(owner)) return boundary.layers.length;
+	if (consumerIds(boundary).includes(owner)) return boundary.layers.length;
 	return null;
 }
 
@@ -502,21 +558,21 @@ function isElftiaSpecifier(spec) {
 // ---------------------------------------------------------------------------
 
 /**
- * Excludes consumer↔consumer edges (`apps/web` ↔ `apps/vite-example`) entirely —
- * not just "same layer passes" but skipped outright — because
- * `check-host-composition.mjs` already owns that seam (design D2): "App↔app edges
- * are out of this checker's scope."
+ * Excludes consumer↔consumer edges (`apps/web` ↔ `apps/vite-example`, or any
+ * later declared pair) entirely — not just "same layer passes" but skipped
+ * outright — because `check-host-composition.mjs` already owns that seam
+ * (design D2): "App↔app edges are out of this checker's scope."
  */
 function acyclicDirectionRule({ files, boundary, manifests }) {
 	const violations = [];
 	// Task 2.1 (design E3(a)): scope widened with the `packages/<dir>/src/`
 	// branch — before any file moves this adds zero files (packages/ has no
 	// source yet), which is exactly what task 2.6's control re-run proves.
+	// s05-second-host task 2.2: the two consumer-root literals became the
+	// declared roots from `boundary.json` — same set today by construction.
+	const consumerSet = new Set(consumerIds(boundary));
 	const scope = files.filter(
-		(f) =>
-			f.path.startsWith("apps/web/src/") ||
-			f.path.startsWith("apps/vite-example/") ||
-			PACKAGE_SOURCE_PATH_PATTERN.test(f.path),
+		(f) => isUnderConsumerRoot(f.path, boundary) || PACKAGE_SOURCE_PATH_PATTERN.test(f.path),
 	);
 	let edgesExamined = 0;
 	for (const file of scope) {
@@ -529,16 +585,11 @@ function acyclicDirectionRule({ files, boundary, manifests }) {
 			if (!spec) return;
 			const resolved = resolveSpecifier({ spec, fromFile: file.path, manifests });
 			if (resolved === null) return;
-			if (
-				!resolved.startsWith("apps/web/src/") &&
-				!resolved.startsWith("apps/vite-example/") &&
-				!PACKAGE_SOURCE_PATH_PATTERN.test(resolved)
-			)
-				return;
+			if (!isUnderConsumerRoot(resolved, boundary) && !PACKAGE_SOURCE_PATH_PATTERN.test(resolved)) return;
 			const targetOwner = ownerOfPath(resolved, boundary, manifests);
 			if (targetOwner === null) return;
 			if (sourceOwner === targetOwner) return; // internal edge
-			if (boundary.consumers.includes(sourceOwner) && boundary.consumers.includes(targetOwner)) return;
+			if (consumerSet.has(sourceOwner) && consumerSet.has(targetOwner)) return;
 			edgesExamined += 1;
 			const sourceLayer = layerIndex(sourceOwner, boundary);
 			const targetLayer = layerIndex(targetOwner, boundary);
@@ -730,7 +781,10 @@ function reactFreeBaseRule({ files, boundary, manifests }) {
 		}
 		// Task 2.1 (design E3(a)): widened the same way acyclic-direction's scope
 		// was — adds zero files before any move, per task 2.6's control re-run.
-		if (!file.path.startsWith("apps/web/src/") && !PACKAGE_SOURCE_PATH_PATTERN.test(file.path)) continue;
+		// s05-second-host task 2.2: consumer-root literals became declared roots;
+		// a directly-owned consumer root never yields a base-layer owner, so the
+		// census is unchanged for consumers added after this edit.
+		if (!isUnderConsumerRoot(file.path, boundary) && !PACKAGE_SOURCE_PATH_PATTERN.test(file.path)) continue;
 		const owner = ownerOfPath(file.path, boundary, manifests);
 		if (!baseLayerNames.has(owner)) continue;
 		scanned += 1;
@@ -782,8 +836,9 @@ function reactFreeBaseRule({ files, boundary, manifests }) {
 				const resolved = resolveSpecifier({ spec, fromFile: file.path, manifests });
 				// Task 2.1 (design E3(a)): also follows a resolved target that lands
 				// in packages/, not only apps/web/src — adds zero reach before any
-				// move, per task 2.6's control re-run.
-				if (resolved && (resolved.startsWith("apps/web/src/") || PACKAGE_SOURCE_PATH_PATTERN.test(resolved))) {
+				// move, per task 2.6's control re-run. s05-second-host task 2.2:
+				// the literal became the declared consumer roots.
+				if (resolved && (isUnderConsumerRoot(resolved, boundary) || PACKAGE_SOURCE_PATH_PATTERN.test(resolved))) {
 					// D-6 (review round 3): was `=== boundary.layers[2]`, a single
 					// index literal that missed a legally-declared fourth layer's
 					// upward import from a manifest-clean base file. Now membership
@@ -865,12 +920,11 @@ function packagesSourceFiles(files) {
  * package the same way it will post-move, and the reviewer's own
  * reproduction used exactly such a file.
  */
-function packageAndConsumerSourceFiles(files) {
+function packageAndConsumerSourceFiles(files, boundary) {
+	// s05-second-host task 2.2: the two consumer-root literals became the
+	// declared roots from `boundary.json` — the same file set by construction.
 	return files.filter(
-		(f) =>
-			/^packages\/[^/]+\/src\//.test(f.path) ||
-			f.path.startsWith("apps/web/src/") ||
-			f.path.startsWith("apps/vite-example/"),
+		(f) => /^packages\/[^/]+\/src\//.test(f.path) || isUnderConsumerRoot(f.path, boundary),
 	);
 }
 
@@ -892,9 +946,9 @@ function subpathOf(match) {
 	return match[2] ? `.${match[2]}` : ".";
 }
 
-function publicEntryOnlyRule({ files, manifests }) {
+function publicEntryOnlyRule({ files, boundary, manifests }) {
 	const violations = [];
-	const scope = packageAndConsumerSourceFiles(files);
+	const scope = packageAndConsumerSourceFiles(files, boundary);
 	const entriesByPackage = manifestEntrySets(manifests);
 	const dirToName = new Map(manifests.map((m) => [m.dir, m.name]));
 	const specifierPattern = packageSpecifierPattern(manifests);
@@ -973,7 +1027,7 @@ function scan({ files, boundary, manifests }) {
 	const acyclic = acyclicDirectionRule({ files, boundary, manifests });
 	const elftia = noElftiaImportRule({ files });
 	const reactFree = reactFreeBaseRule({ files, boundary, manifests });
-	const publicEntry = publicEntryOnlyRule({ files, manifests });
+	const publicEntry = publicEntryOnlyRule({ files, boundary, manifests });
 	const reexport = noInternalReexportRule({ files, manifests });
 	return {
 		violations: [
@@ -1094,7 +1148,7 @@ function guardSelfConsistency(boundary) {
 	const problems = [];
 	for (const shellPath of boundary.shellPaths) {
 		const owner = resolveOwner(shellPath, boundary);
-		if (owner === null || !boundary.consumers.includes(owner)) {
+		if (owner === null || !consumerIds(boundary).includes(owner)) {
 			problems.push(`shell path "${shellPath}" resolves to owner "${owner ?? "none"}", not a declared consumer`);
 		}
 	}
@@ -1113,16 +1167,23 @@ function guardSelfConsistency(boundary) {
  * files (packages/ has no source yet), which task 2.6's control re-run
  * proves does not change the guard's behaviour today.
  */
+// s05-second-host task 2.2: the `apps/web/src` literal became every declared
+// consumer root. A directly-owned consumer root (vite-example, electron-host)
+// can never produce an unowned file under it — `ownerOfPath` returns the
+// consumer id outright — so the guard's bite is unchanged for new consumers,
+// and map-owned roots (web) behave exactly as before.
 function guardUnownedFiles(files, boundary, manifests) {
-	const webFiles = files.filter((f) => f.path.startsWith("apps/web/src/") && /\.(?:ts|tsx)$/.test(f.path));
+	const consumerTsFiles = files.filter(
+		(f) => isUnderConsumerRoot(f.path, boundary) && /\.(?:ts|tsx)$/.test(f.path),
+	);
 	const packageFiles = files.filter((f) => PACKAGE_SOURCE_PATH_PATTERN.test(f.path) && /\.(?:ts|tsx)$/.test(f.path));
 	const unowned = [
-		...webFiles.filter((f) => resolveOwner(f.path, boundary) === null),
+		...consumerTsFiles.filter((f) => ownerOfPath(f.path, boundary, manifests) === null),
 		...packageFiles.filter((f) => ownerOfPath(f.path, boundary, manifests) === null),
 	];
 	if (unowned.length > 0) {
 		console.error(
-			`check-package-boundary: ${unowned.length} file(s) under apps/web/src or packages/*/src resolve to no owner, refusing to scan:`,
+			`check-package-boundary: ${unowned.length} file(s) under a declared consumer root or packages/*/src resolve to no owner, refusing to scan:`,
 		);
 		for (const f of unowned.slice(0, 20)) console.error(`  ${f.path}`);
 		if (unowned.length > 20) console.error(`  ... and ${unowned.length - 20} more`);
@@ -1188,7 +1249,15 @@ function runCheck() {
 
 const FIXTURE_BOUNDARY = {
 	layers: ["@opencut/editor-ports", "@opencut/editor-contracts", "@opencut/editor-classic"],
-	consumers: ["apps/web", "apps/vite-example"],
+	// s05-second-host task 2.4: consumer objects with declared roots — web
+	// keeps map ownership, the third entry is the electron consumer under a
+	// fixture `apps/electron-host/src` root (negative/converse cases below
+	// prove a file under it is judged).
+	consumers: [
+		{ id: "apps/web", root: "apps/web/src", ownership: "map" },
+		{ id: "apps/vite-example", root: "apps/vite-example" },
+		{ id: "apps/electron-host", root: "apps/electron-host/src" },
+	],
 	shellPaths: ["apps/web/src/app"],
 	ownership: [
 		{ path: "apps/web/src/app", owner: "apps/web", why: "fixture shell root" },
@@ -1392,6 +1461,16 @@ const NEGATIVE_FIXTURES = [
 			},
 		],
 	},
+	{
+		rule: "public-entry-only",
+		note: "s05-second-host task 2.4: a file under a declared electron consumer root deep-importing an undeclared subpath — the derived scan roots must judge a third consumer's files, not only the two consumers that predate the derivation",
+		files: [
+			{
+				path: "apps/electron-host/src/violation11.ts",
+				text: 'import { Internal } from "@opencut/editor-ports/internal/secret";\nexport const i = Internal;\n',
+			},
+		],
+	},
 ];
 
 const CONVERSE_FIXTURES = [
@@ -1518,6 +1597,16 @@ const CONVERSE_FIXTURES = [
 			{
 				path: "apps/web/src/editor/ports/env-guard-storage.ts",
 				text: 'export function hasStorage(): boolean {\n  return typeof window.localStorage !== "undefined";\n}\n',
+			},
+		],
+	},
+	{
+		rule: "public-entry-only",
+		label: "s05-second-host task 2.4: a file under a declared electron consumer root importing a declared entry — the derived scan roots must not misfire on a third consumer's legal import",
+		files: [
+			{
+				path: "apps/electron-host/src/consumer-ok.ts",
+				text: 'import { Host } from "@opencut/editor-ports/host";\nexport const h = Host;\n',
 			},
 		],
 	},
