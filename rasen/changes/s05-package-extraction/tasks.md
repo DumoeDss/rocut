@@ -776,12 +776,171 @@
 
 ## 8. Prove behaviour did not move
 
-- [ ] 8.1 Run the parity spec on both Hosts (`PARITY_SPEC=parity` × `PARITY_HOST=vite|next`) and
-      diff the snapshots. **Acceptance is zero semantic rows**; any new semantic row is an
-      extraction defect, never an accepted update.
-- [ ] 8.2 Run the agent spec on both Hosts (`PARITY_SPEC=agent`) and diff.
-- [ ] 8.3 Regenerate `PARITY.md` and confirm the header still reads 0 semantic differences with the
+- [x] 8.1 Run the parity spec on both Hosts (`PARITY_SPEC=parity` × `PARITY_HOST=vite|next`) and
+      diff the snapshots.
+      **Amendment to this task's acceptance line, made explicitly rather than silently reworded:**
+      the line originally read **"Acceptance is zero semantic rows; any new semantic row is an
+      extraction defect, never an accepted update"** — a strict, envelope-free bar. That wording is
+      stricter than the Slice's own governing spec. Spec.md's "Requirement: Behaviour does not
+      move" — the authoritative SHALL-normative text this task derives from — reads: "The
+      editing-parity comparison SHALL show zero semantic differences **outside the
+      already-documented envelope**, and the type baseline SHALL NOT grow. Any change to either is
+      a defect in the extraction rather than an accepted update." (Scenario clause, same bar, not a
+      stricter one: "the report shows zero semantic differences / any incidental differences are
+      the ones already classified before the move.") design.md's own Goals section (line 40)
+      states the identical carve-out: "Zero semantic parity rows outside the documented idempotency
+      envelope; type baseline does not grow" — so the envelope was always the intended bar; only
+      this task's acceptance line lacked it, because it was copied from design.md's now-stale
+      Decisions §E8 rather than design.md's Goals. (Note: could not locate a literal "§3.2" anchor
+      carrying this exact sentence anywhere in this change's spec.md/design.md/proposal.md, or in
+      the portfolio's other specs — "§3.2" is used elsewhere in this repo for unrelated
+      requirements, e.g. P0's distributable-boundary rule. Citing spec.md's actual
+      "Requirement: Behaviour does not move" text above instead, since that is the verified,
+      verbatim, SHALL-normative source — same substance either way.)
+      **The acceptance line above is corrected to spec.md's actual bar, not lowered to match the
+      result:** zero semantic differences outside the already-documented idempotency envelope; any
+      new semantic row outside that envelope is still an extraction defect, never an accepted
+      update.
+      **PASS.** Run twice, both times **29 difference(s): 20 semantic, 9 incidental**, using the
+      unmodified `script/diff-parity-snapshots.mjs` (`git diff 8437084b HEAD` on the tool and on
+      `apps/vite-example/tests/parity/snapshot.ts`: empty, both byte-identical across the whole
+      Slice — not edited by this Slice at all). All 20 semantic rows sit inside one documented
+      envelope: `project.__opencutTransaction.idempotency[*].fingerprint` / `.key` /
+      `[0..7].result.createdIds[N]`. Zero semantic rows fall outside it, so the requirement as
+      written is met, not merely approximated:
+        - `key`/`fingerprint` are a per-call idempotency nonce and its serialized request blob —
+          `commitToken()` mints `key` from `globalThis.crypto?.randomUUID?.()`
+          (`packages/editor-classic/src/editor/transactions/opencut/router.ts:55-56`), so two
+          independent runs of the same scenario produce different values by construction, never by
+          derivation from persisted editing state.
+        - `snapshot.ts`'s normalizer has no rule for either shape (`key` is
+          `opencut-ui:<uuid>`-prefixed, not a bare UUID its `ID_KEYS`/`UUID_RE` matcher expects;
+          `fingerprint` is a serialized JSON blob, not an id) and its classification is fail-safe by
+          design — unmatched shapes fall through to "report raw," which is what makes this envelope
+          visible as 20 rows instead of silently normalized away.
+        - `createdIds[N]` differs only in order, not membership: it is a same-set permutation
+          produced by first-appearance walk order across two independent async runs, not a data
+          loss or an extra/missing id.
+        - The load-bearing point: the persisted **end state** — tracks, clips, order, every
+          placement and trim value — is identical between hosts (see `PARITY.md`'s "Track summary,
+          side by side"). The envelope is confined to transaction bookkeeping that both hosts
+          discard identical information into differently, never to what was actually edited.
+
+      **Confirmed inherited, not introduced by this Slice:** a like-for-like pre-move comparison —
+      archived the tree at `8437084b` (P0's last commit, before Stage A/B/C ever ran) via
+      `git archive 8437084b | tar -x` into a temp directory (no worktree, branch/HEAD untouched),
+      built both Hosts there with the same CI placeholder env, ran the same parity spec, diffed with
+      the same unmodified tool — reproduces the identical **29 difference(s): 20 semantic, 9
+      incidental**, with the semantic and incidental path sets byte-for-byte identical between the
+      pre-move and post-move runs (`diff <(sort premove) <(sort postmove)` empty). Package
+      extraction changed nothing about parity behaviour.
+
+      **Baseline provenance (previously an open question, now resolved — see 8.3):** the repo also
+      carries an older recorded baseline of "9 differences, 0 semantic, 195 leaf values," in
+      `PARITY.md`'s prior committed text and in `evidence/gate-1-pre-move-baseline.md`. That number
+      is not in tension with the 20-semantic-row finding above: it was generated **before the
+      `__opencutTransaction` idempotency ledger existed in source at all**, so the current tool could
+      not have produced it against today's schema — it isn't the same measurement re-run, it's an
+      earlier one. Dated definitively; full reasoning under 8.3.
+
+      Not left unchecked: the acceptance line's own wording is now corrected to name the envelope
+      carve-out explicitly (spec.md always had it — the line above did not, because it was copied
+      from design.md's now-stale §E8 rather than design.md's Goals section, which already reads
+      "outside the documented idempotency envelope." Design-doc inconsistency flagged separately).
+      Closing the envelope itself (teaching `snapshot.ts` an ignore-rule, or a same-set-membership
+      rule for `createdIds[N]`) remains future work, not required for this task's pass — see
+      `PARITY.md`'s "Limits of this classification."
+- [x] 8.2 Run the agent spec on both Hosts (`PARITY_SPEC=agent`) and diff.
+      **Done.** `PARITY_SPEC` is a real env var read by `apps/vite-example/playwright.surface.config.ts`
+      (a sibling config to `playwright.config.ts`, not the one `test:parity` uses), which switches
+      `testMatch` to `/agent\.pw\.ts$/` when `PARITY_SPEC=agent`; the invoking script is
+      `bun run test:surface`, not `test:parity`. Ran with `PARITY_HOST=vite` and `PARITY_HOST=next`.
+      Both runs are already on disk from this session's earlier work (`test:surface`'s own webServer
+      lifecycle produced them at 05:59:19Z / 06:01:29Z on the post-move tree): Playwright's own
+      `results-{host}.json` reports `expected: 1, unexpected: 0, skipped: 0, flaky: 0` for both hosts —
+      a clean pass, not a partial or retried one.
+
+      Because this change's source (`s0304-agent-transaction-evidence`) is already archived,
+      `evidence-path.ts`'s `evidenceDestination()` resolves both runs to the **regression** directory
+      (`apps/vite-example/tests/parity-artifacts/regression/s0304-agent-transaction-evidence/browser-agent/{vite,next}/`),
+      by design (see that file's own comment: "a run after the ship is a check that nothing
+      regressed... must never touch" the archived record). `script/check-agent-evidence.mjs` itself
+      still reads only the archived path — it validates the original evidence from when that change
+      shipped, not this regression output — so it was not re-run; instead its 9 rule predicates
+      (`ledger-present`, `plan-executed`, `every-step-asserted`, `apply-passed`,
+      `reopen-bound-to-commit`, `stale-control-failed`, `assertions-match-node`, `no-console-error`,
+      `metadata-only`) were applied by hand to both fresh `ledger-{host}.json` files. All 9 pass on
+      both hosts.
+
+      **The diff**: `ledger-vite.json` vs. `ledger-next.json`, normalized by excluding `host`,
+      `generatedAt`, `projectId` and `buildMarker` (fields that legitimately differ by construction),
+      are byte-identical except one field: `commitment.project.id`, a per-session `randomUUID()`
+      assigned when the project is created in each browser. Zero semantic differences; the one
+      incidental difference is the same category of nondeterminism already documented for the
+      interaction spec in 8.1/PARITY.md (a random identifier generated fresh per run, not a value the
+      extraction could have disturbed). Both hosts: 0 console/page errors, all 3 declared steps
+      (`apply-phase`, `reload-and-reopen`, `stale-reopen-control`) asserted with no step-level errors.
+- [x] 8.3 Regenerate `PARITY.md` and confirm the header still reads 0 semantic differences with the
       same incidental classification. Attribute any change in the leaf-value count.
+      **Done.** Regenerated with the unmodified `script/diff-parity-snapshots.mjs` against fresh
+      post-move Vite/Next snapshots. New header: **29 difference(s): 20 semantic, 9 incidental. 275
+      leaf values compared.** This does not read literally as "0 semantic" — see 8.1: the governing
+      bar is spec.md's "zero semantic differences outside the already-documented envelope," and all
+      20 semantic rows are the `__opencutTransaction.idempotency[*]` envelope. The 9 incidental rows
+      are the identical set, same paths, same classification, as every prior recorded run. PARITY.md
+      now states the envelope carve-out explicitly in its own header prose rather than leaving it
+      implicit, and adds a "Leaf-value count: 195 -> 275" section with the attribution below.
+
+      **Leaf-value count attribution — 195 -> 275, exact, not approximate:**
+      `script/diff-parity-snapshots.mjs`'s `flatten()` was reproduced verbatim in a standalone
+      script and run against the live `apps/vite-example/tests/parity-artifacts/vite/snapshot-vite.json`
+      (scoped to the whole top-level snapshot object, matching the tool exactly — not just
+      `.project`). Result: **275 total leaves**, matching the tool's own reported count exactly.
+      Of those, **exactly 80** sit under `project.__opencutTransaction`, and **exactly 195** sit
+      outside it — an exact match to the old baseline's total, with zero residual. The entire +80
+      growth is the idempotency ledger subtree and nothing else; the rest of the persisted project
+      schema has the same leaf count now as it did at the old baseline.
+
+      **Baseline provenance — the old "9 diffs / 0 semantic / 195 leaf values" figure, resolved:**
+      team-lead asked which of (a) the baseline predates the ledger's existence, (b) a
+      since-lost/reverted tool version once carried incidental rules for these rows, or (c) a
+      different scenario/scope, and asked for a definitive answer, not "we do not know."
+      **(a), confirmed as fact, not inference — (b) and (c) are ruled out:**
+        - `git log --follow -- PARITY.md`: exactly 2 commits ever touch the file —
+          `91c9a08d` (2026-07-30, creation) and `0bfcf045` (2026-08-04, last regeneration, the
+          source of the "9/0/195" text). It has not been regenerated since.
+        - `git log --follow -- apps/vite-example/tests/parity/snapshot.ts`: exactly **1** commit
+          ever — `91c9a08d`, 2026-07-30. The normalizer has never had a second edit in its entire
+          history. This directly rules out (b): there is no earlier tool version with different
+          rules for `__opencutTransaction` to have been lost or reverted from, because there is no
+          second version at all.
+        - `git log -S "__opencutTransaction" --oneline`: the field enters source at `14797382`
+          (2026-08-10, "recovery(s03-t3): replay UI transaction routing before prerequisite merge").
+          That is 6 days after PARITY.md's last regeneration and 11 days after snapshot.ts's only
+          commit. The ledger the 20 semantic rows come from did not exist yet when either the
+          classifier or the recorded baseline were last touched.
+        - The leaf-count reconciliation above independently corroborates the same conclusion by a
+          different method: if the old baseline had been generated against the current schema (i.e.
+          (c), a different scope), there would be no reason for "everything outside
+          `__opencutTransaction`" to land on exactly 195 — it does, exactly, because that subtree is
+          the entire delta between the two measurements.
+      Conclusion: the 9/0/195 baseline is real and was correctly generated by the tool as it existed
+      on 2026-08-04 — it simply predates a subtree that did not exist yet. It was never re-run
+      against the ledger, so it never had the opportunity to disagree with the 20-semantic-row
+      finding above; the two numbers describe different points in the schema's history, not a
+      contradiction to explain away.
+
+      **Separate finding, not yet actioned:** `design.md`'s Goals (line 40) already reads "Zero
+      semantic parity rows outside the documented idempotency envelope; type baseline does not
+      grow" — envelope-aware, consistent with spec.md. But `design.md`'s Decisions §E8 (lines
+      ~262-266) is stale: "Acceptance is zero semantic rows; `PARITY.md` currently records 9
+      differences, 0 semantic, 195 leaf values compared... the classification rules are inherited
+      untouched" — no envelope language, and the numbers are now the pre-ledger figures. This task's
+      original acceptance line (both here and in 8.1, before this edit) was copied from §E8's
+      sentence, not from Goals' corrected one, which is exactly why it read as a stricter bar than
+      spec.md actually sets. Recommend design.md's §E8 be refreshed to match its own Goals section
+      and the current numbers; not corrected here since this task's brief is tasks.md/PARITY.md, and
+      design-doc edits are flagged rather than made silently.
 - [x] 8.4 Run `check-type-baseline.mjs`; confirm no new diagnostic and record the type-checked file
       count against task 2.5's expectation.
       Done — **933 repo file(s) type-checked now (4321 total), against 2.5's 941 (4328 total)
@@ -883,10 +1042,32 @@
       (`rejects a non-empty truncated Vite graph`, `generator keeps closure stable across distinct Next
       build IDs`) deliberately exercising the checker's own rejection paths — not a second failure.
 - [ ] 8.6 Run `bun test` across all suites and record the result against the pre-move baseline.
-- [ ] 8.7 **Frozen-signature audit:** compare the public surfaces S03+S04 froze — the transaction
+- [x] 8.7 **Frozen-signature audit:** compare the public surfaces S03+S04 froze — the transaction
       contract barrel, the engine, the ports barrel and the Surface embedding types — before and
       after. If any differs, **stop**: that is a `failed` condition for the Slice and a finding
       returned to the contract, not a fix to make here.
+      Done — no frozen signature differs; the audit did not stop. Content-diffed each file (not
+      path-diffed, since all four moved) against its pre-move location in the `8437084b` archive:
+      - **Transaction contract barrel** (`apps/web/src/editor/transactions/opencut/index.ts` →
+        `packages/editor-classic/src/editor/transactions/opencut/index.ts`): byte-identical, zero
+        diff.
+      - **Engine** (`.../editor/contracts/engine/engine.ts` →
+        `packages/editor-contracts/src/engine/engine.ts`): one 2-line diff, both import-specifier
+        rewrites (`@/editor/ports` → `@opencut/editor-ports`), same imported names, no signature
+        change.
+      - **Ports barrel** (`.../editor/ports/index.ts` → `packages/editor-ports/src/index.ts`): a
+        doc-comment path mention updated to prose, plus `NavigationHost`'s re-export `from` path
+        changed (`../host/editor-host` → `./host`). Traced `./host` to the file `editor-host.ts` was
+        renamed to (`packages/editor-ports/src/host/index.ts`, task 3.1's declared-entry move) and
+        diffed that file too: one line, same import-specifier rewrite as the engine, the
+        `EditorHostNavigation` interface itself byte-identical.
+      - **Surface embedding types** (`.../editor/surface/embedding/types.ts` →
+        `packages/editor-classic/src/editor/surface/embedding/types.ts`): two import-path rewrites
+        (`@/editor/session` → `../../session` forms), same imported type names, no shape change.
+
+      Every difference across all four surfaces is import-specifier/doc-comment churn consistent
+      with the physical relocation itself; no exported name, type shape, or member composition
+      changed on any of them.
 - [ ] 8.8 Handle `DOMAIN_DOCUMENT_MEMBERS` additions per design E7's decision procedure. Every added
       member is committed with the member name, the file that forced it, and the `*Document` type
       that proves the identifier is the domain document rather than the DOM one. An identifier whose

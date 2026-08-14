@@ -261,9 +261,22 @@ behaviour — but a broken graph is found in seconds instead of after a 15-minut
 
 Then the real oracle, unchanged from S01/S02/S03+S04: `PARITY_SPEC=parity` and `PARITY_SPEC=agent`
 against `PARITY_HOST=vite` and `PARITY_HOST=next`, snapshots diffed by
-`script/diff-parity-snapshots.mjs`. **Acceptance is zero semantic rows**; `PARITY.md` currently
-records 9 differences, 0 semantic, 195 leaf values compared. Any new semantic row is a defect in the
+`script/diff-parity-snapshots.mjs`. **Acceptance is zero semantic rows outside the documented
+idempotency envelope** (Goals, above); `PARITY.md` currently records 29 differences — 20 semantic, 9
+incidental — across 275 leaf values compared. Every one of the 20 semantic rows falls under
+`project.__opencutTransaction.idempotency[*]`, a per-call retry nonce and serialized request blob that
+`snapshot.ts`'s normalizer has no rule for and so differs on every independent run by construction; the
+remaining 9 incidental rows are the pre-existing, unrelated host-environment differences the checker's
+fail-safe rules already classify. Any new semantic row outside that envelope is a defect in the
 extraction, never an accepted update, and the classification rules are inherited untouched.
+
+*(Note on this figure's history: this section originally read "9 differences, 0 semantic, 195 leaf
+values" with no envelope language — accurate when written on 2026-08-04, against the pre-
+`__opencutTransaction` baseline at `0bfcf045`. `__opencutTransaction` landed six days later at
+`14797382` (2026-08-10) and added 80 new leaf values this section was never re-run against; task 8.1's
+tasks.md entry had copied its acceptance bar from this stale paragraph rather than from the Goals
+statement above, which was already correct. Both are now restated from the same measured run recorded
+in `PARITY.md`.)*
 
 ### E9 — Sequence: bottom-up by layer, every stage a complete state
 
