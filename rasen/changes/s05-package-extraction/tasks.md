@@ -1287,6 +1287,49 @@
       two result sets. This sidesteps the gitignored `rust/wasm/pkg/` build-artifact problem entirely
       — `git archive` only extracts tracked content, so the wasm build step re-runs identically in
       both trees rather than one side silently reusing a stale local `pkg/` directory.
+- [x] 9.5 Record the round-2 delta re-review's remaining disposition: the accepted-known remedy for
+      sweep category 6, the reviewer's new durable path-sweep finding, and the corrected c5 test
+      count — none of which had an existing Group-9 slot, same reasoning as 9.4's own third item.
+      Done — three items, all from `evidence/review-report.md`'s round-2 pass (delta
+      `af0a52ba..1e5a337c`, 0 Blockers, 0 Majors, 2 Minors, 2 Trivials; N-1..N-3 fixed in commits
+      `823522be`, `811202da`+`d76d612f`, `f507ac56`):
+
+      **Accepted-known remedy for sweep category 6 (not fixed in this round, by design).** The
+      violation-scan test the round-1 sweep's category 6 flagged (still not scanning
+      `packages/*/src`) stays unfixed here — deliberately, not by oversight. It is a genuinely
+      different test from the scan-scope guard `8389be4e` fixed (that one is a scope *guard*; this
+      one is a *violation scan*), whole-tree grep confirms no live violation is currently hidden by
+      the gap, and widening a RED-control's scope inside a commit that fixed a different scope bug
+      would blend two changes into one control-test edit — the last place an unattributed edit
+      belongs. The reviewer's attached condition, adopted verbatim as the accepted-known's actual
+      remedy rather than a deferred "revisit later": `8389be4e` gave the scan it fixed a fail-closed
+      `expect(files.length, "...").toBeGreaterThan(0)` non-vacuity assertion; the violation-scan test
+      has no equivalent guard, so if its own scope silently goes vacuous — the exact failure mode
+      this whole review thread traces back to — nothing would catch it. **P2's cheap, correct action
+      is to add that same non-vacuity assertion to the violation-scan test, not to widen its
+      scope.** Widening scope answers a question nobody asked yet (does the scan need to cover more
+      ground); the assertion answers the one that actually recurred (does the scan silently cover
+      zero ground).
+
+      **Hand-forward addition — an existence check belongs inside the path sweep.** Round 1's durable
+      finding said to grep the old path prefix after a move; round 2 showed that grepping the prefix
+      alone under-delivers, because the majority of hits are still-live paths and a dead *target* can
+      hide inside a live *prefix*. Piping `git grep -oE '<old-prefix>/[A-Za-z0-9_./-]+'` through an
+      `existsSync` filter turned **300 raw hits into 60 real candidates** and surfaced N-1
+      (`package.json`'s three stale script targets) in a single pass — the sweep's own triage, done
+      by hand in this Slice's own round-1 fix work, had put that exact file in the bucket labelled
+      fine. Recorded here as a correction to my own earlier hand-triage method, for **P2-P7** to
+      apply directly: run the sweep with the existence filter from the start rather than triaging a
+      raw prefix-grep by eye.
+
+      **Cosmetic count correction (N-4, Trivial).**
+      `apps/web/src/services/storage/__tests__/c5-storage-red-controls.test.ts` contains **10**
+      `test(` declarations (re-counted directly against the file this session), not 9 as earlier
+      characterized in this Slice's own task tracking. All 10 pass; the scope fix in `8389be4e` did
+      not add or remove a test, only widen the directory scan inside the existing single top-level
+      wrapper test. No committed evidence file stated the wrong count — the earlier "9" was a verbal
+      characterization, not a file that needed a wrong number replaced — so this entry is the actual
+      correction of record, recorded here so the number does not propagate further.
 
 ## 10. Ship
 
