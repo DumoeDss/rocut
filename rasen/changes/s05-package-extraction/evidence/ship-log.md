@@ -70,18 +70,68 @@ the correct figure).
 **`rasen validate s05-package-extraction --strict --project rocut --json`**:
 `valid: true`, 0 issues, 1/1 passed.
 
-**Rule-activation, P0 baseline vs P1 now** — P0 shipped the checker with all
-five rules wired but running against an empty `packages/` tree, so every
-rule's pass was vacuously true (0 files matched, nothing to violate). P1's
-extraction is what makes each rule's pass a real assertion for the first
-time:
-| Rule | P0 baseline (pre-extraction) | P1 now (HEAD `e2169f81`) |
+**Rule-activation, P0 baseline vs P1 now — CORRECTED.** An earlier draft of
+this section claimed P0's baseline was vacuous across all five rules. That
+was wrong and has been replaced after checking P0's own archived evidence
+directly (`rasen/changes/archive/2026-08-13-s05-package-boundary-freeze/
+evidence/{normal-run.md,ship-log.md}`, both recorded at commit `8437084b` —
+P0's final ship commit and the exact pin this child started from, so this is
+the true starting baseline, not a stale intermediate one). P0's re-measured,
+committed baseline was:
+```
+PASS  acyclic-direction     949 files scanned, 341 cross-package edges examined
+PASS  public-entry-only     949 files scanned, 0 @opencut/* specifiers examined
+....  no-internal-reexport  0 files scanned (packages/ holds no source yet)
+PASS  no-elftia-import      1031 files scanned
+PASS  react-free-base       68 files scanned
+```
+This is two distinct achievements, not one:
+
+1. **Two rules went from genuinely vacuous to substantive.**
+   `no-internal-reexport`: P0's scan set itself was empty (0 files — `packages/`
+   held no source at all) → P1 now scans 863 files, dormant marker gone.
+   `public-entry-only`: P0's file-scan already covered real source (949 files,
+   widened during P0's own round-1 review fix for BLOCKER-1) but its
+   *substantive* count — `@opencut/*` specifiers actually crossing into a
+   package — was 0, because no package existed yet to import from. P0's own
+   ship-log states this outright: "public-entry-only currently PASSes
+   trivially... P1 writes the tree's first such specifiers, which is where
+   this rule stops being vacuous." P1 now: 964 files scanned, **328
+   specifiers examined** — the rule's core assertion has real work to check
+   for the first time.
+
+2. **Three rules were already substantively live at P0 and had to be
+   preserved through a move that could otherwise have silently blinded them.**
+   `acyclic-direction`: 949 files/341 edges → 964 files/329 edges.
+   `no-elftia-import`: 1031 files → 1048 files. `react-free-base`: 68 files →
+   68 files (unchanged count, same significance — the files it governs did
+   not move). Left with an unwidened scope, these three would have kept
+   scanning the pre-move `apps/web/src` tree after ~863 files moved out of
+   it: `acyclic-direction` and `no-elftia-import` fail open (an emptied scan
+   set still prints PASS, silently proving nothing), `react-free-base` fails
+   closed (would have exited 2 against files that had simply moved, not
+   files that violate anything). Holding real, non-collapsed counts across
+   the move (964/329, 1048, 68) is the evidence the widening actually
+   followed the source, not a rounding artifact.
+
+| Rule | P0 baseline (commit `8437084b`) | P1 now (HEAD `bad9ce3b`) |
 |---|---|---|
-| acyclic-direction | 0 files, 0 edges (vacuous) | 964 files, 329 edges |
-| public-entry-only | 0 files, 0 specifiers (vacuous) | 964 files, 328 specifiers |
-| no-internal-reexport | 0 files (vacuous) | 863 files |
-| no-elftia-import | 0 files (vacuous) | 1048 files |
-| react-free-base | 0 files (vacuous) | 68 files |
+| acyclic-direction | 949 files, 341 edges (live) | 964 files, 329 edges (live) |
+| public-entry-only | 949 files scanned, 0 specifiers (vacuous assertion) | 964 files, 328 specifiers (now live) |
+| no-internal-reexport | 0 files scanned (vacuous) | 863 files (now live) |
+| no-elftia-import | 1031 files (live) | 1048 files (live) |
+| react-free-base | 68 files (live) | 68 files (live) |
+
+**Edge-census as-of note.** 329 edges / 964 files is the figure this
+correction independently re-ran live just now (`node script/check-package-
+boundary.mjs` at HEAD `bad9ce3b`, 2026-08-14) — it also matches what
+review-report.md records. An earlier in-progress task-time checkpoint
+(`tasks.md` lines 340, 712, 723, 733, 760) recorded **962** files at the same
+329-edge count; two further files entered the scan between that
+mid-implementation checkpoint and current HEAD (later review-fix commits
+adding files, not a discrepancy in measurement method). Unless stated
+otherwise, every figure in this ship log is the live, current-HEAD figure,
+not the task-time checkpoint.
 
 **Frozen S03+S04 signature spot-check** (3 of the tracked files, content-diff
 against pre-move commit `8437084b`): transaction contract barrel —
