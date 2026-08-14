@@ -1,0 +1,98 @@
+=== s05-second-host Group 4 — filesystem store evidence ===
+Date: 2026-08-14T18:53:46Z
+
+All runs below are on the final Group 4 code (post typecheck REAL_EXIT_CODE:0).
+
+--- [A] outer gate: bun test apps/electron-host/src/store/ (both wrapper tests spawn isolated children) ---
+bun test v1.2.2 (c1708ea6)
+
+apps\electron-host\src\store\__tests__\filesystem-store-conformance.test.ts:
+(pass) filesystem store conformance runs in an isolated wasm-mock process [375.00ms]
+
+apps\electron-host\src\store\__tests__\filesystem-store-migration-probes.test.ts:
+(pass) filesystem migration probes run in an isolated wasm-mock process [250.00ms]
+
+ 2 pass
+ 0 fail
+Ran 2 tests across 2 files. [783.00ms]
+REAL_EXIT_CODE:0
+
+--- [B] inner conformance suite (OPENCUT_FS_STORE_TEST_ISOLATED=1): per-case listing ---
+bun test v1.2.2 (c1708ea6)
+
+apps\electron-host\src\store\__tests__\filesystem-store-conformance.test.ts:
+  [store] PASSED — declares a schema version
+  [store] PASSED — a known edit round-trips without losing opaque nested fields
+  [store] PASSED — project values are defensively cloned in both directions
+  [store] PASSED — list reports the saved summary
+  [store] PASSED — list carries no project content
+  [store] PASSED — missing project, attachment, and library values return null
+  [store] PASSED — record and summary identities match or fail before commit
+  [store] PASSED — attachments save, load, list, replace, and remove exactly
+  [store] PASSED — attachment scope and project cascade are isolated
+  [store] PASSED — libraries save, load, list, replace, remove, and isolate namespaces
+  [store] PASSED — capacity zero is distinct from unavailable storage
+  [store] PASSED — an uncloneable opaque value is a typed corrupt failure
+  [store] PASSED — typed failures happen before attachment replacement commits
+  [store] PASSED — pre-aborted reads and writes do no work
+  [store] PASSED — same-key mutations serialize while distinct keys progress
+  [store] PASSED — hierarchical mutations preserve invocation order without identity collisions
+  [store] PASSED — clear scopes preserve their documented boundary
+  [store] PASSED — migration brings the store to its declared version
+  [store] PASSED — remove deletes the record and the summary
+  [assets] PASSED — resolves a logical path to a location
+  [assets] PASSED — does not hard-code a root-absolute location
+  [assetLoader] PASSED — reports a missing asset as an error
+  [runtimeResources] PASSED — the host constructs the worker and returns a handle
+  [runtimeResources] PASSED — the worker handle delivers messages
+  [runtimeResources] PASSED — a rewritten worker location is conforming
+  [runtimeResources] PASSED — an audio context is created and closable
+  [runtimeResources] PASSED — an object URL is created and revocable
+  [exporter] PASSED — declares whether it can export
+  [exporter] PASSED — an unsupported export says so rather than failing
+  [diagnostics] PASSED — accepts a log record
+  [diagnostics] PASSED — accepts a session-scoped event
+  [ids] PASSED — ids are unique within a scope
+  [ids] PASSED — scopes are independent
+  [environment] PASSED — declares a graphics mode
+  [environment] PASSED — the host declares but never asserts the report
+  [environment] SKIPPED — a forced no-rasterizer declaration yields a zero limit :: this host declares detect mode, so there is no force to check
+  by-port tally: {"store":{"passed":19,"failed":0,"skipped":0},"assets":{"passed":2,"failed":0,"skipped":0},"assetLoader":{"passed":1,"failed":0,"skipped":0},"runtimeResources":{"passed":5,"failed":0,"skipped":0},"exporter":{"passed":2,"failed":0,"skipped":0},"diagnostics":{"passed":2,"failed":0,"skipped":0},"ids":{"passed":2,"failed":0,"skipped":0},"environment":{"passed":2,"failed":0,"skipped":1}}
+(pass) filesystem store passes the published conformance suite (portable, migration exercised) [156.00ms]
+  opaque-payload case: passed — a known edit round-trips without losing opaque nested fields
+(pass) the provider-private round-trip case (opaque nested fields) passed by name
+  store: 19 case(s)
+  assets: 2 case(s)
+  assetLoader: 1 case(s)
+  runtimeResources: 5 case(s)
+  exporter: 2 case(s)
+  diagnostics: 2 case(s)
+  ids: 2 case(s)
+  environment: 3 case(s)
+(pass) no port role reports zero cases
+
+ 3 pass
+ 0 fail
+ 10 expect() calls
+Ran 3 tests across 1 files. [394.00ms]
+REAL_EXIT_CODE:0
+
+--- [C] inner migration probes (OPENCUT_FS_STORE_TEST_ISOLATED=1) ---
+bun test v1.2.2 (c1708ea6)
+
+apps\electron-host\src\store\__tests__\filesystem-store-migration-probes.test.ts:
+(pass) probe 1: seeded old-version records migrate forward through the published chain [15.00ms]
+(pass) probe 2a: a throwing transform preserves the source record and reports failed
+(pass) probe 2b: a refusing (skipped) transform preserves the source record and reports failed
+(pass) probe 3: migration without disposable opt-in is refused and touches nothing [16.00ms]
+(pass) probe 4: a migrated root holds only the design-E4 layout (no stray files) [16.00ms]
+
+ 5 pass
+ 0 fail
+ 27 expect() calls
+Ran 5 tests across 1 files. [289.00ms]
+REAL_EXIT_CODE:0
+
+--- [D] typecheck gate ---
+$ tsc --noEmit -p tsconfig.json
+REAL_EXIT_CODE:0

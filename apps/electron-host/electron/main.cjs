@@ -13,7 +13,7 @@
  * the one the gate-1 spike proved against Electron 43.4.0
  * (evidence/gate-1-desktop-substrate.md).
  */
-const { app, BrowserWindow, protocol } = require("electron");
+const { app, BrowserWindow, ipcMain, protocol } = require("electron");
 const { readFileSync, statSync } = require("node:fs");
 const path = require("node:path");
 
@@ -128,6 +128,33 @@ function schemeHandler(request) {
 	});
 }
 
+/**
+ * The store's durable root (design E4): a directory this process owns and the
+ * renderer never learns. `app.getPath("userData")/projects` in production;
+ * `OPENCUT_STORE_ROOT` overrides it for parity/disposal/evidence runs, which
+ * need throwaway roots.
+ */
+function storeRoot() {
+	return process.env.OPENCUT_STORE_ROOT || path.join(app.getPath("userData"), "projects");
+}
+
+/**
+ * Task 4.6: install the fourteen `opencut-store:<operation>` IPC handlers over
+ * one `NodeFsStoreBridge` (the compiled store seam — same bridge class the bun
+ * conformance/probe evidence runs), then write the boot bookkeeping: the
+ * design-E4 `<root>/store.json` carrying the store identity and a fresh usage
+ * inspection. Advisory only — a failed refresh must never block boot.
+ */
+function installStore() {
+	const { installFilesystemStoreIpc } = require("../dist-main/main-store-ipc.cjs");
+	const bridge = installFilesystemStoreIpc({
+		ipcMain,
+		root: storeRoot(),
+		identity: "opencut-fs-production",
+	});
+	bridge.inspectFiles().catch(() => {});
+}
+
 function createWindow() {
 	const win = new BrowserWindow({
 		width: 1440,
@@ -146,6 +173,7 @@ function createWindow() {
 
 app.whenReady().then(() => {
 	protocol.handle(SCHEME, schemeHandler);
+	installStore();
 	createWindow();
 	app.on("activate", () => {
 		if (BrowserWindow.getAllWindows().length === 0) createWindow();

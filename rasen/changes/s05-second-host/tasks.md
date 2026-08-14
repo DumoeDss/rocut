@@ -76,30 +76,30 @@
 
 ## 4. The filesystem store: bridge, store, conformance, migration
 
-- [ ] 4.1 Author `ProjectStoreFiles` (the bridge interface: record list/load/save/remove,
+- [x] 4.1 Author `ProjectStoreFiles` (the bridge interface: record list/load/save/remove,
       attachment CRUD, library-record CRUD, inspect, clear — identifiers only, never paths) and
       `NodeFsStoreBridge` implementing it over `node:fs` against a caller-supplied root. On-disk
       layout per design E4; writes atomic (temp + rename); fs errors mapped to `ProjectStoreError`
       with the port's scope/code semantics.
-- [ ] 4.2 Author `FilesystemProjectStore` over the bridge: `schemaVersion` =
+- [x] 4.2 Author `FilesystemProjectStore` over the bridge: `schemaVersion` =
       `CURRENT_PROJECT_VERSION` from `@opencut/editor-classic/storage`, `migrate()` delegating to
       the published `runStorageMigrations`, `persistedSchemaVersion()` reading the on-disk
       envelope. No schema logic of its own — the published runner is the SDK-consumption story.
-- [ ] 4.3 Conformance leg under `bun test` (no Electron involved): `runPortConformance` over the
+- [x] 4.3 Conformance leg under `bun test` (no Electron involved): `runPortConformance` over the
       composed ports with a disposable-root `NodeFsStoreBridge` fixture, `profile: "portable"`,
       `exerciseMigration: true`. Every case passes or carries a stated skip; no port role reports
       zero cases. **The opaque-payload case is the provider-private round-trip requirement** —
       record it by name in the evidence.
-- [ ] 4.4 Filesystem migration probes under `bun test`, mechanism-neutral analogs of the C5
+- [x] 4.4 Filesystem migration probes under `bun test`, mechanism-neutral analogs of the C5
       browser probes: a seeded old-version record migrates forward through the published runner; a
       deliberately failing transform preserves the source record and reports the failure; the
       no-opt-in refusal holds; `afterDatabases`-equivalent: no stray files outside the layout
       after migration. The browser (IndexedDB) probes are stated non-coverage for this store.
-- [ ] 4.5 The owed cheap correct action from P1's archive: add the fail-closed
+- [x] 4.5 The owed cheap correct action from P1's archive: add the fail-closed
       `expect(files.length).toBeGreaterThan(0)` non-vacuity assertion to the violation-scan test
       in `apps/web/src/services/storage/__tests__/c5-storage-red-controls.test.ts` — **the
       assertion only; the scan's scope is NOT widened.** Run the file; all tests pass.
-- [ ] 4.6 Production bridge: preload exposes the single `opencutStore` object (contextBridge) and
+- [x] 4.6 Production bridge: preload exposes the single `opencutStore` object (contextBridge) and
       main implements the same `ProjectStoreFiles` surface over IPC with all I/O inside a root the
       main process owns (`app.getPath("userData")/projects`, overridable by `OPENCUT_STORE_ROOT`
       for evidence runs). The renderer holds no path-shaped surface anywhere (grep-provable:

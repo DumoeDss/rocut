@@ -183,3 +183,158 @@ to the 2.1 baseline capture (`group-3-type-baseline.txt`, diff exit 0) — the
 pre-existing RED is unchanged; the electron app is outside its `apps/web`
 program by design (decision to be recorded in the Group 9 audit table).
 
+
+## Group 4 — the filesystem store: bridge, store, conformance, migration
+
+All logs: `evidence/logs/group-4-store-evidence.log` (bun suites + typecheck)
+and `evidence/logs/group-4-bridge-production.log` (task 4.6's production
+proof). Every run logs its own `REAL_EXIT_CODE`.
+
+**4.1 — the bridge pair.** `src/store/project-store-files.ts` declares
+`ProjectStoreFiles` — the full store surface (record list/load/save/remove,
+attachment CRUD, library-record CRUD, inspect, clear) keyed by identifiers
+only; no method accepts or returns a path. `src/store/node-fs-store-bridge.ts`
+implements it over `node:fs` against a caller-supplied root, design-E4 layout
+(`projects/<id>/record.json`, `.../attachments/<key>` + `<key>.meta.json`,
+`library/<ns>/<key>.json`, `store.json`), every write atomic (sibling temp +
+rename), reads tolerating ENOENT, and every fs failure sanitized through
+`ioFailure()` into a path-free `StoreBridgeError` (which
+`FilesystemProjectStore.throughBridge` maps to the port's `unavailable` code).
+Identifier-to-segment mapping: ids matching `[A-Za-z0-9][A-Za-z0-9._-]*` (not
+`.`/`..`) pass through readable; anything else becomes `~`+base64url — `~`
+cannot occur unencoded, so the conformance suite's `a:b` vs `a`/`b:c`
+hierarchical-collision identities stay distinct trees.
+
+**Codec decision (opaque payloads).** Opaque values cross the disk boundary as
+`node:v8` structured-clone serialization carried base64 inside JSON envelopes:
+the envelope stays inspectable (identity, version, summary readable without
+decoding the payload) while Dates, Maps, Sets and buffers round-trip exactly —
+what the port's provider-private round-trip requirement demands. The codec
+lives bridge-side deliberately: the renderer has no `node:v8`, and Electron
+IPC is itself a structured clone, so typed values cross the contextBridge
+natively and only the bridge serializes.
+
+**4.2 — the store.** `src/store/filesystem-project-store.ts`:
+`schemaVersion = CURRENT_PROJECT_VERSION` (31) from
+`@opencut/editor-classic/storage`; `migrate()` walks the published
+`migrations` transform list under the browser store's policy model
+(production identity migrates by default; any other identity refuses without
+an explicit disposable opt-in; `disabled` always refuses — the no-opt-in
+refusal). `persistedSchemaVersion()` reads on-disk envelope versions via
+`listRecords` (empty store returns `schemaVersion`, else `Math.min`).
+Conflict matrix, enqueue serialization, quota check at the commit seam, and
+the control class mirror the in-memory reference store's shapes.
+
+**Deviation from task 4.2's letter, recorded:** the task says `migrate()`
+"delegating to the published `runStorageMigrations`". That published runner is
+hardwired to the legacy `video-editor-projects` IndexedDB database (it opens
+IndexedDB directly): under `bun test` it crashes on the missing `indexedDB`
+global, and inside Electron it would read the wrong store entirely. The spec
+(which wins over design/tasks where they speak) requires only that migration
+be "brought forward by the published migration runner" — and task 9.4 freezes
+the public signatures of the S03+S04 storage surface, so parameterizing
+`runStorageMigrations` to accept a backend is exactly the change this change
+may not make. Resolution: the store consumes the same published artifacts the
+runner consumes — the `migrations` transform list and `CURRENT_PROJECT_VERSION`
+— and sequences them per-record exactly as the runner's own
+`transformLegacyProject` does (sort by `from`; skip non-matching; a skipped
+transform is a failure; the chain must reach current). The frozen runner is
+untouched.
+
+**4.3 — conformance (the task's oracle).**
+`src/store/__tests__/filesystem-store-conformance.test.ts` runs the published
+`runPortConformance` on the portable profile with `exerciseMigration: true`,
+over `createInMemoryPorts({ store })` with the filesystem store substituted
+and a disposable-root `NodeFsStoreBridge` fixture. Result: **33 passed, 0
+failed, 1 stated skip** (`environment: a forced no-rasterizer declaration
+yields a zero limit :: this host declares detect mode, so there is no force to
+check`). No port role reports zero cases: store 19, assets 2, assetLoader 1,
+runtimeResources 5, exporter 2, diagnostics 2, ids 2, environment 3 (2+1
+skip). **The provider-private round-trip case passed by name: "a known edit
+round-trips without losing opaque nested fields."**
+
+One repo-level constraint shaped the harness: `@opencut/editor-classic/storage`
+statically reaches the real `opencut-wasm` package, whose init throws under
+`bun test`. Both Group 4 suites follow the repo's established pattern
+(`apps/web/src/editor/host/__tests__/production-composition.test.ts`,
+`packages/editor-classic/src/evidence/index.ts`): the real suite runs in an
+isolated child process whose first sequential import installs
+`evidence/wasm-test-mock`, so the process-global wasm mock never reaches any
+other test file.
+
+**4.4 — filesystem migration probes.**
+`src/store/__tests__/filesystem-store-migration-probes.test.ts`, the
+mechanism-neutral analogs of the C5 browser probes (the IndexedDB probes
+themselves — seeding, stage-database cleanup, recovery journals — are stated
+non-coverage for this store). All five passed:
+
+1. forward migration — seeded v29 (two steps) and v30 (one step) records both
+   reach 31 through the published chain, `recordsMigrated: 2`, progress last
+   `{completed: 2, total: 2}`, loaded payloads carry `version: 31`, second
+   run `not-needed`;
+2a. a throwing transform reports `failed`, reason names unchanged durable
+   records, source `record.json` byte-identical (`readFileSync().equals`),
+   reload still v30;
+2b. a refusing (`skipped: true`) transform reports `failed`, source intact;
+3. no-opt-in — default-disabled on a foreign identity refuses ("not enabled")
+   touching nothing (byte-identical); an explicit production policy on a
+   non-default identity refuses ("opt-in"); the default production identity
+   is exactly the one string;
+4. `afterDatabases` equivalent — post-migration root walk finds only the
+   design-E4 layout (`projects/<id>/{record.json,attachments}`,
+   `library/<ns>/*.json`, `store.json`) and zero `.tmp-` strays.
+
+Probe authoring found one trap worth recording: `bun test` does not
+typecheck, so a positional `saveAttachment(id, key, ...)` call against the
+port's args-object surface ran with `undefined` identifiers and silently
+created a `projects/undefined/` tree — `RegExp.test(undefined)` coerces to
+the literal segment "undefined". The probe now calls the args-object surface
+and the layout probe flags any such phantom; `tsc` (run below) is the
+structural backstop.
+
+**4.5 — the owed non-vacuity assertion (already paid).** The assertion
+`expect(files.length, "persistence-importer scan must not be vacuous")
+.toBeGreaterThan(0)` already exists in
+`apps/web/src/services/storage/__tests__/c5-storage-red-controls.test.ts`
+(lines 413-416), added by pre-change commit `8389be4e` — not by this change.
+Verified by execution (`bun test` that file: 1 pass / 0 fail /
+REAL_EXIT_CODE:0) and left unmodified: the task forbids widening the scan's
+scope, and adding a duplicate assertion would be exactly that in disguise.
+
+**4.6 — the production bridge.** Three artifacts, no fourth:
+`electron/preload.cjs` exposes exactly one global (`window.opencutStore`, the
+`ProjectStoreFiles` surface, one `opencut-store:<operation>` channel per
+operation, identifiers and structured-clone values only);
+`src/store/main-store-ipc.ts` (electron-free, compiled by the package build to
+`dist-main/main-store-ipc.cjs` via `bun build`) installs the fourteen IPC
+handlers over one `NodeFsStoreBridge` rooted at
+`app.getPath("userData")/projects`, with `OPENCUT_STORE_ROOT` overriding for
+evidence runs; `src/store/ipc-store-bridge.ts` is the renderer-side
+`IpcStoreBridge` over the preload surface, typing `window.opencutStore` once
+and re-wrapping IPC rejections (Electron erases error identity) as
+`StoreBridgeError`. `electron/main.cjs` installs the handlers before the first
+window and writes the boot bookkeeping `store.json` (identity + fresh usage
+inspection, advisory only). `src/store/__tests__/store-bridge-surface.test.ts`
+holds the structure: the preload's operation list equals
+`STORE_IPC_OPERATIONS`, exactly one exposed global, no `node:` require in the
+preload, no path import or absolute literal in any bridge-facing module, and
+`main.cjs` resolving the design-E4 root and override. `dist-main/` is
+gitignored beside `dist/`.
+
+The production proof (`scripts/store-bridge-proof.mjs`, log
+`group-4-bridge-production.log`) launched the real app over a disposable
+`OPENCUT_STORE_ROOT` and drove every operation through the page's own
+`window.opencutStore`: 12/12 in-page steps green (including a Date in an
+opaque payload surviving the full renderer-to-disk-to-renderer round trip,
+and a 4-byte attachment body), Node-side layout exactly design E4,
+`store.json` identity `opencut-fs-production`, and
+`clearFiles({kind: "all"})` emptying the root. Zero console errors.
+
+The proof earned its keep twice: run 1 caught a real IPC bug the bun suites
+structurally cannot — the handler registrations had dropped Electron's
+leading `event` parameter, so every arg-taking channel received an
+`IpcMainInvokeEvent` where its payload belonged (`stored.record` of
+`undefined`); run 2's only failure was the proof's own over-strict check (an
+empty `attachments/` directory legitimately remains after `removeAttachment`
+unlinks its files). Both are recorded in the log's run sequence; the final
+run is REAL_EXIT_CODE:0.
