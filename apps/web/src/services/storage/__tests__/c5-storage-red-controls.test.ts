@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-type-assertion, opencut/prefer-object-params -- RED-to-green boundary controls intentionally exercise unknown/future APIs and legacy opaque payloads. */
 import { describe, expect, mock, test } from "bun:test";
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
@@ -370,9 +370,34 @@ if (process.env.OPENCUT_C5_STORAGE_RED_ISOLATED !== "1") {
 		});
 
 		test("all current direct persistence importers are rejected", () => {
+			// Scope must cover every package's src, not just the two app Hosts:
+			// production files now live under packages/editor-classic/src (post
+			// package-extraction), and a scan that never looks there is blind to
+			// exactly the files most likely to hold direct persistence access —
+			// review round 2 caught this against sibling `check-surface-private-
+			// drag.mjs`, which already scans a packages/*/src tree. A bare
+			// "packages/*/src" is NOT a working git pathspec here: execFileSync
+			// passes argv straight to git with no shell, and without ":(glob)"
+			// magic git treats "*" as a literal character, so that argument would
+			// match zero files while looking like real coverage (confirmed: `git
+			// ls-files "packages/*/src"` returns nothing even though hundreds of
+			// files exist under it). Reading packages/ directly sidesteps that
+			// footgun and keeps the scan correct as packages are added or removed.
+			const packagesRoot = join(repoRoot, "packages");
+			const packageSrcDirs = readdirSync(packagesRoot, {
+				withFileTypes: true,
+			})
+				.filter((entry) => entry.isDirectory())
+				.map((entry) => join("packages", entry.name, "src"))
+				.filter((path) => existsSync(join(repoRoot, path)));
 			const files = execFileSync(
 				"git",
-				["ls-files", "apps/web/src", "apps/vite-example/src"],
+				[
+					"ls-files",
+					"apps/web/src",
+					"apps/vite-example/src",
+					...packageSrcDirs,
+				],
 				{
 					cwd: repoRoot,
 					encoding: "utf8",
@@ -385,6 +410,10 @@ if (process.env.OPENCUT_C5_STORAGE_RED_ISOLATED !== "1") {
 						!path.includes("/__tests__/") &&
 						existsSync(join(repoRoot, path)),
 				);
+			expect(
+				files.length,
+				"persistence-importer scan must not be vacuous",
+			).toBeGreaterThan(0);
 			const violations = files.filter((path) => {
 				const source = readFileSync(join(repoRoot, path), "utf8");
 				return (
