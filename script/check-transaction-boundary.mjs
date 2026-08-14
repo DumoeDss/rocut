@@ -395,7 +395,7 @@ const CORPUS_CONTROL_FIXTURES = [
 	{
 		rule: "*",
 		expect: "not-caught",
-		path: "apps/web/src/editor/contracts/vectors/corpus/converse.json",
+		path: "packages/editor-contracts/src/vectors/corpus/converse.json",
 		text:
 			'{ "vectors": [ { "id": "document/public-vocabulary", "title": "track, clip, asset, marker and project are the public vocabulary",' +
 			' "batch": { "operations": [ { "kind": "create-track", "track": { "id": "track-video", "kind": "video", "name": "Video lane", "hidden": false } },' +
@@ -408,7 +408,7 @@ const CORPUS_CONTROL_FIXTURES = [
 	{
 		rule: "*",
 		expect: "not-caught",
-		path: "apps/web/src/editor/contracts/vectors/corpus/converse.json",
+		path: "packages/editor-contracts/src/vectors/corpus/converse.json",
 		text: '{ "expect": { "outcome": "rejected", "errorCode": "conflict", "issueCodes": ["collision", "lane-incompatible"] } }\n',
 		note: "closed error and issue codes are public vocabulary too",
 	},

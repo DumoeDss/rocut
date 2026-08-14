@@ -55,7 +55,7 @@ const HOSTS = ["next", "vite"];
 
 /**
  * The Node drivers' per-step comparison counts, pinned identically in
- * `apps/web/src/editor/contracts/vectors/__tests__/agent-drivers.test.ts` as
+ * `packages/editor-contracts/src/vectors/__tests__/agent-drivers.test.ts` as
  * `NODE_DRIVER_ASSERTIONS`, where a live Node run must reproduce them.
  *
  * The implementation report's claim that the Hosts assert "exactly" what the
