@@ -697,3 +697,98 @@ the same contract satisfied. Run 4 then passed end to end.
 
 No frozen surface was touched; no deviation from the change artifacts in this group (the
 `app.tsx` wrapper is host-side defect repair that the parity run exists to catch).
+
+## Group 8 — Agent + disposal oracles on the desktop Host (tasks 8.1–8.4)
+
+### 8.1 — the agent scenario on electron: PASSED
+
+`PARITY_SPEC=agent PARITY_HOST=electron` through the shared `surface-evidence`
+entry (`opencut://app/surface-evidence.html?scenario=agent`). Log with the real
+exit code: `evidence/logs/group-8-agent-electron.log` — `1 passed (4.5s)`,
+`REAL_EXIT_CODE:0`.
+
+- **Apply**: all nine declared steps executed and asserted (87 assertions),
+  ledger written, verdict `passed`, no failure codes, **zero console/page
+  errors**; host `electron`, build marker `s05-electron-20260815`, committed
+  revision 6 (2 tracks, 3 clips).
+- **Reopen**: full window reload (new-document proof asserted), fresh session
+  over the same on-disk fs store — reopened engine reported the exact
+  committed revision 6 and matched **48 committed values**; verdict `passed`.
+- **Stale control**: reopening with the commitment asserted one revision lower
+  failed exactly as demanded (`reopened revision 6 != committed 5`).
+
+The ledger itself is committed at `evidence/agent-ledger-electron.json` (the
+parity-artifacts regression path it was written to is gitignored), with the
+run's two screenshots under `evidence/screenshots/group-8-agent-{apply,reopen}.png`.
+
+### 8.2 — the nine predicates by hand: all nine PASS
+
+`apps/electron-host/scripts/validate-agent-ledger.mjs` carries the checker's
+nine rule bodies and its `NODE_DRIVER_ASSERTIONS` pin copied verbatim, applied
+to a caller-given ledger (the checker itself still reads the archived original
+and was not repointed). Against the fresh electron ledger: **all nine PASS**,
+including `assertions-match-node` — the browser driver's per-step counts are
+step-for-step identical to the Node drivers'. A corrupted-copy negative
+control fails exactly the four predicates the corruptions target, exit 1.
+Full table + negative control: `evidence/group-8-agent-ledger-predicates.md`.
+
+### 8.3 — the C6 disposal oracle on electron: PASSED
+
+`apps/electron-host/scripts/c6-oracle-proof.mjs` gates four visits through the
+package's own, unmodified C6DisposalHarness (only the composition is this
+change's), mirroring the vite standing gate's checks (`status`/marker/label
+plumbing, six cycles, lifecycle + dwell completeness, expected-vs-unexpected
+console split, CSP violations) plus the two negative controls and the durable
+proof. Log with the real exit code: `evidence/logs/group-8-c6-oracle.log` —
+`C6 ORACLE PROOF PASSED`, `REAL_EXIT_CODE:0`.
+
+- **ordinary**: six full cycles; lifecycle and renderer-resume dwell evidence
+  complete on every cycle (the dwell mirror includes the positive form of the
+  vite gate's last conjunct: the resumed renderer must publish **strictly
+  more** than the suspended dwell snapshot — 36 > 34 observed).
+- **missing-created**: not clean, fails on `worker was not CREATED`, six cycles.
+- **leak**: not clean, fails on `independent platform residual`, six cycles.
+- **durable-reopen**: proof clean of everything but the recorded race; the
+  durable store passes the composition's own `isDurableBrowserStore`
+  (`store instanceof FilesystemProjectStore`, app.tsx) — **class identity,
+  which a production minifier cannot rewrite**.
+
+**The Group 6 cycle-1 race on this host is deterministic, and the record shows
+it precisely**: the bounded-retry policy (5 fresh-document attempts per gated
+visit) saw the identical signature — `cycle 1 timer independent platform
+residual 1 (independent ledger retained 1 handle(s)).` — on **10 of 10
+attempts** (ordinary ×5, durable-reopen ×5, the latter prefixed `first
+disposal:`), always cycle 1 only, always exactly 1 handle, never growing,
+never in cycles 2-6, and **zero non-race failures across every attempt**.
+Group 6's characterization (cycle-1 only, non-cumulative, timer ledger only)
+holds; only the frequency differs from vite's intermittent form. Per Group 6
+the race is non-blocking; every attempt's signature is in the committed log.
+
+Two diagnostics recorded, not gated (both consequences of mounting the
+package harness unmodified):
+
+- `constructorName` reads `"Tet"` — the contract marks the field "Diagnostic
+  only. Production minifiers may rewrite this value", and the package's own
+  oracle never gates on it; identity is carried by the `instanceof` flag
+  asserted above.
+- The durable proof's own `host` field reads `"vite"` (pathname `.html`
+  inference inside the unmodified package); recorded in the log's verdicts as
+  `durable-reopen-host-label`.
+
+### 8.4 — the execution-evidence bundle
+
+Groups 5-8's live-region evidence, each with real exit codes visible:
+Group 5 (`evidence/logs/group-5-composition-evidence.log`, boot/asset/worker
+screenshots), Group 7 (`evidence/logs/group-7-parity-*.log`, the two parity
+reports), Group 8 (`evidence/logs/group-8-agent-electron.log`,
+`evidence/logs/group-8-c6-oracle.log`, `evidence/agent-ledger-electron.json`,
+`evidence/group-8-agent-ledger-predicates.md`, the two agent screenshots).
+
+Gate-development note: the oracle script's first six runs failed on its own
+bugs (a TDZ self-shadow, a race signature too strict for the harness's
+ledger-detail suffix and the durable proof's `first disposal:` prefix, a
+transcription inversion of the vite gate's last dwell conjunct, and an
+over-strict `constructorName` equality the contract explicitly deprecates)
+— each fixed against observed evidence, never by weakening a check below the
+vite gate's own bar. The passing run is the seventh; its log is the committed
+one.

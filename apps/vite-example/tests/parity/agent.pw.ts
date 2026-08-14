@@ -26,6 +26,7 @@ import {
 } from "@opencut/editor-contracts/vectors";
 
 import { evidenceDestination } from "./evidence-path";
+import { acquireElectronPage, closeElectronPage } from "./electron-page";
 import { HOST } from "./host-profile";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -37,7 +38,14 @@ const EVIDENCE = evidenceDestination({
 });
 const EVIDENCE_DIR = EVIDENCE.dir;
 const COMMITMENT_KEY = "t4-agent-evidence-commitment";
-const ENTRY = HOST === "next" ? "/surface-evidence" : "/surface-evidence.html";
+// The desktop Host serves the entry from its own `opencut://` scheme — a full
+// URL, not a path (task 7.1's rule); the browser hosts keep their paths.
+const ENTRY =
+	HOST === "next"
+		? "/surface-evidence"
+		: HOST === "electron"
+			? "opencut://app/surface-evidence.html"
+			: "/surface-evidence.html";
 const APPLY_URL = `${ENTRY}?scenario=agent`;
 const REOPEN_URL = `${ENTRY}?scenario=agent&phase=reopen`;
 const DECLARED_STEPS = AGENT_SCENARIO.steps.map((step) => step.id);
@@ -107,7 +115,14 @@ async function documentIsNew(page: Page): Promise<boolean> {
 
 test.describe.configure({ mode: "serial" });
 
-test(`Agent transaction evidence — ${HOST} host`, async ({ page }) => {
+test.afterEach(async () => {
+	// The same seam teardown as the parity spec (task 7.2): the desktop
+	// Host's app process and its disposable store root live for exactly this
+	// run.
+	await closeElectronPage();
+});
+
+test(`Agent transaction evidence — ${HOST} host`, async ({ page: fixturePage }) => {
 	mkdirSync(EVIDENCE_DIR, { recursive: true });
 	if (EVIDENCE.archived) {
 		console.log(
@@ -116,6 +131,11 @@ test(`Agent transaction evidence — ${HOST} host`, async ({ page }) => {
 		);
 	}
 	steps.length = 0;
+	// Task 7.2's page-acquisition seam, the same minimal branch the parity
+	// spec gained: on the desktop Host the page is a window of the launched
+	// app; on the browser hosts it is the fixture page, unchanged, and every
+	// assertion below addresses `page` either way.
+	const page: Page = HOST === "electron" ? await acquireElectronPage() : fixturePage;
 	const consoleErrors: string[] = [];
 	page.on("console", (message) => {
 		if (message.type() === "error") consoleErrors.push(message.text());

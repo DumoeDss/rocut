@@ -182,21 +182,21 @@
 
 ## 8. Automate and disposal: the S03 and S02 evidence on the desktop Host
 
-- [ ] 8.1 Run the agent scenario on the electron Host: `PARITY_SPEC=agent PARITY_HOST=electron`
+- [x] 8.1 Run the agent scenario on the electron Host: `PARITY_SPEC=agent PARITY_HOST=electron`
       through the `surface-evidence` entry (`?scenario=agent`). Apply phase: every declared step
       executed and asserted, ledger written, no console/page errors. Reopen phase: full window
       reload, fresh session over the same disk store, reopened engine reports the exact committed
       revision and every committed entity with committed values. Self-log `REAL_EXIT_CODE`.
-- [ ] 8.2 Validate the electron agent ledger against the same nine predicates
+- [x] 8.2 Validate the electron agent ledger against the same nine predicates
       `check-agent-evidence.mjs` applies (`ledger-present` … `metadata-only`), by hand against the
       fresh ledger as P1 did for its regression runs — the checker itself still reads the archived
       original and is not repointed. All nine pass; record the per-predicate result.
-- [ ] 8.3 Run the disposal oracle on the electron Host: `?c6-disposal-harness=1` ordinary control
+- [x] 8.3 Run the disposal oracle on the electron Host: `?c6-disposal-harness=1` ordinary control
       through its full cycles, plus the `missing-created` and `leak` negative controls, plus the
       `proof=durable-reopen` variant against the fs store. The harness is the package's own code;
       only the composition is new. No leaked timers/workers/audio contexts/object URLs across
       cycles; durable reopen passes. Self-log `REAL_EXIT_CODE`.
-- [ ] 8.4 Bundle the Group 5–8 execution evidence (boot gate, asset manifest, worker fixture,
+- [x] 8.4 Bundle the Group 5–8 execution evidence (boot gate, asset manifest, worker fixture,
       parity, agent, disposal) under `evidence/` with the real exit codes visible — this is the
       live-server/browser region no static gate covers, and P1's worst defects both lived exactly
       here. A green static checker is not evidence in this region.
