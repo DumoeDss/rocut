@@ -380,3 +380,21 @@ rewrite. Boundary checker green at HEAD. No new defects found beyond F8/F9.
 **FINDINGS — F1/F2/F3/F4/F6/F7 verified fixed; F5's disposition carries one false sub-claim
 (new F8, Minor); one Trivial method-annotation nit (F9).** F8 is a two-line evidence-text
 correction; nothing this round blocks ship once it lands.
+
+## Round 2 note (loop-termination check, 2026-08-15)
+
+Micro-fix `4a7d31f7` (13 commits beyond base) — delta-only, all claims reproduced:
+
+- **F8 — FIXED, both halves.** The false TS2352 sentence is deleted from the F5 disposition,
+  which now records the disproof explicitly (single cast compiles clean under the app's TS 5.9.3
+  and root 6.0.3 — my reproduction, restated accurately); `surface-evidence-main.tsx` carries the
+  single `as` cast (one-line diff); typecheck re-run by me at HEAD: REAL_EXIT_CODE:0.
+- **F9 — FIXED.** BOUNDARIES §12 reads 2299 → 2384, +85, 0 removed, with the method
+  (`git ls-tree -r <commit> --name-only | wc -l` at the close-out commit) stated inline; I
+  spot-checked the count myself (2384 at `4a7d31f7`).
+- **Sweep clean.** Five files, all expected (BOUNDARIES, cast site, implementation-report,
+  round-2 typecheck log, this report — the diff to this file is exactly my Round 1 section,
+  committed unmodified); no drive-bys; no new stale hashes (no sha references in any hunk);
+  all five changed files CR=0 (LF-clean).
+
+**Round 2 verdict: CLEAN.** F1–F9 all resolved; no findings. Cleared to ship.

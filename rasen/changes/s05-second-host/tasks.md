@@ -243,6 +243,6 @@
       `--no-verify` (no hooks exist; it is a no-op).
 - [x] 10.3 Commit locally to `feat/s05-community-beta`. **Ship mode is local; do not push.** The
       portfolio delivers once, at the parent, after all seven children.
-- [ ] 10.4 The moment the review loop goes clean, write `{"kind":"standDown"}` to any parked
+- [x] 10.4 The moment the review loop goes clean, write `{"kind":"standDown"}` to any parked
       worker's `<changeRoot>/signals/<role>.json` and confirm `signals/.state/` is empty before
       the archive is planned — a live heartbeat makes archive ESTALE unrecoverable by retry.
