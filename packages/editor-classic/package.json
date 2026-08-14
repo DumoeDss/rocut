@@ -30,6 +30,8 @@
     "./fonts": "./src/fonts/index.ts",
     "./ui": "./src/ui/index.ts",
     "./evidence": "./src/evidence/index.ts",
+    "./evidence/headless": "./src/evidence/headless.ts",
+    "./evidence/headless-semantic-fixture": "./src/editor/session/headless-semantic-fixture.ts",
     "./evidence/wasm-test-mock": "./src/editor/session/__tests__/wasm-test-mock.ts",
     "./package.json": "./package.json"
   }

@@ -1,6 +1,6 @@
-import { runHeadlessProofControl } from "@opencut/editor-classic/evidence";
-import { installHeadlessRuntimeProbe } from "@opencut/editor-classic/evidence";
-import type { HeadlessSemanticResult } from "@opencut/editor-classic/evidence";
+import { runHeadlessProofControl } from "@opencut/editor-classic/evidence/headless";
+import { installHeadlessRuntimeProbe } from "@opencut/editor-classic/evidence/headless";
+import type { HeadlessSemanticResult } from "@opencut/editor-classic/evidence/headless-semantic-fixture";
 import { exerciseHeadlessRuntimeSensitivity } from "../../../../../script/fixtures/c7-headless-runtime-sensitivity-control";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +21,7 @@ export async function GET(): Promise<Response> {
 	let result: HeadlessSemanticResult;
 	try {
 		const { runHeadlessSemanticFixture } =
-			await import("@opencut/editor-classic/evidence");
+			await import("@opencut/editor-classic/evidence/headless-semantic-fixture");
 		result = await runHeadlessSemanticFixture({
 			host: "next",
 			buildMarker,

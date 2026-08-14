@@ -1,6 +1,8 @@
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
+import wasm from "vite-plugin-wasm";
+import topLevelAwait from "vite-plugin-top-level-await";
 import { headlessModuleGraph } from "./build/headless-module-graph";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -41,6 +43,17 @@ const injectedControl = resolve(
 export default defineConfig({
 	base: process.env.OPENCUT_C7_PUBLIC_BASE || "/",
 	plugins: [
+		// The evidence barrel this entry imports (`@opencut/editor-classic/evidence`)
+		// transitively reaches the real `opencut-wasm` package via
+		// c6-disposal-harness / surface-evidence-harness (see that barrel's own
+		// comment). `opencut-wasm` is wasm-pack `--target bundler` output — the
+		// same shape documented in the sibling `vite.config.ts`, which carries
+		// this identical plugin pair for that reason. Bare Vite cannot load it;
+		// without these two plugins the build fails during transform with
+		// `[vite:wasm-fallback] "ESM integration proposal for Wasm" is not
+		// supported currently`, before the module graph plugin below ever runs.
+		wasm(),
+		topLevelAwait(),
 		headlessModuleGraph({
 			repoRoot,
 			outputRoot: relative(repoRoot, resolve(here, outputDirectory)),
