@@ -235,13 +235,13 @@
 
 ## 10. Ship
 
-- [ ] 10.1 Verify line endings per stage with `tr -dc '\r' < <file> | wc -c` on every file written
+- [x] 10.1 Verify line endings per stage with `tr -dc '\r' < <file> | wc -c` on every file written
       or generated, and `git ls-files --eol` over the change's full path set at the end — the
       Write tool flips files to CRLF on this machine and rocut is LF-in-worktree.
-- [ ] 10.2 Stage explicit pathspecs only; assert `git diff --cached --name-only | grep -c
+- [x] 10.2 Stage explicit pathspecs only; assert `git diff --cached --name-only | grep -c
       '^\.rasen/'` is `0` before every commit — `.rasen/` is not gitignored here. Do not pass
       `--no-verify` (no hooks exist; it is a no-op).
-- [ ] 10.3 Commit locally to `feat/s05-community-beta`. **Ship mode is local; do not push.** The
+- [x] 10.3 Commit locally to `feat/s05-community-beta`. **Ship mode is local; do not push.** The
       portfolio delivers once, at the parent, after all seven children.
 - [ ] 10.4 The moment the review loop goes clean, write `{"kind":"standDown"}` to any parked
       worker's `<changeRoot>/signals/<role>.json` and confirm `signals/.state/` is empty before

@@ -901,3 +901,43 @@ Also worth recording from this group: the sweep's first incarnation as a
 execution resolves `/tmp` differently than inline commands on this machine);
 the rerun was inline with a repo-local log, which is the form the evidence
 file preserves.
+
+## Group 10 — Ship discipline (tasks 10.1–10.3)
+
+**10.1 — line endings.** Per-file `tr -dc '\r' | wc -c` ran on every file
+written or generated this group before staging (all zero). The closing audit
+ran `git ls-files --eol` over the change's full path set — 101 files changed
+across `66add22f..HEAD`: 95 `w/lf`, 5 binary PNGs (`i/-text w/-text`,
+expected for images), and 1 `i/mixed w/mixed` captured tool log
+(`evidence/logs/gate-1-spike-run.log`) whose worktree matches its committed
+blob byte-for-byte — the mixed endings are the authentic captured output of
+the Windows tool that produced it, preserved rather than rewritten. No file
+shows index/worktree EOL divergence.
+
+**10.2 — staging discipline.** Every commit this change staged explicit
+pathspecs only and asserted the staged set contains zero `.rasen/` paths
+(the grep -c result captured in a variable each time — grep -c exits 1 on
+zero, which would otherwise read as failure). Final assertion before the
+Group 9 commit: `RASEN_STAGED:0`. No `--no-verify` was ever passed.
+
+**10.3 — local commits.** Eleven commits on `feat/s05-community-beta`,
+nothing pushed. The portfolio delivers once, at the parent.
+
+**Final re-verification — C6 oracle against the rebuilt dist.** Group 9's
+runtime-asset widening fixed `c4-worker-harness.tsx`'s fixture URL and the
+dist was rebuilt (`s05-electron-20260815`) *after* Group 8's oracle run, so
+the standing discipline (live evidence over inference — the URL string is
+identical when `BASE_URL=/`, but that is an inference) required a re-run.
+Result: `C6 ORACLE PROOF PASSED`, `REAL_EXIT_CODE:0`
+(`evidence/logs/group-10-c6-oracle-rebuilt-dist.log`). The race distribution
+is unchanged from Group 8's record — deterministic cycle-1-only, all 5
+ordinary and all 5 durable-reopen attempts (the latter prefixed
+`first disposal: `), exactly 1 retained handle, zero non-race failures;
+missing-created and leak negatives failed exactly as demanded; the
+minified-constructor diagnostic reads `Tet` and the host-label diagnostic
+`vite`, both on the record as diagnostics per the contract's own wording.
+
+**10.4 — standDown is the lead's.** This worker parked nobody (ONE_SHOT, no
+subagents, no `rasen agent wait`), so there is no signal file of mine to
+write and `signals/.state/` concerns only workers the lead parked. The box
+is left for the lead.
