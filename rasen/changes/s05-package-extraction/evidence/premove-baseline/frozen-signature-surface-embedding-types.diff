@@ -1,0 +1,13 @@
+--- /tmp/frozen-sig-diffs/a4.ts	2026-08-14 16:25:23.814791800 +0800
++++ packages/editor-classic/src/editor/surface/embedding/types.ts	2026-08-14 02:48:44.135934800 +0800
+@@ -13,8 +13,8 @@
+  * the public Surface contract.
+  */
+ 
+-import type { EditorSession } from "@/editor/session";
+-import type { EditorSessionRootHandle } from "@/editor/session/session-types";
++import type { EditorSession } from "../../session";
++import type { EditorSessionRootHandle } from "../../session/session-types";
+ 
+ // ---------------------------------------------------------------------------
+ // Focus mode

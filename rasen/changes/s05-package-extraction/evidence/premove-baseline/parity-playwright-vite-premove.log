@@ -1,0 +1,9 @@
+$ playwright test --config playwright.surface.config.ts
+[WebServer] $ vite preview --port "4173" --strictPort --host "127.0.0.1"
+
+Running 1 test using 1 worker
+
+  ✓  1 [chromium] › tests\parity\parity.pw.ts:84:1 › editing parity scenario — vite host (41.7s)
+
+  1 passed (47.2s)
+REAL_EXIT_CODE:0

@@ -1,0 +1,901 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="bun test" tests="665" assertions="3082" failures="8" skipped="0" time="81.0181331">
+  <testsuite name="script\__tests__\c5-emitted-runtime-assets-red.test.mjs" tests="1" assertions="8" failures="0" skipped="0" time="0.516" hostname="">
+    <testcase name="rejects literal and encoded dot-segment escapes after URL canonicalization" classname="C5 mounted-base dot-segment emitted-asset RED controls" time="0.516" file="script\__tests__\c5-emitted-runtime-assets-red.test.mjs" assertions="8" />
+  </testsuite>
+  <testsuite name="script\__tests__\c5-runtime-asset-boundary-red.test.mjs" tests="1" assertions="4" failures="0" skipped="0" time="1.61" hostname="">
+    <testcase name="ignores deleted cached paths but still scans an existing production file" classname="C5 runtime asset boundary deleted-file regression" time="1.61" file="script\__tests__\c5-runtime-asset-boundary-red.test.mjs" assertions="4" />
+  </testsuite>
+  <testsuite name="script\__tests__\c5-storage-boundary-red.test.mjs" tests="19" assertions="37" failures="0" skipped="0" time="2.968" hostname="">
+    <testcase name="the test table names every negative fixture" classname="C5 final storage boundary negative controls" time="0" file="script\__tests__\c5-storage-boundary-red.test.mjs" assertions="1" />
+    <testcase name="rejects direct-adapter with its targeted diagnostic" classname="C5 final storage boundary negative controls" time="0.218" file="script\__tests__\c5-storage-boundary-red.test.mjs" assertions="2" />
+    <testcase name="rejects direct-indexeddb with its targeted diagnostic" classname="C5 final storage boundary negative controls" time="0.172" file="script\__tests__\c5-storage-boundary-red.test.mjs" assertions="2" />
+    <testcase name="rejects direct-opfs with its targeted diagnostic" classname="C5 final storage boundary negative controls" time="0.141" file="script\__tests__\c5-storage-boundary-red.test.mjs" assertions="2" />
+    <testcase name="rejects direct-singleton with its targeted diagnostic" classname="C5 final storage boundary negative controls" time="0.156" file="script\__tests__\c5-storage-boundary-red.test.mjs" assertions="2" />
+    <testcase name="rejects hidden-host-storage with its targeted diagnostic" classname="C5 final storage boundary negative controls" time="0.188" file="script\__tests__\c5-storage-boundary-red.test.mjs" assertions="2" />
+    <testcase name="rejects in-memory-fallback with its targeted diagnostic" classname="C5 final storage boundary negative controls" time="0.171" file="script\__tests__\c5-storage-boundary-red.test.mjs" assertions="2" />
+    <testcase name="rejects localstorage-presets with its targeted diagnostic" classname="C5 final storage boundary negative controls" time="0.172" file="script\__tests__\c5-storage-boundary-red.test.mjs" assertions="2" />
+    <testcase name="rejects localstorage-sounds with its targeted diagnostic" classname="C5 final storage boundary negative controls" time="0.157" file="script\__tests__\c5-storage-boundary-red.test.mjs" assertions="2" />
+    <testcase name="rejects mechanism-type-leak with its targeted diagnostic" classname="C5 final storage boundary negative controls" time="0.171" file="script\__tests__\c5-storage-boundary-red.test.mjs" assertions="2" />
+    <testcase name="rejects physical-storage-path-leak with its targeted diagnostic" classname="C5 final storage boundary negative controls" time="0.172" file="script\__tests__\c5-storage-boundary-red.test.mjs" assertions="2" />
+    <testcase name="rejects private-storage-context with its targeted diagnostic" classname="C5 final storage boundary negative controls" time="0.172" file="script\__tests__\c5-storage-boundary-red.test.mjs" assertions="2" />
+    <testcase name="rejects public-command-leak with its targeted diagnostic" classname="C5 final storage boundary negative controls" time="0.156" file="script\__tests__\c5-storage-boundary-red.test.mjs" assertions="2" />
+    <testcase name="rejects public-schema-leak with its targeted diagnostic" classname="C5 final storage boundary negative controls" time="0.141" file="script\__tests__\c5-storage-boundary-red.test.mjs" assertions="2" />
+    <testcase name="rejects public-state-store-leak with its targeted diagnostic" classname="C5 final storage boundary negative controls" time="0.141" file="script\__tests__\c5-storage-boundary-red.test.mjs" assertions="2" />
+    <testcase name="rejects public-storage-implementation-leak with its targeted diagnostic" classname="C5 final storage boundary negative controls" time="0.156" file="script\__tests__\c5-storage-boundary-red.test.mjs" assertions="2" />
+    <testcase name="rejects second-media-port with its targeted diagnostic" classname="C5 final storage boundary negative controls" time="0.187" file="script\__tests__\c5-storage-boundary-red.test.mjs" assertions="2" />
+    <testcase name="rejects second-storage-port with its targeted diagnostic" classname="C5 final storage boundary negative controls" time="0.157" file="script\__tests__\c5-storage-boundary-red.test.mjs" assertions="2" />
+    <testcase name="rejects unlisted-verification with its targeted diagnostic" classname="C5 final storage boundary negative controls" time="0.14" file="script\__tests__\c5-storage-boundary-red.test.mjs" assertions="2" />
+  </testsuite>
+  <testsuite name="script\__tests__\c6-session-resource-boundary.test.mjs" tests="18" assertions="64" failures="0" skipped="0" time="16.125" hostname="">
+    <testcase name="C6 executable negative rejects timer identifier alias" classname="" time="1.078" file="script\__tests__\c6-session-resource-boundary.test.mjs" assertions="3" />
+    <testcase name="C6 executable negative rejects timer computed property" classname="" time="0.422" file="script\__tests__\c6-session-resource-boundary.test.mjs" assertions="3" />
+    <testcase name="C6 executable negative rejects Worker constructor alias" classname="" time="0.5" file="script\__tests__\c6-session-resource-boundary.test.mjs" assertions="3" />
+    <testcase name="C6 executable negative rejects AudioContext constructor alias" classname="" time="0.515" file="script\__tests__\c6-session-resource-boundary.test.mjs" assertions="3" />
+    <testcase name="C6 executable negative rejects URL.createObjectURL destructure" classname="" time="0.469" file="script\__tests__\c6-session-resource-boundary.test.mjs" assertions="3" />
+    <testcase name="C6 executable negative rejects OfflineAudioContext destructured alias" classname="" time="0.437" file="script\__tests__\c6-session-resource-boundary.test.mjs" assertions="3" />
+    <testcase name="C6 executable negative rejects arbitrary single-resource wrapper" classname="" time="0.454" file="script\__tests__\c6-session-resource-boundary.test.mjs" assertions="3" />
+    <testcase name="C6 executable negative rejects destructured multi-resource wrapper" classname="" time="0.453" file="script\__tests__\c6-session-resource-boundary.test.mjs" assertions="3" />
+    <testcase name="C6 resource boundary scans a non-empty inventory and stays clean" classname="" time="2.797" file="script\__tests__\c6-session-resource-boundary.test.mjs" assertions="8" />
+    <testcase name="C6 resource boundary negative controls prove every rule can fail" classname="" time="0.734" file="script\__tests__\c6-session-resource-boundary.test.mjs" assertions="23" />
+    <testcase name="C6 Next inventory follows the editor route manifest/NFT and source maps" classname="" time="0" file="script\__tests__\c6-session-resource-boundary.test.mjs" assertions="0" />
+    <testcase name="C6 emitted boundary accepts fresh Vite and Next outputs when present" classname="" time="0" file="script\__tests__\c6-session-resource-boundary.test.mjs" assertions="0" />
+    <testcase name="C6 independent anchor verifies fresh Vite and Next artifact digests" classname="" time="0.969" file="script\__tests__\c6-session-resource-boundary.test.mjs" assertions="3" />
+    <testcase name="C6 generator keeps closure stable across distinct Next build IDs" classname="" time="0" file="script\__tests__\c6-session-resource-boundary.test.mjs" assertions="0" />
+    <testcase name="C6 emitted boundary rejects a non-empty truncated Vite graph" classname="" time="3.047" file="script\__tests__\c6-session-resource-boundary.test.mjs" assertions="1" />
+    <testcase name="C6 emitted boundary rejects a padded graph that truncates each attributable root" classname="" time="3.546" file="script\__tests__\c6-session-resource-boundary.test.mjs" assertions="2" />
+    <testcase name="C6 closure minimum is anchored independently from a downgraded fixture" classname="" time="0.422" file="script\__tests__\c6-session-resource-boundary.test.mjs" assertions="1" />
+    <testcase name="C6 checker and closure fixture cannot self-approve a coordinated downgrade" classname="" time="0.282" file="script\__tests__\c6-session-resource-boundary.test.mjs" assertions="2" />
+  </testsuite>
+  <testsuite name="script\__tests__\c7-headless-graph.test.mjs" tests="19" assertions="20" failures="0" skipped="0" time="0.125" hostname="">
+    <testcase name="accepts a complete exact-entry emitted closure" classname="C7 attributable emitted headless graph" time="0.031" file="script\__tests__\c7-headless-graph.test.mjs" assertions="1" />
+    <testcase name="rejects a Vite artifact whose executable HTML facade is absent" classname="C7 attributable emitted headless graph" time="0" file="script\__tests__\c7-headless-graph.test.mjs" assertions="1" />
+    <testcase name="rejects an altered executable HTML facade" classname="C7 attributable emitted headless graph" time="0.032" file="script\__tests__\c7-headless-graph.test.mjs" assertions="1" />
+    <testcase name="rejects HTML whose module script targets a non-entry chunk" classname="C7 attributable emitted headless graph" time="0.015" file="script\__tests__\c7-headless-graph.test.mjs" assertions="1" />
+    <testcase name="rejects empty modules" classname="C7 attributable emitted headless graph" time="0" file="script\__tests__\c7-headless-graph.test.mjs" assertions="1" />
+    <testcase name="rejects wrong entry" classname="C7 attributable emitted headless graph" time="0.016" file="script\__tests__\c7-headless-graph.test.mjs" assertions="1" />
+    <testcase name="rejects missing critical root" classname="C7 attributable emitted headless graph" time="0" file="script\__tests__\c7-headless-graph.test.mjs" assertions="1" />
+    <testcase name="rejects stale marker" classname="C7 attributable emitted headless graph" time="0" file="script\__tests__\c7-headless-graph.test.mjs" assertions="1" />
+    <testcase name="rejects stale base" classname="C7 attributable emitted headless graph" time="0" file="script\__tests__\c7-headless-graph.test.mjs" assertions="1" />
+    <testcase name="rejects altered file digest" classname="C7 attributable emitted headless graph" time="0" file="script\__tests__\c7-headless-graph.test.mjs" assertions="1" />
+    <testcase name="rejects copied Host graph" classname="C7 attributable emitted headless graph" time="0.016" file="script\__tests__\c7-headless-graph.test.mjs" assertions="1" />
+    <testcase name="rejects aggregate-only inventory" classname="C7 attributable emitted headless graph" time="0" file="script\__tests__\c7-headless-graph.test.mjs" assertions="1" />
+    <testcase name="detects POSIX React" classname="C7 attributable emitted headless graph" time="0" file="script\__tests__\c7-headless-graph.test.mjs" assertions="1" />
+    <testcase name="detects Windows React DOM" classname="C7 attributable emitted headless graph" time="0" file="script\__tests__\c7-headless-graph.test.mjs" assertions="1" />
+    <testcase name="detects package-manager JSX runtime" classname="C7 attributable emitted headless graph" time="0" file="script\__tests__\c7-headless-graph.test.mjs" assertions="1" />
+    <testcase name="detects virtual React" classname="C7 attributable emitted headless graph" time="0.015" file="script\__tests__\c7-headless-graph.test.mjs" assertions="1" />
+    <testcase name="detects raw alias" classname="C7 attributable emitted headless graph" time="0" file="script\__tests__\c7-headless-graph.test.mjs" assertions="1" />
+    <testcase name="detects Sonner UI" classname="C7 attributable emitted headless graph" time="0" file="script\__tests__\c7-headless-graph.test.mjs" assertions="1" />
+    <testcase name="publishes stable structured failure evidence with rule and graph IDs" classname="C7 attributable emitted headless graph" time="0" file="script\__tests__\c7-headless-graph.test.mjs" assertions="2" />
+  </testsuite>
+  <testsuite name="script\__tests__\c7-headless-semantic-result.test.mjs" tests="53" assertions="53" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="rejects literal runtime claims without pre-load probe provenance" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="accepts a complete actual edit and reopen" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects no-edit" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects no-second-owner" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects wrong-store" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects fallback-store" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects fabricated probe order" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects missing RAF observation" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects missing React strategy" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects missing-digest" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects post-dispose-write" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects unhandled-error" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean global timeouts value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean global intervals value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean global animationFrames value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean global workers value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean global audioContexts value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean global audioContextConstructions value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean global webkitAudioContextConstructions value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean global objectUrls value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean global webGpuAdapterRequests value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean global wasmInstantiations value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean global wasmInstantiateCalls value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean global wasmInstantiateStreamingCalls value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean Host workers value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean Host audioContexts value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean Host objectUrls value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean Host graphicsQueries value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean React mutationRecords value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean React rootMarkersBefore value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean React rootMarkersAfter value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean React mountAttempts value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean compositor/GPU hostGraphicsQueries value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean compositor/GPU webGpuAdapterRequests value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean compositor/GPU wasmInstantiations value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a fabricated clean compositor/GPU ownershipAttempts value" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects bad global strategy provenance" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects bad global order provenance" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects bad Host strategy provenance" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects bad Host order provenance" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects bad React strategy provenance" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects bad React order provenance" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects bad compositor strategy provenance" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects bad compositor order provenance" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="accepts a genuine vite runtime sensitivity control" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="accepts a genuine next runtime sensitivity control" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects an installed sensitivity hook that was not exercised" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects fabricated browser React sensitivity" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects a copied Host result" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="accepts independently attributed Vite and Next results" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="accepts independent owned Host reports" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects incomplete owned cleanup" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+    <testcase name="rejects copied graph evidence" classname="C7 headless semantic result evaluator" time="0" file="script\__tests__\c7-headless-semantic-result.test.mjs" assertions="1" />
+  </testsuite>
+  <testsuite name="eslint\rules\__tests__\prefer-object-params.test.mjs" tests="25" assertions="0" failures="0" skipped="0" time="0.218" hostname="">
+    <testcase name="function f() {}" classname="valid &amp;gt; prefer-object-params" time="0.062" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="function f(a) {}" classname="valid &amp;gt; prefer-object-params" time="0.016" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="const f = (a) =&gt; a;" classname="valid &amp;gt; prefer-object-params" time="0" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="const f = function (a) { return a; };" classname="valid &amp;gt; prefer-object-params" time="0.015" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="function f({ a, b }) { return a + b; }" classname="valid &amp;gt; prefer-object-params" time="0" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="function f({ a, b }: { a: number; b: number }) { return a + b; }" classname="valid &amp;gt; prefer-object-params" time="0.016" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="[1, 2, 3].reduce((acc, cur) =&gt; acc + cur, 0);" classname="valid &amp;gt; prefer-object-params" time="0" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="arr.map((value, index) =&gt; value + index);" classname="valid &amp;gt; prefer-object-params" time="0.016" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="new Promise((resolve, reject) =&gt; {});" classname="valid &amp;gt; prefer-object-params" time="0" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="maybeFn?.((a, b) =&gt; a + b);" classname="valid &amp;gt; prefer-object-params" time="0" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="someAPI({ on: (a, b) =&gt; a + b });" classname="valid &amp;gt; prefer-object-params" time="0.015" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="persist((set, get) =&gt; ({}), { migrate: (state, version) =&gt; state });" classname="valid &amp;gt; prefer-object-params" time="0" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="new Foo({ handler: (a, b) =&gt; a + b });" classname="valid &amp;gt; prefer-object-params" time="0.016" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="maybeFn?.({ handler: (a, b) =&gt; a + b });" classname="valid &amp;gt; prefer-object-params" time="0" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="someAPI({ outer: { handler: (a, b) =&gt; a + b } });" classname="valid &amp;gt; prefer-object-params" time="0" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="function isFoo(x: unknown, ctx: Ctx): x is Foo { return true; }" classname="valid &amp;gt; prefer-object-params" time="0.016" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="const isFoo = (x: unknown, ctx: Ctx): x is Foo =&gt; true;" classname="valid &amp;gt; prefer-object-params" time="0" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="function f(a, b) { return a + b; }" classname="invalid &amp;gt; prefer-object-params" time="0.015" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="const f = (a, b) =&gt; a + b;" classname="invalid &amp;gt; prefer-object-params" time="0" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="const f = function (a, b) { return a + b; };" classname="invalid &amp;gt; prefer-object-params" time="0" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="function f(a, b, c) { return a + b + c; }" classname="invalid &amp;gt; prefer-object-params" time="0" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="function formatTime(seconds: number, fps: number) { return seconds * fps; }" classname="invalid &amp;gt; prefer-object-params" time="0.016" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="const cb = (a, b) =&gt; a + b; arr.reduce(cb, 0);" classname="invalid &amp;gt; prefer-object-params" time="0" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="const opts = { handler: (a, b) =&gt; a + b }; someAPI(opts);" classname="invalid &amp;gt; prefer-object-params" time="0" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+    <testcase name="&#10;&#10;&#10;function f(
+\u0009a: number,
+\u0009b: number,
+) { return a + b; }" classname="invalid &amp;gt; prefer-object-params" time="0.015" file="eslint\rules\__tests__\prefer-object-params.test.mjs" assertions="0" />
+  </testsuite>
+  <testsuite name="apps\web\build\__tests__\headless-webpack-graph-plugin.test.ts" tests="5" assertions="6" failures="0" skipped="0" time="0.063" hostname="">
+    <testcase name="rejects an entrypoint file when the exact root owns zero chunks" classname="C7 Next exact-root emitted membership" time="0" file="apps\web\build\__tests__\headless-webpack-graph-plugin.test.ts" assertions="1" />
+    <testcase name="accepts actual chunk membership carried by a concatenated owner" classname="C7 Next exact-root emitted membership" time="0.047" file="apps\web\build\__tests__\headless-webpack-graph-plugin.test.ts" assertions="2" />
+    <testcase name="rejects owner chunks outside the named webpack entrypoint" classname="C7 Next exact-root emitted membership" time="0" file="apps\web\build\__tests__\headless-webpack-graph-plugin.test.ts" assertions="1" />
+    <testcase name="rejects truncated root chunk bytes before publishing an envelope" classname="C7 Next exact-root emitted membership" time="0" file="apps\web\build\__tests__\headless-webpack-graph-plugin.test.ts" assertions="1" />
+    <testcase name="rejects a full alias-only producer-to-checker root without a resolved resource" classname="C7 Next exact-root emitted membership" time="0.016" file="apps\web\build\__tests__\headless-webpack-graph-plugin.test.ts" assertions="1" />
+  </testsuite>
+  <testsuite name="packages\editor-ports\src\__tests__\conformance.test.ts" tests="28" assertions="179" failures="0" skipped="0" time="0.062" hostname="">
+    <testcase name="the in-memory reference implementation passes every case" classname="port conformance" time="0.015" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="4" />
+    <testcase name="the migration case runs when opted in, rejects failure, and requires idempotence" classname="port conformance" time="0.016" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="5" />
+    <testcase name="the migration case is skipped, not passed, when it is not opted into" classname="port conformance" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="2" />
+    <testcase name="migration opt-in rejects an identity outside its disposable prefix" classname="port conformance" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="2" />
+    <testcase name="a forcing no-rasterizer host runs the no-rasterizer case, not past it" classname="port conformance" time="0.016" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="5" />
+    <testcase name="reports pass/fail per port and per case" classname="port conformance" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="110" />
+    <testcase name="the suite is not vacuous — a non-conforming store fails it" classname="port conformance" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="2" />
+    <testcase name="an earlier attachment write cannot outlive a later project removal" classname="C5 contract-review regression controls" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="3" />
+    <testcase name="hierarchical clear waits for earlier affected writes" classname="C5 contract-review regression controls" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="4" />
+    <testcase name="collision-shaped attachment identities progress independently" classname="C5 contract-review regression controls" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="1" />
+    <testcase name="complete-browser profile rejects every required skip" classname="C5 contract-review regression controls" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="2" />
+    <testcase name="disposable migration binding rejects a different store and cleanup" classname="C5 contract-review regression controls" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="2" />
+    <testcase name="a migrated outcome without progress is rejected" classname="C5 contract-review regression controls" time="0.015" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="2" />
+    <testcase name="public store errors retain no raw platform cause" classname="C5 contract-review regression controls" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="3" />
+    <testcase name="record and summary identity mismatch fails before commit" classname="C5 contract-review regression controls" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="3" />
+    <testcase name="the shared matrix rejects aliased attachment and library list values" classname="C5 contract-review regression controls" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="1" />
+    <testcase name="provider-private fields round-trip unchanged" classname="the opaque payload survives what the store does not understand" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="1" />
+    <testcase name="a later mutation of the caller&apos;s object does not rewrite what was saved" classname="the opaque payload survives what the store does not understand" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="1" />
+    <testcase name="a forced no-rasterizer host yields a zero limit and a stated reason" classname="graphics negotiation" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="5" />
+    <testcase name="a forced host is not consulted about the runtime it is running on" classname="graphics negotiation" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="1" />
+    <testcase name="a DETECTING host on a GPU-less runtime reports no rasterizer" classname="graphics negotiation" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="5" />
+    <testcase name="a GPU-less runtime still states a reason when it supplies none" classname="graphics negotiation" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="2" />
+    <testcase name="a zero preview budget is reported verbatim, not clamped up to one" classname="graphics negotiation" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="2" />
+    <testcase name="the unimplemented marker cannot be stamped as a real measurement" classname="graphics negotiation" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="1" />
+    <testcase name="the report names the selected backend, as an enumeration" classname="graphics negotiation" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="5" />
+    <testcase name="the placeholder is visibly unimplemented rather than plausibly wrong" classname="graphics negotiation" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="2" />
+    <testcase name="livePreviewLimit is a count, so a limit above one is expressible" classname="graphics negotiation" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="1" />
+    <testcase name="the editor&apos;s requested worker URL is recorded as a request" classname="the runtime-resource host constructs what the editor may not" time="0" file="packages\editor-ports\src\__tests__\conformance.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\actions\__tests__\registry.test.ts" tests="4" assertions="8" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="dispatches a same-named action only to the selected owner scope" classname="action registry scopes" time="0" file="packages\editor-classic\src\actions\__tests__\registry.test.ts" assertions="2" />
+    <testcase name="keeps unscoped binding and dispatch as the legacy compatibility path" classname="action registry scopes" time="0" file="packages\editor-classic\src\actions\__tests__\registry.test.ts" assertions="2" />
+    <testcase name="unbind removes only the handler in the selected scope" classname="action registry scopes" time="0" file="packages\editor-classic\src\actions\__tests__\registry.test.ts" assertions="2" />
+    <testcase name="nested invokeAction inherits the current handler scope" classname="action registry scopes" time="0" file="packages\editor-classic\src\actions\__tests__\registry.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\animation\__tests__\animated-params.test.ts" tests="11" assertions="30" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="snaps and clamps number params" classname="animated params" time="0" file="packages\editor-classic\src\animation\__tests__\animated-params.test.ts" assertions="2" />
+    <testcase name="rejects NaN and non-number values for number params" classname="animated params" time="0" file="packages\editor-classic\src\animation\__tests__\animated-params.test.ts" assertions="3" />
+    <testcase name="passthrough with step &lt;= 0 guard" classname="animated params" time="0" file="packages\editor-classic\src\animation\__tests__\animated-params.test.ts" assertions="1" />
+    <testcase name="accepts valid select values" classname="animated params" time="0" file="packages\editor-classic\src\animation\__tests__\animated-params.test.ts" assertions="2" />
+    <testcase name="rejects select values outside the allowed options" classname="animated params" time="0" file="packages\editor-classic\src\animation\__tests__\animated-params.test.ts" assertions="1" />
+    <testcase name="rejects non-string select values" classname="animated params" time="0" file="packages\editor-classic\src\animation\__tests__\animated-params.test.ts" assertions="3" />
+    <testcase name="boolean params accept booleans and reject other types" classname="animated params" time="0" file="packages\editor-classic\src\animation\__tests__\animated-params.test.ts" assertions="4" />
+    <testcase name="color params accept strings and reject other types" classname="animated params" time="0" file="packages\editor-classic\src\animation\__tests__\animated-params.test.ts" assertions="3" />
+    <testcase name="getAnimationParamValueKind maps param type to binding kind" classname="animated params" time="0" file="packages\editor-classic\src\animation\__tests__\animated-params.test.ts" assertions="4" />
+    <testcase name="getAnimationParamDefaultInterpolation is linear for continuous, hold for discrete" classname="animated params" time="0" file="packages\editor-classic\src\animation\__tests__\animated-params.test.ts" assertions="4" />
+    <testcase name="getAnimationParamNumericRange returns spec for number params, undefined otherwise" classname="animated params" time="0" file="packages\editor-classic\src\animation\__tests__\animated-params.test.ts" assertions="3" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\components\__tests__\storage-provider-operations.test.ts" tests="3" assertions="7" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="storage diagnostics expose stable identity without raw provider payload" classname="" time="0" file="packages\editor-classic\src\components\__tests__\storage-provider-operations.test.ts" assertions="3" />
+    <testcase name="storage clear rejects before publishing a false refreshed state" classname="" time="0" file="packages\editor-classic\src\components\__tests__\storage-provider-operations.test.ts" assertions="2" />
+    <testcase name="storage clear also rejects when the post-clear project refresh fails" classname="" time="0" file="packages\editor-classic\src\components\__tests__\storage-provider-operations.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\fonts\__tests__\host-font-assets.test.ts" tests="6" assertions="27" failures="0" skipped="0" time="0.437" hostname="">
+    <testcase name="loads and caches atlas data by loader identity, never first session" classname="Host-scoped font assets" time="0" file="packages\editor-classic\src\fonts\__tests__\host-font-assets.test.ts" assertions="8" />
+    <testcase name="rejects missing, empty, or malformed atlas entries" classname="Host-scoped font assets" time="0" file="packages\editor-classic\src\fonts\__tests__\host-font-assets.test.ts" assertions="4" />
+    <testcase name="quotes opaque CSS URLs with spaces, quotes and encoded characters" classname="Host-scoped font assets" time="0" file="packages\editor-classic\src\fonts\__tests__\host-font-assets.test.ts" assertions="2" />
+    <testcase name="fails closed on an HTML atlas fallback and propagates an aborted atlas request" classname="Host-scoped font assets" time="0" file="packages\editor-classic\src\fonts\__tests__\host-font-assets.test.ts" assertions="2" />
+    <testcase name="keeps two bases&apos; preloads, masks, and visible atlas names isolated" classname="Host-scoped font assets" time="0" file="packages\editor-classic\src\fonts\__tests__\host-font-assets.test.ts" assertions="8" />
+    <testcase name="decodes a shipped font chunk and rejects corrupt chunk bytes" classname="Host-scoped font assets" time="0.437" file="packages\editor-classic\src\fonts\__tests__\host-font-assets.test.ts" assertions="3" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\fps\__tests__\fps.test.ts" tests="5" assertions="5" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="returns the highest valid video fps" classname="getHighestImportedVideoFps" time="0" file="packages\editor-classic\src\fps\__tests__\fps.test.ts" assertions="1" />
+    <testcase name="ignores missing and invalid fps values" classname="getHighestImportedVideoFps" time="0" file="packages\editor-classic\src\fps\__tests__\fps.test.ts" assertions="1" />
+    <testcase name="raises the project fps to match a higher-fps import" classname="getRaisedProjectFpsForImportedMedia" time="0" file="packages\editor-classic\src\fps\__tests__\fps.test.ts" assertions="1" />
+    <testcase name="does not lower the project fps for lower-fps imports" classname="getRaisedProjectFpsForImportedMedia" time="0" file="packages\editor-classic\src\fps\__tests__\fps.test.ts" assertions="1" />
+    <testcase name="ignores non-video imports" classname="getRaisedProjectFpsForImportedMedia" time="0" file="packages\editor-classic\src\fps\__tests__\fps.test.ts" assertions="1" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\media\__tests__\audio-resource-lifecycle.test.ts" tests="1" assertions="0" failures="0" skipped="0" time="0.203" hostname="">
+    <testcase name="finite audio resource lifecycle runs in an isolated WASM mock process" classname="" time="0.203" file="packages\editor-classic\src\media\__tests__\audio-resource-lifecycle.test.ts" assertions="0" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\media\__tests__\persistence.test.ts" tests="4" assertions="12" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="legacy SVG replacement revokes the sniff URL once and retains the replacement handle" classname="session-owned media persistence" time="0" file="packages\editor-classic\src\media\__tests__\persistence.test.ts" assertions="7" />
+    <testcase name="round-trips attachment bytes and metadata with project isolation" classname="session-owned media persistence" time="0" file="packages\editor-classic\src\media\__tests__\persistence.test.ts" assertions="3" />
+    <testcase name="retains private attachment metadata after a known update" classname="session-owned media persistence" time="0" file="packages\editor-classic\src\media\__tests__\persistence.test.ts" assertions="1" />
+    <testcase name="orders removal after a still-reading attachment write" classname="session-owned media persistence" time="0" file="packages\editor-classic\src\media\__tests__\persistence.test.ts" assertions="1" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\media\__tests__\processing-capacity.test.ts" tests="1" assertions="0" failures="0" skipped="0" time="0.422" hostname="">
+    <testcase name="media capacity test runs with the wasm test double" classname="" time="0.422" file="packages\editor-classic\src\media\__tests__\processing-capacity.test.ts" assertions="0" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\params\__tests__\channel-layout.test.ts" tests="1" assertions="1" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="formats linear animated colors as hex" classname="channel layout" time="0" file="packages\editor-classic\src\params\__tests__\channel-layout.test.ts" assertions="1" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\retime\__tests__\resolve.test.ts" tests="8" assertions="12" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="maps clip time to source time at 2x speed" classname="retime resolve" time="0" file="packages\editor-classic\src\retime\__tests__\resolve.test.ts" assertions="1" />
+    <testcase name="maps clip time to source time at 0.5x speed" classname="retime resolve" time="0" file="packages\editor-classic\src\retime\__tests__\resolve.test.ts" assertions="1" />
+    <testcase name="returns clip time unchanged when no retime" classname="retime resolve" time="0" file="packages\editor-classic\src\retime\__tests__\resolve.test.ts" assertions="1" />
+    <testcase name="inverts source time back to clip time at 2x speed" classname="retime resolve" time="0" file="packages\editor-classic\src\retime\__tests__\resolve.test.ts" assertions="1" />
+    <testcase name="returns effective rate" classname="retime resolve" time="0" file="packages\editor-classic\src\retime\__tests__\resolve.test.ts" assertions="2" />
+    <testcase name="derives timeline duration for a visible source span" classname="retime resolve" time="0" file="packages\editor-classic\src\retime\__tests__\resolve.test.ts" assertions="2" />
+    <testcase name="clamps invalid rates to 1" classname="retime resolve" time="0" file="packages\editor-classic\src\retime\__tests__\resolve.test.ts" assertions="2" />
+    <testcase name="caps retime rates above 5x" classname="retime resolve" time="0" file="packages\editor-classic\src\retime\__tests__\resolve.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\retime\__tests__\split.test.ts" tests="4" assertions="7" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="measures source span at a clip time" classname="retime split" time="0" file="packages\editor-classic\src\retime\__tests__\split.test.ts" assertions="1" />
+    <testcase name="returns zero for non-positive clip time" classname="retime split" time="0" file="packages\editor-classic\src\retime\__tests__\split.test.ts" assertions="2" />
+    <testcase name="passes the same retime to both halves when splitting" classname="retime split" time="0" file="packages\editor-classic\src\retime\__tests__\split.test.ts" assertions="2" />
+    <testcase name="returns undefined on both sides when no retime" classname="retime split" time="0" file="packages\editor-classic\src\retime\__tests__\split.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\stickers\__tests__\host-assets.test.ts" tests="3" assertions="17" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="resolves flag browse/resolve URLs through each immutable Host base" classname="Host-scoped sticker assets" time="0" file="packages\editor-classic\src\stickers\__tests__\host-assets.test.ts" assertions="5" />
+    <testcase name="keys loaded sticker images by resolved URL and dimensions" classname="Host-scoped sticker assets" time="0" file="packages\editor-classic\src\stickers\__tests__\host-assets.test.ts" assertions="3" />
+    <testcase name="keeps generated graphic previews outside AssetResolver and first-party fetch" classname="Host-scoped sticker assets" time="0" file="packages\editor-classic\src\stickers\__tests__\host-assets.test.ts" assertions="9" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\stickers\__tests__\sticker-id.test.ts" tests="4" assertions="7" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="parses provider-prefixed IDs" classname="sticker-id strict mode" time="0" file="packages\editor-classic\src\stickers\__tests__\sticker-id.test.ts" assertions="2" />
+    <testcase name="throws for IDs without provider prefix" classname="sticker-id strict mode" time="0" file="packages\editor-classic\src\stickers\__tests__\sticker-id.test.ts" assertions="1" />
+    <testcase name="throws for malformed IDs" classname="sticker-id strict mode" time="0" file="packages\editor-classic\src\stickers\__tests__\sticker-id.test.ts" assertions="3" />
+    <testcase name="builds sticker IDs unchanged" classname="sticker-id strict mode" time="0" file="packages\editor-classic\src\stickers\__tests__\sticker-id.test.ts" assertions="1" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\timeline\__tests__\element-with-track-selector.test.ts" tests="1" assertions="3" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="a non-empty selection returns shallow-stable members across reads" classname="element-with-track selector snapshot stability" time="0" file="packages\editor-classic\src\timeline\__tests__\element-with-track-selector.test.ts" assertions="3" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\utils\__tests__\browser-resource-lifecycle.test.ts" tests="3" assertions="11" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="successful utility and export downloads each revoke exactly once" classname="transient download object-URL ownership" time="0" file="packages\editor-classic\src\utils\__tests__\browser-resource-lifecycle.test.ts" assertions="4" />
+    <testcase name="a click error still removes the utility anchor and revokes its URL" classname="transient download object-URL ownership" time="0" file="packages\editor-classic\src\utils\__tests__\browser-resource-lifecycle.test.ts" assertions="3" />
+    <testcase name="an aborted export click and a removal failure both revoke terminally" classname="transient download object-URL ownership" time="0" file="packages\editor-classic\src\utils\__tests__\browser-resource-lifecycle.test.ts" assertions="4" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\utils\__tests__\math.test.ts" tests="19" assertions="42" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="should add numbers" classname="basic arithmetic &amp;gt; evaluateMathExpression" time="0" file="packages\editor-classic\src\utils\__tests__\math.test.ts" assertions="2" />
+    <testcase name="should subtract numbers" classname="basic arithmetic &amp;gt; evaluateMathExpression" time="0" file="packages\editor-classic\src\utils\__tests__\math.test.ts" assertions="2" />
+    <testcase name="should multiply numbers" classname="basic arithmetic &amp;gt; evaluateMathExpression" time="0" file="packages\editor-classic\src\utils\__tests__\math.test.ts" assertions="2" />
+    <testcase name="should divide numbers" classname="basic arithmetic &amp;gt; evaluateMathExpression" time="0" file="packages\editor-classic\src\utils\__tests__\math.test.ts" assertions="2" />
+    <testcase name="should respect multiplication over addition" classname="operator precedence &amp;gt; evaluateMathExpression" time="0" file="packages\editor-classic\src\utils\__tests__\math.test.ts" assertions="2" />
+    <testcase name="should respect division over subtraction" classname="operator precedence &amp;gt; evaluateMathExpression" time="0" file="packages\editor-classic\src\utils\__tests__\math.test.ts" assertions="1" />
+    <testcase name="should evaluate expressions in parentheses first" classname="parentheses &amp;gt; evaluateMathExpression" time="0" file="packages\editor-classic\src\utils\__tests__\math.test.ts" assertions="2" />
+    <testcase name="should handle nested parentheses" classname="parentheses &amp;gt; evaluateMathExpression" time="0" file="packages\editor-classic\src\utils\__tests__\math.test.ts" assertions="2" />
+    <testcase name="should handle decimal numbers" classname="decimal numbers &amp;gt; evaluateMathExpression" time="0" file="packages\editor-classic\src\utils\__tests__\math.test.ts" assertions="2" />
+    <testcase name="should handle negative numbers" classname="negative numbers &amp;gt; evaluateMathExpression" time="0" file="packages\editor-classic\src\utils\__tests__\math.test.ts" assertions="2" />
+    <testcase name="should handle various whitespace" classname="whitespace handling &amp;gt; evaluateMathExpression" time="0" file="packages\editor-classic\src\utils\__tests__\math.test.ts" assertions="2" />
+    <testcase name="should handle single number" classname="edge cases &amp;gt; evaluateMathExpression" time="0" file="packages\editor-classic\src\utils\__tests__\math.test.ts" assertions="2" />
+    <testcase name="should return null for empty string" classname="edge cases &amp;gt; evaluateMathExpression" time="0" file="packages\editor-classic\src\utils\__tests__\math.test.ts" assertions="1" />
+    <testcase name="should return null for invalid characters" classname="edge cases &amp;gt; evaluateMathExpression" time="0" file="packages\editor-classic\src\utils\__tests__\math.test.ts" assertions="3" />
+    <testcase name="should return null for unbalanced parentheses" classname="edge cases &amp;gt; evaluateMathExpression" time="0" file="packages\editor-classic\src\utils\__tests__\math.test.ts" assertions="2" />
+    <testcase name="should return null for division by zero" classname="edge cases &amp;gt; evaluateMathExpression" time="0" file="packages\editor-classic\src\utils\__tests__\math.test.ts" assertions="1" />
+    <testcase name="should return null for incomplete expressions" classname="edge cases &amp;gt; evaluateMathExpression" time="0" file="packages\editor-classic\src\utils\__tests__\math.test.ts" assertions="2" />
+    <testcase name="should reject code injection attempts" classname="security - code injection prevention &amp;gt; evaluateMathExpression" time="0" file="packages\editor-classic\src\utils\__tests__\math.test.ts" assertions="8" />
+    <testcase name="should reject prototype pollution attempts" classname="security - code injection prevention &amp;gt; evaluateMathExpression" time="0" file="packages\editor-classic\src\utils\__tests__\math.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-contracts\src\draft\__tests__\draft.test.ts" tests="23" assertions="237" failures="0" skipped="0" time="1.593" hostname="">
+    <testcase name="passes the reusable T2 conformance matrix" classname="Draft editing sessions" time="0.109" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="1" />
+    <testcase name="keeps repeated and concurrent conformance accounting run-local" classname="Draft editing sessions" time="0.11" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="7" />
+    <testcase name="preserves an arbitrary literal optional engine feature" classname="Draft editing sessions" time="0.047" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="2" />
+    <testcase name="accepts a provider retention policy at the public conformance boundary" classname="Draft editing sessions" time="0.046" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="2" />
+    <testcase name="names deliberate protocol violations instead of passing vacuously" classname="Draft editing sessions" time="0.063" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="6" />
+    <testcase name="maps retention adapter failure and rejects still-referenced project asset deletion" classname="Draft editing sessions" time="0" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="7" />
+    <testcase name="preserves parent store-error ownership and publishes nothing on apply failure" classname="Draft editing sessions" time="0.016" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="12" />
+    <testcase name="fails closed when a public engine wrapper omits or loses committed-state capture" classname="Draft editing sessions" time="0" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="7" />
+    <testcase name="uses an explicit wrapper capture for prior-ledger preflight and actual undo equivalence" classname="Draft editing sessions" time="0" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="5" />
+    <testcase name="keeps native capture construction-owned and immune to writer or port substitution" classname="Draft editing sessions" time="0" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="17" />
+    <testcase name="uses distinct base/incarnation keys when a public Draft id is reused" classname="Draft editing sessions" time="0" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="17" />
+    <testcase name="encodes arbitrary UTF-16 Draft ids without collisions or thrown opens" classname="Draft editing sessions" time="0.015" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="7" />
+    <testcase name="does not reserve a Draft id when incarnation key creation fails" classname="Draft editing sessions" time="0" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="2" />
+    <testcase name="keeps a one-field undo constant-sized across 8,000 markers" classname="Draft editing sessions" time="0.969" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="7" />
+    <testcase name="keeps one-to-four-field Project inverses constant-sized, exact, restorable, stale-safe, and preflight-closed" classname="Draft editing sessions" time="0.203" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="33" />
+    <testcase name="traverses first-seen identical containers before rejecting nested alias collapse" classname="Draft editing sessions" time="0" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="14" />
+    <testcase name="terminates cycles only through an already-recorded matching pair" classname="Draft editing sessions" time="0" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="3" />
+    <testcase name="repairs owners hidden below an identical container with a non-circular identity oracle" classname="Draft editing sessions" time="0" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="4" />
+    <testcase name="restores document-wide shared and distinct aliases across every entity collection" classname="Draft editing sessions" time="0" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="24" />
+    <testcase name="preserves cycles and Map/Set-contained aliases through an unrelated edit and undo" classname="Draft editing sessions" time="0" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="12" />
+    <testcase name="restores distinct and shared provider-private alias topology exactly" classname="Draft editing sessions" time="0.015" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="10" />
+    <testcase name="sanitizes adversarial engine error evidence without invoking getters" classname="Draft editing sessions" time="0" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="36" />
+    <testcase name="validates snapshot-attempt configuration" classname="Draft editing sessions" time="0" file="packages\editor-contracts\src\draft\__tests__\draft.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-contracts\src\engine\__tests__\engine.test.ts" tests="18" assertions="278" failures="0" skipped="0" time="0.203" hostname="">
+    <testcase name="passes the reusable T0 + T1 conformance matrix" classname="ProjectStore-backed transaction engine" time="0.031" file="packages\editor-contracts\src\engine\__tests__\engine.test.ts" assertions="4" />
+    <testcase name="isolates assertion accounting across concurrent conformance runs" classname="ProjectStore-backed transaction engine" time="0.031" file="packages\editor-contracts\src\engine\__tests__\engine.test.ts" assertions="10" />
+    <testcase name="runs conformance with an arbitrary literal provider feature" classname="ProjectStore-backed transaction engine" time="0.063" file="packages\editor-contracts\src\engine\__tests__\engine.test.ts" assertions="5" />
+    <testcase name="canonical replay distinguishes an omitted patch from explicit clearing" classname="ProjectStore-backed transaction engine" time="0" file="packages\editor-contracts\src\engine\__tests__\engine.test.ts" assertions="5" />
+    <testcase name="accepted entity, update, and keyed values survive every reopen" classname="ProjectStore-backed transaction engine" time="0" file="packages\editor-contracts\src\engine\__tests__\engine.test.ts" assertions="5" />
+    <testcase name="non-reopenable entity and idempotency values are rejected before save" classname="ProjectStore-backed transaction engine" time="0" file="packages\editor-contracts\src\engine\__tests__\engine.test.ts" assertions="12" />
+    <testcase name="validates the closed Project patch surface without publishing failures" classname="ProjectStore-backed transaction engine" time="0" file="packages\editor-contracts\src\engine\__tests__\engine.test.ts" assertions="128" />
+    <testcase name="rejects nested frame-rate payloads before live, persisted, or reopened state" classname="ProjectStore-backed transaction engine" time="0" file="packages\editor-contracts\src\engine\__tests__\engine.test.ts" assertions="40" />
+    <testcase name="checks keyed Project identity before serializable patch validation and aggregates normal issues" classname="ProjectStore-backed transaction engine" time="0.016" file="packages\editor-contracts\src\engine\__tests__\engine.test.ts" assertions="12" />
+    <testcase name="attributes untouched clip and marker timebase failures to the Project FPS operation" classname="ProjectStore-backed transaction engine" time="0" file="packages\editor-contracts\src\engine\__tests__\engine.test.ts" assertions="9" />
+    <testcase name="native adapter commits every Project field, summary, opaque sibling, and keyed reopen state exactly" classname="ProjectStore-backed transaction engine" time="0" file="packages\editor-contracts\src\engine\__tests__\engine.test.ts" assertions="17" />
+    <testcase name="projectless documents enforce base placement and require a frame rate" classname="ProjectStore-backed transaction engine" time="0" file="packages\editor-contracts\src\engine\__tests__\engine.test.ts" assertions="4" />
+    <testcase name="negative targets fail named conformance cases" classname="ProjectStore-backed transaction engine" time="0.062" file="packages\editor-contracts\src\engine\__tests__\engine.test.ts" assertions="4" />
+    <testcase name="placement reports every base rule and accepts adjacent intervals" classname="ProjectStore-backed transaction engine" time="0" file="packages\editor-contracts\src\engine\__tests__\engine.test.ts" assertions="13" />
+    <testcase name="dry-run conflicts are pure and do not reserve an idempotency key" classname="ProjectStore-backed transaction engine" time="0" file="packages\editor-contracts\src\engine\__tests__\engine.test.ts" assertions="3" />
+    <testcase name="reads are defensive and unsubscribe is idempotent" classname="ProjectStore-backed transaction engine" time="0" file="packages\editor-contracts\src\engine\__tests__\engine.test.ts" assertions="2" />
+    <testcase name="invalid persisted state is sanitized as load-project corruption" classname="ProjectStore-backed transaction engine" time="0" file="packages\editor-contracts\src\engine\__tests__\engine.test.ts" assertions="3" />
+    <testcase name="apply exposes the first placement issue as TransactionError validation" classname="ProjectStore-backed transaction engine" time="0" file="packages\editor-contracts\src\engine\__tests__\engine.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-contracts\src\in-memory\__tests__\in-memory.test.ts" tests="4" assertions="94" failures="0" skipped="0" time="0.016" hostname="">
+    <testcase name="passes T0 conformance with the seeded Project case executed" classname="in-memory transaction Project updates" time="0" file="packages\editor-contracts\src\in-memory\__tests__\in-memory.test.ts" assertions="1" />
+    <testcase name="rejects empty, excess, symbol, id, malformed, missing, and mismatched patches" classname="in-memory transaction Project updates" time="0" file="packages\editor-contracts\src\in-memory\__tests__\in-memory.test.ts" assertions="80" />
+    <testcase name="gives canonical keyed collisions precedence over serializable invalid Project patches" classname="in-memory transaction Project updates" time="0.016" file="packages\editor-contracts\src\in-memory\__tests__\in-memory.test.ts" assertions="6" />
+    <testcase name="commits a same-value patch once and rolls it back on a later failure" classname="in-memory transaction Project updates" time="0" file="packages\editor-contracts\src\in-memory\__tests__\in-memory.test.ts" assertions="7" />
+  </testsuite>
+  <testsuite name="packages\editor-contracts\src\vectors\__tests__\agent-drivers.test.ts" tests="8" assertions="216" failures="0" skipped="0" time="0.031" hostname="">
+    <testcase name="covers exactly the declared plan" classname="the pinned Node ledger" time="0" file="packages\editor-contracts\src\vectors\__tests__\agent-drivers.test.ts" assertions="1" />
+    <testcase name="runs the declared plan and emits a sound ledger" classname="driver 1 — the in-memory fake, without React, Electron or a browser" time="0.016" file="packages\editor-contracts\src\vectors\__tests__\agent-drivers.test.ts" assertions="66" />
+    <testcase name="runs the declared plan, counts durable saves, and reopens on the committed revision" classname="driver 2 — the durable engine over a project store" time="0" file="packages\editor-contracts\src\vectors\__tests__\agent-drivers.test.ts" assertions="69" />
+    <testcase name="a stale reopen expectation fails the reopen step" classname="driver 2 — the durable engine over a project store" time="0.015" file="packages\editor-contracts\src\vectors\__tests__\agent-drivers.test.ts" assertions="3" />
+    <testcase name="an injected durable failure moves nothing, is reported, and a later step still commits" classname="driver 2 — the durable engine over a project store" time="0" file="packages\editor-contracts\src\vectors\__tests__\agent-drivers.test.ts" assertions="10" />
+    <testcase name="a store that parks its saves reaches the same verdicts once released" classname="driver 2 — the durable engine over a project store" time="0" file="packages\editor-contracts\src\vectors\__tests__\agent-drivers.test.ts" assertions="62" />
+    <testcase name="the two Node drivers commit the same identities from the same definition" classname="driver 2 — the durable engine over a project store" time="0" file="packages\editor-contracts\src\vectors\__tests__\agent-drivers.test.ts" assertions="3" />
+    <testcase name="captureAgentCommitment records only what the scenario created" classname="driver 2 — the durable engine over a project store" time="0" file="packages\editor-contracts\src\vectors\__tests__\agent-drivers.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-contracts\src\vectors\__tests__\agent-scenario.test.ts" tests="9" assertions="52" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="the module mirrors the published corpus vector exactly" classname="the Host-neutral agent scenario" time="0" file="packages\editor-contracts\src\vectors\__tests__\agent-scenario.test.ts" assertions="4" />
+    <testcase name="it performs every element the canonical requirement names" classname="the Host-neutral agent scenario" time="0" file="packages\editor-contracts\src\vectors\__tests__\agent-scenario.test.ts" assertions="19" />
+    <testcase name="every declared step asserts something" classname="the Host-neutral agent scenario" time="0" file="packages\editor-contracts\src\vectors\__tests__\agent-scenario.test.ts" assertions="9" />
+    <testcase name="the scenario module imports only the frozen public surface" classname="the Host-neutral agent scenario" time="0" file="packages\editor-contracts\src\vectors\__tests__\agent-scenario.test.ts" assertions="15" />
+    <testcase name="a step that asserted nothing fails the run" classname="ledger accounting controls" time="0" file="packages\editor-contracts\src\vectors\__tests__\agent-scenario.test.ts" assertions="1" />
+    <testcase name="an executed plan that differs from the declared plan fails the run" classname="ledger accounting controls" time="0" file="packages\editor-contracts\src\vectors\__tests__\agent-scenario.test.ts" assertions="1" />
+    <testcase name="a run with no step at all fails" classname="ledger accounting controls" time="0" file="packages\editor-contracts\src\vectors\__tests__\agent-scenario.test.ts" assertions="1" />
+    <testcase name="a failed step fails the run" classname="ledger accounting controls" time="0" file="packages\editor-contracts\src\vectors\__tests__\agent-scenario.test.ts" assertions="1" />
+    <testcase name="a well-formed run reports no failure code" classname="ledger accounting controls" time="0" file="packages\editor-contracts\src\vectors\__tests__\agent-scenario.test.ts" assertions="1" />
+  </testsuite>
+  <testsuite name="packages\editor-contracts\src\vectors\__tests__\contract-surface.test.ts" tests="5" assertions="7" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="the parsed operation kinds are the exported constant, member for member" classname="contract surface derivation" time="0" file="packages\editor-contracts\src\vectors\__tests__\contract-surface.test.ts" assertions="2" />
+    <testcase name="the parsed error codes are exactly the union&apos;s members" classname="contract surface derivation" time="0" file="packages\editor-contracts\src\vectors\__tests__\contract-surface.test.ts" assertions="1" />
+    <testcase name="the parsed engine issue codes are exactly the union&apos;s members" classname="contract surface derivation" time="0" file="packages\editor-contracts\src\vectors\__tests__\contract-surface.test.ts" assertions="1" />
+    <testcase name="a source that does not declare a member set is refused, not defaulted" classname="contract surface derivation" time="0" file="packages\editor-contracts\src\vectors\__tests__\contract-surface.test.ts" assertions="2" />
+    <testcase name="a synthetic member added to the contract source is seen by the parser" classname="contract surface derivation" time="0" file="packages\editor-contracts\src\vectors\__tests__\contract-surface.test.ts" assertions="1" />
+  </testsuite>
+  <testsuite name="packages\editor-contracts\src\vectors\__tests__\corpus-isolation.test.ts" tests="3" assertions="6" failures="0" skipped="0" time="0.89" hostname="">
+    <testcase name="no module imports the committed corpus" classname="corpus isolation" time="0.484" file="packages\editor-contracts\src\vectors\__tests__\corpus-isolation.test.ts" assertions="2" />
+    <testcase name="no source imports a corpus JSON file by any relative path" classname="corpus isolation" time="0.406" file="packages\editor-contracts\src\vectors\__tests__\corpus-isolation.test.ts" assertions="1" />
+    <testcase name="the harness reads the corpus from disk, which proves the scan can see an importer" classname="corpus isolation" time="0" file="packages\editor-contracts\src\vectors\__tests__\corpus-isolation.test.ts" assertions="3" />
+  </testsuite>
+  <testsuite name="packages\editor-contracts\src\vectors\__tests__\coverage.test.ts" tests="6" assertions="48" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="every exported member is covered, and the covering vectors are named" classname="coverage of the frozen contract" time="0" file="packages\editor-contracts\src\vectors\__tests__\coverage.test.ts" assertions="35" />
+    <testcase name="the corpus advertises all twelve operation kinds by measurement" classname="coverage of the frozen contract" time="0" file="packages\editor-contracts\src\vectors\__tests__\coverage.test.ts" assertions="4" />
+    <testcase name="removing every vector for one kind fails the gate, naming that kind" classname="coverage of the frozen contract" time="0" file="packages\editor-contracts\src\vectors\__tests__\coverage.test.ts" assertions="3" />
+    <testcase name="the gate reads the contract: a synthetic exported member fails it" classname="coverage of the frozen contract" time="0" file="packages\editor-contracts\src\vectors\__tests__\coverage.test.ts" assertions="2" />
+    <testcase name="a redundant extra vector does not fail the gate" classname="coverage of the frozen contract" time="0" file="packages\editor-contracts\src\vectors\__tests__\coverage.test.ts" assertions="2" />
+    <testcase name="a member the corpus claims but the contract does not export is reported" classname="coverage of the frozen contract" time="0" file="packages\editor-contracts\src\vectors\__tests__\coverage.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-contracts\src\vectors\__tests__\loader.test.ts" tests="15" assertions="111" failures="0" skipped="0" time="0.937" hostname="">
+    <testcase name="parses with a plain JSON parser and is self-describing" classname="published corpus" time="0" file="packages\editor-contracts\src\vectors\__tests__\loader.test.ts" assertions="67" />
+    <testcase name="loads, and every vector id is unique across both families" classname="published corpus" time="0.047" file="packages\editor-contracts\src\vectors\__tests__\loader.test.ts" assertions="4" />
+    <testcase name="the corpus digest is a real SHA-256 chain, cross-checked against node:crypto" classname="published corpus" time="0.11" file="packages\editor-contracts\src\vectors\__tests__\loader.test.ts" assertions="6" />
+    <testcase name="a file edited without regenerating the manifest fails to load" classname="load-time refusals" time="0.015" file="packages\editor-contracts\src\vectors\__tests__\loader.test.ts" assertions="2" />
+    <testcase name="a manifest whose declared count differs from the files fails to load" classname="load-time refusals" time="0.031" file="packages\editor-contracts\src\vectors\__tests__\loader.test.ts" assertions="2" />
+    <testcase name="a vector whose expectation set is empty is a load error, not a skip" classname="load-time refusals" time="0.047" file="packages\editor-contracts\src\vectors\__tests__\loader.test.ts" assertions="3" />
+    <testcase name="a scenario vector with no step is a load error" classname="load-time refusals" time="0.078" file="packages\editor-contracts\src\vectors\__tests__\loader.test.ts" assertions="2" />
+    <testcase name="a non-integer tick value is refused with the offending field" classname="load-time refusals" time="0.047" file="packages\editor-contracts\src\vectors\__tests__\loader.test.ts" assertions="3" />
+    <testcase name="a non-finite number is refused" classname="load-time refusals" time="0.078" file="packages\editor-contracts\src\vectors\__tests__\loader.test.ts" assertions="4" />
+    <testcase name="an unknown operation kind is refused" classname="load-time refusals" time="0.078" file="packages\editor-contracts\src\vectors\__tests__\loader.test.ts" assertions="2" />
+    <testcase name="an unknown error code is refused" classname="load-time refusals" time="0.047" file="packages\editor-contracts\src\vectors\__tests__\loader.test.ts" assertions="2" />
+    <testcase name="an unknown engine issue code is refused" classname="load-time refusals" time="0.062" file="packages\editor-contracts\src\vectors\__tests__\loader.test.ts" assertions="2" />
+    <testcase name="a duplicate vector id is refused" classname="load-time refusals" time="0.047" file="packages\editor-contracts\src\vectors\__tests__\loader.test.ts" assertions="2" />
+    <testcase name="an unknown-kind probe naming a real kind is refused" classname="load-time refusals" time="0.063" file="packages\editor-contracts\src\vectors\__tests__\loader.test.ts" assertions="2" />
+    <testcase name="no refusal path can return a corpus" classname="load-time refusals" time="0.187" file="packages\editor-contracts\src\vectors\__tests__\loader.test.ts" assertions="8" />
+  </testsuite>
+  <testsuite name="packages\editor-contracts\src\vectors\__tests__\mutation-matrix.test.ts" tests="7" assertions="51" failures="0" skipped="0" time="0.093" hostname="">
+    <testcase name="a stale revision fails exactly the vectors with an accepted step" classname="mutation matrix" time="0.015" file="packages\editor-contracts\src\vectors\__tests__\mutation-matrix.test.ts" assertions="16" />
+    <testcase name="a non-atomic batch fails exactly the multi-operation vectors" classname="mutation matrix" time="0.016" file="packages\editor-contracts\src\vectors\__tests__\mutation-matrix.test.ts" assertions="6" />
+    <testcase name="ignoring the idempotency key fails exactly the keyed replay/reuse vectors" classname="mutation matrix" time="0" file="packages\editor-contracts\src\vectors\__tests__\mutation-matrix.test.ts" assertions="5" />
+    <testcase name="notifying on rejection fails exactly the vectors asserting a silent rejection" classname="mutation matrix" time="0.015" file="packages\editor-contracts\src\vectors\__tests__\mutation-matrix.test.ts" assertions="8" />
+    <testcase name="an uncloned read fails exactly the vectors that probe cloning" classname="mutation matrix" time="0" file="packages\editor-contracts\src\vectors\__tests__\mutation-matrix.test.ts" assertions="4" />
+    <testcase name="waiving placement fails exactly the vectors asserting a placement issue" classname="mutation matrix" time="0.047" file="packages\editor-contracts\src\vectors\__tests__\mutation-matrix.test.ts" assertions="8" />
+    <testcase name="a conforming implementation of a different shape passes every vector" classname="specificity" time="0" file="packages\editor-contracts\src\vectors\__tests__\mutation-matrix.test.ts" assertions="4" />
+  </testsuite>
+  <testsuite name="packages\editor-contracts\src\vectors\__tests__\runner.test.ts" tests="12" assertions="206" failures="0" skipped="0" time="0.078" hostname="">
+    <testcase name="green against the in-memory transaction store" classname="the runner against the reference implementations" time="0.016" file="packages\editor-contracts\src\vectors\__tests__\runner.test.ts" assertions="41" />
+    <testcase name="the fake skips exactly the vectors whose capability it does not advertise" classname="the runner against the reference implementations" time="0" file="packages\editor-contracts\src\vectors\__tests__\runner.test.ts" assertions="3" />
+    <testcase name="green against a durable engine over an in-memory project store" classname="the runner against the reference implementations" time="0.031" file="packages\editor-contracts\src\vectors\__tests__\runner.test.ts" assertions="35" />
+    <testcase name="an empty corpus is refused rather than passed" classname="fail-closed rules" time="0" file="packages\editor-contracts\src\vectors\__tests__\runner.test.ts" assertions="3" />
+    <testcase name="a filter matching nothing is refused" classname="fail-closed rules" time="0" file="packages\editor-contracts\src\vectors\__tests__\runner.test.ts" assertions="2" />
+    <testcase name="a filter matching exactly one vector runs exactly that vector and may pass" classname="fail-closed rules" time="0" file="packages\editor-contracts\src\vectors\__tests__\runner.test.ts" assertions="5" />
+    <testcase name="a target that cannot be seeded reports the document family unsupported" classname="fail-closed rules" time="0" file="packages\editor-contracts\src\vectors\__tests__\runner.test.ts" assertions="83" />
+    <testcase name="a vector that performed no comparison cannot be reported as passed" classname="fail-closed rules" time="0" file="packages\editor-contracts\src\vectors\__tests__\runner.test.ts" assertions="3" />
+    <testcase name="a scenario that compares nothing fails the run despite passing itself" classname="fail-closed rules" time="0" file="packages\editor-contracts\src\vectors\__tests__\runner.test.ts" assertions="6" />
+    <testcase name="executed fewer vectors than applicable is drift" classname="fail-closed rules" time="0" file="packages\editor-contracts\src\vectors\__tests__\runner.test.ts" assertions="3" />
+    <testcase name="a skip against a capability the target advertises is refused" classname="fail-closed rules" time="0" file="packages\editor-contracts\src\vectors\__tests__\runner.test.ts" assertions="17" />
+    <testcase name="a coverage shortfall fails the run even when every vector passes" classname="fail-closed rules" time="0.031" file="packages\editor-contracts\src\vectors\__tests__\runner.test.ts" assertions="5" />
+  </testsuite>
+  <testsuite name="apps\web\src\editor\host\__tests__\branding-assets.test.ts" tests="2" assertions="9" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="keeps both Host logos and Vite favicon below their configured bases" classname="base-aware Host branding" time="0" file="apps\web\src\editor\host\__tests__\branding-assets.test.ts" assertions="3" />
+    <testcase name="decodes non-empty logo and favicon pixels, not status alone" classname="base-aware Host branding" time="0" file="apps\web\src\editor\host\__tests__\branding-assets.test.ts" assertions="6" />
+  </testsuite>
+  <testsuite name="apps\web\src\editor\host\__tests__\production-composition.test.ts" tests="1" assertions="0" failures="0" skipped="0" time="2.672" hostname="">
+    <testcase name="production Host composition runs in an isolated wasm-mock process" classname="" time="2.672" file="apps\web\src\editor\host\__tests__\production-composition.test.ts" assertions="0" />
+  </testsuite>
+  <testsuite name="apps\web\src\services\storage\__tests__\c5-storage-red-controls.test.ts" tests="1" assertions="0" failures="0" skipped="0" time="2.719" hostname="">
+    <testcase name="C5 storage RED controls run in an isolated process" classname="" time="2.719" file="apps\web\src\services\storage\__tests__\c5-storage-red-controls.test.ts" assertions="0" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\actions\keybindings\__tests__\persistence.test.ts" tests="9" assertions="23" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="migrates legacy persisted keybindings before decoding them" classname="keybinding persistence" time="0" file="packages\editor-classic\src\actions\keybindings\__tests__\persistence.test.ts" assertions="6" />
+    <testcase name="filters invalid persisted entries at the boundary and warns" classname="keybinding persistence" time="0" file="packages\editor-classic\src\actions\keybindings\__tests__\persistence.test.ts" assertions="3" />
+    <testcase name="returns null and warns when persisted shape is unrecognizable" classname="keybinding persistence" time="0" file="packages\editor-classic\src\actions\keybindings\__tests__\persistence.test.ts" assertions="2" />
+    <testcase name="round-trips actions that have no default shortcut" classname="keybinding persistence" time="0" file="packages\editor-classic\src\actions\keybindings\__tests__\persistence.test.ts" assertions="5" />
+    <testcase name="accepts a valid configuration" classname="parseImportedKeybindings" time="0" file="packages\editor-classic\src\actions\keybindings\__tests__\persistence.test.ts" assertions="2" />
+    <testcase name="throws on non-object input" classname="parseImportedKeybindings" time="0" file="packages\editor-classic\src\actions\keybindings\__tests__\persistence.test.ts" assertions="2" />
+    <testcase name="throws on non-string action values" classname="parseImportedKeybindings" time="0" file="packages\editor-classic\src\actions\keybindings\__tests__\persistence.test.ts" assertions="1" />
+    <testcase name="throws on invalid shortcut keys" classname="parseImportedKeybindings" time="0" file="packages\editor-classic\src\actions\keybindings\__tests__\persistence.test.ts" assertions="1" />
+    <testcase name="throws on invalid actions" classname="parseImportedKeybindings" time="0" file="packages\editor-classic\src\actions\keybindings\__tests__\persistence.test.ts" assertions="1" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\core\managers\__tests__\media-persistence-rewire.test.ts" tests="1" assertions="0" failures="0" skipped="0" time="0.375" hostname="">
+    <testcase name="media persistence rewiring runs with the wasm test double" classname="" time="0.375" file="packages\editor-classic\src\core\managers\__tests__\media-persistence-rewire.test.ts" assertions="0" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\core\managers\__tests__\project-manager-thumbnail-degraded.test.ts" tests="1" assertions="0" failures="0" skipped="0" time="0.406" hostname="">
+    <testcase name="project thumbnail boundary suite runs with the wasm test double" classname="" time="0.406" file="packages\editor-classic\src\core\managers\__tests__\project-manager-thumbnail-degraded.test.ts" assertions="0" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\core\managers\__tests__\project-persistence-rewire.test.ts" tests="1" assertions="0" failures="0" skipped="0" time="2.344" hostname="">
+    <testcase name="project persistence rewiring runs with the wasm test double" classname="" time="2.344" file="packages\editor-classic\src\core\managers\__tests__\project-persistence-rewire.test.ts" assertions="0" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\core\managers\__tests__\save-manager-persistence-failure.test.ts" tests="2" assertions="4" failures="0" skipped="0" time="0.031" hostname="">
+    <testcase name="failed background save remains dirty without retrying in a tight loop" classname="" time="0.031" file="packages\editor-classic\src\core\managers\__tests__\save-manager-persistence-failure.test.ts" assertions="2" />
+    <testcase name="explicit flush propagates durable failure and retains dirty state" classname="" time="0" file="packages\editor-classic\src\core\managers\__tests__\save-manager-persistence-failure.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\core\managers\__tests__\transaction-persistence-coordination.test.ts" tests="4" assertions="12" failures="0" skipped="0" time="0.031" hostname="">
+    <testcase name="adopts the exact committed record without a second save" classname="transaction persistence coordination" time="0.016" file="packages\editor-classic\src\core\managers\__tests__\transaction-persistence-coordination.test.ts" assertions="2" />
+    <testcase name="already-durable publications suppress only their own dirty signals" classname="transaction persistence coordination" time="0" file="packages\editor-classic\src\core\managers\__tests__\transaction-persistence-coordination.test.ts" assertions="4" />
+    <testcase name="serializes transaction-first without losing metadata or opaque siblings" classname="transaction persistence coordination" time="0" file="packages\editor-classic\src\core\managers\__tests__\transaction-persistence-coordination.test.ts" assertions="3" />
+    <testcase name="serializes legacy-first without losing metadata or opaque siblings" classname="transaction persistence coordination" time="0.015" file="packages\editor-classic\src\core\managers\__tests__\transaction-persistence-coordination.test.ts" assertions="3" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\host\__tests__\browser-runtime.test.ts" tests="7" assertions="35" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="keeps relative, path, encoded, query and absolute bases immutable" classname="browser Host runtime ports" time="0" file="packages\editor-classic\src\editor\host\__tests__\browser-runtime.test.ts" assertions="8" />
+    <testcase name="rejects root, traversal, encoded traversal, schemes and backslashes" classname="browser Host runtime ports" time="0" file="packages\editor-classic\src\editor\host\__tests__\browser-runtime.test.ts" assertions="7" />
+    <testcase name="loads exact bytes, propagates abort and attributes HTTP failures" classname="browser Host runtime ports" time="0" file="packages\editor-classic\src\editor\host\__tests__\browser-runtime.test.ts" assertions="3" />
+    <testcase name="accepts JSON content and rejects HTML fallback or malformed JSON at the boundary" classname="browser Host runtime ports" time="0" file="packages\editor-classic\src\editor\host\__tests__\browser-runtime.test.ts" assertions="3" />
+    <testcase name="rewrites Worker URLs, adapts messages/errors/transfers and terminates exactly once" classname="browser Host runtime ports" time="0" file="packages\editor-classic\src\editor\host\__tests__\browser-runtime.test.ts" assertions="6" />
+    <testcase name="keeps two adapter instances isolated" classname="browser Host runtime ports" time="0" file="packages\editor-classic\src\editor\host\__tests__\browser-runtime.test.ts" assertions="5" />
+    <testcase name="resolves Host service paths under the same base without using the asset port" classname="browser Host runtime ports" time="0" file="packages\editor-classic\src\editor\host\__tests__\browser-runtime.test.ts" assertions="3" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\persistence\__tests__\opaque-roundtrip.test.ts" tests="1" assertions="0" failures="0" skipped="0" time="2.453" hostname="">
+    <testcase name="C5 coordinator suite runs in an isolated wasm-mock process" classname="" time="2.453" file="packages\editor-classic\src\editor\persistence\__tests__\opaque-roundtrip.test.ts" assertions="0" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\session\__tests__\c6-durable-reopen.test.ts" tests="4" assertions="10" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="accepts an attributable public-store reopen with exact durable equality" classname="C6 scenario 52 durable reopen report" time="0" file="packages\editor-classic\src\editor\session\__tests__\c6-durable-reopen.test.ts" assertions="4" />
+    <testcase name="rejects a second Host that does not reuse the module-stable store" classname="C6 scenario 52 durable reopen report" time="0" file="packages\editor-classic\src\editor\session\__tests__\c6-durable-reopen.test.ts" assertions="2" />
+    <testcase name="rejects a reference store even when every durable value matches" classname="C6 scenario 52 durable reopen report" time="0" file="packages\editor-classic\src\editor\session\__tests__\c6-durable-reopen.test.ts" assertions="2" />
+    <testcase name="rejects a different Host object even when its store identity matches" classname="C6 scenario 52 durable reopen report" time="0" file="packages\editor-classic\src\editor\session\__tests__\c6-durable-reopen.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\session\__tests__\disposal-oracle.test.ts" tests="10" assertions="22" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="accepts six clean cycles with all-five CREATED proof" classname="C6 disposal oracle" time="0" file="packages\editor-classic\src\editor\session\__tests__\disposal-oracle.test.ts" assertions="2" />
+    <testcase name="rejects missing-CREATED timer before accepting zero release" classname="C6 disposal oracle" time="0" file="packages\editor-classic\src\editor\session\__tests__\disposal-oracle.test.ts" assertions="2" />
+    <testcase name="rejects missing-CREATED worker before accepting zero release" classname="C6 disposal oracle" time="0" file="packages\editor-classic\src\editor\session\__tests__\disposal-oracle.test.ts" assertions="2" />
+    <testcase name="rejects missing-CREATED audioContext before accepting zero release" classname="C6 disposal oracle" time="0" file="packages\editor-classic\src\editor\session\__tests__\disposal-oracle.test.ts" assertions="2" />
+    <testcase name="rejects missing-CREATED objectUrl before accepting zero release" classname="C6 disposal oracle" time="0" file="packages\editor-classic\src\editor\session\__tests__\disposal-oracle.test.ts" assertions="2" />
+    <testcase name="rejects missing-CREATED gpuResource before accepting zero release" classname="C6 disposal oracle" time="0" file="packages\editor-classic\src\editor\session\__tests__\disposal-oracle.test.ts" assertions="2" />
+    <testcase name="rejects residual leakage and reports monotonic growth" classname="C6 disposal oracle" time="0" file="packages\editor-classic\src\editor\session\__tests__\disposal-oracle.test.ts" assertions="3" />
+    <testcase name="accepts a retained renderer that is silent in dwell and resumes on a fresh RAF generation" classname="C6 disposal oracle" time="0" file="packages\editor-classic\src\editor\session\__tests__\disposal-oracle.test.ts" assertions="2" />
+    <testcase name="rejects a synthetic post-resume claim without a fresh renderer generation and resource" classname="C6 disposal oracle" time="0" file="packages\editor-classic\src\editor\session\__tests__\disposal-oracle.test.ts" assertions="2" />
+    <testcase name="rejects an independent platform ledger residual and lifecycle identity drift" classname="C6 disposal oracle" time="0" file="packages\editor-classic\src\editor\session\__tests__\disposal-oracle.test.ts" assertions="3" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\session\__tests__\editor-singleton-boundary.test.ts" tests="8" assertions="16" failures="1" skipped="0" time="7.329" hostname="">
+    <testcase name="the complete runtime graph has no implicit editor owner" classname="editor singleton boundary" time="0.938" file="packages\editor-classic\src\editor\session\__tests__\editor-singleton-boundary.test.ts" assertions="2">
+      <failure type="AssertionError" />
+    </testcase>
+    <testcase name="negative control detects singleton-accessor" classname="editor singleton boundary" time="0.922" file="packages\editor-classic\src\editor\session\__tests__\editor-singleton-boundary.test.ts" assertions="2" />
+    <testcase name="negative control detects singleton-reset" classname="editor singleton boundary" time="0.781" file="packages\editor-classic\src\editor\session\__tests__\editor-singleton-boundary.test.ts" assertions="2" />
+    <testcase name="negative control detects static-core-instance" classname="editor singleton boundary" time="0.703" file="packages\editor-classic\src\editor\session\__tests__\editor-singleton-boundary.test.ts" assertions="2" />
+    <testcase name="negative control detects module-scope-construction" classname="editor singleton boundary" time="0.86" file="packages\editor-classic\src\editor\session\__tests__\editor-singleton-boundary.test.ts" assertions="2" />
+    <testcase name="negative control detects construction-outside-owner" classname="editor singleton boundary" time="0.796" file="packages\editor-classic\src\editor\session\__tests__\editor-singleton-boundary.test.ts" assertions="2" />
+    <testcase name="negative control detects owner-wrapper-outside-route" classname="editor singleton boundary" time="0.875" file="packages\editor-classic\src\editor\session\__tests__\editor-singleton-boundary.test.ts" assertions="2" />
+    <testcase name="negative control detects session-key-required" classname="editor singleton boundary" time="1.454" file="packages\editor-classic\src\editor\session\__tests__\editor-singleton-boundary.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\session\__tests__\headless-browser-boundary.test.ts" tests="1" assertions="0" failures="0" skipped="0" time="0.36" hostname="">
+    <testcase name="headless browser-global boundary runs in an isolated process" classname="" time="0.36" file="packages\editor-classic\src\editor\session\__tests__\headless-browser-boundary.test.ts" assertions="0" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\session\__tests__\headless-migration.test.ts" tests="1" assertions="0" failures="0" skipped="0" time="3.078" hostname="">
+    <testcase name="shared full/headless migration suite runs in an isolated process" classname="" time="3.078" file="packages\editor-classic\src\editor\session\__tests__\headless-migration.test.ts" assertions="0" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\session\__tests__\headless-runtime-probe.test.ts" tests="2" assertions="10" failures="0" skipped="0" time="0.062" hostname="">
+    <testcase name="pre-load probe proves every global and Host sensitivity path" classname="" time="0.062" file="packages\editor-classic\src\editor\session\__tests__\headless-runtime-probe.test.ts" assertions="7" />
+    <testcase name="server probe records explicit DOM and unavailable-hook absence" classname="" time="0" file="packages\editor-classic\src\editor\session\__tests__\headless-runtime-probe.test.ts" assertions="3" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\session\__tests__\headless-semantic-fixture.test.ts" tests="1" assertions="4" failures="0" skipped="0" time="0.047" hostname="">
+    <testcase name="semantic fixture proves edit, reopen, opaque and attachment fidelity" classname="" time="0.047" file="packages\editor-classic\src\editor\session\__tests__\headless-semantic-fixture.test.ts" assertions="4" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\session\__tests__\headless-session.test.ts" tests="8" assertions="30" failures="0" skipped="0" time="0.016" hostname="">
+    <testcase name="creates a Host-scoped owner with only load, save and dispose" classname="provider-private headless session" time="0" file="packages\editor-classic\src\editor\session\__tests__\headless-session.test.ts" assertions="7" />
+    <testcase name="loads absence as null without navigation or replacement" classname="provider-private headless session" time="0.016" file="packages\editor-classic\src\editor\session\__tests__\headless-session.test.ts" assertions="2" />
+    <testcase name="saves a detached edit and a new owner reopens it with opaque data" classname="provider-private headless session" time="0" file="packages\editor-classic\src\editor\session\__tests__\headless-session.test.ts" assertions="6" />
+    <testcase name="rejects a cross-project save before either identity is written" classname="provider-private headless session" time="0" file="packages\editor-classic\src\editor\session\__tests__\headless-session.test.ts" assertions="3" />
+    <testcase name="serializes admitted work, retries save failure, and closes admission" classname="provider-private headless session" time="0" file="packages\editor-classic\src\editor\session\__tests__\headless-session.test.ts" assertions="6" />
+    <testcase name="disposing one owner leaves another owner and shared store usable" classname="provider-private headless session" time="0" file="packages\editor-classic\src\editor\session\__tests__\headless-session.test.ts" assertions="1" />
+    <testcase name="acquires no in-memory C6 runtime resource" classname="provider-private headless session" time="0" file="packages\editor-classic\src\editor\session\__tests__\headless-session.test.ts" assertions="4" />
+    <testcase name="the isolated headless session contract is importable" classname="" time="0" file="packages\editor-classic\src\editor\session\__tests__\headless-session.test.ts" assertions="1" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\session\__tests__\independent-timer-ledger.test.ts" tests="1" assertions="3" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="counts timer and animation-frame handles independently when numeric IDs collide" classname="independent timer ledger" time="0" file="packages\editor-classic\src\editor\session\__tests__\independent-timer-ledger.test.ts" assertions="3" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\session\__tests__\session-async-store-isolation.test.ts" tests="1" assertions="0" failures="0" skipped="0" time="2.672" hostname="">
+    <testcase name="session async-store suite runs in an isolated wasm-mock process" classname="" time="2.672" file="packages\editor-classic\src\editor\session\__tests__\session-async-store-isolation.test.ts" assertions="0" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\session\__tests__\session-disposal-c6.test.ts" tests="11" assertions="72" failures="0" skipped="0" time="0.047" hostname="">
+    <testcase name="early and repeated object-URL revoke reaches the platform exactly once" classname="C6 session resource drain" time="0" file="packages\editor-classic\src\editor\session\__tests__\session-disposal-c6.test.ts" assertions="3" />
+    <testcase name="equal object URLs owned by two sessions revoke independently" classname="C6 session resource drain" time="0" file="packages\editor-classic\src\editor\session\__tests__\session-disposal-c6.test.ts" assertions="4" />
+    <testcase name="awaits delayed audio close and reports terminal release counts" classname="C6 session resource drain" time="0" file="packages\editor-classic\src\editor\session\__tests__\session-disposal-c6.test.ts" assertions="8" />
+    <testcase name="continues after one rejected release and preserves a stable failed outcome" classname="C6 session resource drain" time="0" file="packages\editor-classic\src\editor\session\__tests__\session-disposal-c6.test.ts" assertions="5" />
+    <testcase name="preserves multiple release failures in exact reverse-acquisition order" classname="C6 session resource drain" time="0" file="packages\editor-classic\src\editor\session\__tests__\session-disposal-c6.test.ts" assertions="6" />
+    <testcase name="terminally drains the old interval and reacquires only through the resume hook" classname="C6 session resource drain" time="0.047" file="packages\editor-classic\src\editor\session\__tests__\session-disposal-c6.test.ts" assertions="9" />
+    <testcase name="worker termination detaches host listeners and a resumed generation subscribes freshly" classname="C6 session resource drain" time="0" file="packages\editor-classic\src\editor\session\__tests__\session-disposal-c6.test.ts" assertions="11" />
+    <testcase name="suspend terminally cancels a due RAF instead of suppressing a live handle" classname="C6 session resource drain" time="0" file="packages\editor-classic\src\editor\session\__tests__\session-disposal-c6.test.ts" assertions="5" />
+    <testcase name="a fired RAF self-releases exactly once" classname="C6 session resource drain" time="0" file="packages\editor-classic\src\editor\session\__tests__\session-disposal-c6.test.ts" assertions="4" />
+    <testcase name="suspend between nested paint frames settles the waiter and releases both frames" classname="C6 session resource drain" time="0" file="packages\editor-classic\src\editor\session\__tests__\session-disposal-c6.test.ts" assertions="5" />
+    <testcase name="the retained RAF-loop owner reacquires a fresh chain only after resume publication" classname="C6 session resource drain" time="0" file="packages\editor-classic\src\editor\session\__tests__\session-disposal-c6.test.ts" assertions="12" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\session\__tests__\session-lifecycle.test.ts" tests="1" assertions="0" failures="0" skipped="0" time="2.547" hostname="">
+    <testcase name="session lifecycle suite runs in an isolated wasm-mock process" classname="" time="2.547" file="packages\editor-classic\src\editor\session\__tests__\session-lifecycle.test.ts" assertions="0" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\session\__tests__\session-runtime-ownership.test.tsx" tests="1" assertions="0" failures="1" skipped="0" time="6.25" hostname="">
+    <testcase name="session ownership suite runs in an isolated wasm-mock process" classname="" time="6.25" file="packages\editor-classic\src\editor\session\__tests__\session-runtime-ownership.test.tsx" assertions="0">
+      <failure type="AssertionError" />
+    </testcase>
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\session\__tests__\session-state-isolation.test.ts" tests="1" assertions="0" failures="0" skipped="0" time="12.813" hostname="">
+    <testcase name="session-state isolation suite runs in an isolated wasm-mock process" classname="" time="12.813" file="packages\editor-classic\src\editor\session\__tests__\session-state-isolation.test.ts" assertions="0" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\session\__tests__\session-timer-matrix.test.ts" tests="4" assertions="16" failures="0" skipped="0" time="0.015" hostname="">
+    <testcase name="timeout fires before disposal once and an early-cancel race cannot publish" classname="session timer fake-clock matrix" time="0.015" file="packages\editor-classic\src\editor\session\__tests__\session-timer-matrix.test.ts" assertions="5" />
+    <testcase name="interval cancellation is idempotent and suppresses an already-queued tick" classname="session timer fake-clock matrix" time="0" file="packages\editor-classic\src\editor\session\__tests__\session-timer-matrix.test.ts" assertions="3" />
+    <testcase name="RAF self-release and cancellation races each publish at most once" classname="session timer fake-clock matrix" time="0" file="packages\editor-classic\src\editor\session\__tests__\session-timer-matrix.test.ts" assertions="3" />
+    <testcase name="suspend quiescence cancels every timer kind and blocks stale publication" classname="session timer fake-clock matrix" time="0" file="packages\editor-classic\src\editor\session\__tests__\session-timer-matrix.test.ts" assertions="5" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\preview\components\__tests__\timecode-playback-subscription.test.ts" tests="1" assertions="8" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="observes general and frame updates and releases both channels" classname="timecode playback subscription" time="0" file="packages\editor-classic\src\preview\components\__tests__\timecode-playback-subscription.test.ts" assertions="8" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\renderer\__tests__\effect-preview-ownership.test.ts" tests="1" assertions="0" failures="0" skipped="0" time="0.234" hostname="">
+    <testcase name="effect preview ownership runs in an isolated WASM mock process" classname="" time="0.234" file="packages\editor-classic\src\services\renderer\__tests__\effect-preview-ownership.test.ts" assertions="0" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\renderer\__tests__\host-effect-preview.test.ts" tests="2" assertions="8" failures="0" skipped="0" time="0.016" hostname="">
+    <testcase name="keys image/canvas state by resolver identity across two bases" classname="Host-scoped effect preview" time="0" file="packages\editor-classic\src\services\renderer\__tests__\host-effect-preview.test.ts" assertions="4" />
+    <testcase name="decodes the shipped image and produces a nonblank preview source" classname="Host-scoped effect preview" time="0.016" file="packages\editor-classic\src\services\renderer\__tests__\host-effect-preview.test.ts" assertions="4" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\__tests__\browser-project-store-cascade-topology.test.ts" tests="7" assertions="48" failures="0" skipped="0" time="0.047" hostname="">
+    <testcase name="refuses current remove for PDB, LDB, SP, and SA before tombstone commit" classname="browser project cascade topology gate" time="0.015" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-cascade-topology.test.ts" assertions="16" />
+    <testcase name="refuses current projects clear for PDB, LDB, SP, and SA before journal commit" classname="browser project cascade topology gate" time="0.016" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-cascade-topology.test.ts" assertions="16" />
+    <testcase name="retains a mixed historical journal and performs zero partial physical I/O" classname="browser project cascade topology gate" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-cascade-topology.test.ts" assertions="3" />
+    <testcase name="keeps an exact same-owner protected historical target blocked" classname="browser project cascade topology gate" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-cascade-topology.test.ts" assertions="2" />
+    <testcase name="does not rewrite a legacy all-clear journal before its full topology permit" classname="browser project cascade topology gate" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-cascade-topology.test.ts" assertions="5" />
+    <testcase name="strictly rejects a malformed retained library claim before clear commit" classname="browser project cascade topology gate" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-cascade-topology.test.ts" assertions="3" />
+    <testcase name="allows all-clear when LDB equals PDB through a safe library store" classname="browser project cascade topology gate" time="0.016" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-cascade-topology.test.ts" assertions="3" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\__tests__\browser-project-store-media-topology.test.ts" tests="7" assertions="74" failures="0" skipped="0" time="0.015" hostname="">
+    <testcase name="rejects current media databases that alias every protected database before I/O" classname="browser media ownership topology gate" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-media-topology.test.ts" assertions="32" />
+    <testcase name="rejects retained library database aliases before media ownership writes" classname="browser media ownership topology gate" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-media-topology.test.ts" assertions="18" />
+    <testcase name="loads one library snapshot and preserves safe idempotent registration" classname="browser media ownership topology gate" time="0.015" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-media-topology.test.ts" assertions="1" />
+    <testcase name="rejects different persisted owners with an exact database or OPFS root collision" classname="browser media ownership topology gate" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-media-topology.test.ts" assertions="18" />
+    <testcase name="keeps exact same-owner tuple registration idempotent" classname="browser media ownership topology gate" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-media-topology.test.ts" assertions="1" />
+    <testcase name="does not certify inventory that resolves a protected media database" classname="browser media ownership topology gate" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-media-topology.test.ts" assertions="2" />
+    <testcase name="does not certify an inventory name claimed by two bindings" classname="browser media ownership topology gate" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-media-topology.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\__tests__\browser-project-store-migration-topology.test.ts" tests="1" assertions="0" failures="0" skipped="0" time="0.328" hostname="">
+    <testcase name="browser project migration topology gate runs in an isolated process" classname="" time="0.328" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-migration-topology.test.ts" assertions="0" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\__tests__\browser-project-store-records.test.ts" tests="10" assertions="72" failures="0" skipped="0" time="0.016" hostname="">
+    <testcase name="projects the ordinary public project row exactly as C4 without duplicating the document" classname="current browser project record pairs" time="0.016" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-records.test.ts" assertions="6" />
+    <testcase name="reconstructs own-root-id and non-projectable opaque payloads exactly" classname="current browser project record pairs" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-records.test.ts" assertions="8" />
+    <testcase name="defensively clones pair inputs and decoded outputs while rejecting identity mismatch" classname="current browser project record pairs" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-records.test.ts" assertions="7" />
+    <testcase name="keeps the public media row C4-exact and the complete logical metadata private" classname="current browser attachment record pairs" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-records.test.ts" assertions="11" />
+    <testcase name="uses an id-only public row for generic metadata while retaining it exactly" classname="current browser attachment record pairs" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-records.test.ts" assertions="8" />
+    <testcase name="prefers a valid sidecar over provider-owned envelope-looking fields" classname="three-generation browser record compatibility" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-records.test.ts" assertions="7" />
+    <testcase name="falls back from absent sidecars to inline C5 and then C4 raw rows" classname="three-generation browser record compatibility" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-records.test.ts" assertions="6" />
+    <testcase name="fails closed for malformed, mismatched, or incomplete current pairs" classname="three-generation browser record compatibility" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-records.test.ts" assertions="10" />
+    <testcase name="represents a current deletion as a strict authority-only tombstone" classname="three-generation browser record compatibility" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-records.test.ts" assertions="5" />
+    <testcase name="derives private authority store names without widening storage identity" classname="" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-records.test.ts" assertions="4" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\__tests__\browser-project-store-topology.test.ts" tests="12" assertions="64" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="owns every canonical control and migration-stage name" classname="browser project store physical topology" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-topology.test.ts" assertions="1" />
+    <testcase name="rejects every reserved projects-database store pair without leaking its name" classname="browser project store physical topology" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-topology.test.ts" assertions="18" />
+    <testcase name="allows a library to share the projects database through a non-reserved store" classname="browser project store physical topology" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-topology.test.ts" assertions="2" />
+    <testcase name="rejects retained authorization and ownership store pairs from cascade cleanup" classname="browser project store physical topology" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-topology.test.ts" assertions="6" />
+    <testcase name="rejects every protected database from cascade media deletion" classname="browser project store physical topology" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-topology.test.ts" assertions="8" />
+    <testcase name="rejects different owners that claim the same database or root directory" classname="browser project store physical topology" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-topology.test.ts" assertions="6" />
+    <testcase name="permits an idempotent retry by the same owner and exact tuple" classname="browser project store physical topology" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-topology.test.ts" assertions="3" />
+    <testcase name="allows only canonical stage self-delete with no live physical alias" classname="browser project store physical topology" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-topology.test.ts" assertions="3" />
+    <testcase name="freezes v1 source authority without widening the cleanup subset" classname="browser project store physical topology" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-topology.test.ts" assertions="4" />
+    <testcase name="rejects a v1 timeline source that aliases a live media database" classname="browser project store physical topology" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-topology.test.ts" assertions="2" />
+    <testcase name="rejects a legacy-media source that aliases a different retained binding" classname="browser project store physical topology" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-topology.test.ts" assertions="2" />
+    <testcase name="rejects noncanonical or physically aliased stage deletion" classname="browser project store physical topology" time="0" file="packages\editor-classic\src\services\storage\__tests__\browser-project-store-topology.test.ts" assertions="9" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\__tests__\migration-provider-private.test.ts" tests="1" assertions="6" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="retains unknown fields at project, metadata, scene, track and clip levels" classname="v1 migration provider-private preservation" time="0" file="packages\editor-classic\src\services\storage\__tests__\migration-provider-private.test.ts" assertions="6" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\transcription\__tests__\session-service.test.ts" tests="4" assertions="35" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="requests a named module Worker through SessionResources and preserves the message flow" classname="session-owned transcription service" time="0" file="packages\editor-classic\src\services\transcription\__tests__\session-service.test.ts" assertions="9" />
+    <testcase name="keeps two sessions isolated and terminates each registry handle exactly once" classname="session-owned transcription service" time="0" file="packages\editor-classic\src\services\transcription\__tests__\session-service.test.ts" assertions="4" />
+    <testcase name="rejects initialization errors and removes listeners" classname="session-owned transcription service" time="0" file="packages\editor-classic\src\services\transcription\__tests__\session-service.test.ts" assertions="4" />
+    <testcase name="terminates pending generations, ignores stale events, and reacquires only after admission resumes" classname="session-owned transcription service" time="0" file="packages\editor-classic\src\services\transcription\__tests__\session-service.test.ts" assertions="18" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\video-cache\__tests__\service-ownership.test.ts" tests="1" assertions="0" failures="0" skipped="0" time="0.188" hostname="">
+    <testcase name="video cache ownership controls run in an isolated media mock process" classname="" time="0.188" file="packages\editor-classic\src\services\video-cache\__tests__\service-ownership.test.ts" assertions="0" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\waveform-cache\__tests__\service-ownership.test.ts" tests="4" assertions="16" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="project replacement invalidates and awaits pending decoding before a fresh generation" classname="WaveformCache ownership" time="0" file="packages\editor-classic\src\services\waveform-cache\__tests__\service-ownership.test.ts" assertions="5" />
+    <testcase name="two owners with an equal source key keep distinct decode generations" classname="WaveformCache ownership" time="0" file="packages\editor-classic\src\services\waveform-cache\__tests__\service-ownership.test.ts" assertions="3" />
+    <testcase name="suspend rejects a delayed decode publication and resume decodes a fresh generation" classname="WaveformCache ownership" time="0" file="packages\editor-classic\src\services\waveform-cache\__tests__\service-ownership.test.ts" assertions="4" />
+    <testcase name="decode failure closes its context, clears the failed entry, and retries freshly" classname="WaveformCache ownership" time="0" file="packages\editor-classic\src\services\waveform-cache\__tests__\service-ownership.test.ts" assertions="4" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts" tests="14" assertions="11" failures="6" skipped="0" time="0.016" hostname="">
+    <testcase name="explicit returns the requested compatible track" classname="resolveTrackPlacement" time="0.016" file="packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts" assertions="1" />
+    <testcase name="explicit rejects missing and incompatible tracks" classname="resolveTrackPlacement" time="0" file="packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts" assertions="2" />
+    <testcase name="firstAvailable picks the first compatible track without overlap" classname="resolveTrackPlacement" time="0" file="packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts" assertions="0">
+      <failure type="AssertionError" />
+    </testcase>
+    <testcase name="firstAvailable creates a new track when all compatible tracks are full" classname="resolveTrackPlacement" time="0" file="packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts" assertions="0">
+      <failure type="AssertionError" />
+    </testcase>
+    <testcase name="preferIndex uses the preferred track when it fits" classname="resolveTrackPlacement" time="0" file="packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts" assertions="1" />
+    <testcase name="preferIndex creates a new overlay track above the main track" classname="resolveTrackPlacement" time="0" file="packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts" assertions="1" />
+    <testcase name="preferIndex keeps audio tracks below the main track" classname="resolveTrackPlacement" time="0" file="packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts" assertions="1" />
+    <testcase name="aboveSource tries the track above source, then any compatible track" classname="resolveTrackPlacement" time="0" file="packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts" assertions="0">
+      <failure type="AssertionError" />
+    </testcase>
+    <testcase name="aboveSource creates a new overlay track in the overlay zone when none fit" classname="resolveTrackPlacement" time="0" file="packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts" assertions="0">
+      <failure type="AssertionError" />
+    </testcase>
+    <testcase name="alwaysNew honors highest and default insertion rules" classname="resolveTrackPlacement" time="0" file="packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts" assertions="2" />
+    <testcase name="batch time spans reject tracks when any span overlaps" classname="resolveTrackPlacement" time="0" file="packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts" assertions="0">
+      <failure type="AssertionError" />
+    </testcase>
+    <testcase name="handles main-only timelines, single tracks, and track-type derivation" classname="resolveTrackPlacement" time="0" file="packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts" assertions="2" />
+    <testcase name="existingTrack on main video includes adjustedStartTime when start snaps" classname="resolveTrackPlacement" time="0" file="packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts" assertions="0">
+      <failure type="AssertionError" />
+    </testcase>
+    <testcase name="preferIndex uses vertical drag direction when hovered track is incompatible" classname="resolveTrackPlacement" time="0" file="packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts" assertions="1" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-composition.test.ts" tests="6" assertions="40" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="renders one bounded root in the caller tree and binds the exact target" classname="public Surface composition" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-composition.test.ts" assertions="5" />
+    <testcase name="derives providers from session and keeps EditorRoot inside the public component" classname="public Surface composition" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-composition.test.ts" assertions="6" />
+    <testcase name="exports the runtime while public props and commit payload stay frozen" classname="public Surface composition" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-composition.test.ts" assertions="5" />
+    <testcase name="session bridge reuses one canonical facade without an engine or event path" classname="public Surface composition" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-composition.test.ts" assertions="3" />
+    <testcase name="both production Hosts consume the same focused Surface contract" classname="public Surface composition" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-composition.test.ts" assertions="12" />
+    <testcase name="keeps the Host-owned C4 probe behind full project-load completion" classname="public Surface composition" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-composition.test.ts" assertions="9" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-drag-coordinator.test.ts" tests="6" assertions="16" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="finishes once and synchronously detaches before the callback" classname="Surface drag coordinator" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-drag-coordinator.test.ts" assertions="4" />
+    <testcase name="cancel, replacement, and returned cleanup never finish" classname="Surface drag coordinator" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-drag-coordinator.test.ts" assertions="2" />
+    <testcase name="provider-style cleanup cancels the active registration exactly once" classname="Surface drag coordinator" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-drag-coordinator.test.ts" assertions="1" />
+    <testcase name="discriminates pointer identity for move, finish, and cancel" classname="Surface drag coordinator" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-drag-coordinator.test.ts" assertions="1" />
+    <testcase name="inspect() matches the listeners addListeners really installs" classname="Surface drag coordinator" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-drag-coordinator.test.ts" assertions="7" />
+    <testcase name="keeps two Surface owners independent" classname="Surface drag coordinator" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-drag-coordinator.test.ts" assertions="1" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-drag-integrations.test.ts" tests="4" assertions="42" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="all concrete Surface continuations register with the coordinator" classname="Surface drag integrations" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-drag-integrations.test.ts" assertions="7" />
+    <testcase name="number scrub preserves pointer ownership and finish/cancel semantics" classname="Surface drag integrations" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-drag-integrations.test.ts" assertions="22" />
+    <testcase name="controller finish paths preserve their established mouse-up commit handlers" classname="Surface drag integrations" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-drag-integrations.test.ts" assertions="9" />
+    <testcase name="bookmark commits only from coordinator finish and cancellation only clears state" classname="Surface drag integrations" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-drag-integrations.test.ts" assertions="4" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-error-boundary.test.ts" tests="3" assertions="11" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="reports the same Error once through the latest callback" classname="Surface error containment" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-error-boundary.test.ts" assertions="2" />
+    <testcase name="reports distinct errors and normalizes non-Error throws" classname="Surface error containment" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-error-boundary.test.ts" assertions="2" />
+    <testcase name="keeps unique labelled alerts contained without lifecycle disposal" classname="Surface error containment" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-error-boundary.test.ts" assertions="7" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-focus.test.ts" tests="6" assertions="34" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="publishes the exact passive/focused/full policy" classname="Surface focus scope" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-focus.test.ts" assertions="1" />
+    <testcase name="filters dynamic tab stops without caching stale descendants" classname="Surface focus scope" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-focus.test.ts" assertions="2" />
+    <testcase name="passive pointer is advisory and leaves pointer and wheel unclaimed" classname="Surface focus scope" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-focus.test.ts" assertions="6" />
+    <testcase name="focused root pointer stays local without blocking descendant React handlers" classname="Surface focus scope" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-focus.test.ts" assertions="7" />
+    <testcase name="full mode cycles current dynamic boundaries and falls back to the root" classname="Surface focus scope" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-focus.test.ts" assertions="4" />
+    <testcase name="mode replacement, independent roots, and unmount remove exact listeners" classname="Surface focus scope" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-focus.test.ts" assertions="14" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-keybinding-scope.test.ts" tests="2" assertions="11" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="uses the narrow legacy fallback only when no explicit ref exists" classname="Surface keybinding target" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-keybinding-scope.test.ts" assertions="3" />
+    <testcase name="registers and removes one capture listener on the supplied root" classname="Surface keybinding target" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-keybinding-scope.test.ts" assertions="8" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-lifecycle.test.ts" tests="12" assertions="66" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="publishes ready only after the live handle settles" classname="Surface lifecycle controller" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-lifecycle.test.ts" assertions="6" />
+    <testcase name="suppresses stale readiness resolution and rejection after unmount" classname="Surface lifecycle controller" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-lifecycle.test.ts" assertions="8" />
+    <testcase name="reports a live ready rejection exactly once" classname="Surface lifecycle controller" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-lifecycle.test.ts" assertions="1" />
+    <testcase name="serializes latest visibility, coalesces redundant values, and delegates only" classname="Surface lifecycle controller" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-lifecycle.test.ts" assertions="5" />
+    <testcase name="rapid hidden-visible-hidden converges without a stale resume" classname="Surface lifecycle controller" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-lifecycle.test.ts" assertions="2" />
+    <testcase name="reports a live suspend rejection once without success, retry, or cleanup drift" classname="Surface lifecycle controller" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-lifecycle.test.ts" assertions="7" />
+    <testcase name="reports a live resume rejection once without success, retry, or cleanup drift" classname="Surface lifecycle controller" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-lifecycle.test.ts" assertions="8" />
+    <testcase name="visible remount resumes one retained suspended session" classname="Surface lifecycle controller" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-lifecycle.test.ts" assertions="8" />
+    <testcase name="visible remount queues one resume behind an in-flight suspend" classname="Surface lifecycle controller" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-lifecycle.test.ts" assertions="12" />
+    <testcase name="session replacement invalidates old work and keeps the new generation live" classname="Surface lifecycle controller" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-lifecycle.test.ts" assertions="4" />
+    <testcase name="Strict-Mode-shaped remount is reversible and cleanup failure is attributable" classname="Surface lifecycle controller" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-lifecycle.test.ts" assertions="4" />
+    <testcase name="stale visibility failures do not publish into a replacement" classname="Surface lifecycle controller" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-lifecycle.test.ts" assertions="1" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-portal.test.ts" tests="3" assertions="18" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="prefers the live owner and preserves the outside-Surface fallback" classname="Surface portal ownership" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-portal.test.ts" assertions="3" />
+    <testcase name="waits for owner readiness so Surface children cannot escape to body" classname="Surface portal ownership" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-portal.test.ts" assertions="3" />
+    <testcase name="routes wrappers, tooltip, and direct overlays through the private owner" classname="Surface portal ownership" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-portal.test.ts" assertions="12" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-react-identity-probe.test.ts" tests="1" assertions="8" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="keeps the probe private and requires identity, context, state, and effect fields" classname="Surface React identity evidence" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-react-identity-probe.test.ts" assertions="8" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-transaction-binding.test.ts" tests="5" assertions="13" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="keeps the public void shape and forwards one valid batch exactly once" classname="Surface transaction binding" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-transaction-binding.test.ts" assertions="3" />
+    <testcase name="rejects malformed unknown values before apply" classname="Surface transaction binding" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-transaction-binding.test.ts" assertions="3" />
+    <testcase name="rejects malformed present payload and patch shapes for every operation kind" classname="Surface transaction binding" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-transaction-binding.test.ts" assertions="3" />
+    <testcase name="accepts the authoritative minimal payload shapes for all operation kinds" classname="Surface transaction binding" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-transaction-binding.test.ts" assertions="2" />
+    <testcase name="routes one asynchronous apply failure exactly once without fallback" classname="Surface transaction binding" time="0" file="packages\editor-classic\src\editor\surface\embedding\__tests__\surface-transaction-binding.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\transactions\opencut\__tests__\adapter-router.test.ts" tests="9" assertions="46" failures="0" skipped="0" time="0.032" hostname="">
+    <testcase name="audio donor candidates encode into a valid reopenable document" classname="OpenCut transaction projection and router" time="0" file="packages\editor-classic\src\editor\transactions\opencut\__tests__\adapter-router.test.ts" assertions="2" />
+    <testcase name="projects donor entities and emits stable minimal dependency order" classname="OpenCut transaction projection and router" time="0" file="packages\editor-classic\src\editor\transactions\opencut\__tests__\adapter-router.test.ts" assertions="3" />
+    <testcase name="typed Project updates cover UI/automation ordering, replay, collision, failure, and reopen" classname="OpenCut transaction projection and router" time="0.016" file="packages\editor-classic\src\editor\transactions\opencut\__tests__\adapter-router.test.ts" assertions="16" />
+    <testcase name="staged binding rejects a wrong record digest before save" classname="OpenCut transaction projection and router" time="0" file="packages\editor-classic\src\editor\transactions\opencut\__tests__\adapter-router.test.ts" assertions="3" />
+    <testcase name="staged binding rejects a token mismatch before save" classname="OpenCut transaction projection and router" time="0" file="packages\editor-classic\src\editor\transactions\opencut\__tests__\adapter-router.test.ts" assertions="3" />
+    <testcase name="staged binding rejects a base-revision mismatch before save" classname="OpenCut transaction projection and router" time="0" file="packages\editor-classic\src\editor\transactions\opencut\__tests__\adapter-router.test.ts" assertions="3" />
+    <testcase name="staged binding rejects a projection mismatch before save" classname="OpenCut transaction projection and router" time="0" file="packages\editor-classic\src\editor\transactions\opencut\__tests__\adapter-router.test.ts" assertions="3" />
+    <testcase name="UI and automation share invocation order, exact adoption, and opaque overlay" classname="OpenCut transaction projection and router" time="0.016" file="packages\editor-classic\src\editor\transactions\opencut\__tests__\adapter-router.test.ts" assertions="8" />
+    <testcase name="durable failure publishes nothing and leaves the shared queue usable" classname="OpenCut transaction projection and router" time="0" file="packages\editor-classic\src\editor\transactions\opencut\__tests__\adapter-router.test.ts" assertions="5" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\transactions\opencut\__tests__\agent-opencut-projection.test.ts" tests="2" assertions="30" failures="0" skipped="0" time="0.062" hostname="">
+    <testcase name="runs the declared plan through the canonical facade" classname="the agent scenario over the donor projection" time="0.031" file="packages\editor-classic\src\editor\transactions\opencut\__tests__\agent-opencut-projection.test.ts" assertions="23" />
+    <testcase name="reopening the project from the store observes the committed revision" classname="the agent scenario over the donor projection" time="0.031" file="packages\editor-classic\src\editor\transactions\opencut\__tests__\agent-opencut-projection.test.ts" assertions="7" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\editor\transactions\opencut\__tests__\routing-registry.test.ts" tests="2" assertions="2" failures="0" skipped="0" time="0.047" hostname="">
+    <testcase name="every concrete command module has one exhaustive routing registration" classname="" time="0.047" file="packages\editor-classic\src\editor\transactions\opencut\__tests__\routing-registry.test.ts" assertions="1" />
+    <testcase name="routing is independent of constructor names after production minification" classname="" time="0" file="packages\editor-classic\src\editor\transactions\opencut\__tests__\routing-registry.test.ts" assertions="1" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\migrations\__tests__\v0-to-v1.test.ts" tests="10" assertions="22" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="adds scenes array to v0 project" classname="transformProjectV0ToV1 &amp;gt; V0 to V1 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v0-to-v1.test.ts" assertions="5" />
+    <testcase name="creates main scene with correct structure" classname="transformProjectV0ToV1 &amp;gt; V0 to V1 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v0-to-v1.test.ts" assertions="5" />
+    <testcase name="updates metadata.updatedAt when metadata exists" classname="transformProjectV0ToV1 &amp;gt; V0 to V1 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v0-to-v1.test.ts" assertions="1" />
+    <testcase name="updates root updatedAt when no metadata" classname="transformProjectV0ToV1 &amp;gt; V0 to V1 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v0-to-v1.test.ts" assertions="1" />
+    <testcase name="skips project that already has scenes" classname="transformProjectV0ToV1 &amp;gt; V0 to V1 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v0-to-v1.test.ts" assertions="2" />
+    <testcase name="preserves original project properties" classname="transformProjectV0ToV1 &amp;gt; V0 to V1 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v0-to-v1.test.ts" assertions="4" />
+    <testcase name="returns id from root level" classname="getProjectId &amp;gt; V0 to V1 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v0-to-v1.test.ts" assertions="1" />
+    <testcase name="returns id from metadata when root id missing" classname="getProjectId &amp;gt; V0 to V1 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v0-to-v1.test.ts" assertions="1" />
+    <testcase name="returns null when no id found" classname="getProjectId &amp;gt; V0 to V1 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v0-to-v1.test.ts" assertions="1" />
+    <testcase name="returns null for malformed project" classname="getProjectId &amp;gt; V0 to V1 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v0-to-v1.test.ts" assertions="1" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\migrations\__tests__\v1-to-v2.test.ts" tests="18" assertions="40" failures="0" skipped="0" time="0.015" hostname="">
+    <testcase name="creates metadata object from flat properties" classname="transformProjectV1ToV2 &amp;gt; V1 to V2 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v1-to-v2.test.ts" assertions="6" />
+    <testcase name="creates settings object from flat properties" classname="transformProjectV1ToV2 &amp;gt; V1 to V2 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v1-to-v2.test.ts" assertions="3" />
+    <testcase name="converts color background correctly" classname="transformProjectV1ToV2 &amp;gt; V1 to V2 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v1-to-v2.test.ts" assertions="2" />
+    <testcase name="converts blur background correctly" classname="transformProjectV1ToV2 &amp;gt; V1 to V2 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v1-to-v2.test.ts" assertions="2" />
+    <testcase name="applies legacy bookmarks to main scene" classname="transformProjectV1ToV2 &amp;gt; V1 to V2 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v1-to-v2.test.ts" assertions="1" />
+    <testcase name="preserves existing scene bookmarks" classname="transformProjectV1ToV2 &amp;gt; V1 to V2 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v1-to-v2.test.ts" assertions="1" />
+    <testcase name="skips project that already has v2 structure" classname="transformProjectV1ToV2 &amp;gt; V1 to V2 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v1-to-v2.test.ts" assertions="2" />
+    <testcase name="skips project with no id" classname="transformProjectV1ToV2 &amp;gt; V1 to V2 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v1-to-v2.test.ts" assertions="2" />
+    <testcase name="handles null values gracefully" classname="transformProjectV1ToV2 &amp;gt; V1 to V2 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v1-to-v2.test.ts" assertions="3" />
+    <testcase name="uses default values for missing properties" classname="transformProjectV1ToV2 &amp;gt; V1 to V2 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v1-to-v2.test.ts" assertions="4" />
+    <testcase name="uses default blur intensity when missing" classname="transformProjectV1ToV2 &amp;gt; V1 to V2 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v1-to-v2.test.ts" assertions="1" />
+    <testcase name="preserves currentSceneId" classname="transformProjectV1ToV2 &amp;gt; V1 to V2 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v1-to-v2.test.ts" assertions="1" />
+    <testcase name="finds main scene id when currentSceneId missing" classname="transformProjectV1ToV2 &amp;gt; V1 to V2 Migration" time="0.015" file="packages\editor-classic\src\services\storage\migrations\__tests__\v1-to-v2.test.ts" assertions="1" />
+    <testcase name="skips loading tracks if scene already has tracks" classname="transformProjectV1ToV2 &amp;gt; V1 to V2 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v1-to-v2.test.ts" assertions="2" />
+    <testcase name="loads tracks from legacy DB and transforms media track to video track" classname="Track Loading and Transformation &amp;gt; V1 to V2 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v1-to-v2.test.ts" assertions="4" />
+    <testcase name="transforms text element preserving opacity and migrating position" classname="Track Loading and Transformation &amp;gt; V1 to V2 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v1-to-v2.test.ts" assertions="3" />
+    <testcase name="returns id from root level" classname="getProjectId &amp;gt; V1 to V2 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v1-to-v2.test.ts" assertions="1" />
+    <testcase name="returns id from metadata" classname="getProjectId &amp;gt; V1 to V2 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v1-to-v2.test.ts" assertions="1" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\migrations\__tests__\v15-to-v16.test.ts" tests="3" assertions="7" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="renames sticker tracks to graphic tracks" classname="V15 to V16 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v15-to-v16.test.ts" assertions="3" />
+    <testcase name="skips projects already on v16" classname="V15 to V16 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v15-to-v16.test.ts" assertions="2" />
+    <testcase name="skips projects with no id" classname="V15 to V16 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v15-to-v16.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\migrations\__tests__\v16-to-v17.test.ts" tests="3" assertions="8" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="adds center stroke alignment to masks that do not have it" classname="V16 to V17 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v16-to-v17.test.ts" assertions="4" />
+    <testcase name="skips projects already on v17" classname="V16 to V17 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v16-to-v17.test.ts" assertions="2" />
+    <testcase name="skips projects with no id" classname="V16 to V17 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v16-to-v17.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\migrations\__tests__\v18-to-v19.test.ts" tests="3" assertions="9" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="adds canvas size mode and empty remembered custom size defaults" classname="V18 to V19 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v18-to-v19.test.ts" assertions="5" />
+    <testcase name="skips projects already on v19" classname="V18 to V19 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v18-to-v19.test.ts" assertions="2" />
+    <testcase name="skips projects with no id" classname="V18 to V19 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v18-to-v19.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\migrations\__tests__\v19-to-v20.test.ts" tests="3" assertions="7" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="backfills source audio enabled state on video elements" classname="V19 to V20 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v19-to-v20.test.ts" assertions="4" />
+    <testcase name="preserves existing explicit source audio state" classname="V19 to V20 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v19-to-v20.test.ts" assertions="1" />
+    <testcase name="skips projects already on v20" classname="V19 to V20 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v19-to-v20.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\migrations\__tests__\v2-to-v3.test.ts" tests="16" assertions="29" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="adds duration to metadata" classname="transformProjectV2ToV3 &amp;gt; V2 to V3 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v2-to-v3.test.ts" assertions="3" />
+    <testcase name="calculates duration from scene tracks" classname="transformProjectV2ToV3 &amp;gt; V2 to V3 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v2-to-v3.test.ts" assertions="1" />
+    <testcase name="handles project with blur background" classname="transformProjectV2ToV3 &amp;gt; V2 to V3 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v2-to-v3.test.ts" assertions="2" />
+    <testcase name="handles empty scenes with zero duration" classname="transformProjectV2ToV3 &amp;gt; V2 to V3 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v2-to-v3.test.ts" assertions="2" />
+    <testcase name="handles scene without tracks property" classname="transformProjectV2ToV3 &amp;gt; V2 to V3 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v2-to-v3.test.ts" assertions="2" />
+    <testcase name="skips project that already has v3 structure" classname="transformProjectV2ToV3 &amp;gt; V2 to V3 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v2-to-v3.test.ts" assertions="2" />
+    <testcase name="skips project that has duration in metadata" classname="transformProjectV2ToV3 &amp;gt; V2 to V3 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v2-to-v3.test.ts" assertions="2" />
+    <testcase name="skips project with no id" classname="transformProjectV2ToV3 &amp;gt; V2 to V3 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v2-to-v3.test.ts" assertions="2" />
+    <testcase name="preserves existing metadata fields" classname="transformProjectV2ToV3 &amp;gt; V2 to V3 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v2-to-v3.test.ts" assertions="5" />
+    <testcase name="preserves settings object" classname="transformProjectV2ToV3 &amp;gt; V2 to V3 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v2-to-v3.test.ts" assertions="1" />
+    <testcase name="preserves scenes array" classname="transformProjectV2ToV3 &amp;gt; V2 to V3 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v2-to-v3.test.ts" assertions="1" />
+    <testcase name="handles project without metadata object" classname="transformProjectV2ToV3 &amp;gt; V2 to V3 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v2-to-v3.test.ts" assertions="2" />
+    <testcase name="calculates duration from main scene only" classname="transformProjectV2ToV3 &amp;gt; V2 to V3 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v2-to-v3.test.ts" assertions="1" />
+    <testcase name="returns id from root level" classname="getProjectId &amp;gt; V2 to V3 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v2-to-v3.test.ts" assertions="1" />
+    <testcase name="returns id from metadata when root id missing" classname="getProjectId &amp;gt; V2 to V3 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v2-to-v3.test.ts" assertions="1" />
+    <testcase name="prefers root id over metadata id" classname="getProjectId &amp;gt; V2 to V3 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v2-to-v3.test.ts" assertions="1" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\migrations\__tests__\v20-to-v21.test.ts" tests="5" assertions="11" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="multiplies blur background intensity by 5" classname="V20 to V21 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v20-to-v21.test.ts" assertions="3" />
+    <testcase name="uses default blur intensity when blur type but intensity missing" classname="V20 to V21 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v20-to-v21.test.ts" assertions="2" />
+    <testcase name="leaves color background unchanged" classname="V20 to V21 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v20-to-v21.test.ts" assertions="2" />
+    <testcase name="skips projects already on v21" classname="V20 to V21 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v20-to-v21.test.ts" assertions="2" />
+    <testcase name="skips projects not on v20" classname="V20 to V21 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v20-to-v21.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\migrations\__tests__\v21-to-v22.test.ts" tests="3" assertions="18" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="migrates legacy animation channels to bindings and component channels" classname="V21 to V22 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v21-to-v22.test.ts" assertions="14" />
+    <testcase name="skips projects already on v22" classname="V21 to V22 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v21-to-v22.test.ts" assertions="2" />
+    <testcase name="skips projects not on v21" classname="V21 to V22 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v21-to-v22.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\migrations\__tests__\v22-to-v23.test.ts" tests="3" assertions="17" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="converts project time values from seconds to ticks and fps to a frame-rate object" classname="V22 to V23 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v22-to-v23.test.ts" assertions="13" />
+    <testcase name="skips projects already on v23" classname="V22 to V23 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v22-to-v23.test.ts" assertions="2" />
+    <testcase name="skips projects not on v22" classname="V22 to V23 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v22-to-v23.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\migrations\__tests__\v26-to-v27.test.ts" tests="1" assertions="4" failures="0" skipped="0" time="0.016" hostname="">
+    <testcase name="converts custom mask paths from JSON strings to typed point arrays" classname="V26 to V27 Migration" time="0.016" file="packages\editor-classic\src\services\storage\migrations\__tests__\v26-to-v27.test.ts" assertions="4" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\migrations\__tests__\v27-to-v28.test.ts" tests="4" assertions="27" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="rounds persisted media-time floats back to integer ticks" classname="V27 to V28 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v27-to-v28.test.ts" assertions="13" />
+    <testcase name="keeps already-integer media-time values unchanged" classname="V27 to V28 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v27-to-v28.test.ts" assertions="10" />
+    <testcase name="skips projects already on v28" classname="V27 to V28 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v27-to-v28.test.ts" assertions="2" />
+    <testcase name="skips projects not on v27" classname="V27 to V28 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v27-to-v28.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\migrations\__tests__\v28-to-v29.test.ts" tests="1" assertions="10" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="copies built-in element fields into params without deleting source fields" classname="V28 to V29 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v28-to-v29.test.ts" assertions="10" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\migrations\__tests__\v29-to-v30.test.ts" tests="2" assertions="6" failures="0" skipped="0" time="0.015" hostname="">
+    <testcase name="flattens animation bindings and channels by path" classname="V29 to V30 Migration" time="0.015" file="packages\editor-classic\src\services\storage\migrations\__tests__\v29-to-v30.test.ts" assertions="5" />
+    <testcase name="leaves elements without animations unchanged" classname="V29 to V30 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v29-to-v30.test.ts" assertions="1" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\migrations\__tests__\v3-to-v4.test.ts" tests="4" assertions="8" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="normalizes legacy text fontWeight values" classname="V3 to V4 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v3-to-v4.test.ts" assertions="3" />
+    <testcase name="does not mutate non-text tracks" classname="V3 to V4 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v3-to-v4.test.ts" assertions="1" />
+    <testcase name="skips projects that are already v4" classname="V3 to V4 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v3-to-v4.test.ts" assertions="2" />
+    <testcase name="skips projects with no id" classname="V3 to V4 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v3-to-v4.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\migrations\__tests__\v30-to-v31.test.ts" tests="5" assertions="14" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="renames custom masks to freeform without changing params" classname="V30 to V31 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v30-to-v31.test.ts" assertions="4" />
+    <testcase name="leaves a type:freeform mask in a v30 project unchanged" classname="V30 to V31 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v30-to-v31.test.ts" assertions="2" />
+    <testcase name="leaves elements without a masks array unchanged" classname="V30 to V31 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v30-to-v31.test.ts" assertions="2" />
+    <testcase name="skips a project that is already v31" classname="V30 to V31 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v30-to-v31.test.ts" assertions="3" />
+    <testcase name="skips a project that is not v30" classname="V30 to V31 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v30-to-v31.test.ts" assertions="3" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\migrations\__tests__\v4-to-v5.test.ts" tests="4" assertions="10" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="migrates sticker iconName to stickerId and removes legacy color" classname="V4 to V5 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v4-to-v5.test.ts" assertions="5" />
+    <testcase name="keeps provider-prefixed stickerId values unchanged" classname="V4 to V5 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v4-to-v5.test.ts" assertions="1" />
+    <testcase name="skips projects that are already v5" classname="V4 to V5 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v4-to-v5.test.ts" assertions="2" />
+    <testcase name="skips projects with no id" classname="V4 to V5 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v4-to-v5.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\migrations\__tests__\v5-to-v6.test.ts" tests="4" assertions="10" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="converts number bookmarks to Bookmark objects" classname="V5 to V6 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v5-to-v6.test.ts" assertions="4" />
+    <testcase name="skips projects that are already v6" classname="V5 to V6 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v5-to-v6.test.ts" assertions="2" />
+    <testcase name="skips projects with no id" classname="V5 to V6 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v5-to-v6.test.ts" assertions="2" />
+    <testcase name="preserves existing Bookmark objects with note, color, duration" classname="V5 to V6 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v5-to-v6.test.ts" assertions="2" />
+  </testsuite>
+  <testsuite name="packages\editor-classic\src\services\storage\migrations\__tests__\v8-to-v9.test.ts" tests="5" assertions="14" failures="0" skipped="0" time="0" hostname="">
+    <testcase name="adds background.enabled from color (transparent =&gt; false, otherwise true)" classname="V8 to V9 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v8-to-v9.test.ts" assertions="6" />
+    <testcase name="preserves existing background.enabled if already present" classname="V8 to V9 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v8-to-v9.test.ts" assertions="2" />
+    <testcase name="skips non-text elements and tracks" classname="V8 to V9 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v8-to-v9.test.ts" assertions="2" />
+    <testcase name="skips projects that are already v9" classname="V8 to V9 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v8-to-v9.test.ts" assertions="2" />
+    <testcase name="skips projects with no id" classname="V8 to V9 Migration" time="0" file="packages\editor-classic\src\services\storage\migrations\__tests__\v8-to-v9.test.ts" assertions="2" />
+  </testsuite>
+</testsuites>
