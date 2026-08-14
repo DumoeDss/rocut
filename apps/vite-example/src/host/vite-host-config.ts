@@ -2,17 +2,17 @@ import type { EditorHost } from "@opencut/editor-ports/host";
 import {
 	createBrowserRuntimePorts,
 	type BrowserWorkerUrlRewriter,
-} from "@/editor/host/browser-runtime";
+} from "@opencut/editor-classic/browser";
 import {
 	createInMemoryPorts,
 	DeterministicIdGenerator,
 	RecordingDiagnostics,
 } from "@opencut/editor-ports/in-memory";
-import { BrowserProjectStore } from "@/services/storage/browser-project-store";
+import { BrowserProjectStore } from "@opencut/editor-classic/storage";
 import {
 	DEFAULT_BROWSER_STORAGE_IDENTITY,
 	browserStoreDiagnosticLogRecord,
-} from "@/services/storage/browser-project-store-internals";
+} from "@opencut/editor-classic/storage";
 
 const viteDiagnostics = new RecordingDiagnostics();
 const viteIds = new DeterministicIdGenerator();

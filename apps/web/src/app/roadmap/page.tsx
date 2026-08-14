@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { BasePage } from "@/app/base-page";
 import { GitHubContributeSection } from "@/components/gitHub-contribute-section";
-import { Badge } from "@/components/ui/badge";
-import { ReactMarkdownWrapper } from "@/components/ui/react-markdown-wrapper";
-import { cn } from "@/utils/ui";
+import { Badge } from "@opencut/editor-classic/ui";
+import { ReactMarkdownWrapper } from "@opencut/editor-classic/ui";
+import { cn } from "@opencut/editor-classic";
 
 const LAST_UPDATED = "February 25, 2026";
 

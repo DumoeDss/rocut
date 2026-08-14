@@ -553,3 +553,71 @@ dependencies, which P1's parity-fixture oracle cannot absorb as a "behaviour-pre
 is recorded as a Direction-level finding, not resolved here: the split needs a Slice of its own,
 and Roadmap M9/S09 ("provider evolution") is its natural home. It does not block P1 — the three-package
 split above is complete and executable without an answer to it.
+
+---
+
+## 8. Consumer entry-mapping (S05 P1)
+
+P0 froze 14 declared `editor-classic` entries (§7) before any source moved. P1 moved the source and
+rewired both consumer apps onto those entries; this is the resulting assignment — which module
+routes through which declared entry — recorded per design E4's requirement, now against the actual
+post-move tree rather than the pre-move estimate.
+
+| Declared entry | Routes |
+| --- | --- |
+| `./ui` | `components/ui/*` (button, checkbox, context-menu, dropdown-menu, input, label, separator, sonner, tooltip, …), `components/icons`, `components/theme-toggle`, `components/editor/mobile-gate`, `components/providers/editor-provider`, `editor/host/editor-host-context` |
+| `./session` | `editor/session`, `create-session`, `editor/use-editor` |
+| `./runtime` | `session-core-owner`, `session-stores`, `wasm-runtime-providers` |
+| `./browser` | `editor/host/browser-runtime`, `editor/host/c4-project-load` |
+| `./surface` (+ `./surface.css`) | `session-surface-bridge`, `editor-root`, `surface-drag-coordinator`, `surface-portal` |
+| `./storage` | `browser-project-store`, `-internals`, `-conformance`, the four probe modules, `browser-storage-mechanisms`, `indexeddb-adapter`, `migrations`, `migrations/v1-to-v2` |
+| `./project` | `project/types`, `migration-dialog`, `delete-project-dialog`, `rename-project-dialog` |
+| `./timeline` | `timeline`, `timeline/element-utils`, `timeline/scenes` |
+| `./renderer` | `services/renderer/canvas-renderer`, `scene-builder` |
+| `./fonts` | `google-fonts`, `use-font-atlas` |
+| `./evidence` | `c6-disposal-harness`, `c6-durable-reopen`, `headless-proof-control`, `headless-runtime-probe`, `headless-semantic-fixture`, `surface-evidence-harness` |
+| `.` (root) | `core`, `utils/{ui,date,id,string}`, `wasm`, `background/color`, `canvas/sizes`, `fps/defaults`, `feedback/types` |
+| `./media` | declared, still unconsumed — no Host reaches it yet; P2's Electron Host is the likely first consumer |
+
+Measured against this table: `apps/web` resolves 91 classic edges (design estimated 103; the 12-edge
+delta is accounted for, not unexplained — see task 6.2), `apps/vite-example` resolves 59 classic / 8
+ports / 1 contracts edges (exact match against design's 59/8/1 estimate, task 6.3). Zero `@/`
+specifiers remain in `apps/vite-example` (task 6.4); the residual `@/` specifiers in `apps/web` are
+all Host-owned modules (`site/`, `db/`, `auth/`, `components/landing/`, …) that were never part of
+the moved editor source, not a rewrite gap.
+
+### One entry was added, and this is the module that forced it
+
+Design E4 stated "no entry needs to be added" but permitted it, on the condition that an addition be
+recorded with the module that forced it. One was added: **`./evidence/wasm-test-mock`** →
+`src/editor/session/__tests__/wasm-test-mock.ts`, a narrow declared entry sitting alongside the wide
+`./evidence` entry above rather than folded into it.
+
+`wasm-test-mock` imports `bun:test` at module top level and registers `mock.module(...)` side effects
+on evaluation — both Bun-test-runtime-only. It was originally reachable only through the wide
+`./evidence` barrel's `export *` list. Two consumers forced the narrow entry into existence, at two
+different points in this Slice:
+
+- **`production-composition.test.ts`** (task 5.4): `bun test` crashed (`wasm.__wbindgen_start is not
+  a function`) because the wide-barrel `export *` collapsed a previously separate, sequentially
+  awaited import into one barrel import, and Bun does not guarantee `export *` sibling evaluation
+  order. Fixed by adding the narrow entry and repointing this one test at it directly.
+- **`apps/web`'s production `next build`** (task 6.5): even after the above fix, `wasm-test-mock`
+  itself was still listed in the wide `./evidence` barrel's `export *`. Because none of the three
+  packages declare `sideEffects: false`, no bundler could tree-shake it out for any consumer of that
+  barrel. Turbopack's page-data collection evaluates every route module, including three that never
+  touch the mock, and `bun:test` does not resolve under Node — crashing the build. Fixed by removing
+  `wasm-test-mock` from the wide barrel's `export *` list; the narrow entry (already added at 5.4)
+  remains the sole supported way to reach it.
+
+Net effect: 14 declared entries → 15. `./evidence` itself did not grow; a second, narrower entry was
+added beside it specifically so a Bun-test-only side-effect module never has to be reachable through
+a barrel that any production bundler must evaluate in full.
+
+Target State §4 draws `provider-opencut-classic` and `react-editor` as siblings. The measured edge
+counts above — 228/293 between the provider and the UI, 19/16 between the UI and `editor/surface`,
+64/31 between session/runtime and the provider — show that split requires inverting production
+dependencies, which P1's parity-fixture oracle cannot absorb as a "behaviour-preserving move." This
+is recorded as a Direction-level finding, not resolved here: the split needs a Slice of its own,
+and Roadmap M9/S09 ("provider evolution") is its natural home. It does not block P1 — the three-package
+split above is complete and executable without an answer to it.

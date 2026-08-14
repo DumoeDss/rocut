@@ -1,6 +1,6 @@
-import { runHeadlessProofControl } from "@/editor/session/headless-proof-control";
-import { installHeadlessRuntimeProbe } from "@/editor/session/headless-runtime-probe";
-import type { HeadlessSemanticResult } from "@/editor/session/headless-semantic-fixture";
+import { runHeadlessProofControl } from "@opencut/editor-classic/evidence";
+import { installHeadlessRuntimeProbe } from "@opencut/editor-classic/evidence";
+import type { HeadlessSemanticResult } from "@opencut/editor-classic/evidence";
 import { exerciseHeadlessRuntimeSensitivity } from "../../../script/fixtures/c7-headless-runtime-sensitivity-control";
 
 declare const __OPENCUT_C7_BUILD_MARKER__: string;
@@ -32,7 +32,7 @@ document.documentElement.dataset.c7HeadlessStage = "proof-control-completed";
 let result: HeadlessSemanticResult;
 try {
 	const { runHeadlessSemanticFixture } =
-		await import("@/editor/session/headless-semantic-fixture");
+		await import("@opencut/editor-classic/evidence");
 	document.documentElement.dataset.c7HeadlessStage = "semantic-fixture-started";
 	result = await runHeadlessSemanticFixture({
 		host: "vite",

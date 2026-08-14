@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
 import { ThemeProvider } from "next-themes";
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { MobileGate } from "@/components/editor/mobile-gate";
-import { SessionEditorSurface } from "@/editor/surface/embedding/session-surface-bridge";
+import { Toaster } from "@opencut/editor-classic/ui";
+import { TooltipProvider } from "@opencut/editor-classic/ui";
+import { MobileGate } from "@opencut/editor-classic/ui";
+import { SessionEditorSurface } from "@opencut/editor-classic/surface";
 import { ViteEditorHost } from "./host/vite-editor-host";
 import { createViteEditorHost } from "./host/vite-host-config";
 import { ProjectPicker } from "./project-picker";
@@ -12,8 +12,8 @@ import { C3SessionHarness } from "./c3-session-harness";
 import { C4ForcedNoneHarness } from "./c4-forced-none-harness";
 import { C4WorkerHarness } from "./c4-worker-harness";
 import { C4SessionHarness } from "./c4-session-harness";
-import { C6DisposalHarness } from "@/editor/session/c6-disposal-harness";
-import { BrowserProjectStore } from "@/services/storage/browser-project-store";
+import { C6DisposalHarness } from "@opencut/editor-classic/evidence";
+import { BrowserProjectStore } from "@opencut/editor-classic/storage";
 
 const C4_BUILD_MARKER = import.meta.env.VITE_C4_BUILD_MARKER ?? "development";
 

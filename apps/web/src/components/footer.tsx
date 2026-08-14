@@ -4,7 +4,7 @@ import { FaGithub } from "react-icons/fa6";
 import Image from "next/image";
 import { DEFAULT_LOGO_URL } from "@/site/brand";
 import { SOCIAL_LINKS } from "@/site/social";
-import { capitalizeFirstLetter } from "@/utils/string";
+import { capitalizeFirstLetter } from "@opencut/editor-classic";
 
 type Category = "resources" | "company";
 

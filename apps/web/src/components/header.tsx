@@ -13,7 +13,7 @@ import {
 	Menu02Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { cn } from "@/utils/ui";
+import { cn } from "@opencut/editor-classic";
 import { DEFAULT_LOGO_URL, SITE_URL } from "@/site/brand";
 import { SOCIAL_LINKS } from "@/site/social";
 import {

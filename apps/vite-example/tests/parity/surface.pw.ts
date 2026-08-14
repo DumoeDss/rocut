@@ -3,7 +3,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, test, type Page } from "@playwright/test";
 
-import type { DisposalReport } from "@/editor/session";
+import type { DisposalReport } from "@opencut/editor-classic/session";
 
 import { evidenceDestination } from "./evidence-path";
 import { HOST } from "./host-profile";

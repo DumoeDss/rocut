@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@opencut/editor-classic/ui";
 import {
 	Dialog,
 	DialogBody,
@@ -8,8 +8,8 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@/components/ui/dialog";
-import { useStoragePersistence } from "@/services/storage/use-storage-persistence";
+} from "@opencut/editor-classic/ui";
+import { useStoragePersistence } from "@opencut/editor-classic/storage";
 
 export function StoragePersistenceDialog() {
 	const { showDialog, onConfirm, onDismiss } = useStoragePersistence();

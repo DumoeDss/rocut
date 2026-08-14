@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { TProjectSortKey } from "@/project/types";
+import type { TProjectSortKey } from "@opencut/editor-classic/project";
 
 export type ProjectsViewMode = "grid" | "list";
 

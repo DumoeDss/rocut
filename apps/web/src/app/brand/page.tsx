@@ -6,10 +6,10 @@ import Link from "next/link";
 import { Check, Copy, Download } from "lucide-react";
 import { useState } from "react";
 import { BasePage } from "@/app/base-page";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { cn } from "@/utils/ui";
+import { Button } from "@opencut/editor-classic/ui";
+import { Card } from "@opencut/editor-classic/ui";
+import { Separator } from "@opencut/editor-classic/ui";
+import { cn } from "@opencut/editor-classic";
 
 function downloadAsset(src: string) {
 	const filename = src.split("/").pop() ?? "asset.svg";

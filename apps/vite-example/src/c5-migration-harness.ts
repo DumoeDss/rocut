@@ -1,4 +1,4 @@
-import { runBrowserProjectStoreMigrationProbes } from "@/services/storage/browser-project-store-conformance";
+import { runBrowserProjectStoreMigrationProbes } from "@opencut/editor-classic/storage/conformance";
 
 declare global {
 	interface Window {

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { GitHubContributeSection } from "@/components/gitHub-contribute-section";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@opencut/editor-classic/ui";
+import { Card, CardContent } from "@opencut/editor-classic/ui";
 import { EXTERNAL_TOOLS } from "@/site/external-tools";
 import { BasePage } from "../base-page";
 

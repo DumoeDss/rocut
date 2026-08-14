@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { BasePage } from "@/app/base-page";
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "@opencut/editor-classic/ui";
 import {
 	type Release as ReleaseType,
 	getSortedReleases,

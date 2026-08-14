@@ -2,17 +2,17 @@ import type { EditorHost } from "@opencut/editor-ports/host";
 import {
 	createBrowserRuntimePorts,
 	resolveHostPath,
-} from "@/editor/host/browser-runtime";
+} from "@opencut/editor-classic/browser";
 import {
 	createInMemoryPorts,
 	DeterministicIdGenerator,
 	RecordingDiagnostics,
 } from "@opencut/editor-ports/in-memory";
-import { BrowserProjectStore } from "@/services/storage/browser-project-store";
+import { BrowserProjectStore } from "@opencut/editor-classic/storage";
 import {
 	DEFAULT_BROWSER_STORAGE_IDENTITY,
 	browserStoreDiagnosticLogRecord,
-} from "@/services/storage/browser-project-store-internals";
+} from "@opencut/editor-classic/storage";
 import { SOCIAL_LINKS } from "@/site/social";
 
 const OPENCUT_SITE_URL = "https://opencut.app";

@@ -6,26 +6,26 @@ import { useRouter } from "next/navigation";
 import type { KeyboardEvent, MouseEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import type { EditorCore } from "@/core";
-import { MigrationDialog } from "@/project/components/migration-dialog";
+import type { EditorCore } from "@opencut/editor-classic";
+import { MigrationDialog } from "@opencut/editor-classic/project";
 import { StoragePersistenceDialog } from "@/services/storage/components/storage-persistence-dialog";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useEditor, useEditorInstance } from "@/editor/use-editor";
+import { Button } from "@opencut/editor-classic/ui";
+import { Card, CardContent } from "@opencut/editor-classic/ui";
+import { Checkbox } from "@opencut/editor-classic/ui";
+import { Input } from "@opencut/editor-classic/ui";
+import { Skeleton } from "@opencut/editor-classic/ui";
+import { useEditor, useEditorInstance } from "@opencut/editor-classic/session";
 import type { EditorHost } from "@opencut/editor-ports/host";
 import { createNextEditorHost } from "@/editor/host/next-editor-host";
-import { EditorSessionHost } from "@/editor/session";
+import { EditorSessionHost } from "@opencut/editor-classic/session";
 import { useProjectsStore } from "./store";
 import type {
 	TProjectMetadata,
 	TProjectSortKey,
 	TProjectSortOption,
-} from "@/project/types";
+} from "@opencut/editor-classic/project";
 import { formatTimecode, mediaTimeToSeconds } from "opencut-wasm";
-import { formatDate } from "@/utils/date";
+import { formatDate } from "@opencut/editor-classic";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
 	Breadcrumb,
@@ -34,7 +34,7 @@ import {
 	BreadcrumbList,
 	BreadcrumbPage,
 	BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from "@opencut/editor-classic/ui";
 import {
 	Calendar04Icon,
 	GridViewIcon,
@@ -49,26 +49,26 @@ import {
 	ArrowDown02Icon,
 	InformationCircleIcon,
 } from "@hugeicons/core-free-icons";
-import { OcVideoIcon } from "@/components/icons";
-import { Label } from "@/components/ui/label";
+import { OcVideoIcon } from "@opencut/editor-classic/ui";
+import { Label } from "@opencut/editor-classic/ui";
 import {
 	ContextMenu,
 	ContextMenuContent,
 	ContextMenuItem,
 	ContextMenuSeparator,
 	ContextMenuTrigger,
-} from "@/components/ui/context-menu";
+} from "@opencut/editor-classic/ui";
 import {
 	DropdownMenu,
 	DropdownMenuCheckboxItem,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { DeleteProjectDialog } from "@/project/components/delete-project-dialog";
+} from "@opencut/editor-classic/ui";
+import { DeleteProjectDialog } from "@opencut/editor-classic/project";
 import { ProjectInfoDialog } from "@/project/components/project-info-dialog";
-import { RenameProjectDialog } from "@/project/components/rename-project-dialog";
-import { cn } from "@/utils/ui";
+import { RenameProjectDialog } from "@opencut/editor-classic/project";
+import { cn } from "@opencut/editor-classic";
 import { ChangelogNotification } from "@/changelog/components/changelog-notification";
 const formatProjectDuration = ({
 	duration,

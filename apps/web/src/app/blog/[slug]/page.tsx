@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { BasePage } from "@/app/base-page";
-import Prose from "@/components/ui/prose";
-import { Separator } from "@/components/ui/separator";
+import { Prose, Separator } from "@opencut/editor-classic/ui";
 import { getPosts, getSinglePost, processHtmlContent } from "@/blog/query";
 import type { Author, Post } from "@/blog/types";
 

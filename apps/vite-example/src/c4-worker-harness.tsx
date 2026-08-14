@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import type { WorkerRequest } from "@opencut/editor-ports";
-import { createEditorSession } from "@/editor/session";
+import { createEditorSession } from "@opencut/editor-classic/session";
 import { createViteEditorHost } from "./host/vite-host-config";
 
 const C4_BUILD_MARKER = import.meta.env.VITE_C4_BUILD_MARKER ?? "development";

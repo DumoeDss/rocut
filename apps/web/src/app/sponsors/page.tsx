@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { BasePage } from "@/app/base-page";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@opencut/editor-classic/ui";
 import { SPONSORS, type Sponsor } from "@/site/sponsors";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { LinkSquare02Icon } from "@hugeicons/core-free-icons";
-import { cn } from "@/utils/ui";
+import { cn } from "@opencut/editor-classic";
 
 export const metadata: Metadata = {
 	title: "Sponsors - OpenCut",

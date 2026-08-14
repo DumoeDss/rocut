@@ -1,5 +1,5 @@
 import { db, feedback } from "@/db";
-import { generateUUID } from "@/utils/id";
+import { generateUUID } from "@opencut/editor-classic";
 import type { FeedbackEntry, SubmitFeedbackInput } from "@opencut/editor-classic";
 
 export async function submitFeedback({

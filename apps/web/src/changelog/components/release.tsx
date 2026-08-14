@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { cn } from "@/utils/ui";
-import { ReactMarkdownWrapper } from "@/components/ui/react-markdown-wrapper";
+import { cn } from "@opencut/editor-classic";
+import { ReactMarkdownWrapper } from "@opencut/editor-classic/ui";
 import {
 	getSectionTitle,
 	groupAndOrderChanges,

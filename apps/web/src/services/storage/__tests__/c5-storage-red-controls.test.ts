@@ -34,7 +34,7 @@ if (process.env.OPENCUT_C5_STORAGE_RED_ISOLATED !== "1") {
 		}
 	});
 } else {
-	await import("@/editor/session/__tests__/wasm-test-mock");
+	await import("@opencut/editor-classic/evidence/wasm-test-mock");
 
 	type StoredValue = Record<string, unknown>;
 	const databases = new Map<string, Map<string, Map<string, StoredValue>>>();
@@ -97,7 +97,17 @@ if (process.env.OPENCUT_C5_STORAGE_RED_ISOLATED !== "1") {
 		}
 	}
 
-	mock.module("@/services/storage/indexeddb-adapter", () => ({
+	// The declared "./storage" entry is a curated barrel over many files
+	// (browser-project-store, its internals, migrations, indexeddb-adapter,
+	// ...) — before the package extraction this mock targeted the narrow
+	// `indexeddb-adapter` module alone. Mocking by specifier now means mocking
+	// the whole entry, so the real module is captured first and spread through:
+	// only IndexedDBAdapter/deleteDatabase are faked, everything else (e.g.
+	// browserStoreDiagnosticLogRecord, BrowserProjectStore, needed by
+	// next-editor-host.ts below) stays real.
+	const realStorage = await import("@opencut/editor-classic/storage");
+	mock.module("@opencut/editor-classic/storage", () => ({
+		...realStorage,
 		IndexedDBAdapter: FakeIndexedDBAdapter,
 		deleteDatabase: async ({ dbName }: { dbName: string }) => {
 			deletedDatabases.push(dbName);
@@ -108,9 +118,9 @@ if (process.env.OPENCUT_C5_STORAGE_RED_ISOLATED !== "1") {
 	const { InMemoryProjectStore } = await import("@opencut/editor-ports/in-memory");
 	const { createInMemoryHost } = await import("@opencut/editor-ports/in-memory/host");
 	const { createEditorSession } =
-		await import("@/editor/session/create-session");
+		await import("@opencut/editor-classic/session");
 	const { editorForSession } =
-		await import("@/editor/runtime/session-core-owner");
+		await import("@opencut/editor-classic/runtime");
 	const { createNextEditorHost } =
 		await import("@/editor/host/next-editor-host");
 	const { createViteEditorHost } =
@@ -277,8 +287,8 @@ if (process.env.OPENCUT_C5_STORAGE_RED_ISOLATED !== "1") {
 				existsSync(
 					join(
 						repoRoot,
-						"apps",
-						"web",
+						"packages",
+						"editor-classic",
 						"src",
 						"services",
 						"storage",

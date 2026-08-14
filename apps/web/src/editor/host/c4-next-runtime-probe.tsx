@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 
-import { editorForSession } from "@/editor/runtime/session-core-owner";
-import { storesForSession } from "@/editor/runtime/session-stores";
-import { useEditorSession } from "@/editor/session";
-import { useEditor } from "@/editor/use-editor";
+import { editorForSession } from "@opencut/editor-classic/runtime";
+import { storesForSession } from "@opencut/editor-classic/runtime";
+import { useEditorSession } from "@opencut/editor-classic/session";
+import { useEditor } from "@opencut/editor-classic/session";
 import { isC4ProjectLoadComplete } from "@opencut/editor-classic/browser";
 
 type ProbeMode = "worker" | "forced-none";

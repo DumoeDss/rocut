@@ -6,6 +6,10 @@ import { headlessModuleGraph } from "./build/headless-module-graph";
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "../..");
 const webSrc = resolve(repoRoot, "apps/web/src");
+// headless-proof-control moved under the package extraction (Stage C) from
+// "apps/web/src/editor/session/..." to
+// "packages/editor-classic/src/editor/session/...".
+const editorClassicSrc = resolve(repoRoot, "packages/editor-classic/src");
 const outputDirectory = process.env.C7_VITE_HEADLESS_OUT_DIR;
 const marker = process.env.OPENCUT_C7_BUILD_MARKER;
 const acceptedHead = process.env.OPENCUT_C7_ACCEPTED_HEAD;
@@ -17,11 +21,11 @@ if (!outputDirectory || !marker || !acceptedHead || !acceptedTree) {
 }
 const reactControl = process.env.OPENCUT_C7_REACT_CONTROL === "1";
 const neutralControl = resolve(
-	webSrc,
+	editorClassicSrc,
 	"editor/session/headless-proof-control.ts",
 );
 const injectedControl = resolve(
-	webSrc,
+	editorClassicSrc,
 	"editor/session/headless-proof-control-react-browser.ts",
 );
 
