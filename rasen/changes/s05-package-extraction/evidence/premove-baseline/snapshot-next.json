@@ -1,0 +1,419 @@
+{
+  "project": {
+    "__opencutTransaction": {
+      "assetCatalog": [
+        {
+          "height": 180,
+          "id": "<id:1>",
+          "name": "fixture-image.png",
+          "type": "image",
+          "width": 320
+        },
+        {
+          "duration": 5,
+          "height": 360,
+          "id": "<id:2>",
+          "name": "fixture-video.mp4",
+          "type": "video",
+          "width": 640
+        },
+        {
+          "duration": 2,
+          "id": "<id:3>",
+          "name": "fixture-tone-a4.wav",
+          "type": "audio"
+        },
+        {
+          "duration": 3,
+          "id": "<id:4>",
+          "name": "fixture-tone-a5.wav",
+          "type": "audio"
+        }
+      ],
+      "idempotency": [
+        {
+          "fingerprint": "[\"array\",[[\"object\",[[\"kind\",[\"string\",\"update-project\"]],[\"patch\",[\"object\",[[\"canvasHeight\",[\"number\",\"180\"]],[\"canvasWidth\",[\"number\",\"320\"]]]]],[\"projectId\",[\"string\",\"0a5ce9d4-c6c0-42e1-9260-2ad666d2ce1d\"]]]],[\"object\",[[\"asset\",[\"object\",[[\"duration\",[\"number\",\"240000\"]],[\"id\",[\"string\",\"2027ba2f-3465-4200-83aa-4e41415a254f\"]],[\"kind\",[\"string\",\"audio\"]],[\"name\",[\"string\",\"fixture-tone-a4.wav\"]]]]],[\"kind\",[\"string\",\"create-asset\"]]]],[\"object\",[[\"asset\",[\"object\",[[\"duration\",[\"number\",\"360000\"]],[\"id\",[\"string\",\"75307a09-2dae-47c8-a710-949244fe4b66\"]],[\"kind\",[\"string\",\"audio\"]],[\"name\",[\"string\",\"fixture-tone-a5.wav\"]]]]],[\"kind\",[\"string\",\"create-asset\"]]]],[\"object\",[[\"asset\",[\"object\",[[\"duration\",[\"number\",\"600000\"]],[\"height\",[\"number\",\"360\"]],[\"id\",[\"string\",\"9833be84-6704-4dea-af27-ef950568f6d2\"]],[\"kind\",[\"string\",\"video\"]],[\"name\",[\"string\",\"fixture-video.mp4\"]],[\"width\",[\"number\",\"640\"]]]]],[\"kind\",[\"string\",\"create-asset\"]]]],[\"object\",[[\"asset\",[\"object\",[[\"height\",[\"number\",\"180\"]],[\"id\",[\"string\",\"e4d5a6f5-24de-4a83-bf22-b9c0006fca08\"]],[\"kind\",[\"string\",\"image\"]],[\"name\",[\"string\",\"fixture-image.png\"]],[\"width\",[\"number\",\"320\"]]]]],[\"kind\",[\"string\",\"create-asset\"]]]],[\"object\",[[\"clip\",[\"object\",[[\"assetId\",[\"string\",\"e4d5a6f5-24de-4a83-bf22-b9c0006fca08\"]],[\"duration\",[\"number\",\"600000\"]],[\"id\",[\"string\",\"93535b25-d7d1-4b77-ab67-2a04ca28cbd8\"]],[\"startTime\",[\"number\",\"0\"]],[\"trackId\",[\"string\",\"5619cf25-63bd-4e5e-b4e1-cd0049418c07\"]],[\"trimEnd\",[\"number\",\"0\"]],[\"trimStart\",[\"number\",\"0\"]]]]],[\"kind\",[\"string\",\"create-clip\"]]]]]]",
+          "key": "opencut-ui:045dd9b4-6317-462e-935a-d663ac8257bc",
+          "result": {
+            "changedIds": [
+              "<id:5>"
+            ],
+            "createdIds": [
+              "<id:3>",
+              "<id:4>",
+              "<id:2>",
+              "<id:1>",
+              "<id:6>"
+            ],
+            "revision": 1
+          }
+        },
+        {
+          "fingerprint": "[\"array\",[[\"object\",[[\"kind\",[\"string\",\"create-track\"]],[\"track\",[\"object\",[[\"hidden\",[\"boolean\",false]],[\"id\",[\"string\",\"ad6c0c74-8db5-4194-b24b-8f936188869b\"]],[\"kind\",[\"string\",\"video\"]],[\"name\",[\"string\",\"Video track\"]]]]]]],[\"object\",[[\"clip\",[\"object\",[[\"assetId\",[\"string\",\"9833be84-6704-4dea-af27-ef950568f6d2\"]],[\"duration\",[\"number\",\"600000\"]],[\"id\",[\"string\",\"4cad66ae-b0ba-4ab4-a6e6-b51a592ac4b1\"]],[\"startTime\",[\"number\",\"0\"]],[\"trackId\",[\"string\",\"ad6c0c74-8db5-4194-b24b-8f936188869b\"]],[\"trimEnd\",[\"number\",\"0\"]],[\"trimStart\",[\"number\",\"0\"]]]]],[\"kind\",[\"string\",\"create-clip\"]]]]]]",
+          "key": "opencut-ui:1503906c-17e8-4a37-8ada-96655b87f62e",
+          "result": {
+            "changedIds": [],
+            "createdIds": [
+              "<id:7>",
+              "<id:8>"
+            ],
+            "revision": 2
+          }
+        },
+        {
+          "fingerprint": "[\"array\",[[\"object\",[[\"kind\",[\"string\",\"create-track\"]],[\"track\",[\"object\",[[\"hidden\",[\"boolean\",false]],[\"id\",[\"string\",\"99289840-f8bf-4602-8893-00d5cc08ed72\"]],[\"kind\",[\"string\",\"audio\"]],[\"name\",[\"string\",\"Audio track\"]]]]]]],[\"object\",[[\"clip\",[\"object\",[[\"assetId\",[\"string\",\"2027ba2f-3465-4200-83aa-4e41415a254f\"]],[\"duration\",[\"number\",\"240000\"]],[\"id\",[\"string\",\"c717e3e3-eb20-4d75-8c76-07534cbdb054\"]],[\"startTime\",[\"number\",\"0\"]],[\"trackId\",[\"string\",\"99289840-f8bf-4602-8893-00d5cc08ed72\"]],[\"trimEnd\",[\"number\",\"0\"]],[\"trimStart\",[\"number\",\"0\"]]]]],[\"kind\",[\"string\",\"create-clip\"]]]]]]",
+          "key": "opencut-ui:3a370e20-70ab-4c1d-8fa0-1c764e82e444",
+          "result": {
+            "changedIds": [],
+            "createdIds": [
+              "<id:9>",
+              "<id:10>"
+            ],
+            "revision": 3
+          }
+        },
+        {
+          "fingerprint": "[\"array\",[[\"object\",[[\"kind\",[\"string\",\"create-track\"]],[\"track\",[\"object\",[[\"hidden\",[\"boolean\",false]],[\"id\",[\"string\",\"6b711bc2-49cf-4cac-975f-d76433a03a06\"]],[\"kind\",[\"string\",\"audio\"]],[\"name\",[\"string\",\"Audio track\"]]]]]]],[\"object\",[[\"clip\",[\"object\",[[\"assetId\",[\"string\",\"75307a09-2dae-47c8-a710-949244fe4b66\"]],[\"duration\",[\"number\",\"360000\"]],[\"id\",[\"string\",\"16445bb4-7a8d-4ed0-94a1-fce916f6b196\"]],[\"startTime\",[\"number\",\"0\"]],[\"trackId\",[\"string\",\"6b711bc2-49cf-4cac-975f-d76433a03a06\"]],[\"trimEnd\",[\"number\",\"0\"]],[\"trimStart\",[\"number\",\"0\"]]]]],[\"kind\",[\"string\",\"create-clip\"]]]]]]",
+          "key": "opencut-ui:0bf24e9f-a9e2-4544-9fb4-25f9a0bc6b46",
+          "result": {
+            "changedIds": [],
+            "createdIds": [
+              "<id:11>",
+              "<id:12>"
+            ],
+            "revision": 4
+          }
+        },
+        {
+          "fingerprint": "[\"array\",[[\"object\",[[\"clipId\",[\"string\",\"4cad66ae-b0ba-4ab4-a6e6-b51a592ac4b1\"]],[\"kind\",[\"string\",\"update-clip\"]],[\"patch\",[\"object\",[[\"startTime\",[\"number\",\"52000\"]]]]]]]]]",
+          "key": "opencut-ui:dc6f863d-1b25-4abb-bb2c-029dbb5afa84",
+          "result": {
+            "changedIds": [
+              "<id:8>"
+            ],
+            "createdIds": [],
+            "revision": 5
+          }
+        },
+        {
+          "fingerprint": "[\"array\",[[\"object\",[[\"clipId\",[\"string\",\"c717e3e3-eb20-4d75-8c76-07534cbdb054\"]],[\"kind\",[\"string\",\"update-clip\"]],[\"patch\",[\"object\",[[\"duration\",[\"number\",\"212000\"]],[\"trimEnd\",[\"number\",\"28000\"]]]]]]]]]",
+          "key": "opencut-ui:9cac5293-044b-454a-9eb0-7754d5f0e453",
+          "result": {
+            "changedIds": [
+              "<id:10>"
+            ],
+            "createdIds": [],
+            "revision": 6
+          }
+        },
+        {
+          "fingerprint": "[\"array\",[[\"object\",[[\"clip\",[\"object\",[[\"assetId\",[\"string\",\"9833be84-6704-4dea-af27-ef950568f6d2\"]],[\"duration\",[\"number\",\"300000\"]],[\"id\",[\"string\",\"72871f7a-5c35-48b8-8ca0-9275c78d9654\"]],[\"startTime\",[\"number\",\"352000\"]],[\"trackId\",[\"string\",\"ad6c0c74-8db5-4194-b24b-8f936188869b\"]],[\"trimEnd\",[\"number\",\"0\"]],[\"trimStart\",[\"number\",\"300000\"]]]]],[\"kind\",[\"string\",\"create-clip\"]]]],[\"object\",[[\"clipId\",[\"string\",\"4cad66ae-b0ba-4ab4-a6e6-b51a592ac4b1\"]],[\"kind\",[\"string\",\"update-clip\"]],[\"patch\",[\"object\",[[\"duration\",[\"number\",\"300000\"]],[\"trimEnd\",[\"number\",\"300000\"]]]]]]]]]",
+          "key": "opencut-ui:48f69cbf-3ed2-4aa5-9638-337aa33fd17d",
+          "result": {
+            "changedIds": [
+              "<id:8>"
+            ],
+            "createdIds": [
+              "<id:13>"
+            ],
+            "revision": 7
+          }
+        },
+        {
+          "fingerprint": "[\"array\",[[\"object\",[[\"clipId\",[\"string\",\"16445bb4-7a8d-4ed0-94a1-fce916f6b196\"]],[\"kind\",[\"string\",\"update-clip\"]],[\"patch\",[\"object\",[[\"startTime\",[\"number\",\"212000\"]]]]]]]]]",
+          "key": "opencut-ui:e565ff02-3d2c-449f-8141-e639eeacc949",
+          "result": {
+            "changedIds": [
+              "<id:12>"
+            ],
+            "createdIds": [],
+            "revision": 8
+          }
+        }
+      ],
+      "revision": 8,
+      "version": 1
+    },
+    "currentSceneId": "<id:14>",
+    "id": "<id:5>",
+    "metadata": {
+      "createdAt": "<timestamp>",
+      "duration": 652000,
+      "id": "<id:5>",
+      "name": "New project",
+      "thumbnail": "<data-url:image/png>",
+      "updatedAt": "<timestamp>"
+    },
+    "scenes": [
+      {
+        "bookmarks": [],
+        "createdAt": "<timestamp>",
+        "id": "<id:14>",
+        "isMain": true,
+        "name": "Main scene",
+        "tracks": {
+          "audio": [
+            {
+              "elements": [
+                {
+                  "duration": 360000,
+                  "id": "<id:12>",
+                  "mediaId": "<id:4>",
+                  "name": "fixture-tone-a5.wav",
+                  "params": {
+                    "muted": false,
+                    "volume": 0
+                  },
+                  "sourceDuration": 360000,
+                  "sourceType": "upload",
+                  "startTime": 212000,
+                  "trimEnd": 0,
+                  "trimStart": 0,
+                  "type": "audio"
+                }
+              ],
+              "id": "<id:11>",
+              "muted": false,
+              "name": "Audio track",
+              "type": "audio"
+            },
+            {
+              "elements": [
+                {
+                  "duration": 212000,
+                  "id": "<id:10>",
+                  "mediaId": "<id:3>",
+                  "name": "fixture-tone-a4.wav",
+                  "params": {
+                    "muted": false,
+                    "volume": 0
+                  },
+                  "sourceDuration": 240000,
+                  "sourceType": "upload",
+                  "startTime": 0,
+                  "trimEnd": 28000,
+                  "trimStart": 0,
+                  "type": "audio"
+                }
+              ],
+              "id": "<id:9>",
+              "muted": false,
+              "name": "Audio track",
+              "type": "audio"
+            }
+          ],
+          "main": {
+            "elements": [
+              {
+                "duration": 600000,
+                "hidden": false,
+                "id": "<id:6>",
+                "mediaId": "<id:1>",
+                "name": "fixture-image.png",
+                "params": {
+                  "blendMode": "normal",
+                  "opacity": 1,
+                  "transform.positionX": 0,
+                  "transform.positionY": 0,
+                  "transform.rotate": 0,
+                  "transform.scaleX": 1,
+                  "transform.scaleY": 1
+                },
+                "startTime": 0,
+                "trimEnd": 0,
+                "trimStart": 0,
+                "type": "image"
+              }
+            ],
+            "hidden": false,
+            "id": "<id:15>",
+            "muted": false,
+            "name": "Main Track",
+            "type": "video"
+          },
+          "overlay": [
+            {
+              "elements": [
+                {
+                  "duration": 300000,
+                  "hidden": false,
+                  "id": "<id:8>",
+                  "isSourceAudioEnabled": true,
+                  "mediaId": "<id:2>",
+                  "name": "fixture-video.mp4 (left)",
+                  "params": {
+                    "blendMode": "normal",
+                    "muted": false,
+                    "opacity": 1,
+                    "transform.positionX": 0,
+                    "transform.positionY": 0,
+                    "transform.rotate": 0,
+                    "transform.scaleX": 1,
+                    "transform.scaleY": 1,
+                    "volume": 0
+                  },
+                  "sourceDuration": 600000,
+                  "startTime": 52000,
+                  "trimEnd": 300000,
+                  "trimStart": 0,
+                  "type": "video"
+                },
+                {
+                  "duration": 300000,
+                  "hidden": false,
+                  "id": "<id:13>",
+                  "isSourceAudioEnabled": true,
+                  "mediaId": "<id:2>",
+                  "name": "fixture-video.mp4 (right)",
+                  "params": {
+                    "blendMode": "normal",
+                    "muted": false,
+                    "opacity": 1,
+                    "transform.positionX": 0,
+                    "transform.positionY": 0,
+                    "transform.rotate": 0,
+                    "transform.scaleX": 1,
+                    "transform.scaleY": 1,
+                    "volume": 0
+                  },
+                  "sourceDuration": 600000,
+                  "startTime": 352000,
+                  "trimEnd": 0,
+                  "trimStart": 300000,
+                  "type": "video"
+                }
+              ],
+              "hidden": false,
+              "id": "<id:7>",
+              "muted": false,
+              "name": "Video track",
+              "type": "video"
+            }
+          ]
+        },
+        "updatedAt": "<timestamp>"
+      }
+    ],
+    "settings": {
+      "background": {
+        "color": "#000000",
+        "type": "color"
+      },
+      "canvasSize": {
+        "height": 180,
+        "width": 320
+      },
+      "canvasSizeMode": "preset",
+      "fps": {
+        "denominator": 1,
+        "numerator": 30
+      },
+      "lastCustomCanvasSize": null,
+      "originalCanvasSize": {
+        "height": 180,
+        "width": 320
+      }
+    },
+    "timelineViewState": {
+      "playheadTime": 240000,
+      "scrollLeft": 0,
+      "zoomLevel": 7.31
+    },
+    "version": 31
+  },
+  "media": [
+    {
+      "height": 180,
+      "id": "<id:1>",
+      "lastModified": "<timestamp>",
+      "name": "fixture-image.png",
+      "size": 628,
+      "thumbnailUrl": "<data-url:image/jpeg>",
+      "type": "image",
+      "width": 320
+    },
+    {
+      "duration": 2,
+      "id": "<id:3>",
+      "lastModified": "<timestamp>",
+      "name": "fixture-tone-a4.wav",
+      "size": 176478,
+      "type": "audio"
+    },
+    {
+      "duration": 3,
+      "id": "<id:4>",
+      "lastModified": "<timestamp>",
+      "name": "fixture-tone-a5.wav",
+      "size": 264678,
+      "type": "audio"
+    },
+    {
+      "duration": 5,
+      "height": 360,
+      "id": "<id:2>",
+      "lastModified": "<timestamp>",
+      "name": "fixture-video.mp4",
+      "size": 4445,
+      "thumbnailUrl": "<data-url:image/jpeg>",
+      "type": "video",
+      "width": 640
+    }
+  ],
+  "trackSummary": {
+    "visualTracks": 2,
+    "audioTracks": 2,
+    "tracks": [
+      {
+        "kind": "main:video",
+        "name": "Main Track",
+        "elements": [
+          "fixture-image.png@0+600000"
+        ]
+      },
+      {
+        "kind": "overlay:video",
+        "name": "Video track",
+        "elements": [
+          "fixture-video.mp4 (left)@52000+300000",
+          "fixture-video.mp4 (right)@352000+300000"
+        ]
+      },
+      {
+        "kind": "audio",
+        "name": "Audio track",
+        "elements": [
+          "fixture-tone-a5.wav@212000+360000"
+        ]
+      },
+      {
+        "kind": "audio",
+        "name": "Audio track",
+        "elements": [
+          "fixture-tone-a4.wav@0+212000"
+        ]
+      }
+    ]
+  },
+  "normalizationLedger": {
+    "idOrdinals": 15,
+    "timestampsReplaced": 8,
+    "dataUrlsReplaced": [
+      {
+        "path": "project.metadata.thumbnail",
+        "mime": "image/png",
+        "chars": 58842
+      },
+      {
+        "path": "media[0].thumbnailUrl",
+        "mime": "image/jpeg",
+        "chars": 1519
+      },
+      {
+        "path": "media[3].thumbnailUrl",
+        "mime": "image/jpeg",
+        "chars": 2879
+      }
+    ]
+  }
+}
