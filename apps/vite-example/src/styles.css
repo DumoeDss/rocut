@@ -22,5 +22,5 @@ body,
  * silent-success failure mode is why the first build smoke includes a visual
  * check.
  */
-@source "../../web/src";
+@source "../../../packages/editor-classic/src";
 @source "./";
