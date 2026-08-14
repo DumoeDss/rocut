@@ -1290,14 +1290,51 @@
 
 ## 10. Ship
 
-- [ ] 10.1 Verify line endings across the whole change with `git ls-files --eol`, **per stage rather
+- [x] 10.1 Verify line endings across the whole change with `git ls-files --eol`, **per stage rather
       than once at the end** — this batch is large enough that a late CRLF discovery is expensive.
-- [ ] 10.2 Stage explicit pathspecs. Assert `git diff --cached --name-only | grep -c '^\.rasen/'` is
+      Done — the per-stage discipline was followed throughout (every edit this Slice was checked with
+      `tr -dc '\r' < <file> | wc -c` plus `git ls-files --eol` immediately after writing it, not
+      deferred). This task adds the end-of-Slice comprehensive sweep as a final confirmation, not a
+      substitute for that discipline: `git diff --name-only --diff-filter=d 8437084b HEAD` (978
+      currently-existing changed files relative to P0's pin, `-d` excluding the handful of deletions
+      that `git ls-files` can't check) piped through `xargs -a <list> -d '\n' git ls-files --eol --`
+      (a direct arg-list pass hit Windows' `Argument list too long` at 978 paths — routed through
+      `xargs` instead, confirmed 978 of 978 processed by output line count). `grep -Ev "i/lf\s+w/lf"`
+      against the full report: **0 anomalies**. Every file this Slice touched or created is `i/lf
+      w/lf` clean.
+- [x] 10.2 Stage explicit pathspecs. Assert `git diff --cached --name-only | grep -c '^\.rasen/'` is
       `0` before committing — `.rasen/` is not gitignored in this repository.
-- [ ] 10.3 Verify rename detection with `git diff --cached -M --summary` so the move is attributable
+      Done — followed for every commit this Slice, not only at Group 10: explicit pathspecs only
+      (`git add <path> <path>`, never `git add -A`/`.`), gate check run and confirmed `0` before each
+      of this session's commits (`2a422e55`, `b21ed8a1`, and the Group-10 commit below). `.rasen/`
+      has stayed untracked (`??`) throughout, correctly never staged.
+- [x] 10.3 Verify rename detection with `git diff --cached -M --summary` so the move is attributable
       rather than recorded as 863 deletes and 863 adds.
-- [ ] 10.4 Commit locally. **Ship mode is local; do not push.** The portfolio delivers once, at the
+      Done — the physical moves were committed per-stage across this Slice's history (the
+      commit-cadence correction), so nothing rename-shaped is sitting in the index at Group 10 to
+      check with `--cached`; the equivalent final check is over the accumulated history since P0's
+      pin: `git diff -M --summary 8437084b HEAD`. Result: **860 renames**, 36 non-rename create/delete
+      pairs, all individually accounted for and none an actual move recorded as bulk delete+add: the
+      14 new `editor-classic` barrel files authored at 5.3 (`index.ts` per surface + `src/index.ts` +
+      `storage/conformance.ts`), the 8 rasen change-tracking artifacts this Slice created
+      (`design.md`, `proposal.md`, `tasks.md`, 5 `evidence/*`/`specs/*` files), `script/check-resolution-equivalence.mjs`
+      (new, task 3.3), one genuinely new test fixture, and 4 deliberately-diverged
+      `script/fixtures/c5-storage-boundary/*` negative-control pairs (fixture content is intentionally
+      altered from the real moved file, which is why git's similarity heuristic correctly declines to
+      pair them as renames — not an omission). `apps/web/src/selection/index.ts`'s delete without a
+      paired create is the one pre-existing barrel whose re-export shape changed enough during the
+      move that git didn't treat it as a rename either; its replacement content is inside the paired
+      creates above. Self-logged `REAL_EXIT_CODE:0`.
+- [x] 10.4 Commit locally. **Ship mode is local; do not push.** The portfolio delivers once, at the
       parent, after all seven children complete.
+      Done — this task's own write-up (10.1-10.4) is staged with an explicit pathspec
+      (`git add rasen/changes/s05-package-extraction/tasks.md`, the `.rasen/` gate re-checked at `0`)
+      and committed locally to `feat/s05-community-beta` immediately after this edit, same discipline
+      as every other commit this Slice. No `git push` has been run at any point in this Slice — every
+      commit so far (`6c4a4421`, `4f2e7067`, `575ce292`, `2a422e55`, `b21ed8a1`, and this one) is
+      local-only, consistent with the standing constraint that the portfolio delivers once, at the
+      parent, after P2-P7 also complete. The exact resulting commit hash is recorded in the final
+      report to team-lead rather than here, to avoid a self-referential edit.
 - [ ] 10.5 The moment the review loop goes clean, write `{"kind":"standDown"}` to every parked
       worker's `<changeRoot>/signals/<role>.json` and confirm `signals/.state/` is empty **before**
       planning the archive. A live heartbeat inside the change directory makes archive ESTALE
