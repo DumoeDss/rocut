@@ -592,3 +592,108 @@ Both proof launches use `mkdtempSync` roots and remove them on exit
   first-cycle debounce pending at the snapshot reads as platform residual on
   a slow host — intermittent, cycle-1 only, non-cumulative (details 6.2).
   Known consequence, not fixed here; Group 8 records the distribution.
+
+## Group 7 — Parity on the third Host (tasks 7.1–7.7)
+
+### What was built
+
+- **7.1** `host-profile.ts`: `HostName` gains `"electron"`; the profile's entry is the full
+  `opencut://app/index.html` URL (no `baseURL` to resolve against); `createProject` reuses
+  the existing `clickUntil` pattern against the electron picker (same "New project" button,
+  same `?project=` record of the open project); `newProjectName` is `"Untitled Project"` —
+  the name the electron picker's own `createNewProject` call gives a project.
+- **7.2** The page-acquisition seam, `tests/parity/electron-page.ts`: refuses to run against
+  an unbuilt host (checks `dist/index.html` and `dist/surface-evidence.html`), launches the
+  app with `_electron.launch` using the gate-1 launch config (`--use-angle=swiftshader
+  --enable-unsafe-swiftshader`, Electron resolved through the app's own `package.json`),
+  a fresh `OPENCUT_STORE_ROOT` per run, and returns `app.firstWindow()`. Teardown
+  (`closeElectronPage`) closes the app and removes the disposable root; the spec calls it in
+  `test.afterEach`.
+- **7.3** `snapshot.ts`: `readPersisted` dispatches on `HOST`. The electron branch reads the
+  fs store's own records through the page's own `opencutStore` bridge — `listRecords` /
+  `loadRecord` / `listAttachments`, the operations the store itself uses — and projects to
+  the public-row shapes the browser store publishes (project row `{...record.data, id}`;
+  media row `{id, name, type, size, lastModified, width, height, duration, thumbnailUrl,
+  ephemeral}` with `size` from the body's byte length, `{id}` alone when metadata misses the
+  row contract). Attachment bodies never leave the page. The databases census records the fs
+  store's own shape (`fs:records`, `fs:attachments:<projectId>`). The vite/next IndexedDB
+  path is unchanged under its original body.
+- **7.4** `playwright.surface.config.ts`: the electron leg has no `webServer`, no `baseURL`,
+  and drops the `channel` pin (the fixture browser opens idle; its page is destructured but
+  never driven on this leg). Artifacts key on `host` — parity output lands under
+  `tests/parity-artifacts/electron/`, agent evidence under the `evidence-path.ts`-resolved
+  leaf with no further config.
+
+### Two Electron import findings
+
+- Electron windows do **not** surface Playwright's `filechooser` event — the browser hosts'
+  chooser-interception dance cannot complete there. The editor's own always-mounted hidden
+  `<input type="file">` (assets panel) is the same import path its change handler serves.
+- That input is not `multiple` in markup: `openFilePicker()` sets `el.multiple = true` as
+  the one statement before the native dialog would open. The electron branch reproduces
+  exactly that statement, then one `setInputFiles` with all four fixtures — the same single
+  change event the intercepted chooser produces on the browser hosts, which keep the genuine
+  chooser flow unchanged.
+
+### The Host defect the parity run caught (durable finding)
+
+Run 3 failed `place-multi-track` with hover hit-tests intercepted by the header's
+project-name input, a panel resize separator, and `<html>` — while the accessibility tree
+was complete and steps 1-2 had *asserted* visibility. Both step screenshots showed chrome
+only: everything below the header was painted at near-zero height. Root cause: the host
+mount supplied no definite-height ancestor. The editor's embedding contract is explicit
+(`editor-root.tsx`: "the host supplies the viewport-sized wrapper"), and the Vite example's
+`HostChrome` — whose bordered box reads as demo decoration — carries the load-bearing
+`height: 100vh` + flex main. Group 3 mirrored `app.tsx` "minus the bounding HostChrome" and
+dropped the height chain along with the decoration: `#root` is `min-height: 100%` (height
+`auto`), and the editor's `size-full` chain then resolves against `auto` all the way down,
+so the panel group measures a degenerate container.
+
+Fix (host-side, in scope): `apps/electron-host/src/app.tsx` wraps the picker/editor
+conditional in `<main className="h-screen w-screen overflow-hidden">` — the desktop window
+*is* its own chrome, so the wrapper is the whole window; the picker's `size-full` root gets
+the same contract satisfied. Run 4 then passed end to end.
+
+### Run verdicts
+
+- **Electron (run 4)**: `1 passed (37.0s)`. All ten ledger entries **asserted**; zero
+  console errors; zero blocked third-party requests; persisted census `fs:records` 1 row,
+  `fs:attachments:<id>` 4 rows. Track summary: image on main, split video halves on
+  overlay, two audio tracks.
+- **7.5 diff (unmodified tool, argv pair vite→electron)**: exit 1 — the tool exits non-zero
+  on any semantic row, envelope rows included, so the verdict is read off the report:
+  **25 differences — 20 semantic, 5 incidental; 275 leaf values compared** (the same leaf
+  count as the committed Vite/Next pair). Every semantic row is under
+  `project.__opencutTransaction.idempotency[*]` — **zero outside the envelope; the §3.2 bar
+  is met.** The 5 incidental rows are the documented classes only (inherited one-frame
+  `metadata.duration`, two one-frame overlay `startTime` rows, `playheadTime`,
+  `zoomLevel` — the desktop window is 1424 CSS px vs the browser viewport's 1600, so its
+  zoom differs more; the one-frame rule absorbs the quantization exactly as documented).
+  Known artifacts of running the unmodified tool: the report's "next" column holds the
+  electron snapshot, and its "Interaction ledger" section is absent (the tool looks for
+  `ledger-next.json` beside the second snapshot). Report:
+  `evidence/parity-electron-vs-vite-20260815.md`.
+- **7.6 regression control**: both browser hosts re-run after the 7.1-7.3 edits — vite
+  `1 passed (38.2s)`, next `1 passed (39.2s)`; same single third-party block, same two
+  route-blocker `ERR_FAILED` console errors as the committed record. Fresh Vite-vs-Next
+  diff: **27 differences — 18 semantic, 9 incidental; 275 leaves.** All semantic rows
+  inside the same envelope; the 9 incidental paths are the same 9 as the committed record.
+  The in-envelope count (18 vs the committed 20) is the envelope's own by-construction
+  per-run variance (retry nonces, `createdIds` ordinal ordering) — path classes unchanged.
+  Report: `evidence/parity-vite-vs-next-regression-20260815.md`.
+- **7.7**: root `PARITY.md` gained a "Third host: the desktop (Electron) comparison"
+  section stating the pair, the counts, the classification and the regression result; the
+  inherited classification and envelope language above it are untouched.
+
+### Shared-harness diff record (7.2's "interactions did not move")
+
+- `parity.pw.ts` — exactly 2 hunks: the seam import; and the test header (afterEach
+  teardown, `page` → `fixturePage` destructure rename, seam acquisition, origin dispatch).
+  All nine interaction bodies and the save-reload-reopen block are byte-identical.
+- `driver.ts` — exactly 2 hunks: the `HOST` import; and the electron branch inside
+  `importFixtures`. The browser-host chooser dance and every other primitive are unchanged.
+- `host-profile.ts` / `snapshot.ts` — additions that dispatch on `HOST`; the vite/next
+  paths are unchanged under their original code.
+
+No frozen surface was touched; no deviation from the change artifacts in this group (the
+`app.tsx` wrapper is host-side defect repair that the parity run exists to catch).

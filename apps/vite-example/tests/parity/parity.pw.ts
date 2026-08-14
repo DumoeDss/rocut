@@ -3,6 +3,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, test, type Page } from "@playwright/test";
 import * as drive from "./driver";
+import { acquireElectronPage, closeElectronPage } from "./electron-page";
 import { HOST, HOST_PROFILE } from "./host-profile";
 import { normalize, readPersisted, summarizeTracks } from "./snapshot";
 
@@ -81,9 +82,27 @@ async function step(
 
 test.describe.configure({ mode: "serial" });
 
-test(`editing parity scenario — ${HOST} host`, async ({ page, baseURL }) => {
+test.afterEach(async () => {
+	// Task 7.2's seam teardown: the desktop Host's app process and its
+	// disposable store root live for exactly this run.
+	await closeElectronPage();
+});
+
+test(`editing parity scenario — ${HOST} host`, async ({ page: fixturePage, baseURL }) => {
 	mkdirSync(OUT_DIR, { recursive: true });
-	const origin = new URL(baseURL ?? "http://127.0.0.1:4173").origin;
+	// Task 7.2 — the page-acquisition seam, and the only structural edit this
+	// host cost the spec: on the desktop Host the page is a window of the
+	// launched app (`_electron.launch`, gate-1 launch config, fresh
+	// `OPENCUT_STORE_ROOT`); on the browser hosts it is the fixture page,
+	// unchanged. Every interaction below addresses `page`, so their bodies are
+	// byte-identical across hosts (diffed in the Group 7 evidence).
+	const page: Page = HOST === "electron" ? await acquireElectronPage() : fixturePage;
+	const origin =
+		HOST === "electron"
+			? // The desktop Host serves itself from its own privileged scheme;
+				// there is no baseURL, and the first-party allowlist is that origin.
+				"opencut://app"
+			: new URL(baseURL ?? "http://127.0.0.1:4173").origin;
 
 	// Task 9.4 — first-party only. Everything off-origin is aborted, so this run
 	// doubles as the §3.7 network-blocked evidence: whatever the editor needs

@@ -1,4 +1,5 @@
 import type { Page } from "@playwright/test";
+import { HOST } from "./host-profile";
 
 /**
  * UI driving primitives for the parity scenario.
@@ -72,6 +73,25 @@ export async function importFixtures(
 	page: Page,
 	files: string[],
 ): Promise<void> {
+	if (HOST === "electron") {
+		// Electron windows do not surface Playwright's `filechooser` event, so
+		// the real-chooser dance below cannot complete there. The editor's own
+		// always-mounted hidden `<input type="file">` (assets panel) is the
+		// same import path its change handler serves — setting files on it
+		// runs the editor's own import code. `openFilePicker` sets `multiple`
+		// on the input immediately before the native dialog would open (the
+		// dialog the interception stands in for on the browser hosts), so that
+		// one statement is reproduced here; then one `setInputFiles` produces
+		// the same single change event with all files that the intercepted
+		// chooser produces there. The browser hosts keep the genuine chooser
+		// flow, unchanged.
+		const input = page.locator('input[type="file"]').first();
+		await input.evaluate((el) => {
+			el.multiple = true;
+		});
+		await input.setInputFiles(files);
+		return;
+	}
 	const [chooser] = await Promise.all([
 		page.waitForEvent("filechooser"),
 		page

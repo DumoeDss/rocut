@@ -149,34 +149,34 @@
 
 ## 7. Parity: the same nine interactions on the third Host
 
-- [ ] 7.1 Extend `apps/vite-example/tests/parity/host-profile.ts`: `HostName` gains `"electron"`;
+- [x] 7.1 Extend `apps/vite-example/tests/parity/host-profile.ts`: `HostName` gains `"electron"`;
       the profile's `entryPath` is the full `opencut://app/index.html` URL; `createProject` uses
       the existing `clickUntil` pattern against the electron picker (`?project=` takes effect);
       `newProjectName` matches what the electron picker actually names a project.
-- [ ] 7.2 Add the page-acquisition seam to `parity.pw.ts` (and the same minimal branch to
+- [x] 7.2 Add the page-acquisition seam to `parity.pw.ts` (and the same minimal branch to
       `agent.pw.ts` in Group 8): when `HOST === "electron"`, acquire the page via `_electron.launch`
       with the Group-1 launch config against the built app; otherwise the fixture page unchanged.
       The interaction bodies after acquisition are untouched — diff the spec and show the
       interactions did not move.
-- [ ] 7.3 Add the host-scoped persisted reader to `snapshot.ts`: `readPersisted` dispatches on the
+- [x] 7.3 Add the host-scoped persisted reader to `snapshot.ts`: `readPersisted` dispatches on the
       host; the electron branch reads the fs store's own on-disk layout **through the page's own
       bridge** (`page.evaluate` over `opencutStore`) — the same no-purpose-built-export-path rule
       in the new medium. The vite/next IndexedDB path is byte-identical in behaviour.
-- [ ] 7.4 Add the electron leg to the Playwright surface config (launcher instead of `webServer`;
+- [x] 7.4 Add the electron leg to the Playwright surface config (launcher instead of `webServer`;
       no `baseURL`/`channel` for this leg; artifacts under `tests/parity-artifacts/electron/` and
       the agent-evidence regression path per `evidence-path.ts`). Run `PARITY_SPEC=parity
       PARITY_HOST=electron`: all nine interactions pass with only first-party assets
       (`page.route` blocking stays on).
-- [ ] 7.5 Diff electron-vs-vite with the **unmodified** `script/diff-parity-snapshots.mjs`. First
+- [x] 7.5 Diff electron-vs-vite with the **unmodified** `script/diff-parity-snapshots.mjs`. First
       verify how the tool selects its host pair; if the pair is hardcoded, adding pair selection
       is an argument change only — the classifier is not touched. Acceptance is the §3.2 bar:
       **zero semantic rows outside the documented idempotency envelope**; any row outside it is a
       defect in this Host. Record the report.
-- [ ] 7.6 Regression control on the shared harness: re-run `PARITY_HOST=vite` and `PARITY_HOST=next`
+- [x] 7.6 Regression control on the shared harness: re-run `PARITY_HOST=vite` and `PARITY_HOST=next`
       parity after the 7.1–7.3 edits; both must reproduce their pre-change results (same
       differences, same classifications). A changed result means the seam edit moved behaviour,
       not just plumbing.
-- [ ] 7.7 State the electron comparison in `PARITY.md` alongside the existing Vite/Next comparison
+- [x] 7.7 State the electron comparison in `PARITY.md` alongside the existing Vite/Next comparison
       (host pair, differences, classification, leaf count), without rewriting the inherited
       classification or its envelope language.
 

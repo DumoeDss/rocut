@@ -1,0 +1,22 @@
+$ playwright test --config playwright.surface.config.ts
+[WebServer] $ next start -H "127.0.0.1" -p "3017"
+[WebServer] (node:55120) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+[WebServer]  We detected multiple lockfiles and selected the directory of E:\AI\ChatAI\Agents\VibeCodingProjects\pnpm-lock.yaml as the root directory.
+[WebServer]  To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+[WebServer]    See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+[WebServer]  Detected additional lockfiles: 
+[WebServer]    * E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\bun.lock
+[WebServer]    * E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\package-lock.json
+[WebServer] 
+[WebServer] ⚠ "next start" does not work with "output: standalone" configuration. Use "node .next/standalone/server.js" instead.
+
+Running 1 test using 1 worker
+
+(node:34688) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › tests\parity\parity.pw.ts:91:1 › editing parity scenario — next host (35.0s)
+
+  1 passed (39.2s)
+REAL_EXIT_CODE:0

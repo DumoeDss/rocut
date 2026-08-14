@@ -76,27 +76,41 @@ function EditorApp() {
 		>
 			<TooltipProvider>
 				<Toaster />
-				{projectId === null ? (
-					<ElectronEditorHost
-						projectId="project-picker"
-						onProjectIdChange={setProjectId}
-						onExitProject={exitProject}
-					>
-						<ProjectPicker onOpen={openProject} />
-					</ElectronEditorHost>
-				) : (
-					<EditorErrorBoundary>
+				{/* The viewport-sized wrapper the editor's embedding contract
+				 * requires (editor-root.tsx: "the host supplies the
+				 * viewport-sized wrapper"). The Vite example wraps this same
+				 * tree in its HostChrome, whose bordered box is demo decoration
+				 * but whose `height: 100vh` + flex main is load-bearing:
+				 * without a definite-height ancestor the editor's `size-full`
+				 * chain resolves against `auto`, and the panel layout collapses
+				 * to near-zero below the header — found by the Group 7 parity
+				 * run (hover hit-tests landed on the header and panel
+				 * separators; both step screenshots showed chrome only). A
+				 * desktop window is its own chrome, so the wrapper is the whole
+				 * window. */}
+				<main className="h-screen w-screen overflow-hidden">
+					{projectId === null ? (
 						<ElectronEditorHost
-							projectId={projectId}
+							projectId="project-picker"
 							onProjectIdChange={setProjectId}
 							onExitProject={exitProject}
 						>
-							<MobileGate>
-								<SessionEditorSurface focusMode="focused" />
-							</MobileGate>
+							<ProjectPicker onOpen={openProject} />
 						</ElectronEditorHost>
-					</EditorErrorBoundary>
-				)}
+					) : (
+						<EditorErrorBoundary>
+							<ElectronEditorHost
+								projectId={projectId}
+								onProjectIdChange={setProjectId}
+								onExitProject={exitProject}
+							>
+								<MobileGate>
+									<SessionEditorSurface focusMode="focused" />
+								</MobileGate>
+							</ElectronEditorHost>
+						</EditorErrorBoundary>
+					)}
+				</main>
 			</TooltipProvider>
 		</ThemeProvider>
 	);
