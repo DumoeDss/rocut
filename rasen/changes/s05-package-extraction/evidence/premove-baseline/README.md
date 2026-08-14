@@ -27,21 +27,40 @@ merely claims to match them.
   titles to see them fail here too, under the same underlying `wasm`/`DEFAULTS`
   errors.
 
-- **`snapshot-vite-premove.json`** / **`snapshot-next-premove.json`** — the
-  two normalized parity snapshots task 8.1's pre-move comparison diffed,
-  copied verbatim from
+- **`snapshot-vite.json`** / **`snapshot-next.json`** — the two normalized
+  parity snapshots task 8.1's pre-move comparison diffed, copied verbatim from
   `apps/vite-example/tests/parity-artifacts/{vite,next}/snapshot-{vite,next}.json`
   as they stood in the `8437084b` scratch tree after both Hosts ran the parity
-  scenario there.
+  scenario there. Named without a `-premove` suffix (review round 2's N-2)
+  because `script/diff-parity-snapshots.mjs` derives each snapshot's optional
+  companion ledger path via `file.replace(/snapshot-\w+\.json$/, ...)` — `\w`
+  excludes `-`, so a suffixed name like `snapshot-vite-premove.json` fails
+  that match, the replace is a no-op, and the tool re-reads the snapshot file
+  itself as if it were the ledger, which then throws when the code that
+  expects a ledger shape reaches a field the snapshot doesn't have. This
+  directory's own filename is the only thing that has to stay conventional;
+  the surrounding path (and the `evidence/premove-baseline/` location) can be
+  anything.
+
+- **`ledger-vite.json`** / **`ledger-next.json`** — the two interaction
+  ledgers the same pre-move Playwright runs left beside the snapshots above,
+  copied verbatim from the same `8437084b` scratch tree location. Without
+  these, `parity-diff-premove.md`'s "Interaction ledger" section falls back to
+  "Not available" (the ledger is optional and its absence is reported rather
+  than treated as an error) — present, it reproduces the full per-interaction
+  table, which is what backs task 9.6.
 
 - **`parity-diff-premove.md`** — this Slice's own unmodified
-  `script/diff-parity-snapshots.mjs`, re-run against the two snapshots above.
-  Reproduces task 8.1's stated pre-move result exactly: **29 difference(s):
-  20 semantic, 9 incidental. 275 leaf values compared** — the same 20 semantic
-  rows, all inside the `__opencutTransaction.idempotency` envelope. This is a
-  live re-derivation (run this session, not carried over from task time), so
-  it is independent confirmation, not just an archived copy of task 8.1's own
-  number.
+  `script/diff-parity-snapshots.mjs`, re-run against the two snapshots above
+  (`node script/diff-parity-snapshots.mjs evidence/premove-baseline/snapshot-vite.json evidence/premove-baseline/snapshot-next.json evidence/premove-baseline/parity-diff-premove.md`
+  from the repo root — this is now a command a reader can literally run, not
+  just prose describing one). Reproduces task 8.1's stated pre-move result
+  exactly: **29 difference(s): 20 semantic, 9 incidental. 275 leaf values
+  compared** — the same 20 semantic rows, all inside the
+  `__opencutTransaction.idempotency` envelope, and the same interaction-ledger
+  table byte-for-byte. This is a live re-derivation (run this session, not
+  carried over from task time), so it is independent confirmation, not just
+  an archived copy of task 8.1's own number.
 
 - **`parity-playwright-next-premove.log`** / **`parity-playwright-vite-premove.log`**
   — the Playwright runner's own console output for the two runs that produced
