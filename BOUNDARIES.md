@@ -1210,3 +1210,97 @@ tracked at Direction level, not in the package. Release automation is out of sco
 decision, which inherits two ready legs — P3's install harness (its env seams, above) and this
 change's `check:surface-labels` plus `surface.json` as the machine-readable classification
 source for any maturity-gate tooling P6 might wire.
+
+## 15. Published examples: the copyable four, the runner, and the CI leg (S05 P6)
+
+P6 makes the SDK demonstrable by someone who has nothing but the tarballs: four examples under
+`examples/`, each an independent npm project an adopter can read top to bottom, a runner that
+materializes them exactly the way an adopter would (fresh tarball installs, no workspace
+linking, self-logged exit codes), and a CI leg that runs the whole thing on a clean machine.
+
+### The four shapes
+
+| Example | Shape | What it proves |
+| --- | --- | --- |
+| `examples/install-packages/` | the install contract | npm installs the three `@opencut/*` tarballs, every entry the example imports resolves, the READMEs and `surface.json` are readable as data, and classic's react peer stays honestly unsatisfied in a react-free tree — the cheapest adopter milestone, no editor mounted |
+| `examples/agent-transaction/` | the published scenario | the agent-transaction walk over the consumer's own in-memory store through published entries only: a 9-step plan executing green, an 87-assertion apply ledger, and a fresh-store reopen from the persisted snapshot at the committed revision |
+| `examples/custom-storage/` | the honest pair | an alien file-backed adapter through the published conformance suites; the production leg records the wasm-init `NOT LOADABLE` finding distinctly and skips the migration leg distinctly (nothing hidden), the mock-installed leg runs the real 31-step chain through the experimental `./evidence/wasm-test-mock` entry |
+| `examples/embed-surface/` | the forcing consumer | a React + vite embed of `SessionEditorSurface` — classic's full React chrome, the peer-dep contract satisfied from the consumer's own manifest, typecheck + build + a GPU-free Playwright smoke (mount gate, branding, degraded-mode banner, focus scope, ruler-scrubbed playhead, clean console/pageerror/network) |
+
+**The workspace-stance rule.** The examples' committed manifests declare plain exact registry
+versions (`"@opencut/editor-classic": "0.2.0"`), never `workspace:` — every file is copyable
+verbatim, which is the point of the directory. The runner is what swaps those specs to
+`file:tarballs/*` at materialization (plus the `opencut-wasm` override that makes classic's
+declared wasm dependency resolve honestly), so the same committed files an adopter reads are
+the ones the runner executes.
+
+**The harness reuse seam.** P6 imports, never re-implements: `createScratchHarness` from
+`script/scratch-install-harness.mjs` (task 2.1's behaviour-preserving extraction of P3's inline
+machinery — root controls, fresh-per-run lifecycle, tarball staging, the no-linking and react
+controls), `packSdkTarballs` from P3's pack module, and the consumer view from
+`script/check-sdk-consumer-view.mjs` (task 2.2's promotion of the P5-era consumer-view
+evidence module into standing tooling beside the other checkers). The runner itself adds only
+what is example-specific: materialization, the per-example execution contract read from the
+example's own manifest (`scripts.typecheck` / `build` / `smoke` via `npm run` in that order;
+`opencutExample.bunEntry` or `bunEntries` under the configured bun), the `OPENCUT_EXAMPLES`
+subset seam, and the env seams (`OPENCUT_EXAMPLES_ROOT`, `OPENCUT_SCRATCH_ROOT`,
+`OPENCUT_BUN`, `OPENCUT_PREPACKED_DIR`, `OPENCUT_TARBALL_OUT_DIR`).
+
+**The honest pair and its label consequence.** custom-storage's two legs are a decision, not a
+concession: the production leg demonstrates the plain consumer's real limits — the wasm-init
+defect is Direction-level, demonstrated not repaired — while the mock-installed leg proves the
+migration chain itself through the **experimental** `./evidence/wasm-test-mock` entry. That
+entry carries the experimental label's full consequence: it is evidence tooling a consumer may
+run, never production surface they may depend on, and the example's README says so where it
+names the entry.
+
+**CONTROL-1c and the leakage lesson (F-P6-7).** Node resolves a bare import by walking
+`node_modules` directories up to the drive root — so a scratch root below **any** ancestor
+carrying `node_modules` can import files the scratch tree never installed. The E:-drive default
+scratch root sat under an unrelated workspace's `node_modules`, and embed-surface's build
+borrowed `date-fns` from it (v4.1.0, out of range): the run was green, the proof was hollow.
+classic's manifest had declared `react-day-picker` but not its peer `date-fns` — bun
+auto-installs peers in the monorepo, and `--legacy-peer-deps` never installs them in the
+scratch, so only the leak kept both worlds green. Two closures, both durable: the harness now
+asserts every ancestor of the scratch root up to the drive root is `node_modules`-free
+(CONTROL-1c, refusing before touching anything), and classic declares `date-fns@^3.6.0`
+(in-range; the workspace already resolved exactly 3.6.0). The manifest-truth corollary extends
+P3's rule: **a peer of a dependency that the package's own closure needs must be promoted to
+the package's own dependencies** — the pack-and-install consumer installs with
+`--legacy-peer-deps`, where peers are never auto-satisfied.
+
+**The consumer entry and census movement.** `packages/boundary.json` consumers gains
+`{ "id": "examples", "root": "examples" }` — the vite-example shape, files owned outright, no
+`ownership` map. Census at close-out: **1110 → 1135** repo files (+25 = +22 example code files
++ the three scripts this change added: `check-sdk-consumer-view.mjs`,
+`run-published-examples.mjs`, `scratch-install-harness.mjs`), package graph 989 → 1011,
+cross-package edges 362 → 416, `@opencut/*` specifiers 361 → 415 (the examples' import
+surface), no-internal-reexport 870 and react-free-base 74 unchanged — all five rules PASS.
+Family sweep at close-out: **29 checkers, 23 exit-zero / 6 nonzero** (the family grew 28 → 29
+with this change's consumer-view checker; the nonzero set is byte-identical to P5's known
+`asset-manifest:2, emitted-runtime-assets:1, headless-graph:2, headless-semantic-result:2,
+resolution-equivalence:1, type-baseline:1`).
+
+**Checker audit** (per-checker disposition, full rows in the change's evidence):
+`no-elftia-import` auto-covers the examples (its clause already read "no package, Host **or
+example**"); `check-host-composition` is Host-scoped and blind to the examples by design;
+`check-type-baseline` is web-scoped, each example type-checks itself in its own execution;
+`check-distributable-boundary` is vite-graph-scoped, the examples are not distributable;
+`check-sdk-surface-labels` is export-map-scoped, the examples cite labels in READMEs and carry
+none; `check-sdk-consumer-view` (this change's own) verifies every full run's tarballs — the
+family's 29th checker. Silence per checker was not accepted.
+
+**The CI leg.** `.github/workflows/bun-ci.yml` gains `sdk-examples` (ubuntu-latest): the same
+routed wasm build as the `build` job (`node script/build-wasm.mjs` — a registry wasm would pass
+every leg while testing the wrong artifact), then the runner with the scratch root under
+`$HOME` — the runner's controls refuse repo-tree, Temp and leaky-ancestor roots, which is why
+the root is a fresh `$HOME` path and never the repo's sibling default. The job claims exactly
+the four examples plus the consumer view over freshly packed tarballs; it does not claim the
+local-only checkers (the family sweep stays a local gate), any matrix extension, or a publish.
+Its local twin is the change's Group-5 clean full-run log, same env shape; the first true CI
+execution lands on the post-delivery push, and its exit-code lines close the evidence loop.
+
+**Non-coverage, deliberately**: LICENSE / NOTICE / SBOM notices in the example files are P7's.
+The wasm-init constraint is Direction-level, demonstrated not repaired (the honest pair above).
+No example covers the desktop shape — the electron Host (section 12) does, and a React Native
+or server-rendered embed has no example yet.

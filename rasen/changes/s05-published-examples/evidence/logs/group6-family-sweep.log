@@ -1,0 +1,92 @@
+Family sweep at 2a72333e (P6 close-out; family grew 28 -> 29 with check-sdk-consumer-view)
+
+=== script/check-agent-evidence.mjs ===
+REAL_EXIT_CODE[script/check-agent-evidence.mjs]:0
+
+=== script/check-asset-manifest.mjs ===
+REAL_EXIT_CODE[script/check-asset-manifest.mjs]:2
+
+=== script/check-distributable-boundary.mjs ===
+REAL_EXIT_CODE[script/check-distributable-boundary.mjs]:0
+
+=== script/check-editor-singleton.mjs ===
+REAL_EXIT_CODE[script/check-editor-singleton.mjs]:0
+
+=== script/check-emitted-runtime-assets.mjs ===
+REAL_EXIT_CODE[script/check-emitted-runtime-assets.mjs]:1
+
+=== script/check-headless-graph.mjs ===
+REAL_EXIT_CODE[script/check-headless-graph.mjs]:2
+
+=== script/check-headless-semantic-result.mjs ===
+REAL_EXIT_CODE[script/check-headless-semantic-result.mjs]:2
+
+=== script/check-host-composition.mjs ===
+REAL_EXIT_CODE[script/check-host-composition.mjs]:0
+
+=== script/check-next-imports.mjs ===
+REAL_EXIT_CODE[script/check-next-imports.mjs]:0
+
+=== script/check-package-boundary.mjs ===
+REAL_EXIT_CODE[script/check-package-boundary.mjs]:0
+
+=== script/check-port-boundary.mjs ===
+REAL_EXIT_CODE[script/check-port-boundary.mjs]:0
+
+=== script/check-react-singleton.mjs ===
+REAL_EXIT_CODE[script/check-react-singleton.mjs]:0
+
+=== script/check-reference-boundary.mjs ===
+REAL_EXIT_CODE[script/check-reference-boundary.mjs]:0
+
+=== script/check-resolution-equivalence.mjs ===
+REAL_EXIT_CODE[script/check-resolution-equivalence.mjs]:1
+
+=== script/check-runtime-asset-boundary.mjs ===
+REAL_EXIT_CODE[script/check-runtime-asset-boundary.mjs]:0
+
+=== script/check-sdk-consumer-view.mjs ===
+REAL_EXIT_CODE[script/check-sdk-consumer-view.mjs]:0
+
+=== script/check-sdk-surface-labels.mjs ===
+REAL_EXIT_CODE[script/check-sdk-surface-labels.mjs]:0
+
+=== script/check-session-resource-boundary.mjs ===
+REAL_EXIT_CODE[script/check-session-resource-boundary.mjs]:0
+
+=== script/check-session-state-boundary.mjs ===
+REAL_EXIT_CODE[script/check-session-state-boundary.mjs]:0
+
+=== script/check-storage-boundary.mjs ===
+REAL_EXIT_CODE[script/check-storage-boundary.mjs]:0
+
+=== script/check-surface-boundary.mjs ===
+REAL_EXIT_CODE[script/check-surface-boundary.mjs]:0
+
+=== script/check-surface-css-boundary.mjs ===
+REAL_EXIT_CODE[script/check-surface-css-boundary.mjs]:0
+
+=== script/check-surface-portal-boundary.mjs ===
+REAL_EXIT_CODE[script/check-surface-portal-boundary.mjs]:0
+
+=== script/check-surface-private-drag.mjs ===
+REAL_EXIT_CODE[script/check-surface-private-drag.mjs]:0
+
+=== script/check-transaction-boundary.mjs ===
+REAL_EXIT_CODE[script/check-transaction-boundary.mjs]:0
+
+=== script/check-type-baseline.mjs ===
+REAL_EXIT_CODE[script/check-type-baseline.mjs]:1
+
+=== script/check-wasm-api-surface.mjs ===
+REAL_EXIT_CODE[script/check-wasm-api-surface.mjs]:0
+
+=== script/check-wasm-paths.mjs ===
+REAL_EXIT_CODE[script/check-wasm-paths.mjs]:0
+
+=== script/check-wasm-source.mjs ===
+REAL_EXIT_CODE[script/check-wasm-source.mjs]:0
+
+family-sweep: 23 exit-zero / 6 nonzero of 29 checkers
+REAL_EXIT_CODE:0
+SWEEP_DONE:0

@@ -462,3 +462,56 @@ through `OPENCUT_PREPACKED_DIR`): pack skipped, consumer-view PASS over the
 pre-packed tarballs, the heaviest example alone green end to end under
 CONTROL-1c. The first true CI execution lands on the post-delivery push; its
 exit-code lines close the evidence loop — stated, not hidden.
+
+## Group 6 — Documentation and close-out (tasks 6.1–6.4)
+
+**6.1 — BOUNDARIES.md section 15** ("Published examples: the copyable four,
+the runner, and the CI leg"): the four shapes table, the workspace-stance
+rule, the harness reuse seam (`createScratchHarness` / `packSdkTarballs` /
+the promoted consumer-view checker), the honest pair and its label
+consequence, CONTROL-1c and the leakage lesson (F-P6-7, with the
+manifest-truth corollary: a peer of a dependency the package's closure needs
+must be promoted to the package's own dependencies — `--legacy-peer-deps`
+consumers never auto-satisfy peers), the consumer entry and census movement,
+the checker-audit rows, the CI leg statement, and the non-coverage paragraph
+(P7 owns notices in example files; wasm-init Direction-level demonstrated
+not repaired; no example covers the desktop shape — the electron Host does).
+
+**6.2 — the cross-cutting sweep guard**
+(`evidence/logs/group6-sweep-guard.log`): 18 identifiers this change
+introduced (three script names, `createScratchHarness`, the
+`opencutExample.bunEntry(s)` contract keys, the two new env seams, the
+`sdk-examples` job id, `CONTROL-1c`, `F-P6-1`…`F-P6-7`),
+`git grep` over everything except archived children's history, every
+surviving hit dispositioned by class — implementation, CI workflow, adopter
+READMEs, boundary narration, change artifacts, committed evidence logs; zero
+hits outside those classes, no dangling reference to a file that does not
+exist.
+
+**6.3 — the F2-class delivery audit** (`evidence/group6-delivery-audit.md`):
+all twelve scenario clauses of `specs/sdk-published-examples/spec.md` paired
+with their evidence lines — the four-lessons clauses against the
+clean-full-run EXIT/ok lines, the extraction clause against the Group-2 P3
+rerun pair, the consumer-view clauses against the standing-gate logs and the
+dangling negative control, the CI clauses against the job definition and the
+CI-shaped dry log (the true CI execution named as post-delivery, stated),
+the README clauses against the consumed-surface tables and the
+custom-storage inheritance wording, and the non-coverage owners against
+BOUNDARIES §15. Two clauses had no dedicated log line and got one
+(`evidence/logs/group6-f2-support-verifications.log`): the workspace-glob
+exclusion (globs `apps/*`,`packages/*`, none of the four example dirs
+matched) and the no-runtime-surface-manifest-read clause (`surface.json`
+read only by install-packages as data — its named lesson).
+
+**6.4 — final controls**:
+`evidence/logs/group6-frozen-byte-control.log` — frozen-surface byte-control
+vs `5aae75ec` (git-show-then-cmp, stat-cache-immune): **4/4 IDENTICAL**;
+`evidence/logs/group6-family-sweep.log` — the checker family at close-out:
+**29 checkers, 23 exit-zero / 6 nonzero** (the family grew 28 → 29 with this
+change's `check-sdk-consumer-view.mjs`; the nonzero set is byte-identical to
+P5's known `asset-manifest:2, emitted-runtime-assets:1, headless-graph:2,
+headless-semantic-result:2, resolution-equivalence:1, type-baseline:1` — the
+tasks.md "28-checker" wording predates the growth);
+`evidence/logs/group6-validate.log` —
+`rasen validate s05-published-examples --strict --project rocut --json`:
+**`"valid": true, "issues": []`**, exit 0.

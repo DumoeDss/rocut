@@ -94,20 +94,20 @@
 
 ## 6. Documentation and close-out
 
-- [ ] 6.1 `BOUNDARIES.md`: the examples section (four shapes, the workspace-stance rule, the
+- [x] 6.1 `BOUNDARIES.md`: the examples section (four shapes, the workspace-stance rule, the
       harness reuse seam, the honest-pair decision and its label consequence), the consumer
       entry, the checker-audit rows from 4.2, the CI leg statement, and the non-coverage
       statement (P7 owns notices in example files; wasm-init is Direction-level, demonstrated
       not repaired; no example covers the desktop shape — the electron Host does).
-- [ ] 6.2 The cross-cutting-correction sweep guard (P5's rule) over any identifier this change
+- [x] 6.2 The cross-cutting-correction sweep guard (P5's rule) over any identifier this change
       introduces or renames: `git grep -n "<identifier>" -- ':!rasen/changes/archive'`, every
       surviving hit dispositioned by class; run at completion, not once mid-flight.
-- [ ] 6.3 The F2-class delivery audit: pair every scenario clause of this change's spec delta
+- [x] 6.3 The F2-class delivery audit: pair every scenario clause of this change's spec delta
       with the evidence line that satisfies it; amend any clause the delivery does not meet
       BEFORE archive, headings verbatim, rulings attributed in design.md — never in spec text.
       Where a clause's evidence is the post-delivery CI push, the clause is authored to pair
       with the local run's log line and says so.
-- [ ] 6.4 Final controls: the frozen-surface byte-control still identical; the 28-checker family
+- [x] 6.4 Final controls: the frozen-surface byte-control still identical; the 28-checker family
       sweep green in the known 22/6 shape; `rasen validate s05-published-examples --strict
       --project rocut --json` → `valid: true, issues: []` (named-item form — bare `--strict`
       prints "Nothing to validate").
