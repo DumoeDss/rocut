@@ -55,11 +55,12 @@ const CARGO_HOME = process.env.CARGO_HOME ?? join(homedir(), ".cargo");
  * On POSIX, cargo hands rustc workspace-RELATIVE source paths (relative to the
  * `rust/` workspace root), so the absolute-`REPO_ROOT` remap never matches the
  * crate's own sources there — only dependencies under `CARGO_HOME` get remapped.
- * Measured on ubuntu CI (check-wasm-paths): the binary carried `/wasm/src/*.rs`
- * and `/crates/*/src/*.rs` with zero `/opencut` occurrences. The two relative
- * forms below are exactly the workspace's top-level source groups; a new group
- * would surface as an unremapped path and fail the check, which is the check
- * working. Windows passes absolute paths, so these two simply never match there.
+ * Measured on ubuntu CI (check-wasm-paths): the binary carried paths like
+ * `/wasm/src/gpu.rs` and `/crates/gpu/src/context.rs` with zero `/opencut`
+ * occurrences. The two relative forms below are exactly the workspace's
+ * top-level source groups; a new group would surface as an unremapped path and
+ * fail the check, which is the check working. Windows passes absolute paths, so
+ * these two simply never match there.
  */
 const REMAPS = [
 	[CARGO_HOME, "/cargo"],
