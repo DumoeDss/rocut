@@ -359,3 +359,97 @@ All runs read-only on source: census re-run, full 29-checker family sweep,
 frozen byte control, probe pack/extract, and the doctored-tarball negative
 control executed from `E:\p6-review-scratch` (node_modules-clean ancestor
 chain, verified before use). The only repo writes are this report file.
+
+---
+
+# Round 1 re-review (delta 253bfe07..d4340b67)
+
+Re-reviewer: the same role-isolated verify worker (round 1 author). Scope:
+the fix delta ONLY — `4b979b67` (static fixes: R2 spec/design, R7 job
+comment, R9 runner comment, R5/R6/R8 report corrections) and `d4340b67`
+(evidence: R1 FAIL log, R3 authoritative re-run, gates log, round
+dispositions, this report committed). Ten files, every one mapped to a
+finding fix or its evidence; zero drive-bys.
+
+**VERDICT: CLEAN — all nine round-1 findings fixed or correctly recorded;
+no new findings.** Per-finding verification, each against the actual diff or
+log content, not the disposition prose:
+
+- **R1 (Minor) — FIXED.** `evidence/logs/review1-synthetic-dangling-fail.log`
+  (165 lines): header documents the doctored-copy mechanism; both legs
+  self-label `verifying at 4b979b67`; leg 1 (provider) FAIL at line 63, leg 2
+  (frozen) FAIL at line 135, each with `dangling-export-entries 1` and
+  `REAL_EXIT_CODE[consumer-view]:1`; set-equality preserved in the doctored
+  package (11 declared = 11 classified in both legs — only the dangling
+  branch fired); per-class census internally consistent (+1 provider / +1
+  frozen); the repo-untouched proof is IN-LOG (git status at run time shows
+  only the known untracked planning containers plus the round's own new
+  files — no tracked file modified). The delivery audit's clause pairing now
+  cites this log (`group6-delivery-audit.md:80-90`). This matches my round-1
+  reproduction independently.
+- **R2 (Minor) — FIXED.** Spec requirement 5 tightened in prose AND scenario
+  clause to the data-vs-behavior form ("no example SHALL read the surface
+  manifest as runtime machinery for its own behavior — the installing
+  example's manifest read is that example's demonstrated data (requirement
+  1's own lesson), not machinery"); scenario heading verbatim (diff touches
+  only the AND clause); the ruling is attributed in design.md E6 as a dated
+  task-time ruling naming R2. `rasen validate --strict --project rocut
+  --json` re-run by this reviewer at HEAD d4340b67: `"valid": true`,
+  `"issues": []`.
+- **R3 (Minor) — FIXED.** `evidence/logs/review1-full-run-clean.log`
+  self-labels `run-published-examples: running at 4b979b67` (line 13) — the
+  static-fixes commit, with every executable round-1 change committed before
+  the run (per-commit split verified: 4b979b67 carries workflow/runner/
+  spec/design; d4340b67 adds only non-executed evidence). The log carries
+  CONTROL-1a/1b/1c PASS (15-17), consumer-view PASS 3/0/0 (92), the date-fns
+  install signature 5 / 252 / 349 / 250 (98, 132, 179, 243), ten
+  `EXIT[example/...]:0` lines zero-nonzero, `REAL_EXIT_CODE[examples-run]:0`
+  (292), wrapper `REAL_EXIT_CODE:0` (293). The 3.5 amendment and section 5.2
+  now designate this run authoritative with group5's log explicitly relabeled
+  **corroborating**; the group5 log file itself is untouched by the delta
+  (verified — 0 paths), the relabel living in the report only, which is the
+  correct treatment of historical evidence.
+- **R4 (Minor) — RECORDED (LEAD routing: record, don't build).** The P7
+  handoff section carries the zustand phantom paths verbatim
+  (`zustand/esm/middleware/immer.mjs`,
+  `zustand/{traditional.js,esm/traditional.mjs}`, classic's three import
+  specifiers, the zero-immer middleware barrel), the two-level probe design
+  with the level-1 residuals, and the consolidated durables (F-P6-3,
+  F-P6-4/5/6, bun.lock refresh, the two process habits).
+- **R5 (Trivial) — FIXED.** 6.3 now reads "24 atomic clauses across the
+  spec delta's 11 scenarios (requirement 6 has a single scenario...)" —
+  matching this reviewer's independent count exactly.
+- **R6 (Trivial) — FIXED.** The F-P6-7 diagnosis drops the 8.10.2-specific
+  claim, states the workspace lock resolves 8.10.1 with the peer range
+  identical across 8.10.x as the load-bearing fact.
+- **R7 (Trivial) — FIXED.** The sdk-examples job comment now carries "The
+  first true CI execution lands on the post-delivery push — the local twin
+  above is the pre-delivery evidence; stated, not hidden."
+- **R8 (Trivial) — FIXED.** The 2.1 identity claim now discloses npm's
+  install-duration line (`in 17s` vs `in 12s`) alongside the wrapper echo.
+- **R9 (Trivial) — FIXED (noted, not guarded — the right size).** The
+  materialize() wasm-override site carries the latent unscoped
+  `opencut-wasm` direct-dep comment; comment-only, no behavior change.
+
+**Round-1 close-out gates verified:** `review1-gates.log` (run at 4b979b67)
+carries validate strict green, `check-sdk-surface-labels` 35 entries all four
+rules PASS exit 0, and the boundary census unchanged at 1135/1011/416/415/
+870/74 all rules PASS — the fixes added only `.md`/`.log` files and one
+code comment, so the census arithmetic is undisturbed, as expected.
+
+**Delta hygiene:** working tree clean of tracked modifications (only the
+pre-existing untracked portfolio containers, unchanged since round 1 start);
+all ten delta files CR-free at their committed blobs (ship discipline 7.1);
+frozen surfaces untouched (no frozen path in either commit's file list;
+spot byte-diff `packages/editor-ports/src/index.ts` vs 5aae75ec IDENTICAL);
+this reviewer's round-1 report committed byte-identical (worktree blob hash
+== d4340b67's committed blob hash).
+
+No new findings. The change is review-clean through round 1 at d4340b67.
+
+## Round-1 re-review method note
+
+Read-only: diff inspection of both commits (combined and per-commit), log
+content verification, one frozen-surface spot byte-diff, one validate-strict
+re-run at HEAD, CR sweep over committed blobs. The only repo write is this
+appended section.
