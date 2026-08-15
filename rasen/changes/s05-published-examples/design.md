@@ -146,6 +146,15 @@ adds the experimental-inheritance statement (E2.3). No example reads `surface.js
 labels are declarative metadata for humans and checkers (P5's rule, restated as an example-side
 obligation so the examples don't accidentally build label-dependent machinery).
 
+*Task-time ruling (review round 1, 2026-08-15, finding R2):* "no example reads `surface.json`
+at runtime" is tightened to the data-vs-behavior distinction the delivery already practiced:
+no example reads the manifest **as runtime machinery for its own behavior** — `install-packages`'
+`surfaceClass()` read (`run.ts`) is that example's demonstrated data, which requirement 1's own
+scenario mandates ("reads the installed artifacts' versions and labels"). The literal wording
+would have made a compliant example read as violating to any future grep-driven audit (the house
+method), inviting a false defect or a "fix" that deletes requirement 1's lesson. The spec delta's
+requirement-5 prose and scenario clause carry the tightened form; headings verbatim.
+
 ### E7 — Sequence
 
 1. **Baseline:** boundary census + family sweep (the known 22/6 nonzero set), frozen byte

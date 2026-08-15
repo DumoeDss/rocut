@@ -111,7 +111,9 @@ jobs:
   # (rasen/changes/s05-published-examples/evidence/logs/group5-full-run-clean.log)
   # is this job's local twin, same env shape (scratch under $HOME). Does NOT
   # claim: the local-only checkers stay local (the checker family sweep is a
-  # local gate), no matrix extension beyond ubuntu, no publish.
+  # local gate), no matrix extension beyond ubuntu, no publish. The first
+  # true CI execution lands on the post-delivery push — the local twin above
+  # is the pre-delivery evidence; stated, not hidden.
   sdk-examples:
     runs-on: ubuntu-latest
 

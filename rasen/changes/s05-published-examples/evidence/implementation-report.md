@@ -49,9 +49,11 @@ factory, P3's runner now a consumer); P3's own CLI and env seams unchanged.
 Acceptance = the diffed control-assertion comparison against 1.2's reference:
 **every runner-emitted line identical** (CONTROL-1a/1b, lifecycle, 4 CONTROL-2
 copy-not-link lines, CONTROL-react-free, adapter materialization,
-`REAL_EXIT_CODE[npm-install|suites|scratch-run]`) — the sole diff line is the
-evidence wrapper's own exit echo (`REAL_EXIT_CODE:0` in Group 1's wrapper,
-`FULL_EXIT:0` in Group 2's), which is not runner output. Both modes re-run
+`REAL_EXIT_CODE[npm-install|suites|scratch-run]`) — the only diff lines are
+the evidence wrapper's own exit echo (`REAL_EXIT_CODE:0` in Group 1's wrapper,
+`FULL_EXIT:0` in Group 2's; not runner output) and npm's install-duration
+line (`in 17s` vs `in 12s` — timing nondeterminism echoed through the runner,
+not a behavior difference; review round 1 R8 completed this disclosure). Both modes re-run
 green after the extraction: full run exit 0, `--control-removal` exit 0 with
 `CONTROL-3 removal: PASS`. (`--variant-nonconforming` exercises runner-local
 code the extraction never touched — unchanged by construction, not re-run.)
@@ -407,8 +409,11 @@ embed-surface's build: rollup could not resolve `date-fns` from
 `react-day-picker`'s dist — `REAL_EXIT_CODE[example/embed-surface/build]:1`,
 self-logged. Diagnosis (finding **F-P6-7**):
 
-- `react-day-picker@8.10.2` declares `date-fns` as a **peer** (range
-  `^2.28.0 || ^3.0.0`), and the runner's `npm install --legacy-peer-deps`
+- `react-day-picker` declares `date-fns` as a **peer** (range
+  `^2.28.0 || ^3.0.0` — identical across 8.10.x and the load-bearing fact; the
+  workspace lock resolves 8.10.1, and a fresh scratch install may pick a newer
+  8.10.x — review round 1 R6 corrected this line's earlier 8.10.2), and the
+  runner's `npm install --legacy-peer-deps`
   never installs peers;
 - classic's `components/ui/calendar.tsx` imports react-day-picker, and
   classic's manifest declared react-day-picker but **not** date-fns — the
@@ -489,7 +494,9 @@ hits outside those classes, no dangling reference to a file that does not
 exist.
 
 **6.3 — the F2-class delivery audit** (`evidence/group6-delivery-audit.md`):
-all twelve scenario clauses of `specs/sdk-published-examples/spec.md` paired
+all 24 atomic clauses across the spec delta's 11 scenarios (requirement 6 has a
+single scenario; review round 1 R5 corrected this line's earlier "twelve")
+paired
 with their evidence lines — the four-lessons clauses against the
 clean-full-run EXIT/ok lines, the extraction clause against the Group-2 P3
 rerun pair, the consumer-view clauses against the standing-gate logs and the
@@ -527,3 +534,41 @@ or written LF at staging time), the `.rasen/` staging guard 0 on every commit
 `signals/` directory exists for this change, no parked workers, nothing to
 stand down; the state is empty by absence. DONE returns with the final
 commit hash in hand.
+
+## P7 handoff — durable findings from this change (incl. review round 1)
+
+- **The packed-manifest dependency-closure checker does not exist — build it
+  reachability-aware.** Known latent set to seed it, verbatim from the
+  review-round-1 probe (review-report.md, mandate item 1d / finding R4):
+  zustand's peers `immer` and `use-sync-external-store` are imported only by
+  `zustand/esm/middleware/immer.mjs` and
+  `zustand/{traditional.js,esm/traditional.mjs}` respectively, while classic
+  imports only `zustand`, `zustand/vanilla`, `zustand/middleware` — and the
+  middleware barrel is a self-contained bundle with zero immer references.
+  Latent-only today (no current consumer is broken; the probe verified the
+  reachable graph is closed), but any future classic edit adding
+  `zustand/middleware/immer`, or an adopter reaching `zustand/traditional`
+  through classic's tree, hits the exact F-P6-7 wall under
+  `--legacy-peer-deps` — and no gate notices. Probe design to reuse:
+  level-1 bare-specifier scan of the extracted tarball vs the packed manifest
+  (known level-1 residuals: `@napi-rs/canvas` and `bun:test`, test files
+  only, README-dispositioned); level-2 peers-of-deps imported by dep code,
+  eliminated by subpath reachability. The alternative routing is to declare
+  and document the two latent peers. **Deliberately not built in P6** (LEAD
+  round-1 routing: record, don't build).
+- **F-P6-3** (3.3): classic ships TS source importing culori, which publishes
+  no declarations — from-tarballs consumers must declare the module
+  themselves; classic's README could name the requirement.
+- **F-P6-4/5/6** (3.4): consumer-side obligations classic's README should
+  name — the `@source` self-registration without which the editor is
+  silently half-styled, the definite-height wrapper, and the empty-scene
+  seed trap.
+- **bun.lock workspace-entry refresh** (5.2 residue): the lock's classic
+  entry predates the F-P6-1 repair; no gate consumes it and CI installs
+  non-frozen, but it should be regenerated.
+- **Process habits from the review's durable list:** authoritative logs
+  should self-certify their revision (generalize the `<HEAD>+worktree` label
+  so no log's tree state has to be re-derived from count arithmetic — the
+  R3 instance is fixed this round), and negative controls should commit
+  their FAIL half (the R1 instance is fixed this round; the rule applies to
+  any future violation-and-revert evidence).

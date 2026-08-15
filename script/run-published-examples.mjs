@@ -239,6 +239,15 @@ function materialize(name) {
 		// The fourth-tarball ruling (2026-08-15): classic's declared opencut-wasm
 		// dependency rides a dead `file:../../rust/wasm/pkg` spec inside the
 		// packed manifest — the override makes it resolve to the staged tarball.
+		//
+		// Latent shape, noted not guarded (review round 1 R9): the rewrite loop
+		// above rewrites only @opencut/* keys, so an example that declared
+		// unscoped `opencut-wasm` as a DIRECT dependency alongside classic would
+		// carry its registry-shaped spec through untouched and hit npm's
+		// direct-dep==override rule with npm's own (less legible) error instead
+		// of a fail-closed guard here. No shipped example declares it directly —
+		// every example reaches wasm through classic, the shape the ruling
+		// anticipated.
 		const wasmSpec = stagedByName.get("opencut-wasm");
 		if (!wasmSpec) {
 			fail("materialize", `${name}: depends on @opencut/editor-classic but no opencut-wasm tarball is staged`);

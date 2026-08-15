@@ -95,7 +95,9 @@ the job's documentation SHALL say so.
 ### Requirement: Example documentation surfaces the labeled surface
 
 Each example's README SHALL list every package entry the example imports with its surface class
-and a one-line justification, and SHALL NOT read the surface manifest at runtime. The
+and a one-line justification, and no example SHALL read the surface manifest as runtime machinery
+for its own behavior — the installing example's manifest read is that example's demonstrated data
+(requirement 1's own lesson), not machinery. The
 custom-storage example SHALL state that its migration validation depends on an
 experimental-labeled entry and that the example inherits that entry's instability, alongside the
 honest pair itself: the production migration path running and recording its skip distinctly
@@ -106,7 +108,8 @@ while the migration chain is validated through the published mock entry.
 - **WHEN** an example's README is read
 - **THEN** every `@opencut/*` specifier the example imports appears with its class and a stated
   justification
-- **AND** no example code reads the surface manifest at runtime
+- **AND** no example reads the surface manifest as runtime machinery for its own behavior —
+  the installing example's manifest read is its demonstrated data, not machinery
 
 #### Scenario: The custom-storage example states its experimental inheritance
 
