@@ -84,3 +84,97 @@ pkg NOTICE would be an untracked file inside a regenerated directory; adding one
 means a build-tooling change, recorded here as the one-copy-step-if-review-wants-it
 outcome the design names. Notice-content review is the human gate; the mechanical
 claim proven here is presence-and-shipped.
+
+## Group 3 — The packed-manifest closure checker (tasks 3.1, 3.2, 3.3)
+
+**3.1 — the checker.** `script/check-packed-manifest-closure.mjs`, the family's
+30th, mirroring `check-sdk-consumer-view.mjs`'s structure (same `runTool`
+shell idiom copied byte-for-byte, same env seams `OPENCUT_PREPACKED_DIR` /
+`OPENCUT_TARBALL_OUT_DIR` / `OPENCUT_SCRATCH_ROOT`, extraction under a
+dot-dir beside the tarballs wiped each run, `REAL_EXIT_CODE` self-logging).
+Design E3, line for line:
+
+- **Level 1** scans every scannable shipped file of every tarball (including
+  the wasm artifact — its glue genuinely traverses 2 relative imports) —
+  bare specifiers must be declared (dep/peer/optional, root-name matching so
+  `zustand/vanilla` and `@opencut/editor-ports/host` count as their declared
+  roots), a Node builtin, or dispositioned. The two dispositions (`bun:test`,
+  `@napi-rs/canvas`) license test files ONLY — the same specifier in runtime
+  code still fails.
+- **Level 2** walks each declared dependency's peer set (minus names the
+  package itself declares, minus peers no runtime file of the dep imports —
+  that drops `@types/react`), resolves the subpaths the package's REACHABLE
+  graph imports through the dep's `exports` map (import condition, `./*`
+  wildcard substitution), takes the transitive closure of every landed dep
+  file, and asks which subjects that closure needs. The two-level answer is
+  compared with the documented-latent register — seeded verbatim with
+  `zustand|use-sync-external-store` and `zustand|immer` and their P6
+  reachability reasons — over four failure modes: REGISTER ACTIVATION (names
+  the row and quotes its reason), unregistered latent, peer-needing-promotion
+  (F-P6-7), stale row. Register judgement aggregates ACROSS packages: a row
+  belongs to whichever package declares the dep, so ports/contracts/wasm
+  (which do not declare zustand) have no say over zustand's rows.
+- Census lines every run per tarball (files scanned, import occurrences,
+  unique bare, declared count, entry roots, reachable, level-2 subjects,
+  latent/activated) plus dispositions honoured and register size; empty scans
+  refuse (zero scannable files, or zero import specifiers).
+
+**Bring-up findings, all fixed in place** (the record keeps them because each
+is a trap the next author would re-hit): `homedir` lives in `node:os` not
+`node:fs`; a `main`→`runClosure` argument key mismatch; `.map(resolve)`
+passes the map triple into `path.resolve` (`ERR_INVALID_ARG_TYPE`); English
+prose in JSDoc reads as an import under a naive `\bfrom\s*["']…` regex —
+`trigger: "visibility prop transitions from 'hidden' to 'visible'"` (a FROZEN
+file) and `Distinguishing "…" from "the runtime holds nothing"` both fired —
+so the `from` clauses are now line-anchored on `import`/`export`/`}`;
+subpath imports (`zustand/vanilla`) initially failed against exact-name
+declaration matching, and zustand's traditional twin imports
+`use-sync-external-store/shim/with-selector.js` — the full subpath — so
+peer/importer keys normalize to the package root; and the control-world
+builder hit the documented GNU-tar `host:path` hazard cross-drive
+(scratch on `C:`, repo on `E:` — `entry.tarballPath` is repo-relative, and
+joining it back against the repo produced a broken path tar read as a remote
+host), fixed by addressing the pack dir by basename.
+
+**3.2 — controls, FAIL halves committed** (`group3-closure-green.log`,
+`group3-closure-negative.log`, `group3-closure-converse.log`):
+
+- **Green run** over freshly packed tarballs: **0 failures over 4 packages**
+  — ports 19 files/46 imports; contracts 55/240; classic 796/3502 with 49
+  unique bare, 32 declared, 18 entry roots, 683 reachable, **level-2 subjects
+  2, latent 2, activated 0** (both register rows latent — the seeded premise
+  re-derived, not trusted), dispositions `bun:test`×88 + `@napi-rs/canvas`×3;
+  wasm 3/2 with `main`-rooted reachability 2. Exit 0.
+- **Negative control**: doctored classic (in-scratch only) plants
+  `@synthetic/undeclared-closure-probe` AND `zustand/traditional` into
+  `src/index.ts` (the `.` entry — reachable by construction), repacked with
+  real `npm pack`, scanned over `OPENCUT_PREPACKED_DIR`. **Both fired**:
+  the level-1 FAIL names the file and specifier; the REGISTER ACTIVATION
+  FAIL names row `zustand|use-sync-external-store`, the package, the
+  F-P6-7 remedy, and quotes the registered reason. Census shows latent 1 /
+  activated 1. Scratch root CONTROL-1a/1b/1c-checked (outside repo, outside
+  Temp, ancestors node_modules-free to the drive root); `git status
+  --porcelain` printed in-log proving the repo untouched; exit 1 = the FAIL
+  half, committed beside the green twin.
+- **Converse control**: doctored classic plants `@napi-rs/canvas` into a NEW
+  test file — the disposition count moves 3→4 and **nothing fires**; both
+  register rows stay silent (latent 2, activated 0); 0 failures, 0 refusals,
+  exit 0.
+
+**3.3 — family integration.** Wired as `check:packed-closure` in the root
+`package.json` (LF-preserving node edit; `git ls-files --eol` verified).
+Family sweep re-run as the 30-checker census
+(`group3-family-sweep.log`; method: every `script/check-*.mjs` run bare in
+name order, `EXIT[name]:code` per checker — Group 1's method unchanged):
+**30 checkers, 24 exit-zero / 6 nonzero, the known set byte-identical**
+(`asset-manifest:2, emitted-runtime-assets:1, headless-graph:2,
+headless-semantic-result:2, resolution-equivalence:1, type-baseline:1`), the
+new checker green among the exit-zero. Checker-audit row recorded as
+`BOUNDARIES.md` §16's opening subsection. ESLint on the new file: clean.
+
+**Group 3 verdict:** the checker exists, is green over the current tarballs,
+its negative control proves both failure modes fire (FAIL half committed),
+its converse control proves the dispositions and register stay silent, the
+family census moved 29→30 with the known nonzero set unchanged, and the
+wiring + audit row are in place.
+

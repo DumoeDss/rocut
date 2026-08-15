@@ -9,6 +9,7 @@
     "build:tools": "turbo run build --filter=@opencut/tools",
     "build:wasm": "node script/build-wasm.mjs",
     "check:packages": "node script/check-package-boundary.mjs",
+    "check:packed-closure": "node script/check-packed-manifest-closure.mjs",
     "check:surface-labels": "node script/check-sdk-surface-labels.mjs",
     "check:wasm": "node script/check-wasm-source.mjs && node script/check-wasm-paths.mjs && node script/check-wasm-api-surface.mjs",
     "preinstall": "node script/check-wasm-source.mjs --preflight",

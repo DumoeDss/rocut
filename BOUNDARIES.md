@@ -1304,3 +1304,51 @@ execution lands on the post-delivery push, and its exit-code lines close the evi
 The wasm-init constraint is Direction-level, demonstrated not repaired (the honest pair above).
 No example covers the desktop shape — the electron Host (section 12) does, and a React Native
 or server-rendered embed has no example yet.
+
+## 16. Provenance and beta closure (S05 P7)
+
+P7 is the portfolio's closing child: the provenance set regenerated over the tree as it
+ships, the packed artifacts carrying their notices, the dependency-closure claim turned into
+a standing gate, and the beta record that states what was delivered, what stance it carries,
+and what residuals remain with their owners. This section opens with the closure checker;
+the beta-closure record subsections land with the same change's documentation group.
+
+### The packed-manifest dependency-closure checker — the family's 30th
+
+`script/check-packed-manifest-closure.mjs` (wired as `check:packed-closure`) reads the
+packed tarballs, never the workspace, over the same seams as the consumer-view checker
+(`OPENCUT_PREPACKED_DIR` / `OPENCUT_TARBALL_OUT_DIR`), and makes P6's F-P6-7 finding a
+standing gate instead of a snapshot:
+
+- **Level 1 (manifest truth).** Every bare specifier in every scannable shipped file —
+  including the wasm artifact's glue — must be declared in the packed manifest (matching
+  the specifier's package root, so `zustand/vanilla` and `@opencut/editor-ports/host`
+  count against their declared roots), be a Node builtin, or carry a written disposition.
+  The two dispositions (`bun:test`, `@napi-rs/canvas`) license **test files only** — the
+  same import in runtime code fails.
+- **Level 2 (documented-latent register).** For each declared dependency's peers — minus
+  names the package itself declares, minus peers no runtime file of the dependency imports
+  (this drops `@types/react`) — the checker resolves the subpaths the package's
+  **reachable** graph imports through the dependency's `exports` map, walks the transitive
+  closure of every landed file, and separates latent peers from activated ones. The
+  register holds `zustand|use-sync-external-store` and `zustand|immer` with their
+  reachability reasons, re-derived every run: a row whose peer becomes reachable FAILs
+  naming the row and quoting its reason; an unregistered latent peer, a peer needing
+  promotion to the package's own dependencies, and a stale row each FAIL. Register
+  judgement aggregates across packages — a row belongs to whichever package declares the
+  dependency.
+- **Controls and census.** The negative control doctors a scratch-only copy of the classic
+  tarball with an undeclared runtime import and a `zustand/traditional` import in the `.`
+  entry target: both fire, and the FAIL log is committed beside the green twin. The
+  converse control plants a dispositioned specifier in a test file and proves it and the
+  register rows stay silent. Every run prints per-tarball census lines (files scanned,
+  import occurrences, unique bare specifiers, declared count, entry roots, reachable count,
+  level-2 subjects, latent/activated) plus dispositions honoured and register size; empty
+  scans refuse. Scratch discipline is CONTROL-1a/1b/1c (outside the repo, outside Temp,
+  ancestor chain node_modules-free to the drive root).
+
+At introduction: green over the current four tarballs (classic: 796 files, 3,502 imports,
+683 reachable, both register rows latent, dispositions `bun:test`×88 +
+`@napi-rs/canvas`×3); family census moves **29 → 30 checkers, 24 exit-zero / 6 nonzero**,
+the known nonzero set unchanged. Evidence and controls:
+`rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group3-closure-*.log`.

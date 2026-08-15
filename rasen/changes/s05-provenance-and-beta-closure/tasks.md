@@ -29,20 +29,20 @@
 
 ## 3. The packed-manifest closure checker
 
-- [ ] 3.1 Author `script/check-packed-manifest-closure.mjs` (family's 30th) per design E3:
+- [x] 3.1 Author `script/check-packed-manifest-closure.mjs` (family's 30th) per design E3:
       level-1 bare-specifier scan of extracted shipped source vs the packed manifest (disposition
       register for the known test-file-only residuals `@napi-rs/canvas` and `bun:test`); level-2
       peer reachability over the declared deps' reachable subpath graph, with the
       documented-latent register seeded verbatim (`immer`, `use-sync-external-store` under
       zustand, with their reachability reasons). Runs from the existing tarball env seams;
       ancestor-clean scratch discipline inherited.
-- [ ] 3.2 Controls, FAIL halves committed: the negative control materializes a synthetic
+- [x] 3.2 Controls, FAIL halves committed: the negative control materializes a synthetic
       undeclared import AND a register-activation break (a synthetic import reaching a
       registered peer's subpath) — both FIRE, the failing logs committed beside the green twin
       (P6's R1 rule); the converse control proves dispositioned residuals and register rows stay
       silent. Census lines every run (specifiers scanned per tarball, register size, disposition
       count); empty scans refuse.
-- [ ] 3.3 Family integration: wire into root `package.json` scripts, re-run the family sweep
+- [x] 3.3 Family integration: wire into root `package.json` scripts, re-run the family sweep
       (now 30), confirm the known nonzero set is unchanged and the new checker exits zero over
       the current tarballs. Checker-audit row recorded in `BOUNDARIES.md`.
 
