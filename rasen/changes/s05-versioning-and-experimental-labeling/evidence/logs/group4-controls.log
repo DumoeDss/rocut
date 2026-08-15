@@ -1,0 +1,16 @@
+=== --negative-control ===
+  FIRED   unlabeled experimental export (row without marker): 1 marker-agreement violation(s), e.g. @fixture/pkg-a: experimental entry "./probe" target carries no @opencutSurface experimental marker — the in-source label must agree with the manifest
+  FIRED   unclassified export entry (no row): 1 completeness violation(s), e.g. @fixture/pkg-a: export entry "./orphan" has no surface.json classification — classify it at birth (spec: the failure names the unclassified entry)
+  FIRED   unknown class vocabulary: 1 completeness violation(s), e.g. @fixture/pkg-a: entry "." carries unknown class "beta" — the vocabulary is exactly frozen | provider | experimental
+  FIRED   dangling symbol override: 1 override-validity violation(s), e.g. @fixture/pkg-a: entry "." overrides symbol "doesNotExist" which the entry does not export (extracted exports: CORE_VERSION, Widget, helper)
+  FIRED   marker on a frozen-classified file: 1 marker-agreement violation(s), e.g. @fixture/pkg-a: frozen entry "./contract" target carries an @opencutSurface marker (frozen) — frozen classification lives in surface.json alone; editing a frozen file for labeling is contract pressure, never a patch
+  FIRED   row naming an undeclared entry: 1 completeness violation(s), e.g. @fixture/pkg-a: surface.json row "./ghost" names an entry the export map does not declare
+negative control: every planted violation fired under its rule (the unlabeled experimental export FAILS — the spec's named evidence).
+EXIT[negative]:0
+
+=== --converse-control ===
+  census  @fixture/pkg-a: 3 export entries — frozen 1, provider 1, experimental 1
+  census  total: 3 export entries across 1 package(s) — frozen 1, provider 1, experimental 1
+converse control: silence over correctly labeled rows, frozen rows without markers (the designed state), a resolving override, and prose that merely mentions a class name.
+EXIT[converse]:0
+REAL_EXIT_CODE:0

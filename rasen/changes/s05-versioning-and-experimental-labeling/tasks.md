@@ -44,25 +44,25 @@
       `provider`- and `experimental`-classified entry's source file. **No frozen-classified file
       is edited** — verify with the byte-control from 1.1 immediately after the marker batch,
       not at ship time. CRLF-check every touched file (`tr -dc '\r' < f | wc -c` = 0).
-- [ ] 3.3 Control: a deliberately misclassified row (marker says provider, manifest says
+- [x] 3.3 Control: a deliberately misclassified row (marker says provider, manifest says
       experimental) is planted, the checker from Group 4 must fire on it, then reverted — the
       marker/manifest agreement rule proven on real source, the P1 E6 violation-and-revert
       pattern.
 
 ## 4. The checker joins the family
 
-- [ ] 4.1 Author `script/check-sdk-surface-labels.mjs` per design E3: completeness in both
+- [x] 4.1 Author `script/check-sdk-surface-labels.mjs` per design E3: completeness in both
       directions (every export entry classified; no row naming an undeclared entry),
       class-vocabulary enforcement, marker agreement for non-frozen rows, symbol-override
       validity resolved against real exports, empty-scan refusal, and census lines
       (per-package entry counts, per-class counts) in the house idiom. Wire it into root
       `package.json`'s scripts beside `check:packages`.
-- [ ] 4.2 `--negative-control`: an unlabeled experimental export (synthetic entry + manifest row
+- [x] 4.2 `--negative-control`: an unlabeled experimental export (synthetic entry + manifest row
       without a source marker) and an unclassified export entry (map row absent from the
       manifest) must each fire with a named violation. `--converse-control`: correctly labeled
       rows, `frozen` rows without markers (the designed state), and prose merely mentioning a
       class name must all stay silent. Both controls exit non-zero on any miss.
-- [ ] 4.3 Family sweep: run every runnable static checker, all green, with per-checker
+- [x] 4.3 Family sweep: run every runnable static checker, all green, with per-checker
       `EXIT[<name>]:<code>` lines; the new checker's census reconciles with 1.1's inventory
       (36 entries at the time of writing — the current count wins if entries moved); the
       boundary checker is untouched and green over its own census (`boundary.json` needs no

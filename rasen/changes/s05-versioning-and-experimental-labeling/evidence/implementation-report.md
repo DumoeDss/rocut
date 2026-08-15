@@ -120,3 +120,46 @@ file carries a marker either — frozen rows are manifest-only by design.
 **3.3 — misclassification control.** Deferred to the Group 4 commit boundary as the task
 itself orders it ("the checker from Group 4 must fire on it"): planted, fired, reverted —
 recorded in the Group 4 section below.
+
+## Group 4 — The checker joins the family (tasks 4.1–4.3)
+
+**4.1** — `script/check-sdk-surface-labels.mjs` authored per design E3: completeness in
+both directions (unclassified entry AND undeclared row both fail), class-vocabulary
+enforcement (`frozen | provider | experimental` exactly), marker agreement (non-frozen
+rows require a matching `@opencutSurface <class>` in the entry target; frozen rows
+require NONE — the forbidden-edit guard), symbol-override validity resolved through the
+boundary checker's source-scan extraction idiom (export statements + transitive relative
+resolution, no parser), empty-scan refusal (exit 2 on zero packages or zero entries), and
+census lines every run. Wired into root `package.json` as `check:surface-labels` beside
+`check:packages` (one-line diff). First live run
+(`evidence/logs/group4-checker-first-run.log`, `REAL_EXIT_CODE:0`): 3 packages, 36
+entries — frozen 17, provider 13, experimental 6, exactly the Group 1 inventory.
+
+**4.2 — controls** (`evidence/logs/group4-controls.log`, both `EXIT:0`):
+`--negative-control` plants six worlds and each FIRED under its rule — the spec's named
+pair (an unlabeled experimental export: row without marker; an export entry with no row)
+plus an unknown-class row, a dangling symbol override, a marker on a frozen-classified
+file, and a row naming an undeclared entry. `--converse-control`: correctly labeled rows,
+frozen rows without markers (the designed state), a RESOLVING override (`Widget`, really
+exported through the fixture barrel), and prose mentioning a class name — all silent.
+
+**3.3 (closed at this boundary) + 4.3 — family sweep**
+(`evidence/logs/group3-misclassification-control.log`,
+`evidence/logs/group4-family-sweep.log`):
+- Task 3.3's real-source plant: classic's `./timeline` manifest row flipped
+  provider→experimental while the source marker still said provider → checker FAILed
+  `marker-agreement` naming the entry and the found class (`EXIT[planted]:1`); reverted
+  by `git show HEAD:path > path` with blob-hash verification
+  (`f30e33d3…` both sides — the python re-serialize had escaped em-dashes, so only the
+  committed bytes were restored); re-run clean (`EXIT[reverted]:0`).
+- Family sweep: **28 checkers, 22 zero / 6 nonzero** — P3's group7 pattern (27 / 21/6)
+  plus `check-sdk-surface-labels:0`. The nonzero set is IDENTICAL to P3's
+  (`asset-manifest:2, emitted-runtime-assets:1, headless-graph:2,
+  headless-semantic-result:2, resolution-equivalence:1, type-baseline:1` — the known
+  pre-existing / capture-run-needing set, unchanged by this change).
+- Boundary checker untouched and green over its own census; `boundary.json` unedited
+  (entries derive from export maps at load time — P3's standing finding). Census
+  movement fully attributed: 1107 → 1109 repo files (+2 = the new checker and the
+  consumer-view evidence module, both `.mjs` outside every package graph); every rule
+  count unchanged (989 package-graph files, 362 edges, 361 specifiers, 870 / 74 scanned).
+  BOUNDARIES.md's table row recorded in Group 6.
