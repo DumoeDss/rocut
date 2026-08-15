@@ -339,3 +339,71 @@ census 35 = 16+13+6 and `dangling-export-entries: 0`; session-state-boundary EXI
 boundary five rules PASS; consumer view from tarballs EXIT 0 (set-equal 6/10/19, 0 failures);
 frozen byte-control vs `5aae75ec` IDENTICAL ×4; no-stability sweep EXIT 0 (70 dispositioned);
 `rasen validate --strict` valid:true.
+
+## Round 1 re-review (reviewer, 2026-08-15 - delta 0fa1e6db..6f99336d, report-only)
+
+**Verdict: CLEAN - all six findings verified fixed; no new findings.** Every gate below was
+re-executed by me at the fixed tree; the implementer's disposition stamp above was not
+trusted where it could be checked, and every checkable claim checked out.
+
+**R1 - FIXED (verified from the packed artifact, not just the workspace).** The diff
+(`packages/editor-contracts/README.md`) moves the figures 11->10 / frozen 10->9, drops
+`./vectors/drivers` from the frozen list, and adds the mis-declaration parenthetical (line 39)
+pointing at the repo-level README. I re-packed via the consumer-view tool and extracted
+`package/README.md` from `opencut-editor-contracts-0.2.0.tgz` myself: the PACKED README
+reads "10 export entries" / "**frozen (9)**" (1 hit each), stale figures 0 hits, and the only
+`vectors/drivers` mention is the removal parenthetical - the R1 defect was consumer-visible,
+and the fix is consumer-visible too. Consumer view: 0 failures, 0 dangling, EXIT 0.
+
+**R1's guard - independently reproduced, count reconciled.** My own
+`git grep -n "vectors/drivers" -- ':!rasen/changes/archive'` at 6f99336d returns **59**
+hits, not the log's 40; the 19-hit difference is fully accounted for by files the fix commit
+itself added or extended after the guard ran (my round-1 review-report.md x13, the group9
+log x2, the new BOUNDARIES:1169 guard sentence x1, implementation-report Group-9 narration
+x3) - same four disposition classes (ruling narration / committed evidence / checker
+provenance / still-existing driver-file references). The guard's substantive claim holds at
+the fixed tree: **zero hits present the removed entry as live manifest, mirror, or figure** -
+no hit in any package.json exports map, any surface.json, or the PACKAGE_EXPORTS
+mirror; the only README hit is the removal note itself.
+
+**R2 - FIXED.** Mirror row deleted (`script/check-session-state-boundary.mjs`, diff) with
+the invariant stated in the map's comment. My re-run: `PASS 10/10 factories, 10/10 registry
+keys, 53 classified imperative modules`, EXIT 0 - matching the disposition claim exactly.
+
+**R3 - FIXED.** The rule code now fails closed on non-string targets: a `typeof target !==
+"string"` branch pushes a `target-existence` violation ("unrepresentable ... fail closed like
+an absent target or flatten the exports map") and continues. World 9 (a conditional
+`{"types":...,"import":...}` target) FIRED under `target-existence` in my re-run of the
+negative control.
+
+**R4 - FIXED.** Marker agreement is exactness: `markerClasses.length !== 1 ||
+markerClasses[0] !== row.class` fires. World 10 (stale `experimental` beside current
+`provider`) FIRED with "(found experimental, provider)". Live run green - all 19 non-frozen
+files carry exactly one matching marker; census unchanged **35 = 16+13+6**, dangling 0.
+
+**R5 - FIXED.** `packages/README.md`'s monotone rule now carries the
+declared-but-never-authored exception in place with the BOUNDARIES 14 cross-ref, exactly as
+recommended.
+
+**R6 - FIXED.** Citation now "lines 58-59 of the 59-line file, failure mode at line 56" -
+matches my own line count.
+
+**Drive-by sweep of 6f99336d - clean.** All 10 changed files are accounted for by R1-R6
+plus their evidence (group9 log, implementation-report Group 9, the disposition stamp
+attributed to the implementer at this file's foot - my findings above it are untouched, and
+the committed copy is byte-identical to my written text through line 321). The
+no-stability-sweep.py diff is exactly the six BOUNDARIES-14 disposition keys re-anchored
+1175-1183 -> 1186-1194 after the section-14 insert - forced by the tool's own
+stale-disposition fail-closed, i.e. the discipline worked. No new stale references
+introduced (my 59-hit grep is the proof set).
+
+**Gates re-run by me at the fixed tree, all green:** labels live / negative **10/10 FIRED** /
+converse / both empty-scan refusals (exit 2 x2) - EXIT 0, census 35 = 16+13+6, dangling 0;
+session-state-boundary EXIT 0; boundary five rules PASS with unchanged census
+(989/362/361/870/74, repo files 1110); consumer view from tarballs EXIT 0; no-stability
+sweep EXIT 0 with census unchanged (REAL 70, noise 111/10/3 - re-anchored keys verify);
+frozen byte-control spot-check `editor-ports/src/index.ts` vs `5aae75ec` IDENTICAL;
+`rasen validate s05-versioning-and-experimental-labeling --strict --project rocut --json`
+EXIT 0.
+
+**Ship gate: PASS.**

@@ -1,0 +1,142 @@
+=== ship gates (shipper-s05-p5) at 6f99336dce4f319f027e4aeeb265b0b04340c5ca (working tree = pre-ship-commit evidence state) ===
+
+--- labels checker (live) ---
+check-sdk-surface-labels: scanned 3 package(s), 35 export entries
+  census  @opencut/editor-classic: 19 export entries — frozen 2, provider 13, experimental 4
+  census  @opencut/editor-contracts: 10 export entries — frozen 9, provider 0, experimental 1
+  census  @opencut/editor-ports: 6 export entries — frozen 5, provider 0, experimental 1
+  census  total: 35 export entries across 3 package(s) — frozen 16, provider 13, experimental 6
+  census  dangling-export-entries: 0
+  PASS  completeness: every export entry is classified in surface.json with a known class and a non-empty reason, and every row names a declared entry
+  PASS  marker-agreement: provider/experimental rows carry exactly one @opencutSurface marker matching the manifest class in their entry file; frozen rows carry none
+  PASS  override-validity: every symbol-level override names a symbol the entry actually exports
+  PASS  target-existence: every declared entry's target is a plain string whose file exists on disk
+clean — run with --negative-control / --converse-control to see each rule proven able to fire, and proven not to misfire.
+EXIT[labels]:0
+
+--- labels negative control (ten worlds) ---
+  FIRED   unlabeled experimental export (row without marker): 1 marker-agreement violation(s), e.g. @fixture/pkg-a: experimental entry "./probe" target must carry exactly one @opencutSurface experimental marker (found none) — the in-source label must agree exactly with the manifest
+  FIRED   unclassified export entry (no row): 1 completeness violation(s), e.g. @fixture/pkg-a: export entry "./orphan" has no surface.json classification — classify it at birth (spec: the failure names the unclassified entry)
+  FIRED   unknown class vocabulary: 1 completeness violation(s), e.g. @fixture/pkg-a: entry "." carries unknown class "beta" — the vocabulary is exactly frozen | provider | experimental
+  FIRED   dangling symbol override: 1 override-validity violation(s), e.g. @fixture/pkg-a: entry "." overrides symbol "doesNotExist" which the entry does not export (extracted exports: CORE_VERSION, Widget, helper)
+  FIRED   marker on a frozen-classified file: 1 marker-agreement violation(s), e.g. @fixture/pkg-a: frozen entry "./contract" target carries an @opencutSurface marker (frozen) — frozen classification lives in surface.json alone; editing a frozen file for labeling is contract pressure, never a patch
+  FIRED   row naming an undeclared entry: 1 completeness violation(s), e.g. @fixture/pkg-a: surface.json row "./ghost" names an entry the export map does not declare
+  FIRED   non-frozen entry with an absent target: 1 target-existence violation(s), e.g. @fixture/pkg-a: provider entry "./void" target ./src/not-there.ts does not exist — a declared entry whose target is absent is module-not-found for every consumer; repair (with a named forcing module) or remove the entry
+  FIRED   frozen entry with an absent target: 1 target-existence violation(s), e.g. @fixture/pkg-a: frozen entry "./void-frozen" target ./src/not-there.ts does not exist — a declared entry whose target is absent is module-not-found for every consumer; repair (with a named forcing module) or remove the entry
+  FIRED   non-string (conditional) export target: 1 target-existence violation(s), e.g. @fixture/pkg-a: provider entry "./conditional" declares a non-string (conditional) target {"types":"./src/index.ts","import":"./src/index.ts"} — unrepresentable to the rules; fail closed like an absent target or flatten the exports map to plain strings
+  FIRED   stale marker beside the current one: 1 marker-agreement violation(s), e.g. @fixture/pkg-a: provider entry "." target must carry exactly one @opencutSurface provider marker (found experimental, provider) — the in-source label must agree exactly with the manifest
+negative control: every planted violation fired under its rule (the unlabeled experimental export FAILS — the spec's named evidence).
+EXIT[negative]:0
+
+--- labels converse control ---
+  census  @fixture/pkg-a: 3 export entries — frozen 1, provider 1, experimental 1
+  census  total: 3 export entries across 1 package(s) — frozen 1, provider 1, experimental 1
+  census  dangling-export-entries: 0
+converse control: silence over correctly labeled rows, frozen rows without markers (the designed state), a resolving override, prose that merely mentions a class name — and zero dangling entries.
+EXIT[converse]:0
+
+--- boundary checker ---
+check-package-boundary: scanned 1110 repo file(s) (tracked + uncommitted)
+  PASS  acyclic-direction: every cross-package edge points to a strictly lower declared layer (989 file(s) scanned, 362 cross-package edge(s) examined)
+  PASS  public-entry-only: a specifier crossing into a package resolves only to a declared exports subpath (989 file(s) scanned, 361 @opencut/* specifier(s) examined)
+  PASS  no-internal-reexport: no package's declared entry re-exports a module owned by another package's undeclared internals (870 file(s) scanned)
+  PASS  no-elftia-import: no package, Host or example imports an Elftia package, protocol identifier or runtime object (1110 file(s) scanned)
+  PASS  react-free-base: editor-ports and editor-contracts import no React, no DOM global, and no editor-classic module (74 file(s) scanned)
+
+clean — run with --negative-control / --converse-control to see each rule proven able to fire, and proven not to misfire.
+EXIT[boundary]:0
+
+--- rasen validate (strict, named item) ---
+{
+  "items": [
+    {
+      "id": "s05-versioning-and-experimental-labeling",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 23
+    }
+  ],
+  "summary": {
+    "totals": {
+      "items": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "byType": {
+      "change": {
+        "items": 1,
+        "passed": 1,
+        "failed": 0
+      }
+    }
+  },
+  "version": "1.0",
+  "root": {
+    "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut",
+    "source": "store",
+    "store_id": "rocut",
+    "scope": {
+      "kind": "standalone",
+      "intent": "project-read",
+      "source": "explicit",
+      "ref": {
+        "mode": "standalone",
+        "projectId": "e1bca41c-14f2-4daa-a592-00fdcb56ee2c",
+        "projectRoot": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+      },
+      "paths": {
+        "planning-checkout": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut",
+        "project-home": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen",
+        "project-config": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\config.yaml",
+        "project-schemas": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\schemas",
+        "project-work": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\work",
+        "specs": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\specs",
+        "project-design-docs": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\design-docs",
+        "active-changes": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes",
+        "archive-line": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\archive",
+        "execution-root": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+      },
+      "evidence": [
+        {
+          "source": "explicit",
+          "field": "project",
+          "value": "e1bca41c-14f2-4daa-a592-00fdcb56ee2c"
+        },
+        {
+          "source": "nearest-standalone",
+          "field": "execution-root",
+          "value": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+        },
+        {
+          "source": "nearest-standalone",
+          "field": "planning-root",
+          "value": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+        },
+        {
+          "source": "nearest-standalone",
+          "field": "project",
+          "value": "e1bca41c-14f2-4daa-a592-00fdcb56ee2c"
+        },
+        {
+          "source": "project-binding",
+          "field": "execution-root",
+          "value": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+        },
+        {
+          "source": "project-binding",
+          "field": "project",
+          "value": "e1bca41c-14f2-4daa-a592-00fdcb56ee2c"
+        }
+      ],
+      "notices": [
+        {
+          "code": "configuration_store_inheritance",
+          "message": "Planning stays local; the declared Store contributes configuration only."
+        }
+      ],
+      "followupSelection": {}
+    }
+  }
+}
+EXIT[validate]:0
