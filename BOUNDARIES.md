@@ -924,6 +924,8 @@ consumer.
 | Package | Entry | Target | Forced by |
 | --- | --- | --- | --- |
 | `@opencut/editor-contracts` | `./vectors/corpus` | `src/vectors/corpus/index.ts` | the scratch-project consumer (P3's worked adapter): an installed consumer could reach the vector runner but not the corpus data it runs — the file-reading layer was test-only (`vectors/__tests__/corpus-fixture.ts`), unreachable from a declared entry |
+| `@opencut/editor-ports` | `./conformance/requirements` | `src/conformance/requirements.ts` | the third-party adapter author (P3's legibility group): a conformance report names its cases, but a reader outside this repository has no way to know which frozen requirement a failed case violates — this entry publishes that mapping beside the suite, plus a failures formatter that renders requirement → case → detail |
+| `@opencut/editor-contracts` | `./conformance/requirements` | `src/conformance/requirements/index.ts` | the same consumer, transaction-family leg: the transaction, engine, Draft and vectors case names and vector ids mapped to their frozen requirements, with the same requirement-first formatter (report-shaped for the suites, `VectorRunReport`-shaped for the runner) |
 
 `./vectors/corpus` exports `readPublishedCorpusText()` — a Node/bun `node:fs` read of the three
 corpus JSONs shipped beside the module (`files: ["src", …]` packs them), returning **exact file
@@ -944,3 +946,21 @@ baseline, then restored):** 1078 → 1080 repo files scanned, 982 → 984 packag
 surface and zero new cross-package specifiers (the entry's first `@opencut/editor-contracts/vectors/corpus`
 specifier lives in the scratch consumer, outside this tree). Both controls green
 (`--negative-control`, `--converse-control`, real exit codes in the change's evidence).
+
+**Group 3 census movement (same method, same day: the four Group-3 files and both entry lines
+temporarily removed for the baseline, then restored byte-identical and re-tested green):**
+1080 → 1084 repo files scanned, 984 → 988 package-graph files, 359 → 361 `@opencut/*`
+specifiers examined, 360 → 362 cross-package edges. The +2 specifiers are the contracts
+drift-guard test's `@opencut/editor-ports` and `@opencut/editor-ports/in-memory` imports —
+test files only, the same specifiers the engine and Draft reference fixtures already use. The
+baseline leg reproduced the Group-2 end-state exactly (1080/984/359/360); both controls green
+again on the restored tree (real exit codes in the change's evidence). The two
+`./conformance/requirements` entries are export-map additions only — `public-entry-only` stayed
+green, so both targets resolve as declared subpaths. Both indices are guarded fail-closed
+in-repository by `__tests__/requirements-index.test.ts` beside each module: every case name
+every suite reports against its reference implementation must have a row, every row must be
+reported, and a synthetic renamed case is proven to fail the guard. Authoring the index
+required one guard amendment, recorded with its reasoning in the code:
+`vectors/__tests__/corpus-isolation.test.ts` now exempts `__tests__` sources from its
+entry-import ban, because the drift guard consumes the published `./vectors/corpus` entry
+exactly as a third party does, and no test file is part of a distributable graph.

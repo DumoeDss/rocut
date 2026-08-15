@@ -39,17 +39,17 @@
 
 ## 3. Legibility: the requirement index beside the suites
 
-- [ ] 3.1 Author the requirement indices — one per package, at declared `./conformance/requirements`
+- [x] 3.1 Author the requirement indices — one per package, at declared `./conformance/requirements`
       entries: every case name each suite can report (ports suite in `editor-ports`; transaction,
       draft, engine and vectors suites in `editor-contracts`) mapped to the frozen requirement it
       exercises, plus `formatConformanceFailures(report)` rendering each failure as requirement →
       case → detail. The five suite modules are NOT edited; the index is authored by reading them.
-- [ ] 3.2 Index drift guard, fail-closed: an in-repo test runs every suite against its reference
+- [x] 3.2 Index drift guard, fail-closed: an in-repo test runs every suite against its reference
       implementation (in-memory ports, the in-memory and durable vector factories, the reference
       draft/engine fixtures) and asserts every reported case name — passed, failed AND skipped —
       has an index row. A synthetic renamed case is proven to fail the guard
       (violation-and-revert). Run green under `bun test`.
-- [ ] 3.3 Prove the formatter's contract on real input: run the non-conforming scenario from task
+- [x] 3.3 Prove the formatter's contract on real input: run the non-conforming scenario from task
       6 against a local copy once the adapter exists, or against a deliberately failing reference
       target if authored earlier — the rendered output names the requirement first, contains no
       stack trace, and is captured as the format's worked example in the entry's docs.

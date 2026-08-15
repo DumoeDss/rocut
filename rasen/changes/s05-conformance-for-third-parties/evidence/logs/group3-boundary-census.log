@@ -1,0 +1,58 @@
+=== A: current tree (Group 3 files + entries present) ===
+check-package-boundary: scanned 1084 repo file(s) (tracked + uncommitted)
+  PASS  acyclic-direction: every cross-package edge points to a strictly lower declared layer (988 file(s) scanned, 362 cross-package edge(s) examined)
+  PASS  public-entry-only: a specifier crossing into a package resolves only to a declared exports subpath (988 file(s) scanned, 361 @opencut/* specifier(s) examined)
+  PASS  no-internal-reexport: no package's declared entry re-exports a module owned by another package's undeclared internals (869 file(s) scanned)
+  PASS  no-elftia-import: no package, Host or example imports an Elftia package, protocol identifier or runtime object (1084 file(s) scanned)
+  PASS  react-free-base: editor-ports and editor-contracts import no React, no DOM global, and no editor-classic module (74 file(s) scanned)
+
+clean — run with --negative-control / --converse-control to see each rule proven able to fire, and proven not to misfire.
+EXIT[A]:0
+=== B: baseline (Group 3 files and entries removed) ===
+check-package-boundary: scanned 1080 repo file(s) (tracked + uncommitted)
+  PASS  acyclic-direction: every cross-package edge points to a strictly lower declared layer (984 file(s) scanned, 360 cross-package edge(s) examined)
+  PASS  public-entry-only: a specifier crossing into a package resolves only to a declared exports subpath (984 file(s) scanned, 359 @opencut/* specifier(s) examined)
+  PASS  no-internal-reexport: no package's declared entry re-exports a module owned by another package's undeclared internals (865 file(s) scanned)
+  PASS  no-elftia-import: no package, Host or example imports an Elftia package, protocol identifier or runtime object (1080 file(s) scanned)
+  PASS  react-free-base: editor-ports and editor-contracts import no React, no DOM global, and no editor-classic module (70 file(s) scanned)
+
+clean — run with --negative-control / --converse-control to see each rule proven able to fire, and proven not to misfire.
+EXIT[B]:0
+=== restore ===
+=== C: controls on restored tree ===
+check-package-boundary: negative control
+  PASS  acyclic-direction — caught [layer-1 (contracts) importing a layer-2 (classic) module is an upward edge]
+  PASS  no-elftia-import — caught [a bare @elftia/* import specifier]
+  PASS  react-free-base — caught [editor-ports importing react]
+  PASS  public-entry-only — caught [a package source file deep-importing an undeclared subpath of another package]
+  PASS  no-internal-reexport — caught [a declared entry re-exporting an undeclared subpath of another package]
+  PASS  public-entry-only — caught [BLOCKER-1 regression: a consumer-side file outside packages/ deep-importing an undeclared subpath — invisible to the pre-fix packages/**/src-only scan set (the reviewer's own P-E reproduction used exactly this shape)]
+  PASS  react-free-base — caught [MAJOR-1 regression: a document-named parameter used only as a domain value no longer blinds detection of a real document.createElement(...) call elsewhere in the same file]
+  PASS  react-free-base — caught [MAJOR-2 regression: globalThis.document reaching a DOM member is caught, closing the globalThis-prefixed hole the bare-globalThis exemption previously left open]
+  PASS  public-entry-only — caught [D-1: a fourth package declared in boundary.json.layers (the legal way BLOCKER-2's guard admits one) must still be caught deep-importing its undeclared internals — PACKAGE_SPECIFIER_PATTERN must not stay hardcoded to the original three names (the reviewer's own D-B2b reproduction)]
+  PASS  react-free-base — caught [D-1 audit bonus: a base-layer package manifest is still checked for a forbidden dependency even when its directory name doesn't literally read "editor-ports", and the forbidden layer-2 name is read from boundary.layers.slice(2) (D-6, review round 3) rather than the literal string "@opencut/editor-classic"]
+  PASS  react-free-base — caught [D-6: a base-layer manifest depending on a legally-declared FOURTH layer (index 3, above the old boundary.layers[2] literal's reach) is caught — the forbidden set must be every layer above the two base layers, not only index 2]
+  PASS  react-free-base — caught [D-2: document.addEventListener — the single most common DOM idiom in editor code per the reviewer's own probe — is now caught; it was silently missed by the pre-fix 18-name alternation]
+  PASS  react-free-base — caught [D-4 regression guard: the generalized typeof strip only removes ONE member, so a chained typeof window.document.createElement stays caught exactly like the pre-existing D-M2d probe — it must not swallow a real access just because it starts with a typeof-guarded prefix]
+  PASS  react-free-base — caught [D-7: document.hasFocus() — one of the 13+ real DOM members the round-2 denylist still missed (reviewer's finding) — is caught under the round-3 allowlist inversion without needing its own name added anywhere, because 'hasFocus' was never going to be on DOMAIN_DOCUMENT_MEMBERS in the first place]
+  PASS  public-entry-only — caught [s05-second-host task 2.4: a file under a declared electron consumer root deep-importing an undeclared subpath — the derived scan roots must judge a third consumer's files, not only the two consumers that predate the derivation]
+
+negative control clean — every rule is proven able to fail.
+EXIT[neg]:0
+check-package-boundary: converse control
+  PASS  acyclic-direction — silent [a legal downward edge (classic importing ports)]
+  PASS  public-entry-only — silent [an import of a declared entry]
+  PASS  no-elftia-import — silent [an Elftia mention in prose (a comment)]
+  PASS  react-free-base — silent [a React import inside @opencut/editor-classic]
+  PASS  public-entry-only — silent [a consumer-side (non-packages/) import of a declared entry — the widened BLOCKER-1 scope must not misfire on a legal import]
+  PASS  no-internal-reexport — silent [a declared entry re-exporting a DECLARED subpath of another package (not an undeclared internal)]
+  PASS  react-free-base — silent [a local document parameter used only as a domain value (no DOM member access) — the MAJOR-1 fix must not misclassify a domain document]
+  PASS  react-free-base — silent [a typeof globalThis.document environment-detection guard (agent-drivers.test.ts's own idiom) — not DOM consumption]
+  PASS  public-entry-only — silent [D-1: a fourth declared package's own declared entry import stays silent — the fixed specifier pattern must recognize a legally-added package, not merely tolerate it]
+  PASS  react-free-base — silent [D-1 audit bonus: a renamed base-layer manifest with a legal (non-forbidden) dependency stays silent — the manifest gate must key off the declared name, not a hardcoded literal path or directory string]
+  PASS  react-free-base — silent [D-6: a base-layer manifest's dependency on the OTHER base layer (contracts→ports, the real declared relationship) stays silent in a legally-declared four-layer boundary — the widened forbidden set (boundary.layers.slice(2)) must not swallow the base layers themselves]
+  PASS  react-free-base — silent [D-4: typeof window.localStorage stays silent — the generalized single-member typeof strip must not regress into treating every window-prefixed environment guard as a DOM access]
+  PASS  public-entry-only — silent [s05-second-host task 2.4: a file under a declared electron consumer root importing a declared entry — the derived scan roots must not misfire on a third consumer's legal import]
+
+converse control clean — no rule fires on a legal case.
+EXIT[converse]:0

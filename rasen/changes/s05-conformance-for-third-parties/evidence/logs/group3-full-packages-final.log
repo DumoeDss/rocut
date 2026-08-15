@@ -1,0 +1,240 @@
+npm warn Unknown project config "node-linker". This will stop working in the next major version of npm.
+bun test v1.2.18 (0d4089ea)
+
+packages\editor-ports\src\__tests__\conformance.test.ts:
+conformance: in-memory reference — PASS
+  PASS  store: 18 passed, 0 failed, 1 skipped
+  PASS  assets: 2 passed, 0 failed, 0 skipped
+  PASS  assetLoader: 1 passed, 0 failed, 0 skipped
+  PASS  runtimeResources: 5 passed, 0 failed, 0 skipped
+  PASS  exporter: 2 passed, 0 failed, 0 skipped
+  PASS  diagnostics: 2 passed, 0 failed, 0 skipped
+  PASS  ids: 2 passed, 0 failed, 0 skipped
+  PASS  environment: 2 passed, 0 failed, 1 skipped
+    SKIP  store / migration brings the store to its declared version: this store declares no migration, which is a conforming answer
+    SKIP  environment / a forced no-rasterizer declaration yields a zero limit: this host declares detect mode, so there is no force to check
+(pass) port conformance > the in-memory reference implementation passes every case [16.00ms]
+(pass) port conformance > the migration case runs when opted in, rejects failure, and requires idempotence
+(pass) port conformance > the migration case is skipped, not passed, when it is not opted into
+(pass) port conformance > migration opt-in rejects an identity outside its disposable prefix
+conformance: in-memory reference, no-rasterizer host — PASS
+  PASS  store: 14 passed, 0 failed, 5 skipped
+  PASS  assets: 2 passed, 0 failed, 0 skipped
+  PASS  assetLoader: 1 passed, 0 failed, 0 skipped
+  PASS  runtimeResources: 5 passed, 0 failed, 0 skipped
+  PASS  exporter: 2 passed, 0 failed, 0 skipped
+  PASS  diagnostics: 2 passed, 0 failed, 0 skipped
+  PASS  ids: 2 passed, 0 failed, 0 skipped
+  PASS  environment: 3 passed, 0 failed, 0 skipped
+    SKIP  store / capacity zero is distinct from unavailable storage: adapter fixture does not provide capacity controls
+    SKIP  store / typed failures happen before attachment replacement commits: adapter fixture does not provide failure controls
+    SKIP  store / same-key mutations serialize while distinct keys progress: adapter fixture does not provide scheduling controls
+    SKIP  store / hierarchical mutations preserve invocation order without identity collisions: adapter fixture does not provide scheduling controls
+    SKIP  store / migration brings the store to its declared version: this store declares no migration, which is a conforming answer
+(pass) port conformance > a forcing no-rasterizer host runs the no-rasterizer case, not past it
+(pass) port conformance > reports pass/fail per port and per case
+(pass) port conformance > the suite is not vacuous — a non-conforming store fails it
+(pass) C5 contract-review regression controls > an earlier attachment write cannot outlive a later project removal
+(pass) C5 contract-review regression controls > hierarchical clear waits for earlier affected writes
+(pass) C5 contract-review regression controls > collision-shaped attachment identities progress independently
+(pass) C5 contract-review regression controls > complete-browser profile rejects every required skip
+(pass) C5 contract-review regression controls > disposable migration binding rejects a different store and cleanup [15.00ms]
+(pass) C5 contract-review regression controls > a migrated outcome without progress is rejected
+(pass) C5 contract-review regression controls > public store errors retain no raw platform cause
+(pass) C5 contract-review regression controls > record and summary identity mismatch fails before commit
+(pass) C5 contract-review regression controls > the shared matrix rejects aliased attachment and library list values
+(pass) the opaque payload survives what the store does not understand > provider-private fields round-trip unchanged
+(pass) the opaque payload survives what the store does not understand > a later mutation of the caller's object does not rewrite what was saved
+(pass) graphics negotiation > a forced no-rasterizer host yields a zero limit and a stated reason
+(pass) graphics negotiation > a forced host is not consulted about the runtime it is running on
+(pass) graphics negotiation > a DETECTING host on a GPU-less runtime reports no rasterizer
+(pass) graphics negotiation > a GPU-less runtime still states a reason when it supplies none
+(pass) graphics negotiation > a zero preview budget is reported verbatim, not clamped up to one
+(pass) graphics negotiation > the unimplemented marker cannot be stamped as a real measurement
+(pass) graphics negotiation > the report names the selected backend, as an enumeration
+(pass) graphics negotiation > the placeholder is visibly unimplemented rather than plausibly wrong
+(pass) graphics negotiation > livePreviewLimit is a count, so a limit above one is expressible
+(pass) the runtime-resource host constructs what the editor may not > the editor's requested worker URL is recorded as a request
+
+packages\editor-contracts\src\draft\__tests__\draft.test.ts:
+(pass) Draft editing sessions > passes the reusable T2 conformance matrix [62.00ms]
+(pass) Draft editing sessions > keeps repeated and concurrent conformance accounting run-local [47.00ms]
+(pass) Draft editing sessions > preserves an arbitrary literal optional engine feature [31.00ms]
+(pass) Draft editing sessions > accepts a provider retention policy at the public conformance boundary [32.00ms]
+(pass) Draft editing sessions > names deliberate protocol violations instead of passing vacuously [31.00ms]
+(pass) Draft editing sessions > maps retention adapter failure and rejects still-referenced project asset deletion
+(pass) Draft editing sessions > preserves parent store-error ownership and publishes nothing on apply failure
+(pass) Draft editing sessions > fails closed when a public engine wrapper omits or loses committed-state capture [15.00ms]
+(pass) Draft editing sessions > uses an explicit wrapper capture for prior-ledger preflight and actual undo equivalence
+(pass) Draft editing sessions > keeps native capture construction-owned and immune to writer or port substitution
+(pass) Draft editing sessions > uses distinct base/incarnation keys when a public Draft id is reused
+(pass) Draft editing sessions > encodes arbitrary UTF-16 Draft ids without collisions or thrown opens
+(pass) Draft editing sessions > does not reserve a Draft id when incarnation key creation fails
+(pass) Draft editing sessions > keeps a one-field undo constant-sized across 8,000 markers [469.00ms]
+(pass) Draft editing sessions > keeps one-to-four-field Project inverses constant-sized, exact, restorable, stale-safe, and preflight-closed [125.00ms]
+(pass) Draft editing sessions > traverses first-seen identical containers before rejecting nested alias collapse
+(pass) Draft editing sessions > terminates cycles only through an already-recorded matching pair
+(pass) Draft editing sessions > repairs owners hidden below an identical container with a non-circular identity oracle
+(pass) Draft editing sessions > restores document-wide shared and distinct aliases across every entity collection [16.00ms]
+(pass) Draft editing sessions > preserves cycles and Map/Set-contained aliases through an unrelated edit and undo
+(pass) Draft editing sessions > restores distinct and shared provider-private alias topology exactly
+(pass) Draft editing sessions > sanitizes adversarial engine error evidence without invoking getters
+(pass) Draft editing sessions > validates snapshot-attempt configuration
+
+packages\editor-contracts\src\engine\__tests__\engine.test.ts:
+(pass) ProjectStore-backed transaction engine > passes the reusable T0 + T1 conformance matrix [31.00ms]
+(pass) ProjectStore-backed transaction engine > isolates assertion accounting across concurrent conformance runs [31.00ms]
+(pass) ProjectStore-backed transaction engine > runs conformance with an arbitrary literal provider feature [16.00ms]
+(pass) ProjectStore-backed transaction engine > canonical replay distinguishes an omitted patch from explicit clearing
+(pass) ProjectStore-backed transaction engine > accepted entity, update, and keyed values survive every reopen
+(pass) ProjectStore-backed transaction engine > non-reopenable entity and idempotency values are rejected before save [16.00ms]
+(pass) ProjectStore-backed transaction engine > validates the closed Project patch surface without publishing failures
+(pass) ProjectStore-backed transaction engine > rejects nested frame-rate payloads before live, persisted, or reopened state
+(pass) ProjectStore-backed transaction engine > checks keyed Project identity before serializable patch validation and aggregates normal issues
+(pass) ProjectStore-backed transaction engine > attributes untouched clip and marker timebase failures to the Project FPS operation
+(pass) ProjectStore-backed transaction engine > native adapter commits every Project field, summary, opaque sibling, and keyed reopen state exactly
+(pass) ProjectStore-backed transaction engine > projectless documents enforce base placement and require a frame rate
+(pass) ProjectStore-backed transaction engine > negative targets fail named conformance cases [62.00ms]
+(pass) ProjectStore-backed transaction engine > placement reports every base rule and accepts adjacent intervals
+(pass) ProjectStore-backed transaction engine > dry-run conflicts are pure and do not reserve an idempotency key
+(pass) ProjectStore-backed transaction engine > reads are defensive and unsubscribe is idempotent
+(pass) ProjectStore-backed transaction engine > invalid persisted state is sanitized as load-project corruption
+(pass) ProjectStore-backed transaction engine > apply exposes the first placement issue as TransactionError validation
+
+packages\editor-contracts\src\in-memory\__tests__\in-memory.test.ts:
+(pass) in-memory transaction Project updates > passes T0 conformance with the seeded Project case executed
+(pass) in-memory transaction Project updates > rejects empty, excess, symbol, id, malformed, missing, and mismatched patches
+(pass) in-memory transaction Project updates > gives canonical keyed collisions precedence over serializable invalid Project patches
+(pass) in-memory transaction Project updates > commits a same-value patch once and rolls it back on a later failure
+
+packages\editor-contracts\src\vectors\__tests__\agent-drivers.test.ts:
+(pass) the pinned Node ledger > covers exactly the declared plan
+(pass) driver 1 — the in-memory fake, without React, Electron or a browser > runs the declared plan and emits a sound ledger
+(pass) driver 2 — the durable engine over a project store > runs the declared plan, counts durable saves, and reopens on the committed revision [15.00ms]
+(pass) driver 2 — the durable engine over a project store > a stale reopen expectation fails the reopen step
+(pass) driver 2 — the durable engine over a project store > an injected durable failure moves nothing, is reported, and a later step still commits
+(pass) driver 2 — the durable engine over a project store > a store that parks its saves reaches the same verdicts once released
+(pass) driver 2 — the durable engine over a project store > the two Node drivers commit the same identities from the same definition
+(pass) driver 2 — the durable engine over a project store > captureAgentCommitment records only what the scenario created
+
+packages\editor-contracts\src\vectors\__tests__\agent-scenario.test.ts:
+(pass) the Host-neutral agent scenario > the module mirrors the published corpus vector exactly
+(pass) the Host-neutral agent scenario > it performs every element the canonical requirement names
+(pass) the Host-neutral agent scenario > every declared step asserts something
+(pass) the Host-neutral agent scenario > the scenario module imports only the frozen public surface
+(pass) ledger accounting controls > a step that asserted nothing fails the run
+(pass) ledger accounting controls > an executed plan that differs from the declared plan fails the run
+(pass) ledger accounting controls > a run with no step at all fails
+(pass) ledger accounting controls > a failed step fails the run
+(pass) ledger accounting controls > a well-formed run reports no failure code
+
+packages\editor-contracts\src\vectors\__tests__\contract-surface.test.ts:
+(pass) contract surface derivation > the parsed operation kinds are the exported constant, member for member [16.00ms]
+(pass) contract surface derivation > the parsed error codes are exactly the union's members
+(pass) contract surface derivation > the parsed engine issue codes are exactly the union's members
+(pass) contract surface derivation > a source that does not declare a member set is refused, not defaulted
+(pass) contract surface derivation > a synthetic member added to the contract source is seen by the parser
+
+packages\editor-contracts\src\vectors\__tests__\corpus-isolation.test.ts:
+(pass) corpus isolation > no distributable module imports the committed corpus [265.00ms]
+(pass) corpus isolation > no source imports a corpus JSON file by any relative path [266.00ms]
+(pass) corpus isolation > the harness reads the corpus from disk, which proves the scan can see an importer
+
+packages\editor-contracts\src\vectors\__tests__\coverage.test.ts:
+(pass) coverage of the frozen contract > every exported member is covered, and the covering vectors are named
+(pass) coverage of the frozen contract > the corpus advertises all twelve operation kinds by measurement
+(pass) coverage of the frozen contract > removing every vector for one kind fails the gate, naming that kind
+(pass) coverage of the frozen contract > the gate reads the contract: a synthetic exported member fails it
+(pass) coverage of the frozen contract > a redundant extra vector does not fail the gate
+(pass) coverage of the frozen contract > a member the corpus claims but the contract does not export is reported
+
+packages\editor-contracts\src\vectors\__tests__\loader.test.ts:
+(pass) published corpus > parses with a plain JSON parser and is self-describing
+(pass) published corpus > loads, and every vector id is unique across both families [16.00ms]
+(pass) published corpus > the corpus digest is a real SHA-256 chain, cross-checked against node:crypto [62.00ms]
+(pass) load-time refusals > a file edited without regenerating the manifest fails to load [16.00ms]
+(pass) load-time refusals > a manifest whose declared count differs from the files fails to load [16.00ms]
+(pass) load-time refusals > a vector whose expectation set is empty is a load error, not a skip [31.00ms]
+(pass) load-time refusals > a scenario vector with no step is a load error [31.00ms]
+(pass) load-time refusals > a non-integer tick value is refused with the offending field [31.00ms]
+(pass) load-time refusals > a non-finite number is refused [32.00ms]
+(pass) load-time refusals > an unknown operation kind is refused [31.00ms]
+(pass) load-time refusals > an unknown error code is refused [16.00ms]
+(pass) load-time refusals > an unknown engine issue code is refused [31.00ms]
+(pass) load-time refusals > a duplicate vector id is refused [31.00ms]
+(pass) load-time refusals > an unknown-kind probe naming a real kind is refused [31.00ms]
+(pass) load-time refusals > no refusal path can return a corpus [78.00ms]
+
+packages\editor-contracts\src\vectors\__tests__\mutation-matrix.test.ts:
+(pass) mutation matrix > a stale revision fails exactly the vectors with an accepted step
+(pass) mutation matrix > a non-atomic batch fails exactly the multi-operation vectors
+(pass) mutation matrix > ignoring the idempotency key fails exactly the keyed replay/reuse vectors
+(pass) mutation matrix > notifying on rejection fails exactly the vectors asserting a silent rejection [15.00ms]
+(pass) mutation matrix > an uncloned read fails exactly the vectors that probe cloning
+(pass) mutation matrix > waiving placement fails exactly the vectors asserting a placement issue [16.00ms]
+(pass) specificity > a conforming implementation of a different shape passes every vector
+
+packages\editor-contracts\src\vectors\__tests__\published-corpus-entry.test.ts:
+(pass) published corpus entry > PUBLISHED_CONTRACT_SURFACE equals the surface parsed from the real sources
+(pass) published corpus entry > a one-member surface mutation fails the guard's comparison
+(pass) published corpus entry > readPublishedCorpusText loads through the published loader, digest matching [15.00ms]
+(pass) published corpus entry > each returned file text hashes to the manifest's declared sha256 [16.00ms]
+(pass) published corpus entry > the returned texts are the exact committed file bytes [15.00ms]
+
+packages\editor-contracts\src\vectors\__tests__\runner.test.ts:
+(pass) the runner against the reference implementations > green against the in-memory transaction store
+(pass) the runner against the reference implementations > the fake skips exactly the vectors whose capability it does not advertise
+(pass) the runner against the reference implementations > green against a durable engine over an in-memory project store [16.00ms]
+(pass) fail-closed rules > an empty corpus is refused rather than passed
+(pass) fail-closed rules > a filter matching nothing is refused [15.00ms]
+(pass) fail-closed rules > a filter matching exactly one vector runs exactly that vector and may pass
+(pass) fail-closed rules > a target that cannot be seeded reports the document family unsupported
+(pass) fail-closed rules > a vector that performed no comparison cannot be reported as passed
+(pass) fail-closed rules > a scenario that compares nothing fails the run despite passing itself
+(pass) fail-closed rules > executed fewer vectors than applicable is drift
+(pass) fail-closed rules > a skip against a capability the target advertises is refused
+(pass) fail-closed rules > a coverage shortfall fails the run even when every vector passes [16.00ms]
+
+packages\editor-ports\src\conformance\__tests__\requirements-index.test.ts:
+(pass) the port conformance requirement index > every case name the suite reports has an index row
+(pass) the port conformance requirement index > no index row is a name no suite run reports (stale rows) [16.00ms]
+(pass) the port conformance requirement index > a synthetic renamed case fails the guard (violation-and-revert)
+conformance failures: json-normalizing store — 2 failed of 36
+[host-port-contract / No port signature exposes an editor-internal or storage-mechanism type]
+  port: store, case: a known edit round-trips without losing opaque nested fields
+  detail: project payload is not an object
+[host-port-contract / Every port has an in-memory reference implementation and a conformance suite]
+  port: store, case: project values are defensively cloned in both directions
+  detail: project payload is not an object
+(pass) the port conformance requirement index > the formatter renders requirement-first with no stack, on a real failing report
+
+packages\editor-contracts\src\conformance\requirements\__tests__\requirements-index.test.ts:
+(pass) the transaction-family requirement index > every case name every suite reports has an index row [78.00ms]
+(pass) the transaction-family requirement index > no index row is a name no suite run reports (stale rows) [78.00ms]
+(pass) the transaction-family requirement index > a synthetic renamed case fails the guard (violation-and-revert) [15.00ms]
+conformance failures: stale-revision target — 6 failed of 21
+[transaction-automation-api / Revisions are monotonic and conflicts are detected]
+  case: apply creates entities and increments revision monotonically
+  detail: result.revision (2) !== read.revision() (0)
+[transaction-automation-api / Revisions are monotonic and conflicts are detected]
+  case: expected revision match succeeds
+  detail: Expected revision 0, actual 2
+[transaction-automation-api / Revisions are monotonic and conflicts are detected]
+  case: expected revision mismatch rejects with conflict
+  detail: actualRevision on error is 2, expected 0
+[transaction-automation-api / Idempotency keys deduplicate applies]
+  case: an apply without a key is never deduplicated
+  detail: two keyless applies incremented revision by 0, expected 2
+[transaction-automation-api / The watch interface subscribes to revision changes]
+  case: watch fires on successful apply
+  detail: watch callback received a stale revision
+[transaction-automation-api / The getContext interface probes transaction metadata]
+  case: getContext reports the current revision
+  detail: getContext.revision() (9) !== read.revision() (0)
+(pass) the transaction-family requirement index > the formatter renders requirement-first with no stack, on a real failing report
+
+ 151 pass
+ 0 fail
+ 1536 expect() calls
+Ran 151 tests across 15 files. [2.69s]
+REAL_EXIT_CODE:0

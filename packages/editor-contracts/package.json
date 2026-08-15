@@ -16,6 +16,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./conformance": "./src/conformance/index.ts",
+    "./conformance/requirements": "./src/conformance/requirements/index.ts",
     "./draft": "./src/draft/index.ts",
     "./draft/conformance": "./src/draft/conformance/index.ts",
     "./engine": "./src/engine/index.ts",

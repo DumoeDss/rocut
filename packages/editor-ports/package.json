@@ -16,6 +16,7 @@
     "./in-memory": "./src/in-memory/index.ts",
     "./in-memory/host": "./src/in-memory/host.ts",
     "./conformance": "./src/conformance/index.ts",
+    "./conformance/requirements": "./src/conformance/requirements.ts",
     "./package.json": "./package.json"
   }
 }

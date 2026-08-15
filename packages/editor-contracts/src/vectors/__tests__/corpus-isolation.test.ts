@@ -29,13 +29,25 @@ function trackedSources(): string[] {
 }
 
 /**
+ * Test sources are exempt from the entry-import ban: consuming the published
+ * `./vectors/corpus` entry is exactly how a third-party consumer — and this
+ * repository's own requirement-index drift guard, which lives under
+ * `conformance/requirements/__tests__/` — reaches the corpus, and no `__tests__`
+ * module is ever part of a distributable graph. The invariant protects the
+ * graphs a Host can ship, not the tests that prove them.
+ */
+function isTestSource(path: string): boolean {
+	return /[\\/]__tests__[\\/]/.test(path);
+}
+
+/**
  * The corpus is data, and it must stay data. If a module imported it, the JSON
  * would enter that module's bundle — and for an editor module, that means the
  * distributable graph. The runner is the only thing a Host can choose to take.
  */
 describe("corpus isolation", () => {
-	test("no module imports the committed corpus", () => {
-		const sources = trackedSources();
+	test("no distributable module imports the committed corpus", () => {
+		const sources = trackedSources().filter((path) => !isTestSource(path));
 		expect(sources.length).toBeGreaterThan(100);
 		const importers = sources.filter((path) => {
 			const text = readFileSync(join(REPO_ROOT, path), "utf8");

@@ -1,0 +1,46 @@
+npm warn Unknown project config "node-linker". This will stop working in the next major version of npm.
+bun test v1.2.18 (0d4089ea)
+
+packages\editor-ports\src\conformance\__tests__\requirements-index.test.ts:
+(pass) the port conformance requirement index > every case name the suite reports has an index row [16.00ms]
+(pass) the port conformance requirement index > no index row is a name no suite run reports (stale rows)
+(pass) the port conformance requirement index > a synthetic renamed case fails the guard (violation-and-revert) [15.00ms]
+conformance failures: json-normalizing store — 2 failed of 36
+[host-port-contract / No port signature exposes an editor-internal or storage-mechanism type]
+  port: store, case: a known edit round-trips without losing opaque nested fields
+  detail: project payload is not an object
+[host-port-contract / Every port has an in-memory reference implementation and a conformance suite]
+  port: store, case: project values are defensively cloned in both directions
+  detail: project payload is not an object
+(pass) the port conformance requirement index > the formatter renders requirement-first with no stack, on a real failing report
+
+packages\editor-contracts\src\conformance\requirements\__tests__\requirements-index.test.ts:
+(pass) the transaction-family requirement index > every case name every suite reports has an index row [140.00ms]
+(pass) the transaction-family requirement index > no index row is a name no suite run reports (stale rows) [78.00ms]
+(pass) the transaction-family requirement index > a synthetic renamed case fails the guard (violation-and-revert)
+conformance failures: stale-revision target — 6 failed of 21
+[transaction-automation-api / Revisions are monotonic and conflicts are detected]
+  case: apply creates entities and increments revision monotonically
+  detail: result.revision (2) !== read.revision() (0)
+[transaction-automation-api / Revisions are monotonic and conflicts are detected]
+  case: expected revision match succeeds
+  detail: Expected revision 0, actual 2
+[transaction-automation-api / Revisions are monotonic and conflicts are detected]
+  case: expected revision mismatch rejects with conflict
+  detail: actualRevision on error is 2, expected 0
+[transaction-automation-api / Idempotency keys deduplicate applies]
+  case: an apply without a key is never deduplicated
+  detail: two keyless applies incremented revision by 0, expected 2
+[transaction-automation-api / The watch interface subscribes to revision changes]
+  case: watch fires on successful apply
+  detail: watch callback received a stale revision
+[transaction-automation-api / The getContext interface probes transaction metadata]
+  case: getContext reports the current revision
+  detail: getContext.revision() (9) !== read.revision() (0)
+(pass) the transaction-family requirement index > the formatter renders requirement-first with no stack, on a real failing report
+
+ 8 pass
+ 0 fail
+ 39 expect() calls
+Ran 8 tests across 2 files. [437.00ms]
+REAL_EXIT_CODE:0
