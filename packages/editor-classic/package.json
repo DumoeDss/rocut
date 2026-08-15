@@ -5,7 +5,12 @@
   "description": "The OpenCut Classic provider and its React editor, including the embeddable Surface. Depends on @opencut/editor-ports and @opencut/editor-contracts.",
   "dependencies": {
     "@opencut/editor-ports": "workspace:*",
-    "@opencut/editor-contracts": "workspace:*"
+    "@opencut/editor-contracts": "workspace:*",
+    "culori": "4.0.2",
+    "opencut-wasm": "file:../../rust/wasm/pkg"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1"
   },
   "files": [
     "dist",
@@ -23,6 +28,7 @@
     "./browser": "./src/browser/index.ts",
     "./storage": "./src/storage/index.ts",
     "./storage/conformance": "./src/storage/conformance.ts",
+    "./storage/migrations": "./src/storage/migrations.ts",
     "./project": "./src/project/index.ts",
     "./timeline": "./src/timeline/index.ts",
     "./renderer": "./src/renderer/index.ts",
