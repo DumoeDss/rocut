@@ -78,7 +78,7 @@
 
 ## 5. The worked adapter: third-party-shaped, passing from tarballs
 
-- [ ] 5.1 Author `script/fixtures/third-party-adapter/` — the base adapter: its own
+- [x] 5.1 Author `script/fixtures/third-party-adapter/` — the base adapter: its own
       `ProjectStore` with a deliberately alien internal representation (records serialized to
       JSON strings in a Map — normalization cannot hide), its own id generator / asset resolver /
       diagnostics, the **published** engine opened over its own store for the engine, draft and
@@ -86,15 +86,15 @@
       that executes all five surfaces and prints failures through the formatter. Imports are
       declared-entry `@opencut/*` specifiers only (the boundary checker scans this directory like
       any source).
-- [ ] 5.2 Implement migration over the published artifacts (E7): the adapter's `migrate()` walks
+- [x] 5.2 Implement migration over the published artifacts (E7): the adapter's `migrate()` walks
       the published `migrations` list to `CURRENT_PROJECT_VERSION` over its own records —
       all-or-nothing, fail-closed (a refusing transform is a failure, not a `break`), chain
       reaching current. If replication cannot be made conforming, STOP and record the finding: the
       attributed fallback is a package-side runner-core export, proposed, not smuggled.
-- [ ] 5.3 Pass **in-repo first**: run the adapter's runner from inside the repository (workspace
+- [x] 5.3 Pass **in-repo first**: run the adapter's runner from inside the repository (workspace
       resolution) — every suite passes, opaque payload round-trips, migration cases included.
       Green with self-logged exit codes.
-- [ ] 5.4 Pass **from the scratch project**: the harness materializes the adapter, installs
+- [x] 5.4 Pass **from the scratch project**: the harness materializes the adapter, installs
       tarballs, runs the same runner — every suite passes against the installed copies. The
       in-repo/scratch pair is the evidence the entries are complete: a missing entry fails ONLY
       the scratch leg, naming it.

@@ -336,9 +336,20 @@ if (!controlRemoval) {
 const removedAt = join(root, "node_modules", "@opencut", "editor-ports");
 rmSync(removedAt, { recursive: true, force: true });
 console.log(`control-3: removed ${removedAt} — re-running the import step`);
-writeFileSync(join(root, "control-removal-import.ts"), REMOVAL_PROBE);
+// Adapter-shaped re-proof (task 4.4): when the committed adapter was
+// materialized, the re-run target is the adapter's own runner — its first
+// import is `@opencut/editor-ports`, so the whole consumer surface, not a
+// bare probe, must collapse with a resolution failure.
+let removalTarget;
+if (script === "adapter/run.ts") {
+	removalTarget = script;
+	console.log("control-3: re-running the ADAPTER runner (adapter-shaped re-proof)");
+} else {
+	writeFileSync(join(root, "control-removal-import.ts"), REMOVAL_PROBE);
+	removalTarget = "control-removal-import.ts";
+}
 const bun = process.env.OPENCUT_BUN ?? "npx --yes bun@1.2.18";
-const probe = spawnSync(`${bun} control-removal-import.ts`, {
+const probe = spawnSync(`${bun} ${removalTarget}`, {
 	shell: true,
 	encoding: "utf8",
 	maxBuffer: 256 * 1024 * 1024,

@@ -150,9 +150,98 @@ settled gate-1 mechanism, bun fallback recorded. `.gitignore` gained `dist-sdk-t
 - `spawnSync` with an args array + `shell:true` trips DEP0190 on Node ≥ 22 → single command
   string on Windows in every spawned tool (pack module, runner, removal probe).
 
+## Group 5 — The worked adapter: third-party-shaped, passing from tarballs (tasks 5.1–5.4)
+
+`script/fixtures/third-party-adapter/` — the committed adapter template. Every import is a
+declared-entry `@opencut/*` specifier (audited: `editor-ports{,/conformance,/conformance/requirements}`,
+`editor-contracts{,/conformance,/conformance/requirements,/engine,/draft,/vectors,/vectors/corpus}`,
+`editor-classic{,/storage,/evidence/wasm-test-mock}` — all present in the exports maps; no deep
+paths).
+
+- **5.1 the adapter.** `src/alien-store.ts` — a `ProjectStore` whose entire durable state is ONE
+  flat `Map<string, string>` keyed by JSON tuples (`["project", id]`, `["summary", id]`,
+  `["attachment", projectId, key]`, `["library", ns, key]`), values are codec-encoded JSON
+  envelopes. The codec (`src/alien-codec.ts`) is a typed subset inside JSON — Date/Map/Set/
+  ArrayBuffer as `NUL+"alien:date|map|set|bytes"` marker objects (base64 for bytes), literal
+  NUL-leading keys escaped with a second NUL, functions/symbols/class instances → `corrupt` —
+  the structuredClone subset, so a payload field the contract has never heard of round-trips
+  exactly. `src/alien-control.ts` supplies the store-suite seam (injected inspection, fail-next,
+  pause-next through one `beforeCommit` on the single commit path; quota checked after
+  `beforeCommit`, `available && capacity!==null && byteLength>remainingBytes`). `src/roles.ts`
+  supplies the remaining host roles. `src/transaction.ts` is the adapter's OWN transaction
+  target (contract semantics verbatim — idempotency before revision, collision before
+  validation, atomic working-copy batches, cascade deletes, `capabilities()` frozen with
+  `defensiveClone: true` — over a per-entity-JSON-text representation). `src/factories.ts`
+  opens the PUBLISHED engine over the alien store for the engine/draft/vectors suites.
+  `run.ts` executes all five suites and prints failures through both published formatters.
+- **5.2 migration by replication.** `src/migrate.ts` walks the published classic chain over the
+  adapter's own records: snapshot → outdated filter → per-record walk with `id` injected at the
+  top level → `skipped`/throw/missing-step are typed `failed` (fail-closed) → monotone
+  `ctx.report` → `legacyReplace` all-or-nothing. **Loading the chain is the recorded finding**
+  (below). The walker itself is validated against the REAL 31-step chain in
+  `__tests__/migration-walker.test.ts`, which loads classic's own published wasm mock entry
+  (`@opencut/editor-classic/evidence/wasm-test-mock`, the same mechanism classic's storage tests
+  use): migrated 30→31 with progress 1/1, second call `not-needed`, a `version: "thirty"` record
+  declined by the REAL v30→v31 transform (`invalid version`) fails closed — plus the full ports
+  suite with `exerciseMigration: true` (`migration brings the store to its declared
+  version=passed`). Log: `logs/group5-migration-walker-real-chain.log`, REAL_EXIT_CODE 0.
+- **5.3 in-repo leg green** (`logs/group5-adapter-in-repo.log`, also under pinned bun 1.2.18):
+  ports 36/36, transaction 21/21, engine 38/38, draft 22/22, vectors 29/29,
+  `REAL_EXIT_CODE:0`. Classic chain not loadable in-repo (finding below); migration cases
+  covered by the walker test against the real chain.
+- **5.4 scratch leg green** (`logs/group5-adapter-scratch.log`): harness materialized the
+  committed template, npm-installed the packed tarballs (controls 1a/1b/2 PASS), and the SAME
+  runner passed all five suites against the installed copies, `REAL_EXIT_CODE[scratch-run]:0`.
+  Classic chain not loadable from the tarball install either — but with the OTHER root cause
+  (`Cannot find package 'culori'`), the phantom-dep confirmed from the install side.
+- **Adapter-shaped removal re-proof** (`logs/group5-control-3-adapter-removal.log`): control 3
+  now re-runs the ADAPTER runner (not the bare probe) after deleting the installed
+  `@opencut/editor-ports`. It failed exactly as required:
+  `error: Cannot find module '@opencut/editor-ports/conformance' from '...adapter\run.ts'`,
+  `REAL_EXIT_CODE[control-3-import]:1`, `CONTROL-3 removal: PASS`.
+
+### Group 5 findings (recorded, not patched — frozen-surface pressure goes to LEAD)
+
+1. **The classic storage barrel is not loadable by a plain TS consumer.** In-repo (bun 1.2.2 and
+   1.2.18): `wasm.__wbindgen_start is not a function` — the migration chain is transitively
+   bound to the `opencut-wasm` artifact (`migrations/transformers/v27-to-v28.ts` imports
+   `roundMediaTime` from `src/wasm`, and `services/storage/service.ts` does the same, so the
+   barrel and even `migrations/index.ts` directly initialize it). From the tarball install:
+   `Cannot find package 'culori'` from `v21-to-v22.ts` — culori is in classic's runtime closure
+   but not its declared dependencies. Two different walls, same verdict: the published chain is
+   reachable only in a host that already provides wasm + culori (i.e., the app). The adapter
+   records the observed error and skips the migration leg distinctly (`run.ts`); the walker is
+   proven against the real chain via the published mock entry.
+2. **The engine's idempotency ledger is not readable through the declared entries.** No
+   `engine.idempotency()` read exists; `dryRun` returns no document; the native capture binder
+   (`bindNativeCommittedTransactionStateCapture`) lives at the undeclared deep path
+   `./engine/engine`. A third party therefore cannot build a Draft-suite committed-state capture
+   that carries the ledger — and placement policies DO inspect it (the draft suite's
+   policy-bearing cases fail with `idempotency: []`). The adapter's answer: record the ledger
+   itself by observing every keyed apply through its own factory seam (fingerprint via the
+   published `canonicalOperationFingerprint`), which is exactly what a diligent third party
+   would do — but the read-side gap is real and worth an entry-reachable capture in a future
+   change.
+3. **The draft suite hardcodes the fixture project id** (`projectId("draft-project")` in its
+   sample operations). A conforming factory must open that exact id; nothing in the factory
+   options says so. Cosmetic, but worth a doc line in the suite's fixture contract.
+
+### Group 5 build notes
+
+- First draft-suite run failed 3 policy/journal cases — two causes, both adapter-side: (a) the
+  capture returned `idempotency: []` while policies inspect the ledger (fixed by the
+  recorder above); (b) my fixture opened `alien-draft-project` while the suite's operations
+  address `projectId("draft-project")` (fixed by matching the suite's id).
+- `import type { AlienProjectStore }` in migrate.ts erased the runtime binding the demo needs
+  (`ReferenceError` only when the chain actually loads — caught by the walker test).
+- The wasm failure is bun-version-independent (1.2.2 and 1.2.18 identical), so the finding is
+  not a pin-away.
+
 ## Open items
 
-- **Phantom-dep blocker (escalated to LEAD, awaiting ruling):** `@opencut/editor-classic`'s
-  runtime closure imports culori / opencut-wasm / react, blocking classic consumption outside
-  the monorepo. Affects only tasks 5.4 / 6.2 scratch legs; everything else proceeds.
-- Groups 4–8 pending.
+- **Phantom-dep blocker (escalated to LEAD, awaiting ruling):** confirmed concretely this group
+  — from the tarball install the chain dies on `culori`; in-repo it dies on the wasm artifact
+  init. The adapter's migration leg records the finding and skips distinctly; the walker is
+  validated against the real chain via the published mock entry. A package-side fix (declare or
+  bundle the closure) is LEAD's call.
+- Groups 6–8 pending.
