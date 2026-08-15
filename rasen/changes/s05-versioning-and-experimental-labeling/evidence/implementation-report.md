@@ -273,3 +273,48 @@ finding, the from-tarballs consumer-view record, the sweep narration, census mov
 updated: the as-of count line now reads "26 at task 2.4, 27 at task 8.5, 28 at P5", and the
 new checker is recorded as a dated row at the table's foot (bucket A — generic package
 discovery, no `apps/web/src` literal, born after the move).
+
+## Group 7 — Delivery audit and ship (tasks 7.1–7.4)
+
+**7.1 — the F2 delivery audit** (`evidence/delivery-audit.md`): every scenario clause of the
+spec delta — 6 requirements, 15 scenarios, headings verbatim — paired with the evidence line
+that satisfies it (final-controls citations from the ship-revision re-run; group-time
+citations from their own committed logs). NO clause required amendment: every clause is met
+as written. The task-time rulings are attributed in `design.md`'s new "Task-time rulings"
+subsection (version ruled `0.2.0`; classic root ruled override-free — closure traced, zero
+frozen symbols; the dangling-entry scope ruling: repair/removal is contract adjudication,
+labeling labels the declared surface), never in the spec text.
+
+**7.2 — final controls** (`evidence/logs/group7-final-controls.log`, run at the shipping
+tree):
+
+- frozen byte-control vs base `5aae75ec`: four surfaces **IDENTICAL** (stat-cache-immune
+  `git show > tmp; cmp` method);
+- label checker live: 3 packages / 36 entries, all three rules PASS, census 17/13/6 +
+  `dangling-export-entries: 1`; negative control 7/7 FIRED; converse control silent with the
+  frozen-dangling assertion; **both empty-scan refusals evidenced** — a new
+  `OPENCUT_LABELS_ROOT` seam (P3's precedent: implemented rather than claimed) lets the
+  checker scan fixture roots under `evidence/fixtures/empty-scan/`: no-packages → exit 2,
+  zero-entries → exit 2;
+- boundary checker: all five rules PASS (989 package-graph files, 362 edges, 361
+  specifiers, 870 / 74 scanned; repo files 1109 → 1110, +1 = the zero-entries fixture's
+  `package.json`, outside every package graph — attributed);
+- consumer view re-run at ship revision: `REAL_EXIT_CODE[consumer-view]:0`, same findings
+  tally (1 escalated dangling entry);
+- no-stability sweep re-run: `REAL_EXIT_CODE[no-stability-sweep]:0`;
+- full checker family: **28 checkers, 22 exit-zero / 6 nonzero**, the nonzero set IDENTICAL
+  to P3's known set (`asset-manifest:2, emitted-runtime-assets:1, headless-graph:2,
+  headless-semantic-result:2, resolution-equivalence:1, type-baseline:1`);
+- `rasen validate s05-versioning-and-experimental-labeling --strict --project rocut --json` →
+  `"valid": true, "issues": []`, `EXIT[validate]:0`.
+
+**7.3 — discipline**: LF verified per stage (`tr -dc '\r' | wc -c` = 0 on every staged
+file; two logs caught CRLF and stripped before staging); explicit pathspecs only;
+`git diff --cached --name-only | grep -c '^\.rasen/'` captured in a variable and = 0 before
+every commit; one `feat(s05-versioning):` commit per group (G1 `5387926d`, G2 `ba6c7ae4`,
+G3 `f239d81b`, G4 `ab23ccc4`, G5 `3cb78fbc`, G6 `e7243283`, G7 this commit); **local only —
+nothing pushed** (the portfolio delivers once at the parent).
+
+**7.4 — standDown**: N-A by structure — this worker is a leaf (no subagents, no parked
+workers); the change directory has no `signals/` directory at all, so there is no
+`signals/.state/` to confirm empty and no standDown to send.

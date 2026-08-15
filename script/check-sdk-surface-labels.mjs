@@ -70,7 +70,13 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const PACKAGES_ROOT = join(REPO_ROOT, "packages");
+// OPENCUT_LABELS_ROOT points the scan at another packages-root (absolute or
+// cwd-relative) so the empty-scan refusals can be evidenced against fixture
+// worlds — and so CI can drive the check over its own geography (P3's seam
+// precedent) — without touching the real packages/ directory.
+const PACKAGES_ROOT = process.env.OPENCUT_LABELS_ROOT
+	? resolve(process.env.OPENCUT_LABELS_ROOT)
+	: join(REPO_ROOT, "packages");
 const MECHANICAL_ENTRIES = new Set(["./package.json"]);
 const CLASS_VOCABULARY = new Set(["frozen", "provider", "experimental"]);
 const MARKER_PATTERN = /@opencutSurface\s+(frozen|provider|experimental)\b/g;
@@ -374,7 +380,7 @@ function renderCensus(census, totalEntries) {
 function runCheck() {
 	const packages = loadLivePackages();
 	if (packages.length === 0) {
-		console.error("check-sdk-surface-labels: no packages discovered under packages/ — refusing to pass over an empty scan");
+		console.error(`check-sdk-surface-labels: no packages discovered under ${PACKAGES_ROOT} — refusing to pass over an empty scan`);
 		process.exit(2);
 	}
 	const { violations, census, dangling, totalEntries } = scan({ packages });

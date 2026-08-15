@@ -1,0 +1,234 @@
+=== group7 final controls at e7243283 (working tree = G7 commit content) ===
+
+--- frozen byte-control vs base 5aae75ec (stat-cache-immune: git show > tmp; cmp) ---
+IDENTICAL packages/editor-classic/src/editor/transactions/opencut/index.ts
+IDENTICAL packages/editor-contracts/src/engine/engine.ts
+IDENTICAL packages/editor-ports/src/index.ts
+IDENTICAL packages/editor-classic/src/editor/surface/embedding/types.ts
+
+--- label checker (live) ---
+check-sdk-surface-labels: scanned 3 package(s), 36 export entries
+  census  @opencut/editor-classic: 19 export entries — frozen 2, provider 13, experimental 4
+  census  @opencut/editor-contracts: 11 export entries — frozen 10, provider 0, experimental 1
+  census  @opencut/editor-ports: 6 export entries — frozen 5, provider 0, experimental 1
+  census  total: 36 export entries across 3 package(s) — frozen 17, provider 13, experimental 6
+  census  dangling-export-entries: 1
+    finding @opencut/editor-contracts ./vectors/drivers -> ./src/vectors/drivers/index.ts (frozen) — declared but absent; repairing or removing an entry is contract adjudication, not a labeling patch
+  PASS  completeness: every export entry is classified in surface.json with a known class and a non-empty reason, and every row names a declared entry
+  PASS  marker-agreement: provider/experimental rows carry a matching @opencutSurface marker in their entry file; frozen rows carry none
+  PASS  override-validity: every symbol-level override names a symbol the entry actually exports
+clean — run with --negative-control / --converse-control to see each rule proven able to fire, and proven not to misfire.
+EXIT[labels]:0
+
+--- negative control ---
+  FIRED   row naming an undeclared entry: 1 completeness violation(s), e.g. @fixture/pkg-a: surface.json row "./ghost" names an entry the export map does not declare
+  FIRED   non-frozen entry with an absent target: 1 marker-agreement violation(s), e.g. @fixture/pkg-a: provider entry "./void" target ./src/not-there.ts does not exist — its @opencutSurface provider marker cannot live in a missing file (dangling export entry)
+negative control: every planted violation fired under its rule (the unlabeled experimental export FAILS — the spec's named evidence).
+EXIT[negative]:0
+
+--- converse control ---
+  census  @fixture/pkg-a: 4 export entries — frozen 2, provider 1, experimental 1
+  census  total: 4 export entries across 1 package(s) — frozen 2, provider 1, experimental 1
+  census  dangling-export-entries: 1
+converse control: silence over correctly labeled rows, frozen rows without markers (the designed state), a resolving override, prose that merely mentions a class name, and an absent frozen target reported as a finding rather than a violation.
+EXIT[converse]:0
+
+--- empty-scan refusals (OPENCUT_LABELS_ROOT seam) ---
+check-sdk-surface-labels: no packages discovered under E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\rasen\changes\s05-versioning-and-experimental-labeling\evidence\fixtures\empty-scan\no-packages — refusing to pass over an empty scan
+EXIT[empty-no-packages]:2
+check-sdk-surface-labels: zero export entries scanned — refusing to pass over an empty scan
+EXIT[empty-zero-entries]:2
+
+--- boundary checker ---
+  PASS  acyclic-direction: every cross-package edge points to a strictly lower declared layer (989 file(s) scanned, 362 cross-package edge(s) examined)
+  PASS  public-entry-only: a specifier crossing into a package resolves only to a declared exports subpath (989 file(s) scanned, 361 @opencut/* specifier(s) examined)
+  PASS  no-internal-reexport: no package's declared entry re-exports a module owned by another package's undeclared internals (870 file(s) scanned)
+  PASS  no-elftia-import: no package, Host or example imports an Elftia package, protocol identifier or runtime object (1110 file(s) scanned)
+  PASS  react-free-base: editor-ports and editor-contracts import no React, no DOM global, and no editor-classic module (74 file(s) scanned)
+EXIT[boundary]:0
+
+--- consumer view from tarballs (re-run at ship revision) ---
+consumer-view-from-tarballs: packing at e7243283 (reads the tarballs, never the workspace)
+  [pack] packed packages/editor-ports -> opencut-editor-ports-0.2.0.tgz
+  [pack] inventory: opencut-editor-ports-0.2.0.tgz — 23 file(s) hashed
+  [pack] packed packages/editor-contracts -> opencut-editor-contracts-0.2.0.tgz
+  [pack] inventory: opencut-editor-contracts-0.2.0.tgz — 61 file(s) hashed
+  [pack] packed packages/editor-classic -> opencut-editor-classic-0.2.0.tgz
+  [pack] inventory: opencut-editor-classic-0.2.0.tgz — 805 file(s) hashed
+  [pack] packed rust/wasm/pkg -> opencut-wasm-0.2.10.tgz
+  [pack] inventory: opencut-wasm-0.2.10.tgz — 7 file(s) hashed
+  [pack] packed packages/editor-ports -> opencut-editor-ports-0.2.0.tgz
+  [pack] determinism: opencut-editor-ports-0.2.0.tgz reproduced (9811aa171567…)
+  [pack] packed packages/editor-contracts -> opencut-editor-contracts-0.2.0.tgz
+  [pack] determinism: opencut-editor-contracts-0.2.0.tgz reproduced (da1e42595635…)
+  [pack] packed packages/editor-classic -> opencut-editor-classic-0.2.0.tgz
+  [pack] determinism: opencut-editor-classic-0.2.0.tgz reproduced (64d152b50a72…)
+  [pack] packed rust/wasm/pkg -> opencut-wasm-0.2.10.tgz
+  [pack] determinism: opencut-wasm-0.2.10.tgz reproduced (24612c4388d6…)
+
+=== @opencut/editor-ports@0.2.0 (opencut-editor-ports-0.2.0.tgz) ===
+  ok   packed manifest version is 0.x (found 0.2.0)
+  ok   packed inventory lists README.md
+  ok   README contains the policy statement ("Compatibility policy (`0.x`)")
+  ok   packed inventory lists surface.json
+  ok   surface.json classifies exactly the export-map entries (6 declared = 6 classified, set-equal)
+  census  @opencut/editor-ports: frozen 5, provider 0, experimental 1
+  markers verified in extracted source: 1 non-frozen entries
+
+=== @opencut/editor-contracts@0.2.0 (opencut-editor-contracts-0.2.0.tgz) ===
+  ok   packed manifest version is 0.x (found 0.2.0)
+  ok   packed inventory lists README.md
+  ok   README contains the policy statement ("Compatibility policy (`0.x`)")
+  ok   packed inventory lists surface.json
+  ok   surface.json classifies exactly the export-map entries (11 declared = 11 classified, set-equal)
+  census  @opencut/editor-contracts: frozen 10, provider 0, experimental 1
+  finding dangling-export-entry @opencut/editor-contracts ./vectors/drivers -> ./src/vectors/drivers/index.ts (frozen) — declared in the export map but absent from the tarball; escalated to the contract owner, not patched by labeling
+  markers verified in extracted source: 1 non-frozen entries
+
+=== @opencut/editor-classic@0.2.0 (opencut-editor-classic-0.2.0.tgz) ===
+  ok   packed manifest version is 0.x (found 0.2.0)
+  ok   packed inventory lists README.md
+  ok   README contains the policy statement ("Compatibility policy (`0.x`)")
+  ok   packed inventory lists surface.json
+  ok   surface.json classifies exactly the export-map entries (19 declared = 19 classified, set-equal)
+  census  @opencut/editor-classic: frozen 2, provider 13, experimental 4
+  markers verified in extracted source: 17 non-frozen entries
+
+consumer-view-from-tarballs: 0 failure(s), 1 dangling-export-entry finding(s) (escalated to the contract owner — repairing or removing a declared entry is contract adjudication, not a labeling patch)
+REAL_EXIT_CODE[consumer-view]:0
+EXIT[consumer-view]:0
+
+--- no-stability sweep (re-run at ship revision) ---
+no-stability-sweep: 891 files in the shipped universe (three packages' src/ + per-package README/surface.json/package.json + packages/README.md + BOUNDARIES.md)
+  census  REAL: 70
+  census  noise:decimal-substring: 10
+  census  noise:svg-path-coordinate: 111
+  census  noise:version-string-substring: 3
+no-stability-sweep: every candidate dispositioned, none makes a 1.0/GA/production-readiness claim
+REAL_EXIT_CODE[no-stability-sweep]:0
+EXIT[sweep]:0
+
+--- checker family sweep (every script/check-*.mjs) ---
+EXIT[check-agent-evidence]:0
+EXIT[check-asset-manifest]:2
+EXIT[check-distributable-boundary]:0
+EXIT[check-editor-singleton]:0
+EXIT[check-emitted-runtime-assets]:1
+EXIT[check-headless-graph]:2
+EXIT[check-headless-semantic-result]:2
+EXIT[check-host-composition]:0
+EXIT[check-next-imports]:0
+EXIT[check-package-boundary]:0
+EXIT[check-port-boundary]:0
+EXIT[check-react-singleton]:0
+EXIT[check-reference-boundary]:0
+EXIT[check-resolution-equivalence]:1
+EXIT[check-runtime-asset-boundary]:0
+EXIT[check-sdk-surface-labels]:0
+EXIT[check-session-resource-boundary]:0
+EXIT[check-session-state-boundary]:0
+EXIT[check-storage-boundary]:0
+EXIT[check-surface-boundary]:0
+EXIT[check-surface-css-boundary]:0
+EXIT[check-surface-portal-boundary]:0
+EXIT[check-surface-private-drag]:0
+EXIT[check-transaction-boundary]:0
+EXIT[check-type-baseline]:1
+EXIT[check-wasm-api-surface]:0
+EXIT[check-wasm-paths]:0
+EXIT[check-wasm-source]:0
+
+--- rasen validate (strict) ---
+{
+  "items": [
+    {
+      "id": "s05-versioning-and-experimental-labeling",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 14
+    }
+  ],
+  "summary": {
+    "totals": {
+      "items": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "byType": {
+      "change": {
+        "items": 1,
+        "passed": 1,
+        "failed": 0
+      }
+    }
+  },
+  "version": "1.0",
+  "root": {
+    "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut",
+    "source": "store",
+    "store_id": "rocut",
+    "scope": {
+      "kind": "standalone",
+      "intent": "project-read",
+      "source": "explicit",
+      "ref": {
+        "mode": "standalone",
+        "projectId": "e1bca41c-14f2-4daa-a592-00fdcb56ee2c",
+        "projectRoot": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+      },
+      "paths": {
+        "planning-checkout": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut",
+        "project-home": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen",
+        "project-config": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\config.yaml",
+        "project-schemas": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\schemas",
+        "project-work": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\work",
+        "specs": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\specs",
+        "project-design-docs": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\design-docs",
+        "active-changes": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes",
+        "archive-line": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\archive",
+        "execution-root": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+      },
+      "evidence": [
+        {
+          "source": "explicit",
+          "field": "project",
+          "value": "e1bca41c-14f2-4daa-a592-00fdcb56ee2c"
+        },
+        {
+          "source": "nearest-standalone",
+          "field": "execution-root",
+          "value": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+        },
+        {
+          "source": "nearest-standalone",
+          "field": "planning-root",
+          "value": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+        },
+        {
+          "source": "nearest-standalone",
+          "field": "project",
+          "value": "e1bca41c-14f2-4daa-a592-00fdcb56ee2c"
+        },
+        {
+          "source": "project-binding",
+          "field": "execution-root",
+          "value": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+        },
+        {
+          "source": "project-binding",
+          "field": "project",
+          "value": "e1bca41c-14f2-4daa-a592-00fdcb56ee2c"
+        }
+      ],
+      "notices": [
+        {
+          "code": "configuration_store_inheritance",
+          "message": "Planning stays local; the declared Store contributes configuration only."
+        }
+      ],
+      "followupSelection": {}
+    }
+  }
+}
+EXIT[validate]:0

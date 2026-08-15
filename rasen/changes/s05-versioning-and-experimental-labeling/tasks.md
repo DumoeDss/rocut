@@ -98,16 +98,16 @@
 
 ## 7. Delivery audit and ship
 
-- [ ] 7.1 The F2-class delivery audit (P3's rule): pair every scenario clause of this change's
+- [x] 7.1 The F2-class delivery audit (P3's rule): pair every scenario clause of this change's
       spec delta with the evidence line that satisfies it; amend any clause the delivery does not
       meet BEFORE archive, scenario headings verbatim, rulings attributed in design.md — never
       in the spec text.
-- [ ] 7.2 Final controls re-run: the frozen-surface byte-control from 1.1 still identical; the
+- [x] 7.2 Final controls re-run: the frozen-surface byte-control from 1.1 still identical; the
       full checker family green; `rasen validate s05-versioning-and-experimental-labeling
       --strict --project rocut --json` → `valid: true, issues: []` (the item name is required —
       bare `--strict` prints "Nothing to validate").
-- [ ] 7.3 Line endings per stage; explicit pathspecs with the `.rasen/` staging guard
+- [x] 7.3 Line endings per stage; explicit pathspecs with the `.rasen/` staging guard
       (`grep -c` exits 1 on zero — capture in a variable); one `feat(<change>):` commit per
       group; **local only, no push** — the portfolio delivers once at the parent.
-- [ ] 7.4 On review-clean: `{"kind":"standDown"}` to any parked worker's signals, confirm
+- [x] 7.4 On review-clean: `{"kind":"standDown"}` to any parked worker's signals, confirm
       `signals/.state/` is empty before the archive is planned.
