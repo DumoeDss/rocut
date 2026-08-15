@@ -77,10 +77,17 @@ say so, per the task's own instruction.
   package(s) verified, 0 failures, 0 dangling)"; the same line appears in
   every full-run and subset log (groups 2–5).
 - *a dangling declared entry introduced as a control fails the gate at any
-  class* — report section 2.2: the declared-but-absent (dangling) negative
-  control was applied and observed failing `check-sdk-consumer-view.mjs`
-  closed at every class (run record in the Group-2 log set;
-  `logs/group2-consumer-view-fresh-pack.log` is the green twin).
+  class* — `logs/review1-synthetic-dangling-fail.log` (committed at review
+  round 1, finding R1): a scratch-doctored copy of the packed contracts
+  tarball — synthetic `./vectors/synthetic-dangling` declared in BOTH the
+  export map and surface.json (set-equality holds; only the dangling branch
+  can fire), target absent from the tarball, repo untouched — run through
+  `check-sdk-consumer-view.mjs` via `OPENCUT_PREPACKED_DIR` fails closed at
+  the provider class and again at the frozen class:
+  `dangling-export-entries 1`, `REAL_EXIT_CODE[consumer-view]:1` both legs,
+  self-labeled at the round-1 fixes commit. Report section 2.2 carries the
+  original violation-and-revert narrative;
+  `logs/group2-consumer-view-fresh-pack.log` is the green twin.
 
 **Scenario: The consumer view is independently runnable**
 

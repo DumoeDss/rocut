@@ -335,14 +335,19 @@ same default-env path, green end to end.
 No example needed a missing export entry — the escalation clause never fired;
 no barrel was invented.
 
-> **Amendment (Group 5, 2026-08-15):** this default-env run was later shown
-> to be **leakage-tainted** — the default scratch root's ancestor chain
-> included an unrelated workspace's `node_modules`, and the embed-surface
-> build borrowed `date-fns` from it (finding F-P6-7, Group 5). The run's
-> per-step exits were real, but its dependency-closure proof was not
-> self-contained. The authoritative shipping-revision run is Group 5's
-> clean-root full run (`evidence/logs/group5-full-run-clean.log`), taken
-> under CONTROL-1c with `date-fns` shipping in classic's manifest.
+> **Amendment (Group 5, 2026-08-15; supersession note added at review round
+> 1, finding R3):** this default-env run was later shown to be
+> **leakage-tainted** — the default scratch root's ancestor chain included
+> an unrelated workspace's `node_modules`, and the embed-surface build
+> borrowed `date-fns` from it (finding F-P6-7, Group 5). The run's per-step
+> exits were real, but its dependency-closure proof was not self-contained.
+> The authoritative shipping-revision run is review round 1's clean-root
+> full run (`evidence/logs/review1-full-run-clean.log` — self-labeled at
+> its HEAD, every round-1 code change committed before the run), taken under
+> CONTROL-1c with `date-fns` shipping in classic's manifest. Group 5's
+> `group5-full-run-clean.log` (self-labeled `4d4a13da` — the repair as
+> then-uncommitted working-tree state, the label gap R3 flagged) stands
+> relabeled **corroborating**.
 
 ## Group 4 — Consumer declaration and census (tasks 4.1, 4.2)
 
@@ -452,9 +457,13 @@ resolved set (`date-fns@3.6.0`) is unchanged; refreshing the lock is a P7
 tidy, as is a checker that asserts packed-manifest dependency closure (the
 family's green plus local leakage is what masked the gap).
 
-**5.2 — the green evidence.** The clean canonical full run at the shipping
-tree (`evidence/logs/group5-full-run-clean.log`,
-`OPENCUT_SCRATCH_ROOT=$HOME/.opencut-scratch-p6`): CONTROL-1a/1b/1c PASS,
+**5.2 — the green evidence.** The clean canonical full run
+(`evidence/logs/group5-full-run-clean.log`,
+`OPENCUT_SCRATCH_ROOT=$HOME/.opencut-scratch-p6`, self-labeled `4d4a13da` —
+the repair was then-uncommitted working-tree state, the one load-bearing
+label gap review round 1 R3 flagged; the authoritative re-run at the
+round-1 fixes commit is `evidence/logs/review1-full-run-clean.log`):
+CONTROL-1a/1b/1c PASS,
 consumer-view PASS (3 packages, 0 failures, 0 dangling), all four examples
 green — 10 EXIT lines zero, `REAL_EXIT_CODE[npm-install/*]:0` ×4 with
 CONTROL-2 and the react controls green per install, wrapper
@@ -572,3 +581,65 @@ commit hash in hand.
   R3 instance is fixed this round), and negative controls should commit
   their FAIL half (the R1 instance is fixed this round; the rule applies to
   any future violation-and-revert evidence).
+
+## Review round 1 — dispositions (0 Blocker / 0 Major / 4 Minor / 5 Trivial)
+
+Reviewer report: `evidence/review-report.md` (committed with this round).
+All nine findings fixed or recorded in one batch, two commits:
+`4b979b67` (the static fixes — every code/doc change, committed BEFORE the
+re-run evidence so the evidence self-certifies a tree containing them) and
+this round's evidence commit (the regenerated logs, the relabels, this
+section, the reviewer's report).
+
+- **R1 (Minor)** — the delivery audit's dangling-clause pairing cited a
+  Group-2 run record that was never committed. FIXED by generating and
+  committing the FAIL half: `evidence/logs/review1-synthetic-dangling-fail.log`
+  — a scratch-doctored COPY of the packed contracts tarball (synthetic
+  `./vectors/synthetic-dangling` declared in BOTH the export map and
+  surface.json, so set-equality holds and only the dangling branch fires;
+  target absent; repo untouched, `git status --porcelain` proven in-log),
+  run through the committed checker via `OPENCUT_PREPACKED_DIR`: fails
+  closed at the provider class and again at the frozen class,
+  `dangling-export-entries 1`, `REAL_EXIT_CODE[consumer-view]:1` both legs,
+  self-labeled `verifying at 4b979b67`. The audit's pairing
+  (`evidence/group6-delivery-audit.md`) now cites this log; the report 2.2
+  violation-and-revert narrative stands as history.
+- **R2 (Minor)** — requirement 5's literal clause ("no example code reads
+  the surface manifest at runtime") tightened to the data-vs-behavior
+  resolution in the spec delta (requirement prose + scenario clause,
+  headings verbatim); the ruling is attributed in design.md E6. Validate
+  strict green after the edit (`evidence/logs/review1-gates.log`).
+- **R3 (Minor)** — the authoritative clean run re-taken at a committed
+  HEAD: `evidence/logs/review1-full-run-clean.log`, self-labeled
+  `running at 4b979b67` (the round-1 fixes commit), fresh scratch
+  lifecycle, CONTROL-1a/1b/1c PASS, consumer-view PASS (3 packages,
+  0 failures, 0 dangling), install counts carrying the date-fns signature
+  (5 / 252 / 349 / 250), 10 `EXIT[example/...]:0` lines zero-nonzero,
+  `REAL_EXIT_CODE[examples-run]:0`, wrapper `REAL_EXIT_CODE:0`. Group 5's
+  `4d4a13da`-labeled log relabeled **corroborating** (3.5 amendment and
+  5.2 above).
+- **R4 (Minor)** — recorded, not built (LEAD round-1 routing): the P7
+  handoff section above carries the two zustand peer phantoms verbatim
+  (`immer` via `zustand/middleware/immer`, `use-sync-external-store` via
+  `zustand/traditional`) beside the reachability-aware closure-checker
+  recommendation and the probe design reference.
+- **R5 (Trivial)** — 6.3's clause count corrected: 24 atomic clauses across
+  11 scenarios (was "twelve").
+- **R6 (Trivial)** — 5.2's react-day-picker version corrected: the
+  workspace lock resolves 8.10.1 (a fresh scratch install may pick a newer
+  8.10.x); the peer range is identical across 8.10.x and is the
+  load-bearing fact.
+- **R7 (Trivial)** — the "first true CI execution lands on the post-delivery
+  push" sentence added to the sdk-examples job's own YAML comment (it
+  already lived in BOUNDARIES §15, this report, and the delivery audit).
+- **R8 (Trivial)** — the extraction-identity claim (2.1) now discloses
+  npm's install-duration line (`in 17s` vs `in 12s`) alongside the wrapper
+  echo.
+- **R9 (Trivial)** — materialize()'s rewrite loop carries the latent unscoped
+  `opencut-wasm` direct-dep note (comment only; no shipped example declares
+  it directly, and the unknown-shape guards cover every shipped manifest).
+
+Close-out gates (`evidence/logs/review1-gates.log`, run at the round-1
+fixes commit): `rasen validate --strict` → `"valid": true, issues empty`;
+`check-sdk-surface-labels` exit 0; `check-package-boundary` exit 0 (1135
+files scanned, all five rules PASS).

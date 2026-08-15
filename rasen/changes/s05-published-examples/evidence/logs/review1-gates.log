@@ -1,0 +1,121 @@
+# Review round 1 close-out gates (run at the round-1 fixes commit).
+
+=== rasen validate --strict ===
+{
+  "items": [
+    {
+      "id": "s05-published-examples",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 11
+    }
+  ],
+  "summary": {
+    "totals": {
+      "items": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "byType": {
+      "change": {
+        "items": 1,
+        "passed": 1,
+        "failed": 0
+      }
+    }
+  },
+  "version": "1.0",
+  "root": {
+    "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut",
+    "source": "store",
+    "store_id": "rocut",
+    "scope": {
+      "kind": "standalone",
+      "intent": "project-read",
+      "source": "explicit",
+      "ref": {
+        "mode": "standalone",
+        "projectId": "e1bca41c-14f2-4daa-a592-00fdcb56ee2c",
+        "projectRoot": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+      },
+      "paths": {
+        "planning-checkout": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut",
+        "project-home": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen",
+        "project-config": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\config.yaml",
+        "project-schemas": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\schemas",
+        "project-work": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\work",
+        "specs": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\specs",
+        "project-design-docs": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\design-docs",
+        "active-changes": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes",
+        "archive-line": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\archive",
+        "execution-root": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+      },
+      "evidence": [
+        {
+          "source": "explicit",
+          "field": "project",
+          "value": "e1bca41c-14f2-4daa-a592-00fdcb56ee2c"
+        },
+        {
+          "source": "nearest-standalone",
+          "field": "execution-root",
+          "value": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+        },
+        {
+          "source": "nearest-standalone",
+          "field": "planning-root",
+          "value": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+        },
+        {
+          "source": "nearest-standalone",
+          "field": "project",
+          "value": "e1bca41c-14f2-4daa-a592-00fdcb56ee2c"
+        },
+        {
+          "source": "project-binding",
+          "field": "execution-root",
+          "value": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+        },
+        {
+          "source": "project-binding",
+          "field": "project",
+          "value": "e1bca41c-14f2-4daa-a592-00fdcb56ee2c"
+        }
+      ],
+      "notices": [
+        {
+          "code": "configuration_store_inheritance",
+          "message": "Planning stays local; the declared Store contributes configuration only."
+        }
+      ],
+      "followupSelection": {}
+    }
+  }
+}
+REAL_EXIT_CODE:0
+
+=== check-sdk-surface-labels ===
+check-sdk-surface-labels: scanned 3 package(s), 35 export entries
+  census  @opencut/editor-classic: 19 export entries — frozen 2, provider 13, experimental 4
+  census  @opencut/editor-contracts: 10 export entries — frozen 9, provider 0, experimental 1
+  census  @opencut/editor-ports: 6 export entries — frozen 5, provider 0, experimental 1
+  census  total: 35 export entries across 3 package(s) — frozen 16, provider 13, experimental 6
+  census  dangling-export-entries: 0
+  PASS  completeness: every export entry is classified in surface.json with a known class and a non-empty reason, and every row names a declared entry
+  PASS  marker-agreement: provider/experimental rows carry exactly one @opencutSurface marker matching the manifest class in their entry file; frozen rows carry none
+  PASS  override-validity: every symbol-level override names a symbol the entry actually exports
+  PASS  target-existence: every declared entry's target is a plain string whose file exists on disk
+clean — run with --negative-control / --converse-control to see each rule proven able to fire, and proven not to misfire.
+REAL_EXIT_CODE:0
+
+=== check-package-boundary ===
+check-package-boundary: scanned 1135 repo file(s) (tracked + uncommitted)
+  PASS  acyclic-direction: every cross-package edge points to a strictly lower declared layer (1011 file(s) scanned, 416 cross-package edge(s) examined)
+  PASS  public-entry-only: a specifier crossing into a package resolves only to a declared exports subpath (1011 file(s) scanned, 415 @opencut/* specifier(s) examined)
+  PASS  no-internal-reexport: no package's declared entry re-exports a module owned by another package's undeclared internals (870 file(s) scanned)
+  PASS  no-elftia-import: no package, Host or example imports an Elftia package, protocol identifier or runtime object (1135 file(s) scanned)
+  PASS  react-free-base: editor-ports and editor-contracts import no React, no DOM global, and no editor-classic module (74 file(s) scanned)
+
+clean — run with --negative-control / --converse-control to see each rule proven able to fire, and proven not to misfire.
+REAL_EXIT_CODE:0
