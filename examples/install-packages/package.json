@@ -1,0 +1,18 @@
+{
+	"name": "opencut-example-install-packages",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"description": "P6 placeholder for the install-packages example — the earliest end-to-end proof of the published-examples runner. Completed by task 3.1 (tsconfig, README, consumed-surface table, full verification script).",
+	"dependencies": {
+		"@opencut/editor-ports": "0.2.0",
+		"@opencut/editor-contracts": "0.2.0",
+		"@opencut/editor-classic": "0.2.0"
+	},
+	"devDependencies": {
+		"typescript": "^5.8.3"
+	},
+	"opencutExample": {
+		"bunEntry": "run.ts"
+	}
+}
