@@ -45,7 +45,7 @@ const log = (line) => {
 	console.log(line);
 };
 let failures = 0;
-let findings = 0;
+let dangling = 0;
 const check = (ok, label) => {
 	if (!ok) failures += 1;
 	log(`  ${ok ? "ok  " : "FAIL"} ${label}`);
@@ -99,11 +99,10 @@ for (const entry of manifest.packages.filter((p) => p.name.startsWith("@opencut/
 
 	// (4) markers in the EXTRACTED source: present and matching for non-frozen
 	// entries, absent for frozen entries. A declared target absent from the
-	// tarball is a dangling export entry: FAIL for non-frozen (the marker cannot
-	// live in a missing file), a reported finding for frozen — repairing or
-	// removing a declared entry is contract adjudication, not a labeling patch
-	// (the live finding: @opencut/editor-contracts ./vectors/drivers, declared by
-	// S05 P0's boundary freeze, target never authored, pre-existing at base).
+	// tarball is a dangling export entry and FAILS at any class, mirroring the
+	// labels checker's target-existence rule (LEAD ruling 2026-08-15, executed on
+	// the finding this oracle caught: @opencut/editor-contracts ./vectors/drivers,
+	// declared by S05 P0 in 5e3fc7cb, target never authored — removed).
 	let markersChecked = 0;
 	for (const e of classified) {
 		const target = packedManifest.exports[e];
@@ -113,12 +112,8 @@ for (const entry of manifest.packages.filter((p) => p.name.startsWith("@opencut/
 		try {
 			text = read(target.replace(/^\.\//, ""));
 		} catch {
-			if (cls === "frozen") {
-				findings += 1;
-				log(`  finding dangling-export-entry ${entry.name} ${e} -> ${target} (${cls}) — declared in the export map but absent from the tarball; escalated to the contract owner, not patched by labeling`);
-			} else {
-				check(false, `${cls} entry ${e} target ${target} absent from tarball — its marker cannot live in a missing file (dangling export entry)`);
-			}
+			dangling += 1;
+			check(false, `${cls} entry ${e} target ${target} absent from tarball — dangling export entry, module-not-found for every consumer (fails target-existence; LEAD ruling 2026-08-15)`);
 			continue;
 		}
 		const found = [...text.matchAll(MARKER_RE)].map((m) => m[1]);
@@ -133,6 +128,6 @@ for (const entry of manifest.packages.filter((p) => p.name.startsWith("@opencut/
 }
 
 rmSync(viewRoot, { recursive: true, force: true });
-log(`\nconsumer-view-from-tarballs: ${failures} failure(s), ${findings} dangling-export-entry finding(s) (escalated to the contract owner — repairing or removing a declared entry is contract adjudication, not a labeling patch)`);
+log(`\nconsumer-view-from-tarballs: ${failures} failure(s), dangling-export-entries ${dangling} — a declared-but-absent entry fails target-existence at any class (LEAD ruling 2026-08-15; the one such entry, ./vectors/drivers, was removed under that ruling)`);
 log(`REAL_EXIT_CODE[consumer-view]:${failures > 0 ? 1 : 0}`);
 process.exit(failures > 0 ? 1 : 0);

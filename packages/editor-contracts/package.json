@@ -25,7 +25,6 @@
     "./engine/conformance": "./src/engine/conformance/index.ts",
     "./vectors": "./src/vectors/index.ts",
     "./vectors/corpus": "./src/vectors/corpus/index.ts",
-    "./vectors/drivers": "./src/vectors/drivers/index.ts",
     "./package.json": "./package.json"
   }
 }

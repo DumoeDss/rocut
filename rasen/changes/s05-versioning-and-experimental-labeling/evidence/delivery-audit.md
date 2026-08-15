@@ -195,7 +195,9 @@ under "The consumer view is proven from the tarball").
   P0, target never authored, pre-existing at base. No clause of this delta requires
   repairing it; the verifier reports it as a finding (non-frozen dangling would FAIL), the
   checker census carries it every run, and repair/removal is escalated as contract
-  adjudication (implementation report, Group 5).
+  adjudication (implementation report, Group 5). RESOLVED 2026-08-15: the LEAD ruled REMOVE
+  and the group-8 completion pass executed it — see the dated addendum at the end of this
+  file and `group8-completion-ruling.log` for the re-proven clauses.
 
 #### Scenario: Manifest truth holds
 
@@ -207,3 +209,36 @@ under "The consumer view is proven from the tarball").
 - OR any import added is declared in the same commit with the scratch harness run recorded —
   the OR-branch is not taken: no import was added, so the scratch-harness obligation is not
   triggered (P3's rule, recorded in the implementation report, Group 5 §5.2).
+
+---
+
+## Addendum (2026-08-15): the LEAD ruling on the escalated finding, executed
+
+The dangling-entry note above was adjudicated the same day it was escalated. LEAD ruling
+2026-08-15: REMOVE `./vectors/drivers`. Reasoning, quoted: the entry's target was never
+authored in any commit — it never worked; zero importers exist, so removal breaks nobody (a
+consumer today gets module-not-found either way, and removal makes the manifest honest); the
+four frozen S03+S04 surfaces are code signatures, byte-identical and untouched — the exports
+map is S05-authored manifest surface, so correcting it is not a frozen-surface change;
+authoring the index now would invent surface with no forcing consumer (monotone-growth cuts
+against inventing barrels); a future child that needs drivers exported re-adds the entry
+WITH the forcing module named.
+
+Effect on this audit's citations (all re-proven in
+`evidence/logs/group8-completion-ruling.log`, EXIT 0 on every leg):
+
+- The consumer-view scenario above now reads, at the completion tree: contracts 10 declared =
+  10 classified set-equal, `./vectors/drivers` absent from the export map, 0 failures,
+  `REAL_EXIT_CODE[consumer-view]:0`. The dangling branch of the verifier now fails closed at
+  any class, mirroring the checker's new fourth rule `target-existence`.
+- The label-checker citations that read 36 entries / frozen 17 / `dangling-export-entries: 1`
+  were accurate at their commits (G4/G5/G7 logs stand as history); the completion census is
+  35 entries — frozen 16, provider 13, experimental 6 — `dangling-export-entries: 0`, four
+  rules PASS (the fourth, `target-existence`, new under the ruling), negative control 8/8
+  FIRED, converse silent with zero dangling.
+- The manifest-truth scenario is unaffected (dependency blocks untouched by the removal);
+  the boundary census is unchanged on every package-graph rule (989/362/361/870/74), and the
+  frozen surfaces re-proved IDENTICAL vs `5aae75ec` for the fourth time.
+- Attribution of record: P0 declared ./vectors/drivers in 5e3fc7cb; target never authored;
+  zero importers; removed by P5 under LEAD ruling 2026-08-15; re-add only with a named
+  forcing module.

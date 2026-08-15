@@ -700,7 +700,7 @@ Three buckets, plus the checkers with no `apps/web/src` vs. `packages/*/src` dis
 | `check-surface-portal-boundary.mjs` | C | `REQUIRED` lists 11 literals overlapping task 5.6's `components/ui/*` atom adjudication; the discrepancy in count (9 vs. "eight") was resolved with evidence at 5.6, not assumed. |
 | `check-surface-private-drag.mjs` | C | `COORDINATOR` plus 2 more `editor/surface/embedding/**` literals, plus Host-owned shell-exclusion prefixes that needed no change. |
 | `check-headless-graph.mjs` | C | ~10+ module-id literals asserted against a headless bundle's module graph; needed updating once the bundler resolved moved sources to new module ids. |
-| `check-sdk-surface-labels.mjs` | A (added at P5, 2026-08-15 — outside 2.4's audited set, recorded per P5 task 6.3) | Born after the move: discovers packages generically via `packages/*/package.json` + each package's shipped `surface.json`; no `apps/web/src` literal anywhere, so it never carried the pre-move scope bug. See §14 for its rules, controls and census. |
+| `check-sdk-surface-labels.mjs` | A (added at P5, 2026-08-15 — outside 2.4's audited set, recorded per P5 task 6.3; same day the LEAD ruling on the `./vectors/drivers` finding added its fourth rule, `target-existence`) | Born after the move: discovers packages generically via `packages/*/package.json` + each package's shipped `surface.json`; no `apps/web/src` literal anywhere, so it never carried the pre-move scope bug. See §14 for its rules, controls and census. |
 
 **Every bucket-C checker was either asserted-existence (fails loudly the moment its literal path
 stops resolving) or swept by task 8.5's "run every runnable static checker, confirm all green,"**
@@ -1094,15 +1094,19 @@ edits a frozen file — the four S03+S04 byte-identical surfaces
 other side too: a marker found on a frozen-classified file is a violation whose text says
 editing a frozen file for labeling is contract pressure, never a patch.
 
-**Classification summary** (36 entries; method: each manifest's `exports` map read at `0.2.0`,
+**Classification summary** (35 entries; method: each manifest's `exports` map read at `0.2.0`,
 `./package.json` excluded; the same census the checker prints every run):
 
 | package | entries | frozen | provider | experimental |
 | --- | --- | ---: | ---: | ---: |
 | `@opencut/editor-ports` | 6 | 5 | 0 | 1 |
-| `@opencut/editor-contracts` | 11 | 10 | 0 | 1 |
+| `@opencut/editor-contracts` | 10 | 9 | 0 | 1 |
 | `@opencut/editor-classic` | 19 | 2 | 13 | 4 |
-| **total** | **36** | **17** | **13** | **6** |
+| **total** | **35** | **16** | **13** | **6** |
+
+The count moved once after classification: the LEAD ruling of 2026-08-15 (below) removed
+contracts' `./vectors/drivers` entry from both the export map and `surface.json`, taking the
+census 36 → 35 and frozen 17 → 16.
 
 Adjudications worth a reader's attention: the conformance suites are `frozen` (executable
 contract truth); P3's `./conformance/requirements` legibility layers are `experimental` (test
@@ -1118,31 +1122,43 @@ labeling twin of the boundary checker's attribution rule (an unlabeled export FA
 classification at birth): completeness both directions, class vocabulary
 (`frozen | provider | experimental` exactly), marker agreement including the frozen guard,
 symbol-override validity via the boundary checker's source-scan extraction idiom (no parser, no
-execution), and the house empty-scan refusal (exit 2). Census lines every run; the live census
-is 36 entries — frozen 17, provider 13, experimental 6 — plus
-`dangling-export-entries: 1` (below). Controls per the family idiom (pure `scan()` over
-in-memory fixtures, never edits to the real tree): the negative control plants seven worlds —
+execution), target existence (every declared entry's target file on disk — added under the LEAD
+ruling of 2026-08-15), and the house empty-scan refusal (exit 2). Census lines every run; the
+live census is 35 entries — frozen 16, provider 13, experimental 6 — with
+`dangling-export-entries: 0`. Controls per the family idiom (pure `scan()` over
+in-memory fixtures, never edits to the real tree): the negative control plants eight worlds —
 the spec's named pair (an unlabeled experimental export FAILs; an export entry with no row),
-an unknown class, a dangling override, a marker on a frozen file, an undeclared row, and a
-non-frozen entry whose target is absent — each fires under its named rule. The converse control
+an unknown class, a dangling override, a marker on a frozen file, an undeclared row, and
+absent-target entries at both classes (non-frozen and frozen) — each fires under its named
+rule, the two absent-target worlds both under `target-existence`. The converse control
 proves the designed silences: frozen rows without markers, a resolving override,
-class-name-in-prose, and a frozen row whose target is absent reported as exactly one finding,
-not a violation.
+class-name-in-prose, and zero dangling entries.
 
-**Finding (escalated, not patched): a dangling export entry the consumer view caught.**
-`@opencut/editor-contracts`' `./vectors/drivers` entry — declared by P0's boundary freeze
-(`5e3fc7cb`) — points at `src/vectors/drivers/index.ts`, a file no commit ever authored; the
-directory holds only `durable.ts`/`in-memory.ts`, consumed via relative imports, and nothing
-imports the entry by specifier. A consumer importing it gets module-not-found from the shipped
-package. Every workspace-side gate was blind to it (the boundary checker never validates target
-existence; `tsc` never resolves an entry nothing imports; the labels checker originally read a
-missing frozen target as a marker-free pass). The from-tarballs consumer-view proof caught it
-because it reads the packed artifact. Disposition: NOT repaired at P5 — authoring the missing
-index means choosing what a frozen-classified entry exports, removing the entry means removing
-frozen-classified surface; both are contract adjudication. The defect is now machine-visible:
-both the checker census (frozen-class dangling = reported finding; non-frozen dangling = FAIL,
-both branches control-proven) and the consumer-view verifier carry it until the contract owner
-rules.
+**Ruled and executed (LEAD ruling, 2026-08-15): a dangling export entry the consumer view
+caught, removed.** `@opencut/editor-contracts`' `./vectors/drivers` entry — declared by P0's
+boundary freeze (`5e3fc7cb`) — pointed at `src/vectors/drivers/index.ts`, a file no commit
+ever authored; the directory held only `durable.ts`/`in-memory.ts`, consumed via relative
+imports, and nothing imported the entry by specifier. A consumer importing it got
+module-not-found from the shipped package. Every workspace-side gate was blind to it (the
+boundary checker never validates target existence; `tsc` never resolves an entry nothing
+imports; the labels checker originally read a missing frozen target as a marker-free pass).
+The from-tarballs consumer-view proof caught it because it reads the packed artifact. P5
+escalated rather than patched: authoring the missing index means choosing what a
+frozen-classified entry exports, removing the entry means removing frozen-classified surface —
+both contract adjudication. The LEAD ruled on 2026-08-15: REMOVE. The reasoning, quoted: the
+entry's target was never authored in any commit — it never worked; zero importers exist, so
+removal breaks nobody (a consumer today gets module-not-found either way, and removal makes
+the manifest honest); the four frozen S03+S04 surfaces are code signatures, byte-identical and
+untouched — the exports map is S05-authored manifest surface, so correcting it is not a
+frozen-surface change; authoring the index now would invent surface with no forcing consumer
+(monotone-growth cuts against inventing barrels); a future child that needs drivers exported
+re-adds the entry WITH the forcing module named. Attribution of record: **P0 declared
+./vectors/drivers in 5e3fc7cb; target never authored; zero importers; removed by P5 under LEAD
+ruling 2026-08-15; re-add only with a named forcing module.** The rule the finding bought: the
+checker's fourth rule (`target-existence`) fails a declared entry whose target is absent at
+any class, and the consumer-view verifier fails the same condition from the packed tarball —
+both control-proven able to fire. Completeness-both-ways stayed satisfied: the entry left the
+export map and its `surface.json` row in the same edit.
 
 **The consumer view is proven from the tarballs, not the workspace.**
 `rasen/changes/s05-versioning-and-experimental-labeling/evidence/consumer-view-from-tarballs.mjs`
@@ -1167,8 +1183,10 @@ ISO code `GA`, and this section's narration of the term list itself. Zero hits m
 GA or production-readiness claim — the READMEs' "this policy is the only stability claim"
 sentence is the claim surface, and it survives its own sweep.
 
-**Census movement over this change**: 1107 → 1109 repo files (+2: the labels checker and the
-consumer-view evidence module, both `.mjs` outside every package graph); every boundary rule
+**Census movement over this change**: 1107 → 1110 repo files in the boundary walk's scope
+(+3 code files, all outside every package graph: the labels checker, the consumer-view
+evidence module, and the empty-scan zero-entries fixture's `package.json`; the walk counts
+code files only, so evidence logs and the sweep's `.py` are invisible to it); every boundary rule
 count unchanged (989 package-graph files, 362 edges, 361 specifiers, 870 / 74 scanned). Family
 sweep at close-out: 28 checkers, 22 exit-zero / 6 nonzero — P3's exact nonzero set unchanged
 (`asset-manifest:2, emitted-runtime-assets:1, headless-graph:2, headless-semantic-result:2,

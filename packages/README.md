@@ -53,18 +53,23 @@ number promises; read its `surface.json` for which class an entry is in.
 ## Current figures
 
 Method: `node script/check-package-boundary.mjs` census lines, and
-`script/pack-sdk-tarballs.mjs` inventories, both run at `3cb78fbc` (2026-08-15):
+`script/pack-sdk-tarballs.mjs` inventories, run at the group-8 completion pass (LEAD ruling
+2026-08-15; committed log:
+`rasen/changes/s05-versioning-and-experimental-labeling/evidence/logs/group8-completion-ruling.log`):
 
 - boundary census: 989 package-graph files, 362 cross-package edges (all pointing to a strictly
   lower layer), 361 `@opencut/*` specifiers (all resolving to declared entries), 870 files scanned
-  for no-internal-reexport, 74 files scanned for the react-free base (ports + contracts), 1109
+  for no-internal-reexport, 74 files scanned for the react-free base (ports + contracts), 1110
   repo files in scope — all five rules PASS;
 - pack inventories at `0.2.0`: editor-ports 23 files, editor-contracts 61, editor-classic 805,
   opencut-wasm 7 (wasm at its own `0.2.10`), each including `surface.json` and the policy
   `README.md`;
-- label census: 36 classified entries — frozen 17, provider 13, experimental 6
-  (`node script/check-sdk-surface-labels.mjs`), plus 1 recorded dangling-entry finding escalated
-  to the contract owner (`@opencut/editor-contracts` `./vectors/drivers`).
+- label census: 35 classified entries — frozen 16, provider 13, experimental 6
+  (`node script/check-sdk-surface-labels.mjs`), dangling-export-entries 0. The count was 36 until
+  the LEAD ruling of 2026-08-15 removed `@opencut/editor-contracts`' `./vectors/drivers` —
+  declared by P0 in `5e3fc7cb`, target never authored, zero importers — which the from-tarballs
+  consumer view caught; the checker now fails any declared-but-absent entry at any class
+  (`target-existence`).
 
 ## Source of truth
 

@@ -318,3 +318,46 @@ nothing pushed** (the portfolio delivers once at the parent).
 **7.4 — standDown**: N-A by structure — this worker is a leaf (no subagents, no parked
 workers); the change directory has no `signals/` directory at all, so there is no
 `signals/.state/` to confirm empty and no standDown to send.
+
+## Group 8 — LEAD-ruling completion pass (the escalated ./vectors/drivers finding)
+
+On 2026-08-15 the LEAD ruled on the finding Group 5 escalated (report §Group 5; census
+`dangling-export-entries: 1`): **REMOVE the entry.** The reasoning, quoted for the record:
+the entry's target was never authored in any commit — it never worked; zero importers exist,
+so removal breaks nobody (a consumer today gets module-not-found either way, and removal
+makes the manifest honest); the four frozen S03+S04 surfaces are code signatures,
+byte-identical and untouched — the exports map is S05-authored manifest surface, so
+correcting it is not a frozen-surface change; authoring the index now would invent surface
+with no forcing consumer (monotone-growth cuts against inventing barrels); a future child
+that needs drivers exported re-adds the entry WITH the forcing module named.
+
+Executed:
+
+- `packages/editor-contracts/package.json` — the `./vectors/drivers` line removed from the
+  exports map; `packages/editor-contracts/surface.json` — its row removed in the same edit
+  (completeness-both-ways stays satisfied; census 36 → 35, frozen 17 → 16).
+- `script/check-sdk-surface-labels.mjs` — fourth rule `target-existence`: a declared entry
+  whose target is absent fails at ANY class (the pre-ruling checker read a missing frozen
+  target as a marker-free pass; the finding proved that vacuous). Negative control extended
+  to eight worlds (world 8: a frozen entry with an absent target); converse control now
+  asserts zero dangling.
+- `evidence/consumer-view-from-tarballs.mjs` — the dangling branch fails closed from the
+  packed tarball at any class, mirroring the checker (was: non-frozen FAIL / frozen
+  escalated finding); the closing line reports the dangling census.
+- Controls re-proven (`evidence/logs/group8-completion-ruling.log`): labels live — 35
+  entries, 16/13/6, `dangling-export-entries: 0`, four rules PASS, EXIT 0; negative control
+  8/8 FIRED; converse silent; boundary five rules PASS (989/362/361/870/74 unchanged);
+  consumer view from tarballs — contracts 10 declared = 10 classified set-equal,
+  `./vectors/drivers` absent, 0 failures, `REAL_EXIT_CODE[consumer-view]:0`; frozen
+  byte-control vs `5aae75ec` re-proven IDENTICAL ×4 (fourth time).
+- Docs: BOUNDARIES §14 (ruling + attribution + figures), `packages/README.md` figures,
+  `design.md` task-time-rulings bullet, this section, `delivery-audit.md` addendum;
+  no-stability sweep re-run over the edited docs
+  (`evidence/logs/group8-no-stability-sweep.log`).
+
+Attribution of record: P0 declared ./vectors/drivers in 5e3fc7cb; target never authored;
+zero importers; removed by P5 under LEAD ruling 2026-08-15; re-add only with a named forcing
+module.
+
+Discipline: unchanged (explicit pathspecs, LF verified, `.rasen/` guard = 0, local only —
+nothing pushed).

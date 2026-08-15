@@ -41,10 +41,6 @@
 		"./vectors/corpus": {
 			"class": "frozen",
 			"reason": "The vectors corpus — S04 contract test data published by P3 with exact-bytes guarantees; changing a corpus file changes contract coverage."
-		},
-		"./vectors/drivers": {
-			"class": "frozen",
-			"reason": "The corpus drivers — S04-era vectors machinery, frozen with the runner they drive."
 		}
 	}
 }
