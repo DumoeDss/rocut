@@ -1,12 +1,12 @@
 ## 1. Baseline
 
-- [ ] 1.1 Capture the baseline with method and measurement point inline: the boundary checker's
+- [x] 1.1 Capture the baseline with method and measurement point inline: the boundary checker's
       printed census (`git ls-files --cached --others --exclude-standard` filter, code files
       only), the 28-checker family sweep with per-checker `EXIT[<name>]:<code>` lines (expected:
       22 zero / 6 nonzero, the known set — any OTHER red is a finding), the frozen-surface
       byte-control over the four S03+S04 files, and confirmation `examples/` does not exist. This
       is the before-half of every comparison.
-- [ ] 1.2 Re-verify the harness reuse surface end-to-end before building on it: run P3's
+- [x] 1.2 Re-verify the harness reuse surface end-to-end before building on it: run P3's
       `run-scratch-conformance.mjs` once at default env and capture its control-assertion output
       (location, copy-not-link, removal proof, react-free) — the pre-extraction reference the
       Group-2 refactor must reproduce.
@@ -33,24 +33,24 @@
 
 ## 3. The examples, cheapest first
 
-- [ ] 3.1 `examples/install-packages/`: own manifest (ports + contracts dep names at `0.2.0`,
+- [x] 3.1 `examples/install-packages/`: own manifest (ports + contracts dep names at `0.2.0`,
       typescript for the self-check), tsconfig, README with the consumed-surface table, and a
       runner script that imports from declared React-free entries, prints resolved versions,
       reads the installed `surface.json` + policy README as verification data, and asserts
       classic's installed metadata WITHOUT importing its runtime (React stays absent —
       `CONTROL-react-free` pattern). Execution includes its own `tsc --noEmit`.
-- [ ] 3.2 `examples/agent-transaction/`: the published `AGENT_SCENARIO` and corpus entry drive
+- [x] 3.2 `examples/agent-transaction/`: the published `AGENT_SCENARIO` and corpus entry drive
       the published engine over the example's own in-memory store through the transaction API —
       every declared step executed and asserted, ledger written, full reload-reopen durability
       assertion against a fresh store instance over the same persisted data. No browser. README
       table; own tsconfig self-check.
-- [ ] 3.3 `examples/custom-storage/` (design E2.3, the honest pair): P3's adapter promoted to
+- [x] 3.3 `examples/custom-storage/` (design E2.3, the honest pair): P3's adapter promoted to
       example shape — own `ProjectStore` behind a deliberately alien representation, published
       engine over it, port conformance (portable profile) run from the tarballs. Migration: the
       production path runs and records its skip distinctly; the real 31-step chain validated
       through `@opencut/editor-classic/evidence/wasm-test-mock`. README states the
       experimental-entry inheritance verbatim.
-- [ ] 3.4 `examples/embed-surface/` (heaviest, last): Vite + React app from the tarballs —
+- [x] 3.4 `examples/embed-surface/` (heaviest, last): Vite + React app from the tarballs —
       stylesheet through the declared `./surface.css` entry, the example's own `react`/
       `react-dom` (the peer contract working as designed), a minimal committed asset set with a
       README pointer to the canonical allowlist, GPU-free configuration settled empirically
@@ -58,7 +58,7 @@
       `vite build` against installed TS source AND a Playwright smoke asserting a booted
       interactive timeline with one interaction (build-only is not execution — the P1 vite
       Blocker is the precedent).
-- [ ] 3.5 Full local run: all four examples through the runner at default env, scratch
+- [x] 3.5 Full local run: all four examples through the runner at default env, scratch
       location asserted outside repo and Temp, controls green per install, consumer view green,
       `EXIT[<name>]:<code>` lines for every step. If any example appears to need a missing
       export entry: STOP and escalate with the forcing example named — inventing a barrel for

@@ -1,0 +1,33 @@
+@import "tailwindcss/theme.css";
+@import "tailwindcss/preflight.css";
+@import "@opencut/editor-classic/surface.css";
+
+/*
+ * The editor's stylesheet is consumed through its declared `./surface.css`
+ * entry, exactly as an adopter reads the export map. That file carries its own
+ * Tailwind 4 directives (`@plugin` typography and animate); the two plugins
+ * resolve from this example's devDependencies via normal node_modules upward
+ * resolution.
+ */
+
+/* Host-owned reset; editor styles stay Surface-scoped. */
+html,
+body,
+#root {
+	min-height: 100%;
+	margin: 0;
+}
+
+/*
+ * Tailwind 4 scans relative to the CSS file that registers the source. The
+ * `source()` registration inside surface.css does not survive that file being
+ * consumed from node_modules: without an explicit registration of the editor's
+ * source tree HERE, the build succeeds with the editor silently unstyled —
+ * theme tokens present, every layout utility missing, the Surface collapsed
+ * to its header with nothing clipping. The in-repo Vite host registers the
+ * same scan for the same reason (apps/vite-example/src/styles.css); this is
+ * the consumer-side form of it, against the installed package. The smoke run,
+ * not the build, is the judge.
+ */
+@source "../node_modules/@opencut/editor-classic/src";
+@source "./";

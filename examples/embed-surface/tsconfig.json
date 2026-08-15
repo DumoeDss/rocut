@@ -1,0 +1,27 @@
+{
+	"compilerOptions": {
+		"target": "ES2022",
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"jsx": "react-jsx",
+		"strict": true,
+		"noEmit": true,
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"types": ["node", "vite/client"]
+	},
+	// The editor's ambient declarations (`EyeDropper`, `soundtouchjs`) live in
+	// classic's `src/types/` — they ship in the tarball but are reachable only
+	// by inclusion, never through the export map. The in-repo Vite host does
+	// the same thing with `../../packages/*/src/types/**/*.d.ts`; from the
+	// installed tarball the same files sit under node_modules.
+	"include": [
+		"src",
+		"types",
+		"vite.config.ts",
+		"node_modules/@opencut/editor-classic/src/types/**/*.d.ts"
+	]
+}

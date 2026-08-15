@@ -22,7 +22,10 @@
  *     run via `npm run <key>` in that fixed order — the example's own
  *     toolchain (its own typescript, vite, playwright) does the work;
  *   - `opencutExample.bunEntry`, when present, runs under the configured bun
- *     invocation afterwards (the bun-shaped examples' runtime step).
+ *     invocation afterwards (the bun-shaped examples' runtime step); or
+ *     `opencutExample.bunEntries` (an array) for several entries, each its own
+ *     process with the entry filename as its step label — the custom-storage
+ *     honest pair runs the production path and the mock-installed path apart.
  *   An example declaring none of these has no execution and fails the run.
  *
  * Modes:
@@ -298,15 +301,29 @@ function runExample(name) {
 		}
 	}
 	const bunEntry = committed.opencutExample?.bunEntry;
+	const bunEntries = committed.opencutExample?.bunEntries;
+	if (bunEntry && bunEntries) {
+		fail(`example/${name}`, "declare opencutExample.bunEntry (one) or bunEntries (many), not both");
+	}
+	const bun = process.env.OPENCUT_BUN ?? "npx --yes bun@1.2.18";
 	if (bunEntry) {
 		if (!existsSync(join(target, bunEntry))) {
 			fail(`example/${name}`, `opencutExample.bunEntry '${bunEntry}' does not exist in the materialized example`);
 		}
-		const bun = process.env.OPENCUT_BUN ?? "npx --yes bun@1.2.18";
 		runStep(name, "execute", `${bun} ${bunEntry}`, target);
 	}
-	if (!scripts.typecheck && !scripts.build && !scripts.smoke && !bunEntry) {
-		fail(`example/${name}`, "no execution declared (no typecheck/build/smoke script, no opencutExample.bunEntry)");
+	// Multiple entries, each its own process — the honest pair needs the
+	// production path and the mock-installed path SEPARATE (a wasm mock must be
+	// in place before the classic chain imports, and the production path must
+	// run without it). The step label is the entry filename.
+	for (const entry of bunEntries ?? []) {
+		if (!existsSync(join(target, entry))) {
+			fail(`example/${name}`, `opencutExample.bunEntries entry '${entry}' does not exist in the materialized example`);
+		}
+		runStep(name, entry.replace(/[/\\]/g, "-"), `${bun} ${entry}`, target);
+	}
+	if (!scripts.typecheck && !scripts.build && !scripts.smoke && !bunEntry && (!bunEntries || bunEntries.length === 0)) {
+		fail(`example/${name}`, "no execution declared (no typecheck/build/smoke script, no opencutExample.bunEntry(s))");
 	}
 }
 

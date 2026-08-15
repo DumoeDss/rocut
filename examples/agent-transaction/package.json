@@ -1,0 +1,21 @@
+{
+	"name": "opencut-example-agent-transaction",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"description": "Drive the published agent scenario through the transaction engine over the example's own in-memory store — every declared step executed and asserted, the ledger written to disk, and reload-reopen durability proven against a fresh store instance over the same persisted data.",
+	"scripts": {
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@opencut/editor-ports": "0.2.0",
+		"@opencut/editor-contracts": "0.2.0"
+	},
+	"devDependencies": {
+		"@types/node": "^22.10.0",
+		"typescript": "^5.8.3"
+	},
+	"opencutExample": {
+		"bunEntry": "run.ts"
+	}
+}
