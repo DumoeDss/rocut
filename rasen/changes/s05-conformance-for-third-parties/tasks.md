@@ -152,7 +152,7 @@
       before every commit. Never `git add -A`. No `--no-verify` (no hooks exist).
 - [x] 8.3 Commit locally to `feat/s05-community-beta`, one `feat(<change>):` commit per group.
       **Ship mode is local; do not push** — the portfolio delivers once, at the parent.
-- [ ] 8.4 The moment the review loop goes clean, `{"kind":"standDown"}` to any parked worker's
+- [x] 8.4 The moment the review loop goes clean, `{"kind":"standDown"}` to any parked worker's
       `<changeRoot>/signals/<role>.json`, confirm `signals/.state/` is empty before the archive is
       planned.
 

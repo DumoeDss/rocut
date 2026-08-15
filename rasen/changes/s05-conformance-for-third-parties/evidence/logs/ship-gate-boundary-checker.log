@@ -1,0 +1,13 @@
+=== Ship gate: package boundary checker ===
+Run by shipper at 2026-08-15T04:48:07Z, tree 07f5c87cda1453c43107346d9513458432cf6b5c
+$ node script/check-package-boundary.mjs
+check-package-boundary: scanned 1107 repo file(s) (tracked + uncommitted)
+  PASS  acyclic-direction: every cross-package edge points to a strictly lower declared layer (989 file(s) scanned, 362 cross-package edge(s) examined)
+  PASS  public-entry-only: a specifier crossing into a package resolves only to a declared exports subpath (989 file(s) scanned, 361 @opencut/* specifier(s) examined)
+  PASS  no-internal-reexport: no package's declared entry re-exports a module owned by another package's undeclared internals (870 file(s) scanned)
+  PASS  no-elftia-import: no package, Host or example imports an Elftia package, protocol identifier or runtime object (1107 file(s) scanned)
+  PASS  react-free-base: editor-ports and editor-contracts import no React, no DOM global, and no editor-classic module (74 file(s) scanned)
+
+clean — run with --negative-control / --converse-control to see each rule proven able to fire, and proven not to misfire.
+EXIT[boundary]:0
+REAL_EXIT_CODE:0

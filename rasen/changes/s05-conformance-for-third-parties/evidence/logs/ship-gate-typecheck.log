@@ -1,0 +1,11 @@
+=== Ship gate: host typechecks ===
+Run by shipper at 2026-08-15T04:48:16Z, tree 07f5c87cda1453c43107346d9513458432cf6b5c
+--- electron-host ---
+$ bun run --cwd apps/electron-host typecheck
+$ tsc --noEmit -p tsconfig.json
+EXIT[electron-typecheck]:0
+--- vite-example ---
+$ bun run --cwd apps/vite-example typecheck
+$ tsc --noEmit -p tsconfig.json
+EXIT[vite-typecheck]:0
+REAL_EXIT_CODE:0
