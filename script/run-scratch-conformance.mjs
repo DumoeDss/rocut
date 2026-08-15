@@ -15,6 +15,7 @@
  * Modes:
  *   node script/run-scratch-conformance.mjs                     # full run
  *   node script/run-scratch-conformance.mjs --control-removal   # control 3
+ *   node script/run-scratch-conformance.mjs --variant-nonconforming
  *
  * Control 3 (E4.3) deletes the installed `@opencut/editor-ports` copy and
  * re-runs the consumer's import step: it MUST fail to resolve. A run that
@@ -49,6 +50,12 @@ const REPO_ROOT = resolve(MODULE_DIR, "..");
 const IS_WINDOWS = process.platform === "win32";
 const MARKER_NAME = ".opencut-scratch-marker";
 const ADAPTER_TEMPLATE = join(REPO_ROOT, "script", "fixtures", "third-party-adapter");
+const VARIANT_TEMPLATE = join(
+	REPO_ROOT,
+	"script",
+	"fixtures",
+	"third-party-adapter-variant-nonconforming",
+);
 const SDK_NAMES = [
 	"@opencut/editor-ports",
 	"@opencut/editor-contracts",
@@ -282,7 +289,17 @@ import "@opencut/editor-ports/conformance";
 console.log("UNEXPECTED: import resolved after removal");
 `;
 
-function materialize(root) {
+function materialize(root, variant) {
+	if (variant) {
+		if (!existsSync(join(VARIANT_TEMPLATE, "run.ts"))) {
+			fail("materialize", `variant template missing at ${VARIANT_TEMPLATE}`);
+		}
+		cpSync(VARIANT_TEMPLATE, join(root, "adapter"), { recursive: true });
+		console.log(
+			"adapter: NONCONFORMING VARIANT materialized into scratch (script/fixtures/third-party-adapter-variant-nonconforming)",
+		);
+		return "adapter/run.ts";
+	}
 	if (existsSync(ADAPTER_TEMPLATE)) {
 		cpSync(ADAPTER_TEMPLATE, join(root, "adapter"), { recursive: true });
 		console.log("adapter: committed template materialized into scratch (script/fixtures/third-party-adapter)");
@@ -317,13 +334,53 @@ function runUnderBun(root, script) {
 // ---------------------------------------------------------------------------
 
 const controlRemoval = process.argv.includes("--control-removal");
+const variantNonconforming = process.argv.includes("--variant-nonconforming");
+if (controlRemoval && variantNonconforming) {
+	fail("args", "--control-removal and --variant-nonconforming are separate runs");
+}
 const root = resolveScratchRoot();
 freshLifecycle(root);
 const specs = stageTarballs(root);
 writeScratchManifest(root, specs);
 install(root);
 controlCopiesNotLinks(root);
-const script = materialize(root);
+const script = materialize(root, variantNonconforming);
+
+if (variantNonconforming) {
+	// Task 6.2/6.3: the variant MUST fail, name the defect, and fail exactly
+	// the attributable set — an executable exactness gate, not a log note.
+	const result = runUnderBun(root, script);
+	if (result.code === 0) {
+		fail("variant", "the nonconforming variant PASSED — the mutation matrix is blind");
+	}
+	const EXPECTED_FAILURES = [
+		"a known edit round-trips without losing opaque nested fields",
+		"project values are defensively cloned in both directions",
+		"T1: opaque provider fields survive adapter round-trip",
+		"T1: Project dry-run/apply/replay/reopen preserves one durable candidate",
+	];
+	for (const name of EXPECTED_FAILURES) {
+		if (!result.output.includes(name)) {
+			fail("variant", `expected failing case is absent from the report: ${name}`);
+		}
+	}
+	const caseLines = result.output
+		.split(/\r?\n/)
+		.filter((line) => /^\s*(port: .+, )?case: /.test(line));
+	if (caseLines.length !== EXPECTED_FAILURES.length) {
+		console.log(caseLines.join("\n"));
+		fail(
+			"variant",
+			`exactness violated: ${caseLines.length} failing case(s) but ${EXPECTED_FAILURES.length} expected — ` +
+				"a case failing extra is an over-constrained suite and a finding (task 6.3)",
+		);
+	}
+	console.log(
+		`CONTROL-variant-exactness: PASS (${EXPECTED_FAILURES.length} failing case(s), every one attributable to the dropped-fields defect, names above)`,
+	);
+	console.log("REAL_EXIT_CODE[scratch-run]:0");
+	process.exit(0);
+}
 
 if (!controlRemoval) {
 	const result = runUnderBun(root, script);

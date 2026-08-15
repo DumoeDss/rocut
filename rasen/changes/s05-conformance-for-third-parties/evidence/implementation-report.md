@@ -237,11 +237,49 @@ paths).
 - The wasm failure is bun-version-independent (1.2.2 and 1.2.18 identical), so the finding is
   not a pin-away.
 
+## Group 6 — The mutation matrix: nonconforming variant and its named failures (tasks 6.1–6.3)
+
+- **6.1 the variant.** `script/fixtures/third-party-adapter-variant-nonconforming/` — a
+  byte-identical copy of the base adapter except ONE hunk in ONE file
+  (`logs/group6-variant-single-diff.txt`): `save()` keeps only primitive payload fields and the
+  vendor engine's `transactionEngine` document key, dropping every field the store "does not
+  know". That is the realistic non-conforming store — it supports the vendor's own engine
+  format and silently normalizes every third party's payload.
+- **6.2 the named failure** (`logs/group6-variant-scratch.log`, with the in-repo control run in
+  `logs/group6-variant-in-repo.log`). The harness grew `--variant-nonconforming`: same
+  lifecycle (root controls, tarball install, copy-not-link), materializes the VARIANT template,
+  and EXPECTS the run to fail. It failed, `REAL_EXIT_CODE[suites]:1`, with the ports suite's
+  opaque-payload case failing BY NAME through the published formatter:
+  `[host-port-contract / No port signature exposes an editor-internal or storage-mechanism type]
+  port: store, case: a known edit round-trips without losing opaque nested fields
+  detail: provider-private payload is absent`.
+- **6.3 exactness** — enforced as an executable gate, not a log note. The harness asserts the
+  variant run fails EXACTLY the four attributable cases (each name present, total failing-case
+  count == 4, any extra is a hard failure naming task 6.3):
+  `CONTROL-variant-exactness: PASS (4 failing case(s), every one attributable ...)`. The four,
+  with their requirement attributions:
+  1. ports `a known edit round-trips without losing opaque nested fields` — the defect's own
+     case (opaque nested fields + Date/Map payload dropped).
+  2. ports `project values are defensively cloned in both directions` — same payload shape
+     assertion fails (`provider-private payload is absent`) before cloning is even exercised.
+  3. engine `T1: opaque provider fields survive adapter round-trip` — the ENGINE suite catches
+     the same store defect through the adapter round-trip (`unknownSentinel was lost`).
+  4. engine `T1: Project dry-run/apply/replay/reopen preserves one durable candidate` — the
+     engine's opaque sibling beside the document key is dropped (`Project apply lost an opaque
+     sibling`).
+  Base passes all of these (36+21+38+22+29 with identical case counts); transaction, draft,
+  vectors, and the corrupt-taxonomy case (`saveLibraryRecord` path) stay green in the variant —
+  the defect cannot reach them, and no case fails extra. In-repo and from-tarballs the failure
+  set is identical — the matrix is environment-independent.
+  Cross-suite detection is the notable outcome: both the PORTS suite and the ENGINE suite name
+  the dropped-fields defect independently, so a host author consuming either surface is
+  protected.
+
 ## Open items
 
-- **Phantom-dep blocker (escalated to LEAD, awaiting ruling):** confirmed concretely this group
+- **Phantom-dep blocker (escalated to LEAD, awaiting ruling):** confirmed concretely in Group 5
   — from the tarball install the chain dies on `culori`; in-repo it dies on the wasm artifact
   init. The adapter's migration leg records the finding and skips distinctly; the walker is
   validated against the real chain via the published mock entry. A package-side fix (declare or
   bundle the closure) is LEAD's call.
-- Groups 6–8 pending.
+- Groups 7–8 pending.

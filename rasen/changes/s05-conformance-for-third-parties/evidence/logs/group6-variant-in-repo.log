@@ -1,0 +1,30 @@
+alien adapter: third-party conformance run
+runtime: bun 1.2.2
+classic chain: NOT LOADABLE — @opencut/editor-classic/storage failed to import in this environment (recorded finding). The migration leg is skipped distinctly; every other surface still runs.
+  observed: wasm.__wbindgen_start is not a function. (In 'wasm.__wbindgen_start()', 'wasm.__wbindgen_start' is undefined)
+suites/ports: passed=false cases=36 (migration absent: classic unresolved)
+suites/transaction: passed=true cases=21
+suites/engine: passed=false cases=38
+suites/draft: passed=true cases=22
+suites/vectors: verdict=passed vectors=29
+migration/by-replication: SKIPPED (classic unresolved — finding above)
+
+— conformance failures —————————————————————————————————————————————————
+conformance failures: alien adapter ports — 2 failed of 36
+[host-port-contract / No port signature exposes an editor-internal or storage-mechanism type]
+  port: store, case: a known edit round-trips without losing opaque nested fields
+  detail: provider-private payload is absent
+[host-port-contract / Every port has an in-memory reference implementation and a conformance suite]
+  port: store, case: project values are defensively cloned in both directions
+  detail: provider-private payload is absent
+
+conformance failures: transaction engine conformance (Engine conformance) — 2 failed of 38
+[transaction-automation-api / A durable transaction engine consumes the frozen Host port]
+  case: T1: opaque provider fields survive adapter round-trip
+  detail: unknownSentinel was lost during adapter round-trip
+[transaction-automation-api / Project metadata updates are typed end-to-end transactions]
+  case: T1: Project dry-run/apply/replay/reopen preserves one durable candidate
+  detail: Project apply lost an opaque sibling
+
+alien adapter: 2 failing surface(s)
+REAL_EXIT_CODE:1

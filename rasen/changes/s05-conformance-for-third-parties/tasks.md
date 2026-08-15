@@ -101,13 +101,13 @@
 
 ## 6. The mutation matrix: non-conforming variant and its named failures
 
-- [ ] 6.1 Author the `variant-nonconforming` sibling: the base adapter with exactly one defect —
+- [x] 6.1 Author the `variant-nonconforming` sibling: the base adapter with exactly one defect —
       its store drops fields it does not know on save. Nothing else differs (diff the two and
       show the single change).
-- [ ] 6.2 Run the variant through the same scratch harness: the ports suite's opaque-payload case
+- [x] 6.2 Run the variant through the same scratch harness: the ports suite's opaque-payload case
       fails **by name**, rendered through the formatter with its requirement; record the variant's
       full report beside the base adapter's passing one as the control.
-- [ ] 6.3 Assert the matrix's exactness: every case that differs between variant and base fails in
+- [x] 6.3 Assert the matrix's exactness: every case that differs between variant and base fails in
       the variant, and each differing case is attributable to the single defect — a case failing
       "extra" in the variant is an over-constrained suite and a finding about the suite, recorded
       and escalated rather than waived.
