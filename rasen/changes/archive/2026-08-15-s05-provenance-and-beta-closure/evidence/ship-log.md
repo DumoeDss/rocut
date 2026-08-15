@@ -299,3 +299,8 @@ stability log proves the second run byte-stable with no edits in between
 - **This is the portfolio's LAST child.** With P7 shipped, all seven
   children are complete and the parent's delivery (PR + merge against
   `main`, then archive per the on-merge timing) is unblocked.
+
+## Archive
+**Date:** 2026-08-15T19:34:52.374Z
+**Outcome:** archived at E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\rasen\changes\archive\2026-08-15-s05-provenance-and-beta-closure
+**Transaction:** 3936ce41-a7f1-4dd7-abec-a1036fd2c6b9

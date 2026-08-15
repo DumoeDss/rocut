@@ -1,0 +1,40 @@
+[v2] packing via packSdkTarballs into E:\rocut-p7-review-scratch\v2-pack
+packed packages/editor-ports -> opencut-editor-ports-0.2.0.tgz
+inventory: opencut-editor-ports-0.2.0.tgz — 25 file(s) hashed
+packed packages/editor-contracts -> opencut-editor-contracts-0.2.0.tgz
+inventory: opencut-editor-contracts-0.2.0.tgz — 63 file(s) hashed
+packed packages/editor-classic -> opencut-editor-classic-0.2.0.tgz
+inventory: opencut-editor-classic-0.2.0.tgz — 807 file(s) hashed
+packed rust/wasm/pkg -> opencut-wasm-0.2.10.tgz
+inventory: opencut-wasm-0.2.10.tgz — 7 file(s) hashed
+[v2] manifest: 4 package(s)
+[v2]   @opencut/editor-ports@0.2.0 -> opencut-editor-ports-0.2.0.tgz
+[v2]   @opencut/editor-contracts@0.2.0 -> opencut-editor-contracts-0.2.0.tgz
+[v2]   @opencut/editor-classic@0.2.0 -> opencut-editor-classic-0.2.0.tgz
+[v2]   opencut-wasm@0.2.10 -> opencut-wasm-0.2.10.tgz
+
+[v2] worktree LICENSE hashes:
+[v2]   8117f9bb64534f75…  LICENSE
+[v2]   8117f9bb64534f75…  packages/editor-ports/LICENSE
+[v2]   8117f9bb64534f75…  packages/editor-contracts/LICENSE
+[v2]   8117f9bb64534f75…  packages/editor-classic/LICENSE
+[v2]   8117f9bb64534f75…  rust/wasm/pkg/LICENSE
+
+[v2] @opencut/editor-ports@0.2.0 (opencut-editor-ports-0.2.0.tgz): 25 entries; LICENSE=true NOTICE=true
+[v2]   packed LICENSE sha256 8117f9bb64534f7530fc6139b014fd1c1465f7981f93d1871789150fa3f59d3d
+[v2]   packed NOTICE 547 bytes; mentions pin/fork: true
+
+[v2] @opencut/editor-contracts@0.2.0 (opencut-editor-contracts-0.2.0.tgz): 63 entries; LICENSE=true NOTICE=true
+[v2]   packed LICENSE sha256 8117f9bb64534f7530fc6139b014fd1c1465f7981f93d1871789150fa3f59d3d
+[v2]   packed NOTICE 551 bytes; mentions pin/fork: true
+
+[v2] @opencut/editor-classic@0.2.0 (opencut-editor-classic-0.2.0.tgz): 807 entries; LICENSE=true NOTICE=true
+[v2]   packed LICENSE sha256 8117f9bb64534f7530fc6139b014fd1c1465f7981f93d1871789150fa3f59d3d
+[v2]   packed NOTICE 549 bytes; mentions pin/fork: true
+
+[v2] opencut-wasm@0.2.10 (opencut-wasm-0.2.10.tgz): 7 entries; LICENSE=true NOTICE=false
+[v2]   packed LICENSE sha256 8117f9bb64534f7530fc6139b014fd1c1465f7981f93d1871789150fa3f59d3d
+
+[v2] RESULT: PASS — all pack-output notice claims reproduced
+REAL_EXIT_CODE:0
+REAL_EXIT_CODE:0
