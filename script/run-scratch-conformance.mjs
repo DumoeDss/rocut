@@ -61,6 +61,20 @@ const SDK_NAMES = [
 	"@opencut/editor-contracts",
 	"@opencut/editor-classic",
 ];
+// The local wasm artifact classic depends on (LEAD ruling 2026-08-15): not a
+// scratch dependency in its own right, but control 2 asserts it lands as a
+// real installed copy — classic's declared closure, resolved through the
+// override, must be present on disk like every other package.
+const TRANSITIVE_ASSERT_NAMES = ["opencut-wasm"];
+// Every tarball this harness stages, mapped to its package name. The
+// prepacked-dir path derives the name from the npm pack filename (scope
+// stripped): opencut-editor-ports-0.1.0.tgz -> @opencut/editor-ports.
+const TARBALL_BASENAME_TO_NAME = new Map([
+	["opencut-editor-ports", "@opencut/editor-ports"],
+	["opencut-editor-contracts", "@opencut/editor-contracts"],
+	["opencut-editor-classic", "@opencut/editor-classic"],
+	["opencut-wasm", "opencut-wasm"],
+]);
 
 /** `child` equals or lies inside `parent` (both resolved, separators normalized). */
 function isInside(child, parent) {
@@ -151,18 +165,28 @@ function freshLifecycle(root) {
 // Pack + install (gate-1 mechanism: npm file: deps + overrides)
 // ---------------------------------------------------------------------------
 
+/** npm pack filename (scope stripped, version and .tgz removed) -> package name. */
+function nameOfTarball(filename) {
+	const base = filename.replace(/-\d+\.\d+\.\d+[^.]*\.tgz$/, "");
+	const name = TARBALL_BASENAME_TO_NAME.get(base);
+	if (!name) {
+		fail("pack", `unrecognized tarball filename (no package-name mapping): ${filename}`);
+	}
+	return name;
+}
+
 function stageTarballs(root) {
 	const tarballsDir = join(root, "tarballs");
 	mkdirSync(tarballsDir, { recursive: true });
 	const prepacked = process.env.OPENCUT_PREPACKED_DIR;
-	let tarballPaths;
+	let staged;
 	if (prepacked) {
 		const dir = resolve(prepacked);
 		console.log(`pack: skipped — copying pre-packed tarballs from ${dir}`);
-		tarballPaths = readdirSync(dir)
+		staged = readdirSync(dir)
 			.filter((name) => name.endsWith(".tgz"))
 			.sort()
-			.map((name) => join(dir, name));
+			.map((name) => ({ name: nameOfTarball(name), file: name }));
 	} else {
 		const outDir = join(REPO_ROOT, DEFAULT_OUT_DIR_NAME);
 		const manifest = packSdkTarballs({
@@ -171,41 +195,58 @@ function stageTarballs(root) {
 			determinism: false,
 			log: (line) => console.log(`pack: ${line}`),
 		});
-		tarballPaths = manifest.packages.map((entry) => join(outDir, basename(entry.tarball)));
+		staged = manifest.packages.map((entry) => ({
+			name: entry.name,
+			file: basename(entry.tarball),
+		}));
 	}
-	for (const tarball of tarballPaths) {
-		cpSync(tarball, join(tarballsDir, basename(tarball)));
+	for (const entry of staged) {
+		cpSync(join(prepacked ? resolve(prepacked) : join(REPO_ROOT, DEFAULT_OUT_DIR_NAME), entry.file), join(tarballsDir, entry.file));
 	}
-	console.log(`pack: ${tarballPaths.length} tarball(s) staged into the scratch project`);
-	return tarballPaths.map((path) => `file:tarballs/${basename(path)}`);
+	console.log(`pack: ${staged.length} tarball(s) staged into the scratch project`);
+	return staged.map((entry) => ({ name: entry.name, spec: `file:tarballs/${entry.file}` }));
 }
 
-function writeScratchManifest(root, specs) {
-	const byName = new Map(
-		SDK_NAMES.map((name, index) => [name, specs[index]]),
-	);
+function writeScratchManifest(root, staged) {
+	const byName = new Map(staged.map((entry) => [entry.name, entry.spec]));
+	for (const name of SDK_NAMES) {
+		if (!byName.has(name)) fail("manifest", `no staged tarball for ${name}`);
+	}
+	if (!byName.has("opencut-wasm")) {
+		fail("manifest", "no staged tarball for opencut-wasm — the fourth-tarball ruling is not wired");
+	}
 	const manifest = {
 		name: "opencut-scratch-conformance",
 		version: "0.0.0",
 		private: true,
 		type: "module",
 		dependencies: Object.fromEntries(SDK_NAMES.map((name) => [name, byName.get(name)])),
-		// Gate-1's proven shape: the overrides replace the workspace:* protocol
-		// that rides verbatim inside the packed editor-contracts/classic
-		// manifests with the same file: tarball specs.
+		// Gate-1's proven shape, extended by the 2026-08-15 ruling: the
+		// overrides replace the workspace:* protocol that rides verbatim
+		// inside the packed editor-contracts/classic manifests AND classic's
+		// `file:../../rust/wasm/pkg` spec (dead from node_modules) with the
+		// same file: tarball specs. The override is the control that makes
+		// classic's declared wasm dependency resolve honestly.
 		overrides: {
 			"@opencut/editor-ports": byName.get("@opencut/editor-ports"),
 			"@opencut/editor-contracts": byName.get("@opencut/editor-contracts"),
+			"opencut-wasm": byName.get("opencut-wasm"),
 		},
 	};
 	writeFileSync(join(root, "package.json"), `${JSON.stringify(manifest, null, 2)}\n`);
-	console.log(`install: scratch package.json written (deps + overrides, gate-1 shape)`);
+	console.log(`install: scratch package.json written (deps + overrides, gate-1 shape + wasm)`);
 }
 
 function install(root) {
-	const result = runLogged("npm-install", IS_WINDOWS ? "npm.cmd" : "npm", ["install"], {
-		cwd: root,
-	});
+	// --legacy-peer-deps: classic's react peer must NOT be auto-installed —
+	// the react-free property of ./storage/migrations is proven by this
+	// project resolving and running with react absent from the tree.
+	const result = runLogged(
+		"npm-install",
+		IS_WINDOWS ? "npm.cmd" : "npm",
+		["install", "--legacy-peer-deps"],
+		{ cwd: root },
+	);
 	if (result.code !== 0) fail("npm-install", "npm install failed — see output above");
 }
 
@@ -215,9 +256,12 @@ function install(root) {
 
 function controlCopiesNotLinks(root) {
 	const lock = JSON.parse(readFileSync(join(root, "package-lock.json"), "utf8"));
-	for (const name of SDK_NAMES) {
-		const short = name.replace("@opencut/", "");
-		const installed = join(root, "node_modules", "@opencut", short);
+	for (const name of [...SDK_NAMES, ...TRANSITIVE_ASSERT_NAMES]) {
+		// Scoped packages install under node_modules/@opencut/<short>; the
+		// unscoped wasm artifact installs flat under node_modules/.
+		const installed = name.startsWith("@")
+			? join(root, "node_modules", "@opencut", name.replace("@opencut/", ""))
+			: join(root, "node_modules", name);
 		if (!existsSync(installed)) {
 			fail("control-2", `${name} is not installed at ${installed}`);
 		}
@@ -241,6 +285,26 @@ function controlCopiesNotLinks(root) {
 			`CONTROL-2 copy-not-link ${name}: PASS (lstat: real directory, symlink=false; lockfile resolved=${resolved}, link=false)`,
 		);
 	}
+}
+
+// ---------------------------------------------------------------------------
+// React-free control (LEAD ruling 2026-08-15): classic's react peer is never
+// installed (--legacy-peer-deps), so nothing in node_modules can satisfy a
+// react specifier — if ./storage/migrations' closure reached react, the
+// adapter's migration leg below would fail to resolve it.
+// ---------------------------------------------------------------------------
+
+function controlReactFree(root) {
+	const react = join(root, "node_modules", "react");
+	if (existsSync(react)) {
+		fail(
+			"control-react-free",
+			`react is installed at ${react} — the react-free proof is void (peer auto-install leaked in)`,
+		);
+	}
+	console.log(
+		"CONTROL-react-free react-absent: PASS (node_modules/react does not exist; the migration entry's closure needs no react)",
+	);
 }
 
 // ---------------------------------------------------------------------------
@@ -340,10 +404,11 @@ if (controlRemoval && variantNonconforming) {
 }
 const root = resolveScratchRoot();
 freshLifecycle(root);
-const specs = stageTarballs(root);
-writeScratchManifest(root, specs);
+const staged = stageTarballs(root);
+writeScratchManifest(root, staged);
 install(root);
 controlCopiesNotLinks(root);
+controlReactFree(root);
 const script = materialize(root, variantNonconforming);
 
 if (variantNonconforming) {

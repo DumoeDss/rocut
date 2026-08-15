@@ -8,9 +8,11 @@
  * disposable demo below proves the adapter honors it.
  *
  * The classic specifier appears ONLY in this module, behind a dynamic import:
- * if the classic tarball cannot resolve in a given environment (the recorded
- * phantom-dependency finding), the failure is confined to the migration leg
- * and reported as a finding, not a crash of the whole run.
+ * if the chain cannot load in a given environment (the historical
+ * phantom-dependency finding, fixed by the LEAD ruling of 2026-08-15 --
+ * culori + opencut-wasm declared, react-free entry added), the failure is
+ * confined to the migration leg and reported as a finding, not a crash of
+ * the whole run.
  */
 import type {
 	MigrationContext,
@@ -48,8 +50,11 @@ export async function loadClassicMigrationChain(): Promise<
 	LegacyMigrationChain | null
 > {
 	try {
+		// The LEAD-ruled react-free entry (2026-08-15): this consumer has no
+		// react anywhere in its tree, so the migration chain loads through
+		// ./storage/migrations, never the react-carrying ./storage barrel.
 		const classic = (await import(
-			"@opencut/editor-classic/storage"
+			"@opencut/editor-classic/storage/migrations"
 		)) as {
 			migrations: readonly LegacyMigrationStep[];
 			CURRENT_PROJECT_VERSION: number;

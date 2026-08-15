@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-15T01:33:56.085Z",
-  "repoHead": "ee0f42004f5ec78606997acf55a1d98b389cdd88",
+  "generatedAt": "2026-08-15T03:39:16.282Z",
+  "repoHead": "ff242e67a779a918052b470595ffd0eaeab08f83",
   "packTool": "npm pack (node v24.14.0)",
   "packages": [
     {
@@ -435,15 +435,15 @@
       "version": "0.1.0",
       "tarball": "opencut-editor-classic-0.1.0.tgz",
       "tarballPath": "dist-sdk-tarballs/opencut-editor-classic-0.1.0.tgz",
-      "sizeBytes": 873975,
-      "npmShasum": "a17ac13825825062792734f518e84083de75fd48",
-      "integrity": "sha512-soEl6tZtvF7qnkMokAdU321XXXYDTpvJgGchGbUMyHEvuC/MkUWvzYuJ/yUuirkCkgULCmGy95N6Wh4Xsy8MUQ==",
-      "fileCount": 802,
+      "sizeBytes": 874654,
+      "npmShasum": "449f3d615603dedf706e41a0e45f5c7c2cc6bcc9",
+      "integrity": "sha512-SoDRs3wKai5D9ICkapzBEt6FWV9GIgYyZjZ2ETA4aVT5Q5M7cLqh83a1BjGPpMv6GmIPeuBZJmhKkP43Hb4x4w==",
+      "fileCount": 803,
       "files": [
         {
           "path": "package.json",
-          "sha256": "15421dfa423ac4e0ef86449ec50a2e16a7c5a9edb7cb6035764d8ceae380bf73",
-          "sizeBytes": 1392
+          "sha256": "311029c65a03b5b8b9c8df51317802910d7498d27dbc633836ce63b78bbd2527",
+          "sizeBytes": 1574
         },
         {
           "path": "src/actions/__tests__/registry.test.ts",
@@ -3721,6 +3721,11 @@
           "sizeBytes": 1696
         },
         {
+          "path": "src/storage/migrations.ts",
+          "sha256": "4f6f6b0f9cddcf6da436a0d3ddbc2bb08349a926f4ebe39e44d20e8446f8633f",
+          "sizeBytes": 1106
+        },
+        {
           "path": "src/subtitles/ass.ts",
           "sha256": "2acc09fdf005f74629b933c267e585d4404ca17a8eb7a7611fb6923c0613c8e5",
           "sizeBytes": 12895
@@ -4451,6 +4456,54 @@
           "sizeBytes": 4989
         }
       ]
+    },
+    {
+      "name": "opencut-wasm",
+      "dir": "rust/wasm/pkg",
+      "version": "0.2.10",
+      "tarball": "opencut-wasm-0.2.10.tgz",
+      "tarballPath": "dist-sdk-tarballs/opencut-wasm-0.2.10.tgz",
+      "sizeBytes": 1209853,
+      "npmShasum": "a59e1ee336811c2a9becf8fbeb0a60dbc6726a90",
+      "integrity": "sha512-vuiYkK+/VfvcsKRJqjFJr9KHYA7iLyd/noEjJk3RsrI4qriJOS8A7K/qaxGZqpiTKb4CdeeqFeU/17JO/nqy2Q==",
+      "fileCount": 7,
+      "files": [
+        {
+          "path": "LICENSE",
+          "sha256": "8117f9bb64534f7530fc6139b014fd1c1465f7981f93d1871789150fa3f59d3d",
+          "sizeBytes": 1067
+        },
+        {
+          "path": "README.md",
+          "sha256": "a09d79579ac121a05ab38ca5c4cba505d91f2ee4359d336cc2cc1fd36b4d3191",
+          "sizeBytes": 2716
+        },
+        {
+          "path": "opencut_wasm.d.ts",
+          "sha256": "e7d942d396f17ebca7fed8ccfe3f9e671103ad733c5ce183ef00d3519720596a",
+          "sizeBytes": 4773
+        },
+        {
+          "path": "opencut_wasm.js",
+          "sha256": "19714428b345a2ac128440319ece8a1c7f3c2f0336d454712189445d427c69f1",
+          "sizeBytes": 939
+        },
+        {
+          "path": "opencut_wasm_bg.js",
+          "sha256": "63414885a3ffc631b9dcc28a9e83f2fb2554c6c1655ddbc27b10d80257098c1c",
+          "sizeBytes": 112793
+        },
+        {
+          "path": "opencut_wasm_bg.wasm",
+          "sha256": "15622cf5f9852c5238cd8326e67a9ec704450d1101a15f2647998501869af9b1",
+          "sizeBytes": 3286340
+        },
+        {
+          "path": "package.json",
+          "sha256": "6eab1bdbf8f6d3a71181bc4f20eb05d35685f48e32c4913bd178671f56876e96",
+          "sizeBytes": 499
+        }
+      ]
     }
   ],
   "determinism": {
@@ -4471,8 +4524,14 @@
       },
       {
         "tarball": "opencut-editor-classic-0.1.0.tgz",
-        "sha256First": "56c1d8c6679d6ddcbd6c083ae3b3a7c80edef8562efc4cc334e6c19b5f763a53",
-        "sha256Second": "56c1d8c6679d6ddcbd6c083ae3b3a7c80edef8562efc4cc334e6c19b5f763a53",
+        "sha256First": "36410642c0bd4156a8255b2d270933be067416d21046489b3263da697b289fbe",
+        "sha256Second": "36410642c0bd4156a8255b2d270933be067416d21046489b3263da697b289fbe",
+        "reproduced": true
+      },
+      {
+        "tarball": "opencut-wasm-0.2.10.tgz",
+        "sha256First": "24612c4388d63f2c96c80d4b6b48816b2b47ccb0e87fc9bbad52e334a61d4dff",
+        "sha256Second": "24612c4388d63f2c96c80d4b6b48816b2b47ccb0e87fc9bbad52e334a61d4dff",
         "reproduced": true
       }
     ]

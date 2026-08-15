@@ -62,9 +62,9 @@ async function main(): Promise<number> {
 		);
 	} else {
 		line(
-			"classic chain: NOT LOADABLE — @opencut/editor-classic/storage failed " +
-				"to import in this environment (recorded finding). The migration leg " +
-				"is skipped distinctly; every other surface still runs.",
+			"classic chain: NOT LOADABLE — @opencut/editor-classic/storage/migrations " +
+				"failed to load or initialize in this environment (recorded finding). " +
+				"The migration leg is skipped distinctly; every other surface still runs.",
 		);
 		line(`  observed: ${classicChainFailure ?? "unknown error"}`);
 	}

@@ -926,6 +926,7 @@ happened, per the monotone-growth rule that every addition names its consumer.
 | `@opencut/editor-contracts` | `./vectors/corpus` | `src/vectors/corpus/index.ts` | the scratch-project consumer (P3's worked adapter): an installed consumer could reach the vector runner but not the corpus data it runs — the file-reading layer was test-only (`vectors/__tests__/corpus-fixture.ts`), unreachable from a declared entry |
 | `@opencut/editor-ports` | `./conformance/requirements` | `src/conformance/requirements.ts` | the third-party adapter author (P3's legibility group): a conformance report names its cases, but a reader outside this repository has no way to know which frozen requirement a failed case violates — this entry publishes that mapping beside the suite, plus a failures formatter that renders requirement → case → detail |
 | `@opencut/editor-contracts` | `./conformance/requirements` | `src/conformance/requirements/index.ts` | the same consumer, transaction-family leg: the transaction, engine, Draft and vectors case names and vector ids mapped to their frozen requirements, with the same requirement-first formatter (report-shaped for the suites, `VectorRunReport`-shaped for the runner) |
+| `@opencut/editor-classic` | `./storage/migrations` | `src/storage/migrations.ts` | the third-party adapter's react-free migration conformance (LEAD ruling 2026-08-15): the published migration chain was reachable only through the react-carrying `./storage` barrel (`use-storage-persistence` is a Host hook), so an installed consumer with no react in its tree could not run the chain at all. This entry exports `migrations`, `CURRENT_PROJECT_VERSION`, `runStorageMigrations`, `StorageMigration` and `MigrationProgress` — the whole published chain surface, no react anywhere in its closure (services/storage/migrations/**, indexeddb-adapter, storage types, utils/id, src/wasm → opencut-wasm, culori). The same ruling made classic's manifest stop understating that closure: `culori@4.0.2` and `opencut-wasm` (the in-repo `file:../../rust/wasm/pkg` spec) are declared dependencies and `react@^18.3.1` a peerDependency |
 
 `./vectors/corpus` exports `readPublishedCorpusText()` — a Node/bun `node:fs` read of the three
 corpus JSONs shipped beside the module (`files: ["src", …]` packs them), returning **exact file
@@ -986,25 +987,36 @@ suites under bun, and `--control-removal` for E4.3.
 What runs where, in order, every run: the repo-side Node script resolves the scratch root
 (E:-drive sibling of the repo by default, `OPENCUT_SCRATCH_ROOT` for CI geography), asserts both
 location controls, wipes-and-recreates the root with a marker file (a pre-existing root without
-the marker is refused, never reused), packs the three tarballs through the pack module (or copies
-them from `OPENCUT_PREPACKED_DIR`), installs them with npm `file:` deps + `overrides`, asserts
-copy-not-link, materializes the committed adapter template
-(`script/fixtures/third-party-adapter`) into the scratch root, and runs it under bun
-(`OPENCUT_BUN` overridable) — every step self-logging `REAL_EXIT_CODE[<step>]`.
+the marker is refused, never reused), packs the four tarballs through the pack module (the three
+`@opencut` SDK packages plus `rust/wasm/pkg` as `opencut-wasm`, per the 2026-08-15 ruling; or
+copies them from `OPENCUT_PREPACKED_DIR`), installs them with npm `file:` deps + `overrides`
+(`--legacy-peer-deps`, so classic's react peer is never auto-installed), asserts copy-not-link
+over all four installed packages plus the react-free property, materializes the committed adapter
+template (`script/fixtures/third-party-adapter`) into the scratch root, and runs it under bun
+(`OPENCUT_BUN` overridable) — every step self-logging `REAL_EXIT_CODE[<step>]`. The
+`opencut-wasm` override is what makes classic's declared wasm dependency resolve honestly from
+installed tarballs: classic's in-repo `file:../../rust/wasm/pkg` spec is dead from `node_modules`,
+and the override maps every occurrence to the packed local tarball — no registry publish, ever.
 
 **The three no-linking controls**, all printed into every run's log:
 
 1. **Location (E4.1)** — 1a: the root must lie outside the repo tree; 1b: outside every Temp
    path (`TEMP`/`TMP`/`TMPDIR`/`os.tmpdir()`), the measured AV hazard. Either violation refuses
    the run before anything is created.
-2. **Copy-not-link (E4.2)** — every installed `@opencut/*` must be a real directory
-   (`lstatSync`: not a symlink) and the lockfile must record `file:` resolutions with no
-   `workspace:` protocol and no `link: true`.
+2. **Copy-not-link (E4.2)** — every installed `@opencut/*` package and the `opencut-wasm`
+   artifact must be a real directory (`lstatSync`: not a symlink) and the lockfile must record
+   `file:` resolutions with no `workspace:` protocol and no `link: true`.
 3. **Removal re-proof (E4.3)** — `--control-removal` deletes the installed
    `@opencut/editor-ports` copy and re-runs **the adapter runner itself** (adapter-shaped
    re-proof, not a bare probe): its first import is `@opencut/editor-ports`, so the whole
    consumer surface must collapse with a resolution failure. A run that still resolved was
    reaching into the monorepo — the exact hole this control closes.
+
+**The react-free control** (2026-08-15 ruling): after every install, `node_modules/react` must
+not exist (the `--legacy-peer-deps` flag keeps npm from auto-installing classic's react peer).
+Combined with the adapter's migration leg importing `./storage/migrations` live from the
+installed tarballs, this is the from-tarballs proof of the entry's react-free closure: nothing
+in the tree could satisfy a react specifier, and the entry's chain still resolves and runs.
 
 **The mutation leg**: `--variant-nonconforming` materializes
 `script/fixtures/third-party-adapter-variant-nonconforming` — byte-identical to the base adapter
@@ -1034,3 +1046,12 @@ Group 2 +2 files, Group 3 +4 files (+2 specifiers, both in the contracts drift-g
 Groups 5–6 +22 files (20 code files and the two adapter `package.json` manifests, all under
 `script/`, outside every package graph — their `@opencut` specifiers are the third-party-shaped
 consumer's, deliberately not counted). Both checker controls green at close-out.
+
+**Group 9 census movement (LEAD-ruling execution, same method)**: 1106 → 1107 repo files,
+988 → 989 package-graph files, specifiers and edges unchanged (361/362) — the single new file is
+classic's `src/storage/migrations.ts` barrel; the manifest edits touch already-counted files
+(`packages/editor-classic/package.json`, `bun.lock`), and the barrel adds no cross-package
+specifier. Both checker controls re-run green; `packages/boundary.json` needed no edit — the
+checker's declared-entry knowledge is derived from the packages' own `exports` maps at load time
+(the dynamic manifest list BLOCKER-2 introduced), so the new entry self-registers and the
+public-entry-only rule proved it resolves as a declared subpath by passing.

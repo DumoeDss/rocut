@@ -154,3 +154,31 @@ No code was patched while awaiting the ruling; groups 2–3 (ports/contracts ent
 indices) proceed — both packages verified fully consumable from tarballs.
 
 Throwaway scratch directories deleted after evidence capture.
+
+## LEAD ruling
+
+Received 2026-08-15 from team-lead, verbatim:
+
+> RULING — option (1)+(2) combined. The principle: classic's manifest must stop lying about its closure, AND the third-party adapter gets a react-free migration surface. Four sub-decisions:
+>
+> 1. **culori → `dependencies` of classic.** It is an implementation detail of a published transformer; consumers must not need to know it exists. Version: whatever the lockfile actually resolves today (match repo pinning convention; exact pin preferred). It installs from the registry in the scratch project — that is legal under B1 (we publish nothing; the CONSUMER fetching a real third-party dep from npm is normal package behavior).
+>
+> 2. **react → `peerDependencies` of classic** (`^18.3.1`). NOT a hard dep — a second React copy breaks hooks; every Host already declares its own 18.3.1, so the peer is satisfied everywhere in-repo. This is the honesty fix for the existing `./storage` barrel's react import; it does not gate the adapter.
+>
+> 3. **opencut-wasm → declared dependency of classic** (declare it the way the monorepo actually resolves it today — do not change in-repo resolution semantics), and the harness packs `rust/wasm/pkg` as a FOURTH local tarball with an `opencut-wasm` override mapping. No registry publish of the wasm package (B1); the override is the control that makes resolution honest.
+>
+> 4. **Add the attributed entry `./storage/migrations`** (option 2). Forcing module to name in the record: the third-party adapter's react-free migration conformance. This is monotone growth under P1's rule — update `packages/boundary.json` + the checker's declared-entry fixtures to match, and record the entry's addition + forcing module in BOUNDARIES.md at close-out (the sdk-package-extraction requirement's attributed-growth protocol; no spec delta edit needed).
+>
+> Verification this ruling adds beyond the existing boxes:
+> - **Prove the react-free property of `./storage/migrations`** from tarballs: a probe (sub-project without react installed, or a module-graph closure assertion — your choice, stated in evidence) showing the entry's closure contains no react specifier.
+> - Re-verify all three in-repo Hosts still resolve after the manifest change (their existing react declarations satisfy the new peer; run each Host's typecheck/build gate, not just install).
+> - The scratch-project adapter then exercises migration through `./storage/migrations` from installed tarballs — tasks 5.4/6.2 unblocked on that surface.
+>
+> REJECTED: option 3 (re-scoping adapter migration off classic) — the adapter consuming the PUBLISHED migration chain is the SDK-consumption story itself; independent replication would drift from the published versions and gut §3.5's point.
+>
+> Record this ruling verbatim in `evidence/gate-1-tarball-resolution.md` (a "## LEAD ruling" section) and carry the gate finding as a durable finding in your DONE: **P1 shipped classic with a manifest that understates its runtime closure — invisible under workspace resolution, caught only by the tarball harness; P5 (versioning/labeling) and P6 (examples) inherit this manifest-truth obligation.** Continue with groups 2–4 as you planned; the classic manifest work lands when 5.4 needs it.
+
+Execution of this ruling is recorded under "Group 9" in `implementation-report.md`
+(the change had already delivered groups 1–8 when the ruling arrived; the migration
+leg had shipped as finding + walker-validation, which this ruling replaces with the
+real fix).

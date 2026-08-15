@@ -418,12 +418,94 @@ Nothing to signal from here: this change has no parked workers (`signals/` does 
 under the change root), so the pre-archive condition "confirm `signals/.state/` is empty"
 holds vacuously at hand-off.
 
+## Group 9 — LEAD-ruling execution: classic manifest truth + `./storage/migrations` + the fourth tarball
+
+The ruling (recorded verbatim in `gate-1-tarball-resolution.md` "## LEAD ruling") arrived after
+DONE had been sent; groups 1–8 were complete and the migration leg had shipped as finding +
+walker-validation. This group executes the ruling and resolves the fork it named.
+
+**9.1 — manifest truth (ruling sub-decisions 1–3).** classic's manifest now declares its real
+runtime closure: `culori@4.0.2` (the lockfile's actual resolution, exact-pinned per repo
+convention — the same copy apps/web's `^4.0.2` already dedupes to), `opencut-wasm` with the
+in-repo `file:../../rust/wasm/pkg` spec (resolution semantics unchanged: `bun install` links it
+to the same physical directory the root already declares, lockfile delta +7 lines, one new
+resolution entry, no duplicate), and `react@^18.3.1` as a **peer** — satisfied by every Host's
+existing exact `18.3.1`, never a hard dep.
+
+**9.2 — the attributed entry (sub-decision 4).** `./storage/migrations` →
+`src/storage/migrations.ts`, exporting `migrations`, `CURRENT_PROJECT_VERSION`,
+`runStorageMigrations`, `StorageMigration`, `MigrationProgress` — the whole published chain
+surface. Closure audited file by file: services/storage/migrations/** (+ runner),
+indexeddb-adapter (imports only storage types), storage types, utils/id, src/wasm → media-time
+→ `opencut-wasm`, and `culori` (transformer v21-to-v22). **No react specifier anywhere in the
+closure** — the react entry into the `./storage` barrel is `use-storage-persistence` (a
+`"use client"` hook), deliberately excluded here. Forcing module recorded in BOUNDARIES.md §13's
+entry table: the third-party adapter's react-free migration conformance. `boundary.json` needed
+no edit (the checker derives declared entries from the packages' own exports maps — BLOCKER-2's
+dynamic manifest list — so the entry self-registers; `public-entry-only` passed over it, both
+controls green).
+
+**9.3 — the fourth tarball + harness wiring.** `SDK_PACKAGES` gains `rust/wasm/pkg` (npm pack
+produces `opencut-wasm-0.2.10.tgz`, 7 files, inventory hashed). The scratch manifest's
+`overrides` now maps `opencut-wasm` to that tarball alongside the two `workspace:*` overrides —
+classic's dead-from-node_modules `file:` spec resolves through the override, no registry fetch.
+Control 2 asserts all four installed packages are real copies (unscoped flat path for
+opencut-wasm). Install runs with `--legacy-peer-deps` so npm never auto-installs classic's react
+peer. Committed `tarball-manifest.json` regenerated: four packages, determinism reproduced on
+all four (`logs/group9-pack-manifest.log`).
+
+**9.4 — the react-free proof (ruling verification 1), method and result.** Method: the scratch
+project itself is the probe — it installs classic's full closure with react ABSENT from the
+tree (`--legacy-peer-deps` + the new `CONTROL-react-free react-absent` assertion that
+`node_modules/react` does not exist), then the adapter's migration leg imports
+`./storage/migrations` live from the installed tarballs. Result: PASS in every mode
+(`group9-scratch-all-modes.log` — react-absent lines in all three legs). Nothing in the tree
+could satisfy a react specifier; the entry's chain resolved past module loading into wasm
+initialization.
+
+**9.5 — Host re-gates (ruling verification 2).** `bun run --cwd apps/electron-host typecheck`
+EXIT 0; `bun run --cwd apps/vite-example typecheck` EXIT 0; apps/web via its scoped program
+`check-type-baseline.mjs` — exit 1 with the SAME two pre-existing S01-regression rows
+byte-identical (file/line/diagnostic), scope 941 → 942 (+1 = the migrations barrel), zero new
+diagnostics (`logs/group9-host-gates.log`). All three Hosts resolve the changed manifest; none
+of them gained a react copy (the peer is satisfied by hoisting, and bun's lockfile shows no new
+react entry).
+
+**9.6 — the fork (ruling verification 3), branch (b) landed.** With resolution now honest —
+culori installed from the registry, opencut-wasm a real installed copy, react absent — the full
+scratch migration run was attempted. The chain STILL dies at initialization, in-repo and from
+tarballs alike, with the identical decisive line:
+
+> observed: wasm.__wbindgen_start is not a function. (In 'wasm.__wbindgen_start()',
+> 'wasm.__wbindgen_start' is undefined)
+
+Per the ruling's own fork rule: this is P1's disclosed pre-existing crash-masked wasm error — a
+runtime failure class, NOT a P3 defect and NOT fixable by packaging (the packaged artifact is a
+real, byte-inventoried installed copy when it fails). The honest-pair shape stands as the end
+state: the production runner records the finding and skips the migration leg distinctly (all
+five suites still green from tarballs, `REAL_EXIT_CODE[suites]:0`), and the walker is validated
+against the real 31-step chain via classic's published `./evidence/wasm-test-mock` entry
+(`migration-walker.test.ts`, 2 tests green re-run this group). The wasm-init class itself is
+out of P3's scope and is carried as a Direction-level finding by the LEAD. Variant exactness
+and the removal control re-ran unchanged in the same sequence (4 attributable failures;
+adapter-shaped import collapse after deletion).
+
+**9.7 — census (re-derived, inline method).** 1107 repo files / 989 package-graph files / 361
+specifiers / 362 edges — +1 file over Group 7's close-out (the migrations barrel); manifest and
+lockfile edits touch already-counted files. Both checker controls green.
+
 ## Open items
 
-- **Phantom-dep blocker (escalated to LEAD, awaiting ruling):** confirmed concretely in Group 5
-  — from the tarball install the chain dies on `culori`; in-repo it dies on the wasm artifact
-  init. The adapter's migration leg records the finding and skips distinctly; the walker is
-  validated against the real chain via the published mock entry. A package-side fix (declare or
-  bundle the closure) is LEAD's call.
-- Groups 1–8 complete. Implementation finished; review + archive are LEAD's. Box 7.5
+- **Phantom-dep blocker: RESOLVED by the executed LEAD ruling (Group 9).** The install-side
+  `culori` death is FIXED (declared dependency, installs from the registry in the scratch
+  project); `opencut-wasm` resolves honestly through the fourth tarball + override; react is a
+  declared peer and the react-free `./storage/migrations` entry is proven from tarballs. What
+  remains is the **wasm-init runtime class** — `wasm.__wbindgen_start is not a function`,
+  identical in-repo and from installed tarballs — which is P1's disclosed pre-existing
+  crash-masked wasm error, not a packaging defect and not P3's to fix; the LEAD carries it as a
+  Direction-level finding. The migration leg's end state is the honest pair (runner records +
+  skips distinctly; walker validated against the real 31-step chain via the published mock
+  entry).
+- Groups 1–9 complete (Group 9 = the executed LEAD ruling). Implementation finished; review +
+  archive are LEAD's. Box 7.5
   (post-archive rider verification) executes at close-out per its own text.

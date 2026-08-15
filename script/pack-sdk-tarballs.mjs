@@ -2,7 +2,9 @@
 /**
  * The SDK tarball pack module (S05 P3, design E1).
  *
- * Packs the three distributable packages with `npm pack` — the real
+ * Packs the distributable packages (the three @opencut SDK packages plus the
+ * local `rust/wasm/pkg` artifact classic depends on — LEAD ruling 2026-08-15)
+ * with `npm pack` — the real
  * distribution path, byte for byte: no extract-fix-repack, ever (E3's ruling)
  * — and writes a committed **tarball manifest** into the change's evidence
  * directory: names, versions, npm shasum/integrity per tarball, and a
@@ -38,11 +40,19 @@ import { spawnSync } from "node:child_process";
 const MODULE_DIR = dirname(fileURLToPath(import.meta.url));
 export const DEFAULT_REPO_ROOT = resolve(MODULE_DIR, "..");
 
-/** The three distributable packages, in dependency-layer order. */
+/**
+ * The distributable packages, in dependency-layer order. The fourth entry is
+ * the local wasm artifact (LEAD ruling 2026-08-15): classic declares
+ * `opencut-wasm` and resolves it in-repo from `rust/wasm/pkg`; an installed
+ * consumer cannot follow that `file:` path, so the harness packs the same
+ * directory as a tarball and the scratch manifest's `overrides` map every
+ * `opencut-wasm` occurrence to it. Nothing is published to any registry.
+ */
 export const SDK_PACKAGES = [
 	"packages/editor-ports",
 	"packages/editor-contracts",
 	"packages/editor-classic",
+	"rust/wasm/pkg",
 ];
 
 export const DEFAULT_OUT_DIR_NAME = "dist-sdk-tarballs";

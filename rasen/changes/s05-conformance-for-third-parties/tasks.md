@@ -155,3 +155,26 @@
 - [ ] 8.4 The moment the review loop goes clean, `{"kind":"standDown"}` to any parked worker's
       `<changeRoot>/signals/<role>.json`, confirm `signals/.state/` is empty before the archive is
       planned.
+
+## 9. LEAD-ruling execution (added 2026-08-15; the ruling crossed DONE in flight)
+
+- [x] 9.1 Manifest truth on classic: culori → dependencies (lockfile-resolved 4.0.2, exact pin),
+      react → peerDependencies ^18.3.1, opencut-wasm → declared as the in-repo file: spec;
+      bun install settles the lockfile with in-repo resolution semantics unchanged.
+- [x] 9.2 Attributed entry ./storage/migrations (react-free barrel; closure audited file by
+      file; forcing module = the third-party adapter's react-free migration conformance);
+      boundary checker green + both controls; boundary.json self-registers via the dynamic
+      manifest list (no edit needed — stated in evidence).
+- [x] 9.3 Harness: fourth local tarball (rust/wasm/pkg) with the opencut-wasm override mapping;
+      control 2 covers all four installed copies; committed tarball manifest regenerated with
+      determinism reproduced on all four.
+- [x] 9.4 React-free proof from tarballs: --legacy-peer-deps install + CONTROL-react-free
+      react-absent assertion + the migration leg importing the entry live (PASS, all modes).
+- [x] 9.5 Host re-gates: electron-host typecheck 0, vite-example typecheck 0, apps/web scoped
+      program unchanged (same two pre-existing S01 rows, +1 scoped file, zero new diagnostics).
+- [x] 9.6 The migration fork: branch (b) landed — wasm.__wbindgen_start init failure persists
+      from installed tarballs with resolution honest; honest-pair end state per the ruling;
+      wasm-init class recorded as Direction-level, LEAD carries it; variant + removal controls
+      re-ran unchanged in the same sequence.
+- [x] 9.7 Census re-derived (1107/989/361/362, +1 attributed); BOUNDARIES.md §13 entry row +
+      harness record updated; report Group 9 + rewritten durable finding 1; commits landed.
