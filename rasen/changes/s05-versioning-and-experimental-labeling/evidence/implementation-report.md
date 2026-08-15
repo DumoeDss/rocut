@@ -220,3 +220,56 @@ top-level manifest keys changed are `version` (0.1.0 → 0.2.0) and `files`
 (+`surface.json`). Labeling added NO runtime-closure import, so P3's scratch-harness
 obligation is not triggered (the rule: run `run-scratch-conformance.mjs` only if an
 import was added — none was).
+
+## Group 6 — The no-stability sweep and documentation (tasks 6.1–6.3)
+
+**6.1 — the semantic sweep** (`evidence/no-stability-sweep.py`, log
+`evidence/logs/group6-no-stability-sweep.log`, `REAL_EXIT_CODE[no-stability-sweep]:0`).
+Universe: 891 files — everything the tarballs ship (the three packages' tracked `src/**`
+plus each `README.md` / `surface.json` / `package.json`; the G2/G5 pack inventories confirm
+no `dist/` files ship) plus `packages/README.md` and `BOUNDARIES.md`; the only DECISIONS doc
+(`packages/editor-ports/src/DECISIONS.md`) is inside ports' `src` and counted once. Five
+terms: `1.0`, `stable`, `production-ready`, `semver`, `GA`. Mechanical noise is classified by
+context, not counted raw: 111 SVG-path-coordinate matches (icon `d="M…"` data), 10
+longer-decimal substrings, 3 version-string substrings (the task's own `0.1.0` trap — and the
+restated README's `0.2.0`/`0.2.10`, same class). All 70 remaining candidates were READ and
+dispositioned, keyed `path:line` in the tool itself (fail-closed: an undispositioned candidate
+OR a stale disposition exits 1):
+
+- `stable` ×48 — every one the ordinary English word (stable identity, stable refs, stable
+  order, module-stable), none a release-stability claim;
+- `1.0` ×13 — 7 standalone numeric literals (migration-fixture seconds, a graph-editor Y-axis
+  fallback, a one-second video-cache threshold, snap-math in a comment), 3 the policy READMEs'
+  own negation sentence, 3 this change's own narration of the term list;
+- `GA` ×7 — the READMEs' negation sentence ×3, Gabon's ISO 3166 code in sticker country data
+  ×1, narration ×3;
+- `production-ready` ×1 and `semver` ×1 — both in the narration.
+
+Zero hits make a `1.0`/GA/production-readiness claim. Methodological note recorded in the
+tool and the log: §14 of BOUNDARIES.md is inside the sweep's own universe, so its narration
+of the terms is self-referentially dispositioned — which is why §14's prose points at the
+committed log's census as authoritative instead of embedding totals its own text would
+change (the fixed-point trap, hit twice and closed during implementation).
+
+**6.2 — `packages/README.md` restated.** The P0-era text ("a declaration, not yet a move:
+`packages/*/src` is empty", "No source has moved. P1 owns the move") has been false since P1;
+replaced with the current tree: the packages are real, ship source through their `exports`
+maps, pack via `script/pack-sdk-tarballs.mjs`; the layer-order rationale and roles table
+kept (still accurate, still measured); the `0.x` freeze section now carries the labeling
+layer on top (three classes, `surface.json`, markers, checker) and points to the per-package
+policy READMEs as the consumer-facing statement. Current figures with method + measurement
+point inline (`3cb78fbc`, 2026-08-15): boundary census 989 package-graph files / 362 edges /
+361 specifiers / 870 / 74 / 1109 repo files, all PASS; pack inventories at `0.2.0` 23 / 61 /
+805 / 7 (wasm at its own `0.2.10`); label census 36 entries (17/13/6) plus the one recorded
+dangling-entry finding. Non-coverage updated: LICENSE/NOTICE/SBOM = P7, wasm-init fix =
+Direction-level, CI = P6's decision.
+
+**6.3 — `BOUNDARIES.md`.** New §14 "Surface stability labeling" (taxonomy table with the
+marker column, the mechanism and the frozen-files-untouched rule with all four byte-identical
+paths named, the classification summary table 36 = 17/13/6 with the adjudications worth a
+reader's attention, the checker's rules/controls/census, the escalated dangling-entry
+finding, the from-tarballs consumer-view record, the sweep narration, census movement
+1107→1109 with full attribution, and the deliberate non-coverage). §9's checker-scope audit
+updated: the as-of count line now reads "26 at task 2.4, 27 at task 8.5, 28 at P5", and the
+new checker is recorded as a dated row at the table's foot (bucket A — generic package
+discovery, no `apps/web/src` literal, born after the move).

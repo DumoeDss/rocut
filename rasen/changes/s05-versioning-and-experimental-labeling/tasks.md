@@ -82,16 +82,16 @@
 
 ## 6. The no-stability sweep and documentation
 
-- [ ] 6.1 Semantic no-`1.0` sweep: enumerate candidates (`1.0`, `stable`, `production-ready`,
+- [x] 6.1 Semantic no-`1.0` sweep: enumerate candidates (`1.0`, `stable`, `production-ready`,
       `semver`, `GA`) over everything tarballs ship plus `packages/README.md`, `BOUNDARIES.md`
       and the DECISIONS docs under `src/`; give every hit a recorded disposition — `0.1.0`
       contains `1.0` as a substring, and counting without reading is the failure mode this task
       exists to avoid.
-- [ ] 6.2 Restate `packages/README.md` at the current tree: its "packages/*/src is empty / every
+- [x] 6.2 Restate `packages/README.md` at the current tree: its "packages/*/src is empty / every
       module still lives under apps/web/src" text has been false since P1. Refresh with current
       figures (method + measurement point inline), and point to the per-package policy READMEs
       as the consumer-facing statement.
-- [ ] 6.3 `BOUNDARIES.md`: labeling section (taxonomy, mechanism, the frozen-files-untouched
+- [x] 6.3 `BOUNDARIES.md`: labeling section (taxonomy, mechanism, the frozen-files-untouched
       rule, the checker and its controls), the classification summary table, the checker-audit
       row for the new script, and the non-coverage statement (LICENSE/NOTICE/SBOM = P7;
       wasm-init fix = Direction-level; release automation and CI = out of scope, P6 decides CI).

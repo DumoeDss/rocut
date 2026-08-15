@@ -654,8 +654,10 @@ and its scan mechanism (probing `HEAD` for a rewritten specifier's pre-rewrite t
 closer to bucket A in spirit (its subject follows whatever is currently staged, not a hardcoded
 root) but was not run through 2.4's classification process, so it is recorded here rather than
 silently folded into a bucket count it was never audited into. State one number with its as-of
-point: **26 at task 2.4 (pre-Stage-A), 27 at task 8.5 and at HEAD.** The table below is the 2.4
-snapshot and is not restated for the 27th checker; treat 27 as the ship-relevant figure.
+point: **26 at task 2.4 (pre-Stage-A), 27 at task 8.5, 28 at P5** — P5
+(`s05-versioning-and-experimental-labeling`, 2026-08-15) adds `check-sdk-surface-labels.mjs`.
+The table below is the 2.4 snapshot and is not restated for the 27th checker; the 28th IS
+recorded as a dated row at the table's foot, because P5's task 6.3 asks this audit to carry it.
 
 Three buckets, plus the checkers with no `apps/web/src` vs. `packages/*/src` distinction at all:
 
@@ -698,6 +700,7 @@ Three buckets, plus the checkers with no `apps/web/src` vs. `packages/*/src` dis
 | `check-surface-portal-boundary.mjs` | C | `REQUIRED` lists 11 literals overlapping task 5.6's `components/ui/*` atom adjudication; the discrepancy in count (9 vs. "eight") was resolved with evidence at 5.6, not assumed. |
 | `check-surface-private-drag.mjs` | C | `COORDINATOR` plus 2 more `editor/surface/embedding/**` literals, plus Host-owned shell-exclusion prefixes that needed no change. |
 | `check-headless-graph.mjs` | C | ~10+ module-id literals asserted against a headless bundle's module graph; needed updating once the bundler resolved moved sources to new module ids. |
+| `check-sdk-surface-labels.mjs` | A (added at P5, 2026-08-15 — outside 2.4's audited set, recorded per P5 task 6.3) | Born after the move: discovers packages generically via `packages/*/package.json` + each package's shipped `surface.json`; no `apps/web/src` literal anywhere, so it never carried the pre-move scope bug. See §14 for its rules, controls and census. |
 
 **Every bucket-C checker was either asserted-existence (fails loudly the moment its literal path
 stops resolving) or swept by task 8.5's "run every runnable static checker, confirm all green,"**
@@ -1058,3 +1061,123 @@ specifier. Both checker controls re-run green; `packages/boundary.json` needed n
 checker's declared-entry knowledge is derived from the packages' own `exports` maps at load time
 (the dynamic manifest list BLOCKER-2 introduced), so the new entry self-registers and the
 public-entry-only rule proved it resolves as a declared subpath by passing.
+
+---
+
+## 14. Surface stability labeling: versions, classes, and the no-maturity-claim sweep (S05 P5)
+
+P5 (`s05-versioning-and-experimental-labeling`) gives every declared export entry a stability
+class, ships the classification beside the code, and enforces it with a checker — without
+touching a single frozen byte. All three manifests moved `0.1.0 → 0.2.0` (the minor that adds
+the S05 surface work; P3's tarball harness maps filenames structurally, version-agnostically, so
+no harness edit was needed or made).
+
+**The taxonomy** (the per-package READMEs are the consumer-facing statement; this section is the
+boundary-mechanics record):
+
+| class | may change in a minor | may be removed in a minor | marker in source |
+| --- | --- | --- | --- |
+| `frozen` | no — additive-only | never | **none — by design** |
+| `provider` | yes | not silently | `@opencutSurface provider — <reason>` |
+| `experimental` | yes | yes | `@opencutSurface experimental — <reason>` |
+
+**The mechanism, and the frozen-files-untouched rule.** Each package ships a `surface.json`
+classifying every `exports` entry except the mechanical `./package.json`, fail-closed in both
+directions (an unclassified entry and an undeclared row are both violations). In-source
+`@opencutSurface` markers live **only** in provider/experimental entry files. Frozen entries
+deliberately carry none: their classification lives in `surface.json` alone, so labeling never
+edits a frozen file — the four S03+S04 byte-identical surfaces
+(`editor-classic/src/editor/transactions/opencut/index.ts`,
+`editor-contracts/src/engine/engine.ts`, `editor-ports/src/index.ts`,
+`editor-classic/src/editor/surface/embedding/types.ts`) stayed IDENTICAL against base
+`5aae75ec` through every group, re-proven at close-out. The checker enforces the guard from the
+other side too: a marker found on a frozen-classified file is a violation whose text says
+editing a frozen file for labeling is contract pressure, never a patch.
+
+**Classification summary** (36 entries; method: each manifest's `exports` map read at `0.2.0`,
+`./package.json` excluded; the same census the checker prints every run):
+
+| package | entries | frozen | provider | experimental |
+| --- | --- | ---: | ---: | ---: |
+| `@opencut/editor-ports` | 6 | 5 | 0 | 1 |
+| `@opencut/editor-contracts` | 11 | 10 | 0 | 1 |
+| `@opencut/editor-classic` | 19 | 2 | 13 | 4 |
+| **total** | **36** | **17** | **13** | **6** |
+
+Adjudications worth a reader's attention: the conformance suites are `frozen` (executable
+contract truth); P3's `./conformance/requirements` legibility layers are `experimental` (test
+infrastructure over frozen suites); classic's `./storage/conformance` is `provider`, not
+experimental — it is the provider's own published test rig (the task's "provider where they are
+Classic's own machinery" arm); all four `./evidence/*` entries are `experimental`, unstable by
+intent. The design's anticipated symbol-override case turned out not to exist at this tree:
+classic's root barrel's full re-export closure carries zero frozen-classified symbols, so no
+production override was needed — the override mechanism exists and is control-proven, unused.
+
+**The checker** — `script/check-sdk-surface-labels.mjs`, wired as `check:surface-labels`, the
+labeling twin of the boundary checker's attribution rule (an unlabeled export FAILs,
+classification at birth): completeness both directions, class vocabulary
+(`frozen | provider | experimental` exactly), marker agreement including the frozen guard,
+symbol-override validity via the boundary checker's source-scan extraction idiom (no parser, no
+execution), and the house empty-scan refusal (exit 2). Census lines every run; the live census
+is 36 entries — frozen 17, provider 13, experimental 6 — plus
+`dangling-export-entries: 1` (below). Controls per the family idiom (pure `scan()` over
+in-memory fixtures, never edits to the real tree): the negative control plants seven worlds —
+the spec's named pair (an unlabeled experimental export FAILs; an export entry with no row),
+an unknown class, a dangling override, a marker on a frozen file, an undeclared row, and a
+non-frozen entry whose target is absent — each fires under its named rule. The converse control
+proves the designed silences: frozen rows without markers, a resolving override,
+class-name-in-prose, and a frozen row whose target is absent reported as exactly one finding,
+not a violation.
+
+**Finding (escalated, not patched): a dangling export entry the consumer view caught.**
+`@opencut/editor-contracts`' `./vectors/drivers` entry — declared by P0's boundary freeze
+(`5e3fc7cb`) — points at `src/vectors/drivers/index.ts`, a file no commit ever authored; the
+directory holds only `durable.ts`/`in-memory.ts`, consumed via relative imports, and nothing
+imports the entry by specifier. A consumer importing it gets module-not-found from the shipped
+package. Every workspace-side gate was blind to it (the boundary checker never validates target
+existence; `tsc` never resolves an entry nothing imports; the labels checker originally read a
+missing frozen target as a marker-free pass). The from-tarballs consumer-view proof caught it
+because it reads the packed artifact. Disposition: NOT repaired at P5 — authoring the missing
+index means choosing what a frozen-classified entry exports, removing the entry means removing
+frozen-classified surface; both are contract adjudication. The defect is now machine-visible:
+both the checker census (frozen-class dangling = reported finding; non-frozen dangling = FAIL,
+both branches control-proven) and the consumer-view verifier carry it until the contract owner
+rules.
+
+**The consumer view is proven from the tarballs, not the workspace.**
+`rasen/changes/s05-versioning-and-experimental-labeling/evidence/consumer-view-from-tarballs.mjs`
+imports P3's `packSdkTarballs` (never re-implements packing), extracts every `@opencut/*`
+tarball, and verifies from the packed artifacts: every version is `0.x`; every README ships and
+contains the policy statement; every `surface.json` ships and classifies exactly its export map
+(set-equal both directions); all 19 non-frozen markers verified in extracted source and no
+frozen entry's file carries one. Manifest truth (P3's rule): the dependency blocks are
+byte-identical to base — labeling adds no runtime-closure import, so the scratch-harness
+obligation was not triggered.
+
+**The no-maturity-claim sweep.** A semantic sweep
+(`evidence/no-stability-sweep.py`, log beside it) over everything the tarballs ship plus
+`packages/README.md` and this file, for the five terms (`1.0`, `stable`, `production-ready`,
+`semver`, `GA`). Mechanical noise is classified by context, not counted raw — SVG path
+coordinates, longer decimal literals, and version-string substrings (the task's own `0.1.0`
+trap) — and every remaining candidate is read and dispositioned in the committed log, whose
+census is authoritative: the bulk are the ordinary English word "stable" (stable identity /
+stable refs / stable order), the rest standalone numeric `1.0` literals (fixture seconds, a
+Y-axis fallback, a one-second threshold), the policy READMEs' own negation sentence, Gabon's
+ISO code `GA`, and this section's narration of the term list itself. Zero hits make a `1.0`,
+GA or production-readiness claim — the READMEs' "this policy is the only stability claim"
+sentence is the claim surface, and it survives its own sweep.
+
+**Census movement over this change**: 1107 → 1109 repo files (+2: the labels checker and the
+consumer-view evidence module, both `.mjs` outside every package graph); every boundary rule
+count unchanged (989 package-graph files, 362 edges, 361 specifiers, 870 / 74 scanned). Family
+sweep at close-out: 28 checkers, 22 exit-zero / 6 nonzero — P3's exact nonzero set unchanged
+(`asset-manifest:2, emitted-runtime-assets:1, headless-graph:2, headless-semantic-result:2,
+resolution-equivalence:1, type-baseline:1`, the known pre-existing / capture-run-needing set).
+
+**Non-coverage, deliberately**: LICENSE / NOTICE / SBOM are P7's — the manifests' `files`
+entries for them are placeholders P7 makes real. The wasm-init constraint on classic's
+`./storage/migrations` is stated in that package's README as current-surface truth; a fix is
+tracked at Direction level, not in the package. Release automation is out of scope; CI is P6's
+decision, which inherits two ready legs — P3's install harness (its env seams, above) and this
+change's `check:surface-labels` plus `surface.json` as the machine-readable classification
+source for any maturity-gate tooling P6 might wire.
