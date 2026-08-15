@@ -74,17 +74,17 @@
 
 ## 6. The beta record and consumer documentation
 
-- [ ] 6.1 Author `BOUNDARIES.md`'s beta-closure section per design E6: delivery statement
+- [x] 6.1 Author `BOUNDARIES.md`'s beta-closure section per design E6: delivery statement
       (packages + versions + the 35-entry labeled surface; conformance and four examples from
       installed tarballs with the CI leg; three Hosts), the no-`1.0` stance restated beside P5's
       policy, the wasm-init Direction finding with its failure text, mock-entry workaround and
       ownership, and the residuals with owners (lint debt = human decision; local-only checkers
       = deliberate; ubuntu-only examples job = a config change away).
-- [ ] 6.2 Complete classic's README consumer obligations (P6's F-P6-3/4/5/6): the culori
+- [x] 6.2 Complete classic's README consumer obligations (P6's F-P6-3/4/5/6): the culori
       `declare module` requirement (ships no declarations), the `@source` self-registration
       without which builds are silently half-styled, the definite-height wrapper, the
       empty-scene seed trap — each stating the failure an adopter sees when it is missed.
-- [ ] 6.3 Restate `UPSTREAM.md` where Phase A touched its inputs (toolchain, retained/removed
+- [x] 6.3 Restate `UPSTREAM.md` where Phase A touched its inputs (toolchain, retained/removed
       areas if the estate changed) — its requirements are the existing spec's; the restatement
       keeps the record current rather than accruing another drift generation.
 

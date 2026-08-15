@@ -293,3 +293,66 @@ the tidied lock with every recorded defect present and the repaired one
 absent. One environmental finding worth its bytes: bun 1.2.2 through an
 inherited local proxy can hang at resolution with zero CPU — the fix is
 unsetting the proxy env for the install child, not a flag change.
+
+## Group 6 — Beta record and consumer documentation (tasks 6.1, 6.2, 6.3)
+
+**6.1 — the beta-closure record** (`BOUNDARIES.md` §16's closing subsection,
+design E6 line for line): the delivery statement (three `@opencut/*` packages at
+`0.2.0` behind a **35-entry labeled surface** — ports 6 + contracts 10 + classic
+19, counted from the shipped `surface.json` files, not recalled; the conformance
+suites and the four examples executable from installed tarballs by
+`run-published-examples.mjs` with the `sdk-examples` CI leg wired, its first
+true execution post-delivery per §15's own statement; the three Hosts — Next,
+Vite, Electron); the **no-`1.0` stance restated beside P5's policy** (§14): no
+GA or production-readiness claim exists in any published material, the
+per-package compatibility policy is the only stability claim, and the beta name
+is precisely that statement; the **wasm-init Direction finding recorded as
+carried** — the probe text verbatim (`wasm.__wbindgen_start is not a function`,
+bun-version-independent 1.2.2/1.2.18, identical in-repo and from tarballs), the
+transitive binding named (`v27-to-v28.ts` and `services/storage/service.ts`
+import from `src/wasm`), the workaround named (install the **experimental**
+`./evidence/wasm-test-mock` entry first — custom-storage's honest pair), and the
+ownership explicit (Direction level, not the package; the package README states
+it as a `0.x` constraint); and the **residuals with owners**: the 255-error
+lint debt stays a human decision, the local-only family sweep is deliberate,
+the ubuntu-only examples job is a config change away from a matrix.
+
+**6.2 — classic README consumer obligations** (F-P6-3/4/5/6, new "Consumer
+obligations (from-tarball adoption)" section): the culori `declare module`
+requirement (culori publishes no declarations; the from-tarball typecheck fails
+on the first import until the consumer declares the module), the `@source`
+self-registration (the failure is silent and specific — theme colours apply,
+`.size-full`/`.overflow-hidden`/`.flex-1`/`.min-h-0` never generate, a
+coloured-but-inert editor), the definite-height wrapper (`min-height: 100%`
+establishes no definite height; the Surface resolves to content height and the
+timeline renders clipped invisible), and the empty-scene seed trap
+(`buildDefaultScene` is zero-duration, the seek controller clamps into it, the
+playhead provably cannot move — seed one element before asserting). Each
+obligation names the failure an adopter sees, per the task's own wording.
+
+**6.3 — UPSTREAM.md restated where Phase A touched its inputs.** Three dated
+restatement blocks, each preserving the historical text above it as history:
+the **Extraction method** (S01 aliased and rejected extraction; S05 P1 then
+performed exactly that extraction — and the ambiguity S01 feared is now
+answered by the provenance set: the rename taxonomy plus rows P-277..P-614,
+not by avoidance); the **Retained areas** (the old `apps/web/src/**` table now
+maps to `packages/editor-classic/src/**`, with the mapping derived in
+`SOURCE_INVENTORY.json`, never recalled); the **Toolchain** (the lock-refresh
+note: the tidy ran under bun 1.2.2, so the recorded 1.2.18-pin discrepancy
+stands unchanged). Beside them, the **added-file inventory** the design's E4
+reconciliation requires: `--write-added-inventory` derived the 504 fork-added
+paths by area and the list is embedded as UPSTREAM.md's closing section — after
+which `reconcile-provenance.mjs --require-added` exits 0 (every added path
+listed, every drift-classed inherited file rowed).
+
+**One line-ending catch, caught by the standing check:** the Write-tool temps
+carried CRLF into UPSTREAM.md's insertions (`git ls-files --eol` showed
+`w/mixed`); 518 lines normalized to LF, after which all three touched files
+read `i/lf w/lf` and every diff is pure additions (BOUNDARIES +50, UPSTREAM
++580, README +31 — `group6-docs.log`).
+
+**Group 6 verdict:** the portfolio's closing record states the delivery, the
+stance, the carried finding and the residuals with owners; the README tells an
+adopter the four failures they will otherwise meet; UPSTREAM.md no longer
+accrues a drift generation — its stale sections are restated beside their
+history and the added-file inventory is embedded, closing E4's second half.

@@ -1,0 +1,38 @@
+Group 6 — beta record + consumer docs + UPSTREAM restatement at caa720c3
+
+--- 6.2 README obligations section:
+61:## Consumer obligations (from-tarball adoption)
+0
+66:1. **Declare the `culori` module yourself.** This package ships TypeScript source
+71:2. **Self-register the Tailwind `@source`.** `surface.css` registers its class
+79:3. **Give the mount a definite height.** `min-height: 100%` on html, body or your
+85:4. **Seed the empty scene before asserting anything.** `buildDefaultScene` yields
+
+--- 6.1 BOUNDARIES beta-closure record:
+1356:### The beta-closure record (task 6.1)
+1359:`editor-contracts`, `editor-classic` — behind a **35-entry labeled surface**
+1387:`wasm.__wbindgen_start is not a function` — bun-version-independent (1.2.2 and
+1399:- The **255-error lint debt** stays a human decision: what to fix versus
+1403:- The **ubuntu-only examples job** is a config change away from a matrix — no
+
+--- 6.3 UPSTREAM restatements + inventory:
+52:> **Restated at S05 P7 (2026-08-16), because the estate changed under it.** The
+79:> **Restated at S05 P7: current locations.** The table above describes the S01
+117:> **Restated at S05 P7: the lock was refreshed.** At the portfolio's close a
+559:## Added-file inventory (fork additions)
+
+--- reconciliation gates after the docs:
+reconcile: added under script: 114 total, 0 unlisted in UPSTREAM.md
+reconcile: every drift-classed inherited file has a PATCHES.md row
+reconcile: every fork-added path is listed in UPSTREAM.md
+REAL_EXIT_CODE: 0
+
+--- eol discipline:
+i/lf    w/lf    attr/                 	BOUNDARIES.md
+i/lf    w/lf    attr/                 	UPSTREAM.md
+i/lf    w/lf    attr/                 	packages/editor-classic/README.md
+--- diffs are pure additions:
+ BOUNDARIES.md                     |  50 ++++
+ UPSTREAM.md                       | 580 ++++++++++++++++++++++++++++++++++++++
+ packages/editor-classic/README.md |  31 ++
+ 3 files changed, 661 insertions(+)

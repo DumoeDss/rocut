@@ -57,3 +57,34 @@ consumers: the chain's wasm initialization fails with
 the wasm module — a runtime property of the current surface, identical in-repo and from
 installed tarballs. This is stated as a constraint of the current `0.x` surface, not a
 fix commitment: a fix is tracked at Direction level, not in this package.
+
+## Consumer obligations (from-tarball adoption)
+
+Four obligations the published examples proved the hard way (findings F-P6-3..6,
+change `s05-published-examples`). Each names the failure you see when you miss it.
+
+1. **Declare the `culori` module yourself.** This package ships TypeScript source
+   that imports `culori`, and culori publishes no type declarations. In a
+   from-tarball tree the typecheck fails on the first culori import until your
+   project carries an ambient declaration (for example
+   `declare module "culori"` in a `.d.ts`, as the published examples do).
+2. **Self-register the Tailwind `@source`.** `surface.css` registers its class
+   scan with `@import "tailwindcss/utilities.css" source("../../")`, which stops
+   working once the stylesheet is consumed from `node_modules`. The failure is
+   silent and specific: theme colours apply but utilities do not (`.size-full`,
+   `.overflow-hidden`, `.flex-1`, `.min-h-0` never generate) — a coloured but
+   inert editor where nothing sizes and nothing clips. Add
+   `@source "../node_modules/@opencut/editor-classic/src";` to your own
+   stylesheet; the in-repo Vite host performs the same self-registration.
+3. **Give the mount a definite height.** `min-height: 100%` on html, body or your
+   root element establishes no definite height, so the Surface's `size-full`
+   resolves to content height — the editor mounts as a strip roughly a hundred
+   pixels tall with the whole timeline rendered but clipped invisible. Wrap the
+   mount in an element with an explicit height (`height: 100vh`, as the in-repo
+   harnesses do).
+4. **Seed the empty scene before asserting anything.** `buildDefaultScene` yields
+   a project of zero duration and the seek controller clamps every ruler seek into
+   that duration — the playhead of an empty project cannot move. Rendering an
+   empty project gives you an inert but blameless-looking timeline; seed one
+   element (for example `buildTextElement`, default duration 5s, on an overlay
+   `TextTrack`) before asserting interaction.

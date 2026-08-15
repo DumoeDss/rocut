@@ -1352,3 +1352,53 @@ At introduction: green over the current four tarballs (classic: 796 files, 3,502
 `@napi-rs/canvas`×3); family census moves **29 → 30 checkers, 24 exit-zero / 6 nonzero**,
 the known nonzero set unchanged. Evidence and controls:
 `rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group3-closure-*.log`.
+
+### The beta-closure record (task 6.1)
+
+**Delivered.** Three `@opencut/*` packages at `0.2.0` — `editor-ports`,
+`editor-contracts`, `editor-classic` — behind a **35-entry labeled surface**
+(ports 6, contracts 10, classic 19: every `exports` entry except the mechanical
+`./package.json` is classified `frozen` / `provider` / `experimental` in each
+package's shipped `surface.json`, enforced by `check:surface-labels`). The
+conformance suites (ports, transaction, engine, draft, vectors) and the four
+published examples (`install-packages`, `agent-transaction`, `custom-storage`,
+`embed-surface`) are executable from **installed tarballs** by
+`script/run-published-examples.mjs`, with the `sdk-examples` CI leg wired in
+`.github/workflows/bun-ci.yml` (ubuntu-latest; its first true execution lands on
+the post-delivery push, per §15). Three Hosts boot the same editor: the Next app
+(`apps/web`), the Vite host (`apps/vite-example`), and the Electron host
+(`apps/electron-host`). Every packed tarball ships LICENSE, and the three editor
+packages ship NOTICE beside it (P7 Group 2, verified in pack output); the
+packed-manifest dependency-closure claim is the standing gate recorded at this
+section's head.
+
+**The `0.x` stance, restated beside P5's policy (§14).** No `1.0`, GA or
+production-readiness claim exists in any published material. The per-package
+READMEs' compatibility policy is the only stability claim this portfolio makes:
+`0.MINOR.PATCH`, the surface partitioned into the three classes, a minor release
+changing exactly what the classes permit and nothing they don't. The `beta` in
+the portfolio's name is precisely that statement — not a countdown to `1.0`.
+
+**The wasm-init Direction finding, recorded as carried.** classic's
+`./storage/migrations` chain is not loadable by a plain TypeScript consumer:
+the chain transitively initializes the `opencut-wasm` artifact
+(`migrations/transformers/v27-to-v28.ts` and `services/storage/service.ts`
+both import from `src/wasm`) and fails with
+`wasm.__wbindgen_start is not a function` — bun-version-independent (1.2.2 and
+1.2.18 identical), identical in-repo and from installed tarballs. Demonstrated,
+not repaired: `examples/custom-storage`'s production leg records the failure
+distinctly and skips the migration leg distinctly, while its mock-installed leg
+proves the real 31-step chain by installing the **experimental**-labeled
+`./evidence/wasm-test-mock` entry first. A fix is owned at Direction level, not
+in the package; classic's README states it as a constraint of the current `0.x`
+surface, and this record carries it forward as the portfolio's one open
+Direction finding.
+
+**Residuals, each with its owner.**
+
+- The **255-error lint debt** stays a human decision: what to fix versus
+  suppress is judgement about each error, not machinery this portfolio owes.
+- The **local-only checkers** are deliberate: the 30-checker family sweep is a
+  local gate; CI claims the examples job and the consumer view, not the sweep.
+- The **ubuntu-only examples job** is a config change away from a matrix — no
+  macOS or Windows leg is claimed, and none is blocked by the machinery.
