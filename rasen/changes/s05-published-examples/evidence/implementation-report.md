@@ -333,6 +333,15 @@ same default-env path, green end to end.
 No example needed a missing export entry — the escalation clause never fired;
 no barrel was invented.
 
+> **Amendment (Group 5, 2026-08-15):** this default-env run was later shown
+> to be **leakage-tainted** — the default scratch root's ancestor chain
+> included an unrelated workspace's `node_modules`, and the embed-surface
+> build borrowed `date-fns` from it (finding F-P6-7, Group 5). The run's
+> per-step exits were real, but its dependency-closure proof was not
+> self-contained. The authoritative shipping-revision run is Group 5's
+> clean-root full run (`evidence/logs/group5-full-run-clean.log`), taken
+> under CONTROL-1c with `date-fns` shipping in classic's manifest.
+
 ## Group 4 — Consumer declaration and census (tasks 4.1, 4.2)
 
 **4.1 — the consumer record and the reconciled census**
@@ -374,3 +383,82 @@ every checker that could see the new paths, disposition per row:
   marker-agreement / override-validity / target-existence all PASS, exit 0.
 - `check-sdk-consumer-view` (this change's own Group-2 checker): verified
   against freshly packed tarballs — 0 failures, 0 dangling, exit 0.
+
+## Group 5 — The CI leg (tasks 5.1, 5.2)
+
+**5.1 — the `sdk-examples` job** (`.github/workflows/bun-ci.yml`):
+`ubuntu-latest`, checkout, the same routed wasm build as the `build` job
+(`rustup target`, `jetli/wasm-pack-action@v0.4.0`, `node
+script/build-wasm.mjs` — a registry wasm would pass the typecheck legs while
+silently testing the wrong artifact), then the runner with
+`OPENCUT_SCRATCH_ROOT="$HOME/.opencut-scratch-ci"` and `OPENCUT_BUN` at its
+default. The job comment states the claim — the four examples plus the
+consumer view over freshly packed tarballs — and the non-claims: the
+local-only checkers stay local (the family sweep is a local gate), no matrix
+extension beyond ubuntu, no publish. YAML validated (js-yaml parse: jobs
+`build, sdk-examples`, 5 steps). The scratch root sits under `$HOME` because
+the runner's own controls refuse repo-tree, Temp (`runner.temp`) and — since
+this group — any root below an ancestor carrying `node_modules`.
+
+**5.2 — the dry run that earned its keep.** The first CI-shaped dry
+invocation (`evidence/logs/group5-ci-dry-run-first-attempt-failed.log`,
+scratch under `$HOME/.opencut-scratch-ci-dry`) **failed honestly** at
+embed-surface's build: rollup could not resolve `date-fns` from
+`react-day-picker`'s dist — `REAL_EXIT_CODE[example/embed-surface/build]:1`,
+self-logged. Diagnosis (finding **F-P6-7**):
+
+- `react-day-picker@8.10.2` declares `date-fns` as a **peer** (range
+  `^2.28.0 || ^3.0.0`), and the runner's `npm install --legacy-peer-deps`
+  never installs peers;
+- classic's `components/ui/calendar.tsx` imports react-day-picker, and
+  classic's manifest declared react-day-picker but **not** date-fns — the
+  F-P6-1 dependency repair was one package short;
+- the monorepo never noticed because bun auto-installs peers
+  (`date-fns@3.6.0` at the workspace root, per `bun.lock`), and the earlier
+  scratch runs never noticed because the E:-drive default root's ancestor
+  chain included `E:\...\VibeCodingProjects\node_modules` — an unrelated
+  workspace's tree carrying `date-fns@4.1.0`, out of react-day-picker's
+  peer range, silently satisfying the import. **The Group-3 "default env"
+  full run was green by leakage** (amended in 3.5 above);
+- the `$HOME`-shaped root has no such ancestor, so the CI-shaped invocation
+  is precisely the environment that catches this class — the dry run did
+  what the job exists to do, before the job ever ran.
+
+The repair, both halves:
+
+1. **complete the manifest** — `"date-fns": "^3.6.0"` added to classic's
+   dependencies (in-range for the peer; the workspace already resolves
+   exactly 3.6.0). The clean full run's install counts moved +1 for every
+   classic-consuming example (251→252, 348→349, 249→250; agent-transaction
+   unchanged at 5 — its closure is ports+contracts only), and
+   `date-fns@3.6.0` is present inside the example trees.
+2. **close the leak class** — CONTROL-1c in
+   `script/scratch-install-harness.mjs`: every ancestor of the scratch root
+   up to the drive root must be free of `node_modules`, else the run
+   refuses before touching anything
+   (`evidence/logs/group5-control-1c-default-refused.log` — the E:-drive
+   default now refuses on this machine, naming `E:\...\elftia` as the
+   first leaky ancestor).
+
+One honest residue: the workspace `bun.lock`'s classic entry predates the
+F-P6-1 repair (it records four deps) and this edit follows that precedent —
+no gate consumes the lock's workspace map, CI installs non-frozen, and the
+resolved set (`date-fns@3.6.0`) is unchanged; refreshing the lock is a P7
+tidy, as is a checker that asserts packed-manifest dependency closure (the
+family's green plus local leakage is what masked the gap).
+
+**5.2 — the green evidence.** The clean canonical full run at the shipping
+tree (`evidence/logs/group5-full-run-clean.log`,
+`OPENCUT_SCRATCH_ROOT=$HOME/.opencut-scratch-p6`): CONTROL-1a/1b/1c PASS,
+consumer-view PASS (3 packages, 0 failures, 0 dangling), all four examples
+green — 10 EXIT lines zero, `REAL_EXIT_CODE[npm-install/*]:0` ×4 with
+CONTROL-2 and the react controls green per install, wrapper
+`REAL_EXIT_CODE:0`. The re-run CI-shaped dry invocation
+(`evidence/logs/group5-ci-dry-run.log`) went green the same way — the job
+needs nothing this machine has that CI lacks beyond what the job itself
+installs. The subset seam re-proven clean at the same tree
+(`evidence/logs/group5-subset-seam-clean.log`, `OPENCUT_EXAMPLES=embed-surface`
+through `OPENCUT_PREPACKED_DIR`): pack skipped, consumer-view PASS over the
+pre-packed tarballs, the heaviest example alone green end to end under
+CONTROL-1c. The first true CI execution lands on the post-delivery push; its
+exit-code lines close the evidence loop — stated, not hidden.

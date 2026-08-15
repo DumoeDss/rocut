@@ -80,13 +80,13 @@
 
 ## 5. The CI leg
 
-- [ ] 5.1 Add the `sdk-examples` job to `.github/workflows/bun-ci.yml`: `ubuntu-latest`, checkout,
+- [x] 5.1 Add the `sdk-examples` job to `.github/workflows/bun-ci.yml`: `ubuntu-latest`, checkout,
       `node script/run-published-examples.mjs` with `OPENCUT_SCRATCH_ROOT` at a non-Temp,
       non-repo path (under `$HOME` — never `runner.temp`, which the runner's assertion refuses
       by design) and `OPENCUT_BUN` defaulted. The job comment states what it claims — four
       examples + consumer view — and what it does not: local-only checkers stay local, no
       matrix extension, no publish.
-- [ ] 5.2 Validate the job's YAML and the runner's env-only drivability locally: a dry invocation
+- [x] 5.2 Validate the job's YAML and the runner's env-only drivability locally: a dry invocation
       with the CI-shaped env (scratch under a `$HOME`-style path) runs green — proving the job
       needs nothing this machine has that CI lacks. The first true CI execution lands on the
       post-delivery push; its log (exit-code lines) closes the evidence loop — stated, not

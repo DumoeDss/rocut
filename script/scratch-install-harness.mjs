@@ -16,8 +16,14 @@
  * marker stay byte-for-byte what they were before the extraction.
  *
  * What lives here (and nowhere else now):
- *   - control 1a/1b: the scratch root must sit outside the repo tree AND
- *     outside every Temp path (the measured AV hazard), asserted every run;
+ *   - control 1a/1b/1c: the scratch root must sit outside the repo tree,
+ *     outside every Temp path (the measured AV hazard), and below no
+ *     ancestor carrying node_modules — Node's upward resolution would let
+ *     files the scratch tree never installed satisfy its imports (the
+ *     date-fns leak of 2026-08-15: the sibling-of-repo default sat under an
+ *     unrelated workspace's node_modules, and a green local build was
+ *     borrowing a dependency the tarballs never shipped; caught by P6
+ *     Group 5's CI-shaped dry run) — all asserted every run;
  *   - the fresh-per-run lifecycle: wipe + recreate + marker; a foreign root
  *     without the marker is refused, never reused;
  *   - tarball staging: pack through `packSdkTarballs` (imported — packing is
@@ -155,6 +161,25 @@ export function createScratchHarness(options = {}) {
 			);
 		}
 		console.log(`CONTROL-1b root-outside-temp: PASS (checked ${temps.length} Temp root(s))`);
+
+		// Node resolves a bare import by walking node_modules up to the drive
+		// root, so a node_modules anywhere above the scratch root can satisfy
+		// an import the scratch tree never installed — the build then proves
+		// nothing about the tarballs. Fail closed on the first leaky ancestor.
+		let ancestorsChecked = 0;
+		for (let dir = dirname(root); ; dir = dirname(dir)) {
+			ancestorsChecked += 1;
+			if (existsSync(join(dir, "node_modules"))) {
+				fail(
+					"control-1",
+					`an ancestor of the scratch root carries node_modules (${dir}) — upward resolution can satisfy imports this scratch tree never installed, so a green run here is not a self-contained proof; set OPENCUT_SCRATCH_ROOT under an ancestor chain with no node_modules (a fresh directory under the user profile works)`,
+				);
+			}
+			if (dirname(dir) === dir) break;
+		}
+		console.log(
+			`CONTROL-1c ancestors-node_modules-free: PASS (checked ${ancestorsChecked} ancestor(s) up to the drive root)`,
+		);
 		return root;
 	}
 

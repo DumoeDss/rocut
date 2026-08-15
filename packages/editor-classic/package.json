@@ -13,6 +13,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "culori": "4.0.2",
+    "date-fns": "^3.6.0",
     "eventemitter3": "^5.0.1",
     "lucide-react": "^0.562.0",
     "mediabunny": "^1.29.1",

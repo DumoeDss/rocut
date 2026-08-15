@@ -102,3 +102,46 @@ jobs:
         working-directory: apps/web
         run: echo "No tests implemented yet"
         continue-on-error: true
+
+  # Claims exactly what run-published-examples.mjs runs: the four
+  # published-SDK examples (install-packages, agent-transaction,
+  # custom-storage's honest pair, embed-surface's build + GPU-free Playwright
+  # smoke) plus the consumer view over the freshly packed tarballs — the
+  # Group-5 clean full-run log
+  # (rasen/changes/s05-published-examples/evidence/logs/group5-full-run-clean.log)
+  # is this job's local twin, same env shape (scratch under $HOME). Does NOT
+  # claim: the local-only checkers stay local (the checker family sweep is a
+  # local gate), no matrix extension beyond ubuntu, no publish.
+  sdk-examples:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust wasm target
+        run: rustup target add wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        uses: jetli/wasm-pack-action@v0.4.0
+        with:
+          version: latest
+
+      # Same routed build as the build job: the examples' tarballs pack the
+      # self-built, remapped wasm, and a registry copy would pass the
+      # typecheck legs while silently testing the wrong artifact.
+      - name: Build WASM
+        run: node script/build-wasm.mjs
+
+      # Scratch root under $HOME — the runner's own controls refuse repo-tree,
+      # Temp (runner.temp) and any root below an ancestor carrying node_modules
+      # (CONTROL-1a/1b/1c) by design: upward module resolution from a leaky
+      # chain can satisfy imports the scratch tree never installed, which is
+      # how a local default-root build once borrowed a dependency the tarballs
+      # never shipped (the date-fns leak of 2026-08-15). OPENCUT_BUN stays at
+      # its default (npx --yes bun@1.2.18). embed-surface's smoke installs its
+      # own headless chromium on first run (the smoke's self-install
+      # fallback); the hosted ubuntu image ships the browser dependencies.
+      - name: Run the published-examples runner
+        run:
+          OPENCUT_SCRATCH_ROOT="$HOME/.opencut-scratch-ci" node script/run-published-examples.mjs
