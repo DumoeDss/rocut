@@ -1,0 +1,163 @@
+{
+  "change": "s05-published-examples",
+  "archivedAt": "2026-08-15T15:02:31.139Z",
+  "codeCommit": "3ba5f23049b40fe5ce22210c21b251ec4cfa2752",
+  "planningBranch": "feat/s05-community-beta",
+  "planningTreeState": "dirty",
+  "evidence": [
+    {
+      "path": "evidence/group6-delivery-audit.md",
+      "sha256": "c0027986dd22b60bdcf892ec5c79f29df639ddb0b57974ab41bca4a90e3b24cc"
+    },
+    {
+      "path": "evidence/implementation-report.md",
+      "sha256": "8fe7981644e83252e0c34d9bf809306b1b1c619fdf0cee9d89eb9e03742f38c4"
+    },
+    {
+      "path": "evidence/logs/group1-baseline.log",
+      "sha256": "d421a2fe9e43119ace15a926250c9d41158269445280961af0cf729e1b72e657"
+    },
+    {
+      "path": "evidence/logs/group1-family-sweep.log",
+      "sha256": "89d743f06c3bfe9bbe6029807e3b5afd8d046bade13d726819550ab54d7916ab"
+    },
+    {
+      "path": "evidence/logs/group1-frozen-byte-control.log",
+      "sha256": "df207c04e5c7a5e79af6c90aa06e976bb887109b8c72be0e51f507ed9f590ede"
+    },
+    {
+      "path": "evidence/logs/group1-p3-runner-reference.log",
+      "sha256": "f80fad1089366c82f2a28ed9bc4012ccba191cfa45d4d2365ed8495dcdbad1c8"
+    },
+    {
+      "path": "evidence/logs/group2-consumer-view-fresh-pack.log",
+      "sha256": "542fafff23f8f78a5bb1d3adbc75127d1dcce43cb11154788488b7925b9263f5"
+    },
+    {
+      "path": "evidence/logs/group2-consumer-view-prepacked.log",
+      "sha256": "624662195e515e8bf00c141e423fefdb9a088b99272e74f6b40b3d54593289c3"
+    },
+    {
+      "path": "evidence/logs/group2-examples-runner-consumer-view-only.log",
+      "sha256": "cb5ac6193e22e583cb0ec879e0a8af162df88884daf9f2cc6daec519f237adec"
+    },
+    {
+      "path": "evidence/logs/group2-examples-runner-placeholder.log",
+      "sha256": "6500c56306d3dc43fd69a29a721db0e20a495cf7383478595c890ae528293a97"
+    },
+    {
+      "path": "evidence/logs/group2-examples-runner-subset-seam.log",
+      "sha256": "4a810be9c5788c82f29382c7664d647355fa3601984644649f07a6e94b45dcd8"
+    },
+    {
+      "path": "evidence/logs/group2-examples-runner-unknown-name-guard.log",
+      "sha256": "e9cccd502169c41cb427070bb03064ac04ee8c038d9d05f19aeb88e092e39967"
+    },
+    {
+      "path": "evidence/logs/group2-p3-rerun-post-extraction.log",
+      "sha256": "8795e957cd243b4be56a820075c7dd057100d0657b5ccbc1a5a801f67244c510"
+    },
+    {
+      "path": "evidence/logs/group3-agent-transaction.log",
+      "sha256": "e4b92df12c12a7e1c55c712945582d00511bf496ddf9ab02b8cb79a79bbf771b"
+    },
+    {
+      "path": "evidence/logs/group3-custom-storage.log",
+      "sha256": "c1e46b52a9187574977f209f19ff84d72e6b8eeecdd78eff5fb3f4ef6a5fe75c"
+    },
+    {
+      "path": "evidence/logs/group3-embed-surface.log",
+      "sha256": "4dd650a0d6961420f3d02745cb08a001007db1109d80fa8cbf68702420a008dc"
+    },
+    {
+      "path": "evidence/logs/group3-full-run.log",
+      "sha256": "1f09f7c43b31d705f33ee8dee97d900d318dbac488c0f8dc20e755b45fb232d1"
+    },
+    {
+      "path": "evidence/logs/group3-install-packages.log",
+      "sha256": "9487c9ea4a0c00eb14e6e31201d3b350dd2a30987ff07ebe32b7f553ff847220"
+    },
+    {
+      "path": "evidence/logs/group4-census.log",
+      "sha256": "789c11fc49dc3be6c79c1fbf2c66fbbc73e65d279dd9167805de17a61876c5b5"
+    },
+    {
+      "path": "evidence/logs/group4-checker-audit.log",
+      "sha256": "d5a487b1a8934c39bc94ecdfaa6fee82287ab60980ee3b0450e1acd6db958b1b"
+    },
+    {
+      "path": "evidence/logs/group5-ci-dry-run-first-attempt-failed.log",
+      "sha256": "4750d8f53b56888c337afb074aa94c6368a6572919b82c89350611e618f67b29"
+    },
+    {
+      "path": "evidence/logs/group5-ci-dry-run.log",
+      "sha256": "1d67d19d18f22725177a7f9905d05b72d9913bb8aed43ef9469fe84edf885889"
+    },
+    {
+      "path": "evidence/logs/group5-control-1c-default-refused.log",
+      "sha256": "f12c4ea9c092ad25a53a20ddfea6a8dff5e11e4cb480f4a11dec93bc7e55c5f0"
+    },
+    {
+      "path": "evidence/logs/group5-full-run-clean.log",
+      "sha256": "585e420dedb70ba2a221f849aef98ea45cc4b77b2e4cfef09060dc85a0ae8356"
+    },
+    {
+      "path": "evidence/logs/group5-subset-seam-clean.log",
+      "sha256": "8c0c4a3460c4a18180e758f896de22667fbd86daf96ac905142425d5e04a15cd"
+    },
+    {
+      "path": "evidence/logs/group6-f2-support-verifications.log",
+      "sha256": "ee061397a41200688f513e3c30eb65b730ed4b30b2c6d3ea315be6232fffbcd0"
+    },
+    {
+      "path": "evidence/logs/group6-family-sweep.log",
+      "sha256": "07627e878286f4b326a074f46323610bf931994acb73b601d04bb67fc6aad598"
+    },
+    {
+      "path": "evidence/logs/group6-frozen-byte-control.log",
+      "sha256": "6354ae33ce9a3379fb5f358bcc689d2acdad570fb8300dbe9c1f71051e4c2a65"
+    },
+    {
+      "path": "evidence/logs/group6-sweep-guard.log",
+      "sha256": "e971fc23ed332538e19bc36a52e53b2907b8f89b64290eb1a6a8f9b5b9e5a37d"
+    },
+    {
+      "path": "evidence/logs/group6-validate.log",
+      "sha256": "77d6dcbab84969d1e8c905f917931a54e66ac3daca631de36eef644bc1beca01"
+    },
+    {
+      "path": "evidence/logs/group7-ship.log",
+      "sha256": "b04f29497609619d9f6b6361de219d3293a27c46b8c5afdf1f88d1a47db432ca"
+    },
+    {
+      "path": "evidence/logs/review1-full-run-clean.log",
+      "sha256": "cc54c48c8b1bd3d461827b358c76efc394eb84ec3530acd5e712d2dd345c21ea"
+    },
+    {
+      "path": "evidence/logs/review1-gates.log",
+      "sha256": "bd604864dde392e7c33d958a1e63cc7882346fc38c8d97f6806975cd944b80ab"
+    },
+    {
+      "path": "evidence/logs/review1-synthetic-dangling-fail.log",
+      "sha256": "f2751b5413e19b56fe231dd3d81ebfaa6689ed902650844a5fb159f77294c59f"
+    },
+    {
+      "path": "evidence/logs/ship-gates.log",
+      "sha256": "94f7c46511135c70d45e0d9c9b736cffbb035a2b51cce77d7fe6d80f0e69aeaf"
+    },
+    {
+      "path": "evidence/review-report.md",
+      "sha256": "2587bede5846bf65169113ce62aa42b7295b49db0953a282a699c7268d3786cf"
+    },
+    {
+      "path": "evidence/ship-log.md",
+      "sha256": "0f46807a839131e427393fd96319f9be982f6eff14f1983cb27163821d88908e"
+    }
+  ],
+  "probes": [],
+  "handoffAbsorbed": [],
+  "ephemeraDiscarded": [],
+  "missing": [
+    "verification-report"
+  ]
+}

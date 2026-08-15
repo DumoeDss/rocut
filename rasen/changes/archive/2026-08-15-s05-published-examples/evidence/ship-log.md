@@ -258,3 +258,8 @@ standDown to send).
   the archive transaction commits them with the change.
 - Review round 1's re-review append to `evidence/review-report.md` is
   committed by this ship step, unmodified (P2/P3/P5 precedent).
+
+## Archive
+**Date:** 2026-08-15T15:02:31.139Z
+**Outcome:** archived at E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\rasen\changes\archive\2026-08-15-s05-published-examples
+**Transaction:** 69a6fd4b-7df6-4fa4-b685-342b4d1f3cd1
