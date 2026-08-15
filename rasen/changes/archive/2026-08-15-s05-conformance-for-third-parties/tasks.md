@@ -131,13 +131,17 @@
       reuse seam for P6), the three attributed entry additions, and the non-coverage statement
       (no CI leg — P6 owns it reusing this harness; registry behaviour excluded by B1; no
       browser-manager adapter beyond the draft fixture's needs).
-- [ ] 7.5 Execute-and-verify the P1-move path refresh rider (design E10, LEAD-ruled in scope
+- [x] 7.5 Execute-and-verify the P1-move path refresh rider (design E10, LEAD-ruled in scope
       2026-08-14): the five refreshed `transaction-automation-api` requirement blocks land
       through this change's delta with path text only — no semantics, scenario-inventory, or
       acceptance-wording change, every scenario heading verbatim. **After archive**, run
       `grep -c 'apps/web/src/editor/contracts' rasen/specs/transaction-automation-api/spec.md`
       and record the result — it MUST be `0`. A non-zero count means a stale reference survived
       the delta and must be fixed before the change closes.
+      Ticked by the archiver 2026-08-15, post-archive by design: after the archive
+      transaction synced this change's delta, the grep returned `0` (all six
+      delta blocks landed verbatim; headings byte-identical, count 40→40). See
+      ship-log.md § "Box 7.5 — deliberately OPEN at ship".
 - [x] 7.6 Spec-falsification sweep: name which governance-spec §3 groups this change advanced
       (§3.5 fully; §4.1(a)'s harness obligation discharged) and which it left untouched, in the
       honest register prior children used.
