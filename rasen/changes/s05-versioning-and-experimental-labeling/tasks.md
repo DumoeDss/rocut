@@ -70,12 +70,12 @@
 
 ## 5. The consumer view, proven from tarballs
 
-- [ ] 5.1 Pack via the P3 module and verify from the packed inventory + extract, not the
+- [x] 5.1 Pack via the P3 module and verify from the packed inventory + extract, not the
       workspace: every tarball's version is `0.x`; each ships `README.md` containing the policy;
       each ships `surface.json` classifying exactly its export-map entries (count reconciliation
       against 4.1's census); at least one non-frozen entry's `@opencutSurface` marker is present
       in the extracted source. Self-log `REAL_EXIT_CODE`.
-- [ ] 5.2 Manifest truth (P3's rule): assert the packages' dependency blocks are unchanged
+- [x] 5.2 Manifest truth (P3's rule): assert the packages' dependency blocks are unchanged
       except version fields — labeling adds no runtime-closure import. If implementation added
       any, declare it in the same commit and run the scratch harness
       (`run-scratch-conformance.mjs`) before claiming this group done; record the run.

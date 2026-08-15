@@ -109,9 +109,9 @@ Adjudications, all with reasons recorded in the files themselves:
   enforced (checker rule 3, exercised by its negative control's dangling-override case).
 
 **3.2 — 19 markers, zero frozen files touched.** `@opencutSurface <class> — <reason>`
-inserted as the first doc-comment block of every provider (15) and experimental (4... plus
-the two requirements entries = 6 experimental total across packages: 19 marker blocks:
-ports 1 + contracts 1 + classic 17). Controls run IMMEDIATELY after the batch
+inserted as the first doc-comment block of every provider (13) and experimental (6) entry
+target across the three packages — 19 marker blocks: ports 1 + contracts 1 + classic 17.
+Controls run IMMEDIATELY after the batch
 (`evidence/logs/group3-post-marker-controls.log`): the four frozen surfaces still
 IDENTICAL at base `5aae75ec`; all 25 touched/new files LF (`tr -dc '\r' | wc -c` = 0 each;
 `git ls-files --eol` over the diff set: 22 files `i/lf w/lf`). No frozen-CLASSIFIED entry
@@ -163,3 +163,60 @@ exported through the fixture barrel), and prose mentioning a class name — all 
   consumer-view evidence module, both `.mjs` outside every package graph); every rule
   count unchanged (989 package-graph files, 362 edges, 361 specifiers, 870 / 74 scanned).
   BOUNDARIES.md's table row recorded in Group 6.
+
+## Group 5 — The consumer view, from the tarballs (tasks 5.1, 5.2)
+
+**5.1** — `evidence/consumer-view-from-tarballs.mjs` (imports `packSdkTarballs` from
+`script/pack-sdk-tarballs.mjs` — the P3 module, never re-implemented; Windows ESM notes:
+`pathToFileURL` for the import, relative tarball path + `cwd` for GNU tar). It packs at
+the current revision, extracts every `@opencut/*` tarball under
+`dist-sdk-tarballs/.consumer-view/`, and verifies what a consumer receives — never the
+workspace (`evidence/logs/group5-consumer-view.log`,
+`REAL_EXIT_CODE[consumer-view]:0`):
+
+- every packed manifest version is `0.x` (all three `0.2.0`, read from the EXTRACTED
+  `package.json`, not the workspace);
+- every tarball's inventory lists `README.md`, and the extracted README contains the
+  policy statement (matched on `Compatibility policy (\`0.x\`)`, printed only by the new
+  READMEs);
+- every tarball's inventory lists `surface.json`, and its entries classify EXACTLY the
+  packed export map (set-equal both directions: 6 / 11 / 19, reconciling line-for-line
+  with 4.1's census — frozen 17, provider 13, experimental 6);
+- markers verified in the EXTRACTED source for all 19 non-frozen entries (the task's
+  clause is "at least one"; the verifier checks every one), and no frozen entry's file
+  carries a marker — 17 frozen files checked marker-free from the tarballs.
+
+**The finding this proof caught (escalated, not patched).** The first full run FAILED
+with ENOENT reading `src/vectors/drivers/index.ts` from the extracted contracts tarball.
+Investigation: `@opencut/editor-contracts`'s `./vectors/drivers` export entry — declared
+by S05 P0's boundary-freeze commit `5e3fc7cb`, present in the map at base `5aae75ec` —
+points at a file that was **never authored in any commit** (`git log --all` over the path
+is empty; the directory holds only `durable.ts` and `in-memory.ts`, both consumed via
+relative imports; zero in-repo consumers import the entry by specifier). It is a dangling
+export-map entry: a consumer importing `@opencut/editor-contracts/vectors/drivers`
+receives a module-not-found from the shipped package. Every workspace-side gate is blind
+to it — the boundary checker never validates target existence, `tsc` never resolves an
+entry nothing imports, and this change's labels checker originally read a missing frozen
+target as marker-free (a vacuous pass). The from-tarballs proof caught it precisely
+because it reads the packed artifact. **Disposition:** NOT repaired here. Authoring the
+missing `index.ts` means choosing what a frozen-classified entry exports; removing the
+entry means removing frozen-classified surface — both are contract adjudication, which
+labeling does not do. Instead both tools were hardened to carry the truth:
+
+- `check-sdk-surface-labels.mjs`: a declared target absent from disk now FAILs for
+  provider/experimental rows (the marker cannot live in a missing file) and is reported
+  as a `dangling-export-entries` census finding for frozen rows — the live census prints
+  `dangling-export-entries: 1` naming `./vectors/drivers` every run, so the defect is
+  machine-visible until adjudicated. Negative control gained the non-frozen absent-target
+  world (fires `marker-agreement`); converse control gained the frozen absent-target
+  world (exactly one dangling finding, zero violations). All three modes re-run green.
+- `consumer-view-from-tarballs.mjs`: the same split — FAIL for non-frozen, reported
+  finding for frozen — logged as
+  `finding dangling-export-entry @opencut/editor-contracts ./vectors/drivers -> ...`.
+
+**5.2 — manifest truth** (`evidence/logs/group5-manifest-truth.log`, `REAL_EXIT_CODE:0`):
+all three packages' dependency blocks are byte-identical to base `5aae75ec`; the only
+top-level manifest keys changed are `version` (0.1.0 → 0.2.0) and `files`
+(+`surface.json`). Labeling added NO runtime-closure import, so P3's scratch-harness
+obligation is not triggered (the rule: run `run-scratch-conformance.mjs` only if an
+import was added — none was).

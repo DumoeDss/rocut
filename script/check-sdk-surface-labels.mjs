@@ -20,17 +20,22 @@
  *                         manifest; a frozen row's target file carries NO marker at
  *                         all — frozen classification lives in the manifest alone,
  *                         which is what keeps labeling from ever editing a frozen
- *                         file (the S03+S04 freeze stays byte-identical).
+ *                         file (the S03+S04 freeze stays byte-identical). A declared
+ *                         target that does not exist FAILS for provider/experimental
+ *                         and is reported as a dangling-export-entry finding for
+ *                         frozen (repairing or removing a declared entry is
+ *                         contract adjudication, not a labeling patch).
  *   3. override-validity  every symbol-level override names a symbol the entry
  *                         actually exports, resolved by the same source-scan
  *                         extraction idiom the boundary checker uses (export
  *                         statements + transitive re-export resolution — no TS
  *                         parser, no execution).
  *
- * Census lines print every run: per-package entry counts and per-class counts. The
- * numbers are regression tests (P1's lesson: a collapsed census is a failure at
- * `PASS`). An empty scan — no packages, or no entries anywhere — refuses to pass
- * (exit 2), the house empty-scan idiom.
+ * Census lines print every run: per-package entry counts, per-class counts, and a
+ * dangling-export-entries count (declared targets absent from disk). The numbers
+ * are regression tests (P1's lesson: a collapsed census is a failure at `PASS`).
+ * An empty scan — no packages, or no entries anywhere — refuses to pass (exit 2),
+ * the house empty-scan idiom.
  *
  * Marker position is authoring discipline, not a rule: the design places the marker
  * as the entry file's first doc-comment line, but this check enforces presence and
@@ -43,15 +48,18 @@
  *
  *   --negative-control   an unlabeled experimental export (entry + manifest row
  *                        whose target file carries no marker), an export entry
- *                        with no manifest row at all, an unknown-class row, and a
- *                        dangling symbol override — each must fire, named, or the
- *                        control exits non-zero. The unlabeled-export pair is the
- *                        spec's own named evidence ("an unlabeled experimental
+ *                        with no manifest row at all, an unknown-class row, a
+ *                        dangling symbol override, and a non-frozen row whose
+ *                        declared target is absent — each must fire, named, or
+ *                        the control exits non-zero. The unlabeled-export pair is
+ *                        the spec's own named evidence ("an unlabeled experimental
  *                        export fails").
  *   --converse-control   correctly labeled rows, frozen rows WITHOUT markers (the
- *                        designed state), a resolving symbol override, and prose
- *                        that mentions a class name — all must stay silent, or the
- *                        control exits non-zero.
+ *                        designed state), a resolving symbol override, prose that
+ *                        mentions a class name, and a frozen row whose declared
+ *                        target is absent — all must stay silent (the absent
+ *                        frozen target reported as exactly one dangling finding),
+ *                        or the control exits non-zero.
  *
  *   node script/check-sdk-surface-labels.mjs
  *   node script/check-sdk-surface-labels.mjs --negative-control
@@ -183,6 +191,7 @@ function resolveExportSource(fromFile, spec, textOf) {
 function scan({ packages }) {
 	const violations = [];
 	const census = [];
+	const dangling = [];
 	let totalEntries = 0;
 
 	for (const pkg of packages) {
@@ -241,8 +250,15 @@ function scan({ packages }) {
 			const targetAbs = resolve(pkg.dir, target);
 			const text = pkg.textOf(targetAbs);
 
-			// Rule 2 — marker agreement.
+			// Rule 2 — marker agreement. A declared target that does not exist is
+			// recorded as a dangling-export-entry finding: FAIL for provider/
+			// experimental (their marker cannot live in a missing file), reported
+			// without failing for frozen — repairing or removing a declared entry
+			// is contract adjudication, not a labeling patch.
 			const markerClasses = text === null ? [] : [...text.matchAll(MARKER_PATTERN)].map((m) => m[1]);
+			if (text === null) {
+				dangling.push({ name: pkg.name, entry, target, cls: row.class });
+			}
 			if (row.class === "frozen") {
 				if (markerClasses.length > 0) {
 					violations.push({
@@ -250,6 +266,11 @@ function scan({ packages }) {
 						detail: `${pkg.name}: frozen entry "${entry}" target carries an @opencutSurface marker (${markerClasses.join(", ")}) — frozen classification lives in surface.json alone; editing a frozen file for labeling is contract pressure, never a patch`,
 					});
 				}
+			} else if (text === null) {
+				violations.push({
+					rule: "marker-agreement",
+					detail: `${pkg.name}: ${row.class} entry "${entry}" target ${target} does not exist — its @opencutSurface ${row.class} marker cannot live in a missing file (dangling export entry)`,
+				});
 			} else if (!markerClasses.includes(row.class)) {
 				violations.push({
 					rule: "marker-agreement",
@@ -294,7 +315,7 @@ function scan({ packages }) {
 		totalEntries += declaredEntries.length;
 	}
 
-	return { violations, census, totalEntries };
+	return { violations, census, dangling, totalEntries };
 }
 
 // ---------------------------------------------------------------------------
@@ -356,13 +377,19 @@ function runCheck() {
 		console.error("check-sdk-surface-labels: no packages discovered under packages/ — refusing to pass over an empty scan");
 		process.exit(2);
 	}
-	const { violations, census, totalEntries } = scan({ packages });
+	const { violations, census, dangling, totalEntries } = scan({ packages });
 	if (totalEntries === 0) {
 		console.error("check-sdk-surface-labels: zero export entries scanned — refusing to pass over an empty scan");
 		process.exit(2);
 	}
 	console.log(`check-sdk-surface-labels: scanned ${packages.length} package(s), ${totalEntries} export entries`);
 	for (const line of renderCensus(census, totalEntries)) console.log(line);
+	console.log(`  census  dangling-export-entries: ${dangling.length}`);
+	for (const d of dangling) {
+		console.log(
+			`    finding ${d.name} ${d.entry} -> ${d.target} (${d.cls}) — declared but absent; repairing or removing an entry is contract adjudication, not a labeling patch`,
+		);
+	}
 	const failed = new Set(violations.map((v) => v.rule));
 	for (const rule of RULES) {
 		const state = failed.has(rule.id) ? "FAIL" : "PASS";
@@ -482,6 +509,16 @@ function runNegativeControl() {
 		};
 		worlds.push({ label: "row naming an undeclared entry", world });
 	}
+	// (7) A non-frozen row whose declared target does not exist — the marker
+	// cannot live in a missing file (the live tree's dangling-entry class pair).
+	{
+		const world = baseFixture();
+		world.packages[0].exports = { ...world.packages[0].exports, "./void": "./src/not-there.ts" };
+		world.packages[0].surface = {
+			entries: { ...world.packages[0].surface.entries, "./void": { class: "provider", reason: "points nowhere" } },
+		};
+		worlds.push({ label: "non-frozen entry with an absent target", world });
+	}
 
 	const ruleToLabel = new Map([
 		["unlabeled experimental export (row without marker)", "marker-agreement"],
@@ -490,6 +527,7 @@ function runNegativeControl() {
 		["dangling symbol override", "override-validity"],
 		["marker on a frozen-classified file", "marker-agreement"],
 		["row naming an undeclared entry", "completeness"],
+		["non-frozen entry with an absent target", "marker-agreement"],
 	]);
 
 	let missed = 0;
@@ -514,7 +552,10 @@ function runNegativeControl() {
 function runConverseControl() {
 	const world = baseFixture();
 
-	// Add a RESOLVING symbol override (Widget is really exported through the barrel).
+	// Add a RESOLVING symbol override (Widget is really exported through the barrel),
+	// and a frozen row whose declared target is absent — reported as the single
+	// dangling finding, never a violation.
+	world.packages[0].exports = { ...world.packages[0].exports, "./void-frozen": "./src/not-there.ts" };
 	world.packages[0].surface = {
 		entries: {
 			...world.packages[0].surface.entries,
@@ -523,18 +564,24 @@ function runConverseControl() {
 				reason: "convenience barrel",
 				symbols: [{ symbol: "Widget", class: "provider", reason: "the barrel's own class atom" }],
 			},
+			"./void-frozen": { class: "frozen", reason: "declared but never authored" },
 		},
 	};
 
-	const { violations, census, totalEntries } = scan({ packages: world.packages });
+	const { violations, census, dangling, totalEntries } = scan({ packages: world.packages });
 	for (const line of renderCensus(census, totalEntries)) console.log(line);
+	console.log(`  census  dangling-export-entries: ${dangling.length}`);
 	if (violations.length > 0) {
 		console.log("converse control FAILED: correctly labeled surface produced violation(s):");
 		for (const violation of violations) console.log(`    ${violation.rule}: ${violation.detail}`);
 		process.exit(1);
 	}
+	if (dangling.length !== 1 || dangling[0].entry !== "./void-frozen" || dangling[0].cls !== "frozen") {
+		console.log("converse control FAILED: the absent frozen target was not reported as exactly one frozen dangling finding");
+		process.exit(1);
+	}
 	console.log(
-		"converse control: silence over correctly labeled rows, frozen rows without markers (the designed state), a resolving override, and prose that merely mentions a class name.",
+		"converse control: silence over correctly labeled rows, frozen rows without markers (the designed state), a resolving override, prose that merely mentions a class name, and an absent frozen target reported as a finding rather than a violation.",
 	);
 }
 

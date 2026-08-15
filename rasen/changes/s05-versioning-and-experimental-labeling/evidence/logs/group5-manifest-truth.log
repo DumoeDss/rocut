@@ -1,0 +1,12 @@
+Manifest truth (task 5.2): dependency blocks vs base 5aae75ec — labeling adds no runtime-closure import
+
+editor-ports: dependency blocks identical: True; top-level keys changed: ['files', 'version']
+  version: 0.1.0 -> 0.2.0
+  files: ['dist', 'src', 'README.md', 'LICENSE', 'NOTICE'] -> ['dist', 'src', 'surface.json', 'README.md', 'LICENSE', 'NOTICE']
+editor-contracts: dependency blocks identical: True; top-level keys changed: ['files', 'version']
+  version: 0.1.0 -> 0.2.0
+  files: ['dist', 'src', 'README.md', 'LICENSE', 'NOTICE'] -> ['dist', 'src', 'surface.json', 'README.md', 'LICENSE', 'NOTICE']
+editor-classic: dependency blocks identical: True; top-level keys changed: ['files', 'version']
+  version: 0.1.0 -> 0.2.0
+  files: ['dist', 'src', 'README.md', 'LICENSE', 'NOTICE'] -> ['dist', 'src', 'surface.json', 'README.md', 'LICENSE', 'NOTICE']
+REAL_EXIT_CODE:0
