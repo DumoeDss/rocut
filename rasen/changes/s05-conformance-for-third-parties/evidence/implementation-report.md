@@ -391,6 +391,33 @@ which it deliberately left untouched (governance spec = the Slice spec at
   the classic-chain loading failures are recorded as findings and escalated, and frozen-surface
   pressure would have been returned, never applied — none arose).
 
+## Group 8 — Ship discipline (tasks 8.1–8.4)
+
+**8.1 — line endings.** Every file written or generated this change was `tr -d '\r'`-normalized
+at write time with a `tr -dc '\r' | wc -c` = 0 check before staging (the Write-tool CRLF flip
+and tsc's CRLF output are both standing hazards on this machine). The closing audit ran
+`git ls-files --eol` over the change's full path set — 59 files changed across
+`8248a115..HEAD`: the 35 non-`rasen/` files all `i/lf w/lf` (index and worktree agree, LF
+both), the 24 evidence files all `w/lf`. Zero binary, zero mixed, zero CRLF, zero
+index/worktree divergence.
+
+**8.2 — staging discipline.** Every commit staged explicit pathspecs only (never `git add -A`)
+and asserted the staged set contains zero `.rasen/` paths — the `grep -c` result captured in a
+variable each time, because `grep -c` exits 1 on zero and would otherwise read as failure.
+`RASEN_STAGED:0` held at every commit including the final one. No `--no-verify` was ever
+passed (no hooks exist).
+
+**8.3 — local commits.** Seven commits on `feat/s05-community-beta`, one per group:
+`7e2f429d` (G1 gate), `ca41ceb0` (G2 entries), `ee0f4200` (G3 legibility), `09e7d458`
+(G4 harness), `bc1a0c4e` (G5 adapter), `e7ca7fdb` (G6 mutation matrix), `75bafcc1` (G7
+close-out), plus this group's ship record. Nothing pushed — the portfolio delivers once, at
+the parent.
+
+**8.4 — standDown.** LEAD-owned per dispatch, conditional on the review loop going clean.
+Nothing to signal from here: this change has no parked workers (`signals/` does not exist
+under the change root), so the pre-archive condition "confirm `signals/.state/` is empty"
+holds vacuously at hand-off.
+
 ## Open items
 
 - **Phantom-dep blocker (escalated to LEAD, awaiting ruling):** confirmed concretely in Group 5
@@ -398,4 +425,5 @@ which it deliberately left untouched (governance spec = the Slice spec at
   init. The adapter's migration leg records the finding and skips distinctly; the walker is
   validated against the real chain via the published mock entry. A package-side fix (declare or
   bundle the closure) is LEAD's call.
-- Group 7 complete (see above). Group 8 (EOL audit, staging guards, ship) remains.
+- Groups 1–8 complete. Implementation finished; review + archive are LEAD's. Box 7.5
+  (post-archive rider verification) executes at close-out per its own text.

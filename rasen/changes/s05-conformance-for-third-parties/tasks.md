@@ -144,13 +144,13 @@
 
 ## 8. Ship
 
-- [ ] 8.1 Line endings per stage (`tr -dc '\r' < f | wc -c` after every write; `git ls-files --eol`
+- [x] 8.1 Line endings per stage (`tr -dc '\r' < f | wc -c` after every write; `git ls-files --eol`
       over the change's path set at the end) — the Write tool flips CRLF on this machine, and tsc
       output captured into logs carries CRLF (normalize when the log is the deliverable).
-- [ ] 8.2 Stage explicit pathspecs; the `.rasen/` staging guard (`RASEN_COUNT=$(git diff --cached
+- [x] 8.2 Stage explicit pathspecs; the `.rasen/` staging guard (`RASEN_COUNT=$(git diff --cached
       --name-only | grep -c '^\.rasen/')` — `grep -c` exits 1 on zero, capture it in a variable)
       before every commit. Never `git add -A`. No `--no-verify` (no hooks exist).
-- [ ] 8.3 Commit locally to `feat/s05-community-beta`, one `feat(<change>):` commit per group.
+- [x] 8.3 Commit locally to `feat/s05-community-beta`, one `feat(<change>):` commit per group.
       **Ship mode is local; do not push** — the portfolio delivers once, at the parent.
 - [ ] 8.4 The moment the review loop goes clean, `{"kind":"standDown"}` to any parked worker's
       `<changeRoot>/signals/<role>.json`, confirm `signals/.state/` is empty before the archive is
