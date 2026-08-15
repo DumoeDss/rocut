@@ -332,3 +332,45 @@ same default-env path, green end to end.
 
 No example needed a missing export entry — the escalation clause never fired;
 no barrel was invented.
+
+## Group 4 — Consumer declaration and census (tasks 4.1, 4.2)
+
+**4.1 — the consumer record and the reconciled census**
+(`evidence/logs/group4-census.log`): `packages/boundary.json` gains
+`{ "id": "examples", "root": "examples" }` beside the existing three — the
+vite-example shape (files owned outright, no `ownership: "map"`), per the
+existing records' precedent. The checker's derived scan roots picked it up
+with no script edit. Census at the shipping tree: **1110 → 1135 repo files**
+(`+25 = +22 examples code files + 3 script files this change added since the
+4f0b9c69 baseline` — `check-sdk-consumer-view.mjs`,
+`run-published-examples.mjs`, `scratch-install-harness.mjs`; reconciled
+against the checker's own printed filter
+`.ts/.tsx/.js/.jsx/.mjs/.cjs/package.json/bun.lock`, figure-exact), package
+graph 989 → 1011 (+22, the examples), cross-package edges 362 → 416 and
+`@opencut/*` specifiers 361 → 415 (+54 — the examples' import surface),
+no-internal-reexport 870 and react-free-base 74 unchanged, all five rules
+PASS, exit 0.
+
+**4.2 — the checker-audit rows** (`evidence/logs/group4-checker-audit.log`),
+every checker that could see the new paths, disposition per row:
+
+- `no-elftia-import` (inside check-package-boundary): auto-covers — its
+  scanned-file count moved 1110 → 1135 with the examples inside, PASS. The
+  rule's own clause already reads "no package, Host **or example**".
+- `check-host-composition`: deliberately Host-scoped — "3 Host roots", the
+  examples are not Hosts and are invisible to it by design; exit 0 unchanged.
+- `check-type-baseline`: deliberately `apps/web`-scoped — each example
+  type-checks itself in its own execution (EXIT[typecheck]:0 ×4 in the full
+  run); the checker stays at its known capture-run-needing exit 1 with the
+  same two classic-test TS2769 failures as the Group-1 baseline (its
+  total-now count improved 3 → 2 — one at-pin diagnostic no longer
+  reproduces after classic's dependency repair; the failing set is
+  unchanged).
+- `check-distributable-boundary`: stays vite-graph-scoped — composition "683
+  editor packages, 15 example host, 3140 dependencies, 4 other", exit 0; the
+  examples are not part of the distributable graph it audits.
+- `check-sdk-surface-labels`: scoped to the packages' export maps — the
+  examples carry no labels (they CITE them in README tables); completeness /
+  marker-agreement / override-validity / target-existence all PASS, exit 0.
+- `check-sdk-consumer-view` (this change's own Group-2 checker): verified
+  against freshly packed tarballs — 0 failures, 0 dangling, exit 0.

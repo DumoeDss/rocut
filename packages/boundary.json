@@ -8,7 +8,8 @@
   "consumers": [
     { "id": "apps/web", "root": "apps/web/src", "ownership": "map" },
     { "id": "apps/vite-example", "root": "apps/vite-example" },
-    { "id": "apps/electron-host", "root": "apps/electron-host/src" }
+    { "id": "apps/electron-host", "root": "apps/electron-host/src" },
+    { "id": "examples", "root": "examples" }
   ],
   "shellPaths": [
     "apps/web/src/app",

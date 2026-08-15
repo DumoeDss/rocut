@@ -1,0 +1,9 @@
+check-package-boundary: scanned 1135 repo file(s) (tracked + uncommitted)
+  PASS  acyclic-direction: every cross-package edge points to a strictly lower declared layer (1011 file(s) scanned, 416 cross-package edge(s) examined)
+  PASS  public-entry-only: a specifier crossing into a package resolves only to a declared exports subpath (1011 file(s) scanned, 415 @opencut/* specifier(s) examined)
+  PASS  no-internal-reexport: no package's declared entry re-exports a module owned by another package's undeclared internals (870 file(s) scanned)
+  PASS  no-elftia-import: no package, Host or example imports an Elftia package, protocol identifier or runtime object (1135 file(s) scanned)
+  PASS  react-free-base: editor-ports and editor-contracts import no React, no DOM global, and no editor-classic module (74 file(s) scanned)
+
+clean — run with --negative-control / --converse-control to see each rule proven able to fire, and proven not to misfire.
+REAL_EXIT_CODE:0

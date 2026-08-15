@@ -1,0 +1,138 @@
+=== node script/check-host-composition.mjs ===
+check-host-composition: scanned 3 Host roots and 835 production modules
+  PASS  stable explicit durable stores are the final Host override
+  PASS  EditorHost is required; its protected resolver is identity-only
+  PASS  no retired adapter, process-global storage or private persistence context exists
+REAL_EXIT_CODE[check-host-composition]:0
+=== node script/check-type-baseline.mjs ===
+check-type-baseline: 3 diagnostic(s) now, 13 at the pin cf5e79e9
+  compiler TypeScript 5.9.3, comparison key = file + code + message
+  942 repo file(s) type-checked now (4330 total, including lib/dependency declarations)
+
+Present at the pin, absent or reduced now:
+  src/actions/keybindings/persistence.ts TS2345 (2 -> 0)
+  src/actions/keybindings/persistence.ts TS2724 (1 -> 0)
+  src/actions/keybindings/persistence.ts TS2724 (1 -> 0)
+  src/services/storage/migrations/runner.ts TS2554 (1 -> 0)
+  src/services/storage/migrations/runner.ts TS2554 (1 -> 0)
+  src/services/storage/migrations/v1-to-v2.ts TS2554 (3 -> 0)
+  src/stickers/providers/index.ts TS2554 (1 -> 0)
+  src/timeline/__tests__/update-pipeline.test.ts TS2769 (1 -> 0)
+  src/timeline/placement/__tests__/resolve.test.ts TS2769 (1 -> 0)
+  Not a failure. Benign if a baseline defect was deliberately repaired; investigate if
+  unexplained, because a shrunken type-check scope also looks like this.
+
+FAIL  2 diagnostic(s) not present at the pin — S01 regressions:
+  ../../packages/editor-classic/src/timeline/__tests__/update-pipeline.test.ts:69 TS2769 (pin 0, now 1)
+    No overload matches this call. Overload 1 of 2, '(expected: MediaTime): void', gave the following error. Argument of type 'number' is not assignable to parameter of type 'MediaTime'. Type 'number' is not assignable to type '{ readonly __med
+  ../../packages/editor-classic/src/timeline/placement/__tests__/resolve.test.ts:646 TS2769 (pin 0, now 1)
+    No overload matches this call. Overload 1 of 2, '(expected: PlacementResult | null): void', gave the following error. Type 'number' is not assignable to type 'MediaTime'. Type 'number' is not assignable to type '{ readonly __mediaTime: uniq
+REAL_EXIT_CODE[check-type-baseline]:1
+=== node script/check-distributable-boundary.mjs ===
+check-distributable-boundary: 3842 module(s) in apps/vite-example/dist/module-graph.json
+  PASS  no-next-runtime — no Next.js runtime module
+  PASS  no-app-router — no Next app-router source
+  PASS  no-site-code — no marketing-site source
+  PASS  no-blog — no blog source
+  PASS  no-database — no database source
+  PASS  no-auth — no authentication source
+  PASS  no-landing — no landing-page components
+  PASS  no-changelog-notification — no changelog notification component
+  PASS  no-content-collections — no content-collections virtual module
+  PASS  no-desktop-app — no apps/desktop source
+
+Composition: 683 from the editor packages, 15 from the example host, 3140 from dependencies, 4 other.
+
+clean
+REAL_EXIT_CODE[check-distributable-boundary]:0
+=== node script/check-sdk-surface-labels.mjs ===
+check-sdk-surface-labels: scanned 3 package(s), 35 export entries
+  census  @opencut/editor-classic: 19 export entries — frozen 2, provider 13, experimental 4
+  census  @opencut/editor-contracts: 10 export entries — frozen 9, provider 0, experimental 1
+  census  @opencut/editor-ports: 6 export entries — frozen 5, provider 0, experimental 1
+  census  total: 35 export entries across 3 package(s) — frozen 16, provider 13, experimental 6
+  census  dangling-export-entries: 0
+  PASS  completeness: every export entry is classified in surface.json with a known class and a non-empty reason, and every row names a declared entry
+  PASS  marker-agreement: provider/experimental rows carry exactly one @opencutSurface marker matching the manifest class in their entry file; frozen rows carry none
+  PASS  override-validity: every symbol-level override names a symbol the entry actually exports
+  PASS  target-existence: every declared entry's target is a plain string whose file exists on disk
+clean — run with --negative-control / --converse-control to see each rule proven able to fire, and proven not to misfire.
+REAL_EXIT_CODE[check-sdk-surface-labels]:0
+=== node script/check-sdk-consumer-view.mjs ===
+check-sdk-consumer-view: verifying at 3f913b7a (reads the tarballs, never the workspace)
+packed packages/editor-ports -> opencut-editor-ports-0.2.0.tgz
+inventory: opencut-editor-ports-0.2.0.tgz — 23 file(s) hashed
+packed packages/editor-contracts -> opencut-editor-contracts-0.2.0.tgz
+inventory: opencut-editor-contracts-0.2.0.tgz — 61 file(s) hashed
+packed packages/editor-classic -> opencut-editor-classic-0.2.0.tgz
+inventory: opencut-editor-classic-0.2.0.tgz — 805 file(s) hashed
+packed rust/wasm/pkg -> opencut-wasm-0.2.10.tgz
+inventory: opencut-wasm-0.2.10.tgz — 7 file(s) hashed
+consumer-view: packed fresh tarballs into E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\dist-sdk-tarballs (4 file(s))
+
+=== @opencut/editor-ports@0.2.0 (opencut-editor-ports-0.2.0.tgz) ===
+  ok   packed manifest version is 0.x (found 0.2.0)
+  ok   packed inventory lists README.md
+  ok   README contains the policy statement ("Compatibility policy (`0.x`)")
+  ok   packed inventory lists surface.json
+  ok   surface.json classifies exactly the export-map entries (6 declared = 6 classified, set-equal)
+  census  @opencut/editor-ports: frozen 5, provider 0, experimental 1
+  ok   frozen entry . carries no marker in extracted source
+  ok   frozen entry ./conformance carries no marker in extracted source
+  ok   experimental entry ./conformance/requirements carries @opencutSurface experimental in extracted source
+  ok   frozen entry ./host carries no marker in extracted source
+  ok   frozen entry ./in-memory carries no marker in extracted source
+  ok   frozen entry ./in-memory/host carries no marker in extracted source
+  markers verified in extracted source: 1 non-frozen entries
+
+=== @opencut/editor-contracts@0.2.0 (opencut-editor-contracts-0.2.0.tgz) ===
+  ok   packed manifest version is 0.x (found 0.2.0)
+  ok   packed inventory lists README.md
+  ok   README contains the policy statement ("Compatibility policy (`0.x`)")
+  ok   packed inventory lists surface.json
+  ok   surface.json classifies exactly the export-map entries (10 declared = 10 classified, set-equal)
+  census  @opencut/editor-contracts: frozen 9, provider 0, experimental 1
+  ok   frozen entry . carries no marker in extracted source
+  ok   frozen entry ./conformance carries no marker in extracted source
+  ok   experimental entry ./conformance/requirements carries @opencutSurface experimental in extracted source
+  ok   frozen entry ./draft carries no marker in extracted source
+  ok   frozen entry ./draft/conformance carries no marker in extracted source
+  ok   frozen entry ./engine carries no marker in extracted source
+  ok   frozen entry ./engine/conformance carries no marker in extracted source
+  ok   frozen entry ./engine/invariant carries no marker in extracted source
+  ok   frozen entry ./vectors carries no marker in extracted source
+  ok   frozen entry ./vectors/corpus carries no marker in extracted source
+  markers verified in extracted source: 1 non-frozen entries
+
+=== @opencut/editor-classic@0.2.0 (opencut-editor-classic-0.2.0.tgz) ===
+  ok   packed manifest version is 0.x (found 0.2.0)
+  ok   packed inventory lists README.md
+  ok   README contains the policy statement ("Compatibility policy (`0.x`)")
+  ok   packed inventory lists surface.json
+  ok   surface.json classifies exactly the export-map entries (19 declared = 19 classified, set-equal)
+  census  @opencut/editor-classic: frozen 2, provider 13, experimental 4
+  ok   provider entry . carries @opencutSurface provider in extracted source
+  ok   provider entry ./browser carries @opencutSurface provider in extracted source
+  ok   experimental entry ./evidence carries @opencutSurface experimental in extracted source
+  ok   experimental entry ./evidence/headless carries @opencutSurface experimental in extracted source
+  ok   experimental entry ./evidence/headless-semantic-fixture carries @opencutSurface experimental in extracted source
+  ok   experimental entry ./evidence/wasm-test-mock carries @opencutSurface experimental in extracted source
+  ok   provider entry ./fonts carries @opencutSurface provider in extracted source
+  ok   provider entry ./media carries @opencutSurface provider in extracted source
+  ok   provider entry ./project carries @opencutSurface provider in extracted source
+  ok   provider entry ./renderer carries @opencutSurface provider in extracted source
+  ok   provider entry ./runtime carries @opencutSurface provider in extracted source
+  ok   provider entry ./session carries @opencutSurface provider in extracted source
+  ok   provider entry ./storage carries @opencutSurface provider in extracted source
+  ok   provider entry ./storage/conformance carries @opencutSurface provider in extracted source
+  ok   provider entry ./storage/migrations carries @opencutSurface provider in extracted source
+  ok   frozen entry ./surface carries no marker in extracted source
+  ok   frozen entry ./surface.css carries no marker in extracted source
+  ok   provider entry ./timeline carries @opencutSurface provider in extracted source
+  ok   provider entry ./ui carries @opencutSurface provider in extracted source
+  markers verified in extracted source: 17 non-frozen entries
+consumer-view: opencut-wasm-0.2.10.tgz — flat artifact (opencut-wasm), no surface clauses
+
+consumer-view: 0 failure(s), dangling-export-entries 0 — a declared-but-absent entry fails target-existence at any class (LEAD ruling 2026-08-15)
+REAL_EXIT_CODE[consumer-view]:0
+REAL_EXIT_CODE[check-sdk-consumer-view]:0

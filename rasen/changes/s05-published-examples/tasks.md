@@ -66,12 +66,12 @@
 
 ## 4. Consumer declaration and census
 
-- [ ] 4.1 Declare `examples` as a consumer in `packages/boundary.json` (`{id, root, ownership}`
+- [x] 4.1 Declare `examples` as a consumer in `packages/boundary.json` (`{id, root, ownership}`
       shape beside the existing three — the ownership field settled by the existing records'
       precedent). The checker's derived scan roots pick it up with no script edit (P2's
       derivation); re-run and reconcile the census growth against the examples' actual code-file
       counts (figures from the checker's own printed filter at a named commit, never prose).
-- [ ] 4.2 Checker-audit rows for every checker that could see the new paths: `no-elftia-import`
+- [x] 4.2 Checker-audit rows for every checker that could see the new paths: `no-elftia-import`
       auto-covers (confirm its file count moved), `check-host-composition` deliberately
       scoped (examples are not Hosts), type-baseline deliberately `apps/web`-scoped (each
       example type-checks itself in its own execution), distributable-boundary stays
