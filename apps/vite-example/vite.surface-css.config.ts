@@ -11,7 +11,7 @@ export default defineConfig({
 		outDir: "dist-surface-css",
 		emptyOutDir: true,
 		rollupOptions: {
-			input: resolve(here, "../web/src/editor/surface/surface.css"),
+			input: resolve(here, "../../packages/editor-classic/src/surface/surface.css"),
 		},
 	},
 });

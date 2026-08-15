@@ -51,10 +51,22 @@ const CARGO_HOME = process.env.CARGO_HOME ?? join(homedir(), ".cargo");
  * synthetic. `/cargo` covers every registry and git dependency; `/opencut` covers
  * this checkout, which is also what makes two clones at different paths able to
  * produce the same bytes.
+ *
+ * On POSIX, cargo hands rustc workspace-RELATIVE source paths (relative to the
+ * `rust/` workspace root), so the absolute-`REPO_ROOT` remap never matches the
+ * crate's own sources there — only dependencies under `CARGO_HOME` get remapped.
+ * Measured on ubuntu CI (check-wasm-paths): the binary carried paths like
+ * `/wasm/src/gpu.rs` and `/crates/gpu/src/context.rs` with zero `/opencut`
+ * occurrences. The two relative forms below are exactly the workspace's
+ * top-level source groups; a new group would surface as an unremapped path and
+ * fail the check, which is the check working. Windows passes absolute paths, so
+ * these two simply never match there.
  */
 const REMAPS = [
 	[CARGO_HOME, "/cargo"],
 	[REPO_ROOT, "/opencut"],
+	["/wasm/", "/opencut/rust/wasm/"],
+	["/crates/", "/opencut/rust/crates/"],
 ];
 
 const flags = REMAPS.map(([from, to]) => `--remap-path-prefix=${from}=${to}`);

@@ -1,0 +1,23 @@
+check-type-baseline: 3 diagnostic(s) now, 13 at the pin cf5e79e9
+  compiler TypeScript 5.9.3, comparison key = file + code + message
+  935 repo file(s) type-checked now (4323 total, including lib/dependency declarations)
+
+Present at the pin, absent or reduced now:
+  src/actions/keybindings/persistence.ts TS2345 (2 -> 0)
+  src/actions/keybindings/persistence.ts TS2724 (1 -> 0)
+  src/actions/keybindings/persistence.ts TS2724 (1 -> 0)
+  src/services/storage/migrations/runner.ts TS2554 (1 -> 0)
+  src/services/storage/migrations/runner.ts TS2554 (1 -> 0)
+  src/services/storage/migrations/v1-to-v2.ts TS2554 (3 -> 0)
+  src/stickers/providers/index.ts TS2554 (1 -> 0)
+  src/timeline/__tests__/update-pipeline.test.ts TS2769 (1 -> 0)
+  src/timeline/placement/__tests__/resolve.test.ts TS2769 (1 -> 0)
+  Not a failure. Benign if a baseline defect was deliberately repaired; investigate if
+  unexplained, because a shrunken type-check scope also looks like this.
+
+FAIL  2 diagnostic(s) not present at the pin — S01 regressions:
+  ../../packages/editor-classic/src/timeline/__tests__/update-pipeline.test.ts:69 TS2769 (pin 0, now 1)
+    No overload matches this call. Overload 1 of 2, '(expected: MediaTime): void', gave the following error. Argument of type 'number' is not assignable to parameter of type 'MediaTime'. Type 'number' is not assignable to type '{ readonly __med
+  ../../packages/editor-classic/src/timeline/placement/__tests__/resolve.test.ts:646 TS2769 (pin 0, now 1)
+    No overload matches this call. Overload 1 of 2, '(expected: PlacementResult | null): void', gave the following error. Type 'number' is not assignable to type 'MediaTime'. Type 'number' is not assignable to type '{ readonly __mediaTime: uniq
+REAL_EXIT_CODE:1

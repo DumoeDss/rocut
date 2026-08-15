@@ -5,11 +5,11 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@/components/ui/dialog";
-import type { TProjectMetadata } from "@/project/types";
-import { formatDate } from "@/utils/date";
+} from "@opencut/editor-classic/ui";
+import type { TProjectMetadata } from "@opencut/editor-classic/project";
+import { formatDate } from "@opencut/editor-classic";
 import { formatTimecode, mediaTimeToSeconds } from "opencut-wasm";
-import { Button } from "@/components/ui/button";
+import { Button } from "@opencut/editor-classic/ui";
 
 function InfoRow({
 	label,

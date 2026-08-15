@@ -1,0 +1,147 @@
+ship gates — s05-provenance-and-beta-closure (P7) — run by shipper-s05-p7
+date: 2026-08-15T19:17:57Z
+HEAD: c4334827574e484215706e8253c4429b6f07490b
+tree: b2795b82aacea97e8e9cbe9def2a6335d50c5c17
+tracked-clean (porcelain, no untracked): []
+
+=== gate A — rasen validate --strict (named-item form) ===
+{
+  "items": [
+    {
+      "id": "s05-provenance-and-beta-closure",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 14
+    }
+  ],
+  "summary": {
+    "totals": {
+      "items": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "byType": {
+      "change": {
+        "items": 1,
+        "passed": 1,
+        "failed": 0
+      }
+    }
+  },
+  "version": "1.0",
+  "root": {
+    "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut",
+    "source": "store",
+    "store_id": "rocut",
+    "scope": {
+      "kind": "standalone",
+      "intent": "project-read",
+      "source": "explicit",
+      "ref": {
+        "mode": "standalone",
+        "projectId": "e1bca41c-14f2-4daa-a592-00fdcb56ee2c",
+        "projectRoot": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+      },
+      "paths": {
+        "planning-checkout": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut",
+        "project-home": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen",
+        "project-config": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\config.yaml",
+        "project-schemas": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\schemas",
+        "project-work": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\work",
+        "specs": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\specs",
+        "project-design-docs": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\design-docs",
+        "active-changes": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes",
+        "archive-line": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\archive",
+        "execution-root": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+      },
+      "evidence": [
+        {
+          "source": "explicit",
+          "field": "project",
+          "value": "e1bca41c-14f2-4daa-a592-00fdcb56ee2c"
+        },
+        {
+          "source": "nearest-standalone",
+          "field": "execution-root",
+          "value": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+        },
+        {
+          "source": "nearest-standalone",
+          "field": "planning-root",
+          "value": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+        },
+        {
+          "source": "nearest-standalone",
+          "field": "project",
+          "value": "e1bca41c-14f2-4daa-a592-00fdcb56ee2c"
+        },
+        {
+          "source": "project-binding",
+          "field": "execution-root",
+          "value": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+        },
+        {
+          "source": "project-binding",
+          "field": "project",
+          "value": "e1bca41c-14f2-4daa-a592-00fdcb56ee2c"
+        }
+      ],
+      "notices": [
+        {
+          "code": "configuration_store_inheritance",
+          "message": "Planning stays local; the declared Store contributes configuration only."
+        }
+      ],
+      "followupSelection": {}
+    }
+  }
+}
+REAL_EXIT_CODE[validate]:0
+
+=== gate B — package boundary checker (live run) ===
+check-package-boundary: scanned 1138 repo file(s) (tracked + uncommitted)
+  PASS  acyclic-direction: every cross-package edge points to a strictly lower declared layer (1011 file(s) scanned, 416 cross-package edge(s) examined)
+  PASS  public-entry-only: a specifier crossing into a package resolves only to a declared exports subpath (1011 file(s) scanned, 415 @opencut/* specifier(s) examined)
+  PASS  no-internal-reexport: no package's declared entry re-exports a module owned by another package's undeclared internals (870 file(s) scanned)
+  PASS  no-elftia-import: no package, Host or example imports an Elftia package, protocol identifier or runtime object (1138 file(s) scanned)
+  PASS  react-free-base: editor-ports and editor-contracts import no React, no DOM global, and no editor-classic module (74 file(s) scanned)
+
+clean — run with --negative-control / --converse-control to see each rule proven able to fire, and proven not to misfire.
+REAL_EXIT_CODE[boundary]:0
+
+=== gate C — packed-manifest closure checker (live green-path run, fresh pack, family #30) ===
+scratch root: C:\Users\Sayo\.opencut-scratch-p7\ship-gates (user-profile dot-dir, CONTROL-1c)
+check-packed-manifest-closure: verifying at c4334827 (reads the tarballs, never the workspace)
+packed packages/editor-ports -> opencut-editor-ports-0.2.0.tgz
+inventory: opencut-editor-ports-0.2.0.tgz — 25 file(s) hashed
+packed packages/editor-contracts -> opencut-editor-contracts-0.2.0.tgz
+inventory: opencut-editor-contracts-0.2.0.tgz — 63 file(s) hashed
+packed packages/editor-classic -> opencut-editor-classic-0.2.0.tgz
+inventory: opencut-editor-classic-0.2.0.tgz — 807 file(s) hashed
+packed rust/wasm/pkg -> opencut-wasm-0.2.10.tgz
+inventory: opencut-wasm-0.2.10.tgz — 7 file(s) hashed
+closure: packed fresh tarballs into E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\dist-sdk-tarballs (4 file(s))
+
+=== @opencut/editor-ports@0.2.0 (opencut-editor-ports-0.2.0.tgz) ===
+  census  @opencut/editor-ports: files-scanned 19, import-occurrences 46, unique-bare 1, declared 0, entry-roots 6, reachable 15, level2-subjects 0, latent 0, activated 0
+  census  dispositions honoured: bun:test×2 (register: 2 row(s))
+
+=== @opencut/editor-contracts@0.2.0 (opencut-editor-contracts-0.2.0.tgz) ===
+  census  @opencut/editor-contracts: files-scanned 55, import-occurrences 240, unique-bare 8, declared 1, entry-roots 10, reachable 37, level2-subjects 0, latent 0, activated 0
+  census  dispositions honoured: bun:test×13 (register: 2 row(s))
+
+=== @opencut/editor-classic@0.2.0 (opencut-editor-classic-0.2.0.tgz) ===
+  census  @opencut/editor-classic: files-scanned 796, import-occurrences 3502, unique-bare 49, declared 32, entry-roots 18, reachable 683, level2-subjects 2, latent 2, activated 0
+  census  dispositions honoured: bun:test×88, @napi-rs/canvas×3 (register: 2 row(s))
+
+=== opencut-wasm@0.2.10 (opencut-wasm-0.2.10.tgz) ===
+  census  opencut-wasm: files-scanned 3, import-occurrences 2, unique-bare 0, declared 0, entry-roots 1, reachable 2, level2-subjects 0, latent 0, activated 0
+  census  dispositions honoured: none (register: 2 row(s))
+  note    no dispositioned specifier occurred in this package's shipped source
+
+closure: 0 failure(s) over 4 package(s) — dispositions 2, register 2 row(s), re-derived this run
+REAL_EXIT_CODE[closure]:0
+REAL_EXIT_CODE[closure]:0
+
+REAL_EXIT_CODE[overall]:0

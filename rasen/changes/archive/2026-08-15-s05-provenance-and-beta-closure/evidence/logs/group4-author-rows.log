@@ -1,0 +1,42 @@
+Group 4 — PATCHES row authoring, actual session output (before-state = the
+265-row ledger; the author script computes the missing set from the derivation
+against that ledger, then appends after the last table row). Commands:
+
+  node rasen/changes/s05-provenance-and-beta-closure/evidence/group4-author-rows.mjs          (dry-run)
+  node rasen/changes/s05-provenance-and-beta-closure/evidence/group4-author-rows.mjs --apply
+  grep -n "later edits in" PATCHES.md
+
+--- dry-run ---
+author-rows: missing 338 of need-row 524 (covered 186)
+author-rows: would append 338 row(s), ids P-277..P-614
+sample first:
+| P-277 | `apps/web/src/actions/index.ts` | Stage C extraction (c234042e) moved the file to `packages/editor-classic/src/actions/index.ts` with import-specifier rewrites; R072 similarity vs the pin, no later edits | S05 P1 package extraction — the editor ships as `@opencut/editor-classic`, so the inherited file moves into the package and its `@/editor/*` specifiers become package specifiers (BOUNDARIES.md §7 "Specifier rewrites P1 owes"). | Derivation: `git diff --name-status -M cf5e79e9` + `git log` attribution (this row is derivation-backed); behavioural gates: the extraction commit's parity fixtures and the 30-checker family sweep. |
+sample last:
+| P-614 | `apps/web/src/utils/id.ts` | Stage C extraction (c234042e) moved the file to `packages/editor-classic/src/utils/id.ts` with import-specifier rewrites; R095 similarity vs the pin, no later edits | S05 P1 package extraction — the editor ships as `@opencut/editor-classic`, so the inherited file moves into the package and its `@/editor/*` specifiers become package specifiers (BOUNDARIES.md §7 "Specifier rewrites P1 owes"). | Derivation: `git diff --name-status -M cf5e79e9` + `git log` attribution (this row is derivation-backed); behavioural gates: the extraction commit's parity fixtures and the 30-checker family sweep. |
+
+--- apply ---
+author-rows: appended 338 row(s) after line 293
+
+--- post-extraction-edit attributions among the 338 (grep "later edits in") ---
+364:| P-347 | `apps/web/src/components/ui/color-picker.tsx` | ... ; later edits in storage/conformance entry + moved-source path fixes (35950753)
+429:| P-412 | `apps/web/src/hooks/use-shift-key.ts` | ... ; later edits in storage/conformance entry + moved-source path fixes (35950753)
+602:| P-585 | `apps/web/src/timeline/index.ts` | ... ; later edits in S05 P6 surface.json manifests + @opencutSurface markers (f239d81b)
+
+(The other 23 later-touched destinations of the 26-file post-extraction tail were
+already covered by era rows — the derivation counts them among the covered 186.)
+
+--- attribution anchors (single git log pass over packages/editor-classic/src) ---
+776 files last touched by c234042e (the Stage C extraction itself)
+ 17 by f239d81b  feat(s05-versioning): surface.json manifests (36 classifications) + 19 @opencutSurface markers, frozen files untouched
+  5 by 35950753  refactor(editor-classic): declare storage/conformance entry, fix moved-source paths
+  4 by 488a8a8d  fix(editor-classic): repair Stage C hardcoded-path defect class
+
+--- after-state (full run: evidence/logs/group4-reconcile-after.log) ---
+reconcile: PATCHES rows 603 across 533 unique upstream paths (naive ^| P- count 603)
+reconcile: need-row 524, covered 524, MISSING 0
+REAL_EXIT_CODE: 0
+
+--- escalation gate (documented behaviour, verified) ---
+node script/reconcile-provenance.mjs --require-added  ->  REAL_EXIT_CODE: 1
+  (496 fork-added path(s) not yet listed in UPSTREAM.md — task 6.3 owns the
+  inventory; Phase B's gates run with --require-added once it exists)

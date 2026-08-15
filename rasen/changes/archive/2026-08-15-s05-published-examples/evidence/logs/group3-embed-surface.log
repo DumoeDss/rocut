@@ -1,0 +1,151 @@
+run-published-examples: running at 6c7f545a
+scratch root: E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\opencut-scratch-p6-examples (E:-drive default)
+CONTROL-1a root-outside-repo-tree: PASS (..\opencut-scratch-p6-examples)
+CONTROL-1b root-outside-temp: PASS (checked 4 Temp root(s))
+lifecycle: wiping previous scratch root (marker verified)
+lifecycle: fresh scratch root created with marker (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\opencut-scratch-p6-examples)
+pack: packed packages/editor-ports -> opencut-editor-ports-0.2.0.tgz
+pack: inventory: opencut-editor-ports-0.2.0.tgz — 23 file(s) hashed
+pack: packed packages/editor-contracts -> opencut-editor-contracts-0.2.0.tgz
+pack: inventory: opencut-editor-contracts-0.2.0.tgz — 61 file(s) hashed
+pack: packed packages/editor-classic -> opencut-editor-classic-0.2.0.tgz
+pack: inventory: opencut-editor-classic-0.2.0.tgz — 805 file(s) hashed
+pack: packed rust/wasm/pkg -> opencut-wasm-0.2.10.tgz
+pack: inventory: opencut-wasm-0.2.10.tgz — 7 file(s) hashed
+pack: 4 tarball(s) staged into the scratch project
+consumer-view: verifying pre-packed tarballs from E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\opencut-scratch-p6-examples\tarballs (4 file(s))
+
+=== @opencut/editor-classic@0.2.0 (opencut-editor-classic-0.2.0.tgz) ===
+  ok   packed manifest version is 0.x (found 0.2.0)
+  ok   packed inventory lists README.md
+  ok   README contains the policy statement ("Compatibility policy (`0.x`)")
+  ok   packed inventory lists surface.json
+  ok   surface.json classifies exactly the export-map entries (19 declared = 19 classified, set-equal)
+  census  @opencut/editor-classic: frozen 2, provider 13, experimental 4
+  ok   provider entry . carries @opencutSurface provider in extracted source
+  ok   provider entry ./browser carries @opencutSurface provider in extracted source
+  ok   experimental entry ./evidence carries @opencutSurface experimental in extracted source
+  ok   experimental entry ./evidence/headless carries @opencutSurface experimental in extracted source
+  ok   experimental entry ./evidence/headless-semantic-fixture carries @opencutSurface experimental in extracted source
+  ok   experimental entry ./evidence/wasm-test-mock carries @opencutSurface experimental in extracted source
+  ok   provider entry ./fonts carries @opencutSurface provider in extracted source
+  ok   provider entry ./media carries @opencutSurface provider in extracted source
+  ok   provider entry ./project carries @opencutSurface provider in extracted source
+  ok   provider entry ./renderer carries @opencutSurface provider in extracted source
+  ok   provider entry ./runtime carries @opencutSurface provider in extracted source
+  ok   provider entry ./session carries @opencutSurface provider in extracted source
+  ok   provider entry ./storage carries @opencutSurface provider in extracted source
+  ok   provider entry ./storage/conformance carries @opencutSurface provider in extracted source
+  ok   provider entry ./storage/migrations carries @opencutSurface provider in extracted source
+  ok   frozen entry ./surface carries no marker in extracted source
+  ok   frozen entry ./surface.css carries no marker in extracted source
+  ok   provider entry ./timeline carries @opencutSurface provider in extracted source
+  ok   provider entry ./ui carries @opencutSurface provider in extracted source
+  markers verified in extracted source: 17 non-frozen entries
+
+=== @opencut/editor-contracts@0.2.0 (opencut-editor-contracts-0.2.0.tgz) ===
+  ok   packed manifest version is 0.x (found 0.2.0)
+  ok   packed inventory lists README.md
+  ok   README contains the policy statement ("Compatibility policy (`0.x`)")
+  ok   packed inventory lists surface.json
+  ok   surface.json classifies exactly the export-map entries (10 declared = 10 classified, set-equal)
+  census  @opencut/editor-contracts: frozen 9, provider 0, experimental 1
+  ok   frozen entry . carries no marker in extracted source
+  ok   frozen entry ./conformance carries no marker in extracted source
+  ok   experimental entry ./conformance/requirements carries @opencutSurface experimental in extracted source
+  ok   frozen entry ./draft carries no marker in extracted source
+  ok   frozen entry ./draft/conformance carries no marker in extracted source
+  ok   frozen entry ./engine carries no marker in extracted source
+  ok   frozen entry ./engine/conformance carries no marker in extracted source
+  ok   frozen entry ./engine/invariant carries no marker in extracted source
+  ok   frozen entry ./vectors carries no marker in extracted source
+  ok   frozen entry ./vectors/corpus carries no marker in extracted source
+  markers verified in extracted source: 1 non-frozen entries
+
+=== @opencut/editor-ports@0.2.0 (opencut-editor-ports-0.2.0.tgz) ===
+  ok   packed manifest version is 0.x (found 0.2.0)
+  ok   packed inventory lists README.md
+  ok   README contains the policy statement ("Compatibility policy (`0.x`)")
+  ok   packed inventory lists surface.json
+  ok   surface.json classifies exactly the export-map entries (6 declared = 6 classified, set-equal)
+  census  @opencut/editor-ports: frozen 5, provider 0, experimental 1
+  ok   frozen entry . carries no marker in extracted source
+  ok   frozen entry ./conformance carries no marker in extracted source
+  ok   experimental entry ./conformance/requirements carries @opencutSurface experimental in extracted source
+  ok   frozen entry ./host carries no marker in extracted source
+  ok   frozen entry ./in-memory carries no marker in extracted source
+  ok   frozen entry ./in-memory/host carries no marker in extracted source
+  markers verified in extracted source: 1 non-frozen entries
+consumer-view: opencut-wasm-0.2.10.tgz — flat artifact (opencut-wasm), no surface clauses
+consumer-view: PASS (3 package(s) verified, 0 failures, 0 dangling)
+examples root: E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\opencut-scratch-p6-examples\examples (under the scratch root)
+examples: running 1 of 4 (embed-surface) (OPENCUT_EXAMPLES)
+
+=== example embed-surface ===
+materialize: embed-surface — 3 @opencut/* spec(s) resolved to staged tarballs (+ the opencut-wasm override)
+added 348 packages, and audited 349 packages in 1m
+
+105 packages are looking for funding
+  run `npm fund` for details
+
+5 vulnerabilities (2 moderate, 3 high)
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+npm warn deprecated boolean@3.2.0: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm warn deprecated uuid@10.0.0: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+REAL_EXIT_CODE[npm-install/embed-surface]:0
+CONTROL-2 copy-not-link @opencut/editor-classic: PASS (lstat: real directory, symlink=false; lockfile resolved=file:tarballs/opencut-editor-classic-0.2.0.tgz, link=false)
+CONTROL-2 copy-not-link @opencut/editor-contracts: PASS (lstat: real directory, symlink=false; lockfile resolved=file:tarballs/opencut-editor-contracts-0.2.0.tgz, link=false)
+CONTROL-2 copy-not-link @opencut/editor-ports: PASS (lstat: real directory, symlink=false; lockfile resolved=file:tarballs/opencut-editor-ports-0.2.0.tgz, link=false)
+CONTROL-2 copy-not-link opencut-wasm: PASS (lstat: real directory, symlink=false; lockfile resolved=file:tarballs/opencut-wasm-0.2.10.tgz, link=false)
+CONTROL-react-present react-satisfied: PASS (react installed from the consumer's own manifest — classic's peer resolves against it, the peer-dep contract working as designed)
+> opencut-example-embed-surface@0.0.0 typecheck
+> tsc --noEmit
+EXIT[example/embed-surface/typecheck]:0
+> opencut-example-embed-surface@0.0.0 build
+> vite build
+
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 3733 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                             0.58 kB │ gzip:     0.39 kB
+dist/assets/worker-CqQdOYN3.ts                              4.49 kB
+dist/assets/worker-AM2FS2wg.js                            868.31 kB
+dist/assets/opencut_wasm_bg-PlMeUgEh.wasm               3,286.34 kB │ gzip: 1,189.08 kB
+dist/assets/ort-wasm-simd-threaded.jsep-B0T3yYHD.wasm  21,596.02 kB │ gzip: 5,087.10 kB
+dist/assets/index-Bpp4NyfK.css                            111.45 kB │ gzip:    17.55 kB
+dist/assets/index-B0uBRz2E.js                           4,342.17 kB │ gzip:   813.65 kB
+✓ built in 33.87s
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+EXIT[example/embed-surface/build]:0
+> opencut-example-embed-surface@0.0.0 smoke
+> node smoke.mjs
+
+smoke/assert mount/surface-root: PASS
+smoke/assert mount/branding-logo: PASS
+smoke/assert gpu-free/degraded-banner: PASS
+smoke/assert interaction/focus-scope: PASS
+smoke/assert interaction/playhead-scrub: PASS
+smoke/assert assets/fetched: PASS
+smoke/assert clean/console: PASS
+smoke/assert clean/pageerror: PASS
+smoke/assert clean/network: PASS
+embed-surface smoke: PASS (9 assertions: mount/surface-root, mount/branding-logo, gpu-free/degraded-banner, interaction/focus-scope, interaction/playhead-scrub, assets/fetched, clean/console, clean/pageerror, clean/network)
+EXIT[example/embed-surface/smoke]:0
+
+examples: 1 example(s) executed green — embed-surface
+REAL_EXIT_CODE[examples-run]:0
+REAL_EXIT_CODE:0
+SUBSET_DONE:0

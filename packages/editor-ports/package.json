@@ -1,0 +1,23 @@
+{
+  "name": "@opencut/editor-ports",
+  "version": "0.2.0",
+  "private": true,
+  "description": "The Host port contract a Host author implements. Zero dependencies, no React, no DOM.",
+  "files": [
+    "dist",
+    "src",
+    "surface.json",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./host": "./src/host/index.ts",
+    "./in-memory": "./src/in-memory/index.ts",
+    "./in-memory/host": "./src/in-memory/host.ts",
+    "./conformance": "./src/conformance/index.ts",
+    "./conformance/requirements": "./src/conformance/requirements.ts",
+    "./package.json": "./package.json"
+  }
+}

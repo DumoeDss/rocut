@@ -1,0 +1,36 @@
+Task 3.3 — misclassification control on real source (planted, fired, reverted)
+
+== PLANT: manifest row ./timeline flipped provider -> experimental (marker still says provider) ==
+planted
+
+== RUN ==
+check-sdk-surface-labels: scanned 3 package(s), 36 export entries
+  census  @opencut/editor-classic: 19 export entries — frozen 2, provider 12, experimental 5
+  census  @opencut/editor-contracts: 11 export entries — frozen 10, provider 0, experimental 1
+  census  @opencut/editor-ports: 6 export entries — frozen 5, provider 0, experimental 1
+  census  total: 36 export entries across 3 package(s) — frozen 17, provider 12, experimental 7
+  PASS  completeness: every export entry is classified in surface.json with a known class and a non-empty reason, and every row names a declared entry
+  FAIL  marker-agreement: provider/experimental rows carry a matching @opencutSurface marker in their entry file; frozen rows carry none
+  PASS  override-validity: every symbol-level override names a symbol the entry actually exports
+    FAIL marker-agreement: @opencut/editor-classic: experimental entry "./timeline" target carries no @opencutSurface experimental marker (found provider) — the in-source label must agree with the manifest
+check-sdk-surface-labels: 1 violation(s)
+EXIT[planted]:1
+REAL_EXIT_CODE:0
+
+== REVERT (git show HEAD:... > path — blob restore; the python re-serialize had also escaped em-dashes to \u2014, so only the committed bytes are the truth) ==
+restored
+f30e33d39f8afeea8eb40c176afcf15ecb45b448
+100644 blob f30e33d39f8afeea8eb40c176afcf15ecb45b448	packages/editor-classic/surface.json
+
+== RE-RUN (must be clean) ==
+check-sdk-surface-labels: scanned 3 package(s), 36 export entries
+  census  @opencut/editor-classic: 19 export entries — frozen 2, provider 13, experimental 4
+  census  @opencut/editor-contracts: 11 export entries — frozen 10, provider 0, experimental 1
+  census  @opencut/editor-ports: 6 export entries — frozen 5, provider 0, experimental 1
+  census  total: 36 export entries across 3 package(s) — frozen 17, provider 13, experimental 6
+  PASS  completeness: every export entry is classified in surface.json with a known class and a non-empty reason, and every row names a declared entry
+  PASS  marker-agreement: provider/experimental rows carry a matching @opencutSurface marker in their entry file; frozen rows carry none
+  PASS  override-validity: every symbol-level override names a symbol the entry actually exports
+clean — run with --negative-control / --converse-control to see each rule proven able to fire, and proven not to misfire.
+EXIT[reverted]:0
+REAL_EXIT_CODE:0

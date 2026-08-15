@@ -48,6 +48,22 @@ would fork the very files this work exists to compare against, making the patch 
 Consequence: "what is in the distributable graph" is not answerable by directory layout. It is
 answered mechanically, by asserting over the emitted Rollup module-id set of a production build.
 
+
+> **Restated at S05 P7 (2026-08-16), because the estate changed under it.** The
+> paragraph above is the S01 record and stays as history: S01's fork indeed
+> aliased rather than extracted. S05 P1 (`s05-package-extraction`) then performed
+> the physical extraction S01 had rejected — Stage C moved 785 files from
+> `apps/web/src` into `packages/editor-classic` (beside the P1-era
+> `editor-ports` and `editor-contracts`), so the three `@opencut/*` packages now
+> exist exactly as directory layout. The ambiguity S01 feared is answered by the
+> provenance set instead of by avoidance: `SOURCE_INVENTORY.md` classifies every
+> moved file (`movedUnmodified` = byte-identical restatement, `movedModified` /
+> `movedRewritten` = drift carrying a `PATCHES.md` row keyed by the upstream
+> path), and the patch log's P-277..P-614 rows are the extraction record.
+> "What is in the distributable graph" is now answerable by both directory
+> layout and the packed-manifest closure gate.
+
+
 ## Retained areas
 
 | Area | Role |
@@ -58,6 +74,19 @@ answered mechanically, by asserting over the emitted Rollup module-id set of a p
 | `apps/web/src/wasm/**`, `fonts/**`, `stickers/**`, `guides/**`, `sounds/**`, `feedback/**` | Editor-adjacent feature modules. |
 | `apps/web/public/{fonts,flags,effects,logos}` | Runtime assets fetched by absolute path. |
 | `rust/` (7 crates) | Source of `opencut-wasm`. Since S02 it is built from here and the build output is what the editor consumes; it was the source of the published `0.2.10` at the pin. |
+
+
+> **Restated at S05 P7: current locations.** The table above describes the S01
+> tree. After the S05 P1 extraction everything under `apps/web/src/{core,editor,
+> timeline,preview,project,media,scenes,actions,components,services,wasm,fonts,
+> stickers,guides,sounds,feedback}` lives under
+> `packages/editor-classic/src/**`; `apps/web/public/{fonts,flags,effects,logos}`
+> survives in place as the Next app's asset root (with the package's own asset
+> allowlist documented in `apps/vite-example/build/editor-assets.ts`), and
+> `rust/` (7 crates) is unchanged as the canonical source of `opencut-wasm`.
+> The old→new mapping for every moved file is derived, not recalled:
+> `SOURCE_INVENTORY.json`'s `workingTreeDriftAgainstPin` carries it.
+
 
 ## Removed / excluded areas
 
@@ -83,6 +112,16 @@ production bundle's module graph.
 | Rust / cargo | 1.88+ (the wasm crate is edition 2024) | `cargo 1.88.0 (873a06493 2025-05-10)` | **Required prerequisite** since S02 — the editor's `opencut-wasm` dependency resolves to the local build output. |
 | `wasm32-unknown-unknown` target | **Required** | `rustup target add wasm32-unknown-unknown` | **Required prerequisite** since S02. Without it the wasm cannot be built and `bun install` cannot resolve `opencut-wasm`. |
 | `wasm-pack` | **Required** | `wasm-pack 0.13.1` | **Required prerequisite** since S02. `script/setup-rust` / `script/setup-rust.ps1` install it. |
+
+
+> **Restated at S05 P7: the lock was refreshed.** At the portfolio's close a
+> plain `bun install` (still under `bun 1.2.2`, so the discrepancy above stands
+> unchanged) refreshed `bun.lock`'s workspace entries to the shipped manifests —
+> `packages/editor-classic` had been carrying the stale pre-P5 map (version
+> `0.1.0`, four dependencies, one peer). The refreshed lock is what the shipped
+> SBOM describes, and the manifest-truth comparison is recorded in
+> `rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group5-bun-install.log`.
+
 
 The editor consumes the artifact **built from this repository's `rust/` sources**. See
 "Canonical wasm artifact" immediately below for what changed, when, and why.
@@ -516,3 +555,544 @@ build's type gate is still red and `ignoreBuildErrors` was **not** removed.
 | `bun run build` in `apps/web` (with P-001, CI placeholder env) | **Succeeds.** Compiled in 26.7 s; 18 static pages generated; 21 routes emitted including the dynamic `/editor/[project_id]`. |
 
 Environment variables use the placeholder values from `.github/workflows/bun-ci.yml`.
+
+## Added-file inventory (fork additions)
+
+Derived by `script/reconcile-provenance.mjs --write-added-inventory` from the same
+drift derivation as `SOURCE_INVENTORY.json`. Fork-added files are not patches and never
+appear in `PATCHES.md`.
+
+### `apps/electron-host` (33 file(s))
+
+- `apps/electron-host/electron/main.cjs`
+- `apps/electron-host/electron/preload.cjs`
+- `apps/electron-host/index.html`
+- `apps/electron-host/package.json`
+- `apps/electron-host/postcss.config.mjs`
+- `apps/electron-host/scripts/boot-proof.mjs`
+- `apps/electron-host/scripts/c6-oracle-proof.mjs`
+- `apps/electron-host/scripts/desktop-composition-proof.mjs`
+- `apps/electron-host/scripts/evidence-entries-proof.mjs`
+- `apps/electron-host/scripts/serve-dist.mjs`
+- `apps/electron-host/scripts/store-bridge-proof.mjs`
+- `apps/electron-host/scripts/validate-agent-ledger.mjs`
+- `apps/electron-host/src/app.tsx`
+- `apps/electron-host/src/c4-worker-harness.tsx`
+- `apps/electron-host/src/editor-error-boundary.tsx`
+- `apps/electron-host/src/host/electron-editor-host.tsx`
+- `apps/electron-host/src/host/electron-host-config.ts`
+- `apps/electron-host/src/host/electron-runtime-resources.ts`
+- `apps/electron-host/src/main.tsx`
+- `apps/electron-host/src/project-picker.tsx`
+- `apps/electron-host/src/store/__tests__/filesystem-store-conformance.test.ts`
+- `apps/electron-host/src/store/__tests__/filesystem-store-migration-probes.test.ts`
+- `apps/electron-host/src/store/__tests__/store-bridge-surface.test.ts`
+- `apps/electron-host/src/store/filesystem-project-store.ts`
+- `apps/electron-host/src/store/ipc-store-bridge.ts`
+- `apps/electron-host/src/store/main-store-ipc.ts`
+- `apps/electron-host/src/store/node-fs-store-bridge.ts`
+- `apps/electron-host/src/store/project-store-files.ts`
+- `apps/electron-host/src/styles.css`
+- `apps/electron-host/src/surface-evidence-main.tsx`
+- `apps/electron-host/surface-evidence.html`
+- `apps/electron-host/tsconfig.json`
+- `apps/electron-host/vite.config.ts`
+
+### `apps/vite-example` (57 file(s))
+
+- `apps/vite-example/README.md`
+- `apps/vite-example/build/editor-assets.ts`
+- `apps/vite-example/build/headless-module-graph.ts`
+- `apps/vite-example/build/module-graph.ts`
+- `apps/vite-example/c5-migration.html`
+- `apps/vite-example/c5-storage.html`
+- `apps/vite-example/headless.html`
+- `apps/vite-example/index.html`
+- `apps/vite-example/package.json`
+- `apps/vite-example/playwright.c3.config.ts`
+- `apps/vite-example/playwright.c5-storage.config.ts`
+- `apps/vite-example/playwright.config.ts`
+- `apps/vite-example/playwright.probe.config.ts`
+- `apps/vite-example/playwright.surface.config.ts`
+- `apps/vite-example/postcss.config.mjs`
+- `apps/vite-example/src/app.tsx`
+- `apps/vite-example/src/c3-session-harness.tsx`
+- `apps/vite-example/src/c4-forced-none-harness.tsx`
+- `apps/vite-example/src/c4-session-harness.tsx`
+- `apps/vite-example/src/c4-worker-harness.tsx`
+- `apps/vite-example/src/c5-migration-harness.ts`
+- `apps/vite-example/src/c5-storage-harness.ts`
+- `apps/vite-example/src/editor-error-boundary.tsx`
+- `apps/vite-example/src/headless-entry.ts`
+- `apps/vite-example/src/host/vite-editor-host.tsx`
+- `apps/vite-example/src/host/vite-host-config.ts`
+- `apps/vite-example/src/main.tsx`
+- `apps/vite-example/src/project-picker.tsx`
+- `apps/vite-example/src/styles.css`
+- `apps/vite-example/src/surface-evidence-main.tsx`
+- `apps/vite-example/surface-evidence.html`
+- `apps/vite-example/tests/c3/session-capacity.pw.ts`
+- `apps/vite-example/tests/c5-storage/browser-store.pw.ts`
+- `apps/vite-example/tests/c5-storage/c4-forced-none.pw.ts`
+- `apps/vite-example/tests/c5-storage/migration-round1.pw.ts`
+- `apps/vite-example/tests/fixtures/FIXTURES.md`
+- `apps/vite-example/tests/fixtures/fixture-image.png`
+- `apps/vite-example/tests/fixtures/fixture-tone-a4.wav`
+- `apps/vite-example/tests/fixtures/fixture-tone-a5.wav`
+- `apps/vite-example/tests/fixtures/fixture-video.mp4`
+- `apps/vite-example/tests/parity/agent.pw.ts`
+- `apps/vite-example/tests/parity/c4-next.runtime.ts`
+- `apps/vite-example/tests/parity/driver.ts`
+- `apps/vite-example/tests/parity/electron-page.ts`
+- `apps/vite-example/tests/parity/evidence-path.ts`
+- `apps/vite-example/tests/parity/host-profile.ts`
+- `apps/vite-example/tests/parity/parity.pw.ts`
+- `apps/vite-example/tests/parity/snapshot.ts`
+- `apps/vite-example/tests/parity/surface-r2-evidence.ts`
+- `apps/vite-example/tests/parity/surface.pw.ts`
+- `apps/vite-example/tests/probe/legacy-migration.pw.ts`
+- `apps/vite-example/tests/probe/seed.ts`
+- `apps/vite-example/tests/probe/stickers-registry.pw.ts`
+- `apps/vite-example/tsconfig.json`
+- `apps/vite-example/vite.config.ts`
+- `apps/vite-example/vite.headless.config.ts`
+- `apps/vite-example/vite.surface-css.config.ts`
+
+### `apps/web/public` (1 file(s))
+
+- `apps/web/public/workers/c4-worker-fixture.js`
+
+### `apps/web/src` (9 file(s))
+
+- `apps/web/src/app/c6-disposal/page.tsx`
+- `apps/web/src/app/c7-headless/route.ts`
+- `apps/web/src/app/surface-evidence/page.tsx`
+- `apps/web/src/editor/host/__tests__/branding-assets.test.ts`
+- `apps/web/src/editor/host/__tests__/production-composition.test.ts`
+- `apps/web/src/editor/host/c4-next-runtime-probe.tsx`
+- `apps/web/src/editor/host/next-editor-host.ts`
+- `apps/web/src/services/storage/__tests__/c5-storage-red-controls.test.ts`
+- `apps/web/src/services/storage/__tests__/fixtures/c5-v1-project.ts`
+
+### `examples` (34 file(s))
+
+- `examples/agent-transaction/README.md`
+- `examples/agent-transaction/package.json`
+- `examples/agent-transaction/run.ts`
+- `examples/agent-transaction/src/own-store.ts`
+- `examples/agent-transaction/tsconfig.json`
+- `examples/custom-storage/README.md`
+- `examples/custom-storage/package.json`
+- `examples/custom-storage/run-mock.ts`
+- `examples/custom-storage/run.ts`
+- `examples/custom-storage/src/alien-codec.ts`
+- `examples/custom-storage/src/alien-control.ts`
+- `examples/custom-storage/src/alien-store.ts`
+- `examples/custom-storage/src/factories.ts`
+- `examples/custom-storage/src/migrate.ts`
+- `examples/custom-storage/src/roles.ts`
+- `examples/custom-storage/src/transaction.ts`
+- `examples/custom-storage/tsconfig.json`
+- `examples/custom-storage/types/culori.d.ts`
+- `examples/embed-surface/README.md`
+- `examples/embed-surface/index.html`
+- `examples/embed-surface/package.json`
+- `examples/embed-surface/postcss.config.mjs`
+- `examples/embed-surface/public/fonts/font-atlas.json`
+- `examples/embed-surface/public/logos/opencut/svg/logo.svg`
+- `examples/embed-surface/smoke.mjs`
+- `examples/embed-surface/src/host.ts`
+- `examples/embed-surface/src/main.tsx`
+- `examples/embed-surface/src/styles.css`
+- `examples/embed-surface/tsconfig.json`
+- `examples/embed-surface/vite.config.ts`
+- `examples/install-packages/README.md`
+- `examples/install-packages/package.json`
+- `examples/install-packages/run.ts`
+- `examples/install-packages/tsconfig.json`
+
+### `packages/editor-classic` (166 file(s))
+
+- `packages/editor-classic/LICENSE`
+- `packages/editor-classic/NOTICE`
+- `packages/editor-classic/README.md`
+- `packages/editor-classic/package.json`
+- `packages/editor-classic/src/actions/__tests__/registry.test.ts`
+- `packages/editor-classic/src/actions/action-scope.tsx`
+- `packages/editor-classic/src/actions/keybinding-target.ts`
+- `packages/editor-classic/src/browser/index.ts`
+- `packages/editor-classic/src/commands/provider-private-composite.ts`
+- `packages/editor-classic/src/components/__tests__/storage-provider-operations.test.ts`
+- `packages/editor-classic/src/components/storage-provider-operations.ts`
+- `packages/editor-classic/src/core/managers/__tests__/media-persistence-rewire.test.ts`
+- `packages/editor-classic/src/core/managers/__tests__/project-manager-thumbnail-degraded.test.ts`
+- `packages/editor-classic/src/core/managers/__tests__/project-persistence-rewire.test.ts`
+- `packages/editor-classic/src/core/managers/__tests__/save-manager-persistence-failure.test.ts`
+- `packages/editor-classic/src/core/managers/__tests__/transaction-command-routing.test.ts`
+- `packages/editor-classic/src/core/managers/__tests__/transaction-persistence-coordination.test.ts`
+- `packages/editor-classic/src/editor/host/__tests__/browser-runtime.test.ts`
+- `packages/editor-classic/src/editor/host/browser-runtime.ts`
+- `packages/editor-classic/src/editor/host/c4-project-load.ts`
+- `packages/editor-classic/src/editor/host/editor-host-context.tsx`
+- `packages/editor-classic/src/editor/host/host-image.tsx`
+- `packages/editor-classic/src/editor/persistence/__tests__/opaque-roundtrip.test.ts`
+- `packages/editor-classic/src/editor/persistence/index.ts`
+- `packages/editor-classic/src/editor/persistence/opaque-value.ts`
+- `packages/editor-classic/src/editor/persistence/project-codec.ts`
+- `packages/editor-classic/src/editor/persistence/session-persistence-coordinator.ts`
+- `packages/editor-classic/src/editor/runtime/process-bootstrap.ts`
+- `packages/editor-classic/src/editor/runtime/session-core-owner.ts`
+- `packages/editor-classic/src/editor/runtime/session-stores.ts`
+- `packages/editor-classic/src/editor/runtime/wasm-runtime-providers.ts`
+- `packages/editor-classic/src/editor/session/__tests__/c6-durable-reopen.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/c6-test-audio-context.ts`
+- `packages/editor-classic/src/editor/session/__tests__/disposal-oracle.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/editor-singleton-boundary.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/headless-browser-boundary.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/headless-migration.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/headless-runtime-probe.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/headless-semantic-fixture.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/headless-session.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/independent-timer-ledger.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/session-async-store-isolation.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/session-disposal-c6.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/session-lifecycle.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/session-runtime-ownership.test.tsx`
+- `packages/editor-classic/src/editor/session/__tests__/session-state-isolation.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/session-timer-matrix.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/wasm-test-mock.ts`
+- `packages/editor-classic/src/editor/session/c6-disposal-harness.tsx`
+- `packages/editor-classic/src/editor/session/c6-durable-reopen-browser.ts`
+- `packages/editor-classic/src/editor/session/c6-durable-reopen.ts`
+- `packages/editor-classic/src/editor/session/create-session.ts`
+- `packages/editor-classic/src/editor/session/disposal-oracle.ts`
+- `packages/editor-classic/src/editor/session/editor-session-host.tsx`
+- `packages/editor-classic/src/editor/session/editor-session-provider.tsx`
+- `packages/editor-classic/src/editor/session/headless-proof-control-react-browser.ts`
+- `packages/editor-classic/src/editor/session/headless-proof-control-react.ts`
+- `packages/editor-classic/src/editor/session/headless-proof-control.ts`
+- `packages/editor-classic/src/editor/session/headless-runtime-probe.ts`
+- `packages/editor-classic/src/editor/session/headless-semantic-fixture.ts`
+- `packages/editor-classic/src/editor/session/headless.ts`
+- `packages/editor-classic/src/editor/session/independent-timer-ledger.ts`
+- `packages/editor-classic/src/editor/session/index.ts`
+- `packages/editor-classic/src/editor/session/migration-gate.ts`
+- `packages/editor-classic/src/editor/session/resources.ts`
+- `packages/editor-classic/src/editor/session/session-resources.ts`
+- `packages/editor-classic/src/editor/session/session-types.ts`
+- `packages/editor-classic/src/editor/surface/editor-root.tsx`
+- `packages/editor-classic/src/editor/surface/embedding/__tests__/surface-composition.test.ts`
+- `packages/editor-classic/src/editor/surface/embedding/__tests__/surface-drag-coordinator.test.ts`
+- `packages/editor-classic/src/editor/surface/embedding/__tests__/surface-drag-integrations.test.ts`
+- `packages/editor-classic/src/editor/surface/embedding/__tests__/surface-error-boundary.test.ts`
+- `packages/editor-classic/src/editor/surface/embedding/__tests__/surface-focus.test.ts`
+- `packages/editor-classic/src/editor/surface/embedding/__tests__/surface-keybinding-scope.test.ts`
+- `packages/editor-classic/src/editor/surface/embedding/__tests__/surface-lifecycle.test.ts`
+- `packages/editor-classic/src/editor/surface/embedding/__tests__/surface-portal.test.ts`
+- `packages/editor-classic/src/editor/surface/embedding/__tests__/surface-react-identity-probe.test.ts`
+- `packages/editor-classic/src/editor/surface/embedding/__tests__/surface-transaction-binding.test.ts`
+- `packages/editor-classic/src/editor/surface/embedding/editor-surface.tsx`
+- `packages/editor-classic/src/editor/surface/embedding/index.ts`
+- `packages/editor-classic/src/editor/surface/embedding/session-surface-bridge.tsx`
+- `packages/editor-classic/src/editor/surface/embedding/surface-commit-context.tsx`
+- `packages/editor-classic/src/editor/surface/embedding/surface-contract.assertions.ts`
+- `packages/editor-classic/src/editor/surface/embedding/surface-drag-coordinator.tsx`
+- `packages/editor-classic/src/editor/surface/embedding/surface-error-boundary.tsx`
+- `packages/editor-classic/src/editor/surface/embedding/surface-evidence-seams.tsx`
+- `packages/editor-classic/src/editor/surface/embedding/surface-focus.ts`
+- `packages/editor-classic/src/editor/surface/embedding/surface-lifecycle.ts`
+- `packages/editor-classic/src/editor/surface/embedding/surface-portal.tsx`
+- `packages/editor-classic/src/editor/surface/embedding/surface-react-identity-probe.tsx`
+- `packages/editor-classic/src/editor/surface/embedding/surface-transaction-binding.ts`
+- `packages/editor-classic/src/editor/surface/embedding/types.ts`
+- `packages/editor-classic/src/editor/surface/evidence/agent-evidence-run.ts`
+- `packages/editor-classic/src/editor/surface/evidence/surface-evidence-harness.tsx`
+- `packages/editor-classic/src/editor/transactions/opencut/__tests__/adapter-router.test.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/__tests__/agent-opencut-projection.test.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/__tests__/fixture.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/__tests__/routing-registry.test.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/adapter.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/arbiter.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/draft-context.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/history-rebase.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/index.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/projection.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/router.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/routing.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/types.ts`
+- `packages/editor-classic/src/editor/use-session-store.ts`
+- `packages/editor-classic/src/evidence/headless.ts`
+- `packages/editor-classic/src/evidence/index.ts`
+- `packages/editor-classic/src/fonts/__tests__/host-font-assets.test.ts`
+- `packages/editor-classic/src/fonts/index.ts`
+- `packages/editor-classic/src/graphics/generated-preview.ts`
+- `packages/editor-classic/src/index.ts`
+- `packages/editor-classic/src/media/__tests__/audio-resource-lifecycle.test.ts`
+- `packages/editor-classic/src/media/__tests__/persistence.test.ts`
+- `packages/editor-classic/src/media/__tests__/processing-capacity.test.ts`
+- `packages/editor-classic/src/media/index.ts`
+- `packages/editor-classic/src/media/persistence.ts`
+- `packages/editor-classic/src/preview/components/__tests__/timecode-playback-subscription.test.ts`
+- `packages/editor-classic/src/preview/components/playback-time-subscription.ts`
+- `packages/editor-classic/src/preview/components/use-playback-time.ts`
+- `packages/editor-classic/src/project/index.ts`
+- `packages/editor-classic/src/renderer/index.ts`
+- `packages/editor-classic/src/runtime/index.ts`
+- `packages/editor-classic/src/services/renderer/__tests__/effect-preview-ownership.test.ts`
+- `packages/editor-classic/src/services/renderer/__tests__/host-effect-preview.test.ts`
+- `packages/editor-classic/src/services/renderer/effect-preview-source.ts`
+- `packages/editor-classic/src/services/renderer/nodes/sticker-cache-key.ts`
+- `packages/editor-classic/src/services/storage/__tests__/browser-project-store-cascade-topology.test.ts`
+- `packages/editor-classic/src/services/storage/__tests__/browser-project-store-media-topology.test.ts`
+- `packages/editor-classic/src/services/storage/__tests__/browser-project-store-migration-topology.test.ts`
+- `packages/editor-classic/src/services/storage/__tests__/browser-project-store-records.test.ts`
+- `packages/editor-classic/src/services/storage/__tests__/browser-project-store-topology.test.ts`
+- `packages/editor-classic/src/services/storage/__tests__/migration-provider-private.test.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-cascade-manager.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-cascade-probes.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-cascade-round2-probes.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-cascade.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-conformance.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-control.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-internals.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-library-clear-bindings.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-media-ownership.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-migration-round2-probes.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-migration.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-records.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-residual-probes.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-topology.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store.ts`
+- `packages/editor-classic/src/services/storage/browser-storage-mechanisms.ts`
+- `packages/editor-classic/src/services/transcription/__tests__/session-service.test.ts`
+- `packages/editor-classic/src/services/video-cache/__tests__/service-ownership.test.ts`
+- `packages/editor-classic/src/services/waveform-cache/__tests__/service-ownership.test.ts`
+- `packages/editor-classic/src/session/index.ts`
+- `packages/editor-classic/src/stickers/__tests__/host-assets.test.ts`
+- `packages/editor-classic/src/storage/conformance.ts`
+- `packages/editor-classic/src/storage/index.ts`
+- `packages/editor-classic/src/storage/migrations.ts`
+- `packages/editor-classic/src/surface/index.ts`
+- `packages/editor-classic/src/surface/surface.css`
+- `packages/editor-classic/src/timeline/__tests__/element-with-track-selector.test.ts`
+- `packages/editor-classic/src/timeline/element-with-track-selector.ts`
+- `packages/editor-classic/src/ui/index.ts`
+- `packages/editor-classic/src/utils/__tests__/browser-resource-lifecycle.test.ts`
+- `packages/editor-classic/surface.json`
+
+### `packages/editor-contracts` (63 file(s))
+
+- `packages/editor-contracts/LICENSE`
+- `packages/editor-contracts/NOTICE`
+- `packages/editor-contracts/README.md`
+- `packages/editor-contracts/package.json`
+- `packages/editor-contracts/src/conformance/index.ts`
+- `packages/editor-contracts/src/conformance/requirements/__tests__/requirements-index.test.ts`
+- `packages/editor-contracts/src/conformance/requirements/index.ts`
+- `packages/editor-contracts/src/domain.ts`
+- `packages/editor-contracts/src/draft/__tests__/draft.test.ts`
+- `packages/editor-contracts/src/draft/classification.ts`
+- `packages/editor-contracts/src/draft/conformance/index.ts`
+- `packages/editor-contracts/src/draft/immutable.ts`
+- `packages/editor-contracts/src/draft/index.ts`
+- `packages/editor-contracts/src/draft/inverse.ts`
+- `packages/editor-contracts/src/draft/manager.ts`
+- `packages/editor-contracts/src/draft/retention.ts`
+- `packages/editor-contracts/src/draft/review.ts`
+- `packages/editor-contracts/src/draft/types.ts`
+- `packages/editor-contracts/src/engine/__tests__/capture-boundary.types.ts`
+- `packages/editor-contracts/src/engine/__tests__/engine.test.ts`
+- `packages/editor-contracts/src/engine/adapter.ts`
+- `packages/editor-contracts/src/engine/clone.ts`
+- `packages/editor-contracts/src/engine/conformance/index.ts`
+- `packages/editor-contracts/src/engine/engine.ts`
+- `packages/editor-contracts/src/engine/evaluator.ts`
+- `packages/editor-contracts/src/engine/index.ts`
+- `packages/editor-contracts/src/engine/invariant.ts`
+- `packages/editor-contracts/src/engine/native-adapter.ts`
+- `packages/editor-contracts/src/engine/placement.ts`
+- `packages/editor-contracts/src/engine/projection.ts`
+- `packages/editor-contracts/src/engine/types.ts`
+- `packages/editor-contracts/src/in-memory/__tests__/in-memory.test.ts`
+- `packages/editor-contracts/src/in-memory/index.ts`
+- `packages/editor-contracts/src/index.ts`
+- `packages/editor-contracts/src/interfaces.ts`
+- `packages/editor-contracts/src/operations.ts`
+- `packages/editor-contracts/src/transaction.ts`
+- `packages/editor-contracts/src/vectors/__tests__/agent-drivers.test.ts`
+- `packages/editor-contracts/src/vectors/__tests__/agent-scenario.test.ts`
+- `packages/editor-contracts/src/vectors/__tests__/contract-surface.test.ts`
+- `packages/editor-contracts/src/vectors/__tests__/corpus-fixture.ts`
+- `packages/editor-contracts/src/vectors/__tests__/corpus-isolation.test.ts`
+- `packages/editor-contracts/src/vectors/__tests__/coverage.test.ts`
+- `packages/editor-contracts/src/vectors/__tests__/loader.test.ts`
+- `packages/editor-contracts/src/vectors/__tests__/mutation-matrix.test.ts`
+- `packages/editor-contracts/src/vectors/__tests__/mutation-targets.ts`
+- `packages/editor-contracts/src/vectors/__tests__/published-corpus-entry.test.ts`
+- `packages/editor-contracts/src/vectors/__tests__/runner.test.ts`
+- `packages/editor-contracts/src/vectors/agent-scenario.ts`
+- `packages/editor-contracts/src/vectors/contract-surface.ts`
+- `packages/editor-contracts/src/vectors/corpus/document-vectors.json`
+- `packages/editor-contracts/src/vectors/corpus/index.ts`
+- `packages/editor-contracts/src/vectors/corpus/manifest.json`
+- `packages/editor-contracts/src/vectors/corpus/scenario-vectors.json`
+- `packages/editor-contracts/src/vectors/coverage.ts`
+- `packages/editor-contracts/src/vectors/drivers/durable.ts`
+- `packages/editor-contracts/src/vectors/drivers/in-memory.ts`
+- `packages/editor-contracts/src/vectors/index.ts`
+- `packages/editor-contracts/src/vectors/loader.ts`
+- `packages/editor-contracts/src/vectors/runner.ts`
+- `packages/editor-contracts/src/vectors/schema.ts`
+- `packages/editor-contracts/src/vectors/sha256.ts`
+- `packages/editor-contracts/surface.json`
+
+### `packages/editor-ports` (25 file(s))
+
+- `packages/editor-ports/LICENSE`
+- `packages/editor-ports/NOTICE`
+- `packages/editor-ports/README.md`
+- `packages/editor-ports/package.json`
+- `packages/editor-ports/src/DECISIONS.md`
+- `packages/editor-ports/src/__tests__/conformance.test.ts`
+- `packages/editor-ports/src/__tests__/port-roles.compile-guard.ts`
+- `packages/editor-ports/src/__tests__/runtime-graphics-query.compile-guard.ts`
+- `packages/editor-ports/src/assets.ts`
+- `packages/editor-ports/src/conformance/__tests__/requirements-index.test.ts`
+- `packages/editor-ports/src/conformance/index.ts`
+- `packages/editor-ports/src/conformance/requirements.ts`
+- `packages/editor-ports/src/diagnostics.ts`
+- `packages/editor-ports/src/environment.ts`
+- `packages/editor-ports/src/export-provider.ts`
+- `packages/editor-ports/src/gpu-resources.ts`
+- `packages/editor-ports/src/host/index.ts`
+- `packages/editor-ports/src/id-generator.ts`
+- `packages/editor-ports/src/identity.ts`
+- `packages/editor-ports/src/in-memory/host.ts`
+- `packages/editor-ports/src/in-memory/index.ts`
+- `packages/editor-ports/src/index.ts`
+- `packages/editor-ports/src/project-store.ts`
+- `packages/editor-ports/src/runtime-resources.ts`
+- `packages/editor-ports/surface.json`
+
+### `rust` (2 file(s))
+
+- `rust/wasm/LICENSE`
+- `rust/wasm/src/runtime_state.rs`
+
+### `script` (114 file(s))
+
+- `script/__tests__/c5-emitted-runtime-assets-red.test.mjs`
+- `script/__tests__/c5-runtime-asset-boundary-red.test.mjs`
+- `script/__tests__/c5-storage-boundary-red.test.mjs`
+- `script/__tests__/c6-session-resource-boundary.test.mjs`
+- `script/__tests__/c7-headless-graph.test.mjs`
+- `script/__tests__/c7-headless-semantic-result.test.mjs`
+- `script/build-wasm.mjs`
+- `script/check-agent-evidence.mjs`
+- `script/check-asset-manifest.mjs`
+- `script/check-distributable-boundary.mjs`
+- `script/check-editor-singleton.mjs`
+- `script/check-emitted-runtime-assets.mjs`
+- `script/check-headless-graph.mjs`
+- `script/check-headless-semantic-result.mjs`
+- `script/check-host-composition.mjs`
+- `script/check-next-imports.mjs`
+- `script/check-package-boundary.mjs`
+- `script/check-packed-manifest-closure.mjs`
+- `script/check-port-boundary.mjs`
+- `script/check-react-singleton.mjs`
+- `script/check-reference-boundary.mjs`
+- `script/check-resolution-equivalence.mjs`
+- `script/check-runtime-asset-boundary.mjs`
+- `script/check-sdk-consumer-view.mjs`
+- `script/check-sdk-surface-labels.mjs`
+- `script/check-session-resource-boundary.mjs`
+- `script/check-session-state-boundary.mjs`
+- `script/check-storage-boundary.mjs`
+- `script/check-surface-boundary.mjs`
+- `script/check-surface-css-boundary.mjs`
+- `script/check-surface-portal-boundary.mjs`
+- `script/check-surface-private-drag.mjs`
+- `script/check-transaction-boundary.mjs`
+- `script/check-type-baseline.mjs`
+- `script/check-wasm-api-surface.mjs`
+- `script/check-wasm-paths.mjs`
+- `script/check-wasm-source.mjs`
+- `script/collect-next-editor-module-ids.mjs`
+- `script/diff-parity-snapshots.mjs`
+- `script/fixtures/c5-browser-store-conformance/browser-store-conformance.ts`
+- `script/fixtures/c5-storage-boundary/direct-adapter/apps/web/src/core/consumer.ts`
+- `script/fixtures/c5-storage-boundary/direct-indexeddb/apps/web/src/core/consumer.ts`
+- `script/fixtures/c5-storage-boundary/direct-opfs/apps/web/src/core/consumer.ts`
+- `script/fixtures/c5-storage-boundary/direct-singleton/apps/web/src/core/consumer.ts`
+- `script/fixtures/c5-storage-boundary/hidden-host-storage/packages/editor-ports/src/index.ts`
+- `script/fixtures/c5-storage-boundary/in-memory-fallback/apps/vite-example/src/host/vite-host-config.ts`
+- `script/fixtures/c5-storage-boundary/localstorage-presets/apps/web/src/timeline/components/graph-editor/custom-presets-store.ts`
+- `script/fixtures/c5-storage-boundary/localstorage-sounds/apps/web/src/sounds/sounds-store.ts`
+- `script/fixtures/c5-storage-boundary/mechanism-type-leak/apps/web/src/editor/ports/project-store.ts`
+- `script/fixtures/c5-storage-boundary/physical-storage-path-leak/packages/editor-ports/src/project-store.ts`
+- `script/fixtures/c5-storage-boundary/private-storage-context/apps/web/src/editor/storage-context.tsx`
+- `script/fixtures/c5-storage-boundary/public-command-leak/packages/editor-ports/src/project-store.ts`
+- `script/fixtures/c5-storage-boundary/public-schema-leak/packages/editor-ports/src/project-store.ts`
+- `script/fixtures/c5-storage-boundary/public-state-store-leak/packages/editor-ports/src/project-store.ts`
+- `script/fixtures/c5-storage-boundary/public-storage-implementation-leak/packages/editor-ports/src/project-store.ts`
+- `script/fixtures/c5-storage-boundary/second-media-port/apps/web/src/editor/ports/index.ts`
+- `script/fixtures/c5-storage-boundary/second-storage-port/apps/web/src/editor/ports/index.ts`
+- `script/fixtures/c5-storage-boundary/unlisted-verification/apps/vite-example/tests/probe/unlisted.ts`
+- `script/fixtures/c6-session-resource-closure-anchor.json`
+- `script/fixtures/c6-session-resource-expected-closure.json`
+- `script/fixtures/c7-headless-runtime-sensitivity-control.ts`
+- `script/fixtures/editor-singleton-negative/current-session-route.ts.fixture`
+- `script/fixtures/editor-singleton-negative/empty-subscriber-facade.ts.fixture`
+- `script/fixtures/editor-singleton-negative/empty-subscriber.ts.fixture`
+- `script/fixtures/editor-singleton-negative/get-instance.ts.fixture`
+- `script/fixtures/editor-singleton-negative/module-scope-construction.ts.fixture`
+- `script/fixtures/editor-singleton-negative/outside-owner-construction.ts.fixture`
+- `script/fixtures/editor-singleton-negative/outside-owner-wrapper.ts.fixture`
+- `script/fixtures/editor-singleton-negative/reset.ts.fixture`
+- `script/fixtures/editor-singleton-negative/static-instance.ts.fixture`
+- `script/fixtures/editor-singleton-negative/use-editor-alias.ts.fixture`
+- `script/fixtures/editor-singleton-negative/use-editor-no-selector.ts.fixture`
+- `script/fixtures/editor-singleton-negative/use-editor-optional.ts.fixture`
+- `script/fixtures/session-state-ownership.json`
+- `script/fixtures/third-party-adapter-variant-nonconforming/README.md`
+- `script/fixtures/third-party-adapter-variant-nonconforming/__tests__/migration-walker.test.ts`
+- `script/fixtures/third-party-adapter-variant-nonconforming/package.json`
+- `script/fixtures/third-party-adapter-variant-nonconforming/run.ts`
+- `script/fixtures/third-party-adapter-variant-nonconforming/src/alien-codec.ts`
+- `script/fixtures/third-party-adapter-variant-nonconforming/src/alien-control.ts`
+- `script/fixtures/third-party-adapter-variant-nonconforming/src/alien-store.ts`
+- `script/fixtures/third-party-adapter-variant-nonconforming/src/factories.ts`
+- `script/fixtures/third-party-adapter-variant-nonconforming/src/migrate.ts`
+- `script/fixtures/third-party-adapter-variant-nonconforming/src/roles.ts`
+- `script/fixtures/third-party-adapter-variant-nonconforming/src/transaction.ts`
+- `script/fixtures/third-party-adapter/README.md`
+- `script/fixtures/third-party-adapter/__tests__/migration-walker.test.ts`
+- `script/fixtures/third-party-adapter/package.json`
+- `script/fixtures/third-party-adapter/run.ts`
+- `script/fixtures/third-party-adapter/src/alien-codec.ts`
+- `script/fixtures/third-party-adapter/src/alien-control.ts`
+- `script/fixtures/third-party-adapter/src/alien-store.ts`
+- `script/fixtures/third-party-adapter/src/factories.ts`
+- `script/fixtures/third-party-adapter/src/migrate.ts`
+- `script/fixtures/third-party-adapter/src/roles.ts`
+- `script/fixtures/third-party-adapter/src/transaction.ts`
+- `script/fixtures/type-baseline.json`
+- `script/fixtures/wasm-runtime-contract.ts`
+- `script/fixtures/wasm-runtime-failure-probe.html`
+- `script/fixtures/wasm-runtime-probe.html`
+- `script/generate-sbom.mjs`
+- `script/generate-session-resource-closure.mjs`
+- `script/generate-source-inventory.mjs`
+- `script/generate-vector-manifest.mjs`
+- `script/pack-sdk-tarballs.mjs`
+- `script/reconcile-provenance.mjs`
+- `script/run-c6-browser-oracle.mjs`
+- `script/run-c7-headless-host.mjs`
+- `script/run-published-examples.mjs`
+- `script/run-scratch-conformance.mjs`
+- `script/run-wasm-api-contract.mjs`
+- `script/scratch-install-harness.mjs`
+- `script/test-wasm-runtime-api.mjs`
+- `script/wasm-api-surface-contract.mjs`
+

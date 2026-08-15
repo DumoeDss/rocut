@@ -1,0 +1,15 @@
+bun test v1.2.2 (c1708ea6)
+
+script\fixtures\third-party-adapter\__tests__\migration-walker.test.ts:
+disposable legacy record: migrated 30->31, progress 1/1
+second migration call: not-needed
+declining transform: failed closed (invalid version)
+(pass) the alien migration walker runs the real published chain [62.00ms]
+migration cases: migration brings the store to its declared version=passed
+(pass) the ports suite passes with the migration case exercised [16.00ms]
+
+ 2 pass
+ 0 fail
+ 4 expect() calls
+Ran 2 tests across 1 files. [243.00ms]
+REAL_EXIT_CODE:0

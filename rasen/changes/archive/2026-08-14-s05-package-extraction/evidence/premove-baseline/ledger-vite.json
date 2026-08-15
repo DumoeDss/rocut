@@ -1,0 +1,211 @@
+{
+  "host": "vite",
+  "baseURL": "http://127.0.0.1:4173",
+  "generatedAt": "2026-08-14T04:52:40.393Z",
+  "interactions": [
+    {
+      "id": "create-open",
+      "title": "Create and open a project",
+      "asserted": [
+        "editor chrome (main track + timecode) is on screen",
+        "a project record exists in video-editor-projects"
+      ],
+      "captured": [
+        "01-editor-open.png"
+      ],
+      "notes": [
+        "dismissed a modal on first open: \"Welcome to OpenCut Beta! 🎉Welcome to OpenCut Beta! 🎉You're among the first to try OpenCut - the fully open source CapC\""
+      ],
+      "error": null,
+      "status": "asserted"
+    },
+    {
+      "id": "import-media",
+      "title": "Import image, video and two audio assets",
+      "asserted": [
+        "all four assets appear in the assets panel",
+        "all four assets are persisted in media-metadata with their names"
+      ],
+      "captured": [
+        "02-assets-imported.png"
+      ],
+      "notes": [],
+      "error": null,
+      "status": "asserted"
+    },
+    {
+      "id": "place-multi-track",
+      "title": "Place clips on >=2 visual and >=2 audio tracks",
+      "asserted": [
+        "2 visual and 2 audio tracks carry clips (persisted)"
+      ],
+      "captured": [
+        "03-clips-placed.png"
+      ],
+      "notes": [
+        "tracks: main:video[fixture-image.png@0+600000] | overlay:video[fixture-video.mp4@0+600000] | audio[fixture-tone-a5.wav@0+360000] | audio[fixture-tone-a4.wav@0+240000]"
+      ],
+      "error": null,
+      "status": "asserted"
+    },
+    {
+      "id": "drag",
+      "title": "Drag a clip along the timeline",
+      "asserted": [
+        "clip moved 166px right (requested 160px)",
+        "persisted startTime is now 56000 (was 0)"
+      ],
+      "captured": [
+        "04-after-drag.png"
+      ],
+      "notes": [],
+      "error": null,
+      "status": "asserted"
+    },
+    {
+      "id": "trim",
+      "title": "Trim a clip by its resize handle",
+      "asserted": [
+        "clip width 713px -> 618px",
+        "persisted trim: duration=208000 trimStart=0 trimEnd=32000"
+      ],
+      "captured": [
+        "05-after-trim.png"
+      ],
+      "notes": [],
+      "error": null,
+      "status": "asserted"
+    },
+    {
+      "id": "split",
+      "title": "Split a clip at the playhead",
+      "asserted": [
+        "clips derived from fixture-video.mp4: 1 -> 2"
+      ],
+      "captured": [
+        "06-after-split.png"
+      ],
+      "notes": [
+        "playhead moved to 00:00:02:29 before splitting"
+      ],
+      "error": null,
+      "status": "asserted"
+    },
+    {
+      "id": "snap",
+      "title": "Snap a clip to a neighbouring clip edge",
+      "asserted": [
+        "the snap indicator was rendered during the drag",
+        "the clip landed on the neighbour edge, not where the pointer released"
+      ],
+      "captured": [
+        "07-snap-mid-drag.png",
+        "07-after-snap.png"
+      ],
+      "notes": [
+        "snap indicator visible mid-drag: true; landed 0.08px from the neighbour edge (dropped 6px short)"
+      ],
+      "error": null,
+      "status": "asserted"
+    },
+    {
+      "id": "scrub",
+      "title": "Scrub the playhead on the ruler",
+      "asserted": [
+        "the displayed timecode advances monotonically with ruler position"
+      ],
+      "captured": [
+        "08-after-scrub.png"
+      ],
+      "notes": [
+        "timecodes: 00:00:00:00 -> 00:00:01:00 -> 00:00:02:01"
+      ],
+      "error": null,
+      "status": "asserted"
+    },
+    {
+      "id": "play",
+      "title": "Play the preview and pause it",
+      "asserted": [
+        "playback advances the timecode",
+        "pausing holds the timecode still"
+      ],
+      "captured": [
+        "09-after-play.png"
+      ],
+      "notes": [
+        "timecode 00:00:00:00 -> 00:00:01:27 (playing) -> 00:00:02:07 (paused)"
+      ],
+      "error": null,
+      "status": "asserted"
+    },
+    {
+      "id": "save-reload-reopen",
+      "title": "Save, full page reload, reopen with equivalent content",
+      "asserted": [
+        "after a full reload the reopened project has identical tracks, clip order, placement and trims"
+      ],
+      "captured": [
+        "10-after-reload.png"
+      ],
+      "notes": [],
+      "error": null,
+      "status": "asserted"
+    }
+  ],
+  "blockedThirdPartyRequests": [],
+  "consoleErrors": [],
+  "persistedDatabases": [
+    {
+      "name": "video-editor-media-f1bf0b68-7c81-437d-995e-23d6a0f68f0e",
+      "stores": [
+        {
+          "store": "media-metadata",
+          "rows": 4
+        },
+        {
+          "store": "media-metadata-attachment-authority",
+          "rows": 4
+        }
+      ]
+    },
+    {
+      "name": "video-editor-projects",
+      "stores": [
+        {
+          "store": "projects",
+          "rows": 1
+        },
+        {
+          "store": "projects-cascade-maintenance",
+          "rows": 0
+        },
+        {
+          "store": "projects-library-clear-bindings",
+          "rows": 0
+        },
+        {
+          "store": "projects-media-ownership",
+          "rows": 3
+        },
+        {
+          "store": "projects-migration-maintenance",
+          "rows": 0
+        },
+        {
+          "store": "projects-project-authority",
+          "rows": 1
+        }
+      ]
+    },
+    {
+      "name": "video-editor-saved-sounds",
+      "stores": [
+        {
+          "store": "saved-sounds",
+          "rows": 0
+        }
+      ]
+    }
+  ]
+}

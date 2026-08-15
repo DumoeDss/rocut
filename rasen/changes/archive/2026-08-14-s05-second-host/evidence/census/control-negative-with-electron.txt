@@ -1,0 +1,19 @@
+check-package-boundary: negative control
+  PASS  acyclic-direction — caught [layer-1 (contracts) importing a layer-2 (classic) module is an upward edge]
+  PASS  no-elftia-import — caught [a bare @elftia/* import specifier]
+  PASS  react-free-base — caught [editor-ports importing react]
+  PASS  public-entry-only — caught [a package source file deep-importing an undeclared subpath of another package]
+  PASS  no-internal-reexport — caught [a declared entry re-exporting an undeclared subpath of another package]
+  PASS  public-entry-only — caught [BLOCKER-1 regression: a consumer-side file outside packages/ deep-importing an undeclared subpath — invisible to the pre-fix packages/**/src-only scan set (the reviewer's own P-E reproduction used exactly this shape)]
+  PASS  react-free-base — caught [MAJOR-1 regression: a document-named parameter used only as a domain value no longer blinds detection of a real document.createElement(...) call elsewhere in the same file]
+  PASS  react-free-base — caught [MAJOR-2 regression: globalThis.document reaching a DOM member is caught, closing the globalThis-prefixed hole the bare-globalThis exemption previously left open]
+  PASS  public-entry-only — caught [D-1: a fourth package declared in boundary.json.layers (the legal way BLOCKER-2's guard admits one) must still be caught deep-importing its undeclared internals — PACKAGE_SPECIFIER_PATTERN must not stay hardcoded to the original three names (the reviewer's own D-B2b reproduction)]
+  PASS  react-free-base — caught [D-1 audit bonus: a base-layer package manifest is still checked for a forbidden dependency even when its directory name doesn't literally read "editor-ports", and the forbidden layer-2 name is read from boundary.layers.slice(2) (D-6, review round 3) rather than the literal string "@opencut/editor-classic"]
+  PASS  react-free-base — caught [D-6: a base-layer manifest depending on a legally-declared FOURTH layer (index 3, above the old boundary.layers[2] literal's reach) is caught — the forbidden set must be every layer above the two base layers, not only index 2]
+  PASS  react-free-base — caught [D-2: document.addEventListener — the single most common DOM idiom in editor code per the reviewer's own probe — is now caught; it was silently missed by the pre-fix 18-name alternation]
+  PASS  react-free-base — caught [D-4 regression guard: the generalized typeof strip only removes ONE member, so a chained typeof window.document.createElement stays caught exactly like the pre-existing D-M2d probe — it must not swallow a real access just because it starts with a typeof-guarded prefix]
+  PASS  react-free-base — caught [D-7: document.hasFocus() — one of the 13+ real DOM members the round-2 denylist still missed (reviewer's finding) — is caught under the round-3 allowlist inversion without needing its own name added anywhere, because 'hasFocus' was never going to be on DOMAIN_DOCUMENT_MEMBERS in the first place]
+  PASS  public-entry-only — caught [s05-second-host task 2.4: a file under a declared electron consumer root deep-importing an undeclared subpath — the derived scan roots must judge a third consumer's files, not only the two consumers that predate the derivation]
+
+negative control clean — every rule is proven able to fail.
+REAL_EXIT_CODE:0

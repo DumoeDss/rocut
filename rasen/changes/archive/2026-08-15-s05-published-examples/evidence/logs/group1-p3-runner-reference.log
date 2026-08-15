@@ -1,0 +1,40 @@
+scratch root: E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\opencut-scratch-p3 (E:-drive default)
+CONTROL-1a root-outside-repo-tree: PASS (..\opencut-scratch-p3)
+CONTROL-1b root-outside-temp: PASS (checked 4 Temp root(s))
+lifecycle: wiping previous scratch root (marker verified)
+lifecycle: fresh scratch root created with marker (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\opencut-scratch-p3)
+pack: packed packages/editor-ports -> opencut-editor-ports-0.2.0.tgz
+pack: inventory: opencut-editor-ports-0.2.0.tgz — 23 file(s) hashed
+pack: packed packages/editor-contracts -> opencut-editor-contracts-0.2.0.tgz
+pack: inventory: opencut-editor-contracts-0.2.0.tgz — 61 file(s) hashed
+pack: packed packages/editor-classic -> opencut-editor-classic-0.2.0.tgz
+pack: inventory: opencut-editor-classic-0.2.0.tgz — 805 file(s) hashed
+pack: packed rust/wasm/pkg -> opencut-wasm-0.2.10.tgz
+pack: inventory: opencut-wasm-0.2.10.tgz — 7 file(s) hashed
+pack: 4 tarball(s) staged into the scratch project
+install: scratch package.json written (deps + overrides, gate-1 shape + wasm)
+added 5 packages, and audited 6 packages in 17s
+
+found 0 vulnerabilities
+REAL_EXIT_CODE[npm-install]:0
+CONTROL-2 copy-not-link @opencut/editor-ports: PASS (lstat: real directory, symlink=false; lockfile resolved=file:tarballs/opencut-editor-ports-0.2.0.tgz, link=false)
+CONTROL-2 copy-not-link @opencut/editor-contracts: PASS (lstat: real directory, symlink=false; lockfile resolved=file:tarballs/opencut-editor-contracts-0.2.0.tgz, link=false)
+CONTROL-2 copy-not-link @opencut/editor-classic: PASS (lstat: real directory, symlink=false; lockfile resolved=file:tarballs/opencut-editor-classic-0.2.0.tgz, link=false)
+CONTROL-2 copy-not-link opencut-wasm: PASS (lstat: real directory, symlink=false; lockfile resolved=file:tarballs/opencut-wasm-0.2.10.tgz, link=false)
+CONTROL-react-free react-absent: PASS (node_modules/react does not exist; the migration entry's closure needs no react)
+adapter: committed template materialized into scratch (script/fixtures/third-party-adapter)
+suites: npx --yes bun@1.2.18 adapter/run.ts (cwd: scratch root)
+alien adapter: third-party conformance run
+runtime: bun 1.2.18
+classic chain: NOT LOADABLE — @opencut/editor-classic/storage/migrations failed to load or initialize in this environment (recorded finding). The migration leg is skipped distinctly; every other surface still runs.
+  observed: wasm.__wbindgen_start is not a function. (In 'wasm.__wbindgen_start()', 'wasm.__wbindgen_start' is undefined)
+suites/ports: passed=true cases=36 (migration absent: classic unresolved)
+suites/transaction: passed=true cases=21
+suites/engine: passed=true cases=38
+suites/draft: passed=true cases=22
+suites/vectors: verdict=passed vectors=29
+migration/by-replication: SKIPPED (classic unresolved — finding above)
+alien adapter: all exercised surfaces green
+REAL_EXIT_CODE[suites]:0
+REAL_EXIT_CODE[scratch-run]:0
+REAL_EXIT_CODE:0

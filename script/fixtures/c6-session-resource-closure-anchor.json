@@ -2,55 +2,55 @@
 	"schemaVersion": 1,
 	"policy": "Review this file independently from checker and mutable closure fixture changes.",
 	"closure": {
-		"canonicalPayloadSha256": "433314cfb301b3b30781151255d36a4d6a7893032b6d7cbf7a7280a34665dd99",
-		"commonSourceCount": 257,
-		"sourceClosureCount": 266,
-		"sourceClosureSha256": "c94d2126b82aae7c40a5edeec5193da2576b0fdea977a9b014e037c04bf9923a"
+		"canonicalPayloadSha256": "703efb9c37906b108ff91a8702606ec6a214a4c793476378fd043a94dff20cea",
+		"commonSourceCount": 272,
+		"sourceClosureCount": 286,
+		"sourceClosureSha256": "0285a5a644b479d50e4ef23fbaa50b3addfc01d840ea589ef1bdaa06076e6875"
 	},
 	"artifacts": {
 		"vite": {
-			"dist": "apps/vite-example/dist-c6-s52-final3-vite-20260804-1",
-			"moduleGraph": "apps/vite-example/dist-c6-s52-final3-vite-20260804-1/module-graph.json",
-			"moduleGraphSha256": "3d785a494c298830b6986d4f17ad61f272d3638f63d994d654836393afcf8812",
-			"assetManifest": "apps/vite-example/dist-c6-s52-final3-vite-20260804-1/asset-manifest.json",
-			"assetManifestSha256": "09dfeefbe34b2a8549960541357d1244675322aaf7ed6b050f169bbec477c24a",
+			"dist": "apps/vite-example/dist",
+			"moduleGraph": "apps/vite-example/dist/module-graph.json",
+			"moduleGraphSha256": "5d100d2aaa142589b9a327fbf7fda56aa1fa025efe43b110afb00cbbd77ae58e",
+			"assetManifest": "apps/vite-example/dist/asset-manifest.json",
+			"assetManifestSha256": "9c911619661c0ed39a5d058e339123454bd87d2367e622b417267cdbdf174769",
 			"moduleIds": {
-				"count": 2892,
-				"sha256": "95651cbd8327753892525a4176be0d7b3a4ccbfc519283db8549d9e882d66dc0"
+				"count": 3842,
+				"sha256": "994c078838ef63d8ae7b97eabbb0ab254c2c9e11b09da041744e5bc91fb823af"
 			},
 			"webSourceModuleIds": {
-				"count": 593,
-				"sha256": "5153b056765b38ee27106ac4d5649ed70c7e496243a4296a9098e9eb411d1d06"
+				"count": 658,
+				"sha256": "dd4ddc8bc1c9dc18ca3d13a362bf68e880003dc3743045dedd2b43d8d3e13797"
 			},
 			"attributableSourceModuleIds": {
-				"count": 604,
-				"sha256": "a245b2bf75f0ec25ba57ddb15b31cba87fd257ece930f4f2c62b1d5661b97074"
+				"count": 670,
+				"sha256": "5c6e6dfabec2ee9416ed1bd56b9f6e8eda265c292792b5ef84d90d35cb688634"
 			}
 		},
 		"next": {
-			"dist": "apps/web/.next-c6-s52-final3-next-20260804-1",
-			"nft": "apps/web/.next-c6-s52-final3-next-20260804-1/server/app/editor/[project_id]/page.js.nft.json",
-			"nftSha256": "203ca9063d36939bd6bd67f2e148e40120d862f7f729009c41e7c2f006ab6817",
-			"routePageSha256": "aff1e85c085f2195381bc871613361e92375d1c365037a18f43d09ae2904845f",
-			"routeManifestSha256": "d3fc95cc0f16823a50b440673e6459155d80b4db4f8d7cd50ab15af0a4f2b071",
+			"dist": "apps/web/.next",
+			"nft": "apps/web/.next/server/app/editor/[project_id]/page.js.nft.json",
+			"nftSha256": "5eb45b082150ea7d52ec12540f09ee902223319a54d2f93ffefb2833fe8c07f2",
+			"routePageSha256": "566972ed5e455030e5129d88db789e6b7edd8847915d951a8c86012e310af3a3",
+			"routeManifestSha256": "368d22931265d7625f00e9f889b11a388a4c6903992915059fa5ba772e0b6883",
 			"routeFiles": {
-				"count": 82,
-				"sha256": "da5dd87c3f5ac7900d5d9085e01a0e9ce1a6d2b324c9c2c5670273178f70b2f4"
+				"count": 86,
+				"sha256": "3a9f5b4c41d640d16420ce04645387a571e5554d8b67457f43c35d5c2b2a55e3"
 			},
 			"sourceMaps": {
-				"count": 78,
-				"sha256": "51c9396e6358c2fd86770df200cf8b5a503be95b68c270829eb8d46460684d45"
+				"count": 82,
+				"sha256": "e42076c2925fe8dad47411db0853de7554b94f8a71de40ba73e85ba2c3ad2f44"
 			},
 			"moduleIds": {
-				"count": 2557,
-				"sha256": "16acff9dac139fe3546afcbde778ec972012ed14a7f4d8b839ae05d677469d77"
+				"count": 3120,
+				"sha256": "35b913b397f7003cbfbdd21b57acccc9dc7c06e9ac2a86f5e6171b8094b3fb39"
 			},
 			"sourceModuleIds": {
-				"count": 596,
-				"sha256": "d9d45357e1ab7e7833b59a1d0cece92e0f67e6e9ec3ef2e2db09bfc99319d11a"
+				"count": 659,
+				"sha256": "b289315931860b94756a3ed3eb048ab2bf9b8b1842ceb4f587bd4fd95b8e6507"
 			},
-			"observedBuildId": "bkdPLKJK7Ps0LPLLDcsZf",
-			"buildIdSha256": "22092b333316ef945ccce4fa76c3bcb1d554fb9158533e390c25a06dfa107503"
+			"observedBuildId": "Vl-7_95JN5T6995Qxo-vK",
+			"buildIdSha256": "f08241d0de95ebcf9beb9a2846265de848b914351258f5e9c994bd052f658c8c"
 		}
 	}
 }

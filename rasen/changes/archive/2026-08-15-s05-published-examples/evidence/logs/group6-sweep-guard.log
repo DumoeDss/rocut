@@ -1,0 +1,156 @@
+Cross-cutting sweep guard at 2a72333e+worktree (P5 rule: every identifier this change introduces, every surviving hit dispositioned by class)
+
+=== run-published-examples (44 hit(s)) ===
+.github/workflows/bun-ci.yml:106:  # Claims exactly what run-published-examples.mjs runs: the four
+.github/workflows/bun-ci.yml:147:          OPENCUT_SCRATCH_ROOT="$HOME/.opencut-scratch-ci" node script/run-published-examples.mjs
+BOUNDARIES.md:1276:`run-published-examples.mjs`, `scratch-install-harness.mjs`), package graph 989 → 1011,
+examples/agent-transaction/README.md:18:Through the repo's runner (see `script/run-published-examples.mjs`):
+examples/agent-transaction/README.md:21:OPENCUT_EXAMPLES=agent-transaction node script/run-published-examples.mjs
+examples/custom-storage/README.md:40:Through the repo's runner (see `script/run-published-examples.mjs`):
+examples/custom-storage/README.md:43:OPENCUT_EXAMPLES=custom-storage node script/run-published-examples.mjs
+examples/embed-surface/README.md:99:OPENCUT_EXAMPLES=embed-surface node script/run-published-examples.mjs
+examples/install-packages/README.md:17:to them, installs, controls, executes — see `script/run-published-examples.mjs`):
+examples/install-packages/README.md:20:node script/run-published-examples.mjs            # all examples
+examples/install-packages/README.md:21:OPENCUT_EXAMPLES=install-packages node script/run-published-examples.mjs
+rasen/changes/s05-published-examples/design.md:106:`script/run-published-examples.mjs`: pack (import `packSdkTarballs`), scratch lifecycle,
+
+=== check-sdk-consumer-view (15 hit(s)) ===
+BOUNDARIES.md:1241:`script/check-sdk-consumer-view.mjs` (task 2.2's promotion of the P5-era consumer-view
+BOUNDARIES.md:1275:+ the three scripts this change added: `check-sdk-consumer-view.mjs`,
+BOUNDARIES.md:1290:none; `check-sdk-consumer-view` (this change's own) verifies every full run's tarballs — the
+rasen/changes/s05-published-examples/evidence/implementation-report.md:67:`script/check-sdk-consumer-view.mjs` — `runConsumerView()` exported (the
+rasen/changes/s05-published-examples/evidence/implementation-report.md:354:4f0b9c69 baseline` — `check-sdk-consumer-view.mjs`,
+rasen/changes/s05-published-examples/evidence/implementation-report.md:384:- `check-sdk-consumer-view` (this change's own Group-2 checker): verified
+rasen/changes/s05-published-examples/evidence/logs/group2-consumer-view-fresh-pack.log:1:check-sdk-consumer-view: verifying at ac961390 (reads the tar…
+rasen/changes/s05-published-examples/evidence/logs/group2-consumer-view-prepacked.log:1:check-sdk-consumer-view: verifying at ac961390 (reads the tarb…
+rasen/changes/s05-published-examples/evidence/logs/group4-checker-audit.log:61:=== node script/check-sdk-consumer-view.mjs ===
+rasen/changes/s05-published-examples/evidence/logs/group4-checker-audit.log:62:check-sdk-consumer-view: verifying at 3f913b7a (reads the tarballs, nev…
+rasen/changes/s05-published-examples/evidence/logs/group4-checker-audit.log:138:REAL_EXIT_CODE[check-sdk-consumer-view]:0
+script/check-sdk-consumer-view.mjs:27: *   node script/check-sdk-consumer-view.mjs
+
+=== scratch-install-harness (11 hit(s)) ===
+BOUNDARIES.md:1238:`script/scratch-install-harness.mjs` (task 2.1's behaviour-preserving extraction of P3's inline
+BOUNDARIES.md:1276:`run-published-examples.mjs`, `scratch-install-harness.mjs`), package graph 989 → 1011,
+rasen/changes/s05-published-examples/evidence/implementation-report.md:47:`script/scratch-install-harness.mjs` (`createScratchHarness({...})` — one
+rasen/changes/s05-published-examples/evidence/implementation-report.md:355:`run-published-examples.mjs`, `scratch-install-harness.mjs`; reconciled
+rasen/changes/s05-published-examples/evidence/implementation-report.md:436:   `script/scratch-install-harness.mjs`: every ancestor of the scratch root…
+script/run-published-examples.mjs:14: * come from `script/scratch-install-harness.mjs` (P6 task 2.1's extraction of
+script/run-published-examples.mjs:55:import { createScratchHarness } from "./scratch-install-harness.mjs";
+script/run-scratch-conformance.mjs:7: * and no-linking controls into `script/scratch-install-harness.mjs`; this
+script/run-scratch-conformance.mjs:45:import { createScratchHarness } from "./scratch-install-harness.mjs";
+script/scratch-install-harness.mjs:100:	const label = options.label ?? "scratch-install-harness";
+script/scratch-install-harness.mjs:104:	const markerCreatedBy = options.markerCreatedBy ?? `${label} (scratch-install-harness)`;
+
+=== createScratchHarness (8 hit(s)) ===
+BOUNDARIES.md:1237:**The harness reuse seam.** P6 imports, never re-implements: `createScratchHarness` from
+rasen/changes/s05-published-examples/evidence/implementation-report.md:47:`script/scratch-install-harness.mjs` (`createScratchHarness({...})` — one
+script/run-published-examples.mjs:55:import { createScratchHarness } from "./scratch-install-harness.mjs";
+script/run-published-examples.mjs:63:const harness = createScratchHarness({
+script/run-scratch-conformance.mjs:45:import { createScratchHarness } from "./scratch-install-harness.mjs";
+script/run-scratch-conformance.mjs:68:const harness = createScratchHarness({
+script/scratch-install-harness.mjs:13: * One factory, two consumers: `createScratchHarness({ label, ... })` binds the
+script/scratch-install-harness.mjs:99:export function createScratchHarness(options = {}) {
+
+=== opencutExample.bunEntries (3 hit(s)) ===
+rasen/changes/s05-published-examples/evidence/implementation-report.md:209:Execution is two legs (`opencutExample.bunEntries`, each its own process —
+script/run-published-examples.mjs:26: *     `opencutExample.bunEntries` (an array) for several entries, each its own
+script/run-published-examples.mjs:321:			fail(`example/${name}`, `opencutExample.bunEntries entry '${entry}' does not exist in the materialized exampl…
+
+=== opencutExample.bunEntry (5 hit(s)) ===
+BOUNDARIES.md:1245:`opencutExample.bunEntry` or `bunEntries` under the configured bun), the `OPENCUT_EXAMPLES`
+script/run-published-examples.mjs:24: *   - `opencutExample.bunEntry`, when present, runs under the configured bun
+script/run-published-examples.mjs:306:		fail(`example/${name}`, "declare opencutExample.bunEntry (one) or bunEntries (many), not both");
+script/run-published-examples.mjs:311:			fail(`example/${name}`, `opencutExample.bunEntry '${bunEntry}' does not exist in the materialized example`);
+script/run-published-examples.mjs:326:		fail(`example/${name}`, "no execution declared (no typecheck/build/smoke script, no opencutExample.bunEntry(s)…
+
+=== OPENCUT_EXAMPLES (27 hit(s)) ===
+BOUNDARIES.md:1245:`opencutExample.bunEntry` or `bunEntries` under the configured bun), the `OPENCUT_EXAMPLES`
+BOUNDARIES.md:1246:subset seam, and the env seams (`OPENCUT_EXAMPLES_ROOT`, `OPENCUT_SCRATCH_ROOT`,
+examples/agent-transaction/README.md:21:OPENCUT_EXAMPLES=agent-transaction node script/run-published-examples.mjs
+examples/custom-storage/README.md:43:OPENCUT_EXAMPLES=custom-storage node script/run-published-examples.mjs
+examples/embed-surface/README.md:99:OPENCUT_EXAMPLES=embed-surface node script/run-published-examples.mjs
+examples/install-packages/README.md:21:OPENCUT_EXAMPLES=install-packages node script/run-published-examples.mjs
+rasen/changes/s05-published-examples/design.md:112:examples runner gains two env seams of its own (`OPENCUT_EXAMPLES_ROOT` defaulting under the
+rasen/changes/s05-published-examples/design.md:113:scratch root; `OPENCUT_EXAMPLES` selecting a subset) so CI can run all four and a developer can
+rasen/changes/s05-published-examples/evidence/implementation-report.md:104:`--consumer-view-only` (exit 0), `OPENCUT_EXAMPLES=install-packages`
+rasen/changes/s05-published-examples/evidence/implementation-report.md:105:(subset line printed, exit 0), `OPENCUT_EXAMPLES=nope` (refused with the
+rasen/changes/s05-published-examples/evidence/implementation-report.md:309:`evidence/logs/group3-embed-surface.log` (the `OPENCUT_EXAMPLES` subset
+rasen/changes/s05-published-examples/evidence/implementation-report.md:330:`OPENCUT_EXAMPLES=embed-surface`): the heaviest example alone through the
+
+=== OPENCUT_EXAMPLES_ROOT (6 hit(s)) ===
+BOUNDARIES.md:1246:subset seam, and the env seams (`OPENCUT_EXAMPLES_ROOT`, `OPENCUT_SCRATCH_ROOT`,
+rasen/changes/s05-published-examples/design.md:112:examples runner gains two env seams of its own (`OPENCUT_EXAMPLES_ROOT` defaulting under the
+rasen/changes/s05-published-examples/tasks.md:30:      run the consumer view. Env seams: `OPENCUT_EXAMPLES_ROOT`, `OPENCUT_EXAMPLES` (subset
+script/run-published-examples.mjs:41: *   OPENCUT_EXAMPLES_ROOT   where examples are materialized (default: under
+script/run-published-examples.mjs:139:const examplesRoot = resolve(process.env.OPENCUT_EXAMPLES_ROOT ?? join(root, "examples"));
+script/run-published-examples.mjs:141:	`examples root: ${examplesRoot}${process.env.OPENCUT_EXAMPLES_ROOT ? " (OPENCUT_EXAMPLES_ROOT)" : " (under the …
+
+=== sdk-examples (7 hit(s)) ===
+.github/workflows/bun-ci.yml:115:  sdk-examples:
+BOUNDARIES.md:1293:**The CI leg.** `.github/workflows/bun-ci.yml` gains `sdk-examples` (ubuntu-latest): the same
+rasen/changes/s05-published-examples/design.md:127:A new `sdk-examples` job in `bun-ci.yml`: `ubuntu-latest`; checkout; run
+rasen/changes/s05-published-examples/evidence/implementation-report.md:389:**5.1 — the `sdk-examples` job** (`.github/workflows/bun-ci.yml`):
+rasen/changes/s05-published-examples/evidence/implementation-report.md:399:`build, sdk-examples`, 5 steps). The scratch root sits under `$HOME` becaus…
+rasen/changes/s05-published-examples/proposal.md:46:- **The CI leg P6 owns**: a new `sdk-examples` job in `.github/workflows/bun-ci.yml` —
+rasen/changes/s05-published-examples/tasks.md:83:- [x] 5.1 Add the `sdk-examples` job to `.github/workflows/bun-ci.yml`: `ubuntu-latest`, checkout,
+
+=== CONTROL-1c (9 hit(s)) ===
+BOUNDARIES.md:1257:**CONTROL-1c and the leakage lesson (F-P6-7).** Node resolves a bare import by walking
+BOUNDARIES.md:1266:(CONTROL-1c, refusing before touching anything), and classic declares `date-fns@^3.6.0`
+rasen/changes/s05-published-examples/evidence/implementation-report.md:343:> under CONTROL-1c with `date-fns` shipping in classic's manifest.
+rasen/changes/s05-published-examples/evidence/implementation-report.md:435:2. **close the leak class** — CONTROL-1c in
+rasen/changes/s05-published-examples/evidence/implementation-report.md:463:CONTROL-1c. The first true CI execution lands on the post-delivery push; it…
+rasen/changes/s05-published-examples/evidence/logs/group5-ci-dry-run.log:5:CONTROL-1c ancestors-node_modules-free: PASS (checked 3 ancestor(s) up to t…
+rasen/changes/s05-published-examples/evidence/logs/group5-full-run-clean.log:5:CONTROL-1c ancestors-node_modules-free: PASS (checked 3 ancestor(s) up …
+rasen/changes/s05-published-examples/evidence/logs/group5-subset-seam-clean.log:5:CONTROL-1c ancestors-node_modules-free: PASS (checked 3 ancestor(s) …
+script/scratch-install-harness.mjs:181:			`CONTROL-1c ancestors-node_modules-free: PASS (checked ${ancestorsChecked} ancestor(s) up to the drive root)…
+
+=== F-P6-1 (4 hit(s)) ===
+examples/embed-surface/README.md:74:surfaced classic's undeclared runtime closure (the P6 report's F-P6-1); classic
+rasen/changes/s05-published-examples/evidence/implementation-report.md:123:- **F-P6-1 (measured at apply start, load-bearing for 3.4):** classic's shi…
+rasen/changes/s05-published-examples/evidence/implementation-report.md:415:  F-P6-1 dependency repair was one package short;
+rasen/changes/s05-published-examples/evidence/implementation-report.md:444:F-P6-1 repair (it records four deps) and this edit follows that precedent —…
+
+=== F-P6-2 (2 hit(s)) ===
+rasen/changes/s05-published-examples/evidence/implementation-report.md:78:stat-cache-immune check). **Staleness trap found while proving it (F-P6-2):*…
+rasen/changes/s05-published-examples/evidence/implementation-report.md:141:- **F-P6-2 (prepacked-mode staleness, Group 2):** `OPENCUT_PREPACKED_DIR`
+
+=== F-P6-3 (2 hit(s)) ===
+examples/custom-storage/types/culori.d.ts:4:// (P6 report finding F-P6-3) and must declare the module itself. The adapter
+rasen/changes/s05-published-examples/evidence/implementation-report.md:203:- `types/culori.d.ts`: ambient `declare module "culori"` — **F-P6-3**: clas…
+
+=== F-P6-4 (1 hit(s)) ===
+rasen/changes/s05-published-examples/evidence/implementation-report.md:257:- **F-P6-4 (unstyled-build: `source()` does not survive node_modules).** Th…
+
+=== F-P6-5 (1 hit(s)) ===
+rasen/changes/s05-published-examples/evidence/implementation-report.md:269:- **F-P6-5 (indefinite-height collapse).** `min-height: 100%` on
+
+=== F-P6-6 (1 hit(s)) ===
+rasen/changes/s05-published-examples/evidence/implementation-report.md:289:  `as CreateTextElement`). Recorded as F-P6-6 for P7: an adopter seeding an…
+
+=== F-P6-7 (3 hit(s)) ===
+BOUNDARIES.md:1257:**CONTROL-1c and the leakage lesson (F-P6-7).** Node resolves a bare import by walking
+rasen/changes/s05-published-examples/evidence/implementation-report.md:339:> build borrowed `date-fns` from it (finding F-P6-7, Group 5). The run's
+rasen/changes/s05-published-examples/evidence/implementation-report.md:408:self-logged. Diagnosis (finding **F-P6-7**):
+
+SWEEP_GUARD_DONE:0
+
+Disposition (every hit above, by class; the run-published-examples block was
+head-truncated to 12 lines in the capture, the per-file census below covers all 44):
+
+  implementation      script/run-published-examples.mjs (the definition), script/
+                      scratch-install-harness.mjs, script/run-scratch-conformance.mjs
+                      (importer), script/check-sdk-consumer-view.mjs (one header
+                      comment naming the consumer-view-only twin) — the code that IS the change.
+  CI workflow         .github/workflows/bun-ci.yml (job id + invocation) — the Group-5 leg.
+  adopter docs        the four examples' READMEs (runner invocations, the OPENCUT_EXAMPLES
+                      subset seam) — adoption instructions, exactly where they belong.
+  boundary narration  BOUNDARIES.md section 15 — the close-out record.
+  change artifacts    proposal.md / design.md / tasks.md — the spec-side record.
+  committed evidence  every evidence log carries the runner's own self-line
+                      ("run-published-examples: running at <rev>") or the checker's; the
+                      logs are the artifacts the citations point at.
+
+Zero hits fall outside these classes; nothing presents a renamed-away or dead
+identifier as live surface, and no hit is a dangling reference to a file that
+does not exist. SWEEP_GUARD_DISPOSITIONED:0

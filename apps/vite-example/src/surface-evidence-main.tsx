@@ -2,9 +2,9 @@ import * as React from "react";
 import { createRoot } from "react-dom/client";
 import { ThemeProvider } from "next-themes";
 
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { SurfaceEvidenceHarness } from "@/editor/surface/evidence/surface-evidence-harness";
+import { Toaster } from "@opencut/editor-classic/ui";
+import { TooltipProvider } from "@opencut/editor-classic/ui";
+import { SurfaceEvidenceHarness } from "@opencut/editor-classic/evidence";
 
 import { createViteEditorHost } from "./host/vite-host-config";
 import "./styles.css";

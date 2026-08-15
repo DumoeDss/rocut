@@ -10,7 +10,7 @@ The transaction contract SHALL define standalone TypeScript types for `Project`,
 #### Scenario: Domain types compile without editor-internal imports
 
 - **WHEN** the contract module graph is inspected
-- **THEN** no module under `apps/web/src/editor/contracts/` imports from `@/project`, `@/timeline`, `@/commands`, `@/core`, `@/stores`, `@/scenes`, `@/effects`, `@/masks`, `@/media`, `@/wasm`, `@/services/storage`, or `zustand`
+- **THEN** no module under `packages/editor-contracts/src/` imports from `@/project`, `@/timeline`, `@/commands`, `@/core`, `@/stores`, `@/scenes`, `@/effects`, `@/masks`, `@/media`, `@/wasm`, `@/services/storage`, or `zustand`
 
 #### Scenario: MediaTime is a branded integer at 120,000 ticks per second
 
@@ -168,7 +168,7 @@ The contract SHALL define a `TransactionWatch` interface that calls a subscriber
 
 ### Requirement: The contract contains no editor-internal types
 
-A committed boundary check script (`script/check-transaction-boundary.mjs`) SHALL scan every module under `apps/web/src/editor/contracts/` and reject imports of OpenCut schema types, command classes, editor state stores, Zustand, IndexedDB types, OPFS handle types, and physical storage fields. The check SHALL include a negative control that materialises a fixture violating each rule and asserts each is caught.
+A committed boundary check script (`script/check-transaction-boundary.mjs`) SHALL scan every module under `packages/editor-contracts/src/` and reject imports of OpenCut schema types, command classes, editor state stores, Zustand, IndexedDB types, OPFS handle types, and physical storage fields. The check SHALL include a negative control that materialises a fixture violating each rule and asserts each is caught.
 
 #### Scenario: The boundary check passes on the contract modules
 
@@ -210,7 +210,7 @@ The contract SHALL ship a conformance suite (`runTransactionConformance`) as a p
 
 ### Requirement: A durable transaction engine consumes the frozen Host port
 
-The system SHALL provide a transaction engine under `apps/web/src/editor/contracts/engine/**` that implements T0's `TransactionRead`, `TransactionApply`, `TransactionGetContext`, and `TransactionWatch` interfaces by consuming S02's existing `ProjectStore`. The engine MUST NOT redefine or widen `ProjectStore`, interpret the minimal transaction-domain types as the provider's persistence schema, or import an OpenCut schema, command, editor store, Zustand store, wasm module, or storage mechanism. An injected document adapter SHALL translate only through `ProjectRecord.data: unknown`, SHALL encode revision and idempotency metadata in the same replacement record as project content, and SHALL preserve provider-private fields it does not interpret.
+The system SHALL provide a transaction engine under `packages/editor-contracts/src/engine/**` that implements T0's `TransactionRead`, `TransactionApply`, `TransactionGetContext`, and `TransactionWatch` interfaces by consuming S02's existing `ProjectStore`. The engine MUST NOT redefine or widen `ProjectStore`, interpret the minimal transaction-domain types as the provider's persistence schema, or import an OpenCut schema, command, editor store, Zustand store, wasm module, or storage mechanism. An injected document adapter SHALL translate only through `ProjectRecord.data: unknown`, SHALL encode revision and idempotency metadata in the same replacement record as project content, and SHALL preserve provider-private fields it does not interpret.
 
 #### Scenario: The engine opens over the frozen ProjectStore
 
@@ -600,7 +600,7 @@ The system SHALL provide a Host-neutral Draft conformance runner that tests any 
 
 #### Scenario: Draft contract remains Host-neutral
 
-- **WHEN** the transaction boundary check scans `apps/web/src/editor/contracts/draft/**`
+- **WHEN** the transaction boundary check scans `packages/editor-contracts/src/draft/**`
 - **THEN** no OpenCut schema, command class, editor core, Zustand store, browser-storage identifier, Rust, WASM, React, or Electron dependency crosses the contract seam
 
 ### Requirement: Project metadata updates are typed end-to-end transactions
@@ -753,7 +753,7 @@ One root command SHALL own one preparation lifecycle. Every transaction-routable
 
 ### Requirement: Donor candidates are explicit, projection-checked, and opaque-preserving
 
-The concrete OpenCut transaction adapter SHALL live outside `apps/web/src/editor/contracts/**` and SHALL overlay the prior `ProjectRecord.data` rather than rebuild it. A staged UI donor candidate SHALL be bound to an explicit unique commit token, base revision, and previous-record identity. Before saving, the adapter MUST prove that projecting the donor candidate yields exactly the engine candidate for every frozen public field. A token, base, or projection mismatch SHALL reject before save. Provider-private fields owned by the edit MAY change in the same record; unrelated provider-private and opaque fields SHALL round-trip unchanged with revision and idempotency metadata.
+The concrete OpenCut transaction adapter SHALL live outside `packages/editor-contracts/src/**` and SHALL overlay the prior `ProjectRecord.data` rather than rebuild it. A staged UI donor candidate SHALL be bound to an explicit unique commit token, base revision, and previous-record identity. Before saving, the adapter MUST prove that projecting the donor candidate yields exactly the engine candidate for every frozen public field. A token, base, or projection mismatch SHALL reject before save. Provider-private fields owned by the edit MAY change in the same record; unrelated provider-private and opaque fields SHALL round-trip unchanged with revision and idempotency metadata.
 
 #### Scenario: Public and provider-private state commit in one record
 
@@ -883,30 +883,57 @@ After a routed commit succeeds, the system SHALL adopt the exact encoded `Projec
 
 ### Requirement: A versioned wire-safe transaction vector corpus is published
 
-The system SHALL publish a conformance-vector corpus as committed data under `apps/web/src/editor/contracts/vectors/`, carrying an explicit schema identifier and version in every file. Every published value MUST be wire-safe: `MediaTime` as a non-negative integer tick count, identities as strings, operation kinds and error codes as members of the contract's closed unions, and no branded type, TypeScript-only construct, function, or module reference at rest. The corpus SHALL declare exactly two families — document vectors carrying an explicit initial document with one batch and its expected result or structured rejection, and scenario vectors carrying an ordered step plan whose expectations are relative to the target's own starting document. A manifest SHALL record every corpus file, its SHA-256, the declared vector count, and a corpus digest; a corpus file whose bytes do not match the manifest MUST fail to load.
+The system SHALL publish a conformance-vector corpus as committed data under
+`packages/editor-contracts/src/vectors/corpus/`, carrying an explicit schema identifier and
+version in every file. Every published value MUST be wire-safe: `MediaTime` as a non-negative
+integer tick count, identities as strings, operation kinds and error codes as members of the
+contract's closed unions, and no branded type, TypeScript-only construct, function, or module
+reference at rest. The corpus SHALL declare exactly two families — document vectors carrying an
+explicit initial document with one batch and its expected result or structured rejection, and
+scenario vectors carrying an ordered step plan whose expectations are relative to the target's
+own starting document. A manifest SHALL record every corpus file, its SHA-256, the declared
+vector count, and a corpus digest; a corpus file whose bytes do not match the manifest MUST fail
+to load.
+
+The corpus SHALL be consumable from an installed package as well as from a checkout: a declared
+export entry SHALL expose the manifest text and corpus file texts as exact file bytes, so a
+consumer outside this repository can load and run the corpus without filesystem access to it.
 
 #### Scenario: The corpus is self-describing and versioned
 
 - **WHEN** a consumer parses any published corpus file with a plain JSON parser
-- **THEN** it reads the schema identifier, the corpus version, the family of every vector, and a stable vector id for every vector
+- **THEN** it reads the schema identifier, the corpus version, the family of every vector, and a
+  stable vector id for every vector
 - **AND** no value requires a contract constructor, branded type, or module import to interpret
 
 #### Scenario: Manifest drift fails to load
 
-- **WHEN** a corpus file is edited without regenerating the manifest, or the manifest declares a vector count different from the files present
+- **WHEN** a corpus file is edited without regenerating the manifest, or the manifest declares a
+  vector count different from the files present
 - **THEN** loading rejects with a structured drift failure naming the offending file
 - **AND** no vector from that corpus is reported as passing
 
 #### Scenario: A vector with no expectation is a load error
 
-- **WHEN** a corpus contains a vector whose expectation set is empty or whose step plan asserts nothing
+- **WHEN** a corpus contains a vector whose expectation set is empty or whose step plan asserts
+  nothing
 - **THEN** loading rejects that corpus
 - **AND** the vector is not admitted as a skipped or passing case
 
 #### Scenario: Non-wire-safe values are rejected
 
-- **WHEN** a corpus contains a non-integer tick value, a non-finite number, an unknown operation kind, or an unknown error code
-- **THEN** loading rejects with a structured validation failure identifying the vector id and the offending field
+- **WHEN** a corpus contains a non-integer tick value, a non-finite number, an unknown operation
+  kind, or an unknown error code
+- **THEN** loading rejects with a structured validation failure identifying the vector id and the
+  offending field
+
+#### Scenario: The corpus loads from an installed package
+
+- **WHEN** a consumer outside this repository imports the corpus entry from an installed package
+  tarball and passes the returned texts to the published loader
+- **THEN** the corpus loads and its recomputed digest matches the manifest's declared digest
+- **AND** the bytes the entry returns are the exact committed file bytes rather than a
+  re-serialization
 
 ### Requirement: Vector coverage is derived from the frozen contract surface
 

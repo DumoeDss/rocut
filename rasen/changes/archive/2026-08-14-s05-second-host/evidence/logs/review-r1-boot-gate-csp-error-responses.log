@@ -1,0 +1,10 @@
+{
+  "origin": "opencut://app",
+  "urlAfterCreate": "?project=1ff38581-c88b-4f23-9867-6dbd58619e34",
+  "onboardingDialog": null,
+  "mainTrackVisible": true,
+  "cspViolations": [],
+  "consoleErrors": []
+}
+BOOT PROOF PASSED
+REAL_EXIT_CODE:0

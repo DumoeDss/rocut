@@ -1,0 +1,16 @@
+check-package-boundary: converse control
+  PASS  acyclic-direction — silent [a legal downward edge (classic importing ports)]
+  PASS  public-entry-only — silent [an import of a declared entry]
+  PASS  no-elftia-import — silent [an Elftia mention in prose (a comment)]
+  PASS  react-free-base — silent [a React import inside @opencut/editor-classic]
+  PASS  public-entry-only — silent [a consumer-side (non-packages/) import of a declared entry — the widened BLOCKER-1 scope must not misfire on a legal import]
+  PASS  no-internal-reexport — silent [a declared entry re-exporting a DECLARED subpath of another package (not an undeclared internal)]
+  PASS  react-free-base — silent [a local document parameter used only as a domain value (no DOM member access) — the MAJOR-1 fix must not misclassify a domain document]
+  PASS  react-free-base — silent [a typeof globalThis.document environment-detection guard (agent-drivers.test.ts's own idiom) — not DOM consumption]
+  PASS  public-entry-only — silent [D-1: a fourth declared package's own declared entry import stays silent — the fixed specifier pattern must recognize a legally-added package, not merely tolerate it]
+  PASS  react-free-base — silent [D-1 audit bonus: a renamed base-layer manifest with a legal (non-forbidden) dependency stays silent — the manifest gate must key off the declared name, not a hardcoded literal path or directory string]
+  PASS  react-free-base — silent [D-6: a base-layer manifest's dependency on the OTHER base layer (contracts→ports, the real declared relationship) stays silent in a legally-declared four-layer boundary — the widened forbidden set (boundary.layers.slice(2)) must not swallow the base layers themselves]
+  PASS  react-free-base — silent [D-4: typeof window.localStorage stays silent — the generalized single-member typeof strip must not regress into treating every window-prefixed environment guard as a DOM access]
+
+converse control clean — no rule fires on a legal case.
+REAL_EXIT_CODE:0

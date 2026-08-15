@@ -1,4 +1,4 @@
-import { Button } from "./ui/button";
+import { Button } from "@opencut/editor-classic/ui";
 import Link from "next/link";
 import { SOCIAL_LINKS } from "@/site/social";
 import { GithubIcon, Link04Icon } from "@hugeicons/core-free-icons";

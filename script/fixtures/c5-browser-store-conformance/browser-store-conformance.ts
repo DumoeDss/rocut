@@ -1,9 +1,9 @@
 import {
 	type ProjectStoreConformanceFixture,
 	runPortConformance,
-} from "../../../apps/web/src/editor/ports/conformance";
-import { createInMemoryPorts } from "../../../apps/web/src/editor/ports/in-memory";
-import { createBrowserProjectStoreConformanceFixture } from "../../../apps/web/src/services/storage/browser-project-store-conformance";
+} from "@opencut/editor-ports/conformance";
+import { createInMemoryPorts } from "@opencut/editor-ports/in-memory";
+import { createBrowserProjectStoreConformanceFixture } from "@opencut/editor-classic/storage/conformance";
 
 export async function runBrowserStoreConformance() {
 	const prefix = "c5-disposable-";

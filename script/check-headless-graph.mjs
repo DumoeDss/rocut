@@ -150,47 +150,49 @@ function canonicalFacadeScripts(scripts) {
 const REQUIRED_ROOTS = [
 	{
 		name: "runtime probe",
-		ids: ["apps/web/src/editor/session/headless-runtime-probe.ts"],
+		ids: ["packages/editor-classic/src/editor/session/headless-runtime-probe.ts"],
 	},
 	{
 		name: "semantic fixture",
-		ids: ["apps/web/src/editor/session/headless-semantic-fixture.ts"],
+		ids: ["packages/editor-classic/src/editor/session/headless-semantic-fixture.ts"],
 	},
 	{
 		name: "isolated headless owner",
-		ids: ["apps/web/src/editor/session/headless.ts"],
+		ids: ["packages/editor-classic/src/editor/session/headless.ts"],
 	},
 	{
 		name: "shared migration gate",
-		ids: ["apps/web/src/editor/session/migration-gate.ts"],
+		ids: ["packages/editor-classic/src/editor/session/migration-gate.ts"],
 	},
 	{
 		name: "persistence coordinator",
-		ids: ["apps/web/src/editor/persistence/session-persistence-coordinator.ts"],
+		ids: [
+			"packages/editor-classic/src/editor/persistence/session-persistence-coordinator.ts",
+		],
 	},
 	{
 		name: "project codec",
-		ids: ["apps/web/src/editor/persistence/project-codec.ts"],
+		ids: ["packages/editor-classic/src/editor/persistence/project-codec.ts"],
 	},
 	{
 		name: "opaque overlay",
-		ids: ["apps/web/src/editor/persistence/opaque-value.ts"],
+		ids: ["packages/editor-classic/src/editor/persistence/opaque-value.ts"],
 	},
 	{
 		name: "Host contract",
-		ids: ["apps/web/src/editor/host/editor-host.ts"],
+		ids: ["packages/editor-ports/src/host/index.ts"],
 	},
 	{
 		name: "store contract",
-		ids: ["apps/web/src/editor/ports/project-store.ts"],
+		ids: ["packages/editor-ports/src/project-store.ts"],
 	},
 	{
 		name: "in-memory store",
-		ids: ["apps/web/src/editor/ports/in-memory/index.ts"],
+		ids: ["packages/editor-ports/src/in-memory/index.ts"],
 	},
 	{
 		name: "in-memory Host",
-		ids: ["apps/web/src/editor/ports/in-memory/host.ts"],
+		ids: ["packages/editor-ports/src/in-memory/host.ts"],
 	},
 ];
 
@@ -215,11 +217,11 @@ function forbiddenRule(item) {
 	if (reactFamily) return "react-family";
 	if (/(^|[/\0:])sonner(?:[/\0:#?]|$)/m.test(identities)) return "sonner";
 	if (
-		identities.includes("apps/web/src/editor/session/index.ts") ||
+		identities.includes("packages/editor-classic/src/editor/session/index.ts") ||
 		identities.includes("editor-session-provider") ||
 		identities.includes("editor-session-host") ||
 		identities.includes("session-core-owner") ||
-		identities.includes("apps/web/src/core/index.ts") ||
+		identities.includes("packages/editor-classic/src/core/index.ts") ||
 		identities.includes("browser-project-store") ||
 		/(^|[/\0])surface(?:[./\0]|$)/m.test(identities)
 	) {

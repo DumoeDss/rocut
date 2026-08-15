@@ -1,4 +1,4 @@
-import { OcDataBuddyIcon, OcMarbleIcon } from "@/components/icons";
+import { OcDataBuddyIcon, OcMarbleIcon } from "@opencut/editor-classic/ui";
 
 export type ExternalTool = {
 	name: string;

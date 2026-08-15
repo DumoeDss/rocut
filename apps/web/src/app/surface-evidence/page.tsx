@@ -3,7 +3,7 @@
 import * as React from "react";
 
 import { createNextEditorHost } from "@/editor/host/next-editor-host";
-import { SurfaceEvidenceHarness } from "@/editor/surface/evidence/surface-evidence-harness";
+import { SurfaceEvidenceHarness } from "@opencut/editor-classic/evidence";
 
 const createEvidenceHost = ({
 	projectId,

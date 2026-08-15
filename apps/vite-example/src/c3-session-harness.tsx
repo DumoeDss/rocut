@@ -1,21 +1,21 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 
-import { editorForSession } from "@/editor/runtime/session-core-owner";
-import { prepareWasmRuntimeProviders } from "@/editor/runtime/wasm-runtime-providers";
+import { editorForSession } from "@opencut/editor-classic/runtime";
+import { prepareWasmRuntimeProviders } from "@opencut/editor-classic/runtime";
 import {
 	createEditorSession,
 	EditorSessionProvider,
 	type EditorSession,
-} from "@/editor/session";
-import { useEditor, useEditorInstance } from "@/editor/use-editor";
-import { createInMemoryHost } from "@/editor/ports/in-memory/host";
-import { MigrationDialog } from "@/project/components/migration-dialog";
-import { IndexedDBAdapter } from "@/services/storage/indexeddb-adapter";
-import type { CanvasRenderer } from "@/services/renderer/canvas-renderer";
-import { buildScene } from "@/services/renderer/scene-builder";
-import { buildTextElement } from "@/timeline/element-utils";
-import type { TextElement, TScene } from "@/timeline";
-import { mediaTime, type MediaTime } from "@/wasm";
+} from "@opencut/editor-classic/session";
+import { useEditor, useEditorInstance } from "@opencut/editor-classic/session";
+import { createInMemoryHost } from "@opencut/editor-ports/in-memory/host";
+import { MigrationDialog } from "@opencut/editor-classic/project";
+import { IndexedDBAdapter } from "@opencut/editor-classic/storage";
+import type { CanvasRenderer } from "@opencut/editor-classic/renderer";
+import { buildScene } from "@opencut/editor-classic/renderer";
+import { buildTextElement } from "@opencut/editor-classic/timeline";
+import type { TextElement, TScene } from "@opencut/editor-classic/timeline";
+import { mediaTime, type MediaTime } from "@opencut/editor-classic";
 
 type HarnessSession = {
 	session: EditorSession;

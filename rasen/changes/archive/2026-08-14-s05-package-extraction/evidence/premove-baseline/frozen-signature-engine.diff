@@ -1,0 +1,13 @@
+--- /tmp/frozen-sig-diffs/a2.ts	2026-08-14 16:25:22.965076400 +0800
++++ packages/editor-contracts/src/engine/engine.ts	2026-08-14 00:48:46.074398400 +0800
+@@ -6,8 +6,8 @@
+ 	TransactionResult,
+ } from "..";
+ import { OPERATION_KINDS, TransactionError } from "..";
+-import type { ProjectId, ProjectRecord, ProjectStore } from "@/editor/ports";
+-import { ProjectStoreError } from "@/editor/ports";
++import type { ProjectId, ProjectRecord, ProjectStore } from "@opencut/editor-ports";
++import { ProjectStoreError } from "@opencut/editor-ports";
+ import {
+ 	assertDecodedTransactionDocument,
+ 	assertEncodedTransactionDocument,

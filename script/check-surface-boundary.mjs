@@ -13,7 +13,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const SURFACE_ROOT = "apps/web/src/editor/surface/";
+const SURFACE_ROOT = "packages/editor-classic/src/editor/surface/";
 const PUBLIC_CONTRACT = new Set([
 	`${SURFACE_ROOT}embedding/types.ts`,
 	`${SURFACE_ROOT}embedding/index.ts`,
@@ -124,7 +124,7 @@ function surfaceFiles() {
 			"--cached",
 			"--others",
 			"--exclude-standard",
-			"apps/web/src/editor/surface",
+			"packages/editor-classic/src/editor/surface",
 		],
 		{ cwd: REPO_ROOT, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
 	)

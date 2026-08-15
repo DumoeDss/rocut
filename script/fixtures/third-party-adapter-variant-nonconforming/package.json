@@ -1,0 +1,7 @@
+{
+	"name": "opencut-third-party-adapter",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"description": "A worked third-party adapter: the alien store, its roles, and a runner that executes every published conformance surface from outside the reference implementations."
+}

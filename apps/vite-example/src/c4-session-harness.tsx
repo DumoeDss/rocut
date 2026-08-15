@@ -1,20 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import type { EditorHost } from "@/editor/host/editor-host";
+import type { EditorHost } from "@opencut/editor-ports/host";
 import {
 	createBrowserRuntimePorts,
 	type BrowserRuntimePortsOptions,
-} from "@/editor/host/browser-runtime";
-import { EditorHostProvider } from "@/editor/host/editor-host-context";
-import { createInMemoryPorts } from "@/editor/ports/in-memory";
+} from "@opencut/editor-classic/browser";
+import { EditorHostProvider } from "@opencut/editor-classic/ui";
+import { createInMemoryPorts } from "@opencut/editor-ports/in-memory";
 import {
 	createEditorSession,
 	EditorSessionProvider,
 	type EditorSession,
 	useEditorSession,
-} from "@/editor/session";
-import { fontChunkUrl, quoteCssUrl } from "@/fonts/google-fonts";
-import { useFontAtlas } from "@/fonts/use-font-atlas";
+} from "@opencut/editor-classic/session";
+import { fontChunkUrl, quoteCssUrl } from "@opencut/editor-classic/fonts";
+import { useFontAtlas } from "@opencut/editor-classic/fonts";
 
 const FIXTURES = {
 	a: { base: "/c4-a/", fontName: "C4 Atlas Alpha", chunk: 1 },

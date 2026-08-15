@@ -1,0 +1,18 @@
+F2 support verifications (two spec clauses with no prior dedicated log line)
+
+=== clause: 'none of them is matched by the repository's workspace globs' ===
+workspaces: ["apps/*", "packages/*"]
+example dirs: agent-transaction custom-storage embed-surface install-packages 
+RESULT: none of the example directories is matched by any workspace glob
+
+=== clause: 'no example code reads the surface manifest at runtime' ===
+grep surface.json over examples/ code and manifests (READMEs excluded):
+examples/install-packages/package.json:6:	"description": "Install the SDK packages from their published tarballs and verify what landed — React-free entries resolve, versions match the pins, surface.json and the policy README read as data, classic's metadata asserted without importing its runtime.",
+examples/install-packages/run.ts:5:// shipped surface.json and policy README read as the data they are, and
+examples/install-packages/run.ts:41:	const surface = JSON.parse(installedText(pkg, "surface.json"));
+examples/install-packages/run.ts:73:// (4) The installed surface.json, read as the data an adopter reads it: every
+RESULT: surface.json is read only by install-packages/run.ts, as data — that example's
+named lesson (spec requirement 1: 'reads the installed artifacts versions and labels');
+no example reads it to drive behavior, and the other three never touch it.
+REAL_EXIT_CODE:0
+F2_SUPPORT_DONE:0

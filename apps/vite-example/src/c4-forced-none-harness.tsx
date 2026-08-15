@@ -1,34 +1,34 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ThemeProvider } from "next-themes";
 
-import { DEFAULT_BACKGROUND_COLOR } from "@/background/color";
-import { DEFAULT_CANVAS_SIZE } from "@/canvas/sizes";
-import { EditorProvider } from "@/components/providers/editor-provider";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { editorForSession } from "@/editor/runtime/session-core-owner";
-import { storesForSession } from "@/editor/runtime/session-stores";
-import { EditorHostProvider } from "@/editor/host/editor-host-context";
+import { DEFAULT_BACKGROUND_COLOR } from "@opencut/editor-classic";
+import { DEFAULT_CANVAS_SIZE } from "@opencut/editor-classic";
+import { EditorProvider } from "@opencut/editor-classic/ui";
+import { TooltipProvider } from "@opencut/editor-classic/ui";
+import { editorForSession } from "@opencut/editor-classic/runtime";
+import { storesForSession } from "@opencut/editor-classic/runtime";
+import { EditorHostProvider } from "@opencut/editor-classic/ui";
 import type {
 	GraphicsCapabilityReport,
 	RuntimeGpuResourceQuery,
 	RuntimeGraphicsQuery,
-} from "@/editor/ports";
+} from "@opencut/editor-ports";
 import {
 	createEditorSession,
 	EditorSessionProvider,
 	type EditorSession,
 	useEditorSession,
-} from "@/editor/session";
-import { SurfaceDragProvider } from "@/editor/surface/embedding/surface-drag-coordinator";
-import { SurfacePortalProvider } from "@/editor/surface/embedding/surface-portal";
-import { EditorRoot } from "@/editor/surface/editor-root";
-import { DEFAULT_FPS } from "@/fps/defaults";
-import type { TProject } from "@/project/types";
-import { CURRENT_PROJECT_VERSION } from "@/services/storage/migrations";
+} from "@opencut/editor-classic/session";
+import { SurfaceDragProvider } from "@opencut/editor-classic/surface";
+import { SurfacePortalProvider } from "@opencut/editor-classic/surface";
+import { EditorRoot } from "@opencut/editor-classic/surface";
+import { DEFAULT_FPS } from "@opencut/editor-classic";
+import type { TProject } from "@opencut/editor-classic/project";
+import { CURRENT_PROJECT_VERSION } from "@opencut/editor-classic/storage";
 import {
 	buildDefaultScene,
 	getProjectDurationFromScenes,
-} from "@/timeline/scenes";
+} from "@opencut/editor-classic/timeline";
 
 import { EditorErrorBoundary } from "./editor-error-boundary";
 import { createViteEditorHost } from "./host/vite-host-config";

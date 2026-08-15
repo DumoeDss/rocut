@@ -3,10 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { Button } from "./ui/button";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
-import { ThemeToggle } from "./theme-toggle";
 import {
 	Copy01Icon,
 	Download01Icon,
@@ -15,15 +13,17 @@ import {
 	Menu02Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { cn } from "@/utils/ui";
+import { cn } from "@opencut/editor-classic";
 import { DEFAULT_LOGO_URL, SITE_URL } from "@/site/brand";
 import { SOCIAL_LINKS } from "@/site/social";
 import {
+	Button,
 	ContextMenu,
 	ContextMenuContent,
 	ContextMenuItem,
 	ContextMenuTrigger,
-} from "./ui/context-menu";
+	ThemeToggle,
+} from "@opencut/editor-classic/ui";
 
 export function Header() {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);

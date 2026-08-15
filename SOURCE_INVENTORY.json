@@ -4,10 +4,52 @@
   "hashAlgorithm": "sha256 over raw blob bytes; rollup = sha256 over sorted `<sha256>  <path>` lines",
   "areas": [
     {
+      "area": "apps/electron-host",
+      "files": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "area": "apps/vite-example",
+      "files": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "area": "apps/web/public",
+      "files": 335,
+      "bytes": 4934994,
+      "sha256": "ffd794b5fc359dceee24828814a8099a2e9dbedc416b5ace8e8daf53f5b8ab12"
+    },
+    {
       "area": "apps/web/src",
       "files": 691,
       "bytes": 2395692,
       "sha256": "6380615a0f4cbf204917e00453f4163a0aca8191d263e405e23e0c44da9e4e63"
+    },
+    {
+      "area": "examples",
+      "files": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "area": "packages/editor-classic",
+      "files": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "area": "packages/editor-contracts",
+      "files": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "area": "packages/editor-ports",
+      "files": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "area": "rust",
@@ -16,457 +58,3586 @@
       "sha256": "4501f519431f53f9eeb6160d0331d7bf552f6e69038c4f50c39db5c2596e9d32"
     },
     {
-      "area": "apps/web/public",
-      "files": 335,
-      "bytes": 4934994,
-      "sha256": "ffd794b5fc359dceee24828814a8099a2e9dbedc416b5ace8e8daf53f5b8ab12"
+      "area": "script",
+      "files": 2,
+      "bytes": 1320,
+      "sha256": "1e593a895513c6b6b3478084a18b21a3022cdd6c621191c0571df25108b6061e"
     }
   ],
   "totals": {
-    "files": 1069,
-    "bytes": 7500075,
-    "sha256": "8ce81cbd563de44ca6d99857fa9959feaeae4eb0992656deb1c4a10b7ba168bf"
+    "files": 1071,
+    "bytes": 7501395,
+    "sha256": "92caf3b6e403ac8051b88b01c9377c3c573d519988de15dbdc80a96f3c32efaf"
   },
   "workingTreeDriftAgainstPin": {
     "modified": [
       "apps/web/public/browserconfig.xml",
       "apps/web/public/manifest.json",
-      "apps/web/src/actions/components/shortcuts-dialog.tsx",
-      "apps/web/src/actions/definitions.ts",
-      "apps/web/src/actions/index.ts",
-      "apps/web/src/actions/keybinding.ts",
-      "apps/web/src/actions/keybindings-store.ts",
-      "apps/web/src/actions/registry.ts",
-      "apps/web/src/actions/use-action-handler.ts",
-      "apps/web/src/actions/use-editor-actions.ts",
-      "apps/web/src/actions/use-keybindings.ts",
-      "apps/web/src/actions/use-keyboard-shortcuts-help.ts",
+      "apps/web/src/app/base-page.tsx",
+      "apps/web/src/app/blog/[slug]/page.tsx",
+      "apps/web/src/app/blog/page.tsx",
+      "apps/web/src/app/brand/page.tsx",
+      "apps/web/src/app/changelog/page.tsx",
+      "apps/web/src/app/contributors/page.tsx",
       "apps/web/src/app/editor/[project_id]/page.tsx",
       "apps/web/src/app/globals.css",
+      "apps/web/src/app/layout.tsx",
       "apps/web/src/app/metadata.ts",
+      "apps/web/src/app/privacy/page.tsx",
       "apps/web/src/app/projects/page.tsx",
-      "apps/web/src/commands/base-command.ts",
-      "apps/web/src/commands/batch-command.ts",
-      "apps/web/src/commands/index.ts",
-      "apps/web/src/commands/media/add-media-asset.ts",
-      "apps/web/src/commands/media/remove-media-asset.ts",
-      "apps/web/src/commands/project/update-project-settings.ts",
-      "apps/web/src/commands/scene/create-scene.ts",
-      "apps/web/src/commands/scene/delete-scene.ts",
-      "apps/web/src/commands/scene/move-bookmark.ts",
-      "apps/web/src/commands/scene/remove-bookmark.ts",
-      "apps/web/src/commands/scene/rename-scene.ts",
-      "apps/web/src/commands/scene/toggle-bookmark.ts",
-      "apps/web/src/commands/scene/update-bookmark.ts",
-      "apps/web/src/commands/timeline/clipboard/paste-keyframes.ts",
-      "apps/web/src/commands/timeline/clipboard/paste.ts",
-      "apps/web/src/commands/timeline/element/delete-elements.ts",
-      "apps/web/src/commands/timeline/element/duplicate-elements.ts",
-      "apps/web/src/commands/timeline/element/effects/add-effect.ts",
-      "apps/web/src/commands/timeline/element/effects/remove-effect.ts",
-      "apps/web/src/commands/timeline/element/effects/reorder-effect.ts",
-      "apps/web/src/commands/timeline/element/effects/toggle-effect.ts",
-      "apps/web/src/commands/timeline/element/effects/update-effect-params.ts",
-      "apps/web/src/commands/timeline/element/insert-element.ts",
-      "apps/web/src/commands/timeline/element/keyframes/remove-effect-param-keyframe.ts",
-      "apps/web/src/commands/timeline/element/keyframes/remove-keyframe.ts",
-      "apps/web/src/commands/timeline/element/keyframes/retime-keyframe.ts",
-      "apps/web/src/commands/timeline/element/keyframes/update-scalar-keyframe-curve.ts",
-      "apps/web/src/commands/timeline/element/keyframes/upsert-effect-param-keyframe.ts",
-      "apps/web/src/commands/timeline/element/keyframes/upsert-keyframe.ts",
-      "apps/web/src/commands/timeline/element/masks/delete-custom-mask-points.ts",
-      "apps/web/src/commands/timeline/element/masks/insert-custom-mask-point.ts",
-      "apps/web/src/commands/timeline/element/masks/remove-mask.ts",
-      "apps/web/src/commands/timeline/element/masks/toggle-mask-inverted.ts",
-      "apps/web/src/commands/timeline/element/move-elements.ts",
-      "apps/web/src/commands/timeline/element/split-elements.ts",
-      "apps/web/src/commands/timeline/element/toggle-source-audio-separation.ts",
-      "apps/web/src/commands/timeline/element/update-elements.ts",
-      "apps/web/src/commands/timeline/track/add-track.ts",
-      "apps/web/src/commands/timeline/track/remove-track.ts",
-      "apps/web/src/commands/timeline/track/toggle-track-mute.ts",
-      "apps/web/src/commands/timeline/track/toggle-track-visibility.ts",
-      "apps/web/src/commands/timeline/tracks-snapshot.ts",
-      "apps/web/src/components/editor/editor-header.tsx",
-      "apps/web/src/components/editor/export-button.tsx",
-      "apps/web/src/components/editor/mobile-gate.tsx",
-      "apps/web/src/components/editor/onboarding.tsx",
-      "apps/web/src/components/editor/panels/assets/assets-panel-store.tsx",
-      "apps/web/src/components/editor/panels/assets/draggable-item.tsx",
-      "apps/web/src/components/editor/panels/assets/index.tsx",
-      "apps/web/src/components/editor/panels/assets/tabbar.tsx",
-      "apps/web/src/components/editor/panels/assets/views/assets.tsx",
-      "apps/web/src/components/editor/panels/assets/views/settings/background.tsx",
-      "apps/web/src/components/editor/panels/assets/views/settings/index.tsx",
-      "apps/web/src/components/editor/panels/properties/hooks/use-keyframed-param-property.ts",
-      "apps/web/src/components/editor/panels/properties/index.tsx",
-      "apps/web/src/components/editor/panels/properties/stores/properties-store.ts",
-      "apps/web/src/components/editor/scenes-view.tsx",
-      "apps/web/src/components/providers/editor-provider.tsx",
-      "apps/web/src/components/storage-provider.tsx",
-      "apps/web/src/components/ui/alert-dialog.tsx",
-      "apps/web/src/components/ui/color-picker.tsx",
-      "apps/web/src/components/ui/context-menu.tsx",
-      "apps/web/src/components/ui/dialog.tsx",
-      "apps/web/src/components/ui/dropdown-menu.tsx",
-      "apps/web/src/components/ui/font-picker.tsx",
-      "apps/web/src/components/ui/menubar.tsx",
-      "apps/web/src/components/ui/number-field.tsx",
-      "apps/web/src/components/ui/popover.tsx",
-      "apps/web/src/components/ui/select.tsx",
-      "apps/web/src/components/ui/sheet.tsx",
-      "apps/web/src/components/ui/tooltip.tsx",
-      "apps/web/src/components/ui/use-overlay-open-change.ts",
-      "apps/web/src/core/index.ts",
-      "apps/web/src/core/managers/audio-manager.ts",
-      "apps/web/src/core/managers/commands.ts",
-      "apps/web/src/core/managers/media-manager.ts",
-      "apps/web/src/core/managers/playback-manager.ts",
-      "apps/web/src/core/managers/project-manager.ts",
-      "apps/web/src/core/managers/renderer-manager.ts",
-      "apps/web/src/core/managers/save-manager.ts",
-      "apps/web/src/core/managers/scenes-manager.ts",
-      "apps/web/src/core/managers/timeline-manager.ts",
-      "apps/web/src/editor/cancel-interaction.ts",
-      "apps/web/src/editor/editor-store.ts",
-      "apps/web/src/editor/panel-store.ts",
-      "apps/web/src/editor/use-editor.ts",
-      "apps/web/src/editor/use-menu-preview.ts",
-      "apps/web/src/effects/components/assets-view.tsx",
-      "apps/web/src/effects/components/effects-tab.tsx",
-      "apps/web/src/effects/definitions/index.ts",
-      "apps/web/src/export/index.ts",
-      "apps/web/src/feedback/components/feedback-popover.tsx",
-      "apps/web/src/fonts/google-fonts.ts",
-      "apps/web/src/fonts/use-font-atlas.ts",
-      "apps/web/src/graphics/components/graphic-tab.tsx",
-      "apps/web/src/graphics/definitions/index.ts",
-      "apps/web/src/graphics/index.ts",
-      "apps/web/src/guides/definitions/grid.tsx",
-      "apps/web/src/guides/definitions/platforms.tsx",
-      "apps/web/src/hooks/use-raf-loop.ts",
-      "apps/web/src/masks/builtin/definitions/index.ts",
-      "apps/web/src/masks/components/masks-tab.tsx",
-      "apps/web/src/masks/use-mask-handles.ts",
-      "apps/web/src/media/audio.ts",
-      "apps/web/src/media/mediabunny.ts",
-      "apps/web/src/media/processing.ts",
-      "apps/web/src/media/types.ts",
-      "apps/web/src/media/upload-toast.ts",
-      "apps/web/src/media/use-file-upload.ts",
-      "apps/web/src/media/use-paste-media.ts",
-      "apps/web/src/params/registry.ts",
-      "apps/web/src/preview/components/context-menu.tsx",
-      "apps/web/src/preview/components/guide-popover.tsx",
-      "apps/web/src/preview/components/index.tsx",
-      "apps/web/src/preview/components/preview-interaction-overlay.tsx",
-      "apps/web/src/preview/components/text-edit-overlay.tsx",
-      "apps/web/src/preview/components/toolbar.tsx",
-      "apps/web/src/preview/hooks/use-preview-interaction.ts",
-      "apps/web/src/preview/hooks/use-transform-handles.ts",
-      "apps/web/src/preview/preview-store.ts",
-      "apps/web/src/project/components/migration-dialog.tsx",
-      "apps/web/src/retime/audio-stretch.ts",
-      "apps/web/src/selection/hooks/use-box-select.ts",
-      "apps/web/src/selection/selectable-surface.tsx",
-      "apps/web/src/services/renderer/canvas-renderer.ts",
-      "apps/web/src/services/renderer/compositor/wasm-compositor.ts",
-      "apps/web/src/services/renderer/effect-preview.ts",
-      "apps/web/src/services/renderer/gpu-renderer.ts",
-      "apps/web/src/services/renderer/nodes/sticker-node.ts",
-      "apps/web/src/services/renderer/resolve.ts",
-      "apps/web/src/services/renderer/scene-builder.ts",
-      "apps/web/src/services/renderer/scene-exporter.ts",
-      "apps/web/src/services/storage/indexeddb-adapter.ts",
-      "apps/web/src/services/storage/migrations/base.ts",
-      "apps/web/src/services/storage/migrations/runner.ts",
-      "apps/web/src/services/storage/migrations/transformers/v1-to-v2.ts",
-      "apps/web/src/services/storage/migrations/v1-to-v2.ts",
-      "apps/web/src/services/storage/service.ts",
-      "apps/web/src/services/transcription/service.ts",
-      "apps/web/src/services/video-cache/service.ts",
-      "apps/web/src/services/waveform-cache/service.ts",
-      "apps/web/src/sounds/components/assets-view.tsx",
-      "apps/web/src/sounds/sounds-store.ts",
-      "apps/web/src/sounds/use-sound-search.ts",
-      "apps/web/src/speed/components/speed-tab.tsx",
-      "apps/web/src/stickers/components/assets-view.tsx",
-      "apps/web/src/stickers/index.ts",
-      "apps/web/src/stickers/providers/flags.ts",
-      "apps/web/src/stickers/providers/index.ts",
-      "apps/web/src/stickers/resolver.ts",
-      "apps/web/src/stickers/stickers-store.ts",
-      "apps/web/src/stickers/types.ts",
-      "apps/web/src/subtitles/components/assets-view.tsx",
-      "apps/web/src/text/components/assets-view.tsx",
-      "apps/web/src/timeline/bookmarks/components/bookmarks.tsx",
-      "apps/web/src/timeline/bookmarks/hooks/use-bookmark-drag.ts",
-      "apps/web/src/timeline/components/audio-volume-line.tsx",
-      "apps/web/src/timeline/components/audio-waveform.tsx",
-      "apps/web/src/timeline/components/graph-editor/custom-presets-store.ts",
-      "apps/web/src/timeline/components/graph-editor/popover.tsx",
-      "apps/web/src/timeline/components/graph-editor/use-controller.ts",
-      "apps/web/src/timeline/components/index.tsx",
-      "apps/web/src/timeline/components/timeline-element.tsx",
-      "apps/web/src/timeline/components/timeline-playhead.tsx",
-      "apps/web/src/timeline/components/timeline-toolbar.tsx",
-      "apps/web/src/timeline/controllers/drag-drop-controller.ts",
-      "apps/web/src/timeline/controllers/element-interaction-controller.ts",
-      "apps/web/src/timeline/controllers/keyframe-drag-controller.ts",
-      "apps/web/src/timeline/controllers/playhead-controller.ts",
-      "apps/web/src/timeline/controllers/resize-controller.ts",
-      "apps/web/src/timeline/controllers/zoom-controller.ts",
-      "apps/web/src/timeline/hooks/element/use-element-interaction.ts",
-      "apps/web/src/timeline/hooks/element/use-element-selection.ts",
-      "apps/web/src/timeline/hooks/element/use-keyframe-drag.ts",
-      "apps/web/src/timeline/hooks/element/use-keyframe-selection.ts",
-      "apps/web/src/timeline/hooks/use-edge-auto-scroll.ts",
-      "apps/web/src/timeline/hooks/use-element-preview.ts",
-      "apps/web/src/timeline/hooks/use-scroll-position.ts",
-      "apps/web/src/timeline/hooks/use-timeline-drag-drop.ts",
-      "apps/web/src/timeline/hooks/use-timeline-playhead.ts",
-      "apps/web/src/timeline/hooks/use-timeline-resize.ts",
-      "apps/web/src/timeline/hooks/use-timeline-seek.ts",
-      "apps/web/src/timeline/hooks/use-timeline-zoom.ts",
-      "apps/web/src/timeline/timeline-store.ts",
-      "apps/web/src/utils/browser.ts",
+      "apps/web/src/app/projects/store.ts",
+      "apps/web/src/app/roadmap/page.tsx",
+      "apps/web/src/app/sponsors/page.tsx",
+      "apps/web/src/app/terms/page.tsx",
+      "apps/web/src/changelog/components/changelog-notification.tsx",
+      "apps/web/src/changelog/components/copy-markdown-button.tsx",
+      "apps/web/src/changelog/components/release.tsx",
+      "apps/web/src/components/footer.tsx",
+      "apps/web/src/components/gitHub-contribute-section.tsx",
+      "apps/web/src/components/header.tsx",
+      "apps/web/src/components/landing/hero.tsx",
+      "apps/web/src/feedback/index.ts",
+      "apps/web/src/feedback/queries.ts",
+      "apps/web/src/project/components/project-info-dialog.tsx",
+      "apps/web/src/services/storage/components/storage-persistence-dialog.tsx",
+      "apps/web/src/site/external-tools.ts",
       "rust/wasm/README.md",
       "rust/wasm/src/compositor.rs",
       "rust/wasm/src/gpu.rs",
       "rust/wasm/src/wasm.rs"
     ],
+    "movedModified": [
+      {
+        "from": "apps/web/src/actions/components/shortcuts-dialog.tsx",
+        "path": "packages/editor-classic/src/actions/components/shortcuts-dialog.tsx",
+        "similarity": "092"
+      },
+      {
+        "from": "apps/web/src/actions/definitions.ts",
+        "path": "packages/editor-classic/src/actions/definitions.ts",
+        "similarity": "068"
+      },
+      {
+        "from": "apps/web/src/actions/index.ts",
+        "path": "packages/editor-classic/src/actions/index.ts",
+        "similarity": "072"
+      },
+      {
+        "from": "apps/web/src/actions/keybindings/migrations/v2-to-v3.ts",
+        "path": "packages/editor-classic/src/actions/keybindings/migrations/v2-to-v3.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/actions/keybindings/migrations/v3-to-v4.ts",
+        "path": "packages/editor-classic/src/actions/keybindings/migrations/v3-to-v4.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/actions/keybindings/migrations/v4-to-v5.ts",
+        "path": "packages/editor-classic/src/actions/keybindings/migrations/v4-to-v5.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/actions/keybindings/migrations/v5-to-v6.ts",
+        "path": "packages/editor-classic/src/actions/keybindings/migrations/v5-to-v6.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/actions/keybindings/persistence.ts",
+        "path": "packages/editor-classic/src/actions/keybindings/persistence.ts",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/actions/use-action-handler.ts",
+        "path": "packages/editor-classic/src/actions/use-action-handler.ts",
+        "similarity": "070"
+      },
+      {
+        "from": "apps/web/src/actions/use-editor-actions.ts",
+        "path": "packages/editor-classic/src/actions/use-editor-actions.ts",
+        "similarity": "079"
+      },
+      {
+        "from": "apps/web/src/actions/use-keybindings.ts",
+        "path": "packages/editor-classic/src/actions/use-keybindings.ts",
+        "similarity": "059"
+      },
+      {
+        "from": "apps/web/src/actions/use-keyboard-shortcuts-help.ts",
+        "path": "packages/editor-classic/src/actions/use-keyboard-shortcuts-help.ts",
+        "similarity": "091"
+      },
+      {
+        "from": "apps/web/src/animation/__tests__/animated-params.test.ts",
+        "path": "packages/editor-classic/src/animation/__tests__/animated-params.test.ts",
+        "similarity": "099"
+      },
+      {
+        "from": "apps/web/src/animation/bezier.ts",
+        "path": "packages/editor-classic/src/animation/bezier.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/animation/channel-data.ts",
+        "path": "packages/editor-classic/src/animation/channel-data.ts",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/animation/curve-bridge.ts",
+        "path": "packages/editor-classic/src/animation/curve-bridge.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/animation/effect-param-channel.ts",
+        "path": "packages/editor-classic/src/animation/effect-param-channel.ts",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/animation/graph-channels.ts",
+        "path": "packages/editor-classic/src/animation/graph-channels.ts",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/animation/graphic-param-channel.ts",
+        "path": "packages/editor-classic/src/animation/graphic-param-channel.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/animation/interpolation.ts",
+        "path": "packages/editor-classic/src/animation/interpolation.ts",
+        "similarity": "098"
+      },
+      {
+        "from": "apps/web/src/animation/keyframe-query.ts",
+        "path": "packages/editor-classic/src/animation/keyframe-query.ts",
+        "similarity": "098"
+      },
+      {
+        "from": "apps/web/src/animation/keyframes.ts",
+        "path": "packages/editor-classic/src/animation/keyframes.ts",
+        "similarity": "099"
+      },
+      {
+        "from": "apps/web/src/animation/path.ts",
+        "path": "packages/editor-classic/src/animation/path.ts",
+        "similarity": "089"
+      },
+      {
+        "from": "apps/web/src/animation/property-groups.ts",
+        "path": "packages/editor-classic/src/animation/property-groups.ts",
+        "similarity": "087"
+      },
+      {
+        "from": "apps/web/src/animation/resolve.ts",
+        "path": "packages/editor-classic/src/animation/resolve.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/animation/types.ts",
+        "path": "packages/editor-classic/src/animation/types.ts",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/canvas/sizes.ts",
+        "path": "packages/editor-classic/src/canvas/sizes.ts",
+        "similarity": "083"
+      },
+      {
+        "from": "apps/web/src/changelog/entries/0.1.0.md",
+        "path": "packages/editor-classic/src/changelog/entries/0.1.0.md",
+        "similarity": "098"
+      },
+      {
+        "from": "apps/web/src/clipboard/handlers/elements.ts",
+        "path": "packages/editor-classic/src/clipboard/handlers/elements.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/clipboard/handlers/keyframes.ts",
+        "path": "packages/editor-classic/src/clipboard/handlers/keyframes.ts",
+        "similarity": "088"
+      },
+      {
+        "from": "apps/web/src/clipboard/types.ts",
+        "path": "packages/editor-classic/src/clipboard/types.ts",
+        "similarity": "087"
+      },
+      {
+        "from": "apps/web/src/commands/batch-command.ts",
+        "path": "packages/editor-classic/src/commands/batch-command.ts",
+        "similarity": "055"
+      },
+      {
+        "from": "apps/web/src/commands/index.ts",
+        "path": "packages/editor-classic/src/commands/index.ts",
+        "similarity": "055"
+      },
+      {
+        "from": "apps/web/src/commands/project/update-project-settings.ts",
+        "path": "packages/editor-classic/src/commands/project/update-project-settings.ts",
+        "similarity": "067"
+      },
+      {
+        "from": "apps/web/src/commands/scene/create-scene.ts",
+        "path": "packages/editor-classic/src/commands/scene/create-scene.ts",
+        "similarity": "060"
+      },
+      {
+        "from": "apps/web/src/commands/scene/delete-scene.ts",
+        "path": "packages/editor-classic/src/commands/scene/delete-scene.ts",
+        "similarity": "076"
+      },
+      {
+        "from": "apps/web/src/commands/scene/move-bookmark.ts",
+        "path": "packages/editor-classic/src/commands/scene/move-bookmark.ts",
+        "similarity": "070"
+      },
+      {
+        "from": "apps/web/src/commands/scene/remove-bookmark.ts",
+        "path": "packages/editor-classic/src/commands/scene/remove-bookmark.ts",
+        "similarity": "070"
+      },
+      {
+        "from": "apps/web/src/commands/scene/rename-scene.ts",
+        "path": "packages/editor-classic/src/commands/scene/rename-scene.ts",
+        "similarity": "065"
+      },
+      {
+        "from": "apps/web/src/commands/scene/toggle-bookmark.ts",
+        "path": "packages/editor-classic/src/commands/scene/toggle-bookmark.ts",
+        "similarity": "068"
+      },
+      {
+        "from": "apps/web/src/commands/scene/update-bookmark.ts",
+        "path": "packages/editor-classic/src/commands/scene/update-bookmark.ts",
+        "similarity": "071"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/clipboard/paste-keyframes.ts",
+        "path": "packages/editor-classic/src/commands/timeline/clipboard/paste-keyframes.ts",
+        "similarity": "081"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/clipboard/paste.ts",
+        "path": "packages/editor-classic/src/commands/timeline/clipboard/paste.ts",
+        "similarity": "090"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/delete-elements.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/delete-elements.ts",
+        "similarity": "079"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/duplicate-elements.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/duplicate-elements.ts",
+        "similarity": "083"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/effects/add-effect.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/effects/add-effect.ts",
+        "similarity": "062"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/effects/remove-effect.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/effects/remove-effect.ts",
+        "similarity": "060"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/effects/reorder-effect.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/effects/reorder-effect.ts",
+        "similarity": "061"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/effects/toggle-effect.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/effects/toggle-effect.ts",
+        "similarity": "061"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/effects/update-effect-params.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/effects/update-effect-params.ts",
+        "similarity": "072"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/insert-element.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/insert-element.ts",
+        "similarity": "089"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/keyframes/remove-effect-param-keyframe.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/keyframes/remove-effect-param-keyframe.ts",
+        "similarity": "070"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/keyframes/remove-keyframe.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/keyframes/remove-keyframe.ts",
+        "similarity": "076"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/keyframes/retime-keyframe.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/keyframes/retime-keyframe.ts",
+        "similarity": "071"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/keyframes/update-scalar-keyframe-curve.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/keyframes/update-scalar-keyframe-curve.ts",
+        "similarity": "074"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/keyframes/upsert-effect-param-keyframe.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/keyframes/upsert-effect-param-keyframe.ts",
+        "similarity": "075"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/keyframes/upsert-keyframe.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/keyframes/upsert-keyframe.ts",
+        "similarity": "074"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/masks/delete-custom-mask-points.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/masks/delete-custom-mask-points.ts",
+        "similarity": "082"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/masks/insert-custom-mask-point.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/masks/insert-custom-mask-point.ts",
+        "similarity": "083"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/masks/remove-mask.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/masks/remove-mask.ts",
+        "similarity": "074"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/masks/toggle-mask-inverted.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/masks/toggle-mask-inverted.ts",
+        "similarity": "075"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/move-elements.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/move-elements.ts",
+        "similarity": "091"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/split-elements.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/split-elements.ts",
+        "similarity": "090"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/toggle-source-audio-separation.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/toggle-source-audio-separation.ts",
+        "similarity": "083"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/update-elements.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/update-elements.ts",
+        "similarity": "064"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/track/add-track.ts",
+        "path": "packages/editor-classic/src/commands/timeline/track/add-track.ts",
+        "similarity": "082"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/track/remove-track.ts",
+        "path": "packages/editor-classic/src/commands/timeline/track/remove-track.ts",
+        "similarity": "055"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/track/toggle-track-mute.ts",
+        "path": "packages/editor-classic/src/commands/timeline/track/toggle-track-mute.ts",
+        "similarity": "061"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/track/toggle-track-visibility.ts",
+        "path": "packages/editor-classic/src/commands/timeline/track/toggle-track-visibility.ts",
+        "similarity": "063"
+      },
+      {
+        "from": "apps/web/src/components/editable-timecode.tsx",
+        "path": "packages/editor-classic/src/components/editable-timecode.tsx",
+        "similarity": "098"
+      },
+      {
+        "from": "apps/web/src/components/editor/editor-header.tsx",
+        "path": "packages/editor-classic/src/components/editor/editor-header.tsx",
+        "similarity": "079"
+      },
+      {
+        "from": "apps/web/src/components/editor/export-button.tsx",
+        "path": "packages/editor-classic/src/components/editor/export-button.tsx",
+        "similarity": "090"
+      },
+      {
+        "from": "apps/web/src/components/editor/mobile-gate.tsx",
+        "path": "packages/editor-classic/src/components/editor/mobile-gate.tsx",
+        "similarity": "080"
+      },
+      {
+        "from": "apps/web/src/components/editor/onboarding.tsx",
+        "path": "packages/editor-classic/src/components/editor/onboarding.tsx",
+        "similarity": "090"
+      },
+      {
+        "from": "apps/web/src/components/editor/panels/assets/assets-panel-store.tsx",
+        "path": "packages/editor-classic/src/components/editor/panels/assets/assets-panel-store.tsx",
+        "similarity": "071"
+      },
+      {
+        "from": "apps/web/src/components/editor/panels/assets/drag-overlay.tsx",
+        "path": "packages/editor-classic/src/components/editor/panels/assets/drag-overlay.tsx",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/components/editor/panels/assets/draggable-item.tsx",
+        "path": "packages/editor-classic/src/components/editor/panels/assets/draggable-item.tsx",
+        "similarity": "084"
+      },
+      {
+        "from": "apps/web/src/components/editor/panels/assets/index.tsx",
+        "path": "packages/editor-classic/src/components/editor/panels/assets/index.tsx",
+        "similarity": "064"
+      },
+      {
+        "from": "apps/web/src/components/editor/panels/assets/tabbar.tsx",
+        "path": "packages/editor-classic/src/components/editor/panels/assets/tabbar.tsx",
+        "similarity": "090"
+      },
+      {
+        "from": "apps/web/src/components/editor/panels/assets/views/assets.tsx",
+        "path": "packages/editor-classic/src/components/editor/panels/assets/views/assets.tsx",
+        "similarity": "089"
+      },
+      {
+        "from": "apps/web/src/components/editor/panels/assets/views/base-panel.tsx",
+        "path": "packages/editor-classic/src/components/editor/panels/assets/views/base-panel.tsx",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/components/editor/panels/assets/views/settings/background.tsx",
+        "path": "packages/editor-classic/src/components/editor/panels/assets/views/settings/background.tsx",
+        "similarity": "078"
+      },
+      {
+        "from": "apps/web/src/components/editor/panels/assets/views/settings/index.tsx",
+        "path": "packages/editor-classic/src/components/editor/panels/assets/views/settings/index.tsx",
+        "similarity": "079"
+      },
+      {
+        "from": "apps/web/src/components/editor/panels/properties/components/element-params-tab.tsx",
+        "path": "packages/editor-classic/src/components/editor/panels/properties/components/element-params-tab.tsx",
+        "similarity": "082"
+      },
+      {
+        "from": "apps/web/src/components/editor/panels/properties/components/keyframe-toggle.tsx",
+        "path": "packages/editor-classic/src/components/editor/panels/properties/components/keyframe-toggle.tsx",
+        "similarity": "083"
+      },
+      {
+        "from": "apps/web/src/components/editor/panels/properties/components/property-param-field.tsx",
+        "path": "packages/editor-classic/src/components/editor/panels/properties/components/property-param-field.tsx",
+        "similarity": "092"
+      },
+      {
+        "from": "apps/web/src/components/editor/panels/properties/empty-view.tsx",
+        "path": "packages/editor-classic/src/components/editor/panels/properties/empty-view.tsx",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/components/editor/panels/properties/hooks/use-element-playhead.ts",
+        "path": "packages/editor-classic/src/components/editor/panels/properties/hooks/use-element-playhead.ts",
+        "similarity": "072"
+      },
+      {
+        "from": "apps/web/src/components/editor/panels/properties/hooks/use-keyframed-param-property.ts",
+        "path": "packages/editor-classic/src/components/editor/panels/properties/hooks/use-keyframed-param-property.ts",
+        "similarity": "088"
+      },
+      {
+        "from": "apps/web/src/components/editor/panels/properties/hooks/use-property-draft.ts",
+        "path": "packages/editor-classic/src/components/editor/panels/properties/hooks/use-property-draft.ts",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/components/editor/panels/properties/index.tsx",
+        "path": "packages/editor-classic/src/components/editor/panels/properties/index.tsx",
+        "similarity": "073"
+      },
+      {
+        "from": "apps/web/src/components/editor/panels/properties/registry.tsx",
+        "path": "packages/editor-classic/src/components/editor/panels/properties/registry.tsx",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/components/editor/scenes-view.tsx",
+        "path": "packages/editor-classic/src/components/editor/scenes-view.tsx",
+        "similarity": "089"
+      },
+      {
+        "from": "apps/web/src/components/icons/ui.tsx",
+        "path": "packages/editor-classic/src/components/icons/ui.tsx",
+        "similarity": "098"
+      },
+      {
+        "from": "apps/web/src/components/providers/editor-provider.tsx",
+        "path": "packages/editor-classic/src/components/providers/editor-provider.tsx",
+        "similarity": "057"
+      },
+      {
+        "from": "apps/web/src/components/section.tsx",
+        "path": "packages/editor-classic/src/components/section.tsx",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/components/theme-toggle.tsx",
+        "path": "packages/editor-classic/src/components/theme-toggle.tsx",
+        "similarity": "092"
+      },
+      {
+        "from": "apps/web/src/components/ui/accordion.tsx",
+        "path": "packages/editor-classic/src/components/ui/accordion.tsx",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/components/ui/alert-dialog.tsx",
+        "path": "packages/editor-classic/src/components/ui/alert-dialog.tsx",
+        "similarity": "092"
+      },
+      {
+        "from": "apps/web/src/components/ui/alert.tsx",
+        "path": "packages/editor-classic/src/components/ui/alert.tsx",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/components/ui/avatar.tsx",
+        "path": "packages/editor-classic/src/components/ui/avatar.tsx",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/components/ui/badge.tsx",
+        "path": "packages/editor-classic/src/components/ui/badge.tsx",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/components/ui/breadcrumb.tsx",
+        "path": "packages/editor-classic/src/components/ui/breadcrumb.tsx",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/components/ui/button.tsx",
+        "path": "packages/editor-classic/src/components/ui/button.tsx",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/components/ui/calendar.tsx",
+        "path": "packages/editor-classic/src/components/ui/calendar.tsx",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/components/ui/card.tsx",
+        "path": "packages/editor-classic/src/components/ui/card.tsx",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/components/ui/checkbox.tsx",
+        "path": "packages/editor-classic/src/components/ui/checkbox.tsx",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/components/ui/color-picker.tsx",
+        "path": "packages/editor-classic/src/components/ui/color-picker.tsx",
+        "similarity": "091"
+      },
+      {
+        "from": "apps/web/src/components/ui/context-menu.tsx",
+        "path": "packages/editor-classic/src/components/ui/context-menu.tsx",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/components/ui/dialog.tsx",
+        "path": "packages/editor-classic/src/components/ui/dialog.tsx",
+        "similarity": "086"
+      },
+      {
+        "from": "apps/web/src/components/ui/dropdown-menu.tsx",
+        "path": "packages/editor-classic/src/components/ui/dropdown-menu.tsx",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/components/ui/font-picker.tsx",
+        "path": "packages/editor-classic/src/components/ui/font-picker.tsx",
+        "similarity": "089"
+      },
+      {
+        "from": "apps/web/src/components/ui/form.tsx",
+        "path": "packages/editor-classic/src/components/ui/form.tsx",
+        "similarity": "099"
+      },
+      {
+        "from": "apps/web/src/components/ui/hover-card.tsx",
+        "path": "packages/editor-classic/src/components/ui/hover-card.tsx",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/components/ui/input.tsx",
+        "path": "packages/editor-classic/src/components/ui/input.tsx",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/components/ui/label.tsx",
+        "path": "packages/editor-classic/src/components/ui/label.tsx",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/components/ui/menubar.tsx",
+        "path": "packages/editor-classic/src/components/ui/menubar.tsx",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/components/ui/navigation-menu.tsx",
+        "path": "packages/editor-classic/src/components/ui/navigation-menu.tsx",
+        "similarity": "099"
+      },
+      {
+        "from": "apps/web/src/components/ui/number-field.tsx",
+        "path": "packages/editor-classic/src/components/ui/number-field.tsx",
+        "similarity": "078"
+      },
+      {
+        "from": "apps/web/src/components/ui/popover.tsx",
+        "path": "packages/editor-classic/src/components/ui/popover.tsx",
+        "similarity": "076"
+      },
+      {
+        "from": "apps/web/src/components/ui/progress.tsx",
+        "path": "packages/editor-classic/src/components/ui/progress.tsx",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/components/ui/prose.tsx",
+        "path": "packages/editor-classic/src/components/ui/prose.tsx",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/components/ui/radio-group.tsx",
+        "path": "packages/editor-classic/src/components/ui/radio-group.tsx",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/components/ui/react-markdown-wrapper.tsx",
+        "path": "packages/editor-classic/src/components/ui/react-markdown-wrapper.tsx",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/components/ui/resizable.tsx",
+        "path": "packages/editor-classic/src/components/ui/resizable.tsx",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/components/ui/scroll-area.tsx",
+        "path": "packages/editor-classic/src/components/ui/scroll-area.tsx",
+        "similarity": "090"
+      },
+      {
+        "from": "apps/web/src/components/ui/select.tsx",
+        "path": "packages/editor-classic/src/components/ui/select.tsx",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/components/ui/separator.tsx",
+        "path": "packages/editor-classic/src/components/ui/separator.tsx",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/components/ui/sheet.tsx",
+        "path": "packages/editor-classic/src/components/ui/sheet.tsx",
+        "similarity": "091"
+      },
+      {
+        "from": "apps/web/src/components/ui/skeleton.tsx",
+        "path": "packages/editor-classic/src/components/ui/skeleton.tsx",
+        "similarity": "085"
+      },
+      {
+        "from": "apps/web/src/components/ui/slider.tsx",
+        "path": "packages/editor-classic/src/components/ui/slider.tsx",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/components/ui/sonner.tsx",
+        "path": "packages/editor-classic/src/components/ui/sonner.tsx",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/components/ui/spinner.tsx",
+        "path": "packages/editor-classic/src/components/ui/spinner.tsx",
+        "similarity": "088"
+      },
+      {
+        "from": "apps/web/src/components/ui/split-button.tsx",
+        "path": "packages/editor-classic/src/components/ui/split-button.tsx",
+        "similarity": "090"
+      },
+      {
+        "from": "apps/web/src/components/ui/switch.tsx",
+        "path": "packages/editor-classic/src/components/ui/switch.tsx",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/components/ui/table.tsx",
+        "path": "packages/editor-classic/src/components/ui/table.tsx",
+        "similarity": "098"
+      },
+      {
+        "from": "apps/web/src/components/ui/tabs.tsx",
+        "path": "packages/editor-classic/src/components/ui/tabs.tsx",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/components/ui/textarea.tsx",
+        "path": "packages/editor-classic/src/components/ui/textarea.tsx",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/components/ui/toast.tsx",
+        "path": "packages/editor-classic/src/components/ui/toast.tsx",
+        "similarity": "099"
+      },
+      {
+        "from": "apps/web/src/components/ui/toggle-group.tsx",
+        "path": "packages/editor-classic/src/components/ui/toggle-group.tsx",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/components/ui/toggle.tsx",
+        "path": "packages/editor-classic/src/components/ui/toggle.tsx",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/components/ui/tooltip.tsx",
+        "path": "packages/editor-classic/src/components/ui/tooltip.tsx",
+        "similarity": "066"
+      },
+      {
+        "from": "apps/web/src/components/ui/use-overlay-open-change.ts",
+        "path": "packages/editor-classic/src/components/ui/use-overlay-open-change.ts",
+        "similarity": "068"
+      },
+      {
+        "from": "apps/web/src/core/managers/audio-manager.ts",
+        "path": "packages/editor-classic/src/core/managers/audio-manager.ts",
+        "similarity": "083"
+      },
+      {
+        "from": "apps/web/src/core/managers/clipboard-manager.ts",
+        "path": "packages/editor-classic/src/core/managers/clipboard-manager.ts",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/core/managers/diagnostics-manager.ts",
+        "path": "packages/editor-classic/src/core/managers/diagnostics-manager.ts",
+        "similarity": "089"
+      },
+      {
+        "from": "apps/web/src/core/managers/playback-manager.ts",
+        "path": "packages/editor-classic/src/core/managers/playback-manager.ts",
+        "similarity": "078"
+      },
+      {
+        "from": "apps/web/src/core/managers/project-manager.ts",
+        "path": "packages/editor-classic/src/core/managers/project-manager.ts",
+        "similarity": "066"
+      },
+      {
+        "from": "apps/web/src/core/managers/scenes-manager.ts",
+        "path": "packages/editor-classic/src/core/managers/scenes-manager.ts",
+        "similarity": "082"
+      },
+      {
+        "from": "apps/web/src/core/managers/selection-manager.ts",
+        "path": "packages/editor-classic/src/core/managers/selection-manager.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/core/managers/timeline-manager.ts",
+        "path": "packages/editor-classic/src/core/managers/timeline-manager.ts",
+        "similarity": "088"
+      },
+      {
+        "from": "apps/web/src/editor/use-editor.ts",
+        "path": "packages/editor-classic/src/editor/use-editor.ts",
+        "similarity": "061"
+      },
+      {
+        "from": "apps/web/src/editor/use-menu-preview.ts",
+        "path": "packages/editor-classic/src/editor/use-menu-preview.ts",
+        "similarity": "082"
+      },
+      {
+        "from": "apps/web/src/effects/components/assets-view.tsx",
+        "path": "packages/editor-classic/src/effects/components/assets-view.tsx",
+        "similarity": "061"
+      },
+      {
+        "from": "apps/web/src/effects/components/effects-tab.tsx",
+        "path": "packages/editor-classic/src/effects/components/effects-tab.tsx",
+        "similarity": "090"
+      },
+      {
+        "from": "apps/web/src/effects/definitions/blur.ts",
+        "path": "packages/editor-classic/src/effects/definitions/blur.ts",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/effects/definitions/index.ts",
+        "path": "packages/editor-classic/src/effects/definitions/index.ts",
+        "similarity": "069"
+      },
+      {
+        "from": "apps/web/src/effects/index.ts",
+        "path": "packages/editor-classic/src/effects/index.ts",
+        "similarity": "078"
+      },
+      {
+        "from": "apps/web/src/effects/registry.ts",
+        "path": "packages/editor-classic/src/effects/registry.ts",
+        "similarity": "059"
+      },
+      {
+        "from": "apps/web/src/effects/types.ts",
+        "path": "packages/editor-classic/src/effects/types.ts",
+        "similarity": "092"
+      },
+      {
+        "from": "apps/web/src/export/index.ts",
+        "path": "packages/editor-classic/src/export/index.ts",
+        "similarity": "066"
+      },
+      {
+        "from": "apps/web/src/feedback/components/feedback-popover.tsx",
+        "path": "packages/editor-classic/src/feedback/components/feedback-popover.tsx",
+        "similarity": "092"
+      },
+      {
+        "from": "apps/web/src/fonts/types.ts",
+        "path": "packages/editor-classic/src/fonts/types.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/fonts/use-font-atlas.ts",
+        "path": "packages/editor-classic/src/fonts/use-font-atlas.ts",
+        "similarity": "059"
+      },
+      {
+        "from": "apps/web/src/fps/__tests__/fps.test.ts",
+        "path": "packages/editor-classic/src/fps/__tests__/fps.test.ts",
+        "similarity": "098"
+      },
+      {
+        "from": "apps/web/src/fps/utils.ts",
+        "path": "packages/editor-classic/src/fps/utils.ts",
+        "similarity": "098"
+      },
+      {
+        "from": "apps/web/src/gradients/parser.ts",
+        "path": "packages/editor-classic/src/gradients/parser.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/graphics/components/graphic-tab.tsx",
+        "path": "packages/editor-classic/src/graphics/components/graphic-tab.tsx",
+        "similarity": "085"
+      },
+      {
+        "from": "apps/web/src/graphics/definitions/ellipse.ts",
+        "path": "packages/editor-classic/src/graphics/definitions/ellipse.ts",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/graphics/definitions/index.ts",
+        "path": "packages/editor-classic/src/graphics/definitions/index.ts",
+        "similarity": "083"
+      },
+      {
+        "from": "apps/web/src/graphics/definitions/polygon.ts",
+        "path": "packages/editor-classic/src/graphics/definitions/polygon.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/graphics/definitions/rectangle.ts",
+        "path": "packages/editor-classic/src/graphics/definitions/rectangle.ts",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/graphics/definitions/shared.ts",
+        "path": "packages/editor-classic/src/graphics/definitions/shared.ts",
+        "similarity": "085"
+      },
+      {
+        "from": "apps/web/src/graphics/definitions/star.ts",
+        "path": "packages/editor-classic/src/graphics/definitions/star.ts",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/graphics/index.ts",
+        "path": "packages/editor-classic/src/graphics/index.ts",
+        "similarity": "076"
+      },
+      {
+        "from": "apps/web/src/graphics/registry.ts",
+        "path": "packages/editor-classic/src/graphics/registry.ts",
+        "similarity": "078"
+      },
+      {
+        "from": "apps/web/src/graphics/stroke.ts",
+        "path": "packages/editor-classic/src/graphics/stroke.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/graphics/types.ts",
+        "path": "packages/editor-classic/src/graphics/types.ts",
+        "similarity": "084"
+      },
+      {
+        "from": "apps/web/src/guides/definitions/custom.tsx",
+        "path": "packages/editor-classic/src/guides/definitions/custom.tsx",
+        "similarity": "083"
+      },
+      {
+        "from": "apps/web/src/guides/definitions/grid.tsx",
+        "path": "packages/editor-classic/src/guides/definitions/grid.tsx",
+        "similarity": "089"
+      },
+      {
+        "from": "apps/web/src/guides/definitions/platforms.tsx",
+        "path": "packages/editor-classic/src/guides/definitions/platforms.tsx",
+        "similarity": "088"
+      },
+      {
+        "from": "apps/web/src/guides/definitions/tiktok-layout.tsx",
+        "path": "packages/editor-classic/src/guides/definitions/tiktok-layout.tsx",
+        "similarity": "099"
+      },
+      {
+        "from": "apps/web/src/guides/index.ts",
+        "path": "packages/editor-classic/src/guides/index.ts",
+        "similarity": "088"
+      },
+      {
+        "from": "apps/web/src/guides/preview-overlay.tsx",
+        "path": "packages/editor-classic/src/guides/preview-overlay.tsx",
+        "similarity": "088"
+      },
+      {
+        "from": "apps/web/src/guides/registry.tsx",
+        "path": "packages/editor-classic/src/guides/registry.tsx",
+        "similarity": "080"
+      },
+      {
+        "from": "apps/web/src/guides/types.ts",
+        "path": "packages/editor-classic/src/guides/types.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/hooks/use-focus-lock.ts",
+        "path": "packages/editor-classic/src/hooks/use-focus-lock.ts",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/hooks/use-infinite-scroll.ts",
+        "path": "packages/editor-classic/src/hooks/use-infinite-scroll.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/hooks/use-mobile.ts",
+        "path": "packages/editor-classic/src/hooks/use-mobile.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/hooks/use-resize-observer.ts",
+        "path": "packages/editor-classic/src/hooks/use-resize-observer.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/hooks/use-shift-key.ts",
+        "path": "packages/editor-classic/src/hooks/use-shift-key.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/masks/__tests__/snap.test.ts",
+        "path": "packages/editor-classic/src/masks/__tests__/snap.test.ts",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/masks/builtin/box-like.ts",
+        "path": "packages/editor-classic/src/masks/builtin/box-like.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/masks/builtin/definitions/cinematic-bars.ts",
+        "path": "packages/editor-classic/src/masks/builtin/definitions/cinematic-bars.ts",
+        "similarity": "099"
+      },
+      {
+        "from": "apps/web/src/masks/builtin/definitions/diamond.ts",
+        "path": "packages/editor-classic/src/masks/builtin/definitions/diamond.ts",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/masks/builtin/definitions/ellipse.ts",
+        "path": "packages/editor-classic/src/masks/builtin/definitions/ellipse.ts",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/masks/builtin/definitions/heart.ts",
+        "path": "packages/editor-classic/src/masks/builtin/definitions/heart.ts",
+        "similarity": "098"
+      },
+      {
+        "from": "apps/web/src/masks/builtin/definitions/rectangle.ts",
+        "path": "packages/editor-classic/src/masks/builtin/definitions/rectangle.ts",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/masks/builtin/definitions/split.ts",
+        "path": "packages/editor-classic/src/masks/builtin/definitions/split.ts",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/masks/builtin/definitions/star.ts",
+        "path": "packages/editor-classic/src/masks/builtin/definitions/star.ts",
+        "similarity": "098"
+      },
+      {
+        "from": "apps/web/src/masks/builtin/definitions/text.ts",
+        "path": "packages/editor-classic/src/masks/builtin/definitions/text.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/masks/components/masks-tab.tsx",
+        "path": "packages/editor-classic/src/masks/components/masks-tab.tsx",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/masks/freeform/definition.ts",
+        "path": "packages/editor-classic/src/masks/freeform/definition.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/masks/freeform/path.ts",
+        "path": "packages/editor-classic/src/masks/freeform/path.ts",
+        "similarity": "099"
+      },
+      {
+        "from": "apps/web/src/masks/geometry.ts",
+        "path": "packages/editor-classic/src/masks/geometry.ts",
+        "similarity": "091"
+      },
+      {
+        "from": "apps/web/src/masks/handle-positions.ts",
+        "path": "packages/editor-classic/src/masks/handle-positions.ts",
+        "similarity": "098"
+      },
+      {
+        "from": "apps/web/src/masks/index.ts",
+        "path": "packages/editor-classic/src/masks/index.ts",
+        "similarity": "091"
+      },
+      {
+        "from": "apps/web/src/masks/param-update.ts",
+        "path": "packages/editor-classic/src/masks/param-update.ts",
+        "similarity": "086"
+      },
+      {
+        "from": "apps/web/src/masks/registry.ts",
+        "path": "packages/editor-classic/src/masks/registry.ts",
+        "similarity": "092"
+      },
+      {
+        "from": "apps/web/src/masks/snap.ts",
+        "path": "packages/editor-classic/src/masks/snap.ts",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/masks/types.ts",
+        "path": "packages/editor-classic/src/masks/types.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/masks/use-mask-handles.ts",
+        "path": "packages/editor-classic/src/masks/use-mask-handles.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/masks/utils.ts",
+        "path": "packages/editor-classic/src/masks/utils.ts",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/media/audio-mastering.ts",
+        "path": "packages/editor-classic/src/media/audio-mastering.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/media/audio.ts",
+        "path": "packages/editor-classic/src/media/audio.ts",
+        "similarity": "082"
+      },
+      {
+        "from": "apps/web/src/media/media-utils.ts",
+        "path": "packages/editor-classic/src/media/media-utils.ts",
+        "similarity": "085"
+      },
+      {
+        "from": "apps/web/src/media/mediabunny.ts",
+        "path": "packages/editor-classic/src/media/mediabunny.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/media/processing.ts",
+        "path": "packages/editor-classic/src/media/processing.ts",
+        "similarity": "051"
+      },
+      {
+        "from": "apps/web/src/media/use-file-upload.ts",
+        "path": "packages/editor-classic/src/media/use-file-upload.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/media/use-paste-media.ts",
+        "path": "packages/editor-classic/src/media/use-paste-media.ts",
+        "similarity": "065"
+      },
+      {
+        "from": "apps/web/src/media/waveform-summary.ts",
+        "path": "packages/editor-classic/src/media/waveform-summary.ts",
+        "similarity": "098"
+      },
+      {
+        "from": "apps/web/src/params/__tests__/channel-layout.test.ts",
+        "path": "packages/editor-classic/src/params/__tests__/channel-layout.test.ts",
+        "similarity": "084"
+      },
+      {
+        "from": "apps/web/src/params/index.ts",
+        "path": "packages/editor-classic/src/params/index.ts",
+        "similarity": "099"
+      },
+      {
+        "from": "apps/web/src/params/registry.ts",
+        "path": "packages/editor-classic/src/params/registry.ts",
+        "similarity": "087"
+      },
+      {
+        "from": "apps/web/src/preview/components/context-menu.tsx",
+        "path": "packages/editor-classic/src/preview/components/context-menu.tsx",
+        "similarity": "088"
+      },
+      {
+        "from": "apps/web/src/preview/components/guide-popover.tsx",
+        "path": "packages/editor-classic/src/preview/components/guide-popover.tsx",
+        "similarity": "085"
+      },
+      {
+        "from": "apps/web/src/preview/components/handle-primitives.tsx",
+        "path": "packages/editor-classic/src/preview/components/handle-primitives.tsx",
+        "similarity": "099"
+      },
+      {
+        "from": "apps/web/src/preview/components/mask-handles.tsx",
+        "path": "packages/editor-classic/src/preview/components/mask-handles.tsx",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/preview/components/overlay-layer.tsx",
+        "path": "packages/editor-classic/src/preview/components/overlay-layer.tsx",
+        "similarity": "099"
+      },
+      {
+        "from": "apps/web/src/preview/components/preview-interaction-overlay.tsx",
+        "path": "packages/editor-classic/src/preview/components/preview-interaction-overlay.tsx",
+        "similarity": "073"
+      },
+      {
+        "from": "apps/web/src/preview/components/preview-viewport.tsx",
+        "path": "packages/editor-classic/src/preview/components/preview-viewport.tsx",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/preview/components/snap-guides.tsx",
+        "path": "packages/editor-classic/src/preview/components/snap-guides.tsx",
+        "similarity": "084"
+      },
+      {
+        "from": "apps/web/src/preview/components/text-edit-overlay.tsx",
+        "path": "packages/editor-classic/src/preview/components/text-edit-overlay.tsx",
+        "similarity": "084"
+      },
+      {
+        "from": "apps/web/src/preview/components/toolbar.tsx",
+        "path": "packages/editor-classic/src/preview/components/toolbar.tsx",
+        "similarity": "077"
+      },
+      {
+        "from": "apps/web/src/preview/components/transform-handles.tsx",
+        "path": "packages/editor-classic/src/preview/components/transform-handles.tsx",
+        "similarity": "091"
+      },
+      {
+        "from": "apps/web/src/preview/controllers/preview-interaction-controller.ts",
+        "path": "packages/editor-classic/src/preview/controllers/preview-interaction-controller.ts",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/preview/controllers/transform-handle-controller.ts",
+        "path": "packages/editor-classic/src/preview/controllers/transform-handle-controller.ts",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/preview/element-bounds.ts",
+        "path": "packages/editor-classic/src/preview/element-bounds.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/preview/hit-test.ts",
+        "path": "packages/editor-classic/src/preview/hit-test.ts",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/preview/hooks/use-preview-interaction.ts",
+        "path": "packages/editor-classic/src/preview/hooks/use-preview-interaction.ts",
+        "similarity": "073"
+      },
+      {
+        "from": "apps/web/src/preview/hooks/use-transform-handles.ts",
+        "path": "packages/editor-classic/src/preview/hooks/use-transform-handles.ts",
+        "similarity": "072"
+      },
+      {
+        "from": "apps/web/src/preview/preview-snap.ts",
+        "path": "packages/editor-classic/src/preview/preview-snap.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/project/components/delete-project-dialog.tsx",
+        "path": "packages/editor-classic/src/project/components/delete-project-dialog.tsx",
+        "similarity": "086"
+      },
+      {
+        "from": "apps/web/src/project/components/migration-dialog.tsx",
+        "path": "packages/editor-classic/src/project/components/migration-dialog.tsx",
+        "similarity": "085"
+      },
+      {
+        "from": "apps/web/src/project/components/rename-project-dialog.tsx",
+        "path": "packages/editor-classic/src/project/components/rename-project-dialog.tsx",
+        "similarity": "087"
+      },
+      {
+        "from": "apps/web/src/project/types.ts",
+        "path": "packages/editor-classic/src/project/types.ts",
+        "similarity": "092"
+      },
+      {
+        "from": "apps/web/src/rendering/animation-values.ts",
+        "path": "packages/editor-classic/src/rendering/animation-values.ts",
+        "similarity": "090"
+      },
+      {
+        "from": "apps/web/src/rendering/index.ts",
+        "path": "packages/editor-classic/src/rendering/index.ts",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/retime/__tests__/resolve.test.ts",
+        "path": "packages/editor-classic/src/retime/__tests__/resolve.test.ts",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/retime/__tests__/split.test.ts",
+        "path": "packages/editor-classic/src/retime/__tests__/split.test.ts",
+        "similarity": "090"
+      },
+      {
+        "from": "apps/web/src/retime/audio-stretch.ts",
+        "path": "packages/editor-classic/src/retime/audio-stretch.ts",
+        "similarity": "091"
+      },
+      {
+        "from": "apps/web/src/retime/index.ts",
+        "path": "packages/editor-classic/src/retime/index.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/retime/presets.ts",
+        "path": "packages/editor-classic/src/retime/presets.ts",
+        "similarity": "064"
+      },
+      {
+        "from": "apps/web/src/retime/resolve.ts",
+        "path": "packages/editor-classic/src/retime/resolve.ts",
+        "similarity": "085"
+      },
+      {
+        "from": "apps/web/src/retime/split.ts",
+        "path": "packages/editor-classic/src/retime/split.ts",
+        "similarity": "088"
+      },
+      {
+        "from": "apps/web/src/ripple/apply.ts",
+        "path": "packages/editor-classic/src/ripple/apply.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/ripple/diff.ts",
+        "path": "packages/editor-classic/src/ripple/diff.ts",
+        "similarity": "099"
+      },
+      {
+        "from": "apps/web/src/ripple/shift.ts",
+        "path": "packages/editor-classic/src/ripple/shift.ts",
+        "similarity": "086"
+      },
+      {
+        "from": "apps/web/src/selection/context.tsx",
+        "path": "packages/editor-classic/src/selection/context.tsx",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/selection/editor-selection.ts",
+        "path": "packages/editor-classic/src/selection/editor-selection.ts",
+        "similarity": "085"
+      },
+      {
+        "from": "apps/web/src/selection/hit-testing.ts",
+        "path": "packages/editor-classic/src/selection/hit-testing.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/selection/hooks/use-box-select.ts",
+        "path": "packages/editor-classic/src/selection/hooks/use-box-select.ts",
+        "similarity": "080"
+      },
+      {
+        "from": "apps/web/src/selection/hooks/use-selection-scope.ts",
+        "path": "packages/editor-classic/src/selection/hooks/use-selection-scope.ts",
+        "similarity": "073"
+      },
+      {
+        "from": "apps/web/src/selection/selectable-item.tsx",
+        "path": "packages/editor-classic/src/selection/selectable-item.tsx",
+        "similarity": "087"
+      },
+      {
+        "from": "apps/web/src/selection/selectable-surface.tsx",
+        "path": "packages/editor-classic/src/selection/selectable-surface.tsx",
+        "similarity": "068"
+      },
+      {
+        "from": "apps/web/src/selection/selection-box.tsx",
+        "path": "packages/editor-classic/src/selection/selection-box.tsx",
+        "similarity": "083"
+      },
+      {
+        "from": "apps/web/src/selection/state.ts",
+        "path": "packages/editor-classic/src/selection/state.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/selection/types.ts",
+        "path": "packages/editor-classic/src/selection/types.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/services/renderer/compositor/frame-descriptor.ts",
+        "path": "packages/editor-classic/src/services/renderer/compositor/frame-descriptor.ts",
+        "similarity": "098"
+      },
+      {
+        "from": "apps/web/src/services/renderer/compositor/types.ts",
+        "path": "packages/editor-classic/src/services/renderer/compositor/types.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/services/renderer/compositor/wasm-compositor.ts",
+        "path": "packages/editor-classic/src/services/renderer/compositor/wasm-compositor.ts",
+        "similarity": "064"
+      },
+      {
+        "from": "apps/web/src/services/renderer/gpu-renderer.ts",
+        "path": "packages/editor-classic/src/services/renderer/gpu-renderer.ts",
+        "similarity": "068"
+      },
+      {
+        "from": "apps/web/src/services/renderer/nodes/blur-background-node.ts",
+        "path": "packages/editor-classic/src/services/renderer/nodes/blur-background-node.ts",
+        "similarity": "084"
+      },
+      {
+        "from": "apps/web/src/services/renderer/nodes/effect-layer-node.ts",
+        "path": "packages/editor-classic/src/services/renderer/nodes/effect-layer-node.ts",
+        "similarity": "076"
+      },
+      {
+        "from": "apps/web/src/services/renderer/nodes/graphic-node.ts",
+        "path": "packages/editor-classic/src/services/renderer/nodes/graphic-node.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/services/renderer/nodes/sticker-node.ts",
+        "path": "packages/editor-classic/src/services/renderer/nodes/sticker-node.ts",
+        "similarity": "066"
+      },
+      {
+        "from": "apps/web/src/services/renderer/nodes/text-node.ts",
+        "path": "packages/editor-classic/src/services/renderer/nodes/text-node.ts",
+        "similarity": "081"
+      },
+      {
+        "from": "apps/web/src/services/renderer/nodes/visual-node.ts",
+        "path": "packages/editor-classic/src/services/renderer/nodes/visual-node.ts",
+        "similarity": "076"
+      },
+      {
+        "from": "apps/web/src/services/renderer/resolve.ts",
+        "path": "packages/editor-classic/src/services/renderer/resolve.ts",
+        "similarity": "088"
+      },
+      {
+        "from": "apps/web/src/services/renderer/scene-builder.ts",
+        "path": "packages/editor-classic/src/services/renderer/scene-builder.ts",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/services/storage/indexeddb-adapter.ts",
+        "path": "packages/editor-classic/src/services/storage/indexeddb-adapter.ts",
+        "similarity": "069"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/fixtures/index.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/fixtures/index.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/fixtures/v5.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/fixtures/v5.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/v15-to-v16.test.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/v15-to-v16.test.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/v16-to-v17.test.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/v16-to-v17.test.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/v18-to-v19.test.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/v18-to-v19.test.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/v3-to-v4.test.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/v3-to-v4.test.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/v4-to-v5.test.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/v4-to-v5.test.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/v8-to-v9.test.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/v8-to-v9.test.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/base.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/base.ts",
+        "similarity": "065"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/runner.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/runner.ts",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v0-to-v1.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v0-to-v1.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v1-to-v2.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v1-to-v2.ts",
+        "similarity": "099"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v10-to-v11.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v10-to-v11.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v11-to-v12.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v11-to-v12.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v12-to-v13.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v12-to-v13.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v13-to-v14.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v13-to-v14.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v15-to-v16.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v15-to-v16.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v16-to-v17.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v16-to-v17.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v18-to-v19.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v18-to-v19.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v27-to-v28.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v27-to-v28.ts",
+        "similarity": "098"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v3-to-v4.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v3-to-v4.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v4-to-v5.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v4-to-v5.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v5-to-v6.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v5-to-v6.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v6-to-v7.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v6-to-v7.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v7-to-v8.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v7-to-v8.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v8-to-v9.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v8-to-v9.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v9-to-v10.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v9-to-v10.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v1-to-v2.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v1-to-v2.ts",
+        "similarity": "076"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v10-to-v11.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v10-to-v11.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v11-to-v12.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v11-to-v12.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v12-to-v13.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v12-to-v13.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v13-to-v14.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v13-to-v14.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v14-to-v15.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v14-to-v15.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v15-to-v16.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v15-to-v16.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v16-to-v17.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v16-to-v17.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v17-to-v18.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v17-to-v18.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v18-to-v19.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v18-to-v19.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v3-to-v4.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v3-to-v4.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v4-to-v5.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v4-to-v5.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v5-to-v6.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v5-to-v6.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v6-to-v7.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v6-to-v7.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v7-to-v8.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v7-to-v8.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v8-to-v9.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v8-to-v9.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v9-to-v10.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v9-to-v10.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/services/storage/quota.ts",
+        "path": "packages/editor-classic/src/services/storage/quota.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/services/storage/service.ts",
+        "path": "packages/editor-classic/src/services/storage/service.ts",
+        "similarity": "086"
+      },
+      {
+        "from": "apps/web/src/services/storage/types.ts",
+        "path": "packages/editor-classic/src/services/storage/types.ts",
+        "similarity": "092"
+      },
+      {
+        "from": "apps/web/src/services/storage/use-storage-persistence.ts",
+        "path": "packages/editor-classic/src/services/storage/use-storage-persistence.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/services/transcription/worker.ts",
+        "path": "packages/editor-classic/src/services/transcription/worker.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/sounds/components/assets-view.tsx",
+        "path": "packages/editor-classic/src/sounds/components/assets-view.tsx",
+        "similarity": "081"
+      },
+      {
+        "from": "apps/web/src/sounds/types.ts",
+        "path": "packages/editor-classic/src/sounds/types.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/speed/components/speed-tab.tsx",
+        "path": "packages/editor-classic/src/speed/components/speed-tab.tsx",
+        "similarity": "085"
+      },
+      {
+        "from": "apps/web/src/stickers/__tests__/sticker-id.test.ts",
+        "path": "packages/editor-classic/src/stickers/__tests__/sticker-id.test.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/stickers/components/assets-view.tsx",
+        "path": "packages/editor-classic/src/stickers/components/assets-view.tsx",
+        "similarity": "088"
+      },
+      {
+        "from": "apps/web/src/stickers/index.ts",
+        "path": "packages/editor-classic/src/stickers/index.ts",
+        "similarity": "091"
+      },
+      {
+        "from": "apps/web/src/stickers/providers/countries-data.ts",
+        "path": "packages/editor-classic/src/stickers/providers/countries-data.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/stickers/providers/flags.ts",
+        "path": "packages/editor-classic/src/stickers/providers/flags.ts",
+        "similarity": "086"
+      },
+      {
+        "from": "apps/web/src/stickers/providers/index.ts",
+        "path": "packages/editor-classic/src/stickers/providers/index.ts",
+        "similarity": "061"
+      },
+      {
+        "from": "apps/web/src/stickers/providers/logos.ts",
+        "path": "packages/editor-classic/src/stickers/providers/logos.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/stickers/providers/shapes.ts",
+        "path": "packages/editor-classic/src/stickers/providers/shapes.ts",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/stickers/registry.ts",
+        "path": "packages/editor-classic/src/stickers/registry.ts",
+        "similarity": "063"
+      },
+      {
+        "from": "apps/web/src/stickers/resolver.ts",
+        "path": "packages/editor-classic/src/stickers/resolver.ts",
+        "similarity": "075"
+      },
+      {
+        "from": "apps/web/src/stickers/sticker-id.ts",
+        "path": "packages/editor-classic/src/stickers/sticker-id.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/stickers/types.ts",
+        "path": "packages/editor-classic/src/stickers/types.ts",
+        "similarity": "086"
+      },
+      {
+        "from": "apps/web/src/subtitles/build-subtitle-text-element.ts",
+        "path": "packages/editor-classic/src/subtitles/build-subtitle-text-element.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/subtitles/components/assets-view.tsx",
+        "path": "packages/editor-classic/src/subtitles/components/assets-view.tsx",
+        "similarity": "079"
+      },
+      {
+        "from": "apps/web/src/subtitles/insert.ts",
+        "path": "packages/editor-classic/src/subtitles/insert.ts",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/subtitles/types.ts",
+        "path": "packages/editor-classic/src/subtitles/types.ts",
+        "similarity": "090"
+      },
+      {
+        "from": "apps/web/src/text/components/assets-view.tsx",
+        "path": "packages/editor-classic/src/text/components/assets-view.tsx",
+        "similarity": "068"
+      },
+      {
+        "from": "apps/web/src/text/layout.ts",
+        "path": "packages/editor-classic/src/text/layout.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/text/measure-element.ts",
+        "path": "packages/editor-classic/src/text/measure-element.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/text/primitives.ts",
+        "path": "packages/editor-classic/src/text/primitives.ts",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/timeline/__tests__/update-pipeline.test.ts",
+        "path": "packages/editor-classic/src/timeline/__tests__/update-pipeline.test.ts",
+        "similarity": "085"
+      },
+      {
+        "from": "apps/web/src/timeline/animation-snap-points.ts",
+        "path": "packages/editor-classic/src/timeline/animation-snap-points.ts",
+        "similarity": "079"
+      },
+      {
+        "from": "apps/web/src/timeline/animation-targets.ts",
+        "path": "packages/editor-classic/src/timeline/animation-targets.ts",
+        "similarity": "091"
+      },
+      {
+        "from": "apps/web/src/timeline/audio-constants.ts",
+        "path": "packages/editor-classic/src/timeline/audio-constants.ts",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/timeline/audio-separation/index.ts",
+        "path": "packages/editor-classic/src/timeline/audio-separation/index.ts",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/timeline/audio-state.ts",
+        "path": "packages/editor-classic/src/timeline/audio-state.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/timeline/bookmarks/components/bookmarks.tsx",
+        "path": "packages/editor-classic/src/timeline/bookmarks/components/bookmarks.tsx",
+        "similarity": "092"
+      },
+      {
+        "from": "apps/web/src/timeline/bookmarks/hooks/use-bookmark-drag.ts",
+        "path": "packages/editor-classic/src/timeline/bookmarks/hooks/use-bookmark-drag.ts",
+        "similarity": "067"
+      },
+      {
+        "from": "apps/web/src/timeline/bookmarks/preview-overlay-source.tsx",
+        "path": "packages/editor-classic/src/timeline/bookmarks/preview-overlay-source.tsx",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/timeline/bookmarks/snap-source.ts",
+        "path": "packages/editor-classic/src/timeline/bookmarks/snap-source.ts",
+        "similarity": "073"
+      },
+      {
+        "from": "apps/web/src/timeline/bookmarks/utils.ts",
+        "path": "packages/editor-classic/src/timeline/bookmarks/utils.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/timeline/components/audio-volume-line.tsx",
+        "path": "packages/editor-classic/src/timeline/components/audio-volume-line.tsx",
+        "similarity": "092"
+      },
+      {
+        "from": "apps/web/src/timeline/components/audio-waveform.tsx",
+        "path": "packages/editor-classic/src/timeline/components/audio-waveform.tsx",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/timeline/components/drag-line.tsx",
+        "path": "packages/editor-classic/src/timeline/components/drag-line.tsx",
+        "similarity": "087"
+      },
+      {
+        "from": "apps/web/src/timeline/components/drop-target.ts",
+        "path": "packages/editor-classic/src/timeline/components/drop-target.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/timeline/components/expanded-layout.ts",
+        "path": "packages/editor-classic/src/timeline/components/expanded-layout.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/timeline/components/graph-editor/bezier-graph.tsx",
+        "path": "packages/editor-classic/src/timeline/components/graph-editor/bezier-graph.tsx",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/timeline/components/graph-editor/easing-presets.ts",
+        "path": "packages/editor-classic/src/timeline/components/graph-editor/easing-presets.ts",
+        "similarity": "089"
+      },
+      {
+        "from": "apps/web/src/timeline/components/graph-editor/popover.tsx",
+        "path": "packages/editor-classic/src/timeline/components/graph-editor/popover.tsx",
+        "similarity": "079"
+      },
+      {
+        "from": "apps/web/src/timeline/components/graph-editor/session.ts",
+        "path": "packages/editor-classic/src/timeline/components/graph-editor/session.ts",
+        "similarity": "098"
+      },
+      {
+        "from": "apps/web/src/timeline/components/graph-editor/use-controller.ts",
+        "path": "packages/editor-classic/src/timeline/components/graph-editor/use-controller.ts",
+        "similarity": "089"
+      },
+      {
+        "from": "apps/web/src/timeline/components/index.tsx",
+        "path": "packages/editor-classic/src/timeline/components/index.tsx",
+        "similarity": "089"
+      },
+      {
+        "from": "apps/web/src/timeline/components/layout.ts",
+        "path": "packages/editor-classic/src/timeline/components/layout.ts",
+        "similarity": "092"
+      },
+      {
+        "from": "apps/web/src/timeline/components/selection-hit-testing.ts",
+        "path": "packages/editor-classic/src/timeline/components/selection-hit-testing.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/timeline/components/snap-indicator.tsx",
+        "path": "packages/editor-classic/src/timeline/components/snap-indicator.tsx",
+        "similarity": "086"
+      },
+      {
+        "from": "apps/web/src/timeline/components/theme.ts",
+        "path": "packages/editor-classic/src/timeline/components/theme.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/timeline/components/timeline-element.tsx",
+        "path": "packages/editor-classic/src/timeline/components/timeline-element.tsx",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/timeline/components/timeline-playhead.tsx",
+        "path": "packages/editor-classic/src/timeline/components/timeline-playhead.tsx",
+        "similarity": "080"
+      },
+      {
+        "from": "apps/web/src/timeline/components/timeline-ruler.tsx",
+        "path": "packages/editor-classic/src/timeline/components/timeline-ruler.tsx",
+        "similarity": "091"
+      },
+      {
+        "from": "apps/web/src/timeline/components/timeline-tick.tsx",
+        "path": "packages/editor-classic/src/timeline/components/timeline-tick.tsx",
+        "similarity": "087"
+      },
+      {
+        "from": "apps/web/src/timeline/components/timeline-toolbar.tsx",
+        "path": "packages/editor-classic/src/timeline/components/timeline-toolbar.tsx",
+        "similarity": "083"
+      },
+      {
+        "from": "apps/web/src/timeline/components/timeline-track.tsx",
+        "path": "packages/editor-classic/src/timeline/components/timeline-track.tsx",
+        "similarity": "092"
+      },
+      {
+        "from": "apps/web/src/timeline/components/track-layout.ts",
+        "path": "packages/editor-classic/src/timeline/components/track-layout.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/timeline/controllers/drag-drop-controller.ts",
+        "path": "packages/editor-classic/src/timeline/controllers/drag-drop-controller.ts",
+        "similarity": "090"
+      },
+      {
+        "from": "apps/web/src/timeline/controllers/element-interaction-controller.ts",
+        "path": "packages/editor-classic/src/timeline/controllers/element-interaction-controller.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/timeline/controllers/keyframe-drag-controller.ts",
+        "path": "packages/editor-classic/src/timeline/controllers/keyframe-drag-controller.ts",
+        "similarity": "087"
+      },
+      {
+        "from": "apps/web/src/timeline/controllers/playhead-controller.ts",
+        "path": "packages/editor-classic/src/timeline/controllers/playhead-controller.ts",
+        "similarity": "078"
+      },
+      {
+        "from": "apps/web/src/timeline/controllers/resize-controller.ts",
+        "path": "packages/editor-classic/src/timeline/controllers/resize-controller.ts",
+        "similarity": "089"
+      },
+      {
+        "from": "apps/web/src/timeline/controllers/seek-controller.ts",
+        "path": "packages/editor-classic/src/timeline/controllers/seek-controller.ts",
+        "similarity": "098"
+      },
+      {
+        "from": "apps/web/src/timeline/controllers/zoom-controller.ts",
+        "path": "packages/editor-classic/src/timeline/controllers/zoom-controller.ts",
+        "similarity": "088"
+      },
+      {
+        "from": "apps/web/src/timeline/creation.ts",
+        "path": "packages/editor-classic/src/timeline/creation.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/timeline/defaults.ts",
+        "path": "packages/editor-classic/src/timeline/defaults.ts",
+        "similarity": "090"
+      },
+      {
+        "from": "apps/web/src/timeline/drag-source.ts",
+        "path": "packages/editor-classic/src/timeline/drag-source.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/timeline/drag-utils.ts",
+        "path": "packages/editor-classic/src/timeline/drag-utils.ts",
+        "similarity": "075"
+      },
+      {
+        "from": "apps/web/src/timeline/drag.ts",
+        "path": "packages/editor-classic/src/timeline/drag.ts",
+        "similarity": "090"
+      },
+      {
+        "from": "apps/web/src/timeline/element-snap-source.ts",
+        "path": "packages/editor-classic/src/timeline/element-snap-source.ts",
+        "similarity": "084"
+      },
+      {
+        "from": "apps/web/src/timeline/element-utils.ts",
+        "path": "packages/editor-classic/src/timeline/element-utils.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/timeline/group-move/build-group.ts",
+        "path": "packages/editor-classic/src/timeline/group-move/build-group.ts",
+        "similarity": "091"
+      },
+      {
+        "from": "apps/web/src/timeline/group-move/resolve-move.ts",
+        "path": "packages/editor-classic/src/timeline/group-move/resolve-move.ts",
+        "similarity": "098"
+      },
+      {
+        "from": "apps/web/src/timeline/group-move/snap.ts",
+        "path": "packages/editor-classic/src/timeline/group-move/snap.ts",
+        "similarity": "084"
+      },
+      {
+        "from": "apps/web/src/timeline/group-move/track-placement.ts",
+        "path": "packages/editor-classic/src/timeline/group-move/track-placement.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/timeline/group-move/types.ts",
+        "path": "packages/editor-classic/src/timeline/group-move/types.ts",
+        "similarity": "086"
+      },
+      {
+        "from": "apps/web/src/timeline/group-resize/compute-resize.ts",
+        "path": "packages/editor-classic/src/timeline/group-resize/compute-resize.ts",
+        "similarity": "099"
+      },
+      {
+        "from": "apps/web/src/timeline/group-resize/types.ts",
+        "path": "packages/editor-classic/src/timeline/group-resize/types.ts",
+        "similarity": "087"
+      },
+      {
+        "from": "apps/web/src/timeline/hooks/element/use-element-interaction.ts",
+        "path": "packages/editor-classic/src/timeline/hooks/element/use-element-interaction.ts",
+        "similarity": "068"
+      },
+      {
+        "from": "apps/web/src/timeline/hooks/element/use-element-selection.ts",
+        "path": "packages/editor-classic/src/timeline/hooks/element/use-element-selection.ts",
+        "similarity": "092"
+      },
+      {
+        "from": "apps/web/src/timeline/hooks/element/use-keyframe-box-select.ts",
+        "path": "packages/editor-classic/src/timeline/hooks/element/use-keyframe-box-select.ts",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/timeline/hooks/element/use-keyframe-drag.ts",
+        "path": "packages/editor-classic/src/timeline/hooks/element/use-keyframe-drag.ts",
+        "similarity": "064"
+      },
+      {
+        "from": "apps/web/src/timeline/hooks/element/use-keyframe-selection.ts",
+        "path": "packages/editor-classic/src/timeline/hooks/element/use-keyframe-selection.ts",
+        "similarity": "097"
+      },
+      {
+        "from": "apps/web/src/timeline/hooks/use-edge-auto-scroll.ts",
+        "path": "packages/editor-classic/src/timeline/hooks/use-edge-auto-scroll.ts",
+        "similarity": "080"
+      },
+      {
+        "from": "apps/web/src/timeline/hooks/use-element-preview.ts",
+        "path": "packages/editor-classic/src/timeline/hooks/use-element-preview.ts",
+        "similarity": "057"
+      },
+      {
+        "from": "apps/web/src/timeline/hooks/use-initial-scroll-bottom.ts",
+        "path": "packages/editor-classic/src/timeline/hooks/use-initial-scroll-bottom.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/timeline/hooks/use-scroll-position.ts",
+        "path": "packages/editor-classic/src/timeline/hooks/use-scroll-position.ts",
+        "similarity": "060"
+      },
+      {
+        "from": "apps/web/src/timeline/hooks/use-scroll-sync.ts",
+        "path": "packages/editor-classic/src/timeline/hooks/use-scroll-sync.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/timeline/hooks/use-snap-indicator-position.ts",
+        "path": "packages/editor-classic/src/timeline/hooks/use-snap-indicator-position.ts",
+        "similarity": "081"
+      },
+      {
+        "from": "apps/web/src/timeline/hooks/use-timeline-drag-drop.ts",
+        "path": "packages/editor-classic/src/timeline/hooks/use-timeline-drag-drop.ts",
+        "similarity": "080"
+      },
+      {
+        "from": "apps/web/src/timeline/hooks/use-timeline-playhead.ts",
+        "path": "packages/editor-classic/src/timeline/hooks/use-timeline-playhead.ts",
+        "similarity": "077"
+      },
+      {
+        "from": "apps/web/src/timeline/hooks/use-timeline-resize.ts",
+        "path": "packages/editor-classic/src/timeline/hooks/use-timeline-resize.ts",
+        "similarity": "060"
+      },
+      {
+        "from": "apps/web/src/timeline/hooks/use-timeline-seek.ts",
+        "path": "packages/editor-classic/src/timeline/hooks/use-timeline-seek.ts",
+        "similarity": "086"
+      },
+      {
+        "from": "apps/web/src/timeline/hooks/use-timeline-zoom.ts",
+        "path": "packages/editor-classic/src/timeline/hooks/use-timeline-zoom.ts",
+        "similarity": "088"
+      },
+      {
+        "from": "apps/web/src/timeline/index.ts",
+        "path": "packages/editor-classic/src/timeline/index.ts",
+        "similarity": "082"
+      },
+      {
+        "from": "apps/web/src/timeline/pixel-utils.ts",
+        "path": "packages/editor-classic/src/timeline/pixel-utils.ts",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/timeline/placement/__tests__/resolve.test.ts",
+        "path": "packages/editor-classic/src/timeline/placement/__tests__/resolve.test.ts",
+        "similarity": "098"
+      },
+      {
+        "from": "apps/web/src/timeline/placement/apply.ts",
+        "path": "packages/editor-classic/src/timeline/placement/apply.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/timeline/placement/compatibility.ts",
+        "path": "packages/editor-classic/src/timeline/placement/compatibility.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/timeline/placement/insert-index.ts",
+        "path": "packages/editor-classic/src/timeline/placement/insert-index.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/timeline/placement/main-track.ts",
+        "path": "packages/editor-classic/src/timeline/placement/main-track.ts",
+        "similarity": "089"
+      },
+      {
+        "from": "apps/web/src/timeline/placement/overlap.ts",
+        "path": "packages/editor-classic/src/timeline/placement/overlap.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/timeline/placement/resolve.ts",
+        "path": "packages/editor-classic/src/timeline/placement/resolve.ts",
+        "similarity": "098"
+      },
+      {
+        "from": "apps/web/src/timeline/placement/track-factory.ts",
+        "path": "packages/editor-classic/src/timeline/placement/track-factory.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/timeline/placement/types.ts",
+        "path": "packages/editor-classic/src/timeline/placement/types.ts",
+        "similarity": "090"
+      },
+      {
+        "from": "apps/web/src/timeline/playhead-snap-source.ts",
+        "path": "packages/editor-classic/src/timeline/playhead-snap-source.ts",
+        "similarity": "062"
+      },
+      {
+        "from": "apps/web/src/timeline/ruler-utils.ts",
+        "path": "packages/editor-classic/src/timeline/ruler-utils.ts",
+        "similarity": "098"
+      },
+      {
+        "from": "apps/web/src/timeline/scenes.ts",
+        "path": "packages/editor-classic/src/timeline/scenes.ts",
+        "similarity": "085"
+      },
+      {
+        "from": "apps/web/src/timeline/snapping/resolve.ts",
+        "path": "packages/editor-classic/src/timeline/snapping/resolve.ts",
+        "similarity": "093"
+      },
+      {
+        "from": "apps/web/src/timeline/snapping/threshold.ts",
+        "path": "packages/editor-classic/src/timeline/snapping/threshold.ts",
+        "similarity": "076"
+      },
+      {
+        "from": "apps/web/src/timeline/snapping/types.ts",
+        "path": "packages/editor-classic/src/timeline/snapping/types.ts",
+        "similarity": "089"
+      },
+      {
+        "from": "apps/web/src/timeline/track-capabilities.ts",
+        "path": "packages/editor-classic/src/timeline/track-capabilities.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/timeline/track-element-update.ts",
+        "path": "packages/editor-classic/src/timeline/track-element-update.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/timeline/tracks.ts",
+        "path": "packages/editor-classic/src/timeline/tracks.ts",
+        "similarity": "081"
+      },
+      {
+        "from": "apps/web/src/timeline/types.ts",
+        "path": "packages/editor-classic/src/timeline/types.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/timeline/update-pipeline.ts",
+        "path": "packages/editor-classic/src/timeline/update-pipeline.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/timeline/zoom-utils.ts",
+        "path": "packages/editor-classic/src/timeline/zoom-utils.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/transcription/caption.ts",
+        "path": "packages/editor-classic/src/transcription/caption.ts",
+        "similarity": "088"
+      },
+      {
+        "from": "apps/web/src/transcription/diagnostics.ts",
+        "path": "packages/editor-classic/src/transcription/diagnostics.ts",
+        "similarity": "082"
+      },
+      {
+        "from": "apps/web/src/transcription/types.ts",
+        "path": "packages/editor-classic/src/transcription/types.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/types/eyedropper.d.ts",
+        "path": "packages/editor-classic/src/types/eyedropper.d.ts",
+        "similarity": "094"
+      },
+      {
+        "from": "apps/web/src/types/soundtouchjs.d.ts",
+        "path": "packages/editor-classic/src/types/soundtouchjs.d.ts",
+        "similarity": "095"
+      },
+      {
+        "from": "apps/web/src/utils/color.ts",
+        "path": "packages/editor-classic/src/utils/color.ts",
+        "similarity": "096"
+      },
+      {
+        "from": "apps/web/src/utils/id.ts",
+        "path": "packages/editor-classic/src/utils/id.ts",
+        "similarity": "095"
+      }
+    ],
+    "movedUnmodified": [
+      {
+        "from": "apps/web/src/actions/keybindings/__tests__/persistence.test.ts",
+        "path": "packages/editor-classic/src/actions/keybindings/__tests__/persistence.test.ts"
+      },
+      {
+        "from": "apps/web/src/actions/keybindings/migrations/index.ts",
+        "path": "packages/editor-classic/src/actions/keybindings/migrations/index.ts"
+      },
+      {
+        "from": "apps/web/src/actions/keybindings/migrations/v6-to-v7.ts",
+        "path": "packages/editor-classic/src/actions/keybindings/migrations/v6-to-v7.ts"
+      },
+      {
+        "from": "apps/web/src/actions/keybindings/persisted-state.ts",
+        "path": "packages/editor-classic/src/actions/keybindings/persisted-state.ts"
+      },
+      {
+        "from": "apps/web/src/actions/types.ts",
+        "path": "packages/editor-classic/src/actions/types.ts"
+      },
+      {
+        "from": "apps/web/src/animation/index.ts",
+        "path": "packages/editor-classic/src/animation/index.ts"
+      },
+      {
+        "from": "apps/web/src/animation/transform.ts",
+        "path": "packages/editor-classic/src/animation/transform.ts"
+      },
+      {
+        "from": "apps/web/src/animation/values.ts",
+        "path": "packages/editor-classic/src/animation/values.ts"
+      },
+      {
+        "from": "apps/web/src/background/blur.ts",
+        "path": "packages/editor-classic/src/background/blur.ts"
+      },
+      {
+        "from": "apps/web/src/background/color.ts",
+        "path": "packages/editor-classic/src/background/color.ts"
+      },
+      {
+        "from": "apps/web/src/changelog/entries/0.2.0.md",
+        "path": "packages/editor-classic/src/changelog/entries/0.2.0.md"
+      },
+      {
+        "from": "apps/web/src/changelog/entries/0.3.0.md",
+        "path": "packages/editor-classic/src/changelog/entries/0.3.0.md"
+      },
+      {
+        "from": "apps/web/src/changelog/entries/0.4.0.md",
+        "path": "packages/editor-classic/src/changelog/entries/0.4.0.md"
+      },
+      {
+        "from": "apps/web/src/clipboard/handlers/index.ts",
+        "path": "packages/editor-classic/src/clipboard/handlers/index.ts"
+      },
+      {
+        "from": "apps/web/src/clipboard/index.ts",
+        "path": "packages/editor-classic/src/clipboard/index.ts"
+      },
+      {
+        "from": "apps/web/src/commands/media/index.ts",
+        "path": "packages/editor-classic/src/commands/media/index.ts"
+      },
+      {
+        "from": "apps/web/src/commands/preview-tracker.ts",
+        "path": "packages/editor-classic/src/commands/preview-tracker.ts"
+      },
+      {
+        "from": "apps/web/src/commands/project/index.ts",
+        "path": "packages/editor-classic/src/commands/project/index.ts"
+      },
+      {
+        "from": "apps/web/src/commands/scene/index.ts",
+        "path": "packages/editor-classic/src/commands/scene/index.ts"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/clipboard/index.ts",
+        "path": "packages/editor-classic/src/commands/timeline/clipboard/index.ts"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/effects/index.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/effects/index.ts"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/index.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/index.ts"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/keyframes/index.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/keyframes/index.ts"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/element/masks/index.ts",
+        "path": "packages/editor-classic/src/commands/timeline/element/masks/index.ts"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/index.ts",
+        "path": "packages/editor-classic/src/commands/timeline/index.ts"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/track/index.ts",
+        "path": "packages/editor-classic/src/commands/timeline/track/index.ts"
+      },
+      {
+        "from": "apps/web/src/components/icons/brand.tsx",
+        "path": "packages/editor-classic/src/components/icons/brand.tsx"
+      },
+      {
+        "from": "apps/web/src/components/icons/index.tsx",
+        "path": "packages/editor-classic/src/components/icons/index.tsx"
+      },
+      {
+        "from": "apps/web/src/components/icons/types.ts",
+        "path": "packages/editor-classic/src/components/icons/types.ts"
+      },
+      {
+        "from": "apps/web/src/components/ui/aspect-ratio.tsx",
+        "path": "packages/editor-classic/src/components/ui/aspect-ratio.tsx"
+      },
+      {
+        "from": "apps/web/src/components/ui/collapsible.tsx",
+        "path": "packages/editor-classic/src/components/ui/collapsible.tsx"
+      },
+      {
+        "from": "apps/web/src/data/colors/pattern-craft.ts",
+        "path": "packages/editor-classic/src/data/colors/pattern-craft.ts"
+      },
+      {
+        "from": "apps/web/src/data/colors/solid.ts",
+        "path": "packages/editor-classic/src/data/colors/solid.ts"
+      },
+      {
+        "from": "apps/web/src/data/colors/syntax-ui.tsx",
+        "path": "packages/editor-classic/src/data/colors/syntax-ui.tsx"
+      },
+      {
+        "from": "apps/web/src/diagnostics/render-perf.ts",
+        "path": "packages/editor-classic/src/diagnostics/render-perf.ts"
+      },
+      {
+        "from": "apps/web/src/diagnostics/types.ts",
+        "path": "packages/editor-classic/src/diagnostics/types.ts"
+      },
+      {
+        "from": "apps/web/src/export/defaults.ts",
+        "path": "packages/editor-classic/src/export/defaults.ts"
+      },
+      {
+        "from": "apps/web/src/export/mime-types.ts",
+        "path": "packages/editor-classic/src/export/mime-types.ts"
+      },
+      {
+        "from": "apps/web/src/feedback/types.ts",
+        "path": "packages/editor-classic/src/feedback/types.ts"
+      },
+      {
+        "from": "apps/web/src/fonts/system-fonts.ts",
+        "path": "packages/editor-classic/src/fonts/system-fonts.ts"
+      },
+      {
+        "from": "apps/web/src/fps/defaults.ts",
+        "path": "packages/editor-classic/src/fps/defaults.ts"
+      },
+      {
+        "from": "apps/web/src/fps/presets.ts",
+        "path": "packages/editor-classic/src/fps/presets.ts"
+      },
+      {
+        "from": "apps/web/src/gradients/canvas.ts",
+        "path": "packages/editor-classic/src/gradients/canvas.ts"
+      },
+      {
+        "from": "apps/web/src/gradients/index.ts",
+        "path": "packages/editor-classic/src/gradients/index.ts"
+      },
+      {
+        "from": "apps/web/src/guides/grid.ts",
+        "path": "packages/editor-classic/src/guides/grid.ts"
+      },
+      {
+        "from": "apps/web/src/hooks/use-committed-ref.ts",
+        "path": "packages/editor-classic/src/hooks/use-committed-ref.ts"
+      },
+      {
+        "from": "apps/web/src/hooks/use-container-size.ts",
+        "path": "packages/editor-classic/src/hooks/use-container-size.ts"
+      },
+      {
+        "from": "apps/web/src/hooks/use-fullscreen.ts",
+        "path": "packages/editor-classic/src/hooks/use-fullscreen.ts"
+      },
+      {
+        "from": "apps/web/src/masks/dimensions.ts",
+        "path": "packages/editor-classic/src/masks/dimensions.ts"
+      },
+      {
+        "from": "apps/web/src/masks/feather.ts",
+        "path": "packages/editor-classic/src/masks/feather.ts"
+      },
+      {
+        "from": "apps/web/src/media/thumbnail.ts",
+        "path": "packages/editor-classic/src/media/thumbnail.ts"
+      },
+      {
+        "from": "apps/web/src/panels/layout.ts",
+        "path": "packages/editor-classic/src/panels/layout.ts"
+      },
+      {
+        "from": "apps/web/src/preview/components/cursors.ts",
+        "path": "packages/editor-classic/src/preview/components/cursors.ts"
+      },
+      {
+        "from": "apps/web/src/preview/overlays.ts",
+        "path": "packages/editor-classic/src/preview/overlays.ts"
+      },
+      {
+        "from": "apps/web/src/preview/preview-coords.ts",
+        "path": "packages/editor-classic/src/preview/preview-coords.ts"
+      },
+      {
+        "from": "apps/web/src/preview/zoom.ts",
+        "path": "packages/editor-classic/src/preview/zoom.ts"
+      },
+      {
+        "from": "apps/web/src/retime/rate.ts",
+        "path": "packages/editor-classic/src/retime/rate.ts"
+      },
+      {
+        "from": "apps/web/src/ripple/index.ts",
+        "path": "packages/editor-classic/src/ripple/index.ts"
+      },
+      {
+        "from": "apps/web/src/selection/attributes.ts",
+        "path": "packages/editor-classic/src/selection/attributes.ts"
+      },
+      {
+        "from": "apps/web/src/selection/scope.ts",
+        "path": "packages/editor-classic/src/selection/scope.ts"
+      },
+      {
+        "from": "apps/web/src/services/renderer/canvas-utils.ts",
+        "path": "packages/editor-classic/src/services/renderer/canvas-utils.ts"
+      },
+      {
+        "from": "apps/web/src/services/renderer/mask-feather.ts",
+        "path": "packages/editor-classic/src/services/renderer/mask-feather.ts"
+      },
+      {
+        "from": "apps/web/src/services/renderer/nodes/base-node.ts",
+        "path": "packages/editor-classic/src/services/renderer/nodes/base-node.ts"
+      },
+      {
+        "from": "apps/web/src/services/renderer/nodes/color-node.ts",
+        "path": "packages/editor-classic/src/services/renderer/nodes/color-node.ts"
+      },
+      {
+        "from": "apps/web/src/services/renderer/nodes/image-node.ts",
+        "path": "packages/editor-classic/src/services/renderer/nodes/image-node.ts"
+      },
+      {
+        "from": "apps/web/src/services/renderer/nodes/root-node.ts",
+        "path": "packages/editor-classic/src/services/renderer/nodes/root-node.ts"
+      },
+      {
+        "from": "apps/web/src/services/renderer/nodes/video-node.ts",
+        "path": "packages/editor-classic/src/services/renderer/nodes/video-node.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/AGENTS.md",
+        "path": "packages/editor-classic/src/services/storage/migrations/AGENTS.md"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/fixtures/v0.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/fixtures/v0.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/fixtures/v1.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/fixtures/v1.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/fixtures/v2.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/fixtures/v2.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/fixtures/v3.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/fixtures/v3.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/helpers.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/helpers.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/v0-to-v1.test.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/v0-to-v1.test.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/v1-to-v2.test.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/v1-to-v2.test.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/v19-to-v20.test.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/v19-to-v20.test.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/v2-to-v3.test.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/v2-to-v3.test.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/v20-to-v21.test.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/v20-to-v21.test.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/v21-to-v22.test.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/v21-to-v22.test.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/v22-to-v23.test.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/v22-to-v23.test.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/v26-to-v27.test.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/v26-to-v27.test.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/v27-to-v28.test.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/v27-to-v28.test.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/v28-to-v29.test.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/v28-to-v29.test.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/v29-to-v30.test.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/v29-to-v30.test.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/v30-to-v31.test.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/v30-to-v31.test.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/__tests__/v5-to-v6.test.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/__tests__/v5-to-v6.test.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/index.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/index.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/index.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/index.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/types.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/types.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/utils.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/utils.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v14-to-v15.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v14-to-v15.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v17-to-v18.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v17-to-v18.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v19-to-v20.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v19-to-v20.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v2-to-v3.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v2-to-v3.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v20-to-v21.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v20-to-v21.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v21-to-v22.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v21-to-v22.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v22-to-v23.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v22-to-v23.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v23-to-v24.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v23-to-v24.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v24-to-v25.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v24-to-v25.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v25-to-v26.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v25-to-v26.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v26-to-v27.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v26-to-v27.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v28-to-v29.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v28-to-v29.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v29-to-v30.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v29-to-v30.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/transformers/v30-to-v31.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/transformers/v30-to-v31.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v0-to-v1.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v0-to-v1.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v19-to-v20.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v19-to-v20.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v2-to-v3.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v2-to-v3.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v20-to-v21.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v20-to-v21.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v21-to-v22.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v21-to-v22.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v22-to-v23.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v22-to-v23.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v23-to-v24.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v23-to-v24.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v24-to-v25.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v24-to-v25.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v25-to-v26.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v25-to-v26.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v26-to-v27.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v26-to-v27.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v27-to-v28.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v27-to-v28.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v28-to-v29.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v28-to-v29.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v29-to-v30.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v29-to-v30.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/migrations/v30-to-v31.ts",
+        "path": "packages/editor-classic/src/services/storage/migrations/v30-to-v31.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/opfs-adapter.ts",
+        "path": "packages/editor-classic/src/services/storage/opfs-adapter.ts"
+      },
+      {
+        "from": "apps/web/src/services/storage/use-local-storage.ts",
+        "path": "packages/editor-classic/src/services/storage/use-local-storage.ts"
+      },
+      {
+        "from": "apps/web/src/stickers/categories.ts",
+        "path": "packages/editor-classic/src/stickers/categories.ts"
+      },
+      {
+        "from": "apps/web/src/stickers/intrinsic-size.ts",
+        "path": "packages/editor-classic/src/stickers/intrinsic-size.ts"
+      },
+      {
+        "from": "apps/web/src/subtitles/ass.ts",
+        "path": "packages/editor-classic/src/subtitles/ass.ts"
+      },
+      {
+        "from": "apps/web/src/subtitles/parse.ts",
+        "path": "packages/editor-classic/src/subtitles/parse.ts"
+      },
+      {
+        "from": "apps/web/src/subtitles/srt.ts",
+        "path": "packages/editor-classic/src/subtitles/srt.ts"
+      },
+      {
+        "from": "apps/web/src/text/background.ts",
+        "path": "packages/editor-classic/src/text/background.ts"
+      },
+      {
+        "from": "apps/web/src/text/typography.ts",
+        "path": "packages/editor-classic/src/text/typography.ts"
+      },
+      {
+        "from": "apps/web/src/timeline/audio-display.ts",
+        "path": "packages/editor-classic/src/timeline/audio-display.ts"
+      },
+      {
+        "from": "apps/web/src/timeline/bookmarks/index.ts",
+        "path": "packages/editor-classic/src/timeline/bookmarks/index.ts"
+      },
+      {
+        "from": "apps/web/src/timeline/components/interaction.ts",
+        "path": "packages/editor-classic/src/timeline/components/interaction.ts"
+      },
+      {
+        "from": "apps/web/src/timeline/components/layers.ts",
+        "path": "packages/editor-classic/src/timeline/components/layers.ts"
+      },
+      {
+        "from": "apps/web/src/timeline/group-move/index.ts",
+        "path": "packages/editor-classic/src/timeline/group-move/index.ts"
+      },
+      {
+        "from": "apps/web/src/timeline/group-resize/index.ts",
+        "path": "packages/editor-classic/src/timeline/group-resize/index.ts"
+      },
+      {
+        "from": "apps/web/src/timeline/placement/index.ts",
+        "path": "packages/editor-classic/src/timeline/placement/index.ts"
+      },
+      {
+        "from": "apps/web/src/timeline/scale.ts",
+        "path": "packages/editor-classic/src/timeline/scale.ts"
+      },
+      {
+        "from": "apps/web/src/timeline/snapping/build.ts",
+        "path": "packages/editor-classic/src/timeline/snapping/build.ts"
+      },
+      {
+        "from": "apps/web/src/timeline/snapping/index.ts",
+        "path": "packages/editor-classic/src/timeline/snapping/index.ts"
+      },
+      {
+        "from": "apps/web/src/transcription/audio.ts",
+        "path": "packages/editor-classic/src/transcription/audio.ts"
+      },
+      {
+        "from": "apps/web/src/transcription/caption-defaults.ts",
+        "path": "packages/editor-classic/src/transcription/caption-defaults.ts"
+      },
+      {
+        "from": "apps/web/src/transcription/languages.ts",
+        "path": "packages/editor-classic/src/transcription/languages.ts"
+      },
+      {
+        "from": "apps/web/src/transcription/models.ts",
+        "path": "packages/editor-classic/src/transcription/models.ts"
+      },
+      {
+        "from": "apps/web/src/transcription/supported-languages.ts",
+        "path": "packages/editor-classic/src/transcription/supported-languages.ts"
+      },
+      {
+        "from": "apps/web/src/utils/__tests__/math.test.ts",
+        "path": "packages/editor-classic/src/utils/__tests__/math.test.ts"
+      },
+      {
+        "from": "apps/web/src/utils/date.ts",
+        "path": "packages/editor-classic/src/utils/date.ts"
+      },
+      {
+        "from": "apps/web/src/utils/geometry.ts",
+        "path": "packages/editor-classic/src/utils/geometry.ts"
+      },
+      {
+        "from": "apps/web/src/utils/math.ts",
+        "path": "packages/editor-classic/src/utils/math.ts"
+      },
+      {
+        "from": "apps/web/src/utils/platform.ts",
+        "path": "packages/editor-classic/src/utils/platform.ts"
+      },
+      {
+        "from": "apps/web/src/utils/string.ts",
+        "path": "packages/editor-classic/src/utils/string.ts"
+      },
+      {
+        "from": "apps/web/src/utils/ui.ts",
+        "path": "packages/editor-classic/src/utils/ui.ts"
+      },
+      {
+        "from": "apps/web/src/wasm/index.ts",
+        "path": "packages/editor-classic/src/wasm/index.ts"
+      },
+      {
+        "from": "apps/web/src/wasm/media-time.ts",
+        "path": "packages/editor-classic/src/wasm/media-time.ts"
+      }
+    ],
+    "movedRewritten": [
+      {
+        "from": "apps/web/src/actions/keybinding.ts",
+        "path": "packages/editor-classic/src/actions/keybinding.ts"
+      },
+      {
+        "from": "apps/web/src/actions/keybindings-store.ts",
+        "path": "packages/editor-classic/src/actions/keybindings-store.ts"
+      },
+      {
+        "from": "apps/web/src/actions/registry.ts",
+        "path": "packages/editor-classic/src/actions/registry.ts"
+      },
+      {
+        "from": "apps/web/src/commands/base-command.ts",
+        "path": "packages/editor-classic/src/commands/base-command.ts"
+      },
+      {
+        "from": "apps/web/src/commands/media/add-media-asset.ts",
+        "path": "packages/editor-classic/src/commands/media/add-media-asset.ts"
+      },
+      {
+        "from": "apps/web/src/commands/media/remove-media-asset.ts",
+        "path": "packages/editor-classic/src/commands/media/remove-media-asset.ts"
+      },
+      {
+        "from": "apps/web/src/commands/timeline/tracks-snapshot.ts",
+        "path": "packages/editor-classic/src/commands/timeline/tracks-snapshot.ts"
+      },
+      {
+        "from": "apps/web/src/components/editor/panels/properties/stores/properties-store.ts",
+        "path": "packages/editor-classic/src/components/editor/panels/properties/stores/properties-store.ts"
+      },
+      {
+        "from": "apps/web/src/components/storage-provider.tsx",
+        "path": "packages/editor-classic/src/components/storage-provider.tsx"
+      },
+      {
+        "from": "apps/web/src/core/index.ts",
+        "path": "packages/editor-classic/src/core/index.ts"
+      },
+      {
+        "from": "apps/web/src/core/managers/commands.ts",
+        "path": "packages/editor-classic/src/core/managers/commands.ts"
+      },
+      {
+        "from": "apps/web/src/core/managers/media-manager.ts",
+        "path": "packages/editor-classic/src/core/managers/media-manager.ts"
+      },
+      {
+        "from": "apps/web/src/core/managers/renderer-manager.ts",
+        "path": "packages/editor-classic/src/core/managers/renderer-manager.ts"
+      },
+      {
+        "from": "apps/web/src/core/managers/save-manager.ts",
+        "path": "packages/editor-classic/src/core/managers/save-manager.ts"
+      },
+      {
+        "from": "apps/web/src/editor/cancel-interaction.ts",
+        "path": "packages/editor-classic/src/editor/cancel-interaction.ts"
+      },
+      {
+        "from": "apps/web/src/editor/editor-store.ts",
+        "path": "packages/editor-classic/src/editor/editor-store.ts"
+      },
+      {
+        "from": "apps/web/src/editor/panel-store.ts",
+        "path": "packages/editor-classic/src/editor/panel-store.ts"
+      },
+      {
+        "from": "apps/web/src/fonts/google-fonts.ts",
+        "path": "packages/editor-classic/src/fonts/google-fonts.ts"
+      },
+      {
+        "from": "apps/web/src/hooks/use-raf-loop.ts",
+        "path": "packages/editor-classic/src/hooks/use-raf-loop.ts"
+      },
+      {
+        "from": "apps/web/src/masks/builtin/definitions/index.ts",
+        "path": "packages/editor-classic/src/masks/builtin/definitions/index.ts"
+      },
+      {
+        "from": "apps/web/src/media/types.ts",
+        "path": "packages/editor-classic/src/media/types.ts"
+      },
+      {
+        "from": "apps/web/src/media/upload-toast.ts",
+        "path": "packages/editor-classic/src/media/upload-toast.ts"
+      },
+      {
+        "from": "apps/web/src/preview/components/index.tsx",
+        "path": "packages/editor-classic/src/preview/components/index.tsx"
+      },
+      {
+        "from": "apps/web/src/preview/preview-store.ts",
+        "path": "packages/editor-classic/src/preview/preview-store.ts"
+      },
+      {
+        "from": "apps/web/src/selection/index.ts",
+        "path": "packages/editor-classic/src/selection/index.ts"
+      },
+      {
+        "from": "apps/web/src/services/renderer/canvas-renderer.ts",
+        "path": "packages/editor-classic/src/services/renderer/canvas-renderer.ts"
+      },
+      {
+        "from": "apps/web/src/services/renderer/effect-preview.ts",
+        "path": "packages/editor-classic/src/services/renderer/effect-preview.ts"
+      },
+      {
+        "from": "apps/web/src/services/renderer/scene-exporter.ts",
+        "path": "packages/editor-classic/src/services/renderer/scene-exporter.ts"
+      },
+      {
+        "from": "apps/web/src/services/transcription/service.ts",
+        "path": "packages/editor-classic/src/services/transcription/service.ts"
+      },
+      {
+        "from": "apps/web/src/services/video-cache/service.ts",
+        "path": "packages/editor-classic/src/services/video-cache/service.ts"
+      },
+      {
+        "from": "apps/web/src/services/waveform-cache/service.ts",
+        "path": "packages/editor-classic/src/services/waveform-cache/service.ts"
+      },
+      {
+        "from": "apps/web/src/sounds/sounds-store.ts",
+        "path": "packages/editor-classic/src/sounds/sounds-store.ts"
+      },
+      {
+        "from": "apps/web/src/sounds/use-sound-search.ts",
+        "path": "packages/editor-classic/src/sounds/use-sound-search.ts"
+      },
+      {
+        "from": "apps/web/src/stickers/stickers-store.ts",
+        "path": "packages/editor-classic/src/stickers/stickers-store.ts"
+      },
+      {
+        "from": "apps/web/src/timeline/components/graph-editor/custom-presets-store.ts",
+        "path": "packages/editor-classic/src/timeline/components/graph-editor/custom-presets-store.ts"
+      },
+      {
+        "from": "apps/web/src/timeline/timeline-store.ts",
+        "path": "packages/editor-classic/src/timeline/timeline-store.ts"
+      },
+      {
+        "from": "apps/web/src/utils/browser.ts",
+        "path": "packages/editor-classic/src/utils/browser.ts"
+      }
+    ],
     "added": [
+      "apps/electron-host/electron/main.cjs",
+      "apps/electron-host/electron/preload.cjs",
+      "apps/electron-host/index.html",
+      "apps/electron-host/package.json",
+      "apps/electron-host/postcss.config.mjs",
+      "apps/electron-host/scripts/boot-proof.mjs",
+      "apps/electron-host/scripts/c6-oracle-proof.mjs",
+      "apps/electron-host/scripts/desktop-composition-proof.mjs",
+      "apps/electron-host/scripts/evidence-entries-proof.mjs",
+      "apps/electron-host/scripts/serve-dist.mjs",
+      "apps/electron-host/scripts/store-bridge-proof.mjs",
+      "apps/electron-host/scripts/validate-agent-ledger.mjs",
+      "apps/electron-host/src/app.tsx",
+      "apps/electron-host/src/c4-worker-harness.tsx",
+      "apps/electron-host/src/editor-error-boundary.tsx",
+      "apps/electron-host/src/host/electron-editor-host.tsx",
+      "apps/electron-host/src/host/electron-host-config.ts",
+      "apps/electron-host/src/host/electron-runtime-resources.ts",
+      "apps/electron-host/src/main.tsx",
+      "apps/electron-host/src/project-picker.tsx",
+      "apps/electron-host/src/store/__tests__/filesystem-store-conformance.test.ts",
+      "apps/electron-host/src/store/__tests__/filesystem-store-migration-probes.test.ts",
+      "apps/electron-host/src/store/__tests__/store-bridge-surface.test.ts",
+      "apps/electron-host/src/store/filesystem-project-store.ts",
+      "apps/electron-host/src/store/ipc-store-bridge.ts",
+      "apps/electron-host/src/store/main-store-ipc.ts",
+      "apps/electron-host/src/store/node-fs-store-bridge.ts",
+      "apps/electron-host/src/store/project-store-files.ts",
+      "apps/electron-host/src/styles.css",
+      "apps/electron-host/src/surface-evidence-main.tsx",
+      "apps/electron-host/surface-evidence.html",
+      "apps/electron-host/tsconfig.json",
+      "apps/electron-host/vite.config.ts",
+      "apps/vite-example/README.md",
+      "apps/vite-example/build/editor-assets.ts",
+      "apps/vite-example/build/headless-module-graph.ts",
+      "apps/vite-example/build/module-graph.ts",
+      "apps/vite-example/c5-migration.html",
+      "apps/vite-example/c5-storage.html",
+      "apps/vite-example/headless.html",
+      "apps/vite-example/index.html",
+      "apps/vite-example/package.json",
+      "apps/vite-example/playwright.c3.config.ts",
+      "apps/vite-example/playwright.c5-storage.config.ts",
+      "apps/vite-example/playwright.config.ts",
+      "apps/vite-example/playwright.probe.config.ts",
+      "apps/vite-example/playwright.surface.config.ts",
+      "apps/vite-example/postcss.config.mjs",
+      "apps/vite-example/src/app.tsx",
+      "apps/vite-example/src/c3-session-harness.tsx",
+      "apps/vite-example/src/c4-forced-none-harness.tsx",
+      "apps/vite-example/src/c4-session-harness.tsx",
+      "apps/vite-example/src/c4-worker-harness.tsx",
+      "apps/vite-example/src/c5-migration-harness.ts",
+      "apps/vite-example/src/c5-storage-harness.ts",
+      "apps/vite-example/src/editor-error-boundary.tsx",
+      "apps/vite-example/src/headless-entry.ts",
+      "apps/vite-example/src/host/vite-editor-host.tsx",
+      "apps/vite-example/src/host/vite-host-config.ts",
+      "apps/vite-example/src/main.tsx",
+      "apps/vite-example/src/project-picker.tsx",
+      "apps/vite-example/src/styles.css",
+      "apps/vite-example/src/surface-evidence-main.tsx",
+      "apps/vite-example/surface-evidence.html",
+      "apps/vite-example/tests/c3/session-capacity.pw.ts",
+      "apps/vite-example/tests/c5-storage/browser-store.pw.ts",
+      "apps/vite-example/tests/c5-storage/c4-forced-none.pw.ts",
+      "apps/vite-example/tests/c5-storage/migration-round1.pw.ts",
+      "apps/vite-example/tests/fixtures/FIXTURES.md",
+      "apps/vite-example/tests/fixtures/fixture-image.png",
+      "apps/vite-example/tests/fixtures/fixture-tone-a4.wav",
+      "apps/vite-example/tests/fixtures/fixture-tone-a5.wav",
+      "apps/vite-example/tests/fixtures/fixture-video.mp4",
+      "apps/vite-example/tests/parity/agent.pw.ts",
+      "apps/vite-example/tests/parity/c4-next.runtime.ts",
+      "apps/vite-example/tests/parity/driver.ts",
+      "apps/vite-example/tests/parity/electron-page.ts",
+      "apps/vite-example/tests/parity/evidence-path.ts",
+      "apps/vite-example/tests/parity/host-profile.ts",
+      "apps/vite-example/tests/parity/parity.pw.ts",
+      "apps/vite-example/tests/parity/snapshot.ts",
+      "apps/vite-example/tests/parity/surface-r2-evidence.ts",
+      "apps/vite-example/tests/parity/surface.pw.ts",
+      "apps/vite-example/tests/probe/legacy-migration.pw.ts",
+      "apps/vite-example/tests/probe/seed.ts",
+      "apps/vite-example/tests/probe/stickers-registry.pw.ts",
+      "apps/vite-example/tsconfig.json",
+      "apps/vite-example/vite.config.ts",
+      "apps/vite-example/vite.headless.config.ts",
+      "apps/vite-example/vite.surface-css.config.ts",
       "apps/web/public/workers/c4-worker-fixture.js",
-      "apps/web/src/actions/__tests__/registry.test.ts",
-      "apps/web/src/actions/action-scope.tsx",
-      "apps/web/src/actions/keybinding-target.ts",
       "apps/web/src/app/c6-disposal/page.tsx",
       "apps/web/src/app/c7-headless/route.ts",
       "apps/web/src/app/surface-evidence/page.tsx",
-      "apps/web/src/commands/provider-private-composite.ts",
-      "apps/web/src/components/__tests__/storage-provider-operations.test.ts",
-      "apps/web/src/components/storage-provider-operations.ts",
-      "apps/web/src/core/managers/__tests__/media-persistence-rewire.test.ts",
-      "apps/web/src/core/managers/__tests__/project-manager-thumbnail-degraded.test.ts",
-      "apps/web/src/core/managers/__tests__/project-persistence-rewire.test.ts",
-      "apps/web/src/core/managers/__tests__/save-manager-persistence-failure.test.ts",
-      "apps/web/src/core/managers/__tests__/transaction-command-routing.test.ts",
-      "apps/web/src/core/managers/__tests__/transaction-persistence-coordination.test.ts",
-      "apps/web/src/editor/contracts/conformance/index.ts",
-      "apps/web/src/editor/contracts/domain.ts",
-      "apps/web/src/editor/contracts/draft/__tests__/draft.test.ts",
-      "apps/web/src/editor/contracts/draft/classification.ts",
-      "apps/web/src/editor/contracts/draft/conformance/index.ts",
-      "apps/web/src/editor/contracts/draft/immutable.ts",
-      "apps/web/src/editor/contracts/draft/index.ts",
-      "apps/web/src/editor/contracts/draft/inverse.ts",
-      "apps/web/src/editor/contracts/draft/manager.ts",
-      "apps/web/src/editor/contracts/draft/retention.ts",
-      "apps/web/src/editor/contracts/draft/review.ts",
-      "apps/web/src/editor/contracts/draft/types.ts",
-      "apps/web/src/editor/contracts/engine/__tests__/capture-boundary.types.ts",
-      "apps/web/src/editor/contracts/engine/__tests__/engine.test.ts",
-      "apps/web/src/editor/contracts/engine/adapter.ts",
-      "apps/web/src/editor/contracts/engine/clone.ts",
-      "apps/web/src/editor/contracts/engine/conformance/index.ts",
-      "apps/web/src/editor/contracts/engine/engine.ts",
-      "apps/web/src/editor/contracts/engine/evaluator.ts",
-      "apps/web/src/editor/contracts/engine/index.ts",
-      "apps/web/src/editor/contracts/engine/invariant.ts",
-      "apps/web/src/editor/contracts/engine/native-adapter.ts",
-      "apps/web/src/editor/contracts/engine/placement.ts",
-      "apps/web/src/editor/contracts/engine/projection.ts",
-      "apps/web/src/editor/contracts/engine/types.ts",
-      "apps/web/src/editor/contracts/in-memory/__tests__/in-memory.test.ts",
-      "apps/web/src/editor/contracts/in-memory/index.ts",
-      "apps/web/src/editor/contracts/index.ts",
-      "apps/web/src/editor/contracts/interfaces.ts",
-      "apps/web/src/editor/contracts/operations.ts",
-      "apps/web/src/editor/contracts/transaction.ts",
-      "apps/web/src/editor/contracts/vectors/__tests__/agent-drivers.test.ts",
-      "apps/web/src/editor/contracts/vectors/__tests__/agent-opencut-projection.test.ts",
-      "apps/web/src/editor/contracts/vectors/__tests__/agent-scenario.test.ts",
-      "apps/web/src/editor/contracts/vectors/__tests__/contract-surface.test.ts",
-      "apps/web/src/editor/contracts/vectors/__tests__/corpus-fixture.ts",
-      "apps/web/src/editor/contracts/vectors/__tests__/corpus-isolation.test.ts",
-      "apps/web/src/editor/contracts/vectors/__tests__/coverage.test.ts",
-      "apps/web/src/editor/contracts/vectors/__tests__/loader.test.ts",
-      "apps/web/src/editor/contracts/vectors/__tests__/mutation-matrix.test.ts",
-      "apps/web/src/editor/contracts/vectors/__tests__/mutation-targets.ts",
-      "apps/web/src/editor/contracts/vectors/__tests__/runner.test.ts",
-      "apps/web/src/editor/contracts/vectors/agent-scenario.ts",
-      "apps/web/src/editor/contracts/vectors/contract-surface.ts",
-      "apps/web/src/editor/contracts/vectors/corpus/document-vectors.json",
-      "apps/web/src/editor/contracts/vectors/corpus/manifest.json",
-      "apps/web/src/editor/contracts/vectors/corpus/scenario-vectors.json",
-      "apps/web/src/editor/contracts/vectors/coverage.ts",
-      "apps/web/src/editor/contracts/vectors/drivers/durable.ts",
-      "apps/web/src/editor/contracts/vectors/drivers/in-memory.ts",
-      "apps/web/src/editor/contracts/vectors/index.ts",
-      "apps/web/src/editor/contracts/vectors/loader.ts",
-      "apps/web/src/editor/contracts/vectors/runner.ts",
-      "apps/web/src/editor/contracts/vectors/schema.ts",
-      "apps/web/src/editor/contracts/vectors/sha256.ts",
       "apps/web/src/editor/host/__tests__/branding-assets.test.ts",
-      "apps/web/src/editor/host/__tests__/browser-runtime.test.ts",
       "apps/web/src/editor/host/__tests__/production-composition.test.ts",
-      "apps/web/src/editor/host/browser-runtime.ts",
       "apps/web/src/editor/host/c4-next-runtime-probe.tsx",
-      "apps/web/src/editor/host/c4-project-load.ts",
-      "apps/web/src/editor/host/editor-host-context.tsx",
-      "apps/web/src/editor/host/editor-host.ts",
-      "apps/web/src/editor/host/host-image.tsx",
       "apps/web/src/editor/host/next-editor-host.ts",
-      "apps/web/src/editor/persistence/__tests__/opaque-roundtrip.test.ts",
-      "apps/web/src/editor/persistence/index.ts",
-      "apps/web/src/editor/persistence/opaque-value.ts",
-      "apps/web/src/editor/persistence/project-codec.ts",
-      "apps/web/src/editor/persistence/session-persistence-coordinator.ts",
-      "apps/web/src/editor/ports/DECISIONS.md",
-      "apps/web/src/editor/ports/__tests__/conformance.test.ts",
-      "apps/web/src/editor/ports/__tests__/port-roles.compile-guard.ts",
-      "apps/web/src/editor/ports/__tests__/runtime-graphics-query.compile-guard.ts",
-      "apps/web/src/editor/ports/assets.ts",
-      "apps/web/src/editor/ports/conformance/index.ts",
-      "apps/web/src/editor/ports/diagnostics.ts",
-      "apps/web/src/editor/ports/environment.ts",
-      "apps/web/src/editor/ports/export-provider.ts",
-      "apps/web/src/editor/ports/gpu-resources.ts",
-      "apps/web/src/editor/ports/id-generator.ts",
-      "apps/web/src/editor/ports/identity.ts",
-      "apps/web/src/editor/ports/in-memory/host.ts",
-      "apps/web/src/editor/ports/in-memory/index.ts",
-      "apps/web/src/editor/ports/index.ts",
-      "apps/web/src/editor/ports/project-store.ts",
-      "apps/web/src/editor/ports/runtime-resources.ts",
-      "apps/web/src/editor/runtime/process-bootstrap.ts",
-      "apps/web/src/editor/runtime/session-core-owner.ts",
-      "apps/web/src/editor/runtime/session-stores.ts",
-      "apps/web/src/editor/runtime/wasm-runtime-providers.ts",
-      "apps/web/src/editor/session/__tests__/c6-durable-reopen.test.ts",
-      "apps/web/src/editor/session/__tests__/c6-test-audio-context.ts",
-      "apps/web/src/editor/session/__tests__/disposal-oracle.test.ts",
-      "apps/web/src/editor/session/__tests__/editor-singleton-boundary.test.ts",
-      "apps/web/src/editor/session/__tests__/headless-browser-boundary.test.ts",
-      "apps/web/src/editor/session/__tests__/headless-migration.test.ts",
-      "apps/web/src/editor/session/__tests__/headless-runtime-probe.test.ts",
-      "apps/web/src/editor/session/__tests__/headless-semantic-fixture.test.ts",
-      "apps/web/src/editor/session/__tests__/headless-session.test.ts",
-      "apps/web/src/editor/session/__tests__/independent-timer-ledger.test.ts",
-      "apps/web/src/editor/session/__tests__/session-async-store-isolation.test.ts",
-      "apps/web/src/editor/session/__tests__/session-disposal-c6.test.ts",
-      "apps/web/src/editor/session/__tests__/session-lifecycle.test.ts",
-      "apps/web/src/editor/session/__tests__/session-runtime-ownership.test.tsx",
-      "apps/web/src/editor/session/__tests__/session-state-isolation.test.ts",
-      "apps/web/src/editor/session/__tests__/session-timer-matrix.test.ts",
-      "apps/web/src/editor/session/__tests__/wasm-test-mock.ts",
-      "apps/web/src/editor/session/c6-disposal-harness.tsx",
-      "apps/web/src/editor/session/c6-durable-reopen-browser.ts",
-      "apps/web/src/editor/session/c6-durable-reopen.ts",
-      "apps/web/src/editor/session/create-session.ts",
-      "apps/web/src/editor/session/disposal-oracle.ts",
-      "apps/web/src/editor/session/editor-session-host.tsx",
-      "apps/web/src/editor/session/editor-session-provider.tsx",
-      "apps/web/src/editor/session/headless-proof-control-react-browser.ts",
-      "apps/web/src/editor/session/headless-proof-control-react.ts",
-      "apps/web/src/editor/session/headless-proof-control.ts",
-      "apps/web/src/editor/session/headless-runtime-probe.ts",
-      "apps/web/src/editor/session/headless-semantic-fixture.ts",
-      "apps/web/src/editor/session/headless.ts",
-      "apps/web/src/editor/session/independent-timer-ledger.ts",
-      "apps/web/src/editor/session/index.ts",
-      "apps/web/src/editor/session/migration-gate.ts",
-      "apps/web/src/editor/session/resources.ts",
-      "apps/web/src/editor/session/session-resources.ts",
-      "apps/web/src/editor/session/session-types.ts",
-      "apps/web/src/editor/surface/editor-root.tsx",
-      "apps/web/src/editor/surface/embedding/__tests__/surface-composition.test.ts",
-      "apps/web/src/editor/surface/embedding/__tests__/surface-drag-coordinator.test.ts",
-      "apps/web/src/editor/surface/embedding/__tests__/surface-drag-integrations.test.ts",
-      "apps/web/src/editor/surface/embedding/__tests__/surface-error-boundary.test.ts",
-      "apps/web/src/editor/surface/embedding/__tests__/surface-focus.test.ts",
-      "apps/web/src/editor/surface/embedding/__tests__/surface-keybinding-scope.test.ts",
-      "apps/web/src/editor/surface/embedding/__tests__/surface-lifecycle.test.ts",
-      "apps/web/src/editor/surface/embedding/__tests__/surface-portal.test.ts",
-      "apps/web/src/editor/surface/embedding/__tests__/surface-react-identity-probe.test.ts",
-      "apps/web/src/editor/surface/embedding/__tests__/surface-transaction-binding.test.ts",
-      "apps/web/src/editor/surface/embedding/editor-surface.tsx",
-      "apps/web/src/editor/surface/embedding/index.ts",
-      "apps/web/src/editor/surface/embedding/session-surface-bridge.tsx",
-      "apps/web/src/editor/surface/embedding/surface-commit-context.tsx",
-      "apps/web/src/editor/surface/embedding/surface-contract.assertions.ts",
-      "apps/web/src/editor/surface/embedding/surface-drag-coordinator.tsx",
-      "apps/web/src/editor/surface/embedding/surface-error-boundary.tsx",
-      "apps/web/src/editor/surface/embedding/surface-evidence-seams.tsx",
-      "apps/web/src/editor/surface/embedding/surface-focus.ts",
-      "apps/web/src/editor/surface/embedding/surface-lifecycle.ts",
-      "apps/web/src/editor/surface/embedding/surface-portal.tsx",
-      "apps/web/src/editor/surface/embedding/surface-react-identity-probe.tsx",
-      "apps/web/src/editor/surface/embedding/surface-transaction-binding.ts",
-      "apps/web/src/editor/surface/embedding/types.ts",
-      "apps/web/src/editor/surface/evidence/agent-evidence-run.ts",
-      "apps/web/src/editor/surface/evidence/surface-evidence-harness.tsx",
-      "apps/web/src/editor/surface/surface.css",
-      "apps/web/src/editor/transactions/opencut/__tests__/adapter-router.test.ts",
-      "apps/web/src/editor/transactions/opencut/__tests__/fixture.ts",
-      "apps/web/src/editor/transactions/opencut/__tests__/routing-registry.test.ts",
-      "apps/web/src/editor/transactions/opencut/adapter.ts",
-      "apps/web/src/editor/transactions/opencut/arbiter.ts",
-      "apps/web/src/editor/transactions/opencut/draft-context.ts",
-      "apps/web/src/editor/transactions/opencut/history-rebase.ts",
-      "apps/web/src/editor/transactions/opencut/index.ts",
-      "apps/web/src/editor/transactions/opencut/projection.ts",
-      "apps/web/src/editor/transactions/opencut/router.ts",
-      "apps/web/src/editor/transactions/opencut/routing.ts",
-      "apps/web/src/editor/transactions/opencut/types.ts",
-      "apps/web/src/editor/use-session-store.ts",
-      "apps/web/src/fonts/__tests__/host-font-assets.test.ts",
-      "apps/web/src/graphics/generated-preview.ts",
-      "apps/web/src/media/__tests__/audio-resource-lifecycle.test.ts",
-      "apps/web/src/media/__tests__/persistence.test.ts",
-      "apps/web/src/media/__tests__/processing-capacity.test.ts",
-      "apps/web/src/media/persistence.ts",
-      "apps/web/src/preview/components/__tests__/timecode-playback-subscription.test.ts",
-      "apps/web/src/preview/components/playback-time-subscription.ts",
-      "apps/web/src/preview/components/use-playback-time.ts",
-      "apps/web/src/services/renderer/__tests__/effect-preview-ownership.test.ts",
-      "apps/web/src/services/renderer/__tests__/host-effect-preview.test.ts",
-      "apps/web/src/services/renderer/effect-preview-source.ts",
-      "apps/web/src/services/renderer/nodes/sticker-cache-key.ts",
-      "apps/web/src/services/storage/__tests__/browser-project-store-cascade-topology.test.ts",
-      "apps/web/src/services/storage/__tests__/browser-project-store-media-topology.test.ts",
-      "apps/web/src/services/storage/__tests__/browser-project-store-migration-topology.test.ts",
-      "apps/web/src/services/storage/__tests__/browser-project-store-records.test.ts",
-      "apps/web/src/services/storage/__tests__/browser-project-store-topology.test.ts",
       "apps/web/src/services/storage/__tests__/c5-storage-red-controls.test.ts",
-      "apps/web/src/services/storage/__tests__/migration-provider-private.test.ts",
-      "apps/web/src/services/storage/browser-project-store-cascade-manager.ts",
-      "apps/web/src/services/storage/browser-project-store-cascade-probes.ts",
-      "apps/web/src/services/storage/browser-project-store-cascade-round2-probes.ts",
-      "apps/web/src/services/storage/browser-project-store-cascade.ts",
-      "apps/web/src/services/storage/browser-project-store-conformance.ts",
-      "apps/web/src/services/storage/browser-project-store-control.ts",
-      "apps/web/src/services/storage/browser-project-store-internals.ts",
-      "apps/web/src/services/storage/browser-project-store-library-clear-bindings.ts",
-      "apps/web/src/services/storage/browser-project-store-media-ownership.ts",
-      "apps/web/src/services/storage/browser-project-store-migration-round2-probes.ts",
-      "apps/web/src/services/storage/browser-project-store-migration.ts",
-      "apps/web/src/services/storage/browser-project-store-records.ts",
-      "apps/web/src/services/storage/browser-project-store-residual-probes.ts",
-      "apps/web/src/services/storage/browser-project-store-topology.ts",
-      "apps/web/src/services/storage/browser-project-store.ts",
-      "apps/web/src/services/storage/browser-storage-mechanisms.ts",
-      "apps/web/src/services/transcription/__tests__/session-service.test.ts",
-      "apps/web/src/services/video-cache/__tests__/service-ownership.test.ts",
-      "apps/web/src/services/waveform-cache/__tests__/service-ownership.test.ts",
-      "apps/web/src/stickers/__tests__/host-assets.test.ts",
-      "apps/web/src/timeline/__tests__/element-with-track-selector.test.ts",
-      "apps/web/src/timeline/element-with-track-selector.ts",
-      "apps/web/src/utils/__tests__/browser-resource-lifecycle.test.ts",
+      "apps/web/src/services/storage/__tests__/fixtures/c5-v1-project.ts",
+      "examples/agent-transaction/README.md",
+      "examples/agent-transaction/package.json",
+      "examples/agent-transaction/run.ts",
+      "examples/agent-transaction/src/own-store.ts",
+      "examples/agent-transaction/tsconfig.json",
+      "examples/custom-storage/README.md",
+      "examples/custom-storage/package.json",
+      "examples/custom-storage/run-mock.ts",
+      "examples/custom-storage/run.ts",
+      "examples/custom-storage/src/alien-codec.ts",
+      "examples/custom-storage/src/alien-control.ts",
+      "examples/custom-storage/src/alien-store.ts",
+      "examples/custom-storage/src/factories.ts",
+      "examples/custom-storage/src/migrate.ts",
+      "examples/custom-storage/src/roles.ts",
+      "examples/custom-storage/src/transaction.ts",
+      "examples/custom-storage/tsconfig.json",
+      "examples/custom-storage/types/culori.d.ts",
+      "examples/embed-surface/README.md",
+      "examples/embed-surface/index.html",
+      "examples/embed-surface/package.json",
+      "examples/embed-surface/postcss.config.mjs",
+      "examples/embed-surface/public/fonts/font-atlas.json",
+      "examples/embed-surface/public/logos/opencut/svg/logo.svg",
+      "examples/embed-surface/smoke.mjs",
+      "examples/embed-surface/src/host.ts",
+      "examples/embed-surface/src/main.tsx",
+      "examples/embed-surface/src/styles.css",
+      "examples/embed-surface/tsconfig.json",
+      "examples/embed-surface/vite.config.ts",
+      "examples/install-packages/README.md",
+      "examples/install-packages/package.json",
+      "examples/install-packages/run.ts",
+      "examples/install-packages/tsconfig.json",
+      "packages/editor-classic/LICENSE",
+      "packages/editor-classic/NOTICE",
+      "packages/editor-classic/README.md",
+      "packages/editor-classic/package.json",
+      "packages/editor-classic/src/actions/__tests__/registry.test.ts",
+      "packages/editor-classic/src/actions/action-scope.tsx",
+      "packages/editor-classic/src/actions/keybinding-target.ts",
+      "packages/editor-classic/src/browser/index.ts",
+      "packages/editor-classic/src/commands/provider-private-composite.ts",
+      "packages/editor-classic/src/components/__tests__/storage-provider-operations.test.ts",
+      "packages/editor-classic/src/components/storage-provider-operations.ts",
+      "packages/editor-classic/src/core/managers/__tests__/media-persistence-rewire.test.ts",
+      "packages/editor-classic/src/core/managers/__tests__/project-manager-thumbnail-degraded.test.ts",
+      "packages/editor-classic/src/core/managers/__tests__/project-persistence-rewire.test.ts",
+      "packages/editor-classic/src/core/managers/__tests__/save-manager-persistence-failure.test.ts",
+      "packages/editor-classic/src/core/managers/__tests__/transaction-command-routing.test.ts",
+      "packages/editor-classic/src/core/managers/__tests__/transaction-persistence-coordination.test.ts",
+      "packages/editor-classic/src/editor/host/__tests__/browser-runtime.test.ts",
+      "packages/editor-classic/src/editor/host/browser-runtime.ts",
+      "packages/editor-classic/src/editor/host/c4-project-load.ts",
+      "packages/editor-classic/src/editor/host/editor-host-context.tsx",
+      "packages/editor-classic/src/editor/host/host-image.tsx",
+      "packages/editor-classic/src/editor/persistence/__tests__/opaque-roundtrip.test.ts",
+      "packages/editor-classic/src/editor/persistence/index.ts",
+      "packages/editor-classic/src/editor/persistence/opaque-value.ts",
+      "packages/editor-classic/src/editor/persistence/project-codec.ts",
+      "packages/editor-classic/src/editor/persistence/session-persistence-coordinator.ts",
+      "packages/editor-classic/src/editor/runtime/process-bootstrap.ts",
+      "packages/editor-classic/src/editor/runtime/session-core-owner.ts",
+      "packages/editor-classic/src/editor/runtime/session-stores.ts",
+      "packages/editor-classic/src/editor/runtime/wasm-runtime-providers.ts",
+      "packages/editor-classic/src/editor/session/__tests__/c6-durable-reopen.test.ts",
+      "packages/editor-classic/src/editor/session/__tests__/c6-test-audio-context.ts",
+      "packages/editor-classic/src/editor/session/__tests__/disposal-oracle.test.ts",
+      "packages/editor-classic/src/editor/session/__tests__/editor-singleton-boundary.test.ts",
+      "packages/editor-classic/src/editor/session/__tests__/headless-browser-boundary.test.ts",
+      "packages/editor-classic/src/editor/session/__tests__/headless-migration.test.ts",
+      "packages/editor-classic/src/editor/session/__tests__/headless-runtime-probe.test.ts",
+      "packages/editor-classic/src/editor/session/__tests__/headless-semantic-fixture.test.ts",
+      "packages/editor-classic/src/editor/session/__tests__/headless-session.test.ts",
+      "packages/editor-classic/src/editor/session/__tests__/independent-timer-ledger.test.ts",
+      "packages/editor-classic/src/editor/session/__tests__/session-async-store-isolation.test.ts",
+      "packages/editor-classic/src/editor/session/__tests__/session-disposal-c6.test.ts",
+      "packages/editor-classic/src/editor/session/__tests__/session-lifecycle.test.ts",
+      "packages/editor-classic/src/editor/session/__tests__/session-runtime-ownership.test.tsx",
+      "packages/editor-classic/src/editor/session/__tests__/session-state-isolation.test.ts",
+      "packages/editor-classic/src/editor/session/__tests__/session-timer-matrix.test.ts",
+      "packages/editor-classic/src/editor/session/__tests__/wasm-test-mock.ts",
+      "packages/editor-classic/src/editor/session/c6-disposal-harness.tsx",
+      "packages/editor-classic/src/editor/session/c6-durable-reopen-browser.ts",
+      "packages/editor-classic/src/editor/session/c6-durable-reopen.ts",
+      "packages/editor-classic/src/editor/session/create-session.ts",
+      "packages/editor-classic/src/editor/session/disposal-oracle.ts",
+      "packages/editor-classic/src/editor/session/editor-session-host.tsx",
+      "packages/editor-classic/src/editor/session/editor-session-provider.tsx",
+      "packages/editor-classic/src/editor/session/headless-proof-control-react-browser.ts",
+      "packages/editor-classic/src/editor/session/headless-proof-control-react.ts",
+      "packages/editor-classic/src/editor/session/headless-proof-control.ts",
+      "packages/editor-classic/src/editor/session/headless-runtime-probe.ts",
+      "packages/editor-classic/src/editor/session/headless-semantic-fixture.ts",
+      "packages/editor-classic/src/editor/session/headless.ts",
+      "packages/editor-classic/src/editor/session/independent-timer-ledger.ts",
+      "packages/editor-classic/src/editor/session/index.ts",
+      "packages/editor-classic/src/editor/session/migration-gate.ts",
+      "packages/editor-classic/src/editor/session/resources.ts",
+      "packages/editor-classic/src/editor/session/session-resources.ts",
+      "packages/editor-classic/src/editor/session/session-types.ts",
+      "packages/editor-classic/src/editor/surface/editor-root.tsx",
+      "packages/editor-classic/src/editor/surface/embedding/__tests__/surface-composition.test.ts",
+      "packages/editor-classic/src/editor/surface/embedding/__tests__/surface-drag-coordinator.test.ts",
+      "packages/editor-classic/src/editor/surface/embedding/__tests__/surface-drag-integrations.test.ts",
+      "packages/editor-classic/src/editor/surface/embedding/__tests__/surface-error-boundary.test.ts",
+      "packages/editor-classic/src/editor/surface/embedding/__tests__/surface-focus.test.ts",
+      "packages/editor-classic/src/editor/surface/embedding/__tests__/surface-keybinding-scope.test.ts",
+      "packages/editor-classic/src/editor/surface/embedding/__tests__/surface-lifecycle.test.ts",
+      "packages/editor-classic/src/editor/surface/embedding/__tests__/surface-portal.test.ts",
+      "packages/editor-classic/src/editor/surface/embedding/__tests__/surface-react-identity-probe.test.ts",
+      "packages/editor-classic/src/editor/surface/embedding/__tests__/surface-transaction-binding.test.ts",
+      "packages/editor-classic/src/editor/surface/embedding/editor-surface.tsx",
+      "packages/editor-classic/src/editor/surface/embedding/index.ts",
+      "packages/editor-classic/src/editor/surface/embedding/session-surface-bridge.tsx",
+      "packages/editor-classic/src/editor/surface/embedding/surface-commit-context.tsx",
+      "packages/editor-classic/src/editor/surface/embedding/surface-contract.assertions.ts",
+      "packages/editor-classic/src/editor/surface/embedding/surface-drag-coordinator.tsx",
+      "packages/editor-classic/src/editor/surface/embedding/surface-error-boundary.tsx",
+      "packages/editor-classic/src/editor/surface/embedding/surface-evidence-seams.tsx",
+      "packages/editor-classic/src/editor/surface/embedding/surface-focus.ts",
+      "packages/editor-classic/src/editor/surface/embedding/surface-lifecycle.ts",
+      "packages/editor-classic/src/editor/surface/embedding/surface-portal.tsx",
+      "packages/editor-classic/src/editor/surface/embedding/surface-react-identity-probe.tsx",
+      "packages/editor-classic/src/editor/surface/embedding/surface-transaction-binding.ts",
+      "packages/editor-classic/src/editor/surface/embedding/types.ts",
+      "packages/editor-classic/src/editor/surface/evidence/agent-evidence-run.ts",
+      "packages/editor-classic/src/editor/surface/evidence/surface-evidence-harness.tsx",
+      "packages/editor-classic/src/editor/transactions/opencut/__tests__/adapter-router.test.ts",
+      "packages/editor-classic/src/editor/transactions/opencut/__tests__/agent-opencut-projection.test.ts",
+      "packages/editor-classic/src/editor/transactions/opencut/__tests__/fixture.ts",
+      "packages/editor-classic/src/editor/transactions/opencut/__tests__/routing-registry.test.ts",
+      "packages/editor-classic/src/editor/transactions/opencut/adapter.ts",
+      "packages/editor-classic/src/editor/transactions/opencut/arbiter.ts",
+      "packages/editor-classic/src/editor/transactions/opencut/draft-context.ts",
+      "packages/editor-classic/src/editor/transactions/opencut/history-rebase.ts",
+      "packages/editor-classic/src/editor/transactions/opencut/index.ts",
+      "packages/editor-classic/src/editor/transactions/opencut/projection.ts",
+      "packages/editor-classic/src/editor/transactions/opencut/router.ts",
+      "packages/editor-classic/src/editor/transactions/opencut/routing.ts",
+      "packages/editor-classic/src/editor/transactions/opencut/types.ts",
+      "packages/editor-classic/src/editor/use-session-store.ts",
+      "packages/editor-classic/src/evidence/headless.ts",
+      "packages/editor-classic/src/evidence/index.ts",
+      "packages/editor-classic/src/fonts/__tests__/host-font-assets.test.ts",
+      "packages/editor-classic/src/fonts/index.ts",
+      "packages/editor-classic/src/graphics/generated-preview.ts",
+      "packages/editor-classic/src/index.ts",
+      "packages/editor-classic/src/media/__tests__/audio-resource-lifecycle.test.ts",
+      "packages/editor-classic/src/media/__tests__/persistence.test.ts",
+      "packages/editor-classic/src/media/__tests__/processing-capacity.test.ts",
+      "packages/editor-classic/src/media/index.ts",
+      "packages/editor-classic/src/media/persistence.ts",
+      "packages/editor-classic/src/preview/components/__tests__/timecode-playback-subscription.test.ts",
+      "packages/editor-classic/src/preview/components/playback-time-subscription.ts",
+      "packages/editor-classic/src/preview/components/use-playback-time.ts",
+      "packages/editor-classic/src/project/index.ts",
+      "packages/editor-classic/src/renderer/index.ts",
+      "packages/editor-classic/src/runtime/index.ts",
+      "packages/editor-classic/src/services/renderer/__tests__/effect-preview-ownership.test.ts",
+      "packages/editor-classic/src/services/renderer/__tests__/host-effect-preview.test.ts",
+      "packages/editor-classic/src/services/renderer/effect-preview-source.ts",
+      "packages/editor-classic/src/services/renderer/nodes/sticker-cache-key.ts",
+      "packages/editor-classic/src/services/storage/__tests__/browser-project-store-cascade-topology.test.ts",
+      "packages/editor-classic/src/services/storage/__tests__/browser-project-store-media-topology.test.ts",
+      "packages/editor-classic/src/services/storage/__tests__/browser-project-store-migration-topology.test.ts",
+      "packages/editor-classic/src/services/storage/__tests__/browser-project-store-records.test.ts",
+      "packages/editor-classic/src/services/storage/__tests__/browser-project-store-topology.test.ts",
+      "packages/editor-classic/src/services/storage/__tests__/migration-provider-private.test.ts",
+      "packages/editor-classic/src/services/storage/browser-project-store-cascade-manager.ts",
+      "packages/editor-classic/src/services/storage/browser-project-store-cascade-probes.ts",
+      "packages/editor-classic/src/services/storage/browser-project-store-cascade-round2-probes.ts",
+      "packages/editor-classic/src/services/storage/browser-project-store-cascade.ts",
+      "packages/editor-classic/src/services/storage/browser-project-store-conformance.ts",
+      "packages/editor-classic/src/services/storage/browser-project-store-control.ts",
+      "packages/editor-classic/src/services/storage/browser-project-store-internals.ts",
+      "packages/editor-classic/src/services/storage/browser-project-store-library-clear-bindings.ts",
+      "packages/editor-classic/src/services/storage/browser-project-store-media-ownership.ts",
+      "packages/editor-classic/src/services/storage/browser-project-store-migration-round2-probes.ts",
+      "packages/editor-classic/src/services/storage/browser-project-store-migration.ts",
+      "packages/editor-classic/src/services/storage/browser-project-store-records.ts",
+      "packages/editor-classic/src/services/storage/browser-project-store-residual-probes.ts",
+      "packages/editor-classic/src/services/storage/browser-project-store-topology.ts",
+      "packages/editor-classic/src/services/storage/browser-project-store.ts",
+      "packages/editor-classic/src/services/storage/browser-storage-mechanisms.ts",
+      "packages/editor-classic/src/services/transcription/__tests__/session-service.test.ts",
+      "packages/editor-classic/src/services/video-cache/__tests__/service-ownership.test.ts",
+      "packages/editor-classic/src/services/waveform-cache/__tests__/service-ownership.test.ts",
+      "packages/editor-classic/src/session/index.ts",
+      "packages/editor-classic/src/stickers/__tests__/host-assets.test.ts",
+      "packages/editor-classic/src/storage/conformance.ts",
+      "packages/editor-classic/src/storage/index.ts",
+      "packages/editor-classic/src/storage/migrations.ts",
+      "packages/editor-classic/src/surface/index.ts",
+      "packages/editor-classic/src/surface/surface.css",
+      "packages/editor-classic/src/timeline/__tests__/element-with-track-selector.test.ts",
+      "packages/editor-classic/src/timeline/element-with-track-selector.ts",
+      "packages/editor-classic/src/ui/index.ts",
+      "packages/editor-classic/src/utils/__tests__/browser-resource-lifecycle.test.ts",
+      "packages/editor-classic/surface.json",
+      "packages/editor-contracts/LICENSE",
+      "packages/editor-contracts/NOTICE",
+      "packages/editor-contracts/README.md",
+      "packages/editor-contracts/package.json",
+      "packages/editor-contracts/src/conformance/index.ts",
+      "packages/editor-contracts/src/conformance/requirements/__tests__/requirements-index.test.ts",
+      "packages/editor-contracts/src/conformance/requirements/index.ts",
+      "packages/editor-contracts/src/domain.ts",
+      "packages/editor-contracts/src/draft/__tests__/draft.test.ts",
+      "packages/editor-contracts/src/draft/classification.ts",
+      "packages/editor-contracts/src/draft/conformance/index.ts",
+      "packages/editor-contracts/src/draft/immutable.ts",
+      "packages/editor-contracts/src/draft/index.ts",
+      "packages/editor-contracts/src/draft/inverse.ts",
+      "packages/editor-contracts/src/draft/manager.ts",
+      "packages/editor-contracts/src/draft/retention.ts",
+      "packages/editor-contracts/src/draft/review.ts",
+      "packages/editor-contracts/src/draft/types.ts",
+      "packages/editor-contracts/src/engine/__tests__/capture-boundary.types.ts",
+      "packages/editor-contracts/src/engine/__tests__/engine.test.ts",
+      "packages/editor-contracts/src/engine/adapter.ts",
+      "packages/editor-contracts/src/engine/clone.ts",
+      "packages/editor-contracts/src/engine/conformance/index.ts",
+      "packages/editor-contracts/src/engine/engine.ts",
+      "packages/editor-contracts/src/engine/evaluator.ts",
+      "packages/editor-contracts/src/engine/index.ts",
+      "packages/editor-contracts/src/engine/invariant.ts",
+      "packages/editor-contracts/src/engine/native-adapter.ts",
+      "packages/editor-contracts/src/engine/placement.ts",
+      "packages/editor-contracts/src/engine/projection.ts",
+      "packages/editor-contracts/src/engine/types.ts",
+      "packages/editor-contracts/src/in-memory/__tests__/in-memory.test.ts",
+      "packages/editor-contracts/src/in-memory/index.ts",
+      "packages/editor-contracts/src/index.ts",
+      "packages/editor-contracts/src/interfaces.ts",
+      "packages/editor-contracts/src/operations.ts",
+      "packages/editor-contracts/src/transaction.ts",
+      "packages/editor-contracts/src/vectors/__tests__/agent-drivers.test.ts",
+      "packages/editor-contracts/src/vectors/__tests__/agent-scenario.test.ts",
+      "packages/editor-contracts/src/vectors/__tests__/contract-surface.test.ts",
+      "packages/editor-contracts/src/vectors/__tests__/corpus-fixture.ts",
+      "packages/editor-contracts/src/vectors/__tests__/corpus-isolation.test.ts",
+      "packages/editor-contracts/src/vectors/__tests__/coverage.test.ts",
+      "packages/editor-contracts/src/vectors/__tests__/loader.test.ts",
+      "packages/editor-contracts/src/vectors/__tests__/mutation-matrix.test.ts",
+      "packages/editor-contracts/src/vectors/__tests__/mutation-targets.ts",
+      "packages/editor-contracts/src/vectors/__tests__/published-corpus-entry.test.ts",
+      "packages/editor-contracts/src/vectors/__tests__/runner.test.ts",
+      "packages/editor-contracts/src/vectors/agent-scenario.ts",
+      "packages/editor-contracts/src/vectors/contract-surface.ts",
+      "packages/editor-contracts/src/vectors/corpus/document-vectors.json",
+      "packages/editor-contracts/src/vectors/corpus/index.ts",
+      "packages/editor-contracts/src/vectors/corpus/manifest.json",
+      "packages/editor-contracts/src/vectors/corpus/scenario-vectors.json",
+      "packages/editor-contracts/src/vectors/coverage.ts",
+      "packages/editor-contracts/src/vectors/drivers/durable.ts",
+      "packages/editor-contracts/src/vectors/drivers/in-memory.ts",
+      "packages/editor-contracts/src/vectors/index.ts",
+      "packages/editor-contracts/src/vectors/loader.ts",
+      "packages/editor-contracts/src/vectors/runner.ts",
+      "packages/editor-contracts/src/vectors/schema.ts",
+      "packages/editor-contracts/src/vectors/sha256.ts",
+      "packages/editor-contracts/surface.json",
+      "packages/editor-ports/LICENSE",
+      "packages/editor-ports/NOTICE",
+      "packages/editor-ports/README.md",
+      "packages/editor-ports/package.json",
+      "packages/editor-ports/src/DECISIONS.md",
+      "packages/editor-ports/src/__tests__/conformance.test.ts",
+      "packages/editor-ports/src/__tests__/port-roles.compile-guard.ts",
+      "packages/editor-ports/src/__tests__/runtime-graphics-query.compile-guard.ts",
+      "packages/editor-ports/src/assets.ts",
+      "packages/editor-ports/src/conformance/__tests__/requirements-index.test.ts",
+      "packages/editor-ports/src/conformance/index.ts",
+      "packages/editor-ports/src/conformance/requirements.ts",
+      "packages/editor-ports/src/diagnostics.ts",
+      "packages/editor-ports/src/environment.ts",
+      "packages/editor-ports/src/export-provider.ts",
+      "packages/editor-ports/src/gpu-resources.ts",
+      "packages/editor-ports/src/host/index.ts",
+      "packages/editor-ports/src/id-generator.ts",
+      "packages/editor-ports/src/identity.ts",
+      "packages/editor-ports/src/in-memory/host.ts",
+      "packages/editor-ports/src/in-memory/index.ts",
+      "packages/editor-ports/src/index.ts",
+      "packages/editor-ports/src/project-store.ts",
+      "packages/editor-ports/src/runtime-resources.ts",
+      "packages/editor-ports/surface.json",
       "rust/wasm/LICENSE",
-      "rust/wasm/src/runtime_state.rs"
+      "rust/wasm/src/runtime_state.rs",
+      "script/__tests__/c5-emitted-runtime-assets-red.test.mjs",
+      "script/__tests__/c5-runtime-asset-boundary-red.test.mjs",
+      "script/__tests__/c5-storage-boundary-red.test.mjs",
+      "script/__tests__/c6-session-resource-boundary.test.mjs",
+      "script/__tests__/c7-headless-graph.test.mjs",
+      "script/__tests__/c7-headless-semantic-result.test.mjs",
+      "script/build-wasm.mjs",
+      "script/check-agent-evidence.mjs",
+      "script/check-asset-manifest.mjs",
+      "script/check-distributable-boundary.mjs",
+      "script/check-editor-singleton.mjs",
+      "script/check-emitted-runtime-assets.mjs",
+      "script/check-headless-graph.mjs",
+      "script/check-headless-semantic-result.mjs",
+      "script/check-host-composition.mjs",
+      "script/check-next-imports.mjs",
+      "script/check-package-boundary.mjs",
+      "script/check-packed-manifest-closure.mjs",
+      "script/check-port-boundary.mjs",
+      "script/check-react-singleton.mjs",
+      "script/check-reference-boundary.mjs",
+      "script/check-resolution-equivalence.mjs",
+      "script/check-runtime-asset-boundary.mjs",
+      "script/check-sdk-consumer-view.mjs",
+      "script/check-sdk-surface-labels.mjs",
+      "script/check-session-resource-boundary.mjs",
+      "script/check-session-state-boundary.mjs",
+      "script/check-storage-boundary.mjs",
+      "script/check-surface-boundary.mjs",
+      "script/check-surface-css-boundary.mjs",
+      "script/check-surface-portal-boundary.mjs",
+      "script/check-surface-private-drag.mjs",
+      "script/check-transaction-boundary.mjs",
+      "script/check-type-baseline.mjs",
+      "script/check-wasm-api-surface.mjs",
+      "script/check-wasm-paths.mjs",
+      "script/check-wasm-source.mjs",
+      "script/collect-next-editor-module-ids.mjs",
+      "script/diff-parity-snapshots.mjs",
+      "script/fixtures/c5-browser-store-conformance/browser-store-conformance.ts",
+      "script/fixtures/c5-storage-boundary/direct-adapter/apps/web/src/core/consumer.ts",
+      "script/fixtures/c5-storage-boundary/direct-indexeddb/apps/web/src/core/consumer.ts",
+      "script/fixtures/c5-storage-boundary/direct-opfs/apps/web/src/core/consumer.ts",
+      "script/fixtures/c5-storage-boundary/direct-singleton/apps/web/src/core/consumer.ts",
+      "script/fixtures/c5-storage-boundary/hidden-host-storage/packages/editor-ports/src/index.ts",
+      "script/fixtures/c5-storage-boundary/in-memory-fallback/apps/vite-example/src/host/vite-host-config.ts",
+      "script/fixtures/c5-storage-boundary/localstorage-presets/apps/web/src/timeline/components/graph-editor/custom-presets-store.ts",
+      "script/fixtures/c5-storage-boundary/localstorage-sounds/apps/web/src/sounds/sounds-store.ts",
+      "script/fixtures/c5-storage-boundary/mechanism-type-leak/apps/web/src/editor/ports/project-store.ts",
+      "script/fixtures/c5-storage-boundary/physical-storage-path-leak/packages/editor-ports/src/project-store.ts",
+      "script/fixtures/c5-storage-boundary/private-storage-context/apps/web/src/editor/storage-context.tsx",
+      "script/fixtures/c5-storage-boundary/public-command-leak/packages/editor-ports/src/project-store.ts",
+      "script/fixtures/c5-storage-boundary/public-schema-leak/packages/editor-ports/src/project-store.ts",
+      "script/fixtures/c5-storage-boundary/public-state-store-leak/packages/editor-ports/src/project-store.ts",
+      "script/fixtures/c5-storage-boundary/public-storage-implementation-leak/packages/editor-ports/src/project-store.ts",
+      "script/fixtures/c5-storage-boundary/second-media-port/apps/web/src/editor/ports/index.ts",
+      "script/fixtures/c5-storage-boundary/second-storage-port/apps/web/src/editor/ports/index.ts",
+      "script/fixtures/c5-storage-boundary/unlisted-verification/apps/vite-example/tests/probe/unlisted.ts",
+      "script/fixtures/c6-session-resource-closure-anchor.json",
+      "script/fixtures/c6-session-resource-expected-closure.json",
+      "script/fixtures/c7-headless-runtime-sensitivity-control.ts",
+      "script/fixtures/editor-singleton-negative/current-session-route.ts.fixture",
+      "script/fixtures/editor-singleton-negative/empty-subscriber-facade.ts.fixture",
+      "script/fixtures/editor-singleton-negative/empty-subscriber.ts.fixture",
+      "script/fixtures/editor-singleton-negative/get-instance.ts.fixture",
+      "script/fixtures/editor-singleton-negative/module-scope-construction.ts.fixture",
+      "script/fixtures/editor-singleton-negative/outside-owner-construction.ts.fixture",
+      "script/fixtures/editor-singleton-negative/outside-owner-wrapper.ts.fixture",
+      "script/fixtures/editor-singleton-negative/reset.ts.fixture",
+      "script/fixtures/editor-singleton-negative/static-instance.ts.fixture",
+      "script/fixtures/editor-singleton-negative/use-editor-alias.ts.fixture",
+      "script/fixtures/editor-singleton-negative/use-editor-no-selector.ts.fixture",
+      "script/fixtures/editor-singleton-negative/use-editor-optional.ts.fixture",
+      "script/fixtures/session-state-ownership.json",
+      "script/fixtures/third-party-adapter-variant-nonconforming/README.md",
+      "script/fixtures/third-party-adapter-variant-nonconforming/__tests__/migration-walker.test.ts",
+      "script/fixtures/third-party-adapter-variant-nonconforming/package.json",
+      "script/fixtures/third-party-adapter-variant-nonconforming/run.ts",
+      "script/fixtures/third-party-adapter-variant-nonconforming/src/alien-codec.ts",
+      "script/fixtures/third-party-adapter-variant-nonconforming/src/alien-control.ts",
+      "script/fixtures/third-party-adapter-variant-nonconforming/src/alien-store.ts",
+      "script/fixtures/third-party-adapter-variant-nonconforming/src/factories.ts",
+      "script/fixtures/third-party-adapter-variant-nonconforming/src/migrate.ts",
+      "script/fixtures/third-party-adapter-variant-nonconforming/src/roles.ts",
+      "script/fixtures/third-party-adapter-variant-nonconforming/src/transaction.ts",
+      "script/fixtures/third-party-adapter/README.md",
+      "script/fixtures/third-party-adapter/__tests__/migration-walker.test.ts",
+      "script/fixtures/third-party-adapter/package.json",
+      "script/fixtures/third-party-adapter/run.ts",
+      "script/fixtures/third-party-adapter/src/alien-codec.ts",
+      "script/fixtures/third-party-adapter/src/alien-control.ts",
+      "script/fixtures/third-party-adapter/src/alien-store.ts",
+      "script/fixtures/third-party-adapter/src/factories.ts",
+      "script/fixtures/third-party-adapter/src/migrate.ts",
+      "script/fixtures/third-party-adapter/src/roles.ts",
+      "script/fixtures/third-party-adapter/src/transaction.ts",
+      "script/fixtures/type-baseline.json",
+      "script/fixtures/wasm-runtime-contract.ts",
+      "script/fixtures/wasm-runtime-failure-probe.html",
+      "script/fixtures/wasm-runtime-probe.html",
+      "script/generate-sbom.mjs",
+      "script/generate-session-resource-closure.mjs",
+      "script/generate-source-inventory.mjs",
+      "script/generate-vector-manifest.mjs",
+      "script/pack-sdk-tarballs.mjs",
+      "script/reconcile-provenance.mjs",
+      "script/run-c6-browser-oracle.mjs",
+      "script/run-c7-headless-host.mjs",
+      "script/run-published-examples.mjs",
+      "script/run-scratch-conformance.mjs",
+      "script/run-wasm-api-contract.mjs",
+      "script/scratch-install-harness.mjs",
+      "script/test-wasm-runtime-api.mjs",
+      "script/wasm-api-surface-contract.mjs"
     ],
-    "other": []
+    "deleted": [],
+    "copied": [],
+    "classification": "modified, movedModified and movedRewritten are drift (a moved file with changed bytes is drift, not an addition) and are expected to carry a PATCHES.md row keyed by the upstream path; movedUnmodified files are byte-identical to the pin (the P1 extraction restated them) and carry no row; added files are fork additions, never patches; deleted paths have no working-tree counterpart under the inventoried areas"
   },
   "files": [
     {
@@ -6882,6 +10053,18 @@
       "area": "rust",
       "sha256": "eaf25918aa252a3a13c600dc36ee33652932422f449fc7d0d1894534327f3634",
       "bytes": 481
+    },
+    {
+      "path": "script/setup-rust",
+      "area": "script",
+      "sha256": "507e2c9fdd79dbc949afce5256f5e1188251539395434675385efad3c82e6832",
+      "bytes": 501
+    },
+    {
+      "path": "script/setup-rust.ps1",
+      "area": "script",
+      "sha256": "559bec2ed636ef83678ba8adce14769d004669e8a6e6467dfe724806be1698a9",
+      "bytes": 819
     }
   ]
 }

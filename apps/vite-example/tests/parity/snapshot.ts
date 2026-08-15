@@ -1,14 +1,24 @@
 import type { Page } from "@playwright/test";
+import { HOST } from "./host-profile";
 
 /**
  * The canonical parity snapshot.
  *
- * It is read **out of IndexedDB, through the storage service's own database and
- * store names** — `video-editor-projects/projects` and
- * `video-editor-media-<projectId>/media-metadata` — not through a purpose-built
- * export path. An export path would be code written for the comparison, and
- * would prove that the export works rather than that the two hosts persist the
- * same project.
+ * It is read **out of the host's own persisted form, through the surface the
+ * store itself uses** — not through a purpose-built export path. An export path
+ * would be code written for the comparison, and would prove that the export
+ * works rather than that the hosts persist the same project. Concretely, per
+ * host (task 7.3 dispatches below):
+ *
+ * - **vite/next** — IndexedDB, through the storage service's own database and
+ *   store names: `video-editor-projects/projects` and
+ *   `video-editor-media-<projectId>/media-metadata`.
+ * - **electron** — the filesystem store's own records, read through the page's
+ *   own `opencutStore` bridge (the preload-exposed `ProjectStoreFiles`
+ *   surface the store itself moves every byte over). The record and attachment
+ *   payloads are projected to the same public-row shapes the browser store
+ *   publishes, so the diff compares like with like; the projection is the
+ *   comparison plumbing, the bytes come from the host's own persisted form.
  *
  * Normalization is deliberately narrow. Ids become ordinals by first appearance
  * and timestamps and data-URL payloads become placeholders, because those are
@@ -45,6 +55,123 @@ const MEDIA_DB_PREFIX = "video-editor-media-";
 const MEDIA_STORE = "media-metadata";
 
 export async function readPersisted(page: Page): Promise<RawSnapshot> {
+	if (HOST === "electron") return readPersistedOverBridge(page);
+	return readPersistedFromIndexedDB(page);
+}
+
+/**
+ * The desktop Host's persisted form: the filesystem store's own records
+ * through the page's own `opencutStore` bridge. No purpose-built export path
+ * exists — `listRecords`/`loadRecord`/`listAttachments` are the operations the
+ * store itself uses, exposed verbatim by the preload.
+ *
+ * The projections below mirror the public-row shapes the browser store
+ * publishes (`browser-project-store-records.ts`):
+ *
+ * - a project row is `{ ...record.data, id: record.id }`;
+ * - a media row is `{ id, name, type, size, lastModified, width, height,
+ *   duration, thumbnailUrl, ephemeral }` — `size` from the body's byte length,
+ *   `mimeType`/`fps`/`hasAudio` not published, `{ id }` alone when the
+ *   metadata does not match the row contract.
+ *
+ * Attachment bodies never leave the page: only the projected row crosses back
+ * (Playwright serializes the return value as JSON; an `ArrayBuffer` would not
+ * survive it, and the comparison needs only the metadata projection).
+ */
+async function readPersistedOverBridge(page: Page): Promise<RawSnapshot> {
+	return page.evaluate(async () => {
+		const store = (
+			window as unknown as {
+				opencutStore: {
+					listRecords(): Promise<
+						readonly { readonly id: string; readonly schemaVersion: number }[]
+					>;
+					loadRecord(id: string): Promise<{
+						readonly record: {
+							readonly id: string;
+							readonly schemaVersion: number;
+							readonly data: unknown;
+						};
+					} | null>;
+					listAttachments(projectId: string): Promise<
+						readonly {
+							readonly key: string;
+							readonly metadata: unknown;
+							readonly body: ArrayBuffer;
+						}[]
+					>;
+				};
+			}
+		).opencutStore;
+
+		const listings = await store.listRecords();
+		// Recorded, not compared: the fs store's own census of what the run
+		// persisted — the same role the IndexedDB database listing plays for
+		// the browser hosts.
+		const databases: {
+			name: string;
+			stores: { store: string; rows: number }[];
+		}[] = [
+			{ name: "fs:records", stores: [{ store: "records", rows: listings.length }] },
+		];
+
+		const first = listings[0] ?? null;
+		if (!first) return { project: null, media: [], databases };
+
+		const stored = await store.loadRecord(first.id);
+		const data = stored?.record.data;
+		const project =
+			data && typeof data === "object"
+				? { ...(data as Record<string, unknown>), id: stored!.record.id }
+				: null;
+
+		const attachments = await store.listAttachments(first.id);
+		databases.push({
+			name: `fs:attachments:${first.id}`,
+			stores: [{ store: "attachments", rows: attachments.length }],
+		});
+		const media = attachments.map((attachment) => {
+			const metadata = attachment.metadata;
+			const looksLikeMediaRow =
+				metadata !== null &&
+				typeof metadata === "object" &&
+				(metadata as { id?: unknown }).id === attachment.key &&
+				typeof (metadata as { name?: unknown }).name === "string" &&
+				["image", "video", "audio"].includes(
+					String((metadata as { type?: unknown }).type),
+				) &&
+				typeof (metadata as { lastModified?: unknown }).lastModified ===
+					"number";
+			if (!looksLikeMediaRow) return { id: attachment.key };
+			const row = metadata as {
+				name: string;
+				type: "image" | "video" | "audio";
+				lastModified: number;
+				width?: number;
+				height?: number;
+				duration?: number;
+				thumbnailUrl?: string;
+				ephemeral?: boolean;
+			};
+			return {
+				id: attachment.key,
+				name: row.name,
+				type: row.type,
+				size: attachment.body.byteLength,
+				lastModified: row.lastModified,
+				width: row.width,
+				height: row.height,
+				duration: row.duration,
+				thumbnailUrl: row.thumbnailUrl,
+				ephemeral: row.ephemeral,
+			};
+		});
+
+		return { project, media, databases };
+	});
+}
+
+async function readPersistedFromIndexedDB(page: Page): Promise<RawSnapshot> {
 	return page.evaluate(
 		async ({ projectsDb, projectsStore, mediaPrefix, mediaStore }) => {
 			const open = (name: string): Promise<IDBDatabase> =>

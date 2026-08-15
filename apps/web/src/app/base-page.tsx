@@ -1,6 +1,6 @@
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { cn } from "@/utils/ui";
+import { cn } from "@opencut/editor-classic";
 
 interface BasePageProps {
 	children: React.ReactNode;

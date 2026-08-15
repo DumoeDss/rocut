@@ -21,7 +21,7 @@ const REVIEWER_EXECUTABLE_NEGATIVES = [
 	{
 		label: "timer identifier alias",
 		rule: "no-direct-timer",
-		path: "apps/web/src/editor/fixture/reviewer-timer-alias.ts",
+		path: "packages/editor-classic/src/editor/fixture/reviewer-timer-alias.ts",
 		text: `export function scheduleNow() {
 			{
 				const schedule = globalThis.setTimeout;
@@ -32,31 +32,31 @@ const REVIEWER_EXECUTABLE_NEGATIVES = [
 	{
 		label: "timer computed property",
 		rule: "no-direct-timer",
-		path: "apps/web/src/editor/fixture/reviewer-timer-computed.ts",
+		path: "packages/editor-classic/src/editor/fixture/reviewer-timer-computed.ts",
 		text: 'globalThis["setTimeout"](() => {}, 1);',
 	},
 	{
 		label: "Worker constructor alias",
 		rule: "no-direct-worker",
-		path: "apps/web/src/editor/fixture/reviewer-worker-alias.ts",
+		path: "packages/editor-classic/src/editor/fixture/reviewer-worker-alias.ts",
 		text: "const WorkerCtor = Worker; new WorkerCtor(url);",
 	},
 	{
 		label: "AudioContext constructor alias",
 		rule: "no-direct-audio",
-		path: "apps/web/src/editor/fixture/reviewer-audio-alias.ts",
+		path: "packages/editor-classic/src/editor/fixture/reviewer-audio-alias.ts",
 		text: "const AudioCtor = AudioContext; new AudioCtor();",
 	},
 	{
 		label: "URL.createObjectURL destructure",
 		rule: "no-direct-object-url",
-		path: "apps/web/src/editor/fixture/reviewer-url-destructure.ts",
+		path: "packages/editor-classic/src/editor/fixture/reviewer-url-destructure.ts",
 		text: "const { createObjectURL } = URL; createObjectURL(blob);",
 	},
 	{
 		label: "OfflineAudioContext destructured alias",
 		rule: "no-offline-escape",
-		path: "apps/web/src/media/fixture/reviewer-offline-destructure.ts",
+		path: "packages/editor-classic/src/media/fixture/reviewer-offline-destructure.ts",
 		text: `export async function render() {
 			const { OfflineAudioContext: OfflineCtor } = globalThis;
 			const context = new OfflineCtor(1, 1, 44100);
@@ -66,7 +66,7 @@ const REVIEWER_EXECUTABLE_NEGATIVES = [
 	{
 		label: "arbitrary single-resource wrapper",
 		rule: "no-second-acquisition-mediator",
-		path: "apps/web/src/editor/fixture/reviewer-single-wrapper.ts",
+		path: "packages/editor-classic/src/editor/fixture/reviewer-single-wrapper.ts",
 		text: `function arbitrary(resources) {
 			return resources.setTimeout({ handler: () => {}, ms: 1 });
 		}
@@ -77,7 +77,7 @@ const REVIEWER_EXECUTABLE_NEGATIVES = [
 	{
 		label: "destructured multi-resource wrapper",
 		rule: "no-second-acquisition-mediator",
-		path: "apps/web/src/editor/fixture/reviewer-destructured-wrapper.ts",
+		path: "packages/editor-classic/src/editor/fixture/reviewer-destructured-wrapper.ts",
 		text: `export function broker(resources) {
 			const { createWorker: spawn, createAudioContext: open } = resources;
 			return { worker: spawn({ request }), audio: open({}) };
@@ -137,13 +137,13 @@ test("C6 resource boundary negative controls prove every rule can fail", () => {
 		"C6 session-resource boundary negative controls clean",
 	);
 	for (const expected of [
-		"no-direct-timer @ apps/web/src/editor/fixture/direct-timer.ts",
-		"no-direct-worker @ apps/web/src/editor/fixture/direct-worker.ts",
-		"no-direct-audio @ apps/web/src/editor/fixture/direct-audio.ts",
-		"no-direct-object-url @ apps/web/src/editor/fixture/direct-object-url.ts",
-		"no-offline-escape @ apps/web/src/editor/fixture/offline-escape.ts",
-		"no-unkeyed-compositor @ apps/web/src/services/renderer/fixture/default-compositor.ts",
-		"no-second-acquisition-mediator @ apps/web/src/editor/session/fixture/second-resource-mediator.ts",
+		"no-direct-timer @ packages/editor-classic/src/editor/fixture/direct-timer.ts",
+		"no-direct-worker @ packages/editor-classic/src/editor/fixture/direct-worker.ts",
+		"no-direct-audio @ packages/editor-classic/src/editor/fixture/direct-audio.ts",
+		"no-direct-object-url @ packages/editor-classic/src/editor/fixture/direct-object-url.ts",
+		"no-offline-escape @ packages/editor-classic/src/editor/fixture/offline-escape.ts",
+		"no-unkeyed-compositor @ packages/editor-classic/src/services/renderer/fixture/default-compositor.ts",
+		"no-second-acquisition-mediator @ packages/editor-classic/src/editor/session/fixture/second-resource-mediator.ts",
 		"truncated-but-nonempty emitted graph control",
 		"missing-root emitted graph control",
 		"truncated source inventory control",
@@ -180,7 +180,7 @@ test("C6 Next inventory follows the editor route manifest/NFT and source maps", 
 		"apps/web/src/editor/host/next-editor-host.ts",
 	);
 	expect(inventory.sourceModuleIds).toContain(
-		"apps/web/src/editor/session/create-session.ts",
+		"packages/editor-classic/src/editor/session/create-session.ts",
 	);
 	for (const requiredRoot of [
 		"components/editor",
@@ -201,7 +201,7 @@ test("C6 Next inventory follows the editor route manifest/NFT and source maps", 
 	]) {
 		expect(
 			inventory.sourceModuleIds.some((moduleId) =>
-				moduleId.startsWith(`apps/web/src/${requiredRoot}/`),
+				moduleId.startsWith(`packages/editor-classic/src/${requiredRoot}/`),
 			),
 		).toBe(true);
 	}
@@ -261,10 +261,10 @@ test("C6 independent anchor verifies fresh Vite and Next artifact digests", () =
 		},
 	);
 	expect(output).toContain(
-		"PASS anchored closure provenance: Vite 2892 modules/593 web source IDs",
+		"PASS anchored closure provenance: Vite 3842 modules/658 web source IDs",
 	);
 	expect(output).toContain(
-		"Next 82 route files/78 maps/2557 module IDs/596 source IDs",
+		"Next 86 route files/82 maps/3120 module IDs/659 source IDs",
 	);
 	expect(output).toContain(
 		"BUILD_ID is verified provenance metadata and is excluded from the closure payload",
@@ -342,10 +342,11 @@ test("C6 emitted boundary rejects a non-empty truncated Vite graph", () => {
 		];
 		const modules = [
 			...roots.map(
-				(requiredRoot) => `apps/web/src/${requiredRoot}/truncated.ts`,
+				(requiredRoot) =>
+					`packages/editor-classic/src/${requiredRoot}/truncated.ts`,
 			),
 			"apps/vite-example/src/host/vite-host-config.ts",
-			"apps/web/src/editor/session/create-session.ts",
+			"packages/editor-classic/src/editor/session/create-session.ts",
 		];
 		writeFileSync(
 			join(fixtureDir, "module-graph.json"),
@@ -392,18 +393,19 @@ test("C6 emitted boundary rejects a padded graph that truncates each attributabl
 		];
 		const modules = [
 			...roots.flatMap((requiredRoot, rootIndex) => [
-				`apps/web/src/${requiredRoot}/only-${rootIndex}.ts`,
+				`packages/editor-classic/src/${requiredRoot}/only-${rootIndex}.ts`,
 				...Array.from(
 					{ length: 5 },
 					(_, index) =>
-						`apps/web/src/${requiredRoot}/padding-${rootIndex}-${index}.ts`,
+						`packages/editor-classic/src/${requiredRoot}/padding-${rootIndex}-${index}.ts`,
 				),
 			]),
 			"apps/vite-example/src/host/vite-host-config.ts",
-			"apps/web/src/editor/session/create-session.ts",
+			"packages/editor-classic/src/editor/session/create-session.ts",
 			...Array.from(
 				{ length: 80 },
-				(_, index) => `apps/web/src/unmandated/padding-${index}.ts`,
+				(_, index) =>
+					`packages/editor-classic/src/unmandated/padding-${index}.ts`,
 			),
 		];
 		writeFileSync(
@@ -446,7 +448,7 @@ test("C6 closure minimum is anchored independently from a downgraded fixture", (
 		const downgraded = JSON.parse(readFileSync(fixturePath, "utf8"));
 		downgraded.common = downgraded.requiredRoots.map((requiredRoot) => {
 			const source = downgraded.common.find((moduleId) =>
-				moduleId.startsWith(`apps/web/src/${requiredRoot}/`),
+				moduleId.startsWith(`packages/editor-classic/src/${requiredRoot}/`),
 			);
 			if (!source) throw new Error(`Missing fixture root ${requiredRoot}`);
 			return source;
@@ -497,7 +499,7 @@ test("C6 checker and closure fixture cannot self-approve a coordinated downgrade
 		const downgraded = JSON.parse(readFileSync(fixturePath, "utf8"));
 		downgraded.common = downgraded.requiredRoots.map((requiredRoot) => {
 			const source = downgraded.common.find((moduleId) =>
-				moduleId.startsWith(`apps/web/src/${requiredRoot}/`),
+				moduleId.startsWith(`packages/editor-classic/src/${requiredRoot}/`),
 			);
 			if (!source) throw new Error(`Missing fixture root ${requiredRoot}`);
 			return source;
@@ -529,11 +531,11 @@ test("C6 checker and closure fixture cannot self-approve a coordinated downgrade
 				JSON.stringify(collectorUrl),
 			)
 			.replace(
-				"433314cfb301b3b30781151255d36a4d6a7893032b6d7cbf7a7280a34665dd99",
+				"703efb9c37906b108ff91a8702606ec6a214a4c793476378fd043a94dff20cea",
 				downgradedDigest,
 			)
 			.replace(
-				"const EXPECTED_COMMON_SOURCE_COUNT = 257;",
+				"const EXPECTED_COMMON_SOURCE_COUNT = 272;",
 				`const EXPECTED_COMMON_SOURCE_COUNT = ${downgraded.common.length};`,
 			);
 		const coordinatedCheckerPath = join(fixtureDir, "coordinated-checker.mjs");

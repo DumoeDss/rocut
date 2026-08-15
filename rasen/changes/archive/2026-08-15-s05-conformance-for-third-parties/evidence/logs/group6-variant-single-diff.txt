@@ -1,0 +1,26 @@
+# The variant differs from the base adapter in exactly one file, one hunk:
+# (task 6.1 — diff -r third-party-adapter third-party-adapter-variant-nonconforming)
+
+diff -r third-party-adapter/src/alien-store.ts third-party-adapter-variant-nonconforming/src/alien-store.ts
+290c290,308
+< 		const recordText = this.encode("save-project", record);
+---
+> 		// THE VARIANT'S ONLY DIFFERENCE FROM THE BASE ADAPTER: this store
+> 		// "knows" primitive payload fields and the vendor engine's document
+> 		// key; every field it does not know is dropped on save.
+> 		const recordText = this.encode("save-project", {
+> 			...record,
+> 			data:
+> 				record.data !== null &&
+> 				typeof record.data === "object" &&
+> 				!Array.isArray(record.data)
+> 					? Object.fromEntries(
+> 							Object.entries(record.data).filter(
+> 								([key, value]) =>
+> 									key === "transactionEngine" ||
+> 									value === null ||
+> 									typeof value !== "object",
+> 							),
+> 						)
+> 					: record.data,
+> 		});

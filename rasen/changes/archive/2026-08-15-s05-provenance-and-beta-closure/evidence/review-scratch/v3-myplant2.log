@@ -1,0 +1,24 @@
+[plant] doctored src/index.ts: + "zustand/middleware/immer" (immer register row)
+[plant] repacked: opencut-editor-classic-0.2.0.tgz
+
+=== @opencut/editor-classic@0.2.0 (opencut-editor-classic-0.2.0.tgz) ===
+  census  @opencut/editor-classic: files-scanned 796, import-occurrences 3503, unique-bare 50, declared 32, entry-roots 18, reachable 683, level2-subjects 2, latent 1, activated 1
+  census  dispositions honoured: bun:test×88, @napi-rs/canvas×3 (register: 2 row(s))
+
+=== @opencut/editor-contracts@0.2.0 (opencut-editor-contracts-0.2.0.tgz) ===
+  census  @opencut/editor-contracts: files-scanned 55, import-occurrences 240, unique-bare 8, declared 1, entry-roots 10, reachable 37, level2-subjects 0, latent 0, activated 0
+  census  dispositions honoured: bun:test×13 (register: 2 row(s))
+
+=== @opencut/editor-ports@0.2.0 (opencut-editor-ports-0.2.0.tgz) ===
+  census  @opencut/editor-ports: files-scanned 19, import-occurrences 46, unique-bare 1, declared 0, entry-roots 6, reachable 15, level2-subjects 0, latent 0, activated 0
+  census  dispositions honoured: bun:test×2 (register: 2 row(s))
+
+=== opencut-wasm@0.2.10 (opencut-wasm-0.2.10.tgz) ===
+  census  opencut-wasm: files-scanned 3, import-occurrences 2, unique-bare 0, declared 0, entry-roots 1, reachable 2, level2-subjects 0, latent 0, activated 0
+  census  dispositions honoured: none (register: 2 row(s))
+  note    no dispositioned specifier occurred in this package's shipped source
+  FAIL REGISTER ACTIVATION: row zustand|immer — the registered latent peer is now reachable from the shipped entries of @opencut/editor-classic; declare it in that packed manifest (F-P6-7) and prune the row. Registered reason: Imported at runtime only by zustand's immer middleware subpath (middleware/immer.js / esm/middleware/immer.mjs). classic imports zustand/middleware — the barrel, never the immer subpath (P6 round-1 probe, seeded verbatim).
+
+[plant] failures=1 refusals=0
+REAL_EXIT_CODE:1
+REAL_EXIT_CODE:1

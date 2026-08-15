@@ -1,0 +1,16 @@
+pack-sdk-tarballs: packing the SDK packages (design E1)
+packed packages/editor-ports -> opencut-editor-ports-0.2.0.tgz
+inventory: opencut-editor-ports-0.2.0.tgz — 25 file(s) hashed
+packed packages/editor-contracts -> opencut-editor-contracts-0.2.0.tgz
+inventory: opencut-editor-contracts-0.2.0.tgz — 63 file(s) hashed
+packed packages/editor-classic -> opencut-editor-classic-0.2.0.tgz
+inventory: opencut-editor-classic-0.2.0.tgz — 807 file(s) hashed
+packed rust/wasm/pkg -> opencut-wasm-0.2.10.tgz
+inventory: opencut-wasm-0.2.10.tgz — 7 file(s) hashed
+manifest written: E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\rasen\changes\s05-provenance-and-beta-closure\evidence\logs\group2-pack-notices-manifest.json
+  @opencut/editor-ports@0.2.0 — 25 file(s), shasum c68cb5d8dce943867f1d2a56b0081fc2e7a81ff2
+  @opencut/editor-contracts@0.2.0 — 63 file(s), shasum 68e4afbc78fbe9cea515acb78b57b7bdabf26e38
+  @opencut/editor-classic@0.2.0 — 807 file(s), shasum 0a7512b7f85546b7ee9ffd83aedcd9802e2b4698
+  opencut-wasm@0.2.10 — 7 file(s), shasum a59e1ee336811c2a9becf8fbeb0a60dbc6726a90
+REAL_EXIT_CODE[pack]:0
+REAL_EXIT_CODE[pack]:0

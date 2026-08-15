@@ -39,7 +39,7 @@ const PKG_DIR = join(REPO_ROOT, "rust", "wasm", "pkg");
 const REBUILD = "bun run build:wasm   (node script/build-wasm.mjs), then bun install";
 
 /** Hosts that resolve `opencut-wasm` independently. */
-const HOSTS = ["", "apps/web", "apps/vite-example"];
+const HOSTS = ["", "apps/web", "apps/vite-example", "apps/electron-host"];
 
 /** wasm-pack writes a `.gitignore` containing `*` into its out-dir; it is not part of the package. */
 const IGNORED_IN_PKG = new Set([".gitignore"]);

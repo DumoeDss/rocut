@@ -3,15 +3,22 @@ import type { Page } from "@playwright/test";
 /**
  * The only host-specific part of the parity scenario.
  *
- * Everything after "the editor is on screen" is identical for both hosts,
+ * Everything after "the editor is on screen" is identical for every host,
  * because it is the same editor source. Reaching that point is not: the Vite
  * example keeps the open project in `?project=<id>` and renders its own picker,
- * while `apps/web` routes to `/editor/<id>` from `/projects`.
+ * while `apps/web` routes to `/editor/<id>` from `/projects`. The desktop Host
+ * (task 7.1) mirrors the Vite example's own picker and `?project=` seam, but
+ * its entry is a full URL on the app's own `opencut://` scheme — there is no
+ * `baseURL` to resolve a path against.
  */
-export type HostName = "vite" | "next";
+export type HostName = "vite" | "next" | "electron";
 
 export const HOST: HostName =
-	process.env.PARITY_HOST === "next" ? "next" : "vite";
+	process.env.PARITY_HOST === "next"
+		? "next"
+		: process.env.PARITY_HOST === "electron"
+			? "electron"
+			: "vite";
 
 export interface HostProfile {
 	name: HostName;
@@ -94,4 +101,29 @@ const NEXT: HostProfile = {
 	},
 };
 
-export const HOST_PROFILE: HostProfile = HOST === "next" ? NEXT : VITE;
+const ELECTRON: HostProfile = {
+	name: "electron",
+	// A full URL, not a path: the desktop Host has no `baseURL`; the scheme
+	// handler serves the built entry at this URL and the acquired window page
+	// is already on it at boot (task 7.2's seam).
+	entryPath: "opencut://app/index.html",
+	newProjectName: "Untitled Project",
+	createProject: async (page) => {
+		// The desktop picker mirrors the Vite example's own (host code, not
+		// editor code): the same "New project" button, the same `?project=<id>`
+		// record of the open project. The seam's fresh store root makes the
+		// list empty, so the only match is the create button.
+		await clickUntil(
+			page,
+			() =>
+				page
+					.locator("button", { hasText: /^New project$/ })
+					.first()
+					.click(),
+			async () => page.url().includes("project="),
+		);
+	},
+};
+
+export const HOST_PROFILE: HostProfile =
+	HOST === "next" ? NEXT : HOST === "electron" ? ELECTRON : VITE;

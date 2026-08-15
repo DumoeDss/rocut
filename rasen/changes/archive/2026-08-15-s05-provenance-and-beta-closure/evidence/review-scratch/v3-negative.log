@@ -1,0 +1,36 @@
+negative control at c4334827: plant an undeclared runtime import AND a register activation; both must FIRE
+CONTROL-1a/1b/1c scratch root: E:\rocut-p7-review-scratch\v3-closure-scratch (outside repo, outside Temp, ancestors node_modules-free)
+packed packages/editor-ports -> opencut-editor-ports-0.2.0.tgz
+inventory: opencut-editor-ports-0.2.0.tgz — 25 file(s) hashed
+packed packages/editor-contracts -> opencut-editor-contracts-0.2.0.tgz
+inventory: opencut-editor-contracts-0.2.0.tgz — 63 file(s) hashed
+packed packages/editor-classic -> opencut-editor-classic-0.2.0.tgz
+inventory: opencut-editor-classic-0.2.0.tgz — 807 file(s) hashed
+packed rust/wasm/pkg -> opencut-wasm-0.2.10.tgz
+inventory: opencut-wasm-0.2.10.tgz — 7 file(s) hashed
+doctored src/index.ts: + "@synthetic/undeclared-closure-probe" (undeclared) + "zustand/traditional" (register activation)
+control world (negative): doctored classic repacked as opencut-editor-classic-0.2.0.tgz; 3 untouched tarball(s) staged beside it
+closure: verifying pre-packed tarballs from E:\rocut-p7-review-scratch\v3-closure-scratch\negative-prepacked (4 file(s))
+
+=== @opencut/editor-classic@0.2.0 (opencut-editor-classic-0.2.0.tgz) ===
+  FAIL level-1: src/index.ts imports undeclared bare specifier @synthetic/undeclared-closure-probe (packed manifest declares 32 runtime names)
+  census  @opencut/editor-classic: files-scanned 796, import-occurrences 3504, unique-bare 51, declared 32, entry-roots 18, reachable 683, level2-subjects 2, latent 1, activated 1
+  census  dispositions honoured: bun:test×88, @napi-rs/canvas×3 (register: 2 row(s))
+
+=== @opencut/editor-contracts@0.2.0 (opencut-editor-contracts-0.2.0.tgz) ===
+  census  @opencut/editor-contracts: files-scanned 55, import-occurrences 240, unique-bare 8, declared 1, entry-roots 10, reachable 37, level2-subjects 0, latent 0, activated 0
+  census  dispositions honoured: bun:test×13 (register: 2 row(s))
+
+=== @opencut/editor-ports@0.2.0 (opencut-editor-ports-0.2.0.tgz) ===
+  census  @opencut/editor-ports: files-scanned 19, import-occurrences 46, unique-bare 1, declared 0, entry-roots 6, reachable 15, level2-subjects 0, latent 0, activated 0
+  census  dispositions honoured: bun:test×2 (register: 2 row(s))
+
+=== opencut-wasm@0.2.10 (opencut-wasm-0.2.10.tgz) ===
+  census  opencut-wasm: files-scanned 3, import-occurrences 2, unique-bare 0, declared 0, entry-roots 1, reachable 2, level2-subjects 0, latent 0, activated 0
+  census  dispositions honoured: none (register: 2 row(s))
+  note    no dispositioned specifier occurred in this package's shipped source
+  FAIL REGISTER ACTIVATION: row zustand|use-sync-external-store — the registered latent peer is now reachable from the shipped entries of @opencut/editor-classic; declare it in that packed manifest (F-P6-7) and prune the row. Registered reason: Imported at runtime only by zustand's traditional subpath (traditional.js / esm/traditional.mjs). classic's reachable graph imports zustand, zustand/vanilla and zustand/middleware only; the middleware barrel is a self-contained bundle (P6 round-1 probe, seeded verbatim).
+repo-untouched proof: git status --porcelain -> "?? .rasen/\n?? rasen/changes/s05-community-beta-second-host/\n?? rasen/changes/s05-provenance-and-beta-closure/.openspec.yaml\n?? rasen/changes/s05-provenance-and-beta-closure/design.md\n?? rasen/changes/s05-provenance-and-beta-closure/proposal.md\n?? rasen/changes/s05-provenance-and-beta-closure/specs/"
+negative control: planted violations FIRED (2 failure line(s), activated peers 1) — the FAIL half is this log
+REAL_EXIT_CODE[closure-negative]:1
+REAL_EXIT_CODE:1

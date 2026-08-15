@@ -5,8 +5,8 @@ import {
 	AccordionContent,
 	AccordionItem,
 	AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Separator } from "@/components/ui/separator";
+} from "@opencut/editor-classic/ui";
+import { Separator } from "@opencut/editor-classic/ui";
 import { SOCIAL_LINKS } from "@/site/social";
 
 export const metadata: Metadata = {

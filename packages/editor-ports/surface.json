@@ -1,0 +1,30 @@
+{
+	"package": "@opencut/editor-ports",
+	"note": "The surface-class manifest (S05 P5, design E2). Classifies every exports-map entry except the mechanical ./package.json. Ships in the tarball beside README.md; enforced by script/check-sdk-surface-labels.mjs. frozen entries carry no in-source marker by design: their classification lives here alone so the frozen sources stay untouched.",
+	"entries": {
+		".": {
+			"class": "frozen",
+			"reason": "The S02 Host port contract barrel — every port role reachable from one entry; check-port-boundary.mjs pins its signature directly."
+		},
+		"./host": {
+			"class": "frozen",
+			"reason": "NavigationHost and the Host-facing port surface (editor-host.ts travels with ports — P0's load-bearing ownership finding); S02 contract."
+		},
+		"./in-memory": {
+			"class": "frozen",
+			"reason": "The in-memory reference implementation of the frozen port contract (S02); its signatures are the contract's."
+		},
+		"./in-memory/host": {
+			"class": "frozen",
+			"reason": "Reference host wiring over the in-memory ports — part of the S02 reference surface."
+		},
+		"./conformance": {
+			"class": "frozen",
+			"reason": "The port conformance suite — the executable form of the S02 contract; its cases are contract truth, so additive-only."
+		},
+		"./conformance/requirements": {
+			"class": "experimental",
+			"reason": "P3's requirement-index legibility layer over the frozen suite — test infrastructure that may be reorganized as suites evolve, without touching the contract it indexes."
+		}
+	}
+}

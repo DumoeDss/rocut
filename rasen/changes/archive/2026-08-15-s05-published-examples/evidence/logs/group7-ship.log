@@ -1,0 +1,21 @@
+Ship controls at 6de3c756 (Group 7; base 4f0b9c69)
+
+== one commit per group ==
+6de3c756 feat(s05-examples): BOUNDARIES section 15, F2 delivery audit, close-out controls
+2a72333e feat(s05-examples): CI leg (sdk-examples), CONTROL-1c, date-fns manifest completion
+4d4a13da feat(s05-examples): Group 4 — examples declared as boundary consumer, census reconciled
+3f913b7a feat(s05-examples): Group 3 — four published-SDK examples green through the runner
+6c7f545a feat(s05-examples): Group 2 — harness extraction, consumer-view tooling, examples runner
+ac961390 feat(s05-examples): Group 1 baseline — census 1110/989/362/361, family 22/6 known set, frozen 4/4 identical, P3 runner reference
+
+== committed-content CR sweep (every file changed since base, read from HEAD blobs) ==
+files-checked:77 cr-containing:0
+
+== .rasen staging guard (each commit used explicit pathspecs; guard re-run now) ==
+rasen-dir staged: 0
+
+== signals state (7.3) ==
+no signals/ directory exists for s05-published-examples (only archived changes carry historical ones); no parked workers to stand down; signals state is empty by absence - nothing blocks archive planning.
+
+REAL_EXIT_CODE:0
+SHIP_DONE:0

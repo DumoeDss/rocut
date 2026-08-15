@@ -44,9 +44,13 @@ import {
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = resolve(HERE, "../probe-artifacts", HOST);
+// The migrations module moved under the package extraction (Stage C) from
+// this repo's "apps/web/src/services/storage/migrations/index.ts" to
+// "packages/editor-classic/src/services/storage/migrations/index.ts" — the
+// old path no longer exists on disk.
 const MIGRATIONS_INDEX = resolve(
 	HERE,
-	"../../../web/src/services/storage/migrations/index.ts",
+	"../../../../packages/editor-classic/src/services/storage/migrations/index.ts",
 );
 
 /**

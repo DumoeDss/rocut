@@ -1,0 +1,22 @@
+pack-sdk-tarballs: packing the SDK packages (design E1)
+packed packages/editor-ports -> opencut-editor-ports-0.1.0.tgz
+inventory: opencut-editor-ports-0.1.0.tgz — 21 file(s) hashed
+packed packages/editor-contracts -> opencut-editor-contracts-0.1.0.tgz
+inventory: opencut-editor-contracts-0.1.0.tgz — 59 file(s) hashed
+packed packages/editor-classic -> opencut-editor-classic-0.1.0.tgz
+inventory: opencut-editor-classic-0.1.0.tgz — 802 file(s) hashed
+packed packages/editor-ports -> opencut-editor-ports-0.1.0.tgz
+determinism: opencut-editor-ports-0.1.0.tgz reproduced (f06692f2fa06…)
+packed packages/editor-contracts -> opencut-editor-contracts-0.1.0.tgz
+determinism: opencut-editor-contracts-0.1.0.tgz reproduced (9d483cbb7806…)
+packed packages/editor-classic -> opencut-editor-classic-0.1.0.tgz
+determinism: opencut-editor-classic-0.1.0.tgz reproduced (56c1d8c6679d…)
+manifest written: E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\rasen\changes\s05-conformance-for-third-parties\evidence\tarball-manifest.json
+  @opencut/editor-ports@0.1.0 — 21 file(s), shasum 07ddd5e33e39cce61b6903e11a20c2aa20f6e962
+  @opencut/editor-contracts@0.1.0 — 59 file(s), shasum 436aa45d4463eddd04fd7975779fecec3222545e
+  @opencut/editor-classic@0.1.0 — 802 file(s), shasum a17ac13825825062792734f518e84083de75fd48
+determinism control: reproduced (3 tarball(s) packed twice)
+REAL_EXIT_CODE[pack]:0
+(node:21508) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+REAL_EXIT_CODE:0

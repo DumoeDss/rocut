@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { useEditorInstance } from "@/editor/use-editor";
-import type { TProjectMetadata } from "@/project/types";
+import { useEditorInstance } from "@opencut/editor-classic/session";
+import type { TProjectMetadata } from "@opencut/editor-classic/project";
 
 /**
  * A deliberately plain project list / create / open surface.

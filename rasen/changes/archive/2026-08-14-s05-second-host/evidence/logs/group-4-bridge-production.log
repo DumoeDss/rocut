@@ -1,0 +1,197 @@
+=== s05-second-host Group 4 task 4.6 — production store-bridge proof ===
+Date: 2026-08-14T18:58:48Z
+
+--- seam bundle build (bun build → dist-main/main-store-ipc.cjs) ---
+
+  main-store-ipc.cjs  14.02 KB
+
+[53ms] bundle 3 modules
+BUILD_EXIT:0
+
+--- structural surface test (bun test store-bridge-surface) ---
+bun test v1.2.2 (c1708ea6)
+
+src\store\__tests__\store-bridge-surface.test.ts:
+(pass) the preload's operation list equals STORE_IPC_OPERATIONS exactly
+(pass) the preload exposes exactly one global and touches no node module
+(pass) no bridge-facing module crosses a filesystem path
+(pass) main.cjs resolves the design-E4 root and requires the compiled seam
+
+ 4 pass
+ 0 fail
+ 16 expect() calls
+Ran 4 tests across 1 files. [76.00ms]
+SURFACE_EXIT:0
+
+--- production proof over OPENCUT_STORE_ROOT (node scripts/store-bridge-proof.mjs) ---
+{
+  "pageResult": {
+    "steps": [
+      {
+        "name": "listRecords-empty",
+        "ok": true,
+        "detail": "count=0"
+      }
+    ],
+    "fatal": "Error: Error invoking remote method 'opencut-store:saveRecord': TypeError: Cannot read properties of undefined (reading 'id')"
+  },
+  "layout": {
+    "storeJson": true,
+    "record": false,
+    "libraryRecord": false,
+    "attachmentRemoved": true
+  },
+  "storeIdentity": "opencut-fs-production",
+  "clearResult": {
+    "remaining": 0
+  },
+  "afterClearProjectsExist": false,
+  "consoleErrors": []
+}
+STORE BRIDGE PROOF FAILED: in-page bridge failure: Error: Error invoking remote method 'opencut-store:saveRecord': TypeError: Cannot read properties of undefined (reading 'id')
+console errors: []
+REAL_EXIT_CODE:1
+
+--- rerun after IPC event-arg fix: build + surface + production proof ---
+
+  main-store-ipc.cjs  14.11 KB
+
+[30ms] bundle 3 modules
+BUILD_EXIT:0
+ 0 fail
+ 16 expect() calls
+Ran 4 tests across 1 files. [88.00ms]
+SURFACE_EXIT:0
+{
+  "pageResult": {
+    "steps": [
+      {
+        "name": "listRecords-empty",
+        "ok": true,
+        "detail": "count=0"
+      },
+      {
+        "name": "record-roundtrip",
+        "ok": true,
+        "detail": "schemaVersion=1"
+      },
+      {
+        "name": "opaque-date-survives",
+        "ok": true,
+        "detail": "when=Sat Aug 15 2026 08:00:00 GMT+0800 (中国标准时间)"
+      },
+      {
+        "name": "library-roundtrip",
+        "ok": true,
+        "detail": "key=proof-key"
+      },
+      {
+        "name": "attachment-roundtrip",
+        "ok": true,
+        "detail": "bytes=9,8,7,6"
+      },
+      {
+        "name": "listAttachments",
+        "ok": true,
+        "detail": "count=1"
+      },
+      {
+        "name": "listRecords-one",
+        "ok": true,
+        "detail": "count=1"
+      },
+      {
+        "name": "inspectFiles",
+        "ok": true,
+        "detail": "usedBytes=681"
+      },
+      {
+        "name": "removeAttachment",
+        "ok": true,
+        "detail": "count=0"
+      }
+    ]
+  },
+  "layout": {
+    "storeJson": true,
+    "record": true,
+    "libraryRecord": true,
+    "attachmentRemoved": false
+  },
+  "storeIdentity": "opencut-fs-production",
+  "clearResult": {
+    "remaining": 0
+  },
+  "afterClearProjectsExist": false,
+  "consoleErrors": []
+}
+STORE BRIDGE PROOF FAILED: attachment files survived removeAttachment
+console errors: []
+REAL_EXIT_CODE:1
+
+--- rerun after proof-script fix (attachment dir may legitimately remain empty) ---
+{
+  "pageResult": {
+    "steps": [
+      {
+        "name": "listRecords-empty",
+        "ok": true,
+        "detail": "count=0"
+      },
+      {
+        "name": "record-roundtrip",
+        "ok": true,
+        "detail": "schemaVersion=1"
+      },
+      {
+        "name": "opaque-date-survives",
+        "ok": true,
+        "detail": "when=Sat Aug 15 2026 08:00:00 GMT+0800 (中国标准时间)"
+      },
+      {
+        "name": "library-roundtrip",
+        "ok": true,
+        "detail": "key=proof-key"
+      },
+      {
+        "name": "attachment-roundtrip",
+        "ok": true,
+        "detail": "bytes=9,8,7,6"
+      },
+      {
+        "name": "listAttachments",
+        "ok": true,
+        "detail": "count=1"
+      },
+      {
+        "name": "listRecords-one",
+        "ok": true,
+        "detail": "count=1"
+      },
+      {
+        "name": "inspectFiles",
+        "ok": true,
+        "detail": "usedBytes=681"
+      },
+      {
+        "name": "removeAttachment",
+        "ok": true,
+        "detail": "count=0"
+      }
+    ]
+  },
+  "layout": {
+    "storeJson": true,
+    "record": true,
+    "libraryRecord": true,
+    "attachmentRemoved": true
+  },
+  "storeIdentity": "opencut-fs-production",
+  "clearResult": {
+    "remaining": 0
+  },
+  "afterClearProjectsExist": false,
+  "consoleErrors": []
+}
+STORE BRIDGE PROOF PASSED
+REAL_EXIT_CODE:0

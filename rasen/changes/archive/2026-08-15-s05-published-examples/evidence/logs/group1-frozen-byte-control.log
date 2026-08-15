@@ -1,0 +1,8 @@
+Frozen-surface byte-control at base 5aae75ec (method: git show <base>:<path> | cmp -s, stat-cache-immune)
+BASE_SHA:5aae75ec
+IDENTICAL packages/editor-classic/src/editor/transactions/opencut/index.ts
+IDENTICAL packages/editor-contracts/src/engine/engine.ts
+IDENTICAL packages/editor-ports/src/index.ts
+IDENTICAL packages/editor-classic/src/editor/surface/embedding/types.ts
+frozen-files-identical:4/4
+REAL_EXIT_CODE:0

@@ -2,7 +2,9 @@
 /**
  * C6 resource-acquisition boundary.
  *
- * The inventory is deliberately rooted at the whole web source tree.  A
+ * The inventory is deliberately rooted at the whole editor source tree —
+ * see SCAN_ROOTS below, which is a superset of SOURCE_ROOT covering both the
+ * shared editor packages and the residual Host-owned apps/web/src shell.  A
  * directory is never exempted: a reviewed exception names one construct (and
  * its reason), while every other direct platform acquisition is reported.
  */
@@ -21,13 +23,55 @@ import {
 } from "./collect-next-editor-module-ids.mjs";
 
 const ROOT = join(fileURLToPath(new URL(".", import.meta.url)), "..");
-const SOURCE_ROOT = "apps/web/src";
-const REGISTRY = "apps/web/src/editor/session/session-resources.ts";
-const SHARED_SESSION_ENTRY = "apps/web/src/editor/session/create-session.ts";
+// S05 P1 Stage C moved the editor runtime graph (session resources registry,
+// shared session entry, and every REQUIRED_ROOTS directory below) out of
+// apps/web/src into @opencut/editor-classic. SOURCE_ROOT anchors the required
+// -root/closure math to the tree that now actually holds them; the residual
+// apps/web/src Host shell (next-editor-host.ts, the Next-only probe, and a
+// handful of standalone Host pages) is still scanned — see SCAN_ROOTS below —
+// it is just no longer where the required domains live.
+const SOURCE_ROOT = "packages/editor-classic/src";
+const REGISTRY = "packages/editor-classic/src/editor/session/session-resources.ts";
+const SHARED_SESSION_ENTRY =
+	"packages/editor-classic/src/editor/session/create-session.ts";
 const HOST_ENTRIES = {
 	vite: "apps/vite-example/src/host/vite-host-config.ts",
 	next: "apps/web/src/editor/host/next-editor-host.ts",
 };
+/**
+ * Modules attributable to the shared editor packages, as opposed to a Host's
+ * own wrapper code (apps/web/src, apps/vite-example/src). Both the checker and
+ * the closure generator/anchor need this same distinction: it is what
+ * "web source" meant before Stage C, now made explicit because the shared
+ * code no longer lives under a Host's own apps/web/src.
+ */
+const EDITOR_PACKAGE_PREFIXES = [
+	"packages/editor-classic/src/",
+	"packages/editor-ports/src/",
+];
+function isEditorPackageModule(moduleId) {
+	return EDITOR_PACKAGE_PREFIXES.some((prefix) => moduleId.startsWith(prefix));
+}
+/**
+ * Roots the direct-acquisition scan walks. SOURCE_ROOT alone would miss the
+ * residual Host-owned apps/web/src files that still carry their own
+ * CONSTRUCT_EXEMPTIONS entries (the Next-only readiness probe, the
+ * changelog button, the brand page, and next-editor-host.ts itself) — those
+ * never moved, so the scan still has to cover apps/web/src as well as the
+ * two packages the runtime graph moved into.
+ */
+const SCAN_ROOTS = [
+	"apps/web/src",
+	// s05-second-host: the desktop Host's renderer owns its runtime-resource
+	// adapter in Host territory (apps/electron-host/src/host/
+	// electron-runtime-resources.ts) rather than through a package-side
+	// adapter, so the direct-acquisition scan must walk that root too; the
+	// adapter carries the same exact construct exemptions browser-runtime.ts
+	// holds, for the same reason.
+	"apps/electron-host/src",
+	"packages/editor-classic/src",
+	"packages/editor-ports/src",
+];
 const EXPECTED_CLOSURE_PATH = process.env.C6_EXPECTED_CLOSURE
 	? resolve(ROOT, process.env.C6_EXPECTED_CLOSURE)
 	: join(ROOT, "script/fixtures/c6-session-resource-expected-closure.json");
@@ -44,8 +88,8 @@ const EXPECTED_CLOSURE_ANCHOR = JSON.parse(
 	readFileSync(EXPECTED_CLOSURE_ANCHOR_PATH, "utf8"),
 );
 const EXPECTED_CLOSURE_SHA256 =
-	"433314cfb301b3b30781151255d36a4d6a7893032b6d7cbf7a7280a34665dd99";
-const EXPECTED_COMMON_SOURCE_COUNT = 257;
+	"703efb9c37906b108ff91a8702606ec6a214a4c793476378fd043a94dff20cea";
+const EXPECTED_COMMON_SOURCE_COUNT = 272;
 const REQUIRED_ROOTS = [
 	"components/editor",
 	"preview",
@@ -108,26 +152,26 @@ const RULES = [
 
 const STRUCTURAL_MEDIATOR_EXEMPTIONS = new Map([
 	[
-		"apps/web/src/editor/host/browser-runtime.ts",
+		"packages/editor-classic/src/editor/host/browser-runtime.ts",
 		"The reviewed Host adapter implements the platform construction boundary.",
 	],
 	[
-		"apps/web/src/editor/ports/in-memory/index.ts",
+		"packages/editor-ports/src/in-memory/index.ts",
 		"The reviewed in-memory Host adapter implements conformance resources.",
 	],
 	[
-		"apps/web/src/editor/session/c6-disposal-harness.tsx",
+		"packages/editor-classic/src/editor/session/c6-disposal-harness.tsx",
 		"The reviewed browser fault harness constructs independent platform-ledger controls.",
 	],
 	[
-		"apps/web/src/editor/session/independent-timer-ledger.ts",
+		"packages/editor-classic/src/editor/session/independent-timer-ledger.ts",
 		"The reviewed browser-oracle timer ledger wraps injected platform APIs solely for independent fault/accounting controls.",
 	],
 ]);
 
 const STRUCTURAL_WRAPPER_EXEMPTIONS = new Map([
 	[
-		"apps/web/src/media/persistence.ts",
+		"packages/editor-classic/src/media/persistence.ts",
 		new Map([
 			[
 				"mediaAssetFromAttachment",
@@ -136,7 +180,7 @@ const STRUCTURAL_WRAPPER_EXEMPTIONS = new Map([
 		]),
 	],
 	[
-		"apps/web/src/services/storage/service.ts",
+		"packages/editor-classic/src/services/storage/service.ts",
 		new Map([
 			[
 				"loadMediaAsset",
@@ -148,10 +192,13 @@ const STRUCTURAL_WRAPPER_EXEMPTIONS = new Map([
 
 const OFFLINE_CONTEXT_ARGUMENT_ALLOWANCES = new Map([
 	[
-		"apps/web/src/media/audio-mastering.ts",
+		"packages/editor-classic/src/media/audio-mastering.ts",
 		new Set(["createAudioMasteringChain"]),
 	],
-	["apps/web/src/retime/audio-stretch.ts", new Set(["PitchShifter"])],
+	[
+		"packages/editor-classic/src/retime/audio-stretch.ts",
+		new Set(["PitchShifter"]),
+	],
 ]);
 
 /**
@@ -161,7 +208,7 @@ const OFFLINE_CONTEXT_ARGUMENT_ALLOWANCES = new Map([
  */
 const CONSTRUCT_EXEMPTIONS = new Map([
 	[
-		"apps/web/src/editor/host/browser-runtime.ts",
+		"packages/editor-classic/src/editor/host/browser-runtime.ts",
 		[
 			{
 				rule: "no-direct-worker",
@@ -181,6 +228,30 @@ const CONSTRUCT_EXEMPTIONS = new Map([
 		],
 	],
 	[
+		// s05-second-host: the desktop Host's owned adapter holds the same
+		// three constructs with the same meaning — the Worker/AudioContext/
+		// object URL this Host owns are constructed by its own runtime role,
+		// not acquired around the session seam.
+		"apps/electron-host/src/host/electron-runtime-resources.ts",
+		[
+			{
+				rule: "no-direct-worker",
+				match: "new Worker(",
+				why: "the desktop Host's runtime constructs the Worker it owns",
+			},
+			{
+				rule: "no-direct-audio",
+				match: "new AudioContext(",
+				why: "the desktop Host's runtime constructs the AudioContext it owns",
+			},
+			{
+				rule: "no-direct-object-url",
+				match: "URL.createObjectURL(",
+				why: "the desktop Host's runtime owns its object URL construction",
+			},
+		],
+	],
+	[
 		"apps/web/src/editor/host/c4-next-runtime-probe.tsx",
 		[
 			{
@@ -191,7 +262,21 @@ const CONSTRUCT_EXEMPTIONS = new Map([
 		],
 	],
 	[
-		"apps/web/src/editor/ports/conformance/index.ts",
+		// s05-second-host: the desktop C4 evidence harness waits one macrotask
+		// before reading session.resources.inspect() because release()
+		// bookkeeping defers its increment behind an await; the exemption is
+		// this exact settle, not a licence for harness timers generally.
+		"apps/electron-host/src/c4-worker-harness.tsx",
+		[
+			{
+				rule: "no-direct-timer",
+				match: "setTimeout(",
+				why: "evidence harness settles the release bookkeeping's deferred increment before reading the durable report",
+			},
+		],
+	],
+	[
+		"packages/editor-ports/src/conformance/index.ts",
 		[
 			{
 				rule: "no-direct-timer",
@@ -201,7 +286,7 @@ const CONSTRUCT_EXEMPTIONS = new Map([
 		],
 	],
 	[
-		"apps/web/src/editor/ports/in-memory/index.ts",
+		"packages/editor-ports/src/in-memory/index.ts",
 		[
 			{
 				rule: "no-direct-audio",
@@ -211,7 +296,7 @@ const CONSTRUCT_EXEMPTIONS = new Map([
 		],
 	],
 	[
-		"apps/web/src/editor/session/c6-disposal-harness.tsx",
+		"packages/editor-classic/src/editor/session/c6-disposal-harness.tsx",
 		[
 			{
 				rule: "no-direct-timer",
@@ -231,7 +316,7 @@ const CONSTRUCT_EXEMPTIONS = new Map([
 		],
 	],
 	[
-		"apps/web/src/services/storage/browser-project-store-cascade-round2-probes.ts",
+		"packages/editor-classic/src/services/storage/browser-project-store-cascade-round2-probes.ts",
 		[
 			{
 				rule: "no-direct-timer",
@@ -241,7 +326,7 @@ const CONSTRUCT_EXEMPTIONS = new Map([
 		],
 	],
 	[
-		"apps/web/src/services/storage/browser-project-store-cascade-probes.ts",
+		"packages/editor-classic/src/services/storage/browser-project-store-cascade-probes.ts",
 		[
 			{
 				rule: "no-direct-timer",
@@ -251,7 +336,7 @@ const CONSTRUCT_EXEMPTIONS = new Map([
 		],
 	],
 	[
-		"apps/web/src/services/storage/browser-project-store-migration-round2-probes.ts",
+		"packages/editor-classic/src/services/storage/browser-project-store-migration-round2-probes.ts",
 		[
 			{
 				rule: "no-direct-timer",
@@ -261,7 +346,7 @@ const CONSTRUCT_EXEMPTIONS = new Map([
 		],
 	],
 	[
-		"apps/web/src/services/storage/migrations/runner.ts",
+		"packages/editor-classic/src/services/storage/migrations/runner.ts",
 		[
 			{
 				rule: "no-direct-timer",
@@ -291,7 +376,7 @@ const CONSTRUCT_EXEMPTIONS = new Map([
 		],
 	],
 	[
-		"apps/web/src/components/ui/form.tsx",
+		"packages/editor-classic/src/components/ui/form.tsx",
 		[
 			{
 				rule: "no-direct-timer",
@@ -301,7 +386,7 @@ const CONSTRUCT_EXEMPTIONS = new Map([
 		],
 	],
 	[
-		"apps/web/src/core/managers/audio-manager.ts",
+		"packages/editor-classic/src/core/managers/audio-manager.ts",
 		[
 			{
 				rule: "no-offline-escape",
@@ -311,7 +396,7 @@ const CONSTRUCT_EXEMPTIONS = new Map([
 		],
 	],
 	[
-		"apps/web/src/media/audio-mastering.ts",
+		"packages/editor-classic/src/media/audio-mastering.ts",
 		[
 			{
 				rule: "no-offline-escape",
@@ -321,7 +406,7 @@ const CONSTRUCT_EXEMPTIONS = new Map([
 		],
 	],
 	[
-		"apps/web/src/media/audio.ts",
+		"packages/editor-classic/src/media/audio.ts",
 		[
 			{
 				rule: "no-offline-escape",
@@ -331,7 +416,7 @@ const CONSTRUCT_EXEMPTIONS = new Map([
 		],
 	],
 	[
-		"apps/web/src/retime/audio-stretch.ts",
+		"packages/editor-classic/src/retime/audio-stretch.ts",
 		[
 			{
 				rule: "no-offline-escape",
@@ -375,7 +460,7 @@ function validateExpectedClosureFixture() {
 	}
 	if (
 		EXPECTED_CLOSURE.provenance?.baseCommit !==
-			"d6ed4166b5ffb13257d1924851f2fa57d73d349f" ||
+			"488a8a8d3ded082813ff4636469e83c6a190a30a" ||
 		EXPECTED_CLOSURE.provenance?.anchor !==
 			EXPECTED_CLOSURE_ANCHOR_REPOSITORY_PATH ||
 		!EXPECTED_CLOSURE.provenance?.vite?.artifact ||
@@ -1468,7 +1553,7 @@ function trackedFiles() {
 			"--cached",
 			"--others",
 			"--exclude-standard",
-			SOURCE_ROOT,
+			...SCAN_ROOTS,
 		],
 		{ cwd: ROOT, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
 	)
@@ -1537,37 +1622,37 @@ function missingEntries(moduleIds, entries) {
 const FIXTURES = [
 	{
 		rule: "no-direct-timer",
-		path: "apps/web/src/editor/fixture/direct-timer.ts",
+		path: "packages/editor-classic/src/editor/fixture/direct-timer.ts",
 		text: "setTimeout(() => {}, 1);",
 	},
 	{
 		rule: "no-direct-worker",
-		path: "apps/web/src/editor/fixture/direct-worker.ts",
+		path: "packages/editor-classic/src/editor/fixture/direct-worker.ts",
 		text: "new Worker(url);",
 	},
 	{
 		rule: "no-direct-audio",
-		path: "apps/web/src/editor/fixture/direct-audio.ts",
+		path: "packages/editor-classic/src/editor/fixture/direct-audio.ts",
 		text: "new AudioContext();",
 	},
 	{
 		rule: "no-direct-object-url",
-		path: "apps/web/src/editor/fixture/direct-object-url.ts",
+		path: "packages/editor-classic/src/editor/fixture/direct-object-url.ts",
 		text: "URL.createObjectURL(blob);",
 	},
 	{
 		rule: "no-offline-escape",
-		path: "apps/web/src/editor/fixture/offline-escape.ts",
+		path: "packages/editor-classic/src/editor/fixture/offline-escape.ts",
 		text: "new OfflineAudioContext(1, 1, 44100);",
 	},
 	{
 		rule: "no-unkeyed-compositor",
-		path: "apps/web/src/services/renderer/fixture/default-compositor.ts",
+		path: "packages/editor-classic/src/services/renderer/fixture/default-compositor.ts",
 		text: "renderFrame(frame);",
 	},
 	{
 		rule: "no-second-acquisition-mediator",
-		path: "apps/web/src/editor/session/fixture/second-resource-mediator.ts",
+		path: "packages/editor-classic/src/editor/session/fixture/second-resource-mediator.ts",
 		text: "return { spawn: () => host.createWorker({ request }), open: () => host.createAudioContext({}) };",
 	},
 ];
@@ -1575,37 +1660,37 @@ const FIXTURES = [
 const POSITIVE_CONTROLS = [
 	{
 		rule: "no-direct-timer",
-		path: "apps/web/src/editor/fixture/mediated-timer.ts",
+		path: "packages/editor-classic/src/editor/fixture/mediated-timer.ts",
 		text: "resources.setTimeout({ handler: () => {}, ms: 1 });",
 	},
 	{
 		rule: "no-direct-worker",
-		path: "apps/web/src/editor/fixture/mediated-worker.ts",
+		path: "packages/editor-classic/src/editor/fixture/mediated-worker.ts",
 		text: "resources.createWorker({ request });",
 	},
 	{
 		rule: "no-direct-audio",
-		path: "apps/web/src/editor/fixture/mediated-audio.ts",
+		path: "packages/editor-classic/src/editor/fixture/mediated-audio.ts",
 		text: "resources.createAudioContext({});",
 	},
 	{
 		rule: "no-direct-object-url",
-		path: "apps/web/src/editor/fixture/mediated-object-url.ts",
+		path: "packages/editor-classic/src/editor/fixture/mediated-object-url.ts",
 		text: "resources.createObjectUrl({ blob });",
 	},
 	{
 		rule: "no-offline-escape",
-		path: "apps/web/src/media/fixture/bounded-offline.ts",
+		path: "packages/editor-classic/src/media/fixture/bounded-offline.ts",
 		text: "export async function render() { const context = new OfflineAudioContext(1, 1, 44100); return await context.startRendering(); }",
 	},
 	{
 		rule: "no-unkeyed-compositor",
-		path: "apps/web/src/services/renderer/fixture/keyed-compositor.ts",
+		path: "packages/editor-classic/src/services/renderer/fixture/keyed-compositor.ts",
 		text: "renderFrameForHandle(handle, frame);",
 	},
 	{
 		rule: "no-second-acquisition-mediator",
-		path: "apps/web/src/editor/session/create-session.ts",
+		path: SHARED_SESSION_ENTRY,
 		text: "const resources = createSessionResources({ host });",
 	},
 ];
@@ -1714,6 +1799,7 @@ function validateEmittedInventory({
 				sourceModuleIds ??
 				normalized.filter(
 					(moduleId) =>
+						isEditorPackageModule(moduleId) ||
 						moduleId.startsWith("apps/web/src/") ||
 						moduleId.startsWith("apps/vite-example/src/"),
 				)
@@ -1788,11 +1874,11 @@ function verifyAnchoredProvenance() {
 		: [];
 	const viteAttributableSourceIds = viteModuleIds.filter(
 		(moduleId) =>
-			moduleId.startsWith("apps/web/src/") ||
+			isEditorPackageModule(moduleId) ||
 			moduleId.startsWith("apps/vite-example/src/"),
 	);
 	const viteWebSourceIds = viteAttributableSourceIds.filter((moduleId) =>
-		moduleId.startsWith("apps/web/src/"),
+		isEditorPackageModule(moduleId),
 	);
 	assertAnchoredValue({
 		label: "Vite module inventory",
@@ -1904,14 +1990,14 @@ function negativeControl() {
 	}
 	for (const control of OFFLINE_SEMANTIC_CONTROLS) {
 		const caught = scan(
-			"apps/web/src/media/fixture/offline-semantic-control.ts",
+			"packages/editor-classic/src/media/fixture/offline-semantic-control.ts",
 			control.text,
 		).some((hit) => hit.rule === "no-offline-escape");
 		console.log(`  ${caught ? "PASS" : "FAIL"} ${control.label}`);
 		if (!caught) ok = false;
 	}
 	const boundedOfflineClean = !scan(
-		"apps/web/src/media/fixture/bounded-offline-control.ts",
+		"packages/editor-classic/src/media/fixture/bounded-offline-control.ts",
 		BOUNDED_OFFLINE_POSITIVE.text,
 	).some((hit) => hit.rule === "no-offline-escape");
 	console.log(
@@ -1919,7 +2005,7 @@ function negativeControl() {
 	);
 	if (!boundedOfflineClean) ok = false;
 	const arbitraryMediatorCaught = scan(
-		"apps/web/src/editor/session/fixture/arbitrary-broker.ts",
+		"packages/editor-classic/src/editor/session/fixture/arbitrary-broker.ts",
 		ARBITRARY_MEDIATOR_CONTROL.text,
 	).some((hit) => hit.rule === "no-second-acquisition-mediator");
 	console.log(
@@ -1927,7 +2013,7 @@ function negativeControl() {
 	);
 	if (!arbitraryMediatorCaught) ok = false;
 	const blockMediatorCaught = scan(
-		"apps/web/src/editor/session/fixture/block-broker.ts",
+		"packages/editor-classic/src/editor/session/fixture/block-broker.ts",
 		BLOCK_MEDIATOR_CONTROL.text,
 	).some((hit) => hit.rule === "no-second-acquisition-mediator");
 	console.log(
@@ -2067,13 +2153,13 @@ function checkEmittedGraph() {
 				moduleIds: modules,
 				sourceModuleIds: modules.filter(
 					(moduleId) =>
-						moduleId.startsWith("apps/web/src/") ||
+						isEditorPackageModule(moduleId) ||
 						moduleId.startsWith("apps/vite-example/src/"),
 				),
 				entries: [HOST_ENTRIES.vite, SHARED_SESSION_ENTRY],
 			});
 			const sourceModules = checked.moduleIds.filter((moduleId) =>
-				moduleId.startsWith("apps/web/src/"),
+				isEditorPackageModule(moduleId),
 			);
 			const markerPath = join(absolute, "asset-manifest.json");
 			let marker = "<missing>";
@@ -2214,7 +2300,7 @@ function checkOneFile() {
 	const sourcePath = process.argv[4] ? resolve(process.argv[4]) : "";
 	if (!logicalPath.startsWith(`${SOURCE_ROOT}/`) || !sourcePath) {
 		console.error(
-			"usage: node script/check-session-resource-boundary.mjs --scan-file <apps/web/src/path> <source-file>",
+			"usage: node script/check-session-resource-boundary.mjs --scan-file <packages/editor-classic/src/path> <source-file>",
 		);
 		process.exit(2);
 	}

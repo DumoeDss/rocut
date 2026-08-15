@@ -3,7 +3,8 @@
  *
  * Every shape here is **derived from the repository's own fixtures**, not
  * invented: the project records follow `v1Project` in
- * `apps/web/src/services/storage/migrations/__tests__/fixtures/v1.ts` (top-level
+ * `packages/editor-classic/src/services/storage/migrations/__tests__/fixtures/
+ * v1.ts` (top-level
  * `name`/`fps`/`canvasSize`, `scenes[].tracks: []`, no `metadata` and no
  * `settings` — which is what makes `isV2Project()` false and
  * `getProjectVersion()` return 1), and the legacy timeline / media-metadata

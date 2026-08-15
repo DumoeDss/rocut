@@ -1,0 +1,20 @@
+HEAD: 1431840a38b353dd211be9897ad44b5b54619e96, tree: clean (tracked)
+reconcile: areas apps/electron-host apps/vite-example apps/web/public apps/web/src examples packages/editor-classic packages/editor-contracts packages/editor-ports rust script
+reconcile: drift classes — 34 modified, 453 moved-modified, 37 moved-rewritten, 151 moved-unmodified, 504 added, 0 deleted
+reconcile: PATCHES rows 603 across 533 unique upstream paths (naive ^| P- count 603)
+reconcile: need-row 524, covered 524, MISSING 0
+reconcile: rows without matching drift 9 (0 over files now restated byte-identical)
+reconcile: added under apps/electron-host: 33 total, 0 unlisted in UPSTREAM.md
+reconcile: added under apps/vite-example: 57 total, 0 unlisted in UPSTREAM.md
+reconcile: added under apps/web/public: 1 total, 0 unlisted in UPSTREAM.md
+reconcile: added under apps/web/src: 9 total, 0 unlisted in UPSTREAM.md
+reconcile: added under examples: 34 total, 0 unlisted in UPSTREAM.md
+reconcile: added under packages/editor-classic: 166 total, 0 unlisted in UPSTREAM.md
+reconcile: added under packages/editor-contracts: 63 total, 0 unlisted in UPSTREAM.md
+reconcile: added under packages/editor-ports: 25 total, 0 unlisted in UPSTREAM.md
+reconcile: added under rust: 2 total, 0 unlisted in UPSTREAM.md
+reconcile: added under script: 114 total, 0 unlisted in UPSTREAM.md
+reconcile: every drift-classed inherited file has a PATCHES.md row
+reconcile: every fork-added path is listed in UPSTREAM.md
+REAL_EXIT_CODE: 0
+REAL_EXIT_CODE:0

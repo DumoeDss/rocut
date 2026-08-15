@@ -1,0 +1,30 @@
+inventory: 1071 files, 7.15 MB, rollup 92caf3b6e403ac8051b88b01c9377c3c573d519988de15dbdc80a96f3c32efaf
+drift vs pin: 34 modified, 453 moved-modified (drift), 37 moved-rewritten (drift), 151 moved-unmodified (restatement), 504 added, 0 deleted
+INV_RC:0
+SBOM: 1375 npm packages, 80 wasm crates
+  OK    D-1  disposition=recorded  observed=present  — Root `package.json` declares a self-dependency `"opencut": "."`
+  OK    D-2  disposition=recorded  observed=present  — Root `package.json` declares application dependencies `next` and `better-auth`
+  OK    D-3  disposition=recorded  observed=present  — `rust/wasm/Cargo.toml` `repository` points at a nonexistent GitHub repository
+  OK    D-4  disposition=recorded  observed=present  — Published `opencut-wasm` declares `sideEffects` on a nonexistent `./snippets/*`
+  OK    D-5  disposition=repaired  observed=absent  — `rust/wasm` declared `license = "MIT"` while shipping no LICENSE file
+SBOM_RC:0
+reconcile: areas apps/electron-host apps/vite-example apps/web/public apps/web/src examples packages/editor-classic packages/editor-contracts packages/editor-ports rust script
+reconcile: drift classes — 34 modified, 453 moved-modified, 37 moved-rewritten, 151 moved-unmodified, 504 added, 0 deleted
+reconcile: PATCHES rows 603 across 533 unique upstream paths (naive ^| P- count 603)
+reconcile: need-row 524, covered 524, MISSING 0
+reconcile: rows without matching drift 9 (0 over files now restated byte-identical)
+reconcile: added under apps/electron-host: 33 total, 0 unlisted in UPSTREAM.md
+reconcile: added under apps/vite-example: 57 total, 0 unlisted in UPSTREAM.md
+reconcile: added under apps/web/public: 1 total, 0 unlisted in UPSTREAM.md
+reconcile: added under apps/web/src: 9 total, 0 unlisted in UPSTREAM.md
+reconcile: added under examples: 34 total, 0 unlisted in UPSTREAM.md
+reconcile: added under packages/editor-classic: 166 total, 0 unlisted in UPSTREAM.md
+reconcile: added under packages/editor-contracts: 63 total, 0 unlisted in UPSTREAM.md
+reconcile: added under packages/editor-ports: 25 total, 0 unlisted in UPSTREAM.md
+reconcile: added under rust: 2 total, 0 unlisted in UPSTREAM.md
+reconcile: added under script: 114 total, 0 unlisted in UPSTREAM.md
+reconcile: every drift-classed inherited file has a PATCHES.md row
+reconcile: every fork-added path is listed in UPSTREAM.md
+REAL_EXIT_CODE: 0
+REC_RC:0
+REAL_EXIT_CODE:0

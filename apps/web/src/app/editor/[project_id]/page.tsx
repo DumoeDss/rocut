@@ -2,13 +2,13 @@
 
 import { useMemo } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { MobileGate } from "@/components/editor/mobile-gate";
+import { MobileGate } from "@opencut/editor-classic/ui";
 import { ChangelogNotification } from "@/changelog/components/changelog-notification";
-import type { EditorHost } from "@/editor/host/editor-host";
+import type { EditorHost } from "@opencut/editor-ports/host";
 import { createNextEditorHost } from "@/editor/host/next-editor-host";
 import { C4NextRuntimeProbe } from "@/editor/host/c4-next-runtime-probe";
-import { EditorSessionHost } from "@/editor/session";
-import { SessionEditorSurface } from "@/editor/surface/embedding/session-surface-bridge";
+import { EditorSessionHost } from "@opencut/editor-classic/session";
+import { SessionEditorSurface } from "@opencut/editor-classic/surface";
 
 /**
  * The Next host of the editor.

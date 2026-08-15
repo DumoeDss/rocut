@@ -16,10 +16,22 @@ import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const SOURCE_ROOTS = ["apps/web/src", "apps/vite-example/src"];
-const STORAGE_AREA = "apps/web/src/services/storage/";
-const PUBLIC_PORT_AREA = "apps/web/src/editor/ports/";
-const HOST_CONTRACT = "apps/web/src/editor/host/editor-host.ts";
+const SOURCE_ROOTS = [
+	"apps/web/src",
+	"apps/vite-example/src",
+	// The desktop Host's renderer is in the browser-mechanism inventory too
+	// (s05-second-host): its durable store is IPC-to-main by design, so the
+	// scan today finds nothing there — but a future localStorage/indexedDB use
+	// in that renderer must fail here exactly as it would in a browser Host.
+	// Its store *composition* rules live in check-host-composition.mjs, whose
+	// durable-store rule was generalized past BrowserProjectStore.
+	"apps/electron-host/src",
+	"packages/editor-classic/src",
+	"packages/editor-ports/src",
+];
+const STORAGE_AREA = "packages/editor-classic/src/services/storage/";
+const PUBLIC_PORT_AREA = "packages/editor-ports/src/";
+const HOST_CONTRACT = "packages/editor-ports/src/index.ts";
 const HOST_ROOTS = new Set([
 	"apps/vite-example/src/host/vite-host-config.ts",
 	"apps/web/src/editor/host/next-editor-host.ts",
@@ -58,27 +70,27 @@ const LOCAL_PREFERENCE_FILES = new Map([
 		"changelog acknowledgement",
 	],
 	[
-		"apps/web/src/feedback/components/feedback-popover.tsx",
+		"packages/editor-classic/src/feedback/components/feedback-popover.tsx",
 		"local feedback-history convenience",
 	],
 	[
-		"apps/web/src/components/editor/mobile-gate.tsx",
+		"packages/editor-classic/src/components/editor/mobile-gate.tsx",
 		"mobile-gate acknowledgement",
 	],
 	[
-		"apps/web/src/components/ui/form.tsx",
+		"packages/editor-classic/src/components/ui/form.tsx",
 		"generic form persistence supplied by UI callers",
 	],
 	[
-		"apps/web/src/services/storage/use-local-storage.ts",
+		"packages/editor-classic/src/services/storage/use-local-storage.ts",
 		"generic local preference hook, not durable editor content",
 	],
 	[
-		"apps/web/src/components/editor/onboarding.tsx",
+		"packages/editor-classic/src/components/editor/onboarding.tsx",
 		"onboarding acknowledgement through useLocalStorage",
 	],
 	[
-		"apps/web/src/services/storage/use-storage-persistence.ts",
+		"packages/editor-classic/src/services/storage/use-storage-persistence.ts",
 		"browser persistence-prompt dismissal",
 	],
 ]);
@@ -96,7 +108,7 @@ const LOCAL_PREFERENCE_FILES = new Map([
  */
 const EVIDENCE_LOCALSTORAGE_FILES = new Map([
 	[
-		"apps/web/src/editor/surface/evidence/agent-evidence-run.ts",
+		"packages/editor-classic/src/editor/surface/evidence/agent-evidence-run.ts",
 		"T4 agent commitment carried across the reopen reload, independent of the store being verified",
 	],
 ]);
@@ -210,20 +222,24 @@ function publicImportLeak({ line, path }) {
 	}
 	const resolved = resolveSpecifier({ spec, fromFile: path });
 	if (resolved === null || resolved.startsWith(PUBLIC_PORT_AREA)) return null;
-	if (/^apps\/web\/src\/commands(?:\/|$)/.test(resolved)) {
+	if (/^packages\/editor-classic\/src\/commands(?:\/|$)/.test(resolved)) {
 		return "public-command-import";
 	}
-	if (/^apps\/web\/src\/(?:core|stores)(?:\/|$)/.test(resolved)) {
+	if (
+		/^packages\/editor-classic\/src\/(?:core|stores)(?:\/|$)/.test(resolved)
+	) {
 		return "public-state-store-import";
 	}
 	if (
-		/^apps\/web\/src\/(?:project|timeline|scenes|effects|masks|media)(?:\/|$)/.test(
+		/^packages\/editor-classic\/src\/(?:project|timeline|scenes|effects|masks|media)(?:\/|$)/.test(
 			resolved,
 		)
 	) {
 		return "public-schema-import";
 	}
-	if (/^apps\/web\/src\/services\/storage(?:\/|$)/.test(resolved)) {
+	if (
+		/^packages\/editor-classic\/src\/services\/storage(?:\/|$)/.test(resolved)
+	) {
 		return "public-storage-implementation-import";
 	}
 	return null;
@@ -554,6 +570,13 @@ if (
 ) {
 	console.error(
 		"\nOne or more exact verification fixtures no longer exercises a browser mechanism; remove or repair the stale exemption.",
+	);
+	process.exit(1);
+}
+
+if (!fixtureRoot && staleEvidenceClassifications.length > 0) {
+	console.error(
+		"\nOne or more evidence-route localStorage classifications is no longer exercised; remove or repair the stale exemption.",
 	);
 	process.exit(1);
 }

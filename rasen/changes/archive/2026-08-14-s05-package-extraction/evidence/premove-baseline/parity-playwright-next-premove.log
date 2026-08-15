@@ -1,0 +1,10 @@
+$ playwright test --config playwright.surface.config.ts
+[WebServer] $ next start -H "127.0.0.1" -p "3017"
+[WebServer] ⚠ "next start" does not work with "output: standalone" configuration. Use "node .next/standalone/server.js" instead.
+
+Running 1 test using 1 worker
+
+  ✓  1 [chromium] › tests\parity\parity.pw.ts:84:1 › editing parity scenario — next host (41.2s)
+
+  1 passed (48.8s)
+REAL_EXIT_CODE:0

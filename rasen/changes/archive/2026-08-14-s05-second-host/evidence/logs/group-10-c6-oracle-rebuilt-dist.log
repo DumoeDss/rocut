@@ -1,0 +1,74 @@
+{
+  "attempts": {
+    "ordinary#1": {
+      "race": [
+        "cycle 1 timer independent platform residual 1 (independent ledger retained 1 handle(s))."
+      ],
+      "other": []
+    },
+    "ordinary#2": {
+      "race": [
+        "cycle 1 timer independent platform residual 1 (independent ledger retained 1 handle(s))."
+      ],
+      "other": []
+    },
+    "ordinary#3": {
+      "race": [
+        "cycle 1 timer independent platform residual 1 (independent ledger retained 1 handle(s))."
+      ],
+      "other": []
+    },
+    "ordinary#4": {
+      "race": [
+        "cycle 1 timer independent platform residual 1 (independent ledger retained 1 handle(s))."
+      ],
+      "other": []
+    },
+    "ordinary#5": {
+      "race": [
+        "cycle 1 timer independent platform residual 1 (independent ledger retained 1 handle(s))."
+      ],
+      "other": []
+    },
+    "durable-reopen#1": {
+      "race": [
+        "first disposal: cycle 1 timer independent platform residual 1 (independent ledger retained 1 handle(s))."
+      ],
+      "other": []
+    },
+    "durable-reopen#2": {
+      "race": [
+        "first disposal: cycle 1 timer independent platform residual 1 (independent ledger retained 1 handle(s))."
+      ],
+      "other": []
+    },
+    "durable-reopen#3": {
+      "race": [
+        "first disposal: cycle 1 timer independent platform residual 1 (independent ledger retained 1 handle(s))."
+      ],
+      "other": []
+    },
+    "durable-reopen#4": {
+      "race": [
+        "first disposal: cycle 1 timer independent platform residual 1 (independent ledger retained 1 handle(s))."
+      ],
+      "other": []
+    },
+    "durable-reopen#5": {
+      "race": [
+        "first disposal: cycle 1 timer independent platform residual 1 (independent ledger retained 1 handle(s))."
+      ],
+      "other": []
+    }
+  },
+  "verdicts": {
+    "ordinary": "cycle-1 timer race on all 5 attempts (distribution recorded); non-blocking per Group 6",
+    "missing-created": "failed exactly as the negative demands",
+    "leak": "failed exactly as the negative demands",
+    "durable-reopen": "cycle-1 timer race on all 5 attempts (distribution recorded); non-blocking per Group 6",
+    "durable-reopen-store-constructor": "Tet",
+    "durable-reopen-host-label": "vite"
+  }
+}
+C6 ORACLE PROOF PASSED
+REAL_EXIT_CODE:0

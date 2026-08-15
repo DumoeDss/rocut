@@ -1,0 +1,11 @@
+$ playwright test --config playwright.surface.config.ts
+
+Running 1 test using 1 worker
+
+(node:13784) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[agent] the change has shipped; this run is regression output at E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\apps\vite-example\tests\parity-artifacts\regression\s0304-agent-transaction-evidence\browser-agent\electron, not evidence for the archived change.
+  ✓  1 [chromium] › tests\parity\agent.pw.ts:125:1 › Agent transaction evidence — electron host (2.7s)
+
+  1 passed (4.5s)
+REAL_EXIT_CODE:0

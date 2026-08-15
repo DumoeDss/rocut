@@ -7,7 +7,12 @@ import { evidenceOutputFile } from "./tests/parity/evidence-path";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 
-const host = process.env.PARITY_HOST === "next" ? "next" : "vite";
+const host =
+	process.env.PARITY_HOST === "next"
+		? "next"
+		: process.env.PARITY_HOST === "electron"
+			? "electron"
+			: "vite";
 
 const PARITY_SPECS = ["surface", "parity", "c4-next", "agent"] as const;
 type ParitySpec = (typeof PARITY_SPECS)[number];
@@ -59,10 +64,33 @@ export default defineConfig({
 				: spec === "agent"
 					? /agent\.pw\.ts$/
 					: /surface\.pw\.ts$/,
+	// The desktop Host leg (task 7.4): the page is acquired by launching the
+	// app (`tests/parity/electron-page.ts`), so there is no webServer, no
+	// `baseURL` and no browser `channel` for this leg — the spec navigates by
+	// the app's own `opencut://` URLs. Evidence paths key on `host`, so the
+	// parity artifacts land under `tests/parity-artifacts/` (electron) and the
+	// agent evidence under its evidence-path-resolved regression leaf, with no
+	// further config.
 	use: {
 		...parityConfig.use,
-		baseURL: host === "next" ? nextBaseUrl : parityConfig.use?.baseURL,
+		baseURL:
+			host === "next"
+				? nextBaseUrl
+				: host === "electron"
+					? undefined
+					: parityConfig.use?.baseURL,
 	},
+	projects:
+		host === "electron"
+			? // The fixture browser still opens (the spec destructures its page for
+				// the browser hosts) but is never driven on this leg; the desktop
+				// window is. Playwright's default Chromium is enough for that idle
+				// page — no `channel` pin.
+				(parityConfig.projects ?? []).map((project) => ({
+					...project,
+					use: { ...project.use, channel: undefined },
+				}))
+			: parityConfig.projects,
 	reporter: [
 		["list"],
 		[
@@ -94,22 +122,24 @@ export default defineConfig({
 		],
 	],
 	webServer:
-		host === "next"
-			? {
-					command: `bun run --cwd ../web start -- -H 127.0.0.1 -p ${nextPort}`,
-					url: `${nextBaseUrl}/surface-evidence`,
-					reuseExistingServer: false,
-					timeout: 120_000,
-					env: nextPlaceholderEnvironment,
-				}
-			: {
-					command: "bun run preview --port 4173 --strictPort --host 127.0.0.1",
-					url: "http://127.0.0.1:4173/surface-evidence.html",
-					reuseExistingServer: false,
-					timeout: 120_000,
-					env: {
-						VITE_R2_BUILD_MARKER:
-							process.env.VITE_R2_BUILD_MARKER ?? "missing-vite-marker",
+		host === "electron"
+			? undefined
+			: host === "next"
+				? {
+						command: `bun run --cwd ../web start -- -H 127.0.0.1 -p ${nextPort}`,
+						url: `${nextBaseUrl}/surface-evidence`,
+						reuseExistingServer: false,
+						timeout: 120_000,
+						env: nextPlaceholderEnvironment,
+					}
+				: {
+						command: "bun run preview --port 4173 --strictPort --host 127.0.0.1",
+						url: "http://127.0.0.1:4173/surface-evidence.html",
+						reuseExistingServer: false,
+						timeout: 120_000,
+						env: {
+							VITE_R2_BUILD_MARKER:
+								process.env.VITE_R2_BUILD_MARKER ?? "missing-vite-marker",
+						},
 					},
-				},
 });

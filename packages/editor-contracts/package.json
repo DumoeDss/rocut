@@ -1,0 +1,30 @@
+{
+  "name": "@opencut/editor-contracts",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Domain, operations, transactions, draft sessions, the engine and conformance. Depends only on @opencut/editor-ports. No React, no DOM.",
+  "dependencies": {
+    "@opencut/editor-ports": "workspace:*"
+  },
+  "files": [
+    "dist",
+    "src",
+    "surface.json",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./conformance": "./src/conformance/index.ts",
+    "./conformance/requirements": "./src/conformance/requirements/index.ts",
+    "./draft": "./src/draft/index.ts",
+    "./draft/conformance": "./src/draft/conformance/index.ts",
+    "./engine": "./src/engine/index.ts",
+    "./engine/invariant": "./src/engine/invariant.ts",
+    "./engine/conformance": "./src/engine/conformance/index.ts",
+    "./vectors": "./src/vectors/index.ts",
+    "./vectors/corpus": "./src/vectors/corpus/index.ts",
+    "./package.json": "./package.json"
+  }
+}

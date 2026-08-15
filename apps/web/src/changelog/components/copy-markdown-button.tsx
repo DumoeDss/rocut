@@ -8,8 +8,8 @@ import {
 	isSectionCollapsible,
 } from "../utils";
 import type { Change } from "../utils";
-import { cn } from "@/utils/ui";
-import { Button } from "@/components/ui/button";
+import { cn } from "@opencut/editor-classic";
+import { Button } from "@opencut/editor-classic/ui";
 
 function buildMarkdown({
 	description,

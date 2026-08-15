@@ -1,0 +1,36 @@
+{
+	"name": "opencut-example-embed-surface",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"typecheck": "tsc --noEmit",
+		"build": "vite build",
+		"smoke": "node smoke.mjs"
+	},
+	"dependencies": {
+		"@opencut/editor-classic": "0.2.0",
+		"@opencut/editor-contracts": "0.2.0",
+		"@opencut/editor-ports": "0.2.0",
+		"next-themes": "^0.4.4",
+		"react": "18.3.1",
+		"react-dom": "18.3.1"
+	},
+	"devDependencies": {
+		"@swc/core": "1.15.47",
+		"@tailwindcss/postcss": "^4.2.1",
+		"@tailwindcss/typography": "^0.5.19",
+		"@types/culori": "^4.0.1",
+		"@types/node": "^22.10.0",
+		"@types/react": "18.3.28",
+		"@types/react-dom": "18.3.7",
+		"@vitejs/plugin-react": "^5.0.0",
+		"playwright": "^1.55.0",
+		"tailwindcss": "^4.2.1",
+		"tailwindcss-animate": "^1.0.7",
+		"typescript": "^5.8.3",
+		"vite": "^7.0.0",
+		"vite-plugin-top-level-await": "^1.6.0",
+		"vite-plugin-wasm": "^3.5.0"
+	}
+}

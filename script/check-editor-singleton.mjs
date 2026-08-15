@@ -10,16 +10,16 @@ const negativeIndex = args.indexOf("--negative-control");
 const negativeControl =
 	negativeIndex === -1 ? null : (args[negativeIndex + 1] ?? null);
 
-const OWNER = "apps/web/src/editor/runtime/session-core-owner.ts";
-const SESSION_FACTORY = "apps/web/src/editor/session/create-session.ts";
+const OWNER = "packages/editor-classic/src/editor/runtime/session-core-owner.ts";
+const SESSION_FACTORY = "packages/editor-classic/src/editor/session/create-session.ts";
 const REQUIRED = [
 	"apps/web/src/app/editor/[project_id]/page.tsx",
 	"apps/vite-example/src/host/vite-editor-host.tsx",
 	OWNER,
 	SESSION_FACTORY,
 	"apps/vite-example/src/project-picker.tsx",
-	"apps/web/src/sounds/sounds-store.ts",
-	"apps/web/src/sounds/components/assets-view.tsx",
+	"packages/editor-classic/src/sounds/sounds-store.ts",
+	"packages/editor-classic/src/sounds/components/assets-view.tsx",
 ];
 // 39 inherited from the donor refactor, plus T3's ProviderPrivateCompositeCommand
 // (`commands/provider-private-composite.ts`, added by 545dc1f9 "route UI commits
@@ -60,6 +60,15 @@ function sourceFilesUnder(directory) {
 const files = [
 	...sourceFilesUnder("apps/web/src"),
 	...sourceFilesUnder("apps/vite-example/src"),
+	// s05-second-host: the desktop Host's renderer is a third consumer of the
+	// session graph and is policed by the same singleton/construction rules.
+	...sourceFilesUnder("apps/electron-host/src"),
+	// S05 P1 Stage C moved the editor runtime graph (session owner, session
+	// factory, and everything else that used to live under apps/web/src/editor
+	// and its sibling domain folders) into @opencut/editor-classic. Without this
+	// the walk only sees the residual apps/web/src Host shell and silently
+	// under-collects the very construction sites this check exists to police.
+	...sourceFilesUnder("packages/editor-classic/src"),
 ];
 const sources = files.map((path) => ({
 	path: relative(repoRoot, path).replaceAll("\\", "/"),
@@ -74,7 +83,7 @@ for (const required of REQUIRED) {
 	}
 }
 
-const commandDirectory = resolve(repoRoot, "apps/web/src/commands");
+const commandDirectory = resolve(repoRoot, "packages/editor-classic/src/commands");
 const commandModules = walk(commandDirectory)
 	.filter((path) => path.endsWith(".ts"))
 	.filter((path) => !path.endsWith("batch-command.ts"))
@@ -165,7 +174,7 @@ for (const entry of sources) {
 
 	const directConstructions =
 		source.match(/\bnew\s+EditorCore\s*\(/g)?.length ?? 0;
-	if (directConstructions > 0 && path !== "apps/web/src/core/index.ts") {
+	if (directConstructions > 0 && path !== "packages/editor-classic/src/core/index.ts") {
 		violations.push({ rule: "construction-outside-owner", path });
 	}
 

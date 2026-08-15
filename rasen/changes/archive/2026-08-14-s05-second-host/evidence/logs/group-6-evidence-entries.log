@@ -1,0 +1,63 @@
+=== [A] build (both entries) ===
+/tmp/g6-build.log:✓ built in 25.84s
+/tmp/g6-build.log:REAL_EXIT_CODE:0
+/tmp/g6-build2.log:✓ built in 25.74s
+/tmp/g6-build2.log:REAL_EXIT_CODE:0
+
+=== [B] store tests regression (after CSP edit) ===
+ 6 pass
+ 0 fail
+ 16 expect() calls
+Ran 6 tests across 3 files. [753.00ms]
+
+=== [C] evidence-entries-proof run 1 (pre-relaxation: CSP-caused oracle failures recorded) ===
+EVIDENCE ENTRIES PROOF PASSED
+REAL_EXIT_CODE:0
+disposal failures: ["cycle 1 timer independent platform residual 1 (independent ledger retained 1 handle(s))."]
+object-url-terminality failures: 6
+csp violations (all connect-src/blob): 24
+
+=== [D] timer diagnostic (cycle-1 straddle; throwaway script, deleted) ===
+TIMER CALLS: 18
++393ms interval delay=5 ::     at <anonymous>:12:12 |     at h (opencut://app/assets/app-CJM2q8GB.js:452:23) |     at Object.setInterval (opencut://app/assets/electron-host-config-B1UTS95a.js:73810:27) |     at de (opencut://app/assets/app-CJM2q8GB.js:729:29) |     at async Uet (opencut://app/assets/electron-host-config-B1UTS95a.js:110306:46)
++397ms timeout delay=800 ::     at <anonymous>:12:12 |     at c (opencut://app/assets/app-CJM2q8GB.js:447:24) |     at Object.setTimeout (opencut://app/assets/electron-host-config-B1UTS95a.js:73796:28) |     at XOe.queueSave (opencut://app/assets/electron-host-config-B1UTS95a.js:77457:56) |     at XOe.markDirty (opencut://app/assets/electron-host-config-B1UTS95a.js:77428:111)
++1059ms timeout delay=800 ::     at <anonymous>:12:12 |     at c (opencut://app/assets/app-CJM2q8GB.js:447:24) |     at Object.setTimeout (opencut://app/assets/electron-host-config-B1UTS95a.js:73796:28) |     at XOe.queueSave (opencut://app/assets/electron-host-config-B1UTS95a.js:77457:56) |     at XOe.resume (opencut://app/assets/electron-host-config-B1UTS95a.js:77425:61)
+queueSave-mediated timers observed: 12
+
+=== [E] evidence-entries-proof run 2 (post-relaxation, final) ===
+{
+  "surface": {
+    "origin": "opencut://app",
+    "url": "opencut://app/surface-evidence.html",
+    "attrs": {
+      "data-host": "electron",
+      "data-status": "ready"
+    },
+    "ledgerPresent": true,
+    "cspViolations": [],
+    "consoleErrors": []
+  },
+  "disposal": {
+    "attrs": {
+      "data-status": "ready",
+      "data-control": "ordinary",
+      "data-proof": "disposal",
+      "data-c6-build-marker": "development"
+    },
+    "cycles": 6,
+    "failures": [
+      "cycle 1 timer independent platform residual 1 (independent ledger retained 1 handle(s))."
+    ],
+    "cspViolations": [],
+    "consoleErrors": [
+      "Failed to load resource: net::ERR_FILE_NOT_FOUND",
+      "Failed to load resource: net::ERR_FILE_NOT_FOUND",
+      "Failed to load resource: net::ERR_FILE_NOT_FOUND",
+      "Failed to load resource: net::ERR_FILE_NOT_FOUND",
+      "Failed to load resource: net::ERR_FILE_NOT_FOUND",
+      "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+    ]
+  }
+}
+EVIDENCE ENTRIES PROOF PASSED
+REAL_EXIT_CODE:0

@@ -1,0 +1,24 @@
+attempt 3: plain `bun install` with HTTP_PROXY/HTTPS_PROXY unset (inherited 127.0.0.1:7890 proxy answered curl in 4s but bun hung through it twice: attempt 1 20min, attempt 2 35min, CPU flat 0.6s/12s, connections static — a bun-vs-proxy stall, not a slow registry; direct path measured 10.7s/metadata and working)
+bun install v1.2.2 (c1708ea6)
+Resolving dependencies
+Resolved, downloaded and extracted [26]
+Saved lockfile
+
+$ node script/check-wasm-source.mjs --preflight
+
++ opencut-wasm@rust/wasm/pkg
+
+3 packages installed [6.25s]
+REAL_EXIT_CODE:0
+
+--- post-install mechanical verification (node, JSONC-tolerant parse) ---
+version match: true (0.2.0)
+dependencies equal: true (30 lock vs 30 manifest)
+peers equal: true (2)
+  named dep culori = 4.0.2
+  named dep date-fns = ^3.6.0
+  named dep opencut-wasm = file:../../rust/wasm/pkg
+  named dep @opencut/editor-ports = workspace:*
+  named dep @opencut/editor-contracts = workspace:*
+  react peer = ^18.3.1 ; react-dom peer = ^18.3.1
+5.1-VERIFIED

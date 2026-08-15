@@ -160,6 +160,40 @@ function runTsc(appDir, roots) {
 	return parseDiagnostics(`${result.stdout || ""}\n${result.stderr || ""}`, roots);
 }
 
+/**
+ * A separate, dedicated `tsc --listFilesOnly` run rather than parsing file paths
+ * out of the diagnostic run's combined stdout/stderr — a plain path line matches
+ * neither the diagnostic `head` pattern nor the continuation pattern only by
+ * accident of regex shape, and a second clean invocation is not worth optimising
+ * away in a script that already reconstructs a whole pin tarball on
+ * `--regenerate`.
+ *
+ * Excludes `node_modules` from the headline count: this count exists to catch a
+ * *repo* type-check scope collapse (S05 task 2.5/2.6 — "does `tsc` under
+ * `apps/web` still reach package sources through the workspace symlink, or must
+ * the program be widened explicitly"), and TypeScript's own lib `.d.ts` files
+ * plus every dependency's type declarations would dwarf that signal and barely
+ * move even if `apps/web/src` or a package's `src` under `packages/` collapsed
+ * to nothing. `total` is still reported alongside it for completeness.
+ */
+function countTypeCheckedFiles(appDir) {
+	if (!existsSync(TSC)) return null;
+
+	const result = spawnSync(
+		process.execPath,
+		[TSC, "-p", "tsconfig.json", "--noEmit", "--listFilesOnly", "--pretty", "false"],
+		{ cwd: appDir, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
+	);
+	if (result.error) return null;
+
+	const lines = `${result.stdout || ""}`
+		.split(/\r?\n/)
+		.map((line) => line.trim())
+		.filter(Boolean);
+	const repo = lines.filter((line) => !line.replace(/\\/g, "/").includes("/node_modules/"));
+	return { total: lines.length, repo: repo.length };
+}
+
 /** Expand the pin into a temp directory and link in what `git archive` omits. */
 function reconstructPin() {
 	const dir = mkdtempSync(join(tmpdir(), "rocut-pin-"));
@@ -202,6 +236,7 @@ if (regenerate) {
 	const pinDir = reconstructPin();
 	try {
 		const records = runTsc(join(pinDir, "apps", "web"), [pinDir, REPO_ROOT]);
+		const typeCheckedFiles = countTypeCheckedFiles(join(pinDir, "apps", "web"));
 		const counts = tally(records);
 		const entries = [...counts.values()]
 			.map(({ record, count }) => ({
@@ -229,6 +264,7 @@ if (regenerate) {
 						"repairing them would alter the baseline this Slice compares against (ruling R1). " +
 						"Line and column are excluded from the comparison key; see the script header.",
 					totalDiagnostics: records.length,
+					typeCheckedFiles,
 					diagnostics: entries,
 				},
 				null,
@@ -237,6 +273,11 @@ if (regenerate) {
 		);
 		console.log(`wrote ${FIXTURE}`);
 		console.log(`${records.length} diagnostic(s), ${entries.length} distinct`);
+		console.log(
+			typeCheckedFiles
+				? `${typeCheckedFiles.repo} repo file(s) type-checked (${typeCheckedFiles.total} total, including lib/dependency declarations)`
+				: "file count unavailable — no compiler at the expected path",
+		);
 	} finally {
 		rmSync(pinDir, { recursive: true, force: true, maxRetries: 3 });
 	}
@@ -252,6 +293,7 @@ if (!existsSync(FIXTURE)) {
 const fixture = JSON.parse(readFileSync(FIXTURE, "utf8"));
 const baseline = new Map(fixture.diagnostics.map((d) => [keyOf(d), d.count]));
 const current = tally(runTsc(join(REPO_ROOT, "apps", "web"), [REPO_ROOT]));
+const typeCheckedFiles = countTypeCheckedFiles(join(REPO_ROOT, "apps", "web"));
 
 const regressions = [];
 const resolved = [];
@@ -271,6 +313,12 @@ for (const diagnostic of fixture.diagnostics) {
 const total = [...current.values()].reduce((sum, entry) => sum + entry.count, 0);
 console.log(`check-type-baseline: ${total} diagnostic(s) now, ${fixture.totalDiagnostics} at the pin ${fixture.pin.slice(0, 8)}`);
 console.log(`  compiler TypeScript ${fixture.compiler}, comparison key = file + code + message`);
+console.log(
+	typeCheckedFiles
+		? `  ${typeCheckedFiles.repo} repo file(s) type-checked now (${typeCheckedFiles.total} total, including lib/dependency declarations)` +
+				(fixture.typeCheckedFiles ? `; ${fixture.typeCheckedFiles.repo} repo file(s) at the pin` : "")
+		: "  file count unavailable — no compiler at the expected path",
+);
 
 if (resolved.length > 0) {
 	console.log("\nPresent at the pin, absent or reduced now:");

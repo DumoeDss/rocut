@@ -28,13 +28,23 @@ const c7ProofWebpackConfig: Pick<NextConfig, "webpack"> =
 						if (Array.isArray(config.resolve.alias)) {
 							throw new Error("C7 proof requires webpack's object alias form");
 						}
+						// headless-proof-control moved under the package extraction
+						// (Stage C) from "src/editor/session/..." (this app) to
+						// "packages/editor-classic/src/editor/session/...". The
+						// swap must key on the resolved absolute path webpack
+						// actually loads today, which is reached via evidence's
+						// relative "../editor/session/headless-proof-control", not
+						// through the "@/..." alias anymore — the specifier-form
+						// entry below is kept only in case something still reaches
+						// it that way, but the object-key entry is the one doing
+						// the real work.
 						const neutral = resolve(
-							process.cwd(),
-							"src/editor/session/headless-proof-control.ts",
+							repoRoot,
+							"packages/editor-classic/src/editor/session/headless-proof-control.ts",
 						);
 						const injected = resolve(
-							process.cwd(),
-							"src/editor/session/headless-proof-control-react.ts",
+							repoRoot,
+							"packages/editor-classic/src/editor/session/headless-proof-control-react.ts",
 						);
 						config.resolve.alias = {
 							...(config.resolve.alias ?? {}),

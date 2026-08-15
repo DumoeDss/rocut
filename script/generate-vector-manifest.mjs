@@ -29,9 +29,13 @@ if (unknownFlags.length > 0) {
 }
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+// The corpus moved under the package extraction (Stage C, S05 P1 task 3.1)
+// from "apps/web/src/editor/contracts/vectors/corpus" to
+// "packages/editor-contracts/src/vectors/corpus" — the old path no longer
+// exists, so `readdirSync` below would fail with ENOENT against it.
 const CORPUS_DIR = join(
 	REPO_ROOT,
-	"apps/web/src/editor/contracts/vectors/corpus",
+	"packages/editor-contracts/src/vectors/corpus",
 );
 const MANIFEST = join(CORPUS_DIR, "manifest.json");
 const SCHEMA = "transaction-vectors/v1";

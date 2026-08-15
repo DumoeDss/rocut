@@ -37,17 +37,17 @@ const TREE = "885d307814260b77397c2c2677b9361fdfc5f5e2";
 
 const required = [
 	"apps/vite-example/src/headless-entry.ts",
-	"apps/web/src/editor/session/headless-runtime-probe.ts",
-	"apps/web/src/editor/session/headless-semantic-fixture.ts",
-	"apps/web/src/editor/session/headless.ts",
-	"apps/web/src/editor/session/migration-gate.ts",
-	"apps/web/src/editor/persistence/session-persistence-coordinator.ts",
-	"apps/web/src/editor/persistence/project-codec.ts",
-	"apps/web/src/editor/persistence/opaque-value.ts",
-	"apps/web/src/editor/host/editor-host.ts",
-	"apps/web/src/editor/ports/project-store.ts",
-	"apps/web/src/editor/ports/in-memory/index.ts",
-	"apps/web/src/editor/ports/in-memory/host.ts",
+	"packages/editor-classic/src/editor/session/headless-runtime-probe.ts",
+	"packages/editor-classic/src/editor/session/headless-semantic-fixture.ts",
+	"packages/editor-classic/src/editor/session/headless.ts",
+	"packages/editor-classic/src/editor/session/migration-gate.ts",
+	"packages/editor-classic/src/editor/persistence/session-persistence-coordinator.ts",
+	"packages/editor-classic/src/editor/persistence/project-codec.ts",
+	"packages/editor-classic/src/editor/persistence/opaque-value.ts",
+	"packages/editor-ports/src/host/index.ts",
+	"packages/editor-ports/src/project-store.ts",
+	"packages/editor-ports/src/in-memory/index.ts",
+	"packages/editor-ports/src/in-memory/host.ts",
 ];
 
 function validEnvelope() {

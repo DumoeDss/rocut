@@ -1,0 +1,7 @@
+SBOM: 1375 npm packages, 80 wasm crates
+  OK    D-1  disposition=recorded  observed=present  — Root `package.json` declares a self-dependency `"opencut": "."`
+  OK    D-2  disposition=recorded  observed=present  — Root `package.json` declares application dependencies `next` and `better-auth`
+  OK    D-3  disposition=recorded  observed=present  — `rust/wasm/Cargo.toml` `repository` points at a nonexistent GitHub repository
+  OK    D-4  disposition=recorded  observed=present  — Published `opencut-wasm` declares `sideEffects` on a nonexistent `./snippets/*`
+  OK    D-5  disposition=repaired  observed=absent  — `rust/wasm` declared `license = "MIT"` while shipping no LICENSE file
+REAL_EXIT_CODE:0

@@ -1,0 +1,36 @@
+scratch root: E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\opencut-scratch-p3 (E:-drive default)
+CONTROL-1a root-outside-repo-tree: PASS (..\opencut-scratch-p3)
+CONTROL-1b root-outside-temp: PASS (checked 4 Temp root(s))
+lifecycle: wiping previous scratch root (marker verified)
+lifecycle: fresh scratch root created with marker (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\opencut-scratch-p3)
+pack: packed packages/editor-ports -> opencut-editor-ports-0.1.0.tgz
+pack: inventory: opencut-editor-ports-0.1.0.tgz — 21 file(s) hashed
+pack: packed packages/editor-contracts -> opencut-editor-contracts-0.1.0.tgz
+pack: inventory: opencut-editor-contracts-0.1.0.tgz — 59 file(s) hashed
+pack: packed packages/editor-classic -> opencut-editor-classic-0.1.0.tgz
+pack: inventory: opencut-editor-classic-0.1.0.tgz — 802 file(s) hashed
+pack: 3 tarball(s) staged into the scratch project
+install: scratch package.json written (deps + overrides, gate-1 shape)
+added 3 packages, and audited 4 packages in 5s
+
+found 0 vulnerabilities
+REAL_EXIT_CODE[npm-install]:0
+CONTROL-2 copy-not-link @opencut/editor-ports: PASS (lstat: real directory, symlink=false; lockfile resolved=file:tarballs/opencut-editor-ports-0.1.0.tgz, link=false)
+CONTROL-2 copy-not-link @opencut/editor-contracts: PASS (lstat: real directory, symlink=false; lockfile resolved=file:tarballs/opencut-editor-contracts-0.1.0.tgz, link=false)
+CONTROL-2 copy-not-link @opencut/editor-classic: PASS (lstat: real directory, symlink=false; lockfile resolved=file:tarballs/opencut-editor-classic-0.1.0.tgz, link=false)
+adapter: committed template materialized into scratch (script/fixtures/third-party-adapter)
+suites: npx --yes bun@1.2.18 adapter/run.ts (cwd: scratch root)
+alien adapter: third-party conformance run
+runtime: bun 1.2.18
+classic chain: NOT LOADABLE — @opencut/editor-classic/storage failed to import in this environment (recorded finding). The migration leg is skipped distinctly; every other surface still runs.
+  observed: ResolveMessage: Cannot find package 'culori' from 'E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\opencut-scratch-p3\node_modules\@opencut\editor-classic\src\services\storage\migrations\transformers\v21-to-v22.ts'
+suites/ports: passed=true cases=36 (migration absent: classic unresolved)
+suites/transaction: passed=true cases=21
+suites/engine: passed=true cases=38
+suites/draft: passed=true cases=22
+suites/vectors: verdict=passed vectors=29
+migration/by-replication: SKIPPED (classic unresolved — finding above)
+alien adapter: all exercised surfaces green
+REAL_EXIT_CODE[suites]:0
+REAL_EXIT_CODE[scratch-run]:0
+REAL_EXIT_CODE[overall]:0

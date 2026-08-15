@@ -1,11 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import { fileURLToPath } from "node:url";
-import type { EditorHost } from "../editor-host";
+import type { EditorHost } from "@opencut/editor-ports/host";
 import {
 	BrowserAssetResolver,
 	BrowserRuntimeAssetLoader,
 	BrowserRuntimeResourceHost,
-} from "../browser-runtime";
+} from "@opencut/editor-classic/browser";
 
 if (process.env.OPENCUT_C5_HOST_TEST_ISOLATED !== "1") {
 	test("production Host composition runs in an isolated wasm-mock process", () => {
@@ -26,7 +26,13 @@ if (process.env.OPENCUT_C5_HOST_TEST_ISOLATED !== "1") {
 		}
 	});
 } else {
-	await import("../../session/__tests__/wasm-test-mock");
+	// Must be its own standalone, sequentially-awaited import — see
+	// packages/editor-classic/src/evidence/index.ts's header comment. Bun
+	// does not guarantee this mock installs before the real "opencut-wasm"
+	// package if it's pulled in as one of several independent `export *`
+	// targets inside a shared barrel (i.e. importing the full "evidence"
+	// entry here instead is not equivalent and will crash on real wasm init).
+	await import("@opencut/editor-classic/evidence/wasm-test-mock");
 	const [
 		{ createNextEditorHost },
 		{ createViteEditorHost },
@@ -39,12 +45,12 @@ if (process.env.OPENCUT_C5_HOST_TEST_ISOLATED !== "1") {
 	] = await Promise.all([
 		import("../next-editor-host"),
 		import("../../../../../vite-example/src/host/vite-host-config"),
-		import("@/services/storage/browser-project-store"),
-		import("../../session/create-session"),
-		import("../../ports/in-memory/host"),
-		import("../../ports/in-memory"),
-		import("../../runtime/session-core-owner"),
-		import("../../session/c6-durable-reopen"),
+		import("@opencut/editor-classic/storage"),
+		import("@opencut/editor-classic/session"),
+		import("@opencut/editor-ports/in-memory/host"),
+		import("@opencut/editor-ports/in-memory"),
+		import("@opencut/editor-classic/runtime"),
+		import("@opencut/editor-classic/evidence"),
 	]);
 
 	function expectBrowserRoles(host: EditorHost): void {

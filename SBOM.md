@@ -13,8 +13,8 @@ Per-file content hashes of the inherited source are in [`SOURCE_INVENTORY.md`](S
 
 | Ecosystem | Count | Source |
 | --- | ---: | --- |
-| npm packages resolved | 1359 | `bun.lock` |
-| bun workspace members | 3 | `bun.lock` (`<root>`, `apps/vite-example`, `apps/web`) |
+| npm packages resolved | 1375 | `bun.lock` |
+| bun workspace members | 7 | `bun.lock` (`<root>`, `apps/electron-host`, `apps/vite-example`, `apps/web`, `packages/editor-classic`, `packages/editor-contracts`, `packages/editor-ports`) |
 | Rust crates in the workspace lockfile | 763 | `Cargo.lock` (includes `apps/desktop`'s `gpui` graph, which is **not** built for wasm) |
 | Rust crates in the `opencut-wasm` wasm32 graph | 80 | `cargo tree -p opencut-wasm --target wasm32-unknown-unknown` |
 
@@ -27,12 +27,14 @@ workspace member despite the `apps/*` glob. It is excluded from the distributabl
 
 | Package | Range |
 | --- | --- |
-| `@types/react` | `^19.2.10` |
-| `@types/react-dom` | `^19.2.3` |
+| `@types/react` | `18.3.28` |
+| `@types/react-dom` | `18.3.7` |
 | `better-auth` | `^1.4.15` |
 | `next` | `^16.1.3` |
 | `opencut` | `.` |
 | `opencut-wasm` | `file:./rust/wasm/pkg` |
+| `react` | `18.3.1` |
+| `react-dom` | `18.3.1` |
 
 ### Root `package.json` — direct devDependencies
 
@@ -93,9 +95,9 @@ workspace member despite the `apps/*` glob. It is excluded from the distributabl
 | `pg` | `^8.16.2` |
 | `postgres` | `^3.4.5` |
 | `radix-ui` | `^1.4.3` |
-| `react` | `^19.0.0` |
+| `react` | `18.3.1` |
 | `react-day-picker` | `^8.10.1` |
-| `react-dom` | `^19.0.0` |
+| `react-dom` | `18.3.1` |
 | `react-hook-form` | `^7.54.0` |
 | `react-icons` | `^5.4.0` |
 | `react-markdown` | `^10.1.0` |
@@ -128,8 +130,8 @@ workspace member despite the `apps/*` glob. It is excluded from the distributabl
 | `@types/bun` | `latest` |
 | `@types/node` | `^24.2.1` |
 | `@types/pg` | `^8.15.4` |
-| `@types/react` | `^19` |
-| `@types/react-dom` | `^19` |
+| `@types/react` | `18.3.28` |
+| `@types/react-dom` | `18.3.7` |
 | `cross-env` | `^7.0.3` |
 | `dotenv` | `^16.5.0` |
 | `drizzle-kit` | `^0.31.4` |

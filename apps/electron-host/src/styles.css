@@ -1,0 +1,29 @@
+@import "tailwindcss/theme.css";
+@import "tailwindcss/preflight.css";
+@import "../../../packages/editor-classic/src/surface/surface.css";
+
+/*
+ * The editor's stylesheet is reused rather than reimplemented. The relative
+ * path is required because Tailwind's PostCSS importer does not know Vite
+ * aliases. Same shape as the Vite example's styles.css; this app sits at the
+ * same repository depth, so the relative paths are identical.
+ */
+
+/* Electron-host reset; editor styles remain Surface-scoped. */
+html,
+body,
+#root {
+	min-height: 100%;
+	margin: 0;
+}
+
+/*
+ * Tailwind 4 detects sources relative to the CSS file that imports it — the
+ * P1 Blocker was a stale scan scope producing a silently unstyled,
+ * non-interactive editor. Without these, the scan roots inside this app and
+ * find none of the editor's classes — a build that succeeds and is completely
+ * unstyled. The first build smoke includes a visual check for exactly this
+ * reason.
+ */
+@source "../../../packages/editor-classic/src";
+@source "./";

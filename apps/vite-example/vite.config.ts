@@ -9,7 +9,6 @@ import { moduleGraph } from "./build/module-graph";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "../..");
-const webSrc = resolve(repoRoot, "apps/web/src");
 const webPublic = resolve(repoRoot, "apps/web/public");
 const publicBase = process.env.OPENCUT_PUBLIC_BASE || "/";
 const outputDirectory = process.env.C4_VITE_OUT_DIR || "dist";
@@ -32,11 +31,6 @@ export default defineConfig({
 		moduleGraph({ repoRoot }),
 	],
 	resolve: {
-		alias: {
-			// One source tree, two hosts. The editor is aliased rather than copied,
-			// so `apps/web` stays a live regression check against the same files.
-			"@": webSrc,
-		},
 		// Both this package and `apps/web` depend on React; two copies would break
 		// hooks at runtime.
 		dedupe: ["react", "react-dom"],

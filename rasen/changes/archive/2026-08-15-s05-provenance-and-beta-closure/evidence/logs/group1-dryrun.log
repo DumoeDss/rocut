@@ -1,0 +1,39 @@
+P7 Group 1.2 dry-run at 959f41d2 — generator with CURRENT (pre-P1) areas at the pre-ship tree
+
+== node script/generate-source-inventory.mjs (current AREAS) ==
+inventory: 1069 files, 7.15 MB, rollup 8ce81cbd563de44ca6d99857fa9959feaeae4eb0992656deb1c4a10b7ba168bf
+drift vs pin: 34 modified, 12 added, 641 other
+REAL_EXIT_CODE[inventory]:0
+
+== drift from the regenerated json ==
+areas: [{"area":"apps/web/src","files":691},{"area":"rust","files":43},{"area":"apps/web/public","files":335}]
+totals.files: 1069
+drift: modified=34 added=12 other=641
+other-status-split: {"D":641}
+
+== Widened-areas probe (throwaway git diff --name-status -M cf5e79e9 -- over the design-E4 set; not a landed edit) ==
+widened set: apps/web/src apps/web/public rust script packages/editor-{ports,contracts,classic} examples apps/vite-example apps/electron-host
+  M: 34
+  A: 533
+  D: 37
+  C: 0
+  movedUnmodified (R100): 151
+  movedModified (R<100): 453
+  rename destinations: packages/editor-classic:604
+  added by prefix: examples:34 apps/electron-host:33 apps/vite-example:57 packages/*:285 script:~114 rust/wasm:2 apps/web:10
+PATCHES reconciliation (padding-aware row regex ^\| P-\d+ \| `path`):
+  rows=265 unique-upstream-paths=195
+  need-row=487 (M 34 + movedModified 453)
+  missing rows=336 (all upstream paths under apps/web/src)
+Added-file inventory delta: UPSTREAM.md carries NO per-file added inventory today
+  (area tables only) — the added-file inventory to reconcile against is authored by
+  this change (6.3); the generator's own A enumeration (533) is the derivation.
+
+== Expected Phase-B deltas the dry-run proves ==
+1. Rename restatement: 604 R entries (151 clean + 453 modified) restating the P1 move;
+   the committed inventory's 205-modified/229-added/0-other picture is stale in both
+   directions (current-areas re-run: 34 M / 12 A / 641 D).
+2. Patch-row gap: 336 rows to author in Phase A (task 4.2) so Phase B is pure regen.
+3. Added-file delta: 533 fork-added paths across the widened areas, none inventoried
+   in UPSTREAM.md per-file today.
+REAL_EXIT_CODE[dryrun]:0

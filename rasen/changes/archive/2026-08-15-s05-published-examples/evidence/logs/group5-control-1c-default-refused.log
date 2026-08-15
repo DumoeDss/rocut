@@ -1,0 +1,7 @@
+run-published-examples: running at 4d4a13da
+scratch root: E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\opencut-scratch-p6-examples (E:-drive default)
+CONTROL-1a root-outside-repo-tree: PASS (..\opencut-scratch-p6-examples)
+CONTROL-1b root-outside-temp: PASS (checked 4 Temp root(s))
+run-published-examples: an ancestor of the scratch root carries node_modules (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia) — upward resolution can satisfy imports this scratch tree never installed, so a green run here is not a self-contained proof; set OPENCUT_SCRATCH_ROOT under an ancestor chain with no node_modules (a fresh directory under the user profile works)
+REAL_EXIT_CODE[control-1]:1
+REAL_EXIT_CODE:1

@@ -11,15 +11,24 @@
 		"esModuleInterop": true,
 		"resolveJsonModule": true,
 		"isolatedModules": true,
-		"types": ["vite/client"],
-		"paths": {
-			"@/*": ["../web/src/*"]
-		}
+		// "bun" is required, not just convenient: `@opencut/editor-classic/evidence`
+		// (imported by real app code, e.g. `src/app.tsx`) deliberately re-exports
+		// `wasm-test-mock` — evidence/mock infrastructure other Slice children
+		// consume, not an internal leak (see the entry's own barrel comment) — and
+		// that module's types depend on `bun:test`.
+		"types": ["vite/client", "bun"]
 	},
-	// `../web/src/types` carries the editor's ambient declarations (`EyeDropper`,
-	// `soundtouchjs`). `apps/web/tsconfig.json` picks them up via its own
-	// `src/types/**/*.d.ts` entry; without the equivalent here, type-checking the
-	// example reports three errors that exist only because of this config gap.
+	// The editor's ambient declarations (`EyeDropper`, `soundtouchjs`) moved
+	// under the package extraction (Stage C) from `apps/web/src/types` to
+	// `packages/*/src/types`. `apps/web/tsconfig.json` picks these up
+	// incidentally via its much broader `../../packages/*/src/**/*.ts` entry
+	// (which also type-checks every package's own `__tests__`, relying on
+	// `apps/web`'s unrestricted `@types/*` auto-inclusion for `bun:test`).
+	// This app's `types` array above is deliberately narrow (`vite/client`
+	// only), so mirroring that broad glob here would surface unresolvable
+	// `bun:test`/`Bun` errors from package-internal tests this app has no
+	// business type-checking. Targeting `src/types` only picks up the ambient
+	// declarations themselves.
 	"include": [
 		"src",
 		"build",
@@ -29,6 +38,6 @@
 		"playwright.config.ts",
 		"playwright.surface.config.ts",
 		"playwright.probe.config.ts",
-		"../web/src/types/**/*.d.ts"
+		"../../packages/*/src/types/**/*.d.ts"
 	]
 }

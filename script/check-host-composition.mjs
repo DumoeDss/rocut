@@ -3,10 +3,13 @@
  * Production Host composition gate (S02/C5).
  *
  * The in-memory bundle remains useful for non-browser roles, so this check does
- * not ban createInMemoryPorts wholesale. It proves that each browser Host
- * explicitly constructs one stable BrowserProjectStore and final-overrides the
- * inherited reference store. It also rejects the retired partial/resolver seam
- * and any parallel persistence acquisition path.
+ * not ban createInMemoryPorts wholesale. It proves that each production Host
+ * explicitly constructs one stable durable store and final-overrides the
+ * inherited reference store — BrowserProjectStore on the browser Hosts,
+ * FilesystemProjectStore on the desktop Host (s05-second-host generalized the
+ * rule past BrowserProjectStore; the intent was always "one stable durable
+ * store per Host", never a specific class). It also rejects the retired
+ * partial/resolver seam and any parallel persistence acquisition path.
  */
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
@@ -14,11 +17,26 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const HOST_ROOTS = [
-	"apps/vite-example/src/host/vite-host-config.ts",
-	"apps/web/src/editor/host/next-editor-host.ts",
+// Each Host names its own durable store class and the identity option that
+// construction must spell out; every other rule below is class-agnostic.
+const HOSTS = [
+	{
+		path: "apps/vite-example/src/host/vite-host-config.ts",
+		durableStore: "BrowserProjectStore",
+		identityKey: "storageIdentity",
+	},
+	{
+		path: "apps/web/src/editor/host/next-editor-host.ts",
+		durableStore: "BrowserProjectStore",
+		identityKey: "storageIdentity",
+	},
+	{
+		path: "apps/electron-host/src/host/electron-host-config.ts",
+		durableStore: "FilesystemProjectStore",
+		identityKey: "identity",
+	},
 ];
-const HOST_CONTRACT = "apps/web/src/editor/host/editor-host.ts";
+const HOST_CONTRACT = "packages/editor-ports/src/host/index.ts";
 const RETIRED_ADAPTER = "apps/web/src/services/storage/browser-host-adapter.ts";
 
 function sourceFiles() {
@@ -32,6 +50,10 @@ function sourceFiles() {
 			"--exclude-standard",
 			"apps/web/src",
 			"apps/vite-example/src",
+			"apps/electron-host/src",
+			"packages/editor-classic/src",
+			"packages/editor-ports/src",
+			"packages/editor-contracts/src",
 		],
 		{ cwd: REPO_ROOT, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
 	)
@@ -46,27 +68,25 @@ function stripComments(source) {
 	return source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
 }
 
-function checkHost({ path, source }) {
+function checkHost({ path, source, durableStore, identityKey }) {
 	const violations = [];
 	const code = stripComments(source);
 	const factoryIndex = code.indexOf("export function create");
-	const declaration =
-		/const\s+([A-Za-z_$][\w$]*)\s*=\s*new\s+BrowserProjectStore\s*\(\s*\{/.exec(
-			code,
-		);
+	const declaration = new RegExp(
+		`const\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*new\\s+${durableStore}\\s*\\(`,
+	).exec(code);
 	if (!declaration || declaration.index > factoryIndex) {
 		violations.push({
-			rule: "stable-explicit-browser-store",
+			rule: "stable-explicit-durable-store",
 			path,
-			detail:
-				"BrowserProjectStore must be a module-stable const before the Host factory",
+			detail: `${durableStore} must be a module-stable const before the Host factory`,
 		});
 	}
-	if (!/storageIdentity\s*:/.test(code)) {
+	if (!new RegExp(`${identityKey}\\s*:`).test(code)) {
 		violations.push({
 			rule: "explicit-durable-identity",
 			path,
-			detail: "BrowserProjectStore construction must name storageIdentity",
+			detail: `${durableStore} construction must name ${identityKey}`,
 		});
 	}
 	const lastReferenceSpread = Math.max(
@@ -195,7 +215,7 @@ function checkGraph({ files }) {
 			});
 		}
 		if (
-			!path.startsWith("apps/web/src/services/storage/") &&
+			!path.startsWith("packages/editor-classic/src/services/storage/") &&
 			/\b(?:interface|type|class)\s+(?:StoragePort|MediaStore|MediaPort|MediaStoragePort)\b/.test(
 				code,
 			)
@@ -207,7 +227,7 @@ function checkGraph({ files }) {
 					"ProjectStore is the only storage/media persistence port in the production graph",
 			});
 		}
-		if (path === "apps/web/src/editor/ports/index.ts") {
+		if (path === "packages/editor-ports/src/index.ts") {
 			const portBody =
 				/interface\s+EditorHostPorts\s*\{([\s\S]*?)\}/.exec(code)?.[1] ?? "";
 			if (
@@ -235,20 +255,61 @@ function runNegativeControl() {
 			return { ...createInMemoryPorts(), ...browser, store: durableStore };
 		}
 	`;
+	// The browser spec exercises the rules exactly as the browser Hosts live
+	// them; the desktop spec proves the same rules fire for a Host whose
+	// durable store is FilesystemProjectStore with its own identity key.
+	const browserSpec = {
+		durableStore: "BrowserProjectStore",
+		identityKey: "storageIdentity",
+	};
+	const desktopSpec = {
+		durableStore: "FilesystemProjectStore",
+		identityKey: "identity",
+	};
+	const validDesktopHost = `
+		const durableStore = new FilesystemProjectStore(new IpcStoreBridge(), { identity: DEFAULT_IDENTITY });
+		export function createHost() {
+			return { ...createInMemoryPorts(), store: durableStore };
+		}
+	`;
 	const fixtures = [
 		{
-			rule: "stable-explicit-browser-store",
+			rule: "stable-explicit-durable-store",
 			kind: "host",
+			spec: browserSpec,
 			source: `export function createHost() { const store = new BrowserProjectStore({ storageIdentity: identity }); return { store }; }`,
+		},
+		{
+			rule: "stable-explicit-durable-store",
+			kind: "host",
+			spec: desktopSpec,
+			source: validDesktopHost.replace(
+				"const durableStore = new FilesystemProjectStore",
+				"let durableStore = new FilesystemProjectStore",
+			),
+		},
+		{
+			rule: "explicit-durable-identity",
+			kind: "host",
+			spec: desktopSpec,
+			source: validDesktopHost.replace(", { identity: DEFAULT_IDENTITY }", ""),
 		},
 		{
 			rule: "final-store-override",
 			kind: "host",
+			spec: browserSpec,
 			source: `const durableStore = new BrowserProjectStore({ storageIdentity: identity }); export function createHost() { return { store: durableStore, ...createInMemoryPorts(), ...browser }; }`,
+		},
+		{
+			rule: "final-store-override",
+			kind: "host",
+			spec: desktopSpec,
+			source: `const durableStore = new FilesystemProjectStore(new IpcStoreBridge(), { identity: DEFAULT_IDENTITY }); export function createHost() { return { store: durableStore, ...createInMemoryPorts() }; }`,
 		},
 		{
 			rule: "no-store-fallback",
 			kind: "host",
+			spec: browserSpec,
 			source: validHost.replace(
 				"store: durableStore",
 				"store: configured ?? inMemory",
@@ -257,11 +318,13 @@ function runNegativeControl() {
 		{
 			rule: "no-production-in-memory-store",
 			kind: "host",
+			spec: browserSpec,
 			source: `${validHost}\nvoid InMemoryProjectStore;`,
 		},
 		{
 			rule: "no-retired-storage-path",
 			kind: "host",
+			spec: browserSpec,
 			source: `${validHost}\nvoid BrowserHostAdapter;`,
 		},
 		{
@@ -307,7 +370,11 @@ function runNegativeControl() {
 	for (const fixture of fixtures) {
 		let hits;
 		if (fixture.kind === "host") {
-			hits = checkHost({ path: "fixture-host.ts", source: fixture.source });
+			hits = checkHost({
+				path: "fixture-host.ts",
+				source: fixture.source,
+				...fixture.spec,
+			});
 		} else if (fixture.kind === "contract") {
 			hits = checkContract({
 				path: "fixture-editor-host.ts",
@@ -349,11 +416,13 @@ function runNegativeControl() {
 function runCheck() {
 	const files = sourceFiles();
 	const violations = [];
-	for (const path of HOST_ROOTS) {
+	for (const host of HOSTS) {
 		violations.push(
 			...checkHost({
-				path,
-				source: readFileSync(join(REPO_ROOT, path), "utf8"),
+				path: host.path,
+				source: readFileSync(join(REPO_ROOT, host.path), "utf8"),
+				durableStore: host.durableStore,
+				identityKey: host.identityKey,
 			}),
 		);
 	}
@@ -373,7 +442,7 @@ function runCheck() {
 	}
 
 	console.log(
-		`check-host-composition: scanned ${HOST_ROOTS.length} Host roots and ${files.length} production modules`,
+		`check-host-composition: scanned ${HOSTS.length} Host roots and ${files.length} production modules`,
 	);
 	for (const violation of violations) {
 		console.error(
@@ -382,7 +451,7 @@ function runCheck() {
 	}
 	if (violations.length > 0) process.exit(1);
 	console.log(
-		"  PASS  stable explicit browser stores are the final Host override",
+		"  PASS  stable explicit durable stores are the final Host override",
 	);
 	console.log(
 		"  PASS  EditorHost is required; its protected resolver is identity-only",

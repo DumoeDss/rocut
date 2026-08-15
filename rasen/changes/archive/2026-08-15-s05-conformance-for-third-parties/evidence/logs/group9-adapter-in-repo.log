@@ -1,0 +1,13 @@
+alien adapter: third-party conformance run
+runtime: bun 1.2.2
+classic chain: NOT LOADABLE — @opencut/editor-classic/storage/migrations failed to load or initialize in this environment (recorded finding). The migration leg is skipped distinctly; every other surface still runs.
+  observed: wasm.__wbindgen_start is not a function. (In 'wasm.__wbindgen_start()', 'wasm.__wbindgen_start' is undefined)
+suites/ports: passed=true cases=36 (migration absent: classic unresolved)
+suites/transaction: passed=true cases=21
+suites/engine: passed=true cases=38
+suites/draft: passed=true cases=22
+suites/vectors: verdict=passed vectors=29
+migration/by-replication: SKIPPED (classic unresolved — finding above)
+alien adapter: all exercised surfaces green
+EXIT[adapter-inrepo]:0
+REAL_EXIT_CODE:0

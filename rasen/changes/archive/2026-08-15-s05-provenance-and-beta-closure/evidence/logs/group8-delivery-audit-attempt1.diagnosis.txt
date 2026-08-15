@@ -1,0 +1,9 @@
+attempt 1 (4 FAIL) diagnosis, all audit-script artifacts, no delivery gap:
+- R2.S1.c1b expected 11 area rows; the derivation yields 10 areas (miscounted
+  the reconcile line) — table, dir-existence walk and areas line all say 10.
+  The 0-file rows are correct semantics: the inventory hashes the PIN, where
+  packages/*, apps/electron-host, vite-example and examples did not exist.
+- R3.S1.c1/c2 node probe used require('<relative>') — a bare specifier Node
+  never resolves as a path; switched to readFileSync+JSON.parse.
+- R5.S1.c3 / R5.S3.c1c / R5.S3.c1d anchors spanned hard line-wraps in the
+  markdown; re-anchored to single-line substrings of the same sentences.

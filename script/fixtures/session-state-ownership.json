@@ -23,12 +23,17 @@
 			"classification": "lifecycle-effect"
 		},
 		{
-			"path": "apps/web/src/actions/use-editor-actions.ts",
+			"path": "apps/electron-host/src/project-picker.tsx",
+			"count": 1,
+			"classification": "lifecycle-effect"
+		},
+		{
+			"path": "packages/editor-classic/src/actions/use-editor-actions.ts",
 			"count": 1,
 			"classification": "controller-or-event"
 		},
 		{
-			"path": "apps/web/src/actions/use-keybindings.ts",
+			"path": "packages/editor-classic/src/actions/use-keybindings.ts",
 			"count": 1,
 			"classification": "controller-or-event"
 		},
@@ -38,370 +43,370 @@
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/components/editor/editor-header.tsx",
+			"path": "packages/editor-classic/src/components/editor/editor-header.tsx",
 			"count": 2,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/components/editor/export-button.tsx",
+			"path": "packages/editor-classic/src/components/editor/export-button.tsx",
 			"count": 2,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/components/editor/panels/assets/draggable-item.tsx",
+			"path": "packages/editor-classic/src/components/editor/panels/assets/draggable-item.tsx",
 			"count": 1,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/components/editor/panels/assets/views/assets.tsx",
+			"path": "packages/editor-classic/src/components/editor/panels/assets/views/assets.tsx",
 			"count": 2,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/components/editor/panels/assets/views/settings/background.tsx",
+			"path": "packages/editor-classic/src/components/editor/panels/assets/views/settings/background.tsx",
 			"count": 1,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/components/editor/panels/assets/views/settings/index.tsx",
+			"path": "packages/editor-classic/src/components/editor/panels/assets/views/settings/index.tsx",
 			"count": 1,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/components/editor/panels/properties/hooks/use-keyframed-param-property.ts",
+			"path": "packages/editor-classic/src/components/editor/panels/properties/hooks/use-keyframed-param-property.ts",
 			"count": 1,
 			"classification": "controller-or-event"
 		},
 		{
-			"path": "apps/web/src/components/editor/scenes-view.tsx",
+			"path": "packages/editor-classic/src/components/editor/scenes-view.tsx",
 			"count": 1,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/components/providers/editor-provider.tsx",
+			"path": "packages/editor-classic/src/components/providers/editor-provider.tsx",
 			"count": 2,
 			"classification": "lifecycle-effect"
 		},
 		{
-			"path": "apps/web/src/editor/use-menu-preview.ts",
+			"path": "packages/editor-classic/src/editor/use-menu-preview.ts",
 			"count": 1,
 			"classification": "controller-or-event"
 		},
 		{
-			"path": "apps/web/src/effects/components/assets-view.tsx",
+			"path": "packages/editor-classic/src/effects/components/assets-view.tsx",
 			"count": 1,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/effects/components/effects-tab.tsx",
+			"path": "packages/editor-classic/src/effects/components/effects-tab.tsx",
 			"count": 1,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/graphics/components/graphic-tab.tsx",
+			"path": "packages/editor-classic/src/graphics/components/graphic-tab.tsx",
 			"count": 1,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/masks/components/masks-tab.tsx",
+			"path": "packages/editor-classic/src/masks/components/masks-tab.tsx",
 			"count": 2,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/masks/use-mask-handles.ts",
+			"path": "packages/editor-classic/src/masks/use-mask-handles.ts",
 			"count": 1,
 			"classification": "controller-or-event"
 		},
 		{
-			"path": "apps/web/src/media/use-file-upload.ts",
+			"path": "packages/editor-classic/src/media/use-file-upload.ts",
 			"count": 1,
 			"classification": "controller-or-event"
 		},
 		{
-			"path": "apps/web/src/media/use-paste-media.ts",
+			"path": "packages/editor-classic/src/media/use-paste-media.ts",
 			"count": 1,
 			"classification": "controller-or-event"
 		},
 		{
-			"path": "apps/web/src/preview/components/context-menu.tsx",
+			"path": "packages/editor-classic/src/preview/components/context-menu.tsx",
 			"count": 1,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/preview/components/index.tsx",
+			"path": "packages/editor-classic/src/preview/components/index.tsx",
 			"count": 2,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/preview/components/text-edit-overlay.tsx",
+			"path": "packages/editor-classic/src/preview/components/text-edit-overlay.tsx",
 			"count": 1,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/preview/components/toolbar.tsx",
+			"path": "packages/editor-classic/src/preview/components/toolbar.tsx",
 			"count": 1,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/preview/components/use-playback-time.ts",
+			"path": "packages/editor-classic/src/preview/components/use-playback-time.ts",
 			"count": 1,
 			"classification": "external-store-subscription"
 		},
 		{
-			"path": "apps/web/src/preview/hooks/use-preview-interaction.ts",
+			"path": "packages/editor-classic/src/preview/hooks/use-preview-interaction.ts",
 			"count": 1,
 			"classification": "controller-or-event"
 		},
 		{
-			"path": "apps/web/src/preview/hooks/use-transform-handles.ts",
+			"path": "packages/editor-classic/src/preview/hooks/use-transform-handles.ts",
 			"count": 1,
 			"classification": "controller-or-event"
 		},
 		{
-			"path": "apps/web/src/sounds/components/assets-view.tsx",
+			"path": "packages/editor-classic/src/sounds/components/assets-view.tsx",
 			"count": 1,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/speed/components/speed-tab.tsx",
+			"path": "packages/editor-classic/src/speed/components/speed-tab.tsx",
 			"count": 1,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/stickers/components/assets-view.tsx",
+			"path": "packages/editor-classic/src/stickers/components/assets-view.tsx",
 			"count": 1,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/subtitles/components/assets-view.tsx",
+			"path": "packages/editor-classic/src/subtitles/components/assets-view.tsx",
 			"count": 1,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/text/components/assets-view.tsx",
+			"path": "packages/editor-classic/src/text/components/assets-view.tsx",
 			"count": 1,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/timeline/bookmarks/components/bookmarks.tsx",
+			"path": "packages/editor-classic/src/timeline/bookmarks/components/bookmarks.tsx",
 			"count": 2,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/timeline/bookmarks/hooks/use-bookmark-drag.ts",
+			"path": "packages/editor-classic/src/timeline/bookmarks/hooks/use-bookmark-drag.ts",
 			"count": 1,
 			"classification": "controller-or-event"
 		},
 		{
-			"path": "apps/web/src/timeline/components/audio-volume-line.tsx",
+			"path": "packages/editor-classic/src/timeline/components/audio-volume-line.tsx",
 			"count": 1,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/timeline/components/graph-editor/use-controller.ts",
+			"path": "packages/editor-classic/src/timeline/components/graph-editor/use-controller.ts",
 			"count": 1,
 			"classification": "controller-or-event"
 		},
 		{
-			"path": "apps/web/src/timeline/components/index.tsx",
+			"path": "packages/editor-classic/src/timeline/components/index.tsx",
 			"count": 2,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/timeline/components/timeline-element.tsx",
+			"path": "packages/editor-classic/src/timeline/components/timeline-element.tsx",
 			"count": 1,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/timeline/components/timeline-playhead.tsx",
+			"path": "packages/editor-classic/src/timeline/components/timeline-playhead.tsx",
 			"count": 1,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/timeline/components/timeline-toolbar.tsx",
+			"path": "packages/editor-classic/src/timeline/components/timeline-toolbar.tsx",
 			"count": 1,
 			"classification": "event-handler"
 		},
 		{
-			"path": "apps/web/src/timeline/hooks/element/use-element-interaction.ts",
+			"path": "packages/editor-classic/src/timeline/hooks/element/use-element-interaction.ts",
 			"count": 1,
 			"classification": "controller-or-event"
 		},
 		{
-			"path": "apps/web/src/timeline/hooks/element/use-element-selection.ts",
+			"path": "packages/editor-classic/src/timeline/hooks/element/use-element-selection.ts",
 			"count": 1,
 			"classification": "controller-or-event"
 		},
 		{
-			"path": "apps/web/src/timeline/hooks/element/use-keyframe-drag.ts",
+			"path": "packages/editor-classic/src/timeline/hooks/element/use-keyframe-drag.ts",
 			"count": 1,
 			"classification": "controller-or-event"
 		},
 		{
-			"path": "apps/web/src/timeline/hooks/element/use-keyframe-selection.ts",
+			"path": "packages/editor-classic/src/timeline/hooks/element/use-keyframe-selection.ts",
 			"count": 1,
 			"classification": "controller-or-event"
 		},
 		{
-			"path": "apps/web/src/timeline/hooks/use-element-preview.ts",
+			"path": "packages/editor-classic/src/timeline/hooks/use-element-preview.ts",
 			"count": 1,
 			"classification": "controller-or-event"
 		},
 		{
-			"path": "apps/web/src/timeline/hooks/use-timeline-drag-drop.ts",
+			"path": "packages/editor-classic/src/timeline/hooks/use-timeline-drag-drop.ts",
 			"count": 1,
 			"classification": "controller-or-event"
 		},
 		{
-			"path": "apps/web/src/timeline/hooks/use-timeline-playhead.ts",
+			"path": "packages/editor-classic/src/timeline/hooks/use-timeline-playhead.ts",
 			"count": 1,
 			"classification": "controller-or-event"
 		},
 		{
-			"path": "apps/web/src/timeline/hooks/use-timeline-resize.ts",
+			"path": "packages/editor-classic/src/timeline/hooks/use-timeline-resize.ts",
 			"count": 1,
 			"classification": "controller-or-event"
 		},
 		{
-			"path": "apps/web/src/timeline/hooks/use-timeline-seek.ts",
+			"path": "packages/editor-classic/src/timeline/hooks/use-timeline-seek.ts",
 			"count": 1,
 			"classification": "controller-or-event"
 		},
 		{
-			"path": "apps/web/src/timeline/hooks/use-timeline-zoom.ts",
+			"path": "packages/editor-classic/src/timeline/hooks/use-timeline-zoom.ts",
 			"count": 1,
 			"classification": "controller-or-event"
 		}
 	],
 	"processSharedMutable": [
 		{
-			"path": "apps/web/src/editor/cancel-interaction.ts",
+			"path": "packages/editor-classic/src/editor/cancel-interaction.ts",
 			"symbol": "cancellersBySession",
 			"classification": "session-owned-weak-index",
 			"reason": "The process index has no current/default route; each mutable Set is reachable only by its explicit EditorSession and is removed on disposal."
 		},
 		{
-			"path": "apps/web/src/editor/runtime/session-core-owner.ts",
+			"path": "packages/editor-classic/src/editor/runtime/session-core-owner.ts",
 			"symbol": "editorsBySession",
 			"classification": "session-owned-weak-index",
 			"reason": "C2's explicit-session owner map has no default/current accessor and drops the entry on disposal."
 		},
 		{
-			"path": "apps/web/src/editor/runtime/process-bootstrap.ts",
+			"path": "packages/editor-classic/src/editor/runtime/process-bootstrap.ts",
 			"symbol": "bootstrapSnapshot",
 			"classification": "idempotent-definition-bootstrap",
 			"reason": "The snapshot records immutable definition registration identity and never carries session state."
 		},
 		{
-			"path": "apps/web/src/editor/session/migration-gate.ts",
+			"path": "packages/editor-classic/src/editor/session/migration-gate.ts",
 			"symbol": "migrationRuns",
 			"classification": "shared-durable-store-migration",
 			"reason": "Migration is serialized by durable ProjectStore identity so two sessions cannot race the same substrate."
 		},
 		{
-			"path": "apps/web/src/editor/persistence/session-persistence-coordinator.ts",
+			"path": "packages/editor-classic/src/editor/persistence/session-persistence-coordinator.ts",
 			"symbol": "libraryArbitrationByStore",
 			"classification": "shared-durable-store-operation-arbitration",
 			"reason": "The WeakMap is keyed only by an explicitly injected ProjectStore identity and holds bounded in-flight Promise tails per logical library key, never library payload or live session state; each key and the weak entry are removed after settlement."
 		},
 		{
-			"path": "apps/web/src/editor/runtime/session-stores.ts",
+			"path": "packages/editor-classic/src/editor/runtime/session-stores.ts",
 			"symbol": "storesBySession",
 			"classification": "session-owned-weak-index",
 			"reason": "Every value is one complete ten-store registry keyed only by an explicit EditorSession and removed on disposal."
 		},
 		{
-			"path": "apps/web/src/editor/session/session-resources.ts",
+			"path": "packages/editor-classic/src/editor/session/session-resources.ts",
 			"symbol": "claimedGpuHandles",
 			"classification": "deferred-c6-runtime-ownership-index",
 			"reason": "Cross-session reconciliation must distinguish another live owner's handle from a genuinely untracked runtime allocation."
 		},
 		{
-			"path": "apps/web/src/editor/runtime/wasm-runtime-providers.ts",
+			"path": "packages/editor-classic/src/editor/runtime/wasm-runtime-providers.ts",
 			"symbol": "sharedLease",
 			"classification": "shared-runtime-final-owner-lease",
 			"reason": "The process-wide WASM lease only counts explicit session owners and is released by the final owner after exact live-handle reconciliation; it carries no editor state or default session."
 		},
 		{
-			"path": "apps/web/src/editor/runtime/wasm-runtime-providers.ts",
+			"path": "packages/editor-classic/src/editor/runtime/wasm-runtime-providers.ts",
 			"symbol": "generation",
 			"classification": "shared-runtime-final-owner-lease",
 			"reason": "The monotonic generation distinguishes serialized runtime lease instances and cannot publish session state."
 		},
 		{
-			"path": "apps/web/src/editor/runtime/wasm-runtime-providers.ts",
+			"path": "packages/editor-classic/src/editor/runtime/wasm-runtime-providers.ts",
 			"symbol": "transitionTail",
 			"classification": "shared-runtime-final-owner-lease",
 			"reason": "The promise tail serializes acquire/release transitions for the shared WASM lease; it contains only operation ordering, never project or editor state."
 		},
 		{
-			"path": "apps/web/src/services/renderer/compositor/frame-descriptor.ts",
+			"path": "packages/editor-classic/src/services/renderer/compositor/frame-descriptor.ts",
 			"symbol": "identityKeys",
 			"classification": "content-identity-cache",
 			"reason": "Frame identity is content keyed and contains no session publication state."
 		},
 		{
-			"path": "apps/web/src/services/renderer/compositor/frame-descriptor.ts",
+			"path": "packages/editor-classic/src/services/renderer/compositor/frame-descriptor.ts",
 			"symbol": "nextIdentity",
 			"classification": "content-identity-cache",
 			"reason": "The counter only mints keys for the accompanying WeakMap and cannot publish editor state."
 		},
 		{
-			"path": "apps/web/src/services/renderer/nodes/image-node.ts",
+			"path": "packages/editor-classic/src/services/renderer/nodes/image-node.ts",
 			"symbol": "imageSourceCache",
 			"classification": "content-keyed-promise-cache",
 			"reason": "Entries are keyed by immutable source URL/size and contain decoded source promises, not session state."
 		},
 		{
-			"path": "apps/web/src/services/renderer/nodes/sticker-node.ts",
+			"path": "packages/editor-classic/src/services/renderer/nodes/sticker-node.ts",
 			"symbol": "stickerSourceCache",
 			"classification": "content-keyed-promise-cache",
 			"reason": "Entries are keyed by the Host-resolved immutable URL plus requested dimensions and contain decoded source promises, not session state."
 		},
 		{
-			"path": "apps/web/src/services/renderer/effect-preview-source.ts",
+			"path": "packages/editor-classic/src/services/renderer/effect-preview-source.ts",
 			"symbol": "sources",
 			"classification": "host-resolver-owned-weak-index-until-c6",
 			"reason": "Each decoded preview source is keyed only by one immutable Host AssetResolver identity, so bases cannot share mutable path/image state; C6 owns deterministic image/canvas disposal."
 		},
 		{
-			"path": "apps/web/src/services/renderer/effect-preview.ts",
+			"path": "packages/editor-classic/src/services/renderer/effect-preview.ts",
 			"symbol": "services",
 			"classification": "host-resolver-owned-weak-index-until-c6",
 			"reason": "Each service is keyed only by one immutable Host AssetResolver and delegates to that resolver's isolated source; C6 owns deterministic service disposal."
 		},
 		{
-			"path": "apps/web/src/graphics/index.ts",
+			"path": "packages/editor-classic/src/graphics/index.ts",
 			"symbol": "graphicPreviewUrlCache",
 			"classification": "content-keyed-url-cache",
 			"reason": "Entries are deterministic preview URLs keyed by definition id and parameter content."
 		},
 		{
-			"path": "apps/web/src/stickers/providers/flags.ts",
+			"path": "packages/editor-classic/src/stickers/providers/flags.ts",
 			"symbol": "countriesPromise",
 			"classification": "immutable-content-promise",
 			"reason": "One immutable country definition dataset is shared; request generations and browse publication remain session-local."
 		},
 		{
-			"path": "apps/web/src/stickers/registry.ts",
+			"path": "packages/editor-classic/src/stickers/registry.ts",
 			"symbol": "stickersRegistry",
 			"classification": "idempotent-definition-registry",
 			"reason": "Provider definitions are process bootstrap data; query generations remain inside each session store closure."
 		},
 		{
-			"path": "apps/web/src/services/storage/service.ts",
+			"path": "packages/editor-classic/src/services/storage/service.ts",
 			"symbol": "storageService",
 			"classification": "shared-user-library-until-c5",
 			"reason": "C5 owns storage inversion; C3 isolates the per-session sounds query/loading/result view over this shared durable substrate."
 		},
 		{
-			"path": "apps/web/src/editor/contracts/engine/engine.ts",
+			"path": "packages/editor-contracts/src/engine/engine.ts",
 			"symbol": "nativeCommittedStateCaptures",
 			"classification": "session-owned-weak-index",
 			"reason": "A WeakMap keyed only by the explicit engine instance, with no current/default route; the capture is unreachable without that engine and dies with it."
 		},
 		{
-			"path": "apps/web/src/editor/surface/embedding/surface-evidence-seams.tsx",
+			"path": "packages/editor-classic/src/editor/surface/embedding/surface-evidence-seams.tsx",
 			"symbol": "dragTallies",
 			"classification": "evidence-only-process-counter",
 			"reason": "R2 drag counters for the evidence harness, partitioned by an explicit namespace string and holding integers only, never session state or user content. Known and accepted limits: the map is never pruned, and two Surfaces sharing one namespace would share counters — acceptable because nothing in the product reads it, but it is a process-global the seam owns rather than a session does."

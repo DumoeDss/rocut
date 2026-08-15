@@ -1,0 +1,76 @@
+check-sdk-consumer-view: verifying at ac961390 (reads the tarballs, never the workspace)
+packed packages/editor-ports -> opencut-editor-ports-0.2.0.tgz
+inventory: opencut-editor-ports-0.2.0.tgz — 23 file(s) hashed
+packed packages/editor-contracts -> opencut-editor-contracts-0.2.0.tgz
+inventory: opencut-editor-contracts-0.2.0.tgz — 61 file(s) hashed
+packed packages/editor-classic -> opencut-editor-classic-0.2.0.tgz
+inventory: opencut-editor-classic-0.2.0.tgz — 805 file(s) hashed
+packed rust/wasm/pkg -> opencut-wasm-0.2.10.tgz
+inventory: opencut-wasm-0.2.10.tgz — 7 file(s) hashed
+consumer-view: packed fresh tarballs into E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\dist-sdk-tarballs (4 file(s))
+
+=== @opencut/editor-ports@0.2.0 (opencut-editor-ports-0.2.0.tgz) ===
+  ok   packed manifest version is 0.x (found 0.2.0)
+  ok   packed inventory lists README.md
+  ok   README contains the policy statement ("Compatibility policy (`0.x`)")
+  ok   packed inventory lists surface.json
+  ok   surface.json classifies exactly the export-map entries (6 declared = 6 classified, set-equal)
+  census  @opencut/editor-ports: frozen 5, provider 0, experimental 1
+  ok   frozen entry . carries no marker in extracted source
+  ok   frozen entry ./conformance carries no marker in extracted source
+  ok   experimental entry ./conformance/requirements carries @opencutSurface experimental in extracted source
+  ok   frozen entry ./host carries no marker in extracted source
+  ok   frozen entry ./in-memory carries no marker in extracted source
+  ok   frozen entry ./in-memory/host carries no marker in extracted source
+  markers verified in extracted source: 1 non-frozen entries
+
+=== @opencut/editor-contracts@0.2.0 (opencut-editor-contracts-0.2.0.tgz) ===
+  ok   packed manifest version is 0.x (found 0.2.0)
+  ok   packed inventory lists README.md
+  ok   README contains the policy statement ("Compatibility policy (`0.x`)")
+  ok   packed inventory lists surface.json
+  ok   surface.json classifies exactly the export-map entries (10 declared = 10 classified, set-equal)
+  census  @opencut/editor-contracts: frozen 9, provider 0, experimental 1
+  ok   frozen entry . carries no marker in extracted source
+  ok   frozen entry ./conformance carries no marker in extracted source
+  ok   experimental entry ./conformance/requirements carries @opencutSurface experimental in extracted source
+  ok   frozen entry ./draft carries no marker in extracted source
+  ok   frozen entry ./draft/conformance carries no marker in extracted source
+  ok   frozen entry ./engine carries no marker in extracted source
+  ok   frozen entry ./engine/conformance carries no marker in extracted source
+  ok   frozen entry ./engine/invariant carries no marker in extracted source
+  ok   frozen entry ./vectors carries no marker in extracted source
+  ok   frozen entry ./vectors/corpus carries no marker in extracted source
+  markers verified in extracted source: 1 non-frozen entries
+
+=== @opencut/editor-classic@0.2.0 (opencut-editor-classic-0.2.0.tgz) ===
+  ok   packed manifest version is 0.x (found 0.2.0)
+  ok   packed inventory lists README.md
+  ok   README contains the policy statement ("Compatibility policy (`0.x`)")
+  ok   packed inventory lists surface.json
+  ok   surface.json classifies exactly the export-map entries (19 declared = 19 classified, set-equal)
+  census  @opencut/editor-classic: frozen 2, provider 13, experimental 4
+  ok   provider entry . carries @opencutSurface provider in extracted source
+  ok   provider entry ./browser carries @opencutSurface provider in extracted source
+  ok   experimental entry ./evidence carries @opencutSurface experimental in extracted source
+  ok   experimental entry ./evidence/headless carries @opencutSurface experimental in extracted source
+  ok   experimental entry ./evidence/headless-semantic-fixture carries @opencutSurface experimental in extracted source
+  ok   experimental entry ./evidence/wasm-test-mock carries @opencutSurface experimental in extracted source
+  ok   provider entry ./fonts carries @opencutSurface provider in extracted source
+  ok   provider entry ./media carries @opencutSurface provider in extracted source
+  ok   provider entry ./project carries @opencutSurface provider in extracted source
+  ok   provider entry ./renderer carries @opencutSurface provider in extracted source
+  ok   provider entry ./runtime carries @opencutSurface provider in extracted source
+  ok   provider entry ./session carries @opencutSurface provider in extracted source
+  ok   provider entry ./storage carries @opencutSurface provider in extracted source
+  ok   provider entry ./storage/conformance carries @opencutSurface provider in extracted source
+  ok   provider entry ./storage/migrations carries @opencutSurface provider in extracted source
+  ok   frozen entry ./surface carries no marker in extracted source
+  ok   frozen entry ./surface.css carries no marker in extracted source
+  ok   provider entry ./timeline carries @opencutSurface provider in extracted source
+  ok   provider entry ./ui carries @opencutSurface provider in extracted source
+  markers verified in extracted source: 17 non-frozen entries
+consumer-view: opencut-wasm-0.2.10.tgz — flat artifact (opencut-wasm), no surface clauses
+
+consumer-view: 0 failure(s), dangling-export-entries 0 — a declared-but-absent entry fails target-existence at any class (LEAD ruling 2026-08-15)
+REAL_EXIT_CODE[consumer-view]:0

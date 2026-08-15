@@ -1,0 +1,10 @@
+{
+  "origin": "opencut://app",
+  "urlAfterCreate": "?project=3e57f193-1337-4e1c-870d-c1049a6f1544",
+  "onboardingDialog": "Welcome to OpenCut Beta! 🎉Welcome to OpenCut Beta! 🎉You're among the first to try OpenCut - the fully open source CapC",
+  "mainTrackVisible": true,
+  "cspViolations": [],
+  "consoleErrors": []
+}
+BOOT PROOF PASSED
+REAL_EXIT_CODE:0

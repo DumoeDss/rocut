@@ -1,0 +1,11 @@
+bun install v1.2.18 (0d4089ea)
+Resolving dependencies
+Resolved, downloaded and extracted [198]
+Saved lockfile
+
+$ node script/check-wasm-source.mjs --preflight
+
++ opencut-wasm@rust/wasm/pkg
+
+9 packages installed [5.28s]
+REAL_EXIT_CODE:0

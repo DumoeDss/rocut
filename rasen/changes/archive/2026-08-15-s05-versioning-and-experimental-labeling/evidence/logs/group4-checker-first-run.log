@@ -1,0 +1,10 @@
+check-sdk-surface-labels: scanned 3 package(s), 36 export entries
+  census  @opencut/editor-classic: 19 export entries — frozen 2, provider 13, experimental 4
+  census  @opencut/editor-contracts: 11 export entries — frozen 10, provider 0, experimental 1
+  census  @opencut/editor-ports: 6 export entries — frozen 5, provider 0, experimental 1
+  census  total: 36 export entries across 3 package(s) — frozen 17, provider 13, experimental 6
+  PASS  completeness: every export entry is classified in surface.json with a known class and a non-empty reason, and every row names a declared entry
+  PASS  marker-agreement: provider/experimental rows carry a matching @opencutSurface marker in their entry file; frozen rows carry none
+  PASS  override-validity: every symbol-level override names a symbol the entry actually exports
+clean — run with --negative-control / --converse-control to see each rule proven able to fire, and proven not to misfire.
+REAL_EXIT_CODE:0

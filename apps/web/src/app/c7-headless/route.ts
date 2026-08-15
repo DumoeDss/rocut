@@ -1,6 +1,16 @@
-import { runHeadlessProofControl } from "@/editor/session/headless-proof-control";
-import { installHeadlessRuntimeProbe } from "@/editor/session/headless-runtime-probe";
-import type { HeadlessSemanticResult } from "@/editor/session/headless-semantic-fixture";
+import { runHeadlessProofControl } from "@opencut/editor-classic/evidence/headless";
+import { installHeadlessRuntimeProbe } from "@opencut/editor-classic/evidence/headless";
+// Must stay `import type`, never a value import: `runHeadlessSemanticFixture`
+// is loaded dynamically from this exact same specifier below. `1770d9b0` fixed
+// a real bug where Rollup/Vite folded a specifier reachable through both a
+// static and a dynamic import into this entry's own chunk, producing a stray
+// `modulepreload` link the neutral-arm MutationObserver flagged as a false
+// positive. Today TypeScript erases this line before either bundler ever
+// sees it, so no static edge to this specifier exists to fold — but that
+// safety is contingent on the keyword, not the shape of the code. Converting
+// this to a value import (or re-exporting `HeadlessSemanticResult` as a
+// value) reintroduces the exact specifier collision `1770d9b0` fixed.
+import type { HeadlessSemanticResult } from "@opencut/editor-classic/evidence/headless-semantic-fixture";
 import { exerciseHeadlessRuntimeSensitivity } from "../../../../../script/fixtures/c7-headless-runtime-sensitivity-control";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +31,7 @@ export async function GET(): Promise<Response> {
 	let result: HeadlessSemanticResult;
 	try {
 		const { runHeadlessSemanticFixture } =
-			await import("@/editor/session/headless-semantic-fixture");
+			await import("@opencut/editor-classic/evidence/headless-semantic-fixture");
 		result = await runHeadlessSemanticFixture({
 			host: "next",
 			buildMarker,

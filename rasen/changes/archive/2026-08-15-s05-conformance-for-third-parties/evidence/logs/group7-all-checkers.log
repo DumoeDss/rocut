@@ -1,0 +1,309 @@
+=== check-agent-evidence ===
+check-agent-evidence: dual-Host agent transaction evidence (archive 2026-08-13-s0304-agent-transaction-evidence)
+  PASS  next ledger-present: the Host emitted an apply ledger with the agent schema
+  PASS  next plan-executed: the executed plan is the declared plan, step for step
+  PASS  next every-step-asserted: no step reached a verdict without asserting something
+  PASS  next apply-passed: the apply phase reported no failure code
+  PASS  next reopen-bound-to-commit: a fresh session reported the exact revision committed before the reload
+  PASS  next stale-control-failed: the stale-reopen control failed its step, proving the assertion can fail
+  PASS  next assertions-match-node: every step asserted exactly what the Node drivers assert, step for step
+  PASS  next no-console-error: the run produced no browser console or page error
+  PASS  next metadata-only: the run claims asset metadata only, never attachment bytes
+        next committed revision 6 over 9 step(s), 87 assertion(s), build marker t4-final-source-20260813-a
+  PASS  vite ledger-present: the Host emitted an apply ledger with the agent schema
+  PASS  vite plan-executed: the executed plan is the declared plan, step for step
+  PASS  vite every-step-asserted: no step reached a verdict without asserting something
+  PASS  vite apply-passed: the apply phase reported no failure code
+  PASS  vite reopen-bound-to-commit: a fresh session reported the exact revision committed before the reload
+  PASS  vite stale-control-failed: the stale-reopen control failed its step, proving the assertion can fail
+  PASS  vite assertions-match-node: every step asserted exactly what the Node drivers assert, step for step
+  PASS  vite no-console-error: the run produced no browser console or page error
+  PASS  vite metadata-only: the run claims asset metadata only, never attachment bytes
+        vite committed revision 6 over 9 step(s), 87 assertion(s), build marker t4-final-source-20260813-a
+  PASS  both Hosts executed one identical declared plan
+
+clean — both Hosts executed, reopened and failed the control.
+EXIT[check-agent-evidence]:0
+=== check-asset-manifest ===
+check-asset-manifest: no preview server at http://127.0.0.1:4173/ — fetch failed
+EXIT[check-asset-manifest]:2
+=== check-distributable-boundary ===
+check-distributable-boundary: 3842 module(s) in apps/vite-example/dist/module-graph.json
+  PASS  no-next-runtime — no Next.js runtime module
+  PASS  no-app-router — no Next app-router source
+  PASS  no-site-code — no marketing-site source
+  PASS  no-blog — no blog source
+  PASS  no-database — no database source
+  PASS  no-auth — no authentication source
+  PASS  no-landing — no landing-page components
+  PASS  no-changelog-notification — no changelog notification component
+  PASS  no-content-collections — no content-collections virtual module
+  PASS  no-desktop-app — no apps/desktop source
+
+Composition: 683 from the editor packages, 15 from the example host, 3140 from dependencies, 4 other.
+
+clean
+EXIT[check-distributable-boundary]:0
+=== check-editor-singleton ===
+check-editor-singleton: scanned 780 runtime module(s), 40 command module(s)
+  PASS explicit-session-only: one core construction in the session owner; no static accessor, reset, default session or out-of-owner construction
+EXIT[check-editor-singleton]:0
+=== check-emitted-runtime-assets ===
+check-runtime-asset-boundary: scanned 838 production source modules
+  Host roots: apps/web/src/editor/host/next-editor-host.ts, apps/vite-example/src/host/vite-host-config.ts, apps/electron-host/src/host/electron-host-config.ts
+  Required layers: next-host, vite-host, electron-host, browser-worker-adapter, electron-worker-adapter, font-assets, flags, stickers, effect-preview, transcription-worker
+  PASS root-fetch
+  PASS root-css-url
+  PASS root-first-party-source
+  PASS dynamic-root-flags
+  PASS direct-platform-worker
+clean — every Host and every required asset/Worker layer are present.
+emitted vite: output=E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\apps\vite-example\dist base=/ entry=2, transcription-worker=1, editor-wasm=1, ort-sidecar=1
+emitted next: output=E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\apps\web\.next base=/ entry=12, transcription-worker=3, editor-wasm=1, ort-sidecar=1
+[relative-next-static-escape] file=static/media/worker.dd71b7fd.ts layer=browser-chunk url=../../transcription/types
+[relative-next-static-escape] file=static/media/worker.dd71b7fd.ts layer=browser-chunk url=../../transcription/audio
+EXIT[check-emitted-runtime-assets]:1
+=== check-headless-graph ===
+usage: node script/check-headless-graph.mjs <envelope> --host <host> --producer <producer> --entry <entry> --marker <marker> --head <head> --tree <tree>
+EXIT[check-headless-graph]:2
+=== check-headless-semantic-result ===
+usage: node script/check-headless-semantic-result.mjs --vite <Vite report JSON> --next <Next report JSON>
+EXIT[check-headless-semantic-result]:2
+=== check-host-composition ===
+check-host-composition: scanned 3 Host roots and 834 production modules
+  PASS  stable explicit durable stores are the final Host override
+  PASS  EditorHost is required; its protected resolver is identity-only
+  PASS  no retired adapter, process-global storage or private persistence context exists
+EXIT[check-host-composition]:0
+=== check-next-imports ===
+check-next-imports: scanned 58 source files (tracked + uncommitted) under apps/web/src/
+  25 file(s) import next/*, 25 of them inside the allowlisted product shell
+  PASS  every next/* importer is product-shell code
+  PASS  no editor-graph file imports next/*
+
+Allowlisted shell importers:
+  apps/web/src/app/api/feedback/route.ts — the Next app router itself — routes, layouts, metadata and API handlers
+  apps/web/src/app/api/sounds/search/route.ts — the Next app router itself — routes, layouts, metadata and API handlers
+  apps/web/src/app/blog/[slug]/page.tsx — the Next app router itself — routes, layouts, metadata and API handlers
+  apps/web/src/app/blog/page.tsx — the Next app router itself — routes, layouts, metadata and API handlers
+  apps/web/src/app/brand/page.tsx — the Next app router itself — routes, layouts, metadata and API handlers
+  apps/web/src/app/changelog/[version]/page.tsx — the Next app router itself — routes, layouts, metadata and API handlers
+  apps/web/src/app/changelog/page.tsx — the Next app router itself — routes, layouts, metadata and API handlers
+  apps/web/src/app/contributors/page.tsx — the Next app router itself — routes, layouts, metadata and API handlers
+  apps/web/src/app/editor/[project_id]/page.tsx — the Next app router itself — routes, layouts, metadata and API handlers
+  apps/web/src/app/layout.tsx — the Next app router itself — routes, layouts, metadata and API handlers
+  apps/web/src/app/metadata.ts — the Next app router itself — routes, layouts, metadata and API handlers
+  apps/web/src/app/page.tsx — the Next app router itself — routes, layouts, metadata and API handlers
+  apps/web/src/app/privacy/page.tsx — the Next app router itself — routes, layouts, metadata and API handlers
+  apps/web/src/app/projects/page.tsx — the Next app router itself — routes, layouts, metadata and API handlers
+  apps/web/src/app/roadmap/page.tsx — the Next app router itself — routes, layouts, metadata and API handlers
+  apps/web/src/app/robots.ts — the Next app router itself — routes, layouts, metadata and API handlers
+  apps/web/src/app/sitemap.ts — the Next app router itself — routes, layouts, metadata and API handlers
+  apps/web/src/app/sponsors/page.tsx — the Next app router itself — routes, layouts, metadata and API handlers
+  apps/web/src/app/terms/page.tsx — the Next app router itself — routes, layouts, metadata and API handlers
+  apps/web/src/changelog/components/changelog-notification.tsx — changelog UI, rendered only by the Next shell (see P-010)
+  apps/web/src/changelog/components/release.tsx — changelog UI, rendered only by the Next shell (see P-010)
+  apps/web/src/components/footer.tsx — site footer
+  apps/web/src/components/gitHub-contribute-section.tsx — marketing section on the landing page
+  apps/web/src/components/header.tsx — site header, not the editor header
+  apps/web/src/components/landing/hero.tsx — marketing landing page
+
+clean
+EXIT[check-next-imports]:0
+=== check-package-boundary ===
+check-package-boundary: scanned 1106 repo file(s) (tracked + uncommitted)
+  PASS  acyclic-direction: every cross-package edge points to a strictly lower declared layer (988 file(s) scanned, 362 cross-package edge(s) examined)
+  PASS  public-entry-only: a specifier crossing into a package resolves only to a declared exports subpath (988 file(s) scanned, 361 @opencut/* specifier(s) examined)
+  PASS  no-internal-reexport: no package's declared entry re-exports a module owned by another package's undeclared internals (869 file(s) scanned)
+  PASS  no-elftia-import: no package, Host or example imports an Elftia package, protocol identifier or runtime object (1106 file(s) scanned)
+  PASS  react-free-base: editor-ports and editor-contracts import no React, no DOM global, and no editor-classic module (74 file(s) scanned)
+
+clean — run with --negative-control / --converse-control to see each rule proven able to fire, and proven not to misfire.
+EXIT[check-package-boundary]:0
+=== check-port-boundary ===
+check-port-boundary: scanned 55 contract module(s) (tracked + uncommitted)
+  EXEMPT  packages/editor-classic/src/editor/session/session-resources.ts — the acquisition mediator; it is what makes every other site unnecessary
+  EXEMPT  packages/editor-ports/src/in-memory/ — a Host implementation — constructing runtime resources is what a Host is for, and forbidding it here would forbid the one thing this code exists to demonstrate (D2)
+  EXEMPT  packages/editor-ports/src/conformance/ — an adapter author's harness — it exercises ports directly, with no session in existence, so no registry can be reachable from it by construction
+  EXEMPT  packages/editor-ports/src/__tests__/ — tests
+  EXEMPT  packages/editor-classic/src/editor/session/__tests__/ — tests
+  PASS  no-editor-internal-import: no port module imports an OpenCut schema type, command class, editor store or the storage service
+  PASS  no-direct-wasm-import: the contract graph does not reach the wasm module; GPU handles arrive through the injected runtime query
+  PASS  no-storage-mechanism-literal: no public port signature names a browser database/store/path type, identity or API
+  PASS  no-direct-resource-acquisition: no contract module constructs a worker or audio context, or creates an object URL, outside the registry
+  PASS  no-direct-timer-acquisition: no contract module calls the platform's timer functions outside the registry
+
+clean — run with --negative-control to see each rule proven able to fail.
+check-session-resource-boundary: scanned 781 web source modules
+  frozen attributable source closure: 286 modules
+  registry: packages/editor-classic/src/editor/session/session-resources.ts
+  required roots: components/editor=24, preview=26, selection=13, timeline=104, sounds=4, export=3, utils=9, core=13, editor=63, media=13, retime=6, services/renderer=24, services/transcription=2, services/video-cache=1, services/waveform-cache=1
+  exact construct exemptions: 24
+  PASS no-direct-timer: 0 violation(s)
+  PASS no-direct-worker: 0 violation(s)
+  PASS no-direct-audio: 0 violation(s)
+  PASS no-direct-object-url: 0 violation(s)
+  PASS no-offline-escape: 0 violation(s)
+  PASS no-unkeyed-compositor: 0 violation(s)
+  PASS no-second-acquisition-mediator: 0 violation(s)
+
+clean — all non-exempt web editor acquisitions cross the session seam
+EXIT[check-port-boundary]:0
+=== check-react-singleton ===
+check-react-singleton: 4 manifests, lock, 3842 emitted modules, runtime probe shape
+clean
+EXIT[check-react-singleton]:0
+=== check-reference-boundary ===
+check-reference-boundary: scanned 1249 of 1621 files (tracked + uncommitted)
+  PASS  no-openchatcut-reference — no path or identifier referencing an OpenChatCut checkout
+  PASS  no-remotion-dependency — no `remotion` package in any manifest or lockfile
+  PASS  no-agpl-header — no AGPL / Affero license header in any source file
+clean
+EXIT[check-reference-boundary]:0
+=== check-resolution-equivalence ===
+check-resolution-equivalence: 0 rewritten specifier(s) examined
+
+FAIL  no rewritten specifiers found in the staged diff — nothing was verified.
+Stage the specifier rewrites before running this check.
+EXIT[check-resolution-equivalence]:1
+=== check-runtime-asset-boundary ===
+check-runtime-asset-boundary: scanned 838 production source modules
+  Host roots: apps/web/src/editor/host/next-editor-host.ts, apps/vite-example/src/host/vite-host-config.ts, apps/electron-host/src/host/electron-host-config.ts
+  Required layers: next-host, vite-host, electron-host, browser-worker-adapter, electron-worker-adapter, font-assets, flags, stickers, effect-preview, transcription-worker
+  PASS root-fetch
+  PASS root-css-url
+  PASS root-first-party-source
+  PASS dynamic-root-flags
+  PASS direct-platform-worker
+clean — every Host and every required asset/Worker layer are present.
+EXIT[check-runtime-asset-boundary]:0
+=== check-session-resource-boundary ===
+check-session-resource-boundary: scanned 781 web source modules
+  frozen attributable source closure: 286 modules
+  registry: packages/editor-classic/src/editor/session/session-resources.ts
+  required roots: components/editor=24, preview=26, selection=13, timeline=104, sounds=4, export=3, utils=9, core=13, editor=63, media=13, retime=6, services/renderer=24, services/transcription=2, services/video-cache=1, services/waveform-cache=1
+  exact construct exemptions: 24
+  PASS no-direct-timer: 0 violation(s)
+  PASS no-direct-worker: 0 violation(s)
+  PASS no-direct-audio: 0 violation(s)
+  PASS no-direct-object-url: 0 violation(s)
+  PASS no-offline-escape: 0 violation(s)
+  PASS no-unkeyed-compositor: 0 violation(s)
+  PASS no-second-acquisition-mediator: 0 violation(s)
+
+clean — all non-exempt web editor acquisitions cross the session seam
+EXIT[check-session-resource-boundary]:0
+=== check-session-state-boundary ===
+check-session-state-boundary: PASS 10/10 factories, 10/10 registry keys, 53 classified imperative modules, no default/handle-0/unimplemented production path
+EXIT[check-session-state-boundary]:0
+=== check-storage-boundary ===
+check-storage-boundary: scanned 798 source module(s) (all production sources + 3 exact verification fixtures; tracked + uncommitted)
+  EXEMPT  apps/vite-example/tests/parity/snapshot.ts — parity snapshot reads the records that were actually persisted [observed]
+  EXEMPT  apps/vite-example/tests/probe/seed.ts — legacy seed writes records that the current ProjectStore must not manufacture [observed]
+  EXEMPT  apps/vite-example/tests/probe/legacy-migration.pw.ts — legacy probe inspects the migration's physical result [observed]
+  PREFERENCE  apps/web/src/changelog/components/changelog-notification.tsx — changelog acknowledgement [observed]
+  PREFERENCE  packages/editor-classic/src/feedback/components/feedback-popover.tsx — local feedback-history convenience [observed]
+  PREFERENCE  packages/editor-classic/src/components/editor/mobile-gate.tsx — mobile-gate acknowledgement [observed]
+  PREFERENCE  packages/editor-classic/src/components/ui/form.tsx — generic form persistence supplied by UI callers [observed]
+  PREFERENCE  packages/editor-classic/src/services/storage/use-local-storage.ts — generic local preference hook, not durable editor content [observed]
+  PREFERENCE  packages/editor-classic/src/components/editor/onboarding.tsx — onboarding acknowledgement through useLocalStorage [observed]
+  PREFERENCE  packages/editor-classic/src/services/storage/use-storage-persistence.ts — browser persistence-prompt dismissal [observed]
+  EVIDENCE  packages/editor-classic/src/editor/surface/evidence/agent-evidence-run.ts — T4 agent commitment carried across the reopen reload, independent of the store being verified [observed]
+  PASS  direct storageService imports/exports: 0
+  PASS  BrowserHostAdapter references: 0
+  PASS  unexpected browser-mechanism hits: 0; allowed storage-boundary hits: 84; exact-fixture hits: 8
+  PASS  unclassified persistence localStorage files: 0
+  PASS  evidence-route localStorage classifications, all exercised: 1/1
+  PASS  one ProjectStore role, no private storage context or hidden Host property
+  PASS  no production in-memory storage fallback
+
+clean — the final BrowserProjectStore/required-Host boundary holds.
+EXIT[check-storage-boundary]:0
+=== check-surface-boundary ===
+check-surface-boundary: scanned 15 Surface module(s) (tracked + uncommitted)
+  PASS  no-public-provider-type-leak: public Surface types remain opaque and do not expose T0/provider-private implementation types
+  PASS  no-next-or-product-shell-import: Surface modules do not import Next, app-router, auth, changelog, site, or content-collections code
+  PASS  no-viewport-ownership: Surface modules fill their supplied container without viewport/body/html ownership
+  PASS  no-global-input-listener: Surface modules add no keyboard, pointer, wheel, mouse, or touch listener to window/document
+
+clean — run with --negative-control to prove each rule
+EXIT[check-surface-boundary]:0
+=== check-surface-css-boundary ===
+check-surface-css-boundary: scanned 1 source and 1 emitted CSS file(s)
+clean
+EXIT[check-surface-css-boundary]:0
+=== check-surface-portal-boundary ===
+check-surface-portal-boundary: scanned 13 tracked + uncommitted file(s)
+clean
+EXIT[check-surface-portal-boundary]:0
+=== check-surface-private-drag ===
+check-surface-private-drag: scanned 723 tracked + uncommitted file(s)
+clean
+EXIT[check-surface-private-drag]:0
+=== check-transaction-boundary ===
+check-transaction-boundary: scanned 55 contract module(s) and 3 published vector file(s) (tracked + uncommitted)
+  PASS  no-editor-internal-import: no contract module imports an OpenCut schema type, command class, editor store, wasm, or the storage service
+  PASS  no-storage-mechanism-literal: no public contract signature names a browser database/store/path type, identity or API
+  PASS  no-donor-schema-field: no published vector key or value names a donor schema field
+  PASS  no-command-class-name: no published vector names a command class or its commit path
+  PASS  no-editor-state-store: no published vector names an editor state store
+  PASS  no-storage-identity: no published vector names a browser database, object store or file-system handle
+  PASS  no-provider-namespaced-key: no published vector carries a provider-namespaced key
+  PASS  no-physical-storage-path: no published vector carries a physical storage path
+
+clean — run with --negative-control to see each rule proven able to fail.
+EXIT[check-transaction-boundary]:0
+=== check-type-baseline ===
+check-type-baseline: 3 diagnostic(s) now, 13 at the pin cf5e79e9
+  compiler TypeScript 5.9.3, comparison key = file + code + message
+  941 repo file(s) type-checked now (4329 total, including lib/dependency declarations)
+
+Present at the pin, absent or reduced now:
+  src/actions/keybindings/persistence.ts TS2345 (2 -> 0)
+  src/actions/keybindings/persistence.ts TS2724 (1 -> 0)
+  src/actions/keybindings/persistence.ts TS2724 (1 -> 0)
+  src/services/storage/migrations/runner.ts TS2554 (1 -> 0)
+  src/services/storage/migrations/runner.ts TS2554 (1 -> 0)
+  src/services/storage/migrations/v1-to-v2.ts TS2554 (3 -> 0)
+  src/stickers/providers/index.ts TS2554 (1 -> 0)
+  src/timeline/__tests__/update-pipeline.test.ts TS2769 (1 -> 0)
+  src/timeline/placement/__tests__/resolve.test.ts TS2769 (1 -> 0)
+  Not a failure. Benign if a baseline defect was deliberately repaired; investigate if
+  unexplained, because a shrunken type-check scope also looks like this.
+
+FAIL  2 diagnostic(s) not present at the pin — S01 regressions:
+  ../../packages/editor-classic/src/timeline/__tests__/update-pipeline.test.ts:69 TS2769 (pin 0, now 1)
+    No overload matches this call. Overload 1 of 2, '(expected: MediaTime): void', gave the following error. Argument of type 'number' is not assignable to parameter of type 'MediaTime'. Type 'number' is not assignable to type '{ readonly __med
+  ../../packages/editor-classic/src/timeline/placement/__tests__/resolve.test.ts:646 TS2769 (pin 0, now 1)
+    No overload matches this call. Overload 1 of 2, '(expected: PlacementResult | null): void', gave the following error. Type 'number' is not assignable to type 'MediaTime'. Type 'number' is not assignable to type '{ readonly __mediaTime: uniq
+EXIT[check-type-baseline]:1
+=== check-wasm-api-surface ===
+check-wasm-api-surface: exact 38 JS / 58 binary exports, 609 imports, providers and structural compile PASS
+EXIT[check-wasm-api-surface]:0
+=== check-wasm-paths ===
+check-wasm-paths: rust/wasm/pkg/opencut_wasm_bg.wasm (3286340 bytes)
+  PASS  no Windows user-profile path (0 occurrence(s), 0 unique)
+  PASS  no any Windows drive-letter path (0 occurrence(s), 0 unique)
+  PASS  no POSIX home-directory path (0 occurrence(s), 0 unique)
+  PASS  no macOS home-directory path (0 occurrence(s), 0 unique)
+  PASS  no POSIX root home-directory path (0 occurrence(s), 0 unique)
+  PASS  no unremapped POSIX source/home/checkout path (0 occurrence(s), 0 unique)
+  PASS  no operating-system username disclosed
+  PASS  scanner rejects negative control /root/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/panicking.rs
+  PASS  scanner rejects negative control /workspace/checkout/rust/crates/gpu/src/context.rs
+  PASS  intentional /cargo and /opencut remap roots are allowed
+  PASS  remapped `/cargo` prefix present (285) — proves the scan is not vacuous
+  PASS  remapped `/opencut` prefix present (1) — proves the scan is not vacuous
+
+clean — the redistributed wasm discloses no build-machine identity
+EXIT[check-wasm-paths]:0
+=== check-wasm-source ===
+check-wasm-source: build output rust/wasm/pkg (8 file(s))
+  PASS  resolved from <root> -> node_modules/opencut-wasm
+  PASS  resolved from apps/web -> apps/web/node_modules/opencut-wasm
+  PASS  build output is newer than every Rust input (44 file(s) considered)
+  PASS  rust/wasm/LICENSE exists and matches the root LICENSE
+  PASS  all wasm gates are wired (npm script + CI step after `bun install`)
+
+clean — the resolved `opencut-wasm` is the self-built artifact
+EXIT[check-wasm-source]:0

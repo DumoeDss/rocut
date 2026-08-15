@@ -1,13 +1,13 @@
 import { runBrowserStoreConformance } from "../../../script/fixtures/c5-browser-store-conformance/browser-store-conformance";
-import { runBrowserProjectStoreMigrationProbes } from "@/services/storage/browser-project-store-conformance";
-import { runBrowserProjectStoreMigrationRound2Probes } from "@/services/storage/browser-project-store-migration-round2-probes";
-import { runBrowserProjectStoreCascadeProbes } from "@/services/storage/browser-project-store-cascade-probes";
-import { runBrowserProjectStoreCascadeRound2Probes } from "@/services/storage/browser-project-store-cascade-round2-probes";
-import { runBrowserProjectStoreResidualProbes } from "@/services/storage/browser-project-store-residual-probes";
+import { runBrowserProjectStoreMigrationProbes } from "@opencut/editor-classic/storage/conformance";
+import { runBrowserProjectStoreMigrationRound2Probes } from "@opencut/editor-classic/storage/conformance";
+import { runBrowserProjectStoreCascadeProbes } from "@opencut/editor-classic/storage/conformance";
+import { runBrowserProjectStoreCascadeRound2Probes } from "@opencut/editor-classic/storage/conformance";
+import { runBrowserProjectStoreResidualProbes } from "@opencut/editor-classic/storage/conformance";
 import {
 	listDatabaseNames,
 	listRootEntries,
-} from "@/services/storage/browser-storage-mechanisms";
+} from "@opencut/editor-classic/storage";
 
 interface C5DisposableInventory {
 	readonly databases: readonly string[];

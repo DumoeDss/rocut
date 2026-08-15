@@ -36,13 +36,28 @@ const REQUIRED_ROOTS = [
 const HOST_ENTRIES = {
 	vite: [
 		"apps/vite-example/src/host/vite-host-config.ts",
-		"apps/web/src/editor/session/create-session.ts",
+		"packages/editor-classic/src/editor/session/create-session.ts",
 	],
 	next: [
 		"apps/web/src/editor/host/next-editor-host.ts",
-		"apps/web/src/editor/session/create-session.ts",
+		"packages/editor-classic/src/editor/session/create-session.ts",
 	],
 };
+
+/**
+ * S05 P1 Stage C moved the editor runtime graph out of apps/web/src into
+ * @opencut/editor-classic and @opencut/editor-ports. Kept in sync by hand
+ * with the identically-named helper in check-session-resource-boundary.mjs —
+ * both scripts need to agree on what counts as shared editor-package source
+ * as opposed to a Host's own wrapper code.
+ */
+const EDITOR_PACKAGE_PREFIXES = [
+	"packages/editor-classic/src/",
+	"packages/editor-ports/src/",
+];
+function isEditorPackageModule(moduleId) {
+	return EDITOR_PACKAGE_PREFIXES.some((prefix) => moduleId.startsWith(prefix));
+}
 
 function slash(value) {
 	return value.replaceAll("\\", "/");
@@ -55,8 +70,8 @@ function repositoryPath({ repositoryRoot, filePath }) {
 function isRequiredSource(moduleId) {
 	return REQUIRED_ROOTS.some(
 		(root) =>
-			moduleId === `apps/web/src/${root}` ||
-			moduleId.startsWith(`apps/web/src/${root}/`),
+			moduleId === `packages/editor-classic/src/${root}` ||
+			moduleId.startsWith(`packages/editor-classic/src/${root}/`),
 	);
 }
 
@@ -70,7 +85,7 @@ function assertEveryRoot({ name, moduleIds }) {
 	const missing = REQUIRED_ROOTS.filter(
 		(root) =>
 			!moduleIds.some((moduleId) =>
-				moduleId.startsWith(`apps/web/src/${root}/`),
+				moduleId.startsWith(`packages/editor-classic/src/${root}/`),
 			),
 	);
 	if (missing.length > 0) {
@@ -93,7 +108,7 @@ function parseViteInventory({ viteDist, repositoryRoot }) {
 	];
 	const sourceModuleIds = moduleIds.filter(
 		(moduleId) =>
-			moduleId.startsWith("apps/web/src/") ||
+			isEditorPackageModule(moduleId) ||
 			moduleId.startsWith("apps/vite-example/src/"),
 	);
 	return {
@@ -115,9 +130,7 @@ function parseViteInventory({ viteDist, repositoryRoot }) {
 			assetManifestSha256: sha256File(assetManifestPath),
 			moduleIds: canonicalStringSetDigest(moduleIds),
 			webSourceModuleIds: canonicalStringSetDigest(
-				sourceModuleIds.filter((moduleId) =>
-					moduleId.startsWith("apps/web/src/"),
-				),
+				sourceModuleIds.filter((moduleId) => isEditorPackageModule(moduleId)),
 			),
 			attributableSourceModuleIds: canonicalStringSetDigest(sourceModuleIds),
 		},
@@ -218,7 +231,7 @@ export function generateSessionResourceClosureCandidate({
 			...common,
 			...Object.values(hosts).flatMap((host) => [
 				...host.additional,
-				...host.entries.filter((entry) => entry.startsWith("apps/web/src/")),
+				...host.entries.filter((entry) => isEditorPackageModule(entry)),
 			]),
 		]),
 	].sort();

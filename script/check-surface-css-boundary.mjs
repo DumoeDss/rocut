@@ -6,7 +6,7 @@ import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const SOURCE = "apps/web/src/editor/surface/surface.css";
+const SOURCE = "packages/editor-classic/src/surface/surface.css";
 const DIST = "apps/vite-example/dist-surface-css";
 
 function trackedAndUncommittedCss() {

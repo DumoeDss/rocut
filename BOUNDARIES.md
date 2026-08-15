@@ -101,37 +101,47 @@ entry used by the dual-Host browser matrix; the normal app does not link to or n
 `dist/module-graph.json` records the union of both entries, so the measured count above is honest
 about verification code that the build emitted.
 
-The ordinary editor route imports twelve editor-source modules through `app.tsx`, the project
-picker, and the Vite Host composition chain:
+The ordinary editor route imports twelve editor-package symbols through `app.tsx`, the project
+picker, and the Vite Host composition chain — eleven through `@opencut/editor-classic`'s declared
+entries, one (`EditorHost`) through `@opencut/editor-ports`'s frozen `./host` entry, since the host
+contract itself is an L0 port-package concern, not a Classic-package one:
 
-| Module                                               | Imported                                      | Role                                                  |
-| ---------------------------------------------------- | --------------------------------------------- | ----------------------------------------------------- |
-| `@/components/editor/mobile-gate`                    | `MobileGate`                                  | Small-viewport gate                                   |
-| `@/components/ui/sonner`                             | `Toaster`                                     | Toast host the editor expects                         |
-| `@/components/ui/tooltip`                            | `TooltipProvider`                             | Context the editor expects from its host              |
-| `@/editor/host/browser-runtime`                      | `createBrowserRuntimePorts` and worker types  | Browser-owned runtime ports                           |
-| `@/editor/host/editor-host`                          | `EditorHost` (type)                           | The host contract                                     |
-| `@/editor/ports/in-memory`                           | reference ports, diagnostics, and IDs         | Non-browser reference ports selected by the Host      |
-| `@/editor/session`                                   | `EditorSessionHost`                           | Creates and owns the Host-bound session               |
-| `@/editor/surface/embedding/session-surface-bridge`  | `SessionEditorSurface`                        | Binds the existing session to the embeddable Surface  |
-| `@/editor/use-editor`                                | `useEditorInstance`                           | Project-list access through the current session       |
-| `@/project/types`                                    | `TProjectMetadata` (type)                     | Project list rendering                                |
-| `@/services/storage/browser-project-store`           | `BrowserProjectStore`                         | Production browser `ProjectStore` implementation (§3) |
-| `@/services/storage/browser-project-store-internals` | storage identity and diagnostic normalization | Explicit durable identity selected by the Host (§3)   |
+| Declared specifier                | Imported                                      | Role                                                  |
+| ---------------------------------- | ---------------------------------------------- | ----------------------------------------------------- |
+| `@opencut/editor-classic/ui`       | `MobileGate`                                  | Small-viewport gate                                   |
+| `@opencut/editor-classic/ui`       | `Toaster`                                     | Toast host the editor expects                         |
+| `@opencut/editor-classic/ui`       | `TooltipProvider`                             | Context the editor expects from its host              |
+| `@opencut/editor-classic/browser`  | `createBrowserRuntimePorts` and worker types  | Browser-owned runtime ports                           |
+| `@opencut/editor-ports/host`       | `EditorHost` (type)                           | The host contract                                     |
+| `@opencut/editor-ports/in-memory`  | reference ports, diagnostics, and IDs         | Non-browser reference ports selected by the Host      |
+| `@opencut/editor-classic/session`  | `EditorSessionHost`                           | Creates and owns the Host-bound session               |
+| `@opencut/editor-classic/surface`  | `SessionEditorSurface`                        | Binds the existing session to the embeddable Surface  |
+| `@opencut/editor-classic/session`  | `useEditorInstance`                           | Project-list access through the current session       |
+| `@opencut/editor-classic/project`  | `TProjectMetadata` (type)                     | Project list rendering                                |
+| `@opencut/editor-classic/storage`  | `BrowserProjectStore`                         | Production browser `ProjectStore` implementation (§3) |
+| `@opencut/editor-classic/storage`  | storage identity and diagnostic normalization | Explicit durable identity selected by the Host (§3)   |
 
 The evidence-only entry shares the two UI providers and `vite-host-config.ts` with the normal Host,
-and adds exactly one editor-source root that is exclusive to that entry:
+and adds exactly one declared specifier that is exclusive to that entry:
 
-| Evidence entry          | Exclusive editor-source root                                      | Role                                                        |
-| ----------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------- |
-| `surface-evidence.html` | `@/editor/surface/evidence/surface-evidence-harness`              | Controlled focus, visibility, lifecycle, style, and ledger proof |
+| Evidence entry          | Exclusive declared specifier                                   | Role                                                              |
+| ------------------------ | ----------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `surface-evidence.html` | `@opencut/editor-classic/evidence` (`SurfaceEvidenceHarness`)  | Controlled focus, visibility, lifecycle, style, and ledger proof |
 
 The pre-existing query-gated C3/C4/C6 proof branches remain statically attached to `app.tsx`, so
 their modules also appear in the emitted union graph. They are verification routes, not additions
 to the ordinary Host API or to the evidence-only Surface entry above.
 
-**This is not a published API.** There is no `exports` map, no entry point and no stability promise;
-the example reaches in through a path alias. Designing the real export surface is later work.
+**This table predates S05 P1's package extraction** — it was written for the S01 Vite-portability
+baseline, when the editor still lived at `apps/web/src/editor/**` and this example reached in
+through a bare `@/` path alias with no `exports` map, no entry point and no stability promise. It is
+restated above against the current, post-move tree. **This is now a published API.** All three
+`@opencut/*` packages declare an `exports` map, frozen at P0 (§7); every row above resolves through
+a declared entry, not a source-relative reach-in. §8 records the complete entry-mapping across both
+consumer apps — every edge, not only the twelve routed through the ordinary route — and is the
+authoritative, continuously-measured view; the table above stays as the narrower "which symbol,
+which role" walkthrough for the ordinary route specifically, and is not a duplicate of §8's edge
+census.
 
 ### Dependencies the example had to declare explicitly
 
@@ -383,3 +393,1017 @@ local Luna ship leaf must first create the reviewed child commit, then regenerat
 official inventory against that committed tree. Until that leaf completes, the authored-path
 manifest and content digest in the C7 evidence are the truthful pre-commit inventory; no official
 source-inventory pass is claimed.
+
+---
+
+## 7. Package boundary (S05 P0)
+
+`packages/` declares three publishable packages and holds no source yet — `apps/web/src` still owns
+every module, through the existing `@` path alias. This section is that declaration, the measurement
+that forced its shape, and what it does not yet cover. Implementation (moving source, publishing) is
+later work; this is the freeze the later work is held to.
+
+### Three packages, ports at the bottom
+
+```
+0  @opencut/editor-ports        editor/ports/** and editor/host/editor-host.ts — no dependencies
+1  @opencut/editor-contracts    editor/contracts/** — depends on layer 0 only
+2  @opencut/editor-classic      everything else under apps/web/src — depends on layers 0 and 1
+—  apps/web, apps/vite-example, P2's second Host   consumers; not packages; may depend on any layer
+```
+
+The intuitive reading of "contracts / ports / surface" puts contracts underneath ports. The measured
+import graph (948 source files under `apps/web/src` and `apps/vite-example`, parsed for every
+`import` / `export … from` / `require()` / dynamic `import()` specifier) says the opposite: **8**
+production edges run `editor/contracts/**` → `editor/ports/**`, and **0** run the other way.
+`contracts/engine` and three other contracts modules consume `IdGenerator` and `DiagnosticsPort` from
+ports; nothing in ports needs a domain type. Ports sits at the bottom because it is the one complete
+surface a Host author implements — zero dependencies, no React, no DOM (spec §3.5, mechanically) —
+and contracts is the one thing that depends on it, not the reverse.
+
+Above that two-layer base, the rest of the tree is one dense mutual-recursion knot in production
+code, measured the same way:
+
+| candidate seam | A→B (prod) | B→A (prod) |
+| --- | ---: | ---: |
+| Classic provider ↔ editor UI | 228 | 293 |
+| editor UI ↔ session/runtime | 95 | 17 |
+| session/runtime ↔ Classic provider | 64 | 31 |
+| editor UI ↔ `editor/surface` | 19 | 16 |
+| `editor/surface` ↔ Classic provider | 5 | 1 |
+
+Every one of those five seams is bidirectional in production source, including the smallest —
+`editor/surface` ↔ UI is two layers wearing one name, not an accident. Cutting any of them apart
+requires inverting production dependencies, which is a rewrite, not an extraction: P1 is constrained
+to a behaviour-preserving move whose oracle is the parity fixture, and a rewrite would trade that
+guarantee for a diagram. So everything above the ports/contracts base is one package,
+`@opencut/editor-classic`, split internally by `exports` subpath rather than by package.
+
+### `editor/host/editor-host.ts` belongs to ports, and resolves a live cycle
+
+`ports/index.ts` re-exports `EditorHostNavigation` from `../host/editor-host` under the frozen name
+`NavigationHost`, while `editor-host.ts` itself imports `@/editor/ports` — a live module cycle today,
+harmless only because both directions are type-only. Splitting `editor/ports/` and `editor/host/`
+into different packages would turn that into a package cycle, which is exactly what the
+`acyclic-direction` rule below forbids. `editor-host.ts` is 118 lines, imports nothing but
+`@/editor/ports`, contains no React and no DOM, and is in substance a ports module; assigning it to
+`@opencut/editor-ports` resolves the cycle without editing the frozen `NavigationHost` re-export. The
+rest of `editor/host/` does not follow it — browser and React modules go to `@opencut/editor-classic`,
+Next-Host composition stays in `apps/web`.
+
+### The checker: `script/check-package-boundary.mjs`
+
+Five rules, four live today and one dormant until `packages/` gains source:
+
+| rule | status | what it asserts |
+| --- | --- | --- |
+| `acyclic-direction` | live | every cross-package edge points to a strictly lower declared layer |
+| `no-elftia-import` | live | no package, Host or example imports an Elftia package, protocol identifier or runtime object |
+| `react-free-base` | live | `editor-ports` and `editor-contracts` import no React, no DOM global, and no `editor-classic` module |
+| `public-entry-only` | live | a specifier into a package resolves only to a declared `exports` subpath |
+| `no-internal-reexport` | dormant, `0 files scanned` | no declared entry re-exports another package's undeclared internals |
+
+`public-entry-only` moved from dormant to live in review round 1 (BLOCKER-1): its scan set was
+originally `packages/**/src` only, which starts empty, so the rule could never see a consumer's
+deep import — exactly the scenario spec.md names, and it survived the dormancy period unenforced.
+The fix widened the scope to every file outside a package's own `src/`: both declared consumers
+(`apps/vite-example`) and the not-yet-moved `apps/web/src` source that will become
+`@opencut/editor-classic` once P1 runs. That source already exists, so the rule is genuinely
+live today — nothing currently imports a bare `@opencut/*` specifier, so it passes, but it is
+actually looking, and `inverted-import-proof.md` / the widened `--negative-control` fixture set
+prove it (see the change's evidence directory). `no-internal-reexport` is unaffected — it is
+asserted only over `packages/**/src`, which still holds no source until P1 moves files there
+(design D6), so it still reports `0 files scanned` honestly.
+
+Ownership is resolved from `packages/boundary.json`, a committed, longest-prefix-wins map from path
+to package with a required `why` per entry — the same self-guard idiom `check-next-imports.mjs`
+applies to its own allowlist: the checker refuses to run if any declared consumer path (`app/`,
+`site/`, `blog/`, `db/`, `auth/`, `components/landing/`) resolves to a package instead of a consumer,
+and refuses to run if any tracked file under `apps/web/src` resolves to no owner at all. The one
+dormant rule reports its `0 files scanned` census as explicit output, not a silent `PASS` — a check
+that is green because it inspected nothing is not the same claim as a check that is green because it
+looked.
+
+**The Elftia rule matches specifiers, dependency names and identifiers — never raw file text.** A
+substring scan over `elftia` is wrong in this repository in both directions: eight tracked files
+(`editor/ports/DECISIONS.md`, `apps/vite-example/README.md`, `editor/session/resources.ts`, three
+`ports/*.ts` compile-guard/documentation files, and `script/check-port-boundary.mjs`) contain the
+word `elftia` in prose, all of it explaining *why the ports are Elftia-neutral* — a text scan would
+flag the documents that record the boundary. So the rule matches only: import specifiers (`elftia`,
+`elftia/*`, `@elftia/*`, `^elftia-plugin-`); dependency names in every `package.json` and package
+identifiers in `bun.lock`; the protocol literals `plugin://` and `elftia://`; and the runtime
+identifiers `window.elftia`, `globalThis.elftia`, `window.native`, `window.api`, `CapabilityBroker`,
+`ArtifactRuntime`, `ArtifactRef`. There is no `adapter-elftia` exception: it does not exist in this
+repository, and housing one here would make the portable SDK depend on its largest consumer.
+
+The DOM check inside `react-free-base` matches `document` only through its own member accesses
+(`document.createElement`, `.querySelector`, `.body`, `.head`, …), never as a bare identifier —
+`document` is a domain term throughout `editor/contracts` (a local draft-document value in `draft`
+and `engine`, a parameter name across `vectors/**`, and the family literal
+`"document" | "scenario"` in `vectors/schema.ts`) — the exact package this rule protects. An
+earlier version matched the bare identifier and exempted a whole file the moment any line declared
+a local `document`; review round 1 (MAJOR-1) found that let a real `document.createElement(...)`
+call elsewhere in that same file pass silently — 15 of 69 tracked layer-0/1 files were already
+exempt this way, including all nine `contracts/engine/*` files. Matching the member access instead
+needs no scope tracking at all: no domain `document` value in this codebase exposes a DOM member
+name, so there is no ambiguity left to resolve by tracking declarations. `window.document` and
+`globalThis.document` both fire — the latter via an explicit `globalThis.(document|window)` pattern
+added in the same round (MAJOR-2; bare `globalThis` alone stays unflagged, since
+`editor/contracts/draft/manager.ts` reaches `globalThis.crypto` for Web Crypto, not a DOM access) —
+except `typeof globalThis.document`, one carved-out exception:
+`vectors/__tests__/agent-drivers.test.ts` uses exactly that shape to prove a driver ran DOM-free,
+which is this rule's own claim checked experimentally rather than asserted, and must keep passing
+unmodified.
+
+Both `--negative-control` (synthesises one violation per rule and asserts it is caught) and
+`--converse-control` (synthesises a legal case per rule and asserts it stays silent) run the same pure
+`scan()` against in-memory fixtures, so every rule — including the one still-dormant rule — is fully
+control-tested today, before `packages/` holds a single real file. Review round 1 added regression
+fixtures for each of BLOCKER-1/MAJOR-1/MAJOR-2 to both control lists, and gave
+`no-internal-reexport` its first converse fixture (MINOR-3) — all five rules now have one.
+
+### What this does not cover
+
+- **"Delete `adapter-elftia` and both Hosts still work"** is not tested here. `adapter-elftia` does
+  not exist in this repository; that removal test belongs to Elftia-side integration CI in the E5/S07
+  era, once such an adapter exists to remove.
+- **Installed-tarball resolution** — whether `exports` behaves correctly for a consumer that installed
+  these packages from a published tarball rather than the workspace — is P3's pack-and-install harness,
+  not this check. `npm pack --dry-run` was run for all three manifests as a narrower assumption check
+  (recorded in the change's evidence directory); it is not a substitute for P3's harness.
+- **No behavioural or parity claim is made here.** This section proves the *source graph* obeys the
+  declared package shape; it does not run or compare the editor.
+
+### Specifier rewrites P1 owes
+
+The declared `exports` maps were derived from every specifier that currently crosses into
+`editor/ports` or `editor/contracts` from outside, and cover all of them except three deep imports —
+of which two are pure specifier rewrites P1 owes, recorded here as a closed list:
+
+- `@/editor/ports/project-store` (4 uses) and `@/editor/ports/gpu-resources` (3 uses) — both resolve
+  to symbols (`ProjectStore`, `ProjectStoreError`, `UNIMPLEMENTED_RUNTIME_GPU`) the package root
+  (`.`) already exports. P1 rewrites the specifier; nothing else changes.
+- The four test-file relocations from task 1.3 —
+  `contracts/vectors/__tests__/agent-opencut-projection.test.ts` to `@opencut/editor-classic`, and
+  `editor/host/__tests__/{branding-assets,production-composition}.test.ts` plus
+  `services/storage/__tests__/c5-storage-red-controls.test.ts` to `apps/web` — are ownership
+  placements already reflected in `boundary.json`, not specifier edits; P1 moves the files to match.
+
+The third deep import, `@/editor/contracts/engine/invariant` (2 uses, `validateTransactionDocument`
+consumed in production by `surface/embedding/surface-transaction-binding.ts`), is **not** a rewrite
+P1 owes — `engine/index.ts` does not re-export `invariant` and never will without an additive edit to
+a frozen barrel, so `./engine/invariant` is declared as its own public entry instead.
+
+### Finding: the four-package split in Target State §4 is not reachable by extraction alone
+
+Target State §4 draws `provider-opencut-classic` and `react-editor` as siblings. The measured edge
+counts above — 228/293 between the provider and the UI, 19/16 between the UI and `editor/surface`,
+64/31 between session/runtime and the provider — show that split requires inverting production
+dependencies, which P1's parity-fixture oracle cannot absorb as a "behaviour-preserving move." This
+is recorded as a Direction-level finding, not resolved here: the split needs a Slice of its own,
+and Roadmap M9/S09 ("provider evolution") is its natural home. It does not block P1 — the three-package
+split above is complete and executable without an answer to it.
+
+---
+
+## 8. Consumer entry-mapping (S05 P1)
+
+P0 froze 14 declared `editor-classic` entries (§7) before any source moved. P1 moved the source and
+rewired both consumer apps onto those entries; this is the resulting assignment — which module
+routes through which declared entry — recorded per design E4's requirement, now against the actual
+post-move tree rather than the pre-move estimate.
+
+| Declared entry | Routes |
+| --- | --- |
+| `./ui` | `components/ui/*` (button, checkbox, context-menu, dropdown-menu, input, label, separator, sonner, tooltip, …), `components/icons`, `components/theme-toggle`, `components/editor/mobile-gate`, `components/providers/editor-provider`, `editor/host/editor-host-context` |
+| `./session` | `editor/session`, `create-session`, `editor/use-editor` |
+| `./runtime` | `session-core-owner`, `session-stores`, `wasm-runtime-providers` |
+| `./browser` | `editor/host/browser-runtime`, `editor/host/c4-project-load` |
+| `./surface` (+ `./surface.css`) | `session-surface-bridge`, `editor-root`, `surface-drag-coordinator`, `surface-portal` |
+| `./storage` | `browser-project-store`, `-internals`, `-conformance`, the four probe modules, `browser-storage-mechanisms`, `indexeddb-adapter`, `migrations`, `migrations/v1-to-v2` |
+| `./project` | `project/types`, `migration-dialog`, `delete-project-dialog`, `rename-project-dialog` |
+| `./timeline` | `timeline`, `timeline/element-utils`, `timeline/scenes` |
+| `./renderer` | `services/renderer/canvas-renderer`, `scene-builder` |
+| `./fonts` | `google-fonts`, `use-font-atlas` |
+| `./evidence` | `c6-disposal-harness`, `c6-durable-reopen`, `headless-proof-control`, `headless-runtime-probe`, `headless-semantic-fixture`, `surface-evidence-harness` |
+| `.` (root) | `core`, `utils/{ui,date,id,string}`, `wasm`, `background/color`, `canvas/sizes`, `fps/defaults`, `feedback/types` |
+| `./media` | declared, still unconsumed — no Host reaches it yet; P2's Electron Host is the likely first consumer |
+
+Measured against this table: `apps/web` resolves 91 classic edges (design estimated 103; the 12-edge
+delta is accounted for, not unexplained — see task 6.2), `apps/vite-example` resolves 59 classic / 8
+ports / 1 contracts edges (exact match against design's 59/8/1 estimate, task 6.3). Zero `@/`
+specifiers remain in `apps/vite-example` (task 6.4); the residual `@/` specifiers in `apps/web` are
+all Host-owned modules (`site/`, `db/`, `auth/`, `components/landing/`, …) that were never part of
+the moved editor source, not a rewrite gap.
+
+### One entry was added, and this is the module that forced it
+
+Design E4 stated "no entry needs to be added" but permitted it, on the condition that an addition be
+recorded with the module that forced it. One was added: **`./evidence/wasm-test-mock`** →
+`src/editor/session/__tests__/wasm-test-mock.ts`, a narrow declared entry sitting alongside the wide
+`./evidence` entry above rather than folded into it.
+
+`wasm-test-mock` imports `bun:test` at module top level and registers `mock.module(...)` side effects
+on evaluation — both Bun-test-runtime-only. It was originally reachable only through the wide
+`./evidence` barrel's `export *` list. Two consumers forced the narrow entry into existence, at two
+different points in this Slice:
+
+- **`production-composition.test.ts`** (task 5.4): `bun test` crashed (`wasm.__wbindgen_start is not
+  a function`) because the wide-barrel `export *` collapsed a previously separate, sequentially
+  awaited import into one barrel import, and Bun does not guarantee `export *` sibling evaluation
+  order. Fixed by adding the narrow entry and repointing this one test at it directly.
+- **`apps/web`'s production `next build`** (task 6.5): even after the above fix, `wasm-test-mock`
+  itself was still listed in the wide `./evidence` barrel's `export *`. Because none of the three
+  packages declare `sideEffects: false`, no bundler could tree-shake it out for any consumer of that
+  barrel. Turbopack's page-data collection evaluates every route module, including three that never
+  touch the mock, and `bun:test` does not resolve under Node — crashing the build. Fixed by removing
+  `wasm-test-mock` from the wide barrel's `export *` list; the narrow entry (already added at 5.4)
+  remains the sole supported way to reach it.
+
+Net effect: 14 declared entries → 15. `./evidence` itself did not grow; a second, narrower entry was
+added beside it specifically so a Bun-test-only side-effect module never has to be reachable through
+a barrel that any production bundler must evaluate in full.
+
+The four-package split finding above (§7) is unchanged by these entry-mapping measurements: nothing
+measured in this section narrows or widens the case that `provider-opencut-classic`/`react-editor`
+requires inverting production dependencies, so it is not restated here a second time.
+
+---
+
+## 9. Static checker scope audit (S05 P1)
+
+Task 2.4 audited every `script/check-*.mjs` for `apps/web/src`-scoped scan sets, per design E3's
+generalisation that any checker whose scan scope is written as a literal `apps/web/src` string has
+this bug latent: once editor source left that directory, such a checker either goes silently
+vacuous (0 files matched, still prints PASS) or fails loudly the moment its literal path stops
+resolving. 26 `check-*.mjs` files existed at audit time (not the 22 named when design.md was
+written — `check-agent-evidence.mjs` landed from an unrelated sibling change in the interim);
+all 26 were audited rather than force-fitting the stale count. `check-type-baseline.mjs` has its
+own dedicated task (2.5) and is excluded from the table below for that reason, not because it was
+skipped.
+
+**The count is 27 as of HEAD, not 26 — two different, both-correct measurements at two different
+timestamps, not a contradiction.** Task 2.4's audit ran before Stage A (Group 3) moved any source.
+Stage A's own commit (`772e6ca5`) added `script/check-resolution-equivalence.mjs` — the design-E8
+specifier-rewrite oracle task 6.1 exercises — which did not exist yet when 2.4 counted 26. Task
+8.5's later full-sweep explicitly recorded "all 27 `script/check-*.mjs` checkers accounted for",
+and `ls script/check-*.mjs` against the current tree still returns 27. `check-resolution-
+equivalence.mjs` is deliberately absent from the table below: it was never in 2.4's audited set,
+and its scan mechanism (probing `HEAD` for a rewritten specifier's pre-rewrite target) has no
+`apps/web/src`-vs-`packages/*/src` literal-path scope of the kind this table classifies — it is
+closer to bucket A in spirit (its subject follows whatever is currently staged, not a hardcoded
+root) but was not run through 2.4's classification process, so it is recorded here rather than
+silently folded into a bucket count it was never audited into. State one number with its as-of
+point: **26 at task 2.4 (pre-Stage-A), 27 at task 8.5, 28 at P5** — P5
+(`s05-versioning-and-experimental-labeling`, 2026-08-15) adds `check-sdk-surface-labels.mjs`.
+The table below is the 2.4 snapshot and is not restated for the 27th checker; the 28th IS
+recorded as a dated row at the table's foot, because P5's task 6.3 asks this audit to carry it.
+
+Three buckets, plus the checkers with no `apps/web/src` vs. `packages/*/src` distinction at all:
+
+- **A — scope follows the source, fixed at audit time.** A general discovery mechanism
+  (glob/prefix over a package registry), so it could be taught `packages/*/src` immediately and
+  verified against the (then-empty) tree.
+- **B — deliberately Host-scoped.** The checker's subject is genuinely the Host/shell, not the
+  editor package, so `apps/web/src` (or `apps/vite-example/src`) is the correct permanent scope.
+- **C — literal-path tracker, fixed at the move that made it testable.** Enumerates specific files
+  or directories editor-owned code would occupy; could not be corrected before the corresponding
+  `git mv` actually happened, since there was nothing yet to verify against.
+- **N/A — not applicable.** No `apps/web/src` vs. `packages/*/src` distinction exists for this
+  checker's subject (wasm artifacts, build output, evidence for an unrelated change, a JSON
+  payload shape).
+
+| Checker | Bucket | Notes |
+| --- | --- | --- |
+| `check-package-boundary.mjs` | A | `ownerOfPath()` gained a `packages/<dir>/src/` branch; `resolveSpecifier()` gained `@opencut/<pkg>[/<subpath>]` resolution through declared `exports`; `guardUnownedFiles()` now refuses unowned `packages/*/src` files. |
+| `check-reference-boundary.mjs` | A (no edit needed) | Already repo-wide with no directory argument; only a `POLICY_DOCS`/`rasen/` exclusion filter. |
+| `check-next-imports.mjs` | B | Guards `apps/web/src` source-level Next imports by design; the bundle-level counterpart is `check-distributable-boundary.mjs`. Named in tasks.md 2.4 itself as the expected Host-scoped example. |
+| `check-distributable-boundary.mjs` | B | All ten `RULES` test shell-owned prefixes or dependency/virtual-module substrings; none reference editor-owned paths. |
+| `check-agent-evidence.mjs` | N/A | Reads a sibling change's evidence directory (`s0304-agent-transaction-evidence`); no relationship to editor source location. |
+| `check-asset-manifest.mjs` | N/A | Operates on build output (`dist/asset-manifest.json`) and static assets (`apps/web/public`), not TS source. |
+| `check-emitted-runtime-assets.mjs` | N/A | Operates on emitted Next build output layers; source-level counterpart is `check-runtime-asset-boundary.mjs` (bucket C). |
+| `check-headless-semantic-result.mjs` | N/A | Validates a JSON payload shape passed as a CLI argument; no filesystem path scope. |
+| `check-wasm-api-surface.mjs` | N/A | Scans `rust/wasm/pkg`'s built surface; unrelated to editor TS source. |
+| `check-wasm-paths.mjs` | N/A | Scans the built `.wasm` binary for leaked build-machine paths; unrelated to editor TS source. |
+| `check-wasm-source.mjs` | N/A | Verifies `opencut-wasm` module resolution points at the repo-built artifact; unrelated to editor TS source. |
+| `check-editor-singleton.mjs` | C | Hardcoded `OWNER`/`SESSION_FACTORY`/`REQUIRED` literals and a literal `"@/editor/use-editor"` specifier match, both under `apps/web/src/editor/**`; fails loudly (`missing-required-root`) once the move happens. |
+| `check-host-composition.mjs` | C | `HOST_ROOTS`, `HOST_CONTRACT = .../editor-host.ts`, `RETIRED_ADAPTER`, all editor-owned; `HOST_CONTRACT` was task 3.1's move target specifically. |
+| `check-port-boundary.mjs` | C + `@/`-resolution duplication | `CONTRACT_AREAS`/`NON_RUNTIME_AREAS` are used as **filters**, not existence-asserted lists — the one bucket-C checker that risked a silent vacuous pass rather than a loud failure, the same failure shape 2.1-2.3 fixed in `check-package-boundary.mjs`. Also independently reimplemented `@/` specifier resolution. |
+| `check-react-singleton.mjs` | C | `PROBE` literal under `editor/surface/embedding/**`; `MANIFESTS` needed widening to the three new package manifests once `editor-classic` declared its own React/UI dependencies, to keep the exact-version pin enforced. |
+| `check-runtime-asset-boundary.mjs` | C | `BROWSER_ADAPTER`, two Host-config literals, 5 producer-file literals, plus a directory walk over both Hosts' `src`. |
+| `check-session-resource-boundary.mjs` | C | `SOURCE_ROOT`, `REGISTRY`, `SHARED_SESSION_ENTRY`, per-Host entries, ~5 more literal editor-owned paths. |
+| `check-session-state-boundary.mjs` | C + `@/`-resolution duplication | ~10 hardcoded store-file literals; independently reimplemented `@/` alias resolution (manual duplicate of `check-package-boundary.mjs`'s `resolveSpecifier()`). |
+| `check-storage-boundary.mjs` | C + `@/`-resolution duplication | `SOURCE_ROOTS`, `STORAGE_AREA`, `PUBLIC_PORT_AREA`, `HOST_CONTRACT`; independently reimplemented `@/` resolution. |
+| `check-transaction-boundary.mjs` | C + `@/`-resolution duplication | `CONTRACT_AREA` — task 4.1's Stage B move target specifically; independently reimplemented `@/` resolution plus ~7 fixture-path literals. |
+| `check-surface-boundary.mjs` | C | `SURFACE_ROOT`, plus a page-route literal. |
+| `check-surface-css-boundary.mjs` | C | `SOURCE = .../surface.css` — the exact file task 5.2 moved. Narrowest-scope entry in the audit: one file. |
+| `check-surface-portal-boundary.mjs` | C | `REQUIRED` lists 11 literals overlapping task 5.6's `components/ui/*` atom adjudication; the discrepancy in count (9 vs. "eight") was resolved with evidence at 5.6, not assumed. |
+| `check-surface-private-drag.mjs` | C | `COORDINATOR` plus 2 more `editor/surface/embedding/**` literals, plus Host-owned shell-exclusion prefixes that needed no change. |
+| `check-headless-graph.mjs` | C | ~10+ module-id literals asserted against a headless bundle's module graph; needed updating once the bundler resolved moved sources to new module ids. |
+| `check-sdk-surface-labels.mjs` | A (added at P5, 2026-08-15 — outside 2.4's audited set, recorded per P5 task 6.3; same day the LEAD ruling on the `./vectors/drivers` finding added its fourth rule, `target-existence`) | Born after the move: discovers packages generically via `packages/*/package.json` + each package's shipped `surface.json`; no `apps/web/src` literal anywhere, so it never carried the pre-move scope bug. See §14 for its rules, controls and census. |
+
+**Every bucket-C checker was either asserted-existence (fails loudly the moment its literal path
+stops resolving) or swept by task 8.5's "run every runnable static checker, confirm all green,"**
+which cannot pass while any checker still points at a pre-move path — so bucket C was never a
+silent gap, only a deferred one, and 8.5's full sweep is the closing proof it was actually cleared.
+
+### Cross-cutting finding: four checkers reimplement `@/` specifier resolution
+
+Four checkers besides `check-package-boundary.mjs` itself independently reimplemented `@/`
+specifier resolution rather than importing a shared helper: `check-session-state-boundary.mjs`,
+`check-storage-boundary.mjs`, `check-transaction-boundary.mjs`, `check-port-boundary.mjs`. All four
+were updated to the chosen relative-path rewrite form (gate-1's decision) at the same time their
+literal path lists were corrected. **Not extracted into a shared module in this Slice** — doing so
+before Group 6 confirmed the exact rewritten form in practice across ~2,179 real specifiers risked
+building the wrong abstraction before the shape was known. This is a real duplication liability
+carried forward for **P2**: a fifth Host means a fifth opportunity for one of these five
+independent implementations to drift from the others, and the shared-helper extraction is now
+buildable against a settled, proven form. Full per-checker audit narrative and the count-discrepancy
+account: `rasen/changes/s05-package-extraction/evidence/group-2-checker-scope-audit.md`.
+
+---
+
+## 10. Blocker: the vite Host was non-interactive, and every gate this child has said green
+
+This is **P1's own Blocker** — distinct from and unrelated to P0's D-8 (a fabricated evidence-file
+transcript in P0's own review record, archived separately at
+`rasen/changes/archive/2026-08-13-s05-package-boundary-freeze/evidence/review-report.md`). D-8
+belongs to P0's record and is not restated here; this section is what actually blocked P1.
+
+### Symptom
+
+The parity spec's editing scenario, run against the post-move vite Host: **all ten interactions
+failed**, a 12.2-minute run, against the Next Host's 41.0-second pass on the identical scenario.
+The `Select Main Track track` button resolved to `HIDDEN` 589 times across the run; the timeline
+reported empty (`no timeline clip whose label contains ... (found: )`); the timecode never left
+`00:00:00:00`. This is not a partial or flaky result — the editor could not be interacted with at
+all.
+
+### Root cause
+
+The Tailwind utility `.right-0{right:0}` was **entirely absent** from the CSS bundle the vite
+example builds and serves, confirmed by an exhaustive literal search of the served file, content-
+hash matched to the `<head>` captured in the failing run's Playwright trace.
+
+**Mechanism:** the Main Track row div carries an inline height but no inline width — its width
+comes solely from `right:0; left:0` stretch-to-fill (CSS2.1 §10.3.7). With `right` never applying,
+the box degrades to shrink-to-fit sizing, whose only in-flow content is a `width:100%` child; that
+circular percentage resolves to ~0 and cascades into the button as a 0×0 box, which Playwright's
+actionability check correctly reports as hidden. The failure is row-scoped rather than wholesale
+because every ancestor above that row takes its critical dimension from a React inline style
+(JS-computed, CSS-independent), while this one div depends entirely on a Tailwind class that had
+silently stopped compiling.
+
+**Actual cause:** `apps/vite-example/src/styles.css` line 25, `@source "../../web/src"` — correct
+before this child (all 863 editor files lived there) — was invalidated the moment Stage C's
+`git mv` relocated the source to `packages/editor-classic/src`. The sibling `@import` for
+`surface.css` on line 3 of the same file *was* updated for the move; the `@source` on line 25 was
+not. Tailwind v4's stale-`@source` failure mode is **partial, not total**: content still reachable
+through the working `@import` chain kept compiling, so most utilities were unaffected and the gap
+was invisible until a utility whose only occurrence sat outside that reachable route was dropped —
+`right-0` (used at `packages/editor-classic/src/timeline/components/index.tsx:818`, among other
+call sites) was that utility.
+
+**Attribution correction, recorded honestly:** the line predates this child (traced to `05befb57`),
+and it is tempting to frame this as a pre-existing defect the move only surfaced. That framing is
+wrong. The line is old; the *wrongness* is new, and it is this child's — a previously-correct
+`@source` directive that this child's own `git mv` invalidated, missed because the adjacent
+`@import` in the same file was updated and this directive was not.
+
+**Pattern instance:** the third occurrence in this child of the predecessor's (P0's) parting
+lesson — "after any structural fix, sweep for sibling assumptions at every level of abstraction,
+not just the one call site." The prior two: package names updated with arity literals left behind,
+and matching logic updated with its message text left behind (both in Group 8's checker-triage
+work). This third instance sits one level of abstraction further out than the first two — not a
+literal inside a script, but a directive inside a CSS file — and is the reason the "sweep siblings"
+discipline has to include build-pipeline configuration, not only source and test literals.
+
+### Fix
+
+Commit `84dfc088` — one line, `@source "../../web/src"` → `@source
+"../../../packages/editor-classic/src"`. Rejected alternatives, both wrong-layer: `inset-x-0` in
+the failing `className` (fixes the one test and leaves 7+ other `right-0` call sites silently
+broken, and is a source edit a behaviour-preserving refactor must not make) and a Tailwind
+safelist (papers over a build defect this child introduced rather than fixing it).
+
+### Fix verified
+
+Rebuilt bundle grew **35,916 → 123,113 bytes (3.4×)** — independently confirmed twice (the
+diagnosis record and a second read by another reviewer), superseding this child's own commit
+message, which recorded 123,105 and is the less-corroborated of the two figures.
+`.right-0{right:calc(var(--spacing,.25rem) * 0)}` now present, 3 occurrences. A full utility-set
+diff against the Next Host's production bundle found **918 vs. 1063 classes**, exactly one
+asymmetric entry (a `next/font` CSS-module artifact expected to differ between the two Hosts) —
+confirming `right-0` was not the only utility the coverage gap had been dropping, and that the fix
+closed the gap rather than papering over its one detected symptom.
+
+### The finding that must not get lost
+
+This defect was **invisible to every gate this child has**: all 27 static checkers (§9), the type
+baseline, `check-resolution-equivalence.mjs`, and `bun test` were green over a Host whose editor
+could not be clicked at all. Only the browser-level parity oracle caught it — and only because the
+run's own log was read instead of the harness's background-task completion status, which reported
+this same failing run as exit code 0 (a separately-tracked harness defect, not a project defect).
+This is the concrete, measured justification for spec §3.2 naming the parity fixture as *the*
+oracle for this child, not one signal among several: every other signal available to P1 was green
+at the same moment the editor was entirely non-interactive.
+
+## 11. Finding: some fixture siblings must move together, some are deliberately anchored — a
+    uniform sweep trades one mismatch for another
+
+Surfaced by task 8.6's mid-task C6 regeneration (`script/__tests__/c6-session-resource-boundary.test.mjs`).
+Regenerating `script/fixtures/c6-session-resource-closure-anchor.json`'s build-provenance fields
+(`assetManifestSha256`, `observedBuildId`, `buildIdSha256`) via the repo's existing non-destructive
+`script/generate-session-resource-closure.mjs` is correct and expected after a real rebuild — but
+updating that fixture alone broke the checker's own cross-fixture consistency check (1 fail → 5
+fail), because the anchor and its sibling `c6-session-resource-expected-closure.json` are **a
+matched pair produced by one regeneration run**, not two independent files: the checker requires
+`artifacts.next.observedBuildId` in one to equal `provenance.next.buildId` in the other, exactly.
+
+A third, easy-to-miss value in the same provenance block must **not** move with the rest:
+`provenance.baseCommit` is a hardcoded literal pinned to the last **reviewed** source-closure audit,
+not to "whenever the fixture was last regenerated." A uniform overwrite of the whole block — the
+instinctive fix once the pair-consistency requirement is known — would have traded the original
+mismatch for a new one against `baseCommit`. The correct fix touched exactly
+`provenance.next.buildId` and left `baseCommit`, `baseTree`, and both `sha256` fields alone, since
+the same rebuild confirmed those digests were unchanged.
+
+**The general shape, stated once so it does not have to be re-derived per fixture family:** a
+sibling-fixture sweep is not "update every field that looks related." Each field is either (a) tied
+to its sibling and must move in lockstep with it, or (b) deliberately anchored to a separate,
+slower-moving reference point and must **not** move just because a neighboring field did. Treating
+the whole block as one undifferentiated unit — moving everything, or moving nothing — is wrong in
+both directions; the fix requires knowing, per field, which of the two rules it follows.
+
+This is one instance of a pattern that recurred four times across this child — package names fixed
+while an arity literal beside them was left, matching logic fixed while its message text was left,
+a `@import` fixed while the sibling `@source` beside it was left (§10 above), and a `.scratch-*`
+cleanup that left four same-class, differently-named siblings behind (see
+`evidence/implementation-report.md`'s housekeeping disclosure for the full four-instance account).
+Recorded here because it is the instance with the sharpest general lesson, and because it is
+directly relevant to **P2** (which will regenerate provenance-adjacent surfaces for a second Host)
+and **P7** (which regenerates the entire `SOURCE_INVENTORY` provenance record for beta closure): a
+provenance/fixture regeneration script's output should be diffed field-by-field against what
+changed and what didn't, not applied as a single trusted block, and any field with an explicit
+pinning rationale (like `baseCommit` here) should be called out by name before the regeneration
+runs, not discovered by a second round of test failures after.
+
+---
+
+## 12. The third consumer: the electron Host (S05 P2)
+
+`apps/electron-host` is now the third declared consumer of the package layers, beside the vite
+example and the Next app. Its owned surface is 33 tracked files (18 under `src/`, 15 scaffolding
+and proof scripts), all-additive: the repo census moves 2299 → 2384 tracked files across this
+change (+85, 0 removed — counted with `git ls-tree -r <commit> --name-only | wc -l`
+at the change's close-out commit, the method the implementation report's census
+paragraphs use, so the figure includes the review-round artifacts; the Group 1
+spike was deleted before any commit, so nothing was ever subtracted). The Host owns, and nothing else owns: its composition root
+(`host/electron-host-config.ts`, which constructs one module-stable `FilesystemProjectStore` over
+an IPC store bridge and final-overrides the inherited reference store), its viewport wrapper
+(`host/electron-editor-host.tsx`, Host-owned exactly like the vite/next wrappers, outside the
+Surface scan by that checker's own scoping note), its resource adapter (`host/electron-runtime-resources.ts`, the
+desktop twin of the browser Worker/audio/object-URL adapter, exempted construct-by-construct in
+`check-session-resource-boundary.mjs` with reasons), the filesystem store stack
+(`store/filesystem-project-store.ts` + bridge + IPC + file layout, with conformance, migration
+and bridge tests), and the Electron scaffolding (`electron/main.cjs` + `preload.cjs`, window,
+single-instance lock, CSP). It owns no port: the frozen ports barrel is byte-identical to this
+change's base commit (`66add22f`, verified by `cmp` per surface —
+`evidence/frozen-signature/README.md`), and the electron Host reaches the editor only through the
+same declared package entries the browser Hosts use — which is the point of a third consumer: the
+package boundary held without reopening a single export.
+
+The static checkers now judge the third consumer where their scope follows the source, and stay
+deliberately scoped where it doesn't: the per-checker verdict for all 27 `script/check-*.mjs`
+live in `rasen/changes/s05-second-host/evidence/group-9-checker-scope-audit.md` (12 edited to
+learn the third Host, 3 nonzero exits each dispositioned with a named pre-existing cause, 2
+usage-gated harnesses whose duties are gated elsewhere). Two findings from that audit are worth
+the boundary document's memory. First, widening `check-runtime-asset-boundary.mjs`'s Host roots
+made its root-css-url rule catch a real defect in this change's own mirror
+(`c4-worker-harness.tsx` built its fixture URL from a root-absolute literal; fixed to the vite
+twin's BASE_URL-composed form) — the rule's regex matches `new URL("/...` case-insensitively,
+which is not a false positive but the rule enforcing the composition discipline it exists for.
+Second, `check-type-baseline.mjs`'s two S01-regression FAIL rows are P1's move artifact, not
+regressions: the checker keys on file+code+message, and its own "present at the pin, absent now"
+list shows the identical TS2769s at their pre-move `apps/web/src/timeline/...` paths — both files
+byte-identical since this change's base.
+
+**Non-coverage, stated plainly rather than discovered later:** this change ships no CI leg (P3/P6
+own CI); no installer, code signing, or auto-update (the Host boots from a dev-mode
+`electron .` and a built `dist/`, nothing more); no tarball/packed-install distribution (P3);
+the transcription Worker runs on the Host but the **browser migration probes are not claimed**
+(Assets find the transcription worker on the electron Host; the migration-probe suite that proves
+browser-stored projects migrate forward is a browser-store duty, exercised where the browser store
+lives); and **C7 headless parity is not ported** — `check-headless-semantic-result.mjs` has no
+electron leg and none was pretended at. What is claimed for the third Host is what the oracles
+actually ran: boot, store conformance and migrations, desktop composition, surface evidence,
+disposal dispatch, full parity, the agent ledger, and the C6 durable-reopen oracle — each with a
+self-logged exit code under `rasen/changes/s05-second-host/evidence/`.
+
+**Capture rule (learned the hard way, review round 1):** Playwright's
+`_electron.launch` under `DEBUG=pw:channel` echoes its full launch message —
+including **the entire inherited process environment** — into the debug
+transcript. The Group 1 capture inherited the env wholesale and committed the
+transcript; the redacted follow-up commit fixed the file but not the history,
+and remediating that took a history rewrite (`evidence/rewrite-record.md`)
+before anything could ever be pushed. Two rules fall out: **future Electron
+evidence captures pass an explicit minimal `env` to `_electron.launch`**, and
+**a redaction commit never redacts history** — if credential bytes reach a
+commit, the fix is a rewrite (or rotation), not an amended file.
+
+---
+
+## 13. Third-party conformance: consumable entries and the pack-and-install harness (S05 P3)
+
+P3 makes the two base packages consumable by someone outside this repository: the corpus and
+contract surface reachable from declared entries, suite failures legible as frozen requirements,
+and a pack → scratch-install → run harness with no-workspace-linking controls. The harness
+mechanics are recorded in full below ("The scratch run, end to end"); the per-checker audit rows
+live in the change's evidence, not here. This section records the export-map growth as it
+happened, per the monotone-growth rule that every addition names its consumer.
+
+### Entry additions (attributed)
+
+| Package | Entry | Target | Forced by |
+| --- | --- | --- | --- |
+| `@opencut/editor-contracts` | `./vectors/corpus` | `src/vectors/corpus/index.ts` | the scratch-project consumer (P3's worked adapter): an installed consumer could reach the vector runner but not the corpus data it runs — the file-reading layer was test-only (`vectors/__tests__/corpus-fixture.ts`), unreachable from a declared entry |
+| `@opencut/editor-ports` | `./conformance/requirements` | `src/conformance/requirements.ts` | the third-party adapter author (P3's legibility group): a conformance report names its cases, but a reader outside this repository has no way to know which frozen requirement a failed case violates — this entry publishes that mapping beside the suite, plus a failures formatter that renders requirement → case → detail |
+| `@opencut/editor-contracts` | `./conformance/requirements` | `src/conformance/requirements/index.ts` | the same consumer, transaction-family leg: the transaction, engine, Draft and vectors case names and vector ids mapped to their frozen requirements, with the same requirement-first formatter (report-shaped for the suites, `VectorRunReport`-shaped for the runner) |
+| `@opencut/editor-classic` | `./storage/migrations` | `src/storage/migrations.ts` | the third-party adapter's react-free migration conformance (LEAD ruling 2026-08-15): the published migration chain was reachable only through the react-carrying `./storage` barrel (`use-storage-persistence` is a Host hook), so an installed consumer with no react in its tree could not run the chain at all. This entry exports `migrations`, `CURRENT_PROJECT_VERSION`, `runStorageMigrations`, `StorageMigration` and `MigrationProgress` — the whole published chain surface, no react anywhere in its closure (services/storage/migrations/**, indexeddb-adapter, storage types, utils/id, src/wasm → opencut-wasm, culori). The same ruling made classic's manifest stop understating that closure: `culori@4.0.2` and `opencut-wasm` (the in-repo `file:../../rust/wasm/pkg` spec) are declared dependencies and `react@^18.3.1` a peerDependency |
+
+`./vectors/corpus` exports `readPublishedCorpusText()` — a Node/bun `node:fs` read of the three
+corpus JSONs shipped beside the module (`files: ["src", …]` packs them), returning **exact file
+bytes** (a static JSON import re-stringifies and would fail the manifest's own corpus digest) —
+and `PUBLISHED_CONTRACT_SURFACE`, the frozen contract surface as data. It is deliberately the
+path-taking edge the runner refuses to be: browser consumers compose from the data-taking
+surface, which is unchanged. Guarded fail-closed in-repo by
+`vectors/__tests__/published-corpus-entry.test.ts`: the published surface must deep-equal
+`parseContractSurface(readContractSources())`, and the published corpus text must load through
+`loadTransactionVectorCorpus` with every recomputed digest matching the manifest. A live
+one-member violation of the constant was applied and observed failing the guard, then reverted
+(the E6 violation-and-revert pattern; run record in the change's evidence).
+
+**Boundary-checker census movement (method: `node script/check-package-boundary.mjs` over the
+working tree, measured 2026-08-15 with the two Group-2 files temporarily moved out for the
+baseline, then restored):** 1078 → 1080 repo files scanned, 982 → 984 package-graph files, 359 →
+359 `@opencut/*` specifiers examined, 360 → 360 cross-package edges. The two new files add scan
+surface and zero new cross-package specifiers (the entry's first `@opencut/editor-contracts/vectors/corpus`
+specifier lives in the scratch consumer, outside this tree). Both controls green
+(`--negative-control`, `--converse-control`, real exit codes in the change's evidence).
+
+**Group 3 census movement (same method, same day: the four Group-3 files and both entry lines
+temporarily removed for the baseline, then restored byte-identical and re-tested green):**
+1080 → 1084 repo files scanned, 984 → 988 package-graph files, 359 → 361 `@opencut/*`
+specifiers examined, 360 → 362 cross-package edges. The +2 specifiers are the contracts
+drift-guard test's `@opencut/editor-ports` and `@opencut/editor-ports/in-memory` imports —
+test files only, the same specifiers the engine and Draft reference fixtures already use. The
+baseline leg reproduced the Group-2 end-state exactly (1080/984/359/360); both controls green
+again on the restored tree (real exit codes in the change's evidence). The two
+`./conformance/requirements` entries are export-map additions only — `public-entry-only` stayed
+green, so both targets resolve as declared subpaths. Both indices are guarded fail-closed
+in-repository by `__tests__/requirements-index.test.ts` beside each module: every case name
+every suite reports against its reference implementation must have a row, every row must be
+reported, and a synthetic renamed case is proven to fail the guard. Authoring the index
+required one guard amendment, recorded with its reasoning in the code:
+`vectors/__tests__/corpus-isolation.test.ts` now exempts `__tests__` sources from its
+entry-import ban, because the drift guard consumes the published `./vectors/corpus` entry
+exactly as a third party does, and no test file is part of a distributable graph.
+
+### The pack-and-install harness (E1) and its exported API
+
+`script/pack-sdk-tarballs.mjs` exports **`SDK_PACKAGES`** and **`packSdkTarballs({ repoRoot?, outDir?,
+packages?, determinism?, log? })`** — pack the three packages with `npm pack` (the real
+distribution path, never extract-fix-repack), hash a per-file SHA-256 inventory, run the
+pack-twice determinism control, and return the manifest object; the CLI entry writes that
+manifest to the change's evidence as the committed digest record
+(`tarball-manifest.json`; tarballs stay in gitignored `dist-sdk-tarballs/`). **This API is the
+deliverable P6 imports for its CI leg** — P6 must not re-implement packing.
+
+`script/run-scratch-conformance.mjs` is the one-process scratch lifecycle runner: E2 root
+resolution (`OPENCUT_SCRATCH_ROOT` overridable; asserts outside the repo tree and outside every
+Temp path), wipe-and-recreate with a marker (foreign roots refused), install via gate-1's proven
+npm `file:` deps + `overrides` mechanism, materialize the committed adapter template, run the
+suites under bun, and `--control-removal` for E4.3.
+
+### The scratch run, end to end (close-out record)
+
+What runs where, in order, every run: the repo-side Node script resolves the scratch root
+(E:-drive sibling of the repo by default, `OPENCUT_SCRATCH_ROOT` for CI geography), asserts both
+location controls, wipes-and-recreates the root with a marker file (a pre-existing root without
+the marker is refused, never reused), packs the four tarballs through the pack module (the three
+`@opencut` SDK packages plus `rust/wasm/pkg` as `opencut-wasm`, per the 2026-08-15 ruling; or
+copies them from `OPENCUT_PREPACKED_DIR`), installs them with npm `file:` deps + `overrides`
+(`--legacy-peer-deps`, so classic's react peer is never auto-installed), asserts copy-not-link
+over all four installed packages plus the react-free property, materializes the committed adapter
+template (`script/fixtures/third-party-adapter`) into the scratch root, and runs it under bun
+(`OPENCUT_BUN` overridable) — every step self-logging `REAL_EXIT_CODE[<step>]`. The
+`opencut-wasm` override is what makes classic's declared wasm dependency resolve honestly from
+installed tarballs: classic's in-repo `file:../../rust/wasm/pkg` spec is dead from `node_modules`,
+and the override maps every occurrence to the packed local tarball — no registry publish, ever.
+
+**The three no-linking controls**, all printed into every run's log:
+
+1. **Location (E4.1)** — 1a: the root must lie outside the repo tree; 1b: outside every Temp
+   path (`TEMP`/`TMP`/`TMPDIR`/`os.tmpdir()`), the measured AV hazard. Either violation refuses
+   the run before anything is created.
+2. **Copy-not-link (E4.2)** — every installed `@opencut/*` package and the `opencut-wasm`
+   artifact must be a real directory (`lstatSync`: not a symlink) and the lockfile must record
+   `file:` resolutions with no `workspace:` protocol and no `link: true`.
+3. **Removal re-proof (E4.3)** — `--control-removal` deletes the installed
+   `@opencut/editor-ports` copy and re-runs **the adapter runner itself** (adapter-shaped
+   re-proof, not a bare probe): its first import is `@opencut/editor-ports`, so the whole
+   consumer surface must collapse with a resolution failure. A run that still resolved was
+   reaching into the monorepo — the exact hole this control closes.
+
+**The react-free control** (2026-08-15 ruling): after every install, `node_modules/react` must
+not exist (the `--legacy-peer-deps` flag keeps npm from auto-installing classic's react peer).
+Combined with the adapter's migration leg importing `./storage/migrations` live from the
+installed tarballs, this is the from-tarballs proof of the entry's react-free closure: nothing
+in the tree could satisfy a react specifier, and the entry's chain still resolves and runs.
+
+**The mutation leg**: `--variant-nonconforming` materializes
+`script/fixtures/third-party-adapter-variant-nonconforming` — byte-identical to the base adapter
+except one hunk in its store's save (object payload fields other than the vendor engine's
+document key are dropped). The runner requires it to FAIL, to name the four attributable cases,
+and to fail **exactly** those four (an executable exactness gate — a fifth failing case would be
+an over-constrained suite and a finding, not a pass).
+
+**Reuse seam for P6 (the CI leg)**: import `packSdkTarballs`/`SDK_PACKAGES` from
+`script/pack-sdk-tarballs.mjs` — P6 must not re-implement packing. The runner is the CI-leg
+blueprint: its six env seams (`OPENCUT_SCRATCH_ROOT`, `OPENCUT_BUN`, `OPENCUT_PREPACKED_DIR`,
+plus `OPENCUT_TARBALL_OUT_DIR`, `OPENCUT_ADAPTER_TEMPLATE` and `OPENCUT_VARIANT_TEMPLATE`,
+added at review round 1 so the pack requirement's "root, tarball output and adapter location
+all env-configurable" CI-readiness clause is implemented rather than claimed) exist so CI can
+drive the same lifecycle with its own geography, bun, tarball output and example fixture
+without forking the logic; P6 wraps or invokes it, and inherits the no-linking controls and the
+exactness gate unchanged.
+
+**Non-coverage, deliberately**: no CI step exists in P3 — §3.5 asks for executed evidence (this
+harness, with real exit codes and committed logs), and §3.7's CI execution is P6's, reusing this
+harness. Registry behaviour (npm publish, resolution from a registry) is excluded by the §4.1(a)
+narrow reading — the harness tests the packing/`files`/exports/install path only as far as `file:`
+tarballs reach. And the worked adapter is not a Host: it exercises the five conformance suites
+and the migration walker, not every Host duty — no browser-manager adapter beyond what the Draft
+fixture needs is claimed or built.
+
+**Final census (close-out)**: 1078 → 1106 repo files scanned, 982 → 988 package-graph files,
+359 → 361 `@opencut/*` specifiers, 360 → 362 cross-package edges over this change's base —
+Group 2 +2 files, Group 3 +4 files (+2 specifiers, both in the contracts drift-guard test),
+Groups 5–6 +22 files (20 code files and the two adapter `package.json` manifests, all under
+`script/`, outside every package graph — their `@opencut` specifiers are the third-party-shaped
+consumer's, deliberately not counted). Both checker controls green at close-out.
+
+**Group 9 census movement (LEAD-ruling execution, same method)**: 1106 → 1107 repo files,
+988 → 989 package-graph files, specifiers and edges unchanged (361/362) — the single new file is
+classic's `src/storage/migrations.ts` barrel; the manifest edits touch already-counted files
+(`packages/editor-classic/package.json`, `bun.lock`), and the barrel adds no cross-package
+specifier. Both checker controls re-run green; `packages/boundary.json` needed no edit — the
+checker's declared-entry knowledge is derived from the packages' own `exports` maps at load time
+(the dynamic manifest list BLOCKER-2 introduced), so the new entry self-registers and the
+public-entry-only rule proved it resolves as a declared subpath by passing.
+
+---
+
+## 14. Surface stability labeling: versions, classes, and the no-maturity-claim sweep (S05 P5)
+
+P5 (`s05-versioning-and-experimental-labeling`) gives every declared export entry a stability
+class, ships the classification beside the code, and enforces it with a checker — without
+touching a single frozen byte. All three manifests moved `0.1.0 → 0.2.0` (the minor that adds
+the S05 surface work; P3's tarball harness maps filenames structurally, version-agnostically, so
+no harness edit was needed or made).
+
+**The taxonomy** (the per-package READMEs are the consumer-facing statement; this section is the
+boundary-mechanics record):
+
+| class | may change in a minor | may be removed in a minor | marker in source |
+| --- | --- | --- | --- |
+| `frozen` | no — additive-only | never | **none — by design** |
+| `provider` | yes | not silently | `@opencutSurface provider — <reason>` |
+| `experimental` | yes | yes | `@opencutSurface experimental — <reason>` |
+
+**The mechanism, and the frozen-files-untouched rule.** Each package ships a `surface.json`
+classifying every `exports` entry except the mechanical `./package.json`, fail-closed in both
+directions (an unclassified entry and an undeclared row are both violations). In-source
+`@opencutSurface` markers live **only** in provider/experimental entry files. Frozen entries
+deliberately carry none: their classification lives in `surface.json` alone, so labeling never
+edits a frozen file — the four S03+S04 byte-identical surfaces
+(`editor-classic/src/editor/transactions/opencut/index.ts`,
+`editor-contracts/src/engine/engine.ts`, `editor-ports/src/index.ts`,
+`editor-classic/src/editor/surface/embedding/types.ts`) stayed IDENTICAL against base
+`5aae75ec` through every group, re-proven at close-out. The checker enforces the guard from the
+other side too: a marker found on a frozen-classified file is a violation whose text says
+editing a frozen file for labeling is contract pressure, never a patch.
+
+**Classification summary** (35 entries; method: each manifest's `exports` map read at `0.2.0`,
+`./package.json` excluded; the same census the checker prints every run):
+
+| package | entries | frozen | provider | experimental |
+| --- | --- | ---: | ---: | ---: |
+| `@opencut/editor-ports` | 6 | 5 | 0 | 1 |
+| `@opencut/editor-contracts` | 10 | 9 | 0 | 1 |
+| `@opencut/editor-classic` | 19 | 2 | 13 | 4 |
+| **total** | **35** | **16** | **13** | **6** |
+
+The count moved once after classification: the LEAD ruling of 2026-08-15 (below) removed
+contracts' `./vectors/drivers` entry from both the export map and `surface.json`, taking the
+census 36 → 35 and frozen 17 → 16.
+
+Adjudications worth a reader's attention: the conformance suites are `frozen` (executable
+contract truth); P3's `./conformance/requirements` legibility layers are `experimental` (test
+infrastructure over frozen suites); classic's `./storage/conformance` is `provider`, not
+experimental — it is the provider's own published test rig (the task's "provider where they are
+Classic's own machinery" arm); all four `./evidence/*` entries are `experimental`, unstable by
+intent. The design's anticipated symbol-override case turned out not to exist at this tree:
+classic's root barrel's full re-export closure carries zero frozen-classified symbols, so no
+production override was needed — the override mechanism exists and is control-proven, unused.
+
+**The checker** — `script/check-sdk-surface-labels.mjs`, wired as `check:surface-labels`, the
+labeling twin of the boundary checker's attribution rule (an unlabeled export FAILs,
+classification at birth): completeness both directions, class vocabulary
+(`frozen | provider | experimental` exactly), marker agreement including the frozen guard and
+exactness — exactly one marker, exactly the row's class (review round 1, R4),
+symbol-override validity via the boundary checker's source-scan extraction idiom (no parser, no
+execution), target existence (every declared entry's target is a plain string whose file is on
+disk — added under the LEAD ruling of 2026-08-15; non-string conditional targets fail closed
+like unreadable ones, review round 1, R3), and the house empty-scan refusal (exit 2). Census
+lines every run; the live census is 35 entries — frozen 16, provider 13, experimental 6 — with
+`dangling-export-entries: 0`. Controls per the family idiom (pure `scan()` over
+in-memory fixtures, never edits to the real tree): the negative control plants ten worlds —
+the spec's named pair (an unlabeled experimental export FAILs; an export entry with no row),
+an unknown class, a dangling override, a marker on a frozen file, an undeclared row,
+absent-target entries at both classes (non-frozen and frozen), a non-string (conditional)
+export target, and a stale marker beside the current one — each fires under its named
+rule, the two absent-target worlds and the conditional target under `target-existence`, the
+stale-marker world under `marker-agreement`. The converse control
+proves the designed silences: frozen rows without markers, a resolving override,
+class-name-in-prose, and zero dangling entries.
+
+**Ruled and executed (LEAD ruling, 2026-08-15): a dangling export entry the consumer view
+caught, removed.** `@opencut/editor-contracts`' `./vectors/drivers` entry — declared by P0's
+boundary freeze (`5e3fc7cb`) — pointed at `src/vectors/drivers/index.ts`, a file no commit
+ever authored; the directory held only `durable.ts`/`in-memory.ts`, consumed via relative
+imports, and nothing imported the entry by specifier. A consumer importing it got
+module-not-found from the shipped package. Every workspace-side gate was blind to it (the
+boundary checker never validates target existence; `tsc` never resolves an entry nothing
+imports; the labels checker originally read a missing frozen target as a marker-free pass).
+The from-tarballs consumer-view proof caught it because it reads the packed artifact. P5
+escalated rather than patched: authoring the missing index means choosing what a
+frozen-classified entry exports, removing the entry means removing frozen-classified surface —
+both contract adjudication. The LEAD ruled on 2026-08-15: REMOVE. The reasoning, quoted: the
+entry's target was never authored in any commit — it never worked; zero importers exist, so
+removal breaks nobody (a consumer today gets module-not-found either way, and removal makes
+the manifest honest); the four frozen S03+S04 surfaces are code signatures, byte-identical and
+untouched — the exports map is S05-authored manifest surface, so correcting it is not a
+frozen-surface change; authoring the index now would invent surface with no forcing consumer
+(monotone-growth cuts against inventing barrels); a future child that needs drivers exported
+re-adds the entry WITH the forcing module named. Attribution of record: **P0 declared
+./vectors/drivers in 5e3fc7cb; target never authored; zero importers; removed by P5 under LEAD
+ruling 2026-08-15; re-add only with a named forcing module.** The rule the finding bought: the
+checker's fourth rule (`target-existence`) fails a declared entry whose target is absent at
+any class, and the consumer-view verifier fails the same condition from the packed tarball —
+both control-proven able to fire. Completeness-both-ways stayed satisfied: the entry left the
+export map and its `surface.json` row in the same edit. Review round 1 (same day) completed
+the sweep the first pass missed — the shipped per-package README still carried the pre-ruling
+figures (11/frozen 10) and named the entry (R1), and the session-state checker's
+`PACKAGE_EXPORTS` mirror still mapped it (R2); both fixed, and a repo-wide
+`git grep vectors/drivers` guard over everything except archived children's history now
+dispositions every surviving hit as ruling narration, committed evidence, checker-provenance
+comments, or references to the still-existing driver files (`durable.ts`/`in-memory.ts`,
+consumed via relative imports) — zero hits present the removed entry as live surface.
+
+**The consumer view is proven from the tarballs, not the workspace.**
+`rasen/changes/s05-versioning-and-experimental-labeling/evidence/consumer-view-from-tarballs.mjs`
+imports P3's `packSdkTarballs` (never re-implements packing), extracts every `@opencut/*`
+tarball, and verifies from the packed artifacts: every version is `0.x`; every README ships and
+contains the policy statement; every `surface.json` ships and classifies exactly its export map
+(set-equal both directions); all 19 non-frozen markers verified in extracted source and no
+frozen entry's file carries one. Manifest truth (P3's rule): the dependency blocks are
+byte-identical to base — labeling adds no runtime-closure import, so the scratch-harness
+obligation was not triggered.
+
+**The no-maturity-claim sweep.** A semantic sweep
+(`evidence/no-stability-sweep.py`, log beside it) over everything the tarballs ship plus
+`packages/README.md` and this file, for the five terms (`1.0`, `stable`, `production-ready`,
+`semver`, `GA`). Mechanical noise is classified by context, not counted raw — SVG path
+coordinates, longer decimal literals, and version-string substrings (the task's own `0.1.0`
+trap) — and every remaining candidate is read and dispositioned in the committed log, whose
+census is authoritative: the bulk are the ordinary English word "stable" (stable identity /
+stable refs / stable order), the rest standalone numeric `1.0` literals (fixture seconds, a
+Y-axis fallback, a one-second threshold), the policy READMEs' own negation sentence, Gabon's
+ISO code `GA`, and this section's narration of the term list itself. Zero hits make a `1.0`,
+GA or production-readiness claim — the READMEs' "this policy is the only stability claim"
+sentence is the claim surface, and it survives its own sweep.
+
+**Census movement over this change**: 1107 → 1110 repo files in the boundary walk's scope
+(+3 code files, all outside every package graph: the labels checker, the consumer-view
+evidence module, and the empty-scan zero-entries fixture's `package.json`; the walk counts
+code files only, so evidence logs and the sweep's `.py` are invisible to it); every boundary rule
+count unchanged (989 package-graph files, 362 edges, 361 specifiers, 870 / 74 scanned). Family
+sweep at close-out: 28 checkers, 22 exit-zero / 6 nonzero — P3's exact nonzero set unchanged
+(`asset-manifest:2, emitted-runtime-assets:1, headless-graph:2, headless-semantic-result:2,
+resolution-equivalence:1, type-baseline:1`, the known pre-existing / capture-run-needing set).
+
+**Non-coverage, deliberately**: LICENSE / NOTICE / SBOM are P7's — the manifests' `files`
+entries for them are placeholders P7 makes real. The wasm-init constraint on classic's
+`./storage/migrations` is stated in that package's README as current-surface truth; a fix is
+tracked at Direction level, not in the package. Release automation is out of scope; CI is P6's
+decision, which inherits two ready legs — P3's install harness (its env seams, above) and this
+change's `check:surface-labels` plus `surface.json` as the machine-readable classification
+source for any maturity-gate tooling P6 might wire.
+
+## 15. Published examples: the copyable four, the runner, and the CI leg (S05 P6)
+
+P6 makes the SDK demonstrable by someone who has nothing but the tarballs: four examples under
+`examples/`, each an independent npm project an adopter can read top to bottom, a runner that
+materializes them exactly the way an adopter would (fresh tarball installs, no workspace
+linking, self-logged exit codes), and a CI leg that runs the whole thing on a clean machine.
+
+### The four shapes
+
+| Example | Shape | What it proves |
+| --- | --- | --- |
+| `examples/install-packages/` | the install contract | npm installs the three `@opencut/*` tarballs, every entry the example imports resolves, the READMEs and `surface.json` are readable as data, and classic's react peer stays honestly unsatisfied in a react-free tree — the cheapest adopter milestone, no editor mounted |
+| `examples/agent-transaction/` | the published scenario | the agent-transaction walk over the consumer's own in-memory store through published entries only: a 9-step plan executing green, an 87-assertion apply ledger, and a fresh-store reopen from the persisted snapshot at the committed revision |
+| `examples/custom-storage/` | the honest pair | an alien file-backed adapter through the published conformance suites; the production leg records the wasm-init `NOT LOADABLE` finding distinctly and skips the migration leg distinctly (nothing hidden), the mock-installed leg runs the real 31-step chain through the experimental `./evidence/wasm-test-mock` entry |
+| `examples/embed-surface/` | the forcing consumer | a React + vite embed of `SessionEditorSurface` — classic's full React chrome, the peer-dep contract satisfied from the consumer's own manifest, typecheck + build + a GPU-free Playwright smoke (mount gate, branding, degraded-mode banner, focus scope, ruler-scrubbed playhead, clean console/pageerror/network) |
+
+**The workspace-stance rule.** The examples' committed manifests declare plain exact registry
+versions (`"@opencut/editor-classic": "0.2.0"`), never `workspace:` — every file is copyable
+verbatim, which is the point of the directory. The runner is what swaps those specs to
+`file:tarballs/*` at materialization (plus the `opencut-wasm` override that makes classic's
+declared wasm dependency resolve honestly), so the same committed files an adopter reads are
+the ones the runner executes.
+
+**The harness reuse seam.** P6 imports, never re-implements: `createScratchHarness` from
+`script/scratch-install-harness.mjs` (task 2.1's behaviour-preserving extraction of P3's inline
+machinery — root controls, fresh-per-run lifecycle, tarball staging, the no-linking and react
+controls), `packSdkTarballs` from P3's pack module, and the consumer view from
+`script/check-sdk-consumer-view.mjs` (task 2.2's promotion of the P5-era consumer-view
+evidence module into standing tooling beside the other checkers). The runner itself adds only
+what is example-specific: materialization, the per-example execution contract read from the
+example's own manifest (`scripts.typecheck` / `build` / `smoke` via `npm run` in that order;
+`opencutExample.bunEntry` or `bunEntries` under the configured bun), the `OPENCUT_EXAMPLES`
+subset seam, and the env seams (`OPENCUT_EXAMPLES_ROOT`, `OPENCUT_SCRATCH_ROOT`,
+`OPENCUT_BUN`, `OPENCUT_PREPACKED_DIR`, `OPENCUT_TARBALL_OUT_DIR`).
+
+**The honest pair and its label consequence.** custom-storage's two legs are a decision, not a
+concession: the production leg demonstrates the plain consumer's real limits — the wasm-init
+defect is Direction-level, demonstrated not repaired — while the mock-installed leg proves the
+migration chain itself through the **experimental** `./evidence/wasm-test-mock` entry. That
+entry carries the experimental label's full consequence: it is evidence tooling a consumer may
+run, never production surface they may depend on, and the example's README says so where it
+names the entry.
+
+**CONTROL-1c and the leakage lesson (F-P6-7).** Node resolves a bare import by walking
+`node_modules` directories up to the drive root — so a scratch root below **any** ancestor
+carrying `node_modules` can import files the scratch tree never installed. The E:-drive default
+scratch root sat under an unrelated workspace's `node_modules`, and embed-surface's build
+borrowed `date-fns` from it (v4.1.0, out of range): the run was green, the proof was hollow.
+classic's manifest had declared `react-day-picker` but not its peer `date-fns` — bun
+auto-installs peers in the monorepo, and `--legacy-peer-deps` never installs them in the
+scratch, so only the leak kept both worlds green. Two closures, both durable: the harness now
+asserts every ancestor of the scratch root up to the drive root is `node_modules`-free
+(CONTROL-1c, refusing before touching anything), and classic declares `date-fns@^3.6.0`
+(in-range; the workspace already resolved exactly 3.6.0). The manifest-truth corollary extends
+P3's rule: **a peer of a dependency that the package's own closure needs must be promoted to
+the package's own dependencies** — the pack-and-install consumer installs with
+`--legacy-peer-deps`, where peers are never auto-satisfied.
+
+**The consumer entry and census movement.** `packages/boundary.json` consumers gains
+`{ "id": "examples", "root": "examples" }` — the vite-example shape, files owned outright, no
+`ownership` map. Census at close-out: **1110 → 1135** repo files (+25 = +22 example code files
++ the three scripts this change added: `check-sdk-consumer-view.mjs`,
+`run-published-examples.mjs`, `scratch-install-harness.mjs`), package graph 989 → 1011,
+cross-package edges 362 → 416, `@opencut/*` specifiers 361 → 415 (the examples' import
+surface), no-internal-reexport 870 and react-free-base 74 unchanged — all five rules PASS.
+Family sweep at close-out: **29 checkers, 23 exit-zero / 6 nonzero** (the family grew 28 → 29
+with this change's consumer-view checker; the nonzero set is byte-identical to P5's known
+`asset-manifest:2, emitted-runtime-assets:1, headless-graph:2, headless-semantic-result:2,
+resolution-equivalence:1, type-baseline:1`).
+
+**Checker audit** (per-checker disposition, full rows in the change's evidence):
+`no-elftia-import` auto-covers the examples (its clause already read "no package, Host **or
+example**"); `check-host-composition` is Host-scoped and blind to the examples by design;
+`check-type-baseline` is web-scoped, each example type-checks itself in its own execution;
+`check-distributable-boundary` is vite-graph-scoped, the examples are not distributable;
+`check-sdk-surface-labels` is export-map-scoped, the examples cite labels in READMEs and carry
+none; `check-sdk-consumer-view` (this change's own) verifies every full run's tarballs — the
+family's 29th checker. Silence per checker was not accepted.
+
+**The CI leg.** `.github/workflows/bun-ci.yml` gains `sdk-examples` (ubuntu-latest): the same
+routed wasm build as the `build` job (`node script/build-wasm.mjs` — a registry wasm would pass
+every leg while testing the wrong artifact), then the runner with the scratch root under
+`$HOME` — the runner's controls refuse repo-tree, Temp and leaky-ancestor roots, which is why
+the root is a fresh `$HOME` path and never the repo's sibling default. The job claims exactly
+the four examples plus the consumer view over freshly packed tarballs; it does not claim the
+local-only checkers (the family sweep stays a local gate), any matrix extension, or a publish.
+Its local twin is the change's Group-5 clean full-run log, same env shape; the first true CI
+execution lands on the post-delivery push, and its exit-code lines close the evidence loop.
+
+**Non-coverage, deliberately**: LICENSE / NOTICE / SBOM notices in the example files are P7's.
+The wasm-init constraint is Direction-level, demonstrated not repaired (the honest pair above).
+No example covers the desktop shape — the electron Host (section 12) does, and a React Native
+or server-rendered embed has no example yet.
+
+## 16. Provenance and beta closure (S05 P7)
+
+P7 is the portfolio's closing child: the provenance set regenerated over the tree as it
+ships, the packed artifacts carrying their notices, the dependency-closure claim turned into
+a standing gate, and the beta record that states what was delivered, what stance it carries,
+and what residuals remain with their owners. This section opens with the closure checker;
+the beta-closure record subsections land with the same change's documentation group.
+
+### The packed-manifest dependency-closure checker — the family's 30th
+
+`script/check-packed-manifest-closure.mjs` (wired as `check:packed-closure`) reads the
+packed tarballs, never the workspace, over the same seams as the consumer-view checker
+(`OPENCUT_PREPACKED_DIR` / `OPENCUT_TARBALL_OUT_DIR`), and makes P6's F-P6-7 finding a
+standing gate instead of a snapshot:
+
+- **Level 1 (manifest truth).** Every bare specifier in every scannable shipped file —
+  including the wasm artifact's glue — must be declared in the packed manifest (matching
+  the specifier's package root, so `zustand/vanilla` and `@opencut/editor-ports/host`
+  count against their declared roots), be a Node builtin, or carry a written disposition.
+  The two dispositions (`bun:test`, `@napi-rs/canvas`) license **test files only** — the
+  same import in runtime code fails.
+- **Level 2 (documented-latent register).** For each declared dependency's peers — minus
+  names the package itself declares, minus peers no runtime file of the dependency imports
+  (this drops `@types/react`) — the checker resolves the subpaths the package's
+  **reachable** graph imports through the dependency's `exports` map, walks the transitive
+  closure of every landed file, and separates latent peers from activated ones. The
+  register holds `zustand|use-sync-external-store` and `zustand|immer` with their
+  reachability reasons, re-derived every run: a row whose peer becomes reachable FAILs
+  naming the row and quoting its reason; an unregistered latent peer, a peer needing
+  promotion to the package's own dependencies, and a stale row each FAIL. Register
+  judgement aggregates across packages — a row belongs to whichever package declares the
+  dependency.
+- **Controls and census.** The negative control doctors a scratch-only copy of the classic
+  tarball with an undeclared runtime import and a `zustand/traditional` import in the `.`
+  entry target: both fire, and the FAIL log is committed beside the green twin. The
+  converse control plants a dispositioned specifier in a test file and proves it and the
+  register rows stay silent. Every run prints per-tarball census lines (files scanned,
+  import occurrences, unique bare specifiers, declared count, entry roots, reachable count,
+  level-2 subjects, latent/activated) plus dispositions honoured and register size; empty
+  scans refuse. Scratch discipline is CONTROL-1a/1b/1c (outside the repo, outside Temp,
+  ancestor chain node_modules-free to the drive root).
+
+At introduction: green over the current four tarballs (classic: 796 files, 3,502 imports,
+683 reachable, both register rows latent, dispositions `bun:test`×88 +
+`@napi-rs/canvas`×3); family census moves **29 → 30 checkers, 24 exit-zero / 6 nonzero**,
+the known nonzero set unchanged. Evidence and controls:
+`rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group3-closure-*.log`.
+
+### The beta-closure record (task 6.1)
+
+**Delivered.** Three `@opencut/*` packages at `0.2.0` — `editor-ports`,
+`editor-contracts`, `editor-classic` — behind a **35-entry labeled surface**
+(ports 6, contracts 10, classic 19: every `exports` entry except the mechanical
+`./package.json` is classified `frozen` / `provider` / `experimental` in each
+package's shipped `surface.json`, enforced by `check:surface-labels`). The
+conformance suites (ports, transaction, engine, draft, vectors) and the four
+published examples (`install-packages`, `agent-transaction`, `custom-storage`,
+`embed-surface`) are executable from **installed tarballs** by
+`script/run-published-examples.mjs`, with the `sdk-examples` CI leg wired in
+`.github/workflows/bun-ci.yml` (ubuntu-latest; its first true execution lands on
+the post-delivery push, per §15). Three Hosts boot the same editor: the Next app
+(`apps/web`), the Vite host (`apps/vite-example`), and the Electron host
+(`apps/electron-host`). Every packed tarball ships LICENSE, and the three editor
+packages ship NOTICE beside it (P7 Group 2, verified in pack output); the
+packed-manifest dependency-closure claim is the standing gate recorded at this
+section's head.
+
+Nothing was published to any registry and nothing was signed: every
+verification above ran against locally packed tarballs, so registry-specific
+behaviour (publishing, resolution from a registry, provenance attestations) was
+never exercised and is claimed nowhere (design B1, held to the last commit).
+
+**The `0.x` stance, restated beside P5's policy (§14).** No `1.0`, GA or
+production-readiness claim exists in any published material. The per-package
+READMEs' compatibility policy is the only stability claim this portfolio makes:
+`0.MINOR.PATCH`, the surface partitioned into the three classes, a minor release
+changing exactly what the classes permit and nothing they don't. The `beta` in
+the portfolio's name is precisely that statement — not a countdown to `1.0`.
+
+**The wasm-init Direction finding, recorded as carried.** classic's
+`./storage/migrations` chain is not loadable by a plain TypeScript consumer:
+the chain transitively initializes the `opencut-wasm` artifact
+(`migrations/transformers/v27-to-v28.ts` and `services/storage/service.ts`
+both import from `src/wasm`) and fails with
+`wasm.__wbindgen_start is not a function` — bun-version-independent (1.2.2 and
+1.2.18 identical), identical in-repo and from installed tarballs. Demonstrated,
+not repaired: `examples/custom-storage`'s production leg records the failure
+distinctly and skips the migration leg distinctly, while its mock-installed leg
+proves the real 31-step chain by installing the **experimental**-labeled
+`./evidence/wasm-test-mock` entry first. A fix is owned at Direction level, not
+in the package; classic's README states it as a constraint of the current `0.x`
+surface, and this record carries it forward as the portfolio's one open
+Direction finding.
+
+**Residuals, each with its owner.**
+
+- The **255-error lint debt** stays a human decision: what to fix versus
+  suppress is judgement about each error, not machinery this portfolio owes.
+- The **local-only checkers** are deliberate: the 30-checker family sweep is a
+  local gate; CI claims the examples job and the consumer view, not the sweep.
+- The **ubuntu-only examples job** is a config change away from a matrix — no
+  macOS or Windows leg is claimed, and none is blocked by the machinery.

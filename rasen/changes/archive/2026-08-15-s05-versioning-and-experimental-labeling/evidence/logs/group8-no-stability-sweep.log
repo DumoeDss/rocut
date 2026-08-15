@@ -1,0 +1,78 @@
+no-stability-sweep: 891 files in the shipped universe (three packages' src/ + per-package README/surface.json/package.json + packages/README.md + BOUNDARIES.md)
+  census  REAL: 70
+  census  noise:decimal-substring: 10
+  census  noise:svg-path-coordinate: 111
+  census  noise:version-string-substring: 3
+
+  ok   stable at BOUNDARIES.md:172: ordinary-English 'module-stable' (one store instance per module) — not a release-stability claim
+  ok   stable at BOUNDARIES.md:231: ordinary-English 'stable identity' (entity ids survive edits) — not a release-stability claim
+  ok   stable at BOUNDARIES.md:234: ordinary-English 'stable error code' (error codes are part of the contract) — not a release-stability claim
+  ok   stable at BOUNDARIES.md:360: ordinary-English 'stable terminal disposal' (one terminal outcome per disposal) — not a release-stability claim
+  ok   stable at BOUNDARIES.md:862: ordinary-English 'module-stable' (one store instance per module) — not a release-stability claim (key moved 859→862 when P5's section-9 audit edit added lines above)
+  ok   1.0 at BOUNDARIES.md:1175: §14's sweep narration naming the term list (`1.0`, `stable`, ...) — a mention, not a claim
+  ok   stable at BOUNDARIES.md:1175: §14's sweep narration naming the term list (`1.0`, `stable`, ...) — a mention, not a claim
+  ok   production-ready at BOUNDARIES.md:1175: §14's sweep narration naming the term list (`1.0`, `stable`, ...) — a mention, not a claim
+  ok   semver at BOUNDARIES.md:1176: §14's sweep narration naming the term list (... `production-ready`, `semver`, `GA`) — a mention, not a claim
+  ok   GA at BOUNDARIES.md:1176: §14's sweep narration naming the term list (... `production-ready`, `semver`, `GA`) — a mention, not a claim
+  ok   stable at BOUNDARIES.md:1179: §14's sweep narration quoting the ordinary-English 'stable' dispositions — a mention, not a claim
+  ok   stable at BOUNDARIES.md:1179: §14's sweep narration quoting the ordinary-English 'stable' dispositions — a mention, not a claim
+  ok   1.0 at BOUNDARIES.md:1180: §14's sweep narration describing the numeric `1.0` literal dispositions — a mention, not a claim
+  ok   stable at BOUNDARIES.md:1180: §14's sweep narration describing the numeric `1.0` literal dispositions — a mention, not a claim
+  ok   stable at BOUNDARIES.md:1180: §14's sweep narration describing the numeric `1.0` literal dispositions — a mention, not a claim
+  ok   1.0 at BOUNDARIES.md:1182: §14's sweep narration (Gabon ISO-code sentence + the closing 'zero hits' denial) — mentions, not claims
+  ok   GA at BOUNDARIES.md:1182: §14's sweep narration (Gabon ISO-code sentence + the closing 'zero hits' denial) — mentions, not claims
+  ok   GA at BOUNDARIES.md:1183: §14's closing sentence that zero hits make a `1.0`/GA claim — the sweep's own result statement, a denial not a claim
+  ok   1.0 at packages/editor-classic/README.md:24: the policy's own negation sentence ('No `1.0`, GA or production-readiness claim') — an explicit denial, not a claim
+  ok   GA at packages/editor-classic/README.md:24: the policy's own negation sentence ('No `1.0`, GA or production-readiness claim') — an explicit denial, not a claim
+  ok   stable at packages/editor-classic/src/actions/use-action-handler.ts:1: ordinary-English 'stable ref' (hook preserves handler signatures) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/components/__tests__/storage-provider-operations.test.ts:8: ordinary-English 'stable identity' (test name about diagnostics identity) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/core/managers/__tests__/project-persistence-rewire.test.ts:606: ordinary-English 'stable failure identity' (test name) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/editor/persistence/opaque-value.ts:28: ordinary-English 'stable `id`' (opaque values matched by id) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/editor/persistence/session-persistence-coordinator.ts:28: ordinary-English 'stable ProjectStore object' (one store object per Host) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/editor/session/__tests__/c6-durable-reopen.test.ts:105: ordinary-English 'module-stable store' (test name) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/editor/session/__tests__/session-disposal-c6.test.ts:240: ordinary-English 'stable failed outcome' (test name) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/editor/session/session-types.ts:79: ordinary-English 'stable useEditorInstance()' (hook reference) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/editor/transactions/opencut/__tests__/adapter-router.test.ts:109: ordinary-English 'stable minimal dependency order' (test name) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/editor/use-editor.ts:65: ordinary-English 'stable-core access' (Explicit stable-core accessor) — not a release-stability claim
+  ok   1.0 at packages/editor-classic/src/masks/__tests__/snap.test.ts:331: arithmetic in a comment (0.2*5 = 1.0, the snapped height) — a number, not a version
+  ok   stable at packages/editor-classic/src/media/__tests__/audio-resource-lifecycle.test.ts:281: ordinary-English 'stable order' (test name about cause ordering) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/services/renderer/compositor/frame-descriptor.ts:567: ordinary-English 'Stable identity key' (WeakMap identity comment) — not a release-stability claim
+  ok   1.0 at packages/editor-classic/src/services/storage/migrations/__tests__/fixtures/v1.ts:45: a v1 fixture's bookmark time literal [1.0] (seconds) — a number, not a version
+  ok   1.0 at packages/editor-classic/src/services/storage/migrations/__tests__/v1-to-v2.test.ts:83: migration test asserts bookmark array [1.0] (seconds) — a number, not a version
+  ok   1.0 at packages/editor-classic/src/services/storage/migrations/__tests__/v22-to-v23.test.ts:78: migration fixture field time: 1.0 (seconds) — a number, not a version
+  ok   1.0 at packages/editor-classic/src/services/video-cache/service.ts:231: frame.timestamp > targetTime + 1.0 — a one-second threshold, not a version
+  ok   GA at packages/editor-classic/src/stickers/providers/countries-data.ts:575: ISO 3166-1 alpha-2 country code 'GA' = Gabon, in sticker country data — not the term
+  ok   stable at packages/editor-classic/src/timeline/__tests__/element-with-track-selector.test.ts:7: ordinary-English 'shallow-stable members' (test name) — not a release-stability claim
+  ok   1.0 at packages/editor-classic/src/timeline/components/graph-editor/session.ts:203: doc comment: Y-axis scale falls back to 1.0 when adjacent segments are flat — a number, not a version
+  ok   1.0 at packages/editor-classic/src/timeline/components/graph-editor/session.ts:228: return 1.0 — the same Y-axis scale fallback value, not a version
+  ok   stable at packages/editor-classic/src/timeline/components/index.tsx:206: ordinary-English 'Stable refs' (wheel-listener comment) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/timeline/controllers/drag-drop-controller.ts:183: ordinary-English 'stable' handlers (bound drag handlers) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/timeline/controllers/element-interaction-controller.ts:110: ordinary-English 'drag stays stable' (drop-target recompute comment) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/timeline/controllers/playhead-controller.ts:139: ordinary-English 'stable references' (bound public handlers) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/timeline/element-with-track-selector.ts:5: ordinary-English 'stable refs' (allocation-free wrapper comment) — not a release-stability claim
+  ok   1.0 at packages/editor-contracts/README.md:22: the policy's own negation sentence ('No `1.0`, GA or production-readiness claim') — an explicit denial, not a claim
+  ok   GA at packages/editor-contracts/README.md:22: the policy's own negation sentence ('No `1.0`, GA or production-readiness claim') — an explicit denial, not a claim
+  ok   stable at packages/editor-contracts/src/conformance/requirements/index.ts:31: ordinary-English 'stable vector ids' (corpus id stability) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/conformance/requirements/index.ts:255: ordinary-English 'Draft ids are stable' (a requirement's own wording about ids) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/conformance/requirements/index.ts:283: ordinary-English 'queue observation are stable' (requirement wording about ordering) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/conformance/requirements/index.ts:292: ordinary-English 'stable receipt' (requirement wording about receipt identity) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/conformance/requirements/index.ts:341: ordinary-English 'corpus's stable' ids (same as :31) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/domain.ts:181: ordinary-English 'minimal stable surface' (metadata field stability for automation clients) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/draft/conformance/index.ts:280: ordinary-English 'Draft ids are stable' (requirement wording) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/draft/conformance/index.ts:599: ordinary-English 'observation are stable' (requirement wording) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/draft/conformance/index.ts:650: ordinary-English 'stable receipt' (requirement wording) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/draft/conformance/index.ts:1080: ordinary-English 'stable affected-id order' (failure-message wording) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/draft/conformance/index.ts:1097: ordinary-English 'composition-stable' (compensation ordering) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/in-memory/index.ts:294: ordinary-English 'Stable serialization' (idempotency comparison) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/transaction.ts:96: ordinary-English 'stable `code` field' (error codes) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/transaction.ts:99: ordinary-English 'stable failure shape' (same) — not a release-stability claim
+  ok   1.0 at packages/editor-ports/README.md:23: the policy's own negation sentence ('No `1.0`, GA or production-readiness claim') — an explicit denial, not a claim
+  ok   GA at packages/editor-ports/README.md:23: the policy's own negation sentence ('No `1.0`, GA or production-readiness claim') — an explicit denial, not a claim
+  ok   stable at packages/editor-ports/src/DECISIONS.md:23: ordinary-English 'stable logical id' (worker identity across Hosts) — not a release-stability claim
+  ok   stable at packages/editor-ports/src/conformance/index.ts:479: ordinary-English 'stable precommit error' (a named conformance assertion) — not a release-stability claim
+  ok   stable at packages/editor-ports/src/identity.ts:18: ordinary-English 'stable across Hosts' (logical worker identity) — not a release-stability claim
+  ok   stable at packages/editor-ports/src/project-store.ts:127: ordinary-English 'Stable failure shape' (an error-shape doc comment) — not a release-stability claim
+  ok   stable at packages/editor-ports/src/runtime-resources.ts:16: ordinary-English 'stable logical id' (script identity independent of serving location) — not a release-stability claim
+  ok   stable at packages/editor-ports/src/runtime-resources.ts:42: ordinary-English 'Stable logical identity' (same) — not a release-stability claim
+no-stability-sweep: every candidate dispositioned, none makes a 1.0/GA/production-readiness claim
+REAL_EXIT_CODE[no-stability-sweep]:0

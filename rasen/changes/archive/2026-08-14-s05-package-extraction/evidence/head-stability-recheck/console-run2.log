@@ -1,0 +1,1173 @@
+bun test v1.2.2 (c1708ea6)
+
+script\__tests__\c5-emitted-runtime-assets-red.test.mjs:
+(pass) C5 mounted-base dot-segment emitted-asset RED controls > rejects literal and encoded dot-segment escapes after URL canonicalization [625.00ms]
+
+script\__tests__\c5-runtime-asset-boundary-red.test.mjs:
+(pass) C5 runtime asset boundary deleted-file regression > ignores deleted cached paths but still scans an existing production file [1719.00ms]
+
+script\__tests__\c5-storage-boundary-red.test.mjs:
+(pass) C5 final storage boundary negative controls > the test table names every negative fixture
+(pass) C5 final storage boundary negative controls > rejects direct-adapter with its targeted diagnostic [187.00ms]
+(pass) C5 final storage boundary negative controls > rejects direct-indexeddb with its targeted diagnostic [188.00ms]
+(pass) C5 final storage boundary negative controls > rejects direct-opfs with its targeted diagnostic [187.00ms]
+(pass) C5 final storage boundary negative controls > rejects direct-singleton with its targeted diagnostic [203.00ms]
+(pass) C5 final storage boundary negative controls > rejects hidden-host-storage with its targeted diagnostic [204.00ms]
+(pass) C5 final storage boundary negative controls > rejects in-memory-fallback with its targeted diagnostic [187.00ms]
+(pass) C5 final storage boundary negative controls > rejects localstorage-presets with its targeted diagnostic [203.00ms]
+(pass) C5 final storage boundary negative controls > rejects localstorage-sounds with its targeted diagnostic [203.00ms]
+(pass) C5 final storage boundary negative controls > rejects mechanism-type-leak with its targeted diagnostic [235.00ms]
+(pass) C5 final storage boundary negative controls > rejects physical-storage-path-leak with its targeted diagnostic [297.00ms]
+(pass) C5 final storage boundary negative controls > rejects private-storage-context with its targeted diagnostic [234.00ms]
+(pass) C5 final storage boundary negative controls > rejects public-command-leak with its targeted diagnostic [297.00ms]
+(pass) C5 final storage boundary negative controls > rejects public-schema-leak with its targeted diagnostic [234.00ms]
+(pass) C5 final storage boundary negative controls > rejects public-state-store-leak with its targeted diagnostic [344.00ms]
+(pass) C5 final storage boundary negative controls > rejects public-storage-implementation-leak with its targeted diagnostic [250.00ms]
+(pass) C5 final storage boundary negative controls > rejects second-media-port with its targeted diagnostic [187.00ms]
+(pass) C5 final storage boundary negative controls > rejects second-storage-port with its targeted diagnostic [188.00ms]
+(pass) C5 final storage boundary negative controls > rejects unlisted-verification with its targeted diagnostic [281.00ms]
+
+script\__tests__\c6-session-resource-boundary.test.mjs:
+(pass) C6 executable negative rejects timer identifier alias [922.00ms]
+(pass) C6 executable negative rejects timer computed property [1015.00ms]
+(pass) C6 executable negative rejects Worker constructor alias [906.00ms]
+(pass) C6 executable negative rejects AudioContext constructor alias [813.00ms]
+(pass) C6 executable negative rejects URL.createObjectURL destructure [1062.00ms]
+(pass) C6 executable negative rejects OfflineAudioContext destructured alias [954.00ms]
+(pass) C6 executable negative rejects arbitrary single-resource wrapper [843.00ms]
+(pass) C6 executable negative rejects destructured multi-resource wrapper [907.00ms]
+(pass) C6 resource boundary scans a non-empty inventory and stays clean [7671.00ms]
+(pass) C6 resource boundary negative controls prove every rule can fail [2063.00ms]
+(pass) C6 Next inventory follows the editor route manifest/NFT and source maps
+(pass) C6 emitted boundary accepts fresh Vite and Next outputs when present
+(pass) C6 independent anchor verifies fresh Vite and Next artifact digests [2250.00ms]
+(pass) C6 generator keeps closure stable across distinct Next build IDs
+error: C6 emitted vite graph is truncated; omitted attributable closure: components/editor (24): packages/editor-classic/src/components/editor/editor-header.tsx, packages/editor-classic/src/components/editor/export-button.tsx, packages/editor-classic/src/components/editor/mobile-gate.tsx, packages/editor-classic/src/components/editor/onboarding.tsx, ...; core (13): packages/editor-classic/src/core/index.ts, packages/editor-classic/src/core/managers/audio-manager.ts, packages/editor-classic/src/core/managers/clipboard-manager.ts, packages/editor-classic/src/core/managers/commands.ts, ...; editor (56): packages/editor-classic/src/editor/cancel-interaction.ts, packages/editor-classic/src/editor/editor-store.ts, packages/editor-classic/src/editor/host/browser-runtime.ts, packages/editor-classic/src/editor/host/c4-project-load.ts, ...; export (3): packages/editor-classic/src/export/defaults.ts, packages/editor-classic/src/export/index.ts, packages/editor-classic/src/export/mime-types.ts; media (11): packages/editor-classic/src/media/audio-mastering.ts, packages/editor-classic/src/media/audio.ts, packages/editor-classic/src/media/media-utils.ts, packages/editor-classic/src/media/mediabunny.ts, ...; preview (25): packages/editor-classic/src/preview/components/context-menu.tsx, packages/editor-classic/src/preview/components/cursors.ts, packages/editor-classic/src/preview/components/handle-primitives.tsx, packages/editor-classic/src/preview/components/index.tsx, ...; retime (6): packages/editor-classic/src/retime/audio-stretch.ts, packages/editor-classic/src/retime/index.ts, packages/editor-classic/src/retime/presets.ts, packages/editor-classic/src/retime/rate.ts, ...; selection (11): packages/editor-classic/src/selection/attributes.ts, packages/editor-classic/src/selection/context.tsx, packages/editor-classic/src/selection/hit-testing.ts, packages/editor-classic/src/selection/hooks/use-box-select.ts, ...; services/renderer (22): packages/editor-classic/src/services/renderer/canvas-renderer.ts, packages/editor-classic/src/services/renderer/canvas-utils.ts, packages/editor-classic/src/services/renderer/compositor/frame-descriptor.ts, packages/editor-classic/src/services/renderer/compositor/wasm-compositor.ts, ...; services/transcription (1): packages/editor-classic/src/services/transcription/service.ts; services/video-cache (1): packages/editor-classic/src/services/video-cache/service.ts; services/waveform-cache (1): packages/editor-classic/src/services/waveform-cache/service.ts; sounds (3): packages/editor-classic/src/sounds/components/assets-view.tsx, packages/editor-classic/src/sounds/sounds-store.ts, packages/editor-classic/src/sounds/use-sound-search.ts; timeline (99): packages/editor-classic/src/timeline/animation-snap-points.ts, packages/editor-classic/src/timeline/animation-targets.ts, packages/editor-classic/src/timeline/audio-constants.ts, packages/editor-classic/src/timeline/audio-display.ts, ...; utils (9): packages/editor-classic/src/utils/browser.ts, packages/editor-classic/src/utils/color.ts, packages/editor-classic/src/utils/date.ts, packages/editor-classic/src/utils/geometry.ts, ...
+      at validateEmittedInventory (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\script\check-session-resource-boundary.mjs:1773:13)
+
+Bun v1.2.2 (Windows x64)
+(pass) C6 emitted boundary rejects a non-empty truncated Vite graph [5844.00ms]
+1768 | 	const sourceSet = new Set(normalizedSource);
+1769 | 	const missingClosure = expectedClosure.filter(
+1770 | 		(moduleId) => !sourceSet.has(moduleId),
+1771 | 	);
+1772 | 	if (missingClosure.length > 0) {
+1773 | 		throw new Error(
+               ^
+error: C6 emitted vite graph is truncated; omitted attributable closure: components/editor (24): packages/editor-classic/src/components/editor/editor-header.tsx, packages/editor-classic/src/components/editor/export-button.tsx, packages/editor-classic/src/components/editor/mobile-gate.tsx, packages/editor-classic/src/components/editor/onboarding.tsx, ...; core (13): packages/editor-classic/src/core/index.ts, packages/editor-classic/src/core/managers/audio-manager.ts, packages/editor-classic/src/core/managers/clipboard-manager.ts, packages/editor-classic/src/core/managers/commands.ts, ...; editor (56): packages/editor-classic/src/editor/cancel-interaction.ts, packages/editor-classic/src/editor/editor-store.ts, packages/editor-classic/src/editor/host/browser-runtime.ts, packages/editor-classic/src/editor/host/c4-project-load.ts, ...; export (3): packages/editor-classic/src/export/defaults.ts, packages/editor-classic/src/export/index.ts, packages/editor-classic/src/export/mime-types.ts; media (11): packages/editor-classic/src/media/audio-mastering.ts, packages/editor-classic/src/media/audio.ts, packages/editor-classic/src/media/media-utils.ts, packages/editor-classic/src/media/mediabunny.ts, ...; preview (25): packages/editor-classic/src/preview/components/context-menu.tsx, packages/editor-classic/src/preview/components/cursors.ts, packages/editor-classic/src/preview/components/handle-primitives.tsx, packages/editor-classic/src/preview/components/index.tsx, ...; retime (6): packages/editor-classic/src/retime/audio-stretch.ts, packages/editor-classic/src/retime/index.ts, packages/editor-classic/src/retime/presets.ts, packages/editor-classic/src/retime/rate.ts, ...; selection (11): packages/editor-classic/src/selection/attributes.ts, packages/editor-classic/src/selection/context.tsx, packages/editor-classic/src/selection/hit-testing.ts, packages/editor-classic/src/selection/hooks/use-box-select.ts, ...; services/renderer (22): packages/editor-classic/src/services/renderer/canvas-renderer.ts, packages/editor-classic/src/services/renderer/canvas-utils.ts, packages/editor-classic/src/services/renderer/compositor/frame-descriptor.ts, packages/editor-classic/src/services/renderer/compositor/wasm-compositor.ts, ...; services/transcription (1): packages/editor-classic/src/services/transcription/service.ts; services/video-cache (1): packages/editor-classic/src/services/video-cache/service.ts; services/waveform-cache (1): packages/editor-classic/src/services/waveform-cache/service.ts; sounds (3): packages/editor-classic/src/sounds/components/assets-view.tsx, packages/editor-classic/src/sounds/sounds-store.ts, packages/editor-classic/src/sounds/use-sound-search.ts; timeline (99): packages/editor-classic/src/timeline/animation-snap-points.ts, packages/editor-classic/src/timeline/animation-targets.ts, packages/editor-classic/src/timeline/audio-constants.ts, packages/editor-classic/src/timeline/audio-display.ts, ...; utils (9): packages/editor-classic/src/utils/browser.ts, packages/editor-classic/src/utils/color.ts, packages/editor-classic/src/utils/date.ts, packages/editor-classic/src/utils/geometry.ts, ...
+      at validateEmittedInventory (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\script\check-session-resource-boundary.mjs:1773:9)
+      at checkEmittedGraph (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\script\check-session-resource-boundary.mjs:2105:20)
+      at check (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\script\check-session-resource-boundary.mjs:2247:2)
+      at E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\script\check-session-resource-boundary.mjs:2281:7
+
+Bun v1.2.2 (Windows x64)
+(pass) C6 emitted boundary rejects a padded graph that truncates each attributable root [6422.00ms]
+407 | 		actualDigest !== EXPECTED_CLOSURE_SHA256 ||
+408 | 		EXPECTED_CLOSURE.common?.length !== EXPECTED_COMMON_SOURCE_COUNT ||
+409 | 		EXPECTED_CLOSURE.integrity?.reviewedCommonSourceCount !==
+410 | 			EXPECTED_COMMON_SOURCE_COUNT
+411 | 	) {
+412 | 		throw new Error(
+              ^
+error: C6 expected closure fixture integrity drifted (expected 703efb9c37906b108ff91a8702606ec6a214a4c793476378fd043a94dff20cea, actual 8dd05a5adef8de7f68e38df1146bbc67d916cc2bc77b32229677761e479d59a2)
+      at validateExpectedClosureFixture (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\script\check-session-resource-boundary.mjs:412:9)
+      at E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\script\check-session-resource-boundary.mjs:2277:2
+
+Bun v1.2.2 (Windows x64)
+(pass) C6 closure minimum is anchored independently from a downgraded fixture [1140.00ms]
+(pass) C6 checker and closure fixture cannot self-approve a coordinated downgrade [531.00ms]
+
+script\__tests__\c7-headless-graph.test.mjs:
+(pass) C7 attributable emitted headless graph > accepts a complete exact-entry emitted closure [15.00ms]
+(pass) C7 attributable emitted headless graph > rejects a Vite artifact whose executable HTML facade is absent
+(pass) C7 attributable emitted headless graph > rejects an altered executable HTML facade [32.00ms]
+(pass) C7 attributable emitted headless graph > rejects HTML whose module script targets a non-entry chunk [31.00ms]
+(pass) C7 attributable emitted headless graph > rejects empty modules
+(pass) C7 attributable emitted headless graph > rejects wrong entry [15.00ms]
+(pass) C7 attributable emitted headless graph > rejects missing critical root
+(pass) C7 attributable emitted headless graph > rejects stale marker [16.00ms]
+(pass) C7 attributable emitted headless graph > rejects stale base
+(pass) C7 attributable emitted headless graph > rejects altered file digest
+(pass) C7 attributable emitted headless graph > rejects copied Host graph
+(pass) C7 attributable emitted headless graph > rejects aggregate-only inventory [16.00ms]
+(pass) C7 attributable emitted headless graph > detects POSIX React
+(pass) C7 attributable emitted headless graph > detects Windows React DOM
+(pass) C7 attributable emitted headless graph > detects package-manager JSX runtime
+(pass) C7 attributable emitted headless graph > detects virtual React
+(pass) C7 attributable emitted headless graph > detects raw alias
+(pass) C7 attributable emitted headless graph > detects Sonner UI
+(pass) C7 attributable emitted headless graph > publishes stable structured failure evidence with rule and graph IDs [16.00ms]
+
+script\__tests__\c7-headless-semantic-result.test.mjs:
+(pass) C7 headless semantic result evaluator > rejects literal runtime claims without pre-load probe provenance
+(pass) C7 headless semantic result evaluator > accepts a complete actual edit and reopen
+(pass) C7 headless semantic result evaluator > rejects no-edit
+(pass) C7 headless semantic result evaluator > rejects no-second-owner
+(pass) C7 headless semantic result evaluator > rejects wrong-store [15.00ms]
+(pass) C7 headless semantic result evaluator > rejects fallback-store
+(pass) C7 headless semantic result evaluator > rejects fabricated probe order
+(pass) C7 headless semantic result evaluator > rejects missing RAF observation
+(pass) C7 headless semantic result evaluator > rejects missing React strategy
+(pass) C7 headless semantic result evaluator > rejects missing-digest
+(pass) C7 headless semantic result evaluator > rejects post-dispose-write
+(pass) C7 headless semantic result evaluator > rejects unhandled-error
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean global timeouts value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean global intervals value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean global animationFrames value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean global workers value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean global audioContexts value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean global audioContextConstructions value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean global webkitAudioContextConstructions value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean global objectUrls value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean global webGpuAdapterRequests value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean global wasmInstantiations value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean global wasmInstantiateCalls value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean global wasmInstantiateStreamingCalls value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean Host workers value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean Host audioContexts value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean Host objectUrls value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean Host graphicsQueries value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean React mutationRecords value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean React rootMarkersBefore value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean React rootMarkersAfter value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean React mountAttempts value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean compositor/GPU hostGraphicsQueries value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean compositor/GPU webGpuAdapterRequests value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean compositor/GPU wasmInstantiations value
+(pass) C7 headless semantic result evaluator > rejects a fabricated clean compositor/GPU ownershipAttempts value
+(pass) C7 headless semantic result evaluator > rejects bad global strategy provenance
+(pass) C7 headless semantic result evaluator > rejects bad global order provenance
+(pass) C7 headless semantic result evaluator > rejects bad Host strategy provenance
+(pass) C7 headless semantic result evaluator > rejects bad Host order provenance
+(pass) C7 headless semantic result evaluator > rejects bad React strategy provenance
+(pass) C7 headless semantic result evaluator > rejects bad React order provenance
+(pass) C7 headless semantic result evaluator > rejects bad compositor strategy provenance
+(pass) C7 headless semantic result evaluator > rejects bad compositor order provenance
+(pass) C7 headless semantic result evaluator > accepts a genuine vite runtime sensitivity control
+(pass) C7 headless semantic result evaluator > accepts a genuine next runtime sensitivity control
+(pass) C7 headless semantic result evaluator > rejects an installed sensitivity hook that was not exercised
+(pass) C7 headless semantic result evaluator > rejects fabricated browser React sensitivity
+(pass) C7 headless semantic result evaluator > rejects a copied Host result
+(pass) C7 headless semantic result evaluator > accepts independently attributed Vite and Next results
+(pass) C7 headless semantic result evaluator > accepts independent owned Host reports
+(pass) C7 headless semantic result evaluator > rejects incomplete owned cleanup [16.00ms]
+(pass) C7 headless semantic result evaluator > rejects copied graph evidence
+
+eslint\rules\__tests__\prefer-object-params.test.mjs:
+(pass) prefer-object-params > valid > function f() {} [218.00ms]
+(pass) prefer-object-params > valid > function f(a) {} [62.00ms]
+(pass) prefer-object-params > valid > const f = (a) => a; [63.00ms]
+(pass) prefer-object-params > valid > const f = function (a) { return a; }; [140.00ms]
+(pass) prefer-object-params > valid > function f({ a, b }) { return a + b; }
+(pass) prefer-object-params > valid > function f({ a, b }: { a: number; b: number }) { return a + b; } [31.00ms]
+(pass) prefer-object-params > valid > [1, 2, 3].reduce((acc, cur) => acc + cur, 0); [16.00ms]
+(pass) prefer-object-params > valid > arr.map((value, index) => value + index); [16.00ms]
+(pass) prefer-object-params > valid > new Promise((resolve, reject) => {});
+(pass) prefer-object-params > valid > maybeFn?.((a, b) => a + b); [31.00ms]
+(pass) prefer-object-params > valid > someAPI({ on: (a, b) => a + b });
+(pass) prefer-object-params > valid > persist((set, get) => ({}), { migrate: (state, version) => state }); [31.00ms]
+(pass) prefer-object-params > valid > new Foo({ handler: (a, b) => a + b }); [16.00ms]
+(pass) prefer-object-params > valid > maybeFn?.({ handler: (a, b) => a + b });
+(pass) prefer-object-params > valid > someAPI({ outer: { handler: (a, b) => a + b } }); [15.00ms]
+(pass) prefer-object-params > valid > function isFoo(x: unknown, ctx: Ctx): x is Foo { return true; } [16.00ms]
+(pass) prefer-object-params > valid > const isFoo = (x: unknown, ctx: Ctx): x is Foo => true; [16.00ms]
+(pass) prefer-object-params > invalid > function f(a, b) { return a + b; } [15.00ms]
+(pass) prefer-object-params > invalid > const f = (a, b) => a + b;
+(pass) prefer-object-params > invalid > const f = function (a, b) { return a + b; }; [16.00ms]
+(pass) prefer-object-params > invalid > function f(a, b, c) { return a + b + c; } [16.00ms]
+(pass) prefer-object-params > invalid > function formatTime(seconds: number, fps: number) { return seconds * fps; } [15.00ms]
+(pass) prefer-object-params > invalid > const cb = (a, b) => a + b; arr.reduce(cb, 0);
+(pass) prefer-object-params > invalid > const opts = { handler: (a, b) => a + b }; someAPI(opts); [16.00ms]
+(pass) prefer-object-params > invalid > function f(
+\u0009a: number,
+\u0009b: number,
+) { return a + b; } [15.00ms]
+
+apps\web\build\__tests__\headless-webpack-graph-plugin.test.ts:
+(pass) C7 Next exact-root emitted membership > rejects an entrypoint file when the exact root owns zero chunks [31.00ms]
+(pass) C7 Next exact-root emitted membership > accepts actual chunk membership carried by a concatenated owner [31.00ms]
+(pass) C7 Next exact-root emitted membership > rejects owner chunks outside the named webpack entrypoint [63.00ms]
+(pass) C7 Next exact-root emitted membership > rejects truncated root chunk bytes before publishing an envelope [31.00ms]
+(pass) C7 Next exact-root emitted membership > rejects a full alias-only producer-to-checker root without a resolved resource [31.00ms]
+
+packages\editor-ports\src\__tests__\conformance.test.ts:
+conformance: in-memory reference — PASS
+  PASS  store: 18 passed, 0 failed, 1 skipped
+  PASS  assets: 2 passed, 0 failed, 0 skipped
+  PASS  assetLoader: 1 passed, 0 failed, 0 skipped
+  PASS  runtimeResources: 5 passed, 0 failed, 0 skipped
+  PASS  exporter: 2 passed, 0 failed, 0 skipped
+  PASS  diagnostics: 2 passed, 0 failed, 0 skipped
+  PASS  ids: 2 passed, 0 failed, 0 skipped
+  PASS  environment: 2 passed, 0 failed, 1 skipped
+    SKIP  store / migration brings the store to its declared version: this store declares no migration, which is a conforming answer
+    SKIP  environment / a forced no-rasterizer declaration yields a zero limit: this host declares detect mode, so there is no force to check
+(pass) port conformance > the in-memory reference implementation passes every case [47.00ms]
+(pass) port conformance > the migration case runs when opted in, rejects failure, and requires idempotence [47.00ms]
+(pass) port conformance > the migration case is skipped, not passed, when it is not opted into
+(pass) port conformance > migration opt-in rejects an identity outside its disposable prefix [15.00ms]
+conformance: in-memory reference, no-rasterizer host — PASS
+  PASS  store: 14 passed, 0 failed, 5 skipped
+  PASS  assets: 2 passed, 0 failed, 0 skipped
+  PASS  assetLoader: 1 passed, 0 failed, 0 skipped
+  PASS  runtimeResources: 5 passed, 0 failed, 0 skipped
+  PASS  exporter: 2 passed, 0 failed, 0 skipped
+  PASS  diagnostics: 2 passed, 0 failed, 0 skipped
+  PASS  ids: 2 passed, 0 failed, 0 skipped
+  PASS  environment: 3 passed, 0 failed, 0 skipped
+    SKIP  store / capacity zero is distinct from unavailable storage: adapter fixture does not provide capacity controls
+    SKIP  store / typed failures happen before attachment replacement commits: adapter fixture does not provide failure controls
+    SKIP  store / same-key mutations serialize while distinct keys progress: adapter fixture does not provide scheduling controls
+    SKIP  store / hierarchical mutations preserve invocation order without identity collisions: adapter fixture does not provide scheduling controls
+    SKIP  store / migration brings the store to its declared version: this store declares no migration, which is a conforming answer
+(pass) port conformance > a forcing no-rasterizer host runs the no-rasterizer case, not past it
+(pass) port conformance > reports pass/fail per port and per case
+(pass) port conformance > the suite is not vacuous — a non-conforming store fails it
+(pass) C5 contract-review regression controls > an earlier attachment write cannot outlive a later project removal
+(pass) C5 contract-review regression controls > hierarchical clear waits for earlier affected writes
+(pass) C5 contract-review regression controls > collision-shaped attachment identities progress independently
+(pass) C5 contract-review regression controls > complete-browser profile rejects every required skip
+(pass) C5 contract-review regression controls > disposable migration binding rejects a different store and cleanup
+(pass) C5 contract-review regression controls > a migrated outcome without progress is rejected [16.00ms]
+(pass) C5 contract-review regression controls > public store errors retain no raw platform cause
+(pass) C5 contract-review regression controls > record and summary identity mismatch fails before commit
+(pass) C5 contract-review regression controls > the shared matrix rejects aliased attachment and library list values [15.00ms]
+(pass) the opaque payload survives what the store does not understand > provider-private fields round-trip unchanged
+(pass) the opaque payload survives what the store does not understand > a later mutation of the caller's object does not rewrite what was saved
+(pass) graphics negotiation > a forced no-rasterizer host yields a zero limit and a stated reason [16.00ms]
+(pass) graphics negotiation > a forced host is not consulted about the runtime it is running on
+(pass) graphics negotiation > a DETECTING host on a GPU-less runtime reports no rasterizer
+(pass) graphics negotiation > a GPU-less runtime still states a reason when it supplies none
+(pass) graphics negotiation > a zero preview budget is reported verbatim, not clamped up to one
+(pass) graphics negotiation > the unimplemented marker cannot be stamped as a real measurement
+(pass) graphics negotiation > the report names the selected backend, as an enumeration
+(pass) graphics negotiation > the placeholder is visibly unimplemented rather than plausibly wrong
+(pass) graphics negotiation > livePreviewLimit is a count, so a limit above one is expressible
+(pass) the runtime-resource host constructs what the editor may not > the editor's requested worker URL is recorded as a request
+
+packages\editor-classic\src\actions\__tests__\registry.test.ts:
+(pass) action registry scopes > dispatches a same-named action only to the selected owner scope
+(pass) action registry scopes > keeps unscoped binding and dispatch as the legacy compatibility path
+(pass) action registry scopes > unbind removes only the handler in the selected scope
+(pass) action registry scopes > nested invokeAction inherits the current handler scope
+
+packages\editor-classic\src\animation\__tests__\animated-params.test.ts:
+(pass) animated params > snaps and clamps number params
+(pass) animated params > rejects NaN and non-number values for number params
+(pass) animated params > passthrough with step <= 0 guard
+(pass) animated params > accepts valid select values
+(pass) animated params > rejects select values outside the allowed options
+(pass) animated params > rejects non-string select values
+(pass) animated params > boolean params accept booleans and reject other types
+(pass) animated params > color params accept strings and reject other types
+(pass) animated params > getAnimationParamValueKind maps param type to binding kind
+(pass) animated params > getAnimationParamDefaultInterpolation is linear for continuous, hold for discrete
+(pass) animated params > getAnimationParamNumericRange returns spec for number params, undefined otherwise
+
+packages\editor-classic\src\components\__tests__\storage-provider-operations.test.ts:
+(pass) storage diagnostics expose stable identity without raw provider payload
+(pass) storage clear rejects before publishing a false refreshed state
+(pass) storage clear also rejects when the post-clear project refresh fails
+
+packages\editor-classic\src\fonts\__tests__\host-font-assets.test.ts:
+(pass) Host-scoped font assets > loads and caches atlas data by loader identity, never first session
+(pass) Host-scoped font assets > rejects missing, empty, or malformed atlas entries
+(pass) Host-scoped font assets > quotes opaque CSS URLs with spaces, quotes and encoded characters
+(pass) Host-scoped font assets > fails closed on an HTML atlas fallback and propagates an aborted atlas request
+(pass) Host-scoped font assets > keeps two bases' preloads, masks, and visible atlas names isolated
+(pass) Host-scoped font assets > decodes a shipped font chunk and rejects corrupt chunk bytes [1688.00ms]
+
+packages\editor-classic\src\fps\__tests__\fps.test.ts:
+(pass) getHighestImportedVideoFps > returns the highest valid video fps
+(pass) getHighestImportedVideoFps > ignores missing and invalid fps values
+(pass) getRaisedProjectFpsForImportedMedia > raises the project fps to match a higher-fps import
+(pass) getRaisedProjectFpsForImportedMedia > does not lower the project fps for lower-fps imports
+(pass) getRaisedProjectFpsForImportedMedia > ignores non-video imports
+
+packages\editor-classic\src\masks\__tests__\snap.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+1 | /* @ts-self-types="./opencut_wasm.d.ts" */
+2 | 
+3 | import * as wasm from "./opencut_wasm_bg.wasm";
+4 | import { __wbg_set_wasm } from "./opencut_wasm_bg.js";
+5 | __wbg_set_wasm(wasm);
+6 | wasm.__wbindgen_start();
+         ^
+TypeError: wasm.__wbindgen_start is not a function. (In 'wasm.__wbindgen_start()', 'wasm.__wbindgen_start' is undefined)
+      at E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\node_modules\opencut-wasm\opencut_wasm.js:6:6
+-------------------------------
+
+
+packages\editor-classic\src\media\__tests__\audio-resource-lifecycle.test.ts:
+(pass) finite audio resource lifecycle runs in an isolated WASM mock process [500.00ms]
+
+packages\editor-classic\src\media\__tests__\persistence.test.ts:
+(pass) session-owned media persistence > legacy SVG replacement revokes the sniff URL once and retains the replacement handle [31.00ms]
+(pass) session-owned media persistence > round-trips attachment bytes and metadata with project isolation
+(pass) session-owned media persistence > retains private attachment metadata after a known update
+(pass) session-owned media persistence > orders removal after a still-reading attachment write
+
+packages\editor-classic\src\media\__tests__\processing-capacity.test.ts:
+(pass) media capacity test runs with the wasm test double [500.00ms]
+
+packages\editor-classic\src\params\__tests__\channel-layout.test.ts:
+(pass) channel layout > formats linear animated colors as hex
+
+packages\editor-classic\src\retime\__tests__\resolve.test.ts:
+(pass) retime resolve > maps clip time to source time at 2x speed
+(pass) retime resolve > maps clip time to source time at 0.5x speed
+(pass) retime resolve > returns clip time unchanged when no retime
+(pass) retime resolve > inverts source time back to clip time at 2x speed
+(pass) retime resolve > returns effective rate
+(pass) retime resolve > derives timeline duration for a visible source span
+(pass) retime resolve > clamps invalid rates to 1
+(pass) retime resolve > caps retime rates above 5x
+
+packages\editor-classic\src\retime\__tests__\split.test.ts:
+(pass) retime split > measures source span at a clip time [16.00ms]
+(pass) retime split > returns zero for non-positive clip time
+(pass) retime split > passes the same retime to both halves when splitting
+(pass) retime split > returns undefined on both sides when no retime
+
+packages\editor-classic\src\stickers\__tests__\host-assets.test.ts:
+(pass) Host-scoped sticker assets > resolves flag browse/resolve URLs through each immutable Host base [15.00ms]
+(pass) Host-scoped sticker assets > keys loaded sticker images by resolved URL and dimensions
+(pass) Host-scoped sticker assets > keeps generated graphic previews outside AssetResolver and first-party fetch
+
+packages\editor-classic\src\stickers\__tests__\sticker-id.test.ts:
+(pass) sticker-id strict mode > parses provider-prefixed IDs
+(pass) sticker-id strict mode > throws for IDs without provider prefix
+(pass) sticker-id strict mode > throws for malformed IDs
+(pass) sticker-id strict mode > builds sticker IDs unchanged
+
+packages\editor-classic\src\timeline\__tests__\element-with-track-selector.test.ts:
+(pass) element-with-track selector snapshot stability > a non-empty selection returns shallow-stable members across reads
+
+packages\editor-classic\src\timeline\__tests__\update-pipeline.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+ 96 | const visualElementParams: ElementParamDefinition[] = [
+ 97 | 	{
+ 98 | 		key: "transform.positionX",
+ 99 | 		label: "Position X",
+100 | 		type: "number",
+101 | 		default: DEFAULTS.element.transform.position.x,
+                 ^
+ReferenceError: Cannot access 'DEFAULTS' before initialization.
+      at E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\packages\editor-classic\src\params\registry.ts:101:12
+-------------------------------
+
+
+packages\editor-classic\src\utils\__tests__\browser-resource-lifecycle.test.ts:
+(pass) transient download object-URL ownership > successful utility and export downloads each revoke exactly once
+(pass) transient download object-URL ownership > a click error still removes the utility anchor and revokes its URL
+(pass) transient download object-URL ownership > an aborted export click and a removal failure both revoke terminally [16.00ms]
+
+packages\editor-classic\src\utils\__tests__\math.test.ts:
+(pass) evaluateMathExpression > basic arithmetic > should add numbers [15.00ms]
+(pass) evaluateMathExpression > basic arithmetic > should subtract numbers
+(pass) evaluateMathExpression > basic arithmetic > should multiply numbers
+(pass) evaluateMathExpression > basic arithmetic > should divide numbers
+(pass) evaluateMathExpression > operator precedence > should respect multiplication over addition
+(pass) evaluateMathExpression > operator precedence > should respect division over subtraction
+(pass) evaluateMathExpression > parentheses > should evaluate expressions in parentheses first
+(pass) evaluateMathExpression > parentheses > should handle nested parentheses
+(pass) evaluateMathExpression > decimal numbers > should handle decimal numbers
+(pass) evaluateMathExpression > negative numbers > should handle negative numbers
+(pass) evaluateMathExpression > whitespace handling > should handle various whitespace
+(pass) evaluateMathExpression > edge cases > should handle single number
+(pass) evaluateMathExpression > edge cases > should return null for empty string [16.00ms]
+(pass) evaluateMathExpression > edge cases > should return null for invalid characters
+(pass) evaluateMathExpression > edge cases > should return null for unbalanced parentheses
+(pass) evaluateMathExpression > edge cases > should return null for division by zero
+(pass) evaluateMathExpression > edge cases > should return null for incomplete expressions
+(pass) evaluateMathExpression > security - code injection prevention > should reject code injection attempts
+(pass) evaluateMathExpression > security - code injection prevention > should reject prototype pollution attempts
+
+packages\editor-contracts\src\draft\__tests__\draft.test.ts:
+(pass) Draft editing sessions > passes the reusable T2 conformance matrix [312.00ms]
+(pass) Draft editing sessions > keeps repeated and concurrent conformance accounting run-local [360.00ms]
+(pass) Draft editing sessions > preserves an arbitrary literal optional engine feature [140.00ms]
+(pass) Draft editing sessions > accepts a provider retention policy at the public conformance boundary [172.00ms]
+(pass) Draft editing sessions > names deliberate protocol violations instead of passing vacuously [266.00ms]
+(pass) Draft editing sessions > maps retention adapter failure and rejects still-referenced project asset deletion [15.00ms]
+(pass) Draft editing sessions > preserves parent store-error ownership and publishes nothing on apply failure [32.00ms]
+(pass) Draft editing sessions > fails closed when a public engine wrapper omits or loses committed-state capture
+(pass) Draft editing sessions > uses an explicit wrapper capture for prior-ledger preflight and actual undo equivalence [31.00ms]
+(pass) Draft editing sessions > keeps native capture construction-owned and immune to writer or port substitution [16.00ms]
+(pass) Draft editing sessions > uses distinct base/incarnation keys when a public Draft id is reused [62.00ms]
+(pass) Draft editing sessions > encodes arbitrary UTF-16 Draft ids without collisions or thrown opens [16.00ms]
+(pass) Draft editing sessions > does not reserve a Draft id when incarnation key creation fails [15.00ms]
+(pass) Draft editing sessions > keeps a one-field undo constant-sized across 8,000 markers [2860.00ms]
+(pass) Draft editing sessions > keeps one-to-four-field Project inverses constant-sized, exact, restorable, stale-safe, and preflight-closed [578.00ms]
+(pass) Draft editing sessions > traverses first-seen identical containers before rejecting nested alias collapse [31.00ms]
+(pass) Draft editing sessions > terminates cycles only through an already-recorded matching pair
+(pass) Draft editing sessions > repairs owners hidden below an identical container with a non-circular identity oracle
+(pass) Draft editing sessions > restores document-wide shared and distinct aliases across every entity collection [31.00ms]
+(pass) Draft editing sessions > preserves cycles and Map/Set-contained aliases through an unrelated edit and undo
+(pass) Draft editing sessions > restores distinct and shared provider-private alias topology exactly [16.00ms]
+(pass) Draft editing sessions > sanitizes adversarial engine error evidence without invoking getters [15.00ms]
+(pass) Draft editing sessions > validates snapshot-attempt configuration
+
+packages\editor-contracts\src\engine\__tests__\engine.test.ts:
+(pass) ProjectStore-backed transaction engine > passes the reusable T0 + T1 conformance matrix [250.00ms]
+(pass) ProjectStore-backed transaction engine > isolates assertion accounting across concurrent conformance runs [140.00ms]
+(pass) ProjectStore-backed transaction engine > runs conformance with an arbitrary literal provider feature [110.00ms]
+(pass) ProjectStore-backed transaction engine > canonical replay distinguishes an omitted patch from explicit clearing [15.00ms]
+(pass) ProjectStore-backed transaction engine > accepted entity, update, and keyed values survive every reopen
+(pass) ProjectStore-backed transaction engine > non-reopenable entity and idempotency values are rejected before save
+(pass) ProjectStore-backed transaction engine > validates the closed Project patch surface without publishing failures [16.00ms]
+(pass) ProjectStore-backed transaction engine > rejects nested frame-rate payloads before live, persisted, or reopened state [16.00ms]
+(pass) ProjectStore-backed transaction engine > checks keyed Project identity before serializable patch validation and aggregates normal issues
+(pass) ProjectStore-backed transaction engine > attributes untouched clip and marker timebase failures to the Project FPS operation
+(pass) ProjectStore-backed transaction engine > native adapter commits every Project field, summary, opaque sibling, and keyed reopen state exactly
+(pass) ProjectStore-backed transaction engine > projectless documents enforce base placement and require a frame rate
+(pass) ProjectStore-backed transaction engine > negative targets fail named conformance cases [296.00ms]
+(pass) ProjectStore-backed transaction engine > placement reports every base rule and accepts adjacent intervals [16.00ms]
+(pass) ProjectStore-backed transaction engine > dry-run conflicts are pure and do not reserve an idempotency key
+(pass) ProjectStore-backed transaction engine > reads are defensive and unsubscribe is idempotent
+(pass) ProjectStore-backed transaction engine > invalid persisted state is sanitized as load-project corruption
+(pass) ProjectStore-backed transaction engine > apply exposes the first placement issue as TransactionError validation [16.00ms]
+
+packages\editor-contracts\src\in-memory\__tests__\in-memory.test.ts:
+(pass) in-memory transaction Project updates > passes T0 conformance with the seeded Project case executed [15.00ms]
+(pass) in-memory transaction Project updates > rejects empty, excess, symbol, id, malformed, missing, and mismatched patches
+(pass) in-memory transaction Project updates > gives canonical keyed collisions precedence over serializable invalid Project patches
+(pass) in-memory transaction Project updates > commits a same-value patch once and rolls it back on a later failure
+
+packages\editor-contracts\src\vectors\__tests__\agent-drivers.test.ts:
+(pass) the pinned Node ledger > covers exactly the declared plan
+(pass) driver 1 — the in-memory fake, without React, Electron or a browser > runs the declared plan and emits a sound ledger [47.00ms]
+(pass) driver 2 — the durable engine over a project store > runs the declared plan, counts durable saves, and reopens on the committed revision [16.00ms]
+(pass) driver 2 — the durable engine over a project store > a stale reopen expectation fails the reopen step [15.00ms]
+(pass) driver 2 — the durable engine over a project store > an injected durable failure moves nothing, is reported, and a later step still commits [16.00ms]
+(pass) driver 2 — the durable engine over a project store > a store that parks its saves reaches the same verdicts once released [47.00ms]
+(pass) driver 2 — the durable engine over a project store > the two Node drivers commit the same identities from the same definition [15.00ms]
+(pass) driver 2 — the durable engine over a project store > captureAgentCommitment records only what the scenario created
+
+packages\editor-contracts\src\vectors\__tests__\agent-scenario.test.ts:
+(pass) the Host-neutral agent scenario > the module mirrors the published corpus vector exactly
+(pass) the Host-neutral agent scenario > it performs every element the canonical requirement names
+(pass) the Host-neutral agent scenario > every declared step asserts something [16.00ms]
+(pass) the Host-neutral agent scenario > the scenario module imports only the frozen public surface
+(pass) ledger accounting controls > a step that asserted nothing fails the run
+(pass) ledger accounting controls > an executed plan that differs from the declared plan fails the run
+(pass) ledger accounting controls > a run with no step at all fails
+(pass) ledger accounting controls > a failed step fails the run
+(pass) ledger accounting controls > a well-formed run reports no failure code
+
+packages\editor-contracts\src\vectors\__tests__\contract-surface.test.ts:
+(pass) contract surface derivation > the parsed operation kinds are the exported constant, member for member
+(pass) contract surface derivation > the parsed error codes are exactly the union's members
+(pass) contract surface derivation > the parsed engine issue codes are exactly the union's members
+(pass) contract surface derivation > a source that does not declare a member set is refused, not defaulted
+(pass) contract surface derivation > a synthetic member added to the contract source is seen by the parser
+
+packages\editor-contracts\src\vectors\__tests__\corpus-isolation.test.ts:
+(pass) corpus isolation > no module imports the committed corpus [1985.00ms]
+(pass) corpus isolation > no source imports a corpus JSON file by any relative path [1141.00ms]
+(pass) corpus isolation > the harness reads the corpus from disk, which proves the scan can see an importer
+
+packages\editor-contracts\src\vectors\__tests__\coverage.test.ts:
+(pass) coverage of the frozen contract > every exported member is covered, and the covering vectors are named
+(pass) coverage of the frozen contract > the corpus advertises all twelve operation kinds by measurement [16.00ms]
+(pass) coverage of the frozen contract > removing every vector for one kind fails the gate, naming that kind
+(pass) coverage of the frozen contract > the gate reads the contract: a synthetic exported member fails it
+(pass) coverage of the frozen contract > a redundant extra vector does not fail the gate
+(pass) coverage of the frozen contract > a member the corpus claims but the contract does not export is reported
+
+packages\editor-contracts\src\vectors\__tests__\loader.test.ts:
+(pass) published corpus > parses with a plain JSON parser and is self-describing [31.00ms]
+(pass) published corpus > loads, and every vector id is unique across both families [125.00ms]
+(pass) published corpus > the corpus digest is a real SHA-256 chain, cross-checked against node:crypto [203.00ms]
+(pass) load-time refusals > a file edited without regenerating the manifest fails to load [47.00ms]
+(pass) load-time refusals > a manifest whose declared count differs from the files fails to load [63.00ms]
+(pass) load-time refusals > a vector whose expectation set is empty is a load error, not a skip [78.00ms]
+(pass) load-time refusals > a scenario vector with no step is a load error [157.00ms]
+(pass) load-time refusals > a non-integer tick value is refused with the offending field [93.00ms]
+(pass) load-time refusals > a non-finite number is refused [125.00ms]
+(pass) load-time refusals > an unknown operation kind is refused [62.00ms]
+(pass) load-time refusals > an unknown error code is refused [110.00ms]
+(pass) load-time refusals > an unknown engine issue code is refused [78.00ms]
+(pass) load-time refusals > a duplicate vector id is refused [78.00ms]
+(pass) load-time refusals > an unknown-kind probe naming a real kind is refused [78.00ms]
+(pass) load-time refusals > no refusal path can return a corpus [328.00ms]
+
+packages\editor-contracts\src\vectors\__tests__\mutation-matrix.test.ts:
+(pass) mutation matrix > a stale revision fails exactly the vectors with an accepted step [15.00ms]
+(pass) mutation matrix > a non-atomic batch fails exactly the multi-operation vectors [16.00ms]
+(pass) mutation matrix > ignoring the idempotency key fails exactly the keyed replay/reuse vectors
+(pass) mutation matrix > notifying on rejection fails exactly the vectors asserting a silent rejection [16.00ms]
+(pass) mutation matrix > an uncloned read fails exactly the vectors that probe cloning [15.00ms]
+(pass) mutation matrix > waiving placement fails exactly the vectors asserting a placement issue [94.00ms]
+(pass) specificity > a conforming implementation of a different shape passes every vector
+
+packages\editor-contracts\src\vectors\__tests__\runner.test.ts:
+(pass) the runner against the reference implementations > green against the in-memory transaction store [15.00ms]
+(pass) the runner against the reference implementations > the fake skips exactly the vectors whose capability it does not advertise
+(pass) the runner against the reference implementations > green against a durable engine over an in-memory project store [78.00ms]
+(pass) fail-closed rules > an empty corpus is refused rather than passed [16.00ms]
+(pass) fail-closed rules > a filter matching nothing is refused
+(pass) fail-closed rules > a filter matching exactly one vector runs exactly that vector and may pass
+(pass) fail-closed rules > a target that cannot be seeded reports the document family unsupported
+(pass) fail-closed rules > a vector that performed no comparison cannot be reported as passed
+(pass) fail-closed rules > a scenario that compares nothing fails the run despite passing itself [16.00ms]
+(pass) fail-closed rules > executed fewer vectors than applicable is drift
+(pass) fail-closed rules > a skip against a capability the target advertises is refused [15.00ms]
+(pass) fail-closed rules > a coverage shortfall fails the run even when every vector passes [94.00ms]
+
+apps\web\src\editor\host\__tests__\branding-assets.test.ts:
+(pass) base-aware Host branding > keeps both Host logos and Vite favicon below their configured bases [15.00ms]
+(pass) base-aware Host branding > decodes non-empty logo and favicon pixels, not status alone [16.00ms]
+
+apps\web\src\editor\host\__tests__\production-composition.test.ts:
+ 7 | 	BrowserRuntimeResourceHost,
+ 8 | } from "@opencut/editor-classic/browser";
+ 9 | 
+10 | if (process.env.OPENCUT_C5_HOST_TEST_ISOLATED !== "1") {
+11 | 	test("production Host composition runs in an isolated wasm-mock process", () => {
+12 | 		const result = Bun.spawnSync({
+                          ^
+error: Test "production Host composition runs in an isolated wasm-mock process" timed out after 5000ms (killed 1 dangling process)
+      at <anonymous> (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\apps\web\src\editor\host\__tests__\production-composition.test.ts:12:22)
+(fail) production Host composition runs in an isolated wasm-mock process [5219.00ms]
+
+# Unhandled error between tests
+-------------------------------
+20 | 			stdout: "pipe",
+21 | 		});
+22 | 		if (result.exitCode !== 0) {
+23 | 			throw new Error(
+24 | 				`isolated production Host composition suite failed:\n${result.stdout.toString()}\n${result.stderr.toString()}`,
+25 | 			);
+        ^
+error: isolated production Host composition suite failed:
+bun test v1.2.2 (c1708ea6)
+
+
+apps\web\src\editor\host\__tests__\production-composition.test.ts:
+(pass) production Host browser composition > Next final-overrides all production browser roles [234.00ms]
+(pass) production Host browser composition > Vite final-overrides all production browser roles
+(pass) production Host browser composition > each Host root reuses one stable durable store across sessions
+(pass) production Host browser composition > durable attribution ignores a minified constructor name
+(pass) production Host browser composition > durable attribution rejects the reference store
+
+      at <anonymous> (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\apps\web\src\editor\host\__tests__\production-composition.test.ts:25:4)
+-------------------------------
+
+
+apps\web\src\services\storage\__tests__\c5-storage-red-controls.test.ts:
+15 | 	"..",
+16 | );
+17 | 
+18 | if (process.env.OPENCUT_C5_STORAGE_RED_ISOLATED !== "1") {
+19 | 	test("C5 storage RED controls run in an isolated process", () => {
+20 | 		const result = Bun.spawnSync({
+                          ^
+error: Test "C5 storage RED controls run in an isolated process" timed out after 5015ms (killed 1 dangling process)
+      at <anonymous> (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\apps\web\src\services\storage\__tests__\c5-storage-red-controls.test.ts:20:22)
+(fail) C5 storage RED controls run in an isolated process [5062.00ms]
+
+# Unhandled error between tests
+-------------------------------
+28 | 			stdout: "pipe",
+29 | 		});
+30 | 		if (result.exitCode !== 0) {
+31 | 			throw new Error(
+32 | 				`isolated C5 storage RED controls failed as expected before implementation:\n${result.stdout.toString()}\n${result.stderr.toString()}`,
+33 | 			);
+        ^
+error: isolated C5 storage RED controls failed as expected before implementation:
+bun test v1.2.2 (c1708ea6)
+
+
+apps\web\src\services\storage\__tests__\c5-storage-red-controls.test.ts:
+(pass) C5 storage behavior RED controls > opaque nested fields survive a known timeline edit and full Host/session recreation [47.00ms]
+(pass) C5 storage behavior RED controls > the public store can carry attachment metadata and bytes
+(pass) C5 storage behavior RED controls > the public store can carry saved-sound and custom-preset libraries
+(pass) C5 storage behavior RED controls > both production Hosts reject inherited InMemoryProjectStore [16.00ms]
+(pass) C5 storage behavior RED controls > the browser implementation runs the shared conformance matrix
+(pass) C5 storage behavior RED controls > a staged-validation failure leaves every legacy source readable [16.00ms]
+(pass) C5 storage behavior RED controls > equal attachment keys remain isolated between projects
+(pass) C5 storage behavior RED controls > equal library keys remain isolated between namespaces
+
+      at <anonymous> (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\apps\web\src\services\storage\__tests__\c5-storage-red-controls.test.ts:33:4)
+-------------------------------
+
+
+packages\editor-classic\src\actions\keybindings\__tests__\persistence.test.ts:
+(pass) keybinding persistence > migrates legacy persisted keybindings before decoding them
+(pass) keybinding persistence > filters invalid persisted entries at the boundary and warns
+(pass) keybinding persistence > returns null and warns when persisted shape is unrecognizable
+(pass) keybinding persistence > round-trips actions that have no default shortcut
+(pass) parseImportedKeybindings > accepts a valid configuration
+(pass) parseImportedKeybindings > throws on non-object input
+(pass) parseImportedKeybindings > throws on non-string action values
+(pass) parseImportedKeybindings > throws on invalid shortcut keys
+(pass) parseImportedKeybindings > throws on invalid actions
+
+packages\editor-classic\src\core\managers\__tests__\media-persistence-rewire.test.ts:
+(pass) media persistence rewiring runs with the wasm test double [828.00ms]
+
+packages\editor-classic\src\core\managers\__tests__\project-manager-thumbnail-degraded.test.ts:
+(pass) project thumbnail boundary suite runs with the wasm test double [734.00ms]
+
+packages\editor-classic\src\core\managers\__tests__\project-persistence-rewire.test.ts:
+(pass) project persistence rewiring runs with the wasm test double [4297.00ms]
+
+packages\editor-classic\src\core\managers\__tests__\save-manager-persistence-failure.test.ts:
+(pass) failed background save remains dirty without retrying in a tight loop [31.00ms]
+(pass) explicit flush propagates durable failure and retains dirty state
+
+packages\editor-classic\src\core\managers\__tests__\transaction-command-routing.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+35 | 	{ definition: rectangleMaskDefinition, icon: { icon: SquareIcon } },
+36 | 	{ definition: ellipseMaskDefinition, icon: { icon: CircleIcon } },
+37 | 	{ definition: heartMaskDefinition, icon: { icon: FavouriteIcon } },
+38 | 	{ definition: diamondMaskDefinition, icon: { icon: DiamondIcon } },
+39 | 	{ definition: starMaskDefinition, icon: { icon: StarsIcon } },
+40 | 	{ definition: textMaskDefinition, icon: { icon: TextFontIcon } },
+                    ^
+ReferenceError: Cannot access 'textMaskDefinition' before initialization.
+      at E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\packages\editor-classic\src\masks\builtin\definitions\index.ts:40:16
+-------------------------------
+
+
+packages\editor-classic\src\core\managers\__tests__\transaction-persistence-coordination.test.ts:
+(pass) transaction persistence coordination > adopts the exact committed record without a second save
+(pass) transaction persistence coordination > already-durable publications suppress only their own dirty signals
+(pass) transaction persistence coordination > serializes transaction-first without losing metadata or opaque siblings [78.00ms]
+(pass) transaction persistence coordination > serializes legacy-first without losing metadata or opaque siblings
+
+packages\editor-classic\src\editor\host\__tests__\browser-runtime.test.ts:
+(pass) browser Host runtime ports > keeps relative, path, encoded, query and absolute bases immutable
+(pass) browser Host runtime ports > rejects root, traversal, encoded traversal, schemes and backslashes
+(pass) browser Host runtime ports > loads exact bytes, propagates abort and attributes HTTP failures
+(pass) browser Host runtime ports > accepts JSON content and rejects HTML fallback or malformed JSON at the boundary
+(pass) browser Host runtime ports > rewrites Worker URLs, adapts messages/errors/transfers and terminates exactly once [78.00ms]
+(pass) browser Host runtime ports > keeps two adapter instances isolated
+(pass) browser Host runtime ports > resolves Host service paths under the same base without using the asset port
+
+packages\editor-classic\src\editor\persistence\__tests__\opaque-roundtrip.test.ts:
+(pass) C5 coordinator suite runs in an isolated wasm-mock process [4375.00ms]
+
+packages\editor-classic\src\editor\session\__tests__\c6-durable-reopen.test.ts:
+(pass) C6 scenario 52 durable reopen report > accepts an attributable public-store reopen with exact durable equality
+(pass) C6 scenario 52 durable reopen report > rejects a second Host that does not reuse the module-stable store
+(pass) C6 scenario 52 durable reopen report > rejects a reference store even when every durable value matches
+(pass) C6 scenario 52 durable reopen report > rejects a different Host object even when its store identity matches
+
+packages\editor-classic\src\editor\session\__tests__\disposal-oracle.test.ts:
+(pass) C6 disposal oracle > accepts six clean cycles with all-five CREATED proof
+(pass) C6 disposal oracle > rejects missing-CREATED timer before accepting zero release
+(pass) C6 disposal oracle > rejects missing-CREATED worker before accepting zero release
+(pass) C6 disposal oracle > rejects missing-CREATED audioContext before accepting zero release
+(pass) C6 disposal oracle > rejects missing-CREATED objectUrl before accepting zero release
+(pass) C6 disposal oracle > rejects missing-CREATED gpuResource before accepting zero release
+(pass) C6 disposal oracle > rejects residual leakage and reports monotonic growth
+(pass) C6 disposal oracle > accepts a retained renderer that is silent in dwell and resumes on a fresh RAF generation
+(pass) C6 disposal oracle > rejects a synthetic post-resume claim without a fresh renderer generation and resource
+(pass) C6 disposal oracle > rejects an independent platform ledger residual and lifecycle identity drift
+
+packages\editor-classic\src\editor\session\__tests__\editor-singleton-boundary.test.ts:
+14 | 
+15 | describe("editor singleton boundary", () => {
+16 | 	test("the complete runtime graph has no implicit editor owner", () => {
+17 | 		const result = run();
+18 | 		expect(result.exitCode).toBe(0);
+19 | 		expect(result.stderr.toString()).toContain("39 command module(s)");
+                                        ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "39 command module(s)"
+Received: "check-editor-singleton: scanned 765 runtime module(s), 40 command module(s)\n  PASS explicit-session-only: one core construction in the session owner; no static accessor, reset, default session or out-of-owner construction\n"
+
+      at <anonymous> (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\packages\editor-classic\src\editor\session\__tests__\editor-singleton-boundary.test.ts:19:36)
+(fail) editor singleton boundary > the complete runtime graph has no implicit editor owner [1454.00ms]
+(pass) editor singleton boundary > negative control detects singleton-accessor [1343.00ms]
+(pass) editor singleton boundary > negative control detects singleton-reset [1422.00ms]
+(pass) editor singleton boundary > negative control detects static-core-instance [1281.00ms]
+(pass) editor singleton boundary > negative control detects module-scope-construction [1469.00ms]
+(pass) editor singleton boundary > negative control detects construction-outside-owner [1391.00ms]
+(pass) editor singleton boundary > negative control detects owner-wrapper-outside-route [1437.00ms]
+(pass) editor singleton boundary > negative control detects session-key-required [1969.00ms]
+
+packages\editor-classic\src\editor\session\__tests__\headless-browser-boundary.test.ts:
+(pass) headless browser-global boundary runs in an isolated process [453.00ms]
+
+packages\editor-classic\src\editor\session\__tests__\headless-migration.test.ts:
+(pass) shared full/headless migration suite runs in an isolated process [4016.00ms]
+
+packages\editor-classic\src\editor\session\__tests__\headless-runtime-probe.test.ts:
+(pass) pre-load probe proves every global and Host sensitivity path [94.00ms]
+(pass) server probe records explicit DOM and unavailable-hook absence
+
+packages\editor-classic\src\editor\session\__tests__\headless-semantic-fixture.test.ts:
+(pass) semantic fixture proves edit, reopen, opaque and attachment fidelity [78.00ms]
+
+packages\editor-classic\src\editor\session\__tests__\headless-session.test.ts:
+(pass) provider-private headless session > creates a Host-scoped owner with only load, save and dispose
+(pass) provider-private headless session > loads absence as null without navigation or replacement
+(pass) provider-private headless session > saves a detached edit and a new owner reopens it with opaque data [15.00ms]
+(pass) provider-private headless session > rejects a cross-project save before either identity is written
+(pass) provider-private headless session > serializes admitted work, retries save failure, and closes admission [16.00ms]
+(pass) provider-private headless session > disposing one owner leaves another owner and shared store usable
+(pass) provider-private headless session > acquires no in-memory C6 runtime resource
+(pass) the isolated headless session contract is importable
+
+packages\editor-classic\src\editor\session\__tests__\independent-timer-ledger.test.ts:
+(pass) independent timer ledger > counts timer and animation-frame handles independently when numeric IDs collide
+
+packages\editor-classic\src\editor\session\__tests__\session-async-store-isolation.test.ts:
+(pass) session async-store suite runs in an isolated wasm-mock process [5328.00ms]
+
+packages\editor-classic\src\editor\session\__tests__\session-disposal-c6.test.ts:
+(pass) C6 session resource drain > early and repeated object-URL revoke reaches the platform exactly once
+(pass) C6 session resource drain > equal object URLs owned by two sessions revoke independently
+(pass) C6 session resource drain > awaits delayed audio close and reports terminal release counts
+(pass) C6 session resource drain > continues after one rejected release and preserves a stable failed outcome [15.00ms]
+(pass) C6 session resource drain > preserves multiple release failures in exact reverse-acquisition order
+(pass) C6 session resource drain > terminally drains the old interval and reacquires only through the resume hook [63.00ms]
+(pass) C6 session resource drain > worker termination detaches host listeners and a resumed generation subscribes freshly
+(pass) C6 session resource drain > suspend terminally cancels a due RAF instead of suppressing a live handle
+(pass) C6 session resource drain > a fired RAF self-releases exactly once
+(pass) C6 session resource drain > suspend between nested paint frames settles the waiter and releases both frames
+(pass) C6 session resource drain > the retained RAF-loop owner reacquires a fresh chain only after resume publication [15.00ms]
+
+packages\editor-classic\src\editor\session\__tests__\session-lifecycle.test.ts:
+(pass) session lifecycle suite runs in an isolated wasm-mock process [4219.00ms]
+
+packages\editor-classic\src\editor\session\__tests__\session-runtime-ownership.test.tsx:
+ 5 | import type { EditorHost } from "@opencut/editor-ports/host";
+ 6 | import type { EditorSession } from "../session-types";
+ 7 | 
+ 8 | if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
+ 9 | 	test("session ownership suite runs in an isolated wasm-mock process", () => {
+10 | 		const result = Bun.spawnSync({
+                          ^
+error: Test "session ownership suite runs in an isolated wasm-mock process" timed out after 5015ms (killed 1 dangling process)
+      at <anonymous> (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\packages\editor-classic\src\editor\session\__tests__\session-runtime-ownership.test.tsx:10:22)
+(fail) session ownership suite runs in an isolated wasm-mock process [5015.00ms]
+
+# Unhandled error between tests
+-------------------------------
+18 | 			stdout: "pipe",
+19 | 		});
+20 | 		if (result.exitCode !== 0) {
+21 | 			throw new Error(
+22 | 				`isolated session ownership suite failed:\n${result.stderr.toString()}`,
+23 | 			);
+        ^
+error: isolated session ownership suite failed:
+
+packages\editor-classic\src\editor\session\__tests__\session-runtime-ownership.test.tsx:
+
+      at <anonymous> (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\packages\editor-classic\src\editor\session\__tests__\session-runtime-ownership.test.tsx:23:4)
+-------------------------------
+
+
+packages\editor-classic\src\editor\session\__tests__\session-state-isolation.test.ts:
+(pass) session-state isolation suite runs in an isolated wasm-mock process [6109.00ms]
+
+packages\editor-classic\src\editor\session\__tests__\session-timer-matrix.test.ts:
+(pass) session timer fake-clock matrix > timeout fires before disposal once and an early-cancel race cannot publish
+(pass) session timer fake-clock matrix > interval cancellation is idempotent and suppresses an already-queued tick
+(pass) session timer fake-clock matrix > RAF self-release and cancellation races each publish at most once
+(pass) session timer fake-clock matrix > suspend quiescence cancels every timer kind and blocks stale publication [16.00ms]
+
+packages\editor-classic\src\preview\components\__tests__\timecode-playback-subscription.test.ts:
+(pass) timecode playback subscription > observes general and frame updates and releases both channels
+
+packages\editor-classic\src\services\renderer\__tests__\effect-preview-ownership.test.ts:
+(pass) effect preview ownership runs in an isolated WASM mock process [438.00ms]
+
+packages\editor-classic\src\services\renderer\__tests__\host-effect-preview.test.ts:
+(pass) Host-scoped effect preview > keys image/canvas state by resolver identity across two bases
+(pass) Host-scoped effect preview > decodes the shipped image and produces a nonblank preview source [31.00ms]
+
+packages\editor-classic\src\services\storage\__tests__\browser-project-store-cascade-topology.test.ts:
+(pass) browser project cascade topology gate > refuses current remove for PDB, LDB, SP, and SA before tombstone commit [16.00ms]
+(pass) browser project cascade topology gate > refuses current projects clear for PDB, LDB, SP, and SA before journal commit [16.00ms]
+(pass) browser project cascade topology gate > retains a mixed historical journal and performs zero partial physical I/O [15.00ms]
+(pass) browser project cascade topology gate > keeps an exact same-owner protected historical target blocked
+(pass) browser project cascade topology gate > does not rewrite a legacy all-clear journal before its full topology permit [16.00ms]
+(pass) browser project cascade topology gate > strictly rejects a malformed retained library claim before clear commit
+(pass) browser project cascade topology gate > allows all-clear when LDB equals PDB through a safe library store [15.00ms]
+
+packages\editor-classic\src\services\storage\__tests__\browser-project-store-media-topology.test.ts:
+(pass) browser media ownership topology gate > rejects current media databases that alias every protected database before I/O
+(pass) browser media ownership topology gate > rejects retained library database aliases before media ownership writes [15.00ms]
+(pass) browser media ownership topology gate > loads one library snapshot and preserves safe idempotent registration
+(pass) browser media ownership topology gate > rejects different persisted owners with an exact database or OPFS root collision [16.00ms]
+(pass) browser media ownership topology gate > keeps exact same-owner tuple registration idempotent
+(pass) browser media ownership topology gate > does not certify inventory that resolves a protected media database
+(pass) browser media ownership topology gate > does not certify an inventory name claimed by two bindings [16.00ms]
+
+packages\editor-classic\src\services\storage\__tests__\browser-project-store-migration-topology.test.ts:
+(pass) browser project migration topology gate runs in an isolated process [578.00ms]
+
+packages\editor-classic\src\services\storage\__tests__\browser-project-store-records.test.ts:
+(pass) current browser project record pairs > projects the ordinary public project row exactly as C4 without duplicating the document
+(pass) current browser project record pairs > reconstructs own-root-id and non-projectable opaque payloads exactly
+(pass) current browser project record pairs > defensively clones pair inputs and decoded outputs while rejecting identity mismatch
+(pass) current browser attachment record pairs > keeps the public media row C4-exact and the complete logical metadata private
+(pass) current browser attachment record pairs > uses an id-only public row for generic metadata while retaining it exactly
+(pass) three-generation browser record compatibility > prefers a valid sidecar over provider-owned envelope-looking fields
+(pass) three-generation browser record compatibility > falls back from absent sidecars to inline C5 and then C4 raw rows
+(pass) three-generation browser record compatibility > fails closed for malformed, mismatched, or incomplete current pairs
+(pass) three-generation browser record compatibility > represents a current deletion as a strict authority-only tombstone
+(pass) derives private authority store names without widening storage identity
+
+packages\editor-classic\src\services\storage\__tests__\browser-project-store-topology.test.ts:
+(pass) browser project store physical topology > owns every canonical control and migration-stage name
+(pass) browser project store physical topology > rejects every reserved projects-database store pair without leaking its name
+(pass) browser project store physical topology > allows a library to share the projects database through a non-reserved store
+(pass) browser project store physical topology > rejects retained authorization and ownership store pairs from cascade cleanup
+(pass) browser project store physical topology > rejects every protected database from cascade media deletion
+(pass) browser project store physical topology > rejects different owners that claim the same database or root directory
+(pass) browser project store physical topology > permits an idempotent retry by the same owner and exact tuple
+(pass) browser project store physical topology > allows only canonical stage self-delete with no live physical alias
+(pass) browser project store physical topology > freezes v1 source authority without widening the cleanup subset
+(pass) browser project store physical topology > rejects a v1 timeline source that aliases a live media database
+(pass) browser project store physical topology > rejects a legacy-media source that aliases a different retained binding
+(pass) browser project store physical topology > rejects noncanonical or physically aliased stage deletion
+
+packages\editor-classic\src\services\storage\__tests__\migration-provider-private.test.ts:
+(pass) v1 migration provider-private preservation > retains unknown fields at project, metadata, scene, track and clip levels
+
+packages\editor-classic\src\services\transcription\__tests__\session-service.test.ts:
+(pass) session-owned transcription service > requests a named module Worker through SessionResources and preserves the message flow
+(pass) session-owned transcription service > keeps two sessions isolated and terminates each registry handle exactly once
+(pass) session-owned transcription service > rejects initialization errors and removes listeners
+(pass) session-owned transcription service > terminates pending generations, ignores stale events, and reacquires only after admission resumes
+
+packages\editor-classic\src\services\video-cache\__tests__\service-ownership.test.ts:
+(pass) video cache ownership controls run in an isolated media mock process [281.00ms]
+
+packages\editor-classic\src\services\waveform-cache\__tests__\service-ownership.test.ts:
+(pass) WaveformCache ownership > project replacement invalidates and awaits pending decoding before a fresh generation [16.00ms]
+(pass) WaveformCache ownership > two owners with an equal source key keep distinct decode generations
+(pass) WaveformCache ownership > suspend rejects a delayed decode publication and resume decodes a fresh generation
+(pass) WaveformCache ownership > decode failure closes its context, clears the failed entry, and retries freshly
+
+packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts:
+(pass) resolveTrackPlacement > explicit returns the requested compatible track
+(pass) resolveTrackPlacement > explicit rejects missing and incompatible tracks
+100 | 				id,
+101 | 				type: "text",
+102 | 				name: id,
+103 | 				startTime: mediaTime({ ticks: startTime }),
+104 | 				duration: mediaTime({ ticks: duration }),
+105 | 				trimStart: ZERO_MEDIA_TIME,
+                     ^
+ReferenceError: Cannot access 'ZERO_MEDIA_TIME' before initialization.
+      at buildElement (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts:105:16)
+      at <anonymous> (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts:323:7)
+(fail) resolveTrackPlacement > firstAvailable picks the first compatible track without overlap
+81 | 				id,
+82 | 				type: "graphic",
+83 | 				name: id,
+84 | 				startTime: mediaTime({ ticks: startTime }),
+85 | 				duration: mediaTime({ ticks: duration }),
+86 | 				trimStart: ZERO_MEDIA_TIME,
+                    ^
+ReferenceError: Cannot access 'ZERO_MEDIA_TIME' before initialization.
+      at buildElement (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts:86:16)
+      at <anonymous> (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts:352:7)
+(fail) resolveTrackPlacement > firstAvailable creates a new track when all compatible tracks are full
+(pass) resolveTrackPlacement > preferIndex uses the preferred track when it fits
+(pass) resolveTrackPlacement > preferIndex creates a new overlay track above the main track
+(pass) resolveTrackPlacement > preferIndex keeps audio tracks below the main track
+100 | 				id,
+101 | 				type: "text",
+102 | 				name: id,
+103 | 				startTime: mediaTime({ ticks: startTime }),
+104 | 				duration: mediaTime({ ticks: duration }),
+105 | 				trimStart: ZERO_MEDIA_TIME,
+                     ^
+ReferenceError: Cannot access 'ZERO_MEDIA_TIME' before initialization.
+      at buildElement (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts:105:16)
+      at <anonymous> (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts:467:7)
+(fail) resolveTrackPlacement > aboveSource tries the track above source, then any compatible track
+100 | 				id,
+101 | 				type: "text",
+102 | 				name: id,
+103 | 				startTime: mediaTime({ ticks: startTime }),
+104 | 				duration: mediaTime({ ticks: duration }),
+105 | 				trimStart: ZERO_MEDIA_TIME,
+                     ^
+ReferenceError: Cannot access 'ZERO_MEDIA_TIME' before initialization.
+      at buildElement (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts:105:16)
+      at <anonymous> (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts:496:7)
+(fail) resolveTrackPlacement > aboveSource creates a new overlay track in the overlay zone when none fit
+(pass) resolveTrackPlacement > alwaysNew honors highest and default insertion rules
+68 | 				id,
+69 | 				type: "audio",
+70 | 				name: id,
+71 | 				startTime: mediaTime({ ticks: startTime }),
+72 | 				duration: mediaTime({ ticks: duration }),
+73 | 				trimStart: ZERO_MEDIA_TIME,
+                    ^
+ReferenceError: Cannot access 'ZERO_MEDIA_TIME' before initialization.
+      at buildElement (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts:73:16)
+      at <anonymous> (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts:566:7)
+(fail) resolveTrackPlacement > batch time spans reject tracks when any span overlaps
+(pass) resolveTrackPlacement > handles main-only timelines, single tracks, and track-type derivation
+128 | 				id,
+129 | 				type: "video",
+130 | 				name: id,
+131 | 				startTime: mediaTime({ ticks: startTime }),
+132 | 				duration: mediaTime({ ticks: duration }),
+133 | 				trimStart: ZERO_MEDIA_TIME,
+                     ^
+ReferenceError: Cannot access 'ZERO_MEDIA_TIME' before initialization.
+      at buildElement (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts:133:16)
+      at <anonymous> (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\packages\editor-classic\src\timeline\placement\__tests__\resolve.test.ts:634:6)
+(fail) resolveTrackPlacement > existingTrack on main video includes adjustedStartTime when start snaps
+(pass) resolveTrackPlacement > preferIndex uses vertical drag direction when hovered track is incompatible
+
+packages\editor-classic\src\editor\surface\embedding\__tests__\surface-composition.test.ts:
+(pass) public Surface composition > renders one bounded root in the caller tree and binds the exact target
+(pass) public Surface composition > derives providers from session and keeps EditorRoot inside the public component
+(pass) public Surface composition > exports the runtime while public props and commit payload stay frozen
+(pass) public Surface composition > session bridge reuses one canonical facade without an engine or event path
+(pass) public Surface composition > both production Hosts consume the same focused Surface contract
+(pass) public Surface composition > keeps the Host-owned C4 probe behind full project-load completion
+
+packages\editor-classic\src\editor\surface\embedding\__tests__\surface-drag-coordinator.test.ts:
+(pass) Surface drag coordinator > finishes once and synchronously detaches before the callback
+(pass) Surface drag coordinator > cancel, replacement, and returned cleanup never finish
+(pass) Surface drag coordinator > provider-style cleanup cancels the active registration exactly once
+(pass) Surface drag coordinator > discriminates pointer identity for move, finish, and cancel
+(pass) Surface drag coordinator > inspect() matches the listeners addListeners really installs
+(pass) Surface drag coordinator > keeps two Surface owners independent
+
+packages\editor-classic\src\editor\surface\embedding\__tests__\surface-drag-integrations.test.ts:
+(pass) Surface drag integrations > all concrete Surface continuations register with the coordinator [16.00ms]
+(pass) Surface drag integrations > number scrub preserves pointer ownership and finish/cancel semantics
+(pass) Surface drag integrations > controller finish paths preserve their established mouse-up commit handlers
+(pass) Surface drag integrations > bookmark commits only from coordinator finish and cancellation only clears state
+
+packages\editor-classic\src\editor\surface\embedding\__tests__\surface-error-boundary.test.ts:
+(pass) Surface error containment > reports the same Error once through the latest callback
+(pass) Surface error containment > reports distinct errors and normalizes non-Error throws
+(pass) Surface error containment > keeps unique labelled alerts contained without lifecycle disposal
+
+packages\editor-classic\src\editor\surface\embedding\__tests__\surface-focus.test.ts:
+(pass) Surface focus scope > publishes the exact passive/focused/full policy
+(pass) Surface focus scope > filters dynamic tab stops without caching stale descendants
+(pass) Surface focus scope > passive pointer is advisory and leaves pointer and wheel unclaimed
+(pass) Surface focus scope > focused root pointer stays local without blocking descendant React handlers
+(pass) Surface focus scope > full mode cycles current dynamic boundaries and falls back to the root
+(pass) Surface focus scope > mode replacement, independent roots, and unmount remove exact listeners
+
+packages\editor-classic\src\editor\surface\embedding\__tests__\surface-keybinding-scope.test.ts:
+(pass) Surface keybinding target > uses the narrow legacy fallback only when no explicit ref exists
+(pass) Surface keybinding target > registers and removes one capture listener on the supplied root
+
+packages\editor-classic\src\editor\surface\embedding\__tests__\surface-lifecycle.test.ts:
+(pass) Surface lifecycle controller > publishes ready only after the live handle settles
+(pass) Surface lifecycle controller > suppresses stale readiness resolution and rejection after unmount
+(pass) Surface lifecycle controller > reports a live ready rejection exactly once
+(pass) Surface lifecycle controller > serializes latest visibility, coalesces redundant values, and delegates only
+(pass) Surface lifecycle controller > rapid hidden-visible-hidden converges without a stale resume
+(pass) Surface lifecycle controller > reports a live suspend rejection once without success, retry, or cleanup drift
+(pass) Surface lifecycle controller > reports a live resume rejection once without success, retry, or cleanup drift
+(pass) Surface lifecycle controller > visible remount resumes one retained suspended session
+(pass) Surface lifecycle controller > visible remount queues one resume behind an in-flight suspend
+(pass) Surface lifecycle controller > session replacement invalidates old work and keeps the new generation live
+(pass) Surface lifecycle controller > Strict-Mode-shaped remount is reversible and cleanup failure is attributable
+(pass) Surface lifecycle controller > stale visibility failures do not publish into a replacement
+
+packages\editor-classic\src\editor\surface\embedding\__tests__\surface-portal.test.ts:
+(pass) Surface portal ownership > prefers the live owner and preserves the outside-Surface fallback
+(pass) Surface portal ownership > waits for owner readiness so Surface children cannot escape to body
+(pass) Surface portal ownership > routes wrappers, tooltip, and direct overlays through the private owner
+
+packages\editor-classic\src\editor\surface\embedding\__tests__\surface-react-identity-probe.test.ts:
+(pass) Surface React identity evidence > keeps the probe private and requires identity, context, state, and effect fields
+
+packages\editor-classic\src\editor\surface\embedding\__tests__\surface-transaction-binding.test.ts:
+(pass) Surface transaction binding > keeps the public void shape and forwards one valid batch exactly once
+(pass) Surface transaction binding > rejects malformed unknown values before apply
+(pass) Surface transaction binding > rejects malformed present payload and patch shapes for every operation kind [16.00ms]
+(pass) Surface transaction binding > accepts the authoritative minimal payload shapes for all operation kinds
+(pass) Surface transaction binding > routes one asynchronous apply failure exactly once without fallback
+
+packages\editor-classic\src\editor\transactions\opencut\__tests__\adapter-router.test.ts:
+(pass) OpenCut transaction projection and router > audio donor candidates encode into a valid reopenable document [15.00ms]
+(pass) OpenCut transaction projection and router > projects donor entities and emits stable minimal dependency order
+(pass) OpenCut transaction projection and router > typed Project updates cover UI/automation ordering, replay, collision, failure, and reopen [16.00ms]
+(pass) OpenCut transaction projection and router > staged binding rejects a wrong record digest before save
+(pass) OpenCut transaction projection and router > staged binding rejects a token mismatch before save [15.00ms]
+(pass) OpenCut transaction projection and router > staged binding rejects a base-revision mismatch before save
+(pass) OpenCut transaction projection and router > staged binding rejects a projection mismatch before save
+(pass) OpenCut transaction projection and router > UI and automation share invocation order, exact adoption, and opaque overlay
+(pass) OpenCut transaction projection and router > durable failure publishes nothing and leaves the shared queue usable [16.00ms]
+
+packages\editor-classic\src\editor\transactions\opencut\__tests__\agent-opencut-projection.test.ts:
+(pass) the agent scenario over the donor projection > runs the declared plan through the canonical facade [31.00ms]
+(pass) the agent scenario over the donor projection > reopening the project from the store observes the committed revision [31.00ms]
+
+packages\editor-classic\src\editor\transactions\opencut\__tests__\routing-registry.test.ts:
+(pass) every concrete command module has one exhaustive routing registration [187.00ms]
+(pass) routing is independent of constructor names after production minification
+
+packages\editor-classic\src\services\storage\migrations\__tests__\v0-to-v1.test.ts:
+(pass) V0 to V1 Migration > transformProjectV0ToV1 > adds scenes array to v0 project
+(pass) V0 to V1 Migration > transformProjectV0ToV1 > creates main scene with correct structure [16.00ms]
+(pass) V0 to V1 Migration > transformProjectV0ToV1 > updates metadata.updatedAt when metadata exists
+(pass) V0 to V1 Migration > transformProjectV0ToV1 > updates root updatedAt when no metadata
+(pass) V0 to V1 Migration > transformProjectV0ToV1 > skips project that already has scenes
+(pass) V0 to V1 Migration > transformProjectV0ToV1 > preserves original project properties
+(pass) V0 to V1 Migration > getProjectId > returns id from root level
+(pass) V0 to V1 Migration > getProjectId > returns id from metadata when root id missing
+(pass) V0 to V1 Migration > getProjectId > returns null when no id found
+(pass) V0 to V1 Migration > getProjectId > returns null for malformed project
+
+packages\editor-classic\src\services\storage\migrations\__tests__\v1-to-v2.test.ts:
+(pass) V1 to V2 Migration > transformProjectV1ToV2 > creates metadata object from flat properties
+(pass) V1 to V2 Migration > transformProjectV1ToV2 > creates settings object from flat properties
+(pass) V1 to V2 Migration > transformProjectV1ToV2 > converts color background correctly
+(pass) V1 to V2 Migration > transformProjectV1ToV2 > converts blur background correctly
+(pass) V1 to V2 Migration > transformProjectV1ToV2 > applies legacy bookmarks to main scene
+(pass) V1 to V2 Migration > transformProjectV1ToV2 > preserves existing scene bookmarks
+(pass) V1 to V2 Migration > transformProjectV1ToV2 > skips project that already has v2 structure
+(pass) V1 to V2 Migration > transformProjectV1ToV2 > skips project with no id
+(pass) V1 to V2 Migration > transformProjectV1ToV2 > handles null values gracefully
+(pass) V1 to V2 Migration > transformProjectV1ToV2 > uses default values for missing properties
+(pass) V1 to V2 Migration > transformProjectV1ToV2 > uses default blur intensity when missing
+(pass) V1 to V2 Migration > transformProjectV1ToV2 > preserves currentSceneId
+(pass) V1 to V2 Migration > transformProjectV1ToV2 > finds main scene id when currentSceneId missing
+(pass) V1 to V2 Migration > transformProjectV1ToV2 > skips loading tracks if scene already has tracks
+(pass) V1 to V2 Migration > Track Loading and Transformation > loads tracks from legacy DB and transforms media track to video track
+(pass) V1 to V2 Migration > Track Loading and Transformation > transforms text element preserving opacity and migrating position
+(pass) V1 to V2 Migration > getProjectId > returns id from root level
+(pass) V1 to V2 Migration > getProjectId > returns id from metadata
+
+packages\editor-classic\src\services\storage\migrations\__tests__\v15-to-v16.test.ts:
+(pass) V15 to V16 Migration > renames sticker tracks to graphic tracks [15.00ms]
+(pass) V15 to V16 Migration > skips projects already on v16
+(pass) V15 to V16 Migration > skips projects with no id
+
+packages\editor-classic\src\services\storage\migrations\__tests__\v16-to-v17.test.ts:
+(pass) V16 to V17 Migration > adds center stroke alignment to masks that do not have it
+(pass) V16 to V17 Migration > skips projects already on v17
+(pass) V16 to V17 Migration > skips projects with no id
+
+packages\editor-classic\src\services\storage\migrations\__tests__\v18-to-v19.test.ts:
+(pass) V18 to V19 Migration > adds canvas size mode and empty remembered custom size defaults
+(pass) V18 to V19 Migration > skips projects already on v19
+(pass) V18 to V19 Migration > skips projects with no id
+
+packages\editor-classic\src\services\storage\migrations\__tests__\v19-to-v20.test.ts:
+(pass) V19 to V20 Migration > backfills source audio enabled state on video elements [16.00ms]
+(pass) V19 to V20 Migration > preserves existing explicit source audio state
+(pass) V19 to V20 Migration > skips projects already on v20
+
+packages\editor-classic\src\services\storage\migrations\__tests__\v2-to-v3.test.ts:
+(pass) V2 to V3 Migration > transformProjectV2ToV3 > adds duration to metadata
+(pass) V2 to V3 Migration > transformProjectV2ToV3 > calculates duration from scene tracks
+(pass) V2 to V3 Migration > transformProjectV2ToV3 > handles project with blur background
+(pass) V2 to V3 Migration > transformProjectV2ToV3 > handles empty scenes with zero duration
+(pass) V2 to V3 Migration > transformProjectV2ToV3 > handles scene without tracks property
+(pass) V2 to V3 Migration > transformProjectV2ToV3 > skips project that already has v3 structure
+(pass) V2 to V3 Migration > transformProjectV2ToV3 > skips project that has duration in metadata
+(pass) V2 to V3 Migration > transformProjectV2ToV3 > skips project with no id
+(pass) V2 to V3 Migration > transformProjectV2ToV3 > preserves existing metadata fields
+(pass) V2 to V3 Migration > transformProjectV2ToV3 > preserves settings object
+(pass) V2 to V3 Migration > transformProjectV2ToV3 > preserves scenes array
+(pass) V2 to V3 Migration > transformProjectV2ToV3 > handles project without metadata object
+(pass) V2 to V3 Migration > transformProjectV2ToV3 > calculates duration from main scene only
+(pass) V2 to V3 Migration > getProjectId > returns id from root level
+(pass) V2 to V3 Migration > getProjectId > returns id from metadata when root id missing
+(pass) V2 to V3 Migration > getProjectId > prefers root id over metadata id
+
+packages\editor-classic\src\services\storage\migrations\__tests__\v20-to-v21.test.ts:
+(pass) V20 to V21 Migration > multiplies blur background intensity by 5 [16.00ms]
+(pass) V20 to V21 Migration > uses default blur intensity when blur type but intensity missing
+(pass) V20 to V21 Migration > leaves color background unchanged
+(pass) V20 to V21 Migration > skips projects already on v21
+(pass) V20 to V21 Migration > skips projects not on v20
+
+packages\editor-classic\src\services\storage\migrations\__tests__\v21-to-v22.test.ts:
+(pass) V21 to V22 Migration > migrates legacy animation channels to bindings and component channels [16.00ms]
+(pass) V21 to V22 Migration > skips projects already on v22
+(pass) V21 to V22 Migration > skips projects not on v21
+
+packages\editor-classic\src\services\storage\migrations\__tests__\v22-to-v23.test.ts:
+(pass) V22 to V23 Migration > converts project time values from seconds to ticks and fps to a frame-rate object
+(pass) V22 to V23 Migration > skips projects already on v23
+(pass) V22 to V23 Migration > skips projects not on v22
+
+packages\editor-classic\src\services\storage\migrations\__tests__\v26-to-v27.test.ts:
+(pass) V26 to V27 Migration > converts custom mask paths from JSON strings to typed point arrays
+
+packages\editor-classic\src\services\storage\migrations\__tests__\v27-to-v28.test.ts:
+(pass) V27 to V28 Migration > rounds persisted media-time floats back to integer ticks [15.00ms]
+(pass) V27 to V28 Migration > keeps already-integer media-time values unchanged
+(pass) V27 to V28 Migration > skips projects already on v28
+(pass) V27 to V28 Migration > skips projects not on v27
+
+packages\editor-classic\src\services\storage\migrations\__tests__\v28-to-v29.test.ts:
+(pass) V28 to V29 Migration > copies built-in element fields into params without deleting source fields
+
+packages\editor-classic\src\services\storage\migrations\__tests__\v29-to-v30.test.ts:
+(pass) V29 to V30 Migration > flattens animation bindings and channels by path
+(pass) V29 to V30 Migration > leaves elements without animations unchanged
+
+packages\editor-classic\src\services\storage\migrations\__tests__\v3-to-v4.test.ts:
+(pass) V3 to V4 Migration > normalizes legacy text fontWeight values
+(pass) V3 to V4 Migration > does not mutate non-text tracks
+(pass) V3 to V4 Migration > skips projects that are already v4
+(pass) V3 to V4 Migration > skips projects with no id
+
+packages\editor-classic\src\services\storage\migrations\__tests__\v30-to-v31.test.ts:
+(pass) V30 to V31 Migration > renames custom masks to freeform without changing params [15.00ms]
+(pass) V30 to V31 Migration > leaves a type:freeform mask in a v30 project unchanged
+(pass) V30 to V31 Migration > leaves elements without a masks array unchanged
+(pass) V30 to V31 Migration > skips a project that is already v31
+(pass) V30 to V31 Migration > skips a project that is not v30
+
+packages\editor-classic\src\services\storage\migrations\__tests__\v4-to-v5.test.ts:
+(pass) V4 to V5 Migration > migrates sticker iconName to stickerId and removes legacy color [16.00ms]
+(pass) V4 to V5 Migration > keeps provider-prefixed stickerId values unchanged
+(pass) V4 to V5 Migration > skips projects that are already v5
+(pass) V4 to V5 Migration > skips projects with no id
+
+packages\editor-classic\src\services\storage\migrations\__tests__\v5-to-v6.test.ts:
+(pass) V5 to V6 Migration > converts number bookmarks to Bookmark objects [16.00ms]
+(pass) V5 to V6 Migration > skips projects that are already v6
+(pass) V5 to V6 Migration > skips projects with no id
+(pass) V5 to V6 Migration > preserves existing Bookmark objects with note, color, duration
+
+packages\editor-classic\src\services\storage\migrations\__tests__\v8-to-v9.test.ts:
+(pass) V8 to V9 Migration > adds background.enabled from color (transparent => false, otherwise true)
+(pass) V8 to V9 Migration > preserves existing background.enabled if already present
+(pass) V8 to V9 Migration > skips non-text elements and tracks
+(pass) V8 to V9 Migration > skips projects that are already v9
+(pass) V8 to V9 Migration > skips projects with no id
+
+13 tests failed:
+(fail) production Host composition runs in an isolated wasm-mock process [5219.00ms]
+(fail) C5 storage RED controls run in an isolated process [5062.00ms]
+(fail) editor singleton boundary > the complete runtime graph has no implicit editor owner [1454.00ms]
+(fail) session ownership suite runs in an isolated wasm-mock process [5015.00ms]
+(fail) resolveTrackPlacement > firstAvailable picks the first compatible track without overlap
+(fail) resolveTrackPlacement > firstAvailable creates a new track when all compatible tracks are full
+(fail) resolveTrackPlacement > aboveSource tries the track above source, then any compatible track
+(fail) resolveTrackPlacement > aboveSource creates a new overlay track in the overlay zone when none fit
+(fail) resolveTrackPlacement > batch time spans reject tracks when any span overlaps
+(fail) resolveTrackPlacement > existingTrack on main video includes adjustedStartTime when start snaps
+
+ 655 pass
+ 13 fail
+ 6 errors
+ 3082 expect() calls
+Ran 668 tests across 110 files. [127.40s]
+REAL_EXIT_CODE:1

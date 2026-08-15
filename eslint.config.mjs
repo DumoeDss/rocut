@@ -9,7 +9,19 @@ import tseslint from "typescript-eslint";
 import preferObjectParams from "./eslint/rules/prefer-object-params.mjs";
 
 const webFiles = ["apps/web/src/**/*.{ts,tsx}"];
-const frontendFiles = [webFiles[0], "apps/vite-example/src/**/*.{ts,tsx}"];
+// Stage A/B/C (s05-package-extraction) moved most of what used to live under
+// apps/web/src out into packages/*/src. Every generic rule block below is
+// scoped through frontendFiles, so packages/*/src has to join it or those
+// files parse with the default (non-TS) parser and fail on the first type
+// annotation — not a silent gap, but the packages-side loss this array
+// existed to prevent. packages/*/src is not Next.js code, so it stays out of
+// webFiles (used only for the Next-specific core-web-vitals config below).
+const packagesFiles = ["packages/*/src/**/*.{ts,tsx}"];
+const frontendFiles = [
+	webFiles[0],
+	"apps/vite-example/src/**/*.{ts,tsx}",
+	packagesFiles[0],
+];
 
 const opencutEslintPlugin = {
 	meta: {
