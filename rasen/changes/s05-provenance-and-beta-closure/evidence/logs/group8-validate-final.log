@@ -1,0 +1,92 @@
+{
+  "items": [
+    {
+      "id": "s05-provenance-and-beta-closure",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 15
+    }
+  ],
+  "summary": {
+    "totals": {
+      "items": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "byType": {
+      "change": {
+        "items": 1,
+        "passed": 1,
+        "failed": 0
+      }
+    }
+  },
+  "version": "1.0",
+  "root": {
+    "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut",
+    "source": "store",
+    "store_id": "rocut",
+    "scope": {
+      "kind": "standalone",
+      "intent": "project-read",
+      "source": "explicit",
+      "ref": {
+        "mode": "standalone",
+        "projectId": "e1bca41c-14f2-4daa-a592-00fdcb56ee2c",
+        "projectRoot": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+      },
+      "paths": {
+        "planning-checkout": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut",
+        "project-home": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen",
+        "project-config": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\config.yaml",
+        "project-schemas": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\schemas",
+        "project-work": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\work",
+        "specs": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\specs",
+        "project-design-docs": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\design-docs",
+        "active-changes": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes",
+        "archive-line": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\archive",
+        "execution-root": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+      },
+      "evidence": [
+        {
+          "source": "explicit",
+          "field": "project",
+          "value": "e1bca41c-14f2-4daa-a592-00fdcb56ee2c"
+        },
+        {
+          "source": "nearest-standalone",
+          "field": "execution-root",
+          "value": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+        },
+        {
+          "source": "nearest-standalone",
+          "field": "planning-root",
+          "value": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+        },
+        {
+          "source": "nearest-standalone",
+          "field": "project",
+          "value": "e1bca41c-14f2-4daa-a592-00fdcb56ee2c"
+        },
+        {
+          "source": "project-binding",
+          "field": "execution-root",
+          "value": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut"
+        },
+        {
+          "source": "project-binding",
+          "field": "project",
+          "value": "e1bca41c-14f2-4daa-a592-00fdcb56ee2c"
+        }
+      ],
+      "notices": [
+        {
+          "code": "configuration_store_inheritance",
+          "message": "Planning stays local; the declared Store contributes configuration only."
+        }
+      ],
+      "followupSelection": {}
+    }
+  }
+}
