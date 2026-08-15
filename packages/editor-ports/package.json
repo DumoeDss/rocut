@@ -1,6 +1,6 @@
 {
   "name": "@opencut/editor-ports",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "The Host port contract a Host author implements. Zero dependencies, no React, no DOM.",
   "files": [

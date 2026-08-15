@@ -1,6 +1,6 @@
 {
   "name": "@opencut/editor-classic",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "The OpenCut Classic provider and its React editor, including the embeddable Surface. Depends on @opencut/editor-ports and @opencut/editor-contracts.",
   "dependencies": {

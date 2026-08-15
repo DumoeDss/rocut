@@ -15,16 +15,16 @@
 
 ## 2. Policy ships: READMEs and the version decision
 
-- [ ] 2.1 Create `packages/editor-ports/README.md`, `packages/editor-contracts/README.md` and
+- [x] 2.1 Create `packages/editor-ports/README.md`, `packages/editor-contracts/README.md` and
       `packages/editor-classic/README.md`, each carrying the shared policy statement plus the
       package's role and its class summary. This makes the manifests' existing `files` entries
       real — today all three name READMEs that do not exist, so tarballs ship no policy at all.
-- [ ] 2.2 Apply the version decision (design E4): bump all three `0.1.0 → 0.2.0` as the policy's
+- [x] 2.2 Apply the version decision (design E4): bump all three `0.1.0 → 0.2.0` as the policy's
       first application (the minor recording P0→P5 entry additions), OR record the
       hold-`0.1.0` alternative if review has ruled by then. Verify `workspace:*` in-repo
       resolution is unaffected (no consumer resolves the literal) and that P3's harness name map
       keys package names, not versions (so tarball filename changes flow through).
-- [ ] 2.3 Verify the version/policy half from the pack path early: reuse `packSdkTarballs`
+- [x] 2.3 Verify the version/policy half from the pack path early: reuse `packSdkTarballs`
       (import from `script/pack-sdk-tarballs.mjs`; never re-implement), pack, and confirm the
       tarball inventory lists `README.md` and shows the `0.x` version — a cheap gate before the
       labeling work lands on top.
