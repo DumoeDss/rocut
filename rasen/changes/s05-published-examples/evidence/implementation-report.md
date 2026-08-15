@@ -515,3 +515,15 @@ tasks.md "28-checker" wording predates the growth);
 `evidence/logs/group6-validate.log` —
 `rasen validate s05-published-examples --strict --project rocut --json`:
 **`"valid": true, "issues": []`**, exit 0.
+
+## Group 7 — Ship (tasks 7.1–7.3)
+
+`evidence/logs/group7-ship.log`: one `feat(s05-examples):` commit per group
+(ac961390 → 6c7f545a → 3f913b7a → 4d4a13da → 2a72333e → 6de3c756), committed
+content CR-swept at HEAD (77 files changed since base 4f0b9c69, zero
+CR-containing — every log, tool-output file and edit was `sed -i 's/\r$//'`'d
+or written LF at staging time), the `.rasen/` staging guard 0 on every commit
+(explicit pathspecs throughout), local only — no push. Signals: no
+`signals/` directory exists for this change, no parked workers, nothing to
+stand down; the state is empty by absence. DONE returns with the final
+commit hash in hand.

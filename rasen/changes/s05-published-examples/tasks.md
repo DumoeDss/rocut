@@ -114,12 +114,12 @@
 
 ## 7. Ship
 
-- [ ] 7.1 Line endings per stage (`tr -dc '\r' < f | wc -c` = 0 after every write; tool OUTPUT
+- [x] 7.1 Line endings per stage (`tr -dc '\r' < f | wc -c` = 0 after every write; tool OUTPUT
       files too — python/redirected prints emit CRLF on this machine, `sed -i 's/\r$//'` before
       staging).
-- [ ] 7.2 Explicit pathspecs; the `.rasen/` staging guard in a variable; one `feat(<change>):`
+- [x] 7.2 Explicit pathspecs; the `.rasen/` staging guard in a variable; one `feat(<change>):`
       commit per group; **local only, no push** — the portfolio delivers once at the parent.
       Return DONE only with the final commit hash in hand (P5's race lesson: an uncommitted
       tree reads as not-landed).
-- [ ] 7.3 On review-clean: `{"kind":"standDown"}` to any parked worker's signals; confirm
+- [x] 7.3 On review-clean: `{"kind":"standDown"}` to any parked worker's signals; confirm
       `signals/.state/` is empty before the archive is planned.
