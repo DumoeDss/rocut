@@ -1372,6 +1372,11 @@ packages ship NOTICE beside it (P7 Group 2, verified in pack output); the
 packed-manifest dependency-closure claim is the standing gate recorded at this
 section's head.
 
+Nothing was published to any registry and nothing was signed: every
+verification above ran against locally packed tarballs, so registry-specific
+behaviour (publishing, resolution from a registry, provenance attestations) was
+never exercised and is claimed nowhere (design B1, held to the last commit).
+
 **The `0.x` stance, restated beside P5's policy (§14).** No `1.0`, GA or
 production-readiness claim exists in any published material. The per-package
 READMEs' compatibility policy is the only stability claim this portfolio makes:

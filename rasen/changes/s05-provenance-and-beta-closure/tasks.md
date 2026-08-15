@@ -108,15 +108,15 @@
 
 ## 8. Ship
 
-- [ ] 8.1 The F2-class delivery audit BEFORE archive: pair every scenario clause of this change's
+- [x] 8.1 The F2-class delivery audit BEFORE archive: pair every scenario clause of this change's
       spec delta with the evidence line that satisfies it (grep every cited artifact EXISTS and
       holds the phrase at the cited file:line — P6's R1/R5 hygiene); amend unmet clauses to the
       evidence's shape, headings verbatim, rulings attributed in design.md, never in spec text.
-- [ ] 8.2 Explicit pathspecs; the `.rasen/` staging guard in a variable; one `feat(<change>):`
+- [x] 8.2 Explicit pathspecs; the `.rasen/` staging guard in a variable; one `feat(<change>):`
       commit per Phase-A group, `feat(<change>): regenerate provenance at <sha>` for the delta;
       **local only, no push, no publish** — the portfolio delivers once, at the parent, and B1's
       no-irreversible-step ruling holds to the last commit. Return DONE only with the final
       commit hash in hand.
-- [ ] 8.3 On review-clean: `{"kind":"standDown"}` to any parked worker's signals; confirm
+- [x] 8.3 On review-clean: `{"kind":"standDown"}` to any parked worker's signals; confirm
       `signals/.state/` is empty before the archive is planned. This is the portfolio's last
       child — the parent's delivery follows, and nothing here may park past review.

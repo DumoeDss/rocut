@@ -403,3 +403,89 @@ only, no code file in the list.
 is generated artifacts only, proven byte-stable on the second run, with every
 control (frozen surfaces, family sweep, CRLF, strict validate) green in its
 known shape.
+
+## Group 8 — Ship: delivery audit, final commit, standDown (tasks 8.1, 8.2, 8.3)
+
+### 8.1 — the F2-class delivery audit
+
+Every scenario clause of `specs/sdk-provenance-beta-closure/spec.md` paired with
+the evidence line that satisfies it, each citation grep-verified at the cited
+file (P6's R1/R5 hygiene). Canonical run:
+`evidence/logs/group8-delivery-audit.log` — **45 PASS, 0 FAIL,
+REAL_EXIT_CODE:0** over 6 requirements / 12 scenarios / 45 clause checks.
+Attempt 1 (4 FAIL, all audit-script artifacts, no delivery gap: a miscounted
+11-vs-10 areas expectation, a bare-specifier `require` in the manifest probe,
+two anchors spanning hard markdown line-wraps) is preserved at
+`group8-delivery-audit-attempt1.log` with its diagnosis beside it.
+
+One unmet clause found and amended — the audit doing its job. R6.S1.c2 ("the
+beta record states that registry-specific behaviour was never exercised and is
+claimed nowhere") had no sentence in the §16 record. Amended by appending five
+lines to the beta-closure record's "Delivered." paragraph (BOUNDARIES.md, pure
+addition, headings verbatim, spec text untouched):
+
+> Nothing was published to any registry and nothing was signed: every
+> verification above ran against locally packed tarballs, so registry-specific
+> behaviour (publishing, resolution from a registry, provenance attestations)
+> was never exercised and is claimed nowhere (design B1, held to the last
+> commit).
+
+Clause-to-evidence highlights (the full mapping is the audit log itself):
+
+- **R1** delta generated-files-only: `git show --name-only 04c42f40` = exactly
+  SBOM.md, SOURCE_INVENTORY.{md,json}; self-cert
+  `group7-regen-source-inventory.log:1`; byte-stability
+  `group7-stability.log:43`; drift counts with method named
+  (`script/generate-source-inventory.mjs:147`).
+- **R2** areas: 10 derived areas (`group7-regen-reconcile.log:2`), 10
+  area-table rows in SOURCE_INVENTORY.md, all 10 directories exist live; the
+  0-file rows are correct semantics — the inventory hashes the PIN, where
+  packages/*, the electron host, the vite example and examples did not exist
+  yet; need-row 524 / covered 524 / MISSING 0
+  (`group7-regen-reconcile.log:5`); a no-row file FAILs loudly
+  (`script/reconcile-provenance.mjs:130`).
+- **R3** notices: all four tarballs ship LICENSE (sha256 `8117f9bb…`,
+  byte-identical to the repo's preserved upstream MIT — live re-hash of the
+  root LICENSE plus all four package LICENSEs), the three editor packages ship
+  NOTICE beside it (live parse of `group2-pack-notices-manifest.json`); the
+  SBOM reflects the tidied lock (`group5-bun-install.log:16`) with D-1..D-5
+  all green (`group7-regen-sbom.log:3-7`).
+- **R4** closure: undeclared runtime import FAILs naming file and specifier
+  (`group3-closure-negative.log:16`); register activation FAILs naming the
+  register row (`:32`); the converse stays silent
+  (`group3-closure-converse.log:32`); the documented-latent register with its
+  reachability reason lives at `script/check-packed-manifest-closure.mjs:107,112`;
+  census lines every run (`group3-closure-green.log:21`); the failing logs are
+  committed beside the green run.
+- **R5** beta record: delivery and stance (`BOUNDARIES.md:1358-1381`), the
+  wasm-init Direction finding with failure text, workaround and ownership
+  (`:1392-1397`), residuals each with its owner (`:1404-1408`), README
+  obligations each naming the failure an adopter sees
+  (`packages/editor-classic/README.md:61-87`).
+- **R6** no publish, no frozen edits: zero credential/registry-operation
+  patterns in the change's full diff (`959f41d2..HEAD`) and zero added
+  publish-command lines; the amended never-exercised sentence at
+  `BOUNDARIES.md:1378`; frozen control 4/4 IDENTICAL
+  (`group7-stability.log:45`, baseline `group1-frozen-byte-control.log:4`);
+  the frozen-surface exclusion ruling at `design.md:51`.
+
+### 8.2 — explicit pathspecs, staging guard, local only
+
+One Group 8 commit: the BOUNDARIES.md amendment, the three audit artifacts
+(audit log + attempt-1 log + diagnosis), this report section and the tasks.md
+ticks — staged by explicit pathspec, `.rasen/` staging guard verified 0, hooks
+on. Local only: the branch has never been pushed (no
+`origin/feat/s05-community-beta`); B1's no-irreversible-step ruling holds to
+the last commit. The final commit hash is this commit itself, reported in the
+implementer's DONE message and reproducible as `git log -1`.
+
+### 8.3 — standDown
+
+Satisfied vacuously, sibling precedent (`s05-second-host`'s ship log, task
+10.4): no worker was ever parked for this change —
+`<changeRoot>/signals/` does not exist, `signals/.state/` does not exist, and
+no signal file or signals directory exists under the change root or `.rasen/`
+(verified at ship time immediately before the commit). There is no live
+heartbeat that could make a later archive ESTALE. The checkbox is ticked with
+this justification recorded here. This is the portfolio's last child; nothing
+here parks past review.

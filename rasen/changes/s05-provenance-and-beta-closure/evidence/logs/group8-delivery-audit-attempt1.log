@@ -1,0 +1,104 @@
+=== R1: provenance set regenerated and accurate at the ship commit ===
+--- R1.S1.c1 (delta commit generated-files-only) LIVE ---
+delta 04c42f40
+
+SBOM.md
+SOURCE_INVENTORY.json
+SOURCE_INVENTORY.md
+PASS R1.S1.c1 - delta touches exactly SBOM.md, SOURCE_INVENTORY.{md,json}
+PASS R1.S1.c2 - rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group7-regen-source-inventory.log:1
+PASS R1.S2.c1 - rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group7-stability.log:43
+PASS R1.S2.c2a - rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group7-regen-source-inventory.log:3
+PASS R1.S2.c2b - script/generate-source-inventory.mjs:147
+
+=== R2: inventory covers the current tree ===
+PASS R2.S1.c1a - rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group7-regen-reconcile.log:2
+LIVE R2.S1.c1b - SOURCE_INVENTORY.md area-table rows: 10
+FAIL R2.S1.c1b
+PASS R2.S1.c2a - script/generate-source-inventory.mjs:64
+--- R2.S1.c2b (no area names a nonexistent location) LIVE ---
+PASS R2.S1.c2b - all 11 areas exist in the working tree
+PASS R2.S2.c1 - rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group7-regen-reconcile.log:5
+PASS R2.S2.c2 - script/reconcile-provenance.mjs:130
+
+=== R3: notices and SBOM verified inside the packed artifacts ===
+--- R3.S1.c1/c2 (tarball notice presence) LIVE: parse the committed pack manifest ---
+node:internal/modules/cjs/loader:1459
+  throw err;
+  ^
+
+Error: Cannot find module 'rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group2-pack-notices-manifest.json'
+Require stack:
+- E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\[eval]
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1456:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1066:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1071:22)
+    at Module._load (node:internal/modules/cjs/loader:1242:25)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.require (node:internal/modules/cjs/loader:1556:12)
+    at require (node:internal/modules/helpers:152:16)
+    at [eval]:2:11
+    at runScriptInThisContext (node:internal/vm:219:10)
+    at node:internal/process/execution:451:12 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\[eval]'
+  ]
+}
+
+Node.js v24.14.0
+PASS R3.S1.c3a - rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group2-pack-notices-manifest.json:19
+--- R3.S1.c3b (license byte-identical to preserved upstream MIT) LIVE ---
+PASS R3.S1.c3b - root preserved MIT and all 4 package LICENSEs hash 8117f9bb64534f7530fc6139b014fd1c1465f7981f93d1871789150fa3f59d3d
+PASS R3.S2.c1a - rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group5-bun-install.log:16
+PASS R3.S2.c1b - rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group7-regen-sbom.log:1
+PASS R3.S2.c2a - rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group7-regen-sbom.log:3
+PASS R3.S2.c2b - rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group7-regen-sbom.log:7
+
+=== R4: packed-manifest dependency closure with reachability ===
+PASS R4.S1.c1 - rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group3-closure-negative.log:16
+PASS R4.S1.c2 - rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group3-closure-converse.log:32
+PASS R4.S2.c1a - script/check-packed-manifest-closure.mjs:107
+PASS R4.S2.c1b - script/check-packed-manifest-closure.mjs:112
+PASS R4.S2.c2 - rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group3-closure-negative.log:32
+--- R4.S3.c1 (failing log committed beside the green run) LIVE ---
+group3-closure-converse.log
+group3-closure-green.log
+group3-closure-negative.log
+PASS R4.S3.c1b - rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group3-closure-negative.log:36
+PASS R4.S3.c2 - rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group3-closure-green.log:21
+
+=== R5: beta-closure record states delivery, stance, residuals ===
+PASS R5.S1.c1a - BOUNDARIES.md:1358
+PASS R5.S1.c1b - BOUNDARIES.md:1359
+PASS R5.S1.c2a - BOUNDARIES.md:1365
+PASS R5.S1.c2b - BOUNDARIES.md:1368
+PASS R5.S1.c2c - BOUNDARIES.md:1366
+FAIL R5.S1.c3 - BOUNDARIES.md lacks: No `1.0`, GA or production-readiness claim exists in any published material
+PASS R5.S2.c1a - BOUNDARIES.md:1392
+PASS R5.S2.c1b - BOUNDARIES.md:1397
+PASS R5.S2.c1c - BOUNDARIES.md:1396
+PASS R5.S2.c2a - BOUNDARIES.md:1404
+PASS R5.S2.c2b - BOUNDARIES.md:1406
+PASS R5.S2.c2c - BOUNDARIES.md:1408
+PASS R5.S3.c1a - packages/editor-classic/README.md:61
+PASS R5.S3.c1b - packages/editor-classic/README.md:68
+FAIL R5.S3.c1c - packages/editor-classic/README.md lacks: a coloured but inert editor where nothing sizes and nothing clips
+FAIL R5.S3.c1d - packages/editor-classic/README.md lacks: the editor mounts as a strip roughly a hundred pixels tall
+PASS R5.S3.c1e - packages/editor-classic/README.md:87
+
+=== R6: no publish, no frozen-surface edits ===
+--- R6.S1.c1 (no publish/sign/credential operation in the change diff) LIVE ---
+diff base: 959f41d2 (parent of e2f82d3b, the change first commit)
+credential/registry-operation patterns in the change diff:
+(zero matches)
+publish-command mentions in the diff, with file context (must all be prose):
+(none)
+PASS R6.S1.c2 - BOUNDARIES.md:1378
+PASS R6.S2.c1a - rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group7-stability.log:45
+PASS R6.S2.c1b - rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group1-frozen-byte-control.log:4
+PASS R6.S2.c2 - rasen/changes/s05-provenance-and-beta-closure/design.md:51
+
+=== verdict ===
+audit: 40 PASS, 4 FAIL
+REAL_EXIT_CODE:4
