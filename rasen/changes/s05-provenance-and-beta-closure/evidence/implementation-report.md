@@ -55,3 +55,32 @@ trap disclosures inline. Evidence logs live in `evidence/logs/`.
 **Group 1 verdict:** the before-half is captured with method and measurement
 point inline; Phase B's size is proven (rename restatement 604, patch-row gap
 336, added delta 533). No code change — the group's deliverable is evidence.
+
+## Group 2 — Notices and pack verification (tasks 2.1, 2.2)
+
+**2.1 — the files.** `packages/editor-{ports,contracts,classic}/LICENSE` created
+by `git show HEAD:LICENSE > <target>` — byte-identity to the preserved upstream
+MIT text (`8117f9bb…`, the sha256 UPSTREAM.md's licence-integrity section
+records) proven by digest, all three identical to root and pin. `NOTICE` in each
+package: upstream project + URL + pin `cf5e79e9…` + fork identity
+(`DumoeDss/rocut`) + the one-line statement that modifications in the shipped
+tree are recorded in the fork's provenance set (PATCHES/SOURCE_INVENTORY/UPSTREAM
+at the repository root). The three NOTICE files differ only in the package-name
+first line. LF-verified at write time (`tr -dc '\r' | wc -c` = 0). No manifest
+edit — the `files` fields already listed both names (P5's README precedent).
+
+**2.2 — verified in PACK OUTPUT** (`evidence/logs/group2-pack-notices.log` +
+`group2-pack-notices-manifest.json`; packed via `packSdkTarballs` through its
+CLI with `--out` under the ancestor-clean scratch root): all three editor
+tarballs list and ship LICENSE + NOTICE (ports 23→25 files, contracts 61→63,
+classic 805→807 — exactly +2 each), and each packed LICENSE's sha256 in the
+manifest's own per-file inventory equals the root text's digest —
+byte-identity proven from the artifact, never the worktree. Belt-and-braces
+`tar -tf` listing per tarball confirms the same. The wasm tarball ships its
+LICENSE (byte-identical to root — wasm-pack's copy carries the same text) and
+no NOTICE: **the design-E2 open question is decided as the recorded flat-artifact
+shape** — `rust/wasm/pkg/` is gitignored build output (`.gitignore:39`), so a
+pkg NOTICE would be an untracked file inside a regenerated directory; adding one
+means a build-tooling change, recorded here as the one-copy-step-if-review-wants-it
+outcome the design names. Notice-content review is the human gate; the mechanical
+claim proven here is presence-and-shipped.

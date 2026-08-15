@@ -16,12 +16,12 @@
 
 ## 2. Notices and pack verification
 
-- [ ] 2.1 Author `packages/editor-{ports,contracts,classic}/LICENSE` (byte-identical copy of the
+- [x] 2.1 Author `packages/editor-{ports,contracts,classic}/LICENSE` (byte-identical copy of the
       root preserved upstream MIT text — modification of that text is the existing spec's
       violation) and `NOTICE` (upstream project + URL + pin `cf5e79e9…` + fork identity + the
       one-line modifications statement). The `files` fields already list both names — no manifest
       edit needed.
-- [ ] 2.2 Verify in PACK OUTPUT, never the worktree: pack via `packSdkTarballs` (import, never
+- [x] 2.2 Verify in PACK OUTPUT, never the worktree: pack via `packSdkTarballs` (import, never
       re-implement), list and extract every tarball — the three editor tarballs ship LICENSE +
       NOTICE, the wasm tarball ships its license. Notice-content review is a human gate recorded
       in the round section; presence-and-shipped is the mechanical claim. Decide and record the
