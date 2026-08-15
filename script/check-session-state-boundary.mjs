@@ -626,7 +626,10 @@ function importedSpecifiers(source) {
  * spelled — a production reachability check that cannot follow a
  * production import is not exercising the boundary it claims to guard.
  * This mirrors each package's own `package.json#exports` map, so it only
- * resolves subpaths the package actually publishes.
+ * resolves subpaths the package actually publishes — the reachability-relevant
+ * subset, never a row for an entry the manifest no longer declares (the
+ * `./vectors/drivers` row left with the entry under the 2026-08-15 LEAD
+ * ruling; review round 1, R2).
  */
 const PACKAGE_EXPORTS = new Map([
 	[
@@ -655,7 +658,6 @@ const PACKAGE_EXPORTS = new Map([
 				["./engine/invariant", "engine/invariant.ts"],
 				["./engine/conformance", "engine/conformance/index.ts"],
 				["./vectors", "vectors/index.ts"],
-				["./vectors/drivers", "vectors/drivers/index.ts"],
 			]),
 		},
 	],

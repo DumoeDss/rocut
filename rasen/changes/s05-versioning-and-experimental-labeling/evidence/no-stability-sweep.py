@@ -55,12 +55,12 @@ DISPOSITIONS = {
     # --- BOUNDARIES.md §14 (the labeling section this sweep's log is cited by):
     #     the sweep narration itself names the five terms and its own result —
     #     self-referential mentions, not claims
-    "BOUNDARIES.md:1175": "§14's sweep narration naming the term list (`1.0`, `stable`, ...) — a mention, not a claim",
-    "BOUNDARIES.md:1176": "§14's sweep narration naming the term list (... `production-ready`, `semver`, `GA`) — a mention, not a claim",
-    "BOUNDARIES.md:1179": "§14's sweep narration quoting the ordinary-English 'stable' dispositions — a mention, not a claim",
-    "BOUNDARIES.md:1180": "§14's sweep narration describing the numeric `1.0` literal dispositions — a mention, not a claim",
-    "BOUNDARIES.md:1182": "§14's sweep narration (Gabon ISO-code sentence + the closing 'zero hits' denial) — mentions, not claims",
-    "BOUNDARIES.md:1183": "§14's closing sentence that zero hits make a `1.0`/GA claim — the sweep's own result statement, a denial not a claim",
+    "BOUNDARIES.md:1186": "§14's sweep narration naming the term list (`1.0`, `stable`, ...) — a mention, not a claim",
+    "BOUNDARIES.md:1187": "§14's sweep narration naming the term list (... `production-ready`, `semver`, `GA`) — a mention, not a claim",
+    "BOUNDARIES.md:1190": "§14's sweep narration quoting the ordinary-English 'stable' dispositions — a mention, not a claim",
+    "BOUNDARIES.md:1191": "§14's sweep narration describing the numeric `1.0` literal dispositions — a mention, not a claim",
+    "BOUNDARIES.md:1193": "§14's sweep narration (Gabon ISO-code sentence + the closing 'zero hits' denial) — mentions, not claims",
+    "BOUNDARIES.md:1194": "§14's closing sentence that zero hits make a `1.0`/GA claim — the sweep's own result statement, a denial not a claim",
     # --- ports: the ordinary English word
     "packages/editor-ports/src/DECISIONS.md:23": "ordinary-English 'stable logical id' (worker identity across Hosts) — not a release-stability claim",
     "packages/editor-ports/src/conformance/index.ts:479": "ordinary-English 'stable precommit error' (a named conformance assertion) — not a release-stability claim",

@@ -27,16 +27,18 @@ minor release may change **exactly what the classes permit and nothing they don'
 
 ## Surface classes in this package
 
-11 export entries (measurement: this manifest's `exports` map read at `0.2.0`, the
+10 export entries (measurement: this manifest's `exports` map read at `0.2.0`, the
 `./package.json` entry excluded as mechanical):
 
-- **frozen (10)** — the domain barrel (`.`), the draft-session surface (`./draft`) with
+- **frozen (9)** — the domain barrel (`.`), the draft-session surface (`./draft`) with
   its conformance suite (`./draft/conformance`), the engine (`./engine`,
-  `./engine/invariant`, `./engine/conformance`), the vectors runner with its corpus and
-  drivers (`./vectors`, `./vectors/corpus`, `./vectors/drivers`), and the
-  transaction-contract conformance suite (`./conformance`). This is the S03+S04 contract
-  surface; `engine/engine.ts` is one of the four byte-identical frozen surfaces the
-  portfolio's close-out control re-proves.
+  `./engine/invariant`, `./engine/conformance`), the vectors runner with its corpus
+  (`./vectors`, `./vectors/corpus`), and the transaction-contract conformance suite
+  (`./conformance`). This is the S03+S04 contract surface; `engine/engine.ts` is one of
+  the four byte-identical frozen surfaces the portfolio's close-out control re-proves.
+  (The 0.1.x manifest's eleventh entry, `./vectors/drivers`, was a mis-declaration — its
+  target was authored in no commit — removed under LEAD ruling 2026-08-15; see the
+  repo-level [`packages/README.md`](../README.md).)
 - **experimental (1)** — `./conformance/requirements`, the requirement-index legibility
   layer over the frozen suites. Test infrastructure: it may be reorganized as the suites
   evolve, without touching the contract it indexes.

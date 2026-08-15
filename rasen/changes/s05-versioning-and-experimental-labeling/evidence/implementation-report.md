@@ -361,3 +361,56 @@ module.
 
 Discipline: unchanged (explicit pathspecs, LF verified, `.rasen/` guard = 0, local only —
 nothing pushed).
+
+## Group 9 — Review round 1 (R1–R6, one batch)
+
+Delta re-review verdict was 0 Blocker / 1 Major / 4 Minor / 1 Trivial
+(`evidence/review-report.md`); all six fixed in this batch, dispositions below.
+
+- **R1 (Major)** — `packages/editor-contracts/README.md` still read "11 export entries /
+  frozen (10)" and listed `./vectors/drivers` beside the 0.2.0 manifest's 10 / frozen 9.
+  Fixed: figures 11→10 and frozen 10→9, the entry dropped from the frozen list, and a
+  parenthetical note records the mis-declaration and its removal (pointing at the repo-level
+  packages/README.md). Figure proof: the file now reads "10 export entries" (line 30) and
+  "**frozen (9)**" (line 33); the consumer view re-proves the README ships in the tarball.
+- **R1's durable guard** — repo-wide `git grep -n "vectors/drivers" -- ':!rasen/changes/archive'`
+  at the fixed tree: 40 surviving hits, every one dispositioned in
+  `evidence/logs/group9-review-round1.log` under four classes: (a) ruling
+  narration/attribution in BOUNDARIES.md, packages/README.md, editor-contracts/README.md;
+  (b) this change's own committed evidence (finding history, group logs, the G2 pack
+  inventory snapshot listing the still-existing driver files); (c) provenance comments in
+  the two checkers; (d) legitimate references to the still-existing driver FILES
+  (`durable.ts`/`in-memory.ts`) via relative imports (`requirements-index.test.ts`) and
+  pre-move path components (`SOURCE_INVENTORY.{json,md}`, a historical file snapshot).
+  Zero hits present the removed export ENTRY as live manifest, mirror, or figure — the R1/R2
+  class has no surviving siblings. Run at completion, this sweep would have caught R1+R2
+  together; it is now the recorded close-out step for any cross-cutting correction.
+- **R2 (Minor)** — `script/check-session-state-boundary.mjs`'s `PACKAGE_EXPORTS` mirror row
+  removed (with a comment stating the invariant: the mirror carries only entries the
+  manifest currently declares). Re-run green: PASS 10/10 factories, 10/10 registry keys,
+  53 classified imperative modules.
+- **R3 (Minor)** — non-string (conditional-exports) targets no longer bypass the rules:
+  `scan()` fails them closed under `target-existence` with a message that names the class
+  and tells the author to flatten the map or treat it like an absent target. Negative
+  control world 9 plants a `{"types":…,"import":…}` target and FIRES under
+  `target-existence`. No live instance (all three manifests use string targets) — the world
+  pins the guard.
+- **R4 (Minor)** — marker agreement is now exactness, not membership: a non-frozen entry
+  file must carry exactly one marker, exactly the row's class. Negative control world 10
+  plants a stale `experimental` marker beside the current `provider` one and FIRES under
+  `marker-agreement`. The live run stays green (every non-frozen file carries exactly one).
+- **R5 (Minor)** — `packages/README.md`'s monotone rule now carries the exception in place:
+  "…may not be removed… — except a declared-but-never-authored target, whose removal is a
+  manifest correction, not a surface removal (the ./vectors/drivers case, LEAD ruling
+  2026-08-15; see BOUNDARIES.md §14)".
+- **R6 (Trivial)** — the delivery-audit citation now reads "the quoted sentence at lines
+  58–59 of the 59-line file, the `wasm.__wbindgen_start is not a function` failure mode at
+  line 56" (was "lines 56–62").
+
+Controls re-proven at the fixed tree (`evidence/logs/group9-review-round1.log`): labels
+live 35 / 16-13-6 / dangling 0, four rules PASS; negative control 10/10 FIRED; converse
+silent; session-state green; boundary five rules PASS (989/362/361/870/74, repo files
+1110 — no new code files this round); consumer view from tarballs 0 failures
+(set-equal 6/10/19); frozen byte-control vs `5aae75ec` IDENTICAL ×4 (fifth re-proof);
+no-stability sweep green (70 dispositioned). Discipline unchanged: explicit pathspecs,
+`.rasen/` guard = 0, LF verified, local only.

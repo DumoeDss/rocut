@@ -35,8 +35,9 @@ under "The consumer view is proven from the tarball").
 - THEN it states the known wasm-initialization constraint on the published migration surface,
   as a constraint of the current `0.x` surface rather than as a fix commitment — the section's
   own words: "This is stated as a constraint of the current `0.x` surface, not a fix
-  commitment: a fix is tracked at Direction level, not in this package" (lines 56–62;
-  the `wasm.__wbindgen_start is not a function` failure mode named verbatim, with the
+  commitment: a fix is tracked at Direction level, not in this package" (the quoted
+  sentence at lines 58–59 of the 59-line file, the `wasm.__wbindgen_start is not a
+  function` failure mode at line 56 named verbatim, with the
   "identical in-repo and from installed tarballs" provenance from P3's install harness).
 
 ## Requirement: Every public export entry is classified

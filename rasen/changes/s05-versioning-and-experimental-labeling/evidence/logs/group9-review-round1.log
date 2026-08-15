@@ -1,0 +1,169 @@
+=== review round 1 batch (R1-R6) at 0fa1e6db (working tree = fix commit) ===
+
+--- frozen byte-control vs base 5aae75ec (fifth re-proof) ---
+IDENTICAL packages/editor-classic/src/editor/transactions/opencut/index.ts
+IDENTICAL packages/editor-contracts/src/engine/engine.ts
+IDENTICAL packages/editor-ports/src/index.ts
+IDENTICAL packages/editor-classic/src/editor/surface/embedding/types.ts
+
+--- labels checker (live) ---
+check-sdk-surface-labels: scanned 3 package(s), 35 export entries
+  census  @opencut/editor-classic: 19 export entries — frozen 2, provider 13, experimental 4
+  census  @opencut/editor-contracts: 10 export entries — frozen 9, provider 0, experimental 1
+  census  @opencut/editor-ports: 6 export entries — frozen 5, provider 0, experimental 1
+  census  total: 35 export entries across 3 package(s) — frozen 16, provider 13, experimental 6
+  census  dangling-export-entries: 0
+  PASS  completeness: every export entry is classified in surface.json with a known class and a non-empty reason, and every row names a declared entry
+  PASS  marker-agreement: provider/experimental rows carry exactly one @opencutSurface marker matching the manifest class in their entry file; frozen rows carry none
+  PASS  override-validity: every symbol-level override names a symbol the entry actually exports
+  PASS  target-existence: every declared entry's target is a plain string whose file exists on disk
+clean — run with --negative-control / --converse-control to see each rule proven able to fire, and proven not to misfire.
+EXIT[labels]:0
+
+--- labels negative control (ten worlds) ---
+  FIRED   unlabeled experimental export (row without marker): 1 marker-agreement violation(s), e.g. @fixture/pkg-a: experimental entry "./probe" target must carry exactly one @opencutSurface experimental marker (found none) — the in-source label must agree exactly with the manifest
+  FIRED   unclassified export entry (no row): 1 completeness violation(s), e.g. @fixture/pkg-a: export entry "./orphan" has no surface.json classification — classify it at birth (spec: the failure names the unclassified entry)
+  FIRED   unknown class vocabulary: 1 completeness violation(s), e.g. @fixture/pkg-a: entry "." carries unknown class "beta" — the vocabulary is exactly frozen | provider | experimental
+  FIRED   dangling symbol override: 1 override-validity violation(s), e.g. @fixture/pkg-a: entry "." overrides symbol "doesNotExist" which the entry does not export (extracted exports: CORE_VERSION, Widget, helper)
+  FIRED   marker on a frozen-classified file: 1 marker-agreement violation(s), e.g. @fixture/pkg-a: frozen entry "./contract" target carries an @opencutSurface marker (frozen) — frozen classification lives in surface.json alone; editing a frozen file for labeling is contract pressure, never a patch
+  FIRED   row naming an undeclared entry: 1 completeness violation(s), e.g. @fixture/pkg-a: surface.json row "./ghost" names an entry the export map does not declare
+  FIRED   non-frozen entry with an absent target: 1 target-existence violation(s), e.g. @fixture/pkg-a: provider entry "./void" target ./src/not-there.ts does not exist — a declared entry whose target is absent is module-not-found for every consumer; repair (with a named forcing module) or remove the entry
+  FIRED   frozen entry with an absent target: 1 target-existence violation(s), e.g. @fixture/pkg-a: frozen entry "./void-frozen" target ./src/not-there.ts does not exist — a declared entry whose target is absent is module-not-found for every consumer; repair (with a named forcing module) or remove the entry
+  FIRED   non-string (conditional) export target: 1 target-existence violation(s), e.g. @fixture/pkg-a: provider entry "./conditional" declares a non-string (conditional) target {"types":"./src/index.ts","import":"./src/index.ts"} — unrepresentable to the rules; fail closed like an absent target or flatten the exports map to plain strings
+  FIRED   stale marker beside the current one: 1 marker-agreement violation(s), e.g. @fixture/pkg-a: provider entry "." target must carry exactly one @opencutSurface provider marker (found experimental, provider) — the in-source label must agree exactly with the manifest
+negative control: every planted violation fired under its rule (the unlabeled experimental export FAILS — the spec's named evidence).
+EXIT[negative]:0
+
+--- labels converse control ---
+  census  @fixture/pkg-a: 3 export entries — frozen 1, provider 1, experimental 1
+  census  total: 3 export entries across 1 package(s) — frozen 1, provider 1, experimental 1
+  census  dangling-export-entries: 0
+converse control: silence over correctly labeled rows, frozen rows without markers (the designed state), a resolving override, prose that merely mentions a class name — and zero dangling entries.
+EXIT[converse]:0
+
+--- session-state-boundary (R2 re-run) ---
+check-session-state-boundary: PASS 10/10 factories, 10/10 registry keys, 53 classified imperative modules, no default/handle-0/unimplemented production path
+EXIT[session-state]:0
+
+--- boundary checker ---
+  PASS  acyclic-direction: every cross-package edge points to a strictly lower declared layer (989 file(s) scanned, 362 cross-package edge(s) examined)
+  PASS  public-entry-only: a specifier crossing into a package resolves only to a declared exports subpath (989 file(s) scanned, 361 @opencut/* specifier(s) examined)
+  PASS  no-internal-reexport: no package's declared entry re-exports a module owned by another package's undeclared internals (870 file(s) scanned)
+  PASS  no-elftia-import: no package, Host or example imports an Elftia package, protocol identifier or runtime object (1110 file(s) scanned)
+  PASS  react-free-base: editor-ports and editor-contracts import no React, no DOM global, and no editor-classic module (74 file(s) scanned)
+EXIT[boundary]:0
+
+--- consumer view from tarballs (README fix ships in the packed artifact) ---
+  ok   README contains the policy statement ("Compatibility policy (`0.x`)")
+  ok   surface.json classifies exactly the export-map entries (6 declared = 6 classified, set-equal)
+  census  @opencut/editor-ports: frozen 5, provider 0, experimental 1
+  ok   README contains the policy statement ("Compatibility policy (`0.x`)")
+  ok   surface.json classifies exactly the export-map entries (10 declared = 10 classified, set-equal)
+  census  @opencut/editor-contracts: frozen 9, provider 0, experimental 1
+  ok   README contains the policy statement ("Compatibility policy (`0.x`)")
+  ok   surface.json classifies exactly the export-map entries (19 declared = 19 classified, set-equal)
+  census  @opencut/editor-classic: frozen 2, provider 13, experimental 4
+consumer-view-from-tarballs: 0 failure(s), dangling-export-entries 0 — a declared-but-absent entry fails target-existence at any class (LEAD ruling 2026-08-15; the one such entry, ./vectors/drivers, was removed under that ruling)
+REAL_EXIT_CODE[consumer-view]:0
+EXIT[consumer]:0
+
+--- R1 guard: repo-wide vectors/drivers sweep (exclude archived children) ---
+40
+surviving hits classified:
+      9 rasen/changes/s05-versioning-and-experimental-labeling/evidence/implementation-report.md
+      5 BOUNDARIES.md
+      4 rasen/changes/s05-versioning-and-experimental-labeling/evidence/delivery-audit.md
+      3 script/check-sdk-surface-labels.mjs
+      2 SOURCE_INVENTORY.md
+      2 SOURCE_INVENTORY.json
+      2 rasen/changes/s05-versioning-and-experimental-labeling/evidence/logs/group8-completion-ruling.log
+      2 rasen/changes/s05-versioning-and-experimental-labeling/evidence/logs/group7-final-controls.log
+      2 rasen/changes/s05-versioning-and-experimental-labeling/evidence/logs/group2-early-pack-manifest.json
+      2 rasen/changes/s05-versioning-and-experimental-labeling/evidence/consumer-view-from-tarballs.mjs
+      2 packages/README.md
+      2 packages/editor-contracts/src/conformance/requirements/__tests__/requirements-index.test.ts
+      1 script/check-session-state-boundary.mjs
+      1 rasen/changes/s05-versioning-and-experimental-labeling/evidence/logs/group5-consumer-view.log
+      1 packages/editor-contracts/README.md
+disposition: every surviving hit is one of — (a) ruling narration/attribution in BOUNDARIES.md + packages/README.md + editor-contracts/README.md (documentation of the correction itself); (b) this change's own committed evidence (finding history, escalation, ruling execution, group logs, the G2 pack inventory snapshot which lists the still-existing driver FILES); (c) provenance comments in the two checkers naming the finding that bought rule 4 / the removed mirror row; (d) legitimate source references to the still-existing driver FILES durable.ts/in-memory.ts via relative imports (requirements-index.test.ts) and pre-move path components (SOURCE_INVENTORY.{json,md} — a historical snapshot listing files, not the export entry). ZERO hits reference the removed export ENTRY as existing in any live manifest, mirror, or figure — the R1/R2 defects have no surviving siblings.
+
+--- no-stability sweep at the edited docs (final state: BOUNDARIES §14 + both READMEs; keys re-fixed 1175-1183 -> 1186-1194 after the review-round insert) ---
+no-stability-sweep: 891 files in the shipped universe (three packages' src/ + per-package README/surface.json/package.json + packages/README.md + BOUNDARIES.md)
+  census  REAL: 70
+  census  noise:decimal-substring: 10
+  census  noise:svg-path-coordinate: 111
+  census  noise:version-string-substring: 3
+
+  ok   stable at BOUNDARIES.md:172: ordinary-English 'module-stable' (one store instance per module) — not a release-stability claim
+  ok   stable at BOUNDARIES.md:231: ordinary-English 'stable identity' (entity ids survive edits) — not a release-stability claim
+  ok   stable at BOUNDARIES.md:234: ordinary-English 'stable error code' (error codes are part of the contract) — not a release-stability claim
+  ok   stable at BOUNDARIES.md:360: ordinary-English 'stable terminal disposal' (one terminal outcome per disposal) — not a release-stability claim
+  ok   stable at BOUNDARIES.md:862: ordinary-English 'module-stable' (one store instance per module) — not a release-stability claim (key moved 859→862 when P5's section-9 audit edit added lines above)
+  ok   1.0 at BOUNDARIES.md:1186: §14's sweep narration naming the term list (`1.0`, `stable`, ...) — a mention, not a claim
+  ok   stable at BOUNDARIES.md:1186: §14's sweep narration naming the term list (`1.0`, `stable`, ...) — a mention, not a claim
+  ok   production-ready at BOUNDARIES.md:1186: §14's sweep narration naming the term list (`1.0`, `stable`, ...) — a mention, not a claim
+  ok   semver at BOUNDARIES.md:1187: §14's sweep narration naming the term list (... `production-ready`, `semver`, `GA`) — a mention, not a claim
+  ok   GA at BOUNDARIES.md:1187: §14's sweep narration naming the term list (... `production-ready`, `semver`, `GA`) — a mention, not a claim
+  ok   stable at BOUNDARIES.md:1190: §14's sweep narration quoting the ordinary-English 'stable' dispositions — a mention, not a claim
+  ok   stable at BOUNDARIES.md:1190: §14's sweep narration quoting the ordinary-English 'stable' dispositions — a mention, not a claim
+  ok   1.0 at BOUNDARIES.md:1191: §14's sweep narration describing the numeric `1.0` literal dispositions — a mention, not a claim
+  ok   stable at BOUNDARIES.md:1191: §14's sweep narration describing the numeric `1.0` literal dispositions — a mention, not a claim
+  ok   stable at BOUNDARIES.md:1191: §14's sweep narration describing the numeric `1.0` literal dispositions — a mention, not a claim
+  ok   1.0 at BOUNDARIES.md:1193: §14's sweep narration (Gabon ISO-code sentence + the closing 'zero hits' denial) — mentions, not claims
+  ok   GA at BOUNDARIES.md:1193: §14's sweep narration (Gabon ISO-code sentence + the closing 'zero hits' denial) — mentions, not claims
+  ok   GA at BOUNDARIES.md:1194: §14's closing sentence that zero hits make a `1.0`/GA claim — the sweep's own result statement, a denial not a claim
+  ok   1.0 at packages/editor-classic/README.md:24: the policy's own negation sentence ('No `1.0`, GA or production-readiness claim') — an explicit denial, not a claim
+  ok   GA at packages/editor-classic/README.md:24: the policy's own negation sentence ('No `1.0`, GA or production-readiness claim') — an explicit denial, not a claim
+  ok   stable at packages/editor-classic/src/actions/use-action-handler.ts:1: ordinary-English 'stable ref' (hook preserves handler signatures) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/components/__tests__/storage-provider-operations.test.ts:8: ordinary-English 'stable identity' (test name about diagnostics identity) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/core/managers/__tests__/project-persistence-rewire.test.ts:606: ordinary-English 'stable failure identity' (test name) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/editor/persistence/opaque-value.ts:28: ordinary-English 'stable `id`' (opaque values matched by id) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/editor/persistence/session-persistence-coordinator.ts:28: ordinary-English 'stable ProjectStore object' (one store object per Host) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/editor/session/__tests__/c6-durable-reopen.test.ts:105: ordinary-English 'module-stable store' (test name) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/editor/session/__tests__/session-disposal-c6.test.ts:240: ordinary-English 'stable failed outcome' (test name) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/editor/session/session-types.ts:79: ordinary-English 'stable useEditorInstance()' (hook reference) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/editor/transactions/opencut/__tests__/adapter-router.test.ts:109: ordinary-English 'stable minimal dependency order' (test name) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/editor/use-editor.ts:65: ordinary-English 'stable-core access' (Explicit stable-core accessor) — not a release-stability claim
+  ok   1.0 at packages/editor-classic/src/masks/__tests__/snap.test.ts:331: arithmetic in a comment (0.2*5 = 1.0, the snapped height) — a number, not a version
+  ok   stable at packages/editor-classic/src/media/__tests__/audio-resource-lifecycle.test.ts:281: ordinary-English 'stable order' (test name about cause ordering) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/services/renderer/compositor/frame-descriptor.ts:567: ordinary-English 'Stable identity key' (WeakMap identity comment) — not a release-stability claim
+  ok   1.0 at packages/editor-classic/src/services/storage/migrations/__tests__/fixtures/v1.ts:45: a v1 fixture's bookmark time literal [1.0] (seconds) — a number, not a version
+  ok   1.0 at packages/editor-classic/src/services/storage/migrations/__tests__/v1-to-v2.test.ts:83: migration test asserts bookmark array [1.0] (seconds) — a number, not a version
+  ok   1.0 at packages/editor-classic/src/services/storage/migrations/__tests__/v22-to-v23.test.ts:78: migration fixture field time: 1.0 (seconds) — a number, not a version
+  ok   1.0 at packages/editor-classic/src/services/video-cache/service.ts:231: frame.timestamp > targetTime + 1.0 — a one-second threshold, not a version
+  ok   GA at packages/editor-classic/src/stickers/providers/countries-data.ts:575: ISO 3166-1 alpha-2 country code 'GA' = Gabon, in sticker country data — not the term
+  ok   stable at packages/editor-classic/src/timeline/__tests__/element-with-track-selector.test.ts:7: ordinary-English 'shallow-stable members' (test name) — not a release-stability claim
+  ok   1.0 at packages/editor-classic/src/timeline/components/graph-editor/session.ts:203: doc comment: Y-axis scale falls back to 1.0 when adjacent segments are flat — a number, not a version
+  ok   1.0 at packages/editor-classic/src/timeline/components/graph-editor/session.ts:228: return 1.0 — the same Y-axis scale fallback value, not a version
+  ok   stable at packages/editor-classic/src/timeline/components/index.tsx:206: ordinary-English 'Stable refs' (wheel-listener comment) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/timeline/controllers/drag-drop-controller.ts:183: ordinary-English 'stable' handlers (bound drag handlers) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/timeline/controllers/element-interaction-controller.ts:110: ordinary-English 'drag stays stable' (drop-target recompute comment) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/timeline/controllers/playhead-controller.ts:139: ordinary-English 'stable references' (bound public handlers) — not a release-stability claim
+  ok   stable at packages/editor-classic/src/timeline/element-with-track-selector.ts:5: ordinary-English 'stable refs' (allocation-free wrapper comment) — not a release-stability claim
+  ok   1.0 at packages/editor-contracts/README.md:22: the policy's own negation sentence ('No `1.0`, GA or production-readiness claim') — an explicit denial, not a claim
+  ok   GA at packages/editor-contracts/README.md:22: the policy's own negation sentence ('No `1.0`, GA or production-readiness claim') — an explicit denial, not a claim
+  ok   stable at packages/editor-contracts/src/conformance/requirements/index.ts:31: ordinary-English 'stable vector ids' (corpus id stability) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/conformance/requirements/index.ts:255: ordinary-English 'Draft ids are stable' (a requirement's own wording about ids) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/conformance/requirements/index.ts:283: ordinary-English 'queue observation are stable' (requirement wording about ordering) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/conformance/requirements/index.ts:292: ordinary-English 'stable receipt' (requirement wording about receipt identity) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/conformance/requirements/index.ts:341: ordinary-English 'corpus's stable' ids (same as :31) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/domain.ts:181: ordinary-English 'minimal stable surface' (metadata field stability for automation clients) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/draft/conformance/index.ts:280: ordinary-English 'Draft ids are stable' (requirement wording) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/draft/conformance/index.ts:599: ordinary-English 'observation are stable' (requirement wording) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/draft/conformance/index.ts:650: ordinary-English 'stable receipt' (requirement wording) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/draft/conformance/index.ts:1080: ordinary-English 'stable affected-id order' (failure-message wording) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/draft/conformance/index.ts:1097: ordinary-English 'composition-stable' (compensation ordering) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/in-memory/index.ts:294: ordinary-English 'Stable serialization' (idempotency comparison) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/transaction.ts:96: ordinary-English 'stable `code` field' (error codes) — not a release-stability claim
+  ok   stable at packages/editor-contracts/src/transaction.ts:99: ordinary-English 'stable failure shape' (same) — not a release-stability claim
+  ok   1.0 at packages/editor-ports/README.md:23: the policy's own negation sentence ('No `1.0`, GA or production-readiness claim') — an explicit denial, not a claim
+  ok   GA at packages/editor-ports/README.md:23: the policy's own negation sentence ('No `1.0`, GA or production-readiness claim') — an explicit denial, not a claim
+  ok   stable at packages/editor-ports/src/DECISIONS.md:23: ordinary-English 'stable logical id' (worker identity across Hosts) — not a release-stability claim
+  ok   stable at packages/editor-ports/src/conformance/index.ts:479: ordinary-English 'stable precommit error' (a named conformance assertion) — not a release-stability claim
+  ok   stable at packages/editor-ports/src/identity.ts:18: ordinary-English 'stable across Hosts' (logical worker identity) — not a release-stability claim
+  ok   stable at packages/editor-ports/src/project-store.ts:127: ordinary-English 'Stable failure shape' (an error-shape doc comment) — not a release-stability claim
+  ok   stable at packages/editor-ports/src/runtime-resources.ts:16: ordinary-English 'stable logical id' (script identity independent of serving location) — not a release-stability claim
+  ok   stable at packages/editor-ports/src/runtime-resources.ts:42: ordinary-English 'Stable logical identity' (same) — not a release-stability claim
+no-stability-sweep: every candidate dispositioned, none makes a 1.0/GA/production-readiness claim
+REAL_EXIT_CODE[no-stability-sweep]:0
+EXIT[sweep]:0

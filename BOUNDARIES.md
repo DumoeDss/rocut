@@ -1120,17 +1120,21 @@ production override was needed — the override mechanism exists and is control-
 **The checker** — `script/check-sdk-surface-labels.mjs`, wired as `check:surface-labels`, the
 labeling twin of the boundary checker's attribution rule (an unlabeled export FAILs,
 classification at birth): completeness both directions, class vocabulary
-(`frozen | provider | experimental` exactly), marker agreement including the frozen guard,
+(`frozen | provider | experimental` exactly), marker agreement including the frozen guard and
+exactness — exactly one marker, exactly the row's class (review round 1, R4),
 symbol-override validity via the boundary checker's source-scan extraction idiom (no parser, no
-execution), target existence (every declared entry's target file on disk — added under the LEAD
-ruling of 2026-08-15), and the house empty-scan refusal (exit 2). Census lines every run; the
-live census is 35 entries — frozen 16, provider 13, experimental 6 — with
+execution), target existence (every declared entry's target is a plain string whose file is on
+disk — added under the LEAD ruling of 2026-08-15; non-string conditional targets fail closed
+like unreadable ones, review round 1, R3), and the house empty-scan refusal (exit 2). Census
+lines every run; the live census is 35 entries — frozen 16, provider 13, experimental 6 — with
 `dangling-export-entries: 0`. Controls per the family idiom (pure `scan()` over
-in-memory fixtures, never edits to the real tree): the negative control plants eight worlds —
+in-memory fixtures, never edits to the real tree): the negative control plants ten worlds —
 the spec's named pair (an unlabeled experimental export FAILs; an export entry with no row),
-an unknown class, a dangling override, a marker on a frozen file, an undeclared row, and
-absent-target entries at both classes (non-frozen and frozen) — each fires under its named
-rule, the two absent-target worlds both under `target-existence`. The converse control
+an unknown class, a dangling override, a marker on a frozen file, an undeclared row,
+absent-target entries at both classes (non-frozen and frozen), a non-string (conditional)
+export target, and a stale marker beside the current one — each fires under its named
+rule, the two absent-target worlds and the conditional target under `target-existence`, the
+stale-marker world under `marker-agreement`. The converse control
 proves the designed silences: frozen rows without markers, a resolving override,
 class-name-in-prose, and zero dangling entries.
 
@@ -1158,7 +1162,14 @@ ruling 2026-08-15; re-add only with a named forcing module.** The rule the findi
 checker's fourth rule (`target-existence`) fails a declared entry whose target is absent at
 any class, and the consumer-view verifier fails the same condition from the packed tarball —
 both control-proven able to fire. Completeness-both-ways stayed satisfied: the entry left the
-export map and its `surface.json` row in the same edit.
+export map and its `surface.json` row in the same edit. Review round 1 (same day) completed
+the sweep the first pass missed — the shipped per-package README still carried the pre-ruling
+figures (11/frozen 10) and named the entry (R1), and the session-state checker's
+`PACKAGE_EXPORTS` mirror still mapped it (R2); both fixed, and a repo-wide
+`git grep vectors/drivers` guard over everything except archived children's history now
+dispositions every surviving hit as ruling narration, committed evidence, checker-provenance
+comments, or references to the still-existing driver files (`durable.ts`/`in-memory.ts`,
+consumed via relative imports) — zero hits present the removed entry as live surface.
 
 **The consumer view is proven from the tarballs, not the workspace.**
 `rasen/changes/s05-versioning-and-experimental-labeling/evidence/consumer-view-from-tarballs.mjs`

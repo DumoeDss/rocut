@@ -26,13 +26,16 @@
  *                         extraction idiom the boundary checker uses (export
  *                         statements + transitive re-export resolution — no TS
  *                         parser, no execution).
- *   4. target-existence   every declared entry's target file exists on disk —
- *                         fail-closed on dangling export entries at ANY class
- *                         (LEAD ruling 2026-08-15, on the ./vectors/drivers
- *                         finding the consumer-view proof caught: a declared
- *                         entry whose target was never authored is
- *                         module-not-found for every consumer, which no
- *                         labeling can repair).
+ *   4. target-existence   every declared entry's target is a plain string
+ *                         whose file exists on disk — fail-closed on dangling
+ *                         export entries at ANY class (LEAD ruling 2026-08-15,
+ *                         on the ./vectors/drivers finding the consumer-view
+ *                         proof caught: a declared entry whose target was
+ *                         never authored is module-not-found for every
+ *                         consumer, which no labeling can repair), and on
+ *                         non-string (conditional) targets, which are
+ *                         unrepresentable to the rules and fail closed like
+ *                         unreadable ones (review round 1, R3).
  *
  * Census lines print every run: per-package entry counts, per-class counts, and a
  * dangling-export-entries count (declared targets absent from disk). The numbers
@@ -41,9 +44,10 @@
  * the house empty-scan idiom.
  *
  * Marker position is authoring discipline, not a rule: the design places the marker
- * as the entry file's first doc-comment line, but this check enforces presence and
- * class agreement only, so a later header reshuffle cannot fake a failure or hide
- * one. Prose that merely MENTIONS a class name cannot fire anything: only a literal
+ * as the entry file's first doc-comment line, but this check enforces presence,
+ * exactness (one marker, exactly the row's class) and the frozen guard only, so a
+ * later header reshuffle cannot fake a failure or hide one. Prose that merely
+ * MENTIONS a class name cannot fire anything: only a literal
  * `@opencutSurface <class>` line in an entry's target file is read.
  *
  * Controls (the family idiom — the same pure `scan()` against in-memory fixtures,
@@ -53,8 +57,10 @@
  *                        whose target file carries no marker), an export entry
  *                        with no manifest row at all, an unknown-class row, a
  *                        dangling symbol override, a non-frozen row whose
- *                        declared target is absent, and a FROZEN row whose
- *                        declared target is absent — each must fire, named, or
+ *                        declared target is absent, a FROZEN row whose
+ *                        declared target is absent, a non-string (conditional)
+ *                        export target, and a stale marker left beside the
+ *                        current one — each must fire, named, or
  *                        the control exits non-zero. The unlabeled-export pair is
  *                        the spec's own named evidence ("an unlabeled experimental
  *                        export fails").
@@ -94,8 +100,8 @@ const RULES = [
 	{
 		id: "marker-agreement",
 		description:
-			"provider/experimental rows carry a matching @opencutSurface marker in their entry file; frozen rows carry none",
-		why: "the manifest is the classification's source of truth and the marker is its in-source twin for the two classes where a reader of the code most needs the warning in place; frozen files are never edited to carry markers — that is what keeps the S03+S04 freeze byte-identical.",
+			"provider/experimental rows carry exactly one @opencutSurface marker matching the manifest class in their entry file; frozen rows carry none",
+		why: "the manifest is the classification's source of truth and the marker is its in-source twin for the two classes where a reader of the code most needs the warning in place; frozen files are never edited to carry markers — that is what keeps the S03+S04 freeze byte-identical. Exactness, not membership (review round 1, R4): a stale marker left beside the current one must fail, not pass with the wrong label shipped.",
 	},
 	{
 		id: "override-validity",
@@ -104,8 +110,8 @@ const RULES = [
 	},
 	{
 		id: "target-existence",
-		description: "every declared entry's target file exists on disk",
-		why: "fail-closed on dangling export entries (LEAD ruling 2026-08-15, on the ./vectors/drivers finding): a declared entry whose target was never authored is module-not-found for every consumer, which no labeling can repair — the checker fails it at any class rather than passing vacuously over a missing file.",
+		description: "every declared entry's target is a plain string whose file exists on disk",
+		why: "fail-closed on dangling export entries (LEAD ruling 2026-08-15, on the ./vectors/drivers finding): a declared entry whose target was never authored is module-not-found for every consumer, which no labeling can repair — the checker fails it at any class rather than passing vacuously over a missing file. Non-string (conditional-exports object) targets fail closed too (review round 1, R3): they are unrepresentable to every rule, and an unrepresentable target is treated exactly like an unreadable one.",
 	},
 ];
 
@@ -260,7 +266,19 @@ function scan({ packages }) {
 			const row = rows[entry];
 			if (!row || !CLASS_VOCABULARY.has(row.class)) continue;
 			const target = pkg.exports[entry];
-			if (typeof target !== "string") continue;
+			if (typeof target !== "string") {
+				// A conditional-exports object target is unrepresentable to
+				// every rule (no single file to stat, read, or extract symbols
+				// from) — it fails closed like an unreadable target instead of
+				// bypassing marker-agreement, override-validity AND
+				// target-existence (review round 1, R3: the vacuous-absence
+				// class must not survive in a new form).
+				violations.push({
+					rule: "target-existence",
+					detail: `${pkg.name}: ${row.class} entry "${entry}" declares a non-string (conditional) target ${JSON.stringify(target)} — unrepresentable to the rules; fail closed like an absent target or flatten the exports map to plain strings`,
+				});
+				continue;
+			}
 			const targetAbs = resolve(pkg.dir, target);
 			const text = pkg.textOf(targetAbs);
 
@@ -286,10 +304,13 @@ function scan({ packages }) {
 						detail: `${pkg.name}: frozen entry "${entry}" target carries an @opencutSurface marker (${markerClasses.join(", ")}) — frozen classification lives in surface.json alone; editing a frozen file for labeling is contract pressure, never a patch`,
 					});
 				}
-			} else if (!markerClasses.includes(row.class)) {
+			} else if (markerClasses.length !== 1 || markerClasses[0] !== row.class) {
+				// Exactness, not membership (review round 1, R4): a file
+				// carrying a stale marker beside the current one would pass a
+				// membership test with the wrong label still shipped.
 				violations.push({
 					rule: "marker-agreement",
-					detail: `${pkg.name}: ${row.class} entry "${entry}" target carries no @opencutSurface ${row.class} marker${markerClasses.length > 0 ? ` (found ${markerClasses.join(", ")})` : ""} — the in-source label must agree with the manifest`,
+					detail: `${pkg.name}: ${row.class} entry "${entry}" target must carry exactly one @opencutSurface ${row.class} marker${markerClasses.length === 0 ? " (found none)" : ` (found ${markerClasses.join(", ")})`} — the in-source label must agree exactly with the manifest`,
 				});
 			}
 
@@ -543,6 +564,35 @@ function runNegativeControl() {
 		};
 		worlds.push({ label: "frozen entry with an absent target", world });
 	}
+	// (9) A non-string (conditional-exports object) target — unrepresentable
+	// to every rule; must fail closed under target-existence rather than
+	// bypassing marker-agreement / override-validity / target-existence
+	// (review round 1, R3). No live instance: all three manifests use plain
+	// string targets; this world pins the guard.
+	{
+		const world = baseFixture();
+		world.packages[0].exports = {
+			...world.packages[0].exports,
+			"./conditional": { types: "./src/index.ts", import: "./src/index.ts" },
+		};
+		world.packages[0].surface = {
+			entries: { ...world.packages[0].surface.entries, "./conditional": { class: "provider", reason: "conditional target" } },
+		};
+		worlds.push({ label: "non-string (conditional) export target", world });
+	}
+	// (10) A non-frozen file carrying BOTH a stale and the current marker —
+	// membership would pass with the wrong label shipped; exactness fires
+	// (review round 1, R4).
+	{
+		const world = baseFixture();
+		world.packages[0].files = {
+			...world.files,
+			"/pkg/a/src/index.ts":
+				"/**\n * @opencutSurface experimental — stale label\n * @opencutSurface provider — current label\n */\nexport * from \"./core\";\nexport const helper = 1;\n",
+		};
+		world.packages[0].textOf = fixtureTextOf(world.packages[0].files);
+		worlds.push({ label: "stale marker beside the current one", world });
+	}
 
 	const ruleToLabel = new Map([
 		["unlabeled experimental export (row without marker)", "marker-agreement"],
@@ -553,6 +603,8 @@ function runNegativeControl() {
 		["row naming an undeclared entry", "completeness"],
 		["non-frozen entry with an absent target", "target-existence"],
 		["frozen entry with an absent target", "target-existence"],
+		["non-string (conditional) export target", "target-existence"],
+		["stale marker beside the current one", "marker-agreement"],
 	]);
 
 	let missed = 0;

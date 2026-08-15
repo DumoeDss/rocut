@@ -36,7 +36,11 @@ Each manifest's `exports` map is the package's entire public surface — nothing
 from outside, and nothing outside this boundary may deep-import a subpath the map does not
 declare. Within the `0.x` range:
 
-- a declared entry may **not** be removed, renamed, or repointed at a different module;
+- a declared entry may **not** be removed, renamed, or repointed at a different module —
+  except a declared-but-never-authored target, whose removal is a manifest correction, not
+  a surface removal (the `./vectors/drivers` case, LEAD ruling 2026-08-15; see
+  BOUNDARIES.md §14 for the dangling-correction nuance — the monotone rule above governs
+  working surface);
 - adding a new entry **is** permitted.
 
 **Monotone growth is the freeze.** It is not a claim that today's surface is final.
