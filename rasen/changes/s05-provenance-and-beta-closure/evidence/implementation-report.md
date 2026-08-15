@@ -246,3 +246,50 @@ touched scripts. `SOURCE_INVENTORY` files left at HEAD bytes.
 **Group 4 verdict:** the areas and the three-class rename taxonomy are
 derived, the reconciliation machinery exists and gates, and the patch-row gap
 it found (338 rows) is closed in Phase A — Phase B's delta is regeneration.
+
+## Group 5 — Lock tidy and SBOM machinery (tasks 5.1, 5.2)
+
+**5.1 — the tidy.** Before-state measured first: the lock's
+`packages/editor-classic` entry was the stale pre-P5 map — version `0.1.0`,
+four dependencies (`editor-contracts`/`editor-ports` workspace, `culori`
+4.0.2, `opencut-wasm` file:), one peer (`react ^18.3.1`) — against the
+manifest's 0.2.0 / 30 dependencies / 2 peers. The refresh ran as a plain
+`bun install` at the repo root (never `--frozen-lockfile`), and the
+environment fight is part of the record: the inherited `HTTP_PROXY`/
+`HTTPS_PROXY` (127.0.0.1:7890) hung bun twice at `Resolving dependencies`
+(attempt 1: 20 min; attempt 2: 35 min; both with CPU flat at 0.6 s over a
+12 s sample, memory flat at 76 MB, four ESTABLISHED proxy connections static
+— a bun-vs-proxy stall, not a slow registry: the same proxy answered curl in
+4 s, and the direct path measured 10.7 s/metadata and working). Attempt 3
+unset the proxy variables for the child only — the command itself stayed
+plain `bun install` — and completed in **6.25 s** ("Resolved, downloaded and
+extracted [26]; Saved lockfile; 3 packages installed"; log
+`group5-bun-install.log`, hung twins preserved as `-attempt1-stalled.log` /
+`-attempt2-hung.log`).
+
+After-state verified mechanically (`group5-install-verify` in the transcript;
+JSONC-tolerant parse of `bun.lock` vs the manifest): version equal (0.2.0),
+**dependencies equal 30-to-30**, peers equal (react + react-dom ^18.3.1);
+the task's named set all present — `culori = 4.0.2`, `date-fns = ^3.6.0`,
+`opencut-wasm = file:../../rust/wasm/pkg`, both workspace deps `workspace:*`,
+react peer `^18.3.1`. The lock diff is exactly the tidy: three workspace
+version syncs 0.1.0→0.2.0 (classic/contracts/ports), the classic dependency
+block expansion, one `sprintf-js` nested-dedup flattening — nothing else.
+
+**5.2 — SBOM machinery pass at the tidied lock** (`group5-sbom.log`):
+`node script/generate-sbom.mjs` → **1375 npm packages, 80 wasm crates,
+exit 0, all five defect probes matching their declared dispositions** —
+D-1/D-2/D-3/D-4 `recorded` all observed present; D-5 `repaired` observed
+absent. No mismatch, nothing escalated, nothing edited. The regenerated
+`SBOM.md` was then restored from HEAD (`git show` + `git hash-object`
+equality; the stat-cache M it initially showed was healed by an index
+refresh staging the identical blob — content diff empty) — **the shipped
+SBOM regenerates in Phase B** (design E5), exactly as `SOURCE_INVENTORY`
+does.
+
+**Group 5 verdict:** the lock's classic entry now equals the manifest's
+dependency block by mechanical comparison, and the SBOM machinery passes at
+the tidied lock with every recorded defect present and the repaired one
+absent. One environmental finding worth its bytes: bun 1.2.2 through an
+inherited local proxy can hang at resolution with zero CPU — the fix is
+unsetting the proxy env for the install child, not a flag change.

@@ -63,11 +63,11 @@
 
 ## 5. Lock tidy and SBOM machinery
 
-- [ ] 5.1 Refresh `bun.lock`'s classic workspace entry with a plain `bun install` at the repo
+- [x] 5.1 Refresh `bun.lock`'s classic workspace entry with a plain `bun install` at the repo
       root — **never** `--frozen-lockfile` (measured 4-minute timeout; not the tool for a stale
       workspace map). Verify the lock's classic entry matches the manifest's dependency block
       (culori, date-fns, opencut-wasm, the two workspace deps, the react peer).
-- [ ] 5.2 SBOM machinery pass at the tidied lock: run `generate-sbom.mjs` and confirm every
+- [x] 5.2 SBOM machinery pass at the tidied lock: run `generate-sbom.mjs` and confirm every
       recorded defect matches its declared disposition (recorded defects present, repaired
       absent). A mismatch is a repository finding, escalated with the probe output — never
       edited into silence. The SHIPPED SBOM regenerates in Phase B (design E5).
