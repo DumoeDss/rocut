@@ -1,0 +1,50 @@
+{
+	"package": "@opencut/editor-contracts",
+	"note": "The surface-class manifest (S05 P5, design E2). Classifies every exports-map entry except the mechanical ./package.json. Ships in the tarball beside README.md; enforced by script/check-sdk-surface-labels.mjs. frozen entries carry no in-source marker by design: their classification lives here alone so the frozen sources stay untouched.",
+	"entries": {
+		".": {
+			"class": "frozen",
+			"reason": "The S03 transaction/domain contract barrel — the transaction contract itself."
+		},
+		"./conformance": {
+			"class": "frozen",
+			"reason": "The transaction-contract conformance suite — S03's executable contract truth, additive-only with the contract it enforces."
+		},
+		"./conformance/requirements": {
+			"class": "experimental",
+			"reason": "P3's requirement-index legibility layer over the frozen suites — test infrastructure that may be reorganized as suites evolve, without touching the contracts it indexes."
+		},
+		"./draft": {
+			"class": "frozen",
+			"reason": "The draft-session domain surface — the S03 transaction contract's draft leg."
+		},
+		"./draft/conformance": {
+			"class": "frozen",
+			"reason": "The draft conformance suite — executable contract truth (S03/S04)."
+		},
+		"./engine": {
+			"class": "frozen",
+			"reason": "The engine — S04-frozen; engine/engine.ts is one of the four byte-identical frozen surfaces the close-out control re-proves."
+		},
+		"./engine/invariant": {
+			"class": "frozen",
+			"reason": "Engine invariant entry (validateTransactionDocument) — engine contract surface consumed in production (P1's declared entry, not a rewrite)."
+		},
+		"./engine/conformance": {
+			"class": "frozen",
+			"reason": "The engine conformance suite — executable contract truth (S04)."
+		},
+		"./vectors": {
+			"class": "frozen",
+			"reason": "The vectors runner — S04-frozen contract surface, Host-neutral by design."
+		},
+		"./vectors/corpus": {
+			"class": "frozen",
+			"reason": "The vectors corpus — S04 contract test data published by P3 with exact-bytes guarantees; changing a corpus file changes contract coverage."
+		},
+		"./vectors/drivers": {
+			"class": "frozen",
+			"reason": "The corpus drivers — S04-era vectors machinery, frozen with the runner they drive."
+		}
+	}
+}

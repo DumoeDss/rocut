@@ -81,3 +81,42 @@ needed or made.
 
 Version is `0.x` in every packed manifest and the policy text ships — the version/policy
 half proven from the pack path before any labeling landed on top.
+
+## Group 3 — Surface manifests and in-source markers (tasks 3.1–3.3)
+
+**3.1 — the classification table (the reviewable core).** Three `surface.json` manifests
+authored (ports 6 / contracts 11 / classic 19 = 36 rows, `./package.json` excluded), every
+row `{ class, reason }`; `surface.json` added to each manifest's `files` (it now ships).
+Adjudications, all with reasons recorded in the files themselves:
+
+- ports: frozen 5 (barrel, host, in-memory ×2, conformance suite), experimental 1
+  (`./conformance/requirements` — P3's legibility layer).
+- contracts: frozen 10 (domain, draft ×2, engine ×3, vectors ×3, transaction conformance
+  suite), experimental 1 (`./conformance/requirements`).
+- classic: frozen 2 (`./surface`, `./surface.css` — the S03+S04 embedding contract),
+  provider 13 (root barrel, session/runtime/browser/storage ×3/project/timeline/renderer/
+  media/fonts/ui — Classic's own machinery), experimental 4 (`./evidence` ×4 — the
+  evidence/test-infrastructure entries, unstable by intent).
+- `./storage/conformance` adjudicated **provider**, not experimental: it is Classic's own
+  published test rig (the task's "provider where they are Classic's own machinery" arm).
+- **Measured task-time finding (design E2's "known mixed case" settled):** classic's root
+  `.` does NOT genuinely mix at this tree — its full re-export closure (core → `EditorCore`
+  only; utils/ui, date, id, string; wasm → media-time; background/color, canvas/sizes,
+  fps/defaults, feedback/types) carries zero frozen-classified symbols; the frozen
+  transaction barrel and Surface embedding types are not re-exported from the root. So the
+  production manifests carry **no symbol overrides** — exactly the design's Open Question
+  outcome ("only genuinely mixed symbols"; none are). The override mechanism exists and is
+  enforced (checker rule 3, exercised by its negative control's dangling-override case).
+
+**3.2 — 19 markers, zero frozen files touched.** `@opencutSurface <class> — <reason>`
+inserted as the first doc-comment block of every provider (15) and experimental (4... plus
+the two requirements entries = 6 experimental total across packages: 19 marker blocks:
+ports 1 + contracts 1 + classic 17). Controls run IMMEDIATELY after the batch
+(`evidence/logs/group3-post-marker-controls.log`): the four frozen surfaces still
+IDENTICAL at base `5aae75ec`; all 25 touched/new files LF (`tr -dc '\r' | wc -c` = 0 each;
+`git ls-files --eol` over the diff set: 22 files `i/lf w/lf`). No frozen-CLASSIFIED entry
+file carries a marker either — frozen rows are manifest-only by design.
+
+**3.3 — misclassification control.** Deferred to the Group 4 commit boundary as the task
+itself orders it ("the checker from Group 4 must fire on it"): planted, fired, reverted —
+recorded in the Group 4 section below.

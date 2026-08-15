@@ -1,3 +1,6 @@
+/**
+ * @opencutSurface provider — Classic's root convenience surface: EditorCore, utils, wasm media-time helpers, defaults
+ */
 // Declared entry "." (design E1/E4). Re-exports the classic package's
 // root-level public surface from its mirrored internals. See BOUNDARIES.md
 // for the full entry-mapping table.

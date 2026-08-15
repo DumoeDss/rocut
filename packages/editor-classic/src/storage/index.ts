@@ -1,3 +1,6 @@
+/**
+ * @opencutSurface provider — the storage barrel; Classic's own machinery
+ */
 // Declared entry "./storage" (design E1/E4). Curated, not a full mirror of
 // services/storage/ (that directory carries many more internal modules).
 // See BOUNDARIES.md for the full entry-mapping table.

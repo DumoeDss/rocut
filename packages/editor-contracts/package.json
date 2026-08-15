@@ -9,6 +9,7 @@
   "files": [
     "dist",
     "src",
+    "surface.json",
     "README.md",
     "LICENSE",
     "NOTICE"

@@ -1,3 +1,6 @@
+/**
+ * @opencutSurface provider — Classic's storage conformance harnesses; the provider's own published test rig
+ */
 // Declared entry "./storage/conformance" (design E1/E4). See BOUNDARIES.md
 // for the full entry-mapping table.
 //

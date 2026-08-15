@@ -1,4 +1,7 @@
 /**
+ * @opencutSurface experimental — requirement-index legibility layer over the frozen suite; test infrastructure, may be reorganized as suites evolve
+ */
+/**
  * The port-conformance requirement index (S05 P3).
  *
  * A conformance report names its cases; a reader who is not this repository has

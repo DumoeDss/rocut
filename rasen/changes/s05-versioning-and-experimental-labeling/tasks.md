@@ -31,7 +31,7 @@
 
 ## 3. The surface manifests and in-source markers
 
-- [ ] 3.1 Author the three `surface.json` manifests — every export entry of every package
+- [x] 3.1 Author the three `surface.json` manifests — every export entry of every package
       classified `frozen | provider | experimental` with a one-line reason, plus symbol-level
       overrides only where an entry genuinely mixes classes (classic's root `.` is the known
       case). The classification table IS this change's reviewable core: the four frozen surfaces
@@ -40,7 +40,7 @@
       `./conformance/requirements`) are adjudicated with reasons — `experimental` where unstable
       by intent, `provider` where they are Classic's own machinery. Add `surface.json` to each
       manifest's `files`.
-- [ ] 3.2 Add `@opencutSurface <class> — <reason>` markers as the first doc-comment line of every
+- [x] 3.2 Add `@opencutSurface <class> — <reason>` markers as the first doc-comment line of every
       `provider`- and `experimental`-classified entry's source file. **No frozen-classified file
       is edited** — verify with the byte-control from 1.1 immediately after the marker batch,
       not at ship time. CRLF-check every touched file (`tr -dc '\r' < f | wc -c` = 0).

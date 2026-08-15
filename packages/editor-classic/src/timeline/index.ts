@@ -1,3 +1,6 @@
+/**
+ * @opencutSurface provider — timeline helpers; Classic's own machinery
+ */
 import { addMediaTime, type MediaTime, ZERO_MEDIA_TIME } from "../wasm";
 import type { SceneTracks } from "./types";
 

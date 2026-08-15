@@ -1,3 +1,6 @@
+/**
+ * @opencutSurface provider — design-system UI atoms; Classic's own machinery
+ */
 // Declared entry "./ui" (design E1/E4). Re-exports the design-system atoms
 // under components/ui/* in full (design E5: eight of these are currently
 // reached only by the apps/web shell, and stay exported rather than split

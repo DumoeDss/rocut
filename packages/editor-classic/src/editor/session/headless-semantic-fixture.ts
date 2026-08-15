@@ -1,3 +1,6 @@
+/**
+ * @opencutSurface experimental — narrow headless-semantic fixture; explicitly unstable
+ */
 /* eslint-disable @typescript-eslint/no-unsafe-type-assertion -- The fixture deliberately verifies opaque provider-owned values. */
 import {
 	InMemoryProjectStore,

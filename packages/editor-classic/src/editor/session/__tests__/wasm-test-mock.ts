@@ -1,3 +1,6 @@
+/**
+ * @opencutSurface experimental — wasm test-mock entry; test infrastructure (the README's migration constraint names it)
+ */
 import { mock } from "bun:test";
 
 const TICKS_PER_SECOND = 120_000;

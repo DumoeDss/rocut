@@ -1,0 +1,82 @@
+{
+	"package": "@opencut/editor-classic",
+	"note": "The surface-class manifest (S05 P5, design E2). Classifies every exports-map entry except the mechanical ./package.json. Ships in the tarball beside README.md; enforced by script/check-sdk-surface-labels.mjs. frozen entries carry no in-source marker by design: their classification lives here alone so the frozen sources stay untouched.",
+	"entries": {
+		".": {
+			"class": "provider",
+			"reason": "Classic's root convenience surface — EditorCore, utils, wasm media-time helpers and default constants; provider machinery throughout (measured at 0.2.0: no frozen-classified symbol flows through this barrel, so no symbol override is needed)."
+		},
+		"./surface": {
+			"class": "frozen",
+			"reason": "The embeddable Surface — the S03+S04 embedding contract; surface/embedding/types.ts is one of the four byte-identical frozen surfaces the close-out control re-proves."
+		},
+		"./surface.css": {
+			"class": "frozen",
+			"reason": "The Surface's stylesheet — ships with the S04-frozen embeddable Surface and changes only additively with it (S04's surface-css freeze)."
+		},
+		"./session": {
+			"class": "provider",
+			"reason": "Session composition — Classic's own machinery, not contract surface."
+		},
+		"./runtime": {
+			"class": "provider",
+			"reason": "Runtime composition (session-core-owner, session-stores) — Classic's own machinery."
+		},
+		"./browser": {
+			"class": "provider",
+			"reason": "Browser runtime ports and C4 project load — Classic's own browser machinery."
+		},
+		"./storage": {
+			"class": "provider",
+			"reason": "The storage barrel (react entry included) — Classic's own machinery."
+		},
+		"./storage/conformance": {
+			"class": "provider",
+			"reason": "Classic's storage conformance harnesses — Classic's own machinery (adjudicated provider, not experimental: it is the provider's own published test rig)."
+		},
+		"./storage/migrations": {
+			"class": "provider",
+			"reason": "The react-free migration chain (runner, 31 transformers, CURRENT_PROJECT_VERSION) — Classic's own machinery; carries the known wasm-init constraint stated in this package's README as policy truth."
+		},
+		"./project": {
+			"class": "provider",
+			"reason": "Project helpers — Classic's own machinery."
+		},
+		"./timeline": {
+			"class": "provider",
+			"reason": "Timeline helpers — Classic's own machinery."
+		},
+		"./renderer": {
+			"class": "provider",
+			"reason": "Renderer (canvas-renderer, scene-builder) — Classic's own machinery."
+		},
+		"./media": {
+			"class": "provider",
+			"reason": "Media helpers — Classic's own machinery (declared at extraction, currently unconsumed outside the package)."
+		},
+		"./fonts": {
+			"class": "provider",
+			"reason": "Font assets and helpers — Classic's own machinery."
+		},
+		"./ui": {
+			"class": "provider",
+			"reason": "The design-system UI atoms — Classic's own machinery."
+		},
+		"./evidence": {
+			"class": "experimental",
+			"reason": "The surface-evidence harnesses — evidence/test infrastructure, unstable by intent (may change or be removed as evidence needs evolve)."
+		},
+		"./evidence/headless": {
+			"class": "experimental",
+			"reason": "The headless graph harness — evidence/test infrastructure, unstable by intent."
+		},
+		"./evidence/headless-semantic-fixture": {
+			"class": "experimental",
+			"reason": "A narrow fixture for headless semantic verification — E1's named example of an explicitly-unstable narrow fixture."
+		},
+		"./evidence/wasm-test-mock": {
+			"class": "experimental",
+			"reason": "The wasm test-mock entry — test infrastructure (today the only working wasm init path for plain TS consumers; see the README's migration-surface constraint)."
+		}
+	}
+}

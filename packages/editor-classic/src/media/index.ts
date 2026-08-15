@@ -1,3 +1,6 @@
+/**
+ * @opencutSurface provider — media helpers; Classic's own machinery
+ */
 // Declared entry "./media" (design E1/E4). Declared but currently
 // unconsumed outside the package — left in place per E4 (P2's Electron
 // Host is the likely first consumer). This directory was extracted from

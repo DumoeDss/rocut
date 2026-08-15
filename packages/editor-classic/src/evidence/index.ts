@@ -1,3 +1,6 @@
+/**
+ * @opencutSurface experimental — surface-evidence harnesses; evidence/test infrastructure, unstable by intent
+ */
 // Declared entry "./evidence" (design E1/E4). See BOUNDARIES.md for the full
 // entry-mapping table.
 //

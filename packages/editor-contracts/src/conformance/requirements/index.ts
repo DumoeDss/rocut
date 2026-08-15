@@ -1,4 +1,7 @@
 /**
+ * @opencutSurface experimental — requirement-index legibility layer over the frozen suites; test infrastructure, may be reorganized as suites evolve
+ */
+/**
  * The transaction-family requirement index (S05 P3).
  *
  * Four suites live in this package — transaction (T0), engine (T1), Draft

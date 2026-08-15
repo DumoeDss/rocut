@@ -1,3 +1,6 @@
+/**
+ * @opencutSurface experimental — headless graph harness; evidence/test infrastructure, unstable by intent
+ */
 // Declared entry "./evidence/headless" (S05 P1 review round 2, C7 barrel-leak
 // finding). See BOUNDARIES.md for the full entry-mapping table.
 //

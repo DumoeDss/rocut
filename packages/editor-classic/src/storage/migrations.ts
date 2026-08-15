@@ -1,3 +1,6 @@
+/**
+ * @opencutSurface provider — the react-free migration chain; Classic's own machinery (see README for the wasm-init constraint)
+ */
 // Declared entry "./storage/migrations" (S05 P3, LEAD ruling 2026-08-15).
 //
 // The react-free migration surface: everything a consumer needs to walk the

@@ -1,3 +1,6 @@
+/**
+ * @opencutSurface provider — runtime composition; Classic's own machinery
+ */
 // Declared entry "./runtime" (design E1/E4). See BOUNDARIES.md for the full
 // entry-mapping table.
 export * from "../editor/runtime/session-core-owner";
