@@ -220,3 +220,8 @@ as P2's 10.4 and P3's 8.4).
   archive transaction commits them with the change.
 - Review round 1's re-review append to `evidence/review-report.md` is
   committed by this ship step, unmodified (P2/P3 precedent).
+
+## Archive
+**Date:** 2026-08-15T07:37:38.250Z
+**Outcome:** archived at E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\rasen\changes\archive\2026-08-15-s05-versioning-and-experimental-labeling
+**Transaction:** 5090a708-2e70-45d0-88ca-6e6e6136f44d

@@ -1,0 +1,117 @@
+{
+  "change": "s05-versioning-and-experimental-labeling",
+  "archivedAt": "2026-08-15T07:37:38.250Z",
+  "codeCommit": "b17d3ca548e804e12fedf904bc1ce0f992f4b87a",
+  "planningBranch": "feat/s05-community-beta",
+  "planningTreeState": "dirty",
+  "evidence": [
+    {
+      "path": "evidence/consumer-view-from-tarballs.mjs",
+      "sha256": "0007cd7a6fd824a3c3cacdff5993786d1fec4b25189e0222e5acdbd65068abe9"
+    },
+    {
+      "path": "evidence/delivery-audit.md",
+      "sha256": "48bfa44b2a0bed0fd13666119cca1b560ef478b81fe73c78d4969d777a4a1a3f"
+    },
+    {
+      "path": "evidence/fixtures/empty-scan/no-packages/README.txt",
+      "sha256": "a1ea56bfac7f2c895ca6336a83e5a1a0ea1adf3c115839abf6d4ae701206aba0"
+    },
+    {
+      "path": "evidence/fixtures/empty-scan/zero-entries/pkg-a/package.json",
+      "sha256": "8cbca6d7624a5779469d43f0adf43a971b4afdeba531592164940e5ec847f35d"
+    },
+    {
+      "path": "evidence/implementation-report.md",
+      "sha256": "1a66364d8e3e1f5ba029e9dc40ede27701ef98c786b633b5a587e3ee9e75e365"
+    },
+    {
+      "path": "evidence/logs/group1-baseline-boundary.log",
+      "sha256": "448e3877c994427291fffc1ffc3b61a9b67e10dae00810331b8f9204d059f2db"
+    },
+    {
+      "path": "evidence/logs/group1-frozen-byte-control.log",
+      "sha256": "7d59519865b8e1977699dbad4a266f057af91d2e87c3037b0ce368ecde681570"
+    },
+    {
+      "path": "evidence/logs/group2-early-pack-manifest.json",
+      "sha256": "c705641ce2a62662010953c8d6f18d42b96187903095017ff1d10f11f1ff46ac"
+    },
+    {
+      "path": "evidence/logs/group2-early-pack.log",
+      "sha256": "18b33a30a2556c7d57329027e522a6f52049a8c5ac2455c4fa694bfd3a951ee8"
+    },
+    {
+      "path": "evidence/logs/group3-misclassification-control.log",
+      "sha256": "df2db5059d0dff6749e5b17bb6b726731a5e5374ae8533cd3be72651722eb6dc"
+    },
+    {
+      "path": "evidence/logs/group3-post-marker-controls.log",
+      "sha256": "5af9b5aba6cc5a043e2975a1b7e1920fd24f19db3db2e451f7fbaacc708e59f2"
+    },
+    {
+      "path": "evidence/logs/group4-checker-first-run.log",
+      "sha256": "54fc189b688895376f6f8b1549e807f616751a6a2594694c9793132cef2ef94f"
+    },
+    {
+      "path": "evidence/logs/group4-controls.log",
+      "sha256": "6924f860fc8641e3fdf7f74ed9932263d36a6824572338f994b8577c485e4ca0"
+    },
+    {
+      "path": "evidence/logs/group4-family-sweep.log",
+      "sha256": "4603bfacfb70f2a4887a77e1da8d627f46b15b41a4d2279fc97d78c848eb3050"
+    },
+    {
+      "path": "evidence/logs/group5-consumer-view.log",
+      "sha256": "736e90a726303b4b5689260e0bdf9dc243c7f7c25ceae591be8c0713133604fd"
+    },
+    {
+      "path": "evidence/logs/group5-manifest-truth.log",
+      "sha256": "7eb2072c2dfb85ee73078b0c9ca0f8e1a4441fd8eb62a5c9dd15b58dd398121c"
+    },
+    {
+      "path": "evidence/logs/group6-no-stability-sweep.log",
+      "sha256": "d34526dfae24d25b017256339577ad62ea6e5a14a61f15c1e10594d95b7399cb"
+    },
+    {
+      "path": "evidence/logs/group7-final-controls.log",
+      "sha256": "cb44e81b7660e4885c2e45c0e4b85e3758dfadf90768db2f24111469c3b642b2"
+    },
+    {
+      "path": "evidence/logs/group8-completion-ruling.log",
+      "sha256": "a1927b2ce847355e0bf59bef36b0b5e4829ebf04b7dd75a278869b837e715774"
+    },
+    {
+      "path": "evidence/logs/group8-no-stability-sweep.log",
+      "sha256": "36290cc5f2b45c7c80a622d340cfdfe4238b3274b4c4c873a6f6aaf78ca19cde"
+    },
+    {
+      "path": "evidence/logs/group9-review-round1.log",
+      "sha256": "2440a87573e2b1a44ffa10261270b7df78a59949fda87c8823ccdbf81eb9ae46"
+    },
+    {
+      "path": "evidence/logs/ship-gates.log",
+      "sha256": "0808fea305ed6c19c3e508419d4d9d2b5dfc04034138b0db4386f668c51e069f"
+    },
+    {
+      "path": "evidence/no-stability-sweep.py",
+      "sha256": "d6afc16a4d5d714685ad1a80aab087b1fc6fb36bf8671daca0610a1a0977917c"
+    },
+    {
+      "path": "evidence/review-report.md",
+      "sha256": "0d1bf46a73c653f21133c2c95bd8f4fc6fbff625955beffac9754f6b7d06a04c"
+    },
+    {
+      "path": "evidence/ship-log.md",
+      "sha256": "6a65e4a295c52557dd0096eef1db41fa370059dd0d4703a4c9736ccb769ecfef"
+    }
+  ],
+  "probes": [],
+  "handoffAbsorbed": [],
+  "ephemeraDiscarded": [
+    "auto-run.json"
+  ],
+  "missing": [
+    "verification-report"
+  ]
+}
