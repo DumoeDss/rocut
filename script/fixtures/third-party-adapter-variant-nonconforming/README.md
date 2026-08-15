@@ -1,10 +1,10 @@
 # The alien adapter
 
 A worked third-party adapter for the OpenCut editor contract packages
-(`@opencut/editor-ports`, `@opencut/editor-contracts`), built to prove the
-published surfaces are implementable from outside the repository — no
-reference implementation is imported, only the packages' own declared
-entries.
+(`@opencut/editor-ports`, `@opencut/editor-contracts`, `@opencut/editor-classic`),
+built to prove the published surfaces are implementable from outside the
+repository — no reference implementation is imported, only the packages' own
+declared entries.
 
 ## What it is
 
@@ -44,8 +44,9 @@ bun adapter/run.ts
 ```
 
 Exit code 0 means every exercised surface passed and the migration leg was
-green (or absent because `@opencut/editor-classic/storage` could not resolve
-in that environment — printed as a finding, never silently skipped).
+green (or absent because `@opencut/editor-classic/storage/migrations` failed
+to load or initialize in that environment — printed as a finding, never
+silently skipped).
 
 Inside the repository, the same runner works against workspace resolution;
 `script/run-scratch-conformance.mjs` copies this directory into each scratch

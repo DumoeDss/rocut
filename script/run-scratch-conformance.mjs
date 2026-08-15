@@ -23,10 +23,16 @@
  * control exists to close. The failure text is recorded in the log.
  *
  * Environment:
- *   OPENCUT_SCRATCH_ROOT  override the scratch root (E2; CI never inherits
- *                         this machine's E:-drive geography)
- *   OPENCUT_BUN           the bun invocation (default: npx --yes bun@1.2.18)
- *   OPENCUT_PREPACKED_DIR skip packing; copy tarballs from this directory
+ *   OPENCUT_SCRATCH_ROOT    override the scratch root (E2; CI never inherits
+ *                           this machine's E:-drive geography)
+ *   OPENCUT_BUN             the bun invocation (default: npx --yes bun@1.2.18)
+ *   OPENCUT_PREPACKED_DIR   skip packing; copy tarballs from this directory
+ *   OPENCUT_TARBALL_OUT_DIR where packing writes tarballs when not prepacked
+ *                           (default: the gitignored <repo>/dist-sdk-tarballs)
+ *   OPENCUT_ADAPTER_TEMPLATE  the adapter template to materialize (default:
+ *                           script/fixtures/third-party-adapter)
+ *   OPENCUT_VARIANT_TEMPLATE the nonconforming-variant template (default:
+ *                           script/fixtures/third-party-adapter-variant-nonconforming)
  */
 import {
 	cpSync,
@@ -49,12 +55,26 @@ const MODULE_DIR = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(MODULE_DIR, "..");
 const IS_WINDOWS = process.platform === "win32";
 const MARKER_NAME = ".opencut-scratch-marker";
-const ADAPTER_TEMPLATE = join(REPO_ROOT, "script", "fixtures", "third-party-adapter");
-const VARIANT_TEMPLATE = join(
-	REPO_ROOT,
-	"script",
-	"fixtures",
-	"third-party-adapter-variant-nonconforming",
+// Adapter/variant template locations and the packing output dir are env seams
+// (review round 1, F3): the spec's CI-readiness clause — "root, tarball
+// output and adapter location all env-configurable" — must be implemented,
+// so CI (P6's leg) can point the harness at its own geography and its own
+// example fixture without forking the runner.
+const ADAPTER_TEMPLATE = resolve(
+	process.env.OPENCUT_ADAPTER_TEMPLATE ??
+		join(REPO_ROOT, "script", "fixtures", "third-party-adapter"),
+);
+const VARIANT_TEMPLATE = resolve(
+	process.env.OPENCUT_VARIANT_TEMPLATE ??
+		join(
+			REPO_ROOT,
+			"script",
+			"fixtures",
+			"third-party-adapter-variant-nonconforming",
+		),
+);
+const TARBALL_OUT_DIR = resolve(
+	process.env.OPENCUT_TARBALL_OUT_DIR ?? join(REPO_ROOT, DEFAULT_OUT_DIR_NAME),
 );
 const SDK_NAMES = [
 	"@opencut/editor-ports",
@@ -188,7 +208,7 @@ function stageTarballs(root) {
 			.sort()
 			.map((name) => ({ name: nameOfTarball(name), file: name }));
 	} else {
-		const outDir = join(REPO_ROOT, DEFAULT_OUT_DIR_NAME);
+		const outDir = TARBALL_OUT_DIR;
 		const manifest = packSdkTarballs({
 			repoRoot: REPO_ROOT,
 			outDir,
@@ -201,7 +221,7 @@ function stageTarballs(root) {
 		}));
 	}
 	for (const entry of staged) {
-		cpSync(join(prepacked ? resolve(prepacked) : join(REPO_ROOT, DEFAULT_OUT_DIR_NAME), entry.file), join(tarballsDir, entry.file));
+		cpSync(join(prepacked ? resolve(prepacked) : TARBALL_OUT_DIR, entry.file), join(tarballsDir, entry.file));
 	}
 	console.log(`pack: ${staged.length} tarball(s) staged into the scratch project`);
 	return staged.map((entry) => ({ name: entry.name, spec: `file:tarballs/${entry.file}` }));
@@ -311,9 +331,10 @@ function controlReactFree(root) {
 // Materialize the consumer, run it under bun
 // ---------------------------------------------------------------------------
 
-const SMOKE_CONSUMER = `// Built-in smoke consumer — the runner's fallback while the committed
-// adapter template (script/fixtures/third-party-adapter, Group 5) does not
-// yet exist. Imports resolve ONLY from the installed tarball copies.
+const SMOKE_CONSUMER = `// Built-in smoke consumer — the runner's fallback when no adapter template
+// is present at the configured location (default: the committed fixture; see
+// OPENCUT_ADAPTER_TEMPLATE). Imports resolve ONLY from the installed tarball
+// copies.
 import { createInMemoryPorts, createInMemoryProjectStoreFixture } from "@opencut/editor-ports/in-memory";
 import { runPortConformance } from "@opencut/editor-ports/conformance";
 import { formatConformanceFailures } from "@opencut/editor-ports/conformance/requirements";
@@ -353,6 +374,13 @@ import "@opencut/editor-ports/conformance";
 console.log("UNEXPECTED: import resolved after removal");
 `;
 
+/** Log label for a template dir: repo-relative when inside the repo (the committed default prints exactly as it always has), absolute when an env seam points outside. */
+function templateLabel(templateDir) {
+	return isInside(templateDir, REPO_ROOT)
+		? relative(REPO_ROOT, templateDir).replace(/\\/g, "/")
+		: templateDir;
+}
+
 function materialize(root, variant) {
 	if (variant) {
 		if (!existsSync(join(VARIANT_TEMPLATE, "run.ts"))) {
@@ -360,19 +388,19 @@ function materialize(root, variant) {
 		}
 		cpSync(VARIANT_TEMPLATE, join(root, "adapter"), { recursive: true });
 		console.log(
-			"adapter: NONCONFORMING VARIANT materialized into scratch (script/fixtures/third-party-adapter-variant-nonconforming)",
+			`adapter: NONCONFORMING VARIANT materialized into scratch (${templateLabel(VARIANT_TEMPLATE)})`,
 		);
 		return "adapter/run.ts";
 	}
 	if (existsSync(ADAPTER_TEMPLATE)) {
 		cpSync(ADAPTER_TEMPLATE, join(root, "adapter"), { recursive: true });
-		console.log("adapter: committed template materialized into scratch (script/fixtures/third-party-adapter)");
+		console.log(`adapter: committed template materialized into scratch (${templateLabel(ADAPTER_TEMPLATE)})`);
 		return "adapter/run.ts";
 	}
 	writeFileSync(join(root, "consumer.ts"), SMOKE_CONSUMER);
 	console.log(
-		"adapter: committed template NOT YET PRESENT (Group 5) — using the built-in smoke consumer; " +
-			"full-adapter runs land with Group 5's evidence",
+		`adapter: no template present at ${ADAPTER_TEMPLATE} — using the built-in smoke consumer ` +
+			"(ports + transaction only); point OPENCUT_ADAPTER_TEMPLATE at an adapter directory for the full run",
 	);
 	return "consumer.ts";
 }

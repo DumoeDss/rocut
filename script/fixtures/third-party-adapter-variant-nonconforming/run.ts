@@ -8,8 +8,8 @@
  * the packed tarballs -- the pair that proves the declared entries complete.
  *
  * Exit rule: 0 iff all five suites pass AND the migration leg is either green
- * or absent because the classic package could not resolve (a recorded
- * finding, printed distinctly -- never silently skipped).
+ * or absent because the classic migrations entry failed to load or initialize
+ * (a recorded finding, printed distinctly -- never silently skipped).
  */
 import type { ProjectId } from "@opencut/editor-ports";
 import { runPortConformance } from "@opencut/editor-ports/conformance";

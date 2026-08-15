@@ -1,7 +1,7 @@
 /**
  * Migration-walker validation against the REAL published chain (S05 P3, 5.2).
  *
- * The production runner records a finding — `@opencut/editor-classic/storage`
+ * The production runner records a finding — `@opencut/editor-classic/storage/migrations`
  * cannot initialize in a plain TS consumer because the chain is transitively
  * bound to the `opencut-wasm` artifact (transformer v27->v28 imports
  * `roundMediaTime`). This test does NOT change that finding: it loads

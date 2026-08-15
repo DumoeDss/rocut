@@ -297,7 +297,7 @@ count is the 1078 → 1106 leg above); both controls re-run green at close-out (
 rule is proven able to fail"; converse: "no rule fires on a legal case" — exit 0 each).
 
 Per-checker rows for the new paths (27 checkers swept, `logs/group7-all-checkers.log`, every
-one with an `EXIT[<name>]:<code>` line — 23 zero / 6 nonzero):
+one with an `EXIT[<name>]:<code>` line — 21 zero / 6 nonzero):
 
 - `check-package-boundary` — **follows**: census above; fixtures live under `script/`, the
   adapter's `@opencut` imports resolve through the installed tarballs in the scratch run, never
@@ -355,8 +355,9 @@ self-logged per leg (`logs/group7-package-tests.log`): `EXIT[ports]:0`,
 **7.4 — BOUNDARIES.md.** §13 closed out: the deferred "lands at close-out" sentences replaced
 by the end-to-end scratch-run record (what runs where), the three no-linking controls
 including the adapter-shaped removal re-proof, the mutation leg's executable exactness gate,
-the P6 reuse seam (`packSdkTarballs`/`SDK_PACKAGES` import; the runner's three env seams as
-the CI blueprint), the non-coverage statement (no CI leg — P6's, reusing this harness;
+the P6 reuse seam (`packSdkTarballs`/`SDK_PACKAGES` import; the runner's env seams as
+the CI blueprint — three at close-out, six after review round 1's F3 fix), the
+non-coverage statement (no CI leg — P6's, reusing this harness;
 registry behaviour excluded by the §4.1(a) ruling; the adapter is not a Host and claims no
 browser-manager surface beyond the Draft fixture's needs), and the final census with
 attribution.
@@ -494,6 +495,52 @@ adapter-shaped import collapse after deletion).
 specifiers / 362 edges — +1 file over Group 7's close-out (the migrations barrel); manifest and
 lockfile edits touch already-counted files. Both checker controls green.
 
+## Review round 1 — the F1–F4 fix batch (2026-08-15)
+
+Reviewer verdict: 0 Blocker / 1 Major / 3 Minor, every load-bearing claim independently
+reproduced (`evidence/review-report.md`). All four findings fixed in one batch, dispositions:
+
+- **F2 (Major, spec fidelity) — fixed by amending the clause.** The ADDED scenario's THEN
+  ("passes on the portable profile with migration exercised") promised from-tarballs migration
+  unconditionally; the executed ruling's fork landed branch (b) (the wasm-init class), so the
+  honest pair is the end state and archive would have synced an unmeetable clause verbatim into
+  the main spec. The clause now states the two-mode truth exactly as the evidence shows it: in
+  the repository, the migration walker is validated against the real 31-step chain through the
+  published `./evidence/wasm-test-mock` entry and the wasm-init finding is recorded distinctly;
+  from the installed tarballs, the suite passes with the migration leg absent — the skip
+  recorded and named in the run's own output. Scenario heading and the WHEN/AND clauses are
+  untouched; the LEAD-ruling attribution lives in `design.md` (E7's dated addendum), not in the
+  spec. `rasen validate --strict --project rocut` valid after the edit.
+- **F1 (Minor, evidence integrity) — fixed by regenerating at HEAD.** The committed
+  `group9-adapter-in-repo.log` predated `00263505`'s run.ts wording switch (it carried the old
+  "./storage failed to import" text while committed beside the new code). Regenerated from the
+  HEAD tree; the fresh log contains the new-code-only string
+  (`@opencut/editor-classic/storage/migrations failed to load or initialize`) — the reviewer's
+  durable guard, applied — beside the same decisive wasm line, five green suites and
+  `EXIT[adapter-inrepo]:0` / `REAL_EXIT_CODE:0`. Same one-revision staleness class, also
+  refreshed: the fixture README's exit-rule sentence and its package list, the walker test's
+  header entry path, `run.ts`'s header exit rule, and the runner's smoke-consumer fallback
+  comments (the "Group 5" sequencing language from before the template landed). Variant tree
+  re-synced byte-identical; the single-diff invariant (one hunk in `src/alien-store.ts`)
+  re-verified by `diff -rq`.
+- **F3 (Minor, spec fidelity) — fixed by adding the two seams (LEAD's preferred direction).**
+  The spec's pack requirement says "root, tarball output and adapter location all
+  env-configurable"; the runner exposed root/bun/prepacked-input only, with `ADAPTER_TEMPLATE`
+  hardcoded and packing always targeting `<repo>/dist-sdk-tarballs/`. Added
+  `OPENCUT_TARBALL_OUT_DIR` (packing output), `OPENCUT_ADAPTER_TEMPLATE` and
+  `OPENCUT_VARIANT_TEMPLATE` (materialization sources) — six seams total, documented in the
+  runner header and BOUNDARIES §13; spec text unchanged because it is now true. Default-env
+  runner output is byte-identical to the committed scratch logs (the materialize log lines
+  print repo-relative labels that render exactly as the old hardcoded strings).
+- **F4 (Minor, report arithmetic) — fixed by counting the log.** §7.1 claimed "23 zero / 6
+  nonzero" of 27 checkers — impossible on its face (23+6=29). Re-derived from
+  `group7-all-checkers.log`'s own lines (`grep -o 'EXIT\[[^]]*\]:[0-9]*'` → 27 total, 21 ending
+  `:0`): **21 zero / 6 nonzero**; corrected above. The six-nonzero disposition set itself was
+  verified correct by the reviewer and is unchanged.
+
+Batch commit: single local commit (`feat(s05-conformance): review round 1 …`), explicit
+pathspecs, `.rasen/` staging guard, LF-verified. Delta re-review is the LEAD's.
+
 ## Open items
 
 - **Phantom-dep blocker: RESOLVED by the executed LEAD ruling (Group 9).** The install-side
@@ -507,5 +554,6 @@ lockfile edits touch already-counted files. Both checker controls green.
   skips distinctly; walker validated against the real 31-step chain via the published mock
   entry).
 - Groups 1–9 complete (Group 9 = the executed LEAD ruling). Implementation finished; review +
-  archive are LEAD's. Box 7.5
-  (post-archive rider verification) executes at close-out per its own text.
+  archive are LEAD's. Review round 1's F1–F4 fix batch landed (see the Review round 1 section);
+  delta re-review pending. Box 7.5 (post-archive rider verification) executes at close-out per
+  its own text.

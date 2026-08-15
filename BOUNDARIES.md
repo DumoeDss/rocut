@@ -1027,10 +1027,13 @@ an over-constrained suite and a finding, not a pass).
 
 **Reuse seam for P6 (the CI leg)**: import `packSdkTarballs`/`SDK_PACKAGES` from
 `script/pack-sdk-tarballs.mjs` — P6 must not re-implement packing. The runner is the CI-leg
-blueprint: its three env seams (`OPENCUT_SCRATCH_ROOT`, `OPENCUT_BUN`, `OPENCUT_PREPACKED_DIR`)
-exist so CI can drive the same lifecycle with its own geography and bun without forking the
-logic; P6 wraps or invokes it, and inherits the no-linking controls and the exactness gate
-unchanged.
+blueprint: its six env seams (`OPENCUT_SCRATCH_ROOT`, `OPENCUT_BUN`, `OPENCUT_PREPACKED_DIR`,
+plus `OPENCUT_TARBALL_OUT_DIR`, `OPENCUT_ADAPTER_TEMPLATE` and `OPENCUT_VARIANT_TEMPLATE`,
+added at review round 1 so the pack requirement's "root, tarball output and adapter location
+all env-configurable" CI-readiness clause is implemented rather than claimed) exist so CI can
+drive the same lifecycle with its own geography, bun, tarball output and example fixture
+without forking the logic; P6 wraps or invokes it, and inherits the no-linking controls and the
+exactness gate unchanged.
 
 **Non-coverage, deliberately**: no CI step exists in P3 — §3.5 asks for executed evidence (this
 harness, with real exit codes and committed logs), and §3.7's CI execution is P6's, reusing this
