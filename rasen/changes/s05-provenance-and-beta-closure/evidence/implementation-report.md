@@ -356,3 +356,50 @@ stance, the carried finding and the residuals with owners; the README tells an
 adopter the four failures they will otherwise meet; UPSTREAM.md no longer
 accrues a drift generation — its stale sections are restated beside their
 history and the added-file inventory is embedded, closing E4's second half.
+
+## Group 7 — Phase B: the regeneration spine (tasks 7.1, 7.2, 7.3)
+
+**7.1 — code-complete HEAD declared** (`group7-code-complete.log`): the six
+Phase-A groups landed as their own commits (e2f82d3b / 98ab8997 / 52fd84b0 /
+490beaef / caa720c3 / 1431840a), the tracked tree is clean
+(`--untracked-files=no` empty — no `+worktree` half), and the log prints the
+full porcelain beside it: the only entries are the untracked planning scope
+(the lead's artifacts for this change and the sibling change's directory),
+which are the lead's call to commit, never the implementer's.
+
+**7.2 — the regeneration trio, one generated-only delta.** At HEAD `1431840a`
+with a clean tracked tree: `generate-source-inventory.mjs` (1071 pin-side
+files; drift **34 M / 453 moved-modified / 37 moved-rewritten / 151
+moved-unmodified / 504 added / 0 deleted** — derived, method named in the log),
+`generate-sbom.mjs` (1375 npm + 80 crates at the tidied lock; D-1..D-4
+recorded+present, D-5 repaired+absent), and the reconciliation with
+`--require-added` (need-row 524 covered 524; every fork-added path listed in
+UPSTREAM.md; exit 0). Each log self-certifies `HEAD: <sha>, tree: clean
+(tracked)`. Committed as **`04c42f40` "feat(s05-provenance): regenerate
+provenance at 1431840a"** — `git show --name-only` acceptance reads exactly
+`SBOM.md, SOURCE_INVENTORY.json, SOURCE_INVENTORY.md`, generated artifacts
+only, no code file in the list.
+
+**7.3 — stability and final controls:**
+
+- **Second-run byte-stability** (`group7-stability.log`): all three generators
+  re-run at `04c42f40` with no edits between; sha256 pre==post 3/3 and the
+  tracked porcelain after the second run is empty — byte-stable.
+- **Frozen-surface byte-control** vs `5aae75ec`: **4/4 IDENTICAL**
+  (`git show <base>:<path> | cmp -s`, stat-cache-immune).
+- **30-checker family sweep** (`group7-family-sweep.log`): **30 EXIT lines,
+  24 exit-zero / 6 nonzero, the known nonzero set byte-identical**
+  (asset-manifest:2, emitted-runtime-assets:1, headless-graph:2,
+  headless-semantic-result:2, resolution-equivalence:1, type-baseline:1);
+  the family's 30th (`check-packed-manifest-closure`) green among the zero.
+- **Blob-level CRLF**: `git show HEAD:<path> | tr -dc '\r' | wc -c` = 0 for
+  all nine files the round committed (the three generated artifacts, the four
+  documentation files, PATCHES.md, bun.lock, tasks.md).
+- **`rasen validate s05-provenance-and-beta-closure --strict --project rocut
+  --json`** (`group7-validate.log`): named-item form
+  `id=s05-provenance-and-beta-closure, valid=true, issues=[]`.
+
+**Group 7 verdict:** the spine held — one delta commit whose changed-file list
+is generated artifacts only, proven byte-stable on the second run, with every
+control (frozen surfaces, family sweep, CRLF, strict validate) green in its
+known shape.

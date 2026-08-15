@@ -90,15 +90,15 @@
 
 ## 7. Phase B — the regeneration spine
 
-- [ ] 7.1 Land every Phase-A group as its own commit; declare the code-complete HEAD. Confirm a
+- [x] 7.1 Land every Phase-A group as its own commit; declare the code-complete HEAD. Confirm a
       clean tree (`git status --porcelain` empty) — Phase B's logs self-certify `HEAD: <sha>,
       tree: clean` with no `+worktree` half.
-- [ ] 7.2 Run the regeneration trio at that HEAD — `generate-source-inventory.mjs`,
+- [x] 7.2 Run the regeneration trio at that HEAD — `generate-source-inventory.mjs`,
       `generate-sbom.mjs`, and the patch/added-file reconciliation — each log self-certifying
       its revision. Commit the generated set as ONE delta commit whose changed-file list is
       generated artifacts ONLY (`git show --name-only` is the acceptance check; a code file in
       the list restarts Phase B).
-- [ ] 7.3 Stability proof and final controls: regenerate a second time with no edits in between —
+- [x] 7.3 Stability proof and final controls: regenerate a second time with no edits in between —
       byte-stable (the existing spec's scenario); drift counts reconciled by derivation with
       method named; the frozen-surface byte-control still identical; the 30-checker family sweep
       green in the known nonzero shape; blob-level CRLF over the round's files

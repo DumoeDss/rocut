@@ -1,0 +1,21 @@
+Phase B 7.1 — code-complete declaration
+HEAD: 1431840a38b353dd211be9897ad44b5b54619e96, tree: clean (tracked: git status --porcelain --untracked-files=no is empty — no +worktree half)
+
+Phase-A group commits (one per group):
+1431840a feat(s05-provenance): Group 6 — beta-closure record, README consumer obligations, UPSTREAM restatement + added-file inventory
+caa720c3 feat(s05-provenance): Group 5 — lock classic entry tidied to manifest truth; SBOM machinery pass green
+490beaef feat(s05-provenance): Group 4 — derived areas, honest rename taxonomy, reconciliation machinery + 338 derivation-backed PATCHES rows
+52fd84b0 feat(s05-provenance): Group 3 — packed-manifest closure checker (family's 30th) + controls
+98ab8997 feat(s05-provenance): Group 2 — LICENSE+NOTICE in all three packages, verified in pack output
+e2f82d3b feat(s05-provenance): Group 1 — baseline before-half + Phase-B dry-run sizing
+
+full porcelain (the only entries are the untracked planning scope — the lead's artifacts for THIS change and the sibling change's directory; committing either is the lead's call, not the implementer's):
+?? .rasen/
+?? rasen/changes/s05-community-beta-second-host/
+?? rasen/changes/s05-provenance-and-beta-closure/.openspec.yaml
+?? rasen/changes/s05-provenance-and-beta-closure/design.md
+?? rasen/changes/s05-provenance-and-beta-closure/evidence/logs/group7-code-complete.log
+?? rasen/changes/s05-provenance-and-beta-closure/proposal.md
+?? rasen/changes/s05-provenance-and-beta-closure/specs/
+
+branch: feat/s05-community-beta
