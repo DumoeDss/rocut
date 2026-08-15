@@ -275,6 +275,122 @@ paths).
   the dropped-fields defect independently, so a host author consuming either surface is
   protected.
 
+## Group 7 — Close-out: checker audit, frozen surfaces, docs, spec sweep (tasks 7.1–7.6)
+
+**7.2 — frozen-surface control (ran first; it feeds the audit).** P2's method at this change's
+base `8248a115`: `git show <base>:<path> | cmp -s` (stat-cache-immune) over the four frozen
+S03+S04 surfaces, plus `git diff --stat 8248a115..HEAD` over the five conformance suite modules.
+All four IDENTICAL, all five diff-empty — record with method and surface list in
+`evidence/frozen-signature-README.md`. No frozen signature changed; the `failed` condition never
+arose; nothing escalated. `check-port-boundary` (which pins the frozen port-contract signature
+directly) ran green in this group's sweep as independent corroboration.
+
+**7.1 — census + the checker audit.** Final census movement over the base, fully attributed:
+1078 → 1106 repo files scanned, 982 → 988 package-graph files, 359 → 361 `@opencut/*`
+specifiers, 360 → 362 cross-package edges. Per group: Group 2 +2 files (the corpus entry);
+Group 3 +4 files and both new specifiers (the contracts drift-guard test's two
+`@opencut/editor-ports` imports); Groups 5–6 +22 files = 20 code files + the two adapter
+`package.json` manifests, all under `script/` and therefore outside every package graph — their
+`@opencut` specifiers are the third-party consumer's own, deliberately uncounted. The
+checker's repo-wide no-elftia-import enumeration auto-covered every new file (its scanned-file
+count is the 1078 → 1106 leg above); both controls re-run green at close-out (negative: "every
+rule is proven able to fail"; converse: "no rule fires on a legal case" — exit 0 each).
+
+Per-checker rows for the new paths (27 checkers swept, `logs/group7-all-checkers.log`, every
+one with an `EXIT[<name>]:<code>` line — 23 zero / 6 nonzero):
+
+- `check-package-boundary` — **follows**: census above; fixtures live under `script/`, the
+  adapter's `@opencut` imports resolve through the installed tarballs in the scratch run, never
+  through the repo's package graph. Controls green.
+- `check-runtime-asset-boundary` — **follows**: scanned modules moved 835 → 838, exactly the
+  three new package source files (`vectors/corpus/index.ts`, the two `conformance/requirements`
+  modules); the `script/` fixtures are not production modules of any host and are not scanned.
+  Green, "every Host and every required asset/Worker layer are present".
+- `check-port-boundary` — **follows**: green; independently corroborates the frozen ports
+  barrel (7.2 above).
+- `check-distributable-boundary`, `check-storage-boundary`, `check-transaction-boundary`,
+  `check-reference-boundary`, the four `check-surface-*`, the three `check-wasm-*`,
+  `check-host-composition`, `check-next-imports`, `check-editor-singleton`,
+  `check-react-singleton`, both `check-session-*` — **deliberately scoped, because** their
+  domains are the package graphs and host apps: this change adds three ordinary package source
+  files (covered by the green runs above) and zero paths under `apps/` (verified:
+  `git diff --name-only 8248a115..HEAD -- apps/` is empty). Editor-singleton's scan count is
+  byte-stable at 780/40 — no new runtime or command module entered its scope.
+- `check-agent-evidence` — **follows**: green with all of this change's evidence logs present.
+
+The six nonzero exits, each dispositioned by name against P2's precedent
+(`archive/…-s05-second-host/evidence/logs/group-9-all-checkers.log`, report §9.3) — the set is
+exit-code-identical to P2's six, and every cause is verified against THIS change's facts:
+
+- `check-type-baseline` (1): the two "S01 regression" FAIL rows are byte-identical diagnostic
+  text at the same file paths and line numbers as P2's sweep (same pin `cf5e79e9` comparison) —
+  P1's move artifact. Both files are diff-empty since this change's base `8248a115` (verified),
+  so this change cannot have produced them. The checker's scope grew 935 → 941 repo files
+  (+6 = this change's new in-scope package files) and they produced zero diagnostics.
+- `check-emitted-runtime-assets` (1): Next-output red (`relative-next-static-escape` in
+  `static/media/worker.dd71b7fd.ts` — the same worker chunk hash as P2's record). The `.next`
+  tree was built 2026-08-14 12:23, ~19 h before base `8248a115`; this change never builds
+  `apps/web` and touches zero `apps/` paths. The red existed at the branch point with the same
+  bytes.
+- `check-asset-manifest` (2): the disclosed no-server attempt — no preview server at
+  `127.0.0.1:4173` (vite preview binds `[::1]` by default; the checker fetches `127.0.0.1`).
+  Same cause as P2's two exit-2 lines. This change modifies zero host/app/asset paths, so the
+  checker's input domain is byte-untouched; the last committed exit-0 evidence remains P2's
+  serve-dist stand-in (`archive/…/logs/group-5-composition-evidence.log` §[C-retry]).
+- `check-resolution-equivalence` (1): fail-closed by design — it verifies staged
+  import-specifier rewrites and exits 1 ("nothing was verified") when the staged diff contains
+  none. This change is all-additive and rewrites no specifier.
+- `check-headless-graph` / `check-headless-semantic-result` (2 each): usage-gated harnesses
+  (explicit build coordinates; two headless report JSONs). No bare form exists to sweep; P3
+  claims nothing headless.
+
+Zero new red attributable to P3: every nonzero is a pre-existing condition P2 already
+dispositioned, re-verified here against this change's base and diff.
+
+**7.3 — package suites.** `bun test` over both touched packages and the adapter's own tests,
+self-logged per leg (`logs/group7-package-tests.log`): `EXIT[ports]:0`,
+`EXIT[contracts]:0`, `EXIT[adapter]:0` (the two migration-walker tests against the real
+31-step chain, 4 expect calls, green).
+
+**7.4 — BOUNDARIES.md.** §13 closed out: the deferred "lands at close-out" sentences replaced
+by the end-to-end scratch-run record (what runs where), the three no-linking controls
+including the adapter-shaped removal re-proof, the mutation leg's executable exactness gate,
+the P6 reuse seam (`packSdkTarballs`/`SDK_PACKAGES` import; the runner's three env seams as
+the CI blueprint), the non-coverage statement (no CI leg — P6's, reusing this harness;
+registry behaviour excluded by the §4.1(a) ruling; the adapter is not a Host and claims no
+browser-manager surface beyond the Draft fixture's needs), and the final census with
+attribution.
+
+**7.6 — spec-falsification sweep.** Which governance-spec §3 groups this change advanced, and
+which it deliberately left untouched (governance spec = the Slice spec at
+`elftia/rasen/work/opencut-agent-editor-sdk/slices/05-community-beta-second-host/spec.md`):
+
+- **§3.5 advanced fully — this change is §3.5's delivery.** The five suites ran from installed
+  tarballs in a scratch project outside the monorepo with no workspace linking (§4.1(a));
+  failures read as frozen requirement → case → detail, not stack traces into our internals
+  (the requirement indices and formatters); and it is proven by doing: the worked
+  conforming-but-differently-shaped adapter (an alien flat-JSON-tuple store no Host resembles)
+  passes all five suites in-repo AND from tarballs, while the deliberately non-conforming
+  variant fails exactly its four attributable named cases.
+- **§4.1(a)'s harness obligation discharged.** The narrow reading's own cost paragraph
+  demands that packing, the `files` field, the exports map as an installer resolves it, and
+  dependency resolution from outside the monorepo be tested anyway, or "an external developer
+  can consume" degrades into "we can import our own workspace". The pack-and-install harness
+  tests exactly that chain (real `npm pack`, `file:` deps + `overrides` install, lstat +
+  lockfile copy proof, removal re-proof). Registry behaviour stays excluded, per the ruling.
+- **§3.1 re-proven, not moved.** Three entry additions, each attributed to its consumer;
+  boundary checker green over the widened census with both controls; frozen surfaces
+  byte-identical at a third base (`8248a115`).
+- **§3.4 followed.** The adapter consumes the packages only through declared entries; the
+  checker's repo-wide Elftia-absence leg green over all +28 new files.
+- **Deliberately untouched:** §3.2/§3.3 (Host legs — P2's; P3 adds no Host and moves no
+  behaviour); §3.6 (versioning and experimental labels — the labeling child's); §3.7's
+  published examples and CI execution beyond this harness (examples are the published-examples
+  child's; the CI leg is P6's, reusing `packSdkTarballs` rather than re-implementing); §3.8
+  (legal/provenance closure — the provenance child's); §3.9 (no inherited defect was patched:
+  the classic-chain loading failures are recorded as findings and escalated, and frozen-surface
+  pressure would have been returned, never applied — none arose).
+
 ## Open items
 
 - **Phantom-dep blocker (escalated to LEAD, awaiting ruling):** confirmed concretely in Group 5
@@ -282,4 +398,4 @@ paths).
   init. The adapter's migration leg records the finding and skips distinctly; the walker is
   validated against the real chain via the published mock entry. A package-side fix (declare or
   bundle the closure) is LEAD's call.
-- Groups 7–8 pending.
+- Group 7 complete (see above). Group 8 (EOL audit, staging guards, ship) remains.

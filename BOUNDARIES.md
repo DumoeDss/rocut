@@ -914,10 +914,10 @@ commit, the fix is a rewrite (or rotation), not an amended file.
 
 P3 makes the two base packages consumable by someone outside this repository: the corpus and
 contract surface reachable from declared entries, suite failures legible as frozen requirements,
-and a pack → scratch-install → run harness with no-workspace-linking controls. Full harness
-mechanics and the checker-audit rows land at this child's close-out; this section records the
-export-map growth as it happens, per the monotone-growth rule that every addition names its
-consumer.
+and a pack → scratch-install → run harness with no-workspace-linking controls. The harness
+mechanics are recorded in full below ("The scratch run, end to end"); the per-checker audit rows
+live in the change's evidence, not here. This section records the export-map growth as it
+happened, per the monotone-growth rule that every addition names its consumer.
 
 ### Entry additions (attributed)
 
@@ -978,8 +978,59 @@ deliverable P6 imports for its CI leg** — P6 must not re-implement packing.
 `script/run-scratch-conformance.mjs` is the one-process scratch lifecycle runner: E2 root
 resolution (`OPENCUT_SCRATCH_ROOT` overridable; asserts outside the repo tree and outside every
 Temp path), wipe-and-recreate with a marker (foreign roots refused), install via gate-1's proven
-npm `file:` deps + `overrides` mechanism, materialize the committed adapter template (Group 5;
-until then a loudly-labeled built-in smoke consumer), run the suites under bun, and
-`--control-removal` for E4.3. Controls E4.1 (location) and E4.2 (copy-not-link, `lstatSync` +
-lockfile `file:` resolutions) print their pass lines into every run's log. The full harness
-mechanics section lands at this child's close-out (E9 step 5).
+npm `file:` deps + `overrides` mechanism, materialize the committed adapter template, run the
+suites under bun, and `--control-removal` for E4.3.
+
+### The scratch run, end to end (close-out record)
+
+What runs where, in order, every run: the repo-side Node script resolves the scratch root
+(E:-drive sibling of the repo by default, `OPENCUT_SCRATCH_ROOT` for CI geography), asserts both
+location controls, wipes-and-recreates the root with a marker file (a pre-existing root without
+the marker is refused, never reused), packs the three tarballs through the pack module (or copies
+them from `OPENCUT_PREPACKED_DIR`), installs them with npm `file:` deps + `overrides`, asserts
+copy-not-link, materializes the committed adapter template
+(`script/fixtures/third-party-adapter`) into the scratch root, and runs it under bun
+(`OPENCUT_BUN` overridable) — every step self-logging `REAL_EXIT_CODE[<step>]`.
+
+**The three no-linking controls**, all printed into every run's log:
+
+1. **Location (E4.1)** — 1a: the root must lie outside the repo tree; 1b: outside every Temp
+   path (`TEMP`/`TMP`/`TMPDIR`/`os.tmpdir()`), the measured AV hazard. Either violation refuses
+   the run before anything is created.
+2. **Copy-not-link (E4.2)** — every installed `@opencut/*` must be a real directory
+   (`lstatSync`: not a symlink) and the lockfile must record `file:` resolutions with no
+   `workspace:` protocol and no `link: true`.
+3. **Removal re-proof (E4.3)** — `--control-removal` deletes the installed
+   `@opencut/editor-ports` copy and re-runs **the adapter runner itself** (adapter-shaped
+   re-proof, not a bare probe): its first import is `@opencut/editor-ports`, so the whole
+   consumer surface must collapse with a resolution failure. A run that still resolved was
+   reaching into the monorepo — the exact hole this control closes.
+
+**The mutation leg**: `--variant-nonconforming` materializes
+`script/fixtures/third-party-adapter-variant-nonconforming` — byte-identical to the base adapter
+except one hunk in its store's save (object payload fields other than the vendor engine's
+document key are dropped). The runner requires it to FAIL, to name the four attributable cases,
+and to fail **exactly** those four (an executable exactness gate — a fifth failing case would be
+an over-constrained suite and a finding, not a pass).
+
+**Reuse seam for P6 (the CI leg)**: import `packSdkTarballs`/`SDK_PACKAGES` from
+`script/pack-sdk-tarballs.mjs` — P6 must not re-implement packing. The runner is the CI-leg
+blueprint: its three env seams (`OPENCUT_SCRATCH_ROOT`, `OPENCUT_BUN`, `OPENCUT_PREPACKED_DIR`)
+exist so CI can drive the same lifecycle with its own geography and bun without forking the
+logic; P6 wraps or invokes it, and inherits the no-linking controls and the exactness gate
+unchanged.
+
+**Non-coverage, deliberately**: no CI step exists in P3 — §3.5 asks for executed evidence (this
+harness, with real exit codes and committed logs), and §3.7's CI execution is P6's, reusing this
+harness. Registry behaviour (npm publish, resolution from a registry) is excluded by the §4.1(a)
+narrow reading — the harness tests the packing/`files`/exports/install path only as far as `file:`
+tarballs reach. And the worked adapter is not a Host: it exercises the five conformance suites
+and the migration walker, not every Host duty — no browser-manager adapter beyond what the Draft
+fixture needs is claimed or built.
+
+**Final census (close-out)**: 1078 → 1106 repo files scanned, 982 → 988 package-graph files,
+359 → 361 `@opencut/*` specifiers, 360 → 362 cross-package edges over this change's base —
+Group 2 +2 files, Group 3 +4 files (+2 specifiers, both in the contracts drift-guard test),
+Groups 5–6 +22 files (20 code files and the two adapter `package.json` manifests, all under
+`script/`, outside every package graph — their `@opencut` specifiers are the third-party-shaped
+consumer's, deliberately not counted). Both checker controls green at close-out.

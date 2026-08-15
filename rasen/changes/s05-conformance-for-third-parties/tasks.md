@@ -114,20 +114,20 @@
 
 ## 7. Close-out: audit, documentation, controls
 
-- [ ] 7.1 Checker-audit rows for every new path (P2's standing rule): `script/pack-sdk-tarballs.mjs`,
+- [x] 7.1 Checker-audit rows for every new path (P2's standing rule): `script/pack-sdk-tarballs.mjs`,
       `script/run-scratch-conformance.mjs`, `script/fixtures/third-party-adapter/**`, the three new
       entry modules. Confirm the boundary checker's census grew over the P3 baseline (re-captured
       at group 1 with method inline) by the adapter + entry file counts; `no-elftia-import`
       auto-covers the new files (its enumeration is repo-wide — confirm its file count moved);
       every other checker that could see the new paths gets "follows" or "deliberately scoped,
       because…". Silence per checker is not acceptable.
-- [ ] 7.2 Frozen-surface control (the P2 method): `git show <base>:<path> | cmp` over the four
+- [x] 7.2 Frozen-surface control (the P2 method): `git show <base>:<path> | cmp` over the four
       frozen S03+S04 surfaces at this change's base — byte-identical. The five conformance suite
       modules are diff-empty over this change. Any pressure discovered is a `failed` finding
       returned to the contract, never a patch.
-- [ ] 7.3 Run every runnable static checker green (sweep with per-checker `EXIT[<name>]:<code>`
+- [x] 7.3 Run every runnable static checker green (sweep with per-checker `EXIT[<name>]:<code>`
       lines), and `bun test` over the touched package suites.
-- [ ] 7.4 `BOUNDARIES.md`: harness section (what runs where, the three no-linking controls, the
+- [x] 7.4 `BOUNDARIES.md`: harness section (what runs where, the three no-linking controls, the
       reuse seam for P6), the three attributed entry additions, and the non-coverage statement
       (no CI leg — P6 owns it reusing this harness; registry behaviour excluded by B1; no
       browser-manager adapter beyond the draft fixture's needs).
@@ -138,7 +138,7 @@
       `grep -c 'apps/web/src/editor/contracts' rasen/specs/transaction-automation-api/spec.md`
       and record the result — it MUST be `0`. A non-zero count means a stale reference survived
       the delta and must be fixed before the change closes.
-- [ ] 7.6 Spec-falsification sweep: name which governance-spec §3 groups this change advanced
+- [x] 7.6 Spec-falsification sweep: name which governance-spec §3 groups this change advanced
       (§3.5 fully; §4.1(a)'s harness obligation discharged) and which it left untouched, in the
       honest register prior children used.
 
