@@ -7,457 +7,1218 @@ node script/generate-source-inventory.mjs
 ```
 
 Hashes cover the **pinned upstream content** at `cf5e79e919144200294fb9fed22a222592a0aeea`, not the working
-tree, so this fingerprint stays stable while `feat/vite-portability-baseline` patches files.
+tree, so this fingerprint stays stable while this fork patches files.
 Per-file hashes live in `SOURCE_INVENTORY.json`; this file is the summary.
 
 | Area | Files | Size | Area digest (sha256) |
 | --- | ---: | ---: | --- |
-| `apps/web/src` | 691 | 2.28 MB | `6380615a0f4cbf204917e00453f4163a0aca8191d263e405e23e0c44da9e4e63` |
-| `rust` | 43 | 0.16 MB | `4501f519431f53f9eeb6160d0331d7bf552f6e69038c4f50c39db5c2596e9d32` |
+| `apps/electron-host` | 0 | 0.00 MB | `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` |
+| `apps/vite-example` | 0 | 0.00 MB | `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` |
 | `apps/web/public` | 335 | 4.71 MB | `ffd794b5fc359dceee24828814a8099a2e9dbedc416b5ace8e8daf53f5b8ab12` |
-| **Total** | **1069** | **7.15 MB** | `8ce81cbd563de44ca6d99857fa9959feaeae4eb0992656deb1c4a10b7ba168bf` |
+| `apps/web/src` | 691 | 2.28 MB | `6380615a0f4cbf204917e00453f4163a0aca8191d263e405e23e0c44da9e4e63` |
+| `examples` | 0 | 0.00 MB | `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` |
+| `packages/editor-classic` | 0 | 0.00 MB | `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` |
+| `packages/editor-contracts` | 0 | 0.00 MB | `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` |
+| `packages/editor-ports` | 0 | 0.00 MB | `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` |
+| `rust` | 43 | 0.16 MB | `4501f519431f53f9eeb6160d0331d7bf552f6e69038c4f50c39db5c2596e9d32` |
+| `script` | 2 | 0.00 MB | `1e593a895513c6b6b3478084a18b21a3022cdd6c621191c0571df25108b6061e` |
+| **Total** | **1071** | **7.15 MB** | `92caf3b6e403ac8051b88b01c9377c3c573d519988de15dbdc80a96f3c32efaf` |
 
 Digest definition: `sha256` over the concatenation of `<file sha256>  <path>\n` lines,
 sorted by path. Per-file hash: `sha256` over raw file bytes.
 
 ## Working-tree drift against the pin
 
-**205 inherited file(s) modified.** Each is expected to carry a `PATCHES.md` row.
+**34 inherited file(s) modified in place.** Each is expected to carry a `PATCHES.md` row.
 
 - `apps/web/public/browserconfig.xml`
 - `apps/web/public/manifest.json`
-- `apps/web/src/actions/components/shortcuts-dialog.tsx`
-- `apps/web/src/actions/definitions.ts`
-- `apps/web/src/actions/index.ts`
-- `apps/web/src/actions/keybinding.ts`
-- `apps/web/src/actions/keybindings-store.ts`
-- `apps/web/src/actions/registry.ts`
-- `apps/web/src/actions/use-action-handler.ts`
-- `apps/web/src/actions/use-editor-actions.ts`
-- `apps/web/src/actions/use-keybindings.ts`
-- `apps/web/src/actions/use-keyboard-shortcuts-help.ts`
+- `apps/web/src/app/base-page.tsx`
+- `apps/web/src/app/blog/[slug]/page.tsx`
+- `apps/web/src/app/blog/page.tsx`
+- `apps/web/src/app/brand/page.tsx`
+- `apps/web/src/app/changelog/page.tsx`
+- `apps/web/src/app/contributors/page.tsx`
 - `apps/web/src/app/editor/[project_id]/page.tsx`
 - `apps/web/src/app/globals.css`
+- `apps/web/src/app/layout.tsx`
 - `apps/web/src/app/metadata.ts`
+- `apps/web/src/app/privacy/page.tsx`
 - `apps/web/src/app/projects/page.tsx`
-- `apps/web/src/commands/base-command.ts`
-- `apps/web/src/commands/batch-command.ts`
-- `apps/web/src/commands/index.ts`
-- `apps/web/src/commands/media/add-media-asset.ts`
-- `apps/web/src/commands/media/remove-media-asset.ts`
-- `apps/web/src/commands/project/update-project-settings.ts`
-- `apps/web/src/commands/scene/create-scene.ts`
-- `apps/web/src/commands/scene/delete-scene.ts`
-- `apps/web/src/commands/scene/move-bookmark.ts`
-- `apps/web/src/commands/scene/remove-bookmark.ts`
-- `apps/web/src/commands/scene/rename-scene.ts`
-- `apps/web/src/commands/scene/toggle-bookmark.ts`
-- `apps/web/src/commands/scene/update-bookmark.ts`
-- `apps/web/src/commands/timeline/clipboard/paste-keyframes.ts`
-- `apps/web/src/commands/timeline/clipboard/paste.ts`
-- `apps/web/src/commands/timeline/element/delete-elements.ts`
-- `apps/web/src/commands/timeline/element/duplicate-elements.ts`
-- `apps/web/src/commands/timeline/element/effects/add-effect.ts`
-- `apps/web/src/commands/timeline/element/effects/remove-effect.ts`
-- `apps/web/src/commands/timeline/element/effects/reorder-effect.ts`
-- `apps/web/src/commands/timeline/element/effects/toggle-effect.ts`
-- `apps/web/src/commands/timeline/element/effects/update-effect-params.ts`
-- `apps/web/src/commands/timeline/element/insert-element.ts`
-- `apps/web/src/commands/timeline/element/keyframes/remove-effect-param-keyframe.ts`
-- `apps/web/src/commands/timeline/element/keyframes/remove-keyframe.ts`
-- `apps/web/src/commands/timeline/element/keyframes/retime-keyframe.ts`
-- `apps/web/src/commands/timeline/element/keyframes/update-scalar-keyframe-curve.ts`
-- `apps/web/src/commands/timeline/element/keyframes/upsert-effect-param-keyframe.ts`
-- `apps/web/src/commands/timeline/element/keyframes/upsert-keyframe.ts`
-- `apps/web/src/commands/timeline/element/masks/delete-custom-mask-points.ts`
-- `apps/web/src/commands/timeline/element/masks/insert-custom-mask-point.ts`
-- `apps/web/src/commands/timeline/element/masks/remove-mask.ts`
-- `apps/web/src/commands/timeline/element/masks/toggle-mask-inverted.ts`
-- `apps/web/src/commands/timeline/element/move-elements.ts`
-- `apps/web/src/commands/timeline/element/split-elements.ts`
-- `apps/web/src/commands/timeline/element/toggle-source-audio-separation.ts`
-- `apps/web/src/commands/timeline/element/update-elements.ts`
-- `apps/web/src/commands/timeline/track/add-track.ts`
-- `apps/web/src/commands/timeline/track/remove-track.ts`
-- `apps/web/src/commands/timeline/track/toggle-track-mute.ts`
-- `apps/web/src/commands/timeline/track/toggle-track-visibility.ts`
-- `apps/web/src/commands/timeline/tracks-snapshot.ts`
-- `apps/web/src/components/editor/editor-header.tsx`
-- `apps/web/src/components/editor/export-button.tsx`
-- `apps/web/src/components/editor/mobile-gate.tsx`
-- `apps/web/src/components/editor/onboarding.tsx`
-- `apps/web/src/components/editor/panels/assets/assets-panel-store.tsx`
-- `apps/web/src/components/editor/panels/assets/draggable-item.tsx`
-- `apps/web/src/components/editor/panels/assets/index.tsx`
-- `apps/web/src/components/editor/panels/assets/tabbar.tsx`
-- `apps/web/src/components/editor/panels/assets/views/assets.tsx`
-- `apps/web/src/components/editor/panels/assets/views/settings/background.tsx`
-- `apps/web/src/components/editor/panels/assets/views/settings/index.tsx`
-- `apps/web/src/components/editor/panels/properties/hooks/use-keyframed-param-property.ts`
-- `apps/web/src/components/editor/panels/properties/index.tsx`
-- `apps/web/src/components/editor/panels/properties/stores/properties-store.ts`
-- `apps/web/src/components/editor/scenes-view.tsx`
-- `apps/web/src/components/providers/editor-provider.tsx`
-- `apps/web/src/components/storage-provider.tsx`
-- `apps/web/src/components/ui/alert-dialog.tsx`
-- `apps/web/src/components/ui/color-picker.tsx`
-- `apps/web/src/components/ui/context-menu.tsx`
-- `apps/web/src/components/ui/dialog.tsx`
-- `apps/web/src/components/ui/dropdown-menu.tsx`
-- `apps/web/src/components/ui/font-picker.tsx`
-- `apps/web/src/components/ui/menubar.tsx`
-- `apps/web/src/components/ui/number-field.tsx`
-- `apps/web/src/components/ui/popover.tsx`
-- `apps/web/src/components/ui/select.tsx`
-- `apps/web/src/components/ui/sheet.tsx`
-- `apps/web/src/components/ui/tooltip.tsx`
-- `apps/web/src/components/ui/use-overlay-open-change.ts`
-- `apps/web/src/core/index.ts`
-- `apps/web/src/core/managers/audio-manager.ts`
-- `apps/web/src/core/managers/commands.ts`
-- `apps/web/src/core/managers/media-manager.ts`
-- `apps/web/src/core/managers/playback-manager.ts`
-- `apps/web/src/core/managers/project-manager.ts`
-- `apps/web/src/core/managers/renderer-manager.ts`
-- `apps/web/src/core/managers/save-manager.ts`
-- `apps/web/src/core/managers/scenes-manager.ts`
-- `apps/web/src/core/managers/timeline-manager.ts`
-- `apps/web/src/editor/cancel-interaction.ts`
-- `apps/web/src/editor/editor-store.ts`
-- `apps/web/src/editor/panel-store.ts`
-- `apps/web/src/editor/use-editor.ts`
-- `apps/web/src/editor/use-menu-preview.ts`
-- `apps/web/src/effects/components/assets-view.tsx`
-- `apps/web/src/effects/components/effects-tab.tsx`
-- `apps/web/src/effects/definitions/index.ts`
-- `apps/web/src/export/index.ts`
-- `apps/web/src/feedback/components/feedback-popover.tsx`
-- `apps/web/src/fonts/google-fonts.ts`
-- `apps/web/src/fonts/use-font-atlas.ts`
-- `apps/web/src/graphics/components/graphic-tab.tsx`
-- `apps/web/src/graphics/definitions/index.ts`
-- `apps/web/src/graphics/index.ts`
-- `apps/web/src/guides/definitions/grid.tsx`
-- `apps/web/src/guides/definitions/platforms.tsx`
-- `apps/web/src/hooks/use-raf-loop.ts`
-- `apps/web/src/masks/builtin/definitions/index.ts`
-- `apps/web/src/masks/components/masks-tab.tsx`
-- `apps/web/src/masks/use-mask-handles.ts`
-- `apps/web/src/media/audio.ts`
-- `apps/web/src/media/mediabunny.ts`
-- `apps/web/src/media/processing.ts`
-- `apps/web/src/media/types.ts`
-- `apps/web/src/media/upload-toast.ts`
-- `apps/web/src/media/use-file-upload.ts`
-- `apps/web/src/media/use-paste-media.ts`
-- `apps/web/src/params/registry.ts`
-- `apps/web/src/preview/components/context-menu.tsx`
-- `apps/web/src/preview/components/guide-popover.tsx`
-- `apps/web/src/preview/components/index.tsx`
-- `apps/web/src/preview/components/preview-interaction-overlay.tsx`
-- `apps/web/src/preview/components/text-edit-overlay.tsx`
-- `apps/web/src/preview/components/toolbar.tsx`
-- `apps/web/src/preview/hooks/use-preview-interaction.ts`
-- `apps/web/src/preview/hooks/use-transform-handles.ts`
-- `apps/web/src/preview/preview-store.ts`
-- `apps/web/src/project/components/migration-dialog.tsx`
-- `apps/web/src/retime/audio-stretch.ts`
-- `apps/web/src/selection/hooks/use-box-select.ts`
-- `apps/web/src/selection/selectable-surface.tsx`
-- `apps/web/src/services/renderer/canvas-renderer.ts`
-- `apps/web/src/services/renderer/compositor/wasm-compositor.ts`
-- `apps/web/src/services/renderer/effect-preview.ts`
-- `apps/web/src/services/renderer/gpu-renderer.ts`
-- `apps/web/src/services/renderer/nodes/sticker-node.ts`
-- `apps/web/src/services/renderer/resolve.ts`
-- `apps/web/src/services/renderer/scene-builder.ts`
-- `apps/web/src/services/renderer/scene-exporter.ts`
-- `apps/web/src/services/storage/indexeddb-adapter.ts`
-- `apps/web/src/services/storage/migrations/base.ts`
-- `apps/web/src/services/storage/migrations/runner.ts`
-- `apps/web/src/services/storage/migrations/transformers/v1-to-v2.ts`
-- `apps/web/src/services/storage/migrations/v1-to-v2.ts`
-- `apps/web/src/services/storage/service.ts`
-- `apps/web/src/services/transcription/service.ts`
-- `apps/web/src/services/video-cache/service.ts`
-- `apps/web/src/services/waveform-cache/service.ts`
-- `apps/web/src/sounds/components/assets-view.tsx`
-- `apps/web/src/sounds/sounds-store.ts`
-- `apps/web/src/sounds/use-sound-search.ts`
-- `apps/web/src/speed/components/speed-tab.tsx`
-- `apps/web/src/stickers/components/assets-view.tsx`
-- `apps/web/src/stickers/index.ts`
-- `apps/web/src/stickers/providers/flags.ts`
-- `apps/web/src/stickers/providers/index.ts`
-- `apps/web/src/stickers/resolver.ts`
-- `apps/web/src/stickers/stickers-store.ts`
-- `apps/web/src/stickers/types.ts`
-- `apps/web/src/subtitles/components/assets-view.tsx`
-- `apps/web/src/text/components/assets-view.tsx`
-- `apps/web/src/timeline/bookmarks/components/bookmarks.tsx`
-- `apps/web/src/timeline/bookmarks/hooks/use-bookmark-drag.ts`
-- `apps/web/src/timeline/components/audio-volume-line.tsx`
-- `apps/web/src/timeline/components/audio-waveform.tsx`
-- `apps/web/src/timeline/components/graph-editor/custom-presets-store.ts`
-- `apps/web/src/timeline/components/graph-editor/popover.tsx`
-- `apps/web/src/timeline/components/graph-editor/use-controller.ts`
-- `apps/web/src/timeline/components/index.tsx`
-- `apps/web/src/timeline/components/timeline-element.tsx`
-- `apps/web/src/timeline/components/timeline-playhead.tsx`
-- `apps/web/src/timeline/components/timeline-toolbar.tsx`
-- `apps/web/src/timeline/controllers/drag-drop-controller.ts`
-- `apps/web/src/timeline/controllers/element-interaction-controller.ts`
-- `apps/web/src/timeline/controllers/keyframe-drag-controller.ts`
-- `apps/web/src/timeline/controllers/playhead-controller.ts`
-- `apps/web/src/timeline/controllers/resize-controller.ts`
-- `apps/web/src/timeline/controllers/zoom-controller.ts`
-- `apps/web/src/timeline/hooks/element/use-element-interaction.ts`
-- `apps/web/src/timeline/hooks/element/use-element-selection.ts`
-- `apps/web/src/timeline/hooks/element/use-keyframe-drag.ts`
-- `apps/web/src/timeline/hooks/element/use-keyframe-selection.ts`
-- `apps/web/src/timeline/hooks/use-edge-auto-scroll.ts`
-- `apps/web/src/timeline/hooks/use-element-preview.ts`
-- `apps/web/src/timeline/hooks/use-scroll-position.ts`
-- `apps/web/src/timeline/hooks/use-timeline-drag-drop.ts`
-- `apps/web/src/timeline/hooks/use-timeline-playhead.ts`
-- `apps/web/src/timeline/hooks/use-timeline-resize.ts`
-- `apps/web/src/timeline/hooks/use-timeline-seek.ts`
-- `apps/web/src/timeline/hooks/use-timeline-zoom.ts`
-- `apps/web/src/timeline/timeline-store.ts`
-- `apps/web/src/utils/browser.ts`
+- `apps/web/src/app/projects/store.ts`
+- `apps/web/src/app/roadmap/page.tsx`
+- `apps/web/src/app/sponsors/page.tsx`
+- `apps/web/src/app/terms/page.tsx`
+- `apps/web/src/changelog/components/changelog-notification.tsx`
+- `apps/web/src/changelog/components/copy-markdown-button.tsx`
+- `apps/web/src/changelog/components/release.tsx`
+- `apps/web/src/components/footer.tsx`
+- `apps/web/src/components/gitHub-contribute-section.tsx`
+- `apps/web/src/components/header.tsx`
+- `apps/web/src/components/landing/hero.tsx`
+- `apps/web/src/feedback/index.ts`
+- `apps/web/src/feedback/queries.ts`
+- `apps/web/src/project/components/project-info-dialog.tsx`
+- `apps/web/src/services/storage/components/storage-persistence-dialog.tsx`
+- `apps/web/src/site/external-tools.ts`
 - `rust/wasm/README.md`
 - `rust/wasm/src/compositor.rs`
 - `rust/wasm/src/gpu.rs`
 - `rust/wasm/src/wasm.rs`
 
-**229 file(s) added by this fork.** These are **not** patches and must **not** appear in `PATCHES.md`, which logs modifications to inherited files only.
+**453 inherited file(s) moved WITH changes against the pin** (the P1 extraction, plus accumulated edits — similarity `R<100`). A moved file with changed bytes is drift, not an addition: each is expected to carry a `PATCHES.md` row keyed by its upstream path.
 
+- `apps/web/src/actions/components/shortcuts-dialog.tsx` → `packages/editor-classic/src/actions/components/shortcuts-dialog.tsx` (R092)
+- `apps/web/src/actions/definitions.ts` → `packages/editor-classic/src/actions/definitions.ts` (R068)
+- `apps/web/src/actions/index.ts` → `packages/editor-classic/src/actions/index.ts` (R072)
+- `apps/web/src/actions/keybindings/migrations/v2-to-v3.ts` → `packages/editor-classic/src/actions/keybindings/migrations/v2-to-v3.ts` (R096)
+- `apps/web/src/actions/keybindings/migrations/v3-to-v4.ts` → `packages/editor-classic/src/actions/keybindings/migrations/v3-to-v4.ts` (R096)
+- `apps/web/src/actions/keybindings/migrations/v4-to-v5.ts` → `packages/editor-classic/src/actions/keybindings/migrations/v4-to-v5.ts` (R096)
+- `apps/web/src/actions/keybindings/migrations/v5-to-v6.ts` → `packages/editor-classic/src/actions/keybindings/migrations/v5-to-v6.ts` (R096)
+- `apps/web/src/actions/keybindings/persistence.ts` → `packages/editor-classic/src/actions/keybindings/persistence.ts` (R093)
+- `apps/web/src/actions/use-action-handler.ts` → `packages/editor-classic/src/actions/use-action-handler.ts` (R070)
+- `apps/web/src/actions/use-editor-actions.ts` → `packages/editor-classic/src/actions/use-editor-actions.ts` (R079)
+- `apps/web/src/actions/use-keybindings.ts` → `packages/editor-classic/src/actions/use-keybindings.ts` (R059)
+- `apps/web/src/actions/use-keyboard-shortcuts-help.ts` → `packages/editor-classic/src/actions/use-keyboard-shortcuts-help.ts` (R091)
+- `apps/web/src/animation/__tests__/animated-params.test.ts` → `packages/editor-classic/src/animation/__tests__/animated-params.test.ts` (R099)
+- `apps/web/src/animation/bezier.ts` → `packages/editor-classic/src/animation/bezier.ts` (R096)
+- `apps/web/src/animation/channel-data.ts` → `packages/editor-classic/src/animation/channel-data.ts` (R097)
+- `apps/web/src/animation/curve-bridge.ts` → `packages/editor-classic/src/animation/curve-bridge.ts` (R096)
+- `apps/web/src/animation/effect-param-channel.ts` → `packages/editor-classic/src/animation/effect-param-channel.ts` (R097)
+- `apps/web/src/animation/graph-channels.ts` → `packages/editor-classic/src/animation/graph-channels.ts` (R097)
+- `apps/web/src/animation/graphic-param-channel.ts` → `packages/editor-classic/src/animation/graphic-param-channel.ts` (R094)
+- `apps/web/src/animation/interpolation.ts` → `packages/editor-classic/src/animation/interpolation.ts` (R098)
+- `apps/web/src/animation/keyframe-query.ts` → `packages/editor-classic/src/animation/keyframe-query.ts` (R098)
+- `apps/web/src/animation/keyframes.ts` → `packages/editor-classic/src/animation/keyframes.ts` (R099)
+- `apps/web/src/animation/path.ts` → `packages/editor-classic/src/animation/path.ts` (R089)
+- `apps/web/src/animation/property-groups.ts` → `packages/editor-classic/src/animation/property-groups.ts` (R087)
+- `apps/web/src/animation/resolve.ts` → `packages/editor-classic/src/animation/resolve.ts` (R096)
+- `apps/web/src/animation/types.ts` → `packages/editor-classic/src/animation/types.ts` (R097)
+- `apps/web/src/canvas/sizes.ts` → `packages/editor-classic/src/canvas/sizes.ts` (R083)
+- `apps/web/src/changelog/entries/0.1.0.md` → `packages/editor-classic/src/changelog/entries/0.1.0.md` (R098)
+- `apps/web/src/clipboard/handlers/elements.ts` → `packages/editor-classic/src/clipboard/handlers/elements.ts` (R094)
+- `apps/web/src/clipboard/handlers/keyframes.ts` → `packages/editor-classic/src/clipboard/handlers/keyframes.ts` (R088)
+- `apps/web/src/clipboard/types.ts` → `packages/editor-classic/src/clipboard/types.ts` (R087)
+- `apps/web/src/commands/batch-command.ts` → `packages/editor-classic/src/commands/batch-command.ts` (R055)
+- `apps/web/src/commands/index.ts` → `packages/editor-classic/src/commands/index.ts` (R055)
+- `apps/web/src/commands/project/update-project-settings.ts` → `packages/editor-classic/src/commands/project/update-project-settings.ts` (R067)
+- `apps/web/src/commands/scene/create-scene.ts` → `packages/editor-classic/src/commands/scene/create-scene.ts` (R060)
+- `apps/web/src/commands/scene/delete-scene.ts` → `packages/editor-classic/src/commands/scene/delete-scene.ts` (R076)
+- `apps/web/src/commands/scene/move-bookmark.ts` → `packages/editor-classic/src/commands/scene/move-bookmark.ts` (R070)
+- `apps/web/src/commands/scene/remove-bookmark.ts` → `packages/editor-classic/src/commands/scene/remove-bookmark.ts` (R070)
+- `apps/web/src/commands/scene/rename-scene.ts` → `packages/editor-classic/src/commands/scene/rename-scene.ts` (R065)
+- `apps/web/src/commands/scene/toggle-bookmark.ts` → `packages/editor-classic/src/commands/scene/toggle-bookmark.ts` (R068)
+- `apps/web/src/commands/scene/update-bookmark.ts` → `packages/editor-classic/src/commands/scene/update-bookmark.ts` (R071)
+- `apps/web/src/commands/timeline/clipboard/paste-keyframes.ts` → `packages/editor-classic/src/commands/timeline/clipboard/paste-keyframes.ts` (R081)
+- `apps/web/src/commands/timeline/clipboard/paste.ts` → `packages/editor-classic/src/commands/timeline/clipboard/paste.ts` (R090)
+- `apps/web/src/commands/timeline/element/delete-elements.ts` → `packages/editor-classic/src/commands/timeline/element/delete-elements.ts` (R079)
+- `apps/web/src/commands/timeline/element/duplicate-elements.ts` → `packages/editor-classic/src/commands/timeline/element/duplicate-elements.ts` (R083)
+- `apps/web/src/commands/timeline/element/effects/add-effect.ts` → `packages/editor-classic/src/commands/timeline/element/effects/add-effect.ts` (R062)
+- `apps/web/src/commands/timeline/element/effects/remove-effect.ts` → `packages/editor-classic/src/commands/timeline/element/effects/remove-effect.ts` (R060)
+- `apps/web/src/commands/timeline/element/effects/reorder-effect.ts` → `packages/editor-classic/src/commands/timeline/element/effects/reorder-effect.ts` (R061)
+- `apps/web/src/commands/timeline/element/effects/toggle-effect.ts` → `packages/editor-classic/src/commands/timeline/element/effects/toggle-effect.ts` (R061)
+- `apps/web/src/commands/timeline/element/effects/update-effect-params.ts` → `packages/editor-classic/src/commands/timeline/element/effects/update-effect-params.ts` (R072)
+- `apps/web/src/commands/timeline/element/insert-element.ts` → `packages/editor-classic/src/commands/timeline/element/insert-element.ts` (R089)
+- `apps/web/src/commands/timeline/element/keyframes/remove-effect-param-keyframe.ts` → `packages/editor-classic/src/commands/timeline/element/keyframes/remove-effect-param-keyframe.ts` (R070)
+- `apps/web/src/commands/timeline/element/keyframes/remove-keyframe.ts` → `packages/editor-classic/src/commands/timeline/element/keyframes/remove-keyframe.ts` (R076)
+- `apps/web/src/commands/timeline/element/keyframes/retime-keyframe.ts` → `packages/editor-classic/src/commands/timeline/element/keyframes/retime-keyframe.ts` (R071)
+- `apps/web/src/commands/timeline/element/keyframes/update-scalar-keyframe-curve.ts` → `packages/editor-classic/src/commands/timeline/element/keyframes/update-scalar-keyframe-curve.ts` (R074)
+- `apps/web/src/commands/timeline/element/keyframes/upsert-effect-param-keyframe.ts` → `packages/editor-classic/src/commands/timeline/element/keyframes/upsert-effect-param-keyframe.ts` (R075)
+- `apps/web/src/commands/timeline/element/keyframes/upsert-keyframe.ts` → `packages/editor-classic/src/commands/timeline/element/keyframes/upsert-keyframe.ts` (R074)
+- `apps/web/src/commands/timeline/element/masks/delete-custom-mask-points.ts` → `packages/editor-classic/src/commands/timeline/element/masks/delete-custom-mask-points.ts` (R082)
+- `apps/web/src/commands/timeline/element/masks/insert-custom-mask-point.ts` → `packages/editor-classic/src/commands/timeline/element/masks/insert-custom-mask-point.ts` (R083)
+- `apps/web/src/commands/timeline/element/masks/remove-mask.ts` → `packages/editor-classic/src/commands/timeline/element/masks/remove-mask.ts` (R074)
+- `apps/web/src/commands/timeline/element/masks/toggle-mask-inverted.ts` → `packages/editor-classic/src/commands/timeline/element/masks/toggle-mask-inverted.ts` (R075)
+- `apps/web/src/commands/timeline/element/move-elements.ts` → `packages/editor-classic/src/commands/timeline/element/move-elements.ts` (R091)
+- `apps/web/src/commands/timeline/element/split-elements.ts` → `packages/editor-classic/src/commands/timeline/element/split-elements.ts` (R090)
+- `apps/web/src/commands/timeline/element/toggle-source-audio-separation.ts` → `packages/editor-classic/src/commands/timeline/element/toggle-source-audio-separation.ts` (R083)
+- `apps/web/src/commands/timeline/element/update-elements.ts` → `packages/editor-classic/src/commands/timeline/element/update-elements.ts` (R064)
+- `apps/web/src/commands/timeline/track/add-track.ts` → `packages/editor-classic/src/commands/timeline/track/add-track.ts` (R082)
+- `apps/web/src/commands/timeline/track/remove-track.ts` → `packages/editor-classic/src/commands/timeline/track/remove-track.ts` (R055)
+- `apps/web/src/commands/timeline/track/toggle-track-mute.ts` → `packages/editor-classic/src/commands/timeline/track/toggle-track-mute.ts` (R061)
+- `apps/web/src/commands/timeline/track/toggle-track-visibility.ts` → `packages/editor-classic/src/commands/timeline/track/toggle-track-visibility.ts` (R063)
+- `apps/web/src/components/editable-timecode.tsx` → `packages/editor-classic/src/components/editable-timecode.tsx` (R098)
+- `apps/web/src/components/editor/editor-header.tsx` → `packages/editor-classic/src/components/editor/editor-header.tsx` (R079)
+- `apps/web/src/components/editor/export-button.tsx` → `packages/editor-classic/src/components/editor/export-button.tsx` (R090)
+- `apps/web/src/components/editor/mobile-gate.tsx` → `packages/editor-classic/src/components/editor/mobile-gate.tsx` (R080)
+- `apps/web/src/components/editor/onboarding.tsx` → `packages/editor-classic/src/components/editor/onboarding.tsx` (R090)
+- `apps/web/src/components/editor/panels/assets/assets-panel-store.tsx` → `packages/editor-classic/src/components/editor/panels/assets/assets-panel-store.tsx` (R071)
+- `apps/web/src/components/editor/panels/assets/drag-overlay.tsx` → `packages/editor-classic/src/components/editor/panels/assets/drag-overlay.tsx` (R096)
+- `apps/web/src/components/editor/panels/assets/draggable-item.tsx` → `packages/editor-classic/src/components/editor/panels/assets/draggable-item.tsx` (R084)
+- `apps/web/src/components/editor/panels/assets/index.tsx` → `packages/editor-classic/src/components/editor/panels/assets/index.tsx` (R064)
+- `apps/web/src/components/editor/panels/assets/tabbar.tsx` → `packages/editor-classic/src/components/editor/panels/assets/tabbar.tsx` (R090)
+- `apps/web/src/components/editor/panels/assets/views/assets.tsx` → `packages/editor-classic/src/components/editor/panels/assets/views/assets.tsx` (R089)
+- `apps/web/src/components/editor/panels/assets/views/base-panel.tsx` → `packages/editor-classic/src/components/editor/panels/assets/views/base-panel.tsx` (R093)
+- `apps/web/src/components/editor/panels/assets/views/settings/background.tsx` → `packages/editor-classic/src/components/editor/panels/assets/views/settings/background.tsx` (R078)
+- `apps/web/src/components/editor/panels/assets/views/settings/index.tsx` → `packages/editor-classic/src/components/editor/panels/assets/views/settings/index.tsx` (R079)
+- `apps/web/src/components/editor/panels/properties/components/element-params-tab.tsx` → `packages/editor-classic/src/components/editor/panels/properties/components/element-params-tab.tsx` (R082)
+- `apps/web/src/components/editor/panels/properties/components/keyframe-toggle.tsx` → `packages/editor-classic/src/components/editor/panels/properties/components/keyframe-toggle.tsx` (R083)
+- `apps/web/src/components/editor/panels/properties/components/property-param-field.tsx` → `packages/editor-classic/src/components/editor/panels/properties/components/property-param-field.tsx` (R092)
+- `apps/web/src/components/editor/panels/properties/empty-view.tsx` → `packages/editor-classic/src/components/editor/panels/properties/empty-view.tsx` (R096)
+- `apps/web/src/components/editor/panels/properties/hooks/use-element-playhead.ts` → `packages/editor-classic/src/components/editor/panels/properties/hooks/use-element-playhead.ts` (R072)
+- `apps/web/src/components/editor/panels/properties/hooks/use-keyframed-param-property.ts` → `packages/editor-classic/src/components/editor/panels/properties/hooks/use-keyframed-param-property.ts` (R088)
+- `apps/web/src/components/editor/panels/properties/hooks/use-property-draft.ts` → `packages/editor-classic/src/components/editor/panels/properties/hooks/use-property-draft.ts` (R093)
+- `apps/web/src/components/editor/panels/properties/index.tsx` → `packages/editor-classic/src/components/editor/panels/properties/index.tsx` (R073)
+- `apps/web/src/components/editor/panels/properties/registry.tsx` → `packages/editor-classic/src/components/editor/panels/properties/registry.tsx` (R094)
+- `apps/web/src/components/editor/scenes-view.tsx` → `packages/editor-classic/src/components/editor/scenes-view.tsx` (R089)
+- `apps/web/src/components/icons/ui.tsx` → `packages/editor-classic/src/components/icons/ui.tsx` (R098)
+- `apps/web/src/components/providers/editor-provider.tsx` → `packages/editor-classic/src/components/providers/editor-provider.tsx` (R057)
+- `apps/web/src/components/section.tsx` → `packages/editor-classic/src/components/section.tsx` (R093)
+- `apps/web/src/components/theme-toggle.tsx` → `packages/editor-classic/src/components/theme-toggle.tsx` (R092)
+- `apps/web/src/components/ui/accordion.tsx` → `packages/editor-classic/src/components/ui/accordion.tsx` (R095)
+- `apps/web/src/components/ui/alert-dialog.tsx` → `packages/editor-classic/src/components/ui/alert-dialog.tsx` (R092)
+- `apps/web/src/components/ui/alert.tsx` → `packages/editor-classic/src/components/ui/alert.tsx` (R094)
+- `apps/web/src/components/ui/avatar.tsx` → `packages/editor-classic/src/components/ui/avatar.tsx` (R094)
+- `apps/web/src/components/ui/badge.tsx` → `packages/editor-classic/src/components/ui/badge.tsx` (R096)
+- `apps/web/src/components/ui/breadcrumb.tsx` → `packages/editor-classic/src/components/ui/breadcrumb.tsx` (R093)
+- `apps/web/src/components/ui/button.tsx` → `packages/editor-classic/src/components/ui/button.tsx` (R095)
+- `apps/web/src/components/ui/calendar.tsx` → `packages/editor-classic/src/components/ui/calendar.tsx` (R096)
+- `apps/web/src/components/ui/card.tsx` → `packages/editor-classic/src/components/ui/card.tsx` (R097)
+- `apps/web/src/components/ui/checkbox.tsx` → `packages/editor-classic/src/components/ui/checkbox.tsx` (R094)
+- `apps/web/src/components/ui/color-picker.tsx` → `packages/editor-classic/src/components/ui/color-picker.tsx` (R091)
+- `apps/web/src/components/ui/context-menu.tsx` → `packages/editor-classic/src/components/ui/context-menu.tsx` (R094)
+- `apps/web/src/components/ui/dialog.tsx` → `packages/editor-classic/src/components/ui/dialog.tsx` (R086)
+- `apps/web/src/components/ui/dropdown-menu.tsx` → `packages/editor-classic/src/components/ui/dropdown-menu.tsx` (R095)
+- `apps/web/src/components/ui/font-picker.tsx` → `packages/editor-classic/src/components/ui/font-picker.tsx` (R089)
+- `apps/web/src/components/ui/form.tsx` → `packages/editor-classic/src/components/ui/form.tsx` (R099)
+- `apps/web/src/components/ui/hover-card.tsx` → `packages/editor-classic/src/components/ui/hover-card.tsx` (R096)
+- `apps/web/src/components/ui/input.tsx` → `packages/editor-classic/src/components/ui/input.tsx` (R095)
+- `apps/web/src/components/ui/label.tsx` → `packages/editor-classic/src/components/ui/label.tsx` (R095)
+- `apps/web/src/components/ui/menubar.tsx` → `packages/editor-classic/src/components/ui/menubar.tsx` (R095)
+- `apps/web/src/components/ui/navigation-menu.tsx` → `packages/editor-classic/src/components/ui/navigation-menu.tsx` (R099)
+- `apps/web/src/components/ui/number-field.tsx` → `packages/editor-classic/src/components/ui/number-field.tsx` (R078)
+- `apps/web/src/components/ui/popover.tsx` → `packages/editor-classic/src/components/ui/popover.tsx` (R076)
+- `apps/web/src/components/ui/progress.tsx` → `packages/editor-classic/src/components/ui/progress.tsx` (R095)
+- `apps/web/src/components/ui/prose.tsx` → `packages/editor-classic/src/components/ui/prose.tsx` (R094)
+- `apps/web/src/components/ui/radio-group.tsx` → `packages/editor-classic/src/components/ui/radio-group.tsx` (R097)
+- `apps/web/src/components/ui/react-markdown-wrapper.tsx` → `packages/editor-classic/src/components/ui/react-markdown-wrapper.tsx` (R097)
+- `apps/web/src/components/ui/resizable.tsx` → `packages/editor-classic/src/components/ui/resizable.tsx` (R097)
+- `apps/web/src/components/ui/scroll-area.tsx` → `packages/editor-classic/src/components/ui/scroll-area.tsx` (R090)
+- `apps/web/src/components/ui/select.tsx` → `packages/editor-classic/src/components/ui/select.tsx` (R094)
+- `apps/web/src/components/ui/separator.tsx` → `packages/editor-classic/src/components/ui/separator.tsx` (R094)
+- `apps/web/src/components/ui/sheet.tsx` → `packages/editor-classic/src/components/ui/sheet.tsx` (R091)
+- `apps/web/src/components/ui/skeleton.tsx` → `packages/editor-classic/src/components/ui/skeleton.tsx` (R085)
+- `apps/web/src/components/ui/slider.tsx` → `packages/editor-classic/src/components/ui/slider.tsx` (R094)
+- `apps/web/src/components/ui/sonner.tsx` → `packages/editor-classic/src/components/ui/sonner.tsx` (R096)
+- `apps/web/src/components/ui/spinner.tsx` → `packages/editor-classic/src/components/ui/spinner.tsx` (R088)
+- `apps/web/src/components/ui/split-button.tsx` → `packages/editor-classic/src/components/ui/split-button.tsx` (R090)
+- `apps/web/src/components/ui/switch.tsx` → `packages/editor-classic/src/components/ui/switch.tsx` (R096)
+- `apps/web/src/components/ui/table.tsx` → `packages/editor-classic/src/components/ui/table.tsx` (R098)
+- `apps/web/src/components/ui/tabs.tsx` → `packages/editor-classic/src/components/ui/tabs.tsx` (R096)
+- `apps/web/src/components/ui/textarea.tsx` → `packages/editor-classic/src/components/ui/textarea.tsx` (R093)
+- `apps/web/src/components/ui/toast.tsx` → `packages/editor-classic/src/components/ui/toast.tsx` (R099)
+- `apps/web/src/components/ui/toggle-group.tsx` → `packages/editor-classic/src/components/ui/toggle-group.tsx` (R097)
+- `apps/web/src/components/ui/toggle.tsx` → `packages/editor-classic/src/components/ui/toggle.tsx` (R097)
+- `apps/web/src/components/ui/tooltip.tsx` → `packages/editor-classic/src/components/ui/tooltip.tsx` (R066)
+- `apps/web/src/components/ui/use-overlay-open-change.ts` → `packages/editor-classic/src/components/ui/use-overlay-open-change.ts` (R068)
+- `apps/web/src/core/managers/audio-manager.ts` → `packages/editor-classic/src/core/managers/audio-manager.ts` (R083)
+- `apps/web/src/core/managers/clipboard-manager.ts` → `packages/editor-classic/src/core/managers/clipboard-manager.ts` (R093)
+- `apps/web/src/core/managers/diagnostics-manager.ts` → `packages/editor-classic/src/core/managers/diagnostics-manager.ts` (R089)
+- `apps/web/src/core/managers/playback-manager.ts` → `packages/editor-classic/src/core/managers/playback-manager.ts` (R078)
+- `apps/web/src/core/managers/project-manager.ts` → `packages/editor-classic/src/core/managers/project-manager.ts` (R066)
+- `apps/web/src/core/managers/scenes-manager.ts` → `packages/editor-classic/src/core/managers/scenes-manager.ts` (R082)
+- `apps/web/src/core/managers/selection-manager.ts` → `packages/editor-classic/src/core/managers/selection-manager.ts` (R095)
+- `apps/web/src/core/managers/timeline-manager.ts` → `packages/editor-classic/src/core/managers/timeline-manager.ts` (R088)
+- `apps/web/src/editor/use-editor.ts` → `packages/editor-classic/src/editor/use-editor.ts` (R061)
+- `apps/web/src/editor/use-menu-preview.ts` → `packages/editor-classic/src/editor/use-menu-preview.ts` (R082)
+- `apps/web/src/effects/components/assets-view.tsx` → `packages/editor-classic/src/effects/components/assets-view.tsx` (R061)
+- `apps/web/src/effects/components/effects-tab.tsx` → `packages/editor-classic/src/effects/components/effects-tab.tsx` (R090)
+- `apps/web/src/effects/definitions/blur.ts` → `packages/editor-classic/src/effects/definitions/blur.ts` (R097)
+- `apps/web/src/effects/definitions/index.ts` → `packages/editor-classic/src/effects/definitions/index.ts` (R069)
+- `apps/web/src/effects/index.ts` → `packages/editor-classic/src/effects/index.ts` (R078)
+- `apps/web/src/effects/registry.ts` → `packages/editor-classic/src/effects/registry.ts` (R059)
+- `apps/web/src/effects/types.ts` → `packages/editor-classic/src/effects/types.ts` (R092)
+- `apps/web/src/export/index.ts` → `packages/editor-classic/src/export/index.ts` (R066)
+- `apps/web/src/feedback/components/feedback-popover.tsx` → `packages/editor-classic/src/feedback/components/feedback-popover.tsx` (R092)
+- `apps/web/src/fonts/types.ts` → `packages/editor-classic/src/fonts/types.ts` (R094)
+- `apps/web/src/fonts/use-font-atlas.ts` → `packages/editor-classic/src/fonts/use-font-atlas.ts` (R059)
+- `apps/web/src/fps/__tests__/fps.test.ts` → `packages/editor-classic/src/fps/__tests__/fps.test.ts` (R098)
+- `apps/web/src/fps/utils.ts` → `packages/editor-classic/src/fps/utils.ts` (R098)
+- `apps/web/src/gradients/parser.ts` → `packages/editor-classic/src/gradients/parser.ts` (R095)
+- `apps/web/src/graphics/components/graphic-tab.tsx` → `packages/editor-classic/src/graphics/components/graphic-tab.tsx` (R085)
+- `apps/web/src/graphics/definitions/ellipse.ts` → `packages/editor-classic/src/graphics/definitions/ellipse.ts` (R093)
+- `apps/web/src/graphics/definitions/index.ts` → `packages/editor-classic/src/graphics/definitions/index.ts` (R083)
+- `apps/web/src/graphics/definitions/polygon.ts` → `packages/editor-classic/src/graphics/definitions/polygon.ts` (R094)
+- `apps/web/src/graphics/definitions/rectangle.ts` → `packages/editor-classic/src/graphics/definitions/rectangle.ts` (R093)
+- `apps/web/src/graphics/definitions/shared.ts` → `packages/editor-classic/src/graphics/definitions/shared.ts` (R085)
+- `apps/web/src/graphics/definitions/star.ts` → `packages/editor-classic/src/graphics/definitions/star.ts` (R093)
+- `apps/web/src/graphics/index.ts` → `packages/editor-classic/src/graphics/index.ts` (R076)
+- `apps/web/src/graphics/registry.ts` → `packages/editor-classic/src/graphics/registry.ts` (R078)
+- `apps/web/src/graphics/stroke.ts` → `packages/editor-classic/src/graphics/stroke.ts` (R094)
+- `apps/web/src/graphics/types.ts` → `packages/editor-classic/src/graphics/types.ts` (R084)
+- `apps/web/src/guides/definitions/custom.tsx` → `packages/editor-classic/src/guides/definitions/custom.tsx` (R083)
+- `apps/web/src/guides/definitions/grid.tsx` → `packages/editor-classic/src/guides/definitions/grid.tsx` (R089)
+- `apps/web/src/guides/definitions/platforms.tsx` → `packages/editor-classic/src/guides/definitions/platforms.tsx` (R088)
+- `apps/web/src/guides/definitions/tiktok-layout.tsx` → `packages/editor-classic/src/guides/definitions/tiktok-layout.tsx` (R099)
+- `apps/web/src/guides/index.ts` → `packages/editor-classic/src/guides/index.ts` (R088)
+- `apps/web/src/guides/preview-overlay.tsx` → `packages/editor-classic/src/guides/preview-overlay.tsx` (R088)
+- `apps/web/src/guides/registry.tsx` → `packages/editor-classic/src/guides/registry.tsx` (R080)
+- `apps/web/src/guides/types.ts` → `packages/editor-classic/src/guides/types.ts` (R095)
+- `apps/web/src/hooks/use-focus-lock.ts` → `packages/editor-classic/src/hooks/use-focus-lock.ts` (R093)
+- `apps/web/src/hooks/use-infinite-scroll.ts` → `packages/editor-classic/src/hooks/use-infinite-scroll.ts` (R095)
+- `apps/web/src/hooks/use-mobile.ts` → `packages/editor-classic/src/hooks/use-mobile.ts` (R096)
+- `apps/web/src/hooks/use-resize-observer.ts` → `packages/editor-classic/src/hooks/use-resize-observer.ts` (R094)
+- `apps/web/src/hooks/use-shift-key.ts` → `packages/editor-classic/src/hooks/use-shift-key.ts` (R096)
+- `apps/web/src/masks/__tests__/snap.test.ts` → `packages/editor-classic/src/masks/__tests__/snap.test.ts` (R097)
+- `apps/web/src/masks/builtin/box-like.ts` → `packages/editor-classic/src/masks/builtin/box-like.ts` (R096)
+- `apps/web/src/masks/builtin/definitions/cinematic-bars.ts` → `packages/editor-classic/src/masks/builtin/definitions/cinematic-bars.ts` (R099)
+- `apps/web/src/masks/builtin/definitions/diamond.ts` → `packages/editor-classic/src/masks/builtin/definitions/diamond.ts` (R097)
+- `apps/web/src/masks/builtin/definitions/ellipse.ts` → `packages/editor-classic/src/masks/builtin/definitions/ellipse.ts` (R097)
+- `apps/web/src/masks/builtin/definitions/heart.ts` → `packages/editor-classic/src/masks/builtin/definitions/heart.ts` (R098)
+- `apps/web/src/masks/builtin/definitions/rectangle.ts` → `packages/editor-classic/src/masks/builtin/definitions/rectangle.ts` (R097)
+- `apps/web/src/masks/builtin/definitions/split.ts` → `packages/editor-classic/src/masks/builtin/definitions/split.ts` (R097)
+- `apps/web/src/masks/builtin/definitions/star.ts` → `packages/editor-classic/src/masks/builtin/definitions/star.ts` (R098)
+- `apps/web/src/masks/builtin/definitions/text.ts` → `packages/editor-classic/src/masks/builtin/definitions/text.ts` (R094)
+- `apps/web/src/masks/components/masks-tab.tsx` → `packages/editor-classic/src/masks/components/masks-tab.tsx` (R094)
+- `apps/web/src/masks/freeform/definition.ts` → `packages/editor-classic/src/masks/freeform/definition.ts` (R096)
+- `apps/web/src/masks/freeform/path.ts` → `packages/editor-classic/src/masks/freeform/path.ts` (R099)
+- `apps/web/src/masks/geometry.ts` → `packages/editor-classic/src/masks/geometry.ts` (R091)
+- `apps/web/src/masks/handle-positions.ts` → `packages/editor-classic/src/masks/handle-positions.ts` (R098)
+- `apps/web/src/masks/index.ts` → `packages/editor-classic/src/masks/index.ts` (R091)
+- `apps/web/src/masks/param-update.ts` → `packages/editor-classic/src/masks/param-update.ts` (R086)
+- `apps/web/src/masks/registry.ts` → `packages/editor-classic/src/masks/registry.ts` (R092)
+- `apps/web/src/masks/snap.ts` → `packages/editor-classic/src/masks/snap.ts` (R097)
+- `apps/web/src/masks/types.ts` → `packages/editor-classic/src/masks/types.ts` (R096)
+- `apps/web/src/masks/use-mask-handles.ts` → `packages/editor-classic/src/masks/use-mask-handles.ts` (R095)
+- `apps/web/src/masks/utils.ts` → `packages/editor-classic/src/masks/utils.ts` (R093)
+- `apps/web/src/media/audio-mastering.ts` → `packages/editor-classic/src/media/audio-mastering.ts` (R096)
+- `apps/web/src/media/audio.ts` → `packages/editor-classic/src/media/audio.ts` (R082)
+- `apps/web/src/media/media-utils.ts` → `packages/editor-classic/src/media/media-utils.ts` (R085)
+- `apps/web/src/media/mediabunny.ts` → `packages/editor-classic/src/media/mediabunny.ts` (R094)
+- `apps/web/src/media/processing.ts` → `packages/editor-classic/src/media/processing.ts` (R051)
+- `apps/web/src/media/use-file-upload.ts` → `packages/editor-classic/src/media/use-file-upload.ts` (R095)
+- `apps/web/src/media/use-paste-media.ts` → `packages/editor-classic/src/media/use-paste-media.ts` (R065)
+- `apps/web/src/media/waveform-summary.ts` → `packages/editor-classic/src/media/waveform-summary.ts` (R098)
+- `apps/web/src/params/__tests__/channel-layout.test.ts` → `packages/editor-classic/src/params/__tests__/channel-layout.test.ts` (R084)
+- `apps/web/src/params/index.ts` → `packages/editor-classic/src/params/index.ts` (R099)
+- `apps/web/src/params/registry.ts` → `packages/editor-classic/src/params/registry.ts` (R087)
+- `apps/web/src/preview/components/context-menu.tsx` → `packages/editor-classic/src/preview/components/context-menu.tsx` (R088)
+- `apps/web/src/preview/components/guide-popover.tsx` → `packages/editor-classic/src/preview/components/guide-popover.tsx` (R085)
+- `apps/web/src/preview/components/handle-primitives.tsx` → `packages/editor-classic/src/preview/components/handle-primitives.tsx` (R099)
+- `apps/web/src/preview/components/mask-handles.tsx` → `packages/editor-classic/src/preview/components/mask-handles.tsx` (R095)
+- `apps/web/src/preview/components/overlay-layer.tsx` → `packages/editor-classic/src/preview/components/overlay-layer.tsx` (R099)
+- `apps/web/src/preview/components/preview-interaction-overlay.tsx` → `packages/editor-classic/src/preview/components/preview-interaction-overlay.tsx` (R073)
+- `apps/web/src/preview/components/preview-viewport.tsx` → `packages/editor-classic/src/preview/components/preview-viewport.tsx` (R094)
+- `apps/web/src/preview/components/snap-guides.tsx` → `packages/editor-classic/src/preview/components/snap-guides.tsx` (R084)
+- `apps/web/src/preview/components/text-edit-overlay.tsx` → `packages/editor-classic/src/preview/components/text-edit-overlay.tsx` (R084)
+- `apps/web/src/preview/components/toolbar.tsx` → `packages/editor-classic/src/preview/components/toolbar.tsx` (R077)
+- `apps/web/src/preview/components/transform-handles.tsx` → `packages/editor-classic/src/preview/components/transform-handles.tsx` (R091)
+- `apps/web/src/preview/controllers/preview-interaction-controller.ts` → `packages/editor-classic/src/preview/controllers/preview-interaction-controller.ts` (R097)
+- `apps/web/src/preview/controllers/transform-handle-controller.ts` → `packages/editor-classic/src/preview/controllers/transform-handle-controller.ts` (R097)
+- `apps/web/src/preview/element-bounds.ts` → `packages/editor-classic/src/preview/element-bounds.ts` (R094)
+- `apps/web/src/preview/hit-test.ts` → `packages/editor-classic/src/preview/hit-test.ts` (R097)
+- `apps/web/src/preview/hooks/use-preview-interaction.ts` → `packages/editor-classic/src/preview/hooks/use-preview-interaction.ts` (R073)
+- `apps/web/src/preview/hooks/use-transform-handles.ts` → `packages/editor-classic/src/preview/hooks/use-transform-handles.ts` (R072)
+- `apps/web/src/preview/preview-snap.ts` → `packages/editor-classic/src/preview/preview-snap.ts` (R096)
+- `apps/web/src/project/components/delete-project-dialog.tsx` → `packages/editor-classic/src/project/components/delete-project-dialog.tsx` (R086)
+- `apps/web/src/project/components/migration-dialog.tsx` → `packages/editor-classic/src/project/components/migration-dialog.tsx` (R085)
+- `apps/web/src/project/components/rename-project-dialog.tsx` → `packages/editor-classic/src/project/components/rename-project-dialog.tsx` (R087)
+- `apps/web/src/project/types.ts` → `packages/editor-classic/src/project/types.ts` (R092)
+- `apps/web/src/rendering/animation-values.ts` → `packages/editor-classic/src/rendering/animation-values.ts` (R090)
+- `apps/web/src/rendering/index.ts` → `packages/editor-classic/src/rendering/index.ts` (R093)
+- `apps/web/src/retime/__tests__/resolve.test.ts` → `packages/editor-classic/src/retime/__tests__/resolve.test.ts` (R093)
+- `apps/web/src/retime/__tests__/split.test.ts` → `packages/editor-classic/src/retime/__tests__/split.test.ts` (R090)
+- `apps/web/src/retime/audio-stretch.ts` → `packages/editor-classic/src/retime/audio-stretch.ts` (R091)
+- `apps/web/src/retime/index.ts` → `packages/editor-classic/src/retime/index.ts` (R096)
+- `apps/web/src/retime/presets.ts` → `packages/editor-classic/src/retime/presets.ts` (R064)
+- `apps/web/src/retime/resolve.ts` → `packages/editor-classic/src/retime/resolve.ts` (R085)
+- `apps/web/src/retime/split.ts` → `packages/editor-classic/src/retime/split.ts` (R088)
+- `apps/web/src/ripple/apply.ts` → `packages/editor-classic/src/ripple/apply.ts` (R096)
+- `apps/web/src/ripple/diff.ts` → `packages/editor-classic/src/ripple/diff.ts` (R099)
+- `apps/web/src/ripple/shift.ts` → `packages/editor-classic/src/ripple/shift.ts` (R086)
+- `apps/web/src/selection/context.tsx` → `packages/editor-classic/src/selection/context.tsx` (R095)
+- `apps/web/src/selection/editor-selection.ts` → `packages/editor-classic/src/selection/editor-selection.ts` (R085)
+- `apps/web/src/selection/hit-testing.ts` → `packages/editor-classic/src/selection/hit-testing.ts` (R095)
+- `apps/web/src/selection/hooks/use-box-select.ts` → `packages/editor-classic/src/selection/hooks/use-box-select.ts` (R080)
+- `apps/web/src/selection/hooks/use-selection-scope.ts` → `packages/editor-classic/src/selection/hooks/use-selection-scope.ts` (R073)
+- `apps/web/src/selection/selectable-item.tsx` → `packages/editor-classic/src/selection/selectable-item.tsx` (R087)
+- `apps/web/src/selection/selectable-surface.tsx` → `packages/editor-classic/src/selection/selectable-surface.tsx` (R068)
+- `apps/web/src/selection/selection-box.tsx` → `packages/editor-classic/src/selection/selection-box.tsx` (R083)
+- `apps/web/src/selection/state.ts` → `packages/editor-classic/src/selection/state.ts` (R094)
+- `apps/web/src/selection/types.ts` → `packages/editor-classic/src/selection/types.ts` (R095)
+- `apps/web/src/services/renderer/compositor/frame-descriptor.ts` → `packages/editor-classic/src/services/renderer/compositor/frame-descriptor.ts` (R098)
+- `apps/web/src/services/renderer/compositor/types.ts` → `packages/editor-classic/src/services/renderer/compositor/types.ts` (R094)
+- `apps/web/src/services/renderer/compositor/wasm-compositor.ts` → `packages/editor-classic/src/services/renderer/compositor/wasm-compositor.ts` (R064)
+- `apps/web/src/services/renderer/gpu-renderer.ts` → `packages/editor-classic/src/services/renderer/gpu-renderer.ts` (R068)
+- `apps/web/src/services/renderer/nodes/blur-background-node.ts` → `packages/editor-classic/src/services/renderer/nodes/blur-background-node.ts` (R084)
+- `apps/web/src/services/renderer/nodes/effect-layer-node.ts` → `packages/editor-classic/src/services/renderer/nodes/effect-layer-node.ts` (R076)
+- `apps/web/src/services/renderer/nodes/graphic-node.ts` → `packages/editor-classic/src/services/renderer/nodes/graphic-node.ts` (R094)
+- `apps/web/src/services/renderer/nodes/sticker-node.ts` → `packages/editor-classic/src/services/renderer/nodes/sticker-node.ts` (R066)
+- `apps/web/src/services/renderer/nodes/text-node.ts` → `packages/editor-classic/src/services/renderer/nodes/text-node.ts` (R081)
+- `apps/web/src/services/renderer/nodes/visual-node.ts` → `packages/editor-classic/src/services/renderer/nodes/visual-node.ts` (R076)
+- `apps/web/src/services/renderer/resolve.ts` → `packages/editor-classic/src/services/renderer/resolve.ts` (R088)
+- `apps/web/src/services/renderer/scene-builder.ts` → `packages/editor-classic/src/services/renderer/scene-builder.ts` (R093)
+- `apps/web/src/services/storage/indexeddb-adapter.ts` → `packages/editor-classic/src/services/storage/indexeddb-adapter.ts` (R069)
+- `apps/web/src/services/storage/migrations/__tests__/fixtures/index.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/fixtures/index.ts` (R095)
+- `apps/web/src/services/storage/migrations/__tests__/fixtures/v5.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/fixtures/v5.ts` (R095)
+- `apps/web/src/services/storage/migrations/__tests__/v15-to-v16.test.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/v15-to-v16.test.ts` (R095)
+- `apps/web/src/services/storage/migrations/__tests__/v16-to-v17.test.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/v16-to-v17.test.ts` (R096)
+- `apps/web/src/services/storage/migrations/__tests__/v18-to-v19.test.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/v18-to-v19.test.ts` (R096)
+- `apps/web/src/services/storage/migrations/__tests__/v3-to-v4.test.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/v3-to-v4.test.ts` (R095)
+- `apps/web/src/services/storage/migrations/__tests__/v4-to-v5.test.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/v4-to-v5.test.ts` (R096)
+- `apps/web/src/services/storage/migrations/__tests__/v8-to-v9.test.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/v8-to-v9.test.ts` (R096)
+- `apps/web/src/services/storage/migrations/base.ts` → `packages/editor-classic/src/services/storage/migrations/base.ts` (R065)
+- `apps/web/src/services/storage/migrations/runner.ts` → `packages/editor-classic/src/services/storage/migrations/runner.ts` (R093)
+- `apps/web/src/services/storage/migrations/transformers/v0-to-v1.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v0-to-v1.ts` (R096)
+- `apps/web/src/services/storage/migrations/transformers/v1-to-v2.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v1-to-v2.ts` (R099)
+- `apps/web/src/services/storage/migrations/transformers/v10-to-v11.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v10-to-v11.ts` (R096)
+- `apps/web/src/services/storage/migrations/transformers/v11-to-v12.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v11-to-v12.ts` (R096)
+- `apps/web/src/services/storage/migrations/transformers/v12-to-v13.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v12-to-v13.ts` (R096)
+- `apps/web/src/services/storage/migrations/transformers/v13-to-v14.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v13-to-v14.ts` (R096)
+- `apps/web/src/services/storage/migrations/transformers/v15-to-v16.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v15-to-v16.ts` (R095)
+- `apps/web/src/services/storage/migrations/transformers/v16-to-v17.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v16-to-v17.ts` (R095)
+- `apps/web/src/services/storage/migrations/transformers/v18-to-v19.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v18-to-v19.ts` (R095)
+- `apps/web/src/services/storage/migrations/transformers/v27-to-v28.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v27-to-v28.ts` (R098)
+- `apps/web/src/services/storage/migrations/transformers/v3-to-v4.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v3-to-v4.ts` (R095)
+- `apps/web/src/services/storage/migrations/transformers/v4-to-v5.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v4-to-v5.ts` (R095)
+- `apps/web/src/services/storage/migrations/transformers/v5-to-v6.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v5-to-v6.ts` (R095)
+- `apps/web/src/services/storage/migrations/transformers/v6-to-v7.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v6-to-v7.ts` (R096)
+- `apps/web/src/services/storage/migrations/transformers/v7-to-v8.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v7-to-v8.ts` (R096)
+- `apps/web/src/services/storage/migrations/transformers/v8-to-v9.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v8-to-v9.ts` (R096)
+- `apps/web/src/services/storage/migrations/transformers/v9-to-v10.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v9-to-v10.ts` (R096)
+- `apps/web/src/services/storage/migrations/v1-to-v2.ts` → `packages/editor-classic/src/services/storage/migrations/v1-to-v2.ts` (R076)
+- `apps/web/src/services/storage/migrations/v10-to-v11.ts` → `packages/editor-classic/src/services/storage/migrations/v10-to-v11.ts` (R096)
+- `apps/web/src/services/storage/migrations/v11-to-v12.ts` → `packages/editor-classic/src/services/storage/migrations/v11-to-v12.ts` (R096)
+- `apps/web/src/services/storage/migrations/v12-to-v13.ts` → `packages/editor-classic/src/services/storage/migrations/v12-to-v13.ts` (R096)
+- `apps/web/src/services/storage/migrations/v13-to-v14.ts` → `packages/editor-classic/src/services/storage/migrations/v13-to-v14.ts` (R096)
+- `apps/web/src/services/storage/migrations/v14-to-v15.ts` → `packages/editor-classic/src/services/storage/migrations/v14-to-v15.ts` (R096)
+- `apps/web/src/services/storage/migrations/v15-to-v16.ts` → `packages/editor-classic/src/services/storage/migrations/v15-to-v16.ts` (R096)
+- `apps/web/src/services/storage/migrations/v16-to-v17.ts` → `packages/editor-classic/src/services/storage/migrations/v16-to-v17.ts` (R096)
+- `apps/web/src/services/storage/migrations/v17-to-v18.ts` → `packages/editor-classic/src/services/storage/migrations/v17-to-v18.ts` (R096)
+- `apps/web/src/services/storage/migrations/v18-to-v19.ts` → `packages/editor-classic/src/services/storage/migrations/v18-to-v19.ts` (R096)
+- `apps/web/src/services/storage/migrations/v3-to-v4.ts` → `packages/editor-classic/src/services/storage/migrations/v3-to-v4.ts` (R096)
+- `apps/web/src/services/storage/migrations/v4-to-v5.ts` → `packages/editor-classic/src/services/storage/migrations/v4-to-v5.ts` (R096)
+- `apps/web/src/services/storage/migrations/v5-to-v6.ts` → `packages/editor-classic/src/services/storage/migrations/v5-to-v6.ts` (R096)
+- `apps/web/src/services/storage/migrations/v6-to-v7.ts` → `packages/editor-classic/src/services/storage/migrations/v6-to-v7.ts` (R096)
+- `apps/web/src/services/storage/migrations/v7-to-v8.ts` → `packages/editor-classic/src/services/storage/migrations/v7-to-v8.ts` (R096)
+- `apps/web/src/services/storage/migrations/v8-to-v9.ts` → `packages/editor-classic/src/services/storage/migrations/v8-to-v9.ts` (R096)
+- `apps/web/src/services/storage/migrations/v9-to-v10.ts` → `packages/editor-classic/src/services/storage/migrations/v9-to-v10.ts` (R096)
+- `apps/web/src/services/storage/quota.ts` → `packages/editor-classic/src/services/storage/quota.ts` (R094)
+- `apps/web/src/services/storage/service.ts` → `packages/editor-classic/src/services/storage/service.ts` (R086)
+- `apps/web/src/services/storage/types.ts` → `packages/editor-classic/src/services/storage/types.ts` (R092)
+- `apps/web/src/services/storage/use-storage-persistence.ts` → `packages/editor-classic/src/services/storage/use-storage-persistence.ts` (R095)
+- `apps/web/src/services/transcription/worker.ts` → `packages/editor-classic/src/services/transcription/worker.ts` (R094)
+- `apps/web/src/sounds/components/assets-view.tsx` → `packages/editor-classic/src/sounds/components/assets-view.tsx` (R081)
+- `apps/web/src/sounds/types.ts` → `packages/editor-classic/src/sounds/types.ts` (R094)
+- `apps/web/src/speed/components/speed-tab.tsx` → `packages/editor-classic/src/speed/components/speed-tab.tsx` (R085)
+- `apps/web/src/stickers/__tests__/sticker-id.test.ts` → `packages/editor-classic/src/stickers/__tests__/sticker-id.test.ts` (R096)
+- `apps/web/src/stickers/components/assets-view.tsx` → `packages/editor-classic/src/stickers/components/assets-view.tsx` (R088)
+- `apps/web/src/stickers/index.ts` → `packages/editor-classic/src/stickers/index.ts` (R091)
+- `apps/web/src/stickers/providers/countries-data.ts` → `packages/editor-classic/src/stickers/providers/countries-data.ts` (R095)
+- `apps/web/src/stickers/providers/flags.ts` → `packages/editor-classic/src/stickers/providers/flags.ts` (R086)
+- `apps/web/src/stickers/providers/index.ts` → `packages/editor-classic/src/stickers/providers/index.ts` (R061)
+- `apps/web/src/stickers/providers/logos.ts` → `packages/editor-classic/src/stickers/providers/logos.ts` (R095)
+- `apps/web/src/stickers/providers/shapes.ts` → `packages/editor-classic/src/stickers/providers/shapes.ts` (R097)
+- `apps/web/src/stickers/registry.ts` → `packages/editor-classic/src/stickers/registry.ts` (R063)
+- `apps/web/src/stickers/resolver.ts` → `packages/editor-classic/src/stickers/resolver.ts` (R075)
+- `apps/web/src/stickers/sticker-id.ts` → `packages/editor-classic/src/stickers/sticker-id.ts` (R096)
+- `apps/web/src/stickers/types.ts` → `packages/editor-classic/src/stickers/types.ts` (R086)
+- `apps/web/src/subtitles/build-subtitle-text-element.ts` → `packages/editor-classic/src/subtitles/build-subtitle-text-element.ts` (R096)
+- `apps/web/src/subtitles/components/assets-view.tsx` → `packages/editor-classic/src/subtitles/components/assets-view.tsx` (R079)
+- `apps/web/src/subtitles/insert.ts` → `packages/editor-classic/src/subtitles/insert.ts` (R093)
+- `apps/web/src/subtitles/types.ts` → `packages/editor-classic/src/subtitles/types.ts` (R090)
+- `apps/web/src/text/components/assets-view.tsx` → `packages/editor-classic/src/text/components/assets-view.tsx` (R068)
+- `apps/web/src/text/layout.ts` → `packages/editor-classic/src/text/layout.ts` (R096)
+- `apps/web/src/text/measure-element.ts` → `packages/editor-classic/src/text/measure-element.ts` (R096)
+- `apps/web/src/text/primitives.ts` → `packages/editor-classic/src/text/primitives.ts` (R097)
+- `apps/web/src/timeline/__tests__/update-pipeline.test.ts` → `packages/editor-classic/src/timeline/__tests__/update-pipeline.test.ts` (R085)
+- `apps/web/src/timeline/animation-snap-points.ts` → `packages/editor-classic/src/timeline/animation-snap-points.ts` (R079)
+- `apps/web/src/timeline/animation-targets.ts` → `packages/editor-classic/src/timeline/animation-targets.ts` (R091)
+- `apps/web/src/timeline/audio-constants.ts` → `packages/editor-classic/src/timeline/audio-constants.ts` (R097)
+- `apps/web/src/timeline/audio-separation/index.ts` → `packages/editor-classic/src/timeline/audio-separation/index.ts` (R093)
+- `apps/web/src/timeline/audio-state.ts` → `packages/editor-classic/src/timeline/audio-state.ts` (R094)
+- `apps/web/src/timeline/bookmarks/components/bookmarks.tsx` → `packages/editor-classic/src/timeline/bookmarks/components/bookmarks.tsx` (R092)
+- `apps/web/src/timeline/bookmarks/hooks/use-bookmark-drag.ts` → `packages/editor-classic/src/timeline/bookmarks/hooks/use-bookmark-drag.ts` (R067)
+- `apps/web/src/timeline/bookmarks/preview-overlay-source.tsx` → `packages/editor-classic/src/timeline/bookmarks/preview-overlay-source.tsx` (R094)
+- `apps/web/src/timeline/bookmarks/snap-source.ts` → `packages/editor-classic/src/timeline/bookmarks/snap-source.ts` (R073)
+- `apps/web/src/timeline/bookmarks/utils.ts` → `packages/editor-classic/src/timeline/bookmarks/utils.ts` (R096)
+- `apps/web/src/timeline/components/audio-volume-line.tsx` → `packages/editor-classic/src/timeline/components/audio-volume-line.tsx` (R092)
+- `apps/web/src/timeline/components/audio-waveform.tsx` → `packages/editor-classic/src/timeline/components/audio-waveform.tsx` (R093)
+- `apps/web/src/timeline/components/drag-line.tsx` → `packages/editor-classic/src/timeline/components/drag-line.tsx` (R087)
+- `apps/web/src/timeline/components/drop-target.ts` → `packages/editor-classic/src/timeline/components/drop-target.ts` (R096)
+- `apps/web/src/timeline/components/expanded-layout.ts` → `packages/editor-classic/src/timeline/components/expanded-layout.ts` (R096)
+- `apps/web/src/timeline/components/graph-editor/bezier-graph.tsx` → `packages/editor-classic/src/timeline/components/graph-editor/bezier-graph.tsx` (R095)
+- `apps/web/src/timeline/components/graph-editor/easing-presets.ts` → `packages/editor-classic/src/timeline/components/graph-editor/easing-presets.ts` (R089)
+- `apps/web/src/timeline/components/graph-editor/popover.tsx` → `packages/editor-classic/src/timeline/components/graph-editor/popover.tsx` (R079)
+- `apps/web/src/timeline/components/graph-editor/session.ts` → `packages/editor-classic/src/timeline/components/graph-editor/session.ts` (R098)
+- `apps/web/src/timeline/components/graph-editor/use-controller.ts` → `packages/editor-classic/src/timeline/components/graph-editor/use-controller.ts` (R089)
+- `apps/web/src/timeline/components/index.tsx` → `packages/editor-classic/src/timeline/components/index.tsx` (R089)
+- `apps/web/src/timeline/components/layout.ts` → `packages/editor-classic/src/timeline/components/layout.ts` (R092)
+- `apps/web/src/timeline/components/selection-hit-testing.ts` → `packages/editor-classic/src/timeline/components/selection-hit-testing.ts` (R096)
+- `apps/web/src/timeline/components/snap-indicator.tsx` → `packages/editor-classic/src/timeline/components/snap-indicator.tsx` (R086)
+- `apps/web/src/timeline/components/theme.ts` → `packages/editor-classic/src/timeline/components/theme.ts` (R094)
+- `apps/web/src/timeline/components/timeline-element.tsx` → `packages/editor-classic/src/timeline/components/timeline-element.tsx` (R093)
+- `apps/web/src/timeline/components/timeline-playhead.tsx` → `packages/editor-classic/src/timeline/components/timeline-playhead.tsx` (R080)
+- `apps/web/src/timeline/components/timeline-ruler.tsx` → `packages/editor-classic/src/timeline/components/timeline-ruler.tsx` (R091)
+- `apps/web/src/timeline/components/timeline-tick.tsx` → `packages/editor-classic/src/timeline/components/timeline-tick.tsx` (R087)
+- `apps/web/src/timeline/components/timeline-toolbar.tsx` → `packages/editor-classic/src/timeline/components/timeline-toolbar.tsx` (R083)
+- `apps/web/src/timeline/components/timeline-track.tsx` → `packages/editor-classic/src/timeline/components/timeline-track.tsx` (R092)
+- `apps/web/src/timeline/components/track-layout.ts` → `packages/editor-classic/src/timeline/components/track-layout.ts` (R096)
+- `apps/web/src/timeline/controllers/drag-drop-controller.ts` → `packages/editor-classic/src/timeline/controllers/drag-drop-controller.ts` (R090)
+- `apps/web/src/timeline/controllers/element-interaction-controller.ts` → `packages/editor-classic/src/timeline/controllers/element-interaction-controller.ts` (R095)
+- `apps/web/src/timeline/controllers/keyframe-drag-controller.ts` → `packages/editor-classic/src/timeline/controllers/keyframe-drag-controller.ts` (R087)
+- `apps/web/src/timeline/controllers/playhead-controller.ts` → `packages/editor-classic/src/timeline/controllers/playhead-controller.ts` (R078)
+- `apps/web/src/timeline/controllers/resize-controller.ts` → `packages/editor-classic/src/timeline/controllers/resize-controller.ts` (R089)
+- `apps/web/src/timeline/controllers/seek-controller.ts` → `packages/editor-classic/src/timeline/controllers/seek-controller.ts` (R098)
+- `apps/web/src/timeline/controllers/zoom-controller.ts` → `packages/editor-classic/src/timeline/controllers/zoom-controller.ts` (R088)
+- `apps/web/src/timeline/creation.ts` → `packages/editor-classic/src/timeline/creation.ts` (R096)
+- `apps/web/src/timeline/defaults.ts` → `packages/editor-classic/src/timeline/defaults.ts` (R090)
+- `apps/web/src/timeline/drag-source.ts` → `packages/editor-classic/src/timeline/drag-source.ts` (R094)
+- `apps/web/src/timeline/drag-utils.ts` → `packages/editor-classic/src/timeline/drag-utils.ts` (R075)
+- `apps/web/src/timeline/drag.ts` → `packages/editor-classic/src/timeline/drag.ts` (R090)
+- `apps/web/src/timeline/element-snap-source.ts` → `packages/editor-classic/src/timeline/element-snap-source.ts` (R084)
+- `apps/web/src/timeline/element-utils.ts` → `packages/editor-classic/src/timeline/element-utils.ts` (R094)
+- `apps/web/src/timeline/group-move/build-group.ts` → `packages/editor-classic/src/timeline/group-move/build-group.ts` (R091)
+- `apps/web/src/timeline/group-move/resolve-move.ts` → `packages/editor-classic/src/timeline/group-move/resolve-move.ts` (R098)
+- `apps/web/src/timeline/group-move/snap.ts` → `packages/editor-classic/src/timeline/group-move/snap.ts` (R084)
+- `apps/web/src/timeline/group-move/track-placement.ts` → `packages/editor-classic/src/timeline/group-move/track-placement.ts` (R096)
+- `apps/web/src/timeline/group-move/types.ts` → `packages/editor-classic/src/timeline/group-move/types.ts` (R086)
+- `apps/web/src/timeline/group-resize/compute-resize.ts` → `packages/editor-classic/src/timeline/group-resize/compute-resize.ts` (R099)
+- `apps/web/src/timeline/group-resize/types.ts` → `packages/editor-classic/src/timeline/group-resize/types.ts` (R087)
+- `apps/web/src/timeline/hooks/element/use-element-interaction.ts` → `packages/editor-classic/src/timeline/hooks/element/use-element-interaction.ts` (R068)
+- `apps/web/src/timeline/hooks/element/use-element-selection.ts` → `packages/editor-classic/src/timeline/hooks/element/use-element-selection.ts` (R092)
+- `apps/web/src/timeline/hooks/element/use-keyframe-box-select.ts` → `packages/editor-classic/src/timeline/hooks/element/use-keyframe-box-select.ts` (R093)
+- `apps/web/src/timeline/hooks/element/use-keyframe-drag.ts` → `packages/editor-classic/src/timeline/hooks/element/use-keyframe-drag.ts` (R064)
+- `apps/web/src/timeline/hooks/element/use-keyframe-selection.ts` → `packages/editor-classic/src/timeline/hooks/element/use-keyframe-selection.ts` (R097)
+- `apps/web/src/timeline/hooks/use-edge-auto-scroll.ts` → `packages/editor-classic/src/timeline/hooks/use-edge-auto-scroll.ts` (R080)
+- `apps/web/src/timeline/hooks/use-element-preview.ts` → `packages/editor-classic/src/timeline/hooks/use-element-preview.ts` (R057)
+- `apps/web/src/timeline/hooks/use-initial-scroll-bottom.ts` → `packages/editor-classic/src/timeline/hooks/use-initial-scroll-bottom.ts` (R096)
+- `apps/web/src/timeline/hooks/use-scroll-position.ts` → `packages/editor-classic/src/timeline/hooks/use-scroll-position.ts` (R060)
+- `apps/web/src/timeline/hooks/use-scroll-sync.ts` → `packages/editor-classic/src/timeline/hooks/use-scroll-sync.ts` (R096)
+- `apps/web/src/timeline/hooks/use-snap-indicator-position.ts` → `packages/editor-classic/src/timeline/hooks/use-snap-indicator-position.ts` (R081)
+- `apps/web/src/timeline/hooks/use-timeline-drag-drop.ts` → `packages/editor-classic/src/timeline/hooks/use-timeline-drag-drop.ts` (R080)
+- `apps/web/src/timeline/hooks/use-timeline-playhead.ts` → `packages/editor-classic/src/timeline/hooks/use-timeline-playhead.ts` (R077)
+- `apps/web/src/timeline/hooks/use-timeline-resize.ts` → `packages/editor-classic/src/timeline/hooks/use-timeline-resize.ts` (R060)
+- `apps/web/src/timeline/hooks/use-timeline-seek.ts` → `packages/editor-classic/src/timeline/hooks/use-timeline-seek.ts` (R086)
+- `apps/web/src/timeline/hooks/use-timeline-zoom.ts` → `packages/editor-classic/src/timeline/hooks/use-timeline-zoom.ts` (R088)
+- `apps/web/src/timeline/index.ts` → `packages/editor-classic/src/timeline/index.ts` (R082)
+- `apps/web/src/timeline/pixel-utils.ts` → `packages/editor-classic/src/timeline/pixel-utils.ts` (R093)
+- `apps/web/src/timeline/placement/__tests__/resolve.test.ts` → `packages/editor-classic/src/timeline/placement/__tests__/resolve.test.ts` (R098)
+- `apps/web/src/timeline/placement/apply.ts` → `packages/editor-classic/src/timeline/placement/apply.ts` (R096)
+- `apps/web/src/timeline/placement/compatibility.ts` → `packages/editor-classic/src/timeline/placement/compatibility.ts` (R094)
+- `apps/web/src/timeline/placement/insert-index.ts` → `packages/editor-classic/src/timeline/placement/insert-index.ts` (R096)
+- `apps/web/src/timeline/placement/main-track.ts` → `packages/editor-classic/src/timeline/placement/main-track.ts` (R089)
+- `apps/web/src/timeline/placement/overlap.ts` → `packages/editor-classic/src/timeline/placement/overlap.ts` (R094)
+- `apps/web/src/timeline/placement/resolve.ts` → `packages/editor-classic/src/timeline/placement/resolve.ts` (R098)
+- `apps/web/src/timeline/placement/track-factory.ts` → `packages/editor-classic/src/timeline/placement/track-factory.ts` (R095)
+- `apps/web/src/timeline/placement/types.ts` → `packages/editor-classic/src/timeline/placement/types.ts` (R090)
+- `apps/web/src/timeline/playhead-snap-source.ts` → `packages/editor-classic/src/timeline/playhead-snap-source.ts` (R062)
+- `apps/web/src/timeline/ruler-utils.ts` → `packages/editor-classic/src/timeline/ruler-utils.ts` (R098)
+- `apps/web/src/timeline/scenes.ts` → `packages/editor-classic/src/timeline/scenes.ts` (R085)
+- `apps/web/src/timeline/snapping/resolve.ts` → `packages/editor-classic/src/timeline/snapping/resolve.ts` (R093)
+- `apps/web/src/timeline/snapping/threshold.ts` → `packages/editor-classic/src/timeline/snapping/threshold.ts` (R076)
+- `apps/web/src/timeline/snapping/types.ts` → `packages/editor-classic/src/timeline/snapping/types.ts` (R089)
+- `apps/web/src/timeline/track-capabilities.ts` → `packages/editor-classic/src/timeline/track-capabilities.ts` (R095)
+- `apps/web/src/timeline/track-element-update.ts` → `packages/editor-classic/src/timeline/track-element-update.ts` (R094)
+- `apps/web/src/timeline/tracks.ts` → `packages/editor-classic/src/timeline/tracks.ts` (R081)
+- `apps/web/src/timeline/types.ts` → `packages/editor-classic/src/timeline/types.ts` (R096)
+- `apps/web/src/timeline/update-pipeline.ts` → `packages/editor-classic/src/timeline/update-pipeline.ts` (R095)
+- `apps/web/src/timeline/zoom-utils.ts` → `packages/editor-classic/src/timeline/zoom-utils.ts` (R096)
+- `apps/web/src/transcription/caption.ts` → `packages/editor-classic/src/transcription/caption.ts` (R088)
+- `apps/web/src/transcription/diagnostics.ts` → `packages/editor-classic/src/transcription/diagnostics.ts` (R082)
+- `apps/web/src/transcription/types.ts` → `packages/editor-classic/src/transcription/types.ts` (R094)
+- `apps/web/src/types/eyedropper.d.ts` → `packages/editor-classic/src/types/eyedropper.d.ts` (R094)
+- `apps/web/src/types/soundtouchjs.d.ts` → `packages/editor-classic/src/types/soundtouchjs.d.ts` (R095)
+- `apps/web/src/utils/color.ts` → `packages/editor-classic/src/utils/color.ts` (R096)
+- `apps/web/src/utils/id.ts` → `packages/editor-classic/src/utils/id.ts` (R095)
+
+**151 inherited file(s) moved byte-unmodified (R100)** — the P1 extraction restated them; the content is identical to the pin, so no `PATCHES.md` row applies.
+
+- `apps/web/src/actions/keybindings/__tests__/persistence.test.ts` → `packages/editor-classic/src/actions/keybindings/__tests__/persistence.test.ts`
+- `apps/web/src/actions/keybindings/migrations/index.ts` → `packages/editor-classic/src/actions/keybindings/migrations/index.ts`
+- `apps/web/src/actions/keybindings/migrations/v6-to-v7.ts` → `packages/editor-classic/src/actions/keybindings/migrations/v6-to-v7.ts`
+- `apps/web/src/actions/keybindings/persisted-state.ts` → `packages/editor-classic/src/actions/keybindings/persisted-state.ts`
+- `apps/web/src/actions/types.ts` → `packages/editor-classic/src/actions/types.ts`
+- `apps/web/src/animation/index.ts` → `packages/editor-classic/src/animation/index.ts`
+- `apps/web/src/animation/transform.ts` → `packages/editor-classic/src/animation/transform.ts`
+- `apps/web/src/animation/values.ts` → `packages/editor-classic/src/animation/values.ts`
+- `apps/web/src/background/blur.ts` → `packages/editor-classic/src/background/blur.ts`
+- `apps/web/src/background/color.ts` → `packages/editor-classic/src/background/color.ts`
+- `apps/web/src/changelog/entries/0.2.0.md` → `packages/editor-classic/src/changelog/entries/0.2.0.md`
+- `apps/web/src/changelog/entries/0.3.0.md` → `packages/editor-classic/src/changelog/entries/0.3.0.md`
+- `apps/web/src/changelog/entries/0.4.0.md` → `packages/editor-classic/src/changelog/entries/0.4.0.md`
+- `apps/web/src/clipboard/handlers/index.ts` → `packages/editor-classic/src/clipboard/handlers/index.ts`
+- `apps/web/src/clipboard/index.ts` → `packages/editor-classic/src/clipboard/index.ts`
+- `apps/web/src/commands/media/index.ts` → `packages/editor-classic/src/commands/media/index.ts`
+- `apps/web/src/commands/preview-tracker.ts` → `packages/editor-classic/src/commands/preview-tracker.ts`
+- `apps/web/src/commands/project/index.ts` → `packages/editor-classic/src/commands/project/index.ts`
+- `apps/web/src/commands/scene/index.ts` → `packages/editor-classic/src/commands/scene/index.ts`
+- `apps/web/src/commands/timeline/clipboard/index.ts` → `packages/editor-classic/src/commands/timeline/clipboard/index.ts`
+- `apps/web/src/commands/timeline/element/effects/index.ts` → `packages/editor-classic/src/commands/timeline/element/effects/index.ts`
+- `apps/web/src/commands/timeline/element/index.ts` → `packages/editor-classic/src/commands/timeline/element/index.ts`
+- `apps/web/src/commands/timeline/element/keyframes/index.ts` → `packages/editor-classic/src/commands/timeline/element/keyframes/index.ts`
+- `apps/web/src/commands/timeline/element/masks/index.ts` → `packages/editor-classic/src/commands/timeline/element/masks/index.ts`
+- `apps/web/src/commands/timeline/index.ts` → `packages/editor-classic/src/commands/timeline/index.ts`
+- `apps/web/src/commands/timeline/track/index.ts` → `packages/editor-classic/src/commands/timeline/track/index.ts`
+- `apps/web/src/components/icons/brand.tsx` → `packages/editor-classic/src/components/icons/brand.tsx`
+- `apps/web/src/components/icons/index.tsx` → `packages/editor-classic/src/components/icons/index.tsx`
+- `apps/web/src/components/icons/types.ts` → `packages/editor-classic/src/components/icons/types.ts`
+- `apps/web/src/components/ui/aspect-ratio.tsx` → `packages/editor-classic/src/components/ui/aspect-ratio.tsx`
+- `apps/web/src/components/ui/collapsible.tsx` → `packages/editor-classic/src/components/ui/collapsible.tsx`
+- `apps/web/src/data/colors/pattern-craft.ts` → `packages/editor-classic/src/data/colors/pattern-craft.ts`
+- `apps/web/src/data/colors/solid.ts` → `packages/editor-classic/src/data/colors/solid.ts`
+- `apps/web/src/data/colors/syntax-ui.tsx` → `packages/editor-classic/src/data/colors/syntax-ui.tsx`
+- `apps/web/src/diagnostics/render-perf.ts` → `packages/editor-classic/src/diagnostics/render-perf.ts`
+- `apps/web/src/diagnostics/types.ts` → `packages/editor-classic/src/diagnostics/types.ts`
+- `apps/web/src/export/defaults.ts` → `packages/editor-classic/src/export/defaults.ts`
+- `apps/web/src/export/mime-types.ts` → `packages/editor-classic/src/export/mime-types.ts`
+- `apps/web/src/feedback/types.ts` → `packages/editor-classic/src/feedback/types.ts`
+- `apps/web/src/fonts/system-fonts.ts` → `packages/editor-classic/src/fonts/system-fonts.ts`
+- `apps/web/src/fps/defaults.ts` → `packages/editor-classic/src/fps/defaults.ts`
+- `apps/web/src/fps/presets.ts` → `packages/editor-classic/src/fps/presets.ts`
+- `apps/web/src/gradients/canvas.ts` → `packages/editor-classic/src/gradients/canvas.ts`
+- `apps/web/src/gradients/index.ts` → `packages/editor-classic/src/gradients/index.ts`
+- `apps/web/src/guides/grid.ts` → `packages/editor-classic/src/guides/grid.ts`
+- `apps/web/src/hooks/use-committed-ref.ts` → `packages/editor-classic/src/hooks/use-committed-ref.ts`
+- `apps/web/src/hooks/use-container-size.ts` → `packages/editor-classic/src/hooks/use-container-size.ts`
+- `apps/web/src/hooks/use-fullscreen.ts` → `packages/editor-classic/src/hooks/use-fullscreen.ts`
+- `apps/web/src/masks/dimensions.ts` → `packages/editor-classic/src/masks/dimensions.ts`
+- `apps/web/src/masks/feather.ts` → `packages/editor-classic/src/masks/feather.ts`
+- `apps/web/src/media/thumbnail.ts` → `packages/editor-classic/src/media/thumbnail.ts`
+- `apps/web/src/panels/layout.ts` → `packages/editor-classic/src/panels/layout.ts`
+- `apps/web/src/preview/components/cursors.ts` → `packages/editor-classic/src/preview/components/cursors.ts`
+- `apps/web/src/preview/overlays.ts` → `packages/editor-classic/src/preview/overlays.ts`
+- `apps/web/src/preview/preview-coords.ts` → `packages/editor-classic/src/preview/preview-coords.ts`
+- `apps/web/src/preview/zoom.ts` → `packages/editor-classic/src/preview/zoom.ts`
+- `apps/web/src/retime/rate.ts` → `packages/editor-classic/src/retime/rate.ts`
+- `apps/web/src/ripple/index.ts` → `packages/editor-classic/src/ripple/index.ts`
+- `apps/web/src/selection/attributes.ts` → `packages/editor-classic/src/selection/attributes.ts`
+- `apps/web/src/selection/scope.ts` → `packages/editor-classic/src/selection/scope.ts`
+- `apps/web/src/services/renderer/canvas-utils.ts` → `packages/editor-classic/src/services/renderer/canvas-utils.ts`
+- `apps/web/src/services/renderer/mask-feather.ts` → `packages/editor-classic/src/services/renderer/mask-feather.ts`
+- `apps/web/src/services/renderer/nodes/base-node.ts` → `packages/editor-classic/src/services/renderer/nodes/base-node.ts`
+- `apps/web/src/services/renderer/nodes/color-node.ts` → `packages/editor-classic/src/services/renderer/nodes/color-node.ts`
+- `apps/web/src/services/renderer/nodes/image-node.ts` → `packages/editor-classic/src/services/renderer/nodes/image-node.ts`
+- `apps/web/src/services/renderer/nodes/root-node.ts` → `packages/editor-classic/src/services/renderer/nodes/root-node.ts`
+- `apps/web/src/services/renderer/nodes/video-node.ts` → `packages/editor-classic/src/services/renderer/nodes/video-node.ts`
+- `apps/web/src/services/storage/migrations/AGENTS.md` → `packages/editor-classic/src/services/storage/migrations/AGENTS.md`
+- `apps/web/src/services/storage/migrations/__tests__/fixtures/v0.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/fixtures/v0.ts`
+- `apps/web/src/services/storage/migrations/__tests__/fixtures/v1.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/fixtures/v1.ts`
+- `apps/web/src/services/storage/migrations/__tests__/fixtures/v2.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/fixtures/v2.ts`
+- `apps/web/src/services/storage/migrations/__tests__/fixtures/v3.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/fixtures/v3.ts`
+- `apps/web/src/services/storage/migrations/__tests__/helpers.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/helpers.ts`
+- `apps/web/src/services/storage/migrations/__tests__/v0-to-v1.test.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/v0-to-v1.test.ts`
+- `apps/web/src/services/storage/migrations/__tests__/v1-to-v2.test.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/v1-to-v2.test.ts`
+- `apps/web/src/services/storage/migrations/__tests__/v19-to-v20.test.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/v19-to-v20.test.ts`
+- `apps/web/src/services/storage/migrations/__tests__/v2-to-v3.test.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/v2-to-v3.test.ts`
+- `apps/web/src/services/storage/migrations/__tests__/v20-to-v21.test.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/v20-to-v21.test.ts`
+- `apps/web/src/services/storage/migrations/__tests__/v21-to-v22.test.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/v21-to-v22.test.ts`
+- `apps/web/src/services/storage/migrations/__tests__/v22-to-v23.test.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/v22-to-v23.test.ts`
+- `apps/web/src/services/storage/migrations/__tests__/v26-to-v27.test.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/v26-to-v27.test.ts`
+- `apps/web/src/services/storage/migrations/__tests__/v27-to-v28.test.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/v27-to-v28.test.ts`
+- `apps/web/src/services/storage/migrations/__tests__/v28-to-v29.test.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/v28-to-v29.test.ts`
+- `apps/web/src/services/storage/migrations/__tests__/v29-to-v30.test.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/v29-to-v30.test.ts`
+- `apps/web/src/services/storage/migrations/__tests__/v30-to-v31.test.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/v30-to-v31.test.ts`
+- `apps/web/src/services/storage/migrations/__tests__/v5-to-v6.test.ts` → `packages/editor-classic/src/services/storage/migrations/__tests__/v5-to-v6.test.ts`
+- `apps/web/src/services/storage/migrations/index.ts` → `packages/editor-classic/src/services/storage/migrations/index.ts`
+- `apps/web/src/services/storage/migrations/transformers/index.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/index.ts`
+- `apps/web/src/services/storage/migrations/transformers/types.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/types.ts`
+- `apps/web/src/services/storage/migrations/transformers/utils.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/utils.ts`
+- `apps/web/src/services/storage/migrations/transformers/v14-to-v15.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v14-to-v15.ts`
+- `apps/web/src/services/storage/migrations/transformers/v17-to-v18.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v17-to-v18.ts`
+- `apps/web/src/services/storage/migrations/transformers/v19-to-v20.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v19-to-v20.ts`
+- `apps/web/src/services/storage/migrations/transformers/v2-to-v3.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v2-to-v3.ts`
+- `apps/web/src/services/storage/migrations/transformers/v20-to-v21.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v20-to-v21.ts`
+- `apps/web/src/services/storage/migrations/transformers/v21-to-v22.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v21-to-v22.ts`
+- `apps/web/src/services/storage/migrations/transformers/v22-to-v23.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v22-to-v23.ts`
+- `apps/web/src/services/storage/migrations/transformers/v23-to-v24.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v23-to-v24.ts`
+- `apps/web/src/services/storage/migrations/transformers/v24-to-v25.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v24-to-v25.ts`
+- `apps/web/src/services/storage/migrations/transformers/v25-to-v26.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v25-to-v26.ts`
+- `apps/web/src/services/storage/migrations/transformers/v26-to-v27.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v26-to-v27.ts`
+- `apps/web/src/services/storage/migrations/transformers/v28-to-v29.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v28-to-v29.ts`
+- `apps/web/src/services/storage/migrations/transformers/v29-to-v30.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v29-to-v30.ts`
+- `apps/web/src/services/storage/migrations/transformers/v30-to-v31.ts` → `packages/editor-classic/src/services/storage/migrations/transformers/v30-to-v31.ts`
+- `apps/web/src/services/storage/migrations/v0-to-v1.ts` → `packages/editor-classic/src/services/storage/migrations/v0-to-v1.ts`
+- `apps/web/src/services/storage/migrations/v19-to-v20.ts` → `packages/editor-classic/src/services/storage/migrations/v19-to-v20.ts`
+- `apps/web/src/services/storage/migrations/v2-to-v3.ts` → `packages/editor-classic/src/services/storage/migrations/v2-to-v3.ts`
+- `apps/web/src/services/storage/migrations/v20-to-v21.ts` → `packages/editor-classic/src/services/storage/migrations/v20-to-v21.ts`
+- `apps/web/src/services/storage/migrations/v21-to-v22.ts` → `packages/editor-classic/src/services/storage/migrations/v21-to-v22.ts`
+- `apps/web/src/services/storage/migrations/v22-to-v23.ts` → `packages/editor-classic/src/services/storage/migrations/v22-to-v23.ts`
+- `apps/web/src/services/storage/migrations/v23-to-v24.ts` → `packages/editor-classic/src/services/storage/migrations/v23-to-v24.ts`
+- `apps/web/src/services/storage/migrations/v24-to-v25.ts` → `packages/editor-classic/src/services/storage/migrations/v24-to-v25.ts`
+- `apps/web/src/services/storage/migrations/v25-to-v26.ts` → `packages/editor-classic/src/services/storage/migrations/v25-to-v26.ts`
+- `apps/web/src/services/storage/migrations/v26-to-v27.ts` → `packages/editor-classic/src/services/storage/migrations/v26-to-v27.ts`
+- `apps/web/src/services/storage/migrations/v27-to-v28.ts` → `packages/editor-classic/src/services/storage/migrations/v27-to-v28.ts`
+- `apps/web/src/services/storage/migrations/v28-to-v29.ts` → `packages/editor-classic/src/services/storage/migrations/v28-to-v29.ts`
+- `apps/web/src/services/storage/migrations/v29-to-v30.ts` → `packages/editor-classic/src/services/storage/migrations/v29-to-v30.ts`
+- `apps/web/src/services/storage/migrations/v30-to-v31.ts` → `packages/editor-classic/src/services/storage/migrations/v30-to-v31.ts`
+- `apps/web/src/services/storage/opfs-adapter.ts` → `packages/editor-classic/src/services/storage/opfs-adapter.ts`
+- `apps/web/src/services/storage/use-local-storage.ts` → `packages/editor-classic/src/services/storage/use-local-storage.ts`
+- `apps/web/src/stickers/categories.ts` → `packages/editor-classic/src/stickers/categories.ts`
+- `apps/web/src/stickers/intrinsic-size.ts` → `packages/editor-classic/src/stickers/intrinsic-size.ts`
+- `apps/web/src/subtitles/ass.ts` → `packages/editor-classic/src/subtitles/ass.ts`
+- `apps/web/src/subtitles/parse.ts` → `packages/editor-classic/src/subtitles/parse.ts`
+- `apps/web/src/subtitles/srt.ts` → `packages/editor-classic/src/subtitles/srt.ts`
+- `apps/web/src/text/background.ts` → `packages/editor-classic/src/text/background.ts`
+- `apps/web/src/text/typography.ts` → `packages/editor-classic/src/text/typography.ts`
+- `apps/web/src/timeline/audio-display.ts` → `packages/editor-classic/src/timeline/audio-display.ts`
+- `apps/web/src/timeline/bookmarks/index.ts` → `packages/editor-classic/src/timeline/bookmarks/index.ts`
+- `apps/web/src/timeline/components/interaction.ts` → `packages/editor-classic/src/timeline/components/interaction.ts`
+- `apps/web/src/timeline/components/layers.ts` → `packages/editor-classic/src/timeline/components/layers.ts`
+- `apps/web/src/timeline/group-move/index.ts` → `packages/editor-classic/src/timeline/group-move/index.ts`
+- `apps/web/src/timeline/group-resize/index.ts` → `packages/editor-classic/src/timeline/group-resize/index.ts`
+- `apps/web/src/timeline/placement/index.ts` → `packages/editor-classic/src/timeline/placement/index.ts`
+- `apps/web/src/timeline/scale.ts` → `packages/editor-classic/src/timeline/scale.ts`
+- `apps/web/src/timeline/snapping/build.ts` → `packages/editor-classic/src/timeline/snapping/build.ts`
+- `apps/web/src/timeline/snapping/index.ts` → `packages/editor-classic/src/timeline/snapping/index.ts`
+- `apps/web/src/transcription/audio.ts` → `packages/editor-classic/src/transcription/audio.ts`
+- `apps/web/src/transcription/caption-defaults.ts` → `packages/editor-classic/src/transcription/caption-defaults.ts`
+- `apps/web/src/transcription/languages.ts` → `packages/editor-classic/src/transcription/languages.ts`
+- `apps/web/src/transcription/models.ts` → `packages/editor-classic/src/transcription/models.ts`
+- `apps/web/src/transcription/supported-languages.ts` → `packages/editor-classic/src/transcription/supported-languages.ts`
+- `apps/web/src/utils/__tests__/math.test.ts` → `packages/editor-classic/src/utils/__tests__/math.test.ts`
+- `apps/web/src/utils/date.ts` → `packages/editor-classic/src/utils/date.ts`
+- `apps/web/src/utils/geometry.ts` → `packages/editor-classic/src/utils/geometry.ts`
+- `apps/web/src/utils/math.ts` → `packages/editor-classic/src/utils/math.ts`
+- `apps/web/src/utils/platform.ts` → `packages/editor-classic/src/utils/platform.ts`
+- `apps/web/src/utils/string.ts` → `packages/editor-classic/src/utils/string.ts`
+- `apps/web/src/utils/ui.ts` → `packages/editor-classic/src/utils/ui.ts`
+- `apps/web/src/wasm/index.ts` → `packages/editor-classic/src/wasm/index.ts`
+- `apps/web/src/wasm/media-time.ts` → `packages/editor-classic/src/wasm/media-time.ts`
+
+**37 inherited file(s) moved with a full rewrite** — the extraction's heavy-rewrite tail: git's similarity pairing missed the move, so the pin path read as deleted; the unique-suffix derivation pairs each with its destination. Drift, not a deletion: expected to carry a `PATCHES.md` row keyed by the upstream path.
+
+- `apps/web/src/actions/keybinding.ts` → `packages/editor-classic/src/actions/keybinding.ts`
+- `apps/web/src/actions/keybindings-store.ts` → `packages/editor-classic/src/actions/keybindings-store.ts`
+- `apps/web/src/actions/registry.ts` → `packages/editor-classic/src/actions/registry.ts`
+- `apps/web/src/commands/base-command.ts` → `packages/editor-classic/src/commands/base-command.ts`
+- `apps/web/src/commands/media/add-media-asset.ts` → `packages/editor-classic/src/commands/media/add-media-asset.ts`
+- `apps/web/src/commands/media/remove-media-asset.ts` → `packages/editor-classic/src/commands/media/remove-media-asset.ts`
+- `apps/web/src/commands/timeline/tracks-snapshot.ts` → `packages/editor-classic/src/commands/timeline/tracks-snapshot.ts`
+- `apps/web/src/components/editor/panels/properties/stores/properties-store.ts` → `packages/editor-classic/src/components/editor/panels/properties/stores/properties-store.ts`
+- `apps/web/src/components/storage-provider.tsx` → `packages/editor-classic/src/components/storage-provider.tsx`
+- `apps/web/src/core/index.ts` → `packages/editor-classic/src/core/index.ts`
+- `apps/web/src/core/managers/commands.ts` → `packages/editor-classic/src/core/managers/commands.ts`
+- `apps/web/src/core/managers/media-manager.ts` → `packages/editor-classic/src/core/managers/media-manager.ts`
+- `apps/web/src/core/managers/renderer-manager.ts` → `packages/editor-classic/src/core/managers/renderer-manager.ts`
+- `apps/web/src/core/managers/save-manager.ts` → `packages/editor-classic/src/core/managers/save-manager.ts`
+- `apps/web/src/editor/cancel-interaction.ts` → `packages/editor-classic/src/editor/cancel-interaction.ts`
+- `apps/web/src/editor/editor-store.ts` → `packages/editor-classic/src/editor/editor-store.ts`
+- `apps/web/src/editor/panel-store.ts` → `packages/editor-classic/src/editor/panel-store.ts`
+- `apps/web/src/fonts/google-fonts.ts` → `packages/editor-classic/src/fonts/google-fonts.ts`
+- `apps/web/src/hooks/use-raf-loop.ts` → `packages/editor-classic/src/hooks/use-raf-loop.ts`
+- `apps/web/src/masks/builtin/definitions/index.ts` → `packages/editor-classic/src/masks/builtin/definitions/index.ts`
+- `apps/web/src/media/types.ts` → `packages/editor-classic/src/media/types.ts`
+- `apps/web/src/media/upload-toast.ts` → `packages/editor-classic/src/media/upload-toast.ts`
+- `apps/web/src/preview/components/index.tsx` → `packages/editor-classic/src/preview/components/index.tsx`
+- `apps/web/src/preview/preview-store.ts` → `packages/editor-classic/src/preview/preview-store.ts`
+- `apps/web/src/selection/index.ts` → `packages/editor-classic/src/selection/index.ts`
+- `apps/web/src/services/renderer/canvas-renderer.ts` → `packages/editor-classic/src/services/renderer/canvas-renderer.ts`
+- `apps/web/src/services/renderer/effect-preview.ts` → `packages/editor-classic/src/services/renderer/effect-preview.ts`
+- `apps/web/src/services/renderer/scene-exporter.ts` → `packages/editor-classic/src/services/renderer/scene-exporter.ts`
+- `apps/web/src/services/transcription/service.ts` → `packages/editor-classic/src/services/transcription/service.ts`
+- `apps/web/src/services/video-cache/service.ts` → `packages/editor-classic/src/services/video-cache/service.ts`
+- `apps/web/src/services/waveform-cache/service.ts` → `packages/editor-classic/src/services/waveform-cache/service.ts`
+- `apps/web/src/sounds/sounds-store.ts` → `packages/editor-classic/src/sounds/sounds-store.ts`
+- `apps/web/src/sounds/use-sound-search.ts` → `packages/editor-classic/src/sounds/use-sound-search.ts`
+- `apps/web/src/stickers/stickers-store.ts` → `packages/editor-classic/src/stickers/stickers-store.ts`
+- `apps/web/src/timeline/components/graph-editor/custom-presets-store.ts` → `packages/editor-classic/src/timeline/components/graph-editor/custom-presets-store.ts`
+- `apps/web/src/timeline/timeline-store.ts` → `packages/editor-classic/src/timeline/timeline-store.ts`
+- `apps/web/src/utils/browser.ts` → `packages/editor-classic/src/utils/browser.ts`
+
+**504 file(s) added by this fork.** These are **not** patches and must **not** appear in `PATCHES.md`, which logs modifications to inherited files only.
+
+- `apps/electron-host/electron/main.cjs`
+- `apps/electron-host/electron/preload.cjs`
+- `apps/electron-host/index.html`
+- `apps/electron-host/package.json`
+- `apps/electron-host/postcss.config.mjs`
+- `apps/electron-host/scripts/boot-proof.mjs`
+- `apps/electron-host/scripts/c6-oracle-proof.mjs`
+- `apps/electron-host/scripts/desktop-composition-proof.mjs`
+- `apps/electron-host/scripts/evidence-entries-proof.mjs`
+- `apps/electron-host/scripts/serve-dist.mjs`
+- `apps/electron-host/scripts/store-bridge-proof.mjs`
+- `apps/electron-host/scripts/validate-agent-ledger.mjs`
+- `apps/electron-host/src/app.tsx`
+- `apps/electron-host/src/c4-worker-harness.tsx`
+- `apps/electron-host/src/editor-error-boundary.tsx`
+- `apps/electron-host/src/host/electron-editor-host.tsx`
+- `apps/electron-host/src/host/electron-host-config.ts`
+- `apps/electron-host/src/host/electron-runtime-resources.ts`
+- `apps/electron-host/src/main.tsx`
+- `apps/electron-host/src/project-picker.tsx`
+- `apps/electron-host/src/store/__tests__/filesystem-store-conformance.test.ts`
+- `apps/electron-host/src/store/__tests__/filesystem-store-migration-probes.test.ts`
+- `apps/electron-host/src/store/__tests__/store-bridge-surface.test.ts`
+- `apps/electron-host/src/store/filesystem-project-store.ts`
+- `apps/electron-host/src/store/ipc-store-bridge.ts`
+- `apps/electron-host/src/store/main-store-ipc.ts`
+- `apps/electron-host/src/store/node-fs-store-bridge.ts`
+- `apps/electron-host/src/store/project-store-files.ts`
+- `apps/electron-host/src/styles.css`
+- `apps/electron-host/src/surface-evidence-main.tsx`
+- `apps/electron-host/surface-evidence.html`
+- `apps/electron-host/tsconfig.json`
+- `apps/electron-host/vite.config.ts`
+- `apps/vite-example/README.md`
+- `apps/vite-example/build/editor-assets.ts`
+- `apps/vite-example/build/headless-module-graph.ts`
+- `apps/vite-example/build/module-graph.ts`
+- `apps/vite-example/c5-migration.html`
+- `apps/vite-example/c5-storage.html`
+- `apps/vite-example/headless.html`
+- `apps/vite-example/index.html`
+- `apps/vite-example/package.json`
+- `apps/vite-example/playwright.c3.config.ts`
+- `apps/vite-example/playwright.c5-storage.config.ts`
+- `apps/vite-example/playwright.config.ts`
+- `apps/vite-example/playwright.probe.config.ts`
+- `apps/vite-example/playwright.surface.config.ts`
+- `apps/vite-example/postcss.config.mjs`
+- `apps/vite-example/src/app.tsx`
+- `apps/vite-example/src/c3-session-harness.tsx`
+- `apps/vite-example/src/c4-forced-none-harness.tsx`
+- `apps/vite-example/src/c4-session-harness.tsx`
+- `apps/vite-example/src/c4-worker-harness.tsx`
+- `apps/vite-example/src/c5-migration-harness.ts`
+- `apps/vite-example/src/c5-storage-harness.ts`
+- `apps/vite-example/src/editor-error-boundary.tsx`
+- `apps/vite-example/src/headless-entry.ts`
+- `apps/vite-example/src/host/vite-editor-host.tsx`
+- `apps/vite-example/src/host/vite-host-config.ts`
+- `apps/vite-example/src/main.tsx`
+- `apps/vite-example/src/project-picker.tsx`
+- `apps/vite-example/src/styles.css`
+- `apps/vite-example/src/surface-evidence-main.tsx`
+- `apps/vite-example/surface-evidence.html`
+- `apps/vite-example/tests/c3/session-capacity.pw.ts`
+- `apps/vite-example/tests/c5-storage/browser-store.pw.ts`
+- `apps/vite-example/tests/c5-storage/c4-forced-none.pw.ts`
+- `apps/vite-example/tests/c5-storage/migration-round1.pw.ts`
+- `apps/vite-example/tests/fixtures/FIXTURES.md`
+- `apps/vite-example/tests/fixtures/fixture-image.png`
+- `apps/vite-example/tests/fixtures/fixture-tone-a4.wav`
+- `apps/vite-example/tests/fixtures/fixture-tone-a5.wav`
+- `apps/vite-example/tests/fixtures/fixture-video.mp4`
+- `apps/vite-example/tests/parity/agent.pw.ts`
+- `apps/vite-example/tests/parity/c4-next.runtime.ts`
+- `apps/vite-example/tests/parity/driver.ts`
+- `apps/vite-example/tests/parity/electron-page.ts`
+- `apps/vite-example/tests/parity/evidence-path.ts`
+- `apps/vite-example/tests/parity/host-profile.ts`
+- `apps/vite-example/tests/parity/parity.pw.ts`
+- `apps/vite-example/tests/parity/snapshot.ts`
+- `apps/vite-example/tests/parity/surface-r2-evidence.ts`
+- `apps/vite-example/tests/parity/surface.pw.ts`
+- `apps/vite-example/tests/probe/legacy-migration.pw.ts`
+- `apps/vite-example/tests/probe/seed.ts`
+- `apps/vite-example/tests/probe/stickers-registry.pw.ts`
+- `apps/vite-example/tsconfig.json`
+- `apps/vite-example/vite.config.ts`
+- `apps/vite-example/vite.headless.config.ts`
+- `apps/vite-example/vite.surface-css.config.ts`
 - `apps/web/public/workers/c4-worker-fixture.js`
-- `apps/web/src/actions/__tests__/registry.test.ts`
-- `apps/web/src/actions/action-scope.tsx`
-- `apps/web/src/actions/keybinding-target.ts`
 - `apps/web/src/app/c6-disposal/page.tsx`
 - `apps/web/src/app/c7-headless/route.ts`
 - `apps/web/src/app/surface-evidence/page.tsx`
-- `apps/web/src/commands/provider-private-composite.ts`
-- `apps/web/src/components/__tests__/storage-provider-operations.test.ts`
-- `apps/web/src/components/storage-provider-operations.ts`
-- `apps/web/src/core/managers/__tests__/media-persistence-rewire.test.ts`
-- `apps/web/src/core/managers/__tests__/project-manager-thumbnail-degraded.test.ts`
-- `apps/web/src/core/managers/__tests__/project-persistence-rewire.test.ts`
-- `apps/web/src/core/managers/__tests__/save-manager-persistence-failure.test.ts`
-- `apps/web/src/core/managers/__tests__/transaction-command-routing.test.ts`
-- `apps/web/src/core/managers/__tests__/transaction-persistence-coordination.test.ts`
-- `apps/web/src/editor/contracts/conformance/index.ts`
-- `apps/web/src/editor/contracts/domain.ts`
-- `apps/web/src/editor/contracts/draft/__tests__/draft.test.ts`
-- `apps/web/src/editor/contracts/draft/classification.ts`
-- `apps/web/src/editor/contracts/draft/conformance/index.ts`
-- `apps/web/src/editor/contracts/draft/immutable.ts`
-- `apps/web/src/editor/contracts/draft/index.ts`
-- `apps/web/src/editor/contracts/draft/inverse.ts`
-- `apps/web/src/editor/contracts/draft/manager.ts`
-- `apps/web/src/editor/contracts/draft/retention.ts`
-- `apps/web/src/editor/contracts/draft/review.ts`
-- `apps/web/src/editor/contracts/draft/types.ts`
-- `apps/web/src/editor/contracts/engine/__tests__/capture-boundary.types.ts`
-- `apps/web/src/editor/contracts/engine/__tests__/engine.test.ts`
-- `apps/web/src/editor/contracts/engine/adapter.ts`
-- `apps/web/src/editor/contracts/engine/clone.ts`
-- `apps/web/src/editor/contracts/engine/conformance/index.ts`
-- `apps/web/src/editor/contracts/engine/engine.ts`
-- `apps/web/src/editor/contracts/engine/evaluator.ts`
-- `apps/web/src/editor/contracts/engine/index.ts`
-- `apps/web/src/editor/contracts/engine/invariant.ts`
-- `apps/web/src/editor/contracts/engine/native-adapter.ts`
-- `apps/web/src/editor/contracts/engine/placement.ts`
-- `apps/web/src/editor/contracts/engine/projection.ts`
-- `apps/web/src/editor/contracts/engine/types.ts`
-- `apps/web/src/editor/contracts/in-memory/__tests__/in-memory.test.ts`
-- `apps/web/src/editor/contracts/in-memory/index.ts`
-- `apps/web/src/editor/contracts/index.ts`
-- `apps/web/src/editor/contracts/interfaces.ts`
-- `apps/web/src/editor/contracts/operations.ts`
-- `apps/web/src/editor/contracts/transaction.ts`
-- `apps/web/src/editor/contracts/vectors/__tests__/agent-drivers.test.ts`
-- `apps/web/src/editor/contracts/vectors/__tests__/agent-opencut-projection.test.ts`
-- `apps/web/src/editor/contracts/vectors/__tests__/agent-scenario.test.ts`
-- `apps/web/src/editor/contracts/vectors/__tests__/contract-surface.test.ts`
-- `apps/web/src/editor/contracts/vectors/__tests__/corpus-fixture.ts`
-- `apps/web/src/editor/contracts/vectors/__tests__/corpus-isolation.test.ts`
-- `apps/web/src/editor/contracts/vectors/__tests__/coverage.test.ts`
-- `apps/web/src/editor/contracts/vectors/__tests__/loader.test.ts`
-- `apps/web/src/editor/contracts/vectors/__tests__/mutation-matrix.test.ts`
-- `apps/web/src/editor/contracts/vectors/__tests__/mutation-targets.ts`
-- `apps/web/src/editor/contracts/vectors/__tests__/runner.test.ts`
-- `apps/web/src/editor/contracts/vectors/agent-scenario.ts`
-- `apps/web/src/editor/contracts/vectors/contract-surface.ts`
-- `apps/web/src/editor/contracts/vectors/corpus/document-vectors.json`
-- `apps/web/src/editor/contracts/vectors/corpus/manifest.json`
-- `apps/web/src/editor/contracts/vectors/corpus/scenario-vectors.json`
-- `apps/web/src/editor/contracts/vectors/coverage.ts`
-- `apps/web/src/editor/contracts/vectors/drivers/durable.ts`
-- `apps/web/src/editor/contracts/vectors/drivers/in-memory.ts`
-- `apps/web/src/editor/contracts/vectors/index.ts`
-- `apps/web/src/editor/contracts/vectors/loader.ts`
-- `apps/web/src/editor/contracts/vectors/runner.ts`
-- `apps/web/src/editor/contracts/vectors/schema.ts`
-- `apps/web/src/editor/contracts/vectors/sha256.ts`
 - `apps/web/src/editor/host/__tests__/branding-assets.test.ts`
-- `apps/web/src/editor/host/__tests__/browser-runtime.test.ts`
 - `apps/web/src/editor/host/__tests__/production-composition.test.ts`
-- `apps/web/src/editor/host/browser-runtime.ts`
 - `apps/web/src/editor/host/c4-next-runtime-probe.tsx`
-- `apps/web/src/editor/host/c4-project-load.ts`
-- `apps/web/src/editor/host/editor-host-context.tsx`
-- `apps/web/src/editor/host/editor-host.ts`
-- `apps/web/src/editor/host/host-image.tsx`
 - `apps/web/src/editor/host/next-editor-host.ts`
-- `apps/web/src/editor/persistence/__tests__/opaque-roundtrip.test.ts`
-- `apps/web/src/editor/persistence/index.ts`
-- `apps/web/src/editor/persistence/opaque-value.ts`
-- `apps/web/src/editor/persistence/project-codec.ts`
-- `apps/web/src/editor/persistence/session-persistence-coordinator.ts`
-- `apps/web/src/editor/ports/DECISIONS.md`
-- `apps/web/src/editor/ports/__tests__/conformance.test.ts`
-- `apps/web/src/editor/ports/__tests__/port-roles.compile-guard.ts`
-- `apps/web/src/editor/ports/__tests__/runtime-graphics-query.compile-guard.ts`
-- `apps/web/src/editor/ports/assets.ts`
-- `apps/web/src/editor/ports/conformance/index.ts`
-- `apps/web/src/editor/ports/diagnostics.ts`
-- `apps/web/src/editor/ports/environment.ts`
-- `apps/web/src/editor/ports/export-provider.ts`
-- `apps/web/src/editor/ports/gpu-resources.ts`
-- `apps/web/src/editor/ports/id-generator.ts`
-- `apps/web/src/editor/ports/identity.ts`
-- `apps/web/src/editor/ports/in-memory/host.ts`
-- `apps/web/src/editor/ports/in-memory/index.ts`
-- `apps/web/src/editor/ports/index.ts`
-- `apps/web/src/editor/ports/project-store.ts`
-- `apps/web/src/editor/ports/runtime-resources.ts`
-- `apps/web/src/editor/runtime/process-bootstrap.ts`
-- `apps/web/src/editor/runtime/session-core-owner.ts`
-- `apps/web/src/editor/runtime/session-stores.ts`
-- `apps/web/src/editor/runtime/wasm-runtime-providers.ts`
-- `apps/web/src/editor/session/__tests__/c6-durable-reopen.test.ts`
-- `apps/web/src/editor/session/__tests__/c6-test-audio-context.ts`
-- `apps/web/src/editor/session/__tests__/disposal-oracle.test.ts`
-- `apps/web/src/editor/session/__tests__/editor-singleton-boundary.test.ts`
-- `apps/web/src/editor/session/__tests__/headless-browser-boundary.test.ts`
-- `apps/web/src/editor/session/__tests__/headless-migration.test.ts`
-- `apps/web/src/editor/session/__tests__/headless-runtime-probe.test.ts`
-- `apps/web/src/editor/session/__tests__/headless-semantic-fixture.test.ts`
-- `apps/web/src/editor/session/__tests__/headless-session.test.ts`
-- `apps/web/src/editor/session/__tests__/independent-timer-ledger.test.ts`
-- `apps/web/src/editor/session/__tests__/session-async-store-isolation.test.ts`
-- `apps/web/src/editor/session/__tests__/session-disposal-c6.test.ts`
-- `apps/web/src/editor/session/__tests__/session-lifecycle.test.ts`
-- `apps/web/src/editor/session/__tests__/session-runtime-ownership.test.tsx`
-- `apps/web/src/editor/session/__tests__/session-state-isolation.test.ts`
-- `apps/web/src/editor/session/__tests__/session-timer-matrix.test.ts`
-- `apps/web/src/editor/session/__tests__/wasm-test-mock.ts`
-- `apps/web/src/editor/session/c6-disposal-harness.tsx`
-- `apps/web/src/editor/session/c6-durable-reopen-browser.ts`
-- `apps/web/src/editor/session/c6-durable-reopen.ts`
-- `apps/web/src/editor/session/create-session.ts`
-- `apps/web/src/editor/session/disposal-oracle.ts`
-- `apps/web/src/editor/session/editor-session-host.tsx`
-- `apps/web/src/editor/session/editor-session-provider.tsx`
-- `apps/web/src/editor/session/headless-proof-control-react-browser.ts`
-- `apps/web/src/editor/session/headless-proof-control-react.ts`
-- `apps/web/src/editor/session/headless-proof-control.ts`
-- `apps/web/src/editor/session/headless-runtime-probe.ts`
-- `apps/web/src/editor/session/headless-semantic-fixture.ts`
-- `apps/web/src/editor/session/headless.ts`
-- `apps/web/src/editor/session/independent-timer-ledger.ts`
-- `apps/web/src/editor/session/index.ts`
-- `apps/web/src/editor/session/migration-gate.ts`
-- `apps/web/src/editor/session/resources.ts`
-- `apps/web/src/editor/session/session-resources.ts`
-- `apps/web/src/editor/session/session-types.ts`
-- `apps/web/src/editor/surface/editor-root.tsx`
-- `apps/web/src/editor/surface/embedding/__tests__/surface-composition.test.ts`
-- `apps/web/src/editor/surface/embedding/__tests__/surface-drag-coordinator.test.ts`
-- `apps/web/src/editor/surface/embedding/__tests__/surface-drag-integrations.test.ts`
-- `apps/web/src/editor/surface/embedding/__tests__/surface-error-boundary.test.ts`
-- `apps/web/src/editor/surface/embedding/__tests__/surface-focus.test.ts`
-- `apps/web/src/editor/surface/embedding/__tests__/surface-keybinding-scope.test.ts`
-- `apps/web/src/editor/surface/embedding/__tests__/surface-lifecycle.test.ts`
-- `apps/web/src/editor/surface/embedding/__tests__/surface-portal.test.ts`
-- `apps/web/src/editor/surface/embedding/__tests__/surface-react-identity-probe.test.ts`
-- `apps/web/src/editor/surface/embedding/__tests__/surface-transaction-binding.test.ts`
-- `apps/web/src/editor/surface/embedding/editor-surface.tsx`
-- `apps/web/src/editor/surface/embedding/index.ts`
-- `apps/web/src/editor/surface/embedding/session-surface-bridge.tsx`
-- `apps/web/src/editor/surface/embedding/surface-commit-context.tsx`
-- `apps/web/src/editor/surface/embedding/surface-contract.assertions.ts`
-- `apps/web/src/editor/surface/embedding/surface-drag-coordinator.tsx`
-- `apps/web/src/editor/surface/embedding/surface-error-boundary.tsx`
-- `apps/web/src/editor/surface/embedding/surface-evidence-seams.tsx`
-- `apps/web/src/editor/surface/embedding/surface-focus.ts`
-- `apps/web/src/editor/surface/embedding/surface-lifecycle.ts`
-- `apps/web/src/editor/surface/embedding/surface-portal.tsx`
-- `apps/web/src/editor/surface/embedding/surface-react-identity-probe.tsx`
-- `apps/web/src/editor/surface/embedding/surface-transaction-binding.ts`
-- `apps/web/src/editor/surface/embedding/types.ts`
-- `apps/web/src/editor/surface/evidence/agent-evidence-run.ts`
-- `apps/web/src/editor/surface/evidence/surface-evidence-harness.tsx`
-- `apps/web/src/editor/surface/surface.css`
-- `apps/web/src/editor/transactions/opencut/__tests__/adapter-router.test.ts`
-- `apps/web/src/editor/transactions/opencut/__tests__/fixture.ts`
-- `apps/web/src/editor/transactions/opencut/__tests__/routing-registry.test.ts`
-- `apps/web/src/editor/transactions/opencut/adapter.ts`
-- `apps/web/src/editor/transactions/opencut/arbiter.ts`
-- `apps/web/src/editor/transactions/opencut/draft-context.ts`
-- `apps/web/src/editor/transactions/opencut/history-rebase.ts`
-- `apps/web/src/editor/transactions/opencut/index.ts`
-- `apps/web/src/editor/transactions/opencut/projection.ts`
-- `apps/web/src/editor/transactions/opencut/router.ts`
-- `apps/web/src/editor/transactions/opencut/routing.ts`
-- `apps/web/src/editor/transactions/opencut/types.ts`
-- `apps/web/src/editor/use-session-store.ts`
-- `apps/web/src/fonts/__tests__/host-font-assets.test.ts`
-- `apps/web/src/graphics/generated-preview.ts`
-- `apps/web/src/media/__tests__/audio-resource-lifecycle.test.ts`
-- `apps/web/src/media/__tests__/persistence.test.ts`
-- `apps/web/src/media/__tests__/processing-capacity.test.ts`
-- `apps/web/src/media/persistence.ts`
-- `apps/web/src/preview/components/__tests__/timecode-playback-subscription.test.ts`
-- `apps/web/src/preview/components/playback-time-subscription.ts`
-- `apps/web/src/preview/components/use-playback-time.ts`
-- `apps/web/src/services/renderer/__tests__/effect-preview-ownership.test.ts`
-- `apps/web/src/services/renderer/__tests__/host-effect-preview.test.ts`
-- `apps/web/src/services/renderer/effect-preview-source.ts`
-- `apps/web/src/services/renderer/nodes/sticker-cache-key.ts`
-- `apps/web/src/services/storage/__tests__/browser-project-store-cascade-topology.test.ts`
-- `apps/web/src/services/storage/__tests__/browser-project-store-media-topology.test.ts`
-- `apps/web/src/services/storage/__tests__/browser-project-store-migration-topology.test.ts`
-- `apps/web/src/services/storage/__tests__/browser-project-store-records.test.ts`
-- `apps/web/src/services/storage/__tests__/browser-project-store-topology.test.ts`
 - `apps/web/src/services/storage/__tests__/c5-storage-red-controls.test.ts`
-- `apps/web/src/services/storage/__tests__/migration-provider-private.test.ts`
-- `apps/web/src/services/storage/browser-project-store-cascade-manager.ts`
-- `apps/web/src/services/storage/browser-project-store-cascade-probes.ts`
-- `apps/web/src/services/storage/browser-project-store-cascade-round2-probes.ts`
-- `apps/web/src/services/storage/browser-project-store-cascade.ts`
-- `apps/web/src/services/storage/browser-project-store-conformance.ts`
-- `apps/web/src/services/storage/browser-project-store-control.ts`
-- `apps/web/src/services/storage/browser-project-store-internals.ts`
-- `apps/web/src/services/storage/browser-project-store-library-clear-bindings.ts`
-- `apps/web/src/services/storage/browser-project-store-media-ownership.ts`
-- `apps/web/src/services/storage/browser-project-store-migration-round2-probes.ts`
-- `apps/web/src/services/storage/browser-project-store-migration.ts`
-- `apps/web/src/services/storage/browser-project-store-records.ts`
-- `apps/web/src/services/storage/browser-project-store-residual-probes.ts`
-- `apps/web/src/services/storage/browser-project-store-topology.ts`
-- `apps/web/src/services/storage/browser-project-store.ts`
-- `apps/web/src/services/storage/browser-storage-mechanisms.ts`
-- `apps/web/src/services/transcription/__tests__/session-service.test.ts`
-- `apps/web/src/services/video-cache/__tests__/service-ownership.test.ts`
-- `apps/web/src/services/waveform-cache/__tests__/service-ownership.test.ts`
-- `apps/web/src/stickers/__tests__/host-assets.test.ts`
-- `apps/web/src/timeline/__tests__/element-with-track-selector.test.ts`
-- `apps/web/src/timeline/element-with-track-selector.ts`
-- `apps/web/src/utils/__tests__/browser-resource-lifecycle.test.ts`
+- `apps/web/src/services/storage/__tests__/fixtures/c5-v1-project.ts`
+- `examples/agent-transaction/README.md`
+- `examples/agent-transaction/package.json`
+- `examples/agent-transaction/run.ts`
+- `examples/agent-transaction/src/own-store.ts`
+- `examples/agent-transaction/tsconfig.json`
+- `examples/custom-storage/README.md`
+- `examples/custom-storage/package.json`
+- `examples/custom-storage/run-mock.ts`
+- `examples/custom-storage/run.ts`
+- `examples/custom-storage/src/alien-codec.ts`
+- `examples/custom-storage/src/alien-control.ts`
+- `examples/custom-storage/src/alien-store.ts`
+- `examples/custom-storage/src/factories.ts`
+- `examples/custom-storage/src/migrate.ts`
+- `examples/custom-storage/src/roles.ts`
+- `examples/custom-storage/src/transaction.ts`
+- `examples/custom-storage/tsconfig.json`
+- `examples/custom-storage/types/culori.d.ts`
+- `examples/embed-surface/README.md`
+- `examples/embed-surface/index.html`
+- `examples/embed-surface/package.json`
+- `examples/embed-surface/postcss.config.mjs`
+- `examples/embed-surface/public/fonts/font-atlas.json`
+- `examples/embed-surface/public/logos/opencut/svg/logo.svg`
+- `examples/embed-surface/smoke.mjs`
+- `examples/embed-surface/src/host.ts`
+- `examples/embed-surface/src/main.tsx`
+- `examples/embed-surface/src/styles.css`
+- `examples/embed-surface/tsconfig.json`
+- `examples/embed-surface/vite.config.ts`
+- `examples/install-packages/README.md`
+- `examples/install-packages/package.json`
+- `examples/install-packages/run.ts`
+- `examples/install-packages/tsconfig.json`
+- `packages/editor-classic/LICENSE`
+- `packages/editor-classic/NOTICE`
+- `packages/editor-classic/README.md`
+- `packages/editor-classic/package.json`
+- `packages/editor-classic/src/actions/__tests__/registry.test.ts`
+- `packages/editor-classic/src/actions/action-scope.tsx`
+- `packages/editor-classic/src/actions/keybinding-target.ts`
+- `packages/editor-classic/src/browser/index.ts`
+- `packages/editor-classic/src/commands/provider-private-composite.ts`
+- `packages/editor-classic/src/components/__tests__/storage-provider-operations.test.ts`
+- `packages/editor-classic/src/components/storage-provider-operations.ts`
+- `packages/editor-classic/src/core/managers/__tests__/media-persistence-rewire.test.ts`
+- `packages/editor-classic/src/core/managers/__tests__/project-manager-thumbnail-degraded.test.ts`
+- `packages/editor-classic/src/core/managers/__tests__/project-persistence-rewire.test.ts`
+- `packages/editor-classic/src/core/managers/__tests__/save-manager-persistence-failure.test.ts`
+- `packages/editor-classic/src/core/managers/__tests__/transaction-command-routing.test.ts`
+- `packages/editor-classic/src/core/managers/__tests__/transaction-persistence-coordination.test.ts`
+- `packages/editor-classic/src/editor/host/__tests__/browser-runtime.test.ts`
+- `packages/editor-classic/src/editor/host/browser-runtime.ts`
+- `packages/editor-classic/src/editor/host/c4-project-load.ts`
+- `packages/editor-classic/src/editor/host/editor-host-context.tsx`
+- `packages/editor-classic/src/editor/host/host-image.tsx`
+- `packages/editor-classic/src/editor/persistence/__tests__/opaque-roundtrip.test.ts`
+- `packages/editor-classic/src/editor/persistence/index.ts`
+- `packages/editor-classic/src/editor/persistence/opaque-value.ts`
+- `packages/editor-classic/src/editor/persistence/project-codec.ts`
+- `packages/editor-classic/src/editor/persistence/session-persistence-coordinator.ts`
+- `packages/editor-classic/src/editor/runtime/process-bootstrap.ts`
+- `packages/editor-classic/src/editor/runtime/session-core-owner.ts`
+- `packages/editor-classic/src/editor/runtime/session-stores.ts`
+- `packages/editor-classic/src/editor/runtime/wasm-runtime-providers.ts`
+- `packages/editor-classic/src/editor/session/__tests__/c6-durable-reopen.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/c6-test-audio-context.ts`
+- `packages/editor-classic/src/editor/session/__tests__/disposal-oracle.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/editor-singleton-boundary.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/headless-browser-boundary.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/headless-migration.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/headless-runtime-probe.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/headless-semantic-fixture.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/headless-session.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/independent-timer-ledger.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/session-async-store-isolation.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/session-disposal-c6.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/session-lifecycle.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/session-runtime-ownership.test.tsx`
+- `packages/editor-classic/src/editor/session/__tests__/session-state-isolation.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/session-timer-matrix.test.ts`
+- `packages/editor-classic/src/editor/session/__tests__/wasm-test-mock.ts`
+- `packages/editor-classic/src/editor/session/c6-disposal-harness.tsx`
+- `packages/editor-classic/src/editor/session/c6-durable-reopen-browser.ts`
+- `packages/editor-classic/src/editor/session/c6-durable-reopen.ts`
+- `packages/editor-classic/src/editor/session/create-session.ts`
+- `packages/editor-classic/src/editor/session/disposal-oracle.ts`
+- `packages/editor-classic/src/editor/session/editor-session-host.tsx`
+- `packages/editor-classic/src/editor/session/editor-session-provider.tsx`
+- `packages/editor-classic/src/editor/session/headless-proof-control-react-browser.ts`
+- `packages/editor-classic/src/editor/session/headless-proof-control-react.ts`
+- `packages/editor-classic/src/editor/session/headless-proof-control.ts`
+- `packages/editor-classic/src/editor/session/headless-runtime-probe.ts`
+- `packages/editor-classic/src/editor/session/headless-semantic-fixture.ts`
+- `packages/editor-classic/src/editor/session/headless.ts`
+- `packages/editor-classic/src/editor/session/independent-timer-ledger.ts`
+- `packages/editor-classic/src/editor/session/index.ts`
+- `packages/editor-classic/src/editor/session/migration-gate.ts`
+- `packages/editor-classic/src/editor/session/resources.ts`
+- `packages/editor-classic/src/editor/session/session-resources.ts`
+- `packages/editor-classic/src/editor/session/session-types.ts`
+- `packages/editor-classic/src/editor/surface/editor-root.tsx`
+- `packages/editor-classic/src/editor/surface/embedding/__tests__/surface-composition.test.ts`
+- `packages/editor-classic/src/editor/surface/embedding/__tests__/surface-drag-coordinator.test.ts`
+- `packages/editor-classic/src/editor/surface/embedding/__tests__/surface-drag-integrations.test.ts`
+- `packages/editor-classic/src/editor/surface/embedding/__tests__/surface-error-boundary.test.ts`
+- `packages/editor-classic/src/editor/surface/embedding/__tests__/surface-focus.test.ts`
+- `packages/editor-classic/src/editor/surface/embedding/__tests__/surface-keybinding-scope.test.ts`
+- `packages/editor-classic/src/editor/surface/embedding/__tests__/surface-lifecycle.test.ts`
+- `packages/editor-classic/src/editor/surface/embedding/__tests__/surface-portal.test.ts`
+- `packages/editor-classic/src/editor/surface/embedding/__tests__/surface-react-identity-probe.test.ts`
+- `packages/editor-classic/src/editor/surface/embedding/__tests__/surface-transaction-binding.test.ts`
+- `packages/editor-classic/src/editor/surface/embedding/editor-surface.tsx`
+- `packages/editor-classic/src/editor/surface/embedding/index.ts`
+- `packages/editor-classic/src/editor/surface/embedding/session-surface-bridge.tsx`
+- `packages/editor-classic/src/editor/surface/embedding/surface-commit-context.tsx`
+- `packages/editor-classic/src/editor/surface/embedding/surface-contract.assertions.ts`
+- `packages/editor-classic/src/editor/surface/embedding/surface-drag-coordinator.tsx`
+- `packages/editor-classic/src/editor/surface/embedding/surface-error-boundary.tsx`
+- `packages/editor-classic/src/editor/surface/embedding/surface-evidence-seams.tsx`
+- `packages/editor-classic/src/editor/surface/embedding/surface-focus.ts`
+- `packages/editor-classic/src/editor/surface/embedding/surface-lifecycle.ts`
+- `packages/editor-classic/src/editor/surface/embedding/surface-portal.tsx`
+- `packages/editor-classic/src/editor/surface/embedding/surface-react-identity-probe.tsx`
+- `packages/editor-classic/src/editor/surface/embedding/surface-transaction-binding.ts`
+- `packages/editor-classic/src/editor/surface/embedding/types.ts`
+- `packages/editor-classic/src/editor/surface/evidence/agent-evidence-run.ts`
+- `packages/editor-classic/src/editor/surface/evidence/surface-evidence-harness.tsx`
+- `packages/editor-classic/src/editor/transactions/opencut/__tests__/adapter-router.test.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/__tests__/agent-opencut-projection.test.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/__tests__/fixture.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/__tests__/routing-registry.test.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/adapter.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/arbiter.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/draft-context.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/history-rebase.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/index.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/projection.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/router.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/routing.ts`
+- `packages/editor-classic/src/editor/transactions/opencut/types.ts`
+- `packages/editor-classic/src/editor/use-session-store.ts`
+- `packages/editor-classic/src/evidence/headless.ts`
+- `packages/editor-classic/src/evidence/index.ts`
+- `packages/editor-classic/src/fonts/__tests__/host-font-assets.test.ts`
+- `packages/editor-classic/src/fonts/index.ts`
+- `packages/editor-classic/src/graphics/generated-preview.ts`
+- `packages/editor-classic/src/index.ts`
+- `packages/editor-classic/src/media/__tests__/audio-resource-lifecycle.test.ts`
+- `packages/editor-classic/src/media/__tests__/persistence.test.ts`
+- `packages/editor-classic/src/media/__tests__/processing-capacity.test.ts`
+- `packages/editor-classic/src/media/index.ts`
+- `packages/editor-classic/src/media/persistence.ts`
+- `packages/editor-classic/src/preview/components/__tests__/timecode-playback-subscription.test.ts`
+- `packages/editor-classic/src/preview/components/playback-time-subscription.ts`
+- `packages/editor-classic/src/preview/components/use-playback-time.ts`
+- `packages/editor-classic/src/project/index.ts`
+- `packages/editor-classic/src/renderer/index.ts`
+- `packages/editor-classic/src/runtime/index.ts`
+- `packages/editor-classic/src/services/renderer/__tests__/effect-preview-ownership.test.ts`
+- `packages/editor-classic/src/services/renderer/__tests__/host-effect-preview.test.ts`
+- `packages/editor-classic/src/services/renderer/effect-preview-source.ts`
+- `packages/editor-classic/src/services/renderer/nodes/sticker-cache-key.ts`
+- `packages/editor-classic/src/services/storage/__tests__/browser-project-store-cascade-topology.test.ts`
+- `packages/editor-classic/src/services/storage/__tests__/browser-project-store-media-topology.test.ts`
+- `packages/editor-classic/src/services/storage/__tests__/browser-project-store-migration-topology.test.ts`
+- `packages/editor-classic/src/services/storage/__tests__/browser-project-store-records.test.ts`
+- `packages/editor-classic/src/services/storage/__tests__/browser-project-store-topology.test.ts`
+- `packages/editor-classic/src/services/storage/__tests__/migration-provider-private.test.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-cascade-manager.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-cascade-probes.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-cascade-round2-probes.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-cascade.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-conformance.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-control.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-internals.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-library-clear-bindings.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-media-ownership.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-migration-round2-probes.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-migration.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-records.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-residual-probes.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store-topology.ts`
+- `packages/editor-classic/src/services/storage/browser-project-store.ts`
+- `packages/editor-classic/src/services/storage/browser-storage-mechanisms.ts`
+- `packages/editor-classic/src/services/transcription/__tests__/session-service.test.ts`
+- `packages/editor-classic/src/services/video-cache/__tests__/service-ownership.test.ts`
+- `packages/editor-classic/src/services/waveform-cache/__tests__/service-ownership.test.ts`
+- `packages/editor-classic/src/session/index.ts`
+- `packages/editor-classic/src/stickers/__tests__/host-assets.test.ts`
+- `packages/editor-classic/src/storage/conformance.ts`
+- `packages/editor-classic/src/storage/index.ts`
+- `packages/editor-classic/src/storage/migrations.ts`
+- `packages/editor-classic/src/surface/index.ts`
+- `packages/editor-classic/src/surface/surface.css`
+- `packages/editor-classic/src/timeline/__tests__/element-with-track-selector.test.ts`
+- `packages/editor-classic/src/timeline/element-with-track-selector.ts`
+- `packages/editor-classic/src/ui/index.ts`
+- `packages/editor-classic/src/utils/__tests__/browser-resource-lifecycle.test.ts`
+- `packages/editor-classic/surface.json`
+- `packages/editor-contracts/LICENSE`
+- `packages/editor-contracts/NOTICE`
+- `packages/editor-contracts/README.md`
+- `packages/editor-contracts/package.json`
+- `packages/editor-contracts/src/conformance/index.ts`
+- `packages/editor-contracts/src/conformance/requirements/__tests__/requirements-index.test.ts`
+- `packages/editor-contracts/src/conformance/requirements/index.ts`
+- `packages/editor-contracts/src/domain.ts`
+- `packages/editor-contracts/src/draft/__tests__/draft.test.ts`
+- `packages/editor-contracts/src/draft/classification.ts`
+- `packages/editor-contracts/src/draft/conformance/index.ts`
+- `packages/editor-contracts/src/draft/immutable.ts`
+- `packages/editor-contracts/src/draft/index.ts`
+- `packages/editor-contracts/src/draft/inverse.ts`
+- `packages/editor-contracts/src/draft/manager.ts`
+- `packages/editor-contracts/src/draft/retention.ts`
+- `packages/editor-contracts/src/draft/review.ts`
+- `packages/editor-contracts/src/draft/types.ts`
+- `packages/editor-contracts/src/engine/__tests__/capture-boundary.types.ts`
+- `packages/editor-contracts/src/engine/__tests__/engine.test.ts`
+- `packages/editor-contracts/src/engine/adapter.ts`
+- `packages/editor-contracts/src/engine/clone.ts`
+- `packages/editor-contracts/src/engine/conformance/index.ts`
+- `packages/editor-contracts/src/engine/engine.ts`
+- `packages/editor-contracts/src/engine/evaluator.ts`
+- `packages/editor-contracts/src/engine/index.ts`
+- `packages/editor-contracts/src/engine/invariant.ts`
+- `packages/editor-contracts/src/engine/native-adapter.ts`
+- `packages/editor-contracts/src/engine/placement.ts`
+- `packages/editor-contracts/src/engine/projection.ts`
+- `packages/editor-contracts/src/engine/types.ts`
+- `packages/editor-contracts/src/in-memory/__tests__/in-memory.test.ts`
+- `packages/editor-contracts/src/in-memory/index.ts`
+- `packages/editor-contracts/src/index.ts`
+- `packages/editor-contracts/src/interfaces.ts`
+- `packages/editor-contracts/src/operations.ts`
+- `packages/editor-contracts/src/transaction.ts`
+- `packages/editor-contracts/src/vectors/__tests__/agent-drivers.test.ts`
+- `packages/editor-contracts/src/vectors/__tests__/agent-scenario.test.ts`
+- `packages/editor-contracts/src/vectors/__tests__/contract-surface.test.ts`
+- `packages/editor-contracts/src/vectors/__tests__/corpus-fixture.ts`
+- `packages/editor-contracts/src/vectors/__tests__/corpus-isolation.test.ts`
+- `packages/editor-contracts/src/vectors/__tests__/coverage.test.ts`
+- `packages/editor-contracts/src/vectors/__tests__/loader.test.ts`
+- `packages/editor-contracts/src/vectors/__tests__/mutation-matrix.test.ts`
+- `packages/editor-contracts/src/vectors/__tests__/mutation-targets.ts`
+- `packages/editor-contracts/src/vectors/__tests__/published-corpus-entry.test.ts`
+- `packages/editor-contracts/src/vectors/__tests__/runner.test.ts`
+- `packages/editor-contracts/src/vectors/agent-scenario.ts`
+- `packages/editor-contracts/src/vectors/contract-surface.ts`
+- `packages/editor-contracts/src/vectors/corpus/document-vectors.json`
+- `packages/editor-contracts/src/vectors/corpus/index.ts`
+- `packages/editor-contracts/src/vectors/corpus/manifest.json`
+- `packages/editor-contracts/src/vectors/corpus/scenario-vectors.json`
+- `packages/editor-contracts/src/vectors/coverage.ts`
+- `packages/editor-contracts/src/vectors/drivers/durable.ts`
+- `packages/editor-contracts/src/vectors/drivers/in-memory.ts`
+- `packages/editor-contracts/src/vectors/index.ts`
+- `packages/editor-contracts/src/vectors/loader.ts`
+- `packages/editor-contracts/src/vectors/runner.ts`
+- `packages/editor-contracts/src/vectors/schema.ts`
+- `packages/editor-contracts/src/vectors/sha256.ts`
+- `packages/editor-contracts/surface.json`
+- `packages/editor-ports/LICENSE`
+- `packages/editor-ports/NOTICE`
+- `packages/editor-ports/README.md`
+- `packages/editor-ports/package.json`
+- `packages/editor-ports/src/DECISIONS.md`
+- `packages/editor-ports/src/__tests__/conformance.test.ts`
+- `packages/editor-ports/src/__tests__/port-roles.compile-guard.ts`
+- `packages/editor-ports/src/__tests__/runtime-graphics-query.compile-guard.ts`
+- `packages/editor-ports/src/assets.ts`
+- `packages/editor-ports/src/conformance/__tests__/requirements-index.test.ts`
+- `packages/editor-ports/src/conformance/index.ts`
+- `packages/editor-ports/src/conformance/requirements.ts`
+- `packages/editor-ports/src/diagnostics.ts`
+- `packages/editor-ports/src/environment.ts`
+- `packages/editor-ports/src/export-provider.ts`
+- `packages/editor-ports/src/gpu-resources.ts`
+- `packages/editor-ports/src/host/index.ts`
+- `packages/editor-ports/src/id-generator.ts`
+- `packages/editor-ports/src/identity.ts`
+- `packages/editor-ports/src/in-memory/host.ts`
+- `packages/editor-ports/src/in-memory/index.ts`
+- `packages/editor-ports/src/index.ts`
+- `packages/editor-ports/src/project-store.ts`
+- `packages/editor-ports/src/runtime-resources.ts`
+- `packages/editor-ports/surface.json`
 - `rust/wasm/LICENSE`
 - `rust/wasm/src/runtime_state.rs`
+- `script/__tests__/c5-emitted-runtime-assets-red.test.mjs`
+- `script/__tests__/c5-runtime-asset-boundary-red.test.mjs`
+- `script/__tests__/c5-storage-boundary-red.test.mjs`
+- `script/__tests__/c6-session-resource-boundary.test.mjs`
+- `script/__tests__/c7-headless-graph.test.mjs`
+- `script/__tests__/c7-headless-semantic-result.test.mjs`
+- `script/build-wasm.mjs`
+- `script/check-agent-evidence.mjs`
+- `script/check-asset-manifest.mjs`
+- `script/check-distributable-boundary.mjs`
+- `script/check-editor-singleton.mjs`
+- `script/check-emitted-runtime-assets.mjs`
+- `script/check-headless-graph.mjs`
+- `script/check-headless-semantic-result.mjs`
+- `script/check-host-composition.mjs`
+- `script/check-next-imports.mjs`
+- `script/check-package-boundary.mjs`
+- `script/check-packed-manifest-closure.mjs`
+- `script/check-port-boundary.mjs`
+- `script/check-react-singleton.mjs`
+- `script/check-reference-boundary.mjs`
+- `script/check-resolution-equivalence.mjs`
+- `script/check-runtime-asset-boundary.mjs`
+- `script/check-sdk-consumer-view.mjs`
+- `script/check-sdk-surface-labels.mjs`
+- `script/check-session-resource-boundary.mjs`
+- `script/check-session-state-boundary.mjs`
+- `script/check-storage-boundary.mjs`
+- `script/check-surface-boundary.mjs`
+- `script/check-surface-css-boundary.mjs`
+- `script/check-surface-portal-boundary.mjs`
+- `script/check-surface-private-drag.mjs`
+- `script/check-transaction-boundary.mjs`
+- `script/check-type-baseline.mjs`
+- `script/check-wasm-api-surface.mjs`
+- `script/check-wasm-paths.mjs`
+- `script/check-wasm-source.mjs`
+- `script/collect-next-editor-module-ids.mjs`
+- `script/diff-parity-snapshots.mjs`
+- `script/fixtures/c5-browser-store-conformance/browser-store-conformance.ts`
+- `script/fixtures/c5-storage-boundary/direct-adapter/apps/web/src/core/consumer.ts`
+- `script/fixtures/c5-storage-boundary/direct-indexeddb/apps/web/src/core/consumer.ts`
+- `script/fixtures/c5-storage-boundary/direct-opfs/apps/web/src/core/consumer.ts`
+- `script/fixtures/c5-storage-boundary/direct-singleton/apps/web/src/core/consumer.ts`
+- `script/fixtures/c5-storage-boundary/hidden-host-storage/packages/editor-ports/src/index.ts`
+- `script/fixtures/c5-storage-boundary/in-memory-fallback/apps/vite-example/src/host/vite-host-config.ts`
+- `script/fixtures/c5-storage-boundary/localstorage-presets/apps/web/src/timeline/components/graph-editor/custom-presets-store.ts`
+- `script/fixtures/c5-storage-boundary/localstorage-sounds/apps/web/src/sounds/sounds-store.ts`
+- `script/fixtures/c5-storage-boundary/mechanism-type-leak/apps/web/src/editor/ports/project-store.ts`
+- `script/fixtures/c5-storage-boundary/physical-storage-path-leak/packages/editor-ports/src/project-store.ts`
+- `script/fixtures/c5-storage-boundary/private-storage-context/apps/web/src/editor/storage-context.tsx`
+- `script/fixtures/c5-storage-boundary/public-command-leak/packages/editor-ports/src/project-store.ts`
+- `script/fixtures/c5-storage-boundary/public-schema-leak/packages/editor-ports/src/project-store.ts`
+- `script/fixtures/c5-storage-boundary/public-state-store-leak/packages/editor-ports/src/project-store.ts`
+- `script/fixtures/c5-storage-boundary/public-storage-implementation-leak/packages/editor-ports/src/project-store.ts`
+- `script/fixtures/c5-storage-boundary/second-media-port/apps/web/src/editor/ports/index.ts`
+- `script/fixtures/c5-storage-boundary/second-storage-port/apps/web/src/editor/ports/index.ts`
+- `script/fixtures/c5-storage-boundary/unlisted-verification/apps/vite-example/tests/probe/unlisted.ts`
+- `script/fixtures/c6-session-resource-closure-anchor.json`
+- `script/fixtures/c6-session-resource-expected-closure.json`
+- `script/fixtures/c7-headless-runtime-sensitivity-control.ts`
+- `script/fixtures/editor-singleton-negative/current-session-route.ts.fixture`
+- `script/fixtures/editor-singleton-negative/empty-subscriber-facade.ts.fixture`
+- `script/fixtures/editor-singleton-negative/empty-subscriber.ts.fixture`
+- `script/fixtures/editor-singleton-negative/get-instance.ts.fixture`
+- `script/fixtures/editor-singleton-negative/module-scope-construction.ts.fixture`
+- `script/fixtures/editor-singleton-negative/outside-owner-construction.ts.fixture`
+- `script/fixtures/editor-singleton-negative/outside-owner-wrapper.ts.fixture`
+- `script/fixtures/editor-singleton-negative/reset.ts.fixture`
+- `script/fixtures/editor-singleton-negative/static-instance.ts.fixture`
+- `script/fixtures/editor-singleton-negative/use-editor-alias.ts.fixture`
+- `script/fixtures/editor-singleton-negative/use-editor-no-selector.ts.fixture`
+- `script/fixtures/editor-singleton-negative/use-editor-optional.ts.fixture`
+- `script/fixtures/session-state-ownership.json`
+- `script/fixtures/third-party-adapter-variant-nonconforming/README.md`
+- `script/fixtures/third-party-adapter-variant-nonconforming/__tests__/migration-walker.test.ts`
+- `script/fixtures/third-party-adapter-variant-nonconforming/package.json`
+- `script/fixtures/third-party-adapter-variant-nonconforming/run.ts`
+- `script/fixtures/third-party-adapter-variant-nonconforming/src/alien-codec.ts`
+- `script/fixtures/third-party-adapter-variant-nonconforming/src/alien-control.ts`
+- `script/fixtures/third-party-adapter-variant-nonconforming/src/alien-store.ts`
+- `script/fixtures/third-party-adapter-variant-nonconforming/src/factories.ts`
+- `script/fixtures/third-party-adapter-variant-nonconforming/src/migrate.ts`
+- `script/fixtures/third-party-adapter-variant-nonconforming/src/roles.ts`
+- `script/fixtures/third-party-adapter-variant-nonconforming/src/transaction.ts`
+- `script/fixtures/third-party-adapter/README.md`
+- `script/fixtures/third-party-adapter/__tests__/migration-walker.test.ts`
+- `script/fixtures/third-party-adapter/package.json`
+- `script/fixtures/third-party-adapter/run.ts`
+- `script/fixtures/third-party-adapter/src/alien-codec.ts`
+- `script/fixtures/third-party-adapter/src/alien-control.ts`
+- `script/fixtures/third-party-adapter/src/alien-store.ts`
+- `script/fixtures/third-party-adapter/src/factories.ts`
+- `script/fixtures/third-party-adapter/src/migrate.ts`
+- `script/fixtures/third-party-adapter/src/roles.ts`
+- `script/fixtures/third-party-adapter/src/transaction.ts`
+- `script/fixtures/type-baseline.json`
+- `script/fixtures/wasm-runtime-contract.ts`
+- `script/fixtures/wasm-runtime-failure-probe.html`
+- `script/fixtures/wasm-runtime-probe.html`
+- `script/generate-sbom.mjs`
+- `script/generate-session-resource-closure.mjs`
+- `script/generate-source-inventory.mjs`
+- `script/generate-vector-manifest.mjs`
+- `script/pack-sdk-tarballs.mjs`
+- `script/reconcile-provenance.mjs`
+- `script/run-c6-browser-oracle.mjs`
+- `script/run-c7-headless-host.mjs`
+- `script/run-published-examples.mjs`
+- `script/run-scratch-conformance.mjs`
+- `script/run-wasm-api-contract.mjs`
+- `script/scratch-install-harness.mjs`
+- `script/test-wasm-runtime-api.mjs`
+- `script/wasm-api-surface-contract.mjs`
