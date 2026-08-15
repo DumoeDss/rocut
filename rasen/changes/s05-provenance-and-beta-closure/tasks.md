@@ -48,14 +48,14 @@
 
 ## 4. Generator widening and reconciliation machinery
 
-- [ ] 4.1 Widen `script/generate-source-inventory.mjs`'s areas to the current tree — derived from
+- [x] 4.1 Widen `script/generate-source-inventory.mjs`'s areas to the current tree — derived from
       the boundary map and workspace globs where possible, not a hand-list — covering
       `packages/*`, `examples/`, the script estate, `apps/vite-example` and `apps/electron-host`
       beside the surviving `rust` and `apps/web/public`. Dry-run again: the rename classification
       flows through the generator's own semantics; reconcile that moved-unmodified and
       moved-modified files classify honestly (a moved file with content change is drift, not an
       addition).
-- [ ] 4.2 Reconciliation machinery check (still Phase A — the final numbers are Phase B's): a
+- [x] 4.2 Reconciliation machinery check (still Phase A — the final numbers are Phase B's): a
       comparison pass that pairs every modified inherited file with a `PATCHES.md` row and every
       fork-added path with a `UPSTREAM.md` entry, reporting both counts by derivation. Fix the
       gap it finds NOW (add the missing rows with their slice attributions — the patch log is the

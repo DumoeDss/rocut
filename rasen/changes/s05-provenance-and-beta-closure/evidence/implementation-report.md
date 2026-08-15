@@ -178,3 +178,71 @@ its converse control proves the dispositions and register stay silent, the
 family census moved 29→30 with the known nonzero set unchanged, and the
 wiring + audit row are in place.
 
+
+## Group 4 — Generator widening and reconciliation machinery (tasks 4.1, 4.2)
+
+**4.1 — areas derived, drift classified honestly.** The generator's pre-P1
+`AREAS` hand-list is gone: `deriveAreas()` expands the root manifest's
+`packages/*` workspace glob, maps `boundary.json` consumers (ownership map
+contributes the mapped tree plus the app's `public`; a `src`-rooted consumer
+contributes its whole app; any other its root), and hand-names only the two
+survivors the design itself names (`script`, `rust`) — the design-E4 set,
+reproduced by derivation. Dry-run at the widened areas: pin-side totals
+unchanged (1071 files — the fork added no files inside pin-side areas beyond
+the 2 script files), drift **34 M / 453 moved-modified / 151 moved-unmodified
+/ 503 added / 0 deleted** once the third rename class landed:
+
+- `computeDrift` now recovers the extraction's heavy-rewrite tail as
+  **`movedRewritten`** (37 files): a pin path git reported deleted pairs with
+  the UNIQUE added path carrying its `apps/web/src/`-stripped suffix — drift
+  carrying a PATCHES row, never a silent deletion. Two of the 37 were
+  ambiguous at first pass because the c5-storage-boundary fixtures replicate
+  the upstream layout verbatim (`script/fixtures/**` tails collide with the
+  packages destinations); fixtures are copies, never extraction destinations,
+  so they are excluded from pairing candidates and stay fork-added. Leftover
+  unpaired paths would stay `deleted`; the derivation refuses to guess.
+- The md/JSON/console renderings all carry the new class; the stale claim that
+  deletions are "judgement recorded in UPSTREAM.md's removed-areas section"
+  is gone (the 37 are moves, and nothing is deleted at all).
+- `SOURCE_INVENTORY.{md,json}` were regenerated to verify the rendering, then
+  restored from HEAD by `git show HEAD:<path> > <path>` with `git hash-object`
+  equality — Phase B owns the regenerated commit, not this group.
+
+One trap fixed in passing, and worth its record: the generator's pin ref was
+`process.argv[2]`, so an IMPORTER's flag (`--apply`) leaked into `git diff`
+as a ref. The pin is now an exported `PIN` constant and `computeDrift`
+defaults to it; the CLI-only override ignores leading-dash args.
+
+**4.2 — reconciliation machinery, gap found and fixed NOW.**
+`script/reconcile-provenance.mjs` pairs every drift-classed inherited file
+(M + movedModified + movedRewritten, keyed by upstream path) with a PATCHES
+row via the padding-aware row regex — parser cross-checked against the naive
+`^| P-` line count each run, a shortfall refuses — and every fork-added path
+with a UPSTREAM.md listing (reported; a FAIL only under `--require-added`,
+which task 6.3's inventory satisfies and Phase B's gates turn on). Orphan rows
+(key paths outside the derivation) are censused: all 9 are repo-root/app-config
+paths (bun-ci.yml, .gitignore, package.json, bun.lock, Cargo.toml,
+eslint.config.mjs, README.md, apps/web/{package.json,next.config.ts}) —
+outside the inventoried areas by design.
+
+First run against the 265-row ledger: **need-row 524, covered 186, missing
+338** (Group 1's 336 + 2: 35 of the 37 movedRewritten froms were already
+rowed). The gap is fixed in this group, by derivation, not archaeology:
+`evidence/group4-author-rows.mjs` (dry-run by default, `--apply` appends)
+generated rows P-277..P-614 — every field derived (drift class and R-score
+from the generator, destination from the rename/pairing record, last-touch
+from a single `git log` pass, and the forcing clause is S05 P1's extraction
+clause per BOUNDARIES.md §7 "Specifier rewrites P1 owes"). The last-touch
+histogram matters for honesty: 776 of 802 extracted files were last touched
+by the extraction commit itself, so the drift is overwhelmingly the
+extraction's own import-specifier rewrites — rows say exactly that; only 3 of
+the 338 carry post-extraction attributions (35950753 ×2, f239d81b ×1; the
+unmapped-commit case refuses rather than fabricating). After-state
+(`group4-reconcile-after.log`): **603 rows / 533 unique paths, need-row 524,
+covered 524, MISSING 0, exit 0**; `--require-added` verified to fail with the
+496-unlisted census (task 6.3's deliverable). ESLint clean on all three
+touched scripts. `SOURCE_INVENTORY` files left at HEAD bytes.
+
+**Group 4 verdict:** the areas and the three-class rename taxonomy are
+derived, the reconciliation machinery exists and gates, and the patch-row gap
+it found (338 rows) is closed in Phase A — Phase B's delta is regeneration.
