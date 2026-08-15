@@ -964,3 +964,22 @@ required one guard amendment, recorded with its reasoning in the code:
 `vectors/__tests__/corpus-isolation.test.ts` now exempts `__tests__` sources from its
 entry-import ban, because the drift guard consumes the published `./vectors/corpus` entry
 exactly as a third party does, and no test file is part of a distributable graph.
+
+### The pack-and-install harness (E1) and its exported API
+
+`script/pack-sdk-tarballs.mjs` exports **`SDK_PACKAGES`** and **`packSdkTarballs({ repoRoot?, outDir?,
+packages?, determinism?, log? })`** — pack the three packages with `npm pack` (the real
+distribution path, never extract-fix-repack), hash a per-file SHA-256 inventory, run the
+pack-twice determinism control, and return the manifest object; the CLI entry writes that
+manifest to the change's evidence as the committed digest record
+(`tarball-manifest.json`; tarballs stay in gitignored `dist-sdk-tarballs/`). **This API is the
+deliverable P6 imports for its CI leg** — P6 must not re-implement packing.
+
+`script/run-scratch-conformance.mjs` is the one-process scratch lifecycle runner: E2 root
+resolution (`OPENCUT_SCRATCH_ROOT` overridable; asserts outside the repo tree and outside every
+Temp path), wipe-and-recreate with a marker (foreign roots refused), install via gate-1's proven
+npm `file:` deps + `overrides` mechanism, materialize the committed adapter template (Group 5;
+until then a loudly-labeled built-in smoke consumer), run the suites under bun, and
+`--control-removal` for E4.3. Controls E4.1 (location) and E4.2 (copy-not-link, `lstatSync` +
+lockfile `file:` resolutions) print their pass lines into every run's log. The full harness
+mechanics section lands at this child's close-out (E9 step 5).

@@ -1,0 +1,363 @@
+#!/usr/bin/env node
+/**
+ * The scratch-conformance runner (S05 P3, design E1/E2/E4).
+ *
+ * Owns the whole scratch-project lifecycle in one foreground process: resolve
+ * the scratch root (E2), assert it is outside the repo tree and outside any
+ * Temp path (control 1), wipe-and-recreate it fresh per run with a marker file
+ * (a root this script did not create is refused, never reused), pack the SDK
+ * tarballs through the pack module, install them via gate-1's proven mechanism
+ * (npm `file:` deps + `overrides`), assert every installed `@opencut/*` is a
+ * real directory copy and the lockfile records `file:` resolutions (control
+ * 2), materialize the committed adapter template, run the suites under bun,
+ * and capture every step's self-logged exit code.
+ *
+ * Modes:
+ *   node script/run-scratch-conformance.mjs                     # full run
+ *   node script/run-scratch-conformance.mjs --control-removal   # control 3
+ *
+ * Control 3 (E4.3) deletes the installed `@opencut/editor-ports` copy and
+ * re-runs the consumer's import step: it MUST fail to resolve. A run that
+ * still succeeded would be reaching into the monorepo — the exact hole this
+ * control exists to close. The failure text is recorded in the log.
+ *
+ * Environment:
+ *   OPENCUT_SCRATCH_ROOT  override the scratch root (E2; CI never inherits
+ *                         this machine's E:-drive geography)
+ *   OPENCUT_BUN           the bun invocation (default: npx --yes bun@1.2.18)
+ *   OPENCUT_PREPACKED_DIR skip packing; copy tarballs from this directory
+ */
+import {
+	cpSync,
+	existsSync,
+	lstatSync,
+	mkdirSync,
+	readdirSync,
+	readFileSync,
+	rmSync,
+	writeFileSync,
+} from "node:fs";
+import { basename, dirname, isAbsolute, join, relative, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { tmpdir } from "node:os";
+import { spawnSync } from "node:child_process";
+
+import { DEFAULT_OUT_DIR_NAME, packSdkTarballs } from "./pack-sdk-tarballs.mjs";
+
+const MODULE_DIR = dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = resolve(MODULE_DIR, "..");
+const IS_WINDOWS = process.platform === "win32";
+const MARKER_NAME = ".opencut-scratch-marker";
+const ADAPTER_TEMPLATE = join(REPO_ROOT, "script", "fixtures", "third-party-adapter");
+const SDK_NAMES = [
+	"@opencut/editor-ports",
+	"@opencut/editor-contracts",
+	"@opencut/editor-classic",
+];
+
+/** `child` equals or lies inside `parent` (both resolved, separators normalized). */
+function isInside(child, parent) {
+	const rel = relative(resolve(parent), resolve(child)).replace(/\\/g, "/");
+	return rel === "" || (!rel.startsWith("..") && !isAbsolute(rel));
+}
+
+function fail(step, message) {
+	console.error(`run-scratch-conformance: ${message}`);
+	console.log(`REAL_EXIT_CODE[${step}]:1`);
+	process.exit(1);
+}
+
+/** Run a tool, echo its output, and self-log the exit code — never throw. */
+function runLogged(step, command, args, options = {}) {
+	// A single command string when a shell is involved: an args array with
+	// shell:true trips DEP0190 and the paths here contain no spaces.
+	const invocation = IS_WINDOWS ? [`${command} ${args.join(" ")}`, []] : [command, args];
+	const result = spawnSync(invocation[0], invocation[1], {
+		shell: IS_WINDOWS,
+		encoding: "utf8",
+		maxBuffer: 256 * 1024 * 1024,
+		...options,
+	});
+	const output = `${result.stdout || ""}${result.stderr || ""}`.trim();
+	if (output) console.log(output);
+	const code = result.status ?? -1;
+	console.log(`REAL_EXIT_CODE[${step}]:${code}`);
+	return { code, output };
+}
+
+// ---------------------------------------------------------------------------
+// E2: root resolution + control 1 (location), asserted every run
+// ---------------------------------------------------------------------------
+
+function resolveScratchRoot() {
+	const fromEnv = process.env.OPENCUT_SCRATCH_ROOT;
+	const root = resolve(fromEnv ?? join(dirname(REPO_ROOT), "opencut-scratch-p3"));
+	console.log(`scratch root: ${root}${fromEnv ? " (OPENCUT_SCRATCH_ROOT)" : " (E:-drive default)"}`);
+
+	if (isInside(root, REPO_ROOT)) {
+		fail("control-1", `scratch root is inside the repo tree (${REPO_ROOT}) — refusing`);
+	}
+	console.log(`CONTROL-1a root-outside-repo-tree: PASS (${relative(REPO_ROOT, root) || "sibling of repo"})`);
+
+	const temps = [process.env.TEMP, process.env.TMP, process.env.TMPDIR, tmpdir()]
+		.filter(Boolean)
+		.map((t) => resolve(t));
+	const underTemp = temps.filter((t) => isInside(root, t));
+	if (underTemp.length > 0) {
+		fail(
+			"control-1",
+			`scratch root sits under a Temp path (${underTemp[0]}) — the measured AV hazard; refusing`,
+		);
+	}
+	console.log(`CONTROL-1b root-outside-temp: PASS (checked ${temps.length} Temp root(s))`);
+	return root;
+}
+
+// ---------------------------------------------------------------------------
+// E2: fresh-per-run lifecycle (wipe + recreate + marker; refuse foreign roots)
+// ---------------------------------------------------------------------------
+
+function freshLifecycle(root) {
+	if (existsSync(root)) {
+		const stat = lstatSync(root);
+		if (!stat.isDirectory()) {
+			fail("lifecycle", `scratch root exists and is not a directory: ${root}`);
+		}
+		if (!existsSync(join(root, MARKER_NAME))) {
+			fail(
+				"lifecycle",
+				`pre-existing root has no ${MARKER_NAME} marker — foreign root, refusing to touch it`,
+			);
+		}
+		console.log(`lifecycle: wiping previous scratch root (marker verified)`);
+		rmSync(root, { recursive: true, force: true });
+	}
+	mkdirSync(root, { recursive: true });
+	writeFileSync(
+		join(root, MARKER_NAME),
+		`${JSON.stringify({ createdBy: "script/run-scratch-conformance.mjs", createdAt: new Date().toISOString() }, null, 2)}\n`,
+	);
+	console.log(`lifecycle: fresh scratch root created with marker (${root})`);
+}
+
+// ---------------------------------------------------------------------------
+// Pack + install (gate-1 mechanism: npm file: deps + overrides)
+// ---------------------------------------------------------------------------
+
+function stageTarballs(root) {
+	const tarballsDir = join(root, "tarballs");
+	mkdirSync(tarballsDir, { recursive: true });
+	const prepacked = process.env.OPENCUT_PREPACKED_DIR;
+	let tarballPaths;
+	if (prepacked) {
+		const dir = resolve(prepacked);
+		console.log(`pack: skipped — copying pre-packed tarballs from ${dir}`);
+		tarballPaths = readdirSync(dir)
+			.filter((name) => name.endsWith(".tgz"))
+			.sort()
+			.map((name) => join(dir, name));
+	} else {
+		const outDir = join(REPO_ROOT, DEFAULT_OUT_DIR_NAME);
+		const manifest = packSdkTarballs({
+			repoRoot: REPO_ROOT,
+			outDir,
+			determinism: false,
+			log: (line) => console.log(`pack: ${line}`),
+		});
+		tarballPaths = manifest.packages.map((entry) => join(outDir, basename(entry.tarball)));
+	}
+	for (const tarball of tarballPaths) {
+		cpSync(tarball, join(tarballsDir, basename(tarball)));
+	}
+	console.log(`pack: ${tarballPaths.length} tarball(s) staged into the scratch project`);
+	return tarballPaths.map((path) => `file:tarballs/${basename(path)}`);
+}
+
+function writeScratchManifest(root, specs) {
+	const byName = new Map(
+		SDK_NAMES.map((name, index) => [name, specs[index]]),
+	);
+	const manifest = {
+		name: "opencut-scratch-conformance",
+		version: "0.0.0",
+		private: true,
+		type: "module",
+		dependencies: Object.fromEntries(SDK_NAMES.map((name) => [name, byName.get(name)])),
+		// Gate-1's proven shape: the overrides replace the workspace:* protocol
+		// that rides verbatim inside the packed editor-contracts/classic
+		// manifests with the same file: tarball specs.
+		overrides: {
+			"@opencut/editor-ports": byName.get("@opencut/editor-ports"),
+			"@opencut/editor-contracts": byName.get("@opencut/editor-contracts"),
+		},
+	};
+	writeFileSync(join(root, "package.json"), `${JSON.stringify(manifest, null, 2)}\n`);
+	console.log(`install: scratch package.json written (deps + overrides, gate-1 shape)`);
+}
+
+function install(root) {
+	const result = runLogged("npm-install", IS_WINDOWS ? "npm.cmd" : "npm", ["install"], {
+		cwd: root,
+	});
+	if (result.code !== 0) fail("npm-install", "npm install failed — see output above");
+}
+
+// ---------------------------------------------------------------------------
+// Control 2: copies, not links (lstat + lockfile), every run
+// ---------------------------------------------------------------------------
+
+function controlCopiesNotLinks(root) {
+	const lock = JSON.parse(readFileSync(join(root, "package-lock.json"), "utf8"));
+	for (const name of SDK_NAMES) {
+		const short = name.replace("@opencut/", "");
+		const installed = join(root, "node_modules", "@opencut", short);
+		if (!existsSync(installed)) {
+			fail("control-2", `${name} is not installed at ${installed}`);
+		}
+		const stat = lstatSync(installed);
+		if (stat.isSymbolicLink() || !stat.isDirectory()) {
+			fail(
+				"control-2",
+				`${name} is a ${stat.isSymbolicLink() ? "symlink" : "non-directory"} — workspace linking, not a copy`,
+			);
+		}
+		const lockEntry = lock.packages?.[`node_modules/${name}`];
+		const resolved = lockEntry?.resolved ?? "(missing lockfile entry)";
+		const linked = lockEntry?.link === true || resolved.startsWith("workspace:");
+		if (linked) {
+			fail("control-2", `${name} lockfile resolution is ${resolved} — not a tarball file: spec`);
+		}
+		if (!resolved.startsWith("file:")) {
+			fail("control-2", `${name} lockfile resolution is ${resolved} — expected a file: tarball spec`);
+		}
+		console.log(
+			`CONTROL-2 copy-not-link ${name}: PASS (lstat: real directory, symlink=false; lockfile resolved=${resolved}, link=false)`,
+		);
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Materialize the consumer, run it under bun
+// ---------------------------------------------------------------------------
+
+const SMOKE_CONSUMER = `// Built-in smoke consumer — the runner's fallback while the committed
+// adapter template (script/fixtures/third-party-adapter, Group 5) does not
+// yet exist. Imports resolve ONLY from the installed tarball copies.
+import { createInMemoryPorts, createInMemoryProjectStoreFixture } from "@opencut/editor-ports/in-memory";
+import { runPortConformance } from "@opencut/editor-ports/conformance";
+import { formatConformanceFailures } from "@opencut/editor-ports/conformance/requirements";
+import { createInMemoryTransactionStore } from "@opencut/editor-contracts";
+import { runTransactionConformance } from "@opencut/editor-contracts/conformance";
+import { requirementOf } from "@opencut/editor-contracts/conformance/requirements";
+
+const fixture = createInMemoryProjectStoreFixture();
+const ports = await runPortConformance({
+	ports: createInMemoryPorts({ store: fixture.store }),
+	storeFixture: fixture,
+	label: "scratch smoke (installed tarballs)",
+});
+console.log(formatConformanceFailures(ports));
+console.log(\`smoke/ports: passed=\${ports.passed} cases=\${ports.results.length}\`);
+
+const store = createInMemoryTransactionStore();
+const transaction = await runTransactionConformance({
+	target: { read: store, apply: store, getContext: store, watch: store },
+	label: "scratch smoke (installed tarballs)",
+});
+console.log(formatConformanceFailures(transaction));
+console.log(\`smoke/transaction: passed=\${transaction.passed} cases=\${transaction.results.length}\`);
+
+const sample = transaction.results[0].name;
+const requirement = requirementOf(sample);
+console.log(\`smoke/requirements: requirementOf("\${sample}") = \${requirement?.requirement}\`);
+if (!ports.passed || !transaction.passed || requirement === undefined) {
+	console.log("REAL_EXIT_CODE[suites]:1");
+	process.exit(1);
+}
+console.log("REAL_EXIT_CODE[suites]:0");
+`;
+
+const REMOVAL_PROBE = `// Control 3's import step: a bare resolution of the removed package.
+import "@opencut/editor-ports/conformance";
+console.log("UNEXPECTED: import resolved after removal");
+`;
+
+function materialize(root) {
+	if (existsSync(ADAPTER_TEMPLATE)) {
+		cpSync(ADAPTER_TEMPLATE, join(root, "adapter"), { recursive: true });
+		console.log("adapter: committed template materialized into scratch (script/fixtures/third-party-adapter)");
+		return "adapter/run.ts";
+	}
+	writeFileSync(join(root, "consumer.ts"), SMOKE_CONSUMER);
+	console.log(
+		"adapter: committed template NOT YET PRESENT (Group 5) — using the built-in smoke consumer; " +
+			"full-adapter runs land with Group 5's evidence",
+	);
+	return "consumer.ts";
+}
+
+function runUnderBun(root, script) {
+	const bun = process.env.OPENCUT_BUN ?? "npx --yes bun@1.2.18";
+	console.log(`suites: ${bun} ${script} (cwd: scratch root)`);
+	const result = spawnSync(`${bun} ${script}`, {
+		shell: true,
+		encoding: "utf8",
+		maxBuffer: 256 * 1024 * 1024,
+		cwd: root,
+	});
+	const output = `${result.stdout || ""}${result.stderr || ""}`.trim();
+	if (output) console.log(output);
+	const code = result.status ?? -1;
+	console.log(`REAL_EXIT_CODE[suites]:${code}`);
+	return { code, output };
+}
+
+// ---------------------------------------------------------------------------
+// Modes
+// ---------------------------------------------------------------------------
+
+const controlRemoval = process.argv.includes("--control-removal");
+const root = resolveScratchRoot();
+freshLifecycle(root);
+const specs = stageTarballs(root);
+writeScratchManifest(root, specs);
+install(root);
+controlCopiesNotLinks(root);
+const script = materialize(root);
+
+if (!controlRemoval) {
+	const result = runUnderBun(root, script);
+	if (result.code !== 0) fail("suites", "consumer run failed — see output above");
+	console.log("REAL_EXIT_CODE[scratch-run]:0");
+	process.exit(0);
+}
+
+// Control 3: remove the installed editor-ports copy; the import step MUST fail.
+const removedAt = join(root, "node_modules", "@opencut", "editor-ports");
+rmSync(removedAt, { recursive: true, force: true });
+console.log(`control-3: removed ${removedAt} — re-running the import step`);
+writeFileSync(join(root, "control-removal-import.ts"), REMOVAL_PROBE);
+const bun = process.env.OPENCUT_BUN ?? "npx --yes bun@1.2.18";
+const probe = spawnSync(`${bun} control-removal-import.ts`, {
+	shell: true,
+	encoding: "utf8",
+	maxBuffer: 256 * 1024 * 1024,
+	cwd: root,
+});
+const probeOutput = `${probe.stdout || ""}${probe.stderr || ""}`.trim();
+if (probeOutput) console.log(probeOutput);
+console.log(`REAL_EXIT_CODE[control-3-import]:${probe.status ?? -1}`);
+if (probe.status === 0) {
+	fail(
+		"control-3",
+		"the import step RESOLVED after the installed copy was removed — the run was reaching into the monorepo",
+	);
+}
+if (!/editor-ports|Cannot find package|ModuleNotFound|ERR_MODULE_NOT_FOUND|Could not resolve/i.test(probeOutput)) {
+	fail(
+		"control-3",
+		"the import step failed, but not with a resolution failure — inspect the output above",
+	);
+}
+console.log("CONTROL-3 removal: PASS (import step failed to resolve after removal, failure text above)");
+console.log("REAL_EXIT_CODE[scratch-run]:0");

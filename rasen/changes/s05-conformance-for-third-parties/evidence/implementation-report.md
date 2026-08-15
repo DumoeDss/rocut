@@ -93,6 +93,63 @@ settled gate-1 mechanism, bun fallback recorded. `.gitignore` gained `dist-sdk-t
 2. **Drafted worked examples corrected, not new**: both modules were authored with drafted
    formatter examples flagged for replacement; both now carry the real captured output.
 
+## Group 4 — The harness: pack module, scratch runner, no-linking controls (tasks 4.1–4.4)
+
+**State: complete. Commit: this group's commit.**
+
+- **4.1** — `script/pack-sdk-tarballs.mjs` exports `SDK_PACKAGES` and
+  `packSdkTarballs({ repoRoot?, outDir?, packages?, determinism?, log? })`; CLI
+  `node script/pack-sdk-tarballs.mjs [--no-determinism] [--out <dir>] [--manifest <path>]`
+  packs all three packages via `npm pack --json` (the real distribution path; no
+  extract-fix-repack), inventories every file with SHA-256 (extracted with the system tar on the
+  same drive, never %TEMP%), and runs the pack-twice determinism control. Wrote the committed
+  manifest `evidence/tarball-manifest.json`: ports 21 files, contracts 59 files, classic 802
+  files; digests **reproduced** for all three. Classic's npm shasum `a17ac138…` is unchanged
+  from gate-1 (classic was untouched by Groups 2–3); ports 19→21 and contracts 55→59 file counts
+  are the Group 2/3 entry additions, as expected. `REAL_EXIT_CODE[pack]:0`
+  (`logs/group4-pack-module.log`). The exported API is named in BOUNDARIES.md §13 — this is the
+  seam P6 imports for its CI leg.
+- **4.2** — `script/run-scratch-conformance.mjs`: one foreground process owning the whole
+  lifecycle. Root resolution (`OPENCUT_SCRATCH_ROOT`, local default a sibling of the repo on the
+  E: drive) with CONTROL-1a (outside repo tree) and CONTROL-1b (outside TEMP/TMP/TMPDIR/tmpdir())
+  asserted fail-closed every run; wipe-and-recreate with `.opencut-scratch-marker` (a pre-existing
+  root without the marker is refused, never reused); tarballs staged from the pack module (or
+  `OPENCUT_PREPACKED_DIR`); scratch `package.json` in gate-1's proven shape (3 `file:` deps +
+  `overrides` for ports/contracts replacing the packed `workspace:*`); `npm install` with
+  `REAL_EXIT_CODE[npm-install]`; materialize the committed adapter template when present
+  (Group 5), else a loudly-labeled built-in smoke consumer; run under bun (`OPENCUT_BUN`,
+  default `npx --yes bun@1.2.18`) with `REAL_EXIT_CODE[suites]`.
+- **4.3** — CONTROL-2 copy-not-link over each of the three installed `@opencut/*`: `lstatSync`
+  real directory (symlink=false) AND lockfile `resolved` starts `file:` with `link !== true`.
+  Pass lines appear in every run's log, not only once — visible in both
+  `logs/group4-scratch-run-smoke.log` and `logs/group4-control-3-removal.log`.
+- **4.4** — `--control-removal` mode: after a full install, deletes
+  `node_modules/@opencut/editor-ports` and re-runs the import step (the adapter template's
+  materializer when present; here the probe `import "@opencut/editor-ports/conformance"`). It
+  MUST fail: the run failed with `error: Cannot find module '@opencut/editor-ports/conformance'`,
+  `REAL_EXIT_CODE[control-3-import]:1`, `CONTROL-3 removal: PASS`
+  (`logs/group4-control-3-removal.log`). A resolution-failure regex gate rejects a pass-through
+  from any other failure mode.
+- **Smoke run** (`logs/group4-scratch-run-smoke.log`): full lifecycle at
+  `<repo>/../opencut-scratch-p3`; npm install green; controls 1a/1b/2 green; smoke consumer
+  under bun ran **ports 36/36 and transaction 21/21 green against the installed tarball
+  copies**, plus `requirementOf("<first transaction case>")` resolved through the published
+  requirements entry — the Group 3 legibility surface consumed from a scratch install,
+  `REAL_EXIT_CODE[scratch-run]:0`.
+- Sequencing note: the committed adapter template does not exist yet (Group 5); until then the
+  runner falls back to the smoke consumer with a marker line in the log. The full-adapter scratch
+  leg and the adapter-shaped removal re-proof land with Group 5/6 evidence.
+
+### Group 4 build notes (failures the scripts now encode)
+
+- `npm pack`'s last-stdout-line filename heuristic caught notice chatter instead of the filename
+  → switched to `npm pack --json` + JSON.parse of the array slice.
+- GNU tar reads an absolute Windows tarball path as a `host:path` **remote spec**
+  ("Cannot connect to E:") → extraction runs with `cwd` at the scratch dir and a relative
+  `../<basename>` path — same issue check-type-baseline.mjs documents.
+- `spawnSync` with an args array + `shell:true` trips DEP0190 on Node ≥ 22 → single command
+  string on Windows in every spawned tool (pack module, runner, removal probe).
+
 ## Open items
 
 - **Phantom-dep blocker (escalated to LEAD, awaiting ruling):** `@opencut/editor-classic`'s

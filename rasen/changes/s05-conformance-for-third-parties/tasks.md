@@ -56,22 +56,22 @@
 
 ## 4. The harness: pack module, scratch runner, no-linking controls
 
-- [ ] 4.1 Author `script/pack-sdk-tarballs.mjs`: pack the three packages, and write the committed
+- [x] 4.1 Author `script/pack-sdk-tarballs.mjs`: pack the three packages, and write the committed
       tarball manifest into the change's evidence directory — names, versions, npm shasums and
       integrity, per-file SHA-256 inventory. Determinism control: pack twice from the same tree,
       record that the digests reproduce. Self-logged exit codes. This is the module P6 imports —
       its exported API is the deliverable, name it in `BOUNDARIES.md`.
-- [ ] 4.2 Author `script/run-scratch-conformance.mjs`: fresh-per-run scratch lifecycle (wipe +
+- [x] 4.2 Author `script/run-scratch-conformance.mjs`: fresh-per-run scratch lifecycle (wipe +
       recreate + marker; refuse foreign roots), root resolution with the assertions of design E2
       (outside repo tree, outside any Temp path; env-overridable `OPENCUT_SCRATCH_ROOT` with the
       E:-drive local default), install via gate-1's mechanism, materialize the committed adapter
       template, run the suites under bun, capture reports + `REAL_EXIT_CODE` lines. One process,
       no nested backgrounding.
-- [ ] 4.3 Wire no-linking controls 1 and 2 into every run: root-outside-tree assertion, and
+- [x] 4.3 Wire no-linking controls 1 and 2 into every run: root-outside-tree assertion, and
       copy-not-link assertion over each installed `@opencut/*` (`lstatSync`; the scratch lockfile
       records tarball `file:` resolutions, not workspace ones). Both assertions' pass lines appear
       in the evidence log of every run, not only once.
-- [ ] 4.4 Control 3 — the removal proof: a harness mode that deletes the installed
+- [x] 4.4 Control 3 — the removal proof: a harness mode that deletes the installed
       `@opencut/editor-ports` copy and re-runs the adapter's import step; it MUST fail to resolve,
       and the failure text is recorded. A run that still succeeded would be reaching into the
       monorepo — that is the exact hole this control exists to close.
