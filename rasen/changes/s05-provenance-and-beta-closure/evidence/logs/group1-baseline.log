@@ -1,0 +1,17 @@
+P7 Group 1.1 baseline at 959f41d2 (2026-08-15T15:27:50Z)
+
+== Inventory drift as SOURCE_INVENTORY.md states it (committed, last regenerated S03+S04 era) ==
+pin: cf5e79e919144200294fb9fed22a222592a0aeea
+areas: [{"area":"apps/web/src","files":691},{"area":"rust","files":43},{"area":"apps/web/public","files":335}]
+totals.files: 1069
+drift: modified=205 added=229 other=0
+**205 inherited file(s) modified.** Each is expected to carry a `PATCHES.md` row.
+regen command: node script/generate-source-inventory.mjs
+19:const AREAS = ["apps/web/src", "rust", "apps/web/public"];
+
+== Generator AREAS constant (pre-P1 set) ==
+19:const AREAS = ["apps/web/src", "rust", "apps/web/public"];
+
+== Family census ==
+checkers on disk: 29
+sweep: see group1-family-sweep.log

@@ -1,0 +1,25 @@
+pack-sdk-tarballs: packing the SDK packages (design E1)
+packed packages/editor-ports -> opencut-editor-ports-0.2.0.tgz
+inventory: opencut-editor-ports-0.2.0.tgz — 23 file(s) hashed
+packed packages/editor-contracts -> opencut-editor-contracts-0.2.0.tgz
+inventory: opencut-editor-contracts-0.2.0.tgz — 61 file(s) hashed
+packed packages/editor-classic -> opencut-editor-classic-0.2.0.tgz
+inventory: opencut-editor-classic-0.2.0.tgz — 805 file(s) hashed
+packed rust/wasm/pkg -> opencut-wasm-0.2.10.tgz
+inventory: opencut-wasm-0.2.10.tgz — 7 file(s) hashed
+packed packages/editor-ports -> opencut-editor-ports-0.2.0.tgz
+determinism: opencut-editor-ports-0.2.0.tgz reproduced (9811aa171567…)
+packed packages/editor-contracts -> opencut-editor-contracts-0.2.0.tgz
+determinism: opencut-editor-contracts-0.2.0.tgz reproduced (c607442b1b9e…)
+packed packages/editor-classic -> opencut-editor-classic-0.2.0.tgz
+determinism: opencut-editor-classic-0.2.0.tgz reproduced (a4b6ca43b5aa…)
+packed rust/wasm/pkg -> opencut-wasm-0.2.10.tgz
+determinism: opencut-wasm-0.2.10.tgz reproduced (24612c4388d6…)
+manifest written: E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut\rasen\changes\s05-provenance-and-beta-closure\evidence\logs\group1-baseline-tarball-manifest.json
+  @opencut/editor-ports@0.2.0 — 23 file(s), shasum 1396ad7a979a7aae81605773c7978372ef0509f2
+  @opencut/editor-contracts@0.2.0 — 61 file(s), shasum 36c7d2c11621577e582f408fd77ab2f0ae0395e0
+  @opencut/editor-classic@0.2.0 — 805 file(s), shasum 0f179e3ff4de0c092aee707c5396bae09d9eb02d
+  opencut-wasm@0.2.10 — 7 file(s), shasum a59e1ee336811c2a9becf8fbeb0a60dbc6726a90
+determinism control: reproduced (4 tarball(s) packed twice)
+REAL_EXIT_CODE[pack]:0
+REAL_EXIT_CODE[pack]:0
