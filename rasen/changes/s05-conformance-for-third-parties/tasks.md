@@ -20,19 +20,19 @@
 
 ## 2. Consumable entries: the corpus and contract surface, published and guarded
 
-- [ ] 2.1 Author `packages/editor-contracts/src/vectors/corpus/index.ts` exporting
+- [x] 2.1 Author `packages/editor-contracts/src/vectors/corpus/index.ts` exporting
       `readPublishedCorpusText()` (fs-read of the three shipped `src/vectors/corpus/*.json` files
       relative to `import.meta.url`, returning **exact bytes** — `manifestText` + `files` map) and
       `PUBLISHED_CONTRACT_SURFACE: ContractSurface` (the three string arrays as static data).
       Declare the `./vectors/corpus` entry in the export map, attributed to the scratch consumer.
       Doc-comment the Node/bun shape of the fs-read deliberately (it is the path-taking edge the
       runner refuses to be).
-- [ ] 2.2 In-repo drift guards, fail-closed: a committed test asserts `PUBLISHED_CONTRACT_SURFACE`
+- [x] 2.2 In-repo drift guards, fail-closed: a committed test asserts `PUBLISHED_CONTRACT_SURFACE`
       deep-equals `parseContractSurface(readContractSources())`; `readPublishedCorpusText()` loads
       through `loadTransactionVectorCorpus` with the recomputed digest matching the manifest's; a
       deliberate one-member surface mutation is proven to fail the guard (violation-and-revert,
       the P1 E6 pattern). Run under `bun test`; green.
-- [ ] 2.3 Re-verify the boundary checker after the export-map additions: `public-entry-only`
+- [x] 2.3 Re-verify the boundary checker after the export-map additions: `public-entry-only`
       still passes, the entry addition is attributed in `BOUNDARIES.md`, both controls re-run, and
       the census movement (files scanned, specifiers examined) is recorded with method and
       measurement point inline (P2's reviewer expectation).

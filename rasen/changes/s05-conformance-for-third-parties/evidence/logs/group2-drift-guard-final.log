@@ -1,0 +1,15 @@
+npm warn Unknown project config "node-linker". This will stop working in the next major version of npm.
+bun test v1.2.18 (0d4089ea)
+
+packages\editor-contracts\src\vectors\__tests__\published-corpus-entry.test.ts:
+(pass) published corpus entry > PUBLISHED_CONTRACT_SURFACE equals the surface parsed from the real sources
+(pass) published corpus entry > a one-member surface mutation fails the guard's comparison
+(pass) published corpus entry > readPublishedCorpusText loads through the published loader, digest matching [16.00ms]
+(pass) published corpus entry > each returned file text hashes to the manifest's declared sha256 [31.00ms]
+(pass) published corpus entry > the returned texts are the exact committed file bytes [16.00ms]
+
+ 5 pass
+ 0 fail
+ 12 expect() calls
+Ran 5 tests across 1 file. [220.00ms]
+REAL_EXIT_CODE:0

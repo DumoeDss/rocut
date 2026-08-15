@@ -907,3 +907,40 @@ before anything could ever be pushed. Two rules fall out: **future Electron
 evidence captures pass an explicit minimal `env` to `_electron.launch`**, and
 **a redaction commit never redacts history** — if credential bytes reach a
 commit, the fix is a rewrite (or rotation), not an amended file.
+
+---
+
+## 13. Third-party conformance: consumable entries and the pack-and-install harness (S05 P3)
+
+P3 makes the two base packages consumable by someone outside this repository: the corpus and
+contract surface reachable from declared entries, suite failures legible as frozen requirements,
+and a pack → scratch-install → run harness with no-workspace-linking controls. Full harness
+mechanics and the checker-audit rows land at this child's close-out; this section records the
+export-map growth as it happens, per the monotone-growth rule that every addition names its
+consumer.
+
+### Entry additions (attributed)
+
+| Package | Entry | Target | Forced by |
+| --- | --- | --- | --- |
+| `@opencut/editor-contracts` | `./vectors/corpus` | `src/vectors/corpus/index.ts` | the scratch-project consumer (P3's worked adapter): an installed consumer could reach the vector runner but not the corpus data it runs — the file-reading layer was test-only (`vectors/__tests__/corpus-fixture.ts`), unreachable from a declared entry |
+
+`./vectors/corpus` exports `readPublishedCorpusText()` — a Node/bun `node:fs` read of the three
+corpus JSONs shipped beside the module (`files: ["src", …]` packs them), returning **exact file
+bytes** (a static JSON import re-stringifies and would fail the manifest's own corpus digest) —
+and `PUBLISHED_CONTRACT_SURFACE`, the frozen contract surface as data. It is deliberately the
+path-taking edge the runner refuses to be: browser consumers compose from the data-taking
+surface, which is unchanged. Guarded fail-closed in-repo by
+`vectors/__tests__/published-corpus-entry.test.ts`: the published surface must deep-equal
+`parseContractSurface(readContractSources())`, and the published corpus text must load through
+`loadTransactionVectorCorpus` with every recomputed digest matching the manifest. A live
+one-member violation of the constant was applied and observed failing the guard, then reverted
+(the E6 violation-and-revert pattern; run record in the change's evidence).
+
+**Boundary-checker census movement (method: `node script/check-package-boundary.mjs` over the
+working tree, measured 2026-08-15 with the two Group-2 files temporarily moved out for the
+baseline, then restored):** 1078 → 1080 repo files scanned, 982 → 984 package-graph files, 359 →
+359 `@opencut/*` specifiers examined, 360 → 360 cross-package edges. The two new files add scan
+surface and zero new cross-package specifiers (the entry's first `@opencut/editor-contracts/vectors/corpus`
+specifier lives in the scratch consumer, outside this tree). Both controls green
+(`--negative-control`, `--converse-control`, real exit codes in the change's evidence).
