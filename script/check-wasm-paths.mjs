@@ -75,7 +75,22 @@ const USERNAME_SHAPES = [
  * a real checkout rooted at (for example) `/workspace` cannot hide behind them.
  */
 const POSIX_PATH = /\/(?:[A-Za-z0-9._+@=-]+\/){1,24}[A-Za-z0-9._+@=-]+/g;
-const REMAPPED_ROOTS = [/^\/cargo(?:\/|$)/, /^\/opencut(?:\/|$)/];
+/**
+ * Sanctioned roots. `/cargo` and `/opencut` are the machine-path remap roots
+ * emitted by `script/build-wasm.mjs` (absolute-prefix remaps). `/wasm` and
+ * `/crates` are the workspace-RELATIVE forms that wasm-bindgen produces when it
+ * rewrites DWARF paths relative to the `rust` workspace root AFTER rustc has
+ * run — on POSIX these survive as `/wasm/src/...` and `/crates/<crate>/src/...`
+ * (measured on ubuntu CI; on Windows the same relativization yields
+ * backslash forms that no POSIX pattern matches, which is why the absolute
+ * remap path alone kept every local run green). Relative paths cannot disclose
+ * a build machine — there is no machine in them by construction — so they are
+ * sanctioned exactly like the remap roots. An ABSOLUTE machine path that merely
+ * contains a `/crates` segment (e.g. `/workspace/checkout/rust/crates/...`)
+ * still starts with its machine root and stays rejected: the allowlist anchors
+ * at the path start.
+ */
+const REMAPPED_ROOTS = [/^\/cargo(?:\/|$)/, /^\/opencut(?:\/|$)/, /^\/wasm(?:\/|$)/, /^\/crates(?:\/|$)/];
 const RUSTC_VIRTUAL_ROOTS = [
 	/^\/rustc\/[0-9a-f]{40}\/library\//,
 	/^\/rust\/deps\//,
@@ -152,11 +167,13 @@ for (const control of POSIX_NEGATIVE_CONTROLS) {
 const POSIX_REMAP_CONTROLS = [
 	"/cargo/registry/src/example-crate/src/lib.rs",
 	"/opencut/rust/crates/gpu/src/context.rs",
+	"/wasm/src/gpu.rs",
+	"/crates/gpu/src/context.rs",
 ];
 const remapControlFindings = POSIX_REMAP_CONTROLS.flatMap(unremappedPosixPaths);
 const remapControlsOk = remapControlFindings.length === 0;
-console.log(`  ${remapControlsOk ? "PASS" : "FAIL"}  intentional /cargo and /opencut remap roots are allowed`);
-if (!remapControlsOk) findings.push(`POSIX scanner rejected intentional remap root(s): ${remapControlFindings.join(", ")}`);
+console.log(`  ${remapControlsOk ? "PASS" : "FAIL"}  intentional sanctioned roots are allowed (/cargo, /opencut, /wasm, /crates)`);
+if (!remapControlsOk) findings.push(`POSIX scanner rejected intentional sanctioned root(s): ${remapControlFindings.join(", ")}`);
 
 /**
  * Anti-vacuity. A scan that finds nothing because it is looking for the wrong
@@ -166,16 +183,23 @@ if (!remapControlsOk) findings.push(`POSIX scanner rejected intentional remap ro
  * even though every disclosure pattern above would be satisfied.
  */
 if (fileIndex === -1) {
-	const remapped = [
-		{ name: "/cargo", re: /\/cargo[\\/][^\x00-\x1f"]{0,120}/g },
-		{ name: "/opencut", re: /\/opencut[\\/][^\x00-\x1f"]{0,120}/g },
-	];
-	for (const { name, re } of remapped) {
-		const count = (text.match(re) ?? []).length;
-		const ok = count > 0;
-		console.log(`  ${ok ? "PASS" : "FAIL"}  remapped \`${name}\` prefix present (${count}) — proves the scan is not vacuous`);
-		if (!ok) findings.push(`no remapped \`${name}\` prefix — was this built with script/build-wasm.mjs?`);
-	}
+	/**
+	 * `/cargo` must be present on every platform: dependency sources always
+	 * embed as absolute remapped paths. The WORKSPACE roots are
+	 * platform-conditional: Windows embeds the absolutely-remapped `/opencut`
+	 * form, while POSIX embeds wasm-bindgen's relativized `/wasm` / `/crates`
+	 * forms (see REMAPPED_ROOTS). Vacuity protection requires at least ONE
+	 * workspace-root form — which one depends on where the artifact was built.
+	 */
+	const cargoCount = (text.match(/\/cargo[\\/][^\x00-\x1f"]{0,120}/g) ?? []).length;
+	const opencutCount = (text.match(/\/opencut[\\/][^\x00-\x1f"]{0,120}/g) ?? []).length;
+	const workspaceRelativeCount = (text.match(/\/(?:wasm|crates)[\\/][A-Za-z0-9._+@=-]+[\\/]/g) ?? []).length;
+	const cargoOk = cargoCount > 0;
+	const workspaceOk = opencutCount + workspaceRelativeCount > 0;
+	console.log(`  ${cargoOk ? "PASS" : "FAIL"}  remapped \`/cargo\` prefix present (${cargoCount}) — proves the scan is not vacuous`);
+	console.log(`  ${workspaceOk ? "PASS" : "FAIL"}  a workspace root form is present (/opencut ${opencutCount}, relativized ${workspaceRelativeCount}) — proves workspace paths were sanctioned`);
+	if (!cargoOk) findings.push("no remapped `/cargo` prefix — was this built with script/build-wasm.mjs?");
+	if (!workspaceOk) findings.push("no `/opencut` or relativized `/wasm`/`/crates` form — was this built with script/build-wasm.mjs?");
 }
 
 if (findings.length > 0) {
