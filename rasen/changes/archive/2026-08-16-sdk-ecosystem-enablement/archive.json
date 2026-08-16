@@ -1,0 +1,55 @@
+{
+  "change": "sdk-ecosystem-enablement",
+  "archivedAt": "2026-08-16T11:57:42.521Z",
+  "codeCommit": "921e2ecee65b4555d9a122e1875f35ce13d71ffa",
+  "planningBranch": "feat/sdk-ecosystem-enablement",
+  "planningTreeState": "dirty",
+  "evidence": [
+    {
+      "path": "evidence/author-template-final.md",
+      "sha256": "418813be5567552a10b4ae3a869f001e6de4bf39c28e6a588b71855c95d120eb"
+    },
+    {
+      "path": "evidence/baseline.md",
+      "sha256": "172a12c4922ed18be12b62adeceb3a4e7044f7fe3c18902ab133d0fd487712b8"
+    },
+    {
+      "path": "evidence/before-contracts-surface.md",
+      "sha256": "fd44da67525162407211fd4e8bf87e38ad4af2c7ebe3833e42d51f7399d3fce4"
+    },
+    {
+      "path": "evidence/final-hygiene.md",
+      "sha256": "625032f0ee1372b336c3f884435584dbb955ee57b39876574dbcfa7f87013d04"
+    },
+    {
+      "path": "evidence/final-regression.md",
+      "sha256": "7db3a3576d6dd5b4f07d52cef1ee936e20c5ca0085c42a1c17860ca8a378ee1e"
+    },
+    {
+      "path": "evidence/independent-blind-test.md",
+      "sha256": "0c32628a61fba13682672f783b947e43c989df7e0e5da4f219ae24e81fa3fa79"
+    },
+    {
+      "path": "evidence/project-store-fakes.md",
+      "sha256": "025f2d309cd9f0c81f95dc15f46169424c035cd0cef2f2d2c3e0057dc7c92aff"
+    },
+    {
+      "path": "evidence/public-fixture-inventory.md",
+      "sha256": "a1803443090b1027cbef8be812b1f49e524c9bb518309873cd5a48020d7086eb"
+    },
+    {
+      "path": "evidence/review-report.md",
+      "sha256": "7cde8ac10e8708846abb8f93be4dd30f6c613710e0f25815da04a9a9d08eee82"
+    },
+    {
+      "path": "evidence/ship-log.md",
+      "sha256": "7d6ce708b892738eeb245c5a57a9d37428fbe5ae6e36a11fa2d302135c6c3d4e"
+    }
+  ],
+  "probes": [],
+  "handoffAbsorbed": [],
+  "ephemeraDiscarded": [],
+  "missing": [
+    "verification-report"
+  ]
+}
