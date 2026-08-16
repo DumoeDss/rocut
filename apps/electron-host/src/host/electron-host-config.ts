@@ -8,7 +8,7 @@ import {
 	DeterministicIdGenerator,
 	RecordingDiagnostics,
 } from "@opencut/editor-ports/in-memory";
-import type { WorkerRequest } from "@opencut/editor-ports";
+import type { LogRecord, WorkerRequest } from "@opencut/editor-ports";
 import {
 	DEFAULT_FILESYSTEM_STORE_IDENTITY,
 	FilesystemProjectStore,
@@ -24,7 +24,30 @@ import { ElectronRuntimeResources } from "./electron-runtime-resources";
  * The store is the filesystem store over the production `IpcStoreBridge` —
  * one bridge, one durable store, for every session in this process.
  */
-const electronDiagnostics = new RecordingDiagnostics();
+/**
+ * Records as the reference implementation does, and mirrors to the console.
+ *
+ * A silent recorder is the right default for a headless conformance run, where
+ * the assertions read `logs`. In a desktop shell it means a failed user action
+ * produces no signal anywhere -- not a toast, not a console line -- so this Host
+ * opts into surfacing what it records.
+ */
+class ConsoleMirroringDiagnostics extends RecordingDiagnostics {
+	log({ record }: { record: LogRecord }): void {
+		super.log({ record });
+		const line = `[diagnostics] ${record.message}`;
+		const context = record.context ?? {};
+		if (record.level === "error") {
+			console.error(line, context);
+		} else if (record.level === "warn") {
+			console.warn(line, context);
+		} else {
+			console.info(line, context);
+		}
+	}
+}
+
+const electronDiagnostics = new ConsoleMirroringDiagnostics();
 const electronIds = new DeterministicIdGenerator();
 const electronFilesystemStore = new FilesystemProjectStore(
 	new IpcStoreBridge(),

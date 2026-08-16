@@ -309,6 +309,13 @@ export class InsertElementCommand extends Command {
 					track: targetTrack,
 				});
 				console.error(validation.errorMessage);
+			} else {
+				// Auto placement used to fail mutely. Every entry point that is not
+				// an explicit drop -- the panel "+" button, drag-and-drop onto empty
+				// timeline space -- returned here with no signal at all.
+				console.error(
+					`No track could accept a ${element.type} element under auto placement`,
+				);
 			}
 
 			return null;
