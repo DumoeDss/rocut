@@ -45,5 +45,5 @@
 
 - [x] 7.1 Validate the Rasen change strictly, confirm all implementation boxes and evidence populations reconcile, and confirm `signals/.state/` is empty before any archive attempt.
 - [x] 7.2 Commit in explicit logical path groups with zero `.rasen/` paths staged and no unrelated worktree changes.
-- [ ] 7.3 Push `feat/sdk-ecosystem-enablement`, open a PR to `DumoeDss/rocut` `main`, and wait for the `sdk-examples`/author-template CI evidence to finish green without merging.
+- [x] 7.3 Push `feat/sdk-ecosystem-enablement`, open a PR to `DumoeDss/rocut` `main`, and wait for the `sdk-examples`/author-template CI evidence to finish green without merging.
 - [ ] 7.4 After the user authorizes/merges the PR, archive the change under the on-merge policy and verify the archived evidence/change status.

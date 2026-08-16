@@ -236,3 +236,19 @@ At reconciliation time, tasks 1.1 through 6.5 were complete with no open impleme
 the author, blind-test, template-drift, and regression evidence agreed on populations
 36/21/38/22/29. The delta spec contained 5 requirements and 12 scenarios, `signals/.state/` had
 zero entries, the local `.rasen/` tree had zero files, and zero `.rasen/` path was staged.
+
+## 7.3 pull request CI
+
+The substantive branch head `e835c6a5e855e09d3f65371f5dd8b368df53e589` was pushed and opened as
+`https://github.com/DumoeDss/rocut/pull/4` against `main`. Bun CI run `31942372869` completed its
+change-specific `sdk-examples` job green in 4m30s. The published-examples runner, locked root
+install, adapter template/guide checks, and adapter-author template runner all completed
+successfully on the clean Ubuntu checkout.
+
+The overall workflow remained red because `build (ubuntu-latest)` failed the pre-existing
+`Verify the exact additive wasm API surface` step; macOS and Windows were then cancelled by
+matrix fail-fast. The immediately preceding `main` run `31915394334` at the exact base commit
+`661d7ac87c3d324839d51bf30470bbf81764b694` failed the same Ubuntu step with the same five
+messages: generated `LICENSE`, `README.md`, and `package.json` drift, low-level declaration drift,
+and the binary export set differing from 58. This change does not modify that checker, Rust/WASM
+source, or generated wasm contract. The PR remains open and unmerged.
