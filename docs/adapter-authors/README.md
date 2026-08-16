@@ -32,6 +32,7 @@ Run this from the repository root. The successful materialized project is left
 at the path printed on the final line.
 
 <!-- opencut-command-id: author/materialize -->
+
 ```sh
 node script/run-adapter-author-template.mjs
 ```
@@ -55,21 +56,25 @@ exit codes; they are documented separately so a later edit cannot become
 prose-only behavior.
 
 <!-- opencut-command-id: author/typecheck -->
+
 ```sh
 npm run typecheck
 ```
 
 <!-- opencut-command-id: author/conformance -->
+
 ```sh
 npm run run
 ```
 
 <!-- opencut-command-id: author/migration -->
+
 ```sh
 npm run run:mock
 ```
 
 <!-- opencut-command-id: author/failure-demo -->
+
 ```sh
 npm run failure-demo
 ```
@@ -80,13 +85,13 @@ The adapter must supply the seams in the middle column. A passing OpenCut
 reference fake is useful infrastructure, but is not evidence that your adapter
 conforms.
 
-| conformance surface | adapter-owned input | SDK-owned runner/factory |
-| --- | --- | --- |
-| ports | `ProjectStore`, the remaining Host port roles, and optional disposable migration fixture | `runPortConformance` from the frozen ports conformance entry |
-| transaction | `TransactionRead` + `TransactionApply` + `TransactionGetContext` + `TransactionWatch` target | `runTransactionConformance` from the frozen contracts conformance entry |
-| engine | a fresh `ProjectStore` from `createAdapterProjectStore()` | frozen `runTransactionEngineConformance`; experimental `createProjectStoreConformanceFactories` only assembles its fixture |
-| draft | a fresh `ProjectStore` from the same function | frozen `runDraftEditingConformance`; the experimental helper assembles engine, capture, retention, and counters |
-| vectors | a fresh `ProjectStore` for every seeded or relative open | frozen corpus and vector runner; the experimental helper returns the existing `VectorTargetFactory` shape |
+| conformance surface | adapter-owned input                                                                          | SDK-owned runner/factory                                                                                                   |
+| ------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| ports               | `ProjectStore`, the remaining Host port roles, and optional disposable migration fixture     | `runPortConformance` from the frozen ports conformance entry                                                               |
+| transaction         | `TransactionRead` + `TransactionApply` + `TransactionGetContext` + `TransactionWatch` target | `runTransactionConformance` from the frozen contracts conformance entry                                                    |
+| engine              | a fresh `ProjectStore` from `createAdapterProjectStore()`                                    | frozen `runTransactionEngineConformance`; experimental `createProjectStoreConformanceFactories` only assembles its fixture |
+| draft               | a fresh `ProjectStore` from the same function                                                | frozen `runDraftEditingConformance`; the experimental helper assembles engine, capture, retention, and counters            |
+| vectors             | a fresh `ProjectStore` for every seeded or relative open                                     | frozen corpus and vector runner; the experimental helper returns the existing `VectorTargetFactory` shape                  |
 
 The template deliberately uses a flat JSON-tuple map and its own transaction
 target. Consequently ports and transaction run directly against author-owned
@@ -139,11 +144,11 @@ files.
 
 ## Understand the `0.x` classes
 
-| class | consequence for an adapter author |
-| --- | --- |
-| `frozen` | additive-only contract surface. Existing entries and signatures cannot be changed, renamed, repointed, or removed at any `0.x` version. |
-| `provider` | Classic convenience. It may change in a minor release, but is not silently removed within that minor. |
-| `experimental` | unstable infrastructure. It may change or be removed in a later minor without a deprecation window. |
+| class          | consequence for an adapter author                                                                                                       |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `frozen`       | additive-only contract surface. Existing entries and signatures cannot be changed, renamed, repointed, or removed at any `0.x` version. |
+| `provider`     | Classic convenience. It may change in a minor release, but is not silently removed within that minor.                                   |
+| `experimental` | unstable infrastructure. It may change or be removed in a later minor without a deprecation window.                                     |
 
 The fakes entry and requirement-first formatters used by the template are
 experimental; their frozen factory/report inputs remain contract truth. The
@@ -151,13 +156,17 @@ mock-installed migration leg also imports Classic's experimental wasm test
 mock, so that leg inherits experimental instability. Pin exact mixed package
 versions and rerun the tarball workflow when adopting a new minor.
 
-## Migration constraint
+## Migration coverage
 
-The production leg currently cannot initialize the published Classic chain in
-a plain TypeScript consumer because `wasm.__wbindgen_start` is absent. It must
-print that finding and distinctly skip only the migration leg. The second leg
-installs Classic's published wasm test mock before importing the real chain and
-then validates the real 31-step `0.2.0` chain, including migration progress,
-the `not-needed` repeat, a declining transform that fails closed, and the ports
-migration case. This honest pair demonstrates the known limitation without
-claiming it is fixed.
+The production leg loads the published Classic chain through the routed wasm
+entry and validates the real 31-step `0.2.0` chain with no mock in the process.
+It covers migration progress, the `not-needed` repeat, a declining transform
+that fails closed, and the ports migration case. The supported Bun path must
+report `classic chain: loaded` and `migration/by-replication: green`; the
+distinct-skip branch remains only as fail-closed behavior for a runtime that
+cannot load the chain.
+
+The second leg installs Classic's published wasm test mock before importing the
+same chain. It is now a compatibility check for that experimental entry, not a
+substitute for production migration coverage, and therefore still inherits the
+mock entry's experimental instability.

@@ -1,0 +1,541 @@
+build (ubuntu-latest)	Set up job	﻿2026-08-16T09:49:09.4920944Z Current runner version: '2.336.0'
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4968850Z ##[group]Runner Image Provisioner
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4969702Z Hosted Compute Agent
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4970280Z Version: 20260729.566
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4970989Z Commit: cf7153fe6e25b664e8693c24944bf2b00355d109
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4971747Z Build Date: 2026-07-29T19:17:02Z
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4972460Z Worker ID: {c220b175-84e5-46ec-90a0-216a8aecb5aa}
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4973438Z Azure Region: westus2
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4974018Z ##[endgroup]
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4975875Z ##[group]Operating System
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4976568Z Ubuntu
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4977063Z 24.04.4
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4977666Z LTS
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4978173Z ##[endgroup]
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4978747Z ##[group]Runner Image
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4979385Z Image: ubuntu-24.04
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4979952Z Version: 20260810.271.1
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4981052Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260810.271/images/ubuntu/Ubuntu2404-Readme.md
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4982814Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260810.271
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4984068Z ##[endgroup]
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4985185Z ##[group]GITHUB_TOKEN Permissions
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4987131Z Contents: read
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4987739Z Metadata: read
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4988410Z Packages: read
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4988955Z ##[endgroup]
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4990906Z Secret source: Actions
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.4992122Z Prepare workflow directory
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.5389319Z Prepare all required actions
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.5438699Z Getting action download info
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:09.9160424Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:10.0445641Z Download action repository 'jetli/wasm-pack-action@v0.4.0' (SHA:0d096b08b4e5a7de8c28de67e11e945404e9eefa)
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:10.2228504Z Download action repository 'actions/cache@v4' (SHA:0057852bfaa89a56745cba8c7296529d2fc39830)
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:10.3657570Z Download action repository 'oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76' (SHA:735343b667d3e6f658f44d0eca948eb6282f2b76)
+build (ubuntu-latest)	Set up job	2026-08-16T09:49:10.6772240Z Complete job name: build (ubuntu-latest)
+build (ubuntu-latest)	Checkout repository	﻿2026-08-16T09:49:10.7856306Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7867346Z ##[group]Run actions/checkout@v4
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7868299Z with:
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7868795Z   repository: DumoeDss/rocut
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7876400Z   token: ***
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7876902Z   ssh-strict: true
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7877408Z   ssh-user: git
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7877934Z   persist-credentials: true
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7878550Z   clean: true
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7879075Z   sparse-checkout-cone-mode: true
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7879779Z   fetch-depth: 1
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7880284Z   fetch-tags: false
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7880808Z   show-progress: true
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7881349Z   lfs: false
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7881813Z   submodules: false
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7882398Z   set-safe-directory: true
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7883052Z   allow-unsafe-pr-checkout: false
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7884246Z env:
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7885188Z   DATABASE_URL: ***localhost:5432/opencut
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7885947Z   BETTER_AUTH_SECRET: supersecret
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7886699Z   NEXT_PUBLIC_SITE_URL: http://localhost:3000
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7887687Z   UPSTASH_REDIS_REST_URL: https://your-upstash-redis-url
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7888718Z   UPSTASH_REDIS_REST_TOKEN: your-upstash-redis-token
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7889801Z   NEXT_PUBLIC_MARBLE_API_URL: https://placeholder.example.com
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7890788Z   MARBLE_WORKSPACE_KEY: placeholder
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7891501Z   FREESOUND_CLIENT_ID: placeholder
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7892200Z   FREESOUND_API_KEY: placeholder
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.7893155Z ##[endgroup]
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.8998867Z Syncing repository: DumoeDss/rocut
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9002368Z ##[group]Getting Git version info
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9004296Z Working directory is '/home/runner/work/rocut/rocut'
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9007089Z [command]/usr/bin/git version
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9090912Z git version 2.54.0
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9113074Z ##[endgroup]
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9129124Z Temporarily overriding HOME='/home/runner/work/_temp/8b6aeec9-453d-4ff6-a957-fd2ccf0d2085' before making global git config changes
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9133172Z Adding repository directory to the temporary git global config as a safe directory
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9136467Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/rocut/rocut
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9191852Z Deleting the contents of '/home/runner/work/rocut/rocut'
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9196124Z ##[group]Initializing the repository
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9199909Z [command]/usr/bin/git init /home/runner/work/rocut/rocut
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9327783Z hint: Using 'master' as the name for the initial branch. This default branch name
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9330508Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9333161Z hint: to use in all of your new repositories, which will suppress this warning,
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9335338Z hint: call:
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9344572Z hint:
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9351514Z hint: 	git config --global init.defaultBranch <name>
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9353063Z hint:
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9354838Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9357539Z hint: 'development'. The just-created branch can be renamed via this command:
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9359640Z hint:
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9360896Z hint: 	git branch -m <name>
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9361995Z hint:
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9363758Z hint: Disable this message with "git config set advice.defaultBranchName false"
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9366491Z Initialized empty Git repository in /home/runner/work/rocut/rocut/.git/
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9370682Z [command]/usr/bin/git remote add origin https://github.com/DumoeDss/rocut
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9395841Z ##[endgroup]
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9397490Z ##[group]Disabling automatic garbage collection
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9399491Z [command]/usr/bin/git config --local gc.auto 0
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9433461Z ##[endgroup]
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9435023Z ##[group]Setting up auth
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9440213Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9506941Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9885630Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:10.9924295Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:11.0149330Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:11.0185968Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:11.0439818Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:11.0478412Z ##[endgroup]
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:11.0480102Z ##[group]Fetching the repository
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:11.0491527Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +964d1411036a5dcf5f2c0cd3e624307a830d4439:refs/remotes/pull/3/merge
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.2489606Z From https://github.com/DumoeDss/rocut
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.2492040Z  * [new ref]         964d1411036a5dcf5f2c0cd3e624307a830d4439 -> pull/3/merge
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.2531514Z ##[endgroup]
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.2532582Z ##[group]Determining the checkout info
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.2534647Z ##[endgroup]
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.2540274Z [command]/usr/bin/git sparse-checkout disable
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.2593598Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.2625763Z ##[group]Checking out the ref
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.2629654Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/3/merge
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.5184297Z Note: switching to 'refs/remotes/pull/3/merge'.
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.5185867Z 
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.5187487Z You are in 'detached HEAD' state. You can look around, make experimental
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.5189767Z changes and commit them, and you can discard any commits you make in this
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.5192024Z state without impacting any branches by switching back to a branch.
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.5194359Z 
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.5195447Z If you want to create a new branch to retain commits you create, you may
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.5197772Z do so (now or later) by using -c with the switch command. Example:
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.5199072Z 
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.5199845Z   git switch -c <new-branch-name>
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.5200836Z 
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.5201654Z Or undo this operation with:
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.5202595Z 
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.5203572Z   git switch -
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.5204445Z 
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.5205488Z Turn off this advice by setting config variable advice.detachedHead to false
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.5206831Z 
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.5208197Z HEAD is now at 964d141 Merge 7be7b97ba95f8513423d3f2ac78c710c6fee30cd into 661d7ac87c3d324839d51bf30470bbf81764b694
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.5213905Z ##[endgroup]
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.5258954Z [command]/usr/bin/git log -1 --format=%H
+build (ubuntu-latest)	Checkout repository	2026-08-16T09:49:12.5287756Z 964d1411036a5dcf5f2c0cd3e624307a830d4439
+build (ubuntu-latest)	Install the pinned Rust toolchain	﻿2026-08-16T09:49:12.5534809Z ##[group]Run rustup toolchain install
+build (ubuntu-latest)	Install the pinned Rust toolchain	2026-08-16T09:49:12.5535885Z ^[[36;1mrustup toolchain install^[[0m
+build (ubuntu-latest)	Install the pinned Rust toolchain	2026-08-16T09:49:12.5536897Z ^[[36;1mrustup target add wasm32-unknown-unknown^[[0m
+build (ubuntu-latest)	Install the pinned Rust toolchain	2026-08-16T09:49:12.5537935Z ^[[36;1mrustc --version^[[0m
+build (ubuntu-latest)	Install the pinned Rust toolchain	2026-08-16T09:49:12.5582381Z shell: /usr/bin/bash -e {0}
+build (ubuntu-latest)	Install the pinned Rust toolchain	2026-08-16T09:49:12.5583636Z env:
+build (ubuntu-latest)	Install the pinned Rust toolchain	2026-08-16T09:49:12.5585010Z   DATABASE_URL: ***localhost:5432/opencut
+build (ubuntu-latest)	Install the pinned Rust toolchain	2026-08-16T09:49:12.5586003Z   BETTER_AUTH_SECRET: supersecret
+build (ubuntu-latest)	Install the pinned Rust toolchain	2026-08-16T09:49:12.5586991Z   NEXT_PUBLIC_SITE_URL: http://localhost:3000
+build (ubuntu-latest)	Install the pinned Rust toolchain	2026-08-16T09:49:12.5588078Z   UPSTASH_REDIS_REST_URL: https://your-upstash-redis-url
+build (ubuntu-latest)	Install the pinned Rust toolchain	2026-08-16T09:49:12.5589174Z   UPSTASH_REDIS_REST_TOKEN: your-upstash-redis-token
+build (ubuntu-latest)	Install the pinned Rust toolchain	2026-08-16T09:49:12.5590293Z   NEXT_PUBLIC_MARBLE_API_URL: https://placeholder.example.com
+build (ubuntu-latest)	Install the pinned Rust toolchain	2026-08-16T09:49:12.5591357Z   MARBLE_WORKSPACE_KEY: placeholder
+build (ubuntu-latest)	Install the pinned Rust toolchain	2026-08-16T09:49:12.5592285Z   FREESOUND_CLIENT_ID: placeholder
+build (ubuntu-latest)	Install the pinned Rust toolchain	2026-08-16T09:49:12.5593186Z   FREESOUND_API_KEY: placeholder
+build (ubuntu-latest)	Install the pinned Rust toolchain	2026-08-16T09:49:12.5594182Z ##[endgroup]
+build (ubuntu-latest)	Install the pinned Rust toolchain	2026-08-16T09:49:12.6221320Z info: syncing channel updates for 1.88.0-x86_64-unknown-linux-gnu
+build (ubuntu-latest)	Install the pinned Rust toolchain	2026-08-16T09:49:12.7882866Z info: latest update on 2025-06-26 for version 1.88.0 (6b00bc388 2025-06-23)
+build (ubuntu-latest)	Install the pinned Rust toolchain	2026-08-16T09:49:12.7901685Z info: downloading 4 components
+build (ubuntu-latest)	Install the pinned Rust toolchain	2026-08-16T09:49:21.5789869Z info: the active toolchain `1.88.0-x86_64-unknown-linux-gnu` has been installed
+build (ubuntu-latest)	Install the pinned Rust toolchain	2026-08-16T09:49:21.5791196Z info: it's active because: overridden by '/home/runner/work/rocut/rocut/rust-toolchain.toml'
+build (ubuntu-latest)	Install the pinned Rust toolchain	2026-08-16T09:49:21.6382904Z info: component rust-std for target wasm32-unknown-unknown is up to date
+build (ubuntu-latest)	Install the pinned Rust toolchain	2026-08-16T09:49:21.6693430Z rustc 1.88.0 (6b00bc388 2025-06-23)
+build (ubuntu-latest)	Install wasm-pack	﻿2026-08-16T09:49:21.6753065Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+build (ubuntu-latest)	Install wasm-pack	2026-08-16T09:49:21.6755031Z ##[group]Run jetli/wasm-pack-action@v0.4.0
+build (ubuntu-latest)	Install wasm-pack	2026-08-16T09:49:21.6755321Z with:
+build (ubuntu-latest)	Install wasm-pack	2026-08-16T09:49:21.6755508Z   version: v0.13.1
+build (ubuntu-latest)	Install wasm-pack	2026-08-16T09:49:21.6755912Z env:
+build (ubuntu-latest)	Install wasm-pack	2026-08-16T09:49:21.6756387Z   DATABASE_URL: ***localhost:5432/opencut
+build (ubuntu-latest)	Install wasm-pack	2026-08-16T09:49:21.6756678Z   BETTER_AUTH_SECRET: supersecret
+build (ubuntu-latest)	Install wasm-pack	2026-08-16T09:49:21.6756963Z   NEXT_PUBLIC_SITE_URL: http://localhost:3000
+build (ubuntu-latest)	Install wasm-pack	2026-08-16T09:49:21.6757320Z   UPSTASH_REDIS_REST_URL: https://your-upstash-redis-url
+build (ubuntu-latest)	Install wasm-pack	2026-08-16T09:49:21.6757709Z   UPSTASH_REDIS_REST_TOKEN: your-upstash-redis-token
+build (ubuntu-latest)	Install wasm-pack	2026-08-16T09:49:21.6758085Z   NEXT_PUBLIC_MARBLE_API_URL: https://placeholder.example.com
+build (ubuntu-latest)	Install wasm-pack	2026-08-16T09:49:21.6758477Z   MARBLE_WORKSPACE_KEY: placeholder
+build (ubuntu-latest)	Install wasm-pack	2026-08-16T09:49:21.6758772Z   FREESOUND_CLIENT_ID: placeholder
+build (ubuntu-latest)	Install wasm-pack	2026-08-16T09:49:21.6759032Z   FREESOUND_API_KEY: placeholder
+build (ubuntu-latest)	Install wasm-pack	2026-08-16T09:49:21.6759270Z ##[endgroup]
+build (ubuntu-latest)	Install wasm-pack	2026-08-16T09:49:21.7176696Z Installing wasm-pack v0.13.1 ...
+build (ubuntu-latest)	Install wasm-pack	2026-08-16T09:49:21.7179984Z Downloading wasm-pack from https://github.com/rustwasm/wasm-pack/releases/download/v0.13.1/wasm-pack-v0.13.1-x86_64-unknown-linux-musl.tar.gz ...
+build (ubuntu-latest)	Install wasm-pack	2026-08-16T09:49:21.7314256Z (node:2270) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+build (ubuntu-latest)	Install wasm-pack	2026-08-16T09:49:21.7315381Z (Use `node --trace-deprecation ...` to show where the warning was created)
+build (ubuntu-latest)	Install wasm-pack	2026-08-16T09:49:22.0888490Z Extracting wasm-pack to /tmp/setup-wasm-pack ...
+build (ubuntu-latest)	Install wasm-pack	2026-08-16T09:49:22.0989313Z [command]/usr/bin/tar xz --warning=no-unknown-keyword -C /tmp/setup-wasm-pack -f /home/runner/work/_temp/4d4e3445-4245-4864-953d-bb809d76168f
+build (ubuntu-latest)	Install wasm-pack	2026-08-16T09:49:22.1567701Z Installed wasm-pack to /home/runner/.cargo/bin/wasm-pack 🎉
+build (ubuntu-latest)	Install wasm-pack	2026-08-16T09:49:22.1568284Z Done
+build (ubuntu-latest)	Cache Rust build artifacts	﻿2026-08-16T09:49:22.2295271Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+build (ubuntu-latest)	Cache Rust build artifacts	2026-08-16T09:49:22.2296619Z ##[group]Run actions/cache@v4
+build (ubuntu-latest)	Cache Rust build artifacts	2026-08-16T09:49:22.2296899Z with:
+build (ubuntu-latest)	Cache Rust build artifacts	2026-08-16T09:49:22.2297151Z   path: ~/.cargo/registry
+build (ubuntu-latest)	Cache Rust build artifacts	~/.cargo/git
+build (ubuntu-latest)	Cache Rust build artifacts	target
+build (ubuntu-latest)	Cache Rust build artifacts	
+build (ubuntu-latest)	Cache Rust build artifacts	2026-08-16T09:49:22.2297606Z   key: Linux-cargo-d9349d820aa38c289f9e1bf5ecccc6d9388cff097930e99743535760925f16ce
+build (ubuntu-latest)	Cache Rust build artifacts	2026-08-16T09:49:22.2298053Z   enableCrossOsArchive: false
+build (ubuntu-latest)	Cache Rust build artifacts	2026-08-16T09:49:22.2298308Z   fail-on-cache-miss: false
+build (ubuntu-latest)	Cache Rust build artifacts	2026-08-16T09:49:22.2298541Z   lookup-only: false
+build (ubuntu-latest)	Cache Rust build artifacts	2026-08-16T09:49:22.2298751Z   save-always: false
+build (ubuntu-latest)	Cache Rust build artifacts	2026-08-16T09:49:22.2298948Z env:
+build (ubuntu-latest)	Cache Rust build artifacts	2026-08-16T09:49:22.2299424Z   DATABASE_URL: ***localhost:5432/opencut
+build (ubuntu-latest)	Cache Rust build artifacts	2026-08-16T09:49:22.2299713Z   BETTER_AUTH_SECRET: supersecret
+build (ubuntu-latest)	Cache Rust build artifacts	2026-08-16T09:49:22.2300007Z   NEXT_PUBLIC_SITE_URL: http://localhost:3000
+build (ubuntu-latest)	Cache Rust build artifacts	2026-08-16T09:49:22.2300411Z   UPSTASH_REDIS_REST_URL: https://your-upstash-redis-url
+build (ubuntu-latest)	Cache Rust build artifacts	2026-08-16T09:49:22.2300775Z   UPSTASH_REDIS_REST_TOKEN: your-upstash-redis-token
+build (ubuntu-latest)	Cache Rust build artifacts	2026-08-16T09:49:22.2301147Z   NEXT_PUBLIC_MARBLE_API_URL: https://placeholder.example.com
+build (ubuntu-latest)	Cache Rust build artifacts	2026-08-16T09:49:22.2301498Z   MARBLE_WORKSPACE_KEY: placeholder
+build (ubuntu-latest)	Cache Rust build artifacts	2026-08-16T09:49:22.2301760Z   FREESOUND_CLIENT_ID: placeholder
+build (ubuntu-latest)	Cache Rust build artifacts	2026-08-16T09:49:22.2302019Z   FREESOUND_API_KEY: placeholder
+build (ubuntu-latest)	Cache Rust build artifacts	2026-08-16T09:49:22.2302256Z ##[endgroup]
+build (ubuntu-latest)	Cache Rust build artifacts	2026-08-16T09:49:22.3372158Z (node:2301) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+build (ubuntu-latest)	Cache Rust build artifacts	2026-08-16T09:49:22.3373134Z (Use `node --trace-deprecation ...` to show where the warning was created)
+build (ubuntu-latest)	Cache Rust build artifacts	2026-08-16T09:49:22.5772672Z Cache not found for input keys: Linux-cargo-d9349d820aa38c289f9e1bf5ecccc6d9388cff097930e99743535760925f16ce
+build (ubuntu-latest)	Build WASM	﻿2026-08-16T09:49:22.5854148Z ##[group]Run node script/build-wasm.mjs
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:22.5854522Z ^[[36;1mnode script/build-wasm.mjs^[[0m
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:22.5893592Z shell: /usr/bin/bash -e {0}
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:22.5893856Z env:
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:22.5894380Z   DATABASE_URL: ***localhost:5432/opencut
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:22.5894681Z   BETTER_AUTH_SECRET: supersecret
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:22.5894978Z   NEXT_PUBLIC_SITE_URL: http://localhost:3000
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:22.5895524Z   UPSTASH_REDIS_REST_URL: https://your-upstash-redis-url
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:22.5895899Z   UPSTASH_REDIS_REST_TOKEN: your-upstash-redis-token
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:22.5896274Z   NEXT_PUBLIC_MARBLE_API_URL: https://placeholder.example.com
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:22.5896631Z   MARBLE_WORKSPACE_KEY: placeholder
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:22.5896897Z   FREESOUND_CLIENT_ID: placeholder
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:22.5897157Z   FREESOUND_API_KEY: placeholder
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:22.5897391Z ##[endgroup]
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:22.8011598Z build-wasm: pinned toolchain
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:22.8374339Z   PASS  rustc 1.88.0 (observed: 1.88.0)
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:22.8374871Z   PASS  wasm-pack 0.13.1 (observed: 0.13.1)
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:22.8375596Z build-wasm: wasm-pack build rust/wasm --target bundler --out-dir pkg
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:22.8376259Z   remapping /home/runner/.cargo  ->  /cargo
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:22.8376910Z   remapping /home/runner/work/rocut/rocut  ->  /opencut
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:22.8377522Z   remapping /wasm/  ->  /opencut/rust/wasm/
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:22.8378134Z   remapping /crates/  ->  /opencut/rust/crates/
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:22.8378848Z   note: CARGO_TARGET_DIR is unset, so the Rust build directory lands beside the checkout.
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:29.8057840Z [INFO]: 🎯  Checking for the Wasm target...
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:29.8685524Z [INFO]: 🌀  Compiling to Wasm...
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:30.0835053Z    Compiling proc-macro2 v1.0.106
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:30.0835678Z    Compiling unicode-ident v1.0.24
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:30.0836366Z    Compiling quote v1.0.45
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:30.0837138Z    Compiling wasm-bindgen-shared v0.2.116
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:30.1484307Z    Compiling rustversion v1.0.22
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:30.3271383Z    Compiling cfg-if v1.0.4
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:30.3633797Z    Compiling bumpalo v3.20.2
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:30.5258270Z    Compiling once_cell v1.21.4
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:30.6974547Z    Compiling futures-core v0.3.32
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:30.7704437Z    Compiling futures-task v0.3.32
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:30.8564429Z    Compiling wasm-bindgen v0.2.116
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:31.0044507Z    Compiling syn v2.0.117
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:31.0206770Z    Compiling slab v0.4.12
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:31.0264048Z    Compiling pin-project-lite v0.2.17
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:31.0674404Z    Compiling cfg_aliases v0.2.1
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:31.0871932Z    Compiling libm v0.2.16
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:31.0924186Z    Compiling autocfg v1.5.0
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:31.1494519Z    Compiling futures-util v0.3.32
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:31.4494252Z    Compiling num-traits v0.2.19
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:31.6514474Z    Compiling zerocopy v0.8.47
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:31.9454283Z    Compiling foldhash v0.2.0
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:32.0764775Z    Compiling version_check v0.9.5
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:32.2974656Z    Compiling thiserror v2.0.18
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:33.1972555Z    Compiling slotmap v1.1.1
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:33.3244274Z    Compiling hashbrown v0.16.1
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:33.3862094Z    Compiling naga v29.0.1
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:33.4344204Z    Compiling bit-vec v0.9.1
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:33.6144065Z    Compiling log v0.4.29
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:33.6764301Z    Compiling equivalent v1.0.2
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:33.7044297Z    Compiling parking_lot_core v0.9.12
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:33.7640055Z    Compiling bitflags v2.11.0
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:33.8635554Z    Compiling unicode-width v0.2.2
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:34.0184331Z    Compiling codespan-reporting v0.13.1
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:34.0477580Z    Compiling indexmap v2.13.0
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:34.0775004Z    Compiling bit-set v0.9.1
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:34.2304381Z    Compiling rustc-hash v1.1.0
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:34.2754406Z    Compiling scopeguard v1.2.0
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:34.3124376Z    Compiling hexf-parse v0.2.1
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:34.4465287Z    Compiling raw-window-handle v0.6.2
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:34.6684375Z    Compiling wasm-bindgen-macro-support v0.2.116
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:34.8934322Z    Compiling smallvec v1.15.1
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:34.9976669Z    Compiling arrayvec v0.7.6
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:35.1814840Z    Compiling lock_api v0.4.14
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:35.3793115Z    Compiling wgpu-hal v29.0.1
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:35.6641310Z    Compiling serde_core v1.0.228
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:35.7992790Z    Compiling parking_lot v0.12.5
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:35.8854271Z    Compiling profiling v1.0.17
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:36.2794388Z    Compiling zerocopy-derive v0.8.47
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:36.5136030Z    Compiling bytemuck_derive v1.10.2
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:37.9229650Z    Compiling thiserror-impl v2.0.18
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:38.3104204Z    Compiling wasm-bindgen-macro v0.2.116
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:38.4187182Z    Compiling bytemuck v1.25.0
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:38.6454312Z    Compiling wgpu-core v29.0.1
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:38.9268558Z    Compiling serde v1.0.228
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:39.1253912Z    Compiling litrs v1.0.0
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:39.3464358Z    Compiling serde_derive v1.0.228
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:39.5597394Z    Compiling document-features v0.2.12
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:40.0124166Z    Compiling wgpu v29.0.1
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:40.4884801Z    Compiling js-sys v0.3.93
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:40.5866938Z    Compiling zmij v1.0.21
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:40.7854369Z    Compiling serde_json v1.0.149
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:40.9106762Z    Compiling static_assertions v1.1.0
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:41.2404197Z    Compiling itoa v1.0.18
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:41.4344422Z    Compiling memchr v2.8.0
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:42.5254454Z    Compiling half v2.7.1
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:43.3964128Z    Compiling serde_derive_internals v0.29.1
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:44.2486196Z    Compiling tsify-next-macros v0.5.6
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:44.4915421Z    Compiling bridge v0.1.0 (/home/runner/work/rocut/rocut/rust/crates/bridge)
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:44.8854466Z    Compiling console_error_panic_hook v0.1.7
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:51.3489492Z    Compiling web-sys v0.3.93
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:51.8264744Z    Compiling wasm-bindgen-futures v0.4.66
+build (ubuntu-latest)	Build WASM	2026-08-16T09:49:51.8684435Z    Compiling serde-wasm-bindgen v0.6.5
+build (ubuntu-latest)	Build WASM	2026-08-16T09:50:05.7718229Z    Compiling wgpu-types v29.0.1
+build (ubuntu-latest)	Build WASM	2026-08-16T09:50:05.7718785Z    Compiling glow v0.17.0
+build (ubuntu-latest)	Build WASM	2026-08-16T09:50:05.7719203Z    Compiling gloo-utils v0.2.0
+build (ubuntu-latest)	Build WASM	2026-08-16T09:50:05.8864469Z    Compiling tsify-next v0.5.6
+build (ubuntu-latest)	Build WASM	2026-08-16T09:50:05.9284493Z    Compiling time v0.1.0 (/home/runner/work/rocut/rocut/rust/crates/time)
+build (ubuntu-latest)	Build WASM	2026-08-16T09:50:07.9021292Z    Compiling wgpu-naga-bridge v29.0.1
+build (ubuntu-latest)	Build WASM	2026-08-16T09:50:09.5135463Z    Compiling wgpu-core-deps-wasm v29.0.0
+build (ubuntu-latest)	Build WASM	2026-08-16T09:50:23.5536534Z    Compiling gpu v0.1.0 (/home/runner/work/rocut/rocut/rust/crates/gpu)
+build (ubuntu-latest)	Build WASM	2026-08-16T09:50:23.8484664Z    Compiling effects v0.1.0 (/home/runner/work/rocut/rocut/rust/crates/effects)
+build (ubuntu-latest)	Build WASM	2026-08-16T09:50:24.1844660Z    Compiling masks v0.1.0 (/home/runner/work/rocut/rocut/rust/crates/masks)
+build (ubuntu-latest)	Build WASM	2026-08-16T09:50:24.4587559Z    Compiling compositor v0.1.0 (/home/runner/work/rocut/rocut/rust/crates/compositor)
+build (ubuntu-latest)	Build WASM	2026-08-16T09:50:26.6991008Z    Compiling opencut-wasm v0.2.10 (/home/runner/work/rocut/rocut/rust/wasm)
+build (ubuntu-latest)	Build WASM	2026-08-16T09:50:28.3739305Z     Finished `release` profile [optimized] target(s) in 58.47s
+build (ubuntu-latest)	Build WASM	2026-08-16T09:50:28.3970118Z [INFO]: ⬇️  Installing wasm-bindgen...
+build (ubuntu-latest)	Build WASM	2026-08-16T09:50:31.2381190Z [INFO]: Optimizing wasm binaries with `wasm-opt`...
+build (ubuntu-latest)	Build WASM	2026-08-16T09:51:03.9241097Z [INFO]: ✨   Done in 1m 34s
+build (ubuntu-latest)	Build WASM	2026-08-16T09:51:03.9244223Z [INFO]: 📦   Your wasm pkg is ready to publish at rust/wasm/pkg.
+build (ubuntu-latest)	Build WASM	2026-08-16T09:51:03.9352857Z [WARN]: ⚠️   There's a newer version of wasm-pack available, the new version is: 0.15.0, you are using: 0.13.1. To update, navigate to: https://rustwasm.github.io/wasm-pack/installer/
+build (ubuntu-latest)	Build WASM	2026-08-16T09:51:03.9368089Z build-wasm: emitted opencut_wasm_sync.js, the bun condition and the ./sync subpath
+build (ubuntu-latest)	Install Bun	﻿2026-08-16T09:51:03.9452720Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+build (ubuntu-latest)	Install Bun	2026-08-16T09:51:03.9454414Z ##[group]Run oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76
+build (ubuntu-latest)	Install Bun	2026-08-16T09:51:03.9454765Z with:
+build (ubuntu-latest)	Install Bun	2026-08-16T09:51:03.9454951Z   bun-version: 1.2.18
+build (ubuntu-latest)	Install Bun	2026-08-16T09:51:03.9455162Z   no-cache: false
+build (ubuntu-latest)	Install Bun	2026-08-16T09:51:03.9455346Z env:
+build (ubuntu-latest)	Install Bun	2026-08-16T09:51:03.9456015Z   DATABASE_URL: ***localhost:5432/opencut
+build (ubuntu-latest)	Install Bun	2026-08-16T09:51:03.9456304Z   BETTER_AUTH_SECRET: supersecret
+build (ubuntu-latest)	Install Bun	2026-08-16T09:51:03.9456588Z   NEXT_PUBLIC_SITE_URL: http://localhost:3000
+build (ubuntu-latest)	Install Bun	2026-08-16T09:51:03.9456937Z   UPSTASH_REDIS_REST_URL: https://your-upstash-redis-url
+build (ubuntu-latest)	Install Bun	2026-08-16T09:51:03.9457295Z   UPSTASH_REDIS_REST_TOKEN: your-upstash-redis-token
+build (ubuntu-latest)	Install Bun	2026-08-16T09:51:03.9457671Z   NEXT_PUBLIC_MARBLE_API_URL: https://placeholder.example.com
+build (ubuntu-latest)	Install Bun	2026-08-16T09:51:03.9458044Z   MARBLE_WORKSPACE_KEY: placeholder
+build (ubuntu-latest)	Install Bun	2026-08-16T09:51:03.9458302Z   FREESOUND_CLIENT_ID: placeholder
+build (ubuntu-latest)	Install Bun	2026-08-16T09:51:03.9458560Z   FREESOUND_API_KEY: placeholder
+build (ubuntu-latest)	Install Bun	2026-08-16T09:51:03.9458796Z ##[endgroup]
+build (ubuntu-latest)	Install Bun	2026-08-16T09:51:04.0804542Z (node:4038) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+build (ubuntu-latest)	Install Bun	2026-08-16T09:51:04.0805486Z (Use `node --trace-deprecation ...` to show where the warning was created)
+build (ubuntu-latest)	Install Bun	2026-08-16T09:51:04.3180218Z Downloading a new version of Bun: https://bun.sh/download/1.2.18/linux/x64?avx2=true&profile=false
+build (ubuntu-latest)	Install Bun	2026-08-16T09:51:05.0251117Z [command]/usr/bin/unzip -o -q /home/runner/work/_temp/ab9ca3f0-db6a-48a8-90ae-d28b413de5ec.zip
+build (ubuntu-latest)	Install Bun	2026-08-16T09:51:05.7577926Z [command]/home/runner/.bun/bin/bun --revision
+build (ubuntu-latest)	Install Bun	2026-08-16T09:51:05.7619515Z 1.2.18+0d4089ea7
+build (ubuntu-latest)	Cache Bun modules	﻿2026-08-16T09:51:05.8248993Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+build (ubuntu-latest)	Cache Bun modules	2026-08-16T09:51:05.8250317Z ##[group]Run actions/cache@v4
+build (ubuntu-latest)	Cache Bun modules	2026-08-16T09:51:05.8250550Z with:
+build (ubuntu-latest)	Cache Bun modules	2026-08-16T09:51:05.8250738Z   path: ~/.bun/install/cache
+build (ubuntu-latest)	Cache Bun modules	2026-08-16T09:51:05.8250969Z   key: Linux-bun-1.2.18-
+build (ubuntu-latest)	Cache Bun modules	2026-08-16T09:51:05.8251198Z   enableCrossOsArchive: false
+build (ubuntu-latest)	Cache Bun modules	2026-08-16T09:51:05.8251437Z   fail-on-cache-miss: false
+build (ubuntu-latest)	Cache Bun modules	2026-08-16T09:51:05.8251657Z   lookup-only: false
+build (ubuntu-latest)	Cache Bun modules	2026-08-16T09:51:05.8251870Z   save-always: false
+build (ubuntu-latest)	Cache Bun modules	2026-08-16T09:51:05.8252053Z env:
+build (ubuntu-latest)	Cache Bun modules	2026-08-16T09:51:05.8252477Z   DATABASE_URL: ***localhost:5432/opencut
+build (ubuntu-latest)	Cache Bun modules	2026-08-16T09:51:05.8252764Z   BETTER_AUTH_SECRET: supersecret
+build (ubuntu-latest)	Cache Bun modules	2026-08-16T09:51:05.8253040Z   NEXT_PUBLIC_SITE_URL: http://localhost:3000
+build (ubuntu-latest)	Cache Bun modules	2026-08-16T09:51:05.8253708Z   UPSTASH_REDIS_REST_URL: https://your-upstash-redis-url
+build (ubuntu-latest)	Cache Bun modules	2026-08-16T09:51:05.8254125Z   UPSTASH_REDIS_REST_TOKEN: your-upstash-redis-token
+build (ubuntu-latest)	Cache Bun modules	2026-08-16T09:51:05.8254489Z   NEXT_PUBLIC_MARBLE_API_URL: https://placeholder.example.com
+build (ubuntu-latest)	Cache Bun modules	2026-08-16T09:51:05.8254830Z   MARBLE_WORKSPACE_KEY: placeholder
+build (ubuntu-latest)	Cache Bun modules	2026-08-16T09:51:05.8255088Z   FREESOUND_CLIENT_ID: placeholder
+build (ubuntu-latest)	Cache Bun modules	2026-08-16T09:51:05.8255339Z   FREESOUND_API_KEY: placeholder
+build (ubuntu-latest)	Cache Bun modules	2026-08-16T09:51:05.8255566Z ##[endgroup]
+build (ubuntu-latest)	Cache Bun modules	2026-08-16T09:51:05.9317158Z (node:4065) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+build (ubuntu-latest)	Cache Bun modules	2026-08-16T09:51:05.9318174Z (Use `node --trace-deprecation ...` to show where the warning was created)
+build (ubuntu-latest)	Cache Bun modules	2026-08-16T09:51:06.1648415Z Cache not found for input keys: Linux-bun-1.2.18-
+build (ubuntu-latest)	Install dependencies	﻿2026-08-16T09:51:06.1746260Z ##[group]Run bun install
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:06.1746755Z ^[[36;1mbun install^[[0m
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:06.1786000Z shell: /usr/bin/bash -e {0}
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:06.1786270Z env:
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:06.1786700Z   DATABASE_URL: ***localhost:5432/opencut
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:06.1787004Z   BETTER_AUTH_SECRET: supersecret
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:06.1787303Z   NEXT_PUBLIC_SITE_URL: http://localhost:3000
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:06.1787667Z   UPSTASH_REDIS_REST_URL: https://your-upstash-redis-url
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:06.1788030Z   UPSTASH_REDIS_REST_TOKEN: your-upstash-redis-token
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:06.1788402Z   NEXT_PUBLIC_MARBLE_API_URL: https://placeholder.example.com
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:06.1788751Z   MARBLE_WORKSPACE_KEY: placeholder
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:06.1789011Z   FREESOUND_CLIENT_ID: placeholder
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:06.1789263Z   FREESOUND_API_KEY: placeholder
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:06.1789499Z ##[endgroup]
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:06.1898260Z bun install v1.2.18 (0d4089ea)
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.7563015Z 
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.7569234Z $ node script/check-wasm-source.mjs --preflight
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8522627Z 
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8522946Z + @content-collections/core@0.14.3
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8523676Z + @content-collections/next@0.2.11
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8524124Z + @napi-rs/canvas@0.1.100
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8524493Z + @tailwindcss/postcss@4.2.4
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8524950Z + @tailwindcss/typography@0.5.19
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8525374Z + @types/bun@1.3.14
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8525728Z + @types/node@24.12.2
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8526091Z + @types/pg@8.20.0
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8526424Z + @types/react@18.3.28
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8526788Z + @types/react-dom@18.3.7
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8527672Z + cross-env@7.0.3
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8528042Z + dotenv@16.6.1
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8528373Z + drizzle-kit@0.31.10
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8528719Z + postcss@8.5.12
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8529037Z + sharp@0.34.5
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8529382Z + tailwindcss@4.2.4
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8529720Z + typescript@5.9.3
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8530073Z + wrangler@4.85.0
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8530416Z + @hello-pangea/dnd@18.0.1
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8530832Z + @hugeicons/core-free-icons@3.3.0
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8531256Z + @hugeicons/react@1.1.6
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8531650Z + @huggingface/transformers@3.8.1
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8531929Z + @opennextjs/cloudflare@1.19.4
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8532193Z + @radix-ui/react-accordion@1.2.12
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8532454Z + @radix-ui/react-checkbox@1.3.3
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8532694Z + @radix-ui/react-dialog@1.1.15
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8532942Z + @radix-ui/react-dropdown-menu@2.1.16
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8533815Z + @radix-ui/react-primitive@2.1.4
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8534134Z + @radix-ui/react-select@2.2.6
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8534395Z + @radix-ui/react-separator@1.1.8
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8534644Z + @radix-ui/react-slot@1.2.4
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8534880Z + @radix-ui/react-tooltip@1.2.8
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8535110Z + @types/culori@4.0.1
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8535332Z + @upstash/ratelimit@2.0.8
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8535566Z + @upstash/redis@1.37.0
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8535773Z + better-auth@1.6.9
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8535970Z + botid@1.5.11
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8536175Z + class-variance-authority@0.7.1
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8536406Z + clsx@2.1.1
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8536579Z + cmdk@1.1.1
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8536750Z + culori@4.0.2
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8536933Z + drizzle-orm@0.44.7
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8537144Z + embla-carousel-react@8.6.0
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8537380Z + eventemitter3@5.0.4
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8537575Z + feed@5.2.1
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8537755Z + input-otp@1.4.2
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8537949Z + lucide-react@0.562.0
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8538154Z + mediabunny@1.41.0
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8538347Z + motion@12.38.0
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8538530Z + nanoid@5.1.9
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8538709Z + next@16.1.3
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8538891Z + next-themes@0.4.6
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8539094Z + opencut-wasm@rust/wasm/pkg
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8539317Z + pg@8.20.0
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8539492Z + postgres@3.4.9
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8539683Z + radix-ui@1.4.3
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8539866Z + react@18.3.1
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8540368Z + react-day-picker@8.10.1
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8540585Z + react-dom@18.3.1
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8540785Z + react-hook-form@7.74.0
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8540999Z + react-icons@5.6.0
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8541194Z + react-markdown@10.1.0
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8541420Z + react-resizable-panels@2.1.9
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8541654Z + react-window@2.2.7
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8541867Z + rehype-autolink-headings@7.1.0
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8542176Z + rehype-parse@9.0.1
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8542413Z + rehype-sanitize@6.0.0
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8542619Z + rehype-slug@6.0.0
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8542817Z + rehype-stringify@10.0.1
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8543029Z + sonner@1.7.4
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8543443Z + soundtouchjs@0.3.0
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8543728Z + tailwind-merge@3.5.0
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8543960Z + tailwindcss-animate@1.0.7
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8544185Z + unified@11.0.5
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8544389Z + use-deep-compare-effect@1.8.1
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8544804Z + wavesurfer.js@7.12.6
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8545000Z + zod@4.3.6
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8545183Z + zustand@5.0.12
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8545291Z 
+build (ubuntu-latest)	Install dependencies	2026-08-16T09:51:11.8545385Z 1017 packages installed [5.67s]
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	﻿2026-08-16T09:51:11.9658389Z ##[group]Run node script/check-wasm-source.mjs
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	2026-08-16T09:51:11.9658822Z ^[[36;1mnode script/check-wasm-source.mjs^[[0m
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	2026-08-16T09:51:11.9696437Z shell: /usr/bin/bash -e {0}
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	2026-08-16T09:51:11.9696689Z env:
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	2026-08-16T09:51:11.9697382Z   DATABASE_URL: ***localhost:5432/opencut
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	2026-08-16T09:51:11.9697689Z   BETTER_AUTH_SECRET: supersecret
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	2026-08-16T09:51:11.9697982Z   NEXT_PUBLIC_SITE_URL: http://localhost:3000
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	2026-08-16T09:51:11.9698335Z   UPSTASH_REDIS_REST_URL: https://your-upstash-redis-url
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	2026-08-16T09:51:11.9698698Z   UPSTASH_REDIS_REST_TOKEN: your-upstash-redis-token
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	2026-08-16T09:51:11.9699070Z   NEXT_PUBLIC_MARBLE_API_URL: https://placeholder.example.com
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	2026-08-16T09:51:11.9699425Z   MARBLE_WORKSPACE_KEY: placeholder
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	2026-08-16T09:51:11.9699697Z   FREESOUND_CLIENT_ID: placeholder
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	2026-08-16T09:51:11.9699952Z   FREESOUND_API_KEY: placeholder
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	2026-08-16T09:51:11.9700183Z ##[endgroup]
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	2026-08-16T09:51:12.2166441Z check-wasm-source: build output rust/wasm/pkg (9 file(s))
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	2026-08-16T09:51:12.2212848Z   PASS  resolved from <root> -> node_modules/opencut-wasm
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	2026-08-16T09:51:12.2249187Z   PASS  resolved from apps/web -> apps/web/node_modules/opencut-wasm
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	2026-08-16T09:51:12.2364594Z   PASS  build output is newer than every Rust input (44 file(s) considered)
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	2026-08-16T09:51:12.2366628Z   PASS  rust/wasm/LICENSE exists and matches the root LICENSE
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	2026-08-16T09:51:12.2382712Z   PASS  all 4 wasm gates are wired (npm script + CI step after `bun install`)
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	2026-08-16T09:51:12.2386626Z   PASS  toolchain pins are declared and enforced (rustc 1.88.0, wasm-pack v0.13.1)
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	2026-08-16T09:51:12.2387248Z 
+build (ubuntu-latest)	Verify the resolved wasm is the self-built artifact	2026-08-16T09:51:12.2387726Z clean — the resolved `opencut-wasm` is the self-built artifact
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	﻿2026-08-16T09:51:12.4559879Z ##[group]Run node script/check-wasm-paths.mjs
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.4560313Z ^[[36;1mnode script/check-wasm-paths.mjs^[[0m
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.4598012Z shell: /usr/bin/bash -e {0}
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.4598330Z env:
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.4598771Z   DATABASE_URL: ***localhost:5432/opencut
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.4599067Z   BETTER_AUTH_SECRET: supersecret
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.4599353Z   NEXT_PUBLIC_SITE_URL: http://localhost:3000
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.4599723Z   UPSTASH_REDIS_REST_URL: https://your-upstash-redis-url
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.4600084Z   UPSTASH_REDIS_REST_TOKEN: your-upstash-redis-token
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.4600454Z   NEXT_PUBLIC_MARBLE_API_URL: https://placeholder.example.com
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.4600793Z   MARBLE_WORKSPACE_KEY: placeholder
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.4601063Z   FREESOUND_CLIENT_ID: placeholder
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.4601317Z   FREESOUND_API_KEY: placeholder
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.4601551Z ##[endgroup]
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.5281239Z check-wasm-paths: rust/wasm/pkg/opencut_wasm_bg.wasm (3284960 bytes)
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.5291501Z   PASS  no Windows user-profile path (0 occurrence(s), 0 unique)
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.5306666Z   PASS  no any Windows drive-letter path (0 occurrence(s), 0 unique)
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.5315071Z   PASS  no POSIX home-directory path (0 occurrence(s), 0 unique)
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.5322656Z   PASS  no macOS home-directory path (0 occurrence(s), 0 unique)
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.5328724Z   PASS  no POSIX root home-directory path (0 occurrence(s), 0 unique)
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.5368361Z   FAIL  no unremapped POSIX source/home/checkout path (1 occurrence(s), 1 unique)
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.5369317Z           e.g. /from_iter/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/parking_lot_core-0.9.12/src/parking_lot.rs
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.5398421Z   PASS  no operating-system username disclosed
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.5400756Z   PASS  scanner rejects negative control /root/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/panicking.rs
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.5402197Z   PASS  scanner rejects negative control /workspace/checkout/rust/crates/gpu/src/context.rs
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.5403725Z   PASS  intentional sanctioned roots are allowed (/cargo, /opencut, /wasm, /crates)
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.5426357Z   PASS  remapped `/cargo` prefix present (285) — proves the scan is not vacuous
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.5426978Z 
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.5427910Z   PASS  a workspace root form is present (/opencut 1, relativized 16) — proves workspace paths were sanctioned
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.5444286Z check-wasm-paths FAILED:
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.5445147Z   - 1 × unremapped POSIX source/home/checkout path
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.5445719Z 
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.5446192Z This artifact is redistributed to every user of the built application.
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.5447133Z Rebuild it through the script that applies --remap-path-prefix:
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.5448143Z   bun run build:wasm   (node script/build-wasm.mjs), then bun install
+build (ubuntu-latest)	Verify the redistributed wasm discloses no build-machine paths	2026-08-16T09:51:12.5477442Z ##[error]Process completed with exit code 1.
+build (ubuntu-latest)	Post Checkout repository	﻿2026-08-16T09:51:12.5638817Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+build (ubuntu-latest)	Post Checkout repository	2026-08-16T09:51:12.5640093Z Post job cleanup.
+build (ubuntu-latest)	Post Checkout repository	2026-08-16T09:51:12.6491972Z [command]/usr/bin/git version
+build (ubuntu-latest)	Post Checkout repository	2026-08-16T09:51:12.6535285Z git version 2.54.0
+build (ubuntu-latest)	Post Checkout repository	2026-08-16T09:51:12.6573683Z Temporarily overriding HOME='/home/runner/work/_temp/f1f530a8-8311-42b9-a0e1-c0744acbe0ff' before making global git config changes
+build (ubuntu-latest)	Post Checkout repository	2026-08-16T09:51:12.6574951Z Adding repository directory to the temporary git global config as a safe directory
+build (ubuntu-latest)	Post Checkout repository	2026-08-16T09:51:12.6578758Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/rocut/rocut
+build (ubuntu-latest)	Post Checkout repository	2026-08-16T09:51:12.6817472Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+build (ubuntu-latest)	Post Checkout repository	2026-08-16T09:51:12.6863991Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+build (ubuntu-latest)	Post Checkout repository	2026-08-16T09:51:12.7134907Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+build (ubuntu-latest)	Post Checkout repository	2026-08-16T09:51:12.7430698Z http.https://github.com/.extraheader
+build (ubuntu-latest)	Post Checkout repository	2026-08-16T09:51:12.7445085Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+build (ubuntu-latest)	Post Checkout repository	2026-08-16T09:51:12.7484272Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+build (ubuntu-latest)	Post Checkout repository	2026-08-16T09:51:12.7720926Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+build (ubuntu-latest)	Post Checkout repository	2026-08-16T09:51:12.7787735Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+build (ubuntu-latest)	Complete job	﻿2026-08-16T09:51:12.8147645Z Cleaning up orphan processes
+build (ubuntu-latest)	Complete job	2026-08-16T09:51:12.8489465Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@v4, actions/checkout@v4, jetli/wasm-pack-action@v0.4.0, oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

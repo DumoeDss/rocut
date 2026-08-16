@@ -1,6 +1,6 @@
 /**
- * The custom-storage example — the production leg of the honest pair (S05 P6
- * task 3.3, promoted from P3's third-party adapter).
+ * The custom-storage example — the production leg (S05 P6 task 3.3, promoted
+ * from P3's third-party adapter).
  *
  * The alien adapter's own ProjectStore (a deliberately alien representation,
  * `src/alien-store.ts`) behind every published conformance surface: the ports
@@ -8,13 +8,16 @@
  * suite and the vectors suite — all executed against THIS adapter's
  * implementations, from installed tarballs.
  *
- * The migration leg is where this leg is deliberately honest: the production
- * path loads the published chain through
- * `@opencut/editor-classic/storage/migrations`, which cannot initialize in a
- * plain TS consumer (the wasm-initialization defect, Direction-level). The
- * skip is recorded distinctly — never silent — and the real chain is validated
- * by the OTHER leg, `run-mock.ts`, through the published wasm test mock. See
- * the README for the experimental-inheritance statement that follows from it.
+ * The migration leg loads the published chain through
+ * `@opencut/editor-classic/storage/migrations` and exercises it for real, with
+ * no mock in the process. Until 2026-08-16 it could not: the chain died with
+ * `wasm.__wbindgen_start is not a function`, which was a runtime capability gap
+ * in how the artifact was reached rather than a defect in the chain
+ * (BOUNDARIES §17). The distinct-skip branch below is deliberately KEPT as the
+ * fail-closed path — a leg that cannot load still says so by name and never
+ * passes silently — and `run-mock.ts` still validates the same chain through
+ * the published wasm test mock, which is where the experimental-inheritance
+ * statement in the README now belongs.
  */
 import type { ProjectId } from "@opencut/editor-ports";
 import { runPortConformance } from "@opencut/editor-ports/conformance";
@@ -67,8 +70,7 @@ async function main(): Promise<number> {
 	} else {
 		line(
 			"classic chain: NOT LOADABLE — @opencut/editor-classic/storage/migrations " +
-				"failed to load or initialize in this environment (recorded finding; the " +
-				"wasm-initialization defect is Direction-level, demonstrated not repaired). " +
+				"failed to load or initialize in this environment (recorded finding). " +
 				"The migration leg is skipped distinctly; every other surface still runs.",
 		);
 		line(`  observed: ${classicChainFailure ?? "unknown error"}`);

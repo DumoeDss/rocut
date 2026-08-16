@@ -1,0 +1,60 @@
+npm warn Unknown project config "node-linker". This will stop working in the next major version of npm.
+$ next build
+Starting content-collections content-collections.ts
+build started ...
+... finished build of 1 collection and 0 documents in 14ms
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of E:\AI\ChatAI\Agents\VibeCodingProjects\pnpm-lock.yaml as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\bun.lock
+   * E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\package-lock.json
+
+▲ Next.js 16.1.3 (Turbopack)
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 20.5s
+  Skipping validation of types
+  Collecting page data using 15 workers ...
+[2m2026-08-16T08:04:28.311Z[0m [33mWARN[0m [1m[Better Auth]:[0m [better-auth] Warning: your BETTER_AUTH_SECRET should be at least 32 characters long for adequate security. Generate one with `npx auth secret` or `openssl rand -base64 32`.
+[2m2026-08-16T08:04:28.315Z[0m [33mWARN[0m [1m[Better Auth]:[0m [better-auth] Warning: your BETTER_AUTH_SECRET appears low-entropy. Use a randomly generated secret for production.
+  Generating static pages using 15 workers (0/20) ...
+  Generating static pages using 15 workers (5/20) 
+  Generating static pages using 15 workers (10/20) 
+  Generating static pages using 15 workers (15/20) 
+✓ Generating static pages using 15 workers (20/20) in 5.0s
+  Finalizing page optimization ...
+
+Route (app)               Revalidate  Expire
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/auth/[...all]
+├ ƒ /api/feedback
+├ ƒ /api/health
+├ ƒ /api/sounds/search
+├ ○ /blog
+├ ● /blog/[slug]
+├ ○ /brand
+├ ○ /c6-disposal
+├ ƒ /c7-headless
+├ ○ /changelog
+├ ● /changelog/[version]
+├ ○ /contributors                10m      1y
+├ ƒ /editor/[project_id]
+├ ○ /privacy
+├ ○ /projects
+├ ○ /roadmap
+├ ○ /robots.txt
+├ ƒ /rss.xml
+├ ○ /sitemap.xml
+├ ○ /sponsors
+├ ○ /surface-evidence
+└ ○ /terms
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+
+REAL_EXIT_CODE:0

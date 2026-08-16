@@ -11,11 +11,11 @@ There is no workspace-link or registry workflow.
 
 The committed manifest intentionally records the current mixed SDK versions:
 
-| package | expected version | surface used here |
-| --- | --- | --- |
-| `@opencut/editor-ports` | `0.2.0` | frozen ports/conformance plus experimental requirement formatting |
-| `@opencut/editor-contracts` | `0.3.0` | frozen suites plus experimental `./conformance/fakes` |
-| `@opencut/editor-classic` | `0.2.0` | provider migration chain plus experimental wasm test mock |
+| package                     | expected version | surface used here                                                 |
+| --------------------------- | ---------------- | ----------------------------------------------------------------- |
+| `@opencut/editor-ports`     | `0.2.0`          | frozen ports/conformance plus experimental requirement formatting |
+| `@opencut/editor-contracts` | `0.3.0`          | frozen suites plus experimental `./conformance/fakes`             |
+| `@opencut/editor-classic`   | `0.2.0`          | provider migration chain plus experimental wasm test mock         |
 
 The runner checks these expectations against the packed manifests before
 rewriting them to `file:` specs; the numbers are not registry coordinates.
@@ -42,26 +42,30 @@ ownership and file inventory is machine-readable in `template.json`.
 
 ## What each suite proves
 
-| suite | implementation under test |
-| --- | --- |
-| ports | `createAlienPorts()` and this template's `AlienProjectStore` |
-| transaction | this template's `createAlienTransactionTarget()` |
-| engine | the published engine opened over fresh stores from `createAdapterProjectStore()` |
-| draft | the published draft manager and engine over fresh stores from the same function |
-| vectors | the published vector corpus over fresh stores from the same function |
+| suite       | implementation under test                                                        |
+| ----------- | -------------------------------------------------------------------------------- |
+| ports       | `createAlienPorts()` and this template's `AlienProjectStore`                     |
+| transaction | this template's `createAlienTransactionTarget()`                                 |
+| engine      | the published engine opened over fresh stores from `createAdapterProjectStore()` |
+| draft       | the published draft manager and engine over fresh stores from the same function  |
+| vectors     | the published vector corpus over fresh stores from the same function             |
 
 The engine/draft/vector helper is experimental. Its returned suite factory
 types remain the existing frozen types, but the convenience assembly itself
 may change or be removed in a later `0.x` minor.
 
-## Migration honest pair
+## Migration coverage
 
-`run.ts` uses the production import. Today it records the known
-`wasm.__wbindgen_start is not a function` initialization finding and skips only
-the migration leg, distinctly. `run-mock.ts` installs Classic's published
-experimental wasm test mock first and validates the real 31-step Classic
-`0.2.0` migration chain. Depending on that mock inherits its experimental
-instability; the production finding is not repaired or hidden here.
+`run.ts` uses the production import, loads the real 31-step Classic `0.2.0`
+migration chain from the installed tarballs, and exercises migration with no
+mock in the process. Its distinct-skip branch remains fail-closed behavior for
+any runtime that still cannot load the chain; the supported Bun path must not
+take that branch.
+
+`run-mock.ts` validates the same chain after installing Classic's published
+experimental wasm test mock. That compatibility leg proves the mock entry does
+what it claims, and it remains useful for runtimes without the routed wasm
+loader. Depending on the mock inherits its experimental instability.
 
 ## Commands
 

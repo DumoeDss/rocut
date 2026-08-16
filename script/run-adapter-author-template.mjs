@@ -247,12 +247,13 @@ if (
 	);
 }
 if (
-	!conformanceOutput.includes("wasm.__wbindgen_start is not a function") ||
-	!conformanceOutput.includes("migration/by-replication: SKIPPED distinctly")
+	!conformanceOutput.includes("classic chain: loaded (31 steps, target v31)") ||
+	!conformanceOutput.includes("migration/by-replication: green") ||
+	!conformanceOutput.includes("migration exercised")
 ) {
 	fail(
 		"author/conformance",
-		"production migration leg did not record the known wasm-init skip distinctly",
+		"production leg did not load the real 31-step chain and exercise migration",
 	);
 }
 console.log(
@@ -274,7 +275,7 @@ if (
 ) {
 	fail(
 		"author/migration",
-		"mock-installed leg did not validate the real 31-step chain",
+		"mock-installed compatibility leg did not validate the real 31-step chain",
 	);
 }
 

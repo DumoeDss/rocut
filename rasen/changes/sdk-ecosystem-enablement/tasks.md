@@ -16,7 +16,7 @@
 
 - [x] 3.1 Create `templates/adapter-project/` from the P3/P6 flat-JSON-tuple adapter seed with a standalone manifest, TypeScript config, source inventory, customization map, and LF-only files.
 - [x] 3.2 Route scaffold engine/draft/vector suites through the new ProjectStore-backed fakes while keeping ports and transaction suites on the scaffold's author-owned roles/store/target.
-- [x] 3.3 Preserve the migration honest pair: the production leg records the known wasm-init skip distinctly and the mock-installed leg validates the real published chain, with experimental inheritance documented.
+- [x] 3.3 Integrate the PR #3 wasm-init repair: the production leg loads the real chain and exercises migration, its distinct-skip branch remains fail-closed, and the mock-installed compatibility leg retains its documented experimental inheritance.
 - [x] 3.4 Add a deterministic non-conforming/failure demonstration whose formatter output is frozen requirement → case → detail and contains no internal stack-trace guidance.
 - [x] 3.5 Add an executable seed/drift guard proving the scaffold retains the P3 adapter's alien representation, opaque round-trip, five-suite coverage, and declared-entry-only imports without copying untracked internals.
 

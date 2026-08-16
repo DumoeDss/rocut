@@ -1,0 +1,110 @@
+npm warn Unknown project config "node-linker". This will stop working in the next major version of npm.
+bun test v1.2.18 (0d4089ea)
+
+script\__tests__\c6-session-resource-boundary.test.mjs:
+(pass) C6 executable negative rejects timer identifier alias [313.00ms]
+(pass) C6 executable negative rejects timer computed property [312.00ms]
+(pass) C6 executable negative rejects Worker constructor alias [297.00ms]
+(pass) C6 executable negative rejects AudioContext constructor alias [297.00ms]
+(pass) C6 executable negative rejects URL.createObjectURL destructure [328.00ms]
+(pass) C6 executable negative rejects OfflineAudioContext destructured alias [297.00ms]
+(pass) C6 executable negative rejects arbitrary single-resource wrapper [312.00ms]
+(pass) C6 executable negative rejects destructured multi-resource wrapper [422.00ms]
+(pass) C6 resource boundary scans a non-empty inventory and stays clean [2391.00ms]
+(pass) C6 resource boundary negative controls prove every rule can fail [484.00ms]
+(pass) C6 Next inventory follows the editor route manifest/NFT and source maps
+(pass) C6 emitted boundary accepts fresh Vite and Next outputs when present
+1840 | 	};
+1841 | }
+1842 | 
+1843 | function assertAnchoredValue({ label, actual, expected }) {
+1844 | 	if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+1845 | 		throw new Error(
+               ^
+error: C6 anchored Vite module-graph SHA-256 drifted (expected "5d100d2aaa142589b9a327fbf7fda56aa1fa025efe43b110afb00cbbd77ae58e", actual "df6724d32560ccd9e6e14ef6075ab3b9ee80174b04dd52c8c55161a89fa1deb8")
+      at assertAnchoredValue (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\script\check-session-resource-boundary.mjs:1845:9)
+      at verifyAnchoredProvenance (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\script\check-session-resource-boundary.mjs:1861:2)
+      at E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\script\check-session-resource-boundary.mjs:2324:3
+      at loadAndEvaluateModule (2:1)
+
+Bun v1.2.18 (Windows x64 baseline)
+250 | 		!existsSync(resolve(root, anchor.artifacts.vite.moduleGraph)) ||
+251 | 		!existsSync(resolve(root, anchor.artifacts.next.dist))
+252 | 	) {
+253 | 		return;
+254 | 	}
+255 | 	const output = execFileSync(
+                      ^
+error: Command failed: C:\Users\Sayo\AppData\Local\npm-cache\_npx\332b6e43b5952f60\node_modules\bun\bin\bun.exe E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\script\check-session-resource-boundary.mjs --verify-provenance
+1840 | 	};
+1841 | }
+1842 | 
+1843 | function assertAnchoredValue({ label, actual, expected }) {
+1844 | 	if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+1845 | 		throw new Error(
+               ^
+error: C6 anchored Vite module-graph SHA-256 drifted (expected "5d100d2aaa142589b9a327fbf7fda56aa1fa025efe43b110afb00cbbd77ae58e", actual "df6724d32560ccd9e6e14ef6075ab3b9ee80174b04dd52c8c55161a89fa1deb8")
+      at assertAnchoredValue (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\script\check-session-resource-boundary.mjs:1845:9)
+      at verifyAnchoredProvenance (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\script\check-session-resource-boundary.mjs:1861:2)
+      at E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\script\check-session-resource-boundary.mjs:2324:3
+      at loadAndEvaluateModule (2:1)
+
+Bun v1.2.18 (Windows x64 baseline)
+
+      at execFileSync (node:child_process:271:14)
+      at <anonymous> (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\script\__tests__\c6-session-resource-boundary.test.mjs:255:17)
+(fail) C6 independent anchor verifies fresh Vite and Next artifact digests [344.00ms]
+(pass) C6 generator keeps closure stable across distinct Next build IDs
+1813 | 	const sourceSet = new Set(normalizedSource);
+1814 | 	const missingClosure = expectedClosure.filter(
+1815 | 		(moduleId) => !sourceSet.has(moduleId),
+1816 | 	);
+1817 | 	if (missingClosure.length > 0) {
+1818 | 		throw new Error(
+               ^
+error: C6 emitted vite graph is truncated; omitted attributable closure: components/editor (24): packages/editor-classic/src/components/editor/editor-header.tsx, packages/editor-classic/src/components/editor/export-button.tsx, packages/editor-classic/src/components/editor/mobile-gate.tsx, packages/editor-classic/src/components/editor/onboarding.tsx, ...; core (13): packages/editor-classic/src/core/index.ts, packages/editor-classic/src/core/managers/audio-manager.ts, packages/editor-classic/src/core/managers/clipboard-manager.ts, packages/editor-classic/src/core/managers/commands.ts, ...; editor (56): packages/editor-classic/src/editor/cancel-interaction.ts, packages/editor-classic/src/editor/editor-store.ts, packages/editor-classic/src/editor/host/browser-runtime.ts, packages/editor-classic/src/editor/host/c4-project-load.ts, ...; export (3): packages/editor-classic/src/export/defaults.ts, packages/editor-classic/src/export/index.ts, packages/editor-classic/src/export/mime-types.ts; media (11): packages/editor-classic/src/media/audio-mastering.ts, packages/editor-classic/src/media/audio.ts, packages/editor-classic/src/media/media-utils.ts, packages/editor-classic/src/media/mediabunny.ts, ...; preview (25): packages/editor-classic/src/preview/components/context-menu.tsx, packages/editor-classic/src/preview/components/cursors.ts, packages/editor-classic/src/preview/components/handle-primitives.tsx, packages/editor-classic/src/preview/components/index.tsx, ...; retime (6): packages/editor-classic/src/retime/audio-stretch.ts, packages/editor-classic/src/retime/index.ts, packages/editor-classic/src/retime/presets.ts, packages/editor-classic/src/retime/rate.ts, ...; selection (11): packages/editor-classic/src/selection/attributes.ts, packages/editor-classic/src/selection/context.tsx, packages/editor-classic/src/selection/hit-testing.ts, packages/editor-classic/src/selection/hooks/use-box-select.ts, ...; services/renderer (22): packages/editor-classic/src/services/renderer/canvas-renderer.ts, packages/editor-classic/src/services/renderer/canvas-utils.ts, packages/editor-classic/src/services/renderer/compositor/frame-descriptor.ts, packages/editor-classic/src/services/renderer/compositor/wasm-compositor.ts, ...; services/transcription (1): packages/editor-classic/src/services/transcription/service.ts; services/video-cache (1): packages/editor-classic/src/services/video-cache/service.ts; services/waveform-cache (1): packages/editor-classic/src/services/waveform-cache/service.ts; sounds (3): packages/editor-classic/src/sounds/components/assets-view.tsx, packages/editor-classic/src/sounds/sounds-store.ts, packages/editor-classic/src/sounds/use-sound-search.ts; timeline (99): packages/editor-classic/src/timeline/animation-snap-points.ts, packages/editor-classic/src/timeline/animation-targets.ts, packages/editor-classic/src/timeline/audio-constants.ts, packages/editor-classic/src/timeline/audio-display.ts, ...; utils (9): packages/editor-classic/src/utils/browser.ts, packages/editor-classic/src/utils/color.ts, packages/editor-classic/src/utils/date.ts, packages/editor-classic/src/utils/geometry.ts, ...
+      at validateEmittedInventory (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\script\check-session-resource-boundary.mjs:1818:9)
+      at checkEmittedGraph (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\script\check-session-resource-boundary.mjs:2150:20)
+      at check (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\script\check-session-resource-boundary.mjs:2292:2)
+      at E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\script\check-session-resource-boundary.mjs:2326:7
+      at loadAndEvaluateModule (2:1)
+
+Bun v1.2.18 (Windows x64 baseline)
+(pass) C6 emitted boundary rejects a non-empty truncated Vite graph [2000.00ms]
+1813 | 	const sourceSet = new Set(normalizedSource);
+1814 | 	const missingClosure = expectedClosure.filter(
+1815 | 		(moduleId) => !sourceSet.has(moduleId),
+1816 | 	);
+1817 | 	if (missingClosure.length > 0) {
+1818 | 		throw new Error(
+               ^
+error: C6 emitted vite graph is truncated; omitted attributable closure: components/editor (24): packages/editor-classic/src/components/editor/editor-header.tsx, packages/editor-classic/src/components/editor/export-button.tsx, packages/editor-classic/src/components/editor/mobile-gate.tsx, packages/editor-classic/src/components/editor/onboarding.tsx, ...; core (13): packages/editor-classic/src/core/index.ts, packages/editor-classic/src/core/managers/audio-manager.ts, packages/editor-classic/src/core/managers/clipboard-manager.ts, packages/editor-classic/src/core/managers/commands.ts, ...; editor (56): packages/editor-classic/src/editor/cancel-interaction.ts, packages/editor-classic/src/editor/editor-store.ts, packages/editor-classic/src/editor/host/browser-runtime.ts, packages/editor-classic/src/editor/host/c4-project-load.ts, ...; export (3): packages/editor-classic/src/export/defaults.ts, packages/editor-classic/src/export/index.ts, packages/editor-classic/src/export/mime-types.ts; media (11): packages/editor-classic/src/media/audio-mastering.ts, packages/editor-classic/src/media/audio.ts, packages/editor-classic/src/media/media-utils.ts, packages/editor-classic/src/media/mediabunny.ts, ...; preview (25): packages/editor-classic/src/preview/components/context-menu.tsx, packages/editor-classic/src/preview/components/cursors.ts, packages/editor-classic/src/preview/components/handle-primitives.tsx, packages/editor-classic/src/preview/components/index.tsx, ...; retime (6): packages/editor-classic/src/retime/audio-stretch.ts, packages/editor-classic/src/retime/index.ts, packages/editor-classic/src/retime/presets.ts, packages/editor-classic/src/retime/rate.ts, ...; selection (11): packages/editor-classic/src/selection/attributes.ts, packages/editor-classic/src/selection/context.tsx, packages/editor-classic/src/selection/hit-testing.ts, packages/editor-classic/src/selection/hooks/use-box-select.ts, ...; services/renderer (22): packages/editor-classic/src/services/renderer/canvas-renderer.ts, packages/editor-classic/src/services/renderer/canvas-utils.ts, packages/editor-classic/src/services/renderer/compositor/frame-descriptor.ts, packages/editor-classic/src/services/renderer/compositor/wasm-compositor.ts, ...; services/transcription (1): packages/editor-classic/src/services/transcription/service.ts; services/video-cache (1): packages/editor-classic/src/services/video-cache/service.ts; services/waveform-cache (1): packages/editor-classic/src/services/waveform-cache/service.ts; sounds (3): packages/editor-classic/src/sounds/components/assets-view.tsx, packages/editor-classic/src/sounds/sounds-store.ts, packages/editor-classic/src/sounds/use-sound-search.ts; timeline (99): packages/editor-classic/src/timeline/animation-snap-points.ts, packages/editor-classic/src/timeline/animation-targets.ts, packages/editor-classic/src/timeline/audio-constants.ts, packages/editor-classic/src/timeline/audio-display.ts, ...; utils (9): packages/editor-classic/src/utils/browser.ts, packages/editor-classic/src/utils/color.ts, packages/editor-classic/src/utils/date.ts, packages/editor-classic/src/utils/geometry.ts, ...
+      at validateEmittedInventory (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\script\check-session-resource-boundary.mjs:1818:9)
+      at checkEmittedGraph (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\script\check-session-resource-boundary.mjs:2150:20)
+      at check (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\script\check-session-resource-boundary.mjs:2292:2)
+      at E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\script\check-session-resource-boundary.mjs:2326:7
+      at loadAndEvaluateModule (2:1)
+
+Bun v1.2.18 (Windows x64 baseline)
+(pass) C6 emitted boundary rejects a padded graph that truncates each attributable root [2000.00ms]
+452 | 		actualDigest !== EXPECTED_CLOSURE_SHA256 ||
+453 | 		EXPECTED_CLOSURE.common?.length !== EXPECTED_COMMON_SOURCE_COUNT ||
+454 | 		EXPECTED_CLOSURE.integrity?.reviewedCommonSourceCount !==
+455 | 			EXPECTED_COMMON_SOURCE_COUNT
+456 | 	) {
+457 | 		throw new Error(
+              ^
+error: C6 expected closure fixture integrity drifted (expected 703efb9c37906b108ff91a8702606ec6a214a4c793476378fd043a94dff20cea, actual 8dd05a5adef8de7f68e38df1146bbc67d916cc2bc77b32229677761e479d59a2)
+      at validateExpectedClosureFixture (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\script\check-session-resource-boundary.mjs:457:9)
+      at E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\script\check-session-resource-boundary.mjs:2322:2
+      at loadAndEvaluateModule (2:1)
+
+Bun v1.2.18 (Windows x64 baseline)
+(pass) C6 closure minimum is anchored independently from a downgraded fixture [297.00ms]
+(pass) C6 checker and closure fixture cannot self-approve a coordinated downgrade [156.00ms]
+
+ 17 pass
+ 1 fail
+ 61 expect() calls
+Ran 18 tests across 1 file. [10.39s]
+REAL_EXIT_CODE:1

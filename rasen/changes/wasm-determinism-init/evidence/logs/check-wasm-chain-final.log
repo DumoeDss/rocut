@@ -1,0 +1,39 @@
+npm warn Unknown project config "node-linker". This will stop working in the next major version of npm.
+$ node script/check-wasm-source.mjs && node script/check-wasm-paths.mjs && node script/check-wasm-api-surface.mjs && node script/check-wasm-init.mjs
+check-wasm-source: build output rust/wasm/pkg (9 file(s))
+  PASS  resolved from <root> -> node_modules/opencut-wasm
+  PASS  resolved from apps/web -> apps/web/node_modules/opencut-wasm
+  PASS  build output is newer than every Rust input (44 file(s) considered)
+  PASS  rust/wasm/LICENSE exists and matches the root LICENSE
+  PASS  all 4 wasm gates are wired (npm script + CI step after `bun install`)
+  PASS  toolchain pins are declared and enforced (rustc 1.88.0, wasm-pack v0.13.1)
+
+clean — the resolved `opencut-wasm` is the self-built artifact
+check-wasm-paths: rust/wasm/pkg/opencut_wasm_bg.wasm (3285863 bytes)
+  PASS  no Windows user-profile path (0 occurrence(s), 0 unique)
+  PASS  no any Windows drive-letter path (0 occurrence(s), 0 unique)
+  PASS  no POSIX home-directory path (0 occurrence(s), 0 unique)
+  PASS  no macOS home-directory path (0 occurrence(s), 0 unique)
+  PASS  no POSIX root home-directory path (0 occurrence(s), 0 unique)
+  PASS  no unremapped POSIX source/home/checkout path (0 occurrence(s), 0 unique)
+  PASS  no operating-system username disclosed
+  PASS  scanner rejects negative control /root/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/panicking.rs
+  PASS  scanner rejects negative control /workspace/checkout/rust/crates/gpu/src/context.rs
+  PASS  scanner rejects negative control /workspace/checkout/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs
+  PASS  scanner rejects negative control /builds/ci/opencut/rust/wasm/src/gpu.rs
+  PASS  intentional sanctioned roots are allowed (/cargo, /opencut, /wasm, /crates)
+  PASS  remapped `/cargo` prefix present (285) — proves the scan is not vacuous
+  PASS  a workspace root form is present (/opencut 1, relativized 0) — proves workspace paths were sanctioned
+
+clean — the redistributed wasm discloses no build-machine identity
+check-wasm-api-surface: exact 38 JS exports, 55 stably-named binary exports + 3 shape-matched compiler trampolines (58 total), 609 imports, 5 pinned files, 60 declaration lines, both entries in parity over the recorded 3 exports conditions, providers and structural compile PASS
+check-wasm-init: initializing the redistributed artifact for real
+  PASS  bun 1.2.18: import "opencut-wasm" -> 38 export(s), TICKS_PER_SECOND=120000
+  PASS  node v24.14.0: import "opencut-wasm/sync" -> 38 export(s), TICKS_PER_SECOND=120000
+  INFO  node v24.14.0: the bare specifier resolves to the bundler entry and initializes (38 exports) via this runtime's WebAssembly/ESM integration
+  PASS  bun 1.2.18 and node v24.14.0 agree on all 4 probed values (mediaTimeFromSeconds(2)=240000, roundToFrame=12000)
+  PASS  bun 1.2.18: @opencut/editor-classic/storage/migrations loads mock-free -> 31 transformer(s), CURRENT_PROJECT_VERSION=31, first=V0toV1Migration
+  PASS  negative control: the --target bundler entry under bun 1.2.18 still fails with __wbindgen_start
+
+clean — 2 runtime(s) initialized the artifact, the real migration chain loaded mock-free, and the pre-fix control still fires
+REAL_EXIT_CODE:0

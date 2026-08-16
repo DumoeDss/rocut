@@ -4,21 +4,23 @@ Date: 2026-08-16
 
 Repository base: `661d7ac87c3d324839d51bf30470bbf81764b694`
 
-All results below are from the `feat/sdk-ecosystem-enablement` worktree after the final wasm,
-Vite, Next, Surface CSS, and install sequence. Commands were run in the foreground or used their
-own self-logged exit code. A non-zero result is not described as green.
+All results through §7.3 below are the historical `661d7ac8` pre-PR-#3 record from the
+`feat/sdk-ecosystem-enablement` worktree after the final wasm, Vite, Next, Surface CSS, and install
+sequence. Commands were run in the foreground or used their own self-logged exit code. A non-zero
+result is not described as green. The merge-integration addendum at the end supersedes those
+sections wherever PR #3 changed wasm initialization, toolchain, or CI status.
 
 ## Build and package gates
 
-| gate | result |
-| --- | --- |
-| `bun run build:wasm` | exit 0; self-sourced wasm artifact rebuilt |
-| `bun install` in `apps/web` | exit 0 |
-| Vite production build | exit 0; 3,842 emitted modules |
-| Next production build | exit 0; Next `16.1.3` |
-| dedicated Surface CSS build and boundary check | exit 0; 1 source + 1 emitted CSS file |
-| scoped fakes TypeScript check | exit 0; 0 diagnostics |
-| contracts package tests | 127 pass, 0 fail, 1,382 expectations, 14 files, exit 0 |
+| gate                                           | result                                                 |
+| ---------------------------------------------- | ------------------------------------------------------ |
+| `bun run build:wasm`                           | exit 0; self-sourced wasm artifact rebuilt             |
+| `bun install` in `apps/web`                    | exit 0                                                 |
+| Vite production build                          | exit 0; 3,842 emitted modules                          |
+| Next production build                          | exit 0; Next `16.1.3`                                  |
+| dedicated Surface CSS build and boundary check | exit 0; 1 source + 1 emitted CSS file                  |
+| scoped fakes TypeScript check                  | exit 0; 0 diagnostics                                  |
+| contracts package tests                        | 127 pass, 0 fail, 1,382 expectations, 14 files, exit 0 |
 
 The scoped TypeScript command was:
 
@@ -58,40 +60,40 @@ All 32 `script/check-*.mjs` files were executed directly and their real exits re
 Twenty-five exit 0. Four are context-only entry points whose bare invocation correctly refuses
 missing inputs. Three inherited reds are retained and dispositioned below.
 
-| checker | exit | result / population |
-| --- | ---: | --- |
-| `check-adapter-author-guide-commands.mjs` | 0 | 5 documented commands = 5 unique runner steps |
-| `check-adapter-project-template.mjs` | 0 | 16 files; 43 imports; suites 36/21/38/22/29 |
-| `check-agent-evidence.mjs` | 0 | both Hosts' existing agent evidence clean |
-| `check-asset-manifest.mjs` | 2 | context gate: requires preview at `127.0.0.1:4173` |
-| `check-distributable-boundary.mjs` | 0 | 3,842 modules; all exclusions clean |
-| `check-editor-singleton.mjs` | 0 | 781 runtime + 40 command modules |
-| `check-emitted-runtime-assets.mjs` | 1 | inherited red: 2 Next worker relative escapes |
-| `check-headless-graph.mjs` | 2 | context gate: requires envelope and Host/build arguments |
-| `check-headless-semantic-result.mjs` | 2 | context gate: requires Vite and Next report JSON |
-| `check-host-composition.mjs` | 0 | 3 Host roots + 836 production modules |
-| `check-next-imports.mjs` | 0 | clean |
-| `check-package-boundary.mjs` | 0 | final rerun: 1,158 repo files; 1,013 source files; 419 cross-package edges |
-| `check-packed-manifest-closure.mjs` | 0 | 4 packages; 0 closure failures |
-| `check-port-boundary.mjs` | 0 | all non-empty acquisition rules clean |
-| `check-react-singleton.mjs` | 0 | 4 manifests + lock + 3,842 modules |
-| `check-reference-boundary.mjs` | 0 | 1,281/1,660 files scanned; all rules clean |
-| `check-resolution-equivalence.mjs` | 1 | context gate: requires staged specifier rewrites; 0 present |
-| `check-runtime-asset-boundary.mjs` | 0 | all Host and asset/Worker layers present |
-| `check-sdk-consumer-view.mjs` | 0 | 4 packed packages; 0 failures; 0 dangling entries |
-| `check-sdk-surface-labels.mjs` | 0 | 36 entries = frozen 16 / provider 13 / experimental 7 |
-| `check-session-resource-boundary.mjs` | 0 | all non-empty resource rules clean |
-| `check-session-state-boundary.mjs` | 0 | 10/10 factories; 10/10 registry keys; 53 imperative modules |
-| `check-storage-boundary.mjs` | 0 | final ProjectStore/Host boundary clean |
-| `check-surface-boundary.mjs` | 0 | 15 Surface modules |
-| `check-surface-css-boundary.mjs` | 0 | 1 source + 1 emitted CSS file |
-| `check-surface-portal-boundary.mjs` | 0 | 13 files |
-| `check-surface-private-drag.mjs` | 0 | 724 files |
-| `check-transaction-boundary.mjs` | 0 | all vector-leak rules clean |
-| `check-type-baseline.mjs` | 1 | inherited red: 2 TS2769 diagnostics |
-| `check-wasm-api-surface.mjs` | 1 | inherited environment red: LICENSE/README line endings |
-| `check-wasm-paths.mjs` | 0 | 285 remapped `/cargo` paths; no machine identity |
-| `check-wasm-source.mjs` | 0 | 8 build files; 44 Rust inputs considered |
+| checker                                   | exit | result / population                                                        |
+| ----------------------------------------- | ---: | -------------------------------------------------------------------------- |
+| `check-adapter-author-guide-commands.mjs` |    0 | 5 documented commands = 5 unique runner steps                              |
+| `check-adapter-project-template.mjs`      |    0 | 16 files; 43 imports; suites 36/21/38/22/29                                |
+| `check-agent-evidence.mjs`                |    0 | both Hosts' existing agent evidence clean                                  |
+| `check-asset-manifest.mjs`                |    2 | context gate: requires preview at `127.0.0.1:4173`                         |
+| `check-distributable-boundary.mjs`        |    0 | 3,842 modules; all exclusions clean                                        |
+| `check-editor-singleton.mjs`              |    0 | 781 runtime + 40 command modules                                           |
+| `check-emitted-runtime-assets.mjs`        |    1 | inherited red: 2 Next worker relative escapes                              |
+| `check-headless-graph.mjs`                |    2 | context gate: requires envelope and Host/build arguments                   |
+| `check-headless-semantic-result.mjs`      |    2 | context gate: requires Vite and Next report JSON                           |
+| `check-host-composition.mjs`              |    0 | 3 Host roots + 836 production modules                                      |
+| `check-next-imports.mjs`                  |    0 | clean                                                                      |
+| `check-package-boundary.mjs`              |    0 | final rerun: 1,158 repo files; 1,013 source files; 419 cross-package edges |
+| `check-packed-manifest-closure.mjs`       |    0 | 4 packages; 0 closure failures                                             |
+| `check-port-boundary.mjs`                 |    0 | all non-empty acquisition rules clean                                      |
+| `check-react-singleton.mjs`               |    0 | 4 manifests + lock + 3,842 modules                                         |
+| `check-reference-boundary.mjs`            |    0 | 1,281/1,660 files scanned; all rules clean                                 |
+| `check-resolution-equivalence.mjs`        |    1 | context gate: requires staged specifier rewrites; 0 present                |
+| `check-runtime-asset-boundary.mjs`        |    0 | all Host and asset/Worker layers present                                   |
+| `check-sdk-consumer-view.mjs`             |    0 | 4 packed packages; 0 failures; 0 dangling entries                          |
+| `check-sdk-surface-labels.mjs`            |    0 | 36 entries = frozen 16 / provider 13 / experimental 7                      |
+| `check-session-resource-boundary.mjs`     |    0 | all non-empty resource rules clean                                         |
+| `check-session-state-boundary.mjs`        |    0 | 10/10 factories; 10/10 registry keys; 53 imperative modules                |
+| `check-storage-boundary.mjs`              |    0 | final ProjectStore/Host boundary clean                                     |
+| `check-surface-boundary.mjs`              |    0 | 15 Surface modules                                                         |
+| `check-surface-css-boundary.mjs`          |    0 | 1 source + 1 emitted CSS file                                              |
+| `check-surface-portal-boundary.mjs`       |    0 | 13 files                                                                   |
+| `check-surface-private-drag.mjs`          |    0 | 724 files                                                                  |
+| `check-transaction-boundary.mjs`          |    0 | all vector-leak rules clean                                                |
+| `check-type-baseline.mjs`                 |    1 | inherited red: 2 TS2769 diagnostics                                        |
+| `check-wasm-api-surface.mjs`              |    1 | inherited environment red: LICENSE/README line endings                     |
+| `check-wasm-paths.mjs`                    |    0 | 285 remapped `/cargo` paths; no machine identity                           |
+| `check-wasm-source.mjs`                   |    0 | 8 build files; 44 Rust inputs considered                                   |
 
 The four context-only exits are the documented fail-closed bare behavior, not regression claims.
 Their exercised forms are covered by the completed Host parity/build evidence or are inapplicable
@@ -130,10 +132,10 @@ check has zero diagnostics.
 The API checker and `script/wasm-api-surface-contract.mjs` have zero diff from `661d7ac8`.
 The current Windows wasm-pack output contains LF-only text for the two failing generated files:
 
-| file | actual LF SHA-256 | CR bytes | in-memory CRLF projection | checker expected |
-| --- | --- | ---: | --- | --- |
-| `LICENSE` | `814632368a8331fd1f485f4bd4b7ecb6401e5f2a24fba79cd3e21aff8ca39a6e` | 0 | `8117f9bb64534f7530fc6139b014fd1c1465f7981f93d1871789150fa3f59d3d` | same |
-| `README.md` | `c8fe27ab5d2e12963e1f04571549afc9828060f4dfec85e6afaa188d3d90a128` | 0 | `a09d79579ac121a05ab38ca5c4cba505d91f2ee4359d336cc2cc1fd36b4d3191` | same |
+| file        | actual LF SHA-256                                                  | CR bytes | in-memory CRLF projection                                          | checker expected |
+| ----------- | ------------------------------------------------------------------ | -------: | ------------------------------------------------------------------ | ---------------- |
+| `LICENSE`   | `814632368a8331fd1f485f4bd4b7ecb6401e5f2a24fba79cd3e21aff8ca39a6e` |        0 | `8117f9bb64534f7530fc6139b014fd1c1465f7981f93d1871789150fa3f59d3d` | same             |
+| `README.md` | `c8fe27ab5d2e12963e1f04571549afc9828060f4dfec85e6afaa188d3d90a128` |        0 | `a09d79579ac121a05ab38ca5c4cba505d91f2ee4359d336cc2cc1fd36b4d3191` | same             |
 
 Mechanical LF-to-CRLF projection in memory exactly reproduces both recorded hashes. The wasm
 implementation and the separate wasm-determinism worktree were not modified.
@@ -211,12 +213,12 @@ was removed.
 Shared-harness integration was repeated from fresh repository-external roots after the safety
 change:
 
-| consumer | result |
-| --- | --- |
-| author runner, fresh root | all steps 0; populations 36/21/38/22/29 |
-| author runner, same exact root | authenticated quarantine move/cleanup/recreate; all steps 0 |
-| P3 scratch conformance | four real tarball copies; populations 36/21/38/22/29; exit 0 |
-| four published examples | all four exit 0; embed smoke 9/9; final runner exit 0 |
+| consumer                       | result                                                       |
+| ------------------------------ | ------------------------------------------------------------ |
+| author runner, fresh root      | all steps 0; populations 36/21/38/22/29                      |
+| author runner, same exact root | authenticated quarantine move/cleanup/recreate; all steps 0  |
+| P3 scratch conformance         | four real tarball copies; populations 36/21/38/22/29; exit 0 |
+| four published examples        | all four exit 0; embed smoke 9/9; final runner exit 0        |
 
 ## 6.2 conclusion
 
@@ -252,3 +254,48 @@ matrix fail-fast. The immediately preceding `main` run `31915394334` at the exac
 messages: generated `LICENSE`, `README.md`, and `package.json` drift, low-level declaration drift,
 and the binary export set differing from 58. This change does not modify that checker, Rust/WASM
 source, or generated wasm contract. The PR remains open and unmerged.
+
+## PR #3 merge-integration addendum
+
+PR #3 merged to `main` as `5c239a84ac642cf99c92488ec097aac17634b418`. It supersedes the
+historical wasm inherited-red disposition above: the Bun-routed sync entry repairs the runtime
+initialization gap, rustc `1.88.0` and wasm-pack `0.13.1` are pinned, the stable/shaped export
+contract handles the three host-dependent trampoline hashes, text hashes use the repository's
+LF-normalized content, and the Linux path-adjacency false positive is covered by controls.
+
+The post-merge main workflow `31942835694` completed successfully:
+
+| job                      | conclusion |
+| ------------------------ | ---------- |
+| `build (ubuntu-latest)`  | success    |
+| `build (windows-latest)` | success    |
+| `build (macos-latest)`   | success    |
+| `sdk-examples`           | success    |
+
+For `sdk-ecosystem-enablement`, this changes the current author journey rather than erasing the
+old evidence: the `661d7ac8` baseline, blind test, and final scratch transcript remain valid
+historical measurements of the pre-repair world. After integration, the production scaffold leg
+must load `classic chain: loaded (31 steps, target v31)`, exercise migration, and report
+`migration/by-replication: green`; the mock-installed leg remains a separate compatibility check
+for the experimental entry, and the distinct-skip branch remains fail-closed behavior only.
+
+Local merge-integration verification in the PR #4 worktree completed as follows:
+
+| gate                                                   | result                                                                                                   |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| pinned `bun run build:wasm`, followed by `bun install` | exit 0; rustc 1.88.0 and wasm-pack 0.13.1 observed                                                       |
+| `bun run check:wasm`                                   | exit 0; all source, path, API-surface, init, cross-runtime, migration-chain, and pre-fix controls passed |
+| adapter template drift                                 | exit 0; 16 files, 43 imports, suites 36/21/38/22/29                                                      |
+| direct production leg                                  | exit 0; real 31-step chain loaded, ports migration exercised, replication green                          |
+| direct mock-installed leg                              | exit 0; experimental entry installed, real 31-step chain and ports migration green                       |
+| guide command check + negative controls                | both exit 0; all four drift directions fired                                                             |
+| contracts fakes tests + scoped strict TypeScript       | 8/8 tests, 40 expectations, 0 diagnostics                                                                |
+| scratch lifecycle safety                               | 7/7 tests, 29 expectations                                                                               |
+| surface-label and package-boundary gates               | both exit 0; 36 entries and 1,169 repository files scanned                                               |
+
+One new repository-external author-runner attempt at
+`E:\opencut-adapter-author-pr3-merge-20260816` reached npm dependency materialization but did not
+finish within the 10-minute outer command limit. It returned no runner exit transcript and is not
+counted as green. No matching child process remained afterward; the marker-owned partial scratch
+tree was retained for diagnosis rather than deleted. The clean Ubuntu `sdk-examples` run on PR #4
+therefore remains the authoritative fresh-tarball integration gate.

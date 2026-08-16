@@ -37,10 +37,9 @@ entry must satisfy the existing exports/surface-marker checker in both direction
 - A general fake framework, public vector-driver internals, or a replacement conformance runner.
 - Hiding an adapter defect by substituting the ports or transaction reference implementation for
   the author's implementation in the scaffold's acceptance run.
-- Registry behavior, release automation, S09 provider evolution, timeline/editor/export work, or
-  the parallel wasm-determinism fix.
-- Solving the known classic wasm-initialization finding; the migration honest pair remains the
-  documented current behavior.
+- Registry behavior, release automation, S09 provider evolution, or timeline/editor/export work.
+- Changing the wasm-init routing or toolchain-determinism repair delivered separately by PR #3;
+  this change consumes that repair and keeps only a fail-closed distinct-skip branch.
 
 ## Decisions
 
@@ -110,9 +109,11 @@ vector drivers remain undeclared implementation modules.
 
 `templates/adapter-project/` is the canonical copyable scaffold. It retains the deliberately
 alien flat JSON-tuple store, codec, port roles, transaction target, requirement-first reporting,
-and the migration honest pair, but replaces repeated engine/draft/vector assembly with E1's
-public helper. Its README labels required customization points separately from reference/demo
-code and states which suites exercise which author-owned implementation.
+and both migration execution paths, but replaces repeated engine/draft/vector assembly with E1's
+public helper. After PR #3, the production path loads and exercises the real chain with no mock;
+the distinct-skip branch remains fail-closed, while the mock-installed path validates the
+experimental compatibility entry. Its README labels required customization points separately
+from reference/demo code and states which suites exercise which author-owned implementation.
 
 The committed manifest records exact expected package versions as input data. Materialization
 rewrites every `@opencut/*` dependency and the wasm override to staged `file:tarballs/*.tgz`

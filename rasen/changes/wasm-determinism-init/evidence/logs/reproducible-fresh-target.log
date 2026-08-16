@@ -1,0 +1,118 @@
+check-wasm-reproducible: first build recorded, 10 file(s) in rust/wasm/pkg
+  second build: CARGO_TARGET_DIR=C:\Users\Sayo\.opencut-wasm-reproducible-target (full recompile at a different path)
+build-wasm: pinned toolchain
+  PASS  rustc 1.88.0 (observed: 1.88.0)
+  PASS  wasm-pack 0.13.1 (observed: 0.13.1)
+build-wasm: wasm-pack build rust/wasm --target bundler --out-dir pkg
+  remapping C:\Users\Sayo\.cargo  ->  /cargo
+  remapping E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm  ->  /opencut
+  remapping /wasm/  ->  /opencut/rust/wasm/
+  remapping /crates/  ->  /opencut/rust/crates/
+[INFO]: 🎯  Checking for the Wasm target...
+[INFO]: 🌀  Compiling to Wasm...
+   Compiling unicode-ident v1.0.24
+   Compiling proc-macro2 v1.0.106
+   Compiling quote v1.0.45
+   Compiling wasm-bindgen-shared v0.2.116
+   Compiling rustversion v1.0.22
+   Compiling cfg-if v1.0.4
+   Compiling bumpalo v3.20.2
+   Compiling once_cell v1.21.4
+   Compiling futures-task v0.3.32
+   Compiling pin-project-lite v0.2.17
+   Compiling slab v0.4.12
+   Compiling futures-core v0.3.32
+   Compiling cfg_aliases v0.2.1
+   Compiling libm v0.2.16
+   Compiling autocfg v1.5.0
+   Compiling zerocopy v0.8.47
+   Compiling foldhash v0.2.0
+   Compiling thiserror v2.0.18
+   Compiling version_check v0.9.5
+   Compiling naga v29.0.1
+   Compiling futures-util v0.3.32
+   Compiling hashbrown v0.16.1
+   Compiling bitflags v2.11.0
+   Compiling parking_lot_core v0.9.12
+   Compiling unicode-width v0.2.2
+   Compiling equivalent v1.0.2
+   Compiling log v0.4.29
+   Compiling num-traits v0.2.19
+   Compiling slotmap v1.1.1
+   Compiling bit-vec v0.9.1
+   Compiling indexmap v2.13.0
+   Compiling codespan-reporting v0.13.1
+   Compiling scopeguard v1.2.0
+   Compiling hexf-parse v0.2.1
+   Compiling bit-set v0.9.1
+   Compiling raw-window-handle v0.6.2
+   Compiling rustc-hash v1.1.0
+   Compiling arrayvec v0.7.6
+   Compiling smallvec v1.15.1
+   Compiling lock_api v0.4.14
+   Compiling wgpu-hal v29.0.1
+   Compiling serde_core v1.0.228
+   Compiling profiling v1.0.17
+   Compiling wgpu-core v29.0.1
+   Compiling litrs v1.0.0
+   Compiling serde v1.0.228
+   Compiling wgpu v29.0.1
+   Compiling zmij v1.0.21
+   Compiling static_assertions v1.1.0
+   Compiling serde_json v1.0.149
+   Compiling memchr v2.8.0
+   Compiling itoa v1.0.18
+   Compiling syn v2.0.117
+   Compiling parking_lot v0.12.5
+   Compiling document-features v0.2.12
+   Compiling wasm-bindgen v0.2.116
+   Compiling wasm-bindgen-macro-support v0.2.116
+   Compiling serde_derive_internals v0.29.1
+   Compiling zerocopy-derive v0.8.47
+   Compiling thiserror-impl v2.0.18
+   Compiling bytemuck_derive v1.10.2
+   Compiling serde_derive v1.0.228
+   Compiling bridge v0.1.0 (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\rust\crates\bridge)
+   Compiling tsify-next-macros v0.5.6
+   Compiling bytemuck v1.25.0
+   Compiling wasm-bindgen-macro v0.2.116
+   Compiling js-sys v0.3.93
+   Compiling console_error_panic_hook v0.1.7
+   Compiling half v2.7.1
+   Compiling web-sys v0.3.93
+   Compiling wasm-bindgen-futures v0.4.66
+   Compiling serde-wasm-bindgen v0.6.5
+   Compiling wgpu-types v29.0.1
+   Compiling glow v0.17.0
+   Compiling gloo-utils v0.2.0
+   Compiling tsify-next v0.5.6
+   Compiling time v0.1.0 (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\rust\crates\time)
+   Compiling wgpu-naga-bridge v29.0.1
+   Compiling wgpu-core-deps-wasm v29.0.0
+   Compiling gpu v0.1.0 (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\rust\crates\gpu)
+   Compiling masks v0.1.0 (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\rust\crates\masks)
+   Compiling effects v0.1.0 (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\rust\crates\effects)
+   Compiling compositor v0.1.0 (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\rust\crates\compositor)
+   Compiling opencut-wasm v0.2.10 (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-wasm\rust\wasm)
+    Finished `release` profile [optimized] target(s) in 2m 06s
+[INFO]: ⬇️  Installing wasm-bindgen...
+[INFO]: Optimizing wasm binaries with `wasm-opt`...
+[INFO]: ✨   Done in 2m 25s
+[INFO]: 📦   Your wasm pkg is ready to publish at rust\wasm\pkg.
+build-wasm: emitted opencut_wasm_sync.js and the bun/node/require exports conditions
+
+  PASS  .gitignore  684888c0ebb17f37…
+  PASS  LICENSE  814632368a8331fd…
+  PASS  README.md  c8fe27ab5d2e1296…
+  PASS  opencut_wasm.d.ts  e7d942d396f17ebc…
+  PASS  opencut_wasm.js  19714428b345a2ac…
+  PASS  opencut_wasm_bg.js  63414885a3ffc631…
+  PASS  opencut_wasm_bg.wasm  7234c951f8bc53d2…
+  PASS  opencut_wasm_bg.wasm.d.ts  df9ee7494a229fc8…
+  PASS  opencut_wasm_sync.js  aa6081035bd18e34…
+  PASS  package.json  40dde4fbe69cf42e…
+
+  PASS  10/10 file(s) byte-identical across two builds
+
+clean — the artifact is byte-reproducible from a fresh build directory at a different absolute path
+REAL_EXIT_CODE:0

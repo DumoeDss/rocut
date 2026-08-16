@@ -1,0 +1,13 @@
+specifier               without exports           with exports              verdict
+(bare)                  esm=ok cjs=ok             esm=ok cjs=ok             ok
+/opencut_wasm.js        esm=ok cjs=ok             esm=ok cjs=ok             ok
+/opencut_wasm_bg.js     esm=ok cjs=ok             esm=ok cjs=ok             ok
+/opencut_wasm_sync.js   esm=ok cjs=ok             esm=ok cjs=ok             ok
+/opencut_wasm_bg.wasm   esm=ok cjs=ok             esm=ok cjs=ok             ok
+/opencut_wasm.d.ts      esm=ok cjs=ok             esm=ok cjs=ok             ok
+/package.json           esm=ok cjs=ok             esm=ok cjs=ok             ok
+/snippets/helper.js     esm=ok cjs=ok             esm=ok cjs=ok             ok
+/sync                   esm=ok cjs=MODULE_NOT_FOUNDesm=ok cjs=ok             ok
+
+clean — 9 specifier(s) x 2 resolvers; 9 resolved before the map existed, 0 sealed by adding it
+REAL_EXIT_CODE:0

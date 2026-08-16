@@ -8,32 +8,38 @@ ports suite (portable profile), the transaction suite, the engine suite, the
 draft suite and the vectors suite — all from the installed tarballs, none of
 them touching a reference implementation.
 
-## The migration honest pair
+## The two migration legs
 
-The wasm-initialization defect (a Direction-level defect, demonstrated here
-but not repaired) means the published migration chain — reachable through
-`@opencut/editor-classic/storage/migrations` — cannot initialize in a plain
-TS consumer. This example handles that honestly, in two legs:
-
-1. **The production path** (`run.ts`) runs and records its skip distinctly:
-   the chain fails to load, the finding is printed with the observed reason,
-   the migration leg is skipped — never silently — and every other surface
-   still runs.
+1. **The production path** (`run.ts`) loads the published migration chain
+   straight from the installed tarballs — no mock anywhere in the process —
+   and exercises migration for real: the chain reports its 31 steps and target
+   version, a seeded legacy record migrates with monotone progress,
+   `not-needed` on the second call, and a declining transform fails closed.
 2. **The validated chain** (`run-mock.ts`) installs classic's own published
-   wasm test mock first, then walks the **real published chain** (31 steps at
-   0.2.0) over the alien store: migrated with monotone progress, `not-needed`
-   on the second call, a declining transform failing closed, and the ports
-   suite's migration case exercised.
+   wasm test mock first, then walks the same **real published chain** over the
+   alien store. It remains as the demonstration that the published
+   experimental entry does what it claims, and as the leg that keeps working
+   in a runtime that cannot initialize the wasm at all.
+
+> **This used to be an "honest pair".** Until 2026-08-16 the production leg
+> could not load the chain: `wasm.__wbindgen_start is not a function`, recorded
+> as a Direction-level defect demonstrated but not repaired, with the migration
+> leg skipped distinctly. That defect is fixed — it was a runtime capability gap
+> (bun resolved the artifact's `.wasm` import to an asset rather than instance
+> exports), not a defect in the chain or in the binary. See `BOUNDARIES.md` §17.
+> `run.ts`'s distinct-skip branch is **kept**, as the fail-closed path for any
+> future runtime that cannot load the chain: a leg that cannot run still says so
+> by name and never passes silently.
 
 ### Experimental inheritance
 
-This example's migration validation depends on the experimental-labeled entry
-`@opencut/editor-classic/evidence/wasm-test-mock`; **the example therefore
-depends on an experimental-labeled entry and inherits its instability.** A
-breaking change to that entry is a documented, labeled consequence of this
-pair — the alternative (validating against a fake chain, or dropping the
-migration behavior an adopter most needs to see) was rejected in the change's
-design.
+`run-mock.ts` depends on the experimental-labeled entry
+`@opencut/editor-classic/evidence/wasm-test-mock`; **that leg therefore depends
+on an experimental-labeled entry and inherits its instability.** A breaking
+change to that entry is a documented, labeled consequence of keeping it — the
+alternative (validating against a fake chain, or dropping the migration
+behavior an adopter most needs to see) was rejected in the change's design.
+Note that the production leg above no longer needs that entry at all.
 
 ## Run it
 
