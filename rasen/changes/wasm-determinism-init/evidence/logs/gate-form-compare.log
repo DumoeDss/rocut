@@ -1,0 +1,6 @@
+unmodified workflow (both must PASS)             old=PASSES  new=PASSES
+step gutted, comment still names the gate        old=catches  new=catches
+step gutted and every mention removed            old=catches  new=catches
+gate invoked with an extra flag                  old=PASSES  new=catches
+gate moved before `bun install`                  old=catches  new=catches
+REAL_EXIT_CODE:0

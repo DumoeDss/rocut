@@ -161,6 +161,31 @@ targets**, each `-e` tested.
 | `script/check-`, `examples/evidence/logs/group5-full-run-clean.log` | scanner artifacts: the first is the `check-*.mjs` glob with `*` outside the character class, the second a mid-path capture of `rasen/changes/s05-published-examples/evidence/logs/…` |
 | `apps/web/bun.lock` | **pre-existing CI defect, recorded not fixed** — see findings |
 
+## 7b. The one assertion this change rewrote, proven not weaker
+
+`check-wasm-source.mjs` located a CI gate with `workflow.indexOf(gate)` and now uses an exact
+`run: node <gate>$` regex. Rewriting an assertion is exactly where a change can quietly widen, so
+it is measured rather than argued: `evidence/gate-form-compare.mjs` runs both forms against the
+real workflow and four doctored variants (`logs/gate-form-compare.log`).
+
+| workflow edit | old form | new form |
+| --- | --- | --- |
+| unmodified | PASSES | PASSES |
+| step gutted, comment still names the gate | catches | catches |
+| step gutted and every mention scrubbed | catches | catches |
+| gate invoked with an extra flag | **PASSES** | catches |
+| gate moved before `bun install` | catches | catches |
+
+**4/4 caught by the new form, 3/4 by the old; no edit exists that the old form catches and the new
+one does not.** The one divergence is the new form being stricter. That strictness is not novel
+either — `check-wasm-api-surface.mjs`'s `workflowCommandPosition` already requires an exact whole
+-command match for its own gate, so the two wasm gate-wiring checks now agree on what registration
+means.
+
+(Note the second row: the old form "catches" it only by accident — `indexOf` finds the mention in
+the step's *comment*, which sits before `bun install`, so it reports the gate as running too early
+rather than as missing. That accident is what produced a false failure during this change.)
+
 ## 8. Statements this change falsified, and what was done about each
 
 Found by grepping the shipped tree and the main specs for the wasm-init language after the

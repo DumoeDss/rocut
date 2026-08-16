@@ -275,6 +275,17 @@ for (const gate of GATED) {
 	// Match the `run:` command, not any mention of the path. A bare `indexOf` also matches the
 	// step's own explanatory comment, so a comment placed above `bun install` made this report the
 	// gate as running too early — a false failure the tightened form cannot produce.
+	//
+	// The match is deliberately EXACT (`\s*$`), which is the same rule
+	// `check-wasm-api-surface.mjs`'s `workflowCommandPosition` already applies to its own gate:
+	// `run: node <gate> --some-flag` is reported as unregistered rather than accepted. Fail-closed
+	// on an unrecognised invocation is the right direction for a registration check, and the two
+	// wasm gate-wiring checks now agree on what registration looks like.
+	//
+	// Measured against the old form (.work/probes/gate-form-compare.mjs): of gutting the step,
+	// gutting it and scrubbing every mention, moving it before `bun install`, and adding a flag,
+	// the new form catches 4/4 and the old form 3/4. There is no edit the old form catches and the
+	// new one does not.
 	const gateAt = workflow.search(new RegExp(`run:\\s*node ${gate.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*$`, "m"));
 	if (gateAt === -1) wiringProblems.push(`bun-ci.yml has no step running ${gate}`);
 	else if (installAt === -1) wiringProblems.push("bun-ci.yml no longer runs `bun install`");
