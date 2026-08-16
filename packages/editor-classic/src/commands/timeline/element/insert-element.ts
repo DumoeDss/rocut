@@ -21,7 +21,7 @@ import {
 	resolveTrackPlacement,
 	validateElementTrackCompatibility,
 } from "../../../timeline/placement";
-import { roundMediaTime } from "../../../wasm";
+import { roundMediaTime, TICKS_PER_SECOND } from "../../../wasm";
 
 type InsertElementPlacement =
 	| { mode: "explicit"; trackId: string }
@@ -68,7 +68,17 @@ export class InsertElementCommand extends Command {
 			);
 		const isFirstElement = totalElementsInTimeline === 0;
 
-		const newElement = this.buildElement({ element: this.element });
+		// Frame alignment: the transaction engine's base placement policy rejects
+		// any clip whose startTime/duration/trimStart/trimEnd is not an exact
+		// multiple of ticks-per-frame. Real media durations essentially never are,
+		// so align here, against the frame rate that will be in effect after this
+		// insert (the first visual element adopts the asset's fps below).
+		const ticksPerFrame = this.resolveTicksPerFrame({ editor, isFirstElement });
+
+		const newElement = this.buildElement({
+			element: this.element,
+			ticksPerFrame,
+		});
 		const updateResult = this.applyPlacementResult({
 			tracks: this.savedState,
 			element: newElement,
@@ -142,18 +152,56 @@ export class InsertElementCommand extends Command {
 		return this.targetTrackId;
 	}
 
+	private resolveTicksPerFrame({
+		editor,
+		isFirstElement,
+	}: {
+		editor: EditorCommandContext["editor"];
+		isFirstElement: boolean;
+	}): number {
+		let frameRate = editor.project.getActive().settings.fps;
+		const isVisualMedia =
+			this.element.type === "video" || this.element.type === "image";
+		const mediaId =
+			"mediaId" in this.element ? String(this.element.mediaId) : null;
+		if (isFirstElement && isVisualMedia && mediaId !== null) {
+			const asset = editor.media
+				.getAssets()
+				.find((candidate) => candidate.id === mediaId);
+			if (asset?.type === "video" && asset?.fps) {
+				frameRate = floatToFrameRate(asset.fps);
+			}
+		}
+		return Math.max(
+			1,
+			Math.round(
+				(TICKS_PER_SECOND * frameRate.denominator) / frameRate.numerator,
+			),
+		);
+	}
+
 	private buildElement({
 		element,
+		ticksPerFrame,
 	}: {
 		element: CreateTimelineElement;
+		ticksPerFrame: number;
 	}): TimelineElement {
+		const ticks = (value: unknown): number => Number(value ?? 0);
+		const alignDown = (value: number): number =>
+			Math.max(0, Math.floor(value / ticksPerFrame) * ticksPerFrame);
+		const alignNearest = (value: number): number =>
+			Math.max(0, Math.round(value / ticksPerFrame) * ticksPerFrame);
+		const rawDuration = ticks(element.duration ?? DEFAULT_NEW_ELEMENT_DURATION);
 		return {
 			...element,
 			id: this.elementId,
-			startTime: element.startTime,
-			trimStart: element.trimStart ?? 0,
-			trimEnd: element.trimEnd ?? 0,
-			duration: element.duration ?? DEFAULT_NEW_ELEMENT_DURATION,
+			startTime: alignNearest(ticks(element.startTime)),
+			trimStart: alignDown(ticks(element.trimStart)),
+			trimEnd: alignDown(ticks(element.trimEnd)),
+			// Never floor a positive source duration to zero: the same policy also
+			// rejects non-positive durations.
+			duration: Math.max(ticksPerFrame, alignDown(rawDuration)),
 		} as TimelineElement;
 	}
 
