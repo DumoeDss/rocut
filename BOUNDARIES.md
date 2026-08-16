@@ -1527,6 +1527,35 @@ now migrates for real. Three consequences, all landed rather than noted:
   change, because a change that makes a standing requirement false and leaves it standing is the
   same failure as a stale hash.
 
+### What CI caught that no local run could: the path gate's POSIX rule is Linux-only
+
+PR #3's first run (31940037053) went red on ubuntu at `check-wasm-paths`, with one finding:
+
+```
+FAIL  no unremapped POSIX source/home/checkout path (1 occurrence(s), 1 unique)
+      e.g. /from_iter/cargo/registry/src/index.crates.io-…/parking_lot_core-0.9.12/src/parking_lot.rs
+```
+
+Not a leak. The gate scans the binary as one flat latin1 string, and the data section has no string
+boundaries — two unrelated literals laid end to end read as a single token. `from_iter` is a Rust
+iterator adapter name; it happened to sit immediately before one of that build's **285** remapped
+`/cargo` paths and end in `/`, so the path regex matched through the join and the `^`-anchored
+allowlist no longer saw `/cargo` at the start. No build machine is named anywhere in that string.
+
+**A local Windows run is structurally blind to this whole class**, which is why nine green local
+gate runs never showed it: measured on the local artifact, the remapped dependency paths embed as
+`/cargo\registry\…` — **286 backslash forms, 0 forward-slash** — and the POSIX regex never matches
+them at all. The forward-slash form only exists on POSIX builds. Recorded because it bounds what
+local verification of this gate can ever prove.
+
+The fix cuts a candidate at every embedded sanctioned root and judges the fragments independently.
+The hole that could open is obvious — a real machine path containing a sanctioned root as an
+interior segment — so it is closed by assertion, not by argument: two new committed negative
+controls (`/workspace/checkout/cargo/registry/…/lib.rs`,
+`/builds/ci/opencut/rust/wasm/src/gpu.rs`) must still be reported, and the CI string verbatim is a
+committed positive control. Scored over 9 cases (`evidence/posix-path-adjacency.mjs`): **pre-fix 1
+wrong, shipped 0** — the fix changes exactly the one verdict that was wrong and no other.
+
 ### The api-surface red leg was two causes, neither of them "machine-bound recording"
 
 PR #2 merged with `check-wasm-api-surface` red on ubuntu and the redness documented as a contract

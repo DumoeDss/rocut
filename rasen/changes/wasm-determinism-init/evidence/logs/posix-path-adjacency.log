@@ -1,0 +1,23 @@
+string                                                    want     BEFORE     AFTER
+/from_iter/cargo/registry/src/index.crates.io-1949cf8...  allow    reportWRONG  allow ok
+                                                          THE CI FAILURE: adjacency of an identifier and a remapped path; discloses nothing
+/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/...  allow    allow ok    allow ok
+                                                          plain remapped dependency path
+/opencut/rust/crates/gpu/src/context.rs                   allow    allow ok    allow ok
+                                                          plain remapped workspace path
+/wasm/src/gpu.rs                                          allow    allow ok    allow ok
+                                                          wasm-bindgen relativized workspace form
+/workspace/checkout/cargo/registry/src/index.crates.i...  report   report ok    report ok
+                                                          REAL machine path with a sanctioned root INSIDE it — the hole the fix could have opened
+/builds/ci/opencut/rust/wasm/src/gpu.rs                   report   report ok    report ok
+                                                          same shape, workspace root interior
+/home/heart/.cargo/registry/src/foo-1.0.0/src/lib.rs      report   report ok    report ok
+                                                          the published-0.2.10 leak shape
+/workspace/checkout/rust/crates/gpu/src/context.rs        report   report ok    report ok
+                                                          the pre-existing committed control
+/root/.rustup/toolchains/stable-x86_64-unknown-linux-...  report   report ok    report ok
+                                                          the pre-existing committed control
+
+wrong verdicts over 9 cases — BEFORE (pre-fix): 1, AFTER (shipped): 0
+Every case the fix changes is one where the pre-fix answer was wrong; no case flips from report to allow that should be reported.
+REAL_EXIT_CODE:0

@@ -99,13 +99,60 @@ const RUSTC_VIRTUAL_ROOTS = [
 const SOURCE_OR_BUILD_SEGMENT = /\/(?:src|checkout|workspaces?|builds?|\.cargo|\.rustup)(?:\/|$)/;
 const SOURCE_FILE_SUFFIX = /\.(?:c|cc|cpp|h|hpp|lock|rs|toml)(?:$|[^A-Za-z0-9])/;
 
+/**
+ * A sanctioned root also terminates whatever precedes it.
+ *
+ * The scan is a flat regex over the binary read as latin1: the data section has no string
+ * boundaries, so two unrelated literals laid end to end read as one token. When the left literal
+ * happens to end in `/`, `POSIX_PATH` matches straight through the join and the `^`-anchored
+ * allowlist no longer sees the sanctioned root at the start.
+ *
+ * Measured, on CI (run 31940037053, PR #3): ubuntu emitted
+ * `/from_iter` + `/cargo/registry/src/index.crates.io-…/parking_lot_core-0.9.12/src/parking_lot.rs`
+ * as one match — 1 of the 285 remapped `/cargo` paths in that build — and the gate reported it as
+ * an unremapped machine path. `from_iter` is a Rust iterator adapter name, `/cargo` is this
+ * repository's own synthetic remap target; there is no build machine in that string.
+ *
+ * So each candidate is cut at every embedded sanctioned root and the fragments judged
+ * independently. That is narrower than it looks, because the roots are synthetic: `/cargo` and
+ * `/opencut` exist only as remap targets. A real machine path that contains one as an interior
+ * segment still fails on its own prefix — `/workspace/checkout/cargo/registry/src/x.rs` splits to
+ * `/workspace/checkout`, which carries a build segment and is rejected; `/home/bob/cargo/...`
+ * splits to `/home/bob`, which the dedicated home-directory disclosure rule rejects regardless of
+ * this function. Both are committed as controls below.
+ *
+ * This class cannot be reproduced on Windows: there the remapped dependency paths embed as
+ * `/cargo\registry\...` (measured: 286 backslash forms, 0 forward-slash) and `POSIX_PATH` never
+ * matches them at all. A local Windows run is therefore structurally blind to it — which is why
+ * it took a CI run to surface, and why the controls below now carry it.
+ */
+function splitAtSanctionedRoots(path) {
+	const fragments = [];
+	let rest = path;
+	while (rest.length > 0) {
+		const cut = [/(?!^)\/cargo(?:\/|$)/, /(?!^)\/opencut(?:\/|$)/, /(?!^)\/wasm(?:\/|$)/, /(?!^)\/crates(?:\/|$)/]
+			.map((root) => rest.search(root))
+			.filter((at) => at > 0)
+			.sort((a, b) => a - b)[0];
+		if (cut === undefined) {
+			fragments.push(rest);
+			break;
+		}
+		fragments.push(rest.slice(0, cut));
+		rest = rest.slice(cut);
+	}
+	return fragments;
+}
+
 function unremappedPosixPaths(value) {
 	const paths = value.match(POSIX_PATH) ?? [];
-	return paths.filter((path) => {
-		if (REMAPPED_ROOTS.some((allowed) => allowed.test(path))) return false;
-		if (RUSTC_VIRTUAL_ROOTS.some((virtual) => virtual.test(path))) return false;
-		return SOURCE_OR_BUILD_SEGMENT.test(path) || SOURCE_FILE_SUFFIX.test(path);
-	});
+	return paths.filter((path) =>
+		splitAtSanctionedRoots(path).some((fragment) => {
+			if (REMAPPED_ROOTS.some((allowed) => allowed.test(fragment))) return false;
+			if (RUSTC_VIRTUAL_ROOTS.some((virtual) => virtual.test(fragment))) return false;
+			return SOURCE_OR_BUILD_SEGMENT.test(fragment) || SOURCE_FILE_SUFFIX.test(fragment);
+		}),
+	);
 }
 
 const bytes = readFileSync(target);
@@ -157,6 +204,11 @@ if (!usersOk) {
 const POSIX_NEGATIVE_CONTROLS = [
 	"/root/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/panicking.rs",
 	"/workspace/checkout/rust/crates/gpu/src/context.rs",
+	// A real machine path whose INTERIOR contains a sanctioned root. Splitting at that root must
+	// not sanction the whole string: the prefix carries a build segment and stays a finding. This
+	// is the hole the adjacency fix could have opened, so it is asserted rather than reasoned.
+	"/workspace/checkout/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs",
+	"/builds/ci/opencut/rust/wasm/src/gpu.rs",
 ];
 for (const control of POSIX_NEGATIVE_CONTROLS) {
 	const rejected = unremappedPosixPaths(control).includes(control);
@@ -169,6 +221,10 @@ const POSIX_REMAP_CONTROLS = [
 	"/opencut/rust/crates/gpu/src/context.rs",
 	"/wasm/src/gpu.rs",
 	"/crates/gpu/src/context.rs",
+	// The literal-adjacency shape CI hit (run 31940037053): an unrelated Rust identifier ending in
+	// `/` laid immediately before a remapped `/cargo` path, read as one token because the data
+	// section has no string boundaries. Committed verbatim so the fix is proved on the real string.
+	"/from_iter/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/parking_lot_core-0.9.12/src/parking_lot.rs",
 ];
 const remapControlFindings = POSIX_REMAP_CONTROLS.flatMap(unremappedPosixPaths);
 const remapControlsOk = remapControlFindings.length === 0;

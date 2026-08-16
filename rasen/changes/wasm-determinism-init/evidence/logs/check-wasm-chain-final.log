@@ -19,6 +19,8 @@ check-wasm-paths: rust/wasm/pkg/opencut_wasm_bg.wasm (3285863 bytes)
   PASS  no operating-system username disclosed
   PASS  scanner rejects negative control /root/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/panicking.rs
   PASS  scanner rejects negative control /workspace/checkout/rust/crates/gpu/src/context.rs
+  PASS  scanner rejects negative control /workspace/checkout/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs
+  PASS  scanner rejects negative control /builds/ci/opencut/rust/wasm/src/gpu.rs
   PASS  intentional sanctioned roots are allowed (/cargo, /opencut, /wasm, /crates)
   PASS  remapped `/cargo` prefix present (285) — proves the scan is not vacuous
   PASS  a workspace root form is present (/opencut 1, relativized 0) — proves workspace paths were sanctioned

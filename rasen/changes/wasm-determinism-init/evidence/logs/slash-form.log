@@ -1,0 +1,7 @@
+/cargo/  (forward-slash form): 0
+/cargo\  (backslash form)   : 286
+sample: "T\u0004\u0010\u0000_\u0000\u0000\u0000X\u0002\u0000\u00000\u0000\u0000\u0000/cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\serde-1.0.228\\src\\private\\d"
+from_iter occurrences       : 4
+parking_lot_core occurrences: 4
+parking_lot.rs occurrences  : 3
+REAL_EXIT_CODE:0

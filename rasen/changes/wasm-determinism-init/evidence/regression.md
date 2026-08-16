@@ -237,6 +237,37 @@ the step's own *comment*, which sits before `bun install`, so it reports the gat
 early rather than as missing. That accident produced a false failure during this change, which is
 how the rewrite came to be needed at all.
 
+## 7c. CI round 1 — the one thing local verification could not have caught
+
+PR #3 run `31940037053`: `sdk-examples` **success** (the wasm-init repair confirmed on Linux CI,
+from installed tarballs), `build (ubuntu-latest)` **failure** at `check-wasm-paths`, one finding:
+
+```
+FAIL  no unremapped POSIX source/home/checkout path (1 occurrence(s), 1 unique)
+      e.g. /from_iter/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/parking_lot_core-0.9.12/src/parking_lot.rs
+```
+
+**A false positive from literal adjacency, and the local blind spot is the real lesson.** The gate
+reads the binary as one flat latin1 string; the data section has no string boundaries, so
+`…from_iter` sitting immediately before one of that build's 285 remapped `/cargo` paths reads as a
+single token, and the `^`-anchored allowlist stops seeing the sanctioned root.
+
+Measured on the local artifact (`.work/probes/slash-form.mjs`): `/cargo\` **286** occurrences,
+`/cargo/` **0**. On Windows the remapped dependency paths embed with backslashes, which
+`POSIX_PATH` never matches — so this class **cannot occur locally at all**, and no amount of local
+re-running would have found it. Both `from_iter` (4) and `parking_lot_core` (4) are present locally
+as ordinary adjacent literals; only the POSIX layout put them in contact.
+
+Fix: cut a candidate at every embedded sanctioned root, judge the fragments independently. The hole
+that creates — a real machine path with a sanctioned root as an *interior* segment — is closed by
+two new committed negative controls, and the CI string verbatim is now a committed positive
+control. Scored over 9 cases (`evidence/posix-path-adjacency.mjs`,
+`logs/posix-path-adjacency.log`): **pre-fix 1 wrong, shipped 0 wrong**; the fix changes exactly the
+one verdict that was wrong.
+
+`check-wasm-paths` now runs **4** negative controls (was 2) and **5** sanctioned-root positives
+(was 4).
+
 ## 8. Statements this change falsified, and what was done about each
 
 Found by grepping the shipped tree and the main specs for the wasm-init language after the
