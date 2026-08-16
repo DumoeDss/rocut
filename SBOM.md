@@ -323,10 +323,12 @@ Disposition: **recorded, not repaired**. Probe confirms it is still present: **y
 #### D-4 — Published `opencut-wasm` declares `sideEffects` on a nonexistent `./snippets/*`
 
 ```
-"sideEffects": ["./opencut_wasm.js", "./snippets/*"]
+"sideEffects": ["./opencut_wasm.js", "./snippets/*", "./opencut_wasm_sync.js"]
 ```
 
-**Generated, not a publishing accident.** The rebuild-correspondence check (`UPSTREAM.md` § WASM rebuild correspondence) rebuilt this package from `rust/` and got a `package.json` that is *byte-identical* to the published one — which establishes that wasm-pack emits this `sideEffects` entry on every build, rather than it having been introduced when the package was packed. The package's `files` list ships no `snippets/` directory. Harmless — bundlers treat an unmatched glob as an empty set — but it means the published metadata does not describe the published contents, and it will keep doing so for any future build.
+**Generated, not a publishing accident.** The rebuild-correspondence check (`UPSTREAM.md` § WASM rebuild correspondence) rebuilt this package from `rust/` and got a `package.json` byte-identical to the published one apart from the post-processing described below — which establishes that wasm-pack emits the `./snippets/*` entry on every build, rather than it having been introduced when the package was packed. The package's `files` list ships no `snippets/` directory. Harmless — bundlers treat an unmatched glob as an empty set — but it means the published metadata does not describe the published contents, and it will keep doing so for any future build.
+
+**Post-processing, since 2026-08-16.** `script/build-wasm.mjs` appends `./opencut_wasm_sync.js` to `sideEffects` and `files` and adds the `exports` conditions that route non-bundler runtimes to that entry (BOUNDARIES §17). The wasm-pack-emitted `./snippets/*` entry this defect is about is untouched by that step, which is why the probe below still fires.
 
 Disposition: **recorded, not repaired**. Probe confirms it is still present: **yes**
 

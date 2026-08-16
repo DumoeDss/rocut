@@ -1,0 +1,27 @@
+### mutation verification: pkg reverted to pre-fix shape (no sync entry, no exports map)
+### baseline bun test with this shape: 724 pass / 6 fail / 3375 expect / 730 tests / 118 files (see bun-test-prefix-baseline.log)
+
+$ node script/check-wasm-init.mjs
+check-wasm-init: rust/wasm/pkg/opencut_wasm_sync.js is absent; run bun run build:wasm
+REAL_EXIT_CODE[init]:2
+
+$ node script/check-wasm-api-surface.mjs
+generated-files: opencut_wasm_sync.js is absent from rust/wasm/pkg
+Rebuild with: bun run build:wasm
+REAL_EXIT_CODE[api-surface]:1
+
+$ node script/check-wasm-source.mjs
+check-wasm-source: build output rust/wasm/pkg (8 file(s))
+  PASS  resolved from <root> -> node_modules/opencut-wasm
+  PASS  resolved from apps/web -> apps/web/node_modules/opencut-wasm
+  PASS  build output is newer than every Rust input (44 file(s) considered)
+  PASS  rust/wasm/LICENSE exists and matches the root LICENSE
+  PASS  all 4 wasm gates are wired (npm script + CI step after `bun install`)
+  PASS  toolchain pins are declared and enforced (rustc 1.88.0, wasm-pack v0.13.1)
+
+clean — the resolved `opencut-wasm` is the self-built artifact
+REAL_EXIT_CODE[source]:0
+
+$ npx bun@1.2.18 script/fixtures/wasm-init-migrations-probe.ts
+npm warn Unknown project config "node-linker". This will stop working in the next major version of npm.
+{"runtime":"bun 1.2.18","currentProjectVersion":null,"transformers":null,"firstTransformer":null,"error":"wasm.__wbindgen_start is not a function. (In 'wasm.__wbindgen_start()', 'wasm.__wbindgen_start' is undefined)"}

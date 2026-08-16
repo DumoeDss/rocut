@@ -36,13 +36,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Rust wasm target
-        run: rustup target add wasm32-unknown-unknown
+      # `rustup toolchain install` with no argument is what reads `rust-toolchain.toml`; a bare
+      # `rustup target add` installs the target against the runner image's default rustc instead,
+      # which is how PR #2 built with an unpinned compiler and reported wasm-export deltas no
+      # commit had caused. The pinned channel embeds itself in the binary's `producers` section and
+      # in three rustc symbol-hash exports, so it is part of the recorded surface, not a preference.
+      - name: Install the pinned Rust toolchain
+        run: |
+          rustup toolchain install
+          rustup target add wasm32-unknown-unknown
+          rustc --version
 
+      # Pinned, not `latest`: wasm-pack selects the wasm-bindgen CLI that writes all four glue
+      # files and the wasm-opt build that rewrites the binary. `latest` installed v0.15.0 on the
+      # PR #2 merge run against a surface recorded with 0.13.1. `script/check-wasm-source.mjs`
+      # asserts this literal matches `WASM_PACK_VERSION` in `script/wasm-toolchain.mjs`.
       - name: Install wasm-pack
         uses: jetli/wasm-pack-action@v0.4.0
         with:
-          version: latest
+          version: v0.13.1
 
       - name: Cache Rust build artifacts
         uses: actions/cache@v4
@@ -94,6 +106,15 @@ jobs:
       - name: Verify the exact additive wasm API surface
         run: node script/check-wasm-api-surface.mjs
 
+      # Every gate above is static — bytes, paths, export counts. All three were green through the
+      # whole S05 portfolio while the artifact could not be *initialized* at all outside a bundler
+      # (`TypeError: wasm.__wbindgen_start is not a function`). This step runs it: both runtimes,
+      # plus classic's real 31-step migration chain with no test mock anywhere in the process.
+      - name: Verify the redistributed wasm actually initializes
+        run: node script/check-wasm-init.mjs
+        env:
+          OPENCUT_BUN: bun
+
       - name: Build
         working-directory: apps/web
         run: bun run build
@@ -105,11 +126,14 @@ jobs:
 
   # Claims exactly what run-published-examples.mjs runs: the four
   # published-SDK examples (install-packages, agent-transaction,
-  # custom-storage's honest pair, embed-surface's build + GPU-free Playwright
-  # smoke) plus the consumer view over the freshly packed tarballs — the
-  # Group-5 clean full-run log
+  # custom-storage's two migration legs, embed-surface's build + GPU-free
+  # Playwright smoke) plus the consumer view over the freshly packed tarballs —
+  # the Group-5 clean full-run log
   # (rasen/changes/s05-published-examples/evidence/logs/group5-full-run-clean.log)
-  # is this job's local twin, same env shape (scratch under $HOME). Does NOT
+  # is this job's local twin, same env shape (scratch under $HOME). Since the
+  # wasm-init repair (BOUNDARIES §17) custom-storage's PRODUCTION leg loads the
+  # real 31-step chain from the installed tarballs and exercises migration; it
+  # used to record that failure and skip that leg. Does NOT
   # claim: the local-only checkers stay local (the checker family sweep is a
   # local gate), no matrix extension beyond ubuntu, no publish. The first
   # true CI execution lands on the post-delivery push — the local twin above
@@ -121,13 +145,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Rust wasm target
-        run: rustup target add wasm32-unknown-unknown
+      # `rustup toolchain install` with no argument is what reads `rust-toolchain.toml`; a bare
+      # `rustup target add` installs the target against the runner image's default rustc instead,
+      # which is how PR #2 built with an unpinned compiler and reported wasm-export deltas no
+      # commit had caused. The pinned channel embeds itself in the binary's `producers` section and
+      # in three rustc symbol-hash exports, so it is part of the recorded surface, not a preference.
+      - name: Install the pinned Rust toolchain
+        run: |
+          rustup toolchain install
+          rustup target add wasm32-unknown-unknown
+          rustc --version
 
+      # Pinned, not `latest`: wasm-pack selects the wasm-bindgen CLI that writes all four glue
+      # files and the wasm-opt build that rewrites the binary. `latest` installed v0.15.0 on the
+      # PR #2 merge run against a surface recorded with 0.13.1. `script/check-wasm-source.mjs`
+      # asserts this literal matches `WASM_PACK_VERSION` in `script/wasm-toolchain.mjs`.
       - name: Install wasm-pack
         uses: jetli/wasm-pack-action@v0.4.0
         with:
-          version: latest
+          version: v0.13.1
 
       # Same routed build as the build job: the examples' tarballs pack the
       # self-built, remapped wasm, and a registry copy would pass the

@@ -258,6 +258,19 @@ them.** The licence addition changed the emitted package by exactly one added fi
 holds exactly the published four entries. This was an open question, deliberately measured rather
 than assumed, and the answer is why `package.json` stays byte-identical to published `0.2.10`.
 
+**Amendment, 2026-08-16 — `package.json` is no longer byte-identical to published `0.2.10`, by
+design.** The table above records the state at baseline `49f8a88a` and stays as written. Since
+`wasm-determinism-init` (BOUNDARIES §17), `script/build-wasm.mjs` post-processes the emitted
+manifest: it appends `opencut_wasm_sync.js` to `files` and `sideEffects` and adds an `exports` map
+routing the `bun` condition (plus an explicit `./sync` subpath) to that generated entry. wasm-pack's
+own output is unchanged — the delta is exactly those three keys, and
+`script/wasm-api-surface-contract.mjs` pins
+the post-processed bytes. The four wasm-pack-emitted glue files, including `opencut_wasm.js`, remain
+byte-for-byte what the table records. The correspondence criterion at the head of this section
+(exported symbol set, emitted declarations, version) is unaffected: the added entry re-exports the
+same 38 names, sliced from `opencut_wasm.js`'s own export block, and `check-wasm-api-surface`
+asserts that equality on every run.
+
 **The binary's own export table was measured too, not inferred from the glue.** Parsing the `.wasm`
 export and import sections directly:
 

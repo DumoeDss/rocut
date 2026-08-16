@@ -1,0 +1,10 @@
+# MODIFIED-delta fidelity: every scenario of every MODIFIED requirement in the base spec must survive
+# method: extract 'Requirement || Scenario' pairs from base and delta, report any base pair whose requirement is MODIFIED but whose scenario is absent
+
+## sdk-published-examples
+base pairs: 11, delta pairs: 4
+dropped scenarios under MODIFIED requirements: 0
+
+## sdk-third-party-conformance
+base pairs: 17, delta pairs: 4
+dropped scenarios under MODIFIED requirements: 0

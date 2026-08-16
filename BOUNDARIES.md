@@ -1206,7 +1206,8 @@ resolution-equivalence:1, type-baseline:1`, the known pre-existing / capture-run
 **Non-coverage, deliberately**: LICENSE / NOTICE / SBOM are P7's — the manifests' `files`
 entries for them are placeholders P7 makes real. The wasm-init constraint on classic's
 `./storage/migrations` is stated in that package's README as current-surface truth; a fix is
-tracked at Direction level, not in the package. Release automation is out of scope; CI is P6's
+tracked at Direction level, not in the package. *(Superseded 2026-08-16: repaired — §17. This
+paragraph is left as the P5-era record.)* Release automation is out of scope; CI is P6's
 decision, which inherits two ready legs — P3's install harness (its env seams, above) and this
 change's `check:surface-labels` plus `surface.json` as the machine-readable classification
 source for any maturity-gate tooling P6 might wire.
@@ -1224,7 +1225,7 @@ linking, self-logged exit codes), and a CI leg that runs the whole thing on a cl
 | --- | --- | --- |
 | `examples/install-packages/` | the install contract | npm installs the three `@opencut/*` tarballs, every entry the example imports resolves, the READMEs and `surface.json` are readable as data, and classic's react peer stays honestly unsatisfied in a react-free tree — the cheapest adopter milestone, no editor mounted |
 | `examples/agent-transaction/` | the published scenario | the agent-transaction walk over the consumer's own in-memory store through published entries only: a 9-step plan executing green, an 87-assertion apply ledger, and a fresh-store reopen from the persisted snapshot at the committed revision |
-| `examples/custom-storage/` | the honest pair | an alien file-backed adapter through the published conformance suites; the production leg records the wasm-init `NOT LOADABLE` finding distinctly and skips the migration leg distinctly (nothing hidden), the mock-installed leg runs the real 31-step chain through the experimental `./evidence/wasm-test-mock` entry |
+| `examples/custom-storage/` | the honest pair *(as of P6; superseded 2026-08-16 — §17)* | an alien file-backed adapter through the published conformance suites; the production leg records the wasm-init `NOT LOADABLE` finding distinctly and skips the migration leg distinctly (nothing hidden), the mock-installed leg runs the real 31-step chain through the experimental `./evidence/wasm-test-mock` entry. **Since §17 the production leg loads the real chain from the installed tarballs and exercises migration; the `NOT LOADABLE` branch is kept as the fail-closed path.** |
 | `examples/embed-surface/` | the forcing consumer | a React + vite embed of `SessionEditorSurface` — classic's full React chrome, the peer-dep contract satisfied from the consumer's own manifest, typecheck + build + a GPU-free Playwright smoke (mount gate, branding, degraded-mode banner, focus scope, ruler-scrubbed playhead, clean console/pageerror/network) |
 
 **The workspace-stance rule.** The examples' committed manifests declare plain exact registry
@@ -1253,6 +1254,13 @@ migration chain itself through the **experimental** `./evidence/wasm-test-mock` 
 entry carries the experimental label's full consequence: it is evidence tooling a consumer may
 run, never production surface they may depend on, and the example's README says so where it
 names the entry.
+
+> *Superseded 2026-08-16 (§17).* The wasm-init defect is repaired, so the production leg now
+> loads the real chain from the installed tarballs and exercises migration — measured, 10/10
+> example legs exit-zero. The paragraph above stays as the P6-era record. What survives it
+> unchanged is the **label consequence**: the mock-installed leg still depends on an
+> experimental-labeled entry and still inherits its instability, and it is still the leg that
+> works in a runtime that cannot initialize the wasm at all.
 
 **CONTROL-1c and the leakage lesson (F-P6-7).** Node resolves a bare import by walking
 `node_modules` directories up to the drive root — so a scratch root below **any** ancestor
@@ -1301,7 +1309,9 @@ Its local twin is the change's Group-5 clean full-run log, same env shape; the f
 execution lands on the post-delivery push, and its exit-code lines close the evidence loop.
 
 **Non-coverage, deliberately**: LICENSE / NOTICE / SBOM notices in the example files are P7's.
-The wasm-init constraint is Direction-level, demonstrated not repaired (the honest pair above).
+~~The wasm-init constraint is Direction-level, demonstrated not repaired (the honest pair
+above).~~ *Struck 2026-08-16: repaired (§17), so it is no longer a non-coverage item — the
+examples now cover the migration path from installed tarballs.*
 No example covers the desktop shape — the electron Host (section 12) does, and a React Native
 or server-rendered embed has no example yet.
 
@@ -1384,7 +1394,14 @@ READMEs' compatibility policy is the only stability claim this portfolio makes:
 changing exactly what the classes permit and nothing they don't. The `beta` in
 the portfolio's name is precisely that statement — not a countdown to `1.0`.
 
-**The wasm-init Direction finding, recorded as carried.** classic's
+**The wasm-init Direction finding, recorded as carried — CLOSED 2026-08-16, see §17.**
+The paragraph below is left as written at S05 close-out because it is the record of what was
+known then. Two of its claims were later measured to be wrong in their diagnosis, not in their
+observation: the failure is not bun-version-independent *in cause* (it is a bun capability gap,
+absent on node 24), and it was repairable inside `0.x` without touching a frozen signature. The
+repair and its evidence are §17. The original text follows.
+
+classic's
 `./storage/migrations` chain is not loadable by a plain TypeScript consumer:
 the chain transitively initializes the `opencut-wasm` artifact
 (`migrations/transformers/v27-to-v28.ts` and `services/storage/service.ts`
@@ -1407,3 +1424,235 @@ Direction finding.
   local gate; CI claims the examples job and the consumer view, not the sweep.
 - The **ubuntu-only examples job** is a config change away from a matrix — no
   macOS or Windows leg is claimed, and none is blocked by the machinery.
+
+## 17. wasm-init and toolchain determinism (`wasm-determinism-init`)
+
+The two Direction findings §16 carried out of S05, both re-measured before anything was
+designed. The measurements moved the diagnosis in both cases, so they are recorded first.
+
+### The wasm-init failure was a runtime capability gap, not a property of the artifact
+
+| runtime | `import "opencut-wasm"` at `661d7ac8` | cause |
+| --- | --- | --- |
+| node 24.14.0 | **worked already** — 38 exports, `TICKS_PER_SECOND() = 120000` | implements the WebAssembly/ESM integration, so the bundler entry's `import * as wasm from "./opencut_wasm_bg.wasm"` yields instance exports |
+| bun 1.2.18 | `TypeError: wasm.__wbindgen_start is not a function` | resolves a `.wasm` import to an **asset**: the namespace is `{__esModule, default: "<path string>"}`, so there is no `__wbindgen_start` to call |
+| vite / webpack with `vite-plugin-wasm` | worked | the target the artifact is built for |
+
+S05's observation ("bun-version-independent, identical in-repo and from installed tarballs") was
+correct; the diagnosis it implied — a defect in the artifact, unfixable inside `0.x` — was not.
+Nothing in the binary or in `@opencut/editor-classic` had to change.
+
+**The repair.** `script/build-wasm.mjs` now emits a second entry, `opencut_wasm_sync.js`, that does
+explicitly what a bundler does implicitly (compile from disk, instantiate against the glue module,
+`__wbg_set_wasm`, `__wbindgen_start()`), and adds an `exports` map routing the **`bun`** condition
+to it while `default` keeps resolving to the untouched `--target bundler` entry. The entry's
+re-export list is **sliced from `opencut_wasm.js`'s own export block**, so the two entries cannot
+disagree; `check-wasm-api-surface` asserts that equality anyway (`entry-parity`), and pins the
+`exports` conditions including their order (`entry-conditions`). `"./*": "./*"` is part of the map
+because adding `exports` otherwise seals every deep path that resolved before it existed.
+
+**Only `bun` is routed, and that is a finding, not a shortcut.** The obvious companion conditions —
+`node` and `require` — were implemented first and **broke this repository's own Next Host**, twice,
+measured:
+
+1. With `readFileSync(new URL("./opencut_wasm_bg.wasm", import.meta.url))`, the turbopack SSR build
+   failed at *Failed to collect page data* with
+   `TypeError: The "path" argument must be of type string or an instance of Buffer or URL. Received
+   an instance of URL` — node's argument check is `instanceof URL` against its own realm, and
+   turbopack bundles its own `URL`.
+2. Rewritten to a realm-independent path string, the same build failed one step later with
+   `ERR_INVALID_URL, input: '/_next/static/media/opencut_wasm_bg.00e3ae0a.wasm'` — turbopack had
+   rewritten the URL to a **browser asset path**, which no server-side `readFileSync` can open.
+
+`bun` and `deno` are runtime-only conditions; **`node` is not** — every bundler targeting node
+claims it, and none of them can serve an entry that reads its own `.wasm` off disk. So the map
+declares `bun` and an explicit **`./sync`** subpath for any other runtime that needs explicit
+instantiation, and `check-wasm-api-surface` asserts that a `node` condition is **absent**
+(`node-condition-added` is one of its negative controls). Node ≥ 24 needs neither: it implements
+the WebAssembly/ESM integration and the bundler entry works there, which `check-wasm-init.mjs`
+reports as an `INFO` line with the running version rather than asserting — a gate that failed there
+would be gating node's release schedule.
+
+**No frozen signature moved.** The artifact exposes the identical 38 public exports; what was added
+is a resolution condition. `opencut_wasm.js`, `opencut_wasm_bg.js`, `opencut_wasm.d.ts` and
+`opencut_wasm_bg.wasm.d.ts` are byte-for-byte what they were.
+
+### The checker family's blind spot, and the gate that closes it
+
+The source gate compares bytes at the resolved path, the path gate scans the binary for
+build-machine strings, the API gate hashes the generated files and counts exports. All three were
+green for the entire S05 portfolio while the artifact **could not be initialized at all** outside a
+bundler. A static surface says the shape is right; only running it says it starts.
+
+`script/check-wasm-init.mjs` (the 4th wasm gate) runs, on every CI run:
+
+- the two **routed** entries — bun's bare `opencut-wasm` and node's `opencut-wasm/sync` — each
+  asserted to resolve to `opencut_wasm_sync.js` and to initialize (38 exports, `TICKS_PER_SECOND`);
+- **cross-runtime agreement** on 4 computed values, because a binary that starts but answers
+  differently per runtime is worse than one that refuses to start and nothing else would notice;
+- classic's **real 31-step migration chain** (`@opencut/editor-classic/storage/migrations`,
+  `CURRENT_PROJECT_VERSION = 31`, first transformer `V0toV1Migration`) with **no** `mock.module`
+  and no `evidence/wasm-test-mock` in the process — the exact consumer §16 recorded as unloadable;
+- a **negative control that is the pre-fix world**, not a synthetic mutation: importing the
+  `--target bundler` entry directly under bun must still fail with `__wbindgen_start`. If bun ever
+  implements the integration, that control fails loudly — which is correct, because it means the
+  generated entry became redundant and that should be a decision, not a drift.
+
+### The repair is proven from installed tarballs, not only in-repo
+
+The `sdk-examples` job was run locally end to end
+(`OPENCUT_SCRATCH_ROOT=<outside the repo> node script/run-published-examples.mjs`): 4 examples,
+**10 legs, all exit-zero**. The decisive line is `examples/custom-storage`'s **production** leg,
+which packs and npm-installs the tarballs and then runs with no mock anywhere in the process:
+
+```
+custom-storage example: production leg (alien adapter, published conformance)
+runtime: bun 1.2.18
+classic chain: loaded (31 steps, target v31)
+suites/ports: passed=true cases=36 (migration exercised)
+migration/by-replication: green
+  disposable legacy record: migrated 30->31, progress 1/1
+```
+
+That leg's job under §16 was to **record the failure and skip the migration leg distinctly**. It
+now migrates for real. Three consequences, all landed rather than noted:
+
+- `examples/custom-storage`'s README, `run.ts`/`run-mock.ts` headers and package description no
+  longer describe an "honest pair" or call the defect unrepaired.
+- `run.ts`'s distinct-skip branch is **kept**, as the fail-closed path for any runtime that still
+  cannot load the chain. A leg that cannot run must say so by name; that property was never the
+  defect.
+- The main specs `sdk-third-party-conformance` and `sdk-published-examples` asserted the skip and
+  the "demonstrated, not repaired" non-coverage statement. Both carry MODIFIED deltas in this
+  change, because a change that makes a standing requirement false and leaves it standing is the
+  same failure as a stale hash.
+
+### What CI caught that no local run could: the path gate's POSIX rule is Linux-only
+
+PR #3's first run (31940037053) went red on ubuntu at `check-wasm-paths`, with one finding:
+
+```
+FAIL  no unremapped POSIX source/home/checkout path (1 occurrence(s), 1 unique)
+      e.g. /from_iter/cargo/registry/src/index.crates.io-…/parking_lot_core-0.9.12/src/parking_lot.rs
+```
+
+Not a leak. The gate scans the binary as one flat latin1 string, and the data section has no string
+boundaries — two unrelated literals laid end to end read as a single token. `from_iter` is a Rust
+iterator adapter name; it happened to sit immediately before one of that build's **285** remapped
+`/cargo` paths and end in `/`, so the path regex matched through the join and the `^`-anchored
+allowlist no longer saw `/cargo` at the start. No build machine is named anywhere in that string.
+
+**A local Windows run is structurally blind to this whole class**, which is why nine green local
+gate runs never showed it: measured on the local artifact, the remapped dependency paths embed as
+`/cargo\registry\…` — **286 backslash forms, 0 forward-slash** — and the POSIX regex never matches
+them at all. The forward-slash form only exists on POSIX builds. Recorded because it bounds what
+local verification of this gate can ever prove.
+
+The fix cuts a candidate at every embedded sanctioned root and judges the fragments independently.
+The hole that could open is obvious — a real machine path containing a sanctioned root as an
+interior segment — so it is closed by assertion, not by argument: two new committed negative
+controls (`/workspace/checkout/cargo/registry/…/lib.rs`,
+`/builds/ci/opencut/rust/wasm/src/gpu.rs`) must still be reported, and the CI string verbatim is a
+committed positive control. Scored over 9 cases (`evidence/posix-path-adjacency.mjs`): **pre-fix 1
+wrong, shipped 0** — the fix changes exactly the one verdict that was wrong and no other.
+
+### The api-surface red leg was two causes, neither of them "machine-bound recording"
+
+PR #2 merged with `check-wasm-api-surface` red on ubuntu and the redness documented as a contract
+bound to its recording machine. Re-measured, it is not:
+
+- **`LICENSE` and `README.md` were stale recordings that failed on *every* platform, Windows
+  included.** Proof by construction: `sha256(crlf(LICENSE)) = 8117f9bb...3f59d3d` and
+  `sha256(crlf(rust/wasm/README.md)) = a09d7957...6b4d3191` are exactly the two values the contract
+  carried, while the LF bytes in the tree hash to `81463236...` / `c8fe27ab...`. Commit `1646ee5a`
+  normalised those blobs to LF *after* the contract was recorded. wasm-pack copies both files
+  byte-for-byte out of the crate directory, so they were never platform-dependent. Both values are
+  re-recorded, with the derivation written into the contract file.
+- **The three CI-only errors were toolchain drift.** The merge run installed **wasm-pack v0.15.0**
+  (`version: latest`) against a surface recorded with 0.13.1, and the workflow pinned no rustc at
+  all. The binary's `producers` section carries the compiler version verbatim, and three of the 58
+  wasm exports are rustc symbol-hash trampoline names — a fact this repository had already measured
+  and written down in `UPSTREAM.md` (WASM rebuild correspondence: rustc 1.94.1 vs 1.88.0 produce
+  three differing export names). `wasm-exports: binary export set is not the exact recorded set of
+  58` is that, verbatim.
+
+**The pins.** `rust-toolchain.toml` pins rustc `1.88.0` (rustup applies it to every cargo
+invocation); `WASM_PACK_VERSION` in `script/wasm-toolchain.mjs` pins wasm-pack `0.13.1`, which
+selects both the wasm-bindgen CLI that writes the glue and the `wasm-opt` build that rewrites the
+binary. Both are asserted **before** wasm-pack runs, because a mismatched build produces an artifact
+that passes the source gate, the path gate, the type baseline and both Host builds, and fails three
+steps later in a way that reads like a source change. `check-wasm-source.mjs` additionally asserts
+the *wiring*: the workflow's action input is the recorded tag rather than `latest`, a CI step runs
+`rustup toolchain install` (the command that actually applies the toolchain file — a bare
+`rustup target add` installs against the image's default rustc, which is the state that produced the
+red leg), and `build-wasm.mjs` still calls the assertion.
+
+Both pins are the toolchain the existing contract was recorded with, so pinning cost **zero**
+re-recording of the wasm surface. Bumping either is a deliberate operation that re-records it.
+
+### Reproducibility: measured, with its population, and honest about where it runs
+
+`script/check-wasm-reproducible.mjs` (`bun run check:wasm:reproducible`) rebuilds and compares every
+emitted file. By default the second build runs with a different `CARGO_TARGET_DIR`, so it is a full
+recompile of the whole graph **at a different absolute path** — which measures path-independence by
+construction rather than by scanning for strings.
+
+Measured 2026-08-16 on rustc 1.88.0 / wasm-pack 0.13.1, Windows: **10/10 files byte-identical**,
+including `opencut_wasm_bg.wasm` (3,285,863 B, `7234c951...`) across a fresh-target full recompile.
+
+It is **not** in `check:wasm` and **not** in `check-wasm-source.mjs`'s `GATED` list: that list means
+"runs in CI", and a multi-minute recompile does not. It is a local gate, named as one.
+
+### The one re-scope, and what still holds
+
+CI rounds 2 and 3 established something the pins cannot fix: with **both pins confirmed applied**
+— `rustc 1.88.0 (6b00bc388)`, the same commit hash as the recording machine, and
+`wasm-pack v0.13.1` — the binary export set still differs between build hosts. The gate was made to
+print the difference before anything was decided (run `31940776057`):
+
+```
+observed 58, recorded 58
+  + wasm_bindgen__convert__closures_____invoke__h276a4a183af50bac|function
+  + wasm_bindgen__convert__closures_____invoke__h3a4584f6e44c7108|function
+  + wasm_bindgen__convert__closures_____invoke__hc1daa042eeabb391|function
+  - wasm_bindgen__convert__closures_____invoke__h6e68ca372e8bf468|function
+  - wasm_bindgen__convert__closures_____invoke__h755062247edbbf0a|function
+  - wasm_bindgen__convert__closures_____invoke__hf7fc07325ff431aa|function
+```
+
+Exactly 3 in, 3 out, total unchanged, **all 55 other exports identical**. These are wasm-bindgen's
+closure trampolines; rustc's legacy mangling ends each with a 16-hex symbol hash derived from
+cargo's `-Cmetadata`, whose inputs include the host triple. `UPSTREAM.md` § WASM rebuild
+correspondence had already measured the same three names varying across rustc versions and
+concluded "stripping the hash makes the two sets identical" — this applies that finding to the gate.
+
+So the contract now pins the **55 stably-named exports as an exact set**, and matches the 3
+trampolines by shape with the count pinned at exactly 3. The low-level `.d.ts` is compared the same
+way: trampoline hashes normalised, every other line verbatim, line count pinned at 60.
+
+**This is the only place the contract is not byte-exact, and it is bounded by controls rather than
+by argument** — 25 negative controls (up from 14), including four written specifically for this
+re-scope: a 4th trampoline, a missing trampoline, a stable export renamed *into* the tolerated
+shape, and an edited non-trampoline declaration line. All four fail the gate.
+
+It also gains the family's **first positive control**: `trampoline-hash-swap` substitutes the exact
+Linux hashes above and asserts the gate exits **0**. A re-scope that only proves "these still fail"
+never demonstrates that what it deliberately permits is permitted, leaving the next reader unable
+to tell an intended tolerance from a hole nobody noticed.
+
+### What is NOT claimed
+
+- **No cross-platform byte-identity claim.** The binary's bytes are pinned only negatively (they
+  must differ from the C0b baseline), exactly as before. What CI's 3-OS matrix proves is that the
+  *recorded surface* holds everywhere — pinned hashes, generated declarations and glue, the
+  38/646/58/609 signatures, entry parity and the exports conditions.
+- **No Linux measurement was taken locally.** A WSL Ubuntu-24.04 reproduction was attempted and
+  abandoned: no C toolchain, no passwordless sudo to install one, so proc-macro crates cannot link.
+  The Linux evidence is CI's own run, which is the surface that has to be green anyway.
+- **A rebuild without a reinstall leaves the resolved copies wrong.** Measured during this change:
+  bun hardlinks `node_modules/opencut-wasm/*` to `rust/wasm/pkg/*`, wasm-pack writes the
+  pre-`wasm-opt` binary in place (which the hardlink shares) and `wasm-opt` then replaces the pkg
+  file with a new inode — leaving the resolved copies holding the **unoptimized 4,309,384 B**
+  intermediate while the pkg holds the 3,285,863 B artifact. `check-wasm-source` catches it and
+  names the fix; the rule stated everywhere in this repo — `bun run build:wasm`, **then**
+  `bun install` — is that hazard.
