@@ -117,9 +117,22 @@ function validate(surface) {
 		fail("wrapper", "wrapper content differs from the recorded C0b output");
 	}
 	if (sha(surface.wasmDts) !== EXPECTED.wasmDtsSha) {
+		// The low-level d.ts is generated from the binary's export table, so name the declaration
+		// identifiers that moved rather than only reporting a hash mismatch.
+		const declared = [...surface.wasmDts.matchAll(/^export const (\S+?):/gm)].map((m) => m[1]);
+		const recordedNames = new Set(EXPECTED.wasmExports.map((entry) => entry.split("|")[0]));
+		const added = declared.filter((name) => !recordedNames.has(name)).sort();
+		const removed = [...recordedNames]
+			.filter((name) => !declared.includes(name) && name !== "__wbindgen_externrefs")
+			.sort();
+		const delta = [
+			`${declared.length} declaration(s) observed`,
+			...added.map((name) => `  + ${name}`),
+			...removed.map((name) => `  - ${name}`),
+		].join("\n");
 		fail(
 			"binary-declarations",
-			"low-level declarations differ from the recorded output",
+			`low-level declarations differ from the recorded output\n${delta}`,
 		);
 	}
 	if (signature(surface.wrapperExports) !== EXPECTED.wrapperExportSignature) {
@@ -134,13 +147,32 @@ function validate(surface) {
 			"generated glue export set is not the exact recorded set of 646",
 		);
 	}
+	// Self-consistency: the recorded list and the recorded digest must agree, so the list below
+	// cannot rot into a decorative comment while the digest does the real work.
+	if (signature(EXPECTED.wasmExports) !== EXPECTED.wasmExportSignature) {
+		fail(
+			"recorded-contract",
+			"EXPECTED.wasmExports does not hash to EXPECTED.wasmExportSignature",
+		);
+	}
 	if (
 		surface.wasmExports.length !== 58 ||
 		signature(surface.wasmExports) !== EXPECTED.wasmExportSignature
 	) {
+		// Name the delta. "the set moved" is not actionable on a runner nobody can attach to —
+		// this gate reported exactly that twice on CI before the diff existed.
+		const recorded = new Set(EXPECTED.wasmExports);
+		const observed = new Set(surface.wasmExports);
+		const added = surface.wasmExports.filter((entry) => !recorded.has(entry)).sort();
+		const removed = EXPECTED.wasmExports.filter((entry) => !observed.has(entry)).sort();
+		const delta = [
+			`observed ${surface.wasmExports.length}, recorded ${EXPECTED.wasmExports.length}`,
+			...added.map((entry) => `  + ${entry}`),
+			...removed.map((entry) => `  - ${entry}`),
+		].join("\n");
 		fail(
 			"wasm-exports",
-			"binary export set is not the exact recorded set of 58",
+			`binary export set is not the exact recorded set of 58\n${delta}`,
 		);
 	}
 	if (
@@ -291,6 +323,7 @@ function mutate(surface, control) {
 	if (control === "missing-export") copy.wrapperExports.pop();
 	if (control === "extra-export") copy.wrapperExports.push("unexpectedExport");
 	if (control === "changed-binary-import") copy.wasmImports.pop();
+	if (control === "changed-binary-export") copy.wasmExports.pop();
 	if (control === "invalid-backend") {
 		copy.dts = copy.dts.replace(
 			'"webgl" | "webgpu" | null',
