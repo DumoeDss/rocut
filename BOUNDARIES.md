@@ -1227,12 +1227,12 @@ linking, self-logged exit codes), and a CI leg that runs the whole thing on a cl
 | `examples/custom-storage/` | the honest pair | an alien file-backed adapter through the published conformance suites; the production leg records the wasm-init `NOT LOADABLE` finding distinctly and skips the migration leg distinctly (nothing hidden), the mock-installed leg runs the real 31-step chain through the experimental `./evidence/wasm-test-mock` entry |
 | `examples/embed-surface/` | the forcing consumer | a React + vite embed of `SessionEditorSurface` — classic's full React chrome, the peer-dep contract satisfied from the consumer's own manifest, typecheck + build + a GPU-free Playwright smoke (mount gate, branding, degraded-mode banner, focus scope, ruler-scrubbed playhead, clean console/pageerror/network) |
 
-**The workspace-stance rule.** The examples' committed manifests declare plain exact registry
-versions (`"@opencut/editor-classic": "0.2.0"`), never `workspace:` — every file is copyable
-verbatim, which is the point of the directory. The runner is what swaps those specs to
-`file:tarballs/*` at materialization (plus the `opencut-wasm` override that makes classic's
-declared wasm dependency resolve honestly), so the same committed files an adopter reads are
-the ones the runner executes.
+**The workspace-stance rule.** The examples' committed manifests record exact version-intent
+data (`"@opencut/editor-classic": "0.2.0"`), never `workspace:`. Those pins are not tested
+registry coordinates and claim no registry install shape. The supported runner rewrites them to
+freshly staged `file:tarballs/*` specs at materialization (plus the `opencut-wasm` override that
+makes classic's declared wasm dependency resolve honestly), so the same committed source an
+adopter reads is executed against repository-produced artifacts without a workspace link.
 
 **The harness reuse seam.** P6 imports, never re-implements: `createScratchHarness` from
 `script/scratch-install-harness.mjs` (task 2.1's behaviour-preserving extraction of P3's inline
@@ -1407,3 +1407,78 @@ Direction finding.
   local gate; CI claims the examples job and the consumer view, not the sweep.
 - The **ubuntu-only examples job** is a config change away from a matrix — no
   macOS or Windows leg is claimed, and none is blocked by the machinery.
+
+---
+
+## 17. Adapter-author enablement: public fakes, scaffold, guide, and CI
+
+The `sdk-ecosystem-enablement` follow-on turns P3's repository-maintainer proof into a
+copyable author path without widening the frozen contracts. The permanent consumption model
+remains four local `npm pack` artifacts installed through `file:` dependencies and overrides;
+this section records no registry publication or registry-resolution claim.
+
+### Attributed additive entry
+
+| Package | Entry | Target | Forced by |
+| --- | --- | --- | --- |
+| `@opencut/editor-contracts` | `./conformance/fakes` | `src/conformance/fakes/index.ts` | the copyable adapter scaffold and the contracts requirement-index guard both need the same ProjectStore-backed engine, draft, and vector fixture assembly without copying private seed, capture, counter, or vector-driver internals |
+
+The entry exports `createProjectStoreConformanceFactories({ createStore })` and its named result
+type. It accepts only the author's fresh `ProjectStore` factory and returns the existing frozen
+engine, draft, and vector factory shapes. It does not export vector drivers, committed-state
+capture, clocks, filesystem paths, registry settings, or replacements for the already-public
+ports and transaction fakes. The entry is classified `experimental`, carries exactly one
+matching source marker, and moves only `@opencut/editor-contracts` to `0.3.0`; ports and Classic
+remain `0.2.0`.
+
+### Current working-tree census
+
+Measured on the `661d7ac8`-based working tree after the additive entry and author assets:
+
+| package | version | entries | frozen | provider | experimental | packed files |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| `@opencut/editor-ports` | `0.2.0` | 6 | 5 | 0 | 1 | 25 |
+| `@opencut/editor-contracts` | `0.3.0` | 11 | 9 | 0 | 2 | 65 |
+| `@opencut/editor-classic` | `0.2.0` | 19 | 2 | 13 | 4 | 807 |
+| `opencut-wasm` | `0.2.10` | N/A | N/A | N/A | N/A | 7 |
+| **editor total** | — | **36** | **16** | **13** | **7** | **897** |
+
+`node script/check-sdk-surface-labels.mjs` reports 36 classified entries and zero dangling
+targets. `node script/check-package-boundary.mjs` scans 1,156 repository files: 1,013 package
+graph files, 419 cross-package edges, 418 `@opencut/*` specifiers, 872 files for the
+no-internal-reexport rule, and 76 files for the React-free base; all five rules pass. The packed
+consumer view reads the artifacts rather than the workspace and reports zero failures, with the
+mixed versions, README policies, export/class set equality, markers, and target existence all
+agreeing. Sections 14 and 16 remain historical S05 close-out snapshots; this table is the live
+post-S05 census.
+
+### Executed scaffold, guide, and CI path
+
+`templates/adapter-project/` contains 16 declared files and no extras. Its drift guard proves
+seven alien flat-JSON-tuple seed files byte-identical to the `custom-storage` seed, 43 imports
+resolving only to declared entries or local files, an exact opaque round trip, and non-zero green
+populations for ports 36, transaction 21, engine 38, draft 22, and vectors 29. Ports and
+transaction exercise author-owned roles/store/target; engine, draft, and vectors use the public
+ProjectStore-backed helper over author-created stores.
+
+`script/check-adapter-author-guide-commands.mjs` pairs five documented command ids with five
+unique author-runner execution sites. Its negative control fires in both drift directions: an
+unexecuted guide command and an undocumented author-facing runner step. The author runner packs
+four artifacts, copies the scaffold outside the repository and Temp, rewrites exact version
+expectations to staged `file:` tarballs, rejects links/workspace resolutions, type-checks, runs
+the five suites and migration honest pair, and demonstrates six requirement-first failures with
+no stack-trace guidance.
+
+The Ubuntu `sdk-examples` job installs Bun 1.2.18, builds the repository's routed wasm artifact,
+runs the published examples, executes both scaffold/guide drift checks, and then runs the author
+template with `OPENCUT_SCRATCH_ROOT="$HOME/.opencut-adapter-template-ci"`. It has no publish
+action. CI reuses the same runner and copy-not-link gates as the local path instead of maintaining
+a CI-only scaffold implementation.
+
+### Deliberate non-coverage
+
+This enablement layer does not implement or modify S06 timeline work, S07 editor/Host work, S08
+export work, or S09 provider/composition evolution. It does not repair the known Classic
+wasm-initialization finding; the production leg records a distinct skip and the experimental
+mock leg proves the real 31-step migration chain. It adds no registry workflow, publication,
+release automation, provenance attestation, or claim about registry-specific resolution.

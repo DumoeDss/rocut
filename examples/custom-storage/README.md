@@ -43,7 +43,8 @@ Through the repo's runner (see `script/run-published-examples.mjs`):
 OPENCUT_EXAMPLES=custom-storage node script/run-published-examples.mjs
 ```
 
-Standalone, once the packages are on a registry:
+After the runner materializes this example from tarballs, the printed project
+can be rerun directly:
 
 ```sh
 npm install --legacy-peer-deps

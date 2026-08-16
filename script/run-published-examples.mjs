@@ -6,8 +6,8 @@
  * would: each one materialized as an independent project, its `@opencut/*`
  * dependencies resolved to freshly packed tarballs through the overrides
  * mechanism (the example's committed manifest declares plain exact versions —
- * the adopter-facing registry shape; this runner is what swaps them for local
- * tarballs), installed with npm, held to the no-linking controls, and run
+ * version intent checked against the produced artifacts; this runner swaps
+ * them for local `file:` tarballs), installed with npm, held to the no-linking controls, and run
  * through its own execution steps with self-logged exit codes.
  *
  * The scratch lifecycle, the no-linking controls and the react control all
@@ -178,8 +178,8 @@ console.log(
 // Materialize: the committed manifest's @opencut/* exact pins resolve to the
 // staged tarballs (dependencies AND matching overrides — npm requires a
 // direct dependency's spec to equal its override). The committed file keeps
-// the adopter-facing registry shape; only the materialized copy carries
-// file:tarballs/* specs.
+// portable version intent; only the materialized copy carries file:tarballs/*
+// specs. Registry behavior is neither required nor claimed.
 // ---------------------------------------------------------------------------
 
 const EXACT_PIN = /^\d+\.\d+\.\d+$/;
@@ -243,7 +243,7 @@ function materialize(name) {
 		// Latent shape, noted not guarded (review round 1 R9): the rewrite loop
 		// above rewrites only @opencut/* keys, so an example that declared
 		// unscoped `opencut-wasm` as a DIRECT dependency alongside classic would
-		// carry its registry-shaped spec through untouched and hit npm's
+		// carry its non-tarball spec through untouched and hit npm's
 		// direct-dep==override rule with npm's own (less legible) error instead
 		// of a fail-closed guard here. No shipped example declares it directly —
 		// every example reaches wasm through classic, the shape the ruling

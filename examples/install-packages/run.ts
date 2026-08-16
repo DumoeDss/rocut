@@ -22,7 +22,11 @@ import {
 	readPublishedCorpusText,
 } from "@opencut/editor-contracts/vectors/corpus";
 
-const PIN = "0.2.0";
+const PINS: Readonly<Record<string, string>> = {
+	"@opencut/editor-ports": "0.2.0",
+	"@opencut/editor-contracts": "0.3.0",
+	"@opencut/editor-classic": "0.2.0",
+};
 const POLICY_ANCHOR = "Compatibility policy (`0.x`)";
 
 const failures: string[] = [];
@@ -65,9 +69,9 @@ check(
 check(Boolean(TRANSACTION_VECTOR_SCHEMA), `vectors exports TRANSACTION_VECTOR_SCHEMA (${TRANSACTION_VECTOR_SCHEMA})`);
 
 // (3) Resolved versions: what landed in node_modules matches the pin.
-for (const pkg of ["@opencut/editor-ports", "@opencut/editor-contracts", "@opencut/editor-classic"]) {
+for (const [pkg, pin] of Object.entries(PINS)) {
 	const version = String(installedManifest(pkg).version);
-	check(version === PIN, `${pkg} resolved at ${version} (pinned ${PIN})`);
+	check(version === pin, `${pkg} resolved at ${version} (pinned ${pin})`);
 }
 
 // (4) The installed surface.json, read as the data an adopter reads it: every

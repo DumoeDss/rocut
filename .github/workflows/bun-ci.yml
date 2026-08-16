@@ -121,6 +121,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install Bun
+        uses: oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76
+        with:
+          bun-version: 1.2.18
+
       - name: Install Rust wasm target
         run: rustup target add wasm32-unknown-unknown
 
@@ -147,3 +152,20 @@ jobs:
       - name: Run the published-examples runner
         run:
           OPENCUT_SCRATCH_ROOT="$HOME/.opencut-scratch-ci" node script/run-published-examples.mjs
+
+      # Keep the copyable scaffold and every executable guide command paired
+      # with the same repository-external, tarball-only path authors run.
+      # The drift check executes the committed TypeScript seed directly, so a
+      # clean checkout must materialize its workspace package imports first;
+      # installing the Bun executable alone does not create those packages.
+      - name: Install repository dependencies for adapter drift checks
+        run: bun install --frozen-lockfile
+
+      - name: Check the adapter-author template and guide
+        run: |
+          node script/check-adapter-project-template.mjs
+          node script/check-adapter-author-guide-commands.mjs
+
+      - name: Run the adapter-author template
+        run:
+          OPENCUT_SCRATCH_ROOT="$HOME/.opencut-adapter-template-ci" node script/run-adapter-author-template.mjs

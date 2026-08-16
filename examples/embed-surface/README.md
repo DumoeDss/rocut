@@ -1,6 +1,6 @@
 # embed-surface
 
-Mount the OpenCut editor Surface in a real app, from the published tarballs.
+Mount the OpenCut editor Surface in a real app, from freshly packed tarballs.
 Vite + React; `vite build` against the installed TypeScript source, then a
 Playwright smoke that boots headless Chromium and interacts with the timeline —
 build success alone is not execution (the P1 vite Blocker is the precedent).
