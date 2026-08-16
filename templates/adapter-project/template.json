@@ -1,0 +1,36 @@
+{
+	"schema": "opencut-adapter-project/v1",
+	"derivedFrom": [
+		"script/fixtures/third-party-adapter",
+		"examples/custom-storage"
+	],
+	"representation": "flat-json-tuple-map",
+	"authorOwned": {
+		"codec": "src/alien-codec.ts",
+		"projectStoreControl": "src/alien-control.ts",
+		"projectStore": "src/alien-store.ts",
+		"hostPorts": "src/roles.ts",
+		"transactionTarget": "src/transaction.ts",
+		"projectStoreFactories": "src/factories.ts",
+		"migrationBridge": "src/migrate.ts"
+	},
+	"executables": {
+		"production": "run.ts",
+		"mockInstalledMigration": "run-mock.ts",
+		"failureDemo": "failure-demo.ts"
+	},
+	"guards": {
+		"opaqueRoundTrip": "seed-check.ts"
+	},
+	"support": [
+		"types/culori.d.ts"
+	],
+	"suiteOwnership": {
+		"ports": "author-owned host ports and ProjectStore",
+		"transaction": "author-owned transaction target",
+		"engine": "published engine over author-owned ProjectStore",
+		"draft": "published draft manager and engine over author-owned ProjectStore",
+		"vectors": "published vector runner and engine over author-owned ProjectStore"
+	},
+	"declaredEntryOnly": true
+}

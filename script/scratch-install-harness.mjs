@@ -54,7 +54,6 @@ import {
 	mkdirSync,
 	readdirSync,
 	readFileSync,
-	rmSync,
 	writeFileSync,
 } from "node:fs";
 import { basename, dirname, isAbsolute, join, relative, resolve } from "node:path";
@@ -63,9 +62,9 @@ import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 
 import { DEFAULT_OUT_DIR_NAME, DEFAULT_REPO_ROOT, packSdkTarballs } from "./pack-sdk-tarballs.mjs";
+import { recreateOwnedScratchRoot } from "./scratch-lifecycle-safety.mjs";
 
 const IS_WINDOWS = process.platform === "win32";
-const MARKER_NAME = ".opencut-scratch-marker";
 
 const SDK_NAMES = [
 	"@opencut/editor-ports",
@@ -188,26 +187,15 @@ export function createScratchHarness(options = {}) {
 	// -------------------------------------------------------------------------
 
 	function freshLifecycle(root) {
-		if (existsSync(root)) {
-			const stat = lstatSync(root);
-			if (!stat.isDirectory()) {
-				fail("lifecycle", `scratch root exists and is not a directory: ${root}`);
-			}
-			if (!existsSync(join(root, MARKER_NAME))) {
-				fail(
-					"lifecycle",
-					`pre-existing root has no ${MARKER_NAME} marker — foreign root, refusing to touch it`,
-				);
-			}
-			console.log(`lifecycle: wiping previous scratch root (marker verified)`);
-			rmSync(root, { recursive: true, force: true });
+		try {
+			recreateOwnedScratchRoot({
+				root,
+				createdBy: markerCreatedBy,
+				log: (line) => console.log(line),
+			});
+		} catch (error) {
+			fail("lifecycle", error instanceof Error ? error.message : String(error));
 		}
-		mkdirSync(root, { recursive: true });
-		writeFileSync(
-			join(root, MARKER_NAME),
-			`${JSON.stringify({ createdBy: markerCreatedBy, createdAt: new Date().toISOString() }, null, 2)}\n`,
-		);
-		console.log(`lifecycle: fresh scratch root created with marker (${root})`);
 	}
 
 	// -------------------------------------------------------------------------

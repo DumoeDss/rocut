@@ -57,23 +57,21 @@ number promises; read its `surface.json` for which class an entry is in.
 ## Current figures
 
 Method: `node script/check-package-boundary.mjs` census lines, and
-`script/pack-sdk-tarballs.mjs` inventories, run at the group-8 completion pass (LEAD ruling
-2026-08-15; committed log:
-`rasen/changes/s05-versioning-and-experimental-labeling/evidence/logs/group8-completion-ruling.log`):
+`script/check-sdk-consumer-view.mjs` packed inventories, run on the
+`sdk-ecosystem-enablement` working tree based on `661d7ac8`:
 
-- boundary census: 989 package-graph files, 362 cross-package edges (all pointing to a strictly
-  lower layer), 361 `@opencut/*` specifiers (all resolving to declared entries), 870 files scanned
-  for no-internal-reexport, 74 files scanned for the react-free base (ports + contracts), 1110
-  repo files in scope — all five rules PASS;
-- pack inventories at `0.2.0`: editor-ports 23 files, editor-contracts 61, editor-classic 805,
-  opencut-wasm 7 (wasm at its own `0.2.10`), each including `surface.json` and the policy
-  `README.md`;
-- label census: 35 classified entries — frozen 16, provider 13, experimental 6
-  (`node script/check-sdk-surface-labels.mjs`), dangling-export-entries 0. The count was 36 until
-  the LEAD ruling of 2026-08-15 removed `@opencut/editor-contracts`' `./vectors/drivers` —
-  declared by P0 in `5e3fc7cb`, target never authored, zero importers — which the from-tarballs
-  consumer view caught; the checker now fails any declared-but-absent entry at any class
-  (`target-existence`).
+- boundary census: 1,013 package-graph files, 419 cross-package edges (all pointing to a strictly
+  lower layer), 418 `@opencut/*` specifiers (all resolving to declared entries), 872 files scanned
+  for no-internal-reexport, 76 files scanned for the React-free base (ports + contracts), and
+  1,156 repo files in scope — all five rules PASS;
+- mixed package versions and pack inventories: editor-ports `0.2.0` / 25 files,
+  editor-contracts `0.3.0` / 65 files, editor-classic `0.2.0` / 807 files, and opencut-wasm
+  `0.2.10` / 7 files. Each editor package includes `surface.json` and its policy `README.md`;
+- label census: 36 classified entries — frozen 16, provider 13, experimental 7
+  (`node script/check-sdk-surface-labels.mjs`), dangling-export-entries 0. Contracts contributes
+  11 entries (9 frozen / 2 experimental), including the new attributed experimental
+  `./conformance/fakes` author helper. Ports remains 6 entries (5 / 0 / 1) and Classic remains
+  19 (2 / 13 / 4).
 
 ## Source of truth
 
@@ -88,7 +86,8 @@ this file explains, they decide.
   `npm pack` still works, which is what the tarball-install harness needs.
 - No build step is declared. `exports` points at TypeScript source directly, matching how
   `apps/web` and `apps/vite-example` consume this code today.
-- LICENSE / NOTICE / SBOM are P7's; the manifests' `files` entries for them are placeholders until
-  then. The wasm-init constraint on `editor-classic`'s migration surface is stated in that
-  package's README as current-surface truth — a fix is tracked at Direction level, not in the
-  package. Release automation and CI are out of scope here; P6 decides CI.
+- LICENSE and NOTICE ship in every editor tarball; the provenance/SBOM closure is recorded in
+  BOUNDARIES.md §16. The wasm-init constraint on `editor-classic`'s migration surface is stated
+  in that package's README as current-surface truth — a fix is tracked at Direction level, not
+  in the package. The `sdk-examples` CI job executes both published examples and the adapter
+  scaffold from packed tarballs, but performs no release or registry action.

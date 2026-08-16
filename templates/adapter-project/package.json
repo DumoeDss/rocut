@@ -1,0 +1,32 @@
+{
+	"name": "opencut-adapter-project-template",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"description": "Copyable adapter-author project: an alien ProjectStore, author-owned ports and transaction target, all five SDK conformance surfaces, and production plus mock-installed migration coverage.",
+	"scripts": {
+		"typecheck": "tsc --noEmit",
+		"run": "bun run.ts",
+		"run:mock": "bun run-mock.ts",
+		"failure-demo": "bun failure-demo.ts"
+	},
+	"dependencies": {
+		"@opencut/editor-ports": "0.2.0",
+		"@opencut/editor-contracts": "0.3.0",
+		"@opencut/editor-classic": "0.2.0"
+	},
+	"devDependencies": {
+		"@types/bun": "^1.2.15",
+		"@types/node": "^22.10.0",
+		"typescript": "^5.8.3"
+	},
+	"opencutAdapterTemplate": {
+		"schema": "opencut-adapter-project/v1",
+		"runEntries": [
+			"run.ts",
+			"run-mock.ts",
+			"failure-demo.ts"
+		],
+		"inventory": "template.json"
+	}
+}

@@ -1,6 +1,6 @@
 {
   "name": "@opencut/editor-contracts",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Domain, operations, transactions, draft sessions, the engine and conformance. Depends only on @opencut/editor-ports. No React, no DOM.",
   "dependencies": {
@@ -17,6 +17,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./conformance": "./src/conformance/index.ts",
+    "./conformance/fakes": "./src/conformance/fakes/index.ts",
     "./conformance/requirements": "./src/conformance/requirements/index.ts",
     "./draft": "./src/draft/index.ts",
     "./draft/conformance": "./src/draft/conformance/index.ts",

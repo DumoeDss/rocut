@@ -10,6 +10,10 @@
 			"class": "frozen",
 			"reason": "The transaction-contract conformance suite — S03's executable contract truth, additive-only with the contract it enforces."
 		},
+		"./conformance/fakes": {
+			"class": "experimental",
+			"reason": "The adapter-author ProjectStore fixture assembly — forced by the copyable adapter scaffold and requirement-index guard, but test infrastructure that may evolve without changing the frozen suite factory types it returns."
+		},
 		"./conformance/requirements": {
 			"class": "experimental",
 			"reason": "P3's requirement-index legibility layer over the frozen suites — test infrastructure that may be reorganized as suites evolve, without touching the contracts it indexes."

@@ -1,7 +1,7 @@
 # install-packages
 
-The first thing an adopter does with the SDK: install the packages from their
-published tarballs and verify what landed — the declared React-free entries
+The first thing an adopter does with the SDK: install the packages from freshly
+packed tarballs and verify what landed — the declared React-free entries
 resolve, the resolved versions match the pins, the shipped `surface.json` and
 policy README read as the data they are, and `@opencut/editor-classic`'s
 installed metadata is sane **without importing its runtime**.
@@ -21,8 +21,10 @@ node script/run-published-examples.mjs            # all examples
 OPENCUT_EXAMPLES=install-packages node script/run-published-examples.mjs
 ```
 
-Standalone, once the packages are on a registry (this manifest's plain `0.2.0`
-pins are exactly the registry shape the runner resolves to tarballs locally):
+The committed manifest records the expected mixed package versions
+(`editor-ports`/`editor-classic` `0.2.0`, `editor-contracts` `0.3.0`). The
+supported runner resolves those pins to freshly packed local tarballs before
+installing them:
 
 ```sh
 npm install --legacy-peer-deps   # classic's React peer stays unsatisfied here

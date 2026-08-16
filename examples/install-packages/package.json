@@ -3,13 +3,13 @@
 	"version": "0.0.0",
 	"private": true,
 	"type": "module",
-	"description": "Install the SDK packages from their published tarballs and verify what landed — React-free entries resolve, versions match the pins, surface.json and the policy README read as data, classic's metadata asserted without importing its runtime.",
+	"description": "Install the SDK packages from freshly packed tarballs and verify what landed — React-free entries resolve, versions match the pins, surface.json and the policy README read as data, classic's metadata asserted without importing its runtime.",
 	"scripts": {
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@opencut/editor-ports": "0.2.0",
-		"@opencut/editor-contracts": "0.2.0",
+		"@opencut/editor-contracts": "0.3.0",
 		"@opencut/editor-classic": "0.2.0"
 	},
 	"devDependencies": {
