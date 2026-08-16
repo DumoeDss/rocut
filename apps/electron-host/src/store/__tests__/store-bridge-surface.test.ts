@@ -38,10 +38,14 @@ test("the preload's operation list equals STORE_IPC_OPERATIONS exactly", () => {
 	expect(invoked.length).toBe(STORE_IPC_OPERATIONS.length);
 });
 
-test("the preload exposes exactly one global and touches no node module", () => {
+test("the preload exposes exactly the two frozen globals and touches no node module", () => {
+	// sdk-export-capability added the second frozen-role global
+	// (`window.opencutExport`, design D4) beside the store bridge; the count
+	// is pinned so a third global cannot appear silently.
 	const exposures = [...preload.matchAll(/exposeInMainWorld\(/g)];
-	expect(exposures.length).toBe(1);
+	expect(exposures.length).toBe(2);
 	expect(preload).toContain('exposeInMainWorld("opencutStore"');
+	expect(preload).toContain('exposeInMainWorld("opencutExport"');
 	expect(preload).toContain('require("electron")');
 	expect(preload).not.toMatch(/require\("node:/);
 });

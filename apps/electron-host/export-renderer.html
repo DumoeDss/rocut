@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<!-- Design E7: byte-identical to index.html's policy (and to the
+		     Content-Security-Policy response header the scheme handler sets) —
+		     this hidden producer window runs the same wasm compositor, workers,
+		     and asset fetches as the interactive window, so it runs under the
+		     same rules. Any relaxation names the feature that forced it, in a
+		     comment here and in the evidence. -->
+		<meta
+			http-equiv="Content-Security-Policy"
+			content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob: data:; font-src 'self' data:; connect-src 'self' blob:"
+		/>
+		<title>OpenCut export renderer</title>
+	</head>
+	<body>
+		<!-- No #root: this entry mounts no UI. The producer is a headless
+		     pipeline (editor session in, frame batches out); its lifecycle is
+		     owned by main, which destroys the window on the job's settled
+		     event. -->
+		<script type="module" src="/src/export-renderer/main.ts"></script>
+	</body>
+</html>

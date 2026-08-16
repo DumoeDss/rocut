@@ -49,9 +49,11 @@ export default defineConfig({
 				// Multi-entry parity with the Vite example (design E2): the
 				// evidence entry is selected at launch via `--opencut-entry=
 				// surface-evidence` — the argv equivalent of the example's
-				// separate HTML files.
+				// separate HTML files. The export entry is the hidden producer
+				// window main opens per job (sdk-export-capability, D3/D4).
 				app: resolve(here, "index.html"),
 				"surface-evidence": resolve(here, "surface-evidence.html"),
+				"export-renderer": resolve(here, "export-renderer.html"),
 			},
 		},
 	},
