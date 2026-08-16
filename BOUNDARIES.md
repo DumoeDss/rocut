@@ -1488,6 +1488,35 @@ bundler. A static surface says the shape is right; only running it says it start
   implements the integration, that control fails loudly — which is correct, because it means the
   generated entry became redundant and that should be a decision, not a drift.
 
+### The repair is proven from installed tarballs, not only in-repo
+
+The `sdk-examples` job was run locally end to end
+(`OPENCUT_SCRATCH_ROOT=<outside the repo> node script/run-published-examples.mjs`): 4 examples,
+**10 legs, all exit-zero**. The decisive line is `examples/custom-storage`'s **production** leg,
+which packs and npm-installs the tarballs and then runs with no mock anywhere in the process:
+
+```
+custom-storage example: production leg (alien adapter, published conformance)
+runtime: bun 1.2.18
+classic chain: loaded (31 steps, target v31)
+suites/ports: passed=true cases=36 (migration exercised)
+migration/by-replication: green
+  disposable legacy record: migrated 30->31, progress 1/1
+```
+
+That leg's job under §16 was to **record the failure and skip the migration leg distinctly**. It
+now migrates for real. Three consequences, all landed rather than noted:
+
+- `examples/custom-storage`'s README, `run.ts`/`run-mock.ts` headers and package description no
+  longer describe an "honest pair" or call the defect unrepaired.
+- `run.ts`'s distinct-skip branch is **kept**, as the fail-closed path for any runtime that still
+  cannot load the chain. A leg that cannot run must say so by name; that property was never the
+  defect.
+- The main specs `sdk-third-party-conformance` and `sdk-published-examples` asserted the skip and
+  the "demonstrated, not repaired" non-coverage statement. Both carry MODIFIED deltas in this
+  change, because a change that makes a standing requirement false and leaves it standing is the
+  same failure as a stale hash.
+
 ### The api-surface red leg was two causes, neither of them "machine-bound recording"
 
 PR #2 merged with `check-wasm-api-surface` red on ubuntu and the redness documented as a contract

@@ -63,6 +63,29 @@ that shaped the design and a reader should be able to check it:
 
 That is why the shipped `exports` map declares `bun` only, plus an explicit `./sync` subpath.
 
+## 2b. The `sdk-examples` CI job, run locally end to end
+
+`logs/published-examples-final.log` —
+`OPENCUT_SCRATCH_ROOT=E:/opencut-scratch-wasm node script/run-published-examples.mjs`, exit 0.
+**4 examples, 10 legs, every `EXIT[...]` line `:0`** (agent-transaction, custom-storage,
+embed-surface, install-packages), including embed-surface's 9-assertion GPU-free Playwright smoke.
+
+The decisive leg is `custom-storage`'s **production** path, which npm-installs the freshly packed
+tarballs and runs with no mock anywhere in the process:
+
+```
+classic chain: loaded (31 steps, target v31)
+suites/ports: passed=true cases=36 (migration exercised)
+migration/by-replication: green
+  disposable legacy record: migrated 30->31, progress 1/1
+  second migration call: not-needed
+  declining transform: failed closed (invalid version)
+```
+
+Under S05 that leg's job was to record the failure and skip the migration leg distinctly. This is
+the wasm-init repair proven **from installed tarballs**, which is the strongest form of the claim
+available — and it is what forced the spec and example-documentation deltas listed in §8 below.
+
 ## 3. Checker family sweep
 
 `logs/checker-family-sweep.log`. Method unchanged from S05 Group 1: every `script/check-*.mjs` run
@@ -137,6 +160,27 @@ targets**, each `-e` tested.
 | `packages/editor` | pre-existing — `UPSTREAM.md:44` names it as a **rejected** alternative |
 | `script/check-`, `examples/evidence/logs/group5-full-run-clean.log` | scanner artifacts: the first is the `check-*.mjs` glob with `*` outside the character class, the second a mid-path capture of `rasen/changes/s05-published-examples/evidence/logs/…` |
 | `apps/web/bun.lock` | **pre-existing CI defect, recorded not fixed** — see findings |
+
+## 8. Statements this change falsified, and what was done about each
+
+Found by grepping the shipped tree and the main specs for the wasm-init language after the
+tarball run showed the production leg migrating for real. Every one is corrected, none is left
+standing:
+
+| statement | where | disposition |
+| --- | --- | --- |
+| "the production migration path running and recording its skip distinctly" | `rasen/specs/sdk-published-examples/spec.md` | MODIFIED delta in this change |
+| "it states that the wasm-initialization defect is Direction-level and demonstrated, not repaired" | `rasen/specs/sdk-published-examples/spec.md` | MODIFIED delta; replaced by a scenario asserting the claim is **gone** |
+| "from the installed tarballs, the suite passes with the migration leg absent — the skip recorded" | `rasen/specs/sdk-third-party-conformance/spec.md` | MODIFIED delta: migration is now **exercised**; the distinct-skip behaviour is retained as its own scenario |
+| "The migration honest pair" section | `examples/custom-storage/README.md` | rewritten; the historical state kept as a dated note |
+| "the migration honest pair (production path records its skip distinctly…)" | `examples/custom-storage/package.json` description | rewritten |
+| "the wasm-initialization defect, Direction-level" / "demonstrated not repaired" | `examples/custom-storage/run.ts` header + runtime message | rewritten; the **skip branch itself is kept** as the fail-closed path |
+| "the honest pair" framing | `examples/custom-storage/run-mock.ts` header | rewritten; the leg keeps its narrower, still-real job |
+| "the glue's top-level `__wbindgen_start()` call needs top-level await" | `examples/embed-surface/vite.config.ts`, `apps/vite-example/vite.config.ts` | **still true, left alone** — those Hosts resolve the `default` condition, i.e. the unchanged bundler entry |
+
+`BOUNDARIES.md` §16's original paragraph is *not* rewritten: it is the record of what was known at
+S05 close-out, and it is marked closed with a pointer to §17 rather than edited into agreement with
+a later measurement.
 
 ## Findings recorded, not fixed
 

@@ -3,7 +3,7 @@
 	"version": "0.0.0",
 	"private": true,
 	"type": "module",
-	"description": "Bring your own storage: the alien adapter's own ProjectStore behind a deliberately alien representation, driven through every published conformance surface — plus the migration honest pair (production path records its skip distinctly; the real chain validated through the published wasm test mock).",
+	"description": "Bring your own storage: the alien adapter's own ProjectStore behind a deliberately alien representation, driven through every published conformance surface — plus two migration legs (the production path loads the real chain from the installed tarballs and exercises migration; the mock-installed path validates the same chain through the published wasm test mock).",
 	"scripts": {
 		"typecheck": "tsc --noEmit"
 	},

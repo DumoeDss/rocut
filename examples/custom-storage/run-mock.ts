@@ -1,16 +1,21 @@
 /**
- * The custom-storage example — the mock-installed leg of the honest pair (S05
- * P6 task 3.3).
+ * The custom-storage example — the mock-installed leg (S05 P6 task 3.3).
  *
- * The production leg (run.ts) records, distinctly, that the published
- * migration chain cannot initialize in a plain TS consumer. This leg does NOT
- * change that finding: it installs classic's own published wasm test mock —
- * the declared experimental entry `@opencut/editor-classic/evidence/wasm-test-mock`,
- * the same mechanism classic's own storage tests use — BEFORE the chain loads,
- * so the alien walker's semantics and the ports suite's migration case are
- * validated against the REAL published chain (31 steps at 0.2.0). Walker green
- * here + the loading finding there is the honest pair, and the README states
- * the experimental inheritance that follows.
+ * It installs classic's own published wasm test mock — the declared
+ * experimental entry `@opencut/editor-classic/evidence/wasm-test-mock`, the
+ * same mechanism classic's own storage tests use — BEFORE the chain loads, so
+ * the alien walker's semantics and the ports suite's migration case are
+ * validated against the REAL published chain (31 steps at 0.2.0) through that
+ * entry.
+ *
+ * This leg used to be half of an "honest pair": run.ts could not load the
+ * chain at all (`wasm.__wbindgen_start is not a function`) and this one was the
+ * only way to reach it. Since the wasm-init repair (BOUNDARIES §17) run.ts
+ * exercises the same chain with no mock at all, so this leg's job is now
+ * narrower and still worth doing: it proves the published experimental entry
+ * does what it claims, and it is the path that keeps working in a runtime that
+ * cannot initialize the wasm. The README carries the experimental inheritance
+ * that follows from depending on it.
  *
  * The mock import must precede any load of the classic chain; every
  * classic-touching import in this example is dynamic, so ordering holds.
