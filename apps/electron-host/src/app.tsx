@@ -10,6 +10,7 @@ import { ProjectPicker } from "./project-picker";
 import { EditorErrorBoundary } from "./editor-error-boundary";
 import { C4WorkerHarness } from "./c4-worker-harness";
 import { FilesystemProjectStore } from "./store/filesystem-project-store";
+import { ExportPanel } from "./export/export-panel";
 import { createElectronEditorHost } from "./host/electron-host-config";
 
 function readProjectIdFromUrl(): string | null {
@@ -107,6 +108,11 @@ function EditorApp() {
 								<MobileGate>
 									<SessionEditorSurface focusMode="focused" />
 								</MobileGate>
+								{/* Host chrome, not editor surface: the export panel is this
+								 * Host's own job-control surface (design D3), a fixed-overlay
+								 * sibling of the editor — outside
+								 * SessionEditorSurface's tree, beside MobileGate. */}
+								<ExportPanel projectId={projectId} />
 							</ElectronEditorHost>
 						</EditorErrorBoundary>
 					)}

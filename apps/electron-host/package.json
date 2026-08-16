@@ -5,7 +5,7 @@
 	"type": "module",
 	"main": "electron/main.cjs",
 	"scripts": {
-		"build": "vite build && bun build src/store/main-store-ipc.ts --target=node --format=cjs --outfile=dist-main/main-store-ipc.cjs",
+		"build": "vite build && bun build src/store/main-store-ipc.ts --target=node --format=cjs --outfile=dist-main/main-store-ipc.cjs && bun build src/export/main-export-ipc.ts --target=node --format=cjs --outfile=dist-main/main-export-ipc.cjs",
 		"start": "electron .",
 		"typecheck": "tsc --noEmit -p tsconfig.json"
 	},

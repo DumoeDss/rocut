@@ -1,0 +1,42 @@
+bun test v1.2.2 (c1708ea6)
+
+apps\electron-host\src\export\__tests__\job-manager.test.ts:
+(pass) happy path: 60 gradient frames + WAV → one ffmpeg encode → completed mp4 with both streams [438.00ms]
+318 | 		expect(cancelled.phase).toBe("cancelled");
+319 | 		expect(cancelled.frames).toEqual({ accepted: 10, total: 60 });
+320 | 
+321 | 		// No producer ran, so no child ever existed — the artifacts are the
+322 | 		// assertion surface: stream gone, wav gone, no partial, no output.
+323 | 		expect(existsSync(join(root, "jobs", `${jobId}.raw`))).toBe(false);
+                                                               ^
+error: expect(received).toBe(expected)
+
+Expected: false
+Received: true
+
+      at <anonymous> (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-export\apps\electron-host\src\export\__tests__\job-manager.test.ts:323:58)
+(fail) cancel mid-render: settles cancelled, keeps the record, deletes raw/wav/partial [16.00ms]
+367 | 		}
+368 | 		const cancelled = await manager.cancelJob({ jobId });
+369 | 		expect(cancelled.phase).toBe("cancelled");
+370 | 		// cancelJob resolves only after the child's exit gate released (the
+371 | 		// SIGTERM→SIGKILL await chain) — a resolved cancel IS the exit proof.
+372 | 		expect(existsSync(join(root, "jobs", `${jobId}.raw`))).toBe(false);
+                                                               ^
+error: expect(received).toBe(expected)
+
+Expected: false
+Received: true
+
+      at <anonymous> (E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-export\apps\electron-host\src\export\__tests__\job-manager.test.ts:372:58)
+(fail) cancel mid-encode: the resolved cancel proves the child exited; partial and raw are gone [328.00ms]
+(pass) interrupt + resume across manager instances completes with the exact frame count [328.00ms]
+(pass) the boot scan interrupts a record left rendering at rest, and discard removes everything [15.00ms]
+(pass) a frame gap or duplicate fails the job with the named desync reason [16.00ms]
+(pass) resume truncates a garbage tail (file ahead of the record) and still completes exactly [359.00ms]
+(pass) resume over a short raw stream fails with the named reason instead of guessing [16.00ms]
+
+ 6 pass
+ 2 fail
+ 74 expect() calls
+Ran 8 tests across 1 files. [1.75s]

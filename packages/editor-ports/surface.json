@@ -25,6 +25,10 @@
 		"./conformance/requirements": {
 			"class": "experimental",
 			"reason": "P3's requirement-index legibility layer over the frozen suite — test infrastructure that may be reorganized as suites evolve, without touching the contract it indexes."
+		},
+		"./export-jobs": {
+			"class": "experimental",
+			"reason": "S08 pre-work: the job lifecycle (identity, phases, progress, cancellation, best-effort recovery) the frozen ExportProvider promise shape cannot carry — declared additive and experimental so S08 can ratify, revise or remove it without a frozen-surface revision."
 		}
 	}
 }

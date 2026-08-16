@@ -1,0 +1,45 @@
+$ playwright test
+[WebServer] $ vite preview --port "4173" --strictPort --host "127.0.0.1"
+
+Running 4 tests using 1 worker
+
+[agent] the change has shipped; this run is regression output at E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-export\apps\vite-example\tests\parity-artifacts\regression\s0304-agent-transaction-evidence\browser-agent\electron, not evidence for the archived change.
+Downloading Electron binary...
+  ✓  1 [chromium] › tests\parity\agent.pw.ts:125:1 › Agent transaction evidence — electron host (7.1s)
+  ✓  2 [chromium] › tests\parity\parity.pw.ts:91:1 › editing parity scenario — electron host (45.5s)
+  ✘  3 [chromium] › tests\parity\surface.pw.ts:232:1 › Surface matrix and lifecycle — electron host (1.1m)
+  -  4 [chromium] › tests\parity\surface.pw.ts:740:1 › S02 disposal oracle remains green — electron host
+
+
+  1) [chromium] › tests\parity\surface.pw.ts:232:1 › Surface matrix and lifecycle — electron host ──
+
+    Error: every Surface step must carry an assertion or capture
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 4
+
+    - Array []
+    + Array [
+    +   "bounded-container-and-outside-style",
+    +   "focused-local-input-and-outside-control",
+    + ]
+
+      723 | 		unevidenced.map((step) => step.id),
+      724 | 		"every Surface step must carry an assertion or capture",
+    > 725 | 	).toEqual([]);
+          | 	  ^
+      726 | 	const failed = steps.filter((step) => step.error !== null);
+      727 | 	expect(
+      728 | 		failed.map((step) => `${step.id}: ${step.error}`),
+        at E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-export\apps\vite-example\tests\parity\surface.pw.ts:725:4
+
+    Error Context: tests\.pw-output\surface.pw.ts-Surface-matrix-and-lifecycle-—-electron-host-chromium\error-context.md
+
+  1 failed
+    [chromium] › tests\parity\surface.pw.ts:232:1 › Surface matrix and lifecycle — electron host ───
+  1 did not run
+  2 passed (2.1m)
+error: script "test:parity" exited with code 1
+REAL_EXIT_CODE:1

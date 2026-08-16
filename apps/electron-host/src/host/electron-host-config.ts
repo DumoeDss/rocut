@@ -14,6 +14,8 @@ import {
 	FilesystemProjectStore,
 } from "../store/filesystem-project-store";
 import { IpcStoreBridge } from "../store/ipc-store-bridge";
+import { ElectronExportProvider } from "../export/electron-export-provider";
+import { RendererExportBridge } from "../export/renderer-export-bridge";
 import { ElectronRuntimeResources } from "./electron-runtime-resources";
 
 /**
@@ -53,13 +55,25 @@ const electronFilesystemStore = new FilesystemProjectStore(
 	new IpcStoreBridge(),
 	{ identity: DEFAULT_FILESYSTEM_STORE_IDENTITY },
 );
+/**
+ * The exporter joins the process-lifetime pattern (sdk-export-capability D6):
+ * one bridge over the preload's export surface, one adapter, for every
+ * session — an export outlives the session that started it (the job record
+ * and its resume live in the main process), so a per-project adapter would
+ * orphan the very identity the frozen `export()` promise is awaiting.
+ */
+const electronExportProvider = new ElectronExportProvider({
+	bridge: new RendererExportBridge(),
+});
 
 /**
  * The Electron composition root (design E3) — the desktop-shaped roles owned,
  * the reference roles visible. Each final override below names its decision;
- * the roles deliberately NOT overridden (`environment`, `exporter`, and the
+ * the roles deliberately NOT overridden (`environment` and the
  * `createInMemoryPorts()` defaults underneath) are the in-memory reference
- * implementations, kept visible rather than re-derived.
+ * implementations, kept visible rather than re-derived. The `exporter` joined
+ * the owned set with sdk-export-capability (D6): the adapter over the export
+ * bridge replaces the reference's deliberate `unsupported`.
  */
 export function createElectronEditorHost({
 	projectId,
@@ -128,5 +142,13 @@ export function createElectronEditorHost({
 		// The desktop substitution this Host exists to prove: durable projects
 		// on disk through the preload bridge, not IndexedDB, not in-memory.
 		store: electronFilesystemStore,
+		// sdk-export-capability D6, the exporter final override: the frozen
+		// role's reference answer (`unsupported`, on purpose — "S08 owns
+		// production export") becomes the real FFmpeg-backed adapter over the
+		// same preload bridge discipline the store uses. A final override
+		// beside the store, not a widening of the port: the frozen contract
+		// keeps its shape and the experimental job surface carries everything
+		// the frozen shape cannot say.
+		exporter: electronExportProvider,
 	};
 }

@@ -161,6 +161,10 @@ function storeRoot() {
  * conformance/probe evidence runs), then write the boot bookkeeping: the
  * design-E4 `<root>/store.json` carrying the store identity and a fresh usage
  * inspection. Advisory only — a failed refresh must never block boot.
+ *
+ * Returns the bridge: sdk-export-capability's export installer reads project
+ * meta (name + updatedAt) through it for the output name and the
+ * stale-timeline guard.
  */
 function installStore() {
 	const { installFilesystemStoreIpc } = require("../dist-main/main-store-ipc.cjs");
@@ -170,6 +174,132 @@ function installStore() {
 		identity: "opencut-fs-production",
 	});
 	bridge.inspectFiles().catch(() => {});
+	return bridge;
+}
+
+/**
+ * The export jobs' durable root (design D3): a directory this process owns
+ * and the renderer never learns. `app.getPath("userData")/exports` in
+ * production; `OPENCUT_EXPORT_ROOT` overrides it for evidence runs (E: scratch
+ * in the recorded runs — a full drive was the constraint, not a choice).
+ */
+function exportsRoot() {
+	return process.env.OPENCUT_EXPORT_ROOT || path.join(app.getPath("userData"), "exports");
+}
+
+let mainWindow = null;
+/** Hidden producer windows by jobId (design D3's two-window architecture). */
+const exportWindows = new Map();
+
+/**
+ * Fan every job event out to the windows that listen: the interactive window
+ * (the job panel) and every live producer window. A `settled` event also
+ * destroys that job's producer window — the belt-and-braces half of the
+ * window's own `jobDone` signal, and the only cleanup for a window that
+ * hung after its job settled.
+ */
+function forwardJobEvent(event) {
+	const targets = [];
+	if (mainWindow !== null && !mainWindow.isDestroyed()) targets.push(mainWindow);
+	for (const win of exportWindows.values()) {
+		if (!win.isDestroyed()) targets.push(win);
+	}
+	for (const win of targets) {
+		if (event.channel === "jobEvent") {
+			win.webContents.send("opencut-export:jobEvent", event.payload);
+		} else if (event.channel === "jobsChanged") {
+			win.webContents.send("opencut-export:jobsChanged");
+		}
+	}
+	if (
+		event.channel === "jobEvent" &&
+		event.payload.event.type === "settled"
+	) {
+		destroyExportWindow(event.payload.jobId);
+	}
+}
+
+/** Create (or return the existing) hidden producer window for a job. */
+function openExportRenderer(manager, jobId) {
+	const existing = exportWindows.get(jobId);
+	if (existing !== undefined && !existing.isDestroyed()) return existing;
+	const job = manager.getJob({ jobId });
+	if (job === null) return null;
+	const win = new BrowserWindow({
+		show: false,
+		// Same isolation posture as the interactive window; GPU switches
+		// (swiftshader) are process-wide argv, so the hidden window inherits
+		// whatever the app booted with.
+		webPreferences: {
+			preload: path.join(__dirname, "preload.cjs"),
+			contextIsolation: true,
+			sandbox: true,
+			nodeIntegration: false,
+		},
+	});
+	exportWindows.set(jobId, win);
+	win.on("closed", () => exportWindows.delete(jobId));
+	const query =
+		"project=" + encodeURIComponent(job.request.projectId) +
+		"&job=" + encodeURIComponent(jobId);
+	win.loadURL(`${SCHEME}://${APP_HOST}/export-renderer.html?${query}`);
+	return win;
+}
+
+function destroyExportWindow(jobId) {
+	const win = exportWindows.get(jobId);
+	if (win !== undefined && !win.isDestroyed()) win.close();
+}
+
+/**
+ * sdk-export-capability (design D3/D4): install the thirteen
+ * `opencut-export:<operation>` IPC handlers over one `ExportJobManager` (the
+ * compiled export seam — same manager class the bun suite runs against real
+ * FFmpeg), discover FFmpeg (env `OPENCUT_FFMPEG_PATH` → `<exe dir>/bin` →
+ * `PATH`; never bundled), then run the boot-time interrupt scan: every record
+ * left live by a previous process becomes `interrupted` BEFORE any window
+ * exists, so the panel that boots next sees a resumable list, never a lie.
+ */
+function installExport(storeBridge) {
+	const { installExportIpc, resolveFfmpegPath, projectContentDigest, projectTimelineDigest } =
+		require("../dist-main/main-export-ipc.cjs");
+	const { mkdirSync } = require("node:fs");
+	const root = exportsRoot();
+	mkdirSync(root, { recursive: true });
+	const ffmpegPath = resolveFfmpegPath({
+		envValue: process.env.OPENCUT_FFMPEG_PATH,
+		configuredRoot: path.dirname(app.getPath("exe")),
+	});
+	const manager = installExportIpc({
+		ipcMain,
+		exportsRoot: root,
+		ffmpegPath,
+		onJobEvent: forwardJobEvent,
+		openExportRenderer: ({ jobId }) => openExportRenderer(manager, jobId),
+		// The digest rides the bundle's own recipe (projectContentDigest in
+		// the contract module) so main and the producer window compare like
+		// with like — metadata (summary.updatedAt) must NOT feed the guard:
+		// reopening a project bumps it via the thumbnail save, which used to
+		// invalidate every interrupted job the moment its project was
+		// reopened to reach Resume (the D2 recovery finding).
+		getProjectMeta: ({ projectId }) =>
+			storeBridge
+				.loadRecord(projectId)
+				.then(async (stored) =>
+					stored === null
+						? null
+						: {
+								name: stored.summary.name,
+								contentDigest: await projectTimelineDigest(
+									stored.record.data,
+								),
+							},
+				)
+				.catch(() => null),
+		onJobDone: ({ jobId }) => destroyExportWindow(jobId),
+	});
+	manager.interruptAllLive();
+	return manager;
 }
 
 function createWindow() {
@@ -190,10 +320,11 @@ function createWindow() {
 
 app.whenReady().then(() => {
 	protocol.handle(SCHEME, schemeHandler);
-	installStore();
-	createWindow();
+	const storeBridge = installStore();
+	installExport(storeBridge);
+	mainWindow = createWindow();
 	app.on("activate", () => {
-		if (BrowserWindow.getAllWindows().length === 0) createWindow();
+		if (BrowserWindow.getAllWindows().length === 0) mainWindow = createWindow();
 	});
 });
 

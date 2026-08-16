@@ -1,0 +1,16 @@
+bun test v1.2.2 (c1708ea6)
+
+apps\electron-host\src\export\__tests__\job-manager.test.ts:
+(pass) happy path: 60 gradient frames + WAV → one ffmpeg encode → completed mp4 with both streams [391.00ms]
+(pass) cancel mid-render: settles cancelled, keeps the record, deletes raw/wav/partial [16.00ms]
+(pass) cancel mid-encode: the resolved cancel proves the child exited; partial and raw are gone [328.00ms]
+(pass) interrupt + resume across manager instances completes with the exact frame count [344.00ms]
+(pass) the boot scan interrupts a record left rendering at rest, and discard removes everything [16.00ms]
+(pass) a frame gap or duplicate fails the job with the named desync reason [15.00ms]
+(pass) resume truncates a garbage tail (file ahead of the record) and still completes exactly [391.00ms]
+(pass) resume over a short raw stream fails with the named reason instead of guessing [16.00ms]
+
+ 8 pass
+ 0 fail
+ 82 expect() calls
+Ran 8 tests across 1 files. [1.74s]
