@@ -1,0 +1,31 @@
+# The pinned toolchain for every cargo/rustc invocation in this repository.
+#
+# **Why a pin rather than `stable`.** `rust/wasm/pkg` is a REDISTRIBUTED artifact whose exact
+# bytes are part of a recorded contract (`script/wasm-api-surface-contract.mjs`), and the
+# compiler version is embedded in those bytes twice over:
+#
+#   * the binary's `producers` custom section carries the literal string
+#     `rustc 1.88.0 (6b00bc388 2025-06-23)`, and
+#   * three of the 58 wasm exports are rustc symbol-hash names
+#     (`wasm_bindgen__convert__closures_____invoke__h6e68ca372e8bf468`, and two siblings),
+#     whose hashes move with the compiler.
+#
+# So an unpinned toolchain does not merely risk a different artifact — it guarantees a different
+# *recorded surface* the moment the runner image's stable Rust moves. That is exactly what
+# happened to PR #2: CI never pinned rustc, ran whatever `ubuntu-latest` shipped, and
+# `check-wasm-api-surface` reported `wasm-exports: binary export set is not the exact recorded
+# set of 58` plus a changed `opencut_wasm_bg.wasm.d.ts`, while the same commit built on a 1.88.0
+# machine reproduced both exactly.
+#
+# `script/build-wasm.mjs` reads the channel below and REFUSES to build on a mismatched `rustc`,
+# so this file is enforced rather than advisory. Its companion pin — the wasm-pack version, which
+# selects the wasm-bindgen CLI and the `wasm-opt` binary — lives in `script/wasm-toolchain.mjs`
+# beside the reader, because rustup's schema has nowhere to put it.
+#
+# **Moving the pin is a deliberate operation**, not a maintenance chore: bump this channel, run
+# `bun run build:wasm`, and re-record every value `check-wasm-api-surface` reports as changed,
+# with the new toolchain named in the commit. Do not bump it to make a red CI leg go away.
+[toolchain]
+channel = "1.88.0"
+targets = ["wasm32-unknown-unknown"]
+profile = "minimal"
