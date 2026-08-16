@@ -27,7 +27,7 @@ minor release may change **exactly what the classes permit and nothing they don'
 
 ## Surface classes in this package
 
-10 export entries (measurement: this manifest's `exports` map read at `0.2.0`, the
+11 export entries (measurement: this manifest's `exports` map read at `0.3.0`, the
 `./package.json` entry excluded as mechanical):
 
 - **frozen (9)** — the domain barrel (`.`), the draft-session surface (`./draft`) with
@@ -39,9 +39,11 @@ minor release may change **exactly what the classes permit and nothing they don'
   (The 0.1.x manifest's eleventh entry, `./vectors/drivers`, was a mis-declaration — its
   target was authored in no commit — removed under LEAD ruling 2026-08-15; see the
   repo-level [`packages/README.md`](../README.md).)
-- **experimental (1)** — `./conformance/requirements`, the requirement-index legibility
-  layer over the frozen suites. Test infrastructure: it may be reorganized as the suites
-  evolve, without touching the contract it indexes.
+- **experimental (2)** — `./conformance/requirements`, the requirement-index legibility
+  layer over the frozen suites, and `./conformance/fakes`, the adapter-author
+  `ProjectStore` fixture assembly used by the copyable scaffold and the index guard.
+  This test/author infrastructure may be reorganized as the suites evolve, without
+  touching the frozen contract or suite factory shapes.
 
 ## Known constraints
 
