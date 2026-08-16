@@ -272,24 +272,35 @@ for (const gate of GATED) {
 		wiringProblems.push("no .github/workflows/bun-ci.yml to carry the gate");
 		continue;
 	}
-	// Match the `run:` command, not any mention of the path. A bare `indexOf` also matches the
-	// step's own explanatory comment, so a comment placed above `bun install` made this report the
-	// gate as running too early — a false failure the tightened form cannot produce.
+	// The question is "does an invocation of this gate run AFTER `bun install`", and it takes all
+	// three of the following to answer it. Each clause is here because a simpler form got it wrong,
+	// measured — see `rasen/changes/.../evidence/gate-form-compare.mjs`, which runs every form
+	// against nine doctored workflows.
 	//
-	// The match is deliberately EXACT (`\s*$`), which is the same rule
+	// 1. Match an invocation LINE, not any mention of the path. A bare `indexOf` also matches the
+	//    step's own explanatory comment; a comment placed above `bun install` made this report the
+	//    gate as running too early, a false failure.
+	// 2. Accept the block form (`run: |` with the command on its own line) as well as the inline
+	//    `run:` and `- run:` forms. An exact-only `run:` regex reports a perfectly valid block-form
+	//    step as missing — this workflow already uses block form for the rustup step.
+	// 3. Look at EVERY invocation, not the first. With one extra early invocation (a `|| true`
+	//    smoke, say) plus the real step after the install, "first match" answers about the wrong
+	//    one. The requirement is existence after the install, so ask exactly that.
+	//
+	// The match stays EXACT in its arguments (`[ \t]*$`), which is the rule
 	// `check-wasm-api-surface.mjs`'s `workflowCommandPosition` already applies to its own gate:
-	// `run: node <gate> --some-flag` is reported as unregistered rather than accepted. Fail-closed
-	// on an unrecognised invocation is the right direction for a registration check, and the two
-	// wasm gate-wiring checks now agree on what registration looks like.
-	//
-	// Measured against the old form (.work/probes/gate-form-compare.mjs): of gutting the step,
-	// gutting it and scrubbing every mention, moving it before `bun install`, and adding a flag,
-	// the new form catches 4/4 and the old form 3/4. There is no edit the old form catches and the
-	// new one does not.
-	const gateAt = workflow.search(new RegExp(`run:\\s*node ${gate.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*$`, "m"));
-	if (gateAt === -1) wiringProblems.push(`bun-ci.yml has no step running ${gate}`);
+	// `node <gate> --some-flag` is reported as unregistered rather than accepted. Fail-closed on an
+	// unrecognised invocation is the right direction for a registration check, and the two wasm
+	// gate-wiring checks now agree on what registration looks like.
+	const escapedGate = gate.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const invocations = [
+		...workflow.matchAll(new RegExp(`^[ \\t]*(?:- )?(?:run:[ \\t]*)?node ${escapedGate}[ \\t]*$`, "gm")),
+	].map((match) => match.index);
+	if (invocations.length === 0) wiringProblems.push(`bun-ci.yml has no step running ${gate}`);
 	else if (installAt === -1) wiringProblems.push("bun-ci.yml no longer runs `bun install`");
-	else if (gateAt < installAt) wiringProblems.push(`bun-ci.yml runs ${gate} BEFORE \`bun install\`, so it checks an uninstalled tree`);
+	else if (!invocations.some((at) => at > installAt)) {
+		wiringProblems.push(`bun-ci.yml runs ${gate} only BEFORE \`bun install\`, so it checks an uninstalled tree`);
+	}
 }
 
 console.log(`  ${wiringProblems.length === 0 ? "PASS" : "FAIL"}  all ${GATED.length} wasm gates are wired (npm script + CI step after \`bun install\`)`);

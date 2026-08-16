@@ -1,0 +1,17 @@
+require.resolve (the CJS path check-wasm-source.mjs uses):
+  PASS  opencut-wasm                       -> opencut-wasm\opencut_wasm.js
+  PASS  opencut-wasm/sync                  -> opencut-wasm\opencut_wasm_sync.js
+  PASS  opencut-wasm/opencut_wasm.js       -> opencut-wasm\opencut_wasm.js
+  PASS  opencut-wasm/opencut_wasm_bg.js    -> opencut-wasm\opencut_wasm_bg.js
+  PASS  opencut-wasm/opencut_wasm_bg.wasm  -> opencut-wasm\opencut_wasm_bg.wasm
+  PASS  opencut-wasm/opencut_wasm.d.ts     -> opencut-wasm\opencut_wasm.d.ts
+  PASS  opencut-wasm/package.json          -> opencut-wasm\package.json
+
+import.meta.resolve (the ESM path consumers use):
+  PASS  opencut-wasm                       -> opencut-wasm/opencut_wasm.js
+  PASS  opencut-wasm/sync                  -> opencut-wasm/opencut_wasm_sync.js
+  PASS  opencut-wasm/opencut_wasm.js       -> opencut-wasm/opencut_wasm.js
+  PASS  opencut-wasm/opencut_wasm_bg.wasm  -> opencut-wasm/opencut_wasm_bg.wasm
+
+clean — 11 specifier(s) checked, 0 unresolvable
+REAL_EXIT_CODE:0

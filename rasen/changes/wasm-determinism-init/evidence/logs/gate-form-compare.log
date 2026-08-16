@@ -1,6 +1,39 @@
-unmodified workflow (both must PASS)             old=PASSES  new=PASSES
-step gutted, comment still names the gate        old=catches  new=catches
-step gutted and every mention removed            old=catches  new=catches
-gate invoked with an extra flag                  old=PASSES  new=catches
-gate moved before `bun install`                  old=catches  new=catches
+0 baseline (unchanged)   [correct answer: pass]
+   OLD     :   ok   pass
+   FIRST   :   ok   pass
+   SHIPPED :   ok   pass
+1 step deleted, a comment still names the gate   [correct answer: catches]
+   OLD     : WRONG  pass
+   FIRST   :   ok   catches(no step running it)
+   SHIPPED :   ok   catches(no step running it)
+2 step deleted and every mention scrubbed   [correct answer: catches]
+   OLD     :   ok   catches(no step running it)
+   FIRST   :   ok   catches(no step running it)
+   SHIPPED :   ok   catches(no step running it)
+3 a flag appended to the only invocation   [correct answer: catches]
+   OLD     : WRONG  pass
+   FIRST   :   ok   catches(no step running it)
+   SHIPPED :   ok   catches(no step running it)
+4 the only invocation moved before `bun install`   [correct answer: catches]
+   OLD     :   ok   catches(runs before bun install)
+   FIRST   :   ok   catches(runs before bun install)
+   SHIPPED :   ok   catches(runs before bun install)
+5 EXTRA early invocation with a flag; exact step still after install   [correct answer: pass]
+   OLD     : WRONG  catches(runs before bun install)
+   FIRST   :   ok   pass
+   SHIPPED :   ok   pass
+6 EXTRA early invocation soft-failed; exact step still after install   [correct answer: pass]
+   OLD     : WRONG  catches(runs before bun install)
+   FIRST   :   ok   pass
+   SHIPPED :   ok   pass
+7 real step moved early WITH a flag, exact-form step appended at EOF   [correct answer: pass]
+   OLD     : WRONG  catches(runs before bun install)
+   FIRST   :   ok   pass
+   SHIPPED :   ok   pass
+8 invocation moved into a `run: |` block after install   [correct answer: pass]
+   OLD     :   ok   pass
+   FIRST   : WRONG  catches(no step running it)
+   SHIPPED :   ok   pass
+
+wrong answers over 9 cases — OLD: 5, FIRST(this change's first attempt): 1, SHIPPED: 0
 REAL_EXIT_CODE:0
