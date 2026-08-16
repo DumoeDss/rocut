@@ -122,7 +122,11 @@ Evidence: `rasen/changes/wasm-determinism-init/evidence/`.
       **falsified my "no edit the old catches and the new doesn't" claim**. Both fixed, both
       recorded in `evidence/regression.md` §7b rather than smoothed over.
 - [x] 6.3 Pushed; **PR #3** open against `DumoeDss/rocut` `main`.
-- [ ] 6.4 CI green on the 3-OS matrix — this change's only cross-platform evidence, stated as such.
+- [x] 6.4 **CI green on the 3-OS matrix** — run `31942106922`, all four jobs `success`
+      (`build (ubuntu-latest)`, `build (macos-latest)`, `build (windows-latest)`, `sdk-examples`).
+      macOS and Windows had been fail-fast-cancelled in rounds 1–4, so round 5 is the first
+      completion for both. This is the change's only cross-platform evidence, and it is CI's,
+      not a local claim.
       Round history, each fix evidence-first:
       - **round 1** — `check-wasm-paths` (ubuntu): literal adjacency false positive. A class local
         Windows runs **cannot** reproduce (`/cargo\` 286, `/cargo/` 0). Fixed + 2 new controls.
@@ -131,6 +135,9 @@ Evidence: `rasen/changes/wasm-determinism-init/evidence/`.
         drift. The gate could not say which export moved, so round 3 shipped the diff first.
       - **round 3** — diff printed: 3 in / 3 out, all closure trampolines, 55 others identical.
         Re-scope written only after reading it.
-      - **round 4** — `build (ubuntu-latest)` **success**: first clean Linux pass of all four wasm
-        gates. macOS and Windows pending (fail-fast cancelled them in rounds 1–3, so both are still
-        first-run).
+      - **round 4** — ubuntu + `sdk-examples` green; **windows** failed on `LICENSE`/`README`,
+        the two files just re-recorded. Its runner checks out with `core.autocrlf` ON, mine OFF —
+        so the earlier "generated-by-copy, therefore platform-independent" conclusion was wrong.
+        They are the only two files wasm-pack *copies*; pinned on content now, with the runner's
+        exact hashes committed as the `crlf-checkout` positive control.
+      - **round 5** — **all four jobs green.**

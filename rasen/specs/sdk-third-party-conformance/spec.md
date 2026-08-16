@@ -134,15 +134,21 @@ Its results SHALL be captured as committed evidence with self-logged exit codes.
 
 - **WHEN** the harness runs the worked adapter inside the scratch project against the installed
   tarballs
-- **THEN** the ports conformance suite passes on the portable profile, its migration leg
-  evidenced as a two-mode pair: in the repository, the migration walker is validated against
-  the real 31-step chain through the published `./evidence/wasm-test-mock` entry and the
-  wasm-init finding is recorded distinctly; from the installed tarballs, the suite passes with
-  the migration leg absent — the skip recorded and named in the run's own output
+- **THEN** the ports conformance suite passes on the portable profile with its migration leg
+  **exercised** — the published migration chain loads from the installed tarballs with no test
+  mock in the process, and the run's own output names the chain's step count and target version
 - **AND** the transaction, engine, draft and vector suites pass over the adapter's own store,
   target and target factory
 - **AND** the provider-private opaque payload round-trips through the adapter's differently-shaped
   store unchanged
+
+#### Scenario: A chain that cannot load is skipped distinctly, never silently
+
+- **WHEN** the migration chain fails to load for any reason
+- **THEN** the run records the observed failure with its reason and marks the migration leg as
+  skipped by name
+- **AND** the remaining surfaces still run, so one unavailable leg does not disguise itself as a
+  pass and does not suppress the rest
 
 #### Scenario: The adapter is third-party-shaped
 
