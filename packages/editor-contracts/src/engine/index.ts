@@ -4,6 +4,8 @@ export {
 	assertEncodedTransactionDocument,
 } from "./adapter";
 export { canonicalOperationFingerprint, cloneTransactionValue } from "./clone";
+export { bindNativeCommittedTransactionStateCapture } from "./committed-capture";
+export type { NativeCommittedTransactionStateCapture } from "./committed-capture";
 export type { OpenTransactionEngineOptions } from "./engine";
 export { openTransactionEngine } from "./engine";
 export { evaluateTransactionBatch } from "./evaluator";

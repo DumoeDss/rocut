@@ -1,0 +1,22 @@
+{
+	"name": "@opencut/editor-automation",
+	"version": "0.1.0",
+	"private": true,
+	"description": "The agent-facing automation integration layer: one injected-ports composition of the engine and Draft orchestration behind the four frozen transaction interfaces. Pure core — hosts inject store, clock and ids. No React, no DOM.",
+	"dependencies": {
+		"@opencut/editor-contracts": "workspace:*",
+		"@opencut/editor-ports": "workspace:*"
+	},
+	"files": [
+		"dist",
+		"src",
+		"surface.json",
+		"README.md",
+		"LICENSE",
+		"NOTICE"
+	],
+	"exports": {
+		".": "./src/index.ts",
+		"./package.json": "./package.json"
+	}
+}

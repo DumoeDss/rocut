@@ -163,6 +163,14 @@
         "wrangler": "^4.77.0",
       },
     },
+    "packages/editor-automation": {
+      "name": "@opencut/editor-automation",
+      "version": "0.1.0",
+      "dependencies": {
+        "@opencut/editor-contracts": "workspace:*",
+        "@opencut/editor-ports": "workspace:*",
+      },
+    },
     "packages/editor-classic": {
       "name": "@opencut/editor-classic",
       "version": "0.2.0",
@@ -205,7 +213,7 @@
     },
     "packages/editor-contracts": {
       "name": "@opencut/editor-contracts",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "dependencies": {
         "@opencut/editor-ports": "workspace:*",
       },
@@ -662,6 +670,8 @@
     "@nodelib/fs.stat": ["@nodelib/fs.stat@2.0.5", "", {}, "sha512-RkhPPp2zrqDAQA/2jNhnztcPAlv64XdhIp7a7454A5ovI7Bukxgt7MX7udwAu3zg1DcpPU0rz3VV1SeaqvY4+A=="],
 
     "@nodelib/fs.walk": ["@nodelib/fs.walk@1.2.8", "", { "dependencies": { "@nodelib/fs.scandir": "2.1.5", "fastq": "^1.6.0" } }, "sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg=="],
+
+    "@opencut/editor-automation": ["@opencut/editor-automation@workspace:packages/editor-automation"],
 
     "@opencut/editor-classic": ["@opencut/editor-classic@workspace:packages/editor-classic"],
 
