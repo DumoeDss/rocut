@@ -176,6 +176,21 @@ map rests on are measured rather than asserted (`evidence/exports-map-resolution
   neither would throw `ERR_PACKAGE_PATH_NOT_EXPORTED` and break the source gate.
 - `opencut-wasm/sync` resolves to `opencut_wasm_sync.js` under both resolvers.
 
+That check is one-sided — it shows what resolves *today*, not what the map *changed*. The A/B is
+`evidence/exports-map-seal-control.mjs` (`logs/exports-map-seal-control.log`): two synthetic
+packages built from the real emitted manifest, identical except one has the `exports` map deleted,
+probed over 9 specifiers under both resolvers. **9 resolved before the map existed, 0 sealed by
+adding it**, and `/sync` moves `MODULE_NOT_FOUND -> ok` — the map only ever adds a path. The
+specifier list deliberately includes `snippets/helper.js`, because the manifest's `sideEffects`
+names `./snippets/*` and sealing it would be invisible until a bundler mis-treed a real build.
+
+The first version of that control was **vacuous and was fixed rather than reported**: it called
+`import.meta.resolve(id, parentURL)` from the evidence directory, and since that second argument is
+not honoured, every ESM row read `ERR_MODULE_NOT_FOUND` for *both* halves — a 0-population
+comparison dressed as a pass. The ESM leg now runs from a module inside the scratch tree, and the
+script refuses (exit 2) if nothing resolves in the no-exports half, so the same vacuity cannot
+return silently.
+
 ## 7b. The one assertion this change rewrote — and the review round that corrected the rewrite
 
 `check-wasm-source.mjs` located a CI gate with `workflow.indexOf(gate)`. This change rewrote it,
