@@ -1,0 +1,55 @@
+REAL_EXIT_CODE[d2-generate-progress]:0
+PASS  seed/d2-generate-progress — generator exit 0, project 49c992fb-e3b6-434a-9e93-89961aa582e8, timeline 1054080 ticks
+FAIL  progress/three-increasing-render-samples — neither source yielded 3 samples (DOM 0, record 0)
+FAIL  progress/render-monotonic — record accepted counts strictly increasing across every recorded transition
+FAIL  progress/encoding-sample-present — DOM encoding samples 0; record encoding transitions 0
+PASS  progress/encoding-monotonic — encoding progress series [] non-decreasing
+FAIL  progress/completed — record phase failed error: "project-updated-mid-job: started at 2026-08-16T16:57:59.748Z, producer sees 2026-08-16T16:58:07.489Z"; DOM settled "Export failed"
+FAIL  progress/final-total-matches — record frames 0/? vs expected 263
+PASS  progress/no-console-errors — 0 console errors captured
+FAIL  progress/output-exists — D2-800-8c66d92e.mp4
+app closed (progress-done)
+REAL_EXIT_CODE[d2-sweep-tasklist-electron]:0
+REAL_EXIT_CODE[d2-sweep-tasklist-ffmpeg]:0
+REAL_EXIT_CODE[d2-sweep-cim]:0
+PASS  sweep/no-strays — none found — nothing to kill
+PASS  sweep/no-ffmpeg-anywhere — tasklist ffmpeg.exe count 0 (whole machine; any nonzero row would be named before action)
+evidence written: E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-export\rasen\changes\sdk-export-capability\evidence\d2-lifecycle-proofs.md (append=false)
+D2 LIFECYCLE PROOF FAILED (6 gate(s))
+scratch kept for diagnosis: E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-export-scratch\e2e-d2-2026-08-16T16-57-54-072Z
+REAL_EXIT_CODE[d2-v2-phase-progress-attempt3]:1
+REAL_EXIT_CODE[d2-generate-progress]:0
+PASS  seed/d2-generate-progress — generator exit 0, project 49c992fb-e3b6-434a-9e93-89961aa582e8, timeline 1054080 ticks
+open-save-settled: stable=true waited=15.0s sawThumbnailSaveBump=true finalUpdatedAt=2026-08-16T17:22:32.198Z
+REAL_EXIT_CODE[d2-v2-phase-progress-attempt4]:1
+REAL_EXIT_CODE[d2-generate-cancel]:0
+PASS  seed/d2-generate-cancel — generator exit 0, project 345088e3-8daf-4385-ba80-a131223e5af6, timeline 971520 ticks
+REAL_EXIT_CODE[d2-cancel-tasklist-before]:0
+open-save-settled: stable=true waited=15.1s sawThumbnailSaveBump=true finalUpdatedAt=2026-08-16T18:04:47.647Z
+D2 LIFECYCLE PROOF FAILED: ReferenceError: pollProgressDual is not defined
+    at phaseCancel (file:///E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut-wt-export/apps/electron-host/scripts/export-lifecycle-proof.mjs:688:19)
+    at async runPhase (file:///E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut-wt-export/apps/electron-host/scripts/export-lifecycle-proof.mjs:1201:30)
+    at async main (file:///E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut-wt-export/apps/electron-host/scripts/export-lifecycle-proof.mjs:1233:2)
+app closed (abort)
+scratch kept for diagnosis: E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-export-scratch\e2e-d2-2026-08-16T18-04-36-550Z
+REAL_EXIT_CODE[d2-v2-cancel-100]:1
+REAL_EXIT_CODE[d2-generate-cancel]:0
+PASS  seed/d2-generate-cancel — generator exit 0, project 345088e3-8daf-4385-ba80-a131223e5af6, timeline 971520 ticks
+REAL_EXIT_CODE[d2-cancel-tasklist-before]:0
+open-save-settled: stable=true waited=15.1s sawThumbnailSaveBump=true finalUpdatedAt=2026-08-16T18:16:21.578Z
+PASS  cancel/settled-within-15s — record phase cancelled; panel "Export cancelled" after 18ms
+REAL_EXIT_CODE[d2-cancel-tasklist-after]:0
+PASS  cancel/no-ffmpeg-left — tasklist ffmpeg.exe: 0 before start, 0 after settle (cancel fired mid-render, before any encoder spawn)
+PASS  cancel/only-record-kept — jobs dir ["41a8ea3a-1025-41ee-9d25-087fb4408ac4.json"]; exports root files []
+PASS  cancel/record-kept-cancelled — record phase cancelled, acceptedFrames 3
+PASS  cancel/re-cancel-idempotent — affordance withdrawn before a second click was possible; record cancelled, error null
+app closed (cancel-done)
+REAL_EXIT_CODE[d2-sweep-tasklist-electron]:0
+REAL_EXIT_CODE[d2-sweep-tasklist-ffmpeg]:0
+REAL_EXIT_CODE[d2-sweep-cim]:0
+PASS  sweep/no-strays — none found — nothing to kill
+PASS  sweep/no-ffmpeg-anywhere — tasklist ffmpeg.exe count 0 (whole machine; any nonzero row would be named before action)
+evidence written: E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-export\rasen\changes\sdk-export-capability\evidence\d2-lifecycle-proofs.md (append=true)
+scratch run dir deleted: E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-export-scratch\e2e-d2-2026-08-16T18-16-08-896Z
+D2 LIFECYCLE PROOF PASSED
+REAL_EXIT_CODE[d2-v2-cancel-100-retry]:0

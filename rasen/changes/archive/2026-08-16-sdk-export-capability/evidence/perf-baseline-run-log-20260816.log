@@ -1,0 +1,115 @@
+export-perf-baseline: runs=2 out=E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-export\rasen\changes\sdk-export-capability\evidence\perf-baseline-20260816.md keep=false
+--- run 1 of 2 ---
+PASS  list() == 1 record with id fc379315-3d76-4274-b52d-1673a7a17264
+PASS  load() returned the record
+PASS  schemaVersion 31 === store.schemaVersion 31 (CURRENT_PROJECT_VERSION 31)
+PASS  payload.version === 31
+PASS  one main scene, currentSceneId matches
+PASS  overlay tracks 16 = 8 text + 8 graphic
+PASS  main video track present and empty
+PASS  no audio tracks
+PASS  element count 2000 === clips 2000
+PASS  kind split text 1000 + graphic 1000 === 2000
+PASS  kind split matches formula (text 1000, graphic 1000)
+PASS  element 0: text, startTime 0, duration 960000
+PASS  metadata.duration 1198080 === 1198080 ticks (9.984s)
+PASS  every element matches the layout formula (startTime/duration/trimStart/trimEnd; 0 mismatches)
+PASS  exact-shape equality: reloaded payload === generated payload (full ELEMENT_KEYS/TRACK_KEYS shape, key order, undefined keys included)
+PASS  reloaded payload is a node:v8 serialization fixed point (byte-stable across another round trip; 1368090 bytes)
+PASS  durable file written by the store's own bridge: E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut-export-scratch/perf-baseline-2026-08-16T15-24--run1/store/projects/fc379315-3d76-4274-b52d-1673a7a17264/record.json
+PASS  on-disk record.json envelope is the store's own (kind=opencut-project-record schemaVersion=31 payloadBytes=1824120)
+--- METHOD ---
+command inputs: --root E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-export-scratch\perf-baseline-2026-08-16T15-24--run1\store --clips 2000 --name "Perf 2000 Dense" --layout dense --width 1280 --height 720 (defaults: clips 2000, name "Perf 2000", layout staggered, 1920x1080)
+store classes: FilesystemProjectStore over NodeFsStoreBridge (../src/store/*), identity DEFAULT_FILESYSTEM_STORE_IDENTITY, schemaVersion read off the store instance (31); record built in the encodeProject durable shape (dates ISO strings, ELEMENT_KEYS/TRACK_KEYS with undefined for absent fields)
+determinism: mulberry32(seed=clips), no Math.random; element ids `clip-<i zero-padded 6>`; project/scene/track ids uuidFromRng drawn in order: project, scene, main track, 16 overlay tracks; dates = Date.UTC(2026,0,1) + rng()*86400000 (updated = created + rng()*3600000; scene drawn separately)
+project: one main scene "Main scene"; settings: fps 30/1, canvas 1280x720 (overridden, canvasSizeMode "custom"), background {color #000000}; version 31
+tracks: main video track "Main Track" EMPTY (no media pipeline), 0 audio tracks; overlay = 8 text tracks ("Text 1".."Text 8") + 8 graphic tracks ("Graphic 1".."Graphic 8")
+elements: 2000 total = 1000 text + 1000 graphic
+layout formula (dense): element i (0-based) -> overlay track (i % 16), slot floor(i / 16); startTime = slot * 1920 ticks (all of a track's elements start within its first 2s), duration 960000 (8s), trimStart 0, trimEnd 0 — every element composites in every frame (TICKS_PER_SECOND = 120000)
+text element (i % 16 < 8): name/content "Clip <i>", fontFamily Arial, fontSize 15+(i%5)*10, color PALETTE[i%6] (#ff5252 #4dff88 #4d9fff #ffd24d #c14dff #ffffff), full DEFAULTS.text.param set (background.*, letterSpacing 0, lineHeight 1.2)
+graphic element (i % 16 >= 8): definitionId "rectangle" (builtin registry), fill PALETTE[(i+3)%6], stroke #000000, strokeWidth i%3, strokeAlign "center", cornerRadius (i%4)*10, scale 0.5+((i*7)%10)/10
+motion (both kinds): transform.positionX (i*97)%1600-800, transform.positionY (i*131)%800-400, transform.rotate ((i*13)%360)-180, opacity 1, blendMode "normal" — frames differ over time by construction
+totals: timeline = 1198080 ticks (9.984s); elements per track = 125 or 125 (last track takes remainder)
+rng draws consumed: 308
+project id: fc379315-3d76-4274-b52d-1673a7a17264
+--- /METHOD ---
+--- STORE FILE LISTING ---
+E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-export-scratch\perf-baseline-2026-08-16T15-24--run1\store/
+  projects/
+    fc379315-3d76-4274-b52d-1673a7a17264/
+      record.json
+--- /STORE FILE LISTING ---
+PROJECT id: fc379315-3d76-4274-b52d-1673a7a17264
+PROJECT name: Perf 2000 Dense
+HINT: open the host at ?project=fc379315-3d76-4274-b52d-1673a7a17264
+GENERATE CLIP PROJECT PASSED
+REAL_EXIT_CODE:0
+REAL_EXIT_CODE[generate-run1]:0
+[run1] cold open total 9562 ms (elements 2000)
+REAL_EXIT_CODE[interaction-zoom-run1]:0
+REAL_EXIT_CODE[interaction-select-run1]:0
+REAL_EXIT_CODE[interaction-panel-run1]:0
+REAL_EXIT_CODE[playback-run1]:0
+REAL_EXIT_CODE[export-run1]:0
+REAL_EXIT_CODE[cleanup-run1]:0
+REAL_EXIT_CODE[run1]:0
+artifact written: E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-export\rasen\changes\sdk-export-capability\evidence\perf-baseline-20260816.md (14951 chars)
+--- run 2 of 2 ---
+PASS  list() == 1 record with id fc379315-3d76-4274-b52d-1673a7a17264
+PASS  load() returned the record
+PASS  schemaVersion 31 === store.schemaVersion 31 (CURRENT_PROJECT_VERSION 31)
+PASS  payload.version === 31
+PASS  one main scene, currentSceneId matches
+PASS  overlay tracks 16 = 8 text + 8 graphic
+PASS  main video track present and empty
+PASS  no audio tracks
+PASS  element count 2000 === clips 2000
+PASS  kind split text 1000 + graphic 1000 === 2000
+PASS  kind split matches formula (text 1000, graphic 1000)
+PASS  element 0: text, startTime 0, duration 960000
+PASS  metadata.duration 1198080 === 1198080 ticks (9.984s)
+PASS  every element matches the layout formula (startTime/duration/trimStart/trimEnd; 0 mismatches)
+PASS  exact-shape equality: reloaded payload === generated payload (full ELEMENT_KEYS/TRACK_KEYS shape, key order, undefined keys included)
+PASS  reloaded payload is a node:v8 serialization fixed point (byte-stable across another round trip; 1368090 bytes)
+PASS  durable file written by the store's own bridge: E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut-export-scratch/perf-baseline-2026-08-16T15-40--run2/store/projects/fc379315-3d76-4274-b52d-1673a7a17264/record.json
+PASS  on-disk record.json envelope is the store's own (kind=opencut-project-record schemaVersion=31 payloadBytes=1824120)
+--- METHOD ---
+command inputs: --root E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-export-scratch\perf-baseline-2026-08-16T15-40--run2\store --clips 2000 --name "Perf 2000 Dense" --layout dense --width 1280 --height 720 (defaults: clips 2000, name "Perf 2000", layout staggered, 1920x1080)
+store classes: FilesystemProjectStore over NodeFsStoreBridge (../src/store/*), identity DEFAULT_FILESYSTEM_STORE_IDENTITY, schemaVersion read off the store instance (31); record built in the encodeProject durable shape (dates ISO strings, ELEMENT_KEYS/TRACK_KEYS with undefined for absent fields)
+determinism: mulberry32(seed=clips), no Math.random; element ids `clip-<i zero-padded 6>`; project/scene/track ids uuidFromRng drawn in order: project, scene, main track, 16 overlay tracks; dates = Date.UTC(2026,0,1) + rng()*86400000 (updated = created + rng()*3600000; scene drawn separately)
+project: one main scene "Main scene"; settings: fps 30/1, canvas 1280x720 (overridden, canvasSizeMode "custom"), background {color #000000}; version 31
+tracks: main video track "Main Track" EMPTY (no media pipeline), 0 audio tracks; overlay = 8 text tracks ("Text 1".."Text 8") + 8 graphic tracks ("Graphic 1".."Graphic 8")
+elements: 2000 total = 1000 text + 1000 graphic
+layout formula (dense): element i (0-based) -> overlay track (i % 16), slot floor(i / 16); startTime = slot * 1920 ticks (all of a track's elements start within its first 2s), duration 960000 (8s), trimStart 0, trimEnd 0 — every element composites in every frame (TICKS_PER_SECOND = 120000)
+text element (i % 16 < 8): name/content "Clip <i>", fontFamily Arial, fontSize 15+(i%5)*10, color PALETTE[i%6] (#ff5252 #4dff88 #4d9fff #ffd24d #c14dff #ffffff), full DEFAULTS.text.param set (background.*, letterSpacing 0, lineHeight 1.2)
+graphic element (i % 16 >= 8): definitionId "rectangle" (builtin registry), fill PALETTE[(i+3)%6], stroke #000000, strokeWidth i%3, strokeAlign "center", cornerRadius (i%4)*10, scale 0.5+((i*7)%10)/10
+motion (both kinds): transform.positionX (i*97)%1600-800, transform.positionY (i*131)%800-400, transform.rotate ((i*13)%360)-180, opacity 1, blendMode "normal" — frames differ over time by construction
+totals: timeline = 1198080 ticks (9.984s); elements per track = 125 or 125 (last track takes remainder)
+rng draws consumed: 308
+project id: fc379315-3d76-4274-b52d-1673a7a17264
+--- /METHOD ---
+--- STORE FILE LISTING ---
+E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-export-scratch\perf-baseline-2026-08-16T15-40--run2\store/
+  projects/
+    fc379315-3d76-4274-b52d-1673a7a17264/
+      record.json
+--- /STORE FILE LISTING ---
+PROJECT id: fc379315-3d76-4274-b52d-1673a7a17264
+PROJECT name: Perf 2000 Dense
+HINT: open the host at ?project=fc379315-3d76-4274-b52d-1673a7a17264
+GENERATE CLIP PROJECT PASSED
+REAL_EXIT_CODE:0
+REAL_EXIT_CODE[generate-run2]:0
+[run2] cold open total 11.85 s (elements 2000)
+REAL_EXIT_CODE[interaction-zoom-run2]:0
+REAL_EXIT_CODE[interaction-select-run2]:0
+REAL_EXIT_CODE[interaction-panel-run2]:0
+REAL_EXIT_CODE[playback-run2]:0
+REAL_EXIT_CODE[export-run2]:0
+REAL_EXIT_CODE[cleanup-run2]:0
+REAL_EXIT_CODE[run2]:0
+artifact written: E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-export\rasen\changes\sdk-export-capability\evidence\perf-baseline-20260816.md (25469 chars)
+artifact written: E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-export\rasen\changes\sdk-export-capability\evidence\perf-baseline-20260816.md (25469 chars)
+SUMMARY [{"run":1,"coldOpenMs":9561.6524,"zoomMs":597.6000000238419,"selectMs":null,"panelMs":1,"fps":null,"renderMs":null,"encodeMs":null,"totalExportMs":null,"rawPeakBytes":232243200,"outputBytes":null,"exportOutcome":"no terminal event within budget (last status: \"Rendering frames…\" after 900.11 s)","failure":null},{"run":2,"coldOpenMs":11849.272400000016,"zoomMs":829.3999999761581,"selectMs":null,"panelMs":1.1999999284744263,"fps":0.3368591255137101,"renderMs":null,"encodeMs":null,"totalExportMs":null,"rawPeakBytes":66355200,"outputBytes":null,"exportOutcome":"app died during export (page gone, no output produced)","failure":null}]
+REAL_EXIT_CODE[harness]:0
+PIPE_EXIT:0

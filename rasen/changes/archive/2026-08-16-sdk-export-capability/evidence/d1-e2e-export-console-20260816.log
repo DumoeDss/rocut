@@ -1,0 +1,29 @@
+PASS  seed/visual-clip — image element on a visual track: {"name":"fixture-image.png","kind":"visual-main","trackName":"Main Track","startTime":0,"duration":600000}
+PASS  seed/audio-clip — audio element on an audio track: {"name":"fixture-tone-a4.wav","kind":"audio","trackName":"Audio track","startTime":0,"duration":240000}
+REAL_EXIT_CODE[d1-ffmpeg-parent@5s]:0
+PASS  export/render-phase-observed — at least one rendering-phase sample
+PASS  export/encode-phase-observed — at least one encoding-phase sample
+PASS  export/completed — settled view: "Export complete."
+PASS  export/duration-matches — render 3.83s, encode 4.96s vs timeline 5s
+PASS  export/output-descriptor-reported — panel name + bridge descriptor file:Untitled-Project-9c8858cf.mp4 bytes 43036
+PASS  export/descriptor-opaque — no drive letter / backslash / second colon in "file:Untitled-Project-9c8858cf.mp4"
+PASS  export/producer-window-closed — windows after settle: 1 (was 1 before, 2 during)
+PASS  export/no-console-errors
+PASS  verify/output-exists — Untitled-Project-9c8858cf.mp4 under the exports root
+REAL_EXIT_CODE[d1-ffprobe-streams]:0
+PASS  verify/ffprobe-ran — exit 0
+PASS  verify/one-video-one-audio — video 1 (h264), audio 1 (aac)
+PASS  verify/codecs-h264-aac-mp4 — container mov,mp4,m4a,3gp,3g2,mj2
+PASS  verify/duration-matches-timeline — ffprobe 5s vs expected 5s (tolerance 0.3)
+REAL_EXIT_CODE[d1-ffprobe-count-packets]:0
+PASS  verify/decodable-packets-both-streams — nb_read_packets video 150, audio 217
+PASS  verify/transients-cleaned — jobs dir: ["9c8858cf-001c-47d1-ac78-a3b9cae23939.json"]; exports root files: ["Untitled-Project-9c8858cf.mp4"]
+PASS  verify/record-kept — record 9c8858cf-001c-47d1-ac78-a3b9cae23939.json kept as history
+PASS  verify/record-completed — record phase completed, outputName Untitled-Project-9c8858cf.mp4
+PASS  negative/canExport-false — probe verdict {"ffmpegAvailable":false}
+PASS  negative/panel-reports-unsupported — status: "Export unavailable: no FFmpeg binary was found (ffmpeg-missing). Set OPENCUT_FFMPEG_PATH, place ffmpeg(.exe) under the app's bin/, or install it on PATH."
+PASS  negative/no-start-affordance — the unsupported view renders no start button
+REAL_EXIT_CODE[d1-negative-tasklist]:0
+evidence written: E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-wt-export\rasen\changes\sdk-export-capability\evidence\d1-e2e-export.md
+scratch run dir deleted: E:\AI\ChatAI\Agents\VibeCodingProjects\elftia\_others\rocut-export-scratch\e2e-d1-2026-08-16T14-36-12-395Z
+D1 E2E PROOF PASSED
