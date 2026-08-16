@@ -1603,6 +1603,43 @@ including `opencut_wasm_bg.wasm` (3,285,863 B, `7234c951...`) across a fresh-tar
 It is **not** in `check:wasm` and **not** in `check-wasm-source.mjs`'s `GATED` list: that list means
 "runs in CI", and a multi-minute recompile does not. It is a local gate, named as one.
 
+### The one re-scope, and what still holds
+
+CI rounds 2 and 3 established something the pins cannot fix: with **both pins confirmed applied**
+— `rustc 1.88.0 (6b00bc388)`, the same commit hash as the recording machine, and
+`wasm-pack v0.13.1` — the binary export set still differs between build hosts. The gate was made to
+print the difference before anything was decided (run `31940776057`):
+
+```
+observed 58, recorded 58
+  + wasm_bindgen__convert__closures_____invoke__h276a4a183af50bac|function
+  + wasm_bindgen__convert__closures_____invoke__h3a4584f6e44c7108|function
+  + wasm_bindgen__convert__closures_____invoke__hc1daa042eeabb391|function
+  - wasm_bindgen__convert__closures_____invoke__h6e68ca372e8bf468|function
+  - wasm_bindgen__convert__closures_____invoke__h755062247edbbf0a|function
+  - wasm_bindgen__convert__closures_____invoke__hf7fc07325ff431aa|function
+```
+
+Exactly 3 in, 3 out, total unchanged, **all 55 other exports identical**. These are wasm-bindgen's
+closure trampolines; rustc's legacy mangling ends each with a 16-hex symbol hash derived from
+cargo's `-Cmetadata`, whose inputs include the host triple. `UPSTREAM.md` § WASM rebuild
+correspondence had already measured the same three names varying across rustc versions and
+concluded "stripping the hash makes the two sets identical" — this applies that finding to the gate.
+
+So the contract now pins the **55 stably-named exports as an exact set**, and matches the 3
+trampolines by shape with the count pinned at exactly 3. The low-level `.d.ts` is compared the same
+way: trampoline hashes normalised, every other line verbatim, line count pinned at 60.
+
+**This is the only place the contract is not byte-exact, and it is bounded by controls rather than
+by argument** — 25 negative controls (up from 14), including four written specifically for this
+re-scope: a 4th trampoline, a missing trampoline, a stable export renamed *into* the tolerated
+shape, and an edited non-trampoline declaration line. All four fail the gate.
+
+It also gains the family's **first positive control**: `trampoline-hash-swap` substitutes the exact
+Linux hashes above and asserts the gate exits **0**. A re-scope that only proves "these still fail"
+never demonstrates that what it deliberately permits is permitted, leaving the next reader unable
+to tell an intended tolerance from a hole nobody noticed.
+
 ### What is NOT claimed
 
 - **No cross-platform byte-identity claim.** The binary's bytes are pinned only negatively (they

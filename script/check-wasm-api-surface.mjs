@@ -11,7 +11,9 @@ import {
 	BUNDLER_ENTRY,
 	CONTROLS,
 	EXPECTED,
+	POSITIVE_CONTROLS,
 	SYNC_ENTRY,
+	TRAMPOLINE_EXPORT,
 } from "./wasm-api-surface-contract.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -26,6 +28,33 @@ const signature = (entries) => sha([...entries].sort().join("\n"));
 /** The `export { … } from "./opencut_wasm_bg.js"` block both entries carry, verbatim. */
 const exportBlock = (source) =>
 	source.match(/export \{([\s\S]*?)\} from/)?.[1] ?? null;
+
+/** Everything except the compiler-generated trampolines — see TRAMPOLINE_EXPORT. */
+const stableExports = (entries) =>
+	entries.filter((entry) => !TRAMPOLINE_EXPORT.test(entry.split("|")[0]));
+
+/**
+ * The low-level declarations with trampoline hashes replaced by a placeholder, one line per
+ * declaration, blank lines dropped. Everything else is compared verbatim.
+ */
+const normalizedDtsLines = (text) =>
+	text
+		.split(/\r?\n/)
+		.map((line) =>
+			line.replace(/(wasm_bindgen__convert__closures_____invoke__h)[0-9a-f]{16}/g, "$1<hash>"),
+		)
+		.filter((line) => line.trim().length > 0);
+
+/** Symmetric difference against the recorded set, for a failure a human has to act on remotely. */
+const exportDelta = (observed) => {
+	const recorded = new Set(EXPECTED.wasmExportsAsRecorded);
+	const seen = new Set(observed);
+	return [
+		`observed ${observed.length}, recorded ${EXPECTED.wasmExportsAsRecorded.length}`,
+		...observed.filter((entry) => !recorded.has(entry)).sort().map((entry) => `  + ${entry}`),
+		...EXPECTED.wasmExportsAsRecorded.filter((entry) => !seen.has(entry)).sort().map((entry) => `  - ${entry}`),
+	].join("\n");
+};
 
 function loadSurface() {
 	const dts = readText(join(PKG, "opencut_wasm.d.ts"));
@@ -116,19 +145,25 @@ function validate(surface) {
 	if (sha(surface.wrapper) !== EXPECTED.wrapperSha) {
 		fail("wrapper", "wrapper content differs from the recorded C0b output");
 	}
-	if (sha(surface.wasmDts) !== EXPECTED.wasmDtsSha) {
-		// The low-level d.ts is generated from the binary's export table, so name the declaration
-		// identifiers that moved rather than only reporting a hash mismatch.
+	// The low-level d.ts is generated from the binary's export table, so it carries the same
+	// host-varying trampoline hashes. Every other line is still compared verbatim, and the line
+	// count is pinned, so an added, removed or edited declaration is caught.
+	const observedDtsLines = normalizedDtsLines(surface.wasmDts);
+	if (
+		observedDtsLines.length !== EXPECTED.wasmDtsLineCount ||
+		signature(observedDtsLines) !== EXPECTED.wasmDtsNormalizedSignature
+	) {
 		const declared = [...surface.wasmDts.matchAll(/^export const (\S+?):/gm)].map((m) => m[1]);
-		const recordedNames = new Set(EXPECTED.wasmExports.map((entry) => entry.split("|")[0]));
-		const added = declared.filter((name) => !recordedNames.has(name)).sort();
-		const removed = [...recordedNames]
-			.filter((name) => !declared.includes(name) && name !== "__wbindgen_externrefs")
-			.sort();
+		const recordedNames = new Set(
+			EXPECTED.wasmExportsAsRecorded.map((entry) => entry.split("|")[0]),
+		);
 		const delta = [
-			`${declared.length} declaration(s) observed`,
-			...added.map((name) => `  + ${name}`),
-			...removed.map((name) => `  - ${name}`),
+			`${observedDtsLines.length} declaration line(s) observed, recorded ${EXPECTED.wasmDtsLineCount}`,
+			...declared.filter((name) => !recordedNames.has(name)).sort().map((name) => `  + ${name}`),
+			...[...recordedNames]
+				.filter((name) => !declared.includes(name) && name !== "__wbindgen_externrefs")
+				.sort()
+				.map((name) => `  - ${name}`),
 		].join("\n");
 		fail(
 			"binary-declarations",
@@ -147,33 +182,50 @@ function validate(surface) {
 			"generated glue export set is not the exact recorded set of 646",
 		);
 	}
-	// Self-consistency: the recorded list and the recorded digest must agree, so the list below
-	// cannot rot into a decorative comment while the digest does the real work.
-	if (signature(EXPECTED.wasmExports) !== EXPECTED.wasmExportSignature) {
+	// Self-consistency: the recorded diagnostic list must still hash to the recorded stable
+	// signature once its trampolines are removed, so the list cannot rot into decoration while the
+	// signature does the real work.
+	if (signature(stableExports(EXPECTED.wasmExportsAsRecorded)) !== EXPECTED.stableWasmExportSignature) {
 		fail(
 			"recorded-contract",
-			"EXPECTED.wasmExports does not hash to EXPECTED.wasmExportSignature",
+			"EXPECTED.wasmExportsAsRecorded does not reduce to EXPECTED.stableWasmExportSignature",
 		);
 	}
-	if (
-		surface.wasmExports.length !== 58 ||
-		signature(surface.wasmExports) !== EXPECTED.wasmExportSignature
-	) {
-		// Name the delta. "the set moved" is not actionable on a runner nobody can attach to —
-		// this gate reported exactly that twice on CI before the diff existed.
-		const recorded = new Set(EXPECTED.wasmExports);
-		const observed = new Set(surface.wasmExports);
-		const added = surface.wasmExports.filter((entry) => !recorded.has(entry)).sort();
-		const removed = EXPECTED.wasmExports.filter((entry) => !observed.has(entry)).sort();
-		const delta = [
-			`observed ${surface.wasmExports.length}, recorded ${EXPECTED.wasmExports.length}`,
-			...added.map((entry) => `  + ${entry}`),
-			...removed.map((entry) => `  - ${entry}`),
-		].join("\n");
+
+	const observedStable = stableExports(surface.wasmExports);
+	const observedTrampolines = surface.wasmExports.filter((entry) =>
+		TRAMPOLINE_EXPORT.test(entry.split("|")[0]),
+	);
+	const totalExpected = EXPECTED.stableWasmExportCount + EXPECTED.trampolineExportCount;
+	if (surface.wasmExports.length !== totalExpected) {
 		fail(
 			"wasm-exports",
-			`binary export set is not the exact recorded set of 58\n${delta}`,
+			`binary export count is ${surface.wasmExports.length}, not the recorded ${totalExpected}\n${exportDelta(surface.wasmExports)}`,
 		);
+	}
+	// The 55 nameable exports stay an EXACT set — this is the contract a consumer relies on.
+	if (
+		observedStable.length !== EXPECTED.stableWasmExportCount ||
+		signature(observedStable) !== EXPECTED.stableWasmExportSignature
+	) {
+		fail(
+			"wasm-exports",
+			`stably-named binary export set is not the exact recorded set of ${EXPECTED.stableWasmExportCount}\n${exportDelta(surface.wasmExports)}`,
+		);
+	}
+	// The 3 compiler-generated trampolines are matched by shape and COUNT: their hashes vary by
+	// build host (see TRAMPOLINE_EXPORT), their number does not. A 4th one, or a missing one, is a
+	// real change to what the binary exports and still fails here.
+	if (observedTrampolines.length !== EXPECTED.trampolineExportCount) {
+		fail(
+			"wasm-exports",
+			`observed ${observedTrampolines.length} closure trampoline(s), recorded ${EXPECTED.trampolineExportCount}\n${exportDelta(surface.wasmExports)}`,
+		);
+	}
+	for (const entry of observedTrampolines) {
+		if (entry.split("|")[1] !== "function") {
+			fail("wasm-exports", `trampoline ${entry} is not exported as a function`);
+		}
 	}
 	if (
 		surface.wasmImports.length !== 609 ||
@@ -324,6 +376,44 @@ function mutate(surface, control) {
 	if (control === "extra-export") copy.wrapperExports.push("unexpectedExport");
 	if (control === "changed-binary-import") copy.wasmImports.pop();
 	if (control === "changed-binary-export") copy.wasmExports.pop();
+	// --- the four controls guarding the trampoline re-scope (see TRAMPOLINE_EXPORT) ---
+	if (control === "extra-trampoline") {
+		copy.wasmExports.push(
+			"wasm_bindgen__convert__closures_____invoke__h0123456789abcdef|function",
+		);
+	}
+	if (control === "missing-trampoline") {
+		const at = copy.wasmExports.findIndex((entry) =>
+			TRAMPOLINE_EXPORT.test(entry.split("|")[0]),
+		);
+		copy.wasmExports.splice(at, 1);
+	}
+	if (control === "stable-export-disguised-as-trampoline") {
+		// A real export renamed into the tolerated shape must NOT slip through the shape match.
+		const at = copy.wasmExports.indexOf("snappedSeekTime|function");
+		copy.wasmExports[at] =
+			"wasm_bindgen__convert__closures_____invoke__hfedcba9876543210|function";
+	}
+	if (control === "edited-declaration") {
+		// A non-trampoline declaration line edited: normalisation must not hide it.
+		copy.wasmDts = copy.wasmDts.replace(
+			"export const snappedSeekTime:",
+			"export const snappedSeekTimeRenamed:",
+		);
+	}
+	if (control === "trampoline-hash-swap") {
+		// POSITIVE control: another build host's symbol hashes, in both the export table and the
+		// declarations. This is exactly what CI observed; it must pass.
+		const swaps = [
+			["h6e68ca372e8bf468", "h276a4a183af50bac"],
+			["h755062247edbbf0a", "h3a4584f6e44c7108"],
+			["hf7fc07325ff431aa", "hc1daa042eeabb391"],
+		];
+		for (const [from, to] of swaps) {
+			copy.wasmExports = copy.wasmExports.map((entry) => entry.replace(from, to));
+			copy.wasmDts = copy.wasmDts.replaceAll(from, to);
+		}
+	}
 	if (control === "invalid-backend") {
 		copy.dts = copy.dts.replace(
 			'"webgl" | "webgpu" | null',
@@ -451,6 +541,25 @@ if (process.argv.includes("--negative-control")) {
 		}
 		console.log(`PASS ${control} -> ${expected} (exit 1)`);
 	}
+	/**
+	 * Positive controls close the other half. A re-scope that only proves "these mutations still
+	 * fail" never demonstrates that the thing it deliberately permits IS permitted — so the next
+	 * reader cannot distinguish an intended tolerance from a hole nobody noticed. These assert the
+	 * tolerance directly, on the exact observation that motivated it.
+	 */
+	for (const [control, why] of Object.entries(POSITIVE_CONTROLS)) {
+		const result = spawnSync(
+			process.execPath,
+			[SELF, `--fixture-negative=${control}`],
+			{ encoding: "utf8" },
+		);
+		const output = `${result.stdout ?? ""}${result.stderr ?? ""}`;
+		if (result.status !== 0) {
+			console.error(`FAIL ${control}: expected exit 0, got ${result.status}\n${output}`);
+			process.exit(1);
+		}
+		console.log(`PASS ${control} -> tolerated (exit 0): ${why}`);
+	}
 	process.exit(0);
 }
 
@@ -483,5 +592,5 @@ if (compile.status !== 0) {
 	process.exit(1);
 }
 console.log(
-	`check-wasm-api-surface: exact 38 JS / 58 binary exports, 609 imports, ${Object.keys(EXPECTED.pinnedHashes).length} pinned files, both entries in parity over the recorded ${Object.keys(EXPECTED.entryConditions).length} exports conditions, providers and structural compile PASS`,
+	`check-wasm-api-surface: exact 38 JS exports, ${EXPECTED.stableWasmExportCount} stably-named binary exports + ${EXPECTED.trampolineExportCount} shape-matched compiler trampolines (${EXPECTED.stableWasmExportCount + EXPECTED.trampolineExportCount} total), 609 imports, ${Object.keys(EXPECTED.pinnedHashes).length} pinned files, ${EXPECTED.wasmDtsLineCount} declaration lines, both entries in parity over the recorded ${Object.keys(EXPECTED.entryConditions).length} exports conditions, providers and structural compile PASS`,
 );

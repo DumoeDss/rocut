@@ -26,7 +26,7 @@ check-wasm-paths: rust/wasm/pkg/opencut_wasm_bg.wasm (3285863 bytes)
   PASS  a workspace root form is present (/opencut 1, relativized 0) — proves workspace paths were sanctioned
 
 clean — the redistributed wasm discloses no build-machine identity
-check-wasm-api-surface: exact 38 JS / 58 binary exports, 609 imports, 5 pinned files, both entries in parity over the recorded 3 exports conditions, providers and structural compile PASS
+check-wasm-api-surface: exact 38 JS exports, 55 stably-named binary exports + 3 shape-matched compiler trampolines (58 total), 609 imports, 5 pinned files, 60 declaration lines, both entries in parity over the recorded 3 exports conditions, providers and structural compile PASS
 check-wasm-init: initializing the redistributed artifact for real
   PASS  bun 1.2.18: import "opencut-wasm" -> 38 export(s), TICKS_PER_SECOND=120000
   PASS  node v24.14.0: import "opencut-wasm/sync" -> 38 export(s), TICKS_PER_SECOND=120000

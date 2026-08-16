@@ -268,6 +268,52 @@ one verdict that was wrong.
 `check-wasm-paths` now runs **4** negative controls (was 2) and **5** sanctioned-root positives
 (was 4).
 
+## 7d. CI rounds 2–3 — the pins are not sufficient, and the one re-scope
+
+Round 2 reached `check-wasm-api-surface` with **both pins confirmed applied** — CI printed
+`the active toolchain '1.88.0-x86_64-unknown-linux-gnu' … overridden by '…/rust-toolchain.toml'`,
+`rustc 1.88.0 (6b00bc388 2025-06-23)` (the same commit hash as the recording machine),
+`Installing wasm-pack v0.13.1`, and `PASS rustc 1.88.0 (observed: 1.88.0)` — and still failed
+`wasm-exports` and `binary-declarations`. So this was never toolchain drift.
+
+**Diagnosis was pushed before any fix.** The gate pinned a *digest* of the export set, so it could
+say the set moved but not which entry, on a machine nobody can attach to — it had reported exactly
+that twice. Round 3 shipped the recorded list beside the digest plus a symmetric-difference
+printer, and returned:
+
+```
+observed 58, recorded 58
+  + …invoke__h276a4a183af50bac|function   - …invoke__h6e68ca372e8bf468|function
+  + …invoke__h3a4584f6e44c7108|function   - …invoke__h755062247edbbf0a|function
+  + …invoke__hc1daa042eeabb391|function   - …invoke__hf7fc07325ff431aa|function
+```
+
+3 in, 3 out, total unchanged, **all 55 other exports identical**. Compiler-generated closure
+trampolines: rustc's legacy mangling appends a 16-hex symbol hash derived from cargo `-Cmetadata`,
+whose inputs include the host triple. `UPSTREAM.md` had already measured these three varying across
+rustc versions.
+
+**The re-scope, and its bounds.** 55 stably-named exports stay an exact set; the 3 trampolines are
+matched by shape with the count pinned at 3; total still 58. The low-level `.d.ts` is normalised on
+those hashes only, every other line verbatim, line count pinned at 60.
+
+| control | verdict |
+| --- | --- |
+| `extra-trampoline` (a 4th appears) | fails ✓ |
+| `missing-trampoline` (one disappears) | fails ✓ |
+| `stable-export-disguised-as-trampoline` (`snappedSeekTime` renamed into the shape) | fails ✓ |
+| `edited-declaration` (a non-trampoline `.d.ts` line edited) | fails ✓ |
+| `changed-binary-export` (a stable export dropped) | fails ✓ |
+| **`trampoline-hash-swap`** (the exact Linux hashes above) | **tolerated, exit 0** ✓ |
+
+**25 negative controls firing (up from 14) plus the family's first positive control.** The positive
+one matters: proving "these mutations still fail" never demonstrates that the thing a re-scope
+deliberately permits *is* permitted, which is the difference between an intended tolerance and a
+hole nobody noticed.
+
+Local chain after the re-scope: `exact 38 JS exports, 55 stably-named binary exports + 3
+shape-matched compiler trampolines (58 total), 609 imports, 5 pinned files, 60 declaration lines`.
+
 ## 8. Statements this change falsified, and what was done about each
 
 Found by grepping the shipped tree and the main specs for the wasm-init language after the

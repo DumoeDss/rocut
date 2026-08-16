@@ -28,6 +28,39 @@ export const API_GATE = "script/check-wasm-api-surface.mjs";
 export const BASELINE_DTS_SHA =
 	"07e195eb8e750a6980aaad9c6d9c1c1376e9e0b282dfc387d8c1ecbf8c89278a";
 
+/**
+ * The compiler-generated closure trampolines, matched by SHAPE rather than by exact name.
+ *
+ * **This is a deliberate, measured re-scope — the one place this contract is not byte-exact.**
+ *
+ * wasm-bindgen emits one of these per closure signature, and rustc's legacy symbol mangling ends
+ * each name with a 16-hex hash. That hash is derived from cargo's `-Cmetadata`, whose inputs
+ * include the **host** triple — so it moves between build hosts even when everything the contract
+ * pins is identical. Measured on PR #3, CI run `31940776057`, with both pins confirmed applied
+ * (`rustc 1.88.0 (6b00bc388)` — the same commit hash as the recording machine — and
+ * `wasm-pack v0.13.1`):
+ *
+ *   windows (recorded)          linux (CI)
+ *   …invoke__h6e68ca372e8bf468  …invoke__h276a4a183af50bac
+ *   …invoke__h755062247edbbf0a  …invoke__h3a4584f6e44c7108
+ *   …invoke__hf7fc07325ff431aa  …invoke__hc1daa042eeabb391
+ *
+ * Exactly 3 in, 3 out, total unchanged at 58, and **all 55 other exports identical**. The gate
+ * printed that difference itself; the re-scope was written only after seeing it, not from the
+ * hypothesis that preceded it.
+ *
+ * `UPSTREAM.md` § WASM rebuild correspondence had already established the same rule for the
+ * published-vs-self-built comparison — "stripping the hash makes the two sets identical, and they
+ * correspond 1:1" — so this applies the repository's own existing finding to its gate.
+ *
+ * **What is still asserted, so this is a re-scope and not a hole**: the count of trampolines is
+ * exactly `trampolineExportCount`, each must match this shape, the other 55 are an exact set, and
+ * the total is still 58. A 4th trampoline, a missing one, a renamed stable export, or a stable
+ * export disguised in this shape all fail — each with a committed negative control.
+ */
+export const TRAMPOLINE_EXPORT =
+	/^wasm_bindgen__convert__closures_____invoke__h[0-9a-f]{16}$/;
+
 /** The generated non-bundler entry emitted by `script/build-wasm.mjs` (`emitSyncEntry`). */
 export const SYNC_ENTRY = "opencut_wasm_sync.js";
 /** The wasm-pack `--target bundler` entry, untouched by the emission step. */
@@ -76,24 +109,41 @@ export const EXPECTED = {
 	dtsSha: "e7d942d396f17ebca7fed8ccfe3f9e671103ad733c5ce183ef00d3519720596a",
 	wrapperSha:
 		"19714428b345a2ac128440319ece8a1c7f3c2f0336d454712189445d427c69f1",
-	wasmDtsSha:
-		"df9ee7494a229fc8762fd332066a98bf32a8cdbe2e42ca7201f9af60076cbca7",
+	/**
+	 * The low-level declarations, hashed after normalising the trampoline hashes below and sorted
+	 * by line. Exact-byte hashing of this file cannot hold across build hosts for the reason
+	 * documented at `TRAMPOLINE_EXPORT`; every other line is still compared verbatim, and the line
+	 * count is pinned, so an added, removed or edited declaration is still caught.
+	 *
+	 * Recorded on Windows; the value is host-independent by construction. Re-derive with
+	 * `rasen/changes/wasm-determinism-init/evidence/rescope-values.mjs`.
+	 */
+	wasmDtsNormalizedSignature:
+		"b03cb7f5c8f12350c38545f8b49fbc3957c5d21813a92e5004560f63f47ad402",
+	wasmDtsLineCount: 60,
 	wrapperExportSignature:
 		"a9a91d9ad6a8b1a13185e8892a2820752c9be4a2885a18edc71c24ee53769cc9",
 	bgExportSignature:
 		"5cb5e6fff95cfcfd2fb70dab7a89628eb087ae9797ada39db9fcf336b649364f",
-	wasmExportSignature:
-		"8034146edac940cb2bcc8469d746fb196f26cdfc0fa8c9643aaafce487945f26",
 	/**
-	 * The recorded export set itself, beside its digest.
+	 * The 55 stably-named binary exports, as an exact set. This is the real contract: every export
+	 * a consumer can name is pinned here, and any addition, removal or rename fails.
 	 *
-	 * The digest alone can only say "this moved", which is not enough to act on — CI reported
-	 * `binary export set is not the exact recorded set of 58` twice with no way to see WHICH entry
-	 * moved, on a machine nobody can attach to. The list is verified against
-	 * `wasmExportSignature` on every run (`recorded-contract` check), so it cannot drift away from
-	 * the digest it accompanies, and on failure the gate prints the exact symmetric difference.
+	 * The remaining 3 are compiler-generated closure trampolines whose names carry a rustc symbol
+	 * hash — see `TRAMPOLINE_EXPORT` for why they are matched by shape and count instead.
 	 */
-	wasmExports: [
+	stableWasmExportSignature:
+		"aac46c356951410ed81141f3e564d95e9212fec6987381429049d2e0b3809547",
+	stableWasmExportCount: 55,
+	trampolineExportCount: 3,
+	/**
+	 * The whole 58-entry set as recorded on the Windows build machine, kept for diagnosis: on
+	 * failure the gate prints the symmetric difference against it, which is how the host-varying
+	 * trampolines were identified in the first place (CI run 31940776057). It is NOT the
+	 * assertion — `stableWasmExportSignature` is.
+	 */
+	wasmExportsAsRecorded: [
+
 		"TICKS_PER_SECOND|function",
 		"__externref_table_alloc|function",
 		"__externref_table_dealloc|function",
@@ -181,6 +231,10 @@ export const CONTROLS = {
 	"extra-export": "wrapper-exports",
 	"changed-binary-import": "wasm-imports",
 	"changed-binary-export": "wasm-exports",
+	"extra-trampoline": "wasm-exports",
+	"missing-trampoline": "wasm-exports",
+	"stable-export-disguised-as-trampoline": "wasm-exports",
+	"edited-declaration": "binary-declarations",
 	"invalid-backend": "graphics-provider",
 	"boolean-count": "graphics-provider",
 	"boolean-handles": "gpu-provider",
@@ -198,4 +252,14 @@ export const CONTROLS = {
 	"ci-missing-registration": "gate-registration",
 	"ci-before-install-registration": "gate-registration",
 	"gated-missing-registration": "gate-registration",
+};
+
+/**
+ * POSITIVE controls: mutations the contract must TOLERATE. A re-scope is only honest if the
+ * thing it now permits is asserted to be permitted — otherwise the next reader cannot tell a
+ * deliberate tolerance from a hole nobody noticed.
+ */
+export const POSITIVE_CONTROLS = {
+	"trampoline-hash-swap":
+		"another build host's closure-trampoline symbol hashes (the exact CI observation)",
 };
