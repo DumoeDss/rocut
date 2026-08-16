@@ -82,7 +82,7 @@ Phase lint runs once at the end per the house convention, not per task.
 - [x] E1. `scripts/generate-clip-project.mjs`: deterministic 2000-element
   project (method recorded: kinds, durations, distribution, tracks, fps,
   canvas) through the real store classes into a caller-given root.
-- [ ] E2. `scripts/export-perf-baseline.mjs`: one command — generate fresh
+- [x] E2. `scripts/export-perf-baseline.mjs`: one command — generate fresh
   root → boot → measure interaction latencies, playback fps, export wall
   time (render/encode split), renderer/main memory → write
   `evidence/perf-baseline-<date>.md` with method + shortfall columns. Two
@@ -98,10 +98,10 @@ Phase lint runs once at the end per the house convention, not per task.
 
 ## Group G — no-regression + close-out
 
-- [ ] G1. Re-run the checker family (census recorded), `bun test` (failures
+- [x] G1. Re-run the checker family (census recorded), `bun test` (failures
   exactly the 6 baseline ones), parity editing scenario on vite + electron +
   snapshot diff (within documented classes), frozen-byte guard A4.
-- [ ] G2. Lint the touched trees once (`eslint` over new/changed files; the
+- [x] G2. Lint the touched trees once (`eslint` over new/changed files; the
   repo's disclosed-lint-errors posture unchanged), `typecheck` the electron
   host.
 - [ ] G3. Commit series (logical groups), review cycle (author≠verifier),
