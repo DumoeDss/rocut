@@ -34,6 +34,11 @@ import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join, relative, resolve } from "node:path";
 
+import {
+	RUSTC_VERSION,
+	WASM_PACK_ACTION_VERSION,
+} from "./wasm-toolchain.mjs";
+
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PKG_DIR = join(REPO_ROOT, "rust", "wasm", "pkg");
 const REBUILD = "bun run build:wasm   (node script/build-wasm.mjs), then bun install";
@@ -241,6 +246,7 @@ const GATED = [
 	"script/check-wasm-source.mjs",
 	"script/check-wasm-paths.mjs",
 	"script/check-wasm-api-surface.mjs",
+	"script/check-wasm-init.mjs",
 ];
 const wiringProblems = [];
 
@@ -266,15 +272,55 @@ for (const gate of GATED) {
 		wiringProblems.push("no .github/workflows/bun-ci.yml to carry the gate");
 		continue;
 	}
-	const gateAt = workflow.indexOf(gate);
+	// Match the `run:` command, not any mention of the path. A bare `indexOf` also matches the
+	// step's own explanatory comment, so a comment placed above `bun install` made this report the
+	// gate as running too early — a false failure the tightened form cannot produce.
+	const gateAt = workflow.search(new RegExp(`run:\\s*node ${gate.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*$`, "m"));
 	if (gateAt === -1) wiringProblems.push(`bun-ci.yml has no step running ${gate}`);
 	else if (installAt === -1) wiringProblems.push("bun-ci.yml no longer runs `bun install`");
 	else if (gateAt < installAt) wiringProblems.push(`bun-ci.yml runs ${gate} BEFORE \`bun install\`, so it checks an uninstalled tree`);
 }
 
-console.log(`  ${wiringProblems.length === 0 ? "PASS" : "FAIL"}  all wasm gates are wired (npm script + CI step after \`bun install\`)`);
+console.log(`  ${wiringProblems.length === 0 ? "PASS" : "FAIL"}  all ${GATED.length} wasm gates are wired (npm script + CI step after \`bun install\`)`);
 for (const p of wiringProblems) console.log(`          ${p}`);
 if (wiringProblems.length > 0) failures.push(`gate wiring: ${wiringProblems.join("; ")}`);
+
+// --- 5. the toolchain pins are wired the same way the gates are --------------
+// The recorded surface is a function of two tool versions. A pin CI does not apply is not a pin:
+// PR #2's `check-wasm-api-surface` red leg was a `wasm-pack: latest` install (v0.15.0) against a
+// 0.13.1-recorded surface, plus an unpinned rustc, and every other gate stayed green through it.
+// So the workflow's *literal* pin text is asserted here, beside the gate wiring it belongs to.
+const pinProblems = [];
+if (!existsSync(join(REPO_ROOT, "rust-toolchain.toml"))) {
+	pinProblems.push("rust-toolchain.toml is absent, so rustc is whatever the machine defaults to");
+}
+if (workflow === null) {
+	pinProblems.push("no .github/workflows/bun-ci.yml to carry the pins");
+} else {
+	const wasmPackVersions = [...workflow.matchAll(/jetli\/wasm-pack-action@[^\n]*\n(?:[^\n]*\n)?\s*with:\s*\n\s*version:\s*["']?([^"'\s]+)/g)].map((m) => m[1]);
+	if (wasmPackVersions.length === 0) {
+		pinProblems.push("no `jetli/wasm-pack-action` step declares a `version:` input");
+	}
+	for (const version of wasmPackVersions) {
+		if (version !== WASM_PACK_ACTION_VERSION) {
+			pinProblems.push(`a wasm-pack step pins \`${version}\`, not the recorded ${WASM_PACK_ACTION_VERSION}`);
+		}
+	}
+	// `rustup toolchain install` with no argument is what applies rust-toolchain.toml; a bare
+	// `rustup target add` on a fresh runner installs the target against the image's default
+	// toolchain instead, which is the state that produced the red leg.
+	if (!/^\s*rustup toolchain install\s*$/m.test(workflow)) {
+		pinProblems.push("no CI step runs `rustup toolchain install`, so rust-toolchain.toml is never applied");
+	}
+}
+// The pin is only enforced if the build path asserts it; a constant nobody reads is documentation.
+const buildScript = readFileSync(join(REPO_ROOT, "script", "build-wasm.mjs"), "utf8");
+if (!buildScript.includes("assertToolchain(")) {
+	pinProblems.push("script/build-wasm.mjs does not call assertToolchain(), so the pins are advisory");
+}
+console.log(`  ${pinProblems.length === 0 ? "PASS" : "FAIL"}  toolchain pins are declared and enforced (rustc ${RUSTC_VERSION}, wasm-pack ${WASM_PACK_ACTION_VERSION})`);
+for (const p of pinProblems) console.log(`          ${p}`);
+if (pinProblems.length > 0) failures.push(`toolchain pins: ${pinProblems.join("; ")}`);
 
 if (failures.length > 0) {
 	console.error("\ncheck-wasm-source FAILED:");

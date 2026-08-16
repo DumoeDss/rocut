@@ -8,8 +8,10 @@ import { fileURLToPath } from "node:url";
 import {
 	API_GATE,
 	BASELINE_DTS_SHA,
+	BUNDLER_ENTRY,
 	CONTROLS,
 	EXPECTED,
+	SYNC_ENTRY,
 } from "./wasm-api-surface-contract.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -21,9 +23,14 @@ const read = (path) => readFileSync(path);
 const readText = (path) => readFileSync(path, "utf8");
 const signature = (entries) => sha([...entries].sort().join("\n"));
 
+/** The `export { … } from "./opencut_wasm_bg.js"` block both entries carry, verbatim. */
+const exportBlock = (source) =>
+	source.match(/export \{([\s\S]*?)\} from/)?.[1] ?? null;
+
 function loadSurface() {
 	const dts = readText(join(PKG, "opencut_wasm.d.ts"));
-	const wrapper = readText(join(PKG, "opencut_wasm.js"));
+	const wrapper = readText(join(PKG, BUNDLER_ENTRY));
+	const syncEntry = readText(join(PKG, SYNC_ENTRY));
 	const bg = readText(join(PKG, "opencut_wasm_bg.js"));
 	const wasmDts = readText(join(PKG, "opencut_wasm_bg.wasm.d.ts"));
 	const wasm = read(join(PKG, "opencut_wasm_bg.wasm"));
@@ -36,7 +43,9 @@ function loadSurface() {
 		),
 		dts,
 		wrapper,
+		syncEntry,
 		wasmDts,
+		wasmManifest: JSON.parse(readText(join(PKG, "package.json"))),
 		wrapperExports: wrapperBlock
 			.split(",")
 			.map((name) => name.trim())
@@ -88,9 +97,9 @@ function validate(surface) {
 	if (JSON.stringify(surface.files) !== JSON.stringify(EXPECTED.files)) {
 		fail("generated-files", `expected ${EXPECTED.files.join(", ")}`);
 	}
-	for (const [name, hash] of Object.entries(EXPECTED.unchangedHashes)) {
+	for (const [name, hash] of Object.entries(EXPECTED.pinnedHashes)) {
 		if (surface.hashes[name] !== hash) {
-			fail("generated-files", `${name} changed from the C0 before-state`);
+			fail("generated-files", `${name} differs from the recorded build output`);
 		}
 	}
 	for (const [name, hash] of Object.entries(EXPECTED.changedBaselineHashes)) {
@@ -141,6 +150,62 @@ function validate(surface) {
 		fail(
 			"wasm-imports",
 			"binary import set moved from the exact C0 set of 609",
+		);
+	}
+
+	// The two entries must expose the identical public set. Slicing the bundler entry's own block
+	// is how `emitSyncEntry` builds it, so an inequality here means the emission drifted or the
+	// generated file was hand-edited — either way one runtime would silently see a different API
+	// from another, which no export-count assertion above would catch.
+	const bundlerBlock = exportBlock(surface.wrapper);
+	const syncBlock = exportBlock(surface.syncEntry);
+	if (syncBlock === null) {
+		fail("entry-parity", `${SYNC_ENTRY} carries no re-export block`);
+	} else if (syncBlock !== bundlerBlock) {
+		fail(
+			"entry-parity",
+			`${SYNC_ENTRY} re-exports a different set from ${BUNDLER_ENTRY}`,
+		);
+	}
+	// An entry that re-exports the right names but never instantiates is the exact shape of the
+	// original defect: it imports clean and dies on first call.
+	for (const marker of ["__wbg_set_wasm(", "__wbindgen_start()"]) {
+		if (!surface.syncEntry.includes(marker)) {
+			fail("entry-parity", `${SYNC_ENTRY} never calls ${marker}`);
+		}
+	}
+
+	// Condition ORDER is load-bearing: `types` must precede the runtime conditions and `default`
+	// must come last, or a bundler resolves to the node entry (or a type resolver to a runtime
+	// one). Comparing the serialised entries compares order and content in one assertion.
+	const conditions = surface.wasmManifest.exports?.["."];
+	const expectedConditions = EXPECTED.entryConditions;
+	if (JSON.stringify(conditions) !== JSON.stringify(expectedConditions)) {
+		fail(
+			"entry-conditions",
+			`the artifact's "." exports conditions are not the recorded ${Object.keys(expectedConditions).join("/")} routing`,
+		);
+	}
+	// Without the wildcard subpath, adding `exports` would seal every deep path that resolved
+	// before it existed — including the bundler entry the negative control imports by name.
+	if (surface.wasmManifest.exports?.["./*"] !== "./*") {
+		fail("entry-conditions", "the artifact's `./*` subpath passthrough is missing");
+	}
+	// The declared opt-in for runtimes that need explicit instantiation and are not bun. A deep
+	// path would work through `./*`, but a *declared* subpath is what makes it a promise.
+	if (
+		surface.wasmManifest.exports?.[EXPECTED.syncSubpath] !== `./${SYNC_ENTRY}`
+	) {
+		fail(
+			"entry-conditions",
+			`the artifact's "${EXPECTED.syncSubpath}" subpath does not point at ${SYNC_ENTRY}`,
+		);
+	}
+	// `node` must NOT be routed: bundlers targeting node set it and cannot serve this entry.
+	if (surface.wasmManifest.exports?.["."]?.node !== undefined) {
+		fail(
+			"entry-conditions",
+			"a `node` condition is declared; bundlers targeting node set it too and break on it (see BOUNDARIES §17)",
 		);
 	}
 
@@ -257,6 +322,39 @@ function mutate(surface, control) {
 		);
 	}
 	if (control === "truncated-files") copy.files.pop();
+	if (control === "sync-entry-export-drift") {
+		copy.syncEntry = copy.syncEntry.replace(
+			"TICKS_PER_SECOND,",
+			"TICKS_PER_SECOND, unexpectedExport,",
+		);
+	}
+	if (control === "sync-entry-uninitialized") {
+		copy.syncEntry = copy.syncEntry.replace(
+			"instance.exports.__wbindgen_start();",
+			"// start call removed",
+		);
+	}
+	if (control === "condition-swap") {
+		copy.wasmManifest.exports["."] = {
+			types: "./opencut_wasm.d.ts",
+			bun: `./${BUNDLER_ENTRY}`,
+			default: `./${BUNDLER_ENTRY}`,
+		};
+	}
+	if (control === "condition-dropped") {
+		delete copy.wasmManifest.exports["./*"];
+	}
+	if (control === "sync-subpath-dropped") {
+		delete copy.wasmManifest.exports[EXPECTED.syncSubpath];
+	}
+	if (control === "node-condition-added") {
+		copy.wasmManifest.exports["."] = {
+			types: "./opencut_wasm.d.ts",
+			bun: `./${SYNC_ENTRY}`,
+			node: `./${SYNC_ENTRY}`,
+			default: `./${BUNDLER_ENTRY}`,
+		};
+	}
 	if (control === "check-wasm-missing-registration") {
 		copy.manifest.scripts["check:wasm"] = copy.manifest.scripts[
 			"check:wasm"
@@ -329,6 +427,16 @@ if (!existsSync(PKG)) {
 	);
 	process.exit(2);
 }
+// Report a missing recorded file as a finding rather than a stack trace from `readFileSync`. A
+// gate whose failure mode is an ENOENT dump is a gate whose output nobody reads.
+const absent = EXPECTED.files.filter((name) => !existsSync(join(PKG, name)));
+if (absent.length > 0) {
+	for (const name of absent) {
+		console.error(`generated-files: ${name} is absent from rust/wasm/pkg`);
+	}
+	console.error("Rebuild with: bun run build:wasm");
+	process.exit(1);
+}
 const errors = validate(loadSurface());
 if (errors.length > 0) {
 	for (const error of errors) console.error(error);
@@ -342,5 +450,5 @@ if (compile.status !== 0) {
 	process.exit(1);
 }
 console.log(
-	"check-wasm-api-surface: exact 38 JS / 58 binary exports, 609 imports, providers and structural compile PASS",
+	`check-wasm-api-surface: exact 38 JS / 58 binary exports, 609 imports, ${Object.keys(EXPECTED.pinnedHashes).length} pinned files, both entries in parity over the recorded ${Object.keys(EXPECTED.entryConditions).length} exports conditions, providers and structural compile PASS`,
 );

@@ -1,6 +1,37 @@
+/**
+ * The recorded wasm surface.
+ *
+ * **How to re-derive every value here**, so a reader can check rather than trust:
+ *
+ *     node script/build-wasm.mjs                 # on the pinned toolchain (rust-toolchain.toml
+ *                                                # + WASM_PACK_VERSION); build-wasm refuses otherwise
+ *     sha256sum rust/wasm/pkg/*                  # pinnedHashes, and the dts/wrapper/wasmDts values
+ *     node script/check-wasm-api-surface.mjs     # reports every value that has moved, by id
+ *
+ * **Why the pins matter to this file.** Three of the 58 wasm exports are rustc symbol-hash names
+ * and the binary's `producers` section carries the compiler version verbatim, so an unpinned
+ * toolchain moves this contract without anyone touching the source. That is what happened on
+ * PR #2: CI installed `wasm-pack: latest` (v0.15.0) and the runner image's rustc against a surface
+ * recorded with wasm-pack 0.13.1 / rustc 1.88.0, and the gate reported `wasm-exports`,
+ * `binary-declarations` and `package.json` deltas that no commit had caused.
+ *
+ * **The LICENSE and README values were stale, not machine-bound** (2026-08-16). They were recorded
+ * from CRLF-era bytes; commit `1646ee5a` later normalised those blobs to LF, after which the
+ * contract was unsatisfiable on *every* platform, Windows included. Proof by construction:
+ * `sha256(crlf(LICENSE)) = 8117f9bb…3f59d3d` and `sha256(crlf(rust/wasm/README.md)) =
+ * a09d7957…6b4d3191` are exactly the two values this file used to carry, while the LF bytes in
+ * the tree hash to the values below. wasm-pack copies both files byte-for-byte out of the crate
+ * directory, so they are generated-by-copy and platform-independent — there was never a
+ * Windows-vs-Linux component to that failure.
+ */
 export const API_GATE = "script/check-wasm-api-surface.mjs";
 export const BASELINE_DTS_SHA =
 	"07e195eb8e750a6980aaad9c6d9c1c1376e9e0b282dfc387d8c1ecbf8c89278a";
+
+/** The generated non-bundler entry emitted by `script/build-wasm.mjs` (`emitSyncEntry`). */
+export const SYNC_ENTRY = "opencut_wasm_sync.js";
+/** The wasm-pack `--target bundler` entry, untouched by the emission step. */
+export const BUNDLER_ENTRY = "opencut_wasm.js";
 
 export const EXPECTED = {
 	files: [
@@ -12,16 +43,24 @@ export const EXPECTED = {
 		"opencut_wasm_bg.js",
 		"opencut_wasm_bg.wasm",
 		"opencut_wasm_bg.wasm.d.ts",
+		"opencut_wasm_sync.js",
 		"package.json",
 	].sort(),
-	unchangedHashes: {
+	/**
+	 * Files whose exact bytes are pinned. `.gitignore`, `LICENSE` and `README.md` are copied by
+	 * wasm-pack; `package.json` is wasm-pack's manifest after `emitSyncEntry` adds the `exports`
+	 * conditions; `opencut_wasm_sync.js` is that emission's own output.
+	 */
+	pinnedHashes: {
 		".gitignore":
 			"684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1",
-		LICENSE: "8117f9bb64534f7530fc6139b014fd1c1465f7981f93d1871789150fa3f59d3d",
+		LICENSE: "814632368a8331fd1f485f4bd4b7ecb6401e5f2a24fba79cd3e21aff8ca39a6e",
 		"README.md":
-			"a09d79579ac121a05ab38ca5c4cba505d91f2ee4359d336cc2cc1fd36b4d3191",
+			"c8fe27ab5d2e12963e1f04571549afc9828060f4dfec85e6afaa188d3d90a128",
 		"package.json":
-			"6eab1bdbf8f6d3a71181bc4f20eb05d35685f48e32c4913bd178671f56876e96",
+			"f92d109c0ed431a74974f90bf207767c033f784af10a34a0accebb1bb921ca18",
+		[SYNC_ENTRY]:
+			"aa6081035bd18e34e99c22e4fa7f3e41d212a602fd6ab552d654f948c4ae6471",
 	},
 	changedBaselineHashes: {
 		"opencut_wasm.d.ts": BASELINE_DTS_SHA,
@@ -47,6 +86,25 @@ export const EXPECTED = {
 		"8034146edac940cb2bcc8469d746fb196f26cdfc0fa8c9643aaafce487945f26",
 	wasmImportSignature:
 		"2da5921beca72832c11efe8a93e3228649ab22ec41d78313f0f4c74fcdd44001",
+	/**
+	 * The `exports` conditions `emitSyncEntry` writes. Recorded here so the routing that makes the
+	 * artifact initializable outside a bundler is a contract term rather than an incidental
+	 * property of a build script — `check-wasm-init.mjs` proves it *runs*, this proves it is
+	 * *declared*, and neither alone would catch a silent condition swap.
+	 *
+	 * **`node` is deliberately absent.** Bundlers targeting node set that condition too, and they
+	 * do not resolve the entry's `new URL("./x.wasm", import.meta.url)` to a readable file:
+	 * measured on this repo's Next Host, turbopack rewrote it to
+	 * `/_next/static/media/opencut_wasm_bg.<hash>.wasm` and the SSR build failed. Node consumers
+	 * take `SYNC_SUBPATH` explicitly.
+	 */
+	entryConditions: {
+		types: "./opencut_wasm.d.ts",
+		bun: `./${SYNC_ENTRY}`,
+		default: `./${BUNDLER_ENTRY}`,
+	},
+	/** The declared opt-in subpath for runtimes that need explicit instantiation. */
+	syncSubpath: "./sync",
 };
 
 export const CONTROLS = {
@@ -59,6 +117,12 @@ export const CONTROLS = {
 	"provider-any": "gpu-provider",
 	"unkeyed-release": "gpu-provider",
 	"truncated-files": "generated-files",
+	"sync-entry-export-drift": "entry-parity",
+	"sync-entry-uninitialized": "entry-parity",
+	"condition-swap": "entry-conditions",
+	"condition-dropped": "entry-conditions",
+	"sync-subpath-dropped": "entry-conditions",
+	"node-condition-added": "entry-conditions",
 	"check-wasm-missing-registration": "gate-registration",
 	"check-wasm-decoy-registration": "gate-registration",
 	"ci-missing-registration": "gate-registration",
