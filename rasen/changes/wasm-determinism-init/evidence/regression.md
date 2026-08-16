@@ -276,7 +276,18 @@ removal is the point of the delta, with a new scenario asserting the claim is go
   path yields the empty string, so the cache key is constant and the bun module cache is never
   invalidated by a lockfile change. Out of this change's scope (it is not the wasm leg) and left to
   a decision rather than fixed in passing.
-- **F2 (Informational).** `script/` is outside every lint gate this repository runs: ESLint is
-  scoped to `apps/web/src`, `apps/vite-example/src` and `packages/*/src`, and `biome.json` exists
-  with no npm script invoking it. The files added here are therefore unlinted — stated rather than
-  claimed clean.
+- **F2 (Informational, measured).** `script/` is outside every lint gate this repository runs, so
+  the files added here are unlinted — stated rather than claimed clean. ESLint's `frontendFiles`
+  covers only `apps/web/src`, `apps/vite-example/src` and `packages/*/src`
+  (`eslint.config.mjs:11-24`). `biome.json` exists and covers `**`, but no npm script invokes it —
+  and it does not currently run at all: invoking biome refuses before linting anything with
+  `biome.json:31:4 × Found an unknown key 'tailwindDirectives'` / `Biome exited because the
+  configuration resulted in errors`. The config declares `$schema` 2.1.2; the key was removed in a
+  later version, so any contributor who runs biome without pinning that exact version gets a
+  configuration error rather than a lint result. Recorded, not fixed — it is neither the wasm leg
+  nor this change's lint debt to take on.
+
+  Worth noting for whoever picks it up: that command was run in the background and the harness
+  reported **`exited with code 0`** while biome had actually refused. Read the output, not the
+  exit code — the same trap this repository's evidence discipline already writes
+  `REAL_EXIT_CODE:$?` into every log to avoid.
