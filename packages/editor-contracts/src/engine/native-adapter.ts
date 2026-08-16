@@ -1,10 +1,21 @@
 import type { Project, Revision } from "..";
 import { INITIAL_REVISION, revisionOf } from "..";
-import type { ProjectId, ProjectRecord, ProjectSummary } from "@opencut/editor-ports";
+import type {
+	ProjectId,
+	ProjectRecord,
+	ProjectSummary,
+} from "@opencut/editor-ports";
+import { ProjectStoreError } from "@opencut/editor-ports";
+import { registerDraftEvidenceErrorType } from "../draft/immutable";
 import { cloneTransactionValue } from "./clone";
 import type { TransactionDocumentAdapter } from "./adapter";
 import { isTransactionEngineDocument } from "./invariant";
 import type { TransactionEngineDocument } from "./types";
+
+// This module is the ports-coupled composition zone: it vouches for the store
+// error class so committed-state failures keep their prototype across the
+// Draft evidence boundary while draft/ stays free of ports imports.
+registerDraftEvidenceErrorType(ProjectStoreError);
 
 const DOCUMENT_KEY = "transactionEngine";
 
@@ -18,9 +29,7 @@ function isRecord(value: unknown): value is Readonly<Record<string, unknown>> {
 }
 
 export function createTransactionNativeDocumentAdapter(
-	options: {
-		readonly now?: () => string;
-	} = {},
+	options: { readonly now?: () => string } = {},
 ): TransactionDocumentAdapter {
 	const now = options.now ?? (() => new Date().toISOString());
 	return {

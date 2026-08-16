@@ -2,7 +2,7 @@ import type { Revision, TransactionBatch, TransactionOperation } from "..";
 import { revisionOf } from "..";
 import type { TransactionEngine, TransactionEngineDocument } from "../engine";
 import { evaluateTransactionBatch } from "../engine";
-import { bindNativeCommittedTransactionStateCapture } from "../engine/engine";
+import { bindNativeCommittedTransactionStateCapture } from "../engine/committed-capture";
 import { projectCommittedTransactionDocument } from "../engine/projection";
 import { classifyDraftRuntimeOperation } from "./classification";
 import {
@@ -38,6 +38,7 @@ import type {
 	DraftOpenError,
 	DraftOpenOutcome,
 	DraftRejectionOutcome,
+	DraftRejectionReason,
 	DraftResourceRetentionEvidence,
 	DraftSnapshot,
 	DraftToolCall,
@@ -306,6 +307,11 @@ function createDraftSession(args: {
 	let state: DraftLifecycleState = "editing";
 	let queue: Promise<void> = Promise.resolve();
 	let terminalApproval: DraftApprovalOutcome | undefined;
+	let rejectionReason: DraftRejectionReason | undefined;
+	const expiresAt =
+		options.clock !== undefined && options.draftTtl !== undefined
+			? options.clock() + options.draftTtl
+			: undefined;
 
 	function enqueue<Result>(action: () => Promise<Result>): Promise<Result> {
 		const result = queue.then(action, action);
@@ -314,6 +320,26 @@ function createDraftSession(args: {
 			() => undefined,
 		);
 		return result;
+	}
+
+	/**
+	 * Lazy TTL enforcement: transitions an elapsed editing Draft to
+	 * rejected("expired"). Returns true when the caller must stop and surface
+	 * an expiry error; false when the session may proceed. No timers — the
+	 * pure core only ever observes the host clock.
+	 */
+	function expireIfDue(): boolean {
+		if (
+			state !== "editing" ||
+			expiresAt === undefined ||
+			options.clock === undefined
+		) {
+			return false;
+		}
+		if (options.clock() < expiresAt) return false;
+		state = "rejected";
+		rejectionReason = "expired";
+		return true;
 	}
 
 	function snapshot(): DraftSnapshot {
@@ -329,6 +355,10 @@ function createDraftSession(args: {
 				(total, call) => total + call.operations.length,
 				0,
 			),
+			...(expiresAt === undefined ? {} : { expiresAt }),
+			...(state === "rejected" && rejectionReason !== undefined
+				? { rejectionReason }
+				: {}),
 		});
 	}
 
@@ -556,6 +586,13 @@ function createDraftSession(args: {
 	}
 
 	async function stageAction(call: DraftToolCall): Promise<DraftCallOutcome> {
+		if (expireIfDue()) {
+			return callFailure({
+				kind: "draft-expired",
+				expiresAt: expiresAt as number,
+				message: `Draft expired at ${expiresAt} (host clock units); it is now rejected`,
+			});
+		}
 		if (state !== "editing")
 			return callFailure(invalidState({ action: "stage", state }));
 		const rawOperations = Reflect.get(call as object, "operations");
@@ -563,6 +600,30 @@ function createDraftSession(args: {
 			return callFailure({
 				kind: "empty-call",
 				message: "Draft calls must contain operations",
+			});
+		}
+		if (
+			options.journalCallBound !== undefined &&
+			journal.length + 1 > options.journalCallBound
+		) {
+			return callFailure({
+				kind: "journal-bound",
+				bound: "calls",
+				limit: options.journalCallBound,
+				message: `Call would exceed the journal call bound ${options.journalCallBound}; the Draft is intact`,
+			});
+		}
+		if (
+			options.journalOperationBound !== undefined &&
+			journal.reduce((total, entry) => total + entry.operations.length, 0) +
+				rawOperations.length >
+				options.journalOperationBound
+		) {
+			return callFailure({
+				kind: "journal-bound",
+				bound: "operations",
+				limit: options.journalOperationBound,
+				message: `Call would exceed the journal operation bound ${options.journalOperationBound}; the Draft is intact`,
 			});
 		}
 		const operations: TransactionOperation[] = [];
@@ -647,6 +708,13 @@ function createDraftSession(args: {
 						message: "Auto Drafts approve only through stage",
 					});
 				}
+				if (expireIfDue()) {
+					return draftApprovalFailure({
+						kind: "draft-expired",
+						expiresAt: expiresAt as number,
+						message: `Draft expired at ${expiresAt} (host clock units); it is now rejected`,
+					});
+				}
 				if (state === "applied" && terminalApproval?.applied)
 					return terminalApproval;
 				if (state !== "editing") {
@@ -665,6 +733,13 @@ function createDraftSession(args: {
 		},
 		reject() {
 			return enqueue(async (): Promise<DraftRejectionOutcome> => {
+				if (expireIfDue()) {
+					return immutableDraftValue({
+						rejected: false as const,
+						snapshot: snapshot(),
+						error: invalidState({ action: "reject", state }),
+					});
+				}
 				if (state !== "editing") {
 					return immutableDraftValue({
 						rejected: false as const,
@@ -673,8 +748,35 @@ function createDraftSession(args: {
 					});
 				}
 				state = "rejected";
+				rejectionReason = "rejected";
 				return immutableDraftValue({
 					rejected: true as const,
+					reason: "rejected" as const,
+					snapshot: snapshot(),
+				});
+			});
+		},
+		discard() {
+			return enqueue(async (): Promise<DraftRejectionOutcome> => {
+				if (expireIfDue()) {
+					return immutableDraftValue({
+						rejected: false as const,
+						snapshot: snapshot(),
+						error: invalidState({ action: "discard", state }),
+					});
+				}
+				if (state !== "editing") {
+					return immutableDraftValue({
+						rejected: false as const,
+						snapshot: snapshot(),
+						error: invalidState({ action: "discard", state }),
+					});
+				}
+				state = "rejected";
+				rejectionReason = "discarded";
+				return immutableDraftValue({
+					rejected: true as const,
+					reason: "discarded" as const,
 					snapshot: snapshot(),
 				});
 			});
@@ -703,6 +805,14 @@ export function createDraftEditingManager<FeatureName extends string = never>(
 		retentionPolicy: options.retentionPolicy,
 		placementPolicies: Object.freeze([...(options.placementPolicies ?? [])]),
 		snapshotAttempts,
+		...(options.clock === undefined ? {} : { clock: options.clock }),
+		...(options.draftTtl === undefined ? {} : { draftTtl: options.draftTtl }),
+		...(options.journalCallBound === undefined
+			? {}
+			: { journalCallBound: options.journalCallBound }),
+		...(options.journalOperationBound === undefined
+			? {}
+			: { journalOperationBound: options.journalOperationBound }),
 	};
 	const usedIds = new Set<string>();
 

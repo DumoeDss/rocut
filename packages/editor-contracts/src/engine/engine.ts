@@ -6,7 +6,11 @@ import type {
 	TransactionResult,
 } from "..";
 import { OPERATION_KINDS, TransactionError } from "..";
-import type { ProjectId, ProjectRecord, ProjectStore } from "@opencut/editor-ports";
+import type {
+	ProjectId,
+	ProjectRecord,
+	ProjectStore,
+} from "@opencut/editor-ports";
 import { ProjectStoreError } from "@opencut/editor-ports";
 import {
 	assertDecodedTransactionDocument,
@@ -15,6 +19,9 @@ import {
 } from "./adapter";
 import type { TransactionDocumentAdapter } from "./adapter";
 import { cloneTransactionValue } from "./clone";
+import { registerNativeCommittedStateCapture } from "./committed-capture";
+export { bindNativeCommittedTransactionStateCapture } from "./committed-capture";
+export type { NativeCommittedTransactionStateCapture } from "./committed-capture";
 import { evaluateTransactionBatch } from "./evaluator";
 import { transactionDocumentInvariantIssue } from "./invariant";
 import { projectCommittedTransactionDocument } from "./projection";
@@ -39,47 +46,6 @@ export interface OpenTransactionEngineOptions<
 	readonly placementPolicies?: readonly TransactionPlacementPolicy[];
 	readonly optionalFeatures?: TransactionEngineOptionalFeatures<FeatureName>;
 	readonly signal?: AbortSignal;
-}
-
-interface NativeCommittedTransactionStateCapture {
-	readonly capture: () => Promise<TransactionEngineDocument>;
-}
-
-const nativeCommittedStateCaptures = new WeakMap<
-	TransactionEngine,
-	() => TransactionEngineDocument | Promise<TransactionEngineDocument>
->();
-
-function registerNativeCommittedStateCapture(args: {
-	readonly engine: TransactionEngine;
-	readonly capture: () =>
-		| TransactionEngineDocument
-		| Promise<TransactionEngineDocument>;
-}): void {
-	if (nativeCommittedStateCaptures.has(args.engine)) {
-		throw new TypeError("Native committed-state capture is already registered");
-	}
-	nativeCommittedStateCaptures.set(args.engine, args.capture);
-}
-
-/**
- * Bind the construction-owned native capture into a detached, read-only port.
- *
- * The registry writer is a private closure in this construction module. This
- * read-only binder cannot register, replace, or copy a capability onto a
- * wrapper: a wrapper is a distinct object and must pass an explicit provider
- * port directly to the Draft manager.
- */
-export function bindNativeCommittedTransactionStateCapture(
-	engine: TransactionEngine,
-): NativeCommittedTransactionStateCapture | undefined {
-	const capture = nativeCommittedStateCaptures.get(engine);
-	if (capture === undefined) return undefined;
-	return Object.freeze({
-		async capture(): Promise<TransactionEngineDocument> {
-			return cloneTransactionValue(await capture());
-		},
-	});
 }
 
 function assertOptionalFeatureNames(
