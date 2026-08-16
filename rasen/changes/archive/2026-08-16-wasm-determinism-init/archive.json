@@ -1,0 +1,133 @@
+{
+  "change": "wasm-determinism-init",
+  "archivedAt": "2026-08-16T11:04:57.252Z",
+  "codeCommit": "692282abe5b53a5f78d440d12fce03e482f7dccb",
+  "planningBranch": "fix/wasm-determinism",
+  "planningTreeState": "dirty",
+  "evidence": [
+    {
+      "path": "evidence/exports-map-resolution.mjs",
+      "sha256": "d7ebd19e8dc086d08e80b8400043a173c694e4bdf2df477989bb60a9486396e1"
+    },
+    {
+      "path": "evidence/exports-map-seal-control.mjs",
+      "sha256": "ba007d02cf25aae11d009ff51cbaa16836aad2613f580640ed47c0d44586759a"
+    },
+    {
+      "path": "evidence/gate-form-compare.mjs",
+      "sha256": "31f7bfb05443a564a7e40916a8207ab9a702bc155149df64dc3fe6b4e7d2f62d"
+    },
+    {
+      "path": "evidence/implementation-report.md",
+      "sha256": "f9ba4d5e57bb662dde89efc3d780a1fd12237f61f9bdf59ee9a9ee4dbeec1d91"
+    },
+    {
+      "path": "evidence/logs/api-surface-negative-controls.log",
+      "sha256": "c5db226e6716454e392f7d871b271b04bb0632918f9eb37b613af4a9992b1982"
+    },
+    {
+      "path": "evidence/logs/bun-test-final.log",
+      "sha256": "5c02b4d858cafd80a2a776444a0bc9b6fa820496523ab81b524cb3a4d3b2972e"
+    },
+    {
+      "path": "evidence/logs/bun-test-prefix-baseline.log",
+      "sha256": "64b471cc9a1f17d2805d7655e3c03bdda1046bfe55225432f93c4dc1a773546c"
+    },
+    {
+      "path": "evidence/logs/c6-anchor-prefix.log",
+      "sha256": "4a6b762adc3da25a87dbc0d3d1586ac5e26a47d8b25038f780104091cee8684a"
+    },
+    {
+      "path": "evidence/logs/check-wasm-chain-final.log",
+      "sha256": "834da061bc26c975e43831f0eb8e2e6e2c38bbd939b25769a6c533a8894bfedb"
+    },
+    {
+      "path": "evidence/logs/checker-family-sweep.log",
+      "sha256": "4c375ac2a8ea6918611181d0c4dbe59dfa21aa70aaff0f97b394e072e62757b0"
+    },
+    {
+      "path": "evidence/logs/ci-pr3-round1-ubuntu-FAIL.log",
+      "sha256": "6201c0d09294b51aff55355e65fdc7ce511b41b18be3fdd0ac3561b8b03ead1b"
+    },
+    {
+      "path": "evidence/logs/exports-map-resolution.log",
+      "sha256": "c6dabfaf76e98ee87cbc01f22e05b4979c0e1fa5c63ce7ea14b79ead4ce0d113"
+    },
+    {
+      "path": "evidence/logs/exports-map-seal-control.log",
+      "sha256": "710fbdbc0bacec153a005bb99ba1c7ae65dc480f8139d2a0c5a582b109816b07"
+    },
+    {
+      "path": "evidence/logs/gate-form-compare.log",
+      "sha256": "858aa0bf41a326db161611d3291b5e310736d96fffb0e0e9c188f9354a4ee1e9"
+    },
+    {
+      "path": "evidence/logs/modified-delta-fidelity.log",
+      "sha256": "d5f2b5e1ddd005985537c337f22a55d93f46762bc55a2118d7798184df2b5aaa"
+    },
+    {
+      "path": "evidence/logs/mutation-prefix-gates.log",
+      "sha256": "e64bc0c24329a219e191a9f1fb38b4e62a53b1641f27731007b13048da2f5db7"
+    },
+    {
+      "path": "evidence/logs/next-build-green.log",
+      "sha256": "13a846b5c0fbe9f99bef8c3c0f150339fff429e74f0300dfcfabc201b5f49ae2"
+    },
+    {
+      "path": "evidence/logs/next-build-node-condition-attempt1-FAIL.log",
+      "sha256": "0abe7f7633821a7f975bd824cb478552bbdfa45d7fcdf58bdd3fcc5925a663d8"
+    },
+    {
+      "path": "evidence/logs/next-build-node-condition-attempt2-FAIL.log",
+      "sha256": "add48e467c601c2acd77525c81321e62bff24f2428ce65dc7782cc161f19e3cc"
+    },
+    {
+      "path": "evidence/logs/posix-path-adjacency.log",
+      "sha256": "53d81d906c042470f2f4dd398e188e4df57d28bea978eb8357911a743046ce44"
+    },
+    {
+      "path": "evidence/logs/published-examples-final.log",
+      "sha256": "262e09ae52ce7756ca0c7df5cdec4e61f9f8afeb863d387d819f9ec36681d900"
+    },
+    {
+      "path": "evidence/logs/reproducible-fresh-target.log",
+      "sha256": "e953515256c69c9d78fa362cc7a34796c4b12bf6f8e1f3ddf9a5384792280fbc"
+    },
+    {
+      "path": "evidence/logs/slash-form.log",
+      "sha256": "38cfed26b515563e781c683e10ca647efaccc84ddda3b7c242eccc7086bbbf4e"
+    },
+    {
+      "path": "evidence/logs/vite-example-build.log",
+      "sha256": "567d2a2c6cadcc1fc1b23b43b4320e17c01dccd9b7e5ea61160f2c1cee31980d"
+    },
+    {
+      "path": "evidence/posix-path-adjacency.mjs",
+      "sha256": "d873eecea4c2ceb14f80298d6b547afadbd603363b2c08f3c4e93081c2cf0ce9"
+    },
+    {
+      "path": "evidence/regression.md",
+      "sha256": "1f3b16cf6271fc592ac4852523782bc84fc4891f3f38dd144070a75bf8017348"
+    },
+    {
+      "path": "evidence/rescope-values.mjs",
+      "sha256": "565d9f0bd51b6649a943fbf27bfd51894680b0ea27ac9b8fa23d897e95704378"
+    },
+    {
+      "path": "evidence/ship-log.md",
+      "sha256": "c54327a5438b1c4b427b19d088aed0da5006297c7475deb308ebec65eb31182e"
+    },
+    {
+      "path": "evidence/slash-form.mjs",
+      "sha256": "e662136eef4049a7cf8b0bcb170e1bd287d405534922f0bd05c992782ca42f11"
+    }
+  ],
+  "probes": [],
+  "handoffAbsorbed": null,
+  "ephemeraDiscarded": [
+    "auto-run.json"
+  ],
+  "missing": [
+    "verification-report"
+  ]
+}
