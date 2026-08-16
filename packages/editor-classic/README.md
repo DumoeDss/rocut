@@ -47,16 +47,28 @@ minor release may change **exactly what the classes permit and nothing they don'
   test-mock entry (`./evidence/wasm-test-mock`). Evidence/test infrastructure, unstable
   by intent: these may change or be removed as evidence needs evolve.
 
-## Known constraint on `./storage/migrations`
+## `./storage/migrations` initialization (former constraint, repaired)
 
-The published migration chain (the runner, the 31 transformers and
-`CURRENT_PROJECT_VERSION`) currently requires the wasm test-mock entry
-(`@opencut/editor-classic/evidence/wasm-test-mock`) to initialize in plain TypeScript
-consumers: the chain's wasm initialization fails with
-`wasm.__wbindgen_start is not a function` in any consumer that does not pre-initialize
-the wasm module — a runtime property of the current surface, identical in-repo and from
-installed tarballs. This is stated as a constraint of the current `0.x` surface, not a
-fix commitment: a fix is tracked at Direction level, not in this package.
+Earlier `0.x` text stated that the migration chain (the runner, the 31 transformers and
+`CURRENT_PROJECT_VERSION`) required the wasm test-mock entry
+(`@opencut/editor-classic/evidence/wasm-test-mock`) to initialize, because the chain died
+with `wasm.__wbindgen_start is not a function` in any consumer that did not pre-initialize
+the wasm module. **That is no longer true.** The chain loads in a plain TypeScript
+consumer with no mock in the process.
+
+The cause was never in this package, nor in the wasm binary. wasm-pack's
+`--target bundler` entry initializes via `import * as wasm from "./opencut_wasm_bg.wasm"`,
+which needs the WebAssembly/ESM integration; bun resolves a `.wasm` import to an asset path
+string instead, so the module namespace had no `__wbindgen_start` to call. `opencut-wasm`
+now also ships an explicitly-instantiating entry: bun reaches it automatically through the
+package's `bun` export condition, and any other runtime that needs it imports
+`opencut-wasm/sync` explicitly. Bundler and browser consumers keep resolving the same
+bundler entry as before, byte-for-byte. `script/check-wasm-init.mjs` loads this exact chain,
+mock-free, on every CI run and keeps the pre-fix failure as its negative control.
+
+The chain still needs `culori` (a declared dependency since S05 P3) and a runtime that can
+execute the shipped TypeScript source — in practice bun, which is the runtime the routing
+above covers automatically.
 
 ## Consumer obligations (from-tarball adoption)
 

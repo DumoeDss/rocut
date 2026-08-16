@@ -1,0 +1,35 @@
+# checker-family sweep, post-change, 2026-08-16T08:11:00Z
+# method: every script/check-*.mjs run bare in name order, EXIT[name]:code per checker (S05 Group-1 method, unchanged)
+# state: rust/wasm/pkg built + bun install done; apps/vite-example dist and dist-surface-css built
+EXIT[agent-evidence]:0
+EXIT[asset-manifest]:2
+EXIT[distributable-boundary]:0
+EXIT[editor-singleton]:0
+EXIT[emitted-runtime-assets]:1
+EXIT[headless-graph]:2
+EXIT[headless-semantic-result]:2
+EXIT[host-composition]:0
+EXIT[next-imports]:0
+EXIT[package-boundary]:0
+EXIT[packed-manifest-closure]:0
+EXIT[port-boundary]:0
+EXIT[react-singleton]:0
+EXIT[reference-boundary]:0
+EXIT[resolution-equivalence]:1
+EXIT[runtime-asset-boundary]:0
+EXIT[sdk-consumer-view]:0
+EXIT[sdk-surface-labels]:0
+EXIT[session-resource-boundary]:0
+EXIT[session-state-boundary]:0
+EXIT[storage-boundary]:0
+EXIT[surface-boundary]:0
+EXIT[surface-css-boundary]:0
+EXIT[surface-portal-boundary]:0
+EXIT[surface-private-drag]:0
+EXIT[transaction-boundary]:0
+EXIT[type-baseline]:1
+EXIT[wasm-api-surface]:0
+EXIT[wasm-init]:0
+EXIT[wasm-paths]:0
+SKIP[wasm-reproducible]: excluded — it rebuilds the wasm (minutes); run via bun run check:wasm:reproducible
+EXIT[wasm-source]:0
