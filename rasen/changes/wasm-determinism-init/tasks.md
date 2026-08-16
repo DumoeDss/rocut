@@ -75,10 +75,23 @@ Evidence: `rasen/changes/wasm-determinism-init/evidence/`.
       expect() / 730 tests / 118 files, same six failure names. (The suite mocks `opencut-wasm`
       globally, so it never exercised the real entry either way; the six failures are pre-existing
       and unrelated — see `evidence/regression.md`.)
-- [ ] 4.6 `apps/web` Next build (the `node` condition's blast radius) and `apps/vite-example`
-      build (`default` condition unchanged).
-- [ ] 4.7 Checker-family sweep, before/after, with the exit-code census.
-- [ ] 4.8 Executable dead-target scan over every path string this change introduced.
+- [x] 4.6 `apps/web` Next build and `apps/vite-example` build: both exit 0. The Next build is what
+      **found** the `node`-condition defect — two failing builds are committed beside the green one
+      because they are the measurement that narrowed the routing.
+- [x] 4.7 Checker-family sweep: 30 → 32 files, 31 swept (the reproducibility gate excluded **by
+      name, printed in the log**), 25 exit-zero / 6 nonzero, nonzero set byte-identical to the
+      documented S05 set. A transient 7th (`surface-css-boundary`) was chased to its cause — a
+      fresh worktree has no `dist-surface-css` — and built rather than accepted.
+- [x] 4.8 Executable dead-target scan: 582 unique path-shaped strings across the 19 touched files,
+      each `existsSync`-tested; 10 non-existent, **0 attributable to this change**, each of the ten
+      attributed in `evidence/regression.md` §7.
+- [x] 4.9 `script/run-published-examples.mjs` (the `sdk-examples` CI job) run locally end to end:
+      4 examples, **10 legs all exit-zero**. custom-storage's production leg — packed tarballs,
+      npm-installed, no mock in the process — reports `classic chain: loaded (31 steps, target
+      v31)` and `migration/by-replication: green`. The repair proven **from installed tarballs**.
+- [x] 4.10 Falsification sweep over the tree for statements the repair made untrue. Eight found,
+      all corrected (two main specs via MODIFIED deltas, four example files, and two vite-config
+      comments confirmed **still true** and left alone). Table in `evidence/regression.md` §8.
 
 ## 5. Documentation
 
@@ -89,6 +102,13 @@ Evidence: `rasen/changes/wasm-determinism-init/evidence/`.
       byte-identical to published `0.2.10`, delta enumerated.
 - [x] 5.4 `script/generate-sbom.mjs` D-4 — `verbatim` updated and the post-processing named, so the
       SBOM entry stays true (its probe still fires: the `./snippets/*` entry is untouched).
+- [x] 5.5 Delta specs written after `rasen validate --strict` refused the change for having none.
+      The proposal had claimed "no capability change", which was the easier claim rather than the
+      true one: `self-built-wasm-artifact` and `wasm-api-surface` gain ADDED requirements, and
+      `sdk-third-party-conformance` and `sdk-published-examples` gain MODIFIED ones for the
+      statements the repair falsified.
+- [x] 5.6 `examples/custom-storage` — README, package description and both runner headers retired
+      the "honest pair"; `run.ts`'s distinct-skip **branch is kept** as the fail-closed path.
 
 ## 6. Delivery
 

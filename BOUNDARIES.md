@@ -1206,7 +1206,8 @@ resolution-equivalence:1, type-baseline:1`, the known pre-existing / capture-run
 **Non-coverage, deliberately**: LICENSE / NOTICE / SBOM are P7's — the manifests' `files`
 entries for them are placeholders P7 makes real. The wasm-init constraint on classic's
 `./storage/migrations` is stated in that package's README as current-surface truth; a fix is
-tracked at Direction level, not in the package. Release automation is out of scope; CI is P6's
+tracked at Direction level, not in the package. *(Superseded 2026-08-16: repaired — §17. This
+paragraph is left as the P5-era record.)* Release automation is out of scope; CI is P6's
 decision, which inherits two ready legs — P3's install harness (its env seams, above) and this
 change's `check:surface-labels` plus `surface.json` as the machine-readable classification
 source for any maturity-gate tooling P6 might wire.
@@ -1224,7 +1225,7 @@ linking, self-logged exit codes), and a CI leg that runs the whole thing on a cl
 | --- | --- | --- |
 | `examples/install-packages/` | the install contract | npm installs the three `@opencut/*` tarballs, every entry the example imports resolves, the READMEs and `surface.json` are readable as data, and classic's react peer stays honestly unsatisfied in a react-free tree — the cheapest adopter milestone, no editor mounted |
 | `examples/agent-transaction/` | the published scenario | the agent-transaction walk over the consumer's own in-memory store through published entries only: a 9-step plan executing green, an 87-assertion apply ledger, and a fresh-store reopen from the persisted snapshot at the committed revision |
-| `examples/custom-storage/` | the honest pair | an alien file-backed adapter through the published conformance suites; the production leg records the wasm-init `NOT LOADABLE` finding distinctly and skips the migration leg distinctly (nothing hidden), the mock-installed leg runs the real 31-step chain through the experimental `./evidence/wasm-test-mock` entry |
+| `examples/custom-storage/` | the honest pair *(as of P6; superseded 2026-08-16 — §17)* | an alien file-backed adapter through the published conformance suites; the production leg records the wasm-init `NOT LOADABLE` finding distinctly and skips the migration leg distinctly (nothing hidden), the mock-installed leg runs the real 31-step chain through the experimental `./evidence/wasm-test-mock` entry. **Since §17 the production leg loads the real chain from the installed tarballs and exercises migration; the `NOT LOADABLE` branch is kept as the fail-closed path.** |
 | `examples/embed-surface/` | the forcing consumer | a React + vite embed of `SessionEditorSurface` — classic's full React chrome, the peer-dep contract satisfied from the consumer's own manifest, typecheck + build + a GPU-free Playwright smoke (mount gate, branding, degraded-mode banner, focus scope, ruler-scrubbed playhead, clean console/pageerror/network) |
 
 **The workspace-stance rule.** The examples' committed manifests declare plain exact registry
@@ -1253,6 +1254,13 @@ migration chain itself through the **experimental** `./evidence/wasm-test-mock` 
 entry carries the experimental label's full consequence: it is evidence tooling a consumer may
 run, never production surface they may depend on, and the example's README says so where it
 names the entry.
+
+> *Superseded 2026-08-16 (§17).* The wasm-init defect is repaired, so the production leg now
+> loads the real chain from the installed tarballs and exercises migration — measured, 10/10
+> example legs exit-zero. The paragraph above stays as the P6-era record. What survives it
+> unchanged is the **label consequence**: the mock-installed leg still depends on an
+> experimental-labeled entry and still inherits its instability, and it is still the leg that
+> works in a runtime that cannot initialize the wasm at all.
 
 **CONTROL-1c and the leakage lesson (F-P6-7).** Node resolves a bare import by walking
 `node_modules` directories up to the drive root — so a scratch root below **any** ancestor
@@ -1301,7 +1309,9 @@ Its local twin is the change's Group-5 clean full-run log, same env shape; the f
 execution lands on the post-delivery push, and its exit-code lines close the evidence loop.
 
 **Non-coverage, deliberately**: LICENSE / NOTICE / SBOM notices in the example files are P7's.
-The wasm-init constraint is Direction-level, demonstrated not repaired (the honest pair above).
+~~The wasm-init constraint is Direction-level, demonstrated not repaired (the honest pair
+above).~~ *Struck 2026-08-16: repaired (§17), so it is no longer a non-coverage item — the
+examples now cover the migration path from installed tarballs.*
 No example covers the desktop shape — the electron Host (section 12) does, and a React Native
 or server-rendered embed has no example yet.
 

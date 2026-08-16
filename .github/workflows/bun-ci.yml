@@ -126,11 +126,14 @@ jobs:
 
   # Claims exactly what run-published-examples.mjs runs: the four
   # published-SDK examples (install-packages, agent-transaction,
-  # custom-storage's honest pair, embed-surface's build + GPU-free Playwright
-  # smoke) plus the consumer view over the freshly packed tarballs — the
-  # Group-5 clean full-run log
+  # custom-storage's two migration legs, embed-surface's build + GPU-free
+  # Playwright smoke) plus the consumer view over the freshly packed tarballs —
+  # the Group-5 clean full-run log
   # (rasen/changes/s05-published-examples/evidence/logs/group5-full-run-clean.log)
-  # is this job's local twin, same env shape (scratch under $HOME). Does NOT
+  # is this job's local twin, same env shape (scratch under $HOME). Since the
+  # wasm-init repair (BOUNDARIES §17) custom-storage's PRODUCTION leg loads the
+  # real 31-step chain from the installed tarballs and exercises migration; it
+  # used to record that failure and skip that leg. Does NOT
   # claim: the local-only checkers stay local (the checker family sweep is a
   # local gate), no matrix extension beyond ubuntu, no publish. The first
   # true CI execution lands on the post-delivery push — the local twin above
