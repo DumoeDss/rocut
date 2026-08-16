@@ -81,14 +81,27 @@ at two different, individually fixable causes:
 
 ### New Capabilities
 
-None. No product capability is added; this is build-toolchain and packaging work behind the
-existing wasm gates.
+None. No new capability is introduced; two existing ones gain requirements.
 
 ### Modified Capabilities
 
-None. No frozen public signature of `@opencut/editor-ports`, `@opencut/editor-contracts` or
-`@opencut/editor-classic` changes. The `opencut-wasm` artifact keeps the identical 38 public
-exports; only the *resolution condition* under which a non-bundler runtime reaches them is added.
+- `self-built-wasm-artifact` — **two ADDED requirements**: the redistributed artifact initializes
+  in runtimes without the WebAssembly/ESM integration (the wasm-init repair, its non-vacuity
+  control, the "no bundler-claimed condition" rule and the deep-path preservation rule), and the
+  artifact is byte-reproducible on a pinned toolchain (pins refused at build time, applied by CI,
+  two builds byte-identical, and the honest scoping of where the reproducibility gate runs).
+  Nothing existing is edited: the capability's standing statement that binary hash equality is not
+  the *correspondence* criterion is about differing toolchain versions and is untouched by a
+  same-pin reproducibility claim — the delta says so explicitly.
+- `wasm-api-surface` — **two ADDED requirements**: the recorded surface covers both entries and
+  their routing (with a negative control per rule), and recorded values state how they were derived
+  so a corrected value carries the derivation that condemns the old one, rather than being repaired
+  by weakening the assertion that caught it.
+
+**No frozen public signature moves.** `@opencut/editor-ports`, `@opencut/editor-contracts` and
+`@opencut/editor-classic` are untouched in their surfaces; the `opencut-wasm` artifact keeps the
+identical 38 public exports, and what is added is the *resolution condition* under which a
+non-bundler runtime reaches them.
 
 ## Impact
 
