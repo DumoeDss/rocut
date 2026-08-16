@@ -15,14 +15,19 @@
  * recorded with wasm-pack 0.13.1 / rustc 1.88.0, and the gate reported `wasm-exports`,
  * `binary-declarations` and `package.json` deltas that no commit had caused.
  *
- * **The LICENSE and README values were stale, not machine-bound** (2026-08-16). They were recorded
- * from CRLF-era bytes; commit `1646ee5a` later normalised those blobs to LF, after which the
- * contract was unsatisfiable on *every* platform, Windows included. Proof by construction:
- * `sha256(crlf(LICENSE)) = 8117f9bb…3f59d3d` and `sha256(crlf(rust/wasm/README.md)) =
- * a09d7957…6b4d3191` are exactly the two values this file used to carry, while the LF bytes in
- * the tree hash to the values below. wasm-pack copies both files byte-for-byte out of the crate
- * directory, so they are generated-by-copy and platform-independent — there was never a
- * Windows-vs-Linux component to that failure.
+ * **The LICENSE and README values were checkout-dependent, which took two attempts to see**
+ * (2026-08-16). First reading: they were "stale CRLF-era recordings" — true as far as it went,
+ * since `sha256(crlf(LICENSE)) = 8117f9bb…3f59d3d` and `sha256(crlf(rust/wasm/README.md)) =
+ * a09d7957…6b4d3191` are exactly the values this file used to carry. The conclusion drawn from
+ * that — "generated-by-copy, therefore platform-independent" — was **wrong**, and CI proved it one
+ * round later: re-recorded as LF bytes, the gate failed on `build (windows-latest)`, whose runner
+ * checks out with git's `core.autocrlf` ON and therefore hands wasm-pack CRLF files to copy.
+ *
+ * The right reading is that these are the only two files wasm-pack COPIES rather than generates,
+ * so their bytes are a property of the checkout, not of the artifact. They now live in
+ * `pinnedTextHashes` and are compared on content. Both directions of the mistake are kept on
+ * record there, because a contract that only shows its final answer teaches nobody why it is
+ * shaped that way.
  */
 export const API_GATE = "script/check-wasm-api-surface.mjs";
 export const BASELINE_DTS_SHA =
@@ -87,13 +92,38 @@ export const EXPECTED = {
 	pinnedHashes: {
 		".gitignore":
 			"684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1",
-		LICENSE: "814632368a8331fd1f485f4bd4b7ecb6401e5f2a24fba79cd3e21aff8ca39a6e",
-		"README.md":
-			"c8fe27ab5d2e12963e1f04571549afc9828060f4dfec85e6afaa188d3d90a128",
 		"package.json":
 			"f92d109c0ed431a74974f90bf207767c033f784af10a34a0accebb1bb921ca18",
 		[SYNC_ENTRY]:
 			"aa6081035bd18e34e99c22e4fa7f3e41d212a602fd6ab552d654f948c4ae6471",
+	},
+	/**
+	 * `LICENSE` and `README.md` are the only two files wasm-pack **copies out of the checkout**
+	 * rather than generates, so their bytes carry the *checkout's* line-ending configuration, not a
+	 * property of the artifact. They are hashed after normalising CRLF to LF: the pin is on their
+	 * CONTENT.
+	 *
+	 * **Byte-pinning them was the wrong instrument from the start, and both directions of the
+	 * mistake are now on record.** The values this contract carried until 2026-08-16 were
+	 * `8117f9bb…` / `a09d7957…` — exactly `sha256(crlf(…))` of these files, recorded on a checkout
+	 * with git's `core.autocrlf` ON. They were re-recorded here as the LF bytes from a checkout
+	 * with it OFF, and PR #3 round 4 immediately failed on `build (windows-latest)`, whose runner
+	 * checks out with `autocrlf` ON:
+	 *
+	 *     generated-files: LICENSE differs from the recorded build output
+	 *     generated-files: README.md differs from the recorded build output
+	 *
+	 * Neither recording was wrong for its machine; both were wrong as a contract term. The
+	 * normalised hash is the same value on every checkout.
+	 *
+	 * Still asserted: the exact content. One changed character fails (`edited-license` control),
+	 * and `check-wasm-source.mjs` independently asserts `rust/wasm/LICENSE` is byte-identical to
+	 * the root `LICENSE` within a checkout.
+	 */
+	pinnedTextHashes: {
+		LICENSE: "814632368a8331fd1f485f4bd4b7ecb6401e5f2a24fba79cd3e21aff8ca39a6e",
+		"README.md":
+			"c8fe27ab5d2e12963e1f04571549afc9828060f4dfec85e6afaa188d3d90a128",
 	},
 	changedBaselineHashes: {
 		"opencut_wasm.d.ts": BASELINE_DTS_SHA,
@@ -235,6 +265,7 @@ export const CONTROLS = {
 	"missing-trampoline": "wasm-exports",
 	"stable-export-disguised-as-trampoline": "wasm-exports",
 	"edited-declaration": "binary-declarations",
+	"edited-license": "generated-files",
 	"invalid-backend": "graphics-provider",
 	"boolean-count": "graphics-provider",
 	"boolean-handles": "gpu-provider",
@@ -260,6 +291,8 @@ export const CONTROLS = {
  * deliberate tolerance from a hole nobody noticed.
  */
 export const POSITIVE_CONTROLS = {
+	"crlf-checkout":
+		"an autocrlf=true checkout, so the copied LICENSE/README arrive with CRLF (the exact windows-latest observation)",
 	"trampoline-hash-swap":
 		"another build host's closure-trampoline symbol hashes (the exact CI observation)",
 };

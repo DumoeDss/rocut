@@ -112,7 +112,25 @@ Evidence: `rasen/changes/wasm-determinism-init/evidence/`.
 
 ## 6. Delivery
 
-- [ ] 6.1 Logical commits, explicit pathspecs, `.rasen/` staging guard, LF verified.
-- [ ] 6.2 Independent review (author ≠ verifier), findings graded, fixes mutation-verified.
-- [ ] 6.3 Push `fix/wasm-determinism`, open the PR to `DumoeDss/rocut` `main`, CI green on the
-      3-OS matrix — which is this change's only cross-platform evidence, stated as such.
+- [x] 6.1 Logical commits, explicit pathspecs, `.rasen/`/`.work/` staging guard asserted on every
+      commit, LF verified per file. Pre-push: no credential-shaped strings in the diff, 0 scratch
+      paths and 0 `rust/wasm/pkg/` build output committed across the whole branch.
+- [x] 6.2 Independent review (author ≠ verifier). Neither reviewer agent returned a written report,
+      so its **scratch harnesses were mined and re-run directly** — which is where the value was:
+      it independently re-derived the CRLF hashes from the HEAD blob, and its 9-case gate-form
+      harness **found a real defect in my rewrite** (block-form `run: |` reported as missing) and
+      **falsified my "no edit the old catches and the new doesn't" claim**. Both fixed, both
+      recorded in `evidence/regression.md` §7b rather than smoothed over.
+- [x] 6.3 Pushed; **PR #3** open against `DumoeDss/rocut` `main`.
+- [ ] 6.4 CI green on the 3-OS matrix — this change's only cross-platform evidence, stated as such.
+      Round history, each fix evidence-first:
+      - **round 1** — `check-wasm-paths` (ubuntu): literal adjacency false positive. A class local
+        Windows runs **cannot** reproduce (`/cargo\` 286, `/cargo/` 0). Fixed + 2 new controls.
+        `sdk-examples` **passed** — the wasm-init repair confirmed from installed tarballs on Linux.
+      - **round 2** — `check-wasm-api-surface` (ubuntu), with both pins *confirmed applied*. Not
+        drift. The gate could not say which export moved, so round 3 shipped the diff first.
+      - **round 3** — diff printed: 3 in / 3 out, all closure trampolines, 55 others identical.
+        Re-scope written only after reading it.
+      - **round 4** — `build (ubuntu-latest)` **success**: first clean Linux pass of all four wasm
+        gates. macOS and Windows pending (fail-fast cancelled them in rounds 1–3, so both are still
+        first-run).

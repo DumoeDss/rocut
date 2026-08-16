@@ -70,6 +70,14 @@ function loadSurface() {
 		hashes: Object.fromEntries(
 			readdirSync(PKG).map((name) => [name, sha(read(join(PKG, name)))]),
 		),
+		// Line-ending-normalised hashes for the files wasm-pack COPIES out of the checkout, whose
+		// bytes carry the checkout's git config rather than anything about the artifact.
+		textHashes: Object.fromEntries(
+			Object.keys(EXPECTED.pinnedTextHashes).map((name) => [
+				name,
+				sha(readText(join(PKG, name)).replaceAll("\r\n", "\n")),
+			]),
+		),
 		dts,
 		wrapper,
 		syncEntry,
@@ -128,7 +136,21 @@ function validate(surface) {
 	}
 	for (const [name, hash] of Object.entries(EXPECTED.pinnedHashes)) {
 		if (surface.hashes[name] !== hash) {
-			fail("generated-files", `${name} differs from the recorded build output`);
+			// Print the observed value: a bare "differs" costs a whole CI round to diagnose, which
+			// this gate has now cost twice.
+			fail(
+				"generated-files",
+				`${name} differs from the recorded build output (observed ${surface.hashes[name]}, recorded ${hash})`,
+			);
+		}
+	}
+	// Copied-from-checkout text, compared on CONTENT — see EXPECTED.pinnedTextHashes.
+	for (const [name, hash] of Object.entries(EXPECTED.pinnedTextHashes)) {
+		if (surface.textHashes[name] !== hash) {
+			fail(
+				"generated-files",
+				`${name} content differs from the recorded build output (observed ${surface.textHashes[name]}, recorded ${hash})`,
+			);
 		}
 	}
 	for (const [name, hash] of Object.entries(EXPECTED.changedBaselineHashes)) {
@@ -400,6 +422,19 @@ function mutate(surface, control) {
 			"export const snappedSeekTime:",
 			"export const snappedSeekTimeRenamed:",
 		);
+	}
+	if (control === "edited-license") {
+		// Content change must still fail: normalising line endings must not normalise away edits.
+		copy.textHashes.LICENSE = sha("MIT License\n\nCopyright (c) somebody else\n");
+	}
+	if (control === "crlf-checkout") {
+		// POSITIVE control: the exact `build (windows-latest)` observation — an autocrlf=true
+		// checkout, so the copied text files arrive with CRLF. Their raw bytes hash to the two
+		// values this contract carried before 2026-08-16; the content hash is unchanged.
+		copy.hashes.LICENSE =
+			"8117f9bb64534f7530fc6139b014fd1c1465f7981f93d1871789150fa3f59d3d";
+		copy.hashes["README.md"] =
+			"a09d79579ac121a05ab38ca5c4cba505d91f2ee4359d336cc2cc1fd36b4d3191";
 	}
 	if (control === "trampoline-hash-swap") {
 		// POSITIVE control: another build host's symbol hashes, in both the export table and the
