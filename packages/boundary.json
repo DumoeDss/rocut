@@ -10,6 +10,7 @@
     { "id": "apps/web", "root": "apps/web/src", "ownership": "map" },
     { "id": "apps/vite-example", "root": "apps/vite-example" },
     { "id": "apps/electron-host", "root": "apps/electron-host/src" },
+    { "id": "apps/cli", "root": "apps/cli/src" },
     { "id": "examples", "root": "examples" }
   ],
   "shellPaths": [
