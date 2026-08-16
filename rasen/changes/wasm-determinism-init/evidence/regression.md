@@ -243,6 +243,16 @@ standing:
 S05 close-out, and it is marked closed with a pointer to §17 rather than edited into agreement with
 a later measurement.
 
+**MODIFIED deltas restate their requirements in full — measured, not asserted**
+(`logs/modified-delta-fidelity.log`). A `MODIFIED` block replaces the base requirement wholesale,
+so a scenario left out of the restatement is silently deleted from the capability on archive. The
+check extracts every `Requirement || Scenario` pair from `git show 661d7ac8:rasen/specs/<cap>/spec.md`
+and from the delta, then reports any base pair whose requirement is being modified but whose
+scenario is absent: **`sdk-published-examples` 11 base pairs, `sdk-third-party-conformance` 17 base
+pairs, 0 dropped scenarios in either.** The only removals are *within* one scenario's bullets —
+the `wasm-initialization defect is …demonstrated, not repaired` non-coverage bullet — and that
+removal is the point of the delta, with a new scenario asserting the claim is gone.
+
 ## Findings recorded, not fixed
 
 - **F1 (Minor, pre-existing).** `.github/workflows/bun-ci.yml` caches bun modules with
