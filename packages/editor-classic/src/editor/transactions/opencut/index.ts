@@ -17,9 +17,9 @@ export { createDetachedCommandContext } from "./draft-context";
 export { rebaseOpenCutHistoryDraft } from "./history-rebase";
 export { classifyCommand, REGISTERED_COMMAND_NAMES } from "./routing";
 export type { OpenCutUiCommitResult, PreparedOpenCutUiCommit } from "./router";
-export { assetCatalogFromMedia, COMMAND_ROUTING_CLASSES } from "./types";
+export { assetCatalogFromMedia } from "./types";
+export { COMMAND_ROUTING_CLASSES, type CommandRoutingClass } from "./routing";
 export type {
-	CommandRoutingClass,
 	EncodedOpenCutPublicationReceipt,
 	OpenCutAssetCatalogEntry,
 	OpenCutCommitToken,

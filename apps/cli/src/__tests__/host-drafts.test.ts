@@ -63,8 +63,8 @@ describe("host draft endpoints (S07 draft verbs)", () => {
 
 			const before = (await (
 				await fetch(`${base}/tracks`)
-			).json()) as unknown[];
-			expect(before.length).toBe(0);
+			).json()) as { name: string }[];
+			expect(before.map((track) => track.name)).toEqual(["Main Track"]);
 			const approved = (await (
 				await fetch(`${base}/drafts/${begun.draftId}/approve`, {
 					method: "POST",
@@ -75,7 +75,11 @@ describe("host draft endpoints (S07 draft verbs)", () => {
 			const after = (await (await fetch(`${base}/tracks`)).json()) as {
 				name: string;
 			}[];
-			expect(after.map((track) => track.name)).toEqual(["d-a", "d-b"]);
+			expect(after.map((track) => track.name)).toEqual([
+				"Main Track",
+				"d-a",
+				"d-b",
+			]);
 		} finally {
 			await host.close();
 		}
@@ -106,8 +110,8 @@ describe("host draft endpoints (S07 draft verbs)", () => {
 			expect(discarded.reason).toBe("discarded");
 			const tracks = (await (
 				await fetch(`${base}/tracks`)
-			).json()) as unknown[];
-			expect(tracks.length).toBe(0);
+			).json()) as { name: string }[];
+			expect(tracks.map((track) => track.name)).toEqual(["Main Track"]);
 			const snapshot = (await (
 				await fetch(`${base}/drafts/${begun.draftId}`)
 			).json()) as { state: string; rejectionReason?: string };

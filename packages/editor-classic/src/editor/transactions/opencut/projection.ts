@@ -17,7 +17,7 @@ import {
 } from "@opencut/editor-contracts";
 import type { TransactionEngineDocument } from "@opencut/editor-contracts/engine";
 import { canonicalOperationFingerprint } from "@opencut/editor-contracts/engine";
-import type { Bookmark, TimelineElement, TimelineTrack } from "../../../timeline";
+import type { Bookmark, TimelineElement, TimelineTrack } from "../../../timeline/types";
 import { cloneOpaque } from "../../persistence/opaque-value";
 import type { OpenCutAssetCatalogEntry, OpenCutProjectDraft } from "./types";
 

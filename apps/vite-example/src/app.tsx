@@ -1,11 +1,18 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@opencut/editor-classic/ui";
 import { TooltipProvider } from "@opencut/editor-classic/ui";
 import { MobileGate } from "@opencut/editor-classic/ui";
 import { SessionEditorSurface } from "@opencut/editor-classic/surface";
+import { EditorSessionHost, useEditorInstance } from "@opencut/editor-classic/session";
 import { ViteEditorHost } from "./host/vite-editor-host";
 import { createViteEditorHost } from "./host/vite-host-config";
+import {
+	createHostServedEditorHost,
+	detectHostServedSurface,
+	subscribeHostRevisions,
+	type HostServedSurface,
+} from "./host/host-served";
 import { ProjectPicker } from "./project-picker";
 import { EditorErrorBoundary } from "./editor-error-boundary";
 import { C3SessionHarness } from "./c3-session-harness";
@@ -64,7 +71,93 @@ export function App() {
 			/>
 		);
 	}
+	return <BootApp />;
+}
+
+/**
+ * One async gate before anything mounts: if the CLI host serves this page
+ * (the pane deployment), the session boots against the host's project and its
+ * file SSOT; otherwise the standalone IndexedDB app, unchanged.
+ */
+function BootApp() {
+	const [surface, setSurface] = useState<HostServedSurface | null | "checking">(
+		"checking",
+	);
+	useEffect(() => {
+		let cancelled = false;
+		void detectHostServedSurface().then((detected) => {
+			if (!cancelled) setSurface(detected);
+		});
+		return () => {
+			cancelled = true;
+		};
+	}, []);
+	if (surface === "checking") {
+		return <div style={{ height: "100vh" }} />;
+	}
+	if (surface !== null) {
+		return <HostServedApp surface={surface} />;
+	}
 	return <EditorApp />;
+}
+
+function HostServedApp({ surface }: { surface: HostServedSurface }) {
+	const host = useMemo(
+		() =>
+			createHostServedEditorHost({
+				projectId: surface.projectId,
+				base: surface.apiBase,
+			}),
+		[surface],
+	);
+	return (
+		<ThemeProvider
+			attribute="class"
+			defaultTheme="system"
+			disableTransitionOnChange={true}
+		>
+			<TooltipProvider>
+				<Toaster />
+				<HostChrome>
+					<EditorErrorBoundary>
+						<EditorSessionHost host={host}>
+							<HostServedSync projectId={surface.projectId} />
+							<MobileGate>
+								<SessionEditorSurface focusMode="focused" />
+							</MobileGate>
+						</EditorSessionHost>
+					</EditorErrorBoundary>
+				</HostChrome>
+			</TooltipProvider>
+		</ThemeProvider>
+	);
+}
+
+/**
+ * Live view of agent commits: the host's revision stream fires only on
+ * engine-side applies, so every event means "the project changed outside this
+ * session" — reload it from the host store (debounced; a reload storm during
+ * an agent batch is one repaint at the end). This session's own saves never
+ * fire the stream.
+ */
+function HostServedSync({ projectId }: { projectId: string }) {
+	const editor = useEditorInstance();
+	useEffect(() => {
+		let timer: number | undefined;
+		const dispose = subscribeHostRevisions(() => {
+			window.clearTimeout(timer);
+			timer = window.setTimeout(() => {
+				void editor.project.loadProject({ id: projectId }).catch(
+					() => undefined,
+				);
+			}, 250);
+		});
+		return () => {
+			dispose();
+			window.clearTimeout(timer);
+		};
+	}, [editor, projectId]);
+	return null;
 }
 
 function EditorApp() {

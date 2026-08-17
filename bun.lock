@@ -36,6 +36,7 @@
       },
       "dependencies": {
         "@opencut/editor-automation": "0.1.0",
+        "@opencut/editor-classic": "workspace:*",
         "@opencut/editor-contracts": "0.3.0",
         "@opencut/editor-ports": "0.2.0",
       },

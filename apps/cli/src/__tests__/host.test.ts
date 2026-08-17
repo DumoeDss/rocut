@@ -6,11 +6,11 @@ import { existsSync } from "node:fs";
 import { frameRate, projectId, revisionOf } from "@opencut/editor-contracts";
 import type { Project } from "@opencut/editor-contracts";
 import {
-	createTransactionNativeDocumentAdapter,
 	createTransactionNativeProjectSeed,
 } from "@opencut/editor-contracts/engine";
-import { createAutomation } from "@opencut/editor-automation";
+import { CURRENT_PROJECT_VERSION } from "@opencut/editor-classic/transactions";
 import { FileProjectStore } from "../file-store";
+import { openEditorPlaneAutomation } from "../editor-plane";
 import { TargetRegistry } from "../target-registry";
 import { startHost } from "../host";
 
@@ -130,7 +130,10 @@ describe("host start (S06 C3)", () => {
 			const tracks = (await (
 				await fetch(`${base}/${host.token}/api/tracks`)
 			).json()) as { name: string }[];
-			expect(tracks.map((track) => track.name)).toEqual(["t1"]);
+			expect(tracks.map((track) => track.name)).toEqual([
+				"Main Track",
+				"t1",
+			]);
 
 			const invalid = (await (
 				await fetch(`${base}/${host.token}/api/apply`, {
@@ -181,15 +184,19 @@ describe("host start (S06 C3)", () => {
 		});
 		await host.close(); // simulate the host dying
 
-		const store = new FileProjectStore({ root: projectRoot, schemaVersion: 1 });
-		const automation = await createAutomation({
-			store,
+		// Reopen on the editor plane (the dual-plane unification): the same
+		// record the pane's session reads.
+		const { automation } = await openEditorPlaneAutomation({
+			baseStore: new FileProjectStore({
+				root: projectRoot,
+				schemaVersion: CURRENT_PROJECT_VERSION,
+			}),
 			projectId: projectId(path.basename(projectRoot)),
-			documentAdapter: createTransactionNativeDocumentAdapter(),
 		});
 		expect(await automation.revision()).toBe(revisionOf(1));
 		expect((await automation.tracks()).map((track) => track.name)).toEqual([
 			"survivor",
+			"Main Track",
 		]);
 		expect((await readdir(projectRoot)).sort()).toEqual(["project.json"]);
 	});

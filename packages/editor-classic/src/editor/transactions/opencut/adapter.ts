@@ -22,7 +22,7 @@ import type {
 	SceneTracks,
 	TimelineElement,
 	TimelineTrack,
-} from "../../../timeline";
+} from "../../../timeline/types";
 import {
 	OPEN_CUT_MARKER_ID_KEY,
 	cloneOpenCutDraft,

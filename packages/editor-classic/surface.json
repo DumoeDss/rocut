@@ -38,6 +38,10 @@
 			"class": "provider",
 			"reason": "The react-free migration chain (runner, 31 transformers, CURRENT_PROJECT_VERSION) — Classic's own machinery; carries the known wasm-init constraint stated in this package's README as policy truth."
 		},
+		"./transactions": {
+			"class": "provider",
+			"reason": "The editor-native transaction plane (adapter + host seed + envelope reader) - Classic's own machinery, react-free and wasm-free by construction; the dual-plane unification's declared seam (ruled 2026-08-17)."
+		},
 		"./project": {
 			"class": "provider",
 			"reason": "Project helpers — Classic's own machinery."

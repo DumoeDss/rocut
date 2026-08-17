@@ -5,6 +5,9 @@ import {
 	type CommandRoutingClass,
 } from "../../../commands/base-command";
 
+export { COMMAND_ROUTING_CLASSES };
+export type { CommandRoutingClass };
+
 export const REGISTERED_COMMAND_NAMES = Object.freeze(
 	[
 		"AddClipEffectCommand",
