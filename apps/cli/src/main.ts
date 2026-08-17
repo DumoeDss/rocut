@@ -153,6 +153,52 @@ async function main(): Promise<void> {
 			);
 			return;
 		}
+		case "verify": {
+			// The composed-frame proof (S07): digest the frame at a tick.
+			const at = args.positional[0];
+			if (at === undefined || !/^\d+$/.test(at)) {
+				throw new Error(
+					"verify requires a MediaTime tick argument (120000 ticks = 1s)",
+				);
+			}
+			const selector = flag(args, "target") ?? "auto";
+			const resolved = await registry.resolve(selector);
+			if (resolved === null)
+				throw new Error(`no live target matches --target ${selector}`);
+			const proof = (await request(
+				resolved.secret,
+				"GET",
+				`frame?at=${at}`,
+			)) as {
+				revision: number | null;
+				digest: string;
+				description: {
+					frameIndex: number;
+					elements: { id: string; type: string; z: number }[];
+					assets: { id: string; kind: string }[];
+				};
+			};
+			process.stdout.write(
+				JSON.stringify(
+					{
+						target: resolved.entry.id,
+						revision: proof.revision,
+						at: Number(at),
+						frameIndex: proof.description.frameIndex,
+						digest: proof.digest,
+						elements: proof.description.elements.map(
+							(element) => `${element.z}:${element.type}:${element.id}`,
+						),
+						assets: proof.description.assets.map(
+							(asset) => `${asset.kind}:${asset.id}`,
+						),
+					},
+					null,
+					"\t",
+				) + "\n",
+			);
+			return;
+		}
 		case "apply": {
 			const selector = flag(args, "target") ?? "auto";
 			const operationsFile = args.positional[0];

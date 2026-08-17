@@ -32,6 +32,7 @@ import {
 	CURRENT_PROJECT_VERSION,
 	readOpenCutEnvelopeSummary,
 } from "@opencut/editor-classic/transactions";
+import { frameProofFromRecord } from "@opencut/editor-classic/frame-proof";
 import {
 	openEditorPlaneAutomation,
 	prepareEditorProjectRecord,
@@ -288,6 +289,7 @@ async function handleApi(
 ): Promise<void> {
 	const { plane } = context;
 	const automation = plane.automation();
+	const url = new URL(request.url ?? "/", "http://127.0.0.1");
 	const respond = (status: number, body: unknown): void => {
 		response.writeHead(status, { "content-type": "application/json" });
 		response.end(JSON.stringify(body));
@@ -328,6 +330,35 @@ async function handleApi(
 				(entry) => entry.id === plane.projectId,
 			);
 			respond(200, { record, summary });
+			return;
+		}
+		if (request.method === "GET" && route[0] === "frame") {
+			// The composed-frame proof (S07): canonical description of the
+			// frame at a tick + its SHA-256 — deterministic across machines,
+			// no renderer involved. Pixels stay the pane's domain.
+			const at = Number(url.searchParams.get("at"));
+			const record = await plane.baseStore.load({ id: plane.projectId });
+			if (record === null || !Number.isFinite(at) || at < 0) {
+				respond(404, { error: "no-frame" });
+				return;
+			}
+			const engineAssets = await automation.assets();
+			const proof = await frameProofFromRecord({
+				record,
+				assets: engineAssets.map((asset) => ({
+					id: String(asset.id),
+					kind: asset.kind,
+					name: asset.name,
+					...(asset.duration !== undefined && {
+						duration: asset.duration,
+					}),
+					...(asset.width !== undefined && { width: asset.width }),
+					...(asset.height !== undefined && { height: asset.height }),
+				})),
+				at,
+				revision: Number(await automation.revision()),
+			});
+			respond(200, proof);
 			return;
 		}
 		if (request.method === "GET" && route[0] === "events") {
