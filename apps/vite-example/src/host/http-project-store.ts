@@ -58,7 +58,12 @@ export class HttpProjectStore implements ProjectStore {
 
 	constructor(options: HttpProjectStoreOptions = {}) {
 		this.base = options.base ?? "api";
-		this.fetchImpl = (options.fetchImpl ?? fetch) as FetchLike;
+		// Invoke the impl BARE (undefined `this`), never as a method of this
+		// instance: the default is `window.fetch`, a native whose `this` must
+		// be a Window — calling it as `this.fetchImpl(...)` throws
+		// "Failed to execute 'fetch' on 'Window': Illegal invocation".
+		const impl = options.fetchImpl ?? fetch;
+		this.fetchImpl = (input, init) => impl(input, init);
 	}
 
 	private url(path: string): string {

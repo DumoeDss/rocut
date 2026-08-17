@@ -122,9 +122,11 @@ function HostServedApp({ surface }: { surface: HostServedSurface }) {
 					<EditorErrorBoundary>
 						<EditorSessionHost host={host}>
 							<HostServedSync projectId={surface.projectId} />
-							<MobileGate>
-								<SessionEditorSurface focusMode="focused" />
-							</MobileGate>
+							{/* No MobileGate here: the host-served pane is a real
+							    desktop editor embedded in a possibly-narrow
+							    WebContentsView — the width guard exists for
+							    opencut.app mobile visitors, not for the pane. */}
+							<SessionEditorSurface focusMode="focused" />
 						</EditorSessionHost>
 					</EditorErrorBoundary>
 				</HostChrome>
