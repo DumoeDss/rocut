@@ -42,6 +42,10 @@
 			"class": "provider",
 			"reason": "The editor-native transaction plane (adapter + host seed + envelope reader) - Classic's own machinery, react-free and wasm-free by construction; the dual-plane unification's declared seam (ruled 2026-08-17)."
 		},
+		"./frame-proof": {
+			"class": "provider",
+			"reason": "The composed-frame proof (canonical frame description + SHA-256) - Classic's own machinery, deterministic by construction; the S07 agent verification primitive."
+		},
 		"./project": {
 			"class": "provider",
 			"reason": "Project helpers — Classic's own machinery."
