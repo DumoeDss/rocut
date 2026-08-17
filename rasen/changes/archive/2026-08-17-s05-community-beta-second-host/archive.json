@@ -1,0 +1,22 @@
+{
+  "change": "s05-community-beta-second-host",
+  "archivedAt": "2026-08-17T08:15:34.393Z",
+  "codeCommit": "269c26a39eac0a939b759a49553dfcc0bd566daa",
+  "planningBranch": "main",
+  "planningTreeState": "dirty",
+  "evidence": [
+    {
+      "path": "evidence/ship-log.md",
+      "sha256": "7e21c6951c9346f67f87410c9c1eb608a2394393c63aa29757dfa803c68f7ae2"
+    }
+  ],
+  "probes": [],
+  "handoffAbsorbed": null,
+  "ephemeraDiscarded": [
+    "auto-run.json",
+    "portfolio-run.json"
+  ],
+  "missing": [
+    "verification-report"
+  ]
+}

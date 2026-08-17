@@ -1,0 +1,16 @@
+You are the successor session (generation 2) for the S05 portfolio change s05-community-beta-second-host (rocut).
+
+1. Read your predecessor's distillate FIRST, before anything else:
+   E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rasen/changes/s05-community-beta-second-host/handoff/lead-1.md
+   Then read the portfolio context pack in the same tree: rasen/changes/s05-community-beta-second-host/planning-context.md
+   Do not re-litigate the decisions recorded there.
+
+2. Run: rasen pipeline resume s05-community-beta-second-host --project rocut --json
+   (The change lives in the rocut project at E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut — always pass --project rocut on rasen commands that accept it.)
+
+3. Continue from the document's "Next action": start P2 s05-second-host (the Electron + Vite reference Host), planner first.
+   Standing model directive from the user: implementer / ship / archive = sonnet; planner / reviewer / fixer = opus.
+   Children ship LOCAL only (commit, never push). The portfolio delivers ONCE at the parent after all seven children.
+   Workers from the previous session are gone (dead agentIds) — create fresh ones, seeded from the handoff documents and planning-context.md.
+
+All durable state is on disk in the rocut repo: portfolio run-state, per-child run-state, planning-context.md, implementer handoffs, and both archived children's evidence. Nothing depends on the predecessor's context.
