@@ -10,7 +10,11 @@ import { moduleGraph } from "./build/module-graph";
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "../..");
 const webPublic = resolve(repoRoot, "apps/web/public");
-const publicBase = process.env.OPENCUT_PUBLIC_BASE || "/";
+// Relative by default: the CLI host serves this dist under an authenticated
+// `/<token>/` prefix, where absolute asset paths escape the prefix and 401
+// (the 2026-08-17 dogfood finding). Hash routing makes a relative base safe
+// on every origin, including a bare root.
+const publicBase = process.env.OPENCUT_PUBLIC_BASE || "./";
 const outputDirectory = process.env.C4_VITE_OUT_DIR || "dist";
 
 export default defineConfig({
