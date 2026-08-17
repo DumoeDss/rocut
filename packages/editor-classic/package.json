@@ -57,6 +57,7 @@
     "./storage": "./src/storage/index.ts",
     "./storage/conformance": "./src/storage/conformance.ts",
     "./storage/migrations": "./src/storage/migrations.ts",
+    "./transactions": "./src/transactions.ts",
     "./project": "./src/project/index.ts",
     "./timeline": "./src/timeline/index.ts",
     "./renderer": "./src/renderer/index.ts",

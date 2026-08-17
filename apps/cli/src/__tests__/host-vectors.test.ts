@@ -5,9 +5,10 @@ import {
 	verifyAgentReopen,
 } from "@opencut/editor-contracts/vectors";
 import type { AgentLedger } from "@opencut/editor-contracts/vectors";
-import { createAutomation } from "@opencut/editor-automation";
-import { createTransactionNativeDocumentAdapter } from "@opencut/editor-contracts/engine";
 import { revisionOf } from "@opencut/editor-contracts";
+import { CURRENT_PROJECT_VERSION } from "@opencut/editor-classic/transactions";
+import { openEditorPlaneAutomation } from "../editor-plane";
+import { FileProjectStore } from "../file-store";
 import { HttpVectorTarget } from "../host-vector-driver";
 
 const DECLARED = AGENT_SCENARIO.steps.map((step) => step.id);
@@ -69,14 +70,15 @@ describe("host-http-start conformance driver (S06 C4)", () => {
 		expect(commitment).not.toBeNull();
 		const projectRoot = await target.closeKeepingProject(); // host "dies"
 
-		const automation = await createAutomation({
-			store: new (await import("../file-store")).FileProjectStore({
-				root: projectRoot,
-				schemaVersion: 1,
-			}),
-			projectId: projectIdValue,
-			documentAdapter: createTransactionNativeDocumentAdapter(),
-		});
+		const automation = (
+			await openEditorPlaneAutomation({
+				baseStore: new FileProjectStore({
+					root: projectRoot,
+					schemaVersion: CURRENT_PROJECT_VERSION,
+				}),
+				projectId: projectIdValue as never,
+			})
+		).automation;
 		const reopen = await verifyAgentReopen({ target: automation, commitment });
 		expect(reopen.failures).toEqual([]);
 		expect(reopen.assertionCount).toBeGreaterThan(0);

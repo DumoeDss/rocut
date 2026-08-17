@@ -32,8 +32,7 @@ import { V29toV30Migration } from "./v29-to-v30";
 import { V30toV31Migration } from "./v30-to-v31";
 export { runStorageMigrations } from "./runner";
 export type { MigrationProgress } from "./runner";
-
-export const CURRENT_PROJECT_VERSION = 31;
+export { CURRENT_PROJECT_VERSION } from "./version";
 
 export const migrations = [
 	new V0toV1Migration(),

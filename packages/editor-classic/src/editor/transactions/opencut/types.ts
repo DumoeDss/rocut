@@ -3,11 +3,6 @@ import type { ProjectRecord } from "@opencut/editor-ports";
 import type { MediaAsset } from "../../../media/types";
 import type { TProject } from "../../../project/types";
 
-export {
-	COMMAND_ROUTING_CLASSES,
-	type CommandRoutingClass,
-} from "../../../commands/base-command";
-
 declare const commitTokenBrand: unique symbol;
 
 export type OpenCutCommitToken = string & {
