@@ -171,6 +171,63 @@ async function main(): Promise<void> {
 			process.stdout.write(JSON.stringify(result, null, "\t") + "\n");
 			return;
 		}
+		case "draft": {
+			const subcommand = args.positional[0];
+			const selector = flag(args, "target") ?? "auto";
+			const resolved = await registry.resolve(selector);
+			if (resolved === null)
+				throw new Error(`no live target matches --target ${selector}`);
+			if (subcommand === "begin") {
+				const mode = flag(args, "mode") === "auto" ? "auto" : "manual";
+				const opened = (await request(resolved.secret, "POST", "drafts", {
+					approvalMode: mode,
+				})) as { opened: boolean; draftId?: string };
+				if (!opened.opened || opened.draftId === undefined) {
+					throw new Error("draft begin was rejected by the host");
+				}
+				process.stdout.write(`${opened.draftId}\n`);
+				return;
+			}
+			const draftId = flag(args, "draft");
+			if (draftId === undefined) {
+				throw new Error(
+					"draft commands require --draft <id> (from draft begin)",
+				);
+			}
+			if (subcommand === "stage") {
+				const operationsFile = args.positional[1];
+				if (operationsFile === undefined) {
+					throw new Error("draft stage requires an operations JSON file");
+				}
+				const batch = JSON.parse(await readFile(operationsFile, "utf8")) as {
+					operations: never[];
+				};
+				const outcome = await request(
+					resolved.secret,
+					"POST",
+					`drafts/${draftId}/stage`,
+					batch,
+				);
+				process.stdout.write(JSON.stringify(outcome, null, "\t") + "\n");
+				return;
+			}
+			if (
+				subcommand === "approve" ||
+				subcommand === "reject" ||
+				subcommand === "discard"
+			) {
+				const outcome = await request(
+					resolved.secret,
+					"POST",
+					`drafts/${draftId}/${subcommand}`,
+				);
+				process.stdout.write(JSON.stringify(outcome, null, "\t") + "\n");
+				return;
+			}
+			throw new Error(
+				"usage: rocut draft begin [--mode manual|auto] | stage <ops.json> --draft <id> | approve|reject|discard --draft <id>",
+			);
+		}
 		default:
 			process.stdout.write(
 				[
@@ -179,6 +236,9 @@ async function main(): Promise<void> {
 					"  rocut target list",
 					"  rocut read [--target <id|auto>]",
 					"  rocut apply <ops.json> [--target <id|auto>]",
+					"  rocut draft begin [--mode manual|auto] [--target <id|auto>]",
+					"  rocut draft stage <ops.json> --draft <id> [--target <id|auto>]",
+					"  rocut draft approve|reject|discard --draft <id> [--target <id|auto>]",
 				].join("\n") + "\n",
 			);
 	}

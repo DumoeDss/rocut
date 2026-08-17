@@ -21,6 +21,7 @@ import {
 import { frameRate, projectId, revisionOf } from "@opencut/editor-contracts";
 import { TransactionError } from "@opencut/editor-contracts";
 import type { Project } from "@opencut/editor-contracts";
+import type { DraftEditingSession } from "@opencut/editor-contracts/draft";
 import { FileProjectStore } from "./file-store";
 import type { TargetEntry, TargetSecret } from "./target-registry";
 import type { TargetRegistry } from "./target-registry";
@@ -96,11 +97,13 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 	});
 
 	const token = randomBytes(24).toString("hex");
+	const draftSessions = new Map<string, DraftEditingSession>();
 	const server = createServer((request, response) => {
 		void handle(request, response, {
 			token,
 			automation,
 			staticDir: args.staticDir,
+			draftSessions,
 		});
 	});
 	const port = await new Promise<number>((resolve, reject) => {
@@ -148,6 +151,7 @@ interface HandleContext {
 	readonly token: string;
 	readonly automation: AutomationApi;
 	readonly staticDir: string | undefined;
+	readonly draftSessions: Map<string, DraftEditingSession>;
 }
 
 async function handle(
@@ -232,6 +236,74 @@ async function handleApi(
 			request.once("close", unsubscribe);
 			return;
 		}
+		if (
+			request.method === "POST" &&
+			route[0] === "drafts" &&
+			route.length === 1
+		) {
+			const body = await readJsonBody(request);
+			const opened = await automation.openDraft({
+				approvalMode: body.approvalMode === "auto" ? "auto" : "manual",
+			});
+			if (!opened.opened) {
+				respond(409, { opened: false, error: opened.error });
+				return;
+			}
+			context.draftSessions.set(String(opened.session.id), opened.session);
+			respond(200, { opened: true, draftId: opened.session.id });
+			return;
+		}
+		if (
+			request.method === "GET" &&
+			route[0] === "drafts" &&
+			route.length === 2
+		) {
+			const session = context.draftSessions.get(route[1]);
+			if (session === undefined) {
+				respond(404, { error: "unknown-draft" });
+				return;
+			}
+			respond(200, session.snapshot());
+			return;
+		}
+		if (
+			request.method === "POST" &&
+			route[0] === "drafts" &&
+			route.length === 3
+		) {
+			const [, draftId, action] = route;
+			const session = context.draftSessions.get(draftId);
+			if (session === undefined) {
+				respond(404, { error: "unknown-draft" });
+				return;
+			}
+			if (action === "open") {
+				// Registration endpoint used by clients that name their own ids:
+				// the generic POST above generates ids, so route[2] === "open"
+				// only arrives for an explicit re-key — reject it.
+				respond(409, { error: "draft-already-open" });
+				return;
+			}
+			if (action === "stage") {
+				const body = await readJsonBody(request);
+				respond(200, await session.stage({ operations: body.operations }));
+				return;
+			}
+			if (action === "approve") {
+				respond(200, await session.approve());
+				return;
+			}
+			if (action === "reject") {
+				respond(200, await session.reject());
+				return;
+			}
+			if (action === "discard") {
+				respond(200, await session.discard());
+				return;
+			}
+			respond(404, { error: "unknown-draft-action" });
+			return;
+		}
 		if (request.method === "POST" && route[0] === "apply") {
 			const body = await readJsonBody(request);
 			const result = await automation.apply({
@@ -275,6 +347,7 @@ function readJsonBody(request: import("node:http").IncomingMessage): Promise<{
 	operations: never[];
 	expectedRevision?: number;
 	idempotencyKey?: string;
+	approvalMode?: string;
 }> {
 	return new Promise((resolve, reject) => {
 		const chunks: Buffer[] = [];
