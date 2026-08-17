@@ -51,6 +51,15 @@ export interface DraftSnapshot {
 	readonly working: DraftContentSnapshot;
 	readonly acceptedCallCount: number;
 	readonly acceptedOperationCount: number;
+	/**
+	 * TTL deadline in host clock units, present only when the manager was
+	 * created with both `clock` and `draftTtl`. Expiry is enforced lazily by
+	 * the async session operations; `snapshot()` itself is point-in-time and
+	 * may briefly report `editing` after `expiresAt` has passed.
+	 */
+	readonly expiresAt?: number;
+	/** Present only when `state === "rejected"`: why it left editing. */
+	readonly rejectionReason?: DraftRejectionReason;
 }
 
 export interface DraftToolCall {
@@ -168,7 +177,7 @@ export type DraftOpenError =
 
 export type DraftInvalidStateError = {
 	readonly kind: "invalid-state";
-	readonly action: "stage" | "approve" | "reject";
+	readonly action: "stage" | "approve" | "reject" | "discard";
 	readonly state: DraftLifecycleState;
 	readonly message: string;
 };
@@ -195,6 +204,19 @@ export type DraftCallError =
 	  }
 	| {
 			readonly kind: "evaluation-failed";
+			readonly message: string;
+	  }
+	| {
+			/** The Draft's TTL elapsed (lazy check); it is now rejected(expired). */
+			readonly kind: "draft-expired";
+			readonly expiresAt: number;
+			readonly message: string;
+	  }
+	| {
+			/** The call would exceed a manager journal bound; the Draft is intact. */
+			readonly kind: "journal-bound";
+			readonly bound: "calls" | "operations";
+			readonly limit: number;
 			readonly message: string;
 	  };
 
@@ -227,6 +249,12 @@ export type DraftApprovalError =
 	  }
 	| {
 			readonly kind: "compensation-failed";
+			readonly message: string;
+	  }
+	| {
+			/** The Draft's TTL elapsed (lazy check); it is now rejected(expired). */
+			readonly kind: "draft-expired";
+			readonly expiresAt: number;
 			readonly message: string;
 	  };
 
@@ -265,9 +293,18 @@ export type DraftCallOutcome =
 			readonly error: DraftCallError;
 	  };
 
+/**
+ * Why a Draft left the editing state without applying. "rejected" is a judged
+ * refusal; "discarded" means nobody judged it (agent crashed, gave up, or the
+ * session was cleaned up) and retry is fine; "expired" is the lazy TTL
+ * transition observed by the next interaction.
+ */
+export type DraftRejectionReason = "rejected" | "discarded" | "expired";
+
 export type DraftRejectionOutcome =
 	| {
 			readonly rejected: true;
+			readonly reason: DraftRejectionReason;
 			readonly snapshot: DraftSnapshot;
 	  }
 	| {
@@ -284,6 +321,8 @@ export interface DraftEditingSession {
 	review(): DraftReviewSummary;
 	approve(): Promise<DraftApprovalOutcome>;
 	reject(): Promise<DraftRejectionOutcome>;
+	/** Terminate an editing Draft without judgement: `editing -> rejected("discarded")`. */
+	discard(): Promise<DraftRejectionOutcome>;
 }
 
 export type DraftOpenOutcome =
@@ -305,6 +344,21 @@ export interface CreateDraftEditingManagerOptions<
 	readonly retentionPolicy: DraftResourceRetentionPolicy;
 	readonly placementPolicies?: readonly TransactionPlacementPolicy[];
 	readonly snapshotAttempts?: number;
+	/**
+	 * Host clock (TTL mechanism). `draftTtl` (the value) is host policy; with
+	 * both present, every opened Draft carries `expiresAt = clock() + draftTtl`
+	 * and the next interaction past the deadline transitions it to
+	 * `rejected("expired")`.
+	 */
+	readonly clock?: () => number;
+	readonly draftTtl?: number;
+	/**
+	 * Journal bounds (host policy). The accepted call that would exceed a
+	 * bound fails whole with a `journal-bound` error; the Draft stays intact
+	 * at its prior state.
+	 */
+	readonly journalCallBound?: number;
+	readonly journalOperationBound?: number;
 }
 
 export const IMMEDIATE_OPERATION_KINDS = [

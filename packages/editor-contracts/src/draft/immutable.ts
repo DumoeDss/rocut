@@ -1,5 +1,34 @@
 import { TransactionError } from "..";
-import { ProjectStoreError } from "@opencut/editor-ports";
+
+/**
+ * Registrable known-error whitelist for evidence prototypes.
+ *
+ * The pure draft subsystem must not import `@opencut/editor-ports` (vendoring
+ * rules exclude ports-coupled files), yet committed-state failures surface as
+ * `ProjectStoreError` and their evidence clones should retain that prototype.
+ * Ports-composing modules (the native adapter zone, or an automation host)
+ * vouch for a class by registering it here; instances of unregistered classes
+ * are still reduced to `Error.prototype`, preserving the security property
+ * that attacker-controlled constructors cannot cross the Draft boundary.
+ */
+type DraftEvidenceErrorType = abstract new (...args: never[]) => Error;
+
+const draftKnownErrorTypes: DraftEvidenceErrorType[] = [
+	TransactionError,
+	TypeError,
+	RangeError,
+	ReferenceError,
+	SyntaxError,
+	URIError,
+	EvalError,
+];
+
+export function registerDraftEvidenceErrorType(
+	errorType: DraftEvidenceErrorType,
+): void {
+	if (draftKnownErrorTypes.includes(errorType)) return;
+	draftKnownErrorTypes.push(errorType);
+}
 
 export function cloneDraftValue<Value>(value: Value): Value {
 	if (typeof structuredClone !== "function") {
@@ -43,14 +72,9 @@ export function immutableDraftValue<Value>(value: Value): Readonly<Value> {
 }
 
 function draftErrorPrototype(error: Error): object {
-	if (error instanceof TransactionError) return TransactionError.prototype;
-	if (error instanceof ProjectStoreError) return ProjectStoreError.prototype;
-	if (error instanceof TypeError) return TypeError.prototype;
-	if (error instanceof RangeError) return RangeError.prototype;
-	if (error instanceof ReferenceError) return ReferenceError.prototype;
-	if (error instanceof SyntaxError) return SyntaxError.prototype;
-	if (error instanceof URIError) return URIError.prototype;
-	if (error instanceof EvalError) return EvalError.prototype;
+	for (const known of draftKnownErrorTypes) {
+		if (error instanceof known) return known.prototype;
+	}
 	return Error.prototype;
 }
 

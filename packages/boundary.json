@@ -3,12 +3,14 @@
   "layers": [
     "@opencut/editor-ports",
     "@opencut/editor-contracts",
+    "@opencut/editor-automation",
     "@opencut/editor-classic"
   ],
   "consumers": [
     { "id": "apps/web", "root": "apps/web/src", "ownership": "map" },
     { "id": "apps/vite-example", "root": "apps/vite-example" },
     { "id": "apps/electron-host", "root": "apps/electron-host/src" },
+    { "id": "apps/cli", "root": "apps/cli/src" },
     { "id": "examples", "root": "examples" }
   ],
   "shellPaths": [
@@ -34,6 +36,11 @@
       "path": "packages/editor-contracts/src",
       "owner": "@opencut/editor-contracts",
       "why": "Domain, operations, transactions, draft sessions, the engine, four of the five conformance suites and the vector corpus. Depends only on @opencut/editor-ports (8 production edges contracts→ports, 0 the other way — design D2/Fact 1). Moved from apps/web/src/editor/contracts by S05 P1 task 3.1; this entry is now vestigial against the generic packages/*/src rule (task 2.1) and kept only so the why below stays attached to the file."
+    },
+    {
+      "path": "packages/editor-automation/src",
+      "owner": "@opencut/editor-automation",
+      "why": "The S06 agent-facing automation integration layer (design 26.7 / D24): one pure-core composition of the engine and Draft orchestrator behind the four frozen transaction interfaces. Injects store/clock/ids; wraps — never forks — editor-contracts. Added by the S06 mainline revision (the sanctioned destination for frozen-map pressure per the ledger rule)."
     },
     {
       "path": "apps/web/src/editor/host/__tests__/branding-assets.test.ts",

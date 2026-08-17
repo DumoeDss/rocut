@@ -1,0 +1,12 @@
+@opencut/editor-ports
+Copyright 2025-2026 OpenCut
+
+This package is built from a fork of OpenCut Classic
+(https://github.com/OpenCut-app/opencut-classic), pinned at upstream commit
+cf5e79e919144200294fb9fed22a222592a0aeea. The upstream MIT licence is shipped
+verbatim as the LICENSE file beside this notice.
+
+The fork (https://github.com/DumoeDss/rocut) modifies and extends the upstream
+sources; the modifications in the shipped tree are recorded in the fork's
+provenance set (PATCHES.md, SOURCE_INVENTORY.md, UPSTREAM.md) at the repository
+root.

@@ -1,0 +1,10 @@
+{
+	"package": "@opencut/editor-automation",
+	"note": "The surface-class manifest (S05 P5 convention). The whole package is the S06 integration layer named by design 26.7 (D24): one implementation consumed by the CLI host verb and any embedding application. Everything here is experimental until S06 reconciles.",
+	"entries": {
+		".": {
+			"class": "experimental",
+			"reason": "createAutomation and the AutomationApi composition — S06 scope; the 0.x surface may move until the host-start shape ratifies."
+		}
+	}
+}

@@ -1,0 +1,22 @@
+{
+	"name": "@opencut/cli",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"description": "The rocut CLI: the sole agent automation surface rocut ships (design 26.7 / D24). host start serves the web surface and automation entry on an authenticated loopback origin; --target routes mutations to a running host. No bespoke daemon protocol.",
+	"bin": {
+		"rocut": "./src/main.ts"
+	},
+	"scripts": {
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@opencut/editor-automation": "0.1.0",
+		"@opencut/editor-contracts": "0.3.0",
+		"@opencut/editor-ports": "0.2.0"
+	},
+	"devDependencies": {
+		"@types/node": "^22.10.0",
+		"typescript": "^5.8.3"
+	}
+}
