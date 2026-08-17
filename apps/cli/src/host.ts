@@ -19,6 +19,7 @@ import {
 	createTransactionNativeProjectSeed,
 } from "@opencut/editor-contracts/engine";
 import { frameRate, projectId, revisionOf } from "@opencut/editor-contracts";
+import { TransactionError } from "@opencut/editor-contracts";
 import type { Project } from "@opencut/editor-contracts";
 import { FileProjectStore } from "./file-store";
 import type { TargetEntry, TargetSecret } from "./target-registry";
@@ -132,7 +133,13 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 		automation,
 		close: async () => {
 			await args.registry.remove(targetId).catch(() => undefined);
-			await new Promise<void>((resolve) => server.close(() => resolve()));
+			await new Promise<void>((resolve) => {
+				server.close(() => resolve());
+				// SSE subscriptions and keep-alive fetches otherwise hold the
+				// close callback forever; the agent owns the lifetime, so close
+				// means close.
+				server.closeAllConnections();
+			});
 		},
 	};
 }
@@ -212,11 +219,15 @@ async function handleApi(
 				"cache-control": "no-cache",
 				connection: "keep-alive",
 			});
-			response.write(
-				`data: ${JSON.stringify({ revision: await automation.revision() })}\n\n`,
-			);
+			response.flushHeaders();
+			// No initial snapshot: TransactionWatch fires only on revision
+			// changes, and the conformance driver counts callbacks exactly.
 			const unsubscribe = automation.watch((revision) => {
 				response.write(`data: ${JSON.stringify({ revision })}\n\n`);
+				// Streaming responses can buffer without an explicit flush on
+				// some runtimes; flush is a runtime extension when present.
+				const extended = response as { flush?: () => void };
+				if (typeof extended.flush === "function") extended.flush();
 			});
 			request.once("close", unsubscribe);
 			return;
@@ -237,6 +248,21 @@ async function handleApi(
 		}
 		respond(404, { error: "unknown-api-route" });
 	} catch (error) {
+		if (error instanceof TransactionError) {
+			respond(409, {
+				accepted: false,
+				name: "TransactionError",
+				code: error.code,
+				message: error.message,
+				...(error.expectedRevision === undefined
+					? {}
+					: { expectedRevision: Number(error.expectedRevision) }),
+				...(error.actualRevision === undefined
+					? {}
+					: { actualRevision: Number(error.actualRevision) }),
+			});
+			return;
+		}
 		respond(409, {
 			accepted: false,
 			name: error instanceof Error ? error.name : "Error",
