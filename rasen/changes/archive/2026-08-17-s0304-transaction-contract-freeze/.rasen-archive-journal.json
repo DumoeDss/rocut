@@ -1,0 +1,2533 @@
+{
+  "schemaVersion": 2,
+  "transactionId": "d7b847d9-e056-496a-96ba-02a8f47d8f04",
+  "planHash": "3e5fc08a8d15c1d94b87425cda738ce8128cb36ac7aaa11a531caeea1db1a3e2",
+  "change": "s0304-transaction-contract-freeze",
+  "phase": "complete",
+  "activePath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\s0304-transaction-contract-freeze",
+  "stagePath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\archive\\.rasen-archive-stage-d7b847d9-e056-496a-96ba-02a8f47d8f04",
+  "finalPath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\archive\\2026-08-17-s0304-transaction-contract-freeze",
+  "ephemeraDisposed": [],
+  "phaseFingerprints": {
+    "payload-copied": {
+      "state": "verified",
+      "scope": "stage",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "3d465a835ad2d0b4072e530989e6d69cda22c62621ecb1e3294d0cab066ba771",
+        "entries": [
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13013",
+            "sha256": "66128014409b106c9195ec1044e3287efa56d9069dac23da15f0ed540d1b3f8c"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3246",
+            "sha256": "b7b04d65883fbec8cbae50a88f577cbb96de1d98e8bfd844f6bfc8e0db5c218a"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12450",
+            "sha256": "e534de237db1dc17e6389869ac9f4cfc269453198dc2fd20cede0c6e48b60ba0"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5745",
+            "sha256": "75c0933d32970546e3bcb3cdb1f4999935a2b6fbf3ea760a9bd1d71a7599bb04"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2814749772505897",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "8d76e267c3fc46c35374da583db836175f65b363dbd7d357fd52e0142cb366c6",
+        "authorityEntries": [
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2814749772505898",
+              "mode": "33206",
+              "size": "13013",
+              "mtimeNs": "1786885138493629900",
+              "ctimeNs": "1786885138493629900"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2814749772505899",
+              "mode": "33206",
+              "size": "3246",
+              "mtimeNs": "1786885138495151300",
+              "ctimeNs": "1786885138495151300"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2814749772505902",
+              "mode": "33206",
+              "size": "12450",
+              "mtimeNs": "1786885138498660200",
+              "ctimeNs": "1786885138498660200"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2814749772505901",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2814749772505900",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2814749772505903",
+              "mode": "33206",
+              "size": "5745",
+              "mtimeNs": "1786885138499671400",
+              "ctimeNs": "1786885138499671400"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "3d465a835ad2d0b4072e530989e6d69cda22c62621ecb1e3294d0cab066ba771",
+        "entries": [
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13013",
+            "sha256": "66128014409b106c9195ec1044e3287efa56d9069dac23da15f0ed540d1b3f8c"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3246",
+            "sha256": "b7b04d65883fbec8cbae50a88f577cbb96de1d98e8bfd844f6bfc8e0db5c218a"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12450",
+            "sha256": "e534de237db1dc17e6389869ac9f4cfc269453198dc2fd20cede0c6e48b60ba0"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5745",
+            "sha256": "75c0933d32970546e3bcb3cdb1f4999935a2b6fbf3ea760a9bd1d71a7599bb04"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "31806672370000380",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "27ff60a29568849df7583f27cb56a42a39181a75dcec40483e6c1c483d5c7640",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889931",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955531359319400",
+              "ctimeNs": "1786955531359319400"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889932",
+              "mode": "33206",
+              "size": "13013",
+              "mtimeNs": "1786885138493629900",
+              "ctimeNs": "1786885138493629900"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153870",
+              "mode": "33206",
+              "size": "3246",
+              "mtimeNs": "1786885138495151300",
+              "ctimeNs": "1786885138495151300"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5910974520128476",
+              "mode": "33206",
+              "size": "12450",
+              "mtimeNs": "1786885138498660200",
+              "ctimeNs": "1786885138498660200"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "8444249310524369",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153871",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5066549589996509",
+              "mode": "33206",
+              "size": "5745",
+              "mtimeNs": "1786885138499671400",
+              "ctimeNs": "1786885138499671400"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "3d465a835ad2d0b4072e530989e6d69cda22c62621ecb1e3294d0cab066ba771",
+        "entries": [
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13013",
+            "sha256": "66128014409b106c9195ec1044e3287efa56d9069dac23da15f0ed540d1b3f8c"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3246",
+            "sha256": "b7b04d65883fbec8cbae50a88f577cbb96de1d98e8bfd844f6bfc8e0db5c218a"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12450",
+            "sha256": "e534de237db1dc17e6389869ac9f4cfc269453198dc2fd20cede0c6e48b60ba0"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5745",
+            "sha256": "75c0933d32970546e3bcb3cdb1f4999935a2b6fbf3ea760a9bd1d71a7599bb04"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "31806672370000380",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "27ff60a29568849df7583f27cb56a42a39181a75dcec40483e6c1c483d5c7640",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889931",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955531359319400",
+              "ctimeNs": "1786955531359319400"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889932",
+              "mode": "33206",
+              "size": "13013",
+              "mtimeNs": "1786885138493629900",
+              "ctimeNs": "1786885138493629900"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153870",
+              "mode": "33206",
+              "size": "3246",
+              "mtimeNs": "1786885138495151300",
+              "ctimeNs": "1786885138495151300"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5910974520128476",
+              "mode": "33206",
+              "size": "12450",
+              "mtimeNs": "1786885138498660200",
+              "ctimeNs": "1786885138498660200"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "8444249310524369",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153871",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5066549589996509",
+              "mode": "33206",
+              "size": "5745",
+              "mtimeNs": "1786885138499671400",
+              "ctimeNs": "1786885138499671400"
+            }
+          }
+        ]
+      }
+    },
+    "handoff-finalized": {
+      "state": "verified",
+      "scope": "stage",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "3d465a835ad2d0b4072e530989e6d69cda22c62621ecb1e3294d0cab066ba771",
+        "entries": [
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13013",
+            "sha256": "66128014409b106c9195ec1044e3287efa56d9069dac23da15f0ed540d1b3f8c"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3246",
+            "sha256": "b7b04d65883fbec8cbae50a88f577cbb96de1d98e8bfd844f6bfc8e0db5c218a"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12450",
+            "sha256": "e534de237db1dc17e6389869ac9f4cfc269453198dc2fd20cede0c6e48b60ba0"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5745",
+            "sha256": "75c0933d32970546e3bcb3cdb1f4999935a2b6fbf3ea760a9bd1d71a7599bb04"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "31806672370000380",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "27ff60a29568849df7583f27cb56a42a39181a75dcec40483e6c1c483d5c7640",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889931",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955531359319400",
+              "ctimeNs": "1786955531359319400"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889932",
+              "mode": "33206",
+              "size": "13013",
+              "mtimeNs": "1786885138493629900",
+              "ctimeNs": "1786885138493629900"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153870",
+              "mode": "33206",
+              "size": "3246",
+              "mtimeNs": "1786885138495151300",
+              "ctimeNs": "1786885138495151300"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5910974520128476",
+              "mode": "33206",
+              "size": "12450",
+              "mtimeNs": "1786885138498660200",
+              "ctimeNs": "1786885138498660200"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "8444249310524369",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153871",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5066549589996509",
+              "mode": "33206",
+              "size": "5745",
+              "mtimeNs": "1786885138499671400",
+              "ctimeNs": "1786885138499671400"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "3d465a835ad2d0b4072e530989e6d69cda22c62621ecb1e3294d0cab066ba771",
+        "entries": [
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13013",
+            "sha256": "66128014409b106c9195ec1044e3287efa56d9069dac23da15f0ed540d1b3f8c"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3246",
+            "sha256": "b7b04d65883fbec8cbae50a88f577cbb96de1d98e8bfd844f6bfc8e0db5c218a"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12450",
+            "sha256": "e534de237db1dc17e6389869ac9f4cfc269453198dc2fd20cede0c6e48b60ba0"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5745",
+            "sha256": "75c0933d32970546e3bcb3cdb1f4999935a2b6fbf3ea760a9bd1d71a7599bb04"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "31806672370000380",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "27ff60a29568849df7583f27cb56a42a39181a75dcec40483e6c1c483d5c7640",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889931",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955531359319400",
+              "ctimeNs": "1786955531359319400"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889932",
+              "mode": "33206",
+              "size": "13013",
+              "mtimeNs": "1786885138493629900",
+              "ctimeNs": "1786885138493629900"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153870",
+              "mode": "33206",
+              "size": "3246",
+              "mtimeNs": "1786885138495151300",
+              "ctimeNs": "1786885138495151300"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5910974520128476",
+              "mode": "33206",
+              "size": "12450",
+              "mtimeNs": "1786885138498660200",
+              "ctimeNs": "1786885138498660200"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "8444249310524369",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153871",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5066549589996509",
+              "mode": "33206",
+              "size": "5745",
+              "mtimeNs": "1786885138499671400",
+              "ctimeNs": "1786885138499671400"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "3d465a835ad2d0b4072e530989e6d69cda22c62621ecb1e3294d0cab066ba771",
+        "entries": [
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13013",
+            "sha256": "66128014409b106c9195ec1044e3287efa56d9069dac23da15f0ed540d1b3f8c"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3246",
+            "sha256": "b7b04d65883fbec8cbae50a88f577cbb96de1d98e8bfd844f6bfc8e0db5c218a"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12450",
+            "sha256": "e534de237db1dc17e6389869ac9f4cfc269453198dc2fd20cede0c6e48b60ba0"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5745",
+            "sha256": "75c0933d32970546e3bcb3cdb1f4999935a2b6fbf3ea760a9bd1d71a7599bb04"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "31806672370000380",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "27ff60a29568849df7583f27cb56a42a39181a75dcec40483e6c1c483d5c7640",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889931",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955531359319400",
+              "ctimeNs": "1786955531359319400"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889932",
+              "mode": "33206",
+              "size": "13013",
+              "mtimeNs": "1786885138493629900",
+              "ctimeNs": "1786885138493629900"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153870",
+              "mode": "33206",
+              "size": "3246",
+              "mtimeNs": "1786885138495151300",
+              "ctimeNs": "1786885138495151300"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5910974520128476",
+              "mode": "33206",
+              "size": "12450",
+              "mtimeNs": "1786885138498660200",
+              "ctimeNs": "1786885138498660200"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "8444249310524369",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153871",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5066549589996509",
+              "mode": "33206",
+              "size": "5745",
+              "mtimeNs": "1786885138499671400",
+              "ctimeNs": "1786885138499671400"
+            }
+          }
+        ]
+      }
+    },
+    "evidence-finalized": {
+      "state": "verified",
+      "scope": "stage",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "3d465a835ad2d0b4072e530989e6d69cda22c62621ecb1e3294d0cab066ba771",
+        "entries": [
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13013",
+            "sha256": "66128014409b106c9195ec1044e3287efa56d9069dac23da15f0ed540d1b3f8c"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3246",
+            "sha256": "b7b04d65883fbec8cbae50a88f577cbb96de1d98e8bfd844f6bfc8e0db5c218a"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12450",
+            "sha256": "e534de237db1dc17e6389869ac9f4cfc269453198dc2fd20cede0c6e48b60ba0"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5745",
+            "sha256": "75c0933d32970546e3bcb3cdb1f4999935a2b6fbf3ea760a9bd1d71a7599bb04"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "31806672370000380",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "27ff60a29568849df7583f27cb56a42a39181a75dcec40483e6c1c483d5c7640",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889931",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955531359319400",
+              "ctimeNs": "1786955531359319400"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889932",
+              "mode": "33206",
+              "size": "13013",
+              "mtimeNs": "1786885138493629900",
+              "ctimeNs": "1786885138493629900"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153870",
+              "mode": "33206",
+              "size": "3246",
+              "mtimeNs": "1786885138495151300",
+              "ctimeNs": "1786885138495151300"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5910974520128476",
+              "mode": "33206",
+              "size": "12450",
+              "mtimeNs": "1786885138498660200",
+              "ctimeNs": "1786885138498660200"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "8444249310524369",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153871",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5066549589996509",
+              "mode": "33206",
+              "size": "5745",
+              "mtimeNs": "1786885138499671400",
+              "ctimeNs": "1786885138499671400"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "863f84cb00472be35ca7c9946a3deb9c0e8c3bc4b867e83b6878863d429e568c",
+        "entries": [
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13013",
+            "sha256": "66128014409b106c9195ec1044e3287efa56d9069dac23da15f0ed540d1b3f8c"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "299",
+            "sha256": "bf84121101686d314630990fb2c382950b1c599e0221e645ab374133d8c3571c"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3246",
+            "sha256": "b7b04d65883fbec8cbae50a88f577cbb96de1d98e8bfd844f6bfc8e0db5c218a"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12450",
+            "sha256": "e534de237db1dc17e6389869ac9f4cfc269453198dc2fd20cede0c6e48b60ba0"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5745",
+            "sha256": "75c0933d32970546e3bcb3cdb1f4999935a2b6fbf3ea760a9bd1d71a7599bb04"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "31806672370000380",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "c3f1abed4763cb55562a852eebf42ead4ce1d888ee8a28fa67f037cd7bf8783c",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889931",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955531359319400",
+              "ctimeNs": "1786955531359319400"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889932",
+              "mode": "33206",
+              "size": "13013",
+              "mtimeNs": "1786885138493629900",
+              "ctimeNs": "1786885138493629900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5910974520128479",
+              "mode": "33206",
+              "size": "299",
+              "mtimeNs": "1786955531736813900",
+              "ctimeNs": "1786955531736813900"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5348024566707166",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153870",
+              "mode": "33206",
+              "size": "3246",
+              "mtimeNs": "1786885138495151300",
+              "ctimeNs": "1786885138495151300"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5910974520128476",
+              "mode": "33206",
+              "size": "12450",
+              "mtimeNs": "1786885138498660200",
+              "ctimeNs": "1786885138498660200"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "8444249310524369",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153871",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5066549589996509",
+              "mode": "33206",
+              "size": "5745",
+              "mtimeNs": "1786885138499671400",
+              "ctimeNs": "1786885138499671400"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "863f84cb00472be35ca7c9946a3deb9c0e8c3bc4b867e83b6878863d429e568c",
+        "entries": [
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13013",
+            "sha256": "66128014409b106c9195ec1044e3287efa56d9069dac23da15f0ed540d1b3f8c"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "299",
+            "sha256": "bf84121101686d314630990fb2c382950b1c599e0221e645ab374133d8c3571c"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3246",
+            "sha256": "b7b04d65883fbec8cbae50a88f577cbb96de1d98e8bfd844f6bfc8e0db5c218a"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12450",
+            "sha256": "e534de237db1dc17e6389869ac9f4cfc269453198dc2fd20cede0c6e48b60ba0"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5745",
+            "sha256": "75c0933d32970546e3bcb3cdb1f4999935a2b6fbf3ea760a9bd1d71a7599bb04"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "31806672370000380",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "c3f1abed4763cb55562a852eebf42ead4ce1d888ee8a28fa67f037cd7bf8783c",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889931",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955531359319400",
+              "ctimeNs": "1786955531359319400"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889932",
+              "mode": "33206",
+              "size": "13013",
+              "mtimeNs": "1786885138493629900",
+              "ctimeNs": "1786885138493629900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5910974520128479",
+              "mode": "33206",
+              "size": "299",
+              "mtimeNs": "1786955531736813900",
+              "ctimeNs": "1786955531736813900"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5348024566707166",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153870",
+              "mode": "33206",
+              "size": "3246",
+              "mtimeNs": "1786885138495151300",
+              "ctimeNs": "1786885138495151300"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5910974520128476",
+              "mode": "33206",
+              "size": "12450",
+              "mtimeNs": "1786885138498660200",
+              "ctimeNs": "1786885138498660200"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "8444249310524369",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153871",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5066549589996509",
+              "mode": "33206",
+              "size": "5745",
+              "mtimeNs": "1786885138499671400",
+              "ctimeNs": "1786885138499671400"
+            }
+          }
+        ]
+      }
+    },
+    "final-reserved": {
+      "state": "verified",
+      "scope": "final",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "863f84cb00472be35ca7c9946a3deb9c0e8c3bc4b867e83b6878863d429e568c",
+        "entries": [
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13013",
+            "sha256": "66128014409b106c9195ec1044e3287efa56d9069dac23da15f0ed540d1b3f8c"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "299",
+            "sha256": "bf84121101686d314630990fb2c382950b1c599e0221e645ab374133d8c3571c"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3246",
+            "sha256": "b7b04d65883fbec8cbae50a88f577cbb96de1d98e8bfd844f6bfc8e0db5c218a"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12450",
+            "sha256": "e534de237db1dc17e6389869ac9f4cfc269453198dc2fd20cede0c6e48b60ba0"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5745",
+            "sha256": "75c0933d32970546e3bcb3cdb1f4999935a2b6fbf3ea760a9bd1d71a7599bb04"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "31806672370000380",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "c3f1abed4763cb55562a852eebf42ead4ce1d888ee8a28fa67f037cd7bf8783c",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889931",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955531359319400",
+              "ctimeNs": "1786955531359319400"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889932",
+              "mode": "33206",
+              "size": "13013",
+              "mtimeNs": "1786885138493629900",
+              "ctimeNs": "1786885138493629900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5910974520128479",
+              "mode": "33206",
+              "size": "299",
+              "mtimeNs": "1786955531736813900",
+              "ctimeNs": "1786955531736813900"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5348024566707166",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153870",
+              "mode": "33206",
+              "size": "3246",
+              "mtimeNs": "1786885138495151300",
+              "ctimeNs": "1786885138495151300"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5910974520128476",
+              "mode": "33206",
+              "size": "12450",
+              "mtimeNs": "1786885138498660200",
+              "ctimeNs": "1786885138498660200"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "8444249310524369",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153871",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5066549589996509",
+              "mode": "33206",
+              "size": "5745",
+              "mtimeNs": "1786885138499671400",
+              "ctimeNs": "1786885138499671400"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "863f84cb00472be35ca7c9946a3deb9c0e8c3bc4b867e83b6878863d429e568c",
+        "entries": [
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13013",
+            "sha256": "66128014409b106c9195ec1044e3287efa56d9069dac23da15f0ed540d1b3f8c"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "299",
+            "sha256": "bf84121101686d314630990fb2c382950b1c599e0221e645ab374133d8c3571c"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3246",
+            "sha256": "b7b04d65883fbec8cbae50a88f577cbb96de1d98e8bfd844f6bfc8e0db5c218a"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12450",
+            "sha256": "e534de237db1dc17e6389869ac9f4cfc269453198dc2fd20cede0c6e48b60ba0"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5745",
+            "sha256": "75c0933d32970546e3bcb3cdb1f4999935a2b6fbf3ea760a9bd1d71a7599bb04"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "4503599636575181",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "5701636c16a63d572eb57c836de1cbfefeed0d34af19fe0f6ae39e255f398c19",
+        "authorityEntries": [
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5629499543417827",
+              "mode": "33206",
+              "size": "13013",
+              "mtimeNs": "1786885138493629900",
+              "ctimeNs": "1786885138493629900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7599824380392439",
+              "mode": "33206",
+              "size": "299",
+              "mtimeNs": "1786955531736813900",
+              "ctimeNs": "1786955531736813900"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "12947848937894885",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7318349403681784",
+              "mode": "33206",
+              "size": "3246",
+              "mtimeNs": "1786885138495151300",
+              "ctimeNs": "1786885138495151300"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5629499543417851",
+              "mode": "33206",
+              "size": "12450",
+              "mtimeNs": "1786885138498660200",
+              "ctimeNs": "1786885138498660200"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "6755399450260474",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7599824380392441",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4785074613285884",
+              "mode": "33206",
+              "size": "5745",
+              "mtimeNs": "1786885138499671400",
+              "ctimeNs": "1786885138499671400"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "863f84cb00472be35ca7c9946a3deb9c0e8c3bc4b867e83b6878863d429e568c",
+        "entries": [
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13013",
+            "sha256": "66128014409b106c9195ec1044e3287efa56d9069dac23da15f0ed540d1b3f8c"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "299",
+            "sha256": "bf84121101686d314630990fb2c382950b1c599e0221e645ab374133d8c3571c"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3246",
+            "sha256": "b7b04d65883fbec8cbae50a88f577cbb96de1d98e8bfd844f6bfc8e0db5c218a"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12450",
+            "sha256": "e534de237db1dc17e6389869ac9f4cfc269453198dc2fd20cede0c6e48b60ba0"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5745",
+            "sha256": "75c0933d32970546e3bcb3cdb1f4999935a2b6fbf3ea760a9bd1d71a7599bb04"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "4503599636575181",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "5701636c16a63d572eb57c836de1cbfefeed0d34af19fe0f6ae39e255f398c19",
+        "authorityEntries": [
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5629499543417827",
+              "mode": "33206",
+              "size": "13013",
+              "mtimeNs": "1786885138493629900",
+              "ctimeNs": "1786885138493629900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7599824380392439",
+              "mode": "33206",
+              "size": "299",
+              "mtimeNs": "1786955531736813900",
+              "ctimeNs": "1786955531736813900"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "12947848937894885",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7318349403681784",
+              "mode": "33206",
+              "size": "3246",
+              "mtimeNs": "1786885138495151300",
+              "ctimeNs": "1786885138495151300"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5629499543417851",
+              "mode": "33206",
+              "size": "12450",
+              "mtimeNs": "1786885138498660200",
+              "ctimeNs": "1786885138498660200"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "6755399450260474",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7599824380392441",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4785074613285884",
+              "mode": "33206",
+              "size": "5745",
+              "mtimeNs": "1786885138499671400",
+              "ctimeNs": "1786885138499671400"
+            }
+          }
+        ]
+      }
+    },
+    "accounting-finalized": {
+      "state": "verified",
+      "scope": "final",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "863f84cb00472be35ca7c9946a3deb9c0e8c3bc4b867e83b6878863d429e568c",
+        "entries": [
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13013",
+            "sha256": "66128014409b106c9195ec1044e3287efa56d9069dac23da15f0ed540d1b3f8c"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "299",
+            "sha256": "bf84121101686d314630990fb2c382950b1c599e0221e645ab374133d8c3571c"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3246",
+            "sha256": "b7b04d65883fbec8cbae50a88f577cbb96de1d98e8bfd844f6bfc8e0db5c218a"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12450",
+            "sha256": "e534de237db1dc17e6389869ac9f4cfc269453198dc2fd20cede0c6e48b60ba0"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5745",
+            "sha256": "75c0933d32970546e3bcb3cdb1f4999935a2b6fbf3ea760a9bd1d71a7599bb04"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "4503599636575181",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "5701636c16a63d572eb57c836de1cbfefeed0d34af19fe0f6ae39e255f398c19",
+        "authorityEntries": [
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5629499543417827",
+              "mode": "33206",
+              "size": "13013",
+              "mtimeNs": "1786885138493629900",
+              "ctimeNs": "1786885138493629900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7599824380392439",
+              "mode": "33206",
+              "size": "299",
+              "mtimeNs": "1786955531736813900",
+              "ctimeNs": "1786955531736813900"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "12947848937894885",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7318349403681784",
+              "mode": "33206",
+              "size": "3246",
+              "mtimeNs": "1786885138495151300",
+              "ctimeNs": "1786885138495151300"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5629499543417851",
+              "mode": "33206",
+              "size": "12450",
+              "mtimeNs": "1786885138498660200",
+              "ctimeNs": "1786885138498660200"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "6755399450260474",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7599824380392441",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4785074613285884",
+              "mode": "33206",
+              "size": "5745",
+              "mtimeNs": "1786885138499671400",
+              "ctimeNs": "1786885138499671400"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "67bd55b18d8c57ef247891dfbf34c13cc450e582a8888c18371ac746e448dfe4",
+        "entries": [
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "executable": false,
+            "size": "486",
+            "sha256": "d9f077c60e5a432080ff99829938315235523ae911af3a6b6606d0b410e5886a"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13013",
+            "sha256": "66128014409b106c9195ec1044e3287efa56d9069dac23da15f0ed540d1b3f8c"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "299",
+            "sha256": "bf84121101686d314630990fb2c382950b1c599e0221e645ab374133d8c3571c"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3246",
+            "sha256": "b7b04d65883fbec8cbae50a88f577cbb96de1d98e8bfd844f6bfc8e0db5c218a"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12450",
+            "sha256": "e534de237db1dc17e6389869ac9f4cfc269453198dc2fd20cede0c6e48b60ba0"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5745",
+            "sha256": "75c0933d32970546e3bcb3cdb1f4999935a2b6fbf3ea760a9bd1d71a7599bb04"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "4503599636575181",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "e2df753dd48ed1010aae2484a8d48e5dfd2c2673e3ac80e41f7b4dbc9aef70ca",
+        "authorityEntries": [
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864574",
+              "mode": "33206",
+              "size": "486",
+              "mtimeNs": "1786955532795034100",
+              "ctimeNs": "1786955532840463300"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5629499543417827",
+              "mode": "33206",
+              "size": "13013",
+              "mtimeNs": "1786885138493629900",
+              "ctimeNs": "1786885138493629900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7599824380392439",
+              "mode": "33206",
+              "size": "299",
+              "mtimeNs": "1786955531736813900",
+              "ctimeNs": "1786955531736813900"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "12947848937894885",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7318349403681784",
+              "mode": "33206",
+              "size": "3246",
+              "mtimeNs": "1786885138495151300",
+              "ctimeNs": "1786885138495151300"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5629499543417851",
+              "mode": "33206",
+              "size": "12450",
+              "mtimeNs": "1786885138498660200",
+              "ctimeNs": "1786885138498660200"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "6755399450260474",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7599824380392441",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4785074613285884",
+              "mode": "33206",
+              "size": "5745",
+              "mtimeNs": "1786885138499671400",
+              "ctimeNs": "1786885138499671400"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "67bd55b18d8c57ef247891dfbf34c13cc450e582a8888c18371ac746e448dfe4",
+        "entries": [
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "executable": false,
+            "size": "486",
+            "sha256": "d9f077c60e5a432080ff99829938315235523ae911af3a6b6606d0b410e5886a"
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13013",
+            "sha256": "66128014409b106c9195ec1044e3287efa56d9069dac23da15f0ed540d1b3f8c"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "299",
+            "sha256": "bf84121101686d314630990fb2c382950b1c599e0221e645ab374133d8c3571c"
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "executable": false,
+            "size": "3246",
+            "sha256": "b7b04d65883fbec8cbae50a88f577cbb96de1d98e8bfd844f6bfc8e0db5c218a"
+          },
+          {
+            "path": "specs",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory"
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12450",
+            "sha256": "e534de237db1dc17e6389869ac9f4cfc269453198dc2fd20cede0c6e48b60ba0"
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "executable": false,
+            "size": "5745",
+            "sha256": "75c0933d32970546e3bcb3cdb1f4999935a2b6fbf3ea760a9bd1d71a7599bb04"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "4503599636575181",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "e2df753dd48ed1010aae2484a8d48e5dfd2c2673e3ac80e41f7b4dbc9aef70ca",
+        "authorityEntries": [
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864574",
+              "mode": "33206",
+              "size": "486",
+              "mtimeNs": "1786955532795034100",
+              "ctimeNs": "1786955532840463300"
+            }
+          },
+          {
+            "path": "design.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5629499543417827",
+              "mode": "33206",
+              "size": "13013",
+              "mtimeNs": "1786885138493629900",
+              "ctimeNs": "1786885138493629900"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7599824380392439",
+              "mode": "33206",
+              "size": "299",
+              "mtimeNs": "1786955531736813900",
+              "ctimeNs": "1786955531736813900"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "12947848937894885",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "proposal.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7318349403681784",
+              "mode": "33206",
+              "size": "3246",
+              "mtimeNs": "1786885138495151300",
+              "ctimeNs": "1786885138495151300"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api/spec.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5629499543417851",
+              "mode": "33206",
+              "size": "12450",
+              "mtimeNs": "1786885138498660200",
+              "ctimeNs": "1786885138498660200"
+            }
+          },
+          {
+            "path": "specs/transaction-automation-api",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "6755399450260474",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "specs",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7599824380392441",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "tasks.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4785074613285884",
+              "mode": "33206",
+              "size": "5745",
+              "mtimeNs": "1786885138499671400",
+              "ctimeNs": "1786885138499671400"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "finalReservation": {
+    "state": "owned",
+    "identity": {
+      "dev": "3122291782",
+      "ino": "4503599636575181",
+      "mode": "16822",
+      "size": "0",
+      "mtimeNs": "0",
+      "ctimeNs": "0"
+    },
+    "entries": [
+      {
+        "path": ".rasen-archive-owner.json",
+        "kind": "file",
+        "state": "copied",
+        "expected": {
+          "path": ".rasen-archive-owner.json",
+          "kind": "file",
+          "executable": false,
+          "size": "324",
+          "sha256": "78e117514e2f8c7ba56867c11f4691cd57db5c5f75c4263d43b9ec8ed40f79de"
+        },
+        "identity": {
+          "dev": "3122291782",
+          "ino": "5629499543417825",
+          "mode": "33206",
+          "size": "324",
+          "mtimeNs": "1786955531880581200",
+          "ctimeNs": "1786955531880581200"
+        }
+      },
+      {
+        "path": "design.md",
+        "kind": "file",
+        "expected": {
+          "path": "design.md",
+          "kind": "file",
+          "executable": false,
+          "size": "13013",
+          "sha256": "66128014409b106c9195ec1044e3287efa56d9069dac23da15f0ed540d1b3f8c"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "5629499543417827",
+          "mode": "33206",
+          "size": "13013",
+          "mtimeNs": "1786885138493629900",
+          "ctimeNs": "1786885138493629900"
+        }
+      },
+      {
+        "path": "evidence",
+        "kind": "directory",
+        "expected": {
+          "path": "evidence",
+          "kind": "directory"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "12947848937894885",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        }
+      },
+      {
+        "path": "evidence/ship-log.md",
+        "kind": "file",
+        "expected": {
+          "path": "evidence/ship-log.md",
+          "kind": "file",
+          "executable": false,
+          "size": "299",
+          "sha256": "bf84121101686d314630990fb2c382950b1c599e0221e645ab374133d8c3571c"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "7599824380392439",
+          "mode": "33206",
+          "size": "299",
+          "mtimeNs": "1786955531736813900",
+          "ctimeNs": "1786955531736813900"
+        }
+      },
+      {
+        "path": "proposal.md",
+        "kind": "file",
+        "expected": {
+          "path": "proposal.md",
+          "kind": "file",
+          "executable": false,
+          "size": "3246",
+          "sha256": "b7b04d65883fbec8cbae50a88f577cbb96de1d98e8bfd844f6bfc8e0db5c218a"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "7318349403681784",
+          "mode": "33206",
+          "size": "3246",
+          "mtimeNs": "1786885138495151300",
+          "ctimeNs": "1786885138495151300"
+        }
+      },
+      {
+        "path": "specs",
+        "kind": "directory",
+        "expected": {
+          "path": "specs",
+          "kind": "directory"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "7599824380392441",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        }
+      },
+      {
+        "path": "specs/transaction-automation-api",
+        "kind": "directory",
+        "expected": {
+          "path": "specs/transaction-automation-api",
+          "kind": "directory"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "6755399450260474",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        }
+      },
+      {
+        "path": "specs/transaction-automation-api/spec.md",
+        "kind": "file",
+        "expected": {
+          "path": "specs/transaction-automation-api/spec.md",
+          "kind": "file",
+          "executable": false,
+          "size": "12450",
+          "sha256": "e534de237db1dc17e6389869ac9f4cfc269453198dc2fd20cede0c6e48b60ba0"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "5629499543417851",
+          "mode": "33206",
+          "size": "12450",
+          "mtimeNs": "1786885138498660200",
+          "ctimeNs": "1786885138498660200"
+        }
+      },
+      {
+        "path": "tasks.md",
+        "kind": "file",
+        "expected": {
+          "path": "tasks.md",
+          "kind": "file",
+          "executable": false,
+          "size": "5745",
+          "sha256": "75c0933d32970546e3bcb3cdb1f4999935a2b6fbf3ea760a9bd1d71a7599bb04"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "4785074613285884",
+          "mode": "33206",
+          "size": "5745",
+          "mtimeNs": "1786885138499671400",
+          "ctimeNs": "1786885138499671400"
+        }
+      }
+    ]
+  },
+  "specProgress": [],
+  "cleanerProgress": [],
+  "sourceProgress": {
+    "state": "removed",
+    "quarantine": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\.rasen-archive-source-d7b847d9-e056-496a-96ba-02a8f47d8f04\\s0304-transaction-contract-freeze",
+    "claimIdentity": {
+      "dev": "3122291782",
+      "ino": "9570149217367010",
+      "mode": "16822",
+      "size": "0",
+      "mtimeNs": "0",
+      "ctimeNs": "0"
+    }
+  },
+  "updatedAt": "2026-08-17T08:32:13.184Z"
+}

@@ -1,0 +1,19 @@
+{
+  "change": "s0304-transaction-contract-freeze",
+  "archivedAt": "2026-08-17T08:32:10.865Z",
+  "codeCommit": "94244e94326cbf901f2edabfa0f0f092ff48ba7c",
+  "planningBranch": "main",
+  "planningTreeState": "dirty",
+  "evidence": [
+    {
+      "path": "evidence/ship-log.md",
+      "sha256": "bf84121101686d314630990fb2c382950b1c599e0221e645ab374133d8c3571c"
+    }
+  ],
+  "probes": [],
+  "handoffAbsorbed": null,
+  "ephemeraDiscarded": [],
+  "missing": [
+    "verification-report"
+  ]
+}

@@ -1,0 +1,4723 @@
+{
+  "schemaVersion": 2,
+  "transactionId": "e5c21f62-0d10-419e-81d5-c76dbcdb5f3f",
+  "planHash": "7fffb7ff424a61be59b47879a1e2ee0b5f443f67b898e02303baa322b047217a",
+  "change": "s0304-transaction-api-and-react-surface",
+  "phase": "complete",
+  "activePath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\s0304-transaction-api-and-react-surface",
+  "stagePath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\archive\\.rasen-archive-stage-e5c21f62-0d10-419e-81d5-c76dbcdb5f3f",
+  "finalPath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\archive\\2026-08-17-s0304-transaction-api-and-react-surface",
+  "ephemeraDisposed": [
+    "portfolio-run.json"
+  ],
+  "phaseFingerprints": {
+    "payload-copied": {
+      "state": "verified",
+      "scope": "stage",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "dc21300a84b6ac1989f33fbebcb33343811e948e10e5865ed72b62364e675bd1",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+          },
+          {
+            "path": "handoff",
+            "kind": "directory"
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6794",
+            "sha256": "ec85fa8dc1447f1dacf54defb643e29c4f5b4a01608ccafffe09b954c519da43"
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10293",
+            "sha256": "1e378e231d7e3a93c4e617831a5ad815a91cce2fdbc5fc9f353296fb949dbf2e"
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "executable": false,
+            "size": "11212",
+            "sha256": "1a4631767ecefbd20b58d4df5be71ea0200828c6d9279781b08fabef98da1dd4"
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12922",
+            "sha256": "2646ea29eabed89c4f252e45c051e1b9c6abc2de32d23328faa4846ca6572bab"
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12441",
+            "sha256": "bc2fd71627e46472038dfc091ebab2ad815f9fa93378234ded7c80d426693feb"
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8645",
+            "sha256": "18b89e25bc8d0c622a5355dd471585dc3cd1e1e27f0862f308af0f5329d11931"
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9279",
+            "sha256": "ccb8ce3e8f483dcf85f9b4560e8e3d3fb8e7201201de5036662b6f53d2967475"
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13300",
+            "sha256": "fdef63f1b631a24526190a8b5e09614c5e0adff4e4bf3f5c4162027358f85822"
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8437",
+            "sha256": "b8a2f776c392f8099606c3f04e0fecd6fd64d3bbbe5a9e0606d9ae7320859a9e"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "17047",
+            "sha256": "3695ec730fb9f24da87a128718ff3839e0090338f0b26d01b0dd9ffc69427ddf"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "289",
+            "sha256": "d7257671285d1dbb36247fd8c104ac47c5107d72a58a66ffc5bc36eacec2c0ba"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "3377699730867037",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "4768856f5bf3f19d0e4fbd4c625389d71cf8fc1f47f1a1a62d845ed34ff877b3",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224754156382",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786263562439654900",
+              "ctimeNs": "1786315257322397600"
+            }
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699730867042",
+              "mode": "33206",
+              "size": "6794",
+              "mtimeNs": "1786268842991984600",
+              "ctimeNs": "1786315257323958800"
+            }
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "12947848939476577",
+              "mode": "33206",
+              "size": "10293",
+              "mtimeNs": "1786347119462374800",
+              "ctimeNs": "1786347119462374800"
+            }
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "18014398519779038",
+              "mode": "33206",
+              "size": "11212",
+              "mtimeNs": "1786443239961614700",
+              "ctimeNs": "1786443239961614700"
+            }
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "6473924475646014",
+              "mode": "33206",
+              "size": "12922",
+              "mtimeNs": "1786508178317623000",
+              "ctimeNs": "1786508178339573500"
+            }
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "31243722418161547",
+              "mode": "33206",
+              "size": "12441",
+              "mtimeNs": "1786526537398045200",
+              "ctimeNs": "1786526537457572200"
+            }
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "6192449493178846",
+              "mode": "33206",
+              "size": "8645",
+              "mtimeNs": "1786530568815904300",
+              "ctimeNs": "1786530568914635900"
+            }
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7318349405844792",
+              "mode": "33206",
+              "size": "9279",
+              "mtimeNs": "1786541197329855300",
+              "ctimeNs": "1786541197353352700"
+            }
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "26740122796842740",
+              "mode": "33206",
+              "size": "13300",
+              "mtimeNs": "1786588979678171300",
+              "ctimeNs": "1786588979790695100"
+            }
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "11540474055942183",
+              "mode": "33206",
+              "size": "8437",
+              "mtimeNs": "1786601056376848800",
+              "ctimeNs": "1786601056393397500"
+            }
+          },
+          {
+            "path": "handoff",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699730867041",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224754156383",
+              "mode": "33206",
+              "size": "17047",
+              "mtimeNs": "1786368134213765600",
+              "ctimeNs": "1786368134213765600"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224754156384",
+              "mode": "33206",
+              "size": "289",
+              "mtimeNs": "1786263562440796400",
+              "ctimeNs": "1786315257326946800"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "dc21300a84b6ac1989f33fbebcb33343811e948e10e5865ed72b62364e675bd1",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+          },
+          {
+            "path": "handoff",
+            "kind": "directory"
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6794",
+            "sha256": "ec85fa8dc1447f1dacf54defb643e29c4f5b4a01608ccafffe09b954c519da43"
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10293",
+            "sha256": "1e378e231d7e3a93c4e617831a5ad815a91cce2fdbc5fc9f353296fb949dbf2e"
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "executable": false,
+            "size": "11212",
+            "sha256": "1a4631767ecefbd20b58d4df5be71ea0200828c6d9279781b08fabef98da1dd4"
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12922",
+            "sha256": "2646ea29eabed89c4f252e45c051e1b9c6abc2de32d23328faa4846ca6572bab"
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12441",
+            "sha256": "bc2fd71627e46472038dfc091ebab2ad815f9fa93378234ded7c80d426693feb"
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8645",
+            "sha256": "18b89e25bc8d0c622a5355dd471585dc3cd1e1e27f0862f308af0f5329d11931"
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9279",
+            "sha256": "ccb8ce3e8f483dcf85f9b4560e8e3d3fb8e7201201de5036662b6f53d2967475"
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13300",
+            "sha256": "fdef63f1b631a24526190a8b5e09614c5e0adff4e4bf3f5c4162027358f85822"
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8437",
+            "sha256": "b8a2f776c392f8099606c3f04e0fecd6fd64d3bbbe5a9e0606d9ae7320859a9e"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "17047",
+            "sha256": "3695ec730fb9f24da87a128718ff3839e0090338f0b26d01b0dd9ffc69427ddf"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "289",
+            "sha256": "d7257671285d1dbb36247fd8c104ac47c5107d72a58a66ffc5bc36eacec2c0ba"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2251799822889925",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "d1fc3fd19211f26feef9fb3e3393f932354987bf8bdd744deea41bfb2a666e20",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324846179270",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955461299945300",
+              "ctimeNs": "1786955461299945300"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2533274799600584",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786263562439654900",
+              "ctimeNs": "1786315257322397600"
+            }
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324846179275",
+              "mode": "33206",
+              "size": "6794",
+              "mtimeNs": "1786268842991984600",
+              "ctimeNs": "1786315257323958800"
+            }
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849869468620",
+              "mode": "33206",
+              "size": "10293",
+              "mtimeNs": "1786347119462374800",
+              "ctimeNs": "1786347119462374800"
+            }
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889933",
+              "mode": "33206",
+              "size": "11212",
+              "mtimeNs": "1786443239961614700",
+              "ctimeNs": "1786443239961614700"
+            }
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021902",
+              "mode": "33206",
+              "size": "12922",
+              "mtimeNs": "1786508178317623000",
+              "ctimeNs": "1786508178339573500"
+            }
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732559",
+              "mode": "33206",
+              "size": "12441",
+              "mtimeNs": "1786526537398045200",
+              "ctimeNs": "1786526537457572200"
+            }
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7881299357103057",
+              "mode": "33206",
+              "size": "8645",
+              "mtimeNs": "1786530568815904300",
+              "ctimeNs": "1786530568914635900"
+            }
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5348024566707164",
+              "mode": "33206",
+              "size": "9279",
+              "mtimeNs": "1786541197329855300",
+              "ctimeNs": "1786541197353352700"
+            }
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4785074613285853",
+              "mode": "33206",
+              "size": "13300",
+              "mtimeNs": "1786588979678171300",
+              "ctimeNs": "1786588979790695100"
+            }
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599636575198",
+              "mode": "33206",
+              "size": "8437",
+              "mtimeNs": "1786601056376848800",
+              "ctimeNs": "1786601056393397500"
+            }
+          },
+          {
+            "path": "handoff",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889930",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153887",
+              "mode": "33206",
+              "size": "17047",
+              "mtimeNs": "1786368134213765600",
+              "ctimeNs": "1786368134213765600"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732576",
+              "mode": "33206",
+              "size": "289",
+              "mtimeNs": "1786263562440796400",
+              "ctimeNs": "1786315257326946800"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "dc21300a84b6ac1989f33fbebcb33343811e948e10e5865ed72b62364e675bd1",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+          },
+          {
+            "path": "handoff",
+            "kind": "directory"
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6794",
+            "sha256": "ec85fa8dc1447f1dacf54defb643e29c4f5b4a01608ccafffe09b954c519da43"
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10293",
+            "sha256": "1e378e231d7e3a93c4e617831a5ad815a91cce2fdbc5fc9f353296fb949dbf2e"
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "executable": false,
+            "size": "11212",
+            "sha256": "1a4631767ecefbd20b58d4df5be71ea0200828c6d9279781b08fabef98da1dd4"
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12922",
+            "sha256": "2646ea29eabed89c4f252e45c051e1b9c6abc2de32d23328faa4846ca6572bab"
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12441",
+            "sha256": "bc2fd71627e46472038dfc091ebab2ad815f9fa93378234ded7c80d426693feb"
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8645",
+            "sha256": "18b89e25bc8d0c622a5355dd471585dc3cd1e1e27f0862f308af0f5329d11931"
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9279",
+            "sha256": "ccb8ce3e8f483dcf85f9b4560e8e3d3fb8e7201201de5036662b6f53d2967475"
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13300",
+            "sha256": "fdef63f1b631a24526190a8b5e09614c5e0adff4e4bf3f5c4162027358f85822"
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8437",
+            "sha256": "b8a2f776c392f8099606c3f04e0fecd6fd64d3bbbe5a9e0606d9ae7320859a9e"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "17047",
+            "sha256": "3695ec730fb9f24da87a128718ff3839e0090338f0b26d01b0dd9ffc69427ddf"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "289",
+            "sha256": "d7257671285d1dbb36247fd8c104ac47c5107d72a58a66ffc5bc36eacec2c0ba"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2251799822889925",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "d1fc3fd19211f26feef9fb3e3393f932354987bf8bdd744deea41bfb2a666e20",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324846179270",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955461299945300",
+              "ctimeNs": "1786955461299945300"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2533274799600584",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786263562439654900",
+              "ctimeNs": "1786315257322397600"
+            }
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324846179275",
+              "mode": "33206",
+              "size": "6794",
+              "mtimeNs": "1786268842991984600",
+              "ctimeNs": "1786315257323958800"
+            }
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849869468620",
+              "mode": "33206",
+              "size": "10293",
+              "mtimeNs": "1786347119462374800",
+              "ctimeNs": "1786347119462374800"
+            }
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889933",
+              "mode": "33206",
+              "size": "11212",
+              "mtimeNs": "1786443239961614700",
+              "ctimeNs": "1786443239961614700"
+            }
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021902",
+              "mode": "33206",
+              "size": "12922",
+              "mtimeNs": "1786508178317623000",
+              "ctimeNs": "1786508178339573500"
+            }
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732559",
+              "mode": "33206",
+              "size": "12441",
+              "mtimeNs": "1786526537398045200",
+              "ctimeNs": "1786526537457572200"
+            }
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7881299357103057",
+              "mode": "33206",
+              "size": "8645",
+              "mtimeNs": "1786530568815904300",
+              "ctimeNs": "1786530568914635900"
+            }
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5348024566707164",
+              "mode": "33206",
+              "size": "9279",
+              "mtimeNs": "1786541197329855300",
+              "ctimeNs": "1786541197353352700"
+            }
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4785074613285853",
+              "mode": "33206",
+              "size": "13300",
+              "mtimeNs": "1786588979678171300",
+              "ctimeNs": "1786588979790695100"
+            }
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599636575198",
+              "mode": "33206",
+              "size": "8437",
+              "mtimeNs": "1786601056376848800",
+              "ctimeNs": "1786601056393397500"
+            }
+          },
+          {
+            "path": "handoff",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889930",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153887",
+              "mode": "33206",
+              "size": "17047",
+              "mtimeNs": "1786368134213765600",
+              "ctimeNs": "1786368134213765600"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732576",
+              "mode": "33206",
+              "size": "289",
+              "mtimeNs": "1786263562440796400",
+              "ctimeNs": "1786315257326946800"
+            }
+          }
+        ]
+      }
+    },
+    "handoff-finalized": {
+      "state": "verified",
+      "scope": "stage",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "dc21300a84b6ac1989f33fbebcb33343811e948e10e5865ed72b62364e675bd1",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+          },
+          {
+            "path": "handoff",
+            "kind": "directory"
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6794",
+            "sha256": "ec85fa8dc1447f1dacf54defb643e29c4f5b4a01608ccafffe09b954c519da43"
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10293",
+            "sha256": "1e378e231d7e3a93c4e617831a5ad815a91cce2fdbc5fc9f353296fb949dbf2e"
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "executable": false,
+            "size": "11212",
+            "sha256": "1a4631767ecefbd20b58d4df5be71ea0200828c6d9279781b08fabef98da1dd4"
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12922",
+            "sha256": "2646ea29eabed89c4f252e45c051e1b9c6abc2de32d23328faa4846ca6572bab"
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12441",
+            "sha256": "bc2fd71627e46472038dfc091ebab2ad815f9fa93378234ded7c80d426693feb"
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8645",
+            "sha256": "18b89e25bc8d0c622a5355dd471585dc3cd1e1e27f0862f308af0f5329d11931"
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9279",
+            "sha256": "ccb8ce3e8f483dcf85f9b4560e8e3d3fb8e7201201de5036662b6f53d2967475"
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13300",
+            "sha256": "fdef63f1b631a24526190a8b5e09614c5e0adff4e4bf3f5c4162027358f85822"
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8437",
+            "sha256": "b8a2f776c392f8099606c3f04e0fecd6fd64d3bbbe5a9e0606d9ae7320859a9e"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "17047",
+            "sha256": "3695ec730fb9f24da87a128718ff3839e0090338f0b26d01b0dd9ffc69427ddf"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "289",
+            "sha256": "d7257671285d1dbb36247fd8c104ac47c5107d72a58a66ffc5bc36eacec2c0ba"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2251799822889925",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "d1fc3fd19211f26feef9fb3e3393f932354987bf8bdd744deea41bfb2a666e20",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324846179270",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955461299945300",
+              "ctimeNs": "1786955461299945300"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2533274799600584",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786263562439654900",
+              "ctimeNs": "1786315257322397600"
+            }
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324846179275",
+              "mode": "33206",
+              "size": "6794",
+              "mtimeNs": "1786268842991984600",
+              "ctimeNs": "1786315257323958800"
+            }
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849869468620",
+              "mode": "33206",
+              "size": "10293",
+              "mtimeNs": "1786347119462374800",
+              "ctimeNs": "1786347119462374800"
+            }
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889933",
+              "mode": "33206",
+              "size": "11212",
+              "mtimeNs": "1786443239961614700",
+              "ctimeNs": "1786443239961614700"
+            }
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021902",
+              "mode": "33206",
+              "size": "12922",
+              "mtimeNs": "1786508178317623000",
+              "ctimeNs": "1786508178339573500"
+            }
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732559",
+              "mode": "33206",
+              "size": "12441",
+              "mtimeNs": "1786526537398045200",
+              "ctimeNs": "1786526537457572200"
+            }
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7881299357103057",
+              "mode": "33206",
+              "size": "8645",
+              "mtimeNs": "1786530568815904300",
+              "ctimeNs": "1786530568914635900"
+            }
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5348024566707164",
+              "mode": "33206",
+              "size": "9279",
+              "mtimeNs": "1786541197329855300",
+              "ctimeNs": "1786541197353352700"
+            }
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4785074613285853",
+              "mode": "33206",
+              "size": "13300",
+              "mtimeNs": "1786588979678171300",
+              "ctimeNs": "1786588979790695100"
+            }
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599636575198",
+              "mode": "33206",
+              "size": "8437",
+              "mtimeNs": "1786601056376848800",
+              "ctimeNs": "1786601056393397500"
+            }
+          },
+          {
+            "path": "handoff",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889930",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153887",
+              "mode": "33206",
+              "size": "17047",
+              "mtimeNs": "1786368134213765600",
+              "ctimeNs": "1786368134213765600"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732576",
+              "mode": "33206",
+              "size": "289",
+              "mtimeNs": "1786263562440796400",
+              "ctimeNs": "1786315257326946800"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "dc21300a84b6ac1989f33fbebcb33343811e948e10e5865ed72b62364e675bd1",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+          },
+          {
+            "path": "handoff",
+            "kind": "directory"
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6794",
+            "sha256": "ec85fa8dc1447f1dacf54defb643e29c4f5b4a01608ccafffe09b954c519da43"
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10293",
+            "sha256": "1e378e231d7e3a93c4e617831a5ad815a91cce2fdbc5fc9f353296fb949dbf2e"
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "executable": false,
+            "size": "11212",
+            "sha256": "1a4631767ecefbd20b58d4df5be71ea0200828c6d9279781b08fabef98da1dd4"
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12922",
+            "sha256": "2646ea29eabed89c4f252e45c051e1b9c6abc2de32d23328faa4846ca6572bab"
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12441",
+            "sha256": "bc2fd71627e46472038dfc091ebab2ad815f9fa93378234ded7c80d426693feb"
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8645",
+            "sha256": "18b89e25bc8d0c622a5355dd471585dc3cd1e1e27f0862f308af0f5329d11931"
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9279",
+            "sha256": "ccb8ce3e8f483dcf85f9b4560e8e3d3fb8e7201201de5036662b6f53d2967475"
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13300",
+            "sha256": "fdef63f1b631a24526190a8b5e09614c5e0adff4e4bf3f5c4162027358f85822"
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8437",
+            "sha256": "b8a2f776c392f8099606c3f04e0fecd6fd64d3bbbe5a9e0606d9ae7320859a9e"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "17047",
+            "sha256": "3695ec730fb9f24da87a128718ff3839e0090338f0b26d01b0dd9ffc69427ddf"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "289",
+            "sha256": "d7257671285d1dbb36247fd8c104ac47c5107d72a58a66ffc5bc36eacec2c0ba"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2251799822889925",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "d1fc3fd19211f26feef9fb3e3393f932354987bf8bdd744deea41bfb2a666e20",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324846179270",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955461299945300",
+              "ctimeNs": "1786955461299945300"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2533274799600584",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786263562439654900",
+              "ctimeNs": "1786315257322397600"
+            }
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324846179275",
+              "mode": "33206",
+              "size": "6794",
+              "mtimeNs": "1786268842991984600",
+              "ctimeNs": "1786315257323958800"
+            }
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849869468620",
+              "mode": "33206",
+              "size": "10293",
+              "mtimeNs": "1786347119462374800",
+              "ctimeNs": "1786347119462374800"
+            }
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889933",
+              "mode": "33206",
+              "size": "11212",
+              "mtimeNs": "1786443239961614700",
+              "ctimeNs": "1786443239961614700"
+            }
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021902",
+              "mode": "33206",
+              "size": "12922",
+              "mtimeNs": "1786508178317623000",
+              "ctimeNs": "1786508178339573500"
+            }
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732559",
+              "mode": "33206",
+              "size": "12441",
+              "mtimeNs": "1786526537398045200",
+              "ctimeNs": "1786526537457572200"
+            }
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7881299357103057",
+              "mode": "33206",
+              "size": "8645",
+              "mtimeNs": "1786530568815904300",
+              "ctimeNs": "1786530568914635900"
+            }
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5348024566707164",
+              "mode": "33206",
+              "size": "9279",
+              "mtimeNs": "1786541197329855300",
+              "ctimeNs": "1786541197353352700"
+            }
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4785074613285853",
+              "mode": "33206",
+              "size": "13300",
+              "mtimeNs": "1786588979678171300",
+              "ctimeNs": "1786588979790695100"
+            }
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599636575198",
+              "mode": "33206",
+              "size": "8437",
+              "mtimeNs": "1786601056376848800",
+              "ctimeNs": "1786601056393397500"
+            }
+          },
+          {
+            "path": "handoff",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889930",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153887",
+              "mode": "33206",
+              "size": "17047",
+              "mtimeNs": "1786368134213765600",
+              "ctimeNs": "1786368134213765600"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732576",
+              "mode": "33206",
+              "size": "289",
+              "mtimeNs": "1786263562440796400",
+              "ctimeNs": "1786315257326946800"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "dc21300a84b6ac1989f33fbebcb33343811e948e10e5865ed72b62364e675bd1",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+          },
+          {
+            "path": "handoff",
+            "kind": "directory"
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6794",
+            "sha256": "ec85fa8dc1447f1dacf54defb643e29c4f5b4a01608ccafffe09b954c519da43"
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10293",
+            "sha256": "1e378e231d7e3a93c4e617831a5ad815a91cce2fdbc5fc9f353296fb949dbf2e"
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "executable": false,
+            "size": "11212",
+            "sha256": "1a4631767ecefbd20b58d4df5be71ea0200828c6d9279781b08fabef98da1dd4"
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12922",
+            "sha256": "2646ea29eabed89c4f252e45c051e1b9c6abc2de32d23328faa4846ca6572bab"
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12441",
+            "sha256": "bc2fd71627e46472038dfc091ebab2ad815f9fa93378234ded7c80d426693feb"
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8645",
+            "sha256": "18b89e25bc8d0c622a5355dd471585dc3cd1e1e27f0862f308af0f5329d11931"
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9279",
+            "sha256": "ccb8ce3e8f483dcf85f9b4560e8e3d3fb8e7201201de5036662b6f53d2967475"
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13300",
+            "sha256": "fdef63f1b631a24526190a8b5e09614c5e0adff4e4bf3f5c4162027358f85822"
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8437",
+            "sha256": "b8a2f776c392f8099606c3f04e0fecd6fd64d3bbbe5a9e0606d9ae7320859a9e"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "17047",
+            "sha256": "3695ec730fb9f24da87a128718ff3839e0090338f0b26d01b0dd9ffc69427ddf"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "289",
+            "sha256": "d7257671285d1dbb36247fd8c104ac47c5107d72a58a66ffc5bc36eacec2c0ba"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2251799822889925",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "d1fc3fd19211f26feef9fb3e3393f932354987bf8bdd744deea41bfb2a666e20",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324846179270",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955461299945300",
+              "ctimeNs": "1786955461299945300"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2533274799600584",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786263562439654900",
+              "ctimeNs": "1786315257322397600"
+            }
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324846179275",
+              "mode": "33206",
+              "size": "6794",
+              "mtimeNs": "1786268842991984600",
+              "ctimeNs": "1786315257323958800"
+            }
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849869468620",
+              "mode": "33206",
+              "size": "10293",
+              "mtimeNs": "1786347119462374800",
+              "ctimeNs": "1786347119462374800"
+            }
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889933",
+              "mode": "33206",
+              "size": "11212",
+              "mtimeNs": "1786443239961614700",
+              "ctimeNs": "1786443239961614700"
+            }
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021902",
+              "mode": "33206",
+              "size": "12922",
+              "mtimeNs": "1786508178317623000",
+              "ctimeNs": "1786508178339573500"
+            }
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732559",
+              "mode": "33206",
+              "size": "12441",
+              "mtimeNs": "1786526537398045200",
+              "ctimeNs": "1786526537457572200"
+            }
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7881299357103057",
+              "mode": "33206",
+              "size": "8645",
+              "mtimeNs": "1786530568815904300",
+              "ctimeNs": "1786530568914635900"
+            }
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5348024566707164",
+              "mode": "33206",
+              "size": "9279",
+              "mtimeNs": "1786541197329855300",
+              "ctimeNs": "1786541197353352700"
+            }
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4785074613285853",
+              "mode": "33206",
+              "size": "13300",
+              "mtimeNs": "1786588979678171300",
+              "ctimeNs": "1786588979790695100"
+            }
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599636575198",
+              "mode": "33206",
+              "size": "8437",
+              "mtimeNs": "1786601056376848800",
+              "ctimeNs": "1786601056393397500"
+            }
+          },
+          {
+            "path": "handoff",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889930",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153887",
+              "mode": "33206",
+              "size": "17047",
+              "mtimeNs": "1786368134213765600",
+              "ctimeNs": "1786368134213765600"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732576",
+              "mode": "33206",
+              "size": "289",
+              "mtimeNs": "1786263562440796400",
+              "ctimeNs": "1786315257326946800"
+            }
+          }
+        ]
+      }
+    },
+    "evidence-finalized": {
+      "state": "verified",
+      "scope": "stage",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "dc21300a84b6ac1989f33fbebcb33343811e948e10e5865ed72b62364e675bd1",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+          },
+          {
+            "path": "handoff",
+            "kind": "directory"
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6794",
+            "sha256": "ec85fa8dc1447f1dacf54defb643e29c4f5b4a01608ccafffe09b954c519da43"
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10293",
+            "sha256": "1e378e231d7e3a93c4e617831a5ad815a91cce2fdbc5fc9f353296fb949dbf2e"
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "executable": false,
+            "size": "11212",
+            "sha256": "1a4631767ecefbd20b58d4df5be71ea0200828c6d9279781b08fabef98da1dd4"
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12922",
+            "sha256": "2646ea29eabed89c4f252e45c051e1b9c6abc2de32d23328faa4846ca6572bab"
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12441",
+            "sha256": "bc2fd71627e46472038dfc091ebab2ad815f9fa93378234ded7c80d426693feb"
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8645",
+            "sha256": "18b89e25bc8d0c622a5355dd471585dc3cd1e1e27f0862f308af0f5329d11931"
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9279",
+            "sha256": "ccb8ce3e8f483dcf85f9b4560e8e3d3fb8e7201201de5036662b6f53d2967475"
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13300",
+            "sha256": "fdef63f1b631a24526190a8b5e09614c5e0adff4e4bf3f5c4162027358f85822"
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8437",
+            "sha256": "b8a2f776c392f8099606c3f04e0fecd6fd64d3bbbe5a9e0606d9ae7320859a9e"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "17047",
+            "sha256": "3695ec730fb9f24da87a128718ff3839e0090338f0b26d01b0dd9ffc69427ddf"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "289",
+            "sha256": "d7257671285d1dbb36247fd8c104ac47c5107d72a58a66ffc5bc36eacec2c0ba"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2251799822889925",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "d1fc3fd19211f26feef9fb3e3393f932354987bf8bdd744deea41bfb2a666e20",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324846179270",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955461299945300",
+              "ctimeNs": "1786955461299945300"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2533274799600584",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786263562439654900",
+              "ctimeNs": "1786315257322397600"
+            }
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324846179275",
+              "mode": "33206",
+              "size": "6794",
+              "mtimeNs": "1786268842991984600",
+              "ctimeNs": "1786315257323958800"
+            }
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849869468620",
+              "mode": "33206",
+              "size": "10293",
+              "mtimeNs": "1786347119462374800",
+              "ctimeNs": "1786347119462374800"
+            }
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889933",
+              "mode": "33206",
+              "size": "11212",
+              "mtimeNs": "1786443239961614700",
+              "ctimeNs": "1786443239961614700"
+            }
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021902",
+              "mode": "33206",
+              "size": "12922",
+              "mtimeNs": "1786508178317623000",
+              "ctimeNs": "1786508178339573500"
+            }
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732559",
+              "mode": "33206",
+              "size": "12441",
+              "mtimeNs": "1786526537398045200",
+              "ctimeNs": "1786526537457572200"
+            }
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7881299357103057",
+              "mode": "33206",
+              "size": "8645",
+              "mtimeNs": "1786530568815904300",
+              "ctimeNs": "1786530568914635900"
+            }
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5348024566707164",
+              "mode": "33206",
+              "size": "9279",
+              "mtimeNs": "1786541197329855300",
+              "ctimeNs": "1786541197353352700"
+            }
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4785074613285853",
+              "mode": "33206",
+              "size": "13300",
+              "mtimeNs": "1786588979678171300",
+              "ctimeNs": "1786588979790695100"
+            }
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599636575198",
+              "mode": "33206",
+              "size": "8437",
+              "mtimeNs": "1786601056376848800",
+              "ctimeNs": "1786601056393397500"
+            }
+          },
+          {
+            "path": "handoff",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889930",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153887",
+              "mode": "33206",
+              "size": "17047",
+              "mtimeNs": "1786368134213765600",
+              "ctimeNs": "1786368134213765600"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732576",
+              "mode": "33206",
+              "size": "289",
+              "mtimeNs": "1786263562440796400",
+              "ctimeNs": "1786315257326946800"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "28e0b783efa0f26af0255313c0b47c0a0fad769ab9dcc33424065679f5174144",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "311",
+            "sha256": "73b703536d504a7a18f4b2ba5f3c66cd4684a98f8e8b29efa90b45cc8f81404f"
+          },
+          {
+            "path": "handoff",
+            "kind": "directory"
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6794",
+            "sha256": "ec85fa8dc1447f1dacf54defb643e29c4f5b4a01608ccafffe09b954c519da43"
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10293",
+            "sha256": "1e378e231d7e3a93c4e617831a5ad815a91cce2fdbc5fc9f353296fb949dbf2e"
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "executable": false,
+            "size": "11212",
+            "sha256": "1a4631767ecefbd20b58d4df5be71ea0200828c6d9279781b08fabef98da1dd4"
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12922",
+            "sha256": "2646ea29eabed89c4f252e45c051e1b9c6abc2de32d23328faa4846ca6572bab"
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12441",
+            "sha256": "bc2fd71627e46472038dfc091ebab2ad815f9fa93378234ded7c80d426693feb"
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8645",
+            "sha256": "18b89e25bc8d0c622a5355dd471585dc3cd1e1e27f0862f308af0f5329d11931"
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9279",
+            "sha256": "ccb8ce3e8f483dcf85f9b4560e8e3d3fb8e7201201de5036662b6f53d2967475"
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13300",
+            "sha256": "fdef63f1b631a24526190a8b5e09614c5e0adff4e4bf3f5c4162027358f85822"
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8437",
+            "sha256": "b8a2f776c392f8099606c3f04e0fecd6fd64d3bbbe5a9e0606d9ae7320859a9e"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "17047",
+            "sha256": "3695ec730fb9f24da87a128718ff3839e0090338f0b26d01b0dd9ffc69427ddf"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "289",
+            "sha256": "d7257671285d1dbb36247fd8c104ac47c5107d72a58a66ffc5bc36eacec2c0ba"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2251799822889925",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "112cbc1252a1699ce863bb2afbf2950b64e1c7e0efc22e2ff826e09d4a00bb5b",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324846179270",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955461299945300",
+              "ctimeNs": "1786955461299945300"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2533274799600584",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786263562439654900",
+              "ctimeNs": "1786315257322397600"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021922",
+              "mode": "33206",
+              "size": "311",
+              "mtimeNs": "1786955461756608400",
+              "ctimeNs": "1786955461756608400"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2814749776311265",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324846179275",
+              "mode": "33206",
+              "size": "6794",
+              "mtimeNs": "1786268842991984600",
+              "ctimeNs": "1786315257323958800"
+            }
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849869468620",
+              "mode": "33206",
+              "size": "10293",
+              "mtimeNs": "1786347119462374800",
+              "ctimeNs": "1786347119462374800"
+            }
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889933",
+              "mode": "33206",
+              "size": "11212",
+              "mtimeNs": "1786443239961614700",
+              "ctimeNs": "1786443239961614700"
+            }
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021902",
+              "mode": "33206",
+              "size": "12922",
+              "mtimeNs": "1786508178317623000",
+              "ctimeNs": "1786508178339573500"
+            }
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732559",
+              "mode": "33206",
+              "size": "12441",
+              "mtimeNs": "1786526537398045200",
+              "ctimeNs": "1786526537457572200"
+            }
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7881299357103057",
+              "mode": "33206",
+              "size": "8645",
+              "mtimeNs": "1786530568815904300",
+              "ctimeNs": "1786530568914635900"
+            }
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5348024566707164",
+              "mode": "33206",
+              "size": "9279",
+              "mtimeNs": "1786541197329855300",
+              "ctimeNs": "1786541197353352700"
+            }
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4785074613285853",
+              "mode": "33206",
+              "size": "13300",
+              "mtimeNs": "1786588979678171300",
+              "ctimeNs": "1786588979790695100"
+            }
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599636575198",
+              "mode": "33206",
+              "size": "8437",
+              "mtimeNs": "1786601056376848800",
+              "ctimeNs": "1786601056393397500"
+            }
+          },
+          {
+            "path": "handoff",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889930",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153887",
+              "mode": "33206",
+              "size": "17047",
+              "mtimeNs": "1786368134213765600",
+              "ctimeNs": "1786368134213765600"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732576",
+              "mode": "33206",
+              "size": "289",
+              "mtimeNs": "1786263562440796400",
+              "ctimeNs": "1786315257326946800"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "28e0b783efa0f26af0255313c0b47c0a0fad769ab9dcc33424065679f5174144",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "311",
+            "sha256": "73b703536d504a7a18f4b2ba5f3c66cd4684a98f8e8b29efa90b45cc8f81404f"
+          },
+          {
+            "path": "handoff",
+            "kind": "directory"
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6794",
+            "sha256": "ec85fa8dc1447f1dacf54defb643e29c4f5b4a01608ccafffe09b954c519da43"
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10293",
+            "sha256": "1e378e231d7e3a93c4e617831a5ad815a91cce2fdbc5fc9f353296fb949dbf2e"
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "executable": false,
+            "size": "11212",
+            "sha256": "1a4631767ecefbd20b58d4df5be71ea0200828c6d9279781b08fabef98da1dd4"
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12922",
+            "sha256": "2646ea29eabed89c4f252e45c051e1b9c6abc2de32d23328faa4846ca6572bab"
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12441",
+            "sha256": "bc2fd71627e46472038dfc091ebab2ad815f9fa93378234ded7c80d426693feb"
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8645",
+            "sha256": "18b89e25bc8d0c622a5355dd471585dc3cd1e1e27f0862f308af0f5329d11931"
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9279",
+            "sha256": "ccb8ce3e8f483dcf85f9b4560e8e3d3fb8e7201201de5036662b6f53d2967475"
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13300",
+            "sha256": "fdef63f1b631a24526190a8b5e09614c5e0adff4e4bf3f5c4162027358f85822"
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8437",
+            "sha256": "b8a2f776c392f8099606c3f04e0fecd6fd64d3bbbe5a9e0606d9ae7320859a9e"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "17047",
+            "sha256": "3695ec730fb9f24da87a128718ff3839e0090338f0b26d01b0dd9ffc69427ddf"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "289",
+            "sha256": "d7257671285d1dbb36247fd8c104ac47c5107d72a58a66ffc5bc36eacec2c0ba"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2251799822889925",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "112cbc1252a1699ce863bb2afbf2950b64e1c7e0efc22e2ff826e09d4a00bb5b",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324846179270",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955461299945300",
+              "ctimeNs": "1786955461299945300"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2533274799600584",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786263562439654900",
+              "ctimeNs": "1786315257322397600"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021922",
+              "mode": "33206",
+              "size": "311",
+              "mtimeNs": "1786955461756608400",
+              "ctimeNs": "1786955461756608400"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2814749776311265",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324846179275",
+              "mode": "33206",
+              "size": "6794",
+              "mtimeNs": "1786268842991984600",
+              "ctimeNs": "1786315257323958800"
+            }
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849869468620",
+              "mode": "33206",
+              "size": "10293",
+              "mtimeNs": "1786347119462374800",
+              "ctimeNs": "1786347119462374800"
+            }
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889933",
+              "mode": "33206",
+              "size": "11212",
+              "mtimeNs": "1786443239961614700",
+              "ctimeNs": "1786443239961614700"
+            }
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021902",
+              "mode": "33206",
+              "size": "12922",
+              "mtimeNs": "1786508178317623000",
+              "ctimeNs": "1786508178339573500"
+            }
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732559",
+              "mode": "33206",
+              "size": "12441",
+              "mtimeNs": "1786526537398045200",
+              "ctimeNs": "1786526537457572200"
+            }
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7881299357103057",
+              "mode": "33206",
+              "size": "8645",
+              "mtimeNs": "1786530568815904300",
+              "ctimeNs": "1786530568914635900"
+            }
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5348024566707164",
+              "mode": "33206",
+              "size": "9279",
+              "mtimeNs": "1786541197329855300",
+              "ctimeNs": "1786541197353352700"
+            }
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4785074613285853",
+              "mode": "33206",
+              "size": "13300",
+              "mtimeNs": "1786588979678171300",
+              "ctimeNs": "1786588979790695100"
+            }
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599636575198",
+              "mode": "33206",
+              "size": "8437",
+              "mtimeNs": "1786601056376848800",
+              "ctimeNs": "1786601056393397500"
+            }
+          },
+          {
+            "path": "handoff",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889930",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153887",
+              "mode": "33206",
+              "size": "17047",
+              "mtimeNs": "1786368134213765600",
+              "ctimeNs": "1786368134213765600"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732576",
+              "mode": "33206",
+              "size": "289",
+              "mtimeNs": "1786263562440796400",
+              "ctimeNs": "1786315257326946800"
+            }
+          }
+        ]
+      }
+    },
+    "final-reserved": {
+      "state": "verified",
+      "scope": "final",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "28e0b783efa0f26af0255313c0b47c0a0fad769ab9dcc33424065679f5174144",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "311",
+            "sha256": "73b703536d504a7a18f4b2ba5f3c66cd4684a98f8e8b29efa90b45cc8f81404f"
+          },
+          {
+            "path": "handoff",
+            "kind": "directory"
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6794",
+            "sha256": "ec85fa8dc1447f1dacf54defb643e29c4f5b4a01608ccafffe09b954c519da43"
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10293",
+            "sha256": "1e378e231d7e3a93c4e617831a5ad815a91cce2fdbc5fc9f353296fb949dbf2e"
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "executable": false,
+            "size": "11212",
+            "sha256": "1a4631767ecefbd20b58d4df5be71ea0200828c6d9279781b08fabef98da1dd4"
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12922",
+            "sha256": "2646ea29eabed89c4f252e45c051e1b9c6abc2de32d23328faa4846ca6572bab"
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12441",
+            "sha256": "bc2fd71627e46472038dfc091ebab2ad815f9fa93378234ded7c80d426693feb"
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8645",
+            "sha256": "18b89e25bc8d0c622a5355dd471585dc3cd1e1e27f0862f308af0f5329d11931"
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9279",
+            "sha256": "ccb8ce3e8f483dcf85f9b4560e8e3d3fb8e7201201de5036662b6f53d2967475"
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13300",
+            "sha256": "fdef63f1b631a24526190a8b5e09614c5e0adff4e4bf3f5c4162027358f85822"
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8437",
+            "sha256": "b8a2f776c392f8099606c3f04e0fecd6fd64d3bbbe5a9e0606d9ae7320859a9e"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "17047",
+            "sha256": "3695ec730fb9f24da87a128718ff3839e0090338f0b26d01b0dd9ffc69427ddf"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "289",
+            "sha256": "d7257671285d1dbb36247fd8c104ac47c5107d72a58a66ffc5bc36eacec2c0ba"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "2251799822889925",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "112cbc1252a1699ce863bb2afbf2950b64e1c7e0efc22e2ff826e09d4a00bb5b",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324846179270",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955461299945300",
+              "ctimeNs": "1786955461299945300"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2533274799600584",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786263562439654900",
+              "ctimeNs": "1786315257322397600"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021922",
+              "mode": "33206",
+              "size": "311",
+              "mtimeNs": "1786955461756608400",
+              "ctimeNs": "1786955461756608400"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2814749776311265",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1970324846179275",
+              "mode": "33206",
+              "size": "6794",
+              "mtimeNs": "1786268842991984600",
+              "ctimeNs": "1786315257323958800"
+            }
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849869468620",
+              "mode": "33206",
+              "size": "10293",
+              "mtimeNs": "1786347119462374800",
+              "ctimeNs": "1786347119462374800"
+            }
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889933",
+              "mode": "33206",
+              "size": "11212",
+              "mtimeNs": "1786443239961614700",
+              "ctimeNs": "1786443239961614700"
+            }
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021902",
+              "mode": "33206",
+              "size": "12922",
+              "mtimeNs": "1786508178317623000",
+              "ctimeNs": "1786508178339573500"
+            }
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732559",
+              "mode": "33206",
+              "size": "12441",
+              "mtimeNs": "1786526537398045200",
+              "ctimeNs": "1786526537457572200"
+            }
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "7881299357103057",
+              "mode": "33206",
+              "size": "8645",
+              "mtimeNs": "1786530568815904300",
+              "ctimeNs": "1786530568914635900"
+            }
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5348024566707164",
+              "mode": "33206",
+              "size": "9279",
+              "mtimeNs": "1786541197329855300",
+              "ctimeNs": "1786541197353352700"
+            }
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4785074613285853",
+              "mode": "33206",
+              "size": "13300",
+              "mtimeNs": "1786588979678171300",
+              "ctimeNs": "1786588979790695100"
+            }
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599636575198",
+              "mode": "33206",
+              "size": "8437",
+              "mtimeNs": "1786601056376848800",
+              "ctimeNs": "1786601056393397500"
+            }
+          },
+          {
+            "path": "handoff",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2251799822889930",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153887",
+              "mode": "33206",
+              "size": "17047",
+              "mtimeNs": "1786368134213765600",
+              "ctimeNs": "1786368134213765600"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732576",
+              "mode": "33206",
+              "size": "289",
+              "mtimeNs": "1786263562440796400",
+              "ctimeNs": "1786315257326946800"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "28e0b783efa0f26af0255313c0b47c0a0fad769ab9dcc33424065679f5174144",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "311",
+            "sha256": "73b703536d504a7a18f4b2ba5f3c66cd4684a98f8e8b29efa90b45cc8f81404f"
+          },
+          {
+            "path": "handoff",
+            "kind": "directory"
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6794",
+            "sha256": "ec85fa8dc1447f1dacf54defb643e29c4f5b4a01608ccafffe09b954c519da43"
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10293",
+            "sha256": "1e378e231d7e3a93c4e617831a5ad815a91cce2fdbc5fc9f353296fb949dbf2e"
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "executable": false,
+            "size": "11212",
+            "sha256": "1a4631767ecefbd20b58d4df5be71ea0200828c6d9279781b08fabef98da1dd4"
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12922",
+            "sha256": "2646ea29eabed89c4f252e45c051e1b9c6abc2de32d23328faa4846ca6572bab"
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12441",
+            "sha256": "bc2fd71627e46472038dfc091ebab2ad815f9fa93378234ded7c80d426693feb"
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8645",
+            "sha256": "18b89e25bc8d0c622a5355dd471585dc3cd1e1e27f0862f308af0f5329d11931"
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9279",
+            "sha256": "ccb8ce3e8f483dcf85f9b4560e8e3d3fb8e7201201de5036662b6f53d2967475"
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13300",
+            "sha256": "fdef63f1b631a24526190a8b5e09614c5e0adff4e4bf3f5c4162027358f85822"
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8437",
+            "sha256": "b8a2f776c392f8099606c3f04e0fecd6fd64d3bbbe5a9e0606d9ae7320859a9e"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "17047",
+            "sha256": "3695ec730fb9f24da87a128718ff3839e0090338f0b26d01b0dd9ffc69427ddf"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "289",
+            "sha256": "d7257671285d1dbb36247fd8c104ac47c5107d72a58a66ffc5bc36eacec2c0ba"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "3940649683153865",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "5ecfb0ee2a5f9c7eae4d3231f5fc858fd6b631eea1d7124ee15cbc7695ed9b8e",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021926",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786263562439654900",
+              "ctimeNs": "1786315257322397600"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021928",
+              "mode": "33206",
+              "size": "311",
+              "mtimeNs": "1786955461756608400",
+              "ctimeNs": "1786955461756608400"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443239",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864554",
+              "mode": "33206",
+              "size": "6794",
+              "mtimeNs": "1786268842991984600",
+              "ctimeNs": "1786315257323958800"
+            }
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864555",
+              "mode": "33206",
+              "size": "10293",
+              "mtimeNs": "1786347119462374800",
+              "ctimeNs": "1786347119462374800"
+            }
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864556",
+              "mode": "33206",
+              "size": "11212",
+              "mtimeNs": "1786443239961614700",
+              "ctimeNs": "1786443239961614700"
+            }
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864557",
+              "mode": "33206",
+              "size": "12922",
+              "mtimeNs": "1786508178317623000",
+              "ctimeNs": "1786508178339573500"
+            }
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864558",
+              "mode": "33206",
+              "size": "12441",
+              "mtimeNs": "1786526537398045200",
+              "ctimeNs": "1786526537457572200"
+            }
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153903",
+              "mode": "33206",
+              "size": "8645",
+              "mtimeNs": "1786530568815904300",
+              "ctimeNs": "1786530568914635900"
+            }
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153904",
+              "mode": "33206",
+              "size": "9279",
+              "mtimeNs": "1786541197329855300",
+              "ctimeNs": "1786541197353352700"
+            }
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443249",
+              "mode": "33206",
+              "size": "13300",
+              "mtimeNs": "1786588979678171300",
+              "ctimeNs": "1786588979790695100"
+            }
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443250",
+              "mode": "33206",
+              "size": "8437",
+              "mtimeNs": "1786601056376848800",
+              "ctimeNs": "1786601056393397500"
+            }
+          },
+          {
+            "path": "handoff",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443241",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443251",
+              "mode": "33206",
+              "size": "17047",
+              "mtimeNs": "1786368134213765600",
+              "ctimeNs": "1786368134213765600"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443252",
+              "mode": "33206",
+              "size": "289",
+              "mtimeNs": "1786263562440796400",
+              "ctimeNs": "1786315257326946800"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "28e0b783efa0f26af0255313c0b47c0a0fad769ab9dcc33424065679f5174144",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "311",
+            "sha256": "73b703536d504a7a18f4b2ba5f3c66cd4684a98f8e8b29efa90b45cc8f81404f"
+          },
+          {
+            "path": "handoff",
+            "kind": "directory"
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6794",
+            "sha256": "ec85fa8dc1447f1dacf54defb643e29c4f5b4a01608ccafffe09b954c519da43"
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10293",
+            "sha256": "1e378e231d7e3a93c4e617831a5ad815a91cce2fdbc5fc9f353296fb949dbf2e"
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "executable": false,
+            "size": "11212",
+            "sha256": "1a4631767ecefbd20b58d4df5be71ea0200828c6d9279781b08fabef98da1dd4"
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12922",
+            "sha256": "2646ea29eabed89c4f252e45c051e1b9c6abc2de32d23328faa4846ca6572bab"
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12441",
+            "sha256": "bc2fd71627e46472038dfc091ebab2ad815f9fa93378234ded7c80d426693feb"
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8645",
+            "sha256": "18b89e25bc8d0c622a5355dd471585dc3cd1e1e27f0862f308af0f5329d11931"
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9279",
+            "sha256": "ccb8ce3e8f483dcf85f9b4560e8e3d3fb8e7201201de5036662b6f53d2967475"
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13300",
+            "sha256": "fdef63f1b631a24526190a8b5e09614c5e0adff4e4bf3f5c4162027358f85822"
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8437",
+            "sha256": "b8a2f776c392f8099606c3f04e0fecd6fd64d3bbbe5a9e0606d9ae7320859a9e"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "17047",
+            "sha256": "3695ec730fb9f24da87a128718ff3839e0090338f0b26d01b0dd9ffc69427ddf"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "289",
+            "sha256": "d7257671285d1dbb36247fd8c104ac47c5107d72a58a66ffc5bc36eacec2c0ba"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "3940649683153865",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "5ecfb0ee2a5f9c7eae4d3231f5fc858fd6b631eea1d7124ee15cbc7695ed9b8e",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021926",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786263562439654900",
+              "ctimeNs": "1786315257322397600"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021928",
+              "mode": "33206",
+              "size": "311",
+              "mtimeNs": "1786955461756608400",
+              "ctimeNs": "1786955461756608400"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443239",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864554",
+              "mode": "33206",
+              "size": "6794",
+              "mtimeNs": "1786268842991984600",
+              "ctimeNs": "1786315257323958800"
+            }
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864555",
+              "mode": "33206",
+              "size": "10293",
+              "mtimeNs": "1786347119462374800",
+              "ctimeNs": "1786347119462374800"
+            }
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864556",
+              "mode": "33206",
+              "size": "11212",
+              "mtimeNs": "1786443239961614700",
+              "ctimeNs": "1786443239961614700"
+            }
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864557",
+              "mode": "33206",
+              "size": "12922",
+              "mtimeNs": "1786508178317623000",
+              "ctimeNs": "1786508178339573500"
+            }
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864558",
+              "mode": "33206",
+              "size": "12441",
+              "mtimeNs": "1786526537398045200",
+              "ctimeNs": "1786526537457572200"
+            }
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153903",
+              "mode": "33206",
+              "size": "8645",
+              "mtimeNs": "1786530568815904300",
+              "ctimeNs": "1786530568914635900"
+            }
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153904",
+              "mode": "33206",
+              "size": "9279",
+              "mtimeNs": "1786541197329855300",
+              "ctimeNs": "1786541197353352700"
+            }
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443249",
+              "mode": "33206",
+              "size": "13300",
+              "mtimeNs": "1786588979678171300",
+              "ctimeNs": "1786588979790695100"
+            }
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443250",
+              "mode": "33206",
+              "size": "8437",
+              "mtimeNs": "1786601056376848800",
+              "ctimeNs": "1786601056393397500"
+            }
+          },
+          {
+            "path": "handoff",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443241",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443251",
+              "mode": "33206",
+              "size": "17047",
+              "mtimeNs": "1786368134213765600",
+              "ctimeNs": "1786368134213765600"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443252",
+              "mode": "33206",
+              "size": "289",
+              "mtimeNs": "1786263562440796400",
+              "ctimeNs": "1786315257326946800"
+            }
+          }
+        ]
+      }
+    },
+    "accounting-finalized": {
+      "state": "verified",
+      "scope": "final",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "28e0b783efa0f26af0255313c0b47c0a0fad769ab9dcc33424065679f5174144",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "311",
+            "sha256": "73b703536d504a7a18f4b2ba5f3c66cd4684a98f8e8b29efa90b45cc8f81404f"
+          },
+          {
+            "path": "handoff",
+            "kind": "directory"
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6794",
+            "sha256": "ec85fa8dc1447f1dacf54defb643e29c4f5b4a01608ccafffe09b954c519da43"
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10293",
+            "sha256": "1e378e231d7e3a93c4e617831a5ad815a91cce2fdbc5fc9f353296fb949dbf2e"
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "executable": false,
+            "size": "11212",
+            "sha256": "1a4631767ecefbd20b58d4df5be71ea0200828c6d9279781b08fabef98da1dd4"
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12922",
+            "sha256": "2646ea29eabed89c4f252e45c051e1b9c6abc2de32d23328faa4846ca6572bab"
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12441",
+            "sha256": "bc2fd71627e46472038dfc091ebab2ad815f9fa93378234ded7c80d426693feb"
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8645",
+            "sha256": "18b89e25bc8d0c622a5355dd471585dc3cd1e1e27f0862f308af0f5329d11931"
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9279",
+            "sha256": "ccb8ce3e8f483dcf85f9b4560e8e3d3fb8e7201201de5036662b6f53d2967475"
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13300",
+            "sha256": "fdef63f1b631a24526190a8b5e09614c5e0adff4e4bf3f5c4162027358f85822"
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8437",
+            "sha256": "b8a2f776c392f8099606c3f04e0fecd6fd64d3bbbe5a9e0606d9ae7320859a9e"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "17047",
+            "sha256": "3695ec730fb9f24da87a128718ff3839e0090338f0b26d01b0dd9ffc69427ddf"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "289",
+            "sha256": "d7257671285d1dbb36247fd8c104ac47c5107d72a58a66ffc5bc36eacec2c0ba"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "3940649683153865",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "5ecfb0ee2a5f9c7eae4d3231f5fc858fd6b631eea1d7124ee15cbc7695ed9b8e",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021926",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786263562439654900",
+              "ctimeNs": "1786315257322397600"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021928",
+              "mode": "33206",
+              "size": "311",
+              "mtimeNs": "1786955461756608400",
+              "ctimeNs": "1786955461756608400"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443239",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864554",
+              "mode": "33206",
+              "size": "6794",
+              "mtimeNs": "1786268842991984600",
+              "ctimeNs": "1786315257323958800"
+            }
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864555",
+              "mode": "33206",
+              "size": "10293",
+              "mtimeNs": "1786347119462374800",
+              "ctimeNs": "1786347119462374800"
+            }
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864556",
+              "mode": "33206",
+              "size": "11212",
+              "mtimeNs": "1786443239961614700",
+              "ctimeNs": "1786443239961614700"
+            }
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864557",
+              "mode": "33206",
+              "size": "12922",
+              "mtimeNs": "1786508178317623000",
+              "ctimeNs": "1786508178339573500"
+            }
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864558",
+              "mode": "33206",
+              "size": "12441",
+              "mtimeNs": "1786526537398045200",
+              "ctimeNs": "1786526537457572200"
+            }
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153903",
+              "mode": "33206",
+              "size": "8645",
+              "mtimeNs": "1786530568815904300",
+              "ctimeNs": "1786530568914635900"
+            }
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153904",
+              "mode": "33206",
+              "size": "9279",
+              "mtimeNs": "1786541197329855300",
+              "ctimeNs": "1786541197353352700"
+            }
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443249",
+              "mode": "33206",
+              "size": "13300",
+              "mtimeNs": "1786588979678171300",
+              "ctimeNs": "1786588979790695100"
+            }
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443250",
+              "mode": "33206",
+              "size": "8437",
+              "mtimeNs": "1786601056376848800",
+              "ctimeNs": "1786601056393397500"
+            }
+          },
+          {
+            "path": "handoff",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443241",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443251",
+              "mode": "33206",
+              "size": "17047",
+              "mtimeNs": "1786368134213765600",
+              "ctimeNs": "1786368134213765600"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443252",
+              "mode": "33206",
+              "size": "289",
+              "mtimeNs": "1786263562440796400",
+              "ctimeNs": "1786315257326946800"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "19b567a0cf2c72554f0f9111295b9c4881c01afe6b35fde6ed7034cc5a88b421",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+          },
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "executable": false,
+            "size": "520",
+            "sha256": "b746d20f60dcba5f1c827957171a4fb74f04e7e12d250a585aaefcd845959947"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "311",
+            "sha256": "73b703536d504a7a18f4b2ba5f3c66cd4684a98f8e8b29efa90b45cc8f81404f"
+          },
+          {
+            "path": "handoff",
+            "kind": "directory"
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6794",
+            "sha256": "ec85fa8dc1447f1dacf54defb643e29c4f5b4a01608ccafffe09b954c519da43"
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10293",
+            "sha256": "1e378e231d7e3a93c4e617831a5ad815a91cce2fdbc5fc9f353296fb949dbf2e"
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "executable": false,
+            "size": "11212",
+            "sha256": "1a4631767ecefbd20b58d4df5be71ea0200828c6d9279781b08fabef98da1dd4"
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12922",
+            "sha256": "2646ea29eabed89c4f252e45c051e1b9c6abc2de32d23328faa4846ca6572bab"
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12441",
+            "sha256": "bc2fd71627e46472038dfc091ebab2ad815f9fa93378234ded7c80d426693feb"
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8645",
+            "sha256": "18b89e25bc8d0c622a5355dd471585dc3cd1e1e27f0862f308af0f5329d11931"
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9279",
+            "sha256": "ccb8ce3e8f483dcf85f9b4560e8e3d3fb8e7201201de5036662b6f53d2967475"
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13300",
+            "sha256": "fdef63f1b631a24526190a8b5e09614c5e0adff4e4bf3f5c4162027358f85822"
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8437",
+            "sha256": "b8a2f776c392f8099606c3f04e0fecd6fd64d3bbbe5a9e0606d9ae7320859a9e"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "17047",
+            "sha256": "3695ec730fb9f24da87a128718ff3839e0090338f0b26d01b0dd9ffc69427ddf"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "289",
+            "sha256": "d7257671285d1dbb36247fd8c104ac47c5107d72a58a66ffc5bc36eacec2c0ba"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "3940649683153865",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "14cd605a5e00993b0195cb75233f75c7910360b652161a3a75b0465756cea7ad",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021926",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786263562439654900",
+              "ctimeNs": "1786315257322397600"
+            }
+          },
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599636575222",
+              "mode": "33206",
+              "size": "520",
+              "mtimeNs": "1786955463564974200",
+              "ctimeNs": "1786955463611635300"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021928",
+              "mode": "33206",
+              "size": "311",
+              "mtimeNs": "1786955461756608400",
+              "ctimeNs": "1786955461756608400"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443239",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864554",
+              "mode": "33206",
+              "size": "6794",
+              "mtimeNs": "1786268842991984600",
+              "ctimeNs": "1786315257323958800"
+            }
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864555",
+              "mode": "33206",
+              "size": "10293",
+              "mtimeNs": "1786347119462374800",
+              "ctimeNs": "1786347119462374800"
+            }
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864556",
+              "mode": "33206",
+              "size": "11212",
+              "mtimeNs": "1786443239961614700",
+              "ctimeNs": "1786443239961614700"
+            }
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864557",
+              "mode": "33206",
+              "size": "12922",
+              "mtimeNs": "1786508178317623000",
+              "ctimeNs": "1786508178339573500"
+            }
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864558",
+              "mode": "33206",
+              "size": "12441",
+              "mtimeNs": "1786526537398045200",
+              "ctimeNs": "1786526537457572200"
+            }
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153903",
+              "mode": "33206",
+              "size": "8645",
+              "mtimeNs": "1786530568815904300",
+              "ctimeNs": "1786530568914635900"
+            }
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153904",
+              "mode": "33206",
+              "size": "9279",
+              "mtimeNs": "1786541197329855300",
+              "ctimeNs": "1786541197353352700"
+            }
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443249",
+              "mode": "33206",
+              "size": "13300",
+              "mtimeNs": "1786588979678171300",
+              "ctimeNs": "1786588979790695100"
+            }
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443250",
+              "mode": "33206",
+              "size": "8437",
+              "mtimeNs": "1786601056376848800",
+              "ctimeNs": "1786601056393397500"
+            }
+          },
+          {
+            "path": "handoff",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443241",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443251",
+              "mode": "33206",
+              "size": "17047",
+              "mtimeNs": "1786368134213765600",
+              "ctimeNs": "1786368134213765600"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443252",
+              "mode": "33206",
+              "size": "289",
+              "mtimeNs": "1786263562440796400",
+              "ctimeNs": "1786315257326946800"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "19b567a0cf2c72554f0f9111295b9c4881c01afe6b35fde6ed7034cc5a88b421",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+          },
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "executable": false,
+            "size": "520",
+            "sha256": "b746d20f60dcba5f1c827957171a4fb74f04e7e12d250a585aaefcd845959947"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "311",
+            "sha256": "73b703536d504a7a18f4b2ba5f3c66cd4684a98f8e8b29efa90b45cc8f81404f"
+          },
+          {
+            "path": "handoff",
+            "kind": "directory"
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "executable": false,
+            "size": "6794",
+            "sha256": "ec85fa8dc1447f1dacf54defb643e29c4f5b4a01608ccafffe09b954c519da43"
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10293",
+            "sha256": "1e378e231d7e3a93c4e617831a5ad815a91cce2fdbc5fc9f353296fb949dbf2e"
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "executable": false,
+            "size": "11212",
+            "sha256": "1a4631767ecefbd20b58d4df5be71ea0200828c6d9279781b08fabef98da1dd4"
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12922",
+            "sha256": "2646ea29eabed89c4f252e45c051e1b9c6abc2de32d23328faa4846ca6572bab"
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "executable": false,
+            "size": "12441",
+            "sha256": "bc2fd71627e46472038dfc091ebab2ad815f9fa93378234ded7c80d426693feb"
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8645",
+            "sha256": "18b89e25bc8d0c622a5355dd471585dc3cd1e1e27f0862f308af0f5329d11931"
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "executable": false,
+            "size": "9279",
+            "sha256": "ccb8ce3e8f483dcf85f9b4560e8e3d3fb8e7201201de5036662b6f53d2967475"
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "executable": false,
+            "size": "13300",
+            "sha256": "fdef63f1b631a24526190a8b5e09614c5e0adff4e4bf3f5c4162027358f85822"
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "executable": false,
+            "size": "8437",
+            "sha256": "b8a2f776c392f8099606c3f04e0fecd6fd64d3bbbe5a9e0606d9ae7320859a9e"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "17047",
+            "sha256": "3695ec730fb9f24da87a128718ff3839e0090338f0b26d01b0dd9ffc69427ddf"
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "executable": false,
+            "size": "289",
+            "sha256": "d7257671285d1dbb36247fd8c104ac47c5107d72a58a66ffc5bc36eacec2c0ba"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "3940649683153865",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "14cd605a5e00993b0195cb75233f75c7910360b652161a3a75b0465756cea7ad",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021926",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1786263562439654900",
+              "ctimeNs": "1786315257322397600"
+            }
+          },
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4503599636575222",
+              "mode": "33206",
+              "size": "520",
+              "mtimeNs": "1786955463564974200",
+              "ctimeNs": "1786955463611635300"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021928",
+              "mode": "33206",
+              "size": "311",
+              "mtimeNs": "1786955461756608400",
+              "ctimeNs": "1786955461756608400"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443239",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "handoff/lead-1.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864554",
+              "mode": "33206",
+              "size": "6794",
+              "mtimeNs": "1786268842991984600",
+              "ctimeNs": "1786315257323958800"
+            }
+          },
+          {
+            "path": "handoff/lead-2.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864555",
+              "mode": "33206",
+              "size": "10293",
+              "mtimeNs": "1786347119462374800",
+              "ctimeNs": "1786347119462374800"
+            }
+          },
+          {
+            "path": "handoff/lead-3.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864556",
+              "mode": "33206",
+              "size": "11212",
+              "mtimeNs": "1786443239961614700",
+              "ctimeNs": "1786443239961614700"
+            }
+          },
+          {
+            "path": "handoff/lead-4.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864557",
+              "mode": "33206",
+              "size": "12922",
+              "mtimeNs": "1786508178317623000",
+              "ctimeNs": "1786508178339573500"
+            }
+          },
+          {
+            "path": "handoff/lead-5.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "4222124659864558",
+              "mode": "33206",
+              "size": "12441",
+              "mtimeNs": "1786526537398045200",
+              "ctimeNs": "1786526537457572200"
+            }
+          },
+          {
+            "path": "handoff/lead-6.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153903",
+              "mode": "33206",
+              "size": "8645",
+              "mtimeNs": "1786530568815904300",
+              "ctimeNs": "1786530568914635900"
+            }
+          },
+          {
+            "path": "handoff/lead-7.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153904",
+              "mode": "33206",
+              "size": "9279",
+              "mtimeNs": "1786541197329855300",
+              "ctimeNs": "1786541197353352700"
+            }
+          },
+          {
+            "path": "handoff/lead-8.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443249",
+              "mode": "33206",
+              "size": "13300",
+              "mtimeNs": "1786588979678171300",
+              "ctimeNs": "1786588979790695100"
+            }
+          },
+          {
+            "path": "handoff/lead-9.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443250",
+              "mode": "33206",
+              "size": "8437",
+              "mtimeNs": "1786601056376848800",
+              "ctimeNs": "1786601056393397500"
+            }
+          },
+          {
+            "path": "handoff",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443241",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443251",
+              "mode": "33206",
+              "size": "17047",
+              "mtimeNs": "1786368134213765600",
+              "ctimeNs": "1786368134213765600"
+            }
+          },
+          {
+            "path": "README.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443252",
+              "mode": "33206",
+              "size": "289",
+              "mtimeNs": "1786263562440796400",
+              "ctimeNs": "1786315257326946800"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "finalReservation": {
+    "state": "owned",
+    "identity": {
+      "dev": "3122291782",
+      "ino": "3940649683153865",
+      "mode": "16822",
+      "size": "0",
+      "mtimeNs": "0",
+      "ctimeNs": "0"
+    },
+    "entries": [
+      {
+        "path": ".openspec.yaml",
+        "kind": "file",
+        "expected": {
+          "path": ".openspec.yaml",
+          "kind": "file",
+          "executable": false,
+          "size": "40",
+          "sha256": "165c19261c3cb160f2c3b746659293a5fa5b588016a558238012d1fa32a42c20"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3096224753021926",
+          "mode": "33206",
+          "size": "40",
+          "mtimeNs": "1786263562439654900",
+          "ctimeNs": "1786315257322397600"
+        }
+      },
+      {
+        "path": ".rasen-archive-owner.json",
+        "kind": "file",
+        "state": "copied",
+        "expected": {
+          "path": ".rasen-archive-owner.json",
+          "kind": "file",
+          "executable": false,
+          "size": "330",
+          "sha256": "5a9f7f0bb74adb35f77749ee55e7190891d0b0a5295641399497f5ba7f3a20f3"
+        },
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3940649683153892",
+          "mode": "33206",
+          "size": "330",
+          "mtimeNs": "1786955461894425000",
+          "ctimeNs": "1786955461894425000"
+        }
+      },
+      {
+        "path": "evidence",
+        "kind": "directory",
+        "expected": {
+          "path": "evidence",
+          "kind": "directory"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3659174706443239",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        }
+      },
+      {
+        "path": "evidence/ship-log.md",
+        "kind": "file",
+        "expected": {
+          "path": "evidence/ship-log.md",
+          "kind": "file",
+          "executable": false,
+          "size": "311",
+          "sha256": "73b703536d504a7a18f4b2ba5f3c66cd4684a98f8e8b29efa90b45cc8f81404f"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3096224753021928",
+          "mode": "33206",
+          "size": "311",
+          "mtimeNs": "1786955461756608400",
+          "ctimeNs": "1786955461756608400"
+        }
+      },
+      {
+        "path": "handoff",
+        "kind": "directory",
+        "expected": {
+          "path": "handoff",
+          "kind": "directory"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3659174706443241",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        }
+      },
+      {
+        "path": "handoff/lead-1.md",
+        "kind": "file",
+        "expected": {
+          "path": "handoff/lead-1.md",
+          "kind": "file",
+          "executable": false,
+          "size": "6794",
+          "sha256": "ec85fa8dc1447f1dacf54defb643e29c4f5b4a01608ccafffe09b954c519da43"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "4222124659864554",
+          "mode": "33206",
+          "size": "6794",
+          "mtimeNs": "1786268842991984600",
+          "ctimeNs": "1786315257323958800"
+        }
+      },
+      {
+        "path": "handoff/lead-2.md",
+        "kind": "file",
+        "expected": {
+          "path": "handoff/lead-2.md",
+          "kind": "file",
+          "executable": false,
+          "size": "10293",
+          "sha256": "1e378e231d7e3a93c4e617831a5ad815a91cce2fdbc5fc9f353296fb949dbf2e"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "4222124659864555",
+          "mode": "33206",
+          "size": "10293",
+          "mtimeNs": "1786347119462374800",
+          "ctimeNs": "1786347119462374800"
+        }
+      },
+      {
+        "path": "handoff/lead-3.md",
+        "kind": "file",
+        "expected": {
+          "path": "handoff/lead-3.md",
+          "kind": "file",
+          "executable": false,
+          "size": "11212",
+          "sha256": "1a4631767ecefbd20b58d4df5be71ea0200828c6d9279781b08fabef98da1dd4"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "4222124659864556",
+          "mode": "33206",
+          "size": "11212",
+          "mtimeNs": "1786443239961614700",
+          "ctimeNs": "1786443239961614700"
+        }
+      },
+      {
+        "path": "handoff/lead-4.md",
+        "kind": "file",
+        "expected": {
+          "path": "handoff/lead-4.md",
+          "kind": "file",
+          "executable": false,
+          "size": "12922",
+          "sha256": "2646ea29eabed89c4f252e45c051e1b9c6abc2de32d23328faa4846ca6572bab"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "4222124659864557",
+          "mode": "33206",
+          "size": "12922",
+          "mtimeNs": "1786508178317623000",
+          "ctimeNs": "1786508178339573500"
+        }
+      },
+      {
+        "path": "handoff/lead-5.md",
+        "kind": "file",
+        "expected": {
+          "path": "handoff/lead-5.md",
+          "kind": "file",
+          "executable": false,
+          "size": "12441",
+          "sha256": "bc2fd71627e46472038dfc091ebab2ad815f9fa93378234ded7c80d426693feb"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "4222124659864558",
+          "mode": "33206",
+          "size": "12441",
+          "mtimeNs": "1786526537398045200",
+          "ctimeNs": "1786526537457572200"
+        }
+      },
+      {
+        "path": "handoff/lead-6.md",
+        "kind": "file",
+        "expected": {
+          "path": "handoff/lead-6.md",
+          "kind": "file",
+          "executable": false,
+          "size": "8645",
+          "sha256": "18b89e25bc8d0c622a5355dd471585dc3cd1e1e27f0862f308af0f5329d11931"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3940649683153903",
+          "mode": "33206",
+          "size": "8645",
+          "mtimeNs": "1786530568815904300",
+          "ctimeNs": "1786530568914635900"
+        }
+      },
+      {
+        "path": "handoff/lead-7.md",
+        "kind": "file",
+        "expected": {
+          "path": "handoff/lead-7.md",
+          "kind": "file",
+          "executable": false,
+          "size": "9279",
+          "sha256": "ccb8ce3e8f483dcf85f9b4560e8e3d3fb8e7201201de5036662b6f53d2967475"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3940649683153904",
+          "mode": "33206",
+          "size": "9279",
+          "mtimeNs": "1786541197329855300",
+          "ctimeNs": "1786541197353352700"
+        }
+      },
+      {
+        "path": "handoff/lead-8.md",
+        "kind": "file",
+        "expected": {
+          "path": "handoff/lead-8.md",
+          "kind": "file",
+          "executable": false,
+          "size": "13300",
+          "sha256": "fdef63f1b631a24526190a8b5e09614c5e0adff4e4bf3f5c4162027358f85822"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3659174706443249",
+          "mode": "33206",
+          "size": "13300",
+          "mtimeNs": "1786588979678171300",
+          "ctimeNs": "1786588979790695100"
+        }
+      },
+      {
+        "path": "handoff/lead-9.md",
+        "kind": "file",
+        "expected": {
+          "path": "handoff/lead-9.md",
+          "kind": "file",
+          "executable": false,
+          "size": "8437",
+          "sha256": "b8a2f776c392f8099606c3f04e0fecd6fd64d3bbbe5a9e0606d9ae7320859a9e"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3659174706443250",
+          "mode": "33206",
+          "size": "8437",
+          "mtimeNs": "1786601056376848800",
+          "ctimeNs": "1786601056393397500"
+        }
+      },
+      {
+        "path": "planning-context.md",
+        "kind": "file",
+        "expected": {
+          "path": "planning-context.md",
+          "kind": "file",
+          "executable": false,
+          "size": "17047",
+          "sha256": "3695ec730fb9f24da87a128718ff3839e0090338f0b26d01b0dd9ffc69427ddf"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3659174706443251",
+          "mode": "33206",
+          "size": "17047",
+          "mtimeNs": "1786368134213765600",
+          "ctimeNs": "1786368134213765600"
+        }
+      },
+      {
+        "path": "README.md",
+        "kind": "file",
+        "expected": {
+          "path": "README.md",
+          "kind": "file",
+          "executable": false,
+          "size": "289",
+          "sha256": "d7257671285d1dbb36247fd8c104ac47c5107d72a58a66ffc5bc36eacec2c0ba"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3659174706443252",
+          "mode": "33206",
+          "size": "289",
+          "mtimeNs": "1786263562440796400",
+          "ctimeNs": "1786315257326946800"
+        }
+      }
+    ]
+  },
+  "specProgress": [],
+  "cleanerProgress": [
+    {
+      "path": "portfolio-run.json",
+      "state": "deleted"
+    }
+  ],
+  "sourceProgress": {
+    "state": "removed",
+    "quarantine": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\.rasen-archive-source-e5c21f62-0d10-419e-81d5-c76dbcdb5f3f\\s0304-transaction-api-and-react-surface",
+    "claimIdentity": {
+      "dev": "3122291782",
+      "ino": "9570149217367013",
+      "mode": "16822",
+      "size": "0",
+      "mtimeNs": "0",
+      "ctimeNs": "0"
+    }
+  },
+  "updatedAt": "2026-08-17T08:31:04.050Z"
+}

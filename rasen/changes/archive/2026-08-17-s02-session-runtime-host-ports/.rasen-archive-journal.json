@@ -1,0 +1,2581 @@
+{
+  "schemaVersion": 2,
+  "transactionId": "59025899-8b7d-4cfa-acc6-4ff9db6fc312",
+  "planHash": "4847ab88b9190d50cef855bb4ecc6afb628a00d488ff94a8ed96ac355bb35dde",
+  "change": "s02-session-runtime-host-ports",
+  "phase": "complete",
+  "activePath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\s02-session-runtime-host-ports",
+  "stagePath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\archive\\.rasen-archive-stage-59025899-8b7d-4cfa-acc6-4ff9db6fc312",
+  "finalPath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\archive\\2026-08-17-s02-session-runtime-host-ports",
+  "ephemeraDisposed": [],
+  "phaseFingerprints": {
+    "payload-copied": {
+      "state": "verified",
+      "scope": "stage",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "dcc6c3a30e9fc0d2c63d45923ea0fddc5328ec4a7e2065a68b37b9cfc4b63b39",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "73504208db74070fd9677cc5de8a27bf95b83a7832739c7383554d56188d3c37"
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10843",
+            "sha256": "d38a5fda8379be9a1f21633cdbd69c2c84ba90c0217e01c0640d721633ea8aaa"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "50444",
+            "sha256": "0ea221bb170efcdbb7ee25d2e815b23bf693654991165cda8cfbd1067b80d9d5"
+          },
+          {
+            "path": "work",
+            "kind": "directory"
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2420",
+            "sha256": "6f42e2f48a2bee6876c75fb96dce4c3d4b28252fd80dd6efbe430aa2daea1a9b"
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "15460",
+            "sha256": "a0c65f4534e5b5967a6d34840d1f4e0532209fe0838146c97a2b3a1b679ebe60"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "5066549591130957",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "84de693d6809a4ceab3bc7241b6635e079cf4eeaae60949e464a9c5ce6825361",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "5066549591130958",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1785432848238054200",
+              "ctimeNs": "1786315257308094200"
+            }
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699730867023",
+              "mode": "33206",
+              "size": "10843",
+              "mtimeNs": "1785489748491330100",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699730867024",
+              "mode": "33206",
+              "size": "50444",
+              "mtimeNs": "1785564007861732500",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699730867026",
+              "mode": "33206",
+              "size": "2420",
+              "mtimeNs": "1786181073623290100",
+              "ctimeNs": "1786315257310110700"
+            }
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174707577683",
+              "mode": "33206",
+              "size": "15460",
+              "mtimeNs": "1786179997623545000",
+              "ctimeNs": "1786315257311630000"
+            }
+          },
+          {
+            "path": "work",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224754156369",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "dcc6c3a30e9fc0d2c63d45923ea0fddc5328ec4a7e2065a68b37b9cfc4b63b39",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "73504208db74070fd9677cc5de8a27bf95b83a7832739c7383554d56188d3c37"
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10843",
+            "sha256": "d38a5fda8379be9a1f21633cdbd69c2c84ba90c0217e01c0640d721633ea8aaa"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "50444",
+            "sha256": "0ea221bb170efcdbb7ee25d2e815b23bf693654991165cda8cfbd1067b80d9d5"
+          },
+          {
+            "path": "work",
+            "kind": "directory"
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2420",
+            "sha256": "6f42e2f48a2bee6876c75fb96dce4c3d4b28252fd80dd6efbe430aa2daea1a9b"
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "15460",
+            "sha256": "a0c65f4534e5b5967a6d34840d1f4e0532209fe0838146c97a2b3a1b679ebe60"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1970324846179268",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "d5788a3acf93192ef19c64928d8cc4a24471a02a117f02b660ab637907c24ed3",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899916047301",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955455986714900",
+              "ctimeNs": "1786955455986714900"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757958",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1785432848238054200",
+              "ctimeNs": "1786315257308094200"
+            }
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849869468616",
+              "mode": "33206",
+              "size": "10843",
+              "mtimeNs": "1785489748491330100",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757961",
+              "mode": "33206",
+              "size": "50444",
+              "mtimeNs": "1785564007861732500",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757963",
+              "mode": "33206",
+              "size": "2420",
+              "mtimeNs": "1786181073623290100",
+              "ctimeNs": "1786315257310110700"
+            }
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899916047308",
+              "mode": "33206",
+              "size": "15460",
+              "mtimeNs": "1786179997623545000",
+              "ctimeNs": "1786315257311630000"
+            }
+          },
+          {
+            "path": "work",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757962",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "dcc6c3a30e9fc0d2c63d45923ea0fddc5328ec4a7e2065a68b37b9cfc4b63b39",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "73504208db74070fd9677cc5de8a27bf95b83a7832739c7383554d56188d3c37"
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10843",
+            "sha256": "d38a5fda8379be9a1f21633cdbd69c2c84ba90c0217e01c0640d721633ea8aaa"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "50444",
+            "sha256": "0ea221bb170efcdbb7ee25d2e815b23bf693654991165cda8cfbd1067b80d9d5"
+          },
+          {
+            "path": "work",
+            "kind": "directory"
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2420",
+            "sha256": "6f42e2f48a2bee6876c75fb96dce4c3d4b28252fd80dd6efbe430aa2daea1a9b"
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "15460",
+            "sha256": "a0c65f4534e5b5967a6d34840d1f4e0532209fe0838146c97a2b3a1b679ebe60"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1970324846179268",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "d5788a3acf93192ef19c64928d8cc4a24471a02a117f02b660ab637907c24ed3",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899916047301",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955455986714900",
+              "ctimeNs": "1786955455986714900"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757958",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1785432848238054200",
+              "ctimeNs": "1786315257308094200"
+            }
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849869468616",
+              "mode": "33206",
+              "size": "10843",
+              "mtimeNs": "1785489748491330100",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757961",
+              "mode": "33206",
+              "size": "50444",
+              "mtimeNs": "1785564007861732500",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757963",
+              "mode": "33206",
+              "size": "2420",
+              "mtimeNs": "1786181073623290100",
+              "ctimeNs": "1786315257310110700"
+            }
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899916047308",
+              "mode": "33206",
+              "size": "15460",
+              "mtimeNs": "1786179997623545000",
+              "ctimeNs": "1786315257311630000"
+            }
+          },
+          {
+            "path": "work",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757962",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          }
+        ]
+      }
+    },
+    "handoff-finalized": {
+      "state": "verified",
+      "scope": "stage",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "dcc6c3a30e9fc0d2c63d45923ea0fddc5328ec4a7e2065a68b37b9cfc4b63b39",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "73504208db74070fd9677cc5de8a27bf95b83a7832739c7383554d56188d3c37"
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10843",
+            "sha256": "d38a5fda8379be9a1f21633cdbd69c2c84ba90c0217e01c0640d721633ea8aaa"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "50444",
+            "sha256": "0ea221bb170efcdbb7ee25d2e815b23bf693654991165cda8cfbd1067b80d9d5"
+          },
+          {
+            "path": "work",
+            "kind": "directory"
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2420",
+            "sha256": "6f42e2f48a2bee6876c75fb96dce4c3d4b28252fd80dd6efbe430aa2daea1a9b"
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "15460",
+            "sha256": "a0c65f4534e5b5967a6d34840d1f4e0532209fe0838146c97a2b3a1b679ebe60"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1970324846179268",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "d5788a3acf93192ef19c64928d8cc4a24471a02a117f02b660ab637907c24ed3",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899916047301",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955455986714900",
+              "ctimeNs": "1786955455986714900"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757958",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1785432848238054200",
+              "ctimeNs": "1786315257308094200"
+            }
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849869468616",
+              "mode": "33206",
+              "size": "10843",
+              "mtimeNs": "1785489748491330100",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757961",
+              "mode": "33206",
+              "size": "50444",
+              "mtimeNs": "1785564007861732500",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757963",
+              "mode": "33206",
+              "size": "2420",
+              "mtimeNs": "1786181073623290100",
+              "ctimeNs": "1786315257310110700"
+            }
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899916047308",
+              "mode": "33206",
+              "size": "15460",
+              "mtimeNs": "1786179997623545000",
+              "ctimeNs": "1786315257311630000"
+            }
+          },
+          {
+            "path": "work",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757962",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "dcc6c3a30e9fc0d2c63d45923ea0fddc5328ec4a7e2065a68b37b9cfc4b63b39",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "73504208db74070fd9677cc5de8a27bf95b83a7832739c7383554d56188d3c37"
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10843",
+            "sha256": "d38a5fda8379be9a1f21633cdbd69c2c84ba90c0217e01c0640d721633ea8aaa"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "50444",
+            "sha256": "0ea221bb170efcdbb7ee25d2e815b23bf693654991165cda8cfbd1067b80d9d5"
+          },
+          {
+            "path": "work",
+            "kind": "directory"
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2420",
+            "sha256": "6f42e2f48a2bee6876c75fb96dce4c3d4b28252fd80dd6efbe430aa2daea1a9b"
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "15460",
+            "sha256": "a0c65f4534e5b5967a6d34840d1f4e0532209fe0838146c97a2b3a1b679ebe60"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1970324846179268",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "d5788a3acf93192ef19c64928d8cc4a24471a02a117f02b660ab637907c24ed3",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899916047301",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955455986714900",
+              "ctimeNs": "1786955455986714900"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757958",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1785432848238054200",
+              "ctimeNs": "1786315257308094200"
+            }
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849869468616",
+              "mode": "33206",
+              "size": "10843",
+              "mtimeNs": "1785489748491330100",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757961",
+              "mode": "33206",
+              "size": "50444",
+              "mtimeNs": "1785564007861732500",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757963",
+              "mode": "33206",
+              "size": "2420",
+              "mtimeNs": "1786181073623290100",
+              "ctimeNs": "1786315257310110700"
+            }
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899916047308",
+              "mode": "33206",
+              "size": "15460",
+              "mtimeNs": "1786179997623545000",
+              "ctimeNs": "1786315257311630000"
+            }
+          },
+          {
+            "path": "work",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757962",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "dcc6c3a30e9fc0d2c63d45923ea0fddc5328ec4a7e2065a68b37b9cfc4b63b39",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "73504208db74070fd9677cc5de8a27bf95b83a7832739c7383554d56188d3c37"
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10843",
+            "sha256": "d38a5fda8379be9a1f21633cdbd69c2c84ba90c0217e01c0640d721633ea8aaa"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "50444",
+            "sha256": "0ea221bb170efcdbb7ee25d2e815b23bf693654991165cda8cfbd1067b80d9d5"
+          },
+          {
+            "path": "work",
+            "kind": "directory"
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2420",
+            "sha256": "6f42e2f48a2bee6876c75fb96dce4c3d4b28252fd80dd6efbe430aa2daea1a9b"
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "15460",
+            "sha256": "a0c65f4534e5b5967a6d34840d1f4e0532209fe0838146c97a2b3a1b679ebe60"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1970324846179268",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "d5788a3acf93192ef19c64928d8cc4a24471a02a117f02b660ab637907c24ed3",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899916047301",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955455986714900",
+              "ctimeNs": "1786955455986714900"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757958",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1785432848238054200",
+              "ctimeNs": "1786315257308094200"
+            }
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849869468616",
+              "mode": "33206",
+              "size": "10843",
+              "mtimeNs": "1785489748491330100",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757961",
+              "mode": "33206",
+              "size": "50444",
+              "mtimeNs": "1785564007861732500",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757963",
+              "mode": "33206",
+              "size": "2420",
+              "mtimeNs": "1786181073623290100",
+              "ctimeNs": "1786315257310110700"
+            }
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899916047308",
+              "mode": "33206",
+              "size": "15460",
+              "mtimeNs": "1786179997623545000",
+              "ctimeNs": "1786315257311630000"
+            }
+          },
+          {
+            "path": "work",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757962",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          }
+        ]
+      }
+    },
+    "evidence-finalized": {
+      "state": "verified",
+      "scope": "stage",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "dcc6c3a30e9fc0d2c63d45923ea0fddc5328ec4a7e2065a68b37b9cfc4b63b39",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "73504208db74070fd9677cc5de8a27bf95b83a7832739c7383554d56188d3c37"
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10843",
+            "sha256": "d38a5fda8379be9a1f21633cdbd69c2c84ba90c0217e01c0640d721633ea8aaa"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "50444",
+            "sha256": "0ea221bb170efcdbb7ee25d2e815b23bf693654991165cda8cfbd1067b80d9d5"
+          },
+          {
+            "path": "work",
+            "kind": "directory"
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2420",
+            "sha256": "6f42e2f48a2bee6876c75fb96dce4c3d4b28252fd80dd6efbe430aa2daea1a9b"
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "15460",
+            "sha256": "a0c65f4534e5b5967a6d34840d1f4e0532209fe0838146c97a2b3a1b679ebe60"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1970324846179268",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "d5788a3acf93192ef19c64928d8cc4a24471a02a117f02b660ab637907c24ed3",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899916047301",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955455986714900",
+              "ctimeNs": "1786955455986714900"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757958",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1785432848238054200",
+              "ctimeNs": "1786315257308094200"
+            }
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849869468616",
+              "mode": "33206",
+              "size": "10843",
+              "mtimeNs": "1785489748491330100",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757961",
+              "mode": "33206",
+              "size": "50444",
+              "mtimeNs": "1785564007861732500",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757963",
+              "mode": "33206",
+              "size": "2420",
+              "mtimeNs": "1786181073623290100",
+              "ctimeNs": "1786315257310110700"
+            }
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899916047308",
+              "mode": "33206",
+              "size": "15460",
+              "mtimeNs": "1786179997623545000",
+              "ctimeNs": "1786315257311630000"
+            }
+          },
+          {
+            "path": "work",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757962",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "6f283810c31d038b76528bae648373e4153e027e92fbc5f8bea9a6346f624d18",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "73504208db74070fd9677cc5de8a27bf95b83a7832739c7383554d56188d3c37"
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10843",
+            "sha256": "d38a5fda8379be9a1f21633cdbd69c2c84ba90c0217e01c0640d721633ea8aaa"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "293",
+            "sha256": "bb2326af5afe65668c116de88df8778f102121ce324cbc97ee7a3852a0a871e3"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "50444",
+            "sha256": "0ea221bb170efcdbb7ee25d2e815b23bf693654991165cda8cfbd1067b80d9d5"
+          },
+          {
+            "path": "work",
+            "kind": "directory"
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2420",
+            "sha256": "6f42e2f48a2bee6876c75fb96dce4c3d4b28252fd80dd6efbe430aa2daea1a9b"
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "15460",
+            "sha256": "a0c65f4534e5b5967a6d34840d1f4e0532209fe0838146c97a2b3a1b679ebe60"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1970324846179268",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "4d7a7cb44656021e1a9f12cc1e554d39c12b17eb9e6315de2ede0e84e3f9c3f2",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899916047301",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955455986714900",
+              "ctimeNs": "1786955455986714900"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757958",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1785432848238054200",
+              "ctimeNs": "1786315257308094200"
+            }
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849869468616",
+              "mode": "33206",
+              "size": "10843",
+              "mtimeNs": "1785489748491330100",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2814749776311246",
+              "mode": "33206",
+              "size": "293",
+              "mtimeNs": "1786955456385282900",
+              "ctimeNs": "1786955456385282900"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849869468621",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757961",
+              "mode": "33206",
+              "size": "50444",
+              "mtimeNs": "1785564007861732500",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757963",
+              "mode": "33206",
+              "size": "2420",
+              "mtimeNs": "1786181073623290100",
+              "ctimeNs": "1786315257310110700"
+            }
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899916047308",
+              "mode": "33206",
+              "size": "15460",
+              "mtimeNs": "1786179997623545000",
+              "ctimeNs": "1786315257311630000"
+            }
+          },
+          {
+            "path": "work",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757962",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "6f283810c31d038b76528bae648373e4153e027e92fbc5f8bea9a6346f624d18",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "73504208db74070fd9677cc5de8a27bf95b83a7832739c7383554d56188d3c37"
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10843",
+            "sha256": "d38a5fda8379be9a1f21633cdbd69c2c84ba90c0217e01c0640d721633ea8aaa"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "293",
+            "sha256": "bb2326af5afe65668c116de88df8778f102121ce324cbc97ee7a3852a0a871e3"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "50444",
+            "sha256": "0ea221bb170efcdbb7ee25d2e815b23bf693654991165cda8cfbd1067b80d9d5"
+          },
+          {
+            "path": "work",
+            "kind": "directory"
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2420",
+            "sha256": "6f42e2f48a2bee6876c75fb96dce4c3d4b28252fd80dd6efbe430aa2daea1a9b"
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "15460",
+            "sha256": "a0c65f4534e5b5967a6d34840d1f4e0532209fe0838146c97a2b3a1b679ebe60"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1970324846179268",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "4d7a7cb44656021e1a9f12cc1e554d39c12b17eb9e6315de2ede0e84e3f9c3f2",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899916047301",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955455986714900",
+              "ctimeNs": "1786955455986714900"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757958",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1785432848238054200",
+              "ctimeNs": "1786315257308094200"
+            }
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849869468616",
+              "mode": "33206",
+              "size": "10843",
+              "mtimeNs": "1785489748491330100",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2814749776311246",
+              "mode": "33206",
+              "size": "293",
+              "mtimeNs": "1786955456385282900",
+              "ctimeNs": "1786955456385282900"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849869468621",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757961",
+              "mode": "33206",
+              "size": "50444",
+              "mtimeNs": "1785564007861732500",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757963",
+              "mode": "33206",
+              "size": "2420",
+              "mtimeNs": "1786181073623290100",
+              "ctimeNs": "1786315257310110700"
+            }
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899916047308",
+              "mode": "33206",
+              "size": "15460",
+              "mtimeNs": "1786179997623545000",
+              "ctimeNs": "1786315257311630000"
+            }
+          },
+          {
+            "path": "work",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757962",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          }
+        ]
+      }
+    },
+    "final-reserved": {
+      "state": "verified",
+      "scope": "final",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "6f283810c31d038b76528bae648373e4153e027e92fbc5f8bea9a6346f624d18",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "73504208db74070fd9677cc5de8a27bf95b83a7832739c7383554d56188d3c37"
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10843",
+            "sha256": "d38a5fda8379be9a1f21633cdbd69c2c84ba90c0217e01c0640d721633ea8aaa"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "293",
+            "sha256": "bb2326af5afe65668c116de88df8778f102121ce324cbc97ee7a3852a0a871e3"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "50444",
+            "sha256": "0ea221bb170efcdbb7ee25d2e815b23bf693654991165cda8cfbd1067b80d9d5"
+          },
+          {
+            "path": "work",
+            "kind": "directory"
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2420",
+            "sha256": "6f42e2f48a2bee6876c75fb96dce4c3d4b28252fd80dd6efbe430aa2daea1a9b"
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "15460",
+            "sha256": "a0c65f4534e5b5967a6d34840d1f4e0532209fe0838146c97a2b3a1b679ebe60"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "1970324846179268",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "4d7a7cb44656021e1a9f12cc1e554d39c12b17eb9e6315de2ede0e84e3f9c3f2",
+        "authorityEntries": [
+          {
+            "path": ".rasen-archive-stage-owner.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899916047301",
+              "mode": "33206",
+              "size": "335",
+              "mtimeNs": "1786955455986714900",
+              "ctimeNs": "1786955455986714900"
+            }
+          },
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757958",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1785432848238054200",
+              "ctimeNs": "1786315257308094200"
+            }
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849869468616",
+              "mode": "33206",
+              "size": "10843",
+              "mtimeNs": "1785489748491330100",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2814749776311246",
+              "mode": "33206",
+              "size": "293",
+              "mtimeNs": "1786955456385282900",
+              "ctimeNs": "1786955456385282900"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1688849869468621",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757961",
+              "mode": "33206",
+              "size": "50444",
+              "mtimeNs": "1785564007861732500",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757963",
+              "mode": "33206",
+              "size": "2420",
+              "mtimeNs": "1786181073623290100",
+              "ctimeNs": "1786315257310110700"
+            }
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1125899916047308",
+              "mode": "33206",
+              "size": "15460",
+              "mtimeNs": "1786179997623545000",
+              "ctimeNs": "1786315257311630000"
+            }
+          },
+          {
+            "path": "work",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "1407374892757962",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "6f283810c31d038b76528bae648373e4153e027e92fbc5f8bea9a6346f624d18",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "73504208db74070fd9677cc5de8a27bf95b83a7832739c7383554d56188d3c37"
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10843",
+            "sha256": "d38a5fda8379be9a1f21633cdbd69c2c84ba90c0217e01c0640d721633ea8aaa"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "293",
+            "sha256": "bb2326af5afe65668c116de88df8778f102121ce324cbc97ee7a3852a0a871e3"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "50444",
+            "sha256": "0ea221bb170efcdbb7ee25d2e815b23bf693654991165cda8cfbd1067b80d9d5"
+          },
+          {
+            "path": "work",
+            "kind": "directory"
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2420",
+            "sha256": "6f42e2f48a2bee6876c75fb96dce4c3d4b28252fd80dd6efbe430aa2daea1a9b"
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "15460",
+            "sha256": "a0c65f4534e5b5967a6d34840d1f4e0532209fe0838146c97a2b3a1b679ebe60"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "3096224753021895",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "06b7bbb2f7c6cd1bd0fe2473cc078614fa4257f91761ca37b089a56d69df5f30",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021906",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1785432848238054200",
+              "ctimeNs": "1786315257308094200"
+            }
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443219",
+              "mode": "33206",
+              "size": "10843",
+              "mtimeNs": "1785489748491330100",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732565",
+              "mode": "33206",
+              "size": "293",
+              "mtimeNs": "1786955456385282900",
+              "ctimeNs": "1786955456385282900"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2814749776311252",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153878",
+              "mode": "33206",
+              "size": "50444",
+              "mtimeNs": "1785564007861732500",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443224",
+              "mode": "33206",
+              "size": "2420",
+              "mtimeNs": "1786181073623290100",
+              "ctimeNs": "1786315257310110700"
+            }
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443225",
+              "mode": "33206",
+              "size": "15460",
+              "mtimeNs": "1786179997623545000",
+              "ctimeNs": "1786315257311630000"
+            }
+          },
+          {
+            "path": "work",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443223",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "6f283810c31d038b76528bae648373e4153e027e92fbc5f8bea9a6346f624d18",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "73504208db74070fd9677cc5de8a27bf95b83a7832739c7383554d56188d3c37"
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10843",
+            "sha256": "d38a5fda8379be9a1f21633cdbd69c2c84ba90c0217e01c0640d721633ea8aaa"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "293",
+            "sha256": "bb2326af5afe65668c116de88df8778f102121ce324cbc97ee7a3852a0a871e3"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "50444",
+            "sha256": "0ea221bb170efcdbb7ee25d2e815b23bf693654991165cda8cfbd1067b80d9d5"
+          },
+          {
+            "path": "work",
+            "kind": "directory"
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2420",
+            "sha256": "6f42e2f48a2bee6876c75fb96dce4c3d4b28252fd80dd6efbe430aa2daea1a9b"
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "15460",
+            "sha256": "a0c65f4534e5b5967a6d34840d1f4e0532209fe0838146c97a2b3a1b679ebe60"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "3096224753021895",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "06b7bbb2f7c6cd1bd0fe2473cc078614fa4257f91761ca37b089a56d69df5f30",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021906",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1785432848238054200",
+              "ctimeNs": "1786315257308094200"
+            }
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443219",
+              "mode": "33206",
+              "size": "10843",
+              "mtimeNs": "1785489748491330100",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732565",
+              "mode": "33206",
+              "size": "293",
+              "mtimeNs": "1786955456385282900",
+              "ctimeNs": "1786955456385282900"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2814749776311252",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153878",
+              "mode": "33206",
+              "size": "50444",
+              "mtimeNs": "1785564007861732500",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443224",
+              "mode": "33206",
+              "size": "2420",
+              "mtimeNs": "1786181073623290100",
+              "ctimeNs": "1786315257310110700"
+            }
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443225",
+              "mode": "33206",
+              "size": "15460",
+              "mtimeNs": "1786179997623545000",
+              "ctimeNs": "1786315257311630000"
+            }
+          },
+          {
+            "path": "work",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443223",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          }
+        ]
+      }
+    },
+    "accounting-finalized": {
+      "state": "verified",
+      "scope": "final",
+      "before": {
+        "algorithm": "sha256",
+        "digest": "6f283810c31d038b76528bae648373e4153e027e92fbc5f8bea9a6346f624d18",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "73504208db74070fd9677cc5de8a27bf95b83a7832739c7383554d56188d3c37"
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10843",
+            "sha256": "d38a5fda8379be9a1f21633cdbd69c2c84ba90c0217e01c0640d721633ea8aaa"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "293",
+            "sha256": "bb2326af5afe65668c116de88df8778f102121ce324cbc97ee7a3852a0a871e3"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "50444",
+            "sha256": "0ea221bb170efcdbb7ee25d2e815b23bf693654991165cda8cfbd1067b80d9d5"
+          },
+          {
+            "path": "work",
+            "kind": "directory"
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2420",
+            "sha256": "6f42e2f48a2bee6876c75fb96dce4c3d4b28252fd80dd6efbe430aa2daea1a9b"
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "15460",
+            "sha256": "a0c65f4534e5b5967a6d34840d1f4e0532209fe0838146c97a2b3a1b679ebe60"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "3096224753021895",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "06b7bbb2f7c6cd1bd0fe2473cc078614fa4257f91761ca37b089a56d69df5f30",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021906",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1785432848238054200",
+              "ctimeNs": "1786315257308094200"
+            }
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443219",
+              "mode": "33206",
+              "size": "10843",
+              "mtimeNs": "1785489748491330100",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732565",
+              "mode": "33206",
+              "size": "293",
+              "mtimeNs": "1786955456385282900",
+              "ctimeNs": "1786955456385282900"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2814749776311252",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153878",
+              "mode": "33206",
+              "size": "50444",
+              "mtimeNs": "1785564007861732500",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443224",
+              "mode": "33206",
+              "size": "2420",
+              "mtimeNs": "1786181073623290100",
+              "ctimeNs": "1786315257310110700"
+            }
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443225",
+              "mode": "33206",
+              "size": "15460",
+              "mtimeNs": "1786179997623545000",
+              "ctimeNs": "1786315257311630000"
+            }
+          },
+          {
+            "path": "work",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443223",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          }
+        ]
+      },
+      "expectedAfter": {
+        "algorithm": "sha256",
+        "digest": "67fe04d848cdf5bbb5bf431c1d84f3e47db4f68c76ad4df4a1fcca7cb0b90bde",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "73504208db74070fd9677cc5de8a27bf95b83a7832739c7383554d56188d3c37"
+          },
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "executable": false,
+            "size": "483",
+            "sha256": "a6bc2827ab65b2c6a9da3b78b3e03c8a389fc9423ee9d663e9d00d7013fa3ab9"
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10843",
+            "sha256": "d38a5fda8379be9a1f21633cdbd69c2c84ba90c0217e01c0640d721633ea8aaa"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "293",
+            "sha256": "bb2326af5afe65668c116de88df8778f102121ce324cbc97ee7a3852a0a871e3"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "50444",
+            "sha256": "0ea221bb170efcdbb7ee25d2e815b23bf693654991165cda8cfbd1067b80d9d5"
+          },
+          {
+            "path": "work",
+            "kind": "directory"
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2420",
+            "sha256": "6f42e2f48a2bee6876c75fb96dce4c3d4b28252fd80dd6efbe430aa2daea1a9b"
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "15460",
+            "sha256": "a0c65f4534e5b5967a6d34840d1f4e0532209fe0838146c97a2b3a1b679ebe60"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "3096224753021895",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "ee252d157ba59bf625a0ba3b1b6181c3e1700971b599819263ad99afff8ba49f",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021906",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1785432848238054200",
+              "ctimeNs": "1786315257308094200"
+            }
+          },
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153883",
+              "mode": "33206",
+              "size": "483",
+              "mtimeNs": "1786955457464012200",
+              "ctimeNs": "1786955457510835000"
+            }
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443219",
+              "mode": "33206",
+              "size": "10843",
+              "mtimeNs": "1785489748491330100",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732565",
+              "mode": "33206",
+              "size": "293",
+              "mtimeNs": "1786955456385282900",
+              "ctimeNs": "1786955456385282900"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2814749776311252",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153878",
+              "mode": "33206",
+              "size": "50444",
+              "mtimeNs": "1785564007861732500",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443224",
+              "mode": "33206",
+              "size": "2420",
+              "mtimeNs": "1786181073623290100",
+              "ctimeNs": "1786315257310110700"
+            }
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443225",
+              "mode": "33206",
+              "size": "15460",
+              "mtimeNs": "1786179997623545000",
+              "ctimeNs": "1786315257311630000"
+            }
+          },
+          {
+            "path": "work",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443223",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          }
+        ]
+      },
+      "observedAfter": {
+        "algorithm": "sha256",
+        "digest": "67fe04d848cdf5bbb5bf431c1d84f3e47db4f68c76ad4df4a1fcca7cb0b90bde",
+        "entries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "executable": false,
+            "size": "40",
+            "sha256": "73504208db74070fd9677cc5de8a27bf95b83a7832739c7383554d56188d3c37"
+          },
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "executable": false,
+            "size": "483",
+            "sha256": "a6bc2827ab65b2c6a9da3b78b3e03c8a389fc9423ee9d663e9d00d7013fa3ab9"
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "executable": false,
+            "size": "10843",
+            "sha256": "d38a5fda8379be9a1f21633cdbd69c2c84ba90c0217e01c0640d721633ea8aaa"
+          },
+          {
+            "path": "evidence",
+            "kind": "directory"
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "executable": false,
+            "size": "293",
+            "sha256": "bb2326af5afe65668c116de88df8778f102121ce324cbc97ee7a3852a0a871e3"
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "executable": false,
+            "size": "50444",
+            "sha256": "0ea221bb170efcdbb7ee25d2e815b23bf693654991165cda8cfbd1067b80d9d5"
+          },
+          {
+            "path": "work",
+            "kind": "directory"
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "2420",
+            "sha256": "6f42e2f48a2bee6876c75fb96dce4c3d4b28252fd80dd6efbe430aa2daea1a9b"
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "executable": false,
+            "size": "15460",
+            "sha256": "a0c65f4534e5b5967a6d34840d1f4e0532209fe0838146c97a2b3a1b679ebe60"
+          }
+        ],
+        "rootIdentity": {
+          "dev": "3122291782",
+          "ino": "3096224753021895",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        },
+        "authorityDigest": "ee252d157ba59bf625a0ba3b1b6181c3e1700971b599819263ad99afff8ba49f",
+        "authorityEntries": [
+          {
+            "path": ".openspec.yaml",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3096224753021906",
+              "mode": "33206",
+              "size": "40",
+              "mtimeNs": "1785432848238054200",
+              "ctimeNs": "1786315257308094200"
+            }
+          },
+          {
+            "path": "archive.json",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153883",
+              "mode": "33206",
+              "size": "483",
+              "mtimeNs": "1786955457464012200",
+              "ctimeNs": "1786955457510835000"
+            }
+          },
+          {
+            "path": "direction-corrections.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443219",
+              "mode": "33206",
+              "size": "10843",
+              "mtimeNs": "1785489748491330100",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "evidence/ship-log.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3377699729732565",
+              "mode": "33206",
+              "size": "293",
+              "mtimeNs": "1786955456385282900",
+              "ctimeNs": "1786955456385282900"
+            }
+          },
+          {
+            "path": "evidence",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "2814749776311252",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          },
+          {
+            "path": "planning-context.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3940649683153878",
+              "mode": "33206",
+              "size": "50444",
+              "mtimeNs": "1785564007861732500",
+              "ctimeNs": "1786315257309114500"
+            }
+          },
+          {
+            "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443224",
+              "mode": "33206",
+              "size": "2420",
+              "mtimeNs": "1786181073623290100",
+              "ctimeNs": "1786315257310110700"
+            }
+          },
+          {
+            "path": "work/real-progress-audit-2026-08-08.md",
+            "kind": "file",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443225",
+              "mode": "33206",
+              "size": "15460",
+              "mtimeNs": "1786179997623545000",
+              "ctimeNs": "1786315257311630000"
+            }
+          },
+          {
+            "path": "work",
+            "kind": "directory",
+            "identity": {
+              "dev": "3122291782",
+              "ino": "3659174706443223",
+              "mode": "16822",
+              "size": "0",
+              "mtimeNs": "0",
+              "ctimeNs": "0"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "finalReservation": {
+    "state": "owned",
+    "identity": {
+      "dev": "3122291782",
+      "ino": "3096224753021895",
+      "mode": "16822",
+      "size": "0",
+      "mtimeNs": "0",
+      "ctimeNs": "0"
+    },
+    "entries": [
+      {
+        "path": ".openspec.yaml",
+        "kind": "file",
+        "expected": {
+          "path": ".openspec.yaml",
+          "kind": "file",
+          "executable": false,
+          "size": "40",
+          "sha256": "73504208db74070fd9677cc5de8a27bf95b83a7832739c7383554d56188d3c37"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3096224753021906",
+          "mode": "33206",
+          "size": "40",
+          "mtimeNs": "1785432848238054200",
+          "ctimeNs": "1786315257308094200"
+        }
+      },
+      {
+        "path": ".rasen-archive-owner.json",
+        "kind": "file",
+        "state": "copied",
+        "expected": {
+          "path": ".rasen-archive-owner.json",
+          "kind": "file",
+          "executable": false,
+          "size": "321",
+          "sha256": "6d787c94c211f5ef96edae5f3eca7a19cac1b9aed5feca358a4e12d264dfaed0"
+        },
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3659174706443216",
+          "mode": "33206",
+          "size": "321",
+          "mtimeNs": "1786955456516916500",
+          "ctimeNs": "1786955456516916500"
+        }
+      },
+      {
+        "path": "direction-corrections.md",
+        "kind": "file",
+        "expected": {
+          "path": "direction-corrections.md",
+          "kind": "file",
+          "executable": false,
+          "size": "10843",
+          "sha256": "d38a5fda8379be9a1f21633cdbd69c2c84ba90c0217e01c0640d721633ea8aaa"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3659174706443219",
+          "mode": "33206",
+          "size": "10843",
+          "mtimeNs": "1785489748491330100",
+          "ctimeNs": "1786315257309114500"
+        }
+      },
+      {
+        "path": "evidence",
+        "kind": "directory",
+        "expected": {
+          "path": "evidence",
+          "kind": "directory"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "2814749776311252",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        }
+      },
+      {
+        "path": "evidence/ship-log.md",
+        "kind": "file",
+        "expected": {
+          "path": "evidence/ship-log.md",
+          "kind": "file",
+          "executable": false,
+          "size": "293",
+          "sha256": "bb2326af5afe65668c116de88df8778f102121ce324cbc97ee7a3852a0a871e3"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3377699729732565",
+          "mode": "33206",
+          "size": "293",
+          "mtimeNs": "1786955456385282900",
+          "ctimeNs": "1786955456385282900"
+        }
+      },
+      {
+        "path": "planning-context.md",
+        "kind": "file",
+        "expected": {
+          "path": "planning-context.md",
+          "kind": "file",
+          "executable": false,
+          "size": "50444",
+          "sha256": "0ea221bb170efcdbb7ee25d2e815b23bf693654991165cda8cfbd1067b80d9d5"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3940649683153878",
+          "mode": "33206",
+          "size": "50444",
+          "mtimeNs": "1785564007861732500",
+          "ctimeNs": "1786315257309114500"
+        }
+      },
+      {
+        "path": "work",
+        "kind": "directory",
+        "expected": {
+          "path": "work",
+          "kind": "directory"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3659174706443223",
+          "mode": "16822",
+          "size": "0",
+          "mtimeNs": "0",
+          "ctimeNs": "0"
+        }
+      },
+      {
+        "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+        "kind": "file",
+        "expected": {
+          "path": "work/c6-c7-reconciliation-plan-2026-08-08.md",
+          "kind": "file",
+          "executable": false,
+          "size": "2420",
+          "sha256": "6f42e2f48a2bee6876c75fb96dce4c3d4b28252fd80dd6efbe430aa2daea1a9b"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3659174706443224",
+          "mode": "33206",
+          "size": "2420",
+          "mtimeNs": "1786181073623290100",
+          "ctimeNs": "1786315257310110700"
+        }
+      },
+      {
+        "path": "work/real-progress-audit-2026-08-08.md",
+        "kind": "file",
+        "expected": {
+          "path": "work/real-progress-audit-2026-08-08.md",
+          "kind": "file",
+          "executable": false,
+          "size": "15460",
+          "sha256": "a0c65f4534e5b5967a6d34840d1f4e0532209fe0838146c97a2b3a1b679ebe60"
+        },
+        "state": "copied",
+        "identity": {
+          "dev": "3122291782",
+          "ino": "3659174706443225",
+          "mode": "33206",
+          "size": "15460",
+          "mtimeNs": "1786179997623545000",
+          "ctimeNs": "1786315257311630000"
+        }
+      }
+    ]
+  },
+  "specProgress": [],
+  "cleanerProgress": [],
+  "sourceProgress": {
+    "state": "removed",
+    "quarantine": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rasen\\changes\\.rasen-archive-source-59025899-8b7d-4cfa-acc6-4ff9db6fc312\\s02-session-runtime-host-ports",
+    "claimIdentity": {
+      "dev": "3122291782",
+      "ino": "7318349403681745",
+      "mode": "16822",
+      "size": "0",
+      "mtimeNs": "0",
+      "ctimeNs": "0"
+    }
+  },
+  "updatedAt": "2026-08-17T08:30:57.860Z"
+}

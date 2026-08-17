@@ -1,0 +1,21 @@
+{
+  "change": "s0304-transaction-api-and-react-surface",
+  "archivedAt": "2026-08-17T08:31:00.878Z",
+  "codeCommit": "94244e94326cbf901f2edabfa0f0f092ff48ba7c",
+  "planningBranch": "main",
+  "planningTreeState": "dirty",
+  "evidence": [
+    {
+      "path": "evidence/ship-log.md",
+      "sha256": "73b703536d504a7a18f4b2ba5f3c66cd4684a98f8e8b29efa90b45cc8f81404f"
+    }
+  ],
+  "probes": [],
+  "handoffAbsorbed": null,
+  "ephemeraDiscarded": [
+    "portfolio-run.json"
+  ],
+  "missing": [
+    "verification-report"
+  ]
+}

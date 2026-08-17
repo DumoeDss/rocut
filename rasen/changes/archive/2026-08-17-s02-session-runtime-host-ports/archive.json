@@ -1,0 +1,19 @@
+{
+  "change": "s02-session-runtime-host-ports",
+  "archivedAt": "2026-08-17T08:30:55.510Z",
+  "codeCommit": "94244e94326cbf901f2edabfa0f0f092ff48ba7c",
+  "planningBranch": "main",
+  "planningTreeState": "dirty",
+  "evidence": [
+    {
+      "path": "evidence/ship-log.md",
+      "sha256": "bb2326af5afe65668c116de88df8778f102121ce324cbc97ee7a3852a0a871e3"
+    }
+  ],
+  "probes": [],
+  "handoffAbsorbed": null,
+  "ephemeraDiscarded": [],
+  "missing": [
+    "verification-report"
+  ]
+}
