@@ -1,0 +1,36 @@
+# B1 acceptance evidence â€” source CLI ensure round-trip
+# date: 2026-08-18T12:33:21Z  worktree: rocut-wt-s08 (branch feat/s08-host-ensure-and-runtime)
+# two ensure runs against one temp project; expect: run1 state=started, run2 state=reused with the SAME id/URL, exactly one registry entry, daemon alive between runs, tree-killed after
+# temp project: /tmp/tmp.BJrekNykjc/proj   registry: /tmp/tmp.BJrekNykjc/targets
+--- run 1: bun apps/cli/src/main.ts host ensure /tmp/tmp.BJrekNykjc/proj --targets-root /tmp/tmp.BJrekNykjc/targets
+target proj
+editorUrl http://127.0.0.1:60550/4e0f2a0c17de3b875f490634b4b572be9540f8b6c0a110fa/
+pid 49916
+state started
+REAL_EXIT_CODE[ensure-1]:0
+--- run 2 (same command, no intervening teardown)
+target proj
+editorUrl http://127.0.0.1:60550/4e0f2a0c17de3b875f490634b4b572be9540f8b6c0a110fa/
+pid 49916
+state reused
+REAL_EXIT_CODE[ensure-2]:0
+--- registry index after both runs:
+[
+	{
+		"id": "proj",
+		"port": 60550,
+		"pid": 49916,
+		"projectPath": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\tmp.BJrekNykjc\\proj",
+		"startedAt": 1787056401848
+	}
+]
+--- entry count (expect 1):
+1
+--- daemon pid 49916 alive before kill:
+========================= ======== ================ =========== ============
+bun.exe                      49916 Console                    1    177,020 K
+--- tree-kill:
+³É¹¦: ÒÑÖÕÖ¹ PID 49916 (ÊôÓÚ PID 64476 ×Ó½ø³Ì)µÄ½ø³Ì¡£
+REAL_EXIT_CODE[treekill]:0
+--- pid after kill (expect not found):
+ÐÅÏ¢: Ã»ÓÐÔËÐÐµÄÈÎÎñÆ¥ÅäÖ¸¶¨±ê×¼¡£

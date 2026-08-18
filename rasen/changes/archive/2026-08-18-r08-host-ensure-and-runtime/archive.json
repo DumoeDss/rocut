@@ -1,0 +1,39 @@
+{
+  "change": "r08-host-ensure-and-runtime",
+  "archivedAt": "2026-08-18T18:45:24.864Z",
+  "codeCommit": "ce9f1438168f67cf67985fb6059f940bef284a10",
+  "planningBranch": "main",
+  "planningTreeState": "dirty",
+  "evidence": [
+    {
+      "path": "evidence/b1-source-cli-ensure-transcript.txt",
+      "sha256": "a555027bae5f28e69257a9f37ae16069eea4934c6bcdb140c7d19da3e6e1a1f2"
+    },
+    {
+      "path": "evidence/cross-contract-elftia-reader.md",
+      "sha256": "26de948ab0c2a70aaade58fb256f055753193a916540e8859c48fd8d98db8d5f"
+    },
+    {
+      "path": "evidence/review-report-round2-delta.md",
+      "sha256": "d36e0c3d98c2635e02a87e06ab081d38d3e8260f820d1cf845d27b090e66bacb"
+    },
+    {
+      "path": "evidence/review-report.md",
+      "sha256": "934515e21de183665be429d5939bddb3834405686d75eef6c6391c42a364204b"
+    },
+    {
+      "path": "evidence/runtime-bundle-manifest.json",
+      "sha256": "607c372e96fe5d6c3569fb7ed0c9496e18dfff37d946a2d04fe44fba4d4479f7"
+    },
+    {
+      "path": "evidence/ship-log.md",
+      "sha256": "c586f0fe66c55c9fdd96bafb505c62c477125d0150f0712b27ae8627ec9ce4b8"
+    }
+  ],
+  "probes": [],
+  "handoffAbsorbed": [],
+  "ephemeraDiscarded": [],
+  "missing": [
+    "verification-report"
+  ]
+}

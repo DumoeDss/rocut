@@ -1,0 +1,86 @@
+{
+  "generatedAt": "2026-08-18T12:33:40.885Z",
+  "repoHead": "00ef74cc620eba20d5563881eb6f3a5c6dbd7d73",
+  "dirty": true,
+  "entry": "apps/cli/src/main.ts",
+  "esbuildVersion": "0.27.3",
+  "toolchain": {
+    "node": "v24.14.0",
+    "bun": "1.2.2",
+    "platform": "win32 x64"
+  },
+  "outputDir": "dist-runtime",
+  "wasmSibling": {
+    "source": "rust/wasm/pkg/opencut_wasm_bg.wasm",
+    "name": "opencut_wasm_bg.wasm",
+    "referencingChunks": [
+      "chunk-IJVOW7TR.js"
+    ],
+    "byteEqual": true,
+    "sha256": "7234c951f8bc53d2bbc9ecb58846d6b017ac96fe6c505e7edec1fb776ea85d62"
+  },
+  "surface": {
+    "source": "apps/vite-example/dist",
+    "copied": false,
+    "skippedReason": "--skip-surface (apps/vite-example/dist absent)",
+    "fileCount": 0
+  },
+  "files": [
+    {
+      "path": "PROVENANCE.md",
+      "sha256": "9899187cc37c96c81e13624f60189762034e29838bfc1b3624557c071377293a",
+      "sizeBytes": 1588
+    },
+    {
+      "path": "chunk-ECR5VUB6.js",
+      "sha256": "8ed97670de476981dd6e062c2aec0cce8caecd9f8320f5139d8b0d980c2c2980",
+      "sizeBytes": 6578
+    },
+    {
+      "path": "chunk-IJVOW7TR.js",
+      "sha256": "83072f03fa292be207febf70461e366e595c7799c682b38982abd6d2d3cce08b",
+      "sizeBytes": 218470
+    },
+    {
+      "path": "chunk-TU7QC3FG.js",
+      "sha256": "1e24c379ac5cf018b437c9e89616eece402f073002ffa454551dc7778fb02431",
+      "sizeBytes": 143
+    },
+    {
+      "path": "chunk-XXM75FWG.js",
+      "sha256": "4f11a03822e974bc4fcdbecd19a64dea4a674d382ee34d4e760b72a320169604",
+      "sizeBytes": 117
+    },
+    {
+      "path": "opencut_wasm_bg.wasm",
+      "sha256": "7234c951f8bc53d2bbc9ecb58846d6b017ac96fe6c505e7edec1fb776ea85d62",
+      "sizeBytes": 3285863
+    },
+    {
+      "path": "rocut.mjs",
+      "sha256": "64548e0b1b508d33e691031a21262ab2bfe72217fb0241e854d4de7f03fb6db2",
+      "sizeBytes": 185441
+    }
+  ],
+  "determinism": {
+    "exercised": true,
+    "reproduced": true,
+    "divergences": []
+  },
+  "smoke": {
+    "listCheck": {
+      "exitCode": 0,
+      "output": "no targets"
+    },
+    "ensureRoundTrip": {
+      "targetId": "proj",
+      "editorUrl": "http://127.0.0.1:63860/6882c45be28ce19907831b913ed4018b15e87e1b3bb9ef06/",
+      "pid": 64300,
+      "states": [
+        "started",
+        "reused"
+      ],
+      "entryCount": 1
+    }
+  }
+}
