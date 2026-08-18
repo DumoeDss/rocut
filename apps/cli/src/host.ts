@@ -23,6 +23,17 @@ import { createReadStream, existsSync } from "node:fs";
 import { stat } from "node:fs/promises";
 import path from "node:path";
 import { randomBytes } from "node:crypto";
+import {
+	createActivityTracker,
+	createRegistryActivitySync,
+	type ActivityTracker,
+} from "./host-activity";
+import {
+	classifyEntry,
+	normalizeProjectKey,
+	projectIdDigest,
+	PROBE_TIMEOUT_SLOW_MS,
+} from "./target-registry";
 import type { AutomationApi } from "@opencut/editor-automation";
 import { projectId, revisionOf } from "@opencut/editor-contracts";
 import { TransactionError } from "@opencut/editor-contracts";
@@ -85,6 +96,8 @@ export interface StartHostArgs {
 	/** 0 (default) binds an ephemeral port. */
 	readonly port?: number;
 	readonly registry: TargetRegistry;
+	/** Registry activity-sync throttle; default 60 s (injectable for tests). */
+	readonly activitySyncIntervalMs?: number;
 }
 
 export interface RunningHost {
@@ -179,15 +192,55 @@ async function createHostPlane(args: {
 	};
 }
 
+/**
+ * The target id: the sanitized project-dir basename, unless an entry for a
+ * *different* project holds that id and is not positively dead — then
+ * basename + first 8 hex of sha256(normalized project key), deterministic so
+ * the same project always derives the same id (ensure is stable across runs).
+ * A live incumbent occupies its id, and so does an UNVERIFIED one: an
+ * incumbent whose identity probe is inconclusive within the slow budget may
+ * be a live-but-busy daemon (its event loop stalled by a large apply), and
+ * taking the unsuffixed id would make register REPLACE its row and secret
+ * file — the same-directory re-start orphan this slice exists to remove;
+ * rare×rare is not rare enough. Only a confirmed-dead incumbent frees the
+ * unsuffixed id: the newcomer reuses it and register replaces the dead row.
+ */
+async function deriveTargetId(target: {
+	readonly registry: TargetRegistry;
+	readonly baseId: string;
+	readonly resolvedProject: string;
+}): Promise<string> {
+	const projectKey = normalizeProjectKey(target.resolvedProject);
+	for (const entry of await target.registry.list()) {
+		if (entry.id !== target.baseId) continue;
+		if (normalizeProjectKey(entry.projectPath) === projectKey) continue; // our own stale entry
+		const secret = await target.registry.readSecret(entry.id);
+		if (
+			(
+				await classifyEntry(entry, secret, {
+					timeoutMs: PROBE_TIMEOUT_SLOW_MS,
+				})
+			).verdict !== "dead"
+		) {
+			return `${target.baseId}-${projectIdDigest(projectKey)}`;
+		}
+	}
+	return target.baseId;
+}
+
 export async function startHost(args: StartHostArgs): Promise<RunningHost> {
+	const resolvedProject = path.resolve(args.projectRoot);
 	const baseStore = new FileProjectStore({
 		root: args.projectRoot,
 		schemaVersion: CURRENT_PROJECT_VERSION,
 	});
-	const targetId = path
-		.basename(path.resolve(args.projectRoot))
+	const baseId = path
+		.basename(resolvedProject)
 		.replace(/[^A-Za-z0-9._-]/g, "-");
-	const projectIdentifier = projectId(targetId);
+	// The record id is the unsuffixed basename, deliberately independent of
+	// the target id: a project whose id derives a collision suffix on one
+	// start and not on another must keep one stable record id.
+	const projectIdentifier = projectId(baseId);
 	await prepareEditorProjectRecord({
 		store: baseStore,
 		projectId: projectIdentifier,
@@ -198,12 +251,34 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 		projectId: projectIdentifier,
 	});
 
+	const startedAt = Date.now();
+	const targetId = await deriveTargetId({
+		registry: args.registry,
+		baseId,
+		resolvedProject,
+	});
+	const activity = createActivityTracker({ id: targetId, startedAt });
+	const activitySync = createRegistryActivitySync({
+		registry: args.registry,
+		targetId,
+		snapshot: activity.snapshot,
+		...(args.activitySyncIntervalMs === undefined
+			? {}
+			: { intervalMs: args.activitySyncIntervalMs }),
+	});
+	const noteActivity = (): void => {
+		activity.note();
+		void activitySync.note();
+	};
+
 	const token = randomBytes(24).toString("hex");
 	const server = createServer((request, response) => {
 		void handle(request, response, {
 			token,
 			plane,
 			staticDir: args.staticDir,
+			activity,
+			noteActivity,
 		});
 	});
 	const port = await new Promise<number>((resolve, reject) => {
@@ -222,8 +297,10 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 		id: targetId,
 		port,
 		pid: process.pid,
-		projectPath: path.resolve(args.projectRoot),
-		startedAt: new Date().toISOString(),
+		projectPath: resolvedProject,
+		// Epoch ms — the landed host supervisor's validating reader accepts
+		// only a number (an ISO string is filtered out as malformed).
+		startedAt,
 	};
 	const secret: TargetSecret = { id: targetId, port, token };
 	await args.registry.register({ entry, secret });
@@ -249,10 +326,34 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 	};
 }
 
+/**
+ * The revision-stream emission path, extracted so the activity-noting is
+ * testable without an SSE-capable client — bun's own HTTP client cannot
+ * consume its own streaming responses (verified against the pre-S08 host:
+ * headers never flush to bun fetch/node:http/curl), while the browser pane's
+ * EventSource reads this route fine in production.
+ */
+export function revisionEventWriter(args: {
+	readonly noteActivity: () => void;
+	readonly write: (chunk: string) => void;
+	readonly flush?: () => void;
+}): (revision: number) => void {
+	return (revision: number) => {
+		args.noteActivity(); // each emission is activity
+		args.write(`data: ${JSON.stringify({ revision })}\n\n`);
+		// Streaming responses can buffer without an explicit flush on some
+		// runtimes; flush is a runtime extension when present.
+		args.flush?.();
+	};
+}
+
 interface HandleContext {
 	readonly token: string;
 	readonly plane: HostPlane;
 	readonly staticDir: string | undefined;
+	readonly activity: ActivityTracker;
+	/** Authenticated request start / revision-stream emission = activity. */
+	readonly noteActivity: () => void;
 }
 
 async function handle(
@@ -262,11 +363,28 @@ async function handle(
 ): Promise<void> {
 	const url = new URL(request.url ?? "/", "http://127.0.0.1");
 	const segments = url.pathname.split("/").filter((segment) => segment !== "");
+	// `/health` — the one route outside the token-path prefix: bearer auth in
+	// the exact shape the landed host supervisor's probeIdentity sends. 200
+	// echoes the id; anything else is a 401 that reveals no id.
+	if (url.pathname === "/health") {
+		if (request.headers.authorization !== `Bearer ${context.token}`) {
+			response.writeHead(401, { "content-type": "application/json" });
+			response.end(JSON.stringify({ error: "unauthorized" }));
+			return;
+		}
+		context.activity.noteProbe();
+		response.writeHead(200, { "content-type": "application/json" });
+		response.end(JSON.stringify(context.activity.snapshot()));
+		return;
+	}
 	if (segments[0] !== context.token) {
 		response.writeHead(401, { "content-type": "text/plain; charset=utf-8" });
 		response.end("unauthorized\n");
 		return;
 	}
+	// Authenticated request start = activity (/health excluded above: probes
+	// are infrastructure traffic and only advance lastProbeAt).
+	context.noteActivity();
 	const rest = segments.slice(1);
 
 	if (rest[0] === "api") {
@@ -295,6 +413,15 @@ async function handleApi(
 		response.end(JSON.stringify(body));
 	};
 	try {
+		if (request.method === "GET" && route[0] === "status") {
+			// The readable mirror for panes/agents: identity + idle signals.
+			// `context` stays as is — this is additive surface (S08 R / D4).
+			respond(200, {
+				...context.activity.snapshot(),
+				revision: await automation.revision(),
+			});
+			return;
+		}
 		if (request.method === "GET" && route[0] === "context") {
 			respond(200, {
 				revision: await automation.revision(),
@@ -370,13 +497,16 @@ async function handleApi(
 			response.flushHeaders();
 			// No initial snapshot: watch fires only on revision changes, and
 			// the conformance driver counts callbacks exactly.
-			const unsubscribe = plane.watchRevision((revision) => {
-				response.write(`data: ${JSON.stringify({ revision })}\n\n`);
-				// Streaming responses can buffer without an explicit flush on
-				// some runtimes; flush is a runtime extension when present.
-				const extended = response as { flush?: () => void };
-				if (typeof extended.flush === "function") extended.flush();
-			});
+			const extended = response as { flush?: () => void };
+			const unsubscribe = plane.watchRevision(
+				revisionEventWriter({
+					noteActivity: () => context.noteActivity(),
+					write: (chunk) => response.write(chunk),
+					...(typeof extended.flush === "function"
+						? { flush: () => extended.flush!() }
+						: {}),
+				}),
+			);
 			request.once("close", unsubscribe);
 			return;
 		}
