@@ -4,14 +4,30 @@
  *
  * Bundles the CLI entry (`apps/cli/src/main.ts`) with esbuild into
  * `dist-runtime/rocut.mjs` — bundle/platform=node/format=esm/target=es2022/
- * splitting=true — so the dynamic migration import stays a separate chunk and
- * the `opencut_wasm_bg.wasm` ESM import it contains is preserved verbatim
- * (`*.wasm` external) and satisfied by a byte-equal sibling copy beside the
- * chunk. Also copies the prebuilt editor surface dist verbatim (absence fails
- * with build instructions unless `--skip-surface`) and writes `PROVENANCE.md`
- * into the output (source commit — refusing a dirty tree without
- * `--allow-dirty` — esbuild version, toolchain, per-file SHA-256, and the
- * commit+esbuild reproducible claim wording).
+ * splitting=true — so the dynamic migration import stays a separate chunk, and
+ * the `opencut_wasm_bg.wasm` binary is satisfied by a byte-equal sibling copy
+ * beside that chunk. Also copies the prebuilt editor surface dist verbatim
+ * (absence fails with build instructions unless `--skip-surface`) and writes
+ * `PROVENANCE.md` into the output (source commit — refusing a dirty tree
+ * without `--allow-dirty` — esbuild version, toolchain, per-file SHA-256, and
+ * the commit+esbuild reproducible claim wording).
+ *
+ * **`opencut-wasm` resolves to the `./sync` subpath here (BOUNDARIES §17).**
+ * The bundle's documented runtime is plain node, and the `--target bundler`
+ * entry that `default` resolves to imports the binary as an ES module, which
+ * only a bundler — or node's own WebAssembly/ESM integration — can satisfy.
+ * Neither applies once the code is bundled and the binary sits beside it as a
+ * plain file: node's loader resolves the *binary's own* import of
+ * `./opencut_wasm_bg.js` relative to the `.wasm`, and that file is bundled into
+ * a chunk rather than emitted as a sibling, so the import cannot resolve.
+ * `opencut_wasm_sync.js` is the entry §17 declares for exactly this case —
+ * "any other runtime that needs explicit instantiation" — and it reads the
+ * binary through `new URL("./opencut_wasm_bg.wasm", import.meta.url)`, which
+ * after bundling points at the sibling this packer places. A `node` *export
+ * condition* would be the wrong repair and `check-wasm-api-surface` fails the
+ * build for it (`node-condition-added`): every bundler targeting node claims
+ * that condition, and §17 records the two turbopack SSR failures it caused.
+ * The alias is scoped to this packer, so no other host's resolution moves.
  *
  * Output is gitignored machine-local build product; the committed record is
  * the evidence manifest this writes into the change's evidence directory —
@@ -21,9 +37,8 @@
  *                                [--skip-surface] [--skip-determinism]
  *                                [--skip-smoke] [--allow-dirty]
  *
- * Runtime claim (PROVENANCE carries it verbatim): bun is the bundle's
- * documented runtime; plain node runs the whole surface except legacy-record
- * migration, whose chunk needs `--experimental-wasm-modules`.
+ * Runtime claim (PROVENANCE carries it verbatim): plain node runs the whole
+ * surface, legacy-record migration included, with no experimental flag.
  */
 import { createHash } from "node:crypto";
 import {
@@ -37,6 +52,7 @@ import {
 	writeFileSync,
 } from "node:fs";
 import { spawnSync } from "node:child_process";
+import { createRequire } from "node:module";
 import { basename, dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
@@ -53,7 +69,28 @@ const IS_WINDOWS = process.platform === "win32";
 const ENTRY = "apps/cli/src/main.ts";
 const WASM_SOURCE = "rust/wasm/pkg/opencut_wasm_bg.wasm";
 const WASM_NAME = "opencut_wasm_bg.wasm";
+const WASM_PACKAGE = "opencut-wasm";
+const WASM_SYNC_SUBPATH = "opencut-wasm/sync";
 const SURFACE_DIST = "apps/vite-example/dist";
+
+/**
+ * Resolve the declared `./sync` subpath through normal package resolution, so
+ * the bundle links the same file an installed consumer would get rather than a
+ * hardcoded path into `rust/wasm/pkg`. `check-wasm-source` already asserts the
+ * resolved package is the self-built artifact, so resolution is the honest way
+ * in and a literal path would bypass that gate.
+ */
+function resolveWasmSyncEntry(repoRoot) {
+	const require = createRequire(join(repoRoot, "package.json"));
+	try {
+		return require.resolve(WASM_SYNC_SUBPATH);
+	} catch (error) {
+		throw new Error(
+			`cannot resolve \`${WASM_SYNC_SUBPATH}\` from ${repoRoot} — run \`bun run build:wasm\` ` +
+				`then \`bun install\` (BOUNDARIES §17 declares this subpath): ${error.message}`,
+		);
+	}
+}
 
 function logVia(sink) {
 	return (line) => (sink ? sink(line) : console.log(line));
@@ -129,7 +166,11 @@ async function buildOnce({ repoRoot, outDir }) {
 		outdir: outDir,
 		entryNames: "rocut", // dist-runtime/rocut.mjs — the runnable name
 		chunkNames: "chunk-[hash]",
-		external: ["*.wasm"], // the ESM wasm specifier stays verbatim in the chunk
+		// The bare specifier would take `default` — the bundler entry, whose ESM
+		// wasm import cannot resolve once bundled. Route it to the declared
+		// `./sync` entry instead; see the header note and BOUNDARIES §17.
+		alias: { [WASM_PACKAGE]: resolveWasmSyncEntry(repoRoot) },
+		external: ["*.wasm"], // no `.wasm` specifier survives the alias; kept as a guard
 		metafile: true,
 		logLevel: "silent",
 		sourcemap: false,
@@ -154,8 +195,10 @@ function placeWasmSibling({ repoRoot, outDir }) {
 	}
 	if (referencers.length === 0) {
 		throw new Error(
-			`no output chunk references "${WASM_NAME}" — the external-wasm contract broke; ` +
-				"inspect the bundle for an inlined loader",
+			`no output chunk references "${WASM_NAME}" — the sibling-binary contract broke; ` +
+				`the \`${WASM_SYNC_SUBPATH}\` alias should leave a ` +
+				`\`new URL("./${WASM_NAME}", import.meta.url)\` in the bundle. Inspect the ` +
+				"output for an inlined loader or a rewritten asset path",
 		);
 	}
 	const source = join(repoRoot, WASM_SOURCE);
@@ -173,13 +216,14 @@ function provenanceText({ head, dirty, esbuild, toolchain, files }) {
 		"# rocut runtime bundle — provenance",
 		"",
 		`- Source commit: ${head}${dirty ? " (DIRTY working tree — packed with --allow-dirty; not a release artifact)" : ""}`,
-		`- Bundler: esbuild ${esbuild} (bundle/platform=node/format=esm/target=es2022/splitting=true, \`*.wasm\` external)`,
+		`- Bundler: esbuild ${esbuild} (bundle/platform=node/format=esm/target=es2022/splitting=true, \`opencut-wasm\` aliased to its \`./sync\` entry)`,
 		`- Toolchain: node ${toolchain.node}, bun ${toolchain.bun}, ${toolchain.platform}`,
-		"- Runtime: **bun is the documented runtime** — the source CLI is bun-run and the",
-		"  wasm ESM import in the migration chunk is native there. Plain node runs the",
-		"  whole surface except legacy-record migration, whose chunk requires",
-		"  `node --experimental-wasm-modules`. Fresh projects (current schema) never",
-		"  load that chunk.",
+		"- Runtime: **plain node (>= 20) is the documented runtime.** `opencut-wasm`",
+		"  resolves to the `./sync` entry BOUNDARIES §17 declares for runtimes that need",
+		"  explicit instantiation, so the binary is read from the sibling copy below and",
+		"  instantiated directly. The whole surface runs — legacy-record migration",
+		"  included — with no experimental flag. Bun is build tooling only here; nothing",
+		"  in this output requires it at run time.",
 		"- Reproducible: **commit + esbuild** — packing the same source commit with the",
 		"  same esbuild version on the same platform reproduces these per-file SHA-256",
 		"  digests (the determinism control in the evidence manifest exercises exactly",
@@ -194,7 +238,12 @@ function provenanceText({ head, dirty, esbuild, toolchain, files }) {
 	].join("\n");
 }
 
-/** Both smoke legs (design D7): target list against an empty root, and a full ensure round-trip. */
+/**
+ * Both smoke legs (design D7): target list against an empty root, and a full
+ * ensure round-trip — run on `process.execPath`, the runtime PROVENANCE now
+ * documents. A packer that claims node and only ever exercised bun would be
+ * asserting the one thing it never measured.
+ */
 function smoke({ outDir, log }) {
 	const results = { listCheck: null, ensureRoundTrip: null };
 	{
@@ -202,7 +251,7 @@ function smoke({ outDir, log }) {
 		rmSync(root, { recursive: true, force: true });
 		mkdirSync(root, { recursive: true });
 		const result = spawnSync(
-			IS_WINDOWS ? "bun.exe" : "bun",
+			process.execPath,
 			[join(outDir, "rocut.mjs"), "target", "list", "--targets-root", root],
 			{ encoding: "utf8", env: { ...process.env, ROCUT_TARGETS_ROOT: root } },
 		);
@@ -223,7 +272,7 @@ function smoke({ outDir, log }) {
 		const registryRoot = join(parent, "targets-root");
 		const ensure = () => {
 			const result = spawnSync(
-				IS_WINDOWS ? "bun.exe" : "bun",
+				process.execPath,
 				[
 					join(outDir, "rocut.mjs"),
 					"host",

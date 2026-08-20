@@ -65,9 +65,26 @@ describe.skipIf(!gated)("pack-runtime (task 4.5) — set ROCUT_PACK_RUNTIME_TEST
 		const provenance = readFileSync(join(outDir, "PROVENANCE.md"), "utf8");
 		expect(provenance).toContain("esbuild");
 		expect(provenance).toContain("Source commit:");
-		expect(provenance).toContain("bun is the documented runtime");
-		expect(provenance).toContain("--experimental-wasm-modules");
+		expect(provenance).toContain("plain node (>= 20) is the documented runtime");
 		expect(provenance).toContain("commit + esbuild");
+		// The flag was the old mitigation for the bundler entry's ESM wasm import.
+		// The `./sync` alias removes the import, so the flag must not be promised.
+		expect(provenance).not.toContain("--experimental-wasm-modules");
+	});
+
+	test("the bundle links the `./sync` entry, not the bundler entry", () => {
+		const bundled = manifest.files
+			.filter((file) => file.path.endsWith(".mjs") || file.path.endsWith(".js"))
+			.map((file) => readFileSync(join(outDir, file.path), "utf8"))
+			.join("\n");
+		// The sync entry's explicit instantiation, which only it performs.
+		expect(bundled).toContain("__wbg_set_wasm");
+		expect(bundled).toContain("__wbindgen_start");
+		expect(bundled).toContain("new URL(");
+		// The bundler entry's ESM wasm import must NOT survive: after bundling
+		// nothing can resolve the binary's own `./opencut_wasm_bg.js` import.
+		expect(bundled).not.toMatch(/from\s*["']\.\/opencut_wasm_bg\.wasm["']/);
+		expect(bundled).not.toMatch(/import\s*\*\s*as\s+\w+\s*from\s*["'][^"']*\.wasm["']/);
 	});
 
 	test("determinism reproduced and smoke outcomes recorded", () => {
