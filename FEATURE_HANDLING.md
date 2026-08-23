@@ -33,8 +33,8 @@ Slice clause: §3.7.
 Saved sounds and custom graph presets are not shell preferences. They are namespaced durable
 library records supplied through the owning session's `EditorHost.store`, so they follow the same
 failure, ordering and private-data rules as other durable editor content. The unrelated changelog,
-feedback-history, mobile-gate, generic-form, onboarding and persistence-prompt values remain
-explicit local UI preferences backed by `localStorage`; C5 does not migrate them opportunistically.
+feedback-history, mobile-gate, generic-form and persistence-prompt values remain explicit local UI
+preferences backed by `localStorage`; C5 does not migrate them opportunistically.
 
 ---
 

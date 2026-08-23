@@ -71,7 +71,7 @@ export interface EditorHostBranding {
  * host's URL structure.
  */
 export interface EditorHostLinks {
-	/** Community invite, from the header menu and named in onboarding. */
+	/** Community invite exposed from the header menu. */
 	discordUrl: string;
 	/** Product roadmap, linked from the mobile gate. */
 	roadmapUrl: string;

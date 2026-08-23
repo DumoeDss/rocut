@@ -86,10 +86,6 @@ const LOCAL_PREFERENCE_FILES = new Map([
 		"generic local preference hook, not durable editor content",
 	],
 	[
-		"packages/editor-classic/src/components/editor/onboarding.tsx",
-		"onboarding acknowledgement through useLocalStorage",
-	],
-	[
 		"packages/editor-classic/src/services/storage/use-storage-persistence.ts",
 		"browser persistence-prompt dismissal",
 	],

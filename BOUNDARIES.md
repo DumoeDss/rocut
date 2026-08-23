@@ -222,9 +222,9 @@ there is no directory or glob exemption:
 - `apps/vite-example/tests/probe/legacy-migration.pw.ts`
 
 Persistence `localStorage` is limited to explicitly classified shell/UI preferences: changelog and
-mobile-gate acknowledgements, feedback history, generic form persistence, onboarding through the
-generic local-preference hook, and persistence-prompt dismissal. Saved sounds and custom graph
-presets are durable library records and are deliberately absent from that allowlist.
+mobile-gate acknowledgements, feedback history, generic form persistence, and persistence-prompt
+dismissal. Saved sounds and custom graph presets are durable library records and are deliberately
+absent from that allowlist.
 
 Project content crosses the public store boundary as an opaque payload plus a typed summary. The
 session coordinator retains a complete structured-clone-compatible snapshot and overlays known

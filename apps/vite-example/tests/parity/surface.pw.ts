@@ -240,10 +240,6 @@ test(`Surface matrix and lifecycle — ${HOST} host`, async ({ page }) => {
 	page.on("pageerror", (error) =>
 		consoleErrors.push(`pageerror: ${error.message}`),
 	);
-	await page.addInitScript(() => {
-		localStorage.setItem("hasSeenOnboarding", "true");
-	});
-
 	try {
 		const boot = begin("boot-unmounted-baseline");
 		await runStep(boot, async () => {

@@ -143,9 +143,6 @@ test(`Agent transaction evidence — ${HOST} host`, async ({ page: fixturePage }
 	page.on("pageerror", (error) =>
 		consoleErrors.push(`pageerror: ${error.message}`),
 	);
-	await page.addInitScript(() => {
-		localStorage.setItem("hasSeenOnboarding", "true");
-	});
 
 	const expectedMarker =
 		process.env.AGENT_EXPECTED_BUILD_MARKER ??

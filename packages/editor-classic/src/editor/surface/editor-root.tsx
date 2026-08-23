@@ -11,7 +11,7 @@ import { PropertiesPanel } from "../../components/editor/panels/properties";
 import { Timeline } from "../../timeline/components";
 import { PreviewPanel } from "../../preview/components";
 import { EditorHeader } from "../../components/editor/editor-header";
-import { Onboarding } from "../../components/editor/onboarding";
+import "../../components/editor/onboarding";
 import { MigrationDialog } from "../../project/components/migration-dialog";
 import { usePanelStore } from "../use-session-store";
 import { usePasteMedia } from "../../media/use-paste-media";
@@ -52,7 +52,6 @@ export function EditorRoot() {
 			<div className="min-h-0 min-w-0 flex-1">
 				<EditorLayout />
 			</div>
-			<Onboarding />
 			<MigrationDialog />
 		</div>
 	);

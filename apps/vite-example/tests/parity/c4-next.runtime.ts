@@ -29,9 +29,6 @@ test("C4 Next worker and forced-none probes start only after project load", asyn
 }) => {
 	expect(HOST_PROFILE.name).toBe("next");
 	mkdirSync(EVIDENCE_DIR, { recursive: true });
-	await page.addInitScript(() => {
-		localStorage.setItem("hasSeenOnboarding", "true");
-	});
 	await page.goto(HOST_PROFILE.entryPath);
 	await HOST_PROFILE.createProject(page);
 	await waitForEditor(page);

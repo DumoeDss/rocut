@@ -124,9 +124,6 @@ try {
 			assetRequests.push(url);
 		}
 	});
-	await page.addInitScript(() => {
-		localStorage.setItem("hasSeenOnboarding", "true");
-	});
 
 	await page.goto(`http://127.0.0.1:${port}/`, {
 		waitUntil: "domcontentloaded",
