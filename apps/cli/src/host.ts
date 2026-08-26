@@ -29,6 +29,12 @@ import {
 	type ActivityTracker,
 } from "./host-activity";
 import {
+	createExportRegistry,
+	NoSurfaceAttachedError,
+	parseExportOptions,
+	type ExportRegistry,
+} from "./host-export";
+import {
 	classifyEntry,
 	normalizeProjectKey,
 	projectIdDigest,
@@ -271,6 +277,14 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 		void activitySync.note();
 	};
 
+	// Export borrows the attached pane's renderer (see `host-export.ts`): this
+	// process has no canvas, no WebGL and no WebCodecs, so the registry both
+	// tracks who is attached and is the only path that can start a render.
+	const exportRegistry = createExportRegistry({
+		projectDir: resolvedProject,
+		noteActivity,
+	});
+
 	const token = randomBytes(24).toString("hex");
 	const server = createServer((request, response) => {
 		void handle(request, response, {
@@ -279,6 +293,7 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 			staticDir: args.staticDir,
 			activity,
 			noteActivity,
+			exportRegistry,
 		});
 	});
 	const port = await new Promise<number>((resolve, reject) => {
@@ -354,6 +369,8 @@ interface HandleContext {
 	readonly activity: ActivityTracker;
 	/** Authenticated request start / revision-stream emission = activity. */
 	readonly noteActivity: () => void;
+	/** Attached-pane registry + export job book (see `host-export.ts`). */
+	readonly exportRegistry: ExportRegistry;
 }
 
 async function handle(
@@ -498,17 +515,123 @@ async function handleApi(
 			// No initial snapshot: watch fires only on revision changes, and
 			// the conformance driver counts callbacks exactly.
 			const extended = response as { flush?: () => void };
+			const flush =
+				typeof extended.flush === "function"
+					? { flush: () => extended.flush!() }
+					: {};
 			const unsubscribe = plane.watchRevision(
 				revisionEventWriter({
 					noteActivity: () => context.noteActivity(),
 					write: (chunk) => response.write(chunk),
-					...(typeof extended.flush === "function"
-						? { flush: () => extended.flush!() }
-						: {}),
+					...flush,
 				}),
 			);
-			request.once("close", unsubscribe);
+			// The SAME stream also carries export commands. Attaching here is
+			// what makes this pane "a renderer this host can direct" — and the
+			// attached count is what lets `POST export` refuse up front when
+			// there is no pane to render with.
+			const detach = context.exportRegistry.attachSurface({
+				write: (chunk) => response.write(chunk),
+				...flush,
+			});
+			request.once("close", () => {
+				unsubscribe();
+				detach();
+			});
 			return;
+		}
+		// `export` — the host has no renderer of its own (no canvas, no WebGL,
+		// no WebCodecs), so these verbs direct the ATTACHED PANE and collect what
+		// it produces. `POST export` is the CLI's entry; `progress`/`result` are
+		// the pane reporting back; `cancel` is the CLI again.
+		if (route[0] === "export") {
+			if (request.method === "POST" && route.length === 1) {
+				const options = parseExportOptions(await readJsonBody(request));
+				if (typeof options === "string") {
+					respond(400, { error: options });
+					return;
+				}
+				try {
+					respond(202, context.exportRegistry.start(options));
+				} catch (error) {
+					if (error instanceof NoSurfaceAttachedError) {
+						// 409, not 500: nothing is broken — the precondition
+						// (a pane to render with) is simply not met.
+						respond(409, { error: error.message, code: error.code });
+						return;
+					}
+					throw error;
+				}
+				return;
+			}
+			if (request.method === "GET" && route.length === 1) {
+				respond(200, {
+					surfaces: context.exportRegistry.surfaceCount(),
+					jobs: context.exportRegistry.list(),
+				});
+				return;
+			}
+			if (route.length >= 2) {
+				const jobId = route[1];
+				if (request.method === "GET" && route.length === 2) {
+					const job = context.exportRegistry.get(jobId);
+					if (job === undefined) {
+						respond(404, { error: `no export job ${jobId}` });
+						return;
+					}
+					respond(200, job);
+					return;
+				}
+				if (request.method === "POST" && route[2] === "progress") {
+					const body = await readJsonBody(request);
+					const progress = Number(body.progress);
+					if (!Number.isFinite(progress)) {
+						respond(400, { error: "progress must be a finite number" });
+						return;
+					}
+					const job = context.exportRegistry.reportProgress(jobId, progress);
+					if (job === undefined) {
+						respond(404, { error: `no export job ${jobId}` });
+						return;
+					}
+					// The pane polls this to drive its own `onCancel`.
+					respond(200, { cancelRequested: job.cancelRequested });
+					return;
+				}
+				if (request.method === "POST" && route[2] === "result") {
+					const failure = url.searchParams.get("error");
+					if (failure !== null) {
+						const job = context.exportRegistry.fail(jobId, failure);
+						if (job === undefined) {
+							respond(404, { error: `no export job ${jobId}` });
+							return;
+						}
+						respond(200, job);
+						return;
+					}
+					const bytes = await readRawBody(request);
+					if (bytes.byteLength === 0) {
+						respond(400, { error: "export result body was empty" });
+						return;
+					}
+					const job = await context.exportRegistry.complete(jobId, bytes);
+					if (job === undefined) {
+						respond(404, { error: `no export job ${jobId}` });
+						return;
+					}
+					respond(200, job);
+					return;
+				}
+				if (request.method === "POST" && route[2] === "cancel") {
+					const job = context.exportRegistry.cancel(jobId);
+					if (job === undefined) {
+						respond(404, { error: `no export job ${jobId}` });
+						return;
+					}
+					respond(200, job);
+					return;
+				}
+			}
 		}
 		if (request.method === "GET" && route[0] === "attachments") {
 			const attachments = await plane.baseStore.listAttachments({
@@ -843,6 +966,8 @@ interface JsonBody {
 	summary?: unknown;
 	schemaVersion?: number;
 	data?: unknown;
+	/** `POST export/<id>/progress` — the attached pane's 0..1 render progress. */
+	progress?: unknown;
 }
 
 /** Library records: `api/library/<ns>` and `api/library/<ns>/<key>`. */

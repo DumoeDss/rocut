@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@opencut/editor-classic/ui";
 import { TooltipProvider } from "@opencut/editor-classic/ui";
@@ -10,7 +10,12 @@ import { createViteEditorHost } from "./host/vite-host-config";
 import {
 	createHostServedEditorHost,
 	detectHostServedSurface,
-	subscribeHostRevisions,
+	reportExportFailure,
+	reportExportProgress,
+	subscribeHostEvents,
+	uploadExportResult,
+	type HostCommand,
+	type HostExportOptions,
 	type HostServedSurface,
 } from "./host/host-served";
 import { ProjectPicker } from "./project-picker";
@@ -144,21 +149,94 @@ function HostServedApp({ surface }: { surface: HostServedSurface }) {
  */
 function HostServedSync({ projectId }: { projectId: string }) {
 	const editor = useEditorInstance();
+	// Cancellation and the busy guard are refs, not state: they are read from
+	// inside a running export's callbacks, where a re-rendered closure would
+	// see a stale value and keep rendering a job the CLI already cancelled.
+	const cancelledJobs = useRef(new Set<string>());
+	const exporting = useRef(false);
+
+	/**
+	 * Render an export the host asked for. THIS is why the pane matters: the
+	 * host process has no canvas, no WebGL and no WebCodecs, so the renderer
+	 * living in this page is the only one either process can reach.
+	 */
+	const runExport = useCallback(
+		async (jobId: string, options: HostExportOptions) => {
+			// One render at a time — the compositor is GPU-bound, and a second
+			// concurrent export would starve both.
+			if (exporting.current) {
+				await reportExportFailure(
+					jobId,
+					"this editor pane is already rendering another export",
+				);
+				return;
+			}
+			exporting.current = true;
+			try {
+				const result = await editor.renderer.exportProject({
+					options,
+					onProgress: ({ progress }) => {
+						void reportExportProgress(jobId, progress)
+							.then(({ cancelRequested }) => {
+								if (cancelRequested) cancelledJobs.current.add(jobId);
+							})
+							.catch(() => undefined);
+					},
+					onCancel: () => cancelledJobs.current.has(jobId),
+				});
+				if (result.cancelled === true) {
+					await reportExportFailure(jobId, "cancelled");
+					return;
+				}
+				if (result.success !== true || result.buffer === undefined) {
+					await reportExportFailure(jobId, result.error ?? "export failed");
+					return;
+				}
+				await uploadExportResult(jobId, result.buffer);
+			} catch (error) {
+				// The host must hear about every failure: a job nobody settles
+				// only ends when the staleness sweep kills it minutes later.
+				await reportExportFailure(
+					jobId,
+					error instanceof Error ? error.message : String(error),
+				);
+			} finally {
+				exporting.current = false;
+				cancelledJobs.current.delete(jobId);
+			}
+		},
+		[editor],
+	);
+
+	const onCommand = useCallback(
+		(command: HostCommand) => {
+			if (command.command === "export.cancel") {
+				cancelledJobs.current.add(command.jobId);
+				return;
+			}
+			void runExport(command.jobId, command.options);
+		},
+		[runExport],
+	);
+
 	useEffect(() => {
 		let timer: number | undefined;
-		const dispose = subscribeHostRevisions(() => {
-			window.clearTimeout(timer);
-			timer = window.setTimeout(() => {
-				void editor.project.loadProject({ id: projectId }).catch(
-					() => undefined,
-				);
-			}, 250);
+		const dispose = subscribeHostEvents({
+			onRevision: () => {
+				window.clearTimeout(timer);
+				timer = window.setTimeout(() => {
+					void editor.project.loadProject({ id: projectId }).catch(
+						() => undefined,
+					);
+				}, 250);
+			},
+			onCommand,
 		});
 		return () => {
 			dispose();
 			window.clearTimeout(timer);
 		};
-	}, [editor, projectId]);
+	}, [editor, projectId, onCommand]);
 	return null;
 }
 

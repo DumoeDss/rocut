@@ -91,30 +91,120 @@ export function createHostServedEditorHost({
 	};
 }
 
+/** Export options the host relays from the CLI; mirrors `ExportOptions`. */
+export interface HostExportOptions {
+	readonly format: "mp4" | "webm";
+	readonly quality: "low" | "medium" | "high" | "very_high";
+	readonly includeAudio?: boolean;
+}
+
 /**
- * Subscribe to the host's revision event stream. Events fire only on
- * engine-side applies (agent mutations, draft approvals) — an external editor
- * save reopens the host engine WITHOUT notifying, so every event this
- * delivers is "the agent changed the project", never this session's own save.
+ * A command the host directs at THIS pane. The host process has no canvas, no
+ * WebGL and no WebCodecs, so it cannot rasterize a frame; this pane can, and
+ * these frames are how the host borrows it.
  */
-export function subscribeHostRevisions(
-	onRevision: (revision: number) => void,
-): () => void {
+export type HostCommand =
+	| { readonly command: "export.start"; readonly jobId: string; readonly options: HostExportOptions }
+	| { readonly command: "export.cancel"; readonly jobId: string };
+
+function parseHostCommand(parsed: Record<string, unknown>): HostCommand | null {
+	const { command, jobId } = parsed;
+	if (typeof jobId !== "string" || jobId === "") return null;
+	if (command === "export.cancel") return { command, jobId };
+	if (command === "export.start" && isRecord(parsed.options)) {
+		return {
+			command,
+			jobId,
+			options: parsed.options as unknown as HostExportOptions,
+		};
+	}
+	return null;
+}
+
+/**
+ * Subscribe to the host's event stream — ONE EventSource carrying two frame
+ * kinds, deliberately not two connections: the host counts attached panes by
+ * counting these connections, and a second one would make this pane look like
+ * two renderers.
+ *
+ * `{revision}` frames fire only on engine-side applies (agent mutations, draft
+ * approvals) — an external editor save reopens the host engine WITHOUT
+ * notifying, so every one means "the project changed outside this session",
+ * never this session's own save. `{command}` frames are the host directing
+ * this pane.
+ */
+export function subscribeHostEvents(handlers: {
+	readonly onRevision?: (revision: number) => void;
+	readonly onCommand?: (command: HostCommand) => void;
+}): () => void {
 	const source = new EventSource(
 		new URL("api/events", location.href).toString(),
 	);
 	source.onmessage = (message) => {
 		try {
 			const parsed: unknown = JSON.parse(message.data);
-			if (
-				isRecord(parsed) &&
-				typeof parsed.revision === "number"
-			) {
-				onRevision(parsed.revision);
+			if (!isRecord(parsed)) return;
+			if (typeof parsed.revision === "number") {
+				handlers.onRevision?.(parsed.revision);
+				return;
 			}
+			const command = parseHostCommand(parsed);
+			if (command !== null) handlers.onCommand?.(command);
 		} catch {
 			// Malformed frames are dropped; EventSource keeps reconnecting.
 		}
 	};
 	return () => source.close();
+}
+
+/**
+ * Report render progress and read back whether the CLI asked to cancel. The
+ * cancel flag rides the progress RESPONSE rather than a separate poll so the
+ * exporter's `onCancel` costs no extra round trip.
+ */
+export async function reportExportProgress(
+	jobId: string,
+	progress: number,
+): Promise<{ cancelRequested: boolean }> {
+	const response = await fetch(
+		new URL(`api/export/${encodeURIComponent(jobId)}/progress`, location.href).toString(),
+		{
+			method: "POST",
+			headers: { "content-type": "application/json" },
+			body: JSON.stringify({ progress }),
+		},
+	);
+	if (!response.ok) return { cancelRequested: false };
+	const parsed: unknown = await response.json();
+	return {
+		cancelRequested: isRecord(parsed) && parsed.cancelRequested === true,
+	};
+}
+
+/** Hand the encoded bytes back to the host, which writes the file. */
+export async function uploadExportResult(
+	jobId: string,
+	bytes: ArrayBuffer,
+): Promise<void> {
+	await fetch(
+		new URL(`api/export/${encodeURIComponent(jobId)}/result`, location.href).toString(),
+		{
+			method: "POST",
+			headers: { "content-type": "application/octet-stream" },
+			body: bytes,
+		},
+	);
+}
+
+/** Tell the host this render failed, so the job settles instead of going stale. */
+export async function reportExportFailure(
+	jobId: string,
+	error: string,
+): Promise<void> {
+	const url = new URL(
+		`api/export/${encodeURIComponent(jobId)}/result`,
+		location.href,
+	);
+	url.searchParams.set("error", error);
+	await fetch(url.toString(), { method: "POST" });
 }

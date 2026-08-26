@@ -9,10 +9,11 @@
  * error). `target list` reconnects by id; credential URLs are printed only
  * on explicit `host start` / `host ensure` and never listed.
  */
-import { readFile } from "node:fs/promises";
+import { copyFile, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { startHost } from "./host";
+import type { ExportJob } from "./host-export";
 import { ensureHost } from "./ensure";
 import {
 	normalizeProjectKey,
@@ -135,6 +136,7 @@ export const USAGE_LINES: readonly string[] = [
 	"  rocut read [--target <id|auto>] [--project <dir>]",
 	"  rocut verify <tick> [--target <id|auto>] [--project <dir>]",
 	"  rocut apply <ops.json> [--target <id|auto>] [--project <dir>]",
+	"  rocut export [--out <file>] [--format mp4|webm] [--quality low|medium|high|very_high] [--no-audio] [--target <id|auto>] [--project <dir>]",
 	"  rocut draft begin [--target <id|auto>] [--project <dir>]",
 	"  rocut draft stage <ops.json> --draft <id> [--target <id|auto>] [--project <dir>]",
 	"  rocut draft approve|reject|discard --draft <id> [--target <id|auto>] [--project <dir>]",
@@ -335,6 +337,66 @@ async function runCli(argv: readonly string[]): Promise<void> {
 			};
 			const result = await request(resolved.secret, "POST", "apply", batch);
 			process.stdout.write(JSON.stringify(result, null, "\t") + "\n");
+			return;
+		}
+		case "export": {
+			// The host cannot rasterize (no canvas / WebGL / WebCodecs in Node),
+			// so it directs the ATTACHED editor pane and writes what the pane
+			// returns. With no pane open the host answers 409 up front rather
+			// than accepting a job that could never run — that error is the
+			// honest one to surface, not a hang.
+			const resolved = await resolveTarget(args, registry);
+			const started = (await request(resolved.secret, "POST", "export", {
+				format: flag(args, "format") ?? "mp4",
+				quality: flag(args, "quality") ?? "high",
+				...(args.flags.has("no-audio") ? { includeAudio: false } : {}),
+			})) as { id: string };
+
+			// Poll until terminal. The host settles a job whose pane went silent
+			// (its staleness sweep runs on read), so this loop always ends.
+			let job: ExportJob;
+			let lastShown = -1;
+			for (;;) {
+				job = (await request(
+					resolved.secret,
+					"GET",
+					`export/${started.id}`,
+				)) as ExportJob;
+				if (job.status !== "pending" && job.status !== "running") break;
+				const percent = Math.floor(job.progress * 100);
+				if (percent !== lastShown) {
+					// Progress on stderr keeps stdout a clean JSON result.
+					process.stderr.write(`export ${started.id}: ${percent}%\n`);
+					lastShown = percent;
+				}
+				await new Promise((wake) => setTimeout(wake, 1000));
+			}
+
+			if (job.status !== "completed" || job.outputPath === undefined) {
+				throw new Error(
+					`export ${started.id} ${job.status}: ${job.error ?? "no reason reported"}`,
+				);
+			}
+
+			// The host only writes inside the project directory it owns; placing
+			// the file where the caller asked is this process's job, because it
+			// runs as the user and the HTTP surface deliberately does not.
+			const out = flag(args, "out");
+			if (out !== undefined) await copyFile(job.outputPath, resolve(out));
+			process.stdout.write(
+				JSON.stringify(
+					{
+						target: resolved.entry.id,
+						jobId: job.id,
+						status: job.status,
+						format: job.options.format,
+						hostPath: job.outputPath,
+						...(out === undefined ? {} : { outputPath: resolve(out) }),
+					},
+					null,
+					"\t",
+				) + "\n",
+			);
 			return;
 		}
 		case "draft": {
