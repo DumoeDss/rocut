@@ -74,13 +74,20 @@ async function request(
 	);
 	const parsed = (await response.json()) as unknown;
 	if (!response.ok) {
-		const message =
+		// The host answers errors with `{ error }` (19 routes) — `{ message }` is
+		// the shape TransactionError surfaces. Reading only `message` silently
+		// reduced every other failure to a bare status word ("Conflict"), which
+		// is exactly the text an operator cannot act on: the host's own
+		// explanation ("no editor pane is attached…") never reached the caller.
+		const field = (name: string): string | undefined =>
 			typeof parsed === "object" &&
 			parsed !== null &&
-			"message" in parsed &&
-			typeof (parsed as { message: unknown }).message === "string"
-				? (parsed as { message: string }).message
-				: response.statusText;
+			name in parsed &&
+			typeof (parsed as Record<string, unknown>)[name] === "string"
+				? ((parsed as Record<string, string>)[name])
+				: undefined;
+		const message =
+			field("message") ?? field("error") ?? response.statusText;
 		throw new Error(
 			`${method} /${route} failed (${response.status}): ${message}`,
 		);

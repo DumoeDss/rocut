@@ -512,6 +512,21 @@ async function handleApi(
 				connection: "keep-alive",
 			});
 			response.flushHeaders();
+			// RUN THIS HOST ON NODE, NOT BUN — measured 2026-08-26 with a minimal
+			// two-write SSE probe run under both:
+			//   node: frame A (written at 300 ms) arrives at ~340 ms.
+			//   bun:  frame A does not arrive until frame B is written at
+			//         2000 ms, and both land together.
+			// bun's `node:http` server holds a lone `res.write` until the NEXT
+			// write pushes it out. `res.socket.setNoDelay(true)` is present and
+			// callable under bun and does NOT help (it is bun's own buffering,
+			// not Nagle); node needs no such call, delivering promptly without
+			// it. The effect is near-invisible for revision frames — the
+			// following apply flushes the previous one — but it silently breaks
+			// any COMMAND frame, which the pane must act on when it is sent.
+			// The shipped plugin runs this on managed Node, so production is
+			// unaffected; a bun dogfood will look like "the pane ignores
+			// commands".
 			// No initial snapshot: watch fires only on revision changes, and
 			// the conformance driver counts callbacks exactly.
 			const extended = response as { flush?: () => void };
