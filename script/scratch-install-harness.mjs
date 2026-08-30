@@ -46,6 +46,8 @@
  *   OPENCUT_BUN             the bun invocation (default: npx --yes bun@1.2.18)
  *   OPENCUT_PREPACKED_DIR   skip packing; copy tarballs from this directory
  *   OPENCUT_TARBALL_OUT_DIR where packing writes tarballs when not prepacked
+ *   OPENCUT_SCRATCH_KEEP=1  keep the scratch root after a successful run
+ *                           (a failed run always keeps it)
  */
 import {
 	cpSync,
@@ -62,7 +64,10 @@ import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 
 import { DEFAULT_OUT_DIR_NAME, DEFAULT_REPO_ROOT, packSdkTarballs } from "./pack-sdk-tarballs.mjs";
-import { recreateOwnedScratchRoot } from "./scratch-lifecycle-safety.mjs";
+import {
+	recreateOwnedScratchRoot,
+	removeOwnedScratchRoot,
+} from "./scratch-lifecycle-safety.mjs";
 
 const IS_WINDOWS = process.platform === "win32";
 
@@ -195,6 +200,49 @@ export function createScratchHarness(options = {}) {
 			});
 		} catch (error) {
 			fail("lifecycle", error instanceof Error ? error.message : String(error));
+		}
+	}
+
+	/**
+	 * Delete the scratch root after a successful run.
+	 *
+	 * **Why this exists.** The scratch is multi-GB (four npm-installed example
+	 * projects plus the staged tarballs) and nothing ever removed it: seven
+	 * abandoned roots under one user profile held ~7.8 GB when this was written,
+	 * one per session that had ever run this harness.
+	 *
+	 * **It never fails the run.** By the time it is called the work is already
+	 * green, and on Windows a directory can stay locked by a process that has
+	 * only just exited — reporting a failed *build* because a temporary
+	 * directory survived would be a lie about what was measured. A cleanup
+	 * problem is reported with the path so it can be removed by hand, and the
+	 * caller's exit code is untouched.
+	 *
+	 * Removal authority comes from the ownership marker, not from the path, so a
+	 * misconfigured `OPENCUT_SCRATCH_ROOT` pointing at a real directory refuses
+	 * rather than deletes (`removeOwnedScratchRoot`).
+	 */
+	function cleanupLifecycle(root) {
+		if (process.env.OPENCUT_SCRATCH_KEEP === "1") {
+			console.log(`lifecycle: scratch root kept at ${root} (OPENCUT_SCRATCH_KEEP=1)`);
+			return;
+		}
+		try {
+			const removed = removeOwnedScratchRoot({
+				root,
+				createdBy: markerCreatedBy,
+				log: (line) => console.log(line),
+			});
+			console.log(
+				removed
+					? `lifecycle: scratch root removed (${root}) — set OPENCUT_SCRATCH_KEEP=1 to keep it`
+					: `lifecycle: no scratch root to remove at ${root}`,
+			);
+		} catch (error) {
+			console.log(
+				`lifecycle: scratch cleanup skipped — ${error instanceof Error ? error.message : String(error)}`,
+			);
+			console.log(`lifecycle: remove it by hand if it is stale: ${root}`);
 		}
 	}
 
@@ -393,6 +441,7 @@ export function createScratchHarness(options = {}) {
 		isInside,
 		resolveScratchRoot,
 		freshLifecycle,
+		cleanupLifecycle,
 		nameOfTarball,
 		stageTarballs,
 		writeScratchManifest,

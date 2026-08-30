@@ -260,12 +260,12 @@ function createOwnedRoot(args) {
  * Replace one exact marker-owned scratch root. Hooks are test-only fault
  * injection points; production callers omit them.
  */
-export function recreateOwnedScratchRoot({
-	root,
-	createdBy,
-	log = () => {},
-	hooks = {},
-}) {
+/**
+ * Validate the root/parent shape both entry points require, once.
+ *
+ * @returns {{absoluteRoot: string, parentPath: string, parent: ReturnType<typeof inspectPlainDirectory>}}
+ */
+function inspectScratchRootShape({ root, createdBy }) {
 	const absoluteRoot = resolve(root);
 	const parentPath = dirname(absoluteRoot);
 	if (samePath(absoluteRoot, parentPath)) {
@@ -277,8 +277,29 @@ export function recreateOwnedScratchRoot({
 		throw new Error("scratch marker owner must be a non-empty string");
 	}
 	const parent = inspectPlainDirectory(parentPath, "scratch parent");
+	return { absoluteRoot, parentPath, parent };
+}
 
-	if (existsSync(absoluteRoot)) {
+/**
+ * Remove an existing scratch root, if present, through the authenticated
+ * quarantine path: capture identity, rename to a sibling, re-capture,
+ * revalidate, then delete — revalidating the marker payload and the tree's
+ * device/inode at every boundary.
+ *
+ * Shared by `recreateOwnedScratchRoot` and `removeOwnedScratchRoot` so the two
+ * cannot drift: a second copy of this sequence is a second place for a
+ * redirected path or a copied marker to become authority to delete.
+ *
+ * @returns {boolean} whether a tree was actually removed
+ */
+function removeOwnedTreeIfPresent({
+	absoluteRoot,
+	parentPath,
+	createdBy,
+	log,
+	hooks,
+}) {
+	if (!existsSync(absoluteRoot)) return false;
 		const capture = captureOwnedTree({
 			treePath: absoluteRoot,
 			originalRootPath: absoluteRoot,
@@ -367,10 +388,66 @@ export function recreateOwnedScratchRoot({
 				`scratch cleanup returned without removing the quarantine; ${state}`,
 			);
 		}
-		log("lifecycle: authenticated previous scratch root removed");
-	}
+	log("lifecycle: authenticated previous scratch root removed");
+	return true;
+}
+
+export function recreateOwnedScratchRoot({
+	root,
+	createdBy,
+	log = () => {},
+	hooks = {},
+}) {
+	const { absoluteRoot, parentPath, parent } = inspectScratchRootShape({
+		root,
+		createdBy,
+	});
+
+	removeOwnedTreeIfPresent({
+		absoluteRoot,
+		parentPath,
+		createdBy,
+		log,
+		hooks,
+	});
 
 	hooks.beforeCreate?.({ root: absoluteRoot, parent: parentPath });
 	createOwnedRoot({ root: absoluteRoot, parent, createdBy });
 	log(`lifecycle: fresh scratch root created with marker (${absoluteRoot})`);
+}
+
+/**
+ * Remove a scratch root this repository created, and do NOT recreate it.
+ *
+ * The counterpart to `recreateOwnedScratchRoot`, for callers that are finished
+ * with the tree. It exists because the runner's scratch is multi-GB and lived
+ * forever: seven abandoned roots under one user profile held ~7.8 GB when this
+ * was written, one per session that had ever run the published-examples
+ * harness, because nothing ever deleted them.
+ *
+ * It authenticates exactly as replacement does — same marker check, same
+ * quarantine rename, same device/inode revalidation at every boundary — so a
+ * copied marker or a redirected path is still residue to report rather than
+ * authority to delete. An absent root is a no-op, not an error: cleanup runs
+ * after failures too, and must not turn a real failure into a confusing one.
+ *
+ * @returns {boolean} whether a tree was removed
+ */
+export function removeOwnedScratchRoot({
+	root,
+	createdBy,
+	log = () => {},
+	hooks = {},
+}) {
+	const { absoluteRoot, parentPath } = inspectScratchRootShape({
+		root,
+		createdBy,
+	});
+	return removeOwnedTreeIfPresent({
+		absoluteRoot,
+		parentPath,
+		createdBy,
+		log,
+		hooks,
+	});
 }

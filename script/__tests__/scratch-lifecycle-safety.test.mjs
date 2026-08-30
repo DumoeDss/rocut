@@ -16,6 +16,7 @@ import { fileURLToPath } from "node:url";
 
 import {
 	recreateOwnedScratchRoot,
+	removeOwnedScratchRoot,
 	SCRATCH_MARKER_NAME,
 } from "../scratch-lifecycle-safety.mjs";
 
@@ -285,5 +286,68 @@ describe("marker-owned scratch lifecycle safety", () => {
 		);
 		expect(marker.createdBy).toBe(OWNER);
 		expect(marker.rootPath).toBe(root);
+	});
+});
+
+describe("marker-owned scratch removal", () => {
+	test("removes an authenticated tree and reports that it did", () => {
+		const parent = caseParent("remove-owned");
+		const root = join(parent, "scratch");
+		recreateOwnedScratchRoot({ root, createdBy: OWNER });
+		writeFileSync(join(root, "installed.txt"), "multi-GB stand-in\n");
+
+		const logs = [];
+		const removed = removeOwnedScratchRoot({
+			root,
+			createdBy: OWNER,
+			log: (line) => logs.push(line),
+		});
+
+		expect(removed).toBe(true);
+		expect(existsSync(root)).toBe(false);
+		// It must NOT recreate: that is the whole difference from replacement.
+		expect(logs.join("\n")).not.toContain("fresh scratch root created");
+	});
+
+	test("an absent root is a no-op, not an error", () => {
+		// Cleanup runs after failures too. If it threw on an absent root it would
+		// mask the real failure with a confusing second one.
+		const parent = caseParent("remove-absent");
+		const removed = removeOwnedScratchRoot({
+			root: join(parent, "never-created"),
+			createdBy: OWNER,
+		});
+		expect(removed).toBe(false);
+	});
+
+	test("refuses a directory this repository never created", () => {
+		// The control that matters: removal authority comes from the marker, not
+		// from the path. A user directory that merely sits at the configured
+		// scratch path must survive.
+		const parent = caseParent("remove-foreign");
+		const foreign = join(parent, "scratch");
+		mkdirSync(foreign, { recursive: false });
+		writeFileSync(join(foreign, "do-not-touch.txt"), "outside:foreign\n");
+
+		expect(() =>
+			removeOwnedScratchRoot({ root: foreign, createdBy: OWNER }),
+		).toThrow();
+		expect(existsSync(join(foreign, "do-not-touch.txt"))).toBe(true);
+	});
+
+	test("refuses a tree whose marker names a different owner", () => {
+		const parent = caseParent("remove-other-owner");
+		const root = join(parent, "scratch");
+		recreateOwnedScratchRoot({ root, createdBy: "some-other-tool" });
+		writeFileSync(join(root, "do-not-touch.txt"), "outside:other-owner\n");
+
+		expect(() => removeOwnedScratchRoot({ root, createdBy: OWNER })).toThrow();
+		expect(existsSync(join(root, "do-not-touch.txt"))).toBe(true);
+	});
+
+	test("refuses a filesystem root outright", () => {
+		expect(() =>
+			removeOwnedScratchRoot({ root: resolve("/"), createdBy: OWNER }),
+		).toThrow(/cannot be a filesystem root/);
 	});
 });

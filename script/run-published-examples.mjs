@@ -67,7 +67,7 @@ const harness = createScratchHarness({
 	scratchProjectName: "opencut-published-examples",
 	markerCreatedBy: "script/run-published-examples.mjs",
 });
-const { fail, isInside, resolveScratchRoot, freshLifecycle, stageTarballs, install, controlCopiesNotLinks, controlReact } =
+const { fail, isInside, resolveScratchRoot, freshLifecycle, cleanupLifecycle, stageTarballs, install, controlCopiesNotLinks, controlReact } =
 	harness;
 
 const consumerViewOnly = process.argv.includes("--consumer-view-only");
@@ -341,4 +341,14 @@ for (const name of requested) {
 }
 
 console.log(`\nexamples: ${requested.length} example(s) executed green — ${requested.join(", ")}`);
+
+// Cleanup runs ONLY here, on the success path. Every failure route above leaves
+// through fail(), which process.exit(1)s before reaching this line — so a failed
+// run always keeps its scratch tree on disk for inspection, and that property
+// costs no code to arrange. `OPENCUT_SCRATCH_KEEP=1` keeps it after success too.
+//
+// Note what this does NOT remove: an `OPENCUT_EXAMPLES_ROOT` pointed outside the
+// scratch root is the caller's directory, so it is left alone.
+cleanupLifecycle(root);
+
 console.log("REAL_EXIT_CODE[examples-run]:0");
