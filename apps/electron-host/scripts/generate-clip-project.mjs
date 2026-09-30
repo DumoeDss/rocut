@@ -13,7 +13,7 @@
  * strings, elements carrying the full `ELEMENT_KEYS` list with undefined for
  * absent fields, tracks carrying `TRACK_KEYS`) → `store.save({record:
  * {id, schemaVersion, data}, summary})` where schemaVersion is the store's own
- * `FILESYSTEM_STORE_SCHEMA_VERSION` = `CURRENT_PROJECT_VERSION` (31).
+ * `FILESYSTEM_STORE_SCHEMA_VERSION` = `CURRENT_PROJECT_VERSION` (32).
  * Defaults mirrored from classic's new-project path (`project-manager.ts`):
  * fps 30/1, canvas 1920x1080, background #000000, one main scene, empty main
  * video track, no audio tracks. Validation after write reloads through the
@@ -410,6 +410,7 @@ function buildProjectPayload({ clips, name, rng, layout, width, height }) {
 					updatedAt: new Date(sceneUpdatedAtMs).toISOString(),
 				},
 			],
+			motionTextSequences: [],
 			currentSceneId: sceneId,
 			settings: {
 				fps: { numerator: 30, denominator: 1 },
@@ -419,7 +420,7 @@ function buildProjectPayload({ clips, name, rng, layout, width, height }) {
 				originalCanvasSize: null,
 				background: { type: "color", color: "#000000" },
 			},
-			version: 31,
+			version: 32,
 			timelineViewState: undefined,
 		},
 		projectId,
@@ -521,7 +522,7 @@ function methodBlock({ args, slots, projectId, rngDraws, schemaVersion }) {
 		`command inputs: --root ${args.root} --clips ${args.clips} --name "${args.name}" --layout ${args.layout} --width ${args.width} --height ${args.height}${args.force ? " --force" : ""} (defaults: clips ${DEFAULT_CLIPS}, name "${DEFAULT_NAME}", layout staggered, 1920x1080)`,
 		`store classes: FilesystemProjectStore over NodeFsStoreBridge (../src/store/*), identity DEFAULT_FILESYSTEM_STORE_IDENTITY, schemaVersion read off the store instance (${schemaVersion}); record built in the encodeProject durable shape (dates ISO strings, ELEMENT_KEYS/TRACK_KEYS with undefined for absent fields)`,
 		"determinism: mulberry32(seed=clips), no Math.random; element ids `clip-<i zero-padded 6>`; project/scene/track ids uuidFromRng drawn in order: project, scene, main track, 16 overlay tracks; dates = Date.UTC(2026,0,1) + rng()*86400000 (updated = created + rng()*3600000; scene drawn separately)",
-		`project: one main scene "Main scene"; settings: fps 30/1, canvas ${args.width}x${args.height} (${args.width === 1920 && args.height === 1080 ? 'classic default, canvasSizeMode "preset"' : 'overridden, canvasSizeMode "custom"'}), background {color #000000}; version 31`,
+		`project: one main scene "Main scene"; settings: fps 30/1, canvas ${args.width}x${args.height} (${args.width === 1920 && args.height === 1080 ? 'classic default, canvasSizeMode "preset"' : 'overridden, canvasSizeMode "custom"'}), background {color #000000}; version 32`,
 		`tracks: main video track "Main Track" EMPTY (no media pipeline), 0 audio tracks; overlay = 8 text tracks ("Text 1".."Text 8") + 8 graphic tracks ("Graphic 1".."Graphic 8")`,
 		`elements: ${args.clips} total = ${elementsWithKind(args.clips, "text")} text + ${elementsWithKind(args.clips, "graphic")} graphic`,
 		args.layout === "dense"
@@ -582,8 +583,8 @@ async function main(args) {
 
 	check(listings.length === 1 && listings[0].id === projectId, `list() == 1 record with id ${projectId}`);
 	check(reloaded !== null, "load() returned the record");
-	check(reloaded?.schemaVersion === store.schemaVersion && store.schemaVersion === 31, `schemaVersion ${reloaded?.schemaVersion} === store.schemaVersion ${store.schemaVersion} (CURRENT_PROJECT_VERSION 31)`);
-	check(data?.version === 31, "payload.version === 31");
+	check(reloaded?.schemaVersion === store.schemaVersion && store.schemaVersion === 32, `schemaVersion ${reloaded?.schemaVersion} === store.schemaVersion ${store.schemaVersion} (CURRENT_PROJECT_VERSION 32)`);
+	check(data?.version === 32, "payload.version === 32");
 	check(data?.scenes?.length === 1 && data?.currentSceneId === scene?.id && scene?.isMain === true, "one main scene, currentSceneId matches");
 	const overlay = scene?.tracks?.overlay ?? [];
 	const textTracks = overlay.filter((t) => t.type === "text");
@@ -636,7 +637,7 @@ async function main(args) {
 		const envelope = JSON.parse(readFileSync(recordPath, "utf8"));
 		envelopeOk =
 			envelope.kind === "opencut-project-record" &&
-			envelope.schemaVersion === 31 &&
+			envelope.schemaVersion === 32 &&
 			envelope.summary?.id === projectId &&
 			typeof envelope.payload === "string" &&
 			envelope.payload.length > 0;

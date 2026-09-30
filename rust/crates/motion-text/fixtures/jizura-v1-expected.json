@@ -1,0 +1,35 @@
+{
+	"language": "zh-Hans",
+	"title": "城里的光",
+	"artist": "Rocut Fixture",
+	"duration": 528000,
+	"defaultStyle": "crimson",
+	"defaultFontId": "gothic_bold_zh_hans",
+	"cueStarts": [60000, 240000],
+	"cueDurations": [180000, 180000],
+	"timingSources": ["manual", "manual"],
+	"line0Preset": {
+		"layout": "huge",
+		"enter": "pop",
+		"hold": "pulse",
+		"exit": "shrink"
+	},
+	"line1FirstCutPreset": {
+		"layout": "type",
+		"enter": "wipe",
+		"hold": "drift",
+		"exit": "wipe"
+	},
+	"requiredCompatibilityCodes": [
+		"jizura-version-supported",
+		"language-preserved",
+		"colors-preserved",
+		"font-preserved",
+		"per-cut-override-preserved",
+		"title-metadata-preserved",
+		"audio-relink-required",
+		"lyrics-preserved",
+		"native-planner-recomputed"
+	],
+	"requiredResources": ["audio:jizura-audio:missing"]
+}

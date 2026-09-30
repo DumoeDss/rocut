@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-type-assertion, opencut/prefer-object-params -- Focused command harnesses intentionally supply narrowed EditorCore collaborators and branded media times. */
 import { describe, expect, test } from "bun:test";
+import { isMotionTextSequence } from "@opencut/editor-contracts";
 import type { EditorCore } from "../..";
 import type { MediaAsset } from "../../../media/types";
 import type { TProject } from "../../../project/types";
@@ -11,26 +12,39 @@ const {
 	BatchCommand,
 	Command,
 	DeleteElementsCommand,
+	DuplicateElementsCommand,
 	InsertElementCommand,
 	MoveElementCommand,
 	ProviderPrivateCompositeCommand,
 	RemoveMediaAssetCommand,
 	TracksSnapshotCommand,
 	UpdateElementsCommand,
+	UpdateMotionTextSequenceCommand,
 	UpdateProjectSettingsCommand,
 } = await import("../../../commands");
 const { CommandManager } = await import("../commands");
 const { SelectionManager } = await import("../selection-manager");
 const { TimelineManager } = await import("../timeline-manager");
 const { MediaManager } = await import("../media-manager");
-const { buildElementFromMedia } = await import("../../../timeline/element-utils");
+const { buildElementFromMedia, buildMotionTextElement } =
+	await import("../../../timeline/element-utils");
 const { savePersistedMediaAsset } = await import("../../../media/persistence");
-const { SessionPersistenceCoordinator } = await import("../../../editor/persistence");
-const { cloneOpaque } = await import("../../../editor/persistence/opaque-value");
+const { SessionPersistenceCoordinator } =
+	await import("../../../editor/persistence");
+const { cloneOpaque } =
+	await import("../../../editor/persistence/opaque-value");
+const { duplicateMotionTextSequence, mutateMotionTextSequence } =
+	await import("../../../../../../rust/wasm/pkg/opencut_wasm_sync.js");
+const { MOTION_TEXT_RENDERER_SUPPORT } =
+	await import("../../../services/renderer/motion-text/support-manifest");
 const { ProjectMutationArbiter, SessionOpenCutTransactions } =
 	await import("../../../editor/transactions/opencut");
-const { projectFixture, storeFixture, TEST_PROJECT_ID } =
-	await import("../../../editor/transactions/opencut/__tests__/fixture");
+const {
+	motionTextSequenceFixture,
+	projectFixture,
+	storeFixture,
+	TEST_PROJECT_ID,
+} = await import("../../../editor/transactions/opencut/__tests__/fixture");
 
 async function commandHarness(
 	project = projectFixture(),
@@ -1081,6 +1095,289 @@ describe("transaction-routed command manager", () => {
 		});
 		expect(duplicated).toHaveLength(1);
 		expect(Number(await harness.transactions.revision())).toBe(2);
+	});
+
+	test("motion-text starter insertion creates its sequence and clip in one undoable transaction", async () => {
+		const harness = await commandHarness();
+		const sequence = motionTextSequenceFixture();
+
+		const inserted = await harness.timeline.insertMotionTextSequence({
+			sequence,
+			element: buildMotionTextElement({
+				sequenceId: sequence.id,
+				name: "Starter motion text",
+				startTime: 0 as never,
+				duration: sequence.duration as never,
+			}),
+			placement: { mode: "auto" },
+		});
+
+		expect(inserted.trackId).not.toBe("");
+		expect(harness.getProject().motionTextSequences).toEqual([sequence]);
+		expect(
+			harness.timeline.getElementsWithTracks({ elements: [inserted] })[0]
+				?.element,
+		).toMatchObject({
+			type: "motion-text",
+			sequenceId: sequence.id,
+		});
+		expect(harness.fixture.getSaveCount()).toBe(1);
+		expect(harness.command.getHistoryCount()).toBe(1);
+
+		await harness.command.undo();
+		expect(harness.getProject().motionTextSequences).toEqual([]);
+		expect(
+			harness.timeline.getElementsWithTracks({ elements: [inserted] }),
+		).toEqual([]);
+		expect(harness.fixture.getSaveCount()).toBe(2);
+
+		await harness.command.redo();
+		expect(harness.getProject().motionTextSequences).toEqual([sequence]);
+		expect(
+			harness.timeline.getElementsWithTracks({ elements: [inserted] }),
+		).toHaveLength(1);
+		expect(harness.fixture.getSaveCount()).toBe(3);
+	});
+
+	test("motion-text restyle applies and undoes as one project transaction", async () => {
+		const project = projectFixture();
+		const original = motionTextSequenceFixture({ revision: 2 });
+		project.motionTextSequences.push(original);
+		const harness = await commandHarness(project);
+		const mutation = mutateMotionTextSequence({
+			sequenceJson: JSON.stringify(original),
+			mutationJson: JSON.stringify({
+				kind: "update-defaults",
+				font: { mode: "inherit" },
+				colors: {
+					mode: "set",
+					foreground: "#f4f4f5",
+					accent: "#ef4444",
+				},
+			}),
+			rendererSupport: [...MOTION_TEXT_RENDERER_SUPPORT],
+		});
+		expect(mutation.sequenceJson).not.toBeNull();
+		const restyled: unknown = JSON.parse(mutation.sequenceJson ?? "null");
+		if (!isMotionTextSequence(restyled)) {
+			throw new Error("Canonical mutation did not return a valid sequence");
+		}
+
+		await harness.command.execute({
+			command: new UpdateMotionTextSequenceCommand(restyled),
+		});
+
+		expect(harness.getProject().motionTextSequences).toEqual([restyled]);
+		expect(harness.fixture.getSaveCount()).toBe(1);
+		expect(harness.command.getHistoryCount()).toBe(1);
+
+		await harness.command.undo();
+		expect(harness.getProject().motionTextSequences).toEqual([original]);
+		expect(harness.fixture.getSaveCount()).toBe(2);
+
+		await harness.command.redo();
+		expect(harness.getProject().motionTextSequences).toEqual([restyled]);
+		expect(harness.fixture.getSaveCount()).toBe(3);
+	});
+
+	test("motion-text timeline edits preserve shared source continuity and undo atomically", async () => {
+		const project = projectFixture();
+		const sequence = motionTextSequenceFixture();
+		project.motionTextSequences.push(sequence);
+		project.scenes[0].tracks.overlay.push({
+			id: "motion-track",
+			name: "Motion text",
+			type: "graphic",
+			hidden: false,
+			elements: [
+				{
+					id: "motion-clip",
+					name: "Motion title",
+					type: "motion-text",
+					sequenceId: sequence.id,
+					startTime: 8_000 as never,
+					duration: 80_000 as never,
+					trimStart: 20_000 as never,
+					trimEnd: 20_000 as never,
+					params: {},
+				},
+			],
+		});
+		const harness = await commandHarness(project);
+
+		const rightRefs = await harness.timeline.splitElements({
+			elements: [{ trackId: "motion-track", elementId: "motion-clip" }],
+			splitTime: 40_000 as never,
+		});
+		expect(rightRefs).toHaveLength(1);
+		const splitElements = harness.getScenes()[0].tracks.overlay[0].elements;
+		expect(splitElements).toHaveLength(2);
+		const [left, right] = splitElements;
+		expect(left.type).toBe("motion-text");
+		expect(right.type).toBe("motion-text");
+		if (left.type !== "motion-text" || right.type !== "motion-text") {
+			throw new Error("Expected motion-text split halves");
+		}
+		expect(left.sequenceId).toBe(sequence.id);
+		expect(right.sequenceId).toBe(sequence.id);
+		expect(left.trimStart + left.duration).toBe(right.trimStart);
+		expect(left.startTime + left.duration).toBe(right.startTime);
+		expect(harness.getProject().motionTextSequences).toEqual([sequence]);
+
+		await harness.command.execute({
+			command: new MoveElementCommand({
+				moves: [
+					{
+						elementId: right.id,
+						sourceTrackId: "motion-track",
+						targetTrackId: "motion-track",
+						newStartTime: 48_000 as never,
+					},
+				],
+			}),
+		});
+		await harness.command.execute({
+			command: new UpdateElementsCommand({
+				updates: [
+					{
+						trackId: "motion-track",
+						elementId: right.id,
+						patch: {
+							duration: 40_000 as never,
+							trimEnd: 28_000 as never,
+						},
+					},
+				],
+			}),
+		});
+		const duplicatedRefs = await harness.timeline.duplicateElements({
+			elements: [{ trackId: "motion-track", elementId: left.id }],
+		});
+		expect(duplicatedRefs).toHaveLength(1);
+		const duplicated = harness.timeline.getElementsWithTracks({
+			elements: duplicatedRefs,
+		})[0]?.element;
+		expect(duplicated?.type).toBe("motion-text");
+		if (duplicated?.type !== "motion-text") {
+			throw new Error("Expected a duplicated motion-text element");
+		}
+		expect(duplicated.sequenceId).toBe(sequence.id);
+
+		await harness.command.execute({
+			command: new DeleteElementsCommand({
+				elements: [duplicatedRefs[0]],
+			}),
+		});
+		expect(
+			harness.timeline.getElementsWithTracks({ elements: duplicatedRefs }),
+		).toEqual([]);
+		await harness.command.undo();
+		expect(
+			harness.timeline.getElementsWithTracks({ elements: duplicatedRefs }),
+		).toHaveLength(1);
+		await harness.command.redo();
+		expect(
+			harness.timeline.getElementsWithTracks({ elements: duplicatedRefs }),
+		).toEqual([]);
+		expect(harness.getProject().motionTextSequences).toEqual([sequence]);
+		expect(Number(await harness.transactions.revision())).toBe(7);
+	});
+
+	test("independent motion-text duplication rebuilds identity in Rust and undoes as one transaction", async () => {
+		const project = projectFixture();
+		const fixture = motionTextSequenceFixture({ revision: 4 });
+		const sourceSequence = {
+			...fixture,
+			cues: [
+				{
+					...fixture.cues[0],
+					locks: [{ scope: "preset-group" as const, key: "trans" }],
+				},
+			],
+			resolvedPlan: {
+				version: 1 as const,
+				sequenceRevision: 4,
+				cuts: [
+					{
+						id: "cut:title" as never,
+						cueId: fixture.cues[0].id,
+						text: fixture.cues[0].text,
+						startTime: 0 as never,
+						duration: 120_000 as never,
+						seed: 23,
+						preset: fixture.defaults.preset,
+						parameters: {},
+					},
+				],
+			},
+		};
+		project.motionTextSequences.push(sourceSequence);
+		project.scenes[0].tracks.overlay.push({
+			id: "motion-track",
+			name: "Motion text",
+			type: "graphic",
+			hidden: false,
+			elements: [
+				{
+					id: "motion-clip",
+					name: "Motion title",
+					type: "motion-text",
+					sequenceId: sourceSequence.id,
+					startTime: 0 as never,
+					duration: 120_000 as never,
+					trimStart: 0 as never,
+					trimEnd: 0 as never,
+					params: {},
+				},
+			],
+		});
+		const harness = await commandHarness(project);
+		const command = new DuplicateElementsCommand({
+			elements: [{ trackId: "motion-track", elementId: "motion-clip" }],
+			motionTextCopyMode: "independent",
+			motionTextIdentityCore: duplicateMotionTextSequence,
+		});
+
+		await harness.command.execute({ command });
+		const duplicatedRefs = command.getDuplicatedElements();
+		expect(duplicatedRefs).toHaveLength(1);
+		const duplicatedElement = harness.timeline.getElementsWithTracks({
+			elements: duplicatedRefs,
+		})[0]?.element;
+		expect(duplicatedElement?.type).toBe("motion-text");
+		if (duplicatedElement?.type !== "motion-text") {
+			throw new Error("Expected an independent motion-text duplicate");
+		}
+		const sequences = harness.getProject().motionTextSequences;
+		expect(sequences).toHaveLength(2);
+		const independent = sequences.find(
+			(sequence) => sequence.id === duplicatedElement.sequenceId,
+		);
+		expect(independent).toBeDefined();
+		expect(independent?.id).not.toBe(sourceSequence.id);
+		expect(independent?.revision).toBe(0);
+		expect(independent?.cues[0].id).not.toBe(sourceSequence.cues[0].id);
+		expect(independent?.cues[0].locks).toEqual(sourceSequence.cues[0].locks);
+		expect(independent?.resolvedPlan?.sequenceRevision).toBe(0);
+		expect(independent?.resolvedPlan?.cuts[0].id).not.toBe(
+			sourceSequence.resolvedPlan.cuts[0].id,
+		);
+		expect(independent?.resolvedPlan?.cuts[0].cueId).toBe(
+			independent?.cues[0].id,
+		);
+		expect(await harness.transactions.motionTextSequences()).toEqual(sequences);
+
+		await harness.command.undo();
+		expect(harness.getProject().motionTextSequences).toEqual([sourceSequence]);
+		expect(
+			harness.timeline.getElementsWithTracks({ elements: duplicatedRefs }),
+		).toEqual([]);
+		await harness.command.redo();
+		expect(harness.getProject().motionTextSequences).toHaveLength(2);
+		expect(
+			harness.timeline.getElementsWithTracks({ elements: duplicatedRefs }),
+		).toHaveLength(1);
+		expect(Number(await harness.transactions.revision())).toBe(3);
 	});
 
 	test("a public clip update carries its provider-private sibling in the same record", async () => {

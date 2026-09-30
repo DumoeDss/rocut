@@ -45,6 +45,15 @@ export function runStoreMigrationOnce(args: {
 		const from = (await store.persistedSchemaVersion?.()) ?? null;
 
 		diagnostics.event({ event: { kind: "migration-started", from, to } });
+		if (from !== null && from > to) {
+			const reason =
+				`persisted schema ${from} is newer than supported schema ${to}; ` +
+				"refusing a downgrade write";
+			diagnostics.event({
+				event: { kind: "migration-failed", from, to, reason },
+			});
+			throw new MigrationFailedError({ from, to, reason });
+		}
 		const outcome = await store.migrate!({
 			from,
 			to,

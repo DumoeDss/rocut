@@ -8,7 +8,7 @@
  *     sha256sum rust/wasm/pkg/*                  # pinnedHashes, and the dts/wrapper/wasmDts values
  *     node script/check-wasm-api-surface.mjs     # reports every value that has moved, by id
  *
- * **Why the pins matter to this file.** Three of the 58 wasm exports are rustc symbol-hash names
+ * **Why the pins matter to this file.** Three of the 79 wasm exports are rustc symbol-hash names
  * and the binary's `producers` section carries the compiler version verbatim, so an unpinned
  * toolchain moves this contract without anyone touching the source. That is what happened on
  * PR #2: CI installed `wasm-pack: latest` (v0.15.0) and the runner image's rustc against a surface
@@ -50,7 +50,7 @@ export const BASELINE_DTS_SHA =
  *   …invoke__h755062247edbbf0a  …invoke__h3a4584f6e44c7108
  *   …invoke__hf7fc07325ff431aa  …invoke__hc1daa042eeabb391
  *
- * Exactly 3 in, 3 out, total unchanged at 58, and **all 55 other exports identical**. The gate
+ * Exactly 3 in, 3 out, total unchanged at 78, and **all 75 other exports identical**. The gate
  * printed that difference itself; the re-scope was written only after seeing it, not from the
  * hypothesis that preceded it.
  *
@@ -59,8 +59,8 @@ export const BASELINE_DTS_SHA =
  * correspond 1:1" — so this applies the repository's own existing finding to its gate.
  *
  * **What is still asserted, so this is a re-scope and not a hole**: the count of trampolines is
- * exactly `trampolineExportCount`, each must match this shape, the other 55 are an exact set, and
- * the total is still 58. A 4th trampoline, a missing one, a renamed stable export, or a stable
+ * exactly `trampolineExportCount`, each must match this shape, the other 76 are an exact set, and
+ * the total is 79. A 4th trampoline, a missing one, a renamed stable export, or a stable
  * export disguised in this shape all fail — each with a committed negative control.
  */
 export const TRAMPOLINE_EXPORT =
@@ -95,7 +95,7 @@ export const EXPECTED = {
 		"package.json":
 			"f92d109c0ed431a74974f90bf207767c033f784af10a34a0accebb1bb921ca18",
 		[SYNC_ENTRY]:
-			"aa6081035bd18e34e99c22e4fa7f3e41d212a602fd6ab552d654f948c4ae6471",
+			"8bc02ee2f66b4a9c6dd264b9cedb983135380afe9f1208095e78fabf524c6567",
 	},
 	/**
 	 * `LICENSE` and `README.md` are the only two files wasm-pack **copies out of the checkout**
@@ -136,44 +136,47 @@ export const EXPECTED = {
 		"opencut_wasm_bg.wasm.d.ts":
 			"d19c1b3dc87f095040c7eb1e56eb8c965d587cf7927ca21cc513327cf78ed7c1",
 	},
-	dtsSha: "e7d942d396f17ebca7fed8ccfe3f9e671103ad733c5ce183ef00d3519720596a",
+	dtsSha: "e8d0fd8ac6cdae7afefddb51b422c5ec88996c3a32c544d2314a9c8ed94210bf",
 	wrapperSha:
-		"19714428b345a2ac128440319ece8a1c7f3c2f0336d454712189445d427c69f1",
+		"8c5f6b37128f67747f95e7e5a3381a0b52ffa0583111ed0f56f5722344116eb1",
 	/**
 	 * The low-level declarations, hashed after normalising the trampoline hashes below and sorted
 	 * by line. Exact-byte hashing of this file cannot hold across build hosts for the reason
 	 * documented at `TRAMPOLINE_EXPORT`; every other line is still compared verbatim, and the line
 	 * count is pinned, so an added, removed or edited declaration is still caught.
 	 *
-	 * Recorded on Windows; the value is host-independent by construction. Re-derive with
-	 * `rasen/changes/wasm-determinism-init/evidence/rescope-values.mjs`.
+	 * Recorded on Windows; the value is host-independent by construction. Re-derive with the
+	 * hashing recipe in `script/check-wasm-api-surface.mjs` after a pinned WASM rebuild.
 	 */
 	wasmDtsNormalizedSignature:
-		"b03cb7f5c8f12350c38545f8b49fbc3957c5d21813a92e5004560f63f47ad402",
-	wasmDtsLineCount: 60,
+		"f3c3b02789b4d467509cea53a885a5a235d812137d27dbc6087e184d7d812f5a",
+	wasmDtsLineCount: 81,
 	wrapperExportSignature:
-		"a9a91d9ad6a8b1a13185e8892a2820752c9be4a2885a18edc71c24ee53769cc9",
+		"b5061d4f1050cb77ea7330cd987365c714a8b178e7fb6d0e77896a5589776cd9",
+	wrapperExportCount: 59,
 	bgExportSignature:
-		"5cb5e6fff95cfcfd2fb70dab7a89628eb087ae9797ada39db9fcf336b649364f",
+		"0259dcb1bb35557e3bf6792585d017c63c100b23989edde61da8ad0e7c9e4cfe",
+	bgExportCount: 670,
 	/**
-	 * The 55 stably-named binary exports, as an exact set. This is the real contract: every export
+	 * The 76 stably-named binary exports, as an exact set. This is the real contract: every export
 	 * a consumer can name is pinned here, and any addition, removal or rename fails.
 	 *
 	 * The remaining 3 are compiler-generated closure trampolines whose names carry a rustc symbol
 	 * hash — see `TRAMPOLINE_EXPORT` for why they are matched by shape and count instead.
 	 */
 	stableWasmExportSignature:
-		"aac46c356951410ed81141f3e564d95e9212fec6987381429049d2e0b3809547",
-	stableWasmExportCount: 55,
+		"de19e20baa9282ee76d92e7e69d6f3c5ca9b3c2d9d9fac879c332676f7679be9",
+	stableWasmExportCount: 76,
 	trampolineExportCount: 3,
 	/**
-	 * The whole 58-entry set as recorded on the Windows build machine, kept for diagnosis: on
+	 * The whole 79-entry set as recorded on the Windows build machine, kept for diagnosis: on
 	 * failure the gate prints the symmetric difference against it, which is how the host-varying
 	 * trampolines were identified in the first place (CI run 31940776057). It is NOT the
 	 * assertion — `stableWasmExportSignature` is.
 	 */
 	wasmExportsAsRecorded: [
-
+		"MOTION_TEXT_PLAN_VERSION|function",
+		"MOTION_TEXT_SCHEMA_VERSION|function",
 		"TICKS_PER_SECOND|function",
 		"__externref_table_alloc|function",
 		"__externref_table_dealloc|function",
@@ -186,11 +189,17 @@ export const EXPECTED = {
 		"__wbindgen_malloc|function",
 		"__wbindgen_realloc|function",
 		"__wbindgen_start|function",
+		"analyzeMotionTextAudio|function",
 		"applyEffectPasses|function",
 		"applyMaskFeather|function",
+		"assessMotionTextAudioSync|function",
 		"createCompositor|function",
+		"createMotionTextPresetPreview|function",
+		"createMotionTextSequence|function",
+		"createMotionTextVariationCandidate|function",
 		"disposeCompositor|function",
 		"disposeGpu|function",
+		"duplicateMotionTextSequence|function",
 		"floorToFrame|function",
 		"formatTimecode|function",
 		"getCompositorCanvasForHandle|function",
@@ -199,6 +208,8 @@ export const EXPECTED = {
 		"guessTimecodeFormat|function",
 		"initCompositor|function",
 		"initializeGpu|function",
+		"inspectMotionTextFont|function",
+		"importJizuraMotionTextProject|function",
 		"isFrameAligned|function",
 		"lastFrameTime|function",
 		"mediaTimeAdd|function",
@@ -210,16 +221,27 @@ export const EXPECTED = {
 		"mediaTimeSub|function",
 		"mediaTimeToFrame|function",
 		"mediaTimeToSeconds|function",
+		"validateMediaTimeRange|function",
+		"mapMotionTextClipTime|function",
+		"mapMotionTextSequenceTimeToTimeline|function",
 		"memory|memory",
+		"mutateMotionTextSequence|function",
+		"parseMotionTextSource|function",
 		"parseTimecode|function",
+		"planMotionTextSequence|function",
 		"releaseTextureForHandle|function",
 		"releaseTexture|function",
 		"renderFrameForHandle|function",
 		"renderFrame|function",
 		"resizeCompositorForHandle|function",
 		"resizeCompositor|function",
+		"resolveMotionTextAudioClipBinding|function",
+		"resolveMotionTextBeatGrid|function",
+		"restyleMotionTextSequence|function",
 		"roundToFrame|function",
+		"snapMotionTextTimeToBeat|function",
 		"snappedSeekTime|function",
+		"tokenizeMotionText|function",
 		"uploadTextureForHandle|function",
 		"uploadTexture|function",
 		"wasm_bindgen__convert__closures_____invoke__h6e68ca372e8bf468|function",
@@ -234,7 +256,8 @@ export const EXPECTED = {
 		"wasmruntimegraphicsquery_unavailableReason|function",
 	],
 	wasmImportSignature:
-		"2da5921beca72832c11efe8a93e3228649ab22ec41d78313f0f4c74fcdd44001",
+		"765c3a874c6bbf836f326daa008a2c4185868cdac26b5369c62d766d6d897cb6",
+	wasmImportCount: 612,
 	/**
 	 * The `exports` conditions `emitSyncEntry` writes. Recorded here so the routing that makes the
 	 * artifact initializable outside a bundler is a contract term rather than an incidental

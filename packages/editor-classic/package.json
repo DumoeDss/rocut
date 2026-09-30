@@ -59,6 +59,7 @@
     "./storage/migrations": "./src/storage/migrations.ts",
     "./transactions": "./src/transactions.ts",
     "./frame-proof": "./src/frame-proof.ts",
+    "./motion-text/factory": "./src/motion-text/factory.ts",
     "./project": "./src/project/index.ts",
     "./timeline": "./src/timeline/index.ts",
     "./renderer": "./src/renderer/index.ts",

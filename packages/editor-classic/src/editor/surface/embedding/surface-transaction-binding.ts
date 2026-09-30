@@ -1,5 +1,6 @@
 import {
 	OPERATION_KINDS,
+	isMotionTextSequence,
 	type TransactionApply,
 	type TransactionBatch,
 	type TransactionResult,
@@ -36,6 +37,7 @@ const clipPatchKeys = new Set([
 	"trimStart",
 	"trimEnd",
 	"assetId",
+	"content",
 ]);
 const markerPatchKeys = new Set(["time", "note", "color"]);
 const projectPatchKeys = new Set([
@@ -173,6 +175,24 @@ function hasRequiredOperationPayload(
 			);
 		case "delete-marker":
 			return isNonEmptyString(operation.markerId);
+		case "create-motion-text-sequence":
+			return isMotionTextSequence(operation.sequence);
+		case "update-motion-text-sequence":
+			return (
+				isNonEmptyString(operation.sequenceId) &&
+				typeof operation.expectedSequenceRevision === "number" &&
+				Number.isInteger(operation.expectedSequenceRevision) &&
+				operation.expectedSequenceRevision >= 0 &&
+				isMotionTextSequence(operation.sequence) &&
+				operation.sequence.id === operation.sequenceId
+			);
+		case "delete-motion-text-sequence":
+			return (
+				isNonEmptyString(operation.sequenceId) &&
+				typeof operation.expectedSequenceRevision === "number" &&
+				Number.isInteger(operation.expectedSequenceRevision) &&
+				operation.expectedSequenceRevision >= 0
+			);
 		case "update-project":
 			return (
 				isNonEmptyString(operation.projectId) && isProjectPatch(operation.patch)

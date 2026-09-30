@@ -5,7 +5,10 @@ import useDeepCompareEffect from "use-deep-compare-effect";
 import { useEditor, useEditorInstance } from "../../editor/use-editor";
 import { useEditorSession } from "../../editor/session/editor-session-provider";
 import { useRafLoop } from "../../hooks/use-raf-loop";
-import type { SessionResources, TimerHandle } from "../../editor/session/resources";
+import type {
+	SessionResources,
+	TimerHandle,
+} from "../../editor/session/resources";
 import {
 	SessionActivityGenerationError,
 	type SessionResourceLifecycle,
@@ -17,7 +20,10 @@ import type { RootNode } from "../../services/renderer/nodes/root-node";
 import { buildScene } from "../../services/renderer/scene-builder";
 import { PreviewOverlayLayer } from "./overlay-layer";
 import { PreviewInteractionOverlay } from "./preview-interaction-overlay";
-import { ContextMenu, ContextMenuTrigger } from "../../components/ui/context-menu";
+import {
+	ContextMenu,
+	ContextMenuTrigger,
+} from "../../components/ui/context-menu";
 import type {
 	PreviewOverlayControl,
 	PreviewOverlayInstance,
@@ -137,6 +143,9 @@ function RenderTreeController() {
 	);
 	const mediaAssets = useEditor((e) => e.media.getAssets());
 	const activeProject = useEditor((e) => e.project.getActive());
+	const motionTextSequencePreview = useEditor((e) =>
+		e.renderer.getMotionTextSequencePreview(),
+	);
 
 	const { width, height } = usePreviewSize();
 
@@ -148,9 +157,19 @@ function RenderTreeController() {
 		if (!activeProject) return;
 
 		const duration = editor.timeline.getTotalDuration();
+		const motionTextSequences = activeProject.motionTextSequences.map(
+			(sequence) =>
+				motionTextSequencePreview?.sequence.id === sequence.id &&
+				motionTextSequencePreview.baseRevision === sequence.revision
+					? motionTextSequencePreview.sequence
+					: sequence,
+		);
 		const renderTree = buildScene({
 			tracks,
 			mediaAssets,
+			motionTextSequences,
+			motionTextFontRuntime: editor.renderer.motionTextFontRuntime,
+			motionTextProjectId: activeProject.metadata.id,
 			duration,
 			canvasSize: { width, height },
 			background: activeProject.settings.background,
@@ -162,7 +181,10 @@ function RenderTreeController() {
 	}, [
 		tracks,
 		mediaAssets,
+		activeProject?.metadata.id,
+		activeProject?.motionTextSequences,
 		activeProject?.settings.background,
+		motionTextSequencePreview,
 		width,
 		height,
 		isDegraded,

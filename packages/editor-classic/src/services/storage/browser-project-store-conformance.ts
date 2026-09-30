@@ -20,6 +20,7 @@ import {
 	type BrowserStoreDiagnostic,
 } from "./browser-project-store-internals";
 import { createStoredProject } from "./browser-project-store-records";
+import { CURRENT_PROJECT_VERSION } from "./migrations/version";
 import {
 	deleteDatabaseExact,
 	idbGet,
@@ -464,7 +465,8 @@ async function probeCurrentVersionNoOp(args: {
 			updatedAt: "2026-08-01T00:00:00.000Z",
 		},
 		scenes: [],
-		version: 31,
+		motionTextSequences: [],
+		version: CURRENT_PROJECT_VERSION,
 		providerPrivateSentinel: { keep: true },
 	};
 	try {

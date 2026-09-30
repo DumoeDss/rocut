@@ -15,6 +15,7 @@ import {
 import type { FrameRate } from "opencut-wasm";
 import { mediaTimeToSeconds } from "opencut-wasm";
 import { TICKS_PER_SECOND } from "../../wasm";
+import type { ResolvedMediaTimeRange } from "../../wasm";
 import { frameRateToFloat } from "../../fps/utils";
 import type { RootNode } from "./nodes/root-node";
 import type { ExportFormat, ExportQuality } from "../../export";
@@ -100,15 +101,23 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 		return this.exportPromise ?? Promise.resolve(null);
 	}
 
-	export({ rootNode }: { rootNode: RootNode }): Promise<ArrayBuffer | null> {
-		this.exportPromise ??= this.runExport({ rootNode });
+	export({
+		rootNode,
+		range,
+	}: {
+		rootNode: RootNode;
+		range: ResolvedMediaTimeRange;
+	}): Promise<ArrayBuffer | null> {
+		this.exportPromise ??= this.runExport({ rootNode, range });
 		return this.exportPromise;
 	}
 
 	private async runExport({
 		rootNode,
+		range,
 	}: {
 		rootNode: RootNode;
+		range: ResolvedMediaTimeRange;
 	}): Promise<ArrayBuffer | null> {
 		this.assertPublicationCurrent();
 		const fps = this.renderer.fps;
@@ -116,7 +125,7 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 		const ticksPerFrame = Math.round(
 			(TICKS_PER_SECOND * fps.denominator) / fps.numerator,
 		);
-		const frameCount = Math.floor(rootNode.duration / ticksPerFrame);
+		const frameCount = Math.floor(range.duration / ticksPerFrame);
 
 		const outputFormat =
 			this.format === "webm" ? new WebMOutputFormat() : new Mp4OutputFormat();
@@ -178,11 +187,12 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 					return null;
 				}
 
-				const timeTicks = i * ticksPerFrame;
-				const timeSeconds = mediaTimeToSeconds({ time: timeTicks });
+				const outputTimeTicks = i * ticksPerFrame;
+				const timelineTimeTicks = range.startTime + outputTimeTicks;
+				const timeSeconds = mediaTimeToSeconds({ time: outputTimeTicks });
 				await this.renderer.renderAndCapture({
 					node: rootNode,
-					time: timeTicks,
+					time: timelineTimeTicks,
 					capture: () => videoSource.add(timeSeconds, 1 / fpsFloat),
 				});
 

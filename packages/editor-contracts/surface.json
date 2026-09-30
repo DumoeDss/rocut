@@ -6,6 +6,14 @@
 			"class": "frozen",
 			"reason": "The S03 transaction/domain contract barrel — the transaction contract itself."
 		},
+		"./motion-text": {
+			"class": "frozen",
+			"reason": "The versioned, Host-neutral motion-text domain and validation contract."
+		},
+		"./motion-text-planner": {
+			"class": "frozen",
+			"reason": "The versioned Rust/WASM planner wire adapter into the nominal motion-text domain contract."
+		},
 		"./conformance": {
 			"class": "frozen",
 			"reason": "The transaction-contract conformance suite — S03's executable contract truth, additive-only with the contract it enforces."

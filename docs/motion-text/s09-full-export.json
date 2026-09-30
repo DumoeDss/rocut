@@ -1,0 +1,51 @@
+{
+	"schemaVersion": 1,
+	"generatedBy": "script/probe-motion-text-full-export.mjs",
+	"source": {
+		"canonicalWasm": {
+			"bytes": 5511220,
+			"sha256": "14de620a1bfa38228a43e4103cc557ae7a27bbb30185bfffae91b17d685e75a8"
+		}
+	},
+	"environment": {
+		"browser": "151.0.7922.34",
+		"userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.7922.34 Safari/537.36"
+	},
+	"fixture": {
+		"id": "F05",
+		"cueCount": 600,
+		"duration": 57600000,
+		"seed": 5005
+	},
+	"config": {
+		"exportWidth": 320,
+		"exportHeight": 180,
+		"progressIntervalFrames": 600
+	},
+	"result": {
+		"fixture": {
+			"id": "F05",
+			"cueCount": 600,
+			"cutCount": 1200,
+			"duration": 57600000
+		},
+		"export": {
+			"frames": 14400,
+			"progressEvents": 14401,
+			"completeEvents": 1,
+			"errorEvents": 0,
+			"cancelledEvents": 0,
+			"elapsedMs": 71797.3,
+			"bufferBytes": 4322393,
+			"fileType": "ftyp",
+			"sha256": "979566adfea6b002b30390e7d18a14a5c45e2756d169baab9649597b9f1d8d51"
+		},
+		"fontRuntime": {
+			"generation": 0,
+			"cachedFonts": 1,
+			"loadedFaces": 1,
+			"pendingLoads": 0,
+			"disposed": false
+		}
+	}
+}

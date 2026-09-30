@@ -44,6 +44,7 @@ export interface FrameProofElement {
 	readonly trimStart: number;
 	readonly trimEnd: number;
 	readonly mediaId?: string;
+	readonly sequenceId?: string;
 	readonly params: unknown;
 }
 
@@ -176,6 +177,9 @@ export function composeFrameDescription(args: {
 				trimStart: element.trimStart,
 				trimEnd: element.trimEnd,
 				...(mediaId === undefined ? {} : { mediaId }),
+				...(element.type === "motion-text"
+					? { sequenceId: element.sequenceId }
+					: {}),
 				params: canonicalize("params" in element ? element.params : {}),
 			});
 			z += 1;

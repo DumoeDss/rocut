@@ -1,0 +1,3054 @@
+{
+	"schemaVersion": 1,
+	"generatedBy": "script/audit-jizura-registry.mjs",
+	"source": {
+		"name": "JIZURA",
+		"version": "0.9.0",
+		"revision": null,
+		"loadedFiles": [
+			"01_util.js",
+			"02_fonts.js",
+			"02b_lang.js",
+			"03_text.js",
+			"04_styles.js",
+			"05_anim.js",
+			"05b_registry.js",
+			"06_layouts.js",
+			"07_decor.js",
+			"08_planner.js",
+			"08b_omakase.js",
+			"11p_bgcamB.js",
+			"11p_decor.js",
+			"11p_decorB.js",
+			"11p_enter.js",
+			"11p_enterB.js",
+			"11p_exit.js",
+			"11p_exitB.js",
+			"11p_fxB.js",
+			"11p_horror1.js",
+			"11p_horror2.js",
+			"11p_horror3.js",
+			"11p_kinetic1.js",
+			"11p_kinetic2.js",
+			"11p_kinetic3.js",
+			"11p_layoutsA.js",
+			"11p_layoutsB.js",
+			"11p_layoutsC.js",
+			"11p_layoutsD.js",
+			"11p_looks.js",
+			"11p_styles.js",
+			"11p_treattrans.js",
+			"11p_typo1.js",
+			"11p_typo2.js",
+			"11p_typo3.js",
+			"11q_sets.js"
+		]
+	},
+	"choices": [
+		{ "group": "style", "id": "noir", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "crimson", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "caution", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "magenta", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "paper", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "hud", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "mint", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "specimen", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "transit", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "blueprint", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "rouge", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "mono", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "hrRuin", "weight": 1, "presetSet": "horror" },
+		{
+			"group": "style",
+			"id": "hrNightRec",
+			"weight": 1,
+			"presetSet": "horror"
+		},
+		{ "group": "style", "id": "hrCurse", "weight": 1, "presetSet": "horror" },
+		{ "group": "style", "id": "sakura", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "ocean", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "sunset", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "forest", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "vapor", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "newsprint", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "synth80", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "kraft", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "candy", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "acid", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "sumi", "weight": 1, "presetSet": null },
+		{ "group": "style", "id": "gold", "weight": 1, "presetSet": null },
+		{ "group": "layout", "id": "center", "weight": 1, "presetSet": null },
+		{
+			"group": "layout",
+			"id": "mixed",
+			"weight": 1,
+			"minChars": 2,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "vcols",
+			"weight": 1,
+			"maxChars": 18,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "marquee",
+			"weight": 1,
+			"maxChars": 12,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "tile",
+			"weight": 1,
+			"maxChars": 12,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "scatter",
+			"weight": 1,
+			"minChars": 2,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "ring",
+			"weight": 1,
+			"minChars": 2,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "wave",
+			"weight": 1,
+			"minChars": 2,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "huge",
+			"weight": 1,
+			"maxChars": 8,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "labels",
+			"weight": 1,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "condensed",
+			"weight": 1,
+			"maxChars": 10,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "gloss",
+			"weight": 1,
+			"maxChars": 12,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "type",
+			"weight": 1,
+			"maxChars": 28,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "diag",
+			"weight": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "circle",
+			"weight": 1,
+			"maxChars": 10,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "stack",
+			"weight": 1,
+			"maxChars": 12,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "pill",
+			"weight": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "hrFlashlight",
+			"weight": 1,
+			"minChars": 1,
+			"maxChars": 18,
+			"presetSet": "horror"
+		},
+		{
+			"group": "layout",
+			"id": "hrDoorGap",
+			"weight": 0.9,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": "horror"
+		},
+		{
+			"group": "layout",
+			"id": "hrWallScrawl",
+			"weight": 0.9,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": "horror"
+		},
+		{
+			"group": "layout",
+			"id": "hrCctv",
+			"weight": 1,
+			"minChars": 1,
+			"maxChars": 18,
+			"presetSet": "horror"
+		},
+		{
+			"group": "layout",
+			"id": "hrOuija",
+			"weight": 0.7,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": "horror"
+		},
+		{
+			"group": "layout",
+			"id": "hrMissing",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": "horror"
+		},
+		{
+			"group": "layout",
+			"id": "hrWrongOne",
+			"weight": 1,
+			"minChars": 2,
+			"maxChars": 16,
+			"presetSet": "horror"
+		},
+		{
+			"group": "layout",
+			"id": "hrRisingDark",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": "horror"
+		},
+		{
+			"group": "layout",
+			"id": "hrRedacted",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 20,
+			"presetSet": "horror"
+		},
+		{
+			"group": "layout",
+			"id": "hrStaticTv",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": "horror"
+		},
+		{
+			"group": "layout",
+			"id": "hrSpiritPhoto",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": "horror"
+		},
+		{
+			"group": "layout",
+			"id": "hrWrongShadow",
+			"weight": 0.9,
+			"minChars": 1,
+			"maxChars": 12,
+			"presetSet": "horror"
+		},
+		{
+			"group": "layout",
+			"id": "knSlamStack",
+			"weight": 1.1,
+			"minChars": 2,
+			"maxChars": 18,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "layout",
+			"id": "knQuarterTurn",
+			"weight": 0.9,
+			"minChars": 2,
+			"maxChars": 16,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "layout",
+			"id": "knSwapCenter",
+			"weight": 1,
+			"minChars": 2,
+			"maxChars": 18,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "layout",
+			"id": "knZoomDive",
+			"weight": 0.9,
+			"minChars": 2,
+			"maxChars": 16,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "layout",
+			"id": "knFlowSnap",
+			"weight": 0.9,
+			"minChars": 3,
+			"maxChars": 16,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "layout",
+			"id": "knSeesaw",
+			"weight": 0.8,
+			"minChars": 2,
+			"maxChars": 14,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "layout",
+			"id": "knTypeSlam",
+			"weight": 1,
+			"minChars": 2,
+			"maxChars": 24,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "layout",
+			"id": "knRhythmCuts",
+			"weight": 0.9,
+			"minChars": 2,
+			"maxChars": 18,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "layout",
+			"id": "knPathRide",
+			"weight": 0.8,
+			"minChars": 2,
+			"maxChars": 14,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "layout",
+			"id": "knGearWords",
+			"weight": 0.7,
+			"minChars": 2,
+			"maxChars": 16,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "layout",
+			"id": "knCollide",
+			"weight": 0.9,
+			"minChars": 2,
+			"maxChars": 16,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "layout",
+			"id": "knTumble",
+			"weight": 0.8,
+			"minChars": 2,
+			"maxChars": 16,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "layout",
+			"id": "knReflow",
+			"weight": 0.9,
+			"minChars": 2,
+			"maxChars": 16,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "layout",
+			"id": "knPadGrid",
+			"weight": 0.8,
+			"minChars": 2,
+			"maxChars": 18,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "layout",
+			"id": "lowerThird",
+			"weight": 1.1,
+			"maxChars": 20,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "corners",
+			"weight": 1,
+			"minChars": 2,
+			"maxChars": 18,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "staircase",
+			"weight": 1,
+			"minChars": 2,
+			"maxChars": 18,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "zigzag",
+			"weight": 0.9,
+			"minChars": 3,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "arcTop",
+			"weight": 0.9,
+			"minChars": 3,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "spiral",
+			"weight": 0.8,
+			"minChars": 2,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "gridCells",
+			"weight": 1,
+			"minChars": 2,
+			"maxChars": 18,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "dropCap",
+			"weight": 1,
+			"minChars": 3,
+			"maxChars": 24,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "justified",
+			"weight": 0.8,
+			"minChars": 2,
+			"maxChars": 22,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "frameBox",
+			"weight": 1.1,
+			"maxChars": 20,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "bubble",
+			"weight": 0.9,
+			"maxChars": 20,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "subtitleBar",
+			"weight": 0.9,
+			"maxChars": 26,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "ticker",
+			"weight": 0.9,
+			"maxChars": 18,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "splitScreen",
+			"weight": 0.9,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "mirror",
+			"weight": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "sideways",
+			"weight": 1,
+			"minChars": 3,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "edgeFrame",
+			"weight": 0.9,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "perspective",
+			"weight": 0.9,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "hanko",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 10,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "genkou",
+			"weight": 0.8,
+			"maxChars": 22,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "panels",
+			"weight": 0.9,
+			"minChars": 2,
+			"maxChars": 18,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "filmstrip",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 18,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "quote",
+			"weight": 1,
+			"maxChars": 20,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "ruler",
+			"weight": 0.8,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "searchBar",
+			"weight": 0.6,
+			"maxChars": 18,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "chat",
+			"weight": 0.6,
+			"maxChars": 22,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "notification",
+			"weight": 0.5,
+			"maxChars": 24,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "ticket",
+			"weight": 0.6,
+			"maxChars": 18,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "rain",
+			"weight": 0.9,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "hanging",
+			"weight": 0.9,
+			"minChars": 2,
+			"maxChars": 12,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "orbit",
+			"weight": 1,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "tunnel",
+			"weight": 0.9,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "wordCloud",
+			"weight": 0.9,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "bounceLine",
+			"weight": 1,
+			"minChars": 2,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "elastic",
+			"weight": 0.9,
+			"minChars": 2,
+			"maxChars": 12,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "crossBands",
+			"weight": 1,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "stickerBomb",
+			"weight": 0.9,
+			"minChars": 1,
+			"maxChars": 12,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "neon",
+			"weight": 1,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "keycaps",
+			"weight": 0.6,
+			"minChars": 1,
+			"maxChars": 10,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "bubbles",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 12,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "slotMachine",
+			"weight": 0.6,
+			"minChars": 1,
+			"maxChars": 10,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "flipBoard",
+			"weight": 0.7,
+			"minChars": 1,
+			"maxChars": 12,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "credits",
+			"weight": 1,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "zoomRepeat",
+			"weight": 0.9,
+			"minChars": 1,
+			"maxChars": 12,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "splitHalves",
+			"weight": 1,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "columnsBig",
+			"weight": 1,
+			"minChars": 1,
+			"maxChars": 10,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "circleWords",
+			"weight": 1,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "dotMatrix",
+			"weight": 0.7,
+			"minChars": 1,
+			"maxChars": 12,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "depthStack",
+			"weight": 1,
+			"minChars": 1,
+			"maxChars": 12,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "typeSpecimen",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 8,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "kanjiFocus",
+			"weight": 1,
+			"minChars": 2,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "halfVertical",
+			"weight": 1,
+			"minChars": 3,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "curtain",
+			"weight": 0.9,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "equalizer",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 12,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "tape",
+			"weight": 1,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "magazine",
+			"weight": 0.9,
+			"maxChars": 18,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "headlineDeck",
+			"weight": 1.1,
+			"maxChars": 22,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "contents",
+			"weight": 0.9,
+			"minChars": 2,
+			"maxChars": 20,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "footnote",
+			"weight": 0.9,
+			"minChars": 2,
+			"maxChars": 22,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "proofread",
+			"weight": 0.8,
+			"minChars": 2,
+			"maxChars": 20,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "numbered",
+			"weight": 1,
+			"minChars": 2,
+			"maxChars": 18,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "poster",
+			"weight": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "swissGrid",
+			"weight": 1,
+			"maxChars": 18,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "dictionary",
+			"weight": 0.9,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "ema",
+			"weight": 0.7,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "ransom",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "newspaper",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "vinyl",
+			"weight": 0.8,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "cassette",
+			"weight": 0.8,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "bookSpine",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "polaroid",
+			"weight": 0.9,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "stampSheet",
+			"weight": 0.7,
+			"minChars": 1,
+			"maxChars": 12,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "postcard",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 18,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "letterPaper",
+			"weight": 0.9,
+			"minChars": 1,
+			"maxChars": 22,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "calendar",
+			"weight": 0.7,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "chochin",
+			"weight": 0.7,
+			"minChars": 1,
+			"maxChars": 12,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "routeMap",
+			"weight": 0.8,
+			"minChars": 2,
+			"maxChars": 18,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "stationSign",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 12,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "noren",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 12,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "tanzaku",
+			"weight": 0.7,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "omikuji",
+			"weight": 0.7,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "kakejiku",
+			"weight": 0.7,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "shoji",
+			"weight": 0.7,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "clapper",
+			"weight": 0.6,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "warningLabel",
+			"weight": 0.7,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "priceTag",
+			"weight": 0.6,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "nameTag",
+			"weight": 0.6,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "stickyNotes",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 18,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "karuta",
+			"weight": 0.6,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "cube",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "cylinder",
+			"weight": 0.9,
+			"minChars": 2,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "flipCards",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "accordion",
+			"weight": 0.8,
+			"minChars": 2,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "flag",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "ribbon",
+			"weight": 0.9,
+			"minChars": 2,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "pendulum",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "pile",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "blocks",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "balloons",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "magnets",
+			"weight": 0.7,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "tiles",
+			"weight": 0.7,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "bulbs",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "ledScroll",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 24,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "billboard",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "crowdBubbles",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "crossword",
+			"weight": 0.7,
+			"minChars": 2,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "wordSearch",
+			"weight": 0.7,
+			"minChars": 2,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "puzzle",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "shadowPlay",
+			"weight": 0.9,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "kaleido",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "dominoes",
+			"weight": 0.7,
+			"minChars": 2,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "burst",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 12,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "fisheye",
+			"weight": 0.8,
+			"minChars": 3,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "wall",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "origami",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "zipper",
+			"weight": 0.7,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "sliceStack",
+			"weight": 0.9,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "glitchGrid",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "mosaicTiles",
+			"weight": 0.7,
+			"minChars": 1,
+			"maxChars": 12,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "maskReveal",
+			"weight": 0.9,
+			"minChars": 1,
+			"maxChars": 12,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "contour",
+			"weight": 0.9,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "halftoneBig",
+			"weight": 0.9,
+			"minChars": 1,
+			"maxChars": 10,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "stencil",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": null
+		},
+		{
+			"group": "layout",
+			"id": "tyKeySplit",
+			"weight": 1.1,
+			"minChars": 2,
+			"maxChars": 16,
+			"presetSet": "typo"
+		},
+		{
+			"group": "layout",
+			"id": "tyCropGiant",
+			"weight": 1,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": "typo"
+		},
+		{
+			"group": "layout",
+			"id": "tyCross",
+			"weight": 0.9,
+			"minChars": 3,
+			"maxChars": 11,
+			"presetSet": "typo"
+		},
+		{
+			"group": "layout",
+			"id": "tyBandHide",
+			"weight": 1,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": "typo"
+		},
+		{
+			"group": "layout",
+			"id": "tyRuby",
+			"weight": 1,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": "typo"
+		},
+		{
+			"group": "layout",
+			"id": "tyBaseline",
+			"weight": 1.1,
+			"minChars": 2,
+			"maxChars": 18,
+			"presetSet": "typo"
+		},
+		{
+			"group": "layout",
+			"id": "tyScaleSteps",
+			"weight": 1,
+			"minChars": 2,
+			"maxChars": 16,
+			"presetSet": "typo"
+		},
+		{
+			"group": "layout",
+			"id": "tyJustify",
+			"weight": 1.1,
+			"minChars": 3,
+			"maxChars": 16,
+			"presetSet": "typo"
+		},
+		{
+			"group": "layout",
+			"id": "tyIndexTable",
+			"weight": 0.8,
+			"minChars": 2,
+			"maxChars": 9,
+			"presetSet": "typo"
+		},
+		{
+			"group": "layout",
+			"id": "tySplitType",
+			"weight": 1,
+			"minChars": 1,
+			"maxChars": 14,
+			"presetSet": "typo"
+		},
+		{
+			"group": "layout",
+			"id": "tyErode",
+			"weight": 0.9,
+			"minChars": 3,
+			"maxChars": 12,
+			"presetSet": "typo"
+		},
+		{
+			"group": "layout",
+			"id": "tyVRuler",
+			"weight": 0.9,
+			"minChars": 1,
+			"maxChars": 12,
+			"presetSet": "typo"
+		},
+		{
+			"group": "layout",
+			"id": "tyFullTrack",
+			"weight": 1,
+			"minChars": 3,
+			"maxChars": 14,
+			"presetSet": "typo"
+		},
+		{
+			"group": "layout",
+			"id": "tyStatCount",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": "typo"
+		},
+		{
+			"group": "layout",
+			"id": "tyMargin",
+			"weight": 0.8,
+			"minChars": 1,
+			"maxChars": 18,
+			"presetSet": "typo"
+		},
+		{
+			"group": "layout",
+			"id": "tyRotBlock",
+			"weight": 1,
+			"minChars": 4,
+			"maxChars": 16,
+			"presetSet": "typo"
+		},
+		{
+			"group": "layout",
+			"id": "tySquare",
+			"weight": 1,
+			"minChars": 3,
+			"maxChars": 16,
+			"presetSet": "typo"
+		},
+		{
+			"group": "layout",
+			"id": "tyLineFocus",
+			"weight": 1,
+			"minChars": 1,
+			"maxChars": 16,
+			"presetSet": "typo"
+		},
+		{ "group": "enter", "id": "cut", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "assemble", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "slice", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "type", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "pop", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "drop", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "stretch", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "wipe", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "blur", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "spin", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "flicker", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "scramble", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "zoom", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "riseMask", "weight": 1.4, "presetSet": null },
+		{ "group": "enter", "id": "dropMask", "weight": 1.2, "presetSet": null },
+		{ "group": "enter", "id": "slideL", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "slideR", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "slideWhole", "weight": 0.9, "presetSet": null },
+		{ "group": "enter", "id": "flipX", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "flipY", "weight": 0.9, "presetSet": null },
+		{
+			"group": "enter",
+			"id": "domino",
+			"weight": 0.7,
+			"minDuration": 50000,
+			"presetSet": null
+		},
+		{ "group": "enter", "id": "fold", "weight": 0.9, "presetSet": null },
+		{ "group": "enter", "id": "unroll", "weight": 0.9, "presetSet": null },
+		{
+			"group": "enter",
+			"id": "strokeDraw",
+			"weight": 1,
+			"minDuration": 80000,
+			"presetSet": null
+		},
+		{
+			"group": "enter",
+			"id": "outlineFill",
+			"weight": 1,
+			"minDuration": 70000,
+			"presetSet": null
+		},
+		{ "group": "enter", "id": "splitJoin", "weight": 0.9, "presetSet": null },
+		{ "group": "enter", "id": "vSlice", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "shutter", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "iris", "weight": 0.8, "presetSet": null },
+		{ "group": "enter", "id": "diagWipe", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "blinds", "weight": 0.8, "presetSet": null },
+		{ "group": "enter", "id": "checker", "weight": 0.7, "presetSet": null },
+		{ "group": "enter", "id": "randomOrder", "weight": 1, "presetSet": null },
+		{
+			"group": "enter",
+			"id": "bounceBig",
+			"weight": 0.7,
+			"minDuration": 70000,
+			"presetSet": null
+		},
+		{
+			"group": "enter",
+			"id": "squashDrop",
+			"weight": 0.8,
+			"minDuration": 50000,
+			"presetSet": null
+		},
+		{
+			"group": "enter",
+			"id": "rubber",
+			"weight": 0.8,
+			"minDuration": 45000,
+			"presetSet": null
+		},
+		{ "group": "enter", "id": "glitchIn", "weight": 1.2, "presetSet": null },
+		{ "group": "enter", "id": "echoIn", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "whip", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "skewIn", "weight": 0.9, "presetSet": null },
+		{ "group": "enter", "id": "trackIn", "weight": 1.2, "presetSet": null },
+		{ "group": "enter", "id": "trackOut", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "blurStagger", "weight": 1.2, "presetSet": null },
+		{ "group": "enter", "id": "fadeStagger", "weight": 1.2, "presetSet": null },
+		{
+			"group": "enter",
+			"id": "waveIn",
+			"weight": 0.9,
+			"minDuration": 50000,
+			"presetSet": null
+		},
+		{
+			"group": "enter",
+			"id": "spiralIn",
+			"weight": 0.7,
+			"minDuration": 50000,
+			"presetSet": null
+		},
+		{ "group": "enter", "id": "zoomOut", "weight": 1, "presetSet": null },
+		{
+			"group": "enter",
+			"id": "resolve",
+			"weight": 0.9,
+			"minDuration": 60000,
+			"presetSet": null
+		},
+		{
+			"group": "enter",
+			"id": "magnet",
+			"weight": 0.8,
+			"minDuration": 60000,
+			"presetSet": null
+		},
+		{ "group": "enter", "id": "inkBleed", "weight": 1, "presetSet": null },
+		{
+			"group": "enter",
+			"id": "neonOn",
+			"weight": 0.8,
+			"minDuration": 60000,
+			"presetSet": null
+		},
+		{ "group": "enter", "id": "cursorSweep", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "stamp", "weight": 0.9, "presetSet": null },
+		{
+			"group": "enter",
+			"id": "springIn",
+			"weight": 0.9,
+			"minDuration": 50000,
+			"presetSet": null
+		},
+		{
+			"group": "enter",
+			"id": "pendulum",
+			"weight": 0.9,
+			"minDuration": 50000,
+			"presetSet": null
+		},
+		{ "group": "enter", "id": "rollIn", "weight": 0.9, "presetSet": null },
+		{
+			"group": "enter",
+			"id": "slingshot",
+			"weight": 0.7,
+			"minDuration": 55000,
+			"presetSet": null
+		},
+		{
+			"group": "enter",
+			"id": "rockSettle",
+			"weight": 0.8,
+			"minDuration": 55000,
+			"presetSet": null
+		},
+		{
+			"group": "enter",
+			"id": "bounceBall",
+			"weight": 0.8,
+			"maxChars": 20,
+			"minDuration": 80000,
+			"presetSet": null
+		},
+		{
+			"group": "enter",
+			"id": "snapRail",
+			"weight": 0.9,
+			"minDuration": 55000,
+			"presetSet": null
+		},
+		{ "group": "enter", "id": "fanOpen", "weight": 0.9, "presetSet": null },
+		{ "group": "enter", "id": "cylinder", "weight": 0.9, "presetSet": null },
+		{
+			"group": "enter",
+			"id": "shuffle",
+			"weight": 0.9,
+			"minDuration": 55000,
+			"presetSet": null
+		},
+		{
+			"group": "enter",
+			"id": "stopMotion",
+			"weight": 0.8,
+			"minDuration": 50000,
+			"presetSet": null
+		},
+		{ "group": "enter", "id": "ripple", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "zipper", "weight": 0.8, "presetSet": null },
+		{ "group": "enter", "id": "zoomAlt", "weight": 0.9, "presetSet": null },
+		{ "group": "enter", "id": "tiltUp", "weight": 0.9, "presetSet": null },
+		{
+			"group": "enter",
+			"id": "stickerPeel",
+			"weight": 0.9,
+			"minDuration": 50000,
+			"presetSet": null
+		},
+		{
+			"group": "enter",
+			"id": "crumple",
+			"weight": 0.7,
+			"minDuration": 50000,
+			"presetSet": null
+		},
+		{
+			"group": "enter",
+			"id": "noteUnfold",
+			"weight": 0.8,
+			"minDuration": 60000,
+			"presetSet": null
+		},
+		{ "group": "enter", "id": "tornJoin", "weight": 0.8, "presetSet": null },
+		{
+			"group": "enter",
+			"id": "splitFlap",
+			"weight": 0.9,
+			"minDuration": 75000,
+			"presetSet": null
+		},
+		{ "group": "enter", "id": "overexpose", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "glint", "weight": 1, "presetSet": null },
+		{
+			"group": "enter",
+			"id": "loupe",
+			"weight": 0.8,
+			"minDuration": 60000,
+			"presetSet": null
+		},
+		{
+			"group": "enter",
+			"id": "filmFeed",
+			"weight": 0.8,
+			"minDuration": 55000,
+			"presetSet": null
+		},
+		{
+			"group": "enter",
+			"id": "backlight",
+			"weight": 0.9,
+			"minDuration": 50000,
+			"presetSet": null
+		},
+		{ "group": "enter", "id": "lightLeak", "weight": 0.9, "presetSet": null },
+		{ "group": "enter", "id": "heatHaze", "weight": 0.9, "presetSet": null },
+		{ "group": "enter", "id": "crtOn", "weight": 0.9, "presetSet": null },
+		{ "group": "enter", "id": "interlace", "weight": 0.9, "presetSet": null },
+		{
+			"group": "enter",
+			"id": "loadingBar",
+			"weight": 0.8,
+			"minDuration": 70000,
+			"presetSet": null
+		},
+		{ "group": "enter", "id": "dither", "weight": 0.9, "presetSet": null },
+		{
+			"group": "enter",
+			"id": "odometer",
+			"weight": 0.9,
+			"minDuration": 55000,
+			"presetSet": null
+		},
+		{
+			"group": "enter",
+			"id": "matrixRain",
+			"weight": 0.8,
+			"minDuration": 55000,
+			"presetSet": null
+		},
+		{ "group": "enter", "id": "hatchFill", "weight": 0.9, "presetSet": null },
+		{ "group": "enter", "id": "brushReveal", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "inkDrop", "weight": 1, "presetSet": null },
+		{ "group": "enter", "id": "quarters", "weight": 0.9, "presetSet": null },
+		{ "group": "enter", "id": "invertBox", "weight": 0.9, "presetSet": null },
+		{
+			"group": "enter",
+			"id": "printRegister",
+			"weight": 0.9,
+			"presetSet": null
+		},
+		{
+			"group": "enter",
+			"id": "echoCount",
+			"weight": 0.8,
+			"minDuration": 55000,
+			"presetSet": null
+		},
+		{
+			"group": "enter",
+			"id": "liquidFill",
+			"weight": 0.9,
+			"minDuration": 50000,
+			"presetSet": null
+		},
+		{
+			"group": "enter",
+			"id": "windBlown",
+			"weight": 0.8,
+			"minDuration": 55000,
+			"presetSet": null
+		},
+		{
+			"group": "enter",
+			"id": "strokeOrder",
+			"weight": 0.9,
+			"minDuration": 60000,
+			"presetSet": null
+		},
+		{ "group": "enter", "id": "clockWipe", "weight": 0.9, "presetSet": null },
+		{
+			"group": "enter",
+			"id": "shadowFirst",
+			"weight": 0.9,
+			"minDuration": 50000,
+			"presetSet": null
+		},
+		{
+			"group": "enter",
+			"id": "bubbles",
+			"weight": 0.8,
+			"minDuration": 55000,
+			"presetSet": null
+		},
+		{
+			"group": "enter",
+			"id": "tokoroten",
+			"weight": 0.7,
+			"minDuration": 50000,
+			"presetSet": null
+		},
+		{
+			"group": "enter",
+			"id": "hrBlinkCreep",
+			"weight": 0.9,
+			"minDuration": 100000,
+			"presetSet": "horror"
+		},
+		{
+			"group": "enter",
+			"id": "hrJumpScare",
+			"weight": 0.7,
+			"minDuration": 90000,
+			"presetSet": "horror"
+		},
+		{
+			"group": "enter",
+			"id": "hrUneasy",
+			"weight": 1,
+			"minDuration": 90000,
+			"presetSet": "horror"
+		},
+		{ "group": "enter", "id": "hrVhold", "weight": 0.8, "presetSet": "horror" },
+		{
+			"group": "enter",
+			"id": "hrMirrorSnap",
+			"weight": 0.8,
+			"minDuration": 80000,
+			"presetSet": "horror"
+		},
+		{
+			"group": "enter",
+			"id": "hrManifest",
+			"weight": 1,
+			"minDuration": 80000,
+			"presetSet": "horror"
+		},
+		{
+			"group": "enter",
+			"id": "hrClawReveal",
+			"weight": 0.8,
+			"presetSet": "horror"
+		},
+		{
+			"group": "enter",
+			"id": "knWordSlam",
+			"weight": 1.1,
+			"minDuration": 50000,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "enter",
+			"id": "knTypeToSlam",
+			"weight": 0.9,
+			"minDuration": 55000,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "enter",
+			"id": "knReplaceIn",
+			"weight": 0.9,
+			"minDuration": 70000,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "enter",
+			"id": "knHingeDrop",
+			"weight": 0.9,
+			"minDuration": 50000,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "enter",
+			"id": "knLoopIn",
+			"weight": 0.8,
+			"minDuration": 50000,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "enter",
+			"id": "knPushIn",
+			"weight": 1,
+			"minDuration": 45000,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "enter",
+			"id": "knInertia",
+			"weight": 0.9,
+			"minDuration": 45000,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "enter",
+			"id": "knWordSpin",
+			"weight": 0.9,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "enter",
+			"id": "knDiveIn",
+			"weight": 0.9,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "enter",
+			"id": "knStretchOut",
+			"weight": 0.9,
+			"presetSet": "kinetic"
+		},
+		{ "group": "enter", "id": "tyKeyFirst", "weight": 1, "presetSet": "typo" },
+		{ "group": "enter", "id": "tyLineWipe", "weight": 1, "presetSet": "typo" },
+		{
+			"group": "enter",
+			"id": "tyZoomOne",
+			"weight": 0.8,
+			"minDuration": 100000,
+			"presetSet": "typo"
+		},
+		{ "group": "enter", "id": "tyUnderLift", "weight": 1, "presetSet": "typo" },
+		{ "group": "enter", "id": "tyDotGrow", "weight": 0.9, "presetSet": "typo" },
+		{
+			"group": "enter",
+			"id": "tyBracketOpen",
+			"weight": 0.9,
+			"presetSet": "typo"
+		},
+		{
+			"group": "enter",
+			"id": "tyRetype",
+			"weight": 0.8,
+			"minDuration": 100000,
+			"presetSet": "typo"
+		},
+		{ "group": "enter", "id": "tyRubyDrop", "weight": 1, "presetSet": "typo" },
+		{ "group": "hold", "id": "still", "weight": 1, "presetSet": null },
+		{ "group": "hold", "id": "jitter", "weight": 1, "presetSet": null },
+		{ "group": "hold", "id": "drift", "weight": 1, "presetSet": null },
+		{ "group": "hold", "id": "breathe", "weight": 1, "presetSet": null },
+		{ "group": "hold", "id": "wave", "weight": 1, "presetSet": null },
+		{ "group": "hold", "id": "glitchtick", "weight": 1, "presetSet": null },
+		{ "group": "hold", "id": "float", "weight": 0.8, "presetSet": null },
+		{ "group": "hold", "id": "sway", "weight": 0.6, "presetSet": null },
+		{ "group": "hold", "id": "pulse", "weight": 0.6, "presetSet": null },
+		{ "group": "hold", "id": "shimmer", "weight": 0.5, "presetSet": null },
+		{ "group": "hold", "id": "colorRun", "weight": 0.5, "presetSet": null },
+		{ "group": "hold", "id": "rotateSlow", "weight": 0.4, "presetSet": null },
+		{ "group": "hold", "id": "trackBreathe", "weight": 0.5, "presetSet": null },
+		{ "group": "hold", "id": "skewWobble", "weight": 0.4, "presetSet": null },
+		{ "group": "hold", "id": "beatHop", "weight": 0.5, "presetSet": null },
+		{ "group": "hold", "id": "hWave", "weight": 0.4, "presetSet": null },
+		{ "group": "hold", "id": "heartbeat", "weight": 0.4, "presetSet": null },
+		{ "group": "hold", "id": "orbitSmall", "weight": 0.5, "presetSet": null },
+		{ "group": "hold", "id": "jelly", "weight": 0.4, "presetSet": null },
+		{ "group": "hold", "id": "scanBand", "weight": 0.4, "presetSet": null },
+		{ "group": "hold", "id": "noiseDrift", "weight": 0.6, "presetSet": null },
+		{ "group": "hold", "id": "tilt", "weight": 0.4, "presetSet": null },
+		{ "group": "hold", "id": "zoomSlow", "weight": 0.8, "presetSet": null },
+		{ "group": "hold", "id": "stretchPulse", "weight": 0.4, "presetSet": null },
+		{ "group": "hold", "id": "glitchJump", "weight": 0.4, "presetSet": null },
+		{ "group": "hold", "id": "echoTrail", "weight": 0.4, "presetSet": null },
+		{ "group": "hold", "id": "glowFlicker", "weight": 0.5, "presetSet": null },
+		{ "group": "hold", "id": "windGust", "weight": 0.5, "presetSet": null },
+		{ "group": "hold", "id": "dangle", "weight": 0.5, "presetSet": null },
+		{ "group": "hold", "id": "eqBounce", "weight": 0.5, "presetSet": null },
+		{ "group": "hold", "id": "flashBox", "weight": 0.4, "presetSet": null },
+		{ "group": "hold", "id": "glintSweep", "weight": 0.5, "presetSet": null },
+		{ "group": "hold", "id": "flipSwap", "weight": 0.4, "presetSet": null },
+		{ "group": "hold", "id": "shadowSway", "weight": 0.5, "presetSet": null },
+		{ "group": "hold", "id": "magnetJiggle", "weight": 0.4, "presetSet": null },
+		{ "group": "hold", "id": "typeRattle", "weight": 0.5, "presetSet": null },
+		{ "group": "hold", "id": "focusRack", "weight": 0.5, "presetSet": null },
+		{ "group": "hold", "id": "pluckString", "weight": 0.4, "presetSet": null },
+		{ "group": "hold", "id": "hrTwitch", "weight": 1, "presetSet": "horror" },
+		{ "group": "hold", "id": "hrStare", "weight": 0.8, "presetSet": "horror" },
+		{ "group": "hold", "id": "hrLagOne", "weight": 0.8, "presetSet": "horror" },
+		{
+			"group": "hold",
+			"id": "hrFlickerLight",
+			"weight": 0.9,
+			"presetSet": "horror"
+		},
+		{
+			"group": "hold",
+			"id": "knWordPulse",
+			"weight": 1,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "hold",
+			"id": "knCounterRock",
+			"weight": 0.9,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "hold",
+			"id": "knWordRide",
+			"weight": 0.9,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "hold",
+			"id": "knTickShift",
+			"weight": 0.8,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "hold",
+			"id": "knBeatLean",
+			"weight": 0.8,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "hold",
+			"id": "knGapBreath",
+			"weight": 0.9,
+			"presetSet": "kinetic"
+		},
+		{ "group": "hold", "id": "tyKeyPulse", "weight": 1, "presetSet": "typo" },
+		{ "group": "hold", "id": "tyReadCursor", "weight": 1, "presetSet": "typo" },
+		{
+			"group": "hold",
+			"id": "tyOutlineBlink",
+			"weight": 0.9,
+			"presetSet": "typo"
+		},
+		{
+			"group": "hold",
+			"id": "tyTrackStep",
+			"weight": 0.8,
+			"presetSet": "typo"
+		},
+		{ "group": "exit", "id": "cut", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "explode", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "fall", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "drift", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "slice", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "wipe", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "shrink", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "blur", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "stretch", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "scatter", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "glitch", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "sinkMask", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "riseOut", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "slideOutL", "weight": 0.8, "presetSet": null },
+		{ "group": "exit", "id": "slideOutR", "weight": 0.8, "presetSet": null },
+		{ "group": "exit", "id": "flipOutX", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "flipOutY", "weight": 0.9, "presetSet": null },
+		{ "group": "exit", "id": "foldOut", "weight": 0.9, "presetSet": null },
+		{ "group": "exit", "id": "squash", "weight": 0.9, "presetSet": null },
+		{ "group": "exit", "id": "trackOutWide", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "collapse", "weight": 0.9, "presetSet": null },
+		{ "group": "exit", "id": "zoomThrough", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "zoomFar", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "spinOut", "weight": 0.9, "presetSet": null },
+		{ "group": "exit", "id": "twist", "weight": 0.8, "presetSet": null },
+		{ "group": "exit", "id": "waveOut", "weight": 0.9, "presetSet": null },
+		{ "group": "exit", "id": "blurOutStagger", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "undraw", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "outlineOut", "weight": 0.9, "presetSet": null },
+		{ "group": "exit", "id": "irisClose", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "diagWipeOut", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "blindsClose", "weight": 0.9, "presetSet": null },
+		{ "group": "exit", "id": "checkerOut", "weight": 0.8, "presetSet": null },
+		{ "group": "exit", "id": "splitApart", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "vSliceDrop", "weight": 0.9, "presetSet": null },
+		{
+			"group": "exit",
+			"id": "melt",
+			"weight": 0.8,
+			"minDuration": 90000,
+			"presetSet": null
+		},
+		{ "group": "exit", "id": "dissolve", "weight": 0.9, "presetSet": null },
+		{
+			"group": "exit",
+			"id": "backspace",
+			"weight": 0.8,
+			"minDuration": 90000,
+			"presetSet": null
+		},
+		{ "group": "exit", "id": "scrambleOut", "weight": 0.9, "presetSet": null },
+		{
+			"group": "exit",
+			"id": "glitchDissolve",
+			"weight": 0.8,
+			"presetSet": null
+		},
+		{ "group": "exit", "id": "echoOut", "weight": 0.9, "presetSet": null },
+		{ "group": "exit", "id": "whipOut", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "gravity", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "popOut", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "burn", "weight": 0.8, "presetSet": null },
+		{ "group": "exit", "id": "sweepCover", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "shatterLite", "weight": 0.8, "presetSet": null },
+		{ "group": "exit", "id": "peelOff", "weight": 1, "presetSet": null },
+		{
+			"group": "exit",
+			"id": "crumpleOut",
+			"weight": 0.9,
+			"minDuration": 80000,
+			"presetSet": null
+		},
+		{ "group": "exit", "id": "tearOut", "weight": 0.9, "presetSet": null },
+		{ "group": "exit", "id": "scorchOut", "weight": 0.8, "presetSet": null },
+		{ "group": "exit", "id": "overexposeOut", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "scanOut", "weight": 0.9, "presetSet": null },
+		{ "group": "exit", "id": "stripesOut", "weight": 0.9, "presetSet": null },
+		{ "group": "exit", "id": "halftoneOut", "weight": 0.9, "presetSet": null },
+		{
+			"group": "exit",
+			"id": "eraserOut",
+			"weight": 0.9,
+			"minDuration": 90000,
+			"presetSet": null
+		},
+		{ "group": "exit", "id": "vacuumOut", "weight": 0.9, "presetSet": null },
+		{
+			"group": "exit",
+			"id": "sandOut",
+			"weight": 1,
+			"minDuration": 80000,
+			"presetSet": null
+		},
+		{
+			"group": "exit",
+			"id": "shredOut",
+			"weight": 0.8,
+			"minDuration": 90000,
+			"presetSet": null
+		},
+		{
+			"group": "exit",
+			"id": "dominoOut",
+			"weight": 0.9,
+			"minDuration": 80000,
+			"presetSet": null
+		},
+		{
+			"group": "exit",
+			"id": "hingeOut",
+			"weight": 0.9,
+			"minDuration": 90000,
+			"presetSet": null
+		},
+		{
+			"group": "exit",
+			"id": "rocketOff",
+			"weight": 0.9,
+			"minDuration": 80000,
+			"presetSet": null
+		},
+		{
+			"group": "exit",
+			"id": "bounceOff",
+			"weight": 0.9,
+			"minDuration": 80000,
+			"presetSet": null
+		},
+		{
+			"group": "exit",
+			"id": "balloonOff",
+			"weight": 0.9,
+			"minDuration": 90000,
+			"presetSet": null
+		},
+		{ "group": "exit", "id": "deflateOut", "weight": 0.8, "presetSet": null },
+		{ "group": "exit", "id": "hazeOut", "weight": 0.9, "presetSet": null },
+		{ "group": "exit", "id": "glassBreak", "weight": 0.8, "presetSet": null },
+		{ "group": "exit", "id": "zipOut", "weight": 0.8, "presetSet": null },
+		{ "group": "exit", "id": "clapShut", "weight": 0.9, "presetSet": null },
+		{ "group": "exit", "id": "lampOff", "weight": 0.8, "presetSet": null },
+		{ "group": "exit", "id": "slotOut", "weight": 0.8, "presetSet": null },
+		{ "group": "exit", "id": "clockOut", "weight": 0.9, "presetSet": null },
+		{ "group": "exit", "id": "matrixOut", "weight": 0.8, "presetSet": null },
+		{
+			"group": "exit",
+			"id": "tornadoOut",
+			"weight": 0.8,
+			"minDuration": 80000,
+			"presetSet": null
+		},
+		{ "group": "exit", "id": "rollUpOut", "weight": 0.8, "presetSet": null },
+		{
+			"group": "exit",
+			"id": "snakeOut",
+			"weight": 0.9,
+			"minDuration": 80000,
+			"presetSet": null
+		},
+		{
+			"group": "exit",
+			"id": "flutterOut",
+			"weight": 1,
+			"minDuration": 80000,
+			"presetSet": null
+		},
+		{
+			"group": "exit",
+			"id": "rollOff",
+			"weight": 0.8,
+			"minDuration": 80000,
+			"presetSet": null
+		},
+		{
+			"group": "exit",
+			"id": "fanClose",
+			"weight": 0.9,
+			"minDuration": 80000,
+			"presetSet": null
+		},
+		{ "group": "exit", "id": "rgbSplitOut", "weight": 0.9, "presetSet": null },
+		{ "group": "exit", "id": "shockOut", "weight": 0.9, "presetSet": null },
+		{ "group": "exit", "id": "floodOut", "weight": 0.9, "presetSet": null },
+		{ "group": "exit", "id": "slashOut", "weight": 1, "presetSet": null },
+		{ "group": "exit", "id": "mosaicOut", "weight": 0.9, "presetSet": null },
+		{ "group": "exit", "id": "scribbleOut", "weight": 0.8, "presetSet": null },
+		{ "group": "exit", "id": "candleOut", "weight": 0.9, "presetSet": null },
+		{
+			"group": "exit",
+			"id": "hrPulledDown",
+			"weight": 1,
+			"presetSet": "horror"
+		},
+		{
+			"group": "exit",
+			"id": "hrLookBack",
+			"weight": 0.9,
+			"minDuration": 100000,
+			"presetSet": "horror"
+		},
+		{
+			"group": "exit",
+			"id": "hrTurnAway",
+			"weight": 0.9,
+			"presetSet": "horror"
+		},
+		{ "group": "exit", "id": "hrShiver", "weight": 0.9, "presetSet": "horror" },
+		{
+			"group": "exit",
+			"id": "hrSwallow",
+			"weight": 0.9,
+			"presetSet": "horror"
+		},
+		{
+			"group": "exit",
+			"id": "hrFlickerDie",
+			"weight": 0.9,
+			"presetSet": "horror"
+		},
+		{
+			"group": "exit",
+			"id": "hrDrain",
+			"weight": 0.8,
+			"minDuration": 80000,
+			"presetSet": "horror"
+		},
+		{
+			"group": "exit",
+			"id": "knWordKick",
+			"weight": 1,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "exit",
+			"id": "knPushOut",
+			"weight": 0.9,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "exit",
+			"id": "knDiveGlyph",
+			"weight": 0.9,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "exit",
+			"id": "knLaunch",
+			"weight": 0.9,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "exit",
+			"id": "knWordBlink",
+			"weight": 0.9,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "exit",
+			"id": "knCloseGap",
+			"weight": 0.9,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "exit",
+			"id": "knJumpCutOut",
+			"weight": 0.8,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "exit",
+			"id": "knStackAway",
+			"weight": 0.8,
+			"minDuration": 90000,
+			"presetSet": "kinetic"
+		},
+		{ "group": "exit", "id": "tyStrike", "weight": 1, "presetSet": "typo" },
+		{ "group": "exit", "id": "tyToDot", "weight": 0.9, "presetSet": "typo" },
+		{ "group": "exit", "id": "tyLineFeed", "weight": 1, "presetSet": "typo" },
+		{
+			"group": "exit",
+			"id": "tyBracketClose",
+			"weight": 0.9,
+			"presetSet": "typo"
+		},
+		{ "group": "exit", "id": "tyToIndex", "weight": 0.8, "presetSet": "typo" },
+		{ "group": "exit", "id": "tyKeyLast", "weight": 0.9, "presetSet": "typo" },
+		{ "group": "exit", "id": "tyUnderSink", "weight": 1, "presetSet": "typo" },
+		{ "group": "exit", "id": "tyFoldVert", "weight": 0.9, "presetSet": "typo" },
+		{ "group": "decor", "id": "brackets", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "rings", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "dots", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "arrows", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "slash", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "sparks", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "leaders", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "waveform", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "barcode", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "grid", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "stripes", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "blobs", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "bars", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "shapes", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "counter", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "crosshair", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "cropMarks", "weight": 1.1, "presetSet": null },
+		{ "group": "decor", "id": "reticle", "weight": 0.9, "presetSet": null },
+		{ "group": "decor", "id": "radar", "weight": 0.7, "presetSet": null },
+		{
+			"group": "decor",
+			"id": "progressRing",
+			"weight": 0.9,
+			"presetSet": null
+		},
+		{ "group": "decor", "id": "timecodeBar", "weight": 0.9, "presetSet": null },
+		{ "group": "decor", "id": "rulerEdge", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "dimension", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "indexNum", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "dateStamp", "weight": 0.7, "presetSet": null },
+		{ "group": "decor", "id": "qrBlock", "weight": 0.7, "presetSet": null },
+		{ "group": "decor", "id": "glitchRects", "weight": 0.9, "presetSet": null },
+		{
+			"group": "decor",
+			"id": "concentricSquares",
+			"weight": 1,
+			"presetSet": null
+		},
+		{
+			"group": "decor",
+			"id": "triangleSpin",
+			"weight": 0.9,
+			"presetSet": null
+		},
+		{ "group": "decor", "id": "lineBurst", "weight": 1.1, "presetSet": null },
+		{ "group": "decor", "id": "plusGrid", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "guides", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "waveLine", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "spiralLine", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "halftonePatch", "weight": 1, "presetSet": null },
+		{
+			"group": "decor",
+			"id": "checkerStrip",
+			"weight": 0.8,
+			"presetSet": null
+		},
+		{ "group": "decor", "id": "beatRing", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "orbitDots", "weight": 1, "presetSet": null },
+		{
+			"group": "decor",
+			"id": "constellation",
+			"weight": 0.9,
+			"presetSet": null
+		},
+		{ "group": "decor", "id": "confetti", "weight": 0.9, "presetSet": null },
+		{ "group": "decor", "id": "petals", "weight": 0.9, "presetSet": null },
+		{ "group": "decor", "id": "rainStreaks", "weight": 0.9, "presetSet": null },
+		{ "group": "decor", "id": "snow", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "lightLeak", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "bokeh", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "speedCorner", "weight": 0.9, "presetSet": null },
+		{
+			"group": "decor",
+			"id": "risingParticles",
+			"weight": 0.9,
+			"presetSet": null
+		},
+		{ "group": "decor", "id": "twinkle", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "brushStroke", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "tapePieces", "weight": 0.9, "presetSet": null },
+		{
+			"group": "decor",
+			"id": "scribbleCircle",
+			"weight": 1,
+			"presetSet": null
+		},
+		{
+			"group": "decor",
+			"id": "scribbleUnder",
+			"weight": 1.1,
+			"presetSet": null
+		},
+		{ "group": "decor", "id": "crossOut", "weight": 0.4, "presetSet": null },
+		{ "group": "decor", "id": "highlightMark", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "heartsStars", "weight": 0.9, "presetSet": null },
+		{
+			"group": "decor",
+			"id": "watermarkKanji",
+			"weight": 1,
+			"presetSet": null
+		},
+		{ "group": "decor", "id": "verticalStrip", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "romajiLine", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "bracketsJP", "weight": 1, "presetSet": null },
+		{ "group": "decor", "id": "seal", "weight": 0.9, "presetSet": null },
+		{ "group": "decor", "id": "kamon", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "seigaiha", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "asanoha", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "hanabi", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "chochin", "weight": 0.7, "presetSet": null },
+		{ "group": "decor", "id": "shimenawa", "weight": 0.6, "presetSet": null },
+		{ "group": "decor", "id": "sensu", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "tsukiKumo", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "momiji", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "namiGashira", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "kasumi", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "hexGrid", "weight": 0.9, "presetSet": null },
+		{
+			"group": "decor",
+			"id": "spectrumRing",
+			"weight": 0.9,
+			"presetSet": null
+		},
+		{ "group": "decor", "id": "dataColumns", "weight": 0.9, "presetSet": null },
+		{ "group": "decor", "id": "spinner", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "headingTape", "weight": 0.9, "presetSet": null },
+		{ "group": "decor", "id": "glyphLock", "weight": 0.9, "presetSet": null },
+		{ "group": "decor", "id": "atomOrbit", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "sonarArcs", "weight": 0.9, "presetSet": null },
+		{ "group": "decor", "id": "circuit", "weight": 0.9, "presetSet": null },
+		{ "group": "decor", "id": "swatches", "weight": 0.9, "presetSet": null },
+		{ "group": "decor", "id": "ruledLines", "weight": 0.8, "presetSet": null },
+		{
+			"group": "decor",
+			"id": "registration",
+			"weight": 0.8,
+			"presetSet": null
+		},
+		{ "group": "decor", "id": "punchHoles", "weight": 0.7, "presetSet": null },
+		{ "group": "decor", "id": "staple", "weight": 0.7, "presetSet": null },
+		{ "group": "decor", "id": "paperClip", "weight": 0.7, "presetSet": null },
+		{ "group": "decor", "id": "indexTabs", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "vines", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "cloudPuffs", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "starField", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "moonPhases", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "sunRays", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "rainRipples", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "bubbles", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "smoke", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "dandelion", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "fireflies", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "memphis", "weight": 0.9, "presetSet": null },
+		{
+			"group": "decor",
+			"id": "zigzagRibbon",
+			"weight": 0.8,
+			"presetSet": null
+		},
+		{ "group": "decor", "id": "polkaPatch", "weight": 0.9, "presetSet": null },
+		{
+			"group": "decor",
+			"id": "stripeCircle",
+			"weight": 0.9,
+			"presetSet": null
+		},
+		{ "group": "decor", "id": "decoCorners", "weight": 0.9, "presetSet": null },
+		{ "group": "decor", "id": "halfCircles", "weight": 0.9, "presetSet": null },
+		{ "group": "decor", "id": "loopArrows", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "starburst", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "tally", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "cursorClick", "weight": 0.8, "presetSet": null },
+		{
+			"group": "decor",
+			"id": "windowChrome",
+			"weight": 0.8,
+			"presetSet": null
+		},
+		{ "group": "decor", "id": "progressBar", "weight": 0.8, "presetSet": null },
+		{
+			"group": "decor",
+			"id": "toggleSwitch",
+			"weight": 0.7,
+			"presetSet": null
+		},
+		{ "group": "decor", "id": "notifBell", "weight": 0.7, "presetSet": null },
+		{ "group": "decor", "id": "likeCounter", "weight": 0.8, "presetSet": null },
+		{
+			"group": "decor",
+			"id": "mediaControls",
+			"weight": 0.8,
+			"presetSet": null
+		},
+		{ "group": "decor", "id": "volumeBars", "weight": 0.8, "presetSet": null },
+		{ "group": "decor", "id": "musicNotes", "weight": 0.8, "presetSet": null },
+		{
+			"group": "decor",
+			"id": "hrScratches",
+			"weight": 0.9,
+			"presetSet": "horror"
+		},
+		{ "group": "decor", "id": "hrSigil", "weight": 0.7, "presetSet": "horror" },
+		{
+			"group": "decor",
+			"id": "hrWatchEye",
+			"weight": 0.8,
+			"presetSet": "horror"
+		},
+		{
+			"group": "decor",
+			"id": "hrStaticPatch",
+			"weight": 0.8,
+			"presetSet": "horror"
+		},
+		{
+			"group": "decor",
+			"id": "hrDustBeam",
+			"weight": 0.8,
+			"presetSet": "horror"
+		},
+		{ "group": "decor", "id": "hrDrips", "weight": 0.8, "presetSet": "horror" },
+		{
+			"group": "decor",
+			"id": "hrCracks",
+			"weight": 0.7,
+			"presetSet": "horror"
+		},
+		{
+			"group": "decor",
+			"id": "knSpeedTrail",
+			"weight": 0.8,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "decor",
+			"id": "knWordTicks",
+			"weight": 0.8,
+			"presetSet": "kinetic"
+		},
+		{ "group": "decor", "id": "tyColophon", "weight": 1, "presetSet": "typo" },
+		{
+			"group": "decor",
+			"id": "tyRunningHead",
+			"weight": 1,
+			"presetSet": "typo"
+		},
+		{
+			"group": "decor",
+			"id": "tyGlyphBody",
+			"weight": 0.9,
+			"presetSet": "typo"
+		},
+		{ "group": "decor", "id": "tyTextRule", "weight": 1, "presetSet": "typo" },
+		{
+			"group": "decor",
+			"id": "tyTypeScale",
+			"weight": 0.8,
+			"presetSet": "typo"
+		},
+		{
+			"group": "decor",
+			"id": "tyBigPunct",
+			"weight": 0.9,
+			"presetSet": "typo"
+		},
+		{ "group": "treat", "id": "none", "weight": 1, "presetSet": null },
+		{
+			"group": "treat",
+			"id": "hrInkBleed",
+			"weight": 0.8,
+			"presetSet": "horror"
+		},
+		{
+			"group": "treat",
+			"id": "hrEroded",
+			"weight": 0.8,
+			"presetSet": "horror"
+		},
+		{
+			"group": "treat",
+			"id": "hrRedact",
+			"weight": 0.7,
+			"presetSet": "horror"
+		},
+		{
+			"group": "treat",
+			"id": "hrDoubleExp",
+			"weight": 0.8,
+			"presetSet": "horror"
+		},
+		{
+			"group": "treat",
+			"id": "knWordScale",
+			"weight": 0.9,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "treat",
+			"id": "knWordPlate",
+			"weight": 0.8,
+			"presetSet": "kinetic"
+		},
+		{ "group": "treat", "id": "outline", "weight": 1.2, "presetSet": null },
+		{ "group": "treat", "id": "outlineFill", "weight": 1, "presetSet": null },
+		{
+			"group": "treat",
+			"id": "doubleOutline",
+			"weight": 0.7,
+			"presetSet": null
+		},
+		{ "group": "treat", "id": "extrude", "weight": 0.9, "presetSet": null },
+		{ "group": "treat", "id": "longShadow", "weight": 0.6, "presetSet": null },
+		{ "group": "treat", "id": "hardShadow", "weight": 1, "presetSet": null },
+		{ "group": "treat", "id": "softShadow", "weight": 0.8, "presetSet": null },
+		{ "group": "treat", "id": "glow", "weight": 0.9, "presetSet": null },
+		{ "group": "treat", "id": "marker", "weight": 1, "presetSet": null },
+		{ "group": "treat", "id": "underline", "weight": 0.8, "presetSet": null },
+		{ "group": "treat", "id": "strike", "weight": 0.5, "presetSet": null },
+		{ "group": "treat", "id": "boxed", "weight": 0.7, "presetSet": null },
+		{ "group": "treat", "id": "gradientV", "weight": 0.9, "presetSet": null },
+		{ "group": "treat", "id": "splitColor", "weight": 0.8, "presetSet": null },
+		{ "group": "treat", "id": "halftone", "weight": 0.7, "presetSet": null },
+		{ "group": "treat", "id": "stripes", "weight": 0.6, "presetSet": null },
+		{ "group": "treat", "id": "hatch", "weight": 0.5, "presetSet": null },
+		{ "group": "treat", "id": "dotted", "weight": 0.5, "presetSet": null },
+		{ "group": "treat", "id": "alternate", "weight": 0.8, "presetSet": null },
+		{ "group": "treat", "id": "italic", "weight": 0.8, "presetSet": null },
+		{ "group": "treat", "id": "wide", "weight": 0.7, "presetSet": null },
+		{ "group": "treat", "id": "tall", "weight": 0.7, "presetSet": null },
+		{ "group": "treat", "id": "echoOutline", "weight": 0.7, "presetSet": null },
+		{
+			"group": "treat",
+			"id": "emphasisDots",
+			"weight": 0.8,
+			"presetSet": null
+		},
+		{ "group": "treat", "id": "neonOutline", "weight": 0.8, "presetSet": null },
+		{ "group": "treat", "id": "chrome", "weight": 0.7, "presetSet": null },
+		{ "group": "treat", "id": "rainbow", "weight": 0.7, "presetSet": null },
+		{ "group": "treat", "id": "glitchSplit", "weight": 0.8, "presetSet": null },
+		{ "group": "treat", "id": "shadowStack", "weight": 0.8, "presetSet": null },
+		{ "group": "treat", "id": "stencilGap", "weight": 0.6, "presetSet": null },
+		{ "group": "treat", "id": "waterline", "weight": 0.6, "presetSet": null },
+		{ "group": "treat", "id": "karaoke", "weight": 0.9, "presetSet": null },
+		{ "group": "treat", "id": "sizeWave", "weight": 0.7, "presetSet": null },
+		{ "group": "treat", "id": "rotateAlt", "weight": 0.7, "presetSet": null },
+		{
+			"group": "treat",
+			"id": "baselineShift",
+			"weight": 0.7,
+			"presetSet": null
+		},
+		{ "group": "treat", "id": "fauxBold", "weight": 0.5, "presetSet": null },
+		{ "group": "treat", "id": "circled", "weight": 0.6, "presetSet": null },
+		{
+			"group": "treat",
+			"id": "bracketsQuote",
+			"weight": 0.6,
+			"presetSet": null
+		},
+		{ "group": "treat", "id": "reflection", "weight": 0.6, "presetSet": null },
+		{ "group": "treat", "id": "inline", "weight": 0.6, "presetSet": null },
+		{ "group": "treat", "id": "sticker", "weight": 0.8, "presetSet": null },
+		{
+			"group": "treat",
+			"id": "gradientSweep",
+			"weight": 0.7,
+			"presetSet": null
+		},
+		{ "group": "treat", "id": "kerningWide", "weight": 0.6, "presetSet": null },
+		{ "group": "treat", "id": "monoGrid", "weight": 0.5, "presetSet": null },
+		{
+			"group": "treat",
+			"id": "outlineOffset",
+			"weight": 0.8,
+			"presetSet": null
+		},
+		{ "group": "treat", "id": "toneShadow", "weight": 0.7, "presetSet": null },
+		{ "group": "treat", "id": "fadeChars", "weight": 0.5, "presetSet": null },
+		{ "group": "treat", "id": "cutShift", "weight": 0.7, "presetSet": null },
+		{ "group": "treat", "id": "focusPull", "weight": 0.6, "presetSet": null },
+		{ "group": "treat", "id": "spotChar", "weight": 0.7, "presetSet": null },
+		{ "group": "treat", "id": "ransom", "weight": 0.6, "presetSet": null },
+		{
+			"group": "treat",
+			"id": "tyHollowKey",
+			"weight": 0.9,
+			"presetSet": "typo"
+		},
+		{
+			"group": "treat",
+			"id": "tyHeadRules",
+			"weight": 0.8,
+			"presetSet": "typo"
+		},
+		{ "group": "treat", "id": "tyHeadBig", "weight": 0.9, "presetSet": "typo" },
+		{
+			"group": "treat",
+			"id": "tyIndexSup",
+			"weight": 0.7,
+			"presetSet": "typo"
+		},
+		{ "group": "bg", "id": "none", "weight": 1, "presetSet": null },
+		{ "group": "bg", "id": "auroraRibbons", "weight": 0.9, "presetSet": null },
+		{ "group": "bg", "id": "meshBlobs", "weight": 1, "presetSet": null },
+		{ "group": "bg", "id": "duotoneSweep", "weight": 0.9, "presetSet": null },
+		{ "group": "bg", "id": "horizonGlow", "weight": 0.8, "presetSet": null },
+		{ "group": "bg", "id": "seigaiha", "weight": 0.8, "presetSet": null },
+		{ "group": "bg", "id": "asanoha", "weight": 0.8, "presetSet": null },
+		{ "group": "bg", "id": "houndstooth", "weight": 0.6, "presetSet": null },
+		{ "group": "bg", "id": "herringbone", "weight": 0.6, "presetSet": null },
+		{ "group": "bg", "id": "argyle", "weight": 0.6, "presetSet": null },
+		{ "group": "bg", "id": "tartan", "weight": 0.6, "presetSet": null },
+		{ "group": "bg", "id": "chevron", "weight": 0.6, "presetSet": null },
+		{ "group": "bg", "id": "isoCubes", "weight": 0.6, "presetSet": null },
+		{ "group": "bg", "id": "hexGrid", "weight": 0.8, "presetSet": null },
+		{ "group": "bg", "id": "triTess", "weight": 0.7, "presetSet": null },
+		{ "group": "bg", "id": "moire", "weight": 0.6, "presetSet": null },
+		{ "group": "bg", "id": "squareTunnel", "weight": 0.6, "presetSet": null },
+		{ "group": "bg", "id": "spiralArms", "weight": 0.6, "presetSet": null },
+		{ "group": "bg", "id": "topoLines", "weight": 0.8, "presetSet": null },
+		{ "group": "bg", "id": "ridgePlot", "weight": 0.7, "presetSet": null },
+		{ "group": "bg", "id": "starfield", "weight": 0.9, "presetSet": null },
+		{ "group": "bg", "id": "nightMoon", "weight": 0.8, "presetSet": null },
+		{ "group": "bg", "id": "skyline", "weight": 0.8, "presetSet": null },
+		{ "group": "bg", "id": "sunsetSun", "weight": 0.8, "presetSet": null },
+		{ "group": "bg", "id": "oceanWaves", "weight": 0.8, "presetSet": null },
+		{ "group": "bg", "id": "rainWindow", "weight": 0.8, "presetSet": null },
+		{ "group": "bg", "id": "snowLayers", "weight": 0.9, "presetSet": null },
+		{ "group": "bg", "id": "fireworks", "weight": 0.7, "presetSet": null },
+		{ "group": "bg", "id": "cloudLayers", "weight": 0.8, "presetSet": null },
+		{ "group": "bg", "id": "mountains", "weight": 0.8, "presetSet": null },
+		{ "group": "bg", "id": "filmStrip", "weight": 0.7, "presetSet": null },
+		{ "group": "bg", "id": "vhsBand", "weight": 0.6, "presetSet": null },
+		{ "group": "bg", "id": "tornPaper", "weight": 0.7, "presetSet": null },
+		{ "group": "bg", "id": "godRays", "weight": 0.8, "presetSet": null },
+		{ "group": "bg", "id": "vignettePulse", "weight": 0.9, "presetSet": null },
+		{ "group": "bg", "id": "kaleidoscope", "weight": 0.6, "presetSet": null },
+		{ "group": "bg", "id": "marble", "weight": 0.7, "presetSet": null },
+		{ "group": "bg", "id": "paperCut", "weight": 0.7, "presetSet": null },
+		{
+			"group": "bg",
+			"id": "hrFailingLamp",
+			"weight": 0.9,
+			"presetSet": "horror"
+		},
+		{ "group": "bg", "id": "hrCorridor", "weight": 0.8, "presetSet": "horror" },
+		{ "group": "bg", "id": "hrMold", "weight": 0.7, "presetSet": "horror" },
+		{
+			"group": "bg",
+			"id": "hrDeadTrees",
+			"weight": 0.7,
+			"presetSet": "horror"
+		},
+		{ "group": "bg", "id": "sunburst", "weight": 0.8, "presetSet": null },
+		{ "group": "bg", "id": "concentric", "weight": 0.9, "presetSet": null },
+		{ "group": "bg", "id": "halftoneFade", "weight": 1, "presetSet": null },
+		{ "group": "bg", "id": "bigStripes", "weight": 0.9, "presetSet": null },
+		{ "group": "bg", "id": "splitV", "weight": 1, "presetSet": null },
+		{ "group": "bg", "id": "splitH", "weight": 0.9, "presetSet": null },
+		{ "group": "bg", "id": "splitDiag", "weight": 1, "presetSet": null },
+		{ "group": "bg", "id": "gradientSweep", "weight": 1, "presetSet": null },
+		{ "group": "bg", "id": "spotlight", "weight": 0.9, "presetSet": null },
+		{ "group": "bg", "id": "tvBars", "weight": 0.6, "presetSet": null },
+		{ "group": "bg", "id": "checker", "weight": 0.7, "presetSet": null },
+		{ "group": "bg", "id": "bigChar", "weight": 1, "presetSet": null },
+		{ "group": "bg", "id": "speedLines", "weight": 0.7, "presetSet": null },
+		{ "group": "bg", "id": "scanBars", "weight": 0.9, "presetSet": null },
+		{ "group": "bg", "id": "dotGrid", "weight": 1, "presetSet": null },
+		{ "group": "bg", "id": "retroGrid", "weight": 0.6, "presetSet": null },
+		{ "group": "bg", "id": "bokehBg", "weight": 1, "presetSet": null },
+		{ "group": "bg", "id": "particlesBg", "weight": 1, "presetSet": null },
+		{ "group": "bg", "id": "ripples", "weight": 0.9, "presetSet": null },
+		{ "group": "bg", "id": "polka", "weight": 0.7, "presetSet": null },
+		{ "group": "bg", "id": "eqBars", "weight": 0.6, "presetSet": null },
+		{ "group": "bg", "id": "borderFrame", "weight": 0.7, "presetSet": null },
+		{ "group": "bg", "id": "letterbox", "weight": 0.6, "presetSet": null },
+		{ "group": "bg", "id": "noiseField", "weight": 0.6, "presetSet": null },
+		{ "group": "cam", "id": "push", "weight": 5, "presetSet": null },
+		{ "group": "cam", "id": "orbitDrift", "weight": 0.8, "presetSet": null },
+		{ "group": "cam", "id": "barrelRoll", "weight": 0.5, "presetSet": null },
+		{ "group": "cam", "id": "pendulumSway", "weight": 0.7, "presetSet": null },
+		{ "group": "cam", "id": "focusIn", "weight": 0.9, "presetSet": null },
+		{ "group": "cam", "id": "rackFocus", "weight": 0.6, "presetSet": null },
+		{ "group": "cam", "id": "earthquake", "weight": 0.5, "presetSet": null },
+		{ "group": "cam", "id": "floatNoise", "weight": 0.9, "presetSet": null },
+		{ "group": "cam", "id": "vertigo", "weight": 0.6, "presetSet": null },
+		{ "group": "cam", "id": "tiltDown", "weight": 0.8, "presetSet": null },
+		{ "group": "cam", "id": "spiralIn", "weight": 0.6, "presetSet": null },
+		{ "group": "cam", "id": "snapPan", "weight": 0.7, "presetSet": null },
+		{ "group": "cam", "id": "jelly", "weight": 0.7, "presetSet": null },
+		{ "group": "cam", "id": "hrNervous", "weight": 0.9, "presetSet": "horror" },
+		{
+			"group": "cam",
+			"id": "hrDutchSnap",
+			"weight": 0.7,
+			"presetSet": "horror"
+		},
+		{
+			"group": "cam",
+			"id": "knReadPan",
+			"weight": 0.8,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "cam",
+			"id": "knTiltKick",
+			"weight": 0.8,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "cam",
+			"id": "knCardFlip",
+			"weight": 0.7,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "cam",
+			"id": "knShearKick",
+			"weight": 0.8,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "cam",
+			"id": "knJumpCut",
+			"weight": 0.7,
+			"presetSet": "kinetic"
+		},
+		{ "group": "cam", "id": "knRushIn", "weight": 0.7, "presetSet": "kinetic" },
+		{ "group": "cam", "id": "pullOut", "weight": 1, "presetSet": null },
+		{ "group": "cam", "id": "panL", "weight": 0.9, "presetSet": null },
+		{ "group": "cam", "id": "panR", "weight": 0.9, "presetSet": null },
+		{ "group": "cam", "id": "tiltUp", "weight": 0.8, "presetSet": null },
+		{ "group": "cam", "id": "dutch", "weight": 0.8, "presetSet": null },
+		{ "group": "cam", "id": "handheld", "weight": 1, "presetSet": null },
+		{ "group": "cam", "id": "beatPunch", "weight": 0.9, "presetSet": null },
+		{ "group": "cam", "id": "whipIn", "weight": 0.7, "presetSet": null },
+		{ "group": "cam", "id": "crashZoom", "weight": 0.6, "presetSet": null },
+		{ "group": "cam", "id": "bounce", "weight": 0.9, "presetSet": null },
+		{ "group": "cam", "id": "roll", "weight": 0.8, "presetSet": null },
+		{ "group": "cam", "id": "driftDiag", "weight": 1, "presetSet": null },
+		{ "group": "cam", "id": "shakeHard", "weight": 0.6, "presetSet": null },
+		{ "group": "cam", "id": "dollyIn", "weight": 1, "presetSet": null },
+		{ "group": "cam", "id": "stepZoom", "weight": 0.8, "presetSet": null },
+		{ "group": "fx", "id": "chroma", "weight": 1, "presetSet": null },
+		{ "group": "fx", "id": "shake", "weight": 1, "presetSet": null },
+		{ "group": "fx", "id": "slice", "weight": 1, "presetSet": null },
+		{ "group": "fx", "id": "block", "weight": 1, "presetSet": null },
+		{ "group": "fx", "id": "invert", "weight": 1, "presetSet": null },
+		{ "group": "fx", "id": "flash", "weight": 1, "presetSet": null },
+		{ "group": "fx", "id": "zoom", "weight": 1, "presetSet": null },
+		{ "group": "fx", "id": "mosaic", "weight": 1, "presetSet": null },
+		{ "group": "fx", "id": "radialChroma", "weight": 0.9, "presetSet": null },
+		{ "group": "fx", "id": "bloomFlash", "weight": 1, "presetSet": null },
+		{ "group": "fx", "id": "bulge", "weight": 0.8, "presetSet": null },
+		{ "group": "fx", "id": "pixelSort", "weight": 0.8, "presetSet": null },
+		{ "group": "fx", "id": "interlace", "weight": 0.7, "presetSet": null },
+		{ "group": "fx", "id": "macroBlock", "weight": 0.8, "presetSet": null },
+		{ "group": "fx", "id": "halftone", "weight": 0.9, "presetSet": null },
+		{ "group": "fx", "id": "duotone", "weight": 0.8, "presetSet": null },
+		{ "group": "fx", "id": "ditherBit", "weight": 0.7, "presetSet": null },
+		{ "group": "fx", "id": "rotateSnap", "weight": 0.9, "presetSet": null },
+		{ "group": "fx", "id": "echoFrames", "weight": 0.9, "presetSet": null },
+		{ "group": "fx", "id": "kaleido", "weight": 0.6, "presetSet": null },
+		{ "group": "fx", "id": "bandInvert", "weight": 0.7, "presetSet": null },
+		{ "group": "fx", "id": "lightRays", "weight": 0.9, "presetSet": null },
+		{ "group": "fx", "id": "anamorphic", "weight": 0.8, "presetSet": null },
+		{ "group": "fx", "id": "heartbeat", "weight": 0.8, "presetSet": null },
+		{ "group": "fx", "id": "tvStatic", "weight": 0.6, "presetSet": null },
+		{ "group": "fx", "id": "dustScratches", "weight": 0.8, "presetSet": null },
+		{ "group": "fx", "id": "filmAdvance", "weight": 0.6, "presetSet": null },
+		{
+			"group": "fx",
+			"id": "perspectiveTilt",
+			"weight": 0.8,
+			"presetSet": null
+		},
+		{ "group": "fx", "id": "ripple", "weight": 0.8, "presetSet": null },
+		{ "group": "fx", "id": "focusLines", "weight": 0.9, "presetSet": null },
+		{ "group": "fx", "id": "speedLines", "weight": 0.8, "presetSet": null },
+		{ "group": "fx", "id": "starGlint", "weight": 0.8, "presetSet": null },
+		{ "group": "fx", "id": "colorBars", "weight": 0.8, "presetSet": null },
+		{ "group": "fx", "id": "zoomStutter", "weight": 0.8, "presetSet": null },
+		{ "group": "fx", "id": "negativeRing", "weight": 0.8, "presetSet": null },
+		{ "group": "fx", "id": "edgeDetect", "weight": 0.7, "presetSet": null },
+		{ "group": "fx", "id": "shatter", "weight": 0.5, "presetSet": null },
+		{ "group": "fx", "id": "defocus", "weight": 0.9, "presetSet": null },
+		{ "group": "fx", "id": "snapshot", "weight": 0.6, "presetSet": null },
+		{ "group": "fx", "id": "squash", "weight": 0.8, "presetSet": null },
+		{ "group": "fx", "id": "scanBar", "weight": 0.7, "presetSet": null },
+		{ "group": "fx", "id": "loopScroll", "weight": 0.7, "presetSet": null },
+		{
+			"group": "fx",
+			"id": "hrSubliminal",
+			"weight": 0.6,
+			"presetSet": "horror"
+		},
+		{
+			"group": "fx",
+			"id": "hrSignalLoss",
+			"weight": 0.7,
+			"presetSet": "horror"
+		},
+		{
+			"group": "fx",
+			"id": "hrPassingShadow",
+			"weight": 0.5,
+			"presetSet": "horror"
+		},
+		{ "group": "fx", "id": "panelWipe", "weight": 1, "presetSet": null },
+		{ "group": "fx", "id": "irisTrans", "weight": 0.7, "presetSet": null },
+		{ "group": "fx", "id": "doors", "weight": 0.7, "presetSet": null },
+		{ "group": "fx", "id": "blindsTrans", "weight": 0.7, "presetSet": null },
+		{ "group": "fx", "id": "rgbSplit", "weight": 1, "presetSet": null },
+		{ "group": "fx", "id": "smear", "weight": 0.8, "presetSet": null },
+		{ "group": "fx", "id": "vhsRoll", "weight": 0.8, "presetSet": null },
+		{ "group": "fx", "id": "trackingNoise", "weight": 0.8, "presetSet": null },
+		{ "group": "fx", "id": "mirrorFlash", "weight": 0.6, "presetSet": null },
+		{ "group": "fx", "id": "strobe", "weight": 0.5, "presetSet": null },
+		{ "group": "fx", "id": "posterize", "weight": 0.7, "presetSet": null },
+		{ "group": "fx", "id": "hueShift", "weight": 0.7, "presetSet": null },
+		{ "group": "fx", "id": "tileShift", "weight": 0.8, "presetSet": null },
+		{ "group": "fx", "id": "filmBurn", "weight": 0.7, "presetSet": null },
+		{ "group": "fx", "id": "whipBlur", "weight": 1, "presetSet": null },
+		{ "group": "fx", "id": "blackFrame", "weight": 0.6, "presetSet": null },
+		{ "group": "fx", "id": "whiteFrame", "weight": 0.5, "presetSet": null },
+		{ "group": "fx", "id": "gridRepeat", "weight": 0.7, "presetSet": null },
+		{ "group": "fx", "id": "waveWarp", "weight": 0.7, "presetSet": null },
+		{ "group": "fx", "id": "pixelDrift", "weight": 0.8, "presetSet": null },
+		{ "group": "fx", "id": "zoomPunch", "weight": 1, "presetSet": null },
+		{ "group": "fx", "id": "lightSweep", "weight": 0.9, "presetSet": null },
+		{ "group": "fx", "id": "crtOff", "weight": 0.3, "presetSet": null },
+		{ "group": "fx", "id": "splitSlide", "weight": 0.9, "presetSet": null },
+		{
+			"group": "trans",
+			"id": "hrStaticCut",
+			"weight": 0.9,
+			"presetSet": "horror"
+		},
+		{ "group": "trans", "id": "hrBlink", "weight": 0.8, "presetSet": "horror" },
+		{
+			"group": "trans",
+			"id": "knCornerSwing",
+			"weight": 0.8,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "trans",
+			"id": "knStutterCut",
+			"weight": 0.7,
+			"presetSet": "kinetic"
+		},
+		{
+			"group": "trans",
+			"id": "knStripSlam",
+			"weight": 0.8,
+			"presetSet": "kinetic"
+		},
+		{ "group": "trans", "id": "wipe", "weight": 1.2, "presetSet": null },
+		{ "group": "trans", "id": "diagonalWipe", "weight": 1, "presetSet": null },
+		{ "group": "trans", "id": "clockWipe", "weight": 0.7, "presetSet": null },
+		{ "group": "trans", "id": "irisOpen", "weight": 0.8, "presetSet": null },
+		{ "group": "trans", "id": "pushSlide", "weight": 1, "presetSet": null },
+		{ "group": "trans", "id": "cover", "weight": 0.9, "presetSet": null },
+		{ "group": "trans", "id": "uncover", "weight": 0.8, "presetSet": null },
+		{ "group": "trans", "id": "zoomThrough", "weight": 1, "presetSet": null },
+		{ "group": "trans", "id": "doorsOpen", "weight": 0.7, "presetSet": null },
+		{ "group": "trans", "id": "blinds", "weight": 0.7, "presetSet": null },
+		{ "group": "trans", "id": "checker", "weight": 0.6, "presetSet": null },
+		{
+			"group": "trans",
+			"id": "blockDissolve",
+			"weight": 0.8,
+			"presetSet": null
+		},
+		{ "group": "trans", "id": "whipPan", "weight": 1, "presetSet": null },
+		{ "group": "trans", "id": "spinOut", "weight": 0.6, "presetSet": null },
+		{ "group": "trans", "id": "inkBlob", "weight": 0.7, "presetSet": null },
+		{
+			"group": "trans",
+			"id": "shatterTiles",
+			"weight": 0.6,
+			"presetSet": null
+		},
+		{ "group": "trans", "id": "sliceShift", "weight": 0.8, "presetSet": null },
+		{ "group": "trans", "id": "cubeTurn", "weight": 0.6, "presetSet": null },
+		{ "group": "trans", "id": "flashCross", "weight": 0.9, "presetSet": null },
+		{ "group": "trans", "id": "pixelate", "weight": 0.6, "presetSet": null },
+		{
+			"group": "trans",
+			"id": "tyRuleWipe",
+			"weight": 0.9,
+			"presetSet": "typo"
+		},
+		{
+			"group": "trans",
+			"id": "tyGridCells",
+			"weight": 0.8,
+			"presetSet": "typo"
+		}
+	]
+}

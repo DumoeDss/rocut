@@ -120,6 +120,11 @@ export interface ExportRenderSpec {
 	readonly height: number;
 	readonly fps: { readonly numerator: number; readonly denominator: number };
 	readonly totalFrames: number;
+	/** Resolved output interval; omitted by legacy full-timeline producers. */
+	readonly range?: {
+		readonly startTime: number;
+		readonly duration: number;
+	};
 }
 
 /** `startJob` arguments: the provider-shaped request plus bookkeeping meta. */

@@ -3,6 +3,10 @@ import { describe, expect, test } from "bun:test";
 
 import {
 	OPERATION_KINDS,
+	mediaTime,
+	motionTextCueId,
+	motionTextSequenceId,
+	type MotionTextSequence,
 	type TransactionApply,
 	type TransactionBatch,
 	type TransactionResult,
@@ -22,6 +26,59 @@ const result = {
 	createdIds: [],
 	changedIds: ["track-1"],
 } as unknown as TransactionResult;
+
+function motionTextSequence(): MotionTextSequence {
+	return {
+		id: motionTextSequenceId("sequence:surface"),
+		schemaVersion: 1,
+		revision: 0,
+		source: { format: "plain", text: "Surface" },
+		language: "en",
+		duration: mediaTime({ ticks: 120_000 }),
+		compositionMode: "overlay",
+		seed: 1,
+		engine: {
+			id: "jizura",
+			version: "0.9.0",
+			catalogHash: "surface-fixture",
+			plannerVersion: 1,
+			tokenizerVersion: "unicode-v1",
+		},
+		fonts: [],
+		defaults: {
+			preset: {
+				style: "base",
+				layout: "center",
+				enter: "fade",
+				hold: "still",
+				exit: "fade",
+				decor: [],
+				treat: "none",
+				bg: "transparent",
+				cam: "static",
+				fx: [],
+				trans: null,
+			},
+			colors: {},
+			parameters: {},
+		},
+		cues: [
+			{
+				id: motionTextCueId("cue:surface"),
+				text: "Surface",
+				startTime: mediaTime({ ticks: 0 }),
+				duration: mediaTime({ ticks: 120_000 }),
+				interlude: false,
+				gapBefore: false,
+				impact: false,
+				emphasis: [],
+				segments: ["Surface"],
+				locks: [],
+				overrides: {},
+			},
+		],
+	};
+}
 
 const malformedPresentOperations = {
 	"create-track": [
@@ -105,6 +162,24 @@ const malformedPresentOperations = {
 		},
 	],
 	"delete-marker": [{ kind: "delete-marker", markerId: 7 }],
+	"create-motion-text-sequence": [
+		{ kind: "create-motion-text-sequence", sequence: { id: "bad" } },
+	],
+	"update-motion-text-sequence": [
+		{
+			kind: "update-motion-text-sequence",
+			sequenceId: "sequence:other",
+			expectedSequenceRevision: -1,
+			sequence: motionTextSequence(),
+		},
+	],
+	"delete-motion-text-sequence": [
+		{
+			kind: "delete-motion-text-sequence",
+			sequenceId: 7,
+			expectedSequenceRevision: 0.5,
+		},
+	],
 	"update-project": [
 		{ kind: "update-project", projectId: "project-1", patch: {} },
 		{
@@ -253,6 +328,21 @@ describe("Surface transaction binding", () => {
 			},
 			{ kind: "update-marker", markerId: "marker-1", patch: {} },
 			{ kind: "delete-marker", markerId: "marker-1" },
+			{
+				kind: "create-motion-text-sequence",
+				sequence: motionTextSequence(),
+			},
+			{
+				kind: "update-motion-text-sequence",
+				sequenceId: motionTextSequenceId("sequence:surface"),
+				expectedSequenceRevision: 0,
+				sequence: motionTextSequence(),
+			},
+			{
+				kind: "delete-motion-text-sequence",
+				sequenceId: motionTextSequenceId("sequence:surface"),
+				expectedSequenceRevision: 0,
+			},
 			{
 				kind: "update-project",
 				projectId: "project-1",

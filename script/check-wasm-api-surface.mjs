@@ -41,7 +41,10 @@ const normalizedDtsLines = (text) =>
 	text
 		.split(/\r?\n/)
 		.map((line) =>
-			line.replace(/(wasm_bindgen__convert__closures_____invoke__h)[0-9a-f]{16}/g, "$1<hash>"),
+			line.replace(
+				/(wasm_bindgen__convert__closures_____invoke__h)[0-9a-f]{16}/g,
+				"$1<hash>",
+			),
 		)
 		.filter((line) => line.trim().length > 0);
 
@@ -51,8 +54,14 @@ const exportDelta = (observed) => {
 	const seen = new Set(observed);
 	return [
 		`observed ${observed.length}, recorded ${EXPECTED.wasmExportsAsRecorded.length}`,
-		...observed.filter((entry) => !recorded.has(entry)).sort().map((entry) => `  + ${entry}`),
-		...EXPECTED.wasmExportsAsRecorded.filter((entry) => !seen.has(entry)).sort().map((entry) => `  - ${entry}`),
+		...observed
+			.filter((entry) => !recorded.has(entry))
+			.sort()
+			.map((entry) => `  + ${entry}`),
+		...EXPECTED.wasmExportsAsRecorded
+			.filter((entry) => !seen.has(entry))
+			.sort()
+			.map((entry) => `  - ${entry}`),
 	].join("\n");
 };
 
@@ -175,15 +184,23 @@ function validate(surface) {
 		observedDtsLines.length !== EXPECTED.wasmDtsLineCount ||
 		signature(observedDtsLines) !== EXPECTED.wasmDtsNormalizedSignature
 	) {
-		const declared = [...surface.wasmDts.matchAll(/^export const (\S+?):/gm)].map((m) => m[1]);
+		const declared = [
+			...surface.wasmDts.matchAll(/^export const (\S+?):/gm),
+		].map((m) => m[1]);
 		const recordedNames = new Set(
 			EXPECTED.wasmExportsAsRecorded.map((entry) => entry.split("|")[0]),
 		);
 		const delta = [
 			`${observedDtsLines.length} declaration line(s) observed, recorded ${EXPECTED.wasmDtsLineCount}`,
-			...declared.filter((name) => !recordedNames.has(name)).sort().map((name) => `  + ${name}`),
+			...declared
+				.filter((name) => !recordedNames.has(name))
+				.sort()
+				.map((name) => `  + ${name}`),
 			...[...recordedNames]
-				.filter((name) => !declared.includes(name) && name !== "__wbindgen_externrefs")
+				.filter(
+					(name) =>
+						!declared.includes(name) && name !== "__wbindgen_externrefs",
+				)
 				.sort()
 				.map((name) => `  - ${name}`),
 		].join("\n");
@@ -192,22 +209,31 @@ function validate(surface) {
 			`low-level declarations differ from the recorded output\n${delta}`,
 		);
 	}
-	if (signature(surface.wrapperExports) !== EXPECTED.wrapperExportSignature) {
+	if (
+		surface.wrapperExports.length !== EXPECTED.wrapperExportCount ||
+		signature(surface.wrapperExports) !== EXPECTED.wrapperExportSignature
+	) {
 		fail(
 			"wrapper-exports",
-			"public JS export set is not the exact recorded set of 38",
+			`public JS export set is not the exact recorded set of ${EXPECTED.wrapperExportCount}`,
 		);
 	}
-	if (signature(surface.bgExports) !== EXPECTED.bgExportSignature) {
+	if (
+		surface.bgExports.length !== EXPECTED.bgExportCount ||
+		signature(surface.bgExports) !== EXPECTED.bgExportSignature
+	) {
 		fail(
 			"glue-exports",
-			"generated glue export set is not the exact recorded set of 646",
+			`generated glue export set is not the exact recorded set of ${EXPECTED.bgExportCount}`,
 		);
 	}
 	// Self-consistency: the recorded diagnostic list must still hash to the recorded stable
 	// signature once its trampolines are removed, so the list cannot rot into decoration while the
 	// signature does the real work.
-	if (signature(stableExports(EXPECTED.wasmExportsAsRecorded)) !== EXPECTED.stableWasmExportSignature) {
+	if (
+		signature(stableExports(EXPECTED.wasmExportsAsRecorded)) !==
+		EXPECTED.stableWasmExportSignature
+	) {
 		fail(
 			"recorded-contract",
 			"EXPECTED.wasmExportsAsRecorded does not reduce to EXPECTED.stableWasmExportSignature",
@@ -218,14 +244,15 @@ function validate(surface) {
 	const observedTrampolines = surface.wasmExports.filter((entry) =>
 		TRAMPOLINE_EXPORT.test(entry.split("|")[0]),
 	);
-	const totalExpected = EXPECTED.stableWasmExportCount + EXPECTED.trampolineExportCount;
+	const totalExpected =
+		EXPECTED.stableWasmExportCount + EXPECTED.trampolineExportCount;
 	if (surface.wasmExports.length !== totalExpected) {
 		fail(
 			"wasm-exports",
 			`binary export count is ${surface.wasmExports.length}, not the recorded ${totalExpected}\n${exportDelta(surface.wasmExports)}`,
 		);
 	}
-	// The 55 nameable exports stay an EXACT set — this is the contract a consumer relies on.
+	// The nameable exports stay an EXACT set — this is the contract a consumer relies on.
 	if (
 		observedStable.length !== EXPECTED.stableWasmExportCount ||
 		signature(observedStable) !== EXPECTED.stableWasmExportSignature
@@ -250,12 +277,12 @@ function validate(surface) {
 		}
 	}
 	if (
-		surface.wasmImports.length !== 609 ||
+		surface.wasmImports.length !== EXPECTED.wasmImportCount ||
 		signature(surface.wasmImports) !== EXPECTED.wasmImportSignature
 	) {
 		fail(
 			"wasm-imports",
-			"binary import set moved from the exact C0 set of 609",
+			`binary import set moved from the exact recorded set of ${EXPECTED.wasmImportCount}`,
 		);
 	}
 
@@ -295,7 +322,10 @@ function validate(surface) {
 	// Without the wildcard subpath, adding `exports` would seal every deep path that resolved
 	// before it existed — including the bundler entry the negative control imports by name.
 	if (surface.wasmManifest.exports?.["./*"] !== "./*") {
-		fail("entry-conditions", "the artifact's `./*` subpath passthrough is missing");
+		fail(
+			"entry-conditions",
+			"the artifact's `./*` subpath passthrough is missing",
+		);
 	}
 	// The declared opt-in for runtimes that need explicit instantiation and are not bun. A deep
 	// path would work through `./*`, but a *declared* subpath is what makes it a promise.
@@ -425,7 +455,9 @@ function mutate(surface, control) {
 	}
 	if (control === "edited-license") {
 		// Content change must still fail: normalising line endings must not normalise away edits.
-		copy.textHashes.LICENSE = sha("MIT License\n\nCopyright (c) somebody else\n");
+		copy.textHashes.LICENSE = sha(
+			"MIT License\n\nCopyright (c) somebody else\n",
+		);
 	}
 	if (control === "crlf-checkout") {
 		// POSITIVE control: the exact `build (windows-latest)` observation — an autocrlf=true
@@ -445,7 +477,9 @@ function mutate(surface, control) {
 			["hf7fc07325ff431aa", "hc1daa042eeabb391"],
 		];
 		for (const [from, to] of swaps) {
-			copy.wasmExports = copy.wasmExports.map((entry) => entry.replace(from, to));
+			copy.wasmExports = copy.wasmExports.map((entry) =>
+				entry.replace(from, to),
+			);
 			copy.wasmDts = copy.wasmDts.replaceAll(from, to);
 		}
 	}
@@ -590,7 +624,9 @@ if (process.argv.includes("--negative-control")) {
 		);
 		const output = `${result.stdout ?? ""}${result.stderr ?? ""}`;
 		if (result.status !== 0) {
-			console.error(`FAIL ${control}: expected exit 0, got ${result.status}\n${output}`);
+			console.error(
+				`FAIL ${control}: expected exit 0, got ${result.status}\n${output}`,
+			);
 			process.exit(1);
 		}
 		console.log(`PASS ${control} -> tolerated (exit 0): ${why}`);
@@ -627,5 +663,5 @@ if (compile.status !== 0) {
 	process.exit(1);
 }
 console.log(
-	`check-wasm-api-surface: exact 38 JS exports, ${EXPECTED.stableWasmExportCount} stably-named binary exports + ${EXPECTED.trampolineExportCount} shape-matched compiler trampolines (${EXPECTED.stableWasmExportCount + EXPECTED.trampolineExportCount} total), 609 imports, ${Object.keys(EXPECTED.pinnedHashes).length} pinned files, ${EXPECTED.wasmDtsLineCount} declaration lines, both entries in parity over the recorded ${Object.keys(EXPECTED.entryConditions).length} exports conditions, providers and structural compile PASS`,
+	`check-wasm-api-surface: exact ${EXPECTED.wrapperExportCount} JS exports, ${EXPECTED.stableWasmExportCount} stably-named binary exports + ${EXPECTED.trampolineExportCount} shape-matched compiler trampolines (${EXPECTED.stableWasmExportCount + EXPECTED.trampolineExportCount} total), ${EXPECTED.wasmImportCount} imports, ${Object.keys(EXPECTED.pinnedHashes).length} pinned files, ${EXPECTED.wasmDtsLineCount} declaration lines, both entries in parity over the recorded ${Object.keys(EXPECTED.entryConditions).length} exports conditions, providers and structural compile PASS`,
 );

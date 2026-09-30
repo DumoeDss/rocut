@@ -19,6 +19,9 @@ export const DRAFT_OPERATION_CLASSIFICATION = {
 	"create-marker": "draft-safe",
 	"update-marker": "draft-safe",
 	"delete-marker": "draft-safe",
+	"create-motion-text-sequence": "draft-safe",
+	"update-motion-text-sequence": "draft-safe",
+	"delete-motion-text-sequence": "draft-safe",
 	"update-project": "draft-safe",
 } as const satisfies Readonly<Record<OperationKind, "draft-safe">>;
 

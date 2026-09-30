@@ -27,6 +27,7 @@ import {
 	recordFixture,
 	storeFixture,
 	TEST_PROJECT_ID,
+	motionTextSequenceFixture,
 } from "./fixture";
 
 describe("OpenCut transaction projection and router", () => {
@@ -104,6 +105,119 @@ describe("OpenCut transaction projection and router", () => {
 			}),
 		).toEqual([]);
 		expect(publicDocumentsEqual(decoded, document)).toBe(true);
+	});
+
+	test("motion-text sequences and clip references survive durable reopen", async () => {
+		const fixture = await storeFixture();
+		const initialRecord = await fixture.store.load({ id: TEST_PROJECT_ID });
+		if (!initialRecord) throw new Error("missing fixture record");
+		const adapter = createOpenCutTransactionDocumentAdapter({
+			initialRecord,
+			initialAssets: [],
+		});
+		const engine = await openTransactionEngine({
+			store: fixture.store,
+			projectId: TEST_PROJECT_ID,
+			documentAdapter: adapter,
+		});
+		const sequence = motionTextSequenceFixture();
+		await engine.apply({
+			idempotencyKey: "motion-text-create",
+			operations: [
+				{
+					kind: "create-track",
+					track: {
+						id: trackId("motion-track"),
+						kind: "graphic",
+						name: "Motion text",
+						hidden: false,
+					},
+				},
+				{ kind: "create-motion-text-sequence", sequence },
+				{
+					kind: "create-clip",
+					clip: {
+						id: clipId("motion-clip"),
+						trackId: trackId("motion-track"),
+						startTime: 0 as never,
+						duration: 120_000 as never,
+						trimStart: 0 as never,
+						trimEnd: 0 as never,
+						content: { kind: "motion-text", sequenceId: sequence.id },
+					},
+				},
+			],
+		});
+
+		const stored = await fixture.store.load({ id: TEST_PROJECT_ID });
+		if (!stored) throw new Error("missing stored motion-text project");
+		const reopenedAdapter = createOpenCutTransactionDocumentAdapter({
+			initialRecord: stored,
+			initialAssets: [],
+		});
+		const reopened = await openTransactionEngine({
+			store: fixture.store,
+			projectId: TEST_PROJECT_ID,
+			documentAdapter: reopenedAdapter,
+		});
+		expect(await reopened.motionTextSequences?.()).toEqual([sequence]);
+		expect(await reopened.clips()).toContainEqual(
+			expect.objectContaining({
+				id: clipId("motion-clip"),
+				content: { kind: "motion-text", sequenceId: sequence.id },
+			}),
+		);
+		const donor = reopenedAdapter.currentDraft().project;
+		expect(donor.motionTextSequences).toEqual([sequence]);
+		expect(donor.scenes[0].tracks.overlay[0].elements[0]).toMatchObject({
+			type: "motion-text",
+			sequenceId: sequence.id,
+		});
+	});
+
+	test("motion-text projection diffs preserve relation-safe operation order", () => {
+		const beforeDraft: OpenCutProjectDraft = {
+			project: projectFixture(),
+			assetCatalog: [],
+		};
+		const afterDraft = cloneOpaque(beforeDraft);
+		const sequence = motionTextSequenceFixture();
+		afterDraft.project.motionTextSequences.push(sequence);
+		afterDraft.project.scenes[0].tracks.overlay.push({
+			id: "motion-track",
+			name: "Motion text",
+			type: "graphic",
+			hidden: false,
+			elements: [
+				{
+					id: "motion-clip",
+					name: "Motion title",
+					type: "motion-text",
+					sequenceId: sequence.id,
+					startTime: 0 as never,
+					duration: 120_000 as never,
+					trimStart: 0 as never,
+					trimEnd: 0 as never,
+					params: {},
+				},
+			],
+		});
+		const before = projectOpenCutDraft(beforeDraft, {
+			revision: revisionOf(0),
+			idempotency: [],
+		});
+		const after = projectOpenCutDraft(afterDraft, {
+			revision: revisionOf(0),
+			idempotency: [],
+		});
+		expect(
+			diffOpenCutProjection({ before, after }).map(({ kind }) => kind),
+		).toEqual(["create-track", "create-motion-text-sequence", "create-clip"]);
+		expect(
+			diffOpenCutProjection({ before: after, after: before }).map(
+				({ kind }) => kind,
+			),
+		).toEqual(["delete-clip", "delete-motion-text-sequence", "delete-track"]);
 	});
 
 	test("projects donor entities and emits stable minimal dependency order", () => {

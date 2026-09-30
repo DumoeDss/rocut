@@ -175,6 +175,38 @@ describe("editor plane: seed and reopen (the unification's file contract)", () =
 });
 
 describe("editor plane: migration walk", () => {
+	test("a newer project schema is refused without a downgrade write", async () => {
+		const root = await tempRoot();
+		const store = new FileProjectStore({
+			root,
+			schemaVersion: CURRENT_PROJECT_VERSION,
+		});
+		const id = projectId("future-project");
+		const futureRecord: ProjectRecord = {
+			id,
+			schemaVersion: CURRENT_PROJECT_VERSION + 1,
+			data: { futureSentinel: { preserve: true } },
+		};
+		await store.save({
+			record: futureRecord,
+			summary: {
+				id,
+				name: "Future project",
+				createdAt: "2026-09-27T00:00:00.000Z",
+				updatedAt: "2026-09-27T00:00:00.000Z",
+			},
+		});
+
+		await expect(
+			prepareEditorProjectRecord({
+				store,
+				projectId: id,
+				name: "Must not replace",
+			}),
+		).rejects.toThrow("refusing a downgrade write");
+		expect(await store.load({ id })).toEqual(futureRecord);
+	});
+
 	test("walks an injected chain to the current version and writes the record back", async () => {
 		const root = await tempRoot();
 		const store = new FileProjectStore({
@@ -196,7 +228,11 @@ describe("editor plane: migration walk", () => {
 				updatedAt: "2026-01-01T00:00:00.000Z",
 			},
 		});
-		const chain = [fakeMigration(29, 30, "a"), fakeMigration(30, 31, "b")];
+		const chain = [
+			fakeMigration(29, 30, "a"),
+			fakeMigration(30, 31, "b"),
+			fakeMigration(31, 32, "c"),
+		];
 		const migrated = await prepareEditorProjectRecord({
 			store,
 			projectId: projectIdentifier,
@@ -207,9 +243,50 @@ describe("editor plane: migration walk", () => {
 		expect((migrated.data as { migrated: string[] }).migrated).toEqual([
 			"a",
 			"b",
+			"c",
 		]);
 		const onDisk = await store.load({ id: projectIdentifier });
 		expect(onDisk?.schemaVersion).toBe(CURRENT_PROJECT_VERSION);
+	});
+
+	test("loads a v31 project through the published additive motion-text migration", async () => {
+		const root = await tempRoot();
+		const store = new FileProjectStore({
+			root,
+			schemaVersion: CURRENT_PROJECT_VERSION,
+		});
+		const id = projectId("motion-text-v31");
+		const legacy: ProjectRecord = {
+			id,
+			schemaVersion: 31,
+			data: {
+				id,
+				version: 31,
+				scenes: [],
+				providerExtension: { preserve: true },
+			},
+		};
+		await store.save({
+			record: legacy,
+			summary: {
+				id,
+				name: "Motion text v31",
+				createdAt: "2026-09-27T00:00:00.000Z",
+				updatedAt: "2026-09-27T00:00:00.000Z",
+			},
+		});
+
+		const migrated = await prepareEditorProjectRecord({
+			store,
+			projectId: id,
+			name: "Motion text v31",
+		});
+		const data = migrated.data as Record<string, unknown>;
+		expect(migrated.schemaVersion).toBe(32);
+		expect(data.version).toBe(32);
+		expect(data.motionTextSequences).toEqual([]);
+		expect(data.providerExtension).toEqual({ preserve: true });
+		expect(await store.load({ id })).toEqual(migrated);
 	});
 
 	test("a gap in the chain refuses and leaves the file untouched", async () => {

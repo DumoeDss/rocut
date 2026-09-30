@@ -6,6 +6,8 @@ import {
 	type MediaTime,
 	mediaTimeFromSeconds,
 	roundFrameTime,
+	resolveMediaTimeRange,
+	type MediaTimeRange,
 	ZERO_MEDIA_TIME,
 } from "../../wasm";
 
@@ -22,6 +24,7 @@ export class PlaybackManager {
 	private playbackTimer: TimerHandle | null = null;
 	private playbackStartWallTime = 0;
 	private playbackStartTime: MediaTime = ZERO_MEDIA_TIME;
+	private loopRange: MediaTimeRange | null = null;
 	private resumePlaybackAfterSuspend = false;
 	private timelineScopeBound = false;
 	private timelineScopeUnsubscribers: Array<() => void> = [];
@@ -52,6 +55,7 @@ export class PlaybackManager {
 		}
 		this.timelineScopeUnsubscribers = [];
 		this.timelineScopeBound = false;
+		this.loopRange = null;
 		this.listeners.clear();
 		this.updateListeners.clear();
 		this.seekListeners.clear();
@@ -63,7 +67,13 @@ export class PlaybackManager {
 			return;
 		}
 
-		if (this.currentTime >= maxTime) {
+		if (
+			this.loopRange &&
+			(this.currentTime < this.loopRange.startTime ||
+				this.currentTime >= this.loopRange.endTime)
+		) {
+			this.seek({ time: this.loopRange.startTime });
+		} else if (this.currentTime >= maxTime) {
 			this.seek({ time: ZERO_MEDIA_TIME });
 		}
 
@@ -151,6 +161,35 @@ export class PlaybackManager {
 		return this.currentTime;
 	}
 
+	setLoopRange({ range }: { range: MediaTimeRange }): void {
+		const resolved = resolveMediaTimeRange({
+			range,
+			timelineDuration: this.editor.timeline.getTotalDuration(),
+		});
+		this.loopRange = {
+			startTime: resolved.startTime,
+			endTime: resolved.endTime,
+		};
+		if (
+			this.currentTime < resolved.startTime ||
+			this.currentTime >= resolved.endTime
+		) {
+			this.seek({ time: resolved.startTime });
+			return;
+		}
+		this.notify();
+	}
+
+	clearLoopRange(): void {
+		if (!this.loopRange) return;
+		this.loopRange = null;
+		this.notify();
+	}
+
+	getLoopRange(): MediaTimeRange | null {
+		return this.loopRange ? { ...this.loopRange } : null;
+	}
+
 	getVolume(): number {
 		return this.volume;
 	}
@@ -185,11 +224,23 @@ export class PlaybackManager {
 
 	private reconcileTimelineScope(): void {
 		const maxTime = this.editor.timeline.getTotalDuration();
+		let rangeChanged = false;
+		if (this.loopRange) {
+			try {
+				resolveMediaTimeRange({
+					range: this.loopRange,
+					timelineDuration: maxTime,
+				});
+			} catch {
+				this.loopRange = null;
+				rangeChanged = true;
+			}
+		}
 		const nextTime = this.clampTimeToTimeline(this.currentTime);
 		const shouldPause = this.isPlaying && nextTime >= maxTime;
 		const timeChanged = nextTime !== this.currentTime;
 
-		if (!timeChanged && !shouldPause) {
+		if (!rangeChanged && !timeChanged && !shouldPause) {
 			return;
 		}
 
@@ -254,6 +305,20 @@ export class PlaybackManager {
 		});
 		const newTime = fps ? roundFrameTime({ time: rawTime, fps }) : rawTime;
 		const maxTime = this.editor.timeline.getTotalDuration();
+		const playbackEnd = this.loopRange?.endTime ?? maxTime;
+
+		if (this.loopRange && newTime >= playbackEnd) {
+			this.currentTime = this.loopRange.startTime;
+			this.playbackStartWallTime = performance.now();
+			this.playbackStartTime = this.currentTime;
+			this.notify();
+			this.notifySeek(this.currentTime);
+			this.dispatchSeekEvent(this.currentTime);
+			this.playbackTimer = this.editor.resources.requestAnimationFrame({
+				handler: this.updateTime,
+			});
+			return;
+		}
 
 		if (newTime >= maxTime) {
 			this.pause();

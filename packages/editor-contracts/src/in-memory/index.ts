@@ -19,6 +19,8 @@ import type {
 	TrackId,
 } from "../domain";
 import { validateFrameRate } from "../domain";
+import type { MotionTextSequence, MotionTextSequenceId } from "../motion-text";
+import { validateMotionTextSequence } from "../motion-text";
 import type {
 	OperationKind,
 	ProjectPatch,
@@ -264,6 +266,10 @@ export function createInMemoryTransactionStore(): InMemoryTransactionStore {
 	const clips = new Map<ClipId, Clip>();
 	const assets = new Map<AssetId, Asset>();
 	const markers = new Map<MarkerId, Marker>();
+	const motionTextSequences = new Map<
+		MotionTextSequenceId,
+		MotionTextSequence
+	>();
 	let project: Project | null = null;
 	const watchers = new Set<(revision: Revision) => void>();
 	const idempotencyCache = new Map<string, IdempotencyEntry>();
@@ -304,6 +310,7 @@ export function createInMemoryTransactionStore(): InMemoryTransactionStore {
 		const workClips = new Map(clips);
 		const workAssets = new Map(assets);
 		const workMarkers = new Map(markers);
+		const workMotionTextSequences = new Map(motionTextSequences);
 		let workProject = project === null ? null : deepClone(project);
 
 		const createdIds: string[] = [];
@@ -396,6 +403,16 @@ export function createInMemoryTransactionStore(): InMemoryTransactionStore {
 							operationIndex: i,
 						});
 					}
+					if (
+						op.clip.content?.kind === "motion-text" &&
+						!workMotionTextSequences.has(op.clip.content.sequenceId)
+					) {
+						throw new TransactionError({
+							code: "validation",
+							message: `Clip references non-existent motion-text sequence ${op.clip.content.sequenceId}`,
+							operationIndex: i,
+						});
+					}
 					workClips.set(op.clip.id, deepClone(op.clip));
 					createdIds.push(op.clip.id);
 					break;
@@ -409,7 +426,18 @@ export function createInMemoryTransactionStore(): InMemoryTransactionStore {
 							operationIndex: i,
 						});
 					}
-					workClips.set(op.clipId, deepClone({ ...existing, ...op.patch }));
+					const updated = { ...existing, ...op.patch };
+					if (
+						updated.content?.kind === "motion-text" &&
+						!workMotionTextSequences.has(updated.content.sequenceId)
+					) {
+						throw new TransactionError({
+							code: "validation",
+							message: `Clip references non-existent motion-text sequence ${updated.content.sequenceId}`,
+							operationIndex: i,
+						});
+					}
+					workClips.set(op.clipId, deepClone(updated));
 					changedIds.push(op.clipId);
 					break;
 				}
@@ -486,6 +514,76 @@ export function createInMemoryTransactionStore(): InMemoryTransactionStore {
 					changedIds.push(op.markerId);
 					break;
 				}
+				case "create-motion-text-sequence": {
+					if (
+						workMotionTextSequences.has(op.sequence.id) ||
+						validateMotionTextSequence({ value: op.sequence }).length > 0
+					) {
+						throw new TransactionError({
+							code: "validation",
+							message: `Invalid or duplicate motion-text sequence ${op.sequence.id}`,
+							operationIndex: i,
+						});
+					}
+					workMotionTextSequences.set(op.sequence.id, deepClone(op.sequence));
+					createdIds.push(op.sequence.id);
+					break;
+				}
+				case "update-motion-text-sequence": {
+					const existing = workMotionTextSequences.get(op.sequenceId);
+					if (!existing) {
+						throw new TransactionError({
+							code: "not-found",
+							message: `Motion-text sequence ${op.sequenceId} not found`,
+							operationIndex: i,
+						});
+					}
+					if (
+						existing.revision !== op.expectedSequenceRevision ||
+						op.sequence.id !== op.sequenceId ||
+						validateMotionTextSequence({ value: op.sequence }).length > 0
+					) {
+						throw new TransactionError({
+							code: "conflict",
+							message: `Invalid or stale motion-text sequence ${op.sequenceId}`,
+							operationIndex: i,
+						});
+					}
+					workMotionTextSequences.set(op.sequenceId, deepClone(op.sequence));
+					changedIds.push(op.sequenceId);
+					break;
+				}
+				case "delete-motion-text-sequence": {
+					const existing = workMotionTextSequences.get(op.sequenceId);
+					if (!existing) {
+						throw new TransactionError({
+							code: "not-found",
+							message: `Motion-text sequence ${op.sequenceId} not found`,
+							operationIndex: i,
+						});
+					}
+					if (existing.revision !== op.expectedSequenceRevision) {
+						throw new TransactionError({
+							code: "conflict",
+							message: `Stale motion-text sequence ${op.sequenceId}`,
+							operationIndex: i,
+						});
+					}
+					if (
+						[...workClips.values()].some(
+							(clip) => clip.content?.sequenceId === op.sequenceId,
+						)
+					) {
+						throw new TransactionError({
+							code: "validation",
+							message: `Motion-text sequence ${op.sequenceId} is still referenced`,
+							operationIndex: i,
+						});
+					}
+					workMotionTextSequences.delete(op.sequenceId);
+					changedIds.push(op.sequenceId);
+					break;
+				}
 			}
 		}
 
@@ -500,6 +598,10 @@ export function createInMemoryTransactionStore(): InMemoryTransactionStore {
 		for (const [k, v] of workAssets) assets.set(k, v);
 		markers.clear();
 		for (const [k, v] of workMarkers) markers.set(k, v);
+		motionTextSequences.clear();
+		for (const [k, v] of workMotionTextSequences) {
+			motionTextSequences.set(k, v);
+		}
 		project = workProject;
 
 		revision = revisionOf(revision + 1);
@@ -527,6 +629,9 @@ export function createInMemoryTransactionStore(): InMemoryTransactionStore {
 		},
 		async markers(): Promise<readonly Marker[]> {
 			return deepClone([...markers.values()]);
+		},
+		async motionTextSequences(): Promise<readonly MotionTextSequence[]> {
+			return deepClone([...motionTextSequences.values()]);
 		},
 		async project(): Promise<Project | null> {
 			return project === null ? null : deepClone(project);

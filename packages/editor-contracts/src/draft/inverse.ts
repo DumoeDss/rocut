@@ -7,11 +7,12 @@ import type {
 	Track,
 	TransactionOperation,
 } from "..";
+import type { MotionTextSequence } from "../motion-text";
 import type { TransactionEngineDocument } from "../engine";
 import { cloneDraftValue } from "./immutable";
 import type { DraftContentSnapshot } from "./types";
 
-type OrderedEntity = Track | Clip | Asset | Marker;
+type OrderedEntity = Track | Clip | Asset | Marker | MotionTextSequence;
 
 const PROJECT_PATCH_KEYS = [
 	"name",
@@ -171,11 +172,21 @@ function sameDraftData(
 export function hasSameDraftContent(
 	left: Pick<
 		DraftContentSnapshot,
-		"project" | "tracks" | "clips" | "assets" | "markers"
+		| "project"
+		| "tracks"
+		| "clips"
+		| "assets"
+		| "markers"
+		| "motionTextSequences"
 	>,
 	right: Pick<
 		DraftContentSnapshot,
-		"project" | "tracks" | "clips" | "assets" | "markers"
+		| "project"
+		| "tracks"
+		| "clips"
+		| "assets"
+		| "markers"
+		| "motionTextSequences"
 	>,
 ): boolean {
 	const pairs = createDraftDataPairs();
@@ -184,7 +195,12 @@ export function hasSameDraftContent(
 		sameDraftData(left.tracks, right.tracks, pairs) &&
 		sameDraftData(left.clips, right.clips, pairs) &&
 		sameDraftData(left.assets, right.assets, pairs) &&
-		sameDraftData(left.markers, right.markers, pairs)
+		sameDraftData(left.markers, right.markers, pairs) &&
+		sameDraftData(
+			left.motionTextSequences ?? [],
+			right.motionTextSequences ?? [],
+			pairs,
+		)
 	);
 }
 
@@ -193,11 +209,21 @@ export function hasSameDraftContent(
 export function hasSameDraftReadableContent(
 	left: Pick<
 		DraftContentSnapshot,
-		"project" | "tracks" | "clips" | "assets" | "markers"
+		| "project"
+		| "tracks"
+		| "clips"
+		| "assets"
+		| "markers"
+		| "motionTextSequences"
 	>,
 	right: Pick<
 		DraftContentSnapshot,
-		"project" | "tracks" | "clips" | "assets" | "markers"
+		| "project"
+		| "tracks"
+		| "clips"
+		| "assets"
+		| "markers"
+		| "motionTextSequences"
 	>,
 ): boolean {
 	return (
@@ -205,7 +231,11 @@ export function hasSameDraftReadableContent(
 		sameDraftData(left.tracks, right.tracks) &&
 		sameDraftData(left.clips, right.clips) &&
 		sameDraftData(left.assets, right.assets) &&
-		sameDraftData(left.markers, right.markers)
+		sameDraftData(left.markers, right.markers) &&
+		sameDraftData(
+			left.motionTextSequences ?? [],
+			right.motionTextSequences ?? [],
+		)
 	);
 }
 
@@ -363,6 +393,10 @@ function collectDocumentAliasRepairIds(args: {
 		[args.base.clips, args.candidate.clips],
 		[args.base.assets, args.candidate.assets],
 		[args.base.markers, args.candidate.markers],
+		[
+			args.base.motionTextSequences ?? [],
+			args.candidate.motionTextSequences ?? [],
+		],
 	] as const) {
 		const candidateById = new Map(
 			candidateEntities.map((entity) => [entity.id, entity]),
@@ -595,6 +629,26 @@ export function planDraftCompensatingOperations(args: {
 			throw new Error("Assets have no update operation");
 		},
 	});
+	const motionTextPlan = planCollectionCompensation({
+		base: args.base.motionTextSequences ?? [],
+		candidate: args.candidate.motionTextSequences ?? [],
+		canUpdate: true,
+		aliasRepairIds,
+		update: (sequence) => {
+			const candidate = (args.candidate.motionTextSequences ?? []).find(
+				(entry) => entry.id === sequence.id,
+			);
+			if (candidate === undefined) {
+				throw new Error(`Motion-text sequence ${sequence.id} disappeared`);
+			}
+			return {
+				kind: "update-motion-text-sequence",
+				sequenceId: sequence.id,
+				expectedSequenceRevision: candidate.revision,
+				sequence,
+			};
+		},
+	});
 	const clipPlan = planCollectionCompensation({
 		base: args.base.clips,
 		candidate: args.candidate.clips,
@@ -602,7 +656,10 @@ export function planDraftCompensatingOperations(args: {
 		aliasRepairIds,
 		forceReplace: (clip) =>
 			trackPlan.recreatedIds.has(clip.trackId) ||
-			(clip.assetId !== undefined && assetPlan.recreatedIds.has(clip.assetId)),
+			(clip.assetId !== undefined &&
+				assetPlan.recreatedIds.has(clip.assetId)) ||
+			(clip.content?.kind === "motion-text" &&
+				motionTextPlan.recreatedIds.has(clip.content.sequenceId)),
 		update: (clip, patch) => ({
 			kind: "update-clip",
 			clipId: clip.id,
@@ -620,16 +677,23 @@ export function planDraftCompensatingOperations(args: {
 			patch: patch as never,
 		}),
 	});
-
 	const planned: TransactionOperation[] = [
 		...(projectCompensation === undefined ? [] : [projectCompensation]),
 		...trackPlan.updates,
+		...motionTextPlan.updates,
 		...clipPlan.updates,
 		...markerPlan.updates,
 		...clipPlan.deletes.map(
 			(clip): TransactionOperation => ({
 				kind: "delete-clip",
 				clipId: clip.id,
+			}),
+		),
+		...motionTextPlan.deletes.map(
+			(sequence): TransactionOperation => ({
+				kind: "delete-motion-text-sequence",
+				sequenceId: sequence.id,
+				expectedSequenceRevision: sequence.revision,
 			}),
 		),
 		...trackPlan.deletes.map(
@@ -660,6 +724,12 @@ export function planDraftCompensatingOperations(args: {
 			(asset): TransactionOperation => ({
 				kind: "create-asset",
 				asset,
+			}),
+		),
+		...motionTextPlan.creates.map(
+			(sequence): TransactionOperation => ({
+				kind: "create-motion-text-sequence",
+				sequence,
 			}),
 		),
 		...clipPlan.creates.map(

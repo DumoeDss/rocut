@@ -143,12 +143,22 @@ export class HttpProjectStore implements ProjectStore {
 			"list-attachments",
 			"attachments",
 		)) as { key: string; metadata: unknown }[] | null;
-		return (payload ?? []).map((entry) => ({
-			projectId: args.projectId,
-			key: entry.key,
-			metadata: entry.metadata,
-			body: new ArrayBuffer(0),
-		}));
+		// The list endpoint returns keys and metadata only. The ProjectStore
+		// contract requires full bodies here (media hydration on reopen reads
+		// them straight from this list), so fetch each one through the same
+		// per-attachment route that loadAttachment uses. An empty placeholder
+		// body would hand the editor 0-byte media files after a reload and
+		// every decode would fail on "unrecognizable format".
+		const attachments: ProjectAttachment[] = [];
+		for (const entry of payload ?? []) {
+			const loaded = await this.loadAttachment({
+				projectId: args.projectId,
+				key: entry.key,
+			});
+			if (loaded === null) continue;
+			attachments.push(loaded);
+		}
+		return attachments;
 	}
 
 	async loadAttachment(args: {

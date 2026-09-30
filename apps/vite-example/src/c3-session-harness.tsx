@@ -98,6 +98,7 @@ function seedEditorState({
 				updatedAt: now,
 			},
 			scenes: [scene],
+			motionTextSequences: [],
 			currentSceneId: scene.id,
 			settings: {
 				fps: { numerator: 30, denominator: 1 },
@@ -128,9 +129,13 @@ async function renderOwnedFrame({
 	const renderTree = buildScene({
 		tracks: editor.scenes.getActiveScene().tracks,
 		mediaAssets: editor.media.getAssets(),
+		motionTextSequences: active.motionTextSequences,
+		motionTextFontRuntime: editor.renderer.motionTextFontRuntime,
+		motionTextProjectId: active.metadata.id,
 		duration: editor.timeline.getTotalDuration(),
 		canvasSize: active.settings.canvasSize,
 		background: { type: "color", color },
+		isPreview: true,
 		assetResolver: editor.renderer.assetResolver,
 	});
 	editor.renderer.setRenderTree({ renderTree });

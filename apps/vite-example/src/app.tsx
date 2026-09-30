@@ -4,7 +4,10 @@ import { Toaster } from "@opencut/editor-classic/ui";
 import { TooltipProvider } from "@opencut/editor-classic/ui";
 import { MobileGate } from "@opencut/editor-classic/ui";
 import { SessionEditorSurface } from "@opencut/editor-classic/surface";
-import { EditorSessionHost, useEditorInstance } from "@opencut/editor-classic/session";
+import {
+	EditorSessionHost,
+	useEditorInstance,
+} from "@opencut/editor-classic/session";
 import { ViteEditorHost } from "./host/vite-editor-host";
 import { createViteEditorHost } from "./host/vite-host-config";
 import {
@@ -26,6 +29,7 @@ import { C4WorkerHarness } from "./c4-worker-harness";
 import { C4SessionHarness } from "./c4-session-harness";
 import { C6DisposalHarness } from "@opencut/editor-classic/evidence";
 import { BrowserProjectStore } from "@opencut/editor-classic/storage";
+import { mediaTime } from "@opencut/editor-classic";
 
 const C4_BUILD_MARKER = import.meta.env.VITE_C4_BUILD_MARKER ?? "development";
 
@@ -165,18 +169,32 @@ function HostServedSync({ projectId }: { projectId: string }) {
 			// One render at a time — the compositor is GPU-bound, and a second
 			// concurrent export would starve both.
 			if (exporting.current) {
-				await reportExportFailure(
+				await reportExportFailure({
 					jobId,
-					"this editor pane is already rendering another export",
-				);
+					error: "this editor pane is already rendering another export",
+				});
 				return;
 			}
 			exporting.current = true;
 			try {
 				const result = await editor.renderer.exportProject({
-					options,
+					options: {
+						format: options.format,
+						quality: options.quality,
+						...(options.includeAudio === undefined
+							? {}
+							: { includeAudio: options.includeAudio }),
+						...(options.range === undefined
+							? {}
+							: {
+									range: {
+										startTime: mediaTime({ ticks: options.range.startTime }),
+										endTime: mediaTime({ ticks: options.range.endTime }),
+									},
+								}),
+					},
 					onProgress: ({ progress }) => {
-						void reportExportProgress(jobId, progress)
+						void reportExportProgress({ jobId, progress })
 							.then(({ cancelRequested }) => {
 								if (cancelRequested) cancelledJobs.current.add(jobId);
 							})
@@ -185,21 +203,24 @@ function HostServedSync({ projectId }: { projectId: string }) {
 					onCancel: () => cancelledJobs.current.has(jobId),
 				});
 				if (result.cancelled === true) {
-					await reportExportFailure(jobId, "cancelled");
+					await reportExportFailure({ jobId, error: "cancelled" });
 					return;
 				}
 				if (result.success !== true || result.buffer === undefined) {
-					await reportExportFailure(jobId, result.error ?? "export failed");
+					await reportExportFailure({
+						jobId,
+						error: result.error ?? "export failed",
+					});
 					return;
 				}
-				await uploadExportResult(jobId, result.buffer);
+				await uploadExportResult({ jobId, bytes: result.buffer });
 			} catch (error) {
 				// The host must hear about every failure: a job nobody settles
 				// only ends when the staleness sweep kills it minutes later.
-				await reportExportFailure(
+				await reportExportFailure({
 					jobId,
-					error instanceof Error ? error.message : String(error),
-				);
+					error: error instanceof Error ? error.message : String(error),
+				});
 			} finally {
 				exporting.current = false;
 				cancelledJobs.current.delete(jobId);
@@ -225,9 +246,9 @@ function HostServedSync({ projectId }: { projectId: string }) {
 			onRevision: () => {
 				window.clearTimeout(timer);
 				timer = window.setTimeout(() => {
-					void editor.project.loadProject({ id: projectId }).catch(
-						() => undefined,
-					);
+					void editor.project
+						.loadProject({ id: projectId })
+						.catch(() => undefined);
 				}, 250);
 			},
 			onCommand,

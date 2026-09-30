@@ -25,7 +25,7 @@ const REQUIRED_LAYERS = [
 	"ort-sidecar",
 ];
 const FIRST_PARTY_PATH =
-	/^\/(?:_next(?:\/|$)|assets(?:\/|$)|fonts(?:\/|$)|flags(?:\/|$)|effects(?:\/|$)|logos(?:\/|$)|workers(?:\/|$)|favicon(?:\.|\/|$)|api\/(?:sounds\/search|feedback)(?:[/?#]|$))/;
+	/^\/(?:_next(?:\/|$)|assets(?:\/|$)|motion-text(?:\/|$)|fonts(?:\/|$)|flags(?:\/|$)|effects(?:\/|$)|logos(?:\/|$)|workers(?:\/|$)|favicon(?:\.|\/|$)|api\/(?:sounds\/search|feedback)(?:[/?#]|$))/;
 const PUBLIC_ORIGIN = "https://opencut.invalid";
 
 function digest(bytes) {

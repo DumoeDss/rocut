@@ -10,7 +10,10 @@ import type {
 import type { ExportOptions, ExportResult, ExportState } from "../../export";
 import { toast } from "sonner";
 import { generateUUID } from "../../utils/id";
-import { UpdateProjectSettingsCommand } from "../../commands/project";
+import {
+	UpdateMotionTextSequenceCommand,
+	UpdateProjectSettingsCommand,
+} from "../../commands/project";
 import { DEFAULT_BACKGROUND_COLOR } from "../../background/color";
 import { DEFAULT_CANVAS_SIZE } from "../../canvas/sizes";
 import { DEFAULT_FPS } from "../../fps/defaults";
@@ -25,6 +28,8 @@ import { DEFAULTS } from "../../timeline/defaults";
 import { getElementFontFamilies } from "../../timeline/element-utils";
 import { getRaisedProjectFpsForImportedMedia } from "../../fps/utils";
 import type { MediaAsset } from "../../media/types";
+import type { MotionTextSequence } from "@opencut/editor-contracts";
+import { resolveMediaTimeRange, type MediaTimeRange } from "../../wasm";
 
 export interface MigrationState {
 	isMigrating: boolean;
@@ -52,6 +57,7 @@ export class ProjectManager {
 		result: null,
 	};
 	private exportCancelRequested = false;
+	private exportRange: MediaTimeRange | null = null;
 
 	constructor(private editor: EditorCore) {}
 
@@ -66,6 +72,7 @@ export class ProjectManager {
 				updatedAt: new Date(),
 			},
 			scenes: [mainScene],
+			motionTextSequences: [],
 			currentSceneId: mainScene.id,
 			settings: {
 				fps: DEFAULT_FPS,
@@ -91,6 +98,7 @@ export class ProjectManager {
 				});
 			}
 			this.active = newProject;
+			this.exportRange = null;
 			this.editor.scenes.initializeScenes({
 				scenes: newProject.scenes,
 				currentSceneId: newProject.currentSceneId,
@@ -144,6 +152,7 @@ export class ProjectManager {
 			}
 
 			this.active = project;
+			this.exportRange = null;
 			this.notify();
 
 			if (project.scenes && project.scenes.length > 0) {
@@ -249,6 +258,28 @@ export class ProjectManager {
 		return this.exportState;
 	}
 
+	setExportRange({ range }: { range: MediaTimeRange }): void {
+		const resolved = resolveMediaTimeRange({
+			range,
+			timelineDuration: this.editor.timeline.getTotalDuration(),
+		});
+		this.exportRange = {
+			startTime: resolved.startTime,
+			endTime: resolved.endTime,
+		};
+		this.notify();
+	}
+
+	clearExportRange(): void {
+		if (!this.exportRange) return;
+		this.exportRange = null;
+		this.notify();
+	}
+
+	getExportRange(): MediaTimeRange | null {
+		return this.exportRange ? { ...this.exportRange } : null;
+	}
+
 	async loadAllProjects(): Promise<void> {
 		if (!this.isInitialized) {
 			this.isLoading = true;
@@ -297,6 +328,7 @@ export class ProjectManager {
 				await this.editor.transactions?.retire();
 				await this.editor.media.clearAllAssets();
 				this.active = null;
+				this.exportRange = null;
 				this.editor.scenes.clearScenes();
 			}
 
@@ -318,6 +350,7 @@ export class ProjectManager {
 		await this.editor.transactions?.retire();
 		await this.editor.media.clearAllAssets();
 		this.active = null;
+		this.exportRange = null;
 		this.notify();
 		this.editor.scenes.clearScenes();
 	}
@@ -525,6 +558,16 @@ export class ProjectManager {
 		this.editor.command.executeWithoutHistory({ command });
 	}
 
+	async updateMotionTextSequence({
+		sequence,
+	}: {
+		sequence: MotionTextSequence;
+	}): Promise<void> {
+		await this.editor.command.execute({
+			command: new UpdateMotionTextSequenceCommand(sequence),
+		});
+	}
+
 	async ratchetFpsForImportedMedia({
 		importedAssets,
 	}: {
@@ -701,9 +744,13 @@ export class ProjectManager {
 		const scene = buildScene({
 			tracks,
 			mediaAssets,
+			motionTextSequences: this.active.motionTextSequences,
+			motionTextFontRuntime: this.editor.renderer.motionTextFontRuntime,
+			motionTextProjectId: this.active.metadata.id,
 			duration: duration || 1,
 			canvasSize,
 			background,
+			isPreview: true,
 			assetResolver: this.editor.renderer.assetResolver,
 		});
 

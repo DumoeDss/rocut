@@ -1,5 +1,6 @@
 import type { SceneTracks, TimelineTrack } from "../../timeline";
 import type { MediaAsset } from "../../media/types";
+import type { MotionTextSequence } from "@opencut/editor-contracts";
 import { RootNode } from "./nodes/root-node";
 import { VideoNode } from "./nodes/video-node";
 import { ImageNode } from "./nodes/image-node";
@@ -9,6 +10,10 @@ import { GraphicNode } from "./nodes/graphic-node";
 import { ColorNode } from "./nodes/color-node";
 import { BlurBackgroundNode } from "./nodes/blur-background-node";
 import { EffectLayerNode } from "./nodes/effect-layer-node";
+import {
+	MotionTextNode,
+	type MotionTextTimeMapper,
+} from "./nodes/motion-text-node";
 import type { AnyBaseNode } from "./nodes/base-node";
 import type { TBackground, TCanvasSize } from "../../project/types";
 import { DEFAULT_BACKGROUND_BLUR_INTENSITY } from "../../background/blur";
@@ -18,6 +23,7 @@ import {
 	readOpacityFromParams,
 } from "../../rendering";
 import type { AssetResolver } from "@opencut/editor-ports";
+import type { MotionTextFontRuntime } from "./motion-text/font-runtime";
 
 const PREVIEW_MAX_IMAGE_SIZE = 2048;
 
@@ -34,12 +40,20 @@ function getVisibleSortedElements({ track }: { track: TimelineTrack }) {
 function buildTrackNodes({
 	tracks,
 	mediaMap,
+	motionTextMap,
+	motionTextTimeMapper,
+	motionTextFontRuntime,
+	motionTextProjectId,
 	canvasSize,
 	isPreview,
 	assetResolver,
 }: {
 	tracks: TimelineTrack[];
 	mediaMap: Map<string, MediaAsset>;
+	motionTextMap: ReadonlyMap<string, MotionTextSequence>;
+	motionTextTimeMapper?: MotionTextTimeMapper;
+	motionTextFontRuntime?: MotionTextFontRuntime;
+	motionTextProjectId?: string;
 	canvasSize: TCanvasSize;
 	isPreview?: boolean;
 	assetResolver: AssetResolver;
@@ -163,6 +177,30 @@ function buildTrackNodes({
 					}),
 				);
 			}
+
+			if (element.type === "motion-text") {
+				const sequence = motionTextMap.get(element.sequenceId);
+				if (!sequence) continue;
+				nodes.push(
+					new MotionTextNode({
+						elementId: element.id,
+						sequence,
+						timeMapper: motionTextTimeMapper,
+						fontRuntime: motionTextFontRuntime,
+						projectId: motionTextProjectId,
+						renderPurpose: isPreview ? "preview" : "export",
+						duration: element.duration,
+						timeOffset: element.startTime,
+						trimStart: element.trimStart,
+						trimEnd: element.trimEnd,
+						transform: buildTransformFromParams({ params: element.params }),
+						animations: element.animations,
+						opacity: readOpacityFromParams({ params: element.params }),
+						blendMode: readBlendModeFromParams({ params: element.params }),
+						effects: element.effects ?? [],
+					}),
+				);
+			}
 		}
 	}
 
@@ -222,6 +260,11 @@ export type BuildSceneParams = {
 	canvasSize: TCanvasSize;
 	tracks: SceneTracks;
 	mediaAssets: MediaAsset[];
+	/** Additive for schema v32; legacy and non-project callers render none. */
+	motionTextSequences?: readonly MotionTextSequence[];
+	motionTextTimeMapper?: MotionTextTimeMapper;
+	motionTextFontRuntime?: MotionTextFontRuntime;
+	motionTextProjectId?: string;
 	duration: number;
 	background: TBackground;
 	isPreview?: boolean;
@@ -232,6 +275,10 @@ export function buildScene({
 	canvasSize,
 	tracks,
 	mediaAssets,
+	motionTextSequences = [],
+	motionTextTimeMapper,
+	motionTextFontRuntime,
+	motionTextProjectId,
 	duration,
 	background,
 	isPreview,
@@ -239,6 +286,9 @@ export function buildScene({
 }: BuildSceneParams) {
 	const rootNode = new RootNode({ duration });
 	const mediaMap = new Map(mediaAssets.map((m) => [m.id, m]));
+	const motionTextMap = new Map(
+		motionTextSequences.map((sequence) => [sequence.id, sequence]),
+	);
 
 	const visibleTracks = [
 		...tracks.overlay.filter((track) => !("hidden" in track && track.hidden)),
@@ -250,6 +300,10 @@ export function buildScene({
 	const allNodes = buildTrackNodes({
 		tracks: orderedTracksBottomToTop,
 		mediaMap,
+	motionTextMap,
+	motionTextTimeMapper,
+	motionTextFontRuntime,
+	motionTextProjectId,
 		canvasSize,
 		isPreview,
 		assetResolver,

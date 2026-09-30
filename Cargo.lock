@@ -3369,6 +3369,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "motion-text"
+version = "0.1.0"
+dependencies = [
+ "bridge",
+ "regex",
+ "serde",
+ "serde_bytes",
+ "serde_json",
+ "sha2",
+ "time",
+ "tsify-next",
+ "ttf-parser 0.25.1",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "moxcms"
 version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3829,6 +3845,7 @@ dependencies = [
  "gpu",
  "js-sys",
  "masks",
+ "motion-text",
  "num-traits",
  "serde",
  "serde-wasm-bindgen",
@@ -4949,6 +4966,16 @@ dependencies = [
  "js-sys",
  "serde",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "serde_bytes"
+version = "0.11.19"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a5d440709e79d88e51ac01c4b72fc6cb7314017bb7da9eeff678aa94c10e3ea8"
+dependencies = [
+ "serde",
+ "serde_core",
 ]
 
 [[package]]

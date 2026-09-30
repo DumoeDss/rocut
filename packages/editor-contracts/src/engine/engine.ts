@@ -135,7 +135,10 @@ export async function openTransactionEngine<FeatureName extends string = never>(
 			record,
 			document: committed,
 		});
-		committed = cloneTransactionValue(committed);
+		committed = cloneTransactionValue({
+			...committed,
+			motionTextSequences: committed.motionTextSequences ?? [],
+		});
 	} catch (error) {
 		throw normalizeDecodeFailure({ projectId: options.projectId, error });
 	}
@@ -174,6 +177,7 @@ export async function openTransactionEngine<FeatureName extends string = never>(
 			"dry-run": true,
 			"placement-policy": true,
 			"cross-engine-cas": false,
+			"motion-text-sequences": true,
 		}),
 		optionalFeatures: options.optionalFeatures,
 	};
@@ -197,6 +201,9 @@ export async function openTransactionEngine<FeatureName extends string = never>(
 		},
 		async markers() {
 			return cloneTransactionValue(committed.markers);
+		},
+		async motionTextSequences() {
+			return cloneTransactionValue(committed.motionTextSequences ?? []);
 		},
 		async project() {
 			return committed.project === null

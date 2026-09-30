@@ -13,6 +13,7 @@ const WEB_PUBLIC_ROOT = join(REPO_ROOT, "apps", "web", "public");
 // producer drops or adds a copied path, this checker must not silently agree
 // just because it consumed the producer's manifest as its own oracle.
 const INDEPENDENT_COPIED_ALLOWLIST = [
+	{ path: "motion-text/fonts", kind: "directory" },
 	{ path: "fonts", kind: "directory" },
 	{ path: "flags", kind: "directory" },
 	{ path: "effects/preview.jpg", kind: "file" },

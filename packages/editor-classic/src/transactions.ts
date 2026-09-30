@@ -133,6 +133,7 @@ export function createOpenCutProjectRecord(args: {
 	const project: TProject = {
 		metadata,
 		scenes: [scene],
+		motionTextSequences: [],
 		currentSceneId: scene.id,
 		settings: {
 			fps: { numerator: 30, denominator: 1 },

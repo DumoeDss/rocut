@@ -1,0 +1,308 @@
+{
+	"schemaVersion": 1,
+	"generatedBy": "script/probe-motion-text-export-matrix.mjs",
+	"source": {
+		"canonicalWasm": {
+			"bytes": 5511220,
+			"sha256": "14de620a1bfa38228a43e4103cc557ae7a27bbb30185bfffae91b17d685e75a8"
+		},
+		"canonicalCatalog": {
+			"identity": {
+				"bytes": 606262,
+				"sha256": "9ec6f3be1a297152ccd377456348900fe0f4cc3b7629d21ec319976740f33d12"
+			},
+			"schemaVersion": 1,
+			"totalEntries": 912
+		}
+	},
+	"environment": {
+		"browser": "151.0.7922.34",
+		"userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.7922.34 Safari/537.36"
+	},
+	"config": {
+		"width": 320,
+		"height": 180,
+		"fps": {
+			"numerator": 30,
+			"denominator": 1
+		},
+		"duration": 720000,
+		"seed": 20260928,
+		"previewText": "ROCUT MATRIX\nJIZURA PRESET",
+		"samplePositions": [0.2, 0.5, 0.8]
+	},
+	"fontRuntime": {
+		"generation": 0,
+		"cachedFonts": 1,
+		"loadedFaces": 1,
+		"pendingLoads": 0,
+		"disposed": false
+	},
+	"results": [
+		{
+			"group": "layout",
+			"id": "perspective",
+			"catalog": {
+				"name": "奥行き",
+				"pack": "layoutsA",
+				"sourceFile": "11p_layoutsA.js"
+			},
+			"factory": {
+				"diagnostics": [],
+				"cueCount": 2,
+				"cutCount": 2,
+				"eligibleCutCount": 2,
+				"appliedCutCount": 2
+			},
+			"window": {
+				"startTime": 72000,
+				"duration": 216000
+			},
+			"frames": {
+				"samples": [
+					{
+						"time": 115200,
+						"digest": "0abc5984",
+						"nonBlackPixels": 6792,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 180000,
+						"digest": "f4384601",
+						"nonBlackPixels": 6787,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 244800,
+						"digest": "7daf6487",
+						"nonBlackPixels": 6787,
+						"nonTransparentPixels": 57600
+					}
+				],
+				"combinedSha256": "130389271719f754da8ff9a771225738907861660a26ec2b43b518081c8711cf"
+			},
+			"export": {
+				"frames": 54,
+				"progressEvents": 55,
+				"completeEvents": 1,
+				"errorEvents": 0,
+				"elapsedMs": 389.2,
+				"bufferBytes": 12575,
+				"fileType": "ftyp",
+				"sha256": "c55534e7d51fb38730766aeb4b38ac7f09f904defd83c4e4f299941f1580cf3f"
+			}
+		},
+		{
+			"group": "enter",
+			"id": "assemble",
+			"catalog": {
+				"name": "分解→集合",
+				"pack": "core",
+				"sourceFile": "05_anim.js"
+			},
+			"factory": {
+				"diagnostics": [],
+				"cueCount": 2,
+				"cutCount": 2,
+				"eligibleCutCount": 2,
+				"appliedCutCount": 2
+			},
+			"window": {
+				"startTime": 0,
+				"duration": 36000
+			},
+			"frames": {
+				"samples": [
+					{
+						"time": 7200,
+						"digest": "88d48613",
+						"nonBlackPixels": 2974,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 18000,
+						"digest": "fd9d1a91",
+						"nonBlackPixels": 4019,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 28800,
+						"digest": "b2f8a98d",
+						"nonBlackPixels": 4175,
+						"nonTransparentPixels": 57600
+					}
+				],
+				"combinedSha256": "69a3bd5b6f5d6194e846d340f7b36dd7725d63b34baa25a350f4b86534277b1d"
+			},
+			"export": {
+				"frames": 9,
+				"progressEvents": 10,
+				"completeEvents": 1,
+				"errorEvents": 0,
+				"elapsedMs": 64.4,
+				"bufferBytes": 5933,
+				"fileType": "ftyp",
+				"sha256": "845711c99ab7fcb8650f31a5594bd877aac6bbfdb2585b985e38acc5fc98ee4b"
+			}
+		},
+		{
+			"group": "fx",
+			"id": "mosaic",
+			"catalog": {
+				"name": "モザイク",
+				"pack": "core",
+				"sourceFile": "05b_registry.js"
+			},
+			"factory": {
+				"diagnostics": [],
+				"cueCount": 2,
+				"cutCount": 2,
+				"eligibleCutCount": 2,
+				"appliedCutCount": 2
+			},
+			"window": {
+				"startTime": 72000,
+				"duration": 216000
+			},
+			"frames": {
+				"samples": [
+					{
+						"time": 115200,
+						"digest": "28ef85f1",
+						"nonBlackPixels": 8591,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 180000,
+						"digest": "8f2c70ae",
+						"nonBlackPixels": 8591,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 244800,
+						"digest": "fecda3a7",
+						"nonBlackPixels": 8591,
+						"nonTransparentPixels": 57600
+					}
+				],
+				"combinedSha256": "f81fda61ec06799f7197e12de6b5f64c809e4e5ef6704a6c47d92b621a218b2d"
+			},
+			"export": {
+				"frames": 54,
+				"progressEvents": 55,
+				"completeEvents": 1,
+				"errorEvents": 0,
+				"elapsedMs": 288.3,
+				"bufferBytes": 14581,
+				"fileType": "ftyp",
+				"sha256": "aa7fac4573e11a472f0559239af198f2cc07956dcea24fcf8406b728b2096610"
+			}
+		},
+		{
+			"group": "bg",
+			"id": "noiseField",
+			"catalog": {
+				"name": "ノイズの揺らぎ",
+				"pack": "looks",
+				"sourceFile": "11p_looks.js"
+			},
+			"factory": {
+				"diagnostics": [],
+				"cueCount": 2,
+				"cutCount": 2,
+				"eligibleCutCount": 2,
+				"appliedCutCount": 2
+			},
+			"window": {
+				"startTime": 72000,
+				"duration": 216000
+			},
+			"frames": {
+				"samples": [
+					{
+						"time": 115200,
+						"digest": "f7739b09",
+						"nonBlackPixels": 18162,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 180000,
+						"digest": "0e38f190",
+						"nonBlackPixels": 18573,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 244800,
+						"digest": "4d3709ab",
+						"nonBlackPixels": 18952,
+						"nonTransparentPixels": 57600
+					}
+				],
+				"combinedSha256": "be46456c0b98c0d03644c1ef0e8a322ae709fb30666e94788d81d118b4a02c75"
+			},
+			"export": {
+				"frames": 54,
+				"progressEvents": 55,
+				"completeEvents": 1,
+				"errorEvents": 0,
+				"elapsedMs": 295.6,
+				"bufferBytes": 15787,
+				"fileType": "ftyp",
+				"sha256": "e4799b1c57a927c4040f72d3ba35ead407740662bb83f3ca77079cd886c3fed7"
+			}
+		},
+		{
+			"group": "trans",
+			"id": "hrBlink",
+			"catalog": {
+				"name": "まばたき",
+				"pack": "horror",
+				"sourceFile": "11p_horror3.js"
+			},
+			"factory": {
+				"diagnostics": [],
+				"cueCount": 2,
+				"cutCount": 2,
+				"eligibleCutCount": 1,
+				"appliedCutCount": 1
+			},
+			"window": {
+				"startTime": 360000,
+				"duration": 36000
+			},
+			"frames": {
+				"samples": [
+					{
+						"time": 367200,
+						"digest": "cd2d67e6",
+						"nonBlackPixels": 4223,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 378000,
+						"digest": "1febf641",
+						"nonBlackPixels": 3682,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 388800,
+						"digest": "a83372e9",
+						"nonBlackPixels": 3682,
+						"nonTransparentPixels": 57600
+					}
+				],
+				"combinedSha256": "7d53db6bfd90d252f7255f490d5562db437fdb87f28698d464ba19b070b3447e"
+			},
+			"export": {
+				"frames": 9,
+				"progressEvents": 10,
+				"completeEvents": 1,
+				"errorEvents": 0,
+				"elapsedMs": 52.1,
+				"bufferBytes": 4341,
+				"fileType": "ftyp",
+				"sha256": "5d8ca142311ddf444fa30e662879b4c3af75f40dd00832172ae20c79388992c9"
+			}
+		}
+	]
+}

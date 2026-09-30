@@ -11,10 +11,12 @@ import { generateUUID } from "../../utils/id";
 import { VideoCache } from "../../services/video-cache/service";
 import { WaveformCache } from "../../services/waveform-cache/service";
 import { buildWaveformSourceKey } from "../../media/waveform-summary";
+import { MotionTextAudioAnalysisCache } from "../../services/motion-text-audio-analysis/service";
 
 export class MediaManager {
 	private readonly videoCache: VideoCache;
 	private readonly waveformCache: WaveformCache;
+	private readonly motionTextAudioAnalysisCache: MotionTextAudioAnalysisCache;
 	private assets: MediaAsset[] = [];
 	private isLoading = false;
 	private listeners = new Set<() => void>();
@@ -22,6 +24,9 @@ export class MediaManager {
 	constructor(private editor: EditorCore) {
 		this.videoCache = new VideoCache();
 		this.waveformCache = new WaveformCache(editor.resources);
+		this.motionTextAudioAnalysisCache = new MotionTextAudioAnalysisCache({
+			resources: editor.resources,
+		});
 	}
 
 	async addMediaAsset({
@@ -166,6 +171,7 @@ export class MediaManager {
 		}
 		try {
 			await this.clearCachedMedia({
+				projectId,
 				mediaId: assetId,
 				sourceKey: buildWaveformSourceKey({ kind: "media", id: assetId }),
 			});
@@ -236,6 +242,7 @@ export class MediaManager {
 		await Promise.all([
 			this.videoCache.clearAll(),
 			this.waveformCache.clearAll(),
+			this.motionTextAudioAnalysisCache.clearProject({ projectId }),
 		]);
 		assetsToClear.forEach((asset) => {
 			if (asset.urlHandle) {
@@ -256,6 +263,7 @@ export class MediaManager {
 		await Promise.all([
 			this.videoCache.clearAll(),
 			this.waveformCache.clearAll(),
+			this.motionTextAudioAnalysisCache.clearAll(),
 		]);
 
 		this.assets.forEach((asset) => {
@@ -285,21 +293,35 @@ export class MediaManager {
 		return this.waveformCache;
 	}
 
+	getMotionTextAudioAnalysisCache(): MotionTextAudioAnalysisCache {
+		return this.motionTextAudioAnalysisCache;
+	}
+
 	setAssets({ assets }: { assets: MediaAsset[] }): void {
 		this.assets = assets;
 		this.notify();
 	}
 
 	async clearCachedMedia({
+		projectId,
 		sourceKey,
 		mediaId,
 	}: {
+		projectId?: string;
 		sourceKey?: string;
 		mediaId?: string;
 	}): Promise<void> {
 		await Promise.all([
 			...(mediaId ? [this.videoCache.clearVideo({ mediaId })] : []),
 			...(sourceKey ? [this.waveformCache.clearSource({ sourceKey })] : []),
+			...(projectId && mediaId
+				? [
+						this.motionTextAudioAnalysisCache.clearSource({
+							projectId,
+							assetId: mediaId,
+						}),
+					]
+				: []),
 		]);
 	}
 
@@ -307,6 +329,7 @@ export class MediaManager {
 		await Promise.all([
 			this.videoCache.dispose(),
 			this.waveformCache.dispose(),
+			this.motionTextAudioAnalysisCache.dispose(),
 		]);
 	}
 

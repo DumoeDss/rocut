@@ -280,11 +280,10 @@ export const DRAFT_EDITING_CONFORMANCE_REQUIREMENTS: Readonly<
 		requirement: R_MODES,
 		scenario: "Auto Draft uses the normal approval path",
 	},
-	"T2: same-Draft invocation order and terminal queue observation are stable":
-		{
-			requirement: R_MODES,
-			scenario: "Mode fallback is forbidden",
-		},
+	"T2: same-Draft invocation order and terminal queue observation are stable": {
+		requirement: R_MODES,
+		scenario: "Mode fallback is forbidden",
+	},
 	"T2: empty and mode-incompatible approval are structured and non-terminal": {
 		requirement: R_MODES,
 		scenario: "Manual Draft accumulates until an explicit decision",
@@ -380,6 +379,11 @@ export const TRANSACTION_VECTOR_REQUIREMENTS: Readonly<
 	"document/delete-marker": {
 		requirement: R_APPLY,
 	},
+	"document/motion-text-sequence-lifecycle": {
+		requirement: R_APPLY,
+		scenario:
+			"Motion-text sequence create, revision-checked replace, and delete are atomic",
+	},
 	"document/update-project": {
 		requirement: R_PROJECT,
 		scenario: "Patch keys and the resulting Project are validated",
@@ -422,7 +426,8 @@ export const TRANSACTION_VECTOR_REQUIREMENTS: Readonly<
 	},
 	"document/validation-expected-revision-conflict": {
 		requirement: R_VALIDATE,
-		scenario: "Expected revision and idempotency are evaluated without reservation",
+		scenario:
+			"Expected revision and idempotency are evaluated without reservation",
 	},
 	"document/placement-collision": {
 		requirement: R_PLACEMENT,
@@ -453,7 +458,8 @@ export const TRANSACTION_VECTOR_REQUIREMENTS: Readonly<
 	},
 	"scenario/agent-transaction-walk": {
 		requirement: R_PROJECT,
-		scenario: "Agent evidence exercises the twelfth operation without inference",
+		scenario:
+			"Agent evidence exercises the twelfth operation without inference",
 	},
 };
 
@@ -513,9 +519,7 @@ export function formatConformanceFailures(
 		return formatVectorFailures(report as VectorRunReport);
 	}
 	const typed = report as ConformanceReport;
-	const failed = typed.results.filter(
-		(result) => result.status === "failed",
-	);
+	const failed = typed.results.filter((result) => result.status === "failed");
 	const lines: string[] = [
 		`conformance failures: ${typed.label} — ${failed.length} failed of ${typed.results.length}`,
 	];

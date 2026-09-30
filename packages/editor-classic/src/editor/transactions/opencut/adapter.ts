@@ -12,10 +12,7 @@ import type {
 	ProjectSummary,
 } from "@opencut/editor-ports";
 import { cloneOpaque } from "../../persistence/opaque-value";
-import {
-	decodeProject,
-	encodeProject,
-} from "../../persistence/project-codec";
+import { decodeProject, encodeProject } from "../../persistence/project-codec";
 import type { TProject } from "../../../project/types";
 import type {
 	Bookmark,
@@ -177,6 +174,14 @@ function newElement(clip: Clip, asset: Asset | undefined): TimelineElement {
 		...(asset?.duration !== undefined && { sourceDuration: asset.duration }),
 		params: {},
 	};
+	if (clip.content?.kind === "motion-text") {
+		return {
+			...base,
+			type: "motion-text",
+			sequenceId: clip.content.sequenceId,
+			hidden: false,
+		} as unknown as TimelineElement;
+	}
 	if (asset?.kind === "audio") {
 		return {
 			...base,
@@ -209,7 +214,12 @@ function overlayElement(
 	previous: TimelineElement | undefined,
 	asset: Asset | undefined,
 ): TimelineElement {
-	const base = previous ?? newElement(clip, asset);
+	const previousMatchesContent =
+		previous !== undefined &&
+		(clip.content?.kind === "motion-text"
+			? previous.type === "motion-text"
+			: previous.type !== "motion-text");
+	const base = previousMatchesContent ? previous : newElement(clip, asset);
 	const next = {
 		...base,
 		id: clip.id,
@@ -219,6 +229,9 @@ function overlayElement(
 		trimEnd: clip.trimEnd,
 	} as unknown as TimelineElement & { mediaId?: string };
 	if (clip.assetId !== undefined) next.mediaId = clip.assetId;
+	if (clip.content?.kind === "motion-text" && next.type === "motion-text") {
+		next.sequenceId = clip.content.sequenceId;
+	}
 	return next;
 }
 
@@ -265,6 +278,9 @@ function applyPublicDocument({
 			height: document.project.canvasHeight,
 		},
 	};
+	project.motionTextSequences = [
+		...cloneOpaque(document.motionTextSequences ?? []),
+	];
 	const activeScene = project.scenes.find(
 		(scene) => scene.id === project.currentSceneId,
 	);

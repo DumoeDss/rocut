@@ -36,7 +36,7 @@
 		},
 		"./storage/migrations": {
 			"class": "provider",
-			"reason": "The react-free migration chain (runner, 31 transformers, CURRENT_PROJECT_VERSION) — Classic's own machinery; carries the known wasm-init constraint stated in this package's README as policy truth."
+			"reason": "The react-free migration chain (runner, 32 transformers, CURRENT_PROJECT_VERSION) — Classic's own machinery; carries the known wasm-init constraint stated in this package's README as policy truth."
 		},
 		"./transactions": {
 			"class": "provider",
@@ -45,6 +45,10 @@
 		"./frame-proof": {
 			"class": "provider",
 			"reason": "The composed-frame proof (canonical frame description + SHA-256) - Classic's own machinery, deterministic by construction; the S07 agent verification primitive."
+		},
+		"./motion-text/factory": {
+			"class": "provider",
+			"reason": "The React-free Rust/WASM motion-text factory and renderer support manifest used by host automation."
 		},
 		"./project": {
 			"class": "provider",

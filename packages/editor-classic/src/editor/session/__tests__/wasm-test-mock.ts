@@ -35,6 +35,14 @@ const canvasCaptures: Array<{
 	content: string;
 	operationIndex: number;
 }> = [];
+const textureUploads: Array<{
+	handle: number;
+	id: string;
+	source: unknown;
+	width: number;
+	height: number;
+}> = [];
+const textureReleases: Array<{ handle: number; id: string }> = [];
 let heldCanvasCapture:
 	| {
 			entered: () => void;
@@ -85,6 +93,12 @@ export const wasmTestControl = {
 	},
 	canvasCaptures() {
 		return [...canvasCaptures];
+	},
+	textureUploads() {
+		return [...textureUploads];
+	},
+	textureReleases() {
+		return [...textureReleases];
 	},
 	holdNextCanvasCapture() {
 		let markEntered!: () => void;
@@ -426,12 +440,91 @@ mock.module("opencut-wasm", () => ({
 		compositorCanvases.clear();
 	},
 	lastFrameTime: ({ duration }: { duration: number }) => duration,
+	mapMotionTextClipTime: ({
+		clipStartTime,
+		clipDuration,
+		trimStart,
+		timelineTime,
+		sequenceDuration,
+	}: {
+		clipStartTime: number;
+		clipDuration: number;
+		trimStart: number;
+		timelineTime: number;
+		sequenceDuration: number;
+	}) => {
+		const sequenceTime = trimStart + timelineTime - clipStartTime;
+		const active =
+			clipDuration > 0 &&
+			trimStart >= 0 &&
+			sequenceDuration > 0 &&
+			timelineTime >= clipStartTime &&
+			timelineTime < clipStartTime + clipDuration &&
+			sequenceTime >= 0 &&
+			sequenceTime < sequenceDuration;
+		return { active, sequenceTime: active ? sequenceTime : undefined };
+	},
+	mapMotionTextSequenceTimeToTimeline: ({
+		clipStartTime,
+		clipDuration,
+		trimStart,
+		sequenceTime,
+		sequenceDuration,
+	}: {
+		clipStartTime: number;
+		clipDuration: number;
+		trimStart: number;
+		sequenceTime: number;
+		sequenceDuration: number;
+	}) => {
+		const visibleSequenceEnd = Math.min(
+			trimStart + clipDuration,
+			sequenceDuration,
+		);
+		const active =
+			clipDuration > 0 &&
+			trimStart >= 0 &&
+			trimStart < sequenceDuration &&
+			sequenceDuration > 0 &&
+			sequenceTime >= trimStart &&
+			sequenceTime < visibleSequenceEnd;
+		return {
+			active,
+			timelineTime: active
+				? clipStartTime + sequenceTime - trimStart
+				: undefined,
+		};
+	},
 	mediaTimeFromSeconds: ({ seconds }: { seconds: number }) =>
 		Math.round(seconds * TICKS_PER_SECOND),
 	mediaTimeToSeconds: ({ time }: { time: number }) => time / TICKS_PER_SECOND,
+	validateMediaTimeRange: ({
+		startTime,
+		endTime,
+		timelineDuration,
+	}: {
+		startTime: number;
+		endTime: number;
+		timelineDuration: number;
+	}) => {
+		const error =
+			timelineDuration <= 0
+				? "invalid-timeline-duration"
+				: startTime < 0
+					? "start-before-zero"
+					: endTime <= startTime
+						? "end-not-after-start"
+						: endTime > timelineDuration
+							? "end-after-timeline-duration"
+							: null;
+		return { duration: error === null ? endTime - startTime : null, error };
+	},
 	parseTimecode: () => null,
 	releaseTexture: () => {},
-	releaseTextureForHandle: () => {},
+	// eslint-disable-next-line opencut/prefer-object-params -- mirrors the positional wasm-bindgen API
+	releaseTextureForHandle: (handle: number, id: string) => {
+		textureReleases.push({ handle, id });
+	},
 	renderFrame: () => {},
 	// eslint-disable-next-line opencut/prefer-object-params -- mirrors the positional wasm-bindgen API
 	renderFrameForHandle: (
@@ -471,7 +564,18 @@ mock.module("opencut-wasm", () => ({
 	roundToFrame: ({ time }: { time: number }) => Math.round(time),
 	snappedSeekTime: ({ time }: { time: number }) => time,
 	uploadTexture: () => {},
-	uploadTextureForHandle: () => {},
+	// eslint-disable-next-line opencut/prefer-object-params -- mirrors the positional wasm-bindgen API
+	uploadTextureForHandle: (
+		handle: number,
+		texture: {
+			id: string;
+			source: unknown;
+			width: number;
+			height: number;
+		},
+	) => {
+		textureUploads.push({ handle, ...texture });
+	},
 	WasmRuntimeGraphicsQuery: MockRuntimeGraphicsQuery,
 	WasmRuntimeGpuResourceQuery: MockRuntimeGpuQuery,
 }));

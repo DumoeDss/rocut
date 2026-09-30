@@ -302,6 +302,9 @@ describe("usage and listing surfaces (task 3.6)", () => {
 		expect(usage).toContain("host ensure <project-dir>");
 		expect(usage).toContain("target reap [--project <dir>] [--dry-run]");
 		expect(usage).toContain("[--project <dir>]");
+		expect(usage).toContain("motion-text create <spec.json>");
+		expect(usage).toContain("motion-text mutate <sequence-id>");
+		expect(usage).toContain("motion-text vary <sequence-id>");
 		expect(usage).not.toContain("--mode");
 	});
 	test("target list shows lastActive only for entries that have one", async () => {

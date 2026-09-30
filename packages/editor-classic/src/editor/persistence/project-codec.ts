@@ -65,6 +65,7 @@ const ELEMENT_KEYS = [
 	"intrinsicWidth",
 	"intrinsicHeight",
 	"definitionId",
+	"sequenceId",
 	"effectType",
 ] as const;
 
@@ -125,6 +126,9 @@ export function decodeProject(data: unknown): TProject {
 			updatedAt: date(metadata.updatedAt, "metadata.updatedAt"),
 		},
 		scenes: raw.scenes.map(decodeScene),
+		motionTextSequences: Array.isArray(raw.motionTextSequences)
+			? cloneOpaque(raw.motionTextSequences)
+			: [],
 		currentSceneId: text(raw.currentSceneId, "currentSceneId"),
 		settings: cloneOpaque(raw.settings) as TProject["settings"],
 		version: raw.version as number,
@@ -193,10 +197,17 @@ export function encodeProject({
 			updatedAt: project.metadata.updatedAt.toISOString(),
 		},
 		scenes: project.scenes.map(encodeScene),
+		motionTextSequences: cloneOpaque(project.motionTextSequences),
 		currentSceneId: project.currentSceneId,
 		settings: cloneOpaque(project.settings),
 		version: project.version,
 		timelineViewState: cloneOpaque(project.timelineViewState),
 	};
-	return overlayOpaque({ retained, known });
+	const encoded = overlayOpaque({ retained, known });
+	// A motion-text update is a full entity replacement. The decoded entity
+	// already carries opaque extensions, so merging it with an older persisted
+	// entity would incorrectly resurrect removed optional fields (for example a
+	// resolved plan after undo, or inherited cue overrides).
+	encoded.motionTextSequences = cloneOpaque(project.motionTextSequences);
+	return encoded;
 }

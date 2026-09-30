@@ -509,6 +509,117 @@
 			}
 		},
 		{
+			"id": "document/motion-text-sequence-lifecycle",
+			"title": "Motion-text sequences support atomic create, revision-checked replace and delete",
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Vector corpus project",
+					"frameRate": { "numerator": 30, "denominator": 1 },
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [],
+				"clips": [],
+				"assets": [],
+				"markers": []
+			},
+			"batch": {
+				"operations": [
+					{
+						"kind": "create-motion-text-sequence",
+						"sequence": {
+							"id": "sequence-vector",
+							"schemaVersion": 1,
+							"revision": 0,
+							"source": { "format": "plain", "text": "Title" },
+							"language": "en",
+							"duration": 120000,
+							"compositionMode": "overlay",
+							"seed": 7,
+							"engine": {
+								"id": "jizura",
+								"version": "0.9.0",
+								"catalogHash": "vector-catalog",
+								"plannerVersion": 1,
+								"tokenizerVersion": "unicode-v1"
+							},
+							"fonts": [],
+							"defaults": {
+								"preset": {
+									"style": "base",
+									"layout": "center",
+									"enter": "fade",
+									"hold": "still",
+									"exit": "fade",
+									"decor": [],
+									"treat": "none",
+									"bg": "transparent",
+									"cam": "static",
+									"fx": [],
+									"trans": null
+								},
+								"colors": {},
+								"parameters": {}
+							},
+							"cues": []
+						}
+					},
+					{
+						"kind": "update-motion-text-sequence",
+						"sequenceId": "sequence-vector",
+						"expectedSequenceRevision": 0,
+						"sequence": {
+							"id": "sequence-vector",
+							"schemaVersion": 1,
+							"revision": 1,
+							"source": { "format": "plain", "text": "Updated title" },
+							"language": "en",
+							"duration": 120000,
+							"compositionMode": "overlay",
+							"seed": 7,
+							"engine": {
+								"id": "jizura",
+								"version": "0.9.0",
+								"catalogHash": "vector-catalog",
+								"plannerVersion": 1,
+								"tokenizerVersion": "unicode-v1"
+							},
+							"fonts": [],
+							"defaults": {
+								"preset": {
+									"style": "base",
+									"layout": "center",
+									"enter": "fade",
+									"hold": "still",
+									"exit": "fade",
+									"decor": [],
+									"treat": "none",
+									"bg": "transparent",
+									"cam": "static",
+									"fx": [],
+									"trans": null
+								},
+								"colors": {},
+								"parameters": {}
+							},
+							"cues": []
+						}
+					},
+					{
+						"kind": "delete-motion-text-sequence",
+						"sequenceId": "sequence-vector",
+						"expectedSequenceRevision": 1
+					}
+				]
+			},
+			"expect": {
+				"outcome": "accepted",
+				"revisionDelta": 1,
+				"watchDelta": 1
+			}
+		},
+		{
 			"id": "document/update-project",
 			"title": "A typed Project patch changes only the public Project fields",
 			"initialDocument": {

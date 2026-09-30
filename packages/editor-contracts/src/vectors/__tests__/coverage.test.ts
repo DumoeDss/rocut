@@ -28,13 +28,13 @@ describe("coverage of the frozen contract", () => {
 		}
 	});
 
-	test("the corpus advertises all twelve operation kinds by measurement", () => {
+	test("the corpus advertises all operation kinds by measurement", () => {
 		const report = computeVectorCoverage({ corpus, contract });
 		const kinds = report.dimensions.find(
 			(dimension) => dimension.name === "operationKind",
 		);
 		expect(kinds?.members.length).toBe(OPERATION_KINDS.length);
-		expect(OPERATION_KINDS.length).toBe(12);
+		expect(OPERATION_KINDS.length).toBe(15);
 		expect(kinds?.uncovered).toEqual([]);
 		expect(
 			kinds?.members.find((member) => member.member === "update-project")

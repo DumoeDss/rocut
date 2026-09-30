@@ -159,7 +159,7 @@ versions and rerun the tarball workflow when adopting a new minor.
 ## Migration coverage
 
 The production leg loads the published Classic chain through the routed wasm
-entry and validates the real 31-step `0.2.0` chain with no mock in the process.
+entry and validates the real 32-step `0.2.0` chain with no mock in the process.
 It covers migration progress, the `not-needed` repeat, a declining transform
 that fails closed, and the ports migration case. The supported Bun path must
 report `classic chain: loaded` and `migration/by-replication: green`; the

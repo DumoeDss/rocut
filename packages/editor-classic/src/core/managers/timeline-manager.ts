@@ -12,7 +12,11 @@ import type {
 import { calculateTotalDuration } from "../../timeline";
 import { TimelineDragSource } from "../../timeline/drag-source";
 import { findTrackInSceneTracks } from "../../timeline/track-element-update";
-import { lastFrameMediaTime, type MediaTime, ZERO_MEDIA_TIME } from "../../wasm";
+import {
+	lastFrameMediaTime,
+	type MediaTime,
+	ZERO_MEDIA_TIME,
+} from "../../wasm";
 import {
 	canElementBeHidden,
 	canElementHaveAudio,
@@ -64,6 +68,7 @@ import type {
 	PlannedTrackCreation,
 } from "../../timeline/group-move";
 import { ProviderPrivateCompositeCommand } from "../../commands/provider-private-composite";
+import type { MotionTextSequence } from "@opencut/editor-contracts";
 
 export class TimelineManager {
 	private listeners = new Set<() => void>();
@@ -87,6 +92,28 @@ export class TimelineManager {
 	insertElement({ element, placement }: InsertElementParams): void {
 		const command = new InsertElementCommand({ element, placement });
 		this.editor.command.execute({ command });
+	}
+
+	async insertMotionTextSequence({
+		sequence,
+		element,
+		placement,
+	}: {
+		sequence: MotionTextSequence;
+		element: Extract<InsertElementParams["element"], { type: "motion-text" }>;
+		placement: InsertElementParams["placement"];
+	}): Promise<{ trackId: string; elementId: string }> {
+		const command = new InsertElementCommand({
+			element,
+			placement,
+			motionTextSequence: sequence,
+		});
+		await this.editor.command.execute({ command });
+		const trackId = command.getTrackId();
+		if (!trackId) {
+			throw new Error("Motion-text insertion did not resolve a target track.");
+		}
+		return { trackId, elementId: command.getElementId() };
 	}
 
 	updateElementTrim({
@@ -807,10 +834,15 @@ export class TimelineManager {
 
 	duplicateElements({
 		elements,
+		motionTextCopyMode = "shared",
 	}: {
 		elements: { trackId: string; elementId: string }[];
+		motionTextCopyMode?: "shared" | "independent";
 	}): Promise<{ trackId: string; elementId: string }[]> {
-		const command = new DuplicateElementsCommand({ elements });
+		const command = new DuplicateElementsCommand({
+			elements,
+			motionTextCopyMode,
+		});
 		return this.editor.command
 			.execute({ command })
 			.then(() => command.getDuplicatedElements());

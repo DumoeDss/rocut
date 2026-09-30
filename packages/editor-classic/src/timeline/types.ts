@@ -54,7 +54,7 @@ export interface AudioTrack extends BaseTrack {
 
 export interface GraphicTrack extends BaseTrack {
 	type: "graphic";
-	elements: (StickerElement | GraphicElement)[];
+	elements: (StickerElement | GraphicElement | MotionTextElement)[];
 	hidden: boolean;
 }
 
@@ -156,6 +156,13 @@ export interface GraphicElement extends BaseTimelineElement {
 	masks?: Mask[];
 }
 
+export interface MotionTextElement extends BaseTimelineElement {
+	type: "motion-text";
+	sequenceId: string;
+	hidden?: boolean;
+	effects?: Effect[];
+}
+
 export interface EffectElement extends BaseTimelineElement {
 	type: "effect";
 	effectType: string;
@@ -170,6 +177,7 @@ export type TimelineElement =
 	| TextElement
 	| StickerElement
 	| GraphicElement
+	| MotionTextElement
 	| EffectElement;
 
 export type ElementType = TimelineElement["type"];
@@ -198,6 +206,7 @@ export const VISUAL_ELEMENT_TYPES = elementTypes(
 	"text",
 	"sticker",
 	"graphic",
+	"motion-text",
 );
 
 export type VisualElement = Extract<
@@ -215,6 +224,7 @@ export type CreateImageElement = Omit<ImageElement, "id">;
 export type CreateTextElement = Omit<TextElement, "id">;
 export type CreateStickerElement = Omit<StickerElement, "id">;
 export type CreateGraphicElement = Omit<GraphicElement, "id">;
+export type CreateMotionTextElement = Omit<MotionTextElement, "id">;
 export type CreateEffectElement = Omit<EffectElement, "id">;
 export type CreateTimelineElement =
 	| CreateAudioElement
@@ -223,6 +233,7 @@ export type CreateTimelineElement =
 	| CreateTextElement
 	| CreateStickerElement
 	| CreateGraphicElement
+	| CreateMotionTextElement
 	| CreateEffectElement;
 
 export interface ElementDragState {

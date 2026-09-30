@@ -987,6 +987,18 @@ function GraphicElementContent({
 	);
 }
 
+function MotionTextElementContent({
+	element,
+}: {
+	element: Extract<TimelineElementType, { type: "motion-text" }>;
+}) {
+	return (
+		<div className="flex size-full items-center justify-start pl-2">
+			<span className="truncate text-xs text-white">{element.name}</span>
+		</div>
+	);
+}
+
 function AudioElementContent({
 	element,
 	trackId,
@@ -1184,6 +1196,8 @@ function ElementContent({ element, track }: ElementContentProps) {
 			return <StickerElementContent element={element} />;
 		case "graphic":
 			return <GraphicElementContent element={element} />;
+		case "motion-text":
+			return <MotionTextElementContent element={element} />;
 		case "audio":
 			return <AudioElementContent element={element} trackId={track.id} />;
 		case "video":

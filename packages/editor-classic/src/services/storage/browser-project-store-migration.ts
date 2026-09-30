@@ -346,6 +346,15 @@ export async function runBrowserProjectMigration(args: {
 			}
 			return { pair, decoded };
 		});
+		const future = discovered.find(
+			({ decoded }) =>
+				decoded.record.schemaVersion > BROWSER_STORE_SCHEMA_VERSION,
+		);
+		if (future) {
+			throw new Error(
+				`Project schema ${future.decoded.record.schemaVersion} is newer than supported schema ${BROWSER_STORE_SCHEMA_VERSION}; refusing a downgrade write`,
+			);
+		}
 		const candidates = discovered.filter(
 			({ decoded }) =>
 				decoded.record.schemaVersion < BROWSER_STORE_SCHEMA_VERSION,

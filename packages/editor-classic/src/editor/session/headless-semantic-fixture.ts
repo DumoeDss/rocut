@@ -7,6 +7,7 @@ import {
 	type InMemoryRuntimeResourceHost,
 } from "@opencut/editor-ports/in-memory";
 import { createInMemoryHost } from "@opencut/editor-ports/in-memory/host";
+import { CURRENT_PROJECT_VERSION } from "../../services/storage/migrations/version";
 import { createHeadlessEditorSession } from "./headless";
 import type {
 	HeadlessRuntimeProbeController,
@@ -111,13 +112,14 @@ function rawProject(): Raw {
 				updatedAt: SEEDED_AT,
 			},
 		],
+		motionTextSequences: [],
 		currentSceneId: "main-scene",
 		settings: {
 			fps: { numerator: 30, denominator: 1 },
 			canvasSize: { width: 1920, height: 1080 },
 			background: { type: "color", color: "#000000" },
 		},
-		version: 31,
+		version: CURRENT_PROJECT_VERSION,
 		providerPrivateProject: {
 			map: new Map([["provider", "retained"]]),
 			set: new Set(["alpha", "beta"]),
@@ -232,7 +234,11 @@ export async function runHeadlessSemanticFixture(args: {
 		providerPrivateAttachment: { nested: ["unchanged", 23] },
 	};
 	await store.save({
-		record: { id: PROJECT_ID, schemaVersion: 31, data: seededData },
+		record: {
+			id: PROJECT_ID,
+			schemaVersion: CURRENT_PROJECT_VERSION,
+			data: seededData,
+		},
 		summary: {
 			id: PROJECT_ID,
 			name: SEEDED_NAME,

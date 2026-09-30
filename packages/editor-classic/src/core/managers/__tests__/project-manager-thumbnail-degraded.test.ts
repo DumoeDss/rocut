@@ -64,6 +64,7 @@ if (process.env.OPENCUT_PROJECT_THUMBNAIL_TEST_ISOLATED !== "1") {
 					updatedAt: now,
 				},
 			],
+			motionTextSequences: [],
 			currentSceneId: "thumbnail-scene",
 			settings: {
 				fps: { numerator: 30, denominator: 1 },

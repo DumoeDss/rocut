@@ -18,6 +18,7 @@ import type {
 	Track,
 	TrackId,
 } from "./domain";
+import type { MotionTextSequence, MotionTextSequenceId } from "./motion-text";
 
 /** The public, Host-neutral Project fields that a transaction may update. */
 export type ProjectPatch = Partial<
@@ -29,6 +30,33 @@ export interface UpdateProjectOperation {
 	readonly kind: "update-project";
 	readonly projectId: ProjectId;
 	readonly patch: ProjectPatch;
+}
+
+/** Create a versioned motion-text sequence before a clip references it. */
+export interface CreateMotionTextSequenceOperation {
+	readonly kind: "create-motion-text-sequence";
+	readonly sequence: MotionTextSequence;
+}
+
+/**
+ * Atomically replace one sequence after comparing its entity revision.
+ *
+ * A full replacement prevents nested cue/plan fields from being silently
+ * dropped by shallow patching. Domain-specific cue/style operations can build
+ * the replacement through the Rust core, then submit it through this boundary.
+ */
+export interface UpdateMotionTextSequenceOperation {
+	readonly kind: "update-motion-text-sequence";
+	readonly sequenceId: MotionTextSequenceId;
+	readonly expectedSequenceRevision: number;
+	readonly sequence: MotionTextSequence;
+}
+
+/** Delete an unreferenced sequence after comparing its entity revision. */
+export interface DeleteMotionTextSequenceOperation {
+	readonly kind: "delete-motion-text-sequence";
+	readonly sequenceId: MotionTextSequenceId;
+	readonly expectedSequenceRevision: number;
 }
 
 /**
@@ -63,6 +91,9 @@ export type TransactionOperation =
 			readonly patch: Partial<Omit<Marker, "id">>;
 	  }
 	| { readonly kind: "delete-marker"; readonly markerId: MarkerId }
+	| CreateMotionTextSequenceOperation
+	| UpdateMotionTextSequenceOperation
+	| DeleteMotionTextSequenceOperation
 	| UpdateProjectOperation;
 
 /** The set of all operation kind strings, for runtime checks. */
@@ -78,6 +109,9 @@ export const OPERATION_KINDS = [
 	"create-marker",
 	"update-marker",
 	"delete-marker",
+	"create-motion-text-sequence",
+	"update-motion-text-sequence",
+	"delete-motion-text-sequence",
 	"update-project",
 ] as const;
 

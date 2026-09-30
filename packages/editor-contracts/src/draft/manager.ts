@@ -80,6 +80,7 @@ function contentFromDocument(
 		clips: document.clips,
 		assets: document.assets,
 		markers: document.markers,
+		motionTextSequences: document.motionTextSequences ?? [],
 		revision: document.revision,
 	};
 }
@@ -167,6 +168,7 @@ async function acquireDraftCommittedSnapshot(
 				clips: await engine.clips(),
 				assets: await engine.assets(),
 				markers: await engine.markers(),
+				motionTextSequences: (await engine.motionTextSequences?.()) ?? [],
 				revision: before,
 			};
 		} catch (error) {

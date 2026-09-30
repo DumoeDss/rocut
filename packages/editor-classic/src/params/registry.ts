@@ -343,6 +343,7 @@ const defaultElementParamDefinitions = [
 	},
 	{ key: "sticker", definition: visualElementParams },
 	{ key: "graphic", definition: visualElementParams },
+	{ key: "motion-text", definition: visualElementParams },
 	{ key: "audio", definition: audioElementParams },
 	{ key: "effect", definition: [] },
 ] as const satisfies ReadonlyArray<{

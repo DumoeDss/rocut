@@ -71,6 +71,7 @@ export class EditorCore {
 			editor: this,
 			resources: this.resources,
 			assetResolver: session.host.assets,
+			assetLoader: session.host.assetLoader,
 			videoCache: this.media.getVideoCache(),
 		});
 		this.save = new SaveManager({ editor: this });

@@ -80,6 +80,9 @@ export const PUBLISHED_CONTRACT_SURFACE: ContractSurface = {
 		"create-marker",
 		"update-marker",
 		"delete-marker",
+		"create-motion-text-sequence",
+		"update-motion-text-sequence",
+		"delete-motion-text-sequence",
 		"update-project",
 	],
 	errorCodes: [

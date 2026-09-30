@@ -1,0 +1,62 @@
+{
+	"schemaVersion": 1,
+	"generatedBy": "script/probe-non-motion-export.mjs",
+	"source": {
+		"canonicalWasm": {
+			"bytes": 5511220,
+			"sha256": "14de620a1bfa38228a43e4103cc557ae7a27bbb30185bfffae91b17d685e75a8"
+		}
+	},
+	"environment": {
+		"browser": "151.0.7922.34",
+		"userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.7922.34 Safari/537.36"
+	},
+	"config": {
+		"width": 320,
+		"height": 180,
+		"fps": {
+			"numerator": 30,
+			"denominator": 1
+		},
+		"duration": 120000,
+		"audioSampleRate": 48000,
+		"sampleTimes": [0, 60000, 119999]
+	},
+	"result": {
+		"samples": [
+			{
+				"time": 0,
+				"digest": "bbbb7840",
+				"nonBlackPixels": 57600
+			},
+			{
+				"time": 60000,
+				"digest": "c999b811",
+				"nonBlackPixels": 57600
+			},
+			{
+				"time": 119999,
+				"digest": "98047c2d",
+				"nonBlackPixels": 57600
+			}
+		],
+		"video": {
+			"frameRequests": 33,
+			"distinctTimes": 31,
+			"minimumTime": 0,
+			"maximumTime": 0.9999916666666666
+		},
+		"export": {
+			"frames": 30,
+			"progressEvents": 31,
+			"completeEvents": 1,
+			"errorEvents": 0,
+			"elapsedMs": 410.6,
+			"bufferBytes": 22624,
+			"fileType": "ftyp",
+			"hasVideoHandler": true,
+			"hasAudioHandler": true,
+			"sha256": "f8623ce6ad09777d3bfddf426ba9bb047f7eab6eb0824ede94e3b52ce9985fea"
+		}
+	}
+}

@@ -127,6 +127,7 @@ function PlayPauseButton() {
 		<Button
 			variant="text"
 			size="icon"
+			aria-label={isPlaying ? "Pause preview" : "Play preview"}
 			onClick={() => invokeAction("toggle-play")}
 		>
 			<HugeiconsIcon icon={isPlaying ? PauseIcon : PlayIcon} />

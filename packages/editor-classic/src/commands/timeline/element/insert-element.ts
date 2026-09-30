@@ -22,6 +22,10 @@ import {
 	validateElementTrackCompatibility,
 } from "../../../timeline/placement";
 import { roundMediaTime, TICKS_PER_SECOND } from "../../../wasm";
+import {
+	isMotionTextSequence,
+	type MotionTextSequence,
+} from "@opencut/editor-contracts";
 
 type InsertElementPlacement =
 	| { mode: "explicit"; trackId: string }
@@ -30,6 +34,7 @@ type InsertElementPlacement =
 export interface InsertElementParams {
 	element: CreateTimelineElement;
 	placement: InsertElementPlacement;
+	motionTextSequence?: MotionTextSequence;
 }
 
 export class InsertElementCommand extends Command {
@@ -38,16 +43,19 @@ export class InsertElementCommand extends Command {
 	private elementId: string;
 	private savedState: SceneTracks | null = null;
 	private targetTrackId: string | null = null;
+	private savedMotionTextSequences: MotionTextSequence[] | null = null;
 
-	constructor({ element, placement }: InsertElementParams) {
+	constructor({ element, placement, motionTextSequence }: InsertElementParams) {
 		super();
 		this.elementId = generateUUID();
 		this.element = element;
 		this.placement = placement;
+		this.motionTextSequence = motionTextSequence;
 	}
 
 	private element: CreateTimelineElement;
 	private placement: InsertElementPlacement;
+	private motionTextSequence?: MotionTextSequence;
 
 	execute({ editor }: EditorCommandContext): CommandResult | undefined {
 		this.savedState = editor.scenes.getActiveScene().tracks;
@@ -55,6 +63,7 @@ export class InsertElementCommand extends Command {
 		if (!this.validateElementBasics({ element: this.element })) {
 			return;
 		}
+		this.validateMotionTextSequence({ editor });
 
 		const totalElementsInTimeline =
 			this.savedState.main.elements.length +
@@ -90,6 +99,19 @@ export class InsertElementCommand extends Command {
 
 		const { updatedTracks, targetTrackId } = updateResult;
 		this.targetTrackId = targetTrackId;
+		if (this.motionTextSequence) {
+			const activeProject = editor.project.getActive();
+			this.savedMotionTextSequences = [...activeProject.motionTextSequences];
+			editor.project.setActiveProject({
+				project: {
+					...activeProject,
+					motionTextSequences: [
+						...activeProject.motionTextSequences,
+						this.motionTextSequence,
+					],
+				},
+			});
+		}
 
 		const isVisualMedia =
 			newElement.type === "video" || newElement.type === "image";
@@ -139,8 +161,45 @@ export class InsertElementCommand extends Command {
 	}
 
 	undo({ editor }: EditorCommandContext): void {
+		if (this.savedMotionTextSequences) {
+			editor.project.setActiveProject({
+				project: {
+					...editor.project.getActive(),
+					motionTextSequences: this.savedMotionTextSequences,
+				},
+			});
+		}
 		if (this.savedState) {
 			editor.timeline.updateTracks(this.savedState);
+		}
+	}
+
+	private validateMotionTextSequence({
+		editor,
+	}: {
+		editor: EditorCommandContext["editor"];
+	}): void {
+		const sequence = this.motionTextSequence;
+		if (!sequence) return;
+		if (this.element.type !== "motion-text") {
+			throw new TypeError(
+				"A motion-text sequence can only be inserted with a motion-text element.",
+			);
+		}
+		if (!isMotionTextSequence(sequence)) {
+			throw new TypeError("The motion-text sequence is invalid.");
+		}
+		if (sequence.id !== this.element.sequenceId) {
+			throw new Error(
+				"The motion-text element must reference the sequence inserted with it.",
+			);
+		}
+		if (
+			editor.project
+				.getActive()
+				.motionTextSequences.some((candidate) => candidate.id === sequence.id)
+		) {
+			throw new Error(`Motion-text sequence ${sequence.id} already exists.`);
 		}
 	}
 
@@ -202,7 +261,7 @@ export class InsertElementCommand extends Command {
 			// Never floor a positive source duration to zero: the same policy also
 			// rejects non-positive durations.
 			duration: Math.max(ticksPerFrame, alignDown(rawDuration)),
-		} as TimelineElement;
+		} as TimelineElement; // eslint-disable-line @typescript-eslint/no-unsafe-type-assertion -- The discriminated CreateTimelineElement union is completed with its generated id and normalized timing here.
 	}
 
 	private validateElementBasics({
@@ -238,6 +297,11 @@ export class InsertElementCommand extends Command {
 				console.error("Graphic element must have a valid definitionId");
 				return false;
 			}
+		}
+
+		if (element.type === "motion-text" && !element.sequenceId) {
+			console.error("Motion-text element must reference a sequence");
+			return false;
 		}
 
 		if (element.type === "text" && !element.params.content) {

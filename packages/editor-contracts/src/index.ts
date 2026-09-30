@@ -48,6 +48,9 @@ export {
 export type {
 	ProjectPatch,
 	UpdateProjectOperation,
+	CreateMotionTextSequenceOperation,
+	UpdateMotionTextSequenceOperation,
+	DeleteMotionTextSequenceOperation,
 	TransactionOperation,
 	OperationKind,
 } from "./operations";
@@ -60,6 +63,53 @@ export type {
 	TransactionErrorCode,
 } from "./transaction";
 export { TransactionError, revisionOf, INITIAL_REVISION } from "./transaction";
+
+export type {
+	MotionTextSequenceId,
+	MotionTextCueId,
+	MotionTextCutId,
+	MotionTextFontId,
+	MotionTextSourceFormat,
+	MotionTextSource,
+	MotionTextEngineRef,
+	MotionTextAudioAnalysisRef,
+	MotionTextAudioBinding,
+	MotionTextFontSource,
+	MotionTextFontAssetRef,
+	MotionTextParameterValue,
+	MotionTextPresetSetControls,
+	MotionTextCenterDirection,
+	MotionTextPlanningControls,
+	MotionTextPresetGroup,
+	MotionTextPresetSelection,
+	MotionTextOverrides,
+	MotionTextDefaults,
+	MotionTextLock,
+	MotionTextCue,
+	MotionTextResolvedCut,
+	MotionTextResolvedPlan,
+	MotionTextSequence,
+	MotionTextClipContent,
+	MotionTextValidationIssue,
+	MotionTextValidationOptions,
+} from "./motion-text";
+export {
+	MOTION_TEXT_SCHEMA_VERSION,
+	MOTION_TEXT_PLAN_VERSION,
+	MOTION_TEXT_LIMITS,
+	DEFAULT_MOTION_TEXT_PLANNING_CONTROLS,
+	motionTextSequenceId,
+	motionTextCueId,
+	motionTextCutId,
+	motionTextFontId,
+	validateMotionTextSequence,
+	isMotionTextSequence,
+} from "./motion-text";
+export type {
+	MotionTextPlannerResolvedCutWire,
+	MotionTextPlannerPlanWire,
+} from "./motion-text-planner";
+export { motionTextResolvedPlanFromPlanner } from "./motion-text-planner";
 
 export type {
 	TransactionRead,

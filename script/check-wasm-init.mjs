@@ -10,7 +10,7 @@
  * Direction-level wasm-init finding. A static surface tells you the shape is right; only running it
  * tells you it starts.
  *
- * **What it runs.** The same probe under both runtimes that matter, plus the real 31-step classic
+ * **What it runs.** The same probe under both runtimes that matter, plus the real 32-step classic
  * migration chain — the exact consumer S05 recorded as unloadable — with **no** `mock.module` and
  * no `@opencut/editor-classic/evidence/wasm-test-mock` anywhere in the process.
  *

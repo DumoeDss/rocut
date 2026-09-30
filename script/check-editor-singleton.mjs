@@ -27,7 +27,7 @@ const REQUIRED = [
 // the gate has been red since 2026-08-10 — through R2 and T4, neither of whose
 // gate lists included it. The count is a tripwire against the walk silently
 // under-collecting, not a budget: move it when a command module is added.
-const EXPECTED_COMMAND_MODULES = 40;
+const EXPECTED_COMMAND_MODULES = 41;
 const NEGATIVE_FIXTURES = {
 	"singleton-accessor": "get-instance.ts.fixture",
 	"singleton-reset": "reset.ts.fixture",

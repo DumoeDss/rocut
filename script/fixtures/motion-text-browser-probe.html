@@ -1,0 +1,52 @@
+<!doctype html>
+<meta charset="utf-8" />
+<script type="module">
+	import {
+		MOTION_TEXT_PLAN_VERSION,
+		MOTION_TEXT_SCHEMA_VERSION,
+		mapMotionTextClipTime,
+		parseMotionTextSource,
+		planMotionTextSequence,
+		tokenizeMotionText,
+	} from "/rust/wasm/pkg/opencut_wasm.js";
+	import {
+		invalidMotionTextPlannerFixture,
+		motionTextPlannerFixture,
+		motionTextSemanticSummary,
+	} from "/script/fixtures/motion-text-planner-fixture.mjs";
+
+	const fixtures = [
+		{
+			sequenceId: "browser-valid",
+			source: "[ti:Bridge]\n[00:01.25]*hello*/world! | note",
+		},
+		{
+			sequenceId: "browser-invalid",
+			source: "[999999999999999999999999:00]overflow",
+		},
+	];
+
+	globalThis.__motionTextBrowserProbe = {
+		planVersion: MOTION_TEXT_PLAN_VERSION,
+		schemaVersion: MOTION_TEXT_SCHEMA_VERSION,
+		results: fixtures.map((fixture) => parseMotionTextSource(fixture)),
+		planner: planMotionTextSequence(motionTextPlannerFixture()),
+		invalidPlanner: planMotionTextSequence(invalidMotionTextPlannerFixture()),
+		tokenizer: tokenizeMotionText({
+			text: "你好世界再次相见",
+			language: "zh-Hans",
+		}),
+		clipTime: mapMotionTextClipTime({
+			clipStartTime: 120_000,
+			clipDuration: 240_000,
+			trimStart: 60_000,
+			timelineTime: 180_000,
+			sequenceDuration: 360_000,
+		}),
+		semanticSummary: motionTextSemanticSummary({
+			parseMotionTextSource,
+			planMotionTextSequence,
+			tokenizeMotionText,
+		}),
+	};
+</script>

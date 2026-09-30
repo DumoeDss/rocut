@@ -55,10 +55,11 @@ import type {
 	ExportProvider,
 	ExportRequest,
 } from "@opencut/editor-ports";
+import type { ExportJobSnapshot } from "@opencut/editor-ports/export-jobs";
 import type {
-	ExportJobSnapshot,
-} from "@opencut/editor-ports/export-jobs";
-import type { ExportCapability, RendererExportBridge } from "./renderer-export-bridge";
+	ExportCapability,
+	RendererExportBridge,
+} from "./renderer-export-bridge";
 
 /** The unsupported reason, naming the missing binary the spec's scenario demands. */
 export const FFMPEG_UNSUPPORTED_REASON =
@@ -130,6 +131,9 @@ export class ElectronExportProvider implements ExportProvider {
 			request: {
 				projectId: args.request.projectId,
 				format: args.request.format,
+				...(args.request.range === undefined
+					? {}
+					: { range: { ...args.request.range } }),
 			},
 		});
 		const settled = await this.awaitSettled({ jobId });
@@ -143,7 +147,9 @@ export class ElectronExportProvider implements ExportProvider {
 	 * phase event is emitted before `startJob`'s reply even crosses, so a
 	 * fetch-before-subscribe alone would race.
 	 */
-	private async awaitSettled(args: { jobId: string }): Promise<ExportJobSnapshot> {
+	private async awaitSettled(args: {
+		jobId: string;
+	}): Promise<ExportJobSnapshot> {
 		const { jobId } = args;
 		const before = await this.bridge.getJob({ jobId });
 		if (before !== null && isSettled(before)) return before;
@@ -177,9 +183,7 @@ export class ElectronExportProvider implements ExportProvider {
 						.catch((error: unknown) => {
 							finish(() => {
 								reject(
-									error instanceof Error
-										? error
-										: new Error(String(error)),
+									error instanceof Error ? error : new Error(String(error)),
 								);
 							});
 						});

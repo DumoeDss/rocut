@@ -1,0 +1,219 @@
+<!doctype html>
+<meta charset="utf-8" />
+<script type="module">
+	import {
+		createMotionTextRenderRuntime,
+		drawMotionTextFrame,
+		resolveMotionTextRenderFrame,
+	} from "/packages/editor-classic/src/services/renderer/motion-text/jizura-adapter.ts";
+
+	function sequence({ id, group, presetId }) {
+		const text = "MOTION TEXT PERFORMANCE SAMPLE WITH MULTIPLE WORDS";
+		const preset = {
+			style: "noir",
+			layout: "center",
+			enter: "cut",
+			hold: "still",
+			exit: "cut",
+			decor: [],
+			treat: "none",
+			bg: "none",
+			cam: "static",
+			fx: [],
+			trans: null,
+		};
+		if (group === "decor" || group === "fx") preset[group] = [presetId];
+		else preset[group] = presetId;
+		const value = {
+			id,
+			schemaVersion: 1,
+			revision: 1,
+			source: { format: "plain", text },
+			language: "en",
+			duration: 120_000,
+			compositionMode: "overlay",
+			seed: 191,
+			engine: {
+				id: "jizura",
+				version: "0.9.0",
+				catalogHash: "renderer-cost-benchmark",
+				plannerVersion: 1,
+				tokenizerVersion: "unicode-v1",
+			},
+			fonts: [],
+			defaults: { preset, colors: {}, parameters: {} },
+			cues: [
+				{
+					id: `cue:${id}`,
+					text,
+					startTime: 0,
+					duration: 120_000,
+					interlude: false,
+					gapBefore: false,
+					impact: false,
+					emphasis: [],
+					segments: [text],
+					locks: [],
+					overrides: {},
+				},
+			],
+			resolvedPlan: {
+				version: 1,
+				sequenceRevision: 1,
+				cuts: [
+					{
+						id: `cut:${id}`,
+						cueId: `cue:${id}`,
+						text,
+						startTime: 0,
+						duration: 120_000,
+						seed: 191,
+						preset,
+						fontId: undefined,
+						parameters: {},
+					},
+				],
+			},
+		};
+		if (group !== "trans") return value;
+
+		const previousText = "PREVIOUS MOTION TEXT SAMPLE";
+		const previousPreset = { ...preset, trans: null };
+		value.cues = [
+			{
+				...value.cues[0],
+				id: `cue:${id}:previous`,
+				text: previousText,
+				duration: 60_000,
+				segments: [previousText],
+			},
+			{
+				...value.cues[0],
+				id: `cue:${id}:current`,
+				startTime: 60_000,
+				duration: 60_000,
+			},
+		];
+		value.resolvedPlan = {
+			...value.resolvedPlan,
+			cuts: [
+				{
+					...value.resolvedPlan.cuts[0],
+					id: `cut:${id}:previous`,
+					cueId: `cue:${id}:previous`,
+					text: previousText,
+					duration: 60_000,
+					preset: previousPreset,
+				},
+				{
+					...value.resolvedPlan.cuts[0],
+					id: `cut:${id}:current`,
+					cueId: `cue:${id}:current`,
+					startTime: 60_000,
+					duration: 60_000,
+					seed: 192,
+				},
+			],
+		};
+		return value;
+	}
+
+	function sampleTime(group, index) {
+		const phases = {
+			enter: [6_000, 12_000, 18_000, 24_000],
+			hold: [18_000, 36_000, 54_000, 72_000],
+			exit: [96_000, 102_000, 108_000, 114_000],
+			layout: [18_000, 36_000, 54_000, 72_000],
+			cam: [12_000, 24_000, 36_000, 48_000],
+			fx: [18_000, 30_000, 42_000, 60_000],
+			trans: [64_000, 68_000, 72_000, 76_000],
+		};
+		const values = phases[group] ?? [60_000];
+		return values[index % values.length];
+	}
+
+	function percentile(values, quantile) {
+		const sorted = [...values].sort((left, right) => left - right);
+		return sorted[
+			Math.min(sorted.length - 1, Math.ceil(sorted.length * quantile) - 1)
+		];
+	}
+
+	function round(value) {
+		return Math.round(value * 10_000) / 10_000;
+	}
+
+	function tier(p95Ms, thresholds) {
+		if (p95Ms <= thresholds.lowMaxMs) return "low";
+		if (p95Ms <= thresholds.mediumMaxMs) return "medium";
+		if (p95Ms <= thresholds.highMaxMs) return "high";
+		if (p95Ms <= thresholds.heavyMaxMs) return "heavy";
+		return "over-budget";
+	}
+
+	globalThis.__benchmarkMotionTextPresets = async ({ entries, config }) => {
+		const canvas = document.createElement("canvas");
+		canvas.width = config.width;
+		canvas.height = config.height;
+		const ctx = canvas.getContext("2d", { willReadFrequently: true });
+		if (!ctx) throw new Error("Motion-text cost benchmark has no 2D context");
+		const measurements = [];
+		for (const [entryIndex, entry] of entries.entries()) {
+			const sequenceValue = sequence({
+				id: `cost-${entryIndex}`,
+				group: entry.group,
+				presetId: entry.id,
+			});
+			const runtime = createMotionTextRenderRuntime({
+				sequence: sequenceValue,
+			});
+			const durations = [];
+			for (
+				let sampleIndex = -config.warmupFrames;
+				sampleIndex < config.sampleFrames;
+				sampleIndex += 1
+			) {
+				const phaseIndex = Math.max(0, sampleIndex);
+				const startedAt = performance.now();
+				const frame = resolveMotionTextRenderFrame({
+					runtime,
+					sequenceTime: sampleTime(entry.group, phaseIndex),
+				});
+				if (!frame) throw new Error(`No frame for ${entry.group}:${entry.id}`);
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				drawMotionTextFrame({
+					ctx,
+					frame,
+					width: canvas.width,
+					height: canvas.height,
+					compositionMode: "overlay",
+				});
+				ctx.getImageData(
+					Math.floor(canvas.width / 2),
+					Math.floor(canvas.height / 2),
+					1,
+					1,
+				);
+				const durationMs = performance.now() - startedAt;
+				if (sampleIndex >= 0) durations.push(durationMs);
+			}
+			const p95Ms = percentile(durations, 0.95);
+			measurements.push({
+				group: entry.group,
+				id: entry.id,
+				key: `${entry.group}:${entry.id}`,
+				tier: tier(p95Ms, config.thresholds),
+				minMs: round(Math.min(...durations)),
+				medianMs: round(percentile(durations, 0.5)),
+				p95Ms: round(p95Ms),
+				maxMs: round(Math.max(...durations)),
+				meanMs: round(
+					durations.reduce((total, duration) => total + duration, 0) /
+						durations.length,
+				),
+			});
+			if (entryIndex % 10 === 9) await Promise.resolve();
+		}
+		return { measurements, userAgent: navigator.userAgent };
+	};
+</script>

@@ -47,6 +47,7 @@ export const REGISTERED_COMMAND_NAMES = Object.freeze(
 		"UpdateBookmarkCommand",
 		"UpdateClipEffectParamsCommand",
 		"UpdateElementsCommand",
+		"UpdateMotionTextSequenceCommand",
 		"UpdateProjectSettingsCommand",
 		"UpdateScalarKeyframeCurveCommand",
 		"UpsertEffectParamKeyframeCommand",

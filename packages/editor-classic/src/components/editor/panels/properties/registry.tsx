@@ -4,6 +4,7 @@ import type {
 	GraphicElement,
 	ImageElement,
 	MaskableElement,
+	MotionTextElement,
 	RetimableElement,
 	StickerElement,
 	TextElement,
@@ -23,11 +24,15 @@ import {
 	DashboardSpeed02Icon,
 } from "@hugeicons/core-free-icons";
 import { ElementParamsTab } from "./components/element-params-tab";
-import { ClipEffectsTab, StandaloneEffectTab } from "../../../../effects/components/effects-tab";
+import {
+	ClipEffectsTab,
+	StandaloneEffectTab,
+} from "../../../../effects/components/effects-tab";
 import { MasksTab } from "../../../../masks/components/masks-tab";
 import { SpeedTab } from "../../../../speed/components/speed-tab";
 import { GraphicTab } from "../../../../graphics/components/graphic-tab";
 import { OcShapesIcon } from "../../../icons";
+import { MotionTextPropertiesTab } from "../../../../motion-text/components/properties-tab";
 
 const TRANSFORM_PARAM_KEYS = [
 	"transform.positionX",
@@ -201,7 +206,9 @@ function buildGraphicTab({
 		id: "graphic",
 		label: "Graphic",
 		icon: <OcShapesIcon size={16} />,
-		content: ({ trackId }) => <GraphicTab element={element} trackId={trackId} />,
+		content: ({ trackId }) => (
+			<GraphicTab element={element} trackId={trackId} />
+		),
 	};
 }
 
@@ -304,6 +311,27 @@ function getGraphicConfig({
 	};
 }
 
+function getMotionTextConfig({
+	element,
+}: {
+	element: MotionTextElement;
+}): ElementPropertiesConfig {
+	return {
+		defaultTab: "motion-text",
+		tabs: [
+			{
+				id: "motion-text",
+				label: "Motion text",
+				icon: <HugeiconsIcon icon={TextFontIcon} size={16} />,
+				content: () => <MotionTextPropertiesTab element={element} />,
+			},
+			buildTransformTab({ element }),
+			buildBlendingTab({ element }),
+			buildClipEffectsTab({ element }),
+		],
+	};
+}
+
 function getAudioConfig({
 	element,
 }: {
@@ -346,6 +374,8 @@ export function getPropertiesConfig({
 			return getStickerConfig({ element });
 		case "graphic":
 			return getGraphicConfig({ element });
+		case "motion-text":
+			return getMotionTextConfig({ element });
 		case "audio":
 			return getAudioConfig({ element });
 		case "effect":

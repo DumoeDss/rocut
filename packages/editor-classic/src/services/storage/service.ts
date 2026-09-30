@@ -178,6 +178,7 @@ class StorageService {
 				updatedAt: project.metadata.updatedAt.toISOString(),
 			},
 			scenes: serializedScenes,
+			motionTextSequences: structuredClone(project.motionTextSequences),
 			currentSceneId: project.currentSceneId,
 			settings: project.settings,
 			version: project.version,
@@ -231,6 +232,9 @@ class StorageService {
 				updatedAt: new Date(serializedProject.metadata.updatedAt),
 			},
 			scenes,
+			motionTextSequences: Array.isArray(serializedProject.motionTextSequences)
+				? structuredClone(serializedProject.motionTextSequences)
+				: [],
 			currentSceneId: serializedProject.currentSceneId || "",
 			settings: serializedProject.settings,
 			version: serializedProject.version,

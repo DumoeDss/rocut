@@ -247,13 +247,13 @@ if (
 	);
 }
 if (
-	!conformanceOutput.includes("classic chain: loaded (31 steps, target v31)") ||
+	!conformanceOutput.includes("classic chain: loaded (32 steps, target v32)") ||
 	!conformanceOutput.includes("migration/by-replication: green") ||
 	!conformanceOutput.includes("migration exercised")
 ) {
 	fail(
 		"author/conformance",
-		"production leg did not load the real 31-step chain and exercise migration",
+		"production leg did not load the real 32-step chain and exercise migration",
 	);
 }
 console.log(
@@ -269,13 +269,13 @@ const migrationOutput = requireGreenStep(
 	}),
 );
 if (
-	!migrationOutput.includes("31 steps, target v31") ||
+	!migrationOutput.includes("32 steps, target v32") ||
 	!migrationOutput.includes("migration/by-replication: green") ||
 	!migrationOutput.includes("migration exercised")
 ) {
 	fail(
 		"author/migration",
-		"mock-installed compatibility leg did not validate the real 31-step chain",
+		"mock-installed compatibility leg did not validate the real 32-step chain",
 	);
 }
 

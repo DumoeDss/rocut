@@ -44,7 +44,10 @@ export function createTransactionNativeDocumentAdapter(
 			if (!isTransactionEngineDocument(candidate)) {
 				throw new TypeError("Invalid transaction document");
 			}
-			return cloneTransactionValue(candidate.document);
+			return cloneTransactionValue({
+				...candidate.document,
+				motionTextSequences: candidate.document.motionTextSequences ?? [],
+			});
 		},
 		encode({ projectId, previousRecord, document }) {
 			const previous = isRecord(previousRecord.data) ? previousRecord.data : {};
@@ -92,6 +95,7 @@ export function createTransactionNativeProjectSeed(args: {
 		clips: [],
 		assets: [],
 		markers: [],
+		motionTextSequences: [],
 		revision: revisionOf(Number(revision)),
 		idempotency: [],
 	};

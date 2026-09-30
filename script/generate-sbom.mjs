@@ -2,8 +2,9 @@
 /**
  * SBOM generator (S01 tasks 2.5 / 2.6).
  *
- * Reads `bun.lock` and `Cargo.lock` and emits `SBOM.md`, grouped into code
- * dependencies, fonts/assets, and codecs.
+ * Reads `bun.lock`, `Cargo.lock`, and the motion-text font closure and emits
+ * `SBOM.md`, grouped into code dependencies, fonts/assets, and codecs. Pass
+ * `--check` to verify the checked-in document without writing it.
  *
  * It also *asserts* the known upstream metadata defects against their **declared
  * disposition**. Recording them as prose would rot the moment someone "tidied"
@@ -29,8 +30,19 @@ import { readFileSync, writeFileSync, statSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
+import {
+	inspectMotionTextFontInventory,
+	renderMotionTextFontProvenance,
+} from "./motion-text-font-inventory.mjs";
+
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const read = (p) => readFileSync(join(REPO_ROOT, p), "utf8");
+const args = process.argv.slice(2);
+if (args.some((arg) => arg !== "--check") || args.length > 1) {
+	console.error("Usage: node script/generate-sbom.mjs [--check]");
+	process.exit(2);
+}
+const checkOnly = args[0] === "--check";
 
 /** bun.lock is JSONC with trailing commas. */
 function parseBunLock() {
@@ -41,6 +53,13 @@ function parseBunLock() {
 const lock = parseBunLock();
 const rootPkg = JSON.parse(read("package.json"));
 const webPkg = JSON.parse(read("apps/web/package.json"));
+const motionTextFontInventory = inspectMotionTextFontInventory({
+	catalogPath: join(
+		REPO_ROOT,
+		"rust/crates/motion-text/resources/jizura-font-catalog.json",
+	),
+	publicRoot: join(REPO_ROOT, "apps/web/public"),
+});
 
 const resolvedPackages = Object.keys(lock.packages ?? {});
 const workspaceNames = Object.keys(lock.workspaces ?? {});
@@ -52,20 +71,26 @@ const workspaceNames = Object.keys(lock.workspaces ?? {});
  * argue with it.
  */
 const CODEC_AND_MEDIA = {
-	mediabunny: "MP4/WebM/MKV muxing and demuxing, and codec configuration for import and export.",
+	mediabunny:
+		"MP4/WebM/MKV muxing and demuxing, and codec configuration for import and export.",
 	soundtouchjs: "Time-stretch and pitch-shift for audio playback.",
 	"wavesurfer.js": "Audio waveform decode and display.",
-	"opencut-wasm": "The editor's Rust core compiled to WebAssembly: time math, compositor, effects, masks, GPU renderer.",
-	"@huggingface/transformers": "In-browser speech-to-text model runtime. Downloads models from Hugging Face at first use.",
+	"opencut-wasm":
+		"The editor's Rust core compiled to WebAssembly: time math, compositor, effects, masks, GPU renderer.",
+	"@huggingface/transformers":
+		"In-browser speech-to-text model runtime. Downloads models from Hugging Face at first use.",
 	sharp: "Build-time image encoding (also Next's image optimizer backend).",
-	"@napi-rs/canvas": "Build-time raster canvas used by the font-sprite generator.",
+	"@napi-rs/canvas":
+		"Build-time raster canvas used by the font-sprite generator.",
 };
 
 const FONT_AND_ASSET_DEPS = {
-	"next/font (Inter)": "Site font for the Next shell, self-hosted by Next at build time. SIL OFL 1.1.",
+	"next/font (Inter)":
+		"Site font for the Next shell, self-hosted by Next at build time. SIL OFL 1.1.",
 	"@hugeicons/core-free-icons": "Icon set used across the editor chrome.",
 	"lucide-react": "Icon set (ISC).",
-	"react-icons": "Icon set aggregator (MIT; individual icon sets carry their own licences).",
+	"react-icons":
+		"Icon set aggregator (MIT; individual icon sets carry their own licences).",
 	"@tailwindcss/typography": "Prose styles for blog/site surfaces.",
 	"tailwindcss-animate": "Animation utilities.",
 };
@@ -79,19 +104,28 @@ const RUNTIME_ASSETS = [
 		fetchedFrom: "`/fonts/...` at runtime by `src/fonts/google-fonts.ts`",
 	},
 	{
+		path: "public/motion-text/fonts/*.ttf + licenses/*-OFL.txt",
+		provenance: renderMotionTextFontProvenance(motionTextFontInventory),
+		fetchedFrom:
+			"`/motion-text/fonts/...` by `packages/editor-classic/src/services/renderer/motion-text/font-runtime.ts`",
+	},
+	{
 		path: "public/flags/*.svg",
 		provenance:
 			"Country flag SVGs. Flag designs are not themselves copyrightable in most jurisdictions; the SVG set ships with the upstream repository under its MIT licence.",
-		fetchedFrom: "`/flags/<code>.svg` at runtime by `src/stickers/providers/flags.ts`",
+		fetchedFrom:
+			"`/flags/<code>.svg` at runtime by `src/stickers/providers/flags.ts`",
 	},
 	{
 		path: "public/effects/preview.jpg",
 		provenance: "Upstream-authored effect preview still.",
-		fetchedFrom: "`/effects/preview.jpg` by `src/services/renderer/effect-preview.ts`",
+		fetchedFrom:
+			"`/effects/preview.jpg` by `src/services/renderer/effect-preview.ts`",
 	},
 	{
 		path: "public/logos/opencut/**",
-		provenance: "Upstream OpenCut brand marks. Trademark, not covered by the MIT code grant.",
+		provenance:
+			"Upstream OpenCut brand marks. Trademark, not covered by the MIT code grant.",
 		fetchedFrom: "`/logos/opencut/svg/logo.svg` via `src/site/brand.ts`",
 	},
 ];
@@ -113,7 +147,7 @@ const UPSTREAM_DEFECTS = [
 	{
 		id: "D-1",
 		disposition: "recorded",
-		title: "Root `package.json` declares a self-dependency `\"opencut\": \".\"`",
+		title: 'Root `package.json` declares a self-dependency `"opencut": "."`',
 		verbatim: '"opencut": "."',
 		detail:
 			"The root package (itself named `opencut`) lists itself as a dependency resolving to the repository root. bun installs it as a symlink to the repo root inside `node_modules`.",
@@ -122,7 +156,8 @@ const UPSTREAM_DEFECTS = [
 	{
 		id: "D-2",
 		disposition: "recorded",
-		title: "Root `package.json` declares application dependencies `next` and `better-auth`",
+		title:
+			"Root `package.json` declares application dependencies `next` and `better-auth`",
 		verbatim: '"better-auth": "^1.4.15",\n"next": "^16.1.3"',
 		detail:
 			"These belong to `apps/web`, which declares its own (exact) `next` pin. The root's caret range floats independently, so the lockfile resolves two different `next` versions and installs a nested copy under `apps/web/node_modules`. This is the direct cause of the dual-`next` type identity clash recorded as patch P-001.",
@@ -133,16 +168,21 @@ const UPSTREAM_DEFECTS = [
 	{
 		id: "D-3",
 		disposition: "recorded",
-		title: "`rust/wasm/Cargo.toml` `repository` points at a nonexistent GitHub repository",
+		title:
+			"`rust/wasm/Cargo.toml` `repository` points at a nonexistent GitHub repository",
 		verbatim: 'repository = "https://github.com/opencut/opencut"',
 		detail:
 			"The real upstream is `OpenCut-app/opencut-classic`. The stale URL is republished in the `opencut-wasm` npm package metadata.",
-		probe: () => read("rust/wasm/Cargo.toml").includes('repository = "https://github.com/opencut/opencut"'),
+		probe: () =>
+			read("rust/wasm/Cargo.toml").includes(
+				'repository = "https://github.com/opencut/opencut"',
+			),
 	},
 	{
 		id: "D-4",
 		disposition: "recorded",
-		title: "Published `opencut-wasm` declares `sideEffects` on a nonexistent `./snippets/*`",
+		title:
+			"Published `opencut-wasm` declares `sideEffects` on a nonexistent `./snippets/*`",
 		verbatim:
 			'"sideEffects": ["./opencut_wasm.js", "./snippets/*", "./opencut_wasm_sync.js"]',
 		detail:
@@ -160,21 +200,31 @@ const UPSTREAM_DEFECTS = [
 		id: "D-5",
 		discoveredDuringS01: true,
 		disposition: "repaired",
-		repairedBy: "change `s02-wasm-self-built-canonical` (S02 C0); patch **P-021**/**P-022** are the manifest edits that force it",
+		repairedBy:
+			"change `s02-wasm-self-built-canonical` (S02 C0); patch **P-021**/**P-022** are the manifest edits that force it",
 		evidence:
 			"`script/check-wasm-source.mjs` asserts `rust/wasm/LICENSE` exists and is byte-identical to the root `LICENSE`; the `License key is set in Cargo.toml but no LICENSE file(s) were found` warning is absent from the build log recorded in `UPSTREAM.md` § WASM rebuild correspondence",
-		title: "`rust/wasm` declared `license = \"MIT\"` while shipping no LICENSE file",
+		title:
+			'`rust/wasm` declared `license = "MIT"` while shipping no LICENSE file',
 		verbatim: 'license = "MIT"',
 		detail:
 			"`rust/wasm/Cargo.toml` declares the MIT licence, but at the pin neither `rust/wasm/` nor the published `opencut-wasm` npm package contained a LICENSE file — the published tarball holds only `opencut_wasm{.d.ts,.js,_bg.js,_bg.wasm}`, `package.json` and `README.md`. wasm-pack warned about this on **every** build (`License key is set in Cargo.toml but no LICENSE file(s) were found`).\n\n**Recorded and unrepaired throughout S01, repaired at S02 — deliberately, in the change whose own scope made it a release gate.** S01's reason for leaving it was sound *for S01*: the Slice consumed the *published* package, the repository-root MIT `LICENSE` covered the source, and the defect had zero effect on that Slice's distributable graph. S01's own text named its expiry condition — it \"becomes a genuine release-gate defect at S02, when building the wasm from source becomes the canonical path and the built package would be redistributed without its licence text\". `s02-wasm-self-built-canonical` is that change, so the condition is met rather than overridden. The repair is the addition of `rust/wasm/LICENSE`, byte-identical to the root `LICENSE`.\n\n**Why there is no `PATCHES.md` row for the repair itself.** `rust/wasm/LICENSE` is a *new* file, and `PATCHES.md` logs modifications to files inherited at the pin only — it says so in its own header, and `SOURCE_INVENTORY.md` already separates added from modified. The manifest edits that make the licence a release gate (root `package.json` and `apps/web/package.json`, P-021/P-022) are inherited files and are logged there.",
 		probe: () => {
-			const declaresMit = read("rust/wasm/Cargo.toml").includes('license = "MIT"');
-			const crateLicense = ["LICENSE", "LICENSE.md", "LICENSE-MIT", "COPYING"].some((name) =>
-				existsInPackage(`rust/wasm/${name}`),
+			const declaresMit = read("rust/wasm/Cargo.toml").includes(
+				'license = "MIT"',
 			);
-			const publishedLicense = ["LICENSE", "LICENSE.md", "LICENSE-MIT", "COPYING"].some((name) =>
-				existsInPackage(`node_modules/opencut-wasm/${name}`),
-			);
+			const crateLicense = [
+				"LICENSE",
+				"LICENSE.md",
+				"LICENSE-MIT",
+				"COPYING",
+			].some((name) => existsInPackage(`rust/wasm/${name}`));
+			const publishedLicense = [
+				"LICENSE",
+				"LICENSE.md",
+				"LICENSE-MIT",
+				"COPYING",
+			].some((name) => existsInPackage(`node_modules/opencut-wasm/${name}`));
 			return declaresMit && !crateLicense && !publishedLicense;
 		},
 	},
@@ -238,7 +288,12 @@ const defectResults = UPSTREAM_DEFECTS.map((d) => {
 	// probe throws yields `present === false`, which *matches* the expected
 	// absence — so a broken probe would report OK and say nothing. D-5's probe
 	// reads `rust/wasm/Cargo.toml`, which throws if that file is ever moved.
-	return { ...d, present, error, matchesDisposition: error === null && present === expectedPresence(d) };
+	return {
+		...d,
+		present,
+		error,
+		matchesDisposition: error === null && present === expectedPresence(d),
+	};
 });
 
 // --- Rust ---------------------------------------------------------------
@@ -246,8 +301,16 @@ function cargoCrates(target) {
 	const out = execFileSync(
 		"cargo",
 		[
-			"tree", "-p", "opencut-wasm", "--offline", "--edges", "normal",
-			"--prefix", "none", "--target", target,
+			"tree",
+			"-p",
+			"opencut-wasm",
+			"--offline",
+			"--edges",
+			"normal",
+			"--prefix",
+			"none",
+			"--target",
+			target,
 		],
 		{ cwd: REPO_ROOT, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
 	);
@@ -255,7 +318,13 @@ function cargoCrates(target) {
 		...new Set(
 			out
 				.split("\n")
-				.map((l) => l.replace(/ \(proc-macro\)/, "").replace(/ \(\*\)$/, "").replace(/ \(.*\)$/, "").trim())
+				.map((l) =>
+					l
+						.replace(/ \(proc-macro\)/, "")
+						.replace(/ \(\*\)$/, "")
+						.replace(/ \(.*\)$/, "")
+						.trim(),
+				)
 				.filter(Boolean),
 		),
 	].sort();
@@ -269,7 +338,8 @@ try {
 	cargoError = e.message;
 }
 
-const cargoLockCrateCount = (read("Cargo.lock").match(/^name = /gm) ?? []).length;
+const cargoLockCrateCount = (read("Cargo.lock").match(/^name = /gm) ?? [])
+	.length;
 
 // --- assemble -----------------------------------------------------------
 const depTable = (deps) =>
@@ -343,7 +413,9 @@ ${
 
 | Package | Role |
 | --- | --- |
-${Object.entries(FONT_AND_ASSET_DEPS).map(([k, v]) => `| \`${k}\` | ${v} |`).join("\n")}
+${Object.entries(FONT_AND_ASSET_DEPS)
+	.map(([k, v]) => `| \`${k}\` | ${v} |`)
+	.join("\n")}
 
 ### Runtime assets served from \`apps/web/public\`
 
@@ -360,7 +432,9 @@ The Vite example copies a deliberate subset of these by allowlist rather than sh
 
 | Package | Role |
 | --- | --- |
-${Object.entries(CODEC_AND_MEDIA).map(([k, v]) => `| \`${k}\` | ${v} |`).join("\n")}
+${Object.entries(CODEC_AND_MEDIA)
+	.map(([k, v]) => `| \`${k}\` | ${v} |`)
+	.join("\n")}
 
 Video and audio decoding otherwise relies on the browser's own WebCodecs and Media Source
 implementations; no codec binaries are vendored into this repository. GPU rendering goes through
@@ -382,7 +456,15 @@ always did, and a **re**-introduction of a repaired defect now fails the same wa
 one-sided "every defect present" assertion could not detect. Repairing a defect never means deleting
 its entry; the record of what upstream shipped survives the repair.
 
-Current dispositions: ${defectResults.filter((d) => d.disposition === "recorded").map((d) => d.id).join(", ")} recorded; ${defectResults.filter((d) => d.disposition === "repaired").map((d) => d.id).join(", ") || "none"} repaired.
+Current dispositions: ${defectResults
+	.filter((d) => d.disposition === "recorded")
+	.map((d) => d.id)
+	.join(", ")} recorded; ${
+	defectResults
+		.filter((d) => d.disposition === "repaired")
+		.map((d) => d.id)
+		.join(", ") || "none"
+} repaired.
 
 ### Known before this Slice began
 
@@ -396,9 +478,22 @@ reader can tell what this work found from what it inherited.
 ${renderDefects(defectResults.filter((d) => d.discoveredDuringS01))}
 `;
 
-writeFileSync(join(REPO_ROOT, "SBOM.md"), md);
+const sbomPath = join(REPO_ROOT, "SBOM.md");
+if (checkOnly) {
+	const existing = readFileSync(sbomPath, "utf8");
+	if (existing !== md) {
+		console.error(
+			"SBOM.md is stale; regenerate it with: node script/generate-sbom.mjs",
+		);
+		process.exit(1);
+	}
+} else {
+	writeFileSync(sbomPath, md);
+}
 
-console.log(`SBOM: ${resolvedPackages.length} npm packages, ${wasmCrates.length} wasm crates`);
+console.log(
+	`SBOM${checkOnly ? " check" : ""}: ${resolvedPackages.length} npm packages, ${wasmCrates.length} wasm crates`,
+);
 for (const d of defectResults) {
 	const observed = d.present ? "present" : "absent";
 	console.log(
@@ -408,10 +503,14 @@ for (const d of defectResults) {
 
 const mismatched = defectResults.filter((d) => !d.matchesDisposition);
 if (mismatched.length > 0) {
-	console.error(`\n${mismatched.length} documented upstream defect(s) do not match their declared disposition.`);
+	console.error(
+		`\n${mismatched.length} documented upstream defect(s) do not match their declared disposition.`,
+	);
 	for (const d of mismatched) {
 		if (d.error) {
-			console.error(`  ${d.id}'s probe threw and therefore proved nothing: ${d.error}`);
+			console.error(
+				`  ${d.id}'s probe threw and therefore proved nothing: ${d.error}`,
+			);
 		} else if (d.disposition === "recorded") {
 			console.error(
 				`  ${d.id} is declared \`recorded\` but is no longer detected. Either the repository was repaired ` +

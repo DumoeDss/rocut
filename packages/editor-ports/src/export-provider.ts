@@ -19,6 +19,11 @@ export interface ExportRequest {
 	readonly projectId: ProjectId;
 	/** A container hint, e.g. `"mp4"`. Opaque to the contract; S08 fixes the set. */
 	readonly format: string;
+	/** Optional strict half-open timeline interval in 120,000 Hz media ticks. */
+	readonly range?: {
+		readonly startTime: number;
+		readonly endTime: number;
+	};
 }
 
 export type ExportOutcome =

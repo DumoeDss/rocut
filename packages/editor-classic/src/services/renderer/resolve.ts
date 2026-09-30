@@ -17,7 +17,10 @@ import {
 	getTextMeasurementContext,
 	measureTextElement,
 } from "../../text/measure-element";
-import { resolveColorAtTime, resolveOpacityAtTime } from "../../animation/values";
+import {
+	resolveColorAtTime,
+	resolveOpacityAtTime,
+} from "../../animation/values";
 import { resolveTransformAtTime } from "../../rendering/animation-values";
 import type { VideoCache } from "../video-cache/service";
 import type { CanvasRenderer } from "./canvas-renderer";
@@ -39,6 +42,12 @@ import { ImageNode, loadImageSource } from "./nodes/image-node";
 import { StickerNode, loadStickerSource } from "./nodes/sticker-node";
 import { TextNode, type ResolvedTextNodeState } from "./nodes/text-node";
 import { VideoNode } from "./nodes/video-node";
+import {
+	MotionTextNode,
+	MotionTextRenderResourceError,
+	type ResolvedMotionTextNodeState,
+} from "./nodes/motion-text-node";
+import { resolveMotionTextRenderFrame } from "./motion-text/jizura-adapter";
 import type {
 	ResolvedVisualNodeState,
 	ResolvedVisualSourceNodeState,
@@ -46,9 +55,9 @@ import type {
 } from "./nodes/visual-node";
 
 type ResolveContext = {
-	renderer: CanvasRenderer;
+	renderer: Pick<CanvasRenderer, "width" | "height">;
 	time: number;
-	videoCache: VideoCache;
+	videoCache: Pick<VideoCache, "getFrameAt">;
 };
 
 export async function resolveRenderTree({
@@ -58,9 +67,9 @@ export async function resolveRenderTree({
 	videoCache,
 }: {
 	node: AnyBaseNode;
-	renderer: CanvasRenderer;
+	renderer: Pick<CanvasRenderer, "width" | "height">;
 	time: number;
-	videoCache: VideoCache;
+	videoCache: Pick<VideoCache, "getFrameAt">;
 }): Promise<void> {
 	await resolveNode({
 		node,
@@ -87,6 +96,8 @@ async function resolveNode({
 		node.resolved = await resolveStickerNode({ node, context });
 	} else if (node instanceof GraphicNode) {
 		node.resolved = resolveGraphicNode({ node, context });
+	} else if (node instanceof MotionTextNode) {
+		node.resolved = await resolveMotionTextNode({ node, context });
 	} else if (node instanceof TextNode) {
 		node.resolved = resolveTextNode({ node, context });
 	} else if (node instanceof BlurBackgroundNode) {
@@ -98,6 +109,55 @@ async function resolveNode({
 	await Promise.all(
 		node.children.map((child) => resolveNode({ node: child, context })),
 	);
+}
+
+async function resolveMotionTextNode({
+	node,
+	context,
+}: {
+	node: MotionTextNode;
+	context: ResolveContext;
+}): Promise<ResolvedMotionTextNodeState | null> {
+	const mapping = node.mapClipTime({
+		clipStartTime: node.params.timeOffset,
+		clipDuration: node.params.duration,
+		trimStart: node.params.trimStart,
+		timelineTime: context.time,
+		sequenceDuration: node.params.sequence.duration,
+	});
+	if (!mapping.active || mapping.sequenceTime == null) {
+		node.diagnostics = node.runtime.baseDiagnostics;
+		return null;
+	}
+	const visualState = resolveVisualState({
+		params: node.params,
+		context,
+		sourceWidth: context.renderer.width,
+		sourceHeight: context.renderer.height,
+	});
+	if (!visualState) return null;
+	const runtime = await node.getRenderRuntime();
+	if (
+		node.params.renderPurpose === "export" &&
+		runtime.baseDiagnostics.some(({ severity }) => severity === "error")
+	) {
+		node.diagnostics = runtime.baseDiagnostics;
+		throw new MotionTextRenderResourceError(runtime.baseDiagnostics);
+	}
+	const frame = resolveMotionTextRenderFrame({
+		runtime,
+		sequenceTime: mapping.sequenceTime,
+	});
+	if (!frame) {
+		node.diagnostics = node.runtime.baseDiagnostics;
+		return null;
+	}
+	node.diagnostics = frame.diagnostics;
+	return {
+		...visualState,
+		frame,
+		contentHash: `motion-text:v1:${context.renderer.width}x${context.renderer.height}:${frame.contentFingerprint}`,
+	};
 }
 
 function resolveEffectPassGroups({

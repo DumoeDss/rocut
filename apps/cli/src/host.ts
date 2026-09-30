@@ -56,6 +56,16 @@ import {
 	sameJson,
 } from "./editor-plane";
 import { FileProjectStore } from "./file-store";
+import {
+	createMotionText,
+	createMotionTextRequestJournal,
+	MotionTextApiError,
+	motionTextCatalog,
+	mutateMotionText,
+	varyMotionText,
+	type MotionTextFactoryCores,
+	type MotionTextRequestJournal,
+} from "./motion-text";
 import type { TargetEntry, TargetSecret } from "./target-registry";
 import type { TargetRegistry } from "./target-registry";
 
@@ -104,6 +114,8 @@ export interface StartHostArgs {
 	readonly registry: TargetRegistry;
 	/** Registry activity-sync throttle; default 60 s (injectable for tests). */
 	readonly activitySyncIntervalMs?: number;
+	/** Rust/WASM factory injection used by canonical-source tests. */
+	readonly motionTextCores?: MotionTextFactoryCores;
 }
 
 export interface RunningHost {
@@ -256,6 +268,7 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 		baseStore,
 		projectId: projectIdentifier,
 	});
+	const motionTextJournal = createMotionTextRequestJournal();
 
 	const startedAt = Date.now();
 	const targetId = await deriveTargetId({
@@ -294,6 +307,8 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 			activity,
 			noteActivity,
 			exportRegistry,
+			motionTextCores: args.motionTextCores,
+			motionTextJournal,
 		});
 	});
 	const port = await new Promise<number>((resolve, reject) => {
@@ -371,6 +386,8 @@ interface HandleContext {
 	readonly noteActivity: () => void;
 	/** Attached-pane registry + export job book (see `host-export.ts`). */
 	readonly exportRegistry: ExportRegistry;
+	readonly motionTextCores: MotionTextFactoryCores | undefined;
+	readonly motionTextJournal: MotionTextRequestJournal;
 }
 
 async function handle(
@@ -463,6 +480,85 @@ async function handleApi(
 		if (request.method === "GET" && route[0] === "markers") {
 			respond(200, await automation.markers());
 			return;
+		}
+		if (request.method === "GET" && route[0] === "motion-text-sequences") {
+			respond(200, (await automation.motionTextSequences?.()) ?? []);
+			return;
+		}
+		if (
+			request.method === "GET" &&
+			route[0] === "motion-text" &&
+			route[1] === "catalog" &&
+			route.length === 2
+		) {
+			respond(200, motionTextCatalog());
+			return;
+		}
+		if (
+			request.method === "POST" &&
+			route[0] === "motion-text" &&
+			route[1] === "sequences" &&
+			route.length === 2
+		) {
+			const body: unknown = await readJsonBody(request);
+			respond(
+				200,
+				await plane.enqueue(() =>
+					createMotionText({
+						automation: plane.automation(),
+						input: body,
+						...(context.motionTextCores === undefined
+							? {}
+							: { cores: context.motionTextCores }),
+						journal: context.motionTextJournal,
+					}),
+				),
+			);
+			return;
+		}
+		if (
+			request.method === "POST" &&
+			route[0] === "motion-text" &&
+			route[1] === "sequences" &&
+			route.length === 4
+		) {
+			const sequenceId = decodeURIComponent(route[2]);
+			const body: unknown = await readJsonBody(request);
+			if (route[3] === "mutations") {
+				respond(
+					200,
+					await plane.enqueue(() =>
+						mutateMotionText({
+							automation: plane.automation(),
+							sequenceId,
+							input: body,
+							...(context.motionTextCores === undefined
+								? {}
+								: { cores: context.motionTextCores }),
+							journal: context.motionTextJournal,
+						}),
+					),
+				);
+				return;
+			}
+			if (route[3] === "variations") {
+				respond(
+					200,
+					await plane.enqueue(() =>
+						varyMotionText({
+							automation: plane.automation(),
+							sequenceId,
+							input: body,
+							apply: url.searchParams.get("apply") === "true",
+							...(context.motionTextCores === undefined
+								? {}
+								: { cores: context.motionTextCores }),
+							journal: context.motionTextJournal,
+						}),
+					),
+				);
+				return;
+			}
 		}
 		if (request.method === "GET" && route[0] === "record") {
 			const record = await plane.baseStore.load({ id: plane.projectId });
@@ -785,6 +881,16 @@ async function handleApi(
 		}
 		respond(404, { error: "unknown-api-route" });
 	} catch (error) {
+		if (error instanceof MotionTextApiError) {
+			respond(error.status, {
+				accepted: false,
+				name: error.name,
+				code: error.code,
+				message: error.message,
+				...error.details,
+			});
+			return;
+		}
 		if (error instanceof TransactionError) {
 			respond(409, {
 				accepted: false,

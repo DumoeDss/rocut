@@ -1,5 +1,11 @@
 import { createHash } from "node:crypto";
-import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import {
+	createReadStream,
+	readdirSync,
+	readFileSync,
+	statSync,
+	writeFileSync,
+} from "node:fs";
 import { extname, join, posix, relative, resolve } from "node:path";
 import type { Plugin } from "vite";
 
@@ -14,10 +20,10 @@ import type { Plugin } from "vite";
  * which is why there is no second inventory to drift out of sync — the
  * allowlist *is* the §3.4 manifest.
  *
- * Copying all of `apps/web/public` instead would work in one line and ship
- * 4.71 MB across 335 files, the extra being landing-page screenshots and
- * open-graph images belonging to the marketing site, with no inventory to show
- * for it.
+ * Copying all of `apps/web/public` instead would work in one line but would
+ * also ship landing-page screenshots and open-graph images belonging to the
+ * marketing site, with no inventory to show for them. The larger offline
+ * motion-text font pack is intentional and remains explicit in this manifest.
  */
 export interface EditorAsset {
 	/** Path under `apps/web/public`, also the served path. */
@@ -32,6 +38,15 @@ export interface EditorAsset {
 }
 
 export const EDITOR_RUNTIME_ASSETS: EditorAsset[] = [
+	{
+		path: "motion-text/fonts",
+		kind: "directory",
+		category: "fonts",
+		consumer:
+			"packages/editor-classic/src/services/renderer/motion-text/font-runtime.ts — digest-verified offline JIZURA font faces",
+		requiredBy:
+			"packages/editor-classic/src/core/managers/renderer-manager.ts — loads builtinPath through the Host asset loader before layout",
+	},
 	{
 		path: "fonts",
 		kind: "directory",
@@ -124,6 +139,12 @@ type CopiedManifestEntry = {
 	requiredBy: string;
 };
 
+type ResolvedEditorAsset = {
+	absolute: string;
+	served: string;
+	asset: EditorAsset;
+};
+
 export function editorAssets({ publicRoot, repoRoot }: { publicRoot: string; repoRoot: string }): Plugin {
 	let copiedEntries: CopiedManifestEntry[] = [];
 	const manifestSource = (emitted: ReturnType<typeof summarizeBundle>) =>
@@ -150,39 +171,59 @@ export function editorAssets({ publicRoot, repoRoot }: { publicRoot: string; rep
 		)}\n`;
 	return {
 		name: "opencut-editor-assets",
+		configureServer(server) {
+			const files = new Map(
+				resolveEditorAssets(publicRoot).map((file) => [file.served, file]),
+			);
+			server.middlewares.use((request, response, next) => {
+				if (request.method !== "GET" && request.method !== "HEAD") {
+					next();
+					return;
+				}
+
+				const path = devAssetPath({
+					url: request.url,
+					base: server.config.base,
+				});
+				const file = path === null ? undefined : files.get(path);
+				if (!file) {
+					next();
+					return;
+				}
+
+				const size = statSync(file.absolute).size;
+				response.statusCode = 200;
+				response.setHeader("Content-Type", servedMime(file.served));
+				response.setHeader("Content-Length", size);
+				response.setHeader("Cache-Control", "no-cache");
+				if (request.method === "HEAD") {
+					response.end();
+					return;
+				}
+
+				const stream = createReadStream(file.absolute);
+				stream.on("error", (error) => {
+					if (response.headersSent) response.destroy(error);
+					else next(error);
+				});
+				stream.pipe(response);
+			});
+		},
 		generateBundle(_options, bundle) {
 			const entries: CopiedManifestEntry[] = [];
 
-			for (const asset of EDITOR_RUNTIME_ASSETS) {
-				const source = resolve(publicRoot, asset.path);
-				const files =
-					asset.kind === "directory"
-						? listFiles(source).map((absolute) => ({
-								absolute,
-								served: posix.join(asset.path, relative(source, absolute).split("\\").join("/")),
-							}))
-						: [{ absolute: source, served: asset.path }];
-
-				if (files.length === 0) {
-					this.error(
-						`editor-assets: "${asset.path}" matched no files under ${publicRoot}. ` +
-							"The allowlist is the manifest, so an entry that copies nothing is a defect, not a no-op.",
-					);
-				}
-
-				for (const file of files) {
-					const contents = readFileSync(file.absolute);
-					this.emitFile({ type: "asset", fileName: file.served, source: contents });
-					entries.push({
-						path: file.served,
-						category: asset.category,
-						expectedMime: expectedMime(file.served),
-						bytes: contents.byteLength,
-						sha256: createHash("sha256").update(contents).digest("hex"),
-						sourcePath: relative(repoRoot, file.absolute).split("\\").join("/"),
-						requiredBy: asset.consumer,
-					});
-				}
+			for (const file of resolveEditorAssets(publicRoot)) {
+				const contents = readFileSync(file.absolute);
+				this.emitFile({ type: "asset", fileName: file.served, source: contents });
+				entries.push({
+					path: file.served,
+					category: file.asset.category,
+					expectedMime: expectedMime(file.served),
+					bytes: contents.byteLength,
+					sha256: createHash("sha256").update(contents).digest("hex"),
+					sourcePath: relative(repoRoot, file.absolute).split("\\").join("/"),
+					requiredBy: file.asset.consumer,
+				});
 			}
 
 			entries.sort((a, b) => a.path.localeCompare(b.path));
@@ -211,6 +252,57 @@ export function editorAssets({ publicRoot, repoRoot }: { publicRoot: string; rep
 			);
 		},
 	};
+}
+
+function resolveEditorAssets(publicRoot: string): ResolvedEditorAsset[] {
+	return EDITOR_RUNTIME_ASSETS.flatMap((asset) => {
+		const source = resolve(publicRoot, asset.path);
+		const files =
+			asset.kind === "directory"
+				? listFiles(source).map((absolute) => ({
+						absolute,
+						served: posix.join(
+							asset.path,
+							relative(source, absolute).split("\\").join("/"),
+						),
+						asset,
+					}))
+				: [{ absolute: source, served: asset.path, asset }];
+		if (files.length === 0) {
+			throw new Error(
+				`editor-assets: "${asset.path}" matched no files under ${publicRoot}. ` +
+					"The allowlist is the manifest, so an entry that copies nothing is a defect, not a no-op.",
+			);
+		}
+		return files;
+	});
+}
+
+function devAssetPath({
+	url,
+	base,
+}: {
+	url: string | undefined;
+	base: string;
+}): string | null {
+	if (!url) return null;
+	let pathname: string;
+	try {
+		pathname = decodeURIComponent(new URL(url, "http://vite.invalid").pathname);
+	} catch {
+		return null;
+	}
+
+	if (base.startsWith("/") && base !== "/") {
+		const prefix = base.endsWith("/") ? base : `${base}/`;
+		if (!pathname.startsWith(prefix)) return null;
+		pathname = pathname.slice(prefix.length);
+	}
+	return pathname.replace(/^\/+/, "");
+}
+
+function servedMime(path: string): string {
+	return expectedMime(path).split("|", 1)[0] ?? "application/octet-stream";
 }
 
 /**
@@ -275,6 +367,10 @@ function expectedMime(path: string): string {
 	switch (extname(path).toLowerCase()) {
 		case ".json":
 			return "application/json";
+		case ".ttf":
+			return "font/ttf|application/octet-stream";
+		case ".txt":
+			return "text/plain|application/octet-stream";
 		case ".avif":
 			return "image/avif";
 		case ".svg":

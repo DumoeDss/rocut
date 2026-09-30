@@ -51,7 +51,11 @@ class FakeExportSurface implements ExportJobControlSurface {
 	/** Settle the job inside startJob — drives the already-settled race. */
 	settleDuringStart: "completed" | null = null;
 
-	startJob({ request }: { request: ExportJobRequest }): Promise<{ jobId: string }> {
+	startJob({
+		request,
+	}: {
+		request: ExportJobRequest;
+	}): Promise<{ jobId: string }> {
 		this.jobSeq += 1;
 		const jobId = `fake-${String(this.jobSeq)}`;
 		const store = ExportJobStore.open({ jobId, request });
@@ -128,7 +132,8 @@ class FakeExportSurface implements ExportJobControlSurface {
 	/** The one job this surface holds (tests start one at a time). */
 	onlyJobId(): string {
 		const ids = [...this.jobs.keys()];
-		if (ids.length !== 1) throw new Error(`expected one job, got ${String(ids.length)}`);
+		if (ids.length !== 1)
+			throw new Error(`expected one job, got ${String(ids.length)}`);
 		return ids[0];
 	}
 
@@ -173,11 +178,32 @@ class FakeExportSurface implements ExportJobControlSurface {
 
 const REQUEST: ExportRequest = { projectId: "project-1", format: "mp4" };
 
-function providerOver(
-	surface: FakeExportSurface,
-): { provider: ElectronExportProvider; surface: FakeExportSurface } {
+test("a requested range reaches the addressable export job unchanged", async () => {
+	const surface = new FakeExportSurface();
+	const { provider } = providerOver(surface);
+	await provider.probe();
+	const request: ExportRequest = {
+		...REQUEST,
+		range: { startTime: 120_000, endTime: 360_000 },
+	};
+	const outcomePromise = provider.export({ request });
+	await Bun.sleep(0);
+	const jobId = surface.onlyJobId();
+	expect(surface.jobs.get(jobId)?.store.snapshot().request.range).toEqual(
+		request.range,
+	);
+	surface.driveCompleted({ jobId, bytes: 8 });
+	expect((await outcomePromise).status).toBe("completed");
+});
+
+function providerOver(surface: FakeExportSurface): {
+	provider: ElectronExportProvider;
+	surface: FakeExportSurface;
+} {
 	return {
-		provider: new ElectronExportProvider({ bridge: new RendererExportBridge(surface) }),
+		provider: new ElectronExportProvider({
+			bridge: new RendererExportBridge(surface),
+		}),
 		surface,
 	};
 }
@@ -203,7 +229,9 @@ test("no binary: canExport false and export settles unsupported naming the binar
 });
 
 test("no bridge at all (composed outside Electron): unsupported, not a crash", async () => {
-	const provider = new ElectronExportProvider({ bridge: new RendererExportBridge(null) });
+	const provider = new ElectronExportProvider({
+		bridge: new RendererExportBridge(null),
+	});
 	await provider.probe();
 	expect(provider.canExport({ request: REQUEST })).toBe(false);
 	const outcome = await provider.export({ request: REQUEST });
@@ -235,7 +263,10 @@ test("failed job: frozen failed outcome carrying the job's reason", async () => 
 	const { provider, surface } = providerOver(new FakeExportSurface());
 	const outcomePromise = provider.export({ request: REQUEST });
 	await Bun.sleep(0);
-	surface.driveFailed({ jobId: surface.onlyJobId(), reason: "render-error: boom" });
+	surface.driveFailed({
+		jobId: surface.onlyJobId(),
+		reason: "render-error: boom",
+	});
 	const outcome = await outcomePromise;
 	expect(outcome).toEqual({ status: "failed", reason: "render-error: boom" });
 });
@@ -317,12 +348,14 @@ if (process.env.OPENCUT_EXPORT_COMPOSITION_ISOLATED !== "1") {
 		opencutStore: {},
 		opencutExport: compositionSurface,
 	};
-	const { createElectronEditorHost } = await import("../../host/electron-host-config");
-	const { FilesystemProjectStore } = await import("../../store/filesystem-project-store");
-	const { DeterministicIdGenerator, RecordingDiagnostics } = await import(
-		"@opencut/editor-ports/in-memory"
-	);
-	const { BrowserAssetResolver } = await import("@opencut/editor-classic/browser");
+	const { createElectronEditorHost } =
+		await import("../../host/electron-host-config");
+	const { FilesystemProjectStore } =
+		await import("../../store/filesystem-project-store");
+	const { DeterministicIdGenerator, RecordingDiagnostics } =
+		await import("@opencut/editor-ports/in-memory");
+	const { BrowserAssetResolver } =
+		await import("@opencut/editor-classic/browser");
 
 	test("createElectronEditorHost's exporter is the adapter; sibling roles untouched", async () => {
 		const stubArgs = {

@@ -96,6 +96,34 @@ export interface HostExportOptions {
 	readonly format: "mp4" | "webm";
 	readonly quality: "low" | "medium" | "high" | "very_high";
 	readonly includeAudio?: boolean;
+	readonly range?: {
+		readonly startTime: number;
+		readonly endTime: number;
+	};
+}
+
+function isHostExportOptions(
+	value: Record<string, unknown>,
+): value is Record<string, unknown> & HostExportOptions {
+	const { format, quality, includeAudio, range } = value;
+	if (format !== "mp4" && format !== "webm") return false;
+	if (
+		quality !== "low" &&
+		quality !== "medium" &&
+		quality !== "high" &&
+		quality !== "very_high"
+	) {
+		return false;
+	}
+	if (includeAudio !== undefined && typeof includeAudio !== "boolean") {
+		return false;
+	}
+	return (
+		range === undefined ||
+		(isRecord(range) &&
+			typeof range.startTime === "number" &&
+			typeof range.endTime === "number")
+	);
 }
 
 /**
@@ -104,18 +132,26 @@ export interface HostExportOptions {
  * these frames are how the host borrows it.
  */
 export type HostCommand =
-	| { readonly command: "export.start"; readonly jobId: string; readonly options: HostExportOptions }
+	| {
+			readonly command: "export.start";
+			readonly jobId: string;
+			readonly options: HostExportOptions;
+	  }
 	| { readonly command: "export.cancel"; readonly jobId: string };
 
 function parseHostCommand(parsed: Record<string, unknown>): HostCommand | null {
 	const { command, jobId } = parsed;
 	if (typeof jobId !== "string" || jobId === "") return null;
 	if (command === "export.cancel") return { command, jobId };
-	if (command === "export.start" && isRecord(parsed.options)) {
+	if (
+		command === "export.start" &&
+		isRecord(parsed.options) &&
+		isHostExportOptions(parsed.options)
+	) {
 		return {
 			command,
 			jobId,
-			options: parsed.options as unknown as HostExportOptions,
+			options: parsed.options,
 		};
 	}
 	return null;
@@ -162,12 +198,18 @@ export function subscribeHostEvents(handlers: {
  * cancel flag rides the progress RESPONSE rather than a separate poll so the
  * exporter's `onCancel` costs no extra round trip.
  */
-export async function reportExportProgress(
-	jobId: string,
-	progress: number,
-): Promise<{ cancelRequested: boolean }> {
+export async function reportExportProgress({
+	jobId,
+	progress,
+}: {
+	readonly jobId: string;
+	readonly progress: number;
+}): Promise<{ cancelRequested: boolean }> {
 	const response = await fetch(
-		new URL(`api/export/${encodeURIComponent(jobId)}/progress`, location.href).toString(),
+		new URL(
+			`api/export/${encodeURIComponent(jobId)}/progress`,
+			location.href,
+		).toString(),
 		{
 			method: "POST",
 			headers: { "content-type": "application/json" },
@@ -182,12 +224,18 @@ export async function reportExportProgress(
 }
 
 /** Hand the encoded bytes back to the host, which writes the file. */
-export async function uploadExportResult(
-	jobId: string,
-	bytes: ArrayBuffer,
-): Promise<void> {
+export async function uploadExportResult({
+	jobId,
+	bytes,
+}: {
+	readonly jobId: string;
+	readonly bytes: ArrayBuffer;
+}): Promise<void> {
 	await fetch(
-		new URL(`api/export/${encodeURIComponent(jobId)}/result`, location.href).toString(),
+		new URL(
+			`api/export/${encodeURIComponent(jobId)}/result`,
+			location.href,
+		).toString(),
 		{
 			method: "POST",
 			headers: { "content-type": "application/octet-stream" },
@@ -197,10 +245,13 @@ export async function uploadExportResult(
 }
 
 /** Tell the host this render failed, so the job settles instead of going stale. */
-export async function reportExportFailure(
-	jobId: string,
-	error: string,
-): Promise<void> {
+export async function reportExportFailure({
+	jobId,
+	error,
+}: {
+	readonly jobId: string;
+	readonly error: string;
+}): Promise<void> {
 	const url = new URL(
 		`api/export/${encodeURIComponent(jobId)}/result`,
 		location.href,

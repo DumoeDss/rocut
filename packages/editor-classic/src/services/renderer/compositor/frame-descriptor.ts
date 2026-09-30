@@ -7,16 +7,18 @@ import { createCanvasSurface } from "../canvas-utils";
 import { BlurBackgroundNode } from "../nodes/blur-background-node";
 import { ColorNode } from "../nodes/color-node";
 import { EffectLayerNode } from "../nodes/effect-layer-node";
-import {
-	GraphicNode,
-	type ResolvedGraphicNodeState,
-} from "../nodes/graphic-node";
+import { GraphicNode } from "../nodes/graphic-node";
 import { ImageNode } from "../nodes/image-node";
 import { RootNode } from "../nodes/root-node";
 import { StickerNode } from "../nodes/sticker-node";
 import { renderTextToContext, TextNode } from "../nodes/text-node";
 import { VideoNode } from "../nodes/video-node";
-import type { ResolvedVisualSourceNodeState } from "../nodes/visual-node";
+import { MotionTextNode } from "../nodes/motion-text-node";
+import type {
+	ResolvedVisualNodeState,
+	ResolvedVisualSourceNodeState,
+} from "../nodes/visual-node";
+import { drawMotionTextFrame } from "../motion-text/jizura-adapter";
 import type {
 	FrameDescriptor,
 	FrameItemDescriptor,
@@ -27,12 +29,14 @@ import type {
 } from "./types";
 import { DEFAULT_GRAPHIC_SOURCE_SIZE } from "../../../graphics";
 
+type RendererDimensions = Pick<CanvasRenderer, "width" | "height">;
+
 export async function buildFrameDescriptor({
 	node,
 	renderer,
 }: {
 	node: AnyBaseNode;
-	renderer: CanvasRenderer;
+	renderer: RendererDimensions;
 }): Promise<{
 	frame: FrameDescriptor;
 	textures: TextureUploadDescriptor[];
@@ -72,7 +76,7 @@ async function collectNode({
 	textures,
 }: {
 	node: AnyBaseNode;
-	renderer: CanvasRenderer;
+	renderer: RendererDimensions;
 	path: string;
 	items: FrameItemDescriptor[];
 	textures: Map<string, TextureUploadDescriptor>;
@@ -202,7 +206,61 @@ async function collectNode({
 			items,
 			textures,
 		});
+		return;
 	}
+
+	if (node instanceof MotionTextNode) {
+		collectMotionTextNode({ node, renderer, path, items, textures });
+	}
+}
+
+function collectMotionTextNode({
+	node,
+	renderer,
+	path,
+	items,
+	textures,
+}: {
+	node: MotionTextNode;
+	renderer: RendererDimensions;
+	path: string;
+	items: FrameItemDescriptor[];
+	textures: Map<string, TextureUploadDescriptor>;
+}): void {
+	const resolved = node.resolved;
+	if (!resolved) return;
+	const textureId = `${path}:motion-text`;
+	const { width, height } = renderer;
+	textures.set(textureId, {
+		kind: "rendered",
+		id: textureId,
+		contentHash: resolved.contentHash,
+		width,
+		height,
+		draw: (ctx) => {
+			drawMotionTextFrame({
+				ctx,
+				frame: resolved.frame,
+				width,
+				height,
+				compositionMode: node.params.sequence.compositionMode,
+			});
+		},
+	});
+	items.push({
+		type: "layer",
+		textureId,
+		transform: computeVisualTransform({
+			renderer,
+			resolved,
+			sourceWidth: width,
+			sourceHeight: height,
+		}),
+		opacity: resolved.opacity,
+		blendMode: node.params.blendMode ?? "normal",
+		effectPassGroups: resolved.effectPasses,
+		mask: null,
+	});
 }
 
 async function collectVisualSourceNode({
@@ -213,7 +271,7 @@ async function collectVisualSourceNode({
 	textures,
 }: {
 	node: VideoNode | ImageNode | StickerNode | GraphicNode;
-	renderer: CanvasRenderer;
+	renderer: RendererDimensions;
 	path: string;
 	items: FrameItemDescriptor[];
 	textures: Map<string, TextureUploadDescriptor>;
@@ -284,7 +342,7 @@ function collectTextNode({
 	textures,
 }: {
 	node: TextNode;
-	renderer: CanvasRenderer;
+	renderer: RendererDimensions;
 	path: string;
 	items: FrameItemDescriptor[];
 	textures: Map<string, TextureUploadDescriptor>;
@@ -330,8 +388,8 @@ function computeVisualTransform({
 	sourceWidth,
 	sourceHeight,
 }: {
-	renderer: CanvasRenderer;
-	resolved: ResolvedVisualSourceNodeState | ResolvedGraphicNodeState;
+	renderer: RendererDimensions;
+	resolved: ResolvedVisualNodeState;
 	sourceWidth: number;
 	sourceHeight: number;
 }): QuadTransformDescriptor {
@@ -356,7 +414,7 @@ function computeVisualTransform({
 }
 
 function fullCanvasTransform(
-	renderer: CanvasRenderer,
+	renderer: RendererDimensions,
 ): QuadTransformDescriptor {
 	return {
 		centerX: renderer.width / 2,
@@ -377,7 +435,7 @@ function buildMaskArtifacts({
 	textures,
 }: {
 	node: VideoNode | ImageNode | StickerNode | GraphicNode;
-	renderer: CanvasRenderer;
+	renderer: RendererDimensions;
 	path: string;
 	transform: QuadTransformDescriptor;
 	textures: Map<string, TextureUploadDescriptor>;

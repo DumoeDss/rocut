@@ -12,9 +12,8 @@
  */
 import type { Asset, Clip, Marker, Project, Track } from "./domain";
 import type { TrackId } from "./domain";
-import type {
-	OperationKind,
-} from "./operations";
+import type { MotionTextSequence } from "./motion-text";
+import type { OperationKind } from "./operations";
 import type {
 	Revision,
 	TransactionBatch,
@@ -37,6 +36,12 @@ export interface TransactionRead {
 	assets(): Promise<readonly Asset[]>;
 	/** All markers/bookmarks. */
 	markers(): Promise<readonly Marker[]>;
+	/**
+	 * All project-owned motion-text sequences. Optional only so pre-motion-text
+	 * hosts remain source-compatible; absence means the host cannot preserve or
+	 * edit this entity type and must omit its operation kinds.
+	 */
+	motionTextSequences?(): Promise<readonly MotionTextSequence[]>;
 	/** The project metadata. */
 	project(): Promise<Project | null>;
 	/** The current revision. */

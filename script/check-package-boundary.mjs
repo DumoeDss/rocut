@@ -128,7 +128,7 @@
  * `DOM_DOCUMENT_MEMBER_PATTERN` was still a DENYLIST after D-2's 50-member widening —
  * the reviewer reproduced 13+ further real DOM members it missed and judged a
  * denylist here structurally uncompletable (the real DOM surface only grows). Inverted
- * to an ALLOWLIST of the seven domain `document` member names actually read across all
+ * to an ALLOWLIST of the eight domain `document` member names actually read across all
  * 68 layer-0/1 files today (`DOMAIN_DOCUMENT_MEMBERS`, see that pattern's own doc
  * comment) — `document.<member>` is now flagged whenever `<member>` is not on that
  * short list, DOM or not, trading a small, known, self-correcting false-positive
@@ -171,22 +171,26 @@ const BOUNDARY_PATH = join(REPO_ROOT, "packages", "boundary.json");
 const RULES = [
 	{
 		id: "acyclic-direction",
-		description: "every cross-package edge points to a strictly lower declared layer",
+		description:
+			"every cross-package edge points to a strictly lower declared layer",
 		why: "ports sits below contracts sits below classic (design D2, measured 8/0 contracts→ports edges); an upward edge would make the freeze a fiction the moment P1 built against it.",
 	},
 	{
 		id: "public-entry-only",
-		description: "a specifier crossing into a package resolves only to a declared exports subpath",
+		description:
+			"a specifier crossing into a package resolves only to a declared exports subpath",
 		why: "the exports map is itself the enforcement Node and every bundler already give an installed consumer (design D5); this rule is the source-level pre-image of that guarantee.",
 	},
 	{
 		id: "no-internal-reexport",
-		description: "no package's declared entry re-exports a module owned by another package's undeclared internals",
+		description:
+			"no package's declared entry re-exports a module owned by another package's undeclared internals",
 		why: "a declared entry that quietly re-exports another package's internals would let a deep import through the front door.",
 	},
 	{
 		id: "no-elftia-import",
-		description: "no package, Host or example imports an Elftia package, protocol identifier or runtime object",
+		description:
+			"no package, Host or example imports an Elftia package, protocol identifier or runtime object",
 		why: "decision B3 — the portable SDK does not depend on its largest consumer. Matches specifiers, dependency names and identifiers, never raw file text (design D7); there is no exception for adapter-elftia.",
 	},
 	{
@@ -213,13 +217,19 @@ function layerShortName(name) {
 function reactFreeBaseDescription(boundary) {
 	const [base0, base1] = boundary.layers.slice(0, 2).map(layerShortName);
 	const forbiddenNames = boundary.layers.slice(2).map(layerShortName);
-	const forbiddenText = forbiddenNames.length > 0 ? forbiddenNames.join("/") : "any higher-layer";
+	const forbiddenText =
+		forbiddenNames.length > 0 ? forbiddenNames.join("/") : "any higher-layer";
 	return `${base0} and ${base1} import no React, no DOM global, and no ${forbiddenText} module`;
 }
 // public-entry-only joined the live set in review round 1 (BLOCKER-1): its
 // scope now reaches every file outside a package's own src/, and that set is
 // never empty while apps/web/src has any tracked source at all.
-const LIVE_RULE_IDS = ["acyclic-direction", "no-elftia-import", "react-free-base", "public-entry-only"];
+const LIVE_RULE_IDS = [
+	"acyclic-direction",
+	"no-elftia-import",
+	"react-free-base",
+	"public-entry-only",
+];
 const DORMANT_RULE_IDS = ["no-internal-reexport"];
 
 /**
@@ -232,7 +242,10 @@ const DORMANT_RULE_IDS = ["no-internal-reexport"];
  * accepted, narrow gap — nothing in the current scan set exercises it.
  */
 function stripStringLiterals(line) {
-	return line.replace(/"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`/g, "");
+	return line.replace(
+		/"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`/g,
+		"",
+	);
 }
 
 /**
@@ -261,7 +274,8 @@ function stripStringLiterals(line) {
  * two or more is a real, chained property read, and the strip does not
  * reach past the first dot.
  */
-const TYPEOF_GUARD_PATTERN = /\btypeof\s+(?:globalThis|window)\b(?:\s*\.\s*\w+\b(?!\s*\.))?/g;
+const TYPEOF_GUARD_PATTERN =
+	/\btypeof\s+(?:globalThis|window)\b(?:\s*\.\s*\w+\b(?!\s*\.))?/g;
 
 function stripTypeofGuards(line) {
 	return line.replace(TYPEOF_GUARD_PATTERN, "");
@@ -323,7 +337,7 @@ const DOM_GLOBAL_PATTERN =
  * `document.<member>` access across all 68 files `react-free-base` scans
  * today (`apps/web/src/editor/ports/**`, `apps/web/src/editor/host/
  * editor-host.ts`, `apps/web/src/editor/contracts/**` minus the one file
- * `boundary.json` reassigns to editor-classic) — seven names, every one a
+ * `boundary.json` reassigns to editor-classic) — eight names, every one a
  * read on a local "document" value, never `globalThis.document`:
  * `revision`, `tracks`, `clips`, `assets`, `markers`, `idempotency`,
  * `project`. `editor/ports` and `editor-host.ts` contain zero `document.*`
@@ -340,9 +354,20 @@ const DOM_GLOBAL_PATTERN =
  * access on `document`, and adding `document\s*\[` back is a straightforward
  * follow-up if that ever changes.
  */
-const DOMAIN_DOCUMENT_MEMBERS = ["revision", "tracks", "clips", "assets", "markers", "idempotency", "project"];
+const DOMAIN_DOCUMENT_MEMBERS = [
+	"revision",
+	"tracks",
+	"clips",
+	"assets",
+	"markers",
+	"motionTextSequences",
+	"idempotency",
+	"project",
+];
 
-const DOM_DOCUMENT_MEMBER_PATTERN = new RegExp(`\\bdocument\\s*\\.\\s*(?!(?:${DOMAIN_DOCUMENT_MEMBERS.join("|")})\\b)\\w+`);
+const DOM_DOCUMENT_MEMBER_PATTERN = new RegExp(
+	`\\bdocument\\s*\\.\\s*(?!(?:${DOMAIN_DOCUMENT_MEMBERS.join("|")})\\b)\\w+`,
+);
 
 /**
  * MAJOR-2 (review round 1): `globalThis.localStorage` and
@@ -423,14 +448,21 @@ function resolveSpecifier({ spec, fromFile, manifests }) {
 		if (match) {
 			const manifest = manifests.find((m) => m.name === match[1]);
 			const target = manifest?.exports?.[subpathOf(match)];
-			if (target) return `packages/${manifest.dir}/${target.replace(/^\.\//, "")}`;
+			if (target)
+				return `packages/${manifest.dir}/${target.replace(/^\.\//, "")}`;
 		}
 	}
 	return null;
 }
 
 function candidatePaths(base) {
-	return [base, `${base}.ts`, `${base}.tsx`, `${base}/index.ts`, `${base}/index.tsx`];
+	return [
+		base,
+		`${base}.ts`,
+		`${base}.tsx`,
+		`${base}/index.ts`,
+		`${base}/index.tsx`,
+	];
 }
 
 /**
@@ -446,8 +478,10 @@ function resolveOwner(resolvedPath, boundary) {
 		const isFileEntry = /\.(?:ts|tsx|css)$/.test(entry.path);
 		const matched = isFileEntry
 			? candidatePaths(resolvedPath).includes(entry.path)
-			: resolvedPath === entry.path || resolvedPath.startsWith(`${entry.path}/`);
-		if (matched && (best === null || entry.path.length > best.path.length)) best = entry;
+			: resolvedPath === entry.path ||
+				resolvedPath.startsWith(`${entry.path}/`);
+		if (matched && (best === null || entry.path.length > best.path.length))
+			best = entry;
 	}
 	return best ? best.owner : null;
 }
@@ -481,7 +515,13 @@ function consumerEntries(boundary) {
 			);
 		}
 		const { id, root } = consumer;
-		if (typeof id !== "string" || typeof root !== "string" || !id || !root || root.startsWith("/")) {
+		if (
+			typeof id !== "string" ||
+			typeof root !== "string" ||
+			!id ||
+			!root ||
+			root.startsWith("/")
+		) {
 			throw new Error(
 				`check-package-boundary: consumer entry ${JSON.stringify(consumer)} needs a string id and a POSIX-relative root`,
 			);
@@ -526,7 +566,9 @@ function isUnderConsumerRoot(path, boundary) {
 function ownerOfPath(path, boundary, manifests) {
 	const consumer = consumerRootEntryOf(path, boundary);
 	if (consumer !== null) {
-		return consumer.ownership === "map" ? resolveOwner(path, boundary) : consumer.id;
+		return consumer.ownership === "map"
+			? resolveOwner(path, boundary)
+			: consumer.id;
 	}
 	const packageMatch = PACKAGE_SOURCE_PATH_PATTERN.exec(path);
 	if (packageMatch) {
@@ -572,7 +614,9 @@ function acyclicDirectionRule({ files, boundary, manifests }) {
 	// declared roots from `boundary.json` — same set today by construction.
 	const consumerSet = new Set(consumerIds(boundary));
 	const scope = files.filter(
-		(f) => isUnderConsumerRoot(f.path, boundary) || PACKAGE_SOURCE_PATH_PATTERN.test(f.path),
+		(f) =>
+			isUnderConsumerRoot(f.path, boundary) ||
+			PACKAGE_SOURCE_PATH_PATTERN.test(f.path),
 	);
 	let edgesExamined = 0;
 	for (const file of scope) {
@@ -583,9 +627,17 @@ function acyclicDirectionRule({ files, boundary, manifests }) {
 			if (isComment(line)) return;
 			const spec = extractSpecifier(line);
 			if (!spec) return;
-			const resolved = resolveSpecifier({ spec, fromFile: file.path, manifests });
+			const resolved = resolveSpecifier({
+				spec,
+				fromFile: file.path,
+				manifests,
+			});
 			if (resolved === null) return;
-			if (!isUnderConsumerRoot(resolved, boundary) && !PACKAGE_SOURCE_PATH_PATTERN.test(resolved)) return;
+			if (
+				!isUnderConsumerRoot(resolved, boundary) &&
+				!PACKAGE_SOURCE_PATH_PATTERN.test(resolved)
+			)
+				return;
 			const targetOwner = ownerOfPath(resolved, boundary, manifests);
 			if (targetOwner === null) return;
 			if (sourceOwner === targetOwner) return; // internal edge
@@ -629,7 +681,12 @@ function scanPackageJsonForElftia(text) {
 	} catch {
 		return hits;
 	}
-	for (const field of ["dependencies", "devDependencies", "peerDependencies", "optionalDependencies"]) {
+	for (const field of [
+		"dependencies",
+		"devDependencies",
+		"peerDependencies",
+		"optionalDependencies",
+	]) {
 		const deps = data[field];
 		if (!deps) continue;
 		for (const name of Object.keys(deps)) {
@@ -728,8 +785,17 @@ function checkManifestReactFree(file, violations, boundary) {
 	} catch {
 		return;
 	}
-	const forbidden = new Set(["react", "react-dom", ...boundary.layers.slice(2)]);
-	for (const field of ["dependencies", "devDependencies", "peerDependencies", "optionalDependencies"]) {
+	const forbidden = new Set([
+		"react",
+		"react-dom",
+		...boundary.layers.slice(2),
+	]);
+	for (const field of [
+		"dependencies",
+		"devDependencies",
+		"peerDependencies",
+		"optionalDependencies",
+	]) {
 		const deps = data[field];
 		if (!deps) continue;
 		for (const name of Object.keys(deps)) {
@@ -762,7 +828,9 @@ function checkManifestReactFree(file, violations, boundary) {
 function baseLayerManifestPaths(boundary, manifests) {
 	const baseLayerNames = new Set(boundary.layers.slice(0, 2));
 	return new Set(
-		manifests.filter((m) => baseLayerNames.has(m.name)).map((m) => `packages/${m.dir}/package.json`),
+		manifests
+			.filter((m) => baseLayerNames.has(m.name))
+			.map((m) => `packages/${m.dir}/package.json`),
 	);
 }
 
@@ -784,14 +852,23 @@ function reactFreeBaseRule({ files, boundary, manifests }) {
 		// s05-second-host task 2.2: consumer-root literals became declared roots;
 		// a directly-owned consumer root never yields a base-layer owner, so the
 		// census is unchanged for consumers added after this edit.
-		if (!isUnderConsumerRoot(file.path, boundary) && !PACKAGE_SOURCE_PATH_PATTERN.test(file.path)) continue;
+		if (
+			!isUnderConsumerRoot(file.path, boundary) &&
+			!PACKAGE_SOURCE_PATH_PATTERN.test(file.path)
+		)
+			continue;
 		const owner = ownerOfPath(file.path, boundary, manifests);
 		if (!baseLayerNames.has(owner)) continue;
 		scanned += 1;
 		file.text.split(/\r?\n/).forEach((line, index) => {
 			if (isComment(line)) return;
 			const spec = extractSpecifier(line);
-			if (spec === "react" || spec === "react-dom" || spec?.startsWith("react/") || spec?.startsWith("react-dom/")) {
+			if (
+				spec === "react" ||
+				spec === "react-dom" ||
+				spec?.startsWith("react/") ||
+				spec?.startsWith("react-dom/")
+			) {
 				violations.push({
 					rule: "react-free-base",
 					path: file.path,
@@ -823,7 +900,10 @@ function reactFreeBaseRule({ files, boundary, manifests }) {
 				});
 				return;
 			}
-			if (DOM_GLOBAL_PATTERN.test(codeOnly) || GLOBALTHIS_DOM_PATTERN.test(codeOnly)) {
+			if (
+				DOM_GLOBAL_PATTERN.test(codeOnly) ||
+				GLOBALTHIS_DOM_PATTERN.test(codeOnly)
+			) {
 				violations.push({
 					rule: "react-free-base",
 					path: file.path,
@@ -833,12 +913,20 @@ function reactFreeBaseRule({ files, boundary, manifests }) {
 				return;
 			}
 			if (spec) {
-				const resolved = resolveSpecifier({ spec, fromFile: file.path, manifests });
+				const resolved = resolveSpecifier({
+					spec,
+					fromFile: file.path,
+					manifests,
+				});
 				// Task 2.1 (design E3(a)): also follows a resolved target that lands
 				// in packages/, not only apps/web/src — adds zero reach before any
 				// move, per task 2.6's control re-run. s05-second-host task 2.2:
 				// the literal became the declared consumer roots.
-				if (resolved && (isUnderConsumerRoot(resolved, boundary) || PACKAGE_SOURCE_PATH_PATTERN.test(resolved))) {
+				if (
+					resolved &&
+					(isUnderConsumerRoot(resolved, boundary) ||
+						PACKAGE_SOURCE_PATH_PATTERN.test(resolved))
+				) {
 					// D-6 (review round 3): was `=== boundary.layers[2]`, a single
 					// index literal that missed a legally-declared fourth layer's
 					// upward import from a manifest-clean base file. Now membership
@@ -898,7 +986,9 @@ function packageSpecifierPattern(manifests) {
 			"check-package-boundary: packageSpecifierPattern requires at least one manifest — refusing to build a pattern that would match almost any specifier",
 		);
 	}
-	const names = manifests.map((m) => m.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+	const names = manifests.map((m) =>
+		m.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+	);
 	return new RegExp(`^(${names.join("|")})(/.*)?$`);
 }
 
@@ -924,12 +1014,16 @@ function packageAndConsumerSourceFiles(files, boundary) {
 	// s05-second-host task 2.2: the two consumer-root literals became the
 	// declared roots from `boundary.json` — the same file set by construction.
 	return files.filter(
-		(f) => /^packages\/[^/]+\/src\//.test(f.path) || isUnderConsumerRoot(f.path, boundary),
+		(f) =>
+			/^packages\/[^/]+\/src\//.test(f.path) ||
+			isUnderConsumerRoot(f.path, boundary),
 	);
 }
 
 function manifestEntrySets(manifests) {
-	return new Map(manifests.map((m) => [m.name, new Set(Object.keys(m.exports ?? {}))]));
+	return new Map(
+		manifests.map((m) => [m.name, new Set(Object.keys(m.exports ?? {}))]),
+	);
 }
 
 function manifestEntryFileSet(manifests) {
@@ -1038,10 +1132,16 @@ function scan({ files, boundary, manifests }) {
 			...reexport.violations,
 		],
 		census: {
-			"acyclic-direction": { filesScanned: acyclic.filesScanned, edgesExamined: acyclic.edgesExamined },
+			"acyclic-direction": {
+				filesScanned: acyclic.filesScanned,
+				edgesExamined: acyclic.edgesExamined,
+			},
 			"no-elftia-import": { filesScanned: elftia.scanned },
 			"react-free-base": { filesScanned: reactFree.scanned },
-			"public-entry-only": { filesScanned: publicEntry.scanned, specifiersExamined: publicEntry.specifiersExamined },
+			"public-entry-only": {
+				filesScanned: publicEntry.scanned,
+				specifiersExamined: publicEntry.specifiersExamined,
+			},
 			"no-internal-reexport": { filesScanned: reexport.scanned },
 		},
 	};
@@ -1083,7 +1183,9 @@ function discoverPackageDirs() {
  * layer is refused outright, never silently skipped. */
 function loadManifests(boundary) {
 	const manifests = discoverPackageDirs().map((dir) => {
-		const data = JSON.parse(readFileSync(join(REPO_ROOT, "packages", dir, "package.json"), "utf8"));
+		const data = JSON.parse(
+			readFileSync(join(REPO_ROOT, "packages", dir, "package.json"), "utf8"),
+		);
 		return { dir, name: data.name, exports: data.exports ?? {} };
 	});
 	const undeclared = manifests.filter((m) => !boundary.layers.includes(m.name));
@@ -1092,7 +1194,9 @@ function loadManifests(boundary) {
 			"check-package-boundary: packages/ contains a manifest not declared in boundary.json's layer order, refusing to scan:",
 		);
 		for (const m of undeclared) {
-			console.error(`  packages/${m.dir}/package.json declares "${m.name}", which boundary.json.layers does not include`);
+			console.error(
+				`  packages/${m.dir}/package.json declares "${m.name}", which boundary.json.layers does not include`,
+			);
 		}
 		process.exit(2);
 	}
@@ -1104,11 +1208,15 @@ function gitLsFiles() {
 	// the commit must see the files the change adds, or it reports a pass on an
 	// empty set. no-elftia-import is repo-wide by spec §3.4; acyclic-direction and
 	// react-free-base filter down to their own scope internally.
-	return execFileSync("git", ["ls-files", "-z", "--cached", "--others", "--exclude-standard"], {
-		cwd: REPO_ROOT,
-		encoding: "utf8",
-		maxBuffer: 64 * 1024 * 1024,
-	})
+	return execFileSync(
+		"git",
+		["ls-files", "-z", "--cached", "--others", "--exclude-standard"],
+		{
+			cwd: REPO_ROOT,
+			encoding: "utf8",
+			maxBuffer: 64 * 1024 * 1024,
+		},
+	)
 		.split("\0")
 		.filter(Boolean)
 		.map((p) => p.replaceAll("\\", "/"));
@@ -1125,7 +1233,10 @@ function collectRepoFiles() {
 	const relevant = gitLsFiles()
 		.filter((p) => p !== SELF_PATH)
 		.filter(
-			(p) => /\.(?:ts|tsx|js|jsx|mjs|cjs)$/.test(p) || /(?:^|\/)package\.json$/.test(p) || /(?:^|\/)bun\.lock$/.test(p),
+			(p) =>
+				/\.(?:ts|tsx|js|jsx|mjs|cjs)$/.test(p) ||
+				/(?:^|\/)package\.json$/.test(p) ||
+				/(?:^|\/)bun\.lock$/.test(p),
 		);
 	const out = [];
 	for (const path of relevant) {
@@ -1149,11 +1260,15 @@ function guardSelfConsistency(boundary) {
 	for (const shellPath of boundary.shellPaths) {
 		const owner = resolveOwner(shellPath, boundary);
 		if (owner === null || !consumerIds(boundary).includes(owner)) {
-			problems.push(`shell path "${shellPath}" resolves to owner "${owner ?? "none"}", not a declared consumer`);
+			problems.push(
+				`shell path "${shellPath}" resolves to owner "${owner ?? "none"}", not a declared consumer`,
+			);
 		}
 	}
 	if (problems.length > 0) {
-		console.error("check-package-boundary: boundary.json is self-inconsistent, refusing to scan:");
+		console.error(
+			"check-package-boundary: boundary.json is self-inconsistent, refusing to scan:",
+		);
 		for (const p of problems) console.error(`  ${p}`);
 		process.exit(2);
 	}
@@ -1174,19 +1289,28 @@ function guardSelfConsistency(boundary) {
 // and map-owned roots (web) behave exactly as before.
 function guardUnownedFiles(files, boundary, manifests) {
 	const consumerTsFiles = files.filter(
-		(f) => isUnderConsumerRoot(f.path, boundary) && /\.(?:ts|tsx)$/.test(f.path),
+		(f) =>
+			isUnderConsumerRoot(f.path, boundary) && /\.(?:ts|tsx)$/.test(f.path),
 	);
-	const packageFiles = files.filter((f) => PACKAGE_SOURCE_PATH_PATTERN.test(f.path) && /\.(?:ts|tsx)$/.test(f.path));
+	const packageFiles = files.filter(
+		(f) =>
+			PACKAGE_SOURCE_PATH_PATTERN.test(f.path) && /\.(?:ts|tsx)$/.test(f.path),
+	);
 	const unowned = [
-		...consumerTsFiles.filter((f) => ownerOfPath(f.path, boundary, manifests) === null),
-		...packageFiles.filter((f) => ownerOfPath(f.path, boundary, manifests) === null),
+		...consumerTsFiles.filter(
+			(f) => ownerOfPath(f.path, boundary, manifests) === null,
+		),
+		...packageFiles.filter(
+			(f) => ownerOfPath(f.path, boundary, manifests) === null,
+		),
 	];
 	if (unowned.length > 0) {
 		console.error(
 			`check-package-boundary: ${unowned.length} file(s) under a declared consumer root or packages/*/src resolve to no owner, refusing to scan:`,
 		);
 		for (const f of unowned.slice(0, 20)) console.error(`  ${f.path}`);
-		if (unowned.length > 20) console.error(`  ... and ${unowned.length - 20} more`);
+		if (unowned.length > 20)
+			console.error(`  ... and ${unowned.length - 20} more`);
 		process.exit(2);
 	}
 }
@@ -1199,12 +1323,16 @@ function runCheck() {
 	guardUnownedFiles(files, boundary, manifests);
 	const { violations, census } = scan({ files, boundary, manifests });
 
-	console.log(`check-package-boundary: scanned ${files.length} repo file(s) (tracked + uncommitted)`);
+	console.log(
+		`check-package-boundary: scanned ${files.length} repo file(s) (tracked + uncommitted)`,
+	);
 
 	const emptyLive = LIVE_RULE_IDS.filter((id) => census[id].filesScanned === 0);
 	if (emptyLive.length > 0) {
 		for (const id of emptyLive) {
-			console.error(`  FAIL  ${id}: scanned 0 files — refusing to report a pass on an empty scan`);
+			console.error(
+				`  FAIL  ${id}: scanned 0 files — refusing to report a pass on an empty scan`,
+			);
 		}
 		process.exit(2);
 	}
@@ -1214,9 +1342,14 @@ function runCheck() {
 		const c = census[rule.id];
 		// D-6 (review round 3): description may be a string or a
 		// `(boundary) => string` function (react-free-base's is now derived).
-		const description = typeof rule.description === "function" ? rule.description(boundary) : rule.description;
+		const description =
+			typeof rule.description === "function"
+				? rule.description(boundary)
+				: rule.description;
 		if (DORMANT_RULE_IDS.includes(rule.id) && c.filesScanned === 0) {
-			console.log(`  ....  ${rule.id}: 0 files scanned — packages/ holds no source yet (${description})`);
+			console.log(
+				`  ....  ${rule.id}: 0 files scanned — packages/ holds no source yet (${description})`,
+			);
 			continue;
 		}
 		const extra =
@@ -1225,14 +1358,18 @@ function runCheck() {
 				: rule.id === "public-entry-only"
 					? `, ${c.specifiersExamined} @opencut/* specifier(s) examined`
 					: "";
-		console.log(`  ${hits.length === 0 ? "PASS" : "FAIL"}  ${rule.id}: ${description} (${c.filesScanned} file(s) scanned${extra})`);
+		console.log(
+			`  ${hits.length === 0 ? "PASS" : "FAIL"}  ${rule.id}: ${description} (${c.filesScanned} file(s) scanned${extra})`,
+		);
 	}
 
 	if (violations.length > 0) {
 		console.error("\nPackage-boundary violations:");
 		for (const v of violations) {
 			const rule = RULES.find((r) => r.id === v.rule);
-			console.error(`  [${v.rule}] ${v.path}${v.line ? `:${v.line}` : ""}: ${v.detail}`);
+			console.error(
+				`  [${v.rule}] ${v.path}${v.line ? `:${v.line}` : ""}: ${v.detail}`,
+			);
 			console.error(`      why: ${rule.why}`);
 		}
 		process.exit(1);
@@ -1248,7 +1385,11 @@ function runCheck() {
 // ---------------------------------------------------------------------------
 
 const FIXTURE_BOUNDARY = {
-	layers: ["@opencut/editor-ports", "@opencut/editor-contracts", "@opencut/editor-classic"],
+	layers: [
+		"@opencut/editor-ports",
+		"@opencut/editor-contracts",
+		"@opencut/editor-classic",
+	],
 	// s05-second-host task 2.4: consumer objects with declared roots — web
 	// keeps map ownership, the third entry is the electron consumer under a
 	// fixture `apps/electron-host/src` root (negative/converse cases below
@@ -1261,19 +1402,47 @@ const FIXTURE_BOUNDARY = {
 	shellPaths: ["apps/web/src/app"],
 	ownership: [
 		{ path: "apps/web/src/app", owner: "apps/web", why: "fixture shell root" },
-		{ path: "apps/web/src/editor/ports", owner: "@opencut/editor-ports", why: "fixture" },
-		{ path: "apps/web/src/editor/contracts", owner: "@opencut/editor-contracts", why: "fixture" },
-		{ path: "apps/web/src", owner: "@opencut/editor-classic", why: "fixture catch-all" },
+		{
+			path: "apps/web/src/editor/ports",
+			owner: "@opencut/editor-ports",
+			why: "fixture",
+		},
+		{
+			path: "apps/web/src/editor/contracts",
+			owner: "@opencut/editor-contracts",
+			why: "fixture",
+		},
+		{
+			path: "apps/web/src",
+			owner: "@opencut/editor-classic",
+			why: "fixture catch-all",
+		},
 	],
 };
 
 const FIXTURE_MANIFESTS = [
-	{ dir: "editor-ports", name: "@opencut/editor-ports", exports: { ".": "./src/index.ts", "./host": "./src/host/index.ts" } },
-	{ dir: "editor-contracts", name: "@opencut/editor-contracts", exports: { ".": "./src/index.ts" } },
-	{ dir: "editor-classic", name: "@opencut/editor-classic", exports: { ".": "./src/index.ts" } },
+	{
+		dir: "editor-ports",
+		name: "@opencut/editor-ports",
+		exports: { ".": "./src/index.ts", "./host": "./src/host/index.ts" },
+	},
+	{
+		dir: "editor-contracts",
+		name: "@opencut/editor-contracts",
+		exports: { ".": "./src/index.ts" },
+	},
+	{
+		dir: "editor-classic",
+		name: "@opencut/editor-classic",
+		exports: { ".": "./src/index.ts" },
+	},
 ];
 
-function fixtureScan(fileList, boundary = FIXTURE_BOUNDARY, manifests = FIXTURE_MANIFESTS) {
+function fixtureScan(
+	fileList,
+	boundary = FIXTURE_BOUNDARY,
+	manifests = FIXTURE_MANIFESTS,
+) {
 	return scan({ files: fileList, boundary, manifests });
 }
 
@@ -1285,10 +1454,17 @@ function fixtureScan(fileList, boundary = FIXTURE_BOUNDARY, manifests = FIXTURE_
  * FIXTURE_BOUNDARY/FIXTURE_MANIFESTS, so the other fixtures keep asserting
  * against the unmodified three-package shape.
  */
-const FOURTH_PACKAGE_BOUNDARY = { ...FIXTURE_BOUNDARY, layers: [...FIXTURE_BOUNDARY.layers, "@opencut/editor-extra"] };
+const FOURTH_PACKAGE_BOUNDARY = {
+	...FIXTURE_BOUNDARY,
+	layers: [...FIXTURE_BOUNDARY.layers, "@opencut/editor-extra"],
+};
 const FOURTH_PACKAGE_MANIFESTS = [
 	...FIXTURE_MANIFESTS,
-	{ dir: "editor-extra", name: "@opencut/editor-extra", exports: { ".": "./src/index.ts" } },
+	{
+		dir: "editor-extra",
+		name: "@opencut/editor-extra",
+		exports: { ".": "./src/index.ts" },
+	},
 ];
 
 /**
@@ -1301,11 +1477,26 @@ const FOURTH_PACKAGE_MANIFESTS = [
  * come from `boundary.layers.slice(2)` (D-6; originally the single literal
  * `boundary.layers[2]`), not the literal string `"@opencut/editor-classic"`.
  */
-const RENAMED_DIR_BOUNDARY = { ...FIXTURE_BOUNDARY, layers: ["@opencut/editor-ports", "@opencut/editor-contracts", "@opencut/editor-classic-v2"] };
+const RENAMED_DIR_BOUNDARY = {
+	...FIXTURE_BOUNDARY,
+	layers: [
+		"@opencut/editor-ports",
+		"@opencut/editor-contracts",
+		"@opencut/editor-classic-v2",
+	],
+};
 const RENAMED_DIR_MANIFESTS = [
-	{ dir: "host-ports", name: "@opencut/editor-ports", exports: { ".": "./src/index.ts" } },
+	{
+		dir: "host-ports",
+		name: "@opencut/editor-ports",
+		exports: { ".": "./src/index.ts" },
+	},
 	FIXTURE_MANIFESTS[1],
-	{ dir: "editor-classic", name: "@opencut/editor-classic-v2", exports: { ".": "./src/index.ts" } },
+	{
+		dir: "editor-classic",
+		name: "@opencut/editor-classic-v2",
+		exports: { ".": "./src/index.ts" },
+	},
 ];
 
 const NEGATIVE_FIXTURES = [
@@ -1415,7 +1606,10 @@ const NEGATIVE_FIXTURES = [
 		files: [
 			{
 				path: "packages/host-ports/package.json",
-				text: JSON.stringify({ name: "@opencut/editor-ports", dependencies: { "@opencut/editor-classic-v2": "workspace:*" } }),
+				text: JSON.stringify({
+					name: "@opencut/editor-ports",
+					dependencies: { "@opencut/editor-classic-v2": "workspace:*" },
+				}),
 			},
 		],
 	},
@@ -1427,7 +1621,10 @@ const NEGATIVE_FIXTURES = [
 		files: [
 			{
 				path: "packages/editor-ports/package.json",
-				text: JSON.stringify({ name: "@opencut/editor-ports", dependencies: { "@opencut/editor-extra": "workspace:*" } }),
+				text: JSON.stringify({
+					name: "@opencut/editor-ports",
+					dependencies: { "@opencut/editor-extra": "workspace:*" },
+				}),
 			},
 		],
 	},
@@ -1516,7 +1713,8 @@ const CONVERSE_FIXTURES = [
 	},
 	{
 		rule: "public-entry-only",
-		label: "a consumer-side (non-packages/) import of a declared entry — the widened BLOCKER-1 scope must not misfire on a legal import",
+		label:
+			"a consumer-side (non-packages/) import of a declared entry — the widened BLOCKER-1 scope must not misfire on a legal import",
 		files: [
 			{
 				path: "apps/web/src/editor/surface/consumer-ok.ts",
@@ -1526,7 +1724,8 @@ const CONVERSE_FIXTURES = [
 	},
 	{
 		rule: "no-internal-reexport",
-		label: "a declared entry re-exporting a DECLARED subpath of another package (not an undeclared internal)",
+		label:
+			"a declared entry re-exporting a DECLARED subpath of another package (not an undeclared internal)",
 		files: [
 			{
 				path: "packages/editor-contracts/src/index.ts",
@@ -1536,7 +1735,8 @@ const CONVERSE_FIXTURES = [
 	},
 	{
 		rule: "react-free-base",
-		label: "a local document parameter used only as a domain value (no DOM member access) — the MAJOR-1 fix must not misclassify a domain document",
+		label:
+			"a local document parameter used only as a domain value (no DOM member access) — the MAJOR-1 fix must not misclassify a domain document",
 		files: [
 			{
 				path: "apps/web/src/editor/ports/document-param.ts",
@@ -1546,7 +1746,8 @@ const CONVERSE_FIXTURES = [
 	},
 	{
 		rule: "react-free-base",
-		label: "a typeof globalThis.document environment-detection guard (agent-drivers.test.ts's own idiom) — not DOM consumption",
+		label:
+			"a typeof globalThis.document environment-detection guard (agent-drivers.test.ts's own idiom) — not DOM consumption",
 		files: [
 			{
 				path: "apps/web/src/editor/ports/env-guard.ts",
@@ -1556,7 +1757,8 @@ const CONVERSE_FIXTURES = [
 	},
 	{
 		rule: "public-entry-only",
-		label: "D-1: a fourth declared package's own declared entry import stays silent — the fixed specifier pattern must recognize a legally-added package, not merely tolerate it",
+		label:
+			"D-1: a fourth declared package's own declared entry import stays silent — the fixed specifier pattern must recognize a legally-added package, not merely tolerate it",
 		boundary: FOURTH_PACKAGE_BOUNDARY,
 		manifests: FOURTH_PACKAGE_MANIFESTS,
 		files: [
@@ -1568,31 +1770,40 @@ const CONVERSE_FIXTURES = [
 	},
 	{
 		rule: "react-free-base",
-		label: "D-1 audit bonus: a renamed base-layer manifest with a legal (non-forbidden) dependency stays silent — the manifest gate must key off the declared name, not a hardcoded literal path or directory string",
+		label:
+			"D-1 audit bonus: a renamed base-layer manifest with a legal (non-forbidden) dependency stays silent — the manifest gate must key off the declared name, not a hardcoded literal path or directory string",
 		boundary: RENAMED_DIR_BOUNDARY,
 		manifests: RENAMED_DIR_MANIFESTS,
 		files: [
 			{
 				path: "packages/host-ports/package.json",
-				text: JSON.stringify({ name: "@opencut/editor-ports", dependencies: { "@opencut/editor-contracts": "workspace:*" } }),
+				text: JSON.stringify({
+					name: "@opencut/editor-ports",
+					dependencies: { "@opencut/editor-contracts": "workspace:*" },
+				}),
 			},
 		],
 	},
 	{
 		rule: "react-free-base",
-		label: "D-6: a base-layer manifest's dependency on the OTHER base layer (contracts→ports, the real declared relationship) stays silent in a legally-declared four-layer boundary — the widened forbidden set (boundary.layers.slice(2)) must not swallow the base layers themselves",
+		label:
+			"D-6: a base-layer manifest's dependency on the OTHER base layer (contracts→ports, the real declared relationship) stays silent in a legally-declared four-layer boundary — the widened forbidden set (boundary.layers.slice(2)) must not swallow the base layers themselves",
 		boundary: FOURTH_PACKAGE_BOUNDARY,
 		manifests: FOURTH_PACKAGE_MANIFESTS,
 		files: [
 			{
 				path: "packages/editor-contracts/package.json",
-				text: JSON.stringify({ name: "@opencut/editor-contracts", dependencies: { "@opencut/editor-ports": "workspace:*" } }),
+				text: JSON.stringify({
+					name: "@opencut/editor-contracts",
+					dependencies: { "@opencut/editor-ports": "workspace:*" },
+				}),
 			},
 		],
 	},
 	{
 		rule: "react-free-base",
-		label: "D-4: typeof window.localStorage stays silent — the generalized single-member typeof strip must not regress into treating every window-prefixed environment guard as a DOM access",
+		label:
+			"D-4: typeof window.localStorage stays silent — the generalized single-member typeof strip must not regress into treating every window-prefixed environment guard as a DOM access",
 		files: [
 			{
 				path: "apps/web/src/editor/ports/env-guard-storage.ts",
@@ -1602,7 +1813,8 @@ const CONVERSE_FIXTURES = [
 	},
 	{
 		rule: "public-entry-only",
-		label: "s05-second-host task 2.4: a file under a declared electron consumer root importing a declared entry — the derived scan roots must not misfire on a third consumer's legal import",
+		label:
+			"s05-second-host task 2.4: a file under a declared electron consumer root importing a declared entry — the derived scan roots must not misfire on a third consumer's legal import",
 		files: [
 			{
 				path: "apps/electron-host/src/consumer-ok.ts",
@@ -1616,10 +1828,16 @@ function runNegativeControl() {
 	console.log("check-package-boundary: negative control");
 	let clean = true;
 	for (const fixture of NEGATIVE_FIXTURES) {
-		const { violations } = fixtureScan(fixture.files, fixture.boundary, fixture.manifests);
+		const { violations } = fixtureScan(
+			fixture.files,
+			fixture.boundary,
+			fixture.manifests,
+		);
 		const caught = violations.some((v) => v.rule === fixture.rule);
 		if (!caught) clean = false;
-		console.log(`  ${caught ? "PASS" : "FAIL"}  ${fixture.rule} — ${caught ? "caught" : "NOT caught"} [${fixture.note}]`);
+		console.log(
+			`  ${caught ? "PASS" : "FAIL"}  ${fixture.rule} — ${caught ? "caught" : "NOT caught"} [${fixture.note}]`,
+		);
 	}
 	if (!clean) process.exit(1);
 	console.log("\nnegative control clean — every rule is proven able to fail.");
@@ -1629,10 +1847,16 @@ function runConverseControl() {
 	console.log("check-package-boundary: converse control");
 	let clean = true;
 	for (const fixture of CONVERSE_FIXTURES) {
-		const { violations } = fixtureScan(fixture.files, fixture.boundary, fixture.manifests);
+		const { violations } = fixtureScan(
+			fixture.files,
+			fixture.boundary,
+			fixture.manifests,
+		);
 		const silent = !violations.some((v) => v.rule === fixture.rule);
 		if (!silent) clean = false;
-		console.log(`  ${silent ? "PASS" : "FAIL"}  ${fixture.rule} — ${silent ? "silent" : "FALSE POSITIVE"} [${fixture.label}]`);
+		console.log(
+			`  ${silent ? "PASS" : "FAIL"}  ${fixture.rule} — ${silent ? "silent" : "FALSE POSITIVE"} [${fixture.label}]`,
+		);
 	}
 	if (!clean) process.exit(1);
 	console.log("\nconverse control clean — no rule fires on a legal case.");

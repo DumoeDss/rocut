@@ -29,7 +29,11 @@
  * backpressure is the `frameAck` promise, job termination is the `settled`
  * event — so this file needs no timers of its own.
  */
-import { TICKS_PER_SECOND } from "@opencut/editor-classic";
+import {
+	mediaTime,
+	resolveMediaTimeRange,
+	TICKS_PER_SECOND,
+} from "@opencut/editor-classic";
 import { loadFontAtlas } from "@opencut/editor-classic/fonts";
 import { extractTimelineAudio } from "@opencut/editor-classic/media";
 import { buildScene } from "@opencut/editor-classic/renderer";
@@ -212,7 +216,9 @@ async function main(): Promise<void> {
 		try {
 			await editor.project.loadProject({ id: projectId });
 		} catch (error) {
-			await fail(`export-renderer: failed to load project ${projectId}: ${errorText(error)}`);
+			await fail(
+				`export-renderer: failed to load project ${projectId}: ${errorText(error)}`,
+			);
 			return;
 		}
 		await loadFontAtlas({
@@ -227,11 +233,29 @@ async function main(): Promise<void> {
 			await fail("Project is empty");
 			return;
 		}
+		let exportRange: ReturnType<typeof resolveMediaTimeRange>;
+		try {
+			exportRange = resolveMediaTimeRange({
+				range:
+					snapshot.request.range === undefined
+						? undefined
+						: {
+								startTime: mediaTime({
+									ticks: snapshot.request.range.startTime,
+								}),
+								endTime: mediaTime({ ticks: snapshot.request.range.endTime }),
+							},
+				timelineDuration: duration,
+			});
+		} catch (error) {
+			await fail(`export-renderer: ${errorText(error)}`);
+			return;
+		}
 		const fps = snapshot.request.fps ?? project.settings.fps;
 		const ticksPerFrame = Math.round(
 			(TICKS_PER_SECOND * fps.denominator) / fps.numerator,
 		);
-		const totalFrames = Math.floor(duration / ticksPerFrame);
+		const totalFrames = Math.floor(exportRange.duration / ticksPerFrame);
 		if (totalFrames < 1) {
 			await fail("export-renderer: timeline is shorter than one frame");
 			return;
@@ -251,9 +275,15 @@ async function main(): Promise<void> {
 				height: project.settings.canvasSize.height,
 				fps,
 				totalFrames,
+				range: {
+					startTime: exportRange.startTime,
+					duration: exportRange.duration,
+				},
 			},
 			projectContentDigest:
-				stored === null ? undefined : await projectTimelineDigest(stored.record.data),
+				stored === null
+					? undefined
+					: await projectTimelineDigest(stored.record.data),
 		});
 
 		// -- the render loop (scene-exporter.runExport's math, byte-for-byte) --
@@ -287,6 +317,9 @@ async function main(): Promise<void> {
 		const scene = buildScene({
 			tracks,
 			mediaAssets,
+			motionTextSequences: project.motionTextSequences,
+			motionTextFontRuntime: editor.renderer.motionTextFontRuntime,
+			motionTextProjectId: project.metadata.id,
 			duration,
 			canvasSize: project.settings.canvasSize,
 			background: project.settings.background,
@@ -303,7 +336,7 @@ async function main(): Promise<void> {
 					const frameIndex = index + offset;
 					await renderer.renderToCanvas({
 						node: scene,
-						time: frameIndex * ticksPerFrame,
+						time: exportRange.startTime + frameIndex * ticksPerFrame,
 						targetCanvas: captureCanvas,
 					});
 					const image = captureCtx.getImageData(
@@ -349,7 +382,8 @@ async function main(): Promise<void> {
 			const wavBlob = await extractTimelineAudio({
 				tracks,
 				mediaAssets,
-				totalDuration: duration,
+				startTime: exportRange.startTime,
+				totalDuration: exportRange.duration,
 				resources: editor.resources,
 			});
 			await bridge.audio({ jobId, wav: await wavBlob.arrayBuffer() });

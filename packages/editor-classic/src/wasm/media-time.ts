@@ -1,3 +1,4 @@
+import * as wasm from "opencut-wasm";
 import {
 	lastFrameTime as _lastFrameTime,
 	parseTimecode as _parseTimecode,
@@ -23,6 +24,28 @@ import {
  * a bare `number` is not assignable to `MediaTime`.
  */
 export type MediaTime = number & { readonly __mediaTime: unique symbol };
+
+/** A strict half-open interval on the project timeline: `[startTime, endTime)`. */
+export interface MediaTimeRange {
+	readonly startTime: MediaTime;
+	readonly endTime: MediaTime;
+}
+
+export interface ResolvedMediaTimeRange extends MediaTimeRange {
+	readonly duration: MediaTime;
+}
+
+export type ValidateMediaTimeRangeCore = (options: {
+	readonly startTime: number;
+	readonly endTime: number;
+	readonly timelineDuration: number;
+}) => unknown;
+
+type MediaTimeRangeError =
+	| "invalid-timeline-duration"
+	| "start-before-zero"
+	| "end-not-after-start"
+	| "end-after-timeline-duration";
 
 export const TICKS_PER_SECOND = _TICKS_PER_SECOND();
 
@@ -96,6 +119,75 @@ export function mediaTimeFromSeconds({
 
 export function mediaTimeToSeconds({ time }: { time: MediaTime }): number {
 	return _mediaTimeToSeconds({ time });
+}
+
+const RANGE_ERROR_MESSAGES: Readonly<Record<MediaTimeRangeError, string>> = {
+	"invalid-timeline-duration": "the timeline duration must be positive",
+	"start-before-zero": "the range start must not be negative",
+	"end-not-after-start": "the range end must be after its start",
+	"end-after-timeline-duration": "the range end exceeds the timeline duration",
+};
+
+function isMediaTimeRangeError(value: unknown): value is MediaTimeRangeError {
+	return value !== null && Object.hasOwn(RANGE_ERROR_MESSAGES, String(value));
+}
+
+/**
+ * Resolve and validate a timeline range through the Rust time core. An omitted
+ * range means the complete timeline; callers never have to duplicate that
+ * default or the boundary rules.
+ */
+export function resolveMediaTimeRange({
+	range,
+	timelineDuration,
+	core,
+}: {
+	readonly range?: MediaTimeRange;
+	readonly timelineDuration: MediaTime;
+	readonly core?: ValidateMediaTimeRangeCore;
+}): ResolvedMediaTimeRange {
+	const candidate: unknown =
+		core ?? Reflect.get(wasm, "validateMediaTimeRange");
+	if (typeof candidate !== "function") {
+		throw new Error(
+			"The installed opencut-wasm binary does not expose validateMediaTimeRange.",
+		);
+	}
+	const startTime = range?.startTime ?? ZERO_MEDIA_TIME;
+	const endTime = range?.endTime ?? timelineDuration;
+	const result: unknown = candidate({
+		startTime,
+		endTime,
+		timelineDuration,
+	});
+	if (result === null || typeof result !== "object" || Array.isArray(result)) {
+		throw new TypeError("The Rust time core returned an invalid range result.");
+	}
+	const duration: unknown = Reflect.get(result, "duration");
+	const error: unknown = Reflect.get(result, "error");
+	if (error !== null) {
+		if (!isMediaTimeRangeError(error) || duration !== null) {
+			throw new TypeError(
+				"The Rust time core returned an invalid range error.",
+			);
+		}
+		throw new RangeError(
+			`Invalid timeline range: ${RANGE_ERROR_MESSAGES[error]}.`,
+		);
+	}
+	if (typeof duration !== "number") {
+		throw new TypeError(
+			"The Rust time core returned an invalid range duration.",
+		);
+	}
+	return {
+		startTime,
+		endTime,
+		duration: requireMediaTime({
+			value: duration,
+			context: "resolveMediaTimeRange()",
+		}),
+	};
 }
 
 /**

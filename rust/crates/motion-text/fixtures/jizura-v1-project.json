@@ -1,0 +1,49 @@
+{
+	"version": 1,
+	"appVersion": "fixture-1.0.0",
+	"title": "城里的光",
+	"artist": "Rocut Fixture",
+	"lyrics": "风从城里来\n灯在雨里亮",
+	"style": "crimson",
+	"mood": null,
+	"lang": "auto",
+	"seed": 20260928,
+	"typeset": false,
+	"timing": {
+		"bpm": 120,
+		"offset": 0.4,
+		"tail": 0.9,
+		"lineScale": 1,
+		"lineTimes": {
+			"0": 0.5,
+			"1": 2.0
+		}
+	},
+	"colors": {
+		"enabled": true,
+		"accentOn": true,
+		"fg": "#F4F4F5",
+		"accent": "#EF4444"
+	},
+	"fonts": {
+		"display": "gothic_bold"
+	},
+	"overrides": {
+		"0": {
+			"layout": "huge",
+			"enter": "pop",
+			"hold": "pulse",
+			"exit": "shrink"
+		},
+		"1": {
+			"cutTech": {
+				"0": {
+					"layout": "type",
+					"enter": "wipe",
+					"hold": "drift",
+					"exit": "wipe"
+				}
+			}
+		}
+	}
+}

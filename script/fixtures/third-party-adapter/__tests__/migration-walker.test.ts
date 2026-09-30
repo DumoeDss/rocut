@@ -8,7 +8,7 @@
  * classic's own published test mock for the wasm artifact (declared entry
  * `./evidence/wasm-test-mock`, the same mechanism classic's own storage tests
  * use) so the walker's semantics AND the ports suite's migration case can be
- * validated against the real 31-step chain. Walker green here + loading
+ * validated against the real 32-step chain. Walker green here + loading
  * finding there is the honest pair.
  */
 import { expect, test } from "bun:test";

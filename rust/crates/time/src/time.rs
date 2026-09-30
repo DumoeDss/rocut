@@ -6,12 +6,13 @@ pub use frame_rate::FrameRate;
 pub use media_time::{
     FloorToFrameOptions, IsFrameAlignedOptions, LastFrameTimeOptions, MediaTime,
     MediaTimeAddOptions, MediaTimeClampOptions, MediaTimeFromFrameOptions,
-    MediaTimeFromSecondsOptions, MediaTimeMaxOptions, MediaTimeMinOptions, MediaTimeSubOptions,
-    MediaTimeToFrameOptions, MediaTimeToSecondsOptions, RoundToFrameOptions,
-    SnappedSeekTimeOptions, TICKS_PER_SECOND, floor_to_frame, is_frame_aligned, last_frame_time,
+    MediaTimeFromSecondsOptions, MediaTimeMaxOptions, MediaTimeMinOptions, MediaTimeRangeError,
+    MediaTimeRangeValidation, MediaTimeSubOptions, MediaTimeToFrameOptions,
+    MediaTimeToSecondsOptions, RoundToFrameOptions, SnappedSeekTimeOptions, TICKS_PER_SECOND,
+    ValidateMediaTimeRangeOptions, floor_to_frame, is_frame_aligned, last_frame_time,
     media_time_add, media_time_clamp, media_time_from_frame, media_time_from_seconds,
     media_time_max, media_time_min, media_time_sub, media_time_to_frame, media_time_to_seconds,
-    round_to_frame, snapped_seek_time,
+    round_to_frame, snapped_seek_time, validate_media_time_range,
 };
 pub use timecode::{
     FormatTimecodeOptions, GuessTimecodeFormatOptions, ParseTimecodeOptions, TimeCodeFormat,

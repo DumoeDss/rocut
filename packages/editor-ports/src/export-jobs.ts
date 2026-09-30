@@ -81,12 +81,19 @@ export type ExportJobFormat = "mp4" | "webm" | (string & {});
 /** The donor's quality ladder, verbatim. */
 export type ExportJobQuality = "low" | "medium" | "high" | "very_high";
 
+/** A strict half-open timeline interval in 120,000 Hz media ticks. */
+export interface ExportJobTimeRange {
+	readonly startTime: number;
+	readonly endTime: number;
+}
+
 /** One export job to start. The provider validates what it can (see `startJob`). */
 export interface ExportJobRequest {
 	readonly projectId: ProjectId;
 	readonly format: ExportJobFormat;
 	readonly quality?: ExportJobQuality;
 	readonly includeAudio?: boolean;
+	readonly range?: ExportJobTimeRange;
 	/**
 	 * Mirrors opencut-wasm's `FrameRate { numerator, denominator }` shape
 	 * WITHOUT importing it — this package has zero dependencies by contract,
@@ -143,7 +150,11 @@ export interface ExportJobSnapshot {
  * reads a wall clock.
  */
 export type ExportJobEvent =
-	| { readonly type: "phase"; readonly phase: ExportJobPhase; readonly at: number }
+	| {
+			readonly type: "phase";
+			readonly phase: ExportJobPhase;
+			readonly at: number;
+	  }
 	| {
 			readonly type: "progress";
 			readonly progress: number;
@@ -369,7 +380,9 @@ export class ExportJobStore {
 		// is typed honestly: rendering without frames is impossible by
 		// construction, not by hope.
 		if (frames === null) {
-			throw new ExportJobTransitionError("acceptFrames: rendering began without a frame budget");
+			throw new ExportJobTransitionError(
+				"acceptFrames: rendering began without a frame budget",
+			);
 		}
 		const accepted = frames.accepted + args.count;
 		if (accepted > frames.total) {
@@ -381,7 +394,12 @@ export class ExportJobStore {
 		const progress = accepted / frames.total;
 		return this.step({
 			patch: { frames: next, progress },
-			event: { type: "progress", progress, frames: next, at: this.atFor(args.now) },
+			event: {
+				type: "progress",
+				progress,
+				frames: next,
+				at: this.atFor(args.now),
+			},
 			now: args.now,
 		});
 	}
@@ -443,7 +461,12 @@ export class ExportJobStore {
 		}
 		return this.step({
 			patch: { phase: "completed", output, progress: 1 },
-			event: { type: "settled", phase: "completed", output, at: this.atFor(args.now) },
+			event: {
+				type: "settled",
+				phase: "completed",
+				output,
+				at: this.atFor(args.now),
+			},
 			now: args.now,
 		});
 	}
@@ -451,11 +474,18 @@ export class ExportJobStore {
 	fail(args: { reason: string; now?: number }): ExportJobStore {
 		this.requireLive("fail");
 		if (typeof args.reason !== "string" || args.reason.length === 0) {
-			throw new ExportJobTransitionError("fail: reason must be a non-empty string");
+			throw new ExportJobTransitionError(
+				"fail: reason must be a non-empty string",
+			);
 		}
 		return this.step({
 			patch: { phase: "failed", error: args.reason, cancelRequested: false },
-			event: { type: "settled", phase: "failed", error: args.reason, at: this.atFor(args.now) },
+			event: {
+				type: "settled",
+				phase: "failed",
+				error: args.reason,
+				at: this.atFor(args.now),
+			},
 			now: args.now,
 		});
 	}
@@ -639,7 +669,9 @@ export class InMemoryExportJobProvider implements ExportJobProvider {
 		return InMemoryExportJobProvider.validateRequest(args.request) === null;
 	}
 
-	async startJob(args: { request: ExportJobRequest }): Promise<{ jobId: string }> {
+	async startJob(args: {
+		request: ExportJobRequest;
+	}): Promise<{ jobId: string }> {
 		const invalid = InMemoryExportJobProvider.validateRequest(args.request);
 		if (invalid !== null) throw new ExportJobError(`startJob: ${invalid}`);
 		const jobId = `job-${String(this.nextJobNumber)}`;
@@ -678,7 +710,9 @@ export class InMemoryExportJobProvider implements ExportJobProvider {
 				"cancelJob: an interrupted job is neither live nor settled — resume it or discard it",
 			);
 		}
-		record.store = record.store.requestCancel().confirmCancelled({ now: this.clock() });
+		record.store = record.store
+			.requestCancel()
+			.confirmCancelled({ now: this.clock() });
 		this.emitNewEvents(record);
 		return record.store.snapshot();
 	}
@@ -719,7 +753,10 @@ export class InMemoryExportJobProvider implements ExportJobProvider {
 	}
 
 	async readJobOutputBytes(args: { jobId: string }): Promise<ArrayBuffer> {
-		const record = this.requireJob({ method: "readJobOutputBytes", jobId: args.jobId });
+		const record = this.requireJob({
+			method: "readJobOutputBytes",
+			jobId: args.jobId,
+		});
 		const snapshot = record.store.snapshot();
 		if (snapshot.phase !== "completed" || record.outputBytes === null) {
 			throw new ExportJobError(
@@ -751,7 +788,10 @@ export class InMemoryExportJobProvider implements ExportJobProvider {
 	}
 
 	private static validateRequest(request: ExportJobRequest): string | null {
-		if (typeof request?.projectId !== "string" || request.projectId.length === 0) {
+		if (
+			typeof request?.projectId !== "string" ||
+			request.projectId.length === 0
+		) {
 			return "a job needs a non-empty projectId";
 		}
 		if (typeof request.format !== "string" || request.format.length === 0) {
@@ -765,6 +805,15 @@ export class InMemoryExportJobProvider implements ExportJobProvider {
 				request.fps.denominator < 1)
 		) {
 			return "fps needs positive integer numerator and denominator";
+		}
+		if (
+			request.range !== undefined &&
+			(!Number.isSafeInteger(request.range.startTime) ||
+				!Number.isSafeInteger(request.range.endTime) ||
+				request.range.startTime < 0 ||
+				request.range.endTime <= request.range.startTime)
+		) {
+			return "range needs non-negative integer ticks with endTime after startTime";
 		}
 		return null;
 	}
@@ -782,7 +831,10 @@ export class InMemoryExportJobProvider implements ExportJobProvider {
 		const record = this.jobs.get(jobId);
 		if (record === undefined) return; // discarded mid-flight
 		const snapshot = record.store.snapshot();
-		if (SETTLED_PHASES.includes(snapshot.phase) || snapshot.phase === "interrupted") {
+		if (
+			SETTLED_PHASES.includes(snapshot.phase) ||
+			snapshot.phase === "interrupted"
+		) {
 			return; // settled or dead producer: no further synthetic work
 		}
 		let next: ExportJobStore;
@@ -795,7 +847,10 @@ export class InMemoryExportJobProvider implements ExportJobProvider {
 			const frames = snapshot.frames;
 			if (frames !== null && frames.accepted < frames.total) {
 				next = record.store.acceptFrames({
-					count: Math.min(REFERENCE_FRAME_BATCH, frames.total - frames.accepted),
+					count: Math.min(
+						REFERENCE_FRAME_BATCH,
+						frames.total - frames.accepted,
+					),
 					now: this.clock(),
 				});
 			} else {

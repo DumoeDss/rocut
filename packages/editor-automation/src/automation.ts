@@ -154,6 +154,8 @@ export async function createAutomation<FeatureName extends string = never>(
 		clips: (filter) => engine.clips(filter),
 		assets: () => engine.assets(),
 		markers: () => engine.markers(),
+		motionTextSequences: () =>
+			engine.motionTextSequences?.() ?? Promise.resolve([]),
 		project: () => engine.project(),
 		revision: () => engine.revision(),
 		apply: (batch) => engine.apply(batch),

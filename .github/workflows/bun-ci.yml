@@ -88,6 +88,26 @@ jobs:
         working-directory: apps/web
         run: bun install
 
+      # Recomputes the checked-in SBOM and validates the motion-text catalog
+      # against the exact shipped TTF/OFL closure. This is deliberately after
+      # the Rust build and dependency install: the generator also records the
+      # current wasm32 crate graph and lockfile resolution, so an earlier run
+      # would certify a different tree from the one consumed below.
+      - name: Verify SBOM and motion-text font closure
+        run: node script/generate-sbom.mjs --check
+
+      # The SBOM gate proves the shipped closure; this separate gate pins the
+      # exact F01 glyph result to the freshly built canonical WASM and exercises
+      # the candidate-review fail-closed cases (font/license digests, OFL 1.1,
+      # strict UTF-8 and missing glyphs) on every supported CI platform.
+      - name: Verify motion-text font readiness evidence
+        run: |
+          bun run check:motion-text:fonts
+          bun test script/__tests__/motion-text-font-inventory.test.mjs script/__tests__/motion-text-font-readiness.test.mjs
+
+      - name: Verify installed-acceptance evidence contract
+        run: bun test script/__tests__/validate-motion-text-installed-acceptance.test.mjs
+
       # MUST stay after "Install dependencies": it asserts what the install
       # actually RESOLVED, not what the manifests declare. A stale or registry
       # copy of `opencut-wasm` passes every other gate in this workflow — the

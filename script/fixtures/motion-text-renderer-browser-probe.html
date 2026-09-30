@@ -1,0 +1,2924 @@
+<!doctype html>
+<meta charset="utf-8" />
+<script type="module">
+	import {
+		createMotionTextRenderRuntime,
+		drawMotionTextFrame,
+		resolveMotionTextRenderFrame,
+	} from "/packages/editor-classic/src/services/renderer/motion-text/jizura-adapter.ts";
+	import { MotionTextFontRuntime } from "/packages/editor-classic/src/services/renderer/motion-text/font-runtime.ts";
+	import { MOTION_TEXT_RENDERER_SUPPORT } from "/packages/editor-classic/src/services/renderer/motion-text/support-manifest.ts";
+	import { CanvasRenderer } from "/packages/editor-classic/src/services/renderer/canvas-renderer.ts";
+	import { WasmCompositor } from "/packages/editor-classic/src/services/renderer/compositor/wasm-compositor.ts";
+	import { buildScene } from "/packages/editor-classic/src/services/renderer/scene-builder.ts";
+	import {
+		disposeCompositor,
+		disposeGpu,
+		initializeGpu,
+		inspectMotionTextFont,
+		planMotionTextSequence,
+	} from "opencut-wasm";
+	import {
+		motionTextPlannerFixture,
+		unsupportedRendererPresetFixture,
+	} from "/script/fixtures/motion-text-planner-fixture.mjs";
+
+	function sequence({
+		id,
+		seed,
+		language = "en",
+		text = "Motion text",
+		compositionMode = "overlay",
+		style = "noir",
+		layout = "center",
+		enter = "blur",
+		exit = "drift",
+		hold = "jitter",
+		cam = "push",
+		decor = [],
+		fx = [],
+		treat = "none",
+		bg = "none",
+		trans = null,
+	}) {
+		const preset = {
+			style,
+			layout,
+			enter,
+			hold,
+			exit,
+			decor,
+			treat,
+			bg,
+			cam,
+			fx,
+			trans,
+		};
+		return {
+			id,
+			schemaVersion: 1,
+			revision: 1,
+			source: { format: "plain", text },
+			language,
+			duration: 120_000,
+			compositionMode,
+			seed,
+			engine: {
+				id: "jizura",
+				version: "0.9.0",
+				catalogHash: "renderer-browser-fixture",
+				plannerVersion: 1,
+				tokenizerVersion: "unicode-v1",
+			},
+			fonts: [],
+			defaults: { preset, colors: {}, parameters: {} },
+			cues: [
+				{
+					id: `cue:${id}`,
+					text,
+					startTime: 0,
+					duration: 120_000,
+					interlude: false,
+					gapBefore: false,
+					impact: false,
+					emphasis: [],
+					segments: [text],
+					locks: [],
+					overrides: {},
+				},
+			],
+			resolvedPlan: {
+				version: 1,
+				sequenceRevision: 1,
+				cuts: [
+					{
+						id: `cut:${id}`,
+						cueId: `cue:${id}`,
+						text,
+						startTime: 0,
+						duration: 120_000,
+						seed,
+						preset,
+						fontId: undefined,
+						parameters: {},
+					},
+				],
+			},
+		};
+	}
+
+	function sequenceWithProjectFont({ id, text, contentDigest }) {
+		const value = sequence({ id, seed: 71, text });
+		const fontId = "font:geist-fixture";
+		value.fonts = [
+			{
+				id: fontId,
+				source: "project",
+				family: "Geist Fixture",
+				style: "normal",
+				weight: 400,
+				assetId: "asset:geist-fixture",
+				contentDigest,
+			},
+		];
+		value.defaults = { ...value.defaults, fontId };
+		value.cues = value.cues.map((cue) => ({ ...cue, text }));
+		value.resolvedPlan = {
+			...value.resolvedPlan,
+			cuts: value.resolvedPlan.cuts.map((cut) => ({
+				...cut,
+				text,
+				fontId,
+			})),
+		};
+		return value;
+	}
+
+	function sequenceWithBuiltinFont({ id, text, contentDigest }) {
+		const value = sequence({ id, seed: 73, text, language: "ja" });
+		const fontId = "gothic_bold";
+		value.fonts = [
+			{
+				id: fontId,
+				source: "builtin",
+				family: "Noto Sans JP",
+				style: "normal",
+				weight: 700,
+				builtinPath: "motion-text/fonts/noto-sans-jp-variable.ttf",
+				contentDigest,
+			},
+		];
+		value.defaults = { ...value.defaults, fontId };
+		value.cues = value.cues.map((cue) => ({ ...cue, text }));
+		value.resolvedPlan = {
+			...value.resolvedPlan,
+			cuts: value.resolvedPlan.cuts.map((cut) => ({
+				...cut,
+				text,
+				fontId,
+			})),
+		};
+		return value;
+	}
+
+	function sequenceWithTransition({
+		id,
+		trans,
+		language = "en",
+		compositionMode = "overlay",
+		beforeText = "BEFORE",
+		afterText = "AFTER",
+	}) {
+		const value = sequence({
+			id,
+			seed: 77,
+			language,
+			text: beforeText,
+			compositionMode,
+			enter: "cut",
+			exit: "cut",
+			hold: "still",
+			cam: "static",
+		});
+		const firstPreset = { ...value.defaults.preset, trans: null };
+		const secondPreset = { ...value.defaults.preset, trans };
+		value.cues = [
+			{
+				...value.cues[0],
+				id: `cue:${id}:before`,
+				text: beforeText,
+				duration: 60_000,
+				segments: [beforeText],
+			},
+			{
+				...value.cues[0],
+				id: `cue:${id}:after`,
+				text: afterText,
+				startTime: 60_000,
+				duration: 60_000,
+				segments: [afterText],
+			},
+		];
+		value.resolvedPlan = {
+			...value.resolvedPlan,
+			cuts: [
+				{
+					...value.resolvedPlan.cuts[0],
+					id: `cut:${id}:before`,
+					cueId: `cue:${id}:before`,
+					text: beforeText,
+					duration: 60_000,
+					preset: firstPreset,
+				},
+				{
+					...value.resolvedPlan.cuts[0],
+					id: `cut:${id}:after`,
+					cueId: `cue:${id}:after`,
+					text: afterText,
+					startTime: 60_000,
+					duration: 60_000,
+					seed: 78,
+					preset: secondPreset,
+				},
+			],
+		};
+		return value;
+	}
+
+	function digestPixels(pixels, width, height) {
+		let hash = 0x811c9dc5;
+		let nonTransparent = 0;
+		let opaque = 0;
+		let minX = width;
+		let minY = height;
+		let maxX = -1;
+		let maxY = -1;
+		for (let index = 0; index < pixels.length; index += 1) {
+			hash ^= pixels[index];
+			hash = Math.imul(hash, 0x01000193) >>> 0;
+			if (index % 4 === 3) {
+				if (pixels[index] > 0) {
+					nonTransparent += 1;
+					const pixelIndex = (index - 3) / 4;
+					const x = pixelIndex % width;
+					const y = Math.floor(pixelIndex / width);
+					minX = Math.min(minX, x);
+					minY = Math.min(minY, y);
+					maxX = Math.max(maxX, x);
+					maxY = Math.max(maxY, y);
+				}
+				if (pixels[index] === 255) opaque += 1;
+			}
+		}
+		return {
+			hash: hash.toString(16).padStart(8, "0"),
+			nonTransparent,
+			opaque,
+			total: width * height,
+			bounds:
+				nonTransparent === 0
+					? null
+					: {
+							x: minX,
+							y: minY,
+							width: maxX - minX + 1,
+							height: maxY - minY + 1,
+						},
+		};
+	}
+
+	function digest(
+		sequenceValue,
+		sequenceTime,
+		{ width = 320, height = 180 } = {},
+	) {
+		const frame = resolveMotionTextRenderFrame({
+			runtime: createMotionTextRenderRuntime({ sequence: sequenceValue }),
+			sequenceTime,
+		});
+		if (!frame) throw new Error("renderer browser fixture produced no frame");
+		const canvas = document.createElement("canvas");
+		canvas.width = width;
+		canvas.height = height;
+		const ctx = canvas.getContext("2d", { willReadFrequently: true });
+		if (!ctx) throw new Error("renderer browser fixture has no 2d context");
+		drawMotionTextFrame({
+			ctx,
+			frame,
+			width: canvas.width,
+			height: canvas.height,
+			compositionMode: sequenceValue.compositionMode,
+		});
+		const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+		return digestPixels(pixels, canvas.width, canvas.height);
+	}
+
+	function digestOffscreen(
+		sequenceValue,
+		sequenceTime,
+		{ width = 320, height = 180 } = {},
+	) {
+		const frame = resolveMotionTextRenderFrame({
+			runtime: createMotionTextRenderRuntime({ sequence: sequenceValue }),
+			sequenceTime,
+		});
+		if (!frame) throw new Error("renderer offscreen fixture produced no frame");
+		const canvas = new OffscreenCanvas(width, height);
+		const ctx = canvas.getContext("2d", { willReadFrequently: true });
+		if (!ctx) throw new Error("renderer offscreen fixture has no 2d context");
+		drawMotionTextFrame({
+			ctx,
+			frame,
+			width: canvas.width,
+			height: canvas.height,
+			compositionMode: sequenceValue.compositionMode,
+		});
+		const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+		return digestPixels(pixels, canvas.width, canvas.height);
+	}
+
+	function tracks(sequenceId) {
+		return {
+			main: {
+				id: "main",
+				name: "Main",
+				type: "video",
+				elements: [],
+				muted: false,
+				hidden: false,
+			},
+			overlay: [
+				{
+					id: "motion-track",
+					name: "Motion text",
+					type: "graphic",
+					hidden: false,
+					elements: [
+						{
+							id: "motion-clip",
+							name: "Motion clip",
+							type: "motion-text",
+							sequenceId,
+							startTime: 0,
+							duration: 120_000,
+							trimStart: 0,
+							trimEnd: 0,
+							params: {},
+						},
+					],
+				},
+			],
+			audio: [],
+		};
+	}
+
+	function mapClipTime({
+		clipStartTime,
+		clipDuration,
+		trimStart,
+		timelineTime,
+		sequenceDuration,
+	}) {
+		const sequenceTime = trimStart + timelineTime - clipStartTime;
+		const active =
+			timelineTime >= clipStartTime &&
+			timelineTime < clipStartTime + clipDuration &&
+			sequenceTime >= 0 &&
+			sequenceTime < sequenceDuration;
+		return { active, sequenceTime: active ? sequenceTime : null };
+	}
+
+	function sceneFor(sequenceValue, isPreview) {
+		return buildScene({
+			canvasSize: { width: 320, height: 180 },
+			tracks: tracks(sequenceValue.id),
+			mediaAssets: [],
+			motionTextSequences: [sequenceValue],
+			motionTextTimeMapper: mapClipTime,
+			duration: 120_000,
+			background: { type: "color", color: "transparent" },
+			isPreview,
+			assetResolver: { resolve: ({ ref }) => ref.path },
+		});
+	}
+
+	function captureDigest(canvas) {
+		const target = document.createElement("canvas");
+		target.width = canvas.width;
+		target.height = canvas.height;
+		const context = target.getContext("2d", { willReadFrequently: true });
+		if (!context) throw new Error("compositor readback has no 2d context");
+		context.drawImage(canvas, 0, 0);
+		return digestPixels(
+			context.getImageData(0, 0, target.width, target.height).data,
+			target.width,
+			target.height,
+		);
+	}
+
+	async function renderPipeline(sequenceValue) {
+		await initializeGpu();
+		const compositor = new WasmCompositor({
+			trackGpuResource: ({ handle, label }) => ({
+				handle,
+				label,
+				resourceId: `probe:${handle}`,
+				release: () => disposeCompositor(handle),
+			}),
+		});
+		const rendererParams = {
+			width: 320,
+			height: 180,
+			fps: { numerator: 30, denominator: 1 },
+			compositor,
+			videoCache: { getFrameAt: async () => null },
+		};
+		const previewRenderer = new CanvasRenderer(rendererParams);
+		const exportRenderer = new CanvasRenderer(rendererParams);
+		const previewScene = sceneFor(sequenceValue, true);
+		const exportScene = sceneFor(sequenceValue, false);
+		const renderAt = (renderer, node, time) =>
+			renderer.renderAndCapture({ node, time, capture: captureDigest });
+		try {
+			const preview = await renderAt(previewRenderer, previewScene, 25_000);
+			const exportFrame = await renderAt(exportRenderer, exportScene, 25_000);
+			const later = await renderAt(previewRenderer, previewScene, 55_000);
+			const repeated = await renderAt(previewRenderer, previewScene, 25_000);
+			return { preview, export: exportFrame, later, repeated };
+		} finally {
+			compositor.dispose();
+			disposeGpu();
+		}
+	}
+
+	function loadedFaceCount(family) {
+		return [...document.fonts].filter((face) => face.family === family).length;
+	}
+
+	async function probeFontRuntime() {
+		const response = await fetch(
+			"/node_modules/next/dist/compiled/@vercel/og/Geist-Regular.ttf",
+		);
+		if (!response.ok) {
+			throw new Error(`Geist font fixture returned HTTP ${response.status}`);
+		}
+		const bytes = await response.arrayBuffer();
+		const inspection = inspectMotionTextFont({
+			bytes: new Uint8Array(bytes),
+			text: "Hello 世界",
+			faceIndex: 0,
+		});
+		if (!inspection.inspection) {
+			throw new Error(`Geist font fixture is invalid: ${inspection.error}`);
+		}
+		let loads = 0;
+		const runtime = new MotionTextFontRuntime({
+			loadBuiltinFont: async () => bytes.slice(0),
+			loadProjectFont: async () => {
+				loads += 1;
+				return bytes.slice(0);
+			},
+		});
+		const readySequence = sequenceWithProjectFont({
+			id: "font-ready",
+			text: "Hello motion",
+			contentDigest: inspection.inspection.contentDigest,
+		});
+		const ready = await runtime.prepareSequence({
+			projectId: "project:font-browser-probe",
+			purpose: "preview",
+			sequence: readySequence,
+		});
+		const family = ready.fonts.get("font:geist-fixture")?.family;
+		if (!family)
+			throw new Error("Font runtime did not publish the loaded face");
+		const loadedBeforeInvalidate = loadedFaceCount(family);
+		const missing = await runtime.prepareSequence({
+			projectId: "project:font-browser-probe",
+			purpose: "export",
+			sequence: sequenceWithProjectFont({
+				id: "font-missing-glyph",
+				text: "Hello 世界",
+				contentDigest: inspection.inspection.contentDigest,
+			}),
+		});
+		runtime.invalidate();
+		const loadedAfterInvalidate = loadedFaceCount(family);
+		await runtime.prepareSequence({
+			projectId: "project:font-browser-probe",
+			purpose: "preview",
+			sequence: readySequence,
+		});
+		const loadedAfterReload = loadedFaceCount(family);
+		runtime.dispose();
+
+		const builtinPath = "motion-text/fonts/noto-sans-jp-variable.ttf";
+		const builtinResponse = await fetch(`/apps/web/public/${builtinPath}`);
+		if (!builtinResponse.ok) {
+			throw new Error(
+				`JIZURA builtin font fixture returned HTTP ${builtinResponse.status}`,
+			);
+		}
+		const builtinBytes = await builtinResponse.arrayBuffer();
+		const builtinInspection = inspectMotionTextFont({
+			bytes: new Uint8Array(builtinBytes),
+			text: "OpenCut 歌詞日本語あア",
+			faceIndex: 0,
+		});
+		if (!builtinInspection.inspection) {
+			throw new Error(
+				`JIZURA builtin font is invalid: ${builtinInspection.error}`,
+			);
+		}
+		const builtinLoads = [];
+		const builtinRuntime = new MotionTextFontRuntime({
+			loadBuiltinFont: async ({ font }) => {
+				builtinLoads.push(font.builtinPath);
+				return builtinBytes.slice(0);
+			},
+			loadProjectFont: async () => null,
+		});
+		const builtinReady = await builtinRuntime.prepareSequence({
+			projectId: "project:font-browser-probe",
+			purpose: "export",
+			sequence: sequenceWithBuiltinFont({
+				id: "font-builtin",
+				text: "OpenCut 歌詞日本語あア",
+				contentDigest: builtinInspection.inspection.contentDigest,
+			}),
+		});
+		const builtinFamily = builtinReady.fonts.get("gothic_bold")?.family;
+		if (!builtinFamily) {
+			throw new Error("Builtin font runtime did not publish the loaded face");
+		}
+		const builtinLoadedBeforeDispose = loadedFaceCount(builtinFamily);
+		builtinRuntime.dispose();
+		return {
+			inspection: inspection.inspection,
+			readyDiagnostics: ready.diagnostics,
+			missingDiagnostics: missing.diagnostics,
+			loadedBeforeInvalidate,
+			loadedAfterInvalidate,
+			loadedAfterReload,
+			loadedAfterDispose: loadedFaceCount(family),
+			loads,
+			snapshot: runtime.inspect(),
+			builtin: {
+				digest: builtinInspection.inspection.contentDigest,
+				diagnostics: builtinReady.diagnostics,
+				loads: builtinLoads,
+				loadedBeforeDispose: builtinLoadedBeforeDispose,
+				loadedAfterDispose: loadedFaceCount(builtinFamily),
+			},
+		};
+	}
+
+	const english = sequence({ id: "en", seed: 17 });
+	const korean = sequence({
+		id: "ko",
+		seed: 31,
+		language: "ko",
+		text: "새벽빛을 기억해",
+		layout: "vcols",
+	});
+	const scene = sequence({
+		id: "scene",
+		seed: 17,
+		compositionMode: "scene",
+	});
+	const first = digest(english, 25_000);
+	const later = digest(english, 55_000);
+	const repeated = digest(english, 25_000);
+	const otherSeed = digest(sequence({ id: "seed", seed: 999 }), 25_000);
+	const koreanFrame = digest(korean, 25_000);
+	const sceneFrame = digest(scene, 25_000);
+	const baselineStyles = Object.fromEntries(
+		["noir", "crimson", "caution", "paper", "mono"].map((style, index) => [
+			style,
+			digest(
+				sequence({
+					id: `baseline-style-${index}`,
+					seed: 131,
+					text: "BASELINE STYLE",
+					style,
+					enter: "cut",
+					exit: "cut",
+					hold: "still",
+					cam: "static",
+				}),
+				60_000,
+			),
+		]),
+	);
+	const horrorStyles = Object.fromEntries(
+		["hrRuin", "hrNightRec", "hrCurse"].map((style, index) => [
+			style,
+			digest(
+				sequence({
+					id: `horror-style-${index}`,
+					seed: 179,
+					text: "HORROR STYLE",
+					style,
+					enter: "cut",
+					exit: "cut",
+					hold: "still",
+					cam: "static",
+				}),
+				60_000,
+			),
+		]),
+	);
+	const catalogStyles = Object.fromEntries(
+		[
+			"magenta",
+			"hud",
+			"mint",
+			"specimen",
+			"transit",
+			"blueprint",
+			"rouge",
+			"sakura",
+			"ocean",
+			"sunset",
+			"forest",
+			"vapor",
+			"newsprint",
+			"synth80",
+			"kraft",
+			"candy",
+			"acid",
+			"sumi",
+			"gold",
+		].map((style, index) => [
+			style,
+			digest(
+				sequence({
+					id: `catalog-style-${index}`,
+					seed: 181,
+					text: "STYLE SIGNAL",
+					style,
+					enter: "cut",
+					exit: "cut",
+					hold: "still",
+					cam: "static",
+					decor: ["leaders"],
+					treat: "underline",
+				}),
+				60_000,
+			),
+		]),
+	);
+	const baselineLayouts = Object.fromEntries(
+		["center", "mixed", "vcols", "marquee", "huge", "type", "stack"].map(
+			(layout, index) => [
+				layout,
+				digest(
+					sequence({
+						id: `baseline-layout-${index}`,
+						seed: 137,
+						text: "ONE TWO THREE FOUR",
+						layout,
+						enter: "cut",
+						exit: "cut",
+						hold: "still",
+						cam: "static",
+					}),
+					60_000,
+				),
+			],
+		),
+	);
+	const coreLayouts = Object.fromEntries(
+		[
+			"tile",
+			"scatter",
+			"ring",
+			"wave",
+			"labels",
+			"condensed",
+			"gloss",
+			"diag",
+			"circle",
+			"pill",
+			"title",
+			"interlude",
+		].map((layout, index) => {
+			const layoutSequence = sequence({
+				id: `core-layout-${index}`,
+				seed: 107,
+				text: "LAYOUT SIGNAL",
+				layout,
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+			});
+			return [
+				layout,
+				{
+					phaseA: digest(layoutSequence, 36_000),
+					phaseB: digest(layoutSequence, 84_000),
+				},
+			];
+		}),
+	);
+	const layoutsA = Object.fromEntries(
+		[
+			"lowerThird",
+			"corners",
+			"staircase",
+			"zigzag",
+			"arcTop",
+			"spiral",
+			"gridCells",
+			"dropCap",
+			"justified",
+			"frameBox",
+			"bubble",
+			"subtitleBar",
+			"ticker",
+			"splitScreen",
+			"mirror",
+			"sideways",
+			"edgeFrame",
+			"perspective",
+			"hanko",
+			"genkou",
+			"panels",
+			"filmstrip",
+			"quote",
+			"ruler",
+			"searchBar",
+			"chat",
+			"notification",
+			"ticket",
+		].map((layout, index) => {
+			const layoutSequence = sequence({
+				id: `layouts-a-${index}`,
+				seed: 113,
+				text: "LAYOUT ALPHA SIGNAL",
+				layout,
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+			});
+			return [
+				layout,
+				{
+					phaseA: digest(layoutSequence, 36_000),
+					phaseB: digest(layoutSequence, 84_000),
+				},
+			];
+		}),
+	);
+	const layoutsB = Object.fromEntries(
+		[
+			"rain",
+			"hanging",
+			"orbit",
+			"tunnel",
+			"wordCloud",
+			"bounceLine",
+			"elastic",
+			"crossBands",
+			"stickerBomb",
+			"neon",
+			"keycaps",
+			"bubbles",
+			"slotMachine",
+			"flipBoard",
+			"credits",
+			"zoomRepeat",
+			"splitHalves",
+			"columnsBig",
+			"circleWords",
+			"dotMatrix",
+			"depthStack",
+			"typeSpecimen",
+			"kanjiFocus",
+			"halfVertical",
+			"curtain",
+			"equalizer",
+			"tape",
+		].map((layout, index) => {
+			const layoutSequence = sequence({
+				id: `layouts-b-${index}`,
+				seed: 127,
+				text: "KINETIC LAYOUT SIGNAL",
+				layout,
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+			});
+			return [
+				layout,
+				{
+					phaseA: digest(layoutSequence, 36_000),
+					phaseB: digest(layoutSequence, 84_000),
+				},
+			];
+		}),
+	);
+	const layoutsC = Object.fromEntries(
+		[
+			"magazine",
+			"headlineDeck",
+			"contents",
+			"footnote",
+			"proofread",
+			"numbered",
+			"poster",
+			"swissGrid",
+			"dictionary",
+			"ema",
+			"ransom",
+			"newspaper",
+			"vinyl",
+			"cassette",
+			"bookSpine",
+			"polaroid",
+			"stampSheet",
+			"postcard",
+			"letterPaper",
+			"calendar",
+			"chochin",
+			"routeMap",
+			"stationSign",
+			"noren",
+			"tanzaku",
+			"omikuji",
+			"kakejiku",
+			"shoji",
+			"clapper",
+			"warningLabel",
+			"priceTag",
+			"nameTag",
+			"stickyNotes",
+			"karuta",
+		].map((layout, index) => {
+			const layoutSequence = sequence({
+				id: `layouts-c-${index}`,
+				seed: 139,
+				text: "EDITORIAL PAPER SIGNAL",
+				layout,
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+			});
+			return [
+				layout,
+				{
+					phaseA: digest(layoutSequence, 36_000),
+					phaseB: digest(layoutSequence, 84_000),
+				},
+			];
+		}),
+	);
+	const layoutsD = Object.fromEntries(
+		[
+			"cube",
+			"cylinder",
+			"flipCards",
+			"accordion",
+			"flag",
+			"ribbon",
+			"pendulum",
+			"pile",
+			"blocks",
+			"balloons",
+			"magnets",
+			"tiles",
+			"bulbs",
+			"ledScroll",
+			"billboard",
+			"crowdBubbles",
+			"crossword",
+			"wordSearch",
+			"puzzle",
+			"shadowPlay",
+			"kaleido",
+			"dominoes",
+			"burst",
+			"fisheye",
+			"wall",
+			"origami",
+			"zipper",
+			"sliceStack",
+			"glitchGrid",
+			"mosaicTiles",
+			"maskReveal",
+			"contour",
+			"halftoneBig",
+			"stencil",
+		].map((layout, index) => {
+			const layoutSequence = sequence({
+				id: `layouts-d-${index}`,
+				seed: 151,
+				text: "PHYSICAL POP SIGNAL",
+				layout,
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+			});
+			return [
+				layout,
+				{
+					phaseA: digest(layoutSequence, 36_000),
+					phaseB: digest(layoutSequence, 84_000),
+				},
+			];
+		}),
+	);
+	const baselineEntrances = Object.fromEntries(
+		["cut", "pop", "wipe", "blur", "slideL", "slideR"].map((enter, index) => {
+			const entranceSequence = sequence({
+				id: `baseline-enter-${index}`,
+				seed: 139,
+				text: "BASELINE ENTER",
+				enter,
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+			});
+			return [
+				enter,
+				{
+					early: digest(entranceSequence, 12_000),
+					settled: digest(entranceSequence, 60_000),
+				},
+			];
+		}),
+	);
+	const baselineHolds = Object.fromEntries(
+		["still", "jitter", "drift", "breathe", "float", "sway", "pulse"].map(
+			(hold, index) => {
+				const holdSequence = sequence({
+					id: `baseline-hold-${index}`,
+					seed: 149,
+					text: "BASELINE HOLD",
+					enter: "cut",
+					exit: "cut",
+					hold,
+					cam: "static",
+				});
+				return [
+					hold,
+					{
+						phaseA: digest(holdSequence, 18_000),
+						phaseB: digest(holdSequence, 48_000),
+					},
+				];
+			},
+		),
+	);
+	const baselineExits = Object.fromEntries(
+		["cut", "drift", "wipe", "shrink", "blur", "slideOutL", "slideOutR"].map(
+			(exit, index) => {
+				const exitSequence = sequence({
+					id: `baseline-exit-${index}`,
+					seed: 151,
+					text: "BASELINE EXIT",
+					enter: "cut",
+					exit,
+					hold: "still",
+					cam: "static",
+				});
+				return [
+					exit,
+					{
+						phaseA: digest(exitSequence, 96_000),
+						phaseB: digest(exitSequence, 108_000),
+					},
+				];
+			},
+		),
+	);
+	const coreAnimEntrances = Object.fromEntries(
+		[
+			"assemble",
+			"slice",
+			"type",
+			"drop",
+			"stretch",
+			"spin",
+			"flicker",
+			"scramble",
+			"zoom",
+		].map((enter, index) => {
+			const entranceSequence = sequence({
+				id: `core-anim-enter-${index}`,
+				seed: 97,
+				text: "CORE ARRIVAL",
+				enter,
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+			});
+			return [
+				enter,
+				{
+					phaseA: digest(entranceSequence, 12_000),
+					phaseB: digest(entranceSequence, 28_000),
+				},
+			];
+		}),
+	);
+	const coreAnimHolds = Object.fromEntries(
+		["wave", "glitchtick"].map((hold, index) => {
+			const holdSequence = sequence({
+				id: `core-anim-hold-${index}`,
+				seed: 101,
+				text: "CORE HOLD",
+				enter: "cut",
+				exit: "cut",
+				hold,
+				cam: "static",
+			});
+			return [
+				hold,
+				{
+					phaseA: digest(holdSequence, 18_000),
+					phaseB: digest(holdSequence, 48_000),
+				},
+			];
+		}),
+	);
+	const coreAnimExits = Object.fromEntries(
+		["explode", "fall", "slice", "stretch", "scatter", "glitch"].map(
+			(exit, index) => {
+				const exitSequence = sequence({
+					id: `core-anim-exit-${index}`,
+					seed: 103,
+					text: "CORE DEPARTURE",
+					enter: "cut",
+					exit,
+					hold: "still",
+					cam: "static",
+				});
+				return [
+					exit,
+					{
+						phaseA: digest(exitSequence, 96_000),
+						phaseB: digest(exitSequence, 108_000),
+					},
+				];
+			},
+		),
+	);
+	const baselineTreatments = Object.fromEntries(
+		["none", "outline", "outlineFill", "glow", "underline"].map(
+			(treat, index) => [
+				treat,
+				digest(
+					sequence({
+						id: `baseline-treatment-${index}`,
+						seed: 157,
+						text: "BASELINE TREATMENT",
+						enter: "cut",
+						exit: "cut",
+						hold: "still",
+						cam: "static",
+						treat,
+					}),
+					60_000,
+				),
+			],
+		),
+	);
+	const baselineBackgrounds = {
+		none: digest(
+			sequence({
+				id: "baseline-background-none",
+				seed: 163,
+				text: "BASELINE BACKGROUND",
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+				bg: "none",
+			}),
+			60_000,
+		),
+	};
+	const baselineCameras = {
+		push: (() => {
+			const cameraSequence = sequence({
+				id: "baseline-camera-push",
+				seed: 167,
+				text: "BASELINE CAMERA",
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam: "push",
+			});
+			return {
+				phaseA: digest(cameraSequence, 12_000),
+				phaseB: digest(cameraSequence, 42_000),
+			};
+		})(),
+	};
+	const variantMatrixScenarios = [
+		{
+			id: "en-short-landscape-overlay",
+			language: "en",
+			text: "GO",
+			width: 320,
+			height: 180,
+			compositionMode: "overlay",
+		},
+		{
+			id: "en-long-portrait-scene",
+			language: "en",
+			text: "A deliberately long motion text line validates wrapping",
+			width: 180,
+			height: 320,
+			compositionMode: "scene",
+		},
+		{
+			id: "zh-short-portrait-overlay",
+			language: "zh-CN",
+			text: "出发",
+			width: 180,
+			height: 320,
+			compositionMode: "overlay",
+		},
+		{
+			id: "zh-long-landscape-scene",
+			language: "zh-CN",
+			text: "这是一行用于验证长文本换行与构图的字幕",
+			width: 320,
+			height: 180,
+			compositionMode: "scene",
+		},
+		{
+			id: "ja-short-landscape-scene",
+			language: "ja",
+			text: "未来へ",
+			width: 320,
+			height: 180,
+			compositionMode: "scene",
+		},
+		{
+			id: "ja-long-portrait-overlay",
+			language: "ja",
+			text: "長い文章の折り返しと縦長の構図を確認します",
+			width: 180,
+			height: 320,
+			compositionMode: "overlay",
+		},
+		{
+			id: "ko-short-portrait-scene",
+			language: "ko",
+			text: "출발",
+			width: 180,
+			height: 320,
+			compositionMode: "scene",
+		},
+		{
+			id: "ko-long-landscape-overlay",
+			language: "ko",
+			text: "긴 문장의 줄바꿈과 가로 구도를 확인합니다",
+			width: 320,
+			height: 180,
+			compositionMode: "overlay",
+		},
+	];
+	const variantMatrixFamilies = [
+		{ group: "style", target: { style: "crimson" }, time: 60_000 },
+		{ group: "layout", target: { layout: "tySplitType" }, time: 60_000 },
+		{ group: "enter", target: { enter: "knWordSpin" }, time: 12_000 },
+		{ group: "hold", target: { hold: "knWordPulse" }, time: 36_000 },
+		{ group: "exit", target: { exit: "knStackAway" }, time: 108_000 },
+		{ group: "decor", target: { decor: ["tyTextRule"] }, time: 60_000 },
+		{ group: "treat", target: { treat: "knWordPlate" }, time: 60_000 },
+		{ group: "bg", target: { bg: "none" }, time: 60_000 },
+		{ group: "cam", target: { cam: "knTiltKick" }, time: 42_000 },
+		{
+			group: "fx",
+			target: { fx: ["hrPassingShadow"] },
+			time: 42_000,
+		},
+		{ group: "trans", target: { trans: "tyRuleWipe" }, time: 70_000 },
+	];
+	const variantMatrix = {
+		scenarios: variantMatrixScenarios,
+		families: Object.fromEntries(
+			variantMatrixFamilies.map(({ group, target, time }, familyIndex) => [
+				group,
+				Object.fromEntries(
+					variantMatrixScenarios.map((scenario, scenarioIndex) => {
+						const id = `variant-${familyIndex}-${scenarioIndex}`;
+						const common = {
+							id,
+							seed: 173,
+							language: scenario.language,
+							text: scenario.text,
+							compositionMode: scenario.compositionMode,
+							enter: "cut",
+							exit: "cut",
+							hold: "still",
+							cam: "static",
+						};
+						const sequenceValue =
+							group === "trans"
+								? sequenceWithTransition({
+										id,
+										trans: target.trans,
+										language: scenario.language,
+										compositionMode: scenario.compositionMode,
+										beforeText: `‹ ${scenario.text}`,
+										afterText: scenario.text,
+									})
+								: sequence({ ...common, ...target });
+						return [
+							scenario.id,
+							digest(sequenceValue, time, {
+								width: scenario.width,
+								height: scenario.height,
+							}),
+						];
+					}),
+				),
+			]),
+		),
+	};
+	const typographyFixtures = [
+		["tyBandHide", "BAND HIDES"],
+		["tyBaseline", "TYPE MOTION"],
+		["tyCropGiant", "CROPPED TYPE"],
+		["tyCross", "ABCDE"],
+		["tyErode", "EROSION"],
+		["tyFullTrack", "TRACKING"],
+		["tyIndexTable", "INDEX"],
+		["tyJustify", "JUSTIFIED BLOCK"],
+		["tyKeySplit", "soft EMPHASIS end"],
+		["tyLineFocus", "A FOCUSED LINE"],
+		["tyMargin", "QUIET SPACE"],
+		["tyRotBlock", "SIDE MAIN BLOCK"],
+		["tyRuby", "未来かな"],
+		["tyScaleSteps", "SCALE"],
+		["tySplitType", "SPLIT TYPE"],
+		["tySquare", "GRIDPLAY"],
+		["tyStatCount", "COUNT ME"],
+		["tyVRuler", "RULER"],
+	];
+	const typographyLayouts = Object.fromEntries(
+		typographyFixtures.map(([layout, text], index) => [
+			layout,
+			digest(
+				sequence({
+					id: `typography-${index}`,
+					seed: 77,
+					text,
+					layout,
+				}),
+				25_000,
+			),
+		]),
+	);
+	const kineticLayoutFixtures = [
+		["knSlamStack", "A WIDE EXTRAORDINARY"],
+		["knQuarterTurn", "ONE TWO THREE FOUR"],
+		["knSwapCenter", "ONE TWO THREE FOUR"],
+		["knZoomDive", "ONE TWO THREE"],
+		["knFlowSnap", "FLOW SNAP NOW"],
+		["knSeesaw", "ONE TWO THREE FOUR"],
+		["knTypeSlam", "TYPE THEN IMPACT"],
+		["knRhythmCuts", "ONE TWO THREE FOUR"],
+		["knPathRide", "LOOPING PATH"],
+		["knGearWords", "ONE TWO THREE FOUR"],
+		["knCollide", "ONE TWO THREE FOUR"],
+		["knTumble", "ONE TWO THREE FOUR"],
+		["knReflow", "VERTICAL REFLOW"],
+		["knPadGrid", "ONE TWO THREE FOUR"],
+	];
+	const kineticLayouts = Object.fromEntries(
+		kineticLayoutFixtures.map(([layout, text], index) => {
+			const layoutSequence = sequence({
+				id: `kinetic-layout-${index}`,
+				seed: 117,
+				text,
+				layout,
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+			});
+			return [
+				layout,
+				{
+					phaseA: digest(layoutSequence, 18_000),
+					phaseB: digest(layoutSequence, 66_000),
+				},
+			];
+		}),
+	);
+	const horrorLayoutFixtures = [
+		["hrFlashlight", "SEARCH THE DARK"],
+		["hrDoorGap", "DO NOT OPEN"],
+		["hrWallScrawl", "IT KNOWS"],
+		["hrCctv", "CAMERA SEES YOU"],
+		["hrOuija", "OPEN THE DOOR"],
+		["hrMissing", "MISSING NAME"],
+		["hrWrongOne", "ONE WRONG GLYPH"],
+		["hrRisingDark", "RISE FROM BELOW"],
+		["hrRedacted", "HIDDEN RECORD"],
+		["hrStaticTv", "NO SIGNAL"],
+		["hrSpiritPhoto", "LOOK BEHIND"],
+		["hrWrongShadow", "SHADOW MOVES"],
+	];
+	const horrorLayouts = Object.fromEntries(
+		horrorLayoutFixtures.map(([layout, text], index) => {
+			const layoutSequence = sequence({
+				id: `horror-layout-${index}`,
+				seed: 181,
+				text,
+				style: "hrNightRec",
+				layout,
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+			});
+			return [
+				layout,
+				{
+					phaseA: digest(layoutSequence, 18_000),
+					phaseB: digest(layoutSequence, 66_000),
+				},
+			];
+		}),
+	);
+	const horrorEntranceFixtures = [
+		["hrBlinkCreep", "BLINK CREEP"],
+		["hrJumpScare", "JUMP SCARE"],
+		["hrUneasy", "UNEASY ARRIVAL"],
+		["hrVhold", "VERTICAL HOLD"],
+		["hrMirrorSnap", "MIRROR SNAP"],
+		["hrManifest", "MANIFEST"],
+		["hrClawReveal", "CLAW REVEAL"],
+	];
+	const horrorEntrances = Object.fromEntries(
+		horrorEntranceFixtures.map(([enter, text], index) => {
+			const entranceSequence = sequence({
+				id: `horror-entrance-${index}`,
+				seed: 191,
+				text,
+				style: "hrNightRec",
+				layout: "center",
+				enter,
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+			});
+			return [
+				enter,
+				{
+					early: digest(entranceSequence, 8_000),
+					settled: digest(entranceSequence, 60_000),
+				},
+			];
+		}),
+	);
+	const horrorHolds = Object.fromEntries(
+		["hrTwitch", "hrStare", "hrLagOne", "hrFlickerLight"].map((hold, index) => {
+			const holdSequence = sequence({
+				id: `horror-hold-${index}`,
+				seed: 193,
+				text: "STARE INTO DARK",
+				style: "hrNightRec",
+				layout: "center",
+				enter: "cut",
+				exit: "cut",
+				hold,
+				cam: "static",
+			});
+			return [
+				hold,
+				{
+					phaseA: digest(holdSequence, 6_000),
+					phaseB: digest(holdSequence, 42_000),
+				},
+			];
+		}),
+	);
+	const horrorExits = Object.fromEntries(
+		[
+			"hrPulledDown",
+			"hrLookBack",
+			"hrTurnAway",
+			"hrShiver",
+			"hrSwallow",
+			"hrFlickerDie",
+			"hrDrain",
+		].map((exit, index) => {
+			const exitSequence = sequence({
+				id: `horror-exit-${index}`,
+				seed: 197,
+				text: "DO NOT LOOK BACK",
+				style: "hrNightRec",
+				layout: "center",
+				enter: "cut",
+				exit,
+				hold: "still",
+				cam: "static",
+			});
+			return [
+				exit,
+				{
+					phaseA: digest(exitSequence, 92_000),
+					phaseB: digest(exitSequence, 96_000),
+				},
+			];
+		}),
+	);
+	const horrorTreatments = Object.fromEntries(
+		["hrInkBleed", "hrEroded", "hrRedact", "hrDoubleExp"].map(
+			(treat, index) => [
+				treat,
+				digest(
+					sequence({
+						id: `horror-treatment-${index}`,
+						seed: 199,
+						text: "CURSED RECORD",
+						style: "hrCurse",
+						layout: "center",
+						enter: "cut",
+						exit: "cut",
+						hold: "still",
+						cam: "static",
+						treat,
+					}),
+					60_000,
+				),
+			],
+		),
+	);
+	const horrorDecors = Object.fromEntries(
+		[
+			"hrScratches",
+			"hrSigil",
+			"hrWatchEye",
+			"hrStaticPatch",
+			"hrDustBeam",
+			"hrDrips",
+			"hrCracks",
+		].map((decor, index) => {
+			const decorSequence = sequence({
+				id: `horror-decor-${index}`,
+				seed: 211,
+				text: "WATCH THE CORNER",
+				style: "hrNightRec",
+				layout: "center",
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+				decor: [decor],
+			});
+			return [
+				decor,
+				{
+					phaseA: digest(decorSequence, 24_000),
+					phaseB: digest(decorSequence, 66_000),
+				},
+			];
+		}),
+	);
+	const horrorBackgrounds = Object.fromEntries(
+		["hrFailingLamp", "hrCorridor", "hrMold", "hrDeadTrees"].map(
+			(bg, index) => {
+				const backgroundSequence = sequence({
+					id: `horror-background-${index}`,
+					seed: 223,
+					text: "EMPTY CORRIDOR",
+					style: "hrRuin",
+					layout: "center",
+					enter: "cut",
+					exit: "cut",
+					hold: "still",
+					cam: "static",
+					bg,
+				});
+				return [
+					bg,
+					{
+						phaseA: digest(backgroundSequence, 24_000),
+						phaseB: digest(backgroundSequence, 66_000),
+					},
+				];
+			},
+		),
+	);
+	const horrorCameras = Object.fromEntries(
+		["hrNervous", "hrDutchSnap"].map((cam, index) => {
+			const cameraSequence = sequence({
+				id: `horror-camera-${index}`,
+				seed: 227,
+				text: "CAMERA MOVES",
+				style: "hrNightRec",
+				layout: "center",
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam,
+			});
+			return [
+				cam,
+				{
+					phaseA: digest(cameraSequence, 24_000),
+					phaseB: digest(cameraSequence, 84_000),
+				},
+			];
+		}),
+	);
+	const bgcamBackgrounds = Object.fromEntries(
+		[
+			"auroraRibbons",
+			"meshBlobs",
+			"duotoneSweep",
+			"horizonGlow",
+			"seigaiha",
+			"asanoha",
+			"houndstooth",
+			"herringbone",
+			"argyle",
+			"tartan",
+			"chevron",
+			"isoCubes",
+			"hexGrid",
+			"triTess",
+			"moire",
+			"squareTunnel",
+			"spiralArms",
+			"topoLines",
+			"ridgePlot",
+			"starfield",
+			"nightMoon",
+			"skyline",
+			"sunsetSun",
+			"oceanWaves",
+			"rainWindow",
+			"snowLayers",
+			"fireworks",
+			"cloudLayers",
+			"mountains",
+			"filmStrip",
+			"vhsBand",
+			"tornPaper",
+			"godRays",
+			"vignettePulse",
+			"kaleidoscope",
+			"marble",
+			"paperCut",
+		].map((bg, index) => {
+			const backgroundSequence = sequence({
+				id: `bgcam-background-${index}`,
+				seed: 233,
+				text: "BACKGROUND FIELD",
+				layout: "center",
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+				bg,
+			});
+			return [
+				bg,
+				{
+					phaseA: digest(backgroundSequence, 18_000),
+					phaseB: digest(backgroundSequence, 48_000),
+				},
+			];
+		}),
+	);
+	const bgcamCameras = Object.fromEntries(
+		[
+			"orbitDrift",
+			"barrelRoll",
+			"pendulumSway",
+			"focusIn",
+			"rackFocus",
+			"earthquake",
+			"floatNoise",
+			"vertigo",
+			"tiltDown",
+			"spiralIn",
+			"snapPan",
+			"jelly",
+		].map((cam, index) => {
+			const cameraSequence = sequence({
+				id: `bgcam-camera-${index}`,
+				seed: 239,
+				text: "CAMERA FIELD",
+				layout: "center",
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam,
+			});
+			return [
+				cam,
+				{
+					phaseA: digest(cameraSequence, 18_000),
+					phaseB: digest(cameraSequence, 96_000),
+				},
+			];
+		}),
+	);
+	const exitHoldHoldFixtures = [
+		["shimmer", 18_000, 42_000],
+		["colorRun", 18_000, 42_000],
+		["rotateSlow", 18_000, 42_000],
+		["trackBreathe", 18_000, 42_000],
+		["skewWobble", 18_000, 42_000],
+		["beatHop", 18_000, 42_000],
+		["hWave", 18_000, 42_000],
+		["heartbeat", 18_000, 42_000],
+		["orbitSmall", 18_000, 42_000],
+		["jelly", 18_000, 42_000],
+		["scanBand", 18_000, 42_000],
+		["noiseDrift", 18_000, 42_000],
+		["tilt", 18_000, 42_000],
+		["zoomSlow", 18_000, 42_000],
+		["stretchPulse", 18_000, 42_000],
+		["glitchJump", 1_000, 6_000],
+		["echoTrail", 18_000, 42_000],
+	];
+	const exitHoldHolds = Object.fromEntries(
+		exitHoldHoldFixtures.map(([hold, phaseATime, phaseBTime], index) => {
+			const holdSequence = sequence({
+				id: `exit-hold-hold-${index}`,
+				seed: 77,
+				text: "MOTION SIGNAL",
+				layout: "center",
+				enter: "cut",
+				exit: "cut",
+				hold,
+				cam: "static",
+			});
+			return [
+				hold,
+				{
+					phaseA: digest(holdSequence, phaseATime),
+					phaseB: digest(holdSequence, phaseBTime),
+				},
+			];
+		}),
+	);
+	const exitHoldExits = Object.fromEntries(
+		[
+			"sinkMask",
+			"riseOut",
+			"flipOutX",
+			"flipOutY",
+			"foldOut",
+			"squash",
+			"trackOutWide",
+			"collapse",
+			"zoomThrough",
+			"zoomFar",
+			"spinOut",
+			"twist",
+			"waveOut",
+			"blurOutStagger",
+			"undraw",
+			"outlineOut",
+			"irisClose",
+			"diagWipeOut",
+			"blindsClose",
+			"checkerOut",
+			"splitApart",
+			"vSliceDrop",
+			"melt",
+			"dissolve",
+			"backspace",
+			"scrambleOut",
+			"glitchDissolve",
+			"echoOut",
+			"whipOut",
+			"gravity",
+			"popOut",
+			"burn",
+			"sweepCover",
+			"shatterLite",
+		].map((exit, index) => {
+			const exitSequence = sequence({
+				id: `exit-hold-exit-${index}`,
+				seed: 83,
+				text: "EXIT SIGNAL",
+				layout: "center",
+				enter: "cut",
+				exit,
+				hold: "still",
+				cam: "static",
+			});
+			return [
+				exit,
+				{
+					phaseA: digest(exitSequence, 96_000),
+					phaseB: digest(exitSequence, 105_000),
+				},
+			];
+		}),
+	);
+	const exitBHoldFixtures = [
+		["glowFlicker", 18_000, 42_000],
+		["windGust", 18_000, 42_000],
+		["dangle", 18_000, 42_000],
+		["eqBounce", 18_000, 42_000],
+		["flashBox", 18_000, 6_000],
+		["glintSweep", 56_000, 96_000],
+		["flipSwap", 56_000, 59_000],
+		["shadowSway", 18_000, 42_000],
+		["magnetJiggle", 18_000, 42_000],
+		["typeRattle", 18_000, 58_000],
+		["focusRack", 18_000, 42_000],
+		["pluckString", 56_000, 59_000],
+	];
+	const exitBHolds = Object.fromEntries(
+		exitBHoldFixtures.map(([hold, phaseATime, phaseBTime], index) => {
+			const holdSequence = sequence({
+				id: `exit-b-hold-${index}`,
+				seed: 97,
+				text: "EXIT B HOLD",
+				layout: "center",
+				enter: "cut",
+				exit: "cut",
+				hold,
+				cam: "static",
+			});
+			return [
+				hold,
+				{
+					phaseA: digest(holdSequence, phaseATime),
+					phaseB: digest(holdSequence, phaseBTime),
+				},
+			];
+		}),
+	);
+	const exitBExits = Object.fromEntries(
+		[
+			"peelOff",
+			"crumpleOut",
+			"tearOut",
+			"scorchOut",
+			"overexposeOut",
+			"scanOut",
+			"stripesOut",
+			"halftoneOut",
+			"eraserOut",
+			"vacuumOut",
+			"sandOut",
+			"shredOut",
+			"dominoOut",
+			"hingeOut",
+			"rocketOff",
+			"bounceOff",
+			"balloonOff",
+			"deflateOut",
+			"hazeOut",
+			"glassBreak",
+			"zipOut",
+			"clapShut",
+			"lampOff",
+			"slotOut",
+			"clockOut",
+			"matrixOut",
+			"tornadoOut",
+			"rollUpOut",
+			"snakeOut",
+			"flutterOut",
+			"rollOff",
+			"fanClose",
+			"rgbSplitOut",
+			"shockOut",
+			"floodOut",
+			"slashOut",
+			"mosaicOut",
+			"scribbleOut",
+			"candleOut",
+		].map((exit, index) => {
+			const exitSequence = sequence({
+				id: `exit-b-exit-${index}`,
+				seed: 101,
+				text: "EXIT B SIGNAL",
+				layout: "center",
+				enter: "cut",
+				exit,
+				hold: "still",
+				cam: "static",
+			});
+			return [
+				exit,
+				{
+					phaseA: digest(exitSequence, 96_000),
+					phaseB: digest(exitSequence, 105_000),
+				},
+			];
+		}),
+	);
+	const coreDecors = Object.fromEntries(
+		[
+			"grid",
+			"stripes",
+			"blobs",
+			"bars",
+			"shapes",
+			"counter",
+			"brackets",
+			"rings",
+			"dots",
+			"arrows",
+			"slash",
+			"sparks",
+			"leaders",
+			"waveform",
+			"barcode",
+		].map((decor, index) => {
+			const decorSequence = sequence({
+				id: `core-decor-${index}`,
+				seed: 89,
+				text: "DECOR SIGNAL",
+				layout: "center",
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+				decor: [decor],
+			});
+			return [
+				decor,
+				{
+					phaseA: digest(decorSequence, 18_000),
+					phaseB: digest(decorSequence, 54_000),
+				},
+			];
+		}),
+	);
+	const extendedDecors = Object.fromEntries(
+		[
+			"crosshair",
+			"cropMarks",
+			"reticle",
+			"radar",
+			"progressRing",
+			"timecodeBar",
+			"rulerEdge",
+			"dimension",
+			"indexNum",
+			"dateStamp",
+			"qrBlock",
+			"glitchRects",
+			"concentricSquares",
+			"triangleSpin",
+			"lineBurst",
+			"plusGrid",
+			"guides",
+			"waveLine",
+			"spiralLine",
+			"halftonePatch",
+			"checkerStrip",
+			"beatRing",
+			"orbitDots",
+			"constellation",
+			"confetti",
+			"petals",
+			"rainStreaks",
+			"snow",
+			"lightLeak",
+			"bokeh",
+			"speedCorner",
+			"risingParticles",
+			"twinkle",
+			"brushStroke",
+			"tapePieces",
+			"scribbleCircle",
+			"scribbleUnder",
+			"crossOut",
+			"highlightMark",
+			"heartsStars",
+			"watermarkKanji",
+			"verticalStrip",
+			"romajiLine",
+			"bracketsJP",
+			"seal",
+		].map((decor, index) => {
+			const decorSequence = sequence({
+				id: `extended-decor-${index}`,
+				seed: 163,
+				text: "装飾 DECOR SIGNAL",
+				layout: "center",
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+				decor: [decor],
+			});
+			return [
+				decor,
+				{
+					phaseA: digest(decorSequence, 36_000),
+					phaseB: digest(decorSequence, 84_000),
+				},
+			];
+		}),
+	);
+	const decorB = Object.fromEntries(
+		[
+			"kamon",
+			"seigaiha",
+			"asanoha",
+			"hanabi",
+			"chochin",
+			"shimenawa",
+			"sensu",
+			"tsukiKumo",
+			"momiji",
+			"namiGashira",
+			"kasumi",
+			"hexGrid",
+			"spectrumRing",
+			"dataColumns",
+			"spinner",
+			"headingTape",
+			"glyphLock",
+			"atomOrbit",
+			"sonarArcs",
+			"circuit",
+			"swatches",
+			"ruledLines",
+			"registration",
+			"punchHoles",
+			"staple",
+			"paperClip",
+			"indexTabs",
+			"vines",
+			"cloudPuffs",
+			"starField",
+			"moonPhases",
+			"sunRays",
+			"rainRipples",
+			"bubbles",
+			"smoke",
+			"dandelion",
+			"fireflies",
+			"memphis",
+			"zigzagRibbon",
+			"polkaPatch",
+			"stripeCircle",
+			"decoCorners",
+			"halfCircles",
+			"loopArrows",
+			"starburst",
+			"tally",
+			"cursorClick",
+			"windowChrome",
+			"progressBar",
+			"toggleSwitch",
+			"notifBell",
+			"likeCounter",
+			"mediaControls",
+			"volumeBars",
+			"musicNotes",
+		].map((decor, index) => {
+			const decorSequence = sequence({
+				id: `decor-b-${index}`,
+				seed: 191,
+				text: "装飾 GRAPHIC SIGNAL",
+				layout: "center",
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+				decor: [decor],
+			});
+			return [
+				decor,
+				{
+					phaseA: digest(decorSequence, 18_000),
+					phaseB: digest(decorSequence, 66_000),
+				},
+			];
+		}),
+	);
+	const looksTreatments = Object.fromEntries(
+		[
+			"doubleOutline",
+			"extrude",
+			"longShadow",
+			"hardShadow",
+			"softShadow",
+			"marker",
+			"strike",
+			"boxed",
+			"gradientV",
+			"splitColor",
+			"halftone",
+			"stripes",
+			"hatch",
+			"dotted",
+			"alternate",
+			"italic",
+			"wide",
+			"tall",
+			"echoOutline",
+			"emphasisDots",
+		].map((treat, index) => {
+			const treatmentSequence = sequence({
+				id: `looks-treatment-${index}`,
+				seed: 211,
+				text: "LOOKS TREATMENT",
+				layout: "center",
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+				treat,
+			});
+			return [
+				treat,
+				{
+					phaseA: digest(treatmentSequence, 18_000),
+					phaseB: digest(treatmentSequence, 36_000),
+				},
+			];
+		}),
+	);
+	const looksBackgrounds = Object.fromEntries(
+		[
+			"sunburst",
+			"concentric",
+			"halftoneFade",
+			"bigStripes",
+			"splitV",
+			"splitH",
+			"splitDiag",
+			"gradientSweep",
+			"spotlight",
+			"tvBars",
+			"checker",
+			"bigChar",
+			"speedLines",
+			"scanBars",
+			"dotGrid",
+			"retroGrid",
+			"bokehBg",
+			"particlesBg",
+			"ripples",
+			"polka",
+			"eqBars",
+			"borderFrame",
+			"letterbox",
+			"noiseField",
+		].map((bg, index) => {
+			const backgroundSequence = sequence({
+				id: `looks-background-${index}`,
+				seed: 223,
+				text: "LOOKS BACKGROUND",
+				layout: "center",
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+				bg,
+			});
+			return [
+				bg,
+				{
+					phaseA: digest(backgroundSequence, 24_000),
+					phaseB: digest(backgroundSequence, 84_000),
+				},
+			];
+		}),
+	);
+	const looksCameras = Object.fromEntries(
+		[
+			"pullOut",
+			"panL",
+			"panR",
+			"tiltUp",
+			"dutch",
+			"handheld",
+			"beatPunch",
+			"whipIn",
+			"crashZoom",
+			"bounce",
+			"roll",
+			"driftDiag",
+			"shakeHard",
+			"dollyIn",
+			"stepZoom",
+		].map((cam, index) => {
+			const cameraSequence = sequence({
+				id: `looks-camera-${index}`,
+				seed: 227,
+				text: "LOOKS CAMERA",
+				layout: "center",
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam,
+			});
+			return [
+				cam,
+				{
+					phaseA: digest(cameraSequence, 24_000),
+					phaseB: digest(cameraSequence, 72_000),
+				},
+			];
+		}),
+	);
+	const looksEffects = Object.fromEntries(
+		[
+			"panelWipe",
+			"irisTrans",
+			"doors",
+			"blindsTrans",
+			"rgbSplit",
+			"smear",
+			"vhsRoll",
+			"trackingNoise",
+			"mirrorFlash",
+			"strobe",
+			"posterize",
+			"hueShift",
+			"tileShift",
+			"filmBurn",
+			"whipBlur",
+			"blackFrame",
+			"whiteFrame",
+			"gridRepeat",
+			"waveWarp",
+			"pixelDrift",
+			"zoomPunch",
+			"lightSweep",
+			"crtOff",
+			"splitSlide",
+		].map((effect, index) => {
+			const effectSequence = sequence({
+				id: `looks-effect-${index}`,
+				seed: 229,
+				text: "LOOKS EFFECT",
+				layout: "center",
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+				fx: [effect],
+			});
+			return [
+				effect,
+				{
+					phaseA: digest(effectSequence, 24_000),
+					phaseB: digest(effectSequence, 84_000),
+				},
+			];
+		}),
+	);
+	const horrorEffects = Object.fromEntries(
+		["hrSubliminal", "hrSignalLoss", "hrPassingShadow"].map((effect, index) => {
+			const effectSequence = sequence({
+				id: `horror-effect-${index}`,
+				seed: 229,
+				text: "NO SIGNAL",
+				style: "hrNightRec",
+				layout: "center",
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+				fx: [effect],
+			});
+			return [
+				effect,
+				{
+					phaseA: digest(effectSequence, 24_000),
+					phaseB: digest(effectSequence, 54_000),
+				},
+			];
+		}),
+	);
+	const coreEffects = Object.fromEntries(
+		[
+			"chroma",
+			"shake",
+			"slice",
+			"block",
+			"invert",
+			"flash",
+			"zoom",
+			"mosaic",
+		].map((effect, index) => {
+			const effectSequence = sequence({
+				id: `core-effect-${index}`,
+				seed: 307,
+				text: "GLITCH SIGNAL",
+				layout: "center",
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+				fx: [effect],
+			});
+			return [
+				effect,
+				{
+					phaseA: digest(effectSequence, 24_000),
+					phaseB: digest(effectSequence, 84_000),
+					offscreen: digestOffscreen(effectSequence, 24_000),
+				},
+			];
+		}),
+	);
+	const fxBEffects = Object.fromEntries(
+		[
+			"radialChroma",
+			"bloomFlash",
+			"bulge",
+			"pixelSort",
+			"interlace",
+			"macroBlock",
+			"halftone",
+			"duotone",
+			"ditherBit",
+			"rotateSnap",
+			"echoFrames",
+			"kaleido",
+			"bandInvert",
+			"lightRays",
+			"anamorphic",
+			"heartbeat",
+			"tvStatic",
+			"dustScratches",
+			"filmAdvance",
+			"perspectiveTilt",
+			"ripple",
+			"focusLines",
+			"speedLines",
+			"starGlint",
+			"colorBars",
+			"zoomStutter",
+			"negativeRing",
+			"edgeDetect",
+			"shatter",
+			"defocus",
+			"snapshot",
+			"squash",
+			"scanBar",
+			"loopScroll",
+		].map((effect, index) => {
+			const effectSequence = sequence({
+				id: `fx-b-effect-${index}`,
+				seed: 311,
+				text: "FX B SIGNAL",
+				layout: "center",
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+				fx: [effect],
+			});
+			return [
+				effect,
+				{
+					phaseA: digest(effectSequence, 24_000),
+					phaseB: digest(effectSequence, 84_000),
+				},
+			];
+		}),
+	);
+	const horrorTransitions = Object.fromEntries(
+		["hrStaticCut", "hrBlink"].map((trans, index) => {
+			const transitionSequence = sequenceWithTransition({
+				id: `horror-transition-${index}`,
+				trans,
+				beforeText: "DO NOT BLINK",
+				afterText: "IT MOVED",
+			});
+			return [
+				trans,
+				{
+					phaseA: digest(transitionSequence, 68_000),
+					phaseB: digest(transitionSequence, 76_000),
+				},
+			];
+		}),
+	);
+	const typographyEntranceFixtures = [
+		["tyBracketOpen", "BRACKET"],
+		["tyDotGrow", "DOTS"],
+		["tyKeyFirst", "small EMPHASIS tail"],
+		["tyLineWipe", "LINE WIPE"],
+		["tyRetype", "RETYPE"],
+		["tyRubyDrop", "RUBY"],
+		["tyUnderLift", "UNDER LIFT"],
+		["tyZoomOne", "ZOOM IN"],
+	];
+	const typographyEntrances = Object.fromEntries(
+		typographyEntranceFixtures.map(([enter, text], index) => {
+			const entranceSequence = sequence({
+				id: `typography-enter-${index}`,
+				seed: 77,
+				text,
+				enter,
+				hold: "still",
+				cam: "static",
+			});
+			return [
+				enter,
+				{
+					early: digest(entranceSequence, 12_000),
+					settled: digest(entranceSequence, 60_000),
+				},
+			];
+		}),
+	);
+	const enterBEntrances = Object.fromEntries(
+		[
+			"springIn",
+			"pendulum",
+			"rollIn",
+			"slingshot",
+			"rockSettle",
+			"bounceBall",
+			"snapRail",
+			"fanOpen",
+			"cylinder",
+			"shuffle",
+			"stopMotion",
+			"ripple",
+			"zipper",
+			"zoomAlt",
+			"tiltUp",
+			"stickerPeel",
+			"crumple",
+			"noteUnfold",
+			"tornJoin",
+			"splitFlap",
+			"overexpose",
+			"glint",
+			"loupe",
+			"filmFeed",
+			"backlight",
+			"lightLeak",
+			"heatHaze",
+			"crtOn",
+			"interlace",
+			"loadingBar",
+			"dither",
+			"odometer",
+			"matrixRain",
+			"hatchFill",
+			"brushReveal",
+			"inkDrop",
+			"quarters",
+			"invertBox",
+			"printRegister",
+			"echoCount",
+			"liquidFill",
+			"windBlown",
+			"strokeOrder",
+			"clockWipe",
+			"shadowFirst",
+			"bubbles",
+			"tokoroten",
+		].map((enter, index) => {
+			const entranceSequence = sequence({
+				id: `enter-b-${index}`,
+				seed: 131,
+				text: "ENTER B SIGNAL",
+				layout: "center",
+				enter,
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+			});
+			return [
+				enter,
+				{
+					phaseA: digest(entranceSequence, 12_000),
+					phaseB: digest(entranceSequence, 24_000),
+				},
+			];
+		}),
+	);
+	const enterAEntrances = Object.fromEntries(
+		[
+			"riseMask",
+			"dropMask",
+			"slideWhole",
+			"flipX",
+			"flipY",
+			"domino",
+			"fold",
+			"unroll",
+			"strokeDraw",
+			"outlineFill",
+			"splitJoin",
+			"vSlice",
+			"shutter",
+			"iris",
+			"diagWipe",
+			"blinds",
+			"checker",
+			"randomOrder",
+			"bounceBig",
+			"squashDrop",
+			"rubber",
+			"glitchIn",
+			"echoIn",
+			"whip",
+			"skewIn",
+			"trackIn",
+			"trackOut",
+			"blurStagger",
+			"fadeStagger",
+			"waveIn",
+			"spiralIn",
+			"zoomOut",
+			"resolve",
+			"magnet",
+			"inkBleed",
+			"neonOn",
+			"cursorSweep",
+			"stamp",
+		].map((enter, index) => {
+			const entranceSequence = sequence({
+				id: `enter-a-${index}`,
+				seed: 137,
+				text: "ENTER A SIGNAL",
+				layout: "center",
+				enter,
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+			});
+			return [
+				enter,
+				{
+					phaseA: digest(entranceSequence, 12_000),
+					phaseB: digest(entranceSequence, 24_000),
+				},
+			];
+		}),
+	);
+	const typographyHoldFixtures = [
+		["tyKeyPulse", "small EMPHASIS tail", 48_000, 72_000],
+		["tyReadCursor", "READ CURSOR", 48_000, 72_000],
+		["tyOutlineBlink", "OUTLINE", 68_000, 80_000],
+		["tyTrackStep", "TRACKING", 48_000, 72_000],
+	];
+	const typographyHolds = Object.fromEntries(
+		typographyHoldFixtures.map(
+			([hold, text, phaseATime, phaseBTime], index) => {
+				const holdSequence = sequence({
+					id: `typography-hold-${index}`,
+					seed: 77,
+					text,
+					enter: "cut",
+					hold,
+					cam: "static",
+				});
+				return [
+					hold,
+					{
+						phaseA: digest(holdSequence, phaseATime),
+						phaseB: digest(holdSequence, phaseBTime),
+					},
+				];
+			},
+		),
+	);
+	const typographyExitFixtures = [
+		["tyStrike", "STRIKE", 96_000, 108_000],
+		["tyToDot", "DOTS", 96_000, 108_000],
+		["tyLineFeed", "LINE FEED", 96_000, 97_000],
+		["tyBracketClose", "BRACKET", 96_000, 108_000],
+		["tyToIndex", "INDEX", 96_000, 108_000],
+		["tyKeyLast", "small EMPHASIS tail", 96_000, 108_000],
+		["tyUnderSink", "UNDER SINK", 96_000, 108_000],
+		["tyFoldVert", "FOLD VERTICAL", 96_000, 108_000],
+	];
+	const typographyExits = Object.fromEntries(
+		typographyExitFixtures.map(
+			([exit, text, phaseATime, phaseBTime], index) => {
+				const exitSequence = sequence({
+					id: `typography-exit-${index}`,
+					seed: 77,
+					text,
+					enter: "cut",
+					exit,
+					hold: "still",
+					cam: "static",
+				});
+				return [
+					exit,
+					{
+						phaseA: digest(exitSequence, phaseATime),
+						phaseB: digest(exitSequence, phaseBTime),
+					},
+				];
+			},
+		),
+	);
+	const typographyDecorFixtures = [
+		["tyColophon", "COLOPHON"],
+		["tyRunningHead", "RUNNING HEAD"],
+		["tyGlyphBody", "GLYPH BODY"],
+		["tyTextRule", "TEXT RULE"],
+		["tyTypeScale", "SCALE TEST"],
+		["tyBigPunct", "QUOTED"],
+	];
+	const typographyDecors = Object.fromEntries(
+		typographyDecorFixtures.map(([decor, text], index) => [
+			decor,
+			digest(
+				sequence({
+					id: `typography-decor-${index}`,
+					seed: 77,
+					text,
+					enter: "cut",
+					exit: "cut",
+					hold: "still",
+					cam: "static",
+					decor: [decor],
+				}),
+				60_000,
+			),
+		]),
+	);
+	const typographyTreatmentFixtures = [
+		["tyHollowKey", "HOLLOW"],
+		["tyHeadRules", "HEAD RULES"],
+		["tyHeadBig", "INITIAL"],
+		["tyIndexSup", "INDEX"],
+	];
+	const typographyTreatments = Object.fromEntries(
+		typographyTreatmentFixtures.map(([treat, text], index) => [
+			treat,
+			digest(
+				sequence({
+					id: `typography-treatment-${index}`,
+					seed: 77,
+					text,
+					enter: "cut",
+					exit: "cut",
+					hold: "still",
+					cam: "static",
+					treat,
+				}),
+				60_000,
+			),
+		]),
+	);
+	const typographyTransitions = Object.fromEntries(
+		["tyRuleWipe", "tyGridCells"].map((trans, index) => {
+			const transitionSequence = sequenceWithTransition({
+				id: `typography-transition-${index}`,
+				trans,
+			});
+			return [
+				trans,
+				{
+					phaseA: digest(transitionSequence, 70_000),
+					phaseB: digest(transitionSequence, 76_000),
+				},
+			];
+		}),
+	);
+	const treatTransTreatments = Object.fromEntries(
+		[
+			"neonOutline",
+			"chrome",
+			"rainbow",
+			"glitchSplit",
+			"shadowStack",
+			"stencilGap",
+			"waterline",
+			"karaoke",
+			"sizeWave",
+			"rotateAlt",
+			"baselineShift",
+			"fauxBold",
+			"circled",
+			"bracketsQuote",
+			"reflection",
+			"inline",
+			"sticker",
+			"gradientSweep",
+			"kerningWide",
+			"monoGrid",
+			"outlineOffset",
+			"toneShadow",
+			"fadeChars",
+			"cutShift",
+			"focusPull",
+			"spotChar",
+			"ransom",
+		].map((treat, index) => {
+			const treatmentSequence = sequence({
+				id: `treat-trans-treatment-${index}`,
+				seed: 109,
+				text: "TREAT TRANS",
+				layout: "center",
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+				treat,
+			});
+			return [
+				treat,
+				{
+					phaseA: digest(treatmentSequence, 18_000),
+					phaseB: digest(treatmentSequence, 42_000),
+				},
+			];
+		}),
+	);
+	const treatTransTransitions = Object.fromEntries(
+		[
+			"wipe",
+			"diagonalWipe",
+			"clockWipe",
+			"irisOpen",
+			"pushSlide",
+			"cover",
+			"uncover",
+			"zoomThrough",
+			"doorsOpen",
+			"blinds",
+			"checker",
+			"blockDissolve",
+			"whipPan",
+			"spinOut",
+			"inkBlob",
+			"shatterTiles",
+			"sliceShift",
+			"cubeTurn",
+			"flashCross",
+			"pixelate",
+		].map((trans, index) => {
+			const transitionSequence = sequenceWithTransition({
+				id: `treat-trans-transition-${index}`,
+				trans,
+			});
+			return [
+				trans,
+				{
+					phaseA: digest(transitionSequence, 66_000),
+					phaseB: digest(transitionSequence, 70_000),
+				},
+			];
+		}),
+	);
+	const kineticDecorFixtures = [
+		["knSpeedTrail", "MOVE FAST NOW", 30_000],
+		["knWordTicks", "ONE TWO THREE FOUR", 24_000],
+	];
+	const kineticDecors = Object.fromEntries(
+		kineticDecorFixtures.map(([decor, text, sequenceTime], index) => [
+			decor,
+			digest(
+				sequence({
+					id: `kinetic-decor-${index}`,
+					seed: 91,
+					text,
+					enter: "cut",
+					exit: "cut",
+					hold: "still",
+					cam: "static",
+					decor: [decor],
+				}),
+				sequenceTime,
+			),
+		]),
+	);
+	const kineticTreatmentFixtures = [
+		["knWordScale", "SMALL IMPACT END"],
+		["knWordPlate", "PLATE WORD CONTRAST"],
+	];
+	const kineticTreatments = Object.fromEntries(
+		kineticTreatmentFixtures.map(([treat, text], index) => [
+			treat,
+			digest(
+				sequence({
+					id: `kinetic-treatment-${index}`,
+					seed: 91,
+					text,
+					enter: "cut",
+					exit: "cut",
+					hold: "still",
+					cam: "static",
+					treat,
+				}),
+				60_000,
+			),
+		]),
+	);
+	const kineticTransitions = Object.fromEntries(
+		["knCornerSwing", "knStutterCut", "knStripSlam"].map((trans, index) => {
+			const transitionSequence = sequenceWithTransition({
+				id: `kinetic-transition-${index}`,
+				trans,
+			});
+			return [
+				trans,
+				{
+					phaseA: digest(transitionSequence, 68_000),
+					phaseB: digest(transitionSequence, 74_000),
+				},
+			];
+		}),
+	);
+	const kineticCameras = Object.fromEntries(
+		[
+			"knReadPan",
+			"knTiltKick",
+			"knCardFlip",
+			"knShearKick",
+			"knJumpCut",
+			"knRushIn",
+		].map((cam, index) => {
+			const cameraSequence = sequence({
+				id: `kinetic-camera-${index}`,
+				seed: 103,
+				text: "READ EVERY WORD NOW",
+				enter: "cut",
+				exit: "cut",
+				hold: "still",
+				cam,
+			});
+			return [
+				cam,
+				{
+					phaseA: digest(cameraSequence, 12_000),
+					phaseB: digest(cameraSequence, 42_000),
+				},
+			];
+		}),
+	);
+	const kineticHolds = Object.fromEntries(
+		[
+			"knWordPulse",
+			"knCounterRock",
+			"knWordRide",
+			"knTickShift",
+			"knBeatLean",
+			"knGapBreath",
+		].map((hold, index) => {
+			const holdSequence = sequence({
+				id: `kinetic-hold-${index}`,
+				seed: 107,
+				text: "ONE TWO THREE",
+				enter: "cut",
+				exit: "cut",
+				hold,
+				cam: "static",
+			});
+			return [
+				hold,
+				{
+					phaseA: digest(holdSequence, 6_000),
+					phaseB: digest(holdSequence, 36_000),
+				},
+			];
+		}),
+	);
+	const kineticEntrances = Object.fromEntries(
+		[
+			"knWordSlam",
+			"knTypeToSlam",
+			"knReplaceIn",
+			"knHingeDrop",
+			"knLoopIn",
+			"knPushIn",
+			"knInertia",
+			"knWordSpin",
+			"knDiveIn",
+			"knStretchOut",
+		].map((enter, index) => {
+			const entranceSequence = sequence({
+				id: `kinetic-entrance-${index}`,
+				seed: 109,
+				text: "ONE TWO THREE",
+				enter,
+				exit: "cut",
+				hold: "still",
+				cam: "static",
+			});
+			return [
+				enter,
+				{
+					early: digest(entranceSequence, 12_000),
+					settled: digest(entranceSequence, 60_000),
+				},
+			];
+		}),
+	);
+	const kineticExits = Object.fromEntries(
+		[
+			"knWordKick",
+			"knPushOut",
+			"knDiveGlyph",
+			"knLaunch",
+			"knWordBlink",
+			"knCloseGap",
+			"knJumpCutOut",
+			"knStackAway",
+		].map((exit, index) => {
+			const exitSequence = sequence({
+				id: `kinetic-exit-${index}`,
+				seed: 113,
+				text: "ONE TWO THREE",
+				enter: "cut",
+				exit,
+				hold: "still",
+				cam: "static",
+			});
+			return [
+				exit,
+				{
+					phaseA: digest(exitSequence, 96_000),
+					phaseB: digest(exitSequence, 108_000),
+				},
+			];
+		}),
+	);
+	const pipeline = await renderPipeline(english);
+	const fontInspection = inspectMotionTextFont({
+		bytes: new TextEncoder().encode("not-a-font"),
+		text: "hello",
+		faceIndex: 0,
+	});
+	const fontRuntime = await probeFontRuntime();
+	const supportedPlan = planMotionTextSequence({
+		...motionTextPlannerFixture(),
+		rendererSupport: MOTION_TEXT_RENDERER_SUPPORT,
+	});
+	const rejectedPlan = planMotionTextSequence({
+		...unsupportedRendererPresetFixture(),
+		rendererSupport: MOTION_TEXT_RENDERER_SUPPORT,
+	});
+
+	globalThis.__motionTextRendererBrowserProbe = {
+		first,
+		later,
+		repeated,
+		otherSeed,
+		koreanFrame,
+		sceneFrame,
+		baselineStyles,
+		horrorStyles,
+		catalogStyles,
+		baselineLayouts,
+		coreLayouts,
+		layoutsA,
+		layoutsB,
+		layoutsC,
+		layoutsD,
+		baselineEntrances,
+		baselineHolds,
+		baselineExits,
+		coreAnimEntrances,
+		coreAnimHolds,
+		coreAnimExits,
+		baselineTreatments,
+		baselineBackgrounds,
+		baselineCameras,
+		variantMatrix,
+		typographyLayouts,
+		kineticLayouts,
+		horrorLayouts,
+		horrorEntrances,
+		horrorHolds,
+		horrorExits,
+		horrorTreatments,
+		horrorDecors,
+		horrorBackgrounds,
+		horrorCameras,
+		bgcamBackgrounds,
+		bgcamCameras,
+		exitHoldHolds,
+		exitHoldExits,
+		exitBHolds,
+		exitBExits,
+		coreDecors,
+		extendedDecors,
+		decorB,
+		looksTreatments,
+		looksBackgrounds,
+		looksCameras,
+		looksEffects,
+		horrorEffects,
+		coreEffects,
+		fxBEffects,
+		horrorTransitions,
+		typographyEntrances,
+		enterBEntrances,
+		enterAEntrances,
+		typographyHolds,
+		typographyExits,
+		typographyDecors,
+		typographyTreatments,
+		typographyTransitions,
+		treatTransTreatments,
+		treatTransTransitions,
+		kineticDecors,
+		kineticTreatments,
+		kineticTransitions,
+		kineticCameras,
+		kineticHolds,
+		kineticEntrances,
+		kineticExits,
+		pipeline,
+		fontInspection,
+		fontRuntime,
+		plannerSupport: { supportedPlan, rejectedPlan },
+	};
+</script>

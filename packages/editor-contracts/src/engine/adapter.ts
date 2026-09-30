@@ -1,4 +1,8 @@
-import type { ProjectId, ProjectRecord, ProjectSummary } from "@opencut/editor-ports";
+import type {
+	ProjectId,
+	ProjectRecord,
+	ProjectSummary,
+} from "@opencut/editor-ports";
 import { ProjectStoreError } from "@opencut/editor-ports";
 import { validateTransactionDocument } from "./invariant";
 import type { TransactionEngineDocument } from "./types";

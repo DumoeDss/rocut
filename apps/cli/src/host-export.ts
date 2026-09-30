@@ -58,6 +58,10 @@ export interface ExportOptions {
 	readonly format: ExportFormat;
 	readonly quality: ExportQuality;
 	readonly includeAudio?: boolean;
+	readonly range?: {
+		readonly startTime: number;
+		readonly endTime: number;
+	};
 }
 
 export interface ExportJob {
@@ -275,8 +279,30 @@ export function parseExportOptions(raw: unknown): ExportOptions | string {
 	if (!EXPORT_QUALITIES.includes(quality as ExportQuality)) {
 		return `quality must be one of ${EXPORT_QUALITIES.join(", ")}`;
 	}
-	if (body.includeAudio !== undefined && typeof body.includeAudio !== "boolean") {
+	if (
+		body.includeAudio !== undefined &&
+		typeof body.includeAudio !== "boolean"
+	) {
 		return "includeAudio must be a boolean when present";
+	}
+	let range: ExportOptions["range"];
+	if (body.range !== undefined) {
+		if (typeof body.range !== "object" || body.range === null) {
+			return "range must be an object when present";
+		}
+		const candidate = body.range as Record<string, unknown>;
+		if (
+			!Number.isSafeInteger(candidate.startTime) ||
+			!Number.isSafeInteger(candidate.endTime) ||
+			(candidate.startTime as number) < 0 ||
+			(candidate.endTime as number) <= (candidate.startTime as number)
+		) {
+			return "range needs non-negative integer ticks with endTime after startTime";
+		}
+		range = {
+			startTime: candidate.startTime as number,
+			endTime: candidate.endTime as number,
+		};
 	}
 	return {
 		format: format as ExportFormat,
@@ -284,5 +310,6 @@ export function parseExportOptions(raw: unknown): ExportOptions | string {
 		...(body.includeAudio === undefined
 			? {}
 			: { includeAudio: body.includeAudio as boolean }),
+		...(range === undefined ? {} : { range }),
 	};
 }

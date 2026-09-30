@@ -1,0 +1,1112 @@
+{
+	"schemaVersion": 1,
+	"generatedBy": "script/probe-motion-text-format-matrix.mjs",
+	"source": {
+		"canonicalWasm": {
+			"bytes": 5511220,
+			"sha256": "14de620a1bfa38228a43e4103cc557ae7a27bbb30185bfffae91b17d685e75a8"
+		},
+		"canonicalCatalog": {
+			"identity": {
+				"bytes": 606262,
+				"sha256": "9ec6f3be1a297152ccd377456348900fe0f4cc3b7629d21ec319976740f33d12"
+			},
+			"schemaVersion": 1,
+			"totalEntries": 912
+		}
+	},
+	"environment": {
+		"browser": "151.0.7922.34",
+		"userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.7922.34 Safari/537.36"
+	},
+	"preset": {
+		"group": "layout",
+		"id": "perspective",
+		"name": "奥行き",
+		"pack": "layoutsA",
+		"sourceFile": "11p_layoutsA.js"
+	},
+	"config": {
+		"duration": 720000,
+		"seed": 20260928,
+		"previewText": "ROCUT FORMAT\nF06 MATRIX",
+		"samplePositions": [0.2, 0.5, 0.8],
+		"exportFrameLimit": 6,
+		"formats": [
+			{
+				"id": "16x9-24",
+				"aspect": "16:9",
+				"width": 320,
+				"height": 180,
+				"fps": {
+					"numerator": 24,
+					"denominator": 1
+				}
+			},
+			{
+				"id": "16x9-25",
+				"aspect": "16:9",
+				"width": 320,
+				"height": 180,
+				"fps": {
+					"numerator": 25,
+					"denominator": 1
+				}
+			},
+			{
+				"id": "16x9-30",
+				"aspect": "16:9",
+				"width": 320,
+				"height": 180,
+				"fps": {
+					"numerator": 30,
+					"denominator": 1
+				}
+			},
+			{
+				"id": "16x9-60",
+				"aspect": "16:9",
+				"width": 320,
+				"height": 180,
+				"fps": {
+					"numerator": 60,
+					"denominator": 1
+				}
+			},
+			{
+				"id": "16x9-30000-1001",
+				"aspect": "16:9",
+				"width": 320,
+				"height": 180,
+				"fps": {
+					"numerator": 30000,
+					"denominator": 1001
+				}
+			},
+			{
+				"id": "9x16-24",
+				"aspect": "9:16",
+				"width": 180,
+				"height": 320,
+				"fps": {
+					"numerator": 24,
+					"denominator": 1
+				}
+			},
+			{
+				"id": "9x16-25",
+				"aspect": "9:16",
+				"width": 180,
+				"height": 320,
+				"fps": {
+					"numerator": 25,
+					"denominator": 1
+				}
+			},
+			{
+				"id": "9x16-30",
+				"aspect": "9:16",
+				"width": 180,
+				"height": 320,
+				"fps": {
+					"numerator": 30,
+					"denominator": 1
+				}
+			},
+			{
+				"id": "9x16-60",
+				"aspect": "9:16",
+				"width": 180,
+				"height": 320,
+				"fps": {
+					"numerator": 60,
+					"denominator": 1
+				}
+			},
+			{
+				"id": "9x16-30000-1001",
+				"aspect": "9:16",
+				"width": 180,
+				"height": 320,
+				"fps": {
+					"numerator": 30000,
+					"denominator": 1001
+				}
+			},
+			{
+				"id": "1x1-24",
+				"aspect": "1:1",
+				"width": 240,
+				"height": 240,
+				"fps": {
+					"numerator": 24,
+					"denominator": 1
+				}
+			},
+			{
+				"id": "1x1-25",
+				"aspect": "1:1",
+				"width": 240,
+				"height": 240,
+				"fps": {
+					"numerator": 25,
+					"denominator": 1
+				}
+			},
+			{
+				"id": "1x1-30",
+				"aspect": "1:1",
+				"width": 240,
+				"height": 240,
+				"fps": {
+					"numerator": 30,
+					"denominator": 1
+				}
+			},
+			{
+				"id": "1x1-60",
+				"aspect": "1:1",
+				"width": 240,
+				"height": 240,
+				"fps": {
+					"numerator": 60,
+					"denominator": 1
+				}
+			},
+			{
+				"id": "1x1-30000-1001",
+				"aspect": "1:1",
+				"width": 240,
+				"height": 240,
+				"fps": {
+					"numerator": 30000,
+					"denominator": 1001
+				}
+			}
+		]
+	},
+	"summary": {
+		"formats": 15,
+		"encodedFrames": 90,
+		"completeEvents": 15,
+		"errorEvents": 0,
+		"bufferBytes": 48147
+	},
+	"results": [
+		{
+			"formatId": "16x9-24",
+			"aspect": "16:9",
+			"width": 320,
+			"height": 180,
+			"fps": {
+				"numerator": 24,
+				"denominator": 1
+			},
+			"fontRuntime": {
+				"generation": 0,
+				"cachedFonts": 1,
+				"loadedFaces": 1,
+				"pendingLoads": 0,
+				"disposed": false
+			},
+			"factory": {
+				"diagnostics": [],
+				"cueCount": 2,
+				"cutCount": 2,
+				"eligibleCutCount": 2,
+				"appliedCutCount": 2
+			},
+			"window": {
+				"startTime": 100200,
+				"duration": 30000
+			},
+			"frames": {
+				"samples": [
+					{
+						"time": 115200,
+						"digest": "4bd6543d",
+						"nonBlackPixels": 6911,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 180000,
+						"digest": "4ec57aa2",
+						"nonBlackPixels": 6908,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 244800,
+						"digest": "ed7d8cbc",
+						"nonBlackPixels": 6897,
+						"nonTransparentPixels": 57600
+					}
+				],
+				"combinedSha256": "ffa474375342a733d31841a3622781173a77bcc4893198e848c94f035f39dab7"
+			},
+			"export": {
+				"frames": 6,
+				"progressEvents": 7,
+				"completeEvents": 1,
+				"errorEvents": 0,
+				"elapsedMs": 79.3,
+				"bufferBytes": 3170,
+				"fileType": "ftyp",
+				"sha256": "40706668722e02d88e0e0f0a689f052d92b66e1b03cefe40c90662b9ad67f428"
+			}
+		},
+		{
+			"formatId": "16x9-25",
+			"aspect": "16:9",
+			"width": 320,
+			"height": 180,
+			"fps": {
+				"numerator": 25,
+				"denominator": 1
+			},
+			"fontRuntime": {
+				"generation": 0,
+				"cachedFonts": 1,
+				"loadedFaces": 1,
+				"pendingLoads": 0,
+				"disposed": false
+			},
+			"factory": {
+				"diagnostics": [],
+				"cueCount": 2,
+				"cutCount": 2,
+				"eligibleCutCount": 2,
+				"appliedCutCount": 2
+			},
+			"window": {
+				"startTime": 100800,
+				"duration": 28800
+			},
+			"frames": {
+				"samples": [
+					{
+						"time": 115200,
+						"digest": "4bd6543d",
+						"nonBlackPixels": 6911,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 180000,
+						"digest": "4ec57aa2",
+						"nonBlackPixels": 6908,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 244800,
+						"digest": "ed7d8cbc",
+						"nonBlackPixels": 6897,
+						"nonTransparentPixels": 57600
+					}
+				],
+				"combinedSha256": "ffa474375342a733d31841a3622781173a77bcc4893198e848c94f035f39dab7"
+			},
+			"export": {
+				"frames": 6,
+				"progressEvents": 7,
+				"completeEvents": 1,
+				"errorEvents": 0,
+				"elapsedMs": 71.1,
+				"bufferBytes": 3347,
+				"fileType": "ftyp",
+				"sha256": "703c7e8062a7f685dc6ac33a7859c6d5e87f826b62c15ee273c086456d33cfd9"
+			}
+		},
+		{
+			"formatId": "16x9-30",
+			"aspect": "16:9",
+			"width": 320,
+			"height": 180,
+			"fps": {
+				"numerator": 30,
+				"denominator": 1
+			},
+			"fontRuntime": {
+				"generation": 0,
+				"cachedFonts": 1,
+				"loadedFaces": 1,
+				"pendingLoads": 0,
+				"disposed": false
+			},
+			"factory": {
+				"diagnostics": [],
+				"cueCount": 2,
+				"cutCount": 2,
+				"eligibleCutCount": 2,
+				"appliedCutCount": 2
+			},
+			"window": {
+				"startTime": 103200,
+				"duration": 24000
+			},
+			"frames": {
+				"samples": [
+					{
+						"time": 115200,
+						"digest": "4bd6543d",
+						"nonBlackPixels": 6911,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 180000,
+						"digest": "4ec57aa2",
+						"nonBlackPixels": 6908,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 244800,
+						"digest": "ed7d8cbc",
+						"nonBlackPixels": 6897,
+						"nonTransparentPixels": 57600
+					}
+				],
+				"combinedSha256": "ffa474375342a733d31841a3622781173a77bcc4893198e848c94f035f39dab7"
+			},
+			"export": {
+				"frames": 6,
+				"progressEvents": 7,
+				"completeEvents": 1,
+				"errorEvents": 0,
+				"elapsedMs": 73.5,
+				"bufferBytes": 3237,
+				"fileType": "ftyp",
+				"sha256": "80a8623270d2569d62ec06820a10d14da1cd6a75018d0f0a21fc7bf0f69ac1af"
+			}
+		},
+		{
+			"formatId": "16x9-60",
+			"aspect": "16:9",
+			"width": 320,
+			"height": 180,
+			"fps": {
+				"numerator": 60,
+				"denominator": 1
+			},
+			"fontRuntime": {
+				"generation": 0,
+				"cachedFonts": 1,
+				"loadedFaces": 1,
+				"pendingLoads": 0,
+				"disposed": false
+			},
+			"factory": {
+				"diagnostics": [],
+				"cueCount": 2,
+				"cutCount": 2,
+				"eligibleCutCount": 2,
+				"appliedCutCount": 2
+			},
+			"window": {
+				"startTime": 109200,
+				"duration": 12000
+			},
+			"frames": {
+				"samples": [
+					{
+						"time": 115200,
+						"digest": "4bd6543d",
+						"nonBlackPixels": 6911,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 180000,
+						"digest": "4ec57aa2",
+						"nonBlackPixels": 6908,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 244800,
+						"digest": "ed7d8cbc",
+						"nonBlackPixels": 6897,
+						"nonTransparentPixels": 57600
+					}
+				],
+				"combinedSha256": "ffa474375342a733d31841a3622781173a77bcc4893198e848c94f035f39dab7"
+			},
+			"export": {
+				"frames": 6,
+				"progressEvents": 7,
+				"completeEvents": 1,
+				"errorEvents": 0,
+				"elapsedMs": 63.8,
+				"bufferBytes": 2436,
+				"fileType": "ftyp",
+				"sha256": "c6d13d351b56f44936949dfd61eef41c15ba96791618e67a7c8dc221925bdebc"
+			}
+		},
+		{
+			"formatId": "16x9-30000-1001",
+			"aspect": "16:9",
+			"width": 320,
+			"height": 180,
+			"fps": {
+				"numerator": 30000,
+				"denominator": 1001
+			},
+			"fontRuntime": {
+				"generation": 0,
+				"cachedFonts": 1,
+				"loadedFaces": 1,
+				"pendingLoads": 0,
+				"disposed": false
+			},
+			"factory": {
+				"diagnostics": [],
+				"cueCount": 2,
+				"cutCount": 2,
+				"eligibleCutCount": 2,
+				"appliedCutCount": 2
+			},
+			"window": {
+				"startTime": 103188,
+				"duration": 24024
+			},
+			"frames": {
+				"samples": [
+					{
+						"time": 115200,
+						"digest": "4bd6543d",
+						"nonBlackPixels": 6911,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 180000,
+						"digest": "4ec57aa2",
+						"nonBlackPixels": 6908,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 244800,
+						"digest": "ed7d8cbc",
+						"nonBlackPixels": 6897,
+						"nonTransparentPixels": 57600
+					}
+				],
+				"combinedSha256": "ffa474375342a733d31841a3622781173a77bcc4893198e848c94f035f39dab7"
+			},
+			"export": {
+				"frames": 6,
+				"progressEvents": 7,
+				"completeEvents": 1,
+				"errorEvents": 0,
+				"elapsedMs": 85.1,
+				"bufferBytes": 3237,
+				"fileType": "ftyp",
+				"sha256": "c057da791bb8c4030466da02ec62490df00debf929c7335e0acf8fe8f33bc5ac"
+			}
+		},
+		{
+			"formatId": "9x16-24",
+			"aspect": "9:16",
+			"width": 180,
+			"height": 320,
+			"fps": {
+				"numerator": 24,
+				"denominator": 1
+			},
+			"fontRuntime": {
+				"generation": 0,
+				"cachedFonts": 1,
+				"loadedFaces": 1,
+				"pendingLoads": 0,
+				"disposed": false
+			},
+			"factory": {
+				"diagnostics": [],
+				"cueCount": 2,
+				"cutCount": 2,
+				"eligibleCutCount": 2,
+				"appliedCutCount": 2
+			},
+			"window": {
+				"startTime": 100200,
+				"duration": 30000
+			},
+			"frames": {
+				"samples": [
+					{
+						"time": 115200,
+						"digest": "b219fb88",
+						"nonBlackPixels": 8683,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 180000,
+						"digest": "ebf29f41",
+						"nonBlackPixels": 8651,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 244800,
+						"digest": "7d7c79e0",
+						"nonBlackPixels": 8583,
+						"nonTransparentPixels": 57600
+					}
+				],
+				"combinedSha256": "644b54e113da0fa7cc432b82ff66b77acde49dd60549786f62fadc7fb1a91f8b"
+			},
+			"export": {
+				"frames": 6,
+				"progressEvents": 7,
+				"completeEvents": 1,
+				"errorEvents": 0,
+				"elapsedMs": 73.2,
+				"bufferBytes": 3360,
+				"fileType": "ftyp",
+				"sha256": "d801217484aeb5e17ef7752efec743b994fd4c1702ff628973b629cbc15a0e9d"
+			}
+		},
+		{
+			"formatId": "9x16-25",
+			"aspect": "9:16",
+			"width": 180,
+			"height": 320,
+			"fps": {
+				"numerator": 25,
+				"denominator": 1
+			},
+			"fontRuntime": {
+				"generation": 0,
+				"cachedFonts": 1,
+				"loadedFaces": 1,
+				"pendingLoads": 0,
+				"disposed": false
+			},
+			"factory": {
+				"diagnostics": [],
+				"cueCount": 2,
+				"cutCount": 2,
+				"eligibleCutCount": 2,
+				"appliedCutCount": 2
+			},
+			"window": {
+				"startTime": 100800,
+				"duration": 28800
+			},
+			"frames": {
+				"samples": [
+					{
+						"time": 115200,
+						"digest": "b219fb88",
+						"nonBlackPixels": 8683,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 180000,
+						"digest": "ebf29f41",
+						"nonBlackPixels": 8651,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 244800,
+						"digest": "7d7c79e0",
+						"nonBlackPixels": 8583,
+						"nonTransparentPixels": 57600
+					}
+				],
+				"combinedSha256": "644b54e113da0fa7cc432b82ff66b77acde49dd60549786f62fadc7fb1a91f8b"
+			},
+			"export": {
+				"frames": 6,
+				"progressEvents": 7,
+				"completeEvents": 1,
+				"errorEvents": 0,
+				"elapsedMs": 115.3,
+				"bufferBytes": 3301,
+				"fileType": "ftyp",
+				"sha256": "638ca93defc008421297c9aaca28df41898b0c7814fd7a660e86759038b7397c"
+			}
+		},
+		{
+			"formatId": "9x16-30",
+			"aspect": "9:16",
+			"width": 180,
+			"height": 320,
+			"fps": {
+				"numerator": 30,
+				"denominator": 1
+			},
+			"fontRuntime": {
+				"generation": 0,
+				"cachedFonts": 1,
+				"loadedFaces": 1,
+				"pendingLoads": 0,
+				"disposed": false
+			},
+			"factory": {
+				"diagnostics": [],
+				"cueCount": 2,
+				"cutCount": 2,
+				"eligibleCutCount": 2,
+				"appliedCutCount": 2
+			},
+			"window": {
+				"startTime": 103200,
+				"duration": 24000
+			},
+			"frames": {
+				"samples": [
+					{
+						"time": 115200,
+						"digest": "b219fb88",
+						"nonBlackPixels": 8683,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 180000,
+						"digest": "ebf29f41",
+						"nonBlackPixels": 8651,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 244800,
+						"digest": "7d7c79e0",
+						"nonBlackPixels": 8583,
+						"nonTransparentPixels": 57600
+					}
+				],
+				"combinedSha256": "644b54e113da0fa7cc432b82ff66b77acde49dd60549786f62fadc7fb1a91f8b"
+			},
+			"export": {
+				"frames": 6,
+				"progressEvents": 7,
+				"completeEvents": 1,
+				"errorEvents": 0,
+				"elapsedMs": 72.3,
+				"bufferBytes": 3181,
+				"fileType": "ftyp",
+				"sha256": "17d5124e270652a055be5b46d8be20954945c0b9f64385ff3cd9925466920205"
+			}
+		},
+		{
+			"formatId": "9x16-60",
+			"aspect": "9:16",
+			"width": 180,
+			"height": 320,
+			"fps": {
+				"numerator": 60,
+				"denominator": 1
+			},
+			"fontRuntime": {
+				"generation": 0,
+				"cachedFonts": 1,
+				"loadedFaces": 1,
+				"pendingLoads": 0,
+				"disposed": false
+			},
+			"factory": {
+				"diagnostics": [],
+				"cueCount": 2,
+				"cutCount": 2,
+				"eligibleCutCount": 2,
+				"appliedCutCount": 2
+			},
+			"window": {
+				"startTime": 109200,
+				"duration": 12000
+			},
+			"frames": {
+				"samples": [
+					{
+						"time": 115200,
+						"digest": "b219fb88",
+						"nonBlackPixels": 8683,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 180000,
+						"digest": "ebf29f41",
+						"nonBlackPixels": 8651,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 244800,
+						"digest": "7d7c79e0",
+						"nonBlackPixels": 8583,
+						"nonTransparentPixels": 57600
+					}
+				],
+				"combinedSha256": "644b54e113da0fa7cc432b82ff66b77acde49dd60549786f62fadc7fb1a91f8b"
+			},
+			"export": {
+				"frames": 6,
+				"progressEvents": 7,
+				"completeEvents": 1,
+				"errorEvents": 0,
+				"elapsedMs": 69.3,
+				"bufferBytes": 2847,
+				"fileType": "ftyp",
+				"sha256": "79909e59db95c354617d881ec1d800a2d41a2c300e377ab98697a5f61ca83ffb"
+			}
+		},
+		{
+			"formatId": "9x16-30000-1001",
+			"aspect": "9:16",
+			"width": 180,
+			"height": 320,
+			"fps": {
+				"numerator": 30000,
+				"denominator": 1001
+			},
+			"fontRuntime": {
+				"generation": 0,
+				"cachedFonts": 1,
+				"loadedFaces": 1,
+				"pendingLoads": 0,
+				"disposed": false
+			},
+			"factory": {
+				"diagnostics": [],
+				"cueCount": 2,
+				"cutCount": 2,
+				"eligibleCutCount": 2,
+				"appliedCutCount": 2
+			},
+			"window": {
+				"startTime": 103188,
+				"duration": 24024
+			},
+			"frames": {
+				"samples": [
+					{
+						"time": 115200,
+						"digest": "b219fb88",
+						"nonBlackPixels": 8683,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 180000,
+						"digest": "ebf29f41",
+						"nonBlackPixels": 8651,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 244800,
+						"digest": "7d7c79e0",
+						"nonBlackPixels": 8583,
+						"nonTransparentPixels": 57600
+					}
+				],
+				"combinedSha256": "644b54e113da0fa7cc432b82ff66b77acde49dd60549786f62fadc7fb1a91f8b"
+			},
+			"export": {
+				"frames": 6,
+				"progressEvents": 7,
+				"completeEvents": 1,
+				"errorEvents": 0,
+				"elapsedMs": 78.7,
+				"bufferBytes": 3181,
+				"fileType": "ftyp",
+				"sha256": "324d8b3abace508e51c02e1e3a7d9a5e11386e62bfc0fb8eb6d81371b05592ad"
+			}
+		},
+		{
+			"formatId": "1x1-24",
+			"aspect": "1:1",
+			"width": 240,
+			"height": 240,
+			"fps": {
+				"numerator": 24,
+				"denominator": 1
+			},
+			"fontRuntime": {
+				"generation": 0,
+				"cachedFonts": 1,
+				"loadedFaces": 1,
+				"pendingLoads": 0,
+				"disposed": false
+			},
+			"factory": {
+				"diagnostics": [],
+				"cueCount": 2,
+				"cutCount": 2,
+				"eligibleCutCount": 2,
+				"appliedCutCount": 2
+			},
+			"window": {
+				"startTime": 100200,
+				"duration": 30000
+			},
+			"frames": {
+				"samples": [
+					{
+						"time": 115200,
+						"digest": "228415c7",
+						"nonBlackPixels": 7776,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 180000,
+						"digest": "04c44cb8",
+						"nonBlackPixels": 7765,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 244800,
+						"digest": "c8a5a975",
+						"nonBlackPixels": 7735,
+						"nonTransparentPixels": 57600
+					}
+				],
+				"combinedSha256": "e6e611753f5e4ffe04e804a0e7a63b91e33258bf05ecdf2e6a9932bef246ec75"
+			},
+			"export": {
+				"frames": 6,
+				"progressEvents": 7,
+				"completeEvents": 1,
+				"errorEvents": 0,
+				"elapsedMs": 66.4,
+				"bufferBytes": 3802,
+				"fileType": "ftyp",
+				"sha256": "be9a96b30b6dbc8d91d4d5a9ae57291099205ff500e5e06927ab7f8a2497a933"
+			}
+		},
+		{
+			"formatId": "1x1-25",
+			"aspect": "1:1",
+			"width": 240,
+			"height": 240,
+			"fps": {
+				"numerator": 25,
+				"denominator": 1
+			},
+			"fontRuntime": {
+				"generation": 0,
+				"cachedFonts": 1,
+				"loadedFaces": 1,
+				"pendingLoads": 0,
+				"disposed": false
+			},
+			"factory": {
+				"diagnostics": [],
+				"cueCount": 2,
+				"cutCount": 2,
+				"eligibleCutCount": 2,
+				"appliedCutCount": 2
+			},
+			"window": {
+				"startTime": 100800,
+				"duration": 28800
+			},
+			"frames": {
+				"samples": [
+					{
+						"time": 115200,
+						"digest": "228415c7",
+						"nonBlackPixels": 7776,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 180000,
+						"digest": "04c44cb8",
+						"nonBlackPixels": 7765,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 244800,
+						"digest": "c8a5a975",
+						"nonBlackPixels": 7735,
+						"nonTransparentPixels": 57600
+					}
+				],
+				"combinedSha256": "e6e611753f5e4ffe04e804a0e7a63b91e33258bf05ecdf2e6a9932bef246ec75"
+			},
+			"export": {
+				"frames": 6,
+				"progressEvents": 7,
+				"completeEvents": 1,
+				"errorEvents": 0,
+				"elapsedMs": 62.2,
+				"bufferBytes": 3604,
+				"fileType": "ftyp",
+				"sha256": "aca3f4e821afe90cc4c050dcc9650bd067c61ce29a9236bdc9e111e7da86372a"
+			}
+		},
+		{
+			"formatId": "1x1-30",
+			"aspect": "1:1",
+			"width": 240,
+			"height": 240,
+			"fps": {
+				"numerator": 30,
+				"denominator": 1
+			},
+			"fontRuntime": {
+				"generation": 0,
+				"cachedFonts": 1,
+				"loadedFaces": 1,
+				"pendingLoads": 0,
+				"disposed": false
+			},
+			"factory": {
+				"diagnostics": [],
+				"cueCount": 2,
+				"cutCount": 2,
+				"eligibleCutCount": 2,
+				"appliedCutCount": 2
+			},
+			"window": {
+				"startTime": 103200,
+				"duration": 24000
+			},
+			"frames": {
+				"samples": [
+					{
+						"time": 115200,
+						"digest": "228415c7",
+						"nonBlackPixels": 7776,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 180000,
+						"digest": "04c44cb8",
+						"nonBlackPixels": 7765,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 244800,
+						"digest": "c8a5a975",
+						"nonBlackPixels": 7735,
+						"nonTransparentPixels": 57600
+					}
+				],
+				"combinedSha256": "e6e611753f5e4ffe04e804a0e7a63b91e33258bf05ecdf2e6a9932bef246ec75"
+			},
+			"export": {
+				"frames": 6,
+				"progressEvents": 7,
+				"completeEvents": 1,
+				"errorEvents": 0,
+				"elapsedMs": 71.4,
+				"bufferBytes": 3325,
+				"fileType": "ftyp",
+				"sha256": "4e4098d1b43384c9c0f0cee7bb9621c2f048cad4110fd22d424766fef5df39f0"
+			}
+		},
+		{
+			"formatId": "1x1-60",
+			"aspect": "1:1",
+			"width": 240,
+			"height": 240,
+			"fps": {
+				"numerator": 60,
+				"denominator": 1
+			},
+			"fontRuntime": {
+				"generation": 0,
+				"cachedFonts": 1,
+				"loadedFaces": 1,
+				"pendingLoads": 0,
+				"disposed": false
+			},
+			"factory": {
+				"diagnostics": [],
+				"cueCount": 2,
+				"cutCount": 2,
+				"eligibleCutCount": 2,
+				"appliedCutCount": 2
+			},
+			"window": {
+				"startTime": 109200,
+				"duration": 12000
+			},
+			"frames": {
+				"samples": [
+					{
+						"time": 115200,
+						"digest": "228415c7",
+						"nonBlackPixels": 7776,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 180000,
+						"digest": "04c44cb8",
+						"nonBlackPixels": 7765,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 244800,
+						"digest": "c8a5a975",
+						"nonBlackPixels": 7735,
+						"nonTransparentPixels": 57600
+					}
+				],
+				"combinedSha256": "e6e611753f5e4ffe04e804a0e7a63b91e33258bf05ecdf2e6a9932bef246ec75"
+			},
+			"export": {
+				"frames": 6,
+				"progressEvents": 7,
+				"completeEvents": 1,
+				"errorEvents": 0,
+				"elapsedMs": 71.9,
+				"bufferBytes": 2794,
+				"fileType": "ftyp",
+				"sha256": "17d8861f20d99a8623bf2330122a9721b5b03faf824a6c1109f36cb7f21cb3dd"
+			}
+		},
+		{
+			"formatId": "1x1-30000-1001",
+			"aspect": "1:1",
+			"width": 240,
+			"height": 240,
+			"fps": {
+				"numerator": 30000,
+				"denominator": 1001
+			},
+			"fontRuntime": {
+				"generation": 0,
+				"cachedFonts": 1,
+				"loadedFaces": 1,
+				"pendingLoads": 0,
+				"disposed": false
+			},
+			"factory": {
+				"diagnostics": [],
+				"cueCount": 2,
+				"cutCount": 2,
+				"eligibleCutCount": 2,
+				"appliedCutCount": 2
+			},
+			"window": {
+				"startTime": 103188,
+				"duration": 24024
+			},
+			"frames": {
+				"samples": [
+					{
+						"time": 115200,
+						"digest": "228415c7",
+						"nonBlackPixels": 7776,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 180000,
+						"digest": "04c44cb8",
+						"nonBlackPixels": 7765,
+						"nonTransparentPixels": 57600
+					},
+					{
+						"time": 244800,
+						"digest": "c8a5a975",
+						"nonBlackPixels": 7735,
+						"nonTransparentPixels": 57600
+					}
+				],
+				"combinedSha256": "e6e611753f5e4ffe04e804a0e7a63b91e33258bf05ecdf2e6a9932bef246ec75"
+			},
+			"export": {
+				"frames": 6,
+				"progressEvents": 7,
+				"completeEvents": 1,
+				"errorEvents": 0,
+				"elapsedMs": 66.2,
+				"bufferBytes": 3325,
+				"fileType": "ftyp",
+				"sha256": "86217afa9979bc5991ef01618f96dc427401802df6aee272d39979dd9b6e916d"
+			}
+		}
+	]
+}

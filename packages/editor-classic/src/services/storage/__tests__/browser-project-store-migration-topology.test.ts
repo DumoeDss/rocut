@@ -348,6 +348,7 @@ if (process.env.OPENCUT_BROWSER_MIGRATION_TOPOLOGY_ISOLATED !== "1") {
 		await import("../browser-project-store-migration");
 	const { browserProjectTopologyStoreNames, createBrowserStorageTopology } =
 		await import("../browser-project-store-topology");
+	const { CURRENT_PROJECT_VERSION } = await import("../migrations/version");
 
 	function storageIdentity(
 		overrides: Partial<BrowserStorageIdentity> = {},
@@ -398,6 +399,30 @@ if (process.env.OPENCUT_BROWSER_MIGRATION_TOPOLOGY_ISOLATED !== "1") {
 				providerPrivate: { keep: true },
 			},
 		});
+	}
+
+	function seedFutureProject(args: {
+		identity: BrowserStorageIdentity;
+		projectId: string;
+	}): Record<string, unknown> {
+		const project = {
+			id: args.projectId,
+			version: CURRENT_PROJECT_VERSION + 1,
+			metadata: {
+				id: args.projectId,
+				name: "future project",
+				createdAt: "2026-09-27T00:00:00.000Z",
+				updatedAt: "2026-09-27T00:00:00.000Z",
+			},
+			scenes: [],
+			futureSentinel: { preserve: true },
+		};
+		upsert({
+			database: args.identity.projectsDatabase,
+			store: args.identity.projectsStore,
+			value: project,
+		});
+		return structuredClone(project);
 	}
 
 	function seedLegacyV1Project(args: {
@@ -532,6 +557,40 @@ if (process.env.OPENCUT_BROWSER_MIGRATION_TOPOLOGY_ISOLATED !== "1") {
 	beforeEach(resetFixture);
 
 	describe("browser project migration topology gate", () => {
+		test("refuses a future project schema before any migration write", async () => {
+			const identity = storageIdentity();
+			const projectId = `${identity.identity}-future`;
+			const before = seedFutureProject({ identity, projectId });
+			const collected = diagnosticCollector();
+			mechanism.calls = [];
+
+			const outcome = await runBrowserProjectMigration({
+				identity,
+				policy: migrationPolicy(identity),
+				context: {
+					from: CURRENT_PROJECT_VERSION + 1,
+					to: CURRENT_PROJECT_VERSION,
+					report: () => undefined,
+				},
+				diagnostic: collected.diagnostic,
+			});
+
+			expect(outcome.status).toBe("failed");
+			expect(mutationCalls()).toEqual([]);
+			expect(
+				rows({
+					database: identity.projectsDatabase,
+					store: identity.projectsStore,
+				}).find((row) => row.id === projectId),
+			).toEqual(before);
+			expect(collected.diagnostics).toContainEqual(
+				expect.objectContaining({
+					phase: "migration-discovery",
+					code: "unavailable",
+				}),
+			);
+		});
+
 		test("authorizes a genuine v1 transformer source before it can open an aliased database", async () => {
 			const base = storageIdentity();
 			const projectId = `${base.identity}-preauthorization`;
@@ -553,7 +612,11 @@ if (process.env.OPENCUT_BROWSER_MIGRATION_TOPOLOGY_ISOLATED !== "1") {
 			const outcome = await runBrowserProjectMigration({
 				identity,
 				policy: migrationPolicy(identity),
-				context: { from: 1, to: 31, report: () => undefined },
+				context: {
+					from: 1,
+					to: CURRENT_PROJECT_VERSION,
+					report: () => undefined,
+				},
 				diagnostic: collected.diagnostic,
 			});
 
@@ -584,7 +647,11 @@ if (process.env.OPENCUT_BROWSER_MIGRATION_TOPOLOGY_ISOLATED !== "1") {
 			const outcome = await runBrowserProjectMigration({
 				identity,
 				policy: migrationPolicy(identity),
-				context: { from: 1, to: 31, report: () => undefined },
+				context: {
+					from: 1,
+					to: CURRENT_PROJECT_VERSION,
+					report: () => undefined,
+				},
 			});
 
 			expect(outcome.status).toBe("migrated");
@@ -613,7 +680,11 @@ if (process.env.OPENCUT_BROWSER_MIGRATION_TOPOLOGY_ISOLATED !== "1") {
 			const outcome = await runBrowserProjectMigration({
 				identity,
 				policy: migrationPolicy(identity),
-				context: { from: 30, to: 31, report: () => undefined },
+				context: {
+					from: 30,
+					to: CURRENT_PROJECT_VERSION,
+					report: () => undefined,
+				},
 				diagnostic: collected.diagnostic,
 			});
 
@@ -641,7 +712,11 @@ if (process.env.OPENCUT_BROWSER_MIGRATION_TOPOLOGY_ISOLATED !== "1") {
 			const outcome = await runBrowserProjectMigration({
 				identity,
 				policy: migrationPolicy(identity),
-				context: { from: 30, to: 31, report: () => undefined },
+				context: {
+					from: 30,
+					to: CURRENT_PROJECT_VERSION,
+					report: () => undefined,
+				},
 				diagnostic: collected.diagnostic,
 			});
 
@@ -781,7 +856,11 @@ if (process.env.OPENCUT_BROWSER_MIGRATION_TOPOLOGY_ISOLATED !== "1") {
 			const outcome = await runBrowserProjectMigration({
 				identity,
 				policy: migrationPolicy(identity),
-				context: { from: 30, to: 31, report: () => undefined },
+				context: {
+					from: 30,
+					to: CURRENT_PROJECT_VERSION,
+					report: () => undefined,
+				},
 				hooks: {
 					beforeValidation: () => {
 						throw new Error("fixture validation interruption");

@@ -3,11 +3,7 @@
 import { useState } from "react";
 import { TransitionTopIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "../ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
@@ -35,6 +31,7 @@ import {
 import { useEditor, useEditorInstance } from "../../editor/use-editor";
 import { useEditorSession } from "../../editor/session/editor-session-provider";
 import { DEFAULT_EXPORT_OPTIONS } from "../../export/defaults";
+import { TICKS_PER_SECOND } from "../../wasm";
 
 function isExportFormat(value: string): value is ExportFormat {
 	return EXPORT_FORMAT_VALUES.some((formatValue) => formatValue === value);
@@ -101,6 +98,16 @@ function ExportPopover({
 	const editor = useEditorInstance();
 	const activeProject = useEditor((e) => e.project.getActive());
 	const exportState = useEditor((e) => e.project.getExportState());
+	const exportRangeStart = useEditor(
+		(e) => e.project.getExportRange()?.startTime ?? null,
+	);
+	const exportRangeEnd = useEditor(
+		(e) => e.project.getExportRange()?.endTime ?? null,
+	);
+	const exportRange =
+		exportRangeStart === null || exportRangeEnd === null
+			? null
+			: { startTime: exportRangeStart, endTime: exportRangeEnd };
 	const { isExporting, progress, result: exportResult } = exportState;
 	const [format, setFormat] = useState<ExportFormat>(
 		DEFAULT_EXPORT_OPTIONS.format,
@@ -121,6 +128,7 @@ function ExportPopover({
 				quality,
 				fps: activeProject.settings.fps,
 				includeAudio: shouldIncludeAudio,
+				...(exportRange ? { range: exportRange } : {}),
 			},
 		});
 
@@ -230,6 +238,30 @@ function ExportPopover({
 													</Label>
 												</div>
 											</RadioGroup>
+										</SectionContent>
+									</Section>
+
+									<Section collapsible defaultOpen={exportRange !== null}>
+										<SectionHeader>
+											<SectionTitle>Range</SectionTitle>
+										</SectionHeader>
+										<SectionContent>
+											<div className="space-y-2 text-sm">
+												<p className="text-muted-foreground">
+													{exportRange
+														? `${(exportRange.startTime / TICKS_PER_SECOND).toFixed(2)}s – ${(exportRange.endTime / TICKS_PER_SECOND).toFixed(2)}s`
+														: "Full timeline"}
+												</p>
+												{exportRange && (
+													<Button
+														variant="outline"
+														size="sm"
+														onClick={() => editor.project.clearExportRange()}
+													>
+														Use full timeline
+													</Button>
+												)}
+											</div>
 										</SectionContent>
 									</Section>
 

@@ -87,12 +87,14 @@ const MIN_SILENT_DURATION_SECONDS = 0.001;
 export const extractTimelineAudio = async ({
 	tracks,
 	mediaAssets,
+	startTime = 0,
 	totalDuration,
 	resources,
 	onProgress,
 }: {
 	tracks: SceneTracks;
 	mediaAssets: MediaAsset[];
+	startTime?: number;
 	totalDuration: number;
 	resources: SessionResources;
 	onProgress?: (progress: number) => void;
@@ -110,6 +112,7 @@ export const extractTimelineAudio = async ({
 	const audioBuffer = await createTimelineAudioBuffer({
 		tracks,
 		mediaAssets,
+		startTime,
 		duration: totalDuration,
 		sampleRate: SAMPLE_RATE,
 		resources,

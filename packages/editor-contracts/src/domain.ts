@@ -11,6 +11,7 @@
  * between contract `MediaTime` and donor `MediaTime` with a zero-cost cast at
  * the seam.
  */
+import type { MotionTextClipContent } from "./motion-text";
 
 // ---------------------------------------------------------------------------
 // MediaTime — branded integer at fixed 120,000 ticks/sec
@@ -213,6 +214,8 @@ export interface Clip {
 	readonly trimStart: MediaTime;
 	readonly trimEnd: MediaTime;
 	readonly assetId?: AssetId;
+	/** Structured generated content owned by the referenced project entity. */
+	readonly content?: MotionTextClipContent;
 }
 
 /**

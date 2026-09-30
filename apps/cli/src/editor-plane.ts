@@ -65,7 +65,12 @@ export async function migrateEditorRecord(args: {
 	readonly migrations: readonly StorageMigration[];
 }): Promise<ProjectRecord> {
 	const to = CURRENT_PROJECT_VERSION;
-	if (args.record.schemaVersion >= to) return args.record;
+	if (args.record.schemaVersion > to) {
+		throw new Error(
+			`Project schema ${args.record.schemaVersion} is newer than supported schema ${to}; refusing a downgrade write`,
+		);
+	}
+	if (args.record.schemaVersion === to) return args.record;
 	if (
 		typeof args.record.data !== "object" ||
 		args.record.data === null ||
@@ -130,7 +135,12 @@ export async function prepareEditorProjectRecord(args: {
 	if (loaded === null) {
 		throw new Error("The project summary has no record behind it");
 	}
-	if (loaded.schemaVersion >= CURRENT_PROJECT_VERSION) return loaded;
+	if (loaded.schemaVersion > CURRENT_PROJECT_VERSION) {
+		throw new Error(
+			`Project schema ${loaded.schemaVersion} is newer than supported schema ${CURRENT_PROJECT_VERSION}; refusing a downgrade write`,
+		);
+	}
+	if (loaded.schemaVersion === CURRENT_PROJECT_VERSION) return loaded;
 	const source = args.migrationSource ?? defaultMigrationSource;
 	const { migrations } = await source();
 	const migrated = await migrateEditorRecord({ record: loaded, migrations });

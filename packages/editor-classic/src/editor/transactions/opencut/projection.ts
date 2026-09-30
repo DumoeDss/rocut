@@ -3,6 +3,7 @@ import type {
 	Asset,
 	Clip,
 	Marker,
+	MotionTextSequence,
 	Project,
 	ProjectPatch,
 	Track,
@@ -97,6 +98,12 @@ function clipProjection(track: TimelineTrack, element: TimelineElement): Clip {
 		trimStart: contractTime(element.trimStart),
 		trimEnd: contractTime(element.trimEnd),
 		...(mediaId !== undefined && { assetId: assetId(mediaId) }),
+		...(element.type === "motion-text" && {
+			content: {
+				kind: "motion-text" as const,
+				sequenceId: element.sequenceId as MotionTextSequence["id"],
+			},
+		}),
 	};
 }
 
@@ -148,6 +155,7 @@ export function projectOpenCutDraft(
 			scene?.bookmarks.map((bookmark, index) =>
 				markerProjection(scene.id, bookmark, index),
 			) ?? [],
+		motionTextSequences: cloneOpaque(draft.project.motionTextSequences),
 		revision: metadata.revision,
 		idempotency: metadata.idempotency,
 	};
@@ -236,6 +244,8 @@ export function diffOpenCutProjection({
 	const afterAssets = mapById(after.assets);
 	const beforeMarkers = mapById(before.markers);
 	const afterMarkers = mapById(after.markers);
+	const beforeMotionTextSequences = mapById(before.motionTextSequences ?? []);
+	const afterMotionTextSequences = mapById(after.motionTextSequences ?? []);
 	const operations: TransactionOperation[] = [];
 	const projectPatch = changedPatch(before.project, after.project, [
 		"name",
@@ -254,6 +264,16 @@ export function diffOpenCutProjection({
 	for (const id of sortedIds(beforeClips.keys())) {
 		if (!afterClips.has(id))
 			operations.push({ kind: "delete-clip", clipId: clipId(id) });
+	}
+	for (const id of sortedIds(beforeMotionTextSequences.keys())) {
+		const previous = beforeMotionTextSequences.get(id);
+		if (previous && !afterMotionTextSequences.has(id)) {
+			operations.push({
+				kind: "delete-motion-text-sequence",
+				sequenceId: previous.id,
+				expectedSequenceRevision: previous.revision,
+			});
+		}
 	}
 	for (const id of sortedIds(beforeMarkers.keys())) {
 		if (!afterMarkers.has(id))
@@ -275,6 +295,15 @@ export function diffOpenCutProjection({
 		const current = afterTracks.get(id);
 		if (current && !beforeTracks.has(id))
 			operations.push({ kind: "create-track", track: current });
+	}
+	for (const id of sortedIds(afterMotionTextSequences.keys())) {
+		const current = afterMotionTextSequences.get(id);
+		if (current && !beforeMotionTextSequences.has(id)) {
+			operations.push({
+				kind: "create-motion-text-sequence",
+				sequence: current,
+			});
+		}
 	}
 	for (const id of sortedIds(afterClips.keys())) {
 		const current = afterClips.get(id);
@@ -306,9 +335,21 @@ export function diffOpenCutProjection({
 			"trimStart",
 			"trimEnd",
 			"assetId",
+			"content",
 		]);
 		if (Object.keys(patch).length > 0)
 			operations.push({ kind: "update-clip", clipId: clipId(id), patch });
+	}
+	for (const id of sortedIds(afterMotionTextSequences.keys())) {
+		const current = afterMotionTextSequences.get(id);
+		const previous = beforeMotionTextSequences.get(id);
+		if (!current || !previous || same(previous, current)) continue;
+		operations.push({
+			kind: "update-motion-text-sequence",
+			sequenceId: previous.id,
+			expectedSequenceRevision: previous.revision,
+			sequence: current,
+		});
 	}
 	// Existing clips must leave a soon-to-be-deleted parent (or asset) before
 	// the evaluator applies the parent's cascading deletion.
@@ -355,6 +396,9 @@ export function publicDocumentsEqual(
 		clips: [...document.clips].sort((a, b) => a.id.localeCompare(b.id)),
 		assets: [...document.assets].sort((a, b) => a.id.localeCompare(b.id)),
 		markers: [...document.markers].sort((a, b) => a.id.localeCompare(b.id)),
+		motionTextSequences: [...(document.motionTextSequences ?? [])].sort(
+			(a, b) => a.id.localeCompare(b.id),
+		),
 		revision: 0,
 		idempotency: [],
 	});

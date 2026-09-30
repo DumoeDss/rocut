@@ -1,0 +1,2 @@
+# Font licenses are upstream, digest-pinned assets; preserve their exact bytes.
+apps/web/public/motion-text/fonts/licenses/*-OFL.txt -text

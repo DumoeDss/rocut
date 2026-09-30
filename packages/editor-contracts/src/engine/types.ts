@@ -13,6 +13,7 @@ import type {
 	TransactionResult,
 	TransactionWatch,
 } from "..";
+import type { MotionTextSequence } from "../motion-text";
 
 export const TRANSACTION_ENGINE_BASE_FEATURES = [
 	"atomic-batch",
@@ -101,6 +102,8 @@ export interface TransactionEngineDocument {
 	readonly clips: readonly Clip[];
 	readonly assets: readonly Asset[];
 	readonly markers: readonly Marker[];
+	/** Absent only in persisted documents written before schema v1. */
+	readonly motionTextSequences?: readonly MotionTextSequence[];
 	readonly revision: Revision;
 	readonly idempotency: readonly TransactionIdempotencyEntry[];
 }

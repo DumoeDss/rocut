@@ -1,5 +1,6 @@
 import type { FrameRate } from "opencut-wasm";
 import type { SessionResources } from "../editor/session/resources";
+import type { MediaTimeRange } from "../wasm";
 import { EXPORT_MIME_TYPES } from "./mime-types";
 
 export const EXPORT_QUALITY_VALUES = [
@@ -19,6 +20,8 @@ export interface ExportOptions {
 	quality: ExportQuality;
 	fps?: FrameRate;
 	includeAudio?: boolean;
+	/** Optional strict half-open timeline interval `[startTime, endTime)`. */
+	range?: MediaTimeRange;
 }
 
 export interface ExportResult {

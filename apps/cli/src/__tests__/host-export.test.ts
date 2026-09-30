@@ -186,8 +186,26 @@ describe("parseExportOptions", () => {
 
 	test("passes includeAudio through when present", () => {
 		expect(
-			parseExportOptions({ format: "webm", quality: "low", includeAudio: false }),
+			parseExportOptions({
+				format: "webm",
+				quality: "low",
+				includeAudio: false,
+			}),
 		).toEqual({ format: "webm", quality: "low", includeAudio: false });
+	});
+
+	test("passes a strict media-tick range through when present", () => {
+		expect(
+			parseExportOptions({
+				format: "mp4",
+				quality: "high",
+				range: { startTime: 120_000, endTime: 360_000 },
+			}),
+		).toEqual({
+			format: "mp4",
+			quality: "high",
+			range: { startTime: 120_000, endTime: 360_000 },
+		});
 	});
 
 	/**
@@ -210,6 +228,13 @@ describe("parseExportOptions", () => {
 		expect(typeof parseExportOptions({ format: "mkv" })).toBe("string");
 		expect(typeof parseExportOptions({ quality: "ultra" })).toBe("string");
 		expect(typeof parseExportOptions({ includeAudio: "yes" })).toBe("string");
+		expect(
+			typeof parseExportOptions({ range: { startTime: 10, endTime: 10 } }),
+		).toBe("string");
+		expect(
+			typeof parseExportOptions({ range: { startTime: -1, endTime: 10 } }),
+		).toBe("string");
+		expect(typeof parseExportOptions({ range: "all" })).toBe("string");
 		expect(typeof parseExportOptions(null)).toBe("string");
 	});
 });

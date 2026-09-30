@@ -16,7 +16,7 @@ describe("editor singleton boundary", () => {
 	test("the complete runtime graph has no implicit editor owner", () => {
 		const result = run();
 		expect(result.exitCode).toBe(0);
-		expect(result.stderr.toString()).toContain("39 command module(s)");
+		expect(result.stderr.toString()).toContain("41 command module(s)");
 		expect(result.stderr.toString()).toContain("PASS explicit-session-only");
 	});
 

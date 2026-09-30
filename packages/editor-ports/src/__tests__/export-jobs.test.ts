@@ -11,7 +11,9 @@ function request(overrides: Partial<ExportJobRequest> = {}): ExportJobRequest {
 	return { projectId: "p1", format: "mp4", ...overrides };
 }
 
-function openedStore(options: { jobId?: string; now?: number } = {}): ExportJobStore {
+function openedStore(
+	options: { jobId?: string; now?: number } = {},
+): ExportJobStore {
 	return ExportJobStore.open({
 		jobId: options.jobId ?? "job-x",
 		request: request(),
@@ -56,9 +58,7 @@ describe("the export-job store", () => {
 			error: null,
 			frames: null,
 		});
-		expect(store.events()).toEqual([
-			{ type: "phase", phase: "queued", at: 0 },
-		]);
+		expect(store.events()).toEqual([{ type: "phase", phase: "queued", at: 0 }]);
 	});
 
 	test("render progress tracks accepted over total and never decreases", () => {
@@ -80,8 +80,12 @@ describe("the export-job store", () => {
 	});
 
 	test("acceptFrames throws on a frame overshoot rather than absorbing it", () => {
-		const store = openedStore().beginRendering({ totalFrames: 3 }).acceptFrames({ count: 2 });
-		expect(() => store.acceptFrames({ count: 2 })).toThrow(ExportJobTransitionError);
+		const store = openedStore()
+			.beginRendering({ totalFrames: 3 })
+			.acceptFrames({ count: 2 });
+		expect(() => store.acceptFrames({ count: 2 })).toThrow(
+			ExportJobTransitionError,
+		);
 		expect(store.snapshot().frames).toEqual({ accepted: 2, total: 3 });
 	});
 
@@ -97,10 +101,14 @@ describe("the export-job store", () => {
 		});
 		const half = encoding.setEncodeProgress({ progress: 0.5 });
 		expect(half.snapshot().progress).toBe(0.5);
-		expect(() => half.setEncodeProgress({ progress: 0.25 })).toThrow(ExportJobTransitionError);
+		expect(() => half.setEncodeProgress({ progress: 0.25 })).toThrow(
+			ExportJobTransitionError,
+		);
 		const clamped = half.setEncodeProgress({ progress: 7 });
 		expect(clamped.snapshot().progress).toBe(1);
-		expect(() => clamped.setEncodeProgress({ progress: 0.9 })).toThrow(ExportJobTransitionError);
+		expect(() => clamped.setEncodeProgress({ progress: 0.9 })).toThrow(
+			ExportJobTransitionError,
+		);
 	});
 
 	test("encode progress clamps an out-of-range value into [0, 1]", () => {
@@ -108,8 +116,12 @@ describe("the export-job store", () => {
 			.beginRendering({ totalFrames: 4 })
 			.acceptFrames({ count: 4 })
 			.beginEncoding();
-		expect(encoding.setEncodeProgress({ progress: -0.5 }).snapshot().progress).toBe(0);
-		expect(encoding.setEncodeProgress({ progress: 2 }).snapshot().progress).toBe(1);
+		expect(
+			encoding.setEncodeProgress({ progress: -0.5 }).snapshot().progress,
+		).toBe(0);
+		expect(
+			encoding.setEncodeProgress({ progress: 2 }).snapshot().progress,
+		).toBe(1);
 	});
 
 	test("illegal transitions throw ExportJobTransitionError", () => {
@@ -130,12 +142,16 @@ describe("the export-job store", () => {
 			.beginRendering({ totalFrames: 2 })
 			.acceptFrames({ count: 2 })
 			.beginEncoding();
-		expect(() => encoding.acceptFrames({ count: 1 })).toThrow(ExportJobTransitionError);
+		expect(() => encoding.acceptFrames({ count: 1 })).toThrow(
+			ExportJobTransitionError,
+		);
 
 		const partialRender = openedStore()
 			.beginRendering({ totalFrames: 2 })
 			.acceptFrames({ count: 1 });
-		expect(() => partialRender.beginEncoding()).toThrow(ExportJobTransitionError);
+		expect(() => partialRender.beginEncoding()).toThrow(
+			ExportJobTransitionError,
+		);
 
 		expect(() => openedStore().confirmCancelled()).toThrow(
 			ExportJobTransitionError,
@@ -143,21 +159,25 @@ describe("the export-job store", () => {
 	});
 
 	test("cancel is two-step: the request stops work, the confirm settles", () => {
-		const store = openedStore().beginRendering({ totalFrames: 10 }).acceptFrames({ count: 4 });
+		const store = openedStore()
+			.beginRendering({ totalFrames: 10 })
+			.acceptFrames({ count: 4 });
 		const requested = store.requestCancel();
 		// The window between request and settle exists for resource cleanup; the
 		// phase has not moved yet, but work must stop.
 		expect(requested.snapshot().phase).toBe("rendering");
-		expect(() => requested.acceptFrames({ count: 1 })).toThrow(ExportJobTransitionError);
+		expect(() => requested.acceptFrames({ count: 1 })).toThrow(
+			ExportJobTransitionError,
+		);
 		const cancelled = requested.confirmCancelled();
 		expect(cancelled.snapshot()).toMatchObject({
 			phase: "cancelled",
 			progress: 0.4,
 			frames: { accepted: 4, total: 10 },
 		});
-		expect(
-			cancelled.events().some((event) => event.type === "settled"),
-		).toBe(true);
+		expect(cancelled.events().some((event) => event.type === "settled")).toBe(
+			true,
+		);
 	});
 
 	test("a cancel requested in queued goes straight to cancelled via confirm", () => {
@@ -387,6 +407,19 @@ describe("the in-memory reference provider", () => {
 		await expect(provider.startJob({ request: invalid })).rejects.toThrow(
 			ExportJobError,
 		);
+		for (const range of [
+			{ startTime: -1, endTime: 10 },
+			{ startTime: 10, endTime: 10 },
+			{ startTime: 20, endTime: 10 },
+		]) {
+			const invalidRange = request({ range });
+			expect(provider.canStartJob({ request: invalidRange })).toBe(false);
+			await expect(
+				provider.startJob({ request: invalidRange }),
+			).rejects.toThrow(ExportJobError);
+		}
+		const ranged = request({ range: { startTime: 10, endTime: 20 } });
+		expect(provider.canStartJob({ request: ranged })).toBe(true);
 		// F7: the format set stays open — any non-empty string starts (S08 closes it).
 		const exotic = request({ format: "mov" });
 		expect(provider.canStartJob({ request: exotic })).toBe(true);
@@ -416,7 +449,11 @@ describe("the in-memory reference provider", () => {
 		// and not a timer: this source sits inside the C6 resource boundary.
 		const provider = new InMemoryExportJobProvider();
 		const { jobId } = await provider.startJob({ request: request() });
-		for (let i = 0; i < 40 && provider.getJob({ jobId })?.phase !== "completed"; i += 1) {
+		for (
+			let i = 0;
+			i < 40 && provider.getJob({ jobId })?.phase !== "completed";
+			i += 1
+		) {
 			await new Promise((resolve) => setTimeout(resolve, 25));
 		}
 		expect(provider.getJob({ jobId })?.phase).toBe("completed");

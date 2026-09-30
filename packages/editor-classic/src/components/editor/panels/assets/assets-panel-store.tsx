@@ -19,6 +19,7 @@ export const TAB_KEYS = [
 	"media",
 	"sounds",
 	"text",
+	"motion-text",
 	"stickers",
 	"effects",
 	"transitions",
@@ -31,9 +32,9 @@ export type Tab = (typeof TAB_KEYS)[number];
 
 const createHugeiconsIcon =
 	({ icon }: { icon: IconSvgElement }) =>
-	({ className }: { className?: string }) => (
-		<HugeiconsIcon icon={icon} className={className} />
-	);
+	function AssetsPanelHugeicon({ className }: { className?: string }) {
+		return <HugeiconsIcon icon={icon} className={className} />;
+	};
 
 export const tabs = {
 	media: {
@@ -47,6 +48,10 @@ export const tabs = {
 	text: {
 		icon: createHugeiconsIcon({ icon: TextIcon }),
 		label: "Text",
+	},
+	"motion-text": {
+		icon: createHugeiconsIcon({ icon: ColorsIcon }),
+		label: "Motion text",
 	},
 	stickers: {
 		icon: createHugeiconsIcon({ icon: Happy01Icon }),

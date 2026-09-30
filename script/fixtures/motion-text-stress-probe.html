@@ -1,0 +1,629 @@
+<!doctype html>
+<meta charset="utf-8" />
+<script type="module">
+	import {
+		createMotionTextSequence as canonicalCreateMotionTextSequence,
+		disposeCompositor,
+		disposeGpu,
+		initializeGpu,
+		mapMotionTextClipTime,
+		mutateMotionTextSequence as canonicalMutateMotionTextSequence,
+	} from "/rust/wasm/pkg/opencut_wasm.js";
+	import {
+		MOTION_TEXT_RENDERER_SUPPORT,
+		createStarterMotionTextSequence,
+	} from "/packages/editor-classic/src/motion-text/factory.ts";
+	import { mutateMotionTextSequence } from "/packages/editor-classic/src/wasm/motion-text-factory.ts";
+	import {
+		createMotionTextRenderRuntime,
+		drawMotionTextFrame,
+		resolveMotionTextRenderFrame,
+	} from "/packages/editor-classic/src/services/renderer/motion-text/jizura-adapter.ts";
+	import { SceneExporter } from "/packages/editor-classic/src/services/renderer/scene-exporter.ts";
+	import { WasmCompositor } from "/packages/editor-classic/src/services/renderer/compositor/wasm-compositor.ts";
+	import { buildScene } from "/packages/editor-classic/src/services/renderer/scene-builder.ts";
+	import { MotionTextFontRuntime } from "/packages/editor-classic/src/services/renderer/motion-text/font-runtime.ts";
+
+	function round(value) {
+		return Math.round(value * 10_000) / 10_000;
+	}
+
+	function percentile(values, quantile) {
+		const sorted = [...values].sort((left, right) => left - right);
+		return sorted[
+			Math.min(sorted.length - 1, Math.ceil(sorted.length * quantile) - 1)
+		];
+	}
+
+	function durationSummary(values) {
+		return {
+			min: round(Math.min(...values)),
+			median: round(percentile(values, 0.5)),
+			p95: round(percentile(values, 0.95)),
+			max: round(Math.max(...values)),
+		};
+	}
+
+	function sourceFor({ id, cueCount }) {
+		return Array.from(
+			{ length: cueCount },
+			(_, index) =>
+				`${id} LINE ${String(index + 1).padStart(3, "0")} STRESS SAMPLE`,
+		).join("\n");
+	}
+
+	function canonicalSequence(fixture) {
+		const source = sourceFor(fixture);
+		const created = createStarterMotionTextSequence({
+			sequenceId: `stress:${fixture.id}`,
+			source,
+			sourceFormat: "plain",
+			language: "en",
+			duration: fixture.duration,
+			seed: fixture.seed,
+			starterPreset: "clean-caption",
+			rendererSupport: MOTION_TEXT_RENDERER_SUPPORT,
+			core: canonicalCreateMotionTextSequence,
+		});
+		if (!created.sequence) {
+			throw new Error(
+				`${fixture.id} factory failed: ${JSON.stringify(created.diagnostics)}`,
+			);
+		}
+		return { created, sequence: created.sequence, source };
+	}
+
+	function sampleTicks({ duration, sampleCount }) {
+		return Array.from({ length: sampleCount }, (_, index) =>
+			Math.min(
+				duration - 1,
+				Math.floor(((index + 0.5) * duration) / sampleCount),
+			),
+		);
+	}
+
+	function shuffled(values, seed) {
+		const result = [...values];
+		let state = seed >>> 0;
+		for (let index = result.length - 1; index > 0; index -= 1) {
+			state = (Math.imul(state, 1_664_525) + 1_013_904_223) >>> 0;
+			const target = state % (index + 1);
+			[result[index], result[target]] = [result[target], result[index]];
+		}
+		return result;
+	}
+
+	function pixelSummary(ctx, width, height) {
+		const pixels = ctx.getImageData(0, 0, width, height).data;
+		let hash = 2_166_136_261;
+		let nonTransparentPixels = 0;
+		for (let index = 0; index < pixels.length; index += 4) {
+			hash ^= pixels[index];
+			hash = Math.imul(hash, 16_777_619);
+			hash ^= pixels[index + 1];
+			hash = Math.imul(hash, 16_777_619);
+			hash ^= pixels[index + 2];
+			hash = Math.imul(hash, 16_777_619);
+			hash ^= pixels[index + 3];
+			hash = Math.imul(hash, 16_777_619);
+			if (pixels[index + 3] !== 0) nonTransparentPixels += 1;
+		}
+		return {
+			digest: (hash >>> 0).toString(16).padStart(8, "0"),
+			nonTransparentPixels,
+		};
+	}
+
+	async function heapBytes() {
+		globalThis.gc?.();
+		await new Promise((resolve) => setTimeout(resolve, 0));
+		globalThis.gc?.();
+		return Number.isFinite(performance.memory?.usedJSHeapSize)
+			? performance.memory.usedJSHeapSize
+			: null;
+	}
+
+	function runLocalMutationProbe({
+		sequence: initialSequence,
+		runtime: initialRuntime,
+		canvas,
+		ctx,
+		config,
+	}) {
+		let sequence = initialSequence;
+		let runtime = initialRuntime;
+		const targetCue = sequence.cues[Math.floor(sequence.cues.length / 2)];
+		if (!targetCue) throw new Error("F04 local mutation has no target cue");
+		const cueId = targetCue.id;
+		const baseText = targetCue.text;
+		const planDurations = [];
+		const drawDurations = [];
+		const totalDurations = [];
+		const fingerprints = new Set();
+		let visibleSamples = 0;
+		let lastPixels = null;
+
+		for (let index = 0; index < config.mutationSamples; index += 1) {
+			const currentCue = sequence.cues.find((cue) => cue.id === cueId);
+			if (!currentCue) {
+				throw new Error("F04 local mutation lost its stable cue ID");
+			}
+			const totalStartedAt = performance.now();
+			const planStartedAt = performance.now();
+			const mutated = mutateMotionTextSequence({
+				sequence,
+				mutation: {
+					kind: "update-cue",
+					cueId,
+					text: `${baseText} ${index % 2 === 0 ? "A" : "B"}`,
+					startTime: currentCue.startTime,
+					duration: currentCue.duration,
+					preset: { mode: "inherit" },
+					font: { mode: "inherit" },
+					colors: {
+						mode: "set",
+						foreground: index % 2 === 0 ? "#f8fafc" : "#fef3c7",
+						accent: index % 2 === 0 ? "#38bdf8" : "#fb7185",
+					},
+				},
+				rendererSupport: MOTION_TEXT_RENDERER_SUPPORT,
+				core: canonicalMutateMotionTextSequence,
+			});
+			planDurations.push(performance.now() - planStartedAt);
+			if (!mutated.sequence || mutated.diagnostics.length !== 0) {
+				throw new Error(
+					`F04 local mutation failed: ${JSON.stringify(mutated.diagnostics)}`,
+				);
+			}
+			if (
+				mutated.sequence.id !== sequence.id ||
+				mutated.sequence.revision !== sequence.revision + 1
+			) {
+				throw new Error(
+					"F04 local mutation changed identity or revision badly",
+				);
+			}
+			sequence = mutated.sequence;
+			runtime = createMotionTextRenderRuntime({ sequence });
+			const frame = resolveMotionTextRenderFrame({
+				runtime,
+				sequenceTime:
+					currentCue.startTime + Math.floor(currentCue.duration / 2),
+			});
+			if (!frame?.cut) {
+				throw new Error("F04 local mutation produced no stable preview frame");
+			}
+			fingerprints.add(frame.contentFingerprint);
+			const drawStartedAt = performance.now();
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			drawMotionTextFrame({
+				ctx,
+				frame,
+				width: canvas.width,
+				height: canvas.height,
+				compositionMode: sequence.compositionMode,
+			});
+			lastPixels = pixelSummary(ctx, canvas.width, canvas.height);
+			if (lastPixels.nonTransparentPixels <= 0) {
+				throw new Error("F04 local mutation produced an empty preview");
+			}
+			visibleSamples += 1;
+			drawDurations.push(performance.now() - drawStartedAt);
+			totalDurations.push(performance.now() - totalStartedAt);
+		}
+		if (
+			fingerprints.size < 2 ||
+			visibleSamples !== config.mutationSamples ||
+			lastPixels === null
+		) {
+			throw new Error("F04 local mutation did not change a visible preview");
+		}
+		return {
+			sequence,
+			runtime,
+			summary: {
+				cueId,
+				samples: config.mutationSamples,
+				visibleSamples,
+				revisionDelta: config.mutationSamples,
+				distinctFingerprints: fingerprints.size,
+				planMs: durationSummary(planDurations),
+				drawMs: durationSummary(drawDurations),
+				totalMs: durationSummary(totalDurations),
+				pixels: lastPixels,
+			},
+		};
+	}
+
+	async function runCase(fixture, config) {
+		const heapBefore = await heapBytes();
+		const createStartedAt = performance.now();
+		let { created, sequence, source } = canonicalSequence(fixture);
+		const createMs = performance.now() - createStartedAt;
+		const heapAfterCreate = await heapBytes();
+		let runtime = createMotionTextRenderRuntime({ sequence });
+		const canvas = document.createElement("canvas");
+		canvas.width = config.width;
+		canvas.height = config.height;
+		document.body.append(canvas);
+		let ctx = canvas.getContext("2d", { willReadFrequently: true });
+		if (!ctx) throw new Error("Motion-text stress probe has no 2D context");
+
+		const ticks = sampleTicks({
+			duration: fixture.duration,
+			sampleCount: fixture.sampleCount,
+		});
+		const signatures = new Map();
+		for (const tick of ticks) {
+			const frame = resolveMotionTextRenderFrame({
+				runtime,
+				sequenceTime: tick,
+			});
+			if (!frame?.cut) throw new Error(`${fixture.id} has no frame at ${tick}`);
+			signatures.set(tick, frame.contentFingerprint);
+		}
+
+		const seekDurations = [];
+		let lastFrame = null;
+		for (const tick of shuffled(ticks, fixture.seed ^ 0xa5a5a5a5)) {
+			const startedAt = performance.now();
+			const frame = resolveMotionTextRenderFrame({
+				runtime,
+				sequenceTime: tick,
+			});
+			if (!frame?.cut)
+				throw new Error(`${fixture.id} random seek missed ${tick}`);
+			if (frame.contentFingerprint !== signatures.get(tick)) {
+				throw new Error(`${fixture.id} random seek changed frame ${tick}`);
+			}
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			drawMotionTextFrame({
+				ctx,
+				frame,
+				width: canvas.width,
+				height: canvas.height,
+				compositionMode: sequence.compositionMode,
+			});
+			ctx.getImageData(0, 0, 1, 1);
+			seekDurations.push(performance.now() - startedAt);
+			lastFrame = frame;
+		}
+		if (!lastFrame) throw new Error(`${fixture.id} produced no sampled frame`);
+		const heapAfterSeek = await heapBytes();
+		let localMutation;
+		if (fixture.id === "F04") {
+			const mutated = runLocalMutationProbe({
+				sequence,
+				runtime,
+				canvas,
+				ctx,
+				config,
+			});
+			sequence = mutated.sequence;
+			runtime = mutated.runtime;
+			localMutation = mutated.summary;
+		}
+		const pixels = pixelSummary(ctx, canvas.width, canvas.height);
+		const heapAfterMutation = await heapBytes();
+		const summary = {
+			id: fixture.id,
+			cueCount: sequence.cues.length,
+			cutCount: sequence.resolvedPlan?.cuts.length ?? 0,
+			duration: sequence.duration,
+			sourceBytes: new TextEncoder().encode(source).byteLength,
+			createMs: round(createMs),
+			samples: seekDurations.length,
+			seekDrawMs: durationSummary(seekDurations),
+			seekParity: true,
+			pixels,
+			...(localMutation === undefined ? {} : { localMutation }),
+			heap: {
+				before: heapBefore,
+				afterCreate: heapAfterCreate,
+				afterSeek: heapAfterSeek,
+				afterMutation: heapAfterMutation,
+			},
+		};
+
+		lastFrame = null;
+		ctx = null;
+		runtime = null;
+		sequence = null;
+		created = null;
+		canvas.remove();
+		canvas.width = 0;
+		canvas.height = 0;
+		const afterRelease = await heapBytes();
+		return {
+			...summary,
+			heap: {
+				...summary.heap,
+				afterRelease,
+				retainedAfterRelease:
+					heapBefore === null || afterRelease === null
+						? null
+						: afterRelease - heapBefore,
+			},
+		};
+	}
+
+	function tracksFor(sequence) {
+		return {
+			main: {
+				id: "main",
+				name: "Main",
+				type: "video",
+				elements: [],
+				muted: false,
+				hidden: false,
+			},
+			overlay: [
+				{
+					id: "motion-track",
+					name: "Motion text",
+					type: "graphic",
+					hidden: false,
+					elements: [
+						{
+							id: "motion-clip",
+							name: "Motion clip",
+							type: "motion-text",
+							sequenceId: sequence.id,
+							startTime: 0,
+							duration: sequence.duration,
+							trimStart: 0,
+							trimEnd: 0,
+							params: {},
+						},
+					],
+				},
+			],
+			audio: [],
+		};
+	}
+
+	function exportScene(sequence, config, fontRuntime) {
+		return buildScene({
+			canvasSize: { width: config.exportWidth, height: config.exportHeight },
+			tracks: tracksFor(sequence),
+			mediaAssets: [],
+			motionTextSequences: [sequence],
+			motionTextTimeMapper: mapMotionTextClipTime,
+			motionTextFontRuntime: fontRuntime,
+			motionTextProjectId: "stress-export-project",
+			duration: sequence.duration,
+			background: { type: "color", color: "transparent" },
+			isPreview: false,
+			assetResolver: { resolve: ({ ref }) => ref.path },
+		});
+	}
+
+	function createFontRuntime() {
+		return new MotionTextFontRuntime({
+			loadBuiltinFont: async ({ font }) => {
+				const response = await fetch(`/apps/web/public/${font.builtinPath}`);
+				if (!response.ok) {
+					throw new Error(
+						`Stress export font ${font.id} returned HTTP ${response.status}`,
+					);
+				}
+				return response.arrayBuffer();
+			},
+			loadProjectFont: async () => null,
+		});
+	}
+
+	function mp4FileType(buffer) {
+		const bytes = new Uint8Array(buffer);
+		return String.fromCharCode(...bytes.slice(4, 8));
+	}
+
+	async function sha256(buffer) {
+		const digest = await crypto.subtle.digest("SHA-256", buffer);
+		return [...new Uint8Array(digest)]
+			.map((byte) => byte.toString(16).padStart(2, "0"))
+			.join("");
+	}
+
+	async function runExportProbe(fixture, config) {
+		const { sequence } = canonicalSequence(fixture);
+		const fontRuntime = createFontRuntime();
+		const rootNode = exportScene(sequence, config, fontRuntime);
+		const videoCache = { getFrameAt: async () => null };
+		await initializeGpu();
+		const compositor = new WasmCompositor({
+			trackGpuResource: ({ handle, label }) => ({
+				handle,
+				label,
+				resourceId: `stress-export:${handle}`,
+				release: () => disposeCompositor(handle),
+			}),
+		});
+		try {
+			const selectedDuration = 2 * 120_000;
+			const selectedStart = fixture.duration - selectedDuration;
+			const completeExporter = new SceneExporter({
+				width: config.exportWidth,
+				height: config.exportHeight,
+				fps: { numerator: 30, denominator: 1 },
+				format: "mp4",
+				quality: "low",
+				compositor,
+				videoCache,
+			});
+			let completeProgressEvents = 0;
+			completeExporter.on("progress", () => {
+				completeProgressEvents += 1;
+			});
+			const completeStartedAt = performance.now();
+			const completed = await completeExporter.export({
+				rootNode,
+				range: {
+					startTime: selectedStart,
+					endTime: fixture.duration,
+					duration: selectedDuration,
+				},
+			});
+			const completeMs = performance.now() - completeStartedAt;
+			if (!completed) throw new Error("Selected F05 export returned no buffer");
+
+			const cancelExporter = new SceneExporter({
+				width: config.exportWidth,
+				height: config.exportHeight,
+				fps: { numerator: 30, denominator: 1 },
+				format: "mp4",
+				quality: "low",
+				compositor,
+				videoCache,
+			});
+			let cancelProgressEvents = 0;
+			let cancelledEvents = 0;
+			cancelExporter.on("progress", () => {
+				cancelProgressEvents += 1;
+				if (cancelProgressEvents === config.cancelAfterFrames) {
+					void cancelExporter.cancel();
+				}
+			});
+			cancelExporter.on("cancelled", () => {
+				cancelledEvents += 1;
+			});
+			const cancelStartedAt = performance.now();
+			const cancelled = await cancelExporter.export({
+				rootNode,
+				range: {
+					startTime: 0,
+					endTime: fixture.duration,
+					duration: fixture.duration,
+				},
+			});
+			return {
+				selectedRange: {
+					startTime: selectedStart,
+					duration: selectedDuration,
+					frames: 60,
+					progressEvents: completeProgressEvents,
+					elapsedMs: round(completeMs),
+					bufferBytes: completed.byteLength,
+					fileType: mp4FileType(completed),
+				},
+				fullRangeCancellation: {
+					totalFrames: (fixture.duration / 120_000) * 30,
+					cancelAfterFrames: config.cancelAfterFrames,
+					progressEvents: cancelProgressEvents,
+					cancelledEvents,
+					elapsedMs: round(performance.now() - cancelStartedAt),
+					resultWasNull: cancelled === null,
+				},
+			};
+		} finally {
+			compositor.dispose();
+			disposeGpu();
+			fontRuntime.dispose();
+		}
+	}
+
+	async function runFullExportProbe(fixture, config) {
+		const { sequence } = canonicalSequence(fixture);
+		const fontRuntime = createFontRuntime();
+		const rootNode = exportScene(sequence, config, fontRuntime);
+		const videoCache = { getFrameAt: async () => null };
+		await initializeGpu();
+		const compositor = new WasmCompositor({
+			trackGpuResource: ({ handle, label }) => ({
+				handle,
+				label,
+				resourceId: `stress-full-export:${handle}`,
+				release: () => disposeCompositor(handle),
+			}),
+		});
+		try {
+			const exporter = new SceneExporter({
+				width: config.exportWidth,
+				height: config.exportHeight,
+				fps: { numerator: 30, denominator: 1 },
+				format: "mp4",
+				quality: "low",
+				compositor,
+				videoCache,
+			});
+			const totalFrames = (fixture.duration / 120_000) * 30;
+			let progressEvents = 0;
+			let completeEvents = 0;
+			let errorEvents = 0;
+			let cancelledEvents = 0;
+			exporter.on("progress", () => {
+				progressEvents += 1;
+				if (
+					progressEvents <= totalFrames &&
+					progressEvents % config.progressIntervalFrames === 0
+				) {
+					console.log(
+						`motion-text F05 full export ${progressEvents}/${totalFrames}`,
+					);
+				}
+			});
+			exporter.on("complete", () => {
+				completeEvents += 1;
+			});
+			exporter.on("error", () => {
+				errorEvents += 1;
+			});
+			exporter.on("cancelled", () => {
+				cancelledEvents += 1;
+			});
+			const startedAt = performance.now();
+			const buffer = await exporter.export({
+				rootNode,
+				range: {
+					startTime: 0,
+					endTime: fixture.duration,
+					duration: fixture.duration,
+				},
+			});
+			const elapsedMs = performance.now() - startedAt;
+			if (!buffer) throw new Error("Full F05 export returned no buffer");
+			return {
+				fixture: {
+					id: fixture.id,
+					cueCount: sequence.cues.length,
+					cutCount: sequence.resolvedPlan?.cuts.length ?? 0,
+					duration: sequence.duration,
+				},
+				export: {
+					frames: totalFrames,
+					progressEvents,
+					completeEvents,
+					errorEvents,
+					cancelledEvents,
+					elapsedMs: round(elapsedMs),
+					bufferBytes: buffer.byteLength,
+					fileType: mp4FileType(buffer),
+					sha256: await sha256(buffer),
+				},
+				fontRuntime: fontRuntime.inspect(),
+			};
+		} finally {
+			compositor.dispose();
+			disposeGpu();
+			fontRuntime.dispose();
+		}
+	}
+
+	globalThis.__probeMotionTextStress = async ({ fixtures, config }) => {
+		const results = [];
+		for (const fixture of fixtures) {
+			results.push(await runCase(fixture, config));
+		}
+		const exportFixture = fixtures.find((fixture) => fixture.id === "F05");
+		if (!exportFixture) throw new Error("F05 export fixture is missing");
+		return {
+			results,
+			exportProbe: await runExportProbe(exportFixture, config),
+			userAgent: navigator.userAgent,
+			hasPreciseHeap: Number.isFinite(performance.memory?.usedJSHeapSize),
+		};
+	};
+
+	globalThis.__probeMotionTextFullExport = ({ fixture, config }) =>
+		runFullExportProbe(fixture, config);
+</script>

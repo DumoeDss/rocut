@@ -3,11 +3,22 @@ import { mkdtemp, readFile, readdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { existsSync } from "node:fs";
-import { frameRate, projectId, revisionOf } from "@opencut/editor-contracts";
-import type { Project } from "@opencut/editor-contracts";
 import {
-	createTransactionNativeProjectSeed,
-} from "@opencut/editor-contracts/engine";
+	clipId,
+	frameRate,
+	mediaTime,
+	motionTextCueId,
+	motionTextSequenceId,
+	projectId,
+	revisionOf,
+	trackId,
+} from "@opencut/editor-contracts";
+import type {
+	MotionTextSequence,
+	Project,
+	TransactionOperation,
+} from "@opencut/editor-contracts";
+import { createTransactionNativeProjectSeed } from "@opencut/editor-contracts/engine";
 import { CURRENT_PROJECT_VERSION } from "@opencut/editor-classic/transactions";
 import { FileProjectStore } from "../file-store";
 import { openEditorPlaneAutomation } from "../editor-plane";
@@ -42,6 +53,59 @@ function createTrack(id: string) {
 			name: id,
 			hidden: false,
 		},
+	};
+}
+
+function motionTextSequence(): MotionTextSequence {
+	return {
+		id: motionTextSequenceId("sequence:cli-title"),
+		schemaVersion: 1,
+		revision: 0,
+		source: { format: "plain", text: "CLI title" },
+		language: "en",
+		duration: mediaTime({ ticks: 120_000 }),
+		compositionMode: "overlay",
+		seed: 17,
+		engine: {
+			id: "jizura",
+			version: "0.9.0",
+			catalogHash: "cli-fixture",
+			plannerVersion: 1,
+			tokenizerVersion: "unicode-v1",
+		},
+		fonts: [],
+		defaults: {
+			preset: {
+				style: "base",
+				layout: "center",
+				enter: "fade",
+				hold: "still",
+				exit: "fade",
+				decor: [],
+				treat: "none",
+				bg: "transparent",
+				cam: "static",
+				fx: [],
+				trans: null,
+			},
+			colors: {},
+			parameters: {},
+		},
+		cues: [
+			{
+				id: motionTextCueId("cue:cli-title"),
+				text: "CLI title",
+				startTime: mediaTime({ ticks: 0 }),
+				duration: mediaTime({ ticks: 120_000 }),
+				interlude: false,
+				gapBefore: false,
+				impact: false,
+				emphasis: [],
+				segments: ["CLI title"],
+				locks: [],
+				overrides: {},
+			},
+		],
 	};
 }
 
@@ -199,6 +263,122 @@ describe("host start (S06 C3)", () => {
 			"Main Track",
 		]);
 		expect((await readdir(projectRoot)).sort()).toEqual(["project.json"]);
+	});
+
+	test("motion-text sequence and clip commit as one idempotent batch and reopen together", async () => {
+		const projectRoot = await tempRoot();
+		const sequence = motionTextSequence();
+		const motionTrackId = trackId("motion-track");
+		const motionClipId = clipId("motion-clip");
+		const operations: TransactionOperation[] = [
+			{
+				kind: "create-track",
+				track: {
+					id: motionTrackId,
+					kind: "graphic",
+					name: "Motion text",
+					hidden: false,
+				},
+			},
+			{ kind: "create-motion-text-sequence", sequence },
+			{
+				kind: "create-clip",
+				clip: {
+					id: motionClipId,
+					trackId: motionTrackId,
+					startTime: mediaTime({ ticks: 0 }),
+					duration: mediaTime({ ticks: 120_000 }),
+					trimStart: mediaTime({ ticks: 0 }),
+					trimEnd: mediaTime({ ticks: 0 }),
+					content: { kind: "motion-text", sequenceId: sequence.id },
+				},
+			},
+		];
+		const host = await startHost({
+			projectRoot,
+			registry: new TargetRegistry(await tempRoot()),
+		});
+		const base = `http://127.0.0.1:${host.port}/${host.token}/api`;
+		try {
+			const batch = {
+				operations,
+				expectedRevision: 0,
+				idempotencyKey: "cli:motion-text:create",
+			};
+			const first = await fetch(`${base}/apply`, {
+				method: "POST",
+				headers: { "content-type": "application/json" },
+				body: JSON.stringify(batch),
+			});
+			expect(first.status).toBe(200);
+			expect(await first.json()).toMatchObject({
+				accepted: true,
+				revision: 1,
+				createdIds: ["motion-track", sequence.id, "motion-clip"],
+			});
+
+			const replay = await fetch(`${base}/apply`, {
+				method: "POST",
+				headers: { "content-type": "application/json" },
+				body: JSON.stringify(batch),
+			});
+			expect(replay.status).toBe(200);
+			expect(await replay.json()).toMatchObject({
+				accepted: true,
+				revision: 1,
+			});
+
+			const conflict = await fetch(`${base}/apply`, {
+				method: "POST",
+				headers: { "content-type": "application/json" },
+				body: JSON.stringify({
+					operations: [createTrack("must-not-exist")],
+					expectedRevision: 0,
+					idempotencyKey: "cli:stale",
+				}),
+			});
+			expect(conflict.status).toBe(409);
+			expect(await conflict.json()).toMatchObject({
+				accepted: false,
+				code: "conflict",
+				expectedRevision: 0,
+				actualRevision: 1,
+			});
+
+			const sequences = (await (
+				await fetch(`${base}/motion-text-sequences`)
+			).json()) as MotionTextSequence[];
+			expect(sequences).toEqual([sequence]);
+			expect(await host.automation.revision()).toBe(revisionOf(1));
+			expect(await host.automation.clips()).toContainEqual(
+				expect.objectContaining({
+					id: motionClipId,
+					content: { kind: "motion-text", sequenceId: sequence.id },
+				}),
+			);
+			expect(
+				(await host.automation.tracks()).map((track) => String(track.id)),
+			).not.toContain("must-not-exist");
+		} finally {
+			await host.close();
+		}
+
+		const reopened = await openEditorPlaneAutomation({
+			baseStore: new FileProjectStore({
+				root: projectRoot,
+				schemaVersion: CURRENT_PROJECT_VERSION,
+			}),
+			projectId: projectId(path.basename(projectRoot)),
+		});
+		expect(await reopened.automation.motionTextSequences?.()).toEqual([
+			sequence,
+		]);
+		expect(await reopened.automation.clips()).toContainEqual(
+			expect.objectContaining({
+				id: motionClipId,
+				content: { kind: "motion-text", sequenceId: sequence.id },
+			}),
+		);
 	});
 
 	test("a static dir serves index.html at the authenticated root", async () => {

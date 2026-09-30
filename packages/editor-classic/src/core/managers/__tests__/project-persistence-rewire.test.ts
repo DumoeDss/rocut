@@ -56,6 +56,7 @@ if (process.env.OPENCUT_PROJECT_PERSISTENCE_TEST_ISOLATED !== "1") {
 				updatedAt: now,
 			},
 			scenes: [],
+			motionTextSequences: [],
 			currentSceneId: "",
 			settings: {
 				fps: { numerator: 30, denominator: 1 },

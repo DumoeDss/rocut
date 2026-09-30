@@ -4,6 +4,7 @@ import type {
 	ConformanceReport,
 	Project,
 	Revision,
+	MotionTextSequence,
 	TransactionBatch,
 	TransactionOperation,
 } from "../..";
@@ -12,6 +13,8 @@ import {
 	clipId,
 	mediaTime,
 	markerId,
+	motionTextCueId,
+	motionTextSequenceId,
 	projectId,
 	OPERATION_KINDS,
 	revisionOf,
@@ -140,6 +143,63 @@ function clip(args: {
 	};
 }
 
+function motionTextSequence(args: {
+	readonly id: string;
+	readonly revision: number;
+	readonly text: string;
+}): MotionTextSequence {
+	return {
+		id: motionTextSequenceId(args.id),
+		schemaVersion: 1,
+		revision: args.revision,
+		source: { format: "plain", text: args.text },
+		language: "en",
+		duration: mediaTime({ ticks: 120_000 }),
+		compositionMode: "overlay",
+		seed: 1,
+		engine: {
+			id: "jizura",
+			version: "0.9.0",
+			catalogHash: "conformance-catalog",
+			plannerVersion: 1,
+			tokenizerVersion: "unicode-v1",
+		},
+		fonts: [],
+		defaults: {
+			preset: {
+				style: "base",
+				layout: "center",
+				enter: "fade",
+				hold: "still",
+				exit: "fade",
+				decor: [],
+				treat: "none",
+				bg: "transparent",
+				cam: "static",
+				fx: [],
+				trans: null,
+			},
+			colors: {},
+			parameters: {},
+		},
+		cues: [
+			{
+				id: motionTextCueId(`${args.id}:cue`),
+				text: args.text,
+				startTime: mediaTime({ ticks: 0 }),
+				duration: mediaTime({ ticks: 120_000 }),
+				interlude: false,
+				gapBefore: false,
+				impact: false,
+				emphasis: [],
+				segments: [args.text],
+				locks: [],
+				overrides: {},
+			},
+		],
+	};
+}
+
 async function open(
 	manager: DraftEditingManager,
 	id: string,
@@ -158,6 +218,7 @@ async function readContent(engine: TransactionEngine): Promise<unknown> {
 		clips: await engine.clips(),
 		assets: await engine.assets(),
 		markers: await engine.markers(),
+		motionTextSequences: (await engine.motionTextSequences?.()) ?? [],
 	};
 }
 
@@ -1191,6 +1252,14 @@ export async function runDraftEditingConformance<
 						note: "old",
 					},
 				},
+				{
+					kind: "create-motion-text-sequence",
+					sequence: motionTextSequence({
+						id: "existing-sequence",
+						revision: 0,
+						text: "old",
+					}),
+				},
 			];
 			const fixture = await factory({
 				optionalFeatures,
@@ -1221,6 +1290,16 @@ export async function runDraftEditingConformance<
 						markerId: markerId("existing-marker"),
 						patch: { note: "updated" },
 					},
+					{
+						kind: "update-motion-text-sequence",
+						sequenceId: motionTextSequenceId("existing-sequence"),
+						expectedSequenceRevision: 0,
+						sequence: motionTextSequence({
+							id: "existing-sequence",
+							revision: 1,
+							text: "updated",
+						}),
+					},
 				],
 			});
 			await draft.stage({
@@ -1228,6 +1307,11 @@ export async function runDraftEditingConformance<
 					{ kind: "delete-clip", clipId: clipId("existing-clip") },
 					{ kind: "delete-asset", assetId: assetId("existing-asset") },
 					{ kind: "delete-marker", markerId: markerId("existing-marker") },
+					{
+						kind: "delete-motion-text-sequence",
+						sequenceId: motionTextSequenceId("existing-sequence"),
+						expectedSequenceRevision: 1,
+					},
 					{ kind: "delete-track", trackId: trackId("existing-track") },
 				],
 			});
@@ -1249,6 +1333,14 @@ export async function runDraftEditingConformance<
 							id: markerId("created-marker"),
 							time: mediaTime({ ticks: 0 }),
 						},
+					},
+					{
+						kind: "create-motion-text-sequence",
+						sequence: motionTextSequence({
+							id: "created-sequence",
+							revision: 0,
+							text: "created",
+						}),
 					},
 				],
 			});

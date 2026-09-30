@@ -267,6 +267,7 @@ function startRetainedRendererActivity({
 	const renderTree = buildScene({
 		tracks,
 		mediaAssets: [],
+		motionTextSequences: [],
 		duration: 1,
 		canvasSize: { width: 16, height: 10 },
 		background: { type: "color", color: "#09090b" },

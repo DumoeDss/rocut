@@ -5,6 +5,7 @@ import {
 	VISUAL_ELEMENT_TYPES,
 	type CreateEffectElement,
 	type CreateGraphicElement,
+	type CreateMotionTextElement,
 	type CreateTimelineElement,
 	type CreateVideoElement,
 	type CreateImageElement,
@@ -199,6 +200,30 @@ export function buildGraphicElement({
 		startTime,
 		trimStart: ZERO_MEDIA_TIME,
 		trimEnd: ZERO_MEDIA_TIME,
+	};
+}
+
+export function buildMotionTextElement({
+	sequenceId,
+	name,
+	startTime,
+	duration,
+}: {
+	sequenceId: string;
+	name?: string;
+	startTime: MediaTime;
+	duration?: MediaTime;
+}): CreateMotionTextElement {
+	return {
+		type: "motion-text",
+		name: name ?? "Motion text",
+		sequenceId,
+		params: buildDefaultElementParams({ type: "motion-text" }),
+		duration: duration ?? DEFAULT_NEW_ELEMENT_DURATION,
+		startTime,
+		trimStart: ZERO_MEDIA_TIME,
+		trimEnd: ZERO_MEDIA_TIME,
+		hidden: false,
 	};
 }
 

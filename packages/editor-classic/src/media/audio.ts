@@ -55,7 +55,7 @@ export async function decodeAudioToFloat32({
 }: {
 	audioBlob: Blob;
 	sampleRate?: number;
-	resources: SessionResources;
+	resources: Pick<SessionResources, "createAudioContext">;
 }): Promise<DecodedAudio> {
 	const audioHandle = resources.createAudioContext({
 		request: sampleRate === undefined ? undefined : { sampleRate },
@@ -654,6 +654,7 @@ export async function collectAudioClips({
 export async function createTimelineAudioBuffer({
 	tracks,
 	mediaAssets,
+	startTime = 0,
 	duration,
 	sampleRate = EXPORT_SAMPLE_RATE,
 	audioContext,
@@ -661,6 +662,8 @@ export async function createTimelineAudioBuffer({
 }: {
 	tracks: SceneTracks;
 	mediaAssets: MediaAsset[];
+	/** Absolute timeline start in ticks. The returned buffer always begins at 0. */
+	startTime?: number;
 	duration: number;
 	sampleRate?: number;
 	audioContext?: AudioContext;
@@ -685,6 +688,7 @@ export async function createTimelineAudioBuffer({
 		if (audioElements.length === 0) return null;
 
 		const outputChannels = 2;
+		const outputStartTime = startTime / TICKS_PER_SECOND;
 		const durationSeconds = duration / TICKS_PER_SECOND;
 		const outputLength = Math.ceil(durationSeconds * sampleRate);
 		const outputBuffer = context.createBuffer(
@@ -718,6 +722,7 @@ export async function createTimelineAudioBuffer({
 				outputBuffer,
 				outputLength,
 				sampleRate,
+				outputStartTime,
 			});
 		}
 
@@ -853,7 +858,7 @@ export function extractRmsRange({
 	});
 }
 
-function mixAudioChannels({
+export function mixAudioChannels({
 	element,
 	buffer,
 	trimStart,
@@ -861,6 +866,7 @@ function mixAudioChannels({
 	outputBuffer,
 	outputLength,
 	sampleRate,
+	outputStartTime,
 }: {
 	element: CollectedAudioElement;
 	buffer: AudioBuffer;
@@ -869,11 +875,23 @@ function mixAudioChannels({
 	outputBuffer: AudioBuffer;
 	outputLength: number;
 	sampleRate: number;
+	/** Absolute timeline time represented by output sample zero, in seconds. */
+	outputStartTime: number;
 }): void {
 	const { startTime, duration: elementDuration } = element;
+	const outputEndTime = outputStartTime + outputLength / sampleRate;
+	const overlapStartTime = Math.max(startTime, outputStartTime);
+	const overlapEndTime = Math.min(startTime + elementDuration, outputEndTime);
+	if (overlapEndTime <= overlapStartTime) return;
 
-	const outputStartSample = Math.floor(startTime * sampleRate);
-	const renderedLength = Math.ceil(elementDuration * sampleRate);
+	const outputStartSample = Math.max(
+		0,
+		Math.ceil((overlapStartTime - outputStartTime) * sampleRate),
+	);
+	const outputEndSample = Math.min(
+		outputLength,
+		Math.ceil((overlapEndTime - outputStartTime) * sampleRate),
+	);
 
 	const outputChannels = 2;
 	for (let channel = 0; channel < outputChannels; channel++) {
@@ -881,14 +899,17 @@ function mixAudioChannels({
 		const sourceChannel = Math.min(channel, buffer.numberOfChannels - 1);
 		const sourceData = buffer.getChannelData(sourceChannel);
 
-		for (let i = 0; i < renderedLength; i++) {
-			const outputIndex = outputStartSample + i;
-			if (outputIndex >= outputLength) break;
-
-			const clipTime = i / sampleRate;
+		for (
+			let outputIndex = outputStartSample;
+			outputIndex < outputEndSample;
+			outputIndex++
+		) {
+			const timelineTime = outputStartTime + outputIndex / sampleRate;
+			const clipTime = timelineTime - startTime;
 			const sourceTime =
 				trimStart + getSourceTimeAtClipTime({ clipTime, retime });
 			const sourceIndex = sourceTime * buffer.sampleRate;
+			if (sourceIndex < 0) continue;
 			if (sourceIndex >= sourceData.length) break;
 
 			const lowerIndex = Math.floor(sourceIndex);

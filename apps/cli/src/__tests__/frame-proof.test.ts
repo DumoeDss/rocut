@@ -15,7 +15,7 @@ import {
 	createOpenCutProjectRecord,
 } from "@opencut/editor-classic/transactions";
 import type { TProject } from "@opencut/editor-classic/project";
-import type { TScene } from "@opencut/editor-classic/timeline/types";
+import type { TScene } from "@opencut/editor-classic/timeline";
 import { FileProjectStore } from "../file-store";
 import { prepareEditorProjectRecord } from "../editor-plane";
 import { TargetRegistry } from "../target-registry";
@@ -88,6 +88,7 @@ function projectWith(elements: never[], name = "Proof project"): TProject {
 			updatedAt: new Date(0),
 		},
 		scenes: [scene],
+		motionTextSequences: [],
 		currentSceneId: scene.id,
 		settings: {
 			fps: { numerator: 30, denominator: 1 },

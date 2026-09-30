@@ -1,0 +1,131 @@
+{
+	"schemaVersion": 1,
+	"generatedBy": "script/probe-motion-text-stress.mjs",
+	"source": {
+		"canonicalWasm": {
+			"bytes": 5511220,
+			"sha256": "14de620a1bfa38228a43e4103cc557ae7a27bbb30185bfffae91b17d685e75a8"
+		}
+	},
+	"environment": {
+		"browser": "151.0.7922.34",
+		"userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.7922.34 Safari/537.36",
+		"hasPreciseHeap": true
+	},
+	"config": {
+		"width": 1280,
+		"height": 720,
+		"previewBudgetMs": 33.33,
+		"exportWidth": 320,
+		"exportHeight": 180,
+		"cancelAfterFrames": 5,
+		"mutationSamples": 40,
+		"mutationBudgetMs": 300
+	},
+	"results": [
+		{
+			"id": "F04",
+			"cueCount": 120,
+			"cutCount": 240,
+			"duration": 21600000,
+			"sourceBytes": 3239,
+			"createMs": 61.8,
+			"samples": 180,
+			"seekDrawMs": {
+				"min": 0.1,
+				"median": 0.2,
+				"p95": 0.9,
+				"max": 41.5
+			},
+			"seekParity": true,
+			"pixels": {
+				"digest": "bb605023",
+				"nonTransparentPixels": 52212
+			},
+			"localMutation": {
+				"cueId": "cue-d92f4616458b86f0",
+				"samples": 40,
+				"visibleSamples": 40,
+				"revisionDelta": 40,
+				"distinctFingerprints": 40,
+				"planMs": {
+					"min": 7.3,
+					"median": 8.2,
+					"p95": 12.6,
+					"max": 38.6
+				},
+				"drawMs": {
+					"min": 5.7,
+					"median": 6.2,
+					"p95": 9.3,
+					"max": 9.7
+				},
+				"totalMs": {
+					"min": 13.4,
+					"median": 14.6,
+					"p95": 21.3,
+					"max": 49.1
+				},
+				"pixels": {
+					"digest": "bb605023",
+					"nonTransparentPixels": 52212
+				}
+			},
+			"heap": {
+				"before": 31096453,
+				"afterCreate": 31361125,
+				"afterSeek": 32814775,
+				"afterMutation": 32996654,
+				"afterRelease": 32897327,
+				"retainedAfterRelease": 1800874
+			}
+		},
+		{
+			"id": "F05",
+			"cueCount": 600,
+			"cutCount": 1200,
+			"duration": 57600000,
+			"sourceBytes": 16199,
+			"createMs": 18.2,
+			"samples": 240,
+			"seekDrawMs": {
+				"min": 0.1,
+				"median": 0.2,
+				"p95": 0.4,
+				"max": 1.7
+			},
+			"seekParity": true,
+			"pixels": {
+				"digest": "a391a808",
+				"nonTransparentPixels": 52405
+			},
+			"heap": {
+				"before": 31754674,
+				"afterCreate": 32360130,
+				"afterSeek": 33722830,
+				"afterMutation": 33723006,
+				"afterRelease": 33141327,
+				"retainedAfterRelease": 1386653
+			}
+		}
+	],
+	"exportProbe": {
+		"selectedRange": {
+			"startTime": 57360000,
+			"duration": 240000,
+			"frames": 60,
+			"progressEvents": 61,
+			"elapsedMs": 1013.9,
+			"bufferBytes": 19477,
+			"fileType": "ftyp"
+		},
+		"fullRangeCancellation": {
+			"totalFrames": 14400,
+			"cancelAfterFrames": 5,
+			"progressEvents": 5,
+			"cancelledEvents": 1,
+			"elapsedMs": 43.8,
+			"resultWasNull": true
+		}
+	}
+}

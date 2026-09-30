@@ -569,6 +569,26 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 			expect(finished).toMatchObject({ from: 2, to: 5, recordsMigrated: 3 });
 		});
 
+		test("a future persisted schema refuses session creation before migration can write", async () => {
+			const store = migratingStore();
+			(
+				store as InMemoryProjectStore & {
+					persistedSchemaVersion?: () => Promise<number | null>;
+				}
+			).persistedSchemaVersion = async () => 3;
+			const host = createInMemoryHost({ store });
+
+			await expect(createEditorSession({ host })).rejects.toThrow(
+				"refusing a downgrade write",
+			);
+			expect(calls).toBe(0);
+			const recorded = host.diagnostics as RecordingDiagnostics;
+			expect(recorded.events.map((event) => event.event.kind)).toEqual([
+				"migration-started",
+				"migration-failed",
+			]);
+		});
+
 		test("`from` is null, not a fabricated number, when the store cannot report it", async () => {
 			const store = migratingStore();
 			const host = createInMemoryHost({ store });

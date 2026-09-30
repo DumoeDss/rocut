@@ -1,4 +1,5 @@
 import type { FrameRate } from "opencut-wasm";
+import type { MotionTextSequence } from "@opencut/editor-contracts";
 import type { TScene } from "../timeline/types";
 import type { MediaTime } from "../wasm";
 
@@ -44,6 +45,7 @@ export interface TTimelineViewState {
 export interface TProject {
 	metadata: TProjectMetadata;
 	scenes: TScene[];
+	motionTextSequences: MotionTextSequence[];
 	currentSceneId: string;
 	settings: TProjectSettings;
 	version: number;

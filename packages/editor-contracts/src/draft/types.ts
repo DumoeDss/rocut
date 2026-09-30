@@ -11,6 +11,7 @@ import type {
 	TransactionOperation,
 	TransactionResult,
 } from "..";
+import type { MotionTextSequence } from "../motion-text";
 import type {
 	TransactionEngine,
 	TransactionEngineDocument,
@@ -39,6 +40,8 @@ export interface DraftContentSnapshot {
 	readonly clips: readonly Clip[];
 	readonly assets: readonly Asset[];
 	readonly markers: readonly Marker[];
+	/** Absent only in snapshots captured from a pre-motion-text host. */
+	readonly motionTextSequences?: readonly MotionTextSequence[];
 	readonly revision: Revision;
 }
 

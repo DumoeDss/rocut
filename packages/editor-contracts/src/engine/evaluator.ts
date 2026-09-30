@@ -1,10 +1,12 @@
 import type {
+	AssetId,
 	ProjectPatch,
 	TransactionBatch,
 	TransactionOperation,
 	TransactionResult,
 } from "..";
 import { revisionOf } from "..";
+import type { MotionTextSequence } from "../motion-text";
 import {
 	canonicalOperationFingerprint,
 	cloneTransactionValue,
@@ -14,6 +16,7 @@ import {
 	isValidAsset,
 	isValidClip,
 	isValidMarker,
+	isValidMotionTextSequence,
 	isValidProject,
 	isValidTrack,
 	validateTransactionDocument,
@@ -184,7 +187,19 @@ function entityExists(args: {
 		document.tracks.some((entry) => entry.id === id) ||
 		document.clips.some((entry) => entry.id === id) ||
 		document.assets.some((entry) => entry.id === id) ||
-		document.markers.some((entry) => entry.id === id)
+		document.markers.some((entry) => entry.id === id) ||
+		(document.motionTextSequences ?? []).some((entry) => entry.id === id)
+	);
+}
+
+function sequenceAssetIds(sequence: MotionTextSequence): readonly AssetId[] {
+	return [
+		sequence.audioBinding?.assetId,
+		...sequence.fonts
+			.filter((font) => font.source === "project")
+			.map((font) => font.assetId),
+	].filter((assetId): assetId is NonNullable<typeof assetId> =>
+		Boolean(assetId),
 	);
 }
 
@@ -230,6 +245,9 @@ function mutateOperations(args: {
 	const markers = new Map(
 		args.document.markers.map((entry) => [entry.id, entry]),
 	);
+	const motionTextSequences = new Map(
+		(args.document.motionTextSequences ?? []).map((entry) => [entry.id, entry]),
+	);
 	let project = args.document.project;
 	const createdIds: string[] = [];
 	const changedIds: string[] = [];
@@ -243,6 +261,7 @@ function mutateOperations(args: {
 		clips: [...clips.values()],
 		assets: [...assets.values()],
 		markers: [...markers.values()],
+		motionTextSequences: [...motionTextSequences.values()],
 	});
 
 	for (
@@ -440,6 +459,33 @@ function mutateOperations(args: {
 					);
 					break;
 				}
+				if (operation.clip.content?.kind === "motion-text") {
+					if (!motionTextSequences.has(operation.clip.content.sequenceId)) {
+						issues.push(
+							issue({
+								code: "missing-relation",
+								message: `Motion-text sequence ${operation.clip.content.sequenceId} not found`,
+								operationIndex,
+								entityIds: [
+									operation.clip.id,
+									operation.clip.content.sequenceId,
+								],
+							}),
+						);
+						break;
+					}
+					if (tracks.get(operation.clip.trackId)?.kind !== "graphic") {
+						issues.push(
+							issue({
+								code: "lane-incompatible",
+								message: "Motion-text clips require a graphic track",
+								operationIndex,
+								entityIds: [operation.clip.id, operation.clip.trackId],
+							}),
+						);
+						break;
+					}
+				}
 				clips.set(operation.clip.id, operation.clip);
 				createdIds.push(operation.clip.id);
 				origins.set(operation.clip.id, operationIndex);
@@ -491,6 +537,30 @@ function mutateOperations(args: {
 						}),
 					);
 					break;
+				}
+				if (updated.content?.kind === "motion-text") {
+					if (!motionTextSequences.has(updated.content.sequenceId)) {
+						issues.push(
+							issue({
+								code: "missing-relation",
+								message: `Motion-text sequence ${updated.content.sequenceId} not found`,
+								operationIndex,
+								entityIds: [operation.clipId, updated.content.sequenceId],
+							}),
+						);
+						break;
+					}
+					if (tracks.get(updated.trackId)?.kind !== "graphic") {
+						issues.push(
+							issue({
+								code: "lane-incompatible",
+								message: "Motion-text clips require a graphic track",
+								operationIndex,
+								entityIds: [operation.clipId, updated.trackId],
+							}),
+						);
+						break;
+					}
 				}
 				clips.set(operation.clipId, updated);
 				changedIds.push(operation.clipId);
@@ -558,10 +628,13 @@ function mutateOperations(args: {
 					);
 					break;
 				}
-				const referencing = [...clips.values()].filter(
+				const referencingClips = [...clips.values()].filter(
 					(clip) => clip.assetId === operation.assetId,
 				);
-				if (referencing.length > 0) {
+				const referencingSequences = [...motionTextSequences.values()].filter(
+					(sequence) => sequenceAssetIds(sequence).includes(operation.assetId),
+				);
+				if (referencingClips.length > 0 || referencingSequences.length > 0) {
 					issues.push(
 						issue({
 							code: "missing-relation",
@@ -569,7 +642,8 @@ function mutateOperations(args: {
 							operationIndex,
 							entityIds: [
 								operation.assetId,
-								...referencing.map((clip) => clip.id),
+								...referencingClips.map((clip) => clip.id),
+								...referencingSequences.map((sequence) => sequence.id),
 							],
 						}),
 					);
@@ -657,6 +731,155 @@ function mutateOperations(args: {
 				markers.delete(operation.markerId);
 				changedIds.push(operation.markerId);
 				origins.set(operation.markerId, operationIndex);
+				break;
+			}
+			case "create-motion-text-sequence": {
+				if (!isValidMotionTextSequence(operation.sequence)) {
+					issues.push(
+						issue({
+							code: "invalid-entity",
+							message: "Invalid motion-text sequence",
+							operationIndex,
+						}),
+					);
+					break;
+				}
+				if (
+					entityExists({
+						document: currentDocument(),
+						id: operation.sequence.id,
+					})
+				) {
+					issues.push(
+						issue({
+							code: "duplicate-id",
+							message: `Entity ${operation.sequence.id} already exists`,
+							operationIndex,
+							entityIds: [operation.sequence.id],
+						}),
+					);
+					break;
+				}
+				const missingAssets = sequenceAssetIds(operation.sequence).filter(
+					(assetId) => !assets.has(assetId),
+				);
+				if (missingAssets.length > 0) {
+					issues.push(
+						issue({
+							code: "missing-relation",
+							message: "Motion-text sequence references missing assets",
+							operationIndex,
+							entityIds: [operation.sequence.id, ...missingAssets],
+						}),
+					);
+					break;
+				}
+				motionTextSequences.set(operation.sequence.id, operation.sequence);
+				createdIds.push(operation.sequence.id);
+				origins.set(operation.sequence.id, operationIndex);
+				break;
+			}
+			case "update-motion-text-sequence": {
+				const existing = motionTextSequences.get(operation.sequenceId);
+				if (!existing) {
+					issues.push(
+						issue({
+							code: "not-found",
+							message: `Motion-text sequence ${operation.sequenceId} not found`,
+							operationIndex,
+							entityIds: [operation.sequenceId],
+						}),
+					);
+					break;
+				}
+				if (existing.revision !== operation.expectedSequenceRevision) {
+					issues.push(
+						issue({
+							code: "provider:motion-text-sequence-revision-conflict",
+							message: `Expected motion-text sequence revision ${operation.expectedSequenceRevision}, actual ${existing.revision}`,
+							operationIndex,
+							entityIds: [operation.sequenceId],
+						}),
+					);
+					break;
+				}
+				if (
+					operation.sequence.id !== operation.sequenceId ||
+					!isValidMotionTextSequence(operation.sequence)
+				) {
+					issues.push(
+						issue({
+							code: "invalid-entity",
+							message: `Invalid motion-text sequence ${operation.sequenceId}`,
+							operationIndex,
+							entityIds: [operation.sequenceId],
+						}),
+					);
+					break;
+				}
+				const missingAssets = sequenceAssetIds(operation.sequence).filter(
+					(assetId) => !assets.has(assetId),
+				);
+				if (missingAssets.length > 0) {
+					issues.push(
+						issue({
+							code: "missing-relation",
+							message: "Motion-text sequence references missing assets",
+							operationIndex,
+							entityIds: [operation.sequenceId, ...missingAssets],
+						}),
+					);
+					break;
+				}
+				motionTextSequences.set(operation.sequenceId, operation.sequence);
+				changedIds.push(operation.sequenceId);
+				origins.set(operation.sequenceId, operationIndex);
+				break;
+			}
+			case "delete-motion-text-sequence": {
+				const existing = motionTextSequences.get(operation.sequenceId);
+				if (!existing) {
+					issues.push(
+						issue({
+							code: "not-found",
+							message: `Motion-text sequence ${operation.sequenceId} not found`,
+							operationIndex,
+							entityIds: [operation.sequenceId],
+						}),
+					);
+					break;
+				}
+				if (existing.revision !== operation.expectedSequenceRevision) {
+					issues.push(
+						issue({
+							code: "provider:motion-text-sequence-revision-conflict",
+							message: `Expected motion-text sequence revision ${operation.expectedSequenceRevision}, actual ${existing.revision}`,
+							operationIndex,
+							entityIds: [operation.sequenceId],
+						}),
+					);
+					break;
+				}
+				const referencingClips = [...clips.values()].filter(
+					(clip) => clip.content?.sequenceId === operation.sequenceId,
+				);
+				if (referencingClips.length > 0) {
+					issues.push(
+						issue({
+							code: "missing-relation",
+							message: `Motion-text sequence ${operation.sequenceId} is still referenced`,
+							operationIndex,
+							entityIds: [
+								operation.sequenceId,
+								...referencingClips.map((clip) => clip.id),
+							],
+						}),
+					);
+					break;
+				}
+				motionTextSequences.delete(operation.sequenceId);
+				changedIds.push(operation.sequenceId);
+				origins.set(operation.sequenceId, operationIndex);
 				break;
 			}
 			default:

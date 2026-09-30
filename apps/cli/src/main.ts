@@ -28,6 +28,28 @@ interface Args {
 	readonly flags: ReadonlyMap<string, string | true>;
 }
 
+class CliRequestError extends Error {
+	readonly status: number;
+	readonly method: "GET" | "POST";
+	readonly route: string;
+	readonly response: unknown;
+
+	constructor(args: {
+		readonly status: number;
+		readonly method: "GET" | "POST";
+		readonly route: string;
+		readonly response: unknown;
+		readonly message: string;
+	}) {
+		super(args.message);
+		this.name = "CliRequestError";
+		this.status = args.status;
+		this.method = args.method;
+		this.route = args.route;
+		this.response = args.response;
+	}
+}
+
 function parseArgs(argv: readonly string[]): Args {
 	const positional: string[] = [];
 	const flags = new Map<string, string | true>();
@@ -84,13 +106,16 @@ async function request(
 			parsed !== null &&
 			name in parsed &&
 			typeof (parsed as Record<string, unknown>)[name] === "string"
-				? ((parsed as Record<string, string>)[name])
+				? (parsed as Record<string, string>)[name]
 				: undefined;
-		const message =
-			field("message") ?? field("error") ?? response.statusText;
-		throw new Error(
-			`${method} /${route} failed (${response.status}): ${message}`,
-		);
+		const message = field("message") ?? field("error") ?? response.statusText;
+		throw new CliRequestError({
+			status: response.status,
+			method,
+			route,
+			response: parsed,
+			message: `${method} /${route} failed (${response.status}): ${message}`,
+		});
 	}
 	return parsed;
 }
@@ -141,9 +166,14 @@ export const USAGE_LINES: readonly string[] = [
 	"  rocut target list",
 	"  rocut target reap [--project <dir>] [--dry-run]",
 	"  rocut read [--target <id|auto>] [--project <dir>]",
+	"  rocut motion-text catalog [--target <id|auto>] [--project <dir>]",
+	"  rocut motion-text list [--target <id|auto>] [--project <dir>]",
+	"  rocut motion-text create <spec.json> [--target <id|auto>] [--project <dir>]",
+	"  rocut motion-text mutate <sequence-id> <mutation.json> [--target <id|auto>] [--project <dir>]",
+	"  rocut motion-text vary <sequence-id> <variation.json> [--apply] [--target <id|auto>] [--project <dir>]",
 	"  rocut verify <tick> [--target <id|auto>] [--project <dir>]",
 	"  rocut apply <ops.json> [--target <id|auto>] [--project <dir>]",
-	"  rocut export [--out <file>] [--format mp4|webm] [--quality low|medium|high|very_high] [--no-audio] [--target <id|auto>] [--project <dir>]",
+	"  rocut export [--out <file>] [--format mp4|webm] [--quality low|medium|high|very_high] [--no-audio] [--start-time <ticks> --end-time <ticks>] [--target <id|auto>] [--project <dir>]",
 	"  rocut draft begin [--target <id|auto>] [--project <dir>]",
 	"  rocut draft stage <ops.json> --draft <id> [--target <id|auto>] [--project <dir>]",
 	"  rocut draft approve|reject|discard --draft <id> [--target <id|auto>] [--project <dir>]",
@@ -267,26 +297,115 @@ async function runCli(argv: readonly string[]): Promise<void> {
 			const resolved = await resolveTarget(args, registry);
 			const context = (await request(resolved.secret, "GET", "context")) as {
 				revision: number;
-				project: { name: string } | null;
+				project: { id: string; name: string } | null;
 			};
-			const tracks = (await request(
-				resolved.secret,
-				"GET",
-				"tracks",
-			)) as unknown[];
+			const [tracks, clips, assets, markers, motionTextSequences] =
+				(await Promise.all([
+					request(resolved.secret, "GET", "tracks"),
+					request(resolved.secret, "GET", "clips"),
+					request(resolved.secret, "GET", "assets"),
+					request(resolved.secret, "GET", "markers"),
+					request(resolved.secret, "GET", "motion-text-sequences"),
+				])) as [unknown[], unknown[], unknown[], unknown[], unknown[]];
 			process.stdout.write(
 				JSON.stringify(
 					{
 						target: resolved.entry.id,
 						revision: context.revision,
 						project: context.project?.name ?? null,
+						projectEntity: context.project,
 						tracks: tracks.length,
+						clips: clips.length,
+						assets: assets.length,
+						markers: markers.length,
+						motionTextSequences: motionTextSequences.length,
+						entities: {
+							tracks,
+							clips,
+							assets,
+							markers,
+							motionTextSequences,
+						},
 					},
 					null,
 					"\t",
 				) + "\n",
 			);
 			return;
+		}
+		case "motion-text": {
+			const subcommand = args.positional[0];
+			const resolved = await resolveTarget(args, registry);
+			if (subcommand === "catalog") {
+				const catalog = await request(
+					resolved.secret,
+					"GET",
+					"motion-text/catalog",
+				);
+				process.stdout.write(
+					JSON.stringify({ target: resolved.entry.id, catalog }, null, "\t") +
+						"\n",
+				);
+				return;
+			}
+			if (subcommand === "list") {
+				const [context, sequences] = (await Promise.all([
+					request(resolved.secret, "GET", "context"),
+					request(resolved.secret, "GET", "motion-text-sequences"),
+				])) as [{ revision: number }, unknown[]];
+				process.stdout.write(
+					JSON.stringify(
+						{
+							target: resolved.entry.id,
+							projectRevision: context.revision,
+							sequences,
+						},
+						null,
+						"\t",
+					) + "\n",
+				);
+				return;
+			}
+			if (subcommand === "create") {
+				const specFile = args.positional[1];
+				if (specFile === undefined) {
+					throw new Error("motion-text create requires a spec JSON file");
+				}
+				const spec: unknown = JSON.parse(await readFile(specFile, "utf8"));
+				const outcome = await request(
+					resolved.secret,
+					"POST",
+					"motion-text/sequences",
+					spec,
+				);
+				process.stdout.write(JSON.stringify(outcome, null, "\t") + "\n");
+				return;
+			}
+			if (subcommand === "mutate" || subcommand === "vary") {
+				const sequenceId = args.positional[1];
+				const specFile = args.positional[2];
+				if (sequenceId === undefined || specFile === undefined) {
+					throw new Error(
+						`motion-text ${subcommand} requires a sequence id and JSON file`,
+					);
+				}
+				const spec: unknown = JSON.parse(await readFile(specFile, "utf8"));
+				const suffix =
+					subcommand === "mutate"
+						? "mutations"
+						: `variations${args.flags.has("apply") ? "?apply=true" : ""}`;
+				const outcome = await request(
+					resolved.secret,
+					"POST",
+					`motion-text/sequences/${encodeURIComponent(sequenceId)}/${suffix}`,
+					spec,
+				);
+				process.stdout.write(JSON.stringify(outcome, null, "\t") + "\n");
+				return;
+			}
+			throw new Error(
+				"usage: rocut motion-text catalog|list|create|mutate|vary (see rocut --help)",
+			);
 		}
 		case "verify": {
 			// The composed-frame proof (S07): digest the frame at a tick.
@@ -353,10 +472,25 @@ async function runCli(argv: readonly string[]): Promise<void> {
 			// than accepting a job that could never run — that error is the
 			// honest one to surface, not a hang.
 			const resolved = await resolveTarget(args, registry);
+			const startTime = flag(args, "start-time");
+			const endTime = flag(args, "end-time");
+			if ((startTime === undefined) !== (endTime === undefined)) {
+				throw new Error(
+					"export range requires both --start-time and --end-time in media ticks",
+				);
+			}
 			const started = (await request(resolved.secret, "POST", "export", {
 				format: flag(args, "format") ?? "mp4",
 				quality: flag(args, "quality") ?? "high",
 				...(args.flags.has("no-audio") ? { includeAudio: false } : {}),
+				...(startTime === undefined || endTime === undefined
+					? {}
+					: {
+							range: {
+								startTime: Number(startTime),
+								endTime: Number(endTime),
+							},
+						}),
 			})) as { id: string };
 
 			// Poll until terminal. The host settles a job whose pane went silent
@@ -480,6 +614,16 @@ function main(): void {
 		process.stderr.write(
 			`rocut: ${error instanceof Error ? error.message : String(error)}\n`,
 		);
+		if (error instanceof CliRequestError) {
+			process.stderr.write(
+				JSON.stringify({
+					httpStatus: error.status,
+					method: error.method,
+					route: error.route,
+					response: error.response,
+				}) + "\n",
+			);
+		}
 		process.exitCode = 1;
 	});
 }

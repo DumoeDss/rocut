@@ -1,0 +1,140 @@
+{
+	"tokenizer": {
+		"zh-Hans": {
+			"version": "unicode-v1",
+			"segments": ["你好世界", "再次相见"],
+			"explicit": false
+		},
+		"ja": {
+			"version": "unicode-v1",
+			"segments": ["夜明けの", "色を覚え", "てる"],
+			"explicit": false
+		},
+		"ko": {
+			"version": "unicode-v1",
+			"segments": ["새벽빛", "을", "기억해"],
+			"explicit": false
+		},
+		"en": {
+			"version": "unicode-v1",
+			"segments": ["I remember", "the color of dawn"],
+			"explicit": false
+		},
+		"explicit": {
+			"version": "unicode-v1",
+			"segments": ["夜明け", "の色"],
+			"explicit": true
+		}
+	},
+	"cueIdentity": {
+		"base": {
+			"alpha": "cue-57273fbf06df1788",
+			"beta": "cue-45661113ca3d1096"
+		},
+		"prefixed": {
+			"intro": "cue-71e234b22dd61b16",
+			"alpha": "cue-57273fbf06df1788",
+			"beta": "cue-45661113ca3d1096"
+		},
+		"stableAfterPrefix": true
+	},
+	"initialPlan": {
+		"version": 1,
+		"sequenceRevision": 2,
+		"cuts": [
+			{
+				"id": "cut-b0e416d02577ed00",
+				"cueId": "cue:one",
+				"text": "hello vivid",
+				"startTime": 0,
+				"duration": 82500,
+				"seed": 55471181,
+				"layout": "stack",
+				"enter": "blur",
+				"trans": null,
+				"density": 0.5,
+				"nullable": null
+			},
+			{
+				"id": "cut-24853dfc0ea5fcac",
+				"cueId": "cue:one",
+				"text": "world",
+				"startTime": 82500,
+				"duration": 37500,
+				"seed": 658863141,
+				"layout": "stack",
+				"enter": "blur",
+				"trans": null,
+				"density": 0.5,
+				"nullable": null
+			},
+			{
+				"id": "cut-e0b53f16dd049910",
+				"cueId": "cue:two",
+				"text": "second line",
+				"startTime": 120000,
+				"duration": 120000,
+				"seed": 4150470937,
+				"layout": "center",
+				"enter": "blur",
+				"trans": null,
+				"density": 0.5,
+				"nullable": null
+			}
+		]
+	},
+	"variation": {
+		"cuts": [
+			{
+				"id": "cut-b0e416d02577ed00",
+				"cueId": "cue:one",
+				"text": "hello vivid",
+				"startTime": 0,
+				"duration": 82500,
+				"seed": 2835937776,
+				"layout": "stack",
+				"enter": "blur",
+				"trans": null,
+				"density": 0.5,
+				"nullable": null
+			},
+			{
+				"id": "cut-24853dfc0ea5fcac",
+				"cueId": "cue:one",
+				"text": "world",
+				"startTime": 82500,
+				"duration": 37500,
+				"seed": 2622694642,
+				"layout": "stack",
+				"enter": "blur",
+				"trans": null,
+				"density": 0.5,
+				"nullable": null
+			},
+			{
+				"id": "cut-e0b53f16dd049910",
+				"cueId": "cue:two",
+				"text": "second line",
+				"startTime": 120000,
+				"duration": 120000,
+				"seed": 4150470937,
+				"layout": "center",
+				"enter": "blur",
+				"trans": null,
+				"density": 0.5,
+				"nullable": null
+			}
+		],
+		"untouchedCueStable": true,
+		"lockedLayoutStable": true,
+		"lockedParameterStable": true
+	},
+	"invalidTiming": {
+		"plan": null,
+		"codes": ["overlapping-cues"]
+	},
+	"unsupportedRendererPreset": {
+		"plan": null,
+		"codes": ["unsupported-renderer-preset"]
+	}
+}

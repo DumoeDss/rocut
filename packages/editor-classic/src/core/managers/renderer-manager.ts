@@ -14,9 +14,13 @@ import { createTimelineAudioBuffer } from "../../media/audio";
 import { formatTimecode } from "opencut-wasm";
 import { downloadBlob } from "../../utils/browser";
 import type { AssetResolver } from "@opencut/editor-ports";
+import type { RuntimeAssetLoader } from "@opencut/editor-ports";
 import type { VideoCache } from "../../services/video-cache/service";
 import { resetEffectPreviewService } from "../../services/renderer/effect-preview";
 import { SessionActivityGenerationError } from "../../editor/session/session-resources";
+import { MotionTextFontRuntime } from "../../services/renderer/motion-text/font-runtime";
+import type { MotionTextSequence } from "@opencut/editor-contracts";
+import { resolveMediaTimeRange } from "../../wasm";
 
 interface RendererActivityLifecycle {
 	getActivityGeneration(): number;
@@ -94,12 +98,19 @@ type SnapshotResult =
 export const RASTERIZER_UNAVAILABLE_ERROR =
 	"Renderer unavailable: this environment has no rasterizer";
 
+export interface MotionTextSequencePreview {
+	readonly baseRevision: number;
+	readonly sequence: MotionTextSequence;
+}
+
 export class RendererManager {
 	private renderTree: RootNode | null = null;
+	private motionTextSequencePreview: MotionTextSequencePreview | null = null;
 	private _isDegraded = false;
 	private listeners = new Set<() => void>();
 	private readonly editor: EditorCore;
 	readonly assetResolver: AssetResolver;
+	readonly motionTextFontRuntime: MotionTextFontRuntime;
 
 	private readonly compositor: WasmCompositor;
 	private readonly videoCache: VideoCache;
@@ -111,11 +122,13 @@ export class RendererManager {
 		editor,
 		resources,
 		assetResolver,
+		assetLoader,
 		videoCache,
 	}: {
 		editor: EditorCore;
 		resources: SessionResources;
 		assetResolver: AssetResolver;
+		assetLoader: RuntimeAssetLoader;
 		videoCache: VideoCache;
 	}) {
 		this.editor = editor;
@@ -123,6 +136,23 @@ export class RendererManager {
 		this.activityLifecycle = resolveActivityLifecycle(resources);
 		this.compositor = new WasmCompositor(resources);
 		this.videoCache = videoCache;
+		this.motionTextFontRuntime = new MotionTextFontRuntime({
+			loadBuiltinFont: ({ font, signal }) =>
+				assetLoader.loadBytes({
+					ref: {
+						path: font.builtinPath ?? `motion-text/fonts/${font.id}.ttf`,
+					},
+					signal,
+				}),
+			loadProjectFont: async ({ projectId, assetId, signal }) => {
+				const attachment = await this.editor.persistence.loadAttachment({
+					projectId,
+					key: assetId,
+					signal,
+				});
+				return attachment?.body ?? null;
+			},
+		});
 	}
 
 	createCanvasRenderer({
@@ -163,11 +193,47 @@ export class RendererManager {
 		this.notify();
 	}
 
+	setMotionTextSequencePreview({
+		baseRevision,
+		sequence,
+	}: MotionTextSequencePreview): boolean {
+		const committedSequence = this.editor.project
+			.getActiveOrNull()
+			?.motionTextSequences.find((candidate) => candidate.id === sequence.id);
+		if (
+			!committedSequence ||
+			committedSequence.revision !== baseRevision ||
+			sequence.revision !== baseRevision + 1
+		) {
+			this.clearMotionTextSequencePreview({ sequenceId: sequence.id });
+			return false;
+		}
+		this.motionTextSequencePreview = { baseRevision, sequence };
+		this.notify();
+		return true;
+	}
+
+	getMotionTextSequencePreview(): MotionTextSequencePreview | null {
+		return this.motionTextSequencePreview;
+	}
+
+	clearMotionTextSequencePreview({
+		sequenceId,
+	}: {
+		readonly sequenceId: string;
+	}): void {
+		if (this.motionTextSequencePreview?.sequence.id !== sequenceId) return;
+		this.motionTextSequencePreview = null;
+		this.notify();
+	}
+
 	async drainProjectLiveState(): Promise<void> {
 		const results = await Promise.allSettled([
 			this.invalidatePublications(),
+			Promise.resolve().then(() => this.motionTextFontRuntime.invalidate()),
 			Promise.resolve().then(() => {
 				this.renderTree = null;
+				this.motionTextSequencePreview = null;
 				this.notify();
 			}),
 			Promise.resolve().then(() =>
@@ -181,6 +247,7 @@ export class RendererManager {
 	}
 
 	async suspend(): Promise<void> {
+		this.motionTextFontRuntime.invalidate();
 		await this.invalidatePublications();
 	}
 
@@ -325,7 +392,12 @@ export class RendererManager {
 			return { success: false, error: RASTERIZER_UNAVAILABLE_ERROR };
 		}
 
-		const { format, quality, fps, includeAudio } = options;
+		const { format, quality, fps, includeAudio, range } = options;
+		// Audio is opt-OUT: the UI checkbox and the CLI's --no-audio both map
+		// to an explicit false, while an absent flag must keep the documented
+		// default (include). A bare truthiness check silently dropped audio
+		// for every host-driven export that did not pass --no-audio.
+		const shouldIncludeAudio = includeAudio !== false;
 		const publication = this.capturePublication();
 
 		try {
@@ -342,18 +414,23 @@ export class RendererManager {
 			if (duration === 0) {
 				return { success: false, error: "Project is empty" };
 			}
+			const exportRange = resolveMediaTimeRange({
+				range,
+				timelineDuration: duration,
+			});
 
 			const exportFps = fps ?? activeProject.settings.fps;
 			const canvasSize = activeProject.settings.canvasSize;
 
 			let audioBuffer: AudioBuffer | null = null;
-			if (includeAudio) {
+			if (shouldIncludeAudio) {
 				publication.guard.assertCurrent({ token: publication.token });
 				onProgress?.({ progress: 0.05 });
 				audioBuffer = await createTimelineAudioBuffer({
 					tracks,
 					mediaAssets,
-					duration,
+					startTime: exportRange.startTime,
+					duration: exportRange.duration,
 					resources: this.editor.resources,
 				});
 				publication.guard.assertCurrent({ token: publication.token });
@@ -362,6 +439,9 @@ export class RendererManager {
 			const scene = buildScene({
 				tracks,
 				mediaAssets,
+				motionTextSequences: activeProject.motionTextSequences,
+				motionTextFontRuntime: this.motionTextFontRuntime,
+				motionTextProjectId: activeProject.metadata.id,
 				duration,
 				canvasSize,
 				background: activeProject.settings.background,
@@ -374,7 +454,7 @@ export class RendererManager {
 				fps: exportFps,
 				format,
 				quality,
-				shouldIncludeAudio: !!includeAudio,
+				shouldIncludeAudio,
 				audioBuffer: audioBuffer || undefined,
 				compositor: this.compositor,
 				videoCache: this.videoCache,
@@ -385,7 +465,7 @@ export class RendererManager {
 			try {
 				exporter.on("progress", (progress) => {
 					publication.guard.assertCurrent({ token: publication.token });
-					const adjustedProgress = includeAudio
+					const adjustedProgress = shouldIncludeAudio
 						? 0.05 + progress * 0.95
 						: progress;
 					onProgress?.({ progress: adjustedProgress });
@@ -405,7 +485,10 @@ export class RendererManager {
 				});
 
 				try {
-					const buffer = await exporter.export({ rootNode: scene });
+					const buffer = await exporter.export({
+						rootNode: scene,
+						range: exportRange,
+					});
 					publication.guard.assertCurrent({ token: publication.token });
 
 					if (cancelled) {
@@ -441,7 +524,11 @@ export class RendererManager {
 		const results = await Promise.allSettled([this.invalidatePublications()]);
 		const ownerResults = await Promise.allSettled([
 			Promise.resolve().then(() => this.compositor.dispose()),
-			Promise.resolve().then(() => this.listeners.clear()),
+			Promise.resolve().then(() => this.motionTextFontRuntime.dispose()),
+			Promise.resolve().then(() => {
+				this.motionTextSequencePreview = null;
+				this.listeners.clear();
+			}),
 		]);
 		throwRendererLifecycleErrors({
 			results: [...results, ...ownerResults],

@@ -360,11 +360,70 @@ pub fn media_time_clamp(
     time.clamp(min, max)
 }
 
+#[cfg_attr(feature = "wasm", derive(tsify_next::Tsify))]
+#[cfg_attr(feature = "wasm", tsify(from_wasm_abi))]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct ValidateMediaTimeRangeOptions {
+    pub start_time: MediaTime,
+    pub end_time: MediaTime,
+    pub timeline_duration: MediaTime,
+}
+
+#[cfg_attr(feature = "wasm", derive(tsify_next::Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
+#[derive(Clone, Copy, Debug, Serialize, Eq, PartialEq)]
+#[serde(rename_all = "kebab-case")]
+pub enum MediaTimeRangeError {
+    InvalidTimelineDuration,
+    StartBeforeZero,
+    EndNotAfterStart,
+    EndAfterTimelineDuration,
+}
+
+#[cfg_attr(feature = "wasm", derive(tsify_next::Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi, missing_as_null))]
+#[derive(Clone, Copy, Debug, Serialize, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct MediaTimeRangeValidation {
+    pub duration: Option<MediaTime>,
+    pub error: Option<MediaTimeRangeError>,
+}
+
+#[export]
+pub fn validate_media_time_range(
+    ValidateMediaTimeRangeOptions {
+        start_time,
+        end_time,
+        timeline_duration,
+    }: ValidateMediaTimeRangeOptions,
+) -> MediaTimeRangeValidation {
+    let error = if timeline_duration <= MediaTime::ZERO {
+        Some(MediaTimeRangeError::InvalidTimelineDuration)
+    } else if start_time < MediaTime::ZERO {
+        Some(MediaTimeRangeError::StartBeforeZero)
+    } else if end_time <= start_time {
+        Some(MediaTimeRangeError::EndNotAfterStart)
+    } else if end_time > timeline_duration {
+        Some(MediaTimeRangeError::EndAfterTimelineDuration)
+    } else {
+        None
+    };
+
+    MediaTimeRangeValidation {
+        duration: error.is_none().then_some(end_time - start_time),
+        error,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::frame_rate::FrameRate;
 
-    use super::{MediaTime, TICKS_PER_SECOND};
+    use super::{
+        MediaTime, MediaTimeRangeError, TICKS_PER_SECOND, ValidateMediaTimeRangeOptions,
+        validate_media_time_range,
+    };
 
     #[test]
     fn converts_between_seconds_and_ticks() {
@@ -424,5 +483,53 @@ mod tests {
                 .snapped_seek_time(duration, rate),
             Some(MediaTime::from_seconds_f64(10.0).unwrap()),
         );
+    }
+
+    #[test]
+    fn validates_strict_half_open_timeline_ranges() {
+        let timeline_duration = MediaTime::from_ticks(1_200_000);
+        let valid = validate_media_time_range(ValidateMediaTimeRangeOptions {
+            start_time: MediaTime::from_ticks(120_000),
+            end_time: MediaTime::from_ticks(360_000),
+            timeline_duration,
+        });
+        assert_eq!(valid.duration, Some(MediaTime::from_ticks(240_000)));
+        assert_eq!(valid.error, None);
+
+        let cases = [
+            (
+                MediaTime::from_ticks(-1),
+                MediaTime::from_ticks(1),
+                timeline_duration,
+                MediaTimeRangeError::StartBeforeZero,
+            ),
+            (
+                MediaTime::from_ticks(120_000),
+                MediaTime::from_ticks(120_000),
+                timeline_duration,
+                MediaTimeRangeError::EndNotAfterStart,
+            ),
+            (
+                MediaTime::from_ticks(120_000),
+                MediaTime::from_ticks(1_200_001),
+                timeline_duration,
+                MediaTimeRangeError::EndAfterTimelineDuration,
+            ),
+            (
+                MediaTime::ZERO,
+                MediaTime::ONE_TICK,
+                MediaTime::ZERO,
+                MediaTimeRangeError::InvalidTimelineDuration,
+            ),
+        ];
+        for (start_time, end_time, duration, expected) in cases {
+            let result = validate_media_time_range(ValidateMediaTimeRangeOptions {
+                start_time,
+                end_time,
+                timeline_duration: duration,
+            });
+            assert_eq!(result.duration, None);
+            assert_eq!(result.error, Some(expected));
+        }
     }
 }

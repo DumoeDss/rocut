@@ -95,7 +95,11 @@ export const PROJECT_UPDATED_MID_JOB_REASON = "project-updated-mid-job";
 export const FFMPEG_MISSING_REASON = "ffmpeg-missing";
 export const RAW_STREAM_SHORT_REASON = "raw-stream-short";
 
-const LIVE_PHASES: readonly ExportJobPhase[] = ["queued", "rendering", "encoding"];
+const LIVE_PHASES: readonly ExportJobPhase[] = [
+	"queued",
+	"rendering",
+	"encoding",
+];
 const SETTLED_PHASES: readonly ExportJobPhase[] = [
 	"completed",
 	"failed",
@@ -154,7 +158,11 @@ interface JobEntry {
 
 /** What `onAnyJob` hears: one job's event, or a list membership change. */
 export type ExportJobNotification =
-	| { readonly kind: "event"; readonly jobId: string; readonly event: ExportJobEvent }
+	| {
+			readonly kind: "event";
+			readonly jobId: string;
+			readonly event: ExportJobEvent;
+	  }
 	| { readonly kind: "listChanged" };
 
 export interface ExportJobManagerArgs {
@@ -240,10 +248,17 @@ export class ExportJobManager {
 		try {
 			descriptor = openSync(temp, "w");
 			const buffer =
-				typeof bytes === "string" ? Buffer.from(bytes, "utf8") : Buffer.from(bytes);
+				typeof bytes === "string"
+					? Buffer.from(bytes, "utf8")
+					: Buffer.from(bytes);
 			let written = 0;
 			while (written < buffer.length) {
-				written += writeSync(descriptor, buffer, written, buffer.length - written);
+				written += writeSync(
+					descriptor,
+					buffer,
+					written,
+					buffer.length - written,
+				);
 			}
 			closeSync(descriptor);
 			descriptor = undefined;
@@ -298,7 +313,9 @@ export class ExportJobManager {
 		this.removeIfPresent(this.rawPath(jobId));
 		this.removeIfPresent(this.wavPath(jobId));
 		if (entry?.record.outputName) {
-			this.removeIfPresent(`${this.outputPath(entry.record.outputName)}.partial`);
+			this.removeIfPresent(
+				`${this.outputPath(entry.record.outputName)}.partial`,
+			);
 			if (includeOutput) {
 				this.removeIfPresent(this.outputPath(entry.record.outputName));
 			}
@@ -426,11 +443,23 @@ export class ExportJobManager {
 	// -- lifecycle ----------------------------------------------------------
 
 	private static validateRequest(request: ExportJobRequest): string | null {
-		if (typeof request?.projectId !== "string" || request.projectId.length === 0) {
+		if (
+			typeof request?.projectId !== "string" ||
+			request.projectId.length === 0
+		) {
 			return "a job needs a non-empty projectId";
 		}
 		if (typeof request?.format !== "string" || request.format.length === 0) {
 			return "a job needs a non-empty format";
+		}
+		if (
+			request.range !== undefined &&
+			(!Number.isSafeInteger(request.range.startTime) ||
+				!Number.isSafeInteger(request.range.endTime) ||
+				request.range.startTime < 0 ||
+				request.range.endTime <= request.range.startTime)
+		) {
+			return "range needs non-negative integer ticks with endTime after startTime";
 		}
 		return null;
 	}
@@ -446,7 +475,8 @@ export class ExportJobManager {
 		projectContentDigest?: string;
 	}): { jobId: string } {
 		const invalid = ExportJobManager.validateRequest(args.request);
-		if (invalid !== null) throw new ExportJobManagerError(`startJob: ${invalid}`);
+		if (invalid !== null)
+			throw new ExportJobManagerError(`startJob: ${invalid}`);
 		const jobId = randomUUID();
 		const now = Date.now();
 		const record: ExportJobRecord = {
@@ -561,6 +591,7 @@ export class ExportJobManager {
 			height: number;
 			fps: { numerator: number; denominator: number };
 			totalFrames: number;
+			range?: { startTime: number; duration: number };
 		};
 		projectName?: string;
 		projectContentDigest?: string;
@@ -635,7 +666,10 @@ export class ExportJobManager {
 		if (record.phase === "interrupted") {
 			// A rendering job's frames are the resumable part; without the raw
 			// stream the record is a receipt for work that cannot continue.
-			if (record.totalFrames !== null && !existsSync(this.rawPath(record.jobId))) {
+			if (
+				record.totalFrames !== null &&
+				!existsSync(this.rawPath(record.jobId))
+			) {
 				throw new ExportJobManagerError(
 					`beginExport: interrupted job ${record.jobId} has no raw stream to resume — discard the job`,
 				);
@@ -654,6 +688,10 @@ export class ExportJobManager {
 					`beginExport: queued job ${record.jobId} needs its render spec`,
 				);
 			}
+			this.assertRangeMatchesRequest({
+				request: record.request,
+				spec: attachSpec,
+			});
 			this.ensureLive(entry);
 			const live = entry.live as LiveJob;
 			live.store = live.store.beginRendering({
@@ -677,6 +715,10 @@ export class ExportJobManager {
 		// rendering (or encoding): an idempotent re-attach. The spec, if
 		// declared again, must be the same job it always was.
 		if (attachSpec !== undefined) {
+			this.assertRangeMatchesRequest({
+				request: record.request,
+				spec: attachSpec,
+			});
 			this.assertSpecMatches({ record, spec: attachSpec });
 		}
 		return this.assignmentOf(record);
@@ -728,6 +770,7 @@ export class ExportJobManager {
 			height: number;
 			fps: { numerator: number; denominator: number };
 			totalFrames: number;
+			range?: { startTime: number; duration: number };
 		};
 	}): void {
 		const { record, spec } = args;
@@ -741,6 +784,24 @@ export class ExportJobManager {
 		) {
 			throw new ExportJobManagerError(
 				`beginExport: spec mismatch for job ${record.jobId} — the record says ${String(record.width)}x${String(record.height)}@${String(record.fps?.numerator)}/${String(record.fps?.denominator)} ${String(record.totalFrames)}f, the producer declared ${String(spec.width)}x${String(spec.height)}@${String(spec.fps.numerator)}/${String(spec.fps.denominator)} ${String(spec.totalFrames)}f`,
+			);
+		}
+	}
+
+	private assertRangeMatchesRequest(args: {
+		request: ExportJobRequest;
+		spec: { range?: { startTime: number; duration: number } };
+	}): void {
+		const requested = args.request.range;
+		if (requested === undefined) return;
+		const resolved = args.spec.range;
+		if (
+			resolved === undefined ||
+			resolved.startTime !== requested.startTime ||
+			resolved.duration !== requested.endTime - requested.startTime
+		) {
+			throw new ExportJobManagerError(
+				"beginExport: render range does not match the requested timeline range",
 			);
 		}
 	}
@@ -819,7 +880,12 @@ export class ExportJobManager {
 		);
 		let written = 0;
 		while (written < buffer.length) {
-			written += writeSync(live.rawFd, buffer, written, buffer.length - written);
+			written += writeSync(
+				live.rawFd,
+				buffer,
+				written,
+				buffer.length - written,
+			);
 		}
 
 		try {
@@ -1014,7 +1080,9 @@ export class ExportJobManager {
 		live.child = child;
 		let stderrTail = "";
 		child.stderr?.on("data", (chunk: Buffer) => {
-			stderrTail = `${stderrTail}${chunk.toString("utf8")}`.slice(-STDERR_TAIL_BYTES);
+			stderrTail = `${stderrTail}${chunk.toString("utf8")}`.slice(
+				-STDERR_TAIL_BYTES,
+			);
 		});
 		child.stdout?.on("data", (chunk: Buffer) => {
 			// `-progress pipe:1` emits `key=value` lines; `out_time_ms` is
@@ -1033,7 +1101,10 @@ export class ExportJobManager {
 		// gate must release in both paths or a cancel await would hang.
 		child.once("error", (error) => {
 			this.log(`job ${record.jobId}: ffmpeg spawn error ${String(error)}`);
-			this.failJob({ jobId: record.jobId, reason: `ffmpeg-spawn: ${String(error)}` });
+			this.failJob({
+				jobId: record.jobId,
+				reason: `ffmpeg-spawn: ${String(error)}`,
+			});
 			releaseChildExit();
 		});
 
@@ -1068,7 +1139,10 @@ export class ExportJobManager {
 		);
 	}
 
-	private applyEncodeProgress(args: { entry: JobEntry; progress: number }): void {
+	private applyEncodeProgress(args: {
+		entry: JobEntry;
+		progress: number;
+	}): void {
 		const { entry } = args;
 		const live = entry.live;
 		if (live === null || entry.record.phase !== "encoding") return;
@@ -1456,12 +1530,20 @@ export function resolveFfmpegPath(args: {
 	envValue?: string;
 	configuredRoot?: string;
 }): string | null {
-	const cacheKey = JSON.stringify([args.envValue ?? null, args.configuredRoot ?? null]);
+	const cacheKey = JSON.stringify([
+		args.envValue ?? null,
+		args.configuredRoot ?? null,
+	]);
 	const cached = ffmpegDiscoveryCache.get(cacheKey);
 	if (cached !== undefined) return cached;
-	const names = process.platform === "win32" ? ["ffmpeg.exe"] : ["ffmpeg", "ffmpeg.exe"];
+	const names =
+		process.platform === "win32" ? ["ffmpeg.exe"] : ["ffmpeg", "ffmpeg.exe"];
 	const found = (() => {
-		if (args.envValue !== undefined && args.envValue !== "" && existsSync(args.envValue)) {
+		if (
+			args.envValue !== undefined &&
+			args.envValue !== "" &&
+			existsSync(args.envValue)
+		) {
 			return args.envValue;
 		}
 		if (args.configuredRoot !== undefined) {
@@ -1471,7 +1553,9 @@ export function resolveFfmpegPath(args: {
 			}
 		}
 		const pathValue = process.env.PATH ?? "";
-		for (const dir of pathValue.split(process.platform === "win32" ? ";" : ":")) {
+		for (const dir of pathValue.split(
+			process.platform === "win32" ? ";" : ":",
+		)) {
 			if (dir === "") continue;
 			for (const name of names) {
 				const candidate = join(dir, name);

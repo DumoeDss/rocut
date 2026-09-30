@@ -264,6 +264,12 @@ export class SessionOpenCutTransactions {
 		return this.requireActive().engine.markers();
 	}
 
+	motionTextSequences() {
+		return (
+			this.requireActive().engine.motionTextSequences?.() ?? Promise.resolve([])
+		);
+	}
+
 	project(): Promise<Project | null> {
 		return this.requireActive().engine.project();
 	}
@@ -322,19 +328,22 @@ export class SessionOpenCutTransactions {
 		engine: TransactionEngine,
 		revision: Revision,
 	): Promise<TransactionEngineDocument> {
-		const [project, tracks, clips, assets, markers] = await Promise.all([
-			engine.project(),
-			engine.tracks(),
-			engine.clips(),
-			engine.assets(),
-			engine.markers(),
-		]);
+		const [project, tracks, clips, assets, markers, motionTextSequences] =
+			await Promise.all([
+				engine.project(),
+				engine.tracks(),
+				engine.clips(),
+				engine.assets(),
+				engine.markers(),
+				engine.motionTextSequences?.() ?? Promise.resolve([]),
+			]);
 		return {
 			project,
 			tracks,
 			clips,
 			assets,
 			markers,
+			motionTextSequences,
 			revision,
 			idempotency: [],
 		};

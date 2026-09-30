@@ -30,6 +30,11 @@ function affectedEntityIds(operation: TransactionOperation): readonly string[] {
 		case "update-marker":
 		case "delete-marker":
 			return [operation.markerId];
+		case "create-motion-text-sequence":
+			return [operation.sequence.id];
+		case "update-motion-text-sequence":
+		case "delete-motion-text-sequence":
+			return [operation.sequenceId];
 	}
 }
 

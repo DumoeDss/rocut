@@ -1,5 +1,7 @@
 import type { Asset, Clip, Marker, Project, Track } from "..";
 import { validateFrameRate } from "..";
+import type { MotionTextClipContent, MotionTextSequence } from "../motion-text";
+import { validateMotionTextSequence } from "../motion-text";
 import type { ProjectId } from "@opencut/editor-ports";
 import type {
 	TransactionEngineDocument,
@@ -77,8 +79,26 @@ export function isValidClip(value: unknown): value is Clip {
 		isNonNegativeInteger(value.duration) &&
 		isNonNegativeInteger(value.trimStart) &&
 		isNonNegativeInteger(value.trimEnd) &&
-		(value.assetId === undefined || isNonEmptyString(value.assetId))
+		(value.assetId === undefined || isNonEmptyString(value.assetId)) &&
+		(value.content === undefined || isValidMotionTextClipContent(value.content))
 	);
+}
+
+function isValidMotionTextClipContent(
+	value: unknown,
+): value is MotionTextClipContent {
+	return (
+		isRecord(value) &&
+		Reflect.ownKeys(value).length === 2 &&
+		value.kind === "motion-text" &&
+		isNonEmptyString(value.sequenceId)
+	);
+}
+
+export function isValidMotionTextSequence(
+	value: unknown,
+): value is MotionTextSequence {
+	return validateMotionTextSequence({ value }).length === 0;
 }
 
 export function isValidAsset(value: unknown): value is Asset {
@@ -162,6 +182,25 @@ export function validateTransactionDocument(args: {
 			}
 		});
 	}
+	if (
+		document.motionTextSequences !== undefined &&
+		!Array.isArray(document.motionTextSequences)
+	) {
+		issues.push(
+			invalid("motionTextSequences", "motionTextSequences must be an array"),
+		);
+	} else if (Array.isArray(document.motionTextSequences)) {
+		document.motionTextSequences.forEach((value, index) => {
+			for (const sequenceIssue of validateMotionTextSequence({ value })) {
+				issues.push(
+					invalid(
+						`motionTextSequences[${index}].${sequenceIssue.path}`,
+						sequenceIssue.message,
+					),
+				);
+			}
+		});
+	}
 
 	if (
 		Array.isArray(document.tracks) &&
@@ -171,14 +210,19 @@ export function validateTransactionDocument(args: {
 		document.tracks.every(isValidTrack) &&
 		document.clips.every(isValidClip) &&
 		document.assets.every(isValidAsset) &&
-		document.markers.every(isValidMarker)
+		document.markers.every(isValidMarker) &&
+		(document.motionTextSequences === undefined ||
+			(Array.isArray(document.motionTextSequences) &&
+				document.motionTextSequences.every(isValidMotionTextSequence)))
 	) {
+		const motionTextSequences = document.motionTextSequences ?? [];
 		const ids = new Set<string>();
 		for (const entity of [
 			...document.tracks,
 			...document.clips,
 			...document.assets,
 			...document.markers,
+			...motionTextSequences,
 		]) {
 			if (ids.has(entity.id)) {
 				issues.push(invalid("entities", `Duplicate entity id ${entity.id}`));
@@ -187,6 +231,9 @@ export function validateTransactionDocument(args: {
 		}
 		const trackIds = new Set(document.tracks.map((track) => track.id));
 		const assetIds = new Set(document.assets.map((asset) => asset.id));
+		const sequenceIds = new Set(
+			motionTextSequences.map((sequence) => sequence.id),
+		);
 		for (const clip of document.clips) {
 			if (!trackIds.has(clip.trackId)) {
 				issues.push(
@@ -201,6 +248,36 @@ export function validateTransactionDocument(args: {
 					invalid(
 						`clips.${clip.id}.assetId`,
 						"Clip references a missing asset",
+					),
+				);
+			}
+			if (
+				clip.content?.kind === "motion-text" &&
+				!sequenceIds.has(clip.content.sequenceId)
+			) {
+				issues.push(
+					invalid(
+						`clips.${clip.id}.content.sequenceId`,
+						"Motion-text clip references a missing sequence",
+					),
+				);
+			}
+		}
+		for (const sequence of motionTextSequences) {
+			const referencedAssetIds = [
+				sequence.audioBinding?.assetId,
+				...sequence.fonts
+					.filter((font) => font.source === "project")
+					.map((font) => font.assetId),
+			].filter((assetId): assetId is NonNullable<typeof assetId> =>
+				Boolean(assetId),
+			);
+			for (const referencedAssetId of referencedAssetIds) {
+				if (assetIds.has(referencedAssetId)) continue;
+				issues.push(
+					invalid(
+						`motionTextSequences.${sequence.id}.assets`,
+						`Motion-text sequence references missing asset ${referencedAssetId}`,
 					),
 				);
 			}

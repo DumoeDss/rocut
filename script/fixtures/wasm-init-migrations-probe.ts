@@ -1,5 +1,5 @@
 /**
- * Loads classic's real 31-step migration chain — no `evidence/wasm-test-mock`, no
+ * Loads classic's real 32-step migration chain — no `evidence/wasm-test-mock`, no
  * `mock.module` — and reports what came back, as one JSON line on stdout.
  *
  * This is the entry S05 recorded as unloadable: the chain reaches `opencut-wasm` transitively

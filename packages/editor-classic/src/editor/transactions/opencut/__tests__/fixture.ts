@@ -1,11 +1,76 @@
 /* eslint-disable @typescript-eslint/no-unsafe-type-assertion, opencut/prefer-object-params -- Focused fixtures intentionally construct branded donor times, opaque records, and an instrumented store. */
 import type { ProjectRecord, ProjectStore } from "@opencut/editor-ports";
 import { createInMemoryProjectStoreFixture } from "@opencut/editor-ports/in-memory";
+import {
+	mediaTime,
+	motionTextCueId,
+	motionTextSequenceId,
+	type MotionTextSequence,
+} from "@opencut/editor-contracts";
 import { encodeProject } from "../../../persistence/project-codec";
 import type { TProject } from "../../../../project/types";
 import type { SceneTracks } from "../../../../timeline";
 
 export const TEST_PROJECT_ID = "opencut-routing-project";
+
+export function motionTextSequenceFixture({
+	revision = 0,
+	text = "Hello motion",
+}: {
+	revision?: number;
+	text?: string;
+} = {}): MotionTextSequence {
+	return {
+		id: motionTextSequenceId("sequence:title"),
+		schemaVersion: 1,
+		revision,
+		source: { format: "plain", text },
+		language: "en",
+		duration: mediaTime({ ticks: 120_000 }),
+		compositionMode: "overlay",
+		seed: 7,
+		engine: {
+			id: "jizura",
+			version: "0.9.0",
+			catalogHash: "fixture-catalog",
+			plannerVersion: 1,
+			tokenizerVersion: "unicode-v1",
+		},
+		fonts: [],
+		defaults: {
+			preset: {
+				style: "base",
+				layout: "center",
+				enter: "fade",
+				hold: "still",
+				exit: "fade",
+				decor: [],
+				treat: "none",
+				bg: "transparent",
+				cam: "static",
+				fx: [],
+				trans: null,
+			},
+			colors: {},
+			parameters: {},
+		},
+		cues: [
+			{
+				id: motionTextCueId("cue:title"),
+				text,
+				startTime: mediaTime({ ticks: 0 }),
+				duration: mediaTime({ ticks: 120_000 }),
+				interlude: false,
+				gapBefore: false,
+				impact: false,
+				emphasis: [],
+				segments: [text],
+				locks: [],
+				overrides: {},
+			},
+		],
+	};
+}
 
 export function projectFixture(): TProject {
 	const tracks: SceneTracks = {
@@ -39,6 +104,7 @@ export function projectFixture(): TProject {
 				updatedAt: new Date("2026-08-10T00:00:00.000Z"),
 			},
 		],
+		motionTextSequences: [],
 		currentSceneId: "scene-main",
 		settings: {
 			fps: { numerator: 30, denominator: 1 },

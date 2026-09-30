@@ -7,4 +7,4 @@
  * `opencut-wasm` closure — the constraint the package README states as policy
  * truth and S05 documented as a direction-level finding.
  */
-export const CURRENT_PROJECT_VERSION = 31;
+export const CURRENT_PROJECT_VERSION = 32;
