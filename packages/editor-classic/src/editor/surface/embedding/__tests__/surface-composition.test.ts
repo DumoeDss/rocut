@@ -94,6 +94,26 @@ describe("public Surface composition", () => {
 		expect(vite).toContain("<EditorErrorBoundary>");
 	});
 
+	test("Tool Host pane fills its viewport without standalone chrome", () => {
+		const app = source("apps/vite-example/src/app.tsx");
+		const embedded = app.slice(
+			app.indexOf("function HostServedApp("),
+			app.indexOf("function HostServedSync("),
+		);
+		expect(embedded).toContain('id="editor-container" data-host-embedded="true"');
+		expect(embedded).not.toContain("<HostChrome>");
+		expect(embedded).toContain("<HostServedSync");
+		expect(embedded).toContain('<SessionEditorSurface focusMode="focused" />');
+		const standalone = app.slice(app.indexOf("function EditorApp("));
+		expect(standalone).toContain("<HostChrome>");
+		expect(standalone).not.toContain("data-host-embedded");
+		const css = source("apps/vite-example/src/styles.css");
+		expect(css).toMatch(/\[data-host-embedded="true"\]\s*\{[^}]*height: 100dvh;/);
+		expect(css).toMatch(/\[data-host-embedded="true"\] \[data-editor-header\]\s*\{\s*display: none;/);
+		expect(source("packages/editor-classic/src/components/editor/editor-header.tsx"))
+			.toContain('data-editor-header=""');
+	});
+
 	test("keeps the Host-owned C4 probe behind full project-load completion", () => {
 		const page = source("apps/web/src/app/editor/[project_id]/page.tsx");
 		const probe = withoutComments(

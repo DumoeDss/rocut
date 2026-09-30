@@ -24,3 +24,17 @@ body,
  */
 @source "../../../packages/editor-classic/src";
 @source "./";
+
+/* The Tool Host pane is already framed by Elftia; only the editor belongs here.
+ * Keep the standalone demo chrome and the frozen Surface API unchanged. */
+[data-host-embedded="true"] {
+	height: 100dvh;
+	width: 100%;
+	min-width: 0;
+	min-height: 0;
+	overflow: hidden;
+}
+
+[data-host-embedded="true"] [data-editor-header] {
+	display: none;
+}

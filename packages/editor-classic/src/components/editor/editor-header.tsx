@@ -33,7 +33,10 @@ export function EditorHeader() {
 	const { feedbackEndpoint } = useEditorHostServices();
 
 	return (
-		<header className="bg-background flex h-[3.4rem] items-center justify-between px-3 pt-0.5">
+		<header
+			data-editor-header=""
+			className="bg-background flex h-[3.4rem] items-center justify-between px-3 pt-0.5"
+		>
 			<div className="flex items-center gap-1">
 				<ProjectDropdown />
 				<EditableProjectName />

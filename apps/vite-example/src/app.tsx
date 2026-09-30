@@ -127,7 +127,7 @@ function HostServedApp({ surface }: { surface: HostServedSurface }) {
 		>
 			<TooltipProvider>
 				<Toaster />
-				<HostChrome>
+				<main id="editor-container" data-host-embedded="true">
 					<EditorErrorBoundary>
 						<EditorSessionHost host={host}>
 							<HostServedSync projectId={surface.projectId} />
@@ -138,7 +138,7 @@ function HostServedApp({ surface }: { surface: HostServedSurface }) {
 							<SessionEditorSurface focusMode="focused" />
 						</EditorSessionHost>
 					</EditorErrorBoundary>
-				</HostChrome>
+				</main>
 			</TooltipProvider>
 		</ThemeProvider>
 	);
