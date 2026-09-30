@@ -156,7 +156,7 @@ export function MotionTextPresetPreview({
 	if (!active) {
 		return (
 			<div
-				className="bg-muted/40 flex aspect-video items-center justify-center"
+				className="bg-muted/40 flex h-20 shrink-0 items-center justify-center"
 				data-motion-text-preview-state="idle"
 			>
 				<span className="text-muted-foreground text-[10px] uppercase tracking-widest">
@@ -167,10 +167,10 @@ export function MotionTextPresetPreview({
 	}
 
 	return (
-		<div className="bg-black/90 relative aspect-video overflow-hidden">
+		<div className="bg-black/90 relative h-20 shrink-0 overflow-hidden">
 			<canvas
 				ref={canvasRef}
-				className="size-full"
+				className="size-full object-contain"
 				data-motion-text-preview-active="true"
 				data-motion-text-preview-key={entry.key}
 			/>

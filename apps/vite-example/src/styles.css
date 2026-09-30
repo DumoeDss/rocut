@@ -1,5 +1,6 @@
-@import "tailwindcss/theme.css";
-@import "tailwindcss/preflight.css";
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
 @import "../../../packages/editor-classic/src/surface/surface.css";
 
 /*

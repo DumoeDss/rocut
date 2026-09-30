@@ -93,6 +93,41 @@ function isPrimaryPointer(event: PointerEvent): boolean {
 	return event.button === 0 && event.isPrimary !== false;
 }
 
+/** Keep native panel scrolling; only contain wheel gestures that would escape. */
+function canScrollInside({
+	root,
+	event,
+}: {
+	root: HTMLElement;
+	event: WheelEvent;
+}): boolean {
+	if (event.ctrlKey) return false;
+	const view = root.ownerDocument.defaultView;
+	if (!view) return false;
+	let element = event.target instanceof view.Element ? event.target : null;
+	const deltaX = event.deltaX || (event.shiftKey ? event.deltaY : 0);
+	const deltaY = event.shiftKey ? 0 : event.deltaY;
+	while (element && element !== root) {
+		const style = view.getComputedStyle(element);
+		if (
+			/^(auto|scroll)$/.test(style.overflowY) &&
+			((deltaY < 0 && element.scrollTop > 0) ||
+				(deltaY > 0 &&
+					element.scrollTop + element.clientHeight < element.scrollHeight))
+		)
+			return true;
+		if (
+			/^(auto|scroll)$/.test(style.overflowX) &&
+			((deltaX < 0 && element.scrollLeft > 0) ||
+				(deltaX > 0 &&
+					element.scrollLeft + element.clientWidth < element.scrollWidth))
+		)
+			return true;
+		element = element.parentElement;
+	}
+	return false;
+}
+
 export function installSurfaceFocusScope({
 	root,
 	mode,
@@ -120,7 +155,7 @@ export function installSurfaceFocusScope({
 	if (FOCUS_MODE_MATRIX[mode].wheel) {
 		const wheelOptions: AddEventListenerOptions = { passive: false };
 		const onWheel = (event: WheelEvent) => {
-			event.preventDefault();
+			if (!canScrollInside({ root, event })) event.preventDefault();
 			event.stopPropagation();
 		};
 		root.addEventListener("wheel", onWheel, wheelOptions);

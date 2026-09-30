@@ -31,8 +31,8 @@ import type { EditorSessionRootHandle } from "../../session/session-types";
  * | Mode      | `tabIndex` | Keyboard shortcuts     | Wheel handling                    | Focus trap |
  * | --------- | ---------- | ---------------------- | --------------------------------- | ---------- |
  * | `passive` | `-1`       | inactive (host retains) | default (page scroll)            | no         |
- * | `focused` | `0`        | active (editor handles) | `preventDefault` inside container | no         |
- * | `full`    | `0`        | active                  | `preventDefault` inside container | yes (Tab cycles within container) |
+ * | `focused` | `0`        | active (editor handles) | native panel scroll; contain edges | no         |
+ * | `full`    | `0`        | active                  | native panel scroll; contain edges | yes (Tab cycles within container) |
  *
  * The Surface SHALL NOT claim window-level key or pointer capture in any mode.
  *

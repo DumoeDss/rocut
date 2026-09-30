@@ -4,6 +4,7 @@ interface PanelViewProps extends React.HTMLAttributes<HTMLDivElement> {
 	title?: string;
 	actions?: React.ReactNode;
 	children: React.ReactNode;
+	footer?: React.ReactNode;
 	contentClassName?: string;
 	scrollClassName?: string;
 	hideHeader?: boolean;
@@ -16,6 +17,7 @@ export function PanelView({
 	title,
 	actions,
 	children,
+	footer,
 	className,
 	contentClassName,
 	scrollClassName,
@@ -27,7 +29,7 @@ export function PanelView({
 }: PanelViewProps) {
 	return (
 		<div
-			className={cn("relative flex h-full flex-col", className)}
+			className={cn("relative flex h-full min-h-0 min-w-0 flex-col", className)}
 			ref={ref}
 			{...rest}
 		>
@@ -41,7 +43,7 @@ export function PanelView({
 			)}
 			<div
 				className={cn(
-					"scrollbar-hidden size-full overflow-y-auto",
+					"scrollbar-thin min-h-0 w-full flex-1 overflow-y-auto overscroll-contain",
 					hideHeader ? "pt-4" : "pt-2",
 					scrollClassName,
 				)}
@@ -52,6 +54,9 @@ export function PanelView({
 					{children}
 				</div>
 			</div>
+			{footer && (
+				<div className="bg-background shrink-0 border-t p-2">{footer}</div>
+			)}
 		</div>
 	);
 }

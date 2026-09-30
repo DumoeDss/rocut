@@ -10,6 +10,16 @@ import {
 type Listener = (event: FakeEvent) => void;
 
 class FakeElement {
+	nodeType = 1;
+	parentElement: FakeElement | null = null;
+	scrollTop = 0;
+	scrollLeft = 0;
+	scrollHeight = 0;
+	scrollWidth = 0;
+	clientHeight = 0;
+	clientWidth = 0;
+	overflowY = "visible";
+	overflowX = "visible";
 	readonly attributes = new Map<string, string>();
 	isConnected = true;
 	disabled = false;
@@ -87,6 +97,9 @@ class FakeRoot extends FakeElement {
 }
 
 class FakeEvent {
+	deltaY = 100;
+	deltaX = 0;
+	ctrlKey = false;
 	defaultPrevented = false;
 	propagationStopped = false;
 	button = 0;
@@ -204,6 +217,53 @@ describe("Surface focus scope", () => {
 		});
 		cleanup();
 	});
+
+	for (const mode of ["focused", "full"] as const) {
+		test(`${mode} permits native panel scrolling but contains exhausted edges and zoom`, () => {
+			const document = {
+				activeElement: null as FakeElement | null,
+				defaultView: {
+					Element: FakeElement,
+					getComputedStyle: (element: FakeElement) => element,
+				},
+			};
+			const root = new FakeRoot(document, "root");
+			const panel = new FakeElement(document, "panel");
+			panel.parentElement = root;
+			panel.overflowY = "auto";
+			panel.scrollHeight = 1200;
+			panel.clientHeight = 400;
+			const child = new FakeElement(document, "button");
+			child.parentElement = panel;
+			const cleanup = installSurfaceFocusScope({ root: asRoot(root), mode });
+			const wheel = new FakeEvent(child);
+			root.dispatch("wheel", wheel);
+			expect(wheel.defaultPrevented).toBe(false);
+			expect(wheel.propagationStopped).toBe(true);
+			panel.scrollTop = 800;
+			const edge = new FakeEvent(child);
+			root.dispatch("wheel", edge);
+			expect(edge.defaultPrevented).toBe(true);
+			const reverse = new FakeEvent(child);
+			reverse.deltaY = -100;
+			root.dispatch("wheel", reverse);
+			expect(reverse.defaultPrevented).toBe(false);
+			const zoom = new FakeEvent(child);
+			zoom.ctrlKey = true;
+			zoom.deltaY = -100;
+			root.dispatch("wheel", zoom);
+			expect(zoom.defaultPrevented).toBe(true);
+			panel.overflowX = "auto";
+			panel.scrollWidth = 900;
+			panel.clientWidth = 300;
+			const horizontal = new FakeEvent(child);
+			horizontal.deltaY = 0;
+			horizontal.deltaX = 60;
+			root.dispatch("wheel", horizontal);
+			expect(horizontal.defaultPrevented).toBe(false);
+			cleanup();
+		});
+	}
 
 	test("full mode cycles current dynamic boundaries and falls back to the root", () => {
 		const document = { activeElement: null as FakeElement | null };

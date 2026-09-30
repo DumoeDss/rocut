@@ -111,7 +111,21 @@ export function MotionTextAssetsView() {
 	};
 
 	return (
-		<PanelView title="Motion text" contentClassName="pb-3">
+		<PanelView
+			title="Motion text"
+			contentClassName="pb-3"
+			footer={
+				<Button
+					data-testid="motion-text-add"
+					onClick={() => void addAtPlayhead()}
+					disabled={isAdding || isComposing || source.trim().length === 0}
+					className="w-full"
+				>
+					{isAdding && <Spinner className="size-4" />}
+					{isAdding ? "Adding motion text…" : "Add at playhead"}
+				</Button>
+			}
+		>
 			<div className="flex flex-col gap-4">
 				<JizuraImportControl />
 				<div className="flex flex-col gap-1.5">
@@ -209,15 +223,6 @@ export function MotionTextAssetsView() {
 						<span>{message.text}</span>
 					</div>
 				)}
-
-				<Button
-					onClick={() => void addAtPlayhead()}
-					disabled={isAdding || isComposing || source.trim().length === 0}
-					className="w-full"
-				>
-					{isAdding && <Spinner className="size-4" />}
-					{isAdding ? "Adding motion text…" : "Add at playhead"}
-				</Button>
 			</div>
 		</PanelView>
 	);

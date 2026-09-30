@@ -6,6 +6,8 @@
 @plugin "tailwindcss-animate";
 
 :where([data-editor-surface]) {
+	font-family: var(--font-inter, "Segoe UI"), "Microsoft YaHei UI", sans-serif;
+	color: var(--foreground);
 	--background: hsl(0 0% 100%);
 	--foreground: hsl(0 0% 11%);
 	--card: hsl(0 0% 100%);
@@ -159,7 +161,7 @@
 
 @theme inline {
 	--breakpoint-xs: 30rem;
-	--font-sans: var(--font-inter), sans-serif;
+	--font-sans: var(--font-inter, "Segoe UI"), "Microsoft YaHei UI", sans-serif;
 	--text-xs: 0.72rem;
 	--text-sm: 0.79rem;
 	--text-base: 0.92rem;
