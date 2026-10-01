@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ThemeProvider } from "next-themes";
+import { useEmbeddedHostTheme } from "./host/use-embedded-host-theme";
 import { Toaster } from "@opencut/editor-classic/ui";
 import { TooltipProvider } from "@opencut/editor-classic/ui";
 import { MobileGate } from "@opencut/editor-classic/ui";
@@ -111,6 +112,7 @@ function BootApp() {
 }
 
 function HostServedApp({ surface }: { surface: HostServedSurface }) {
+	const hostTheme = useEmbeddedHostTheme();
 	const host = useMemo(
 		() =>
 			createHostServedEditorHost({
@@ -122,6 +124,7 @@ function HostServedApp({ surface }: { surface: HostServedSurface }) {
 	return (
 		<ThemeProvider
 			attribute="class"
+			forcedTheme={hostTheme}
 			defaultTheme="system"
 			disableTransitionOnChange={true}
 		>
@@ -262,6 +265,7 @@ function HostServedSync({ projectId }: { projectId: string }) {
 }
 
 function EditorApp() {
+	const hostTheme = useEmbeddedHostTheme();
 	const [projectId, setProjectId] = useState<string | null>(
 		readProjectIdFromUrl,
 	);
@@ -281,6 +285,7 @@ function EditorApp() {
 		// analytics scripts — the editor expects a theme, tooltips and a toaster.
 		<ThemeProvider
 			attribute="class"
+			forcedTheme={hostTheme}
 			defaultTheme="system"
 			disableTransitionOnChange={true}
 		>

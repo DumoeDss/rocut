@@ -7,11 +7,7 @@ import {
 	type TimeCodeFormat,
 } from "opencut-wasm";
 import { cn } from "../utils/ui";
-import {
-	parseMediaTimecode,
-	snapSeekMediaTime,
-	type MediaTime,
-} from "../wasm";
+import { parseMediaTimecode, snapSeekMediaTime, type MediaTime } from "../wasm";
 
 interface EditableTimecodeProps {
 	time: MediaTime;
@@ -123,6 +119,8 @@ export function EditableTimecode({
 		return (
 			<input
 				ref={inputRef}
+				aria-label="Playhead time"
+				aria-invalid={hasError}
 				type="text"
 				value={inputValue}
 				onChange={handleInputChange}
@@ -144,6 +142,7 @@ export function EditableTimecode({
 	return (
 		<button
 			type="button"
+			aria-label="Edit playhead time"
 			onClick={startEditing}
 			onKeyDown={handleDisplayKeyDown}
 			disabled={disabled}

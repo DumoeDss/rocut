@@ -149,18 +149,21 @@ function ToolbarLeftSection() {
 				<ToolbarButton
 					icon={<HugeiconsIcon icon={ScissorIcon} />}
 					tooltip="Split element"
+					disabled={selectedElements.length === 0}
 					onClick={({ event }) => handleAction({ action: "split", event })}
 				/>
 
 				<ToolbarButton
 					icon={<HugeiconsIcon icon={AlignLeftIcon} />}
 					tooltip="Split left"
+					disabled={selectedElements.length === 0}
 					onClick={({ event }) => handleAction({ action: "split-left", event })}
 				/>
 
 				<ToolbarButton
 					icon={<HugeiconsIcon icon={AlignRightIcon} />}
 					tooltip="Split right"
+					disabled={selectedElements.length === 0}
 					onClick={({ event }) =>
 						handleAction({ action: "split-right", event })
 					}
@@ -182,6 +185,7 @@ function ToolbarLeftSection() {
 				<ToolbarButton
 					icon={<HugeiconsIcon icon={Copy01Icon} />}
 					tooltip="Duplicate element"
+					disabled={selectedElements.length === 0}
 					onClick={({ event }) =>
 						handleAction({ action: "duplicate-selected", event })
 					}
@@ -197,6 +201,7 @@ function ToolbarLeftSection() {
 				<ToolbarButton
 					icon={<HugeiconsIcon icon={Delete02Icon} />}
 					tooltip="Delete element"
+					disabled={selectedElements.length === 0}
 					onClick={({ event }) =>
 						handleAction({ action: "delete-selected", event })
 					}
@@ -258,7 +263,7 @@ function SceneSelector() {
 				<SplitButtonLeft>{currentScene?.name || "No Scene"}</SplitButtonLeft>
 				<SplitButtonSeparator />
 				<ScenesView>
-					<SplitButtonRight onClick={() => {}}>
+					<SplitButtonRight aria-label="Manage scenes">
 						<HugeiconsIcon icon={Layers01Icon} className="size-4" />
 					</SplitButtonRight>
 				</ScenesView>
@@ -307,11 +312,13 @@ function ToolbarRightSection({
 				<Button
 					variant="text"
 					size="icon"
+					aria-label="Zoom timeline out"
 					onClick={() => onZoom({ direction: "out" })}
 				>
 					<HugeiconsIcon icon={SearchMinusIcon} />
 				</Button>
 				<Slider
+					aria-label="Timeline zoom"
 					className="w-28"
 					value={[zoomToSlider({ zoomLevel, minZoom })]}
 					onValueChange={(values) =>
@@ -324,6 +331,7 @@ function ToolbarRightSection({
 				<Button
 					variant="text"
 					size="icon"
+					aria-label="Zoom timeline in"
 					onClick={() => onZoom({ direction: "in" })}
 				>
 					<HugeiconsIcon icon={SearchAddIcon} />
@@ -351,6 +359,8 @@ function ToolbarButton({
 	const button = (
 		<Button
 			variant={isActive ? "secondary" : "text"}
+			aria-label={tooltip}
+			aria-pressed={isActive}
 			size="icon"
 			disabled={disabled}
 			onClick={onClick ? (event) => onClick({ event }) : undefined}

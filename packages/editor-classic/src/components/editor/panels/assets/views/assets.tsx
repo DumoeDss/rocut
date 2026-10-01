@@ -535,6 +535,11 @@ function MediaActions({
 					<TooltipTrigger asChild>
 						<Button
 							size="icon"
+							aria-label={
+								mediaViewMode === "grid"
+									? "Switch to list view"
+									: "Switch to grid view"
+							}
 							variant="ghost"
 							onClick={() =>
 								setMediaViewMode(mediaViewMode === "grid" ? "list" : "grid")
@@ -563,6 +568,7 @@ function MediaActions({
 							<DropdownMenuTrigger asChild>
 								<Button
 									size="icon"
+									aria-label="Sort media"
 									variant="ghost"
 									disabled={isProcessing}
 									className="items-center justify-center"
@@ -612,6 +618,7 @@ function MediaActions({
 			</TooltipProvider>
 			<Button
 				variant="outline"
+				aria-label="Import media"
 				onClick={onImport}
 				disabled={isProcessing}
 				size="sm"

@@ -156,6 +156,12 @@ export type MotionTextCuePresetMutation =
 
 export type MotionTextSequenceMutation =
 	| {
+			readonly kind: "apply-preset";
+			readonly group: MotionTextPresetGroup;
+			readonly presetId: string;
+			readonly cueIds?: readonly string[];
+	  }
+	| {
 			readonly kind: "update-planning-controls";
 			readonly controls: MotionTextPlanningControls;
 	  }

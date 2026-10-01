@@ -88,6 +88,23 @@ const canonicalJizuraImport: ImportJizuraMotionTextProjectCore = (options) =>
 	});
 
 describe("motion-text Rust sequence factory seam", () => {
+	test("applies catalog presets through the canonical WASM mutation seam", () => {
+		const created = createStarterMotionTextSequence({
+			sequenceId: "catalog-application", source: "First line\nSecond line",
+			duration: 1_800_000, starterPreset: "clean-caption",
+			rendererSupport: MOTION_TEXT_RENDERER_SUPPORT, core: canonicalFactory,
+		});
+		if (!created.sequence) throw new Error("Fixture sequence missing");
+		const result = mutateMotionTextSequence({
+			sequence: created.sequence,
+			mutation: { kind: "apply-preset", group: "style", presetId: "crimson" },
+			rendererSupport: MOTION_TEXT_RENDERER_SUPPORT, core: canonicalMutation,
+		});
+		expect(result.sequence?.revision).toBe(1);
+		expect(result.sequence?.cues.every((cue) => cue.overrides.preset?.style === "crimson")).toBe(true);
+		expect(result.sequence?.resolvedPlan?.cuts.every((cut) => cut.preset.style === "crimson")).toBe(true);
+		expect(created.sequence.revision).toBe(0);
+	});
 	test("creates contract-valid preset previews through the canonical WASM seam", () => {
 		const created = createMotionTextPresetPreview({
 			sequenceId: "preview:layout:huge",

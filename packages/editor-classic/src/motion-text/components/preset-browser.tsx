@@ -4,11 +4,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { MotionTextPresetGroup } from "@opencut/editor-contracts";
 
 import { Input } from "../../components/ui/input";
+import { Button } from "../../components/ui/button";
 import { cn } from "../../utils/ui";
 import {
 	filterMotionTextPresetCatalog,
 	JIZURA_PRESET_CATALOG,
 	MOTION_TEXT_PRESET_GROUPS,
+	type MotionTextPresetCatalogEntry,
 } from "../preset-catalog";
 import {
 	MOTION_TEXT_PRESET_COLUMNS,
@@ -16,6 +18,7 @@ import {
 	resolveMotionTextPresetVirtualWindow,
 } from "../preset-virtualization";
 import { MotionTextPresetPreview } from "./preset-preview";
+import { usePresetApplication } from "./use-preset-application";
 
 type PresetGroupFilter = MotionTextPresetGroup | "all";
 
@@ -30,6 +33,10 @@ export function MotionTextPresetBrowser({
 	const scrollRef = useRef<HTMLDivElement>(null);
 	const [group, setGroup] = useState<PresetGroupFilter>("all");
 	const [query, setQuery] = useState("");
+	const [selected, setSelected] = useState<MotionTextPresetCatalogEntry | null>(
+		null,
+	);
+	const { targetName, apply, isApplying, message } = usePresetApplication();
 	const [scrollTop, setScrollTop] = useState(0);
 	const [viewportHeight, setViewportHeight] = useState(DEFAULT_VIEWPORT_HEIGHT);
 	const [catalogVisible, setCatalogVisible] = useState(false);
@@ -115,7 +122,7 @@ export function MotionTextPresetBrowser({
 							resetScroll();
 						}}
 						className={cn(
-							"shrink-0 rounded-full border px-2 py-1 text-[10px] uppercase tracking-wide",
+							"focus-visible:ring-ring shrink-0 rounded-full border px-2 py-1 text-xs focus-visible:ring-2",
 							group === value
 								? "border-foreground bg-foreground text-background"
 								: "border-border bg-background text-muted-foreground",
@@ -145,9 +152,13 @@ export function MotionTextPresetBrowser({
 							const row = Math.floor(index / MOTION_TEXT_PRESET_COLUMNS);
 							const column = index % MOTION_TEXT_PRESET_COLUMNS;
 							return (
-								<article
+								<button
 									key={entry.key}
-									className="absolute p-1"
+									type="button"
+									aria-label={`Select preset ${entry.name} (${entry.group})`}
+									aria-pressed={selected?.key === entry.key}
+									onClick={() => setSelected(entry)}
+									className="focus-visible:ring-ring absolute p-1 text-left focus-visible:z-10 focus-visible:ring-2"
 									style={{
 										top: row * MOTION_TEXT_PRESET_ROW_HEIGHT,
 										left: `${column * 50}%`,
@@ -156,7 +167,13 @@ export function MotionTextPresetBrowser({
 									}}
 									data-motion-text-preset-card={entry.key}
 								>
-									<div className="bg-background size-full overflow-hidden rounded border">
+									<div
+										className={cn(
+											"bg-background size-full overflow-hidden rounded border",
+											selected?.key === entry.key &&
+												"border-primary ring-primary ring-1",
+										)}
+									>
 										<MotionTextPresetPreview
 											active={
 												catalogVisible && virtualWindow.activeIndexes.has(index)
@@ -168,24 +185,51 @@ export function MotionTextPresetBrowser({
 												<span className="min-w-0 flex-1 truncate text-[11px] font-medium">
 													{entry.name}
 												</span>
-												<span className="text-muted-foreground shrink-0 text-[8px] uppercase">
-													Supported
-												</span>
 											</div>
 											<span className="text-muted-foreground truncate font-mono text-[9px]">
 												{entry.key}
 											</span>
 										</div>
 									</div>
-								</article>
+								</button>
 							);
 						})}
 					</div>
 				)}
 			</div>
-			<p className="text-muted-foreground text-[11px] leading-4">
-				Only visible rows are mounted. Up to four previews animate at once.
-			</p>
+			<div
+				className="bg-muted/30 flex flex-col gap-2 rounded-md border p-2"
+				data-testid="motion-text-preset-application"
+			>
+				<p className="text-muted-foreground text-xs leading-4">
+					{targetName
+						? `Target: ${targetName}. Changes only the selected preset group; locks stay intact.`
+						: "Add or select a motion-text clip on the timeline to apply presets."}
+				</p>
+				<Button
+					data-testid="motion-text-apply-preset"
+					size="sm"
+					disabled={!selected || !targetName || isApplying}
+					onClick={() => selected && void apply(selected)}
+				>
+					{isApplying
+						? "Applying…"
+						: selected
+							? `Apply ${selected.name}`
+							: "Select a preset above"}
+				</Button>
+				{message && (
+					<p
+						role={message.error ? "alert" : "status"}
+						className={cn(
+							"text-xs leading-4",
+							message.error ? "text-destructive" : "text-muted-foreground",
+						)}
+					>
+						{message.text}
+					</p>
+				)}
+			</div>
 		</section>
 	);
 }

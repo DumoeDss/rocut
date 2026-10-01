@@ -5,11 +5,7 @@ import { type ReactNode, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AspectRatio } from "../../../ui/aspect-ratio";
 import { Button } from "../../../ui/button";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "../../../ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../../ui/tooltip";
 import { useSurfaceDragCoordinator } from "../../../../editor/surface/embedding/surface-drag-coordinator";
 import { useSurfacePortalOwner } from "../../../../editor/surface/embedding/surface-portal";
 import { useEditorInstance } from "../../../../editor/use-editor";
@@ -116,9 +112,9 @@ export function DraggableItem({
 							onDragEnd={isDraggable ? handleDragEnd : undefined}
 						>
 							{preview}
-							{!isDragging && (
+							{!isDragging && onAddToTimeline && (
 								<PlusButton
-									className="opacity-0 group-hover:opacity-100"
+									label={`Add ${name} to timeline`}
 									onClick={handleAddToTimeline}
 								/>
 							)}
@@ -146,7 +142,7 @@ export function DraggableItem({
 					<button
 						type="button"
 						className={cn(
-							"flex h-8 w-full cursor-default items-center gap-3 px-1 outline-none",
+							"focus-visible:ring-ring flex h-8 w-full cursor-default items-center gap-3 pr-9 pl-1 focus-visible:ring-2",
 							isDraggable && "[&::-webkit-drag-ghost]:opacity-0",
 							className,
 						)}
@@ -161,6 +157,13 @@ export function DraggableItem({
 							{name}
 						</span>
 					</button>
+					{onAddToTimeline && !isDragging && (
+						<PlusButton
+							label={`Add ${name} to timeline`}
+							className="right-1 bottom-1"
+							onClick={handleAddToTimeline}
+						/>
+					)}
 				</div>
 			)}
 
@@ -183,8 +186,9 @@ export function DraggableItem({
 								<div className="size-full [&_img]:size-full [&_img]:rounded-none [&_img]:object-cover">
 									{preview}
 								</div>
-								{shouldShowPlusOnDrag && (
+								{shouldShowPlusOnDrag && onAddToTimeline && (
 									<PlusButton
+										label={`Add ${name} to timeline`}
 										onClick={handleAddToTimeline}
 										tooltipText="Add to timeline or drag to position"
 									/>
@@ -199,19 +203,23 @@ export function DraggableItem({
 }
 
 function PlusButton({
+	label,
 	className,
 	onClick,
 	tooltipText,
 }: {
+	label: string;
 	className?: string;
 	onClick?: () => void;
 	tooltipText?: string;
 }) {
 	const button = (
 		<Button
+			aria-label={label}
+			data-testid="asset-add-to-timeline"
 			size="icon"
 			className={cn(
-				"bg-background hover:bg-background text-foreground absolute right-2 bottom-2 size-5",
+				"bg-background/90 hover:bg-background text-foreground absolute right-1 bottom-1 size-6 border",
 				className,
 			)}
 			onClick={(e) => {

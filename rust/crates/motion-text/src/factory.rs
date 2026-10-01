@@ -1,6 +1,8 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::OnceLock;
 
+mod preset_application;
+
 use bridge::export;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
@@ -150,6 +152,12 @@ pub struct MotionTextVariationCandidateResult {
     rename_all_fields = "camelCase"
 )]
 enum MotionTextSequenceMutation {
+    ApplyPreset {
+        group: MotionTextPresetGroup,
+        preset_id: String,
+        #[serde(default)]
+        cue_ids: Vec<String>,
+    },
     UpdatePlanningControls {
         controls: MotionTextPlanningControls,
     },
@@ -1011,6 +1019,20 @@ pub fn mutate_motion_text_sequence(
         _ => None,
     };
     let original = document.clone();
+    if let MotionTextSequenceMutation::ApplyPreset {
+        group, preset_id, ..
+    } = &mutation
+    {
+        if !renderer_support
+            .iter()
+            .any(|entry| entry.group == *group && entry.id == *preset_id)
+        {
+            return failed_build(
+                "unsupported-preset",
+                "The selected preset is not supported by the active renderer.",
+            );
+        }
+    }
     if let Err(result) = apply_sequence_mutation(&mut document, mutation) {
         return result;
     }
@@ -1212,6 +1234,13 @@ fn apply_sequence_mutation(
     mutation: MotionTextSequenceMutation,
 ) -> Result<(), CreateMotionTextSequenceResult> {
     match mutation {
+        MotionTextSequenceMutation::ApplyPreset {
+            group,
+            preset_id,
+            cue_ids,
+        } => {
+            preset_application::apply(&mut *document, group, &preset_id, &cue_ids)?;
+        }
         MotionTextSequenceMutation::UpdatePlanningControls { controls } => {
             document.insert(
                 "planningControls".to_owned(),
