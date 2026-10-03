@@ -15,6 +15,8 @@ use crate::{
     texture_store::TextureStore,
 };
 
+mod frame_composition;
+
 const LAYER_SHADER_SOURCE: &str = include_str!("shaders/layer.wgsl");
 const BLEND_SHADER_SOURCE: &str = include_str!("shaders/blend.wgsl");
 const MASK_SHADER_SOURCE: &str = include_str!("shaders/mask.wgsl");
@@ -41,6 +43,8 @@ pub struct Compositor {
 pub enum CompositorError {
     #[error("Texture '{texture_id}' is not available")]
     MissingTexture { texture_id: String },
+    #[error("Transition progress must be finite and between zero and one, got {0}")]
+    InvalidTransitionProgress(f32),
     #[error("Failed to apply effects: {0}")]
     Effects(#[from] effects::EffectsError),
     #[error("Failed to present frame: {0}")]
@@ -64,7 +68,8 @@ struct LayerUniformBuffer {
 #[derive(Clone, Copy, Pod, Zeroable)]
 struct BlendUniformBuffer {
     blend_mode: u32,
-    _padding: [u32; 3],
+    progress: f32,
+    _padding: [u32; 2],
 }
 
 #[repr(C)]
@@ -310,32 +315,7 @@ impl Compositor {
             frame.clear.color,
         );
 
-        for item in &frame.items {
-            match item {
-                FrameItemDescriptor::Layer(layer) => {
-                    let layer_texture = self.render_layer(context, &mut encoder, frame, layer)?;
-                    scene = self.blend_texture(
-                        context,
-                        &mut encoder,
-                        &scene,
-                        &layer_texture,
-                        layer.blend_mode,
-                        frame.width,
-                        frame.height,
-                    )?;
-                }
-                FrameItemDescriptor::SceneEffect { effect_pass_groups } => {
-                    scene = self.apply_effect_groups(
-                        context,
-                        &mut encoder,
-                        &scene,
-                        frame.width,
-                        frame.height,
-                        effect_pass_groups,
-                    )?;
-                }
-            }
-        }
+        scene = self.compose_items(context, &mut encoder, frame, scene)?;
 
         context.queue().submit([encoder.finish()]);
         Ok(scene)
@@ -366,32 +346,7 @@ impl Compositor {
             frame.clear.color,
         );
 
-        for item in &frame.items {
-            match item {
-                FrameItemDescriptor::Layer(layer) => {
-                    let layer_texture = self.render_layer(context, &mut encoder, frame, layer)?;
-                    scene = self.blend_texture(
-                        context,
-                        &mut encoder,
-                        &scene,
-                        &layer_texture,
-                        layer.blend_mode,
-                        frame.width,
-                        frame.height,
-                    )?;
-                }
-                FrameItemDescriptor::SceneEffect { effect_pass_groups } => {
-                    scene = self.apply_effect_groups(
-                        context,
-                        &mut encoder,
-                        &scene,
-                        frame.width,
-                        frame.height,
-                        effect_pass_groups,
-                    )?;
-                }
-            }
-        }
+        scene = self.compose_items(context, &mut encoder, frame, scene)?;
 
         context.encode_texture_blit_to_view(
             &mut encoder,
@@ -750,6 +705,31 @@ impl Compositor {
         width: u32,
         height: u32,
     ) -> Result<wgpu::Texture, CompositorError> {
+        self.blend_textures(
+            context,
+            encoder,
+            base,
+            layer,
+            BlendUniformBuffer {
+                blend_mode: blend_mode.shader_code(),
+                progress: 0.0,
+                _padding: [0; 2],
+            },
+            width,
+            height,
+        )
+    }
+
+    fn blend_textures(
+        &mut self,
+        context: &GpuContext,
+        encoder: &mut wgpu::CommandEncoder,
+        base: &wgpu::Texture,
+        layer: &wgpu::Texture,
+        uniforms: BlendUniformBuffer,
+        width: u32,
+        height: u32,
+    ) -> Result<wgpu::Texture, CompositorError> {
         let target =
             self.texture_pool
                 .acquire(context, width, height, "compositor-blended-texture");
@@ -793,10 +773,7 @@ impl Compositor {
                 .device()
                 .create_buffer_init(&wgpu::util::BufferInitDescriptor {
                     label: Some("compositor-blend-uniform-buffer"),
-                    contents: bytemuck::bytes_of(&BlendUniformBuffer {
-                        blend_mode: blend_mode.shader_code(),
-                        _padding: [0; 3],
-                    }),
+                    contents: bytemuck::bytes_of(&uniforms),
                     usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
                 });
         let uniform_bind_group = context

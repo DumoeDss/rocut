@@ -5,7 +5,7 @@ struct VertexOutput {
 
 struct BlendUniforms {
     blend_mode: u32,
-    _pad0: u32,
+    progress: f32,
     _pad1: u32,
     _pad2: u32,
 }
@@ -132,11 +132,21 @@ fn fragment_main(input: VertexOutput) -> @location(0) vec4f {
     let base = textureSample(base_texture, base_sampler, input.tex_coord);
     let layer = textureSample(layer_texture, layer_sampler, input.tex_coord);
 
+    // Both inputs and every compositor intermediate store straight alpha.
+    // Interpolate premultiplied contributions, then return straight alpha again.
+    if (uniforms.blend_mode == 17u) {
+        let alpha = mix(base.a, layer.a, uniforms.progress);
+        if (alpha <= 0.0) { return vec4f(0.0); }
+        let premultiplied = mix(base.rgb * base.a, layer.rgb * layer.a, uniforms.progress);
+        return vec4f(clamp01(premultiplied / alpha), alpha);
+    }
+
     let blend_rgb_value = blend_rgb(base.rgb, layer.rgb, uniforms.blend_mode);
     let out_alpha = layer.a + base.a * (1.0 - layer.a);
-    let out_rgb =
-        ((1.0 - layer.a) * base.rgb) +
+    if (out_alpha <= 0.0) { return vec4f(0.0); }
+    let premultiplied =
+        ((1.0 - layer.a) * base.a * base.rgb) +
         (layer.a * ((1.0 - base.a) * layer.rgb + base.a * blend_rgb_value));
 
-    return vec4f(clamp01(out_rgb), out_alpha);
+    return vec4f(clamp01(premultiplied / out_alpha), out_alpha);
 }

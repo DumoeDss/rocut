@@ -10,15 +10,23 @@ export type FrameDescriptor = {
 	items: FrameItemDescriptor[];
 };
 
+export type FrameLayerDescriptor = {
+	type: "layer";
+	textureId: string;
+	transform: QuadTransformDescriptor;
+	opacity: number;
+	blendMode: BlendMode;
+	effectPassGroups: EffectPass[][];
+	mask: LayerMaskDescriptor | null;
+};
+
 export type FrameItemDescriptor =
+	| FrameLayerDescriptor
 	| {
-			type: "layer";
-			textureId: string;
-			transform: QuadTransformDescriptor;
-			opacity: number;
-			blendMode: BlendMode;
-			effectPassGroups: EffectPass[][];
-			mask: LayerMaskDescriptor | null;
+			type: "transition";
+			outgoing: Omit<FrameLayerDescriptor, "type">[];
+			incoming: Omit<FrameLayerDescriptor, "type">[];
+			progress: number;
 	  }
 	| {
 			type: "sceneEffect";

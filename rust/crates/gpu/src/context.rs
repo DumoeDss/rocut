@@ -213,10 +213,12 @@ impl GpuContext {
     #[cfg(not(all(feature = "wasm", target_arch = "wasm32")))]
     async fn acquire_device()
     -> Result<(wgpu::Instance, wgpu::Adapter, wgpu::Device, wgpu::Queue), GpuError> {
-        let instance = wgpu::util::new_instance_with_webgpu_detection(
-            wgpu::InstanceDescriptor::new_without_display_handle(),
-        )
-        .await;
+        // Opt-in native diagnostics may isolate a backend whose adapter probing
+        // is unstable (for example headless WGL on Windows). Defaults are unchanged;
+        // this does not disable validation or affect browser WebGPU/WebGL selection.
+        let mut descriptor = wgpu::InstanceDescriptor::new_without_display_handle();
+        descriptor.backends = descriptor.backends.with_env();
+        let instance = wgpu::util::new_instance_with_webgpu_detection(descriptor).await;
 
         match Self::try_request_device(&instance, None).await {
             Ok((adapter, device, queue)) => return Ok((instance, adapter, device, queue)),
