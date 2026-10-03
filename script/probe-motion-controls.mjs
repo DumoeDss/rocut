@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { expect } from "@playwright/test";
 import { probeAudioTempo } from "./probe-audio-tempo.mjs";
+import { probeAudioSync } from "./probe-audio-sync.mjs";
 
 // UI-only mutations; durable API reads are independent acceptance assertions.
 export async function probeMotionControls(page, evidence) {
@@ -41,7 +42,7 @@ export async function probeMotionControls(page, evidence) {
 	evidence.checks.push({ name: "default font apply, close, undo and redo persist", pass: true });
 }
 
-export async function probeAudioBinding(page, evidence) {
+export async function probeAudioBinding(page, evidence, { sync = false } = {}) {
 	const readState = () => page.evaluate(async () => {
 		const { record } = await (await fetch(new URL("api/record", location.href))).json();
 		return {
@@ -68,6 +69,7 @@ export async function probeAudioBinding(page, evidence) {
 	assert(bound.binding.contentDigest?.length > 0);
 	assert.equal(bound.audio.length, 1, "Binding must not duplicate the audio track");
 	await probeAudioTempo(page, evidence);
+	if (sync) await probeAudioSync(page, evidence);
 	await page.getByRole("button", { name: "Clear binding", exact: true }).click();
 	await expect.poll(async () => (await readState()).binding).toBeUndefined();
 	assert.equal((await readState()).audio.length, 1, "Clearing binding must retain the timeline audio");

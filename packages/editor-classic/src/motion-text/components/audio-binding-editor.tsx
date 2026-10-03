@@ -185,16 +185,6 @@ export function MotionTextAudioBindingEditor({
 	const [phase, setPhase] = useState<OperationPhase>("idle");
 	const analyzeButtonRef = useRef<HTMLButtonElement>(null);
 	const clearedTriggerRef = useRef<HTMLButtonElement | null>(null);
-	useLayoutEffect(() => {
-		const trigger = clearedTriggerRef.current;
-		if (phase !== "idle" || !trigger) return;
-		clearedTriggerRef.current = null;
-		const active = trigger.ownerDocument.activeElement;
-		if (active === trigger.ownerDocument.body || active === trigger) {
-			const target = trigger.isConnected ? trigger : analyzeButtonRef.current;
-			target?.focus({ preventScroll: true });
-		}
-	});
 	const [analysis, setAnalysis] =
 		useState<MotionTextAudioAnalysisCacheValue | null>(null);
 	const nextRunId = useRef(0);
@@ -211,6 +201,17 @@ export function MotionTextAudioBindingEditor({
 		sequence,
 		selectedClipId,
 		onMessage,
+	});
+
+	useLayoutEffect(() => {
+		const trigger = clearedTriggerRef.current;
+		if (phase !== "idle" || isApplyingTimingPreview || !trigger) return;
+		clearedTriggerRef.current = null;
+		const active = trigger.ownerDocument.activeElement;
+		if (active === trigger.ownerDocument.body || active === trigger) {
+			const target = trigger.isConnected ? trigger : analyzeButtonRef.current;
+			target?.focus({ preventScroll: true });
+		}
 	});
 
 	useEffect(() => {
@@ -562,8 +563,14 @@ export function MotionTextAudioBindingEditor({
 				<MotionTextAudioTimingPreviewPanel
 					preview={activeTimingPreview}
 					isApplying={isApplyingTimingPreview}
-					onCancel={cancelTimingPreview}
-					onApply={() => void applyTimingPreview()}
+					onCancel={(trigger) => {
+						clearedTriggerRef.current = trigger;
+						cancelTimingPreview();
+					}}
+					onApply={(trigger) => {
+						clearedTriggerRef.current = trigger;
+						void applyTimingPreview();
+					}}
 				/>
 			)}
 			<div className="flex flex-wrap justify-end gap-2 [&>button]:h-auto [&>button]:min-h-7 [&>button]:max-w-full [&>button]:whitespace-normal">

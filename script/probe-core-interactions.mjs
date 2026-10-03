@@ -44,6 +44,20 @@ export async function probeCoreInteractions({ page, evidence, work, audioFixture
 	assert(scroll > 0, "Motion text must scroll with the mouse wheel");
 	const add = page.locator('[data-testid="motion-text-add"]');
 	onPhase('motion insertion');
+	if (flags.includes("--audio-sync")) {
+		await page.getByRole("combobox", { name: "Lyrics format", exact: true }).click();
+		await page.getByRole("option", { name: "LRC timestamps", exact: true }).click();
+		const beforeInvalid = await page.evaluate(async () => (await (await fetch(new URL("api/record", location.href))).json()).record.data.scenes);
+		await page.locator("#motion-text-source").fill("[00:20.00]Outside the 15-second sequence");
+		await add.click();
+		await expect(page.locator("#motion-text-message")).toBeVisible();
+		const rejected = await page.evaluate(async () => (await (await fetch(new URL("api/record", location.href))).json()).record.data);
+		assert.equal(rejected.motionTextSequences?.length ?? 0, 0);
+		assert.deepEqual(rejected.scenes, beforeInvalid);
+		evidence.checks.push({name:"out-of-range LRC rejected without inserting a clip or sequence",pass:true});
+		await page.locator("#motion-text-source").fill("[00:01.00]让画面说话\n[00:07.00]让节奏被看见\n[00:12.00]每一句都有动作");
+		await page.screenshot({path:join(work,"lrc-input.png")});
+	}
 	if (await add.count()) {
 		await add.click();
 		await page.waitForTimeout(600);
@@ -52,6 +66,12 @@ export async function probeCoreInteractions({ page, evidence, work, audioFixture
 	}
 	await page.screenshot({ path: join(work, "motion.png") });
 	await assertMotionPersistence('motion insertion retains sequence and linked clip');
+	if (flags.includes("--audio-sync")) {
+		const cues = await page.evaluate(async () => (await (await fetch(new URL("api/record", location.href))).json()).record.data.motionTextSequences[0].cues);
+		assert.deepEqual(cues.map(c => c.startTime), [120000, 840000, 1440000]);
+		assert(cues.every(c => c.timingSource === "lrc"));
+		evidence.checks.push({name:"LRC input preserves explicit timestamps through the editor UI",pass:true});
+	}
 	onPhase('preset application');
 	await page.locator('[data-motion-text-preset-card="style:crimson"]').click();
 	await page.locator('[data-testid="motion-text-apply-preset"]').click();
@@ -134,7 +154,7 @@ export async function probeCoreInteractions({ page, evidence, work, audioFixture
 		onPhase('cue loop and export range');
 		await probeCueRanges(page, evidence);
 	}
-	await page.locator('[role="combobox"]').first().click({timeout:5000});
+	await page.getByRole("combobox", { name: "Preview zoom", exact: true }).click({timeout:5000});
 	await page.waitForTimeout(200);
 	evidence.checks.push({name:'preview menu', menus: await page.locator('[role="menu"],[role="listbox"]').count(), text: await page.locator('[role="menu"],[role="listbox"]').allTextContents()});
 	await page.keyboard.press('Escape');
@@ -189,7 +209,7 @@ export async function probeCoreInteractions({ page, evidence, work, audioFixture
 	evidence.checks.push({name:'corrupt video rejected without persisting an attachment',pass:true});
 	if (flags.includes('--motion-controls')) {
 		onPhase('audio binding');
-		await probeAudioBinding(page, evidence);
+		await probeAudioBinding(page, evidence, { sync: flags.includes("--audio-sync") });
 	}
 	for (const label of ['Sounds','Text','Stickers','Effects','Transitions','Captions','Adjustment','Settings']) {
 		await page.locator('[aria-label="Media"]').locator('..').locator(`[aria-label="${label}"]`).click();

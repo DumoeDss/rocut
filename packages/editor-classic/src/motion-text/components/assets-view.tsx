@@ -7,6 +7,13 @@ import { PanelView } from "../../components/editor/panels/assets/views/base-pane
 import { Button } from "../../components/ui/button";
 import { Spinner } from "../../components/ui/spinner";
 import { Textarea } from "../../components/ui/textarea";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "../../components/ui/select";
 import { useEditor, useEditorInstance } from "../../editor/use-editor";
 import { MOTION_TEXT_RENDERER_SUPPORT } from "../../services/renderer/motion-text/support-manifest";
 import { buildMotionTextElement } from "../../timeline/element-utils";
@@ -44,6 +51,7 @@ export function MotionTextAssetsView() {
 		(instance) => instance.project.getActiveOrNull()?.metadata.id ?? "none",
 	);
 	const [source, setSource] = useState(STARTER_SOURCE);
+	const [sourceFormat, setSourceFormat] = useState<"plain" | "lrc">("plain");
 	const [selectedPreset, setSelectedPreset] =
 		useState<MotionTextStarterPresetId>("clean-caption");
 	const [isComposing, setIsComposing] = useState(false);
@@ -67,6 +75,7 @@ export function MotionTextAssetsView() {
 			const created = createStarterMotionTextSequence({
 				sequenceId,
 				source,
+				sourceFormat,
 				duration: STARTER_DURATION,
 				starterPreset: selectedPreset,
 				rendererSupport: MOTION_TEXT_RENDERER_SUPPORT,
@@ -128,6 +137,35 @@ export function MotionTextAssetsView() {
 		>
 			<div className="flex flex-col gap-4">
 				<JizuraImportControl />
+				<div className="flex min-w-0 flex-col gap-1.5">
+					<label
+						htmlFor="motion-text-source-format"
+						className="text-xs font-medium"
+					>
+						Lyrics format
+					</label>
+					<Select
+						value={sourceFormat}
+						onValueChange={(value) => {
+							if (value === "plain" || value === "lrc") {
+								setSourceFormat(value);
+								setMessage(null);
+							}
+						}}
+					>
+						<SelectTrigger
+							id="motion-text-source-format"
+							aria-label="Lyrics format"
+							className="w-full min-w-0 text-xs"
+						>
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="plain">Plain lyrics</SelectItem>
+							<SelectItem value="lrc">LRC timestamps</SelectItem>
+						</SelectContent>
+					</Select>
+				</div>
 				<div className="flex flex-col gap-1.5">
 					<div className="flex items-baseline justify-between gap-2">
 						<label htmlFor="motion-text-source" className="text-sm font-medium">
@@ -153,12 +191,19 @@ export function MotionTextAssetsView() {
 								void addAtPlayhead();
 							}
 						}}
-						placeholder="Enter one lyric line per row"
+						placeholder={
+							sourceFormat === "lrc"
+								? "[00:01.00]First lyric line"
+								: "Enter one lyric line per row"
+						}
 						aria-invalid={message?.kind === "error"}
 						aria-describedby={message ? "motion-text-message" : undefined}
 						className="min-h-28 resize-y leading-6"
 					/>
 					<p className="text-muted-foreground text-xs">
+						{sourceFormat === "lrc"
+							? "Paste timestamped LRC lyrics to preserve their timing. "
+							: "Plain lines receive estimated timing. "}
 						Use Ctrl+Enter to add. Chinese input composition is preserved.
 					</p>
 				</div>

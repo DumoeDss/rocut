@@ -105,7 +105,9 @@ function ZoomSelect() {
 			value={isAtFit ? "fit" : String(zoomPercent)}
 			onValueChange={onValueChange}
 		>
-			<SelectTrigger className="tabular-nums">{displayLabel}</SelectTrigger>
+			<SelectTrigger aria-label="Preview zoom" className="tabular-nums">
+				{displayLabel}
+			</SelectTrigger>
 			<SelectContent>
 				<SelectItem value="fit">Fit</SelectItem>
 				<SelectSeparator />

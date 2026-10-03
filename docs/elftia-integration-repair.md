@@ -2,12 +2,24 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## LRC input and audio re-sync acceptance (2026-10-03)
+
+- Added an explicit Lyrics format selector (plain lyrics / LRC timestamps), using the existing Rust factory rather than a second parser. Timestamped input retains its timing and source metadata. Untimed input still follows the Rust factory's estimated-timing fallback; this is not a strict LRC-only validator. A timestamp outside the sequence is rejected atomically.
+- Real mouse coverage now includes left/right motion-clip trims, each committing once with Undo/Redo; moving the clip invalidates the old audio geometry without silently changing its binding. Re-sync preview and cancellation do not persist. Apply commits once, moves derived LRC cues with available headroom, preserves a UI-locked cue, and supports Undo/Redo.
+- Fixed cancellation/application of the re-sync preview losing focus to BODY. Restore the trigger (or analysis/re-sync action after its removal) only if focus was not moved elsewhere; wait for the async apply to finish. Both shortcut paths pass inside the installed editor.
+- Reload acceptance waits for the debounced persisted view state to settle, then proves a new document through a unique marker. It neither removes beforeunload protection nor ignores dialog errors.
+- Latest real-host runs: <elftia>/.tmp-rocut-e2e/live-VnnfL4/evidence.json and, after splitting the gesture helper, live-6urVFi/evidence.json. Both pass 56 recorded checks with no uncaught page/driver errors. Fixture creation remains host API setup, not project-creation UI acceptance. All editor mutations in this matrix use real pointer/keyboard/file input.
+- The first run independently decodes the mixed ranged MP4: 3.018594 seconds, red-video fraction 0.93979, light-glyph fraction 0.04573, audio RMS 0.12434. The rerun repeats the decoder assertions. These are not export-button UI checks.
+- Installed candidate includes the diagnostic privacy fix below and this LRC/focus change: 354 files, inventory SHA-256 00f7e7db76f5a6ff0af71d050c3ce5f01ac3ce553114b1ba3e8993942157f1af. Prior installation is preserved at C:/Users/Sayo/.elftia/plugin-backups/rocut-0.5.0-before-ui-refresh-8816a3a9769b48acb49c12abc2391e96. Version remains 0.5.0; Omnicross is separately 0.6.4.
+- Focused UI ESLint, Vite typecheck/build and 21 WASM factory tests (103 expectations) pass. Preview toolbar has two existing unused-import warnings; no lint suppression was introduced. New/changed probe modules pass Node syntax checks. Producer deterministic pack/build/verify and installed file parity passed for this candidate before the helper-only split.
+- The captured LRC selector is contained but truncates in the very narrow embedded assets pane. Full narrow-pane keyboard and light/dark UI acceptance remains work, not a completed redesign.
+
 ## Persistence diagnostics follow-up (2026-10-03)
 
 - Resolved the earlier failing diagnostic privacy regression without weakening its assertion or modifying its partial EditorCore fixture. The reporter now calls a separate boundary formatter instead of a private instance method absent from that fixture.
 - Host diagnostic records allow only stable storage/transaction error codes, the known transaction error identity, and non-negative safe-integer operation/revision fields. Raw provider messages, arbitrary names/codes, thrown primitive values and coerced revision strings are not logged. The original thrown error and save failure/dirty-state behavior are unchanged.
 - Focused regression: 44 top-level tests pass, zero fail across persistence diagnostics, project persistence rewiring, save-manager failure handling, transaction routing, atomic file replacement and media capacity. This includes the previously failing isolated privacy case and four new formatter regressions. It is not a claim that the entire repository test suite passes.
-- The installed UI acceptance below predates this logging-only change; it remains evidence for the editor interactions, not a new host run of the formatter.
+- The LRC/audio-sync installed runs above include this formatter fix. The older 51-check UI acceptance below predates it.
 - The three changed TypeScript files pass focused ESLint; Vite typecheck and production build pass. Existing large-chunk and mixed static/dynamic-import build warnings remain.
 
 ## Real Elftia acceptance and audio/cue fixes (2026-10-03)
@@ -27,16 +39,16 @@ Status: installed core interaction matrix passes in real Elftia; full editor fea
 
 Use the Elftia worktree's installed tsx loader from the Rocut working directory. Set ELFTIA_WORKTREE, ELFTIA_TEST_SESSION, and ELFTIA_CLI_DEBUG_PORT to the authorized dev instance. Open Rocut in that dedicated session first; the runner rejects other project folders.
 
-Run: node <elftia>/node_modules/tsx/dist/cli.mjs script/probe-elftia-interactions.mjs --motion-controls --planning-controls --cut-controls --cue-ranges --mixed-export --jizura-import
+Run: node <elftia>/node_modules/tsx/dist/cli.mjs script/probe-elftia-interactions.mjs --motion-controls --audio-sync --planning-controls --cut-controls --cue-ranges --mixed-export --jizura-import
 
 ### Still required before a complete-functionality claim
 
 - Transitions and Adjustment remain explicit placeholder views; they need real timeline/model/render/export support, not cosmetic replacement text.
 - Sounds search reports that this host does not provide a server endpoint; offline imported audio is tested, external sound search is not implemented here.
-- Broader media codec/format coverage, drag/trim gesture matrix, audio re-sync with changed clip geometry, export cancellation/error paths, and real in-use plugin replacement remain outstanding.
+- Motion-clip left/right trims and audio re-sync after clip movement now have real-installed evidence above. Broader media codec/format coverage, other drag/trim combinations, export cancellation/error paths, and real in-use plugin replacement remain outstanding.
 - Paid ASR/model calls were not made. Existing ColorPicker lint findings remain separately recorded; diagnostic privacy-test repair is now complete as noted above.
 
-## Current checkpoint (2026-10-03; supersedes historical blockers below)
+## Earlier startup checkpoint (2026-10-03; subsequent acceptance is recorded above)
 
 - User authorized Elftia lifecycle control, installed-plugin backup/replacement, Omnicross dependency synchronization, and Rocut commit/push. Do not disable Steam or change real editing projects for testing.
 - Steam Windows x64 native authentication hotfix 0.2.22 is installed and enabled. Elftia was rebuilt and restarted successfully; elftia-cli confirms renderer readiness and the plugin is not withheld. This is startup verification, not a complete Steam or Rocut feature acceptance.

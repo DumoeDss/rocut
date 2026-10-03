@@ -115,8 +115,8 @@ export function MotionTextAudioTimingPreviewPanel({
 }: {
 	readonly preview: MotionTextAudioTimingPreview;
 	readonly isApplying: boolean;
-	readonly onCancel: () => void;
-	readonly onApply: () => void;
+	readonly onCancel: (trigger: HTMLButtonElement) => void;
+	readonly onApply: (trigger: HTMLButtonElement) => void;
 }) {
 	return (
 		<div
@@ -152,11 +152,15 @@ export function MotionTextAudioTimingPreviewPanel({
 					variant="ghost"
 					size="sm"
 					disabled={isApplying}
-					onClick={onCancel}
+					onClick={(event) => onCancel(event.currentTarget)}
 				>
 					Cancel preview
 				</Button>
-				<Button size="sm" disabled={isApplying} onClick={onApply}>
+				<Button
+					size="sm"
+					disabled={isApplying}
+					onClick={(event) => onApply(event.currentTarget)}
+				>
 					{isApplying ? "Applying…" : "Apply sync"}
 				</Button>
 			</div>
