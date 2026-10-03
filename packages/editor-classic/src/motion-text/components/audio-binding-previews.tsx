@@ -123,7 +123,7 @@ export function MotionTextAudioTimingPreviewPanel({
 			className="border-caution/50 bg-muted space-y-1.5 rounded-sm border px-2.5 py-2"
 			data-testid="motion-text-audio-sync-preview"
 		>
-			<div className="flex items-baseline justify-between gap-2">
+			<div className="flex flex-wrap items-baseline justify-between gap-2">
 				<h4 className="text-xs font-medium">Timing preview</h4>
 				<span className="text-caution text-[11px]">Preview only</span>
 			</div>
@@ -147,7 +147,7 @@ export function MotionTextAudioTimingPreviewPanel({
 			<p className="text-muted-foreground text-[11px]">
 				Project unchanged until apply.
 			</p>
-			<div className="flex justify-end gap-2 pt-0.5">
+			<div className="flex flex-wrap justify-end gap-2 pt-0.5 [&>button]:h-auto [&>button]:min-h-7 [&>button]:max-w-full [&>button]:whitespace-normal">
 				<Button
 					variant="ghost"
 					size="sm"

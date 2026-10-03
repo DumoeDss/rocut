@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { expect } from "@playwright/test";
+import { probeAudioTempo } from "./probe-audio-tempo.mjs";
 
 // UI-only mutations; durable API reads are independent acceptance assertions.
 export async function probeMotionControls(page, evidence) {
@@ -13,6 +14,11 @@ export async function probeMotionControls(page, evidence) {
 	await page.getByRole("button", { name: "Edit font and colors", exact: true }).click();
 	const field = page.getByText("Default font", { exact: true }).locator("..").locator("..");
 	await field.getByRole("combobox").click();
+	// The current font may be near the end of a long scrollable menu. Scroll
+	// that viewport with real input before clicking an initially offscreen row.
+	await page.getByRole("listbox").hover();
+	await page.mouse.wheel(0, -2000);
+	await page.waitForTimeout(250);
 	await page.getByRole("option", {
 		name: `${font.family} · ${font.weight} · ${font.supportedLanguages?.join("/") ?? "coverage unknown"}`,
 		exact: true,
@@ -61,9 +67,14 @@ export async function probeAudioBinding(page, evidence) {
 	assert.equal(bound.binding.assetId, clip.mediaId);
 	assert(bound.binding.contentDigest?.length > 0);
 	assert.equal(bound.audio.length, 1, "Binding must not duplicate the audio track");
+	await probeAudioTempo(page, evidence);
 	await page.getByRole("button", { name: "Clear binding", exact: true }).click();
 	await expect.poll(async () => (await readState()).binding).toBeUndefined();
 	assert.equal((await readState()).audio.length, 1, "Clearing binding must retain the timeline audio");
+	await page.keyboard.press("Control+z");
+	await expect.poll(async () => (await readState()).binding?.clipId).toBe(clip.id);
+	await page.keyboard.press("Control+Shift+z");
+	await expect.poll(async () => (await readState()).binding).toBeUndefined();
 	evidence.checks.push({ name: "audio analysis binds existing clip, clears without adding/removing audio", pass: true });
 }
 

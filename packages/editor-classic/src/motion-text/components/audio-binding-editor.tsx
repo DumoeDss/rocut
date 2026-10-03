@@ -1,7 +1,7 @@
 "use client";
 
 import type { MotionTextSequence } from "@opencut/editor-contracts";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Button } from "../../components/ui/button";
 import { Label } from "../../components/ui/label";
 import {
@@ -183,6 +183,18 @@ export function MotionTextAudioBindingEditor({
 		sequence.audioBinding?.clipId ?? "",
 	);
 	const [phase, setPhase] = useState<OperationPhase>("idle");
+	const analyzeButtonRef = useRef<HTMLButtonElement>(null);
+	const clearedTriggerRef = useRef<HTMLButtonElement | null>(null);
+	useLayoutEffect(() => {
+		const trigger = clearedTriggerRef.current;
+		if (phase !== "idle" || !trigger) return;
+		clearedTriggerRef.current = null;
+		const active = trigger.ownerDocument.activeElement;
+		if (active === trigger.ownerDocument.body || active === trigger) {
+			const target = trigger.isConnected ? trigger : analyzeButtonRef.current;
+			target?.focus({ preventScroll: true });
+		}
+	});
 	const [analysis, setAnalysis] =
 		useState<MotionTextAudioAnalysisCacheValue | null>(null);
 	const nextRunId = useRef(0);
@@ -435,8 +447,9 @@ export function MotionTextAudioBindingEditor({
 		}
 	};
 
-	const clearBinding = async () => {
+	const clearBinding = async (trigger: HTMLButtonElement) => {
 		if (!binding || phase !== "idle" || isApplyingTimingPreview) return;
+		clearedTriggerRef.current = trigger;
 		clearTimingPreview();
 		setPhase("clearing");
 		onMessage(null);
@@ -469,8 +482,8 @@ export function MotionTextAudioBindingEditor({
 	};
 
 	return (
-		<section className="space-y-2 border-b px-3 py-3">
-			<div className="flex items-baseline justify-between gap-2">
+		<section className="min-w-0 space-y-2 border-b px-3 py-3">
+			<div className="flex flex-wrap items-baseline justify-between gap-2">
 				<h3 className="text-sm font-medium">Audio analysis</h3>
 				{sync.assessment && (
 					<span
@@ -535,7 +548,7 @@ export function MotionTextAudioBindingEditor({
 			{analysis && <MotionTextAudioEnergyPreview analysis={analysis} />}
 			{binding && (
 				<MotionTextBeatOverrideEditor
-					key={`${sequence.id}:${sequence.revision}`}
+					key={sequence.id}
 					sequence={sequence}
 					onMessage={onMessage}
 				/>
@@ -553,13 +566,13 @@ export function MotionTextAudioBindingEditor({
 					onApply={() => void applyTimingPreview()}
 				/>
 			)}
-			<div className="flex justify-end gap-2">
+			<div className="flex flex-wrap justify-end gap-2 [&>button]:h-auto [&>button]:min-h-7 [&>button]:max-w-full [&>button]:whitespace-normal">
 				{binding && (
 					<Button
 						variant="ghost"
 						size="sm"
 						disabled={phase !== "idle" || isApplyingTimingPreview}
-						onClick={() => void clearBinding()}
+						onClick={(event) => void clearBinding(event.currentTarget)}
 					>
 						{phase === "clearing" ? "Clearing…" : "Clear binding"}
 					</Button>
@@ -575,6 +588,7 @@ export function MotionTextAudioBindingEditor({
 					</Button>
 				) : (
 					<Button
+						ref={analyzeButtonRef}
 						size="sm"
 						disabled={
 							!selectedChoice || phase !== "idle" || isApplyingTimingPreview

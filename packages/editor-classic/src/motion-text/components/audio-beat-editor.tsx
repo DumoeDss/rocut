@@ -1,7 +1,7 @@
 "use client";
 
 import type { MotionTextSequence } from "@opencut/editor-contracts";
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
@@ -84,6 +84,25 @@ export function MotionTextBeatOverrideEditor({
 	const [bpmText, setBpmText] = useState(initialBpm);
 	const [firstBeatText, setFirstBeatText] = useState(initialFirstBeat);
 	const [isApplying, setIsApplying] = useState(false);
+	const applyingRef = useRef(false);
+	const applyButtonRef = useRef<HTMLButtonElement>(null);
+	const pendingFocusRef = useRef<HTMLButtonElement | null>(null);
+	const [baseRevision, setBaseRevision] = useState(sequence.revision);
+	if (baseRevision !== sequence.revision) {
+		setBaseRevision(sequence.revision);
+		setBpmText(initialBpm);
+		setFirstBeatText(initialFirstBeat);
+	}
+	useLayoutEffect(() => {
+		const trigger = pendingFocusRef.current;
+		if (isApplying || !trigger) return;
+		pendingFocusRef.current = null;
+		const active = trigger.ownerDocument.activeElement;
+		if (active === trigger.ownerDocument.body || active === trigger) {
+			const target = trigger.isConnected ? trigger : applyButtonRef.current;
+			target?.focus({ preventScroll: true });
+		}
+	});
 	const parsed = parseOverrides({ bpmText, firstBeatText });
 	const isDirty = bpmText !== initialBpm || firstBeatText !== initialFirstBeat;
 	const grid = useMemo(() => {
@@ -107,11 +126,14 @@ export function MotionTextBeatOverrideEditor({
 	const apply = async ({
 		bpm,
 		firstBeat,
+		trigger,
 	}: {
 		readonly bpm: number | null;
 		readonly firstBeat: number | null;
+		readonly trigger: HTMLButtonElement;
 	}) => {
-		if (isApplying) return;
+		if (applyingRef.current) return;
+		applyingRef.current = true;
 		setIsApplying(true);
 		onMessage(null);
 		try {
@@ -143,13 +165,15 @@ export function MotionTextBeatOverrideEditor({
 					: "The manual beat override could not be updated.",
 			);
 		} finally {
+			applyingRef.current = false;
+			pendingFocusRef.current = trigger;
 			setIsApplying(false);
 		}
 	};
 
 	return (
 		<div className="bg-muted/30 space-y-2 rounded-sm border p-2.5">
-			<div className="flex items-baseline justify-between gap-2">
+			<div className="flex flex-wrap items-baseline justify-between gap-2">
 				<span className="text-xs font-medium">Beat grid</span>
 				{grid && (
 					<span className="text-muted-foreground text-[11px] tabular-nums">
@@ -157,7 +181,7 @@ export function MotionTextBeatOverrideEditor({
 					</span>
 				)}
 			</div>
-			<div className="grid grid-cols-2 gap-2">
+			<div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,8rem),1fr))] gap-2">
 				<div className="space-y-1.5">
 					<Label htmlFor={`motion-text-bpm-${sequence.id}`}>Manual BPM</Label>
 					<Input
@@ -195,23 +219,35 @@ export function MotionTextBeatOverrideEditor({
 					{parsed.error}
 				</p>
 			)}
-			<div className="flex justify-end gap-2">
+			<div className="flex flex-wrap justify-end gap-2 [&>button]:h-auto [&>button]:min-h-7 [&>button]:max-w-full [&>button]:whitespace-normal">
 				{binding.beatOverride && (
 					<Button
 						variant="ghost"
 						size="sm"
-						disabled={isApplying}
-						onClick={() => void apply({ bpm: null, firstBeat: null })}
+						aria-disabled={isApplying}
+						onClick={(event) =>
+							void apply({
+								bpm: null,
+								firstBeat: null,
+								trigger: event.currentTarget,
+							})
+						}
 					>
 						Use detected
 					</Button>
 				)}
 				<Button
+					ref={applyButtonRef}
 					size="sm"
-					disabled={!isDirty || parsed.error !== null || isApplying}
-					onClick={() =>
-						void apply({ bpm: parsed.bpm, firstBeat: parsed.firstBeat })
-					}
+					aria-disabled={!isDirty || parsed.error !== null || isApplying}
+					onClick={(event) => {
+						if (!isDirty || parsed.error !== null) return;
+						void apply({
+							bpm: parsed.bpm,
+							firstBeat: parsed.firstBeat,
+							trigger: event.currentTarget,
+						});
+					}}
 				>
 					{isApplying ? "Applying…" : "Apply tempo"}
 				</Button>

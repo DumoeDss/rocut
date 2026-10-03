@@ -65,11 +65,9 @@ export async function probeJizuraImport(parent, frame, evidence) {
 	await expect.poll(async () => digest(await readState()), { message: "Undo must remove only the imported sequence and clip" }).toBe(digest(initial));
 	await parent.keyboard.press("Control+Shift+z");
 	await expect.poll(async () => digest(await readState()), { message: "Redo must restore the identical imported sequence and clip" }).toBe(digest(imported));
-	await Promise.all([
-		frame.waitForNavigation({ waitUntil: "domcontentloaded" }),
-		frame.evaluate(() => location.reload()),
-	]);
+	await reloadEditorFrame(frame);
 	await expect(frame.locator('[aria-label="Media"]')).toBeVisible({ timeout: 30000 });
 	assert.deepEqual(await readState(), imported, "Import and clip must survive reopening");
 	evidence.checks.push({ name: "JIZURA file chooser rejects invalid/versioned files without mutation, import undo/redo and reopen persist", pass: true });
 }
+import { reloadEditorFrame } from "./probe-reload-editor.mjs";

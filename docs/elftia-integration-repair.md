@@ -1,6 +1,32 @@
 # Rocut / JIZURA in Elftia: repair and acceptance
 
-Status: host startup prerequisites resolved; real-host acceptance in progress. No complete-functionality claim. Started 2026-10-01.
+Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
+
+## Real Elftia acceptance and audio/cue fixes (2026-10-03)
+
+- Source checkpoint 4139608f was committed and pushed to origin/main at the user's request. This follow-up continues the same work; no Rocut version bump is implied by the Omnicross 0.6.4 upgrade.
+- Added script/probe-elftia-interactions.mjs: attaches through the real Elftia CLI, verifies the authorized session and dedicated .tmp-rocut-e2e/project workspace, prepares a fresh project through the host API, then opens it through the actual Rocut workspace button. Fixture preparation is not claimed as project-creation UI acceptance. All editor mutations use actual iframe pointer/keyboard/file input; durable API reads provide independent checks. Export is the host API plus real surface encoder, not an export-button UI claim.
+- The real host exposed an audio-action overflow not covered by the earlier standalone width: Clear binding extended into the preview and pointer events hit a sibling panel. Audio binding/beat/sync-preview actions now wrap in narrow inspectors. A targeted real-host test also reproduced manual tempo Apply losing focus to BODY. Beat editors now preserve DOM across revisions, reconcile saved/undone values, guard repeat apply, and restore focus after clearing overrides. Clearing the audio binding also preserves shortcut focus, with Undo/Redo coverage.
+- Cue loop/export-range controls likewise overflowed a narrow inspector (61px container, 114px content). They now stack/wrap without dropping the controls. The new probe verifies playback really wraps from cue end to start and toggling the range leaves scenes/sequences/settings unchanged. View-state playhead/zoom and autosave timestamps are intentionally not mistaken for edits.
+- Latest installed candidate: 354 files, inventory SHA-256 9b805e81d444271215fc45d98e3decd5a6fba728ea48dae417196a800cc553aa. Complete previous installation preserved at C:/Users/Sayo/.elftia/plugin-backups/rocut-0.5.0-before-ui-refresh-755f2bca8e0548e5b750c6602f2be29b. Offline staging/backup/install parity passed; user editing projects and login state were not changed.
+- Real-host run <elftia>/.tmp-rocut-e2e/live-ykn6bF/evidence.json passes **51 checks**, no uncaught page/driver errors. Includes wheel scrolling; presets; cue text; rapid history gestures; fonts, locks and variations; cue styling/tapping; planning/cut boundaries; cue looping; video split/duplicate/delete; reload; corrupt-media rejection; manual tempo validation/apply/reset/history; audio binding/clear/history; native PNG file chooser; visible video+motion text playback; mixed export; JIZURA file chooser, invalid/future-version rejection, preservation, undo/redo and reopen.
+- Export independently decoded by ffprobe/ffmpeg: 3-second requested range, 3.018594-second output, one video and one audio stream, red video and white glyphs present, audio RMS above 0.12. Real screenshot pixel checks also establish compositing, not merely a moving time counter.
+- Separate real-host responsive run live-wrWok0/responsive.json passes 900x640 and 760x640 after collapsing chat through the UI. Font-menu containment/Escape/focus, color editing, cancel/add and final-cue reachability pass; native viewport and chat-panel state were restored afterward.
+- Focused ESLint for the four changed UI components, Vite typecheck, Vite production build, deterministic double-pack, producer build and verify:dist pass. The pre-existing persistence-diagnostics unit-test failure recorded below remains unresolved; do not call the entire unit suite green.
+- Refactored standalone regression also passes all selected scenarios (57 recorded checks, rocut-interactions-qwPAvg), including cue ranges and responsive controls. Its diagnostic log contains expected missing optional-library 404s, the deliberate corrupt-media error and an event-stream abort during reload; this is not a replacement for the real-host evidence above.
+
+### Reproduce the installed editor matrix
+
+Use the Elftia worktree's installed tsx loader from the Rocut working directory. Set ELFTIA_WORKTREE, ELFTIA_TEST_SESSION, and ELFTIA_CLI_DEBUG_PORT to the authorized dev instance. Open Rocut in that dedicated session first; the runner rejects other project folders.
+
+Run: node <elftia>/node_modules/tsx/dist/cli.mjs script/probe-elftia-interactions.mjs --motion-controls --planning-controls --cut-controls --cue-ranges --mixed-export --jizura-import
+
+### Still required before a complete-functionality claim
+
+- Transitions and Adjustment remain explicit placeholder views; they need real timeline/model/render/export support, not cosmetic replacement text.
+- Sounds search reports that this host does not provide a server endpoint; offline imported audio is tested, external sound search is not implemented here.
+- Broader media codec/format coverage, drag/trim gesture matrix, audio re-sync with changed clip geometry, export cancellation/error paths, and real in-use plugin replacement remain outstanding.
+- Paid ASR/model calls were not made. Diagnostic privacy-test repair and existing ColorPicker lint findings remain separately recorded.
 
 ## Current checkpoint (2026-10-03; supersedes historical blockers below)
 

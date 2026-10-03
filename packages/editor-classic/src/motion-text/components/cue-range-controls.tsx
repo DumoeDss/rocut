@@ -81,7 +81,7 @@ export function MotionTextCueRangeControls({
 				Timeline {(range.startTime / TICKS_PER_SECOND).toFixed(2)}s –{" "}
 				{(range.endTime / TICKS_PER_SECOND).toFixed(2)}s
 			</p>
-			<div className="grid grid-cols-2 gap-2">
+			<div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,8rem),1fr))] gap-2 [&>button]:h-auto [&>button]:min-h-7 [&>button]:min-w-0 [&>button]:whitespace-normal [&>button]:[overflow-wrap:anywhere]">
 				<Button
 					variant={isLooping ? "default" : "outline"}
 					size="sm"
