@@ -426,7 +426,12 @@ export function createInMemoryTransactionStore(): InMemoryTransactionStore {
 							operationIndex: i,
 						});
 					}
-					const updated = { ...existing, ...op.patch };
+					const { freezeFrame, ...patch } = op.patch;
+					const updated = { ...existing, ...patch };
+					if ("freezeFrame" in op.patch) {
+						if (freezeFrame == null) delete updated.freezeFrame;
+						else updated.freezeFrame = freezeFrame;
+					}
 					if (
 						updated.content?.kind === "motion-text" &&
 						!workMotionTextSequences.has(updated.content.sequenceId)

@@ -12,6 +12,7 @@ import { probeJizuraImport } from './probe-jizura-import.mjs';
 import { probeResponsiveMotion } from './probe-responsive-motion.mjs';
 import { reloadEditorFrame } from './probe-reload-editor.mjs';
 import { probeInstalledPreview } from './probe-installed-preview.mjs';
+import { probeVideoFreeze } from './probe-video-freeze.mjs';
 
 // Run with the Elftia worktree's tsx loader. Never launch a substitute browser.
 const hostRoot = resolve(process.env.ELFTIA_WORKTREE ?? '');
@@ -86,6 +87,9 @@ try {
   conn.page.on('response',response=>{if(response.status()>=400 && response.url().includes('/api/')) evidence.requests.push({phase,status:response.status(),url:scrub(response.url())});});
   const audioFixture=join(work,'fixture-tone-a4.wav');
   execFileSync('ffmpeg',['-v','error','-n','-f','lavfi','-i','sine=frequency=440:duration=16','-ar','44100','-ac','1','-c:a','pcm_s16le',audioFixture],{windowsHide:true});
+  if (process.argv.includes('--freeze-only')) {
+    await probeVideoFreeze({page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
+  } else {
   phase='core interactions';
   await probeCoreInteractions({page,evidence,work,audioFixture,flags:process.argv,onPhase:next=>{
     phase=next; console.log('phase:',phase);
@@ -98,6 +102,7 @@ try {
   if(process.argv.includes('--jizura-import')) {phase='JIZURA import'; console.log('phase:',phase); await probeJizuraImport(conn.page,editor,evidence);}
   if(process.argv.includes('--responsive')) {phase='responsive'; console.log('phase:',phase); await probeResponsiveMotion(conn.page,editor,work,evidence);}
   if(process.argv.includes('--layout')) {phase='embedded layout'; console.log('phase:',phase); await probeEmbeddedLayout(conn.page,editor,work,evidence);}
+  }
   assert.equal(evidence.errors.length,0,'Real-host run must not report uncaught page/driver errors');
   const unexpectedRequests=evidence.requests.filter(request=>!(request.status===404 &&
     ['/api/library/graph-editor-presets/user-presets','/api/library/saved-sounds/user-sounds'].some(path=>request.url.endsWith(path))));

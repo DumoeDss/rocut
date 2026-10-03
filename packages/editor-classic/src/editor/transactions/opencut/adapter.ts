@@ -229,6 +229,10 @@ function overlayElement(
 		trimEnd: clip.trimEnd,
 	} as unknown as TimelineElement & { mediaId?: string };
 	if (clip.assetId !== undefined) next.mediaId = clip.assetId;
+	if (next.type === "video") {
+		if (clip.freezeFrame === undefined) delete next.freezeFrame;
+		else next.freezeFrame = clip.freezeFrame as unknown as NonNullable<typeof next.freezeFrame>;
+	}
 	if (clip.content?.kind === "motion-text" && next.type === "motion-text") {
 		next.sequenceId = clip.content.sequenceId;
 	}

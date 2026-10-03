@@ -98,6 +98,9 @@ function clipProjection(track: TimelineTrack, element: TimelineElement): Clip {
 		trimStart: contractTime(element.trimStart),
 		trimEnd: contractTime(element.trimEnd),
 		...(mediaId !== undefined && { assetId: assetId(mediaId) }),
+		...(element.type === "video" && element.freezeFrame !== undefined && {
+			freezeFrame: contractTime(element.freezeFrame),
+		}),
 		...(element.type === "motion-text" && {
 			content: {
 				kind: "motion-text" as const,
@@ -337,8 +340,10 @@ export function diffOpenCutProjection({
 			"assetId",
 			"content",
 		]);
-		if (Object.keys(patch).length > 0)
-			operations.push({ kind: "update-clip", clipId: clipId(id), patch });
+		const freezePatch = previous.freezeFrame === current.freezeFrame
+			? {} : { freezeFrame: current.freezeFrame ?? null };
+		if (Object.keys(patch).length > 0 || Object.keys(freezePatch).length > 0)
+			operations.push({ kind: "update-clip", clipId: clipId(id), patch: { ...patch, ...freezePatch } });
 	}
 	for (const id of sortedIds(afterMotionTextSequences.keys())) {
 		const current = afterMotionTextSequences.get(id);

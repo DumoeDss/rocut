@@ -58,6 +58,7 @@ const ELEMENT_KEYS = [
 	"mediaId",
 	"sourceUrl",
 	"isSourceAudioEnabled",
+	"freezeFrame",
 	"hidden",
 	"effects",
 	"masks",

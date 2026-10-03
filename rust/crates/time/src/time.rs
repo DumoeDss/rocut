@@ -1,6 +1,12 @@
 mod frame_rate;
 mod media_time;
 mod timecode;
+mod video_time;
+
+pub use video_time::{
+    VideoFreezeFrameOptions, VideoSourceTimeOptions, plan_video_freeze_frame,
+    resolve_video_source_time,
+};
 
 pub use frame_rate::FrameRate;
 pub use media_time::{

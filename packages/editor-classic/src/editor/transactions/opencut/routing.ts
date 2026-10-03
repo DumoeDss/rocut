@@ -43,6 +43,7 @@ export const REGISTERED_COMMAND_NAMES = Object.freeze(
 		"ToggleSourceAudioSeparationCommand",
 		"ToggleTrackMuteCommand",
 		"ToggleTrackVisibilityCommand",
+		"ToggleVideoFreezeCommand",
 		"TracksSnapshotCommand",
 		"UpdateBookmarkCommand",
 		"UpdateClipEffectParamsCommand",

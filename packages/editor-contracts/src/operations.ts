@@ -79,7 +79,10 @@ export type TransactionOperation =
 	| {
 			readonly kind: "update-clip";
 			readonly clipId: ClipId;
-			readonly patch: Partial<Omit<Clip, "id">>;
+			/** null explicitly clears the frame hold across JSON transports. */
+			readonly patch: Partial<Omit<Clip, "id" | "freezeFrame">> & {
+				readonly freezeFrame?: Clip["freezeFrame"] | null;
+			};
 	  }
 	| { readonly kind: "delete-clip"; readonly clipId: ClipId }
 	| { readonly kind: "create-asset"; readonly asset: Asset }

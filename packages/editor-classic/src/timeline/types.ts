@@ -118,6 +118,8 @@ export interface VideoElement extends BaseTimelineElement {
 	type: "video";
 	mediaId: string;
 	isSourceAudioEnabled?: boolean;
+	/** Absolute source-media time held throughout this clip; audio is suspended. */
+	freezeFrame?: MediaTime;
 	hidden?: boolean;
 	retime?: RetimeConfig;
 	effects?: Effect[];

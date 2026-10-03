@@ -505,6 +505,7 @@ function mutateOperations(args: {
 					break;
 				}
 				const updated = { ...existing, ...operation.patch };
+				if (updated.freezeFrame === null) delete updated.freezeFrame;
 				if (!isValidClip(updated)) {
 					issues.push(
 						issue({

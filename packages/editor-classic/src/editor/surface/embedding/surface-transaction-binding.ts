@@ -36,6 +36,7 @@ const clipPatchKeys = new Set([
 	"duration",
 	"trimStart",
 	"trimEnd",
+	"freezeFrame",
 	"assetId",
 	"content",
 ]);
@@ -110,6 +111,7 @@ function isTrackPatch(value: unknown): boolean {
 
 function isClipPatch(value: unknown): boolean {
 	const patch = readPatch({ value, keys: clipPatchKeys });
+	if (patch?.freezeFrame === null) delete patch.freezeFrame;
 	return patch !== null && isValidClip({ ...clipPatchBase, ...patch });
 }
 

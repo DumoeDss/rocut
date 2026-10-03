@@ -79,6 +79,8 @@ export function isValidClip(value: unknown): value is Clip {
 		isNonNegativeInteger(value.duration) &&
 		isNonNegativeInteger(value.trimStart) &&
 		isNonNegativeInteger(value.trimEnd) &&
+		(value.freezeFrame === undefined ||
+			(isNonNegativeInteger(value.freezeFrame) && Number.isSafeInteger(value.freezeFrame))) &&
 		(value.assetId === undefined || isNonEmptyString(value.assetId)) &&
 		(value.content === undefined || isValidMotionTextClipContent(value.content))
 	);
@@ -235,6 +237,14 @@ export function validateTransactionDocument(args: {
 			motionTextSequences.map((sequence) => sequence.id),
 		);
 		for (const clip of document.clips) {
+			if (clip.freezeFrame !== undefined) {
+				const source = document.assets.find((asset) => asset.id === clip.assetId);
+				if (source?.kind !== "video" || clip.content !== undefined ||
+					(source.duration !== undefined && clip.freezeFrame >= source.duration)) {
+					issues.push(invalid(`clips.${clip.id}.freezeFrame`,
+						"Frame hold requires a video asset and a tick inside its source duration"));
+				}
+			}
 			if (!trackIds.has(clip.trackId)) {
 				issues.push(
 					invalid(

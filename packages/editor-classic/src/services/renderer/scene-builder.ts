@@ -93,6 +93,7 @@ function buildTrackNodes({
 							trimStart: element.trimStart,
 							trimEnd: element.trimEnd,
 							retime: element.retime,
+							freezeFrame: element.freezeFrame,
 							transform: buildTransformFromParams({ params: element.params }),
 							animations: element.animations,
 							opacity: readOpacityFromParams({ params: element.params }),
@@ -248,6 +249,7 @@ function buildBlurBackgroundNodes({
 				trimStart: element.trimStart,
 				trimEnd: element.trimEnd,
 				retime: element.type === "video" ? element.retime : undefined,
+				freezeFrame: element.type === "video" ? element.freezeFrame : undefined,
 				blurIntensity,
 			}),
 		);

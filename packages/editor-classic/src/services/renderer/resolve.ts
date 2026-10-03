@@ -7,7 +7,7 @@ import {
 } from "../../effects/definitions/blur";
 import { effectsRegistry, resolveEffectPasses } from "../../effects";
 import type { Effect, EffectPass } from "../../effects/types";
-import { getSourceTimeAtClipTime } from "../../retime";
+import { resolveVideoSourceTime } from "../../wasm/video-time";
 import {
 	DEFAULT_GRAPHIC_SOURCE_SIZE,
 	resolveGraphicElementParamsAtTime,
@@ -260,12 +260,13 @@ async function resolveVideoNode({
 		return null;
 	}
 
-	const sourceTimeTicks =
-		node.params.trimStart +
-		getSourceTimeAtClipTime({
-			clipTime,
-			retime: node.params.retime,
-		});
+	const sourceTimeTicks = resolveVideoSourceTime({
+		clipTime,
+		trimStart: node.params.trimStart,
+		playbackRate: node.params.retime?.rate ?? 1,
+		freezeFrame: node.params.freezeFrame,
+	});
+	if (sourceTimeTicks === null) return null;
 	const frame = await context.videoCache.getFrameAt({
 		mediaId: node.params.mediaId,
 		file: node.params.file,
@@ -290,6 +291,7 @@ async function resolveVideoNode({
 	return {
 		...visualState,
 		source: frame.canvas,
+		sourceVersion: `${node.params.mediaId}:${frame.timestamp}`,
 		sourceWidth: frame.canvas.width,
 		sourceHeight: frame.canvas.height,
 	};
@@ -492,12 +494,13 @@ async function resolveBackdropSource({
 	context: ResolveContext;
 }): Promise<BackdropSource | null> {
 	if (node.params.mediaType === "video") {
-		const sourceTimeTicks =
-			node.params.trimStart +
-			getSourceTimeAtClipTime({
-				clipTime,
-				retime: node.params.retime,
-			});
+		const sourceTimeTicks = resolveVideoSourceTime({
+			clipTime,
+			trimStart: node.params.trimStart,
+			playbackRate: node.params.retime?.rate ?? 1,
+			freezeFrame: node.params.freezeFrame,
+		});
+		if (sourceTimeTicks === null) return null;
 		const frame = await context.videoCache.getFrameAt({
 			mediaId: node.params.mediaId,
 			file: node.params.file,
@@ -511,6 +514,7 @@ async function resolveBackdropSource({
 
 		return {
 			source: frame.canvas,
+			sourceVersion: `${node.params.mediaId}:${frame.timestamp}`,
 			width: frame.canvas.width,
 			height: frame.canvas.height,
 		};

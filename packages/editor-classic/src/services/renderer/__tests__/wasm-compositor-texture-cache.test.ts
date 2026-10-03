@@ -71,6 +71,38 @@ if (process.env.OPENCUT_COMPOSITOR_TEXTURE_TEST_ISOLATED !== "1") {
 	}
 
 	describe("WasmCompositor rendered texture cache", () => {
+		test("pooled video canvases upload when the decoded frame changes", () => {
+			const { compositor } = createCompositor();
+			const start = wasmTestControl.textureUploads().length;
+			const source = new OffscreenCanvas(64, 36);
+			const texture = (sourceVersion: string) => ({
+				kind: "external" as const, id: "video", source,
+				sourceVersion, width: 64, height: 36,
+			});
+			compositor.syncTextures([texture("video:1")]);
+			compositor.syncTextures([texture("video:5")]);
+			compositor.syncTextures([texture("video:5")]);
+			compositor.syncTextures([texture("video:1")]);
+			expect(wasmTestControl.textureUploads().slice(start)).toHaveLength(3);
+			compositor.dispose();
+		});
+		test("blur background hashes include decoded frame versions", async () => {
+			const { BlurBackgroundNode } = await import("../nodes/blur-background-node");
+			const { buildFrameDescriptor } = await import("../compositor/frame-descriptor");
+			const node = new BlurBackgroundNode({ mediaId: "video", url: "blob:fixture", file: new File([], "video.mp4"), mediaType: "video", duration: 720_000, timeOffset: 0, trimStart: 0, trimEnd: 0, blurIntensity: 10 });
+			const source = new OffscreenCanvas(64, 36);
+			const hash = async (sourceVersion: string) => {
+				node.resolved = { backdropSource: { source, sourceVersion, width: 64, height: 36 }, passes: [] };
+				const descriptor = await buildFrameDescriptor({ node, renderer: { width: 64, height: 36 } });
+				const texture = descriptor.textures[0];
+				if (texture.kind !== "rendered") throw new Error("Expected backdrop texture");
+				return texture.contentHash;
+			};
+			const first = await hash("video:1");
+			expect(await hash("video:1")).toBe(first);
+			expect(await hash("video:5")).not.toBe(first);
+		});
+
 		test("hash changes redraw and upload through one bounded backing surface", () => {
 			const uploadStart = wasmTestControl.textureUploads().length;
 			const releaseStart = wasmTestControl.textureReleases().length;

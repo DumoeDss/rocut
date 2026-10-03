@@ -214,6 +214,8 @@ export interface Clip {
 	readonly trimStart: MediaTime;
 	readonly trimEnd: MediaTime;
 	readonly assetId?: AssetId;
+	/** Hold an absolute video-source tick; absence means ordinary playback. */
+	readonly freezeFrame?: MediaTime;
 	/** Structured generated content owned by the referenced project entity. */
 	readonly content?: MotionTextClipContent;
 }

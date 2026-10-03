@@ -59,8 +59,9 @@ export const BASELINE_DTS_SHA =
  * correspond 1:1" — so this applies the repository's own existing finding to its gate.
  *
  * **What is still asserted, so this is a re-scope and not a hole**: the count of trampolines is
- * exactly `trampolineExportCount`, each must match this shape, the other 76 are an exact set, and
- * the total is 79. A 4th trampoline, a missing one, a renamed stable export, or a stable
+ * exactly `trampolineExportCount`, each must match this shape, the other 78 are an exact set, and
+ * the total is 81. The frame-hold APIs added two stable exports on 2026-10-03.
+ * A 4th trampoline, a missing one, a renamed stable export, or a stable
  * export disguised in this shape all fail — each with a committed negative control.
  */
 export const TRAMPOLINE_EXPORT =
@@ -95,7 +96,7 @@ export const EXPECTED = {
 		"package.json":
 			"f92d109c0ed431a74974f90bf207767c033f784af10a34a0accebb1bb921ca18",
 		[SYNC_ENTRY]:
-			"8bc02ee2f66b4a9c6dd264b9cedb983135380afe9f1208095e78fabf524c6567",
+			"80bb978cf6ab21005e7041c0f52f1f4bb68ac021f4f58a9ed9caec545f6139a9",
 	},
 	/**
 	 * `LICENSE` and `README.md` are the only two files wasm-pack **copies out of the checkout**
@@ -136,9 +137,9 @@ export const EXPECTED = {
 		"opencut_wasm_bg.wasm.d.ts":
 			"d19c1b3dc87f095040c7eb1e56eb8c965d587cf7927ca21cc513327cf78ed7c1",
 	},
-	dtsSha: "e8d0fd8ac6cdae7afefddb51b422c5ec88996c3a32c544d2314a9c8ed94210bf",
+	dtsSha: "93db472d1cb3137c8b550904495dcdd553969ee4dd31106052f21790096335b3",
 	wrapperSha:
-		"8c5f6b37128f67747f95e7e5a3381a0b52ffa0583111ed0f56f5722344116eb1",
+		"5a5137775864b2f7e50c8a1eb18aa655d983d08df4f4f9f1cb9a24311cf92f8e",
 	/**
 	 * The low-level declarations, hashed after normalising the trampoline hashes below and sorted
 	 * by line. Exact-byte hashing of this file cannot hold across build hosts for the reason
@@ -149,32 +150,34 @@ export const EXPECTED = {
 	 * hashing recipe in `script/check-wasm-api-surface.mjs` after a pinned WASM rebuild.
 	 */
 	wasmDtsNormalizedSignature:
-		"f3c3b02789b4d467509cea53a885a5a235d812137d27dbc6087e184d7d812f5a",
-	wasmDtsLineCount: 81,
+		"511b67c7ca58d61b6f185da09294a1c42a65e681434ea73a18795b1dd9b7d46b",
+	wasmDtsLineCount: 83,
 	wrapperExportSignature:
-		"b5061d4f1050cb77ea7330cd987365c714a8b178e7fb6d0e77896a5589776cd9",
-	wrapperExportCount: 59,
+		"3db8ff5c594f57962d7af1884a7c50ce4062d2d6b619b72fe013ff41a40b20ea",
+	wrapperExportCount: 61,
 	bgExportSignature:
-		"0259dcb1bb35557e3bf6792585d017c63c100b23989edde61da8ad0e7c9e4cfe",
-	bgExportCount: 670,
+		"96579f0402bd71376fc6ca89a532a729c2aba3f168cf69cb3b59abc643e95f28",
+	bgExportCount: 672,
 	/**
-	 * The 76 stably-named binary exports, as an exact set. This is the real contract: every export
+	 * The 78 stably-named binary exports, as an exact set. This is the real contract: every export
 	 * a consumer can name is pinned here, and any addition, removal or rename fails.
 	 *
 	 * The remaining 3 are compiler-generated closure trampolines whose names carry a rustc symbol
 	 * hash — see `TRAMPOLINE_EXPORT` for why they are matched by shape and count instead.
 	 */
 	stableWasmExportSignature:
-		"de19e20baa9282ee76d92e7e69d6f3c5ca9b3c2d9d9fac879c332676f7679be9",
-	stableWasmExportCount: 76,
+		"e8cdf2d13073fec4cd328d225376eeda8e9276aa9d2957e49726517567b733fa",
+	stableWasmExportCount: 78,
 	trampolineExportCount: 3,
 	/**
-	 * The whole 79-entry set as recorded on the Windows build machine, kept for diagnosis: on
+	 * The whole 81-entry set as recorded on the Windows build machine, kept for diagnosis: on
 	 * failure the gate prints the symmetric difference against it, which is how the host-varying
 	 * trampolines were identified in the first place (CI run 31940776057). It is NOT the
-	 * assertion — `stableWasmExportSignature` is.
+ * assertion — `stableWasmExportSignature` is.
 	 */
 	wasmExportsAsRecorded: [
+		"planVideoFreezeFrame|function",
+		"resolveVideoSourceTime|function",
 		"MOTION_TEXT_PLAN_VERSION|function",
 		"MOTION_TEXT_SCHEMA_VERSION|function",
 		"TICKS_PER_SECOND|function",

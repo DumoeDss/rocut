@@ -10,6 +10,7 @@ export interface VisualNodeParams {
 	trimStart: number;
 	trimEnd: number;
 	retime?: RetimeConfig;
+	freezeFrame?: number;
 	transform: Transform;
 	animations?: VisualElement["animations"];
 	opacity: number;
@@ -27,6 +28,8 @@ export interface ResolvedVisualNodeState {
 
 export interface ResolvedVisualSourceNodeState extends ResolvedVisualNodeState {
 	source: CanvasImageSource;
+	/** Decoded frame identity: pooled canvases can change without changing reference. */
+	sourceVersion?: string;
 	sourceWidth: number;
 	sourceHeight: number;
 }

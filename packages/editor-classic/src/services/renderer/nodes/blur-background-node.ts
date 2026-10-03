@@ -12,11 +12,13 @@ export type BlurBackgroundNodeParams = {
 	trimStart: number;
 	trimEnd: number;
 	retime?: RetimeConfig;
+	freezeFrame?: number;
 	blurIntensity: number;
 };
 
 export type BackdropSource = {
 	source: CanvasImageSource;
+	sourceVersion?: string;
 	width: number;
 	height: number;
 };

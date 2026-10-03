@@ -1,4 +1,4 @@
-import { useEditor, useEditorInstance } from "../../editor/use-editor";
+import { useEditor } from "../../editor/use-editor";
 import { useElementSelection } from "../hooks/element/use-element-selection";
 import {
 	TooltipProvider,
@@ -51,6 +51,7 @@ import { GraphEditorPopover } from "./graph-editor/popover";
 import { PopoverTrigger } from "../../components/ui/popover";
 import { useGraphEditorController } from "./graph-editor/use-controller";
 import { selectElementWithTrackTuple } from "../element-with-track-selector";
+import { useVideoFreeze } from "../hooks/use-video-freeze";
 
 export function TimelineToolbar({
 	zoomLevel,
@@ -89,12 +90,12 @@ export function TimelineToolbar({
 
 function ToolbarLeftSection() {
 	const invokeAction = useActionInvoker();
-	const editor = useEditorInstance();
 	const mediaAssets = useEditor((currentEditor) =>
 		currentEditor.media.getAssets(),
 	);
 	const { selectedElements } = useElementSelection();
 	const graphEditor = useGraphEditorController();
+	const freeze = useVideoFreeze();
 	const isCurrentlyBookmarked = useEditor((e) =>
 		e.scenes.isBookmarked({ time: e.playback.getCurrentTime() }),
 	);
@@ -193,9 +194,10 @@ function ToolbarLeftSection() {
 
 				<ToolbarButton
 					icon={<HugeiconsIcon icon={SnowIcon} />}
-					tooltip="Freeze frame (coming soon)"
-					disabled={true}
-					onClick={({ event: _event }) => {}}
+					tooltip={freeze.label}
+					disabled={freeze.disabled}
+					isActive={freeze.isActive}
+					onClick={({ event }) => { event.stopPropagation(); void freeze.apply(); }}
 				/>
 
 				<ToolbarButton

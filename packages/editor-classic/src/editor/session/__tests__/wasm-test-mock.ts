@@ -2,6 +2,7 @@
  * @opencutSurface experimental — wasm test-mock entry; test infrastructure (the README's migration constraint names it)
  */
 import { mock } from "bun:test";
+import { planVideoFreezeFrame, resolveVideoSourceTime } from "../../../../../../rust/wasm/pkg/opencut_wasm_sync.js";
 
 const TICKS_PER_SECOND = 120_000;
 let nextCompositorHandle = 1;
@@ -403,6 +404,8 @@ class MockRuntimeGpuQuery {
 }
 
 mock.module("opencut-wasm", () => ({
+	planVideoFreezeFrame,
+	resolveVideoSourceTime,
 	TICKS_PER_SECOND: () => TICKS_PER_SECOND,
 	applyEffectPasses: () => {},
 	applyMaskFeather: () => {},
