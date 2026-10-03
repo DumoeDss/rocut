@@ -21,8 +21,7 @@ import {
 } from "../../components/ui/select";
 import { PREVIEW_ZOOM_PRESETS } from "../zoom";
 import { usePreviewViewport } from "./preview-viewport";
-import { GridPopover } from "./guide-popover";
-import { usePreviewStore } from "../../editor/use-session-store";
+
 import { usePlaybackTime } from "./use-playback-time";
 
 export function PreviewToolbar({
@@ -31,26 +30,22 @@ export function PreviewToolbar({
 	onToggleFullscreen: () => void;
 }) {
 	return (
-		<div className="grid grid-cols-[1fr_auto_1fr] items-center pb-3 pt-5 px-5">
+		<div
+			data-testid="preview-toolbar"
+			className="flex min-w-0 flex-wrap items-center justify-between gap-x-2 gap-y-2 px-3 py-3"
+		>
 			<TimecodeDisplay />
 			<PlayPauseButton />
-			<div className="justify-self-end flex items-center gap-2.5">
+			<div className="ml-auto flex min-w-0 items-center gap-2">
 				<ZoomSelect />
 				<Separator orientation="vertical" className="h-4" />
-				{/* v0.4.0 */}
-				{/* <GridPopover>
-					<Button
-						variant={activeGuideDefinition ? "secondary" : "text"}
-						size="icon"
-					>
-						{activeGuideDefinition ? (
-							activeGuideDefinition.renderTriggerIcon()
-						) : (
-							<HugeiconsIcon icon={GridTableIcon} />
-						)}
-					</Button>
-				</GridPopover> */}
-				<Button variant="text" onClick={onToggleFullscreen}>
+
+				<Button
+					variant="text"
+					size="icon"
+					aria-label="Toggle preview fullscreen"
+					onClick={onToggleFullscreen}
+				>
 					<HugeiconsIcon icon={FullScreenIcon} />
 				</Button>
 			</div>
@@ -65,7 +60,7 @@ function TimecodeDisplay() {
 	const currentTime = usePlaybackTime();
 
 	return (
-		<div className="flex items-center">
+		<div className="flex min-w-0 flex-wrap items-center">
 			<EditableTimecode
 				time={currentTime}
 				duration={totalDuration}

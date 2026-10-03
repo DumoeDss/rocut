@@ -5,6 +5,7 @@ import { useKeybindingsStore } from "../editor/use-session-store";
 import { isTypableDOMElement } from "../utils/browser";
 import {
 	installScopedKeydownListener,
+	isControlNavigation,
 	resolveKeybindingEventTarget,
 } from "./keybinding-target";
 
@@ -55,6 +56,7 @@ export function useKeybindingsListener({
 				target instanceof HTMLElement
 					? target.ownerDocument.activeElement
 					: target.activeElement;
+			if (isControlNavigation({ element: activeElement, key: ev.key })) return;
 			const isTextInput =
 				activeElement instanceof HTMLElement &&
 				isTypableDOMElement({ element: activeElement });

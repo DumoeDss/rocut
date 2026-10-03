@@ -23,6 +23,30 @@ export function resolveKeybindingEventTarget({
 	return targetRef === undefined ? fallbackDocument : targetRef.current;
 }
 
+/** Focused controls own their native keys before editor capture shortcuts run. */
+export function isControlNavigation({
+	element,
+	key,
+}: {
+	element: Pick<Element, "getAttribute" | "tagName"> | null;
+	key: string;
+}): boolean {
+	if (!element) return false;
+	const navigation = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
+	if (element.getAttribute("data-panel-resize-handle-id") != null) {
+		return navigation.includes(key);
+	}
+	const role = element.getAttribute("role");
+	if (role === "combobox" || role === "listbox" || role === "option") {
+		return [...navigation, " ", "Enter"].includes(key);
+	}
+	if (role === "slider") return navigation.includes(key);
+	if (element.tagName === "BUTTON" || role === "button") {
+		return key === " " || key === "Enter";
+	}
+	return false;
+}
+
 export function installScopedKeydownListener({
 	target,
 	listener,

@@ -8,31 +8,31 @@
 :where([data-editor-surface]) {
 	font-family: var(--font-inter, "Segoe UI"), "Microsoft YaHei UI", sans-serif;
 	color: var(--foreground);
-	--background: hsl(0 0% 100%);
-	--foreground: hsl(0 0% 11%);
-	--card: hsl(0 0% 100%);
-	--card-foreground: hsl(0 0% 11%);
-	--popover: hsl(0 0% 100%);
-	--popover-hover: hsl(0 0% 96%);
-	--popover-foreground: hsl(0 0% 2%);
+	--background: #f5f3f0;
+	--foreground: #27231f;
+	--card: #fcfbf9;
+	--card-foreground: #27231f;
+	--popover: #fffdfa;
+	--popover-hover: #eee9e2;
+	--popover-foreground: #27231f;
 	--primary: hsl(200 90% 52%);
 	--primary-foreground: hsl(0 0% 100%);
 	--secondary: hsl(204 100% 97%);
 	--secondary-border: hsl(204 100% 94%);
 	--secondary-foreground: hsl(200 98% 39%);
-	--muted: hsl(0 0% 85.1%);
-	--muted-foreground: hsl(0 0% 50%);
-	--accent: hsl(0 0% 96%);
-	--accent-foreground: hsl(0 0% 2%);
+	--muted: #e5ded5;
+	--muted-foreground: #6b6259;
+	--accent: #eae4dc;
+	--accent-foreground: #27231f;
 	--destructive: hsl(0 83% 50%);
 	--destructive-foreground: hsl(0 0% 100%);
 	--constructive: hsl(141 71% 48%);
 	--constructive-foreground: hsl(0 0% 100%);
 	--caution: hsl(38 92% 50%);
 	--caution-foreground: hsl(0 0% 10%);
-	--border: hsl(0 0% 91%);
-	--input: hsl(0 0% 100%);
-	--ring: hsl(0 0% 55%);
+	--border: #958a7e;
+	--input: #fffdfa;
+	--ring: #218fce;
 	--chart-1: hsl(220 70% 50%);
 	--chart-2: hsl(160 60% 45%);
 	--chart-3: hsl(30 80% 55%);
@@ -73,43 +73,43 @@
 }
 
 :where([data-editor-surface]) .panel {
-	--background: hsl(210 20% 98%);
-	--foreground: hsl(0 0% 13%);
-	--card: hsl(0 0% 98%);
-	--card-foreground: hsl(0 0% 13%);
+	--background: #fcfbf9;
+	--foreground: #27231f;
+	--card: #fcfbf9;
+	--card-foreground: #27231f;
 	--primary-foreground: hsl(0 0% 98%);
 	--secondary: hsl(204 100% 95%);
 	--secondary-border: hsl(204 100% 92%);
 	--secondary-foreground: hsl(200 98% 37%);
-	--muted: hsl(0 0% 83.1%);
-	--muted-foreground: hsl(0 0% 48%);
-	--accent: hsl(0 0% 93%);
-	--accent-foreground: hsl(0 0% 5%);
+	--muted: #e5ded5;
+	--muted-foreground: #6b6259;
+	--accent: #eee9e2;
+	--accent-foreground: #27231f;
 	--destructive-foreground: hsl(0 0% 98%);
 	--constructive-foreground: hsl(0 0% 98%);
-	--border: hsl(0 0% 87%);
-	--input: hsl(0 0% 93%);
-	--ring: hsl(0 0% 53%);
+	--border: #958a7e;
+	--input: #f3eee8;
+	--ring: #218fce;
 }
 
 :where(.dark) :where([data-editor-surface]),
 :where([data-editor-surface].dark) {
-	--background: hsl(0 0% 5%);
-	--foreground: hsl(0 0% 87%);
-	--card: hsl(0 0% 5%);
-	--card-foreground: hsl(0 0% 87%);
-	--popover: hsl(0 0% 5%);
-	--popover-hover: hsl(0 0% 13%);
-	--popover-foreground: hsl(0 0% 95%);
+	--background: #171614;
+	--foreground: #eee9e2;
+	--card: #211f1c;
+	--card-foreground: #eee9e2;
+	--popover: #302c27;
+	--popover-hover: #3c3731;
+	--popover-foreground: #f4eee6;
 	--secondary: hsl(204 100% 12%);
 	--secondary-border: hsl(204 100% 15%);
 	--secondary-foreground: hsl(200 98% 61%);
-	--muted: hsl(0 0% 20%);
-	--accent: hsl(0 0% 14%);
-	--accent-foreground: hsl(0 0% 95%);
-	--border: hsl(0 0% 16%);
-	--input: hsl(0 0% 5%);
-	--ring: hsl(0 0% 50%);
+	--muted: #37312b;
+	--accent: #302c27;
+	--accent-foreground: #f4eee6;
+	--border: #766b5f;
+	--input: #211f1c;
+	--ring: #55b7eb;
 	--caution: hsl(38 92% 60%);
 	--caution-foreground: hsl(0 0% 10%);
 	--sidebar-background: hsl(0 0% 8%);
@@ -121,23 +121,25 @@
 	--sidebar-border: hsl(0 0% 20%);
 	--sidebar-ring: hsl(0 0% 83.1%);
 	--sidebar: hsl(0 0% 6%);
+	--muted-foreground: #aea69c;
 }
 
 :where(.dark) :where([data-editor-surface]) .panel,
 :where([data-editor-surface].dark) .panel {
-	--background: hsl(0 0% 10%);
-	--foreground: hsl(0 0% 85%);
-	--card: hsl(0 0% 10%);
-	--card-foreground: hsl(0 0% 85%);
+	--background: #211f1c;
+	--foreground: #eee9e2;
+	--card: #211f1c;
+	--card-foreground: #eee9e2;
 	--secondary: hsl(204 67% 9%);
 	--secondary-border: hsl(204 100% 14%);
 	--secondary-foreground: hsl(200 98% 63%);
-	--muted: hsl(0 0% 22%);
-	--accent: hsl(0 0% 15%);
-	--accent-foreground: hsl(0 0% 93%);
-	--border: hsl(0 0% 18%);
-	--input: hsl(0 0% 22%);
-	--ring: hsl(0 0% 52%);
+	--muted: #37312b;
+	--accent: #302c27;
+	--accent-foreground: #f4eee6;
+	--border: #766b5f;
+	--input: #302c27;
+	--ring: #55b7eb;
+	--muted-foreground: #aea69c;
 }
 
 @layer base {

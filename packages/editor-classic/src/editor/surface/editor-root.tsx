@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { EditorPanels } from "./editor-panels";
 import {
 	ResizablePanelGroup,
 	ResizablePanel,
@@ -69,7 +70,7 @@ function DegradedRendererBanner() {
 		>
 			<span>
 				Renderer unavailable in this environment. Editing remains available, but
-				 preview and export are disabled.
+				preview and export are disabled.
 			</span>
 			<Button
 				variant="text"
@@ -152,52 +153,17 @@ function EditorLayout() {
 				maxSize={85}
 				className="min-h-0"
 			>
-				<ResizablePanelGroup
-					direction="horizontal"
-					className="size-full gap-[0.19rem] px-3"
-					onLayout={(sizes) => {
-						setPanel({ panel: "tools", size: sizes[0] ?? panels.tools });
-						setPanel({ panel: "preview", size: sizes[1] ?? panels.preview });
-						setPanel({
-							panel: "properties",
-							size: sizes[2] ?? panels.properties,
-						});
-					}}
-				>
-					<ResizablePanel
-						defaultSize={panels.tools}
-						minSize={15}
-						maxSize={40}
-						className="min-w-0"
-					>
-						<AssetsPanel />
-					</ResizablePanel>
-
-					<ResizableHandle withHandle />
-
-					<ResizablePanel
-						defaultSize={panels.preview}
-						minSize={30}
-						className="min-h-0 min-w-0 flex-1"
-					>
+				<EditorPanels
+					assets={<AssetsPanel />}
+					properties={<PropertiesPanel />}
+					preview={
 						<PreviewPanel
 							overlayControls={overlayControls}
 							overlayInstances={overlaySource.instances}
 							onOverlayVisibilityChange={setOverlayVisibility}
 						/>
-					</ResizablePanel>
-
-					<ResizableHandle withHandle />
-
-					<ResizablePanel
-						defaultSize={panels.properties}
-						minSize={15}
-						maxSize={40}
-						className="min-w-0"
-					>
-						<PropertiesPanel />
-					</ResizablePanel>
-				</ResizablePanelGroup>
+					}
+				/>
 			</ResizablePanel>
 
 			<ResizableHandle withHandle />

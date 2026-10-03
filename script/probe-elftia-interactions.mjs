@@ -7,6 +7,7 @@ import { expect } from '@playwright/test';
 import { probeCoreInteractions } from './probe-core-interactions.mjs';
 import { probeMixedExport } from './probe-mixed-export.mjs';
 import { probeExportRecovery } from './probe-export-recovery.mjs';
+import { probeEmbeddedLayout } from './probe-embedded-layout.mjs';
 import { probeJizuraImport } from './probe-jizura-import.mjs';
 import { probeResponsiveMotion } from './probe-responsive-motion.mjs';
 import { reloadEditorFrame } from './probe-reload-editor.mjs';
@@ -68,6 +69,13 @@ try {
     const value=target[key]; return typeof value==='function'?value.bind(target):value;
   }});
   conn.page.on('pageerror',error=>evidence.errors.push(scrub(error.message)));
+  // Safe transaction summaries distinguish a dropped shortcut from stale persistence.
+  evidence.recordWrites=[];
+  conn.page.on('request',request=>{
+    if(request.method()!=='PUT'||!request.url().endsWith('/api/record'))return;
+    const data=request.postDataJSON()?.record?.data;
+    evidence.recordWrites.push({phase,revision:data?.__opencutTransaction?.revision,sequences:data?.motionTextSequences?.map(s=>({revision:s.revision,beatOverride:s.audioBinding?.beatOverride}))});
+  });
   // Electron may handle beforeunload before the CDP acknowledgement returns.
   // Handle it explicitly so Playwright does not create an unhandled auto-dismiss.
   conn.page.on('dialog', dialog=>{
@@ -89,6 +97,7 @@ try {
   if(process.argv.includes('--mixed-export') || process.argv.includes('--export-recovery')) {phase='mixed export'; console.log('phase:',phase); await probeMixedExport(editor,project.path,evidence);}
   if(process.argv.includes('--jizura-import')) {phase='JIZURA import'; console.log('phase:',phase); await probeJizuraImport(conn.page,editor,evidence);}
   if(process.argv.includes('--responsive')) {phase='responsive'; console.log('phase:',phase); await probeResponsiveMotion(conn.page,editor,work,evidence);}
+  if(process.argv.includes('--layout')) {phase='embedded layout'; console.log('phase:',phase); await probeEmbeddedLayout(conn.page,editor,work,evidence);}
   assert.equal(evidence.errors.length,0,'Real-host run must not report uncaught page/driver errors');
   const unexpectedRequests=evidence.requests.filter(request=>!(request.status===404 &&
     ['/api/library/graph-editor-presets/user-presets','/api/library/saved-sounds/user-sounds'].some(path=>request.url.endsWith(path))));
