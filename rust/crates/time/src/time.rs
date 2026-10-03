@@ -1,7 +1,13 @@
 mod frame_rate;
 mod media_time;
 mod timecode;
+mod transition;
 mod video_time;
+
+pub use transition::{
+    ClipTransitionOptions, ClipTransitionPlan, ClipTransitionSample, ClipTransitionWindow,
+    TransitionClip, TransitionPlanError, TransitionSource, plan_clip_transition,
+};
 
 pub use video_time::{
     VideoFreezeFrameOptions, VideoSourceTimeOptions, plan_video_freeze_frame,

@@ -24,6 +24,13 @@ pub fn resolve_video_source_time(options: VideoSourceTimeOptions) -> Option<Medi
     if options.clip_time < MediaTime::ZERO || options.trim_start < MediaTime::ZERO {
         return None;
     }
+    resolve_video_source_time_offset(options)
+}
+
+// Transitions alone may address negative clip time to read a validated source pre-roll.
+pub(crate) fn resolve_video_source_time_offset(
+    options: VideoSourceTimeOptions,
+) -> Option<MediaTime> {
     let source = if let Some(frame) = options.freeze_frame {
         frame
     } else {
