@@ -29,6 +29,7 @@ import {
 	StandaloneEffectTab,
 } from "../../../../effects/components/effects-tab";
 import { MasksTab } from "../../../../masks/components/masks-tab";
+import { AdjustmentProperties } from "../../../../effects/components/adjustment-properties";
 import { SpeedTab } from "../../../../speed/components/speed-tab";
 import { GraphicTab } from "../../../../graphics/components/graphic-tab";
 import { OcShapesIcon } from "../../../icons";
@@ -222,7 +223,9 @@ function buildStandaloneEffectTab({
 		label: "Effects",
 		icon: <HugeiconsIcon icon={MagicWand05Icon} size={16} />,
 		content: ({ trackId }) => (
-			<StandaloneEffectTab element={element} trackId={trackId} />
+			element.effectType === "color-adjustment"
+				? <AdjustmentProperties element={element} trackId={trackId} />
+				: <StandaloneEffectTab element={element} trackId={trackId} />
 		),
 	};
 }

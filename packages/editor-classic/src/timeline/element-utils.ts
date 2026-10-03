@@ -33,7 +33,7 @@ import {
 	getBuiltInElementParams,
 } from "../params/registry";
 import { capitalizeFirstLetter } from "../utils/string";
-import { type MediaTime, ZERO_MEDIA_TIME } from "../wasm";
+import { type MediaTime, ZERO_MEDIA_TIME, normalizeColorAdjustment } from "../wasm";
 
 export function canElementHaveAudio(
 	element: TimelineElement,
@@ -137,6 +137,9 @@ export function buildEffectElement({
 		name: capitalizeFirstLetter({ string: instance.type }),
 		effectType,
 		params: instance.params,
+		...(effectType === "color-adjustment" && { adjustment: normalizeColorAdjustment({
+			exposure: 0, contrast: 0, saturation: 0, temperature: 0, tint: 0,
+		}) }),
 		duration: duration ?? DEFAULT_NEW_ELEMENT_DURATION,
 		startTime,
 		trimStart: ZERO_MEDIA_TIME,

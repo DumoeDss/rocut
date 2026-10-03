@@ -2,7 +2,7 @@ import type { ElementAnimations } from "../animation/types";
 import type { Effect } from "../effects/types";
 import type { Mask } from "../masks/types";
 import type { ParamValues } from "../params";
-import type { MediaTime } from "../wasm";
+import type { ColorAdjustment, MediaTime } from "../wasm";
 
 export type ElementRef = {
 	trackId: string;
@@ -168,6 +168,7 @@ export interface MotionTextElement extends BaseTimelineElement {
 export interface EffectElement extends BaseTimelineElement {
 	type: "effect";
 	effectType: string;
+	adjustment?: ColorAdjustment;
 }
 
 export type ElementUpdatePatch = { params?: Partial<ParamValues> };

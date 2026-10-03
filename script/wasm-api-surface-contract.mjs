@@ -59,8 +59,8 @@ export const BASELINE_DTS_SHA =
  * correspond 1:1" — so this applies the repository's own existing finding to its gate.
  *
  * **What is still asserted, so this is a re-scope and not a hole**: the count of trampolines is
- * exactly `trampolineExportCount`, each must match this shape, the other 78 are an exact set, and
- * the total is 81. The frame-hold APIs added two stable exports on 2026-10-03.
+ * exactly `trampolineExportCount`, each must match this shape, the other 80 are an exact set, and
+ * the total is 83. Frame-hold and color-adjustment APIs each added two stable exports.
  * A 4th trampoline, a missing one, a renamed stable export, or a stable
  * export disguised in this shape all fail — each with a committed negative control.
  */
@@ -96,7 +96,7 @@ export const EXPECTED = {
 		"package.json":
 			"f92d109c0ed431a74974f90bf207767c033f784af10a34a0accebb1bb921ca18",
 		[SYNC_ENTRY]:
-			"80bb978cf6ab21005e7041c0f52f1f4bb68ac021f4f58a9ed9caec545f6139a9",
+			"55a0dc84cd4eeb95e8c37fe3e49246c957fd795025f37f11f04580dfe5363b90",
 	},
 	/**
 	 * `LICENSE` and `README.md` are the only two files wasm-pack **copies out of the checkout**
@@ -137,9 +137,8 @@ export const EXPECTED = {
 		"opencut_wasm_bg.wasm.d.ts":
 			"d19c1b3dc87f095040c7eb1e56eb8c965d587cf7927ca21cc513327cf78ed7c1",
 	},
-	dtsSha: "93db472d1cb3137c8b550904495dcdd553969ee4dd31106052f21790096335b3",
-	wrapperSha:
-		"5a5137775864b2f7e50c8a1eb18aa655d983d08df4f4f9f1cb9a24311cf92f8e",
+	dtsSha: "449e27f41111d81e42a23b7ffc9351fa9ac99a369b08f7780663d7bb746e7150",
+	wrapperSha: "25da68086f30a9e680e2e98eba0be7ff2aff84dbf091bfe5d7569518dd43c115",
 	/**
 	 * The low-level declarations, hashed after normalising the trampoline hashes below and sorted
 	 * by line. Exact-byte hashing of this file cannot hold across build hosts for the reason
@@ -149,33 +148,31 @@ export const EXPECTED = {
 	 * Recorded on Windows; the value is host-independent by construction. Re-derive with the
 	 * hashing recipe in `script/check-wasm-api-surface.mjs` after a pinned WASM rebuild.
 	 */
-	wasmDtsNormalizedSignature:
-		"511b67c7ca58d61b6f185da09294a1c42a65e681434ea73a18795b1dd9b7d46b",
-	wasmDtsLineCount: 83,
-	wrapperExportSignature:
-		"3db8ff5c594f57962d7af1884a7c50ce4062d2d6b619b72fe013ff41a40b20ea",
-	wrapperExportCount: 61,
-	bgExportSignature:
-		"96579f0402bd71376fc6ca89a532a729c2aba3f168cf69cb3b59abc643e95f28",
-	bgExportCount: 672,
+	wasmDtsNormalizedSignature: "99e5bb1e2076029ee7afa1a05e41d88482200bad095ea7ca3acf493484d94074",
+	wasmDtsLineCount: 85,
+	wrapperExportSignature: "4f3d2740df6bc7dbd13c009097f449d7686afd3d4ab0d45c44d864c0b32f4a7f",
+	wrapperExportCount: 63,
+	bgExportSignature: "ff4c5c14a2fd33e128445fcab48d51d795445a5ebff338b99c9422462ee8727e",
+	bgExportCount: 674,
 	/**
-	 * The 78 stably-named binary exports, as an exact set. This is the real contract: every export
+	 * The 80 stably-named binary exports, as an exact set. This is the real contract: every export
 	 * a consumer can name is pinned here, and any addition, removal or rename fails.
 	 *
 	 * The remaining 3 are compiler-generated closure trampolines whose names carry a rustc symbol
 	 * hash — see `TRAMPOLINE_EXPORT` for why they are matched by shape and count instead.
 	 */
-	stableWasmExportSignature:
-		"e8cdf2d13073fec4cd328d225376eeda8e9276aa9d2957e49726517567b733fa",
-	stableWasmExportCount: 78,
+	stableWasmExportSignature: "8c4eaf48f3e40cb9e70714810f91ca77e43b2c2475a8b8ad4c254a3408db34a0",
+	stableWasmExportCount: 80,
 	trampolineExportCount: 3,
 	/**
-	 * The whole 81-entry set as recorded on the Windows build machine, kept for diagnosis: on
+	 * The whole 83-entry set as recorded on the Windows build machine, kept for diagnosis: on
 	 * failure the gate prints the symmetric difference against it, which is how the host-varying
 	 * trampolines were identified in the first place (CI run 31940776057). It is NOT the
  * assertion — `stableWasmExportSignature` is.
 	 */
 	wasmExportsAsRecorded: [
+		"colorAdjustmentCatalog|function",
+		"normalizeColorAdjustment|function",
 		"planVideoFreezeFrame|function",
 		"resolveVideoSourceTime|function",
 		"MOTION_TEXT_PLAN_VERSION|function",

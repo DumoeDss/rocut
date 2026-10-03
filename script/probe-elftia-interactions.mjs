@@ -13,6 +13,7 @@ import { probeResponsiveMotion } from './probe-responsive-motion.mjs';
 import { reloadEditorFrame } from './probe-reload-editor.mjs';
 import { probeInstalledPreview } from './probe-installed-preview.mjs';
 import { probeVideoFreeze } from './probe-video-freeze.mjs';
+import { probeColorAdjustment } from './probe-color-adjustment.mjs';
 
 // Run with the Elftia worktree's tsx loader. Never launch a substitute browser.
 const hostRoot = resolve(process.env.ELFTIA_WORKTREE ?? '');
@@ -70,6 +71,9 @@ try {
     const value=target[key]; return typeof value==='function'?value.bind(target):value;
   }});
   conn.page.on('pageerror',error=>evidence.errors.push(scrub(error.message)));
+  if (process.argv.includes('--adjustment-only')) conn.page.on('console', message => {
+    if (message.type() === 'error' && /Failed to render preview frame|Validation Error/.test(message.text())) evidence.errors.push(scrub(message.text()));
+  });
   // Safe transaction summaries distinguish a dropped shortcut from stale persistence.
   evidence.recordWrites=[];
   conn.page.on('request',request=>{
@@ -87,7 +91,9 @@ try {
   conn.page.on('response',response=>{if(response.status()>=400 && response.url().includes('/api/')) evidence.requests.push({phase,status:response.status(),url:scrub(response.url())});});
   const audioFixture=join(work,'fixture-tone-a4.wav');
   execFileSync('ffmpeg',['-v','error','-n','-f','lavfi','-i','sine=frequency=440:duration=16','-ar','44100','-ac','1','-c:a','pcm_s16le',audioFixture],{windowsHide:true});
-  if (process.argv.includes('--freeze-only')) {
+  if (process.argv.includes('--adjustment-only')) {
+    await probeColorAdjustment({page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
+  } else if (process.argv.includes('--freeze-only')) {
     await probeVideoFreeze({page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else {
   phase='core interactions';

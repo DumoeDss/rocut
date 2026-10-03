@@ -37,6 +37,7 @@ const clipPatchKeys = new Set([
 	"trimStart",
 	"trimEnd",
 	"freezeFrame",
+	"adjustment",
 	"assetId",
 	"content",
 ]);

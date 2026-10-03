@@ -19,6 +19,7 @@ pub use effects::*;
 pub use gpu::*;
 #[cfg(target_arch = "wasm32")]
 pub use masks::*;
+pub use ::effects::{color_adjustment_catalog, normalize_color_adjustment};
 pub use motion_text::*;
 #[cfg(target_arch = "wasm32")]
 pub use perf::*;

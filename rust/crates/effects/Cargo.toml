@@ -8,7 +8,14 @@ path = "src/effects.rs"
 crate-type = ["rlib"]
 
 [dependencies]
+bridge = { version = "0.1.0", path = "../bridge" }
+serde = { version = "1", features = ["derive"] }
+tsify-next = { version = "0.5", optional = true }
+wasm-bindgen = { version = "0.2.115", optional = true }
 bytemuck = { version = "1.25.0", features = ["derive"] }
 gpu = { version = "0.1.0", path = "../gpu" }
 thiserror = "2.0.18"
 wgpu = "29.0.1"
+
+[features]
+wasm = ["dep:wasm-bindgen", "dep:tsify-next", "tsify-next/js"]

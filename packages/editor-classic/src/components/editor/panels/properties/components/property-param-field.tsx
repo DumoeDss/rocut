@@ -209,6 +209,7 @@ function NumberParamField({
 
 	return (
 		<NumberField
+			aria-label={param.label}
 			icon={param.shortLabel}
 			value={draft.displayValue}
 			dragSensitivity="slow"

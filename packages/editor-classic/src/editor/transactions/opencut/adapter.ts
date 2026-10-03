@@ -182,6 +182,10 @@ function newElement(clip: Clip, asset: Asset | undefined): TimelineElement {
 			hidden: false,
 		} as unknown as TimelineElement;
 	}
+	if (clip.adjustment !== undefined) {
+		return { ...base, type: "effect", effectType: "color-adjustment",
+			name: "Color adjustment", adjustment: { ...clip.adjustment } } as unknown as TimelineElement;
+	}
 	if (asset?.kind === "audio") {
 		return {
 			...base,
@@ -218,7 +222,9 @@ function overlayElement(
 		previous !== undefined &&
 		(clip.content?.kind === "motion-text"
 			? previous.type === "motion-text"
-			: previous.type !== "motion-text");
+			: clip.adjustment !== undefined
+				? previous.type === "effect" && previous.effectType === "color-adjustment"
+				: previous.type !== "motion-text");
 	const base = previousMatchesContent ? previous : newElement(clip, asset);
 	const next = {
 		...base,
@@ -229,6 +235,9 @@ function overlayElement(
 		trimEnd: clip.trimEnd,
 	} as unknown as TimelineElement & { mediaId?: string };
 	if (clip.assetId !== undefined) next.mediaId = clip.assetId;
+	if (next.type === "effect" && clip.adjustment !== undefined) {
+		next.adjustment = { ...clip.adjustment };
+	}
 	if (next.type === "video") {
 		if (clip.freezeFrame === undefined) delete next.freezeFrame;
 		else next.freezeFrame = clip.freezeFrame as unknown as NonNullable<typeof next.freezeFrame>;

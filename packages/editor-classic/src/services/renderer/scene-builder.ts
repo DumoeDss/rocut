@@ -68,7 +68,7 @@ function buildTrackNodes({
 				nodes.push(
 					new EffectLayerNode({
 						effectType: element.effectType,
-						effectParams: element.params,
+						effectParams: element.adjustment ? { ...element.adjustment } : element.params,
 						timeOffset: element.startTime,
 						duration: element.duration,
 					}),

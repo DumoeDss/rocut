@@ -216,6 +216,14 @@ export interface Clip {
 	readonly assetId?: AssetId;
 	/** Hold an absolute video-source tick; absence means ordinary playback. */
 	readonly freezeFrame?: MediaTime;
+	/** Scene adjustment layer parameters; valid only on an effect track. */
+	readonly adjustment?: {
+		readonly exposure: number;
+		readonly contrast: number;
+		readonly saturation: number;
+		readonly temperature: number;
+		readonly tint: number;
+	};
 	/** Structured generated content owned by the referenced project entity. */
 	readonly content?: MotionTextClipContent;
 }

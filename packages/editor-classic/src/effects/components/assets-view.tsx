@@ -14,7 +14,7 @@ import type { EffectDefinition } from "../types";
 import { useEditorSession } from "../../editor/session/editor-session-provider";
 
 export function EffectsView() {
-	const effects = effectsRegistry.getAll();
+	const effects = effectsRegistry.getAll().filter((effect) => effect.type !== "color-adjustment");
 
 	return (
 		<PanelView title="Effects">

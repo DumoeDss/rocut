@@ -101,6 +101,9 @@ function clipProjection(track: TimelineTrack, element: TimelineElement): Clip {
 		...(element.type === "video" && element.freezeFrame !== undefined && {
 			freezeFrame: contractTime(element.freezeFrame),
 		}),
+		...(element.type === "effect" && element.adjustment !== undefined && {
+			adjustment: { ...element.adjustment },
+		}),
 		...(element.type === "motion-text" && {
 			content: {
 				kind: "motion-text" as const,
@@ -339,6 +342,7 @@ export function diffOpenCutProjection({
 			"trimEnd",
 			"assetId",
 			"content",
+			"adjustment",
 		]);
 		const freezePatch = previous.freezeFrame === current.freezeFrame
 			? {} : { freezeFrame: current.freezeFrame ?? null };

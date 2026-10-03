@@ -23,6 +23,7 @@ export class UpdateElementsCommand extends Command {
 			"trimStart",
 			"trimEnd",
 			"mediaId",
+			"adjustment",
 		]);
 		return this.updates.some(({ patch }) =>
 			Object.keys(patch).some((key) => publicKeys.has(key)),

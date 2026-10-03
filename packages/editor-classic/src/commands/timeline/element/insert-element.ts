@@ -354,7 +354,9 @@ export class InsertElementCommand extends Command {
 			strategy:
 				placement.mode === "explicit"
 					? { type: "explicit", trackId: placement.trackId }
-					: { type: "firstAvailable" },
+					: element.type === "effect" && element.effectType === "color-adjustment"
+						? { type: "alwaysNew", position: "highest" }
+						: { type: "firstAvailable" },
 		});
 		if (!placementResult) {
 			if (placement.mode === "explicit") {

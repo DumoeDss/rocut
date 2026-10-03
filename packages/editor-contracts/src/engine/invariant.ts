@@ -70,6 +70,13 @@ export function isValidTrack(value: unknown): value is Track {
 	);
 }
 
+function isValidAdjustment(value: unknown): boolean {
+	return isRecord(value) && Reflect.ownKeys(value).length === 5 &&
+		["exposure", "contrast", "saturation", "temperature", "tint"].every(
+			(key) => typeof value[key] === "number" && Number.isFinite(value[key]),
+		);
+}
+
 export function isValidClip(value: unknown): value is Clip {
 	return (
 		isRecord(value) &&
@@ -81,6 +88,7 @@ export function isValidClip(value: unknown): value is Clip {
 		isNonNegativeInteger(value.trimEnd) &&
 		(value.freezeFrame === undefined ||
 			(isNonNegativeInteger(value.freezeFrame) && Number.isSafeInteger(value.freezeFrame))) &&
+		(value.adjustment === undefined || isValidAdjustment(value.adjustment)) &&
 		(value.assetId === undefined || isNonEmptyString(value.assetId)) &&
 		(value.content === undefined || isValidMotionTextClipContent(value.content))
 	);
@@ -237,6 +245,11 @@ export function validateTransactionDocument(args: {
 			motionTextSequences.map((sequence) => sequence.id),
 		);
 		for (const clip of document.clips) {
+			if (clip.adjustment !== undefined && (clip.assetId !== undefined ||
+				clip.content !== undefined || document.tracks.find((track) => track.id === clip.trackId)?.kind !== "effect")) {
+				issues.push(invalid(`clips.${clip.id}.adjustment`,
+					"Color adjustment requires an effect track and no asset or content"));
+			}
 			if (clip.freezeFrame !== undefined) {
 				const source = document.assets.find((asset) => asset.id === clip.assetId);
 				if (source?.kind !== "video" || clip.content !== undefined ||

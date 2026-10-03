@@ -13,6 +13,7 @@ import { SoundsView } from "../../../../sounds/components/assets-view";
 import { StickersView } from "../../../../stickers/components/assets-view";
 import { TextView } from "../../../../text/components/assets-view";
 import { EffectsView } from "../../../../effects/components/assets-view";
+import { AdjustmentAssetsView } from "../../../../effects/components/adjustment-assets-view";
 import { MotionTextAssetsView } from "../../../../motion-text/components/assets-view";
 
 export function AssetsPanel() {
@@ -31,11 +32,7 @@ export function AssetsPanel() {
 			</div>
 		),
 		captions: <Captions />,
-		adjustment: (
-			<div className="text-muted-foreground p-4">
-				Adjustment view coming soon...
-			</div>
-		),
+		adjustment: <AdjustmentAssetsView />,
 		settings: <SettingsView />,
 	};
 

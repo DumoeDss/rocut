@@ -964,6 +964,7 @@ dependencies = [
  "gpu",
  "masks",
  "serde",
+ "serde_json",
  "thiserror 2.0.18",
 ]
 
@@ -1453,9 +1454,13 @@ checksum = "d0881ea181b1df73ff77ffaaf9c7544ecc11e82fba9b5f27b262a3c73a332555"
 name = "effects"
 version = "0.1.0"
 dependencies = [
+ "bridge",
  "bytemuck",
  "gpu",
+ "serde",
  "thiserror 2.0.18",
+ "tsify-next",
+ "wasm-bindgen",
  "wgpu",
 ]
 
