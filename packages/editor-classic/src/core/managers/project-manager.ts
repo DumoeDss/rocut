@@ -193,22 +193,27 @@ export class ProjectManager {
 
 	async saveCurrentProject(): Promise<void> {
 		if (!this.active) return;
+		const savingProject = this.active;
 
 		try {
 			const scenes = this.editor.scenes.getScenes();
 			const updatedProject = {
-				...this.active,
+				...savingProject,
 				scenes,
 				metadata: {
-					...this.active.metadata,
+					...savingProject.metadata,
 					duration: getProjectDurationFromScenes({ scenes }),
 					updatedAt: new Date(),
 				},
 			};
 
 			await this.editor.persistence.saveProject({ project: updatedProject });
-			this.active = updatedProject;
-			this.updateMetadata(updatedProject);
+			// Storage completion acknowledges this snapshot, not any edits or
+			// project replacement published while its asynchronous save was pending.
+			if (this.active === savingProject) {
+				this.active = updatedProject;
+				this.updateMetadata(updatedProject);
+			}
 		} catch (error) {
 			this.editor.reportPersistenceFailure({
 				operation: "save-project",

@@ -91,6 +91,7 @@ export class CommandManager {
 	public isRippleEnabled = false;
 	private history: CommandHistoryEntry[] = [];
 	private redoStack: CommandHistoryEntry[] = [];
+	private pendingHistory: Promise<void> | null = null;
 	private reactors: CommandReactor[] = [];
 	private readonly context: EditorCommandContext;
 
@@ -104,25 +105,30 @@ export class CommandManager {
 			command.execute(this.context);
 			return Promise.resolve(command);
 		}
-		if (routing === "provider-private") {
-			const previousSelection = this.getSelectionSnapshot();
-			const result = command.execute(this.context);
-			const selectionOverride = this.applySelectionOverride(result);
-			this.runReactors(this.context);
-			this.history.push({
-				kind: "provider-private",
-				command,
-				previousSelection,
-				selectionPatch: result?.selection,
-				selectionOverride,
-			});
-			this.redoStack = [];
-			return Promise.resolve(command);
-		}
 		if (routing === "preview") {
 			throw new Error("Preview commands must use local preview state");
 		}
-		return this.executeRouted({ command, recordHistory: true });
+		return this.enqueueHistoryWork({
+			synchronous: routing === "provider-private",
+			operation: () => {
+				if (routing === "provider-private") {
+					const previousSelection = this.getSelectionSnapshot();
+					const result = command.execute(this.context);
+					const selectionOverride = this.applySelectionOverride(result);
+					this.runReactors(this.context);
+					this.history.push({
+						kind: "provider-private",
+						command,
+						previousSelection,
+						selectionPatch: result?.selection,
+						selectionOverride,
+					});
+					this.redoStack = [];
+					return Promise.resolve(command);
+				}
+				return this.executeRouted({ command, recordHistory: true });
+			},
+		});
 	}
 
 	executeSystem({ command }: { command: Command }): Promise<Command> {
@@ -131,7 +137,9 @@ export class CommandManager {
 				"System transaction execution requires transaction-routable work",
 			);
 		}
-		return this.executeRouted({ command, recordHistory: false });
+		return this.enqueueHistoryWork({
+			operation: () => this.executeRouted({ command, recordHistory: false }),
+		});
 	}
 
 	async removeMediaAssetReferences({
@@ -309,7 +317,11 @@ export class CommandManager {
 		this.reactors.push(reactor);
 	}
 
-	async undo(): Promise<void> {
+	undo(): Promise<void> {
+		return this.enqueueHistoryWork({ operation: () => this.undoFromHistory() });
+	}
+
+	private async undoFromHistory(): Promise<void> {
 		const entry = this.history.at(-1);
 		if (!entry) return;
 		if (entry.kind === "provider-private") {
@@ -326,7 +338,11 @@ export class CommandManager {
 		await this.commitHistorySnapshot({ entry, direction: "undo" });
 	}
 
-	async redo(): Promise<void> {
+	redo(): Promise<void> {
+		return this.enqueueHistoryWork({ operation: () => this.redoFromHistory() });
+	}
+
+	private async redoFromHistory(): Promise<void> {
 		const entry = this.redoStack.at(-1);
 		if (!entry) return;
 		if (entry.kind === "provider-private") {
@@ -360,6 +376,35 @@ export class CommandManager {
 
 	getHistoryCount(): number {
 		return this.history.length;
+	}
+
+	/** History decisions must wait for durable publication, not just store writes. */
+	private enqueueHistoryWork<Result>({
+		operation,
+		synchronous = false,
+	}: {
+		operation: () => Promise<Result>;
+		synchronous?: boolean;
+	}): Promise<Result> {
+		const projectId = this.editor.project.getActiveOrNull()?.metadata.id;
+		const run = () => {
+			if (projectId !== this.editor.project.getActiveOrNull()?.metadata.id) {
+				throw new Error("The command's project is no longer active");
+			}
+			return operation();
+		};
+		// Private UI commands remain synchronous when there is no durable work
+		// ahead of them (keyframe gesture APIs depend on this).
+		if (synchronous && this.pendingHistory === null) return run();
+		const result = this.pendingHistory ? this.pendingHistory.then(run) : run();
+		// A rejected save must neither poison subsequent gestures nor generate an
+		// unhandled rejection at fire-and-forget UI entry points.
+		const finish = () => {
+			if (this.pendingHistory === settled) this.pendingHistory = null;
+		};
+		const settled = result.then(finish, finish);
+		this.pendingHistory = settled;
+		return result;
 	}
 
 	private async commitHistorySnapshot({

@@ -209,36 +209,28 @@ export async function processMediaAssets({
 				width = result.width;
 				height = result.height;
 			} else if (fileType === "video") {
-				try {
-					const videoData = await readVideoFile({ file });
-					if (!publication.isCurrent()) {
-						throw new Error(
-							"Video processing activity generation was invalidated.",
-						);
-					}
-					duration = videoData.duration;
-					width = videoData.width;
-					height = videoData.height;
-					fps = Number.isFinite(videoData.fps)
-						? Math.round(videoData.fps)
-						: undefined;
-					hasAudio = videoData.hasAudio;
-					thumbnailUrl = videoData.thumbnailUrl ?? undefined;
+				// Parsing failures belong to the per-file failure path below. Never
+				// publish an asset with missing metadata after an invalid container.
+				const videoData = await readVideoFile({ file });
+				if (!publication.isCurrent()) {
+					throw new Error(
+						"Video processing activity generation was invalidated.",
+					);
+				}
+				duration = videoData.duration;
+				width = videoData.width;
+				height = videoData.height;
+				fps = Number.isFinite(videoData.fps)
+					? Math.round(videoData.fps)
+					: undefined;
+				hasAudio = videoData.hasAudio;
+				thumbnailUrl = videoData.thumbnailUrl ?? undefined;
 
-					if (!videoData.canDecode) {
-						toast.error(`Can't preview ${file.name}`, {
-							description: getUnsupportedVideoDescription({
-								codec: videoData.codec,
-							}),
-						});
-					}
-				} catch (error) {
-					if (!publication.isCurrent()) throw error;
-					const message =
-						error instanceof Error ? error.message : "Could not process video";
-
-					toast.error(`Couldn't process ${file.name}`, {
-						description: message,
+				if (!videoData.canDecode) {
+					toast.error(`Can't preview ${file.name}`, {
+						description: getUnsupportedVideoDescription({
+							codec: videoData.codec,
+						}),
 					});
 				}
 			} else if (fileType === "audio") {
@@ -277,10 +269,12 @@ export async function processMediaAssets({
 				const percent = Math.round((completed / total) * 100);
 				onProgress({ progress: percent });
 			}
-		} catch {
+		} catch (error) {
 			if (publication.isCurrent()) {
 				console.error("Failed to process media file");
-				toast.error(`Failed to process ${file.name}`);
+				toast.error(`Failed to process ${file.name}`, {
+					description: error instanceof Error ? error.message : undefined,
+				});
 			}
 			urlHandle.revoke();
 		}

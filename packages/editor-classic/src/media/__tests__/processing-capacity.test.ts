@@ -1,4 +1,4 @@
-import { expect, test } from "bun:test";
+import { expect, spyOn, test } from "bun:test";
 import { fileURLToPath } from "node:url";
 
 if (process.env.OPENCUT_PROCESSING_CAPACITY_TEST_ISOLATED !== "1") {
@@ -23,13 +23,99 @@ if (process.env.OPENCUT_PROCESSING_CAPACITY_TEST_ISOLATED !== "1") {
 	await import("../../editor/session/__tests__/wasm-test-mock");
 	const { InMemoryProjectStore, InMemoryProjectStoreControl } =
 		await import("@opencut/editor-ports/in-memory");
-	const { createInMemoryHost } = await import("@opencut/editor-ports/in-memory/host");
-	const { UNIMPLEMENTED_RUNTIME_GPU } =
-		await import("@opencut/editor-ports");
+	const { createInMemoryHost } =
+		await import("@opencut/editor-ports/in-memory/host");
+	const { UNIMPLEMENTED_RUNTIME_GPU } = await import("@opencut/editor-ports");
 	const { createSessionResources } =
 		await import("../../editor/session/session-resources");
 	const { inspectMediaCapacity, processMediaAssets } =
 		await import("../processing");
+
+	test("rejects corrupt video without retaining its URL and continues the import batch", async () => {
+		const host = createInMemoryHost();
+		const rawCreateObjectUrl = host.runtimeResources.createObjectUrl.bind(
+			host.runtimeResources,
+		);
+		const urls: Array<{ name: string; revokeCalls: number }> = [];
+		host.runtimeResources.createObjectUrl = ({ blob }) => {
+			const raw = rawCreateObjectUrl({ blob });
+			const state = {
+				name: blob instanceof File ? blob.name : "",
+				revokeCalls: 0,
+			};
+			urls.push(state);
+			return {
+				...raw,
+				revoke: () => {
+					state.revokeCalls += 1;
+					raw.revoke();
+				},
+			};
+		};
+		let sequence = 0;
+		const resources = createSessionResources({
+			runtimeResources: host.runtimeResources,
+			runtimeGpu: UNIMPLEMENTED_RUNTIME_GPU,
+			nextId: ({ scope }) => `${scope}-${++sequence}`,
+		});
+		const mediaReader = await import("../mediabunny");
+		const readVideo = mediaReader.readVideoFile;
+		// Bun has no browser decoder. Keep the real malformed-container parser,
+		// and supply valid platform metadata for the next file in the batch.
+		const reader = spyOn(mediaReader, "readVideoFile").mockImplementation(
+			async ({ file }) =>
+				file.name === "valid.mp4"
+					? {
+							duration: 5,
+							width: 320,
+							height: 180,
+							fps: 30,
+							hasAudio: false,
+							codec: "avc",
+							canDecode: true,
+							thumbnailUrl: null,
+						}
+					: readVideo({ file }),
+		);
+		try {
+			const assets = await processMediaAssets({
+				files: [
+					new File(["not a media container"], "broken.mp4", {
+						type: "video/mp4",
+					}),
+					new File(
+						[
+							await Bun.file(
+								"apps/vite-example/tests/fixtures/fixture-video.mp4",
+							).arrayBuffer(),
+						],
+						"valid.mp4",
+						{ type: "video/mp4" },
+					),
+				],
+				store: {
+					inspect: async () => ({
+						availability: "available" as const,
+						capacity: null,
+					}),
+				},
+				resources,
+				reportPersistenceFailure: () => {
+					throw new Error("Decode errors are not persistence errors");
+				},
+			});
+			expect(assets.map((asset) => asset.name)).toEqual(["valid.mp4"]);
+			expect(assets[0]?.duration).toBeGreaterThan(0);
+			expect(urls).toEqual([
+				{ name: "broken.mp4", revokeCalls: 1 },
+				{ name: "valid.mp4", revokeCalls: 0 },
+			]);
+		} finally {
+			reader.mockRestore();
+			await resources.disposeAll();
+		}
+		expect(urls.every((url) => url.revokeCalls === 1)).toBe(true);
+	});
 
 	test("distinguishes unavailable, unknown and zero remaining capacity", async () => {
 		const control = new InMemoryProjectStoreControl();

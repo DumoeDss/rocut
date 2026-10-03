@@ -172,7 +172,7 @@ function EditorActions({
 	readonly onApply: () => void;
 }) {
 	return (
-		<div className="flex justify-end gap-2 pt-1">
+		<div className="flex flex-wrap justify-end gap-2 pt-1">
 			<Button variant="ghost" size="sm" onClick={onCancel}>
 				Cancel
 			</Button>
@@ -283,7 +283,7 @@ export function MotionTextDefaultsEditor({
 					inheritLabel="Renderer default"
 				/>
 			</div>
-			<div className="flex items-center justify-between gap-2">
+			<div className="flex flex-wrap items-center justify-between gap-2">
 				<div className="flex items-center gap-2">
 					<Label>Palette</Label>
 					<FieldState locked={hasFullCueLock} local={!initialUsePresetColors} />
@@ -291,7 +291,7 @@ export function MotionTextDefaultsEditor({
 				<Button
 					variant="ghost"
 					size="sm"
-					className="h-6 text-xs"
+					className="h-auto min-h-6 max-w-full whitespace-normal text-xs"
 					disabled={hasFullCueLock}
 					onClick={() => setUsePresetColors((value) => !value)}
 				>
@@ -300,7 +300,7 @@ export function MotionTextDefaultsEditor({
 			</div>
 			{!usePresetColors && (
 				<div
-					className={`grid grid-cols-2 gap-2 ${hasFullCueLock ? "pointer-events-none opacity-50" : ""}`}
+					className={`grid grid-cols-[repeat(auto-fit,minmax(min(100%,8rem),1fr))] gap-2 ${hasFullCueLock ? "pointer-events-none opacity-50" : ""}`}
 					aria-disabled={hasFullCueLock}
 				>
 					<div className="space-y-1.5">
@@ -537,7 +537,7 @@ export function MotionTextCueEditor({
 					className="min-h-20 resize-y"
 				/>
 			</div>
-			<div className="grid grid-cols-2 gap-2">
+			<div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,8rem),1fr))] gap-2">
 				<div className="space-y-1.5">
 					<div className="flex items-center justify-between gap-2">
 						<Label htmlFor={`motion-text-start-${cue.id}`}>Start (sec)</Label>
@@ -571,11 +571,12 @@ export function MotionTextCueEditor({
 					/>
 				</div>
 			</div>
-			<div className="flex items-center gap-2">
+			<div className="flex flex-wrap items-center gap-2">
 				<Button
 					variant="outline"
 					size="sm"
 					aria-pressed={snapEnabled}
+					className="h-auto min-h-7 max-w-full whitespace-normal"
 					disabled={!canSnap || timingLocked || isApplying}
 					onClick={() => setSnapEnabled((value) => !value)}
 				>
@@ -642,7 +643,7 @@ export function MotionTextCueEditor({
 					disabled={fontLocked}
 				/>
 			</div>
-			<div className="flex items-center justify-between gap-2">
+			<div className="flex flex-wrap items-center justify-between gap-2">
 				<div className="flex items-center gap-2">
 					<Label>Local palette</Label>
 					<FieldState
@@ -653,7 +654,7 @@ export function MotionTextCueEditor({
 				<Button
 					variant="ghost"
 					size="sm"
-					className="h-6 text-xs"
+					className="h-auto min-h-6 max-w-full whitespace-normal text-xs"
 					disabled={colorsLocked}
 					onClick={() => setUseLocalColors((value) => !value)}
 				>
@@ -662,7 +663,7 @@ export function MotionTextCueEditor({
 			</div>
 			{useLocalColors && (
 				<div
-					className={`grid grid-cols-2 gap-2 ${colorsLocked ? "pointer-events-none opacity-50" : ""}`}
+					className={`grid grid-cols-[repeat(auto-fit,minmax(min(100%,8rem),1fr))] gap-2 ${colorsLocked ? "pointer-events-none opacity-50" : ""}`}
 					aria-disabled={colorsLocked}
 				>
 					<div className="space-y-1.5">

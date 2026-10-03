@@ -528,14 +528,14 @@ const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
 				<div
 					ref={ref}
 					className={cn(
-						"bg-accent flex h-7 border flex-1 items-center gap-2 rounded-md px-[0.45rem]",
+						"bg-accent flex h-7 min-w-0 border flex-1 items-center gap-2 rounded-md px-[0.45rem]",
 						className,
 					)}
 					{...props}
 				>
 					<PopoverTrigger asChild>
 						<button
-							className="size-4.5 relative cursor-pointer overflow-hidden rounded-sm border hover:ring-1 hover:ring-foreground/20"
+							className="size-4.5 relative shrink-0 cursor-pointer overflow-hidden rounded-sm border hover:ring-1 hover:ring-foreground/20"
 							type="button"
 						>
 							<span
@@ -548,7 +548,7 @@ const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
 							/>
 						</button>
 					</PopoverTrigger>
-					<div className="flex flex-1 items-center">
+					<div className="flex min-w-0 flex-1 items-center">
 						<Input
 							className="border-0! bg-transparent p-0 ring-0! ring-offset-0! uppercase"
 							size="sm"

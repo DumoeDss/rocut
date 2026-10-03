@@ -5,7 +5,7 @@ import type {
 	MotionTextResolvedCut,
 	MotionTextSequence,
 } from "@opencut/editor-contracts";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
@@ -55,6 +55,12 @@ function CutBoundaryRow({
 	const initialEndSeconds = (initialEndTime / TICKS_PER_SECOND).toFixed(3);
 	const [endSeconds, setEndSeconds] = useState(initialEndSeconds);
 	const [isApplying, setIsApplying] = useState(false);
+	const applyingRef = useRef(false);
+	const [savedEndTime, setSavedEndTime] = useState(initialEndTime);
+	if (savedEndTime !== initialEndTime) {
+		setSavedEndTime(initialEndTime);
+		setEndSeconds(initialEndSeconds);
+	}
 	const nextEndTime =
 		endSeconds === initialEndSeconds
 			? initialEndTime
@@ -67,11 +73,13 @@ function CutBoundaryRow({
 	});
 
 	const apply = async () => {
+		if (applyingRef.current || isLocked || !isDirty) return;
 		const seconds = Number(endSeconds);
 		if (!Number.isFinite(seconds)) {
 			onMessage("Cut boundary time must be a valid number.");
 			return;
 		}
+		applyingRef.current = true;
 		setIsApplying(true);
 		onMessage(null);
 		try {
@@ -114,6 +122,7 @@ function CutBoundaryRow({
 					: "The cut boundary could not be updated.",
 			);
 		} finally {
+			applyingRef.current = false;
 			setIsApplying(false);
 		}
 	};
@@ -121,14 +130,14 @@ function CutBoundaryRow({
 	const label = cut.text || "Interlude";
 	return (
 		<div className="bg-muted/30 space-y-2 rounded-sm border p-2.5">
-			<div className="flex items-baseline justify-between gap-2">
+			<div className="flex flex-wrap items-baseline justify-between gap-2">
 				<span className="truncate text-xs font-medium">After {label}</span>
 				<span className="text-muted-foreground text-[11px]">
 					before {nextCut.text || "interlude"}
 				</span>
 			</div>
-			<div className="flex items-end gap-2">
-				<div className="min-w-0 flex-1 space-y-1.5">
+			<div className="flex flex-wrap items-end gap-2">
+				<div className="min-w-0 flex-1 basis-28 space-y-1.5">
 					<Label htmlFor={`motion-text-cut-end-${cut.id}`}>End (sec)</Label>
 					<Input
 						id={`motion-text-cut-end-${cut.id}`}
@@ -137,12 +146,16 @@ function CutBoundaryRow({
 						max={(nextCut.startTime + nextCut.duration - 1) / TICKS_PER_SECOND}
 						step="0.001"
 						value={endSeconds}
+						disabled={isLocked}
 						onChange={(event) => setEndSeconds(event.target.value)}
 					/>
 				</div>
 				<Button
 					size="sm"
-					disabled={!isDirty || isLocked || isApplying}
+					disabled={isLocked}
+					aria-disabled={!isDirty || isLocked || isApplying}
+					aria-busy={isApplying}
+					className="h-auto min-h-7 max-w-full whitespace-normal aria-disabled:opacity-50"
 					onClick={() => void apply()}
 				>
 					{isApplying ? "Applying…" : "Apply boundary"}
@@ -200,7 +213,7 @@ export function MotionTextCutTimingEditor({
 
 	return (
 		<section className="space-y-2 border-b px-3 py-3">
-			<div className="flex items-center justify-between gap-2">
+			<div className="flex flex-wrap items-center justify-between gap-2">
 				<div>
 					<h4 className="text-xs font-medium">Cut timing</h4>
 					<p className="text-muted-foreground text-[11px]">
@@ -211,6 +224,7 @@ export function MotionTextCutTimingEditor({
 					variant="outline"
 					size="sm"
 					aria-pressed={snapEnabled}
+					className="h-auto min-h-7 max-w-full whitespace-normal"
 					disabled={!canSnap}
 					onClick={() => setSnapEnabled((value) => !value)}
 				>

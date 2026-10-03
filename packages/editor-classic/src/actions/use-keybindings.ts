@@ -41,6 +41,9 @@ export function useKeybindingsListener({
 		});
 		if (!target) return;
 		const handleKeyDown = (ev: KeyboardEvent) => {
+			// A dismissing overlay can unmount before this capture listener runs.
+			// Its consumed Escape must not also clear the timeline selection.
+			if (ev.defaultPrevented) return;
 			const normalizedKey = (ev.key ?? "").toLowerCase();
 
 			if (overlayDepth > 0 || isLoadingProject || isRecording) {

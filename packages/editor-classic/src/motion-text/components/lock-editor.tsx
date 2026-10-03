@@ -6,7 +6,7 @@ import type {
 	MotionTextPresetGroup,
 	MotionTextSequence,
 } from "@opencut/editor-contracts";
-import { type ReactNode, useMemo, useState } from "react";
+import { type ReactNode, useMemo, useRef, useState } from "react";
 import { Button } from "../../components/ui/button";
 import { useEditorInstance } from "../../editor/use-editor";
 import { MOTION_TEXT_RENDERER_SUPPORT } from "../../services/renderer/motion-text/support-manifest";
@@ -48,21 +48,25 @@ function LockToggle({
 	active,
 	children,
 	disabled,
+	busy,
 	onClick,
 }: {
 	readonly active: boolean;
 	readonly children: ReactNode;
 	readonly disabled: boolean;
+	readonly busy: boolean;
 	readonly onClick: () => void;
 }) {
 	return (
 		<button
 			type="button"
 			aria-pressed={active}
+			aria-disabled={disabled || busy}
+			aria-busy={busy}
 			disabled={disabled}
-			onClick={onClick}
+			onClick={() => { if (!busy) onClick(); }}
 			className={cn(
-				"focus-visible:ring-ring rounded-full border px-2 py-1 text-[11px] outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50",
+				"focus-visible:ring-ring rounded-full border px-2 py-1 text-[11px] outline-none focus-visible:ring-1 disabled:cursor-not-allowed aria-disabled:opacity-50 aria-busy:cursor-wait",
 				active
 					? "bg-foreground text-background border-foreground"
 					: "text-muted-foreground border-border",
@@ -84,6 +88,7 @@ export function MotionTextLockEditor({
 }) {
 	const editor = useEditorInstance();
 	const [pendingLock, setPendingLock] = useState<string | null>(null);
+	const pendingRef = useRef(false);
 	const fullCueLocked = hasMotionTextLock({
 		cue,
 		scope: "cue",
@@ -122,7 +127,8 @@ export function MotionTextLockEditor({
 		key,
 	}: Pick<MotionTextLock, "scope" | "key">) => {
 		const identity = `${scope}:${key}`;
-		if (pendingLock !== null) return;
+		if (pendingRef.current) return;
+		pendingRef.current = true;
 		setPendingLock(identity);
 		onMessage(null);
 		try {
@@ -155,6 +161,7 @@ export function MotionTextLockEditor({
 					: "The motion-text lock could not be updated.",
 			);
 		} finally {
+			pendingRef.current = false;
 			setPendingLock(null);
 		}
 	};
@@ -166,7 +173,6 @@ export function MotionTextLockEditor({
 		scope,
 		key,
 	}: Pick<MotionTextLock, "scope" | "key">): boolean => {
-		if (pendingLock !== null) return true;
 		return (
 			fullCueLocked &&
 			!hasMotionTextLock({ cue, scope, key }) &&
@@ -196,7 +202,9 @@ export function MotionTextLockEditor({
 					variant={fullCueLocked ? "secondary" : "outline"}
 					size="sm"
 					aria-pressed={fullCueLocked}
-					disabled={pendingLock !== null}
+					aria-disabled={pendingLock !== null}
+					aria-busy={pendingLock !== null}
+					className="aria-disabled:cursor-wait aria-disabled:opacity-50"
 					onClick={() => toggle({ scope: "cue", key: "all" })}
 				>
 					{fullCueLocked ? "Unlock cue" : "Lock cue"}
@@ -207,6 +215,7 @@ export function MotionTextLockEditor({
 				<p className="text-[11px] font-medium">Field sets</p>
 				<div className="flex flex-wrap gap-1.5">
 					<LockToggle
+						busy={pendingLock !== null}
 						active={hasMotionTextLock({
 							cue,
 							scope: "cue",
@@ -218,6 +227,7 @@ export function MotionTextLockEditor({
 						All preset groups
 					</LockToggle>
 					<LockToggle
+						busy={pendingLock !== null}
 						active={hasMotionTextLock({
 							cue,
 							scope: "cue",
@@ -237,6 +247,7 @@ export function MotionTextLockEditor({
 					{MOTION_TEXT_LOCKABLE_PRESET_GROUPS.map((group) => (
 						<LockToggle
 							key={group}
+							busy={pendingLock !== null}
 							active={hasMotionTextLock({
 								cue,
 								scope: "preset-group",
@@ -261,6 +272,7 @@ export function MotionTextLockEditor({
 						{cuts.map((cut, index) => (
 							<LockToggle
 								key={cut.id}
+								busy={pendingLock !== null}
 								active={hasMotionTextLock({
 									cue,
 									scope: "cut",
@@ -275,8 +287,9 @@ export function MotionTextLockEditor({
 						{staleCutLocks.map((lock) => (
 							<LockToggle
 								key={`stale:${lock.key}`}
+								busy={pendingLock !== null}
 								active
-								disabled={pendingLock !== null}
+								disabled={false}
 								onClick={() => toggle({ scope: "cut", key: lock.key })}
 							>
 								Missing cut · remove
@@ -293,6 +306,7 @@ export function MotionTextLockEditor({
 						{parameterKeys.map((key) => (
 							<LockToggle
 								key={key}
+								busy={pendingLock !== null}
 								active={hasMotionTextLock({
 									cue,
 									scope: "parameter",

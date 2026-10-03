@@ -139,6 +139,105 @@ async function commandHarness(
 }
 
 describe("transaction-routed command manager", () => {
+	test("redo waits for an in-flight undo to publish its history", async () => {
+		const harness = await commandHarness();
+		await harness.command.execute({
+			command: new UpdateProjectSettingsCommand({
+				canvasSize: { width: 1280, height: 720 },
+			}),
+		});
+		const paused = harness.fixture.control.pauseNext({
+			operation: "save-project",
+		});
+		const undo = harness.command.undo();
+		await paused.entered;
+		const redo = harness.command.redo();
+		paused.release();
+		await Promise.all([undo, redo]);
+		expect(harness.getProject().settings.canvasSize).toEqual({
+			width: 1280,
+			height: 720,
+		});
+		expect(harness.command.getHistoryCount()).toBe(1);
+		expect(harness.fixture.getSaveCount()).toBe(3);
+	});
+
+	test("undo waits for an in-flight edit instead of dropping the gesture", async () => {
+		const harness = await commandHarness();
+		const paused = harness.fixture.control.pauseNext({
+			operation: "save-project",
+		});
+		const edit = harness.command.execute({
+			command: new UpdateProjectSettingsCommand({
+				canvasSize: { width: 1280, height: 720 },
+			}),
+		});
+		await paused.entered;
+		const undo = harness.command.undo();
+		paused.release();
+		await Promise.all([edit, undo]);
+		expect(harness.getProject().settings.canvasSize).toEqual({
+			width: 1920,
+			height: 1080,
+		});
+		expect(harness.command.getHistoryCount()).toBe(0);
+		expect(harness.fixture.getSaveCount()).toBe(2);
+	});
+
+	test("rapid undo gestures consume distinct history entries in order", async () => {
+		const harness = await commandHarness();
+		for (const width of [1280, 640]) {
+			await harness.command.execute({
+				command: new UpdateProjectSettingsCommand({
+					canvasSize: { width, height: 720 },
+				}),
+			});
+		}
+		await Promise.all([harness.command.undo(), harness.command.undo()]);
+		expect(harness.getProject().settings.canvasSize).toEqual({
+			width: 1920,
+			height: 1080,
+		});
+		expect(harness.command.getHistoryCount()).toBe(0);
+		await Promise.all([harness.command.redo(), harness.command.redo()]);
+		expect(harness.getProject().settings.canvasSize).toEqual({
+			width: 640,
+			height: 720,
+		});
+		expect(harness.command.getHistoryCount()).toBe(2);
+	});
+
+	test("private edits do not overtake a pending undo and redo", async () => {
+		const harness = await commandHarness();
+		await harness.command.execute({
+			command: new UpdateProjectSettingsCommand({
+				canvasSize: { width: 1280, height: 720 },
+			}),
+		});
+		const paused = harness.fixture.control.pauseNext({
+			operation: "save-project",
+		});
+		const undo = harness.command.undo();
+		await paused.entered;
+		const redo = harness.command.redo();
+		const edit = harness.command.execute({
+			command: new UpdateProjectSettingsCommand({
+				background: { type: "color", color: "#123456" },
+			}),
+		});
+		paused.release();
+		await Promise.all([undo, redo, edit]);
+		expect(harness.getProject().settings.canvasSize).toEqual({
+			width: 1280,
+			height: 720,
+		});
+		expect(harness.getProject().settings.background).toEqual({
+			type: "color",
+			color: "#123456",
+		});
+		expect(harness.command.getHistoryCount()).toBe(2);
+	});
+
 	test("auto placement routes uploaded audio into one durable audio track", async () => {
 		const asset: MediaAsset = {
 			id: "audio-asset",

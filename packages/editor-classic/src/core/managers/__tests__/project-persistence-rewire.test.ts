@@ -67,6 +67,37 @@ if (process.env.OPENCUT_PROJECT_PERSISTENCE_TEST_ISOLATED !== "1") {
 		};
 	}
 
+	for (const nextId of ["source", "another-project"]) {
+		test(`late save completion preserves newer active state (${nextId})`, async () => {
+			const control = new InMemoryProjectStoreControl();
+			const store = new InMemoryProjectStore({ control });
+			const persistence = new SessionPersistenceCoordinator(store);
+			const original = project("source");
+			await persistence.saveProject({ project: original });
+			const editor = {
+				persistence,
+				scenes: { getScenes: () => [] },
+				reportPersistenceFailure: () => {},
+			} as unknown as EditorCoreType;
+			const manager = new ProjectManager(editor);
+			manager.setActiveProject({ project: original });
+			const heldSave = control.pauseNext({ operation: "save-project" });
+			const saving = manager.saveCurrentProject();
+			await heldSave.entered;
+			const newer = project(nextId);
+			newer.metadata.name = "Edited while the previous save was pending";
+			newer.settings.background = { type: "color", color: "#ff0000" };
+			manager.setActiveProject({ project: newer });
+			heldSave.release();
+			await saving;
+			expect(manager.getActive()).toBe(newer);
+			await manager.saveCurrentProject();
+			const restored = await persistence.loadProject({ id: nextId });
+			expect(restored?.metadata.name).toBe(newer.metadata.name);
+			expect(restored?.settings.background).toEqual(newer.settings.background);
+		});
+	}
+
 	test("duplicates raw attachments and project removal cascades only its scope", async () => {
 		const store = new InMemoryProjectStore();
 		const persistence = new SessionPersistenceCoordinator(store);

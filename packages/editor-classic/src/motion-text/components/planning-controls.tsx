@@ -5,7 +5,7 @@ import type {
 	MotionTextPresetSetControls,
 	MotionTextSequence,
 } from "@opencut/editor-contracts";
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { Button } from "../../components/ui/button";
 import { useEditorInstance } from "../../editor/use-editor";
 import { MOTION_TEXT_RENDERER_SUPPORT } from "../../services/renderer/motion-text/support-manifest";
@@ -43,11 +43,13 @@ function diagnosticMessage(
 function ToggleButton({
 	pressed,
 	disabled,
+	busy = false,
 	children,
 	onClick,
 }: {
 	readonly pressed: boolean;
 	readonly disabled?: boolean;
+	readonly busy?: boolean;
 	readonly children: ReactNode;
 	readonly onClick: () => void;
 }) {
@@ -56,9 +58,13 @@ function ToggleButton({
 			type="button"
 			aria-pressed={pressed}
 			disabled={disabled}
-			onClick={onClick}
+			aria-disabled={disabled || busy}
+			aria-busy={busy}
+			onClick={() => {
+				if (!disabled && !busy) onClick();
+			}}
 			className={cn(
-				"focus-visible:ring-ring rounded-full border px-2 py-1 text-[11px] outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50",
+				"focus-visible:ring-ring rounded-full border px-2 py-1 text-[11px] outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:opacity-50",
 				pressed
 					? "bg-secondary text-secondary-foreground"
 					: "text-muted-foreground",
@@ -79,9 +85,11 @@ export function MotionTextPlanningControlsEditor({
 	const editor = useEditorInstance();
 	const controls = getMotionTextPlanningControls(sequence);
 	const [isApplying, setIsApplying] = useState(false);
+	const applyingRef = useRef(false);
 
 	const apply = async (next: MotionTextPlanningControls) => {
-		if (isApplying) return;
+		if (applyingRef.current) return;
+		applyingRef.current = true;
 		setIsApplying(true);
 		onMessage(null);
 		try {
@@ -107,6 +115,7 @@ export function MotionTextPlanningControlsEditor({
 					: "Planning controls could not be updated.",
 			);
 		} finally {
+			applyingRef.current = false;
 			setIsApplying(false);
 		}
 	};
@@ -136,19 +145,21 @@ export function MotionTextPlanningControlsEditor({
 					<ToggleButton
 						key={presetSet}
 						pressed={controls.presetSets[presetSet]}
-						disabled={isApplying}
+						busy={isApplying}
 						onClick={() => togglePresetSet(presetSet)}
 					>
 						{PRESET_SET_LABELS[presetSet]}
 					</ToggleButton>
 				))}
 			</div>
-			<div className="mt-2 grid grid-cols-2 gap-1.5">
+			<div className="mt-2 grid grid-cols-[repeat(auto-fit,minmax(min(100%,8rem),1fr))] gap-1.5">
 				<Button
 					variant={controls.unify ? "secondary" : "outline"}
 					size="sm"
 					aria-pressed={controls.unify}
-					disabled={isApplying}
+					aria-disabled={isApplying}
+					aria-busy={isApplying}
+					className="h-auto min-h-7 whitespace-normal aria-disabled:opacity-50"
 					onClick={() => void apply({ ...controls, unify: !controls.unify })}
 				>
 					Unified look
@@ -157,7 +168,9 @@ export function MotionTextPlanningControlsEditor({
 					variant={controls.centerFree ? "secondary" : "outline"}
 					size="sm"
 					aria-pressed={controls.centerFree}
-					disabled={isApplying}
+					aria-disabled={isApplying}
+					aria-busy={isApplying}
+					className="h-auto min-h-7 whitespace-normal aria-disabled:opacity-50"
 					onClick={() =>
 						void apply({ ...controls, centerFree: !controls.centerFree })
 					}
@@ -165,19 +178,21 @@ export function MotionTextPlanningControlsEditor({
 					Keep center clear
 				</Button>
 			</div>
-			<div className="mt-2 flex items-center justify-between gap-2">
+			<div className="mt-2 flex flex-wrap items-center justify-between gap-2">
 				<span className="text-muted-foreground text-xs">Portrait bands</span>
-				<div className="flex gap-1.5">
+				<div className="flex flex-wrap gap-1.5">
 					<ToggleButton
 						pressed={controls.centerDirection === "tb"}
-						disabled={isApplying || !controls.centerFree}
+						disabled={!controls.centerFree}
+						busy={isApplying}
 						onClick={() => void apply({ ...controls, centerDirection: "tb" })}
 					>
 						Top / bottom
 					</ToggleButton>
 					<ToggleButton
 						pressed={controls.centerDirection === "lr"}
-						disabled={isApplying || !controls.centerFree}
+						disabled={!controls.centerFree}
+						busy={isApplying}
 						onClick={() => void apply({ ...controls, centerDirection: "lr" })}
 					>
 						Left / right

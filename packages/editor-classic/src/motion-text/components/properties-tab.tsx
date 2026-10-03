@@ -4,7 +4,7 @@ import type {
 	MotionTextCue,
 	MotionTextSequence,
 } from "@opencut/editor-contracts";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { MotionTextElement } from "../../timeline";
 import { Button } from "../../components/ui/button";
 import { useEditor, useEditorInstance } from "../../editor/use-editor";
@@ -68,7 +68,7 @@ function SequenceDefaults({
 }: {
 	readonly sequence: MotionTextSequence;
 	readonly isEditing: boolean;
-	readonly onEdit: () => void;
+	readonly onEdit: (trigger: HTMLButtonElement) => void;
 }) {
 	const preset = sequence.defaults.preset;
 	const colors = Object.entries(sequence.defaults.colors);
@@ -86,9 +86,9 @@ function SequenceDefaults({
 				<span>Enter {preset.enter}</span>
 				<span>Hold {preset.hold}</span>
 			</div>
-			<div className="mt-2 flex items-center gap-2 text-xs">
+			<div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
 				<span className="text-muted-foreground">Font</span>
-				<span>{sequence.defaults.fontId ?? "Renderer default"}</span>
+				<span className="min-w-0 break-all">{sequence.defaults.fontId ?? "Renderer default"}</span>
 				{colors.length > 0 && (
 					<div
 						className="ml-auto flex items-center gap-1"
@@ -108,8 +108,8 @@ function SequenceDefaults({
 			<Button
 				variant="outline"
 				size="sm"
-				className="mt-2 w-full"
-				onClick={onEdit}
+				className="mt-2 h-auto min-h-7 w-full whitespace-normal"
+				onClick={(event) => onEdit(event.currentTarget)}
 			>
 				{isEditing ? "Close defaults editor" : "Edit font and colors"}
 			</Button>
@@ -128,13 +128,13 @@ function CueRow({
 	readonly isActive: boolean;
 	readonly isSelected: boolean;
 	readonly activeCutLabel: string | null;
-	readonly onSeek: () => void;
+	readonly onSeek: (trigger: HTMLButtonElement) => void;
 }) {
 	const overrideGroups = getOverrideSummary(cue);
 	return (
 		<button
 			type="button"
-			onClick={onSeek}
+			onClick={(event) => onSeek(event.currentTarget)}
 			aria-current={isActive ? "true" : undefined}
 			aria-expanded={isSelected}
 			className={cn(
@@ -193,10 +193,51 @@ export function MotionTextPropertiesTab({
 	const [defaultsEditorSequenceId, setDefaultsEditorSequenceId] = useState<
 		string | null
 	>(null);
+	const defaultsTriggerRef = useRef<{
+		sequenceId: string;
+		button: HTMLButtonElement;
+	} | null>(null);
+	const defaultsRegionRef = useRef<HTMLDivElement>(null);
+	const closeDefaultsEditor = (sequenceId: string) => {
+		setDefaultsEditorSequenceId((current) =>
+			current === sequenceId ? null : current,
+		);
+		const trigger = defaultsTriggerRef.current;
+		if (trigger?.sequenceId !== sequenceId || !trigger.button.isConnected) return;
+		const active = trigger.button.ownerDocument.activeElement;
+		// A save remounts the revision-keyed form before closing it. Restore its
+		// stable opener, but do not steal focus from another panel during a save.
+		if (
+			active === trigger.button.ownerDocument.body ||
+			defaultsRegionRef.current?.contains(active)
+		) {
+			trigger.button.focus({ preventScroll: true });
+		}
+	};
 	const [selectedCue, setSelectedCue] = useState<{
 		readonly sequenceId: string;
 		readonly cueId: string;
 	} | null>(null);
+	const cueTriggerRef = useRef<{
+		cueId: string;
+		button: HTMLButtonElement;
+	} | null>(null);
+	const closeCueEditor = (cueId: string) => {
+		const trigger = cueTriggerRef.current;
+		setSelectedCue((current) => (current?.cueId === cueId ? null : current));
+		if (trigger?.cueId !== cueId) return;
+		const { button } = trigger;
+		const active = button.ownerDocument.activeElement;
+		// Return keyboard users to the cue after the form is removed, without
+		// stealing focus if they moved to another control during the save.
+		if (
+			button.isConnected &&
+			(active === button.ownerDocument.body ||
+				button.parentElement?.contains(active))
+		) {
+			button.focus({ preventScroll: true });
+		}
+	};
 
 	if (!sequence) {
 		return (
@@ -262,16 +303,17 @@ export function MotionTextPropertiesTab({
 			<SequenceDefaults
 				sequence={sequence}
 				isEditing={isEditingDefaults}
-				onEdit={() =>
-					setDefaultsEditorSequenceId(isEditingDefaults ? null : sequence.id)
-				}
+				onEdit={(button) => {
+					defaultsTriggerRef.current = { sequenceId: sequence.id, button };
+					setDefaultsEditorSequenceId(isEditingDefaults ? null : sequence.id);
+				}}
 			/>
 			{isEditingDefaults && (
-				<div className="border-b px-3 pb-3">
+				<div ref={defaultsRegionRef} className="border-b px-3 pb-3">
 					<MotionTextDefaultsEditor
 						key={`${sequence.id}:${sequence.revision}`}
 						sequence={sequence}
-						onCancel={() => setDefaultsEditorSequenceId(null)}
+						onCancel={() => closeDefaultsEditor(sequence.id)}
 					/>
 				</div>
 			)}
@@ -281,12 +323,12 @@ export function MotionTextPropertiesTab({
 				onMessage={setMessage}
 			/>
 			<MotionTextPlanningControlsEditor
-				key={`planning:${sequence.id}:${sequence.revision}`}
+				key={`planning:${sequence.id}`}
 				sequence={sequence}
 				onMessage={setMessage}
 			/>
 			<MotionTextCandidateControls
-				key={`${sequence.id}:${sequence.revision}`}
+				key={sequence.id}
 				sequence={sequence}
 				selectedCueId={
 					selectedCue?.sequenceId === sequence.id ? selectedCue.cueId : null
@@ -294,15 +336,16 @@ export function MotionTextPropertiesTab({
 				onMessage={setMessage}
 			/>
 			<MotionTextTapControls
-				key={`tap:${sequence.id}:${sequence.revision}`}
+				key={`tap:${sequence.id}`}
 				sequence={sequence}
 				element={element}
 				selectedCueId={
 					selectedCue?.sequenceId === sequence.id ? selectedCue.cueId : null
 				}
-				onSelectCue={(cueId) =>
-					setSelectedCue({ sequenceId: sequence.id, cueId })
-				}
+				onSelectCue={(cueId) => {
+					cueTriggerRef.current = null;
+					setSelectedCue({ sequenceId: sequence.id, cueId });
+				}}
 				onMessage={setMessage}
 			/>
 
@@ -340,7 +383,8 @@ export function MotionTextPropertiesTab({
 											? `Cut · ${activeCut.preset.style}/${activeCut.preset.enter}`
 											: null
 									}
-									onSeek={() => {
+									onSeek={(button) => {
+										cueTriggerRef.current = { cueId: cue.id, button };
 										setSelectedCue({ sequenceId: sequence.id, cueId: cue.id });
 										seekToCue(cue);
 									}}
@@ -354,7 +398,7 @@ export function MotionTextPropertiesTab({
 											onMessage={setMessage}
 										/>
 										<MotionTextLockEditor
-											key={`locks:${cue.id}:${sequence.revision}`}
+											key={`locks:${sequence.id}:${cue.id}`}
 											sequence={sequence}
 											cue={cue}
 											onMessage={setMessage}
@@ -363,10 +407,10 @@ export function MotionTextPropertiesTab({
 											key={`cue:${cue.id}:${sequence.revision}`}
 											sequence={sequence}
 											cue={cue}
-											onCancel={() => setSelectedCue(null)}
+											onCancel={() => closeCueEditor(cue.id)}
 										/>
 										<MotionTextCutTimingEditor
-											key={`cuts:${cue.id}:${sequence.revision}`}
+											key={`cuts:${sequence.id}:${cue.id}`}
 											sequence={sequence}
 											cue={cue}
 											onMessage={setMessage}

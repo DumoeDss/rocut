@@ -1,7 +1,7 @@
 "use client";
 
 import type { MotionTextSequence } from "@opencut/editor-contracts";
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Button } from "../../components/ui/button";
 import { useEditor, useEditorInstance } from "../../editor/use-editor";
 import { MOTION_TEXT_RENDERER_SUPPORT } from "../../services/renderer/motion-text/support-manifest";
@@ -52,6 +52,27 @@ export function MotionTextTapControls({
 	const [tapTimes, setTapTimes] = useState<readonly number[]>([]);
 	const [snapEnabled, setSnapEnabled] = useState(false);
 	const [isApplying, setIsApplying] = useState(false);
+	const applyingRef = useRef(false);
+	const beginRef = useRef<HTMLButtonElement>(null);
+	const pendingFocusRef = useRef<HTMLButtonElement | null>(null);
+	const [baseRevision, setBaseRevision] = useState(sequence.revision);
+	// External edits invalidate an unfinished tapping session without replacing
+	// the control tree (which would strand keyboard focus after Apply).
+	if (baseRevision !== sequence.revision) {
+		setBaseRevision(sequence.revision);
+		setStartCueId(null);
+		setTapTimes([]);
+	}
+	useLayoutEffect(() => {
+		const action = pendingFocusRef.current;
+		if (isApplying || !action) return;
+		pendingFocusRef.current = null;
+		const active = action.ownerDocument.activeElement;
+		if (active === action.ownerDocument.body || active === action) {
+			const target = beginRef.current ?? action;
+			if (target.isConnected) target.focus({ preventScroll: true });
+		}
+	});
 	const startIndex =
 		startCueId === null
 			? -1
@@ -161,14 +182,17 @@ export function MotionTextTapControls({
 		onMessage(null);
 	};
 
-	const cancel = () => {
+	const cancel = (button: HTMLButtonElement) => {
+		if (applyingRef.current) return;
+		pendingFocusRef.current = button;
 		setStartCueId(null);
 		setTapTimes([]);
 		onMessage(null);
 	};
 
-	const apply = async () => {
-		if (startCueId === null || tapTimes.length === 0 || isApplying) return;
+	const apply = async (button: HTMLButtonElement) => {
+		if (startCueId === null || tapTimes.length === 0 || applyingRef.current) return;
+		applyingRef.current = true;
 		setIsApplying(true);
 		onMessage(null);
 		try {
@@ -198,6 +222,8 @@ export function MotionTextTapControls({
 					: "The tapped cue timing could not be applied.",
 			);
 		} finally {
+			applyingRef.current = false;
+			pendingFocusRef.current = button;
 			setIsApplying(false);
 		}
 	};
@@ -214,9 +240,10 @@ export function MotionTextTapControls({
 			</div>
 			{startCueId === null ? (
 				<Button
+					ref={beginRef}
 					variant="outline"
 					size="sm"
-					className="w-full"
+					className="h-auto min-h-7 w-full whitespace-normal"
 					disabled={sequence.cues.length === 0}
 					onClick={begin}
 				>
@@ -236,7 +263,7 @@ export function MotionTextTapControls({
 							Last tap {formatTime(tapTimes.at(-1) ?? 0)}
 						</p>
 					)}
-					<div className="grid grid-cols-2 gap-2">
+					<div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,8rem),1fr))] gap-2">
 						<Button
 							variant="outline"
 							size="sm"
@@ -254,8 +281,8 @@ export function MotionTextTapControls({
 							Tap current cue
 						</Button>
 					</div>
-					<div className="flex justify-end gap-2">
-						<Button variant="ghost" size="sm" onClick={cancel}>
+					<div className="flex flex-wrap justify-end gap-2">
+						<Button variant="ghost" size="sm" disabled={isApplying} onClick={(event) => cancel(event.currentTarget)}>
 							Cancel
 						</Button>
 						<Button
@@ -269,7 +296,7 @@ export function MotionTextTapControls({
 						<Button
 							size="sm"
 							disabled={tapTimes.length === 0 || isApplying}
-							onClick={() => void apply()}
+							onClick={(event) => void apply(event.currentTarget)}
 						>
 							{isApplying ? "Applying…" : "Apply taps"}
 						</Button>

@@ -82,11 +82,13 @@ function resultNotice(result: ImportedJizuraMotionTextProject): ImportNotice {
 export function JizuraImportControl() {
 	const editor = useEditorInstance();
 	const inputRef = useRef<HTMLInputElement>(null);
+	const importingRef = useRef(false);
 	const [isImporting, setIsImporting] = useState(false);
 	const [notice, setNotice] = useState<ImportNotice | null>(null);
 
 	const importFile = async ({ file }: { file: File }) => {
-		if (isImporting) return;
+		if (importingRef.current) return;
+		importingRef.current = true;
 		setIsImporting(true);
 		setNotice(null);
 		try {
@@ -122,6 +124,7 @@ export function JizuraImportControl() {
 				details: [],
 			});
 		} finally {
+			importingRef.current = false;
 			setIsImporting(false);
 		}
 	};
@@ -139,8 +142,8 @@ export function JizuraImportControl() {
 					if (file) void importFile({ file });
 				}}
 			/>
-			<div className="flex items-center justify-between gap-3">
-				<div className="min-w-0">
+			<div className="flex flex-wrap items-center justify-between gap-3">
+				<div className="min-w-0 flex-1 basis-40">
 					<p className="text-sm font-medium">JIZURA project</p>
 					<p className="text-muted-foreground text-[11px] leading-4">
 						Import lyrics, timing, presets, locks, fonts, and provenance.
@@ -150,8 +153,11 @@ export function JizuraImportControl() {
 					type="button"
 					variant="outline"
 					size="sm"
-					disabled={isImporting}
-					onClick={() => inputRef.current?.click()}
+					aria-disabled={isImporting}
+					aria-busy={isImporting}
+					onClick={() => {
+						if (!importingRef.current) inputRef.current?.click();
+					}}
 					className="shrink-0 gap-1.5"
 				>
 					{isImporting ? (

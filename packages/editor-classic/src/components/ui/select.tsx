@@ -87,7 +87,7 @@ const SelectTrigger = React.forwardRef<
 		className={cn(selectTriggerVariants({ variant, size }), className)}
 		{...props}
 	>
-		<div className="flex items-center gap-1.5">
+		<div className="flex min-w-0 items-center gap-1.5 [&>span]:truncate">
 			{icon && (
 				<span className="text-muted-foreground [&_svg]:size-3.5 shrink-0">
 					{icon}
@@ -95,7 +95,7 @@ const SelectTrigger = React.forwardRef<
 			)}
 			{children}
 		</div>
-		<SelectPrimitive.Icon asChild>
+		<SelectPrimitive.Icon asChild className="shrink-0">
 			<HugeiconsIcon icon={ArrowDownIcon} className="size-4" />
 		</SelectPrimitive.Icon>
 	</SelectPrimitive.Trigger>

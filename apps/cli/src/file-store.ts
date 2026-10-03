@@ -11,16 +11,10 @@
  * mid-save reopens from the last complete write — the crash-recovery
  * acceptance of S06 C4 rests on this property.
  */
-import {
-	mkdir,
-	readFile,
-	rename,
-	rm,
-	writeFile,
-	readdir,
-} from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile, readdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
+import { writeAtomic } from "./atomic-file";
 import { ProjectStoreError } from "@opencut/editor-ports";
 import type {
 	LibraryRecord,
@@ -69,12 +63,6 @@ function toArrayBuffer(buffer: Buffer): ArrayBuffer {
 		buffer.byteOffset,
 		buffer.byteOffset + buffer.byteLength,
 	) as ArrayBuffer;
-}
-
-async function writeAtomic(filePath: string, contents: string): Promise<void> {
-	const temp = `${filePath}.tmp-${process.pid}-${Date.now()}`;
-	await writeFile(temp, contents, "utf8");
-	await rename(temp, filePath);
 }
 
 export class FileProjectStore implements ProjectStore {
@@ -131,7 +119,10 @@ export class FileProjectStore implements ProjectStore {
 			record: args.record,
 			summary: args.summary,
 		};
-		await writeAtomic(this.projectFile, JSON.stringify(wrapper));
+		await writeAtomic({
+			filePath: this.projectFile,
+			contents: JSON.stringify(wrapper),
+		});
 	}
 
 	async remove(args: { readonly id: ProjectId }): Promise<void> {
@@ -251,10 +242,13 @@ export class FileProjectStore implements ProjectStore {
 	}): Promise<void> {
 		const dir = path.join(this.root, "library", safeSegment(args.namespace));
 		await mkdir(dir, { recursive: true });
-		await writeAtomic(
-			path.join(dir, `${safeSegment(args.key)}.json`),
-			JSON.stringify({ schemaVersion: args.schemaVersion, data: args.data }),
-		);
+		await writeAtomic({
+			filePath: path.join(dir, `${safeSegment(args.key)}.json`),
+			contents: JSON.stringify({
+				schemaVersion: args.schemaVersion,
+				data: args.data,
+			}),
+		});
 	}
 
 	async removeLibraryRecord(args: {

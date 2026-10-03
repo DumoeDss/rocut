@@ -4,7 +4,7 @@ import type {
 	MotionTextPresetGroup,
 	MotionTextSequence,
 } from "@opencut/editor-contracts";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Button } from "../../components/ui/button";
 import { useEditorInstance } from "../../editor/use-editor";
 import { MOTION_TEXT_RENDERER_SUPPORT } from "../../services/renderer/motion-text/support-manifest";
@@ -78,11 +78,24 @@ export function MotionTextCandidateControls({
 	const appliedPreset = getMotionTextStarterPresetId(sequence);
 	const [candidate, setCandidate] = useState<Candidate | null>(null);
 	const [isApplying, setIsApplying] = useState(false);
+	const applyingRef = useRef(false);
+	const candidateTriggerRef = useRef<HTMLButtonElement | null>(null);
+	const pendingFocusRef = useRef<{
+		trigger: HTMLButtonElement | null;
+		applyButton: HTMLButtonElement;
+	} | null>(null);
 	const [variationScope, setVariationScope] = useState<"all" | "selected">(
 		"all",
 	);
 	const [variationGroups, setVariationGroups] =
 		useState<readonly MotionTextPresetGroup[]>(VARIATION_GROUPS);
+	if (
+		candidate &&
+		(candidate.baseRevision !== sequence.revision ||
+			candidate.sequence.id !== sequence.id)
+	) {
+		setCandidate(null);
+	}
 	const activeCandidate =
 		candidate?.baseRevision === sequence.revision &&
 		candidate.sequence.id === sequence.id
@@ -94,6 +107,23 @@ export function MotionTextCandidateControls({
 		activeCandidate?.kind === "starter"
 			? activeCandidate.preset
 			: appliedPreset;
+
+	// Revision changes invalidate previews, not the entire control tree. Keeping
+	// its DOM stable lets keyboard focus return to the generator/starter card.
+	useEffect(() => {
+		editor.renderer.clearMotionTextSequencePreview({ sequenceId: sequence.id });
+	}, [editor, sequence.id, sequence.revision]);
+	useLayoutEffect(() => {
+		const pending = pendingFocusRef.current;
+		if (isApplying || !pending) return;
+		pendingFocusRef.current = null;
+		const { trigger, applyButton } = pending;
+		if (!trigger?.isConnected) return;
+		const active = trigger.ownerDocument.activeElement;
+		if (active === trigger.ownerDocument.body || active === applyButton) {
+			trigger.focus({ preventScroll: true });
+		}
+	});
 
 	useEffect(
 		() => () => {
@@ -120,7 +150,13 @@ export function MotionTextCandidateControls({
 		return true;
 	};
 
-	const cancelCandidate = () => {
+	const cancelCandidate = (cancelButton?: HTMLButtonElement) => {
+		if (cancelButton) {
+			pendingFocusRef.current = {
+				trigger: candidateTriggerRef.current,
+				applyButton: cancelButton,
+			};
+		}
 		editor.renderer.clearMotionTextSequencePreview({
 			sequenceId: sequence.id,
 		});
@@ -129,6 +165,7 @@ export function MotionTextCandidateControls({
 	};
 
 	const previewStarterPreset = (preset: MotionTextStarterPresetId) => {
+		if (applyingRef.current) return;
 		if (preset === appliedPreset) {
 			cancelCandidate();
 			return;
@@ -162,6 +199,7 @@ export function MotionTextCandidateControls({
 	};
 
 	const generateVariation = () => {
+		if (applyingRef.current) return;
 		const cueIds =
 			effectiveVariationScope === "selected" && selectedCueId !== null
 				? [selectedCueId]
@@ -206,8 +244,10 @@ export function MotionTextCandidateControls({
 		}
 	};
 
-	const applyCandidate = async () => {
-		if (!activeCandidate || isApplying) return;
+	const applyCandidate = async (applyButton: HTMLButtonElement) => {
+		if (!activeCandidate || applyingRef.current) return;
+		applyingRef.current = true;
+		const trigger = candidateTriggerRef.current;
 		setIsApplying(true);
 		onMessage(null);
 		try {
@@ -225,6 +265,8 @@ export function MotionTextCandidateControls({
 					: "The preview candidate could not be applied.",
 			);
 		} finally {
+			applyingRef.current = false;
+			pendingFocusRef.current = { trigger, applyButton };
 			setIsApplying(false);
 		}
 	};
@@ -253,7 +295,11 @@ export function MotionTextCandidateControls({
 							key={preset.id}
 							type="button"
 							aria-pressed={candidatePreset === preset.id}
-							onClick={() => previewStarterPreset(preset.id)}
+							disabled={isApplying}
+							onClick={(event) => {
+								candidateTriggerRef.current = event.currentTarget;
+								previewStarterPreset(preset.id);
+							}}
 							className={cn(
 								"focus-visible:ring-ring overflow-hidden rounded-sm border text-left outline-none focus-visible:ring-1",
 								candidatePreset === preset.id
@@ -288,14 +334,14 @@ export function MotionTextCandidateControls({
 						variant="ghost"
 						size="sm"
 						disabled={activeCandidate?.kind !== "starter" || isApplying}
-						onClick={cancelCandidate}
+						onClick={(event) => cancelCandidate(event.currentTarget)}
 					>
 						Cancel
 					</Button>
 					<Button
 						size="sm"
 						disabled={activeCandidate?.kind !== "starter" || isApplying}
-						onClick={() => void applyCandidate()}
+						onClick={(event) => void applyCandidate(event.currentTarget)}
 					>
 						{isApplying ? "Applying…" : "Apply"}
 					</Button>
@@ -368,7 +414,10 @@ export function MotionTextCandidateControls({
 						variant="outline"
 						size="sm"
 						disabled={variationGroups.length === 0 || isApplying}
-						onClick={generateVariation}
+						onClick={(event) => {
+							candidateTriggerRef.current = event.currentTarget;
+							generateVariation();
+						}}
 					>
 						{activeCandidate?.kind === "variation"
 							? "Reroll variation"
@@ -378,14 +427,14 @@ export function MotionTextCandidateControls({
 						variant="ghost"
 						size="sm"
 						disabled={activeCandidate?.kind !== "variation" || isApplying}
-						onClick={cancelCandidate}
+						onClick={(event) => cancelCandidate(event.currentTarget)}
 					>
 						Cancel
 					</Button>
 					<Button
 						size="sm"
 						disabled={activeCandidate?.kind !== "variation" || isApplying}
-						onClick={() => void applyCandidate()}
+						onClick={(event) => void applyCandidate(event.currentTarget)}
 					>
 						{isApplying ? "Applying…" : "Apply variation"}
 					</Button>

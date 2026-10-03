@@ -209,8 +209,13 @@ export function MotionTextPresetBrowser({
 				<Button
 					data-testid="motion-text-apply-preset"
 					size="sm"
-					disabled={!selected || !targetName || isApplying}
-					onClick={() => selected && void apply(selected)}
+					disabled={!selected || !targetName}
+					// Native disabling during a save drops focus outside the editor's
+					// shortcut scope. Keep the busy control focused and guard activation.
+					aria-disabled={isApplying || undefined}
+					aria-busy={isApplying || undefined}
+					className="aria-disabled:cursor-wait aria-disabled:opacity-50"
+					onClick={() => selected && !isApplying && void apply(selected)}
 				>
 					{isApplying
 						? "Applying…"
