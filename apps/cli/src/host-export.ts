@@ -21,8 +21,7 @@
  * that, so the HTTP surface never gains an arbitrary-path write.
  */
 import { randomBytes } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { createExportOutputWriter } from "./host-export-output";
 
 /** Containers the editor's exporter supports (`editor-classic/src/export`). */
 export const EXPORT_FORMATS = Object.freeze(["mp4", "webm"] as const);
@@ -36,11 +35,6 @@ export const EXPORT_QUALITIES = Object.freeze([
 	"very_high",
 ] as const);
 export type ExportQuality = (typeof EXPORT_QUALITIES)[number];
-
-const EXTENSION: Readonly<Record<ExportFormat, string>> = {
-	mp4: ".mp4",
-	webm: ".webm",
-};
 
 /**
  * A job is terminal in `completed` / `failed` / `cancelled`. `running` means a
@@ -125,6 +119,11 @@ export function createExportRegistry(args: {
 	const noteActivity = args.noteActivity ?? (() => {});
 	const surfaces = new Set<SurfaceStream>();
 	const jobs = new Map<string, ExportJob>();
+	const writeOutput = createExportOutputWriter({
+		projectDir: args.projectDir,
+		now,
+		noteActivity,
+	});
 
 	const send = (frame: unknown): void => {
 		const chunk = `data: ${JSON.stringify(frame)}\n\n`;
@@ -229,21 +228,16 @@ export function createExportRegistry(args: {
 			) {
 				return job;
 			}
-			const dir = path.join(args.projectDir, "exports");
-			await mkdir(dir, { recursive: true });
-			const file = path.join(dir, `${job.id}${EXTENSION[job.options.format]}`);
-			await writeFile(file, bytes);
-			job.status = "completed";
-			job.progress = 1;
-			job.outputPath = file;
-			job.updatedAt = now();
-			noteActivity();
-			return job;
+			return writeOutput(job, bytes);
 		},
 		fail(id, error) {
 			return settle(id, (job) => {
-				job.status = "failed";
-				job.error = error;
+				if (job.cancelRequested && error === "cancelled") {
+					job.status = "cancelled";
+				} else {
+					job.status = "failed";
+					job.error = error;
+				}
 			});
 		},
 		cancel(id) {

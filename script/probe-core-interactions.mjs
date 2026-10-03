@@ -166,7 +166,9 @@ export async function probeCoreInteractions({ page, evidence, work, audioFixture
 	const firstAttachments = await page.evaluate(async () => (await fetch(new URL('api/attachments', location.href))).json());
 	assert(firstAttachments.length > 0, 'Video import must persist an attachment');
 	onPhase('timeline edits');
-	await page.locator('[aria-label="Switch to list view"]').click();
+	const listToggle = page.locator('[aria-label="Switch to list view"]');
+	if (await listToggle.count()) await listToggle.click();
+	await expect(page.locator('[aria-label="Switch to grid view"]')).toBeVisible();
 	await page.locator('[aria-label="Add fixture-video.mp4 to timeline"]').click();
 	const waitVideoCount = async count => expect.poll(() => page.evaluate(async () => {
 		const payload = await (await fetch(new URL('api/record', location.href))).json();

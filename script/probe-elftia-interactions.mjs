@@ -6,6 +6,7 @@ import { pathToFileURL } from 'node:url';
 import { expect } from '@playwright/test';
 import { probeCoreInteractions } from './probe-core-interactions.mjs';
 import { probeMixedExport } from './probe-mixed-export.mjs';
+import { probeExportRecovery } from './probe-export-recovery.mjs';
 import { probeJizuraImport } from './probe-jizura-import.mjs';
 import { probeResponsiveMotion } from './probe-responsive-motion.mjs';
 import { reloadEditorFrame } from './probe-reload-editor.mjs';
@@ -84,7 +85,8 @@ try {
   }});
   phase='installed preview'; console.log('phase:',phase);
   await probeInstalledPreview(conn.page,editor,work,evidence);
-  if(process.argv.includes('--mixed-export')) {phase='mixed export'; console.log('phase:',phase); await probeMixedExport(editor,project.path,evidence);}
+  if(process.argv.includes('--export-recovery')) {phase='export recovery'; console.log('phase:',phase); await probeExportRecovery(editor,project.path,evidence);}
+  if(process.argv.includes('--mixed-export') || process.argv.includes('--export-recovery')) {phase='mixed export'; console.log('phase:',phase); await probeMixedExport(editor,project.path,evidence);}
   if(process.argv.includes('--jizura-import')) {phase='JIZURA import'; console.log('phase:',phase); await probeJizuraImport(conn.page,editor,evidence);}
   if(process.argv.includes('--responsive')) {phase='responsive'; console.log('phase:',phase); await probeResponsiveMotion(conn.page,editor,work,evidence);}
   assert.equal(evidence.errors.length,0,'Real-host run must not report uncaught page/driver errors');

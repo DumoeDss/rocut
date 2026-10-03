@@ -2,6 +2,18 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Export cancellation and recovery (2026-10-03)
+
+- After the LRC/audio-sync push (Rocut 00206d19, producer 8e5dfd7), a new real-installed cancellation probe reproduced a wrong terminal state: a cancelled renderer job was reported as failed with error text cancelled. Evidence: <elftia>/.tmp-rocut-e2e/export-recovery.json.
+- The host now recognizes the renderer's cancellation acknowledgment only after a cancellation request; genuine encoder errors remain failures. Late successful bytes cannot override cancellation/failure. Uploads stage to an exclusively created file, recheck state across asynchronous writes/publication, clean only their owned output, and coalesce concurrent uploads for the same job so the first result wins.
+- Seven new regressions cover acknowledgment, real errors, unsolicited cancellation text, late bytes, cancellation/failure during publication and duplicate uploads. Five failed against the old implementation. With the fix, the new cases plus the existing registry/HTTP-route tests pass: **24 tests, 73 expectations, zero failures**. CLI TypeScript checking and focused formatting pass. Rocut's ESLint configuration does not cover these CLI files (ignored-file warnings); it is not counted as lint coverage.
+- Installed candidate: 354 files, inventory SHA-256 da44dc6a84b51568efbbe0256fa5664e669965575ef88cd27a183512d8b077c9. Complete prior installation preserved at C:/Users/Sayo/.elftia/plugin-backups/rocut-0.5.0-before-ui-refresh-e2c82b2de5b04ea184f7d0cd3911ba82. This candidate was packed with explicitly disclosed working-tree changes; it is not a release artifact. No frontend build was necessary for this host-only change; packaged runtime and installed-file parity were verified.
+- Elftia restarted through the normal exit/start path; Steam 0.2.22 remains enabled and not withheld. The new process used CDP 9334, inspector 9335 and HTTP debug 9336. No user editing project or Steam toggle was changed.
+- Full real-host run <elftia>/.tmp-rocut-e2e/live-g4AQFC/evidence.json passes **59 recorded checks**, including running-job cancellation with no output/project mutation, invalid-range failure, subsequent successful export/decoded retry, and the preceding LRC/audio/JIZURA matrix. No uncaught page/driver errors or unexpected failed host API requests; only the explicitly allowed optional user-library 404s appeared.
+- A focused rerun, <elftia>/.tmp-rocut-e2e/export-recovery-fixed.json, also passes after strengthening the invalid-range assertion to the exact Rust validation error. The retry decodes to 3.018594 seconds with video, glyphs and audible audio (RMS 0.12434).
+- The earlier live-z53Eam run stopped at a driver precondition: it assumed media grid mode even though the application had persisted list mode. The probe now conditionally switches and asserts actual list mode before adding media; it does not alter the application's preference implementation or waive timeline assertions.
+- Remaining export work includes additional codecs, render/upload failures and disconnect/reconnect cases. This host-command plus real-renderer matrix is not export-button UI acceptance, nor a claim that all editor functionality is complete.
+
 ## LRC input and audio re-sync acceptance (2026-10-03)
 
 - Added an explicit Lyrics format selector (plain lyrics / LRC timestamps), using the existing Rust factory rather than a second parser. Timestamped input retains its timing and source metadata. Untimed input still follows the Rust factory's estimated-timing fallback; this is not a strict LRC-only validator. A timestamp outside the sequence is rejected atomically.
@@ -39,13 +51,13 @@ Status: installed core interaction matrix passes in real Elftia; full editor fea
 
 Use the Elftia worktree's installed tsx loader from the Rocut working directory. Set ELFTIA_WORKTREE, ELFTIA_TEST_SESSION, and ELFTIA_CLI_DEBUG_PORT to the authorized dev instance. Open Rocut in that dedicated session first; the runner rejects other project folders.
 
-Run: node <elftia>/node_modules/tsx/dist/cli.mjs script/probe-elftia-interactions.mjs --motion-controls --audio-sync --planning-controls --cut-controls --cue-ranges --mixed-export --jizura-import
+Run: node <elftia>/node_modules/tsx/dist/cli.mjs script/probe-elftia-interactions.mjs --motion-controls --audio-sync --planning-controls --cut-controls --cue-ranges --export-recovery --mixed-export --jizura-import
 
 ### Still required before a complete-functionality claim
 
 - Transitions and Adjustment remain explicit placeholder views; they need real timeline/model/render/export support, not cosmetic replacement text.
 - Sounds search reports that this host does not provide a server endpoint; offline imported audio is tested, external sound search is not implemented here.
-- Motion-clip left/right trims and audio re-sync after clip movement now have real-installed evidence above. Broader media codec/format coverage, other drag/trim combinations, export cancellation/error paths, and real in-use plugin replacement remain outstanding.
+- Motion-clip left/right trims, audio re-sync after movement, export cancellation and invalid-range recovery now have real-installed evidence above. Broader codecs, other drag/trim combinations, renderer/upload/disconnect failures, and real in-use plugin replacement remain outstanding.
 - Paid ASR/model calls were not made. Existing ColorPicker lint findings remain separately recorded; diagnostic privacy-test repair is now complete as noted above.
 
 ## Earlier startup checkpoint (2026-10-03; subsequent acceptance is recorded above)
