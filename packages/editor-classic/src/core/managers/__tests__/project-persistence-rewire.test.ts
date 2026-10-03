@@ -67,6 +67,43 @@ if (process.env.OPENCUT_PROJECT_PERSISTENCE_TEST_ISOLATED !== "1") {
 		};
 	}
 
+	test("queued autosave captures the project after transaction publication", async () => {
+		const store = new InMemoryProjectStore();
+		const persistence = new SessionPersistenceCoordinator(store);
+		const original = project("source");
+		await persistence.saveProject({ project: original });
+		const editor = {
+			persistence,
+			scenes: { getScenes: () => [] },
+			reportPersistenceFailure: () => {},
+		} as unknown as EditorCoreType;
+		const manager = new ProjectManager(editor);
+		manager.setActiveProject({ project: original });
+		let release = () => {};
+		let entered = () => {};
+		const hold = new Promise<void>((resolve) => { release = resolve; });
+		const started = new Promise<void>((resolve) => { entered = resolve; });
+		const newer = project("source");
+		newer.metadata.name = "Committed while autosave was queued";
+		newer.settings.background = { type: "color", color: "#ff0000" };
+		const transaction = persistence.projectMutationArbiter.run({
+			projectId: "source",
+			operation: async () => {
+				entered();
+				await hold;
+				manager.adoptCommittedProject({ project: newer });
+			},
+		});
+		await started;
+		const saving = manager.saveCurrentProject();
+		release();
+		await Promise.all([transaction, saving]);
+		const restored = await persistence.loadProject({ id: "source" });
+		expect(restored?.metadata.name).toBe(newer.metadata.name);
+		expect(restored?.settings.background).toEqual(newer.settings.background);
+		expect(manager.getActive().metadata.name).toBe(newer.metadata.name);
+	});
+
 	for (const nextId of ["source", "another-project"]) {
 		test(`late save completion preserves newer active state (${nextId})`, async () => {
 			const control = new InMemoryProjectStoreControl();

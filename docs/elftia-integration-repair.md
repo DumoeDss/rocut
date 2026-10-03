@@ -2,6 +2,15 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Queued autosave and durable Undo/Redo (2026-10-03)
+
+- Real installed runs live-s9bFMB, live-xwvQy1 and live-9iD52d exposed a manual-tempo Undo whose UI cleared the override but whose saved record retained it. The safe PUT summaries in live-9iD52d establish the order: revision 56 first saved sequence revision 2 without an override, then a queued ordinary save overwrote it with sequence revision 3 and the override while retaining transaction revision 56. This was not a dropped shortcut or a need for a longer assertion timeout.
+- Automatic saving now captures the live project and scenes inside the shared project mutation critical section, after earlier transaction publication. A switched project is rejected by identity. The existing guard still prevents a late save completion from replacing newer live state.
+- Separately, ordinary saving no longer performs a generic deep merge after the project codec. That second merge resurrected removed nested optional sequence fields; encoding against the retained record once preserves the codec's full-sequence replacement semantics and opaque extensions.
+- Both defects have deterministic regressions that failed before their respective repairs. The isolated ProjectManager persistence suite, transaction/persistence coordination tests, codec tests and 29 command-routing tests pass; changed-file ESLint and Vite typecheck/build pass.
+- Installed candidate inventory b76d34f96bacbae889b4b6482d960d5619fb01112fb086745c8ac18abba83fc7 passed file parity. Real run <elftia>/.tmp-rocut-e2e/live-kP0lMH/evidence.json passes the full preceding 59-check core/audio/export/JIZURA matrix, then stops at a newly added layout keyboard check (60 checks recorded including initial layout). This is acceptance of the persistence repair, not full layout or whole-editor acceptance.
+- Later UI candidates retain this repair. User projects were not edited; all fixtures remain under the authorized E2E workspace.
+
 ## Export cancellation and recovery (2026-10-03)
 
 - After the LRC/audio-sync push (Rocut 00206d19, producer 8e5dfd7), a new real-installed cancellation probe reproduced a wrong terminal state: a cancelled renderer job was reported as failed with error text cancelled. Evidence: <elftia>/.tmp-rocut-e2e/export-recovery.json.

@@ -193,21 +193,29 @@ export class ProjectManager {
 
 	async saveCurrentProject(): Promise<void> {
 		if (!this.active) return;
-		const savingProject = this.active;
+		let savingProject = this.active;
+		let updatedProject = savingProject;
 
 		try {
-			const scenes = this.editor.scenes.getScenes();
-			const updatedProject = {
-				...savingProject,
-				scenes,
-				metadata: {
-					...savingProject.metadata,
-					duration: getProjectDurationFromScenes({ scenes }),
-					updatedAt: new Date(),
+			await this.editor.persistence.saveProject({
+				project: savingProject,
+				refreshProject: () => {
+					// A queued transaction may publish an Undo/Redo before this save.
+					// Capture the live graph inside the shared persistence critical section.
+					savingProject = this.getActive();
+					const scenes = this.editor.scenes.getScenes();
+					updatedProject = {
+						...savingProject,
+						scenes,
+						metadata: {
+							...savingProject.metadata,
+							duration: getProjectDurationFromScenes({ scenes }),
+							updatedAt: new Date(),
+						},
+					};
+					return updatedProject;
 				},
-			};
-
-			await this.editor.persistence.saveProject({ project: updatedProject });
+			});
 			// Storage completion acknowledges this snapshot, not any edits or
 			// project replacement published while its asynchronous save was pending.
 			if (this.active === savingProject) {

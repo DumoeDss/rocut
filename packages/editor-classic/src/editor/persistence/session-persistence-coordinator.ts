@@ -119,17 +119,18 @@ export class SessionPersistenceCoordinator {
 
 	async saveProject(args: {
 		project: TProject;
+		/** Read live state only after earlier project mutations have published. */
+		refreshProject?: () => TProject;
 		summary?: ProjectSummary;
 		signal?: AbortSignal;
 	}): Promise<void> {
 		this.assertAlive();
 		const id = args.project.metadata.id;
-		const schemaVersion = args.project.version;
-		const known = encodeProject({ project: args.project, retained: {} });
+		const projectSnapshot = cloneOpaque(args.project);
 		const summaryOverride = args.summary
 			? cloneOpaque(args.summary)
 			: undefined;
-		const defaultSummary = this.summaryFor(args.project);
+
 		return this.projectMutationArbiter.run({
 			projectId: id,
 			operation: () =>
@@ -137,9 +138,17 @@ export class SessionPersistenceCoordinator {
 					key: `project:${id}`,
 					operation: async () => {
 						const retained = this.projectSnapshots.get(id) ?? {};
-						const data = overlayOpaque({ retained, known });
-						const summary = summaryOverride ?? defaultSummary;
-						const record = { id, schemaVersion, data };
+						// Encode against the latest retained record exactly once. A second
+						// generic merge resurrects removed fields in full sequence replacements.
+						const project = args.refreshProject
+							? cloneOpaque(args.refreshProject())
+							: projectSnapshot;
+						if (project.metadata.id !== id) {
+							throw new Error("The queued save project is no longer active");
+						}
+						const data = encodeProject({ project, retained });
+						const summary = summaryOverride ?? this.summaryFor(project);
+						const record = { id, schemaVersion: project.version, data };
 						await this.store.save({
 							record,
 							summary,

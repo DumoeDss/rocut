@@ -2,14 +2,41 @@
 import { describe, expect, test } from "bun:test";
 
 import { decodeProject, encodeProject } from "../project-codec";
+import { SessionPersistenceCoordinator } from "../session-persistence-coordinator";
 import {
 	motionTextSequenceFixture,
 	projectFixture,
+	storeFixture,
+	TEST_PROJECT_ID,
 } from "../../transactions/opencut/__tests__/fixture";
 
 type Raw = Record<string, unknown>;
 
 describe("motion-text project codec", () => {
+	test("ordinary save preserves removal of nested sequence fields", async () => {
+		const project = projectFixture();
+		project.motionTextSequences.push(motionTextSequenceFixture());
+		const raw = project.motionTextSequences[0] as unknown as Raw;
+		raw.audioBinding = {
+			clipId: "audio-clip",
+			beatOverride: { bpm: 120, firstBeat: 24000 },
+			futureExtension: { keep: true },
+		};
+		const fixture = await storeFixture(project);
+		const persistence = new SessionPersistenceCoordinator(fixture.store);
+		const loaded = await persistence.loadProject({ id: TEST_PROJECT_ID });
+		if (!loaded) throw new Error("missing fixture");
+		const binding = (loaded.motionTextSequences[0] as unknown as Raw).audioBinding as Raw;
+		delete binding.beatOverride;
+		await persistence.saveProject({ project: loaded });
+		const stored = await fixture.store.load({ id: TEST_PROJECT_ID });
+		const reloaded = decodeProject(stored?.data);
+		const storedBinding = (reloaded.motionTextSequences[0] as unknown as Raw).audioBinding as Raw;
+		expect(Object.hasOwn(storedBinding, "beatOverride")).toBe(false);
+		expect(storedBinding.futureExtension).toEqual({ keep: true });
+		expect((stored?.data as Raw).nestedOpaque).toEqual({ sentinel: ["keep", { value: 42 }] });
+		expect(persistence.readCachedProject({ id: TEST_PROJECT_ID })).toEqual(reloaded);
+	});
 	test("legacy projects default the additive sequence collection to empty", () => {
 		const encoded = encodeProject({ project: projectFixture(), retained: {} });
 		const legacy = encoded as Raw;
