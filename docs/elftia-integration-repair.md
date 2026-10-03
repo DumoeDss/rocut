@@ -2,6 +2,14 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Persistence diagnostics follow-up (2026-10-03)
+
+- Resolved the earlier failing diagnostic privacy regression without weakening its assertion or modifying its partial EditorCore fixture. The reporter now calls a separate boundary formatter instead of a private instance method absent from that fixture.
+- Host diagnostic records allow only stable storage/transaction error codes, the known transaction error identity, and non-negative safe-integer operation/revision fields. Raw provider messages, arbitrary names/codes, thrown primitive values and coerced revision strings are not logged. The original thrown error and save failure/dirty-state behavior are unchanged.
+- Focused regression: 44 top-level tests pass, zero fail across persistence diagnostics, project persistence rewiring, save-manager failure handling, transaction routing, atomic file replacement and media capacity. This includes the previously failing isolated privacy case and four new formatter regressions. It is not a claim that the entire repository test suite passes.
+- The installed UI acceptance below predates this logging-only change; it remains evidence for the editor interactions, not a new host run of the formatter.
+- The three changed TypeScript files pass focused ESLint; Vite typecheck and production build pass. Existing large-chunk and mixed static/dynamic-import build warnings remain.
+
 ## Real Elftia acceptance and audio/cue fixes (2026-10-03)
 
 - Source checkpoint 4139608f was committed and pushed to origin/main at the user's request. This follow-up continues the same work; no Rocut version bump is implied by the Omnicross 0.6.4 upgrade.
@@ -12,7 +20,7 @@ Status: installed core interaction matrix passes in real Elftia; full editor fea
 - Real-host run <elftia>/.tmp-rocut-e2e/live-ykn6bF/evidence.json passes **51 checks**, no uncaught page/driver errors. Includes wheel scrolling; presets; cue text; rapid history gestures; fonts, locks and variations; cue styling/tapping; planning/cut boundaries; cue looping; video split/duplicate/delete; reload; corrupt-media rejection; manual tempo validation/apply/reset/history; audio binding/clear/history; native PNG file chooser; visible video+motion text playback; mixed export; JIZURA file chooser, invalid/future-version rejection, preservation, undo/redo and reopen.
 - Export independently decoded by ffprobe/ffmpeg: 3-second requested range, 3.018594-second output, one video and one audio stream, red video and white glyphs present, audio RMS above 0.12. Real screenshot pixel checks also establish compositing, not merely a moving time counter.
 - Separate real-host responsive run live-wrWok0/responsive.json passes 900x640 and 760x640 after collapsing chat through the UI. Font-menu containment/Escape/focus, color editing, cancel/add and final-cue reachability pass; native viewport and chat-panel state were restored afterward.
-- Focused ESLint for the four changed UI components, Vite typecheck, Vite production build, deterministic double-pack, producer build and verify:dist pass. The pre-existing persistence-diagnostics unit-test failure recorded below remains unresolved; do not call the entire unit suite green.
+- Focused ESLint for the four changed UI components, Vite typecheck, Vite production build, deterministic double-pack, producer build and verify:dist pass. The then-outstanding persistence-diagnostics failure was subsequently fixed in the follow-up above; do not call the entire unit suite green.
 - Refactored standalone regression also passes all selected scenarios (57 recorded checks, rocut-interactions-qwPAvg), including cue ranges and responsive controls. Its diagnostic log contains expected missing optional-library 404s, the deliberate corrupt-media error and an event-stream abort during reload; this is not a replacement for the real-host evidence above.
 
 ### Reproduce the installed editor matrix
@@ -26,7 +34,7 @@ Run: node <elftia>/node_modules/tsx/dist/cli.mjs script/probe-elftia-interaction
 - Transitions and Adjustment remain explicit placeholder views; they need real timeline/model/render/export support, not cosmetic replacement text.
 - Sounds search reports that this host does not provide a server endpoint; offline imported audio is tested, external sound search is not implemented here.
 - Broader media codec/format coverage, drag/trim gesture matrix, audio re-sync with changed clip geometry, export cancellation/error paths, and real in-use plugin replacement remain outstanding.
-- Paid ASR/model calls were not made. Diagnostic privacy-test repair and existing ColorPicker lint findings remain separately recorded.
+- Paid ASR/model calls were not made. Existing ColorPicker lint findings remain separately recorded; diagnostic privacy-test repair is now complete as noted above.
 
 ## Current checkpoint (2026-10-03; supersedes historical blockers below)
 

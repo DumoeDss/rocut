@@ -17,7 +17,7 @@ import {
 } from "../services/transcription/service";
 import type { EditorSession } from "../editor/session/session-types";
 import { SessionPersistenceCoordinator } from "../editor/persistence";
-import { ProjectStoreError } from "@opencut/editor-ports";
+import { describePersistenceFailure } from "./persistence-diagnostics";
 import type { AssetResolver } from "@opencut/editor-ports";
 import type { SessionResources } from "../editor/session/resources";
 import { SessionOpenCutTransactions } from "../editor/transactions/opencut";
@@ -137,54 +137,10 @@ export class EditorCore {
 				message: "Durable editor operation failed",
 				context: {
 					operation,
-					...this.describeFailure(error),
+					...describePersistenceFailure({ error }),
 				},
 			},
 		});
-	}
-
-	/**
-	 * Keep the failure's own words.
-	 *
-	 * The previous shape logged `code: "unknown"` for anything that was not a
-	 * `ProjectStoreError`, which discarded the one line that identifies the
-	 * fault: a rejected `TransactionError` ("... is not aligned to 4000 ticks
-	 * per frame") reached the Host as an unexplained "Durable editor operation
-	 * failed". Read structurally rather than importing each error family --
-	 * this module would otherwise depend on the contract package to describe a
-	 * string.
-	 */
-	private describeFailure(error: unknown): Record<string, unknown> {
-		if (error instanceof ProjectStoreError) {
-			return { code: error.code, reason: error.message };
-		}
-		if (error === null || typeof error !== "object") {
-			return { code: "unknown", reason: String(error) };
-		}
-		const candidate = error as {
-			name?: unknown;
-			code?: unknown;
-			message?: unknown;
-			operationIndex?: unknown;
-			expectedRevision?: unknown;
-			actualRevision?: unknown;
-		};
-		return {
-			code: typeof candidate.code === "string" ? candidate.code : "unknown",
-			...(typeof candidate.name === "string" ? { name: candidate.name } : {}),
-			...(typeof candidate.message === "string"
-				? { reason: candidate.message }
-				: {}),
-			...(typeof candidate.operationIndex === "number"
-				? { operationIndex: candidate.operationIndex }
-				: {}),
-			...(candidate.expectedRevision !== undefined
-				? { expectedRevision: String(candidate.expectedRevision) }
-				: {}),
-			...(candidate.actualRevision !== undefined
-				? { actualRevision: String(candidate.actualRevision) }
-				: {}),
-		};
 	}
 
 	static createSessionOwned({
