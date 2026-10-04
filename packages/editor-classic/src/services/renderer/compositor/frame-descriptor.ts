@@ -10,6 +10,8 @@ import { EffectLayerNode } from "../nodes/effect-layer-node";
 import { GraphicNode } from "../nodes/graphic-node";
 import { ImageNode } from "../nodes/image-node";
 import { RootNode } from "../nodes/root-node";
+import { TransitionTrackNode } from "../nodes/transition-track-node";
+import { collectTransitionTrack } from "./collect-transition-track";
 import { StickerNode } from "../nodes/sticker-node";
 import { renderTextToContext, TextNode } from "../nodes/text-node";
 import { VideoNode } from "../nodes/video-node";
@@ -81,6 +83,14 @@ async function collectNode({
 	items: FrameItemDescriptor[];
 	textures: Map<string, TextureUploadDescriptor>;
 }): Promise<void> {
+	if (node instanceof TransitionTrackNode) {
+		await collectTransitionTrack({
+			node,
+			context: { renderer, path, items, textures },
+			collectNode,
+		});
+		return;
+	}
 	if (node instanceof RootNode) {
 		for (let index = 0; index < node.children.length; index++) {
 			await collectNode({
@@ -301,7 +311,8 @@ async function collectVisualSourceNode({
 		kind: "external",
 		id: textureId,
 		source,
-		sourceVersion: node instanceof GraphicNode ? undefined : node.resolved.sourceVersion,
+		sourceVersion:
+			node instanceof GraphicNode ? undefined : node.resolved.sourceVersion,
 		width: sourceWidth,
 		height: sourceHeight,
 	});

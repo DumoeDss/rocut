@@ -5,6 +5,8 @@ import type { BlendMode, Transform } from "../../../rendering";
 import type { RetimeConfig, VisualElement } from "../../../timeline";
 
 export interface VisualNodeParams {
+	/** Scene identity for transition branch grouping; absent for standalone nodes. */
+	clipId?: string;
 	duration: number;
 	timeOffset: number;
 	trimStart: number;

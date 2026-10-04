@@ -81,6 +81,9 @@ pub struct ClipTransitionSample {
     /// Quantized project time used by both preview and export.
     pub time: MediaTime,
     pub progress: f64,
+    /// Animation clocks hold endpoint values while source handles run outside the edit.
+    pub outgoing_local_time: MediaTime,
+    pub incoming_local_time: MediaTime,
     /// Images have no source clock; explicitly frozen video retains its frame.
     pub outgoing_source: Option<MediaTime>,
     pub incoming_source: Option<MediaTime>,
@@ -247,6 +250,14 @@ impl ClipTransitionPlan {
             time: MediaTime::from_ticks(time),
             progress: (time - self.window.start.as_ticks()) as f64
                 / (self.window.end.as_ticks() - self.window.start.as_ticks()) as f64,
+            outgoing_local_time: MediaTime::from_ticks(
+                (time - self.options.outgoing.start.as_ticks())
+                    .clamp(0, self.options.outgoing.duration.as_ticks()),
+            ),
+            incoming_local_time: MediaTime::from_ticks(
+                (time - self.options.incoming.start.as_ticks())
+                    .clamp(0, self.options.incoming.duration.as_ticks()),
+            ),
             outgoing_source: source_at(&self.options.outgoing, time)?,
             incoming_source: source_at(&self.options.incoming, time)?,
         })

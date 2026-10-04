@@ -3,6 +3,7 @@ import type { RetimeConfig } from "../../../timeline";
 import { BaseNode } from "./base-node";
 
 export type BlurBackgroundNodeParams = {
+	clipId?: string;
 	mediaId: string;
 	url: string;
 	file: File;

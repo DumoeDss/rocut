@@ -27,7 +27,7 @@ fn serializable_api_returns_the_same_window_and_source_samples() {
         output,
         json!({
             "accepted":[{"linkIndex":0, "window":{"start":300_000,"cut":360_000,"end":420_000},
-                "sample":{"time":360_000,"progress":0.5,"outgoingSource":480_000,"incomingSource":120_000}}],
+                "sample":{"time":360_000,"progress":0.5,"outgoingLocalTime":360_000,"incomingLocalTime":0,"outgoingSource":480_000,"incomingSource":120_000}}],
             "rejected":[], "removed":[]
         })
     );
@@ -97,5 +97,23 @@ fn rejects_unknown_fields_invalid_discriminators_and_fractional_wire_integers() 
             serde_json::from_value::<ClipTransitionsOptions>(input).is_err(),
             "{pointer}"
         );
+    }
+}
+
+#[test]
+fn quantized_animation_clocks_hold_clip_endpoints_during_source_handles() {
+    for (playhead, time, outgoing, incoming) in [
+        (300_999, 300_000, 300_000, 0),
+        (359_999, 356_000, 356_000, 0),
+        (360_000, 360_000, 360_000, 0),
+        (419_999, 416_000, 360_000, 56_000),
+    ] {
+        let mut input = fixture();
+        input["playhead"] = json!(playhead);
+        let output = evaluate(input);
+        let sample = &output["accepted"][0]["sample"];
+        assert_eq!(sample["time"], json!(time));
+        assert_eq!(sample["outgoingLocalTime"], json!(outgoing));
+        assert_eq!(sample["incomingLocalTime"], json!(incoming));
     }
 }

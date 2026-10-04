@@ -138,7 +138,7 @@ export const EXPECTED = {
 		"opencut_wasm_bg.wasm.d.ts":
 			"d19c1b3dc87f095040c7eb1e56eb8c965d587cf7927ca21cc513327cf78ed7c1",
 	},
-	dtsSha: "9412f17fbc9c53bf22824714d2d6c3859b1a52cd9c63f47b6ce501283eee8805",
+	dtsSha: "2f0222c1595e0047152d2bd5cc71bdf96c23679d068537e55839842362daa556",
 	wrapperSha: "51046acb410a95463f30e901d9b5d20564f5d17027f9812865e554688813f450",
 	/**
 	 * The low-level declarations, hashed after normalising the trampoline hashes below and sorted

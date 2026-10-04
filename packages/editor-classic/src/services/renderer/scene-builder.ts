@@ -2,6 +2,7 @@ import type { SceneTracks, TimelineTrack } from "../../timeline";
 import type { MediaAsset } from "../../media/types";
 import type { MotionTextSequence } from "@opencut/editor-contracts";
 import { RootNode } from "./nodes/root-node";
+import { groupTransitionTrack } from "./transition-track";
 import { VideoNode } from "./nodes/video-node";
 import { ImageNode } from "./nodes/image-node";
 import { TextNode } from "./nodes/text-node";
@@ -68,7 +69,9 @@ function buildTrackNodes({
 				nodes.push(
 					new EffectLayerNode({
 						effectType: element.effectType,
-						effectParams: element.adjustment ? { ...element.adjustment } : element.params,
+						effectParams: element.adjustment
+							? { ...element.adjustment }
+							: element.params,
 						timeOffset: element.startTime,
 						duration: element.duration,
 					}),
@@ -85,6 +88,7 @@ function buildTrackNodes({
 				if (element.type === "video" && mediaAsset.type === "video") {
 					nodes.push(
 						new VideoNode({
+							clipId: element.id,
 							mediaId: mediaAsset.id,
 							url: mediaAsset.url,
 							file: mediaAsset.file,
@@ -106,6 +110,7 @@ function buildTrackNodes({
 				if (element.type === "image" && mediaAsset.type === "image") {
 					nodes.push(
 						new ImageNode({
+							clipId: element.id,
 							url: mediaAsset.url,
 							duration: element.duration,
 							timeOffset: element.startTime,
@@ -240,6 +245,7 @@ function buildBlurBackgroundNodes({
 
 		nodes.push(
 			new BlurBackgroundNode({
+				clipId: element.id,
 				mediaId: mediaAsset.id,
 				url: mediaAsset.url,
 				file: mediaAsset.file,
@@ -297,39 +303,36 @@ export function buildScene({
 		...(!tracks.main.hidden ? [tracks.main] : []),
 	];
 	const orderedTracksBottomToTop = visibleTracks.slice().reverse();
-	const mainTrack = tracks.main.hidden ? undefined : tracks.main;
-
-	const allNodes = buildTrackNodes({
-		tracks: orderedTracksBottomToTop,
-		mediaMap,
-	motionTextMap,
-	motionTextTimeMapper,
-	motionTextFontRuntime,
-	motionTextProjectId,
-		canvasSize,
-		isPreview,
-		assetResolver,
-	});
-
-	if (background.type === "blur") {
-		const blurNodes = buildBlurBackgroundNodes({
-			track: mainTrack,
-			mediaMap,
-			blurIntensity:
-				background.blurIntensity ?? DEFAULT_BACKGROUND_BLUR_INTENSITY,
-		});
-		for (const node of blurNodes) {
-			rootNode.add(node);
-		}
-	} else if (
-		background.type === "color" &&
-		background.color !== "transparent"
-	) {
+	if (background.type === "color" && background.color !== "transparent") {
 		rootNode.add(new ColorNode({ color: background.color }));
 	}
-
-	for (const node of allNodes) {
-		rootNode.add(node);
+	for (const track of orderedTracksBottomToTop) {
+		const pictures = buildTrackNodes({
+			tracks: [track],
+			mediaMap,
+			motionTextMap,
+			motionTextTimeMapper,
+			motionTextFontRuntime,
+			motionTextProjectId,
+			canvasSize,
+			isPreview,
+			assetResolver,
+		});
+		const backdrops =
+			track.id === tracks.main.id && background.type === "blur"
+				? buildBlurBackgroundNodes({
+						track,
+						mediaMap,
+						blurIntensity:
+							background.blurIntensity ?? DEFAULT_BACKGROUND_BLUR_INTENSITY,
+					})
+				: [];
+		for (const node of groupTransitionTrack({
+			track,
+			mediaMap,
+			children: [...backdrops, ...pictures],
+		}))
+			rootNode.add(node);
 	}
 
 	return rootNode;

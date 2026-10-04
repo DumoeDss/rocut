@@ -58,6 +58,8 @@ export function runTransitionGraphProbe(api) {
 			assert(
 				sample.time === 360000 &&
 					sample.progress === 0.5 &&
+					sample.outgoingLocalTime === 360000 &&
+					sample.incomingLocalTime === 0 &&
 					sample.outgoingSource === 480000 &&
 					sample.incomingSource === 120000,
 				"source sample mismatch",

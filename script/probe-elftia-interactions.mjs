@@ -16,6 +16,7 @@ import { probeVideoFreeze } from './probe-video-freeze.mjs';
 import { probeColorAdjustment } from './probe-color-adjustment.mjs';
 import { probeTransitionPersistence } from './probe-transition-persistence.mjs';
 import { probeVideoSourceLifetime } from './probe-video-source-lifetime.mjs';
+import { probeTransitionRender } from './probe-transition-render.mjs';
 
 // Run with the Elftia worktree's tsx loader. Never launch a substitute browser.
 const hostRoot = resolve(process.env.ELFTIA_WORKTREE ?? '');
@@ -73,7 +74,7 @@ try {
     const value=target[key]; return typeof value==='function'?value.bind(target):value;
   }});
   conn.page.on('pageerror',error=>evidence.errors.push(scrub(error.message)));
-  if (process.argv.includes('--adjustment-only')) conn.page.on('console', message => {
+  if (['--adjustment-only', '--transition-render-only'].some(flag => process.argv.includes(flag))) conn.page.on('console', message => {
     if (message.type() === 'error' && /Failed to render preview frame|Validation Error/.test(message.text())) evidence.errors.push(scrub(message.text()));
   });
   // Safe transaction summaries distinguish a dropped shortcut from stale persistence.
@@ -93,7 +94,9 @@ try {
   conn.page.on('response',response=>{if(response.status()>=400 && response.url().includes('/api/')) evidence.requests.push({phase,status:response.status(),url:scrub(response.url())});});
   const audioFixture=join(work,'fixture-tone-a4.wav');
   execFileSync('ffmpeg',['-v','error','-n','-f','lavfi','-i','sine=frequency=440:duration=16','-ar','44100','-ac','1','-c:a','pcm_s16le',audioFixture],{windowsHide:true});
-  if (process.argv.includes('--source-lifetime-only')) {
+  if (process.argv.includes('--transition-render-only')) {
+    await probeTransitionRender({page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
+  } else if (process.argv.includes('--source-lifetime-only')) {
     await probeVideoSourceLifetime({page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--transition-persistence-only')) {
     await probeTransitionPersistence({page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});

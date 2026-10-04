@@ -1,13 +1,5 @@
-import { mediaTimeToSeconds, roundMediaTime } from "../../wasm";
 import { getElementLocalTime } from "../../animation";
-import { resolveEffectParamsAtTime } from "../../animation/effect-param-channel";
-import {
-	buildGaussianBlurPasses,
-	intensityToSigma,
-} from "../../effects/definitions/blur";
 import { effectsRegistry, resolveEffectPasses } from "../../effects";
-import type { Effect, EffectPass } from "../../effects/types";
-import { resolveVideoSourceTime } from "../../wasm/video-time";
 import {
 	DEFAULT_GRAPHIC_SOURCE_SIZE,
 	resolveGraphicElementParamsAtTime,
@@ -26,11 +18,7 @@ import type { VideoCache } from "../video-cache/service";
 import { createVideoFrameScope } from "./video-frame-scope";
 import type { CanvasRenderer } from "./canvas-renderer";
 import type { AnyBaseNode } from "./nodes/base-node";
-import {
-	BlurBackgroundNode,
-	type BackdropSource,
-	type ResolvedBlurBackgroundNodeState,
-} from "./nodes/blur-background-node";
+import { BlurBackgroundNode } from "./nodes/blur-background-node";
 import {
 	EffectLayerNode,
 	type ResolvedEffectLayerNodeState,
@@ -39,7 +27,7 @@ import {
 	GraphicNode,
 	type ResolvedGraphicNodeState,
 } from "./nodes/graphic-node";
-import { ImageNode, loadImageSource } from "./nodes/image-node";
+import { ImageNode } from "./nodes/image-node";
 import { StickerNode, loadStickerSource } from "./nodes/sticker-node";
 import { TextNode, type ResolvedTextNodeState } from "./nodes/text-node";
 import { VideoNode } from "./nodes/video-node";
@@ -49,34 +37,40 @@ import {
 	type ResolvedMotionTextNodeState,
 } from "./nodes/motion-text-node";
 import { resolveMotionTextRenderFrame } from "./motion-text/jizura-adapter";
-import type {
-	ResolvedVisualNodeState,
-	ResolvedVisualSourceNodeState,
-	VisualNodeParams,
-} from "./nodes/visual-node";
-
-type ResolveContext = {
-	renderer: Pick<CanvasRenderer, "width" | "height">;
-	time: number;
-	videoCache: Pick<VideoCache, "getFrameAt">;
-};
+import type { ResolvedVisualSourceNodeState } from "./nodes/visual-node";
+import type { ResolveContext } from "./resolve-context";
+import {
+	resolveEffectPassGroups,
+	resolveVisualState,
+} from "./resolve-visual-state";
+import {
+	resolveVideoNode,
+	resolveImageNode,
+	resolveBlurBackgroundNode,
+} from "./resolve-picture";
+import { TransitionTrackNode } from "./nodes/transition-track-node";
+import { resolveTransitionTrack } from "./resolve-transition-track";
+import type { FrameRate } from "opencut-wasm";
 
 export async function resolveRenderTree({
 	node,
 	renderer,
 	time,
 	videoCache,
+	frameRate,
 }: {
 	node: AnyBaseNode;
 	renderer: Pick<CanvasRenderer, "width" | "height">;
 	time: number;
 	videoCache: Pick<VideoCache, "getFrameAt">;
+	frameRate?: FrameRate;
 }): Promise<void> {
 	await resolveNode({
 		node,
 		context: {
 			renderer,
 			time,
+			frameRate,
 			videoCache: createVideoFrameScope(videoCache),
 		},
 	});
@@ -89,6 +83,10 @@ async function resolveNode({
 	node: AnyBaseNode;
 	context: ResolveContext;
 }): Promise<void> {
+	if (node instanceof TransitionTrackNode) {
+		await resolveTransitionTrack({ node, context, resolveNode });
+		return;
+	}
 	if (node instanceof VideoNode) {
 		node.resolved = await resolveVideoNode({ node, context });
 	} else if (node instanceof ImageNode) {
@@ -107,9 +105,11 @@ async function resolveNode({
 		node.resolved = resolveEffectLayerNode({ node, context });
 	}
 
-	await Promise.all(
+	const settled = await Promise.allSettled(
 		node.children.map((child) => resolveNode({ node: child, context })),
 	);
+	for (const entry of settled)
+		if (entry.status === "rejected") throw entry.reason;
 }
 
 async function resolveMotionTextNode({
@@ -158,172 +158,6 @@ async function resolveMotionTextNode({
 		...visualState,
 		frame,
 		contentHash: `motion-text:v1:${context.renderer.width}x${context.renderer.height}:${frame.contentFingerprint}`,
-	};
-}
-
-function resolveEffectPassGroups({
-	effects,
-	animations,
-	localTime,
-	width,
-	height,
-}: {
-	effects: Effect[] | undefined;
-	animations: VisualNodeParams["animations"];
-	localTime: number;
-	width: number;
-	height: number;
-}): EffectPass[][] {
-	return (effects ?? [])
-		.filter((effect) => effect.enabled)
-		.map((effect) => {
-			const resolvedParams = resolveEffectParamsAtTime({
-				effectId: effect.id,
-				params: effect.params,
-				animations,
-				localTime,
-			});
-			const definition = effectsRegistry.get(effect.type);
-			return resolveEffectPasses({
-				definition,
-				effectParams: resolvedParams,
-				width,
-				height,
-			});
-		});
-}
-
-function resolveVisualState({
-	params,
-	context,
-	sourceWidth,
-	sourceHeight,
-}: {
-	params: VisualNodeParams;
-	context: ResolveContext;
-	sourceWidth: number;
-	sourceHeight: number;
-}): ResolvedVisualNodeState | null {
-	const clipTime = context.time - params.timeOffset;
-	if (clipTime < 0 || clipTime >= params.duration) {
-		return null;
-	}
-
-	const localTime = getElementLocalTime({
-		timelineTime: context.time,
-		elementStartTime: params.timeOffset,
-		elementDuration: params.duration,
-	});
-	const transform = resolveTransformAtTime({
-		baseTransform: params.transform,
-		animations: params.animations,
-		localTime,
-	});
-	const opacity = resolveOpacityAtTime({
-		baseOpacity: params.opacity,
-		animations: params.animations,
-		localTime,
-	});
-	const containScale = Math.min(
-		context.renderer.width / sourceWidth,
-		context.renderer.height / sourceHeight,
-	);
-	const effectWidth = Math.round(
-		Math.abs(sourceWidth * containScale * transform.scaleX),
-	);
-	const effectHeight = Math.round(
-		Math.abs(sourceHeight * containScale * transform.scaleY),
-	);
-
-	return {
-		localTime,
-		transform,
-		opacity,
-		effectPasses: resolveEffectPassGroups({
-			effects: params.effects,
-			animations: params.animations,
-			localTime,
-			width: effectWidth,
-			height: effectHeight,
-		}),
-	};
-}
-
-async function resolveVideoNode({
-	node,
-	context,
-}: {
-	node: VideoNode;
-	context: ResolveContext;
-}): Promise<ResolvedVisualSourceNodeState | null> {
-	const clipTime = context.time - node.params.timeOffset;
-	if (clipTime < 0 || clipTime >= node.params.duration) {
-		return null;
-	}
-
-	const sourceTimeTicks = resolveVideoSourceTime({
-		clipTime,
-		trimStart: node.params.trimStart,
-		playbackRate: node.params.retime?.rate ?? 1,
-		freezeFrame: node.params.freezeFrame,
-	});
-	if (sourceTimeTicks === null) return null;
-	const frame = await context.videoCache.getFrameAt({
-		mediaId: node.params.mediaId,
-		file: node.params.file,
-		time: mediaTimeToSeconds({
-			time: roundMediaTime({ time: sourceTimeTicks }),
-		}),
-	});
-	if (!frame) {
-		return null;
-	}
-
-	const visualState = resolveVisualState({
-		params: node.params,
-		context,
-		sourceWidth: frame.canvas.width,
-		sourceHeight: frame.canvas.height,
-	});
-	if (!visualState) {
-		return null;
-	}
-
-	return {
-		...visualState,
-		source: frame.canvas,
-		sourceVersion: `${node.params.mediaId}:${frame.timestamp}`,
-		sourceWidth: frame.canvas.width,
-		sourceHeight: frame.canvas.height,
-	};
-}
-
-async function resolveImageNode({
-	node,
-	context,
-}: {
-	node: ImageNode;
-	context: ResolveContext;
-}): Promise<ResolvedVisualSourceNodeState | null> {
-	const source = await loadImageSource({
-		url: node.params.url,
-		maxSourceSize: node.params.maxSourceSize,
-	});
-	const visualState = resolveVisualState({
-		params: node.params,
-		context,
-		sourceWidth: source.width,
-		sourceHeight: source.height,
-	});
-	if (!visualState) {
-		return null;
-	}
-
-	return {
-		...visualState,
-		source: source.source,
-		sourceWidth: source.width,
-		sourceHeight: source.height,
 	};
 }
 
@@ -444,88 +278,6 @@ function resolveTextNode({
 			localTime,
 			ctx: getTextMeasurementContext(),
 		}),
-	};
-}
-
-async function resolveBlurBackgroundNode({
-	node,
-	context,
-}: {
-	node: BlurBackgroundNode;
-	context: ResolveContext;
-}): Promise<ResolvedBlurBackgroundNodeState | null> {
-	const clipTime = context.time - node.params.timeOffset;
-	if (clipTime < 0 || clipTime >= node.params.duration) {
-		return null;
-	}
-
-	const backdropSource = await resolveBackdropSource({
-		node,
-		clipTime,
-		context,
-	});
-	if (!backdropSource) {
-		return null;
-	}
-
-	return {
-		backdropSource,
-		passes: buildGaussianBlurPasses({
-			sigmaX: intensityToSigma({
-				intensity: node.params.blurIntensity,
-				resolution: context.renderer.width,
-				reference: 1920,
-			}),
-			sigmaY: intensityToSigma({
-				intensity: node.params.blurIntensity,
-				resolution: context.renderer.height,
-				reference: 1080,
-			}),
-		}),
-	};
-}
-
-async function resolveBackdropSource({
-	node,
-	clipTime,
-	context,
-}: {
-	node: BlurBackgroundNode;
-	clipTime: number;
-	context: ResolveContext;
-}): Promise<BackdropSource | null> {
-	if (node.params.mediaType === "video") {
-		const sourceTimeTicks = resolveVideoSourceTime({
-			clipTime,
-			trimStart: node.params.trimStart,
-			playbackRate: node.params.retime?.rate ?? 1,
-			freezeFrame: node.params.freezeFrame,
-		});
-		if (sourceTimeTicks === null) return null;
-		const frame = await context.videoCache.getFrameAt({
-			mediaId: node.params.mediaId,
-			file: node.params.file,
-			time: mediaTimeToSeconds({
-				time: roundMediaTime({ time: sourceTimeTicks }),
-			}),
-		});
-		if (!frame) {
-			return null;
-		}
-
-		return {
-			source: frame.canvas,
-			sourceVersion: `${node.params.mediaId}:${frame.timestamp}`,
-			width: frame.canvas.width,
-			height: frame.canvas.height,
-		};
-	}
-
-	const source = await loadImageSource({ url: node.params.url });
-	return {
-		source: source.source,
-		width: source.width,
-		height: source.height,
 	};
 }
 

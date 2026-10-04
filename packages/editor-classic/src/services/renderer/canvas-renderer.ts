@@ -171,6 +171,7 @@ export class CanvasRenderer {
 					node,
 					renderer: this,
 					time,
+					frameRate: this.fps,
 					videoCache: this.videoCache,
 				}),
 		});
