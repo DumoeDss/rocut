@@ -23,6 +23,7 @@ import {
 } from "../../animation/values";
 import { resolveTransformAtTime } from "../../rendering/animation-values";
 import type { VideoCache } from "../video-cache/service";
+import { createVideoFrameScope } from "./video-frame-scope";
 import type { CanvasRenderer } from "./canvas-renderer";
 import type { AnyBaseNode } from "./nodes/base-node";
 import {
@@ -76,7 +77,7 @@ export async function resolveRenderTree({
 		context: {
 			renderer,
 			time,
-			videoCache,
+			videoCache: createVideoFrameScope(videoCache),
 		},
 	});
 }

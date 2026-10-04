@@ -20,7 +20,9 @@ if (process.env.OPENCUT_EFFECT_PREVIEW_TEST_ISOLATED !== "1") {
 		}
 	});
 } else {
+	const actualWasm = await import("opencut-wasm");
 	mock.module("opencut-wasm", () => ({
+		...actualWasm,
 		applyEffectPasses: ({ source }: { source: OffscreenCanvas }) => source,
 		applyMaskFeather: ({ mask }: { mask: OffscreenCanvas }) => mask,
 		formatTimecode: ({ time }: { time: number }) => String(time),
