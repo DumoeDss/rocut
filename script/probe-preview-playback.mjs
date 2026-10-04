@@ -27,6 +27,7 @@ export async function probePreviewPlayback({
 		writeFileSync(join(work, "playback.json"), JSON.stringify(result, null, 2));
 	onPhase("F04 configure actual 720p preview");
 	await page.getByLabel("Settings", { exact: true }).click();
+	await page.getByRole("button", { name: "Custom", exact: true }).click();
 	for (const [name, value] of [
 		["Canvas width", "1280"],
 		["Canvas height", "720"],
