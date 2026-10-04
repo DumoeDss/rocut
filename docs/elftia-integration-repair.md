@@ -2,6 +2,14 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Video speed, pitch and transforms — installed checkpoint
+
+- **Baseline:** live-StjSBZ completes the real speed/history/pitch/transform exports, but fails because the speed textbox and Change pitch switch have no accessible names. Preserve this failed run as baseline evidence.
+- **Repair:** give the playback-speed input an explicit accessible name and associate the visible pitch label with the existing Radix switch using a per-instance ID. Label clicking and keyboard Space now reach the same existing retime command; no new business policy or dependency change.
+- **Installed acceptance:** source 80f6fd61; run **live-JVcsv9 passes eight checks** in the owned Elftia session. Actual input changes 4 seconds to 2 seconds, preserves trim/source bounds, and supports undo/redo. Three independently decoded MP4s each contain 60 frames, one audio stream and a 2.020136-second container (within one 30fps frame of the 2-second timeline). Red/blue source samples switch as expected; pitch changes to 880 Hz or remains 440.67 Hz with preservation. Half-size, translated, 180-degree-rotated video retains the asymmetric white marker at the expected location after reload. Label click, Space toggles and speed reset/undo/reopen pass; the final speed-panel screenshot was visually inspected.
+- **Packaging:** Vite typecheck/build, focused ESLint, probe syntax, strict UTF-8 and producer 52/52 tests pass. Installed/dist parity: 354 files, inventory 8385f73ac9811cd39ed9bde313af3c94277100f388b046052a02f19f8b77e44b. Backup: C:/Users/Sayo/.elftia/plugin-backups/rocut-0.5.0-before-speed-a11y-285a2209-2a70-43f4-804f-69d3cbec08a9.
+- **Limits:** import uses the actual file input, not the operating-system picker; exports use the host API, not export-button acceptance. Empty custom graph-preset reads return HTTP 404 and remain recorded for follow-up; there are no page errors in this run. This closes only this properties slice, not F04 latency, sustained playback/GPU accounting, all media formats or the full editor goal.
+
 ## Existing-project migration and contradictory versions — installed checkpoint
 
 - **Installed baseline:** migration-QEsDr0 passes six checks on a synthetic v31 copy of the owned media fixture. The installed host migrates to v32, adds the motion-text collection, preserves all video/audio geometry, unknown extension data and every attachment byte. Real UI volume edits, undo/redo and reload persist; the preview screenshot shows the expected source video. Future schema 33 and an untransformable v31 payload are refused without changing project.json, and the valid project opens afterward. This is synthetic v31 compatibility, not evidence for all archived project generations.
