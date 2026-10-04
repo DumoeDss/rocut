@@ -125,11 +125,7 @@ export function DraggableItem({
 								title={name}
 							>
 								<span className="sr-only">{name}</span>
-								<span aria-hidden="true">
-									{name.length > 8
-										? `${name.slice(0, 16)}...${name.slice(-3)}`
-										: name}
-								</span>
+								<span aria-hidden="true">{name}</span>
 							</span>
 						)}
 					</div>

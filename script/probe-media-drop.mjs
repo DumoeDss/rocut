@@ -94,6 +94,31 @@ export async function probeMediaDrop({
 		await reloadEditorFrame(page);
 		assert.equal((await attachments()).length, 4);
 		assert.equal((await clips()).length, 2);
+		const grid = page.getByLabel("Switch to grid view", { exact: true });
+		if (await grid.count()) await grid.click();
+		const names = [
+			"拖入 素材.mp4",
+			"drop-library.wav",
+			"drop-timeline.mp4",
+			"drop-timeline.wav",
+		];
+		evidence.mediaCardNames = [];
+		for (const name of names) {
+			const label = page.getByTitle(name, { exact: true });
+			const displayed = await label
+				.locator('[aria-hidden="true"]')
+				.textContent();
+			evidence.mediaCardNames.push({ name, displayed });
+			assert.equal(
+				displayed,
+				name,
+				"Card text must not repeat filename suffixes",
+			);
+			await expect(label).toHaveCSS("text-overflow", "ellipsis");
+		}
+		check(
+			"media cards keep exact Unicode filenames and use width-based CSS ellipsis",
+		);
 		await hostPage.screenshot({ path: join(work, "media-drop-reopened.png") });
 		check(
 			"native timeline drop persists both media clips and exact source bytes across reopen",
