@@ -59,8 +59,9 @@ export const BASELINE_DTS_SHA =
  * correspond 1:1" — so this applies the repository's own existing finding to its gate.
  *
  * **What is still asserted, so this is a re-scope and not a hole**: the count of trampolines is
- * exactly `trampolineExportCount`, each must match this shape, the other 80 are an exact set, and
- * the total is 83. Frame-hold and color-adjustment APIs each added two stable exports.
+ * exactly `trampolineExportCount`, each must match this shape, the other 81 are an exact set, and
+ * the total is 84. Frame-hold and color-adjustment APIs each added two stable exports.
+ * Transition graph validation/sampling adds one stable export, evaluateClipTransitions.
  * A 4th trampoline, a missing one, a renamed stable export, or a stable
  * export disguised in this shape all fail — each with a committed negative control.
  */
@@ -96,7 +97,7 @@ export const EXPECTED = {
 		"package.json":
 			"f92d109c0ed431a74974f90bf207767c033f784af10a34a0accebb1bb921ca18",
 		[SYNC_ENTRY]:
-			"55a0dc84cd4eeb95e8c37fe3e49246c957fd795025f37f11f04580dfe5363b90",
+			"4127197f42da8b61c25176076b32bf77a5c2f6e04350a867e6d2e489f8a57004",
 	},
 	/**
 	 * `LICENSE` and `README.md` are the only two files wasm-pack **copies out of the checkout**
@@ -137,8 +138,8 @@ export const EXPECTED = {
 		"opencut_wasm_bg.wasm.d.ts":
 			"d19c1b3dc87f095040c7eb1e56eb8c965d587cf7927ca21cc513327cf78ed7c1",
 	},
-	dtsSha: "449e27f41111d81e42a23b7ffc9351fa9ac99a369b08f7780663d7bb746e7150",
-	wrapperSha: "25da68086f30a9e680e2e98eba0be7ff2aff84dbf091bfe5d7569518dd43c115",
+	dtsSha: "8bad0ee91688d26ffe589306a5628f303885870886154fbf7171c3e70b6a296e",
+	wrapperSha: "5e3dcd76d7b726f0a0bc5eacd80c6fdd09a781df5357a0ab634b0758a37ba798",
 	/**
 	 * The low-level declarations, hashed after normalising the trampoline hashes below and sorted
 	 * by line. Exact-byte hashing of this file cannot hold across build hosts for the reason
@@ -148,29 +149,30 @@ export const EXPECTED = {
 	 * Recorded on Windows; the value is host-independent by construction. Re-derive with the
 	 * hashing recipe in `script/check-wasm-api-surface.mjs` after a pinned WASM rebuild.
 	 */
-	wasmDtsNormalizedSignature: "99e5bb1e2076029ee7afa1a05e41d88482200bad095ea7ca3acf493484d94074",
-	wasmDtsLineCount: 85,
-	wrapperExportSignature: "4f3d2740df6bc7dbd13c009097f449d7686afd3d4ab0d45c44d864c0b32f4a7f",
-	wrapperExportCount: 63,
-	bgExportSignature: "ff4c5c14a2fd33e128445fcab48d51d795445a5ebff338b99c9422462ee8727e",
-	bgExportCount: 674,
+	wasmDtsNormalizedSignature: "effddfc8439677f8c9482c43764934487e1dd46cfd5da5492682ca3d0f1b29d0",
+	wasmDtsLineCount: 86,
+	wrapperExportSignature: "4019b2e7d73addf0fe83498fe836e01778349402b40170ee41e0d8b555079353",
+	wrapperExportCount: 64,
+	bgExportSignature: "5793d1ad5628fd8530b80bec91bca7a9d90e6f1be3edb135f2bfac5e0d2d48f7",
+	bgExportCount: 675,
 	/**
-	 * The 80 stably-named binary exports, as an exact set. This is the real contract: every export
+	 * The 81 stably-named binary exports, as an exact set. This is the real contract: every export
 	 * a consumer can name is pinned here, and any addition, removal or rename fails.
 	 *
 	 * The remaining 3 are compiler-generated closure trampolines whose names carry a rustc symbol
 	 * hash — see `TRAMPOLINE_EXPORT` for why they are matched by shape and count instead.
 	 */
-	stableWasmExportSignature: "8c4eaf48f3e40cb9e70714810f91ca77e43b2c2475a8b8ad4c254a3408db34a0",
-	stableWasmExportCount: 80,
+	stableWasmExportSignature: "a9d5f1a1c8c3aad4f74ddb6def00c49a0e8b70ac41ef0e07e46f3b8fa1f789d8",
+	stableWasmExportCount: 81,
 	trampolineExportCount: 3,
 	/**
-	 * The whole 83-entry set as recorded on the Windows build machine, kept for diagnosis: on
+	 * The whole 84-entry set as recorded on the Windows build machine, kept for diagnosis: on
 	 * failure the gate prints the symmetric difference against it, which is how the host-varying
 	 * trampolines were identified in the first place (CI run 31940776057). It is NOT the
  * assertion — `stableWasmExportSignature` is.
 	 */
 	wasmExportsAsRecorded: [
+		"evaluateClipTransitions|function",
 		"colorAdjustmentCatalog|function",
 		"normalizeColorAdjustment|function",
 		"planVideoFreezeFrame|function",

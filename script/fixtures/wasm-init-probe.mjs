@@ -7,6 +7,8 @@
  *   --specifier=opencut-wasm/sync               the declared explicit-instantiation subpath
  *   --specifier=opencut-wasm/opencut_wasm.js    the --target bundler entry, by deep path
  */
+import { runTransitionGraphProbe } from "../probe-transition-graph-browser.mjs";
+
 const argument = process.argv.find((value) => value.startsWith("--specifier="));
 const specifier = argument ? argument.slice("--specifier=".length) : "opencut-wasm";
 
@@ -21,6 +23,7 @@ const report = {
 	ticksPerSecond: null,
 	mediaTimeFromSeconds2: null,
 	roundToFrame: null,
+	transitionGraphChecks: 0,
 	error: null,
 };
 
@@ -34,6 +37,7 @@ try {
 	const wasm = await import(specifier);
 	report.exports = Object.keys(wasm).length;
 	report.ticksPerSecond = wasm.TICKS_PER_SECOND();
+	report.transitionGraphChecks = runTransitionGraphProbe(wasm).length;
 	report.mediaTimeFromSeconds2 = wasm.mediaTimeFromSeconds({ seconds: 2 });
 	report.roundToFrame = wasm.roundToFrame({
 		time: 12345,

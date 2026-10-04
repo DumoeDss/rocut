@@ -1,4 +1,5 @@
 import * as api from "./opencut_wasm_bg.js";
+import { runTransitionGraphProbe } from "./transition-graph.js";
 
 export async function runTransitionCompositorProbe() {
 	const { instance } = await WebAssembly.instantiateStreaming(
@@ -9,12 +10,13 @@ export async function runTransitionCompositorProbe() {
 	);
 	api.__wbg_set_wasm(instance.exports);
 	instance.exports.__wbindgen_start();
+	const checks = runTransitionGraphProbe(api);
 	await api.initializeGpu();
 	const query = new api.WasmRuntimeGraphicsQuery();
 	const backend = query.selectedBackend();
 	query.free();
 	const handle = api.createCompositor(64, 64);
-	const checks = [];
+
 	const source = (rgba) => {
 		const canvas = new OffscreenCanvas(1, 1);
 		canvas

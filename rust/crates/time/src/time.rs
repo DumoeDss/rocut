@@ -1,12 +1,25 @@
 mod frame_rate;
+mod strict_object;
 mod media_time;
 mod timecode;
 mod transition;
+mod transition_api;
+mod transition_graph;
 mod video_time;
 
 pub use transition::{
     ClipTransitionOptions, ClipTransitionPlan, ClipTransitionSample, ClipTransitionWindow,
     TransitionClip, TransitionPlanError, TransitionSource, plan_clip_transition,
+};
+
+pub use transition_api::{
+    ClipTransitionsEvaluation, ClipTransitionsOptions, EvaluatedTransitionLink,
+    evaluate_clip_transitions,
+};
+
+pub use transition_graph::{
+    PlannedTransitionLink, RejectedTransitionLink, TransitionGraphError,
+    TransitionGraphEvaluation, TransitionLink, evaluate_transition_graph,
 };
 
 pub use video_time::{

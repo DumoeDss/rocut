@@ -47,6 +47,13 @@ const routes = new Map([
 			readFileSync(join(root, "rust/wasm/pkg/opencut_wasm_bg.js")),
 		],
 	],
+	[
+		"/transition-graph.js",
+		[
+			"text/javascript",
+			readFileSync(join(root, "script/probe-transition-graph-browser.mjs")),
+		],
+	],
 	["/opencut_wasm_bg.wasm", ["application/wasm", wasm]],
 ]);
 const server = createServer((request, response) => {

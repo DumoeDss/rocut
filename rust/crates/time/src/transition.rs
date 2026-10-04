@@ -1,29 +1,43 @@
 //! Frame-aligned, non-ripple transitions between adjacent picture clips.
 //! The caller selects two clips from one visible video track. This module never
 //! changes their geometry or synthesizes missing source handles by freezing.
+use serde::{Deserialize, Serialize};
+
 use crate::video_time::resolve_video_source_time_offset;
 use crate::{FrameRate, MediaTime, VideoSourceTimeOptions};
 
 const MAX_SAFE_TICK: i64 = 9_007_199_254_740_991;
 
-#[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "wasm", derive(tsify_next::Tsify))]
+#[derive(Serialize, Deserialize, Clone, Copy, Debug)]
+#[serde(
+    tag = "type",
+    rename_all = "camelCase",
+    rename_all_fields = "camelCase",
+    deny_unknown_fields
+)]
 pub enum TransitionSource {
     Image,
     Video {
         trim_start: MediaTime,
         source_duration: MediaTime,
         playback_rate: f64,
+        #[serde(default)]
         freeze_frame: Option<MediaTime>,
     },
 }
 
-#[derive(Clone, Debug)]
+crate::strict_object::strict_object! {
+#[cfg_attr(feature = "wasm", derive(tsify_next::Tsify))]
+#[derive(Serialize, Clone, Debug)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct TransitionClip {
     pub id: String,
     pub track_id: String,
     pub start: MediaTime,
     pub duration: MediaTime,
     pub source: TransitionSource,
+}
 }
 
 #[derive(Clone, Debug)]
@@ -34,7 +48,9 @@ pub struct ClipTransitionOptions {
     pub frame_rate: FrameRate,
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "wasm", derive(tsify_next::Tsify))]
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, Eq, PartialEq)]
+#[serde(rename_all = "kebab-case")]
 pub enum TransitionPlanError {
     InvalidFrameRate,
     InvalidDuration,
@@ -49,14 +65,18 @@ pub enum TransitionPlanError {
     MissingIncomingHandle,
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "wasm", derive(tsify_next::Tsify))]
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, Eq, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct ClipTransitionWindow {
     pub start: MediaTime,
     pub cut: MediaTime,
     pub end: MediaTime,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[cfg_attr(feature = "wasm", derive(tsify_next::Tsify))]
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct ClipTransitionSample {
     /// Quantized project time used by both preview and export.
     pub time: MediaTime,

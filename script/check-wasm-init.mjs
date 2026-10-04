@@ -148,6 +148,7 @@ for (const leg of [
 		);
 	}
 	if (report.exports === 0) problems.push("the entry exported nothing");
+	if (report.transitionGraphChecks !== 9) problems.push("transition graph smoke checks did not complete");
 	if (!String(report.resolved).endsWith(leg.mustResolveTo)) {
 		problems.push(
 			`"${leg.specifier}" resolved to ${report.resolved}, not ${leg.mustResolveTo}`,
@@ -190,6 +191,7 @@ if (entryReports.length === 2) {
 		"ticksPerSecond",
 		"mediaTimeFromSeconds2",
 		"roundToFrame",
+		"transitionGraphChecks",
 	];
 	const disagreements = fields.filter(
 		(field) => a.report[field] !== b.report[field],
