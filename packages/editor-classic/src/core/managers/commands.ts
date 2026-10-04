@@ -25,6 +25,7 @@ import {
 } from "../../editor/transactions/opencut";
 import { cloneOpaque } from "../../editor/persistence/opaque-value";
 import { reconcileDraftTransitions } from "../../editor/transactions/opencut/media-policy";
+import { diffOpenCutUiDraft } from "../../editor/transactions/opencut/ui-operations";
 
 interface TransactionCommandHistoryEntry {
 	readonly kind: "transaction";
@@ -236,13 +237,17 @@ export class CommandManager {
 						revision: baseRevision,
 						idempotency: [],
 					});
-					const forwardOperations = diffOpenCutProjection({
+					const forwardOperations = diffOpenCutUiDraft({
 						before: baseDocument,
 						after: afterProjection,
+						beforeDraft: before,
+						afterDraft: after,
 					});
-					const inverseOperations = diffOpenCutProjection({
+					const inverseOperations = diffOpenCutUiDraft({
 						before: afterProjection,
 						after: undoProjection,
+						beforeDraft: after,
+						afterDraft: undoTarget,
 					});
 					return {
 						draft: after,
@@ -435,9 +440,11 @@ export class CommandManager {
 				});
 				return {
 					draft: rebased,
-					operations: diffOpenCutProjection({
+					operations: diffOpenCutUiDraft({
 						before: baseDocument,
 						after: projected,
+						beforeDraft: draft,
+						afterDraft: rebased,
 					}),
 					payload: undefined,
 				};

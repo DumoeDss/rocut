@@ -92,7 +92,7 @@ export function AudioVolumeLine({
 					{
 						trackId,
 						elementId: element.id,
-						updates: { params: { volume: nextVolume } },
+						updates: { params: { ...element.params, volume: nextVolume } },
 					},
 				],
 			});
@@ -102,7 +102,7 @@ export function AudioVolumeLine({
 				rightValue: nextVolume,
 			});
 		},
-		[editor, element.id, trackId],
+		[editor, element.id, element.params, trackId],
 	);
 
 	const finishDrag = useCallback(

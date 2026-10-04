@@ -18,6 +18,7 @@ import { probeTransitionPersistence } from './probe-transition-persistence.mjs';
 import { probeVideoSourceLifetime } from './probe-video-source-lifetime.mjs';
 import { probeTransitionRender } from './probe-transition-render.mjs';
 import { probeMediaImport } from './probe-media-import.mjs';
+import { probeAudioFormats } from './probe-audio-formats.mjs';
 
 // Run with the Elftia worktree's tsx loader. Never launch a substitute browser.
 const hostRoot = resolve(process.env.ELFTIA_WORKTREE ?? '');
@@ -98,7 +99,9 @@ try {
   conn.page.on('response',response=>{if(response.status()>=400 && response.url().includes('/api/')) evidence.requests.push({phase,status:response.status(),url:scrub(response.url())});});
   const audioFixture=join(work,'fixture-tone-a4.wav');
   execFileSync('ffmpeg',['-v','error','-n','-f','lavfi','-i','sine=frequency=440:duration=16','-ar','44100','-ac','1','-c:a','pcm_s16le',audioFixture],{windowsHide:true});
-  if (process.argv.includes('--media-import-only')) {
+  if (process.argv.includes('--audio-formats-only')) {
+    await probeAudioFormats({page,hostPage:conn.page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
+  } else if (process.argv.includes('--media-import-only')) {
     await probeMediaImport({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--transition-render-only') || process.argv.includes('--transition-authoring-only') || process.argv.includes('--transition-image-authoring-only')) {
     await probeTransitionRender({page,project:project.path,work,evidence,authorUi:!process.argv.includes('--transition-render-only'),mediaKind:process.argv.includes('--transition-image-authoring-only')?'image':'video',onPhase:next=>{phase=next;console.log('phase:',phase);}});

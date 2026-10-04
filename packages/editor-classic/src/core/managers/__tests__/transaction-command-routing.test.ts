@@ -441,7 +441,7 @@ describe("transaction-routed command manager", () => {
 		expect(harness.getScenes()[0].tracks.overlay[0].elements).toHaveLength(1);
 	});
 
-	test("mixed/private fake batches fail before mutation, save, revision, or history", async () => {
+	test("mixed/unregistered batches and unchanged snapshots fail before mutation or history", async () => {
 		const harness = await commandHarness();
 		const addTrack = new AddTrackCommand({ type: "text" });
 		const mixed = new BatchCommand([
@@ -482,13 +482,12 @@ describe("transaction-routed command manager", () => {
 		expect(unregisteredMutations).toBe(0);
 
 		const before = cloneOpaque(harness.getScenes()[0].tracks);
-		const privateAfter = cloneOpaque(before);
-		privateAfter.main.muted = true;
+		const unchanged = cloneOpaque(before);
 		await expect(
 			harness.command.execute({
 				command: new TracksSnapshotCommand({
 					before,
-					after: privateAfter,
+					after: unchanged,
 				}),
 			}),
 		).rejects.toThrow("non-empty");

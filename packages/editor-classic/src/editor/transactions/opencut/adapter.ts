@@ -93,6 +93,10 @@ function canonical(value: unknown, seen = new Set<object>()): string {
 	}
 }
 
+export function digestOpenCutProject(draft: OpenCutProjectDraft): string {
+	return canonical(encodeProject({ project: draft.project, retained: undefined }));
+}
+
 export function digestProjectRecord(record: ProjectRecord): string {
 	return canonical({
 		id: record.id,
