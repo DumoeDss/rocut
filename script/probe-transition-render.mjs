@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { isAbsolute, join, relative } from "node:path";
 import { expect } from "@playwright/test";
+import { probeTransitionAuthoring } from "./probe-transition-authoring.mjs";
 const run = (args) => execFileSync("ffmpeg", args, { windowsHide: true });
 function verifyColor(pixel, progress) {
 	assert(pixel[1] < 70, "Dissolve must not add green: " + pixel);
@@ -141,78 +142,67 @@ async function exportDissolve({ page, project }) {
 	return decoded;
 }
 
-// A deliberately seeded incoming relation: this validates installed scene rendering,
-// real seeks, reload and decoded exports, NOT a transition-authoring control.
+// Geometry is seeded only in the owned test project. With authorUi, the relation
+// is created through real controls; otherwise this is rendering-only acceptance.
 export async function probeTransitionRender({
 	page,
 	project,
 	work,
 	evidence,
 	onPhase,
+	authorUi = false,
+	mediaKind = "video",
 }) {
 	onPhase("transition render media import");
-	const source = join(work, "dissolve-source.mp4");
-	run([
-		"-v",
-		"error",
-		"-n",
-		"-f",
-		"lavfi",
-		"-i",
-		"color=c=red:s=640x360:r=30:d=8",
-		"-vf",
-		"drawbox=c=blue:t=fill:enable='gte(t,4)'",
-		"-c:v",
-		"libx264",
-		"-pix_fmt",
-		"yuv420p",
-		source,
-	]);
-	await page.getByLabel("Media", { exact: true }).click();
-	await page.locator('input[type="file"]').setInputFiles(source);
-	const list = page.getByLabel("Switch to list view", { exact: true });
-	if (await list.count()) await list.click();
-	await page
-		.getByLabel("Add dissolve-source.mp4 to timeline", { exact: true })
-		.click();
-	await expect
-		.poll(() =>
-			page.evaluate(
-				async () =>
-					(await (await fetch(new URL("api/record", location.href))).json())
-						.record.data.scenes[0].tracks.main.elements.length,
-			),
-		)
-		.toBe(1);
+	const filenames = mediaKind === "image" ? ["dissolve-red.png", "dissolve-blue.png"] : ["dissolve-source.mp4"];
+	for (const [index, name] of filenames.entries()) {
+		const source = join(work, name);
+		if (mediaKind === "image") run(["-v", "error", "-n", "-f", "lavfi", "-i", "color=c=" + (index ? "blue" : "red") + ":s=640x360", "-frames:v", "1", source]);
+		else run(["-v", "error", "-n", "-f", "lavfi", "-i", "color=c=red:s=640x360:r=30:d=8", "-vf", "drawbox=c=blue:t=fill:enable='gte(t,4)'", "-c:v", "libx264", "-pix_fmt", "yuv420p", source]);
+		await page.getByLabel("Media", { exact: true }).click();
+		await page.locator('input[type="file"]').setInputFiles(source);
+		const list = page.getByLabel("Switch to list view", { exact: true });
+		if (await list.count()) await list.click();
+		await page.getByLabel("Add " + name + " to timeline", { exact: true }).click();
+		await expect.poll(async () => { const tracks = await page.evaluate(async () =>
+			(await (await fetch(new URL("api/record", location.href))).json()).record.data.scenes[0].tracks,
+		); return [tracks.main, ...tracks.overlay].reduce((sum, track) => sum + track.elements.length, 0); }).toBe(index + 1);
+	}
 	await page.reload();
-	await page.evaluate(async () => {
+	await page.evaluate(async ({ authorUi, mediaKind }) => {
 		const url = new URL("api/record", location.href),
 			envelope = await (await fetch(url)).json();
 		const data = envelope.record.data,
-			track = data.scenes[0].tracks.main,
-			original = track.elements[0];
+			tracks = data.scenes[0].tracks,
+			track = tracks.main,
+			allClips = [track, ...tracks.overlay].flatMap((entry) => entry.elements),
+			original = mediaKind === "image" ? allClips.find((clip) => clip.name === "dissolve-red.png") : allClips[0],
+			second = allClips.find((clip) => clip.name === "dissolve-blue.png");
+		if (!original || (mediaKind === "image" && !second)) throw Error("Imported transition sources unavailable");
 		data.settings.fps = { numerator: 30, denominator: 1 };
 		const outgoing = {
 			...original,
 			startTime: 0,
 			duration: 360000,
 			trimStart: 0,
-			trimEnd: 600000,
+			trimEnd: mediaKind === "video" ? 600000 : 0,
 		};
 		const incoming = {
-			...original,
+			...(mediaKind === "image" ? second : original),
 			id: crypto.randomUUID(),
 			startTime: 360000,
 			duration: 240000,
-			trimStart: 600000,
-			trimEnd: 120000,
+			trimStart: mediaKind === "video" ? 600000 : 0,
+			trimEnd: mediaKind === "video" ? 120000 : 0,
 			transitionIn: {
 				kind: "cross-dissolve",
 				outgoingClipId: outgoing.id,
 				durationFrames: 30,
 			},
 		};
+		if (authorUi) delete incoming.transitionIn;
 		track.elements = [outgoing, incoming];
+		tracks.overlay = [];
 		const response = await fetch(url, {
 			method: "PUT",
 			headers: { "Content-Type": "application/json" },
@@ -220,8 +210,12 @@ export async function probeTransitionRender({
 		});
 		if (!response.ok)
 			throw Error("Failed to seed owned dissolve: " + response.status);
-	});
+	}, { authorUi, mediaKind });
 	await page.reload();
+	if (authorUi) {
+		evidence.transitionAuthoringScreenshot = join(work, "transition-authoring.png");
+		await probeTransitionAuthoring({ page, evidence, onPhase, preview, seek });
+	}
 	onPhase("transition preview source handles");
 	const samples = [];
 	for (const [timecode, progress] of [
@@ -236,7 +230,7 @@ export async function probeTransitionRender({
 		samples.push({ timecode, progress, pixels: await preview(page, progress) });
 	}
 	evidence.checks.push({
-		name: "installed scene renders same-source dissolve across both handles, cut and half-open end",
+		name: "installed scene renders " + mediaKind + " dissolve across the cut and half-open end",
 		pass: true,
 		samples,
 	});
@@ -296,5 +290,5 @@ export async function probeTransitionRender({
 		pass: true,
 		decoded: await exportDissolve({ page, project }),
 	});
-	evidence.notTransitionAuthoringUiAcceptance = true;
+	evidence.notTransitionAuthoringUiAcceptance = !authorUi;
 }

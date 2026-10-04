@@ -15,6 +15,7 @@ import { TextView } from "../../../../text/components/assets-view";
 import { EffectsView } from "../../../../effects/components/assets-view";
 import { AdjustmentAssetsView } from "../../../../effects/components/adjustment-assets-view";
 import { MotionTextAssetsView } from "../../../../motion-text/components/assets-view";
+import { TransitionsView } from "../../../../transitions/transitions-view";
 
 export function AssetsPanel() {
 	const { activeTab } = useAssetsPanelStore();
@@ -26,11 +27,7 @@ export function AssetsPanel() {
 		"motion-text": <MotionTextAssetsView />,
 		stickers: <StickersView />,
 		effects: <EffectsView />,
-		transitions: (
-			<div className="text-muted-foreground p-4">
-				Transitions view coming soon...
-			</div>
-		),
+		transitions: <TransitionsView />,
 		captions: <Captions />,
 		adjustment: <AdjustmentAssetsView />,
 		settings: <SettingsView />,

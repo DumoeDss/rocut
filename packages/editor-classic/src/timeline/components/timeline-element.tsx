@@ -583,6 +583,8 @@ function ElementInner({
 					<button
 						type="button"
 						tabIndex={-1}
+						data-testid="timeline-clip"
+						data-element-id={element.id}
 						className="absolute inset-0 size-full flex flex-col"
 						onClick={(event) => onElementClick({ event, element })}
 						onMouseDown={(event) => onElementMouseDown({ event, element })}

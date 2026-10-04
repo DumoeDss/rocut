@@ -22,6 +22,7 @@ import {
 	MusicNote03Icon,
 	MagicWand05Icon,
 	DashboardSpeed02Icon,
+	TransitionRightIcon,
 } from "@hugeicons/core-free-icons";
 import { ElementParamsTab } from "./components/element-params-tab";
 import {
@@ -34,6 +35,7 @@ import { SpeedTab } from "../../../../speed/components/speed-tab";
 import { GraphicTab } from "../../../../graphics/components/graphic-tab";
 import { OcShapesIcon } from "../../../icons";
 import { MotionTextPropertiesTab } from "../../../../motion-text/components/properties-tab";
+import { TransitionProperties } from "../../../../transitions/transition-properties";
 
 const TRANSFORM_PARAM_KEYS = [
 	"transform.positionX",
@@ -245,6 +247,14 @@ function getTextConfig({
 	};
 }
 
+function buildTransitionTab({ element }: { element: VideoElement | ImageElement }): PropertiesTabDef {
+	return {
+		id: "transition", label: "Transition",
+		icon: <HugeiconsIcon icon={TransitionRightIcon} size={16} />,
+		content: ({ trackId }) => <TransitionProperties key={element.id} element={element} trackId={trackId} />,
+	};
+}
+
 function getVideoConfig({
 	element,
 	mediaAsset,
@@ -259,6 +269,7 @@ function getVideoConfig({
 			buildTransformTab({ element }),
 			...(showAudioTab ? [buildAudioTab({ element })] : []),
 			buildSpeedTab({ element }),
+			buildTransitionTab({ element }),
 			buildBlendingTab({ element }),
 			buildMasksTab({ element }),
 			buildClipEffectsTab({ element }),
@@ -275,6 +286,7 @@ function getImageConfig({
 		defaultTab: "transform",
 		tabs: [
 			buildTransformTab({ element }),
+			buildTransitionTab({ element }),
 			buildBlendingTab({ element }),
 			buildMasksTab({ element }),
 			buildClipEffectsTab({ element }),
