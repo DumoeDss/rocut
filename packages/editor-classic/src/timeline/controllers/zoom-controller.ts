@@ -4,7 +4,10 @@ import { timelineTimeToPixels } from "../pixel-utils";
 import { TIMELINE_ZOOM_MAX } from "../scale";
 import { zoomToSlider } from "../zoom-utils";
 import type { MediaTime } from "../../wasm";
-import type { SessionResources, TimerHandle } from "../../editor/session/resources";
+import type {
+	SessionResources,
+	TimerHandle,
+} from "../../editor/session/resources";
 
 type ZoomUpdater = number | ((prev: number) => number);
 
@@ -14,6 +17,9 @@ export interface ZoomConfig {
 	getTracksScrollEl: () => HTMLDivElement | null;
 	getRulerScrollEl: () => HTMLDivElement | null;
 	getCurrentPlayheadTime: () => MediaTime;
+	getProjectId: () => string | null;
+	getIsPlaying: () => boolean;
+	subscribePlayback: (listener: () => void) => () => void;
 	seek: (time: MediaTime) => void;
 	setTimelineViewState: (viewState: {
 		zoomLevel: number;
@@ -50,6 +56,10 @@ export class ZoomController {
 	private prePlayheadAnchorScrollLeft = 0;
 	private isInPlayheadAnchorMode = false;
 	private scrollSaveTimeout: TimerHandle | null = null;
+	private pendingScrollSave: {
+		projectId: string;
+		viewState: Parameters<ZoomConfig["setTimelineViewState"]>[0];
+	} | null = null;
 
 	constructor(deps: { configRef: ZoomConfigRef; initialZoom?: number }) {
 		this.configRef = deps.configRef;
@@ -85,6 +95,19 @@ export class ZoomController {
 			this.scrollSaveTimeout.cancel();
 			this.scrollSaveTimeout = null;
 		}
+		this.flushScrollPosition();
+	}
+
+	bindPlaybackPersistence(): () => void {
+		return this.config.subscribePlayback(() => {
+			if (!this.config.getIsPlaying() && this.pendingScrollSave) {
+				if (this.pendingScrollSave.projectId !== this.config.getProjectId()) {
+					this.pendingScrollSave = null;
+					return;
+				}
+				this.saveScrollPosition();
+			}
+		});
 	}
 
 	setZoomLevel(zoomLevelOrUpdater: ZoomUpdater): void {
@@ -219,20 +242,41 @@ export class ZoomController {
 	saveScrollPosition(): void {
 		if (this.scrollSaveTimeout) {
 			this.scrollSaveTimeout.cancel();
+			this.scrollSaveTimeout = null;
 		}
+		const scrollElement = this.config.getTracksScrollEl();
+		const projectId = this.config.getProjectId();
+		if (!scrollElement || !projectId) return;
+		this.pendingScrollSave = {
+			projectId,
+			viewState: {
+				zoomLevel: this.zoomLevelValue,
+				scrollLeft: scrollElement.scrollLeft,
+				playheadTime: this.config.getCurrentPlayheadTime(),
+			},
+		};
+		// Following the playhead is animation, not a project edit. Persist at
+		// pause/unmount rather than cloning and uploading the document per scroll.
+		if (this.config.getIsPlaying()) return;
 
 		this.scrollSaveTimeout = this.config.resources.setTimeout({
 			handler: () => {
-				const scrollElement = this.config.getTracksScrollEl();
-				if (!scrollElement) return;
-
-				this.config.setTimelineViewState({
-					zoomLevel: this.zoomLevelValue,
-					scrollLeft: scrollElement.scrollLeft,
-					playheadTime: this.config.getCurrentPlayheadTime(),
-				});
+				this.scrollSaveTimeout = null;
+				if (!this.config.getIsPlaying()) this.flushScrollPosition();
 			},
 			ms: 300,
+		});
+	}
+
+	private flushScrollPosition(): void {
+		const pending = this.pendingScrollSave;
+		this.pendingScrollSave = null;
+		if (!pending || pending.projectId !== this.config.getProjectId()) return;
+		const scrollElement = this.config.getTracksScrollEl();
+		this.config.setTimelineViewState({
+			zoomLevel: this.zoomLevelValue,
+			scrollLeft: scrollElement?.scrollLeft ?? pending.viewState.scrollLeft,
+			playheadTime: this.config.getCurrentPlayheadTime(),
 		});
 	}
 

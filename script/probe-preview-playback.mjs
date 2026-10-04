@@ -120,6 +120,17 @@ export async function probePreviewPlayback({
 			};
 		});
 	let started;
+	result.projectWrites = [];
+	const onRequest = (request) => {
+		if (
+			started !== undefined &&
+			request.method() === "PUT" &&
+			request.url().endsWith("/api/record")
+		) {
+			result.projectWrites.push({ elapsedMs: performance.now() - started });
+		}
+	};
+	hostPage.on("request", onRequest);
 	try {
 		onPhase("F04 full continuous playback with real audio");
 		await page.getByLabel("Play preview", { exact: true }).click();
@@ -158,7 +169,16 @@ export async function probePreviewPlayback({
 			await new Promise((resolve) => setTimeout(resolve, 1000));
 		}
 		result.wallMs = performance.now() - started;
+		result.steadyPlaybackWrites = result.projectWrites.filter(
+			(write) =>
+				write.elapsedMs >= 5000 && write.elapsedMs < result.wallMs - 2000,
+		);
 		persist();
+		assert.equal(
+			result.steadyPlaybackWrites.length,
+			0,
+			"Playback-follow scrolling must not repeatedly upload the whole project",
+		);
 		assert(
 			result.clocks.at(-1).seconds >= 179.9,
 			"Playback did not reach the complete F04 ending",
@@ -235,6 +255,7 @@ export async function probePreviewPlayback({
 		);
 		result.pass = true;
 	} finally {
+		hostPage.off("request", onRequest);
 		const pause = page.getByLabel("Pause preview", { exact: true });
 		if (await pause.count()) await pause.click();
 		await page.evaluate(() => {

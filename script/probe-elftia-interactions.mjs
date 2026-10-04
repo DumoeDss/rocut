@@ -30,6 +30,7 @@ import { probeVideoProperties } from './probe-video-properties.mjs';
 import { probeGraphPresets } from './probe-graph-presets.mjs';
 import { probeMediaDrop } from './probe-media-drop.mjs';
 import { probePreviewPlayback } from './probe-preview-playback.mjs';
+import { probePlaybackViewState } from './probe-playback-view-state.mjs';
 
 // Run with the Elftia worktree's tsx loader. Never launch a substitute browser.
 const hostRoot = resolve(process.env.ELFTIA_WORKTREE ?? '');
@@ -146,6 +147,7 @@ try {
   } else if (process.argv.includes('--motion-playback-only')) {
     await probeMotionDuration({page,hostPage:conn.page,work,evidence,includeVideo:true,onPhase:next=>{phase=next;console.log('phase:',phase);}});
     await probePreviewPlayback({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
+    await probePlaybackViewState({page,hostPage:conn.page,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--motion-duration-only') || process.argv.includes('--motion-seek-only')) {
     await probeMotionDuration({page,hostPage:conn.page,work,evidence,measureSeek:process.argv.includes('--motion-seek-only'),onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--media-drop-only')) {
