@@ -55,6 +55,60 @@ function sameJson(left: unknown, right: unknown): boolean {
 	return JSON.stringify(left) === JSON.stringify(right);
 }
 
+/** Validate both file-envelope versions before deciding to decode or migrate. */
+function assertReadableRecordVersion(record: ProjectRecord): void {
+	const supported = CURRENT_PROJECT_VERSION;
+	if (!Number.isInteger(record.schemaVersion) || record.schemaVersion < 0) {
+		throw new Error(
+			"Invalid project schema version; refusing to modify the project",
+		);
+	}
+	if (record.schemaVersion > supported) {
+		throw new Error(
+			"Project schema " +
+				record.schemaVersion +
+				" is newer than supported schema " +
+				supported +
+				"; refusing a downgrade write",
+		);
+	}
+	if (
+		typeof record.data !== "object" ||
+		record.data === null ||
+		Array.isArray(record.data)
+	) {
+		throw new Error("The persisted project payload is not migratable");
+	}
+	const payloadVersion =
+		"version" in record.data ? record.data.version : undefined;
+	// Early legacy payloads have no explicit version; their envelope remains
+	// authoritative. An explicit version must not be silently overwritten.
+	if (payloadVersion === undefined) return;
+	if (
+		typeof payloadVersion !== "number" ||
+		!Number.isInteger(payloadVersion) ||
+		payloadVersion < 0
+	) {
+		throw new Error(
+			"Invalid project payload version; refusing to modify the project",
+		);
+	}
+	if (payloadVersion > supported) {
+		throw new Error(
+			"Project payload schema " +
+				payloadVersion +
+				" is newer than supported schema " +
+				supported +
+				"; refusing a downgrade write",
+		);
+	}
+	if (payloadVersion !== record.schemaVersion) {
+		throw new Error(
+			"Project payload version does not match its record schema; refusing to modify the project",
+		);
+	}
+}
+
 /**
  * Bring a persisted record forward through the published transform chain,
  * sequencing exactly as `FilesystemProjectStore.runMigration` does: transform
@@ -65,19 +119,8 @@ export async function migrateEditorRecord(args: {
 	readonly migrations: readonly StorageMigration[];
 }): Promise<ProjectRecord> {
 	const to = CURRENT_PROJECT_VERSION;
-	if (args.record.schemaVersion > to) {
-		throw new Error(
-			`Project schema ${args.record.schemaVersion} is newer than supported schema ${to}; refusing a downgrade write`,
-		);
-	}
+	assertReadableRecordVersion(args.record);
 	if (args.record.schemaVersion === to) return args.record;
-	if (
-		typeof args.record.data !== "object" ||
-		args.record.data === null ||
-		Array.isArray(args.record.data)
-	) {
-		throw new Error("The persisted project payload is not migratable");
-	}
 	let current = args.record.schemaVersion;
 	let project: Record<string, unknown> = {
 		...(args.record.data as Record<string, unknown>),
@@ -91,9 +134,7 @@ export async function migrateEditorRecord(args: {
 			project,
 		});
 		if (result.skipped) {
-			throw new Error(
-				"A published transform refused a required schema step",
-			);
+			throw new Error("A published transform refused a required schema step");
 		}
 		project = result.project;
 		current = migration.to;
@@ -135,11 +176,7 @@ export async function prepareEditorProjectRecord(args: {
 	if (loaded === null) {
 		throw new Error("The project summary has no record behind it");
 	}
-	if (loaded.schemaVersion > CURRENT_PROJECT_VERSION) {
-		throw new Error(
-			`Project schema ${loaded.schemaVersion} is newer than supported schema ${CURRENT_PROJECT_VERSION}; refusing a downgrade write`,
-		);
-	}
+	assertReadableRecordVersion(loaded);
 	if (loaded.schemaVersion === CURRENT_PROJECT_VERSION) return loaded;
 	const source = args.migrationSource ?? defaultMigrationSource;
 	const { migrations } = await source();

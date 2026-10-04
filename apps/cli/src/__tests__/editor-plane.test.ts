@@ -175,6 +175,62 @@ describe("editor plane: seed and reopen (the unification's file contract)", () =
 });
 
 describe("editor plane: migration walk", () => {
+	for (const [outer, inner, message] of [
+		[32, 33, "newer than supported"],
+		[31, 33, "newer than supported"],
+		[32, 31, "does not match"],
+		[31, 32, "does not match"],
+		[32, "32", "Invalid project payload version"],
+		[32.5, 32.5, "Invalid project schema version"],
+	] as const) {
+		test(
+			"rejects inconsistent version fields " +
+				outer +
+				"/" +
+				inner +
+				" before migration or writes",
+			async () => {
+				const root = await tempRoot();
+				const store = new FileProjectStore({
+					root,
+					schemaVersion: CURRENT_PROJECT_VERSION,
+				});
+				const id = projectId("inconsistent-version");
+				const record: ProjectRecord = {
+					id,
+					schemaVersion: outer,
+					data: { id, version: inner, providerExtension: { preserve: true } },
+				};
+				await store.save({
+					record,
+					summary: {
+						id,
+						name: "Inconsistent",
+						createdAt: "2026-01-01T00:00:00.000Z",
+						updatedAt: "2026-01-01T00:00:00.000Z",
+					},
+				});
+				const before = await readFile(path.join(root, "project.json"));
+				let migrationCalls = 0;
+				await expect(
+					prepareEditorProjectRecord({
+						store,
+						projectId: id,
+						name: "Do not replace",
+						migrationSource: async () => {
+							migrationCalls++;
+							return { migrations: [] };
+						},
+					}),
+				).rejects.toThrow(message);
+				expect(migrationCalls).toBe(0);
+				expect(await readFile(path.join(root, "project.json"))).toEqual(before);
+				await expect(
+					migrateEditorRecord({ record, migrations: [] }),
+				).rejects.toThrow(message);
+			},
+		);
+	}
 	test("a newer project schema is refused without a downgrade write", async () => {
 		const root = await tempRoot();
 		const store = new FileProjectStore({
