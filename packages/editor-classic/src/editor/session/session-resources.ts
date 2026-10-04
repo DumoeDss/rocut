@@ -38,10 +38,10 @@ import type {
 	GpuResourceHandle,
 	ResourceClassReport,
 	SessionResourceClass,
-	SessionResourceRef,
 	SessionResources,
 	TimerHandle,
 } from "./resources";
+import { ResourceLedger } from "./resource-ledger";
 
 interface TrackedResource {
 	readonly resourceId: ResourceId;
@@ -168,9 +168,8 @@ export function createSessionResources(args: {
 	const { runtimeResources, runtimeGpu, nextId } = args;
 
 	/** Acquisition order. Release walks it backwards. */
-	const acquired: TrackedResource[] = [];
+	const ledger = new ResourceLedger<TrackedResource>();
 	const counts = emptyCounts();
-	const releaseOrder: SessionResourceRef[] = [];
 	/** Every GPU handle this session was told about, released or not. */
 	const trackedGpuHandles = new Set<GpuHandleId>();
 	const gpuOwner = {};
@@ -195,7 +194,7 @@ export function createSessionResources(args: {
 			releaseStarted: false,
 			released: false,
 		};
-		acquired.push(entry);
+		ledger.track(entry);
 		counts[args2.resourceClass].created += 1;
 		return entry;
 	}
@@ -209,10 +208,7 @@ export function createSessionResources(args: {
 				await entry.release();
 				entry.released = true;
 				counts[entry.resourceClass].released += 1;
-				releaseOrder.push({
-					resourceId: entry.resourceId,
-					resourceClass: entry.resourceClass,
-				});
+				ledger.retire(entry);
 			} catch (cause) {
 				const error = new SessionResourceReleaseError({
 					resourceClass: entry.resourceClass,
@@ -243,6 +239,7 @@ export function createSessionResources(args: {
 		activityOnly: boolean;
 	}): Promise<void> {
 		const errors: unknown[] = [];
+		const acquired = ledger.entries();
 		for (let index = acquired.length - 1; index >= 0; index -= 1) {
 			const entry = acquired[index];
 			if (!entry) continue;
@@ -280,7 +277,8 @@ export function createSessionResources(args: {
 			: ("runtime" as const);
 		const live = runtimeGpu.liveHandles();
 		const releasedHandles = new Set(
-			acquired
+			ledger
+				.entries()
 				.filter((e) => e.resourceClass === "gpuResource" && e.released)
 				.map((e) => e.gpuHandle)
 				.filter((h): h is GpuHandleId => h !== undefined),
@@ -321,7 +319,7 @@ export function createSessionResources(args: {
 			audioContext: per.audioContext,
 			objectUrl: per.objectUrl,
 			gpuResource: per.gpuResource,
-			releaseOrder: [...releaseOrder],
+			...ledger.releaseHistory(),
 			gpuReconciliation: reconcileGpu(),
 		};
 	}

@@ -102,8 +102,10 @@ export interface DisposalReport {
 	readonly audioContext: ResourceClassReport;
 	readonly objectUrl: ResourceClassReport;
 	readonly gpuResource: ResourceClassReport;
-	/** What was actually released, in the order it was released. */
+	/** Most recent releases in order; lifetime counters above remain exact. */
 	readonly releaseOrder: readonly SessionResourceRef[];
+	/** Older diagnostic entries omitted from the bounded release history. */
+	readonly releaseOrderOmitted?: number;
 	/**
 	 * The registry checked against what the runtime still holds. This is what
 	 * makes the un-mediated GPU class measurable rather than merely tracked.
@@ -120,9 +122,7 @@ export interface DisposalReport {
 export interface SessionResources {
 	setTimeout(args: { handler: () => void; ms: number }): TimerHandle;
 	setInterval(args: { handler: () => void; ms: number }): TimerHandle;
-	requestAnimationFrame(args: {
-		handler: (time: number) => void;
-	}): TimerHandle;
+	requestAnimationFrame(args: { handler: (time: number) => void }): TimerHandle;
 
 	createWorker(args: { request: WorkerRequest }): WorkerHandle;
 	createAudioContext(args: {

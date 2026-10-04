@@ -11,7 +11,16 @@ export async function probeMotionDuration({
 	evidence,
 	onPhase,
 	measureSeek = false,
+	fixture = "F04",
 }) {
+	assert(["F04", "F05"].includes(fixture));
+	assert(
+		!measureSeek || fixture === "F04",
+		"F04 seek measurement requires its own fixture",
+	);
+	const cueCount = fixture === "F05" ? 600 : 120;
+	const durationSeconds = fixture === "F05" ? 480 : 180;
+	const cueStepCentiseconds = fixture === "F05" ? 80 : 150;
 	const readData = () =>
 		page.evaluate(
 			async () =>
@@ -28,8 +37,8 @@ export async function probeMotionDuration({
 	await page
 		.getByRole("option", { name: "LRC timestamps", exact: true })
 		.click();
-	const source = Array.from({ length: 120 }, (_, index) => {
-		const centiseconds = index * 150;
+	const source = Array.from({ length: cueCount }, (_, index) => {
+		const centiseconds = index * cueStepCentiseconds;
 		return (
 			"[" +
 			String(Math.floor(centiseconds / 6000)).padStart(2, "0") +
@@ -70,7 +79,7 @@ export async function probeMotionDuration({
 	check(
 		"empty, nonpositive and sub-frame durations produce no project changes",
 	);
-	await duration.fill("180");
+	await duration.fill(String(durationSeconds));
 	await expect(page.locator("#motion-text-message")).toHaveCount(0);
 	await page.screenshot({ path: join(work, "long-lyrics-input.png") });
 	await add.click();
@@ -81,11 +90,11 @@ export async function probeMotionDuration({
 		.toBe(1);
 	const created = await readData();
 	const sequence = created.motionTextSequences[0];
-	assert.equal(sequence.duration, 180 * 120000);
-	assert.equal(sequence.cues.length, 120);
+	assert.equal(sequence.duration, durationSeconds * 120000);
+	assert.equal(sequence.cues.length, cueCount);
 	assert.deepEqual(
 		sequence.cues.map((cue) => cue.startTime),
-		Array.from({ length: 120 }, (_, i) => i * 180000),
+		Array.from({ length: cueCount }, (_, i) => i * cueStepCentiseconds * 1200),
 	);
 	const clips = [
 		created.scenes[0].tracks.main,
@@ -98,7 +107,10 @@ export async function probeMotionDuration({
 		sequence.duration,
 	);
 	check(
-		"UI creates the full three-minute, 120-cue LRC sequence with exact timestamps",
+		"UI creates the complete " +
+			fixture +
+			" LRC sequence with exact timestamps",
+		{ cueCount, durationSeconds },
 	);
 	await page.locator('[data-testid="timeline-clip"]').first().click();
 	await page.keyboard.press("Control+z");
@@ -164,4 +176,5 @@ export async function probeMotionDuration({
 		check("F04 contains actual 720p video/audio under the full lyric sequence");
 		await probePreviewSeek({ page, hostPage, work, evidence, onPhase });
 	}
+	return { created, readData };
 }
