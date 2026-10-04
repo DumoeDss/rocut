@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { join } from "node:path";
 import { expect } from "@playwright/test";
+import { createScreencastCapture } from "./probe-preview-screencast.mjs";
+import { traceVideoDecoder } from "./probe-video-decoder-trace.mjs";
 
 function timecode(frame) {
 	const seconds = Math.floor(frame / 30);
@@ -16,7 +18,8 @@ function timecode(frame) {
 
 // WebGPU discards its drawing buffer after presentation. Capture the displayed
 // canvas through Chromium, not canvas.drawImage(), which reads transparent pixels.
-// Times include screenshot/decode overhead: they are conservative upper bounds.
+// The default screenshot observer includes transfer/decode overhead. The opt-in
+// screencast observer records compositor frame-swap timestamps independently.
 export async function probePreviewSeek({
 	page,
 	hostPage,
@@ -25,14 +28,42 @@ export async function probePreviewSeek({
 	onPhase,
 }) {
 	const cdp = await hostPage.context().newCDPSession(hostPage);
+	const observer = { active: null };
+	let restoreDecoder;
 	try {
-		return await measurePreviewSeek({ page, work, evidence, onPhase, cdp });
+		const decoderHint = process.env.ROCUT_DIAGNOSTIC_DECODER_HINT ?? null;
+		assert([null, "prefer-software", "prefer-hardware"].includes(decoderHint));
+		if (process.env.ROCUT_TRACE_VIDEO_DECODER === "1" || decoderHint)
+			restoreDecoder = await traceVideoDecoder(page, decoderHint);
+		return await measurePreviewSeek({
+			page,
+			work,
+			evidence,
+			onPhase,
+			cdp,
+			observer,
+		});
 	} finally {
-		await cdp.detach();
+		try {
+			await observer.active?.close();
+		} finally {
+			try {
+				await restoreDecoder?.();
+			} finally {
+				await cdp.detach();
+			}
+		}
 	}
 }
 
-async function measurePreviewSeek({ page, work, evidence, onPhase, cdp }) {
+async function measurePreviewSeek({
+	page,
+	work,
+	evidence,
+	onPhase,
+	cdp,
+	observer,
+}) {
 	onPhase("F04 visible-frame reference sweep");
 	const dimensions = await page.evaluate(
 		async () =>
@@ -56,6 +87,7 @@ async function measurePreviewSeek({ page, work, evidence, onPhase, cdp }) {
 		window.__rocutVisibleSeekProbe = {
 			target: null,
 			start: null,
+			startEpoch: null,
 			trusted: false,
 		};
 		document.addEventListener(
@@ -68,78 +100,95 @@ async function measurePreviewSeek({ page, work, evidence, onPhase, cdp }) {
 					event.target.value === state.target
 				) {
 					state.start = performance.now();
+					state.startEpoch = performance.timeOrigin + state.start;
 					state.trusted = event.isTrusted;
 				}
 			},
 			true,
 		);
 	});
-	const capture = async () => {
-		const captureStarted = performance.now();
-		const screenshot = await cdp.send("Page.captureScreenshot", {
-			format: "png",
-			fromSurface: true,
-			captureBeyondViewport: false,
-			optimizeForSpeed: true,
-			clip: {
-				x: displayed.x,
-				y: displayed.y,
-				width: displayed.width,
-				height: displayed.height,
-				scale: 1,
-			},
-		});
-		const captureMs = performance.now() - captureStarted;
-		const decodeStarted = performance.now();
-		const png = Buffer.from(screenshot.data, "base64");
-		const result = await page.evaluate(async (bytes) => {
-			const image = await createImageBitmap(
-				new Blob([new Uint8Array(bytes)], { type: "image/png" }),
-			);
-			const sample = new OffscreenCanvas(160, 90);
-			const context = sample.getContext("2d");
-			context.drawImage(image, 0, 0, 160, 90);
-			image.close();
-			const pixels = context.getImageData(0, 0, 160, 90).data;
-			let hash = 2166136261,
-				light = 0,
-				blue = 0;
-			for (let i = 0; i < pixels.length; i++)
-				hash = Math.imul(hash ^ pixels[i], 16777619) >>> 0;
-			for (let i = 0; i < pixels.length; i += 4) {
-				if (pixels[i] > 160 && pixels[i + 1] > 160 && pixels[i + 2] > 160)
-					light++;
-				if (pixels[i + 2] > 160 && pixels[i] < 100 && pixels[i + 1] < 100)
-					blue++;
-			}
-			const state = window.__rocutVisibleSeekProbe;
+	const observerMode = process.env.ROCUT_SEEK_OBSERVER ?? "screenshot";
+	assert(["screenshot", "screencast"].includes(observerMode));
+	if (observerMode === "screencast")
+		observer.active = await createScreencastCapture({ page, cdp, displayed });
+	const capture =
+		observer.active?.capture ??
+		(async () => {
+			const captureStarted = performance.now();
+			const screenshot = await cdp.send("Page.captureScreenshot", {
+				format: "png",
+				fromSurface: true,
+				captureBeyondViewport: false,
+				optimizeForSpeed: true,
+				clip: {
+					x: displayed.x,
+					y: displayed.y,
+					width: displayed.width,
+					height: displayed.height,
+					scale: 1,
+				},
+			});
+			const captureMs = performance.now() - captureStarted;
+			const decodeStarted = performance.now();
+			const png = Buffer.from(screenshot.data, "base64");
+			const result = await page.evaluate(async (bytes) => {
+				const image = await createImageBitmap(
+					new Blob([new Uint8Array(bytes)], { type: "image/png" }),
+				);
+				const sample = new OffscreenCanvas(160, 90);
+				const context = sample.getContext("2d");
+				context.drawImage(image, 0, 0, 160, 90);
+				image.close();
+				const pixels = context.getImageData(0, 0, 160, 90).data;
+				let hash = 2166136261,
+					light = 0,
+					blue = 0;
+				for (let i = 0; i < pixels.length; i++)
+					hash = Math.imul(hash ^ pixels[i], 16777619) >>> 0;
+				for (let i = 0; i < pixels.length; i += 4) {
+					if (pixels[i] > 160 && pixels[i + 1] > 160 && pixels[i + 2] > 160)
+						light++;
+					if (pixels[i + 2] > 160 && pixels[i] < 100 && pixels[i + 1] < 100)
+						blue++;
+				}
+				const state = window.__rocutVisibleSeekProbe;
+				return {
+					hash: hash.toString(16).padStart(8, "0"),
+					light,
+					blue,
+					milliseconds:
+						state.start === null ? null : performance.now() - state.start,
+					trusted: state.trusted,
+					decoderTrace: state.decoderTrace,
+				};
+			}, Array.from(png));
 			return {
-				hash: hash.toString(16).padStart(8, "0"),
-				light,
-				blue,
-				milliseconds:
-					state.start === null ? null : performance.now() - state.start,
-				trusted: state.trusted,
+				...result,
+				captureMs,
+				decodeMs: performance.now() - decodeStarted,
 			};
-		}, Array.from(png));
-		return { ...result, captureMs, decodeMs: performance.now() - decodeStarted };
-	};
+		});
 	const seek = async (target, expected) => {
 		const before = (await capture()).hash;
 		await page.getByLabel("Edit playhead time", { exact: true }).click();
 		const input = page.getByLabel("Playhead time", { exact: true });
 		await input.fill(target);
 		await page.evaluate((target) => {
-			window.__rocutVisibleSeekProbe = { target, start: null, trusted: false };
+			window.__rocutVisibleSeekProbe = {
+				target,
+				start: null,
+				startEpoch: null,
+				trusted: false,
+			};
 		}, target);
 		await input.press("Enter");
-		const pressReturnMs = await page.evaluate(() =>
-			performance.now() - window.__rocutVisibleSeekProbe.start,
+		const pressReturnMs = await page.evaluate(
+			() => performance.now() - window.__rocutVisibleSeekProbe.start,
 		);
 		const observations = [];
 		let previous = null,
 			stable = 0;
-		for (let attempt = 0; attempt < 30; attempt++) {
+		for (let attempt = 0; attempt < 150; attempt++) {
 			const current = await capture();
 			observations.push(current);
 			assert(
@@ -151,6 +200,7 @@ async function measurePreviewSeek({ page, work, evidence, onPhase, cdp }) {
 				"Requested visible frame did not arrive: " + target,
 			);
 			const hasScene = current.light > 20 && current.blue > 1000;
+			if (current.milliseconds < 0) continue; // A frame presented before this input.
 			if (expected && hasScene && current.hash === expected) {
 				await expect(
 					page.getByLabel("Edit playhead time", { exact: true }),
@@ -198,14 +248,20 @@ async function measurePreviewSeek({ page, work, evidence, onPhase, cdp }) {
 		p95,
 		maximum: ordered.at(-1),
 		budgetMs: 250,
+		observerMode,
+		decoderInstrumented: process.env.ROCUT_TRACE_VIDEO_DECODER === "1",
+		diagnosticDecoderHint: process.env.ROCUT_DIAGNOSTIC_DECODER_HINT ?? null,
+		acceptanceEligible: !process.env.ROCUT_DIAGNOSTIC_DECODER_HINT,
 		measurement:
-			"trusted Enter to matching visible Chromium screenshot; includes capture, transfer and decode overhead",
+			observerMode === "screencast"
+				? "trusted Enter epoch to matching Chromium screencast frame-swap epoch; observer overhead recorded separately"
+				: "trusted Enter to matching visible Chromium screenshot; includes capture, transfer and decode overhead",
 		pass: p95 <= 250,
 	};
 	evidence.checks.push(result);
 	await page.screenshot({ path: join(work, "f04-measured-seek.png") });
 	assert(
 		p95 <= 250,
-		"F04 visible-frame seek upper-bound p95 exceeds 250 ms: " + p95,
+		"F04 visible-frame seek p95 exceeds 250 ms (" + observerMode + "): " + p95,
 	);
 }

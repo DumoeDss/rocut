@@ -34,7 +34,7 @@ const conn = await connect({mode:'attach', port:Number(process.env.ELFTIA_CLI_DE
 const evidenceRoot = join(hostRoot, '.tmp-rocut-e2e');
 mkdirSync(evidenceRoot, {recursive:true});
 const work = mkdtempSync(join(evidenceRoot, 'live-'));
-const evidence = {kind:'real-elftia', fixtureSetup:'host preload API, not project-creation UI acceptance', checks:[], errors:[], requests:[]};
+const evidence = {kind:'real-elftia', fixtureSetup:'host preload API, not project-creation UI acceptance', acceptanceEligible:!process.env.ROCUT_DIAGNOSTIC_DECODER_HINT, checks:[], errors:[], requests:[]};
 const scrub = value => String(value).replace(/(https?:\/\/(?:127\.0\.0\.1|localhost):\d+)\/[^\s/]+/g,'$1/[redacted]');
 let phase = 'ownership';
 let editor;
@@ -164,6 +164,6 @@ try {
     await cdp.detach();
   }
   writeFileSync(join(work,'evidence.json'),JSON.stringify(evidence,null,2));
-  console.log(JSON.stringify({work,passed:evidence.passed,checks:evidence.checks.length,phase}));
+  console.log(JSON.stringify({work,passed:evidence.passed,acceptanceEligible:evidence.acceptanceEligible,checks:evidence.checks.length,phase}));
   await conn.close();
 }
