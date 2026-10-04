@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { Popover, PopoverContent } from "../../../components/ui/popover";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../components/ui/tabs";
+import {
+	Tabs,
+	TabsContent,
+	TabsList,
+	TabsTrigger,
+} from "../../../components/ui/tabs";
 import { Button } from "../../../components/ui/button";
 import { cn } from "../../../utils/ui";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -106,7 +111,7 @@ export function GraphEditorPopover({
 			<PopoverContent
 				side={side}
 				sideOffset={8}
-				className="w-60 overflow-hidden px-0"
+				className="max-h-[var(--radix-popover-content-available-height)] w-60 overflow-y-auto px-0"
 			>
 				{componentOptions.length > 1 && (
 					<div className="border-b px-3 py-2">
@@ -189,7 +194,11 @@ export function GraphEditorPopover({
 								</Button>
 							</div>
 						)}
-						<div className="grid grid-cols-3 gap-1">
+						<div
+							role="region"
+							aria-label="Saved curve presets"
+							className="grid max-h-60 grid-cols-3 gap-1 overflow-y-auto overscroll-contain p-1"
+						>
 							{custom.map((preset) => (
 								<PresetItem
 									key={preset.id}
@@ -298,39 +307,44 @@ function PresetItem({
 	disabled?: boolean;
 }) {
 	return (
-		<button
-			type="button"
-			onClick={onSelect}
-			disabled={disabled}
-			className={cn(
-				"group relative flex flex-col items-center gap-1 rounded-sm px-1 py-1",
-				disabled
-					? "cursor-not-allowed opacity-50"
-					: "hover:bg-foreground/5 cursor-pointer",
-				isActive && "bg-primary/5! text-primary",
-			)}
-		>
-			<div
+		<div className="group relative">
+			<button
+				type="button"
+				aria-label={preset.label}
+				aria-pressed={isActive}
+				onClick={onSelect}
+				disabled={disabled}
 				className={cn(
-					"flex aspect-video w-full items-center justify-center rounded-sm bg-foreground/5",
-					isActive && "bg-primary/5!",
+					"flex w-full flex-col items-center gap-1 rounded-sm px-1 py-1 focus-visible:outline focus-visible:outline-ring",
+					disabled
+						? "cursor-not-allowed opacity-50"
+						: "hover:bg-foreground/5 cursor-pointer",
+					isActive && "bg-primary/5! text-primary",
 				)}
 			>
-				<CurveThumb value={preset.value} />
-			</div>
-			<span
-				className={cn(
-					"text-[10px] leading-tight",
-					isActive ? "text-primary" : "text-muted-foreground",
-				)}
-			>
-				{preset.label}
-			</span>
+				<div
+					className={cn(
+						"flex aspect-video w-full items-center justify-center rounded-sm bg-foreground/5",
+						isActive && "bg-primary/5!",
+					)}
+				>
+					<CurveThumb value={preset.value} />
+				</div>
+				<span
+					className={cn(
+						"text-[10px] leading-tight",
+						isActive ? "text-primary" : "text-muted-foreground",
+					)}
+				>
+					{preset.label}
+				</span>
+			</button>
 			{onDelete && (
 				<Button
+					aria-label={`Delete ${preset.label} preset`}
 					variant="destructive"
 					size="icon"
-					className="absolute -right-0.5 -top-0.5 hidden size-4.5 rounded-full [&_svg]:size-3 group-hover:flex"
+					className="absolute -right-0.5 -top-0.5 size-4.5 rounded-full opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 [&_svg]:size-3"
 					onClick={(event) => {
 						event.stopPropagation();
 						onDelete();
@@ -339,7 +353,7 @@ function PresetItem({
 					<HugeiconsIcon icon={Delete02Icon} />
 				</Button>
 			)}
-		</button>
+		</div>
 	);
 }
 
