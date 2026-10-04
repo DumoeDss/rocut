@@ -21,6 +21,7 @@ import { probeMediaImport } from './probe-media-import.mjs';
 import { probeAudioFormats } from './probe-audio-formats.mjs';
 import { probeMediaMime } from './probe-media-mime.mjs';
 import { probeTimelineControls } from './probe-timeline-controls.mjs';
+import { probeMotionDuration } from './probe-motion-duration.mjs';
 
 // Run with the Elftia worktree's tsx loader. Never launch a substitute browser.
 const hostRoot = resolve(process.env.ELFTIA_WORKTREE ?? '');
@@ -53,7 +54,7 @@ try {
   if (nativeAudio) {
     nativeAudioCdp = await conn.context.newCDPSession(conn.page);
     await nativeAudioCdp.send('Emulation.clearDeviceMetricsOverride');
-  } else await conn.page.setViewportSize({width:1280,height:900});
+  } else await conn.page.setViewportSize(process.argv.includes('--motion-seek-only') ? {width:1920,height:1080} : {width:1280,height:900});
   evidence.viewportMode = nativeAudio ? 'native-audio' : 'emulated-interactions';
   const frames = conn.page.frames();
   for (const frame of frames) if ((await frame.title().catch(()=>'' )).startsWith('OpenCut editor')) editor=frame;
@@ -88,7 +89,7 @@ try {
     const value=target[key]; return typeof value==='function'?value.bind(target):value;
   }});
   conn.page.on('pageerror',error=>evidence.errors.push(scrub(error.message)));
-  if (['--adjustment-only', '--transition-render-only', '--transition-authoring-only', '--transition-image-authoring-only'].some(flag => process.argv.includes(flag))) conn.page.on('console', message => {
+  if (['--adjustment-only', '--transition-render-only', '--transition-authoring-only', '--transition-image-authoring-only', '--motion-seek-only', '--motion-duration-only'].some(flag => process.argv.includes(flag))) conn.page.on('console', message => {
     if (message.type() === 'error' && /Failed to render preview frame|Validation Error/.test(message.text())) evidence.errors.push(scrub(message.text()));
   });
   // Safe transaction summaries distinguish a dropped shortcut from stale persistence.
@@ -108,7 +109,9 @@ try {
   conn.page.on('response',response=>{if(response.status()>=400 && response.url().includes('/api/')) evidence.requests.push({phase,status:response.status(),url:scrub(response.url())});});
   const audioFixture=join(work,'fixture-tone-a4.wav');
   execFileSync('ffmpeg',['-v','error','-n','-f','lavfi','-i','sine=frequency=440:duration=16','-ar','44100','-ac','1','-c:a','pcm_s16le',audioFixture],{windowsHide:true});
-  if (process.argv.includes('--timeline-controls-only')) {
+  if (process.argv.includes('--motion-duration-only') || process.argv.includes('--motion-seek-only')) {
+    await probeMotionDuration({page,hostPage:conn.page,work,evidence,measureSeek:process.argv.includes('--motion-seek-only'),onPhase:next=>{phase=next;console.log('phase:',phase);}});
+  } else if (process.argv.includes('--timeline-controls-only')) {
     await probeTimelineControls({page,hostPage:conn.page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--media-mime-only')) {
     await probeMediaMime({page,hostPage:conn.page,work,evidence,reopenAudio:process.argv.includes('--reopen-mime-audio'),preparePlayback:()=>nativeAudioCdp.send('Emulation.clearDeviceMetricsOverride'),onPhase:next=>{phase=next;console.log('phase:',phase);}});

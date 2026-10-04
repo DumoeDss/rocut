@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Alert02Icon, Tick02Icon } from "@hugeicons/core-free-icons";
+import { Tick02Icon } from "@hugeicons/core-free-icons";
 import { PanelView } from "../../components/editor/panels/assets/views/base-panel";
 import { Button } from "../../components/ui/button";
 import { Spinner } from "../../components/ui/spinner";
@@ -22,15 +22,20 @@ import { cn } from "../../utils/ui";
 import {
 	createStarterMotionTextSequence,
 	mediaTime,
+	mediaTimeFromSeconds,
+	roundFrameTime,
 	type MotionTextSequenceBuildDiagnostic,
 	type MotionTextStarterPresetId,
-	TICKS_PER_SECOND,
 } from "../../wasm";
 import { MOTION_TEXT_STARTER_PRESETS } from "../starter-presets";
 import { JizuraImportControl } from "./jizura-import-control";
 import { MotionTextPresetBrowser } from "./preset-browser";
+import { MotionTextDurationField } from "./duration-field";
+import {
+	MotionTextCreationFeedback,
+	type MotionTextCreationMessage,
+} from "./creation-feedback";
 
-const STARTER_DURATION = 15 * TICKS_PER_SECOND;
 const STARTER_SOURCE = "让画面说话\n让节奏被看见\n每一句都有动作";
 
 function diagnosticMessage(
@@ -51,15 +56,15 @@ export function MotionTextAssetsView() {
 		(instance) => instance.project.getActiveOrNull()?.metadata.id ?? "none",
 	);
 	const [source, setSource] = useState(STARTER_SOURCE);
+	const [durationSeconds, setDurationSeconds] = useState("15");
 	const [sourceFormat, setSourceFormat] = useState<"plain" | "lrc">("plain");
 	const [selectedPreset, setSelectedPreset] =
 		useState<MotionTextStarterPresetId>("clean-caption");
 	const [isComposing, setIsComposing] = useState(false);
 	const [isAdding, setIsAdding] = useState(false);
-	const [message, setMessage] = useState<{
-		kind: "error" | "warning";
-		text: string;
-	} | null>(null);
+	const [message, setMessage] = useState<MotionTextCreationMessage | null>(
+		null,
+	);
 	const lineCount = useMemo(
 		() =>
 			source.split(/\r?\n/u).filter((line) => line.trim().length > 0).length,
@@ -70,19 +75,33 @@ export function MotionTextAssetsView() {
 		if (isAdding || isComposing || source.trim().length === 0) return;
 		setIsAdding(true);
 		setMessage(null);
+		let errorField: MotionTextCreationMessage["field"] = "duration";
 		try {
+			const seconds = Number(durationSeconds);
+			if (!Number.isFinite(seconds) || seconds <= 0) {
+				throw new Error("Enter a duration greater than zero seconds.");
+			}
+			const duration = roundFrameTime({
+				time: mediaTimeFromSeconds({ seconds }),
+				fps: editor.project.getActive().settings.fps,
+			});
+			if (duration <= 0) {
+				throw new Error("Duration must cover at least one project frame.");
+			}
 			const sequenceId = `motion-text:${generateUUID()}`;
+			errorField = undefined;
 			const created = createStarterMotionTextSequence({
 				sequenceId,
 				source,
 				sourceFormat,
-				duration: STARTER_DURATION,
+				duration,
 				starterPreset: selectedPreset,
 				rendererSupport: MOTION_TEXT_RENDERER_SUPPORT,
 			});
 			if (!created.sequence) {
 				setMessage({
 					kind: "error",
+					field: "source",
 					text:
 						diagnosticMessage(created.diagnostics) ??
 						"The motion-text sequence could not be created.",
@@ -109,6 +128,7 @@ export function MotionTextAssetsView() {
 		} catch (error) {
 			setMessage({
 				kind: "error",
+				field: errorField,
 				text:
 					error instanceof Error
 						? error.message
@@ -124,15 +144,18 @@ export function MotionTextAssetsView() {
 			title="Motion text"
 			contentClassName="pb-3"
 			footer={
-				<Button
-					data-testid="motion-text-add"
-					onClick={() => void addAtPlayhead()}
-					disabled={isAdding || isComposing || source.trim().length === 0}
-					className="w-full"
-				>
-					{isAdding && <Spinner className="size-4" />}
-					{isAdding ? "Adding motion text…" : "Add at playhead"}
-				</Button>
+				<div className="flex flex-col gap-2">
+					<MotionTextCreationFeedback message={message} />
+					<Button
+						data-testid="motion-text-add"
+						onClick={() => void addAtPlayhead()}
+						disabled={isAdding || isComposing || source.trim().length === 0}
+						className="w-full"
+					>
+						{isAdding && <Spinner className="size-4" />}
+						{isAdding ? "Adding motion text…" : "Add at playhead"}
+					</Button>
+				</div>
 			}
 		>
 			<div className="flex flex-col gap-4">
@@ -166,13 +189,21 @@ export function MotionTextAssetsView() {
 						</SelectContent>
 					</Select>
 				</div>
+				<MotionTextDurationField
+					value={durationSeconds}
+					invalid={message?.kind === "error" && message.field === "duration"}
+					onChange={(value) => {
+						setDurationSeconds(value);
+						setMessage(null);
+					}}
+				/>
 				<div className="flex flex-col gap-1.5">
 					<div className="flex items-baseline justify-between gap-2">
 						<label htmlFor="motion-text-source" className="text-sm font-medium">
 							Lines
 						</label>
 						<span className="text-muted-foreground text-xs tabular-nums">
-							{lineCount} {lineCount === 1 ? "line" : "lines"} · 15 sec
+							{lineCount} {lineCount === 1 ? "line" : "lines"}
 						</span>
 					</div>
 					<Textarea
@@ -196,7 +227,9 @@ export function MotionTextAssetsView() {
 								? "[00:01.00]First lyric line"
 								: "Enter one lyric line per row"
 						}
-						aria-invalid={message?.kind === "error"}
+						aria-invalid={
+							message?.kind === "error" && message.field === "source"
+						}
 						aria-describedby={message ? "motion-text-message" : undefined}
 						className="min-h-28 resize-y leading-6"
 					/>
@@ -252,22 +285,6 @@ export function MotionTextAssetsView() {
 				</div>
 
 				<MotionTextPresetBrowser key={projectId} projectId={projectId} />
-
-				{message && (
-					<div
-						id="motion-text-message"
-						role={message.kind === "error" ? "alert" : "status"}
-						className={cn(
-							"flex items-start gap-2 rounded-md border p-2 text-xs leading-5",
-							message.kind === "error"
-								? "border-destructive/40 text-destructive"
-								: "border-caution/40 text-caution",
-						)}
-					>
-						<HugeiconsIcon icon={Alert02Icon} size={14} className="mt-0.5" />
-						<span>{message.text}</span>
-					</div>
-				)}
 			</div>
 		</PanelView>
 	);
