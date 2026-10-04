@@ -121,8 +121,15 @@ async function measureMotionStressMemory({
 			let previous = null,
 				stable = 0;
 			const started = performance.now();
+			const observations = [];
 			while (performance.now() - started < 5000) {
 				const current = await observer.capture();
+				observations.push({
+					hash: current.hash,
+					light: current.light,
+					sequence: current.sequence,
+				});
+				if (observations.length > 8) observations.shift();
 				if (current.light <= 20) continue;
 				if (expected && current.hash === expected)
 					return { target, hash: current.hash };
@@ -133,6 +140,14 @@ async function measureMotionStressMemory({
 				if (stable >= 2) return { target, hash: current.hash };
 				previous = current.hash;
 			}
+			evidence.f05PictureFailure = {
+				target,
+				expected,
+				before,
+				observations,
+				displayed,
+				currentBounds: await canvas.boundingBox(),
+			};
 			throw new Error("F05 target picture did not arrive: " + target);
 		};
 		onPhase("F05 visible-frame memory warmup");
