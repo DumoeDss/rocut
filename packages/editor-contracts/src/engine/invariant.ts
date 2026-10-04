@@ -125,6 +125,7 @@ export function isValidClip(value: unknown): value is Clip {
 		(value.transitionIn === undefined ||
 			isValidTransitionIn(value.transitionIn)) &&
 		(value.assetId === undefined || isNonEmptyString(value.assetId)) &&
+		(value.sourceComponent === undefined || value.sourceComponent === "audio") &&
 		(value.content === undefined || isValidMotionTextClipContent(value.content))
 	);
 }
@@ -153,6 +154,7 @@ export function isValidAsset(value: unknown): value is Asset {
 		["image", "video", "audio"].includes(String(value.kind)) &&
 		isNonEmptyString(value.name) &&
 		(value.duration === undefined || isNonNegativeInteger(value.duration)) &&
+		(value.hasAudio === undefined || typeof value.hasAudio === "boolean") &&
 		(value.width === undefined || isPositiveNumber(value.width)) &&
 		(value.height === undefined || isPositiveNumber(value.height))
 	);
@@ -326,6 +328,25 @@ export function validateTransactionDocument(args: {
 						"Color adjustment requires an effect track and no asset or content",
 					),
 				);
+			}
+			if (clip.sourceComponent !== undefined) {
+				const source = document.assets.find((asset) => asset.id === clip.assetId);
+				if (
+					!source ||
+					source.kind !== "video" ||
+					source.hasAudio === false ||
+					clip.content !== undefined ||
+					clip.adjustment !== undefined ||
+					clip.freezeFrame !== undefined ||
+					clip.transitionIn !== undefined
+				) {
+					issues.push(
+						invalid(
+							`clips.${clip.id}.sourceComponent`,
+							"Audio component requires a video asset not known to be silent and no picture-only settings",
+						),
+					);
+				}
 			}
 			if (clip.freezeFrame !== undefined) {
 				const source = document.assets.find(

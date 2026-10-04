@@ -214,6 +214,8 @@ export interface Clip {
 	readonly trimStart: MediaTime;
 	readonly trimEnd: MediaTime;
 	readonly assetId?: AssetId;
+	/** Audio-only view of a video asset; omission retains the asset’s native kind. */
+	readonly sourceComponent?: "audio";
 	/** Incoming picture transition; media handles and adjacency are provider-validated. */
 	readonly transitionIn?: {
 		readonly kind: "cross-dissolve";
@@ -256,6 +258,8 @@ export interface Asset {
 	readonly duration?: MediaTime;
 	readonly width?: number;
 	readonly height?: number;
+	/** Absent means not probed; false explicitly rules out an audio component. */
+	readonly hasAudio?: boolean;
 }
 
 /**

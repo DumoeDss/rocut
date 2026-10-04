@@ -81,8 +81,12 @@ export type TransactionOperation =
 			readonly clipId: ClipId;
 			/** null explicitly clears optional media settings across JSON transports. */
 			readonly patch: Partial<
-				Omit<Clip, "id" | "freezeFrame" | "retime" | "transitionIn">
+				Omit<
+					Clip,
+					"id" | "freezeFrame" | "retime" | "transitionIn" | "sourceComponent"
+				>
 			> & {
+				readonly sourceComponent?: Clip["sourceComponent"] | null;
 				readonly retime?: Clip["retime"] | null;
 				readonly transitionIn?: Clip["transitionIn"] | null;
 				readonly freezeFrame?: Clip["freezeFrame"] | null;

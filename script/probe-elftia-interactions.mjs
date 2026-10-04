@@ -20,6 +20,7 @@ import { probeTransitionRender } from './probe-transition-render.mjs';
 import { probeMediaImport } from './probe-media-import.mjs';
 import { probeAudioFormats } from './probe-audio-formats.mjs';
 import { probeMediaMime } from './probe-media-mime.mjs';
+import { probeTimelineControls } from './probe-timeline-controls.mjs';
 
 // Run with the Elftia worktree's tsx loader. Never launch a substitute browser.
 const hostRoot = resolve(process.env.ELFTIA_WORKTREE ?? '');
@@ -48,7 +49,7 @@ try {
   // CDP metrics can stall Electron's realtime audio clock on this host.
   // Use native metrics for audio measurements; fixed metrics remain useful
   // for gesture/layout fixtures. Finally restores the previous host metrics.
-  const nativeAudio = ['--audio-formats-only', '--media-mime-only'].some(flag=>process.argv.includes(flag));
+  const nativeAudio = ['--audio-formats-only', '--media-mime-only', '--timeline-controls-only'].some(flag=>process.argv.includes(flag));
   if (nativeAudio) {
     nativeAudioCdp = await conn.context.newCDPSession(conn.page);
     await nativeAudioCdp.send('Emulation.clearDeviceMetricsOverride');
@@ -107,7 +108,9 @@ try {
   conn.page.on('response',response=>{if(response.status()>=400 && response.url().includes('/api/')) evidence.requests.push({phase,status:response.status(),url:scrub(response.url())});});
   const audioFixture=join(work,'fixture-tone-a4.wav');
   execFileSync('ffmpeg',['-v','error','-n','-f','lavfi','-i','sine=frequency=440:duration=16','-ar','44100','-ac','1','-c:a','pcm_s16le',audioFixture],{windowsHide:true});
-  if (process.argv.includes('--media-mime-only')) {
+  if (process.argv.includes('--timeline-controls-only')) {
+    await probeTimelineControls({page,hostPage:conn.page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
+  } else if (process.argv.includes('--media-mime-only')) {
     await probeMediaMime({page,hostPage:conn.page,work,evidence,reopenAudio:process.argv.includes('--reopen-mime-audio'),preparePlayback:()=>nativeAudioCdp.send('Emulation.clearDeviceMetricsOverride'),onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--audio-formats-only')) {
     await probeAudioFormats({page,hostPage:conn.page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});

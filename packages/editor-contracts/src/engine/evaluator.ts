@@ -506,6 +506,7 @@ function mutateOperations(args: {
 				}
 				const updated = { ...existing, ...operation.patch };
 				if (updated.freezeFrame === null) delete updated.freezeFrame;
+				if (updated.sourceComponent === null) delete updated.sourceComponent;
 				if (updated.retime === null) delete updated.retime;
 				if (updated.transitionIn === null) delete updated.transitionIn;
 				if (!isValidClip(updated)) {

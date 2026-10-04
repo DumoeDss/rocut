@@ -195,7 +195,7 @@ function newElement(clip: Clip, asset: Asset | undefined): TimelineElement {
 			adjustment: { ...clip.adjustment },
 		} as unknown as TimelineElement;
 	}
-	if (asset?.kind === "audio") {
+	if (asset && (asset.kind === "audio" || clip.sourceComponent === "audio")) {
 		return {
 			...base,
 			type: "audio",
@@ -229,6 +229,9 @@ function overlayElement(
 ): TimelineElement {
 	const previousMatchesContent =
 		previous !== undefined &&
+		(clip.sourceComponent === "audio"
+			? previous.type === "audio"
+			: !(previous.type === "audio" && asset?.kind === "video")) &&
 		(clip.content?.kind === "motion-text"
 			? previous.type === "motion-text"
 			: clip.adjustment !== undefined
@@ -376,6 +379,7 @@ function applyPublicDocument({
 			}),
 			...(asset.width !== undefined && { width: asset.width }),
 			...(asset.height !== undefined && { height: asset.height }),
+			...(asset.hasAudio !== undefined && { hasAudio: asset.hasAudio }),
 		})),
 	};
 }

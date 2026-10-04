@@ -18,7 +18,9 @@ import type {
 import { generateUUID } from "../../../utils/id";
 
 export class ToggleSourceAudioSeparationCommand extends Command {
-	readonly routingClass = "provider-private" as const;
+	// Snapshot history must retain the generated track/clip/keyframe identities
+	// and publish source muting together with the extracted audio after save.
+	readonly routingClass = "transaction" as const;
 
 	private savedState: SceneTracks | null = null;
 

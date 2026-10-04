@@ -16,6 +16,7 @@ export interface OpenCutAssetCatalogEntry {
 	readonly duration?: number;
 	readonly width?: number;
 	readonly height?: number;
+	readonly hasAudio?: boolean;
 }
 
 export interface OpenCutProjectDraft {
@@ -47,5 +48,6 @@ export function assetCatalogFromMedia(
 		...(asset.duration !== undefined && { duration: asset.duration }),
 		...(asset.width !== undefined && { width: asset.width }),
 		...(asset.height !== undefined && { height: asset.height }),
+		...(asset.hasAudio !== undefined && { hasAudio: asset.hasAudio }),
 	}));
 }

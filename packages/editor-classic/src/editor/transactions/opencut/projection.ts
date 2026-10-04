@@ -92,7 +92,11 @@ function elementAssetId(element: TimelineElement): string | undefined {
 	return undefined;
 }
 
-function clipProjection(track: TimelineTrack, element: TimelineElement): Clip {
+function clipProjection(
+	track: TimelineTrack,
+	element: TimelineElement,
+	assets: readonly OpenCutAssetCatalogEntry[],
+): Clip {
 	const mediaId = elementAssetId(element);
 	return {
 		id: clipId(element.id),
@@ -102,6 +106,10 @@ function clipProjection(track: TimelineTrack, element: TimelineElement): Clip {
 		trimStart: contractTime(element.trimStart),
 		trimEnd: contractTime(element.trimEnd),
 		...(mediaId !== undefined && { assetId: assetId(mediaId) }),
+		...(element.type === "audio" &&
+			assets.some((asset) => asset.id === mediaId && asset.type === "video") && {
+				sourceComponent: "audio" as const,
+			}),
 		...((element.type === "video" || element.type === "audio") &&
 			element.retime !== undefined && { retime: { ...element.retime } }),
 		...((element.type === "video" || element.type === "image") &&
@@ -138,6 +146,7 @@ function assetProjection(asset: OpenCutAssetCatalogEntry): Asset {
 		}),
 		...(asset.width !== undefined && { width: asset.width }),
 		...(asset.height !== undefined && { height: asset.height }),
+		...(asset.hasAudio !== undefined && { hasAudio: asset.hasAudio }),
 	};
 }
 
@@ -169,7 +178,9 @@ export function projectOpenCutDraft(
 		project: projectProjection(draft),
 		tracks: tracks.map(trackProjection),
 		clips: tracks.flatMap((track) =>
-			track.elements.map((element) => clipProjection(track, element)),
+			track.elements.map((element) =>
+				clipProjection(track, element, draft.assetCatalog),
+			),
 		),
 		assets: draft.assetCatalog.map(assetProjection),
 		markers:
@@ -371,6 +382,9 @@ export function diffOpenCutProjection({
 			: { retime: current.retime ?? null };
 		const combined = {
 			...patch,
+			...(previous.sourceComponent !== current.sourceComponent && {
+				sourceComponent: current.sourceComponent ?? null,
+			}),
 			...freezePatch,
 			...transitionPatch,
 			...retimePatch,

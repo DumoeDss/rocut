@@ -59,7 +59,8 @@ function laneIsCompatible(args: {
 	if (!args.asset) {
 		return ["text", "graphic", "effect"].includes(args.track.kind);
 	}
-	if (args.asset.kind === "audio") return args.track.kind === "audio";
+	if (args.clip.sourceComponent === "audio" || args.asset.kind === "audio")
+		return args.track.kind === "audio";
 	return args.track.kind === "video" || args.track.kind === "graphic";
 }
 

@@ -426,8 +426,13 @@ export function createInMemoryTransactionStore(): InMemoryTransactionStore {
 							operationIndex: i,
 						});
 					}
-					const { freezeFrame, retime, transitionIn, ...patch } = op.patch;
+					const { freezeFrame, retime, transitionIn, sourceComponent, ...patch } =
+						op.patch;
 					const updated = { ...existing, ...patch };
+					if ("sourceComponent" in op.patch) {
+						if (sourceComponent == null) delete updated.sourceComponent;
+						else updated.sourceComponent = sourceComponent;
+					}
 					if ("retime" in op.patch) {
 						if (retime == null) delete updated.retime;
 						else updated.retime = retime;
