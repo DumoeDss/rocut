@@ -214,6 +214,17 @@ export interface Clip {
 	readonly trimStart: MediaTime;
 	readonly trimEnd: MediaTime;
 	readonly assetId?: AssetId;
+	/** Incoming picture transition; media handles and adjacency are provider-validated. */
+	readonly transitionIn?: {
+		readonly kind: "cross-dissolve";
+		readonly outgoingClipId: ClipId;
+		readonly durationFrames: number;
+	};
+	/** Source playback configuration; absence means the original playback rate. */
+	readonly retime?: {
+		readonly rate: number;
+		readonly maintainPitch?: boolean;
+	};
 	/** Hold an absolute video-source tick; absence means ordinary playback. */
 	readonly freezeFrame?: MediaTime;
 	/** Scene adjustment layer parameters; valid only on an effect track. */

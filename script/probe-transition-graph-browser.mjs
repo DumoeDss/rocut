@@ -237,5 +237,127 @@ export function runTransitionGraphProbe(api) {
 			"WASM did not recover",
 		);
 	});
+	check(
+		"transition reconciliation clears unchanged moved links atomically",
+		() => {
+			const input = fixture();
+			input.previous = {
+				clipIds: input.clips.map((c) => c.id),
+				links: structuredClone(input.links),
+			};
+			input.clips[1].start += 4000;
+			const result = api.evaluateClipTransitions(input);
+			assert(
+				result.accepted.length === 0 &&
+					result.rejected.length === 0 &&
+					result.removed.join() === "0",
+				"unchanged invalid relation not removed",
+			);
+		},
+	);
+	check("transition reconciliation rejects explicit invalid edits", () => {
+		const input = fixture();
+		input.previous = {
+			clipIds: input.clips.map((c) => c.id),
+			links: structuredClone(input.links),
+		};
+		input.links[0].durationFrames = 9999;
+		const result = api.evaluateClipTransitions(input);
+		assert(
+			result.rejected.length === 1 && result.removed.length === 0,
+			"invalid edit silently removed",
+		);
+	});
+	check(
+		"transition reconciliation drops copied links before graph validation",
+		() => {
+			const input = fixture();
+			input.previous = {
+				clipIds: input.clips.map((c) => c.id),
+				links: structuredClone(input.links),
+			};
+			input.clips.push({ ...input.clips[1], id: "copy", start: 720000 });
+			input.links.unshift({ ...input.links[0], incomingClipId: "copy" });
+			const result = api.evaluateClipTransitions(input);
+			assert(
+				result.accepted.length === 1 &&
+					result.accepted[0].linkIndex === 1 &&
+					result.rejected.length === 0 &&
+					result.removed.join() === "0",
+				"copied link affected original",
+			);
+		},
+	);
+	check(
+		"source span validation shares playback clock and explicit frame hold",
+		() => {
+			const source = {
+				trimStart: 120000,
+				trimEnd: 120000,
+				duration: 720000,
+				sourceDuration: 600000,
+				playbackRate: 0.5,
+			};
+			assert(api.isMediaSourceSpanValid(source), "slow source span rejected");
+			assert(
+				!api.isMediaSourceSpanValid({ ...source, playbackRate: 2 }),
+				"source overflow accepted",
+			);
+			assert(
+				api.isMediaSourceSpanValid({
+					...source,
+					duration: 2400000,
+					freezeFrame: 599999,
+				}),
+				"valid hold rejected",
+			);
+			assert(
+				!api.isMediaSourceSpanValid({ ...source, freezeFrame: 600000 }),
+				"exclusive source end accepted",
+			);
+			for (const rate of [NaN, Infinity, 0, 6])
+				assert(
+					!api.isMediaSourceSpanValid({ ...source, playbackRate: rate }),
+					"invalid source rate accepted",
+				);
+		},
+	);
+	check(
+		"new wire boundaries reject unknown fields and fractional ticks",
+		() => {
+			for (const run of [
+				() =>
+					api.isMediaSourceSpanValid({
+						trimStart: 0,
+						trimEnd: 0,
+						duration: 4000,
+						sourceDuration: 8000,
+						playbackRate: 1,
+						typo: true,
+					}),
+				() =>
+					api.isMediaSourceSpanValid({
+						trimStart: 0,
+						trimEnd: 0,
+						duration: 4000.5,
+						sourceDuration: 8000,
+						playbackRate: 1,
+					}),
+				() =>
+					api.evaluateClipTransitions({
+						...fixture(),
+						previous: { clipIds: ["a", "b"], links: [], typo: true },
+					}),
+			]) {
+				let rejected = false;
+				try {
+					run();
+				} catch {
+					rejected = true;
+				}
+				assert(rejected, "malformed new ABI accepted");
+			}
+		},
+	);
 	return checks;
 }

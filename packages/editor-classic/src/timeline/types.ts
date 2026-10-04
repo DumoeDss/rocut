@@ -1,3 +1,4 @@
+import type { Clip } from "@opencut/editor-contracts";
 import type { ElementAnimations } from "../animation/types";
 import type { Effect } from "../effects/types";
 import type { Mask } from "../masks/types";
@@ -114,10 +115,16 @@ interface BaseTimelineElement {
 	params: ParamValues;
 }
 
+type IncomingTransition = Omit<
+	NonNullable<Clip["transitionIn"]>,
+	"outgoingClipId"
+> & { outgoingClipId: string };
+
 export interface VideoElement extends BaseTimelineElement {
 	type: "video";
 	mediaId: string;
 	isSourceAudioEnabled?: boolean;
+	transitionIn?: IncomingTransition;
 	/** Absolute source-media time held throughout this clip; audio is suspended. */
 	freezeFrame?: MediaTime;
 	hidden?: boolean;
@@ -128,6 +135,7 @@ export interface VideoElement extends BaseTimelineElement {
 
 export interface ImageElement extends BaseTimelineElement {
 	type: "image";
+	transitionIn?: IncomingTransition;
 	mediaId: string;
 	hidden?: boolean;
 	effects?: Effect[];

@@ -28,7 +28,7 @@ fn serializable_api_returns_the_same_window_and_source_samples() {
         json!({
             "accepted":[{"linkIndex":0, "window":{"start":300_000,"cut":360_000,"end":420_000},
                 "sample":{"time":360_000,"progress":0.5,"outgoingSource":480_000,"incomingSource":120_000}}],
-            "rejected":[]
+            "rejected":[], "removed":[]
         })
     );
 }

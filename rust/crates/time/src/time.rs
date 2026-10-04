@@ -1,10 +1,12 @@
 mod frame_rate;
-mod strict_object;
 mod media_time;
+mod source_span;
+mod strict_object;
 mod timecode;
 mod transition;
 mod transition_api;
 mod transition_graph;
+mod transition_reconcile;
 mod video_time;
 
 pub use transition::{
@@ -12,14 +14,20 @@ pub use transition::{
     TransitionClip, TransitionPlanError, TransitionSource, plan_clip_transition,
 };
 
+pub use source_span::{MediaSourceSpanOptions, is_media_source_span_valid};
+
 pub use transition_api::{
     ClipTransitionsEvaluation, ClipTransitionsOptions, EvaluatedTransitionLink,
     evaluate_clip_transitions,
 };
 
+pub use transition_reconcile::{
+    PreviousTransitionGraph, TransitionGraphReconciliation, reconcile_transition_graph,
+};
+
 pub use transition_graph::{
-    PlannedTransitionLink, RejectedTransitionLink, TransitionGraphError,
-    TransitionGraphEvaluation, TransitionLink, evaluate_transition_graph,
+    PlannedTransitionLink, RejectedTransitionLink, TransitionGraphError, TransitionGraphEvaluation,
+    TransitionLink, evaluate_transition_graph,
 };
 
 pub use video_time::{

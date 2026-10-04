@@ -59,7 +59,7 @@ export const BASELINE_DTS_SHA =
  * correspond 1:1" — so this applies the repository's own existing finding to its gate.
  *
  * **What is still asserted, so this is a re-scope and not a hole**: the count of trampolines is
- * exactly `trampolineExportCount`, each must match this shape, the other 81 are an exact set, and
+ * exactly `trampolineExportCount`, each must match this shape, the other 82 are an exact set, and
  * the total is 84. Frame-hold and color-adjustment APIs each added two stable exports.
  * Transition graph validation/sampling adds one stable export, evaluateClipTransitions.
  * A 4th trampoline, a missing one, a renamed stable export, or a stable
@@ -97,7 +97,7 @@ export const EXPECTED = {
 		"package.json":
 			"f92d109c0ed431a74974f90bf207767c033f784af10a34a0accebb1bb921ca18",
 		[SYNC_ENTRY]:
-			"4127197f42da8b61c25176076b32bf77a5c2f6e04350a867e6d2e489f8a57004",
+			"a058be9a1df7d32633e4fd1ba72439974f579e5f3d3f81b6636d0f4d2123346c",
 	},
 	/**
 	 * `LICENSE` and `README.md` are the only two files wasm-pack **copies out of the checkout**
@@ -138,8 +138,8 @@ export const EXPECTED = {
 		"opencut_wasm_bg.wasm.d.ts":
 			"d19c1b3dc87f095040c7eb1e56eb8c965d587cf7927ca21cc513327cf78ed7c1",
 	},
-	dtsSha: "8bad0ee91688d26ffe589306a5628f303885870886154fbf7171c3e70b6a296e",
-	wrapperSha: "5e3dcd76d7b726f0a0bc5eacd80c6fdd09a781df5357a0ab634b0758a37ba798",
+	dtsSha: "9412f17fbc9c53bf22824714d2d6c3859b1a52cd9c63f47b6ce501283eee8805",
+	wrapperSha: "51046acb410a95463f30e901d9b5d20564f5d17027f9812865e554688813f450",
 	/**
 	 * The low-level declarations, hashed after normalising the trampoline hashes below and sorted
 	 * by line. Exact-byte hashing of this file cannot hold across build hosts for the reason
@@ -149,29 +149,30 @@ export const EXPECTED = {
 	 * Recorded on Windows; the value is host-independent by construction. Re-derive with the
 	 * hashing recipe in `script/check-wasm-api-surface.mjs` after a pinned WASM rebuild.
 	 */
-	wasmDtsNormalizedSignature: "effddfc8439677f8c9482c43764934487e1dd46cfd5da5492682ca3d0f1b29d0",
-	wasmDtsLineCount: 86,
-	wrapperExportSignature: "4019b2e7d73addf0fe83498fe836e01778349402b40170ee41e0d8b555079353",
-	wrapperExportCount: 64,
-	bgExportSignature: "5793d1ad5628fd8530b80bec91bca7a9d90e6f1be3edb135f2bfac5e0d2d48f7",
-	bgExportCount: 675,
+	wasmDtsNormalizedSignature: "aa6e7f1c43419437e5c9d73d8cf0295c06daa5d935593cc5fca671edd5a574dd",
+	wasmDtsLineCount: 87,
+	wrapperExportSignature: "bbf58599bbdd7b5036183f55dc2c976d078a9f76be761136f8d4e6d636fdecb9",
+	wrapperExportCount: 65,
+	bgExportSignature: "d0d4ad5d7372fbdb5a60ba548b3b2988f19577c95d2e5d59dccc46d1afffcbb0",
+	bgExportCount: 676,
 	/**
-	 * The 81 stably-named binary exports, as an exact set. This is the real contract: every export
+	 * The 82 stably-named binary exports, as an exact set. This is the real contract: every export
 	 * a consumer can name is pinned here, and any addition, removal or rename fails.
 	 *
 	 * The remaining 3 are compiler-generated closure trampolines whose names carry a rustc symbol
 	 * hash — see `TRAMPOLINE_EXPORT` for why they are matched by shape and count instead.
 	 */
-	stableWasmExportSignature: "a9d5f1a1c8c3aad4f74ddb6def00c49a0e8b70ac41ef0e07e46f3b8fa1f789d8",
-	stableWasmExportCount: 81,
+	stableWasmExportSignature: "1ed7ff89f2e790ff582f4a7cd5417582418498bdbde4ab8b497871ffe82db3e4",
+	stableWasmExportCount: 82,
 	trampolineExportCount: 3,
 	/**
-	 * The whole 84-entry set as recorded on the Windows build machine, kept for diagnosis: on
+	 * The whole 85-entry set as recorded on the Windows build machine, kept for diagnosis: on
 	 * failure the gate prints the symmetric difference against it, which is how the host-varying
 	 * trampolines were identified in the first place (CI run 31940776057). It is NOT the
  * assertion — `stableWasmExportSignature` is.
 	 */
 	wasmExportsAsRecorded: [
+		"isMediaSourceSpanValid|function",
 		"evaluateClipTransitions|function",
 		"colorAdjustmentCatalog|function",
 		"normalizeColorAdjustment|function",

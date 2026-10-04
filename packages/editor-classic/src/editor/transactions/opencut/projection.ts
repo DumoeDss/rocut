@@ -18,7 +18,11 @@ import {
 } from "@opencut/editor-contracts";
 import type { TransactionEngineDocument } from "@opencut/editor-contracts/engine";
 import { canonicalOperationFingerprint } from "@opencut/editor-contracts/engine";
-import type { Bookmark, TimelineElement, TimelineTrack } from "../../../timeline/types";
+import type {
+	Bookmark,
+	TimelineElement,
+	TimelineTrack,
+} from "../../../timeline/types";
 import { cloneOpaque } from "../../persistence/opaque-value";
 import type { OpenCutAssetCatalogEntry, OpenCutProjectDraft } from "./types";
 
@@ -98,12 +102,23 @@ function clipProjection(track: TimelineTrack, element: TimelineElement): Clip {
 		trimStart: contractTime(element.trimStart),
 		trimEnd: contractTime(element.trimEnd),
 		...(mediaId !== undefined && { assetId: assetId(mediaId) }),
-		...(element.type === "video" && element.freezeFrame !== undefined && {
-			freezeFrame: contractTime(element.freezeFrame),
-		}),
-		...(element.type === "effect" && element.adjustment !== undefined && {
-			adjustment: { ...element.adjustment },
-		}),
+		...((element.type === "video" || element.type === "audio") &&
+			element.retime !== undefined && { retime: { ...element.retime } }),
+		...((element.type === "video" || element.type === "image") &&
+			element.transitionIn !== undefined && {
+				transitionIn: {
+					...element.transitionIn,
+					outgoingClipId: clipId(element.transitionIn.outgoingClipId),
+				},
+			}),
+		...(element.type === "video" &&
+			element.freezeFrame !== undefined && {
+				freezeFrame: contractTime(element.freezeFrame),
+			}),
+		...(element.type === "effect" &&
+			element.adjustment !== undefined && {
+				adjustment: { ...element.adjustment },
+			}),
 		...(element.type === "motion-text" && {
 			content: {
 				kind: "motion-text" as const,
@@ -344,10 +359,28 @@ export function diffOpenCutProjection({
 			"content",
 			"adjustment",
 		]);
-		const freezePatch = previous.freezeFrame === current.freezeFrame
-			? {} : { freezeFrame: current.freezeFrame ?? null };
-		if (Object.keys(patch).length > 0 || Object.keys(freezePatch).length > 0)
-			operations.push({ kind: "update-clip", clipId: clipId(id), patch: { ...patch, ...freezePatch } });
+		const freezePatch =
+			previous.freezeFrame === current.freezeFrame
+				? {}
+				: { freezeFrame: current.freezeFrame ?? null };
+		const transitionPatch = same(previous.transitionIn, current.transitionIn)
+			? {}
+			: { transitionIn: current.transitionIn ?? null };
+		const retimePatch = same(previous.retime, current.retime)
+			? {}
+			: { retime: current.retime ?? null };
+		const combined = {
+			...patch,
+			...freezePatch,
+			...transitionPatch,
+			...retimePatch,
+		};
+		if (Object.keys(combined).length > 0)
+			operations.push({
+				kind: "update-clip",
+				clipId: clipId(id),
+				patch: combined,
+			});
 	}
 	for (const id of sortedIds(afterMotionTextSequences.keys())) {
 		const current = afterMotionTextSequences.get(id);

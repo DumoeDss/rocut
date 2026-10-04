@@ -152,6 +152,9 @@ export function evaluateBasePlacementPolicy(
 		}
 		if (
 			asset?.duration !== undefined &&
+			// Retimed/held source clocks are validated by the concrete media provider.
+			clip.retime === undefined &&
+			clip.freezeFrame === undefined &&
 			ticksOf(clip.trimStart) + ticksOf(clip.duration) + ticksOf(clip.trimEnd) >
 				ticksOf(asset.duration)
 		) {

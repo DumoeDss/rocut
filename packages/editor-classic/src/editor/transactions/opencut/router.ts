@@ -20,10 +20,14 @@ import {
 	type TransactionValidationOutcome,
 } from "@opencut/editor-contracts/engine";
 import type { SessionPersistenceCoordinator } from "../../persistence";
-import type { ProjectId as PortProjectId, ProjectRecord } from "@opencut/editor-ports";
+import type {
+	ProjectId as PortProjectId,
+	ProjectRecord,
+} from "@opencut/editor-ports";
 import type { MediaAsset } from "../../../media/types";
 import { createOpenCutTransactionDocumentAdapter } from "./adapter";
 import { ProjectMutationArbiter } from "./arbiter";
+import { openCutMediaPolicy } from "./media-policy";
 import { cloneOpenCutDraft, projectOpenCutDraft } from "./projection";
 import {
 	assetCatalogFromMedia,
@@ -119,6 +123,7 @@ export class SessionOpenCutTransactions {
 					store: this.options.persistence.store,
 					projectId: portProjectId,
 					documentAdapter: adapter,
+					placementPolicies: [openCutMediaPolicy],
 				});
 				const active: ActiveOpenCutRouter = {
 					projectId: portProjectId,

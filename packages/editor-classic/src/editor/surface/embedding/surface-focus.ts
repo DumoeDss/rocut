@@ -1,4 +1,5 @@
 import type { FocusMode } from "./types";
+import { installSurfaceFocusRecovery } from "./surface-focus-recovery";
 
 export const FOCUS_MODE_MATRIX = {
 	passive: {
@@ -138,6 +139,9 @@ export function installSurfaceFocusScope({
 	onFocusModeChange?: (mode: FocusMode) => void;
 }): () => void {
 	const cleanups: Array<() => void> = [];
+	if (FOCUS_MODE_MATRIX[mode].keyboard) {
+		cleanups.push(installSurfaceFocusRecovery(root));
+	}
 	const onPointerDown = (event: PointerEvent) => {
 		if (mode === "passive") {
 			if (isPrimaryPointer(event)) onFocusModeChange?.("focused");

@@ -24,6 +24,7 @@ import {
 	type OpenCutProjectDraft,
 } from "../../editor/transactions/opencut";
 import { cloneOpaque } from "../../editor/persistence/opaque-value";
+import { reconcileDraftTransitions } from "../../editor/transactions/opencut/media-policy";
 
 interface TransactionCommandHistoryEntry {
 	readonly kind: "transaction";
@@ -176,6 +177,7 @@ export class CommandManager {
 						.map((track) => withoutAsset(track))
 						.filter((track) => track.elements.length > 0),
 				};
+				reconcileDraftTransitions({ draft, previous: baseDocument });
 				const projected = projectOpenCutDraft(draft, {
 					revision: baseRevision,
 					idempotency: [],
@@ -217,6 +219,7 @@ export class CommandManager {
 					const result = command.execute(detached.context);
 					this.applyRippleToDraft({ beforeTracks, draft });
 					this.runReactors(detached.context);
+					reconcileDraftTransitions({ draft, previous: baseDocument });
 					ensureDraftMarkerIds(draft);
 					const after = cloneOpenCutDraft(draft);
 					const undoTarget = historyUndoTarget({

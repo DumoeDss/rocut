@@ -59,6 +59,7 @@ const ELEMENT_KEYS = [
 	"sourceUrl",
 	"isSourceAudioEnabled",
 	"freezeFrame",
+	"transitionIn",
 	"adjustment",
 	"hidden",
 	"effects",

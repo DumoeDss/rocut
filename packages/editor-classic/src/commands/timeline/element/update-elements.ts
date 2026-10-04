@@ -5,7 +5,10 @@ import {
 	type CommandResult,
 } from "../../base-command";
 import type { SceneTracks, TimelineElement } from "../../../timeline";
-import { findTrackInSceneTracks, updateElementInSceneTracks } from "../../../timeline";
+import {
+	findTrackInSceneTracks,
+	updateElementInSceneTracks,
+} from "../../../timeline";
 import { applyElementUpdate } from "../../../timeline/update-pipeline";
 
 export class UpdateElementsCommand extends Command {
@@ -23,6 +26,9 @@ export class UpdateElementsCommand extends Command {
 			"trimStart",
 			"trimEnd",
 			"mediaId",
+			"retime",
+			"freezeFrame",
+			"transitionIn",
 			"adjustment",
 		]);
 		return this.updates.some(({ patch }) =>

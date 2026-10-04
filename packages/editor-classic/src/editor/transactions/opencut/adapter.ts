@@ -183,8 +183,13 @@ function newElement(clip: Clip, asset: Asset | undefined): TimelineElement {
 		} as unknown as TimelineElement;
 	}
 	if (clip.adjustment !== undefined) {
-		return { ...base, type: "effect", effectType: "color-adjustment",
-			name: "Color adjustment", adjustment: { ...clip.adjustment } } as unknown as TimelineElement;
+		return {
+			...base,
+			type: "effect",
+			effectType: "color-adjustment",
+			name: "Color adjustment",
+			adjustment: { ...clip.adjustment },
+		} as unknown as TimelineElement;
 	}
 	if (asset?.kind === "audio") {
 		return {
@@ -223,7 +228,8 @@ function overlayElement(
 		(clip.content?.kind === "motion-text"
 			? previous.type === "motion-text"
 			: clip.adjustment !== undefined
-				? previous.type === "effect" && previous.effectType === "color-adjustment"
+				? previous.type === "effect" &&
+					previous.effectType === "color-adjustment"
 				: previous.type !== "motion-text");
 	const base = previousMatchesContent ? previous : newElement(clip, asset);
 	const next = {
@@ -238,9 +244,20 @@ function overlayElement(
 	if (next.type === "effect" && clip.adjustment !== undefined) {
 		next.adjustment = { ...clip.adjustment };
 	}
+	if (next.type === "video" || next.type === "audio") {
+		if (clip.retime === undefined) delete next.retime;
+		else next.retime = { ...clip.retime };
+	}
+	if (next.type === "video" || next.type === "image") {
+		if (clip.transitionIn === undefined) delete next.transitionIn;
+		else next.transitionIn = { ...clip.transitionIn };
+	}
 	if (next.type === "video") {
 		if (clip.freezeFrame === undefined) delete next.freezeFrame;
-		else next.freezeFrame = clip.freezeFrame as unknown as NonNullable<typeof next.freezeFrame>;
+		else
+			next.freezeFrame = clip.freezeFrame as unknown as NonNullable<
+				typeof next.freezeFrame
+			>;
 	}
 	if (clip.content?.kind === "motion-text" && next.type === "motion-text") {
 		next.sequenceId = clip.content.sequenceId;

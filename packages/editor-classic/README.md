@@ -70,6 +70,25 @@ The chain still needs `culori` (a declared dependency since S05 P3) and a runtim
 execute the shipped TypeScript source — in practice bun, which is the runtime the routing
 above covers automatically.
 
+## Media transaction policy and embedded focus
+
+- `src/editor/transactions/opencut/media-policy.ts` adapts public clips to the Rust
+  transition graph and source-clock validators. Public validate/dryRun/apply use
+  strict candidate validation; ordinary UI edits reconcile stale relations in
+  `CommandManager.prepare` before diff, history, save and publication.
+- `transitionIn` and `retime` are explicit projected/persisted clip fields. A null
+  update clears them across JSON transport; clearing must not resurrect a value
+  from retained donor data. The generic contracts package validates structure and
+  references, not retimed source clocks or transition geometry; providers must
+  install an appropriate placement policy. Classic installs the Rust-backed policy.
+- `src/editor/surface/embedding/surface-focus-recovery.ts` returns keyboard focus
+  to an active surface after its focused control unmounts. It observes only that
+  surface and does not claim focus from surviving outside controls or blurred
+  windows. Chromium removal can emit focusout before disconnecting the node, so
+  the recovery decision waits for the DOM commit.
+- Transition storage/validation does not itself enable transition authoring or
+  rendered dissolves. Those still require scene sampling and UI integration.
+
 ## Consumer obligations (from-tarball adoption)
 
 Four obligations the published examples proved the hard way (findings F-P6-3..6,

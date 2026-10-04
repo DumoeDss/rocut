@@ -71,10 +71,41 @@ export function isValidTrack(value: unknown): value is Track {
 }
 
 function isValidAdjustment(value: unknown): boolean {
-	return isRecord(value) && Reflect.ownKeys(value).length === 5 &&
+	return (
+		isRecord(value) &&
+		Reflect.ownKeys(value).length === 5 &&
 		["exposure", "contrast", "saturation", "temperature", "tint"].every(
 			(key) => typeof value[key] === "number" && Number.isFinite(value[key]),
-		);
+		)
+	);
+}
+
+function isValidTransitionIn(value: unknown): boolean {
+	return (
+		isRecord(value) &&
+		Reflect.ownKeys(value).length === 3 &&
+		value.kind === "cross-dissolve" &&
+		isNonEmptyString(value.outgoingClipId) &&
+		typeof value.durationFrames === "number" &&
+		Number.isInteger(value.durationFrames) &&
+		value.durationFrames >= 2 &&
+		value.durationFrames <= 0xffff_ffff
+	);
+}
+
+function isValidRetime(value: unknown): boolean {
+	return (
+		isRecord(value) &&
+		Reflect.ownKeys(value).every(
+			(key) => key === "rate" || key === "maintainPitch",
+		) &&
+		typeof value.rate === "number" &&
+		Number.isFinite(value.rate) &&
+		value.rate >= 0.01 &&
+		value.rate <= 5 &&
+		(value.maintainPitch === undefined ||
+			typeof value.maintainPitch === "boolean")
+	);
 }
 
 export function isValidClip(value: unknown): value is Clip {
@@ -87,8 +118,12 @@ export function isValidClip(value: unknown): value is Clip {
 		isNonNegativeInteger(value.trimStart) &&
 		isNonNegativeInteger(value.trimEnd) &&
 		(value.freezeFrame === undefined ||
-			(isNonNegativeInteger(value.freezeFrame) && Number.isSafeInteger(value.freezeFrame))) &&
+			(isNonNegativeInteger(value.freezeFrame) &&
+				Number.isSafeInteger(value.freezeFrame))) &&
 		(value.adjustment === undefined || isValidAdjustment(value.adjustment)) &&
+		(value.retime === undefined || isValidRetime(value.retime)) &&
+		(value.transitionIn === undefined ||
+			isValidTransitionIn(value.transitionIn)) &&
 		(value.assetId === undefined || isNonEmptyString(value.assetId)) &&
 		(value.content === undefined || isValidMotionTextClipContent(value.content))
 	);
@@ -245,17 +280,68 @@ export function validateTransactionDocument(args: {
 			motionTextSequences.map((sequence) => sequence.id),
 		);
 		for (const clip of document.clips) {
-			if (clip.adjustment !== undefined && (clip.assetId !== undefined ||
-				clip.content !== undefined || document.tracks.find((track) => track.id === clip.trackId)?.kind !== "effect")) {
-				issues.push(invalid(`clips.${clip.id}.adjustment`,
-					"Color adjustment requires an effect track and no asset or content"));
+			if (clip.retime !== undefined) {
+				const source = document.assets.find(
+					(asset) => asset.id === clip.assetId,
+				);
+				const lane = document.tracks.find((track) => track.id === clip.trackId);
+				if (
+					clip.content !== undefined ||
+					!(
+						source?.kind === "video" ||
+						source?.kind === "audio" ||
+						(clip.assetId === undefined && lane?.kind === "audio")
+					)
+				) {
+					issues.push(
+						invalid(
+							`clips.${clip.id}.retime`,
+							"Playback rate requires a video or audio source",
+						),
+					);
+				}
+			}
+			if (clip.transitionIn !== undefined) {
+				const outgoing = document.clips.find(
+					(candidate) => candidate.id === clip.transitionIn?.outgoingClipId,
+				);
+				if (!outgoing)
+					issues.push(
+						invalid(
+							`clips.${clip.id}.transitionIn`,
+							"Transition references a missing outgoing clip",
+						),
+					);
+			}
+			if (
+				clip.adjustment !== undefined &&
+				(clip.assetId !== undefined ||
+					clip.content !== undefined ||
+					document.tracks.find((track) => track.id === clip.trackId)?.kind !==
+						"effect")
+			) {
+				issues.push(
+					invalid(
+						`clips.${clip.id}.adjustment`,
+						"Color adjustment requires an effect track and no asset or content",
+					),
+				);
 			}
 			if (clip.freezeFrame !== undefined) {
-				const source = document.assets.find((asset) => asset.id === clip.assetId);
-				if (source?.kind !== "video" || clip.content !== undefined ||
-					(source.duration !== undefined && clip.freezeFrame >= source.duration)) {
-					issues.push(invalid(`clips.${clip.id}.freezeFrame`,
-						"Frame hold requires a video asset and a tick inside its source duration"));
+				const source = document.assets.find(
+					(asset) => asset.id === clip.assetId,
+				);
+				if (
+					source?.kind !== "video" ||
+					clip.content !== undefined ||
+					(source.duration !== undefined && clip.freezeFrame >= source.duration)
+				) {
+					issues.push(
+						invalid(
+							`clips.${clip.id}.freezeFrame`,
+							"Frame hold requires a video asset and a tick inside its source duration",
+						),
+					);
 				}
 			}
 			if (!trackIds.has(clip.trackId)) {

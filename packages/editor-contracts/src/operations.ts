@@ -79,8 +79,12 @@ export type TransactionOperation =
 	| {
 			readonly kind: "update-clip";
 			readonly clipId: ClipId;
-			/** null explicitly clears the frame hold across JSON transports. */
-			readonly patch: Partial<Omit<Clip, "id" | "freezeFrame">> & {
+			/** null explicitly clears optional media settings across JSON transports. */
+			readonly patch: Partial<
+				Omit<Clip, "id" | "freezeFrame" | "retime" | "transitionIn">
+			> & {
+				readonly retime?: Clip["retime"] | null;
+				readonly transitionIn?: Clip["transitionIn"] | null;
 				readonly freezeFrame?: Clip["freezeFrame"] | null;
 			};
 	  }

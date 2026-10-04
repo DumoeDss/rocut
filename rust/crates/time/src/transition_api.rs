@@ -3,8 +3,9 @@ use bridge::export;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ClipTransitionSample, ClipTransitionWindow, FrameRate, MediaTime, RejectedTransitionLink,
-    TransitionClip, TransitionLink, evaluate_transition_graph,
+    ClipTransitionSample, ClipTransitionWindow, FrameRate, MediaTime, PreviousTransitionGraph,
+    RejectedTransitionLink, TransitionClip, TransitionLink, evaluate_transition_graph,
+    reconcile_transition_graph,
 };
 
 crate::strict_object::strict_object! {
@@ -18,6 +19,9 @@ pub struct ClipTransitionsOptions {
     pub frame_rate: FrameRate,
     #[serde(default)]
     pub playhead: Option<MediaTime>,
+    /// Only UI edit reconciliation supplies prior state. Public transactions omit it.
+    #[serde(default)]
+    pub previous: Option<PreviousTransitionGraph>,
 }
 }
 
@@ -38,11 +42,26 @@ pub struct EvaluatedTransitionLink {
 pub struct ClipTransitionsEvaluation {
     pub accepted: Vec<EvaluatedTransitionLink>,
     pub rejected: Vec<RejectedTransitionLink>,
+    /// Original input indices to clear atomically with an ordinary UI edit.
+    pub removed: Vec<usize>,
 }
 
 #[export]
 pub fn evaluate_clip_transitions(options: ClipTransitionsOptions) -> ClipTransitionsEvaluation {
-    let graph = evaluate_transition_graph(&options.clips, &options.links, options.frame_rate);
+    let (graph, removed) = if let Some(previous) = &options.previous {
+        let result = reconcile_transition_graph(
+            &options.clips,
+            &options.links,
+            options.frame_rate,
+            previous,
+        );
+        (result.graph, result.removed)
+    } else {
+        (
+            evaluate_transition_graph(&options.clips, &options.links, options.frame_rate),
+            vec![],
+        )
+    };
     ClipTransitionsEvaluation {
         accepted: graph
             .accepted
@@ -54,5 +73,6 @@ pub fn evaluate_clip_transitions(options: ClipTransitionsOptions) -> ClipTransit
             })
             .collect(),
         rejected: graph.rejected,
+        removed,
     }
 }
