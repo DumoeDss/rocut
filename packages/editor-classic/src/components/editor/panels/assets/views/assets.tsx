@@ -101,15 +101,20 @@ export function MediaView() {
 						onProgress: (progress: { progress: number }) =>
 							setProgress(progress.progress),
 					});
+					const assetNames: string[] = [];
 					for (const asset of processedAssets) {
-						await editor.media.addMediaAsset({
+						const saved = await editor.media.addMediaAsset({
 							projectId: activeProject.metadata.id,
 							asset,
 						});
+						if (saved) assetNames.push(saved.name);
+					}
+					if (assetNames.length === 0) {
+						throw new Error("No media assets were saved");
 					}
 					return {
-						uploadedCount: processedAssets.length,
-						assetNames: processedAssets.map((asset) => asset.name),
+						uploadedCount: assetNames.length,
+						assetNames,
 					};
 				},
 			});

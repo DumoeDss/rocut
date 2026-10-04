@@ -119,6 +119,9 @@ export async function showMediaUploadToast<T extends MediaUploadToastResult>({
 		{
 			loading: `Uploading ${getAssetLabel({ count: filesCount })}...`,
 			success: ({ uploadedCount, assetNames }) => {
+				if (uploadedCount > 0 && uploadedCount < filesCount) {
+					return `${uploadedCount} of ${filesCount} media assets uploaded; ${filesCount - uploadedCount} failed`;
+				}
 				if (uploadedCount === 1) {
 					const assetName = assetNames?.[0];
 					return assetName

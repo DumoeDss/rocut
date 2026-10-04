@@ -205,7 +205,7 @@ export async function probeCoreInteractions({ page, evidence, work, audioFixture
 	assert(secondAttachments.length > firstAttachments.length, 'Importing after reload must not overwrite existing media');
 	await page.locator('input[type="file"]').setInputFiles({name:'broken-probe.mp4',mimeType:'video/mp4',buffer:Buffer.from('not a media container')});
 	await page.locator('[data-sonner-toast]').filter({hasText:'Failed to process broken-probe.mp4'}).waitFor({timeout:10000});
-	await page.locator('[data-sonner-toast]').filter({hasText:'No media assets were uploaded'}).waitFor({timeout:10000});
+	await page.locator('[data-sonner-toast][data-type="error"]').filter({hasText:'Failed to upload media asset'}).waitFor({timeout:10000});
 	const afterCorrupt = await page.evaluate(async () => (await fetch(new URL('api/attachments', location.href))).json());
 	assert.equal(afterCorrupt.length, secondAttachments.length, 'Corrupt video must not persist an attachment');
 	evidence.checks.push({name:'corrupt video rejected without persisting an attachment',pass:true});

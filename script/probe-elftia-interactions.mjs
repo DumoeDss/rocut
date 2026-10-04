@@ -17,6 +17,7 @@ import { probeColorAdjustment } from './probe-color-adjustment.mjs';
 import { probeTransitionPersistence } from './probe-transition-persistence.mjs';
 import { probeVideoSourceLifetime } from './probe-video-source-lifetime.mjs';
 import { probeTransitionRender } from './probe-transition-render.mjs';
+import { probeMediaImport } from './probe-media-import.mjs';
 
 // Run with the Elftia worktree's tsx loader. Never launch a substitute browser.
 const hostRoot = resolve(process.env.ELFTIA_WORKTREE ?? '');
@@ -41,6 +42,9 @@ try {
   },sessionId);
   assert.equal(ownership.active,sessionId);
   assert.equal(resolve(ownership.folder),join(evidenceRoot,'project'),'Only the dedicated test workspace may be mutated');
+  // CDP attach may inherit metrics left by an earlier narrow-pane probe.
+  // Establish the gesture fixture's baseline; finally restores host metrics.
+  await conn.page.setViewportSize({width:1280,height:900});
   const frames = conn.page.frames();
   for (const frame of frames) if ((await frame.title().catch(()=>'' )).startsWith('OpenCut editor')) editor=frame;
   assert(editor,'Open Rocut in the authorized Elftia session before this probe');
@@ -94,7 +98,9 @@ try {
   conn.page.on('response',response=>{if(response.status()>=400 && response.url().includes('/api/')) evidence.requests.push({phase,status:response.status(),url:scrub(response.url())});});
   const audioFixture=join(work,'fixture-tone-a4.wav');
   execFileSync('ffmpeg',['-v','error','-n','-f','lavfi','-i','sine=frequency=440:duration=16','-ar','44100','-ac','1','-c:a','pcm_s16le',audioFixture],{windowsHide:true});
-  if (process.argv.includes('--transition-render-only') || process.argv.includes('--transition-authoring-only') || process.argv.includes('--transition-image-authoring-only')) {
+  if (process.argv.includes('--media-import-only')) {
+    await probeMediaImport({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
+  } else if (process.argv.includes('--transition-render-only') || process.argv.includes('--transition-authoring-only') || process.argv.includes('--transition-image-authoring-only')) {
     await probeTransitionRender({page,project:project.path,work,evidence,authorUi:!process.argv.includes('--transition-render-only'),mediaKind:process.argv.includes('--transition-image-authoring-only')?'image':'video',onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--source-lifetime-only')) {
     await probeVideoSourceLifetime({page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});

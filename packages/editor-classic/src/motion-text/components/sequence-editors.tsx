@@ -173,10 +173,20 @@ function EditorActions({
 }) {
 	return (
 		<div className="flex flex-wrap justify-end gap-2 pt-1">
-			<Button variant="ghost" size="sm" onClick={onCancel}>
+			<Button
+				variant="ghost"
+				size="sm"
+				className="h-auto min-h-7 max-w-full px-1 whitespace-normal [overflow-wrap:anywhere]"
+				onClick={onCancel}
+			>
 				Cancel
 			</Button>
-			<Button size="sm" disabled={isDisabled || isApplying} onClick={onApply}>
+			<Button
+				size="sm"
+				className="h-auto min-h-7 max-w-full px-1 whitespace-normal [overflow-wrap:anywhere]"
+				disabled={isDisabled || isApplying}
+				onClick={onApply}
+			>
 				{isApplying ? "Applying…" : "Apply changes"}
 			</Button>
 		</div>
@@ -270,9 +280,9 @@ export function MotionTextDefaultsEditor({
 	};
 
 	return (
-		<div className="bg-muted/30 mt-2 space-y-3 rounded-sm border p-2.5">
+		<div className="bg-muted/30 mt-2 space-y-3 rounded-sm border p-2 [overflow-wrap:anywhere]">
 			<div className="space-y-1.5">
-				<div className="flex items-center justify-between gap-2">
+				<div className="flex flex-wrap items-center justify-between gap-2">
 					<Label>Default font</Label>
 					<FieldState locked={false} local={initialFontId !== ""} />
 				</div>
@@ -284,7 +294,7 @@ export function MotionTextDefaultsEditor({
 				/>
 			</div>
 			<div className="flex flex-wrap items-center justify-between gap-2">
-				<div className="flex items-center gap-2">
+				<div className="flex flex-wrap items-center gap-2">
 					<Label>Palette</Label>
 					<FieldState locked={hasFullCueLock} local={!initialUsePresetColors} />
 				</div>
@@ -308,6 +318,7 @@ export function MotionTextDefaultsEditor({
 						<ColorPicker
 							value={foreground}
 							onChange={setForeground}
+							className="h-auto min-h-7 flex-wrap py-1 [&>div]:basis-16"
 							contentSide="left"
 						/>
 					</div>
@@ -316,6 +327,7 @@ export function MotionTextDefaultsEditor({
 						<ColorPicker
 							value={accent}
 							onChange={setAccent}
+							className="h-auto min-h-7 flex-wrap py-1 [&>div]:basis-16"
 							contentSide="left"
 						/>
 					</div>
