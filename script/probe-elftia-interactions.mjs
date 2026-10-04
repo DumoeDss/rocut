@@ -26,6 +26,7 @@ import { probeMotionStress } from './probe-motion-stress.mjs';
 import { probeMotionStressMemory } from './probe-motion-stress-memory.mjs';
 import { probeMotionFullExport } from './probe-motion-full-export.mjs';
 import { probeExportBackpressure } from './probe-export-backpressure.mjs';
+import { probeVideoProperties } from './probe-video-properties.mjs';
 
 // Run with the Elftia worktree's tsx loader. Never launch a substitute browser.
 const hostRoot = resolve(process.env.ELFTIA_WORKTREE ?? '');
@@ -141,6 +142,8 @@ try {
     await probeMotionStress({page,hostPage:conn.page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--motion-duration-only') || process.argv.includes('--motion-seek-only')) {
     await probeMotionDuration({page,hostPage:conn.page,work,evidence,measureSeek:process.argv.includes('--motion-seek-only'),onPhase:next=>{phase=next;console.log('phase:',phase);}});
+  } else if (process.argv.includes('--video-properties-only')) {
+    await probeVideoProperties({page,hostPage:conn.page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--timeline-controls-only')) {
     await probeTimelineControls({page,hostPage:conn.page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--media-mime-only')) {

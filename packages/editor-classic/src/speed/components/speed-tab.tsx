@@ -1,4 +1,5 @@
-import { useRef } from "react";
+import { useId, useRef } from "react";
+import { Label } from "../../components/ui/label";
 import { useEditorInstance } from "../../editor/use-editor";
 import { NumberField } from "../../components/ui/number-field";
 import { Switch } from "../../components/ui/switch";
@@ -65,6 +66,7 @@ export function SpeedTab({
 	trackId: string;
 }) {
 	const editor = useEditorInstance();
+	const pitchSwitchId = useId();
 	const rate = clampRetimeRate({
 		rate: element.retime?.rate ?? DEFAULT_RETIME_RATE,
 	});
@@ -117,6 +119,7 @@ export function SpeedTab({
 				<SectionFields>
 					<SectionField label="Speed">
 						<NumberField
+							aria-label="Playback speed"
 							icon={<HugeiconsIcon icon={DashboardSpeed02Icon} />}
 							value={speedDraft.displayValue}
 							suffix="x"
@@ -140,8 +143,14 @@ export function SpeedTab({
 						/>
 					</SectionField>
 					<div className="flex items-center justify-between">
-						<span className="text-sm">Change pitch</span>
+						<Label
+							htmlFor={pitchSwitchId}
+							className="text-sm text-foreground font-normal"
+						>
+							Change pitch
+						</Label>
 						<Switch
+							id={pitchSwitchId}
 							checked={!maintainPitch}
 							disabled={!isPitchPreserveAvailable}
 							onCheckedChange={(checked) =>
