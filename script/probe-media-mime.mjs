@@ -184,7 +184,10 @@ export async function probeMediaMime({
 				await attachAudioOutputObserver(page);
 			}
 			await preparePlayback();
-			await observeAudioPlayback(page);
+			const output = await observeAudioPlayback(page, {
+				minimumAudioSeconds: 1.8,
+			});
+			(evidence.audioPreview ??= []).push({ name: entry.name, ...output });
 		} else
 			await expect
 				.poll(

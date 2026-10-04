@@ -29,6 +29,7 @@ export class AudioManager {
 	private masterGain: GainNode | null = null;
 	private playbackStartTime = 0;
 	private playbackStartContextTime = 0;
+	private playbackClockState: "idle" | "starting" | "running" = "idle";
 	private scheduleTimer: TimerHandle | null = null;
 	private lookaheadSeconds = 2;
 	private scheduleIntervalMs = 500;
@@ -165,6 +166,14 @@ export class AudioManager {
 		return this.playbackStartTime + elapsed;
 	}
 
+	/** The preview must not outrun a decoder or a device whose clock is starting. */
+	getPlaybackClockTime(): number | null {
+		if (this.playbackClockState === "idle") return null;
+		return this.playbackClockState === "starting"
+			? this.playbackStartTime
+			: this.getPlaybackTime();
+	}
+
 	private async startPlayback({ time }: { time: number }): Promise<void> {
 		const audioContext = this.ensureAudioContext();
 		if (!audioContext) return;
@@ -179,12 +188,23 @@ export class AudioManager {
 
 		if (duration <= 0) return;
 
-		if (audioContext.state === "suspended") {
-			await audioContext.resume();
-			if (sessionId !== this.playbackSessionId) return;
-		}
+		this.playbackStartTime = time;
+		this.playbackClockState = "starting";
 
-		this.clips = await collectAudioClips({ tracks, mediaAssets });
+		try {
+			if (audioContext.state === "suspended") {
+				await audioContext.resume();
+				if (sessionId !== this.playbackSessionId) return;
+			}
+			const clips = await collectAudioClips({ tracks, mediaAssets });
+			if (sessionId !== this.playbackSessionId) return;
+			this.clips = clips;
+		} catch (error) {
+			if (sessionId !== this.playbackSessionId) return;
+			this.editor.playback.pause();
+			console.error("Failed to start audio playback", error);
+			return;
+		}
 		if (
 			sessionId !== this.playbackSessionId ||
 			!this.editor.playback.getIsPlaying()
@@ -194,6 +214,9 @@ export class AudioManager {
 
 		this.playbackStartTime = time;
 		this.playbackStartContextTime = audioContext.currentTime;
+		this.playbackClockState = this.clips.some((clip) => !clip.muted)
+			? "running"
+			: "idle";
 
 		this.scheduleUpcomingClips();
 
@@ -239,6 +262,7 @@ export class AudioManager {
 	}
 
 	private stopPlayback(): void {
+		this.playbackClockState = "idle";
 		this.playbackSessionId += 1;
 		if (this.scheduleTimer) this.scheduleTimer.cancel();
 		this.scheduleTimer = null;

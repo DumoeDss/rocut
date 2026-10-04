@@ -37,12 +37,14 @@ if (process.env.OPENCUT_PLAYBACK_RANGE_TEST_ISOLATED !== "1") {
 	interface Fixture {
 		readonly playback: InstanceType<typeof PlaybackManager>;
 		setDuration(duration: number): void;
+		setAudioClock(seconds: number | null): void;
 		flushTimelineChange(): void;
 		flushAnimationFrame(): void;
 	}
 
 	function createFixture(): Fixture {
 		let duration = 1_200_000;
+		let audioClock: number | null = null;
 		let frameHandler: (() => void) | null = null;
 		const timelineListeners = new Set<() => void>();
 		const sceneListeners = new Set<() => void>();
@@ -52,6 +54,7 @@ if (process.env.OPENCUT_PLAYBACK_RANGE_TEST_ISOLATED !== "1") {
 			cancel: mock(() => {}),
 		};
 		const editor = {
+			audio: { getPlaybackClockTime: () => audioClock },
 			timeline: {
 				getTotalDuration: () => duration,
 				subscribe: (listener: () => void) => {
@@ -77,6 +80,9 @@ if (process.env.OPENCUT_PLAYBACK_RANGE_TEST_ISOLATED !== "1") {
 		playback.bindTimelineScope();
 		return {
 			playback,
+			setAudioClock(seconds) {
+				audioClock = seconds;
+			},
 			setDuration(nextDuration) {
 				duration = nextDuration;
 			},
@@ -103,6 +109,81 @@ if (process.env.OPENCUT_PLAYBACK_RANGE_TEST_ISOLATED !== "1") {
 		nowSpy.mockRestore();
 	});
 
+	describe("PlaybackManager audio clock", () => {
+		test("a delayed device does not consume or truncate a short clip", () => {
+			const fixture = createFixture();
+			fixture.setDuration(240_000);
+			fixture.setAudioClock(0);
+			fixture.playback.play();
+			now = 3_000;
+			fixture.flushAnimationFrame();
+			expect(fixture.playback.getCurrentTime()).toBe(0);
+			expect(fixture.playback.getIsPlaying()).toBe(true);
+			fixture.setAudioClock(1.5);
+			now = 4_500;
+			fixture.flushAnimationFrame();
+			expect(fixture.playback.getCurrentTime()).toBe(180_000);
+			expect(fixture.playback.getIsPlaying()).toBe(true);
+			fixture.setAudioClock(2);
+			fixture.flushAnimationFrame();
+			expect(fixture.playback.getCurrentTime()).toBe(240_000);
+			expect(fixture.playback.getIsPlaying()).toBe(false);
+		});
+
+		test("video-only playback still uses elapsed wall time", () => {
+			const fixture = createFixture();
+			fixture.playback.play();
+			now = 1_500;
+			fixture.flushAnimationFrame();
+			expect(fixture.playback.getCurrentTime()).toBe(180_000);
+		});
+
+		test("removing the audio clock does not jump over its startup wait", () => {
+			const fixture = createFixture();
+			fixture.setAudioClock(0);
+			fixture.playback.play();
+			now = 3_000;
+			fixture.flushAnimationFrame();
+			fixture.setAudioClock(0.5);
+			now = 3_500;
+			fixture.flushAnimationFrame();
+			fixture.setAudioClock(null);
+			now = 3_600;
+			fixture.flushAnimationFrame();
+			expect(fixture.playback.getCurrentTime()).toBe(72_000);
+		});
+
+		test("audio loop boundaries follow audio time, not delayed wall time", () => {
+			const fixture = createFixture();
+			fixture.playback.setLoopRange({
+				range: { startTime: 240_000 as never, endTime: 480_000 as never },
+			});
+			fixture.setAudioClock(2);
+			fixture.playback.play();
+			now = 9_000;
+			fixture.flushAnimationFrame();
+			expect(fixture.playback.getCurrentTime()).toBe(240_000);
+			fixture.setAudioClock(3.5);
+			fixture.flushAnimationFrame();
+			expect(fixture.playback.getCurrentTime()).toBe(420_000);
+			fixture.setAudioClock(4);
+			fixture.flushAnimationFrame();
+			expect(fixture.playback.getCurrentTime()).toBe(240_000);
+			expect(fixture.playback.getIsPlaying()).toBe(true);
+		});
+
+		test("pause cancels updates while the native clock continues", () => {
+			const fixture = createFixture();
+			fixture.setAudioClock(1);
+			fixture.playback.play();
+			fixture.playback.pause();
+			fixture.setAudioClock(9);
+			now = 9_000;
+			fixture.flushAnimationFrame();
+			expect(fixture.playback.getCurrentTime()).toBe(120_000);
+			expect(fixture.playback.getIsPlaying()).toBe(false);
+		});
+	});
 	describe("PlaybackManager loop range", () => {
 		test("setting a range outside the playhead seeks to its inclusive start", () => {
 			const fixture = createFixture();

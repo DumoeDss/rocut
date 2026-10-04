@@ -297,12 +297,22 @@ export class PlaybackManager {
 		if (!this.isPlaying) return;
 
 		const fps = this.editor.project.getActive()?.settings.fps;
-		const elapsedSeconds =
-			(performance.now() - this.playbackStartWallTime) / 1000;
-		const rawTime = addMediaTime({
-			a: this.playbackStartTime,
-			b: mediaTimeFromSeconds({ seconds: elapsedSeconds }),
-		});
+		const audioTime = this.editor.audio?.getPlaybackClockTime();
+		const now = performance.now();
+		const elapsedSeconds = (now - this.playbackStartWallTime) / 1000;
+		const rawTime =
+			audioTime != null
+				? mediaTimeFromSeconds({ seconds: audioTime })
+				: addMediaTime({
+						a: this.playbackStartTime,
+						b: mediaTimeFromSeconds({ seconds: elapsedSeconds }),
+					});
+		if (audioTime != null) {
+			// Rebase fallback time so muting/removing audio does not skip the time
+			// spent waiting for its device or decoder to start.
+			this.playbackStartWallTime = now;
+			this.playbackStartTime = rawTime;
+		}
 		const newTime = fps ? roundFrameTime({ time: rawTime, fps }) : rawTime;
 		const maxTime = this.editor.timeline.getTotalDuration();
 		const playbackEnd = this.loopRange?.endTime ?? maxTime;

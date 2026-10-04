@@ -25,14 +25,17 @@ export async function attachAudioOutputObserver(page) {
 	});
 }
 
-export async function observeAudioPlayback(page, { silent = false } = {}) {
+export async function observeAudioPlayback(
+	page,
+	{ silent = false, minimumAudioSeconds = 1.2 } = {},
+) {
 	await page.getByLabel("Edit playhead time", { exact: true }).click();
 	await page.getByLabel("Playhead time", { exact: true }).fill("00:00:00:00");
 	await page.getByLabel("Playhead time", { exact: true }).press("Enter");
 	await page.getByLabel("Play preview", { exact: true }).click();
 	let result;
 	try {
-		result = await page.evaluate(async () => {
+		result = await page.evaluate(async (minimumSeconds) => {
 			const probe = globalThis.__audioOutputProbe;
 			for (const output of probe.outputs.splice(0)) {
 				const analyser = output.source.context.createAnalyser();
@@ -41,12 +44,21 @@ export async function observeAudioPlayback(page, { silent = false } = {}) {
 				probe.taps.push(analyser);
 			}
 			let maxRms = 0,
+				tailRms = 0,
 				frequency = 0,
 				running = false,
-				audioSeconds = 0;
+				audioSeconds = 0,
+				startupMs = null,
+				maxPlayheadLead = 0,
+				timecodeSamples = 0;
 			const start = performance.now(),
 				audioStarts = new Map();
-			while (performance.now() - start < 1200) {
+			// Observe device progress, with no sleep before Play. A finite deadline
+			// rejects a stuck device; the playhead check catches truncated audio.
+			while (
+				performance.now() - start < 6000 &&
+				audioSeconds < minimumSeconds
+			) {
 				for (const analyser of probe.taps) {
 					if (!audioStarts.has(analyser))
 						audioStarts.set(analyser, analyser.context.currentTime);
@@ -70,18 +82,46 @@ export async function observeAudioPlayback(page, { silent = false } = {}) {
 							if (bins[i] > bins[peak]) peak = i;
 						frequency = (peak * analyser.context.sampleRate) / analyser.fftSize;
 					}
+					if (audioSeconds >= minimumSeconds - 0.15)
+						tailRms = Math.max(tailRms, rms);
 				}
 				await new Promise((resolve) => setTimeout(resolve, 20));
+				if (audioSeconds > 0 && startupMs === null)
+					startupMs = performance.now() - start;
+				const timecode = document
+					.querySelector('[aria-label="Edit playhead time"]')
+					?.textContent?.trim()
+					.split(":")
+					.map(Number);
+				if (timecode?.length === 4 && timecode.every(Number.isFinite)) {
+					timecodeSamples++;
+					const wholeSeconds =
+						timecode[0] * 3600 + timecode[1] * 60 + timecode[2];
+					maxPlayheadLead = Math.max(
+						maxPlayheadLead,
+						wholeSeconds - audioSeconds,
+					);
+				}
 			}
-			return { maxRms, frequency, running, audioSeconds };
-		});
+			return {
+				maxRms,
+				tailRms,
+				frequency,
+				running,
+				audioSeconds,
+				startupMs,
+				maxPlayheadLead,
+				timecodeSamples,
+				wallMs: performance.now() - start,
+			};
+		}, minimumAudioSeconds);
 	} finally {
 		const pause = page.getByLabel("Pause preview", { exact: true });
 		if (await pause.count()) await pause.click();
 	}
 	assert(result.running, "Actual realtime audio context must run");
 	assert(
-		result.audioSeconds > 0.8,
+		result.audioSeconds >= minimumAudioSeconds,
 		"Realtime output clock must advance during observation: " +
 			JSON.stringify(result),
 	);
@@ -92,8 +132,21 @@ export async function observeAudioPlayback(page, { silent = false } = {}) {
 		);
 	else {
 		assert(
+			result.timecodeSamples > 0,
+			"Actual preview timecode must be observed",
+		);
+		assert(
+			result.maxPlayheadLead < 0.15,
+			"Preview playhead must not outrun delayed audio: " +
+				JSON.stringify(result),
+		);
+		assert(
 			result.maxRms > 0.015,
 			"Preview must emit real audio: " + JSON.stringify(result),
+		);
+		assert(
+			result.tailRms > 0.015,
+			"Preview must retain late audio: " + JSON.stringify(result),
 		);
 		assert(
 			Math.abs(result.frequency - 880) < 30,
