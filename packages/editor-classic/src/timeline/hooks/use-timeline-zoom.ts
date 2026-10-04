@@ -89,6 +89,10 @@ export function useTimelineZoom({
 
 	useEffect(() => controller.bindPreventBrowserZoom(), [controller]);
 	useEffect(() => controller.bindPlaybackPersistence(), [controller]);
+	useEffect(() => editor.save.beforeFlush(() => {
+		controller.saveScrollPosition();
+		controller.flushScrollPosition();
+	}), [editor, controller]);
 
 	useEffect(() => () => controller.destroy(), [controller]);
 

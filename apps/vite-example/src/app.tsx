@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ThemeProvider } from "next-themes";
 import { useEmbeddedHostTheme } from "./host/use-embedded-host-theme";
+import { bindEmbeddedHostLifecycle } from "./host/embedded-host-lifecycle";
 import { Toaster } from "@opencut/editor-classic/ui";
 import { TooltipProvider } from "@opencut/editor-classic/ui";
 import { MobileGate } from "@opencut/editor-classic/ui";
@@ -156,6 +157,16 @@ function HostServedApp({ surface }: { surface: HostServedSurface }) {
  */
 function HostServedSync({ projectId }: { projectId: string }) {
 	const editor = useEditorInstance();
+	useEffect(() => bindEmbeddedHostLifecycle(async () => {
+		if (editor.project.getActiveOrNull()?.metadata.id !== projectId) {
+			throw new Error("Project is not ready to close");
+		}
+		editor.playback.pause();
+		await editor.save.flush();
+		if (editor.project.getActiveOrNull()?.metadata.id !== projectId) {
+			throw new Error("Project changed while preparing to close");
+		}
+	}), [editor, projectId]);
 	// Cancellation and the busy guard are refs, not state: they are read from
 	// inside a running export's callbacks, where a re-rendered closure would
 	// see a stale value and keep rendering a job the CLI already cancelled.

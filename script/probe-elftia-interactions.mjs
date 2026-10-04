@@ -91,6 +91,7 @@ try {
   // Reopen through the real workspace button: host URL/theme ownership must
   // follow the fixture too, not just a navigation of its existing iframe.
   await conn.page.locator('[data-testid="chat-button-workspace-close"][data-workspace-id="rocut"]').click();
+  await expect(conn.page.locator('[data-testid="webpane-tab-slot"][data-tool-id="rocut"]')).toHaveCount(0, {timeout:20000});
   await conn.page.locator('[data-testid="chat-tab-workspace"][data-workspace-id="rocut"]').click();
   await expect.poll(async () => {
     for (const frame of conn.page.frames()) {

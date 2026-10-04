@@ -61,6 +61,9 @@ export async function probePlaybackViewState({
 			'[data-testid="chat-button-workspace-close"][data-workspace-id="rocut"]',
 		)
 		.click();
+	await expect(hostPage.locator(
+		'[data-testid="webpane-tab-slot"][data-tool-id="rocut"]',
+	)).toHaveCount(0, { timeout: 20000 });
 	await hostPage
 		.locator('[data-testid="chat-tab-workspace"][data-workspace-id="rocut"]')
 		.click();

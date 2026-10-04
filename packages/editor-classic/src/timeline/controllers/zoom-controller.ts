@@ -268,7 +268,9 @@ export class ZoomController {
 		});
 	}
 
-	private flushScrollPosition(): void {
+	flushScrollPosition(): void {
+		this.scrollSaveTimeout?.cancel();
+		this.scrollSaveTimeout = null;
 		const pending = this.pendingScrollSave;
 		this.pendingScrollSave = null;
 		if (!pending || pending.projectId !== this.config.getProjectId()) return;

@@ -9,6 +9,8 @@ export class SaveManager {
 	private debounceMs: number;
 	private isPaused = false;
 	private isSaving = false;
+	private inFlight: Promise<void> | null = null;
+	private flushListeners = new Set<() => void>();
 	private hasPendingSave = false;
 	private saveTimer: TimerHandle | null = null;
 	private unsubscribeHandlers: Array<() => void> = [];
@@ -77,8 +79,22 @@ export class SaveManager {
 	}
 
 	async flush(): Promise<void> {
+		for (const listener of this.flushListeners) listener();
 		this.hasPendingSave = true;
-		await this.saveNow();
+		while (this.hasPendingSave || this.isSaving) {
+			if (this.isPaused || !this.editor.project.getActive() ||
+				this.editor.project.getIsLoading() ||
+				this.editor.project.getMigrationState().isMigrating) {
+				throw new Error("Project is not ready to flush");
+			}
+			await this.saveNow();
+		}
+	}
+
+	/** Publish transient UI state before an explicit durable-save barrier. */
+	beforeFlush(listener: () => void): () => void {
+		this.flushListeners.add(listener);
+		return () => { this.flushListeners.delete(listener); };
 	}
 
 	getIsDirty(): boolean {
@@ -123,21 +139,28 @@ export class SaveManager {
 		});
 	}
 
-	private async saveNow(): Promise<void> {
-		if (this.isPaused) return;
-		if (this.isSaving) return;
-		if (!this.hasPendingSave) return;
+	private saveNow(): Promise<void> {
+		if (this.inFlight) return this.inFlight;
+		if (this.isPaused || !this.hasPendingSave) return Promise.resolve();
 
 		const activeProject = this.editor.project.getActive();
-		if (!activeProject) return;
-		if (this.editor.project.getIsLoading()) return;
-		if (this.editor.project.getMigrationState().isMigrating) return;
+		if (!activeProject || this.editor.project.getIsLoading() ||
+			this.editor.project.getMigrationState().isMigrating) return Promise.resolve();
 
 		this.isSaving = true;
 		this.hasPendingSave = false;
 		this.clearTimer();
-		let didFail = false;
+		this.inFlight = this.persist().then(() => {
+			this.inFlight = null;
+			if (this.hasPendingSave && !this.isPaused) this.queueSave();
+		}, (error: unknown) => {
+			this.inFlight = null;
+			throw error;
+		});
+		return this.inFlight;
+	}
 
+	private async persist(): Promise<void> {
 		try {
 			await this.editor.project.saveCurrentProject();
 			for (const listener of this.publicationListeners) {
@@ -149,14 +172,10 @@ export class SaveManager {
 				}
 			}
 		} catch (error) {
-			didFail = true;
 			this.hasPendingSave = true;
 			throw error;
 		} finally {
 			this.isSaving = false;
-			if (this.hasPendingSave && !didFail && !this.isPaused) {
-				this.queueSave();
-			}
 		}
 	}
 
