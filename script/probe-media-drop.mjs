@@ -32,6 +32,9 @@ export async function probeMediaDrop({
 			work,
 			cdp,
 			attachments,
+			onTarget: (target) => {
+				(evidence.nativeDropTargets ??= []).push(target);
+			},
 		});
 		const assetVideo = make("拖入 素材.mp4"),
 			assetAudio = make("drop-library.wav", true);

@@ -3,9 +3,16 @@ import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { expect } from "@playwright/test";
 
 // Uses Chromium input, not synthetic DOM events; the caller owns CDP disposal.
-export function createNativeDropHelpers({ page, work, cdp, attachments }) {
+export function createNativeDropHelpers({
+	page,
+	work,
+	cdp,
+	attachments,
+	onTarget = () => {},
+}) {
 	const make = (name, audio = false) => {
 		const path = join(work, name);
 		execFileSync(
@@ -30,6 +37,31 @@ export function createNativeDropHelpers({ page, work, cdp, attachments }) {
 		return path;
 	};
 	const drop = async (files, locator) => {
+		const inspectTarget = () =>
+			locator.evaluate((node) => {
+				const r = node.getBoundingClientRect();
+				const hit = document.elementFromPoint(
+					r.x + r.width * 0.55,
+					r.y + r.height * 0.62,
+				);
+				return {
+					inside: node.contains(hit),
+					tag: hit?.tagName,
+					toast: Boolean(hit?.closest("[data-sonner-toast]")),
+					role: hit?.getAttribute("role"),
+				};
+			});
+		const target = await inspectTarget();
+		onTarget(target);
+		// CDP has no locator actionability checks. Wait for transient notifications
+		// to uncover the real target; never drop through an unrelated overlay.
+		await expect
+			.poll(async () => (await inspectTarget()).inside, {
+				timeout: 10000,
+				message: "Native drop target must receive the input",
+			})
+			.toBe(true);
+		if (!target.inside) onTarget(await inspectTarget());
 		const b = await locator.boundingBox();
 		assert(b, "Drop target must be visible");
 		const data = { items: [], files, dragOperationsMask: 1 };
