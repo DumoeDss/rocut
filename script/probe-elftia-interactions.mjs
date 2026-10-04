@@ -58,7 +58,7 @@ try {
   if (nativeAudio) {
     nativeAudioCdp = await conn.context.newCDPSession(conn.page);
     await nativeAudioCdp.send('Emulation.clearDeviceMetricsOverride');
-  } else await conn.page.setViewportSize(['--motion-seek-only','--motion-stress-only','--motion-stress-memory-only','--motion-stress-full-export-only'].some(flag=>process.argv.includes(flag)) ? {width:1920,height:1080} : {width:1280,height:900});
+  } else await conn.page.setViewportSize(['--motion-seek-only','--motion-stress-only','--motion-stress-memory-only','--motion-stress-full-export-only','--export-backpressure-only'].some(flag=>process.argv.includes(flag)) ? {width:1920,height:1080} : {width:1280,height:900});
   evidence.viewportMode = nativeAudio ? 'native-audio' : 'emulated-interactions';
   const frames = conn.page.frames();
   for (const frame of frames) if ((await frame.title().catch(()=>'' )).startsWith('OpenCut editor')) editor=frame;
@@ -111,7 +111,7 @@ try {
     const value=target[key]; return typeof value==='function'?value.bind(target):value;
   }});
   conn.page.on('pageerror',error=>evidence.errors.push(scrub(error.message)));
-  if (['--adjustment-only', '--transition-render-only', '--transition-authoring-only', '--transition-image-authoring-only', '--motion-seek-only', '--motion-duration-only', '--motion-stress-only', '--motion-stress-memory-only', '--motion-stress-full-export-only'].some(flag => process.argv.includes(flag))) conn.page.on('console', message => {
+  if (['--adjustment-only', '--transition-render-only', '--transition-authoring-only', '--transition-image-authoring-only', '--motion-seek-only', '--motion-duration-only', '--motion-stress-only', '--motion-stress-memory-only', '--motion-stress-full-export-only', '--export-backpressure-only'].some(flag => process.argv.includes(flag))) conn.page.on('console', message => {
     if (message.type() === 'error' && /Failed to render preview frame|Validation Error/.test(message.text())) evidence.errors.push(scrub(message.text()));
   });
   // Safe transaction summaries distinguish a dropped shortcut from stale persistence.
