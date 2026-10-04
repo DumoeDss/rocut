@@ -2,6 +2,15 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Keyframe curve presets — installed keyboard and scrolling checkpoint
+
+- **Baseline:** live-fHk41V passes real position-keyframe creation, Smooth application, undo/redo, library save, reload and reapplication. It then fails the interaction structure check: one button nested inside another and no named delete control. The observed graph-library 404 is the existing missing-record/null protocol, not failed persistence; no server contract change is needed.
+- **Repair:** preset application and deletion are sibling buttons with distinct names; active curves expose pressed state. Delete controls become visible on keyboard focus as well as hover. The saved grid has a bounded scroll area, and the popover respects available height instead of clipping content. Existing library persistence and timeline commands are unchanged.
+- **Installed acceptance:** source 189f7ec6, **live-CNYFrz passes five checks**. Real UI creates two Position X keys, applies Smooth, undoes/redoes and saves the exact [0.25, 0.1, 0.25, 1] curve. Reopening, applying Linear then the saved curve preserves exact keyframe data. Tab from the preset reaches its named delete control, reveals it and Enter removes only the library entry; deletion survives reopen. Eighteen new saved curves persist across another reopen; native wheel scrolls the 240px grid through its larger content. No nested buttons or page errors remain. Saved/deleted/scrolled screenshots are retained; the scrolled screenshot was visually inspected.
+- **Packaging:** focused ESLint, Vite typecheck/build, script syntax and UTF-8 checks pass; producer tests pass 52/52. Exact installed/dist inventory: 354 files, 67f62d25dffa0f3cda9bccf08089f33a630b6f2fed2515e9286e317521361100. Backup retained at C:/Users/Sayo/.elftia/plugin-backups/rocut-0.5.0-before-curve-presets-3cd6fd4b-784c-470f-961d-e1877981c162.
+- **Limits:** this proves curve authoring and durable-library interaction, not independent rendered interpolation, every multi-property curve combination or OS file-picker behavior. F04 and sustained playback/resource gates remain open.
+- **Combined candidate regression:** live-yrA6yW passes the 30-check core suite. Then **live-ukdV7F passes all 72 extended checks** covering motion controls, planning/cut controls, cue ranges, audio-sync controls, export recovery, mixed standard/motion export, JIZURA import, responsive layout and editor-only embedding on this same installed candidate. The page-error array is empty; expected empty-library 404 responses remain separately recorded. The full editor goal is still incomplete.
+
 ## Video speed, pitch and transforms — installed checkpoint
 
 - **Baseline:** live-StjSBZ completes the real speed/history/pitch/transform exports, but fails because the speed textbox and Change pitch switch have no accessible names. Preserve this failed run as baseline evidence.
