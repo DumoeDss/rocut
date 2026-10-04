@@ -11,6 +11,7 @@ export async function probeMotionDuration({
 	evidence,
 	onPhase,
 	measureSeek = false,
+	includeVideo = false,
 	fixture = "F04",
 }) {
 	assert(["F04", "F05"].includes(fixture));
@@ -129,7 +130,7 @@ export async function probeMotionDuration({
 	check(
 		"long sequence insertion is one undo/redo transaction and reopens unchanged",
 	);
-	if (measureSeek) {
+	if (measureSeek || includeVideo) {
 		onPhase("F04 real video underlay import");
 		const videoPath = join(work, "f04-underlay.mp4");
 		execFileSync(
@@ -174,7 +175,8 @@ export async function probeMotionDuration({
 			)
 			.toBe(1);
 		check("F04 contains actual 720p video/audio under the full lyric sequence");
-		await probePreviewSeek({ page, hostPage, work, evidence, onPhase });
+		if (measureSeek)
+			await probePreviewSeek({ page, hostPage, work, evidence, onPhase });
 	}
 	return { created, readData };
 }

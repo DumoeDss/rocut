@@ -29,6 +29,7 @@ import { probeExportBackpressure } from './probe-export-backpressure.mjs';
 import { probeVideoProperties } from './probe-video-properties.mjs';
 import { probeGraphPresets } from './probe-graph-presets.mjs';
 import { probeMediaDrop } from './probe-media-drop.mjs';
+import { probePreviewPlayback } from './probe-preview-playback.mjs';
 
 // Run with the Elftia worktree's tsx loader. Never launch a substitute browser.
 const hostRoot = resolve(process.env.ELFTIA_WORKTREE ?? '');
@@ -57,7 +58,7 @@ try {
   // CDP metrics can stall Electron's realtime audio clock on this host.
   // Use native metrics for audio measurements; fixed metrics remain useful
   // for gesture/layout fixtures. Finally restores the previous host metrics.
-  const nativeAudio = ['--audio-formats-only', '--media-mime-only', '--timeline-controls-only'].some(flag=>process.argv.includes(flag));
+  const nativeAudio = ['--audio-formats-only', '--media-mime-only', '--timeline-controls-only', '--motion-playback-only'].some(flag=>process.argv.includes(flag));
   if (nativeAudio) {
     nativeAudioCdp = await conn.context.newCDPSession(conn.page);
     await nativeAudioCdp.send('Emulation.clearDeviceMetricsOverride');
@@ -114,7 +115,7 @@ try {
     const value=target[key]; return typeof value==='function'?value.bind(target):value;
   }});
   conn.page.on('pageerror',error=>evidence.errors.push(scrub(error.message)));
-  if (['--adjustment-only', '--transition-render-only', '--transition-authoring-only', '--transition-image-authoring-only', '--motion-seek-only', '--motion-duration-only', '--motion-stress-only', '--motion-stress-memory-only', '--motion-stress-full-export-only', '--export-backpressure-only'].some(flag => process.argv.includes(flag))) conn.page.on('console', message => {
+  if (['--motion-playback-only', '--adjustment-only', '--transition-render-only', '--transition-authoring-only', '--transition-image-authoring-only', '--motion-seek-only', '--motion-duration-only', '--motion-stress-only', '--motion-stress-memory-only', '--motion-stress-full-export-only', '--export-backpressure-only'].some(flag => process.argv.includes(flag))) conn.page.on('console', message => {
     if (message.type() === 'error' && /Failed to render preview frame|Validation Error/.test(message.text())) evidence.errors.push(scrub(message.text()));
   });
   // Safe transaction summaries distinguish a dropped shortcut from stale persistence.
@@ -142,6 +143,9 @@ try {
     await probeMotionStressMemory({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--motion-stress-only')) {
     await probeMotionStress({page,hostPage:conn.page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
+  } else if (process.argv.includes('--motion-playback-only')) {
+    await probeMotionDuration({page,hostPage:conn.page,work,evidence,includeVideo:true,onPhase:next=>{phase=next;console.log('phase:',phase);}});
+    await probePreviewPlayback({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--motion-duration-only') || process.argv.includes('--motion-seek-only')) {
     await probeMotionDuration({page,hostPage:conn.page,work,evidence,measureSeek:process.argv.includes('--motion-seek-only'),onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--media-drop-only')) {

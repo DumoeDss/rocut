@@ -5,6 +5,7 @@ import useDeepCompareEffect from "use-deep-compare-effect";
 import { useEditor, useEditorInstance } from "../../editor/use-editor";
 import { useEditorSession } from "../../editor/session/editor-session-provider";
 import { useRafLoop } from "../../hooks/use-raf-loop";
+import { measurePreviewSubmission } from "../../diagnostics/preview-perf";
 import type {
 	SessionResources,
 	TimerHandle,
@@ -318,8 +319,12 @@ function PreviewCanvas({
 		renderingRef.current = true;
 		lastSceneRef.current = renderTree;
 		lastFrameRef.current = frame;
-		void renderer
-			.render({ node: renderTree, time: renderTime })
+		void measurePreviewSubmission({
+			render: () => renderer.render({ node: renderTree, time: renderTime }),
+			time: renderTime,
+			width: renderer.width,
+			height: renderer.height,
+		})
 			.catch((error: unknown) => {
 				if (!(error instanceof SessionActivityGenerationError)) {
 					console.error("Failed to render preview frame:", error);
