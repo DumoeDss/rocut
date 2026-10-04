@@ -19,6 +19,7 @@ import { probeVideoSourceLifetime } from './probe-video-source-lifetime.mjs';
 import { probeTransitionRender } from './probe-transition-render.mjs';
 import { probeMediaImport } from './probe-media-import.mjs';
 import { probeAudioFormats } from './probe-audio-formats.mjs';
+import { probeMediaMime } from './probe-media-mime.mjs';
 
 // Run with the Elftia worktree's tsx loader. Never launch a substitute browser.
 const hostRoot = resolve(process.env.ELFTIA_WORKTREE ?? '');
@@ -35,6 +36,7 @@ const evidence = {kind:'real-elftia', fixtureSetup:'host preload API, not projec
 const scrub = value => String(value).replace(/(https?:\/\/(?:127\.0\.0\.1|localhost):\d+)\/[^\s/]+/g,'$1/[redacted]');
 let phase = 'ownership';
 let editor;
+let nativeAudioCdp;
 const previousViewport = conn.page.viewportSize();
 try {
   const ownership = await conn.page.evaluate(async id => {
@@ -43,9 +45,15 @@ try {
   },sessionId);
   assert.equal(ownership.active,sessionId);
   assert.equal(resolve(ownership.folder),join(evidenceRoot,'project'),'Only the dedicated test workspace may be mutated');
-  // CDP attach may inherit metrics left by an earlier narrow-pane probe.
-  // Establish the gesture fixture's baseline; finally restores host metrics.
-  await conn.page.setViewportSize({width:1280,height:900});
+  // CDP metrics can stall Electron's realtime audio clock on this host.
+  // Use native metrics for audio measurements; fixed metrics remain useful
+  // for gesture/layout fixtures. Finally restores the previous host metrics.
+  const nativeAudio = ['--audio-formats-only', '--media-mime-only'].some(flag=>process.argv.includes(flag));
+  if (nativeAudio) {
+    nativeAudioCdp = await conn.context.newCDPSession(conn.page);
+    await nativeAudioCdp.send('Emulation.clearDeviceMetricsOverride');
+  } else await conn.page.setViewportSize({width:1280,height:900});
+  evidence.viewportMode = nativeAudio ? 'native-audio' : 'emulated-interactions';
   const frames = conn.page.frames();
   for (const frame of frames) if ((await frame.title().catch(()=>'' )).startsWith('OpenCut editor')) editor=frame;
   assert(editor,'Open Rocut in the authorized Elftia session before this probe');
@@ -99,7 +107,9 @@ try {
   conn.page.on('response',response=>{if(response.status()>=400 && response.url().includes('/api/')) evidence.requests.push({phase,status:response.status(),url:scrub(response.url())});});
   const audioFixture=join(work,'fixture-tone-a4.wav');
   execFileSync('ffmpeg',['-v','error','-n','-f','lavfi','-i','sine=frequency=440:duration=16','-ar','44100','-ac','1','-c:a','pcm_s16le',audioFixture],{windowsHide:true});
-  if (process.argv.includes('--audio-formats-only')) {
+  if (process.argv.includes('--media-mime-only')) {
+    await probeMediaMime({page,hostPage:conn.page,work,evidence,reopenAudio:process.argv.includes('--reopen-mime-audio'),preparePlayback:()=>nativeAudioCdp.send('Emulation.clearDeviceMetricsOverride'),onPhase:next=>{phase=next;console.log('phase:',phase);}});
+  } else if (process.argv.includes('--audio-formats-only')) {
     await probeAudioFormats({page,hostPage:conn.page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--media-import-only')) {
     await probeMediaImport({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
@@ -140,6 +150,7 @@ try {
   console.error('FAILED',phase,scrub(error.message));
   process.exitCode=1;
 } finally {
+  await nativeAudioCdp?.detach().catch(()=>{});
   if(previousViewport) await conn.page.setViewportSize(previousViewport).catch(()=>{});
   else {
     const cdp=await conn.context.newCDPSession(conn.page);

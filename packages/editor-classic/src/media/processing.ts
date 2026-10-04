@@ -1,5 +1,5 @@
 import { toast } from "sonner";
-import { getMediaTypeFromFile } from "./media-utils";
+import { getMediaTypeFromFile, normalizeMediaFile } from "./media-utils";
 import { formatStorageBytes } from "../services/storage/quota";
 import type { MediaAsset } from "./types";
 import type { ProjectStore } from "@opencut/editor-ports";
@@ -154,8 +154,9 @@ export async function processMediaAssets({
 	const total = fileArray.length;
 	let completed = 0;
 
-	for (const file of fileArray) {
+	for (const sourceFile of fileArray) {
 		if (!publication.isCurrent()) return [];
+		const file = normalizeMediaFile({ file: sourceFile });
 		const fileType = getMediaTypeFromFile({ file });
 
 		if (!fileType) {

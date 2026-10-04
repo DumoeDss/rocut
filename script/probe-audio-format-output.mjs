@@ -3,31 +3,24 @@ import { execFileSync } from "node:child_process";
 import { isAbsolute, join, relative } from "node:path";
 import { expect } from "@playwright/test";
 
-// Observe the actual realtime output graph, not a separately decoded test file.
-// The analyser is signal-transparent and disappears with the owned iframe.
+// Observe the actual realtime output, not a separately decoded test file.
+// Record native destination connections without changing them; attach a passive
+// analyser branch after Play has constructed the production graph.
 export async function attachAudioOutputObserver(page) {
 	await page.evaluate(() => {
 		if (globalThis.__audioOutputProbe) return;
 		const connect = AudioNode.prototype.connect;
-		const taps = [];
-		globalThis.__audioOutputProbe = { taps };
-		AudioNode.prototype.connect = function (
-			destination,
-			output = 0,
-			input = 0,
-		) {
+		const probe = { connect, outputs: [], taps: [] };
+		globalThis.__audioOutputProbe = probe;
+		AudioNode.prototype.connect = function (destination, output = 0) {
+			const result = connect.apply(this, arguments);
 			if (
 				this.context instanceof AudioContext &&
 				destination === this.context.destination
 			) {
-				const analyser = this.context.createAnalyser();
-				analyser.fftSize = 4096;
-				connect.call(this, analyser, output, 0);
-				connect.call(analyser, destination, 0, input);
-				taps.push(analyser);
-				return destination;
+				probe.outputs.push({ source: this, output });
 			}
-			return connect.apply(this, arguments);
+			return result;
 		};
 	});
 }
@@ -37,37 +30,61 @@ export async function observeAudioPlayback(page, { silent = false } = {}) {
 	await page.getByLabel("Playhead time", { exact: true }).fill("00:00:00:00");
 	await page.getByLabel("Playhead time", { exact: true }).press("Enter");
 	await page.getByLabel("Play preview", { exact: true }).click();
-	const result = await page.evaluate(async () => {
-		let maxRms = 0,
-			frequency = 0,
-			running = false;
-		const start = performance.now();
-		while (performance.now() - start < 1200) {
-			for (const analyser of globalThis.__audioOutputProbe.taps) {
-				running ||= analyser.context.state === "running";
-				const samples = new Float32Array(analyser.fftSize);
-				analyser.getFloatTimeDomainData(samples);
-				const rms = Math.sqrt(
-					samples.reduce((total, value) => total + value * value, 0) /
-						samples.length,
-				);
-				if (rms > maxRms) {
-					maxRms = rms;
-					const bins = new Float32Array(analyser.frequencyBinCount);
-					analyser.getFloatFrequencyData(bins);
-					let peak = 1;
-					for (let i = 2; i < bins.length; i++)
-						if (bins[i] > bins[peak]) peak = i;
-					frequency = (peak * analyser.context.sampleRate) / analyser.fftSize;
-				}
+	let result;
+	try {
+		result = await page.evaluate(async () => {
+			const probe = globalThis.__audioOutputProbe;
+			for (const output of probe.outputs.splice(0)) {
+				const analyser = output.source.context.createAnalyser();
+				analyser.fftSize = 4096;
+				probe.connect.call(output.source, analyser, output.output, 0);
+				probe.taps.push(analyser);
 			}
-			await new Promise((resolve) => requestAnimationFrame(resolve));
-		}
-		return { maxRms, frequency, running };
-	});
-	const pause = page.getByLabel("Pause preview", { exact: true });
-	if (await pause.count()) await pause.click();
+			let maxRms = 0,
+				frequency = 0,
+				running = false,
+				audioSeconds = 0;
+			const start = performance.now(),
+				audioStarts = new Map();
+			while (performance.now() - start < 1200) {
+				for (const analyser of probe.taps) {
+					if (!audioStarts.has(analyser))
+						audioStarts.set(analyser, analyser.context.currentTime);
+					audioSeconds = Math.max(
+						audioSeconds,
+						analyser.context.currentTime - audioStarts.get(analyser),
+					);
+					running ||= analyser.context.state === "running";
+					const samples = new Float32Array(analyser.fftSize);
+					analyser.getFloatTimeDomainData(samples);
+					const rms = Math.sqrt(
+						samples.reduce((total, value) => total + value * value, 0) /
+							samples.length,
+					);
+					if (rms > maxRms) {
+						maxRms = rms;
+						const bins = new Float32Array(analyser.frequencyBinCount);
+						analyser.getFloatFrequencyData(bins);
+						let peak = 1;
+						for (let i = 2; i < bins.length; i++)
+							if (bins[i] > bins[peak]) peak = i;
+						frequency = (peak * analyser.context.sampleRate) / analyser.fftSize;
+					}
+				}
+				await new Promise((resolve) => setTimeout(resolve, 20));
+			}
+			return { maxRms, frequency, running, audioSeconds };
+		});
+	} finally {
+		const pause = page.getByLabel("Pause preview", { exact: true });
+		if (await pause.count()) await pause.click();
+	}
 	assert(result.running, "Actual realtime audio context must run");
+	assert(
+		result.audioSeconds > 0.8,
+		"Realtime output clock must advance during observation: " +
+			JSON.stringify(result),
+	);
 	if (silent)
 		assert(
 			result.maxRms < 0.0001,
