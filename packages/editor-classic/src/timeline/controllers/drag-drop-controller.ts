@@ -524,12 +524,14 @@ export class DragDropController {
 				// Sequential on purpose: each iteration reads getSceneTracks()
 				// to decide placement (reuse empty main vs new track) and that
 				// decision depends on the effects of prior inserts.
+				const assetNames: string[] = [];
 				for (const asset of processedAssets) {
 					const createdAsset = await this.config.addMediaAsset({
 						projectId,
 						asset,
 					});
 					if (!createdAsset) continue;
+					assetNames.push(createdAsset.name);
 
 					const duration = toElementDurationTicks({
 						seconds: createdAsset.duration,
@@ -587,9 +589,12 @@ export class DragDropController {
 					});
 				}
 
+				if (assetNames.length === 0) {
+					throw new Error("No media assets were saved");
+				}
 				return {
-					uploadedCount: processedAssets.length,
-					assetNames: processedAssets.map((asset) => asset.name),
+					uploadedCount: assetNames.length,
+					assetNames,
 				};
 			},
 		});

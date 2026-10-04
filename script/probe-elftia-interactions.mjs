@@ -28,6 +28,7 @@ import { probeMotionFullExport } from './probe-motion-full-export.mjs';
 import { probeExportBackpressure } from './probe-export-backpressure.mjs';
 import { probeVideoProperties } from './probe-video-properties.mjs';
 import { probeGraphPresets } from './probe-graph-presets.mjs';
+import { probeMediaDrop } from './probe-media-drop.mjs';
 
 // Run with the Elftia worktree's tsx loader. Never launch a substitute browser.
 const hostRoot = resolve(process.env.ELFTIA_WORKTREE ?? '');
@@ -143,6 +144,8 @@ try {
     await probeMotionStress({page,hostPage:conn.page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--motion-duration-only') || process.argv.includes('--motion-seek-only')) {
     await probeMotionDuration({page,hostPage:conn.page,work,evidence,measureSeek:process.argv.includes('--motion-seek-only'),onPhase:next=>{phase=next;console.log('phase:',phase);}});
+  } else if (process.argv.includes('--media-drop-only')) {
+    await probeMediaDrop({page,hostPage:conn.page,work,evidence,storageFailure:process.argv.includes('--drop-storage-failure'),onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--graph-presets-only')) {
     await probeGraphPresets({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--video-properties-only')) {
