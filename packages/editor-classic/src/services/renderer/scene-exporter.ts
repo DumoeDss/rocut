@@ -26,6 +26,11 @@ import {
 } from "./canvas-renderer";
 import type { WasmCompositor } from "./compositor/wasm-compositor";
 import type { VideoCache } from "../video-cache/service";
+import {
+	ExportCancelledError,
+	waitForExportOperation,
+} from "./export-cancellation";
+import { resolveExportVideoOptions } from "./export-video-options";
 
 type ExportParams = {
 	width: number;
@@ -64,6 +69,7 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 	private readonly publicationToken: RendererPublicationToken | null;
 
 	private isCancelled = false;
+	private readonly cancellation = new AbortController();
 	private exportPromise: Promise<ArrayBuffer | null> | null = null;
 
 	constructor({
@@ -98,6 +104,7 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 
 	cancel(): Promise<ArrayBuffer | null> {
 		this.isCancelled = true;
+		this.cancellation.abort();
 		return this.exportPromise ?? Promise.resolve(null);
 	}
 
@@ -119,6 +126,10 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 		rootNode: RootNode;
 		range: ResolvedMediaTimeRange;
 	}): Promise<ArrayBuffer | null> {
+		if (this.isCancelled) {
+			this.emit("cancelled");
+			return null;
+		}
 		this.assertPublicationCurrent();
 		const fps = this.renderer.fps;
 		const fpsFloat = frameRateToFloat(fps);
@@ -137,10 +148,14 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 
 		const outputCanvas = await this.renderer.getOutputCanvas();
 		this.assertPublicationCurrent();
-		const videoSource = new CanvasSource(outputCanvas, {
+		const videoOptions = await resolveExportVideoOptions({
 			codec: this.format === "webm" ? "vp9" : "avc",
 			bitrate: qualityMap[this.quality],
+			width: outputCanvas.width,
+			height: outputCanvas.height,
 		});
+		this.assertPublicationCurrent();
+		const videoSource = new CanvasSource(outputCanvas, videoOptions);
 
 		output.addVideoTrack(videoSource, { frameRate: fpsFloat });
 
@@ -174,7 +189,12 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 			this.assertPublicationCurrent();
 
 			if (audioSource && this.audioBuffer) {
-				await audioSource.add(this.audioBuffer);
+				const source = audioSource;
+				const buffer = this.audioBuffer;
+				await waitForExportOperation({
+					signal: this.cancellation.signal,
+					operation: () => source.add(buffer),
+				});
 				this.assertPublicationCurrent();
 				audioSource.close();
 			}
@@ -193,7 +213,11 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 				await this.renderer.renderAndCapture({
 					node: rootNode,
 					time: timelineTimeTicks,
-					capture: () => videoSource.add(timeSeconds, 1 / fpsFloat),
+					capture: () =>
+						waitForExportOperation({
+							signal: this.cancellation.signal,
+							operation: () => videoSource.add(timeSeconds, 1 / fpsFloat),
+						}),
 				});
 
 				this.assertPublicationCurrent();
@@ -231,6 +255,10 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 						"Export invalidation and output cancellation both failed.",
 					);
 				}
+			}
+			if (error instanceof ExportCancelledError) {
+				this.emit("cancelled");
+				return null;
 			}
 			throw error;
 		}

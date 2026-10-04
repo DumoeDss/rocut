@@ -24,6 +24,8 @@ import { probeTimelineControls } from './probe-timeline-controls.mjs';
 import { probeMotionDuration } from './probe-motion-duration.mjs';
 import { probeMotionStress } from './probe-motion-stress.mjs';
 import { probeMotionStressMemory } from './probe-motion-stress-memory.mjs';
+import { probeMotionFullExport } from './probe-motion-full-export.mjs';
+import { probeExportBackpressure } from './probe-export-backpressure.mjs';
 
 // Run with the Elftia worktree's tsx loader. Never launch a substitute browser.
 const hostRoot = resolve(process.env.ELFTIA_WORKTREE ?? '');
@@ -56,20 +58,22 @@ try {
   if (nativeAudio) {
     nativeAudioCdp = await conn.context.newCDPSession(conn.page);
     await nativeAudioCdp.send('Emulation.clearDeviceMetricsOverride');
-  } else await conn.page.setViewportSize(['--motion-seek-only','--motion-stress-only','--motion-stress-memory-only'].some(flag=>process.argv.includes(flag)) ? {width:1920,height:1080} : {width:1280,height:900});
+  } else await conn.page.setViewportSize(['--motion-seek-only','--motion-stress-only','--motion-stress-memory-only','--motion-stress-full-export-only'].some(flag=>process.argv.includes(flag)) ? {width:1920,height:1080} : {width:1280,height:900});
   evidence.viewportMode = nativeAudio ? 'native-audio' : 'emulated-interactions';
   const frames = conn.page.frames();
   for (const frame of frames) if ((await frame.title().catch(()=>'' )).startsWith('OpenCut editor')) editor=frame;
   assert(editor,'Open Rocut in the authorized Elftia session before this probe');
-  const reuseMemoryFixture = process.argv.includes('--motion-stress-memory-only');
+  const fullMotionExport = process.argv.includes('--motion-stress-full-export-only');
+  const backpressureOnly = process.argv.includes('--export-backpressure-only');
+  const reuseStressFixture = process.argv.includes('--motion-stress-memory-only') || fullMotionExport || backpressureOnly;
   let reusePath;
-  if (reuseMemoryFixture) {
+  if (reuseStressFixture) {
     assert(process.env.ELFTIA_REUSE_TEST_PROJECT, 'Set the exact owned F05 project path');
     reusePath = realpathSync(process.env.ELFTIA_REUSE_TEST_PROJECT);
     const nested = relative(realpathSync(ownership.folder), reusePath);
     assert(nested && !nested.startsWith('..') && !isAbsolute(nested), 'Reused fixture must remain in the dedicated test folder');
   }
-  const project = reuseMemoryFixture ? await conn.page.evaluate(async ({folder,path}) => {
+  const project = reuseStressFixture ? await conn.page.evaluate(async ({folder,path}) => {
     const opened = await window.native.toolHosts.openProject({toolId:'rocut',workingFolder:folder,projectPath:path});
     return {path,url:opened.editorUrl};
   },{folder:ownership.folder,path:reusePath}) : await conn.page.evaluate(async ({folder,name}) => {
@@ -94,8 +98,8 @@ try {
   evidence.checks.push({name:'real Elftia iframe loaded with WebCodecs',pass:true});
   const readRecord=()=>editor.evaluate(async()=> (await (await fetch(new URL('api/record',location.href))).json()).record);
   const initialRecord = await readRecord();
-  assert.equal(initialRecord.data.motionTextSequences?.length ?? 0,reuseMemoryFixture ? 1 : 0);
-  if (reuseMemoryFixture) {
+  assert.equal(initialRecord.data.motionTextSequences?.length ?? 0,reuseStressFixture ? 1 : 0);
+  if (reuseStressFixture) {
     assert.equal(initialRecord.data.motionTextSequences[0].cues.length,600);
     assert.equal(initialRecord.data.motionTextSequences[0].duration,480*120000);
   }
@@ -107,7 +111,7 @@ try {
     const value=target[key]; return typeof value==='function'?value.bind(target):value;
   }});
   conn.page.on('pageerror',error=>evidence.errors.push(scrub(error.message)));
-  if (['--adjustment-only', '--transition-render-only', '--transition-authoring-only', '--transition-image-authoring-only', '--motion-seek-only', '--motion-duration-only', '--motion-stress-only', '--motion-stress-memory-only'].some(flag => process.argv.includes(flag))) conn.page.on('console', message => {
+  if (['--adjustment-only', '--transition-render-only', '--transition-authoring-only', '--transition-image-authoring-only', '--motion-seek-only', '--motion-duration-only', '--motion-stress-only', '--motion-stress-memory-only', '--motion-stress-full-export-only'].some(flag => process.argv.includes(flag))) conn.page.on('console', message => {
     if (message.type() === 'error' && /Failed to render preview frame|Validation Error/.test(message.text())) evidence.errors.push(scrub(message.text()));
   });
   // Safe transaction summaries distinguish a dropped shortcut from stale persistence.
@@ -127,7 +131,11 @@ try {
   conn.page.on('response',response=>{if(response.status()>=400 && response.url().includes('/api/')) evidence.requests.push({phase,status:response.status(),url:scrub(response.url())});});
   const audioFixture=join(work,'fixture-tone-a4.wav');
   execFileSync('ffmpeg',['-v','error','-n','-f','lavfi','-i','sine=frequency=440:duration=16','-ar','44100','-ac','1','-c:a','pcm_s16le',audioFixture],{windowsHide:true});
-  if (reuseMemoryFixture) {
+  if (backpressureOnly) {
+    await probeExportBackpressure({page,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
+  } else if (fullMotionExport) {
+    await probeMotionFullExport({page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
+  } else if (reuseStressFixture) {
     await probeMotionStressMemory({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--motion-stress-only')) {
     await probeMotionStress({page,hostPage:conn.page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
@@ -178,6 +186,7 @@ try {
   console.error('FAILED',phase,scrub(error.message));
   process.exitCode=1;
 } finally {
+  try {
   await nativeAudioCdp?.detach().catch(()=>{});
   if(previousViewport) await conn.page.setViewportSize(previousViewport).catch(()=>{});
   else {
@@ -185,7 +194,12 @@ try {
     await cdp.send('Emulation.clearDeviceMetricsOverride');
     await cdp.detach();
   }
+  } catch (error) {
+    evidence.cleanupFailure = scrub(error.message);
+    evidence.passed = false;
+    process.exitCode = 1;
+  }
   writeFileSync(join(work,'evidence.json'),JSON.stringify(evidence,null,2));
   console.log(JSON.stringify({work,passed:evidence.passed,acceptanceEligible:evidence.acceptanceEligible,checks:evidence.checks.length,phase}));
-  await conn.close();
+  await conn.close().catch(error=>console.error('Disconnect failed:',scrub(error.message)));
 }
