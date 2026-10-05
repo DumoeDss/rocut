@@ -446,6 +446,7 @@ function ColorPickerContent({
 }
 
 interface ColorPickerProps {
+	inputLabel?: string;
 	value?: string;
 	onChange?: (value: string) => void;
 	onChangeEnd?: (value: string) => void;
@@ -459,6 +460,7 @@ const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
 		{
 			className,
 			value = "FFFFFF",
+			inputLabel = "Color",
 			onChange,
 			onChangeEnd,
 			contentSide,
@@ -535,6 +537,7 @@ const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
 				>
 					<PopoverTrigger asChild>
 						<button
+							aria-label={`Choose ${inputLabel}`}
 							className="size-4.5 relative shrink-0 cursor-pointer overflow-hidden rounded-sm border hover:ring-1 hover:ring-foreground/20"
 							type="button"
 						>
@@ -550,6 +553,7 @@ const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
 					</PopoverTrigger>
 					<div className="flex min-w-0 flex-1 items-center">
 						<Input
+							aria-label={inputLabel}
 							className="border-0! bg-transparent p-0 ring-0! ring-offset-0! uppercase"
 							size="sm"
 							containerClassName="w-full"

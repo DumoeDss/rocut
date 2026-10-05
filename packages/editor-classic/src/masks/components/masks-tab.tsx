@@ -607,6 +607,7 @@ function MaskParamsFields({
 							onCommit={onCommit}
 						/>
 						<ColorPicker
+							inputLabel="Mask stroke color"
 							className=""
 							value={mask.params.strokeColor.replace(/^#/, "").toUpperCase()}
 							onChange={(color) => previewStrokeColor(`#${color}`)}
@@ -624,7 +625,7 @@ function MaskParamsFields({
 								onCommit();
 							}}
 						>
-							<SelectTrigger className="w-full">
+							<SelectTrigger className="w-full" aria-label="Mask stroke alignment">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -687,6 +688,7 @@ function TextMaskFields({
 		<>
 			<SectionField label="Content">
 				<Textarea
+					aria-label="Mask content"
 					value={content.displayValue}
 					className="min-h-20"
 					onFocus={content.onFocus}
@@ -821,6 +823,7 @@ function MaskNumberField({
 
 	return (
 		<NumberField
+			aria-label={`Mask ${param.label}`}
 			className={className}
 			icon={icon}
 			value={draft.displayValue}
