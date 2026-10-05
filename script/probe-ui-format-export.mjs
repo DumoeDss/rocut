@@ -77,8 +77,7 @@ export async function probeUiFormatExport({
 		"fractional frame rate is selectable and displayed without integer rounding",
 	);
 	const undoFrameRate = async () => {
-		await page.getByTestId("editor-menu-trigger").click();
-		await page.getByRole("menuitem", { name: "Undo", exact: true }).click();
+		await hostPage.keyboard.press("Control+z");
 		await expect.poll(async () => (await record()).data.settings.fps)
 			.toEqual({ numerator: 30, denominator: 1 });
 		const restored = (await record()).data.scenes[0].tracks;
@@ -104,7 +103,8 @@ export async function probeUiFormatExport({
 			["9x16", 1080, 1920],
 			["1x1", 1080, 1080],
 		]) {
-			await page.getByRole("button", { name: "Custom", exact: true }).click();
+			// The selected Custom button includes its width/height field values.
+			await page.getByRole("button", { name: /^Custom(?:\s|$)/ }).click();
 			for (const [name, value] of [
 				["Canvas width", width],
 				["Canvas height", height],
@@ -159,6 +159,26 @@ export async function probeUiFormatExport({
 		await cdp.send("Browser.setDownloadBehavior", { behavior: "default" });
 		await cdp.detach();
 	}
+	onPhase("F06 frame-rate refusal preserves an existing one-frame clip");
+	const original = (await record()).data.scenes[0].tracks.main.elements;
+	await page.locator(`[data-testid="timeline-clip"][data-element-id="${original[0].id}"]`).click();
+	await page.getByLabel("Edit playhead time", { exact: true }).click();
+	await page.getByLabel("Playhead time", { exact: true }).fill("00:00:00:01");
+	await page.getByLabel("Playhead time", { exact: true }).press("Enter");
+	await page.getByLabel("Split element", { exact: true }).click();
+	await expect.poll(async () => (await record()).data.scenes[0].tracks.main.elements.length).toBe(2);
+	const splitClips = (await record()).data.scenes[0].tracks.main.elements;
+	assert.equal(splitClips[0].duration, 4000);
+	await page.getByRole("combobox", { name: "Frame rate", exact: true }).click();
+	await page.getByRole("option", { name: "24 fps", exact: true }).click();
+	await expect(page.getByRole("alert")).toContainText("shorter than one frame");
+	assert.deepEqual((await record()).data.settings.fps, { numerator: 30, denominator: 1 });
+	assert.deepEqual((await record()).data.scenes[0].tracks.main.elements, splitClips);
+	await hostPage.screenshot({ path: join(work, "frame-rate-refusal.png") });
+	// A rejected change adds no history: one Undo restores the actual split.
+	await hostPage.keyboard.press("Control+z");
+	await expect.poll(async () => (await record()).data.scenes[0].tracks.main.elements).toEqual(original);
+	check("unrepresentable one-frame clip gives a visible refusal with no mutation or history entry");
 }
 
 async function download(cdp, dialog, work) {
