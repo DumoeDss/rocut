@@ -6,6 +6,7 @@ Status: installed core interaction matrix passes in real Elftia; full editor fea
 
 - The pinned Bun 1.2.18 hang below is now reproduced and fixed without changing any dependency pin. In the same motion-text-draft-preview test, the original close order hangs until the 10-second external diagnostic timeout; draining active connections before close(), while retaining the post-close drain for newly accepted connections, completes all three tests in under a second. The timed-out process was the dedicated diagnostic child and was terminated; no Elftia process was stopped.
 - Fixed Bun 1.2.18 now passes the complete 138-test CLI/HTTP/presentation selection (659 assertions, 23 files, 22.21s). Local Bun 1.4.2 passes 15 affected host/draft tests; CLI typecheck passes. This supersedes the pinned-runtime limitation recorded in the earlier checkpoints, not the other whole-editor gaps.
+- Final source 0faf4ee1 is packaged and natively installed: 354 files, inventory 738aaab54923c74288d3d95056f25ef4045b1c37500e0de3fde623d26bcc5ba9, installed/dist parity confirmed. Producer tests pass 52/52; real-host draft/menu-focus/preview/reopen flow live-MIzfZ9 passes 11/11 after replacement. Pre-replacement backup is C:/Users/Sayo/.elftia/plugin-backups/rocut-0.5.0-before-shutdown-fix-b11bd310-e790-4696-a4f2-7782d323c250. The 7/72 broader suites above ran on the preceding source; the only later runtime change is shutdown connection draining.
 
 ## In-editor exact draft review — installed checkpoint (2026-10-05)
 
