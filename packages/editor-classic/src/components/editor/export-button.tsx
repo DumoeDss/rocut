@@ -85,12 +85,16 @@ export function ExportButton() {
 					</div>
 				</button>
 			</PopoverTrigger>
-			{hasProject && <ExportPopover onOpenChange={setIsExportPopoverOpen} />}
+			{hasProject && (
+				<PopoverContent className="bg-background mr-4 flex w-80 flex-col p-0">
+					<ExportOptions onOpenChange={setIsExportPopoverOpen} />
+				</PopoverContent>
+			)}
 		</Popover>
 	);
 }
 
-function ExportPopover({
+export function ExportOptions({
 	onOpenChange,
 }: {
 	onOpenChange: (open: boolean) => void;
@@ -155,7 +159,7 @@ function ExportPopover({
 	};
 
 	return (
-		<PopoverContent className="bg-background mr-4 flex w-80 flex-col p-0">
+		<>
 			{exportResult && !exportResult.success ? (
 				<ExportError
 					error={exportResult.error || "Unknown error occurred"}
@@ -319,7 +323,7 @@ function ExportPopover({
 					</div>
 				</>
 			)}
-		</PopoverContent>
+		</>
 	);
 }
 

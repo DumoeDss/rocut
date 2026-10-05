@@ -1,12 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "../../../ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../../ui/tooltip";
 import { Button } from "../../../ui/button";
+import { EditorMenu } from "../../editor-menu";
 import { cn } from "../../../../utils/ui";
 import {
 	TAB_KEYS,
@@ -46,47 +43,52 @@ export function TabBar() {
 	}, [checkScrollPosition]);
 
 	return (
-		<div className="relative flex">
-			<div
-				ref={scrollRef}
-				className="scrollbar-hidden relative flex size-full p-1 flex-col items-center justify-start gap-0.5 overflow-y-auto"
-			>
-				{TAB_KEYS.map((tabKey) => {
-					const tab = tabs[tabKey];
-					return (
-						<Tooltip key={tabKey} delayDuration={10}>
-							<TooltipTrigger asChild>
-								<Button
-									variant={activeTab === tabKey ? "secondary" : "ghost"}
-									size="icon"
-									aria-label={tab.label}
-									className={cn(
-										"shrink-0",
-										"h-8 w-8",
-										activeTab !== tabKey && "text-muted-foreground",
-									)}
-									onClick={() => setActiveTab(tabKey)}
+		<div className="relative flex min-h-0 flex-col">
+			<div className="relative min-h-0 flex-1">
+				<div
+					ref={scrollRef}
+					className="scrollbar-hidden relative flex size-full p-1 flex-col items-center justify-start gap-0.5 overflow-y-auto"
+				>
+					{TAB_KEYS.map((tabKey) => {
+						const tab = tabs[tabKey];
+						return (
+							<Tooltip key={tabKey} delayDuration={10}>
+								<TooltipTrigger asChild>
+									<Button
+										variant={activeTab === tabKey ? "secondary" : "ghost"}
+										size="icon"
+										aria-label={tab.label}
+										className={cn(
+											"shrink-0",
+											"h-8 w-8",
+											activeTab !== tabKey && "text-muted-foreground",
+										)}
+										onClick={() => setActiveTab(tabKey)}
+									>
+										<tab.icon />
+									</Button>
+								</TooltipTrigger>
+								<TooltipContent
+									side="right"
+									align="center"
+									variant="sidebar"
+									sideOffset={8}
 								>
-									<tab.icon />
-								</Button>
-							</TooltipTrigger>
-							<TooltipContent
-								side="right"
-								align="center"
-								variant="sidebar"
-								sideOffset={8}
-							>
-								<div className="text-foreground text-sm leading-none font-medium">
-									{tab.label}
-								</div>
-							</TooltipContent>
-						</Tooltip>
-					);
-				})}
-			</div>
+									<div className="text-foreground text-sm leading-none font-medium">
+										{tab.label}
+									</div>
+								</TooltipContent>
+							</Tooltip>
+						);
+					})}
+				</div>
 
-			<FadeOverlay direction="top" show={showTopFade} />
-			<FadeOverlay direction="bottom" show={showBottomFade} />
+				<FadeOverlay direction="top" show={showTopFade} />
+				<FadeOverlay direction="bottom" show={showBottomFade} />
+			</div>
+			<div className="shrink-0 border-t border-border p-1">
+				<EditorMenu />
+			</div>
 		</div>
 	);
 }
