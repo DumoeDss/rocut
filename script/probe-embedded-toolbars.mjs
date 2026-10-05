@@ -86,6 +86,12 @@ export async function probeEmbeddedToolbars({
 				width,
 				height: width === 1920 ? 1080 : 650,
 			});
+			// ResizeObserver updates the iframe layout after host metrics settle.
+			// Do not click a focus tab that the incoming wide layout will remove.
+			await expect(page.getByTestId("editor-main-panels")).toHaveAttribute(
+				"data-layout",
+				width === 1920 ? "wide" : "focus",
+			);
 			for (const mode of ["dark", "light"]) {
 				const assetsTab = page.getByRole("tab", {
 					name: "Media & text",
@@ -167,6 +173,11 @@ export async function probeEmbeddedToolbars({
 					await expect(page.getByTestId("timeline-clip")).toHaveCount(
 						count + 1,
 					);
+					if (width !== 1920) {
+						await expect(
+							page.getByRole("tab", { name: "Inspector", exact: true }),
+						).toBeFocused();
+					}
 					await hostPage.keyboard.press("Control+z");
 					await expect(page.getByTestId("timeline-clip")).toHaveCount(count);
 					await expect.poll(state).toEqual(before);

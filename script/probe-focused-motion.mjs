@@ -186,24 +186,32 @@ export async function probeFocusedMotion({
 			"focused preview renders the created clip and history survives view switches",
 		);
 		await tab("Preview").click();
-		await page.getByLabel("Edit playhead time", { exact: true }).click();
-		await page.getByLabel("Playhead time", { exact: true }).fill("00:00:00:24");
-		await page.getByLabel("Playhead time", { exact: true }).press("Enter");
-		await expect
-			.poll(
-				async () => {
-					const png = await (await mainPreviewCanvas(page)).screenshot();
-					return samplePreviewPng(page, png, (pixels) => {
-						let lit = 0;
-						for (let i = 0; i < pixels.length; i += 4)
-							if (pixels[i] > 150 && pixels[i + 1] > 150 && pixels[i + 2] > 150)
-								lit++;
-						return lit;
-					});
-				},
-				{ timeout: 20000 },
-			)
-			.toBeGreaterThan(20);
+		// Each one-second cue splits into an 0.8s phrase and a 0.2s number.
+		// Frame 24 is a fade boundary, not evidence of a stalled compositor.
+		for (const timecode of ["00:00:00:12", "00:00:00:27", "00:00:01:12"]) {
+			await page.getByLabel("Edit playhead time", { exact: true }).click();
+			await page.getByLabel("Playhead time", { exact: true }).fill(timecode);
+			await page.getByLabel("Playhead time", { exact: true }).press("Enter");
+			await expect
+				.poll(
+					async () => {
+						const png = await (await mainPreviewCanvas(page)).screenshot();
+						return samplePreviewPng(page, png, (pixels) => {
+							let lit = 0;
+							for (let i = 0; i < pixels.length; i += 4)
+								if (
+									pixels[i] > 150 &&
+									pixels[i + 1] > 150 &&
+									pixels[i + 2] > 150
+								)
+									lit++;
+							return lit;
+						});
+					},
+					{ timeout: 20000 },
+				)
+				.toBeGreaterThan(20);
+		}
 		await hostPage.keyboard.press("Control+z");
 		await expect(page.getByTestId("timeline-clip")).toHaveCount(0);
 		await expect.poll(read).toEqual(before);

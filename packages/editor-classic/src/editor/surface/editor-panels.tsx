@@ -32,6 +32,7 @@ export function EditorPanels({
 	const containerRef = useRef<HTMLDivElement>(null);
 	const groupRef = useRef<ImperativePanelGroupHandle>(null);
 	const compactLayout = useRef<number[] | null>(null);
+	const pendingInspectorFocus = useRef<Element | null>(null);
 	const { width } = useContainerSize({ containerRef });
 	const { panels, setPanels } = usePanelStore();
 	const editor = useEditorInstance();
@@ -48,10 +49,41 @@ export function EditorPanels({
 		let previous = selectionKey();
 		return editor.selection.subscribe(() => {
 			const next = selectionKey();
-			if (next && next !== previous) setFocusedPanel("properties");
+			if (next && next !== previous) {
+				const container = containerRef.current;
+				const active = container?.ownerDocument.activeElement;
+				const panel = active?.closest("[data-panel-id]");
+				// Add-to-timeline can hide its own focused button. Hand focus to
+				// the revealed view so scoped shortcuts still receive Ctrl+Z.
+				if (
+					active &&
+					panel &&
+					container?.contains(active) &&
+					panel.getAttribute("data-panel-id") !== "editor-properties"
+				)
+					pendingInspectorFocus.current = active;
+				setFocusedPanel("properties");
+			}
 			previous = next;
 		});
 	}, [editor, focus]);
+	useLayoutEffect(() => {
+		const previous = pendingInspectorFocus.current;
+		pendingInspectorFocus.current = null;
+		const container = containerRef.current;
+		if (!previous || !container || !focus || focusedPanel !== "properties")
+			return;
+		const document = container.ownerDocument;
+		if (
+			document.hasFocus() &&
+			(document.activeElement === previous ||
+				document.activeElement === document.body)
+		) {
+			container
+				.querySelector<HTMLElement>("#focus-tab-properties")
+				?.focus({ preventScroll: true });
+		}
+	}, [focus, focusedPanel]);
 	useLayoutEffect(() => {
 		if (width <= 0 || focus) return;
 		const defaults = getEditorPanelPolicy(width).defaultLayout;
