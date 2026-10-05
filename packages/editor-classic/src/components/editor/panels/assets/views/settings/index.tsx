@@ -9,8 +9,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "../../../../../ui/select";
-import { FPS_PRESETS } from "../../../../../../fps/presets";
-import { floatToFrameRate, frameRateToFloat } from "../../../../../../fps/utils";
+import { FPS_PRESETS, frameRateSelectOption } from "../../../../../../fps/presets";
+import { floatToFrameRate } from "../../../../../../fps/utils";
 import { useEditor, useEditorInstance } from "../../../../../../editor/use-editor";
 import {
 	Section,
@@ -212,6 +212,7 @@ export function SettingsView() {
 	});
 
 	const isCustomSelected = canvasSizeMode === "custom";
+	const frameRateOption = frameRateSelectOption(activeProject.settings.fps);
 
 	return (
 		<PanelView
@@ -247,20 +248,22 @@ export function SettingsView() {
 						<SectionHeader className="justify-between">
 							<SectionTitle className="flex-1">Frame rate</SectionTitle>
 							<Select
-								value={String(
-									Math.round(frameRateToFloat(activeProject.settings.fps)),
-								)}
+								value={frameRateOption.value}
 								onValueChange={(value) => {
+									if (value === "custom") return;
 									const fps = floatToFrameRate(parseFloat(value));
 									void editor.project
 										.updateSettings({ settings: { fps } })
 										.catch(() => undefined);
 								}}
 							>
-								<SelectTrigger className="bg-transparent border-none p-1 h-auto">
+								<SelectTrigger aria-label="Frame rate" className="bg-transparent border-none p-1 h-auto">
 									<SelectValue placeholder="Select a frame rate" />
 								</SelectTrigger>
 								<SelectContent>
+									{frameRateOption.value === "custom" && (
+										<SelectItem value="custom">{frameRateOption.label}</SelectItem>
+									)}
 									{FPS_PRESETS.map((preset) => (
 										<SelectItem key={preset.value} value={preset.value}>
 											{preset.label}
