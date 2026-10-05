@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useId, useState } from "react";
 import { cn } from "../utils/ui";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowDownIcon } from "@hugeicons/core-free-icons";
@@ -12,6 +12,7 @@ interface SectionContext {
 	isOpen: boolean;
 	toggle: () => void;
 	collapsible: boolean;
+	contentId: string;
 }
 
 const SectionCtx = createContext<SectionContext | null>(null);
@@ -39,6 +40,7 @@ export function Section({
 	showTopBorder = false,
 	showBottomBorder = true,
 }: SectionProps) {
+	const contentId = useId();
 	const cached = sectionKey ? sectionExpandedCache.get(sectionKey) : undefined;
 	const [isOpen, setIsOpen] = useState(cached ?? defaultOpen);
 
@@ -65,7 +67,7 @@ export function Section({
 	};
 
 	return (
-		<SectionCtx.Provider value={{ isOpen, toggle, collapsible }}>
+		<SectionCtx.Provider value={{ isOpen, toggle, collapsible, contentId }}>
 			<div
 				className={cn(
 					"flex flex-col",
@@ -124,6 +126,8 @@ export function SectionHeader({
 						variant="ghost"
 						size="icon"
 						aria-label={isOpen ? "Collapse section" : "Expand section"}
+						aria-expanded={isOpen}
+						aria-controls={ctx?.contentId}
 						onClick={handleClick}
 					>
 						{chevronIcon}
@@ -135,6 +139,8 @@ export function SectionHeader({
 	const innerContent = isInteractive ? (
 		<button
 			type="button"
+			aria-expanded={isCollapsible ? isOpen : undefined}
+			aria-controls={isCollapsible ? ctx?.contentId : undefined}
 			className="min-w-0 flex-1 flex items-center gap-2 h-full cursor-pointer text-left"
 			onClick={handleClick}
 		>
@@ -243,6 +249,11 @@ export function SectionContent({
 	if (isCollapsible) {
 		return (
 			<div
+				id={ctx?.contentId}
+				aria-hidden={!isOpen}
+				// React 18 forwards the native boolean attribute as an empty string.
+				// Keep descendants mounted for drafts/animations but out of focus order.
+				{...(isOpen ? {} : { inert: "" })}
 				className={cn(
 					"grid transition-[grid-template-rows] duration-100 ease-out",
 					isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
