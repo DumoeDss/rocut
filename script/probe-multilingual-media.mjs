@@ -21,7 +21,7 @@ export function inspectLanguagePixels(pixels, channels = 4) {
 	};
 }
 
-export async function languagePreview(page) {
+export async function mainPreviewCanvas(page) {
 	// Preset cards also render canvases. Anchor to the actual preview region.
 	const canvas = page
 		.getByRole("application", { name: "Preview canvas", exact: true })
@@ -33,7 +33,11 @@ export async function languagePreview(page) {
 		1,
 		"one main compositor canvas is required",
 	);
-	const png = await canvas.screenshot();
+	return canvas;
+}
+
+export async function languagePreview(page) {
+	const png = await (await mainPreviewCanvas(page)).screenshot();
 	const pixels = await page.evaluate(async (bytes) => {
 		const image = await createImageBitmap(
 			new Blob([new Uint8Array(bytes)], { type: "image/png" }),

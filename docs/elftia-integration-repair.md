@@ -2,6 +2,12 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Agent/UI workflow regression after locked-variation repair (2026-10-05)
+
+- **Installed live-fkxzDP passes 11/11** on runtime c1100766: installed CLI stages canonical third-cue text/color changes without committing; a real second-cue user edit invalidates the old draft; stale review decisions and unseen added operations are refused; explicit rejection preserves committed data; a fresh proposal is manually approved in the real editor dialog. No model or paid service is called.
+- Both host themes, bounded small-window scrolling, expanded before/after values, approval focus return and actual green main-compositor pixels pass. After closing the actual workspace, export refuses with the expected editor/surface requirement while CLI business reads remain available; reopening preserves both user and approved changes plus the frame-description digest. The reopened screenshot was inspected.
+- Agent visual verification now reuses the same uniquely identified main preview canvas as the multilingual and cue-lock probes, never the first arbitrary preset canvas. This is a test-only improvement; runtime/plugin bytes and the verified c1100766 producer pin remain unchanged. These independent fixtures do not yet constitute one uninterrupted section-14 combined workflow or comprehensive GPU/resource acceptance.
+
 ## Cue-group locks and variation seed preservation (2026-10-05)
 
 - **Installed live-mNblSv passes 5/5:** real LRC creation and Specimen application, second-cue edit with exact undo/redo, Layout/Enter locks, selected-scope no-op refusal, all-cue candidate preview/cancel/deterministic regeneration/reroll/application, exact history, and actual host workspace close/reopen. Locked second-cue cuts retain their full seeds and data; main-compositor frames remain identical while unlocked first-cue frames change. The reopened screenshot was visually inspected. This is not an all-preset text-fit claim.

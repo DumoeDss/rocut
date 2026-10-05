@@ -6,6 +6,7 @@ import { join } from "node:path";
 import { homedir } from "node:os";
 import { promisify } from "node:util";
 import { expect } from "@playwright/test";
+import { mainPreviewCanvas } from "./probe-multilingual-media.mjs";
 
 const run = promisify(execFile);
 
@@ -66,10 +67,11 @@ export async function probeAgentDrafts({
 		await expect
 			.poll(
 				async () => {
-					const png = await frame
-						.locator("canvas")
-						.first()
-						.screenshot({ path: join(work, label + "-preview.png") });
+					const png = await (
+						await mainPreviewCanvas(frame)
+					).screenshot({
+						path: join(work, label + "-preview.png"),
+					});
 					greenFraction = await hostPage.evaluate(async (bytes) => {
 						const bitmap = await createImageBitmap(
 							new Blob([new Uint8Array(bytes)], { type: "image/png" }),
