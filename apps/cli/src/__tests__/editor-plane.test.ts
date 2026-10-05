@@ -520,6 +520,8 @@ describe("editor plane: external record saves over HTTP", () => {
 				})
 			).json()) as { draftId: string };
 			const { record, summary } = await getRecord(host);
+			// Unknown retained content is not a view field even at equal revision.
+			(record.data as Record<string, unknown>).pluginContent = { changed: true };
 			const saved = await putRecord(host, { record, summary });
 			expect(saved.status).toBe(200);
 			const staged = await fetch(

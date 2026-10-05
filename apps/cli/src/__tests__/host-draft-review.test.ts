@@ -45,6 +45,31 @@ afterAll(async () => {
 });
 
 describe("review-bound host draft decisions", () => {
+	test("view-only and redundant saves preserve an exact review and its latest persisted view", async () => {
+		const f = await fixture();
+		try {
+			const id = await f.open();
+			await f.stage(id, "review-survives-view");
+			const review = (await f.call("/drafts/" + id + "/review")).body;
+			const saved = (await f.call("/record")).body;
+			for (const changed of [false, true]) {
+				if (changed) {
+					saved.record.data.timelineViewState = { zoomLevel: 2, scrollLeft: 135, playheadTime: 240000 };
+					saved.record.data.metadata.updatedAt = "2026-10-05T00:00:00.000Z";
+				}
+				const response = await fetch("http://127.0.0.1:" + f.host.port + "/" + f.host.token + "/api/record", {
+					method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify(saved),
+				});
+				expect(response.status).toBe(200);
+				await response.text();
+				expect((await f.call("/drafts/" + id + "/review")).body.token).toBe(review.token);
+			}
+			expect((await f.call("/drafts/" + id + "/approve-reviewed", { expectedReviewToken: review.token })).body.applied).toBe(true);
+			const committed = (await f.call("/record")).body.record;
+			expect(committed.data.timelineViewState).toEqual(saved.record.data.timelineViewState);
+			expect((await f.call("/tracks")).body).toHaveLength(2);
+		} finally { await f.host.close(); }
+	});
 	test("lists proposals without content, returns stable exact reviews, and approves only the reviewed state", async () => {
 		const f = await fixture();
 		try {
@@ -138,7 +163,8 @@ describe("review-bound host draft decisions", () => {
 				).status,
 			).toBe(409);
 			const record = (await f.call("/record")).body;
-			// A real accepted editor save retires draft sessions in the host plane.
+			// A content edit at the same revision must still retire old drafts.
+			record.record.data.metadata.name = "User renamed project";
 			const base =
 				"http://127.0.0.1:" + f.host.port + "/" + f.host.token + "/api/record";
 			const saved = await fetch(base, {

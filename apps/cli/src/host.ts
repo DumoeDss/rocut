@@ -13,10 +13,9 @@
  * One file, two writers, one authority: agent mutations flow through the
  * engine; the pane's editor session saves its record through `PUT
  * api/record`, gated by an envelope parent-chain check (a lost update is a
- * deterministic 409, never a silent clobber). An accepted external save
- * reopens the engine over the file — the resync the long-lived engine cannot
- * do in place — and clears open draft sessions, which were staged against the
- * record that just changed. All mutations serialize through one queue.
+ * deterministic 409, never a silent clobber). Content saves reopen the engine
+ * and retire old drafts. View-only saves adopt the latest retained record
+ * without invalidating reviews. Persistence and resync share one queue slot.
  */
 import { createServer } from "node:http";
 import { createReadStream, existsSync } from "node:fs";
@@ -24,6 +23,7 @@ import { stat } from "node:fs/promises";
 import path from "node:path";
 import { randomBytes } from "node:crypto";
 import { handleDraftRoute } from "./host-drafts";
+import { isViewOnlyRecordSave } from "./host-record-view";
 import {
 	createActivityTracker,
 	createRegistryActivitySync,
@@ -44,7 +44,7 @@ import {
 import type { AutomationApi } from "@opencut/editor-automation";
 import { projectId, revisionOf } from "@opencut/editor-contracts";
 import { TransactionError } from "@opencut/editor-contracts";
-import type { ProjectId, ProjectStore } from "@opencut/editor-ports";
+import type { ProjectId, ProjectRecord, ProjectStore } from "@opencut/editor-ports";
 import type { DraftEditingSession } from "@opencut/editor-contracts/draft";
 import {
 	CURRENT_PROJECT_VERSION,
@@ -142,8 +142,8 @@ interface HostPlane {
 	automation(): AutomationApi;
 	/** Serialize a mutation (agent apply, draft verb, external save). */
 	enqueue<T>(operation: () => Promise<T>): Promise<T>;
-	/** Resync after an external record save: reopen over the file SSOT. */
-	rebuild(): Promise<void>;
+	/** Adopt view-only saves; reopen the engine when content changed. */
+	reconcileRecord(record: ProjectRecord, viewOnly: boolean): Promise<void>;
 	watchRevision(callback: (revision: number) => void): () => void;
 }
 
@@ -206,7 +206,10 @@ async function createHostPlane(args: {
 		draftSessions,
 		automation: () => current.automation,
 		enqueue,
-		rebuild,
+		async reconcileRecord(record, viewOnly) {
+			if (viewOnly) current.adapter.adoptCommittedRecord(record);
+			else await rebuild();
+		},
 		watchRevision,
 	};
 }
@@ -805,7 +808,6 @@ async function handleApi(
 				}),
 			);
 			if (outcome.accepted) {
-				await plane.enqueue(() => plane.rebuild());
 				respond(200, { accepted: true, revision: outcome.revision });
 				return;
 			}
@@ -854,7 +856,7 @@ async function handleApi(
  * save) or that history plus exactly one new commit, so a save built on a
  * revision the file has already moved past is a deterministic refusal, never
  * a silent overwrite of the agent's work (or vice versa). Runs inside the
- * plane's mutation queue; the caller rebuilds the engine on acceptance.
+ * plane's mutation queue, including engine adoption/rebuild on acceptance.
  */
 async function acceptExternalRecord(args: {
 	readonly plane: HostPlane;
@@ -946,10 +948,13 @@ async function acceptExternalRecord(args: {
 	if (summaryToSave === undefined) {
 		return invalid("summary-missing");
 	}
+	const incomingRecord = record as unknown as ProjectRecord;
+	const viewOnly = uiFieldSave && isViewOnlyRecordSave(stored, incomingRecord);
 	await plane.baseStore.save({
-		record: record as unknown as Parameters<ProjectStore["save"]>[0]["record"],
+		record: incomingRecord,
 		summary: summaryToSave,
 	});
+	await plane.reconcileRecord(incomingRecord, viewOnly);
 	return { accepted: true, revision: incomingEnvelope.revision };
 }
 
