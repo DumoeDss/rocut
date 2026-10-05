@@ -116,7 +116,9 @@ function runtimeFixture({
 	loadProjectFont,
 	missingCodePoints = [],
 }: {
-	loadProjectFont?: (args: { signal: AbortSignal }) => Promise<ArrayBuffer | null>;
+	loadProjectFont?: (args: {
+		signal: AbortSignal;
+	}) => Promise<ArrayBuffer | null>;
 	missingCodePoints?: readonly number[];
 } = {}) {
 	let loads = 0;
@@ -167,6 +169,68 @@ function runtimeFixture({
 }
 
 describe("MotionTextFontRuntime", () => {
+	test("caches failures between frames but recovers on an explicit export attempt", async () => {
+		let available = false;
+		const fixture = runtimeFixture({
+			loadProjectFont: async () =>
+				available ? new Uint8Array([1, 2, 3]).buffer : null,
+		});
+		const prepare = (purpose: "preview" | "export") =>
+			fixture.runtime.prepareSequence({
+				projectId: "project",
+				purpose,
+				sequence: sequenceFixture(),
+			});
+		const failed = await prepare("export");
+		expect(failed.diagnostics).toContainEqual(
+			expect.objectContaining({ severity: "error", code: "font-load-failed" }),
+		);
+		available = true;
+		for (let index = 0; index < 20; index += 1) await prepare("preview");
+		expect(fixture.counts().loads).toBe(1);
+		fixture.runtime.retryFailedLoads();
+		const restored = await prepare("export");
+		expect(restored.diagnostics).toEqual([]);
+		expect(restored.fonts.has("font:project")).toBe(true);
+		expect(restored.generation).toBe(failed.generation + 1);
+		expect(fixture.counts()).toMatchObject({ loads: 2, adds: 1 });
+		fixture.runtime.retryFailedLoads();
+		await prepare("export");
+		expect(fixture.runtime.inspect().generation).toBe(restored.generation);
+		expect(fixture.counts()).toMatchObject({ loads: 2, adds: 1, deletes: 0 });
+		fixture.runtime.dispose();
+		expect(() => fixture.runtime.retryFailedLoads()).toThrow(/disposed/);
+	});
+
+	test("does not let stale failed loads invalidate a healthy replacement generation", async () => {
+		const old = deferred<ArrayBuffer | null>();
+		let first = true;
+		const fixture = runtimeFixture({
+			loadProjectFont: async () => {
+				if (first) {
+					first = false;
+					return old.promise;
+				}
+				return new Uint8Array([1, 2, 3]).buffer;
+			},
+		});
+		const prepare = () =>
+			fixture.runtime.prepareSequence({
+				projectId: "project",
+				purpose: "export",
+				sequence: sequenceFixture(),
+			});
+		const stale = prepare();
+		const rejected = stale.catch((error: unknown) => error);
+		fixture.runtime.invalidate();
+		const healthy = await prepare();
+		old.resolve(null);
+		expect(String(await rejected)).toMatch(/stale/i);
+		fixture.runtime.retryFailedLoads();
+		expect(fixture.runtime.inspect().generation).toBe(healthy.generation);
+		expect(fixture.counts()).toMatchObject({ loads: 2, adds: 1, deletes: 0 });
+	});
+
 	test("waits for bytes and FontFace registration before publishing a font", async () => {
 		const bytes = deferred<ArrayBuffer | null>();
 		const fixture = runtimeFixture({
@@ -187,9 +251,7 @@ describe("MotionTextFontRuntime", () => {
 		const prepared = await preparation;
 
 		expect(prepared.diagnostics).toEqual([]);
-		expect(prepared.fonts.get("font:project")?.family).toMatch(
-			/^__rocut_mt_/,
-		);
+		expect(prepared.fonts.get("font:project")?.family).toMatch(/^__rocut_mt_/);
 		expect(fixture.inspectedTexts).toEqual(["", "Hello 世界"]);
 		expect(fixture.runtime.inspect()).toMatchObject({
 			cachedFonts: 1,

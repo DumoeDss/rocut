@@ -2,6 +2,12 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Font-resource retry recovery (2026-10-05)
+
+- Installed fault injection `live-mGMojV` reproduces a real defect: an owned-frame-only 503 for the Chinese builtin font produces a visible, fail-closed export error, but restoring the resource and clicking Retry never downloads. The rejected font promise remained cached for the lifetime of the editor. No installed font files or user projects were changed.
+- New export attempts now invalidate failed font generations deliberately, retiring cached fallback node preparation too. Preview frames retain negative caching, successful generations are reused, and stale asynchronous failures cannot invalidate a healthy replacement generation. Font runtime regression suite: 7/7. Focused ESLint and Vite-example typecheck pass. Installed candidate acceptance follows below when verified; this source checkpoint alone is not installed acceptance.
+- `script/probe-elftia-interactions.mjs --font-recovery-only` exercises actual JIZURA import, error UI, Retry, recovered FontFace registration, downloaded MP4 decoding, and unchanged persisted project data. The shared download helper accepts a button name with its existing Export default preserved.
+
 ## Installed multilingual overlay isolation (2026-10-05)
 
 - **Installed live-bxRC1j passes 7/7:** actual JIZURA file chooser imports two simultaneous overlays, zh-Hans and English, with different locked seeds and cyan/magenta colors. Actual Transform controls scale them to 0.4 and position them on separate halves of the canvas. Persisted assets resolve to gothic_bold_zh_hans and gothic_bold; loaded browser FontFace families are independently digest-namespaced (__rocut_mt_gothic_bold_zh_hans_a3041811a78c361b and __rocut_mt_gothic_bold_c2f3b4d463500a2d). The verifier matches complete asset-ID/digest names, not ambiguous prefixes.

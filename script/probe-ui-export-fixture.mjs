@@ -55,7 +55,12 @@ export async function createUiExportFixture({ page, work, sourceVideo }) {
 	await page.getByLabel("Settings", { exact: true }).click();
 }
 
-export async function downloadUiExport(cdp, dialog, work) {
+export async function downloadUiExport(
+	cdp,
+	dialog,
+	work,
+	buttonName = "Export",
+) {
 	let guid,
 		suggestedFilename,
 		completed = false;
@@ -69,7 +74,7 @@ export async function downloadUiExport(cdp, dialog, work) {
 	cdp.on("Browser.downloadWillBegin", begin);
 	cdp.on("Browser.downloadProgress", progress);
 	try {
-		await dialog.getByRole("button", { name: "Export", exact: true }).click();
+		await dialog.getByRole("button", { name: buttonName, exact: true }).click();
 		await expect
 			.poll(() => completed, {
 				timeout: 120000,

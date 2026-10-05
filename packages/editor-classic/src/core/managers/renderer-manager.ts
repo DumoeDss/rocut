@@ -421,6 +421,7 @@ export class RendererManager {
 
 			const exportFps = fps ?? activeProject.settings.fps;
 			const canvasSize = activeProject.settings.canvasSize;
+			this.motionTextFontRuntime.retryFailedLoads();
 
 			let audioBuffer: AudioBuffer | null = null;
 			if (shouldIncludeAudio) {

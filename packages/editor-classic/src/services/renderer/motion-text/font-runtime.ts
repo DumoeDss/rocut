@@ -82,6 +82,7 @@ export class MotionTextFontRuntime {
 	private readonly loadedFaces = new Set<MotionTextFontFaceHandle>();
 	private generation = 0;
 	private disposed = false;
+	private hasFailedLoads = false;
 	private readonly loader: MotionTextFontBytesLoader;
 	private readonly inspectFont: MotionTextFontInspector;
 	private readonly environment: MotionTextFontEnvironment;
@@ -159,12 +160,20 @@ export class MotionTextFontRuntime {
 		};
 	}
 
+	// Retry only on an explicit export attempt, not on every preview frame.
+	// A generation change also retires nodes that cached fallback preparation.
+	retryFailedLoads(): void {
+		this.assertLive();
+		if (this.hasFailedLoads) this.invalidate();
+	}
+
 	invalidate(): void {
 		if (this.disposed) return;
 		this.generation += 1;
 		for (const controller of this.controllers) controller.abort();
 		this.controllers.clear();
 		this.cachedFonts.clear();
+		this.hasFailedLoads = false;
 		this.releaseFaces();
 	}
 
@@ -196,7 +205,16 @@ export class MotionTextFontRuntime {
 		const key = fontCacheKey({ font, projectId });
 		const cached = this.cachedFonts.get(key);
 		if (cached) return cached;
-		const pending = this.loadFontUncached({ font, projectId, generation });
+		const pending = this.loadFontUncached({
+			font,
+			projectId,
+			generation,
+		}).catch((error: unknown) => {
+			if (!this.disposed && generation === this.generation) {
+				this.hasFailedLoads = true;
+			}
+			throw error;
+		});
 		this.cachedFonts.set(key, pending);
 		return pending;
 	}
