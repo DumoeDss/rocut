@@ -58,6 +58,7 @@ import {
 	Video01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
+import { ClipExportDialog } from "../../../clip-export-dialog";
 
 export function MediaView() {
 	const invokeAction = useActionInvoker();
@@ -330,25 +331,40 @@ function MediaItemWithContextMenu({
 	}) => void;
 }) {
 	const { isSelected, selectedIds } = useSelection();
+	const [exportOpen, setExportOpen] = useState(false);
 	const idsToDelete = isSelected(item.id) ? selectedIds : [item.id];
 	const deleteLabel =
 		idsToDelete.length > 1 ? `Delete ${idsToDelete.length} items` : "Delete";
 
 	return (
-		<ContextMenu>
-			<ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
-			<ContextMenuContent>
-				<ContextMenuItem>Export clips</ContextMenuItem>
-				<ContextMenuItem
-					variant="destructive"
-					onClick={(event: React.MouseEvent<HTMLDivElement>) =>
-						onRemove({ event, ids: idsToDelete })
-					}
+		<>
+			<ContextMenu>
+				<ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
+				<ContextMenuContent
+					onCloseAutoFocus={(event) => {
+						if (exportOpen) event.preventDefault();
+					}}
 				>
-					{deleteLabel}
-				</ContextMenuItem>
-			</ContextMenuContent>
-		</ContextMenu>
+					<ContextMenuItem onSelect={() => setExportOpen(true)}>
+						Export clips
+					</ContextMenuItem>
+					<ContextMenuItem
+						variant="destructive"
+						onClick={(event: React.MouseEvent<HTMLDivElement>) =>
+							onRemove({ event, ids: idsToDelete })
+						}
+					>
+						{deleteLabel}
+					</ContextMenuItem>
+				</ContextMenuContent>
+			</ContextMenu>
+			{exportOpen && (
+				<ClipExportDialog
+					selection={{ kind: "media", ids: idsToDelete }}
+					onClose={() => setExportOpen(false)}
+				/>
+			)}
+		</>
 	);
 }
 

@@ -21,11 +21,12 @@ import {
 } from "../ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { ExportOptions } from "./export-button";
+import { ClipExportDialog } from "./clip-export-dialog";
 
 /** Editor commands remain reachable when an embedding host removes its header. */
 export function EditorMenu() {
 	const [dialog, setDialog] = useState<
-		"export" | "shortcuts" | "drafts" | null
+		"export" | "clips" | "shortcuts" | "drafts" | null
 	>(null);
 	const { draftReview } = useEditorHost();
 	const triggerRef = useRef<HTMLButtonElement>(null);
@@ -79,6 +80,13 @@ export function EditorMenu() {
 						Export project
 					</DropdownMenuItem>
 					<DropdownMenuItem
+						disabled={!hasProject}
+						icon={<Download />}
+						onSelect={() => setDialog("clips")}
+					>
+						Export clips
+					</DropdownMenuItem>
+					<DropdownMenuItem
 						icon={<Keyboard />}
 						onSelect={() => setDialog("shortcuts")}
 					>
@@ -93,6 +101,12 @@ export function EditorMenu() {
 					onOpenChange={(open) => {
 						if (!open) setDialog(null);
 					}}
+					onCloseAutoFocus={restoreFocus}
+				/>
+			)}
+			{dialog === "clips" && (
+				<ClipExportMenuDialog
+					onClose={() => setDialog(null)}
 					onCloseAutoFocus={restoreFocus}
 				/>
 			)}
@@ -111,6 +125,28 @@ export function EditorMenu() {
 				}}
 			/>
 		</>
+	);
+}
+
+function ClipExportMenuDialog({
+	onClose,
+	onCloseAutoFocus,
+}: {
+	onClose: () => void;
+	onCloseAutoFocus: (event: Event) => void;
+}) {
+	const editor = useEditorInstance();
+	const selected = editor.selection.getSelectedElements();
+	return (
+		<ClipExportDialog
+			selection={
+				selected.length
+					? { kind: "elements", references: selected }
+					: { kind: "all" }
+			}
+			onClose={onClose}
+			onCloseAutoFocus={onCloseAutoFocus}
+		/>
 	);
 }
 

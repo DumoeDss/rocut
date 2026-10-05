@@ -235,6 +235,9 @@ export class ProjectManager {
 	}
 
 	async export({ options }: { options: ExportOptions }): Promise<ExportResult> {
+		if (this.exportState.isExporting) {
+			return { success: false, error: "Another export is already running" };
+		}
 		this.exportCancelRequested = false;
 		this.exportState = { isExporting: true, progress: 0, result: null };
 		this.notify();

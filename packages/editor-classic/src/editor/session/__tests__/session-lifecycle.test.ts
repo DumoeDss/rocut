@@ -7,6 +7,7 @@ import {
 	RecordingDiagnostics,
 } from "@opencut/editor-ports/in-memory";
 import { PORT_ROLES, type MigrationOutcome } from "@opencut/editor-ports";
+import type { ExportResult } from "../../../export";
 
 if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 	test("session lifecycle suite runs in an isolated wasm-mock process", () => {
@@ -29,8 +30,41 @@ if (process.env.OPENCUT_SESSION_TEST_ISOLATED !== "1") {
 } else {
 	await import("./wasm-test-mock");
 	const { createEditorSession } = await import("../create-session");
-	const { editorForSession } =
-		await import("../../runtime/session-core-owner");
+	const { editorForSession } = await import("../../runtime/session-core-owner");
+
+	test("a concurrent export cannot replace progress or reset cancellation", async () => {
+		const session = await createEditorSession({ host: createInMemoryHost() });
+		const editor = editorForSession(session);
+		const original = editor.renderer.exportProject;
+		let complete!: (result: ExportResult) => void;
+		let isCancelled: (() => boolean) | undefined;
+		let renders = 0;
+		editor.renderer.exportProject = async ({ onCancel }) => {
+			renders += 1;
+			isCancelled = onCancel;
+			return new Promise<ExportResult>((resolve) => {
+				complete = resolve;
+			});
+		};
+		try {
+			const options = { format: "mp4" as const, quality: "high" as const };
+			const first = editor.project.export({ options });
+			editor.project.cancelExport();
+			expect(await editor.project.export({ options })).toEqual({
+				success: false,
+				error: "Another export is already running",
+			});
+			expect(renders).toBe(1);
+			expect(isCancelled?.()).toBe(true);
+			expect(editor.project.getExportState().isExporting).toBe(true);
+			complete({ success: false, cancelled: true });
+			expect(await first).toEqual({ success: false, cancelled: true });
+			expect(editor.project.getExportState().isExporting).toBe(false);
+		} finally {
+			editor.renderer.exportProject = original;
+			await session.dispose();
+		}
+	});
 
 	/**
 	 * A stand-in for a mounted container.

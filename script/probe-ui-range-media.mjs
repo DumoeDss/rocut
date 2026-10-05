@@ -47,8 +47,8 @@ export function createRangeSource(
 
 // Independent of the editor clock/range planner: the source has two distinct
 // colors AND tones, so exporting the wrong second cannot pass duration alone.
-export function verifyRangeMedia(output, { format, ranged }) {
-	const duration = ranged ? 1 : 2;
+export function verifyRangeMedia(output, { format, ranged, firstClip = false }) {
+	const duration = ranged || firstClip ? 1 : 2;
 	const metadata = JSON.parse(
 		execFileSync(
 			"ffprobe",
@@ -121,8 +121,8 @@ export function verifyRangeMedia(output, { format, ranged }) {
 	const samples = [];
 	// The fixed fixture has 0.4s cuts followed by 0.1s cuts: 0.4/1.4 are
 	// intentional fade boundaries, while 0.2/1.2 are cut interiors.
-	for (const seconds of ranged ? [0.1, 0.2, 0.8] : [0.1, 0.2, 1.1, 1.2, 1.8]) {
-		const blue = ranged || seconds >= 1;
+	for (const seconds of ranged || firstClip ? [0.1, 0.2, 0.8] : [0.1, 0.2, 1.1, 1.2, 1.8]) {
+		const blue = !firstClip && (ranged || seconds >= 1);
 		const pixels = execFileSync(
 			"ffmpeg",
 			[

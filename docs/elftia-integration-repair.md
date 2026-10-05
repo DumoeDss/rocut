@@ -2,6 +2,14 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Timeline clip export source checkpoint (2026-10-06)
+
+- Added Rust `planClipExports`: validated clip/media selection, stable ordering, safe numbered filenames and authored timeline ranges. Assets **Export clips** now lists all matching timeline instances; the editor menu uses selected clips or the full clip list. Each file renders the full composition during that clip's interval, including overlapping layers/effects/audio, not source bytes. Empty/unused media cannot silently export the whole project.
+- The dialog reviews per-clip ranges, supports MP4/WebM, quality/audio options and checkbox selection, and retains a fixed status/action footer with a scrollable body. Batch cancellation suppresses late downloads; a project/scene/timeline/settings/sequence/session guard rejects stale reviews. ProjectManager refuses concurrent exports without resetting the first export's cancellation state. Existing editor-only embedding is unchanged.
+- Rust planner 5 tests, batch runner 5 tests/15 assertions, isolated session lifecycle/headless migration suites, changed-source lint, Vite typecheck/build and all four WASM gates pass. The real-installed `--clip-export-only` driver now verifies two source instances against independent decoded color/glyph/tone/frame-count checks; **this checkpoint has not yet installed or run that new driver**.
+- The generated `opencut-wasm/sync` subpath now declares its existing public types; the experimental Classic test helper imports that subpath instead of a checkout-relative WASM path. `install-packages`, `agent-transaction` and `custom-storage` local typechecks pass. `embed-surface` remains red: fixture missing `motionTextSequences`, missing EyeDropper/soundtouchjs declarations, and two Canvas context union errors. These are not represented as successful packed-consumer verification.
+- Source additions: `export/clip-export-plan.ts`, `export/clip-export-batch.ts`, `components/editor/clip-export-dialog.tsx`, Rust `time/src/clip_export.rs`; focused tests live beside the owners. No version bump, Elftia main commit, Steam change or paid generation.
+
 ## Approved decoder dependency and seek policy (2026-10-06)
 
 - Both Mediabunny consumers now pin the approved **1.48.1**, with the official npm SHA-512 in `bun.lock`; transitive dependency versions are unchanged. The ordinary installer stalled in resolution and was stopped; frozen/offline-preferred installation succeeded. Two pre-existing nested symlinks still resolved 1.41.0 after the root update; only those stale links were removed (old package cache retained), then both consumers resolved 1.48.1 and the surface was rebuilt.

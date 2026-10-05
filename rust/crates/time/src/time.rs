@@ -1,4 +1,5 @@
 mod frame_rate;
+mod clip_export;
 mod frame_grid;
 mod media_time;
 mod source_span;
@@ -9,6 +10,11 @@ mod transition_api;
 mod transition_graph;
 mod transition_reconcile;
 mod video_time;
+
+pub use clip_export::{
+    ClipExportOptions, ClipExportPlan, ExportClipCandidate, ExportClipRef,
+    ExportClipSelection, PlannedClipExport, plan_clip_exports,
+};
 
 pub use transition::{
     ClipTransitionOptions, ClipTransitionPlan, ClipTransitionSample, ClipTransitionWindow,

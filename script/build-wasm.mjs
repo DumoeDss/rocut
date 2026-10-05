@@ -213,7 +213,7 @@ export {${exportBlock}} from "./opencut_wasm_bg.js";
 			bun: `./${SYNC_ENTRY}`,
 			default: "./opencut_wasm.js",
 		},
-		"./sync": `./${SYNC_ENTRY}`,
+		"./sync": { types: "./opencut_wasm.d.ts", default: `./${SYNC_ENTRY}` },
 		"./*": "./*",
 	};
 	// wasm-pack writes this file with two-space indent and no trailing newline; matching it keeps

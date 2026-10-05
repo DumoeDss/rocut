@@ -11,7 +11,7 @@ import {
 	normalizeColorAdjustment,
 	planVideoFreezeFrame,
 	resolveVideoSourceTime,
-} from "../../../../../../rust/wasm/pkg/opencut_wasm_sync.js";
+} from "opencut-wasm/sync";
 
 const TICKS_PER_SECOND = 120_000;
 let nextCompositorHandle = 1;

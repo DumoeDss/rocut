@@ -330,7 +330,8 @@ function validate(surface) {
 	// The declared opt-in for runtimes that need explicit instantiation and are not bun. A deep
 	// path would work through `./*`, but a *declared* subpath is what makes it a promise.
 	if (
-		surface.wasmManifest.exports?.[EXPECTED.syncSubpath] !== `./${SYNC_ENTRY}`
+		JSON.stringify(surface.wasmManifest.exports?.[EXPECTED.syncSubpath]) !==
+		JSON.stringify({ types: "./opencut_wasm.d.ts", default: `./${SYNC_ENTRY}` })
 	) {
 		fail(
 			"entry-conditions",
@@ -538,6 +539,9 @@ function mutate(surface, control) {
 	}
 	if (control === "sync-subpath-dropped") {
 		delete copy.wasmManifest.exports[EXPECTED.syncSubpath];
+	}
+	if (control === "sync-subpath-types-dropped") {
+		delete copy.wasmManifest.exports[EXPECTED.syncSubpath].types;
 	}
 	if (control === "node-condition-added") {
 		copy.wasmManifest.exports["."] = {
