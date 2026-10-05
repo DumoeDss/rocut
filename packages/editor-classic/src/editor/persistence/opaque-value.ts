@@ -58,7 +58,22 @@ export function overlayOpaque<Value>({
 			knownIdentity === null || knownIdentity === retainedIdentity;
 		const retainedRecord =
 			isRecord(retained) && mayRetain ? retained : undefined;
-		const base = retainedRecord ? cloneOpaque(retainedRecord) : {};
+		// Known children are overlaid below. Cloning them here as well copies
+		// every large sequence once per ancestor, only to discard those copies.
+		// Clone unknown siblings together to preserve their shared references.
+		const prototype = retainedRecord && Object.getPrototypeOf(retainedRecord);
+		const base = !retainedRecord
+			? {}
+			: prototype === Object.prototype || prototype === null
+				? cloneOpaque(
+						Object.fromEntries(
+							Object.entries(retainedRecord).filter(
+								([key]) =>
+									!Object.prototype.propertyIsEnumerable.call(known, key),
+							),
+						),
+					)
+				: cloneOpaque(retainedRecord);
 		for (const [key, value] of Object.entries(known)) {
 			base[key] = overlayOpaque({
 				retained: retainedRecord?.[key],

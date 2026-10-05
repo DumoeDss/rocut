@@ -52,6 +52,7 @@ import { probeCueLockWorkflow } from './probe-cue-lock-workflow.mjs';
 import { enterCreatorProject } from './probe-creator-entry.mjs';
 import { probeLinkedWorkflow } from './probe-linked-workflow.mjs';
 import { probeClipExport } from './probe-clip-export.mjs';
+import { probePreviewMutation } from './probe-preview-mutation.mjs';
 
 // Run with the Elftia worktree's tsx loader. Never launch a substitute browser.
 const hostRoot = resolve(process.env.ELFTIA_WORKTREE ?? '');
@@ -85,7 +86,7 @@ try {
   if (nativeAudio) {
     nativeAudioCdp = await conn.context.newCDPSession(conn.page);
     await nativeAudioCdp.send('Emulation.clearDeviceMetricsOverride');
-  } else await conn.page.setViewportSize(['--motion-seek-only','--motion-stress-only','--motion-stress-memory-only','--motion-stress-full-export-only','--export-backpressure-only'].some(flag=>process.argv.includes(flag)) ? {width:1920,height:1080} : {width:1280,height:900});
+  } else await conn.page.setViewportSize(['--motion-edit-only','--motion-seek-only','--motion-stress-only','--motion-stress-memory-only','--motion-stress-full-export-only','--export-backpressure-only'].some(flag=>process.argv.includes(flag)) ? {width:1920,height:1080} : {width:1280,height:900});
   evidence.viewportMode = nativeAudio ? 'native-audio' : 'emulated-interactions';
   const frames = conn.page.frames();
   for (const frame of frames) if ((await frame.title().catch(()=>'' )).startsWith('OpenCut editor')) editor=frame;
@@ -167,7 +168,11 @@ try {
   conn.page.on('response',response=>{if(response.status()>=400 && response.url().includes('/api/')) evidence.requests.push({phase,status:response.status(),url:scrub(response.url())});});
   const audioFixture=join(work,'fixture-tone-a4.wav');
   execFileSync('ffmpeg',['-v','error','-n','-f','lavfi','-i','sine=frequency=440:duration=16','-ar','44100','-ac','1','-c:a','pcm_s16le',audioFixture],{windowsHide:true});
- if (process.argv.includes('--clip-export-only')) {
+ if (process.argv.includes('--motion-edit-only')) {
+    const onPhase=next=>{phase=next;console.log('phase:',next);};
+    await probeMotionDuration({page,hostPage:conn.page,work,evidence,includeVideo:true,onPhase});
+    await probePreviewMutation({page,hostPage:conn.page,work,evidence,onPhase});
+  } else if (process.argv.includes('--clip-export-only')) {
     await probeClipExport({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',next);}});
   } else if (process.argv.includes('--focused-motion-only')) {
     await probeFocusedMotion({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',next);}});

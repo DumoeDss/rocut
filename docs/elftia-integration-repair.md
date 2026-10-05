@@ -2,6 +2,13 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Single-cue visible latency checkpoint (2026-10-06)
+
+- Added actual-host `--motion-edit-only`: a 180-second/120-cue F04 project with a real video underlay, 30 alternating persisted cue edits, trusted Apply timestamps and exact compositor-picture matches. It checks unchanged other cues/scenes/settings and restores the owned cue through UI even on failure. The original 300ms p95 budget is unchanged.
+- Installed `19b37011`, ordinary `live-Aoaq7T`: all 30 visible edits succeed, but p95 **511.31ms**, maximum **532.59ms** fails the budget. Earlier `live-tuuSeS` and `live-LkDxHN` driver failures observed the transparent first fade frame: opening a cue row seeks its start. The corrected driver seeks an interior frame after opening the row; these failures do not establish a renderer defect.
+- Separate instrumented `mutation-profile-6L9gU2` (acceptance-ineligible) identifies repeated opaque-record structured cloning and Rust operation-fingerprint normalization as CPU hotspots. `overlayOpaque` now clones only unknown retained siblings before recursively overlaying known fields, avoiding discarded full-subtree copies at every ancestor. Non-plain retained objects keep their existing clone behavior; private siblings remain cloned together.
+- Three focused tests cover deterministic redundant-copy detection, explicit clearing, opaque alias/cycle/binary preservation, and identity replacement/reordering. The copy-cost regression fails against the original HEAD implementation and passes with this change. Persistence/codec suites pass 9 tests; transaction/adapter suites pass 39/40. The remaining FPS rejection-shape assertion also fails with the original HEAD overlay loaded in isolation (plain Error versus expected `code: validation`); it is not suppressed or counted as passing. Vite typecheck/build and scoped lint pass. Actual installed performance of the optimization is still pending; no aggregate acceptance claim.
+
 ## Timeline clip export source checkpoint (2026-10-06)
 
 - Added Rust `planClipExports`: validated clip/media selection, stable ordering, safe numbered filenames and authored timeline ranges. Assets **Export clips** now lists all matching timeline instances; the editor menu uses selected clips or the full clip list. Each file renders the full composition during that clip's interval, including overlapping layers/effects/audio, not source bytes. Empty/unused media cannot silently export the whole project.
