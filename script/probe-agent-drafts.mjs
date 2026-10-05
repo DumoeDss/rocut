@@ -303,9 +303,25 @@ export async function probeAgentDrafts({
 		(await json("draft", "stage", extra, "--draft", changed.draftId)).accepted,
 		true,
 	);
+	const conflictPath = "/api/drafts/" + changed.draftId + "/approve-reviewed";
+	const conflictResponse = hostPage.waitForResponse(
+		(response) =>
+			response.url().endsWith(conflictPath) &&
+			response.request().method() === "POST",
+	);
 	await dialog
 		.getByRole("button", { name: "Approve changes", exact: true })
 		.click();
+	const refusal = await conflictResponse;
+	assert.equal(refusal.status(), 409);
+	assert.deepEqual(await refusal.json(), { error: "draft-review-changed" });
+	evidence.expectedRequestFailures ??= [];
+	evidence.expectedRequestFailures.push({
+		phase:
+			"real editor review refuses unseen changes and allows explicit rejection",
+		status: 409,
+		path: conflictPath,
+	});
 	await expect(dialog.getByRole("alert")).toContainText(
 		"changed after you opened",
 	);
@@ -337,6 +353,9 @@ export async function probeAgentDrafts({
 	);
 	const fresh = await previewAndStage(userState, "rebased-proposal");
 	const originalViewport = hostPage.viewportSize();
+	const originalThemeMode = await hostPage.evaluate(
+		async () => (await window.native.theme.getState()).mode,
+	);
 	await hostPage.setViewportSize({ width: 1000, height: 650 });
 	try {
 		dialog = await openReview(fresh.draftId);
@@ -354,6 +373,44 @@ export async function probeAgentDrafts({
 		await hostPage.screenshot({
 			path: join(work, "agent-draft-ui-review.png"),
 		});
+		for (const dark of [false, true]) {
+			const current = await hostPage.evaluate(() =>
+				document.documentElement.classList.contains("dark"),
+			);
+			if (current !== dark)
+				await hostPage
+					.getByRole("button", { name: current ? "深色" : "浅色", exact: true })
+					.click();
+			await expect
+				.poll(() =>
+					page.evaluate(() =>
+						document.documentElement.classList.contains("dark"),
+					),
+				)
+				.toBe(dark);
+			await expect(
+				dialog.getByRole("button", { name: "Approve changes", exact: true }),
+			).toBeVisible();
+			await hostPage.screenshot({
+				path: join(
+					work,
+					"agent-draft-ui-" + (dark ? "dark" : "light") + ".png",
+				),
+			});
+		}
+		await scroll.hover();
+		await hostPage.mouse.wheel(0, 750);
+		await expect
+			.poll(() => scroll.evaluate((element) => element.scrollTop))
+			.toBeGreaterThan(0);
+		await dialog.locator("summary").first().click();
+		await expect(dialog.locator("details").first()).toHaveAttribute("open", "");
+		await expect(dialog.locator("details").first().locator("pre")).toHaveCount(
+			2,
+		);
+		check(
+			"review follows both host themes and exposes full large values through a real scroll/expand interaction",
+		);
 		await dialog
 			.getByRole("button", { name: "Approve changes", exact: true })
 			.click();
@@ -365,6 +422,10 @@ export async function probeAgentDrafts({
 			sizes,
 		);
 	} finally {
+		await hostPage.evaluate(
+			(mode) => window.native.theme.setMode(mode),
+			originalThemeMode,
+		);
 		if (originalViewport) await hostPage.setViewportSize(originalViewport);
 	}
 	const committed = await json("motion-text", "list");

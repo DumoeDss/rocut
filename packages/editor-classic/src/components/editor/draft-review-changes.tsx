@@ -1,7 +1,11 @@
 import { useState } from "react";
 import type { DraftContentSnapshot } from "@opencut/editor-contracts/draft";
 import { TICKS_PER_SECOND } from "../../wasm";
-import { changedReviewFields, type ReviewField } from "./draft-review-diff";
+import {
+	changedReviewFields,
+	reviewFieldLabel,
+	type ReviewField,
+} from "./draft-review-diff";
 
 function display(value: unknown): string {
 	if (value === undefined) return "Not present";
@@ -33,7 +37,9 @@ function FieldComparison({ field }: { field: ReviewField }) {
 			className="space-y-2 border-b pb-4 last:border-b-0"
 			aria-label={field.path}
 		>
-			<h4 className="break-all text-sm font-medium">{field.path}</h4>
+			<h4 title={field.path} className="break-words text-sm font-medium">
+				{reviewFieldLabel(field.path)}
+			</h4>
 			{long ? (
 				<details onToggle={(event) => setExpanded(event.currentTarget.open)}>
 					<summary className="cursor-pointer text-sm text-muted-foreground focus-visible:outline-2 focus-visible:outline-ring">
@@ -55,7 +61,11 @@ export function DraftChanges({
 	before: DraftContentSnapshot;
 	after: DraftContentSnapshot;
 }) {
-	const fields = changedReviewFields({ before, after });
+	const fields = changedReviewFields({ before, after }).sort(
+		(left, right) =>
+			Number(right.path.endsWith(".text")) -
+			Number(left.path.endsWith(".text")),
+	);
 	return (
 		<div className="space-y-4" data-testid="draft-review-changes">
 			<p className="text-xs text-muted-foreground">

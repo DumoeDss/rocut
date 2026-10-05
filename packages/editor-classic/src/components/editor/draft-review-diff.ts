@@ -4,6 +4,33 @@ export interface ReviewField {
 	readonly after: unknown;
 }
 
+/** Human labels are presentation only; raw paths remain available for inspection. */
+export function reviewFieldLabel(path: string): string {
+	const labels: Record<string, string> = {
+		motionTextSequences: "Motion text",
+		cues: "Cue",
+		overrides: "Local settings",
+		colors: "Colors",
+		foreground: "Text color",
+		accent: "Accent color",
+		resolvedPlan: "Render plan",
+		text: "Text",
+		segments: "Text segments",
+		startTime: "Start time",
+		duration: "Duration",
+		revision: "Revision",
+		id: "ID",
+	};
+	return path
+		.split(".")
+		.map((part) =>
+			/^\d+$/.test(part)
+				? String(Number(part) + 1)
+				: (labels[part] ?? part.replace(/([a-z])([A-Z])/g, "$1 $2")),
+		)
+		.join(" / ");
+}
+
 /** Presentation-only comparison; never constructs or applies an operation. */
 export function changedReviewFields({
 	before,

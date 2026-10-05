@@ -97,7 +97,7 @@ function DraftReviewBody({ port }: { port: DraftReviewPort }) {
 	const refresh = useCallback(
 		() =>
 			perform(async (isCurrent) => {
-				editor.playback.pause();
+				// Viewing a proposal must not force a save or change playback state.
 				if (editor.save.getIsDirty()) await editor.save.flush();
 				ensureProject();
 				const drafts = await port.list();
@@ -126,7 +126,6 @@ function DraftReviewBody({ port }: { port: DraftReviewPort }) {
 		perform(async (isCurrent) => {
 			setReview(null);
 			setNotice("");
-			editor.playback.pause();
 			if (editor.save.getIsDirty()) await editor.save.flush();
 			ensureProject();
 			const next = await port.read(id);
@@ -189,7 +188,10 @@ function DraftReviewBody({ port }: { port: DraftReviewPort }) {
 					<>
 						<div className="space-y-1 text-sm">
 							<h3 className="font-medium">
-								{review.snapshot.acceptedOperationCount} proposed operations
+								{review.snapshot.acceptedOperationCount} proposed{" "}
+								{review.snapshot.acceptedOperationCount === 1
+									? "operation"
+									: "operations"}
 							</h3>
 							<p className="text-xs text-muted-foreground break-all">
 								Draft {review.snapshot.id} · Base revision{" "}
@@ -223,7 +225,10 @@ function DraftReviewBody({ port }: { port: DraftReviewPort }) {
 									>
 										<div className="min-w-0 flex-1 text-sm">
 											<p className="font-medium">
-												{item.acceptedOperationCount} proposed operations
+												{item.acceptedOperationCount} proposed{" "}
+												{item.acceptedOperationCount === 1
+													? "operation"
+													: "operations"}
 											</p>
 											<p className="break-all text-xs text-muted-foreground">
 												{item.id}

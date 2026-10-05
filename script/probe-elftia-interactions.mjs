@@ -198,8 +198,10 @@ try {
   if(process.argv.includes('--layout')) {phase='embedded layout'; console.log('phase:',phase); await probeEmbeddedLayout(conn.page,editor,work,evidence);}
   }
   assert.equal(evidence.errors.length,0,'Real-host run must not report uncaught page/driver errors');
+  const expectedFailures=evidence.expectedRequestFailures??[];
+  for (const expected of expectedFailures) assert.equal(evidence.requests.filter(request=>request.phase===expected.phase && request.status===expected.status && request.url.endsWith(expected.path)).length,1,'Expected exactly one verified refusal');
   const unexpectedRequests=evidence.requests.filter(request=>!(request.status===404 &&
-    ['/api/library/graph-editor-presets/user-presets','/api/library/saved-sounds/user-sounds'].some(path=>request.url.endsWith(path))));
+    ['/api/library/graph-editor-presets/user-presets','/api/library/saved-sounds/user-sounds'].some(path=>request.url.endsWith(path))) && !expectedFailures.some(expected=>request.phase===expected.phase && request.status===expected.status && request.url.endsWith(expected.path)));
   assert.equal(unexpectedRequests.length,0,'Unexpected failed host API requests: '+JSON.stringify(unexpectedRequests));
   await conn.page.screenshot({path:join(work,'complete.png')});
   evidence.passed=true;
