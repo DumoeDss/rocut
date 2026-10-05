@@ -2,6 +2,13 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Transformed shape-mask spatial export matrix (2026-10-05)
+
+- **Installed live-h4NAbs passes 7/7:** actual UI authors Rectangle, Ellipse and Diamond at 40% width/height, center offsets (+8%, -4%) and 35-degree rotation. Each shape is checked normally and inverted, including exact session-local undo/redo of inversion and complete saved-clip equality after reload. Six actual Export-menu downloads pass 1080p H.264/30-frame/one-second metadata and reveal-area checks. Ellipse-normal and Diamond-inverted screenshots were visually inspected.
+- **Independent spatial checks:** probe-mask-spatial.mjs uses analytic box/ellipse/diamond membership, not production path builders or persisted params, to verify both exposed red and hidden black at 520/536/548 non-edge points per frame. It checks the actual preview and decoded video at 0.1, 0.5 and 0.9 seconds. Following the live run, all six saved files were independently rechecked with added negative controls: horizontal mirroring and a 12-pixel cyclic horizontal shift preserve area but must fail the pixel assertions. All 12 wrong-frame controls were rejected. Future --mask-shapes-only runs include these controls.
+- **Probe correction retained:** live-3AETW6 validated both Rectangle exports but then wrongly expected undo history to survive browser reload. CommandsManager owns an in-memory history array; the corrected probe checks exact undo/redo before reload, then separately verifies persisted content afterward. This was a test expectation error, not a production fix or a promise of persistent undo history.
+- **Scope:** these cases expand verified transforms beyond the earlier axis-aligned rectangle; they do not establish feathering, stroke rendering, all built-in shapes/fonts or all aspect ratios. Pen tool currently exposes anchor editing, not independent Bezier tangent handles. No production/runtime/installed bytes, dependencies, versions or Elftia main commits changed.
+
 ## Freeform mask editing and real-font snapping (2026-10-05)
 
 - **Installed live-OOijR2 passes 7/7:** actual Pen tool drawing closes a four-point path; clicking its segment inserts exactly one new stable ID; Delete and anchor dragging preserve IDs with exact undo/redo. Deleting below three anchors reopens the path; further drawing recloses it, and four undos restore each prior geometry. Reload and actual Export-menu MP4 download retain the quarter-frame reveal. Independent decoding checks 1920x1080 H.264, 30 frames and 24.44% red at 0.1/0.5/0.9 seconds. The restored screenshot was visually inspected. Earlier live-zv7VEk (5/5) and live-SL6rnG (7/7) remain incremental evidence.
