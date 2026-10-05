@@ -97,7 +97,7 @@ export async function probeFingerprintCompaction({
 	});
 	onPhase("real cue edit compacts old history on normal save");
 	await page.getByTestId("timeline-clip").click();
-	await page.getByLabel("Motion text", { exact: true }).click();
+	await page.locator("#editor-properties").getByLabel("Motion text", { exact: true }).click();
 	const cue = initial.data.motionTextSequences[0].cues[0];
 	const row = page
 		.locator(

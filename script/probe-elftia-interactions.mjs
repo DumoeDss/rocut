@@ -68,7 +68,8 @@ const previousViewport = conn.page.viewportSize();
 try {
   const ownership = await conn.page.evaluate(async id => {
     const session = await window.native.sessions.chat.get(id);
-    return {active:document.querySelector('[data-session-active="true"]')?.getAttribute('data-session-id'), folder:session.projectPath};
+    const active = document.querySelector('[data-session-active="true"]')?.getAttribute('data-session-id') ?? window.__ELFTIA__?.activeSessionId;
+    return {active, folder:session.projectPath};
   },sessionId);
   assert.equal(ownership.active,sessionId);
   assert.equal(resolve(ownership.folder),join(evidenceRoot,'project'),'Only the dedicated test workspace may be mutated');

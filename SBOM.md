@@ -13,10 +13,10 @@ Per-file content hashes of the inherited source are in [`SOURCE_INVENTORY.md`](S
 
 | Ecosystem | Count | Source |
 | --- | ---: | --- |
-| npm packages resolved | 1390 | `bun.lock` |
+| npm packages resolved | 1391 | `bun.lock` |
 | bun workspace members | 9 | `bun.lock` (`<root>`, `apps/cli`, `apps/electron-host`, `apps/vite-example`, `apps/web`, `packages/editor-automation`, `packages/editor-classic`, `packages/editor-contracts`, `packages/editor-ports`) |
-| Rust crates in the workspace lockfile | 765 | `Cargo.lock` (includes `apps/desktop`'s `gpui` graph, which is **not** built for wasm) |
-| Rust crates in the `opencut-wasm` wasm32 graph | 93 | `cargo tree -p opencut-wasm --target wasm32-unknown-unknown` |
+| Rust crates in the workspace lockfile | 766 | `Cargo.lock` (includes `apps/desktop`'s `gpui` graph, which is **not** built for wasm) |
+| Rust crates in the `opencut-wasm` wasm32 graph | 94 | `cargo tree -p opencut-wasm --target wasm32-unknown-unknown` |
 
 `apps/desktop` has no `package.json`, so it is a Cargo workspace member only and is not a bun
 workspace member despite the `apps/*` glob. It is excluded from the distributable graph entirely.
@@ -144,7 +144,7 @@ workspace member despite the `apps/*` glob. It is excluded from the distributabl
 
 ### Rust crates in the wasm32 build graph
 
-93 crates. First-party crates are `opencut-wasm`, `bridge`, `compositor`, `effects`, `gpu`, `masks` and `time` (in `rust/`); the rest are third-party.
+94 crates. First-party crates are `opencut-wasm`, `bridge`, `compositor`, `effects`, `gpu`, `masks`, `motion-text`, `time` and `transaction-identity` (in `rust/`); the rest are third-party.
 
 - `aho-corasick v1.1.4`
 - `arrayvec v0.7.6`
@@ -218,6 +218,7 @@ workspace member despite the `apps/*` glob. It is excluded from the distributabl
 - `thiserror v2.0.18`
 - `thiserror-impl v2.0.18`
 - `time v0.1.0`
+- `transaction-identity v0.1.0`
 - `tsify-next v0.5.6`
 - `tsify-next-macros v0.5.6`
 - `ttf-parser v0.25.1`

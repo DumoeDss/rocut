@@ -404,7 +404,7 @@ ${depTable(webPkg.devDependencies)}
 ${
 	cargoError
 		? `> Could not resolve the crate graph: ${cargoError}`
-		: `${wasmCrates.length} crates. First-party crates are \`opencut-wasm\`, \`bridge\`, \`compositor\`, \`effects\`, \`gpu\`, \`masks\` and \`time\` (in \`rust/\`); the rest are third-party.\n\n${wasmCrates.map((c) => `- \`${c}\``).join("\n")}`
+		: `${wasmCrates.length} crates. First-party crates are \`opencut-wasm\`, \`bridge\`, \`compositor\`, \`effects\`, \`gpu\`, \`masks\`, \`motion-text\`, \`time\` and \`transaction-identity\` (in \`rust/\`); the rest are third-party.\n\n${wasmCrates.map((c) => `- \`${c}\``).join("\n")}`
 }
 
 ## 2. Fonts and assets
