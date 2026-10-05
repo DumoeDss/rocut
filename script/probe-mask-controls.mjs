@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { expect } from "@playwright/test";
 import { downloadUiExport } from "./probe-ui-export-fixture.mjs";
 import { verifyMaskExport, verifyMaskPreview } from "./probe-mask-media.mjs";
+import { probeMaskProperties } from "./probe-mask-properties.mjs";
 
 export async function probeMaskControls({
 	page,
@@ -38,6 +39,18 @@ export async function probeMaskControls({
 		.getByLabel("Add mask-red.mp4 to timeline", { exact: true })
 		.click();
 	await expect(page.getByTestId("timeline-clip")).toHaveCount(1);
+	// A first video sets the project canvas to its native 640x360 size.
+	// Author 1080p explicitly rather than assuming the empty-project default.
+	await page.getByLabel("Settings", { exact: true }).click();
+	await page.getByRole("button", { name: /^Custom(?:\s|$)/ }).click();
+	for (const [name, value] of [
+		["Canvas width", "1920"],
+		["Canvas height", "1080"],
+	]) {
+		await page.getByLabel(name, { exact: true }).fill(value);
+		await page.getByLabel(name, { exact: true }).press("Enter");
+		await page.getByLabel(name, { exact: true }).press("Tab");
+	}
 	await page.getByTestId("timeline-clip").click();
 	await page.getByLabel("Masks", { exact: true }).click();
 	await page
@@ -52,6 +65,18 @@ export async function probeMaskControls({
 			).json();
 			return record.data.scenes[0].tracks.main.elements[0];
 		});
+	const preview = async (expectedFraction) => {
+		// A locator screenshot includes overlaid selection handles. Deselect via
+		// actual keyboard input, then restore the inspector after pixel sampling.
+		await page.getByTestId("timeline-clip").click();
+		await hostPage.keyboard.press("Escape");
+		try {
+			return await verifyMaskPreview(page, expectedFraction);
+		} finally {
+			await page.getByTestId("timeline-clip").click();
+			await page.getByLabel("Masks", { exact: true }).click();
+		}
+	};
 	await expect
 		.poll(async () => (await readClip()).masks?.[0]?.type)
 		.toBe("rectangle");
@@ -94,7 +119,7 @@ export async function probeMaskControls({
 	await expect
 		.poll(async () => (await readClip()).masks[0].params.height)
 		.toBe(0.5);
-	evidence.maskNormalArea = await verifyMaskPreview(page, 0.25);
+	evidence.maskNormalArea = await preview(0.25);
 	const before = await readClip();
 	await page
 		.getByLabel("Toggle Rectangle mask inversion", { exact: true })
@@ -102,7 +127,7 @@ export async function probeMaskControls({
 	await expect
 		.poll(async () => (await readClip()).masks[0].params.inverted)
 		.toBe(true);
-	evidence.maskInvertedArea = await verifyMaskPreview(page, 0.75);
+	evidence.maskInvertedArea = await preview(0.75);
 	await hostPage.keyboard.press("Control+z");
 	await expect
 		.poll(async () => (await readClip()).masks[0].params.inverted)
@@ -149,49 +174,19 @@ export async function probeMaskControls({
 	const inverted = await readClip();
 	await page.reload();
 	await expect.poll(readClip).toEqual(inverted);
-	await verifyMaskPreview(page, 0.75);
+	await preview(0.75);
 	await page.getByTestId("timeline-clip").click();
 	await page.getByLabel("Masks", { exact: true }).click();
 	await page.getByLabel("Remove Rectangle mask", { exact: true }).click();
 	await expect.poll(async () => (await readClip()).masks?.length ?? 0).toBe(0);
-	await verifyMaskPreview(page, 1);
+	await preview(1);
 	await hostPage.keyboard.press("Control+z");
 	await expect.poll(readClip).toEqual(inverted);
-	await verifyMaskPreview(page, 0.75);
+	await preview(0.75);
 	await hostPage.screenshot({ path: join(work, "mask-inverted-restored.png") });
 	evidence.checks.push({
 		name: "masked preview and data survive reload; remove and undo restore the same mask",
 		pass: true,
 	});
-	onPhase("text mask content editing");
-	await page.getByLabel("Remove Rectangle mask", { exact: true }).click();
-	await page
-		.getByRole("button", { name: "Add mask", exact: true })
-		.first()
-		.click();
-	await page.getByRole("menuitem", { name: "Text", exact: true }).click();
-	await expect
-		.poll(async () => (await readClip()).masks?.[0]?.type)
-		.toBe("text");
-	const textBefore = await readClip();
-	await page
-		.getByRole("textbox", { name: "Mask content", exact: true })
-		.fill("UI MASK");
-	await page
-		.getByRole("textbox", { name: "Mask content", exact: true })
-		.press("Tab");
-	await expect
-		.poll(async () => (await readClip()).masks[0].params.content)
-		.toBe("UI MASK");
-	await page.getByLabel("Masks", { exact: true }).click();
-	await hostPage.keyboard.press("Control+z");
-	await expect.poll(readClip).toEqual(textBefore);
-	await hostPage.keyboard.press("Control+Shift+z");
-	await expect
-		.poll(async () => (await readClip()).masks[0].params.content)
-		.toBe("UI MASK");
-	evidence.checks.push({
-		name: "text mask content is labelled and supports durable edit undo redo",
-		pass: true,
-	});
+	await probeMaskProperties({ page, hostPage, evidence, onPhase, readClip });
 }
