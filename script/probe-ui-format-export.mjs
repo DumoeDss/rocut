@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { join } from "node:path";
 import { expect } from "@playwright/test";
 import { verifyUiFormatMedia } from "./probe-ui-format-media.mjs";
+import { verifyUiExportOptions } from "./probe-ui-export-options-media.mjs";
 import {
 	createUiExportFixture,
 	downloadUiExport as download,
@@ -15,7 +16,9 @@ export async function probeUiFormatExport({
 	work,
 	evidence,
 	onPhase,
+	format = "mp4",
 }) {
+	assert(["mp4", "webm"].includes(format));
 	const check = (name, details = {}) =>
 		evidence.checks.push({ name, ...details, pass: true });
 	const record = () =>
@@ -92,7 +95,7 @@ export async function probeUiFormatExport({
 				["59.94", 60000, 1001],
 				["120", 120, 1],
 			]) {
-				const id = aspect + "-" + label;
+				const id = format + "-" + aspect + "-" + label;
 				onPhase("F06 UI export " + id);
 				await page
 					.getByRole("combobox", { name: "Frame rate", exact: true })
@@ -108,17 +111,33 @@ export async function probeUiFormatExport({
 					.getByRole("menuitem", { name: "Export project", exact: true })
 					.click();
 				await expect(dialog).toBeVisible();
+				if (format === "webm") {
+					await dialog
+						.getByRole("button", { name: "Format", exact: true })
+						.click();
+					await dialog
+						.getByRole("radio", {
+							name: "WebM (VP9) - Smaller file size",
+							exact: true,
+						})
+						.check();
+				}
 				const output = await download(cdp, dialog, work);
 				await expect(dialog).toHaveCount(0);
 				await expect(trigger).toBeFocused();
 				check(
 					"actual UI download " + id,
-					verifyUiFormatMedia(output, {
-						width,
-						height,
-						numerator,
-						denominator,
-					}),
+					(format === "mp4" ? verifyUiFormatMedia : verifyUiExportOptions)(
+						output,
+						{
+							format,
+							includeAudio: true,
+							width,
+							height,
+							numerator,
+							denominator,
+						},
+					),
 				);
 				if (numerator !== 30 || denominator !== 1) await undoFrameRate();
 			}

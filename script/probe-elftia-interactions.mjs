@@ -147,8 +147,8 @@ try {
     await probeAgentDrafts({page,hostPage:conn.page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--ui-export-options-only')) {
     await probeUiExportOptions({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
-  } else if (process.argv.includes('--ui-format-export-only')) {
-    await probeUiFormatExport({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
+  } else if (process.argv.includes('--ui-format-export-only') || process.argv.includes('--ui-webm-format-export-only')) {
+    await probeUiFormatExport({page,hostPage:conn.page,work,evidence,format:process.argv.includes('--ui-webm-format-export-only')?'webm':'mp4',onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--editor-menu-only')) {
     await probeEditorMenu({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (backpressureOnly) {

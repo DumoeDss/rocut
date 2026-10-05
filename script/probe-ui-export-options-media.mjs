@@ -5,7 +5,19 @@ import {
 	verifyUiExportPicture,
 } from "./probe-ui-export-samples.mjs";
 
-export function verifyUiExportOptions(output, { format, includeAudio }) {
+export function verifyUiExportOptions(
+	output,
+	{
+		format,
+		includeAudio,
+		width = 1920,
+		height = 1080,
+		numerator = 30,
+		denominator = 1,
+	},
+) {
+	const expectedFrames = Math.floor((2 * numerator) / denominator);
+	const expectedDuration = (expectedFrames * denominator) / numerator;
 	const metadata = JSON.parse(
 		execFileSync(
 			"ffprobe",
@@ -46,27 +58,28 @@ export function verifyUiExportOptions(output, { format, includeAudio }) {
 	);
 	const video = videos[0];
 	assert.equal(video.codec_name, format === "webm" ? "vp9" : "h264");
-	assert.equal(video.width, 1920);
-	assert.equal(video.height, 1080);
-	assert.equal(Number(video.nb_read_frames), 60);
+	assert.equal(video.width, width);
+	assert.equal(video.height, height);
+	assert.equal(Number(video.nb_read_frames), expectedFrames);
 	const picturePackets = metadata.packets
 		.filter((packet) => packet.stream_index === video.index)
 		.map((packet) => Number(packet.pts_time))
 		.sort((a, b) => a - b);
-	assert.equal(picturePackets.length, 60);
+	assert.equal(picturePackets.length, expectedFrames);
 	// Matroska timestamps use millisecond precision; validate every presentation time.
-	for (let frame = 0; frame < 60; frame++)
+	for (let frame = 0; frame < expectedFrames; frame++)
 		assert(
-			Math.abs(picturePackets[frame] - frame / 30) < 0.002,
+			Math.abs(picturePackets[frame] - (frame * denominator) / numerator) <
+				0.002,
 			"each encoded picture must retain its selected timing",
 		);
 	assert(
-		Math.abs(Number(metadata.format.duration) - 2) < 0.05,
+		Math.abs(Number(metadata.format.duration) - expectedDuration) < 0.05,
 		"container duration must retain the full timeline",
 	);
 	const picture = verifyUiExportPicture({
 		path: output.path,
-		expectedFrames: 60,
+		expectedFrames,
 	});
 	let audio = null;
 	if (includeAudio) {
@@ -86,14 +99,14 @@ export function verifyUiExportOptions(output, { format, includeAudio }) {
 			"audio/video start offset must stay bounded",
 		);
 		assert(
-			Math.abs(last - 2) < 0.05,
+			Math.abs(last - expectedDuration) < 0.05,
 			"audio tail must end at the timeline endpoint within codec padding",
 		);
 		audio = {
 			codec: stream.codec_name,
 			start: first,
 			end: last,
-			samples: verifyUiExportAudio({ path: output.path, expectedDuration: 2 }),
+			samples: verifyUiExportAudio({ path: output.path, expectedDuration }),
 		};
 	}
 	return {
@@ -101,6 +114,11 @@ export function verifyUiExportOptions(output, { format, includeAudio }) {
 		filename: output.suggestedFilename,
 		bytes: Number(metadata.format.size),
 		videoCodec: video.codec_name,
+		width,
+		height,
+		fps: { numerator, denominator },
+		frames: expectedFrames,
+		duration: expectedDuration,
 		picture,
 		audio,
 	};
