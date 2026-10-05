@@ -2,6 +2,13 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Frame-grid validation / record digest follow-up (2026-10-06)
+
+- Fixed the previously recorded FPS rejection-shape failure: Rust still owns frame-grid planning and collapse refusal, but the TS command adapter now transports a refusal as the established `TransactionError` with `code: validation` and the original reason. The strengthened regression fails before the fix; afterward it verifies no store write, unchanged project/history/revision, and a subsequent valid historyless FPS update. No planning rule or test expectation was relaxed.
+- Diagnostic `mutation-profile-Td3ybN` on installed `31bfc0fe` still samples 2590.90ms of opaque cloning and 719.69ms of canonical serialization across 30 Apply-to-visible intervals. Instrumented p95 424.46ms is not ordinary acceptance. Its costs remain distributed across transaction preparation, stage, encoding and publication, not a newly proven single cause.
+- The adapter now memoizes the canonical digest only of its private, immutable latest record. Staging and encoding retain the exact same digest check; every successful adoption invalidates the cache, and caller-owned fallback records remain computed directly. A regression fails before the change (ten repeated Object.keys calls versus zero); mutation of caller data cannot change the cached private record. A new staged-record-change case verifies that warming the cache cannot allow a stale commit after adoption. Installed timing for this candidate is pending.
+- All 52 related command/persistence/ownership/router tests now pass (361 assertions), including the previously failing FPS case. Scoped ESLint, Vite typecheck/build, strict UTF-8 and diff checks pass; existing build warnings remain. No Elftia main-repository commit, plugin version change, Steam change or paid generation.
+
 ## Transaction preparation ownership follow-up (2026-10-06)
 
 - Command capture now borrows project fields until the router performs its required isolation clone. It creates private scene shells before marker normalization, which itself replaces bookmark arrays/entries; it never normalizes live scenes. The copy-cost regression fails on the previous implementation. Successful edit/undo/redo preserve marker identities and old live references; rejected preparation leaves live settings, bookmarks, history and durable state unchanged.

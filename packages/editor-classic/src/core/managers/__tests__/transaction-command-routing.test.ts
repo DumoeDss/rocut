@@ -387,19 +387,34 @@ describe("transaction-routed command manager", () => {
 			],
 		});
 		const rejectedHarness = await commandHarness(placed);
+		const beforeRejection = cloneOpaque(rejectedHarness.getProject());
 		await expect(
 			rejectedHarness.command.executeSystem({
 				command: new UpdateProjectSettingsCommand({
 					fps: { numerator: 24, denominator: 1 },
 				}),
 			}),
-		).rejects.toMatchObject({ code: "validation" });
+		).rejects.toMatchObject({
+			name: "TransactionError",
+			code: "validation",
+			message: expect.stringContaining("shorter than one frame"),
+		});
+		expect(rejectedHarness.fixture.getSaveCount()).toBe(0);
+		expect(rejectedHarness.getProject()).toEqual(beforeRejection);
 		expect(Number(await rejectedHarness.transactions.revision())).toBe(0);
 		expect(rejectedHarness.command.getHistoryCount()).toBe(0);
 		expect(rejectedHarness.getProject().settings.fps).toEqual({
 			numerator: 30,
 			denominator: 1,
 		});
+		await rejectedHarness.command.executeSystem({
+			command: new UpdateProjectSettingsCommand({
+				fps: { numerator: 60, denominator: 1 },
+			}),
+		});
+		expect(rejectedHarness.fixture.getSaveCount()).toBe(1);
+		expect(rejectedHarness.getProject().settings.fps.numerator).toBe(60);
+		expect(rejectedHarness.command.getHistoryCount()).toBe(0);
 	});
 
 	test("Batch commits once and undo/redo each commit once after durability", async () => {

@@ -2,6 +2,31 @@ import { expect, spyOn, test } from "bun:test";
 import { createOpenCutTransactionDocumentAdapter } from "../adapter";
 import { recordFixture, TEST_PROJECT_ID } from "./fixture";
 
+test("record digests are memoized only for the adapter-owned record", () => {
+	const record = recordFixture();
+	const adapter = createOpenCutTransactionDocumentAdapter({
+		initialRecord: record,
+		initialAssets: [],
+	});
+	const first = adapter.currentRecordDigest();
+	const keys = spyOn(Object, "keys");
+	try {
+		expect(adapter.currentRecordDigest()).toBe(first);
+		expect(keys).not.toHaveBeenCalled();
+	} finally {
+		keys.mockRestore();
+	}
+	Reflect.set(record, "schemaVersion", record.schemaVersion + 1);
+	expect(adapter.currentRecordDigest()).toBe(first);
+	adapter.adoptCommittedRecord(record);
+	const second = adapter.currentRecordDigest();
+	expect(second).not.toBe(first);
+	Reflect.set(record, "schemaVersion", record.schemaVersion + 1);
+	expect(adapter.currentRecordDigest()).toBe(second);
+	adapter.adoptCommittedRecord(recordFixture());
+	expect(adapter.currentRecordDigest()).toBe(first);
+});
+
 test("catalog-only reads isolate entries without decoding or cloning the project", () => {
 	const initialRecord = recordFixture();
 	const initialAssets = [

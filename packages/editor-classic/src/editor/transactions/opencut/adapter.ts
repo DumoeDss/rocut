@@ -404,8 +404,15 @@ export function createOpenCutTransactionDocumentAdapter({
 	initialAssets: readonly OpenCutAssetCatalogEntry[];
 }): OpenCutTransactionDocumentAdapter {
 	let latestRecord = cloneOpaque(initialRecord);
+	let latestRecordDigest: string | undefined;
 	let latestReceipt: EncodedOpenCutPublicationReceipt | null = null;
 	const staged = new Map<OpenCutCommitToken, StagedOpenCutCandidate>();
+
+	function currentRecordDigest(): string {
+		// latestRecord is private and never mutated. Reuse its serialization
+		// across staging and encode, but invalidate on every successful adoption.
+		return (latestRecordDigest ??= digestProjectRecord(latestRecord));
+	}
 
 	function decodeDraft(record: ProjectRecord): OpenCutProjectDraft {
 		const envelope = readEnvelope(record.data);
@@ -464,7 +471,10 @@ export function createOpenCutTransactionDocumentAdapter({
 			if (registered) {
 				if (
 					registered.baseRevision + 1 !== document.revision ||
-					registered.previousRecordDigest !== digestProjectRecord(baseRecord) ||
+					registered.previousRecordDigest !==
+						(baseRecord === latestRecord
+							? currentRecordDigest()
+							: digestProjectRecord(baseRecord)) ||
 					!publicDocumentsEqual(registered.projectedDocument, document)
 				) {
 					throw new Error("Staged OpenCut candidate binding mismatch");
@@ -507,9 +517,7 @@ export function createOpenCutTransactionDocumentAdapter({
 			// Clearing our only reference transfers ownership to the consumer.
 			return receipt;
 		},
-		currentRecordDigest() {
-			return digestProjectRecord(latestRecord);
-		},
+		currentRecordDigest,
 		currentDraft() {
 			// decodeDraft owns its cloned record and catalog; no shared state
 			// remains for another whole-project clone to protect.
@@ -526,6 +534,7 @@ export function createOpenCutTransactionDocumentAdapter({
 		},
 		adoptCommittedRecord(record) {
 			latestRecord = cloneOpaque(record);
+			latestRecordDigest = undefined;
 		},
 	};
 }

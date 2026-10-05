@@ -1,4 +1,5 @@
 import { planFrameGrid, type FrameRate } from "opencut-wasm";
+import { TransactionError } from "@opencut/editor-contracts";
 import type { MediaAsset } from "../../media/types";
 import type { TProject } from "../../project/types";
 import type { TimelineTrack, TimelineElement } from "../../timeline/types";
@@ -60,7 +61,9 @@ export function projectOnFrameGrid({
 			};
 		}),
 	});
-	if (result.status === "rejected") throw new Error(result.reason);
+	if (result.status === "rejected") {
+		throw new TransactionError({ code: "validation", message: result.reason });
+	}
 	const timing = new Map(result.clips.map((clip) => [clip.id, clip]));
 	const mapTrack = <T extends TimelineTrack>(track: T): T => ({
 		...track,

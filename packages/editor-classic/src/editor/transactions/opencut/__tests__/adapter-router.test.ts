@@ -459,7 +459,7 @@ describe("OpenCut transaction projection and router", () => {
 		expect(Number(await engine.revision())).toBe(0);
 	});
 
-	for (const mismatch of ["token", "base-revision", "projection"] as const) {
+	for (const mismatch of ["token", "base-revision", "projection", "record-after-stage"] as const) {
 		test(`staged binding rejects a ${mismatch} mismatch before save`, async () => {
 			const fixture = await storeFixture();
 			const initialRecord = await fixture.store.load({ id: TEST_PROJECT_ID });
@@ -487,13 +487,19 @@ describe("OpenCut transaction projection and router", () => {
 			adapter.stage({
 				token: stagedToken,
 				baseRevision: mismatch === "base-revision" ? 1 : 0,
-				previousRecordDigest: digestProjectRecord(initialRecord),
+				previousRecordDigest: adapter.currentRecordDigest(),
 				draft,
 				projectedDocument: projectOpenCutDraft(projectedDraft, {
 					revision: revisionOf(1),
 					idempotency: [],
 				}),
 			});
+			if (mismatch === "record-after-stage") {
+				adapter.adoptCommittedRecord({
+					...initialRecord,
+					schemaVersion: initialRecord.schemaVersion + 1,
+				});
+			}
 			await expect(
 				engine.apply({
 					operations: [
