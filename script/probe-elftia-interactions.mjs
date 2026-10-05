@@ -9,6 +9,7 @@ import { probeMixedExport } from './probe-mixed-export.mjs';
 import { probeExportRecovery } from './probe-export-recovery.mjs';
 import { probeEmbeddedLayout } from './probe-embedded-layout.mjs';
 import { probeEmbeddedToolbars } from './probe-embedded-toolbars.mjs';
+import { probeFocusedMotion } from './probe-focused-motion.mjs';
 import { probeJizuraImport } from './probe-jizura-import.mjs';
 import { probeResponsiveMotion } from './probe-responsive-motion.mjs';
 import { reloadEditorFrame } from './probe-reload-editor.mjs';
@@ -165,7 +166,9 @@ try {
   conn.page.on('response',response=>{if(response.status()>=400 && response.url().includes('/api/')) evidence.requests.push({phase,status:response.status(),url:scrub(response.url())});});
   const audioFixture=join(work,'fixture-tone-a4.wav');
   execFileSync('ffmpeg',['-v','error','-n','-f','lavfi','-i','sine=frequency=440:duration=16','-ar','44100','-ac','1','-c:a','pcm_s16le',audioFixture],{windowsHide:true});
- if (process.argv.includes('--toolbars-only')) {
+ if (process.argv.includes('--focused-motion-only')) {
+    await probeFocusedMotion({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',next);}});
+  } else if (process.argv.includes('--toolbars-only')) {
     await probeEmbeddedToolbars({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',next);}});
   } else if (process.argv.includes('--linked-workflow-only')) {
     await probeLinkedWorkflow({page,hostPage:conn.page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});

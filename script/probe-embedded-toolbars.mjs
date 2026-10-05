@@ -87,6 +87,11 @@ export async function probeEmbeddedToolbars({
 				height: width === 1920 ? 1080 : 650,
 			});
 			for (const mode of ["dark", "light"]) {
+				const assetsTab = page.getByRole("tab", {
+					name: "Media & text",
+					exact: true,
+				});
+				if (await assetsTab.isVisible()) await assetsTab.click();
 				onPhase("embedded toolbar reachability " + width + " " + mode);
 				await setTheme(mode === "dark");
 				await expect
@@ -165,6 +170,7 @@ export async function probeEmbeddedToolbars({
 					await hostPage.keyboard.press("Control+z");
 					await expect(page.getByTestId("timeline-clip")).toHaveCount(count);
 					await expect.poll(state).toEqual(before);
+					if (await assetsTab.isVisible()) await assetsTab.click();
 				}
 				await sort.focus();
 				await hostPage.keyboard.press("Enter");

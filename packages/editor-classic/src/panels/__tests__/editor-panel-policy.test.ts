@@ -2,6 +2,12 @@ import { describe, expect, test } from "bun:test";
 import { getEditorPanelPolicy } from "../editor-panel-policy";
 
 describe("embedded editor panel sizing", () => {
+	test("hosts below 640px use focused views instead of unusably thin columns", () => {
+		for (const width of [320, 454, 560, 639])
+			expect(getEditorPanelPolicy(width).focus).toBe(true);
+		for (const width of [640, 727, 1280, 0, -1, NaN, Infinity])
+			expect(getEditorPanelPolicy(width).focus).toBe(false);
+	});
 	test("a 727px host gives both sidebars space without hiding the preview", () => {
 		const policy = getEditorPanelPolicy(727);
 		expect(policy.compact).toBe(true);

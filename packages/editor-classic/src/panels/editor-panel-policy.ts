@@ -6,6 +6,7 @@ export function getEditorPanelPolicy(width: number) {
 	const compact = available < 960;
 	const side = Math.min(35, (250 / available) * 100);
 	return {
+		focus: available < 608,
 		compact,
 		sidebarMin: Math.max(15, Math.min(32, (220 / available) * 100)),
 		previewMin: compact ? 25 : 30,

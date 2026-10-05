@@ -2,6 +2,13 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Focused views for very narrow embeds (2026-10-05)
+
+- Reproduced on installed 6348f6b8: a 760px Elftia split workspace gives Rocut 454px and leaves about 80px for Motion text content. JIZURA import overflows its card, the Add label is clipped, and the three-column arrangement leaves little useful form space. Evidence: .tmp-probe/motion-before-760.png plus measured DOM bounds. This is distinct from the previously fixed media toolbar.
+- EditorPanels now presents Media & text / Preview / Inspector tabs when its own measured width is below 640px; the timeline stays visible. All three panel components stay mounted and inactive panels use display:none, retaining local drafts and component identity. New timeline selection reveals Inspector. Tabs provide arrow/Home/End navigation, selected/tab-stop state, and tab-to-panel accessibility links. Above the threshold, the existing compact/wide resizable layout and saved wide proportions remain authoritative; automatic mode changes never persist new panel sizes.
+- Design follows frontend-design with the existing surface palette, fonts, focus rings and restrained secondary-button selection. This is an editing workspace adaptation, not new outer host chrome or decorative cards. The change is presentation/lifecycle only; Rust still owns project business rules.
+- Source checks: panel policy suite passes 5 tests / 71 assertions, changed source lint and Vite typecheck/build pass. New --focused-motion-only real-Elftia probe covers file chooser, scrolled starter controls, unchanged drafts across tabs/widths, DOM identity, original panel preferences, automatic inspector reveal, final cue accessibility, rendered preview, undo and redo. Installation and runtime results are recorded separately when observed.
+
 ## Narrow embedded toolbar repair (2026-10-05)
 
 - **Final installed runtime 6348f6b8 passes all eight populated-project cases** in embedded-toolbars-vJ5o5R: four host widths times both themes, actual media Add/undo in every case, grid/list hit testing, file chooser, sort and scene menus, focus restoration and zoom round-trip. Authored content in live-1791201626090 remains unchanged. Toolbar scrollWidth equals clientWidth throughout; narrow toolbar height is 68px, wide height 39px. Screenshot review confirms the 760px assets pane no longer horizontally scrolls or clips the Add button.
