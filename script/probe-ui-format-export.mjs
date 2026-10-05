@@ -33,10 +33,17 @@ export async function probeUiFormatExport({
 			"lavfi",
 			"-i",
 			"color=c=red:s=640x360:r=30:d=2",
+			"-f",
+			"lavfi",
+			"-i",
+			"sine=frequency=880:duration=2",
 			"-c:v",
 			"libx264",
 			"-pix_fmt",
 			"yuv420p",
+			"-c:a",
+			"aac",
+			"-shortest",
 			video,
 		],
 		{ windowsHide: true },
@@ -72,13 +79,16 @@ export async function probeUiFormatExport({
 	await expect
 		.poll(async () => (await record()).data.settings.fps)
 		.toEqual({ numerator: 30000, denominator: 1001 });
-	await expect(page.getByRole("combobox", { name: "Frame rate", exact: true })).toHaveText("29.97 fps");
+	await expect(
+		page.getByRole("combobox", { name: "Frame rate", exact: true }),
+	).toHaveText("29.97 fps");
 	check(
 		"fractional frame rate is selectable and displayed without integer rounding",
 	);
 	const undoFrameRate = async () => {
 		await hostPage.keyboard.press("Control+z");
-		await expect.poll(async () => (await record()).data.settings.fps)
+		await expect
+			.poll(async () => (await record()).data.settings.fps)
 			.toEqual({ numerator: 30, denominator: 1 });
 		const restored = (await record()).data.scenes[0].tracks;
 		for (const track of [restored.main, ...restored.overlay]) {
@@ -117,15 +127,20 @@ export async function probeUiFormatExport({
 				.poll(async () => (await record()).data.settings.canvasSize)
 				.toEqual({ width, height });
 			for (const [label, numerator, denominator] of [
+				["23.976", 24000, 1001],
 				["24", 24, 1],
 				["25", 25, 1],
 				["30", 30, 1],
 				["60", 60, 1],
 				["29.97", 30000, 1001],
+				["59.94", 60000, 1001],
+				["120", 120, 1],
 			]) {
 				const id = aspect + "-" + label;
 				onPhase("F06 UI export " + id);
-				await page.getByRole("combobox", { name: "Frame rate", exact: true }).click();
+				await page
+					.getByRole("combobox", { name: "Frame rate", exact: true })
+					.click();
 				await page
 					.getByRole("option", { name: label + " fps", exact: true })
 					.click();
@@ -161,24 +176,42 @@ export async function probeUiFormatExport({
 	}
 	onPhase("F06 frame-rate refusal preserves an existing one-frame clip");
 	const original = (await record()).data.scenes[0].tracks.main.elements;
-	await page.locator(`[data-testid="timeline-clip"][data-element-id="${original[0].id}"]`).click();
+	await page
+		.locator(
+			`[data-testid="timeline-clip"][data-element-id="${original[0].id}"]`,
+		)
+		.click();
 	await page.getByLabel("Edit playhead time", { exact: true }).click();
 	await page.getByLabel("Playhead time", { exact: true }).fill("00:00:00:01");
 	await page.getByLabel("Playhead time", { exact: true }).press("Enter");
 	await page.getByLabel("Split element", { exact: true }).click();
-	await expect.poll(async () => (await record()).data.scenes[0].tracks.main.elements.length).toBe(2);
+	await expect
+		.poll(
+			async () => (await record()).data.scenes[0].tracks.main.elements.length,
+		)
+		.toBe(2);
 	const splitClips = (await record()).data.scenes[0].tracks.main.elements;
 	assert.equal(splitClips[0].duration, 4000);
 	await page.getByRole("combobox", { name: "Frame rate", exact: true }).click();
 	await page.getByRole("option", { name: "24 fps", exact: true }).click();
 	await expect(page.getByRole("alert")).toContainText("shorter than one frame");
-	assert.deepEqual((await record()).data.settings.fps, { numerator: 30, denominator: 1 });
-	assert.deepEqual((await record()).data.scenes[0].tracks.main.elements, splitClips);
+	assert.deepEqual((await record()).data.settings.fps, {
+		numerator: 30,
+		denominator: 1,
+	});
+	assert.deepEqual(
+		(await record()).data.scenes[0].tracks.main.elements,
+		splitClips,
+	);
 	await hostPage.screenshot({ path: join(work, "frame-rate-refusal.png") });
 	// A rejected change adds no history: one Undo restores the actual split.
 	await hostPage.keyboard.press("Control+z");
-	await expect.poll(async () => (await record()).data.scenes[0].tracks.main.elements).toEqual(original);
-	check("unrepresentable one-frame clip gives a visible refusal with no mutation or history entry");
+	await expect
+		.poll(async () => (await record()).data.scenes[0].tracks.main.elements)
+		.toEqual(original);
+	check(
+		"unrepresentable one-frame clip gives a visible refusal with no mutation or history entry",
+	);
 }
 
 async function download(cdp, dialog, work) {

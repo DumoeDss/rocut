@@ -2,6 +2,12 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Full FPS-preset audiovisual UI matrix (2026-10-05)
+
+- After pushing the frame-rate repair, extended the same actual-UI matrix to **all eight exposed FPS presets**: 23.976 (24000/1001), 24, 25, 29.97 (30000/1001), 30, 59.94 (60000/1001), 60 and 120. The fixture now has a real 880 Hz AAC source track. No runtime or installed artifact changed after source 8c2492e5.
+- **Installed live-ldn2kT passes 27/27 checks**, including 24 Export-menu downloads across landscape, portrait and square canvases, rational FPS display, and the existing one-frame refusal/history case. Every file independently passes H.264 dimensions/frame count/duration and first/interior/final picture samples, plus exactly one AAC stream with bounded start offset and endpoint duration. Three decoded PCM windows require audible, non-doubled RMS and the original tone frequency, including the tail. Fractional two-second clips produce 47/59/119 frames respectively under the documented earlier-frame alignment.
+- This closes the short MP4 audiovisual matrix for the current FPS selector, **not all formats or the whole editor goal**. WebM/other codecs, broader content/GPU/long-session coverage, F04 seek latency, external sound-service prerequisites and the distinct Export clips product decision remain open. The runtime pin and verified plugin backup from the preceding checkpoint are unchanged.
+
 ## Existing-project frame-rate changes and actual UI exports (2026-10-05)
 
 - **Reproduced:** live-uKGhfA exposed missing fractional-rate choices. After adding them, live-kfKXXr exposed the real transaction failure: existing clip timing remained on the old grid while settings changed; placement validation rejected the new project and Settings swallowed the error. Neither failed run is acceptance.
