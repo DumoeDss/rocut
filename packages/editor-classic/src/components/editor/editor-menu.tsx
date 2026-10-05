@@ -1,7 +1,14 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Download, Keyboard, MoreHorizontal } from "lucide-react";
+import {
+	ClipboardCheck,
+	Download,
+	Keyboard,
+	MoreHorizontal,
+} from "lucide-react";
+import { useEditorHost } from "../../editor/host/editor-host-context";
+import { DraftReviewDialog } from "./draft-review-dialog";
 import { ShortcutsDialog } from "../../actions/components/shortcuts-dialog";
 import { useEditor, useEditorInstance } from "../../editor/use-editor";
 import { Button } from "../ui/button";
@@ -17,7 +24,10 @@ import { ExportOptions } from "./export-button";
 
 /** Editor commands remain reachable when an embedding host removes its header. */
 export function EditorMenu() {
-	const [dialog, setDialog] = useState<"export" | "shortcuts" | null>(null);
+	const [dialog, setDialog] = useState<
+		"export" | "shortcuts" | "drafts" | null
+	>(null);
+	const { draftReview } = useEditorHost();
 	const triggerRef = useRef<HTMLButtonElement>(null);
 	const restoreFocus = (event: Event) => {
 		event.preventDefault();
@@ -55,6 +65,13 @@ export function EditorMenu() {
 					}}
 				>
 					<DropdownMenuItem
+						disabled={!hasProject || !draftReview}
+						icon={<ClipboardCheck />}
+						onSelect={() => setDialog("drafts")}
+					>
+						Review agent changes
+					</DropdownMenuItem>
+					<DropdownMenuItem
 						disabled={!hasProject}
 						icon={<Download />}
 						onSelect={() => setDialog("export")}
@@ -69,6 +86,16 @@ export function EditorMenu() {
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>
+			{draftReview && (
+				<DraftReviewDialog
+					port={draftReview}
+					open={dialog === "drafts"}
+					onOpenChange={(open) => {
+						if (!open) setDialog(null);
+					}}
+					onCloseAutoFocus={restoreFocus}
+				/>
+			)}
 			<EditorExportDialog
 				onCloseAutoFocus={restoreFocus}
 				open={dialog === "export"}

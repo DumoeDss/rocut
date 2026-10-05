@@ -9,8 +9,8 @@ import { expect } from "@playwright/test";
 
 const run = promisify(execFile);
 
-// Installed CLI, real Elftia UI and dedicated data only. Manual CLI approval
-// represents the authorized test actor, NOT a live model or in-pane review UI.
+// Installed CLI authors proposals; the real Elftia editor UI reviews/decides.
+// All data belongs to the dedicated test project. No live model is called.
 export async function probeAgentDrafts({
 	page,
 	hostPage,
@@ -31,7 +31,7 @@ export async function probeAgentDrafts({
 		modelCalled: false,
 		cliSha256: createHash("sha256").update(bytes).digest("hex"),
 		approval:
-			"authorized test actor invokes manual draft approve; not in-pane review acceptance",
+			"authorized test actor clicks guarded approval in the real editor dialog",
 	};
 	const cli = async (...args) => {
 		const { stdout } = await run(
@@ -256,12 +256,117 @@ export async function probeAgentDrafts({
 			userRevision: userState.projectRevision,
 		},
 	);
-	onPhase("agent re-reads and commits a fresh manually approved draft");
-	const fresh = await previewAndStage(userState, "rebased-proposal");
+	onPhase(
+		"real editor review refuses unseen changes and allows explicit rejection",
+	);
+	const openReview = async (id) => {
+		await page.getByTestId("editor-menu-trigger").click();
+		await page
+			.getByRole("menuitem", { name: "Review agent changes", exact: true })
+			.click();
+		const dialog = page.getByRole("dialog", {
+			name: "Review agent changes",
+			exact: true,
+		});
+		await dialog
+			.getByRole("button", { name: "Review draft " + id, exact: true })
+			.click();
+		await expect(dialog.getByTestId("draft-review-changes")).toContainText(
+			"草稿批准后的第三句",
+		);
+		await expect(dialog.getByTestId("draft-review-changes")).toContainText(
+			"第三句等待草稿",
+		);
+		return dialog;
+	};
+	const changed = await previewAndStage(userState, "review-conflict-proposal");
+	let dialog = await openReview(changed.draftId);
+	assert.deepEqual(await json("motion-text", "list"), userState);
+	await dialog.press("Escape");
+	await expect(page.getByTestId("editor-menu-trigger")).toBeFocused();
+	assert.deepEqual(await json("motion-text", "list"), userState);
+	dialog = await openReview(changed.draftId);
+	const extra = await spec("unseen-draft-operation", {
+		operations: [
+			{
+				kind: "create-track",
+				track: {
+					id: "unseen-review-track",
+					kind: "graphic",
+					name: "Unseen second operation",
+					hidden: false,
+				},
+			},
+		],
+	});
 	assert.equal(
-		(await json("draft", "approve", "--draft", fresh.draftId)).applied,
+		(await json("draft", "stage", extra, "--draft", changed.draftId)).accepted,
 		true,
 	);
+	await dialog
+		.getByRole("button", { name: "Approve changes", exact: true })
+		.click();
+	await expect(dialog.getByRole("alert")).toContainText(
+		"changed after you opened",
+	);
+	assert.deepEqual(await json("motion-text", "list"), userState);
+	check(
+		"closing review does not apply; unseen new operations invalidate an actual UI approval click",
+	);
+	await dialog
+		.getByRole("button", { name: "Refresh proposals", exact: true })
+		.click();
+	await dialog
+		.getByRole("button", {
+			name: "Review draft " + changed.draftId,
+			exact: true,
+		})
+		.click();
+	await expect(dialog.getByTestId("draft-review-changes")).toContainText(
+		"Unseen second operation",
+	);
+	await dialog
+		.getByRole("button", { name: "Reject proposal", exact: true })
+		.click();
+	await expect(dialog.getByRole("status")).toContainText("Proposal rejected");
+	assert.deepEqual(await json("motion-text", "list"), userState);
+	await dialog.getByRole("button", { name: "Close", exact: true }).click();
+	check("real UI rejection leaves committed lyrics unchanged");
+	onPhase(
+		"review and approve a fresh proposal in a bounded small-viewport dialog",
+	);
+	const fresh = await previewAndStage(userState, "rebased-proposal");
+	const originalViewport = hostPage.viewportSize();
+	await hostPage.setViewportSize({ width: 1000, height: 650 });
+	try {
+		dialog = await openReview(fresh.draftId);
+		const scroll = dialog.getByTestId("draft-review-body");
+		const sizes = await scroll.evaluate((element) => ({
+			client: element.clientHeight,
+			scroll: element.scrollHeight,
+			overflow: getComputedStyle(element).overflowY,
+		}));
+		assert.equal(sizes.overflow, "auto");
+		assert(
+			sizes.scroll > sizes.client,
+			"small review must expose an actual scrollable body",
+		);
+		await hostPage.screenshot({
+			path: join(work, "agent-draft-ui-review.png"),
+		});
+		await dialog
+			.getByRole("button", { name: "Approve changes", exact: true })
+			.click();
+		await expect(dialog.getByRole("status")).toContainText("Changes approved");
+		await dialog.getByRole("button", { name: "Close", exact: true }).click();
+		await expect(page.getByTestId("editor-menu-trigger")).toBeFocused();
+		check(
+			"small-viewport review scrolls and actual approval/focus return work",
+			sizes,
+		);
+	} finally {
+		if (originalViewport) await hostPage.setViewportSize(originalViewport);
+	}
 	const committed = await json("motion-text", "list");
 	assert.equal(committed.projectRevision, userState.projectRevision + 1);
 	assert.equal(committed.sequences[0].cues[1].text, "用户保留的第二句");

@@ -6,6 +6,7 @@ import {
 	RecordingDiagnostics,
 } from "@opencut/editor-ports/in-memory";
 import { HttpProjectStore } from "./http-project-store";
+import { createHttpDraftReview } from "./http-draft-review";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
 	return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -75,6 +76,7 @@ export function createHostServedEditorHost({
 			onGoBack: () => undefined,
 		},
 		services: {},
+		draftReview: createHttpDraftReview({ base }),
 		branding: {
 			logoUrl: browser.assets.resolve({
 				ref: { path: "logos/opencut/svg/logo.svg" },

@@ -23,6 +23,7 @@ import { createReadStream, existsSync } from "node:fs";
 import { stat } from "node:fs/promises";
 import path from "node:path";
 import { randomBytes } from "node:crypto";
+import { handleDraftRoute } from "./host-drafts";
 import {
 	createActivityTracker,
 	createRegistryActivitySync,
@@ -766,81 +767,12 @@ async function handleApi(
 			await handleLibrary(request, response, route.slice(1), plane);
 			return;
 		}
-		if (
-			request.method === "POST" &&
-			route[0] === "drafts" &&
-			route.length === 1
-		) {
-			const body = await readJsonBody(request);
-			const opened = await plane.enqueue(() =>
-				plane
-					.automation()
-					.openDraft({
-						approvalMode: body.approvalMode === "auto" ? "auto" : "manual",
-					}),
-			);
-			if (!opened.opened) {
-				respond(409, { opened: false, error: opened.error });
-				return;
-			}
-			plane.draftSessions.set(String(opened.session.id), opened.session);
-			respond(200, { opened: true, draftId: opened.session.id });
-			return;
-		}
-		if (
-			request.method === "GET" &&
-			route[0] === "drafts" &&
-			route.length === 2
-		) {
-			const session = plane.draftSessions.get(route[1]);
-			if (session === undefined) {
-				respond(404, { error: "unknown-draft" });
-				return;
-			}
-			respond(200, session.snapshot());
-			return;
-		}
-		if (
-			request.method === "POST" &&
-			route[0] === "drafts" &&
-			route.length === 3
-		) {
-			const [, draftId, action] = route;
-			const session = plane.draftSessions.get(draftId);
-			if (session === undefined) {
-				respond(404, { error: "unknown-draft" });
-				return;
-			}
-			if (action === "open") {
-				// Registration endpoint used by clients that name their own ids:
-				// the generic POST above generates ids, so route[2] === "open"
-				// only arrives for an explicit re-key — reject it.
-				respond(409, { error: "draft-already-open" });
-				return;
-			}
-			if (action === "stage") {
-				const body = await readJsonBody(request);
-				respond(
-					200,
-					await plane.enqueue(() =>
-						session.stage({ operations: body.operations }),
-					),
-				);
-				return;
-			}
-			if (action === "approve") {
-				respond(200, await plane.enqueue(() => session.approve()));
-				return;
-			}
-			if (action === "reject") {
-				respond(200, await plane.enqueue(() => session.reject()));
-				return;
-			}
-			if (action === "discard") {
-				respond(200, await plane.enqueue(() => session.discard()));
-				return;
-			}
-			respond(404, { error: "unknown-draft-action" });
+		if (route[0] === "drafts") {
+			response.setHeader("cache-control", "no-store");
+			await handleDraftRoute({
+				method: request.method, route, plane,
+				readBody: () => readJsonBody(request), respond,
+			});
 			return;
 		}
 		if (request.method === "POST" && route[0] === "apply") {

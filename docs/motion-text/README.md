@@ -59,6 +59,12 @@ JIZURA 导入使用 `sourceFormat: "jizura"`，并把原始 JSON 文本作为 in
 
 需要人工审批时，先 `draft begin`，再生成候选。用一个 `update-motion-text-sequence` 操作提交到 `draft stage`：`sequenceId` 为返回 ID，`expectedSequenceRevision` 为返回 `baseSequenceRevision`，`sequence` 必须原样使用 Rust 返回的 `candidate`，不能手工编造或修改 resolved plan。审批前工程保持不变；取得用户对具体变更的批准后才 `draft approve`。用户保存导致草稿失效或 revision 冲突时，重读并重新生成候选／草稿，不复用陈旧候选。预览采用独立的 `mutation-previews` 接口，旧宿主拒绝时应更新插件，不能自动回退成直接写入。
 
+### 在编辑器中审阅 Agent 草稿
+
+Elftia 内打开编辑器左下角的 Editor menu → Review agent changes，可刷新待审草稿、查看修改前后对照，再点击 Approve changes 或 Reject proposal。长内容在面板内滚动，大型渲染计划可展开查看完整值。关闭弹窗不会批准或拒绝草稿。
+
+审批绑定服务端返回的精确审阅版本；如果 Agent 在审阅期间追加修改，旧审批会被拒绝，必须刷新并重新查看。用户编辑、项目保存或宿主重启也可能让草稿失效，此时要求 Agent 重新读取工程并生成提案。审批结果不确定时，不自动重试。仅支持声明草稿审阅能力的宿主。
+
 ### 修改歌词与手工切分
 
 修改 cue 歌词后，Rust 会更新实际渲染分段，而不只更新属性面板中的文字。普通分段重新按语言生成；已有手工 cut 时长且 cue 总时长不变时，若新文字仍能填满相同数量的非空分段，则保留时长并重新分配文字。文字太短、分段只含空白或总时长改变时，清除过时的分段时长并重新规划。仅修改其他属性、不改变歌词时，不重分段；cut 锁仍会阻止歌词修改。

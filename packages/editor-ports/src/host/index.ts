@@ -17,6 +17,12 @@
  */
 
 import type { EditorHostPorts } from "..";
+import type { DraftReviewPort } from "./draft-review";
+export type {
+	DraftReviewDocument,
+	DraftReviewItem,
+	DraftReviewPort,
+} from "./draft-review";
 
 export interface EditorHostNavigation {
 	/**
@@ -83,6 +89,8 @@ export interface EditorHostLinks {
  * port-bearing runtime code receives the complete Host through its session.
  */
 export interface EditorHostBase {
+	/** Present only when this host supports reviewable agent drafts. */
+	draftReview?: DraftReviewPort;
 	/** The project the editor should open. Was `useParams().project_id`. */
 	projectId: string;
 	navigation: EditorHostNavigation;
