@@ -24,6 +24,7 @@ import type {
 	TimelineTrack,
 } from "../../../timeline/types";
 import { cloneOpaque } from "../../persistence/opaque-value";
+import { projectionValuesEqual } from "./projection-value-equality";
 import type { OpenCutAssetCatalogEntry, OpenCutProjectDraft } from "./types";
 
 const MARKER_ID_KEY = "__opencutTransactionMarkerId";
@@ -193,28 +194,8 @@ export function projectOpenCutDraft(
 	};
 }
 
-function stableValue(value: unknown): string {
-	if (value === null) return "null";
-	if (value === undefined) return "undefined";
-	if (typeof value === "string") return `string:${JSON.stringify(value)}`;
-	if (typeof value === "number" || typeof value === "boolean") {
-		return `${typeof value}:${String(value)}`;
-	}
-	if (Array.isArray(value)) {
-		return `array:[${value.map(stableValue).join(",")}]`;
-	}
-	if (typeof value === "object") {
-		const source = value as Record<string, unknown>;
-		return `object:{${Object.keys(source)
-			.sort()
-			.map((key) => `${JSON.stringify(key)}:${stableValue(source[key])}`)
-			.join(",")}}`;
-	}
-	return `${typeof value}:${String(value)}`;
-}
-
 function same(left: unknown, right: unknown): boolean {
-	return stableValue(left) === stableValue(right);
+	return projectionValuesEqual({ left, right });
 }
 
 function changedPatch<Value extends object>(

@@ -2,6 +2,13 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Projection comparison, single adoption and active rename (2026-10-06)
+
+- Projection equality now compares cloned snapshot values recursively instead of allocating canonical strings for ordinary data. An independent legacy serializer checks 1,521 value pairs, including missing/undefined fields, sparse arrays, key order and non-JSON values; dense comparisons make no JSON.stringify calls. Fingerprints and durable record digests are unchanged.
+- Durable publication relies on the existing synchronous record subscription for adapter adoption, eliminating its second copy/invalidation. The regression counts ordinary, automation and UI adoptions and rejects adoption after a failed store write.
+- That regression exposed a separate real bug: active-project rename saved directly while the transaction engine retained the old public name. A subsequent edit could restore the old name. `RenameProjectCommand` now uses historyless durable command routing for active projects, updates the timestamp in the same record and rejects a mismatched active project. Inactive projects retain their persistence path. Regressions cover later editing, undo/redo, reopen, failed persistence and inactive/stale targets.
+- Relevant source suites pass **80 tests / 2,049 assertions**; changed-file ESLint, Vite typecheck and production build pass (existing mixed-import/large-chunk warnings remain). The original rename-loss test failed before the fix. Actual installed acceptance and the unchanged 300ms latency gate are pending for this candidate.
+
 ## Staged encoding and adoption ownership (2026-10-06)
 
 - Staged encoding now reads the adapter-private draft instead of cloning it again before read-only projection/encoding. Staging still detaches caller input, and the returned record and publication receipt retain independent copies. New regression coverage rejects the old extra-copy implementation and mutates stage inputs, receipt drafts/records and encoded records before repeating the encode.

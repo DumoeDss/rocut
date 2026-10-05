@@ -33,6 +33,7 @@ export const REGISTERED_COMMAND_NAMES = Object.freeze(
 		"RemoveMaskCommand",
 		"RemoveMediaAssetCommand",
 		"RemoveTrackCommand",
+		"RenameProjectCommand",
 		"RenameSceneCommand",
 		"ReorderClipEffectsCommand",
 		"RetimeKeyframeCommand",

@@ -11,6 +11,7 @@ import type { ExportOptions, ExportResult, ExportState } from "../../export";
 import { toast } from "sonner";
 import { generateUUID } from "../../utils/id";
 import {
+	RenameProjectCommand,
 	UpdateMotionTextSequenceCommand,
 	UpdateProjectSettingsCommand,
 } from "../../commands/project";
@@ -379,6 +380,13 @@ export class ProjectManager {
 		name: string;
 	}): Promise<void> {
 		try {
+			if (this.active?.metadata.id === id) {
+				if (this.active.metadata.name === name) return;
+				await this.editor.command.executeSystem({
+					command: new RenameProjectCommand({ projectId: id, name }),
+				});
+				return;
+			}
 			const project = await this.editor.persistence.loadProject({ id });
 			if (!project) {
 				throw new Error("Project not found");

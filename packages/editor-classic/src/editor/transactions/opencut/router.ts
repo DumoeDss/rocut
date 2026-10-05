@@ -328,7 +328,8 @@ export class SessionOpenCutTransactions {
 			record,
 			returnProject: false,
 		});
-		active.adapter.adoptCommittedRecord(record);
+		// The synchronous record subscription already adopted this durable record,
+		// just as it does for ordinary saves. Do not copy and invalidate it twice.
 		this.options.publish(cloneOpenCutDraft(draft));
 	}
 
