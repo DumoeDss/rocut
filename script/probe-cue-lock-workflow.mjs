@@ -254,13 +254,24 @@ export async function probeCueLockWorkflow({
 	check(
 		"preview cancel deterministic regeneration and reroll preserve both locked groups while changing unlocked cue frames",
 	);
+	onPhase("undo and redo the applied cue variation through editor shortcuts");
 	await variation
 		.getByRole("button", { name: "Generate variation", exact: true })
 		.focus();
 	await hostPage.keyboard.press("Control+z");
-	await expect.poll(readState).toEqual(locked);
+	try {
+		await expect.poll(readState).toEqual(locked);
+	} catch (error) {
+		evidence.cueLockUndoFailure = { expected: locked, observed: await readState() };
+		throw error;
+	}
 	await hostPage.keyboard.press("Control+Shift+z");
-	await expect.poll(readState).toEqual(applied);
+	try {
+		await expect.poll(readState).toEqual(applied);
+	} catch (error) {
+		evidence.cueLockRedoFailure = { expected: applied, observed: await readState() };
+		throw error;
+	}
 	onPhase("close and reopen actual Rocut workspace after locked cue variation");
 	const editorUrl = page.url();
 	await hostPage
