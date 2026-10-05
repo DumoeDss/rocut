@@ -59,6 +59,10 @@ const hostRoot = resolve(process.env.ELFTIA_WORKTREE ?? '');
 assert(process.env.ELFTIA_WORKTREE, 'Set ELFTIA_WORKTREE to the authorized dev worktree');
 const sessionId = process.env.ELFTIA_TEST_SESSION;
 assert(sessionId, 'Set ELFTIA_TEST_SESSION to an authorized dedicated test session');
+if (['--linked-workflow-only', '--agent-drafts-only'].some(flag => process.argv.includes(flag))) {
+  assert(process.env.ELFTIA_INSTALLED_ROCUT, 'Set the exact installed plugin root');
+  realpathSync(process.env.ELFTIA_INSTALLED_ROCUT);
+}
 await import(pathToFileURL(join(hostRoot, 'packages/elftia-cli/src/proxy.ts')).href);
 const { connect } = await import(pathToFileURL(join(hostRoot, 'packages/elftia-cli/src/connect.ts')).href);
 const conn = await connect({mode:'attach', port:Number(process.env.ELFTIA_CLI_DEBUG_PORT ?? 9333)});
