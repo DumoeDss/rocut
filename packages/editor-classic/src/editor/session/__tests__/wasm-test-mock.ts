@@ -5,6 +5,7 @@ import { mock } from "bun:test";
 import {
 	evaluateClipTransitions,
 	isMediaSourceSpanValid,
+	planFrameGrid,
 	colorAdjustmentCatalog,
 	normalizeColorAdjustment,
 	planVideoFreezeFrame,
@@ -327,6 +328,7 @@ class MockAudioBufferSink {
 }
 
 mock.module("mediabunny", () => ({
+	canEncodeVideo: async () => true,
 	Output: MockOutput,
 	Mp4OutputFormat: class {},
 	WebMOutputFormat: class {},
@@ -413,6 +415,7 @@ class MockRuntimeGpuQuery {
 mock.module("opencut-wasm", () => ({
 	evaluateClipTransitions,
 	isMediaSourceSpanValid,
+	planFrameGrid,
 	colorAdjustmentCatalog,
 	normalizeColorAdjustment,
 	planVideoFreezeFrame,

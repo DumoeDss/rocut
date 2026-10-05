@@ -64,7 +64,7 @@ export async function probeUiFormatExport({
 	await expect(page.getByTestId("timeline-clip")).toHaveCount(2);
 	await page.getByLabel("Settings", { exact: true }).click();
 	// This option is deliberately required: rounding 29.97 to 30 is not coverage.
-	await page.getByRole("combobox").first().click();
+	await page.getByRole("combobox", { name: "Frame rate", exact: true }).click();
 	await expect(
 		page.getByRole("option", { name: "29.97 fps", exact: true }),
 	).toBeVisible();
@@ -72,10 +72,21 @@ export async function probeUiFormatExport({
 	await expect
 		.poll(async () => (await record()).data.settings.fps)
 		.toEqual({ numerator: 30000, denominator: 1001 });
-	await expect(page.getByRole("combobox").first()).toHaveText("29.97 fps");
+	await expect(page.getByRole("combobox", { name: "Frame rate", exact: true })).toHaveText("29.97 fps");
 	check(
 		"fractional frame rate is selectable and displayed without integer rounding",
 	);
+	const undoFrameRate = async () => {
+		await page.getByTestId("editor-menu-trigger").click();
+		await page.getByRole("menuitem", { name: "Undo", exact: true }).click();
+		await expect.poll(async () => (await record()).data.settings.fps)
+			.toEqual({ numerator: 30, denominator: 1 });
+		const restored = (await record()).data.scenes[0].tracks;
+		for (const track of [restored.main, ...restored.overlay]) {
+			for (const clip of track.elements) assert.equal(clip.duration, 240000);
+		}
+	};
+	await undoFrameRate();
 	const trigger = page.getByTestId("editor-menu-trigger");
 	const dialog = page.getByRole("dialog", {
 		name: "Export project",
@@ -114,7 +125,7 @@ export async function probeUiFormatExport({
 			]) {
 				const id = aspect + "-" + label;
 				onPhase("F06 UI export " + id);
-				await page.getByRole("combobox").first().click();
+				await page.getByRole("combobox", { name: "Frame rate", exact: true }).click();
 				await page
 					.getByRole("option", { name: label + " fps", exact: true })
 					.click();
@@ -138,6 +149,7 @@ export async function probeUiFormatExport({
 						denominator,
 					}),
 				);
+				if (numerator !== 30 || denominator !== 1) await undoFrameRate();
 			}
 			await hostPage.screenshot({
 				path: join(work, "format-" + aspect + ".png"),

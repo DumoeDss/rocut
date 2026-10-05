@@ -4,6 +4,8 @@ import {
 	type CommandResult,
 } from "../base-command";
 import type { TProject, TProjectSettings } from "../../project/types";
+import { projectOnFrameGrid } from "./frame-rate-project";
+import { frameRatesEqual } from "../../fps/utils";
 
 export class UpdateProjectSettingsCommand extends Command {
 	get routingClass(): "transaction" | "provider-private" {
@@ -15,6 +17,7 @@ export class UpdateProjectSettingsCommand extends Command {
 
 	private savedSettings: TProjectSettings | null = null;
 	private savedUpdatedAt: Date | null = null;
+	private savedScenes: TProject["scenes"] | null = null;
 
 	constructor(private updates: Partial<TProjectSettings>) {
 		super();
@@ -26,9 +29,19 @@ export class UpdateProjectSettingsCommand extends Command {
 
 		this.savedSettings = activeProject.settings;
 		this.savedUpdatedAt = activeProject.metadata.updatedAt;
+		this.savedScenes = activeProject.scenes;
+		const alignedProject =
+			this.updates.fps &&
+			!frameRatesEqual({ a: activeProject.settings.fps, b: this.updates.fps })
+				? projectOnFrameGrid({
+						project: activeProject,
+						assets: editor.media.getAssets(),
+						fps: this.updates.fps,
+					})
+				: activeProject;
 
 		const updatedProject: TProject = {
-			...activeProject,
+			...alignedProject,
 			settings: { ...activeProject.settings, ...this.updates },
 			metadata: { ...activeProject.metadata, updatedAt: new Date() },
 		};
@@ -45,6 +58,7 @@ export class UpdateProjectSettingsCommand extends Command {
 		const updatedProject: TProject = {
 			...activeProject,
 			settings: this.savedSettings,
+			scenes: this.savedScenes ?? activeProject.scenes,
 			metadata: { ...activeProject.metadata, updatedAt: this.savedUpdatedAt },
 		};
 

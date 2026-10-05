@@ -9,9 +9,15 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "../../../../../ui/select";
-import { FPS_PRESETS, frameRateSelectOption } from "../../../../../../fps/presets";
+import {
+	FPS_PRESETS,
+	frameRateSelectOption,
+} from "../../../../../../fps/presets";
 import { floatToFrameRate } from "../../../../../../fps/utils";
-import { useEditor, useEditorInstance } from "../../../../../../editor/use-editor";
+import {
+	useEditor,
+	useEditorInstance,
+} from "../../../../../../editor/use-editor";
 import {
 	Section,
 	SectionContent,
@@ -98,6 +104,8 @@ function useCanvasDimensionDraft({
 
 export function SettingsView() {
 	const [view, setView] = useState<SettingsView>("project-info");
+	const [frameRateError, setFrameRateError] = useState<string | null>(null);
+	const [frameRatePending, setFrameRatePending] = useState(false);
 	const editor = useEditorInstance();
 	const activeProject = useEditor((e) => e.project.getActive());
 	const { canvasPresets } = useEditorStore();
@@ -249,20 +257,35 @@ export function SettingsView() {
 							<SectionTitle className="flex-1">Frame rate</SectionTitle>
 							<Select
 								value={frameRateOption.value}
+								disabled={frameRatePending}
 								onValueChange={(value) => {
 									if (value === "custom") return;
 									const fps = floatToFrameRate(parseFloat(value));
+									setFrameRateError(null);
+									setFrameRatePending(true);
 									void editor.project
 										.updateSettings({ settings: { fps } })
-										.catch(() => undefined);
+										.catch((error: unknown) =>
+											setFrameRateError(
+												error instanceof Error
+													? error.message
+													: "Could not change frame rate",
+											),
+										)
+										.finally(() => setFrameRatePending(false));
 								}}
 							>
-								<SelectTrigger aria-label="Frame rate" className="bg-transparent border-none p-1 h-auto">
+								<SelectTrigger
+									aria-label="Frame rate"
+									className="bg-transparent border-none p-1 h-auto"
+								>
 									<SelectValue placeholder="Select a frame rate" />
 								</SelectTrigger>
 								<SelectContent>
 									{frameRateOption.value === "custom" && (
-										<SelectItem value="custom">{frameRateOption.label}</SelectItem>
+										<SelectItem value="custom">
+											{frameRateOption.label}
+										</SelectItem>
 									)}
 									{FPS_PRESETS.map((preset) => (
 										<SelectItem key={preset.value} value={preset.value}>
@@ -272,6 +295,15 @@ export function SettingsView() {
 								</SelectContent>
 							</Select>
 						</SectionHeader>
+						<SectionContent className="px-2 pb-2 text-xs text-muted-foreground">
+							Clip boundaries and markers snap to earlier frames. Clips may
+							shorten by up to one frame; Undo restores original timing.
+							{frameRateError && (
+								<p role="alert" className="mt-2 text-destructive">
+									{frameRateError}
+								</p>
+							)}
+						</SectionContent>
 					</Section>
 					<Section
 						showTopBorder={false}

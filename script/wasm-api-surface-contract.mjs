@@ -97,7 +97,7 @@ export const EXPECTED = {
 		"package.json":
 			"f92d109c0ed431a74974f90bf207767c033f784af10a34a0accebb1bb921ca18",
 		[SYNC_ENTRY]:
-			"a058be9a1df7d32633e4fd1ba72439974f579e5f3d3f81b6636d0f4d2123346c",
+			"cbc226483940eb7a2111bed3ca4ed52ebe81f576210d503af2f7a66ba2029c71",
 	},
 	/**
 	 * `LICENSE` and `README.md` are the only two files wasm-pack **copies out of the checkout**
@@ -138,8 +138,8 @@ export const EXPECTED = {
 		"opencut_wasm_bg.wasm.d.ts":
 			"d19c1b3dc87f095040c7eb1e56eb8c965d587cf7927ca21cc513327cf78ed7c1",
 	},
-	dtsSha: "2f0222c1595e0047152d2bd5cc71bdf96c23679d068537e55839842362daa556",
-	wrapperSha: "51046acb410a95463f30e901d9b5d20564f5d17027f9812865e554688813f450",
+	dtsSha: "c65c663d675b03d95fc0bb4b50f5c48aa8ef798307f45fc79dcfd82b87863a39",
+	wrapperSha: "a6082a52dd6fd581849fdd4a539b13bf8a33a2645e6388641d973c22662d6ac5",
 	/**
 	 * The low-level declarations, hashed after normalising the trampoline hashes below and sorted
 	 * by line. Exact-byte hashing of this file cannot hold across build hosts for the reason
@@ -149,12 +149,12 @@ export const EXPECTED = {
 	 * Recorded on Windows; the value is host-independent by construction. Re-derive with the
 	 * hashing recipe in `script/check-wasm-api-surface.mjs` after a pinned WASM rebuild.
 	 */
-	wasmDtsNormalizedSignature: "aa6e7f1c43419437e5c9d73d8cf0295c06daa5d935593cc5fca671edd5a574dd",
-	wasmDtsLineCount: 87,
-	wrapperExportSignature: "bbf58599bbdd7b5036183f55dc2c976d078a9f76be761136f8d4e6d636fdecb9",
-	wrapperExportCount: 65,
-	bgExportSignature: "d0d4ad5d7372fbdb5a60ba548b3b2988f19577c95d2e5d59dccc46d1afffcbb0",
-	bgExportCount: 676,
+	wasmDtsNormalizedSignature: "71919179822dcc07ee0ab380e4c7569d42b2bae279baacbcfb422c461a4760ec",
+	wasmDtsLineCount: 88,
+	wrapperExportSignature: "c02b3b31ead3119d3a7ad783662f9fac7e3a0442d9d031ad86a005782fcafb6a",
+	wrapperExportCount: 66,
+	bgExportSignature: "b5f20fe21b08d4c891ec028ee49676a0c4c9c7449ef8d593675e7e832b9b414e",
+	bgExportCount: 677,
 	/**
 	 * The 82 stably-named binary exports, as an exact set. This is the real contract: every export
 	 * a consumer can name is pinned here, and any addition, removal or rename fails.
@@ -162,8 +162,8 @@ export const EXPECTED = {
 	 * The remaining 3 are compiler-generated closure trampolines whose names carry a rustc symbol
 	 * hash — see `TRAMPOLINE_EXPORT` for why they are matched by shape and count instead.
 	 */
-	stableWasmExportSignature: "1ed7ff89f2e790ff582f4a7cd5417582418498bdbde4ab8b497871ffe82db3e4",
-	stableWasmExportCount: 82,
+	stableWasmExportSignature: "2c4a5823ccc4597046b3dc0b572cee3f879a91227e625791b104551a91aae433",
+	stableWasmExportCount: 83,
 	trampolineExportCount: 3,
 	/**
 	 * The whole 85-entry set as recorded on the Windows build machine, kept for diagnosis: on
@@ -172,6 +172,7 @@ export const EXPECTED = {
  * assertion — `stableWasmExportSignature` is.
 	 */
 	wasmExportsAsRecorded: [
+		"planFrameGrid|function",
 		"isMediaSourceSpanValid|function",
 		"evaluateClipTransitions|function",
 		"colorAdjustmentCatalog|function",

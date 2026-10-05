@@ -1,4 +1,5 @@
 mod frame_rate;
+mod frame_grid;
 mod media_time;
 mod source_span;
 mod strict_object;
@@ -36,6 +37,7 @@ pub use video_time::{
 };
 
 pub use frame_rate::FrameRate;
+pub use frame_grid::{FrameGridClip, FrameGridOptions, FrameGridResult, FrameGridTiming, plan_frame_grid};
 pub use media_time::{
     FloorToFrameOptions, IsFrameAlignedOptions, LastFrameTimeOptions, MediaTime,
     MediaTimeAddOptions, MediaTimeClampOptions, MediaTimeFromFrameOptions,

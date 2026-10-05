@@ -25,7 +25,9 @@ export function verifyUiFormatMedia(
 	assert.equal(stream.codec_name, "h264");
 	assert.equal(stream.width, width);
 	assert.equal(stream.height, height);
-	const expectedFrames = Math.ceil((2 * numerator) / denominator);
+	// Each case starts from the original two-second timeline via actual Undo.
+	// Earlier-frame endpoint alignment yields 59 frames at 30000/1001.
+	const expectedFrames = Math.floor((2 * numerator) / denominator);
 	assert.equal(Number(stream.nb_read_frames), expectedFrames);
 	const [rateNum, rateDen] = stream.avg_frame_rate.split("/").map(Number);
 	assert(
