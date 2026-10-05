@@ -1497,6 +1497,55 @@ if (process.env.OPENCUT_SESSION_STATE_TEST_ISOLATED !== "1") {
 			await session.dispose();
 		});
 
+		test("export completion invalidates paused preview after success failure and cancellation", async () => {
+			const session = await createEditorSession({
+				host: createInMemoryHost({ projectId: "preview-refresh" }),
+				...runtime(),
+			});
+			const editor = editorForSession(session);
+			seedEmptyProject({ editor, id: "preview-refresh" });
+			const initial = editor.renderer.getPreviewRevision();
+			const revisions: number[] = [];
+			const unsubscribe = editor.renderer.subscribe(() => {
+				revisions.push(editor.renderer.getPreviewRevision());
+			});
+			const options = {
+				format: "mp4" as const,
+				quality: "low" as const,
+				includeAudio: false,
+			};
+			let release: (() => void) | undefined;
+			try {
+				expect((await editor.renderer.exportProject({ options })).success).toBe(
+					true,
+				);
+				expect(editor.renderer.getPreviewRevision()).toBe(initial + 1);
+				const failure = await editor.renderer.exportProject({
+					options,
+					onProgress: () => {
+						throw new Error("controlled export preview failure");
+					},
+				});
+				expect(failure.success).toBe(false);
+				expect(editor.renderer.getPreviewRevision()).toBe(initial + 2);
+				const held = wasmTestControl.holdNextCanvasCapture();
+				release = held.release;
+				const pending = editor.renderer.exportProject({ options });
+				await held.entered;
+				const suspension = session.suspend();
+				held.release();
+				await suspension;
+				expect((await pending).success).toBe(false);
+				expect(editor.renderer.getPreviewRevision()).toBe(initial + 3);
+				for (const revision of [initial + 1, initial + 2, initial + 3])
+					expect(revisions).toContain(revision);
+			} finally {
+				release?.();
+				unsubscribe();
+				await session.dispose();
+			}
+		});
+
 		test("suspend cancels the canonical exporter without stale progress or success", async () => {
 			const ownedRuntime = runtime();
 			const session = await createEditorSession({

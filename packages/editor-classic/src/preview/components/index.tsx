@@ -213,6 +213,7 @@ function PreviewCanvas({
 	const canvasMountRef = useRef<HTMLDivElement>(null);
 	const viewportRef = useRef<HTMLDivElement>(null);
 	const lastFrameRef = useRef(-1);
+	const lastPreviewRevisionRef = useRef(-1);
 	const lastSceneRef = useRef<RootNode | null>(null);
 	const renderingRef = useRef(false);
 	const { width: nativeWidth, height: nativeHeight } = usePreviewSize();
@@ -226,6 +227,7 @@ function PreviewCanvas({
 	const activeProject = useEditor((e) => e.project.getActive());
 	const renderTree = useEditor((e) => e.renderer.getRenderTree());
 	const rendererManager = useEditor((e) => e.renderer);
+	const previewRevision = useEditor((e) => e.renderer.getPreviewRevision());
 	const isDegraded = useEditor((e) => e.renderer.isDegraded);
 	const viewport = usePreviewViewportState({
 		canvasHeight: nativeHeight,
@@ -312,13 +314,18 @@ function PreviewCanvas({
 		);
 		const frame = Math.floor(renderTime / ticksPerFrame);
 
-		if (frame === lastFrameRef.current && renderTree === lastSceneRef.current) {
+		if (
+			frame === lastFrameRef.current &&
+			renderTree === lastSceneRef.current &&
+			previewRevision === lastPreviewRevisionRef.current
+		) {
 			return;
 		}
 
 		renderingRef.current = true;
 		lastSceneRef.current = renderTree;
 		lastFrameRef.current = frame;
+		lastPreviewRevisionRef.current = previewRevision;
 		void measurePreviewSubmission({
 			render: () => renderer.render({ node: renderTree, time: renderTime }),
 			time: renderTime,
@@ -333,7 +340,14 @@ function PreviewCanvas({
 			.finally(() => {
 				renderingRef.current = false;
 			});
-	}, [isDegraded, renderer, renderTree, editor.playback, editor.timeline]);
+	}, [
+		isDegraded,
+		renderer,
+		renderTree,
+		previewRevision,
+		editor.playback,
+		editor.timeline,
+	]);
 
 	useRafLoop({ callback: render, resources: editor.resources });
 

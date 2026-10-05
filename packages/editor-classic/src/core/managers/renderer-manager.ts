@@ -117,6 +117,7 @@ export class RendererManager {
 	private readonly activityLifecycle: RendererActivityLifecycle;
 	private publicationGeneration = 0;
 	private readonly activeExporters = new Set<SceneExporter>();
+	private previewRevision = 0;
 
 	constructor({
 		editor,
@@ -176,6 +177,10 @@ export class RendererManager {
 
 	getCompositorHandle(): number | null {
 		return this.compositor.handle;
+	}
+
+	getPreviewRevision(): number {
+		return this.previewRevision;
 	}
 
 	get isDegraded(): boolean {
@@ -509,6 +514,10 @@ export class RendererManager {
 				}
 			} finally {
 				this.activeExporters.delete(exporter);
+				// Export draws into the same canvas mounted by the paused preview.
+				// Invalidate its frame cache after success, failure or cancellation.
+				this.previewRevision += 1;
+				this.notify();
 			}
 		} catch (error) {
 			if (!(error instanceof SessionActivityGenerationError)) {

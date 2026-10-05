@@ -9,6 +9,7 @@ export async function probeCueLockWorkflow({
 	work,
 	evidence,
 	onPhase,
+	afterCreate,
 }) {
 	await hostPage.setViewportSize({ width: 1920, height: 1080 });
 	const readState = () =>
@@ -84,6 +85,7 @@ export async function probeCueLockWorkflow({
 			),
 		)
 		.toBe(true);
+	await afterCreate?.(page);
 	const initial = await readState(),
 		initialSequence = initial.sequences[0],
 		cueId = initialSequence.cues[1].id;
@@ -263,7 +265,15 @@ export async function probeCueLockWorkflow({
 			{ timeout: 30000 },
 		)
 		.toBe(true);
-	await page.getByTestId("timeline-clip").click({ timeout: 30000 });
+	const motionClip = applied.scenes[0].tracks.overlay
+		.flatMap((track) => track.elements)
+		.find((clip) => clip.type === "motion-text");
+	assert(motionClip);
+	await page
+		.locator(
+			`[data-testid="timeline-clip"][data-element-id="${motionClip.id}"]`,
+		)
+		.click({ timeout: 30000 });
 	assert.deepEqual(await readState(), applied);
 	await cueRows().nth(1).click();
 	await expect(
@@ -283,4 +293,5 @@ export async function probeCueLockWorkflow({
 	check(
 		"actual workspace close reopen preserves edited cue text both locks varied plans and exact preview frames",
 	);
+	return page;
 }

@@ -47,6 +47,8 @@ import { probeFontRecovery } from './probe-font-recovery.mjs';
 import { probeUnknownPreset } from './probe-unknown-preset.mjs';
 import { probeMotionClipContinuity } from './probe-motion-clip-continuity.mjs';
 import { probeCueLockWorkflow } from './probe-cue-lock-workflow.mjs';
+import { enterCreatorProject } from './probe-creator-entry.mjs';
+import { probeLinkedWorkflow } from './probe-linked-workflow.mjs';
 
 // Run with the Elftia worktree's tsx loader. Never launch a substitute browser.
 const hostRoot = resolve(process.env.ELFTIA_WORKTREE ?? '');
@@ -110,6 +112,11 @@ try {
   },{folder:ownership.folder,name:'live-'+Date.now()});
   assert(resolve(project.path).startsWith(resolve(ownership.folder)+'/') || resolve(project.path).startsWith(resolve(ownership.folder)+'\\'));
   evidence.projectPath=project.path;
+  if (process.argv.includes('--linked-workflow-only')) {
+    phase='Creator Studio project entry';
+    console.log('phase:',phase);
+    await enterCreatorProject({hostPage:conn.page,sessionId,folder:ownership.folder,evidence});
+  }
   // Reopen through the real workspace button: host URL/theme ownership must
   // follow the fixture too, not just a navigation of its existing iframe.
   await conn.page.locator('[data-testid="chat-tab-workspace"][data-workspace-id="rocut"]').click();
@@ -157,7 +164,9 @@ try {
   conn.page.on('response',response=>{if(response.status()>=400 && response.url().includes('/api/')) evidence.requests.push({phase,status:response.status(),url:scrub(response.url())});});
   const audioFixture=join(work,'fixture-tone-a4.wav');
   execFileSync('ffmpeg',['-v','error','-n','-f','lavfi','-i','sine=frequency=440:duration=16','-ar','44100','-ac','1','-c:a','pcm_s16le',audioFixture],{windowsHide:true});
- if (process.argv.includes('--agent-drafts-only')) {
+ if (process.argv.includes('--linked-workflow-only')) {
+    await probeLinkedWorkflow({page,hostPage:conn.page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
+  } else if (process.argv.includes('--agent-drafts-only')) {
     await probeAgentDrafts({page,hostPage:conn.page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--cue-lock-workflow-only')) {
     await probeCueLockWorkflow({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});

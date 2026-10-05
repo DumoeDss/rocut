@@ -7,6 +7,7 @@ import { homedir } from "node:os";
 import { promisify } from "node:util";
 import { expect } from "@playwright/test";
 import { mainPreviewCanvas } from "./probe-multilingual-media.mjs";
+import { createAgentDraftFixture } from "./probe-agent-draft-fixture.mjs";
 
 const run = promisify(execFile);
 
@@ -19,6 +20,7 @@ export async function probeAgentDrafts({
 	work,
 	evidence,
 	onPhase,
+	existingTimeline,
 }) {
 	assert(
 		process.env.ELFTIA_INSTALLED_ROCUT,
@@ -57,11 +59,18 @@ export async function probeAgentDrafts({
 	};
 	const check = (name, details = {}) =>
 		evidence.checks.push({ name, ...details, pass: true });
+	const verifyTicks = existingTimeline?.verifyTicks ?? 540000;
+	const verifyFrame = Math.round(verifyTicks / 4000);
+	const verifyTimecode =
+		"00:00:" +
+		String(Math.floor(verifyFrame / 30)).padStart(2, "0") +
+		":" +
+		String(verifyFrame % 30).padStart(2, "0");
 	const verifyVisible = async (frame, label) => {
 		await frame.getByLabel("Edit playhead time", { exact: true }).click();
 		await frame
 			.getByLabel("Playhead time", { exact: true })
-			.fill("00:00:04:15");
+			.fill(verifyTimecode);
 		await frame.getByLabel("Playhead time", { exact: true }).press("Enter");
 		let greenFraction = 0;
 		await expect
@@ -181,24 +190,18 @@ export async function probeAgentDrafts({
 			"CLI must report the expected refusal, not succeed or time out",
 		);
 	};
-	onPhase("UI fixture for agent draft collaboration");
-	await page.getByLabel("Motion text", { exact: true }).click();
-	await page
-		.getByRole("combobox", { name: "Lyrics format", exact: true })
-		.click();
-	await page
-		.getByRole("option", { name: "LRC timestamps", exact: true })
-		.click();
-	await page
-		.locator("#motion-text-source")
-		.fill(
-			"[00:00.00]第一句保持不变\n[00:02.00]第二句由用户修改\n[00:04.00]第三句等待草稿",
-		);
-	await page
-		.getByRole("spinbutton", { name: "Duration (seconds)", exact: true })
-		.fill("6");
-	await page.getByTestId("motion-text-add").click();
-	await expect(page.getByTestId("timeline-clip")).toHaveCount(1);
+	if (!existingTimeline) await createAgentDraftFixture({ page, onPhase });
+	const clipCount = existingTimeline?.clipCount ?? 1;
+	const selectMotion = (frame) =>
+		existingTimeline
+			? frame
+					.locator(
+						'[data-testid="timeline-clip"][data-element-id="' +
+							existingTimeline.clipId +
+							'"]',
+					)
+					.click({ timeout: 30000 })
+			: frame.getByTestId("timeline-clip").click({ timeout: 30000 });
 	await expect
 		.poll(async () => (await json("motion-text", "list")).sequences.length)
 		.toBe(1);
@@ -210,7 +213,7 @@ export async function probeAgentDrafts({
 		"installed CLI previews and stages a Rust-planned cue edit without changing the live project",
 	);
 	onPhase("real user edit invalidates the pending agent draft");
-	await page.getByTestId("timeline-clip").click();
+	await selectMotion(page);
 	await page
 		.locator(
 			'[aria-labelledby="motion-text-cues-heading"] button[aria-expanded]',
@@ -277,7 +280,7 @@ export async function probeAgentDrafts({
 			"草稿批准后的第三句",
 		);
 		await expect(dialog.getByTestId("draft-review-changes")).toContainText(
-			"第三句等待草稿",
+			userState.sequences[0].cues[2].text,
 		);
 		return dialog;
 	};
@@ -435,14 +438,14 @@ export async function probeAgentDrafts({
 	assert.equal(committed.sequences[0].cues[1].text, "用户保留的第二句");
 	assert.equal(committed.sequences[0].cues[2].text, "草稿批准后的第三句");
 	assert.deepEqual(committed.sequences[0], fresh.preview.candidate);
-	await expect(page.getByTestId("timeline-clip")).toHaveCount(1);
-	await page.getByTestId("timeline-clip").click();
+	await expect(page.getByTestId("timeline-clip")).toHaveCount(clipCount);
+	await selectMotion(page);
 	await expect(
 		page.locator('[aria-labelledby="motion-text-cues-heading"]'),
 	).toContainText("草稿批准后的第三句", { timeout: 10000 });
 	await verifyVisible(page, "agent-draft-committed");
 	await hostPage.screenshot({ path: join(work, "agent-draft-committed.png") });
-	const proof = await json("verify", "540000");
+	const proof = await json("verify", String(verifyTicks));
 	check(
 		"fresh manual draft commits text and local color atomically and appears in the live editor",
 		{
@@ -492,17 +495,21 @@ export async function probeAgentDrafts({
 			{ timeout: 30000 },
 		)
 		.toBe(true);
-	await reopened.getByTestId("timeline-clip").click({ timeout: 30000 });
+	await selectMotion(reopened);
 	await expect(
 		reopened.locator('[aria-labelledby="motion-text-cues-heading"]'),
 	).toContainText("草稿批准后的第三句");
 	await expect(
 		reopened.locator('[aria-labelledby="motion-text-cues-heading"]'),
 	).toContainText("用户保留的第二句");
-	assert.equal((await json("verify", "540000")).digest, proof.digest);
+	assert.equal(
+		(await json("verify", String(verifyTicks))).digest,
+		proof.digest,
+	);
 	await verifyVisible(reopened, "agent-draft-reopened");
 	await hostPage.screenshot({ path: join(work, "agent-draft-reopened.png") });
 	check(
 		"closed pane refuses rendering but keeps CLI reads; reopening preserves user and agent changes and frame-description digest",
 	);
+	return reopened;
 }

@@ -4,6 +4,7 @@ import { expect } from "@playwright/test";
 import {
 	languagePreview,
 	languageOverlap,
+	mainPreviewCanvas,
 } from "./probe-multilingual-media.mjs";
 import {
 	createMotionContinuityFixture,
@@ -16,6 +17,7 @@ export async function probeMotionClipContinuity({
 	work,
 	evidence,
 	onPhase,
+	existingLyrics = false,
 }) {
 	await hostPage.setViewportSize({ width: 1920, height: 1080 });
 	const readState = () =>
@@ -75,34 +77,51 @@ export async function probeMotionClipContinuity({
 	};
 	const check = (name, extra = {}) =>
 		evidence.checks.push({ name, pass: true, ...extra });
-	onPhase("import locked animated text and real video audio underlay");
-	await createMotionContinuityFixture({ page, hostPage, work });
+	if (!existingLyrics) {
+		onPhase("import locked animated text and real video audio underlay");
+		await createMotionContinuityFixture({ page, hostPage, work });
+	}
 	const initial = await readState(),
 		original = motion(initial)[0];
+	onPhase(
+		"capture original animation phases over the same audiovisual project",
+	);
 	assert.equal(original.startTime, 0);
-	assert.equal(original.duration, 528000);
-	const frames = [24, 36, 42, 69, 87],
+	assert.equal(original.duration, existingLyrics ? 720000 : 528000);
+	const frames = existingLyrics ? [24, 48, 84, 144, 168] : [24, 36, 42, 69, 87],
 		baselines = new Map();
 	for (const frame of frames) {
 		const sample = await capture(frame);
-		assert(sample.cyan.length > 25);
+		assert(
+			sample.cyan.length > 25,
+			"baseline frame " +
+				frame +
+				" must contain visible cyan glyphs, got " +
+				sample.cyan.length,
+		);
 		baselines.set(frame, sample);
-		await page
-			.locator("canvas")
-			.first()
-			.screenshot({ path: join(work, "baseline-" + frame + ".png") });
+		await (
+			await mainPreviewCanvas(page)
+		).screenshot({ path: join(work, "baseline-" + frame + ".png") });
 	}
 	assert(
 		new Set([...baselines.values()].map((s) => JSON.stringify(s.cyan))).size >=
 			3,
 		"different animation phases must render different pixels",
 	);
-	const reset = await capture(6);
-	assert.equal(
-		reset.cyan.length,
-		0,
-		"reset-to-zero negative control must lack the first cue",
-	);
+	const reset = await capture(existingLyrics ? 0 : 6);
+	if (existingLyrics)
+		assert.notDeepEqual(
+			reset.cyan,
+			baselines.get(48).cyan,
+			"restart negative control must differ from the running cue",
+		);
+	else
+		assert.equal(
+			reset.cyan.length,
+			0,
+			"reset-to-zero negative control must lack the first cue",
+		);
 	check(
 		"independent original-time frame baselines contain changing locked animation over audiovisual media",
 	);
@@ -159,12 +178,11 @@ export async function probeMotionClipContinuity({
 					actual: sample.cyan,
 				}),
 			});
-			await page
-				.locator("canvas")
-				.first()
-				.screenshot({
-					path: join(work, label.replaceAll(" ", "-") + "-" + frame + ".png"),
-				});
+			await (
+				await mainPreviewCanvas(page)
+			).screenshot({
+				path: join(work, label.replaceAll(" ", "-") + "-" + frame + ".png"),
+			});
 			// Source video frames and selected-object canvas decoration may differ.
 			// Animation continuity requires the exact same glyph pixel coordinates.
 			assert.deepEqual(
@@ -251,7 +269,35 @@ export async function probeMotionClipContinuity({
 		await hostPage.keyboard.press("Control+Shift+z");
 		await expect.poll(readState).toEqual(expected);
 	}
-	await page.reload();
+	if (existingLyrics) {
+		const editorUrl = page.url();
+		await hostPage
+			.locator(
+				'[data-testid="chat-button-workspace-close"][data-workspace-id="rocut"]',
+			)
+			.click();
+		await expect(
+			hostPage.locator(
+				'[data-testid="webpane-tab-slot"][data-tool-id="rocut"]',
+			),
+		).toHaveCount(0);
+		await hostPage
+			.locator('[data-testid="chat-tab-workspace"][data-workspace-id="rocut"]')
+			.click();
+		await expect
+			.poll(
+				() => {
+					const reopened = hostPage
+						.frames()
+						.find((frame) => frame.url() === editorUrl);
+					if (reopened) page = reopened;
+					return !!reopened;
+				},
+				{ timeout: 30000 },
+			)
+			.toBe(true);
+		await page.getByLabel("Media", { exact: true }).waitFor({ timeout: 30000 });
+	} else await page.reload();
 	assert.deepEqual(await readState(), split);
 	await compare("reopened split clips");
 	await hostPage.screenshot({
@@ -274,4 +320,31 @@ export async function probeMotionClipContinuity({
 		split,
 		check,
 	});
+	onPhase(
+		"export completion restores the unchanged playhead preview without a seek",
+	);
+	const expected = baselines.get(frames[frames.length - 1]).cyan;
+	let restored;
+	await expect
+		.poll(
+			async () => {
+				restored = await languagePreview(page);
+				return JSON.stringify(restored.cyan) === JSON.stringify(expected);
+			},
+			{ timeout: 10000 },
+		)
+		.toBe(true);
+	check(
+		"export completion restores exact current-time glyph pixels without moving the playhead",
+		{ cyanPixels: restored.cyan.length },
+	);
+	return {
+		page,
+		state: split,
+		existingTimeline: {
+			clipCount: clips(split).length,
+			clipId: parts[1].id,
+			verifyTicks: offset * 4000 + 540000,
+		},
+	};
 }
