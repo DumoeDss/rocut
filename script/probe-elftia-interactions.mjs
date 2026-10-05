@@ -41,6 +41,7 @@ import { probeFreeformMask } from './probe-freeform-mask.mjs';
 import { probeMaskShapes } from './probe-mask-shapes.mjs';
 import { probeMaskFeather } from './probe-mask-feather.mjs';
 import { probeMaskStroke } from './probe-mask-stroke.mjs';
+import { probeMultilingual } from './probe-multilingual.mjs';
 
 // Run with the Elftia worktree's tsx loader. Never launch a substitute browser.
 const hostRoot = resolve(process.env.ELFTIA_WORKTREE ?? '');
@@ -151,6 +152,8 @@ try {
   execFileSync('ffmpeg',['-v','error','-n','-f','lavfi','-i','sine=frequency=440:duration=16','-ar','44100','-ac','1','-c:a','pcm_s16le',audioFixture],{windowsHide:true});
  if (process.argv.includes('--agent-drafts-only')) {
     await probeAgentDrafts({page,hostPage:conn.page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
+  } else if (process.argv.includes('--multilingual-only')) {
+    await probeMultilingual({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--mask-stroke-only')) {
     await probeMaskStroke({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--mask-feather-only')) {
