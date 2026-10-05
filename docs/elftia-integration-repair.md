@@ -2,6 +2,13 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Narrow embedded toolbar repair (2026-10-05)
+
+- Reproduced on installed 831b4862 at a 1000x650 Elftia viewport with the chat/editor split: editor width 560px, assets panel 182.66px. Import extends past its containing panel and fails four-corner hit testing; timeline zoom controls also overflow the visible toolbar. Evidence: embedded-toolbars-me70NQ and .tmp-probe/narrow-toolbar-1000.png. This was a real hidden-control defect, not an absent DOM element.
+- Media action groups now wrap within their available panel width; the timeline toolbar wraps its existing groups instead of putting them in a hidden horizontal scrolling strip. The toolbar does not shrink vertically, so its controls retain full hit areas while the existing timeline track scroller takes the remaining space. No business logic, panel preferences, dependencies or theme tokens change.
+- Visual direction follows frontend-design: retain the established editing workspace (light panel #fcfbf9, ink #27231f, muted #6b6259; dark panel #211f1c, ink #eee9e2, border #766b5f), inherited Segoe UI / Microsoft YaHei UI typography, existing icon scale and focus rings. Deliberate grouping and line wrapping replace clipping; no extra decorative panels or outer host chrome.
+- New real-Elftia probe checks full panel containment and four-corner pointer hit testing, then actual file chooser cancellation, grid/list restoration, keyboard sort-menu dismissal/focus, scene-dialog dismissal/focus and timeline zoom round-trip at 1000/900/760/1920 host widths in both themes. It also verifies unchanged authored project content and no concealed horizontal toolbar overflow. Entry: probe-elftia-interactions.mjs --toolbars-only. Source lint, Vite typecheck/build and WASM currency pass; installed-candidate results are recorded after replacement, not inferred from the build.
+
 ## Continuous installed diagnostics and recovery (2026-10-05)
 
 - **Installed live-WTVggR passes 35/35 uninterrupted checks** on runtime 831b4862 / plugin 0.5.0. The same Creator-opened project proceeds through cue edits, locks, variations, move/trim/split/history/reopen, guarded Agent review, bilingual overlays, range/full exports, missing-font failure/Retry, and unknown-preset rejection/correction. Evidence: Elftia .tmp-rocut-e2e/live-WTVggR/evidence.json; project live-1791201626090. No captured runtime errors. Initial fixture creation still uses the host API, not project-creation UI acceptance.

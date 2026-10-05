@@ -28,7 +28,6 @@ import {
 import { hasMediaId } from "..";
 import { cn } from "../../utils/ui";
 import { useTimelineStore } from "../../editor/use-session-store";
-import { ScrollArea } from "../../components/ui/scroll-area";
 import {
 	Bookmark02Icon,
 	Delete02Icon,
@@ -71,20 +70,23 @@ export function TimelineToolbar({
 	};
 
 	return (
-		<ScrollArea className="scrollbar-hidden">
-			<div className="flex h-10 items-center justify-between border-b px-2 py-1">
-				<ToolbarLeftSection />
+		<div
+			className="flex min-h-10 shrink-0 flex-wrap items-center justify-between gap-x-2 gap-y-1 border-b px-2 py-1"
+			data-testid="timeline-toolbar"
+			role="group"
+			aria-label="Timeline actions"
+		>
+			<ToolbarLeftSection />
 
-				<SceneSelector />
+			<SceneSelector />
 
-				<ToolbarRightSection
-					zoomLevel={zoomLevel}
-					minZoom={minZoom}
-					onZoomChange={(zoom) => setZoomLevel({ zoom })}
-					onZoom={handleZoom}
-				/>
-			</div>
-		</ScrollArea>
+			<ToolbarRightSection
+				zoomLevel={zoomLevel}
+				minZoom={minZoom}
+				onZoomChange={(zoom) => setZoomLevel({ zoom })}
+				onZoom={handleZoom}
+			/>
+		</div>
 	);
 }
 
