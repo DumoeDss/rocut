@@ -66,6 +66,7 @@ function createExampleProject(): TProject {
 			updatedAt: now,
 		},
 		scenes: [scene],
+		motionTextSequences: [],
 		currentSceneId: scene.id,
 		settings: {
 			fps: DEFAULT_FPS,

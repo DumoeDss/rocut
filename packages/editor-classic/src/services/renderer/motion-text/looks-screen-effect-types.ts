@@ -161,7 +161,10 @@ function scratchSurface({
 	if (cached) return cached;
 	const canvas = createScratchCanvas({ height, source: ctx.canvas, width });
 	if (!canvas) return null;
-	const context = canvas.getContext("2d");
+	// Resolve each canvas's 2D overload before joining the DOM context types.
+	const context = "ownerDocument" in canvas
+		? canvas.getContext("2d")
+		: canvas.getContext("2d");
 	if (!context || !isLooksPixelContext(context)) return null;
 	const surface = { canvas, context };
 	scratchByCanvas.set(ctx.canvas, surface);

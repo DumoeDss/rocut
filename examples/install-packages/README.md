@@ -22,7 +22,7 @@ OPENCUT_EXAMPLES=install-packages node script/run-published-examples.mjs
 ```
 
 The committed manifest records the expected mixed package versions
-(`editor-ports`/`editor-classic` `0.2.0`, `editor-contracts` `0.3.0`). The
+(`editor-ports` `0.3.0`, `editor-classic` `0.2.0`, `editor-contracts` `0.4.0`). The
 supported runner resolves those pins to freshly packed local tarballs before
 installing them:
 

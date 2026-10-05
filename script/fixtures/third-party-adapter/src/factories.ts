@@ -82,6 +82,7 @@ function alienCommittedStateCapture(
 			clips: await engine.clips(),
 			assets: await engine.assets(),
 			markers: await engine.markers(),
+			motionTextSequences: (await engine.motionTextSequences?.()) ?? [],
 			revision: await engine.revision(),
 			idempotency: [...committedLedger],
 		}),

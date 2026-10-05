@@ -516,7 +516,10 @@ function createScratchCanvas({
 	} else {
 		return null;
 	}
-	const context = canvas.getContext("2d");
+	// Resolve each canvas's 2D overload before joining the DOM context types.
+	const context = "ownerDocument" in canvas
+		? canvas.getContext("2d")
+		: canvas.getContext("2d");
 	return context && isPixelContext(context) ? { canvas, context } : null;
 }
 

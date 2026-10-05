@@ -23,8 +23,8 @@ import {
 } from "@opencut/editor-contracts/vectors/corpus";
 
 const PINS: Readonly<Record<string, string>> = {
-	"@opencut/editor-ports": "0.2.0",
-	"@opencut/editor-contracts": "0.3.0",
+	"@opencut/editor-ports": "0.3.0",
+	"@opencut/editor-contracts": "0.4.0",
 	"@opencut/editor-classic": "0.2.0",
 };
 const POLICY_ANCHOR = "Compatibility policy (`0.x`)";
