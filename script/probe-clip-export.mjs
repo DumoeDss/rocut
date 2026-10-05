@@ -3,6 +3,7 @@ import { basename, join } from "node:path";
 import { expect } from "@playwright/test";
 import { createUiExportFixture } from "./probe-ui-export-fixture.mjs";
 import { createRangeSource, verifyRangeMedia } from "./probe-ui-range-media.mjs";
+import { probeClipExportLayout } from "./probe-clip-export-layout.mjs";
 
 export async function probeClipExport({ page, hostPage, work, evidence, onPhase }) {
 	const check = (name, extra = {}) => evidence.checks.push({ name, pass: true, ...extra });
@@ -65,7 +66,7 @@ export async function probeClipExport({ page, hostPage, work, evidence, onPhase 
 					verifyRangeMedia({ path: join(work, output.guid), suggestedFilename: output.suggestedFilename },
 						{ format, ranged: index === 1, firstClip: index === 0 }));
 			}
-			await dialog.getByRole("button", { name: "Close", exact: true }).click();
+			await dialog.getByRole("button", { name: "Close", exact: true }).first().click();
 			await expect(dialog).toHaveCount(0);
 		}
 		onPhase("clip export: row selection, no late download after cancellation");
@@ -79,7 +80,7 @@ export async function probeClipExport({ page, hostPage, work, evidence, onPhase 
 		await expect(dialog.getByRole("status")).toHaveText("Cancelled. 0 of 1 files sent to downloads.", { timeout: 30000 });
 		await expect(dialog.getByRole("button", { name: "Export 1 clips", exact: true })).toBeEnabled();
 		assert.equal(downloads.size, 0);
-		await dialog.getByRole("button", { name: "Close", exact: true }).click();
+		await dialog.getByRole("button", { name: "Close", exact: true }).first().click();
 		const after = await readRecord();
 		for (const key of ["scenes", "settings", "motionTextSequences"]) assert.deepEqual(after[key], initial[key]);
 		check("checkbox selection and cancellation retain timeline without publishing late output");
@@ -90,9 +91,11 @@ export async function probeClipExport({ page, hostPage, work, evidence, onPhase 
 		await page.getByRole("menuitem", { name: "Export clips", exact: true }).click();
 		await expect(dialog.getByRole("checkbox", { name: /^Export / })).toHaveCount(1);
 		await expect(dialog.getByText("1.00s – 2.00s", { exact: false })).toBeVisible();
-		await dialog.getByRole("button", { name: "Close", exact: true }).click();
+		await dialog.getByRole("button", { name: "Close", exact: true }).first().click();
 		await expect(trigger).toBeFocused();
 		check("main-menu selected clip range and keyboard focus restoration");
+		onPhase("clip export: narrow themes, scrolling and unused asset");
+		await probeClipExportLayout({ page, hostPage, work, evidence, openAsset, dialog, asset });
 	} finally {
 		cdp.off("Browser.downloadWillBegin", begin);
 		cdp.off("Browser.downloadProgress", progress);
