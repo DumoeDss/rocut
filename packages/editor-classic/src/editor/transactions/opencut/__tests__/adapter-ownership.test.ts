@@ -2,6 +2,47 @@ import { expect, spyOn, test } from "bun:test";
 import { createOpenCutTransactionDocumentAdapter } from "../adapter";
 import { recordFixture, TEST_PROJECT_ID } from "./fixture";
 
+test("catalog-only reads isolate entries without decoding or cloning the project", () => {
+	const initialRecord = recordFixture();
+	const initialAssets = [
+		{ id: "asset", name: "source", type: "image" as const },
+	];
+	const adapter = createOpenCutTransactionDocumentAdapter({
+		initialRecord,
+		initialAssets,
+	});
+	const clone = spyOn(globalThis, "structuredClone");
+	let catalog;
+	try {
+		catalog = adapter.currentAssetCatalog();
+		expect(clone).toHaveBeenCalledTimes(1);
+		expect(clone.mock.calls[0][0]).toEqual(initialAssets);
+	} finally {
+		clone.mockRestore();
+	}
+	expect(catalog).toEqual(initialAssets);
+	Reflect.set(catalog[0], "name", "caller edit");
+	catalog.push({ id: "added", name: "added", type: "image" });
+	expect(initialAssets[0].name).toBe("source");
+	expect(adapter.currentAssetCatalog()).toEqual(initialAssets);
+	const document = adapter.decode({
+		projectId: TEST_PROJECT_ID,
+		record: initialRecord,
+	});
+	const encoded = adapter.encode({
+		projectId: TEST_PROJECT_ID,
+		previousRecord: initialRecord,
+		document,
+	});
+	adapter.adoptCommittedRecord(encoded.record);
+	initialAssets[0].name = "later fallback mutation";
+	expect(adapter.currentAssetCatalog()[0].name).toBe("source");
+	expect(adapter.currentAssetCatalog()).toEqual(
+		adapter.currentDraft().assetCatalog,
+	);
+	expect(initialRecord).toEqual(recordFixture());
+});
+
 test("currentDraft decodes an isolated snapshot without cloning that fresh snapshot again", () => {
 	const initialRecord = recordFixture();
 	const adapter = createOpenCutTransactionDocumentAdapter({

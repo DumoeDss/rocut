@@ -476,8 +476,13 @@ export class CommandManager {
 	}
 
 	private captureLiveDraft(): OpenCutProjectDraft {
-		const project = cloneOpaque(this.editor.project.getActive());
-		project.scenes = cloneOpaque(this.editor.scenes.getScenes());
+		// commitUi immediately clones this borrowed snapshot before prepare.
+		// Only scene shells need local ownership here: marker normalization
+		// replaces their bookmark arrays without mutating the borrowed entries.
+		const project = {
+			...this.editor.project.getActive(),
+			scenes: this.editor.scenes.getScenes().map((scene) => ({ ...scene })),
+		};
 		const draft = {
 			project,
 			assetCatalog: assetCatalogFromMedia(this.editor.media.getAssets()),

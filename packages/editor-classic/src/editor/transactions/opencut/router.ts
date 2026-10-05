@@ -168,9 +168,8 @@ export class SessionOpenCutTransactions {
 				const revision = await active.engine.revision();
 				const baseDocument = await this.readDocument(active.engine, revision);
 				const draft = cloneOpenCutDraft(baseDraft());
-				const committedDraft = active.adapter.currentDraft();
 				draft.assetCatalog = mergeAssetCatalogs({
-					committed: committedDraft.assetCatalog,
+					committed: active.adapter.currentAssetCatalog(),
 					live: draft.assetCatalog,
 				});
 				const prepared = prepare({

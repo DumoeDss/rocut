@@ -94,7 +94,9 @@ function canonical(value: unknown, seen = new Set<object>()): string {
 }
 
 export function digestOpenCutProject(draft: OpenCutProjectDraft): string {
-	return canonical(encodeProject({ project: draft.project, retained: undefined }));
+	return canonical(
+		encodeProject({ project: draft.project, retained: undefined }),
+	);
 }
 
 export function digestProjectRecord(record: ProjectRecord): string {
@@ -390,6 +392,7 @@ export interface OpenCutTransactionDocumentAdapter extends TransactionDocumentAd
 	consumeReceipt(): EncodedOpenCutPublicationReceipt | null;
 	currentRecordDigest(): string;
 	currentDraft(): OpenCutProjectDraft;
+	currentAssetCatalog(): OpenCutAssetCatalogEntry[];
 	adoptCommittedRecord(record: ProjectRecord): void;
 }
 
@@ -511,6 +514,15 @@ export function createOpenCutTransactionDocumentAdapter({
 			// decodeDraft owns its cloned record and catalog; no shared state
 			// remains for another whole-project clone to protect.
 			return decodeDraft(latestRecord);
+		},
+		currentAssetCatalog() {
+			// UI preparation needs only catalog reconciliation, not a decoded
+			// copy of every scene and motion-text sequence in the record.
+			return [
+				...cloneOpaque(
+					readEnvelope(latestRecord.data)?.assetCatalog ?? initialAssets,
+				),
+			];
 		},
 		adoptCommittedRecord(record) {
 			latestRecord = cloneOpaque(record);

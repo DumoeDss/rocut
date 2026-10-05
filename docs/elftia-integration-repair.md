@@ -2,12 +2,24 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Transaction preparation ownership follow-up (2026-10-06)
+
+- Command capture now borrows project fields until the router performs its required isolation clone. It creates private scene shells before marker normalization, which itself replaces bookmark arrays/entries; it never normalizes live scenes. The copy-cost regression fails on the previous implementation. Successful edit/undo/redo preserve marker identities and old live references; rejected preparation leaves live settings, bookmarks, history and durable state unchanged.
+- UI asset reconciliation reads only the adapter's isolated asset catalog, instead of decoding the entire committed project merely to discard everything except that catalog. The same envelope validation remains in use. Tests verify fallback/committed catalogs, independent caller mutations and the absence of project-sized cloning.
+- Focused ownership/adapter/router tests pass 16 tests / 85 assertions. Changed-file ESLint, Vite typecheck/build, strict UTF-8 and diff checks pass; existing build warnings remain. The broader command suite still has its previously reproduced FPS error-shape failure (44/45 combined tests pass); it is not suppressed. Installed timing for these additional preparation changes is pending.
+
 ## Persistence copy ownership checkpoint (2026-10-06)
 
 - Diagnostic `mutation-profile-z24Vg1` on installed `c4f5e7e5` confirms the repeated font-hash hotspot is gone. Interval-filtered Apply-to-visible CPU samples still attribute 3102.43ms to opaque cloning across 30 edits. Its instrumented p95 (442.24ms) is not ordinary performance acceptance.
 - Project encoding no longer clones and recursively overlays the complete motion-text sequence tree before discarding that intermediate value. Sequences still replace the retained collection with an independent deep copy, preserving removals and unknown project siblings. The regression detects two source-tree copies on the old implementation versus one after the change, and checks source/retained isolation.
 - Committed-record adoption now transfers its already-private decoded result; the cache retains its separate copy and listeners retain individually isolated record snapshots. The added deterministic copy-cost regression fails before the change (two equivalent decoded-project clone inputs instead of one), then passes alongside caller/input/listener/cache isolation and a subsequent durable save.
 - Focused persistence/codec/transaction suites pass 23 tests / 86 assertions; changed-file ESLint, Vite typecheck/build, strict UTF-8 and diff checks pass (existing chunk warnings remain). Actual installed latency and workflow regression for these two changes are pending; the 300ms gate and the previously unexplained undo failure remain open. No domain rule, schema, WASM contract or plugin version changed.
+
+### Installed copy ownership follow-up
+
+- Runtime `c78cc1a7` packs reproduce; producer 52 tests and vendor/dist gates pass. Previous 354-file installation was independently verified against backup `C:/Users/Sayo/.elftia/plugin-backups/rocut-0.5.0-before-copy-ownership-mHS0if/rocut`. Installed/dist parity is exact: producer digest `281205d542c6cab34c60cf0778fe956961d5b2af0dbd49afe123a1d1f9a8dc7c`, independent digest `785ca28d1dd9cf2d1d6ab73ea2ba8d3b3ba689d1fea1e590455bd7e167162c75`.
+- Ordinary actual-Elftia `live-tyASir` completes 30 persisted exact visible-picture changes with other authored state intact and no captured errors. **p95 390.47ms / max 392.68ms still fails 300ms**. This is not aggregate performance acceptance.
+- `live-j7GRgB` passes 14 workflow checks including cue-lock variation undo/redo/reopen, move/trim/split and independent audiovisual export decoding, then stops because the invocation omitted required `ELFTIA_INSTALLED_ROCUT` for the next Agent step. This is a test setup failure, not a completed workflow or established product regression; rerun with the explicit installed root is required.
 
 ## Font coverage / receipt ownership checkpoint (2026-10-06)
 
