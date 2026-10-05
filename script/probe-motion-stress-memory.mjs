@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { join } from "node:path";
 import { expect } from "@playwright/test";
 import { createScreencastCapture } from "./probe-preview-screencast.mjs";
+import { captureHeapSummary } from "./probe-heap-summary.mjs";
+import { createScreenshotCapture } from "./probe-preview-screenshot.mjs";
 
 function timecode(frame) {
 	const seconds = Math.floor(frame / 30);
@@ -73,6 +75,11 @@ async function measureMotionStressMemory({
 	lifecycle,
 }) {
 	const url = await page.evaluate(() => location.href);
+	const frameObserver = process.env.ROCUT_F05_FRAME_OBSERVER ?? "screencast";
+	assert(
+		["screencast", "screenshot"].includes(frameObserver),
+		"Unsupported F05 frame observer",
+	);
 	const cycles = Number(process.env.ROCUT_F05_CYCLES ?? 4);
 	assert(
 		Number.isInteger(cycles) && cycles >= 4 && cycles <= 24,
@@ -104,6 +111,9 @@ async function measureMotionStressMemory({
 	let sampling = false;
 	let sampledAllocations;
 	const snapshots = [];
+	const heapSummaries = [];
+	const summarizeHeap = process.env.ROCUT_F05_HEAP_SUMMARY === "1";
+	if (summarizeHeap) evidence.acceptanceEligible = false;
 	const memory = async (label) => {
 		await resourceCdp.send("HeapProfiler.collectGarbage");
 		const [heap, dom] = await Promise.all([
@@ -111,9 +121,23 @@ async function measureMotionStressMemory({
 			resourceCdp.send("Memory.getDOMCounters"),
 		]);
 		snapshots.push({ label, heap, dom });
+		const checkpoint = snapshots.length - 1;
+		if (
+			summarizeHeap &&
+			[0, Math.floor(cycles / 2), cycles].includes(checkpoint)
+		) {
+			onPhase("F05 in-memory heap retainer summary: " + label);
+			heapSummaries.push({
+				label,
+				summary: await captureHeapSummary(resourceCdp),
+			});
+		}
 	};
 	try {
-		observer = await createScreencastCapture({ page, cdp, displayed });
+		observer =
+			frameObserver === "screenshot"
+				? createScreenshotCapture({ cdp, displayed })
+				: await createScreencastCapture({ page, cdp, displayed });
 		const seek = async (target, expected) => {
 			const before = (await observer.capture()).hash;
 			await page.getByLabel("Edit playhead time", { exact: true }).click();
@@ -254,6 +278,8 @@ async function measureMotionStressMemory({
 				heapSampling: process.env.ROCUT_F05_HEAP_SAMPLE === "1",
 				cycles,
 				memoryGateStatus: "measured-not-asserted",
+				heapSummaries,
+				frameObserver,
 				sampledAllocations,
 				gpuMeasured: false,
 				snapshots,
