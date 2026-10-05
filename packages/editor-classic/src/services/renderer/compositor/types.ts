@@ -78,6 +78,8 @@ export type RenderedTextureDescriptor = {
 	kind: "rendered";
 	id: string;
 	contentHash: string;
+	/** Canvas backing preference; changing it requires a new backing surface. */
+	willReadFrequently?: boolean;
 	width: number;
 	height: number;
 	draw: TextureCanvasDrawFn;

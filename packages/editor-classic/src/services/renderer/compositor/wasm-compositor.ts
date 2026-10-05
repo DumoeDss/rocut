@@ -33,6 +33,7 @@ type RenderedCacheEntry = {
 	kind: "rendered";
 	canvas: OffscreenCanvas;
 	contentHash: string;
+	willReadFrequently: boolean;
 	width: number;
 	height: number;
 };
@@ -200,8 +201,10 @@ export class WasmCompositor {
 
 	private syncRenderedTexture(texture: RenderedTextureDescriptor) {
 		const previous = this.cache.get(texture.id);
+		const willReadFrequently = texture.willReadFrequently ?? false;
 		if (
 			previous?.kind === "rendered" &&
+			previous.willReadFrequently === willReadFrequently &&
 			previous.contentHash === texture.contentHash &&
 			previous.width === texture.width &&
 			previous.height === texture.height
@@ -212,6 +215,7 @@ export class WasmCompositor {
 
 		const canvas =
 			previous?.kind === "rendered" &&
+			previous.willReadFrequently === willReadFrequently &&
 			previous.width === texture.width &&
 			previous.height === texture.height
 				? previous.canvas
@@ -220,7 +224,7 @@ export class WasmCompositor {
 						height: texture.height,
 					});
 
-		const ctx = canvas.getContext("2d");
+		const ctx = canvas.getContext("2d", { willReadFrequently });
 		if (!ctx) {
 			throw new Error(`Failed to get 2d context for texture ${texture.id}`);
 		}
@@ -242,6 +246,7 @@ export class WasmCompositor {
 			kind: "rendered",
 			canvas,
 			contentHash: texture.contentHash,
+			willReadFrequently,
 			width: texture.width,
 			height: texture.height,
 		});

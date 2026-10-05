@@ -4429,7 +4429,10 @@ describe("MotionTextNode", () => {
 		const descriptor = await buildFrameDescriptor({ node: scene, renderer });
 
 		expect(descriptor.textures).toHaveLength(1);
-		expect(descriptor.textures[0].kind).toBe("rendered");
+		expect(descriptor.textures[0]).toMatchObject({
+			kind: "rendered",
+			willReadFrequently: true,
+		});
 		expect(descriptor.frame.items).toHaveLength(1);
 		expect(descriptor.frame.items[0]).toMatchObject({
 			type: "layer",

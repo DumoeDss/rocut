@@ -23,6 +23,7 @@ if (process.env.OPENCUT_COMPOSITOR_TEXTURE_TEST_ISOLATED !== "1") {
 	class TestOffscreenCanvas {
 		readonly width: number;
 		readonly height: number;
+		contextOptions: unknown;
 
 		// eslint-disable-next-line opencut/prefer-object-params -- mirrors the platform OffscreenCanvas constructor.
 		constructor(width: number, height: number) {
@@ -30,7 +31,9 @@ if (process.env.OPENCUT_COMPOSITOR_TEXTURE_TEST_ISOLATED !== "1") {
 			this.height = height;
 		}
 
-		getContext() {
+		// eslint-disable-next-line opencut/prefer-object-params -- mirrors the platform Canvas API.
+		getContext(_type: string, options?: unknown) {
+			this.contextOptions ??= options;
 			return {
 				clearRect() {},
 				fillRect() {},
@@ -71,6 +74,43 @@ if (process.env.OPENCUT_COMPOSITOR_TEXTURE_TEST_ISOLATED !== "1") {
 	}
 
 	describe("WasmCompositor rendered texture cache", () => {
+		test("raster backing preference is applied at creation and invalidates reuse", () => {
+			const { compositor } = createCompositor();
+			const start = wasmTestControl.textureUploads().length;
+			const texture = (willReadFrequently?: boolean) => ({
+				kind: "rendered" as const,
+				id: "raster-policy",
+				contentHash: "same-content",
+				width: 64,
+				height: 36,
+				willReadFrequently,
+				draw() {},
+			});
+			compositor.syncTextures([texture()]);
+			compositor.syncTextures([texture(false)]);
+			compositor.syncTextures([texture(true)]);
+			compositor.syncTextures([texture(true)]);
+			compositor.syncTextures([{ ...texture(true), contentHash: "next-frame" }]);
+			compositor.syncTextures([texture(false)]);
+			const uploads = wasmTestControl.textureUploads().slice(start);
+			expect(uploads).toHaveLength(4);
+			const canvases = uploads.map(({ source }) => {
+				if (!(source instanceof TestOffscreenCanvas)) {
+					throw new Error("Expected a rendered backing canvas");
+				}
+				return source;
+			});
+			expect(canvases[0].contextOptions)
+				.toEqual({ willReadFrequently: false });
+			expect(canvases[1].contextOptions)
+				.toEqual({ willReadFrequently: true });
+			expect(uploads[1].source).not.toBe(uploads[0].source);
+			expect(uploads[2].source).toBe(uploads[1].source);
+			expect(uploads[3].source).not.toBe(uploads[1].source);
+			expect(canvases[3].contextOptions)
+				.toEqual({ willReadFrequently: false });
+			compositor.dispose();
+		});
 		test("pooled video canvases upload when the decoded frame changes", () => {
 			const { compositor } = createCompositor();
 			const start = wasmTestControl.textureUploads().length;

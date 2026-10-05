@@ -244,6 +244,9 @@ function collectMotionTextNode({
 		kind: "rendered",
 		id: textureId,
 		contentHash: resolved.contentHash,
+		// Readback-optimized rasterization keeps translucent glyph edges stable
+		// across reopened editors; the accelerated backing can round alpha differently.
+		willReadFrequently: true,
 		width,
 		height,
 		draw: (ctx) => {
