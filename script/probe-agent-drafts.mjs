@@ -56,6 +56,52 @@ export async function probeAgentDrafts({
 	};
 	const check = (name, details = {}) =>
 		evidence.checks.push({ name, ...details, pass: true });
+	const verifyVisible = async (frame, label) => {
+		await frame.getByLabel("Edit playhead time", { exact: true }).click();
+		await frame
+			.getByLabel("Playhead time", { exact: true })
+			.fill("00:00:04:15");
+		await frame.getByLabel("Playhead time", { exact: true }).press("Enter");
+		let greenFraction = 0;
+		await expect
+			.poll(
+				async () => {
+					const png = await frame
+						.locator("canvas")
+						.first()
+						.screenshot({ path: join(work, label + "-preview.png") });
+					greenFraction = await hostPage.evaluate(async (bytes) => {
+						const bitmap = await createImageBitmap(
+							new Blob([new Uint8Array(bytes)], { type: "image/png" }),
+						);
+						const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+						const context = canvas.getContext("2d");
+						context.drawImage(bitmap, 0, 0);
+						const { data } = context.getImageData(
+							0,
+							0,
+							bitmap.width,
+							bitmap.height,
+						);
+						let green = 0;
+						for (let i = 0; i < data.length; i += 4)
+							if (data[i] < 100 && data[i + 1] > 150 && data[i + 2] < 100)
+								green++;
+						bitmap.close();
+						return green / (data.length / 4);
+					}, Array.from(png));
+					return greenFraction;
+				},
+				{
+					timeout: 10000,
+					message: "Real preview must display the approved local green text",
+				},
+			)
+			.toBeGreaterThan(0.002);
+		check(label + " shows approved local color in actual preview pixels", {
+			greenFraction,
+		});
+	};
 	const makeMutation = (sequence, text) => ({
 		mutation: {
 			kind: "update-cue",
@@ -88,6 +134,14 @@ export async function probeAgentDrafts({
 		assert.equal(preview.baseSequenceRevision, sequence.revision);
 		assert.equal(preview.projectRevision, snapshot.projectRevision);
 		assert.equal(preview.candidate.cues[2].text, "草稿批准后的第三句");
+		assert.equal(
+			preview.candidate.resolvedPlan.cuts
+				.filter((cut) => cut.cueId === sequence.cues[2].id)
+				.map((cut) => cut.text)
+				.join(""),
+			"草稿批准后的第三句",
+			"Rendered cuts must contain the edited lyric, not just its cue label",
+		);
 		assert.equal(
 			preview.candidate.cues[2].overrides.colors.foreground,
 			"#00FF00",
@@ -173,6 +227,14 @@ export async function probeAgentDrafts({
 		)
 		.toBe("用户保留的第二句");
 	const userState = await json("motion-text", "list");
+	assert.equal(
+		userState.sequences[0].resolvedPlan.cuts
+			.filter((cut) => cut.cueId === userState.sequences[0].cues[1].id)
+			.map((cut) => cut.text)
+			.join(""),
+		"用户保留的第二句",
+		"User text edits must also change actual rendered cuts",
+	);
 	await expectCliFailure(
 		["draft", "approve", "--draft", first.draftId],
 		/404.*unknown-draft/s,
@@ -210,6 +272,7 @@ export async function probeAgentDrafts({
 	await expect(
 		page.locator('[aria-labelledby="motion-text-cues-heading"]'),
 	).toContainText("草稿批准后的第三句", { timeout: 10000 });
+	await verifyVisible(page, "agent-draft-committed");
 	await hostPage.screenshot({ path: join(work, "agent-draft-committed.png") });
 	const proof = await json("verify", "540000");
 	check(
@@ -269,6 +332,7 @@ export async function probeAgentDrafts({
 		reopened.locator('[aria-labelledby="motion-text-cues-heading"]'),
 	).toContainText("用户保留的第二句");
 	assert.equal((await json("verify", "540000")).digest, proof.digest);
+	await verifyVisible(reopened, "agent-draft-reopened");
 	await hostPage.screenshot({ path: join(work, "agent-draft-reopened.png") });
 	check(
 		"closed pane refuses rendering but keeps CLI reads; reopening preserves user and agent changes and frame-description digest",

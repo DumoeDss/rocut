@@ -106,6 +106,12 @@ describe("motion-text mutation preview for manual drafts", () => {
 			expect(await f.sequences()).toEqual(before);
 			expect(await f.host.automation.revision()).toBe(1);
 			expect(preview.candidate.cues[1].text).toBe("Draft only");
+			expect(
+				preview.candidate.resolvedPlan.cuts
+					.filter((cut) => cut.cueId === f.original.cues[1].id)
+					.map((cut) => cut.text)
+					.join(" "),
+			).toBe("Draft only");
 			const { draftId } = (await (
 				await f.post("drafts", { approvalMode: "manual" })
 			).json()) as { draftId: string };

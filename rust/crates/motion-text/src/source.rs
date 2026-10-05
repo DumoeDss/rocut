@@ -314,6 +314,24 @@ fn strip_emphasis(content: &str) -> (String, Vec<String>) {
     (text, emphasis)
 }
 
+pub(crate) fn split_to_count(text: &str, count: usize) -> Vec<String> {
+    let characters: Vec<char> = text.chars().collect();
+    if characters.is_empty() || count <= 1 {
+        return vec![text.to_owned()];
+    }
+    let count = count.min(characters.len());
+    let mut segments = Vec::with_capacity(count);
+    let mut start = 0;
+    for index in 0..count {
+        let remaining = characters.len() - start;
+        let slots = count - index;
+        let length = remaining.div_ceil(slots);
+        segments.push(characters[start..start + length].iter().collect());
+        start += length;
+    }
+    segments
+}
+
 fn split_manual_segments(content: &str) -> (String, Option<Vec<String>>) {
     if !content.contains('/') {
         return (content.trim().to_owned(), None);

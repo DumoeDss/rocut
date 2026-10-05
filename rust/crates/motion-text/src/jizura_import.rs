@@ -21,7 +21,7 @@ use crate::planner::{
 };
 use crate::source::{
     MOTION_TEXT_SCHEMA_VERSION, MotionTextDiagnosticSeverity, MotionTextSourceCue,
-    ParseMotionTextSourceOptions, parse_motion_text_source,
+    ParseMotionTextSourceOptions, parse_motion_text_source, split_to_count,
 };
 
 const TICKS_PER_SECOND: f64 = 120_000.0;
@@ -1446,24 +1446,6 @@ fn set_preset_override(
         MotionTextPresetGroup::Fx => preset.fx = Some(value.into_iter().collect()),
         MotionTextPresetGroup::Trans => preset.trans = Some(value),
     }
-}
-
-fn split_to_count(text: &str, count: usize) -> Vec<String> {
-    let characters: Vec<char> = text.chars().collect();
-    if characters.is_empty() || count <= 1 {
-        return vec![text.to_owned()];
-    }
-    let count = count.min(characters.len());
-    let mut segments = Vec::with_capacity(count);
-    let mut start = 0;
-    for index in 0..count {
-        let remaining = characters.len() - start;
-        let slots = count - index;
-        let length = remaining.div_ceil(slots);
-        segments.push(characters[start..start + length].iter().collect());
-        start += length;
-    }
-    segments
 }
 
 fn locked_cut_segments(line_override: &Map<String, Value>) -> Option<Vec<String>> {

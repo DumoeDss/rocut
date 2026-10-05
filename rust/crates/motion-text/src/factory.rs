@@ -2,6 +2,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::sync::OnceLock;
 
 mod preset_application;
+mod text_edit;
 
 use bridge::export;
 use serde::{Deserialize, Serialize};
@@ -1338,9 +1339,8 @@ fn apply_sequence_mutation(
                     &cue_id,
                 ));
             }
-            if cue.get("text").and_then(Value::as_str) != Some(trimmed_text)
-                && cue_has_lock_scope(cue, "cut")
-            {
+            let text_changed = cue.get("text").and_then(Value::as_str) != Some(trimmed_text);
+            if text_changed && cue_has_lock_scope(cue, "cut") {
                 return Err(failed_cue_build(
                     "locked-cue-cuts",
                     "Unlock this cue's cuts before changing text that defines their stable ids.",
@@ -1355,6 +1355,9 @@ fn apply_sequence_mutation(
                 ));
             }
             cue.insert("text".to_owned(), Value::String(trimmed_text.to_owned()));
+            if text_changed {
+                text_edit::refresh_segments(cue, trimmed_text, duration);
+            }
             let previous_duration = cue.get("duration").and_then(Value::as_i64);
             let timing_changed = cue.get("startTime").and_then(Value::as_i64) != Some(start_time)
                 || previous_duration != Some(duration);
@@ -3944,6 +3947,14 @@ mod tests {
 
         assert_eq!(mutated["revision"], 1);
         assert_eq!(mutated["cues"][0]["text"], "改后的第一句");
+        let rendered_text: String = mutated["resolvedPlan"]["cuts"]
+            .as_array()
+            .expect("the plan has cuts")
+            .iter()
+            .filter(|cut| cut["cueId"] == cue_id)
+            .map(|cut| cut["text"].as_str().expect("each cut has text"))
+            .collect();
+        assert_eq!(rendered_text, "改后的第一句");
         assert_eq!(mutated["cues"][0]["duration"], 600_000);
         assert_eq!(
             mutated["cues"][0]["overrides"]["preset"]["style"],
