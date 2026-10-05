@@ -2,6 +2,13 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Selected-cue and full-timeline UI export (2026-10-05)
+
+- **Installed live-5CUEeZ passes 6/6 checks:** actual cue controls select the second second of a two-second timeline; the Export dialog displays 1.00s - 2.00s and produces a one-second MP4/WebM download. Reopening retains the range; Use full timeline restores a two-second download and resets the inspector range action. Scenes, settings and motion-text sequences are unchanged. The selected-range screenshot was visually inspected.
+- The source deliberately changes from red/440Hz to blue/880Hz at one second. Independent ffprobe/ffmpeg checks require 30 versus 60 pictures, rebased timestamps starting at zero, correct container/codecs, bounded audio start/end and the expected colors, glyphs and frequencies. This distinguishes exporting the selected second from incorrectly truncating the first second. Both cases use the real UI and browser download, not host export API injection.
+- Negative controls generated beside the owned evidence also pass: the verifier rejects a one-second first-interval picture and a correctly blue picture with the wrong 440Hz audio interval, for their respective content assertions rather than duration. After making the fixture source configurable, the unchanged default fixture passes the complete 18-check options/keyboard regression again in live-Nvl4wu. Probe syntax/format, strict UTF-8 and git diff checks pass; no production source or build changed in this follow-up.
+- **Probe correction:** live-J8jh32 remains failed. Its glyph sample was at 1.4s, exactly the persisted boundary between a 0.4s cut and the next 0.1s fade-in cut. The decoded blue-only picture is expected at that boundary. The fixed fixture samples 1.2s (cut interior) without reducing the visible-glyph threshold; no product change was warranted. This extends workflow coverage, not all codecs, long sessions, GPU/resource or whole-editor acceptance. Runtime/installed bytes remain 62c44ec0.
+
 ## Export controls and both-format UI matrix (2026-10-05)
 
 - **Reproduced and fixed in runtime 62c44ec0:** collapsed Section content previously remained keyboard-focusable inside a zero-height clipping ancestor. Actual Tab reached the invisible mp4/high/include-audio controls. Section now links header/chevron controls to a stable content ID, reports aria-expanded, and applies aria-hidden plus native inert while collapsed. Descendants stay mounted, preserving selected values and local drafts. Two pinned-Bun tests / 13 assertions, focused lint, Vite typecheck/build and 52 producer tests pass; existing build warnings remain.

@@ -35,6 +35,7 @@ import { probeEditorMenu } from './probe-editor-menu.mjs';
 import { probeAgentDrafts } from './probe-agent-drafts.mjs';
 import { probeUiFormatExport } from './probe-ui-format-export.mjs';
 import { probeUiExportOptions } from './probe-ui-export-options.mjs';
+import { probeUiRangeExport } from './probe-ui-range-export.mjs';
 
 // Run with the Elftia worktree's tsx loader. Never launch a substitute browser.
 const hostRoot = resolve(process.env.ELFTIA_WORKTREE ?? '');
@@ -145,6 +146,8 @@ try {
   execFileSync('ffmpeg',['-v','error','-n','-f','lavfi','-i','sine=frequency=440:duration=16','-ar','44100','-ac','1','-c:a','pcm_s16le',audioFixture],{windowsHide:true});
  if (process.argv.includes('--agent-drafts-only')) {
     await probeAgentDrafts({page,hostPage:conn.page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
+  } else if (process.argv.includes('--ui-range-export-only')) {
+    await probeUiRangeExport({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--ui-export-options-only')) {
     await probeUiExportOptions({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--ui-format-export-only') || process.argv.includes('--ui-webm-format-export-only')) {
