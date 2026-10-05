@@ -87,7 +87,7 @@ workspace member despite the `apps/*` glob. It is excluded from the distributabl
 | `feed` | `^5.1.0` |
 | `input-otp` | `^1.4.1` |
 | `lucide-react` | `^0.562.0` |
-| `mediabunny` | `^1.29.1` |
+| `mediabunny` | `1.48.1` |
 | `motion` | `^12.18.1` |
 | `nanoid` | `^5.1.5` |
 | `next` | `16.1.3` |

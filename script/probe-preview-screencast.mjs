@@ -10,6 +10,7 @@ const requireWeb = createRequire(
 export async function createScreencastCapture({ page, cdp, displayed }) {
 	const sharp = requireWeb("sharp");
 	let latest = null;
+	let latestPixels = null;
 	let failure = null;
 	let closed = false;
 	let pending = Promise.resolve();
@@ -56,6 +57,7 @@ export async function createScreencastCapture({ page, cdp, displayed }) {
 						if (pixels[i + 2] > 160 && pixels[i] < 100 && pixels[i + 1] < 100)
 							blue++;
 					}
+					latestPixels = pixels;
 					latest = {
 						hash: hash.toString(16).padStart(8, "0"),
 						light,
@@ -85,6 +87,19 @@ export async function createScreencastCapture({ page, cdp, displayed }) {
 		throw error;
 	}
 	return {
+		async saveReference({ path, hash }) {
+			assert.equal(
+				latest?.hash,
+				hash,
+				"Reference changed before saving pixels",
+			);
+			assert(latestPixels);
+			await sharp(latestPixels, {
+				raw: { width: 160, height: 90, channels: 4 },
+			})
+				.png()
+				.toFile(path);
+		},
 		async capture() {
 			// Bounded polling only retrieves already-presented compositor frames.
 			// Repeated hashes from a static scene are valid; no synthetic paint.

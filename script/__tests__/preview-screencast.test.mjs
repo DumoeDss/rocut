@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { EventEmitter } from "node:events";
+import { mkdtemp, unlink, rmdir } from "node:fs/promises";
 import { createRequire } from "node:module";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { test } from "node:test";
 import { createScreencastCapture } from "../probe-preview-screencast.mjs";
 
@@ -70,6 +73,41 @@ test("pre-input frames remain negative instead of being clamped into a pass", as
 		assert.equal((await observer.capture()).milliseconds, -25);
 	} finally {
 		await observer.close();
+	}
+});
+
+test("reference PNG contains the observed pixels without another browser capture", async () => {
+	const dir = await mkdtemp(join(tmpdir(), "rocut-screencast-test-"));
+	const path = join(dir, "reference.png");
+	const cdp = new Cdp();
+	const observer = await createScreencastCapture({ page, cdp, displayed });
+	try {
+		cdp.emit("Page.screencastFrame", await frame());
+		const sample = await observer.capture();
+		const callsBefore = cdp.calls.length;
+		await assert.rejects(
+			observer.saveReference({ path, hash: "not-the-frame" }),
+			/Reference changed/,
+		);
+		await observer.saveReference({ path, hash: sample.hash });
+		const { data, info } = await sharp(path)
+			.ensureAlpha()
+			.raw()
+			.toBuffer({ resolveWithObject: true });
+		assert.equal(info.width, 160);
+		assert.equal(info.height, 90);
+		for (let offset = 0; offset < data.length; offset += 4)
+			assert.deepEqual(
+				[...data.subarray(offset, offset + 4)],
+				[0, 0, 255, 255],
+			);
+		assert.equal(cdp.calls.length, callsBefore);
+	} finally {
+		await observer.close();
+		await unlink(path).catch((error) => {
+			if (error.code !== "ENOENT") throw error;
+		});
+		await rmdir(dir);
 	}
 });
 

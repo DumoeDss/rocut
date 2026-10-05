@@ -108,6 +108,10 @@ async function measurePreviewSeek({
 		);
 	});
 	const observerMode = process.env.ROCUT_SEEK_OBSERVER ?? "screenshot";
+	const references = [];
+	const samples = [];
+	// Preserve partial observations when a picture match fails before the result.
+	evidence.previewSeekProgress = { references, samples, lastAttempt: null };
 	assert(["screenshot", "screencast"].includes(observerMode));
 	if (observerMode === "screencast")
 		observer.active = await createScreencastCapture({ page, cdp, displayed });
@@ -186,6 +190,12 @@ async function measurePreviewSeek({
 			() => performance.now() - window.__rocutVisibleSeekProbe.start,
 		);
 		const observations = [];
+		evidence.previewSeekProgress.lastAttempt = {
+			target,
+			expected,
+			before,
+			observations,
+		};
 		let previous = null,
 			stable = 0;
 		for (let attempt = 0; attempt < 150; attempt++) {
@@ -219,9 +229,16 @@ async function measurePreviewSeek({
 		}
 		throw new Error("Requested visible frame was not stable: " + target);
 	};
-	const references = [];
-	for (let index = 0; index < 30; index++)
+	for (let index = 0; index < 30; index++) {
 		references.push(await seek(timecode(((index * 37) % 120) * 45 + 12)));
+		const path = join(work, `f04-reference-${index}.png`);
+		if (observer.active)
+			await observer.active.saveReference({
+				path,
+				hash: references.at(-1).hash,
+			});
+		else await canvas.screenshot({ path });
+	}
 	assert.equal(
 		new Set(references.map((sample) => sample.hash)).size,
 		30,
@@ -229,7 +246,6 @@ async function measurePreviewSeek({
 	);
 	await page.screenshot({ path: join(work, "f04-reference.png") });
 	onPhase("F04 thirty measured random visible-frame seeks");
-	const samples = [];
 	for (let index = 0; index < 30; index++) {
 		const reference = references[(index * 13 + 7) % 30];
 		samples.push(await seek(reference.timecode, reference.hash));
