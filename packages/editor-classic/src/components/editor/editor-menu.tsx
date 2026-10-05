@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Download, Keyboard, MoreHorizontal } from "lucide-react";
 import { ShortcutsDialog } from "../../actions/components/shortcuts-dialog";
 import { useEditor, useEditorInstance } from "../../editor/use-editor";
@@ -18,6 +18,11 @@ import { ExportOptions } from "./export-button";
 /** Editor commands remain reachable when an embedding host removes its header. */
 export function EditorMenu() {
 	const [dialog, setDialog] = useState<"export" | "shortcuts" | null>(null);
+	const triggerRef = useRef<HTMLButtonElement>(null);
+	const restoreFocus = (event: Event) => {
+		event.preventDefault();
+		triggerRef.current?.focus();
+	};
 	const hasProject = useEditor(
 		(editor) => editor.project.getActiveOrNull() !== null,
 	);
@@ -28,6 +33,7 @@ export function EditorMenu() {
 					<TooltipTrigger asChild>
 						<DropdownMenuTrigger asChild>
 							<Button
+								ref={triggerRef}
 								variant="ghost"
 								size="icon"
 								className="size-8 text-muted-foreground"
@@ -64,12 +70,14 @@ export function EditorMenu() {
 				</DropdownMenuContent>
 			</DropdownMenu>
 			<EditorExportDialog
+				onCloseAutoFocus={restoreFocus}
 				open={dialog === "export"}
 				onOpenChange={(open) => {
 					if (!open) setDialog(null);
 				}}
 			/>
 			<ShortcutsDialog
+				onCloseAutoFocus={restoreFocus}
 				isOpen={dialog === "shortcuts"}
 				onOpenChange={(open) => {
 					if (!open) setDialog(null);
@@ -82,9 +90,11 @@ export function EditorMenu() {
 function EditorExportDialog({
 	open,
 	onOpenChange,
+	onCloseAutoFocus,
 }: {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
+	onCloseAutoFocus: (event: Event) => void;
 }) {
 	const editor = useEditorInstance();
 	const isExporting = useEditor(
@@ -100,6 +110,7 @@ function EditorExportDialog({
 	return (
 		<Dialog open={open} onOpenChange={changeOpen}>
 			<DialogContent
+				onCloseAutoFocus={onCloseAutoFocus}
 				aria-describedby={undefined}
 				className="flex max-h-[calc(100%-2rem)] max-w-sm flex-col overflow-y-auto overscroll-contain p-0"
 			>

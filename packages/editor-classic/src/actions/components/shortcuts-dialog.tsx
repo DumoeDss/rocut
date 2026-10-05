@@ -20,9 +20,11 @@ import {
 export function ShortcutsDialog({
 	isOpen,
 	onOpenChange,
+	onCloseAutoFocus,
 }: {
 	isOpen: boolean;
 	onOpenChange: (open: boolean) => void;
+	onCloseAutoFocus?: (event: Event) => void;
 }) {
 	const [recordingShortcut, setRecordingShortcut] =
 		useState<KeyboardShortcut | null>(null);
@@ -108,7 +110,10 @@ export function ShortcutsDialog({
 
 	return (
 		<Dialog open={isOpen} onOpenChange={onOpenChange}>
-			<DialogContent className="flex max-h-[80vh] max-w-2xl flex-col p-0">
+			<DialogContent
+				className="flex max-h-[80vh] max-w-2xl flex-col p-0"
+				onCloseAutoFocus={onCloseAutoFocus}
+			>
 				<DialogHeader>
 					<DialogTitle>Keyboard shortcuts</DialogTitle>
 				</DialogHeader>
