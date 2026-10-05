@@ -2,6 +2,12 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Unknown imported preset recovery (2026-10-05)
+
+- **Installed live-moYfKw passes 6/6:** actual JIZURA file chooser rejects unknown layout IDs independently at cue override, per-cut override, and locked-cut snapshot locations. Each visible alert identifies the exact unsupported preset; no sequences, clips, scenes or settings are changed. This validates the existing Rust import policy rather than adding silent fallback or stripping incompatible fields.
+- Correcting the source and selecting it through the same chooser clears the error, imports the two lyric lines with exact original JSON provenance, survives exact undo/redo and iframe reload, and exports through the actual menu. The downloaded 1920x1080 H.264 MP4 has 132 frames and fully decodes; persisted project state remains unchanged after export.
+- Regression entry: `script/probe-elftia-interactions.mjs --unknown-preset-only`, implementation `script/probe-unknown-preset.mjs`. No additional production runtime change. This covers unknown presets at the JIZURA import boundary, not arbitrary manually corrupted stored plans or all historical plugin versions.
+
 ## Font-resource retry recovery (2026-10-05)
 
 - Installed fault injection `live-mGMojV` reproduces a real defect: an owned-frame-only 503 for the Chinese builtin font produces a visible, fail-closed export error, but restoring the resource and clicking Retry never downloads. The rejected font promise remained cached for the lifetime of the editor. No installed font files or user projects were changed.
