@@ -98,7 +98,7 @@ function DraftReviewBody({ port }: { port: DraftReviewPort }) {
 		() =>
 			perform(async (isCurrent) => {
 				editor.playback.pause();
-				await editor.save.flush();
+				if (editor.save.getIsDirty()) await editor.save.flush();
 				ensureProject();
 				const drafts = await port.list();
 				if (!isCurrent()) return;
@@ -127,7 +127,7 @@ function DraftReviewBody({ port }: { port: DraftReviewPort }) {
 			setReview(null);
 			setNotice("");
 			editor.playback.pause();
-			await editor.save.flush();
+			if (editor.save.getIsDirty()) await editor.save.flush();
 			ensureProject();
 			const next = await port.read(id);
 			if (isCurrent()) setReview(next);
@@ -138,7 +138,7 @@ function DraftReviewBody({ port }: { port: DraftReviewPort }) {
 		void perform(async (isCurrent) => {
 			// Disable repeat decisions even if the request outcome is uncertain.
 			setReview(null);
-			await editor.save.flush();
+			if (editor.save.getIsDirty()) await editor.save.flush();
 			ensureProject();
 			if (!isCurrent()) return;
 			await port.decide({
