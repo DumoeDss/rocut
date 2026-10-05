@@ -57,7 +57,9 @@ JIZURA 导入使用 `sourceFormat: "jizura"`，并把原始 JSON 文本作为 in
 
 `motion-text mutate ... --preview` 接受 `mutation` 与 `expectedSequenceRevision`，调用同一 Rust planner，返回 `applied: false`、当前 `projectRevision`、`baseSequenceRevision`、`candidateSequenceRevision` 和完整 `candidate`。不修改工程、不增加 revision、不写幂等日志；写入用的 `expectedRevision`／`idempotencyKey` 在预览模式不必提供。默认不带 `--preview` 的行为仍为直接提交，仍要求完整写入保护字段。
 
-需要人工审批时，先 `draft begin`，再生成候选。用一个 `update-motion-text-sequence` 操作提交到 `draft stage`：`sequenceId` 为返回 ID，`expectedSequenceRevision` 为返回 `baseSequenceRevision`，`sequence` 必须原样使用 Rust 返回的 `candidate`，不能手工编造或修改 resolved plan。审批前工程保持不变；取得用户对具体变更的批准后才 `draft approve`。用户保存导致草稿失效或 revision 冲突时，重读并重新生成候选／草稿，不复用陈旧候选。预览采用独立的 `mutation-previews` 接口，旧宿主拒绝时应更新插件，不能自动回退成直接写入。
+需要人工审批时，先 `draft begin`，再生成候选。用一个 `update-motion-text-sequence` 操作提交到 `draft stage`：`sequenceId` 为返回 ID，`expectedSequenceRevision` 为返回 `baseSequenceRevision`，`sequence` 必须原样使用 Rust 返回的 `candidate`，不能手工编造或修改 resolved plan。审批前工程保持不变；取得用户对具体变更的批准后才 `draft approve`。用户修改项目内容导致草稿失效或 revision 冲突时，重读并重新生成候选／草稿，不复用陈旧候选。预览采用独立的 `mutation-previews` 接口，旧宿主拒绝时应更新插件，不能自动回退成直接写入。
+
+仅时间线视图状态或保存时间变化不会清除待审草稿；宿主会保留最新视图状态并让批准沿用它。未知扩展字段、项目内容、修订或历史变化不会被当作视图保存放行。
 
 ### 在编辑器中审阅 Agent 草稿
 
