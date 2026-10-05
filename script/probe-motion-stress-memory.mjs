@@ -26,6 +26,7 @@ export async function probeMotionStressMemory({
 	evidence,
 	onPhase,
 	onCheckpoint,
+	onLifecycle,
 }) {
 	const cdp = await hostPage.context().newCDPSession(hostPage);
 	let resourceCdp;
@@ -50,6 +51,7 @@ export async function probeMotionStressMemory({
 			evidence,
 			onPhase,
 			onCheckpoint,
+			onLifecycle,
 			cdp,
 			resourceCdp,
 			targetId: targetInfo.targetId,
@@ -72,6 +74,7 @@ async function measureMotionStressMemory({
 	evidence,
 	onPhase,
 	onCheckpoint,
+	onLifecycle,
 	cdp,
 	resourceCdp,
 	targetId,
@@ -310,6 +313,7 @@ async function measureMotionStressMemory({
 			)
 			.toBe(false);
 		evidence.f05Memory.closedTargetDestroyed = true;
+		await onLifecycle?.("editor target destroyed");
 	} finally {
 		await hostPage
 			.locator('[data-testid="chat-tab-workspace"][data-workspace-id="rocut"]')
@@ -336,6 +340,7 @@ async function measureMotionStressMemory({
 		);
 		assert.equal(data.motionTextSequences[0].cues.length, 600);
 		assert.equal(data.motionTextSequences[0].duration, 480 * 120000);
+		await onLifecycle?.("editor reopened");
 		evidence.checks.push({
 			name: "F05 owned iframe closes and a fresh editor reopens the intact 600-cue project",
 			pass: true,
