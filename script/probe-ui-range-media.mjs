@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 
-export function createRangeSource(path) {
+export function createRangeSource(
+	path,
+	{ segmentSeconds = 1, secondColor = "blue" } = {},
+) {
 	execFileSync(
 		"ffmpeg",
 		[
@@ -11,19 +14,19 @@ export function createRangeSource(path) {
 			"-f",
 			"lavfi",
 			"-i",
-			"color=c=red:s=640x360:r=30:d=1",
+			"color=c=red:s=640x360:r=30:d=" + segmentSeconds,
 			"-f",
 			"lavfi",
 			"-i",
-			"color=c=blue:s=640x360:r=30:d=1",
+			"color=c=" + secondColor + ":s=640x360:r=30:d=" + segmentSeconds,
 			"-f",
 			"lavfi",
 			"-i",
-			"sine=frequency=440:duration=1",
+			"sine=frequency=440:duration=" + segmentSeconds,
 			"-f",
 			"lavfi",
 			"-i",
-			"sine=frequency=880:duration=1",
+			"sine=frequency=880:duration=" + segmentSeconds,
 			"-filter_complex",
 			"[0:v][1:v]concat=n=2:v=1:a=0[v];[2:a][3:a]concat=n=2:v=0:a=1[a]",
 			"-map",

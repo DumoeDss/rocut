@@ -1,5 +1,4 @@
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -7,6 +6,9 @@ import { expect } from "@playwright/test";
 import { probeCueLockWorkflow } from "./probe-cue-lock-workflow.mjs";
 import { probeMotionClipContinuity } from "./probe-motion-clip-continuity.mjs";
 import { probeAgentDrafts } from "./probe-agent-drafts.mjs";
+import { probeLinkedLanguages } from "./probe-linked-languages.mjs";
+import { createRangeSource } from "./probe-ui-range-media.mjs";
+import { probeLinkedRange } from "./probe-linked-range.mjs";
 
 export async function probeLinkedWorkflow({
 	page,
@@ -34,31 +36,7 @@ export async function probeLinkedWorkflow({
 	assert(record.id, "fixture identity must exist");
 	evidence.linkedWorkflow.projectId = record.id;
 	const video = join(work, "continuity-underlay.mp4");
-	execFileSync(
-		"ffmpeg",
-		[
-			"-v",
-			"error",
-			"-n",
-			"-f",
-			"lavfi",
-			"-i",
-			"color=c=red:s=640x360:r=30:d=8",
-			"-f",
-			"lavfi",
-			"-i",
-			"sine=frequency=660:duration=8",
-			"-c:v",
-			"libx264",
-			"-pix_fmt",
-			"yuv420p",
-			"-c:a",
-			"aac",
-			"-shortest",
-			video,
-		],
-		{ windowsHide: true },
-	);
+	createRangeSource(video, { segmentSeconds: 4, secondColor: "red" });
 	evidence.linkedWorkflow.mediaSha256 = createHash("sha256")
 		.update(readFileSync(video))
 		.digest("hex");
@@ -151,4 +129,17 @@ export async function probeLinkedWorkflow({
 		name: "Agent review and reopening preserve the same project identity, edited timeline, media references and second-cue locks",
 		pass: true,
 	});
+	page = await probeLinkedLanguages({
+		page,
+		hostPage,
+		work,
+		evidence,
+		onPhase,
+	});
+	evidence.linkedWorkflow.completedSections.push(9);
+	evidence.linkedWorkflow.pendingSections = ["10-range", 12];
+	page = await probeLinkedRange({ page, hostPage, work, evidence, onPhase });
+	evidence.linkedWorkflow.completedSections.push("10-range", "10-final-full");
+	evidence.linkedWorkflow.pendingSections = [12];
+	return page;
 }
