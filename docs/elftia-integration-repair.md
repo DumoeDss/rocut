@@ -2,6 +2,13 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Cue-group locks and variation seed preservation (2026-10-05)
+
+- **Installed live-BgKDHX exposes a real planner defect:** after editing the second lyric and locking Layout plus Enter, selecting only those two variation groups and Selected cue still yields an applicable candidate. The UI scope/group state and both persisted locks were verified. Rust preserved preset IDs but rerolled seeds, so an ostensibly fully locked operation was not a no-op.
+- Rust now reuses complete existing cuts when all requested groups are protected (individual preset-group locks or a cue-wide preset/all lock). The existing factory no-variation result rejects a fully locked selection; all-cue variation still updates unlocked cues without changing locked seeds or geometry. The new factory regression fails before the fix and passes after it for both lock representations and both scopes.
+- Source checks: all 84 motion-text Rust tests and 21 canonical-WASM factory-seam tests pass; pinned WASM build and all four source/path/API/init gates pass. Three generated dependency copies were backed up under `.tmp-probe/wasm-before-frame-grid-5bwGBu` before atomic synchronization. Installed acceptance of this new source follows below; source tests are not a substitute for it.
+- `script/probe-cue-lock-workflow.mjs` / `--cue-lock-workflow-only` covers timestamped creation, Specimen preset, second-cue text/history, Layout/Enter locks, selected/all-cue variation, nonpersistent preview/cancel/reroll, and actual workspace close/reopen. Initial `live-OFzmq4` used a nonexistent catalog key style:paper; the corrected probe uses the observed style:specimen card rather than conflating the separate Editorial paper starter shortcut with a catalog entry.
+
 ## Motion-clip move / head trim / split continuity (2026-10-05)
 
 - **Installed live-EBrejr passes 7/7:** actual JIZURA import creates two locked Chinese animation cuts over an eight-second video with real AAC audio. Pointer drag moves the motion clip exactly 30 frames later; its left resize handle removes 60,000 ticks (0.5s); the actual Split element button divides the clip at original sequence time 1s, inside the running first animation. Both parts retain their source-time mapping and shared unchanged sequence.

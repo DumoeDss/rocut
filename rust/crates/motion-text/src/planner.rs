@@ -606,7 +606,19 @@ pub fn plan_motion_text_sequence(options: MotionTextPlanOptions) -> MotionTextPl
         let is_variation_target = options.variation.is_none()
             || variation_targets.is_empty()
             || variation_targets.contains(cue.id.as_str());
-        if options.variation.is_some() && !is_variation_target {
+        // Group locks preserve the render seed too when every requested group
+        // is locked; otherwise a no-op reroll can still change glyph geometry.
+        let locks_variation_groups = cue
+            .locks
+            .iter()
+            .any(|lock| lock.scope == "cue" && (lock.key == "all" || lock.key == "preset"))
+            || (!variation_groups.is_empty()
+                && variation_groups.iter().all(|group| {
+                    cue.locks
+                        .iter()
+                        .any(|lock| lock.scope == "preset-group" && lock.key == group.key())
+                }));
+        if options.variation.is_some() && (!is_variation_target || locks_variation_groups) {
             if let Some(existing) = existing_by_cue.get(cue.id.as_str()) {
                 let mut reused = existing.to_vec();
                 reused.sort_by(|left, right| {

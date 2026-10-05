@@ -4441,6 +4441,78 @@ mod tests {
     }
 
     #[test]
+    fn fully_locked_variation_groups_preserve_cuts_and_reject_noop_candidates() {
+        let created = create_motion_text_sequence(options("第一句\n第二句"));
+        let mut document: Value =
+            serde_json::from_str(created.sequence_json.as_deref().unwrap()).unwrap();
+        let cue_id = document["cues"][0]["id"].as_str().unwrap().to_owned();
+        let original_cuts = document["resolvedPlan"]["cuts"].as_array().unwrap().clone();
+        for locks in [
+            serde_json::json!([
+                {"scope": "preset-group", "key": "layout"},
+                {"scope": "preset-group", "key": "enter"}
+            ]),
+            serde_json::json!([{"scope": "cue", "key": "preset"}]),
+        ] {
+            document["cues"][0]["locks"] = locks;
+            let selected =
+                create_motion_text_variation_candidate(CreateMotionTextVariationCandidateOptions {
+                    sequence_json: document.to_string(),
+                    salt: 42,
+                    cue_ids: vec![cue_id.clone()],
+                    groups: vec![MotionTextPresetGroup::Layout, MotionTextPresetGroup::Enter],
+                    renderer_support: renderer_support(),
+                });
+            assert!(
+                selected.sequence_json.is_none(),
+                "locked groups must not become a seed-only variation"
+            );
+            assert!(
+                selected
+                    .diagnostics
+                    .iter()
+                    .any(|d| d.code == "no-variation")
+            );
+            let all =
+                create_motion_text_variation_candidate(CreateMotionTextVariationCandidateOptions {
+                    sequence_json: document.to_string(),
+                    salt: 42,
+                    cue_ids: vec![],
+                    groups: vec![MotionTextPresetGroup::Layout, MotionTextPresetGroup::Enter],
+                    renderer_support: renderer_support(),
+                });
+            let varied: Value = serde_json::from_str(
+                all.sequence_json
+                    .as_deref()
+                    .expect("unlocked second cue can vary"),
+            )
+            .unwrap();
+            let next_cuts = varied["resolvedPlan"]["cuts"].as_array().unwrap();
+            assert_eq!(
+                next_cuts
+                    .iter()
+                    .filter(|c| c["cueId"] == cue_id)
+                    .collect::<Vec<_>>(),
+                original_cuts
+                    .iter()
+                    .filter(|c| c["cueId"] == cue_id)
+                    .collect::<Vec<_>>(),
+                "locked cue must preserve every field including seeds"
+            );
+            assert_ne!(
+                next_cuts
+                    .iter()
+                    .filter(|c| c["cueId"] != cue_id)
+                    .collect::<Vec<_>>(),
+                original_cuts
+                    .iter()
+                    .filter(|c| c["cueId"] != cue_id)
+                    .collect::<Vec<_>>()
+            );
+        }
+    }
+
+    #[test]
     fn later_cue_edits_preserve_applied_variations_on_untouched_cues() {
         let created = create_motion_text_sequence(options("第一句\n第二句"));
         let base_document: Value = serde_json::from_str(
