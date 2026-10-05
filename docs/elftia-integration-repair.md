@@ -2,6 +2,13 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Feather and stroke rendered-output acceptance (2026-10-05)
+
+- **Installed feather live-ApEqPP passes 7/7:** actual UI adds Split at 40% feather (stored 400px), tests 0/90-degree directions both normally and inverted, then Rectangle at 20% feather (stored 200px), normally and inverted. Every saved mask survives reload. Six real Export-menu MP4 downloads pass 1080p H.264/30-frame/one-second and area checks. Split samples must match an independent linear alpha gradient; Rectangle samples must be monotonic and contain multiple intermediate alpha levels rather than a hard edge. Decoded samples at 0.1/0.5/0.9 seconds must agree with the screenshot preview within 18 red-channel levels. The feathered rectangle screenshot was visually inspected.
+- **Installed stroke live-TeI5RQ passes 7/7:** a 50%-size Rectangle with 100px green stroke is tested inside/center/outside and normally/inverted. Six actual MP4 downloads retain the settings and correct rendering after reload. Independent analytic ring geometry checks red content, green border and black hidden regions in both preview and three decoded times. Supplying a wrong alignment must fail the color-position assertions; all such controls passed. The outside/inverted screenshot was visually inspected.
+- **Probe corrections retained:** live-ihhoNw entered raw 400 into a percentage field; the UI correctly clamped it to 100%/1000px. The probe now inputs 40% while still asserting stored 400px. live-ZWOkwg sampled the last downscaled row, which includes the CSS canvas border (41/37/33 rather than video black). Stroke sampling now excludes the outer two pixels as well as geometric antialias edges; color thresholds remain unchanged. Neither failed run is relabelled as acceptance.
+- **Limits:** verifies these concrete feather/stroke combinations, not every mask shape, font or long-session GPU lifecycle. No production source or installed/plugin bytes changed; no dependency upgrade/version bump. Syntax/format, strict UTF-8 and git diff checks pass. The full editor goal and its performance/workflow/service gates remain open.
+
 ## Transformed shape-mask spatial export matrix (2026-10-05)
 
 - **Installed live-h4NAbs passes 7/7:** actual UI authors Rectangle, Ellipse and Diamond at 40% width/height, center offsets (+8%, -4%) and 35-degree rotation. Each shape is checked normally and inverted, including exact session-local undo/redo of inversion and complete saved-clip equality after reload. Six actual Export-menu downloads pass 1080p H.264/30-frame/one-second metadata and reveal-area checks. Ellipse-normal and Diamond-inverted screenshots were visually inspected.
