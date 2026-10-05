@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import { join } from "node:path";
 import { expect } from "@playwright/test";
-import { languagePreview } from "./probe-multilingual-media.mjs";
+import {
+	languagePreview,
+	mainPreviewCanvas,
+	samplePreviewPng,
+} from "./probe-multilingual-media.mjs";
 
 export async function probeCueLockWorkflow({
 	page,
@@ -28,6 +32,8 @@ export async function probeCueLockWorkflow({
 		page.locator(
 			'[aria-labelledby="motion-text-cues-heading"] button[aria-expanded]',
 		);
+	const captures = [];
+	evidence.cueLockCaptures = captures;
 	const capture = async (frame) => {
 		await page.getByLabel("Edit playhead time", { exact: true }).click();
 		await page
@@ -54,7 +60,22 @@ export async function probeCueLockWorkflow({
 				{ timeout: 20000 },
 			)
 			.toBe(true);
-		return sample.hash;
+		const canvas = await mainPreviewCanvas(page);
+		const path = join(work, `cue-lock-${captures.length}-frame-${frame}.png`);
+		const png = await canvas.screenshot({ path });
+		const saved = await samplePreviewPng(page, png);
+		captures.push({
+			frame,
+			hash: saved.hash,
+			path,
+			bounds: await canvas.boundingBox(),
+		});
+		assert.equal(
+			saved.hash,
+			sample.hash,
+			"saved cue frame must match the stable observation",
+		);
+		return saved.hash;
 	};
 	const check = (name, details = {}) =>
 		evidence.checks.push({ name, pass: true, ...details });

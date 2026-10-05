@@ -38,6 +38,14 @@ export async function mainPreviewCanvas(page) {
 
 export async function languagePreview(page) {
 	const png = await (await mainPreviewCanvas(page)).screenshot();
+	return samplePreviewPng(page, png);
+}
+
+export async function samplePreviewPng(
+	page,
+	png,
+	inspect = inspectLanguagePixels,
+) {
 	const pixels = await page.evaluate(async (bytes) => {
 		const image = await createImageBitmap(
 			new Blob([new Uint8Array(bytes)], { type: "image/png" }),
@@ -51,7 +59,7 @@ export async function languagePreview(page) {
 			image.close();
 		}
 	}, Array.from(png));
-	return inspectLanguagePixels(pixels);
+	return inspect(pixels);
 }
 
 export function assertBothLanguages(sample) {

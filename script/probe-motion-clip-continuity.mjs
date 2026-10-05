@@ -2,7 +2,11 @@ import assert from "node:assert/strict";
 import { join } from "node:path";
 import { expect } from "@playwright/test";
 import {
-	languagePreview,
+	continuityPreview,
+	sampleContinuityPng,
+} from "./probe-continuity-pixels.mjs";
+import { captureExportReference } from "./probe-export-reference.mjs";
+import {
 	languageOverlap,
 	mainPreviewCanvas,
 } from "./probe-multilingual-media.mjs";
@@ -65,7 +69,7 @@ export async function probeMotionClipContinuity({
 		await expect
 			.poll(
 				async () => {
-					sample = await languagePreview(page);
+					sample = await continuityPreview(page);
 					streak = sample.hash === previous ? streak + 1 : 1;
 					previous = sample.hash;
 					return streak >= 3;
@@ -89,36 +93,48 @@ export async function probeMotionClipContinuity({
 	assert.equal(original.startTime, 0);
 	assert.equal(original.duration, existingLyrics ? 720000 : 528000);
 	const frames = existingLyrics ? [24, 48, 84, 144, 168] : [24, 36, 42, 69, 87],
-		baselines = new Map();
+		baselines = new Map(),
+		exportBaselines = new Map();
 	for (const frame of frames) {
 		const sample = await capture(frame);
 		assert(
-			sample.cyan.length > 25,
+			sample.overlay.length > 25,
 			"baseline frame " +
 				frame +
 				" must contain visible cyan glyphs, got " +
-				sample.cyan.length,
+				sample.overlay.length,
 		);
 		baselines.set(frame, sample);
+		const exportReference = await captureExportReference({
+			page,
+			hostPage,
+			path: join(work, "export-reference-" + frame + ".png"),
+			sample: sampleContinuityPng,
+		});
+		assert(
+			exportReference.overlay.length > 25,
+			"high-density reference must contain the displayed glyphs",
+		);
+		exportBaselines.set(frame, exportReference);
 		await (
 			await mainPreviewCanvas(page)
 		).screenshot({ path: join(work, "baseline-" + frame + ".png") });
 	}
 	assert(
-		new Set([...baselines.values()].map((s) => JSON.stringify(s.cyan))).size >=
-			3,
+		new Set([...baselines.values()].map((s) => JSON.stringify(s.overlay)))
+			.size >= 3,
 		"different animation phases must render different pixels",
 	);
 	const reset = await capture(existingLyrics ? 0 : 6);
 	if (existingLyrics)
 		assert.notDeepEqual(
-			reset.cyan,
-			baselines.get(48).cyan,
+			reset.overlay,
+			baselines.get(48).overlay,
 			"restart negative control must differ from the running cue",
 		);
 	else
 		assert.equal(
-			reset.cyan.length,
+			reset.overlay.length,
 			0,
 			"reset-to-zero negative control must lack the first cue",
 		);
@@ -171,11 +187,11 @@ export async function probeMotionClipContinuity({
 				frame,
 				expectedHash: baselines.get(frame).hash,
 				actualHash: sample.hash,
-				expectedPixels: baselines.get(frame).cyan.length,
-				actualPixels: sample.cyan.length,
+				expectedPixels: baselines.get(frame).overlay.length,
+				actualPixels: sample.overlay.length,
 				overlap: languageOverlap({
-					expected: baselines.get(frame).cyan,
-					actual: sample.cyan,
+					expected: baselines.get(frame).overlay,
+					actual: sample.overlay,
 				}),
 			});
 			await (
@@ -186,8 +202,8 @@ export async function probeMotionClipContinuity({
 			// Source video frames and selected-object canvas decoration may differ.
 			// Animation continuity requires the exact same glyph pixel coordinates.
 			assert.deepEqual(
-				sample.cyan,
-				baselines.get(frame).cyan,
+				sample.overlay,
+				baselines.get(frame).overlay,
 				label + " must preserve source animation phase at " + frame,
 			);
 		}
@@ -315,7 +331,7 @@ export async function probeMotionClipContinuity({
 		work,
 		frames,
 		offset,
-		baselines,
+		baselines: exportBaselines,
 		readState,
 		split,
 		check,
@@ -323,20 +339,20 @@ export async function probeMotionClipContinuity({
 	onPhase(
 		"export completion restores the unchanged playhead preview without a seek",
 	);
-	const expected = baselines.get(frames[frames.length - 1]).cyan;
+	const expected = baselines.get(frames[frames.length - 1]).overlay;
 	let restored;
 	await expect
 		.poll(
 			async () => {
-				restored = await languagePreview(page);
-				return JSON.stringify(restored.cyan) === JSON.stringify(expected);
+				restored = await continuityPreview(page);
+				return JSON.stringify(restored.overlay) === JSON.stringify(expected);
 			},
 			{ timeout: 10000 },
 		)
 		.toBe(true);
 	check(
 		"export completion restores exact current-time glyph pixels without moving the playhead",
-		{ cyanPixels: restored.cyan.length },
+		{ overlayPixels: restored.overlay.length },
 	);
 	return {
 		page,

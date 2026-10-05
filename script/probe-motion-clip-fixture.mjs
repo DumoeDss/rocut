@@ -1,12 +1,10 @@
 import assert from "node:assert/strict";
+import { sampleContinuityPng } from "./probe-continuity-pixels.mjs";
 import { readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { join } from "node:path";
 import { expect } from "@playwright/test";
-import {
-	languageOverlap,
-	inspectLanguagePixels,
-} from "./probe-multilingual-media.mjs";
+import { languageOverlap } from "./probe-multilingual-media.mjs";
 import { downloadUiExport } from "./probe-ui-export-fixture.mjs";
 
 export async function createMotionContinuityFixture({ page, hostPage, work }) {
@@ -138,33 +136,54 @@ export async function exportMotionContinuity({
 			),
 			240,
 		);
-		const overlaps = [];
-		for (const frame of frames) {
-			const pixels = execFileSync(
+		const decode = async (frame) => {
+			assert(Number.isInteger(frame) && frame >= 0);
+			const png = execFileSync(
 				"ffmpeg",
 				[
 					"-v",
 					"error",
-					"-ss",
-					String((frame + offset) / 30),
 					"-i",
 					output.path,
+					"-vf",
+					"select=eq(n\\," + frame + ")",
 					"-frames:v",
 					"1",
-					"-vf",
-					"scale=320:180",
 					"-f",
-					"rawvideo",
-					"-pix_fmt",
-					"rgb24",
+					"image2pipe",
+					"-vcodec",
+					"png",
 					"pipe:1",
 				],
 				{ windowsHide: true },
 			);
-			const actual = inspectLanguagePixels(pixels, 3);
+			return sampleContinuityPng(hostPage, png);
+		};
+		const empty = await decode(0);
+		assert.equal(
+			empty.overlay.length,
+			0,
+			"export frame zero must be an independent no-text negative control",
+		);
+		const wrong = await decode(frames[0] + offset);
+		const wrongFrameOverlap = languageOverlap({
+			expected: baselines.get(frames[frames.length - 1]).overlay,
+			actual: wrong.overlay,
+		});
+		assert(
+			wrongFrameOverlap <= 0.7,
+			"wrong animation phase must fail the same glyph-overlap gate",
+		);
+		check(
+			"decoded empty and wrong-phase frames fail the 0.7 export overlay gate",
+			{ emptyPixels: empty.overlay.length, wrongFrameOverlap },
+		);
+		const overlaps = [];
+		for (const frame of frames) {
+			const actual = await decode(frame + offset);
 			const overlap = languageOverlap({
-				expected: baselines.get(frame).cyan,
-				actual: actual.cyan,
+				expected: baselines.get(frame).overlay,
+				actual: actual.overlay,
 			});
 			assert(
 				overlap > 0.7,
