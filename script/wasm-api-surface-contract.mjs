@@ -97,7 +97,7 @@ export const EXPECTED = {
 		"package.json":
 			"aff1b5ec12a69cf964733fd5122450d5d5821cca88241eae8fd2dcef2b64fd0f",
 		[SYNC_ENTRY]:
-			"0c71c5050db6e0e397b77bb03c8e0b5431ad2e78a0820718f6a1c81d7a696e59",
+			"dedcb4b0b165498e06b4b3b8a5b2c4d8a5d58a601779f4217df92cee5de9615a",
 	},
 	/**
 	 * `LICENSE` and `README.md` are the only two files wasm-pack **copies out of the checkout**
@@ -138,9 +138,9 @@ export const EXPECTED = {
 		"opencut_wasm_bg.wasm.d.ts":
 			"d19c1b3dc87f095040c7eb1e56eb8c965d587cf7927ca21cc513327cf78ed7c1",
 	},
-	dtsSha: "00f53d9f0278607f025a163becc29804bbefa439f3d88224d240db922f87827e",
+	dtsSha: "2038382f594da66c79f858fab8e7b0b45acd86e34bb91fd472b43211b6f07915",
 	wrapperSha:
-		"448e50cdf9e524b515c15760abe201e0bd10fbd310ac028c6f5344bdf843c8aa",
+		"62b92e4fd24557742dcc94fc6e722ab1133d7f30df246782e47cfcad56c63d76",
 	/**
 	 * The low-level declarations, hashed after normalising the trampoline hashes below and sorted
 	 * by line. Exact-byte hashing of this file cannot hold across build hosts for the reason
@@ -151,14 +151,14 @@ export const EXPECTED = {
 	 * hashing recipe in `script/check-wasm-api-surface.mjs` after a pinned WASM rebuild.
 	 */
 	wasmDtsNormalizedSignature:
-		"e90481ba9f2d0f01e536f42fbea89fd87ce5f3c8d940f7ee0b86a3d460611934",
-	wasmDtsLineCount: 90,
+		"c1fbc0faae50ce51e858eacdcc8fcab68db7069732bc3e294473beca4abe082e",
+	wasmDtsLineCount: 91,
 	wrapperExportSignature:
-		"37b25e51c79a5b6a166be6b36ee2cb2f7cc7a0055a5610bb39e9662a7c1add9e",
-	wrapperExportCount: 68,
+		"7d5248ae0976b6e97af48c3f4f09485cd33a86228e6deb990c099f640e2c08af",
+	wrapperExportCount: 69,
 	bgExportSignature:
-		"b6540dbdd4d12733d153420913681dab873c0b4fdf18ee77aa088b0162dc46c3",
-	bgExportCount: 679,
+		"49dfd9a7e119131de2b2f785a072aa844a21e2f0b378d65b9368e3a6178cef4c",
+	bgExportCount: 680,
 	/**
 	 * The 82 stably-named binary exports, as an exact set. This is the real contract: every export
 	 * a consumer can name is pinned here, and any addition, removal or rename fails.
@@ -167,8 +167,8 @@ export const EXPECTED = {
 	 * hash — see `TRAMPOLINE_EXPORT` for why they are matched by shape and count instead.
 	 */
 	stableWasmExportSignature:
-		"ba4e135c4ed6f53907250ecb4a9ff3a7fc8a49186e9b421b74afaa71311a96a9",
-	stableWasmExportCount: 85,
+		"43b24495fb86bbb57d85fb17cfc0e4b3454b8190d3090c7b692f74a0c512b8ac",
+	stableWasmExportCount: 86,
 	trampolineExportCount: 3,
 	/**
 	 * The whole 85-entry set as recorded on the Windows build machine, kept for diagnosis: on
@@ -220,6 +220,7 @@ export const EXPECTED = {
 		"initCompositor|function",
 		"initializeGpu|function",
 		"inspectMotionTextFont|function",
+		"inspectMotionTextFontCoverage|function",
 		"importJizuraMotionTextProject|function",
 		"isFrameAligned|function",
 		"lastFrameTime|function",

@@ -29,7 +29,8 @@ pub use factory::{
 };
 pub use font::{
     InspectMotionTextFontOptions, MotionTextFontInspection, MotionTextFontInspectionResult,
-    inspect_motion_text_font,
+    MotionTextFontCoverage, MotionTextFontCoverageResult,
+    inspect_motion_text_font, inspect_motion_text_font_coverage,
 };
 pub use identity::{
     DuplicateMotionTextSequenceOptions, DuplicateMotionTextSequenceResult, MotionTextIdentityError,

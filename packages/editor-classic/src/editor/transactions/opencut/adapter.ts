@@ -500,13 +500,17 @@ export function createOpenCutTransactionDocumentAdapter({
 		consumeReceipt() {
 			const receipt = latestReceipt;
 			latestReceipt = null;
-			return receipt ? cloneOpaque(receipt) : null;
+			// encode already detached both fields from its inputs and result.
+			// Clearing our only reference transfers ownership to the consumer.
+			return receipt;
 		},
 		currentRecordDigest() {
 			return digestProjectRecord(latestRecord);
 		},
 		currentDraft() {
-			return cloneOpenCutDraft(decodeDraft(latestRecord));
+			// decodeDraft owns its cloned record and catalog; no shared state
+			// remains for another whole-project clone to protect.
+			return decodeDraft(latestRecord);
 		},
 		adoptCommittedRecord(record) {
 			latestRecord = cloneOpaque(record);

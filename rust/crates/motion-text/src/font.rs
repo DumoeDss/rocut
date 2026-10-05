@@ -37,15 +37,56 @@ pub struct MotionTextFontInspectionResult {
     pub error: Option<String>,
 }
 
+#[cfg_attr(feature = "wasm", derive(tsify_next::Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
+#[derive(Clone, Debug, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct MotionTextFontCoverage {
+    pub face_index: u32,
+    pub glyph_count: u16,
+    pub missing_code_points: Vec<u32>,
+}
+
+#[cfg_attr(feature = "wasm", derive(tsify_next::Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi, missing_as_null))]
+#[derive(Clone, Debug, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct MotionTextFontCoverageResult {
+    pub inspection: Option<MotionTextFontCoverage>,
+    pub error: Option<String>,
+}
+
 #[export]
 pub fn inspect_motion_text_font(
     options: InspectMotionTextFontOptions,
 ) -> MotionTextFontInspectionResult {
-    let content_digest = sha256_digest(&options.bytes);
+    let result = font_coverage(&options);
+    MotionTextFontInspectionResult {
+        inspection: result.inspection.map(|coverage| MotionTextFontInspection {
+            content_digest: sha256_digest(&options.bytes),
+            face_index: coverage.face_index,
+            glyph_count: coverage.glyph_count,
+            missing_code_points: coverage.missing_code_points,
+        }),
+        error: result.error,
+    }
+}
+
+/// Check changing text against immutable, already authenticated font bytes.
+/// This does not establish content identity: callers must retain the full
+/// inspection/digest check when loading or replacing the font resource.
+#[export]
+pub fn inspect_motion_text_font_coverage(
+    options: InspectMotionTextFontOptions,
+) -> MotionTextFontCoverageResult {
+    font_coverage(&options)
+}
+
+fn font_coverage(options: &InspectMotionTextFontOptions) -> MotionTextFontCoverageResult {
     let face = match ttf_parser::Face::parse(&options.bytes, options.face_index) {
         Ok(face) => face,
         Err(error) => {
-            return MotionTextFontInspectionResult {
+            return MotionTextFontCoverageResult {
                 inspection: None,
                 error: Some(format!("invalid-font:{error:?}")),
             };
@@ -62,9 +103,8 @@ pub fn inspect_motion_text_font(
         .into_iter()
         .collect();
 
-    MotionTextFontInspectionResult {
-        inspection: Some(MotionTextFontInspection {
-            content_digest,
+    MotionTextFontCoverageResult {
+        inspection: Some(MotionTextFontCoverage {
             face_index: options.face_index,
             glyph_count: face.number_of_glyphs(),
             missing_code_points,
@@ -125,6 +165,11 @@ mod tests {
             sha256_digest(b"not-a-font"),
             "sha256:5e6ed95031c41c0c3c678d67c25b7fb67c229f8e3d51d8a2e92145e0ac077b29"
         );
+        let coverage = inspect_motion_text_font_coverage(InspectMotionTextFontOptions {
+            bytes: b"not-a-font".to_vec(), text: "hello".to_owned(), face_index: 0,
+        });
+        assert_eq!(coverage.error, result.error);
+        assert!(coverage.inspection.is_none());
     }
 
     #[test]
@@ -187,6 +232,12 @@ mod tests {
                 });
                 assert_eq!(result.error, None, "{} must parse for {language}", font.id);
                 let inspection = result.inspection.expect("valid fonts return an inspection");
+                let coverage = inspect_motion_text_font_coverage(InspectMotionTextFontOptions {
+                    bytes: bytes.clone(), text: sample.to_owned(), face_index: 0,
+                }).inspection.expect("coverage must parse the same valid face");
+                assert_eq!(coverage.face_index, inspection.face_index);
+                assert_eq!(coverage.glyph_count, inspection.glyph_count);
+                assert_eq!(coverage.missing_code_points, inspection.missing_code_points);
                 assert_eq!(
                     inspection.content_digest, font.content_digest,
                     "{} for {language}",
@@ -200,5 +251,18 @@ mod tests {
                 );
             }
         }
+    }
+
+    #[test]
+    fn coverage_reports_unique_missing_scalars_and_rejects_invalid_faces() {
+        let bytes = fs::read(repository_root().join("apps/web/public/motion-text/fonts/ibm-plex-mono-medium.ttf")).unwrap();
+        let options = InspectMotionTextFontOptions {
+            bytes, text: "A\n\t\u{10ffff}\u{10ffff}\u{10fffe}".to_owned(), face_index: 0,
+        };
+        let full = inspect_motion_text_font(options.clone()).inspection.unwrap();
+        let coverage = inspect_motion_text_font_coverage(options.clone()).inspection.unwrap();
+        assert_eq!(coverage.missing_code_points, vec![0x10fffe, 0x10ffff]);
+        assert_eq!(coverage.missing_code_points, full.missing_code_points);
+        assert!(inspect_motion_text_font_coverage(InspectMotionTextFontOptions { face_index: u32::MAX, ..options }).inspection.is_none());
     }
 }

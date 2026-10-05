@@ -3,7 +3,10 @@ import type {
 	MotionTextSequence,
 } from "@opencut/editor-contracts";
 
-import { inspectMotionTextFont } from "../../../wasm/motion-text-font";
+import {
+	inspectMotionTextFont,
+	inspectMotionTextFontCoverage,
+} from "../../../wasm/motion-text-font";
 import type {
 	MotionTextRenderDiagnostic,
 	MotionTextResolvedFont,
@@ -24,6 +27,7 @@ export interface MotionTextFontBytesLoader {
 }
 
 type MotionTextFontInspector = typeof inspectMotionTextFont;
+type MotionTextFontCoverageInspector = typeof inspectMotionTextFontCoverage;
 
 export interface MotionTextFontFaceHandle {
 	readonly family: string;
@@ -44,6 +48,7 @@ export interface MotionTextFontEnvironment {
 export interface MotionTextFontRuntimeOptions extends MotionTextFontBytesLoader {
 	readonly environment?: MotionTextFontEnvironment;
 	readonly inspectFont?: MotionTextFontInspector;
+	readonly inspectCoverage?: MotionTextFontCoverageInspector;
 }
 
 export interface PreparedMotionTextFonts {
@@ -85,11 +90,18 @@ export class MotionTextFontRuntime {
 	private hasFailedLoads = false;
 	private readonly loader: MotionTextFontBytesLoader;
 	private readonly inspectFont: MotionTextFontInspector;
+	private readonly inspectCoverage: MotionTextFontCoverageInspector;
 	private readonly environment: MotionTextFontEnvironment;
 
 	constructor(options: MotionTextFontRuntimeOptions) {
 		this.loader = options;
 		this.inspectFont = options.inspectFont ?? inspectMotionTextFont;
+		// Custom inspectors remain compatible; production validates/digests the
+		// immutable loaded bytes once, then checks changing glyphs without hashing.
+		this.inspectCoverage =
+			options.inspectCoverage ??
+			options.inspectFont ??
+			inspectMotionTextFontCoverage;
 		this.environment = options.environment ?? BROWSER_FONT_ENVIRONMENT;
 	}
 
@@ -132,7 +144,7 @@ export class MotionTextFontRuntime {
 					loaded,
 					text,
 					purpose,
-					inspectFont: this.inspectFont,
+					inspectFont: this.inspectCoverage,
 				});
 				if (issue) diagnostics.push(issue);
 				if (!issue || purpose === "preview") {
@@ -349,7 +361,7 @@ function inspectLoadedFont({
 	loaded: LoadedFont;
 	text: string;
 	purpose: MotionTextRenderPurpose;
-	inspectFont: MotionTextFontInspector;
+	inspectFont: MotionTextFontCoverageInspector;
 }): MotionTextRenderDiagnostic | null {
 	if (loaded.system) {
 		if (purpose === "export") {

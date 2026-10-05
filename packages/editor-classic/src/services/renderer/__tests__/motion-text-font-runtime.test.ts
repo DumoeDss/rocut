@@ -12,6 +12,7 @@ import {
 import {
 	MotionTextFontRuntime,
 	type MotionTextFontEnvironment,
+	type MotionTextFontRuntimeOptions,
 } from "../motion-text/font-runtime";
 
 const FONT_DIGEST = "sha256:fixture-font";
@@ -115,11 +116,13 @@ function deferred<T>() {
 function runtimeFixture({
 	loadProjectFont,
 	missingCodePoints = [],
+	inspectCoverage,
 }: {
 	loadProjectFont?: (args: {
 		signal: AbortSignal;
 	}) => Promise<ArrayBuffer | null>;
 	missingCodePoints?: readonly number[];
+	inspectCoverage?: MotionTextFontRuntimeOptions["inspectCoverage"];
 } = {}) {
 	let loads = 0;
 	let faceLoads = 0;
@@ -141,6 +144,7 @@ function runtimeFixture({
 	};
 	const runtime = new MotionTextFontRuntime({
 		environment,
+		inspectCoverage,
 		inspectFont: ({ text }) => {
 			inspectedTexts.push(text);
 			return {
@@ -169,6 +173,90 @@ function runtimeFixture({
 }
 
 describe("MotionTextFontRuntime", () => {
+	test("digests immutable bytes once but checks every changed text and revalidates after invalidation", async () => {
+		const checkedTexts: string[] = [];
+		const fixture = runtimeFixture({
+			inspectCoverage: ({ text }) => {
+				checkedTexts.push(text);
+				return {
+					error: null,
+					inspection: {
+						faceIndex: 0,
+						glyphCount: 10,
+						missingCodePoints: text === "missing" ? [0x10ffff] : [],
+					},
+				};
+			},
+		});
+		const base = sequenceFixture();
+		const prepare = ({
+			text,
+			purpose,
+		}: {
+			text: string;
+			purpose: "preview" | "export";
+		}) =>
+			fixture.runtime.prepareSequence({
+				projectId: "project",
+				purpose,
+				sequence: {
+					...base,
+					resolvedPlan: base.resolvedPlan && {
+						...base.resolvedPlan,
+						cuts: base.resolvedPlan.cuts.map((cut) => ({ ...cut, text })),
+					},
+				},
+			});
+		expect(
+			(await prepare({ text: "first", purpose: "preview" })).diagnostics,
+		).toEqual([]);
+		expect(
+			(await prepare({ text: "second", purpose: "preview" })).diagnostics,
+		).toEqual([]);
+		expect(
+			(await prepare({ text: "missing", purpose: "export" })).diagnostics,
+		).toContainEqual(
+			expect.objectContaining({
+				code: "missing-glyph",
+				severity: "error",
+				codePoints: [0x10ffff],
+			}),
+		);
+		expect(fixture.inspectedTexts).toEqual([""]);
+		expect(checkedTexts).toEqual(["first", "second", "missing"]);
+		fixture.runtime.invalidate();
+		await prepare({ text: "first", purpose: "export" });
+		expect(fixture.inspectedTexts).toEqual(["", ""]);
+		expect(fixture.counts()).toMatchObject({ loads: 2, adds: 2, deletes: 1 });
+		fixture.runtime.dispose();
+	});
+
+	test("coverage cannot bypass digest validation on a replaced font", async () => {
+		let coverageCalls = 0;
+		const fixture = runtimeFixture({
+			inspectCoverage: () => {
+				coverageCalls += 1;
+				return {
+					error: null,
+					inspection: { faceIndex: 0, glyphCount: 1, missingCodePoints: [] },
+				};
+			},
+		});
+		const result = await fixture.runtime.prepareSequence({
+			projectId: "project",
+			purpose: "export",
+			sequence: sequenceFixture({ contentDigest: "sha256:changed" }),
+		});
+		expect(result.diagnostics).toContainEqual(
+			expect.objectContaining({
+				code: "font-digest-mismatch",
+				severity: "error",
+			}),
+		);
+		expect(coverageCalls).toBe(0);
+		expect(fixture.counts().faceLoads).toBe(0);
+		fixture.runtime.dispose();
+	});
 	test("caches failures between frames but recovers on an explicit export attempt", async () => {
 		let available = false;
 		const fixture = runtimeFixture({
