@@ -53,6 +53,16 @@ export type {
 	ImmediateOperationKind,
 } from "./types";
 export { IMMEDIATE_OPERATION_KINDS } from "./types";
+export {
+	createValidatedDraftReviewPort,
+	isDraftReviewItem,
+	isDraftReviewDocument,
+} from "./review-port";
+export type {
+	DraftReviewItem,
+	DraftReviewDocument,
+	DraftReviewPort,
+} from "./review-port";
 export type {
 	DraftEditingConformanceFactory,
 	DraftEditingConformanceFactoryOptions,

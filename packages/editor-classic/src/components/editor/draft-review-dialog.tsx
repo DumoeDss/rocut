@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import type {
-	DraftReviewDocument,
-	DraftReviewItem,
-	DraftReviewPort,
-} from "@opencut/editor-ports/host";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { DraftReviewPort } from "@opencut/editor-ports/host";
+import {
+	createValidatedDraftReviewPort,
+	type DraftReviewDocument,
+	type DraftReviewItem,
+} from "@opencut/editor-contracts/draft";
 import { useEditorInstance } from "../../editor/use-editor";
 import { Button } from "../ui/button";
 import {
@@ -45,7 +46,11 @@ export function DraftReviewDialog({
 	);
 }
 
-function DraftReviewBody({ port }: { port: DraftReviewPort }) {
+function DraftReviewBody({ port: transport }: { port: DraftReviewPort }) {
+	const port = useMemo(
+		() => createValidatedDraftReviewPort(transport),
+		[transport],
+	);
 	const editor = useEditorInstance();
 	const [items, setItems] = useState<readonly DraftReviewItem[]>([]);
 	const [review, setReview] = useState<DraftReviewDocument | null>(null);

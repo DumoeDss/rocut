@@ -1,55 +1,11 @@
-import type {
-	DraftReviewDocument,
-	DraftReviewItem,
-	DraftReviewPort,
-} from "@opencut/editor-ports/host";
+import {
+	isDraftReviewDocument,
+	isDraftReviewItem,
+	type DraftReviewPort,
+} from "@opencut/editor-contracts/draft";
 
 const record = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
-const count = (value: unknown): value is number =>
-	typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
-function isItem(value: unknown): value is DraftReviewItem {
-	return (
-		record(value) &&
-		typeof value.id === "string" &&
-		value.id.length > 0 &&
-		["editing", "applying", "applied", "rejected", "conflicted"].includes(
-			String(value.state),
-		) &&
-		(value.approvalMode === "manual" || value.approvalMode === "auto") &&
-		count(value.baseRevision) &&
-		count(value.acceptedCallCount) &&
-		count(value.acceptedOperationCount)
-	);
-}
-function isReview(value: unknown): value is DraftReviewDocument {
-	if (
-		!record(value) ||
-		typeof value.token !== "string" ||
-		!/^[a-f0-9]{64}$/.test(value.token) ||
-		!isItem(value.snapshot) ||
-		!record(value.snapshot) ||
-		!record(value.review)
-	)
-		return false;
-	const snapshot = value.snapshot;
-	const content = (data: unknown) =>
-		record(data) &&
-		count(data.revision) &&
-		["tracks", "clips", "assets", "markers"].every((key) =>
-			Array.isArray(data[key]),
-		) &&
-		(data.motionTextSequences === undefined ||
-			Array.isArray(data.motionTextSequences));
-	return (
-		content(snapshot.base) &&
-		content(snapshot.working) &&
-		Array.isArray(value.review.entries) &&
-		value.review.entries.every(
-			(entry) => record(entry) && typeof entry.kind === "string",
-		)
-	);
-}
 function failure(code: unknown): Error {
 	switch (code) {
 		case "draft-review-changed":
@@ -109,7 +65,10 @@ export function createHttpDraftReview({
 	return {
 		async list() {
 			const result = await request({ route: "" });
-			if (!Array.isArray(result.drafts) || !result.drafts.every(isItem))
+			if (
+				!Array.isArray(result.drafts) ||
+				!result.drafts.every(isDraftReviewItem)
+			)
 				throw new Error(
 					"This host does not support draft review. Update the plugin and reopen the editor.",
 				);
@@ -119,7 +78,7 @@ export function createHttpDraftReview({
 			const result = await request({
 				route: "/" + encodeURIComponent(id) + "/review",
 			});
-			if (!isReview(result) || result.snapshot.id !== id)
+			if (!isDraftReviewDocument(result) || result.snapshot.id !== id)
 				throw new Error(
 					"Invalid draft review. Refresh the list before deciding.",
 				);

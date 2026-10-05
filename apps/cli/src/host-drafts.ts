@@ -2,9 +2,9 @@ import { createHash } from "node:crypto";
 import type { AutomationApi } from "@opencut/editor-automation";
 import type {
 	DraftEditingSession,
+	DraftReviewDocument,
 	DraftToolCall,
 } from "@opencut/editor-contracts/draft";
-import type { DraftReviewDocument } from "@opencut/editor-ports/host";
 
 interface DraftPlane {
 	readonly draftSessions: Map<string, DraftEditingSession>;

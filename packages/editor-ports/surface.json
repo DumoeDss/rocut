@@ -8,7 +8,7 @@
 		},
 		"./host": {
 			"class": "frozen",
-			"reason": "NavigationHost and the Host-facing port surface (editor-host.ts travels with ports — P0's load-bearing ownership finding); S02 contract."
+			"reason": "NavigationHost and the Host-facing port surface; frozen except for the explicitly owner-approved draft-review transport revision in ports 0.3.0 (2026-10-06), now frozen again. See README migration; no other signatures changed."
 		},
 		"./in-memory": {
 			"class": "frozen",
