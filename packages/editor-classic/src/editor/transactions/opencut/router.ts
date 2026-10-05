@@ -324,7 +324,10 @@ export class SessionOpenCutTransactions {
 		draft: OpenCutProjectDraft,
 	): Promise<void> {
 		this.assertCurrent(active);
-		await this.options.persistence.adoptCommittedProjectRecord({ record });
+		await this.options.persistence.adoptCommittedProjectRecord({
+			record,
+			returnProject: false,
+		});
 		active.adapter.adoptCommittedRecord(record);
 		this.options.publish(cloneOpenCutDraft(draft));
 	}

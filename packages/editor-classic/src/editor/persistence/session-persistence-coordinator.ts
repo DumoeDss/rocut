@@ -102,7 +102,7 @@ export class SessionPersistenceCoordinator {
 					return null;
 				}
 				const retained = cloneOpaque(record.data);
-				const decoded = decodeProject(cloneOpaque(record.data));
+				const decoded = decodeProject(record.data);
 				this.projectSnapshots.set(args.id, retained);
 				this.projectCache.set(args.id, cloneOpaque(decoded));
 				this.emitProjectRecord(record);
@@ -164,11 +164,21 @@ export class SessionPersistenceCoordinator {
 		});
 	}
 
+	async adoptCommittedProjectRecord(args: {
+		record: ProjectRecord;
+		returnProject: false;
+	}): Promise<void>;
+	async adoptCommittedProjectRecord(args: {
+		record: ProjectRecord;
+		returnProject?: true;
+	}): Promise<TProject>;
 	async adoptCommittedProjectRecord({
 		record,
+		returnProject = true,
 	}: {
 		record: ProjectRecord;
-	}): Promise<TProject> {
+		returnProject?: boolean;
+	}): Promise<TProject | void> {
 		this.assertAlive();
 		if (!record.id || !Number.isInteger(record.schemaVersion)) {
 			throw new Error(
@@ -176,19 +186,20 @@ export class SessionPersistenceCoordinator {
 			);
 		}
 		const retained = cloneOpaque(record.data);
-		const decoded = decodeProject(cloneOpaque(record.data));
+		const decoded = decodeProject(record.data);
 		if (decoded.metadata.id !== record.id) {
 			throw new Error(
 				"Committed project record identity does not match its payload",
 			);
 		}
 		this.projectSnapshots.set(record.id, retained);
-		this.projectCache.set(record.id, cloneOpaque(decoded));
+		// Internal publication already has its own draft; keep the decoded value
+		// private rather than allocating a second project that the caller discards.
+		this.projectCache.set(record.id, returnProject ? cloneOpaque(decoded) : decoded);
 		this.emitProjectRecord(record);
 		this.emit({ kind: "project", key: record.id });
-		// Decoding owns its input, and the cache above owns a separate copy.
-		// Transfer this private result rather than cloning the project again.
-		return decoded;
+		// Only expose a decoded result when the cache retained a separate copy.
+		if (returnProject) return decoded;
 	}
 
 	async removeProject(args: {

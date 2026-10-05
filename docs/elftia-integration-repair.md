@@ -2,6 +2,13 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Staged encoding and adoption ownership (2026-10-06)
+
+- Staged encoding now reads the adapter-private draft instead of cloning it again before read-only projection/encoding. Staging still detaches caller input, and the returned record and publication receipt retain independent copies. New regression coverage rejects the old extra-copy implementation and mutates stage inputs, receipt drafts/records and encoded records before repeating the encode.
+- `decodeProject` now consistently detaches every owned field, including unvalidated object values in normally scalar duration/version slots. Adapter/coordinator callers can therefore decode directly without first copying the entire raw record. A reference-graph test covers dates, arrays, nested cue data, Map and typed-array extensions; it does not redefine domain validation or accept malformed projects at the application boundary.
+- Internal durable publication opts out of a returned project with `returnProject: false`: the freshly decoded value stays private in the cache. Ordinary callers retain the existing isolated returned-project behavior. New tests verify zero discarded full-project copies, input/listener/cache isolation and identity-refusal behavior; existing retained-data, store-failure, UI/automation ordering and undo/redo checks remain intact.
+- The three initial targeted regressions fail on the old implementation. After the changes, the relevant persistence, adapter and command suites pass **77 tests / 507 assertions**; scoped lint and Vite typecheck pass. Runtime installation and ordinary 30-edit latency are still pending for this candidate, so no performance/aggregate gate is closed by these source checks.
+
 ## Reopened translucent text rasterization (2026-10-06)
 
 - The original failed fixture from `live-dy48qv` reproduces before WebGPU composition. Diagnostics `reopen-upload-audit-ep9dGM` / `reopen-upload-audit-Z2GXop` capture the 1920x1080 motion-text canvas immediately before upload: RGB is identical but 42 alpha pixels differ by one level after reopen. The background texture remains identical. Recorded drawing commands, transforms, font and global alpha match; this trace does not cover every Canvas state, so it is not proof of identical internal rasterizer inputs.

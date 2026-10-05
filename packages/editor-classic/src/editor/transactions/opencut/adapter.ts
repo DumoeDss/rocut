@@ -417,7 +417,7 @@ export function createOpenCutTransactionDocumentAdapter({
 	function decodeDraft(record: ProjectRecord): OpenCutProjectDraft {
 		const envelope = readEnvelope(record.data);
 		const draft = {
-			project: decodeProject(cloneOpaque(record.data)),
+			project: decodeProject(record.data),
 			assetCatalog: [...cloneOpaque(envelope?.assetCatalog ?? initialAssets)],
 		};
 		ensureDraftMarkerIds(draft);
@@ -479,7 +479,9 @@ export function createOpenCutTransactionDocumentAdapter({
 				) {
 					throw new Error("Staged OpenCut candidate binding mismatch");
 				}
-				draft = cloneOpenCutDraft(registered.draft);
+				// stage owns this copy; projection/encoding only read it. The receipt
+				// below still receives an independent draft for external consumers.
+				draft = registered.draft;
 				const reprojected = projectOpenCutDraft(draft, {
 					revision: document.revision,
 					idempotency: document.idempotency,
@@ -519,8 +521,8 @@ export function createOpenCutTransactionDocumentAdapter({
 		},
 		currentRecordDigest,
 		currentDraft() {
-			// decodeDraft owns its cloned record and catalog; no shared state
-			// remains for another whole-project clone to protect.
+			// Decoding detaches the project fields, and the catalog is copied too;
+			// no shared state remains for another whole-project clone to protect.
 			return decodeDraft(latestRecord);
 		},
 		currentAssetCatalog() {

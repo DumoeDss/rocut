@@ -16,6 +16,36 @@ import {
 } from "../../../editor/transactions/opencut/__tests__/fixture";
 
 describe("transaction persistence coordination", () => {
+	test("cache-only adoption avoids discarded project copies and keeps inputs and listeners isolated", async () => {
+		const fixture = await storeFixture();
+		const persistence = new SessionPersistenceCoordinator(fixture.store);
+		const record = await fixture.store.load({ id: TEST_PROJECT_ID });
+		if (!record) throw new Error("missing fixture record");
+		const original = structuredClone(record);
+		const expected = projectFixture();
+		persistence.subscribeProjectRecords((snapshot) => {
+			(snapshot.data as { metadata: { name: string } }).metadata.name = "listener edit";
+		});
+		const clone = spyOn(globalThis, "structuredClone");
+		try {
+			expect(await persistence.adoptCommittedProjectRecord({ record, returnProject: false })).toBeUndefined();
+			expect(clone.mock.calls.filter(([value]) => value === record.data)).toHaveLength(1);
+			expect(clone.mock.calls.filter(([value]) => Bun.deepEquals(value, expected))).toHaveLength(0);
+		} finally {
+			clone.mockRestore();
+		}
+		expect(record).toEqual(original);
+		(record.data as { metadata: { name: string } }).metadata.name = "input edit";
+		const cached = persistence.readCachedProject({ id: TEST_PROJECT_ID });
+		expect(cached).toEqual(expected);
+		if (!cached) throw new Error("missing cache");
+		cached.metadata.name = "returned cache edit";
+		expect(persistence.readCachedProject({ id: TEST_PROJECT_ID })).toEqual(expected);
+		await expect(persistence.adoptCommittedProjectRecord({ record: { ...original, id: "wrong" }, returnProject: false })).rejects.toThrow("identity does not match");
+		expect(persistence.readCachedProject({ id: TEST_PROJECT_ID })).toEqual(expected);
+		expect(fixture.getSaveCount()).toBe(0);
+	});
+
 	test("adoption transfers its private decoded result without a second clone", async () => {
 		const fixture = await storeFixture();
 		const persistence = new SessionPersistenceCoordinator(fixture.store);

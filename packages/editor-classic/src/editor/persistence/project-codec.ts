@@ -112,7 +112,7 @@ function decodeScene(value: unknown): TScene {
 	} as TScene;
 }
 
-/** Decode only OpenCut-owned fields; provider-private siblings stay retained. */
+/** Decode into detached owned fields; provider-private siblings stay retained. */
 export function decodeProject(data: unknown): TProject {
 	const raw = record(data, "project");
 	const metadata = record(raw.metadata, "project.metadata");
@@ -121,10 +121,10 @@ export function decodeProject(data: unknown): TProject {
 	}
 	return {
 		metadata: {
-			...pick(metadata, ["name", "thumbnail", "duration"]),
+			...pick(metadata, ["name", "thumbnail"]),
 			id: text(metadata.id, "metadata.id"),
 			name: text(metadata.name, "metadata.name"),
-			duration: metadata.duration as TProject["metadata"]["duration"],
+			duration: cloneOpaque(metadata.duration) as TProject["metadata"]["duration"],
 			createdAt: date(metadata.createdAt, "metadata.createdAt"),
 			updatedAt: date(metadata.updatedAt, "metadata.updatedAt"),
 		},
@@ -134,7 +134,7 @@ export function decodeProject(data: unknown): TProject {
 			: [],
 		currentSceneId: text(raw.currentSceneId, "currentSceneId"),
 		settings: cloneOpaque(raw.settings) as TProject["settings"],
-		version: raw.version as number,
+		version: cloneOpaque(raw.version) as number,
 		...(Object.hasOwn(raw, "timelineViewState") && {
 			timelineViewState: cloneOpaque(
 				raw.timelineViewState,
