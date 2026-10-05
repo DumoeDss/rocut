@@ -25,6 +25,7 @@ export async function probeMotionStressMemory({
 	work,
 	evidence,
 	onPhase,
+	onCheckpoint,
 }) {
 	const cdp = await hostPage.context().newCDPSession(hostPage);
 	let resourceCdp;
@@ -48,6 +49,7 @@ export async function probeMotionStressMemory({
 			work,
 			evidence,
 			onPhase,
+			onCheckpoint,
 			cdp,
 			resourceCdp,
 			targetId: targetInfo.targetId,
@@ -69,6 +71,7 @@ async function measureMotionStressMemory({
 	work,
 	evidence,
 	onPhase,
+	onCheckpoint,
 	cdp,
 	resourceCdp,
 	targetId,
@@ -121,6 +124,7 @@ async function measureMotionStressMemory({
 			resourceCdp.send("Memory.getDOMCounters"),
 		]);
 		snapshots.push({ label, heap, dom });
+		await onCheckpoint?.(label);
 		const checkpoint = snapshots.length - 1;
 		if (
 			summarizeHeap &&
@@ -260,7 +264,7 @@ async function measureMotionStressMemory({
 			seeks: cycles * 30,
 			pass: true,
 		});
-		await page.screenshot({ path: join(work, "f05-memory-seeks.png") });
+		await hostPage.screenshot({ path: join(work, "f05-memory-seeks.png") });
 	} finally {
 		try {
 			await observer?.close();
