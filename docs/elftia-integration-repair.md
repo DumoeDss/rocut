@@ -2,6 +2,11 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Fixed-runtime shutdown follow-up (2026-10-05)
+
+- The pinned Bun 1.2.18 hang below is now reproduced and fixed without changing any dependency pin. In the same motion-text-draft-preview test, the original close order hangs until the 10-second external diagnostic timeout; draining active connections before close(), while retaining the post-close drain for newly accepted connections, completes all three tests in under a second. The timed-out process was the dedicated diagnostic child and was terminated; no Elftia process was stopped.
+- Fixed Bun 1.2.18 now passes the complete 138-test CLI/HTTP/presentation selection (659 assertions, 23 files, 22.21s). Local Bun 1.4.2 passes 15 affected host/draft tests; CLI typecheck passes. This supersedes the pinned-runtime limitation recorded in the earlier checkpoints, not the other whole-editor gaps.
+
 ## In-editor exact draft review — installed checkpoint (2026-10-05)
 
 - **Production source 6bdf5636** (UI introduced in 72b93e65, refined in a5f1f80a and 168af8ba): Editor menu now opens human draft review with complete before/after values, readable text-first labels, bounded scrolling, expandable large plans and explicit approval/rejection. Only the exact reviewed snapshot/review token may be decided. New stages invalidate both prior approval and rejection tokens; no unguarded fallback or automatic decision is made.

@@ -349,6 +349,10 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 		},
 		close: async () => {
 			await args.registry.remove(targetId).catch(() => undefined);
+			// Bun 1.2.18 can lose the close callback if active fetch connections
+			// are terminated only after close(). Drain once before it as well;
+			// the second drain below covers connections accepted in between.
+			server.closeAllConnections();
 			await new Promise<void>((resolve) => {
 				server.close(() => resolve());
 				// SSE subscriptions and keep-alive fetches otherwise hold the
