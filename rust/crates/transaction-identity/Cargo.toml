@@ -1,0 +1,12 @@
+[package]
+name = "transaction-identity"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bridge = { version = "0.1.0", path = "../bridge" }
+sha2 = "0.10"
+wasm-bindgen = { version = "0.2.116", optional = true }
+
+[features]
+wasm = ["dep:wasm-bindgen"]

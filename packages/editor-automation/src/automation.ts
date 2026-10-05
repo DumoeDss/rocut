@@ -28,6 +28,7 @@ import type {
 	TransactionEngine,
 	TransactionEngineOptionalFeatures,
 	TransactionPlacementPolicy,
+	OperationFingerprintNormalizer,
 } from "@opencut/editor-contracts/engine";
 import { createDraftEditingManager } from "@opencut/editor-contracts/draft";
 import type {
@@ -57,6 +58,7 @@ export interface AutomationDependencies<FeatureName extends string = never> {
 	readonly projectId: ProjectId;
 	/** Defaults to the native transaction document adapter. */
 	readonly documentAdapter?: TransactionDocumentAdapter;
+	readonly normalizeOperationFingerprint?: OperationFingerprintNormalizer;
 	/** Determinism seam for generated draft ids. */
 	readonly ids?: IdGenerator;
 	/** Host clock for the Draft TTL mechanism (the value is host policy). */
@@ -72,7 +74,8 @@ export interface AutomationDependencies<FeatureName extends string = never> {
  * engine 1:1; `drafts` is the Draft orchestrator bound to the same engine.
  */
 export interface AutomationApi<FeatureName extends string = never>
-	extends TransactionRead,
+	extends
+		TransactionRead,
 		TransactionApply,
 		TransactionGetContext,
 		TransactionWatch {
@@ -120,6 +123,7 @@ export async function createAutomation<FeatureName extends string = never>(
 		projectId: deps.projectId,
 		documentAdapter:
 			deps.documentAdapter ?? createTransactionNativeDocumentAdapter(),
+		normalizeOperationFingerprint: deps.normalizeOperationFingerprint,
 		placementPolicies: deps.placementPolicies,
 		optionalFeatures: deps.optionalFeatures,
 		signal: deps.signal,

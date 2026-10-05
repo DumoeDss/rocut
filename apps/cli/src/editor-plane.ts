@@ -34,6 +34,7 @@ import type {
 	ProjectSummary,
 } from "@opencut/editor-ports";
 import { createAutomation } from "@opencut/editor-automation";
+import { normalizeOperationFingerprint } from "opencut-wasm";
 import type { AutomationApi } from "@opencut/editor-automation";
 import {
 	createOpenCutProjectRecord,
@@ -249,9 +250,31 @@ export async function openEditorPlaneAutomation(args: {
 		store,
 		projectId: args.projectId,
 		documentAdapter: adapter,
+		normalizeOperationFingerprint,
 	});
 	return { automation, adapter, store };
 }
 
-/** JSON-equality helper reused by the record endpoint's parent-chain check. */
-export { sameJson };
+/** Compare the full ordered ledger, allowing only the Rust fingerprint encoding
+ * to differ. Keys, receipts, revisions, extra fields and order remain exact. */
+export function sameTransactionHistory(
+	left: readonly unknown[],
+	right: readonly unknown[],
+): boolean {
+	const normalize = (history: readonly unknown[]) =>
+		history.map((entry) => {
+			if (
+				typeof entry !== "object" ||
+				entry === null ||
+				Array.isArray(entry) ||
+				!("fingerprint" in entry) ||
+				typeof entry.fingerprint !== "string"
+			)
+				return entry;
+			return {
+				...entry,
+				fingerprint: normalizeOperationFingerprint(entry.fingerprint),
+			};
+		});
+	return sameJson(normalize(left), normalize(right));
+}

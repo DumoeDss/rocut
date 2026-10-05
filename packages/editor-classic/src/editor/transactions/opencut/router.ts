@@ -124,6 +124,7 @@ export class SessionOpenCutTransactions {
 					projectId: portProjectId,
 					documentAdapter: adapter,
 					placementPolicies: [openCutMediaPolicy],
+					normalizeOperationFingerprint,
 				});
 				const active: ActiveOpenCutRouter = {
 					projectId: portProjectId,
@@ -373,3 +374,4 @@ export class SessionOpenCutTransactions {
 			throw new Error("OpenCut transaction facade has been disposed");
 	}
 }
+import { normalizeOperationFingerprint } from "opencut-wasm";

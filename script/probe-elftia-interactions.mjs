@@ -24,6 +24,7 @@ import { probeTimelineControls } from './probe-timeline-controls.mjs';
 import { probeMotionDuration } from './probe-motion-duration.mjs';
 import { probeMotionStress } from './probe-motion-stress.mjs';
 import { probeMotionStressMemory } from './probe-motion-stress-memory.mjs';
+import { probeFingerprintCompaction } from './probe-fingerprint-compaction.mjs';
 import { probeMotionFullExport } from './probe-motion-full-export.mjs';
 import { probeExportBackpressure } from './probe-export-backpressure.mjs';
 import { probeVideoProperties } from './probe-video-properties.mjs';
@@ -85,7 +86,8 @@ try {
   assert(editor,'Open Rocut in the authorized Elftia session before this probe');
   const fullMotionExport = process.argv.includes('--motion-stress-full-export-only');
   const backpressureOnly = process.argv.includes('--export-backpressure-only');
-  const reuseStressFixture = process.argv.includes('--motion-stress-memory-only') || fullMotionExport || backpressureOnly;
+  const fingerprintCompaction = process.argv.includes('--fingerprint-compaction-only');
+  const reuseStressFixture = fingerprintCompaction || process.argv.includes('--motion-stress-memory-only') || fullMotionExport || backpressureOnly;
   let reusePath;
   if (reuseStressFixture) {
     assert(process.env.ELFTIA_REUSE_TEST_PROJECT, 'Set the exact owned F05 project path');
@@ -188,6 +190,8 @@ try {
     await probeExportBackpressure({page,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (fullMotionExport) {
     await probeMotionFullExport({page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
+  } else if (fingerprintCompaction) {
+    await probeFingerprintCompaction({page,hostPage:conn.page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (reuseStressFixture) {
     await probeMotionStressMemory({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--motion-stress-only')) {

@@ -3855,6 +3855,7 @@ dependencies = [
  "serde",
  "serde-wasm-bindgen",
  "time",
+ "transaction-identity",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
@@ -5935,6 +5936,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "db97caf9d906fbde555dd62fa95ddba9eecfd14cb388e4f491a66d74cd5fb79a"
 dependencies = [
  "once_cell",
+]
+
+[[package]]
+name = "transaction-identity"
+version = "0.1.0"
+dependencies = [
+ "bridge",
+ "sha2",
+ "wasm-bindgen",
 ]
 
 [[package]]

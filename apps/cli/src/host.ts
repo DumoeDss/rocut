@@ -44,7 +44,11 @@ import {
 import type { AutomationApi } from "@opencut/editor-automation";
 import { projectId, revisionOf } from "@opencut/editor-contracts";
 import { TransactionError } from "@opencut/editor-contracts";
-import type { ProjectId, ProjectRecord, ProjectStore } from "@opencut/editor-ports";
+import type {
+	ProjectId,
+	ProjectRecord,
+	ProjectStore,
+} from "@opencut/editor-ports";
 import type { DraftEditingSession } from "@opencut/editor-contracts/draft";
 import {
 	CURRENT_PROJECT_VERSION,
@@ -54,7 +58,7 @@ import { frameProofFromRecord } from "@opencut/editor-classic/frame-proof";
 import {
 	openEditorPlaneAutomation,
 	prepareEditorProjectRecord,
-	sameJson,
+	sameTransactionHistory,
 } from "./editor-plane";
 import { FileProjectStore } from "./file-store";
 import {
@@ -156,10 +160,7 @@ async function createHostPlane(args: {
 		baseStore: args.baseStore,
 		projectId: args.projectId,
 	});
-	const revisionWatchers = new Map<
-		(revision: number) => void,
-		() => void
-	>();
+	const revisionWatchers = new Map<(revision: number) => void, () => void>();
 	let queue: Promise<unknown> = Promise.resolve();
 
 	function enqueue<T>(operation: () => Promise<T>): Promise<T> {
@@ -777,8 +778,11 @@ async function handleApi(
 		if (route[0] === "drafts") {
 			response.setHeader("cache-control", "no-store");
 			await handleDraftRoute({
-				method: request.method, route, plane,
-				readBody: () => readJsonBody(request), respond,
+				method: request.method,
+				route,
+				plane,
+				readBody: () => readJsonBody(request),
+				respond,
 			});
 			return;
 		}
@@ -921,7 +925,10 @@ async function acceptExternalRecord(args: {
 	const incomingHistory = incomingEnvelope.idempotency;
 	const parentMatches =
 		incomingHistory.length >= storedHistory.length &&
-		sameJson(incomingHistory.slice(0, storedHistory.length), storedHistory);
+		sameTransactionHistory(
+			incomingHistory.slice(0, storedHistory.length),
+			storedHistory,
+		);
 	const uiFieldSave =
 		incomingEnvelope.revision === storedEnvelope.revision &&
 		incomingHistory.length === storedHistory.length &&
@@ -1050,10 +1057,7 @@ async function handleLibrary(
 			respond(404, { error: "unknown-library-method" });
 			return;
 		}
-		respond(
-			200,
-			await plane.baseStore.listLibraryRecords({ namespace }),
-		);
+		respond(200, await plane.baseStore.listLibraryRecords({ namespace }));
 		return;
 	}
 	const key = decodeURIComponent(route[1]);

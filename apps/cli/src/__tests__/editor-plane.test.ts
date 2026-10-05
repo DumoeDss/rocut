@@ -43,13 +43,20 @@ function createTrack(id: string) {
 }
 
 /** A fabricated transform chain step, in the published chain's shape. */
-function fakeMigration(from: number, to: number, tag: string): StorageMigration {
+function fakeMigration(
+	from: number,
+	to: number,
+	tag: string,
+): StorageMigration {
 	return {
 		from,
 		to,
 		async run({ project }) {
 			return {
-				project: { ...project, migrated: [...(project.migrated as string[] ?? []), tag] },
+				project: {
+					...project,
+					migrated: [...((project.migrated as string[]) ?? []), tag],
+				},
 				skipped: false,
 			};
 		},
@@ -147,10 +154,9 @@ describe("editor plane: seed and reopen (the unification's file contract)", () =
 			record: {
 				...stored!,
 				data: {
-					...((stored!.data as Record<string, unknown>)),
+					...(stored!.data as Record<string, unknown>),
 					metadata: {
-						...((stored!.data as { metadata: Record<string, unknown> })
-							.metadata),
+						...(stored!.data as { metadata: Record<string, unknown> }).metadata,
 						thumbnail: "data:image/png;base64,pane",
 					},
 				},
@@ -391,17 +397,14 @@ describe("editor plane: external record saves over HTTP", () => {
 		id: string,
 	): Promise<{ accepted: boolean; revision?: number }> {
 		return (await (
-			await fetch(
-				`http://127.0.0.1:${host.port}/${host.token}/api/apply`,
-				{
-					method: "POST",
-					headers: { "content-type": "application/json" },
-					body: JSON.stringify({
-						operations: [createTrack(id)],
-						idempotencyKey: `agent:${id}`,
-					}),
-				},
-			)
+			await fetch(`http://127.0.0.1:${host.port}/${host.token}/api/apply`, {
+				method: "POST",
+				headers: { "content-type": "application/json" },
+				body: JSON.stringify({
+					operations: [createTrack(id)],
+					idempotencyKey: `agent:${id}`,
+				}),
+			})
 		).json()) as { accepted: boolean; revision?: number };
 	}
 
@@ -410,9 +413,7 @@ describe("editor plane: external record saves over HTTP", () => {
 		summary: unknown;
 	}> {
 		return (await (
-			await fetch(
-				`http://127.0.0.1:${host.port}/${host.token}/api/record`,
-			)
+			await fetch(`http://127.0.0.1:${host.port}/${host.token}/api/record`)
 		).json()) as { record: ProjectRecord; summary: unknown };
 	}
 
@@ -434,6 +435,45 @@ describe("editor plane: external record saves over HTTP", () => {
 		};
 	}
 
+	test("fingerprint compaction preserves HTTP parent checks and rejects changed receipts", async () => {
+		const { canonicalOperationFingerprint } =
+			await import("@opencut/editor-contracts/engine");
+		const { normalizeOperationFingerprint } = await import("opencut-wasm");
+		const host = await openHost();
+		try {
+			expect((await applyTrack(host, "legacy")).accepted).toBe(true);
+			const body = await getRecord(host);
+			const data = body.record.data as {
+				__opencutTransaction: {
+					idempotency: Array<{
+						fingerprint: string;
+						result: { revision: number };
+					}>;
+				};
+			};
+			const entry = data.__opencutTransaction.idempotency[0];
+			const compact = entry.fingerprint;
+			entry.fingerprint = canonicalOperationFingerprint([
+				createTrack("legacy"),
+			]);
+			expect(normalizeOperationFingerprint(entry.fingerprint)).toBe(compact);
+			// Model a legacy writer at the same revision; do not touch disk out of band.
+			expect((await putRecord(host, body)).status).toBe(200);
+			entry.fingerprint = compact;
+			expect((await putRecord(host, body)).status).toBe(200);
+			entry.result.revision += 1;
+			expect((await putRecord(host, body)).status).toBe(409);
+			entry.result.revision -= 1;
+			entry.fingerprint = canonicalOperationFingerprint([
+				createTrack("different"),
+			]);
+			expect((await putRecord(host, body)).status).toBe(409);
+			expect((await applyTrack(host, "next")).accepted).toBe(true);
+		} finally {
+			await host.close();
+		}
+	});
+
 	test("a UI-field-only save (same revision, same history) is accepted and the engine resyncs", async () => {
 		const host = await openHost();
 		try {
@@ -445,8 +485,8 @@ describe("editor plane: external record saves over HTTP", () => {
 					data: {
 						...(record.data as Record<string, unknown>),
 						metadata: {
-							...((record.data as { metadata: Record<string, unknown> })
-								.metadata),
+							...(record.data as { metadata: Record<string, unknown> })
+								.metadata,
 							thumbnail: "pane-thumb",
 						},
 					},
@@ -463,9 +503,7 @@ describe("editor plane: external record saves over HTTP", () => {
 			).metadata;
 			expect(metadata.thumbnail).toBe("pane-thumb");
 			const tracks = (await (
-				await fetch(
-					`http://127.0.0.1:${host.port}/${host.token}/api/tracks`,
-				)
+				await fetch(`http://127.0.0.1:${host.port}/${host.token}/api/tracks`)
 			).json()) as { name: string }[];
 			expect(tracks.map((track) => track.name)).toEqual([
 				"one",
@@ -496,9 +534,7 @@ describe("editor plane: external record saves over HTTP", () => {
 			expect(stale.payload.error).toBe("revision-conflict");
 			// The agent's work survived the refused save.
 			const tracks = (await (
-				await fetch(
-					`http://127.0.0.1:${host.port}/${host.token}/api/tracks`,
-				)
+				await fetch(`http://127.0.0.1:${host.port}/${host.token}/api/tracks`)
 			).json()) as { name: string }[];
 			expect(tracks.map((track) => track.name)).toEqual([
 				"Main Track",
@@ -521,7 +557,9 @@ describe("editor plane: external record saves over HTTP", () => {
 			).json()) as { draftId: string };
 			const { record, summary } = await getRecord(host);
 			// Unknown retained content is not a view field even at equal revision.
-			(record.data as Record<string, unknown>).pluginContent = { changed: true };
+			(record.data as Record<string, unknown>).pluginContent = {
+				changed: true,
+			};
 			const saved = await putRecord(host, { record, summary });
 			expect(saved.status).toBe(200);
 			const staged = await fetch(
@@ -604,12 +642,7 @@ describe("editor plane: the ./transactions entry stays wasm-free and react-free"
 		}
 		expect(
 			seen.has(
-				path.join(
-					packageSrc,
-					"editor",
-					"persistence",
-					"project-codec.ts",
-				),
+				path.join(packageSrc, "editor", "persistence", "project-codec.ts"),
 			),
 		).toBe(true);
 	});

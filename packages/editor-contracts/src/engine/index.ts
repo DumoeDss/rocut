@@ -7,6 +7,7 @@ export { canonicalOperationFingerprint, cloneTransactionValue } from "./clone";
 export { bindNativeCommittedTransactionStateCapture } from "./committed-capture";
 export type { NativeCommittedTransactionStateCapture } from "./committed-capture";
 export type { OpenTransactionEngineOptions } from "./engine";
+export type { OperationFingerprintNormalizer } from "./fingerprint";
 export { openTransactionEngine } from "./engine";
 export { evaluateTransactionBatch } from "./evaluator";
 export {

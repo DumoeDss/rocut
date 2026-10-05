@@ -4,6 +4,8 @@ import type { TransactionEngine, TransactionEngineDocument } from "../engine";
 import { evaluateTransactionBatch } from "../engine";
 import { bindNativeCommittedTransactionStateCapture } from "../engine/committed-capture";
 import { projectCommittedTransactionDocument } from "../engine/projection";
+import { bindOperationFingerprintNormalizer } from "../engine/fingerprint";
+import type { OperationFingerprintNormalizer } from "../engine/fingerprint";
 import { classifyDraftRuntimeOperation } from "./classification";
 import {
 	cloneDraftValue,
@@ -46,6 +48,10 @@ import type {
 
 const DEFAULT_SNAPSHOT_ATTEMPTS = 3;
 const DRAFT_INCARNATION_BYTES = 16;
+
+type BoundDraftOptions = CreateDraftEditingManagerOptions<string> & {
+	readonly normalizeOperationFingerprint?: OperationFingerprintNormalizer;
+};
 
 function draftIdOf(value: string): DraftId {
 	return value as DraftId;
@@ -298,7 +304,7 @@ function createDraftSession(args: {
 	readonly approvalMode: "manual" | "auto";
 	readonly base: DraftContentSnapshot;
 	readonly committedBase: TransactionEngineDocument;
-	readonly options: CreateDraftEditingManagerOptions<string>;
+	readonly options: BoundDraftOptions;
 }): DraftEditingSession {
 	const { id, approvalMode, options } = args;
 	const base = immutableDraftValue(args.base);
@@ -469,6 +475,7 @@ function createDraftSession(args: {
 		try {
 			const forwardEvaluation = await evaluateTransactionBatch({
 				document: cloneDraftValue(committedBase),
+				normalizeOperationFingerprint: options.normalizeOperationFingerprint,
 				batch: forwardBatch,
 				collectAllIssues: true,
 			});
@@ -501,6 +508,7 @@ function createDraftSession(args: {
 			});
 			const compensationPreflight = await evaluateTransactionBatch({
 				document: projectedCommitted,
+				normalizeOperationFingerprint: options.normalizeOperationFingerprint,
 				batch: {
 					operations: compensatingOperations,
 					expectedRevision: expectedAppliedRevision,
@@ -660,6 +668,7 @@ function createDraftSession(args: {
 		try {
 			evaluated = await evaluateTransactionBatch({
 				document: cloneDraftValue(working),
+				normalizeOperationFingerprint: options.normalizeOperationFingerprint,
 				batch: { operations },
 				placementPolicies: options.placementPolicies,
 				collectAllIssues: true,
@@ -801,8 +810,11 @@ export function createDraftEditingManager<FeatureName extends string = never>(
 	const committedState = bindCommittedStatePort(
 		nativeCommittedState ?? options.committedState,
 	);
-	const frozenOptions: CreateDraftEditingManagerOptions<string> = {
+	const frozenOptions: BoundDraftOptions = {
 		engine: options.engine,
+		normalizeOperationFingerprint: bindOperationFingerprintNormalizer(
+			options.engine,
+		),
 		...(committedState === undefined ? {} : { committedState }),
 		retentionPolicy: options.retentionPolicy,
 		placementPolicies: Object.freeze([...(options.placementPolicies ?? [])]),

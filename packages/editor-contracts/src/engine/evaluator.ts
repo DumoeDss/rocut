@@ -22,6 +22,7 @@ import {
 	validateTransactionDocument,
 } from "./invariant";
 import { evaluateBasePlacementPolicy } from "./placement";
+import type { OperationFingerprintNormalizer } from "./fingerprint";
 import type {
 	TransactionEngineDocument,
 	TransactionEngineIssue,
@@ -909,15 +910,27 @@ function mutateOperations(args: {
 export async function evaluateTransactionBatch(args: {
 	readonly document: TransactionEngineDocument;
 	readonly batch: TransactionBatch;
+	readonly normalizeOperationFingerprint?: OperationFingerprintNormalizer;
 	readonly placementPolicies?: readonly TransactionPlacementPolicy[];
 	readonly collectAllIssues?: boolean;
 }): Promise<TransactionEvaluation> {
-	const document = cloneTransactionValue(args.document);
+	let document = cloneTransactionValue(args.document);
 	const baseRevision = document.revision;
 	let fingerprint: string;
 	let operations: readonly TransactionOperation[];
 	try {
 		fingerprint = canonicalOperationFingerprint(args.batch.operations);
+		if (args.normalizeOperationFingerprint) {
+			const normalize = args.normalizeOperationFingerprint;
+			fingerprint = normalize(fingerprint);
+			document = {
+				...document,
+				idempotency: document.idempotency.map((entry) => ({
+					...entry,
+					fingerprint: normalize(entry.fingerprint),
+				})),
+			};
+		}
 		// Clone the complete operation array once. Per-operation or per-entity
 		// cloning destroys aliases intentionally shared by patches in one atomic
 		// batch and makes exact provider-private restoration impossible.

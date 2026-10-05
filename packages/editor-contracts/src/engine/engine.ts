@@ -23,6 +23,8 @@ import { registerNativeCommittedStateCapture } from "./committed-capture";
 export { bindNativeCommittedTransactionStateCapture } from "./committed-capture";
 export type { NativeCommittedTransactionStateCapture } from "./committed-capture";
 import { evaluateTransactionBatch } from "./evaluator";
+import { registerOperationFingerprintNormalizer } from "./fingerprint";
+import type { OperationFingerprintNormalizer } from "./fingerprint";
 import { transactionDocumentInvariantIssue } from "./invariant";
 import { projectCommittedTransactionDocument } from "./projection";
 import { TRANSACTION_ENGINE_BASE_FEATURES } from "./types";
@@ -43,6 +45,7 @@ export interface OpenTransactionEngineOptions<
 	readonly store: ProjectStore;
 	readonly projectId: ProjectId;
 	readonly documentAdapter: TransactionDocumentAdapter;
+	readonly normalizeOperationFingerprint?: OperationFingerprintNormalizer;
 	readonly placementPolicies?: readonly TransactionPlacementPolicy[];
 	readonly optionalFeatures?: TransactionEngineOptionalFeatures<FeatureName>;
 	readonly signal?: AbortSignal;
@@ -111,6 +114,7 @@ export async function openTransactionEngine<FeatureName extends string = never>(
 	options: OpenTransactionEngineOptions<FeatureName>,
 ): Promise<TransactionEngine<FeatureName>> {
 	assertOptionalFeatureNames(options.optionalFeatures);
+	const normalizeOperationFingerprint = options.normalizeOperationFingerprint;
 	const record = await options.store.load({
 		id: options.projectId,
 		signal: options.signal,
@@ -232,6 +236,7 @@ export async function openTransactionEngine<FeatureName extends string = never>(
 			return enqueue(async () => {
 				const evaluated = await evaluateTransactionBatch({
 					document: committed,
+					normalizeOperationFingerprint,
 					batch,
 					placementPolicies: options.placementPolicies,
 				});
@@ -285,6 +290,7 @@ export async function openTransactionEngine<FeatureName extends string = never>(
 			return enqueue(async () => {
 				const evaluated = await evaluateTransactionBatch({
 					document: committed,
+					normalizeOperationFingerprint,
 					batch,
 					placementPolicies: options.placementPolicies,
 					collectAllIssues: true,
@@ -302,6 +308,7 @@ export async function openTransactionEngine<FeatureName extends string = never>(
 			return enqueue(async () => {
 				const evaluated = await evaluateTransactionBatch({
 					document: committed,
+					normalizeOperationFingerprint,
 					batch,
 					placementPolicies: options.placementPolicies,
 				});
@@ -323,6 +330,10 @@ export async function openTransactionEngine<FeatureName extends string = never>(
 	registerNativeCommittedStateCapture({
 		engine,
 		capture: () => enqueue(async () => committed),
+	});
+	registerOperationFingerprintNormalizer({
+		engine,
+		normalize: normalizeOperationFingerprint,
 	});
 
 	return engine;
