@@ -36,6 +36,10 @@ import { promisify } from "node:util";
 import { chromium } from "@playwright/test";
 
 import { MOTION_TEXT_F01_SOURCE } from "./fixtures/motion-text-f01-fixture.mjs";
+import {
+	probeExportMedia as probeMedia,
+	exportMediaFacts as mediaFacts,
+} from "./installed-export-media-facts.mjs";
 
 const run = promisify(execFile);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -104,51 +108,6 @@ function buildClickTrackWav({ durationSeconds, sampleRate }) {
 		}
 	}
 	return buffer;
-}
-
-async function probeMedia(ffprobe, path) {
-	const { stdout } = await run(
-		ffprobe,
-		[
-			"-v",
-			"error",
-			"-show_entries",
-			"stream=codec_type,width,height,r_frame_rate,sample_rate,duration",
-			"-show_entries",
-			"format=duration",
-			"-of",
-			"json",
-			path,
-		],
-		{ maxBuffer: 16 * 1024 * 1024 },
-	);
-	return JSON.parse(stdout);
-}
-
-function mediaFacts(probe, { fpsNumerator, fpsDenominator }) {
-	const video = probe.streams.find((s) => s.codec_type === "video");
-	const audio = probe.streams.filter((s) => s.codec_type === "audio");
-	if (!video) throw new Error("export has no video stream");
-	if (audio.length !== 1) throw new Error("export must have one audio stream");
-	const rate =
-		Number(video.r_frame_rate.split("/")[0]) /
-		Number(video.r_frame_rate.split("/")[1]);
-	const durationSeconds = Number(probe.format.duration);
-	const frameCount = Math.round(durationSeconds * rate);
-	// Audio starts at 0 in the muxer; the container-level A/V offset is the
-	// audio duration delta vs video, expressed in whole frames.
-	const audioDuration = Number(audio[0].duration ?? probe.format.duration);
-	const offsetSeconds = Math.abs(audioDuration - durationSeconds);
-	return {
-		width: video.width,
-		height: video.height,
-		fpsNumerator: Number(video.r_frame_rate.split("/")[0]),
-		fpsDenominator: Number(video.r_frame_rate.split("/")[1]),
-		frameCount,
-		videoStreams: 1,
-		audioStreams: 1,
-		audioVideoOffsetFrames: Math.min(1, offsetSeconds * rate),
-	};
 }
 
 async function extractFrames(ffmpeg, mp4Path, outDir, prefix, phases) {
@@ -968,8 +927,8 @@ async function main() {
 		console.log("[analysis] ffprobe on both exports");
 		const fullProbe = await probeMedia(ffprobe, fullOut);
 		const selectedProbe = await probeMedia(ffprobe, selectedOut);
-		const fullFacts = mediaFacts(fullProbe, {});
-		const selectedFacts = mediaFacts(selectedProbe, {});
+		const fullFacts = mediaFacts(fullProbe);
+		const selectedFacts = mediaFacts(selectedProbe);
 
 		const fullFrames = await extractFrames(
 			ffmpeg,

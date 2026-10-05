@@ -14,6 +14,7 @@ import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, test } from "bun:test";
 
 import { validateInstalledAcceptance } from "../validate-motion-text-installed-acceptance.mjs";
+import { exportMediaFacts } from "../installed-export-media-facts.mjs";
 
 const roots = [];
 const SCRIPT = join(
@@ -288,6 +289,35 @@ describe("installed motion-text acceptance evidence", () => {
 		writeManifest(manifestPath, manifest);
 		expect(() => validateInstalledAcceptance(manifestPath)).toThrow(
 			"selected export frame count differs by more than one frame",
+		);
+	});
+
+	test("rejects measured six-frame A/V drift even when its metadata and digest agree", () => {
+		const { root, manifest, manifestPath } = buildFixture();
+		const measured = exportMediaFacts({
+			streams: [
+				{
+					codec_type: "video",
+					width: 1920,
+					height: 1080,
+					r_frame_rate: "30/1",
+					start_time: "0",
+					duration: "15",
+					nb_read_frames: "450",
+				},
+				{ codec_type: "audio", start_time: "0", duration: "15.2" },
+			],
+		});
+		manifest.exports[0].audioVideoOffsetFrames =
+			measured.audioVideoOffsetFrames;
+		const metadata = JSON.parse(
+			readFileSync(join(root, "exports/full.json"), "utf8"),
+		);
+		metadata.audioVideoOffsetFrames = measured.audioVideoOffsetFrames;
+		replaceArtifact(root, manifest, "exports/full.json", metadata);
+		writeManifest(manifestPath, manifest);
+		expect(() => validateInstalledAcceptance(manifestPath)).toThrow(
+			"full export A/V offset must be within one frame",
 		);
 	});
 
