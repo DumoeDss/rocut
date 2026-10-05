@@ -78,6 +78,10 @@ try {
     const nested = relative(realpathSync(ownership.folder), reusePath);
     assert(nested && !nested.startsWith('..') && !isAbsolute(nested), 'Reused fixture must remain in the dedicated test folder');
   }
+  // Finish the previous editor's durable close BEFORE opening a new fixture:
+  // that final save updates recency, which the real launcher uses as default.
+  await conn.page.locator('[data-testid="chat-button-workspace-close"][data-workspace-id="rocut"]').click();
+  await expect(conn.page.locator('[data-testid="webpane-tab-slot"][data-tool-id="rocut"]')).toHaveCount(0, {timeout:20000});
   const project = reuseStressFixture ? await conn.page.evaluate(async ({folder,path}) => {
     const opened = await window.native.toolHosts.openProject({toolId:'rocut',workingFolder:folder,projectPath:path});
     return {path,url:opened.editorUrl};
@@ -90,8 +94,6 @@ try {
   evidence.projectPath=project.path;
   // Reopen through the real workspace button: host URL/theme ownership must
   // follow the fixture too, not just a navigation of its existing iframe.
-  await conn.page.locator('[data-testid="chat-button-workspace-close"][data-workspace-id="rocut"]').click();
-  await expect(conn.page.locator('[data-testid="webpane-tab-slot"][data-tool-id="rocut"]')).toHaveCount(0, {timeout:20000});
   await conn.page.locator('[data-testid="chat-tab-workspace"][data-workspace-id="rocut"]').click();
   await expect.poll(async () => {
     for (const frame of conn.page.frames()) {
