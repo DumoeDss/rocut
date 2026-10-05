@@ -2,6 +2,13 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Actionable legacy-host transport diagnosis (2026-10-05)
+
+- Reproduced two source-CLI failures against an authenticated loopback legacy-host fixture: missing JSON catalog returned only a generic 404; an HTML 404 became `Failed to parse JSON`. Neither explained how to restore motion-text functionality.
+- CLI HTTP transport now lives in apps/cli/src/host-request.ts. A GET motion-text/catalog 404 yields `motion-text-capability-unavailable`, action `upgrade-rocut-and-reopen`, and a human instruction to upgrade the plugin/standalone host and reopen its editor (or restart a stale host). It never edits a project, installs software or retries a mutation automatically.
+- Scope is deliberately precise: sequence-not-found 404, context 404, 401, 403 and 503 retain their own status/details and never receive upgrade advice. Non-JSON responses retain HTTP diagnostic context without echoing HTML or credentials. Existing structured revision-conflict output is preserved.
+- Source verification: 9 real-HTTP/CLI error tests pass, including JSON and HTML legacy responses, same-host capability recovery, zero writes, unrelated refusal classifications and the existing 409 conflict contract. CLI typecheck and SBOM check pass. These controlled legacy-host fixtures are not an actual old-plugin installation or proof of the full section-12 UI recovery chain; installed-artifact verification follows separately.
+
 ## Same-project multilingual and range acceptance (2026-10-05)
 
 - **Installed live-CB08Dw passes 28/28 uninterrupted checks.** The same Creator-opened project continues from cue edits/locks/variation, move/trim/split/history/reopen and Agent conflict/review into an imported English overlay, shuffled seeks, visibility undo, selected-third-cue export and final full export. The combined harness now records section 12 diagnostics as pending; its fixture setup still uses the host API, not project-creation UI acceptance. This is not overall feature completion. Runtime stays f93ce325 and plugin stays 0.5.0; only test drivers and this record changed.
