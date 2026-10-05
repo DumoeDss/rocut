@@ -169,7 +169,7 @@ export const USAGE_LINES: readonly string[] = [
 	"  rocut motion-text catalog [--target <id|auto>] [--project <dir>]",
 	"  rocut motion-text list [--target <id|auto>] [--project <dir>]",
 	"  rocut motion-text create <spec.json> [--target <id|auto>] [--project <dir>]",
-	"  rocut motion-text mutate <sequence-id> <mutation.json> [--target <id|auto>] [--project <dir>]",
+	"  rocut motion-text mutate <sequence-id> <mutation.json> [--preview] [--target <id|auto>] [--project <dir>]",
 	"  rocut motion-text vary <sequence-id> <variation.json> [--apply] [--target <id|auto>] [--project <dir>]",
 	"  rocut verify <tick> [--target <id|auto>] [--project <dir>]",
 	"  rocut apply <ops.json> [--target <id|auto>] [--project <dir>]",
@@ -382,6 +382,9 @@ async function runCli(argv: readonly string[]): Promise<void> {
 				return;
 			}
 			if (subcommand === "mutate" || subcommand === "vary") {
+				if (subcommand === "mutate" && args.flags.has("preview") && args.flags.has("apply")) {
+					throw new Error("motion-text mutate --preview cannot be combined with --apply");
+				}
 				const sequenceId = args.positional[1];
 				const specFile = args.positional[2];
 				if (sequenceId === undefined || specFile === undefined) {
@@ -392,7 +395,7 @@ async function runCli(argv: readonly string[]): Promise<void> {
 				const spec: unknown = JSON.parse(await readFile(specFile, "utf8"));
 				const suffix =
 					subcommand === "mutate"
-						? "mutations"
+						? (args.flags.has("preview") ? "mutation-previews" : "mutations")
 						: `variations${args.flags.has("apply") ? "?apply=true" : ""}`;
 				const outcome = await request(
 					resolved.secret,

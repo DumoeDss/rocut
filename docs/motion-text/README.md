@@ -27,7 +27,7 @@ Rocut 已把 JIZURA 的文字动效、预设和工程导入能力吸收到同一
 rocut motion-text catalog
 rocut motion-text list
 rocut motion-text create <spec.json>
-rocut motion-text mutate <sequence-id> <mutation.json>
+rocut motion-text mutate <sequence-id> <mutation.json> [--preview]
 rocut motion-text vary <sequence-id> <variation.json> [--apply]
 ```
 
@@ -52,6 +52,12 @@ rocut motion-text vary <sequence-id> <variation.json> [--apply]
 修改前必须先 `motion-text list` 或 `rocut read`，使用刚读到的两级 revision。sequence 冲突返回 HTTP 409 和 `motion-text-sequence-conflict`；project 冲突沿用事务层 `conflict`。相同 key 与相同请求是幂等重放，相同 key 与不同请求返回 `motion-text-idempotency-conflict`。Agent 不能直接写 `project.json`、构造 resolved plan 或用通用事务模拟缺失的高层能力。
 
 JIZURA 导入使用 `sourceFormat: "jizura"`，并把原始 JSON 文本作为 inert `source` 传入；duration、language、seed、字体和 resolved plan 由 Rust 决定。完整协议见 [S08 Agent 接口](./s08-agent-interface-progress.md)。
+
+### 只读候选与人工审批草稿
+
+`motion-text mutate ... --preview` 接受 `mutation` 与 `expectedSequenceRevision`，调用同一 Rust planner，返回 `applied: false`、当前 `projectRevision`、`baseSequenceRevision`、`candidateSequenceRevision` 和完整 `candidate`。不修改工程、不增加 revision、不写幂等日志；写入用的 `expectedRevision`／`idempotencyKey` 在预览模式不必提供。默认不带 `--preview` 的行为仍为直接提交，仍要求完整写入保护字段。
+
+需要人工审批时，先 `draft begin`，再生成候选。用一个 `update-motion-text-sequence` 操作提交到 `draft stage`：`sequenceId` 为返回 ID，`expectedSequenceRevision` 为返回 `baseSequenceRevision`，`sequence` 必须原样使用 Rust 返回的 `candidate`，不能手工编造或修改 resolved plan。审批前工程保持不变；取得用户对具体变更的批准后才 `draft approve`。用户保存导致草稿失效或 revision 冲突时，重读并重新生成候选／草稿，不复用陈旧候选。预览采用独立的 `mutation-previews` 接口，旧宿主拒绝时应更新插件，不能自动回退成直接写入。
 
 ## 当前交付边界
 

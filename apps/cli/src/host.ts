@@ -524,7 +524,7 @@ async function handleApi(
 		) {
 			const sequenceId = decodeURIComponent(route[2]);
 			const body: unknown = await readJsonBody(request);
-			if (route[3] === "mutations") {
+			if (route[3] === "mutations" || route[3] === "mutation-previews") {
 				respond(
 					200,
 					await plane.enqueue(() =>
@@ -532,6 +532,7 @@ async function handleApi(
 							automation: plane.automation(),
 							sequenceId,
 							input: body,
+							preview: route[3] === "mutation-previews",
 							...(context.motionTextCores === undefined
 								? {}
 								: { cores: context.motionTextCores }),

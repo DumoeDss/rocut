@@ -311,6 +311,8 @@ export async function mutateMotionText(args: {
 	readonly automation: AutomationApi;
 	readonly sequenceId: string;
 	readonly input: unknown;
+	/** Build a Rust candidate for review/staging without writing committed state. */
+	readonly preview?: boolean;
 	readonly cores?: MotionTextFactoryCores;
 	readonly journal?: MotionTextRequestJournal;
 }): Promise<Readonly<Record<string, unknown>>> {
@@ -321,23 +323,26 @@ export async function mutateMotionText(args: {
 		"expectedSequenceRevision",
 		"idempotencyKey",
 	]);
-	const expectedRevision = integer(input.expectedRevision, "expectedRevision")!;
+	const expectedRevision = args.preview
+		? undefined
+		: integer(input.expectedRevision, "expectedRevision")!;
 	const expectedSequenceRevision = integer(
 		input.expectedSequenceRevision,
 		"expectedSequenceRevision",
 	)!;
-	const idempotencyKey = nonEmptyString(
-		input.idempotencyKey,
-		"idempotencyKey",
-	)!;
+	const idempotencyKey = args.preview
+		? undefined
+		: nonEmptyString(input.idempotencyKey, "idempotencyKey")!;
 	const scope = `mutate:${args.sequenceId}`;
-	const replayed = replayMotionTextRequest({
-		journal: args.journal,
-		idempotencyKey,
-		scope,
-		input,
-	});
-	if (replayed !== null) return replayed;
+	if (idempotencyKey !== undefined) {
+		const replayed = replayMotionTextRequest({
+			journal: args.journal,
+			idempotencyKey,
+			scope,
+			input,
+		});
+		if (replayed !== null) return replayed;
+	}
 	const sequences = (await args.automation.motionTextSequences?.()) ?? [];
 	const sequence = sequenceById(sequences, args.sequenceId);
 	assertSequenceRevision(sequence, expectedSequenceRevision);
@@ -348,6 +353,20 @@ export async function mutateMotionText(args: {
 		...(args.cores?.mutate === undefined ? {} : { core: args.cores.mutate }),
 	});
 	if (built.sequence === null) rejected(built.diagnostics);
+	if (args.preview) {
+		return {
+			accepted: true, operation: "mutate", applied: false,
+			projectRevision: Number(await args.automation.revision()),
+			baseSequenceRevision: sequence.revision,
+			candidateSequenceRevision: built.sequence.revision,
+			sequenceId: built.sequence.id,
+			affected: affected(sequence, built.sequence),
+			diagnostics: built.diagnostics, candidate: built.sequence,
+		};
+	}
+	if (expectedRevision === undefined || idempotencyKey === undefined) {
+		return invalid("Applied mutations require expectedRevision and idempotencyKey.");
+	}
 	const result = await args.automation.apply({
 		operations: [
 			{
