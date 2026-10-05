@@ -37,6 +37,7 @@ import { probeUiFormatExport } from './probe-ui-format-export.mjs';
 import { probeUiExportOptions } from './probe-ui-export-options.mjs';
 import { probeUiRangeExport } from './probe-ui-range-export.mjs';
 import { probeMaskControls } from './probe-mask-controls.mjs';
+import { probeFreeformMask } from './probe-freeform-mask.mjs';
 
 // Run with the Elftia worktree's tsx loader. Never launch a substitute browser.
 const hostRoot = resolve(process.env.ELFTIA_WORKTREE ?? '');
@@ -147,6 +148,8 @@ try {
   execFileSync('ffmpeg',['-v','error','-n','-f','lavfi','-i','sine=frequency=440:duration=16','-ar','44100','-ac','1','-c:a','pcm_s16le',audioFixture],{windowsHide:true});
  if (process.argv.includes('--agent-drafts-only')) {
     await probeAgentDrafts({page,hostPage:conn.page,project:project.path,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
+  } else if (process.argv.includes('--freeform-mask-only')) {
+    await probeFreeformMask({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--mask-controls-only')) {
     await probeMaskControls({page,hostPage:conn.page,work,evidence,onPhase:next=>{phase=next;console.log('phase:',phase);}});
   } else if (process.argv.includes('--ui-range-export-only')) {

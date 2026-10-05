@@ -346,7 +346,7 @@ describe("mask snapping", () => {
 		// bounds.width=200 → localCanvasSize.width/2=100 is the right snap target.
 		// width=0.4, scale=1 → aabbHalfW = (0.4*200)/2 * 1 = 40.
 		// At scale=2.48 → rightEdge=0+40*2.48=99.2; |99.2-100|=0.8 < threshold(8)
-		// → snaps to scale=1*(100/40)=2.5; line at position 100.
+		// → snaps to scale=1*(100/40)=2.5. Both centered edges align at ±100.
 		const result = snapBoxMaskInteraction({
 			handleId: { kind: "scale" },
 			startParams: buildRectangleParams({ scale: 1 }),
@@ -357,30 +357,15 @@ describe("mask snapping", () => {
 		});
 
 		expect(result.params.scale).toBe(2.5);
-		expect(result.activeLines).toEqual([{ type: "vertical", position: 100 }]);
-	});
-
-	test("snaps text mask movement using intrinsic text bounds", () => {
-		const params = buildTextMaskParams({
-			centerX: 0.03,
-			centerY: -0.04,
-		});
-		const result = textMaskDefinition.interaction.snap?.({
-			handleId: { kind: "position" },
-			startParams: params,
-			proposedParams: params,
-			bounds,
-			canvasSize,
-			snapThreshold,
-		});
-
-		expect(result?.params.centerX).toBe(0);
-		expect(result?.params.centerY).toBe(0);
-		expect(result?.activeLines).toEqual([
-			{ type: "vertical", position: 0 },
-			{ type: "horizontal", position: 0 },
+		expect(result.activeLines).toEqual([
+			{ type: "vertical", position: -100 },
+			{ type: "vertical", position: 100 },
 		]);
 	});
+
+	// Text-mask snapping needs real Canvas font metrics, unavailable in Bun.
+	// Its position AND both guide assertions live in the installed-browser
+	// script/probe-mask-handle-edges.mjs (--freeform-mask-only), not a Canvas mock.
 
 	test("snaps custom mask movement using path geometry bounds", () => {
 		const params = buildFreeformPathMaskParams({
@@ -499,11 +484,58 @@ describe("custom mask point insertion", () => {
 			id: "new",
 			x: 0,
 			y: -0.1,
-			inX: 0,
+			inX: -0.1,
 			inY: 0,
-			outX: 0,
+			outX: 0.1,
 			outY: 0,
 		});
+	});
+
+	test("insertion preserves the original cubic curve, not just its endpoints", () => {
+		const points = buildFreeformPathMaskParams().path;
+		points[0] = { ...points[0], outX: 0.1, outY: 0.2 };
+		points[1] = { ...points[1], inX: -0.15, inY: 0.25 };
+		const split = 0.37;
+		const next = insertPointIntoFreeformSegment({
+			points,
+			segmentIndex: 0,
+			pointId: "new",
+			t: split,
+			closed: true,
+		});
+		const sample = ({
+			a,
+			b,
+			t,
+		}: {
+			a: FreeformPathMaskParams["path"][number];
+			b: FreeformPathMaskParams["path"][number];
+			t: number;
+		}) => {
+			const u = 1 - t;
+			return {
+				x:
+					u ** 3 * a.x +
+					3 * u ** 2 * t * (a.x + a.outX) +
+					3 * u * t ** 2 * (b.x + b.inX) +
+					t ** 3 * b.x,
+				y:
+					u ** 3 * a.y +
+					3 * u ** 2 * t * (a.y + a.outY) +
+					3 * u * t ** 2 * (b.y + b.inY) +
+					t ** 3 * b.y,
+			};
+		};
+		for (let i = 0; i <= 20; i++) {
+			const t = i / 20;
+			const original = sample({ a: points[0], b: points[1], t });
+			const inserted =
+				t <= split
+					? sample({ a: next[0], b: next[1], t: t / split })
+					: sample({ a: next[1], b: next[2], t: (t - split) / (1 - split) });
+			expect(inserted.x).toBeCloseTo(original.x, 8);
+			expect(inserted.y).toBeCloseTo(original.y, 8);
+		}
 	});
 
 	test("builds updated custom mask params for a clicked segment", () => {
