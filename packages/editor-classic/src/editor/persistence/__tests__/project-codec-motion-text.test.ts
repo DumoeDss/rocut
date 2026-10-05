@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-type-assertion -- Codec tests inspect and extend opaque persisted records deliberately. */
-import { describe, expect, test } from "bun:test";
+import { describe, expect, spyOn, test } from "bun:test";
 
 import { decodeProject, encodeProject } from "../project-codec";
 import { SessionPersistenceCoordinator } from "../session-persistence-coordinator";
@@ -13,6 +13,34 @@ import {
 type Raw = Record<string, unknown>;
 
 describe("motion-text project codec", () => {
+	test("full sequence replacement clones its body only once and keeps snapshots isolated", () => {
+		const project = projectFixture();
+		project.motionTextSequences.push(motionTextSequenceFixture());
+		const retained = encodeProject({ project, retained: {} });
+		const clone = spyOn(globalThis, "structuredClone");
+		let encoded;
+		try {
+			encoded = encodeProject({ project, retained }) as Raw;
+			expect(
+				clone.mock.calls.filter(
+					([value]) => value === project.motionTextSequences,
+				),
+			).toHaveLength(1);
+		} finally {
+			clone.mockRestore();
+		}
+		expect(encoded.motionTextSequences).toEqual(project.motionTextSequences);
+		expect(encoded.motionTextSequences).not.toBe(project.motionTextSequences);
+		const sequence = (encoded.motionTextSequences as Raw[])[0];
+		sequence.futureExtension = { value: "caller edit" };
+		expect(project.motionTextSequences[0]).not.toHaveProperty(
+			"futureExtension",
+		);
+		expect((retained as Raw).motionTextSequences).toEqual(
+			project.motionTextSequences,
+		);
+	});
+
 	test("ordinary save preserves removal of nested sequence fields", async () => {
 		const project = projectFixture();
 		project.motionTextSequences.push(motionTextSequenceFixture());
@@ -26,16 +54,22 @@ describe("motion-text project codec", () => {
 		const persistence = new SessionPersistenceCoordinator(fixture.store);
 		const loaded = await persistence.loadProject({ id: TEST_PROJECT_ID });
 		if (!loaded) throw new Error("missing fixture");
-		const binding = (loaded.motionTextSequences[0] as unknown as Raw).audioBinding as Raw;
+		const binding = (loaded.motionTextSequences[0] as unknown as Raw)
+			.audioBinding as Raw;
 		delete binding.beatOverride;
 		await persistence.saveProject({ project: loaded });
 		const stored = await fixture.store.load({ id: TEST_PROJECT_ID });
 		const reloaded = decodeProject(stored?.data);
-		const storedBinding = (reloaded.motionTextSequences[0] as unknown as Raw).audioBinding as Raw;
+		const storedBinding = (reloaded.motionTextSequences[0] as unknown as Raw)
+			.audioBinding as Raw;
 		expect(Object.hasOwn(storedBinding, "beatOverride")).toBe(false);
 		expect(storedBinding.futureExtension).toEqual({ keep: true });
-		expect((stored?.data as Raw).nestedOpaque).toEqual({ sentinel: ["keep", { value: 42 }] });
-		expect(persistence.readCachedProject({ id: TEST_PROJECT_ID })).toEqual(reloaded);
+		expect((stored?.data as Raw).nestedOpaque).toEqual({
+			sentinel: ["keep", { value: 42 }],
+		});
+		expect(persistence.readCachedProject({ id: TEST_PROJECT_ID })).toEqual(
+			reloaded,
+		);
 	});
 	test("legacy projects default the additive sequence collection to empty", () => {
 		const encoded = encodeProject({ project: projectFixture(), retained: {} });

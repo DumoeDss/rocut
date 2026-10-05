@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-type-assertion -- Focused persistence harnesses intentionally inspect opaque records and provide narrowed EditorCore collaborators. */
-import { describe, expect, test } from "bun:test";
+import { describe, expect, spyOn, test } from "bun:test";
 import { trackId } from "@opencut/editor-contracts";
 import type { EditorCore } from "../..";
 import { SaveManager } from "../save-manager";
@@ -16,6 +16,51 @@ import {
 } from "../../../editor/transactions/opencut/__tests__/fixture";
 
 describe("transaction persistence coordination", () => {
+	test("adoption transfers its private decoded result without a second clone", async () => {
+		const fixture = await storeFixture();
+		const persistence = new SessionPersistenceCoordinator(fixture.store);
+		const record = await fixture.store.load({ id: TEST_PROJECT_ID });
+		if (!record) throw new Error("missing fixture record");
+		const original = structuredClone(record);
+		const received: (typeof record)[] = [];
+		persistence.subscribeProjectRecords((snapshot) => {
+			(snapshot.data as { metadata: { name: string } }).metadata.name =
+				"listener mutation";
+		});
+		persistence.subscribeProjectRecords((snapshot) => received.push(snapshot));
+		const clone = spyOn(globalThis, "structuredClone");
+		let adopted;
+		try {
+			adopted = await persistence.adoptCommittedProjectRecord({ record });
+			// The fresh decoded project is copied only for the private cache.
+			// Returning another full clone used to create two equal clone inputs.
+			expect(
+				clone.mock.calls.filter(([value]) => Bun.deepEquals(value, adopted)),
+			).toHaveLength(1);
+		} finally {
+			clone.mockRestore();
+		}
+		expect(record).toEqual(original);
+		expect(received).toEqual([original]);
+		const expected = structuredClone(adopted);
+		adopted.metadata.name = "caller mutation";
+		adopted.scenes[0].name = "caller scene";
+		(record.data as { metadata: { name: string } }).metadata.name =
+			"input mutation";
+		const cached = persistence.readCachedProject({ id: TEST_PROJECT_ID });
+		expect(cached).toEqual(expected);
+		expect(received).toEqual([original]);
+		if (!cached) throw new Error("missing cached project");
+		await persistence.saveProject({ project: cached });
+		const saved = await fixture.store.load({ id: TEST_PROJECT_ID });
+		expect((saved?.data as Record<string, unknown>).nestedOpaque).toEqual(
+			(original.data as Record<string, unknown>).nestedOpaque,
+		);
+		expect(persistence.readCachedProject({ id: TEST_PROJECT_ID })).toEqual(
+			expected,
+		);
+	});
+
 	test("adopts the exact committed record without a second save", async () => {
 		const fixture = await storeFixture();
 		const persistence = new SessionPersistenceCoordinator(fixture.store);

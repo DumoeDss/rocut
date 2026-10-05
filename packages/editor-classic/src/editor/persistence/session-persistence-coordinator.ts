@@ -186,7 +186,9 @@ export class SessionPersistenceCoordinator {
 		this.projectCache.set(record.id, cloneOpaque(decoded));
 		this.emitProjectRecord(record);
 		this.emit({ kind: "project", key: record.id });
-		return cloneOpaque(decoded);
+		// Decoding owns its input, and the cache above owns a separate copy.
+		// Transfer this private result rather than cloning the project again.
+		return decoded;
 	}
 
 	async removeProject(args: {

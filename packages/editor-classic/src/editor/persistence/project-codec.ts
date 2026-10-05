@@ -200,7 +200,9 @@ export function encodeProject({
 			updatedAt: project.metadata.updatedAt.toISOString(),
 		},
 		scenes: project.scenes.map(encodeScene),
-		motionTextSequences: cloneOpaque(project.motionTextSequences),
+		// These entities are replaced below, not recursively overlaid. Do not
+		// clone/traverse the full sequence tree only to discard that result.
+		motionTextSequences: [] as TProject["motionTextSequences"],
 		currentSceneId: project.currentSceneId,
 		settings: cloneOpaque(project.settings),
 		version: project.version,

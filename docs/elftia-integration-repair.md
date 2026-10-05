@@ -2,6 +2,13 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Persistence copy ownership checkpoint (2026-10-06)
+
+- Diagnostic `mutation-profile-z24Vg1` on installed `c4f5e7e5` confirms the repeated font-hash hotspot is gone. Interval-filtered Apply-to-visible CPU samples still attribute 3102.43ms to opaque cloning across 30 edits. Its instrumented p95 (442.24ms) is not ordinary performance acceptance.
+- Project encoding no longer clones and recursively overlays the complete motion-text sequence tree before discarding that intermediate value. Sequences still replace the retained collection with an independent deep copy, preserving removals and unknown project siblings. The regression detects two source-tree copies on the old implementation versus one after the change, and checks source/retained isolation.
+- Committed-record adoption now transfers its already-private decoded result; the cache retains its separate copy and listeners retain individually isolated record snapshots. The added deterministic copy-cost regression fails before the change (two equivalent decoded-project clone inputs instead of one), then passes alongside caller/input/listener/cache isolation and a subsequent durable save.
+- Focused persistence/codec/transaction suites pass 23 tests / 86 assertions; changed-file ESLint, Vite typecheck/build, strict UTF-8 and diff checks pass (existing chunk warnings remain). Actual installed latency and workflow regression for these two changes are pending; the 300ms gate and the previously unexplained undo failure remain open. No domain rule, schema, WASM contract or plugin version changed.
+
 ## Font coverage / receipt ownership checkpoint (2026-10-06)
 
 - Corrected the prior CPU attribution: the same sampled WASM function appears beneath multiple callers. Aggregating by full stack in `mutation-profile-dgCEBK` attributes **2723.80ms** to `inspectMotionTextFont` during renderer `prepareSequence`, versus roughly **57.73ms** beneath transaction fingerprint normalization. The earlier statement that Rust transaction hashing was a principal bottleneck was not supported by caller-level evidence. The font path repeatedly hashes the entire cached font file on text edits.
