@@ -9,6 +9,8 @@ import { probeAgentDrafts } from "./probe-agent-drafts.mjs";
 import { probeLinkedLanguages } from "./probe-linked-languages.mjs";
 import { createRangeSource } from "./probe-ui-range-media.mjs";
 import { probeLinkedRange } from "./probe-linked-range.mjs";
+import { probeLinkedFontRecovery } from "./probe-linked-font-recovery.mjs";
+import { probeUnknownPreset } from "./probe-unknown-preset.mjs";
 
 export async function probeLinkedWorkflow({
 	page,
@@ -141,5 +143,23 @@ export async function probeLinkedWorkflow({
 	page = await probeLinkedRange({ page, hostPage, work, evidence, onPhase });
 	evidence.linkedWorkflow.completedSections.push("10-range", "10-final-full");
 	evidence.linkedWorkflow.pendingSections = [12];
+	page = await probeLinkedFontRecovery({
+		page,
+		hostPage,
+		work,
+		evidence,
+		onPhase,
+	});
+	evidence.linkedWorkflow.completedSections.push("12-font-retry");
+	await probeUnknownPreset({
+		page,
+		hostPage,
+		work,
+		evidence,
+		onPhase,
+		existingProject: true,
+	});
+	evidence.linkedWorkflow.completedSections.push("12-unknown-preset");
+	evidence.linkedWorkflow.pendingSections = ["12-actual-legacy-plugin"];
 	return page;
 }
