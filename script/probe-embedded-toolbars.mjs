@@ -7,11 +7,14 @@ async function assertUnclipped(control) {
 	const result = await control.evaluate((element) => {
 		const rect = element.getBoundingClientRect();
 		const panel = element.closest(".panel").getBoundingClientRect();
+		// The scene selector sits inside a rounded pill: 2px corners are
+		// intentionally outside its shape. Keep full-box panel containment,
+		// but sample pointer hits 4px inside the visible rounded boundary.
 		const points = [
-			[rect.left + 2, rect.top + 2],
-			[rect.right - 2, rect.top + 2],
-			[rect.left + 2, rect.bottom - 2],
-			[rect.right - 2, rect.bottom - 2],
+			[rect.left + 4, rect.top + 4],
+			[rect.right - 4, rect.top + 4],
+			[rect.left + 4, rect.bottom - 4],
+			[rect.right - 4, rect.bottom - 4],
 		];
 		return {
 			label: element.getAttribute("aria-label"),
@@ -44,6 +47,25 @@ export async function probeEmbeddedToolbars({
 	const theme = await hostPage.evaluate(
 		async () => (await window.native.theme.getState()).mode,
 	);
+	const originallyDark = await hostPage.evaluate(() =>
+		document.documentElement.classList.contains("dark"),
+	);
+	const setTheme = async (dark) => {
+		const current = await hostPage.evaluate(() =>
+			document.documentElement.classList.contains("dark"),
+		);
+		if (current !== dark)
+			await hostPage
+				.getByRole("button", { name: current ? "深色" : "浅色", exact: true })
+				.click();
+		await expect
+			.poll(() =>
+				page.evaluate(() =>
+					document.documentElement.classList.contains("dark"),
+				),
+			)
+			.toBe(dark);
+	};
 	const state = () =>
 		page.evaluate(async () => {
 			const { record } = await (
@@ -66,10 +88,7 @@ export async function probeEmbeddedToolbars({
 			});
 			for (const mode of ["dark", "light"]) {
 				onPhase("embedded toolbar reachability " + width + " " + mode);
-				await hostPage.evaluate(
-					(value) => window.native.theme.setMode(value),
-					mode,
-				);
+				await setTheme(mode === "dark");
 				await expect
 					.poll(() =>
 						page.evaluate(() =>
@@ -129,10 +148,24 @@ export async function probeEmbeddedToolbars({
 				await importButton.click();
 				await (await chooser).setFiles([]);
 				const originalView = await view.getAttribute("aria-label");
+				const assetAdd = page.getByTestId("asset-add-to-timeline").first();
+				const hasAssets = (await assetAdd.count()) > 0;
+				if (hasAssets) await assertUnclipped(assetAdd);
 				await view.click();
 				await expect(view).not.toHaveAttribute("aria-label", originalView);
+				if (hasAssets) await assertUnclipped(assetAdd);
 				await view.click();
 				await expect(view).toHaveAttribute("aria-label", originalView);
+				if (hasAssets) {
+					const count = await page.getByTestId("timeline-clip").count();
+					await assetAdd.click();
+					await expect(page.getByTestId("timeline-clip")).toHaveCount(
+						count + 1,
+					);
+					await hostPage.keyboard.press("Control+z");
+					await expect(page.getByTestId("timeline-clip")).toHaveCount(count);
+					await expect.poll(state).toEqual(before);
+				}
 				await sort.focus();
 				await hostPage.keyboard.press("Enter");
 				await expect(page.getByRole("menu")).toBeVisible();
@@ -172,12 +205,17 @@ export async function probeEmbeddedToolbars({
 					width,
 					mode,
 					sizes,
+					assetAddAndUndo: hasAssets,
 					pass: true,
 				});
 			}
 		}
+	} catch (error) {
+		await hostPage.screenshot({ path: join(work, "failure-at-test-size.png") });
+		throw error;
 	} finally {
 		await hostPage.keyboard.press("Escape");
+		await setTheme(originallyDark);
 		await hostPage.evaluate(
 			(value) => window.native.theme.setMode(value),
 			theme,

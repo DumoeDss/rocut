@@ -306,6 +306,9 @@ function MediaAssetDraggable({
 				addElementAtTime({ asset: item, startTime: currentTime })
 			}
 			variant={variant}
+			containerClassName={
+				variant === "card" ? "min-w-0 w-full max-w-28" : undefined
+			}
 			isRounded={isRounded}
 		/>
 	);
@@ -370,12 +373,14 @@ function MediaItemList({
 		<div
 			className={cn(isGrid ? "grid gap-4" : "flex flex-col gap-1.5")}
 			style={
-				isGrid ? { gridTemplateColumns: "repeat(auto-fill, 7rem)" } : undefined
+				isGrid
+					? { gridTemplateColumns: "repeat(auto-fill, min(100%, 7rem))" }
+					: undefined
 			}
 		>
 			{items.map((item) => (
 				<MediaItemWithContextMenu item={item} onRemove={onRemove} key={item.id}>
-					<SelectableItem className={cn(!isGrid && "w-full")} id={item.id}>
+					<SelectableItem className="min-w-0 w-full" id={item.id}>
 						<MediaAssetDraggable
 							item={item}
 							preview={
