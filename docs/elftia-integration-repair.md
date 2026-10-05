@@ -2,6 +2,12 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Approved decoder dependency and seek policy (2026-10-06)
+
+- Both Mediabunny consumers now pin the approved **1.48.1**, with the official npm SHA-512 in `bun.lock`; transitive dependency versions are unchanged. The ordinary installer stalled in resolution and was stopped; frozen/offline-preferred installation succeeded. Two pre-existing nested symlinks still resolved 1.41.0 after the root update; only those stale links were removed (old package cache retained), then both consumers resolved 1.48.1 and the surface was rebuilt.
+- The shared preview/export `VideoCache` uses the supported per-sink `decoderOptions` API. It probes the full track configuration with `prefer-software`, retaining default options when WebCodecs/config is absent, unsupported, or the probe throws. No global decoder patch, GOP/resolution/frame-count change, or relaxed seek threshold is introduced. A generation check after the asynchronous probe prevents closed/replaced owners from publishing a late sink.
+- Four capability tests and six isolated cache ownership tests pass, including actual constructor option forwarding and disposal during a pending capability probe. Vite typecheck and production build pass; the build retains existing flags-provider/chunk-size warnings. Installed F04 timing and affected import/playback/export compatibility are the next required checks, not yet claimed by this source checkpoint.
+
 ## Approved draft-review SDK revision and installed acceptance (2026-10-06)
 
 - The owner explicitly approved the controlled draft-review contract revision, Mediabunny 1.48.1 upgrade, and timeline-effect rendering semantics for Export clips. The latter two are authorized next work, not blocked on another permission request and not claimed implemented by this checkpoint. Temporary filesystem restrictions were subsequently removed.

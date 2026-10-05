@@ -1,4 +1,5 @@
-import { expect, mock, test } from "bun:test";
+import { afterEach, expect, mock, test } from "bun:test";
+import type { CanvasSinkOptions } from "mediabunny";
 import { fileURLToPath } from "node:url";
 
 if (process.env.OPENCUT_VIDEO_CACHE_TEST_ISOLATED !== "1") {
@@ -27,6 +28,7 @@ if (process.env.OPENCUT_VIDEO_CACHE_TEST_ISOLATED !== "1") {
 
 	interface MockTrack {
 		canDecode(): Promise<boolean>;
+		getDecoderConfig?(): Promise<VideoDecoderConfig>;
 	}
 
 	function deferred<Value>(): Deferred<Value> {
@@ -39,6 +41,16 @@ if (process.env.OPENCUT_VIDEO_CACHE_TEST_ISOLATED !== "1") {
 
 	const queuedTracks: Array<Promise<MockTrack>> = [];
 	const inputs: MockInput[] = [];
+	const sinkOptions: CanvasSinkOptions[] = [];
+	const originalDecoder = Object.getOwnPropertyDescriptor(
+		globalThis,
+		"VideoDecoder",
+	);
+	afterEach(() => {
+		if (originalDecoder)
+			Object.defineProperty(globalThis, "VideoDecoder", originalDecoder);
+		else Reflect.deleteProperty(globalThis, "VideoDecoder");
+	});
 
 	class MockInput {
 		disposeCalls = 0;
@@ -61,6 +73,10 @@ if (process.env.OPENCUT_VIDEO_CACHE_TEST_ISOLATED !== "1") {
 	}
 
 	class MockCanvasSink {
+		constructor(...args: [MockTrack, CanvasSinkOptions]) {
+			sinkOptions.push(args[1]);
+		}
+
 		canvases(time: number) {
 			return (async function* () {
 				yield {
@@ -82,12 +98,73 @@ if (process.env.OPENCUT_VIDEO_CACHE_TEST_ISOLATED !== "1") {
 	const { VideoCache } = await import("../service");
 	const file = () => new File([Uint8Array.of(1)], "clip.mp4");
 
+	test("supported software preference reaches the actual CanvasSink", async () => {
+		Object.defineProperty(globalThis, "VideoDecoder", {
+			configurable: true,
+			value: { isConfigSupported: async () => ({ supported: true }) },
+		});
+		queuedTracks.push(
+			Promise.resolve({
+				canDecode: async () => true,
+				getDecoderConfig: async () => ({ codec: "avc1.64001f" }),
+			}),
+		);
+		const cache = new VideoCache();
+		try {
+			expect(
+				await cache.getFrameAt({ mediaId: "software", file: file(), time: 0 }),
+			).not.toBeNull();
+			expect(sinkOptions.at(-1)).toEqual({
+				poolSize: 3,
+				fit: "contain",
+				decoderOptions: { hardwareAcceleration: "prefer-software" },
+			});
+		} finally {
+			await cache.dispose();
+		}
+	});
+
+	test("disposal during capability probing cannot construct or publish a sink", async () => {
+		const started = deferred<void>();
+		const supported = deferred<{ supported: boolean }>();
+		Object.defineProperty(globalThis, "VideoDecoder", {
+			configurable: true,
+			value: {
+				isConfigSupported: () => {
+					started.resolve();
+					return supported.promise;
+				},
+			},
+		});
+		queuedTracks.push(
+			Promise.resolve({
+				canDecode: async () => true,
+				getDecoderConfig: async () => ({ codec: "avc1.64001f" }),
+			}),
+		);
+		const cache = new VideoCache();
+		const before = sinkOptions.length;
+		const frame = cache.getFrameAt({
+			mediaId: "late-probe",
+			file: file(),
+			time: 0,
+		});
+		await started.promise;
+		const disposed = cache.dispose();
+		supported.resolve({ supported: true });
+		expect(await frame).toBeNull();
+		await disposed;
+		expect(sinkOptions).toHaveLength(before);
+		expect(inputs.at(-1)?.disposeCalls).toBe(1);
+		expect(cache.getStats().totalSinks).toBe(0);
+	});
+
 	test("dispose during initialization cannot repopulate or publish a sink", async () => {
 		const pendingTrack = deferred<MockTrack>();
 		queuedTracks.push(pendingTrack.promise);
 		const cache = new VideoCache();
 		const frame = cache.getFrameAt({ mediaId: "same", file: file(), time: 0 });
-		expect(inputs).toHaveLength(1);
+		expect(inputs.at(-1)?.disposeCalls).toBe(0);
 
 		const disposed = cache.dispose();
 		pendingTrack.resolve({ canDecode: async () => true });

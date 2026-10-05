@@ -5,6 +5,7 @@ import {
 	CanvasSink,
 	type WrappedCanvas,
 } from "mediabunny";
+import { resolveVideoDecoderOptions } from "./decoder-options";
 
 interface WorkToken {
 	readonly mediaId: string;
@@ -381,9 +382,12 @@ export class VideoCache {
 				throw new Error("Video codec not supported for decoding");
 			}
 
+			const decoderOptions = await resolveVideoDecoderOptions(videoTrack);
+			if (!this.isTokenCurrent(token)) return;
 			const sink = new CanvasSink(videoTrack, {
 				poolSize: 3,
 				fit: "contain",
+				decoderOptions,
 			});
 			if (!this.isTokenCurrent(token)) return;
 
