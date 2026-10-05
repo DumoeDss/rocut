@@ -1,0 +1,228 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { join } from "node:path";
+import { expect } from "@playwright/test";
+import {
+	languageOverlap,
+	inspectLanguagePixels,
+} from "./probe-multilingual-media.mjs";
+import { downloadUiExport } from "./probe-ui-export-fixture.mjs";
+
+export async function createMotionContinuityFixture({ page, hostPage, work }) {
+	await page.getByLabel("Motion text", { exact: true }).click();
+	const source = JSON.parse(
+		readFileSync(
+			new URL(
+				"../rust/crates/motion-text/fixtures/jizura-v1-project.json",
+				import.meta.url,
+			),
+			"utf8",
+		),
+	);
+	source.colors = {
+		enabled: true,
+		accentOn: true,
+		fg: "#00FFFF",
+		accent: "#00FFFF",
+	};
+	source.overrides = Object.fromEntries(
+		source.lyrics.split("\n").map((text, index) => [
+			index,
+			{
+				lock: true,
+				lockedCuts: [
+					{
+						utext: text,
+						layout: "huge",
+						enter: "pop",
+						hold: "pulse",
+						exit: "shrink",
+						seed: 24000 + index,
+					},
+				],
+			},
+		]),
+	);
+	const chooser = hostPage.waitForEvent("filechooser");
+	await page.getByRole("button", { name: "Import", exact: true }).click();
+	await (
+		await chooser
+	).setFiles({
+		name: "continuity.jizura.json",
+		mimeType: "application/json",
+		buffer: Buffer.from(JSON.stringify(source)),
+	});
+	await expect(page.getByTestId("timeline-clip")).toHaveCount(1);
+	const video = join(work, "continuity-underlay.mp4");
+	execFileSync(
+		"ffmpeg",
+		[
+			"-v",
+			"error",
+			"-n",
+			"-f",
+			"lavfi",
+			"-i",
+			"color=c=red:s=640x360:r=30:d=8",
+			"-f",
+			"lavfi",
+			"-i",
+			"sine=frequency=660:duration=8",
+			"-c:v",
+			"libx264",
+			"-pix_fmt",
+			"yuv420p",
+			"-c:a",
+			"aac",
+			"-shortest",
+			video,
+		],
+		{ windowsHide: true },
+	);
+	await page.getByLabel("Media", { exact: true }).click();
+	await page.locator('input[type="file"]').setInputFiles(video);
+	await page
+		.getByLabel("Add continuity-underlay.mp4 to timeline", { exact: true })
+		.click();
+	await expect(page.getByTestId("timeline-clip")).toHaveCount(2);
+}
+
+export async function exportMotionContinuity({
+	page,
+	hostPage,
+	work,
+	frames,
+	offset,
+	baselines,
+	readState,
+	split,
+	check,
+}) {
+	const cdp = await hostPage.context().browser().newBrowserCDPSession();
+	try {
+		await cdp.send("Browser.setDownloadBehavior", {
+			behavior: "allowAndName",
+			downloadPath: work,
+			eventsEnabled: true,
+		});
+		await page.getByTestId("editor-menu-trigger").click();
+		await page
+			.getByRole("menuitem", { name: "Export project", exact: true })
+			.click();
+		const output = await downloadUiExport(
+			cdp,
+			page.getByRole("dialog", { name: "Export project", exact: true }),
+			work,
+		);
+		const metadata = JSON.parse(
+			execFileSync(
+				"ffprobe",
+				[
+					"-v",
+					"error",
+					"-count_frames",
+					"-show_streams",
+					"-show_format",
+					"-of",
+					"json",
+					output.path,
+				],
+				{ encoding: "utf8", windowsHide: true },
+			),
+		);
+		assert(metadata.streams.some((s) => s.codec_type === "audio"));
+		assert.equal(
+			Number(
+				metadata.streams.find((s) => s.codec_type === "video").nb_read_frames,
+			),
+			240,
+		);
+		const overlaps = [];
+		for (const frame of frames) {
+			const pixels = execFileSync(
+				"ffmpeg",
+				[
+					"-v",
+					"error",
+					"-ss",
+					String((frame + offset) / 30),
+					"-i",
+					output.path,
+					"-frames:v",
+					"1",
+					"-vf",
+					"scale=320:180",
+					"-f",
+					"rawvideo",
+					"-pix_fmt",
+					"rgb24",
+					"pipe:1",
+				],
+				{ windowsHide: true },
+			);
+			const actual = inspectLanguagePixels(pixels, 3);
+			const overlap = languageOverlap({
+				expected: baselines.get(frame).cyan,
+				actual: actual.cyan,
+			});
+			assert(
+				overlap > 0.7,
+				"exported animation phase must match original frame " +
+					frame +
+					": " +
+					overlap,
+			);
+			overlaps.push({
+				sourceFrame: frame,
+				outputFrame: frame + offset,
+				overlap,
+			});
+		}
+		const audioRms = (path, channel) => {
+			// Select a channel, do not downmix stereo with ffmpeg's sqrt(2) gain.
+			const audio = execFileSync(
+				"ffmpeg",
+				[
+					"-v",
+					"error",
+					"-i",
+					path,
+					"-vn",
+					"-af",
+					"pan=mono|c0=c" + channel,
+					"-ar",
+					"8000",
+					"-f",
+					"f32le",
+					"pipe:1",
+				],
+				{ windowsHide: true },
+			);
+			let sum = 0;
+			for (let i = 0; i < audio.length; i += 4)
+				sum += audio.readFloatLE(i) ** 2;
+			return Math.sqrt(sum / (audio.length / 4));
+		};
+		const sourceRms = audioRms(join(work, "continuity-underlay.mp4"), 0);
+		const rms = [audioRms(output.path, 0), audioRms(output.path, 1)];
+		assert(
+			sourceRms > 0.07 && sourceRms < 0.11,
+			"source fixture must be audible",
+		);
+		assert(
+			rms.every(
+				(value) => value / sourceRms > 0.95 && value / sourceRms < 1.05,
+			),
+			"each exported channel must preserve original gain",
+		);
+		assert.deepEqual(await readState(), split);
+		check(
+			"actual MP4 export preserves all five source-time glyph regions and real audio after move trim split",
+			{ frames: 240, overlaps, sourceRms, rms, output: output.path },
+		);
+	} finally {
+		await cdp.send("Browser.setDownloadBehavior", { behavior: "default" });
+		await cdp.detach();
+	}
+}
