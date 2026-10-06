@@ -2,6 +2,14 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## F03 simultaneous languages and document isolation (2026-10-06)
+
+- Added `--f03-languages-only`: actual JIZURA file imports create Japanese / Korean / English layers on the same timeline with `gothic_bold` / `gothic_bold_ko` / `mono`, distinct seeds and locked cuts. Real transform controls place them in three independently measured regions. Every layer's Hide / Undo leaves the other two color masks exactly unchanged; out-of-order seeks restore the full preview hash at four interior frames.
+- Initial installed `live-1pXhg7` passes 5/5 checks. Expanded installed `live-18zPfV` passes **6/6**, zero captured errors, on unchanged runtime `1734b578`. Two actual workspace remounts and two project round trips preserve sequences, clips, settings and exact preview pictures. A separately created empty E2E project remains independent and does not retain the first document's Korean/Mono font faces; the probe restores the first project after successful completion.
+- Owned editor documents deny external HTTP(S), while loopback host resources remain available. Eight reserved `.invalid` control fetches are explicitly intercepted (not merely failed DNS). Cache is disabled before an additional real document reload; local requests load Noto Sans JP, Noto Sans KR and IBM Plex Mono. This establishes this fixture's offline font/document isolation, **not** system-wide offline operation or comprehensive GPU/resource-leak freedom.
+- Real menu-driven **1920x1080 H.264, 162-frame** export independently decodes all three simultaneous language masks at frames 24/36/69/87. Twelve overlaps range **0.74038–0.97136**, each above the unchanged >0.7 gate. Exact preview comparisons remain separate from compressed-export tolerance. Four oracle tests cover exact identity, omitted/blank/recolored layers, shifted masks and independent H.264/YUV420P encode/decode. Scoped lint, explicit no-undef/no-unused-vars and formatting pass.
+- This is probe/evidence-only work: no runtime bytes, producer pin, installed plugin or version change; no Elftia-main commit. The latest ordinary F04 **301.90ms p95** still fails 300ms. Performance headroom, actual legacy-plugin aggregate, fresh SDK consumer, broader resource release and external Sounds prerequisites remain open; the full goal is not complete.
+
 ## Korean offline font and explicit creation language (2026-10-06)
 
 - The offline catalog lacked a Korean asset, and the ordinary creation form never supplied a language (its factory default was `zh-Hans`). Added a Language Select for Chinese (Simplified), Japanese, Korean and English, keeping existing theme tokens/type and accessible Select behavior. The UI only passes the chosen language; Rust continues to resolve font roles.
