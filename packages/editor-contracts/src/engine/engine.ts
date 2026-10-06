@@ -280,7 +280,10 @@ export async function openTransactionEngine<FeatureName extends string = never>(
 					summary: encoded.summary,
 					signal: options.signal,
 				});
-				committed = cloneTransactionValue(candidate);
+				// Projection already detached this private candidate. The adapter
+				// received its own copy, so publication can transfer ownership only
+				// after save succeeds without another whole-document allocation.
+				committed = candidate;
 				committedRecord = cloneTransactionValue(encoded.record);
 				notify(committed.revision);
 				return cloneTransactionValue(evaluated.result);
