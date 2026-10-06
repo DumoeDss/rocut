@@ -20,7 +20,12 @@ import {
 import { Input } from "../../components/ui/input";
 import { ScrollArea } from "../../components/ui/scroll-area";
 import { Separator } from "../../components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import {
+	Tabs,
+	TabsContent,
+	TabsList,
+	TabsTrigger,
+} from "../../components/ui/tabs";
 import { useInfiniteScroll } from "../../hooks/use-infinite-scroll";
 import {
 	useSoundSearch,
@@ -71,8 +76,6 @@ export function SoundsView() {
 
 function SoundEffectsView() {
 	const {
-		topSoundEffects,
-		isLoading,
 		searchQuery,
 		setSearchQuery,
 		scrollPosition,
@@ -80,20 +83,14 @@ function SoundEffectsView() {
 		loadSavedSounds,
 		showCommercialOnly,
 		toggleCommercialFilter,
-		hasLoaded,
-		setTopSoundEffects,
-		setLoading,
-		setError,
-		setHasLoaded,
-		setCurrentPage,
-		setHasNextPage,
-		setTotalCount,
 	} = useSoundsStore();
 	const { soundSearchEndpoint } = useEditorHostServices();
 	const { resources } = useEditorSession();
 	const {
-		results: searchResults,
-		isLoading: isSearching,
+		results: displayedSounds,
+		isLoading,
+		error: searchError,
+		retry,
 		loadMore,
 		hasNextPage,
 		isLoadingMore,
@@ -110,7 +107,7 @@ function SoundEffectsView() {
 	const { scrollAreaRef, handleScroll } = useInfiniteScroll({
 		onLoadMore: loadMore,
 		hasMore: hasNextPage,
-		isLoading: isLoadingMore || isSearching,
+		isLoading: isLoadingMore || isLoading,
 	});
 
 	useEffect(() => {
@@ -118,82 +115,6 @@ function SoundEffectsView() {
 			// The session store publishes the recoverable error and diagnostics.
 		});
 	}, [loadSavedSounds]);
-
-	useEffect(() => {
-		if (hasLoaded) {
-			return;
-		}
-
-		// No endpoint means no server behind this panel. Say so instead of
-		// requesting a route that a static host answers with its SPA fallback.
-		if (!soundSearchEndpoint) {
-			setError({ error: SOUND_SEARCH_UNAVAILABLE_MESSAGE });
-			setLoading({ loading: false });
-			return;
-		}
-
-		let shouldIgnore = false;
-
-		const fetchTopSounds = async () => {
-			try {
-				if (!shouldIgnore) {
-					setLoading({ loading: true });
-					setError({ error: null });
-				}
-
-				const response = await fetch(
-					`${soundSearchEndpoint}?page_size=50&sort=downloads`,
-				);
-
-				if (!shouldIgnore) {
-					if (!response.ok) {
-						throw new Error(`Failed to fetch: ${response.status}`);
-					}
-
-					const data = await response.json();
-					setTopSoundEffects({ sounds: data.results });
-					setHasLoaded({ loaded: true });
-
-					setCurrentPage({ page: 1 });
-					setHasNextPage({ hasNext: !!data.next });
-					setTotalCount({ count: data.count });
-				}
-			} catch (error) {
-				if (!shouldIgnore) {
-					console.error("Failed to fetch top sounds:", error);
-					setError({
-						error:
-							error instanceof Error ? error.message : "Failed to load sounds",
-					});
-				}
-			} finally {
-				if (!shouldIgnore) {
-					setLoading({ loading: false });
-				}
-			}
-		};
-
-		const timeoutHandle = resources.setTimeout({
-			handler: fetchTopSounds,
-			ms: 100,
-		});
-
-		return () => {
-			shouldIgnore = true;
-			timeoutHandle.cancel();
-		};
-	}, [
-		hasLoaded,
-		soundSearchEndpoint,
-		setTopSoundEffects,
-		setLoading,
-		setError,
-		setHasLoaded,
-		setCurrentPage,
-		setHasNextPage,
-		setTotalCount,
-		resources,
-	]);
 
 	useEffect(() => {
 		if (!scrollAreaRef.current || scrollPosition <= 0) {
@@ -218,8 +139,6 @@ function SoundEffectsView() {
 		setScrollPosition({ position: scrollTop });
 		handleScroll(event);
 	};
-
-	const displayedSounds = searchQuery ? searchResults : topSoundEffects;
 
 	const playSound = ({ sound }: { sound: SoundEffect }) => {
 		if (playingId === sound.id) {
@@ -268,6 +187,7 @@ function SoundEffectsView() {
 							variant="text"
 							size="icon"
 							className={cn(showCommercialOnly && "text-primary")}
+							aria-label="Filter sounds"
 						>
 							<HugeiconsIcon icon={FilterMailIcon} />
 						</Button>
@@ -296,16 +216,31 @@ function SoundEffectsView() {
 				>
 					<div className="flex flex-col gap-4">
 						{soundSearchEndpoint ? null : (
-							<div className="text-muted-foreground text-sm">
+							<div role="status" className="text-muted-foreground text-sm">
 								{SOUND_SEARCH_UNAVAILABLE_MESSAGE}
 							</div>
 						)}
-						{isLoading && !searchQuery && (
+						{soundSearchEndpoint && searchError && (
+							<div
+								role="alert"
+								className="flex flex-col items-start gap-2 text-sm"
+							>
+								<p className="text-destructive">{searchError}</p>
+								<Button
+									variant="outline"
+									size="sm"
+									onClick={() => void retry()}
+								>
+									Retry sounds
+								</Button>
+							</div>
+						)}
+						{isLoading && !searchQuery.trim() && (
 							<div className="text-muted-foreground text-sm">
 								Loading sounds...
 							</div>
 						)}
-						{isSearching && searchQuery && (
+						{isLoading && searchQuery.trim() && (
 							<div className="text-muted-foreground text-sm">Searching...</div>
 						)}
 						{displayedSounds.map((sound) => (
@@ -318,7 +253,7 @@ function SoundEffectsView() {
 						))}
 						{soundSearchEndpoint &&
 							!isLoading &&
-							!isSearching &&
+							!searchError &&
 							displayedSounds.length === 0 && (
 								<div className="text-muted-foreground text-sm">
 									{searchQuery ? "No sounds found" : "No sounds available"}

@@ -2,18 +2,7 @@ import { webEnv } from "@/env/web";
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { checkRateLimit } from "@/auth/rate-limit";
-
-const searchParamsSchema = z.object({
-	q: z.string().max(500, "Query too long").optional(),
-	type: z.enum(["songs", "effects"]).optional(),
-	page: z.coerce.number().int().min(1).max(1000).default(1),
-	page_size: z.coerce.number().int().min(1).max(150).default(20),
-	sort: z
-		.enum(["downloads", "rating", "created", "score"])
-		.default("downloads"),
-	min_rating: z.coerce.number().min(0).max(5).default(3),
-	commercial_only: z.coerce.boolean().default(true),
-});
+import { parseSoundSearchParameters } from "./search-params";
 
 const freesoundResultSchema = z.object({
 	id: z.number(),
@@ -156,14 +145,7 @@ export async function GET(request: NextRequest) {
 
 		const { searchParams } = new URL(request.url);
 
-		const validationResult = searchParamsSchema.safeParse({
-			q: searchParams.get("q") || undefined,
-			type: searchParams.get("type") || undefined,
-			page: searchParams.get("page") || undefined,
-			page_size: searchParams.get("page_size") || undefined,
-			sort: searchParams.get("sort") || undefined,
-			min_rating: searchParams.get("min_rating") || undefined,
-		});
+		const validationResult = parseSoundSearchParameters(searchParams);
 
 		if (!validationResult.success) {
 			return NextResponse.json(
