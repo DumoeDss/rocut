@@ -205,7 +205,9 @@ export class SessionOpenCutTransactions {
 					const committed = {
 						transaction,
 						payload: prepared.payload,
-						committedDraft: cloneOpenCutDraft(receipt.draft),
+						// consumeReceipt transferred this isolated draft; publication
+						// already received a separate copy in adoptAndPublish.
+						committedDraft: receipt.draft,
 					};
 					finalize?.(committed);
 					return committed;
