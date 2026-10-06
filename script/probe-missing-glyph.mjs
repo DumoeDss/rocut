@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { join } from "node:path";
 import { expect } from "@playwright/test";
 import { downloadUiExport } from "./probe-ui-export-fixture.mjs";
+import { probeResourceNoticeLayout } from "./probe-resource-notice-layout.mjs";
 
 // Dedicated host-owned fixture; no project/asset injection and no external font.
 export async function probeMissingGlyph({
@@ -58,18 +60,13 @@ export async function probeMissingGlyph({
 		.then(() => true)
 		.catch(() => false);
 	if (previewWarning) {
-		await warning.locator("summary").click();
-		await expect(warning).toContainText("U+BC14");
-		await expect(warning).toContainText("change its font or text");
-		const bounds = await warning.evaluate((element) => ({
-			width: element.clientWidth,
-			scrollWidth: element.scrollWidth,
-			height: element.clientHeight,
-			scrollHeight: element.scrollHeight,
-		}));
-		assert(bounds.width > 150 && bounds.scrollWidth <= bounds.width + 1);
-		assert(bounds.height <= 128);
-		evidence.missingGlyphLayout = bounds;
+		await probeResourceNoticeLayout({
+			page,
+			hostPage,
+			warning,
+			work,
+			evidence,
+		});
 	}
 	evidence.missingGlyph = {
 		previewWarning,
@@ -154,10 +151,35 @@ export async function probeMissingGlyph({
 			page.getByRole("dialog", { name: "Export project", exact: true }),
 			work,
 		);
+		const media = JSON.parse(
+			execFileSync(
+				"ffprobe",
+				[
+					"-v",
+					"error",
+					"-select_streams",
+					"v:0",
+					"-count_frames",
+					"-show_entries",
+					"stream=codec_name,width,height,nb_read_frames",
+					"-show_entries",
+					"format=duration",
+					"-of",
+					"json",
+					output.path,
+				],
+				{ encoding: "utf8", windowsHide: true },
+			),
+		);
+		assert.equal(media.streams[0].nb_read_frames, "90");
+		assert.equal(media.streams[0].width, 1920);
+		assert.equal(media.streams[0].height, 1080);
+		assert.equal(Number(media.format.duration), 3);
 		evidence.checks.push({
 			name: "actual text correction clears stale warnings and exports successfully",
 			pass: true,
 			output,
+			media,
 		});
 	} finally {
 		await cdp.send("Browser.setDownloadBehavior", { behavior: "default" });

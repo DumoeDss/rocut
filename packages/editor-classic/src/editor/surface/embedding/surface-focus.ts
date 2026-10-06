@@ -36,6 +36,7 @@ const TAB_STOP_SELECTOR = [
 	"a[href]",
 	"area[href]",
 	"button",
+	"summary",
 	"input",
 	"select",
 	"textarea",

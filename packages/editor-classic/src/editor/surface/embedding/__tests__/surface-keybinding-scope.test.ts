@@ -37,6 +37,15 @@ class FakeTarget {
 }
 
 describe("Surface keybinding target", () => {
+	test("native disclosure owns Enter and Space without swallowing editor history keys", () => {
+		const element = { tagName: "SUMMARY", getAttribute: () => null };
+		for (const key of ["Enter", " "]) {
+			expect(isControlNavigation({ element, key })).toBe(true);
+		}
+		for (const key of ["z", "Delete", "ArrowRight"]) {
+			expect(isControlNavigation({ element, key })).toBe(false);
+		}
+	});
 	test("resize handles own navigation but not unrelated editor shortcuts", () => {
 		const element = { tagName: "DIV", getAttribute: (name: string) => name === "data-panel-resize-handle-id" ? "pane" : null };
 		for (const key of ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"]) {

@@ -41,7 +41,7 @@ export function isControlNavigation({
 		return [...navigation, " ", "Enter"].includes(key);
 	}
 	if (role === "slider") return navigation.includes(key);
-	if (element.tagName === "BUTTON" || role === "button") {
+	if (element.tagName === "BUTTON" || element.tagName === "SUMMARY" || role === "button") {
 		return key === " " || key === "Enter";
 	}
 	return false;
