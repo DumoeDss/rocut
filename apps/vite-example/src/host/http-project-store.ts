@@ -295,9 +295,24 @@ export class HttpProjectStore implements ProjectStore {
 
 	async clear(args: {
 		readonly scope: ProjectStoreClearScope;
+		readonly signal?: AbortSignal;
 	}): Promise<void> {
-		void args;
-		this.unavailable("clear");
+		// Only a named library is clearable from the surface. Project/root
+		// destruction remains a host-owned operation, never a generic endpoint.
+		if (args.scope.kind !== "library") this.unavailable("clear");
+		const result = await this.requestJson(
+			"clear",
+			`library/${encodeURIComponent(args.scope.namespace)}`,
+			{ method: "DELETE", signal: args.signal },
+		);
+		if (
+			typeof result !== "object" ||
+			result === null ||
+			!("accepted" in result) ||
+			result.accepted !== true
+		) {
+			this.unavailable("clear");
+		}
 	}
 
 	async persistedSchemaVersion(): Promise<number | null> {

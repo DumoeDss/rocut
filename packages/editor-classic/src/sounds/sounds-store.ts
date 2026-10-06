@@ -273,7 +273,7 @@ export function createSoundsStore({
 			}),
 
 		loadSavedSounds: async () => {
-			if (get().isSavedSoundsLoaded) return;
+			if (get().isSavedSoundsLoaded && !get().savedSoundsError) return;
 			const token = beginRequest({ channel: "savedLoad" });
 
 			try {

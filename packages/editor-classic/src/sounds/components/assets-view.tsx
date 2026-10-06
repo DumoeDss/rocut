@@ -300,10 +300,21 @@ function SavedSoundsView() {
 
 	if (savedSoundsError) {
 		return (
-			<div className="flex h-full items-center justify-center">
-				<div className="text-destructive text-sm">
+			<div className="flex h-full flex-col items-start justify-center gap-3">
+				<div role="alert" className="text-destructive text-sm">
 					Error: {savedSoundsError}
 				</div>
+				<Button
+					variant="outline"
+					size="sm"
+					onClick={() => {
+						void loadSavedSounds().catch(() => {
+							// Keep the retry action visible until persistence recovers.
+						});
+					}}
+				>
+					Reload saved sounds
+				</Button>
 			</div>
 		);
 	}

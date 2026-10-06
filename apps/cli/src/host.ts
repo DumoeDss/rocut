@@ -1053,6 +1053,13 @@ async function handleLibrary(
 	};
 	const namespace = decodeURIComponent(route[0]);
 	if (route.length === 1) {
+		if (request.method === "DELETE") {
+			await plane.enqueue(() => plane.baseStore.clear({
+				scope: { kind: "library", namespace },
+			}));
+			respond(200, { accepted: true });
+			return;
+		}
 		if (request.method !== "GET") {
 			respond(404, { error: "unknown-library-method" });
 			return;

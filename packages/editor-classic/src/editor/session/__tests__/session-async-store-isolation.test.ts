@@ -323,6 +323,34 @@ if (process.env.OPENCUT_SESSION_ASYNC_STORE_TEST_ISOLATED !== "1") {
 			});
 		});
 
+		test("a failed clear keeps Saved data and an explicit reload recovers even after a completed load", async () => {
+			const saved = [{ ...soundEffect(79), savedAt: new Date().toISOString() }];
+			let loads = 0;
+			const store = createSoundsStore({
+				getPersistence: () => ({
+					loadLibraryRecord: async () => {
+						loads++;
+						return { data: saved };
+					},
+					mutateLibraryRecord: async () => saved,
+					clearLibraryNamespace: async () => {
+						throw new Error("owned failure");
+					},
+				}),
+			});
+			await store.getState().loadSavedSounds();
+			expect(store.getState().isSavedSoundsLoaded).toBe(true);
+			await expect(store.getState().clearSavedSounds()).rejects.toThrow(
+				"owned failure",
+			);
+			expect(store.getState().savedSounds).toEqual(saved);
+			expect(store.getState().savedSoundsError).not.toBeNull();
+			await store.getState().loadSavedSounds();
+			expect(loads).toBe(2);
+			expect(store.getState().savedSoundsError).toBeNull();
+			expect(store.getState().savedSounds).toEqual(saved);
+		});
+
 		test("overlapping timeline commands all insert until their store is disposed", async () => {
 			let disposed = false;
 			const store = createSoundsStore({ isDisposed: () => disposed });
