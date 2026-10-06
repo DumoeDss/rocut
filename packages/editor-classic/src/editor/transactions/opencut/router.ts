@@ -29,24 +29,22 @@ import { createOpenCutTransactionDocumentAdapter } from "./adapter";
 import { ProjectMutationArbiter } from "./arbiter";
 import { openCutMediaPolicy } from "./media-policy";
 import { cloneOpenCutDraft, projectOpenCutDraft } from "./projection";
+import type {
+	OpenCutUiCommitResult,
+	OpenCutUiCommitSummary,
+	OpenCutUiCommitWithDraft,
+	OpenCutUiCommitWithoutDraft,
+} from "./ui-commit";
+export type {
+	OpenCutUiCommitResult,
+	PreparedOpenCutUiCommit,
+} from "./ui-commit";
 import {
 	assetCatalogFromMedia,
 	type OpenCutAssetCatalogEntry,
 	type OpenCutCommitToken,
 	type OpenCutProjectDraft,
 } from "./types";
-
-export interface PreparedOpenCutUiCommit<Payload> {
-	readonly draft: OpenCutProjectDraft;
-	readonly operations: TransactionBatch["operations"];
-	readonly payload: Payload;
-}
-
-export interface OpenCutUiCommitResult<Payload> {
-	readonly transaction: TransactionResult;
-	readonly payload: Payload;
-	readonly committedDraft: OpenCutProjectDraft;
-}
 
 interface ActiveOpenCutRouter {
 	readonly projectId: PortProjectId;
@@ -148,19 +146,18 @@ export class SessionOpenCutTransactions {
 		});
 	}
 
-	async commitUi<Payload>({
-		baseDraft,
-		prepare,
-		finalize,
-	}: {
-		baseDraft: () => OpenCutProjectDraft;
-		prepare: (args: {
-			readonly draft: OpenCutProjectDraft;
-			readonly baseRevision: Revision;
-			readonly baseDocument: TransactionEngineDocument;
-		}) => PreparedOpenCutUiCommit<Payload>;
-		finalize?: (result: OpenCutUiCommitResult<Payload>) => void;
-	}): Promise<OpenCutUiCommitResult<Payload>> {
+	commitUi<Payload>(
+		options: OpenCutUiCommitWithoutDraft<Payload>,
+	): Promise<OpenCutUiCommitSummary<Payload>>;
+	commitUi<Payload>(
+		options: OpenCutUiCommitWithDraft<Payload>,
+	): Promise<OpenCutUiCommitResult<Payload>>;
+	async commitUi<Payload>(
+		options:
+			| OpenCutUiCommitWithDraft<Payload>
+			| OpenCutUiCommitWithoutDraft<Payload>,
+	): Promise<OpenCutUiCommitSummary<Payload> | OpenCutUiCommitResult<Payload>> {
+		const { baseDraft, prepare } = options;
 		const active = this.requireActive();
 		return this.options.arbiter.run({
 			projectId: active.projectId,
@@ -203,7 +200,17 @@ export class SessionOpenCutTransactions {
 							"The durable OpenCut publication receipt is missing",
 						);
 					}
-					await this.adoptAndPublish(active, receipt.record, receipt.draft);
+					await this.adoptAndPublish(
+						active,
+						receipt.record,
+						receipt.draft,
+						options.returnCommittedDraft === false,
+					);
+					if (options.returnCommittedDraft === false) {
+						const committed = { transaction, payload: prepared.payload };
+						options.finalize?.(committed);
+						return committed;
+					}
 					const committed = {
 						transaction,
 						payload: prepared.payload,
@@ -211,7 +218,7 @@ export class SessionOpenCutTransactions {
 						// already received a separate copy in adoptAndPublish.
 						committedDraft: receipt.draft,
 					};
-					finalize?.(committed);
+					options.finalize?.(committed);
 					return committed;
 				} finally {
 					active.adapter.clear(token);
@@ -230,7 +237,12 @@ export class SessionOpenCutTransactions {
 					const result = await active.engine.apply(batch);
 					const receipt = active.adapter.consumeReceipt();
 					if (receipt) {
-						await this.adoptAndPublish(active, receipt.record, receipt.draft);
+						await this.adoptAndPublish(
+							active,
+							receipt.record,
+							receipt.draft,
+							true,
+						);
 					}
 					return result;
 				} catch (error) {
@@ -326,6 +338,7 @@ export class SessionOpenCutTransactions {
 		active: ActiveOpenCutRouter,
 		record: ProjectRecord,
 		draft: OpenCutProjectDraft,
+		takeDraftOwnership: boolean,
 	): Promise<void> {
 		this.assertCurrent(active);
 		await this.options.persistence.adoptCommittedProjectRecord({
@@ -336,7 +349,9 @@ export class SessionOpenCutTransactions {
 		});
 		// The synchronous record subscription already adopted this durable record,
 		// just as it does for ordinary saves. Do not copy and invalidate it twice.
-		this.options.publish(cloneOpenCutDraft(draft));
+		// A consumed receipt is private. Transfer it when the caller requests no
+		// result draft; the default API still isolates publication from its result.
+		this.options.publish(takeDraftOwnership ? draft : cloneOpenCutDraft(draft));
 	}
 
 	private async readDocument(

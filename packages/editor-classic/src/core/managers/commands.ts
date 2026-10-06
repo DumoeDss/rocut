@@ -153,6 +153,7 @@ export class CommandManager {
 		assetId: string;
 	}): Promise<void> {
 		await this.editor.transactions.commitUi({
+			returnCommittedDraft: false,
 			baseDraft: () => this.captureLiveDraft(),
 			prepare: ({ draft, baseRevision, baseDocument }) => {
 				draft.assetCatalog = draft.assetCatalog.filter(
@@ -208,6 +209,7 @@ export class CommandManager {
 		const liveAssets = [...this.editor.media.getAssets()];
 		const routed = this.editor.transactions
 			.commitUi<PreparedCommandPayload>({
+				returnCommittedDraft: false,
 				baseDraft: () => this.captureLiveDraft(),
 				prepare: ({ draft, baseRevision, baseDocument }) => {
 					ensureDraftMarkerIds(draft);
@@ -431,6 +433,7 @@ export class CommandManager {
 		const to = direction === "undo" ? entry.undoTarget : entry.redoTarget;
 		const previousSelection = this.getSelectionSnapshot();
 		await this.editor.transactions.commitUi({
+			returnCommittedDraft: false,
 			baseDraft: () => this.captureLiveDraft(),
 			prepare: ({ draft, baseRevision, baseDocument }) => {
 				const rebased = rebaseOpenCutHistoryDraft({

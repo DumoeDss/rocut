@@ -2,6 +2,12 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Publication-only UI/automation ownership (2026-10-06)
+
+- Fresh ordinary installed `4b3a0dc6` F04 `live-DF1jnl` preserves all 30 edits and exact visible pictures, but **397.52ms p95 / 422.05ms max fails the unchanged 300ms gate**. Its captured page errors are empty. No unchanged-candidate timing retry was used. Same-project `mutation-profile-3TpaRT` is diagnostic only: across Apply-to-visible windows, sampled self-time includes approximately 1.06s opaque cloning, 0.50s engine cloning and 0.50s GC. Its instrumented 337.98ms p95 is not acceptance. Raw authenticated profiles remain uncommitted.
+- `SessionOpenCutTransactions.commitUi` now offers `returnCommittedDraft: false` for internal commands that only consume their payload/transaction. It transfers the already isolated consumed receipt draft into publication instead of copying it for a result the caller discards. All three CommandManager paths opt in; automation apply also transfers its unexposed private receipt. Default UI callers still receive a result draft separate from publication, and stage/store/cache isolation is unchanged. Request/result types live in `ui-commit.ts`, with existing result type exports preserved.
+- Both deterministic allocation regressions fail before the change and pass afterward. They cover saved-state/cache isolation from input, payload and publication mutation, failure before publication, successful retry and later commit/reopen. Existing default-result isolation remains tested. Related suites pass **46 tests / 372 assertions**; scoped lint, standard Vite typecheck and production build pass (existing chunk warnings remain). Current-candidate installed verification is pending. Removing one copy is proven; a sufficient end-to-end speedup is not yet claimed.
+
 ## Current-runtime continuity oracle correction (2026-10-06)
 
 - Runtime remains `4b3a0dc6`, plugin **0.5.0**. Fresh continuous `live-NIaExB` passed six checks, then rejected frame 168 because its cyan mask was empty. The preserved project resolves that cut to `flipCards`; all three cosine signs at progress 0.533337 are negative. The screenshot shows the intended secondary-color card backs and dark diamonds, not a blank render. Randomized variation invalidated the driver's assumption that every sampled frame must contain cyan. No renderer, preset, seed or project plan was changed to make this pass.
