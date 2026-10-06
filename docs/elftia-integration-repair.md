@@ -2,6 +2,26 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Consumer-owned host probes and current continuous acceptance (2026-10-06)
+
+- Moved 20 Elftia-specific drivers and their installed-root preflight test from this repository's `script/` to `elftia-plugin-rocut/scripts/`. These cover the installed interaction/workflow, Agent draft, Creator entry, layout/toolbars, migration, language/resource and GPU/lifecycle probes. Host-neutral helpers remain here; the consumer's `rocut-probe-source.mjs` requires an explicit `ROCUT_WORKTREE`, checks the checkout identity and confines helper loading to real paths under `script/`. Portable source has no reverse import of the plugin repository.
+- Every moved driver was compared with its original: only imports and the appropriate repository/asset root calculation changed; assertions, exact-preview comparisons and performance thresholds did not. Historical `script/probe-*` references below describe the original evidence; moved drivers now run from the plugin's `scripts/` directory. `probe-embedded-interactions.mjs` remains a neutral source-side driver.
+- Six Node preflight/loader tests pass, including all named exports from more than 40 retained neutral helpers; all 20 drivers pass syntax and strict UTF-8 checks. The plugin producer's existing suite passes 52/52. No runtime bytes, plugin version, runtime pin or installation changed for this relocation.
+- Current-source `check-packed-manifest-closure.mjs` freshly packs all four SDK artifacts into the consumer's local `.elftia-work/closure-current-20261006`: **0 failures / 0 refusals**, with 22/71/1105/4 source files scanned and both latent peer rows re-derived. No dependency override, install, checker change or Rasen workflow was used. This closes current packed-manifest closure only; the previously captured consumer-install security advisories remain unresolved.
+- Fresh installed runtime `ab3d0155`, driven from the relocated entry, passes **35/35** uninterrupted real-Elftia checks in `live-FXmevH`, with `acceptanceEligible: true` and zero captured errors. It covers actual Creator entry, cue edits/locks/variation, move/trim/split and Undo/Redo with exact pictures, independent audiovisual full/range exports, post-export preview restoration, stale Agent draft refusal and explicit review, pane reopen, same-project multilingual composition, missing-font refusal/Retry and unsupported-preset refusal/corrected import. This is current-runtime functional evidence; it is not a new 300ms p95 latency measurement, historical-upgrade run, online Sounds acceptance or comprehensive resource-release proof.
+- The unchanged package-boundary checker passes four rules; its remaining `no-elftia-import` findings are confined to 27 untracked `.tmp-probe` files. The user authorized verified archival, but the execution layer rejected the archive/removal command before execution. That directory remains untouched; no ignore, suppression, checker weakening or alternate deletion was used. The local boundary gate remains **failed**, not waived. A verified archive outside portable Rocut and removal of the original still require executable filesystem authority.
+
+Current real-host invocation (run from the Elftia worktree, using only an owned E2E session/project):
+
+```powershell
+$env:ELFTIA_WORKTREE='<absolute Elftia worktree>'
+$env:ROCUT_WORKTREE='<absolute Rocut source checkout>'
+$env:ELFTIA_TEST_SESSION='<owned E2E session id>'
+$env:ELFTIA_CLI_DEBUG_PORT='9361'
+$env:ELFTIA_INSTALLED_ROCUT='<exact installed plugin root>'
+node node_modules/tsx/dist/cli.mjs '../elftia-plugin-rocut/scripts/probe-elftia-interactions.mjs' --linked-workflow-only
+```
+
 ## Actual Saved insertion/export and HTTP clear gap (2026-10-06)
 
 - Consumer probe `scripts/probe-installed-sound-insertion.mjs` creates a new owned Elftia project, seeds only its project-local Saved record through the authenticated API and serves self-generated PCM over loopback. Real Saved audition, panel-exit release, Add, keyboard Undo/Redo, provider-disconnected document reload/playback and menu export run through the installed editor. This is not live online-provider/search or project-creation UI acceptance. The prior E2E project is checked unchanged while away and restored afterward.
