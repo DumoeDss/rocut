@@ -248,6 +248,10 @@ export async function openTransactionEngine<FeatureName extends string = never>(
 					batch,
 					result: evaluated.result,
 					fingerprint: evaluated.fingerprint,
+					// Evaluation cloned the committed input and operation patches;
+					// policies only see independent frozen copies. No other owner
+					// retains this accepted document after projection.
+					takeOwnership: true,
 				});
 				const candidateIssue = transactionDocumentInvariantIssue({
 					projectId: options.projectId,
@@ -280,7 +284,7 @@ export async function openTransactionEngine<FeatureName extends string = never>(
 					summary: encoded.summary,
 					signal: options.signal,
 				});
-				// Projection already detached this private candidate. The adapter
+				// Evaluation already detached this private candidate. The adapter
 				// received its own copy, so publication can transfer ownership only
 				// after save succeeds without another whole-document allocation.
 				committed = candidate;

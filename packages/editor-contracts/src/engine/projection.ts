@@ -12,8 +12,12 @@ export function projectCommittedTransactionDocument(args: {
 	readonly batch: TransactionBatch;
 	readonly result: TransactionResult;
 	readonly fingerprint: string;
+	/** Internal caller relinquishes its already-detached evaluation document. */
+	readonly takeOwnership?: true;
 }): TransactionEngineDocument {
-	const document = cloneTransactionValue(args.evaluatedDocument);
+	const document = args.takeOwnership
+		? args.evaluatedDocument
+		: cloneTransactionValue(args.evaluatedDocument);
 	if (args.batch.idempotencyKey === undefined) return document;
 	return {
 		...document,

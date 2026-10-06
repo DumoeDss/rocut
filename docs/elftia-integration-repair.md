@@ -2,6 +2,11 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Accepted evaluation ownership (2026-10-06)
+
+- The engine's evaluator already detaches committed state and operation patches, and passes separate frozen copies to placement policies. Its accepted private document can therefore transfer into commit projection without another whole-document copy. The projection default stays defensive for other callers (including draft preflight); adapters still receive a separate candidate, public reads remain copied, and durable-save failure cannot publish it. Fingerprints, schemas and Rust domain rules are unchanged.
+- Two deterministic keyed/unkeyed allocation regressions fail before this change and pass afterward, checking input/default-projection isolation and idempotency-result copying. The real engine regression additionally requires exactly the evaluation and adapter-boundary copies before encoding, plus zero publication copies after save. Related engine/draft suites pass **56 tests / 600 assertions**, and the strengthened engine test separately passes **15 assertions**. Scoped lint, strict UTF-8/diff checks, pinned-Bun Vite typecheck and production build pass; existing chunk warnings remain. Packaging, installed ordinary timing and same-runtime continuous acceptance are pending; no latency gain is claimed yet.
+
 ## F03 simultaneous languages and document isolation (2026-10-06)
 
 - Added `--f03-languages-only`: actual JIZURA file imports create Japanese / Korean / English layers on the same timeline with `gothic_bold` / `gothic_bold_ko` / `mono`, distinct seeds and locked cuts. Real transform controls place them in three independently measured regions. Every layer's Hide / Undo leaves the other two color masks exactly unchanged; out-of-order seeks restore the full preview hash at four interior frames.

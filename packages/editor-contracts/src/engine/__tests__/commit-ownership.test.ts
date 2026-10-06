@@ -26,7 +26,9 @@ test("publication owns its candidate without recloning it after durable save", a
 	const adapter = createTransactionNativeDocumentAdapter();
 	const encode = adapter.encode.bind(adapter);
 	let exposed: TransactionEngineDocument | undefined;
+	let encoding = false;
 	adapter.encode = (args) => {
+		encoding = true;
 		exposed = args.document;
 		return encode(args);
 	};
@@ -48,8 +50,18 @@ test("publication owns its candidate without recloning it after durable save", a
 	engine.watch((revision) => revisions.push(Number(revision)));
 	const clone = globalThis.structuredClone;
 	let publicationCopies = 0;
+	let preEncodeCopies = 0;
 	const cloning = spyOn(globalThis, "structuredClone").mockImplementation(
 		(value, options) => {
+			if (
+				!encoding &&
+				value &&
+				typeof value === "object" &&
+				"tracks" in value &&
+				"idempotency" in value
+			) {
+				preEncodeCopies += 1;
+			}
 			if (
 				durable &&
 				value &&
@@ -74,6 +86,9 @@ test("publication owns its candidate without recloning it after durable save", a
 		cloning.mockRestore();
 	}
 	expect(publicationCopies).toBe(0);
+	// One detached evaluation plus one copy for the external adapter;
+	// projecting an already-owned evaluation must not add a third copy.
+	expect(preEncodeCopies).toBe(2);
 	expect(revisions).toEqual([1]);
 	if (!exposed?.project) throw new Error("adapter did not receive a project");
 	Reflect.set(exposed.project, "name", "adapter mutation");
