@@ -8,6 +8,7 @@ import type {
 import { IMMEDIATE_OPERATION_KINDS } from "./types";
 
 export const DRAFT_OPERATION_CLASSIFICATION = {
+	"reorder-tracks": "draft-safe",
 	"create-track": "draft-safe",
 	"update-track": "draft-safe",
 	"delete-track": "draft-safe",

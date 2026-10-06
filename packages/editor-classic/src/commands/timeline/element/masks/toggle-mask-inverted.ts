@@ -3,7 +3,10 @@ import {
 	type EditorCommandContext,
 	type CommandResult,
 } from "../../../base-command";
-import { isMaskableElement, updateElementInSceneTracks } from "../../../../timeline";
+import {
+	isMaskableElement,
+	updateElementInSceneTracks,
+} from "../../../../timeline";
 import type { Mask } from "../../../../masks/types";
 import type { SceneTracks, MaskableElement } from "../../../../timeline";
 
@@ -30,7 +33,7 @@ export function toggleMaskInvertedOnElement({
 }
 
 export class ToggleMaskInvertedCommand extends Command {
-	readonly routingClass = "provider-private" as const;
+	readonly routingClass = "transaction" as const;
 
 	private savedState: SceneTracks | null = null;
 	private readonly trackId: string;

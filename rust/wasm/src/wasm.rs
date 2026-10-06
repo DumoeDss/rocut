@@ -12,6 +12,7 @@ mod perf;
 mod runtime_state;
 
 pub use ::effects::{color_adjustment_catalog, normalize_color_adjustment};
+pub use editor_api::*;
 #[cfg(target_arch = "wasm32")]
 pub use compositor::*;
 #[cfg(target_arch = "wasm32")]

@@ -34,7 +34,7 @@ describe("coverage of the frozen contract", () => {
 			(dimension) => dimension.name === "operationKind",
 		);
 		expect(kinds?.members.length).toBe(OPERATION_KINDS.length);
-		expect(OPERATION_KINDS.length).toBe(15);
+		expect(OPERATION_KINDS.length).toBe(16);
 		expect(kinds?.uncovered).toEqual([]);
 		expect(
 			kinds?.members.find((member) => member.member === "update-project")

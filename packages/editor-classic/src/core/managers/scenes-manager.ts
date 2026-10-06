@@ -1,4 +1,5 @@
 import type { EditorCore } from "..";
+import { SwitchSceneCommand } from "../../commands/scene/switch-scene";
 import type { Bookmark, SceneTracks, TScene } from "../../timeline";
 import {
 	getMainScene,
@@ -85,29 +86,9 @@ export class ScenesManager {
 	}
 
 	async switchToScene({ sceneId }: { sceneId: string }): Promise<void> {
-		const targetScene = this.list.find((s) => s.id === sceneId);
-
-		if (!targetScene) {
-			throw new Error("Scene not found");
-		}
-
-		const activeProject = this.editor.project.getActive();
-
-		if (activeProject) {
-			const updatedProject = {
-				...activeProject,
-				currentSceneId: sceneId,
-				metadata: {
-					...activeProject.metadata,
-					updatedAt: new Date(),
-				},
-			};
-
-			this.editor.project.setActiveProject({ project: updatedProject });
-		}
-
-		this.active = targetScene;
-		this.notify();
+		await this.editor.command.execute({
+			command: new SwitchSceneCommand(sceneId),
+		});
 	}
 
 	async toggleBookmark({ time }: { time: MediaTime }): Promise<void> {

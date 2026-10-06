@@ -19,6 +19,8 @@ const PROJECT_PATCH_KEYS = [
 	"frameRate",
 	"canvasWidth",
 	"canvasHeight",
+	"sceneState",
+	"background",
 ] as const satisfies readonly (keyof ProjectPatch)[];
 
 interface EntityRepair {

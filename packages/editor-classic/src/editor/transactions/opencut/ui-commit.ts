@@ -24,6 +24,8 @@ export interface OpenCutUiCommitResult<
 }
 
 interface UiCommitPreparation<Payload> {
+	/** Checked inside the mutation arbiter, never just before queueing. */
+	readonly expectedRevision?: Revision;
 	readonly baseDraft: () => OpenCutProjectDraft;
 	readonly prepare: (args: {
 		readonly draft: OpenCutProjectDraft;

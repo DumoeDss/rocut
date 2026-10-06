@@ -5,8 +5,6 @@ import { commandHarness } from "./command-test-harness";
 import type { EditorCore } from "../..";
 import type { MediaAsset } from "../../../media/types";
 
-
-
 await import("../../../editor/session/__tests__/wasm-test-mock");
 const {
 	AddTrackCommand,
@@ -23,8 +21,6 @@ const {
 	UpdateMotionTextSequenceCommand,
 	UpdateProjectSettingsCommand,
 } = await import("../../../commands");
-
-
 
 const { MediaManager } = await import("../media-manager");
 const { buildElementFromMedia, buildMotionTextElement } =
@@ -44,8 +40,6 @@ const {
 
 	TEST_PROJECT_ID,
 } = await import("../../../editor/transactions/opencut/__tests__/fixture");
-
-
 
 describe("transaction-routed command manager", () => {
 	test("redo waits for an in-flight undo to publish its history", async () => {
@@ -344,7 +338,7 @@ describe("transaction-routed command manager", () => {
 		const privateHarness = await commandHarness();
 		await privateHarness.command.execute({
 			command: new UpdateProjectSettingsCommand({
-				background: { type: "color", color: "#abcdef" },
+				canvasSizeMode: "custom",
 			}),
 		});
 		expect(privateHarness.fixture.getSaveCount()).toBe(0);
@@ -462,7 +456,7 @@ describe("transaction-routed command manager", () => {
 		const mixed = new BatchCommand([
 			addTrack,
 			new UpdateProjectSettingsCommand({
-				background: { type: "color", color: "#ffffff" },
+				canvasSizeMode: "custom",
 			}),
 		]);
 		expect(() => harness.command.execute({ command: mixed })).toThrow(
@@ -632,14 +626,14 @@ describe("transaction-routed command manager", () => {
 			},
 		];
 
-		harness.timeline.upsertKeyframes({ keyframes });
+		await harness.timeline.upsertKeyframes({ keyframes });
 		expect(harness.command.getHistoryCount()).toBe(1);
 		await harness.command.undo();
 		expect(harness.command.getHistoryCount()).toBe(0);
 		await harness.command.redo();
 		expect(harness.command.getHistoryCount()).toBe(1);
 
-		harness.timeline.removeKeyframes({
+		await harness.timeline.removeKeyframes({
 			keyframes: keyframes.map(
 				({ trackId, elementId, propertyPath, keyframeId }) => ({
 					trackId,
@@ -653,7 +647,7 @@ describe("transaction-routed command manager", () => {
 		await harness.command.undo();
 		expect(harness.command.getHistoryCount()).toBe(1);
 
-		harness.timeline.updateKeyframeCurves({
+		await harness.timeline.updateKeyframeCurves({
 			keyframes: keyframes.map(
 				({ trackId, elementId, propertyPath, keyframeId }) => ({
 					trackId,
@@ -661,7 +655,7 @@ describe("transaction-routed command manager", () => {
 					propertyPath,
 					componentKey: "value",
 					keyframeId,
-					patch: { tangentMode: "flat" as const },
+					patch: { tangentMode: "broken" as const },
 				}),
 			),
 		});

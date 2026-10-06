@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-type-assertion -- Preview overlays intentionally merge partial fields back into the donor TimelineElement discriminated union. */
 import type { EditorCore } from "..";
+import { BatchCommand } from "../../commands/batch-command";
 import type { ElementBounds } from "../../preview/element-bounds";
 import type { ParamValues } from "../../params";
 import type {
@@ -67,7 +68,6 @@ import type {
 	PlannedElementMove,
 	PlannedTrackCreation,
 } from "../../timeline/group-move";
-import { ProviderPrivateCompositeCommand } from "../../commands/provider-private-composite";
 import type { MotionTextSequence } from "@opencut/editor-contracts";
 
 export class TimelineManager {
@@ -322,7 +322,7 @@ export class TimelineManager {
 		if (pushHistory) {
 			this.editor.command.execute({ command });
 		} else {
-			this.editor.command.executeWithoutHistory({ command });
+			void this.editor.command.executeSystem({ command });
 		}
 	}
 
@@ -449,7 +449,7 @@ export class TimelineManager {
 		if (pushHistory) {
 			this.editor.command.execute({ command });
 		} else {
-			this.editor.command.executeWithoutHistory({ command });
+			void this.editor.command.executeSystem({ command });
 		}
 	}
 
@@ -507,7 +507,7 @@ export class TimelineManager {
 		this.editor.command.execute({ command });
 	}
 
-	upsertKeyframes({
+	async upsertKeyframes({
 		keyframes,
 	}: {
 		keyframes: Array<{
@@ -519,7 +519,7 @@ export class TimelineManager {
 			interpolation?: AnimationInterpolation;
 			keyframeId?: string;
 		}>;
-	}): void {
+	}): Promise<void> {
 		if (keyframes.length === 0) {
 			return;
 		}
@@ -544,12 +544,12 @@ export class TimelineManager {
 					keyframeId,
 				}),
 		);
-		void this.editor.command.execute({
-			command: new ProviderPrivateCompositeCommand(commands),
+		await this.editor.command.execute({
+			command: new BatchCommand(commands),
 		});
 	}
 
-	removeKeyframes({
+	async removeKeyframes({
 		keyframes,
 	}: {
 		keyframes: Array<{
@@ -558,7 +558,7 @@ export class TimelineManager {
 			propertyPath: AnimationPath;
 			keyframeId: string;
 		}>;
-	}): void {
+	}): Promise<void> {
 		if (keyframes.length === 0) {
 			return;
 		}
@@ -613,8 +613,8 @@ export class TimelineManager {
 						valueAtPlayheadMap.get(`${elementId}:${propertyPath}`) ?? null,
 				}),
 		);
-		void this.editor.command.execute({
-			command: new ProviderPrivateCompositeCommand(commands),
+		await this.editor.command.execute({
+			command: new BatchCommand(commands),
 		});
 	}
 
@@ -641,7 +641,7 @@ export class TimelineManager {
 		this.editor.command.execute({ command });
 	}
 
-	updateKeyframeCurves({
+	async updateKeyframeCurves({
 		keyframes,
 	}: {
 		keyframes: Array<{
@@ -652,7 +652,7 @@ export class TimelineManager {
 			keyframeId: string;
 			patch: ScalarCurveKeyframePatch;
 		}>;
-	}): void {
+	}): Promise<void> {
 		if (keyframes.length === 0) {
 			return;
 		}
@@ -668,8 +668,8 @@ export class TimelineManager {
 					patch,
 				}),
 		);
-		void this.editor.command.execute({
-			command: new ProviderPrivateCompositeCommand(commands),
+		await this.editor.command.execute({
+			command: new BatchCommand(commands),
 		});
 	}
 

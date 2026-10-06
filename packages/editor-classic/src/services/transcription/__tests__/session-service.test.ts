@@ -60,6 +60,45 @@ async function afterTurn(): Promise<void> {
 }
 
 describe("session-owned transcription service", () => {
+	test("a rejected concurrent Agent call cannot cancel the UI-owned inference", async () => {
+		const { handle, resources } = fixture();
+		const service = createTranscriptionService({ resources });
+		const controller = new AbortController();
+		const first = service.transcribe({ audioData: new Float32Array(1) });
+		await afterTurn();
+		await expect(
+			service.transcribe({
+				audioData: new Float32Array(1),
+				signal: controller.signal,
+			}),
+		).rejects.toThrow("transcription-busy");
+		controller.abort();
+		expect(handle.terminations).toBe(0);
+		handle.emit({ type: "init-complete" });
+		await afterTurn();
+		handle.emit({ type: "transcribe-complete", text: "UI", segments: [] });
+		expect(await first).toMatchObject({ text: "UI" });
+		service.terminate();
+	});
+
+	test("Agent abort releases only its owned generation and permits retry", async () => {
+		const { handle, resources } = fixture();
+		const service = createTranscriptionService({ resources });
+		const controller = new AbortController();
+		const pending = service.transcribe({
+			audioData: new Float32Array(1),
+			signal: controller.signal,
+		});
+		controller.abort();
+		await expect(pending).rejects.toThrow("cancelled");
+		expect(handle.terminations).toBe(1);
+		const retry = service.transcribe({ audioData: new Float32Array(1) });
+		handle.emit({ type: "init-complete" });
+		await afterTurn();
+		handle.emit({ type: "transcribe-complete", text: "retry", segments: [] });
+		expect(await retry).toMatchObject({ text: "retry" });
+		service.terminate();
+	});
 	test("cancels pending initialization immediately and releases its worker", async () => {
 		const { handle, resources } = fixture();
 		const service = createTranscriptionService({ resources });
@@ -116,7 +155,9 @@ describe("session-owned transcription service", () => {
 			service.cancel();
 			await afterTurn();
 			expect(cancelled).toBeInstanceOf(Error);
-			expect(cancelled instanceof Error && cancelled.message).toMatch(/cancelled/i);
+			expect(cancelled instanceof Error && cancelled.message).toMatch(
+				/cancelled/i,
+			);
 			expect(oldWorker.terminations).toBe(1);
 
 			let result: unknown;

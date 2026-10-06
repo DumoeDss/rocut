@@ -38,7 +38,7 @@ test("legacy saves and UI/automation commits each adopt one durable record; fail
 		expect(adoptions).toBe(0);
 		const legacy = projectFixture();
 		// Ordinary saves carry donor-private state; public renames must be transactions.
-		legacy.settings.background = { type: "color", color: "#123456" };
+		legacy.settings.canvasSizeMode = "custom";
 		await persistence.saveProject({ project: legacy });
 		expect(adoptions).toBe(1);
 		expect(publicationsAdopted).not.toHaveBeenCalled();
@@ -60,8 +60,8 @@ test("legacy saves and UI/automation commits each adopt one durable record; fail
 		expect(publications).toEqual(["OpenCut routing"]);
 		expect(
 			persistence.readCachedProject({ id: TEST_PROJECT_ID })?.settings
-				.background,
-		).toEqual(legacy.settings.background);
+				.canvasSizeMode,
+		).toEqual(legacy.settings.canvasSizeMode);
 		await facade.commitUi({
 			baseDraft: () => {
 				const project = persistence.readCachedProject({ id: TEST_PROJECT_ID });

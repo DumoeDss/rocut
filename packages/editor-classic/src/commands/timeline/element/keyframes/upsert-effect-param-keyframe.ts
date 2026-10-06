@@ -3,7 +3,10 @@ import {
 	type EditorCommandContext,
 	type CommandResult,
 } from "../../../base-command";
-import { buildEffectParamPath, upsertPathKeyframe } from "../../../../animation";
+import {
+	buildEffectParamPath,
+	upsertPathKeyframe,
+} from "../../../../animation";
 import { updateElementInSceneTracks } from "../../../../timeline";
 import { isVisualElement } from "../../../../timeline/element-utils";
 import { resolveAnimationTarget } from "../../../../timeline/animation-targets";
@@ -17,7 +20,7 @@ import {
 } from "../../../../wasm";
 
 export class UpsertEffectParamKeyframeCommand extends Command {
-	readonly routingClass = "provider-private" as const;
+	readonly routingClass = "transaction" as const;
 
 	private savedState: SceneTracks | null = null;
 	private readonly trackId: string;

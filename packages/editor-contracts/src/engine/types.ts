@@ -110,6 +110,8 @@ export interface TransactionEngineDocument {
 
 export interface PlacementPolicyContext {
 	readonly document: TransactionEngineDocument;
+	/** Detached pre-batch project metadata for topology invariants. */
+	readonly previousProject?: Project | null;
 	readonly batch: TransactionBatch;
 	readonly operationIndexByEntityId: ReadonlyMap<string, number>;
 }

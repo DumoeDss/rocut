@@ -1,4 +1,7 @@
-import { hasKeyframesForPath, removeElementKeyframe } from "../../../../animation";
+import {
+	hasKeyframesForPath,
+	removeElementKeyframe,
+} from "../../../../animation";
 import {
 	Command,
 	type EditorCommandContext,
@@ -48,7 +51,7 @@ function removeKeyframeAndPersist({
 }
 
 export class RemoveKeyframeCommand extends Command {
-	readonly routingClass = "provider-private" as const;
+	readonly routingClass = "transaction" as const;
 
 	private savedState: SceneTracks | null = null;
 	private readonly trackId: string;

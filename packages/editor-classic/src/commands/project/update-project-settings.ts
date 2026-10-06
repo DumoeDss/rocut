@@ -10,6 +10,7 @@ import { frameRatesEqual } from "../../fps/utils";
 export class UpdateProjectSettingsCommand extends Command {
 	get routingClass(): "transaction" | "provider-private" {
 		return Object.prototype.hasOwnProperty.call(this.updates, "fps") ||
+			Object.prototype.hasOwnProperty.call(this.updates, "background") ||
 			Object.prototype.hasOwnProperty.call(this.updates, "canvasSize")
 			? "transaction"
 			: "provider-private";

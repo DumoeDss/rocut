@@ -4,10 +4,13 @@ import {
 	type CommandResult,
 } from "../base-command";
 import type { TScene } from "../../timeline";
-import { canDeleteScene, getFallbackSceneAfterDelete } from "../../timeline/scenes";
+import {
+	canDeleteScene,
+	getFallbackSceneAfterDelete,
+} from "../../timeline/scenes";
 
 export class DeleteSceneCommand extends Command {
-	readonly routingClass = "provider-private" as const;
+	readonly routingClass = "transaction" as const;
 
 	private savedScenes: TScene[] | null = null;
 	private savedActiveSceneId: string | null = null;

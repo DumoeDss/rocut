@@ -4,30 +4,31 @@ import {
 	type EditorCommandContext,
 	type CommandResult,
 } from "../../../base-command";
-import { isVisualElement, updateElementInSceneTracks } from "../../../../timeline";
+import {
+	isVisualElement,
+	updateElementInSceneTracks,
+} from "../../../../timeline";
 import type { SceneTracks, VisualElement } from "../../../../timeline";
 import { buildDefaultEffectInstance } from "../../../../effects";
 
 function addEffectToElement({
 	element,
-	effectType,
+	instance,
 }: {
 	element: VisualElement;
-	effectType: string;
+	instance: ReturnType<typeof buildDefaultEffectInstance>;
 }): VisualElement {
-	const instance = buildDefaultEffectInstance({ effectType });
 	const currentEffects = element.effects ?? [];
 	return { ...element, effects: [...currentEffects, instance] };
 }
 
 export class AddClipEffectCommand extends Command {
-	readonly routingClass = "provider-private" as const;
+	readonly routingClass = "transaction" as const;
 
 	private savedState: SceneTracks | null = null;
-	private effectId: string | null = null;
+	private readonly instance: ReturnType<typeof buildDefaultEffectInstance>;
 	private readonly trackId: string;
 	private readonly elementId: string;
-	private readonly effectType: string;
 
 	constructor({
 		trackId,
@@ -41,7 +42,7 @@ export class AddClipEffectCommand extends Command {
 		super();
 		this.trackId = trackId;
 		this.elementId = elementId;
-		this.effectType = effectType;
+		this.instance = buildDefaultEffectInstance({ effectType });
 	}
 
 	execute({ editor }: EditorCommandContext): CommandResult | undefined {
@@ -55,10 +56,8 @@ export class AddClipEffectCommand extends Command {
 			update: (element) => {
 				const updated = addEffectToElement({
 					element: element as VisualElement,
-					effectType: this.effectType,
+					instance: this.instance,
 				});
-				const effects = updated.effects ?? [];
-				this.effectId = effects[effects.length - 1]?.id ?? null;
 				return updated;
 			},
 		});
@@ -74,6 +73,6 @@ export class AddClipEffectCommand extends Command {
 	}
 
 	getEffectId(): string | null {
-		return this.effectId;
+		return this.instance.id;
 	}
 }

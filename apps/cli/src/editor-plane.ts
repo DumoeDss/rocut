@@ -34,6 +34,11 @@ import type {
 	ProjectSummary,
 } from "@opencut/editor-ports";
 import { createAutomation } from "@opencut/editor-automation";
+import {
+	openCutEditingPolicy,
+	openCutMediaPolicy,
+	validateDocumentEditing,
+} from "@opencut/editor-classic/editing";
 import { normalizeOperationFingerprint } from "opencut-wasm";
 import type { AutomationApi } from "@opencut/editor-automation";
 import {
@@ -244,6 +249,7 @@ export async function openEditorPlaneAutomation(args: {
 	const adapter = createOpenCutTransactionDocumentAdapter({
 		initialRecord: record,
 		initialAssets: [],
+		validateEditing: validateDocumentEditing,
 	});
 	const store = createAdoptingStore({ store: args.baseStore, adapter });
 	const automation = await createAutomation({
@@ -251,6 +257,7 @@ export async function openEditorPlaneAutomation(args: {
 		projectId: args.projectId,
 		documentAdapter: adapter,
 		normalizeOperationFingerprint,
+		placementPolicies: [openCutMediaPolicy, openCutEditingPolicy],
 	});
 	return { automation, adapter, store };
 }

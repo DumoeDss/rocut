@@ -130,3 +130,16 @@ export type {
 	ConformanceCaseResult,
 	ConformanceStatus,
 } from "./conformance";
+export type {
+	ClipEditing,
+	EditingValue,
+	EditingParams,
+	EditingKey,
+	EditingChannel,
+	EditingAnimations,
+	EditingEffect,
+	EditingMask,
+	EditingPathPoint,
+	EditingElementType,
+} from "./editing";
+export { isEditorTaskRequest, type EditorTaskRequest } from "./editor-tasks";

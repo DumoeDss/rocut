@@ -1271,6 +1271,10 @@ export async function runDraftEditingConformance<
 			await draft.stage({
 				operations: [
 					{
+						kind: "reorder-tracks",
+						trackIds: (await fixture.engine.tracks()).map((track) => track.id).reverse(),
+					},
+					{
 						kind: "update-project",
 						projectId: projectId("draft-project"),
 						patch: { canvasWidth: 1280 },

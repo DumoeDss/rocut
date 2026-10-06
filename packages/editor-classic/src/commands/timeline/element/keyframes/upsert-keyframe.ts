@@ -7,7 +7,10 @@ import { upsertPathKeyframe } from "../../../../animation";
 import { updateElementInSceneTracks } from "../../../../timeline";
 import type { SceneTracks } from "../../../../timeline";
 import { resolveAnimationTarget } from "../../../../timeline/animation-targets";
-import type { AnimationPath, AnimationInterpolation } from "../../../../animation/types";
+import type {
+	AnimationPath,
+	AnimationInterpolation,
+} from "../../../../animation/types";
 import type { ParamValue } from "../../../../params";
 import {
 	type MediaTime,
@@ -17,7 +20,7 @@ import {
 } from "../../../../wasm";
 
 export class UpsertKeyframeCommand extends Command {
-	readonly routingClass = "provider-private" as const;
+	readonly routingClass = "transaction" as const;
 
 	private savedState: SceneTracks | null = null;
 	private readonly trackId: string;

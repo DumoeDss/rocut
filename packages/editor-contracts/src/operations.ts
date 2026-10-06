@@ -22,7 +22,15 @@ import type { MotionTextSequence, MotionTextSequenceId } from "./motion-text";
 
 /** The public, Host-neutral Project fields that a transaction may update. */
 export type ProjectPatch = Partial<
-	Pick<Project, "name" | "frameRate" | "canvasWidth" | "canvasHeight">
+	Pick<
+		Project,
+		| "name"
+		| "frameRate"
+		| "canvasWidth"
+		| "canvasHeight"
+		| "sceneState"
+		| "background"
+	>
 >;
 
 /** Update the selected Project without exposing provider-private settings. */
@@ -69,6 +77,8 @@ export interface DeleteMotionTextSequenceOperation {
  */
 export type TransactionOperation =
 	| { readonly kind: "create-track"; readonly track: Track }
+	/** Exact permutation of all current track IDs; relative order within each scene/lane is rendered. */
+	| { readonly kind: "reorder-tracks"; readonly trackIds: readonly TrackId[] }
 	| {
 			readonly kind: "update-track";
 			readonly trackId: TrackId;
@@ -109,6 +119,7 @@ export type TransactionOperation =
 
 /** The set of all operation kind strings, for runtime checks. */
 export const OPERATION_KINDS = [
+	"reorder-tracks",
 	"create-track",
 	"update-track",
 	"delete-track",

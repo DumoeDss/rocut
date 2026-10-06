@@ -12,12 +12,13 @@ import type {
 	ProjectSummary,
 } from "@opencut/editor-ports";
 import { cloneOpaque } from "../../persistence/opaque-value";
+import { applyEditingState } from "./editing-state";
+import { overlaySceneState } from "./scene-state";
 import { decodeProject, encodeProject } from "../../persistence/project-codec";
 import type { TProject } from "../../../project/types";
 import { getProjectDurationFromScenes } from "../../../timeline/scenes";
 import type {
 	Bookmark,
-	SceneTracks,
 	TimelineElement,
 	TimelineTrack,
 } from "../../../timeline/types";
@@ -163,6 +164,7 @@ function overlayTrack(
 		name: track.name,
 		type: track.kind,
 		...("hidden" in base && { hidden: track.hidden }),
+		...("muted" in base && { muted: track.muted ?? base.muted }),
 	} as TimelineTrack;
 }
 
@@ -232,6 +234,7 @@ function overlayElement(
 ): TimelineElement {
 	const previousMatchesContent =
 		previous !== undefined &&
+		(clip.editing === undefined || clip.editing.type === previous.type) &&
 		(clip.sourceComponent === "audio"
 			? previous.type === "audio"
 			: !(previous.type === "audio" && asset?.kind === "video")) &&
@@ -272,7 +275,9 @@ function overlayElement(
 	if (clip.content?.kind === "motion-text" && next.type === "motion-text") {
 		next.sequenceId = clip.content.sequenceId;
 	}
-	return next;
+	return clip.editing
+		? applyEditingState({ element: next, editing: clip.editing })
+		: next;
 }
 
 function overlayMarkers(
@@ -312,6 +317,9 @@ function applyPublicDocument({
 	project.metadata = { ...project.metadata, name: document.project.name };
 	project.settings = {
 		...project.settings,
+		...(document.project.background && {
+			background: cloneOpaque(document.project.background),
+		}),
 		fps: cloneOpaque(document.project.frameRate) as TProject["settings"]["fps"],
 		canvasSize: {
 			width: document.project.canvasWidth,
@@ -321,11 +329,6 @@ function applyPublicDocument({
 	project.motionTextSequences = [
 		...cloneOpaque(document.motionTextSequences ?? []),
 	];
-	const activeScene = project.scenes.find(
-		(scene) => scene.id === project.currentSceneId,
-	);
-	if (!activeScene) throw new Error("OpenCut project has no active scene");
-
 	const previousTracks = donorTrackById(project);
 	const previousElements = donorElementById(project);
 	const assets = assetById(document);
@@ -346,31 +349,7 @@ function applyPublicDocument({
 				),
 			) as TimelineTrack["elements"];
 	}
-	const previousMainId = activeScene.tracks.main.id;
-	const main = tracks.get(previousMainId);
-	if (!main || main.type !== "video")
-		throw new Error("The canonical main track cannot be removed or retyped");
-	activeScene.tracks = {
-		main,
-		overlay: document.tracks
-			.filter((track) => track.id !== previousMainId && track.kind !== "audio")
-			.map((track) => tracks.get(track.id))
-			.filter(
-				(track): track is SceneTracks["overlay"][number] =>
-					track !== undefined && track.type !== "audio",
-			),
-		audio: document.tracks
-			.filter((track) => track.kind === "audio")
-			.map((track) => tracks.get(track.id))
-			.filter(
-				(track): track is SceneTracks["audio"][number] =>
-					track?.type === "audio",
-			),
-	};
-	activeScene.bookmarks = overlayMarkers(
-		activeScene.bookmarks,
-		document.markers,
-	);
+	overlaySceneState({ project, document, tracks, overlayMarkers });
 	return {
 		project,
 		assetCatalog: document.assets.map((asset) => ({
@@ -404,9 +383,16 @@ export interface OpenCutTransactionDocumentAdapter extends TransactionDocumentAd
 export function createOpenCutTransactionDocumentAdapter({
 	initialRecord,
 	initialAssets,
+	validateEditing,
 }: {
 	initialRecord: ProjectRecord;
 	initialAssets: readonly OpenCutAssetCatalogEntry[];
+	/** Injected runtime policy keeps the serialization-only entry WASM-free. */
+	validateEditing?: (args: {
+		document: TransactionEngineDocument;
+		ids?: ReadonlySet<string>;
+		previousProject?: TransactionEngineDocument["project"];
+	}) => readonly { message: string }[];
 }): OpenCutTransactionDocumentAdapter {
 	let latestRecord = cloneOpaque(initialRecord);
 	let latestRecordDigest: string | undefined;
@@ -465,7 +451,11 @@ export function createOpenCutTransactionDocumentAdapter({
 		},
 		encode({ projectId, previousRecord, document }) {
 			const baseRecord =
-				latestRecord.id === projectId ? latestRecord : previousRecord;
+				latestRecord.id === projectId &&
+				(readEnvelope(latestRecord.data)?.revision ?? 0) >=
+					(readEnvelope(previousRecord.data)?.revision ?? 0)
+					? latestRecord
+					: previousRecord;
 			const lastKey = document.idempotency.at(-1)?.key;
 			const token = lastKey as OpenCutCommitToken | undefined;
 			const registered = token ? staged.get(token) : undefined;
@@ -496,6 +486,51 @@ export function createOpenCutTransactionDocumentAdapter({
 					throw new Error("Staged OpenCut candidate projection mismatch");
 				}
 			} else {
+				// Direct adapter consumers must not bypass provider validation. UI
+				// staged commands already own a validated native candidate.
+				const previous = projectOpenCutDraft(decodeDraft(baseRecord), {
+					revision: document.revision,
+					idempotency: [],
+				});
+				const engineBase = projectOpenCutDraft(decodeDraft(previousRecord), {
+					revision: document.revision,
+					idempotency: [],
+				});
+				if (!publicDocumentsEqual(previous, engineBase)) {
+					throw new Error(
+						"The native project changed outside this engine; reopen before applying edits",
+					);
+				}
+				const oldClips = new Map(previous.clips.map((clip) => [clip.id, clip]));
+				const changed = new Set(
+					document.clips
+						.filter(
+							(clip) =>
+								clip.editing &&
+								canonical(oldClips.get(clip.id)?.editing) !==
+									canonical(clip.editing),
+						)
+						.map((clip) => clip.id),
+				);
+				if (changed.size && !validateEditing)
+					throw new Error("Rich editing requires the runtime editing provider");
+				const topologyChanged =
+					canonical(previous.project?.sceneState) !==
+						canonical(document.project?.sceneState) ||
+					canonical(previous.project?.background) !==
+						canonical(document.project?.background);
+				if (topologyChanged && !validateEditing)
+					throw new Error(
+						"Scene editing requires the runtime editing provider",
+					);
+				const issues =
+					validateEditing?.({
+						document,
+						ids: changed,
+						previousProject: previous.project,
+					}) ?? [];
+				if (issues.length)
+					throw new Error(issues.map((issue) => issue.message).join("; "));
 				draft = applyPublicDocument({
 					base: decodeDraft(baseRecord),
 					document,

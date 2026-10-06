@@ -69,6 +69,7 @@ export function readPublishedCorpusText(): PublishedCorpusText {
  */
 export const PUBLISHED_CONTRACT_SURFACE: ContractSurface = {
 	operationKinds: [
+		"reorder-tracks",
 		"create-track",
 		"update-track",
 		"delete-track",

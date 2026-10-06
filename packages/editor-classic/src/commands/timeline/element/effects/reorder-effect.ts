@@ -4,7 +4,10 @@ import {
 	type EditorCommandContext,
 	type CommandResult,
 } from "../../../base-command";
-import { isVisualElement, updateElementInSceneTracks } from "../../../../timeline";
+import {
+	isVisualElement,
+	updateElementInSceneTracks,
+} from "../../../../timeline";
 import type { SceneTracks, VisualElement } from "../../../../timeline";
 
 function reorderEffectsOnElement({
@@ -23,7 +26,7 @@ function reorderEffectsOnElement({
 }
 
 export class ReorderClipEffectsCommand extends Command {
-	readonly routingClass = "provider-private" as const;
+	readonly routingClass = "transaction" as const;
 
 	private savedState: SceneTracks | null = null;
 	private readonly trackId: string;

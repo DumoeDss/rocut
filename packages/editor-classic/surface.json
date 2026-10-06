@@ -42,6 +42,18 @@
 			"class": "provider",
 			"reason": "The editor-native transaction plane (adapter + host seed + envelope reader) - Classic's own machinery, react-free and wasm-free by construction; the dual-plane unification's declared seam (ruled 2026-08-17)."
 		},
+		"./editing": {
+			"class": "provider",
+			"reason": "Agent-first editing catalogue, Rust validation policies and scene planning; loads the provider WASM runtime."
+		},
+		"./agent-tasks": {
+			"class": "provider",
+			"reason": "Attached-session history and caption task runner; reuses the native editor command and transcription services."
+		},
+		"./media-import": {
+			"class": "provider",
+			"reason": "Node-safe container metadata probe over the existing media I/O library; no rasterization or session imports."
+		},
 		"./frame-proof": {
 			"class": "provider",
 			"reason": "The composed-frame proof (canonical frame description + SHA-256) - Classic's own machinery, deterministic by construction; the S07 agent verification primitive."

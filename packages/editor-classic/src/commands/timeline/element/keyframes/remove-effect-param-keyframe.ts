@@ -9,7 +9,7 @@ import { isVisualElement } from "../../../../timeline/element-utils";
 import type { SceneTracks } from "../../../../timeline";
 
 export class RemoveEffectParamKeyframeCommand extends Command {
-	readonly routingClass = "provider-private" as const;
+	readonly routingClass = "transaction" as const;
 
 	private savedState: SceneTracks | null = null;
 	private readonly trackId: string;

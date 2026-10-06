@@ -28,6 +28,10 @@ import type { MediaAsset } from "../../../media/types";
 import { createOpenCutTransactionDocumentAdapter } from "./adapter";
 import { ProjectMutationArbiter } from "./arbiter";
 import { openCutMediaPolicy } from "./media-policy";
+import {
+	openCutEditingPolicy,
+	validateDocumentEditing,
+} from "./editing-policy";
 import { cloneOpenCutDraft, projectOpenCutDraft } from "./projection";
 import type {
 	OpenCutUiCommitResult,
@@ -115,6 +119,7 @@ export class SessionOpenCutTransactions {
 				});
 				if (!record) throw new Error(`Project ${projectId} no longer exists`);
 				const adapter = createOpenCutTransactionDocumentAdapter({
+					validateEditing: validateDocumentEditing,
 					initialRecord: record,
 					initialAssets: assetCatalogFromMedia(assets),
 				});
@@ -122,7 +127,7 @@ export class SessionOpenCutTransactions {
 					store: this.options.persistence.store,
 					projectId: portProjectId,
 					documentAdapter: adapter,
-					placementPolicies: [openCutMediaPolicy],
+					placementPolicies: [openCutMediaPolicy, openCutEditingPolicy],
 					normalizeOperationFingerprint,
 				});
 				const active: ActiveOpenCutRouter = {
@@ -164,6 +169,12 @@ export class SessionOpenCutTransactions {
 			operation: async () => {
 				this.assertCurrent(active);
 				const revision = await active.engine.revision();
+				if (
+					options.expectedRevision !== undefined &&
+					options.expectedRevision !== revision
+				) {
+					throw new Error("revision-conflict");
+				}
 				const baseDocument = await this.readDocument(active.engine, revision);
 				const draft = cloneOpenCutDraft(baseDraft());
 				draft.assetCatalog = mergeAssetCatalogs({

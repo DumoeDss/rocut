@@ -225,5 +225,34 @@ export function encodeProject({
 	// entity would incorrectly resurrect removed optional fields (for example a
 	// resolved plan after undo, or inherited cue overrides).
 	encoded.motionTextSequences = cloneOpaque(project.motionTextSequences);
+	// These objects are complete editor-owned values, not opaque partial patches.
+	// Recursive overlay would resurrect deleted animation channels/parameters or
+	// retain the other background variant after switching color <-> blur.
+	encoded.settings.background = cloneOpaque(project.settings.background);
+	for (const [sceneIndex, scene] of project.scenes.entries()) {
+		const savedTracks = record(
+			encoded.scenes[sceneIndex].tracks,
+			"encoded tracks",
+		);
+		const nativeTracks = [
+			...scene.tracks.overlay,
+			scene.tracks.main,
+			...scene.tracks.audio,
+		];
+		const saved = [
+			...(savedTracks.overlay as UnknownRecord[]),
+			record(savedTracks.main, "encoded main track"),
+			...(savedTracks.audio as UnknownRecord[]),
+		];
+		for (const [trackIndex, track] of nativeTracks.entries()) {
+			const elements = saved[trackIndex].elements as UnknownRecord[];
+			for (const [elementIndex, element] of track.elements.entries()) {
+				const source = element as unknown as UnknownRecord;
+				for (const key of ["params", "animations", "effects", "masks"]) {
+					elements[elementIndex][key] = cloneOpaque(source[key]);
+				}
+			}
+		}
+	}
 	return encoded;
 }

@@ -18,6 +18,14 @@
  * without invalidating reviews. Persistence and resync share one queue slot.
  */
 import { createServer } from "node:http";
+import { editingCatalog } from "@opencut/editor-classic/editing";
+import { planSceneEdit } from "./scene-editing";
+import { importLocalMedia, MEDIA_IMPORT_CAPABILITY } from "./media-import";
+import {
+	createEditorTaskRegistry,
+	type EditorTaskRegistry,
+} from "./host-editor-tasks";
+import { handleEditorTaskRoute } from "./host-editor-task-routes";
 import { createReadStream, existsSync } from "node:fs";
 import { stat } from "node:fs/promises";
 import path from "node:path";
@@ -304,6 +312,7 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 	});
 
 	const token = randomBytes(24).toString("hex");
+	const editorTasks = createEditorTaskRegistry();
 	const server = createServer((request, response) => {
 		void handle(request, response, {
 			token,
@@ -312,6 +321,7 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 			activity,
 			noteActivity,
 			exportRegistry,
+			editorTasks,
 			motionTextCores: args.motionTextCores,
 			motionTextJournal,
 		});
@@ -349,6 +359,7 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 			return plane.automation();
 		},
 		close: async () => {
+			editorTasks.dispose();
 			await args.registry.remove(targetId).catch(() => undefined);
 			// Bun 1.2.18 can lose the close callback if active fetch connections
 			// are terminated only after close(). Drain once before it as well;
@@ -395,6 +406,7 @@ interface HandleContext {
 	readonly noteActivity: () => void;
 	/** Attached-pane registry + export job book (see `host-export.ts`). */
 	readonly exportRegistry: ExportRegistry;
+	readonly editorTasks: EditorTaskRegistry;
 	readonly motionTextCores: MotionTextFactoryCores | undefined;
 	readonly motionTextJournal: MotionTextRequestJournal;
 }
@@ -470,8 +482,92 @@ async function handleApi(
 				revision: await automation.revision(),
 				capabilities: await automation.capabilities(),
 				supportedOperations: await automation.supportedOperations(),
+				mediaImport: MEDIA_IMPORT_CAPABILITY,
 				project: await automation.project(),
+				editing: {
+					version: 1,
+					catalog: "editing/catalog",
+					mutation: "update-clip.patch.editing",
+					trackMute: "update-track.patch.muted",
+					background: "update-project.patch.background",
+					trackOrder: "reorder-tracks",
+				},
+				editorTasks: {
+					route: "editor-tasks",
+					kinds: [
+						"history.status",
+						"history.undo",
+						"history.redo",
+						"captions.import",
+						"captions.transcribe",
+					],
+					historyScope: "attached-session",
+					captionsReturnPlan: true,
+				},
 			});
+			return;
+		}
+		if (
+			request.method === "GET" &&
+			route[0] === "editing" &&
+			route[1] === "catalog" &&
+			route.length === 2
+		) {
+			respond(200, editingCatalog());
+			return;
+		}
+		if (route[0] === "editor-tasks") {
+			await handleEditorTaskRoute({
+				request,
+				route,
+				registry: context.editorTasks,
+				currentRevision: async () =>
+					Number(await plane.automation().revision()),
+				respond,
+			});
+			return;
+		}
+		if (
+			route[0] === "scenes" &&
+			request.method === "GET" &&
+			route.length === 1
+		) {
+			respond(200, (await automation.project())?.sceneState ?? null);
+			return;
+		}
+		if (
+			route[0] === "scenes" &&
+			route[1] === "plan" &&
+			route.length === 2 &&
+			request.method === "POST"
+		) {
+			const input: unknown = await readJsonBody(request);
+			respond(
+				200,
+				await plane.enqueue(() =>
+					planSceneEdit({ automation: plane.automation(), input }),
+				),
+			);
+			return;
+		}
+		if (
+			request.method === "POST" &&
+			route.length === 2 &&
+			route[0] === "media" &&
+			route[1] === "import"
+		) {
+			const input: unknown = await readJsonBody(request);
+			respond(
+				200,
+				await plane.enqueue(() =>
+					importLocalMedia({
+						input,
+						store: plane.baseStore,
+						projectId: plane.projectId,
+						automation: plane.automation(),
+					}),
+				),
+			);
 			return;
 		}
 		if (request.method === "GET" && route[0] === "tracks") {
@@ -612,6 +708,15 @@ async function handleApi(
 			return;
 		}
 		if (request.method === "GET" && route[0] === "events") {
+			const taskSurfaceId = url.searchParams.get("editorTaskSurface");
+			const detachTasks =
+				taskSurfaceId === null
+					? () => undefined
+					: context.editorTasks.attach(taskSurfaceId, {
+							send: (frame) => {
+								response.write(`data: ${JSON.stringify(frame)}\n\n`);
+							},
+						});
 			response.writeHead(200, {
 				"content-type": "text/event-stream",
 				"cache-control": "no-cache",
@@ -656,6 +761,7 @@ async function handleApi(
 				...flush,
 			});
 			request.once("close", () => {
+				detachTasks();
 				unsubscribe();
 				detach();
 			});
@@ -1054,9 +1160,11 @@ async function handleLibrary(
 	const namespace = decodeURIComponent(route[0]);
 	if (route.length === 1) {
 		if (request.method === "DELETE") {
-			await plane.enqueue(() => plane.baseStore.clear({
-				scope: { kind: "library", namespace },
-			}));
+			await plane.enqueue(() =>
+				plane.baseStore.clear({
+					scope: { kind: "library", namespace },
+				}),
+			);
 			respond(200, { accepted: true });
 			return;
 		}

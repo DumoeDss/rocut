@@ -1,4 +1,5 @@
 import type { EditorCore } from "..";
+import { revisionOf } from "@opencut/editor-contracts";
 import {
 	BatchCommand,
 	type Command,
@@ -380,6 +381,40 @@ export class CommandManager {
 		return this.history.length > 0;
 	}
 
+	/** Actual session history, serialized with UI gestures and durable saves. */
+	travelHistory({
+		direction,
+		expectedRevision,
+	}: {
+		direction: "undo" | "redo";
+		expectedRevision: number;
+	}): Promise<void> {
+		return this.enqueueHistoryWork({
+			operation: async () => {
+				if (
+					Number(await this.editor.transactions.revision()) !== expectedRevision
+				) {
+					throw new Error("revision-conflict");
+				}
+				const entry = (direction === "undo" ? this.history : this.redoStack).at(
+					-1,
+				);
+				if (!entry) throw new Error("history-empty");
+				if (entry.kind !== "transaction")
+					throw new Error("history-entry-not-transactional");
+				await this.commitHistorySnapshot({
+					entry,
+					direction,
+					expectedRevision,
+				});
+			},
+		});
+	}
+
+	async whenIdle(): Promise<void> {
+		while (this.pendingHistory) await this.pendingHistory;
+	}
+
 	canRedo(): boolean {
 		return this.redoStack.length > 0;
 	}
@@ -425,14 +460,20 @@ export class CommandManager {
 	private async commitHistorySnapshot({
 		entry,
 		direction,
+		expectedRevision,
 	}: {
 		entry: TransactionCommandHistoryEntry;
 		direction: "undo" | "redo";
+		expectedRevision?: number;
 	}): Promise<void> {
 		const from = direction === "undo" ? entry.redoTarget : entry.undoTarget;
 		const to = direction === "undo" ? entry.undoTarget : entry.redoTarget;
 		const previousSelection = this.getSelectionSnapshot();
 		await this.editor.transactions.commitUi({
+			expectedRevision:
+				expectedRevision === undefined
+					? undefined
+					: revisionOf(expectedRevision),
 			returnCommittedDraft: false,
 			baseDraft: () => this.captureLiveDraft(),
 			prepare: ({ draft, baseRevision, baseDocument }) => {

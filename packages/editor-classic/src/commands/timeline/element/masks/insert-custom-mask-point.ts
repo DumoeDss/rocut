@@ -6,7 +6,10 @@ import {
 import { insertPointOnFreeformSegment } from "../../../../masks/freeform/definition";
 import type { ElementBounds } from "../../../../preview/element-bounds";
 import type { FreeformPathMask } from "../../../../masks/types";
-import { isMaskableElement, updateElementInSceneTracks } from "../../../../timeline";
+import {
+	isMaskableElement,
+	updateElementInSceneTracks,
+} from "../../../../timeline";
 import type { MaskableElement, SceneTracks } from "../../../../timeline";
 
 function insertPointIntoFreeformPathMask({
@@ -89,7 +92,7 @@ function insertPointIntoElementMask({
 }
 
 export class InsertFreeformPathMaskPointCommand extends Command {
-	readonly routingClass = "provider-private" as const;
+	readonly routingClass = "transaction" as const;
 
 	private savedState: SceneTracks | null = null;
 	private readonly trackId: string;

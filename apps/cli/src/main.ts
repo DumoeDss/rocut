@@ -13,6 +13,7 @@ import { copyFile, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { startHost } from "./host";
+import { runAgentCli } from "./agent-cli";
 import type { ExportJob } from "./host-export";
 import { ensureHost } from "./ensure";
 import { CliRequestError, request } from "./host-request";
@@ -101,6 +102,11 @@ export const USAGE_LINES: readonly string[] = [
 	"  rocut target list",
 	"  rocut target reap [--project <dir>] [--dry-run]",
 	"  rocut read [--target <id|auto>] [--project <dir>]",
+	"  rocut editing catalog [--target <id|auto>] [--project <dir>]",
+	"  rocut capabilities [--target <id|auto>] [--project <dir>]",
+	"  rocut media import <spec.json> [--target <id|auto>] [--project <dir>]",
+	"  rocut task list|start <spec.json>|get <id>|cancel <id> [--target <id|auto>] [--project <dir>]",
+	"  rocut scenes list|plan <spec.json> [--target <id|auto>] [--project <dir>]",
 	"  rocut motion-text catalog [--target <id|auto>] [--project <dir>]",
 	"  rocut motion-text list [--target <id|auto>] [--project <dir>]",
 	"  rocut motion-text create <spec.json> [--target <id|auto>] [--project <dir>]",
@@ -268,6 +274,18 @@ async function runCli(argv: readonly string[]): Promise<void> {
 			);
 			return;
 		}
+		case "capabilities":
+		case "media":
+		case "editing":
+		case "task":
+		case "scenes": {
+			await runAgentCli({
+				command,
+				positional: args.positional,
+				resolved: await resolveTarget(args, registry),
+			});
+			return;
+		}
 		case "motion-text": {
 			const subcommand = args.positional[0];
 			const resolved = await resolveTarget(args, registry);
@@ -317,8 +335,14 @@ async function runCli(argv: readonly string[]): Promise<void> {
 				return;
 			}
 			if (subcommand === "mutate" || subcommand === "vary") {
-				if (subcommand === "mutate" && args.flags.has("preview") && args.flags.has("apply")) {
-					throw new Error("motion-text mutate --preview cannot be combined with --apply");
+				if (
+					subcommand === "mutate" &&
+					args.flags.has("preview") &&
+					args.flags.has("apply")
+				) {
+					throw new Error(
+						"motion-text mutate --preview cannot be combined with --apply",
+					);
 				}
 				const sequenceId = args.positional[1];
 				const specFile = args.positional[2];
@@ -330,7 +354,9 @@ async function runCli(argv: readonly string[]): Promise<void> {
 				const spec: unknown = JSON.parse(await readFile(specFile, "utf8"));
 				const suffix =
 					subcommand === "mutate"
-						? (args.flags.has("preview") ? "mutation-previews" : "mutations")
+						? args.flags.has("preview")
+							? "mutation-previews"
+							: "mutations"
 						: `variations${args.flags.has("apply") ? "?apply=true" : ""}`;
 				const outcome = await request(
 					resolved.secret,

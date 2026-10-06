@@ -7,7 +7,7 @@ import type { TScene } from "../../timeline";
 import { updateSceneInArray } from "../../timeline/scenes";
 
 export class RenameSceneCommand extends Command {
-	readonly routingClass = "provider-private" as const;
+	readonly routingClass = "transaction" as const;
 
 	private savedScenes: TScene[] | null = null;
 	private previousName: string | null = null;

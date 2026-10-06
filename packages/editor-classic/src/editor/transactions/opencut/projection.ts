@@ -25,6 +25,8 @@ import type {
 } from "../../../timeline/types";
 import { cloneOpaque } from "../../persistence/opaque-value";
 import { projectionValuesEqual } from "./projection-value-equality";
+import { projectEditingState } from "./editing-state";
+import { projectTrackOrder } from "./scene-state";
 import type { OpenCutAssetCatalogEntry, OpenCutProjectDraft } from "./types";
 
 const MARKER_ID_KEY = "__opencutTransactionMarkerId";
@@ -65,15 +67,31 @@ function projectProjection(draft: OpenCutProjectDraft): Project {
 		},
 		canvasWidth: project.settings.canvasSize.width,
 		canvasHeight: project.settings.canvasSize.height,
+		background:
+			project.settings.background.type === "blur"
+				? {
+						type: "blur",
+						blurIntensity: project.settings.background.blurIntensity,
+					}
+				: { type: "color", color: project.settings.background.color },
+		sceneState: {
+			currentSceneId: project.currentSceneId,
+			scenes: project.scenes.map((scene) => ({
+				id: scene.id,
+				name: scene.name,
+				isMain: scene.isMain,
+				mainTrackId: trackId(scene.tracks.main.id),
+			})),
+		},
 	};
 }
 
 function allTracks(draft: OpenCutProjectDraft): TimelineTrack[] {
-	const scene = draft.project.scenes.find(
-		(candidate) => candidate.id === draft.project.currentSceneId,
-	);
-	if (!scene) return [];
-	return [...scene.tracks.overlay, scene.tracks.main, ...scene.tracks.audio];
+	return draft.project.scenes.flatMap((scene) => [
+		...scene.tracks.overlay,
+		scene.tracks.main,
+		...scene.tracks.audio,
+	]);
 }
 
 function trackProjection(track: TimelineTrack): Track {
@@ -81,6 +99,8 @@ function trackProjection(track: TimelineTrack): Track {
 		id: trackId(track.id),
 		kind: track.type,
 		name: track.name,
+		...("muted" in track &&
+			track.muted !== undefined && { muted: track.muted }),
 		hidden:
 			"hidden" in track && typeof track.hidden === "boolean"
 				? track.hidden
@@ -106,9 +126,12 @@ function clipProjection(
 		duration: contractTime(element.duration),
 		trimStart: contractTime(element.trimStart),
 		trimEnd: contractTime(element.trimEnd),
+		editing: projectEditingState(element),
 		...(mediaId !== undefined && { assetId: assetId(mediaId) }),
 		...(element.type === "audio" &&
-			assets.some((asset) => asset.id === mediaId && asset.type === "video") && {
+			assets.some(
+				(asset) => asset.id === mediaId && asset.type === "video",
+			) && {
 				sourceComponent: "audio" as const,
 			}),
 		...((element.type === "video" || element.type === "audio") &&
@@ -158,6 +181,7 @@ function markerProjection(
 ): Marker {
 	return {
 		id: markerId(markerIdentity(sceneId, bookmark, index)),
+		sceneId,
 		time: contractTime(bookmark.time),
 		...(bookmark.note !== undefined && { note: bookmark.note }),
 		...(bookmark.color !== undefined && { color: bookmark.color }),
@@ -174,22 +198,30 @@ export function projectOpenCutDraft(
 	},
 ): TransactionEngineDocument {
 	const tracks = allTracks(draft);
-	const scene = draft.project.scenes.find(
-		(candidate) => candidate.id === draft.project.currentSceneId,
+	const sceneByTrack = new Map(
+		draft.project.scenes.flatMap((scene) =>
+			[...scene.tracks.overlay, scene.tracks.main, ...scene.tracks.audio].map(
+				(track) => [track.id, scene.id] as const,
+			),
+		),
 	);
 	return {
 		project: projectProjection(draft),
-		tracks: tracks.map(trackProjection),
+		tracks: tracks.map((track) => ({
+			...trackProjection(track),
+			sceneId: sceneByTrack.get(track.id),
+		})),
 		clips: tracks.flatMap((track) =>
 			track.elements.map((element) =>
 				clipProjection(track, element, draft.assetCatalog),
 			),
 		),
 		assets: draft.assetCatalog.map(assetProjection),
-		markers:
-			scene?.bookmarks.map((bookmark, index) =>
+		markers: draft.project.scenes.flatMap((scene) =>
+			scene.bookmarks.map((bookmark, index) =>
 				markerProjection(scene.id, bookmark, index),
-			) ?? [],
+			),
+		),
 		motionTextSequences:
 			metadata.sequenceOwnership === "borrow"
 				? draft.project.motionTextSequences
@@ -270,6 +302,8 @@ export function diffOpenCutProjection({
 		"frameRate",
 		"canvasWidth",
 		"canvasHeight",
+		"sceneState",
+		"background",
 	]) as ProjectPatch;
 	if (Object.keys(projectPatch).length > 0) {
 		operations.push({
@@ -338,7 +372,13 @@ export function diffOpenCutProjection({
 		const current = afterTracks.get(id);
 		const previous = beforeTracks.get(id);
 		if (!current || !previous) continue;
-		const patch = changedPatch(previous, current, ["kind", "name", "hidden"]);
+		const patch = changedPatch(previous, current, [
+			"kind",
+			"name",
+			"hidden",
+			"muted",
+			"sceneId",
+		]);
 		if (Object.keys(patch).length > 0)
 			operations.push({ kind: "update-track", trackId: trackId(id), patch });
 	}
@@ -355,6 +395,7 @@ export function diffOpenCutProjection({
 			"assetId",
 			"content",
 			"adjustment",
+			"editing",
 		]);
 		const freezePatch =
 			previous.freezeFrame === current.freezeFrame
@@ -407,11 +448,36 @@ export function diffOpenCutProjection({
 		const current = afterMarkers.get(id);
 		const previous = beforeMarkers.get(id);
 		if (!current || !previous) continue;
-		const patch = changedPatch(previous, current, ["time", "note", "color"]);
+		const patch = changedPatch(previous, current, [
+			"time",
+			"note",
+			"color",
+			"sceneId",
+		]);
 		if (Object.keys(patch).length > 0)
 			operations.push({ kind: "update-marker", markerId: markerId(id), patch });
 	}
 
+	const reducedTrackIds = [
+		...before.tracks
+			.map((track) => track.id)
+			.filter((id) => afterTracks.has(id)),
+		...sortedIds(afterTracks.keys()).filter((id) => !beforeTracks.has(id)),
+	];
+	if (
+		!same(
+			projectTrackOrder({
+				project: after.project,
+				tracks: reducedTrackIds.map((id) => afterTracks.get(id)!),
+			}),
+			projectTrackOrder(after),
+		)
+	) {
+		operations.push({
+			kind: "reorder-tracks",
+			trackIds: after.tracks.map((track) => track.id),
+		});
+	}
 	if (operations.length === 0) {
 		throw new OpenCutProjectionError(
 			"empty",
@@ -434,6 +500,10 @@ export function publicDocumentsEqual(
 ): boolean {
 	const normalized = (document: TransactionEngineDocument) => ({
 		project: document.project,
+		// Collection membership is unordered, but lane-relative compositing order is not.
+		trackOrder: document.project?.sceneState
+			? projectTrackOrder(document)
+			: undefined,
 		tracks: [...document.tracks].sort((a, b) => a.id.localeCompare(b.id)),
 		clips: [...document.clips].sort((a, b) => a.id.localeCompare(b.id)),
 		assets: [...document.assets].sort((a, b) => a.id.localeCompare(b.id)),

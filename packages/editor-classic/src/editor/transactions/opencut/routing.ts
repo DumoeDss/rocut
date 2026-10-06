@@ -38,6 +38,7 @@ export const REGISTERED_COMMAND_NAMES = Object.freeze(
 		"ReorderClipEffectsCommand",
 		"RetimeKeyframeCommand",
 		"SplitElementsCommand",
+		"SwitchSceneCommand",
 		"ToggleBookmarkCommand",
 		"ToggleClipEffectCommand",
 		"ToggleMaskInvertedCommand",

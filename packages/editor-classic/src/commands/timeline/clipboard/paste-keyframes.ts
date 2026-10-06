@@ -88,7 +88,7 @@ function pasteKeyframesIntoElement({
 }
 
 export class PasteKeyframesCommand extends Command {
-	readonly routingClass = "provider-private" as const;
+	readonly routingClass = "transaction" as const;
 
 	private savedState: SceneTracks | null = null;
 	private readonly trackId: string;

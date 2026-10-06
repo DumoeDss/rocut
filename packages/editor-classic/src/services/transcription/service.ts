@@ -40,6 +40,7 @@ export interface TranscriptionService {
 		language?: TranscriptionLanguage;
 		modelId?: TranscriptionModelId;
 		onProgress?: ProgressCallback;
+		signal?: AbortSignal;
 	}): Promise<TranscriptionResult>;
 	cancel(): void;
 	terminate(): void;
@@ -60,6 +61,7 @@ export function createTranscriptionService({
 	let initializing: Promise<void> | null = null;
 	let terminateInitialization: ((reason: Error) => void) | null = null;
 	let generation = 0;
+	let busy = false;
 	const pendingTerminals = new Set<(reason: Error) => void>();
 
 	function assertActivityAdmitted(): void {
@@ -186,7 +188,7 @@ export function createTranscriptionService({
 		}
 	}
 
-	async function transcribe({
+	async function runTranscription({
 		audioData,
 		language = "auto",
 		modelId = DEFAULT_TRANSCRIPTION_MODEL,
@@ -263,7 +265,20 @@ export function createTranscriptionService({
 	}
 
 	return {
-		transcribe,
+		async transcribe(args) {
+			if (busy) throw new Error("transcription-busy");
+			args.signal?.throwIfAborted();
+			busy = true;
+			const abort = () =>
+				releaseWorker({ reason: new Error("Transcription cancelled") });
+			args.signal?.addEventListener("abort", abort, { once: true });
+			try {
+				return await runTranscription(args);
+			} finally {
+				args.signal?.removeEventListener("abort", abort);
+				busy = false;
+			}
+		},
 		cancel: () => {
 			// A message cannot interrupt model loading or an in-flight native
 			// inference. Release the owned worker and reject all pending work;

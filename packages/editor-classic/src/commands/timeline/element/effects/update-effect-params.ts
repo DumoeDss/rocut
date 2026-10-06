@@ -4,7 +4,10 @@ import {
 	type EditorCommandContext,
 	type CommandResult,
 } from "../../../base-command";
-import { isVisualElement, updateElementInSceneTracks } from "../../../../timeline";
+import {
+	isVisualElement,
+	updateElementInSceneTracks,
+} from "../../../../timeline";
 import type { ParamValues } from "../../../../params";
 import type { SceneTracks, VisualElement } from "../../../../timeline";
 
@@ -36,7 +39,7 @@ function updateEffectParamsOnElement({
 }
 
 export class UpdateClipEffectParamsCommand extends Command {
-	readonly routingClass = "provider-private" as const;
+	readonly routingClass = "transaction" as const;
 
 	private savedState: SceneTracks | null = null;
 	private readonly trackId: string;

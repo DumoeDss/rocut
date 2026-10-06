@@ -30,6 +30,7 @@ members = [
     "apps/desktop",
     "rust/crates/time",
     "rust/crates/transaction-identity",
+    "rust/crates/editor-api",
     "rust/crates/bridge",
     "rust/crates/effects",
     "rust/crates/gpu",

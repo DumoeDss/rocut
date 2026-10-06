@@ -1,4 +1,8 @@
 import type { EditorHost } from "@opencut/editor-ports/host";
+import {
+	isEditorTaskRequest,
+	type EditorTaskRequest,
+} from "@opencut/editor-contracts";
 import { createBrowserRuntimePorts } from "@opencut/editor-classic/browser";
 import {
 	createInMemoryPorts,
@@ -135,6 +139,13 @@ function isHostExportOptions(
  */
 export type HostCommand =
 	| {
+			readonly command: "editor-task.start";
+			readonly jobId: string;
+			readonly token: string;
+			readonly request: EditorTaskRequest;
+	  }
+	| { readonly command: "editor-task.cancel"; readonly jobId: string }
+	| {
 			readonly command: "export.start";
 			readonly jobId: string;
 			readonly options: HostExportOptions;
@@ -144,6 +155,14 @@ export type HostCommand =
 function parseHostCommand(parsed: Record<string, unknown>): HostCommand | null {
 	const { command, jobId } = parsed;
 	if (typeof jobId !== "string" || jobId === "") return null;
+	if (command === "editor-task.cancel") return { command, jobId };
+	if (
+		command === "editor-task.start" &&
+		typeof parsed.token === "string" &&
+		isEditorTaskRequest(parsed.request)
+	) {
+		return { command, jobId, token: parsed.token, request: parsed.request };
+	}
 	if (command === "export.cancel") return { command, jobId };
 	if (
 		command === "export.start" &&
@@ -172,12 +191,16 @@ function parseHostCommand(parsed: Record<string, unknown>): HostCommand | null {
  * this pane.
  */
 export function subscribeHostEvents(handlers: {
+	readonly editorTaskSurface?: string;
+	readonly onDisconnect?: () => void;
 	readonly onRevision?: (revision: number) => void;
 	readonly onCommand?: (command: HostCommand) => void;
 }): () => void {
-	const source = new EventSource(
-		new URL("api/events", location.href).toString(),
-	);
+	const url = new URL("api/events", location.href);
+	if (handlers.editorTaskSurface)
+		url.searchParams.set("editorTaskSurface", handlers.editorTaskSurface);
+	const source = new EventSource(url.toString());
+	source.onerror = () => handlers.onDisconnect?.();
 	source.onmessage = (message) => {
 		try {
 			const parsed: unknown = JSON.parse(message.data);

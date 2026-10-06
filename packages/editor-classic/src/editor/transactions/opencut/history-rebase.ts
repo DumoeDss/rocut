@@ -116,6 +116,35 @@ function rebaseEntityCollection(
 		}
 		insertInTargetOrder(result, toEntry, toEntities);
 	}
+	// Reordering an effect stack (or scene/track collection) owns order as well
+	// as values. Keep unrelated entities in their current slots while restoring
+	// the relative order of the entities touched by this history entry.
+	const common = new Set(
+		fromEntities
+			.filter((entry) => toById.has(entry.id))
+			.map((entry) => entry.id),
+	);
+	const fromOrder = fromEntities
+		.filter((entry) => common.has(entry.id))
+		.map((entry) => entry.id);
+	const toOrder = toEntities
+		.filter((entry) => common.has(entry.id))
+		.map((entry) => entry.id);
+	if (!same(fromOrder, toOrder)) {
+		const rank = new Map(toOrder.map((id, index) => [id, index]));
+		const ordered = result
+			.filter((entry) => hasId(entry) && common.has(entry.id))
+			.sort(
+				(a, b) =>
+					rank.get((a as { id: string }).id)! -
+					rank.get((b as { id: string }).id)!,
+			);
+		let index = 0;
+		for (let slot = 0; slot < result.length; slot++) {
+			const entry = result[slot];
+			if (hasId(entry) && common.has(entry.id)) result[slot] = ordered[index++];
+		}
+	}
 	return result;
 }
 

@@ -19,6 +19,7 @@ import type {
 	TrackId,
 } from "../domain";
 import { validateFrameRate } from "../domain";
+import { orderedTracks } from "../engine/track-order";
 import type { MotionTextSequence, MotionTextSequenceId } from "../motion-text";
 import { validateMotionTextSequence } from "../motion-text";
 import type {
@@ -60,6 +61,8 @@ const PROJECT_PATCH_KEYS = new Set([
 	"frameRate",
 	"canvasWidth",
 	"canvasHeight",
+	"sceneState",
+	"background",
 ]);
 const FRAME_RATE_KEYS = ["numerator", "denominator"] as const;
 
@@ -319,6 +322,25 @@ export function createInMemoryTransactionStore(): InMemoryTransactionStore {
 		for (let i = 0; i < operations.length; i++) {
 			const op = operations[i];
 			switch (op.kind) {
+				case "reorder-tracks": {
+					const ordered = orderedTracks({
+						tracks: workTracks,
+						ids: op.trackIds,
+					});
+					if (!ordered)
+						throw new TransactionError({
+							code: "validation",
+							message:
+								"trackIds must be an exact permutation of all current tracks",
+							operationIndex: i,
+						});
+					workTracks.clear();
+					for (const track of ordered) {
+						workTracks.set(track.id, track);
+						changedIds.push(track.id);
+					}
+					break;
+				}
 				case "update-project": {
 					if (workProject === null || workProject.id !== op.projectId) {
 						throw new TransactionError({
@@ -426,8 +448,13 @@ export function createInMemoryTransactionStore(): InMemoryTransactionStore {
 							operationIndex: i,
 						});
 					}
-					const { freezeFrame, retime, transitionIn, sourceComponent, ...patch } =
-						op.patch;
+					const {
+						freezeFrame,
+						retime,
+						transitionIn,
+						sourceComponent,
+						...patch
+					} = op.patch;
 					const updated = { ...existing, ...patch };
 					if ("sourceComponent" in op.patch) {
 						if (sourceComponent == null) delete updated.sourceComponent;

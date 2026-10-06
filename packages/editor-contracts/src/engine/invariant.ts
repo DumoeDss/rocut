@@ -1,5 +1,6 @@
 import type { Asset, Clip, Marker, Project, Track } from "..";
 import { validateFrameRate } from "..";
+import { isClipEditing } from "../editing";
 import type { MotionTextClipContent, MotionTextSequence } from "../motion-text";
 import { validateMotionTextSequence } from "../motion-text";
 import type { ProjectId } from "@opencut/editor-ports";
@@ -34,6 +35,10 @@ export function isValidProject(
 	projectId: string,
 ): value is Project {
 	if (!isRecord(value) || !isRecord(value.frameRate)) return false;
+	if (value.sceneState !== undefined && !isSceneState(value.sceneState))
+		return false;
+	if (value.background !== undefined && !isProjectBackground(value.background))
+		return false;
 	if (
 		!isNonEmptyString(value.id) ||
 		value.id !== projectId ||
@@ -62,11 +67,15 @@ export function isValidTrack(value: unknown): value is Track {
 	return (
 		isRecord(value) &&
 		isNonEmptyString(value.id) &&
+		(value.sceneId === undefined || isNonEmptyString(value.sceneId)) &&
 		["video", "audio", "text", "graphic", "effect"].includes(
 			String(value.kind),
 		) &&
 		isNonEmptyString(value.name) &&
-		typeof value.hidden === "boolean"
+		typeof value.hidden === "boolean" &&
+		(value.muted === undefined ||
+			(typeof value.muted === "boolean" &&
+				(value.kind === "video" || value.kind === "audio")))
 	);
 }
 
@@ -125,8 +134,11 @@ export function isValidClip(value: unknown): value is Clip {
 		(value.transitionIn === undefined ||
 			isValidTransitionIn(value.transitionIn)) &&
 		(value.assetId === undefined || isNonEmptyString(value.assetId)) &&
-		(value.sourceComponent === undefined || value.sourceComponent === "audio") &&
-		(value.content === undefined || isValidMotionTextClipContent(value.content))
+		(value.sourceComponent === undefined ||
+			value.sourceComponent === "audio") &&
+		(value.content === undefined ||
+			isValidMotionTextClipContent(value.content)) &&
+		(value.editing === undefined || isClipEditing(value.editing))
 	);
 }
 
@@ -164,9 +176,39 @@ export function isValidMarker(value: unknown): value is Marker {
 	return (
 		isRecord(value) &&
 		isNonEmptyString(value.id) &&
+		(value.sceneId === undefined || isNonEmptyString(value.sceneId)) &&
 		isNonNegativeInteger(value.time) &&
 		(value.note === undefined || typeof value.note === "string") &&
 		(value.color === undefined || typeof value.color === "string")
+	);
+}
+
+function isSceneState(value: unknown): boolean {
+	return (
+		isRecord(value) &&
+		Object.keys(value).length === 2 &&
+		isNonEmptyString(value.currentSceneId) &&
+		Array.isArray(value.scenes) &&
+		value.scenes.length > 0 &&
+		value.scenes.every(
+			(scene) =>
+				isRecord(scene) &&
+				Object.keys(scene).length === 4 &&
+				isNonEmptyString(scene.id) &&
+				isNonEmptyString(scene.name) &&
+				typeof scene.isMain === "boolean" &&
+				isNonEmptyString(scene.mainTrackId),
+		)
+	);
+}
+
+function isProjectBackground(value: unknown): boolean {
+	if (!isRecord(value) || Object.keys(value).length !== 2) return false;
+	return (
+		(value.type === "color" && typeof value.color === "string") ||
+		(value.type === "blur" &&
+			typeof value.blurIntensity === "number" &&
+			Number.isFinite(value.blurIntensity))
 	);
 }
 
@@ -330,7 +372,9 @@ export function validateTransactionDocument(args: {
 				);
 			}
 			if (clip.sourceComponent !== undefined) {
-				const source = document.assets.find((asset) => asset.id === clip.assetId);
+				const source = document.assets.find(
+					(asset) => asset.id === clip.assetId,
+				);
 				if (
 					!source ||
 					source.kind !== "video" ||

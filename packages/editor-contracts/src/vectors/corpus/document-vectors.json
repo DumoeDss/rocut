@@ -4,6 +4,78 @@
 	"family": "document",
 	"vectors": [
 		{
+			"id": "document/reorder-tracks",
+			"title": "Track permutation changes order without recreating entities",
+			"initialDocument": {
+				"project": {
+					"id": "vector-project",
+					"name": "Layer ordering",
+					"frameRate": {
+						"numerator": 30,
+						"denominator": 1
+					},
+					"canvasWidth": 1920,
+					"canvasHeight": 1080
+				},
+				"tracks": [
+					{
+						"id": "first",
+						"kind": "text",
+						"name": "First",
+						"hidden": false
+					},
+					{
+						"id": "second",
+						"kind": "text",
+						"name": "Second",
+						"hidden": false
+					}
+				],
+				"clips": [],
+				"assets": [],
+				"markers": []
+			},
+			"batch": {
+				"operations": [
+					{
+						"kind": "reorder-tracks",
+						"trackIds": [
+							"second",
+							"first"
+						]
+					}
+				]
+			},
+			"expect": {
+				"outcome": "accepted",
+				"revisionDelta": 1,
+				"watchDelta": 1,
+				"createdIds": [],
+				"changedIds": [
+					"second",
+					"first"
+				],
+				"reads": [
+					{
+						"entity": "track",
+						"id": "first",
+						"fields": {
+							"name": "First",
+							"kind": "text"
+						}
+					},
+					{
+						"entity": "track",
+						"id": "second",
+						"fields": {
+							"name": "Second",
+							"kind": "text"
+						}
+					}
+				]
+			}
+		},
+		{
 			"id": "document/create-track-and-clone",
 			"title": "Creating a track advances the revision, notifies once, and hands back a defensive copy",
 			"initialDocument": {

@@ -22,6 +22,7 @@ import {
 	validateTransactionDocument,
 } from "./invariant";
 import { evaluateBasePlacementPolicy } from "./placement";
+import { orderedTracks } from "./track-order";
 import type { OperationFingerprintNormalizer } from "./fingerprint";
 import type {
 	TransactionEngineDocument,
@@ -34,6 +35,8 @@ const PROJECT_PATCH_KEYS = new Set([
 	"frameRate",
 	"canvasWidth",
 	"canvasHeight",
+	"sceneState",
+	"background",
 ]);
 const FRAME_RATE_KEYS = ["numerator", "denominator"] as const;
 
@@ -277,6 +280,27 @@ function mutateOperations(args: {
 		};
 		const rawOperationKind = Reflect.get(operation, "kind");
 		switch (operation.kind) {
+			case "reorder-tracks": {
+				const ordered = orderedTracks({ tracks, ids: operation.trackIds });
+				if (!ordered) {
+					issues.push(
+						issue({
+							code: "invalid-entity",
+							message:
+								"trackIds must be an exact permutation of all current tracks",
+							operationIndex,
+						}),
+					);
+					break;
+				}
+				tracks.clear();
+				for (const track of ordered) {
+					tracks.set(track.id, track);
+					changedIds.push(track.id);
+					origins.set(track.id, operationIndex);
+				}
+				break;
+			}
 			case "update-project": {
 				if (project === null || project.id !== operation.projectId) {
 					issues.push(
@@ -350,7 +374,13 @@ function mutateOperations(args: {
 					);
 					break;
 				}
-				tracks.set(operation.track.id, operation.track);
+				tracks.set(operation.track.id, {
+					...operation.track,
+					...(project?.sceneState && {
+						sceneId:
+							operation.track.sceneId ?? project.sceneState.currentSceneId,
+					}),
+				});
 				createdIds.push(operation.track.id);
 				origins.set(operation.track.id, operationIndex);
 				break;
@@ -508,6 +538,14 @@ function mutateOperations(args: {
 				const updated = { ...existing, ...operation.patch };
 				if (updated.freezeFrame === null) delete updated.freezeFrame;
 				if (updated.sourceComponent === null) delete updated.sourceComponent;
+				// A source-component replacement creates a different native element.
+				// Do not carry the old type-specific snapshot into that replacement;
+				// callers can explicitly supply the new editing state in the same batch.
+				if (
+					updated.sourceComponent !== existing.sourceComponent &&
+					!Object.hasOwn(operation.patch, "editing")
+				)
+					delete updated.editing;
 				if (updated.retime === null) delete updated.retime;
 				if (updated.transitionIn === null) delete updated.transitionIn;
 				if (!isValidClip(updated)) {
@@ -686,7 +724,13 @@ function mutateOperations(args: {
 					);
 					break;
 				}
-				markers.set(operation.marker.id, operation.marker);
+				markers.set(operation.marker.id, {
+					...operation.marker,
+					...(project?.sceneState && {
+						sceneId:
+							operation.marker.sceneId ?? project.sceneState.currentSceneId,
+					}),
+				});
 				createdIds.push(operation.marker.id);
 				origins.set(operation.marker.id, operationIndex);
 				break;
@@ -1055,6 +1099,7 @@ export async function evaluateTransactionBatch(args: {
 	);
 	const placementContext = {
 		document: candidate,
+		previousProject: document.project,
 		batch: { ...args.batch, operations },
 		operationIndexByEntityId: reduced.operationIndexByEntityId,
 	};

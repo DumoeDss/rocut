@@ -143,7 +143,7 @@ describe("load-time refusals", () => {
 			}),
 		);
 		expect(error.code).toBe("empty-expectation");
-		expect(error.vectorId).toBe("document/create-track-and-clone");
+		expect(error.vectorId).toBe("document/reorder-tracks");
 		expect(error.field).toBe("expect");
 	});
 
@@ -238,7 +238,7 @@ describe("load-time refusals", () => {
 			}),
 		);
 		expect(error.code).toBe("duplicate-id");
-		expect(error.message).toContain("document/create-track-and-clone");
+		expect(error.message).toContain("document/reorder-tracks");
 	});
 
 	test("an unknown-kind probe naming a real kind is refused", () => {

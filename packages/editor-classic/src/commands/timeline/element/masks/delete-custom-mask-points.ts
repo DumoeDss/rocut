@@ -8,7 +8,10 @@ import {
 	removeFreeformPathPoints,
 } from "../../../../masks/freeform/path";
 import type { FreeformPathMask } from "../../../../masks/types";
-import { isMaskableElement, updateElementInSceneTracks } from "../../../../timeline";
+import {
+	isMaskableElement,
+	updateElementInSceneTracks,
+} from "../../../../timeline";
 import type { MaskableElement, SceneTracks } from "../../../../timeline";
 
 function deletePointsFromFreeformPathMask({
@@ -68,7 +71,7 @@ function deletePointsFromElementMask({
 }
 
 export class DeleteFreeformPathMaskPointsCommand extends Command {
-	readonly routingClass = "provider-private" as const;
+	readonly routingClass = "transaction" as const;
 
 	private savedState: SceneTracks | null = null;
 	private readonly trackId: string;

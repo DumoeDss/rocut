@@ -172,9 +172,8 @@ export function projectId(id: string): ProjectId {
 /**
  * The kind of content a track carries. The contract uses a single `Track`
  * interface with a `kind` discriminator, not a union of provider-specific
- * variants. Provider-private fields (effects, masks, keyframes, retiming,
- * animations) are excluded — Target State §5.3 "Not Now" until two real use
- * cases exist.
+ * variants. Rich clip editing is exposed through the versioned editing surface;
+ * provider catalogues describe the supported parameters and definitions.
  */
 export type TrackKind = "video" | "audio" | "text" | "graphic" | "effect";
 
@@ -188,6 +187,20 @@ export interface Project {
 	readonly frameRate: FrameRate;
 	readonly canvasWidth: number;
 	readonly canvasHeight: number;
+	/** Native project backdrop; strings use the renderer's color/gradient syntax. */
+	readonly background?:
+		| { readonly type: "color"; readonly color: string }
+		| { readonly type: "blur"; readonly blurIntensity: number };
+	/** Scene topology. Tracks and markers carry sceneId when this is present. */
+	readonly sceneState?: {
+		readonly currentSceneId: string;
+		readonly scenes: readonly {
+			readonly id: string;
+			readonly name: string;
+			readonly isMain: boolean;
+			readonly mainTrackId: TrackId;
+		}[];
+	};
 }
 
 /**
@@ -196,9 +209,12 @@ export interface Project {
  */
 export interface Track {
 	readonly id: TrackId;
+	readonly sceneId?: string;
 	readonly kind: TrackKind;
 	readonly name: string;
 	readonly hidden: boolean;
+	/** Audio/video track mute. Other lane kinds do not carry audio. */
+	readonly muted?: boolean;
 }
 
 /**
@@ -239,6 +255,8 @@ export interface Clip {
 	};
 	/** Structured generated content owned by the referenced project entity. */
 	readonly content?: MotionTextClipContent;
+	/** Typed editor state shared by UI and automation. Omit to preserve legacy state. */
+	readonly editing?: import("./editing").ClipEditing;
 }
 
 /**
@@ -267,6 +285,7 @@ export interface Asset {
  */
 export interface Marker {
 	readonly id: MarkerId;
+	readonly sceneId?: string;
 	readonly time: MediaTime;
 	readonly note?: string;
 	readonly color?: string;

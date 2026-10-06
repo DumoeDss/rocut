@@ -219,6 +219,224 @@ this example, in the editor source it uses, or in the check scripts. The install
 the repo root; the build is `vite build`; the run is `vite preview`. This example is the portability
 evidence precisely because it is a plain Vite app.
 
+## Agent-first editing (source implementation, 2026-10-06)
+
+The host-served editor now exposes native editing through the same guarded
+transaction engine as UI commits. This section describes the source checkout,
+not the capabilities of an older installed Elftia plugin. Rebuild/package the
+CLI, Vite surface and WASM together before deployment; no plugin installation
+or shared-environment E2E is implied by the source tests.
+
+### Discover, read, modify, verify
+
+```sh
+rocut capabilities --target <target-id>
+rocut editing catalog --target <target-id>
+rocut read --target <target-id>
+rocut apply batch.json --target <target-id>
+rocut read --target <target-id>
+```
+
+`capabilities` returns the running Host's context directly, including supported
+operations, editing/task routes and `mediaImport`. CLI catalogs wrap their data in
+`catalog`; CLI tasks wrap theirs in `result` (a caption batch is therefore
+`result.result.batch`). Scene plans are unwrapped transaction batches.
+
+### Import real media files
+
+`rocut media import spec.json --target <target-id>` maps to `POST media/import`.
+It takes `{filePath, expectedRevision, idempotencyKey}` with an absolute local path,
+probes audio/video container metadata, persists original bytes, and creates an
+asset through the shared transaction engine. `create-asset` alone has no path
+field and does not persist bytes. The returned `asset.id` can then be used by
+`create-clip`; importing does not insert a clip or change project fps.
+
+For images, add `image: {mimeType:"image/png", width:320, height:180}` using
+verified dimensions. PNG/JPEG/WebP/GIF/AVIF declarations are accepted; images are
+not decoded/probed by this route, explicitly reported as `metadataSource:"caller"`.
+Audio/video returns `metadataSource:"container"`. One file is limited to 512 MiB;
+there is no URL download, external process, codec installation or model download.
+Check actual decoding, alpha and playback separately.
+
+The response includes `asset`, `sourceSha256`, `result` and `replayed`. Identity
+binds the idempotency key to bytes/name/metadata; exact retries survive Host
+restarts and changed content conflicts. Keep the source for retries. The project
+uses its copied attachment thereafter. A failed commit can retain a prepared
+attachment for retry; no multi-file atomicity or automatic orphan cleanup is
+claimed. A missing/changed attachment refuses replay rather than reporting success.
+
+### Native editing catalog
+
+`GET editing/catalog` describes the actual registered element, graphic, effect
+and mask parameters: names, defaults, ranges, units, select options and
+keyframability. Domain validation lives in `rust/crates/editor-api`; do not
+guess parameter names from UI labels or bypass it with native JSON writes.
+
+| Existing editor capability | Agent entry |
+| --- | --- |
+| Text content, fonts, size, alignment, background | `Clip.editing.params` on a text clip |
+| Position, scale, rotation, opacity, blend mode | Registered visual parameters in `editing.params` |
+| Scalar/discrete/color animation and curve handles | `editing.animations` |
+| Clip effect insertion/removal/toggle/order/parameters | Ordered `editing.effects` |
+| Whole-frame registered effect layers | Effect track + `editing.type: "effect"`, `effectType`, `params`; color adjustment also retains `Clip.adjustment` |
+| Graphic definitions and geometry | `editing.type: "graphic"`, `definitionId`, registered params |
+| Stickers | `editing.type: "sticker"`, `stickerId`, intrinsic dimensions and visual params |
+| Rectangle/ellipse/freeform masks | Ordered `editing.masks`, using catalog defaults |
+| Audio volume, volume automation, source-audio enable | `editing.params.volume` (dB), `params.muted`, animations, video `isSourceAudioEnabled` |
+| Track mute/visibility | `update-track.patch.muted` / `hidden` |
+| Project backdrop | `update-project.patch.background`: color/gradient or blur intensity 0–500 |
+| Track compositing order | `reorder-tracks` with an exact permutation of all current track IDs |
+| Scenes | `rocut scenes list`, `rocut scenes plan scene.json`, then ordinary `apply` |
+| SRT/ASS import and local ASR | Attached-session caption tasks returning a proposed batch |
+| Existing session Undo/Redo | Attached-session history tasks; actual command stack, not draft rejection |
+
+An editing object is a **full replacement**, not a recursive patch. Read the
+current clip first, preserve fields that should remain, then replace
+`update-clip.patch.editing`. Empty `{}`/`[]` clear animation/effect/mask
+collections. Missing optional collections also mean none. Copy complete
+effect/mask defaults from the catalog before changing individual parameters.
+Parameter maps also replace completely: omitted keys revert to renderer defaults.
+Track order controls the relative order within each scene's overlay/audio group;
+the canonical main video track remains below overlays. It does not move tracks
+between scenes. Preserve every current track ID, including inactive-scene tracks,
+when submitting `reorder-tracks`.
+Include the read revision and an idempotency key in each mutation:
+
+```json
+{
+  "expectedRevision": 12,
+  "idempotencyKey": "title-style-001",
+  "operations": [{
+    "kind": "update-clip",
+    "clipId": "title",
+    "patch": { "editing": {
+      "type": "text",
+      "name": "Title",
+      "params": { "content": "Hello", "fontSize": 48, "opacity": 0.8 },
+      "animations": {}, "effects": [], "masks": []
+    }}
+  }]
+}
+```
+
+Times are integer ticks at 120,000 ticks/second. Keyframe times are local to
+the element, sorted and unique; scalar keys carry `segmentToNext` and
+`tangentMode`. Color channels are linear RGBA component channels. Effect
+animation paths use `effects.<effect-id>.params.<parameter>`; graphic-specific
+animation paths use `params.<parameter>`. Existing renderer limitations still
+apply: whole-frame effect-layer parameter animation is rejected rather than
+advertised as rendered. Clip-effect animation is supported.
+
+### Scene plans
+
+`read` now returns tracks/clips/markers from **all scenes**. Use
+`projectEntity.sceneState.currentSceneId`, `Track.sceneId` and `Marker.sceneId`
+to select a scene; do not assume the returned timeline is only the active one.
+
+```json
+{
+  "idempotencyKey": "scene-create-001",
+  "operation": {
+    "kind": "create", "id": "chorus", "name": "Chorus", "mainTrackId": "chorus-main"
+  }
+}
+```
+
+Other operations are `rename` (`id`, `name`), `switch` (`id`) and `delete`
+(`id`). Planning is read-only and returns a batch. Save that exact batch and
+apply it normally: durable replay belongs to `apply`, not replanning after a
+restart. Deleting the canonical main scene, orphaning tracks/markers, or
+replacing a surviving scene's canonical main track is rejected atomically.
+
+### Attached-session tasks
+
+```sh
+rocut task list --target <target-id>
+rocut task start task.json --target <target-id>
+rocut task get <job-id> --target <target-id>
+rocut task cancel <job-id> --target <target-id>
+```
+
+These map to `GET/POST editor-tasks`, `GET editor-tasks/<id>` and
+`POST editor-tasks/<id>/cancel`. Jobs are polled; the start response is not
+completion. The current Vite host-served pane advertises its capability through
+the existing SSE connection. With multiple panes, specify a `surfaceId` from
+`task list`; tasks are never broadcast. With no capable pane, the host refuses
+the task. Headless transaction/scene editing does not require a pane.
+
+Example SRT import request (the same endpoint accepts `.ass`):
+
+```json
+{
+  "request": {
+    "kind": "captions.import", "expectedRevision": 12,
+    "idempotencyKey": "captions-import-001", "sceneId": "chorus",
+    "trackId": "chorus-captions", "fileName": "lyrics.srt",
+    "input": "1\n00:00:00,000 --> 00:00:02,000\nHello\n"
+  }
+}
+```
+
+For ASR, use `kind: "captions.transcribe"` with the same revision, scene and
+new track ID; optionally specify `language` and `modelId` (for example
+`whisper-small`). Discover supported values and the default in
+`editing/catalog.transcription`. `allowModelDownload: true` is mandatory: model acquisition
+may access the network. Audio is extracted and transcribed locally by the
+existing session service, not uploaded. Concurrent UI/Agent inference is
+refused so cancelling one caller cannot terminate another caller's worker.
+
+A completed caption job contains cues, warnings, skipped-cue count and a
+`result.batch`. It has **not inserted anything**. Save `result.batch`, review it,
+and use `apply` or a draft; a stale source revision or wrong active scene is
+refused. Layout and frame alignment reuse the native caption/insert pipeline.
+Cancellation, disconnect and project changes prevent late results from
+inserting into another timeline. SRT/ASS support does not imply VTT import or
+singing/phoneme forced alignment.
+
+History requests use `history.status`, `history.undo` or `history.redo` plus
+`expectedRevision` and `idempotencyKey`. Undo/Redo run on the selected pane's
+real serialized command stack and publish only after persistence succeeds.
+History commits cannot be cancelled once dispatched. A timeout/disconnect
+reports `outcome-unknown`; inspect the project before deciding what to do next,
+and never automatically retry with a fresh key.
+
+### Explicit lifecycle boundaries and remaining acceptance work
+
+- History is **attached-session history**, not a durable global history log.
+  Reloading the pane can clear it; Host/CLI applies are not automatically added
+  to that pane's UI history. A persistent unified UI/Agent history remains work
+  to finish before claiming that broader guarantee.
+- Task idempotency and job results live for the Host process lifetime, with a
+  bounded 128-job book. They are not a cross-restart job journal. Normal
+  transaction batches retain their existing durable replay contract.
+- Source tests cover native persistence/reopen, invalid-input atomic rejection,
+  revisions, drafts, actual history, caption planning, ownership and cancellation.
+  Real attached-pane task dispatch, visual rendering/export and model inference
+  through this new route still require isolated E2E acceptance.
+- Project background and track-order edits also use the shared transaction path.
+  Their values and empty editing maps are tested after native save/reopen.
+- UI final keyframe/effect/mask/mute/scene edits now use transactions; preview
+  overlays remain local. Multi-keyframe methods now return promises: await them
+  before observing the committed history or issuing dependent work.
+- The new provider entries are `@opencut/editor-classic/editing` (catalog and
+  Rust policies) and `@opencut/editor-classic/agent-tasks` (session runner). The
+  latter is deliberately separate from the CLI's renderer-free imports.
+
+Verification snapshot (2026-10-06): 244 targeted Bun tests
+across 43 files and 8 Rust tests passed; later catalog/conformance refinements
+passed the affected 47-test subset. CLI/Vite TypeScript, transaction-boundary,
+vector-manifest, surface-label, SDK tarball dependency-closure and four WASM gates passed. This is not an
+installed-plugin or render/export E2E result. Changed-file ESLint retains 33
+existing errors across six contract files (same counts confirmed against HEAD);
+the CLI paths are outside that ESLint configuration. The full package-boundary
+gate is blocked by pre-existing `.tmp-probe` files naming Elftia runtime objects;
+those unrelated local probes were left untouched. Dependency-closure checks use
+local SDK test tarballs, not a released plugin. The follow-up media-import CLI
+test uses real WAV/MP4/PNG fixtures, LRC composition and Host restart/replay,
+including stale/changed-source refusal; CLI dispatch regressions also pass.
+The Vite production surface builds with a relative base. Installation, visual
+render/export acceptance and model download are not part of this verification.
+
 ## Related documents
 
 - [`../../UPSTREAM.md`](../../UPSTREAM.md) — provenance, the pin, toolchain, known upstream defects.

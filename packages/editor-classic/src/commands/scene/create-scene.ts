@@ -7,7 +7,7 @@ import type { TScene } from "../../timeline";
 import { buildDefaultScene } from "../../timeline/scenes";
 
 export class CreateSceneCommand extends Command {
-	readonly routingClass = "provider-private" as const;
+	readonly routingClass = "transaction" as const;
 
 	private savedScenes: TScene[] | null = null;
 	private createdScene: TScene | null = null;

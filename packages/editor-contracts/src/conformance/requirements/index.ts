@@ -352,6 +352,10 @@ export const TRANSACTION_VECTOR_REQUIREMENTS: Readonly<
 		requirement: R_APPLY,
 		scenario: "Update operations apply partial patches",
 	},
+	"document/reorder-tracks": {
+		requirement: R_APPLY,
+		scenario: "Track permutations preserve entity identity",
+	},
 	"document/delete-track-cascade": {
 		requirement: R_APPLY,
 	},
