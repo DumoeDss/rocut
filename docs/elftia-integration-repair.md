@@ -2,6 +2,12 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Internal projection and history snapshot ownership (2026-10-06)
+
+- Internal read-only projection/diff steps can explicitly borrow their private draft's motion-text sequence array. The default projection still returns independently copied sequences. Router staging still performs an owned clone of the complete candidate before any asynchronous engine work, preserving aliases only within its private candidate; adapter encoding only reads that candidate. No public transaction, schema, validation, digest or fingerprint rule changes.
+- Ordinary undo targets reuse the already-detached private before snapshot when there are no historyless setting overrides. The override case retains its independent writable copy. After snapshots, published results and retained inputs remain isolated.
+- Three new ownership/cost regressions fail before the changes. They cover default isolation versus internal borrowing, post-staging caller/receipt mutation and repeated encoding, plus the removed extra undo-target copy. **85 tests / 2,088 assertions** pass across related router, persistence, command, rename and history suites; scoped lint, Vite typecheck, UTF-8 and diff checks pass. Build/installed timing remain pending; the previous 314.44ms p95 is still a failed gate.
+
 ## Compressed-export oracle and immutable scalar copies (2026-10-06)
 
 - The `live-1Lvx1Y` diagnostic establishes that a cyan compositing equation is not a valid spatial mask for every supported styled glyph: dark fills and translucent colored outlines are real content, and independent YUV420P conversion alone can fail that old mask. Exact preview comparison remains unchanged. The compressed-export helper now compares the complete foreground against this fixture's known flat-red underlay, retains the `>0.7` spatial-overlap requirement, and additionally requires normalized mean RGB error `<=0.1` over the foreground union (the unchanged background cannot dilute color error). This is an explicit oracle correction, not a retroactive reclassification of the original failed run.

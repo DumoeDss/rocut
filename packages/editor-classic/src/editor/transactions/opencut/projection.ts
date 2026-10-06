@@ -169,6 +169,8 @@ export function projectOpenCutDraft(
 	metadata: {
 		readonly revision: TransactionEngineDocument["revision"];
 		readonly idempotency: TransactionEngineDocument["idempotency"];
+		/** Internal read-only lifetime, or immediately followed by owned staging. */
+		readonly sequenceOwnership?: "borrow";
 	},
 ): TransactionEngineDocument {
 	const tracks = allTracks(draft);
@@ -188,7 +190,10 @@ export function projectOpenCutDraft(
 			scene?.bookmarks.map((bookmark, index) =>
 				markerProjection(scene.id, bookmark, index),
 			) ?? [],
-		motionTextSequences: cloneOpaque(draft.project.motionTextSequences),
+		motionTextSequences:
+			metadata.sequenceOwnership === "borrow"
+				? draft.project.motionTextSequences
+				: cloneOpaque(draft.project.motionTextSequences),
 		revision: metadata.revision,
 		idempotency: metadata.idempotency,
 	};

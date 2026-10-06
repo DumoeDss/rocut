@@ -181,6 +181,7 @@ export class SessionOpenCutTransactions {
 				const projectedDocument = projectOpenCutDraft(prepared.draft, {
 					revision: revisionOf(Number(revision) + 1),
 					idempotency: [],
+					sequenceOwnership: "borrow",
 				});
 				active.adapter.stage({
 					token,

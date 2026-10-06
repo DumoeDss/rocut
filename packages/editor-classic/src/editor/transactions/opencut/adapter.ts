@@ -485,6 +485,7 @@ export function createOpenCutTransactionDocumentAdapter({
 				const reprojected = projectOpenCutDraft(draft, {
 					revision: document.revision,
 					idempotency: document.idempotency,
+					sequenceOwnership: "borrow",
 				});
 				if (!publicDocumentsEqual(reprojected, document)) {
 					throw new Error("Staged OpenCut candidate projection mismatch");

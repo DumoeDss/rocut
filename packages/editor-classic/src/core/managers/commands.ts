@@ -80,6 +80,9 @@ function historyUndoTarget({
 		keyof OpenCutProjectDraft["project"]["settings"]
 	>;
 }): OpenCutProjectDraft {
+	// before is already detached and private to this history entry. Only a
+	// historyless settings override needs another independently writable root.
+	if (historylessProjectSettingKeys.size === 0) return before;
 	const target = cloneOpenCutDraft(before);
 	for (const key of historylessProjectSettingKeys) {
 		Object.assign(target.project.settings, {
@@ -232,10 +235,12 @@ export class CommandManager {
 					const afterProjection = projectOpenCutDraft(after, {
 						revision: baseRevision,
 						idempotency: [],
+						sequenceOwnership: "borrow",
 					});
 					const undoProjection = projectOpenCutDraft(undoTarget, {
 						revision: baseRevision,
 						idempotency: [],
+						sequenceOwnership: "borrow",
 					});
 					const forwardOperations = diffOpenCutUiDraft({
 						before: baseDocument,
@@ -437,6 +442,7 @@ export class CommandManager {
 				const projected = projectOpenCutDraft(rebased, {
 					revision: baseRevision,
 					idempotency: [],
+					sequenceOwnership: "borrow",
 				});
 				return {
 					draft: rebased,
