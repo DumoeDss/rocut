@@ -14,6 +14,7 @@ import type {
 import { cloneOpaque } from "../../persistence/opaque-value";
 import { decodeProject, encodeProject } from "../../persistence/project-codec";
 import type { TProject } from "../../../project/types";
+import { getProjectDurationFromScenes } from "../../../timeline/scenes";
 import type {
 	Bookmark,
 	SceneTracks,
@@ -500,6 +501,20 @@ export function createOpenCutTransactionDocumentAdapter({
 					document,
 				});
 			}
+			// A durable publication skips the redundant autosave. Derive its summary
+			// here so the stored record, receipt and live/cache publication agree.
+			draft = {
+				...draft,
+				project: {
+					...draft.project,
+					metadata: {
+						...draft.project.metadata,
+						duration: getProjectDurationFromScenes({
+							scenes: draft.project.scenes,
+						}),
+					},
+				},
+			};
 			const record = encodedRecord(projectId, baseRecord, draft, document);
 			latestReceipt = {
 				token: registered?.token ?? null,

@@ -2,6 +2,12 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Atomic duration-summary publication (2026-10-06)
+
+- The ASR-discovered stale duration is reproduced without model downloads by consumer `ROCUT_ASR_DURATION_ONLY=1`: old installed `aff5ec05`, evidence `installed-asr-bXmI6a`, saves a real 644,000-tick audio element while summary duration remains zero. The original owned project is restored after this expected failure.
+- The OpenCut transaction adapter now derives `metadata.duration` through the existing project-duration helper during encoding, before constructing the durable record and publication receipt. UI, automation, cache and saved state share that value. It uses shallow metadata replacement without mutating a staged candidate, adding a second save or changing publication ownership. Existing scene-selection and time arithmetic remain centralized in the existing helper/wasm path.
+- New deterministic UI and automation regressions fail before the repair (0 versus 360,000 ticks), pass afterward, and cover grow/shrink/clear/recreate, failed-save isolation, reopen and exactly one save attempt per transaction. All 34 adapter/router suites' tests pass (1,793 assertions); scoped lint, Vite typecheck and production build pass, with existing chunk warnings. Installed changed-candidate acceptance is still pending at this source commit.
+
 ## Authorized real local ASR acceptance (2026-10-06)
 
 - User authorization permits public model downloads only for local ASR acceptance with generated test audio. Consumer `scripts/probe-installed-asr.mjs` requires `ROCUT_ALLOW_LOCAL_ASR=1`, uses Windows Zira offline speech synthesis in a new owned fixture, and drives actual Media import and Captions UI through elftia-cli. No paid provider, user media, request mocking, worker replacement or inference bypass. Model requests observed during the test are GETs to public Hugging Face assets; authenticated editor URLs and CDN query strings are omitted from reports.
