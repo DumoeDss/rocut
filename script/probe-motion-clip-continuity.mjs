@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import { join } from "node:path";
 import { expect } from "@playwright/test";
-import { continuityPreview } from "./probe-continuity-pixels.mjs";
+import {
+	assertContinuityPreview,
+	continuityPreview,
+} from "./probe-continuity-pixels.mjs";
 import { sampleContinuityExportPng } from "./probe-continuity-export-pixels.mjs";
 import { captureExportReference } from "./probe-export-reference.mjs";
 import {
@@ -95,12 +98,13 @@ export async function probeMotionClipContinuity({
 		exportBaselines = new Map();
 	for (const frame of frames) {
 		const sample = await capture(frame);
+		const visible = existingLyrics ? sample.foreground : sample.overlay;
 		assert(
-			sample.overlay.length > 25,
+			visible.length > 25,
 			"baseline frame " +
 				frame +
-				" must contain visible cyan glyphs, got " +
-				sample.overlay.length,
+				" must contain visible motion artwork, got " +
+				visible.length,
 		);
 		baselines.set(frame, sample);
 		const exportReference = await captureExportReference({
@@ -119,15 +123,18 @@ export async function probeMotionClipContinuity({
 		).screenshot({ path: join(work, "baseline-" + frame + ".png") });
 	}
 	assert(
-		new Set([...baselines.values()].map((s) => JSON.stringify(s.overlay)))
-			.size >= 3,
+		new Set(
+			[...baselines.values()].map((s) =>
+				JSON.stringify([s.foreground, s.foregroundRgba]),
+			),
+		).size >= 3,
 		"different animation phases must render different pixels",
 	);
 	const reset = await capture(existingLyrics ? 0 : 6);
 	if (existingLyrics)
 		assert.notDeepEqual(
-			reset.overlay,
-			baselines.get(48).overlay,
+			[reset.foreground, reset.foregroundRgba],
+			[baselines.get(48).foreground, baselines.get(48).foregroundRgba],
 			"restart negative control must differ from the running cue",
 		);
 	else
@@ -187,6 +194,8 @@ export async function probeMotionClipContinuity({
 				actualHash: sample.hash,
 				expectedPixels: baselines.get(frame).overlay.length,
 				actualPixels: sample.overlay.length,
+				expectedForegroundPixels: baselines.get(frame).foreground.length,
+				actualForegroundPixels: sample.foreground.length,
 				overlap: languageOverlap({
 					expected: baselines.get(frame).overlay,
 					actual: sample.overlay,
@@ -197,13 +206,12 @@ export async function probeMotionClipContinuity({
 			).screenshot({
 				path: join(work, label.replaceAll(" ", "-") + "-" + frame + ".png"),
 			});
-			// Source video frames and selected-object canvas decoration may differ.
-			// Animation continuity requires the exact same glyph pixel coordinates.
-			assert.deepEqual(
-				sample.overlay,
-				baselines.get(frame).overlay,
-				label + " must preserve source animation phase at " + frame,
-			);
+			// Preserve the exact cyan gate and include card backs/dark artwork.
+			assertContinuityPreview({
+				actual: sample,
+				expected: baselines.get(frame),
+				label: label + " must preserve source animation phase at " + frame,
+			});
 		}
 	};
 	await compare("moved clip");
@@ -337,13 +345,24 @@ export async function probeMotionClipContinuity({
 	onPhase(
 		"export completion restores the unchanged playhead preview without a seek",
 	);
-	const expected = baselines.get(frames[frames.length - 1]).overlay;
+	const expected = baselines.get(frames[frames.length - 1]);
 	let restored;
 	await expect
 		.poll(
 			async () => {
 				restored = await continuityPreview(page);
-				return JSON.stringify(restored.overlay) === JSON.stringify(expected);
+				return (
+					JSON.stringify([
+						restored.overlay,
+						restored.foreground,
+						restored.foregroundRgba,
+					]) ===
+					JSON.stringify([
+						expected.overlay,
+						expected.foreground,
+						expected.foregroundRgba,
+					])
+				);
 			},
 			{ timeout: 10000 },
 		)
