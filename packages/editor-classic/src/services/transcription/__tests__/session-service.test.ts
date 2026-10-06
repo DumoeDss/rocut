@@ -60,6 +60,103 @@ async function afterTurn(): Promise<void> {
 }
 
 describe("session-owned transcription service", () => {
+	test("cancels pending initialization immediately and releases its worker", async () => {
+		const { handle, resources } = fixture();
+		const service = createTranscriptionService({ resources });
+		let outcome: unknown;
+		const pending = service
+			.transcribe({ audioData: new Float32Array(1) })
+			.catch((error: unknown) => {
+				outcome = error;
+			});
+		try {
+			await afterTurn();
+			service.cancel();
+			await afterTurn();
+			await afterTurn();
+			expect(outcome).toBeInstanceOf(Error);
+			expect(outcome instanceof Error && outcome.message).toMatch(/cancelled/i);
+			expect(handle.terminations).toBe(1);
+			expect(handle.messages.size).toBe(0);
+			expect(handle.errors.size).toBe(0);
+			service.cancel();
+			expect(handle.terminations).toBe(1);
+		} finally {
+			service.terminate();
+			await pending;
+		}
+	});
+
+	test("cancelled inference cannot publish a late result into the next request", async () => {
+		const handles: FakeHandle[] = [];
+		const service = createTranscriptionService({
+			resources: {
+				createWorker: () => {
+					const handle = new FakeHandle();
+					handles.push(handle);
+					return handle;
+				},
+			},
+		});
+		let cancelled: unknown;
+		const pending = service
+			.transcribe({ audioData: new Float32Array(1) })
+			.catch((error: unknown) => {
+				cancelled = error;
+			});
+		let fresh: Promise<unknown> | undefined;
+		try {
+			await afterTurn();
+			const oldWorker = handles[0];
+			oldWorker.emit({ type: "init-complete" });
+			await afterTurn();
+			expect(oldWorker.sent.at(-1)?.message).toMatchObject({
+				type: "transcribe",
+			});
+			service.cancel();
+			await afterTurn();
+			expect(cancelled).toBeInstanceOf(Error);
+			expect(cancelled instanceof Error && cancelled.message).toMatch(/cancelled/i);
+			expect(oldWorker.terminations).toBe(1);
+
+			let result: unknown;
+			fresh = service.transcribe({ audioData: new Float32Array(1) }).then(
+				(value) => {
+					result = value;
+				},
+				(error: unknown) => {
+					result = error;
+				},
+			);
+			await afterTurn();
+			expect(handles).toHaveLength(2);
+			const freshWorker = handles[1];
+			freshWorker.emit({ type: "init-complete" });
+			await afterTurn();
+			oldWorker.emit({
+				type: "transcribe-complete",
+				text: "stale",
+				segments: [],
+			});
+			oldWorker.emit({ type: "cancelled" });
+			await afterTurn();
+			expect(result).toBeUndefined();
+			freshWorker.emit({
+				type: "transcribe-complete",
+				text: "fresh",
+				segments: [],
+			});
+			await fresh;
+			expect(result).toMatchObject({ text: "fresh" });
+			expect(oldWorker.messages.size).toBe(0);
+			expect(oldWorker.errors.size).toBe(0);
+		} finally {
+			service.terminate();
+			await pending;
+			await fresh;
+		}
+	});
+
 	test("requests a named module Worker through SessionResources and preserves the message flow", async () => {
 		const { handle, requests, resources } = fixture();
 		const service = createTranscriptionService({

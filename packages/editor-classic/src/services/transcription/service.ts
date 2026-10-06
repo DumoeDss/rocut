@@ -71,11 +71,8 @@ export function createTranscriptionService({
 		}
 	}
 
-	function terminate(): void {
+	function releaseWorker({ reason }: { reason: Error }): void {
 		generation += 1;
-		const reason = new Error(
-			"Transcription Worker was terminated by the session lifecycle.",
-		);
 		for (const settle of [...pendingTerminals]) settle(reason);
 		pendingTerminals.clear();
 		const settleInitialization = terminateInitialization;
@@ -83,10 +80,16 @@ export function createTranscriptionService({
 		currentModelId = null;
 		const ownedWorker = worker;
 		worker = null;
-		settleInitialization?.(
-			new Error("Transcription Worker was terminated during initialization."),
-		);
+		settleInitialization?.(reason);
 		ownedWorker?.terminate();
+	}
+
+	function terminate(): void {
+		releaseWorker({
+			reason: new Error(
+				"Transcription Worker was terminated by the session lifecycle.",
+			),
+		});
 	}
 
 	async function ensureWorker({
@@ -262,9 +265,10 @@ export function createTranscriptionService({
 	return {
 		transcribe,
 		cancel: () => {
-			worker?.postMessage({
-				message: { type: "cancel" } satisfies WorkerMessage,
-			});
+			// A message cannot interrupt model loading or an in-flight native
+			// inference. Release the owned worker and reject all pending work;
+			// a later request must acquire a fresh generation.
+			releaseWorker({ reason: new Error("Transcription cancelled") });
 		},
 		terminate,
 	};
