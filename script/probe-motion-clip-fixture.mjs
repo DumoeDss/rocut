@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
-import { sampleContinuityPng } from "./probe-continuity-pixels.mjs";
-import { readFileSync } from "node:fs";
+import {
+	sampleContinuityExportPng,
+	compareContinuityExport,
+	assertContinuityExport,
+} from "./probe-continuity-export-pixels.mjs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { join } from "node:path";
 import { expect } from "@playwright/test";
@@ -157,18 +161,22 @@ export async function exportMotionContinuity({
 				],
 				{ windowsHide: true },
 			);
-			return sampleContinuityPng(hostPage, png);
+			writeFileSync(
+				join(work, "continuity-export-frame-" + frame + ".png"),
+				png,
+			);
+			return sampleContinuityExportPng(hostPage, png);
 		};
 		const empty = await decode(0);
 		assert.equal(
-			empty.overlay.length,
+			empty.foreground.length,
 			0,
 			"export frame zero must be an independent no-text negative control",
 		);
 		const wrong = await decode(frames[0] + offset);
 		const wrongFrameOverlap = languageOverlap({
-			expected: baselines.get(frames[frames.length - 1]).overlay,
-			actual: wrong.overlay,
+			expected: baselines.get(frames[frames.length - 1]).foreground,
+			actual: wrong.foreground,
 		});
 		assert(
 			wrongFrameOverlap <= 0.7,
@@ -176,27 +184,25 @@ export async function exportMotionContinuity({
 		);
 		check(
 			"decoded empty and wrong-phase frames fail the 0.7 export overlay gate",
-			{ emptyPixels: empty.overlay.length, wrongFrameOverlap },
+			{ emptyPixels: empty.foreground.length, wrongFrameOverlap },
 		);
 		const overlaps = [];
 		for (const frame of frames) {
 			const actual = await decode(frame + offset);
-			const overlap = languageOverlap({
-				expected: baselines.get(frame).overlay,
-				actual: actual.overlay,
+			const scores = compareContinuityExport({
+				expected: baselines.get(frame),
+				actual,
 			});
-			assert(
-				overlap > 0.7,
-				"exported animation phase must match original frame " +
-					frame +
-					": " +
-					overlap,
-			);
 			overlaps.push({
 				sourceFrame: frame,
 				outputFrame: frame + offset,
-				overlap,
+				...scores,
 			});
+			writeFileSync(
+				join(work, "continuity-export-samples.json"),
+				JSON.stringify(overlaps, null, 2),
+			);
+			assertContinuityExport(scores);
 		}
 		const audioRms = (path, channel) => {
 			// Select a channel, do not downmix stereo with ffmpeg's sqrt(2) gain.

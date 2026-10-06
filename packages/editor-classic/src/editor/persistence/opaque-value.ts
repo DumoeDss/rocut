@@ -7,6 +7,17 @@ export function cloneOpaque<Value>(value: Value): Value {
 	if (typeof structuredClone !== "function") {
 		throw new Error("This Host does not provide structured cloning");
 	}
+	// Overlay traversals visit many scalar leaves. They cannot share mutable
+	// state; unsupported symbols/functions must still reach native rejection.
+	if (value === null) return value;
+	switch (typeof value) {
+		case "undefined":
+		case "boolean":
+		case "string":
+		case "number":
+		case "bigint":
+			return value;
+	}
 	return structuredClone(value);
 }
 

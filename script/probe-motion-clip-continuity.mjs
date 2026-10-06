@@ -1,10 +1,8 @@
 import assert from "node:assert/strict";
 import { join } from "node:path";
 import { expect } from "@playwright/test";
-import {
-	continuityPreview,
-	sampleContinuityPng,
-} from "./probe-continuity-pixels.mjs";
+import { continuityPreview } from "./probe-continuity-pixels.mjs";
+import { sampleContinuityExportPng } from "./probe-continuity-export-pixels.mjs";
 import { captureExportReference } from "./probe-export-reference.mjs";
 import {
 	languageOverlap,
@@ -109,10 +107,10 @@ export async function probeMotionClipContinuity({
 			page,
 			hostPage,
 			path: join(work, "export-reference-" + frame + ".png"),
-			sample: sampleContinuityPng,
+			sample: sampleContinuityExportPng,
 		});
 		assert(
-			exportReference.overlay.length > 25,
+			exportReference.foreground.length > 25,
 			"high-density reference must contain the displayed glyphs",
 		);
 		exportBaselines.set(frame, exportReference);
