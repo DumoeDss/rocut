@@ -112,8 +112,15 @@ function decodeScene(value: unknown): TScene {
 	} as TScene;
 }
 
-/** Decode into detached owned fields; provider-private siblings stay retained. */
-export function decodeProject(data: unknown): TProject {
+/**
+ * Decode into detached fields by default; provider-private siblings stay retained.
+ * Borrowing is internal-only: the backing record must remain private and immutable,
+ * and the result must be detached before exposing it outside its owner.
+ */
+export function decodeProject(
+	data: unknown,
+	options?: { sequenceOwnership: "borrow" },
+): TProject {
 	const raw = record(data, "project");
 	const metadata = record(raw.metadata, "project.metadata");
 	if (!Array.isArray(raw.scenes)) {
@@ -124,13 +131,17 @@ export function decodeProject(data: unknown): TProject {
 			...pick(metadata, ["name", "thumbnail"]),
 			id: text(metadata.id, "metadata.id"),
 			name: text(metadata.name, "metadata.name"),
-			duration: cloneOpaque(metadata.duration) as TProject["metadata"]["duration"],
+			duration: cloneOpaque(
+				metadata.duration,
+			) as TProject["metadata"]["duration"],
 			createdAt: date(metadata.createdAt, "metadata.createdAt"),
 			updatedAt: date(metadata.updatedAt, "metadata.updatedAt"),
 		},
 		scenes: raw.scenes.map(decodeScene),
 		motionTextSequences: Array.isArray(raw.motionTextSequences)
-			? cloneOpaque(raw.motionTextSequences)
+			? options?.sequenceOwnership === "borrow"
+				? raw.motionTextSequences
+				: cloneOpaque(raw.motionTextSequences)
 			: [],
 		currentSceneId: text(raw.currentSceneId, "currentSceneId"),
 		settings: cloneOpaque(raw.settings) as TProject["settings"],

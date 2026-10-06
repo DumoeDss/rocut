@@ -93,7 +93,8 @@ export class SessionOpenCutTransactions {
 			options.persistence.subscribeProjectRecords((record) => {
 				const active = this.active;
 				if (active && !active.disposed && active.projectId === record.id) {
-					active.adapter.adoptCommittedRecord(record);
+					// The subscription gives this callback its own isolated record.
+					active.adapter.adoptCommittedRecord(record, { takeOwnership: true });
 				}
 			});
 	}
@@ -330,6 +331,8 @@ export class SessionOpenCutTransactions {
 		await this.options.persistence.adoptCommittedProjectRecord({
 			record,
 			returnProject: false,
+			// The consumed receipt relinquished this record to the router.
+			takeOwnership: true,
 		});
 		// The synchronous record subscription already adopted this durable record,
 		// just as it does for ordinary saves. Do not copy and invalidate it twice.

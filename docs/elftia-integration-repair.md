@@ -2,6 +2,12 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Post-save publication ownership (2026-10-06)
+
+- Consumed transaction receipts now transfer their isolated records into the private persistence snapshot/cache. The internal cache may borrow the private immutable motion-sequence array; public decoding and cache reads remain detached. Subscription delivery retains a separate copy per listener, but omits the extra whole-record snapshot only when the caller has explicitly relinquished the record. The router transfers its subscription-owned copy into the adapter without another copy. Default adoption remains defensive, and live Set subscription iteration is unchanged.
+- Three allocation/isolation regressions fail before the change; all five new ownership regressions pass afterward. The real routing test verifies transfers for ordinary saves, UI and automation commits and no publication after durable failure. Related persistence/adapter/router suites pass **49 tests / 1,799 assertions**. Scoped lint, strict UTF-8/diff checks, pinned-Bun Vite typecheck and production build pass; existing chunk warnings remain. No schema, Rust rule, WASM contract or version changes.
+- Packaging and actual installed timing/continuous-workflow verification are pending. The previous runtime's **330.23ms p95 fails 300ms**; removed allocations alone do not establish an end-to-end improvement. Other full-goal gates remain open.
+
 ## Fresh distributable SDK consumer proof (2026-10-06)
 
 - `sdk-consumer-j0v9YO` freshly packs the three distributable SDK packages and canonical WASM from `e055266e` (runtime source identical to installed `9d5e0cd1`), then runs all four existing published examples in a newly created E-drive scratch directory. The ancestor chain has no `node_modules`; every SDK/WASM installation is a real tarball copy, not a workspace link. No existing/shared dependencies were installed or changed, no Rasen workflow ran, and the private workspace-only `editor-automation` package is not claimed as a distributable fifth artifact.

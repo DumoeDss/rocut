@@ -68,6 +68,7 @@ export class SessionPersistenceCoordinator {
 		return () => this.listeners.delete(listener);
 	}
 
+	/** Each callback owns an independent record and may retain or transfer it. */
 	subscribeProjectRecords(listener: ProjectRecordListener): () => void {
 		this.assertAlive();
 		this.projectRecordListeners.add(listener);
@@ -167,6 +168,8 @@ export class SessionPersistenceCoordinator {
 	async adoptCommittedProjectRecord(args: {
 		record: ProjectRecord;
 		returnProject: false;
+		/** Internal transfer: the caller must relinquish the entire record. */
+		takeOwnership?: true;
 	}): Promise<void>;
 	async adoptCommittedProjectRecord(args: {
 		record: ProjectRecord;
@@ -175,9 +178,11 @@ export class SessionPersistenceCoordinator {
 	async adoptCommittedProjectRecord({
 		record,
 		returnProject = true,
+		takeOwnership,
 	}: {
 		record: ProjectRecord;
 		returnProject?: boolean;
+		takeOwnership?: true;
 	}): Promise<TProject | void> {
 		this.assertAlive();
 		if (!record.id || !Number.isInteger(record.schemaVersion)) {
@@ -185,8 +190,11 @@ export class SessionPersistenceCoordinator {
 				"Invalid committed project record identity or schema version",
 			);
 		}
-		const retained = cloneOpaque(record.data);
-		const decoded = decodeProject(record.data);
+		const retained = takeOwnership ? record.data : cloneOpaque(record.data);
+		const decoded = decodeProject(
+			retained,
+			returnProject ? undefined : { sequenceOwnership: "borrow" },
+		);
 		if (decoded.metadata.id !== record.id) {
 			throw new Error(
 				"Committed project record identity does not match its payload",
@@ -195,8 +203,11 @@ export class SessionPersistenceCoordinator {
 		this.projectSnapshots.set(record.id, retained);
 		// Internal publication already has its own draft; keep the decoded value
 		// private rather than allocating a second project that the caller discards.
-		this.projectCache.set(record.id, returnProject ? cloneOpaque(decoded) : decoded);
-		this.emitProjectRecord(record);
+		this.projectCache.set(
+			record.id,
+			returnProject ? cloneOpaque(decoded) : decoded,
+		);
+		this.emitProjectRecord(record, { takeOwnership });
 		this.emit({ kind: "project", key: record.id });
 		// Only expose a decoded result when the cache retained a separate copy.
 		if (returnProject) return decoded;
@@ -616,8 +627,13 @@ export class SessionPersistenceCoordinator {
 		this.listeners.forEach((listener) => listener(event));
 	}
 
-	private emitProjectRecord(record: ProjectRecord): void {
-		const snapshot = cloneOpaque(record);
+	private emitProjectRecord(
+		record: ProjectRecord,
+		options?: { takeOwnership?: true },
+	): void {
+		// Owned records cannot be changed by an external source during delivery.
+		// Default callers still need a snapshot before invoking any observer.
+		const snapshot = options?.takeOwnership ? record : cloneOpaque(record);
 		this.projectRecordListeners.forEach((listener) =>
 			listener(cloneOpaque(snapshot)),
 		);

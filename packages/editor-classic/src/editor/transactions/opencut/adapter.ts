@@ -393,7 +393,11 @@ export interface OpenCutTransactionDocumentAdapter extends TransactionDocumentAd
 	currentRecordDigest(): string;
 	currentDraft(): OpenCutProjectDraft;
 	currentAssetCatalog(): OpenCutAssetCatalogEntry[];
-	adoptCommittedRecord(record: ProjectRecord): void;
+	/** Ownership transfer requires an isolated record relinquished by the caller. */
+	adoptCommittedRecord(
+		record: ProjectRecord,
+		options?: { takeOwnership: true },
+	): void;
 }
 
 export function createOpenCutTransactionDocumentAdapter({
@@ -535,8 +539,8 @@ export function createOpenCutTransactionDocumentAdapter({
 				),
 			];
 		},
-		adoptCommittedRecord(record) {
-			latestRecord = cloneOpaque(record);
+		adoptCommittedRecord(record, options) {
+			latestRecord = options?.takeOwnership ? record : cloneOpaque(record);
 			latestRecordDigest = undefined;
 		},
 	};

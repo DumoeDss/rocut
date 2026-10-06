@@ -19,15 +19,17 @@ test("legacy saves and UI/automation commits each adopt one durable record; fail
 	});
 	const original = adapterModule.createOpenCutTransactionDocumentAdapter;
 	let adoptions = 0;
+	const publicationsAdopted = spyOn(persistence, "adoptCommittedProjectRecord");
 	const factory = spyOn(
 		adapterModule,
 		"createOpenCutTransactionDocumentAdapter",
 	).mockImplementation((args) => {
 		const adapter = original(args);
 		const adopt = adapter.adoptCommittedRecord;
-		adapter.adoptCommittedRecord = (record) => {
+		adapter.adoptCommittedRecord = (...args) => {
 			adoptions++;
-			adopt(record);
+			expect(args[1]).toEqual({ takeOwnership: true });
+			adopt(...args);
 		};
 		return adapter;
 	});
@@ -39,6 +41,7 @@ test("legacy saves and UI/automation commits each adopt one durable record; fail
 		legacy.settings.background = { type: "color", color: "#123456" };
 		await persistence.saveProject({ project: legacy });
 		expect(adoptions).toBe(1);
+		expect(publicationsAdopted).not.toHaveBeenCalled();
 		await facade.apply({
 			operations: [
 				{
@@ -49,6 +52,11 @@ test("legacy saves and UI/automation commits each adopt one durable record; fail
 			],
 		});
 		expect(adoptions).toBe(2);
+		expect(publicationsAdopted).toHaveBeenCalledTimes(1);
+		expect(publicationsAdopted.mock.calls[0][0]).toMatchObject({
+			returnProject: false,
+			takeOwnership: true,
+		});
 		expect(publications).toEqual(["OpenCut routing"]);
 		expect(
 			persistence.readCachedProject({ id: TEST_PROJECT_ID })?.settings
@@ -74,6 +82,11 @@ test("legacy saves and UI/automation commits each adopt one durable record; fail
 			},
 		});
 		expect(adoptions).toBe(3);
+		expect(publicationsAdopted).toHaveBeenCalledTimes(2);
+		expect(publicationsAdopted.mock.calls[1][0]).toMatchObject({
+			returnProject: false,
+			takeOwnership: true,
+		});
 		expect(publications).toEqual(["OpenCut routing", "UI name"]);
 		expect((await facade.tracks())[0].name).toBe("Automation track");
 		fixture.control.failNext({
@@ -92,10 +105,12 @@ test("legacy saves and UI/automation commits each adopt one durable record; fail
 			}),
 		).rejects.toMatchObject({ code: "unavailable" });
 		expect(adoptions).toBe(3);
+		expect(publicationsAdopted).toHaveBeenCalledTimes(2);
 		expect(publications).toEqual(["OpenCut routing", "UI name"]);
 		expect((await facade.tracks())[0].name).toBe("Automation track");
 	} finally {
 		await facade.dispose();
 		factory.mockRestore();
+		publicationsAdopted.mockRestore();
 	}
 });
