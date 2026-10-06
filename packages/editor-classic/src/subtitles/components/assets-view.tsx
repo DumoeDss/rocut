@@ -7,7 +7,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "../../components/ui/select";
-import { useReducer, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { extractTimelineAudio } from "../../media/mediabunny";
 import { useEditor, useEditorInstance } from "../../editor/use-editor";
 import { TRANSCRIPTION_DIAGNOSTICS_SCOPE } from "../../transcription/diagnostics";
@@ -38,7 +38,7 @@ import {
 	TooltipTrigger,
 } from "../../components/ui/tooltip";
 import type { DiagnosticSeverity } from "../../diagnostics/types";
-import type { SessionResources } from "../../editor/session/resources";
+import { useCaptionTask } from "../use-caption-task";
 
 const DIAGNOSTIC_BUTTON_VARIANT: Record<
 	DiagnosticSeverity,
@@ -48,70 +48,14 @@ const DIAGNOSTIC_BUTTON_VARIANT: Record<
 	error: "destructive-foreground",
 };
 
-type ProcessingState =
-	| { status: "idle"; error: string | null; warnings: string[] }
-	| { status: "processing"; step: string };
-
-type ProcessingAction =
-	| { type: "start"; step: string }
-	| { type: "update_step"; step: string }
-	| { type: "succeed"; warnings: string[] }
-	| { type: "fail"; error: string };
-
-const IDLE_STATE: ProcessingState = {
-	status: "idle",
-	error: null,
-	warnings: [],
-};
-
-function captureActivityPublication(resources: SessionResources): {
-	isCurrent(): boolean;
-} {
-	const lifecycle = resources as SessionResources & {
-		getActivityGeneration?: () => number;
-		assertActivityGeneration?: (args: { generation: number }) => void;
-	};
-	const generation = lifecycle.getActivityGeneration?.();
-	return {
-		isCurrent: () => {
-			if (generation === undefined || !lifecycle.assertActivityGeneration) {
-				return true;
-			}
-			try {
-				lifecycle.assertActivityGeneration({ generation });
-				return true;
-			} catch {
-				return false;
-			}
-		},
-	};
-}
-
-/* eslint-disable opencut/prefer-object-params -- React reducers must accept (state, action). */
-function processingReducer(
-	state: ProcessingState,
-	action: ProcessingAction,
-): ProcessingState {
-	switch (action.type) {
-		case "start":
-			return { status: "processing", step: action.step };
-		case "update_step":
-			if (state.status !== "processing") return state;
-			return { status: "processing", step: action.step };
-		case "succeed":
-			return { status: "idle", error: null, warnings: action.warnings };
-		case "fail":
-			return { status: "idle", error: action.error, warnings: [] };
-	}
-}
-/* eslint-enable opencut/prefer-object-params */
-
 export function Captions() {
 	const [selectedLanguage, setSelectedLanguage] =
 		useState<TranscriptionLanguage>("auto");
-	const [processing, dispatch] = useReducer(processingReducer, IDLE_STATE);
+	const { processing, begin, cancel } = useCaptionTask();
 	const containerRef = useRef<HTMLDivElement>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
+	const importButtonRef = useRef<HTMLButtonElement>(null);
+	const generateButtonRef = useRef<HTMLButtonElement>(null);
 	const editor = useEditorInstance();
 	const transcriptionService = editor.transcription;
 
@@ -121,30 +65,21 @@ export function Captions() {
 		e.diagnostics.getActive({ scope: TRANSCRIPTION_DIAGNOSTICS_SCOPE }),
 	);
 
-	const handleProgress = (progress: TranscriptionProgress) => {
-		if (progress.status === "loading-model") {
-			dispatch({
-				type: "update_step",
-				step: `Loading model ${Math.round(progress.progress)}%`,
-			});
-		} else if (progress.status === "transcribing") {
-			dispatch({ type: "update_step", step: "Transcribing..." });
-		}
-	};
-
-	const insertCaptions = ({
+	const insertCaptions = async ({
 		captions,
 	}: {
 		captions: CaptionChunk[];
-	}): boolean => {
-		const trackId = insertCaptionChunksAsTextTrack({ editor, captions });
+	}): Promise<boolean> => {
+		const trackId = await insertCaptionChunksAsTextTrack({ editor, captions });
 		return trackId !== null;
 	};
 
 	const handleGenerateTranscript = async () => {
-		const publication = captureActivityPublication(editor.resources);
-		if (!publication.isCurrent()) return;
-		dispatch({ type: "start", step: "Extracting audio..." });
+		const task = begin({
+			step: "Extracting audio...",
+			onCancel: () => transcriptionService.cancel(),
+		});
+		if (!task) return;
 		try {
 			const audioBlob = await extractTimelineAudio({
 				tracks: editor.scenes.getActiveScene().tracks,
@@ -152,40 +87,45 @@ export function Captions() {
 				totalDuration: editor.timeline.getTotalDuration(),
 				resources: editor.resources,
 			});
-			if (!publication.isCurrent()) return;
+			if (!task.isCurrent()) return;
 
-			dispatch({ type: "update_step", step: "Preparing audio..." });
+			task.updateStep({ step: "Preparing audio..." });
 			const { samples } = await decodeAudioToFloat32({
 				audioBlob,
 				sampleRate: DEFAULT_TRANSCRIPTION_SAMPLE_RATE,
 				resources: editor.resources,
 			});
-			if (!publication.isCurrent()) return;
+			if (!task.isCurrent()) return;
 
 			const result = await transcriptionService.transcribe({
 				audioData: samples,
 				language: selectedLanguage === "auto" ? undefined : selectedLanguage,
-				onProgress: (progress) => {
-					if (publication.isCurrent()) handleProgress(progress);
+				onProgress: (progress: TranscriptionProgress) => {
+					if (progress.status === "loading-model") {
+						task.updateStep({
+							step: `Loading model ${Math.round(progress.progress)}%`,
+						});
+					} else if (progress.status === "transcribing") {
+						task.updateStep({ step: "Transcribing..." });
+					}
 				},
 			});
-			if (!publication.isCurrent()) return;
+			if (!task.isCurrent()) return;
 
-			dispatch({ type: "update_step", step: "Generating captions..." });
+			task.updateStep({ step: "Generating captions..." });
 			const captionChunks = buildCaptionChunks({ segments: result.segments });
 
-			if (!publication.isCurrent()) return;
-			if (!insertCaptions({ captions: captionChunks })) {
-				dispatch({ type: "fail", error: "No captions were generated" });
+			if (!task.beginCommit()) return;
+			if (!(await insertCaptions({ captions: captionChunks }))) {
+				task.fail({ error: "No captions were generated" });
 				return;
 			}
 
-			dispatch({ type: "succeed", warnings: [] });
+			task.succeed();
 		} catch (error) {
-			if (!publication.isCurrent()) return;
+			if (!task.isCurrent()) return;
 			console.error("Transcription failed:", error);
-			dispatch({
-				type: "fail",
+			task.fail({
 				error:
 					error instanceof Error
 						? error.message
@@ -195,30 +135,33 @@ export function Captions() {
 	};
 
 	const handleImportClick = () => {
+		if (isProcessing) return;
 		fileInputRef.current?.click();
 	};
 
 	const handleImportFile = async ({ file }: { file: File }) => {
-		dispatch({ type: "start", step: "Reading subtitle file..." });
+		const task = begin({ step: "Reading subtitle file..." });
+		if (!task) return;
 		try {
 			const input = await file.text();
+			if (!task.isCurrent()) return;
 			const result = parseSubtitleFile({
 				fileName: file.name,
 				input,
 			});
 
 			if (result.captions.length === 0) {
-				dispatch({
-					type: "fail",
+				task.fail({
 					error: "No valid subtitle cues were found in the subtitle file",
 				});
 				return;
 			}
 
-			dispatch({ type: "update_step", step: "Importing subtitles..." });
+			task.updateStep({ step: "Importing subtitles..." });
 
-			if (!insertCaptions({ captions: result.captions })) {
-				dispatch({ type: "fail", error: "No captions were generated" });
+			if (!task.beginCommit()) return;
+			if (!(await insertCaptions({ captions: result.captions }))) {
+				task.fail({ error: "No captions were generated" });
 				return;
 			}
 
@@ -229,11 +172,11 @@ export function Captions() {
 				);
 			}
 
-			dispatch({ type: "succeed", warnings: nextWarnings });
+			task.succeed({ warnings: nextWarnings });
 		} catch (error) {
+			if (!task.isCurrent()) return;
 			console.error("Subtitle import failed:", error);
-			dispatch({
-				type: "fail",
+			task.fail({
 				error:
 					error instanceof Error
 						? error.message
@@ -295,11 +238,12 @@ export function Captions() {
 								</Tooltip>
 							))}
 						<Button
+							ref={importButtonRef}
 							type="button"
 							variant="outline"
 							size="sm"
 							onClick={handleImportClick}
-							disabled={isProcessing}
+							aria-disabled={isProcessing}
 							className="items-center justify-center gap-1.5"
 						>
 							<HugeiconsIcon icon={CloudUploadIcon} />
@@ -345,16 +289,36 @@ export function Captions() {
 					</SectionFields>
 
 					<Button
+						ref={generateButtonRef}
 						type="button"
 						className="mt-auto w-full"
 						onClick={handleGenerateTranscript}
-						disabled={isProcessing || activeDiagnostics.length > 0}
+						disabled={activeDiagnostics.length > 0}
+						aria-disabled={isProcessing || activeDiagnostics.length > 0}
+						aria-busy={isProcessing}
 					>
 						{isProcessing && <Spinner className="mr-1" />}
 						{isProcessing ? processing.step : "Generate transcript"}
 					</Button>
+					{processing.status === "processing" && processing.cancellable && (
+						<Button
+							type="button"
+							variant="outline"
+							onClick={() => {
+								cancel();
+								if (generateButtonRef.current?.disabled)
+									importButtonRef.current?.focus();
+								else generateButtonRef.current?.focus();
+							}}
+						>
+							Cancel caption operation
+						</Button>
+					)}
 					{error && (
-						<div className="bg-destructive/10 border-destructive/20 rounded-md border p-3">
+						<div
+							role="alert"
+							className="bg-destructive/10 border-destructive/20 rounded-md border p-3"
+						>
 							<p className="text-destructive text-sm">{error}</p>
 						</div>
 					)}

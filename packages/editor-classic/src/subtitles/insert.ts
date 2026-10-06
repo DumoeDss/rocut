@@ -7,13 +7,13 @@ import {
 import { buildSubtitleTextElement } from "./build-subtitle-text-element";
 import type { SubtitleCue } from "./types";
 
-export function insertCaptionChunksAsTextTrack({
+export async function insertCaptionChunksAsTextTrack({
 	editor,
 	captions,
 }: {
 	editor: EditorCore;
 	captions: SubtitleCue[];
-}): string | null {
+}): Promise<string | null> {
 	if (captions.length === 0) {
 		return null;
 	}
@@ -32,7 +32,7 @@ export function insertCaptionChunksAsTextTrack({
 				}),
 			}),
 	);
-	editor.command.execute({
+	await editor.command.execute({
 		command: new BatchCommand([addTrackCommand, ...insertCommands]),
 	});
 
