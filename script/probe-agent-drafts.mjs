@@ -7,7 +7,10 @@ import { homedir } from "node:os";
 import { promisify } from "node:util";
 import { expect } from "@playwright/test";
 import { mainPreviewCanvas } from "./probe-multilingual-media.mjs";
-import { createAgentDraftFixture } from "./probe-agent-draft-fixture.mjs";
+import {
+	createAgentDraftFixture,
+	makeAgentDraftMutation,
+} from "./probe-agent-draft-fixture.mjs";
 
 const run = promisify(execFile);
 
@@ -113,26 +116,13 @@ export async function probeAgentDrafts({
 			greenFraction,
 		});
 	};
-	const makeMutation = (sequence, text) => ({
-		mutation: {
-			kind: "update-cue",
-			cueId: sequence.cues[2].id,
-			text,
-			startTime: sequence.cues[2].startTime,
-			duration: sequence.cues[2].duration,
-			preset: { mode: "keep" },
-			font: { mode: "keep" },
-			colors: { mode: "set", foreground: "#00FF00", accent: "#FF0000" },
-		},
-		expectedSequenceRevision: sequence.revision,
-	});
 	const previewAndStage = async (snapshot, label) => {
 		const sequence = snapshot.sequences[0];
 		const draftId = await cli("draft", "begin");
 		assert.match(draftId, /^[a-zA-Z0-9:_-]+$/);
 		const input = await spec(
 			label,
-			makeMutation(sequence, "草稿批准后的第三句"),
+			makeAgentDraftMutation(sequence, "草稿批准后的第三句"),
 		);
 		const preview = await json(
 			"motion-text",
@@ -156,6 +146,16 @@ export async function probeAgentDrafts({
 		assert.equal(
 			preview.candidate.cues[2].overrides.colors.foreground,
 			"#00FF00",
+		);
+		for (const cut of preview.candidate.resolvedPlan.cuts.filter(
+			(cut) => cut.cueId === sequence.cues[2].id,
+		)) {
+			assert.equal(cut.preset.layout, "center");
+			assert.equal(cut.preset.treat, "none");
+		}
+		assert.deepEqual(
+			preview.candidate.cues.slice(0, 2),
+			sequence.cues.slice(0, 2),
 		);
 		const batch = await spec(label + "-stage", {
 			operations: [
@@ -245,7 +245,7 @@ export async function probeAgentDrafts({
 		/404.*unknown-draft/s,
 	);
 	const stale = await spec("stale-direct-mutation", {
-		...makeMutation(before.sequences[0], "must not overwrite"),
+		...makeAgentDraftMutation(before.sequences[0], "must not overwrite"),
 		expectedRevision: before.projectRevision,
 		idempotencyKey: "agent-draft-probe-stale",
 	});

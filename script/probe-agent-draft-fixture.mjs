@@ -1,5 +1,23 @@
 import { expect } from "@playwright/test";
 
+export const makeAgentDraftMutation = (sequence, text) => ({
+	mutation: {
+		kind: "update-cue",
+		cueId: sequence.cues[2].id,
+		text,
+		startTime: sequence.cues[2].startTime,
+		duration: sequence.cues[2].duration,
+		// The green-pixel oracle needs foreground-drawing typography. Random
+		// layouts such as tunnel intentionally draw only accent/secondary colors.
+		// This local style change is part of the reviewed proposal, not a patch
+		// to the committed project or a replacement of earlier variation checks.
+		preset: { mode: "starter", starterPreset: "clean-caption" },
+		font: { mode: "keep" },
+		colors: { mode: "set", foreground: "#00FF00", accent: "#FF0000" },
+	},
+	expectedSequenceRevision: sequence.revision,
+});
+
 export async function createAgentDraftFixture({ page, onPhase }) {
 	onPhase("UI fixture for agent draft collaboration");
 	await page.getByLabel("Motion text", { exact: true }).click();
