@@ -4,6 +4,7 @@ import { expect } from "@playwright/test";
 import { createScreencastCapture } from "./probe-preview-screencast.mjs";
 import { captureHeapSummary } from "./probe-heap-summary.mjs";
 import { createScreenshotCapture } from "./probe-preview-screenshot.mjs";
+import { createMotionStressSchedule } from "./probe-motion-stress-schedule.mjs";
 
 function timecode(frame) {
 	const seconds = Math.floor(frame / 30);
@@ -86,11 +87,11 @@ async function measureMotionStressMemory({
 		["screencast", "screenshot"].includes(frameObserver),
 		"Unsupported F05 frame observer",
 	);
-	const cycles = Number(process.env.ROCUT_F05_CYCLES ?? 4);
-	assert(
-		Number.isInteger(cycles) && cycles >= 4 && cycles <= 24,
-		"F05 cycles must be an integer from 4 to 24; do not reduce the baseline",
-	);
+	const schedule = createMotionStressSchedule({
+		cycles: Number(process.env.ROCUT_F05_CYCLES ?? 4),
+		targets: Number(process.env.ROCUT_F05_TARGETS ?? 30),
+	});
+	const { cycles, targets } = schedule;
 	const dimensions = await page.evaluate(
 		async () =>
 			(await (await fetch(new URL("api/record", location.href))).json()).record
@@ -184,14 +185,31 @@ async function measureMotionStressMemory({
 				displayed,
 				currentBounds: await canvas.boundingBox(),
 			};
+			// Diagnose a stalled screencast without retrying or changing the verdict.
+			// A current screenshot is not frame-swap timing evidence.
+			const independent = createScreenshotCapture({ cdp, displayed });
+			try {
+				evidence.f05PictureFailure.independentScreenshot =
+					await independent.capture();
+			} catch (error) {
+				evidence.f05PictureFailure.independentScreenshotError =
+					error instanceof Error ? error.message : String(error);
+			} finally {
+				await independent.close();
+			}
 			throw new Error("F05 target picture did not arrive: " + target);
 		};
 		onPhase("F05 visible-frame memory warmup");
 		const references = [];
-		for (let i = 0; i < 30; i++)
-			references.push(await seek(timecode(((i * 197) % 600) * 24 + 6)));
-		assert.equal(new Set(references.map((row) => row.hash)).size, 30);
-		await memory("warmed 30 distinct target pictures");
+		for (const frame of schedule.referenceFrames) {
+			references.push(await seek(timecode(frame)));
+			if (targets > 30 && references.length % 30 === 0)
+				onPhase(
+					"F05 distinct-picture warmup " + references.length + "/" + targets,
+				);
+		}
+		assert.equal(new Set(references.map((row) => row.hash)).size, targets);
+		await memory("warmed " + targets + " distinct target pictures");
 		if (process.env.ROCUT_F05_HEAP_SAMPLE === "1") {
 			await resourceCdp.send("HeapProfiler.startSampling", {
 				samplingInterval: 32768,
@@ -201,11 +219,23 @@ async function measureMotionStressMemory({
 		}
 		for (let cycle = 0; cycle < cycles; cycle++) {
 			onPhase("F05 repeated visible seeks cycle " + (cycle + 1));
-			for (let i = 0; i < 30; i++) {
-				const target = references[(i * 13 + 7 + cycle) % 30];
+			let completed = 0;
+			for (const index of schedule.cycleOrder(cycle)) {
+				const target = references[index];
 				await seek(target.target, target.hash);
+				completed++;
+				if (targets > 30 && completed % 60 === 0)
+					onPhase(
+						"F05 cycle " +
+							(cycle + 1) +
+							": " +
+							completed +
+							"/" +
+							targets +
+							" exact pictures",
+					);
 			}
-			await memory("after " + (cycle + 1) * 30 + " measured seeks");
+			await memory("after " + (cycle + 1) * targets + " measured seeks");
 		}
 		if (sampling) {
 			const { profile } = await resourceCdp.send("HeapProfiler.stopSampling");
@@ -245,7 +275,7 @@ async function measureMotionStressMemory({
 			sampledAllocations = allocations
 				.sort((a, b) => b.bytes - a.bytes)
 				.slice(0, 30);
-			const last = references[(29 * 13 + 7 + cycles - 1) % 30];
+			const last = references[schedule.cycleOrder(cycles - 1).at(-1)];
 			for (let cycle = 0; cycle < 2; cycle++) {
 				onPhase("F05 same-frame UI control cycle " + (cycle + 1));
 				for (let i = 0; i < 30; i++) await seek(last.target, last.hash);
@@ -261,10 +291,12 @@ async function measureMotionStressMemory({
 		}
 		evidence.checks.push({
 			name:
-				"F05 reaches all 30 distinct visible target frames across " +
+				"F05 reaches all " +
+				targets +
+				" distinct visible target frames across " +
 				cycles +
 				" shuffled cycles",
-			seeks: cycles * 30,
+			seeks: cycles * targets,
 			pass: true,
 		});
 		await hostPage.screenshot({ path: join(work, "f05-memory-seeks.png") });
@@ -284,6 +316,7 @@ async function measureMotionStressMemory({
 				targetId,
 				heapSampling: process.env.ROCUT_F05_HEAP_SAMPLE === "1",
 				cycles,
+				distinctTargets: targets,
 				memoryGateStatus: "measured-not-asserted",
 				heapSummaries,
 				frameObserver,
