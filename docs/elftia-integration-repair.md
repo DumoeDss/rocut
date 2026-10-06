@@ -2,6 +2,12 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Preview font-resource warnings (2026-10-06)
+
+- Real installed `live-E2sBUw` reproduces a user-facing defect: a Korean sentence is accepted, preview silently displays fallback glyphs, and only Export reveals missing required glyphs. Export correctly refuses without a download or project mutation. Initial driver run `live-dUAZ7P` incorrectly expected a trailing `!` to remain in cue text; the source parser intentionally converts it to `impact: true`. The corrected probe checks that documented result.
+- `preview/resource-diagnostics.ts` reads already-resolved motion-text nodes after successful preview submission. It copies diagnostic payloads, deduplicates split clips for the same sequence and gates display by render-tree identity so a prior project/revision cannot label a new one. Ordinary no-warning frames do not enqueue state updates. No additional font loads/coverage scans, Rust policy change, persisted data mutation or export-gate relaxation.
+- `PreviewResourceNotice` uses existing theme tokens and type, outside the picture and above the toolbar. The visible warning has keyboard-expandable, height-bounded, scrollable resource details, exact Unicode code points and recovery guidance. No banner is mounted for healthy frames. Renderer diagnostic/SSR regressions and font-runtime regressions pass **12 tests / 53 assertions**; Vite typecheck passes. Build and actual installed warning/recovery acceptance are pending.
+
 ## Internal projection and history snapshot ownership (2026-10-06)
 
 - Internal read-only projection/diff steps can explicitly borrow their private draft's motion-text sequence array. The default projection still returns independently copied sequences. Router staging still performs an owned clone of the complete candidate before any asynchronous engine work, preserving aliases only within its private candidate; adapter encoding only reads that candidate. No public transaction, schema, validation, digest or fingerprint rule changes.

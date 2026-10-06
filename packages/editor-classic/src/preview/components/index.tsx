@@ -31,6 +31,8 @@ import type {
 } from "../overlays";
 import { PreviewContextMenu } from "./context-menu";
 import { PreviewToolbar } from "./toolbar";
+import { usePreviewResourceIssues } from "../resource-diagnostics";
+import { PreviewResourceNotice } from "./resource-notice";
 import {
 	PreviewViewportProvider,
 	usePreviewViewportState,
@@ -226,6 +228,8 @@ function PreviewCanvas({
 	);
 	const activeProject = useEditor((e) => e.project.getActive());
 	const renderTree = useEditor((e) => e.renderer.getRenderTree());
+	const { issues: resourceIssues, publish: publishResourceIssues } =
+		usePreviewResourceIssues(renderTree);
 	const rendererManager = useEditor((e) => e.renderer);
 	const previewRevision = useEditor((e) => e.renderer.getPreviewRevision());
 	const isDegraded = useEditor((e) => e.renderer.isDegraded);
@@ -332,6 +336,7 @@ function PreviewCanvas({
 			width: renderer.width,
 			height: renderer.height,
 		})
+			.then(() => publishResourceIssues(renderTree))
 			.catch((error: unknown) => {
 				if (!(error instanceof SessionActivityGenerationError)) {
 					console.error("Failed to render preview frame:", error);
@@ -345,6 +350,7 @@ function PreviewCanvas({
 		renderer,
 		renderTree,
 		previewRevision,
+		publishResourceIssues,
 		editor.playback,
 		editor.timeline,
 	]);
@@ -532,6 +538,7 @@ function PreviewCanvas({
 						/>
 					</ContextMenu>
 				</div>
+				<PreviewResourceNotice issues={resourceIssues} />
 				<PreviewToolbar onToggleFullscreen={onToggleFullscreen} />
 			</div>
 		</PreviewViewportProvider>
