@@ -2,8 +2,9 @@ import { createStore } from "zustand/vanilla";
 import type { SoundEffect, SavedSound } from "./types";
 import { toast } from "sonner";
 import type { EditorCore } from "../core";
-import { buildLibraryAudioElement } from "../timeline/element-utils";
+import { buildElementFromMedia } from "../timeline/element-utils";
 import { mediaTimeFromSeconds } from "../wasm";
+import { InsertElementCommand } from "../commands/timeline/element/insert-element";
 
 const SAVED_SOUNDS_NAMESPACE = "saved-sounds";
 const SAVED_SOUNDS_KEY = "user-sounds";
@@ -393,6 +394,11 @@ export function createSoundsStore({
 		},
 
 		addSoundToTimeline: async ({ sound, editor }) => {
+			const projectId = editor.project.getActiveOrNull()?.metadata.id;
+			if (!projectId) {
+				toast.error("Open a project before adding a sound");
+				return false;
+			}
 			const token = beginRequest({ channel: "timeline" });
 			const lifecycle = editor.resources as typeof editor.resources & {
 				getActivityGeneration?: () => number;
@@ -401,6 +407,8 @@ export function createSoundsStore({
 			const activityGeneration = lifecycle.getActivityGeneration?.();
 			const canPublishActivity = () => {
 				if (!canPublishRequest({ token })) return false;
+				if (editor.project.getActiveOrNull()?.metadata.id !== projectId)
+					return false;
 				if (
 					activityGeneration === undefined ||
 					!lifecycle.assertActivityGeneration
@@ -430,32 +438,59 @@ export function createSoundsStore({
 				if (!response.ok)
 					throw new Error(`Failed to download audio: ${response.statusText}`);
 
-				const arrayBuffer = await response.arrayBuffer();
+				const blob = await response.blob();
+				const arrayBuffer = await blob.arrayBuffer();
 				if (!canPublishActivity()) return false;
 				const audioHandle = editor.resources.createAudioContext({});
 				if (!audioHandle.context) {
 					await audioHandle.close();
 					throw new Error("Sound decoding is unavailable on this Host.");
 				}
-				let buffer: AudioBuffer;
+				let duration: number;
 				try {
-					buffer = await audioHandle.context.decodeAudioData(arrayBuffer);
+					const decoded =
+						await audioHandle.context.decodeAudioData(arrayBuffer);
+					duration = decoded.duration;
 				} finally {
 					await audioHandle.close();
 				}
 				if (!canPublishActivity()) return false;
 
-				const element = buildLibraryAudioElement({
-					sourceUrl: audioUrl,
+				const file = new File([blob], sound.name, { type: blob.type });
+				const urlHandle = editor.resources.createObjectUrl({ blob: file });
+				let asset;
+				try {
+					asset = await editor.media.addMediaAsset({
+						projectId,
+						canPublish: canPublishActivity,
+						asset: {
+							name: sound.name,
+							type: "audio",
+							file,
+							duration,
+							url: urlHandle.url,
+							urlHandle,
+						},
+					});
+				} finally {
+					if (!asset) urlHandle.revoke();
+				}
+				if (!asset || !canPublishActivity()) return false;
+				const element = buildElementFromMedia({
+					mediaId: asset.id,
+					mediaType: "audio",
 					name: sound.name,
-					duration: mediaTimeFromSeconds({ seconds: sound.duration }),
+					duration: mediaTimeFromSeconds({ seconds: duration }),
 					startTime: currentTime,
-					buffer,
 				});
+				// Keep decoded native buffers out of cloneable project records. The
+				// durable attachment supplies playback after undo/redo and reopening.
 
-				editor.timeline.insertElement({
-					placement: { mode: "auto", trackType: "audio" },
-					element,
+				await editor.command.execute({
+					command: new InsertElementCommand({
+						placement: { mode: "auto", trackType: "audio" },
+						element,
+					}),
 				});
 				return true;
 			} catch (error) {

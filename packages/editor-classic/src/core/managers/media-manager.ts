@@ -32,10 +32,13 @@ export class MediaManager {
 	async addMediaAsset({
 		projectId,
 		asset,
+		canPublish = () => true,
 	}: {
 		projectId: string;
 		asset: Omit<MediaAsset, "id">;
+		canPublish?: () => boolean;
 	}): Promise<MediaAsset | null> {
+		if (!canPublish()) return null;
 		const newAsset: MediaAsset = {
 			...asset,
 			id: generateUUID(),
@@ -47,6 +50,13 @@ export class MediaManager {
 				projectId,
 				asset: newAsset,
 			});
+			if (!canPublish()) {
+				await this.editor.persistence.removeAttachment({
+					projectId,
+					key: newAsset.id,
+				});
+				return null;
+			}
 		} catch (error) {
 			this.editor.reportPersistenceFailure({
 				operation: "save-media-attachment",

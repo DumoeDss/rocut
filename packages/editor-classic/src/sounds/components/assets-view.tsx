@@ -36,6 +36,7 @@ import { useEditorInstance } from "../../editor/use-editor";
 import { useEditorSession } from "../../editor/session/editor-session-provider";
 import { useSoundsStore } from "../../editor/use-session-store";
 import type { SavedSound, SoundEffect } from "../types";
+import { useSoundPreview } from "../use-sound-preview";
 import { cn } from "../../utils/ui";
 import {
 	FavouriteIcon,
@@ -99,10 +100,7 @@ function SoundEffectsView() {
 		commercialOnly: showCommercialOnly,
 	});
 
-	const [playingId, setPlayingId] = useState<number | null>(null);
-	const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(
-		null,
-	);
+	const { playingId, playSound } = useSoundPreview(displayedSounds);
 
 	const { scrollAreaRef, handleScroll } = useInfiniteScroll({
 		onLoadMore: loadMore,
@@ -138,33 +136,6 @@ function SoundEffectsView() {
 		const { scrollTop } = currentTarget;
 		setScrollPosition({ position: scrollTop });
 		handleScroll(event);
-	};
-
-	const playSound = ({ sound }: { sound: SoundEffect }) => {
-		if (playingId === sound.id) {
-			audioElement?.pause();
-			setPlayingId(null);
-			return;
-		}
-
-		audioElement?.pause();
-
-		if (sound.previewUrl) {
-			const audio = new Audio(sound.previewUrl);
-			audio.addEventListener("ended", () => {
-				setPlayingId(null);
-			});
-			audio.addEventListener("error", () => {
-				setPlayingId(null);
-			});
-			audio.play().catch((error) => {
-				console.error("Failed to play sound preview:", error);
-				setPlayingId(null);
-			});
-
-			setAudioElement(audio);
-			setPlayingId(sound.id);
-		}
 	};
 
 	return (
@@ -280,10 +251,7 @@ function SavedSoundsView() {
 		clearSavedSounds,
 	} = useSoundsStore();
 
-	const [playingId, setPlayingId] = useState<number | null>(null);
-	const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(
-		null,
-	);
+	const { playingId, playSound } = useSoundPreview(savedSounds);
 
 	const [showClearDialog, setShowClearDialog] = useState(false);
 
@@ -292,33 +260,6 @@ function SavedSoundsView() {
 			// The session store publishes the recoverable error and diagnostics.
 		});
 	}, [loadSavedSounds]);
-
-	const playSound = ({ sound }: { sound: SoundEffect }) => {
-		if (playingId === sound.id) {
-			audioElement?.pause();
-			setPlayingId(null);
-			return;
-		}
-
-		audioElement?.pause();
-
-		if (sound.previewUrl) {
-			const audio = new Audio(sound.previewUrl);
-			audio.addEventListener("ended", () => {
-				setPlayingId(null);
-			});
-			audio.addEventListener("error", () => {
-				setPlayingId(null);
-			});
-			audio.play().catch((error) => {
-				console.error("Failed to play sound preview:", error);
-				setPlayingId(null);
-			});
-
-			setAudioElement(audio);
-			setPlayingId(sound.id);
-		}
-	};
 
 	const convertToSoundEffect = ({
 		savedSound,
@@ -415,10 +356,8 @@ function SavedSoundsView() {
 							</Button>
 							<Button
 								variant="destructive"
-								onClick={async ({
-									stopPropagation,
-								}: React.MouseEvent<HTMLButtonElement>) => {
-									stopPropagation();
+								onClick={async (event: React.MouseEvent<HTMLButtonElement>) => {
+									event.stopPropagation();
 									try {
 										await clearSavedSounds();
 										setShowClearDialog(false);
@@ -468,19 +407,17 @@ function AudioItem({ sound, isPlaying, onPlay }: AudioItemProps) {
 		onPlay({ sound });
 	};
 
-	const handleSaveClick = ({
-		stopPropagation,
-	}: React.MouseEvent<HTMLButtonElement>) => {
-		stopPropagation();
+	const handleSaveClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+		event.stopPropagation();
 		void toggleSavedSound({ soundEffect: sound }).catch(() => {
 			// The session store publishes the recoverable error and diagnostics.
 		});
 	};
 
-	const handleAddToTimeline = async ({
-		stopPropagation,
-	}: React.MouseEvent<HTMLButtonElement>) => {
-		stopPropagation();
+	const handleAddToTimeline = async (
+		event: React.MouseEvent<HTMLButtonElement>,
+	) => {
+		event.stopPropagation();
 		await addSoundToTimeline({ sound, editor });
 	};
 

@@ -24,8 +24,10 @@ if (process.env.OPENCUT_SESSION_ASYNC_STORE_TEST_ISOLATED !== "1") {
 	const { createSoundsStore } = await import("../../../sounds/sounds-store");
 	const { createCustomPresetsStore } =
 		await import("../../../timeline/components/graph-editor/custom-presets-store");
-	const { createStickersStore } = await import("../../../stickers/stickers-store");
-	const { createInMemoryHost } = await import("@opencut/editor-ports/in-memory/host");
+	const { createStickersStore } =
+		await import("../../../stickers/stickers-store");
+	const { createInMemoryHost } =
+		await import("@opencut/editor-ports/in-memory/host");
 	const { C6TestAudioBuffer, C6TestAudioContext } =
 		await import("./c6-test-audio-context");
 	const {
@@ -33,11 +35,9 @@ if (process.env.OPENCUT_SESSION_ASYNC_STORE_TEST_ISOLATED !== "1") {
 		InMemoryProjectStoreControl,
 		RecordingDiagnostics,
 	} = await import("@opencut/editor-ports/in-memory");
-	const { SessionPersistenceCoordinator } =
-		await import("../../persistence");
+	const { SessionPersistenceCoordinator } = await import("../../persistence");
 	const { storesForSession } = await import("../../runtime/session-stores");
-	const { editorForSession } =
-		await import("../../runtime/session-core-owner");
+	const { editorForSession } = await import("../../runtime/session-core-owner");
 	const { createEditorSession } = await import("../create-session");
 	type SavedSoundsData = import("../../../sounds/types").SavedSoundsData;
 	type SavedSound = import("../../../sounds/types").SavedSound;
@@ -343,9 +343,16 @@ if (process.env.OPENCUT_SESSION_ASYNC_STORE_TEST_ISOLATED !== "1") {
 				host,
 			});
 			const editor = editorForSession(session);
-			editor.timeline.insertElement = ({ element }) => {
+			editor.command.execute = async ({ command }) => {
+				// Project creation uses persistence directly; only insertion is mocked.
+				const element = Reflect.get(command, "element");
+				expect(element).not.toHaveProperty("buffer");
 				inserted.push(element.name);
+				return command;
 			};
+			await editor.project.createNewProject({
+				name: "Owned overlapping sounds",
+			});
 			const originalFetch = globalThis.fetch;
 			globalThis.fetch = Object.assign(
 				async (input: string | URL | Request) => {
@@ -388,6 +395,59 @@ if (process.env.OPENCUT_SESSION_ASYNC_STORE_TEST_ISOLATED !== "1") {
 			}
 		});
 
+		test("a sound attachment finishing after a project switch cannot enter the new project", async () => {
+			const control = new InMemoryProjectStoreControl();
+			const durable = new InMemoryProjectStore({ control });
+			const host = createInMemoryHost({ store: durable });
+			const createAudioContext = host.runtimeResources.createAudioContext.bind(
+				host.runtimeResources,
+			);
+			host.runtimeResources.createAudioContext = (args) => ({
+				...createAudioContext(args),
+				context: new C6TestAudioContext(),
+			});
+			const session = await createEditorSession({ host });
+			const editor = editorForSession(session);
+			const store = createSoundsStore();
+			const originalFetch = globalThis.fetch;
+			globalThis.fetch = Object.assign(
+				async () => new Response(new ArrayBuffer(8)),
+				{ preconnect: () => {} },
+			) as typeof fetch;
+			let pending: Promise<boolean> | undefined;
+			let release = () => {};
+			try {
+				expect(
+					await store
+						.getState()
+						.addSoundToTimeline({ sound: soundEffect(60), editor }),
+				).toBe(false);
+				const oldId = await editor.project.createNewProject({
+					name: "Owned old sound project",
+				});
+				const pause = control.pauseNext({ operation: "save-attachment" });
+				release = pause.release;
+				pending = store
+					.getState()
+					.addSoundToTimeline({ sound: soundEffect(61), editor });
+				await pause.entered;
+				const newId = await editor.project.createNewProject({
+					name: "Owned new sound project",
+				});
+				pause.release();
+				expect(await pending).toBe(false);
+				expect(editor.media.getAssets()).toEqual([]);
+				expect(editor.scenes.getActiveScene().tracks.audio).toEqual([]);
+				expect(await durable.listAttachments({ projectId: oldId })).toEqual([]);
+				expect(await durable.listAttachments({ projectId: newId })).toEqual([]);
+			} finally {
+				release();
+				await pending;
+				globalThis.fetch = originalFetch;
+				await session.dispose();
+			}
+		});
+
 		test("a delayed sound decode cannot publish across suspend and a resumed generation inserts freshly", async () => {
 			const store = createSoundsStore();
 			const inserted: string[] = [];
@@ -420,9 +480,13 @@ if (process.env.OPENCUT_SESSION_ASYNC_STORE_TEST_ISOLATED !== "1") {
 			};
 			const session = await createEditorSession({ host });
 			const editor = editorForSession(session);
-			editor.timeline.insertElement = ({ element }) => {
+			editor.command.execute = async ({ command }) => {
+				const element = Reflect.get(command, "element");
+				expect(element).not.toHaveProperty("buffer");
 				inserted.push(element.name);
+				return command;
 			};
+			await editor.project.createNewProject({ name: "Owned suspended sounds" });
 			const originalFetch = globalThis.fetch;
 			globalThis.fetch = Object.assign(
 				async () => new Response(new ArrayBuffer(8)),
