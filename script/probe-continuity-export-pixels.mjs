@@ -22,7 +22,13 @@ export function inspectContinuityExportPixels(pixels) {
 }
 
 export const sampleContinuityExportPng = (page, png) =>
-	samplePreviewPng(page, png, inspectContinuityExportPixels);
+	// FFmpeg has already decoded the video into RGB samples. Its PNG can retain
+	// video cICP/gAMA metadata; another image color conversion changes those
+	// samples (and the foreground mask). Compare the decoded numerical raster.
+	// General preview-image sampling deliberately keeps its default conversion.
+	samplePreviewPng(page, png, inspectContinuityExportPixels, {
+		colorSpaceConversion: "none",
+	});
 
 export function compareContinuityExport({ expected, actual }) {
 	const union = new Set([...expected.foreground, ...actual.foreground]);

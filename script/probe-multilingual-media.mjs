@@ -45,20 +45,25 @@ export async function samplePreviewPng(
 	page,
 	png,
 	inspect = inspectLanguagePixels,
+	{ colorSpaceConversion = "default" } = {},
 ) {
-	const pixels = await page.evaluate(async (bytes) => {
-		const image = await createImageBitmap(
-			new Blob([new Uint8Array(bytes)], { type: "image/png" }),
-		);
-		try {
-			const canvas = new OffscreenCanvas(320, 180),
-				ctx = canvas.getContext("2d");
-			ctx.drawImage(image, 0, 0, 320, 180);
-			return Array.from(ctx.getImageData(0, 0, 320, 180).data);
-		} finally {
-			image.close();
-		}
-	}, Array.from(png));
+	const pixels = await page.evaluate(
+		async ({ bytes, colorSpaceConversion }) => {
+			const image = await createImageBitmap(
+				new Blob([new Uint8Array(bytes)], { type: "image/png" }),
+				{ colorSpaceConversion },
+			);
+			try {
+				const canvas = new OffscreenCanvas(320, 180),
+					ctx = canvas.getContext("2d");
+				ctx.drawImage(image, 0, 0, 320, 180);
+				return Array.from(ctx.getImageData(0, 0, 320, 180).data);
+			} finally {
+				image.close();
+			}
+		},
+		{ bytes: Array.from(png), colorSpaceConversion },
+	);
 	return inspect(pixels);
 }
 
