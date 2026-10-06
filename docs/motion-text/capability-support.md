@@ -55,11 +55,11 @@
 
 ## 字体支持
 
-23 个 JIZURA 字体角色映射到 19 份 digest-pinned 离线 TTF，其中 `gothic_bold` 另有实测覆盖 zh-Hans 的 Noto Sans SC 变体。`mono` 仍为 Latin-only；`zh-Hant`、`ko` 及未覆盖角色的中文保真没有离线闭包。UI 对当前语言显示 `supported`、`unsupported` 或 `unknown`，导出遇到必需字形缺失时 fail closed。
+23 个 JIZURA 字体角色映射到 20 份 digest-pinned 离线 TTF，其中 `gothic_bold` 另有 Noto Sans SC（zh-Hans）和 Noto Sans KR（ko）变体。新建表单可显式选择语言，Rust 负责解析默认资产。`mono` 仍为 Latin-only；`zh-Hant` 及未覆盖角色的中韩文保真不作保证。UI 对当前语言显示 `supported`、`unsupported` 或 `unknown`，导出遇到必需字形缺失时 fail closed。
 
-最新 F01 中，默认解析到 `gothic_bold_zh_hans`（Noto Sans SC 变量字体），缺字为 0，是 19 份资产中唯一完整覆盖该 fixture 的资产。精确码点和逐资产结果见 [字体 readiness 报告](./s09-font-readiness.json)。其他语言仍不得使用操作系统 fallback。来源与许可见 [上游来源清单](./upstream-sources.md)。
+最新 F01 中，默认解析到 `gothic_bold_zh_hans`（Noto Sans SC 变量字体），缺字为 0，是 20 份资产中唯一完整覆盖该 fixture 的资产。Noto Sans KR 对本次韩文及混排样本覆盖完整，不代表完整覆盖 F01 的全部中文字符。精确码点和逐资产结果见 [字体 readiness 报告](./s09-font-readiness.json)。不得使用操作系统 fallback 冒充确定的字体覆盖。来源与许可见 [上游来源清单](./upstream-sources.md)。
 
-语言字体选择由 Rust catalog 决定，而不是 React fallback。目录可为稳定角色追加语言资产变体；新建／导入会保存解析后的具体资产 ID，后续 mutation、锁定、variation 与保存重开保持该 ID。当前 catalog 已登记该 zh-Hans 变体，installed WASM 已经正常依赖路径同步；plugin dist 仍按 L03 阻塞。
+语言字体选择由 Rust catalog 决定，而不是 React fallback。目录可为稳定角色追加语言资产变体；新建／导入会保存解析后的具体资产 ID，后续 mutation、锁定、variation 与保存重开保持该 ID。当前 catalog 已登记 zh-Hans 和 ko 变体，已同步到本地 WASM 消费副本并实际安装插件。最新安装证据见 [修复验收记录](../elftia-integration-repair.md)；本页较早的宿主快照不替代该记录。
 
 ## 兼容性分级
 

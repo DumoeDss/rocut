@@ -29,7 +29,7 @@ JIZURA 的 registry 源文件在固定 commit 上按真实加载顺序执行，�
 
 | 来源                                 | 固定 revision                              | 用途／许可                                                  |
 | ------------------------------------ | ------------------------------------------ | ----------------------------------------------------------- |
-| https://github.com/google/fonts      | `23e54b51ddffbc7713c583748e3bd86f62b1fa4a` | 19 份共享 TTF 的主要来源；每个 family 随附 SIL OFL 1.1 文本 |
+| https://github.com/google/fonts      | `23e54b51ddffbc7713c583748e3bd86f62b1fa4a` | 20 份共享 TTF 的主要来源；每个 family 随附 SIL OFL 1.1 文本 |
 | https://github.com/coz-m/MPLUS_FONTS | `eb604901d6f04b6f7f2a84b0378c58df84a9dba6` | M PLUS Rounded 1c 许可来源固定点                            |
 
 原版 JIZURA `src/02b_lang.js` 是语言替换的权威设计来源。对 `zh-Hans`，它把
@@ -69,10 +69,12 @@ Rust 字体目录已为后续落库准备了不改变现有工程语义的变体
 个稳定 JIZURA 角色的 base asset ID；新增语言资产使用自己的唯一 `id`，并以 `roleId` 和
 `defaultForLanguages` 声明由哪个角色在何种语言下选中。Rust 只在创建／JIZURA 导入时解析
 角色并把具体资产 ID 写入 defaults／resolved cuts；重开、锁定、变体和显式用户选择均不
-重新解析。当前 catalog 已用这两个字段登记唯一的 zh-Hans 资产
-`gothic_bold_zh_hans`（Noto Sans SC），其余 23 个角色的 base asset 不变。
+重新解析。当前 catalog 已用这两个字段登记 zh-Hans 资产
+`gothic_bold_zh_hans`（Noto Sans SC）及 ko 资产 `gothic_bold_ko`（Noto Sans KR），23 个角色的 base asset 不变。
 
-当前 19 份 TTF 共 117,455,080 bytes；连同 19 份 OFL 文本共 38 文件、117,539,061 bytes。每个角色记录 family、weight、kind、`supportedLanguages`、`builtinPath`、内容 SHA-256、源目录、源文件和 license path。实际文件清单以字体目录和 [SBOM](../../SBOM.md) 为准。
+2026-10-06 新增 Noto Sans KR：同一 Google Fonts 固定 revision 的 `ofl/notosanskr/NotoSansKR[wght].ttf`，10,414,588 bytes，SHA-256 `194018e6b2b293a7964f037b25c0249ce1418bc9ab3c971060a03aa57861e252`，24,964 个字形；许可为 `ofl/notosanskr/OFL.txt`，4,388 bytes，SHA-256 `1c05c68c34f9708415aada51f17e1b0092d2cea709bf4a94cd38114f9e73d7d9`。Rust 实际检查覆盖选定韩文和中日韩英混排样本；仅声明 `ko`、`en`，不把部分汉字覆盖误报为完整 F01 覆盖。
+
+当前 20 份 TTF 共 127,869,668 bytes；连同 20 份 OFL 文本共 40 文件、127,958,037 bytes。每个角色记录 family、weight、kind、`supportedLanguages`、`builtinPath`、内容 SHA-256、源目录、源文件和 license path。实际文件清单以字体目录和 [SBOM](../../SBOM.md) 为准。
 
 SBOM 中的角色数、资产数、语言标签和字节总量现由
 `script/motion-text-font-inventory.mjs` 从 catalog 与实际 public tree 生成，不再维护硬编码副本。
@@ -82,14 +84,14 @@ SBOM 中的角色数、资产数、语言标签和字节总量现由
 的 checked-in SBOM；三平台 CI 在依赖安装后、installed-WASM 校验前运行同一门禁。确需
 更新时运行 `node script/generate-sbom.mjs`。
 
-当前已交付资源声明 `gothic_bold` 角色的 zh-Hans 变体，但**没有**声明完整 zh-Hans／ko 覆盖；`zh-Hant`、`ko` 与其余角色的中文保真仍按缺字门禁拒绝。新增或替换字体时必须：
+当前已交付资源声明 `gothic_bold` 角色的 zh-Hans 和 ko 变体，但**没有**声明全部角色或所有 Unicode 文字覆盖；`zh-Hant` 与未覆盖角色的中韩文仍按实际缺字门禁拒绝。新增或替换字体时必须：
 
 1. 固定 repository、revision、源路径、内容 SHA-256 和许可文件；
 2. 用真实字形检查更新 `supportedLanguages`，并为语言变体登记唯一资产 `id`、稳定 `roleId` 与 `defaultForLanguages`；不根据字体名称推断；
 3. 更新 runtime asset manifest、SBOM、plugin NOTICE 和 packed closure；
 4. 重跑 F01、语言矩阵、WASM／asset／export 门禁。
 
-候选落库前必须先运行同一 F01 fixture 的独立预检：
+针对 zh-Hans 默认角色的候选落库前必须先运行同一 F01 fixture 的独立预检；其他语言资产须通过其目标语言和混排样本的同一 canonical 字形检查，并保留 F01 全目录缺字报告：
 
 ```text
 node script/probe-motion-text-font-readiness.mjs --candidate <font.ttf> --expected-sha256 <font-sha256> --license <license-file> --expected-license-sha256 <license-sha256>

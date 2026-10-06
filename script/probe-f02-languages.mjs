@@ -68,6 +68,7 @@ export async function probeF02Languages({
 			return {
 				sequences: record.data.motionTextSequences,
 				scenes: record.data.scenes,
+				settings: record.data.settings,
 			};
 		});
 	const seek = async (frame) => {
@@ -89,15 +90,8 @@ export async function probeF02Languages({
 			hash: createHash("sha256").update(value.pixels).digest("hex"),
 		};
 	};
-	onPhase("F02 import audiovisual underlay through actual media controls");
 	const video = join(work, "f02-underlay.mp4");
 	createRangeSource(video, { segmentSeconds: 6, secondColor: "red" });
-	await page.getByLabel("Media", { exact: true }).click();
-	await page.locator('input[type="file"]').setInputFiles(video);
-	await page
-		.getByLabel("Add f02-underlay.mp4 to timeline", { exact: true })
-		.click();
-	await expect(page.getByTestId("timeline-clip")).toHaveCount(1);
 	for (const [index, definition] of definitions.entries()) {
 		onPhase(
 			"F02 form creation: " +
@@ -105,7 +99,10 @@ export async function probeF02Languages({
 				(index === 3 ? " mixed script" : ""),
 		);
 		await seek(index * 90);
-		await page.getByLabel("Motion text", { exact: true }).click();
+		await page
+			.locator("#editor-assets")
+			.getByLabel("Motion text", { exact: true })
+			.click();
 		const language = page.getByRole("combobox", {
 			name: "Motion text language",
 			exact: true,
@@ -113,8 +110,17 @@ export async function probeF02Languages({
 		await language.click();
 		if (index === 1) {
 			await hostPage.keyboard.press("Home");
+			await expect(
+				page.getByRole("option", { name: "Chinese (Simplified)", exact: true }),
+			).toBeFocused();
 			await hostPage.keyboard.press("ArrowDown");
+			await expect(
+				page.getByRole("option", { name: "Japanese", exact: true }),
+			).toBeFocused();
 			await hostPage.keyboard.press("ArrowDown");
+			await expect(
+				page.getByRole("option", { name: "Korean", exact: true }),
+			).toBeFocused();
 			await hostPage.keyboard.press("Enter");
 		} else
 			await page
@@ -126,7 +132,9 @@ export async function probeF02Languages({
 			.getByRole("spinbutton", { name: "Duration (seconds)", exact: true })
 			.fill("3");
 		await page.getByTestId("motion-text-add").click();
-		await expect(page.getByTestId("timeline-clip")).toHaveCount(index + 2);
+		await expect(page.getByTestId("timeline-clip")).toHaveCount(
+			index === 0 ? 1 : index + 2,
+		);
 		await expect
 			.poll(async () => (await read()).sequences.length)
 			.toBe(index + 1);
@@ -140,15 +148,42 @@ export async function probeF02Languages({
 		assert(
 			sequence.resolvedPlan.cuts.every((cut) => cut.fontId === definition.font),
 		);
+		if (index === 0) {
+			// The first media import adopts source dimensions in an empty project.
+			// Author text first to keep the project's ordinary 1080p canvas.
+			onPhase("F02 import audiovisual underlay through actual media controls");
+			await seek(0);
+			await page.getByLabel("Media", { exact: true }).click();
+			await page.locator('input[type="file"]').setInputFiles(video);
+			await page
+				.getByLabel("Add f02-underlay.mp4 to timeline", { exact: true })
+				.click();
+			await expect(page.getByTestId("timeline-clip")).toHaveCount(2);
+		}
 	}
 	const authored = await read();
+	assert.deepEqual(authored.settings.canvasSize, { width: 1920, height: 1080 });
 	evidence.checks.push({
 		name: "F02 real form and keyboard language selection persist Japanese, Korean, English and mixed-script sequences with Rust-resolved fonts",
 		pass: true,
 	});
 	const baselines = new Map();
 	const references = new Map();
-	for (const frame of Array.from({ length: 12 }, (_, i) => i * 30 + 15)) {
+	// Sample every letter/number-bearing cut, including every script in mixed
+	// cues. Standalone punctuation is covered by font inspection, not the >25
+	// visible-pixel oracle. Exact cut boundaries can intentionally fade to zero.
+	const sampleFrames = authored.sequences.flatMap((sequence, index) =>
+		sequence.resolvedPlan.cuts
+			.filter((cut) => /[\p{L}\p{N}]/u.test(cut.text))
+			.map((cut) => {
+				const frame =
+					index * 90 + Math.floor((cut.startTime + cut.duration / 2) / 4000);
+				assert(frame * 4000 - index * 360000 > cut.startTime);
+				assert(frame * 4000 - index * 360000 < cut.startTime + cut.duration);
+				return frame;
+			}),
+	);
+	for (const frame of sampleFrames) {
 		onPhase("F02 exact visible baseline frame " + frame);
 		await seek(frame);
 		let previous,
@@ -183,10 +218,9 @@ export async function probeF02Languages({
 			}),
 		);
 	}
-	assert.equal(
-		new Set(baselines.values()).size,
-		12,
-		"each authored phrase must render a distinct picture",
+	assert(
+		new Set(baselines.values()).size >= 12,
+		"the twelve phrases must not collapse to stale repeated pictures",
 	);
 	const fonts = await page.evaluate(() =>
 		[...document.fonts]
@@ -215,7 +249,7 @@ export async function probeF02Languages({
 			.toBe(baselines.get(frame));
 	}
 	evidence.checks.push({
-		name: "F02 all twelve multilingual pictures reproduce exactly after reload and reversed seeks",
+		name: "F02 all letter-bearing cut pictures reproduce exactly after reload and reversed seeks",
 		pass: true,
 	});
 	onPhase("F02 real MP4 export and independent glyph samples");
@@ -283,7 +317,7 @@ export async function probeF02Languages({
 		}
 		evidence.f02Languages.export = { file: output.path, frames: 360, scores };
 		evidence.checks.push({
-			name: "F02 actual 1080p H.264 export preserves all twelve multilingual glyph samples",
+			name: "F02 actual 1080p H.264 export preserves every sampled letter-bearing cut across twelve multilingual phrases",
 			pass: true,
 		});
 	} finally {

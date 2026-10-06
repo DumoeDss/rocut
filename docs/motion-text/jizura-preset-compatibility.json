@@ -5,7 +5,7 @@
 		"catalog": "docs/motion-text/jizura-preset-catalog.json",
 		"catalogSha256": "9ec6f3be1a297152ccd377456348900fe0f4cc3b7629d21ec319976740f33d12",
 		"fontCatalog": "rust/crates/motion-text/resources/jizura-font-catalog.json",
-		"fontCatalogSha256": "ff46303135e2b4983369e95e14798cb9f110c49fab23a9ac0284bc7854592854",
+		"fontCatalogSha256": "e5209fd85256903528fa3cb43a4f1273d8e30b3f7f0c1319b0bc5be58394b374",
 		"engineVersion": "0.9.0",
 		"engineRevision": null,
 		"rendererSupportVersion": 38
@@ -100,7 +100,7 @@
 				"unsupported": 0
 			}
 		},
-		"nativeOnlySupport": 6
+		"nativeOnlySupport": 7
 	},
 	"gates": {
 		"allCatalogEntriesClassified": true,
@@ -260,6 +260,11 @@
 			"group": "exit",
 			"id": "fade",
 			"reason": "rocut baseline opacity exit"
+		},
+		{
+			"group": "font",
+			"id": "gothic_bold_ko",
+			"reason": "rocut-native Korean language asset variant for the gothic_bold role"
 		},
 		{
 			"group": "font",

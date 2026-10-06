@@ -52,6 +52,10 @@ const NATIVE_ONLY_SUPPORT = new Map([
 		"font:gothic_bold_zh_hans",
 		"rocut-native zh-Hans language asset variant for the gothic_bold role",
 	],
+	[
+		"font:gothic_bold_ko",
+		"rocut-native Korean language asset variant for the gothic_bold role",
+	],
 ]);
 const VARIANT_MATRIX_REPRESENTATIVES = {
 	style: "crimson",
