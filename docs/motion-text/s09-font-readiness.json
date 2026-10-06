@@ -3,12 +3,12 @@
 	"generatedBy": "script/probe-motion-text-font-readiness.mjs",
 	"source": {
 		"canonicalWasm": {
-			"bytes": 5511220,
-			"sha256": "14de620a1bfa38228a43e4103cc557ae7a27bbb30185bfffae91b17d685e75a8"
+			"bytes": 5733936,
+			"sha256": "b69db0c062e908080ba22a4174f1a14fe7f5edcea438c81e560714d0bfffc0a1"
 		},
 		"fontCatalog": {
-			"bytes": 13017,
-			"sha256": "ff46303135e2b4983369e95e14798cb9f110c49fab23a9ac0284bc7854592854"
+			"bytes": 13609,
+			"sha256": "e5209fd85256903528fa3cb43a4f1273d8e30b3f7f0c1319b0bc5be58394b374"
 		}
 	},
 	"fixture": {
@@ -31,17 +31,21 @@
 	},
 	"summary": {
 		"roles": 23,
-		"uniqueAssets": 19,
+		"uniqueAssets": 20,
 		"defaultRoleId": "gothic_bold",
 		"defaultAssetPath": "motion-text/fonts/noto-sans-sc-variable.ttf",
 		"defaultMissingCodePointCount": 0,
 		"defaultMissingCodePoints": [],
-		"fullCoverageAssets": ["motion-text/fonts/noto-sans-sc-variable.ttf"]
+		"fullCoverageAssets": [
+			"motion-text/fonts/noto-sans-sc-variable.ttf"
+		]
 	},
 	"assets": [
 		{
 			"builtinPath": "motion-text/fonts/dela-gothic-one-regular.ttf",
-			"roleIds": ["dela"],
+			"roleIds": [
+				"dela"
+			],
 			"contentDigest": "sha256:4ff87a0965f1b0505e5a2c58424bc6ad3cff27e56a82f21c2fc9d6b0e3857ee2",
 			"glyphCount": 9194,
 			"coversF01": false,
@@ -49,7 +53,9 @@
 		},
 		{
 			"builtinPath": "motion-text/fonts/dot-gothic-16-regular.ttf",
-			"roleIds": ["dot"],
+			"roleIds": [
+				"dot"
+			],
 			"contentDigest": "sha256:3ad9af88726d42b40f7f365f0dcac785af73cf20ea6f1d5b44e57cc21150b8f1",
 			"glyphCount": 9362,
 			"coversF01": false,
@@ -57,7 +63,9 @@
 		},
 		{
 			"builtinPath": "motion-text/fonts/ibm-plex-mono-medium.ttf",
-			"roleIds": ["mono"],
+			"roleIds": [
+				"mono"
+			],
 			"contentDigest": "sha256:a9b4c49bb299e05b5f6c481e7fb5e78943d2793249a0c8874ab574a2d1ea6755",
 			"glyphCount": 1033,
 			"coversF01": false,
@@ -65,7 +73,9 @@
 		},
 		{
 			"builtinPath": "motion-text/fonts/ibm-plex-sans-jp-medium.ttf",
-			"roleIds": ["sansui"],
+			"roleIds": [
+				"sansui"
+			],
 			"contentDigest": "sha256:1d09f5e25b19e54b2c55da70de58f9962512c3e07ed7c3e1c9bad77ace5c22e6",
 			"glyphCount": 9505,
 			"coversF01": false,
@@ -73,7 +83,9 @@
 		},
 		{
 			"builtinPath": "motion-text/fonts/kaisei-tokumin-extrabold.ttf",
-			"roleIds": ["tokumin"],
+			"roleIds": [
+				"tokumin"
+			],
 			"contentDigest": "sha256:bf44bb3e23cc703bfb19111833f78e651998d0a2b1863eff9e88cecb38a8bc53",
 			"glyphCount": 9368,
 			"coversF01": false,
@@ -81,7 +93,9 @@
 		},
 		{
 			"builtinPath": "motion-text/fonts/kiwi-maru-medium.ttf",
-			"roleIds": ["kiwi"],
+			"roleIds": [
+				"kiwi"
+			],
 			"contentDigest": "sha256:b2659f300a7d48c3f29eb273ffc5e1b26cc416ac8c37ff6bb2f3e43c2f4d235a",
 			"glyphCount": 9505,
 			"coversF01": false,
@@ -89,7 +103,9 @@
 		},
 		{
 			"builtinPath": "motion-text/fonts/klee-one-semibold.ttf",
-			"roleIds": ["klee"],
+			"roleIds": [
+				"klee"
+			],
 			"contentDigest": "sha256:b031ec426c23ca1143ef1f7d58bee7a79efe119ed654152f121c922202b303fd",
 			"glyphCount": 15450,
 			"coversF01": false,
@@ -97,7 +113,9 @@
 		},
 		{
 			"builtinPath": "motion-text/fonts/m-plus-rounded-1c-extrabold.ttf",
-			"roleIds": ["round"],
+			"roleIds": [
+				"round"
+			],
 			"contentDigest": "sha256:8e7c15901dca87f1451b356dda594f7d092ba252a5dcc47da74523a242493c36",
 			"glyphCount": 8546,
 			"coversF01": false,
@@ -105,7 +123,9 @@
 		},
 		{
 			"builtinPath": "motion-text/fonts/mochiy-pop-one-regular.ttf",
-			"roleIds": ["pop"],
+			"roleIds": [
+				"pop"
+			],
 			"contentDigest": "sha256:9e009430e1316c271a5f34759c6b65fc343c4e806f193042528887e7235a92c6",
 			"glyphCount": 16908,
 			"coversF01": false,
@@ -113,15 +133,32 @@
 		},
 		{
 			"builtinPath": "motion-text/fonts/noto-sans-jp-variable.ttf",
-			"roleIds": ["gothic_black", "gothic_bold", "gothic_light", "gothic_med"],
+			"roleIds": [
+				"gothic_black",
+				"gothic_bold",
+				"gothic_light",
+				"gothic_med"
+			],
 			"contentDigest": "sha256:c2f3b4d463500a2ddcd3849cded1fceeb9fd6d1c32e6cbecd568453ba50fc68f",
 			"glyphCount": 17936,
 			"coversF01": false,
 			"missingCodePointCount": 14
 		},
 		{
+			"builtinPath": "motion-text/fonts/noto-sans-kr-variable.ttf",
+			"roleIds": [
+				"gothic_bold"
+			],
+			"contentDigest": "sha256:194018e6b2b293a7964f037b25c0249ce1418bc9ab3c971060a03aa57861e252",
+			"glyphCount": 24964,
+			"coversF01": false,
+			"missingCodePointCount": 15
+		},
+		{
 			"builtinPath": "motion-text/fonts/noto-sans-sc-variable.ttf",
-			"roleIds": ["gothic_bold"],
+			"roleIds": [
+				"gothic_bold"
+			],
 			"contentDigest": "sha256:a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da",
 			"glyphCount": 31036,
 			"coversF01": true,
@@ -129,7 +166,11 @@
 		},
 		{
 			"builtinPath": "motion-text/fonts/noto-serif-jp-variable.ttf",
-			"roleIds": ["mincho", "mincho_bold", "mincho_light"],
+			"roleIds": [
+				"mincho",
+				"mincho_bold",
+				"mincho_light"
+			],
 			"contentDigest": "sha256:2fd527ba12b6a44ec30d796d633360da0aeba6c5d4af1304ce12bb4dc15a7dfc",
 			"glyphCount": 17923,
 			"coversF01": false,
@@ -137,7 +178,9 @@
 		},
 		{
 			"builtinPath": "motion-text/fonts/potta-one-regular.ttf",
-			"roleIds": ["potta"],
+			"roleIds": [
+				"potta"
+			],
 			"contentDigest": "sha256:bde843868b56e429e1c863da2efa76df533162b226d990efcb96d533b0ca2a93",
 			"glyphCount": 7365,
 			"coversF01": false,
@@ -145,7 +188,9 @@
 		},
 		{
 			"builtinPath": "motion-text/fonts/rampart-one-regular.ttf",
-			"roleIds": ["rampart"],
+			"roleIds": [
+				"rampart"
+			],
 			"contentDigest": "sha256:a4c60ee835175fa147eb483fac0dd8ff9007c37884ef77af86b0a868fa554d49",
 			"glyphCount": 9360,
 			"coversF01": false,
@@ -153,7 +198,9 @@
 		},
 		{
 			"builtinPath": "motion-text/fonts/reggae-one-regular.ttf",
-			"roleIds": ["reggae"],
+			"roleIds": [
+				"reggae"
+			],
 			"contentDigest": "sha256:aebe62598732d76036f30ec11bb0ec5f68938e373a06d1b4ceb6b9cf1abf3db2",
 			"glyphCount": 9362,
 			"coversF01": false,
@@ -161,7 +208,9 @@
 		},
 		{
 			"builtinPath": "motion-text/fonts/shippori-mincho-b1-extrabold.ttf",
-			"roleIds": ["shippori"],
+			"roleIds": [
+				"shippori"
+			],
 			"contentDigest": "sha256:bee99a242f32128e8d6a4acff2b3f1742cd42ea90748758e6e10456871887e76",
 			"glyphCount": 16359,
 			"coversF01": false,
@@ -169,7 +218,9 @@
 		},
 		{
 			"builtinPath": "motion-text/fonts/yuji-syuku-regular.ttf",
-			"roleIds": ["brush"],
+			"roleIds": [
+				"brush"
+			],
 			"contentDigest": "sha256:82728ebafc8c97391e2dab633414a806f344b8e4e2227d307179f07b548fca61",
 			"glyphCount": 9504,
 			"coversF01": false,
@@ -177,7 +228,9 @@
 		},
 		{
 			"builtinPath": "motion-text/fonts/zen-kaku-gothic-new-black.ttf",
-			"roleIds": ["zenkaku"],
+			"roleIds": [
+				"zenkaku"
+			],
 			"contentDigest": "sha256:795819a979184981842994d8f4eb9e14ce443d687bd5e731d6ca67ded8f92261",
 			"glyphCount": 7792,
 			"coversF01": false,
@@ -185,7 +238,9 @@
 		},
 		{
 			"builtinPath": "motion-text/fonts/zen-old-mincho-black.ttf",
-			"roleIds": ["mincho_black"],
+			"roleIds": [
+				"mincho_black"
+			],
 			"contentDigest": "sha256:84a80d8bca79d7d9478935045b216ed003ad40fdea5fd9116d524eb26e872cdc",
 			"glyphCount": 7866,
 			"coversF01": false,

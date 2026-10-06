@@ -1,6 +1,8 @@
 mod audio;
 mod factory;
 mod font;
+#[cfg(test)]
+mod font_language_tests;
 mod identity;
 mod jizura_import;
 mod planner;

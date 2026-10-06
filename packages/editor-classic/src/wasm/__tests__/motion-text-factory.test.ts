@@ -159,7 +159,7 @@ describe("motion-text Rust sequence factory seam", () => {
 
 			expect(created.sequence).not.toBeNull();
 			expect(created.sequence?.cues).toHaveLength(3);
-			expect(created.sequence?.fonts).toHaveLength(24);
+			expect(created.sequence?.fonts).toHaveLength(25);
 			expect(created.sequence?.defaults.fontId).toBe("gothic_bold_zh_hans");
 			expect(created.sequence?.fonts[0]).toMatchObject({
 				id: "gothic_black",

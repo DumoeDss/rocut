@@ -368,6 +368,23 @@
 			"sourceFile": "NotoSansSC[wght].ttf",
 			"license": "OFL-1.1",
 			"licensePath": "motion-text/fonts/licenses/notosanssc-OFL.txt"
+		},
+		{
+			"id": "gothic_bold_ko",
+			"label": "Noto Sans KR Bold",
+			"family": "Noto Sans KR",
+			"style": "normal",
+			"weight": 700,
+			"kind": "gothic",
+			"roleId": "gothic_bold",
+			"defaultForLanguages": ["ko"],
+			"supportedLanguages": ["ko", "en"],
+			"builtinPath": "motion-text/fonts/noto-sans-kr-variable.ttf",
+			"contentDigest": "sha256:194018e6b2b293a7964f037b25c0249ce1418bc9ab3c971060a03aa57861e252",
+			"sourceDirectory": "ofl/notosanskr",
+			"sourceFile": "NotoSansKR[wght].ttf",
+			"license": "OFL-1.1",
+			"licensePath": "motion-text/fonts/licenses/notosanskr-OFL.txt"
 		}
 	]
 }

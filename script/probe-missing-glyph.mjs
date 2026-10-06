@@ -23,8 +23,16 @@ export async function probeMissingGlyph({
 				sequences: record.data.motionTextSequences,
 			};
 		});
-	onPhase("F02 enter Korean text through the actual motion-text form");
+	onPhase(
+		"F02 enter Korean text with an explicitly incompatible Chinese font default",
+	);
 	await page.getByLabel("Motion text", { exact: true }).click();
+	await page
+		.getByRole("combobox", { name: "Motion text language", exact: true })
+		.click();
+	await page
+		.getByRole("option", { name: "Chinese (Simplified)", exact: true })
+		.click();
 	await page
 		.locator("#motion-text-source")
 		.fill("바람이 분다. 밤의 도시, 그리고 아침!");
@@ -47,6 +55,7 @@ export async function probeMissingGlyph({
 		)
 		.toBe(true);
 	const before = await state();
+	assert.equal(before.sequences[0].defaults.fontId, "gothic_bold_zh_hans");
 	assert.equal(
 		before.sequences[0].cues[0].text,
 		"바람이 분다. 밤의 도시, 그리고 아침",

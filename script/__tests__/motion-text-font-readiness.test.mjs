@@ -56,7 +56,7 @@ describe("motion-text font readiness CLI", () => {
 		const result = run(["--check"]);
 		expect(result.status, result.stderr).toBe(0);
 		expect(result.stdout).toContain(
-			"19 assets, default missing 0, full coverage 1",
+			"20 assets, default missing 0, full coverage 1",
 		);
 	});
 

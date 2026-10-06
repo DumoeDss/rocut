@@ -2,6 +2,14 @@
 
 Status: installed core interaction matrix passes in real Elftia; full editor feature coverage is incomplete. Started 2026-10-01.
 
+## Korean offline font and explicit creation language (2026-10-06)
+
+- The offline catalog lacked a Korean asset, and the ordinary creation form never supplied a language (its factory default was `zh-Hans`). Added a Language Select for Chinese (Simplified), Japanese, Korean and English, keeping existing theme tokens/type and accessible Select behavior. The UI only passes the chosen language; Rust continues to resolve font roles.
+- Added `gothic_bold_ko`: Noto Sans KR variable TTF and OFL from the existing pinned Google Fonts revision `23e54b51ddffbc7713c583748e3bd86f62b1fa4a`, asset SHA-256 `194018e6b2b293a7964f037b25c0249ce1418bc9ab3c971060a03aa57861e252`. Canonical inspection covers the selected Korean and mixed Japanese/Korean/Chinese/English samples with no missing glyphs; this does not claim every Chinese code point or typographic role is covered. The 23 stable roles now use 20 offline assets, 25 catalog entries, and 20 license notices; the SBOM and font-readiness report are regenerated.
+- A new Rust regression fails before the catalog change (`ko` resolves to the Japanese asset), then passes for `ko` and `ko-KR` with digest-verified actual font coverage. All 86 Rust motion-text tests, 21 canonical WASM factory tests, 8 font-readiness tests, 5 font-inventory tests, scoped lint, Vite typecheck/build and WASM source/API/path/init gates pass. The initial four factory-test failures were stale 24-entry expectations, updated to the verified 25-entry catalog.
+- WASM consumers are independently backed up under `.tmp-probe/wasm-before-korean-font-ILDAgJ`, then atomically replaced and validated in root, web and editor-classic dependency directories (tree digest `881832c958df3b71d3d604823dda53f24d950554c872e4b986aa505ff78c67ab`). Existing atomic fault-injection suite passes 12/12; no Rasen workflow is used.
+- New actual-host probe `--f02-languages-only` requires real form/keyboard selection, 12 short/long/punctuation/mixed-script phrases, loaded offline font faces, exact pictures after reload and out-of-order seeks, and independent H.264 export comparisons. The missing-glyph negative control explicitly selects the incompatible Chinese default for Korean text; it must still warn/refuse/recover. Installed acceptance is pending for this candidate.
+
 ## Private engine publication ownership (2026-10-06)
 
 - Instrumented current-baseline `mutation-profile-Cuy09X` identifies remaining whole-snapshot copies and GC during real Apply-to-visible windows. Its 292.16ms p95 is explicitly **ineligible for acceptance** and does not supersede ordinary `live-26dBT2`'s failed 302.46ms gate. Authenticated raw CPU profiles stay uncommitted; the owned cue, instrumentation and viewport are restored by the profiler.

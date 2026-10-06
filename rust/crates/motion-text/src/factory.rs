@@ -2980,7 +2980,7 @@ mod tests {
         assert_eq!(document["schemaVersion"], 1);
         assert_eq!(document["duration"], 1_800_000);
         assert_eq!(document["engine"]["version"], JIZURA_ENGINE_VERSION);
-        assert_eq!(document["fonts"].as_array().map(Vec::len), Some(24));
+        assert_eq!(document["fonts"].as_array().map(Vec::len), Some(25));
         assert_eq!(document["defaults"]["fontId"], "gothic_bold_zh_hans");
         assert_eq!(document["fonts"][0]["source"], "builtin");
         assert_eq!(document["fonts"][0]["supportedLanguages"][0], "ja");

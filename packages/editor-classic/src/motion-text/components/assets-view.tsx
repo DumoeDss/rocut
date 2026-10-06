@@ -58,6 +58,7 @@ export function MotionTextAssetsView() {
 	const [source, setSource] = useState(STARTER_SOURCE);
 	const [durationSeconds, setDurationSeconds] = useState("15");
 	const [sourceFormat, setSourceFormat] = useState<"plain" | "lrc">("plain");
+	const [language, setLanguage] = useState("zh-Hans");
 	const [selectedPreset, setSelectedPreset] =
 		useState<MotionTextStarterPresetId>("clean-caption");
 	const [isComposing, setIsComposing] = useState(false);
@@ -94,6 +95,7 @@ export function MotionTextAssetsView() {
 				sequenceId,
 				source,
 				sourceFormat,
+				language,
 				duration,
 				starterPreset: selectedPreset,
 				rendererSupport: MOTION_TEXT_RENDERER_SUPPORT,
@@ -186,6 +188,26 @@ export function MotionTextAssetsView() {
 						<SelectContent>
 							<SelectItem value="plain">Plain lyrics</SelectItem>
 							<SelectItem value="lrc">LRC timestamps</SelectItem>
+						</SelectContent>
+					</Select>
+				</div>
+				<div className="flex min-w-0 flex-col gap-1.5">
+					<label htmlFor="motion-text-language" className="text-xs font-medium">
+						Language
+					</label>
+					<Select value={language} onValueChange={setLanguage}>
+						<SelectTrigger
+							id="motion-text-language"
+							aria-label="Motion text language"
+							className="w-full min-w-0 text-xs"
+						>
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="zh-Hans">Chinese (Simplified)</SelectItem>
+							<SelectItem value="ja">Japanese</SelectItem>
+							<SelectItem value="ko">Korean</SelectItem>
+							<SelectItem value="en">English</SelectItem>
 						</SelectContent>
 					</Select>
 				</div>

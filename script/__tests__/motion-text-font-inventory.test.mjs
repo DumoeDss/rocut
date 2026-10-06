@@ -88,17 +88,17 @@ describe("motion-text font inventory", () => {
 			catalogPath: CURRENT_CATALOG,
 			publicRoot: CURRENT_PUBLIC_ROOT,
 		});
-		expect(inventory.catalogEntries).toBe(24);
+		expect(inventory.catalogEntries).toBe(25);
 		expect(inventory.roles).toBe(23);
-		expect(inventory.assets).toBe(19);
-		expect(inventory.assetBytes).toBe(117_455_080);
-		expect(inventory.licenses).toBe(19);
-		expect(inventory.licenseBytes).toBe(83_981);
-		expect(inventory.closureBytes).toBe(117_539_061);
-		expect(inventory.languageDefaults).toBe(1);
-		expect(inventory.languages).toEqual(["en", "ja", "zh-Hans"]);
+		expect(inventory.assets).toBe(20);
+		expect(inventory.assetBytes).toBe(127_869_668);
+		expect(inventory.licenses).toBe(20);
+		expect(inventory.licenseBytes).toBe(88_369);
+		expect(inventory.closureBytes).toBe(127_958_037);
+		expect(inventory.languageDefaults).toBe(2);
+		expect(inventory.languages).toEqual(["en", "ja", "ko", "zh-Hans"]);
 		expect(renderMotionTextFontProvenance(inventory)).toContain(
-			"19 digest-pinned offline TTFs serve 23 stable JIZURA font roles plus 1 language-specific asset entry",
+			"20 digest-pinned offline TTFs serve 23 stable JIZURA font roles plus 2 language-specific asset entries",
 		);
 	});
 
