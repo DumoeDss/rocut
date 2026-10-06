@@ -251,7 +251,9 @@ function SavedSoundsView() {
 		clearSavedSounds,
 	} = useSoundsStore();
 
-	const { playingId, playSound } = useSoundPreview(savedSounds);
+	const { playingId, playSound } = useSoundPreview(
+		isLoadingSavedSounds || savedSoundsError ? [] : savedSounds,
+	);
 
 	const [showClearDialog, setShowClearDialog] = useState(false);
 
@@ -373,7 +375,9 @@ function SavedSoundsView() {
 										await clearSavedSounds();
 										setShowClearDialog(false);
 									} catch {
-										// Keep the dialog open; the store renders a retryable error.
+										// The error view replaces this dialog. Do not resurrect the
+										// destructive confirmation after Reload recovers the list.
+										setShowClearDialog(false);
 									}
 								}}
 							>

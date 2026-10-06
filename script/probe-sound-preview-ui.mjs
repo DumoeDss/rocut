@@ -210,6 +210,29 @@ try {
 	await page.getByRole("tab", { name: "Saved", exact: true }).click();
 	await play(1);
 	await expect.poll(active).toBe(1);
+	await page
+		.getByRole("button", { name: "Fail next library clear", exact: true })
+		.click();
+	await page.getByRole("button", { name: "Clear all", exact: true }).click();
+	await page
+		.getByRole("button", { name: "Clear all sounds", exact: true })
+		.click();
+	await expect(page.getByRole("alert")).toContainText(
+		"Saved sounds could not be persisted",
+	);
+	await expect(page.getByTestId("saved-count")).toHaveText("1");
+	await expect.poll(released).toBe(true);
+	await page
+		.getByRole("button", { name: "Reload saved sounds", exact: true })
+		.click();
+	await expect(
+		page.getByRole("button", { name: "Fixture sound 1 Fixture", exact: true }),
+	).toBeVisible();
+	await expect(page.getByRole("dialog")).toHaveCount(0);
+	evidence.checks.push({
+		name: "Failed clear reload restores the list without resurrecting its confirmation",
+		pass: true,
+	});
 	await page.getByRole("button", { name: "Clear all", exact: true }).click();
 	await page
 		.getByRole("button", { name: "Clear all sounds", exact: true })

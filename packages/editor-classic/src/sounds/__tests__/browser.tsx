@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { createInMemoryPorts } from "@opencut/editor-ports/in-memory";
+import {
+	createInMemoryPorts,
+	InMemoryProjectStore,
+	InMemoryProjectStoreControl,
+} from "@opencut/editor-ports/in-memory";
 import type { EditorHost } from "@opencut/editor-ports/host";
 import { createBrowserRuntimePorts } from "../../editor/host/browser-runtime";
 import { EditorSessionHost } from "../../editor/session/editor-session-host";
@@ -15,8 +19,11 @@ import { useEditorInstance } from "../../editor/use-editor";
 import "../../surface/surface.css";
 
 const browser = createBrowserRuntimePorts({ base: "/" });
+const storageControl = new InMemoryProjectStoreControl();
 const host: EditorHost = {
-	...createInMemoryPorts(),
+	...createInMemoryPorts({
+		store: new InMemoryProjectStore({ control: storageControl }),
+	}),
 	...browser,
 	projectId: "sounds-browser-fixture",
 	navigation: { onProjectReplaced() {}, onExitProject() {}, onGoBack() {} },
@@ -165,6 +172,13 @@ function Fixture() {
 				Toggle endpoint
 			</button>
 			<output data-testid="saved-count">{saved}</output>
+			<button
+				onClick={() =>
+					storageControl.failNext({ operation: "clear", code: "unavailable" })
+				}
+			>
+				Fail next library clear
+			</button>
 			<div data-editor-surface="true" style={{ width: 320, height: 540 }}>
 				{mounted && (panel ? <SoundsView /> : <HookProbe />)}
 			</div>
