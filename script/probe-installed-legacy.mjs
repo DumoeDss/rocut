@@ -1,21 +1,17 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { execFile } from "node:child_process";
-import {
-	cp,
-	lstat,
-	readdir,
-	readFile,
-	realpath,
-	mkdtemp,
-	writeFile,
-} from "node:fs/promises";
+import { cp, readFile, realpath, mkdtemp, writeFile } from "node:fs/promises";
 import { join, resolve, relative, isAbsolute } from "node:path";
 import { homedir } from "node:os";
 import { promisify } from "node:util";
 import { pathToFileURL } from "node:url";
 import { expect } from "@playwright/test";
 import { probeFocusedMotion } from "./probe-focused-motion.mjs";
+import {
+	inventoryPlugin as inventory,
+	normalizePluginPath as normalize,
+} from "./probe-plugin-inventory.mjs";
 
 // Explicit opt-in: temporarily install an actual historical plugin, never a mock.
 // Only a new dedicated fixture is opened by that runtime; always restore current.
@@ -41,32 +37,11 @@ const work = await mkdtemp(join(main, ".tmp-rocut-e2e/installed-legacy-"));
 const evidence = {
 	kind: "real-elftia-historical-plugin",
 	checks: [],
+	errors: [],
 	replacementAttempted: false,
 	restored: false,
 };
 const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
-const normalize = (p) => p.replaceAll("\\", "/").toLowerCase();
-async function inventory(root) {
-	assert.equal(normalize(await realpath(root)), normalize(root));
-	const files = [];
-	async function visit(path, rel) {
-		const stat = await lstat(path);
-		assert(!stat.isSymbolicLink(), "No redirected plugin files");
-		if (stat.isDirectory())
-			for (const name of (await readdir(path)).sort())
-				await visit(join(path, name), rel ? rel + "/" + name : name);
-		else {
-			assert(stat.isFile());
-			files.push({
-				path: rel,
-				bytes: stat.size,
-				sha256: hash(await readFile(path)),
-			});
-		}
-	}
-	await visit(root, "");
-	return { files, sha256: hash(JSON.stringify(files)) };
-}
 await import(
 	pathToFileURL(join(main, "packages/elftia-cli/src/proxy.ts")).href
 );
@@ -77,6 +52,14 @@ const conn = await connect({
 	mode: "attach",
 	port: Number(process.env.ELFTIA_CLI_DEBUG_PORT),
 });
+const scrub = (value) =>
+	String(value).replace(
+		/(https?:\/\/(?:127\.0\.0\.1|localhost):\d+)\/[^\s/]+/g,
+		"$1/[redacted]",
+	);
+conn.page.on("pageerror", (error) =>
+	evidence.errors.push(scrub(error.message)),
+);
 const run = promisify(execFile);
 let backup, before, legacyBefore;
 const close = async () => {
@@ -202,6 +185,8 @@ try {
 	};
 	await close();
 	const originalProjectHash = hash(await recordBytes(restoreProject));
+	evidence.restoreProject = restoreProject;
+	evidence.originalProjectHash = originalProjectHash;
 	before = await inventory(installed);
 	const backupRoot = join(homedir(), ".elftia/plugin-backups");
 	assert.equal(normalize(await realpath(backupRoot)), normalize(backupRoot));
@@ -302,6 +287,11 @@ try {
 		name: "old runtime never changed the original modern project",
 		pass: true,
 	});
+	assert.equal(
+		evidence.errors.length,
+		0,
+		"Historical upgrade must not report uncaught page errors",
+	);
 	evidence.passed = true;
 } catch (error) {
 	evidence.error = String(error.stack).replace(
