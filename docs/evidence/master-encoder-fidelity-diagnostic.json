@@ -1,0 +1,153 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "controlled-codec-matrix-verified-production-fidelity-still-failed",
+	"productionChanged": false,
+	"scope": "Replay the six actual native VideoEncoder input frames captured from the production SceneExporter. Standalone Chromium 151.0.7922.34 WebCodecs plus independent FFmpeg 6.0 decode; not installed Electron or full-song acceptance.",
+	"lockedInputs": {
+		"directory": "C:/Users/Sayo/AppData/Local/Temp/rocut-master-effects-tu2Trq",
+		"rawInputsSha256": "3767c360b44c6bb69b8508291a53e9c01021f47737158440c0cf9aa66de3ff8a",
+		"originalVideoSha256": "2389638c47f03e1b3ded4e3a391e79d8d1d3b574b53fa18918bb916f5b671ca6",
+		"originalDecodedRgbSha256": "fb3da766f59a81396f880fb756260e6cf257fd52544fd4c94805e3f1cdc3e74a",
+		"dimensions": [96, 64],
+		"frameRate": 30,
+		"sceneFrames": [12, 13, 14, 15, 16, 17],
+		"format": "BGRA",
+		"timestampsMicroseconds": [0, 33333, 66666, 100000, 133333, 166666],
+		"frameDurationMicroseconds": 33333,
+		"sourceColorSpace": {
+			"fullRange": true,
+			"matrix": "rgb",
+			"primaries": "bt709",
+			"transfer": "iec61966-2-1"
+		},
+		"invariants": "No material, noise, dimensions, frame ordering, timing or original decoded-interior RGB MAE < 3 gate changes. The original baseline encode options remain fixed; each diagnostic variant declares its changed fields. Six captured native inputs equal the independent CPU oracle byte-for-byte. Observed and unobserved production outputs have identical encoded and decoded hashes."
+	},
+	"runs": {
+		"singleFactors": {
+			"directory": "C:/Users/Sayo/AppData/Local/Temp/rocut-master-encoder-factors-2k9Jn9",
+			"verificationSha256": "dcfc8b485266bb6ef80e01d6ece072ffe0c9b056c023460ac5a3cdfda3cc061d",
+			"result": "Original packet payloads and full decoded RGB reproduced. Explicit latency quality/realtime and variable bitrate mode reproduce the same packets. Constant bitrate changes packets but fails. 560000 bps improves late frames but still fails all six gates; this early isolated bitrate factor retained the original level-10 string and is not production level-conformance evidence."
+		},
+		"shortProfileRejection": {
+			"directory": "C:/Users/Sayo/AppData/Local/Temp/rocut-master-encoder-factors-ESRKbs",
+			"verificationSha256": "0a8f38455405ba42b9805e6e61c35b534df1504022f578afe258b5f7b060c836",
+			"result": "Both short profile-1 cases were rejected by capability queries. No fallback occurred and no profile-1 result was claimed. Original and level-only P0 controls reproduced the original packets/RGB."
+		},
+		"matchedFullCodecMatrix": {
+			"directory": "C:/Users/Sayo/AppData/Local/Temp/rocut-master-encoder-factors-pEymiE",
+			"verificationSha256": "c298752e84bebb8cf1c14a9f8ae23bac8380ec477ab6b5ee7ff6eba65101493a",
+			"sourceIdentitySha256": "3937f0ae46c6fa4efc7305c1c3c0237a225261f7c7690ae29d6dc3f55138bb0f",
+			"diagnosticExitCode": 0,
+			"allSixCasesExecuted": true,
+			"productionAcceptancePassed": false,
+			"controls": "Original short P0 level-10, short P0 level-30 and full P0 level-30 explicit-default low-budget cases all reproduce every original VP9 packet payload and full FFmpeg RGB bytes. IVF framing is independently checked against every native packet SHA256."
+		}
+	},
+	"codecGrammar": {
+		"source": "https://www.webmproject.org/vp9/mp4/",
+		"shortProfile1Rejection": "Omitted optional fields default to 4:2:0, incompatible with profile 1. The optional chroma/color group is all-or-none. P0 supports 4:2:0; P1 supports 4:2:2 or 4:4:4.",
+		"profile0": "vp09.00.30.08.01.01.01.01.00",
+		"profile1": "vp09.01.30.08.03.01.01.01.00",
+		"controlledFields": "Every factorial cell uses level 30 and identical primaries/transfer/matrix/range declarations. The chroma factor legally changes profile and subsampling together, not just one profile byte. All four paired comparisons assert that no other actual configure field changes.",
+		"actualColorMetadata": "FFprobe and Chromium decoder configuration report smpte170m limited-range YUV, not the BT.709 color declaration in the requested codec string. Requested fields are not accepted as proof of actual encoded color metadata."
+	},
+	"matchedResults": [
+		{
+			"profile": 0,
+			"pixelFormat": "yuv420p",
+			"targetBitrate": 56000,
+			"encodedPayloadBytes": 5283,
+			"ffmpegInteriorMae": [
+				3.213105963105963, 4.02970827970828, 10.73938223938224,
+				12.248069498069498, 12.40015015015015, 12.626876876876876
+			],
+			"chromiumInteriorMae": [
+				3.5, 4.231123981123981, 10.898434148434148, 12.387494637494637,
+				12.603603603603604, 12.841913341913342
+			],
+			"passingFramesPerDecoder": 0
+		},
+		{
+			"profile": 0,
+			"pixelFormat": "yuv420p",
+			"targetBitrate": 5600000,
+			"encodedPayloadBytes": 13804,
+			"ffmpegInteriorMae": [
+				3.038931788931789, 3.8134920634920637, 4.127413127413128,
+				4.0117975117975115, 3.761046761046761, 3.6189403689403687
+			],
+			"chromiumInteriorMae": [
+				3.346203346203346, 3.990990990990991, 4.294401544401544,
+				4.188760188760189, 3.9575289575289574, 3.814993564993565
+			],
+			"passingFramesPerDecoder": 0
+		},
+		{
+			"profile": 1,
+			"pixelFormat": "yuv444p",
+			"targetBitrate": 56000,
+			"encodedPayloadBytes": 7174,
+			"ffmpegInteriorMae": [
+				2.4957099957099955, 3.925997425997426, 10.903474903474903,
+				12.29890604890605, 12.646610896610897, 12.62097812097812
+			],
+			"chromiumInteriorMae": [
+				2.598241098241098, 4.019412269412269, 10.962247962247963,
+				12.338803088803088, 12.722222222222221, 12.693479193479194
+			],
+			"passingFramesPerDecoder": 1
+		},
+		{
+			"profile": 1,
+			"pixelFormat": "yuv444p",
+			"targetBitrate": 5600000,
+			"encodedPayloadBytes": 18595,
+			"ffmpegInteriorMae": [
+				2.1233376233376235, 3.5413985413985416, 3.941977691977692,
+				3.744744744744745, 3.4121621621621623, 3.187044187044187
+			],
+			"chromiumInteriorMae": [
+				2.2244744744744747, 3.6332046332046333, 4.033569283569284,
+				3.841055341055341, 3.502895752895753, 3.2815315315315314
+			],
+			"passingFramesPerDecoder": 1
+		}
+	],
+	"conclusions": {
+		"established": [
+			"This failure is downstream of correct native encoder inputs, not application frame ordering, canvas reuse or a wrong scene clock.",
+			"The bitrate target and legal chroma/profile mode both influence error, but neither tested high-bitrate profile passes the unchanged gate.",
+			"Chromium and FFmpeg independently reproduce the fidelity loss, so it is not an FFmpeg-only decoder defect.",
+			"Codec level and explicit optional defaults were isolated and did not change this baseline's packet payloads."
+		],
+		"notEstablished": [
+			"The exact division between RGB/YUV conversion, subsampling and VP9 quantization residuals.",
+			"A mathematical impossibility result for every possible 4:2:0 encoder or a universally sufficient bitrate.",
+			"A production fix, final export-quality policy or installed Electron/full-song acceptance."
+		]
+	},
+	"productionGuidance": [
+		"Keep compatible 4:2:0 output explicitly lossy; do not promise per-frame RGB fidelity or silently change the existing profile.",
+		"Current production very_high 4:4:4 at 93000 bps failed this fixture; even the isolated 5600000-bps matched 4:4:4 configuration still fails. No sufficient bitrate or safe global multiplier was demonstrated.",
+		"A high-fidelity/master preset needs validated quality control or an explicit lossless/intermediate route, with clear capability failure. A bitrate label alone must not advertise fidelity that the decoded artifact does not meet.",
+		"Retain the original failing gate and artifacts. Any eventual policy change needs representative resolution/frame-rate/content coverage, not this one tiny fixture alone."
+	],
+	"nextReadOnlyDiagnosticDesign": {
+		"status": "designed-not-run",
+		"inputRule": "Use only the existing locked BGRA bytes and already encoded payloads. Do not regenerate noise, re-time frames, alter content or relax RGB acceptance.",
+		"decoderPlaneControl": "Decode retained VP9 packets to native YUV planes via Chromium VideoFrame.copyTo without RGB conversion, and extract the same native pixel format through FFmpeg without resampling. Compare plane bytes, layouts, strides and timestamps before any RGB readback.",
+		"noCodecRoundtrip": "In a private artifact directory, convert the locked BGRA frames to explicit limited-range BT.601 YUV444 and back to RGB without an encoder. Repeat 4:2:0 separately with the chosen chroma resampling flags recorded. Compare every original RGB frame using the same interior gate.",
+		"encodedPlaneComparison": "Compare actual decoded Y/U/V planes with the no-codec forward-conversion planes. First establish equal native-decoder planes; then report conversion-only RGB residual separately from encoded-plane residual.",
+		"limits": "FFmpeg's matrix/range arithmetic, rounding and especially 4:2:0 chroma filters are an independent reference, not proof of Chromium's internal conversion. Plane disagreement against that reference cannot automatically be labeled pure quantization. Prioritize 4:4:4, where spatial chroma resampling is absent; use controls to bound conversion differences before assigning a cause.",
+		"notAuthorizedByThisEvidence": "No production edits, default-profile migration, bitrate-policy increase, shared dependency installation or threshold change."
+	},
+	"sourceFiles": {
+		"script/fixtures/master-encoder-browser.mjs": "11cfc444fb874e5e4c9b796420955428bd3be9e90fc757136736a4efca4ce8b0",
+		"script/fixtures/master-encoder-analysis.mjs": "68964d1d5db50a316c26c87d197091619571e9948ec90f4c2a0d259e403f91ee",
+		"script/fixtures/master-encoder-analysis.test.mjs": "fdb1683e19ad572c27c538917080b9dc95f8970f1b07fae802dcc2f1e87e3349",
+		"script/probe-master-encoder-factors.mjs": "3dd856c0b8e4b9efa83b10b8fcddfda81482bb355e6fba62e15675bf9c5c7ef4",
+		"script/fixtures/master-effects-browser-oracle.ts": "5386ad30b1acad77d2fddff495ea12bc5559d9ee53d8dd71b0d72c8961543055"
+	},
+	"lightweightTests": { "passed": 6, "failed": 0 }
+}

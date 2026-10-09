@@ -2,8 +2,9 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
 	FACTORS,
-	CHROMA_BITRATE_FACTORS,
+	CHROMA_BITRATE_FULL_FACTORS,
 	controlledComparisons,
+	vp9CodecFields,
 	WIDTH,
 	HEIGHT,
 	FPS,
@@ -24,7 +25,7 @@ test("every diagnostic factor changes just one field against unchanged 56000 bps
 });
 
 test("2x2 profile/budget matrix provides four exact single-variable causal pairs", () => {
-	const results = CHROMA_BITRATE_FACTORS.map((factor) => ({
+	const results = CHROMA_BITRATE_FULL_FACTORS.map((factor) => ({
 		factor,
 		actualConfigure: {
 			codec: "vp09.00.10.08",
@@ -48,11 +49,31 @@ test("2x2 profile/budget matrix provides four exact single-variable causal pairs
 		pairs.map((pair) => pair.changedField),
 		["bitrate", "codec", "codec", "bitrate"],
 	);
+	assert.deepEqual(pairs[1].codecFieldChanges, [
+		"profile",
+		"chromaSubsampling",
+	]);
 	results.find((entry) => entry.factor.name === "profile1-high-budget")
 		.actualConfigure.width++;
 	assert.throws(
 		() => controlledComparisons(results),
 		/exactly its declared field/,
+	);
+});
+
+test("VP9 short-string defaults explain invalid short P1 and explicit matched color controls", () => {
+	assert.deepEqual(
+		vp9CodecFields("vp09.00.30.08"),
+		vp9CodecFields("vp09.00.30.08.01.01.01.01.00"),
+	);
+	assert.equal(vp9CodecFields("vp09.01.30.08").chromaSubsampling, 1);
+	assert.equal(
+		vp9CodecFields("vp09.01.30.08.03.01.01.01.00").chromaSubsampling,
+		3,
+	);
+	assert.throws(
+		() => vp9CodecFields("vp09.01.30.08.03"),
+		/optional group must be complete/,
 	);
 });
 

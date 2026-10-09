@@ -50,6 +50,67 @@ export const CHROMA_BITRATE_PAIRS = [
 	["profile0-high-budget", "profile1-high-budget", "codec"],
 	["profile1-base-budget", "profile1-high-budget", "bitrate"],
 ];
+export const VP9_CODEC_SPECIFICATION = {
+	url: "https://www.webmproject.org/vp9/mp4/",
+	shortProfile1Rejection:
+		"Omitted optional fields default to 4:2:0, which is incompatible with profile 1. Optional chroma and color fields must be present together. Profile 0 uses 4:2:0; profile 1 permits 4:2:2 or 4:4:4.",
+	matchedDesign:
+		"Use level 30 in every factorial cell; change profile 0/chroma 1 together to profile 1/chroma 3. Hold primaries, transfer, matrix and range at their explicit short-string defaults (1,1,1,0).",
+};
+export const CHROMA_BITRATE_FULL_FACTORS = [
+	{ name: "baseline", patch: {}, expectedPixelFormat: "yuv420p" },
+	{
+		name: "level-only-control",
+		patch: { codec: "vp09.00.30.08" },
+		expectedPixelFormat: "yuv420p",
+	},
+	{
+		name: "profile0-base-budget",
+		patch: { codec: "vp09.00.30.08.01.01.01.01.00" },
+		expectedPixelFormat: "yuv420p",
+	},
+	{
+		name: "profile0-high-budget",
+		patch: { codec: "vp09.00.30.08.01.01.01.01.00", bitrate: 5600000 },
+		expectedPixelFormat: "yuv420p",
+	},
+	{
+		name: "profile1-base-budget",
+		patch: { codec: "vp09.01.30.08.03.01.01.01.00" },
+		expectedPixelFormat: "yuv444p",
+	},
+	{
+		name: "profile1-high-budget",
+		patch: { codec: "vp09.01.30.08.03.01.01.01.00", bitrate: 5600000 },
+		expectedPixelFormat: "yuv444p",
+	},
+];
+
+export function vp9CodecFields(codec) {
+	const parts = codec.split(".");
+	assert.equal(parts[0], "vp09");
+	assert.ok(
+		parts.length === 4 || parts.length === 9,
+		"VP9 optional group must be complete",
+	);
+	const defaults = [1, 1, 1, 1, 0];
+	const values = [
+		...parts.slice(1).map(Number),
+		...(parts.length === 4 ? defaults : []),
+	];
+	return Object.fromEntries(
+		[
+			"profile",
+			"level",
+			"bitDepth",
+			"chromaSubsampling",
+			"colourPrimaries",
+			"transferCharacteristics",
+			"matrixCoefficients",
+			"videoFullRangeFlag",
+		].map((key, index) => [key, values[index]]),
+	);
+}
 
 export function controlledComparisons(results) {
 	return CHROMA_BITRATE_PAIRS.map(([from, to, changedField]) => {
@@ -68,10 +129,25 @@ export function controlledComparisons(results) {
 			[changedField],
 			"Causal pair must differ in exactly its declared field",
 		);
+		const originalCodecFields = vp9CodecFields(original.actualConfigure.codec);
+		const variantCodecFields = vp9CodecFields(variant.actualConfigure.codec);
+		const codecFieldChanges = Object.keys(originalCodecFields).filter(
+			(key) => originalCodecFields[key] !== variantCodecFields[key],
+		);
+		if (changedField === "codec") {
+			assert.deepEqual(
+				codecFieldChanges,
+				["profile", "chromaSubsampling"],
+				"Matched chroma pair must only change its legally bound profile/subsampling fields",
+			);
+		} else assert.deepEqual(codecFieldChanges, []);
 		return {
 			from,
 			to,
 			changedField,
+			originalCodecFields,
+			variantCodecFields,
+			codecFieldChanges,
 			supported: true,
 			originalValue: original.actualConfigure[changedField],
 			variantValue: variant.actualConfigure[changedField],

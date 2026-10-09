@@ -15,6 +15,8 @@ import {
 	FRAME_COUNT,
 	FACTORS,
 	CHROMA_BITRATE_FACTORS,
+	CHROMA_BITRATE_FULL_FACTORS,
+	VP9_CODEC_SPECIFICATION,
 	controlledComparisons,
 	sha256,
 	sourceRgba,
@@ -27,10 +29,15 @@ import {
 const inputs = process.env.ROCUT_MASTER_ENCODER_INPUTS;
 const matrix = process.env.ROCUT_MASTER_ENCODER_MATRIX ?? "single-factors";
 assert.ok(
-	["single-factors", "chroma-bitrate"].includes(matrix),
+	["single-factors", "chroma-bitrate", "chroma-bitrate-full"].includes(matrix),
 	"Unknown private encoder matrix",
 );
-const factors = matrix === "chroma-bitrate" ? CHROMA_BITRATE_FACTORS : FACTORS;
+const factors =
+	matrix === "chroma-bitrate-full"
+		? CHROMA_BITRATE_FULL_FACTORS
+		: matrix === "chroma-bitrate"
+			? CHROMA_BITRATE_FACTORS
+			: FACTORS;
 const ffmpeg = process.env.ROCUT_TEST_FFMPEG,
 	ffprobe = process.env.ROCUT_TEST_FFPROBE;
 if (
@@ -149,6 +156,7 @@ await writeFile(
 );
 const provenance = {
 	matrix,
+	codecSpecification: VP9_CODEC_SPECIFICATION,
 	inputs,
 	rawInputsSha256: sha256(rawBytes),
 	originalVideoSha256: previous.exportedSha256,
@@ -328,7 +336,11 @@ try {
 				),
 			}),
 		);
-		if (factor.name === "baseline") {
+		if (
+			factor.name === "baseline" ||
+			(matrix === "chroma-bitrate-full" &&
+				["level-only-control", "profile0-base-budget"].includes(factor.name))
+		) {
 			assert.equal(
 				report.originalPacketsReproduced,
 				true,
@@ -354,7 +366,7 @@ try {
 				browser: await browser.version(),
 				...provenance,
 				results,
-				...(matrix === "chroma-bitrate"
+				...(matrix !== "single-factors"
 					? { controlledComparisons: controlledComparisons(results) }
 					: {}),
 			},
