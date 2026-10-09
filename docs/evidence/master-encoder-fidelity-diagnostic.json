@@ -149,5 +149,352 @@
 		"script/probe-master-encoder-factors.mjs": "3dd856c0b8e4b9efa83b10b8fcddfda81482bb355e6fba62e15675bf9c5c7ef4",
 		"script/fixtures/master-effects-browser-oracle.ts": "5386ad30b1acad77d2fddff495ea12bc5559d9ee53d8dd71b0d72c8961543055"
 	},
-	"lightweightTests": { "passed": 6, "failed": 0 }
+	"lightweightTests": { "passed": 6, "failed": 0 },
+	"quantizerFollowup": {
+		"status": "native-quantizer-fixture-passed-production-adapter-not-implemented",
+		"directory": "C:/Users/Sayo/AppData/Local/Temp/rocut-master-encoder-quantizer-OKpEpv",
+		"verificationSha256": "3e06c30955aa83e1a4f28b57cbe99dff7aba84ff87ae3cd19a37b5717628c645",
+		"sourceIdentitySha256": "f4edee3cbd27e7de5b617539b86c4e60e8ed91e3a853169a32d89b0351f469c1",
+		"diagnosticExitCode": 0,
+		"browser": "151.0.7922.34",
+		"productionChanged": false,
+		"productionAcceptanceClaimed": false,
+		"allNineCasesConfiguredEncodedAndDecoded": true,
+		"gate": {
+			"metric": "interior RGB mean absolute error per frame versus the unchanged independent CPU oracle",
+			"exclusiveUpperBound": 3,
+			"sceneFrames": [12, 13, 14, 15, 16, 17],
+			"decoders": [
+				"FFmpeg 6.0 rgb24",
+				"Chromium VideoDecoder followed by sRGB OffscreenCanvas RGB readback"
+			]
+		},
+		"invariantControls": [
+			"The original six 96x64 BGRA frames, source color metadata, noise, content, scene clock, timestamps, durations and original keyFrame flags are unchanged. No gate was relaxed.",
+			"The original short-codec baseline and full P0 variable-control case reproduce every original VP9 packet payload and all original FFmpeg-decoded RGB bytes, including after optional observation/error capture was added to the shared diagnostic helper.",
+			"Both variable controls omit bitrateMode just like the original input; capability results normalize this to variable. Quantizer cases change only bitrateMode and per-frame vp9.quantizer relative to their legal matched-profile controls.",
+			"The numeric bitrate field remains 56000 in every configuration. In quantizer mode this is not proof that bitrate control is still used. Every quantizer capability result retains bitrateMode:quantizer; actual configure and every successful encode call's submitted options are retained in the run artifacts.",
+			"IVF packets are independently checked with FFprobe SHA256 against the native encoder payloads. Every output has six frames, original dimensions and timing. Quantizer q0/q32/q63 produce distinct packets and decoded pixels for both profiles, establishing behavior beyond capability acceptance.",
+			"The seven diagnostic source hashes were frozen before the run and checked again after it. No Mediabunny callback mutation, production change, dependency update or installed-plugin operation was used."
+		],
+		"configuration": {
+			"baseline": {
+				"codec": "vp09.00.10.08",
+				"width": 96,
+				"height": 64,
+				"displayWidth": 96,
+				"displayHeight": 64,
+				"bitrate": 56000,
+				"alpha": "discard",
+				"framerate": 30,
+				"hardwareAcceleration": "prefer-software"
+			},
+			"matchedProfileCodecs": [
+				"vp09.00.30.08.01.01.01.01.00",
+				"vp09.01.30.08.03.01.01.01.00"
+			],
+			"quantizerConfigurationDelta": {
+				"bitrateMode": "quantizer"
+			},
+			"quantizerEncodeOptionsDelta": "Each original encode options object keeps keyFrame (true for the first frame, false for the other five) and adds vp9:{quantizer:q}. Values tested: 0,32,63.",
+			"observedMetadata": "P0 is yuv420p and P1 is yuv444p. FFprobe and Chromium decoderConfig report smpte170m limited/tv range for both, despite the requested codec color fields."
+		},
+		"results": [
+			{
+				"name": "baseline",
+				"profile": 0,
+				"quantizer": null,
+				"pixelFormat": "yuv420p",
+				"encodedPayloadBytes": 5283,
+				"ffmpegRgbSha256": "fb3da766f59a81396f880fb756260e6cf257fd52544fd4c94805e3f1cdc3e74a",
+				"chromiumRgbSha256": "8a739a1f8e6d1501d621da85d36b58a2ff5dabf7d88ba1de20fac7357a5b7ba4",
+				"originalPacketsReproduced": true,
+				"originalFfmpegDecodedReproduced": true,
+				"ffmpegInteriorMae": [
+					3.213105963105963, 4.02970827970828, 10.73938223938224,
+					12.248069498069498, 12.40015015015015, 12.626876876876876
+				],
+				"chromiumInteriorMae": [
+					3.5, 4.231123981123981, 10.898434148434148, 12.387494637494637,
+					12.603603603603604, 12.841913341913342
+				],
+				"ffmpegPassingFrames": 0,
+				"chromiumPassingFrames": 0
+			},
+			{
+				"name": "profile0-variable-control",
+				"profile": 0,
+				"quantizer": null,
+				"pixelFormat": "yuv420p",
+				"encodedPayloadBytes": 5283,
+				"ffmpegRgbSha256": "fb3da766f59a81396f880fb756260e6cf257fd52544fd4c94805e3f1cdc3e74a",
+				"chromiumRgbSha256": "8a739a1f8e6d1501d621da85d36b58a2ff5dabf7d88ba1de20fac7357a5b7ba4",
+				"originalPacketsReproduced": true,
+				"originalFfmpegDecodedReproduced": true,
+				"ffmpegInteriorMae": [
+					3.213105963105963, 4.02970827970828, 10.73938223938224,
+					12.248069498069498, 12.40015015015015, 12.626876876876876
+				],
+				"chromiumInteriorMae": [
+					3.5, 4.231123981123981, 10.898434148434148, 12.387494637494637,
+					12.603603603603604, 12.841913341913342
+				],
+				"ffmpegPassingFrames": 0,
+				"chromiumPassingFrames": 0
+			},
+			{
+				"name": "profile0-q0",
+				"profile": 0,
+				"quantizer": 0,
+				"pixelFormat": "yuv420p",
+				"encodedPayloadBytes": 35190,
+				"ffmpegRgbSha256": "f963afac0ed2b18c0623824fb82ff470f8d0fd8422f00fe4e47d68bf6121770b",
+				"chromiumRgbSha256": "fd4a235743c61bd06c87e3d3f59feadce20cf3903a8289d9397c1a6e31cb85a1",
+				"originalPacketsReproduced": false,
+				"originalFfmpegDecodedReproduced": false,
+				"ffmpegInteriorMae": [
+					2.3544616044616045, 2.4183826683826686, 2.3863148863148864,
+					2.442942942942943, 2.3865293865293866, 2.3962891462891465
+				],
+				"chromiumInteriorMae": [
+					2.7183612183612182, 2.7944015444015444, 2.7404547404547404,
+					2.804054054054054, 2.7466752466752467, 2.7556842556842556
+				],
+				"ffmpegPassingFrames": 6,
+				"chromiumPassingFrames": 6
+			},
+			{
+				"name": "profile0-q32",
+				"profile": 0,
+				"quantizer": 32,
+				"pixelFormat": "yuv420p",
+				"encodedPayloadBytes": 17781,
+				"ffmpegRgbSha256": "407bcbd84e8aef1e296184592b6b1055e9ed754bdfd0ce2af1529f0b91a3f830",
+				"chromiumRgbSha256": "6438d74f3dbf795dbd537f9e254541a27c1007c7165560e69ed7dcd2793f6adc",
+				"originalPacketsReproduced": false,
+				"originalFfmpegDecodedReproduced": false,
+				"ffmpegInteriorMae": [
+					3.0677820677820677, 3.159051909051909, 3.216001716001716,
+					3.251072501072501, 3.198090948090948, 3.1815744315744316
+				],
+				"chromiumInteriorMae": [
+					3.3696911196911197, 3.442942942942943, 3.4686829686829688,
+					3.524238524238524, 3.478871728871729, 3.4548477048477046
+				],
+				"ffmpegPassingFrames": 0,
+				"chromiumPassingFrames": 0
+			},
+			{
+				"name": "profile0-q63",
+				"profile": 0,
+				"quantizer": 63,
+				"pixelFormat": "yuv420p",
+				"encodedPayloadBytes": 12631,
+				"ffmpegRgbSha256": "2cd7f432df22b8e66e1d86066f611429b8aab0eee7d7a16c708187529bb314f8",
+				"chromiumRgbSha256": "fc25f01fec9bf0d5c9847de238452a3c23450320d3f461697f21ba8abd1cef42",
+				"originalPacketsReproduced": false,
+				"originalFfmpegDecodedReproduced": false,
+				"ffmpegInteriorMae": [
+					3.692299442299442, 3.798262548262548, 3.8381595881595882,
+					3.917095667095667, 3.8307593307593306, 3.848991848991849
+				],
+				"chromiumInteriorMae": [
+					3.8843843843843846, 3.9798369798369797, 4.0482625482625485,
+					4.114972114972115, 4.000429000429, 4.033354783354783
+				],
+				"ffmpegPassingFrames": 0,
+				"chromiumPassingFrames": 0
+			},
+			{
+				"name": "profile1-variable-control",
+				"profile": 1,
+				"quantizer": null,
+				"pixelFormat": "yuv444p",
+				"encodedPayloadBytes": 7174,
+				"ffmpegRgbSha256": "d4880419aa2ddff08453b0054c4877f83004cb3d42a9bccfce1808db9582cd36",
+				"chromiumRgbSha256": "b795eff656e2dc4b48e86deabf55aac4e8aff54ac175beaee94570ea87f60cb7",
+				"originalPacketsReproduced": false,
+				"originalFfmpegDecodedReproduced": false,
+				"ffmpegInteriorMae": [
+					2.4957099957099955, 3.925997425997426, 10.903474903474903,
+					12.29890604890605, 12.646610896610897, 12.62097812097812
+				],
+				"chromiumInteriorMae": [
+					2.598241098241098, 4.019412269412269, 10.962247962247963,
+					12.338803088803088, 12.722222222222221, 12.693479193479194
+				],
+				"ffmpegPassingFrames": 1,
+				"chromiumPassingFrames": 1
+			},
+			{
+				"name": "profile1-q0",
+				"profile": 1,
+				"quantizer": 0,
+				"pixelFormat": "yuv444p",
+				"encodedPayloadBytes": 63450,
+				"ffmpegRgbSha256": "9f602172e689a3315591992fddc78512ebdeaf3d4c8790ecc89805a4908e4171",
+				"chromiumRgbSha256": "16fe9608c13cfa331202abf8151f221ad009ca9e55b1a6cfb9f885e1392ebc5f",
+				"originalPacketsReproduced": false,
+				"originalFfmpegDecodedReproduced": false,
+				"ffmpegInteriorMae": [
+					0.9693264693264694, 0.9752252252252253, 0.9832689832689833,
+					0.9761904761904762, 0.9766194766194766, 0.9784427284427284
+				],
+				"chromiumInteriorMae": [
+					1.0868725868725868, 1.0947018447018446, 1.1007078507078507,
+					1.0926640926640927, 1.0897683397683398, 1.092878592878593
+				],
+				"ffmpegPassingFrames": 6,
+				"chromiumPassingFrames": 6
+			},
+			{
+				"name": "profile1-q32",
+				"profile": 1,
+				"quantizer": 32,
+				"pixelFormat": "yuv444p",
+				"encodedPayloadBytes": 28197,
+				"ffmpegRgbSha256": "509921ce3bc9b16e095f44e9427b02b85519afd05a75aa1442b098ae703ea7e6",
+				"chromiumRgbSha256": "dc563a3a6b8b6bbce86f0e0b65b3519309a901c78346f54fa64b5d45e1b36e95",
+				"originalPacketsReproduced": false,
+				"originalFfmpegDecodedReproduced": false,
+				"ffmpegInteriorMae": [
+					2.2486057486057485, 2.400686400686401, 2.414950664950665,
+					2.433826683826684, 2.3781638781638783, 2.376233376233376
+				],
+				"chromiumInteriorMae": [
+					2.34984984984985, 2.4973187473187473, 2.525847275847276,
+					2.530995280995281, 2.4801587301587302, 2.45988845988846
+				],
+				"ffmpegPassingFrames": 6,
+				"chromiumPassingFrames": 6
+			},
+			{
+				"name": "profile1-q63",
+				"profile": 1,
+				"quantizer": 63,
+				"pixelFormat": "yuv444p",
+				"encodedPayloadBytes": 15964,
+				"ffmpegRgbSha256": "56f5d98b16a27dbc52acd1ba0a272663fbdde499903ed7ddc86cfa1bcbdf233d",
+				"chromiumRgbSha256": "83f175e79c48805b1f035273e5431ae88eef69aea56e6697b4ed98a57c1057b1",
+				"originalPacketsReproduced": false,
+				"originalFfmpegDecodedReproduced": false,
+				"ffmpegInteriorMae": [
+					3.488845988845989, 3.5641355641355643, 3.585371085371085,
+					3.659373659373659, 3.5406477906477907, 3.536894036894037
+				],
+				"chromiumInteriorMae": [
+					3.591162591162591, 3.651222651222651, 3.6795366795366795,
+					3.7533247533247533, 3.628807378807379, 3.635993135993136
+				],
+				"ffmpegPassingFrames": 0,
+				"chromiumPassingFrames": 0
+			}
+		],
+		"conclusions": [
+			"P0 q0, P1 q0 and P1 q32 pass all six original gates in both independent decoders on this fixture/runtime. This disproves a claim that this fixture's original gate is inherently unattainable with 4:2:0.",
+			"Increasing the fixed bitrate alone did not fix the previous experiment; an empirically effective per-frame quantizer control now provides a candidate integration path.",
+			"q0 is not RGB lossless: conversion/subsampling and other residuals remain. A passing tiny fixture does not establish a safe universal quantizer, size/performance budget, export preset or installed Electron acceptance.",
+			"The default production failure is not repaired by this standalone diagnostic. The earlier raw-YUV/no-codec design remains not run; this experiment does not fully separate conversion, chroma resampling and quantization residuals."
+		],
+		"sourceFiles": {
+			"script/probe-master-encoder-quantizer.mjs": "d2f175c9fb3eeb6191dc8d44bc36e8846321cde8bcae3b693f3dce391013ee80",
+			"script/fixtures/master-encoder-quantizer-cases.mjs": "b28ddecf2c334d06b8ecc731217ebdbd7210590e9b10fafcd93e4287ea76b9ea",
+			"script/fixtures/master-encoder-quantizer-io.mjs": "55eccb034ab2a0c32956f88db481b25d31a2e4a4a590b0824ff109d61915f66d",
+			"script/fixtures/master-encoder-browser.mjs": "ec018fcdbd8b0170fc17daa7ce9dc9a09524ada2182d52d4aee16b0aff360c7c",
+			"script/fixtures/master-encoder-analysis.mjs": "68964d1d5db50a316c26c87d197091619571e9948ec90f4c2a0d259e403f91ee",
+			"script/fixtures/master-effects-browser-oracle.ts": "5386ad30b1acad77d2fddff495ea12bc5559d9ee53d8dd71b0d72c8961543055",
+			"script/browser-probe-toolchain.mjs": "795ee858ba116ac7134f9b32e60d4908c90f6467d270bb8602c6c6b419d170d0",
+			"script/fixtures/master-encoder-quantizer-cases.test.mjs": "116bd06296c974ee08be17b4a1a105722c9762b222cab700f85408a3cb9a45fe"
+		},
+		"specifications": {
+			"webcodecs": "https://www.w3.org/TR/webcodecs/#dom-videoencoderbitratemode-quantizer",
+			"registration": "https://www.w3.org/TR/2025/DNOTE-webcodecs-vp9-codec-registration-20250514/#vp9-encode-options",
+			"editorDraft": "https://w3c.github.io/webcodecs/vp9_codec_registration.html#vp9-encode-options",
+			"rangeCaution": "The 2025 published Group Draft Note describes 0..63; the current Editor Draft describes 0..255. This diagnostic only uses their shared q0/q32/q63 values. A declaration is not runtime support or whole-pipeline losslessness evidence."
+		},
+		"installedApiAudit": {
+			"versions": {
+				"mediabunny": "1.48.1",
+				"typescript": "6.0.3"
+			},
+			"auditedSourceSha256": {
+				"node_modules/mediabunny/src/encode.ts": "fc2929194e17179b36b746f7ba58151becba61b485f80140f393c16c3bb05aae",
+				"node_modules/mediabunny/src/media-source.ts": "7a14d00881f671b67139caf15b7e0ac4ae2f83ac02b6fed7f2384555a46b22f9",
+				"node_modules/mediabunny/src/packet.ts": "b5db87d1abc610cefc8e9046902ad567af94a25b4a340c454c956bd761f04e2f",
+				"node_modules/mediabunny/src/index.ts": "ef3ea63b8f0559e838b6e484a7a2bc97b74a6ff8308bdd3a358b2ba0f43df109",
+				"node_modules/typescript/lib/lib.dom.d.ts": "d6b1eba8496bdd0eed6fc8a685768fe01b2da4a0388b5fe7df558290bffcf32f"
+			},
+			"findings": [
+				{
+					"source": "node_modules/typescript/lib/lib.dom.d.ts:44465",
+					"finding": "Native VideoEncoderBitrateMode includes quantizer; VideoEncoderEncodeOptions at line 3043 lacks vp9, while retaining avc/keyFrame. Missing TypeScript VP9 options do not establish a runtime limitation. A local structural option type is preferable to dependency mutation or any."
+				},
+				{
+					"source": "node_modules/mediabunny/src/encode.ts:259",
+					"finding": "Mediabunny's public encoding bitrateMode admits only constant/variable; its runtime validator at line 297 rejects quantizer. The local CanvasSource constructor check accepted variable and rejected quantizer with that exact validator error."
+				},
+				{
+					"source": "node_modules/mediabunny/src/encode.ts:337",
+					"finding": "Quality instances resolve to estimated numeric bitrates. Quality labels are not per-frame quantizer control."
+				},
+				{
+					"source": "node_modules/mediabunny/src/media-source.ts:470",
+					"finding": "Final per-frame options are assembled before onEncodedSample at line 484. Mutating sample options inside that observer is too late for this frame."
+				},
+				{
+					"source": "node_modules/mediabunny/src/media-source.ts:614",
+					"finding": "onEncoderConfig precedes native configure, but using mutation here to bypass Mediabunny validation is explicitly excluded from the proposed production approach."
+				},
+				{
+					"source": "node_modules/mediabunny/src/media-source.ts:188",
+					"finding": "Public EncodedVideoPacketSource('vp9') accepts EncodedPacket plus EncodedVideoChunkMetadata through add at line 204. Calls must preserve decode order while timestamps remain presentation timestamps; the returned promise is the mux/writer backpressure signal."
+				},
+				{
+					"source": "node_modules/mediabunny/src/packet.ts:218",
+					"finding": "Public EncodedPacket.fromEncodedChunk(chunk) copies bytes and converts microsecond timestamps/durations to seconds. clone can supply precise original timing when required. Both classes are exported from the public package index."
+				}
+			]
+		},
+		"proposedProductionAdapter": {
+			"status": "proposal-only-not-implemented",
+			"scope": "A narrow native-WebCodecs browser platform adapter for explicitly requested VP9 quality control; keep existing rendering, audio, mux/output ownership, cancellation contract and compatible defaults. Product policy remains outside this diagnostic.",
+			"minimalFlow": [
+				"Resolve an explicit, validated codec/profile and quantizer policy without inferring a global q default from this fixture. Probe the exact native VideoEncoderConfig, require quantizer mode to survive capability normalization, and report unsupported configuration without silently falling back.",
+				"Create a public EncodedVideoPacketSource('vp9') and connect it to the existing Output before starting. Do not patch Mediabunny or use private source/muxer members.",
+				"Own a native VideoEncoder configured with bitrateMode:'quantizer'. Construct each VideoFrame using the existing renderer's source, precise timestamp and duration; preserve the requested keyframe schedule and pass a local structurally typed vp9:{quantizer:q}. Always close owned frames.",
+				"In the native output callback, convert with EncodedPacket.fromEncodedChunk(chunk), preserve all actual decoder metadata, and enqueue packetSource.add(packet,metadata) in encoder emission/decode order. Restore precise original second-based timing via public packet.clone only when the mapping is unambiguous.",
+				"Bound both native encodeQueueSize and pending mux bytes/calls. The native output callback is not awaitable, so explicitly queue writes, propagate their first failure and await drain in the producer. Preserve audio/video interleaving rather than waiting in a way that deadlocks a muxer needing the other track.",
+				"On normal completion, await native encoder.flush, drain every queued packet write, close the packet source, then let the existing Output owner finalize only after all audio/video sources finish. Native flush alone does not mean mux writes are complete.",
+				"On cancellation/error, prevent late construction/output from reviving the session, close/reset the owned encoder as appropriate, settle queue waiters and reuse the existing exactly-once output cancel/finalize ownership. Never convert a partial artifact into a successful result."
+			],
+			"acceptanceRequired": [
+				"Keep the original six-frame CPU/native-input/original decoded-MAE acceptance unchanged; run through the real production export and decode the produced container with both independent decoders.",
+				"Verify actual configure/per-frame options, codec metadata, frame count, ordering, keyframes, duration, seeking and A/V sync in the final muxed artifact, not only raw IVF.",
+				"Regression-test default compatible exports and explicit unsupported mode rejection, runtime codec failure, mux rejection, first-frame cancellation, cancellation during capability/configure/flush, and late callbacks without leaking frames or finalizing twice.",
+				"Calibrate representative dimensions, frame rates, thin text, saturated graphics, grain, gradients and motion; measure size/performance before selecting public quality labels or any default quantizer.",
+				"Validate installed Electron separately: standalone Chromium 151 support is not proof of the application's Chromium runtime capabilities."
+			],
+			"risks": [
+				"Microseconds-to-seconds precision, duplicate rounded timestamps, missing chunk duration, reordered packets and midstream decoderConfig changes.",
+				"Native asynchronous callbacks, unawaitable output, bounded backpressure across both audio/video tracks and cancellation races.",
+				"Frame and encoded-packet ownership, memory amplification at low q, encoder speed and output size at real project scale.",
+				"VP9 profile/color metadata and browser/hardware differences; declared requested color fields are not proof of actual stream metadata.",
+				"The initial alpha:discard fixture does not cover alpha-preserving WebM. Do not silently drop an existing transparency requirement or claim this adapter supports alpha side data before implementing and testing it.",
+				"Published VP9 quantizer range 0..63 versus current editor-draft 0..255 discrepancy; tested common values are not justification to expand the public range."
+			],
+			"excluded": [
+				"Mediabunny callback validation bypass",
+				"dependency or shared-WASM replacement",
+				"changing the original fixture/gate",
+				"global q/default-profile migration",
+				"claiming RGB-lossless output or full-song acceptance"
+			]
+		},
+		"lightweightTests": {
+			"command": "node --test script/fixtures/master-encoder-quantizer-cases.test.mjs script/fixtures/master-encoder-analysis.test.mjs",
+			"passed": 11,
+			"failed": 0
+		},
+		"checkpointScope": "Five diagnostic source files plus this evidence file only. Historical sourceFiles above refer to the prior matrix snapshot and remain unchanged."
+	}
 }

@@ -1,5 +1,10 @@
 /** Runs in a blank private Chromium page; no application or renderer code is replaced. */
-export async function runMasterEncoderCase({ config, frames }) {
+export async function runMasterEncoderCase({
+	config,
+	frames,
+	recordEncodeOptions = false,
+	captureErrors = false,
+}) {
 	const bounded = async (operation) => {
 		let timer;
 		try {
@@ -25,7 +30,8 @@ export async function runMasterEncoderCase({ config, frames }) {
 	if (!support.supported)
 		return { supported: false, requestedConfig: config, support };
 	const packets = [],
-		decoded = [];
+		decoded = [],
+		actualEncodeOptions = [];
 	let encoderError, decoderError, decoderConfig;
 	const encoder = new VideoEncoder({
 		error: (error) => {
@@ -44,11 +50,14 @@ export async function runMasterEncoderCase({ config, frames }) {
 				decoderConfig = structuredClone(metadata.decoderConfig);
 		},
 	});
-	let decoder;
+	let decoder,
+		actualConfigure,
+		configureSucceeded = false;
 	try {
 		// These are exactly the arguments actually submitted, not only a capability query.
-		const actualConfigure = structuredClone(config);
+		actualConfigure = structuredClone(config);
 		encoder.configure(actualConfigure);
+		configureSucceeded = true;
 		for (const source of frames) {
 			const frame = new VideoFrame(new Uint8Array(source.bytes), {
 				format: source.format,
@@ -63,6 +72,11 @@ export async function runMasterEncoderCase({ config, frames }) {
 			});
 			try {
 				encoder.encode(frame, source.options);
+				if (recordEncodeOptions)
+					actualEncodeOptions.push({
+						timestamp: source.timestamp,
+						options: structuredClone(source.options),
+					});
 			} finally {
 				frame.close();
 			}
@@ -115,6 +129,7 @@ export async function runMasterEncoderCase({ config, frames }) {
 		return {
 			supported: true,
 			actualConfigure,
+			...(recordEncodeOptions ? { actualEncodeOptions } : {}),
 			support,
 			decoderConfig: {
 				...decoderConfig,
@@ -126,6 +141,18 @@ export async function runMasterEncoderCase({ config, frames }) {
 			decoded,
 			decodeReadback:
 				"Chromium VideoDecoder -> sRGB OffscreenCanvas 2D drawImage/getImageData; not direct raw YUV planes",
+		};
+	} catch (error) {
+		if (!captureErrors) throw error;
+		return {
+			supported: true,
+			error: String(error?.stack ?? error),
+			actualConfigure,
+			configureSucceeded,
+			actualEncodeOptions,
+			support,
+			packets,
+			decoded,
 		};
 	} finally {
 		if (decoder && decoder.state !== "closed") decoder.close();
