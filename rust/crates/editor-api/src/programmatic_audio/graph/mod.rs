@@ -37,6 +37,8 @@ mod rate_loop_tests;
 mod rate_prepare;
 #[cfg(test)]
 mod rate_tests;
+#[cfg(test)]
+mod rate_trim_tests;
 mod seek;
 mod snapshot;
 mod topology;

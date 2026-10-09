@@ -1,0 +1,48 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "bounded-nonloop-variable-rate-trim-verified",
+	"scope": "Fractional mediaStart for nonloop variable-rate preparation; full preparation and FX history before final crop",
+	"implementation": [
+		"Remove only the nonloop trim sample-alignment gate; retain finite/range checks and duration/start/loop restrictions",
+		"Preserve JavaScript String trim serialization including negative zero and exponential notation below 1e-6",
+		"Keep Host production transport and full-clip preparation, FX and final-crop order unchanged"
+	],
+	"privateBuild": {
+		"directory": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/web-scene-transition-KpO0zH",
+		"wasmSha256": "c41fcea74e584c425e8aa2df1c1ce328a084f01f2247388df7285680de9ee26d",
+		"provenance": "See scene-transition-crossfade.json for frozen source build manifest"
+	},
+	"checks": {
+		"nativeGraphLibPassed": 29,
+		"nativeGraphLibIntentionallyIgnored": 1,
+		"nativeRateLoopTrimIntegrationPassed": 11,
+		"parameterRecipes": 22,
+		"remainingGateNegatives": 6,
+		"bunTestsPassed": 3,
+		"scopedTypesLintRustfmtUtf8AndDiff": "passed",
+		"productionReport": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-fractional-trim-zs3Qn1/verification.json",
+		"productionReportSha256": "81f5a62212c0f27f466d6d9e0bf75c7e85a4e6f447345c821cfd6ed625f11c95",
+		"pcmCases": 8,
+		"statefulSaturateDelayCases": 2,
+		"maxPcmError": 0,
+		"rmsPcmError": 0,
+		"cropByteExact": true,
+		"deterministicRepeat": true,
+		"sourceIdentityAndGeometryTamperingRejected": true,
+		"roundedTrimNegativeMaxErrors": [0.6519775390625, 0.538726806640625],
+		"tinyIoReport": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-fractional-trim-io-izWyRC/verification.json",
+		"tinyIoReportSha256": "5bf49435c118f83167456a3c5b17eebcbdbccf60eeeade6f651382f4149fd6b9",
+		"tinyIoCases": 14,
+		"tinyIoSuccessfulExactPcmCases": 6,
+		"tinyIoMatchedFailureCases": 8,
+		"tinyIoBoundary": "Original FFmpeg rejects 5e-324, 1e-12, 1e-7 and the immediate lower neighbor of 1e-6 at both graph rates; Host also exits 1 without silence substitution. These are not supported PCM inputs."
+	},
+	"remaining": [
+		"Fractional duration with distinct capacity, semantic duration and actual decoded geometry",
+		"Fractional start/placement and loop trim/period",
+		"Participating fallback histories",
+		"Browser author collection and encoded media acceptance for this new trim slice",
+		"Installed Electron and full-song acceptance"
+	]
+}

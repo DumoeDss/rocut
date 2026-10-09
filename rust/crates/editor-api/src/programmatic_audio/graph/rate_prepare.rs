@@ -116,12 +116,19 @@ pub(super) fn prepare(
     points: &[Point],
     sample_rate: u32,
 ) -> Result<RatePreparation, String> {
-    // Preserve the strict phase boundary at both graph and native preparation rates.
+    if !super::facts::seconds(native.media_start) {
+        return Err("Invalid HyperFrames variable-rate media trim".into());
+    }
+    // Nonloop preparation forwards the original fractional trim to FFmpeg.
+    // Its time-parser/source-sample rounding must not be replaced with ours.
+    // The independent source-loop extension still requires aligned tile phase.
     for sr in [sample_rate, 48000] {
-        sample_aligned(
-            native.media_start * f64::from(sr),
-            "variable-rate media trim",
-        )?;
+        if native.r#loop {
+            sample_aligned(
+                native.media_start * f64::from(sr),
+                "variable-rate media trim",
+            )?;
+        }
         sample_aligned(
             native.duration * f64::from(sr),
             "variable-rate clip duration",
@@ -156,7 +163,15 @@ pub(super) fn prepare(
         media_start_seconds: if source_loop.is_some() {
             "0".into()
         } else {
-            native.media_start.to_string()
+            // JS String uses exponential notation below 1e-6 and normalizes
+            // negative zero. Preserve that native IO parameter, not just f64.
+            if native.media_start == 0.0 {
+                "0".into()
+            } else if native.media_start < 1e-6 {
+                format!("{:e}", native.media_start)
+            } else {
+                native.media_start.to_string()
+            }
         },
         source_duration_seconds: source_duration.to_string(),
         duration_seconds: native.duration.to_string(),

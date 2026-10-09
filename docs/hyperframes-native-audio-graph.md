@@ -843,3 +843,28 @@ preparation. Fractional duration needs distinct capacity, semantic duration and
 actual PCM geometry; fractional clip placement and loop periods remain separate
 requirements. Neither arbitrary rounding nor crop-first processing is an
 acceptable substitute for those semantics.
+
+### Nonloop fractional source-trim acceptance (2026-10-09)
+
+The next bounded slice is now accepted: nonloop variable-rate `mediaStart`
+preserves its fractional value and original JavaScript string formatting, while
+preparation and stateful FX retain full-clip history before the final crop.
+Duration, placement and loop alignment restrictions remain unchanged. Host
+production transport was not modified.
+
+The private `web-scene-transition-KpO0zH` build passes 22 parameter recipes,
+six remaining-gate negatives, eight real-source PCM cases at 48/44.1 kHz and
+two saturate-plus-delay graph cases. PCM maximum/RMS errors are zero; cropped
+output is byte-identical to the full slice and rerenders are deterministic.
+Premature trim rounding and pre-FX gain controls produce measurable errors.
+
+Fourteen tiny-trim IO cases retain both successes and original failures.
+Zero, `1e-6` and its upper neighbor succeed at both graph rates with exact PCM.
+The original FFmpeg rejects `5e-324`, `1e-12`, `1e-7` and the lower neighbor of
+`1e-6`; Host also exits 1 for all eight cases, without replacing them with silence.
+These rejected exponent-form inputs are not claimed as supported audio.
+
+Reports, hashes, native checks and remaining scope are recorded in
+[fractional trim evidence](evidence/hyperframes-fractional-trim.json).
+This is not fractional duration/start/loop support, browser author-collection
+acceptance, installed Electron or full-song export acceptance.

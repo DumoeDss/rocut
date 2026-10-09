@@ -86,9 +86,14 @@ fn variable_rate_cannot_be_smuggled_by_native_facts_or_share_scalar_decode() {
 }
 
 #[test]
-fn variable_rate_fractional_and_fallback_are_not_silently_enabled() {
+fn variable_rate_fractional_placement_duration_and_fallback_still_require_evidence() {
     let mut input = variable_request(48000);
-    input["graph"]["snapshot"]["tracks"][0]["native"]["mediaStart"] = json!(0.1 + 0.5 / 48000.0);
+    input["graph"]["snapshot"]["tracks"][0]["native"]["start"] = json!(0.5 / 48000.0);
+    input["graph"]["snapshot"]["tracks"][0]["native"]["end"] = json!(1.13 + 0.5 / 48000.0);
+    rejected(&input, "fractional-sample");
+    input = variable_request(48000);
+    input["graph"]["snapshot"]["tracks"][0]["native"]["duration"] = json!(1.13 + 0.5 / 48000.0);
+    input["graph"]["snapshot"]["tracks"][0]["native"]["end"] = json!(1.13 + 0.5 / 48000.0);
     rejected(&input, "fractional-sample");
     input = variable_request(48000);
     let track = &mut input["graph"]["snapshot"]["tracks"][0];
