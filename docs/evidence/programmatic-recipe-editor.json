@@ -1,0 +1,38 @@
+{
+	"version": 1,
+	"date": "2026-10-10",
+	"status": "verified-checkpoint",
+	"scope": "Actual browser recipe panel with real EditorSession, in-memory ProjectStore, native Rust transactions/history and solid recipe Canvas preview; not installed Electron or full visual-field authoring",
+	"entry": "node script/probe-programmatic-recipe-editor.mjs",
+	"session": 31852,
+	"exitCode": 0,
+	"evidence": "E:/Elftia-private-tests/rocut-ink-20261009-F0U4dW/temp/rocut-recipe-editor-aCbQcP/verification.json",
+	"evidenceSha256": "08f224a39f0a0495a564e5f6c7c502668d2f796b8ce9df0c5dd17c9bdd564c7c",
+	"results": {
+		"passed": true,
+		"checks": 6,
+		"loadedAndDriverSourceInputs": 728,
+		"sourceIdentityStable": true,
+		"pageErrors": [],
+		"externalRequests": [],
+		"resourceErrors": []
+	},
+	"behavior": [
+		"Editing a retained draft does not publish before Apply",
+		"Real Apply/Undo/Redo change sampled Canvas pixels red/green",
+		"Invalid JSON and actual Rust recipe rejection leave the persisted project unchanged and retain the draft",
+		"Selection switches retain clip-scoped drafts",
+		"External recipe updates conflict; Discard loads the current source",
+		"Replacing recipe with inline/compiled source keeps old text copyable, blocks Apply, and undo restores recipe preview"
+	],
+	"wasm": {
+		"binding": "explicit-private",
+		"binarySha256": "1400a5ed4c7dab1b165f5ffd3836bd9cbc64411fc65023f4e4f697c87900c3cd",
+		"sharedCopiesModified": false
+	},
+	"limitations": [
+		"Advanced full-recipe JSON editor, not a complete scene/post visual form",
+		"Compiled replacement is a descriptor-only refusal fixture, not compiled HTML rendering or attachment download acceptance",
+		"In-memory dedicated project only; no user project, installed Creator/Electron, GPU compositor, final export or whole MV acceptance"
+	]
+}

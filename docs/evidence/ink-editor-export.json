@@ -1,0 +1,73 @@
+{
+	"version": 1,
+	"date": "2026-10-10",
+	"status": "verified-checkpoint",
+	"scope": "Full original Ink scene, native Canvas replay, Rocut GPU preview/export, one actual binary WebM download and independent FFmpeg decoding of every 421 frame; synthetic declared character markers, not installed Electron or a whole MV",
+	"entry": "node script/probe-mv-ink-export.mjs",
+	"session": 21326,
+	"exitCode": 0,
+	"evidence": "E:/Elftia-private-tests/rocut-ink-20261009-F0U4dW/temp/rocut-ink-export-FtQKa0/verification.json",
+	"evidenceSha256": "d07d86843121900f3cb897542c25efd4ae2adee5e1ba3778ec8ce9f9150a58e2",
+	"results": {
+		"passed": true,
+		"width": 1920,
+		"height": 1080,
+		"fps": 60,
+		"frames": 421,
+		"originalSourceSamples": 408,
+		"repeatSeeks": 48,
+		"blankFrames": 13,
+		"gpuFrameObservations": 421,
+		"decodedFrames": 421,
+		"pageErrors": [],
+		"externalRequests": [],
+		"decodedViolations": [],
+		"maximumDecodedRgbMae": 0.8037942065329218,
+		"maximumDecodedForegroundMae": 0.8045371038880271
+	},
+	"thresholds": {
+		"nativeGpu": {
+			"maxChannelAtMost": 2,
+			"maeLessThan": 0.025,
+			"repeatMax": 0
+		},
+		"independentVideoDecode": {
+			"rgbMaeLessThan": 4,
+			"foregroundMaeLessThan": 8,
+			"blankRgbMax": 0
+		}
+	},
+	"video": {
+		"codec": "vp9",
+		"profile": "Profile 1",
+		"pixelFormat": "yuv444p",
+		"quantizer": 0,
+		"colorSpace": "smpte170m",
+		"colorRange": "tv",
+		"byteLength": 279745681,
+		"sha256": "437b55a11a6f04d745eadf04f7b3b1a2dec8f1104d69eb1b4c41a32669930e4c"
+	},
+	"transport": {
+		"kind": "blob-download",
+		"downloadCount": 1,
+		"acknowledgedAfterIndependentStreamHash": true,
+		"completed": true,
+		"error": null,
+		"finiteFixtureCapacityBytes": 3523727360,
+		"capacityScope": "Fixed 421-frame RGBA8 reservation plus explicit container allowance; not a universal VP9 bound or production export policy"
+	},
+	"identity": {
+		"stable": true,
+		"loadedSourceInputs": 402,
+		"privateRustSnapshotFiles": 636,
+		"selectedCurrentMatchingRustSources": 262,
+		"sourceManifestSha256": "fc6b2b56dd066cb90e9fb68165430e788f12455a2a54c136fecfb2ba718fb766",
+		"privateWasmSha256": "1400a5ed4c7dab1b165f5ffd3836bd9cbc64411fc65023f4e4f697c87900c3cd"
+	},
+	"limitations": [
+		"Native/GPU pixel parity and encoded RGB fidelity have separate unchanged gates; quantizer0/444 is not RGB losslessness",
+		"The test's synthetic character markers do not grant or verify reference-artwork rights or arbitrary automatic character separation",
+		"The enumerated source scopes are not whole-project, installation or later-source identities",
+		"No installed Electron, full-song soundtrack/A-V synchronization, export format matrix, performance or universal codec policy acceptance"
+	]
+}
