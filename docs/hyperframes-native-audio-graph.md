@@ -932,6 +932,17 @@ Exact reports, hashes, failed-run provenance and commands are recorded in
 [fractional duration evidence](evidence/hyperframes-fractional-duration.json).
 Fractional clip start, scalar fractional duration/trim, fractional loop
 trim/period/duration and participating fallback gain histories remain unsupported.
-The new duration slice is validated with trusted graph declarations and real WAV
-sources, not browser author collection, installed Electron, encoded video or
-full-song/full-MV export acceptance.
+The authored follow-up `rocut-hf-fractional-duration-editor-XdlZiS` also passes
+real HTML compilation, archive rebuild and browser collection with complete gain
+history. It uses an original 44.1 kHz WAV, fractional trim/duration, rate automation,
+saturate+delay and sample-aligned placement. Host PCM, editor mix and repeated
+crops exactly match the independent native-preparation/FX oracle; rounding the
+duration incorrectly still causes post-FX maximum error 0.152585.
+
+Actual SceneExporter output is 21 frames at 64x64/25 fps, 25,987 bytes. Independent
+FFmpeg decoding yields zero lag on both audio channels, correlations 0.994552 and
+0.989894, and worst section RMS error 0.0039292. Codec padding is recorded
+separately, not mistaken for extra source duration. A first run failed solely on
+the test shell's favicon 404; adding the data favicon retains the console-error
+gate, and both runs' video bytes are identical. This completes this single
+authored/exported duration case, not installed Electron or full-song/MV acceptance.

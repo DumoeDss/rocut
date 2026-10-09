@@ -190,11 +190,49 @@
 			"ROCUT_TEST_FFPROBE": "E:/Software/ffmpeg-6.0-full_build/bin/ffprobe.exe"
 		}
 	},
+	"authoredEditorExport": {
+		"passed": true,
+		"report": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-fractional-duration-editor-XdlZiS/verification.json",
+		"reportSha256": "b7cc4381c1673b7b3a182f75bd710d973c794190ffc18d88558753762c3218f8",
+		"runner": "script/probe-hyperframes-fractional-duration-editor.mjs",
+		"route": "Authored HTML -> compile/archive/rebuild -> actual browser collection with complete gain history -> Host graph -> editor mix/crop -> SceneExporter -> independent FFmpeg AV decode",
+		"originalSourceRate": 44100,
+		"actualNativePreparedFrames": 24001,
+		"actualGraphPreparedFrames": 22051,
+		"graphSampleRate": 44100,
+		"hostPcmMaximumError": 0,
+		"editorMixedMaximumError": 0,
+		"cropAndRepeatedCropMaximumError": 0,
+		"incorrectRoundedDurationPostFxMaximumError": 0.1525849774479866,
+		"video": {
+			"width": 64,
+			"height": 64,
+			"fps": 25,
+			"frames": 21,
+			"bytes": 25987,
+			"sha256": "ad40aa8af904f20f9d7b4cb4bdf7b7538f6b8e6c00e3111a038a60bd8449a1d3"
+		},
+		"decodedAudio": {
+			"bestLagSamples": [0, 0],
+			"bestCorrelation": [0.9945517708783654, 0.9898943573134686],
+			"maximumSectionRms": 0.003929152406157773,
+			"timelineFrames": 37044,
+			"decodedFrames": 37640,
+			"codecPaddingFrames": 596
+		},
+		"requests": { "audio": 1, "identity": 4, "pictures": 16 },
+		"retainedFailedRun": {
+			"artifact": "rocut-hf-fractional-duration-editor-rFr72N",
+			"cause": "Test shell omitted data favicon, causing a 404 console error",
+			"correction": "Add data favicon without relaxing console-error gate",
+			"videoBytesEqualSuccessfulRun": true
+		},
+		"scope": "One real authored nonloop variable-rate fractional trim/duration fixture with saturate+delay and aligned placement; not all engine timing cases, installed Electron or full MV"
+	},
 	"remaining": [
 		"Fractional clip start/placement; integer-millisecond native-exporter adelay is not a substitute",
 		"Fractional loop trim/period/duration and scalar fractional duration/trim",
 		"Participating fallback author-gain histories",
-		"Browser author collection and encoded media acceptance for this new duration slice",
 		"Installed Electron and full-song/full-MV acceptance"
 	]
 }
