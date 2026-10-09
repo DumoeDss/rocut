@@ -23,6 +23,7 @@ function* drawMvEmberSteps(ctx, data, assets, createSurface) {
   const draw = (target, command) => {
     target.save();
     try {
+      if (command.kind === 'preparedPatch') { assets.preparedPatch(command,target); return; }
       if (command.kind === 'grayPixels') { mvEmberGrayPixels(target,command); return; }
       if (command.kind === 'alphaPixels') { mvEmberPixels(target,command,true); return; }
       if (command.kind === 'filteredRect') { mvEmberFilteredRect(target,command); return; }

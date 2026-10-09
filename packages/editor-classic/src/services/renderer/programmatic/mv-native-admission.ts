@@ -15,6 +15,7 @@ import { verifyProgrammaticFontResources } from "./font-resources";
 import { resolveCanvasSequenceImages } from "./image-sequence-resources";
 import { canonicalMvResourceRequest } from "./mv-canonical-frame";
 import { resolveMvResourceFrame } from "./mv-resource-frame";
+import type { ImagePreprocessPatch } from "./image-preprocess-patches";
 
 export interface MvNativeRasterInput {
 	width: number;
@@ -26,6 +27,9 @@ export interface MvNativeRasterInput {
 	resources: readonly ResolvedProgrammaticResource[];
 	sequenceImages: readonly ResolvedSequenceImage[];
 	imageAdmissions: readonly ImageDecodeAdmission[];
+	/** Private binary side channel, never part of frame.recipePlan. */
+	preparedPatches?: readonly ImagePreprocessPatch[];
+	rasterByteLimit?: number;
 }
 
 const ticketKind = Symbol("native-mv-admission");

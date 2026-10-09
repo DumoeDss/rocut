@@ -1,5 +1,6 @@
 import { getElementLocalTime } from "../../animation";
 import { effectsRegistry, resolveEffectPasses } from "../../effects";
+import { resolveEffectLayerParams } from "../../wasm/effect-layer-animation";
 import {
 	DEFAULT_GRAPHIC_SOURCE_SIZE,
 	resolveGraphicElementParamsAtTime,
@@ -52,6 +53,7 @@ import {
 import { TransitionTrackNode } from "./nodes/transition-track-node";
 import { resolveTransitionTrack } from "./resolve-transition-track";
 import type { FrameRate } from "opencut-wasm";
+import type { RenderTreeResidencyScope } from "./render-residency-domain";
 
 export async function resolveRenderTree({
 	node,
@@ -59,16 +61,22 @@ export async function resolveRenderTree({
 	time,
 	videoCache,
 	frameRate,
+	rasterResidency,
+	signal,
 }: {
 	node: AnyBaseNode;
 	renderer: Pick<CanvasRenderer, "width" | "height">;
 	time: number;
 	videoCache: Pick<VideoCache, "getFrameAt">;
 	frameRate?: FrameRate;
+	rasterResidency?: RenderTreeResidencyScope;
+	signal?: AbortSignal;
 }): Promise<void> {
 	await resolveNode({
 		node,
 		context: {
+			rasterResidency,
+			signal,
 			renderer,
 			time,
 			frameRate,
@@ -301,14 +309,26 @@ function resolveEffectLayerNode({
 	}
 
 	const definition = effectsRegistry.get(node.params.effectType);
+	const localTicks = time - node.params.timeOffset;
+	const effectParams =
+		node.params.animations && Object.keys(node.params.animations).length > 0
+			? resolveEffectLayerParams({
+					request: {
+						effectType: node.params.effectType,
+						params: node.params.effectParams,
+						animations: node.params.animations,
+						localTicks,
+					},
+				})
+			: node.params.effectParams;
 	const passes = resolveEffectPasses({
 		definition,
-		effectParams: node.params.effectParams,
+		effectParams,
 		width: context.renderer.width,
 		height: context.renderer.height,
 		frame: context.frameRate
 			? {
-					localTime: time - node.params.timeOffset,
+					localTime: localTicks,
 					frameRate: context.frameRate,
 				}
 			: undefined,

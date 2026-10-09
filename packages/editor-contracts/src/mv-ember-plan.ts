@@ -4,6 +4,7 @@ import type { MvEmberText } from "./mv-ember-text";
 import type { MvEmberPixels } from "./mv-ember-pixels";
 import type { MvConvergeStyle } from "./mv-converge-plan";
 import type { MvConvergeTransform } from "./mv-converge-transform";
+import type { MvPreparedPatchCommand } from "./mv-image-preprocess";
 
 export type MvEmberRect = readonly [number, number, number, number];
 export type MvEmberComposite = MvDrawComposite;
@@ -96,6 +97,7 @@ export type MvEmberCommand =
 	  };
 export type MvEmberSurfaceDraw =
 	| MvEmberDraw
+	| MvPreparedPatchCommand
 	| MvEmberPixels
 	| (MvEmberDrawingSpace & {
 			readonly kind: "surfacePatternRect";

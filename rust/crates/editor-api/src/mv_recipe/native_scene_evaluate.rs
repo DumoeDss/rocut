@@ -3,6 +3,15 @@ use super::{Clock, PlanNode, Scene, Span};
 use crate::mv_recipe::kanji_slam;
 
 impl Clock<'_> {
+    fn flame_sample(&self, span: &Span) -> Result<crate::mv_recipe::flame::Sample<'_>, String> {
+        let sample = self.ember_sample(span)?;
+        Ok(crate::mv_recipe::flame::Sample {
+            shot_start_ticks: sample.shot_start_ticks,
+            shot_end_ticks: sample.shot_end_ticks,
+            song_ticks: sample.song_ticks,
+            analysis: sample.analysis,
+        })
+    }
     fn fall_sample(&self, span: &Span) -> Result<crate::mv_recipe::fall::Sample<'_>, String> {
         let sample = self.ember_sample(span)?;
         Ok(crate::mv_recipe::fall::Sample {
@@ -51,6 +60,13 @@ impl Clock<'_> {
 
 pub(super) fn preflight(scene: &Scene, clock: Clock<'_>) -> Result<(), String> {
     match scene {
+        Scene::Flame {settings,span,..} => {
+            let images=clock.images.ok_or("flame requires decoded image facts")?;
+            let start=u64::from(span.start_frame);
+            let end=start+u64::from(span.duration_frames);
+            let resource_clock=clock.remap(clock.frame.clamp(start,end));
+            settings.runtime_ready(&resource_clock.flame_sample(span)?,images,clock.resources)?;
+        }
         Scene::Fall { settings, span, .. } => {
             let images = clock.images.ok_or("fall requires decoded image facts")?;
             let start = u64::from(span.start_frame);
@@ -115,6 +131,11 @@ pub(super) fn collect_font_requests(scene: &Scene, clock: Clock<'_>) -> Result<b
 
 pub(super) fn resolve(scene: &Scene, clock: Clock<'_>) -> Result<Option<PlanNode>, String> {
     Ok(Some(match scene {
+        Scene::Flame {role,settings,span} => PlanNode::Flame {
+            role:*role,
+            data:settings.produce(&clock.flame_sample(span)?,clock.width as u32,clock.height as u32,
+                clock.images.ok_or("flame requires decoded image facts")?,clock.resources)?,
+        },
         Scene::Fall { role, settings, span } => PlanNode::Fall {
             role: *role,
             data: settings.produce(

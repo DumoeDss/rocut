@@ -159,6 +159,7 @@ export type {
 } from "./mv-recipe-audio";
 export type { MvThread, MvThreadScene } from "./mv-thread";
 export type { MvFall, MvFallScene } from "./mv-fall";
+export type { MvFlame, MvFlameScene, MvFlamePlan } from "./mv-flame";
 export type {
 	ProgrammaticResource,
 	ProgrammaticResourceLimits,
@@ -304,3 +305,9 @@ export type {
 	EditingElementType,
 } from "./editing";
 export { isEditorTaskRequest, type EditorTaskRequest } from "./editor-tasks";
+export type {
+	MvImagePreprocessBinding,
+	MvImagePreprocessRoi,
+	MvImagePreprocessRequest,
+	MvPreparedPatchCommand,
+} from "./mv-image-preprocess";

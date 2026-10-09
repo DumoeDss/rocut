@@ -24,6 +24,8 @@ import { MotionTextFontRuntime } from "../../services/renderer/motion-text/font-
 import type { MotionTextSequence } from "@opencut/editor-contracts";
 import { resolveMediaTimeRange } from "../../wasm";
 import { cancelPendingRenderFrames } from "../../services/renderer/cancel-tree";
+import { RenderResidencyDomain } from "../../services/renderer/render-residency-domain";
+import { ImagePreprocessOwner } from "../../services/renderer/programmatic/image-preprocess-owner";
 import { isRenderCancelledError } from "../../services/renderer/compositor/render-request";
 
 interface RendererActivityLifecycle {
@@ -119,6 +121,8 @@ export class RendererManager {
 	readonly motionTextFontRuntime: MotionTextFontRuntime;
 
 	private readonly compositor: WasmCompositor;
+	private readonly rasterResidencyDomain: RenderResidencyDomain;
+	private readonly rasterRetirements = new Set<Promise<void>>();
 	private readonly videoCache: VideoCache;
 	private readonly activityLifecycle: RendererActivityLifecycle;
 	private publicationGeneration = 0;
@@ -148,6 +152,10 @@ export class RendererManager {
 		this.assetResolver = assetResolver;
 		this.activityLifecycle = resolveActivityLifecycle(resources);
 		this.compositor = new WasmCompositor(resources);
+		this.rasterResidencyDomain = new RenderResidencyDomain({
+			preprocessor: new ImagePreprocessOwner(),
+		});
+		this.rasterResidencyDomain.bindCompositor(this.compositor);
 		this.videoCache = videoCache;
 		this.motionTextFontRuntime = new MotionTextFontRuntime({
 			loadBuiltinFont: ({ font, signal }) =>
@@ -184,6 +192,7 @@ export class RendererManager {
 			compositor: this.compositor,
 			videoCache: this.videoCache,
 			publicationGuard: this.createPublicationGuard(),
+			rasterResidencyDomain: this.rasterResidencyDomain,
 		});
 	}
 
@@ -206,7 +215,7 @@ export class RendererManager {
 	}
 
 	setRenderTree({ renderTree }: { renderTree: RootNode | null }): void {
-		if (this.renderTree !== renderTree) cancelPendingRenderFrames(this.renderTree);
+		if (this.renderTree !== renderTree) this.retireRasterTree(this.renderTree);
 		this.renderTree = renderTree;
 		this.notify();
 	}
@@ -454,27 +463,42 @@ export class RendererManager {
 				publication.guard.assertCurrent({ token: publication.token });
 				onProgress?.({ progress: 0.05 });
 				const preparation = new AbortController();
-				const checkCancel = () => { if (onCancel?.()) preparation.abort(); };
-				const timer = this.editor.resources.setInterval({ handler: checkCancel, ms: 100 });
+				const checkCancel = () => {
+					if (onCancel?.()) preparation.abort();
+				};
+				const timer = this.editor.resources.setInterval({
+					handler: checkCancel,
+					ms: 100,
+				});
 				this.audioPreparations.add(preparation);
 				let operation: Promise<AudioBuffer | null> | undefined;
 				let drain: Promise<unknown> | undefined;
 				try {
 					checkCancel();
-					operation = createTimelineAudioBuffer({ tracks, mediaAssets,
-						startTime: exportRange.startTime, duration: exportRange.duration,
-						resources: this.editor.resources, programmaticAudio: this.programmaticAudio,
-						signal: preparation.signal });
+					operation = createTimelineAudioBuffer({
+						tracks,
+						mediaAssets,
+						startTime: exportRange.startTime,
+						duration: exportRange.duration,
+						resources: this.editor.resources,
+						programmaticAudio: this.programmaticAudio,
+						signal: preparation.signal,
+					});
 					// The export's await reports failures; lifecycle only waits for cleanup.
-					drain = operation.then(() => {}, () => {});
+					drain = operation.then(
+						() => {},
+						() => {},
+					);
 					this.audioPreparationDrains.add(drain);
 					audioBuffer = await operation;
 					preparation.signal.throwIfAborted();
 				} catch (error) {
-					if (preparation.signal.aborted) return { success: false, cancelled: true };
+					if (preparation.signal.aborted)
+						return { success: false, cancelled: true };
 					throw error;
 				} finally {
-					timer.cancel(); this.audioPreparations.delete(preparation);
+					timer.cancel();
+					this.audioPreparations.delete(preparation);
 					if (drain) this.audioPreparationDrains.delete(drain);
 				}
 				publication.guard.assertCurrent({ token: publication.token });
@@ -507,6 +531,7 @@ export class RendererManager {
 				compositor: this.compositor,
 				videoCache: this.videoCache,
 				publicationGuard: publication.guard,
+				rasterResidencyDomain: this.rasterResidencyDomain,
 			});
 			this.activeExporters.add(exporter);
 
@@ -627,26 +652,57 @@ export class RendererManager {
 		return { guard, token: guard.capture() };
 	}
 
+	private retireRasterTree(node: RootNode | null): void {
+		if (!node) return;
+		const scope = this.rasterResidencyDomain.closeTree(node);
+		cancelPendingRenderFrames(node);
+		if (!scope) return;
+		const drain = this.compositor
+			.runExclusive(async () => {
+				if (!this.rasterResidencyDomain.isPublishedScope(scope)) return;
+				this.compositor.syncTextures([]);
+				this.rasterResidencyDomain.releasePublishedAfterClear();
+			})
+			.catch((error: unknown) => {
+				if (!isRenderCancelledError(error)) throw error;
+			});
+		this.rasterRetirements.add(drain);
+		// Keep a failed cleanup observed and available to the lifecycle aggregate.
+		void drain.then(
+			() => this.rasterRetirements.delete(drain),
+			() => {},
+		);
+	}
+
 	private async invalidatePublications(): Promise<void> {
 		const compositorDrain = this.compositor.cancelAndDrain();
 		for (const preparation of this.audioPreparations) preparation.abort();
 		const audioDrain = this.programmaticAudio.invalidate();
-		cancelPendingRenderFrames(this.renderTree);
+		this.retireRasterTree(this.renderTree);
 		this.publicationGeneration += 1;
 		const exporters = [...this.activeExporters];
-		const results = await Promise.allSettled(
-			[compositorDrain, audioDrain, ...this.audioPreparationDrains, ...exporters.map(async (exporter, exporterIndex) => {
+		const results = await Promise.allSettled([
+			compositorDrain,
+			audioDrain,
+			...this.rasterRetirements,
+			...this.audioPreparationDrains,
+			...exporters.map(async (exporter, exporterIndex) => {
 				try {
 					await exporter.cancel();
+					await exporter.drainRasterResidency();
 				} catch (cause) {
-					if (cause instanceof SessionActivityGenerationError || isRenderCancelledError(cause)) return;
+					if (
+						cause instanceof SessionActivityGenerationError ||
+						isRenderCancelledError(cause)
+					)
+						return;
 					throw new RendererExporterTerminalError({
 						exporterIndex,
 						cause,
 					});
 				}
-			})],
-		);
+			}),
+		]);
 		throwRendererLifecycleErrors({
 			results,
 			message: "Failed to settle active renderer exporters.",

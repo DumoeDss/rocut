@@ -1,0 +1,133 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "native-flame-production-preview-editor-export-and-independent-decode-passed",
+	"run": {
+		"command": "node script/probe-mv-flame-export.mjs",
+		"exitCode": 0,
+		"report": "C:/Users/Sayo/AppData/Local/Temp/rocut-flame-export-bjAhlR/verification.json",
+		"reportSha256": "b8b504503387172b8f5f809adc918ee52f63456b4f63db7a68e376c1861e1d6d",
+		"productionAcceptancePassed": true,
+		"sourceIdentityStable": true,
+		"pageErrors": [],
+		"externalRequests": []
+	},
+	"scope": {
+		"pipeline": "Actual private Rust WASM Flame plan and preprocessing -> production ProgrammaticNode/CanvasRenderer preview and SceneExporter GPU rendering -> VP9 WebM -> independent FFmpeg full-frame RGB decode",
+		"assets": "Synthetic declared markers, complete unchanged original Flame oracle; not original film artwork",
+		"sceneSize": { "width": 1920, "height": 1080 },
+		"fps": 60,
+		"frameCount": 165,
+		"sourceVisits": 160,
+		"cases": 16,
+		"modes": ["breathe", "grow", "dark"],
+		"exactRepeatPairs": 16,
+		"blankFrames": [0, 41, 82, 123, 164],
+		"sampling": "Every exported frame at full 1920x1080; no acceptance crop or reduced-resolution preprocessing",
+		"completion": "Production Flame preview/export scope, not a completed whole-song MV or full effect ecosystem"
+	},
+	"identity": {
+		"loadedSourceInputs": 401,
+		"rustSnapshotFilesVerified": 614,
+		"currentMatchingProducerSourcesAtRun": 242,
+		"privateSourceManifestSha256": "7de4d72a6f6eb8345b1c196a9002da0391696c0150bda14febe1a1e195f0a6a2",
+		"privateWasmDirectory": "C:/Users/Sayo/AppData/Local/Temp/rocut-flame-integrated-UoOQ5J/wasm",
+		"privateWasmSha256": "9dd8bc0521bea902b246093ea0d74216a248b578c76bf136d5f312b0b3fde7b6",
+		"privateGlueSha256": "05c1f4c54590dbbf200d134f776f93d1e9c753ab61e3c4d8afa953195f06298f",
+		"privateWasmBuildReportSha256": "245d11508d336462a4e3203cdeb741a74f1b9f11f8fead9488ab6fd3f4f46cf7",
+		"driverSha256": "204ba401db882a99d6a82632e03dc3270de5c6121b7672fea111cb4ce525ac70",
+		"browserFixtureSha256": "39d5f8fd471221c7053800afb94e47377bf23ecf7e58804fad7bcc41cc84cc91",
+		"beforeAndAfter": "Runner rechecked loaded source inputs, complete original scripts, private WASM/glue, Rust snapshot/current producer sources, every served file, actual browser/decoder binaries and exported video before publishing success",
+		"reference": [
+			{ "id": "core/util.js", "sha256": "1e6be8d7551fdb3ded2a6dde027fab9630837fcc47c34ac3c1dc622664dedd48" },
+			{ "id": "core/assets.js", "sha256": "ca6f66a75af8ce87607e2e8ff708343209cacffc35cc04a6130e53b2548d3baa" },
+			{ "id": "core/draw.js", "sha256": "4e7b4cd7efd46bf7dd69046a6fc0bd15131c1c66a7bc64e7823d557ba4fd11ec" },
+			{ "id": "scenes/dark.js", "sha256": "4b20e29e78b30ae67c350e4622ae60933137b00cbcedbe858ed7c652536a55bd" }
+		],
+		"servedFiles": {
+			"assets/export-vp9-quantizer-source-Dz7OM4Yc.js": { "byteLength": 12209, "sha256": "bae3ee434db96d256c59a8ef1ec77fe99d2c1bdb9ab1546707e5c8731c328512" },
+			"assets/mv-flame-export-browser-EU86B6xz.js": { "byteLength": 2740005, "sha256": "3946b250aa3cff0ab99c4d19e0e1b2d5a45d1652a6cb3ffe7ea2d8873b784dc2" },
+			"assets/opencut_wasm_bg-D7jdgQM9.wasm": { "byteLength": 10312674, "sha256": "9dd8bc0521bea902b246093ea0d74216a248b578c76bf136d5f312b0b3fde7b6" },
+			"script/fixtures/mv-flame-export-browser.html": { "byteLength": 244, "sha256": "525bccf81b229a83759927cb574e13e131319f90bbaaba63234bfa0363428d9a" }
+		},
+		"browser": {
+			"version": "151.0.7922.34",
+			"executable": "C:/Users/Sayo/AppData/Local/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-win64/chrome-headless-shell.exe",
+			"sha256": "ce4635cd0e5dc0e21494542a701f347e91c1f1d821970578d97ed8df4ced50ef",
+			"actualBinaryBoundBeforeAndAfter": true
+		},
+		"decoders": [
+			{ "executable": "E:/Software/ffmpeg-6.0-full_build/bin/ffmpeg.exe", "sha256": "3fe23ab1bdb8f686bef34000dc93534caa689c4efa073295d2f705732d002a6f" },
+			{ "executable": "E:/Software/ffmpeg-6.0-full_build/bin/ffprobe.exe", "sha256": "4e3882e55e03493cc5a12b395b70490b0dcab4dcc160d458ca7b5990ce7c4098" }
+		],
+		"scope": "Identities bind this completed checkpoint and its actual served artifacts, not later renderer cleanup changes or the current whole workspace"
+	},
+	"gpu": {
+		"measuredFrames": 165,
+		"previewExportParity": { "worstMaxChannel": 0, "worstMae": 0, "worstChangedChannels": 0 },
+		"completeOriginalOracleError": { "worstMaxChannel": 0, "worstMae": 0, "worstChangedChannels": 0 },
+		"repeatPairs": 16,
+		"repeatFrames": [10, 20, 30, 40, 51, 61, 71, 81, 92, 102, 112, 122, 133, 143, 153, 163],
+		"repeatError": { "worstMaxChannel": 0, "worstMae": 0, "worstChangedChannels": 0 },
+		"blankFrames": 5,
+		"thresholds": { "maxChannelAtMost": 2, "maeLessThan": 0.025, "repeatMax": 0 }
+	},
+	"encodedVideo": {
+		"file": "C:/Users/Sayo/AppData/Local/Temp/rocut-flame-export-bjAhlR/flame.webm",
+		"mimeType": "video/webm",
+		"byteLength": 144969393,
+		"sha256": "ef2de89c3350e4b1c4a14b966c42358758f984692bee6bf46d80a44741651114",
+		"requestedChroma": "444",
+		"requestedVp9Quantizer": 0,
+		"rgbLosslessClaim": false,
+		"binaryTransport": { "downloadCount": 1, "acknowledged": true, "completed": true, "error": null },
+		"transport": "Browser Blob download with one completed, acknowledged binary transfer; not a JSON/base64 encoded-video payload"
+	},
+	"independentDecode": {
+		"passed": true,
+		"measuredFrames": 165,
+		"frameCount": 165,
+		"fps": 60,
+		"width": 1920,
+		"height": 1080,
+		"thresholds": { "rgbMaeLessThan": 4, "foregroundMaeLessThan": 8, "blankRgbMax": 0 },
+		"worstRgbMae": 1,
+		"worstForegroundMae": 0.955683995627572,
+		"worstMaxChannel": 3,
+		"blankFrames": 5,
+		"allBlankRgbMax": 0,
+		"violations": [],
+		"actualMetadata": { "codec": "vp9", "profile": "Profile 1", "pixelFormat": "yuv444p", "colorSpace": "smpte170m", "colorRange": "tv", "colorTransfer": "smpte170m", "colorPrimaries": "smpte170m" },
+		"browserResultIndependentDecodeTested": false,
+		"scope": "Browser stage did not decode video; final Host report independently decoded all 165 frames with FFmpeg. 444/q0 is not byte-exact RGB and actual encoded metadata is tv/smpte170m, not verified full-range sRGB."
+	},
+	"lifecycleCheckpoint": {
+		"bridgeFreeze": "C:/Users/Sayo/AppData/Local/Temp/rocut-flame-bridge-freeze-20261009-f.json",
+		"bridgeFreezeSha256": "5704349858009523123af912ea538d3f5a4ecb7675cfcc4a8de148dc40c0611f",
+		"frozenFiles": 43,
+		"frozenFilesLoadedInThisExport": 23,
+		"loadedFreezeHashMismatches": 0,
+		"wholeRenderTreeJointBudgetImplemented": true,
+		"cpuChecks": { "nodeLifecycleTests": 7, "nodeLifecycleAssertions": 509, "domainTests": 7, "domainAssertions": 189, "realOwnerNativeTests": 3, "realOwnerNativeAssertions": 10, "compositorResidencyTests": 6, "compositorResidencyAssertions": 21, "publicationTests": 6, "publicationAssertions": 28, "exportCancellationTests": 10, "exportCancellationAssertions": 53, "combinedOuterTests": 21, "combinedOuterAssertions": 216 },
+		"scope": "One explicit compositor/session residency domain shares owned raster reservations and semantic GPU texture leases across preview/export nodes; Rust native.admit and Budget::joint own cap/work policy. CPU checks and the completed export bind freeze f, not later RendererManager cross-root partial-sync cleanup.",
+		"notProven": ["RSS bounds", "driver-hidden GPU allocation", "arbitrary JS heap", "external provider retention", "encoder queue bounds", "root cause or universal resolution of the historical V8 allocation failure"]
+	},
+	"priorNativeCheckpoint": {
+		"evidence": "docs/evidence/flame-native-pixels.json",
+		"namedObservations": 173,
+		"bridgeFreeze": "C:/Users/Sayo/AppData/Local/Temp/rocut-flame-bridge-freeze-20261009-e.json",
+		"bridgeFreezeSha256": "af3d6b313932f7421ff2141172f25085e777d200d69160eb985271cdde3c42e1",
+		"scope": "Historical original native scene/prepared-image parity remains bound to checkpoint e; it is not relabeled as f"
+	},
+	"limits": {
+		"realExportTested": true,
+		"independentEncodedVideoDecodeTested": true,
+		"installedElectronTested": false,
+		"groupMasterPostTested": false,
+		"wholeSongMvTested": false,
+		"rgbLosslessTested": false,
+		"actualFullRangeSrgbTested": false,
+		"performanceOrRssAcceptance": false,
+		"scope": "Standalone pinned-browser Flame production preview/export with declared synthetic assets; no installed Electron, original film artwork, whole-song MV, arbitrary codecs/backends or full ecosystem guarantee"
+	}
+}

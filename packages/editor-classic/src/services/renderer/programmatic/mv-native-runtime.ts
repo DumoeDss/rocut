@@ -10,6 +10,15 @@ import {
 	type MvNativeDispose,
 	type MvNativeRequest,
 } from "./mv-native-protocol";
+import {
+	ImagePreprocessOwner,
+	type ImagePreprocessAccess,
+} from "./image-preprocess-owner";
+import { prepareImagePreprocessPatches } from "./image-preprocess-patches";
+import {
+	hasFlamePlan,
+	imagePreprocessRasterBytes,
+} from "./image-preprocess-binding";
 
 /** Only fresh canonical Rust admission can create a ticket. No source code,
  * caller-supplied frame or Worker message can select this DOM-backed seam.
@@ -19,16 +28,78 @@ import {
 export async function runMvNativeRaster({
 	ticket,
 	signal,
+	imagePreprocessOwner,
 }: {
 	ticket: MvNativeRasterTicket;
 	signal?: AbortSignal;
+	imagePreprocessOwner?: ImagePreprocessAccess;
 }): Promise<ImageBitmap> {
 	signal?.throwIfAborted();
 	const input = consumeMvNativeRasterTicket(ticket);
 	if (typeof document === "undefined")
 		throw Error("Native MV rasterization requires a browser document");
+	let releaseResidency: (() => void) | undefined;
+	let releasePatches: (() => void) | undefined;
+	const ownsPreprocessor = !imagePreprocessOwner;
+	if (hasFlamePlan(input.frame.recipePlan)) {
+		imagePreprocessOwner ??= new ImagePreprocessOwner();
+		const encoded =
+			input.resources.reduce((sum, item) => sum + item.body.byteLength, 0) +
+			input.sequenceImages.reduce((sum, item) => sum + item.body.byteLength, 0);
+		const releasePreparation = imagePreprocessOwner.reserve(encoded * 2);
+		try {
+			const prepared = await prepareImagePreprocessPatches({
+				input,
+				owner: imagePreprocessOwner,
+				signal: signal ?? new AbortController().signal,
+			});
+			const { patches } = prepared;
+			releasePatches = prepared.release;
+			const rasterByteLimit = imagePreprocessRasterBytes({
+				plan: input.frame.recipePlan,
+				width: input.width,
+				height: input.height,
+			});
+			const decoded =
+				input.imageAdmissions.reduce(
+					(sum, item) => sum + item.decodedBytes,
+					0,
+				) +
+				(input.frame.sequenceImages ?? []).reduce(
+					(sum, item) => sum + item.width * item.height * 4,
+					0,
+				);
+			releasePreparation();
+			releaseResidency = imagePreprocessOwner.reserve(
+				encoded * 2 +
+					decoded * 2 +
+					rasterByteLimit +
+					patches.reduce(
+						(sum, patch) => sum + patch.envelope.byteLength * 3,
+						0,
+					),
+			);
+			input.preparedPatches = patches;
+			input.rasterByteLimit = rasterByteLimit;
+		} catch (error) {
+			releasePatches?.();
+			releasePatches = undefined;
+			if (ownsPreprocessor) imagePreprocessOwner.dispose();
+			throw error;
+		} finally {
+			releasePreparation();
+		}
+	}
 	const requestId = crypto.randomUUID();
-	return new Promise((resolve, reject) => {
+	let realmStarted = false;
+	const releaseOwner = () => {
+		releaseResidency?.();
+		releaseResidency = undefined;
+		releasePatches?.();
+		releasePatches = undefined;
+		if (ownsPreprocessor) imagePreprocessOwner?.dispose();
+	};
+	return new Promise<ImageBitmap>((resolve, reject) => {
 		const iframe = document.createElement("iframe");
 		iframe.sandbox.add("allow-scripts");
 		iframe.hidden = true;
@@ -48,7 +119,9 @@ export async function runMvNativeRaster({
 			channel.port2.close();
 			iframe.onload = null;
 			iframe.remove();
+			releaseOwner();
 		};
+		realmStarted = true;
 		const cleanup = () => {
 			if (disposing) return;
 			disposing = true;
@@ -173,5 +246,7 @@ export async function runMvNativeRaster({
 		} catch (error) {
 			fail(error);
 		}
+	}).finally(() => {
+		if (!realmStarted) releaseOwner();
 	});
 }

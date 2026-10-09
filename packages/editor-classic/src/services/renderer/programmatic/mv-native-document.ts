@@ -2,6 +2,7 @@ import { MV_RECIPE_RENDERER_SOURCE } from "./mv-recipe-renderer";
 import { SEQUENCE_IMAGE_DECODER_SOURCE } from "./sequence-image-decoder";
 import { IMAGE_DIMENSIONS_WORKER_SOURCE } from "./image-dimensions-worker";
 import { MV_NATIVE_CONNECT, MV_NATIVE_PROTOCOL } from "./mv-native-protocol";
+import { IMAGE_PREPROCESS_RENDERER_SOURCE } from "./image-preprocess-renderer";
 
 /** Fixed interpreter only. Project text never enters this document/script.
  * Unlike the authored Worker broker, this CSP cannot eval, spawn Workers,
@@ -16,6 +17,7 @@ export const MV_NATIVE_DOCUMENT = `<!doctype html>
   const nativeCreateImageBitmap = globalThis.createImageBitmap.bind(globalThis);
   let disposed = false, started = false, iterator;
   const bitmaps = new Set(), faces = new Set(), canvases = new Set();
+  let rasterBytes=0, rasterByteLimit;
   const check = () => { if (disposed) throw Error('Native MV frame cancelled'); };
   // This lexical wrapper also covers asynchronous decoders shared with Worker.
   // A bitmap completing after cancellation is closed before it can be used.
@@ -30,6 +32,11 @@ export const MV_NATIVE_DOCUMENT = `<!doctype html>
     check();
     if (![width,height].every(v => Number.isSafeInteger(v) && v > 0 && v <= 4096))
       throw Error('Invalid native MV surface dimensions');
+    if(rasterByteLimit!==undefined){
+      rasterBytes=width*height*8;
+      for(const existing of canvases)rasterBytes+=existing.width*existing.height*8;
+      if(rasterBytes>rasterByteLimit)throw Error('Native MV joint raster budget exceeded');
+    }
     const canvas = document.createElement('canvas');
     canvas.width = width; canvas.height = height; canvases.add(canvas);
     return canvas;
@@ -56,6 +63,7 @@ export const MV_NATIVE_DOCUMENT = `<!doctype html>
   }
   ${SEQUENCE_IMAGE_DECODER_SOURCE}
   ${IMAGE_DIMENSIONS_WORKER_SOURCE}
+  ${IMAGE_PREPROCESS_RENDERER_SOURCE}
   ${MV_RECIPE_RENDERER_SOURCE}
   addEventListener('message', function connect(event) {
     const message = event.data;
@@ -72,9 +80,13 @@ export const MV_NATIVE_DOCUMENT = `<!doctype html>
       try {
         check();
         if (!input || typeof input !== 'object' || Array.isArray(input)
-          || Object.keys(input).some(k => !['width','height','frame','resources','sequenceImages','imageAdmissions'].includes(k)))
+          || Object.keys(input).some(k => !['width','height','frame','resources','sequenceImages','imageAdmissions','preparedPatches','rasterByteLimit'].includes(k)))
           throw Error('Invalid native MV payload');
         const {width,height,frame,resources,sequenceImages,imageAdmissions} = input;
+        if(input.preparedPatches!==undefined){
+          if(!Array.isArray(input.preparedPatches)||!Number.isSafeInteger(input.rasterByteLimit)||input.rasterByteLimit<1)throw Error('Invalid preprocessing raster residency');
+          rasterByteLimit=input.rasterByteLimit;
+        }
         if (!frame || !frame.recipePlan || !Array.isArray(resources) || !Array.isArray(sequenceImages))
           throw Error('Missing admitted native MV inputs');
         const resourceBytes = new Map(), descriptors = new Map();
@@ -91,6 +103,7 @@ export const MV_NATIVE_DOCUMENT = `<!doctype html>
         imageAssets = await decodeMvDeclaredImages(frame,resources,imageAdmissions,'render',budget); check();
         sequenceAssets = await decodeMvSequenceImages(frame,sequenceImages,budget); check();
         const assets = Object.freeze({
+          preparedPatch:createMvPreparedPatches(input.preparedPatches||[]),
           image(id) { if (!imageAssets.images.has(id)) throw Error('Unknown native image'); return imageAssets.images.get(id); },
           sequenceImage(key) { if (!sequenceAssets.images.has(key)) throw Error('Unknown native sequence image'); return sequenceAssets.images.get(key); },
           bytes(id) { if (!resourceBytes.has(id)) throw Error('Unknown native resource'); return resourceBytes.get(id).slice(0); },

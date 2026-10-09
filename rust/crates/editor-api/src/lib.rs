@@ -10,6 +10,7 @@ pub use image_sequence::{validate_image_sequence_manifest_json, validate_image_s
 mod mv_audio;
 mod mv_font_metrics;
 mod mv_image_dimensions;
+pub mod mv_image_preprocess;
 pub use mv_image_dimensions::inspect_programmatic_image_bytes;
 pub use mv_audio::prepare_mv_audio_json;
 mod mv_recipe;

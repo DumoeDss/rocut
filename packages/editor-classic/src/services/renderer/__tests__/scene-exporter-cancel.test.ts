@@ -175,6 +175,8 @@ if (process.env.ROCUT_EXPORT_CANCEL_ISOLATED !== "1") {
 	mock.module("../../../fps/utils", () => ({ frameRateToFloat: () => 30 }));
 	mock.module("../canvas-renderer", () => ({
 		CanvasRenderer: class {
+			rasterResidencyDomain = { closeTree() {} };
+			async retireTree() {}
 			fps = { numerator: 30, denominator: 1 };
 			async getOutputCanvas() {
 				return { width: 1920, height: 1080 };

@@ -1,0 +1,169 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "native-flame-original-pixel-parity-and-editor-export-passed",
+	"run": {
+		"command": "node script/probe-mv-flame-native.mjs --browser-only",
+		"sessionId": 37902,
+		"exitCode": 0,
+		"browser": "151.0.7922.34",
+		"report": "C:/Users/Sayo/AppData/Local/Temp/rocut-flame-native-ZX8xOV/verification.json",
+		"reportSha256": "c494d4cd7ac066c5a813f3ffea5b6e8a6d4684016f74cfd152f668cfe6d5f869",
+		"browserExecutable": "C:/Users/Sayo/AppData/Local/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-win64/chrome-headless-shell.exe",
+		"browserBinarySha256": "ce4635cd0e5dc0e21494542a701f347e91c1f1d821970578d97ed8df4ced50ef",
+		"actualBrowserBinaryBoundBeforeAndAfter": true
+	},
+	"scope": {
+		"pipeline": "Actual private Rust WASM Flame plan and image preprocessing -> production native frame runtime -> complete unchanged original Flame scene in an independent iframe",
+		"sceneSize": { "width": 1920, "height": 1080 },
+		"modes": ["breathe", "grow", "dark"],
+		"cases": 16,
+		"sceneCaptureVisits": 160,
+		"uniqueSceneSamples": 144,
+		"exactNonmonotonicRepeats": 16,
+		"fullPreparedImageComparisons": 13,
+		"namedObservations": 173,
+		"sampling": "Complete scene and prepared images; no acceptance crop, mask or reduced-resolution preprocessing",
+		"coverage": [
+			"Default and explicit parameters for all three modes",
+			"Same resource ID with changed content, changed ID and actual 720x1200 image dimensions",
+			"Changed landmarks, vocal start boundary and end-of-envelope clamp",
+			"Explicit zero vocal, reviewed global stops, explicit empty stops and relighting",
+			"Nonmonotonic sampling across original 12fps animation boundaries"
+		]
+	},
+	"identity": {
+		"loadedSourceCount": 80,
+		"sourcesAndReferenceAndServedBundleStable": true,
+		"privateSourceManifestSha256": "7de4d72a6f6eb8345b1c196a9002da0391696c0150bda14febe1a1e195f0a6a2",
+		"privateWasmSha256": "9dd8bc0521bea902b246093ea0d74216a248b578c76bf136d5f312b0b3fde7b6",
+		"privateGlueSha256": "05c1f4c54590dbbf200d134f776f93d1e9c753ab61e3c4d8afa953195f06298f",
+		"servedJavascriptSha256": "07ca1f138ab2a26ec84530dae4fe53ad6678053b0f6ba10dcf58708e9dbabdf8",
+		"reference": [
+			{
+				"id": "core/util.js",
+				"sha256": "1e6be8d7551fdb3ded2a6dde027fab9630837fcc47c34ac3c1dc622664dedd48"
+			},
+			{
+				"id": "core/assets.js",
+				"sha256": "ca6f66a75af8ce87607e2e8ff708343209cacffc35cc04a6130e53b2548d3baa"
+			},
+			{
+				"id": "core/draw.js",
+				"sha256": "4e7b4cd7efd46bf7dd69046a6fc0bd15131c1c66a7bc64e7823d557ba4fd11ec"
+			},
+			{
+				"id": "scenes/dark.js",
+				"sha256": "4b20e29e78b30ae67c350e4622ae60933137b00cbcedbe858ed7c652536a55bd"
+			}
+		],
+		"oracle": "Whole unchanged scripts, original makeClock/makeEnv, original diffusion and feathering. Independent prepared debug canvas after all preprocessing, never rewritten native expected math."
+	},
+	"pixels": {
+		"passed": true,
+		"allMaxChannel": 0,
+		"allMae": 0,
+		"thresholds": {
+			"maxChannelAtMost": 2,
+			"maeLessThan": 0.025,
+			"repeatMax": 0
+		},
+		"violations": [],
+		"pageErrors": [],
+		"externalRequests": []
+	},
+	"commandOmissionControls": {
+		"positive": { "max": 0, "mae": 0, "changed": 0 },
+		"unlit-fingers": {
+			"max": 30,
+			"mae": 0.2565890239197531,
+			"changed": 236797
+		},
+		"no-repair": { "max": 167, "mae": 0.7381780478395061, "changed": 89443 },
+		"no-feather": { "max": 99, "mae": 1.575313705632716, "changed": 752331 },
+		"no-fingers": { "max": 60, "mae": 0.5036623505015432, "changed": 259095 },
+		"no-lit-shading": {
+			"max": 65,
+			"mae": 6.494060932677469,
+			"changed": 3023776
+		},
+		"detected": 5,
+		"nestedDeletion": "no-fingers deletes exactly one fl-fingers blit inside fl-scene.commands; zero or multiple hits are fixture errors"
+	},
+	"referenceDerivedSensitivityControls": {
+		"low-iterations": {
+			"mutation": "Independent reference-derived mutant only: 220 diffusion iterations -> 20",
+			"mutantScriptSha256": "c1d59748c81d7660502f63e5ae33e1c056a27b071c703ca87c4950cefd5a04b5",
+			"fullPreparedDifference": {
+				"max": 92,
+				"mae": 0.17543115234375,
+				"changed": 80390
+			}
+		},
+		"low-roi": {
+			"mutation": "Independent reference-derived mutant only: rx/ry -> rx*0.35/ry*0.35 when bounding diffusion ROI",
+			"mutantScriptSha256": "7884ead1e701c8468f2d517ac71a7849a532b568a054c46186a36a47a5424a80",
+			"fullPreparedDifference": {
+				"max": 189,
+				"mae": 2.0166964518229165,
+				"changed": 154997
+			}
+		},
+		"productionAlgorithmAndPositiveOracleChanged": false
+	},
+	"nodeLifecycle": {
+		"checkpoint": "Historical native-pixel checkpoint e; current joint-budget/export checkpoint f is recorded separately below",
+		"cpuOwnerTests": 13,
+		"cpuNodeTests": 6,
+		"inactiveAndCancelledNodesDropPersistentCacheReferences": true,
+		"publishedCanvasesNotResizedDuringRelease": true,
+		"reactivationWaitsForOldPendingLeasesAndRealmGraceToDrain": true,
+		"waitingCanBeCancelledWithoutAllocatingANewOwner": true,
+		"lateAbortedBitmapCannotRepublishCache": true,
+		"bridgeFreeze": "C:/Users/Sayo/AppData/Local/Temp/rocut-flame-bridge-freeze-20261009-e.json",
+		"bridgeFreezeSha256": "af3d6b313932f7421ff2141172f25085e777d200d69160eb985271cdde3c42e1",
+		"wholeRenderTreeJointBudgetImplemented": false,
+		"scope": "CPU lifetime tests, including 160 sequential node clients; not RSS measurements or proof of a root cause for the earlier renderer allocation failure"
+	},
+	"currentLifecycleCheckpoint": {
+		"bridgeFreeze": "C:/Users/Sayo/AppData/Local/Temp/rocut-flame-bridge-freeze-20261009-f.json",
+		"bridgeFreezeSha256": "5704349858009523123af912ea538d3f5a4ecb7675cfcc4a8de148dc40c0611f",
+		"frozenFiles": 43,
+		"wholeRenderTreeJointBudgetImplemented": true,
+		"cpuNodeTests": 7,
+		"cpuDomainTests": 7,
+		"cpuCompositorResidencyTests": 6,
+		"scope": "Implemented shared compositor/session raster and semantic GPU texture reservations, CPU verified and exercised by the separately recorded real export. No RSS/driver-hidden allocation proof; does not cover later cross-root partial-sync cleanup. The original 173 pixel observations above remain bound to e."
+	},
+	"editorExportCheckpoint": {
+		"evidence": "docs/evidence/flame-editor-export.json",
+		"report": "C:/Users/Sayo/AppData/Local/Temp/rocut-flame-export-bjAhlR/verification.json",
+		"reportSha256": "b8b504503387172b8f5f809adc918ee52f63456b4f63db7a68e376c1861e1d6d",
+		"exitCode": 0,
+		"productionAcceptancePassed": true,
+		"gpuFrames": 165,
+		"gpuWorstMaxChannel": 0,
+		"gpuWorstMae": 0,
+		"exactRepeatPairs": 16,
+		"blankFrames": 5,
+		"independentlyDecodedFrames": 165,
+		"decodedWorstRgbMae": 1,
+		"decodedWorstForegroundMae": 0.955683995627572,
+		"decodedWorstMaxChannel": 3,
+		"scope": "Separate production preview/SceneExporter/VP9 444-q0/FFmpeg checkpoint f. RGB decode is quality-gated, not byte-exact; actual metadata is yuv444p tv/smpte170m, not verified full-range sRGB."
+	},
+	"priorRun": {
+		"report": "C:/Users/Sayo/AppData/Local/Temp/rocut-flame-native-NBgrGs/verification.json",
+		"sha256": "a4e8f50176a6583cc08ce4e73d8a4ead581051f04bc1aa49a435ae8141217f9d",
+		"passed": true,
+		"actualBrowserBinaryBound": false
+	},
+	"limits": {
+		"realExportTested": true,
+		"independentEncodedVideoDecodeTested": true,
+		"installedElectronTested": false,
+		"groupMasterPostTested": false,
+		"wholeSongMvTested": false,
+		"scope": "Native producer/runtime parity and separately bound real production export with synthetic declared assets, not original film artwork, performance/RSS acceptance, whole-song MV or full ecosystem completion"
+	}
+}

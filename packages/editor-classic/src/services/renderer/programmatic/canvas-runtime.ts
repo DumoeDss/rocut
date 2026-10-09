@@ -9,6 +9,11 @@ import { resolveMvResourceFrame } from "./mv-resource-frame";
 import { resolveCanvasSequenceImages } from "./image-sequence-resources";
 import { prepareMvNativeRasterTicket } from "./mv-native-admission";
 import { runMvNativeRaster } from "./mv-native-runtime";
+import {
+	ImagePreprocessOwner,
+	type ImagePreprocessAccess,
+} from "./image-preprocess-owner";
+import { awaitImagePreprocessDeadline } from "./image-preprocess-deadline";
 
 export interface ProgrammaticRenderRequest {
 	source: ProgrammaticSource;
@@ -16,6 +21,7 @@ export interface ProgrammaticRenderRequest {
 	signal?: AbortSignal;
 	resources?: readonly ResolvedProgrammaticResource[];
 	provider?: ProgrammaticFrameProvider;
+	imagePreprocessOwner?: ImagePreprocessAccess;
 }
 
 /** One isolated execution per frame: random seek cannot inherit earlier state.
@@ -27,6 +33,7 @@ export async function renderProgrammaticCanvas({
 	signal,
 	resources = [],
 	provider,
+	imagePreprocessOwner,
 }: ProgrammaticRenderRequest): Promise<ImageBitmap> {
 	// Native Ember/titleRiff/kanjiSlam/thread/fall need HTMLCanvas clip coverage, including internal
 	// surfaces. Keep authored JavaScript on the separate, terminable Worker.
@@ -39,17 +46,63 @@ export async function renderProgrammaticCanvas({
 				node.scene.kind === "titleRiff" ||
 				node.scene.kind === "kanjiSlam" ||
 				node.scene.kind === "thread" ||
-				node.scene.kind === "fall",
+				node.scene.kind === "fall" ||
+				Reflect.get(node.scene, "kind") === "flame",
 		)
 	) {
-		const ticket = await prepareMvNativeRasterTicket({
-			source,
-			frame,
-			resources,
-			provider,
-			signal,
-		});
-		return runMvNativeRaster({ ticket, signal });
+		const deadline = new AbortController();
+		const flame = source.recipe.nodes.some(
+			(node) => Reflect.get(node.scene, "kind") === "flame",
+		);
+		const timer = flame
+			? setTimeout(
+					() =>
+						deadline.abort(
+							Error("Native MV preparation timed out after 5000 ms"),
+						),
+					5000,
+				)
+			: undefined;
+		const linked = flame
+			? AbortSignal.any([...(signal ? [signal] : []), deadline.signal])
+			: signal;
+		const ownsPreprocessor = flame && !imagePreprocessOwner;
+		let releaseEncoded: (() => void) | undefined;
+		let admissionPending: Promise<unknown> | undefined;
+		try {
+			if (flame) {
+				imagePreprocessOwner ??= new ImagePreprocessOwner();
+				releaseEncoded = imagePreprocessOwner.reserve(
+					resources.reduce((sum, item) => sum + item.body.byteLength * 3, 0),
+				);
+			}
+			const preparation = prepareMvNativeRasterTicket({
+				source,
+				frame,
+				resources,
+				provider,
+				signal: linked,
+			});
+			admissionPending = preparation;
+			const ticket = flame
+				? await awaitImagePreprocessDeadline({
+						promise: preparation,
+						signal: linked!,
+					})
+				: await preparation;
+			return await runMvNativeRaster({
+				ticket,
+				signal: linked,
+				imagePreprocessOwner,
+			});
+		} finally {
+			clearTimeout(timer);
+			if (admissionPending && releaseEncoded) {
+				const release = releaseEncoded;
+				void admissionPending.then(release, release);
+			} else releaseEncoded?.();
+			if (ownsPreprocessor) imagePreprocessOwner?.dispose();
+		}
 	}
 	frame = await resolveMvResourceFrame({ source, frame, resources, signal });
 	const sequenceImages = await resolveCanvasSequenceImages({

@@ -79,7 +79,7 @@ function* renderMvRecipeSteps(canvas, plan, assets, createSurface) {
         if (node.role === role) drawMvTypeCard(ctx, node.data, assets, w, h, createSurface);
       } else if (node.kind === 'converge') {
         if (node.role === role) drawMvConverge(ctx, node.data, createSurface);
-      } else if (node.kind === 'ember' || node.kind === 'titleRiff' || node.kind === 'kanjiSlam' || node.kind === 'thread' || node.kind === 'fall') {
+      } else if (node.kind === 'ember' || node.kind === 'titleRiff' || node.kind === 'kanjiSlam' || node.kind === 'thread' || node.kind === 'fall' || node.kind === 'flame') {
         if (node.role === role) yield* drawMvEmberSteps(ctx, node.data, assets, createSurface);
       } else if (node.kind === 'glyphRain') {
         if (node.role === role) drawMvGlyphRain(ctx, node.data, assets);

@@ -9,6 +9,8 @@ mod kanji_slam;
 mod thread;
 #[path = "fall_catalog.rs"]
 mod fall;
+#[path = "flame_catalog.rs"]
+mod flame;
 
 #[derive(Clone, Copy, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -75,6 +77,7 @@ pub fn mv_recipe_catalog_json() -> String {
     // This describes authoring support in this binary, never health or an
     // installation's verification status. Suggestions are NOT implicit defaults.
     let generators = json!({
+            "flame":flame::entry(),
             "fall":fall::entry(),
             "thread":thread::entry(),
             "kanjiSlam":kanji_slam::entry(),

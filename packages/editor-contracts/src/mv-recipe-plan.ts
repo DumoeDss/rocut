@@ -16,9 +16,15 @@ import type { MvTypeCardPlan } from "./mv-type-card-plan";
 import type { MvConvergePlan } from "./mv-converge-plan";
 import type { MvEmberPlan } from "./mv-ember-plan";
 import type { MvTitleRiffPlan } from "./mv-title-riff-plan";
+import type { MvFlamePlan } from "./mv-flame";
 
 /** Internal raster transport, produced exclusively by Rust frame evaluation. */
 export type MvPlanNode =
+	| {
+			readonly kind: "flame";
+			readonly role: MvRole;
+			readonly data: MvFlamePlan;
+	  }
 	| {
 			readonly kind: "fall";
 			readonly role: MvRole;

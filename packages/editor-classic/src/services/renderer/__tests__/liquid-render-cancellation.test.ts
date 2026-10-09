@@ -130,8 +130,16 @@ if (process.env.ROCUT_LIQUID_CANCEL_BOUNDARY_ISOLATED !== "1") {
 		WebMOutputFormat: class {},
 		BufferTarget: class {},
 		CanvasSource: class {
+			private readonly initialized?: () => void;
+			constructor(
+				...[_canvas, options]: [unknown, { onEncodedSample?: () => void }]
+			) {
+				this.initialized = options.onEncodedSample;
+			}
 			async add() {
 				encodedFrames++;
+				// This gate blocks an initialized encoder task, not its first query.
+				this.initialized?.();
 				await encodeFrame();
 			}
 			close() {}

@@ -61,6 +61,10 @@ pub enum Step {
     rename_all_fields = "camelCase"
 )]
 pub enum Command {
+    PreparedPatch {
+        request: crate::mv_image_preprocess::Request,
+        patch_key: String,
+    },
     RectBatch {
         transform: Matrix,
         operations: Vec<Operation>,

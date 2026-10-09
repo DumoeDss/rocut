@@ -26,6 +26,7 @@ import {
 } from "./canvas-renderer";
 import type { WasmCompositor } from "./compositor/wasm-compositor";
 import type { VideoCache } from "../video-cache/service";
+import type { RenderResidencyDomain } from "./render-residency-domain";
 import {
 	ExportCancelledError,
 	waitForExportOperation,
@@ -52,6 +53,7 @@ type ExportParams = {
 	compositor: WasmCompositor;
 	videoCache: VideoCache;
 	publicationGuard?: RendererPublicationGuard;
+	rasterResidencyDomain?: RenderResidencyDomain;
 };
 
 const qualityMap = {
@@ -83,6 +85,11 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 	private readonly cancellation = new AbortController();
 	private exportPromise: Promise<ArrayBuffer | null> | null = null;
 	private rootNode: RootNode | null = null;
+	private rasterRetirement: Promise<void> | undefined;
+
+	drainRasterResidency(): Promise<void> {
+		return this.rasterRetirement ?? Promise.resolve();
+	}
 
 	constructor({
 		width,
@@ -97,6 +104,7 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 		compositor,
 		videoCache,
 		publicationGuard,
+		rasterResidencyDomain,
 	}: ExportParams) {
 		super();
 		this.renderer = new CanvasRenderer({
@@ -106,6 +114,7 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 			compositor,
 			videoCache,
 			publicationGuard,
+			rasterResidencyDomain,
 		});
 
 		this.format = format;
@@ -121,7 +130,9 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 	cancel(): Promise<ArrayBuffer | null> {
 		this.isCancelled = true;
 		this.cancellation.abort();
-		cancelPendingRenderFrames(this.rootNode);
+		cancelPendingRenderFrames(this.rootNode, {
+			rasterResidencyDomain: this.renderer.rasterResidencyDomain,
+		});
 		return this.exportPromise ?? Promise.resolve(null);
 	}
 
@@ -148,8 +159,13 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 					throw error;
 				})
 				.finally(() => {
-					cancelPendingRenderFrames(rootNode);
+					const retirement = this.renderer.retireTree(rootNode);
+					this.rasterRetirement = retirement;
 					this.rootNode = null;
+					// Cancel must not wait behind an encoder still holding the exclusive
+					// transaction. The retained lease/drain stays owned until clear/close.
+					if (!this.isCancelled) return retirement;
+					void retirement.catch(() => {});
 				});
 		}
 		return this.exportPromise;

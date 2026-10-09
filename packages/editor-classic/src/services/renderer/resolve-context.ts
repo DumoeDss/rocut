@@ -1,12 +1,15 @@
 import type { FrameRate } from "opencut-wasm";
 import type { VideoCache } from "../video-cache/service";
 import type { CanvasRenderer } from "./canvas-renderer";
+import type { RenderTreeResidencyScope } from "./render-residency-domain";
 
 export interface TransitionBranchSample {
 	localTime: number;
 	sourceTime: number | null | undefined;
 }
 export interface ResolveContext {
+	rasterResidency?: RenderTreeResidencyScope;
+	signal?: AbortSignal;
 	renderer: Pick<CanvasRenderer, "width" | "height">;
 	time: number;
 	frameRate?: FrameRate;

@@ -13,6 +13,8 @@ mod gpu;
 #[cfg(target_arch = "wasm32")]
 mod masks;
 #[cfg(target_arch = "wasm32")]
+mod mv_image_preprocess;
+#[cfg(target_arch = "wasm32")]
 mod perf;
 #[cfg(any(target_arch = "wasm32", test))]
 mod render_requests;
@@ -35,6 +37,8 @@ pub use gpu::*;
 #[cfg(target_arch = "wasm32")]
 pub use masks::*;
 pub use motion_text::*;
+#[cfg(target_arch = "wasm32")]
+pub use mv_image_preprocess::*;
 #[cfg(target_arch = "wasm32")]
 pub use perf::*;
 pub use time::*;

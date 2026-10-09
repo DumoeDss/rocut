@@ -1,0 +1,8 @@
+{
+	"extends": "./mv-flame-export.tsconfig.json",
+	"include": [
+		"./mv-flame-export-browser.ts",
+		"./mv-flame-export-video.test.ts",
+		"../../packages/*/src/types/**/*.d.ts"
+	]
+}

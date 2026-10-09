@@ -1,0 +1,9 @@
+{
+	"extends": "./mv-flame-native.tsconfig.json",
+	"include": [
+		"./mv-flame-export-browser.ts",
+		"./mv-flame-export-support.test.ts",
+		"./mv-flame-export-resource.test.ts",
+		"../../packages/*/src/types/**/*.d.ts"
+	]
+}

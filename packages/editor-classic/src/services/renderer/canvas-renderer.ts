@@ -7,6 +7,13 @@ import { assertRenderNotAborted } from "./compositor/render-request";
 import type { VideoCache } from "../video-cache/service";
 import { resolveRenderTree } from "./resolve";
 import {
+	RenderResidencyDomain,
+	resolveRenderResidencyDomain,
+} from "./render-residency-domain";
+import { ImagePreprocessOwner } from "./programmatic/image-preprocess-owner";
+import { cancelPendingRenderFrames } from "./cancel-tree";
+import { isRenderCancelledError } from "./compositor/render-request";
+import {
 	measureSpanAsync,
 	measureSpanSync,
 	onRenderPerfFrameComplete,
@@ -19,6 +26,7 @@ export type CanvasRendererParams = {
 	compositor: WasmCompositor;
 	videoCache: VideoCache;
 	publicationGuard?: RendererPublicationGuard;
+	rasterResidencyDomain?: RenderResidencyDomain;
 };
 
 export interface RendererPublicationToken {
@@ -32,6 +40,7 @@ export interface RendererPublicationGuard {
 }
 
 export class CanvasRenderer {
+	readonly rasterResidencyDomain: RenderResidencyDomain;
 	canvas: OffscreenCanvas;
 	context: OffscreenCanvasRenderingContext2D;
 	width: number;
@@ -48,6 +57,7 @@ export class CanvasRenderer {
 		compositor,
 		videoCache,
 		publicationGuard,
+		rasterResidencyDomain,
 	}: CanvasRendererParams) {
 		this.width = width;
 		this.height = height;
@@ -55,6 +65,11 @@ export class CanvasRenderer {
 		this.compositor = compositor;
 		this.videoCache = videoCache;
 		this.publicationGuard = publicationGuard;
+		this.rasterResidencyDomain = resolveRenderResidencyDomain({
+			compositor,
+			domain: rasterResidencyDomain,
+			createOwner: () => new ImagePreprocessOwner(),
+		});
 
 		const surface = createCanvasSurface({ width, height });
 		this.canvas = surface.canvas;
@@ -203,6 +218,7 @@ export class CanvasRenderer {
 		signal: AbortSignal;
 	}): Promise<void> {
 		this.assertPublicationCurrent({ token, signal });
+		const rasterResidency = this.rasterResidencyDomain.tree(node);
 		await measureSpanAsync({
 			name: "resolve",
 			fn: () =>
@@ -212,6 +228,8 @@ export class CanvasRenderer {
 					time,
 					frameRate: this.fps,
 					videoCache: this.videoCache,
+					rasterResidency,
+					signal,
 				}),
 		});
 		this.assertPublicationCurrent({ token, signal });
@@ -224,10 +242,23 @@ export class CanvasRenderer {
 			width: this.width,
 			height: this.height,
 		});
-		measureSpanSync({
-			name: "syncTextures",
-			fn: () => this.compositor.syncTextures(textures),
+		const publication = this.rasterResidencyDomain.preparePublication({
+			scope: rasterResidency,
+			textures,
 		});
+		let textureSyncStarted = false;
+		try {
+			measureSpanSync({
+				name: "syncTextures",
+				fn: () => {
+					textureSyncStarted = true;
+					this.compositor.syncTextures(textures);
+				},
+			});
+			publication.commitAfterTextureSync();
+		} finally {
+			publication.discard({ textureSyncStarted });
+		}
 		await measureSpanAsync({
 			name: "renderFrame",
 			fn: () =>
@@ -237,6 +268,25 @@ export class CanvasRenderer {
 				}),
 		});
 		this.assertPublicationCurrent({ token, signal });
+	}
+
+	/** Retire only this root; texture clearing is serialized with publication. */
+	async retireTree(node: AnyBaseNode | null): Promise<void> {
+		if (!node) return;
+		const scope = this.rasterResidencyDomain.closeTree(node);
+		cancelPendingRenderFrames(node);
+		if (!scope || !this.rasterResidencyDomain.isPublishedScope(scope)) return;
+		try {
+			await this.compositor.runExclusive(async () => {
+				this.rasterResidencyDomain.retirePublication({
+					scope,
+					syncTextures: (textures) => this.compositor.syncTextures(textures),
+				});
+			});
+		} catch (error) {
+			// A closing compositor owns the final cache-clear acknowledgement.
+			if (!isRenderCancelledError(error)) throw error;
+		}
 	}
 
 	private assertPublicationCurrent({

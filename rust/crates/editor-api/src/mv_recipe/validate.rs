@@ -96,6 +96,12 @@ impl Recipe {
                 );
             }
             let valid = match &n.scene {
+                Scene::Flame {settings,span:s,..} => {
+                    uses_audio |= settings.uses_audio();
+                    afterimage_scratch=afterimage_scratch.max(settings.scratch_pixels(images)?);
+                    settings.valid((self.song_start_seconds*120000.0).round() as u64,s,step)
+                        &&settings.resources_valid(resources)&&span(s,frames)
+                }
                 Scene::Fall {settings,span:s,..} => {
                     uses_audio |= settings.uses_audio();
                     afterimage_scratch=afterimage_scratch.max(settings.scratch_pixels(images)?);
@@ -362,6 +368,7 @@ impl Recipe {
             .get(id)
             .ok_or_else(|| format!("Unknown MV input node: {id}"))?;
         work.drawing += match node {
+            Scene::Flame { .. } => 16,
             Scene::Fall { .. } => 16,
             Scene::Thread { .. } => 16,
             Scene::KanjiSlam { .. } => 16,
@@ -381,6 +388,10 @@ impl Recipe {
         // Keep the existing complex-operation budget. Simple glyphs/image cells
         // have a separate finite expanded-DAG budget, including shared inputs.
         let primitive_cost = match node {
+            Scene::Flame {settings,..} => {
+                work.plan_pixels+=settings.plan_pixels();
+                settings.work()
+            }
             Scene::Fall {settings,span,..} => {
                 work.plan_pixels+=settings.plan_pixels();
                 let ticks=u64::from(span.duration_frames).checked_mul(step).ok_or("MV simulation duration overflow")?;

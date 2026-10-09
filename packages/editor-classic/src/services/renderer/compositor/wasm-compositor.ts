@@ -9,6 +9,7 @@ import {
 	uploadTextureForHandle,
 } from "opencut-wasm";
 import * as wasmRequestApi from "opencut-wasm";
+import { getBoundRenderResidencyDomain } from "../render-residency-domain";
 import {
 	assertRenderNotAborted,
 	assertRenderFrameRequestApi,
@@ -324,6 +325,7 @@ export class WasmCompositor {
 		});
 	}
 
+	private rasterResidencyDrain: Promise<void> | undefined;
 	dispose(): void {
 		if (this.disposed) return;
 		if (this.transactions.size || this.requests.size) {
@@ -335,6 +337,14 @@ export class WasmCompositor {
 		this.canvas = null;
 		this.initializedSize = null;
 		this.cache.clear();
+		const domain = getBoundRenderResidencyDomain(this);
+		if (domain) {
+			domain.releasePublishedAfterClear();
+			this.rasterResidencyDrain = domain.disposeAndDrain();
+			// Observe synchronous dispose's async cleanup; close awaits this same
+			// original promise and still propagates its actual failure.
+			void this.rasterResidencyDrain.catch(() => {});
+		}
 	}
 
 	/** Abort callbacks run now, not as another queued compositor transaction. */
@@ -350,7 +360,10 @@ export class WasmCompositor {
 	close(): Promise<void> {
 		if (this.closePromise) return this.closePromise;
 		this.closing = true;
-		this.closePromise = this.cancelAndDrain().then(() => this.dispose());
+		this.closePromise = this.cancelAndDrain().then(() => {
+			this.dispose();
+			return this.rasterResidencyDrain;
+		});
 		return this.closePromise;
 	}
 

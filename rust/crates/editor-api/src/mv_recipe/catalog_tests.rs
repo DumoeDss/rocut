@@ -23,6 +23,8 @@ fn suggested(parameters: &Value) -> Value {
 }
 fn valid(kind: &str, settings: Value) -> bool {
     match kind {
+        "flame" => serde_json::from_value::<super::flame::Flame>(settings).is_ok_and(|v|
+            v.valid(0, &super::model::Span { start_frame: 0, duration_frames: 60 }, 4000)),
         "fall" => serde_json::from_value::<super::fall::Fall>(settings).is_ok_and(|v|
             v.valid(0, &super::model::Span { start_frame: 0, duration_frames: 60 }, 4000)),
         "thread" => serde_json::from_value::<super::thread::Thread>(settings).is_ok_and(|v|

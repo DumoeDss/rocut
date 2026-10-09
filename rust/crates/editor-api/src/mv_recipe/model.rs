@@ -60,6 +60,11 @@ pub struct Node {
     deny_unknown_fields
 )]
 pub enum Scene {
+    Flame {
+        role: Role,
+        settings: super::flame::Flame,
+        span: Span,
+    },
     Fall {
         role: Role,
         settings: super::fall::Fall,
@@ -289,6 +294,10 @@ pub struct Plan {
 #[derive(Serialize)]
 #[serde(tag = "kind", rename_all = "camelCase")]
 pub enum PlanNode {
+    Flame {
+        role: Role,
+        data: super::flame::Plan,
+    },
     Fall {
         role: Role,
         data: super::fall::Plan,
