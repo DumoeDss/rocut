@@ -214,7 +214,9 @@ pub(super) fn prepare(request: &ExecutionRequest) -> Result<ExecutionPlan, Strin
             start_sample: participation.start_sample,
             source_start_sample: source_start,
             source_period_frames: source_period,
-            r#loop: native.r#loop,
+            // A variable-rate loop is already materialized across the full
+            // clip, before FX. Do not modulo it a second time in the dry kernel.
+            r#loop: native.r#loop && decoded_sources[index].rate_preparation.is_none(),
             muted: participation.muted,
             audible_media: participation.audible_media,
             requires_pcm,

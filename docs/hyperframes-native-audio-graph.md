@@ -9,10 +9,11 @@ FFmpeg, private Chromium and HTTP PCM transport. Omit the profile to retain the
 legacy collector/cache behavior (including its rejection of groups/FX).
 The graph profile requires an archived DSP identity and a freshly checked Host
 runtime identity. Bounded native FX/preset automation and native variable-rate
-preparation are implemented in this profile. The variable-rate preparation and
-downstream native FX/Rust mix matrices pass; see the 2026-10-09 checkpoint below
-for the precise coverage. Variable-loop behavior, fractional clip/trim/loop sample
-phases and participating fallback gain histories remain separate gaps.
+preparation, including bounded source-domain loops, are implemented in this
+profile. The variable-rate preparation and downstream native FX/Rust mix matrices
+pass; see the 2026-10-09 checkpoints below for precise coverage. Fractional
+clip/trim/loop sample phases and participating fallback gain histories remain
+separate gaps.
 This is source-level standalone Host acceptance, not installed-plugin acceptance.
 Electron adaptation and shared installations are outside this workstream.
 
@@ -360,8 +361,9 @@ complete the track→bus→master mixing stages. The 512 MiB estimate includes b
 encoded source copies, decoded cache, retained track/bus outputs, canonical mix
 buffers, dry/assembly transport and WASM copies, explicit native buffers
 and conservative opaque-DSP reserves; `browserTotalMemoryGuaranteed: false`
-is intentional. Native variable rate, unresolved discovery
-boundaries and full dynamic fallback history remain integration gaps.
+is intentional. At this earlier checkpoint, native variable rate, unresolved
+discovery boundaries and full dynamic fallback history were integration gaps;
+later checkpoints below supersede the rate/discovery status.
 The targeted Rust run passed 57 cases across bus scheduling (6), execution
 preparation (8), dry/post-FX PCM (5), graph admission (12), discovery (7), FX
 normalization (10) and existing gain envelopes (9). Bus curve expansion has
@@ -542,9 +544,10 @@ and `hyperframes-graph-editor.webm` (12,545 bytes; SHA-256
 `8a0b3acea53e6886308fd0aaf4675f398c8589b7128a74f67caabebf0e5bf23f`).
 
 Still required: installed UI playback/synchronization acceptance for this graph
-profile; participating fallback history, variable-loop behavior and fractional
-clip/trim/loop phase support; installed Electron/full-MV acceptance. Variable-rate
-preparation has since been implemented; see the 2026-10-09 checkpoint below.
+profile; participating fallback history and fractional clip/trim/loop phase
+support; installed Electron/full-MV acceptance. Variable-rate preparation and
+bounded source-domain looping have since been implemented; see the 2026-10-09
+checkpoints below.
 The remaining gaps are not replaced with silent approximations.
 
 ### Native FX automation acceptance (2026-10-08)
@@ -596,8 +599,8 @@ The differential report is in private
 `tmp/rocut-fx-automation-rust-zAml9S/verification.json`; new artifacts are under
 `.tmp-probe/hf-automation-20261008-b935e1/`. No shared WASM, installed plugin or
 Electron process was replaced. Installed playback/full-MV and the remaining
-loop/fallback/fractional-phase gaps still require separate work. The later
-variable-rate checkpoint below supersedes the earlier rate-automation gap.
+fallback/fractional-phase gaps still require separate work. The later
+variable-rate/loop checkpoints below supersede those earlier gaps.
 
 The new private canonical release has no public API delta. Its measured NOTICE
 digest is recorded; API validation passes all 27 negative/two positive controls,
@@ -665,8 +668,9 @@ bounded media IO. The native intermediate is stereo PCM16 at 48 kHz and is
 explicitly converted to the requested graph rate before native FX, the post-FX
 fader, bus/master processing and the final crop. Rate bounds remain 0.1 to 10;
 the native atempo decomposition tolerance is preserved. The existing constant-rate
-decoder path is unchanged. Variable-rate loops still fail admission rather than
-being approximated by repeated prepared output.
+decoder path is unchanged. At this checkpoint, variable-rate loops still failed
+admission. The following loop checkpoint adds source-domain preparation rather
+than repeating already prepared output.
 
 The independent oracle extracts unchanged functions from the pinned engine;
 only process selection and IO transport are adapted. Its expanded preparation
@@ -704,5 +708,103 @@ identity requests are rejected. The Host matrix uses private
 
 These checks do not establish full upstream `processCompositionAudio`
 equivalence, continuous MediaElement preview, Electron transport, installed UI
-or encoded variable-rate/full-MV export. Fractional sample phase, variable-loop
-and participating fallback histories remain open requirements.
+or encoded variable-rate/full-MV export. Fractional sample phase and participating
+fallback histories remain open requirements; bounded loops are covered below.
+
+### Variable-rate source-domain loop acceptance (2026-10-09)
+
+The same graph v1 profile now supports variable-rate loops with explicit
+sample-grid and working-set limits. This preserves native author/preview loop
+intent; it does **not** claim to reproduce the upstream exporter's omission of
+loop. The pinned engine's parsed audio/track objects do not carry a loop field,
+whereas actual core `syncRuntimeMedia` requests
+`mediaStart + sourceTimeAt(rate, clipLocalTime) % (sourceDuration - mediaStart)`.
+Rate, fader and FX clocks continue across wraps; none restart on each source lap.
+
+Rust owns source period, full consumed span, finite repeat count, filter strings
+and memory admission. Host performs two bounded IO stages:
+
+1. Decode the trimmed source window, canonicalize it to stereo Float32/48 kHz
+   with amplitude-preserving mono duplication, loop **source** samples, and
+   materialize a bounded canonical WAV.
+2. Apply the unchanged full-clip native rate-slice preparation once to this WAV,
+   followed by the established PCM16/48 kHz → graph-rate conversion. Process
+   native FX/faders/buses once over complete history, then crop the final output.
+
+The independent reference instead repeats decoded source samples in fixture
+code, writes a virtual WAV, and invokes the unchanged pinned native preparation.
+It does not use the production Rust filters or repeat stretched/prepared PCM.
+The separate source WAV is required by observed behavior: an inline
+mono-canonicalization/loop/ramp candidate differed in 1,336 frames across five
+short windows, maximum error `0.134033203125`. The same source prepared in two
+stages matches exactly. This isolates the required IO seam, not the precise
+internal FFmpeg packetization/format-negotiation cause.
+
+The restricted admission contract is:
+
+- Trim, loop period, clip start and duration must align at both native 48 kHz
+  and the requested 44.1/48 kHz graph rate. Fractional-phase and participating
+  fallback-history gates remain unchanged; a zero/negative period is rejected.
+- The whole source-span and loop tile each obey the 128 MiB PCM bound; finite
+  repeat counts never use an infinite FFmpeg loop. Canonical WAV output adds a
+  bounded 64 KiB header allowance. Source transport/native buffer reservations
+  join the existing conservative 512 MiB working set, even for a tiny final crop
+  or muted clip. This is not a hard process-RSS guarantee.
+- Per-clip rate/source geometry cannot share a decoded buffer merely because
+  encoded source identity matches. Prepared variable-loop clips disable the dry
+  kernel's scalar-loop modulo, avoiding a second loop. Scalar and nonloop
+  preparation paths are unchanged.
+
+Acceptance reports are retained under the local temporary directory:
+
+| Report directory                       | Evidence                                                                                                                       |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `rocut-hf-rate-loop-clock-UUqalm`      | Five original runtime clock cases with IO-only element stubs; source/rate requests, not playback PCM                           |
+| `rocut-hf-rate-loop-oracle-oxrd24`     | Retained failed inline mono candidate; `verification-source-stage.json` records exact two-stage recovery                       |
+| `rocut-hf-rate-loop-oracle-A9DgQH`     | Five independent real-source cases, including mono and 44.1 kHz input; maximum/RMS error zero                                  |
+| `rocut-hf-rate-loop-production-IVF47b` | Actual private WASM and Host: 10 preparation cases, two stateful FX/mix cases at both graph rates; all maximum/RMS errors zero |
+| `rocut-hf-rate-loop-host-hUJHl4`       | Compiled author loop → real browser graph collection → HTTP → editor `ProgrammaticAudioRuntime`, default 44.1 kHz              |
+| `rocut-hf-rate-loop-boundary-rFC3BQ`   | Seven source-span EOF boundary cases around half a source sample and the six-decimal native time grid; exact PCM               |
+
+The independent oracle detects 16 incorrect implementations: repeating the first
+prepared lap, looping through source zero, restarting preparation for a crop,
+and resetting the real native delay at the first wrap. The delay-reset control
+differs by maximum `0.28971198201179504`, RMS `0.025858744009024225`.
+Production stateful saturate+delay cases preserve full/crop byte identity,
+deterministic rerenders and source-identity rejection; wrong pre-FX faders differ
+by maximum `0.0288953` to `0.0290159`.
+
+The real Host cases use mono WAV, audible AAC MP4 and silent MP4, with a 0.4 s
+source, 0.1 s source trim and 1.6 s clip. Audible complete/cropped PCM matches the
+independent expected SHA-256 exactly, with zero maximum/RMS error. The 10,143-frame
+crop begins at sample 27,783 and equals the full-output slice. Silent video
+returns `hasAudio=false`, editor `null` and a zero crop. Each case performs two
+editor loads with one cached full render, one crop and one stale-identity
+rejection. These are genuine encoded videos, not WAV bodies relabeled as MP4.
+
+The EOF experiment compares current bounded source materialization against an
+independently oversized virtual source. It covers six consecutive whole-sample
+residues at fraction `.4999` and one `.5001` control; all seven pass exactly.
+It does not enable fractional source trim or claim exhaustive floating-point
+equivalence for every rate curve.
+
+The tested private artifact is `web-title-riff-rect-nhvakA`, WASM SHA-256
+`57b1a4b0975091d8c2efd5e0a390915c31e2d3d6483b057fd50b61fdbacd747e`.
+Relevant Rust source was frozen before its build and unchanged during acceptance.
+The seven-file implementation hash captured during acceptance is
+`0cdaac8a3ec5bd2dbb926f3d5c2dce3ee79c15a855b51ceac3fc5696e9e83c56`.
+Its ordered inputs under `rust/crates/editor-api/src/programmatic_audio/graph/`
+are `rate_loop.rs`, `rate_prepare.rs`, `rate_clock.rs`, `rate_lane.rs`,
+`execution.rs`, `working_set.rs`, `mod.rs`; the hash concatenates each repository
+relative slash path, NUL, exact file bytes and NUL.
+No build-time source-hash manifest was retained, so source/artifact provenance
+here combines coordination records with actual plan/PCM checks; it is not a
+cryptographic reproducible-build claim. No shared dependency, installed plugin
+or Electron process was replaced.
+
+Entry points: `rate_loop.rs`, `hyperframes-rate-loop-source.ts`, and the
+`hyperframes-variable-rate-loop-{oracle,production,host,boundary}` fixtures
+(the latter three use `.test.ts`). Native Rust loop geometry/budget and graph
+tests, scoped TypeScript and explicit recommended-rule lint checks also pass.
+Continuous MediaElement audio equivalence, installed UI/Electron transport and
+encoded variable-loop/full-MV export remain outside this acceptance.

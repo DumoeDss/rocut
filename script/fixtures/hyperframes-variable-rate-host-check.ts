@@ -16,6 +16,7 @@ export async function verifyRateHostConsumer(
 	expected: Buffer,
 	hasAudio: boolean,
 	signal: AbortSignal,
+	range = { firstFrame: 37, frameCount: 11 },
 ) {
 	const service = createProgrammaticAudioService({
 		...project,
@@ -66,22 +67,28 @@ export async function verifyRateHostConsumer(
 		const request = {
 			source: project.source,
 			sampleRate: 44100,
-			firstFrame: 37,
-			frameCount: 11,
+			...range,
 			expectedIdentity: identity,
 		};
 		const crop = await provider.renderAudio!({ request, signal });
 		assert.equal(crop.hasAudio, hasAudio);
-		assert.equal(crop.sampleOrigin, 16317);
+		const firstSample = Math.round((range.firstFrame * 44100) / 100),
+			lastSample = Math.round(
+				((range.firstFrame + range.frameCount) * 44100) / 100,
+			);
+		assert.equal(crop.sampleOrigin, firstSample);
 		const cropDifference = pcmDifference(
-			expected.subarray(16317 * 8, 21168 * 8),
+			expected.subarray(firstSample * 8, lastSample * 8),
 			Buffer.from(crop.pcm),
 		);
 		assert.ok(cropDifference.maximum < 2e-6);
 		if (loaded)
 			assert.equal(
 				Buffer.from(crop.pcm).equals(
-					Buffer.from(loaded.data.pcm).subarray(16317 * 8, 21168 * 8),
+					Buffer.from(loaded.data.pcm).subarray(
+						firstSample * 8,
+						lastSample * 8,
+					),
 				),
 				true,
 			);
@@ -112,8 +119,8 @@ export async function verifyRateHostConsumer(
 			runtimeLoads: 2,
 			identityRequests,
 			renderRequests,
-			cropFirstSample: 16317,
-			cropFrames: 4851,
+			cropFirstSample: firstSample,
+			cropFrames: lastSample - firstSample,
 			pcmSha256: loaded ? digest(Buffer.from(loaded.data.pcm)) : null,
 			identity: identity.id,
 			boundary:

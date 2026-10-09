@@ -76,7 +76,6 @@ export function createProgrammaticAudioService({
 				unsupported: [
 					"participating-fallback-gain-history",
 					"fractional-sample-phase",
-					"variable-rate-loop",
 				],
 			},
 			electron: "requires-native-audio-analysis-transport",

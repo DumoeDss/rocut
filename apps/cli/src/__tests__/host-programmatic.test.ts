@@ -39,7 +39,7 @@ test("HTML capability is explicit, authenticated, unavailable without a browser 
 		).not.toContain("fx-automation");
 		expect(
 			context.programmaticNativeAudio.hyperframesGraph.unsupported,
-		).toContain("variable-rate-loop");
+		).not.toContain("variable-rate-loop");
 		expect(
 			context.programmaticNativeAudio.hyperframesGraph.unsupported,
 		).not.toContain("variable-rate");
@@ -75,7 +75,14 @@ test("HTML capability is explicit, authenticated, unavailable without a browser 
 			resolve().plan.decodedSources[0].ratePreparation.nativeSampleRate,
 		).toBe(48000);
 		fixture.request.graph.snapshot.tracks[0].native.loop = true;
-		expect(resolve().error).toContain("variable-rate loop");
+		fixture.request.graph.snapshot.tracks[0].native.sourceDuration = 0.35;
+		expect(resolve().error).toBeUndefined();
+		expect(
+			resolve().plan.decodedSources[0].ratePreparation.sourceLoop.periodFrames,
+		).toBe(12000);
+		expect(resolve().plan.tracks[0].loop).toBe(false);
+		fixture.request.graph.snapshot.tracks[0].native.sourceDuration += 1 / 48000;
+		expect(resolve().error).toContain("fractional-sample");
 		expect(
 			(
 				await fetch(api("programmatic/audio/identity"), {

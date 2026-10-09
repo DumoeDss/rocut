@@ -24,6 +24,9 @@ pub(super) fn estimate(
                 recipe.stereo_filter.len() as u64
                     + recipe.mono_filter.len() as u64
                     + recipe.resample_filter.len() as u64
+                    + recipe.source_loop.as_ref().map_or(0, |source_loop| {
+                        (source_loop.stereo_filter.len() + source_loop.mono_filter.len()) as u64
+                    })
             })
         })
         .sum::<u64>()
@@ -34,6 +37,10 @@ pub(super) fn estimate(
                     2 * recipe.native_max_bytes
                         + 2 * source.pcm_bytes
                         + recipe.clock_cells as u64 * 16
+                        + recipe
+                            .source_loop
+                            .as_ref()
+                            .map_or(0, |source_loop| source_loop.working_set_bytes)
                 })
             })
             .max()

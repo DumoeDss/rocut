@@ -209,12 +209,9 @@ fn rate_prepare_keeps_native_s16_48k_before_explicit_graph_resampling() {
 }
 
 #[test]
-fn rate_prepare_keeps_phase_loop_and_full_history_budget_gates() {
+fn rate_prepare_keeps_phase_and_full_history_budget_gates() {
     let points = points(json!([{"t":0,"v":0.5},{"t":1,"v":2}]));
     let mut clip = native(1.0);
-    clip.r#loop = true;
-    assert!(prepare(&clip, &points, 48000).unwrap_err().contains("loop"));
-    clip.r#loop = false;
     clip.media_start = 0.1 + 0.25 / 48000.0;
     assert!(
         prepare(&clip, &points, 48000)

@@ -25,6 +25,8 @@ export async function verifyRatePreparation({
 	sampleRate,
 	decoder,
 	signal,
+	loopSourceDuration,
+	fxNodes = RATE_TEST_FX,
 }: {
 	oracle: RateOracle;
 	media: RateProductionMedia;
@@ -34,6 +36,8 @@ export async function verifyRatePreparation({
 	sampleRate: number;
 	decoder: NativeVideoDecoder;
 	signal: AbortSignal;
+	loopSourceDuration?: number;
+	fxNodes?: unknown[];
 }) {
 	const fixture = variableRateGraphFixture(
 		media.body,
@@ -41,8 +45,13 @@ export async function verifyRatePreparation({
 		test,
 		rate,
 		sampleRate,
-		RATE_TEST_FX,
+		fxNodes,
 	);
+	if (loopSourceDuration !== undefined) {
+		fixture.request.graph.snapshot.tracks[0].native.loop = true;
+		fixture.request.graph.snapshot.tracks[0].native.sourceDuration =
+			loopSourceDuration;
+	}
 	const response = JSON.parse(
 		wasm.resolveHyperframesAudioExecutionPlanJson(
 			JSON.stringify(fixture.request),
@@ -55,6 +64,17 @@ export async function verifyRatePreparation({
 	const source = plan.decodedSources[0],
 		recipe = source.ratePreparation;
 	assert.ok(recipe, "Variable-rate path must not fall back to scalar decoder");
+	if (loopSourceDuration !== undefined) {
+		assert.ok(
+			recipe.sourceLoop,
+			"Loop must materialize canonical source before native rate preparation",
+		);
+		assert.equal(recipe.mediaStartSeconds, "0");
+		assert.equal(
+			recipe.sourceLoop.periodFrames,
+			Math.round((loopSourceDuration - test.mediaStart) * 48000),
+		);
+	} else assert.equal(recipe.sourceLoop, undefined);
 	assert.equal(
 		recipe.stereoFilter,
 		oracle.native.buildRampFilterComplex(rate, test.duration, null),

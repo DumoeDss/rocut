@@ -2,6 +2,10 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, dirname, isAbsolute, join, resolve } from "node:path";
 import * as wasm from "opencut-wasm";
+import {
+	materializeHyperframesRateLoop,
+	type HyperframesRateSourceLoop,
+} from "./hyperframes-rate-loop-source";
 import { runNativeMediaProcess } from "./native-media-process";
 import type { NativeVideoDecoder } from "./video-decoder";
 
@@ -19,6 +23,21 @@ export interface HyperframesRatePreparation {
 	resampleFilter: string;
 	slices: number;
 	clockCells: number;
+	sourceLoop?: HyperframesRateSourceLoop;
+}
+
+async function removeRatePreparation(root: string, parent: string) {
+	if (
+		dirname(root) !== parent ||
+		!basename(root).startsWith("rocut-rate-prepare-")
+	)
+		throw Error("Unsafe native rate cleanup");
+	await rm(root, {
+		recursive: true,
+		force: true,
+		maxRetries: 3,
+		retryDelay: 100,
+	});
 }
 
 /** Canonical full clip -> original s16/48k -> explicit graph-domain resample.
@@ -152,12 +171,27 @@ export async function prepareHyperframesRateAudio({
 					"0",
 			),
 		});
+		const nativeSource = recipe.sourceLoop
+			? await materializeHyperframesRateLoop({
+					ffmpeg: decoder.ffmpeg,
+					root,
+					sourcePath,
+					inputArgs,
+					channels: stream.channels!,
+					recipe: recipe.sourceLoop,
+					signal,
+				})
+			: sourcePath;
+		const nativeInputArgs = recipe.sourceLoop
+			? ["-protocol_whitelist", "file,pipe", "-f", "wav"]
+			: inputArgs;
+		const nativeChannels = recipe.sourceLoop ? 2 : stream.channels;
 		// A 240-slice graph can exceed Windows' command-line bound. Transport the
 		// exact Rust-generated graph in a private file; do not rewrite its filters.
 		const graphPath = join(root, "native.filter");
 		await writeFile(
 			graphPath,
-			stream.channels === 1 ? recipe.monoFilter : recipe.stereoFilter,
+			nativeChannels === 1 ? recipe.monoFilter : recipe.stereoFilter,
 			{ flag: "wx" },
 		);
 		const prepared = await runNativeMediaProcess({
@@ -173,13 +207,13 @@ export async function prepareHyperframesRateAudio({
 				"-nostdin",
 				"-threads",
 				"1",
-				...inputArgs,
+				...nativeInputArgs,
 				"-ss",
 				recipe.mediaStartSeconds,
 				"-t",
 				recipe.sourceDurationSeconds,
 				"-i",
-				sourcePath,
+				nativeSource,
 				"-vn",
 				"-sn",
 				"-dn",
@@ -191,7 +225,7 @@ export async function prepareHyperframesRateAudio({
 				graphPath,
 				"-map",
 				"[out]",
-				...(stream.channels === 1 ? [] : ["-ac", "2"]),
+				...(nativeChannels === 1 ? [] : ["-ac", "2"]),
 				"-t",
 				recipe.durationSeconds,
 				"-f",
@@ -247,16 +281,6 @@ export async function prepareHyperframesRateAudio({
 			throw Error("Native rate graph conversion disagrees with Rust geometry");
 		return { pcm, hasAudio: true };
 	} finally {
-		if (
-			dirname(root) !== parent ||
-			!basename(root).startsWith("rocut-rate-prepare-")
-		)
-			throw Error("Unsafe native rate cleanup");
-		await rm(root, {
-			recursive: true,
-			force: true,
-			maxRetries: 3,
-			retryDelay: 100,
-		});
+		await removeRatePreparation(root, parent);
 	}
 }

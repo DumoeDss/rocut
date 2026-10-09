@@ -19,6 +19,7 @@ export async function rateHostProject(
 	test: VariableRateCase,
 	rate: RateLane,
 	signal: AbortSignal,
+	options: { loop?: boolean; fxNodes?: unknown[] } = {},
 ) {
 	const sourceDirectory = join(directory, `${media.name}-author`);
 	await mkdir(sourceDirectory);
@@ -48,7 +49,7 @@ export async function rateHostProject(
 				: "source.webm";
 	// Intentionally declare video audio even for the silent fixture: real probing
 	// must return no audio instead of trusting the declaration or fabricating PCM.
-	const element = `<${tag} id="rate" src="${mediaFile}" data-start="0.1" data-duration="${test.duration}" data-media-start="${test.mediaStart}" data-track-index="0" data-volume="0.75" data-automation='${automation}' data-fx-chain='${JSON.stringify({ version: 1, nodes: RATE_TEST_FX })}' ${tag === "video" ? 'playsinline data-has-audio="true"' : ""}></${tag}>`;
+	const element = `<${tag} id="rate" src="${mediaFile}" data-start="0.1" data-duration="${test.duration}" data-media-start="${test.mediaStart}" data-track-index="0" data-volume="0.75" data-automation='${automation}' data-fx-chain='${JSON.stringify({ version: 1, nodes: options.fxNodes ?? RATE_TEST_FX })}' ${options.loop ? "loop " : ""}${tag === "video" ? 'playsinline data-has-audio="true"' : ""}></${tag}>`;
 	let removed = 0;
 	const html = template
 		.replace(/<audio\b[\s\S]*?<\/audio>/g, () =>

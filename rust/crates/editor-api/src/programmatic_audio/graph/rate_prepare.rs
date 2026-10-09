@@ -23,6 +23,8 @@ pub(super) struct RatePreparation {
     pub resample_filter: String,
     pub slices: usize,
     pub clock_cells: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source_loop: Option<super::rate_loop::SourceLoop>,
 }
 
 /// Number(value.toFixed(6)).toString() for admitted nonnegative bounded values.
@@ -114,9 +116,6 @@ pub(super) fn prepare(
     points: &[Point],
     sample_rate: u32,
 ) -> Result<RatePreparation, String> {
-    if native.r#loop {
-        return Err("HyperFrames variable-rate loop needs its own native history oracle".into());
-    }
     // Preserve the strict phase boundary at both graph and native preparation rates.
     for sr in [sample_rate, 48000] {
         sample_aligned(
@@ -148,9 +147,17 @@ pub(super) fn prepare(
         return Err("HyperFrames variable-rate source span exceeds its safety bound".into());
     }
     let slices = (native.duration / 0.25).ceil().clamp(1.0, 240.0) as usize;
+    let source_loop = native
+        .r#loop
+        .then(|| super::rate_loop::prepare(native, source_duration, sample_rate))
+        .transpose()?;
     Ok(RatePreparation {
         profile: "hyperframes-0.8.139-exporter-prepare-s16-48k-v1",
-        media_start_seconds: native.media_start.to_string(),
+        media_start_seconds: if source_loop.is_some() {
+            "0".into()
+        } else {
+            native.media_start.to_string()
+        },
         source_duration_seconds: source_duration.to_string(),
         duration_seconds: native.duration.to_string(),
         native_sample_rate: 48000,
@@ -163,5 +170,6 @@ pub(super) fn prepare(
         ),
         slices,
         clock_cells: 2 + (points.len() - 1) * 48,
+        source_loop,
     })
 }

@@ -31,6 +31,9 @@ mod plan;
 mod plan_model;
 mod rate_clock;
 mod rate_lane;
+mod rate_loop;
+#[cfg(test)]
+mod rate_loop_tests;
 mod rate_prepare;
 #[cfg(test)]
 mod rate_tests;

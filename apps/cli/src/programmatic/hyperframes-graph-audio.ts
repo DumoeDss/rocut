@@ -26,10 +26,11 @@ interface GraphAudioOptions {
 
 /** Opt-in Host graph path. Discovery validates observed declaration stability,
  * not arbitrary authored script behavior between observations. Native FX lanes
- * use Rust-admitted local-track/global-bus clocks. Nonloop variable-rate clips
- * use complete native exporter PCM16/48k preparation before graph resampling;
- * participating fallback history, fractional phase and variable-rate loops remain
- * errors. Graph cache identity binds trusted DSP, browser, decoder and Host epoch.
+ * use Rust-admitted local-track/global-bus clocks. Variable-rate clips use full
+ * native PCM16/48k preparation before graph resampling. Loops preserve native
+ * author/preview intent via bounded source-domain materialization, not the
+ * exporter's loop omission. Participating fallback history and fractional phase
+ * remain errors. Cache identity binds trusted DSP, browser, decoder and Host epoch.
  */
 export async function renderHyperframesGraphAudioRange(
 	options: GraphAudioOptions,
