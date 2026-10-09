@@ -32,20 +32,27 @@ const wasm = process.env.ROCUT_TEST_WASM_DIRECTORY;
 const ffmpeg = process.env.ROCUT_TEST_FFMPEG;
 const ffprobe = process.env.ROCUT_TEST_FFPROBE;
 const policyResolver = process.env.ROCUT_VP9_POLICY_RESOLVER;
+const browserExecutable = process.env.ROCUT_TEST_BROWSER_EXECUTABLE;
 const expectedWasm = process.env.ROCUT_TEST_EXPECTED_WASM_SHA256;
 const policySource = process.env.ROCUT_VP9_POLICY_SOURCE;
 const expectedSourceManifest =
 	process.env.ROCUT_VP9_POLICY_SOURCE_MANIFEST_SHA256;
 if (
 	process.argv.length !== 2 ||
-	![inputs, wasm, ffmpeg, ffprobe, policyResolver, policySource].every(
-		(path) => path && isAbsolute(path),
-	) ||
+	![
+		inputs,
+		wasm,
+		ffmpeg,
+		ffprobe,
+		policyResolver,
+		policySource,
+		browserExecutable,
+	].every((path) => path && isAbsolute(path)) ||
 	!/^[0-9a-f]{64}$/i.test(expectedWasm ?? "") ||
 	!/^[0-9a-f]{64}$/i.test(expectedSourceManifest ?? "")
 )
 	throw Error(
-		"Use absolute frozen inputs/private WASM/Rust policy resolver/FFmpeg/FFprobe paths and expected WASM SHA256; no arguments",
+		"Use absolute frozen inputs/private WASM/Rust policy resolver/FFmpeg/FFprobe paths and ROCUT_TEST_BROWSER_EXECUTABLE plus expected WASM SHA256; no arguments",
 	);
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const identities = () => editorIdentities({ root, policyResolver });
@@ -88,7 +95,7 @@ const artifacts = await mkdtemp(join(tmpdir(), "rocut-vp9-quantizer-editor-")),
 console.log(
 	JSON.stringify({ artifacts, wasm, cases: cases.map((entry) => entry.name) }),
 );
-const tools = [ffmpeg, ffprobe, chromium.executablePath(), policyResolver];
+const tools = [ffmpeg, ffprobe, browserExecutable, policyResolver];
 const toolsBefore = await Promise.all(tools.map(binaryIdentity));
 await buildNativeAudioExportProbe(
 	root,
@@ -103,6 +110,15 @@ const bundles = await bundleIdentities(output),
 assert.equal(bundledWasm.length, 1);
 assert.equal(bundledWasm[0].sha256, expectedWasm.toLowerCase());
 const provenance = {
+	browserLaunch: {
+		executablePath: browserExecutable,
+		executableSha256: toolsBefore.find(
+			(entry) => entry.path === browserExecutable,
+		).sha256,
+		headless: true,
+		executableSelection:
+			"Required absolute ROCUT_TEST_BROWSER_EXECUTABLE passed as explicit executablePath; before/after hashes bind the same launched image",
+	},
 	rustSnapshot,
 	trackedSources: sourceBefore,
 	privateWasm: wasmBefore,
@@ -136,6 +152,7 @@ try {
 	await server.listen();
 	const origin = `http://127.0.0.1:${server.httpServer.address().port}`;
 	browser = await chromium.launch({
+		executablePath: browserExecutable,
 		headless: true,
 		args: ["--disable-gpu-rasterization"],
 	});
@@ -258,7 +275,13 @@ try {
 		),
 		{ flag: "wx" },
 	);
-	throw error;
+	console.error(
+		`VP9 editor acceptance failed: ${String(error?.message ?? error).split("\n")[0]}; see ${join(artifacts, "failure.json")}`.slice(
+			0,
+			1200,
+		),
+	);
+	process.exitCode = 1;
 } finally {
 	await browser?.close();
 	await server.close();

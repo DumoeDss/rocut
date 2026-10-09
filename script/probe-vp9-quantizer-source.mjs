@@ -29,14 +29,17 @@ const inputs = process.env.ROCUT_MASTER_ENCODER_INPUTS;
 const ffmpeg = process.env.ROCUT_TEST_FFMPEG;
 const ffprobe = process.env.ROCUT_TEST_FFPROBE;
 const policyResolver = process.env.ROCUT_VP9_POLICY_RESOLVER;
+const browserExecutable = process.env.ROCUT_TEST_BROWSER_EXECUTABLE;
 if (policyResolver !== undefined && !isAbsolute(policyResolver))
 	throw Error("Use an absolute private Rust policy resolver path");
 if (
 	process.argv.length !== 2 ||
-	![inputs, ffmpeg, ffprobe].every((path) => path && isAbsolute(path))
+	![inputs, ffmpeg, ffprobe, browserExecutable].every(
+		(path) => path && isAbsolute(path),
+	)
 )
 	throw Error(
-		"Use absolute frozen encoder-input/FFmpeg/FFprobe paths; no arguments",
+		"Use absolute frozen encoder-input/FFmpeg/FFprobe paths and ROCUT_TEST_BROWSER_EXECUTABLE; no arguments",
 	);
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const identities = () => sourceIdentities({ root, policyResolver });
@@ -75,11 +78,20 @@ const toolsBefore = await Promise.all(
 	[
 		ffmpeg,
 		ffprobe,
-		chromium.executablePath(),
+		browserExecutable,
 		...(policyResolver ? [policyResolver] : []),
 	].map(binaryIdentity),
 );
 const provenance = {
+	browserLaunch: {
+		executablePath: browserExecutable,
+		executableSha256: toolsBefore.find(
+			(entry) => entry.path === browserExecutable,
+		).sha256,
+		headless: true,
+		executableSelection:
+			"Required absolute ROCUT_TEST_BROWSER_EXECUTABLE passed as explicit executablePath; before/after hashes bind the same launched image",
+	},
 	trackedSources: sourceBefore,
 	bundledSources: bundledBefore,
 	bundleSha256: sha256(Buffer.from(bundle.outputFiles[0].text)),
@@ -120,6 +132,7 @@ try {
 	});
 	const origin = `http://127.0.0.1:${server.address().port}`;
 	browser = await chromium.launch({
+		executablePath: browserExecutable,
 		headless: true,
 		args: ["--disable-gpu-rasterization"],
 	});
@@ -202,7 +215,7 @@ try {
 			[
 				ffmpeg,
 				ffprobe,
-				chromium.executablePath(),
+				browserExecutable,
 				...(policyResolver ? [policyResolver] : []),
 			].map(binaryIdentity),
 		),
@@ -245,7 +258,13 @@ try {
 		),
 		{ flag: "wx" },
 	);
-	throw error;
+	console.error(
+		`VP9 adapter acceptance failed: ${String(error?.message ?? error).split("\n")[0]}; see ${join(artifacts, "failure.json")}`.slice(
+			0,
+			1200,
+		),
+	);
+	process.exitCode = 1;
 } finally {
 	await browser?.close();
 	await new Promise((done) => server.close(done));

@@ -1,12 +1,48 @@
 {
 	"schemaVersion": 1,
 	"passed": true,
+	"browserBinaryIdentityComplete": true,
+	"formalBrowserIdentityBoundAcceptance": true,
 	"run": {
+		"sessionId": 43675,
+		"exitCode": 0,
+		"artifactDirectory": "C:/Users/Sayo/AppData/Local/Temp/rocut-vp9-quantizer-editor-mPLtSj",
+		"browser": "151.0.7922.34",
+		"entry": "script/probe-vp9-quantizer-editor.mjs",
+		"browserLaunch": {
+			"executablePath": "C:/Users/Sayo/AppData/Local/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-win64/chrome-headless-shell.exe",
+			"executableSha256": "ce4635cd0e5dc0e21494542a701f347e91c1f1d821970578d97ed8df4ced50ef",
+			"headless": true,
+			"executableSelection": "Required absolute ROCUT_TEST_BROWSER_EXECUTABLE passed as explicit executablePath; before/after hashes bind the same launched image"
+		}
+	},
+	"historicalBrowserIdentityGap": {
 		"sessionId": 63029,
 		"exitCode": 0,
 		"artifactDirectory": "C:/Users/Sayo/AppData/Local/Temp/rocut-vp9-quantizer-editor-Gk2Y5L",
-		"browser": "151.0.7922.34",
-		"entry": "script/probe-vp9-quantizer-editor.mjs"
+		"sourceIdentityJsonSha256": "5efebd74ab70a0a967f8492858874da6ad1155da97eea43effa80fa24b6b6b8b",
+		"verificationJsonSha256": "e1d0c3aab36ffbb884589dee738ebdca7c0b9f17e63420183ac4aeb1df2615cb",
+		"cancellationJsonSha256": "0cdb6df20bf54ee0c544d76768603cbab3b66f55132ab45b01163267bf3703a8",
+		"recordedBrowserExecutable": "C:/Users/Sayo/AppData/Local/ms-playwright/chromium-1234/chrome-win64/chrome.exe",
+		"recordedBrowserExecutableSha256": "409805a16d6416087e6b2f778df1cf8f7bbb267d6b99f6b5bb0a618eace234f2",
+		"launchOptions": {
+			"headless": true,
+			"explicitExecutablePath": false,
+			"channel": null
+		},
+		"installedPlaywrightVersion": "1.62.0",
+		"defaultSelectedExecutableKind": "chromium-headless-shell",
+		"actualExecutedBrowserExecutableSha256": null,
+		"launcherSource": {
+			"path": "node_modules/.bun/playwright-core@1.62.0/node_modules/playwright-core/lib/coreBundle.js",
+			"sha256": "3258d1cf334c6afc95f22aa9c292436cb976b391e0437f1359c83b84f0cb9d66",
+			"executablePathMethodLine": 39401,
+			"launchSelectionLine": 39524,
+			"headlessExecutableSelectionLine": 43106
+		},
+		"observedBrowserVersionAndExportChecksRemainValid": true,
+		"boundary": "Gk2Y5L hashed chromium.executablePath() (full chrome.exe), but launch({headless:true}) without an explicit path selects chrome-headless-shell.exe. The actual executing browser image was not hash-bound. Historical artifact JSON and hashes are retained unchanged, not retroactively repaired.",
+		"requiredFollowup": "Fulfilled by the new primary mPLtSj run with explicitly selected and before/after hashed headless shell. This does not retroactively bind the historical Gk2Y5L executing image."
 	},
 	"scope": {
 		"pipeline": "Real buildScene -> CanvasRenderer -> actual Rust WASM resolver -> SceneExporter -> native VP9 adapter or default CanvasSource -> ExportOutputLifetime plus companion audio -> WebM -> independent FFmpeg and Chromium decoders",
@@ -27,12 +63,13 @@
 			"RGB lossless output",
 			"Actual encoded sRGB/full-range bitstream",
 			"Installed Electron or user application acceptance",
-			"q-controlled actual bitstream level bitrate/CPB compliance"
+			"q-controlled actual bitstream level bitrate/CPB compliance",
+			"Cross-browser or full-Chrome rendering-backend guarantee"
 		]
 	},
 	"identities": {
-		"sourceIdentityJsonSha256": "5efebd74ab70a0a967f8492858874da6ad1155da97eea43effa80fa24b6b6b8b",
-		"verificationJsonSha256": "e1d0c3aab36ffbb884589dee738ebdca7c0b9f17e63420183ac4aeb1df2615cb",
+		"sourceIdentityJsonSha256": "6f567ebc30d96b1393130f640c420a124bc627ba7815402bd775c9de71253664",
+		"verificationJsonSha256": "c60e43e8637ad9bc90732d630f5310122bd4f2fcd0e37cc82f21b92c9528ffbe",
 		"cancellationJsonSha256": "0cdb6df20bf54ee0c544d76768603cbab3b66f55132ab45b01163267bf3703a8",
 		"privateRustSourceManifest": {
 			"sha256": "7de4d72a6f6eb8345b1c196a9002da0391696c0150bda14febe1a1e195f0a6a2",
@@ -76,12 +113,12 @@
 				"sha256": "9dd8bc0521bea902b246093ea0d74216a248b578c76bf136d5f312b0b3fde7b6"
 			},
 			{
-				"path": "assets/vp9-quantizer-editor-browser-CYDO-LC2.js",
-				"sha256": "eeecc7b6c8cd54906ab2103c64a0bbc247ef66fcaccdc1f6246a71c6e3630b8e"
+				"path": "assets/vp9-quantizer-editor-browser-Dsm-42Y2.js",
+				"sha256": "a3a53810fc4e66078b9fdac24b7216ae974274b056b3175b962d9a0461d676b2"
 			},
 			{
 				"path": "script/fixtures/vp9-quantizer-editor-browser.html",
-				"sha256": "3d8be0923ff276a33f44a7970c64b5133853b1c9e7fc5bdff943ad7bb142fd14"
+				"sha256": "541fc2302ce5559f13bf85c7f68c8d5430a2eec4e8bc658b75a761f4a15c270b"
 			}
 		],
 		"binaries": [
@@ -94,8 +131,8 @@
 				"sha256": "4e3882e55e03493cc5a12b395b70490b0dcab4dcc160d458ca7b5990ce7c4098"
 			},
 			{
-				"path": "C:\\Users\\Sayo\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe",
-				"sha256": "409805a16d6416087e6b2f778df1cf8f7bbb267d6b99f6b5bb0a618eace234f2"
+				"path": "C:/Users/Sayo/AppData/Local/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-win64/chrome-headless-shell.exe",
+				"sha256": "ce4635cd0e5dc0e21494542a701f347e91c1f1d821970578d97ed8df4ced50ef"
 			},
 			{
 				"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-flame-core-20261009-a-target/debug/examples/vp9-quantizer-policy.exe",
@@ -117,7 +154,7 @@
 			},
 			{
 				"path": "script/probe-vp9-quantizer-editor.mjs",
-				"sha256": "5a6b36095e52ced863a7fb36e283dfac7b55a0ca2f7eee00d7f6eb218694ace6"
+				"sha256": "80d2e5c81a756b52be1899a79f047e8116b4efcfe032e2395c0175628f9ff5d8"
 			},
 			{
 				"path": "script/fixtures/vp9-quantizer-editor-identities.mjs",
@@ -170,7 +207,7 @@
 			"master-effects.webm": "2389638c47f03e1b3ded4e3a391e79d8d1d3b574b53fa18918bb916f5b671ca6",
 			"decoded.rgb": "fb3da766f59a81396f880fb756260e6cf257fd52544fd4c94805e3f1cdc3e74a"
 		},
-		"stability": "Runner verified named source files, all 614 private Rust snapshot files, served bundle bytes, private WASM, tools and frozen original inputs unchanged before/after the combined run."
+		"stability": "The primary run verified named source files, all 614 private Rust snapshot files, served bundle bytes, private WASM, tools, and frozen original inputs unchanged before/after the combined run. ROCUT_TEST_BROWSER_EXECUTABLE was required absolute and passed explicitly to launch; its before/after SHA binds the same actual headless-shell executable."
 	},
 	"cases": [
 		{
@@ -334,6 +371,7 @@
 		"nativeAdapterCancelObserved": true
 	},
 	"limitations": [
+		"The primary mPLtSj run explicitly launched and hash-bound the same headless-shell environment used by the original reference. Historical Gk2Y5L results remain valid observations, but its executing browser image was not hash-bound. Explicit full Chrome failed strict original input reproduction in d34MZA; no cross-browser or full-Chrome rendering guarantee is claimed.",
 		"FFprobe reports actual smpte170m/tv for both default and native streams despite the complete Rust codec request ending .01.13.01.01; configure pass-through is not proof of encoded sRGB/full-range.",
 		"Six 96x64 frames from scene frames 12 through 17 are a short 0.2-second export. Companion audio is a fixed 48kHz mono 997Hz tone, not a song.",
 		"Default and q63 are expected failing quality controls. Only explicit q0 and its repeat pass the unchanged <3 six-frame decoded interior gates."
@@ -341,5 +379,52 @@
 	"retainedEarlierFixtureFailure": {
 		"artifactDirectory": "C:/Users/Sayo/AppData/Local/Temp/rocut-vp9-quantizer-editor-inqGRp",
 		"reason": "Initial comparison treated JavaScript explicit undefined optional keys as unequal to absent fields in the frozen JSON. No source pixels or policy gates were relaxed."
+	},
+	"retainedExplicitFullChromeFailure": {
+		"sessionId": 55779,
+		"exitCode": 1,
+		"artifactDirectory": "C:/Users/Sayo/AppData/Local/Temp/rocut-vp9-quantizer-editor-d34MZA",
+		"sourceIdentityJsonSha256": "8a4ca7aa5496472e3d6eb247550a6da549e056097382692d28a7ec3e70dc60ee",
+		"failureJsonSha256": "9b2cd7c383b7059dd5e55e496bfec82f21177067b54713a8b6cfdcc4677028ed",
+		"browserLaunch": {
+			"executablePath": "C:\\Users\\Sayo\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe",
+			"executableSha256": "409805a16d6416087e6b2f778df1cf8f7bbb267d6b99f6b5bb0a618eace234f2",
+			"headless": true,
+			"executableSelection": "Explicit executablePath; the launched image is the hashed binary, not Playwright's implicit headless-shell selection"
+		},
+		"failureFirstLine": "AssertionError [ERR_ASSERTION]: Real exporter native frame changed original pixels/color/timing",
+		"originalInputDifferences": [
+			{
+				"encodedFrame": 0,
+				"changedNativeBgraBytes": 6199,
+				"maxAbsoluteByteDelta": 2
+			},
+			{
+				"encodedFrame": 1,
+				"changedNativeBgraBytes": 6221,
+				"maxAbsoluteByteDelta": 2
+			},
+			{
+				"encodedFrame": 2,
+				"changedNativeBgraBytes": 6203,
+				"maxAbsoluteByteDelta": 2
+			},
+			{
+				"encodedFrame": 3,
+				"changedNativeBgraBytes": 6209,
+				"maxAbsoluteByteDelta": 2
+			},
+			{
+				"encodedFrame": 4,
+				"changedNativeBgraBytes": 6218,
+				"maxAbsoluteByteDelta": 2
+			},
+			{
+				"encodedFrame": 5,
+				"changedNativeBgraBytes": 6220,
+				"maxAbsoluteByteDelta": 2
+			}
+		],
+		"interpretation": "All six real rendered Canvas captures also showed the same changed byte counts and maximum delta 2. The strict original-input assertion was not relaxed. This is a retained rendering-environment mismatch, not a passing full-Chrome test or an accepted replacement input."
 	}
 }
