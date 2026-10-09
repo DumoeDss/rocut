@@ -2,7 +2,106 @@
 	"version": 1,
 	"date": "2026-10-09",
 	"status": "explicit-native-exporter-final-track-timing-verified",
-	"scope": "Compatibility-additive final track trim and millisecond placement in graph-v1. Real Host graph IO/native FX/Rust assembly verified; NOT whole original exporter bit-exact or installed-editor acceptance.",
+	"scope": "Compatibility-additive final track trim and millisecond placement in graph-v1. Real authored compile/archive/collector/Host/native FX/Rust assembly and standalone Editor/SceneExporter verified; NOT whole original exporter bit-exact or installed Electron acceptance.",
+	"editorEndToEnd": {
+		"passed": true,
+		"terminalExitCode": 0,
+		"summary": {
+			"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-export-timing-editor-evidence-20261009-c20EZ5.json",
+			"sha256": "570cf197146751f05fe17ec2f4875166c699b48a881336eadcfd39ec0045a018"
+		},
+		"report": {
+			"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-export-timing-editor-c20EZ5/verification.json",
+			"sha256": "8c428cf7207b4e74333016d233cfd9065b62f9467d29ddd79529ff8cdb21a4f3"
+		},
+		"executionFreeze": {
+			"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-export-timing-editor-execution-freeze-20261009-2271e9a2.json",
+			"sha256": "28f062f4f15c4145982934c7fea0d876bdd4308f871fdc341c8a94af67d3b26b"
+		},
+		"programmaticSourcesVerifiedUnchanged": 119,
+		"finalFixtureHashesVerified": 10,
+		"targetedTypecheck": {
+			"roots": 7,
+			"reachableFiles": 992,
+			"diagnostics": 0,
+			"base": "script/fixtures/remotion-audio.tsconfig.json",
+			"overrides": "jsx:react-jsx; types:node,bun; explicit repository node_modules/@types; opencut-wasm mapped to the real private declaration; roots are five fixture TS/declaration files plus eyedropper/soundtouch ambient declarations",
+			"privateDeclarationSha256": "b4035893ff225241530ab8272bbcf84144675de54563976135d49920e51279dd",
+			"retainedInitialFailure": "CLI-only config with canonical stale WASM and missing ambient declarations yielded 45 diagnostics; corrected scoped verification uses actual private-WASM declarations, without shared dependency changes",
+			"aggregateTypecheckClaimed": false
+		},
+		"privateWasmSha256": "f38a61f8c0246ddeaa69a3e37937734ed5829d23e3e2c8926f227c6590afb4d9",
+		"sameAuthorInputAcrossDefaultAndSelectedMode": true,
+		"modeDifference": 0.12981083616614342,
+		"geometry": {
+			"sourceFrames": 27,
+			"exportFrames": 30,
+			"frameRate": { "numerator": 25, "denominator": 1 },
+			"sampleRate": 44100,
+			"sourcePcmFrames": 47628,
+			"timelinePcmFrames": 52920,
+			"cropPcmFrames": 8820
+		},
+		"cases": [
+			{
+				"id": "aligned-default",
+				"nativeMaximum": 0,
+				"mixedMaximum": 1.4551915228366852e-11,
+				"cropMaximum": 0,
+				"encoded": false,
+				"reportSha256": "fd5732c05da98619845a01b1a8784d75d85fbb9483b45e8be8e44f8c4733776c"
+			},
+			{
+				"id": "aligned-native",
+				"nativeMaximum": 0,
+				"mixedMaximum": 3.637978807091713e-12,
+				"cropMaximum": 0,
+				"placementNegativeMaximum": 0.12981083616614342,
+				"trimNegativeMaximum": 0.00010896491585299373,
+				"pictureChecks": 85,
+				"channelCorrelations": [0.9945271834276664, 0.9899031407503261],
+				"channelLagSamples": [0, 0],
+				"videoSha256": "6f70a8015fd2199bfa7328f149f156b7529f114634465da0c7fea89666554dd9",
+				"reportSha256": "4cfb57eed0430aa850fe29a93d60006b5bad291b430ac1493b218e2dfad45b60"
+			},
+			{
+				"id": "fractional-native",
+				"nativeMaximum": 0,
+				"mixedMaximum": 7.275957614183426e-12,
+				"cropMaximum": 5.684341886080802e-14,
+				"placementNegativeMaximum": 0.15493373572826385,
+				"placementActualFrames": 47628,
+				"placementExpectedFrames": 47629,
+				"trimNegativeMaximum": 0.00010896491585299373,
+				"pictureChecks": 85,
+				"channelCorrelations": [0.9944197748352109, 0.9903650744486286],
+				"channelLagSamples": [0, 0],
+				"videoSha256": "b9f140e72820314de3d2da76bacbe8d3563117bc96639483dd3ff58359d67a69",
+				"reportSha256": "16ab9ff305db39b884fce28a1858b12b2b66d0634203aedd7c141f18e5ea7c2b"
+			}
+		],
+		"negativeControlCorrection": {
+			"reason": "Actual FFmpeg sample-delay negative contains one additional tail frame; old fixture incorrectly required negative PCM lengths to match",
+			"policy": "Negative placement uses a zero-padded union domain including the extra frame; correct PCM remains strictly equal-length; every original threshold is unchanged",
+			"changedFixture": "script/fixtures/hyperframes-export-timing-editor-browser.ts",
+			"sha256": "2271e9a262297081ac5552bd5d90bc1b0888a97d37236e6b7f7c8ce9aa80b7fe",
+			"independentAssertions": 6,
+			"productionChanged": false
+		},
+		"historicalRunsRetained": [
+			{
+				"artifact": "rocut-hf-export-timing-editor-Sv60wr",
+				"status": "incomplete; no algorithm failure established"
+			},
+			{
+				"artifact": "rocut-hf-export-timing-editor-NCMmFE",
+				"status": "fixture negative-control equal-length assumption failed"
+			}
+		],
+		"mainSupplementalCheck": "Existing per-case FFprobe JSON independently confirms both encoded artifacts have 30 decoded video frames at 25/1 fps",
+		"reproduction": "node script/probe-hyperframes-export-timing-editor.mjs <absolute pinned toolchain>; use reproduction.environment below for private WASM, native oracle and decoder paths",
+		"scope": "Fresh authored compile/archive/rebuild, actual collector, Host graph, Editor full/crop/cache, selected timing SceneExporter and independent AV decode; no installed Electron, UI playback synchronization or full MV claim"
+	},
 	"declaration": {
 		"version": 1,
 		"mode": "native",
@@ -345,7 +444,6 @@
 		"Scalar fractional duration/trim and fractional loop tile/trim/duration retain their existing fail-closed gates",
 		"Participating fallback author-gain history remains unsupported",
 		"Graph precision/FX behavior and the source-loop extension remain graph semantics; original full exporter PCM16/clamp/loop omission is not claimed equivalent",
-		"This mode still needs authored HTML/compile/archive/actual collector/editor/SceneExporter acceptance; the existing aligned-placement duration-editor result is not relabeled as this mode",
 		"Installed Electron and full-song/full-MV acceptance"
 	]
 }
