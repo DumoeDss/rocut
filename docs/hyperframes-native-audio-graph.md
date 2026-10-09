@@ -808,3 +808,38 @@ Entry points: `rate_loop.rs`, `hyperframes-rate-loop-source.ts`, and the
 tests, scoped TypeScript and explicit recommended-rule lint checks also pass.
 Continuous MediaElement audio equivalence, installed UI/Electron transport and
 encoded variable-loop/full-MV export remain outside this acceptance.
+
+### Fractional-phase oracle checkpoint (2026-10-09; not enabled in production)
+
+The independent `script/fixtures/hyperframes-fractional-phase-oracle.test.ts`
+now passes two tests and 66 assertions against pinned 0.8.139 native code.
+Ten source-rate/boundary cases invoke the original preparation 80 times, retaining
+its actual output lengths rather than padding away fractional duration behavior.
+Reports are `rocut-hf-fractional-phase-c7w7hL/verification.json` (SHA-256
+`0c11c50a8d17f527cd23770e7b6af921bf8c1ad058dcb6006c0adc8691c9d1fa`)
+and `rocut-hf-fractional-placement-XdoLaU/verification.json` (SHA-256
+`e5345c38ed64f37bc17403129b40c0277ff43b57b954aba7a3fec6818b0ce8d3`)
+under the local temporary directory.
+
+The original preparation passes unrounded trim, duration and source-clock values
+to FFmpeg; only ramp filter slice times use its six-decimal formatting. Separate
+negative controls detect premature trim rounding (maximum PCM error 0.651978),
+duration rounding (0.805298), and crop-first preparation even with the corrected
+source clock and shifted lane (0.737091). Some fractional inputs are equivalent
+after decoding; the oracle retains those cases and does not claim every fractional
+input changes PCM. A quarter-sample duration offset across 0.5 seconds also changes
+the original slice count. The same requested fractional duration can produce
+different actual frame counts for 48 kHz versus 44.1 kHz sources.
+
+The original exporter's integer-millisecond placement is confirmed using real
+PCM, but is not a replacement for Rocut's intended graph placement phase. Four
+original runtime loop-clock cases preserve fractional source periods; rounding
+the period causes accumulated clock drift. These use IO-only element stubs and
+do not establish fractional-loop PCM equivalence.
+
+No production admission gate changes in this checkpoint. The next bounded slice
+is nonloop variable-rate fractional source trim while retaining full-history
+preparation. Fractional duration needs distinct capacity, semantic duration and
+actual PCM geometry; fractional clip placement and loop periods remain separate
+requirements. Neither arbitrary rounding nor crop-first processing is an
+acceptable substitute for those semantics.
