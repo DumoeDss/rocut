@@ -1,0 +1,122 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "closed-module-resource-aliases-verified",
+	"scope": "Pinned HyperFrames 0.8.139 compile/archive/rebuild and actual standalone Chromium ESM/resource evaluation; not installed Electron or arbitrary ESM ecosystem coverage",
+	"semantics": [
+		"Recognize lexical const aliases/chains of URL, globalThis, import.meta and url, including object destructuring and static string properties",
+		"Respect function/parameter, var, class, catch, loop and temporal-dead-zone binding semantics; unknown and mutable aliases remain untouched",
+		"Only an actual captured native URL constructor receives declared-resource argument conversion; custom constructors and nonconstructors retain their original arguments and evaluation behavior",
+		"Evaluate callee and arguments once in original order; preserve native prototype, constructor and static identity without replacing globals",
+		"Keep executable modules and image/font/media resources separate; reject undeclared dependencies, path escapes, external schemes and forged data URLs",
+		"Retain historical compile-time literal admission for direct unbound new URL syntax; it is not full compatibility with authored global URL replacement",
+		"Adapter identity changes require explicit compile of old archives rather than rewriting their locks"
+	],
+	"acceptance": {
+		"report": {
+			"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-resources-OtW07W/verification.json",
+			"bytes": 41876,
+			"sha256": "2dd3e245097541d103b921c745b465d004ec8723f93c515452d77544345921bd"
+		},
+		"hostArchiveAndCompilerNegativeChecks": 25,
+		"actualResourceBrowserChecks": 35,
+		"nativeEsmChecks": 29,
+		"allChecksPassed": true,
+		"originalArchivedInputDigestsPreserved": 20,
+		"authorDirectoryMovedBeforeRebuild": true,
+		"compiledAndRebuiltDocument": {
+			"bytes": 1094311,
+			"sha256": "66038cf158cda6d8c34614fed71f95c3694c23b4a555c2a97135e51de794454b",
+			"identical": true
+		},
+		"realResourceLoads": ["PNG image decode", "TTF font load", "WAV metadata"],
+		"regressions": [
+			"const alias image and font loads",
+			"custom constructor and global replacement",
+			"callee/argument/coercion order",
+			"nonconstructor argument side effects",
+			"module/resource graph separation",
+			"native cycles and singleton bindings",
+			"CSP external-connect and worker rejection"
+		],
+		"externalRequests": 0,
+		"pageErrors": 0,
+		"browser": "151.0.7922.34",
+		"exitCode": 0
+	},
+	"localChecks": {
+		"bunTestFiles": 3,
+		"passedTests": 12,
+		"assertions": 145,
+		"failedTests": 0,
+		"targetedLintFiles": 11,
+		"lintErrors": 0,
+		"lintWarnings": 0,
+		"strictTypecheckRoots": 11,
+		"strictTypecheckReachableFiles": 465,
+		"typeDiagnostics": 0
+	},
+	"sourceSnapshot": [
+		{
+			"path": "apps/cli/src/programmatic/engines/hyperframes-module-scopes.ts",
+			"bytes": 4494,
+			"sha256": "1193ab88fc8f61975f11d83586f26b2cfe569a9b0e6e423f921a90c2b4eafe81"
+		},
+		{
+			"path": "apps/cli/src/programmatic/engines/hyperframes-module-references.ts",
+			"bytes": 1555,
+			"sha256": "a1c0ced8f5b4931887600f94cf08583238abe89e2cb9c3e203eb36f01867e90a"
+		},
+		{
+			"path": "apps/cli/src/programmatic/engines/hyperframes-module-parser.ts",
+			"bytes": 4918,
+			"sha256": "488933618a40af1679b07bd468b3c077aadfd5603414892a016f5b652a013209"
+		},
+		{
+			"path": "apps/cli/src/programmatic/engines/hyperframes-module-runtime.ts",
+			"bytes": 3778,
+			"sha256": "a9735a64b9132fc5b9b09399b9a7ebfa330c225e2339d6d9628d50bdccd50e4c"
+		},
+		{
+			"path": "apps/cli/src/programmatic/engines/hyperframes-module-graph.ts",
+			"bytes": 9053,
+			"sha256": "15fbedae00fd3fba1b2e1dea619ab2ccd4a75f2ca7a0bde6e9350fa2940d9fcc"
+		},
+		{
+			"path": "apps/cli/src/__tests__/hyperframes-module-aliases.test.ts",
+			"bytes": 4749,
+			"sha256": "dd9164d424c0466fe21261aece0249bea84874d467bec568aa1b3fddb808342d"
+		},
+		{
+			"path": "apps/cli/src/__tests__/hyperframes-module-resources.test.ts",
+			"bytes": 8679,
+			"sha256": "b669015fdc064ef3f3cb911db708bbfa11599a03b324e9f5afeb490ec52c0b50"
+		},
+		{
+			"path": "script/fixtures/hyperframes-resource-alias-sources.ts",
+			"bytes": 3564,
+			"sha256": "941647bc8b60468ceaaac02223b88986db445eb1187335f990f89beb63dbbb0d"
+		},
+		{
+			"path": "script/fixtures/hyperframes-resource-sources.ts",
+			"bytes": 4271,
+			"sha256": "202d509398e81db5321e4862d11fabcd3d60fb5b5f1c6e1c271ed16cf5b34b8c"
+		},
+		{
+			"path": "script/fixtures/hyperframes-resource-browser.ts",
+			"bytes": 4911,
+			"sha256": "43a5e03785889a62344fdeee1d0c1d8d1f8f88c3a6a961659493e03c1c26e51f"
+		},
+		{
+			"path": "script/fixtures/hyperframes-resource-acceptance.ts",
+			"bytes": 5595,
+			"sha256": "e7bf8b09b00adaf9790a6cc3549d21af1f0fc65c2c998308576b3ad348e583f2"
+		}
+	],
+	"uncovered": [
+		"Mutable aliases, arbitrary parameter/data flow, default/array destructuring and dynamic property names",
+		"Classic-script dynamic imports and query-specific import-map scopes",
+		"Native hierarchical resource URLs and all HTTP pathname/query behavior; resource URLs are closed in-memory data URLs",
+		"Full authored audio graphs, all ESM ecosystems, full MV and installed Electron acceptance"
+	]
+}

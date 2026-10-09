@@ -1,4 +1,5 @@
 import { HYPERFRAMES_MODULE_SCOPES_SOURCE } from "./hyperframes-module-scopes";
+import { HYPERFRAMES_MODULE_REFERENCES_SOURCE } from "./hyperframes-module-references";
 
 /** Acorn AST positions preserve source syntax, comments, live bindings, cyclic
  * graphs and top-level await. No regex attempts to recognize JavaScript imports.
@@ -6,11 +7,12 @@ import { HYPERFRAMES_MODULE_SCOPES_SOURCE } from "./hyperframes-module-scopes";
  */
 export const HYPERFRAMES_MODULE_PARSER_SOURCE =
 	HYPERFRAMES_MODULE_SCOPES_SOURCE +
+	HYPERFRAMES_MODULE_REFERENCES_SOURCE +
 	String.raw`
 function hfModuleRewrite(code, base, acorn, resolve, runtimeId, inline = false, resource) {
-  const tokens = [];
-  const tree = acorn.parse(code,{ecmaVersion:'latest',sourceType:'module',allowHashBang:true,onToken:tokens});
+  const tree = acorn.parse(code,{ecmaVersion:'latest',sourceType:'module',allowHashBang:true});
   const isBound = hfModuleScopes(tree);
+  const references = hfModuleResourceReferences(isBound);
   const names = new Set(), changes = [];
   function walk(node, visit) {
     if (!node || typeof node !== 'object') return;
@@ -23,12 +25,6 @@ function hfModuleRewrite(code, base, acorn, resolve, runtimeId, inline = false, 
   let usesRuntime = false, usesMeta = false, dynamic = false, resources = false;
   const origin = inline ? JSON.stringify(base) : name + '.metaUrl(import.meta.url)';
   const metaProperty = node => node?.type === 'MetaProperty' && node.meta.name === 'import' && node.property.name === 'meta';
-  const metaUrl = node => node?.type === 'MemberExpression' && !node.computed && node.property.name === 'url' && metaProperty(node.object);
-  function tokenAfter(offset) {
-    let low = 0, high = tokens.length;
-    while (low < high) { const middle = (low+high) >>> 1; if (tokens[middle].start < offset) low = middle+1; else high = middle; }
-    return low;
-  }
   walk(tree,node => {
     if ((node.type === 'ImportDeclaration' || node.type === 'ExportNamedDeclaration' || node.type === 'ExportAllDeclaration') && node.source) {
       if (typeof node.source.value !== 'string') throw Error('Invalid native module specifier');
@@ -41,19 +37,18 @@ function hfModuleRewrite(code, base, acorn, resolve, runtimeId, inline = false, 
         changes.push({start:node.source.start,end:node.source.start,text:name+'.loadUrl('});
         changes.push({start:node.source.end,end:node.source.end,text:','+origin+')'});
       }
-    } else if (node.type === 'NewExpression' && node.callee.type === 'Identifier' && node.callee.name === 'URL'
-      && !isBound(node,'URL') && node.arguments.length === 2 && node.arguments.every(arg => arg.type !== 'SpreadElement') && metaUrl(node.arguments[1])) {
+    } else if (node.type === 'NewExpression' && references.constructor(node.callee)
+      && node.arguments.length === 2 && node.arguments.every(arg => arg.type !== 'SpreadElement') && references.base(node.arguments[1])) {
       usesRuntime = true; resources = true;
-      if (node.arguments[0].type === 'Literal' && typeof node.arguments[0].value === 'string') resource?.(node.arguments[0].value,base);
-      // Insert outside the complete argument text, including grouping/comments.
-      // Both original expressions evaluate once and in their original order.
-      // The original native URL constructor still constructs the actual object.
-      let at = tokenAfter(node.callee.end);
-      while (tokens[at]?.type.label === ')') at++;
-      const open = tokens[at], close = tokens[tokenAfter(node.end)-1];
-      if (open?.type.label !== '(' || close?.type.label !== ')') throw Error('Unrecognized native URL argument range');
-      changes.push({start:open.end,end:open.end,text:'...'+name+'.resourceArguments('});
-      changes.push({start:close.start,end:close.start,text:')'});
+      // Retain the existing direct-URL literal admission. Aliased/global member
+      // values may be custom constructors, so their resource admission is at
+      // runtime, after checking actual native identity, not only a const binding.
+      if (node.callee.type === 'Identifier' && node.callee.name === 'URL' && !isBound(node.callee,'URL')
+        && node.arguments[0].type === 'Literal' && typeof node.arguments[0].value === 'string') resource?.(node.arguments[0].value,base);
+      // Callee/getter and both argument expressions retain evaluation order and
+      // execute once. The runtime leaves custom constructor arguments untouched.
+      changes.push({start:node.callee.start,end:node.callee.start,text:'('+name+'.resourceConstructor('});
+      changes.push({start:node.callee.end,end:node.callee.end,text:'))'});
     } else if (metaProperty(node)) {
       usesRuntime = true; usesMeta = true;
       changes.push({start:node.start,end:node.end,text:name+'Meta'});

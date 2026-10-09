@@ -43,6 +43,7 @@ export async function verifyHyperframesResources(code: string) {
 		await inner.waitForFunction(
 			() =>
 				Reflect.has(globalThis, "__resourceResult") &&
+				Reflect.has(globalThis, "__resourceAliasResult") &&
 				Reflect.has(globalThis, "__rootResource") &&
 				Reflect.has(globalThis, "__nestedResource"),
 			undefined,
@@ -50,6 +51,7 @@ export async function verifyHyperframesResources(code: string) {
 		);
 		const result = await inner.evaluate(() => ({
 			...Reflect.get(globalThis, "__resourceResult"),
+			aliases: Reflect.get(globalThis, "__resourceAliasResult"),
 			root: Reflect.get(globalThis, "__rootResource"),
 			nested: Reflect.get(globalThis, "__nestedResource"),
 		}));
@@ -79,6 +81,59 @@ export async function verifyHyperframesResources(code: string) {
 			true,
 		]);
 		check("resource-code-never-executed", result.resourceExecuted, false);
+		check(
+			"alias-custom-callee-read-once-before-arguments",
+			result.aliases.customOrder,
+			["callee", "input", "construct", "callee", "construct"],
+		);
+		check(
+			"alias-custom-original-two-arguments",
+			result.aliases.customArguments,
+			["./aliased-custom-undeclared.png", result.aliases.customBase],
+		);
+		check(
+			"alias-non-constructor-keeps-argument-effects",
+			result.aliases.nonConstructorEffects,
+			1,
+		);
+		for (const field of ["picture", "extracted", "global", "ordered"])
+			check(`alias-resource-${field}`, result.aliases[field], result.picture);
+		check(
+			"alias-real-image-decode",
+			[result.aliases.width, result.aliases.height],
+			[1, 1],
+		);
+		check("alias-real-font-load", result.aliases.fontStatus, "loaded");
+		check(
+			"alias-native-constructor-and-prototype",
+			result.aliases.native,
+			true,
+		);
+		check("alias-native-static-functions", result.aliases.nativeStatic, true);
+		check("alias-evaluation-and-conversion-order", result.aliases.order, [
+			"input-expression",
+			"base-expression",
+			"convert-input",
+		]);
+		check("alias-closed-resource-graph", result.aliases.denied, [
+			true,
+			true,
+			true,
+		]);
+		check("alias-resource-module-separation", result.aliases.moduleDenied, [
+			true,
+			true,
+		]);
+		check(
+			"alias-shadowed-constructor",
+			result.aliases.localInput,
+			"./local-only.png",
+		);
+		check(
+			"alias-shadowed-global-object",
+			result.aliases.globalLocalInput,
+			"./global-local-only.png",
+		);
 		check("page-errors", errors, []);
 		check("external-requests", requests, []);
 		const csp = await inner.evaluate(() =>

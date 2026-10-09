@@ -1,9 +1,10 @@
 /** Fixed browser resolver. Resource bytes and executable modules stay separate. */
 export const HYPERFRAMES_MODULE_RUNTIME_SOURCE = String.raw`
 function hfCreateModuleRuntime(maps,bodies,assets) {
+  const NativeURL = URL, construct = Reflect.construct, StringValue = String;
   const string = value => {
     if (typeof value === 'symbol') throw TypeError('Cannot convert a Symbol to a URL');
-    return typeof value === 'string' ? value : String(value);
+    return typeof value === 'string' ? value : StringValue(value);
   };
   const metaUrl = url => {
     const hash = new URL(url).hash;
@@ -45,7 +46,12 @@ function hfCreateModuleRuntime(maps,bodies,assets) {
     hfModuleFile(origin);
     return [resolve(value,origin,false,false)];
   };
-  return Object.freeze({metaUrl,resolveUrl,loadUrl,resourceArguments});
+  const resourceURL = new Proxy(NativeURL,{construct(target,args,newTarget) {
+    return construct(target,args.length === 2 ? resourceArguments(args[0],args[1]) : args,
+      newTarget === resourceURL ? target : newTarget);
+  }});
+  const resourceConstructor = candidate => candidate === NativeURL ? resourceURL : candidate;
+  return Object.freeze({metaUrl,resolveUrl,loadUrl,resourceArguments,resourceConstructor});
 }
 `;
 

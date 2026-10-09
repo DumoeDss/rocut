@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { hyperframesModuleSources } from "./hyperframes-module-sources";
+import { HYPERFRAMES_RESOURCE_ALIAS_PROBE } from "./hyperframes-resource-alias-sources";
 
 export async function hyperframesResourceSources(): Promise<
 	Record<string, string | Uint8Array>
@@ -46,7 +47,8 @@ export async function hyperframesResourceSources(): Promise<
 		),
 		"assets/sound.wav": wav,
 		"assets/never-execute.txt": "globalThis.__resourceExecuted=true;",
-		"scenes/resource-probe.mjs": String.raw`
+		"scenes/resource-probe.mjs":
+			String.raw`
 const originalURL = globalThis.URL, prototype = originalURL.prototype, blobFactory = originalURL.createObjectURL;
 const originalBase = import.meta.url;
 let baseReads = 0;
@@ -71,6 +73,6 @@ for(const name of ['../missing.png','../../../escape.png','https://example.inval
 const resourcesAsModules=[];
 for(const value of [picture,new URL('../assets/never-execute.txt',import.meta.url),import.meta.resolve('../assets/font.ttf')]) {try {await import(value);resourcesAsModules.push(false);}catch{resourcesAsModules.push(true);}}
 globalThis.__resourceResult={picture:picture.href,computed:computed.href,fromResolved:fromResolved.href,width:image.naturalWidth,height:image.naturalHeight,fontStatus:face.status,fontFamily:face.family,mediaDuration:duration,mediaType:mediaURL.href.split(';')[0],directBaseReads,order,scopedInput:scoped.input,nativeURL:globalThis.URL===originalURL,nativeInstance:picture.constructor===originalURL&&Object.getPrototypeOf(picture)===prototype,nativeStatic:URL.createObjectURL===blobFactory,denied,resourcesAsModules,resourceExecuted:globalThis.__resourceExecuted===true};
-`,
+` + HYPERFRAMES_RESOURCE_ALIAS_PROBE,
 	};
 }

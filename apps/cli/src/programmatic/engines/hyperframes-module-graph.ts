@@ -134,7 +134,7 @@ async function prepareHyperframesModules(config, fs, sync, path, parseHTMLConten
     const bootstrap = doc.createElement('script');
     bootstrap.setAttribute('data-rocut-hyperframes-module-graph','1');
     bootstrap.textContent = '(()=>{const URL=globalThis.URL;'+${JSON.stringify(HYPERFRAMES_MODULE_RESOLVER_SOURCE + HYPERFRAMES_MODULE_RUNTIME_SOURCE)}+'\n'+runtime+'})();';
-    const facade = 'const graph=globalThis.__rocutHyperframesModuleGraph; export const metaUrl=graph.metaUrl,resolveUrl=graph.resolveUrl,loadUrl=graph.loadUrl,resourceArguments=graph.resourceArguments;';
+    const facade = 'const graph=globalThis.__rocutHyperframesModuleGraph; export const metaUrl=graph.metaUrl,resolveUrl=graph.resolveUrl,loadUrl=graph.loadUrl,resourceArguments=graph.resourceArguments,resourceConstructor=graph.resourceConstructor;';
     imports[runtimeId] = 'data:text/javascript;base64,'+Buffer.from(facade,'utf8').toString('base64');
     for (const el of doc.querySelectorAll('script[type="importmap"]')) el.remove();
     const importMap = doc.createElement('script'); importMap.setAttribute('type','importmap');

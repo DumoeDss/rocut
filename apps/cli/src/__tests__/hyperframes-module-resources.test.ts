@@ -103,6 +103,44 @@ test("resource arguments preserve native URL identity, conversion order and loca
 	).toThrow("outside");
 });
 
+test("constructor guard preserves custom arguments and checks actual native identity", () => {
+	class LocalURL {
+		constructor(
+			readonly input: unknown,
+			readonly origin: unknown,
+		) {}
+	}
+	const Custom = runtime.resourceConstructor(LocalURL);
+	const input = {
+		toString: () => {
+			throw Error("must not coerce custom input");
+		},
+	};
+	const custom = new Custom(input, base);
+	expect(Custom).toBe(LocalURL);
+	expect(custom.input).toBe(input);
+	expect(custom.origin).toBe(base);
+	const Native = runtime.resourceConstructor(URL);
+	const native = new Native("../assets/picture.png", base);
+	expect(native.constructor).toBe(URL);
+	expect(Object.getPrototypeOf(native)).toBe(URL.prototype);
+	expect(native.href).toBe(assets["assets/picture.png"]);
+	expect(() => new Native("../missing.png", base)).toThrow("Undeclared");
+	class Derived extends URL {}
+	const derived = Reflect.construct(
+		Native,
+		["../assets/picture.png", base],
+		Derived,
+	);
+	expect(Object.getPrototypeOf(derived)).toBe(Derived.prototype);
+	if (!(derived instanceof Derived)) throw Error("Derived URL identity lost");
+	expect(derived.href).toBe(assets["assets/picture.png"]);
+	const invalid = runtime.resourceConstructor(null);
+	let argumentEffects = 0;
+	expect(() => new invalid(argumentEffects++, base)).toThrow();
+	expect(argumentEffects).toBe(1);
+});
+
 test.skipIf(!toolchain)(
 	"Acorn URL rewrites honor lexical declarations, parameters, var hoisting and class scopes",
 	async () => {
@@ -130,10 +168,10 @@ test.skipIf(!toolchain)(
 			[`switch (${sample}) {case 1: ${sample}; let URL;}`, 1],
 			[`class C {static {${sample};var URL;} field=${sample};}`, 1],
 			[`function f(){${sample};{let URL;}}`, 1],
-			[`const base=import.meta.url; new URL('./picture.png',base);`, 0],
+			[`const base=import.meta.url; new URL('./picture.png',base);`, 1],
 			[
 				`new globalThis.URL('./picture.png',import.meta.url); const U=URL; new U('./picture.png',import.meta.url);`,
-				0,
+				2,
 			],
 		];
 		for (const [source, expected] of cases) {
@@ -151,18 +189,17 @@ test.skipIf(!toolchain)(
 				sourceType: "module",
 			});
 			let wrappers = 0;
-			const walk = (value: any) => {
+			const walk = (value: unknown) => {
 				if (!value || typeof value !== "object") return;
+				const node = value as {
+					type?: string;
+					callee?: { type?: string; callee?: { property?: { name?: string } } };
+				};
 				if (
-					value.type === "NewExpression" &&
-					value.arguments[0]?.type === "SpreadElement" &&
-					value.arguments[0].argument.callee?.property?.name ===
-						"resourceArguments"
+					node.type === "NewExpression" &&
+					node.callee?.type === "CallExpression" &&
+					node.callee.callee?.property?.name === "resourceConstructor"
 				) {
-					expect(value.callee).toMatchObject({
-						type: "Identifier",
-						name: "URL",
-					});
 					wrappers++;
 				}
 				for (const entry of Object.values(value))

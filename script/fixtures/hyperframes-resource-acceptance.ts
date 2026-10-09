@@ -140,7 +140,7 @@ const report = {
 	browser,
 	modules,
 	uncovered: [
-		"Only direct unshadowed new URL(input, import.meta.url) is adapted; aliased meta.url/URL and globalThis.URL forms remain unsupported.",
+		"Immutable const URL/import.meta aliases and globalThis.URL are covered. Mutable aliases, arbitrary data flow and dynamic properties remain unproven. Alias/member constructor replacement is runtime-guarded; direct unbound URL retains its historical compile-time literal admission.",
 		"No global URL override or native hierarchical resource route is installed.",
 		"Query-specific import-map scope handling and classic-script imports remain outside this resource-stage verification.",
 	],

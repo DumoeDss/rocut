@@ -3,18 +3,22 @@ export const HYPERFRAMES_MODULE_SCOPES_SOURCE = String.raw`
 function hfModuleScopes(tree) {
   const scopes = new WeakMap();
   function scope(parent, ownsVar = false) {
-    const result = {parent,bindings:new Set(),varScope:null};
+    const result = {parent,bindings:new Map(),varScope:null};
     result.varScope = ownsVar ? result : parent.varScope;
     return result;
   }
-  function bind(pattern, target) {
+  function bind(pattern, target, reference = null) {
     if (!pattern) return;
-    if (pattern.type === 'Identifier') target.bindings.add(pattern.name);
+    if (pattern.type === 'Identifier') target.bindings.set(pattern.name,{reference});
     else if (pattern.type === 'RestElement') bind(pattern.argument,target);
     else if (pattern.type === 'AssignmentPattern') bind(pattern.left,target);
     else if (pattern.type === 'ArrayPattern') for (const item of pattern.elements) bind(item,target);
-    else if (pattern.type === 'ObjectPattern') for (const item of pattern.properties)
-      bind(item.type === 'RestElement' ? item.argument : item.value,target);
+    else if (pattern.type === 'ObjectPattern') for (const item of pattern.properties) {
+      const key = item.type === 'Property' ? (!item.computed && item.key.type === 'Identifier'
+        ? item.key.name : item.key.type === 'Literal' && typeof item.key.value === 'string' ? item.key.value : null) : null;
+      const child = reference && key !== null ? {...reference,path:[...reference.path,key]} : null;
+      bind(item.type === 'RestElement' ? item.argument : item.value,target,child);
+    }
   }
   function children(node, current) {
     for (const [key,value] of Object.entries(node)) {
@@ -63,17 +67,21 @@ function hfModuleScopes(tree) {
       visit(node.superClass,klass); visit(node.body,klass); return;
     }
     if (node.type === 'VariableDeclaration') {
-      for (const declaration of node.declarations) bind(declaration.id,node.kind === 'var' ? current.varScope : current);
+      for (const declaration of node.declarations) bind(declaration.id,node.kind === 'var' ? current.varScope : current,
+        node.kind === 'const' && declaration.init ? {value:declaration.init,path:[]} : null);
     } else if (node.type === 'ImportDeclaration') {
       for (const specifier of node.specifiers) bind(specifier.local,current);
     }
     children(node,current);
   }
   const root = scope(null,true); visit(tree,root);
-  return (node,name) => {
+  const binding = (node,name) => {
     for (let current = scopes.get(node); current; current = current.parent)
-      if (current.bindings.has(name)) return true;
-    return false;
+      if (current.bindings.has(name)) return current.bindings.get(name);
+    return undefined;
   };
+  const isBound = (node,name) => binding(node,name) !== undefined;
+  isBound.binding = binding;
+  return isBound;
 }
 `;
