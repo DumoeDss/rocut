@@ -1,0 +1,77 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "compile-archive-revise-and-native-browser-data-read-verified",
+	"implementation": {
+		"compiler": "apps/cli/src/programmatic/engines/remotion-compiler-child.ts",
+		"editableArchive": "apps/cli/src/programmatic/engines/build-revision.ts",
+		"publicExtensions": ["json", "txt", "csv", "srt", "vtt", "lrc"],
+		"semantics": "Declared public files become UTF-8 data URLs for native staticFile/getStaticFiles; raw UTF-8 bytes, newlines and sizeInBytes are retained. JSON module imports remain parsed objects, not URL strings.",
+		"validation": "Strict UTF-8, existing Rust source/path/resource budgets, declared source snapshot and archive digests remain authoritative. Unsupported public binaries remain rejected.",
+		"network": "Unchanged opaque-origin capture CSP permits data URLs, not external network fetches or nested frames.",
+		"revision": "Known archived text inputs can be revised; no implicit source-file creation, undeclared filesystem reads or author Node execution.",
+		"provenance": "Existing adapter SHA automatically includes compiler source changes; incompatible historical adapter locks still require explicit recompilation rather than silent reinterpretation. The shared compiler hash also belongs to the Three adapter."
+	},
+	"checks": {
+		"compileArchiveRevisionTests": { "passed": 2, "assertions": 33 },
+		"withExistingRevisionAdmission": {
+			"passed": 4,
+			"skipped": 2,
+			"failed": 0,
+			"assertions": 48,
+			"skippedReason": "Existing real HyperFrames/Remotion revision tests require their separate environment flag; not counted as executed."
+		},
+		"strictScopedTypes": { "rootFiles": 6, "diagnostics": 0 },
+		"explicitRecommendedEslint": {
+			"files": 6,
+			"errors": 0,
+			"warnings": 0,
+			"scope": "CLI and fixture paths are outside canonical frontend ESLint globs; checked explicitly without changing repository lint configuration."
+		},
+		"prettier": "passed",
+		"strictUtf8JsonAndDiff": "passed"
+	},
+	"browser": {
+		"report": "C:/Users/Sayo/AppData/Local/Temp/rocut-remotion-static-data-jUR1Fb/verification.json",
+		"reportSha256": "ecfd61665cec63eb73f502243572124d4ccce5a028b3d840ba28d9ee61f60740",
+		"passed": true,
+		"exitCode": 0,
+		"wasmSha256": "992ffb5b51a1d138a0f5ed6cf3d2743c3b84aa57dbbd1c537cbae871e802c84a",
+		"compiledDocumentSha256": "40125583372917ad24542b83707b458251bb5547a0be1dfdc987cea22b044a94",
+		"toolchainLockSha256": "0215d68d66faaf5cf485483b9944f467199198a8c52db5550609ac0863dd1ec4",
+		"dimensions": [32, 32],
+		"observations": 7,
+		"completeRgbaMaximumError": 0,
+		"cases": [
+			"reverse and repeated frames",
+			"declared getStaticFiles inventory and UTF-8 byte sizes",
+			"fetch(staticFile(...)) exact Unicode/newline text",
+			"JSON source import remains an object",
+			"script-like data stays inert",
+			"author directory moved before archive rebuild",
+			"archived JSON revision changes exact rendered colors",
+			"successful capture after rejected requests"
+		],
+		"negativeControls": [
+			"undeclared staticFile rejected",
+			"external network fetch rejected by unchanged capture policy"
+		],
+		"independentDecoder": "FFmpeg decodes every 32x32 RGBA channel; expected solid calibration colors are independent of production pixels",
+		"inputIdentityStable": true
+	},
+	"reproduction": {
+		"tests": "bun test --preload ./script/fixtures/isolated-web-wasm-preload.mjs apps/cli/src/__tests__/remotion-static-data.test.ts",
+		"browser": "bun --preload ./script/fixtures/isolated-web-wasm-preload.mjs script/probe-remotion-static-data.ts",
+		"environment": [
+			"ROCUT_TEST_REMOTION_TOOLCHAIN",
+			"ROCUT_TEST_WASM_DIRECTORY",
+			"ROCUT_TEST_FFMPEG"
+		],
+		"startupCorrection": "The first browser runner imported the Node/Vite bundler facade under Bun and failed before any capture. It now imports only workspace Playwright, matching existing native probe hosts. No dependency was changed."
+	},
+	"limits": [
+		"Data files are made available; this does not implement all third-party caption/Lottie parsers or their ecosystem dependencies.",
+		"No new standalone encoded-video, installed Electron, cross-machine or full-MV acceptance is claimed.",
+		"Original resource/output budgets and unsupported binary-extension policy are unchanged."
+	]
+}

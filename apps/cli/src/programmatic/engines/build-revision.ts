@@ -18,7 +18,7 @@ interface BuildRevisionInput {
 
 /** Mirrors the compiler's existing text decoding boundary, not a budget policy. */
 export const isBuildTextInput = (id: string): boolean =>
-	/\.(?:html?|css|[cm]?js|tsx?|jsx|json|svg)$/i.test(id);
+	/\.(?:html?|css|[cm]?js|tsx?|jsx|json|svg|txt|csv|srt|vtt|lrc)$/i.test(id);
 
 export function parseBuildRevisionInput(input: unknown): BuildRevisionInput {
 	if (!input || typeof input !== "object" || Array.isArray(input))

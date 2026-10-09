@@ -16,10 +16,17 @@ export const REMOTION_COMPILER_CHILD = String.raw`
     '.ttf':'font/ttf','.otf':'font/otf','.woff':'font/woff','.woff2':'font/woff2'};
   if (!isThree) Object.assign(mime, {'.webm':'video/webm','.mp4':'video/mp4',
     '.wav':'audio/wav','.mp3':'audio/mpeg','.ogg':'audio/ogg','.flac':'audio/flac'});
+  // Public data is fetched as an archived URL, not imported as a module. Keep
+  // these MIME entries separate so ordinary JSON imports retain object semantics.
+  const textMime = {'.json':'application/json','.txt':'text/plain','.csv':'text/csv',
+    '.srt':'application/x-subrip','.vtt':'text/vtt','.lrc':'text/plain'};
   const staticFiles = [], urls = {};
   for (const file of config.files.filter(file => !isThree && file.startsWith('public/'))) {
     const body = await fs.readFile(path.join(config.project,file));
-    const kind = mime[path.extname(file).toLowerCase()];
+    const ext = path.extname(file).toLowerCase();
+    const textKind = textMime[ext];
+    if (textKind) new TextDecoder('utf-8',{fatal:true}).decode(body);
+    const kind = textKind ? textKind+';charset=utf-8' : mime[ext];
     if (!kind) throw Error('Unsupported Remotion static asset: ' + file);
     const name = file.slice(7), src = 'data:'+kind+';base64,'+body.toString('base64');
     urls['/'+name.split('/').map(encodeURIComponent).join('/')] = src;
