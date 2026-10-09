@@ -1,0 +1,32 @@
+{
+	"version": 1,
+	"date": "2026-10-10",
+	"status": "verified-checkpoint",
+	"scope": "Actual Rust transient Heart resource owner with a valid tiny PNG fixture; not the native decode, provider, pixel or export boundary",
+	"native": {
+		"session": 45930,
+		"exitCode": 0,
+		"filter": "mv_heart_owner::",
+		"passedTests": 2,
+		"privateSource": "E:/Elftia-private-tests/rocut-ink-20261009-F0U4dW/tunnel-native-20261010-a/source-f",
+		"sourceManifestSha256": "f0f181ea6bc1b74ad57bd62608b33c7986f71e8c6c11b5868ceb1225c7d971e9",
+		"copiedSourceFiles": 772,
+		"fixture": "Valid 20x20 RGBA8 PNG with CRC, uncompressed zlib/deflate and Adler32; expected RGBA supplied directly for this CPU-only gate"
+	},
+	"coverage": [
+		"Encoded Resource length/SHA and actual MIME/container dimensions, plus decoded RGBA hash/shape binding",
+		"Owner/session/frame/manifest identity equality and stale/cross-owner isolation",
+		"Gaps, overlaps, missing/trailing bytes, overflow and unknown authored fact fields",
+		"Metadata, immutable provider packet and inbound WASM-copy reservation before invoking the copier",
+		"Exactly one successful binary extraction per derived image index; duplicate extraction creates no second copy and cancels only that session",
+		"Cancellation, malformed frames, metadata failure, copier failure and caught panic release reservations symmetrically",
+		"Owner/session capability exhaustion and explicit dispose/Drop symmetry"
+	],
+	"limitations": [
+		"Two tests contain a serial process-global lifecycle matrix; not two complete end-to-end editor scenarios",
+		"The image header parser does not replace actual Canvas decode or prove compressed pixel validity",
+		"The 16KiB-per-possible-image metadata reservation is conservative and may reject ordinary large source images; common-size capacity still needs production acceptance",
+		"Budgets describe one Rust/WASM instance and stated provider copies, not measured whole-renderer or cross-worker memory",
+		"No installed Electron, whole MV, native raster parity, export or performance acceptance"
+	]
+}

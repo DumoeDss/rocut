@@ -1,0 +1,40 @@
+{
+	"version": 1,
+	"date": "2026-10-10",
+	"status": "verified-checkpoint",
+	"scope": "Integrated MV recipe Rust library tests and original Heart shatter/burn Canvas-call traces; not pixel parity or a production prepared-image owner",
+	"native": {
+		"session": 14518,
+		"exitCode": 0,
+		"filter": "mv_recipe::",
+		"passedTests": 354,
+		"privateSource": "E:/Elftia-private-tests/rocut-ink-20261009-F0U4dW/tunnel-native-20261010-a/source-c",
+		"sourceManifestSha256": "6619586aac76585c78c53e6cf7d6a0b3ddce2b5a80a08606664f5975f53a51b8",
+		"copiedSourceFiles": 757,
+		"registration": "Heart is now crate-internal and its shatter/burn producers compile in the actual editor-api library; no public scene or WASM owner registration yet"
+	},
+	"referencePost": {
+		"exitCode": 0,
+		"filter": "mv_reference_post::",
+		"passedTests": 4,
+		"samePrivateSource": true
+	},
+	"originalTrace": {
+		"entry": "node script/fixtures/mv-heart-scene-oracle.mjs",
+		"originalRoot": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/vocaloid-style-mv-pipeline/skills/vocaloid-style-mv/template/engine",
+		"artifact": "E:/Elftia-private-tests/rocut-ink-20261009-F0U4dW/temp/heart-shatter-burn-trace-20261010-a.json",
+		"artifactSha256": "89fae98f732ffbc00494d5da6753fd840c23b6854f96d87639943cdb9f301bc7",
+		"shatterFrames": 14,
+		"burnFrames": 15,
+		"assertions": 334583,
+		"tolerance": 1e-8,
+		"pixelParity": false
+	},
+	"limitations": [
+		"The 354 tests cover the mv_recipe namespace, not 354 Heart-specific cases or all integration targets",
+		"The immutable snapshot includes unregistered leaves; copying a leaf does not establish that it was compiled",
+		"The snapshot predates the new Tunnel pre-copy typed-array transport guard",
+		"Gather, sun, skyShatter, actual prepared-image provider and native raster pixels remain unaccepted",
+		"No GPU/export, installed Electron, whole-MV or performance acceptance"
+	]
+}
