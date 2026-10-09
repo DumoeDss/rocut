@@ -73,7 +73,34 @@
 			"videoSha256": "e99d850d5712183b50946edb923f33dcb1319a26648ec3a827a3fdd7a5888b22",
 			"errors": [],
 			"exitCode": 0
+		},
+		{
+			"name": "VinylPlayer",
+			"inputPropsScope": "Original component and props with the original default cover and stardust texture bytes localized; not arbitrary remote images or every props combination",
+			"dimensions": [1080, 1920],
+			"fps": 30,
+			"exportedFrames": 300,
+			"decodedFrames": 300,
+			"durationSeconds": 10,
+			"bytes": 3663881,
+			"meanMae": 0.520086081802307,
+			"worstFrameMae": 0.56961011775444,
+			"repeatPixelsExact": true,
+			"rebuiltPixelsExact": true,
+			"wasm": {
+				"artifact": "web-scene-transition-oi8DXV",
+				"sha256": "f38a61f8c0246ddeaa69a3e37937734ed5829d23e3e2c8926f227c6590afb4d9"
+			},
+			"report": "C:/Users/Sayo/AppData/Local/Temp/rocut-remotion-presets-Gp4mFH/verification.json",
+			"reportSha256": "e8a7a44d1e74781254c679e4005fdda8aad486cc200945c1f1082f5896d7bcb3",
+			"nativeResultsSha256": "c680a5e898e5ca00bd68c133f65df301f94da5e056b6924d48d9e2f00869e3b9",
+			"assetProvenanceSha256": "afc32257d249399bbe7d8ef8d7da2395301c030ed4369841e9fd52d8d8bdf6a0",
+			"coverSha256": "b7bf8b8469a05994850cb5b02daf6774262aec29afe5bdc89dd2a5e0ace90d3a",
+			"textureSha256": "9ab95f1bbac23474659fafa5fd3c6dcfb30d8ef2fdd30c3e0019821cd44e5edd",
+			"videoSha256": "cbc7cd5cb25df7b083631ab7fe34ef6d45e9d2e00ea92b0a038fdd05a7e7f655",
+			"errors": [],
+			"exitCode": 0
 		}
 	],
-	"remainingFullRangePresets": ["VinylPlayer"]
+	"remainingFullRangePresets": []
 }
