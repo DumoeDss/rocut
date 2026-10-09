@@ -1,0 +1,795 @@
+{
+  "version": 1,
+  "date": "2026-10-09",
+  "status": "native-thread-original-parity-and-export-subset-passed",
+  "scope": [
+    "Complete Thread scene from the unchanged reference dark.js; Rust owns scene geometry, timing, validation and allocation admission.",
+    "TypeScript replays the existing native-scene raster protocol; Thread adds no raster operation.",
+    "Standalone private Chromium full-frame parity and real SceneExporter video export; not installed Electron or a full MV."
+  ],
+  "implementation": {
+    "sceneKind": "thread",
+    "contract": "packages/editor-contracts/src/mv-thread.ts",
+    "rustEntry": "rust/crates/editor-api/src/mv_recipe/thread.rs",
+    "canvasSize": {
+      "width": 1920,
+      "height": 1080
+    },
+    "scalePolicy": "Preserve the original 1920x1080 scene and Canvas transform operation order; output scaling occurs only after the native scene.",
+    "args": [
+      "hand",
+      "light",
+      "stops",
+      "kickAt",
+      "arriveAt",
+      "handRot",
+      "handH",
+      "handX",
+      "handY"
+    ],
+    "clockInputs": [
+      "manual songTicks or reviewed analysis beats",
+      "bpm",
+      "downbeatIndex0"
+    ],
+    "layers": [
+      "Violet background, seeded tiled/tinted 480x270 nebula and 80 dust particles.",
+      "Landmark-positioned hand, full-frame lit mask/source-atop shade and warm inner rim with blur 4.",
+      "Eight controls, Catmull-Rom 20 steps per segment, 301 arc-length points, waves/tug and visible-prefix growth.",
+      "Tapered ribbon, 12 frayed fibres and original 0.25/0.5-size soft glows with blur 9/3.",
+      "18 motes, light core/streaks, five bokeh elements and vignette."
+    ],
+    "timeSemantics": [
+      "held(t) subtracts each interval's clamped elapsed length in original order; overlaps are deliberately neither sorted nor merged.",
+      "Drawing uses floor(held*12+1e-6)/12 while the original camera/light/particle paths retain their full-rate clocks.",
+      "kickAt defaults to the last selected stop's end, otherwise shotStart + duration*0.74; selected-stop order therefore matters.",
+      "Default arrival uses the original next-beat logic and at least kick+0.2; empty beats require explicit arriveAt rather than a fabricated beat.",
+      "The native plan reuses the existing explicit transform/copy-transform, mask, surface, blit and filter operations."
+    ],
+    "distinctionFromCloth": "Thread is the reference's authored ribbon scene, not the separate XPBD clothImage simulation; Cloth behavior, constraints and simulation budget are not replaced by this port."
+  },
+  "reviewedStopContract": {
+    "field": "rocut-mv-audio/1.stops (Rust mv_audio::Data; TypeScript MvAudioStopMetadata)",
+    "shape": "stops?: [{ kind: 'stop' | 'gap', start: number, end: number, depthDb?: number }]",
+    "sourceImport": "Copies music.stops only from the existing fingerprinted/reviewed analysis import; maps depth_db to depthDb.",
+    "validation": {
+      "maxEvents": 4096,
+      "units": "Original source-audio seconds (binary64); not rounded into timeline ticks.",
+      "interval": "Finite 0 <= start < end <= audio duration; optional depthDb must be finite.",
+      "missingField": "Remains absent for old data.",
+      "emptyArray": "Remains explicitly present.",
+      "null": "Rejected, including explicit null depthDb.",
+      "orderAndOverlaps": "Retained exactly; no sorting or merging."
+    },
+    "threadOverride": {
+      "field": "thread.settings.stops",
+      "shape": "Optional source-second [start,end][]; explicit [] overrides all global stops.",
+      "selectionWhenAbsent": "Select global kind=stop with end > shotStart && start < shotEnd, preserving input order; ignore gap events.",
+      "maxEvents": 4096,
+      "bounds": "Finite 0 <= start < end <= 21600 seconds."
+    },
+    "unchanged": "No stop-detection algorithm, envelope threshold inference, review bypass, fingerprint relaxation or Thread-only audioStops alias."
+  },
+  "budgets": {
+    "perThreadExpandedCommands": 1024,
+    "perThreadPathSteps": 12000,
+    "serializedPlanBytes": 1048576,
+    "planCopyAccounting": "Charges ceil(3 * maximum serialized-plan bytes / 4) pixel units to the shared budget.",
+    "handDecodedMaxDimension": 4096,
+    "projectedHandBlurMaxDimension": 8192,
+    "scratch": "Measured live surface/filter/image allocations are validated against the conservative Thread envelope; image-dependent admission uses verified decoded dimensions.",
+    "jointRasterPixelUnits": 67108864,
+    "independentDecoderBytes": 134217728,
+    "expandedGraphPrimitives": 4096,
+    "existingExpandedSimulationWork": 80000000,
+    "unchangedGlobalLimits": true,
+    "wholeSource": "Preflight includes hidden scene leaves and all declared resident images; image IDs are charged once, including encoded transport copies. Missing image facts defer dimension-dependent admission, never authorize a render plan.",
+    "caveat": "These are logical admission/allocation bounds, not a measured process RSS or cross-GPU performance guarantee."
+  },
+  "provenance": {
+    "reference": {
+      "root": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/vocaloid-style-mv-pipeline",
+      "scripts": [
+        {
+          "id": "core/util.js",
+          "sha256": "1e6be8d7551fdb3ded2a6dde027fab9630837fcc47c34ac3c1dc622664dedd48"
+        },
+        {
+          "id": "core/assets.js",
+          "sha256": "ca6f66a75af8ce87607e2e8ff708343209cacffc35cc04a6130e53b2548d3baa"
+        },
+        {
+          "id": "core/draw.js",
+          "sha256": "4e7b4cd7efd46bf7dd69046a6fc0bd15131c1c66a7bc64e7823d557ba4fd11ec"
+        },
+        {
+          "id": "scenes/dark.js",
+          "sha256": "4b20e29e78b30ae67c350e4622ae60933137b00cbcedbe858ed7c652536a55bd"
+        }
+      ]
+    },
+    "oracle": "Executes the complete unchanged util/assets/draw/dark scripts in an isolated realm, rather than a rewritten visual approximation.",
+    "privateWasm": {
+      "directory": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/web-scene-transition-1ST2Rf",
+      "files": {
+        "opencut_wasm_bg.wasm": {
+          "byteLength": 9986473,
+          "sha256": "992ffb5b51a1d138a0f5ed6cf3d2743c3b84aa57dbbd1c537cbae871e802c84a"
+        },
+        "opencut_wasm.js": {
+          "byteLength": 165861,
+          "sha256": "1e4b1d40757cab5b035bb4300a05c7e8656782b469c864602d1b4a471da6b1dc"
+        },
+        "verification.json": {
+          "byteLength": 581,
+          "sha256": "1c61425935f3fafc6c3a866e14a05d0cf9ce20dae870bd11d796ebec24261723"
+        }
+      },
+      "sourceManifestSha256": "4fc50838d1581293ade98d5bf8dcebb8760ee31308975d603d6fc06c0b2e822a",
+      "scope": "Exact private WASM/glue/build-report files; producer source-manifest digest, not a claim over the current whole workspace"
+    },
+    "servedBundle": {
+      "scope": "Every file in this run's private served web directory",
+      "files": {
+        "assets/mv-thread-native-browser-CQ4yFLzp.js": {
+          "byteLength": 2186832,
+          "sha256": "8986f99613c3e1678d5dcb693d2e17e924f7e33b5223596c4a9c4e037bffbce3"
+        },
+        "assets/opencut_wasm_bg-B_Oh3eMr.wasm": {
+          "byteLength": 9986473,
+          "sha256": "992ffb5b51a1d138a0f5ed6cf3d2743c3b84aa57dbbd1c537cbae871e802c84a"
+        },
+        "script/fixtures/mv-thread-native-browser.html": {
+          "byteLength": 241,
+          "sha256": "e1f3501b7d12407cb1e54fdfc0dd5fe924d92577470f5b16675d287a55d48fde"
+        }
+      }
+    },
+    "privateProducerDirectory": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/scene-transition-source-JeXUmF",
+    "currentOwnedRustVsPrivateProducer": {
+      "files": 28,
+      "exactSha256Matches": 28,
+      "differences": []
+    },
+    "scope": "Input identity was checked before and after each acceptance run; neither these identities nor the owned-file checkpoint below attest the entire concurrently changing workspace.",
+    "browser": "151.0.7922.34",
+    "marker": {
+      "id": "thread-hand",
+      "kind": "synthetic transparent PNG marker, not original film artwork",
+      "width": 960,
+      "height": 1600,
+      "bytes": 72890,
+      "sha256": "ff314d9cc5b8b9f2bc95f9790c98dfbf2eebbc6dbef0ba5e586e0fdf5ade12cc",
+      "defaultPathCheck": "Three independent original implicit-hand/default-path checks resolve this same marker; they do not validate the original asset."
+    }
+  },
+  "verification": {
+    "browserOnly": {
+      "command": "node script/probe-mv-thread.mjs --browser-only",
+      "exitCode": 0,
+      "evidence": "C:/Users/Sayo/AppData/Local/Temp/rocut-thread-native-iAEHsR/verification.json",
+      "evidenceSha256": "c264e355df36c8d53339b867a660d61bb40c30b5b0d3b9a44072de2a225e8715",
+      "passed": true
+    },
+    "formal": {
+      "command": "node script/probe-mv-thread.mjs",
+      "argumentsUnmodified": true,
+      "exitCode": 0,
+      "evidence": "C:/Users/Sayo/AppData/Local/Temp/rocut-thread-native-qWYtkO/verification.json",
+      "evidenceSha256": "1238ec416165811c7d0600134d9d79f493dbd049a4d57edf926e5bf9b05c5720",
+      "passed": true,
+      "inputIdentityStable": true,
+      "browserErrors": 0,
+      "violations": []
+    },
+    "pixelParity": {
+      "width": 1920,
+      "height": 1080,
+      "namedObservations": 71,
+      "uniqueSceneSamples": 61,
+      "nonmonotonicRepeatObservations": 7,
+      "originalImplicitDefaultObservations": 3,
+      "allMaxChannel": 0,
+      "allMae": 0,
+      "thresholds": {
+        "maxChannelAtMost": 2,
+        "maeLessThan": 0.025,
+        "repeatMax": 0
+      },
+      "coverage": [
+        "defaults",
+        "reviewed global stops",
+        "explicit empty override",
+        "overlapping unsorted authored stops",
+        "explicit light/hand/kick/arrival and downbeat offset",
+        "empty beats with explicit arrival",
+        "strict global overlap boundaries and gap exclusion"
+      ],
+      "sampling": "Complete native-resolution frames; no acceptance crop, mask or output downsampling."
+    },
+    "omissionNegatives": {
+      "case": "default",
+      "sourceFrame": 170,
+      "detected": 5,
+      "measurements": {
+        "controlled": {
+          "max": 0,
+          "mae": 0,
+          "changed": 0
+        },
+        "nebula": {
+          "max": 22,
+          "mae": 5.289650245949074,
+          "changed": 5782105
+        },
+        "hand-lighting": {
+          "max": 69,
+          "mae": 1.7655700231481481,
+          "changed": 440814
+        },
+        "hand-rim": {
+          "max": 177,
+          "mae": 0.18712034625771604,
+          "changed": 74147
+        },
+        "ribbon-glows": {
+          "max": 179,
+          "mae": 0.9720138888888888,
+          "changed": 755870
+        },
+        "frayed-fibres": {
+          "max": 110,
+          "mae": 0.01654562114197531,
+          "changed": 7343
+        }
+      },
+      "note": "The controlled replay is exact. Frayed-fibre omission is rejected by max-channel error 110, not by MAE 0.01654562114197531, which is below the positive MAE limit."
+    },
+    "gpu": {
+      "observations": 13,
+      "sequence": [
+        9,
+        1,
+        4,
+        0,
+        5,
+        6,
+        11,
+        8,
+        7,
+        2,
+        3,
+        10,
+        1
+      ],
+      "previewVsExportMax": 0,
+      "previewVsExportMae": 0,
+      "gpuVsOriginalMax": 0,
+      "gpuVsOriginalMae": 0
+    },
+    "export": {
+      "route": "Production CanvasRenderer + SceneExporter",
+      "quality": "very_high",
+      "video": "C:/Users/Sayo/AppData/Local/Temp/rocut-thread-native-qWYtkO/thread.webm",
+      "videoSha256": "c279885dc247251d3a45991c934652c1523a75a83ff4bb5583c2b50d3479666e",
+      "width": 1920,
+      "height": 1080,
+      "fps": 30,
+      "frames": 12,
+      "bytes": 174263,
+      "codec": "vp9",
+      "pixelFormat": "yuv420p",
+      "colorSpace": "smpte170m",
+      "colorRange": "tv",
+      "colorClaim": "Reports observed smpte170m/tv metadata; does not claim BT.709 or full range.",
+      "clips": [
+        {
+          "label": "default-tug",
+          "outputFrames": [
+            1,
+            2
+          ],
+          "sourceFrames": [
+            177,
+            179
+          ]
+        },
+        {
+          "label": "reviewed-hold",
+          "outputFrames": [
+            3,
+            4
+          ],
+          "sourceFrames": [
+            83,
+            85
+          ]
+        },
+        {
+          "label": "explicit-arrival",
+          "outputFrames": [
+            6,
+            7
+          ],
+          "sourceFrames": [
+            151,
+            153
+          ]
+        },
+        {
+          "label": "overlap-release",
+          "outputFrames": [
+            8,
+            9
+          ],
+          "sourceFrames": [
+            167,
+            169
+          ]
+        }
+      ],
+      "blankFrames": [
+        0,
+        5,
+        10,
+        11
+      ],
+      "independentDecodeTested": true,
+      "decodedPassed": 12,
+      "decodedThresholds": {
+        "rgbMaeLessThan": 4,
+        "foregroundMaeLessThan": 8
+      },
+      "worstRgbMae": {
+        "frame": 2,
+        "value": 1.7023622363683129
+      },
+      "worstForegroundMae": {
+        "frame": 2,
+        "value": 1.7131632948672593
+      },
+      "worstDecodedMaxChannel": {
+        "frame": 3,
+        "value": 77,
+        "note": "Lossy-codec diagnostic, not the native RGBA parity gate."
+      },
+      "decodeFrames": [
+        {
+          "frame": 0,
+          "mae": 0.0001234567901234568,
+          "foreground": 0,
+          "foregroundMae": 0,
+          "max": 1,
+          "qualityPassed": true
+        },
+        {
+          "frame": 1,
+          "mae": 1.636494341563786,
+          "foreground": 1987072,
+          "foregroundMae": 1.6445131328910074,
+          "max": 66,
+          "qualityPassed": true
+        },
+        {
+          "frame": 2,
+          "mae": 1.7023622363683129,
+          "foreground": 1987119,
+          "foregroundMae": 1.7131632948672593,
+          "max": 72,
+          "qualityPassed": true
+        },
+        {
+          "frame": 3,
+          "mae": 1.6265062371399177,
+          "foreground": 1988121,
+          "foregroundMae": 1.6403465047315196,
+          "max": 77,
+          "qualityPassed": true
+        },
+        {
+          "frame": 4,
+          "mae": 1.6325795717592593,
+          "foreground": 1988088,
+          "foregroundMae": 1.6460354538296762,
+          "max": 61,
+          "qualityPassed": true
+        },
+        {
+          "frame": 5,
+          "mae": 0.0001234567901234568,
+          "foreground": 0,
+          "foregroundMae": 0,
+          "max": 1,
+          "qualityPassed": true
+        },
+        {
+          "frame": 6,
+          "mae": 1.587790798611111,
+          "foreground": 2017097,
+          "foregroundMae": 1.5948524042225038,
+          "max": 59,
+          "qualityPassed": true
+        },
+        {
+          "frame": 7,
+          "mae": 1.6784455375514404,
+          "foreground": 2017127,
+          "foregroundMae": 1.6882764446661018,
+          "max": 64,
+          "qualityPassed": true
+        },
+        {
+          "frame": 8,
+          "mae": 1.5891820987654321,
+          "foreground": 1986877,
+          "foregroundMae": 1.6091808065287048,
+          "max": 72,
+          "qualityPassed": true
+        },
+        {
+          "frame": 9,
+          "mae": 1.6058944187242798,
+          "foreground": 1986929,
+          "foregroundMae": 1.620805440623864,
+          "max": 52,
+          "qualityPassed": true
+        },
+        {
+          "frame": 10,
+          "mae": 0.000016878858024691356,
+          "foreground": 0,
+          "foregroundMae": 0,
+          "max": 2,
+          "qualityPassed": true
+        },
+        {
+          "frame": 11,
+          "mae": 0.000013020833333333334,
+          "foreground": 0,
+          "foregroundMae": 0,
+          "max": 2,
+          "qualityPassed": true
+        }
+      ]
+    },
+    "supportingChecks": {
+      "combinedPrivateRustLib": {
+        "passed": 322,
+        "failed": 0,
+        "ignored": 1,
+        "scope": "Parent-reported combined editor-api --lib private snapshot; ignored pre-existing native-bus oracle requires its environment."
+      },
+      "threadSourceAndExportAdapter": {
+        "tests": 4,
+        "assertions": 54,
+        "passed": true
+      },
+      "evidenceIdentityNodeTests": {
+        "tests": 3,
+        "passed": true
+      },
+      "canvasRuntimeRouteTestPassed": true,
+      "strictTypecheck": {
+        "diagnostics": 0,
+        "scope": "Parent-verified full mv-thread-native-browser.ts import graph against the accepted private WASM declarations."
+      },
+      "scopedProductionEslintPassed": true,
+      "fixtureEslintClaim": false,
+      "note": "Supporting checks preceded evidence-only documentation. No repeated heavy build or acceptance run was required."
+    },
+    "environment": {
+      "ROCUT_TEST_MV_REFERENCE": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/vocaloid-style-mv-pipeline",
+      "ROCUT_TEST_WASM_DIRECTORY": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/web-scene-transition-1ST2Rf",
+      "ROCUT_TEST_FFMPEG": "E:/Software/ffmpeg-6.0-full_build/bin/ffmpeg.exe",
+      "ROCUT_TEST_FFPROBE": "E:/Software/ffmpeg-6.0-full_build/bin/ffprobe.exe"
+    }
+  },
+  "limits": {
+    "installedPluginTested": false,
+    "installedElectronTested": false,
+    "groupMasterPostTested": false,
+    "fullSongOrFullMvAccepted": false,
+    "originalFilmArtworkAccepted": false,
+    "dedicatedThreadParameterUiAccepted": false,
+    "crossBrowserOrCrossGpuReliabilityEstablished": false,
+    "performanceAcceptance": false,
+    "fallImplemented": false,
+    "referenceChanged": false,
+    "thresholdsWeakened": false,
+    "budgetsIncreased": false,
+    "sharedWasmOrDependenciesUpdated": false,
+    "note": "Production Thread code remained frozen after the accepted private build. Fall has read-only design only and requires its own implementation and acceptance."
+  },
+  "checkpoint": {
+    "root": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut",
+    "hashAlgorithm": "SHA-256 over exact current file bytes",
+    "scope": "Explicit owned paths for the Thread/stops checkpoint, not a blanket dirty-worktree staging instruction.",
+    "implementationDirectoryFiles": 36,
+    "implementationFilesExcludingColocatedTests": 31,
+    "colocatedTestFiles": 5,
+    "fixtureFiles": 19,
+    "totalSourceAndFixtureFiles": 55,
+    "newEvidenceFile": "docs/evidence/mv-thread.json",
+    "totalWithThisEvidence": 56,
+    "sharedNarrativeDocument": "docs/programmatic-frame-sources.md is parent-owned and deliberately not edited here.",
+    "implementationAndColocatedTests": [
+      {
+        "path": "rust/crates/editor-api/src/mv_audio/mod.rs",
+        "bytes": 5119,
+        "sha256": "5897a83c501c41763c3b95f62b4341c1181e08c4e6c322e5325fd83783ee5556"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_audio/import.rs",
+        "bytes": 5420,
+        "sha256": "f490630d226b1feb68299b4f495f28151adb61f707d234df00990ce863590333"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_audio/stops.rs",
+        "bytes": 2443,
+        "sha256": "eb62a8a1f4afda8ca998b2778f00969f4374311108621c1c1adb4593d5f091c6"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_audio/stop_tests.rs",
+        "bytes": 3681,
+        "sha256": "67122ec62a15766cd1e52a701e049bfa75198b6d6f4795f100655b5aac539a2d"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/mod.rs",
+        "bytes": 1073,
+        "sha256": "23bf98d934e37bb35a6233bd86c1df5a7da6e8d3c5dfa1bdc8467c06caff04f1"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/model.rs",
+        "bytes": 9607,
+        "sha256": "5b0739bbea44fa4b74ec10a7d24e724018b4a8b4206b27a14f328538f57abe0e"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/catalog.rs",
+        "bytes": 9361,
+        "sha256": "82889c096b5762a606aea72bf97607bea966645b42bd6372e44c84ffe62eb8a6"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/catalog_tests.rs",
+        "bytes": 6459,
+        "sha256": "683798c6ea3dc9250c8e7a70f82771970082829b6b218cdfae12425c8c94e0bd"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/validate.rs",
+        "bytes": 20798,
+        "sha256": "3a60285aee440f1be243e641d61fd520e46ae58bd1377c90c42423fb455b106a"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/evaluate.rs",
+        "bytes": 16705,
+        "sha256": "d5cebe093a7e6fac77ac341337c579d7aa28e2a39d713cf47c490a39f934ea0b"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/native_scene_evaluate.rs",
+        "bytes": 5523,
+        "sha256": "95064830189b78e0d068246637b3206307a214a01ffeffcc526b967e770b0ac0"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/image_dimensions.rs",
+        "bytes": 1385,
+        "sha256": "5ecd87f06b10dce4ecd9db9ead7a3d32bda18acb7ff5e23bbb6ab6a8611f74d4"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/thread.rs",
+        "bytes": 1128,
+        "sha256": "68a83f62d9d82a0ca22a00f5b7fa4c3adf4921111021b383acc9f03b50d5f5fe"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/thread_background.rs",
+        "bytes": 4266,
+        "sha256": "e16b18f09876e78e3086e81e99a1228ded0b26d8d8431c216f7e3e369cd911c2"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/thread_budget.rs",
+        "bytes": 3805,
+        "sha256": "1aab2c135f3fe72cd24e4f9761ded217d0c04766a836c7d16ff76d2ffee8d505"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/thread_catalog.rs",
+        "bytes": 3064,
+        "sha256": "ae30306c0d6beea16f32907e91a089b5f0c7ab7614d2217e9a90ccbbb3f02708"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/thread_clock.rs",
+        "bytes": 4058,
+        "sha256": "e5a388150f96cdfdb60a2ec594e99933d735c579a0c06d950ebde2afd1580333"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/thread_finishing.rs",
+        "bytes": 3079,
+        "sha256": "9fa6e3b1c7c43f5008a8ff3ed11124956fdc8523ce588b8d7aaaebe40f20ceb8"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/thread_geometry.rs",
+        "bytes": 3739,
+        "sha256": "1f589b91ce3180b3740ad79dbe68316d9362b39199081964a4776b7589a3082f"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/thread_hand.rs",
+        "bytes": 4488,
+        "sha256": "321b3cabbf06a305abb698cb3bccc1756b4724e8dfc5c5ce1d0a1fe4487674df"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/thread_math.rs",
+        "bytes": 964,
+        "sha256": "0b33af66570ae2fa644f951643f3b3719a4f5a3d6b334f88384e89d844dc75c8"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/thread_model.rs",
+        "bytes": 1183,
+        "sha256": "53a10e62013006538ffa139e01056884ad6a80f9ce1288b7cc42de9065f8a365"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/thread_producer.rs",
+        "bytes": 1937,
+        "sha256": "b45d7973b53ba1a0299d40dfe984c52d26a49d8fd500cb78af2d91b04bff0279"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/thread_public_tests.rs",
+        "bytes": 3693,
+        "sha256": "abe820500edb6024a948c5f11d75cf321fc54f93b03722156f38fac47c5c0264"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/thread_ribbon.rs",
+        "bytes": 5640,
+        "sha256": "335c7b4d72d095f1143082308a0da1cd7e6dc0733dbe9355f628698967a04f58"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/thread_state.rs",
+        "bytes": 1477,
+        "sha256": "144bb18afb45d7dd1b58fef4e6396a568a49e78aa0283c5067b9a283f5534afd"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/thread_tests.rs",
+        "bytes": 5975,
+        "sha256": "9100f98c31348507be8cf421d1da6e33a2f15932c3b641de2fc8ab64db2123fa"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_recipe/thread_validate.rs",
+        "bytes": 2263,
+        "sha256": "7e8247ffd98c1d167b13a8e67c028f9b1ce23ea794bf96ab32419b28867b8795"
+      },
+      {
+        "path": "packages/editor-contracts/src/index.ts",
+        "bytes": 7010,
+        "sha256": "98836e75b2ee4f1a94aeda325715fb8a58106033ab2eb96de9cfbda84d236e1b"
+      },
+      {
+        "path": "packages/editor-contracts/src/mv-recipe-audio.ts",
+        "bytes": 1416,
+        "sha256": "35e1788fda4bc5f72408048c9f18d6e9a3342c18963e33715bc2f0fd721a1c5b"
+      },
+      {
+        "path": "packages/editor-contracts/src/mv-recipe.ts",
+        "bytes": 3525,
+        "sha256": "4cf898d6c4e8f630851383fb9ff27f6e52cfa7a67c82c8f7ce110664d71fac41"
+      },
+      {
+        "path": "packages/editor-contracts/src/mv-recipe-plan.ts",
+        "bytes": 3511,
+        "sha256": "ba57fbd81271aeb577f2b88776c3c92e9c9ca630e86dd3fc13b8e913e6cd7427"
+      },
+      {
+        "path": "packages/editor-contracts/src/mv-thread.ts",
+        "bytes": 933,
+        "sha256": "fe610fd07a6e9d6cf18cd950a19f996662421eef27202a72d036d00130162f8d"
+      },
+      {
+        "path": "packages/editor-classic/src/services/renderer/programmatic/canvas-runtime.ts",
+        "bytes": 2107,
+        "sha256": "2da02b75f2b4d0a5b8f98db70e3dd906364a6160085c4600d1eb889e83fc332b"
+      },
+      {
+        "path": "packages/editor-classic/src/services/renderer/programmatic/canvas-runtime.test.ts",
+        "bytes": 5126,
+        "sha256": "1966d58a1f01bb181eb7e60e357ad265eb4aeaeeff414331927fcc1f66692255"
+      },
+      {
+        "path": "packages/editor-classic/src/services/renderer/programmatic/mv-recipe-renderer.ts",
+        "bytes": 7223,
+        "sha256": "60b34a33cf11a0ed4c6190fbd35190ad2e8623f2986fa070905411292665f726"
+      }
+    ],
+    "fixtures": [
+      {
+        "path": "script/probe-mv-thread.mjs",
+        "bytes": 6040,
+        "sha256": "06872d83add6949f44f5695031a978d3fd88cee9e25c9cf5d1a3b5d30b9a860f"
+      },
+      {
+        "path": "script/fixtures/mv-thread-contract.ts",
+        "bytes": 1787,
+        "sha256": "e738c36f01ae26fde7b6f4ee43a1b77b44f7de75141a23594160762e3341a271"
+      },
+      {
+        "path": "script/fixtures/mv-thread-reference.ts",
+        "bytes": 1277,
+        "sha256": "255a8a6b45d71fa8d0ffc05924235e1b8bf7460e240d8d06e761a50cb67aa5af"
+      },
+      {
+        "path": "script/fixtures/mv-thread-source.ts",
+        "bytes": 4648,
+        "sha256": "213367eedc0220b470f182bc5754957aba2f5f049c99d5597f38d9d4362f9069"
+      },
+      {
+        "path": "script/fixtures/mv-thread-source.test.ts",
+        "bytes": 2747,
+        "sha256": "2d28f8469c22a98e5fdf55ce08bf93ace5cc2a93e8581967711b0212a8d0181f"
+      },
+      {
+        "path": "script/fixtures/mv-thread-oracle.ts",
+        "bytes": 4779,
+        "sha256": "0e568ef8cccb7c5bffe553b7b067f7c0b635d50490140c7fe20d699ea2a138a9"
+      },
+      {
+        "path": "script/fixtures/mv-thread-cases.ts",
+        "bytes": 2237,
+        "sha256": "71676d6986f12d87d039a0d53780053e7dea2a80c1b4acc21fbb06f81250097f"
+      },
+      {
+        "path": "script/fixtures/mv-thread-capture.ts",
+        "bytes": 1320,
+        "sha256": "3458929cf9fa98e94bbf2dda0506e00da59057cd41af77b127b96214bea56577"
+      },
+      {
+        "path": "script/fixtures/mv-thread-negatives.ts",
+        "bytes": 2505,
+        "sha256": "a1a3eb3a14c0e96b270f16985c10bce0b6e762896964a8f17a6ec3081519d11d"
+      },
+      {
+        "path": "script/fixtures/mv-thread-native-browser.ts",
+        "bytes": 4271,
+        "sha256": "20ebd2b0ff0c0b2897a2ff274041ecf0cc3b7ccc904e8c7569bf6fc9ed205aac"
+      },
+      {
+        "path": "script/fixtures/mv-thread-native-browser.html",
+        "bytes": 214,
+        "sha256": "f07b91eed05606f955a673d90d3e96bfbbfc6f9ef6e5d42a1df00b8574b1e737"
+      },
+      {
+        "path": "script/fixtures/mv-thread.tsconfig.json",
+        "bytes": 140,
+        "sha256": "334a785d9aaafce343f75c645df370208d7895b66c1892437f0dfd1c8103720a"
+      },
+      {
+        "path": "script/fixtures/mv-thread-export-support.ts",
+        "bytes": 1010,
+        "sha256": "2f171e9097dffef3c1008b53685eeed7ed02658f7495a4bddd9e84366ef8fe9d"
+      },
+      {
+        "path": "script/fixtures/mv-thread-export-support.test.ts",
+        "bytes": 874,
+        "sha256": "98fb5d1cce8e376e0bea680632c3701bb93ee7b098d876fdcbf0666afc57a6e6"
+      },
+      {
+        "path": "script/fixtures/mv-thread-export-scene.ts",
+        "bytes": 3407,
+        "sha256": "9f4f644609988ab09cfedfd43d5b43c8489b494a64c90a769e5d25d4fb2d386e"
+      },
+      {
+        "path": "script/fixtures/mv-thread-export.ts",
+        "bytes": 5165,
+        "sha256": "51024c987ca8fde579142b20cb68b04fdcea9ac0494715d25d22a94b33502173"
+      },
+      {
+        "path": "script/fixtures/mv-thread-artifacts.mjs",
+        "bytes": 1686,
+        "sha256": "3431869db93b3e328afaf0409ca295f6624990b06d82a40535b557a58762a6b0"
+      },
+      {
+        "path": "script/fixtures/mv-thread-evidence.mjs",
+        "bytes": 2419,
+        "sha256": "dfcf1042ee427d5766fe0cd9fdb8eb86b0abf091a67320ba7ddaee58221e8d6e"
+      },
+      {
+        "path": "script/fixtures/mv-thread-evidence.test.mjs",
+        "bytes": 1608,
+        "sha256": "3aa7800b95d4e91ee1950079239dc140236f8b619bad09518bcfac1c3d71a3cf"
+      }
+    ]
+  }
+}

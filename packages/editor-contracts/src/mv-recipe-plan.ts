@@ -20,6 +20,11 @@ import type { MvTitleRiffPlan } from "./mv-title-riff-plan";
 /** Internal raster transport, produced exclusively by Rust frame evaluation. */
 export type MvPlanNode =
 	| {
+			readonly kind: "thread";
+			readonly role: MvRole;
+			readonly data: MvEmberPlan;
+	  }
+	| {
 			readonly kind: "kanjiSlam";
 			readonly role: MvRole;
 			readonly data: MvEmberPlan;

@@ -149,12 +149,15 @@ export type {
 } from "./mv-recipe-generators";
 export type {
 	MvAudioBinding,
+	MvAudioStop,
+	MvAudioStopMetadata,
 	MvAudioSignal,
 	MvAudioChannel,
 	MvCameraAudio,
 	MvSpriteAudio,
 	MvPostAudio,
 } from "./mv-recipe-audio";
+export type { MvThread, MvThreadScene } from "./mv-thread";
 export type {
 	ProgrammaticResource,
 	ProgrammaticResourceLimits,

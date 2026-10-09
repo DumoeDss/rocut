@@ -2,6 +2,17 @@ export interface MvAudioBinding {
 	readonly resource: string;
 	readonly inputSha256: string;
 }
+/** Reviewed evidence in source-audio seconds; order and overlaps are significant. */
+export interface MvAudioStop {
+	readonly kind: "stop" | "gap";
+	readonly start: number;
+	readonly end: number;
+	readonly depthDb?: number;
+}
+/** Optional additive field of rocut-mv-audio/1; absence is not analyzed empty. */
+export interface MvAudioStopMetadata {
+	readonly stops?: readonly MvAudioStop[];
+}
 export type MvAudioChannel =
 	| "mix_rms"
 	| "low_power"

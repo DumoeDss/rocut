@@ -60,6 +60,11 @@ pub struct Node {
     deny_unknown_fields
 )]
 pub enum Scene {
+    Thread {
+        role: Role,
+        settings: super::thread::Thread,
+        span: Span,
+    },
     KanjiSlam {
         role: Role,
         settings: super::kanji_slam::KanjiSlam,
@@ -279,6 +284,10 @@ pub struct Plan {
 #[derive(Serialize)]
 #[serde(tag = "kind", rename_all = "camelCase")]
 pub enum PlanNode {
+    Thread {
+        role: Role,
+        data: super::thread::Plan,
+    },
     KanjiSlam {
         role: Role,
         data: super::kanji_slam::Plan,

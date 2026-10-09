@@ -4,9 +4,11 @@ mod import;
 mod onset_import;
 mod onsets;
 mod sampling;
+mod stops;
 pub use import::prepare_mv_audio_json;
 pub use onsets::StrongOnsets;
 pub use sampling::{Channel, Signal};
+pub use stops::{Stop, StopKind};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
@@ -58,6 +60,12 @@ pub struct Data {
         deserialize_with = "onsets::deserialize_optional"
     )]
     pub strong_onsets: Option<StrongOnsets>,
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "stops::deserialize_optional"
+    )]
+    pub stops: Option<Vec<Stop>>,
     pub channels: BTreeMap<Channel, Vec<f64>>,
     pub scales: BTreeMap<Channel, f64>,
 }
@@ -133,6 +141,9 @@ impl Data {
         }
         if let Some(onsets) = &self.strong_onsets {
             onsets.validate(self.duration)?;
+        }
+        if let Some(stops) = &self.stops {
+            stops::validate(stops, self.duration)?;
         }
         Ok(())
     }

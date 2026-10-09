@@ -3,6 +3,15 @@ use super::{Clock, PlanNode, Scene, Span};
 use crate::mv_recipe::kanji_slam;
 
 impl Clock<'_> {
+    fn thread_sample(&self, span: &Span) -> Result<crate::mv_recipe::thread::Sample<'_>, String> {
+        let sample = self.ember_sample(span)?;
+        Ok(crate::mv_recipe::thread::Sample {
+            shot_start_ticks: sample.shot_start_ticks,
+            shot_end_ticks: sample.shot_end_ticks,
+            song_ticks: sample.song_ticks,
+            analysis: sample.analysis,
+        })
+    }
     fn kanji_sample(&self, span: &Span) -> Result<kanji_slam::Sample<'_>, String> {
         let sample = self.ember_sample(span)?;
         Ok(kanji_slam::Sample {
@@ -33,6 +42,13 @@ impl Clock<'_> {
 
 pub(super) fn preflight(scene: &Scene, clock: Clock<'_>) -> Result<(), String> {
     match scene {
+        Scene::Thread { settings, span, .. } => {
+            let images = clock.images.ok_or("thread requires decoded image facts")?;
+            let start = u64::from(span.start_frame);
+            let end = start + u64::from(span.duration_frames);
+            let resource_clock = clock.remap(clock.frame.clamp(start, end));
+            settings.runtime_ready(&resource_clock.thread_sample(span)?, images)?;
+        }
         Scene::Ember { settings, span, .. } => {
             settings.runtime_ready(&clock.ember_sample(span)?)?
         }
@@ -83,6 +99,13 @@ pub(super) fn collect_font_requests(scene: &Scene, clock: Clock<'_>) -> Result<b
 
 pub(super) fn resolve(scene: &Scene, clock: Clock<'_>) -> Result<Option<PlanNode>, String> {
     Ok(Some(match scene {
+        Scene::Thread { role, settings, span } => PlanNode::Thread {
+            role: *role,
+            data: settings.produce(
+                &clock.thread_sample(span)?, clock.width as u32, clock.height as u32,
+                clock.images.ok_or("thread requires decoded image facts")?,
+            )?,
+        },
         Scene::TitleRiff {
             role,
             settings,

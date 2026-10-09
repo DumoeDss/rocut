@@ -39,6 +39,7 @@ mod transition_shatter;
 mod transitions;
 mod type_card;
 mod title_riff;
+mod thread;
 mod validate;
 pub use catalog::mv_recipe_catalog_json;
 pub use model::{Plan, Recipe};

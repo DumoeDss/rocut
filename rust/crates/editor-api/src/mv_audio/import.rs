@@ -118,6 +118,7 @@ fn prepare(r: Request) -> Result<Data, String> {
         beats: points(&r.music, "beats")?,
         downbeats: points(&r.music, "downbeats")?,
         strong_onsets: super::onset_import::from_music(&r.music, duration)?,
+        stops: super::stops::from_music(&r.music, duration)?,
         provenance: Provenance {
             schema: CREATOR_SCHEMA.into(),
             input_sha256: r.expected_audio_sha256,
