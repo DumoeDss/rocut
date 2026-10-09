@@ -1,0 +1,72 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "verified-checkpoint",
+	"scope": "Fresh real compile-inspected adapter v2 -> native Remotion audio observation -> FFmpeg decode -> Rust/Rocut source-soundtrack PCM; not a final master A/V export or Electron acceptance",
+	"session": 67190,
+	"exitCode": 0,
+	"tests": 4,
+	"assertions": 89,
+	"durationSeconds": 29.54,
+	"resultEvidence": "Terminal Bun test stdout; no automatic verification.json is claimed",
+	"entries": [
+		"apps/cli/src/__tests__/remotion-pinned-audio-browser.test.ts",
+		"apps/cli/src/__tests__/remotion-pinned-audio-pcm-browser.test.ts"
+	],
+	"requiredFlags": [
+		"ROCUT_RUN_REMOTION_PINNED_AUDIO_BROWSER=1",
+		"ROCUT_RUN_REMOTION_PINNED_AUDIO_PCM=1"
+	],
+	"wasm": {
+		"directory": "E:/Elftia-private-tests/rocut-ink-20261009-F0U4dW/wasm",
+		"binarySha256": "1400a5ed4c7dab1b165f5ffd3836bd9cbc64411fc65023f4e4f697c87900c3cd",
+		"sourceManifestSha256": "fc6b2b56dd066cb90e9fb68165430e788f12455a2a54c136fecfb2ba718fb766",
+		"currentMatchingProgrammaticRustModules": 58,
+		"registrationBoundary": "Current editor-api lib.rs additionally registers another session's effect-layer animation modules and removes the old animation prohibition. That unrelated current registration file does not match this private snapshot; this evidence does not claim those animation APIs were tested.",
+		"sharedCopiesModified": false
+	},
+	"behavior": [
+		"Versioned v2 metadata receipt is present in the actual compiled document and lock",
+		"Original non-default inputProps remain inputProps; returned props are checked, not re-fed into metadata",
+		"Eight seeks [12,4,5,8,13,6,0,12] observe exact activity/source timing/rate/gain and the declared WAV identity",
+		"Returned-props and geometry drift confined to the audio realm fail closed",
+		"Actual renderRemotionAudioRange produces stereo float32 PCM at 48000Hz for frames4..13",
+		"All eight active-frame RMS values exceed0.08 and match an independent fixed-gain energy oracle within0.003",
+		"Frames4/13 are zero; separately rendered frames0/13 report hasAudio=false and all-zero PCM"
+	],
+	"sourceInputs": [
+		{
+			"path": "apps/cli/src/__tests__/remotion-pinned-audio-source.ts",
+			"sha256": "c4d2588f2abbeba0542c96814cd341b9ed09831efa76653d05eca7974d0495b0"
+		},
+		{
+			"path": "apps/cli/src/__tests__/remotion-pinned-audio-fixture.ts",
+			"sha256": "8191389dd216d9fef964d892edafc2fc6302c16f595708912be40a1bbeca6ba1"
+		},
+		{
+			"path": "apps/cli/src/__tests__/remotion-pinned-audio-oracle.ts",
+			"sha256": "4c2360d0d8b5353b80659dc6dc27a738aa3298e515126c3be0d0d530c261ed99"
+		},
+		{
+			"path": "apps/cli/src/__tests__/remotion-pinned-audio-browser.test.ts",
+			"sha256": "ad989b44c0cecba8f06045f3e7f5254777f0282f3b2b2fd483957242149f88b2"
+		},
+		{
+			"path": "apps/cli/src/__tests__/remotion-pinned-audio-pcm-browser.test.ts",
+			"sha256": "4489fde3df869a4d0166dbfca57e03ffed8488649ebf7639f3650fc55df10404"
+		},
+		{
+			"path": "apps/cli/src/programmatic/remotion-audio-analysis.ts",
+			"sha256": "ffa489412c2bd75fca02d192dc38f1f0ffdb8baeb1dd295fc0456446afd03ea6"
+		},
+		{
+			"path": "apps/cli/src/programmatic/remotion-audio-render.ts",
+			"sha256": "79a2fe631afd1a1766fe79ff4345c27744e3cddc13f27169ea6de814850e7a9f"
+		}
+	],
+	"limitations": [
+		"These seven post-run source hashes enumerate a checkpoint, not a complete dependency graph or pre/post source-drift monitor",
+		"PCM checks prove energy/gain/timing and silence boundaries, not sample-exact phase identity",
+		"No final container soundtrack decode, video A/V synchronization, installed plugin or whole MV is asserted"
+	]
+}

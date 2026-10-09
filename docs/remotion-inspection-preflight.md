@@ -22,14 +22,43 @@ from that snapshot; rejects changed geometry or returned props; then prepares a
 normal immutable source. Applying it still requires an editing transaction.
 The receipt is consumed on compile, including failure.
 
-## Remaining runtime identity gap
+## Versioned runtime metadata pinning
 
-The response explicitly reports
-`rechecked-before-compile; runtime-geometry-checked; runtime-props-not-pinned`.
-The unchanged archived frame driver recalculates metadata at render time and
-checks geometry/FPS, but does not compare returned props with this receipt.
-Non-deterministic metadata may therefore change props after successful preflight.
-This feature does **not** freeze `calculateMetadata` execution or claim full
-Remotion ecosystem parity. Per-frame receipt/props pinning needs a separately
-versioned runtime adapter identity; the existing frame-driver fingerprint is not
-changed here.
+The inspected path now uses `rocut-remotion-html` adapter version **2** and reports
+`rechecked-before-compile; runtime-geometry-and-props-pinned-v1`. Its immutable
+receipt binds the original input props, inspection revision, composition,
+toolchain lock, rational frame rate, geometry, duration and complete returned
+props. Each new frame or audio realm still runs native `calculateMetadata`, then
+rejects a result that disagrees with that receipt. Returned props are compared as
+strict JSON: object key order is irrelevant, while array order remains material.
+They are never fed back as the next invocation's original input props.
+
+Ordinary `programmatic/build/compile` intentionally retains the legacy version-1
+adapter and does **not** gain this guarantee. Existing archives are not silently
+upgraded. Rebuild preserves an archive's profile; revising an inspected source
+requires fresh inspection. A version-2 source with a missing or invalid receipt
+fails closed instead of falling back to the legacy path. Metadata execution has
+a bounded lifetime and observes cancellation; late settlement cannot publish a
+successful source after disposal.
+
+## Verified checkpoints and remaining coverage
+
+The [native regression checkpoint](evidence/remotion-pinned-regression.json)
+records 11 successful private-Chromium checks. The main positive visual and
+native-video samples use real Host `inspect` then `compile-inspected`, including
+GPU preview/export and independently decoded short WebM clips. Intentionally
+invalid explicit-geometry cases and the additional attachment-video resource
+sample still use legacy compilation; this is not a claim that every branch of
+the probe is pinned.
+
+The separate [pinned audio checkpoint](evidence/remotion-pinned-audio.json)
+exercises real version-2 compilation, native observations, FFmpeg decoding and
+Rocut/Rust PCM mixing, including nonsequential seek, gain, silence windows and
+audio-realm metadata drift rejection. It does not establish sample-exact phase
+identity or a decoded final master A/V container.
+
+Neither checkpoint establishes installed Electron acceptance, a whole MV,
+arbitrary ecosystem dependencies or all author prop/media combinations. The
+earlier [preflight evidence](evidence/remotion-inspection-preflight.json) remains
+a historical version-1 checkpoint; its then-unpinned runtime limitation is not
+the current version-2 contract.

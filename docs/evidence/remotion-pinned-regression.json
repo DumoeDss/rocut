@@ -1,0 +1,45 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "verified-checkpoint",
+	"scope": "Real Host inspect/compile-inspected adapter-v2 main visual and native-video samples, native resources and short Rocut GPU/export/decode regression; not every probe branch, installed Electron or a whole MV",
+	"entry": "node script/probe-remotion.mjs C:/Users/Sayo/AppData/Local/Temp/rocut-media-toolchain-YbloF9",
+	"session": 96630,
+	"exitCode": 0,
+	"evidence": "E:/Elftia-private-tests/rocut-ink-20261009-F0U4dW/remotion-v2-regression/evidence.json",
+	"evidenceSha256": "3954a121372eeb606dc0601b3e8bb143824e9482413f2b374f1193123e082d63",
+	"browser": "151.0.7922.34",
+	"frameBackend": "private-chromium",
+	"electronTested": false,
+	"wasm": {
+		"binding": "explicit-private",
+		"directory": "E:/Elftia-private-tests/rocut-ink-20261009-F0U4dW/wasm",
+		"binarySha256": "1400a5ed4c7dab1b165f5ffd3836bd9cbc64411fc65023f4e4f697c87900c3cd",
+		"declarationsSha256": "c44c471889314d9f3d6db7331f72ca7097e25b57bad7cbde97e46c9a1dd98440",
+		"sharedCopiesModified": false,
+		"registrationBoundary": "The private snapshot predates another session's effect-layer animation API registrations. This checkpoint does not validate those newly registered APIs."
+	},
+	"results": {
+		"passed": true,
+		"checks": 11,
+		"encodedBytes": 484,
+		"nativeEncodedBytes": 534,
+		"nativeVideoEncodedBytes": 567,
+		"enumeratedSourceInputs": 24,
+		"sourceHashesRecheckedOn": "2026-10-10",
+		"currentEnumeratedSourceDrift": []
+	},
+	"coverage": [
+		"Native nesting, alpha, nonsequential seek and asynchronous readiness",
+		"Actual image/font pixels in Worker and DOM, replacement, integrity and cancellation",
+		"Metadata/errors/media rejection, stalled work abort and subsequent recovery",
+		"Native video Sequence, trim, rate, loop and attachment bridge",
+		"Rocut GPU preview/export, independent short WebM decode and cancellation recovery"
+	],
+	"limitations": [
+		"The 24 source inputs enumerate selected probe and production entries, not the complete dependency graph",
+		"Invalid explicit-geometry cases and the additional attachment-video resource sample intentionally remain legacy-compiled",
+		"Native source soundtrack PCM is verified separately; this is not final master A/V synchronization acceptance",
+		"Private local evidence paths are not portable release artifacts; no installation, Electron, whole-MV or full-ecosystem claim"
+	]
+}
