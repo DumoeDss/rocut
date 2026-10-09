@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Clouds production rendering and export probe</title>
+	</head>
+	<body>
+		<script type="module">
+			import { runCloudsPipeline } from "./clouds-pipeline.ts";
+			globalThis.__cloudsPipeline = await runCloudsPipeline();
+		</script>
+	</body>
+</html>

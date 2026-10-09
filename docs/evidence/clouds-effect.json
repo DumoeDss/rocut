@@ -1,0 +1,469 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "in-progress",
+	"acceptance": {
+		"clouds": "V",
+		"overallGoalComplete": false,
+		"definition": "Verified Clouds fog/refraction video subset with twelve controls and nine attached animation channels: native CPU/GPU, authoring helpers, private WASM gates, real Host persistence, browser raster, production preview and independent production VP9 decode, actual editor history and same-edited-project export with independent bytes/timing/pixel review. This does not complete the overall integration goal.",
+		"blocking": [],
+		"scope": "Recorded native Vulkan and private Chromium SwiftShader paths, attached effects and static effect layers, Host-authored attached channels, twelve actual UI parameter edits and the two specified VP9 export fixtures only. Installation, Electron, performance and all-codec/backend coverage remain outside this acceptance.",
+		"history": "Each record applies only to its frozen inputs and stated scope. Earlier handoff notExecuted fields describe their historical stage; later results are separate records, not rewrites. Static fixtures and native GPU success do not imply browser or video acceptance."
+	},
+	"contract": {
+		"controls": [
+			"amount",
+			"density",
+			"scale",
+			"speed",
+			"windX",
+			"windY",
+			"refraction",
+			"fogOpacity",
+			"colorR",
+			"colorG",
+			"colorB",
+			"seed"
+		],
+		"attachedAnimationChannels": [
+			"amount",
+			"density",
+			"windX",
+			"windY",
+			"refraction",
+			"fogOpacity",
+			"colorR",
+			"colorG",
+			"colorB"
+		],
+		"staticControls": ["scale", "speed", "seed"],
+		"layerAnimationsSupported": false,
+		"clock": "Signed rational frame flooring and exact binary-f64 speed modulo; deterministic bounded phase, no wall clock. Speed zero does not disable explicitly authored wind animation.",
+		"alpha": "Premultiplied refraction with transparent exterior and separate fog-over composition. Nonneutral exact zero alpha canonicalizes hidden RGB; explicit neutral identities preserve all source bytes after full validation."
+	},
+	"nativeTests": {
+		"cpu": {
+			"passed": 25,
+			"failed": 0,
+			"groups": {
+				"cloudsEffectsIncludingNaga": 9,
+				"cloudsEditorApi": 3,
+				"dropletsEditorApiRegression": 2,
+				"stylizedCatalog": 4,
+				"dropletsEffectsRegression": 7
+			},
+			"inputsUnchanged": 443,
+			"scope": "Catalog, strict admission, uniforms, independent seeded field vectors, signed frame/phase behavior and CPU WGSL validation; offline locked build with two jobs.",
+			"evidence": {
+				"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-native-aCebpI/handoff.json",
+				"sha256": "3e8329e77f724acf843a434e9bbaff088b6b099bb9fa6c3388f51932901cc778"
+			},
+			"alphaAmendment": {
+				"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-alpha-l51sGn/amendment.json",
+				"sha256": "b800b5d583d26dbebb5dcd95a5434ea141286f66f61b9fab4f09ea8a337774af"
+			},
+			"affectedNagaTestRerun": {
+				"passed": 1,
+				"failed": 0,
+				"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-alpha-l51sGn/result.json",
+				"sha256": "e7a564393dc24414aaeaf3d035cfe066c854c6f1c9a7d572dcea5f0fd2b1fdd0"
+			},
+			"counting": "The affected Naga test rerun is one repeated test, not an additional distinct case. The original 25 includes Droplets regression and shared catalog tests.",
+			"knownWarnings": "Existing unrelated Liquid and editor-api MV dead-code warnings remain recorded."
+		},
+		"gpu": {
+			"passed": 6,
+			"failed": 0,
+			"backend": "Native Vulkan",
+			"adapter": "NVIDIA GeForce RTX 3060 Laptop GPU",
+			"driver": "591.44",
+			"inputsUnchanged": 129,
+			"exitCode": 0,
+			"signal": null,
+			"forcedCleanup": false,
+			"scope": "Neutral identity including hidden RGB; nonneutral coverage-zero canonicalization; fog-only alpha-over; independent affine-texture refraction and alpha edges; seed/wind/phase, repeated/reverse seeks and speed zero; malformed inactive raw uniforms.",
+			"limits": "Native GPU tests are not browser hardware WebGPU or video encoder validation.",
+			"evidence": {
+				"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-gpu-YOnbFC/result.json",
+				"sha256": "7448673b0cc1e783e6412dcdff15baa1a5ea5b3946b251025c36631ce4f1350f"
+			},
+			"log": {
+				"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-gpu-YOnbFC/gpu.log",
+				"sha256": "a86d04e8576aa46354fa890b4114b7481c650936adbd90188c7fde5baa99b03b"
+			},
+			"inputs": {
+				"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-gpu-YOnbFC/inputs.json",
+				"sha256": "7f246dba6d046a2d1f7a70fc7f8729a46e1533bad92f6d4ac8dc6739219ec761"
+			}
+		}
+	},
+	"creatorAuthoring": {
+		"status": "helper-and-isolated-agent-copy-verified",
+		"passed": 32,
+		"failed": 0,
+		"cloudsTests": 10,
+		"dropletsRegressionTests": 9,
+		"liquidRegressionTests": 12,
+		"realCopyPackagingTests": 1,
+		"scope": "Image resource authoring, twelve static controls, nine attached channels, ordered keyframes and strict validation; isolated real agent-copy packaging.",
+		"limits": "Packaging uses main/renderer entry stubs, not an executable bundle or installed-plugin test. Existing no-unsafe-finally lint failure remains in stylized-package.test.cjs; this is not an all-green lint result.",
+		"evidence": {
+			"path": "C:/tmps/rocut-clouds-authoring-Rc0HYy/verification.json",
+			"sha256": "beb38361adc01555b77a00796162d129f6df61b803c50f43aef60343cab359d8"
+		}
+	},
+	"hostPersistence": {
+		"status": "real-host-file-store-verified",
+		"passed": 1,
+		"failed": 0,
+		"assertions": 938,
+		"reopens": 6,
+		"rejectedAtomicTransactions": 212,
+		"inputsUnchanged": 1720,
+		"runtime": "Bun 1.2.18",
+		"exitCode": 0,
+		"signal": null,
+		"forcedCleanup": false,
+		"hostClosed": true,
+		"scope": "All twelve controls and nine attached channels, inclusive bounds, distinct source/effect seeds, offline imported PNG and exact memory/revision/project-byte preservation after rejected multi-operation batches.",
+		"limits": "Six Host close/reopen cycles within one Bun process, not fresh OS-process restarts. No rendering or editor history was tested.",
+		"evidence": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-private-host-5oXSd0/artifacts/clouds-persistence-qU2wai/evidence.json",
+			"sha256": "d081a44d16c926ef4af6e803e5028e0a6a0920484f7f891f0e6e1c67d4e27964"
+		},
+		"run": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-private-host-5oXSd0/result.json",
+			"sha256": "45e45317a302cb657c1e0116aaf121bc94e501779f3d7e50f99684ad3f43ace6"
+		},
+		"log": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-private-host-5oXSd0/host.log",
+			"sha256": "d0a240467d848c6577591f75ef8a5d33752b2e2624e51bd6f7088e5083878b0b"
+		}
+	},
+	"wasm": {
+		"status": "private-package-gates-passed",
+		"package": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/rocut-clouds-source-pI37uy/rust/wasm/pkg/opencut_wasm_bg.wasm",
+			"sha256": "254c5af34475e2c8737b4d1f65bd0b526994a825b14a2d1ce67d6002bab9e1b9"
+		},
+		"build": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/rocut-clouds-source-pI37uy/private-build-result.json",
+			"sha256": "e2b0bf1ef7ffdc8d50cc3b6641a5f8eda5712fe5c6d697f4b70d197d90398fd5"
+		},
+		"packageSelection": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/rocut-clouds-source-pI37uy/package-selection.json",
+			"sha256": "aa8bf77e0869119a224980b144596c71e5a99e2224abb84f3a5dd3f65a5838ef"
+		},
+		"passed": ["source", "paths", "api", "init", "controls"],
+		"abiNegativeControls": 27,
+		"abiPositiveControls": 2,
+		"sharedPackageReplaced": false,
+		"scope": "Private release build with no dependency install, offline/locked/two jobs; exact ABI, remapped paths, Bun and Node initialization, real migration-chain loading and negative controls.",
+		"sourceLog": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-wasm-gates-7k1T35/source.log",
+			"sha256": "0e54e96c27ce4d187850a6358ed93797b46dd2696c9617e5c35feaae55c594a5"
+		},
+		"pathsLog": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-wasm-gates-7k1T35/paths.log",
+			"sha256": "3701bffd27322d30209e31ec0dcdb30a11c3788b7115cc74a568282e78b7800e"
+		},
+		"apiLog": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-wasm-gates-7k1T35/api.log",
+			"sha256": "c0e739f18f4dbcc79992b4fca19e2586b76b16c317ecba35c9f489862c08241f"
+		},
+		"remainingGates": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-wasm-remaining-D2O9Fq/evidence.json",
+			"sha256": "c79ae1fcdd0422c1d08f7341b4ef4e9d210af3ae1654a97e21687315d089b03e"
+		}
+	},
+	"acceptanceTooling": {
+		"status": "cpu-and-static-verified-not-runtime-acceptance",
+		"oracleTests": 14,
+		"oracleAssertions": 316,
+		"nodeHarnessTests": 27,
+		"pipelineFixtureTests": 7,
+		"pipelineFixtureAssertions": 2643,
+		"editorFixtureTests": 8,
+		"editorFixtureAssertions": 806,
+		"scope": "Independent optical/time reference, fixed quality gates and negative controls, immutable artifact capture, source-closure guards, pipeline fixtures and actual-editor/export fixture preparation. Focused typecheck, lint and format checks passed.",
+		"counting": "Repeated 14-test oracle runs are not additive; the earlier nine artifact tests are included in the later 27-test harness run. Fixture tests do not imply execution of the browser or export workflow.",
+		"toolingHandoff": {
+			"path": "C:/tmps/clouds-pipeline-tooling-OMVYtz/handoff.json",
+			"sha256": "079f286614721842c59631129ec4cb49d92bcf0574488bf3ed910496f325c1fe"
+		},
+		"initialOracle": {
+			"path": "C:/tmps/clouds-oracle-evidence-2qSJsT/evidence.json",
+			"sha256": "727bed3842045b74c4e56a070720659f391d327df68d7a5f6249b44f7d0a0d87"
+		},
+		"pipelineTooling": {
+			"path": "C:/tmps/clouds-pipeline-tooling-evidence-4ESJHY/evidence.json",
+			"sha256": "d62ab5d0b0dcc88ff3f472bc128e14131b0e42510c73a97b7bbab6c6f60e0b98"
+		},
+		"pipelineStatic": {
+			"path": "C:/tmps/clouds-pipeline-static-XSZx0P/verification.json",
+			"sha256": "78ed8eaf9ef482c1eec972ab7720ded859f091e0e21e5ef87e5a2bbd85d99e86"
+		},
+		"editorStatic": {
+			"path": "C:/tmps/clouds-editor-static-Xb34Lj/verification.json",
+			"sha256": "fd24f3efc36bf1a7cd2340767c2f16e6827a58a3cd3852261b6fb801237f43be"
+		}
+	},
+	"thresholds": {
+		"premultipliedRgb": 2,
+		"alpha": 1,
+		"identity": 0,
+		"exportMeanRgba": 10,
+		"exportActiveRgb": 15,
+		"exportMinimumActivePixels": 64,
+		"exportTimestampSeconds": 0.0011,
+		"unchanged": true
+	},
+	"browserRaster": {
+		"status": "passed",
+		"backend": "Private Chromium SwiftShader WebGL",
+		"pixelCases": 212,
+		"strictAdmissionRejections": 256,
+		"independentPhaseChecks": 80,
+		"failedPixels": 0,
+		"excludedPixels": 0,
+		"maximumPremultipliedRgbError": 1.8274509803921717,
+		"maximumAlphaError": 1,
+		"inputsUnchanged": 464,
+		"packageFilesUnchanged": 5,
+		"runnerFilesUnchanged": 8,
+		"scope": "Clouds native resolver/raster at landscape and portrait sizes with legal opaque, holes and transparent canvas inputs. All twelve controls, signed frame/phase and neutral identities are covered.",
+		"counting": "215 result records consist of 212 pixel cases, one combined admission/phase record and two scope notes; scope notes are not additional tests.",
+		"limits": "Canvas may canonicalize hidden RGB before upload/readback. Raw hidden-RGB behavior is established by the separate native Vulkan tests, not this browser run. Raw raster frames are not encoded video acceptance.",
+		"cleanup": {
+			"browserClosed": true,
+			"serverClosed": true,
+			"gpuDisposed": true,
+			"queryFreed": true,
+			"pageErrors": [],
+			"httpErrors": [],
+			"externalRequests": [],
+			"captureErrors": []
+		},
+		"evidence": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-raster-aKf5px/evidence.json",
+			"sha256": "0ea0c914d943a310055147860b77bbc1b8ff5335628237df4178cbcdcbd30d84"
+		}
+	},
+	"productionPipeline": {
+		"status": "preview-and-independent-video-passed",
+		"backend": "Private Chromium SwiftShader WebGL",
+		"dimensions": [192, 128],
+		"fps": 30,
+		"preview": {
+			"pixelCases": 87,
+			"failedPixels": 0,
+			"excludedPixels": 0,
+			"maximumPremultipliedRgbError": 1,
+			"maximumAlphaError": 1,
+			"timingAndReverseSeekCases": 6,
+			"isolatedAnimationNegativeControls": 9,
+			"alphaReplacementCases": 1,
+			"scope": "Real CanvasRenderer/WasmCompositor: attached and static effect-layer placements; opaque, holes and transparent sources; active boundaries, frame flooring, reverse/repeat seeks, offset/trim invariance, nine isolated attached channels and full alpha-frame replacement preserving caller composite mode.",
+			"counting": "87 direct pixel records in the 103-record preview subsection; the separate alpha-replacement nested capture and six pre-encode reference captures are not added to that count."
+		},
+		"video": {
+			"status": "browser-and-independent-decoder-passed",
+			"codec": "vp9",
+			"pixelFormat": "yuv420p",
+			"frames": 6,
+			"durationSeconds": 0.2,
+			"decoder": "Independent FFmpeg/FFprobe with default chroma reconstruction",
+			"reference": "Independent Clouds optical/time reference on the fixed cut-out source, composited over black; not production capture pixels.",
+			"meanRgbaRange": [2.5012105305989585, 5.404693603515625],
+			"activeRgbRange": [4.535699348748282, 7.202410030939586],
+			"baselineRejectedFrames": [0, 1, 2, 3, 4, 5],
+			"repeatedFirstRejectedFrames": [1, 2, 3, 4, 5],
+			"timing": "All six frame and packet timestamps/durations pass; frame end, packet end and container duration are 0.2 seconds.",
+			"counterfactualScope": "Independent decoder repeats expected frame zero; the browser fixture separately rejects repetition of decoded frame zero for frames one through five.",
+			"artifact": {
+				"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-pipeline-KZgyg6/production.webm",
+				"sha256": "5eb1b2590dc78a8ed8a35942c35259aeeafa1ade3ae05c019242a2f69d58db09"
+			},
+			"independentExpectedRgba": {
+				"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-pipeline-KZgyg6/expected.rgba",
+				"sha256": "2a50db8d003fd292f9408a54faa5682019f68e13b7b7b76390b747f8797b19f9"
+			},
+			"independentDecode": {
+				"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-pipeline-KZgyg6/independent-decode.json",
+				"sha256": "c9183139114c4f8a69751709b293e8b830b09151f438a98b1edbc995b1fded88"
+			}
+		},
+		"inputsUnchanged": 1863,
+		"packageFilesUnchanged": 5,
+		"runnerFilesUnchanged": 8,
+		"cleanup": {
+			"browserClosed": true,
+			"serverClosed": true,
+			"nativeHandlesGone": true,
+			"nativeReleaseCalls": 1,
+			"liveTimers": 0,
+			"errors": [],
+			"pageErrors": [],
+			"httpErrors": [],
+			"externalRequests": []
+		},
+		"limits": "Fixture resource registry only; this run does not establish installed UI, editor-history or hardware-performance acceptance. This production pipeline export is distinct from the separately verified same-UI-edited-project export.",
+		"evidence": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-pipeline-KZgyg6/evidence.json",
+			"sha256": "16b9ba4e4e9935629ec0dc09dd051d43b851188bcec20ec7ad72d4d4e2d4a772"
+		}
+	},
+	"editor": {
+		"status": "real-editor-ui-history-passed",
+		"backend": "Private Chromium SwiftShader",
+		"transport": "Actual Host staticDir and authenticated URL; attached editor task runner.",
+		"parameterEditsWithUndoRedo": 12,
+		"parameters": [
+			"amount",
+			"density",
+			"scale",
+			"speed",
+			"windX",
+			"windY",
+			"refraction",
+			"fogOpacity",
+			"colorR",
+			"colorG",
+			"colorB",
+			"seed"
+		],
+		"completeClipRestoredAfterEveryUndo": true,
+		"attachedChannels": 9,
+		"keyframeCreationUi": false,
+		"keyframeScope": "Host-authored channels rendered by the actual editor; three sample times, reverse seeks and reload. This does not claim UI keyframe creation.",
+		"reopenedRevision": 37,
+		"reopenedClips": 7,
+		"reopenedTracks": 3,
+		"resourceAvailableAfterReopen": true,
+		"uiPersistenceQuietMs": 1600,
+		"geometry": {
+			"policy": "complete-integer-canvas-v2",
+			"viewport": [1440, 1028],
+			"fullCanvasBounds": [401, 127, 638, 358]
+		},
+		"knownNoise": "Two optional graph-editor user-presets HTTP 404 console entries, unavailable WebGPU adapters and a Canvas2D readback hint; 54 build warnings retained. No external requests.",
+		"cleanup": {
+			"browserClosed": true,
+			"hostClosed": true,
+			"forced": false,
+			"errors": []
+		},
+		"evidence": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-editor/run-P3egh3/evidence.json",
+			"sha256": "df14ec2705bf076adbf9c82607ce1056fcb8c98d0e6c735d4b7bc5f165a84206"
+		}
+	},
+	"sameProjectExport": {
+		"status": "passed-with-independent-cpu-review",
+		"source": "Original run-P3egh3 UI-edited project, original recorded editor-dist path and original Clouds WASM; no parameter replay or project recreation.",
+		"dimensions": [640, 360],
+		"fps": 30,
+		"frames": 6,
+		"packets": 6,
+		"durationSeconds": 0.2,
+		"codec": "vp9",
+		"pixelFormat": "yuv420p",
+		"independentDecoder": "Fresh default FFmpeg/FFprobe invocation in a separate CPU review; no chroma reconstruction override.",
+		"meanRgbRange": [1.7773003472222222, 2.681164641203704],
+		"effectRgbRange": [1.7830745726936519, 2.649328194664853],
+		"thresholds": {
+			"meanRgb": 10,
+			"effectRgb": 15,
+			"effectPixels": 64,
+			"timestamp": 0.0011
+		},
+		"noEffectRejectedFrames": [0, 1, 2, 3, 4, 5],
+		"repeatedExpectedFirstRejectedFrames": [2, 3, 4, 5],
+		"repeatedDecodedFirstRejectedFrames": [2, 3, 4, 5],
+		"geometry": {
+			"policy": "First complete integer canvas from the predeclared 1440-wide, 1000..1127-high viewport list.",
+			"viewport": [1440, 1028],
+			"fullCanvasBounds": [401, 127, 638, 358],
+			"normalization": "Full 638x358 canvas scaled to 640x360 with bicubic filtering; seven independently regenerated raw RGB references match the saved normalized PNGs exactly.",
+			"discardedPixels": 0,
+			"reference": "Complete neutral actual-editor canvas; same unfiltered imported-image baseline. Not an independent optical solver reference."
+		},
+		"persistence": {
+			"revision": 37,
+			"clips": 7,
+			"tracks": 3,
+			"uiStageChanges": "Before the export baseline, only metadata/summary updatedAt and timelineViewState.playheadTime changed; independent JSON comparison reproduced all three changes.",
+			"uiPersistenceQuietMs": 1600,
+			"projectByteLength": 184736,
+			"exportBaselineSha256": "a8845c77f0bfd995ff40519b4486bd4d20e1c1695d4ff296f834be80c333b42e",
+			"beforeAfterCloseReopenBytesIdentical": true,
+			"clipsAndTracksIdenticalToAcceptedUiStage": true
+		},
+		"independentReview": {
+			"sourceFilesMatchingFrozenManifest": 3855,
+			"inputsUnchanged": 4250,
+			"decodedRgbBytes": 4147200,
+			"expectedRgbBytes": 4147200,
+			"baselineRgbBytes": 691200,
+			"allSixMetricsExactlyMatchOriginalReport": true,
+			"frameAndPacketTimingPassed": true,
+			"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-ui-export-review-s1kXYR/review.json",
+			"sha256": "fb9320d546cc4ac9696c8c57435ce3b578dc636163bf30e4da46250617fd0d22"
+		},
+		"limits": "Current editor-dist hashes are captured in the independent review, but no separate pre-export dist byte manifest was supplied; original dist reuse is supported by the matching recorded path. This CPU review did not rerun the browser or establish installed-plugin, Electron or performance behavior.",
+		"cleanup": {
+			"browserClosed": true,
+			"hostClosed": true,
+			"forced": false,
+			"errors": []
+		},
+		"knownNoise": "One optional graph-editor user-presets HTTP 404, unavailable WebGPU adapter and Canvas2D readback hint; no external requests or page errors.",
+		"videoSha256": "c3bea43fa5594fd10545cb5955de77e9abd756548e63c373e34a245cbe60304e",
+		"evidence": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-editor/run-EVt51N/evidence.json",
+			"sha256": "e974be17e0e3011400090f5f1639435887a76b361ab9edfa5ddba4ba8571df33"
+		},
+		"decoderEvidence": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-editor/run-EVt51N/export-decode.json",
+			"sha256": "24a100549450b1945ecd0bab0e3b30b9ca3686c6ca58000b86133a7fdf8b2b8b"
+		}
+	},
+	"retainedDiagnostics": [
+		{
+			"status": "initial-init-attempt-interrupted-not-a-pass",
+			"reason": "The npx-spawned Bun bare-import probe produced no result for over ten minutes with negligible CPU. The owned runner and descendants were stopped by the coordinator; the original log is retained. The exact cause is unproven. Later direct invocation of the same Bun binary and the remaining gates passed without changing the WASM.",
+			"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-wasm-gates-7k1T35/init.log",
+			"sha256": "0ebf33bc9a968f6ce09eac6728c9779b534142d107a26a18155c96b6b64be531"
+		},
+		{
+			"status": "direct-bun-init-diagnostic-passed",
+			"elapsedMs": 414,
+			"wasmUnchanged": true,
+			"path": "C:/tmps/rocut-stylized-f6XU4z/clouds-init-diagnostic-mhCqf3/evidence.json",
+			"sha256": "02145e1e8965ec74848241c14e3ac59809d7688b8bb1d085c647d9970df9e160"
+		}
+	],
+	"verified": [
+		"Native catalog, strict admission, deterministic field/clock, alpha rules and real Vulkan texture rendering within the recorded test scope.",
+		"Creator authoring helpers and isolated agent-copy packaging behavior, subject to the recorded lint and bundle limitations.",
+		"Private WASM build and source/path/API/initialization/control gates.",
+		"Real Host transaction atomicity, control/channel persistence and resource reopening.",
+		"CPU/static correctness of the prepared browser, pipeline and editor acceptance tooling.",
+		"Private WebGL browser raster and real production preview against the independent optical/time reference.",
+		"Six-frame production VP9 through browser and independent default-FFmpeg decoders, including fixed quality/timing gates and negative controls.",
+		"Actual editor editing of all twelve controls, attached-session undo/redo, rendering of nine Host-authored channels, reload and persisted project/resource reopening.",
+		"Same-UI-edited-project VP9 export, independently repeated default decoding and pixel/timing checks, source hashes and exact four-stage project-byte preservation."
+	],
+	"notVerified": [
+		"Installed Creator Studio/Rocut plugin, Electron runtime or browser hardware WebGPU.",
+		"UI creation of attached keyframes; effect-layer animation remains unsupported.",
+		"Alpha-preserving video, all-codec/all-backend coverage, performance and resource/latency bounds.",
+		"Whole-current-worktree build, shared dependency replacement, commit, push, release or overall-goal completion."
+	],
+	"isolation": {
+		"artifactsRoot": "C:/tmps",
+		"method": "Task-owned artifacts and private source/package inputs; evidence records retain consumed hashes and scope.",
+		"historicalEvidenceOrSnapshotsRewritten": false,
+		"aggregateOnly": true
+	}
+}

@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Rocut Clouds native raster verification</title>
+	</head>
+	<body>
+		<script type="module">
+			import { runCloudsProbe } from "./clouds-browser-probe.ts";
+			runCloudsProbe()
+				.then((result) => {
+					globalThis.__cloudsResult = result;
+				})
+				.catch((error) => {
+					globalThis.__cloudsResult = {
+						ok: false,
+						failure: String(error),
+						stack: error.stack,
+					};
+				});
+		</script>
+	</body>
+</html>
