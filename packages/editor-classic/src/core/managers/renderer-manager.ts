@@ -659,9 +659,10 @@ export class RendererManager {
 		if (!scope) return;
 		const drain = this.compositor
 			.runExclusive(async () => {
-				if (!this.rasterResidencyDomain.isPublishedScope(scope)) return;
-				this.compositor.syncTextures([]);
-				this.rasterResidencyDomain.releasePublishedAfterClear();
+				this.rasterResidencyDomain.retirePublication({
+					scope,
+					syncTextures: (textures) => this.compositor.syncTextures(textures),
+				});
 			})
 			.catch((error: unknown) => {
 				if (!isRenderCancelledError(error)) throw error;

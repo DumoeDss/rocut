@@ -1,0 +1,175 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "renderer-manager-cross-root-retirement-cpu-verified",
+	"scope": "A single RendererManager.retireRasterTree hunk and two dedicated CPU test/fixture files; no other production file or residency policy changed",
+	"sources": [
+		{
+			"path": "packages/editor-classic/src/core/managers/renderer-manager.ts",
+			"byteLength": 21432,
+			"sha256": "32d40c392ea665affbc47000e33e4b3b20e7ccbd96bf1d5625aa640ba21bd705"
+		},
+		{
+			"path": "packages/editor-classic/src/core/managers/renderer-manager-residency.test.ts",
+			"byteLength": 2878,
+			"sha256": "f4bbd7bfd68b524019b1720350572054cce1a8c6fd89121dadd4500166a9bf65"
+		},
+		{
+			"path": "packages/editor-classic/src/core/managers/renderer-manager-residency-fixture.ts",
+			"byteLength": 5582,
+			"sha256": "39cc3be4b389c5ff905cc34ae82f52d6ad4d06af46b2f7d0fd80bdf9ba92ad5b"
+		}
+	],
+	"fix": {
+		"symbol": "RendererManager.retireRasterTree",
+		"diff": { "addedLines": 4, "removedLines": 3 },
+		"before": "isPublishedScope included uncertain old-root entries; unconditional syncTextures([]) and releasePublishedAfterClear could clear a different root's committed publication",
+		"after": "Within the same compositor.runExclusive, call domain.retirePublication({scope,syncTextures}); retiring an uncertain other-root sync restores the complete committed descriptor set, including unowned media textures, and releases uncertain charges only after successful sync",
+		"preserved": [
+			"closeTree",
+			"cancelPendingRenderFrames",
+			"manager notification",
+			"cancellation classification",
+			"observed retirement promise",
+			"rasterRetirements lifecycle aggregation",
+			"Rust cap/work policy"
+		]
+	},
+	"regression": {
+		"entry": "packages/editor-classic/src/core/managers/renderer-manager-residency.test.ts",
+		"publicSurface": [
+			"RendererManager.setRenderTree",
+			"RendererManager.subscribe",
+			"RendererManager.getRenderTree",
+			"RendererManager.suspend",
+			"RendererManager.dispose"
+		],
+		"redBeforePatch": {
+			"innerPassed": 1,
+			"innerFailed": 1,
+			"assertionsReached": 12,
+			"failure": "Expected cache [current-raster, committed-media]; received [] after public setRenderTree retired an uncertain old-root sync"
+		},
+		"greenAfterPatch": {
+			"command": "ROCUT_MANAGER_RESIDENCY_ISOLATED=1 bun test packages/editor-classic/src/core/managers/renderer-manager-residency.test.ts",
+			"environmentScope": "Flag is set only in the test process, not persisted to the user environment",
+			"exitCode": 0,
+			"passed": 2,
+			"failed": 0,
+			"assertions": 17
+		},
+		"behaviors": [
+			"Uncertain old-root retirement restores both current-raster and committed-media descriptors",
+			"Owned surface plus semantic GPU publication charges change from 64 to 32 bytes after successful recovery, then to 0 when the current root is retired",
+			"Current scope remains published while uncertain old scope is released",
+			"Public setRenderTree updates the manager root and notifies once",
+			"Failed GPU recovery retains both roots' 64-byte charge and publication state",
+			"Failed retirement is observed by suspend/dispose lifecycle aggregation rather than becoming an unhandled rejection",
+			"Successful actual compositor close releases remaining charges even when the previously observed lifecycle error is propagated"
+		]
+	},
+	"affectedCpuChecks": {
+		"command": "bun test packages/editor-classic/src/core/managers/renderer-manager-residency.test.ts packages/editor-classic/src/services/renderer/render-residency-domain.test.ts packages/editor-classic/src/services/renderer/render-residency-compositor.test.ts packages/editor-classic/src/services/renderer/__tests__/canvas-renderer-publication.test.ts",
+		"exitCode": 0,
+		"outerPassed": 10,
+		"outerFailed": 0,
+		"outerAssertions": 189,
+		"reporting": "The outer reporter counts seven domain cases plus three isolated-process wrappers. Each wrapper requires its child exit code 0; these counts are not ten total semantic cases or all child assertions.",
+		"entries": [
+			{
+				"path": "packages/editor-classic/src/core/managers/renderer-manager-residency.test.ts",
+				"mode": "isolated wrapper; dedicated two-case inner run also recorded above"
+			},
+			{
+				"path": "packages/editor-classic/src/services/renderer/render-residency-domain.test.ts",
+				"mode": "seven direct cases; 189 assertions"
+			},
+			{
+				"path": "packages/editor-classic/src/services/renderer/render-residency-compositor.test.ts",
+				"mode": "isolated wrapper; actual compositor/domain classes with native GPU boundary doubles"
+			},
+			{
+				"path": "packages/editor-classic/src/services/renderer/__tests__/canvas-renderer-publication.test.ts",
+				"mode": "isolated wrapper; CPU publication/cancellation boundary checks"
+			}
+		]
+	},
+	"mockBoundaries": {
+		"realClasses": [
+			"RendererManager",
+			"CanvasRenderer",
+			"RenderResidencyDomain",
+			"RenderTreeResidencyScope",
+			"WasmCompositor",
+			"RootNode",
+			"ImagePreprocessOwner"
+		],
+		"doubles": [
+			"opencut-wasm native/GPU functions and native admission owner",
+			"OffscreenCanvas and canvas utility context",
+			"media/audio runtime",
+			"motion-text font runtime",
+			"scene/export construction not exercised by setRenderTree",
+			"frame descriptor and render-tree resolution not exercised here",
+			"download/effect-preview/range adapters"
+		],
+		"isolation": "Each wrapper starts a dedicated Bun child before installing module/global doubles; no shared app/browser, dependency replacement, or renderer session is touched",
+		"notEstablished": "These CPU checks establish manager/domain/compositor ordering, descriptor restoration, accounting and observed lifecycle failures, not native admission policy correctness, actual pixel output or hidden GPU memory bounds"
+	},
+	"staticChecks": {
+		"formalLint": {
+			"command": "bunx eslint packages/editor-classic/src/core/managers/renderer-manager.ts packages/editor-classic/src/core/managers/renderer-manager-residency.test.ts packages/editor-classic/src/core/managers/renderer-manager-residency-fixture.ts",
+			"configuration": "Repository eslint.config.mjs; all three owned files are covered, not ignored",
+			"exitCode": 0,
+			"errors": 0,
+			"warnings": 0
+		},
+		"strictTypecheck": {
+			"command": "bunx tsc --noEmit -p C:/Users/Sayo/AppData/Local/Temp/rocut-renderer-manager-residency-typecheck.json",
+			"configSha256": "62eecfa5f3b1d0a1276f5e7b45993cefffd8386ebb3f2944cb5b5f780f8d35c9",
+			"baseConfig": "C:/Users/Sayo/AppData/Local/Temp/rocut-remotion-inspection-typecheck.json",
+			"baseConfigSha256": "4405f4426ecbbdeb84b63c700c66e80e3d7c7440439fd2f7c111563d8422264b",
+			"root": "packages/editor-classic/src/core/managers/renderer-manager-residency.test.ts",
+			"ambient": [
+				"packages/editor-classic/src/types/eyedropper.d.ts",
+				"packages/editor-classic/src/types/soundtouchjs.d.ts"
+			],
+			"types": ["node", "bun"],
+			"wasmDeclaration": "C:/Users/Sayo/AppData/Local/Temp/rocut-flame-integrated-UoOQ5J/wasm/opencut_wasm.d.ts",
+			"wasmDeclarationSha256": "ec78e1bf2c3dd617e7c0e79b045f8152545aff1a2013bdb05934754cc1cea2a5",
+			"exitCode": 0,
+			"scope": "Strict check of the test root and its real reachable manager/renderer dependencies using private WASM declarations. No shared node_modules or repository tsconfig mutation; not execution of actual native WASM in these mocked CPU cases."
+		},
+		"format": {
+			"command": "bunx prettier --check packages/editor-classic/src/core/managers/renderer-manager.ts packages/editor-classic/src/core/managers/renderer-manager-residency.test.ts packages/editor-classic/src/core/managers/renderer-manager-residency-fixture.ts",
+			"exitCode": 0
+		},
+		"encoding": {
+			"strictUtf8": true,
+			"unexpectedBom": false,
+			"replacementCharacters": false,
+			"files": 3
+		},
+		"diff": { "scopedDiffCheckPassed": true, "productionFilesChanged": 1 }
+	},
+	"limitedReadOnlyCallReview": {
+		"managerCallers": [
+			"setRenderTree when replacing the root",
+			"invalidatePublications during lifecycle drain"
+		],
+		"remainingManagerUnconditionalPublicationClear": false,
+		"canvasRendererRetirement": "Already delegates to domain.retirePublication within compositor.runExclusive",
+		"domainClear": "syncTextures([]) remains only for the scope that owns the current publication; uncertain other-root recovery syncs the complete committed descriptor set",
+		"scope": "Only retireRasterTree and related retirement calls reviewed; not a full renderer audit or authorization for unrelated refactoring"
+	},
+	"limits": {
+		"gpuPixelAcceptance": false,
+		"browserAcceptance": false,
+		"installedElectronAcceptance": false,
+		"rssOrDriverHiddenAllocationProof": false,
+		"inheritedFreezeFHeavyAcceptance": false,
+		"historicalFreezeF": "C:/Users/Sayo/AppData/Local/Temp/rocut-flame-bridge-freeze-20261009-f.json",
+		"historicalFreezeFSha256": "5704349858009523123af912ea538d3f5a4ecb7675cfcc4a8de148dc40c0611f",
+		"invalidatedScope": "Current renderer-manager.ts differs from freeze f. Earlier f-bound Flame export and HyperFrames/Remotion browser gates remain valid historical checkpoints, not acceptance for this modified Manager source. Rust/private WASM were not changed by this fix; root coordinates any new heavy regression checkpoint."
+	}
+}
