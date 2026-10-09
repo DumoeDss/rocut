@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<style>
+			html,
+			body {
+				margin: 0;
+				background: transparent;
+			}
+			#root {
+				position: relative;
+				width: 160px;
+				height: 90px;
+				overflow: hidden;
+			}
+			.scene {
+				position: absolute;
+				inset: 0;
+				overflow: hidden;
+			}
+			#shot1 {
+				background: #18204c;
+			}
+			#shot2 {
+				background: #1c5a36;
+				opacity: 0;
+			}
+			#shot3 {
+				background: #6a2632;
+				opacity: 0;
+			}
+			.rule {
+				position: absolute;
+				left: 8px;
+				bottom: 6px;
+				width: 32px;
+				height: 2px;
+				background: #e94560;
+				transform-origin: left center;
+			}
+		</style>
+		<script src="gsap.js"></script>
+	</head>
+	<body>
+		<div
+			id="root"
+			data-composition-id="root"
+			data-start="0"
+			data-duration="6"
+			data-width="160"
+			data-height="90"
+		>
+			<div id="shot1" class="scene"><div class="rule"></div></div>
+			<div id="shot2" class="scene"><div class="rule"></div></div>
+			<div id="shot3" class="scene"><div class="rule"></div></div>
+			<audio
+				id="music"
+				src="music.wav"
+				data-start="0.2"
+				data-duration="5.6"
+				data-media-start="0.1"
+				data-volume="0.5"
+				data-track-index="0"
+			></audio>
+		</div>
+		<script>
+			// Palette/geometry are specified in multishot-mv-design.md. Incoming-only
+			// opacity preserves an opaque outgoing field throughout each crossfade.
+			const timeline = gsap.timeline({ paused: true });
+			timeline.from(
+				"#shot1 .rule",
+				{ scaleX: 0, duration: 0.3, ease: "power3.out" },
+				0.2,
+			);
+			timeline.to("#shot2", { opacity: 1, duration: 0.4, ease: "none" }, 1.6);
+			timeline.from(
+				"#shot2 .rule",
+				{ x: -40, duration: 0.4, ease: "expo.out" },
+				2.2,
+			);
+			timeline.to("#shot3", { opacity: 1, duration: 0.4, ease: "none" }, 3.6);
+			timeline.from(
+				"#shot3 .rule",
+				{ opacity: 0, duration: 0.6, ease: "sine.out" },
+				4.2,
+			);
+			window.__timelines = { root: timeline };
+		</script>
+	</body>
+</html>

@@ -203,6 +203,7 @@ export function createAdoptingStore(args: {
 }): ProjectStore {
 	const { store, adapter } = args;
 	const persistedSchemaVersion = store.persistedSchemaVersion?.bind(store);
+	const listAttachmentHeaders = store.listAttachmentHeaders?.bind(store);
 	return {
 		schemaVersion: store.schemaVersion,
 		list: (options) => store.list(options),
@@ -213,6 +214,7 @@ export function createAdoptingStore(args: {
 		},
 		remove: (options) => store.remove(options),
 		listAttachments: (options) => store.listAttachments(options),
+		...(listAttachmentHeaders === undefined ? {} : { listAttachmentHeaders }),
 		loadAttachment: (options) => store.loadAttachment(options),
 		saveAttachment: (options) => store.saveAttachment(options),
 		removeAttachment: (options) => store.removeAttachment(options),

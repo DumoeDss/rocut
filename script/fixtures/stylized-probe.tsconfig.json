@@ -1,0 +1,9 @@
+{
+	"extends": "./three-probe.tsconfig.json",
+	"include": [
+		"./stylized-browser-probe.ts",
+		"./stylized-probe-scene.ts",
+		"./stylized-export-probe.ts",
+		"../../packages/*/src/types/**/*.d.ts"
+	]
+}

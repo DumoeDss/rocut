@@ -1,0 +1,5 @@
+<!doctype html>
+<html><body><script type="module">
+import { runThreeSceneProbe } from './three-scene-browser-probe.ts';
+runThreeSceneProbe().then(result => globalThis.__threeSceneResult = result, error => globalThis.__threeSceneResult = { error: String(error), stack: error.stack });
+</script></body></html>

@@ -1,4 +1,4 @@
-import type { Clip } from "@opencut/editor-contracts";
+import type { Clip, ProgrammaticSource } from "@opencut/editor-contracts";
 import type { ElementAnimations } from "../animation/types";
 import type { Effect } from "../effects/types";
 import type { Mask } from "../masks/types";
@@ -161,6 +161,7 @@ export interface StickerElement extends BaseTimelineElement {
 export interface GraphicElement extends BaseTimelineElement {
 	type: "graphic";
 	definitionId: string;
+	programmatic?: ProgrammaticSource;
 	hidden?: boolean;
 	effects?: Effect[];
 	masks?: Mask[];

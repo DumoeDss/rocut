@@ -21,12 +21,19 @@ pub struct ApplyEffectsOptions<'a> {
 }
 
 pub struct EffectPipeline {
+    liquid: crate::liquid_pipeline::LiquidPipeline,
     uniform_bind_group_layout: wgpu::BindGroupLayout,
     pipelines: HashMap<String, wgpu::RenderPipeline>,
 }
 
 #[derive(Debug, Error)]
 pub enum EffectsError {
+    #[error("Render preparation was cancelled")]
+    Cancelled,
+    #[error("Prepared Liquid pass does not match the frame")]
+    InvalidPreparedLiquid,
+    #[error("Liquid simulation failed: {message}")]
+    LiquidSimulation { message: String },
     #[error("At least one effect pass is required")]
     MissingEffectPasses,
     #[error("Unknown effect shader '{shader}'")]
@@ -95,9 +102,39 @@ impl EffectPipeline {
         let pipelines = [
             (GAUSSIAN_BLUR_SHADER_ID, GAUSSIAN_BLUR_SHADER_SOURCE),
             (COLOR_ADJUSTMENT_SHADER_ID, COLOR_ADJUSTMENT_SHADER_SOURCE),
+            ("vhs", include_str!("shaders/vhs.wgsl")),
+            ("glitch", include_str!("shaders/glitch.wgsl")),
+            ("retro-dither", include_str!("shaders/retro_dither.wgsl")),
+            ("ascii", include_str!("shaders/ascii.wgsl")),
+            ("mono-dither", include_str!("shaders/mono_dither.wgsl")),
+            ("lens", include_str!("shaders/lens.wgsl")),
+            ("magnify", include_str!("shaders/magnify.wgsl")),
+            ("displacement", include_str!("shaders/displacement.wgsl")),
+            ("laser", include_str!("shaders/laser.wgsl")),
+            (
+                "decrypt-reveal",
+                include_str!("shaders/decrypt-reveal.wgsl"),
+            ),
+            ("ripple", include_str!("shaders/ripple.wgsl")),
+            ("force-field", include_str!("shaders/force_field.wgsl")),
+            ("droplets", include_str!("shaders/droplets.wgsl")),
+            ("clouds", include_str!("shaders/clouds.wgsl")),
         ]
         .into_iter()
         .map(|(id, source)| {
+            let source = if matches!(id, "lens" | "magnify" | "displacement") {
+                format!(
+                    "{}\n{}\n{source}",
+                    include_str!("shaders/spatial_region.wgsl"),
+                    include_str!("shaders/lens_sampling.wgsl")
+                )
+            } else if matches!(id, "ripple" | "force-field") {
+                format!("{}\n{source}", include_str!("shaders/wave_common.wgsl"))
+            } else if matches!(id, "ascii" | "retro-dither") {
+                format!("{}\n{source}", include_str!("shaders/spatial_region.wgsl"))
+            } else {
+                source.to_owned()
+            };
             let shader_module =
                 context
                     .device()
@@ -147,6 +184,7 @@ impl EffectPipeline {
         .collect();
 
         Self {
+            liquid: crate::liquid_pipeline::LiquidPipeline::new(context),
             uniform_bind_group_layout,
             pipelines,
         }
@@ -186,17 +224,53 @@ impl EffectPipeline {
         &self,
         context: &GpuContext,
         encoder: &mut wgpu::CommandEncoder,
+        options: ApplyEffectsOptions<'_>,
+    ) -> Result<wgpu::Texture, EffectsError> {
+        self.apply_prepared_with_encoder(context, encoder, options, None)
+    }
+
+    pub fn apply_prepared_with_encoder(
+        &self,
+        context: &GpuContext,
+        encoder: &mut wgpu::CommandEncoder,
         ApplyEffectsOptions {
             source,
             width,
             height,
             passes,
         }: ApplyEffectsOptions<'_>,
+        mut prepared: Option<&mut std::collections::VecDeque<crate::PreparedLiquidPass>>,
     ) -> Result<wgpu::Texture, EffectsError> {
         let mut current_texture: Option<wgpu::Texture> = None;
 
         for pass in passes {
             let input_texture = current_texture.as_ref().unwrap_or(source);
+            if pass.shader == "liquid" {
+                if let Some(prepared) = prepared.as_mut() {
+                    let state = prepared
+                        .pop_front()
+                        .ok_or(EffectsError::InvalidPreparedLiquid)?;
+                    current_texture = Some(self.liquid.apply_prepared(
+                        context,
+                        encoder,
+                        input_texture,
+                        width,
+                        height,
+                        pass,
+                        &state,
+                    )?);
+                    continue;
+                }
+                current_texture = Some(self.liquid.apply(
+                    context,
+                    encoder,
+                    input_texture,
+                    width,
+                    height,
+                    pass,
+                )?);
+                continue;
+            }
             let output_texture =
                 context.create_render_texture(width, height, "effects-pass-output");
             let input_view = input_texture.create_view(&wgpu::TextureViewDescriptor::default());
@@ -223,7 +297,7 @@ impl EffectPipeline {
                     .device()
                     .create_buffer_init(&wgpu::util::BufferInitDescriptor {
                         label: Some("effects-uniform-buffer"),
-                        contents: bytemuck::bytes_of(&pack_effect_uniforms(pass, width, height)?),
+                        contents: &pack_effect_uniforms(pass, width, height)?,
                         usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
                     });
             let uniform_bind_group =
@@ -278,9 +352,57 @@ fn pack_effect_uniforms(
     pass: &EffectPass,
     width: u32,
     height: u32,
-) -> Result<EffectUniformBuffer, EffectsError> {
+) -> Result<Vec<u8>, EffectsError> {
     if pass.shader == COLOR_ADJUSTMENT_SHADER_ID {
-        return pack_color_uniforms(pass, width, height);
+        return Ok(bytemuck::bytes_of(&pack_color_uniforms(pass, width, height)?).to_vec());
+    }
+    if pass.shader == "displacement" {
+        return Ok(
+            bytemuck::bytes_of(&crate::displacement::pack_uniforms(pass, width, height)?).to_vec(),
+        );
+    }
+    if pass.shader == "laser" {
+        return Ok(bytemuck::bytes_of(&crate::laser::pack_uniforms(pass, width, height)?).to_vec());
+    }
+    if pass.shader == "decrypt-reveal" {
+        return Ok(
+            bytemuck::bytes_of(&crate::decrypt_reveal::pack_uniforms(pass, width, height)?)
+                .to_vec(),
+        );
+    }
+    if matches!(pass.shader.as_str(), "ripple" | "force-field") {
+        return Ok(
+            bytemuck::bytes_of(&crate::wave_uniforms::pack_wave_uniforms(
+                pass, width, height,
+            )?)
+            .to_vec(),
+        );
+    }
+    if pass.shader == "clouds" {
+        return Ok(
+            bytemuck::bytes_of(&crate::clouds::pack_uniforms(pass, width, height)?).to_vec(),
+        );
+    }
+    if pass.shader == "droplets" {
+        return Ok(
+            bytemuck::bytes_of(&crate::droplets::pack_uniforms(pass, width, height)?).to_vec(),
+        );
+    }
+    if matches!(
+        pass.shader.as_str(),
+        "vhs" | "glitch" | "retro-dither" | "ascii" | "mono-dither" | "lens" | "magnify"
+    ) {
+        return Ok(
+            bytemuck::bytes_of(&crate::stylized_uniforms::pack_stylized_uniforms(
+                pass, width, height,
+            )?)
+            .to_vec(),
+        );
+    }
+    if pass.shader != GAUSSIAN_BLUR_SHADER_ID {
+        return Err(EffectsError::UnknownEffectShader {
+            shader: pass.shader.clone(),
+        });
     }
     let shader = pass.shader.as_str();
     let sigma = read_number_uniform(pass, "u_sigma")?;
@@ -297,11 +419,12 @@ fn pack_effect_uniforms(
         });
     }
 
-    Ok(EffectUniformBuffer {
+    Ok(bytemuck::bytes_of(&EffectUniformBuffer {
         resolution: [width as f32, height as f32],
         direction,
         scalars: [sigma, step, 0.0, 0.0],
     })
+    .to_vec())
 }
 
 pub(crate) fn read_number_uniform(pass: &EffectPass, uniform: &str) -> Result<f32, EffectsError> {

@@ -1,0 +1,614 @@
+{
+  "version": 1,
+  "date": "2026-10-07",
+  "status": "verified-video-subsets",
+  "scope": [
+    "asciiSweep: real A/B scalar-cell text and deterministic traveling scramble band",
+    "particleScroll: direction-driven image frontier with intact side and analytical textured fragments"
+  ],
+  "limits": [
+    "No dedicated recipe parameter inspector",
+    "Host apply does not enter attached-session UI history; Agent source restoration is a new revision-checked transaction",
+    "No shaped text or implicit font fallback",
+    "No arbitrary underlying video or live DOM capture",
+    "No physics simulation, installation/Electron acceptance or transparent final-master export",
+    "No cross-GPU reliability or performance conclusion"
+  ],
+  "implementation": {
+    "clock": "Rust source-frame span/easing/seed; Canvas Worker raster-only; refs/trim/rational fps reuse the existing clock",
+    "budget": "4096 expanded generator primitives; ASCII union columns*rows, Particle Scroll columns*rows+1; all existing graph/raster limits retained",
+    "resources": "Declared font/image descriptors archived through existing Host resource bridge",
+    "creatorHelpers": [
+      "asciiSweepText",
+      "particleScrollImage"
+    ]
+  },
+  "wasm": {
+    "sha256": "0827a23defec390941a8d1fd7062218a9330bebf06808526c0ae0b9145b7845a",
+    "bytes": 7102267,
+    "rustc": "1.88.0",
+    "wasmPack": "0.13.1",
+    "gates": [
+      "source",
+      "paths",
+      "API surface",
+      "init"
+    ],
+    "publicJsExports": 87,
+    "stableBinaryExports": 104,
+    "compilerTrampolines": 3,
+    "imports": 612,
+    "newPublicExports": 0,
+    "privateGeneratedCopiesOnly": true
+  },
+  "validation": {
+    "native": {
+      "newIntegrationTests": 17,
+      "moduleAndCatalogTests": 4,
+      "additionalExistingRegressions": 22,
+      "command": "cargo +stable test -p editor-api --test mv_ascii_sweep --test mv_particle_scroll; cargo +stable test -p editor-api --lib mv_recipe::",
+      "regressions": [
+        "mv_generators",
+        "mv_finishing",
+        "mv_post_automation",
+        "mv_post_composite"
+      ],
+      "note": "Additional regressions passed in canonical source before concurrent audio graph edits; final new integration/module tests passed in frozen private fixture."
+    },
+    "frontend": {
+      "typescript": [
+        "spatial-probe.tsconfig.json",
+        "spatial-regression.tsconfig.json"
+      ],
+      "productionEslint": true,
+      "hostTests": 2,
+      "assertions": 320,
+      "hostEvidence": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/sweep-scroll-persistence/run-9Wdda5/evidence.json",
+      "invalidAtomicTransactions": [
+        {
+          "name": "missing font",
+          "status": 409
+        },
+        {
+          "name": "missing image",
+          "status": 409
+        },
+        {
+          "name": "font bound to image",
+          "status": 409
+        },
+        {
+          "name": "image bound to font",
+          "status": 409
+        },
+        {
+          "name": "unknown ASCII field",
+          "status": 409
+        },
+        {
+          "name": "unknown particle field",
+          "status": 409
+        },
+        {
+          "name": "invalid ASCII direction",
+          "status": 409
+        },
+        {
+          "name": "invalid particle direction",
+          "status": 409
+        },
+        {
+          "name": "zero ASCII band",
+          "status": 409
+        },
+        {
+          "name": "zero particle band",
+          "status": 409
+        },
+        {
+          "name": "insufficient text rect",
+          "status": 409
+        },
+        {
+          "name": "too many text columns",
+          "status": 409
+        },
+        {
+          "name": "too many text rows",
+          "status": 409
+        },
+        {
+          "name": "particle primitive overflow",
+          "status": 409
+        },
+        {
+          "name": "expanded ASCII budget",
+          "status": 409
+        },
+        {
+          "name": "expanded particle budget",
+          "status": 409
+        }
+      ],
+      "hostReopens": [
+        1,
+        2,
+        4
+      ]
+    },
+    "creator": {
+      "tests": 6,
+      "realAgentPackageCopy": true,
+      "skillQuickValidate": true,
+      "skillValidationCommand": "python -X utf8 .../quick_validate.py resources/agent/skills/html-video"
+    },
+    "browser": {
+      "artifactDirectory": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/sweep-scroll/run-8T2yeW",
+      "sourceManifestSha256": "e505678ccd38b6df2f0e8635c721f845286045cf9760cbead8e2006ebd177374",
+      "browser": "154.0.8037.98",
+      "captures": 60,
+      "oracles": [
+        {
+          "frame": 0,
+          "ascii": {
+            "maximum": 0,
+            "alphaMaximum": 0,
+            "mean": 0
+          },
+          "particle": {
+            "maximum": 0,
+            "alphaMaximum": 0,
+            "mean": 0
+          }
+        },
+        {
+          "frame": 12,
+          "ascii": {
+            "maximum": 0,
+            "alphaMaximum": 0,
+            "mean": 0
+          },
+          "particle": {
+            "maximum": 0,
+            "alphaMaximum": 0,
+            "mean": 0
+          }
+        },
+        {
+          "frame": 24,
+          "ascii": {
+            "maximum": 0,
+            "alphaMaximum": 0,
+            "mean": 0
+          },
+          "particle": {
+            "maximum": 0,
+            "alphaMaximum": 0,
+            "mean": 0
+          }
+        },
+        {
+          "frame": 12,
+          "ascii": {
+            "maximum": 0,
+            "alphaMaximum": 0,
+            "mean": 0
+          }
+        }
+      ],
+      "checks": [
+        "independent font/text/band oracle",
+        "fixed source UV/geometry/alpha particle oracle",
+        "both ASCII and four particle scan directions",
+        "parameter and seed changes",
+        "repeat/reverse/ref/trim/rational frame mapping",
+        "role filtering and missing resources",
+        "independent timeline overlay oracle",
+        "three six-frame WebM exports with preview parity"
+      ],
+      "parameters": 13,
+      "seeds": 2,
+      "overlay": {
+        "maximum": 1,
+        "alphaMaximum": 0,
+        "mean": 0.03504372427983539
+      },
+      "exports": [
+        {
+          "name": "ascii-sweep",
+          "width": 384,
+          "height": 216,
+          "frames": 6,
+          "previewExportEqual": true
+        },
+        {
+          "name": "particle-scroll",
+          "width": 384,
+          "height": 216,
+          "frames": 6,
+          "previewExportEqual": true
+        },
+        {
+          "name": "overlay",
+          "width": 384,
+          "height": 216,
+          "frames": 6,
+          "previewExportEqual": true
+        }
+      ],
+      "independentDecode": [
+        {
+          "name": "ascii-sweep",
+          "ok": true,
+          "videoSha256": "aa5ac746a6864590f6ededfe403343de4293b5df4d0e1db5a12944db711e244d",
+          "metrics": [
+            {
+              "frame": 0,
+              "meanRgbaError": 1.2032696759259258,
+              "pixels": 2261,
+              "detailError": 14.323160843284683,
+              "contrastRatio": 0.9658870663423016,
+              "motion": 0
+            },
+            {
+              "frame": 1,
+              "meanRgbaError": 1.2165738329475309,
+              "pixels": 2226,
+              "detailError": 14.70649895178197,
+              "contrastRatio": 0.96442767303831,
+              "motion": 0.41735086323302467
+            },
+            {
+              "frame": 2,
+              "meanRgbaError": 1.2545241367669753,
+              "pixels": 2377,
+              "detailError": 14.74014864675361,
+              "contrastRatio": 0.9626255259128883,
+              "motion": 1.2382661795910495
+            },
+            {
+              "frame": 3,
+              "meanRgbaError": 1.1983416521990742,
+              "pixels": 2369,
+              "detailError": 13.202617138032926,
+              "contrastRatio": 0.9674569486646876,
+              "motion": 1.4457344714506173
+            },
+            {
+              "frame": 4,
+              "meanRgbaError": 1.0884301456404322,
+              "pixels": 2405,
+              "detailError": 9.96146916146916,
+              "contrastRatio": 0.9755076289260187,
+              "motion": 1.922070915316358
+            },
+            {
+              "frame": 5,
+              "meanRgbaError": 1.0271146797839505,
+              "pixels": 2365,
+              "detailError": 8.302607470049331,
+              "contrastRatio": 0.9793075714300883,
+              "motion": 2.1403718171296298
+            }
+          ]
+        },
+        {
+          "name": "particle-scroll",
+          "ok": true,
+          "videoSha256": "aa663684f77b5f09b11bd8a5f7964a8397f06479de59453b5f0d2862e6255ae9",
+          "metrics": [
+            {
+              "frame": 0,
+              "meanRgbaError": 1.1103485484182098,
+              "pixels": 45937,
+              "detailError": 1.702926471762051,
+              "contrastRatio": 0.9830140071838023,
+              "motion": 0
+            },
+            {
+              "frame": 1,
+              "meanRgbaError": 1.1464210792824074,
+              "pixels": 40878,
+              "detailError": 1.8139259911606895,
+              "contrastRatio": 0.981116132033873,
+              "motion": 3.5031195746527777
+            },
+            {
+              "frame": 2,
+              "meanRgbaError": 1.2042100694444444,
+              "pixels": 38945,
+              "detailError": 1.9049000727521719,
+              "contrastRatio": 0.9793784827632566,
+              "motion": 6.282663604359568
+            },
+            {
+              "frame": 3,
+              "meanRgbaError": 1.1005949797453705,
+              "pixels": 36672,
+              "detailError": 1.7608166084933101,
+              "contrastRatio": 0.979696469852959,
+              "motion": 8.500382788387345
+            },
+            {
+              "frame": 4,
+              "meanRgbaError": 1.0314670138888888,
+              "pixels": 32062,
+              "detailError": 1.6443349343979374,
+              "contrastRatio": 0.9781689906781031,
+              "motion": 10.609619140625
+            },
+            {
+              "frame": 5,
+              "meanRgbaError": 0.9946650752314815,
+              "pixels": 26693,
+              "detailError": 1.6414415764432624,
+              "contrastRatio": 0.9772621720618446,
+              "motion": 12.746551890432098
+            }
+          ]
+        },
+        {
+          "name": "overlay",
+          "ok": true,
+          "videoSha256": "16574594784ca6a83433218983b280e392d3b83d60eea5da037d8d069d144920",
+          "metrics": [
+            {
+              "frame": 0,
+              "meanRgbaError": 1.618311752507716,
+              "pixels": 46927,
+              "detailError": 2.710656977859228,
+              "contrastRatio": 0.9829671514003732,
+              "motion": 0
+            },
+            {
+              "frame": 1,
+              "meanRgbaError": 1.6482144579475309,
+              "pixels": 42203,
+              "detailError": 2.846322141395951,
+              "contrastRatio": 0.9815853110473715,
+              "motion": 3.697386188271605
+            },
+            {
+              "frame": 2,
+              "meanRgbaError": 1.8160716869212963,
+              "pixels": 40338,
+              "detailError": 3.2188424479812254,
+              "contrastRatio": 0.981405037752253,
+              "motion": 6.933973524305555
+            },
+            {
+              "frame": 3,
+              "meanRgbaError": 1.7103316695601851,
+              "pixels": 38245,
+              "detailError": 3.082354991937944,
+              "contrastRatio": 0.9832373167654607,
+              "motion": 9.26878677179784
+            },
+            {
+              "frame": 4,
+              "meanRgbaError": 1.5482705198688271,
+              "pixels": 34115,
+              "detailError": 2.7087889002882406,
+              "contrastRatio": 0.9797999706175841,
+              "motion": 11.555537471064815
+            },
+            {
+              "frame": 5,
+              "meanRgbaError": 1.4349410445601851,
+              "pixels": 29108,
+              "detailError": 2.471359534606752,
+              "contrastRatio": 0.9777471645434002,
+              "motion": 13.714090229552468
+            }
+          ]
+        }
+      ],
+      "contactSheetVisuallyInspected": true
+    },
+    "editor": {
+      "artifactDirectory": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/sweep-scroll-editor/run-J2lKpz",
+      "sourceManifestSha256": "8b9f118f479cefbc8383848611a4b36ca8bd8e075b246fc6f587ee6e6e8361d6",
+      "reusedEditorDist": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa\\rocut-three-resources-VSD7L2\\.artifacts\\sweep-scroll-editor\\run-7AZWMR\\temp\\editor-dist",
+      "checks": [
+        {
+          "name": "persisted sweep-scroll project loaded by actual attached editor",
+          "pass": true
+        },
+        {
+          "name": "two Creator generators: revision-checked Host recipe replacement/restore/reapply and preview preserve complete sources without entering local history",
+          "pass": true
+        },
+        {
+          "name": "real Blending/Opacity input plus attached-session undo/redo/restore preserves full generator sources and every other clip",
+          "pass": true
+        },
+        {
+          "name": "saved project and editor reload preserve full sources, resources, roles, spans, seeds and four preview samples",
+          "pass": true
+        },
+        {
+          "name": "120-frame four-second export: independent decoder compares four edited-preview samples and final transparent-image endpoint",
+          "pass": true
+        }
+      ],
+      "agentSourceReversal": "Host apply -> restore original source -> reapply edited source; revision checked and exact pixel/full-source comparisons; not UI undo",
+      "uiHistory": [
+        {
+          "index": 0,
+          "tab": "Blending",
+          "field": "Opacity",
+          "value": 0.55,
+          "sequence": [
+            "UI input",
+            "history.undo",
+            "history.redo",
+            "history.undo"
+          ],
+          "sourceUnchanged": true,
+          "completeClipRestored": true
+        },
+        {
+          "index": 1,
+          "tab": "Blending",
+          "field": "Opacity",
+          "value": 0.55,
+          "sequence": [
+            "UI input",
+            "history.undo",
+            "history.redo",
+            "history.undo"
+          ],
+          "sourceUnchanged": true,
+          "completeClipRestored": true
+        }
+      ],
+      "width": 640,
+      "height": 360,
+      "fps": "30/1",
+      "seconds": 4,
+      "frames": 120,
+      "decoder": "independent FFmpeg/FFprobe",
+      "metrics": [
+        {
+          "index": 0,
+          "frame": 15,
+          "localTicks": 60000,
+          "timelineTicks": 60000,
+          "screenshotBounds": {
+            "x": 379.53125,
+            "y": 105.828125,
+            "width": 680.9375,
+            "height": 382.140625
+          },
+          "meanRgbError": 2.2098263888888887,
+          "activeError": 13.40715703632169,
+          "activePixels": 6213,
+          "inactiveError": 0.8560011935573848,
+          "detailEnergyRatio": 1.0393714015374336
+        },
+        {
+          "index": 0,
+          "frame": 30,
+          "localTicks": 120000,
+          "timelineTicks": 120000,
+          "screenshotBounds": {
+            "x": 379.53125,
+            "y": 105.828125,
+            "width": 680.9375,
+            "height": 382.140625
+          },
+          "meanRgbError": 2.4700983796296296,
+          "activeError": 15.272950016334532,
+          "activePixels": 6122,
+          "inactiveError": 0.9475245088516777,
+          "detailEnergyRatio": 1.0386965896070275
+        },
+        {
+          "index": 1,
+          "frame": 75,
+          "localTicks": 60000,
+          "timelineTicks": 300000,
+          "screenshotBounds": {
+            "x": 379.53125,
+            "y": 105.828125,
+            "width": 680.9375,
+            "height": 382.140625
+          },
+          "meanRgbError": 0.72234375,
+          "activeError": 4.125030171373401,
+          "activePixels": 4143,
+          "inactiveError": 0.4586303009895804,
+          "detailEnergyRatio": 0.9938061573604817
+        },
+        {
+          "index": 1,
+          "frame": 90,
+          "localTicks": 120000,
+          "timelineTicks": 360000,
+          "screenshotBounds": {
+            "x": 379.53125,
+            "y": 105.828125,
+            "width": 680.9375,
+            "height": 382.140625
+          },
+          "meanRgbError": 0.6710706018518519,
+          "activeError": 7.009301442672741,
+          "activePixels": 1756,
+          "inactiveError": 0.4717665878757491,
+          "detailEnergyRatio": 0.906145830763644
+        }
+      ],
+      "progression": [
+        {
+          "index": 0,
+          "meanRgbDifference": 13.444056712962963
+        },
+        {
+          "index": 1,
+          "meanRgbDifference": 5.06681712962963
+        }
+      ],
+      "finalBackgroundError": 0.334537037037037,
+      "hostRestart": {
+        "ok": true,
+        "hostReopenedAfterEdits": true,
+        "revision": 15,
+        "clipIds": [
+          "sweep-scroll-0",
+          "sweep-scroll-1"
+        ],
+        "authoredTrackIds": [
+          "sweep-scroll-shots"
+        ],
+        "comparison": "complete clip and track projections by ID; authored track order; revision"
+      },
+      "errors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to render preview frame: AbortError: Programmatic frame cancelled",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "expectedHttpFailures": [
+        {
+          "path": "/api/library/graph-editor-presets/user-presets",
+          "status": 404
+        },
+        {
+          "path": "/api/library/graph-editor-presets/user-presets",
+          "status": 404
+        }
+      ],
+      "expectedFrameCancellations": [
+        "Failed to render preview frame: AbortError: Programmatic frame cancelled"
+      ],
+      "contactSheetVisuallyInspected": true
+    }
+  },
+  "retainedFailures": [
+    {
+      "kind": "canonical-in-progress-closure",
+      "message": "Targeted native test collection hit missing programmatic_audio/graph fx, fx_catalog, fx_model and fx_tail modules during another session work.",
+      "resolution": "Preserved concurrent edits; ran final generator tests on the coherent private source snapshot. Does not establish current canonical whole-tree build."
+    },
+    {
+      "kind": "acceptance-assumption",
+      "artifactDirectory": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/sweep-scroll-editor/run-7AZWMR",
+      "message": "Host apply followed by attached-session history.undo returned history-empty.",
+      "resolution": "Source confirms Host apply never records local CommandManager history. Separated Agent revision-checked source reversal from actual UI Opacity undo/redo; no production change or relaxed pixel gate."
+    },
+    {
+      "kind": "validator-encoding",
+      "message": "quick_validate.py default Windows GBK decode rejected UTF-8 SKILL.md.",
+      "resolution": "Ran with python -X utf8; validation passed, source encoding unchanged."
+    }
+  ],
+  "commands": {
+    "browser": "node script/probe-sweep-scroll.mjs <absolute Chromium> <absolute FFmpeg directory>",
+    "editor": "ROCUT_FUSION_FFMPEG_DIR=<absolute FFmpeg directory>; node script/probe-stylized-fusion.mjs <Creator templates> <read-only Three toolchain> <absolute Chromium> --sweep-scroll"
+  },
+  "release": {
+    "committed": false,
+    "pushed": false,
+    "installed": false,
+    "electronTested": false
+  }
+}

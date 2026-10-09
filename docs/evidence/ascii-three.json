@@ -1,0 +1,330 @@
+{
+  "version": 1,
+  "date": "2026-10-07",
+  "status": "fixture-verified-with-intermittent-capture-timeout",
+  "implementation": "5x7 glyph ramp and native Rust/wgpu ASCII effect after a real offline Three/GLB/HDR source",
+  "browser": {
+    "ok": true,
+    "captures": 22,
+    "firstHash": "a58fbd254318bca482542d519f3af0c4e07f780e520514b387993de42f7b11f0",
+    "laterHash": "aa87a5ed2683fe425ff17acf5e19760c13a652a575c91377ddaa60c4ac3721fa",
+    "cameraHash": "24db934a5650a1780cc19b41372be7ce49acd1541661c81900cd1344da50bd86",
+    "materialHash": "c862dbe7f92a2326f6789d0400e70eb4f5b50659ad04df062dcc698df5645dfb",
+    "transparentPixels": 223756,
+    "partialPixels": 2148,
+    "blendError": 1,
+    "video": {
+      "width": 640,
+      "height": 360,
+      "fps": {
+        "numerator": 30,
+        "denominator": 1
+      },
+      "frames": 6,
+      "quality": "very_high",
+      "errors": [
+        0.84837890625,
+        1.119689670138889,
+        1.214599609375,
+        1.2025227864583334,
+        1.2211273871527777,
+        1.2351671006944445
+      ],
+      "errorLimit": 10,
+      "detail": [
+        {
+          "pixels": 6476,
+          "error": 8.132386246654313,
+          "contrastRatio": 1.0017187229089526
+        },
+        {
+          "pixels": 6512,
+          "error": 12.450911138411138,
+          "contrastRatio": 0.9813324977949898
+        },
+        {
+          "pixels": 6392,
+          "error": 13.927461410095953,
+          "contrastRatio": 0.9786598435913432
+        },
+        {
+          "pixels": 6616,
+          "error": 12.812625957275293,
+          "contrastRatio": 0.9910799085692961
+        },
+        {
+          "pixels": 6600,
+          "error": 13.01469696969697,
+          "contrastRatio": 0.9918480005735357
+        },
+        {
+          "pixels": 6612,
+          "error": 13.161222020568664,
+          "contrastRatio": 0.9900407733091208
+        }
+      ],
+      "motion": 2.3206108940972223,
+      "encodedBytes": 14764
+    },
+    "source": {
+      "version": 1,
+      "runtime": "html-document",
+      "code": "",
+      "documentId": "_rocut/compiled.html",
+      "width": 640,
+      "height": 360,
+      "frameRate": {
+        "numerator": 30,
+        "denominator": 1
+      },
+      "durationFrames": 60,
+      "seed": 19,
+      "resources": [
+        {
+          "id": "_rocut/compiled.html",
+          "kind": "document",
+          "mimeType": "text/html",
+          "byteLength": 847226,
+          "sha256": "32f6b08f9628dbb4ed80c736ab6707362afc4c81a985d8fd5485b237124c61b9",
+          "attachmentKey": "programmatic-sha256-32f6b08f9628dbb4ed80c736ab6707362afc4c81a985d8fd5485b237124c61b9"
+        },
+        {
+          "id": "assets/cube.glb",
+          "kind": "model",
+          "mimeType": "model/gltf-binary",
+          "byteLength": 1780,
+          "sha256": "201692bc8fdddcd3b015e07a5bf2315db843cab47878aec53a10e6d033a8f21d",
+          "attachmentKey": "programmatic-sha256-201692bc8fdddcd3b015e07a5bf2315db843cab47878aec53a10e6d033a8f21d"
+        },
+        {
+          "id": "assets/neutral.hdr",
+          "kind": "environment",
+          "mimeType": "image/vnd.radiance",
+          "byteLength": 8239,
+          "sha256": "c0189db833bcd32f4d2b3c30309eff76fe009695741652fa710c136a2448ba56",
+          "attachmentKey": "programmatic-sha256-c0189db833bcd32f4d2b3c30309eff76fe009695741652fa710c136a2448ba56"
+        }
+      ],
+      "build": {
+        "version": 1,
+        "engine": "three",
+        "engineVersion": "0.185.1",
+        "entryFile": "scene.ts",
+        "inputProps": {},
+        "inputs": [
+          {
+            "id": "scene.ts",
+            "kind": "source",
+            "mimeType": "application/octet-stream",
+            "byteLength": 1337,
+            "sha256": "406cb55de752c9dd9b7215657878918a7e7d0e6169822cdbcf8151f7145be80d",
+            "attachmentKey": "programmatic-source-sha256-406cb55de752c9dd9b7215657878918a7e7d0e6169822cdbcf8151f7145be80d"
+          }
+        ],
+        "toolchainLock": {
+          "id": "_rocut/toolchain-lock.json",
+          "kind": "source",
+          "mimeType": "application/octet-stream",
+          "byteLength": 5341,
+          "sha256": "e7300714d607313e77703fcaa05accf603a018e14b48916836a839c3af6c199e",
+          "attachmentKey": "programmatic-source-sha256-e7300714d607313e77703fcaa05accf603a018e14b48916836a839c3af6c199e"
+        }
+      }
+    },
+    "resources": [
+      {
+        "id": "assets/cube.glb",
+        "kind": "model",
+        "mimeType": "model/gltf-binary",
+        "byteLength": 1780,
+        "sha256": "201692bc8fdddcd3b015e07a5bf2315db843cab47878aec53a10e6d033a8f21d",
+        "attachmentKey": "programmatic-sha256-201692bc8fdddcd3b015e07a5bf2315db843cab47878aec53a10e6d033a8f21d"
+      },
+      {
+        "id": "assets/neutral.hdr",
+        "kind": "environment",
+        "mimeType": "image/vnd.radiance",
+        "byteLength": 8239,
+        "sha256": "c0189db833bcd32f4d2b3c30309eff76fe009695741652fa710c136a2448ba56",
+        "attachmentKey": "programmatic-sha256-c0189db833bcd32f4d2b3c30309eff76fe009695741652fa710c136a2448ba56"
+      }
+    ],
+    "checks": [
+      "real offline textured GLB cube and HDR",
+      "native ASCII glyphs",
+      "zero identity",
+      "color/cell/seed",
+      "seek/trim",
+      "camera/material/model rebuild",
+      "transparent and partial alpha over dark/light backgrounds",
+      "preview/export equality",
+      "real WebM encode/decode"
+    ],
+    "externalRequests": [],
+    "browser": "154.0.8037.98",
+    "frameBackend": "private-chromium",
+    "electronTested": false,
+    "sourceCommit": "e791be658f63384b6b7c064c1a92dd1912246ada",
+    "sourceWorktreeClean": false,
+    "sourceManifestSha256": "3490f38c4c85be7615e1725b791a86f4724ca31ce5f2e19d74664534a62fba4a",
+    "wasmSha256": "1030260add0927e938870cc80537020e4e75b47c69541b9e550a708546874c29",
+    "toolchainLockSha256": "a5f51282b3cd63e4e00f887f5545f8fcb61009a82d0d66616938d03ddc89f88f"
+  },
+  "independentDecode": {
+    "decoder": "ffmpeg 6.0",
+    "codec": "vp9",
+    "width": 640,
+    "height": 360,
+    "frameRate": "30/1",
+    "frames": 6,
+    "metrics": [
+      {
+        "frame": 0,
+        "meanRgbaError": 1.0159309895833333,
+        "foregroundPixels": 6476,
+        "foregroundRgbError": 6.189674696314597,
+        "contrastRatio": 0.9885425815016704
+      },
+      {
+        "frame": 1,
+        "meanRgbaError": 1.2988433159722221,
+        "foregroundPixels": 6512,
+        "foregroundRgbError": 11.175778050778051,
+        "contrastRatio": 0.9704611005788786
+      },
+      {
+        "frame": 2,
+        "meanRgbaError": 1.3964171006944444,
+        "foregroundPixels": 6392,
+        "foregroundRgbError": 12.78238423028786,
+        "contrastRatio": 0.9682842198232203
+      },
+      {
+        "frame": 3,
+        "meanRgbaError": 1.3876584201388888,
+        "foregroundPixels": 6616,
+        "foregroundRgbError": 11.745717452640065,
+        "contrastRatio": 0.9810797530749017
+      },
+      {
+        "frame": 4,
+        "meanRgbaError": 1.4113932291666667,
+        "foregroundPixels": 6600,
+        "foregroundRgbError": 12.091868686868686,
+        "contrastRatio": 0.982574801210659
+      },
+      {
+        "frame": 5,
+        "meanRgbaError": 1.4298556857638889,
+        "foregroundPixels": 6612,
+        "foregroundRgbError": 12.36993345432547,
+        "contrastRatio": 0.9814438161744867
+      }
+    ]
+  },
+  "persistence": {
+    "ok": true,
+    "resources": [
+      {
+        "id": "assets/cube.glb",
+        "kind": "model",
+        "mimeType": "model/gltf-binary",
+        "byteLength": 1780,
+        "sha256": "201692bc8fdddcd3b015e07a5bf2315db843cab47878aec53a10e6d033a8f21d",
+        "attachmentKey": "programmatic-sha256-201692bc8fdddcd3b015e07a5bf2315db843cab47878aec53a10e6d033a8f21d"
+      },
+      {
+        "id": "assets/neutral.hdr",
+        "kind": "environment",
+        "mimeType": "image/vnd.radiance",
+        "byteLength": 8239,
+        "sha256": "c0189db833bcd32f4d2b3c30309eff76fe009695741652fa710c136a2448ba56",
+        "attachmentKey": "programmatic-sha256-c0189db833bcd32f4d2b3c30309eff76fe009695741652fa710c136a2448ba56"
+      }
+    ],
+    "originalDocumentSha256": "32f6b08f9628dbb4ed80c736ab6707362afc4c81a985d8fd5485b237124c61b9",
+    "modifiedDocumentSha256": "ccb79d17f4dcb620566b172955a0b7d3a18f0684219f5638b0bfd0494ba63a9e",
+    "archivedRebuildEqual": true,
+    "invalidUpdateStatus": 409,
+    "restoredRevision": 3,
+    "scope": "real compile/rebuild + Agent persistence; no attached-editor undo/redo or GPU rendering in this test"
+  },
+  "artifacts": {
+    "browser": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/ascii-three/run-iaHrbR",
+    "persistence": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/ascii-three-persistence/run-iDhYy5"
+  },
+  "checks": {
+    "nativeAsciiGpuTests": 2,
+    "rawGlyphPixels": true,
+    "rawHalfAlpha": true,
+    "amountZeroIdentity": true,
+    "browserTypecheck": true,
+    "effectRegistryTests": 6,
+    "fullWasmGatesBeforeAndAfterCatalog": true
+  },
+  "limits": [
+    "Two earlier attempts hit the existing 15-second frame deadline; one complete 22-capture run passed without raising the deadline or retrying failed frames. Root cause and reliability follow-up remain open.",
+    "Final Rocut scene canvas clears opaque; layer transparency measured by independent black/white composites and cross-checked over dark/light backgrounds. Native GPU test separately asserts exact raw glyph alpha.",
+    "Real encoded sample is six frames, not a complete MV; no installed/Electron/other-GPU/MP4 or attached-editor undo-redo acceptance.",
+    "Character-cell alpha follows averaged source coverage, not an exact original silhouette.",
+    "Catalog-only WASM rebuild occurred after this browser run; original binary/source fingerprints are preserved above."
+  ],
+  "sourceFiles": [
+    {
+      "path": "rust/crates/effects/src/stylized_catalog.rs",
+      "sha256": "0a6c8825ec667c838674b6679f49bfb90f8679596948e36f4d1d6bd844e76106"
+    },
+    {
+      "path": "rust/crates/effects/tests/stylized_contract.rs",
+      "sha256": "2eff5148edaace051622a8a2608532677a6546af0ccf65bc46938130ab208eb6"
+    },
+    {
+      "path": "script/probe-html-frames.mjs",
+      "sha256": "d0a29aebd57f87ddb63df65f64731fa6dc4586a92b527dae804bda835526074b"
+    },
+    {
+      "path": "script/probe-three-scene.mjs",
+      "sha256": "7ae26de11a25ff1cac6e30b33d2d184d81163538f4e792f91f22fc694e52b11e"
+    },
+    {
+      "path": "rust/crates/effects/src/pipeline.rs",
+      "sha256": "a9e79c37fb6693639a395de6ceb6a9b55da6db5e67c1fc826e99125ab7a47130"
+    },
+    {
+      "path": "packages/editor-classic/src/effects/__tests__/stylized.test.ts",
+      "sha256": "afcf9cb0375c38a4de8defb1d45fe9a2e5a352866eaa5925c9340cf8a7ae9436"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/ascii.wgsl",
+      "sha256": "1ef0157bab08e2c9dfee0ea203a6518469a8690c73bc9a45ce35c21eef312554"
+    },
+    {
+      "path": "rust/crates/effects/tests/ascii_gpu.rs",
+      "sha256": "08475c4feebe5ea6bde578d9063ad8f61fe2dbcffa89bf9c19dc0a33744f377f"
+    },
+    {
+      "path": "script/fixtures/prepare-ascii-three-probe.ts",
+      "sha256": "db5846d43624b0d8f29013e5b64dd4b3854bc6f46a78a30ac1220e4a16bfb1c4"
+    },
+    {
+      "path": "script/fixtures/ascii-three-scene.ts",
+      "sha256": "05671a645f2ecd478c6098a641e432070b570c284d27ddfdc351819f94e99866"
+    },
+    {
+      "path": "script/fixtures/ascii-three-browser-probe.ts",
+      "sha256": "17b02f8250b0b2c86b81b256d32454c62dc5d6e5cc7cf60ed26926d0c7ce5237"
+    },
+    {
+      "path": "script/fixtures/ascii-three-browser-probe.html",
+      "sha256": "3b9fc69abc83ae5c7d58400d71e803b2067a4cf852bd9f267b606a7b8aaffca4"
+    },
+    {
+      "path": "script/fixtures/ascii-three-export.ts",
+      "sha256": "28d4d0436ea21566d3a353e42891aa6bfdcdc369b7248b6d89bd4544e5cdf8ab"
+    },
+    {
+      "path": "script/fixtures/ascii-three-probe.tsconfig.json",
+      "sha256": "8f75f0ae11a15b667bc9800b9cd1de8f4584520c6f3d144e1e76ff69b7433b85"
+    }
+  ]
+}

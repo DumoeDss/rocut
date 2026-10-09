@@ -1,9 +1,48 @@
 //! Shared validation for the agent-visible editing surface. Registries are supplied
 //! by the provider; rules are independent of a browser, CLI or React session.
 mod animation;
+mod effect_params;
 mod model;
+mod image_sequence;
+pub use image_sequence::{validate_image_sequence_manifest_json, validate_image_sequence_image_bytes};
+mod mv_audio;
+mod mv_font_metrics;
+mod mv_image_dimensions;
+pub use mv_image_dimensions::inspect_programmatic_image_bytes;
+pub use mv_audio::prepare_mv_audio_json;
+mod mv_recipe;
+pub use mv_recipe::mv_recipe_catalog_json;
+mod particle_surface;
+mod particle_surface_bridge;
+pub use particle_surface_bridge::sample_particle_surface_json;
+mod particle_transport_policy;
+pub use particle_transport_policy::particle_transport_policy_json;
+mod programmatic;
+mod programmatic_audio;
+pub use programmatic_audio::{
+    normalize_hyperframes_fx_chain_json,
+    resolve_hyperframes_audio_graph_json,
+    resolve_hyperframes_audio_discovery_json,
+    resolve_hyperframes_bus_fader_json,
+    apply_hyperframes_audio_track_gain_pcm, prepare_hyperframes_audio_dry_track_pcm,
+    resolve_hyperframes_audio_execution_plan_json,
+    mix_hyperframes_audio_bus_pcm, mix_hyperframes_audio_master_pcm,
+    resolve_hyperframes_audio_seek_json,
+    resolve_hyperframes_audio_observations_json,
+    mix_programmatic_audio_pcm, programmatic_audio_policy_json, resolve_native_audio_decode_json,
+    resolve_programmatic_audio_range_json, resolve_programmatic_audio_schedule_json,
+    resolve_programmatic_audio_source_json,
+    resolve_hyperframes_audio_frame_json,
+    resolve_remotion_audio_frame_json,
+};
+mod programmatic_build;
+mod programmatic_resources;
+pub use programmatic_resources::validate_programmatic_resources_json;
+pub use programmatic::resolve_programmatic_frame_json;
 mod scenes;
 pub use scenes::{plan_scene_mutation_json, validate_scene_state_json};
+mod video_export;
+pub use video_export::resolve_video_export_json;
 
 use bridge::export;
 use model::*;
@@ -74,6 +113,22 @@ fn validate(request: &Request) -> Vec<Issue> {
     let mut issues = Vec::new();
     let e = &request.editing;
     let kind = e.kind.as_str();
+    let programmatic = kind == "graphic" && e.definition_id.as_deref() == Some("programmatic");
+    if programmatic != e.programmatic.is_some() {
+        issues.push(Issue::new(
+            "editing.programmatic",
+            "Programmatic content requires graphic definitionId programmatic and a source",
+        ));
+    }
+    if let Some(source) = &e.programmatic {
+        issues.extend(source.validate());
+        if !source.contains_clip(request.trim_start, request.duration) {
+            issues.push(Issue::new(
+                "editing.programmatic",
+                "Clip exceeds programmatic source duration",
+            ));
+        }
+    }
     let lane = match kind {
         "video" | "image" => "video",
         "graphic" | "sticker" | "motion-text" => "graphic",
@@ -173,6 +228,9 @@ fn validate(request: &Request) -> Vec<Issue> {
         .cloned()
         .unwrap_or_default();
     if kind == "effect" {
+        effect_params::validate(
+            e.effect_type.as_deref().unwrap_or_default(), &e.params, "editing.params", &mut issues,
+        );
         if let Some(params) = e
             .effect_type
             .as_ref()
@@ -181,7 +239,7 @@ fn validate(request: &Request) -> Vec<Issue> {
             definitions.extend(params.clone());
             if !request.has_adjustment {
                 for param in params {
-                    if !e.params.contains_key(&param.key) {
+                    if param.required != Some(false) && !e.params.contains_key(&param.key) {
                         issues.push(Issue::new(
                             &format!("editing.params.{}", param.key),
                             "Required effect layer parameter missing",
@@ -221,6 +279,7 @@ fn validate(request: &Request) -> Vec<Issue> {
     let mut effect_ids = BTreeSet::new();
     for effect in &e.effects {
         let path = format!("editing.effects.{}", effect.id);
+        effect_params::validate(&effect.kind, &effect.params, &format!("{path}.params"), &mut issues);
         unique_id(&effect.id, &mut effect_ids, &path, &mut issues);
         match request.catalog.effects.get(&effect.kind) {
             None => issues.push(Issue::new(&path, "Unknown effect type")),
@@ -232,7 +291,7 @@ fn validate(request: &Request) -> Vec<Issue> {
                     &mut issues,
                 );
                 for param in params {
-                    if !effect.params.contains_key(&param.key) {
+                    if param.required != Some(false) && !effect.params.contains_key(&param.key) {
                         issues.push(Issue::new(
                             &format!("{path}.params.{}", param.key),
                             "Required effect parameter missing; use catalog defaults",

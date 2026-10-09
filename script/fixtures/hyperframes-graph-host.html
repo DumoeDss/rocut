@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<script src="gsap.js"></script>
+	</head>
+	<body>
+		<div
+			id="root"
+			data-composition-id="root"
+			data-start="0"
+			data-duration="0.32"
+			data-width="64"
+			data-height="64"
+		>
+			<div
+				id="marker"
+				style="width: 16px; height: 16px; background: #e94560"
+			></div>
+			<hf-audio-group
+				id="voice"
+				data-volume="0.5"
+				data-fx-chain='{"version":1,"nodes":[{"type":"gain","params":{"gain":-6}}]}'
+			></hf-audio-group>
+			<audio
+				id="a"
+				src="tone.wav"
+				data-audio-group="voice"
+				data-start="0"
+				data-duration="0.32"
+				data-track-index="0"
+				loop
+				data-fx-chain='{"version":1,"nodes":[{"type":"gain","params":{"gain":6}}]}'
+				data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":1},{"t":0.32,"v":1}]}]}'
+			></audio>
+			<audio
+				id="b"
+				src="tone.wav"
+				data-audio-group="voice"
+				data-start="0.08"
+				data-duration="0.16"
+				data-track-index="1"
+				data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0.5},{"t":0.16,"v":0.5}]}]}'
+			></audio>
+			<audio
+				id="muted-fallback"
+				src="tone.wav"
+				data-start="0"
+				data-duration="0.32"
+				data-track-index="2"
+				loop
+				muted
+				data-volume="0.75"
+			></audio>
+		</div>
+		<script>
+			window.__timelines = {
+				root: gsap
+					.timeline({ paused: true })
+					.to("#marker", { x: 32, duration: 0.32, ease: "none" }, 0),
+			};
+		</script>
+	</body>
+</html>

@@ -68,6 +68,7 @@ export class EditorCore {
 		this.project = new ProjectManager(this);
 		this.media = new MediaManager(this);
 		this.renderer = new RendererManager({
+			programmaticFrames: session.host.programmaticFrames,
 			editor: this,
 			resources: this.resources,
 			assetResolver: session.host.assets,

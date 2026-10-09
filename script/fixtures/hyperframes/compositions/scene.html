@@ -1,0 +1,13 @@
+<template>
+<div data-composition-id="scene" data-width="64" data-height="64">
+  <style>
+  [data-composition-id="scene"] { position:absolute; inset:0; background:transparent }
+  #red { position:absolute; top:0; width:16px; height:16px; background:rgba(255,0,0,.5) }
+  </style>
+  <div id="red"></div>
+  <div id="leaf" data-composition-id="leaf" data-composition-src="compositions/leaf.html" data-start="0.25" data-duration="0.5" data-track-index="1"></div>
+  <script>
+  window.__timelines.scene = gsap.timeline({paused:true}).to('#red', {x:32, duration:1, ease:'none'}, 0);
+  </script>
+</div>
+</template>

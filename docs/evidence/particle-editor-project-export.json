@@ -1,0 +1,273 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "static-glb-video-subset-accepted",
+	"ledger": {
+		"verified": 24,
+		"notAccepted": 11,
+		"particleObject": "V",
+		"liquid": "N"
+	},
+	"scope": "Static self-contained GLB surface particles, bounded base-color/nearest-base-level materials and deterministic scatter/hold/return. Real Chromium editor generic opacity/history/reload followed by the same saved project and 121 Electron v2 source captures feeding Rocut composition/encoding in an outer Chromium browser.",
+	"notFullFeatureParity": true,
+	"project": {
+		"originalC4Sha256": "96672b702d66ea305126147ecdb10fa21f773ea12ba8e77af383b41e2216fa36",
+		"uiProject": "C:\\tmps\\rocut-stylized-f6XU4z\\particle-editor-cTW0gv\\project",
+		"uiRevision": 7,
+		"opacity": 0.55,
+		"savedProjectSha256": "5acafbaf455280b8c23a840d310d57f237fe409d2080e6ccf0c2f2de16b48f9a",
+		"canvas": {
+			"width": 1920,
+			"height": 1080
+		},
+		"sourceSize": {
+			"width": 320,
+			"height": 240
+		},
+		"sourceFrames": 121,
+		"originalProjectAndEarlierFailedCopiesUnmodified": true,
+		"uiAndExportProjectStateSourceAttachmentsIdentical": true
+	},
+	"productionFix": {
+		"files": [
+			"packages/editor-classic/src/preview/hooks/use-transform-handles.ts",
+			"packages/editor-classic/src/preview/controllers/transform-handle-controller.ts"
+		],
+		"cause": "Render read the preceding committed scene through useCommittedRef; selection and bounds remained one commit behind.",
+		"change": "Use the current SceneReader only for render-time bounds; retain committed dependencies for event handlers.",
+		"regression": "packages/editor-classic/src/preview/hooks/__tests__/use-transform-handles.test.tsx",
+		"before": {
+			"tests": 3,
+			"failed": 3
+		},
+		"after": {
+			"tests": 3,
+			"passed": 3
+		},
+		"coverage": [
+			"select",
+			"clear selection",
+			"same selected ID with new bounds"
+		],
+		"rawEvidenceDirectory": "C:/tmps/rocut-stylized-f6XU4z/particle-editor-handoff-imoMXw"
+	},
+	"ui": {
+		"evidence": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-editor-cTW0gv/evidence.json",
+			"sha256": "9b0614292d23549acf197cb24f5752d6d8feae7e61dd3c971ee7f27f27756743"
+		},
+		"revisionSequence": [2, 3, 4, 5, 6, 7],
+		"historyRounds": 2,
+		"editedProperty": "Blending/Opacity0.85->0.55",
+		"particleSpecificParameterUi": false,
+		"randomAndReverseRevisitExactPngs": true,
+		"reloadAndHostReopenFullStateEqual": true,
+		"clearSelection": "Actual empty-corner click clears timeline selection and all transform handles.",
+		"consoleErrors": [
+			"Failed to load resource: the server responded with a status of 404 (Not Found)",
+			"Failed to load resource: the server responded with a status of 404 (Not Found)"
+		],
+		"externalRequests": [],
+		"backingReadback": "Transparent and unavailable; never used as authoritative reference.",
+		"hostExitCode": 0,
+		"hostKillAttempted": false,
+		"browserClosed": true,
+		"observedDirectChildren": 58,
+		"allObservedDirectChildrenClosed": true,
+		"childSignals": "Chromium SIGTERM and Bun sampler SIGKILL; not reported as exit0.",
+		"parentReview": "C:/tmps/rocut-stylized-f6XU4z/particle-editor-ui-parent-review.json"
+	},
+	"referenceCorrection": {
+		"originalFractionalUiHandoff": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-editor-cTW0gv/export-handoff.json",
+			"sha256": "9991d76ae5321170e6a457b4f89d9cf48499c705c558187103a55e39b6df6a5f"
+		},
+		"originalExportRoot": "C:/tmps/rocut-stylized-f6XU4z/particle-editor-export-G0UwXs",
+		"originalExportAcceptance": "failed and retained unchanged",
+		"originalRejectedEnergyRange": [0.8847336217474883, 0.8919687007473597],
+		"cause": "Playwright enclosing integer screenshot bounds included the production parent border RGB149/138/126 around the fractional canvas.",
+		"method": "Normal visible25% Preview zoom reapplied after each viewport resize. Predeclared1440px width and heights1000..1063, first DOM-only complete integer canvas selected; no video pixels consulted.",
+		"candidate": 29,
+		"selectedHeight": 1028,
+		"geometry": {
+			"bounds": {
+				"x": 481,
+				"y": 172,
+				"width": 478,
+				"height": 268
+			},
+			"devicePixelRatio": 1,
+			"viewport": {
+				"width": 1440,
+				"height": 1028
+			},
+			"backing": {
+				"width": 1920,
+				"height": 1080
+			},
+			"css": {
+				"transform": "none",
+				"objectFit": "fill",
+				"opacity": "1",
+				"borderLeftWidth": "0px",
+				"borderTopWidth": "0px",
+				"borderRightWidth": "0px",
+				"borderBottomWidth": "0px"
+			},
+			"selection": []
+		},
+		"handoff": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-editor-integer-handoff-20Alrs/export-handoff.json",
+			"sha256": "ce6dfbed40928ec990c51530f3bc9333ddc8834420c9715cba4a06cb2382b5f1"
+		},
+		"evidence": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-editor-integer-handoff-20Alrs/evidence.json",
+			"sha256": "f70f96aa8329b1064999f323d30ac5ca5bf85721409ff22e82e71bd45bdad5fe"
+		},
+		"newReferenceSource": "Actual visible full canvas screenshots of the identical saved project and frozen production editor.",
+		"noCropMaskShiftColorFitOrThresholdRelaxation": true,
+		"noProductionCssOrRendererChange": true,
+		"preparationFailure": {
+			"root": "C:/tmps/rocut-stylized-f6XU4z/particle-editor-integer-handoff-bMXrLM",
+			"reason": "Check incorrectly required unrelated current browser sources to equal the historical build, despite reusing the frozen editor artifact. Concurrent font-metrics-worker.ts change was not consumed by new Host; actual frozen editor and new Host inputs separately verified."
+		}
+	},
+	"video": {
+		"path": "C:/tmps/rocut-stylized-f6XU4z/particle-video-reverify-Qt0kiY/particle.webm",
+		"sha256": "556833f49da3930c5300f929890daba3a1475027307337afadb47fc6b1459451",
+		"codec": "vp9",
+		"width": 1920,
+		"height": 1080,
+		"frameRate": "30/1",
+		"frameCount": 121,
+		"durationSeconds": 4.033,
+		"allFramesIndependentlyDecoded": true,
+		"allTimestampsIndependentlyChecked": true,
+		"maximumTimestampErrorSeconds": 0.00033333333333351867,
+		"pixelComparedFrames": [0, 15, 30, 60, 75, 120],
+		"other115FramesPixelCertified": false,
+		"resampling": "FFmpeg bilinear downsample of decoded video to measured478x268 visible UI; never upscale or fit the reference.",
+		"limits": {
+			"wholeMeanRgb": 12,
+			"activeMeanRgb": 18,
+			"activity": "Any reference RGB channel>32",
+			"minimumActivePixels": 64,
+			"activeEnergyRatio": [0.94, 1.06]
+		},
+		"independentMetrics": [
+			{
+				"frame": 0,
+				"ticks": 0,
+				"meanRgbError": 0.5482602676991611,
+				"activeMeanRgbError": 4.224755546085186,
+				"activePixels": 14079,
+				"activeLumaRatio": 0.9758683595368346,
+				"actualMeanRgb": 6.841974749682549
+			},
+			{
+				"frame": 15,
+				"ticks": 60000,
+				"meanRgbError": 1.448299818897146,
+				"activeMeanRgbError": 8.471384165295301,
+				"activePixels": 18230,
+				"activeLumaRatio": 0.963319065781492,
+				"actualMeanRgb": 8.479563479672766
+			},
+			{
+				"frame": 30,
+				"ticks": 120000,
+				"meanRgbError": 2.3444519036616085,
+				"activeMeanRgbError": 11.131756500644379,
+				"activePixels": 21985,
+				"activeLumaRatio": 0.9544885889756616,
+				"actualMeanRgb": 9.9552629113845
+			},
+			{
+				"frame": 60,
+				"ticks": 240000,
+				"meanRgbError": 2.3405592331230873,
+				"activeMeanRgbError": 11.145932832992191,
+				"activePixels": 21985,
+				"activeLumaRatio": 0.9548599505136055,
+				"actualMeanRgb": 9.95244749058057
+			},
+			{
+				"frame": 75,
+				"ticks": 300000,
+				"meanRgbError": 1.4512453423260268,
+				"activeMeanRgbError": 8.484860120680198,
+				"activePixels": 18230,
+				"activeLumaRatio": 0.9635459677058363,
+				"actualMeanRgb": 8.48249859489165
+			},
+			{
+				"frame": 120,
+				"ticks": 480000,
+				"meanRgbError": 0.5450181102853932,
+				"activeMeanRgbError": 4.2023581220257125,
+				"activePixels": 14079,
+				"activeLumaRatio": 0.9759825178948897,
+				"actualMeanRgb": 6.8421464851474845
+			}
+		],
+		"reverification": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-video-reverify-Qt0kiY/evidence.json",
+			"sha256": "8dbd1c9401a9bef12ecbdf6195cd65dbc7fecd3f3fde34a911c3fda8b12b8a38"
+		},
+		"decodeEvidence": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-video-reverify-Qt0kiY/decode-ui-verification.json",
+			"sha256": "22c888f3998189fc12e98d7657a7244c5c5d25d76f9d6e66c87d3819bd154516"
+		},
+		"originalVideoReusedByteExactly": true,
+		"newRenderingForCorrection": false,
+		"originalFailedRunUnmodified": true
+	},
+	"native": {
+		"root": "C:/tmps/rocut-stylized-f6XU4z/particle-electron-v2-AhQcGp",
+		"sourceBackend": "elftia-electron-particle-session-v2",
+		"wasmSha256": "328a2a4313812c356f28d74f27cfeaa10cad3a933e2c4f3de5ded20d8d98c221",
+		"captures": 121,
+		"windowsOpened": 121,
+		"windowsClosed": 121,
+		"remainingWindows": 0,
+		"closeFailures": 0,
+		"supervisorExitCode": 0,
+		"forcedKill": false,
+		"exportHost": {
+			"spawned": true,
+			"closed": true,
+			"code": 0,
+			"signal": null,
+			"stopRequested": true,
+			"killAttempted": false,
+			"stdoutBytes": 0,
+			"stderrBytes": 0,
+			"errors": [],
+			"scope": "direct private Host process; no descendant inference",
+			"pid": 33364
+		},
+		"outerBrowserClosed": true,
+		"observedSamplerChildren": 121,
+		"allObservedSamplerChildrenClosed": true,
+		"tokenScan": {
+			"exactNativeTokens": 3,
+			"nativePublicFiles": 4,
+			"exportPublicFiles": 43,
+			"leaks": [],
+			"buffersCleared": true,
+			"scope": "Top-level public native/export text artifacts only; raw native stdout was not retained for this coordinator scan",
+			"excluded": "Private rendezvous/connection files, isolated profiles/cache/temp and binary media"
+		},
+		"parentReview": "C:/tmps/rocut-stylized-f6XU4z/particle-editor-full-export-parent-review.json",
+		"faultRecoveryEvidence": "particle-native-failure-recovery.json"
+	},
+	"acceptanceReview": "Independent plan-scope review accepts the explicitly bounded static GLB video subset after the corrected same-video comparison passes; image/SVG, all materials and mouse interactions are exclusions, not implied completed features. P8 installation remains separate.",
+	"notCovered": [
+		"Image/SVG shape inputs, dynamic/skinned/morphed/instanced models and full material ecosystem",
+		"Mouse spring/vortex interaction and particle-specific authoring UI/history",
+		"Installed Creator/Rocut plugin and whole Electron editor Export-button UI",
+		"GPU-process/device-loss injection, all GPUs or WebGPU portability",
+		"Audio, transparent-video alpha and performance",
+		"Complete runtime pack, clean install, release or shared application restart"
+	]
+}

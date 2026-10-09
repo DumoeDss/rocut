@@ -8,6 +8,7 @@ import { ImageNode } from "./nodes/image-node";
 import { TextNode } from "./nodes/text-node";
 import { StickerNode } from "./nodes/sticker-node";
 import { GraphicNode } from "./nodes/graphic-node";
+import { buildProgrammaticNode } from "./programmatic/build-node";
 import { ColorNode } from "./nodes/color-node";
 import { BlurBackgroundNode } from "./nodes/blur-background-node";
 import { EffectLayerNode } from "./nodes/effect-layer-node";
@@ -24,6 +25,7 @@ import {
 	readOpacityFromParams,
 } from "../../rendering";
 import type { AssetResolver } from "@opencut/editor-ports";
+import type { ProgrammaticFrameProvider } from "@opencut/editor-ports/host";
 import type { MotionTextFontRuntime } from "./motion-text/font-runtime";
 
 const PREVIEW_MAX_IMAGE_SIZE = 2048;
@@ -39,6 +41,7 @@ function getVisibleSortedElements({ track }: { track: TimelineTrack }) {
 }
 
 function buildTrackNodes({
+	programmaticFrames,
 	tracks,
 	mediaMap,
 	motionTextMap,
@@ -50,6 +53,7 @@ function buildTrackNodes({
 	assetResolver,
 }: {
 	tracks: TimelineTrack[];
+	programmaticFrames?: ProgrammaticFrameProvider;
 	mediaMap: Map<string, MediaAsset>;
 	motionTextMap: ReadonlyMap<string, MotionTextSequence>;
 	motionTextTimeMapper?: MotionTextTimeMapper;
@@ -166,6 +170,10 @@ function buildTrackNodes({
 			}
 
 			if (element.type === "graphic") {
+				if (element.definitionId === "programmatic" || element.programmatic) {
+					nodes.push(buildProgrammaticNode({ element, programmaticFrames }));
+					continue;
+				}
 				nodes.push(
 					new GraphicNode({
 						definitionId: element.definitionId,
@@ -265,6 +273,7 @@ function buildBlurBackgroundNodes({
 }
 
 export type BuildSceneParams = {
+	programmaticFrames?: ProgrammaticFrameProvider;
 	canvasSize: TCanvasSize;
 	tracks: SceneTracks;
 	mediaAssets: MediaAsset[];
@@ -280,6 +289,7 @@ export type BuildSceneParams = {
 };
 
 export function buildScene({
+	programmaticFrames,
 	canvasSize,
 	tracks,
 	mediaAssets,
@@ -308,6 +318,7 @@ export function buildScene({
 	}
 	for (const track of orderedTracksBottomToTop) {
 		const pictures = buildTrackNodes({
+			programmaticFrames,
 			tracks: [track],
 			mediaMap,
 			motionTextMap,

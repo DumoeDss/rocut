@@ -31,6 +31,12 @@ import {
 	waitForExportOperation,
 } from "./export-cancellation";
 import { resolveExportVideoOptions } from "./export-video-options";
+import { resolveExportVideoBitrate } from "./export-video-bitrate";
+import { cancelPendingRenderFrames } from "./cancel-tree";
+import {
+	assertRenderNotAborted,
+	isRenderCancelledError,
+} from "./compositor/render-request";
 
 type ExportParams = {
 	width: number;
@@ -71,6 +77,7 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 	private isCancelled = false;
 	private readonly cancellation = new AbortController();
 	private exportPromise: Promise<ArrayBuffer | null> | null = null;
+	private rootNode: RootNode | null = null;
 
 	constructor({
 		width,
@@ -105,6 +112,7 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 	cancel(): Promise<ArrayBuffer | null> {
 		this.isCancelled = true;
 		this.cancellation.abort();
+		cancelPendingRenderFrames(this.rootNode);
 		return this.exportPromise ?? Promise.resolve(null);
 	}
 
@@ -115,7 +123,23 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 		rootNode: RootNode;
 		range: ResolvedMediaTimeRange;
 	}): Promise<ArrayBuffer | null> {
-		this.exportPromise ??= this.runExport({ rootNode, range });
+		if (!this.exportPromise) {
+			this.rootNode = rootNode;
+			this.exportPromise = this.runExport({ rootNode, range })
+				.catch((error: unknown) => {
+					// Startup (including a queued compositor acquisition) precedes the
+					// output transaction, but still owns a request-scoped cancellation.
+					if (isRenderCancelledError(error)) {
+						this.emit("cancelled");
+						return null;
+					}
+					throw error;
+				})
+				.finally(() => {
+					cancelPendingRenderFrames(rootNode);
+					this.rootNode = null;
+				});
+		}
 		return this.exportPromise;
 	}
 
@@ -146,11 +170,21 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 			target: new BufferTarget(),
 		});
 
-		const outputCanvas = await this.renderer.getOutputCanvas();
+		const outputCanvas = await this.renderer.getOutputCanvas({
+			signal: this.cancellation.signal,
+		});
 		this.assertPublicationCurrent();
+		const codec = this.format === "webm" ? "vp9" : "avc";
+		const bitrate = resolveExportVideoBitrate({
+			codec,
+			quality: this.quality,
+			frameRate: fps,
+			width: outputCanvas.width,
+			height: outputCanvas.height,
+		});
 		const videoOptions = await resolveExportVideoOptions({
-			codec: this.format === "webm" ? "vp9" : "avc",
-			bitrate: qualityMap[this.quality],
+			codec,
+			bitrate,
 			width: outputCanvas.width,
 			height: outputCanvas.height,
 		});
@@ -177,6 +211,9 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 			audioSource = new AudioBufferSource({
 				codec: audioCodec,
 				bitrate: qualityMap[this.quality],
+				// Chromium's implicit 44.1k -> Opus resampler loses its flush tail
+				// (and adds onset latency). Feed its native 48k clock explicitly.
+				...(audioCodec === "opus" ? { transform: { sampleRate: 48000 } } : {}),
 			});
 			output.addAudioTrack(audioSource);
 		}
@@ -210,13 +247,20 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 				const outputTimeTicks = i * ticksPerFrame;
 				const timelineTimeTicks = range.startTime + outputTimeTicks;
 				const timeSeconds = mediaTimeToSeconds({ time: outputTimeTicks });
-				await this.renderer.renderAndCapture({
-					node: rootNode,
-					time: timelineTimeTicks,
-					capture: () =>
-						waitForExportOperation({
+				await waitForExportOperation({
+					signal: this.cancellation.signal,
+					// Cancellation can start output.cancel promptly, while the actual
+					// compositor transaction keeps owning the canvas until add settles.
+					operation: () =>
+						this.renderer.renderAndCapture({
+							node: rootNode,
+							time: timelineTimeTicks,
 							signal: this.cancellation.signal,
-							operation: () => videoSource.add(timeSeconds, 1 / fpsFloat),
+							capture: () => {
+								assertRenderNotAborted(this.cancellation.signal);
+								this.assertPublicationCurrent();
+								return videoSource.add(timeSeconds, 1 / fpsFloat);
+							},
 						}),
 				});
 
@@ -256,7 +300,10 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 					);
 				}
 			}
-			if (error instanceof ExportCancelledError) {
+			if (
+				error instanceof ExportCancelledError ||
+				isRenderCancelledError(error)
+			) {
 				this.emit("cancelled");
 				return null;
 			}
@@ -265,6 +312,7 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 	}
 
 	private assertPublicationCurrent(): void {
+		assertRenderNotAborted(this.cancellation.signal);
 		if (!this.publicationToken) return;
 		this.publicationGuard?.assertCurrent({ token: this.publicationToken });
 	}

@@ -8,6 +8,163 @@
  * The contract wires nothing. Commands keep committing exactly as they do today.
  * T1/T3 connect the real engine behind these types at the seam.
  */
+export { isProgrammaticResource } from "./programmatic-resources";
+export type { ProgrammaticBuild } from "./programmatic-build";
+export { encodeImageSequenceImageRequest } from "./image-sequence-image";
+export { IMAGE_SEQUENCE_RESOURCE_CAPABILITY } from "./image-sequence-capability";
+export type {
+	ImageSequenceManifest,
+	ImageSequenceManifestInput,
+	ImageSequenceManifestLimits,
+	ImageSequenceManifestValidation,
+	MvImageSequenceScene,
+	SequenceImage,
+	SequenceImageLimits,
+	ResolvedSequenceImage,
+} from "./image-sequence";
+export type {
+	MvRecipe,
+	MvRole,
+	MvScene,
+	MvSprite,
+	MvTransition,
+} from "./mv-recipe";
+export type { MvEffect } from "./mv-recipe-post";
+export type { MvPostAutomation } from "./mv-recipe-post-automation";
+export type { MvLightLeakPlan } from "./mv-light-leak";
+export type {
+	MvSpriteEntrance,
+	MvSpriteWave,
+	MvSpriteUnderlay,
+	MvSpriteGlow,
+} from "./mv-recipe-sprite";
+export type {
+	MvCompositionScene,
+	MvPanel,
+	MvTimePoint,
+} from "./mv-recipe-composition";
+export type { MvRecipePlan } from "./mv-recipe-plan";
+export type { MvTitleRiff, MvTitleRiffRecap, MvTitleRiffScene } from "./mv-title-riff";
+export type { MvTitleRiffPlan } from "./mv-title-riff-plan";
+export type {
+	MvEmber,
+	MvEmberScene,
+	MvEmberPalette,
+	MvEmberBeats,
+	MvEmberHud,
+	MvEmberBreathe,
+	MvEmberIgnite,
+	MvEmberCollapse,
+	MvEmberCollapseKey,
+} from "./mv-ember";
+export type {
+	MvKanjiSlamScene,
+	MvKanjiSlam,
+	MvKanjiSlamWind,
+	MvKanjiSlamSlot,
+	MvKanjiSlamReframe,
+} from "./mv-kanji-slam";
+export type {
+	MvEmberPlan,
+	MvEmberCommand,
+	MvEmberDraw,
+	MvEmberSurfaceDraw,
+	MvEmberRect,
+	MvEmberComposite,
+} from "./mv-ember-plan";
+export type {
+	MvDrawComposite,
+	MvDrawPaint,
+	MvDrawTextFill,
+} from "./mv-draw-paint";
+export type {
+	MvEmberPathStep,
+	MvEmberClip,
+	MvEmberDrawingSpace,
+} from "./mv-ember-path";
+export type {
+	MvConverge,
+	MvConvergePalette,
+	MvConvergeScene,
+} from "./mv-converge";
+export type {
+	MvConvergePlan,
+	MvConvergeCommand,
+	MvConvergePaint,
+	MvConvergeStyle,
+	MvConvergePathStep,
+	MvConvergeTransform,
+	MvConvergeTransformOp,
+	MvConvergeGradientStop,
+} from "./mv-converge-plan";
+export type { MvAsciiSweep, MvAsciiSweepPlan } from "./mv-ascii-sweep";
+export type {
+	MvTypeCard,
+	MvTypeCardQuiet,
+	MvTypeCardFlicker,
+	MvTypeCardScene,
+	MvTypeCardText,
+	MvTypeCardPart,
+	MvTypeCardLayout,
+} from "./mv-type-card";
+export type {
+	MvTypeCardPlan,
+	MvTypeCardTextPlan,
+	MvTypeCardRectPlan,
+	MvTypeCardGlowPlan,
+} from "./mv-type-card-plan";
+export type {
+	MvAfterimage,
+	MvAfterimageGlyph,
+	MvAfterimageText,
+	MvAfterimageScene,
+	MvAfterimageRasterId,
+	MvAfterimagePlan,
+} from "./mv-afterimage";
+export type { MvGrid, MvGridScene, MvGridPlan } from "./mv-grid";
+export type { MvShatter, MvShatterScene, MvShatterPlan } from "./mv-shatter";
+export type {
+	MvCloth,
+	MvClothEvent,
+	MvClothScene,
+	MvClothPlan,
+} from "./mv-cloth";
+export type {
+	MvHexFloat,
+	MvHexFloatScene,
+	MvHexFloatPlan,
+} from "./mv-hex-float";
+export type { MvBendTransition } from "./mv-bend";
+export type { MvMeshVertex, MvMeshFace, MvMeshImagePlanData } from "./mv-mesh";
+export type {
+	MvParticleScroll,
+	MvParticleScrollScene,
+	MvParticleScrollPlanData,
+	MvParticleScrollPlan,
+} from "./mv-particle-scroll";
+export type {
+	MvGeneratorScene,
+	MvGlyphRain,
+	MvParticleReveal,
+} from "./mv-recipe-generators";
+export type {
+	MvAudioBinding,
+	MvAudioSignal,
+	MvAudioChannel,
+	MvCameraAudio,
+	MvSpriteAudio,
+	MvPostAudio,
+} from "./mv-recipe-audio";
+export type {
+	ProgrammaticResource,
+	ProgrammaticResourceLimits,
+	ResolvedProgrammaticResource,
+} from "./programmatic-resources";
+export type {
+	ProgrammaticSource,
+	ProgrammaticFrameRequest,
+} from "./programmatic";
+export { isProgrammaticSource } from "./programmatic";
 export type {
 	// MediaTime
 	MediaTime,

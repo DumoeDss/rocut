@@ -247,6 +247,12 @@ pub(crate) fn unavailable_reason() -> String {
 
 #[wasm_bindgen(js_name = disposeGpu)]
 pub fn dispose_gpu() -> Result<(), JsValue> {
+    #[cfg(feature = "browser-readback-tests")]
+    if crate::effects_readback_state::ReadbackGuard::is_active() {
+        return Err(JsValue::from_str(
+            "Cannot dispose GPU while a diagnostic readback is pending.",
+        ));
+    }
     let handles = live_compositor_handles();
     if !handles.is_empty() {
         return Err(JsValue::from_str(&format!(

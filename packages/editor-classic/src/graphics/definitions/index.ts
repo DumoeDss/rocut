@@ -3,12 +3,14 @@ import { ellipseGraphicDefinition } from "./ellipse";
 import { polygonGraphicDefinition } from "./polygon";
 import { rectangleGraphicDefinition } from "./rectangle";
 import { starGraphicDefinition } from "./star";
+import { programmaticGraphicDefinition } from "./programmatic";
 
 const defaultGraphicDefinitions = [
 	rectangleGraphicDefinition,
 	ellipseGraphicDefinition,
 	polygonGraphicDefinition,
 	starGraphicDefinition,
+	programmaticGraphicDefinition,
 ];
 
 export function registerDefaultGraphics(): void {

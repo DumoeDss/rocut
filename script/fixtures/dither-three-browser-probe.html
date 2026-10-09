@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Dithered Three scene</title>
+	</head>
+	<body>
+		<script type="module">
+			import { runDitherThreeProbe } from "./dither-three-browser-probe.ts";
+			runDitherThreeProbe()
+				.then((result) => (globalThis.__ditherThreeResult = result))
+				.catch((error) => {
+					globalThis.__ditherThreeResult = {
+						error: String(error),
+						stack: error.stack,
+					};
+				});
+		</script>
+	</body>
+</html>

@@ -26,6 +26,7 @@ import type {
 	MigrationContext,
 	MigrationOutcome,
 	ProjectAttachment,
+	ProjectAttachmentHeader,
 	ProjectRecord,
 	ProjectStore,
 	ProjectStoreClearScope,
@@ -438,6 +439,26 @@ export class InMemoryProjectStore implements ProjectStore {
 						operation: "list-attachments",
 						scope: { kind: "project", projectId: args.projectId },
 					},
+				}),
+			);
+	}
+
+	async listAttachmentHeaders(args: {
+		projectId: ProjectId;
+		signal?: AbortSignal;
+	}): Promise<readonly ProjectAttachmentHeader[]> {
+		const scope = { kind: "project", projectId: args.projectId } as const;
+		throwIfAborted({
+			operation: "list-attachments",
+			scope,
+			signal: args.signal,
+		});
+		return [...(this.attachments.get(args.projectId)?.values() ?? [])]
+			.sort((a, b) => a.key.localeCompare(b.key))
+			.map(({ projectId, key, metadata }) =>
+				clonePayload({
+					value: { projectId, key, metadata },
+					failure: { operation: "list-attachments", scope },
 				}),
 			);
 	}

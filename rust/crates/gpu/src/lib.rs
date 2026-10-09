@@ -1,4 +1,8 @@
 mod context;
+mod surface_alpha;
+mod surface_presentation;
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod surface_presentation_tests;
 
 use thiserror::Error;
 
@@ -18,4 +22,6 @@ pub enum GpuError {
     CreateSurface(#[from] wgpu::CreateSurfaceError),
     #[error("The output surface does not support the required texture format")]
     UnsupportedSurfaceFormat,
+    #[error("The output surface has no supported explicit alpha mode for this target")]
+    UnsupportedSurfaceAlphaMode,
 }

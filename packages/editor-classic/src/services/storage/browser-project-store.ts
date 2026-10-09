@@ -3,6 +3,7 @@ import type {
 	MigrationContext,
 	MigrationOutcome,
 	ProjectAttachment,
+	ProjectAttachmentHeader,
 	ProjectRecord,
 	ProjectStore,
 	ProjectStoreClearScope,
@@ -516,6 +517,34 @@ export class BrowserProjectStore implements ProjectStore {
 		projectId: string;
 		signal?: AbortSignal;
 	}): Promise<readonly ProjectAttachment[]> {
+		return this.listAttachmentRecords({
+			...args,
+			read: (record) => this.readAttachmentBody(record),
+		});
+	}
+
+	async listAttachmentHeaders(args: {
+		projectId: string;
+		signal?: AbortSignal;
+	}): Promise<readonly ProjectAttachmentHeader[]> {
+		return this.listAttachmentRecords({
+			...args,
+			read: async ({ projectId, key, metadata }) =>
+				cloneBrowserValue({
+					value: { projectId, key, metadata },
+					operation: "list-attachments",
+					scope: { kind: "project", projectId },
+				}),
+		});
+	}
+
+	private async listAttachmentRecords<
+		Value extends ProjectAttachmentHeader,
+	>(args: {
+		projectId: string;
+		signal?: AbortSignal;
+		read: (record: DecodedStoredAttachment) => Promise<Value | null>;
+	}): Promise<readonly Value[]> {
 		const scope = { kind: "project", projectId: args.projectId } as const;
 		throwIfBrowserStoreAborted({
 			operation: "list-attachments",
@@ -574,7 +603,7 @@ export class BrowserProjectStore implements ProjectStore {
 					scope,
 					signal: args.signal,
 				});
-				const values: ProjectAttachment[] = [];
+				const values: Value[] = [];
 				for (const pair of pairs) {
 					const decoded = decodeStoredAttachmentPair({
 						projectId: args.projectId,
@@ -583,7 +612,7 @@ export class BrowserProjectStore implements ProjectStore {
 					if (!decoded) throwCorrupt({ operation: "list-attachments", scope });
 					if (decoded.kind === "tombstone") continue;
 					const attachment = await this.readAfterDispatch({
-						io: this.readAttachmentBody(decoded),
+						io: args.read(decoded),
 						operation: "list-attachments",
 						scope,
 						signal: args.signal,

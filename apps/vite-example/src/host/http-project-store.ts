@@ -2,6 +2,7 @@
 import type {
 	LibraryRecord,
 	ProjectAttachment,
+	ProjectAttachmentHeader,
 	ProjectId,
 	ProjectRecord,
 	ProjectStore,
@@ -138,11 +139,9 @@ export class HttpProjectStore implements ProjectStore {
 
 	async listAttachments(args: {
 		readonly projectId: ProjectId;
+		readonly signal?: AbortSignal;
 	}): Promise<readonly ProjectAttachment[]> {
-		const payload = (await this.requestJson(
-			"list-attachments",
-			"attachments",
-		)) as { key: string; metadata: unknown }[] | null;
+		const payload = await this.listAttachmentHeaders(args);
 		// The list endpoint returns keys and metadata only. The ProjectStore
 		// contract requires full bodies here (media hydration on reopen reads
 		// them straight from this list), so fetch each one through the same
@@ -150,10 +149,11 @@ export class HttpProjectStore implements ProjectStore {
 		// body would hand the editor 0-byte media files after a reload and
 		// every decode would fail on "unrecognizable format".
 		const attachments: ProjectAttachment[] = [];
-		for (const entry of payload ?? []) {
+		for (const entry of payload) {
 			const loaded = await this.loadAttachment({
 				projectId: args.projectId,
 				key: entry.key,
+				signal: args.signal,
 			});
 			if (loaded === null) continue;
 			attachments.push(loaded);
@@ -161,12 +161,64 @@ export class HttpProjectStore implements ProjectStore {
 		return attachments;
 	}
 
+	async listAttachmentHeaders(args: {
+		readonly projectId: ProjectId;
+		readonly signal?: AbortSignal;
+	}): Promise<readonly ProjectAttachmentHeader[]> {
+		try {
+			args.signal?.throwIfAborted();
+			const payload = await this.requestJson(
+				"list-attachments",
+				"attachments",
+				{
+					signal: args.signal,
+				},
+			);
+			args.signal?.throwIfAborted();
+			if (payload === null) return [];
+			if (
+				!Array.isArray(payload) ||
+				payload.some(
+					(entry) =>
+						typeof entry !== "object" ||
+						entry === null ||
+						typeof entry.key !== "string",
+				)
+			) {
+				throw new ProjectStoreError({
+					code: "corrupt",
+					operation: "list-attachments",
+					scope: { kind: "project", projectId: args.projectId },
+				});
+			}
+			return payload.map((entry) => ({
+				projectId: args.projectId,
+				key: entry.key,
+				metadata: entry.metadata,
+			}));
+		} catch (error) {
+			throw new ProjectStoreError({
+				code: args.signal?.aborted
+					? "aborted"
+					: error instanceof ProjectStoreError
+						? error.code
+						: error instanceof SyntaxError
+							? "corrupt"
+							: "unavailable",
+				operation: "list-attachments",
+				scope: { kind: "project", projectId: args.projectId },
+			});
+		}
+	}
+
 	async loadAttachment(args: {
 		readonly projectId: ProjectId;
 		readonly key: string;
+		readonly signal?: AbortSignal;
 	}): Promise<ProjectAttachment | null> {
 		const response = await this.fetchImpl(
 			this.url(`attachment/${encodeURIComponent(args.key)}`),
+			{ signal: args.signal },
 		);
 		if (response.status === 404) return null;
 		if (!response.ok) {

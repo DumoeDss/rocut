@@ -1,0 +1,397 @@
+{
+  "version": 1,
+  "date": "2026-10-07",
+  "status": "isolated-fixture-verified",
+  "implementation": "Native Rust/wgpu mono-dither after a resource-backed Three frame source; Creator ditheredThree template",
+  "parameters": {
+    "amount": {
+      "min": 0,
+      "max": 1,
+      "default": 1
+    },
+    "threshold": {
+      "min": 0,
+      "max": 1,
+      "default": 0.5
+    },
+    "cellSize": {
+      "min": 1,
+      "max": 32,
+      "integer": true,
+      "default": 2
+    },
+    "spread": {
+      "min": 0,
+      "max": 1,
+      "default": 1
+    },
+    "seed": {
+      "min": 0,
+      "max": 65535,
+      "integer": true,
+      "default": 1,
+      "keyframable": false
+    }
+  },
+  "semantics": [
+    "4x4 ordered Bayer threshold of weighted encoded SDR RGB, not linear-light luminance",
+    "Full amount uses one shared black/white decision for RGB and retains input alpha",
+    "Zero amount is exact identity; partial amount blends the input color",
+    "Spread zero is a hard threshold; threshold endpoints preserve pure black and white",
+    "Seed translates the static pattern with 16 repeating phase combinations; it does not animate with time"
+  ],
+  "verification": {
+    "nativeGpuTests": 2,
+    "stylizedContractTests": 4,
+    "existingAsciiGpuTests": 2,
+    "existingStylizedGpuTests": 1,
+    "bunTests": 7,
+    "bunAssertions": 86,
+    "scopedTypecheck": true,
+    "scopedLint": true,
+    "wasmGates": {
+      "passed": true,
+      "publicJsExports": 78,
+      "stableBinaryExports": 95,
+      "trampolines": 3,
+      "imports": 612,
+      "lowLevelDeclarationLines": 100,
+      "binaryBytes": 6761766
+    },
+    "skillValidation": true,
+    "realAgentCopyTest": true
+  },
+  "browser": {
+    "ok": true,
+    "captures": 22,
+    "browser": "154.0.8037.98",
+    "backend": "private-chromium",
+    "gpu": "SwiftShader",
+    "alpha": {
+      "transparent": 202994,
+      "partial": 4474,
+      "opaqueBlack": 8211,
+      "opaqueWhite": 14721,
+      "blendError": 0.4549019607843263
+    },
+    "checks": [
+      "actual Creator ditheredThree template",
+      "real offline GLB/HDR",
+      "native one-bit foreground and source alpha",
+      "zero identity, threshold/cell/spread/seed",
+      "seek/reverse/trim",
+      "camera/material/model rebuild",
+      "preview/export equality",
+      "real WebM encode/decode",
+      "no leaked iframe"
+    ],
+    "externalRequests": [],
+    "video": {
+      "width": 640,
+      "height": 360,
+      "fps": {
+        "numerator": 30,
+        "denominator": 1
+      },
+      "frames": 6,
+      "quality": "very_high",
+      "errors": [
+        0.6155501302083334,
+        0.9553537326388889,
+        1.154611545138889,
+        1.2159700520833334,
+        1.2983062065972222,
+        1.337765842013889
+      ],
+      "errorLimit": 10,
+      "detail": [
+        {
+          "pixels": 28259,
+          "error": 1.6016844191231112,
+          "contrastRatio": 0.990527771808224
+        },
+        {
+          "pixels": 28356,
+          "error": 4.669452673155593,
+          "contrastRatio": 0.977988418567356
+        },
+        {
+          "pixels": 28439,
+          "error": 6.579333544311216,
+          "contrastRatio": 0.9717598164182045
+        },
+        {
+          "pixels": 28524,
+          "error": 7.121909035665872,
+          "contrastRatio": 0.9677461377816509
+        },
+        {
+          "pixels": 28604,
+          "error": 7.962429497040041,
+          "contrastRatio": 0.9631304073939825
+        },
+        {
+          "pixels": 28661,
+          "error": 8.389460707349127,
+          "contrastRatio": 0.9611105845935336
+        }
+      ],
+      "motion": 3.487523871527778,
+      "encodedBytes": 22758
+    },
+    "templateSources": [
+      {
+        "file": "templates.mjs",
+        "sha256": "026cef7aef7558bc0b69e423ca9972b10167d0c5d53b1e0aa88153c694fff436"
+      },
+      {
+        "file": "scene.ts",
+        "sha256": "17793e3367cba0453a6817a86674b345075e641dcfb638746c7f41095b2217aa"
+      }
+    ]
+  },
+  "independentDecode": {
+    "ok": true,
+    "decoder": "FFmpeg/FFprobe 6.0",
+    "width": 640,
+    "height": 360,
+    "fps": "30/1",
+    "frames": 6,
+    "durationSeconds": 0.2,
+    "codec": "vp9",
+    "videoSha256": "d117c8afff789c4999e0295f9a5a2990008bd7cacf60a96d2c8d768249f472c9",
+    "expectedSha256": "297714328f8e8d06a6e06f7c53c3cea31900ea524e686ef8dacc128c15868e29",
+    "minimumBitRetention": 0.75,
+    "metrics": [
+      {
+        "frame": 0,
+        "meanRgbaError": 0.8389583333333334,
+        "foregroundPixels": 28259,
+        "foregroundError": 1.6715618622975572,
+        "contrastRatio": 0.9899745505035762,
+        "bits": {
+          "black": {
+            "count": 8881,
+            "retained": 8881
+          },
+          "white": {
+            "count": 15125,
+            "retained": 15125
+          }
+        }
+      },
+      {
+        "frame": 1,
+        "meanRgbaError": 1.1781510416666667,
+        "foregroundPixels": 28356,
+        "foregroundError": 4.746038463346969,
+        "contrastRatio": 0.9772554113206114,
+        "bits": {
+          "black": {
+            "count": 8963,
+            "retained": 8693
+          },
+          "white": {
+            "count": 15287,
+            "retained": 14895
+          }
+        }
+      },
+      {
+        "frame": 2,
+        "meanRgbaError": 1.3776931423611112,
+        "foregroundPixels": 28439,
+        "foregroundError": 6.661169520728577,
+        "contrastRatio": 0.9708412897797941,
+        "bits": {
+          "black": {
+            "count": 8989,
+            "retained": 8415
+          },
+          "white": {
+            "count": 15490,
+            "retained": 14811
+          }
+        }
+      },
+      {
+        "frame": 3,
+        "meanRgbaError": 1.4389431423611112,
+        "foregroundPixels": 28524,
+        "foregroundError": 7.204704809984574,
+        "contrastRatio": 0.9667979088635413,
+        "bits": {
+          "black": {
+            "count": 9044,
+            "retained": 8448
+          },
+          "white": {
+            "count": 15640,
+            "retained": 14849
+          }
+        }
+      },
+      {
+        "frame": 4,
+        "meanRgbaError": 1.5213324652777778,
+        "foregroundPixels": 28604,
+        "foregroundError": 8.04688155502727,
+        "contrastRatio": 0.9621082872486909,
+        "bits": {
+          "black": {
+            "count": 9094,
+            "retained": 8395
+          },
+          "white": {
+            "count": 15766,
+            "retained": 14854
+          }
+        }
+      },
+      {
+        "frame": 5,
+        "meanRgbaError": 1.5608365885416666,
+        "foregroundPixels": 28661,
+        "foregroundError": 8.477164090576045,
+        "contrastRatio": 0.9600494293278757,
+        "bits": {
+          "black": {
+            "count": 9108,
+            "retained": 8342
+          },
+          "white": {
+            "count": 15905,
+            "retained": 14921
+          }
+        }
+      }
+    ]
+  },
+  "persistence": {
+    "ok": true,
+    "templates": [
+      "retroMv",
+      "particleLogo",
+      "asciiThree",
+      "ditheredThree"
+    ],
+    "originalInputsUnavailable": true,
+    "restarted": true,
+    "archiveRebuilt": true,
+    "sources": [
+      {
+        "file": "templates.mjs",
+        "sha256": "a79a9a23752fb60c5b089e6b1405f2ee5d04126337765cf7a15eaefcaa434128"
+      },
+      {
+        "file": "scene.ts",
+        "sha256": "52afe6cb7ab401dd0045aa72f12914a1066e1e34e657d71e815e9e8f50896e68"
+      }
+    ],
+    "compiledDocumentSha256": "cbb0bff52245493038d194b1ced34df3c3602dfd097e3b4ac886f46a922b50f2",
+    "scope": "Rust frame validation, real Three compile, transaction, reopen and archived rebuild; template-specific visual/audio/UI E2E pending"
+  },
+  "provenance": {
+    "sourceCommit": "e791be658f63384b6b7c064c1a92dd1912246ada",
+    "sourceWorktreeClean": false,
+    "sourceManifestSha256": "edfa991e10565005cceea4b112833287f6353b25c0e14205566586588604cf4f",
+    "wasmSha256": "012ae415aa5d3b075fcfa14381cf03ff84eb1c96bebe5fb128afe4d1f6c67dbe",
+    "toolchainLockSha256": "a5f51282b3cd63e4e00f887f5545f8fcb61009a82d0d66616938d03ddc89f88f"
+  },
+  "artifacts": {
+    "browser": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/dither-three/run-lc26EM",
+    "persistenceBeforeCommentCleanup": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/creator-stylized/run-gpNwiA",
+    "persistenceAfterCommentCleanup": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/creator-stylized/run-b7OKEc"
+  },
+  "snapshotNotes": [
+    "Browser/GPU/WASM results refer to their recorded tested snapshot. Later production-code edits changed comments only; code bodies were compared unchanged. No browser rerun or WASM rebuild was performed for these wording-only changes.",
+    "The template persistence probe was rerun after comment changes. All four templates reopen and rebuild; compiled-document SHA-256 is unchanged.",
+    "Fixture title/diagnostic text and GLB generator metadata changed after the recorded browser run; raw captured artifacts and their hashes are retained."
+  ],
+  "commentOnlyProductionFiles": [
+    {
+      "path": "creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/templates.mjs",
+      "beforeSha256": "026cef7aef7558bc0b69e423ca9972b10167d0c5d53b1e0aa88153c694fff436",
+      "afterSha256": "a79a9a23752fb60c5b089e6b1405f2ee5d04126337765cf7a15eaefcaa434128"
+    },
+    {
+      "path": "creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/scene.ts",
+      "beforeSha256": "17793e3367cba0453a6817a86674b345075e641dcfb638746c7f41095b2217aa",
+      "afterSha256": "52afe6cb7ab401dd0045aa72f12914a1066e1e34e657d71e815e9e8f50896e68"
+    },
+    {
+      "path": "creator-studio/resources/agent/skills/motion-design/assets/remotion-scaffold/src/compositions/ClaudeTyper.tsx",
+      "beforeSha256": "db69b06458bd06d2c20839abfaf965c1c87ee6f00d1fa9bf4d497730495dcab9",
+      "afterSha256": "7210536f8497371c4d7445f74d26e02bf0132d790348e28f8be24367589c50f4"
+    },
+    {
+      "path": "rocut/rust/crates/effects/src/stylized_catalog.rs",
+      "beforeSha256": "6b049b145a1919a5f4546fe2ecf745c934ea4eb1da0fb15c4d4d1026568855b5",
+      "afterSha256": "5f111dcbc77e0e19925c9262bfbb4c837ebe210d926db2e31f705f2fe6ef6d1f"
+    },
+    {
+      "path": "rocut/rust/crates/effects/src/shaders/ascii.wgsl",
+      "beforeSha256": "1ef0157bab08e2c9dfee0ea203a6518469a8690c73bc9a45ce35c21eef312554",
+      "afterSha256": "1ea9c197c15dd8e29450e465ea7593a11152523c7b23554483178f41b425b2cb"
+    },
+    {
+      "path": "rocut/rust/crates/effects/src/shaders/glitch.wgsl",
+      "beforeSha256": "5825ce48cfa471d4e264f7d85fab58a6be7078c9248cc7dbaf5b15643860eb41",
+      "afterSha256": "091f31973c9baaf9f84f6a18e644deeb9839ea29de71afb967bdf210e95c8adb"
+    },
+    {
+      "path": "rocut/rust/crates/effects/src/shaders/vhs.wgsl",
+      "beforeSha256": "8e4eb9913d9f6f86328f8617d2998349759092c3740324992188bc73b3054ed2",
+      "afterSha256": "b08d195fe345acacafb59597891e90f6fde8ce1c48206e47ebab62535da6c512"
+    },
+    {
+      "path": "rocut/rust/crates/effects/src/shaders/mono_dither.wgsl",
+      "beforeSha256": "423acb168af822706972b6d7ad00b9a0ddd66de2b82174c0307001261cd023ff",
+      "afterSha256": "e40f47c07c52de64f997308ac9a7555635d9aa80520a67df228918a697dc9576"
+    },
+    {
+      "path": "rocut/rust/crates/effects/src/shaders/retro_dither.wgsl",
+      "beforeSha256": "69d75e05731b0d462834e36342100181691af11fbbbf8a3dc77f89829ab1282f",
+      "afterSha256": "e5e9724468c1c62eb049eb98bd39c42d5fa00f61212ca31024acd19596f867e7"
+    },
+    {
+      "path": "rocut/rust/crates/editor-api/src/mv_recipe/generators.rs",
+      "beforeSha256": "060ca291942a3266d466cc14043c021c9853f4ce1eaee7dd7d83209f4722eecf",
+      "afterSha256": "0464a2ae08cc9f50539804293f810e66689914fd46f85a18ab7defe059c6121b"
+    },
+    {
+      "path": "rocut/rust/crates/editor-api/src/mv_recipe/transition_peel.rs",
+      "beforeSha256": "4f057bda460ae53d327dd5fbf64d140354ee007452bd0eba20c9cd841903ecdd",
+      "afterSha256": "91f3beeacee317795a510e1b6802e795c4e9d1a6f7fbe8a4699e7ebcdaf46e85"
+    },
+    {
+      "path": "rocut/rust/crates/editor-api/src/mv_recipe/transition_model.rs",
+      "beforeSha256": "684bb01b30231b2744ec8807ce12968b38deb6099a63f60d1ac5d7aa938a2508",
+      "afterSha256": "916aca52f8128170989a97e6a6b224d3bf917502bbc5abff9854f62c9f549cbd"
+    },
+    {
+      "path": "rocut/rust/crates/editor-api/src/mv_recipe/catalog.rs",
+      "beforeSha256": "505c20658fb4e049bea1b3bbf1487ca347174c2f50f0ea3a71640c162cd60076",
+      "afterSha256": "ad5358176bd089c32354810ba4b5e59b1852241b06371019865bf3bc0b9ce477"
+    },
+    {
+      "path": "rocut/packages/editor-classic/src/services/renderer/programmatic/mv-generator-renderer.ts",
+      "beforeSha256": "92ac45cb6846d492946c98779cb52a6ea76139aa172b2d2f5ee19792312ef647",
+      "afterSha256": "ea12635fab010ef9465d095cde67c7bbde821174fcaf25c1f43bd26a267e98e2"
+    },
+    {
+      "path": "rocut/packages/editor-classic/src/services/renderer/programmatic/mv-surface-renderer.ts",
+      "beforeSha256": "c28c7022234aaf08e88e40e470ee262d2cad1be54413c33cc11019e8772a8746",
+      "afterSha256": "244045d35528beddef7a04b2e04fe1396997fad21747f443cec66fb33966fa74"
+    }
+  ],
+  "limits": [
+    "The Dithered Object row covers a self-contained GLB scene plus native effect, not arbitrary SVG/image geometry, external glTF dependencies or full interactive equivalence.",
+    "Browser fixture uses real Creator template source, GLB/HDR and Rocut export; it is not installed Creator UI or Electron acceptance.",
+    "The encoded sample is six video frames without audio; the prior ten-second lyric/audio fusion sample did not include mono-dither.",
+    "Layer alpha is tested; final compositor is opaque. Transparent-master export is not verified.",
+    "The new template has persistence/rebuild coverage, but no dedicated attached-editor undo/redo or full-MV acceptance.",
+    "Earlier intermittent 15-second ASCII capture timeout remains unresolved. This passing run does not establish reliability across GPUs or hosts.",
+    "No shared dependency installation, release, commit, push or installed-plugin update was performed."
+  ]
+}

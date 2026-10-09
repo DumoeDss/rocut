@@ -113,7 +113,15 @@ pub fn validate(request: &Request, definitions: &[Param], issues: &mut Vec<Issue
                     .effects
                     .iter()
                     .find(|effect| effect.id == id)
-                    .and_then(|effect| request.catalog.effects.get(&effect.kind))
+                    .and_then(|effect| {
+                        if !effect.params.contains_key(key) {
+                            issues.push(Issue::new(
+                                &path,
+                                "Animated effect parameter requires a static fallback",
+                            ));
+                        }
+                        request.catalog.effects.get(&effect.kind)
+                    })
                     .and_then(|params| params.iter().find(|param| param.key == key))
             })
         } else if let Some(key) = property.strip_prefix("params.") {
@@ -154,6 +162,7 @@ pub fn validate(request: &Request, definitions: &[Param], issues: &mut Vec<Issue
                     max: Some(1.0),
                     display_multiplier: None,
                     keyframable: Some(true),
+                    required: None,
                     options: vec![],
                 };
                 channel(value, &scalar, &format!("{path}.{component}"), issues);

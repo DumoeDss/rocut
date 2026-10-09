@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { isProgrammaticSource } from "@opencut/editor-contracts";
 import { request } from "./host-request";
 import type { ResolvedTarget } from "./target-registry";
 
@@ -37,6 +38,71 @@ export async function runAgentCli({
 					"\t",
 				) + "\n",
 			);
+			return;
+		}
+		case "resource": {
+			if (
+				args.positional[0] !== "import" ||
+				!args.positional[1] ||
+				args.positional.length !== 2
+			)
+				throw new Error("usage: rocut resource import <spec.json>");
+			const spec = JSON.parse(
+				await readFile(resolve(args.positional[1]), "utf8"),
+			);
+			const result = await request(
+				resolved.secret,
+				"POST",
+				"programmatic/resources/import",
+				spec,
+			);
+			process.stdout.write(JSON.stringify(result, null, "\t") + "\n");
+			return;
+		}
+		case "programmatic": {
+			const [action, file] = args.positional;
+			if (
+				![
+					"compile",
+					"rebuild",
+					"revise",
+					"audio-import",
+					"sequence-import",
+					"sequence-restore",
+				].includes(action) ||
+				!file ||
+				args.positional.length !== 2
+			)
+				throw Error(
+					"usage: rocut programmatic compile|rebuild|revise|audio-import|sequence-import|sequence-restore <spec.json>",
+				);
+			const input = JSON.parse(
+				new TextDecoder("utf-8", { fatal: true }).decode(
+					await readFile(resolve(file)),
+				),
+			);
+			const route =
+				action === "audio-import"
+					? "programmatic/resources/import-audio"
+					: action === "sequence-import"
+						? "programmatic/resources/import-image-sequence"
+						: action === "sequence-restore"
+							? "programmatic/resources/restore-image-sequence-source"
+							: `programmatic/build/${action}`;
+			const result = await request(resolved.secret, "POST", route, input);
+			if (
+				action === "revise" &&
+				(!result ||
+					typeof result !== "object" ||
+					Array.isArray(result) ||
+					Object.keys(result).length !== 2 ||
+					!("source" in result) ||
+					!isProgrammaticSource(result.source) ||
+					!("reusedDocument" in result) ||
+					typeof result.reusedDocument !== "boolean")
+			)
+				throw Error("Invalid programmatic build revision response");
+			process.stdout.write(JSON.stringify(result, null, "\t") + "\n");
 			return;
 		}
 		case "editing": {

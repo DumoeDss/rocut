@@ -143,12 +143,12 @@ describe("target reap (task 3.3)", () => {
 			expect(out).toContain("pre-boot: dead (pre-boot) — removed");
 			expect(out).toContain("squatter: dead (foreign-id) — removed");
 			expect(out).toContain("unverified: unverified");
-			expect(out).toContain(`pid ${process.pid} alive but identity inconclusive`);
+			expect(out).toContain(
+				`pid ${process.pid} alive but identity inconclusive`,
+			);
 			expect(out).toContain(`${host.targetId}: live`);
 			const remaining = (await registry.list()).map((entry) => entry.id);
-			expect(remaining.sort()).toEqual(
-				[host.targetId, "unverified"].sort(),
-			);
+			expect(remaining.sort()).toEqual([host.targetId, "unverified"].sort());
 		} finally {
 			await host.close();
 		}
@@ -162,7 +162,10 @@ describe("target reap (task 3.3)", () => {
 			projectPath: "/nowhere/dead-pid",
 			startedAt: Date.now(),
 		});
-		const before = await readFile(path.join(targetsRoot, "targets.json"), "utf8");
+		const before = await readFile(
+			path.join(targetsRoot, "targets.json"),
+			"utf8",
+		);
 		const out = await captureStdout(() =>
 			runCli(["target", "reap", "--targets-root", targetsRoot, "--dry-run"]),
 		);
@@ -305,6 +308,9 @@ describe("usage and listing surfaces (task 3.6)", () => {
 		expect(usage).toContain("motion-text create <spec.json>");
 		expect(usage).toContain("motion-text mutate <sequence-id>");
 		expect(usage).toContain("motion-text vary <sequence-id>");
+		expect(usage).toContain("programmatic sequence-import <spec.json>");
+		expect(usage).toContain("programmatic sequence-restore <spec.json>");
+		expect(usage).toContain("programmatic revise <spec.json>");
 		expect(usage).not.toContain("--mode");
 	});
 	test("target list shows lastActive only for entries that have one", async () => {

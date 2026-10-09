@@ -8,6 +8,7 @@ import { BlurBackgroundNode } from "../nodes/blur-background-node";
 import { ColorNode } from "../nodes/color-node";
 import { EffectLayerNode } from "../nodes/effect-layer-node";
 import { GraphicNode } from "../nodes/graphic-node";
+import { ProgrammaticNode } from "../nodes/programmatic-node";
 import { ImageNode } from "../nodes/image-node";
 import { RootNode } from "../nodes/root-node";
 import { TransitionTrackNode } from "../nodes/transition-track-node";
@@ -195,7 +196,7 @@ async function collectNode({
 		node instanceof VideoNode ||
 		node instanceof ImageNode ||
 		node instanceof StickerNode ||
-		node instanceof GraphicNode
+		node instanceof GraphicNode || node instanceof ProgrammaticNode
 	) {
 		await collectVisualSourceNode({
 			node,
@@ -282,7 +283,7 @@ async function collectVisualSourceNode({
 	items,
 	textures,
 }: {
-	node: VideoNode | ImageNode | StickerNode | GraphicNode;
+	node: VideoNode | ImageNode | StickerNode | GraphicNode | ProgrammaticNode;
 	renderer: RendererDimensions;
 	path: string;
 	items: FrameItemDescriptor[];
@@ -448,7 +449,7 @@ function buildMaskArtifacts({
 	transform,
 	textures,
 }: {
-	node: VideoNode | ImageNode | StickerNode | GraphicNode;
+	node: VideoNode | ImageNode | StickerNode | GraphicNode | ProgrammaticNode;
 	renderer: RendererDimensions;
 	path: string;
 	transform: QuadTransformDescriptor;

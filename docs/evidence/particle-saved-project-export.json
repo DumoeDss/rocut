@@ -1,0 +1,675 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "saved-project-semantics-bounded-range-video-verified-not-editor-or-full-duration",
+	"ledger": {
+		"verified": 23,
+		"notAccepted": 12,
+		"particleObject": "N"
+	},
+	"scope": "Saved-project semantics bounded-range exports only, six frames per run. Neither complete 121-frame motion nor attached-editor UI nor audio is certified here.",
+	"productionPath": "FileProjectStore record -> production decodeProject -> unchanged active SceneTracks and saved project canvas/clip parameters -> buildScene/CanvasRenderer/WasmCompositor/SceneExporter. Real Electron v2 supplies particle frames; an outer Playwright Chromium hosts Rocut composition/encoding.",
+	"wasmBoundary": "Frozen private C3 Rust/WASM 328a2a4313812c356f28d74f27cfeaa10cad3a933e2c4f3de5ded20d8d98c221; shared generated dependencies and installed application not replaced.",
+	"limits": {
+		"meanRgbError": 12,
+		"activeMeanRgbError": 18,
+		"activeChannelThreshold": 32,
+		"activeLumaRatioMinimum": 0.94,
+		"activeLumaRatioMaximum": 1.06,
+		"minimumActivePixels": 64,
+		"blankMeanRgbMaximum": 0.5,
+		"timestampToleranceSeconds": 0.001,
+		"negativeMinimumActiveMeanRgbError": 3,
+		"opacityCompositeMeanErrorMaximum": 2,
+		"opacityCompositeMaximumError": 4
+	},
+	"mask": "Fixed positive saved-project reference pixels with any RGB > 32, reused for positive and wrong-reference comparisons. At least64 active pixels; no dynamic edge exclusion. Blank timeline frame uses independent meanRGB<=0.5.",
+	"opacityRule": "At the same source pose over opaque black, saved0.85 reference RGB is compared with0.85*opacity1 RGB; maximum error<=4 and mean<=2 on the fixed mask. The broad video MAE gate alone is insufficient to reject this opacity counterexample, so fixed energy-ratio limits [0.94,1.06] also apply.",
+	"runs": [
+		{
+			"root": "C:/tmps/rocut-stylized-f6XU4z/particle-project-export-1i61Mh",
+			"evidenceSha256": "58d9d3b859e7abdddd84c4980fed5fd45e579c4fb26eed8bdcfe85b88162a93f",
+			"variant": "original",
+			"dimensions": [1920, 1080],
+			"frameRate": {
+				"numerator": 30,
+				"denominator": 1
+			},
+			"frameCount": 6,
+			"exportedTimelineRange": {
+				"startTime": 0,
+				"endTime": 24000,
+				"duration": 24000
+			},
+			"unexportedTimelineIntervals": [
+				{
+					"startTime": 24000,
+					"endTime": 484000
+				}
+			],
+			"entire121FrameSourceExported": false,
+			"projectSha256": "96672b702d66ea305126147ecdb10fa21f773ea12ba8e77af383b41e2216fa36",
+			"savedClipSemantics": {
+				"opacity": 0.85,
+				"startTime": 0,
+				"duration": 484000,
+				"trimStart": 0,
+				"trimEnd": 0
+			},
+			"outputs": [
+				{
+					"path": "particle.webm",
+					"bytes": 127061,
+					"sha256": "2a71ff9bd11a4975a8c1a75209601886a7b1f90d5e3008b73048cf44864d020d"
+				},
+				{
+					"path": "decoded.rgba",
+					"bytes": 49766400,
+					"sha256": "38546cee97dc1c4a69bf942ff16bef9fe8f7b96265c859d93834b7816713a362"
+				}
+			],
+			"frames": [
+				{
+					"index": 0,
+					"timeTicks": 0,
+					"expectedActive": true,
+					"meanRgbError": 0.33176617155349797,
+					"activeMeanRgbError": 2.830252748928774,
+					"activePixels": 231666,
+					"activeLumaRatio": 0.9885991895029819,
+					"actualMeanRgb": 10.599162969393005,
+					"accepted": true,
+					"timestampSeconds": 0
+				},
+				{
+					"index": 1,
+					"timeTicks": 4000,
+					"expectedActive": true,
+					"meanRgbError": 0.34626173482510286,
+					"activeMeanRgbError": 2.945206286526388,
+					"activePixels": 231967,
+					"activeLumaRatio": 0.9883483932240619,
+					"actualMeanRgb": 10.623815907921811,
+					"accepted": true,
+					"timestampSeconds": 0.033
+				},
+				{
+					"index": 2,
+					"timeTicks": 8000,
+					"expectedActive": true,
+					"meanRgbError": 0.37697209362139916,
+					"activeMeanRgbError": 3.183991284653536,
+					"activePixels": 232540,
+					"activeLumaRatio": 0.9883212701253692,
+					"actualMeanRgb": 10.640259452160494,
+					"accepted": true,
+					"timestampSeconds": 0.067
+				},
+				{
+					"index": 3,
+					"timeTicks": 12000,
+					"expectedActive": true,
+					"meanRgbError": 0.3786041988168724,
+					"activeMeanRgbError": 3.181664507319687,
+					"activePixels": 233867,
+					"activeLumaRatio": 0.9883874780206872,
+					"actualMeanRgb": 10.69119614840535,
+					"accepted": true,
+					"timestampSeconds": 0.1
+				},
+				{
+					"index": 4,
+					"timeTicks": 16000,
+					"expectedActive": true,
+					"meanRgbError": 0.382465920781893,
+					"activeMeanRgbError": 3.183786838461756,
+					"activePixels": 235940,
+					"activeLumaRatio": 0.9884271679068064,
+					"actualMeanRgb": 10.778573173868313,
+					"accepted": true,
+					"timestampSeconds": 0.133
+				},
+				{
+					"index": 5,
+					"timeTicks": 20000,
+					"expectedActive": true,
+					"meanRgbError": 0.39360387731481483,
+					"activeMeanRgbError": 3.233336687096675,
+					"activePixels": 238538,
+					"activeLumaRatio": 0.9883720902969428,
+					"actualMeanRgb": 10.884710969650206,
+					"accepted": true,
+					"timestampSeconds": 0.167
+				}
+			],
+			"uncompressedNegatives": [
+				{
+					"kind": "opacity-ignored",
+					"index": 3,
+					"metrics": {
+						"meanRgbError": 1.894110725308642,
+						"activeMeanRgbError": 16.74889288926327,
+						"activePixels": 233867,
+						"activeLumaRatio": 1.1752489989581885,
+						"actualMeanRgb": 12.700992476851852
+					},
+					"alphaComposite": {
+						"channels": 701601,
+						"mean": 0.2868632598873047,
+						"maximum": 1.4499999999999886,
+						"accepted": true
+					},
+					"rejected": true,
+					"bytes": 8294400,
+					"sha256": "98d254f8b0fcdcd39614f88529acf2ace863867ccc9c5ef21a9b9076cd9771ae"
+				}
+			],
+			"decodedNegatives": [
+				{
+					"kind": "opacity-ignored",
+					"index": 3,
+					"decodedAgainstWrongReference": {
+						"meanRgbError": 2.129986014660494,
+						"activeMeanRgbError": 18.703107606745146,
+						"activePixels": 233867,
+						"activeLumaRatio": 0.841002612124625,
+						"actualMeanRgb": 10.69119614840535
+					},
+					"wrongAgainstDecoded": {
+						"meanRgbError": 2.129986014660494,
+						"activeMeanRgbError": 18.703107606745146,
+						"activePixels": 233867,
+						"activeLumaRatio": 1.1890569489120846,
+						"actualMeanRgb": 12.700992476851852
+					},
+					"rejected": true
+				}
+			],
+			"previewExportByteIdentical": true,
+			"projectStability": {
+				"sourceUnchanged": true,
+				"copyUnchangedDuringExport": true,
+				"variant": "original"
+			},
+			"sourceStableDuringRun": {
+				"stable": true,
+				"changed": []
+			},
+			"nativeOpenedAndClosed": 19,
+			"nativeScreenshotsSucceeded": 19,
+			"nativeRemainingWindows": 0,
+			"nativeCloseFailures": 0,
+			"nativeSupervisorClosedExitZero": true,
+			"nativeForcedKill": false,
+			"hostObservedDirectChildren": 19,
+			"allObservedDirectChildrenClosed": true,
+			"browserClosed": true,
+			"hostClosedExitZero": true,
+			"ffmpegAndFfprobeClosedExitZero": true
+		},
+		{
+			"root": "C:/tmps/rocut-stylized-f6XU4z/particle-project-export-FConVH",
+			"evidenceSha256": "bf43d44b2137022abf7337e43a479db75791da244ff79db1148a33e9131b26bf",
+			"variant": "timing",
+			"dimensions": [1920, 1080],
+			"frameRate": {
+				"numerator": 30,
+				"denominator": 1
+			},
+			"frameCount": 6,
+			"exportedTimelineRange": {
+				"startTime": 236000,
+				"endTime": 260000,
+				"duration": 24000
+			},
+			"unexportedTimelineIntervals": [
+				{
+					"startTime": 0,
+					"endTime": 236000
+				},
+				{
+					"startTime": 260000,
+					"endTime": 264000
+				}
+			],
+			"entire121FrameSourceExported": false,
+			"projectSha256": "25881f2d5a50aedf06052e57128d4313ed9446e6a60a4bd6e5b6722737f1ea90",
+			"savedClipSemantics": {
+				"opacity": 0.85,
+				"startTime": 240000,
+				"duration": 24000,
+				"trimStart": 120000,
+				"trimEnd": 340000
+			},
+			"outputs": [
+				{
+					"path": "particle.webm",
+					"bytes": 118183,
+					"sha256": "b59baaa1db6becc5a81465834d6e505b1b867194d04ea92ab504f8afa342f32d"
+				},
+				{
+					"path": "decoded.rgba",
+					"bytes": 49766400,
+					"sha256": "da1ffa85155aa5fd1b54e80521caf7ea23e1fb4d6645b607716ad6cabba1e043"
+				}
+			],
+			"frames": [
+				{
+					"index": 0,
+					"timeTicks": 236000,
+					"expectedActive": false,
+					"meanRgbError": 0.0001234567901234568,
+					"activeMeanRgbError": 0,
+					"activePixels": 0,
+					"activeLumaRatio": null,
+					"actualMeanRgb": 0.0001234567901234568,
+					"accepted": true,
+					"timestampSeconds": 0
+				},
+				{
+					"index": 1,
+					"timeTicks": 240000,
+					"expectedActive": true,
+					"meanRgbError": 1.3961982381687243,
+					"activeMeanRgbError": 6.889543174414714,
+					"activePixels": 375643,
+					"activeLumaRatio": 0.9905031928237518,
+					"actualMeanRgb": 15.411459137088478,
+					"accepted": true,
+					"timestampSeconds": 0.033
+				},
+				{
+					"index": 2,
+					"timeTicks": 244000,
+					"expectedActive": true,
+					"meanRgbError": 1.389552147633745,
+					"activeMeanRgbError": 6.874757859634458,
+					"activePixels": 375643,
+					"activeLumaRatio": 0.9902530506000302,
+					"actualMeanRgb": 15.40577980324074,
+					"accepted": true,
+					"timestampSeconds": 0.067
+				},
+				{
+					"index": 3,
+					"timeTicks": 248000,
+					"expectedActive": true,
+					"meanRgbError": 1.3841992991255143,
+					"activeMeanRgbError": 6.85106603876553,
+					"activePixels": 375643,
+					"activeLumaRatio": 0.9902198069087012,
+					"actualMeanRgb": 15.404649562757202,
+					"accepted": true,
+					"timestampSeconds": 0.1
+				},
+				{
+					"index": 4,
+					"timeTicks": 252000,
+					"expectedActive": true,
+					"meanRgbError": 1.380357349537037,
+					"activeMeanRgbError": 6.831866958787998,
+					"activePixels": 375643,
+					"activeLumaRatio": 0.9901481695390841,
+					"actualMeanRgb": 15.403268389917695,
+					"accepted": true,
+					"timestampSeconds": 0.133
+				},
+				{
+					"index": 5,
+					"timeTicks": 256000,
+					"expectedActive": true,
+					"meanRgbError": 1.3780991190843621,
+					"activeMeanRgbError": 6.819560061015379,
+					"activePixels": 375643,
+					"activeLumaRatio": 0.9900916352944876,
+					"actualMeanRgb": 15.402363683127572,
+					"accepted": true,
+					"timestampSeconds": 0.167
+				}
+			],
+			"uncompressedNegatives": [
+				{
+					"kind": "placement-ignored",
+					"index": 3,
+					"metrics": {
+						"meanRgbError": 15.47948800797325,
+						"activeMeanRgbError": 84.42934026899654,
+						"activePixels": 375643,
+						"activeLumaRatio": 0,
+						"actualMeanRgb": 0
+					},
+					"rejected": true,
+					"bytes": 8294400,
+					"sha256": "d7489c5f92e95426f405806b89a221d798c8dd31992b20de26caf7a97789fc99"
+				},
+				{
+					"kind": "trim-ignored",
+					"index": 3,
+					"metrics": {
+						"meanRgbError": 11.985386927726337,
+						"activeMeanRgbError": 59.49266723990598,
+						"activePixels": 375643,
+						"activeLumaRatio": 0.6305008587235398,
+						"actualMeanRgb": 10.756320730452675
+					},
+					"rejected": true,
+					"bytes": 8294400,
+					"sha256": "fd4f8dc080125660e0edc55fd5be05cb78682cc2386c96e7a26925763d96694c"
+				}
+			],
+			"decodedNegatives": [
+				{
+					"kind": "placement-ignored",
+					"index": 3,
+					"decodedAgainstWrongReference": {
+						"meanRgbError": 15.404649562757202,
+						"activeMeanRgbError": 83.60360501859478,
+						"activePixels": 375643,
+						"activeLumaRatio": null,
+						"actualMeanRgb": 15.404649562757202
+					},
+					"wrongAgainstDecoded": {
+						"meanRgbError": 15.404649562757202,
+						"activeMeanRgbError": 83.60360501859478,
+						"activePixels": 375643,
+						"activeLumaRatio": 0,
+						"actualMeanRgb": 0
+					},
+					"rejected": true
+				},
+				{
+					"kind": "trim-ignored",
+					"index": 3,
+					"decodedAgainstWrongReference": {
+						"meanRgbError": 12.107841756687243,
+						"activeMeanRgbError": 59.888162430818625,
+						"activePixels": 375643,
+						"activeLumaRatio": 1.5705288790778476,
+						"actualMeanRgb": 15.404649562757202
+					},
+					"wrongAgainstDecoded": {
+						"meanRgbError": 12.107841756687243,
+						"activeMeanRgbError": 59.888162430818625,
+						"activePixels": 375643,
+						"activeLumaRatio": 0.6367281833029141,
+						"actualMeanRgb": 10.756320730452675
+					},
+					"rejected": true
+				}
+			],
+			"previewExportByteIdentical": true,
+			"projectStability": {
+				"sourceUnchanged": true,
+				"copyUnchangedDuringExport": true,
+				"variant": "timing"
+			},
+			"sourceStableDuringRun": {
+				"stable": true,
+				"changed": []
+			},
+			"transaction": {
+				"scope": "Explicit saved fixture variant; not original C4 project",
+				"transaction": {
+					"expectedRevision": 2,
+					"idempotencyKey": "particle-project-export-timing-fixture-v1",
+					"operations": [
+						{
+							"kind": "update-clip",
+							"clipId": "particle-model",
+							"patch": {
+								"startTime": 240000,
+								"duration": 24000,
+								"trimStart": 120000,
+								"trimEnd": 340000
+							}
+						}
+					]
+				},
+				"receipt": {
+					"accepted": true,
+					"revision": 3,
+					"createdIds": [],
+					"changedIds": ["particle-model"]
+				},
+				"beforeSha256": "96672b702d66ea305126147ecdb10fa21f773ea12ba8e77af383b41e2216fa36",
+				"afterSha256": "25881f2d5a50aedf06052e57128d4313ed9446e6a60a4bd6e5b6722737f1ea90",
+				"reopened": true
+			},
+			"nativeOpenedAndClosed": 16,
+			"nativeScreenshotsSucceeded": 16,
+			"nativeRemainingWindows": 0,
+			"nativeCloseFailures": 0,
+			"nativeSupervisorClosedExitZero": true,
+			"nativeForcedKill": false,
+			"hostObservedDirectChildren": 16,
+			"allObservedDirectChildrenClosed": true,
+			"browserClosed": true,
+			"hostClosedExitZero": true,
+			"ffmpegAndFfprobeClosedExitZero": true
+		}
+	],
+	"staticChecks": {
+		"note": "Transcribed from actual command results after final source changes; CPU tests ran after independent-fixture refinement, TypeScript and ESLint ran after the host type-only change. No runtime source changes after timing started.",
+		"cpuTests": {
+			"command": "Bun 1.2.18 test --preload C:/tmps/rocut-stylized-f6XU4z/particle-electron-v2-test-preload.mjs script/fixtures/particle-project-export-contract.test.ts",
+			"fixture": "C:/tmps/rocut-stylized-f6XU4z/particle-c4-persistence-AGMhEa/project/project.json",
+			"passed": 6,
+			"failed": 0,
+			"assertions": 29
+		},
+		"typescript": {
+			"entryPoints": [
+				"script/fixtures/particle-project-export-probe.ts",
+				"script/fixtures/particle-project-export-host.ts",
+				"script/fixtures/particle-project-export-contract.test.ts"
+			],
+			"configReadOnly": "C:/tmps/rocut-stylized-f6XU4z/particle-c3-integration.tsconfig.json",
+			"privateWasmTypeOverrideInMemory": true,
+			"noEmit": true,
+			"diagnostics": 0
+		},
+		"eslint": {
+			"scope": "Explicit ESLint API override: @eslint/js recommended + typescript-eslint recommended + browser/node globals; script fixtures excluded by ordinary repository frontend-only config",
+			"files": 8,
+			"errors": 0,
+			"warnings": 0
+		},
+		"prettier": {
+			"files": 9,
+			"passed": true
+		},
+		"syntax": {
+			"nodeCheck": [
+				"script/probe-particle-project-export.mjs",
+				"script/fixtures/particle-project-export-pixels.mjs",
+				"script/fixtures/particle-project-export-verify.mjs"
+			],
+			"passed": true
+		},
+		"encoding": {
+			"strictUtf8Files": 9,
+			"noBom": true,
+			"noReplacementCharacters": true
+		},
+		"sourceDelta": {
+			"reconstructedOldHashesMatchHistoricalManifest": true,
+			"hostTranspiledCodeIdentical": true,
+			"htmlOnlyPrettierWhitespace": true,
+			"historicalEvidenceBytesUnchanged": true,
+			"timingOwnedInputsMatchCurrentFiles": 7
+		}
+	},
+	"finalOwnedSourceFiles": [
+		{
+			"path": "script/probe-particle-project-export.mjs",
+			"bytes": 22533,
+			"sha256": "7da714b886eaec585606f35f44df9e82e90049677ea4943cda83a6c8af60ddc0"
+		},
+		{
+			"path": "script/fixtures/particle-project-export-host.ts",
+			"bytes": 9217,
+			"sha256": "e31a6c9a2461b715334e35bcd00f7215e6da042d358bf03a1b9909db8ea9089b"
+		},
+		{
+			"path": "script/fixtures/particle-project-export-probe.ts",
+			"bytes": 14765,
+			"sha256": "bde43dac710b99f538d0204da273beeadc92d25a25cf988b89acaf59234f8cf9"
+		},
+		{
+			"path": "script/fixtures/particle-project-export.html",
+			"bytes": 901,
+			"sha256": "814dd6d7fbd2551df4994b8d9384b52788db8bc54ec609923d909ae630dfb16e"
+		},
+		{
+			"path": "script/fixtures/particle-project-export-contract.ts",
+			"bytes": 4159,
+			"sha256": "847dc8cd8c66a848b726f162880ab104a6a0d97fb1f23588505e38278bf92f58"
+		},
+		{
+			"path": "script/fixtures/particle-project-export-contract.test.ts",
+			"bytes": 7099,
+			"sha256": "992bc385b0e7b9ad9a47754c23b5e886dabb8042305678f0b67b8e6839f2e2d6"
+		},
+		{
+			"path": "script/fixtures/particle-project-export-pixels.mjs",
+			"bytes": 3200,
+			"sha256": "cb0152cf5cabf4aa5103fa5ee4531383a9f061efb29a5b9ea8499040a2d0d1a5"
+		},
+		{
+			"path": "script/fixtures/particle-project-export-pixels.d.mts",
+			"bytes": 997,
+			"sha256": "36103d4b1faab6c7a289e277d9b802507f5373386672d9799e81b33fdced9a90"
+		},
+		{
+			"path": "script/fixtures/particle-project-export-verify.mjs",
+			"bytes": 4232,
+			"sha256": "5382608942d05c40056ecf6073b872df5305a23c17957db33f7d0fd649e4d8a3"
+		}
+	],
+	"redaction": {
+		"coordinatorNativeScans": [
+			{
+				"root": "C:/tmps/rocut-stylized-f6XU4z/particle-electron-v2-ZeDvfU",
+				"exactCredentials": 3,
+				"publicTextFiles": 4,
+				"matches": 0,
+				"scope": "Exact native-token byte scan of bounded public text artifacts; no whole-profile or arbitrary binary scan",
+				"excludedDirectories": [
+					"registry",
+					"tool-hosts",
+					"temp",
+					"user-data",
+					"session-data",
+					"cache",
+					"crash-dumps",
+					"supervisor-temp",
+					"vite-cache"
+				],
+				"excludedFiles": "Filenames containing private; binary media and private browser/profile/cache/runtime registry files"
+			},
+			{
+				"root": "C:/tmps/rocut-stylized-f6XU4z/particle-project-export-1i61Mh",
+				"exactCredentials": 3,
+				"publicTextFiles": 37,
+				"matches": 0,
+				"scope": "Exact native-token byte scan of bounded public text artifacts; no whole-profile or arbitrary binary scan",
+				"excludedDirectories": [
+					"registry",
+					"tool-hosts",
+					"temp",
+					"user-data",
+					"session-data",
+					"cache",
+					"crash-dumps",
+					"supervisor-temp",
+					"vite-cache"
+				],
+				"excludedFiles": "Filenames containing private; binary media and private browser/profile/cache/runtime registry files"
+			},
+			{
+				"root": "C:/tmps/rocut-stylized-f6XU4z/particle-electron-v2-sfAAdg",
+				"exactCredentials": 3,
+				"publicTextFiles": 4,
+				"matches": 0,
+				"scope": "Exact native-token byte scan of bounded public text artifacts; no whole-profile or arbitrary binary scan",
+				"excludedDirectories": [
+					"registry",
+					"tool-hosts",
+					"temp",
+					"user-data",
+					"session-data",
+					"cache",
+					"crash-dumps",
+					"supervisor-temp",
+					"vite-cache"
+				],
+				"excludedFiles": "Filenames containing private; binary media and private browser/profile/cache/runtime registry files"
+			},
+			{
+				"root": "C:/tmps/rocut-stylized-f6XU4z/particle-project-export-FConVH",
+				"exactCredentials": 3,
+				"publicTextFiles": 44,
+				"matches": 0,
+				"scope": "Exact native-token byte scan of bounded public text artifacts; no whole-profile or arbitrary binary scan",
+				"excludedDirectories": [
+					"registry",
+					"tool-hosts",
+					"temp",
+					"user-data",
+					"session-data",
+					"cache",
+					"crash-dumps",
+					"supervisor-temp",
+					"vite-cache"
+				],
+				"excludedFiles": "Filenames containing private; binary media and private browser/profile/cache/runtime registry files"
+			}
+		],
+		"runnerScans": [
+			{
+				"root": "C:/tmps/rocut-stylized-f6XU4z/particle-project-export-1i61Mh",
+				"scanned": 53,
+				"excludedPrivateArtifacts": ["host-ready.private.json"],
+				"exactInMemoryPatterns": 3,
+				"leakedPaths": [],
+				"passed": true,
+				"scope": "All retained files under this project-export root except explicit private readiness records; token values never logged"
+			},
+			{
+				"root": "C:/tmps/rocut-stylized-f6XU4z/particle-project-export-FConVH",
+				"scanned": 66,
+				"excludedPrivateArtifacts": ["host-ready.private.json"],
+				"exactInMemoryPatterns": 3,
+				"leakedPaths": [],
+				"passed": true,
+				"scope": "All retained files under this project-export root except explicit private readiness records; token values never logged"
+			}
+		],
+		"coverageBoundary": "Runner known patterns were the selected native token plus final-ready Host token/editor URL. The first timing-transaction Host grant remained only in child memory for diagnostic redaction and was not returned for runner/parent exact-value audit. This does not retroactively cover the earlier C5 deleted-token gap."
+	},
+	"sourceDelta": {
+		"path": "C:/tmps/rocut-stylized-f6XU4z/particle-project-export-post-original-source-delta.json",
+		"sha256": "ef9b5ce12f8f62798c2c3980a3c833ff4449e06c51dbe0985b0a0f999fe659d3"
+	},
+	"independentReview": {
+		"path": "C:/tmps/rocut-stylized-f6XU4z/particle-project-export-parent-review.json",
+		"sha256": "96c7f570948c9bce4d572b13f57af585bd00168b827fdcc1f06f9c0c27818da4",
+		"scope": "All saved video/reference artifacts rehashed; twelve frame metrics and opacity/timing controls recalculated independently. Two decoded frame3 PNGs visually inspected; not a second full export."
+	},
+	"summary": {
+		"path": "C:/tmps/rocut-stylized-f6XU4z/particle-project-export-verification-summary.json",
+		"sha256": "a9de7f6c51bc348b5e31daa1f5d61c51b108978f455c43e517bdf8e8999c4b8f"
+	},
+	"notExecuted": [
+		"Complete121-frame export and all motion phases in one encoded timeline",
+		"Real attached-editor parameter/history/reload and exporting that same UI-edited saved project",
+		"Audio, transparent-video alpha, long-project performance and cross-GPU coverage",
+		"Installed plugin/runtime pack/release and shared Elftia app acceptance"
+	],
+	"isolation": {
+		"artifactRoot": "C:/tmps/rocut-stylized-f6XU4z",
+		"originalC4ProjectUnmodified": true,
+		"sharedAppChanged": false,
+		"gitWrites": false
+	}
+}

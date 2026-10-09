@@ -1,0 +1,58 @@
+{
+  "phase": "P4 native-filter subset",
+  "date": "2026-10-07",
+  "status": "fixture-verified",
+  "ids": ["vhs", "glitch", "retro-dither"],
+  "version": 1,
+  "origin": "Native Rust/wgpu single-input filters for VHS, glitch and per-channel ordered dithering.",
+  "source": {
+    "commit": "e791be658f63384b6b7c064c1a92dd1912246ada",
+    "worktreeClean": false,
+    "manifestSha256": "3f877b8f52df3283ab605b4a0ea316895b25af4401455b4a06542d9d673cc87d",
+    "wasmSha256": "fcab89ce093a191a0dc628b5a264ff2543443df0eefc46902ea7e0545d0ab081"
+  },
+  "artifacts": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/stylized-effects/run-g5yRNt",
+  "retention": "Private temporary fixture; includes source manifest, evidence, contact sheet and video. Not a released artifact or permanent archive.",
+  "verification": {
+    "rust": "12 tests passed: 6 unit tests, 4 contract tests, actual native stylized GPU test and existing color GPU regression (ignored GPU tests explicitly enabled)",
+    "bun": "6 tests / 32 assertions passed, including registry metadata, explicit clock, fractional frame rate, signed transition handles, keyframed amount, empty-group bypass, exact scene-effect end boundary and malformed input",
+    "typecheck": "Three and stylized probe configurations passed, including production renderer dependencies",
+    "lint": "All eight changed frontend files passed scoped ESLint",
+    "wasm": "Full check:wasm passed on final private rebuild: source freshness and installed-copy identity, path disclosure and negative controls, exact ABI, real Bun 1.2.18 / Node 24.14.0 initialization and 32-step migration chain",
+    "abi": { "publicJsExports": 77, "stableBinaryExports": 94, "compilerTrampolines": 3, "imports": 612, "declarationLines": 99 },
+    "browser": "Chrome 154.0.8037.98, private WebGPU/SwiftShader; Canvas source through production scene builder, common visual effect chain, scene-effect node, compositor and exporter; no Host or Electron",
+    "pixels": [
+      "Native zero-strength identity and browser zero/disabled bypass",
+      "Repeat/reverse seek and seed; static dither stays static",
+      "Native four-level RGB palette and straight-alpha saturated glitch fringes",
+      "Preview/export raw frames equal",
+      "Source trim does not offset the clip-local effect clock",
+      "Effect parameter JSON roundtrip (not full project database persistence)",
+      "Effect chain order and scene-effect placement leave upper foreground untouched"
+    ],
+    "video": {
+      "codec": "VP9", "container": "WebM", "width": 128, "height": 72, "fps": 30,
+      "decodedFrames": 6, "durationSeconds": 0.2, "encodedBytes": 973,
+      "decodedMeanRgbaError": 4.352918836805555, "errorLimit": 10,
+      "decodedMotionMean": 1.0843641493055556,
+      "independentFfprobe": "VP9, 128x72, 30/1, six frames, 0.200000 seconds",
+      "independentFfmpegDecode": "ffmpeg 6.0 -v error -i filters.webm -f null - exited 0 without diagnostics"
+    }
+  },
+  "clock": "Rust floors signed clip-local integer ticks on the supplied rational frame grid. Seed is explicit 0..65535. Animated GPU key repeats every 16777216 frames; no wall clock or accumulated simulation. Source trim/playback rate does not control these clip effects.",
+  "notVerified": [
+    "Glyph Rain and Particle Reveal generators; P4 is not complete",
+    "ASCII Object, two-input Peel, P6 Creator templates/Agent integration and P7 remaining effects",
+    "Installed UI, full project persistence/undo-redo, Electron, every media decoder, format/GPU or performance matrix",
+    "Scene-effect parameter keyframe editing; clip-attached effect parameter interpolation is tested",
+    "Release/packaging or a coordinated latest mixed-tree rebuild with other sessions"
+  ],
+  "environmentNotes": [
+    "First native build failed because C: ran out of space. It was not a shader/test failure.",
+    "A cleanup command was rejected before execution; no caches were removed. Subsequent source copy, temporary files and builds used a new private E: directory.",
+    "First browser run found an empty effect-group failure at amount=0; fixed by filtering empty resolved groups, with regression test.",
+    "Intermediate source freshness failure after source formatting/test additions was resolved by a final rebuild and private dependency refresh. Shared dependencies were never reinstalled."
+  ],
+  "installedVerified": false,
+  "committedOrPublished": false
+}

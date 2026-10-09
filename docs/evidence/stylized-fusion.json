@@ -1,0 +1,585 @@
+{
+  "version": 1,
+  "date": "2026-10-07",
+  "phase": "P6 selected-template fusion",
+  "status": "private-attached-editor-verified-not-installed",
+  "helperExtractionRegression": {
+    "status": "passed-default-mode-after-helper-extraction",
+    "artifacts": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/stylized-fusion/run-wUXAYg",
+    "evidenceSha256": "fa47646663bb58c0ea6dc2df7e5960418dd47f498be1b00c9248a3ff043fac8e",
+    "sourceManifestSha256": "c47310cd9bb5d404be8657ce9c0d1641cde8366c76d3b779491435485054bcc7",
+    "wasmSha256": "07484390feacd7941ad56f9a79ce7550b799993f216d8d0187be22bedcecf0a6",
+    "templates": {
+      "templates.mjs": "9065c27a8f385e5e1d7e2900623076360a6cac246c49256e724ca2c43c2f72fe",
+      "scene.ts": "52afe6cb7ab401dd0045aa72f12914a1066e1e34e657d71e815e9e8f50896e68",
+      "spatial.mjs": "26c77701439bfb57102454f2e9360f8210012c454936689b6425f94bc17c12a1",
+      "wave.mjs": "8d202bf65882c11f78e1f195fc944988540d1e4edfcbb69f0164fa4c1017c329"
+    },
+    "editorReuse": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa\\rocut-three-resources-VSD7L2\\.artifacts\\distortion-editor\\run-i8iyAE\\temp\\editor-dist",
+    "backend": "private-chromium-swiftshader",
+    "browser": "154.0.8037.98",
+    "checks": [
+      {
+        "name": "persisted mixed project loaded by actual attached editor",
+        "pass": true
+      },
+      {
+        "name": "real preview of all four shots and reverse seek",
+        "pass": true
+      },
+      {
+        "name": "UI VHS parameter edit and attached-session undo/redo restore actual pixels",
+        "pass": true
+      },
+      {
+        "name": "editor reload after editing preserves source, parameters and visible pixels",
+        "pass": true
+      },
+      {
+        "name": "in-flight Three export cancellation without published output",
+        "pass": true
+      },
+      {
+        "name": "full mixed export after cancellation",
+        "pass": true
+      },
+      {
+        "name": "independent 300-frame video and segmented stereo audio decode",
+        "pass": true
+      }
+    ],
+    "video": [
+      {
+        "name": "retro",
+        "frame": 30,
+        "meanRgbError": 3.6241319444444446,
+        "contrastRatio": 0.9992694047500171,
+        "redFraction": 0.35421875,
+        "blueFraction": 0,
+        "tealFraction": 0,
+        "whiteFraction": 0.047170138888888886
+      },
+      {
+        "name": "retro-second",
+        "frame": 90,
+        "meanRgbError": 4.092424768518518,
+        "contrastRatio": 0.9992232019559125,
+        "redFraction": 0.42401041666666667,
+        "blueFraction": 0,
+        "tealFraction": 0,
+        "whiteFraction": 0.057430555555555554
+      },
+      {
+        "name": "particles",
+        "frame": 150,
+        "meanRgbError": 2.46318287037037,
+        "contrastRatio": 1.0025520592457628,
+        "redFraction": 0,
+        "blueFraction": 0,
+        "tealFraction": 0.039427083333333335,
+        "whiteFraction": 0.047135416666666666
+      },
+      {
+        "name": "peel",
+        "frame": 195,
+        "meanRgbError": 3.8535069444444443,
+        "contrastRatio": 0.9986861419815367,
+        "redFraction": 0.04586805555555556,
+        "blueFraction": 0.18279513888888888,
+        "tealFraction": 0.19213541666666667,
+        "whiteFraction": 0.043958333333333335
+      },
+      {
+        "name": "three",
+        "frame": 255,
+        "meanRgbError": 3.2606076388888887,
+        "contrastRatio": 1.0153702797519646,
+        "redFraction": 0.00008680555555555556,
+        "blueFraction": 0.00001736111111111111,
+        "tealFraction": 0,
+        "whiteFraction": 0.034965277777777776
+      }
+    ],
+    "audio": [
+      {
+        "segment": 0,
+        "channel": 0,
+        "frequency": 220,
+        "rms": 0.07091122537259342,
+        "amplitude": 0.10028306831243489,
+        "leakage": 0.00000556553898595766
+      },
+      {
+        "segment": 0,
+        "channel": 1,
+        "frequency": 275,
+        "rms": 0.07101792766646094,
+        "amplitude": 0.10042905156102098,
+        "leakage": 0.000029275411195262935
+      },
+      {
+        "segment": 1,
+        "channel": 0,
+        "frequency": 330,
+        "rms": 0.07095497457559741,
+        "amplitude": 0.10034507733135642,
+        "leakage": 0.0000035258330486806594
+      },
+      {
+        "segment": 1,
+        "channel": 1,
+        "frequency": 385,
+        "rms": 0.07089068863315891,
+        "amplitude": 0.100248653540123,
+        "leakage": 0.000017568847197090586
+      },
+      {
+        "segment": 2,
+        "channel": 0,
+        "frequency": 440,
+        "rms": 0.07082397541974471,
+        "amplitude": 0.10015992736193909,
+        "leakage": 4.5571341440715396e-7
+      },
+      {
+        "segment": 2,
+        "channel": 1,
+        "frequency": 495,
+        "rms": 0.0709172535955935,
+        "amplitude": 0.10028768134337378,
+        "leakage": 0.00003084982408565054
+      },
+      {
+        "segment": 3,
+        "channel": 0,
+        "frequency": 550,
+        "rms": 0.07087741958344483,
+        "amplitude": 0.10023529140347644,
+        "leakage": 8.576601509824184e-7
+      },
+      {
+        "segment": 3,
+        "channel": 1,
+        "frequency": 605,
+        "rms": 0.07087853648261108,
+        "amplitude": 0.10023562921579732,
+        "leakage": 0.00002137898407503786
+      },
+      {
+        "segment": 4,
+        "channel": 0,
+        "frequency": 660,
+        "rms": 0.07091493749322587,
+        "amplitude": 0.10028824175079547,
+        "leakage": 0.00003316665953644648
+      },
+      {
+        "segment": 4,
+        "channel": 1,
+        "frequency": 715,
+        "rms": 0.07085468751774376,
+        "amplitude": 0.10020130467900905,
+        "leakage": 0.00005737569397707683
+      }
+    ],
+    "export": {
+      "durationSeconds": 10,
+      "frames": 300,
+      "width": 640,
+      "height": 360,
+      "fps": "30/1",
+      "sha256": "caffff65d9182974e20ea314678b81faeee337d495a8c55cc571ddbe120432aa"
+    },
+    "expectedHttpFailures": [
+      {
+        "path": "/api/library/graph-editor-presets/user-presets",
+        "status": 404
+      },
+      {
+        "path": "/api/library/graph-editor-presets/user-presets",
+        "status": 404
+      }
+    ],
+    "expectedFrameCancellations": [],
+    "visualInspection": "Contact sheet inspected: all five lyrics visible, particle, actual A/B peel and Three ASCII content present.",
+    "installedPluginTested": false,
+    "electronTested": false,
+    "scope": "Regression of shared probe lifecycle and default fusion branch using the exact distortion-batch renderer source/WASM; does not establish general ASCII timeout reliability or newer concurrent audio work."
+  },
+  "origin": "Rocut effects and Creator templates composed with native lyric and audio tracks.",
+  "source": {
+    "commit": "e791be658f63384b6b7c064c1a92dd1912246ada",
+    "worktreeClean": false,
+    "manifestSha256": "4887f78cc511049ec9fd50ac2127944693cd66acef2711f546acebacac9a934b",
+    "wasmSha256": "947bc4423b7521e920c0ce4dd0a09cd1048866946c8ee52907b43aa3fc9ba199",
+    "toolchainLockSha256": "a5f51282b3cd63e4e00f887f5545f8fcb61009a82d0d66616938d03ddc89f88f",
+    "templates": {
+      "templates.mjs": "3c7d75a50c9d5e874a3e62e54d0880ba77143ec00cc859fb99a26e84fd5b1a53",
+      "scene.ts": "17793e3367cba0453a6817a86674b345075e641dcfb638746c7f41095b2217aa"
+    },
+    "files": [
+      {
+        "path": "apps/cli/src/programmatic/engines/remotion-compiler-child.ts",
+        "testedSha256": "dc72afc12cdf64532796fc0ec3637e3c7b4bddef4e179aac1fdfeba01c83e947",
+        "canonicalSha256": "dc72afc12cdf64532796fc0ec3637e3c7b4bddef4e179aac1fdfeba01c83e947",
+        "canonicalMatchesTested": true,
+        "prettierEquivalent": true
+      },
+      {
+        "path": "apps/cli/src/__tests__/compiler-isolation.test.ts",
+        "testedSha256": "a43c23060d5c198274616455f51e41b07ce444570ded50337dde5a3d8d24321b",
+        "canonicalSha256": "c73e5c8ac79920363753ab12e0a8796d5babc030c021eab865a9971300f1763e",
+        "canonicalMatchesTested": false,
+        "prettierEquivalent": true
+      },
+      {
+        "path": "packages/editor-classic/src/media/persistence.ts",
+        "testedSha256": "7a2b60e15449c4487bf01076d34d15fbfaaffe673cc8ecc3b4ef1fff1f83729e",
+        "canonicalSha256": "f1d60759face0b112ff1a8abd3e786cf8270084e0e09442beb7a703260cc6dd6",
+        "canonicalMatchesTested": false,
+        "prettierEquivalent": true
+      },
+      {
+        "path": "packages/editor-classic/src/core/managers/media-manager.ts",
+        "testedSha256": "f7a32807f132d300a0525c24693ac0588529b40f8708b3646afe81db19bb5862",
+        "canonicalSha256": "f7a32807f132d300a0525c24693ac0588529b40f8708b3646afe81db19bb5862",
+        "canonicalMatchesTested": true,
+        "prettierEquivalent": true
+      },
+      {
+        "path": "packages/editor-classic/src/media/__tests__/programmatic-attachments.test.ts",
+        "testedSha256": "89cc8b636ee88bfb74cac7572233757c3535540f5d596a09e11ec4d7406b0e7c",
+        "canonicalSha256": "7e6f5b85ef7ebaf64bd67f871907a7d7111f54c082e7c70f90afdc03f1ac74cb",
+        "canonicalMatchesTested": false,
+        "prettierEquivalent": true
+      },
+      {
+        "path": "script/fixtures/stylized-fusion-assets.ts",
+        "testedSha256": "3612372e9bc03348b25858a86741b97faf89f5cc52b739a8206be52500dc15ea",
+        "canonicalSha256": "6b470de0da83eb891389e954429fe2f22a067dac3278c3b6112e601de7080cc8",
+        "canonicalMatchesTested": false,
+        "prettierEquivalent": true
+      },
+      {
+        "path": "script/fixtures/stylized-fusion-host.ts",
+        "testedSha256": "922f6e0e5856ddae07a5f61936c0f2dcda7dd9d3648648b3e9c65c2b77a0bac1",
+        "canonicalSha256": "922f6e0e5856ddae07a5f61936c0f2dcda7dd9d3648648b3e9c65c2b77a0bac1",
+        "canonicalMatchesTested": true,
+        "prettierEquivalent": true
+      },
+      {
+        "path": "script/fixtures/stylized-fusion-checks.mjs",
+        "testedSha256": "f5a9364076f53d34794281669e9e969bab151780f323ccf2c57e2dc0fb2e7407",
+        "canonicalSha256": "f5a9364076f53d34794281669e9e969bab151780f323ccf2c57e2dc0fb2e7407",
+        "canonicalMatchesTested": true,
+        "prettierEquivalent": true
+      },
+      {
+        "path": "script/fixtures/stylized-fusion-editing.mjs",
+        "testedSha256": "c5ac394ee75f53b1f7f07e4be653a47582746f92e46ff5956993a04bf16a31ed",
+        "canonicalSha256": "ae4565c5e191db495d3873d09ee2f3cd57020d3cacdc8b2bbdc7e850d60600e9",
+        "canonicalMatchesTested": false,
+        "prettierEquivalent": true
+      },
+      {
+        "path": "script/fixtures/stylized-fusion-visuals.mjs",
+        "testedSha256": "31a169654281f07cd1932d8a3e21e0c7a41157f69705a29cfa5d34ebef470077",
+        "canonicalSha256": "31a169654281f07cd1932d8a3e21e0c7a41157f69705a29cfa5d34ebef470077",
+        "canonicalMatchesTested": true,
+        "prettierEquivalent": true
+      },
+      {
+        "path": "script/probe-stylized-fusion.mjs",
+        "testedSha256": "c1be66265a53902004a41b451cd8ed2b2ef4556bd12f26b10092fce4590ab9d5",
+        "canonicalSha256": "c1be66265a53902004a41b451cd8ed2b2ef4556bd12f26b10092fce4590ab9d5",
+        "canonicalMatchesTested": true,
+        "prettierEquivalent": true
+      }
+    ]
+  },
+  "artifacts": {
+    "root": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/stylized-fusion/run-5IcAX7",
+    "report": "evidence.json",
+    "manifest": "source-manifest.json",
+    "prepared": "prepared.json",
+    "project": "project/project.json",
+    "contactSheet": "contact-sheet.png",
+    "export": "project/exports/31523bd5f7f80fe9.webm",
+    "reportSha256": "01f4f9ae354d341a5557c65c1244ea07f44d8ad09d2ce6d61d1101d87495eaed",
+    "exportSha256": "9eec3aaf5c39b84e3bf36c3ccd77f3401f5a9929581572515492e675d850cec9",
+    "retention": "Private E: fixture retained; not a published artifact or permanent archive."
+  },
+  "environment": {
+    "browser": "154.0.8037.98",
+    "backend": "private-chromium-swiftshader",
+    "editorTransport": "actual Host staticDir and authenticated URL, no Vite HTTP proxy",
+    "agentTransport": "direct authenticated Host HTTP, actual attached-editor task runner",
+    "dependencyScope": "Only private fixture hoisted from local cache offline/frozen-lockfile/ignore-scripts; shared dependencies unchanged.",
+    "editorBuild": "Actual Vite production app; reused private build after renderer-source manifest and WASM hash match; not a mock renderer."
+  },
+  "composition": {
+    "seconds": 10,
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "shots": [
+      "0-4s retroMv + native VHS",
+      "4-6s particleLogo",
+      "6-7s true recipe A/B Peel",
+      "7-10s real Three GLB/HDR + native ASCII"
+    ],
+    "lyrics": "Five LRC cues through native motion-text/sequences, clean-caption; explicit top overlay order",
+    "audio": "Independent imported original 48 kHz stereo WAV, five two-second tone segments, -6 dB native gain",
+    "resources": "Authored PNG/GLB/HDR/WAV; original input and author directories moved before Host restart and archived Three rebuild."
+  },
+  "checks": {
+    "preparation": [
+      "all four shots created through Agent transactions",
+      "native lyrics created through motion-text factory",
+      "native lyrics explicitly ordered above opaque scenes",
+      "independent real audio media import",
+      "original inputs unavailable",
+      "Host restarted and record exactly preserved",
+      "Three rebuilt from archived inputs"
+    ],
+    "attachedEditor": [
+      {
+        "name": "persisted mixed project loaded by actual attached editor",
+        "pass": true
+      },
+      {
+        "name": "real preview of all four shots and reverse seek",
+        "pass": true
+      },
+      {
+        "name": "UI VHS parameter edit and attached-session undo/redo restore actual pixels",
+        "pass": true
+      },
+      {
+        "name": "editor reload after editing preserves source, parameters and visible pixels",
+        "pass": true
+      },
+      {
+        "name": "in-flight Three export cancellation without published output",
+        "pass": true
+      },
+      {
+        "name": "full mixed export after cancellation",
+        "pass": true
+      },
+      {
+        "name": "independent 300-frame video and segmented stereo audio decode",
+        "pass": true
+      }
+    ],
+    "visual": "All five cue texts visibly inspected in decoded contact sheet, including opaque retro/Peel shots; numeric white coverage required in all five preview/export samples.",
+    "negativeControl": "Updated lyric visibility gate rejects old run-Hymm55 export with occluded lyrics.",
+    "externalRequests": [],
+    "expectedHttpFailures": [
+      {
+        "path": "/api/library/graph-editor-presets/user-presets",
+        "status": 404
+      },
+      {
+        "path": "/api/library/graph-editor-presets/user-presets",
+        "status": 404
+      }
+    ],
+    "compilerAndThree": "2 tests / 22 assertions passed; ancestor package decoy denied, controlled toolchain chosen, undeclared relative source denied, real Three compile/restart/rebuild.",
+    "media": "7 tests / 19 assertions passed; mixed attachment hydration retains resources, corrupt media still rejected.",
+    "typechecks": [
+      "apps/cli/tsconfig.json passed on private generated WASM snapshot",
+      "script/fixtures/three-probe.tsconfig.json passed, including production renderer dependencies"
+    ],
+    "frontendEslint": "Three changed media/manager/test files passed scoped ESLint.",
+    "creatorPackaging": "Real agent-copy step test passed with byte-identical templates and valid in-package links; not release build/install.",
+    "creatorSkillValidation": "quick_validate.py passed with explicit Python UTF-8 mode; existing html-video reference updated with tested overlay-order guidance.",
+    "documentation": "35 unique coverage rows match reference metadata exactly: 8 verified video subsets, 27 unimplemented; strict UTF-8/no-BOM, JSON and local-link checks passed."
+  },
+  "decoded": {
+    "video": {
+      "codec": "vp9",
+      "width": 640,
+      "height": 360,
+      "frames": 300,
+      "fps": "30/1"
+    },
+    "audioStream": {
+      "codec": "opus",
+      "sampleRate": 48000,
+      "channels": 2
+    },
+    "durationSeconds": 10,
+    "bytes": 1243248,
+    "sampleMetrics": [
+      {
+        "name": "retro",
+        "frame": 30,
+        "meanRgbError": 3.872337962962963,
+        "contrastRatio": 0.999465158047483,
+        "redFraction": 0.35508680555555555,
+        "blueFraction": 0,
+        "tealFraction": 0,
+        "whiteFraction": 0.046996527777777776
+      },
+      {
+        "name": "retro-second",
+        "frame": 90,
+        "meanRgbError": 4.2943287037037035,
+        "contrastRatio": 0.999263441696198,
+        "redFraction": 0.4249131944444444,
+        "blueFraction": 0,
+        "tealFraction": 0,
+        "whiteFraction": 0.05737847222222222
+      },
+      {
+        "name": "particles",
+        "frame": 150,
+        "meanRgbError": 2.471087962962963,
+        "contrastRatio": 1.0023851393070395,
+        "redFraction": 0,
+        "blueFraction": 0,
+        "tealFraction": 0.03944444444444444,
+        "whiteFraction": 0.047065972222222224
+      },
+      {
+        "name": "peel",
+        "frame": 195,
+        "meanRgbError": 4.514508101851852,
+        "contrastRatio": 0.9945263742329382,
+        "redFraction": 0.04638888888888889,
+        "blueFraction": 0.18454861111111112,
+        "tealFraction": 0.19135416666666666,
+        "whiteFraction": 0.04324652777777778
+      },
+      {
+        "name": "three",
+        "frame": 255,
+        "meanRgbError": 3.345138888888889,
+        "contrastRatio": 1.0146122968816784,
+        "redFraction": 0.00006944444444444444,
+        "blueFraction": 0,
+        "tealFraction": 0,
+        "whiteFraction": 0.035069444444444445
+      }
+    ],
+    "audioMetrics": [
+      {
+        "segment": 0,
+        "channel": 0,
+        "frequency": 220,
+        "rms": 0.07091122537259342,
+        "amplitude": 0.10028306831243489,
+        "leakage": 0.00000556553898595766
+      },
+      {
+        "segment": 0,
+        "channel": 1,
+        "frequency": 275,
+        "rms": 0.07101792766646094,
+        "amplitude": 0.10042905156102098,
+        "leakage": 0.000029275411195262935
+      },
+      {
+        "segment": 1,
+        "channel": 0,
+        "frequency": 330,
+        "rms": 0.07095497457559741,
+        "amplitude": 0.10034507733135642,
+        "leakage": 0.0000035258330486806594
+      },
+      {
+        "segment": 1,
+        "channel": 1,
+        "frequency": 385,
+        "rms": 0.07089068863315891,
+        "amplitude": 0.100248653540123,
+        "leakage": 0.000017568847197090586
+      },
+      {
+        "segment": 2,
+        "channel": 0,
+        "frequency": 440,
+        "rms": 0.07082397541974471,
+        "amplitude": 0.10015992736193909,
+        "leakage": 4.5571341440715396e-7
+      },
+      {
+        "segment": 2,
+        "channel": 1,
+        "frequency": 495,
+        "rms": 0.0709172535955935,
+        "amplitude": 0.10028768134337378,
+        "leakage": 0.00003084982408565054
+      },
+      {
+        "segment": 3,
+        "channel": 0,
+        "frequency": 550,
+        "rms": 0.07087741958344483,
+        "amplitude": 0.10023529140347644,
+        "leakage": 8.576601509824184e-7
+      },
+      {
+        "segment": 3,
+        "channel": 1,
+        "frequency": 605,
+        "rms": 0.07087853648261108,
+        "amplitude": 0.10023562921579732,
+        "leakage": 0.00002137898407503786
+      },
+      {
+        "segment": 4,
+        "channel": 0,
+        "frequency": 660,
+        "rms": 0.07091493749322587,
+        "amplitude": 0.10028824175079547,
+        "leakage": 0.00003316665953644648
+      },
+      {
+        "segment": 4,
+        "channel": 1,
+        "frequency": 715,
+        "rms": 0.07085468751774376,
+        "amplitude": 0.10020130467900905,
+        "leakage": 0.00005737569397707683
+      }
+    ]
+  },
+  "fixes": [
+    {
+      "kind": "production",
+      "file": "apps/cli/src/programmatic/engines/remotion-compiler-child.ts",
+      "detail": "Pin bare-import resolution to controlled toolchain (nodePaths alone is fallback); preserve nested toolchain imports and realpath source containment; concurrent native Offthread seam retained."
+    },
+    {
+      "kind": "production",
+      "file": "packages/editor-classic/src/media/persistence.ts",
+      "detail": "Do not decode explicitly tagged programmatic-resource/source-archive attachments as legacy media. Preserve attachments; programmatic provider validates on use; unrelated corrupt metadata still rejects."
+    },
+    {
+      "kind": "fixture",
+      "detail": "Explicitly reorder native lyric track above opaque shots using real reorder-tracks API; check persisted overlay order and actual pixels."
+    },
+    {
+      "kind": "checker",
+      "detail": "Integer stereo sample offsets eliminate floating point buffer-index failure; retain original failed-run record."
+    }
+  ],
+  "history": {
+    "earlierCompletedExport": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/stylized-fusion/run-Hymm55",
+    "earlierDecodeSupplement": "decoded-evidence.json",
+    "earlierAcceptance": "Export and numeric preview/audio checks passed, but native lyrics were occluded in opaque shots. Not accepted as full fusion.",
+    "proxy": "Retired unnecessary Vite test proxy after captured loopback connect ETIMEDOUT. Final Host staticDir transport succeeded; no claim about OS/security-software cause.",
+    "timeout": "Prior ASCII runs hit unchanged 15-second frame deadline. This full success does not diagnose or fix the intermittent timeout."
+  },
+  "notVerified": [
+    "Installed Creator UI-to-Rocut workflow, plugin packaging/install or Electron backend",
+    "All 35 Canvas UI categories, full reference MV, stateful simulations or arbitrary adjacent timeline Peel",
+    "Every GPU/browser/media/codec, MP4 or performance matrix",
+    "Cross-machine font/pixel identity; fixture uses native clean-caption font behavior"
+  ],
+  "installedPluginTested": false,
+  "electronTested": false,
+  "committedOrPublished": false
+}

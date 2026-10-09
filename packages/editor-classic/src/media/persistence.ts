@@ -1,4 +1,7 @@
-import type { ProjectAttachment } from "@opencut/editor-ports";
+import type {
+	ProjectAttachment,
+	ProjectAttachmentHeader,
+} from "@opencut/editor-ports";
 import { ProjectStoreError } from "@opencut/editor-ports";
 import type { SessionPersistenceCoordinator } from "../editor/persistence";
 import type { MediaAsset, MediaType } from "./types";
@@ -77,6 +80,28 @@ export function decodePersistedMediaMetadata(
 				? value.thumbnailUrl
 				: undefined,
 	};
+}
+
+/** Attachments also contain programmatic resources and archived source files.
+ * Those belong to the programmatic provider, which validates their version,
+ * digest and bytes on use. Do not turn them into media assets or discard them.
+ * All other attachments retain strict legacy media metadata validation. */
+export function mediaAttachmentsForHydration<
+	Attachment extends ProjectAttachmentHeader,
+>(attachments: readonly Attachment[]) {
+	return attachments.flatMap((attachment) => {
+		const metadata = attachment.metadata;
+		if (
+			typeof metadata === "object" &&
+			metadata !== null &&
+			"kind" in metadata &&
+			metadata.kind === "programmatic-resource"
+		)
+			return [];
+		return [
+			{ ...attachment, metadata: decodePersistedMediaMetadata(metadata) },
+		];
+	});
 }
 
 function metadataFor(asset: MediaAsset): PersistedMediaMetadata {

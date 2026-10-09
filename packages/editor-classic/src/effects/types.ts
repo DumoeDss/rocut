@@ -1,4 +1,19 @@
 import type { ParamDefinition, ParamValues } from "../params";
+import type { FrameRate } from "opencut-wasm";
+
+export interface EffectFrameContext {
+	/** Signed clip-local integer ticks, independent of source trim/playback rate. */
+	localTime: number;
+	frameRate: FrameRate;
+}
+
+export interface EffectRenderInput {
+	effectParams: ParamValues;
+	width: number;
+	height: number;
+	/** Required by time-dependent effects; static thumbnails supply frame zero. */
+	frame?: EffectFrameContext;
+}
 
 export interface Effect {
 	id: string;
@@ -16,20 +31,12 @@ export interface EffectPass {
 
 export interface EffectPassTemplate {
 	shader: string;
-	uniforms(params: {
-		effectParams: ParamValues;
-		width: number;
-		height: number;
-	}): Record<string, EffectUniformValue>;
+	uniforms(params: EffectRenderInput): Record<string, EffectUniformValue>;
 }
 
 export interface EffectRendererConfig {
 	passes: EffectPassTemplate[];
-	buildPasses?: (params: {
-		effectParams: ParamValues;
-		width: number;
-		height: number;
-	}) => EffectPass[];
+	buildPasses?: (params: EffectRenderInput) => EffectPass[];
 }
 
 export interface EffectDefinition {

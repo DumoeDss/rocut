@@ -1,0 +1,332 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "in-progress",
+	"acceptance": {
+		"droplets": "N",
+		"overallGoalComplete": false,
+		"definition": "Independent seeded lens effect; native, authoring, persistence, raster, preview, actual editor history and its 640x360 same-project video checks have passed. The separate 192x128 production oracle video acceptance remains open.",
+		"blocking": [
+			"The 192x128 production six-frame VP9 decode exceeds the unchanged quality gates on frame 5. Passing 640x360 same-project export does not supersede it."
+		],
+		"history": "Each evidence record describes its own frozen inputs and scope. Later results must be appended explicitly; diagnostic encodes do not replace failed production runs."
+	},
+	"nativeTests": {
+		"cpu": {
+			"passed": 7,
+			"failed": 0,
+			"scope": "Catalog, strict admission, raw uniforms, independent seed/geometry vectors and signed rational frame/phase behavior.",
+			"evidence": {
+				"path": "C:/tmps/rocut-stylized-f6XU4z/droplets-native-uWys2J/verification-v2.json",
+				"sha256": "1034efafba832c7b16fa35e2cd1f83c900e763abbbc02338a573d62ca53a1a58"
+			}
+		},
+		"gpu": {
+			"passed": 5,
+			"failed": 0,
+			"backend": "Native Vulkan",
+			"adapter": "NVIDIA GeForce RTX 3060 Laptop GPU",
+			"scope": "Real texture refraction, alpha/hidden RGB, exact no-op, frame/seed/seek determinism and invalid raw-pass rejection; not browser hardware WebGPU.",
+			"inputsUnchanged": 121,
+			"evidence": {
+				"path": "C:/tmps/rocut-stylized-f6XU4z/droplets-gpu-ngmBDb/result.json",
+				"sha256": "bee2790f4e60ae18ea0f415104fc0cd5e5e824253f8314ead8d7003675649f2f"
+			},
+			"log": {
+				"path": "C:/tmps/rocut-stylized-f6XU4z/droplets-gpu-ngmBDb/full.log",
+				"sha256": "4c246b1684f96d1120857f2929f7fcc894e21bc6c80b24448cbaf733b092962e"
+			}
+		},
+		"counting": "The two seven-test CPU runs are repeats, not fourteen distinct passing tests. The v2 record compiled GPU tests only; the separate GPU run executed all five."
+	},
+	"creatorAuthoring": {
+		"status": "helper-and-isolated-agent-copy-verified",
+		"passed": 22,
+		"dropletsTests": 9,
+		"liquidRegressionTests": 12,
+		"realCopyPackagingTests": 1,
+		"scope": "Complete image resource, independent source/effect seeds, eight static controls and attached amount/refraction/highlight keyframes; strict ranges without caller mutation.",
+		"limits": "Packaging uses real copy script with main/renderer entry stubs, not executable bundle or installed-plugin validation. Existing unrelated no-unsafe-finally lint failure remains in the packaging test cleanup guard.",
+		"evidence": {
+			"path": "C:/tmps/rocut-droplets-authoring-e46CkQ/verification.json",
+			"sha256": "02289dd1ec23d708f2300f2f35c3b4bde7bc5f3fc1578e646a2505460b51b97e"
+		}
+	},
+	"hostPersistence": {
+		"status": "real-host-file-store-verified",
+		"passed": 1,
+		"assertions": 656,
+		"reopens": 6,
+		"rejectedAtomicTransactions": 142,
+		"inputsUnchanged": 2733,
+		"scope": "All eight controls, three attached optical channels, inclusive bounds, offline imported resource and exact memory/revision/disk preservation after invalid multi-operation batches.",
+		"layerAnimationsSupported": false,
+		"hostClosed": true,
+		"limits": "Host reopen within one test process, not fresh OS process or UI acceptance.",
+		"evidence": {
+			"path": "C:/tmps/rocut-droplets-host-QuHep7/droplets-persistence-1xTEF8/evidence.json",
+			"sha256": "dc9b56f10bb933eb721fc66d793e805c21a0df83b2d6959f0a2d9e3bba5df1ba"
+		},
+		"run": {
+			"path": "C:/tmps/rocut-droplets-host-QuHep7/run-result.json",
+			"sha256": "d8f72c03107898bad6cb7dd78676ea8698bc334e9caa0bb3424f5708549f1c5d"
+		}
+	},
+	"wasm": {
+		"status": "private-package-gates-passed",
+		"package": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/rocut-liquid-pipeline-DZbDIO/rust/wasm/pkg/opencut_wasm_bg.wasm",
+			"sha256": "46441328ec9dd68deb6e54b68b2e2acd22e538923aef36f98bc03621ef40c077"
+		},
+		"passed": ["source", "paths", "api", "init", "controls"],
+		"abiNegativeControls": 27,
+		"abiPositiveControls": 2,
+		"sharedPackageReplaced": false,
+		"evidence": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/droplets-wasm-gates-nOdShH/evidence.json",
+			"sha256": "19df30226e026644c4de758d8838ee74bd958ffd94e2c39c779d0b341edd78fc"
+		}
+	},
+	"thresholds": {
+		"premultipliedRgb": 2,
+		"alpha": 1,
+		"outsideIdentity": 0,
+		"boundarySquaredRadius": 0.0001,
+		"exportMeanRgba": 10,
+		"exportActiveRgb": 15,
+		"exportMinimumActivePixels": 64,
+		"exportTimestampSeconds": 0.0011,
+		"unchanged": true
+	},
+	"browserRaster": {
+		"status": "passed",
+		"backend": "Private Chromium SwiftShader WebGL",
+		"pixelCases": 162,
+		"strictAdmissionRejections": 60,
+		"failedPixels": 0,
+		"outsideFailedPixels": 0,
+		"maximumPremultipliedRgbError": 1.6196078431372598,
+		"maximumAlphaError": 1,
+		"maximumBoundaryExcludedPixelsPerFrame": 6,
+		"inputsUnchanged": 452,
+		"codecVerified": false,
+		"browserClosed": true,
+		"serverClosed": true,
+		"scope": "Native effect resolver/raster at landscape and portrait sizes with opaque, holes and transparent legal canvas inputs. Raw frame candidates are not encoded video acceptance.",
+		"evidence": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/droplets-raster-h3t1Ni/evidence.json",
+			"sha256": "a02abf41faa33f076cd9b8c47cd365e4577320f1ad51afd68e13f85149792fe0"
+		}
+	},
+	"productionPipeline": {
+		"status": "preview-passed-video-failed",
+		"backend": "Private Chromium SwiftShader WebGL",
+		"dimensions": [192, 128],
+		"fps": 30,
+		"preview": {
+			"pixelCases": 45,
+			"failedPixels": 0,
+			"outsideFailedPixels": 0,
+			"maximumPremultipliedRgbError": 1,
+			"maximumAlphaError": 0,
+			"maximumBoundaryExcludedPixelsPerFrame": 5,
+			"timingAndReverseSeekCases": 4,
+			"alphaReplacementCases": 1,
+			"scope": "Real CanvasRenderer/WasmCompositor: attached and effect-layer placements, start/end boundaries, offset/trim invariance, three attached optical animations, repeat/reverse seeks and full alpha-frame replacement."
+		},
+		"video": {
+			"codec": "vp9",
+			"frames": 6,
+			"status": "browser-decoder-quality-failed",
+			"failedFrameIndex": 5,
+			"meanRgba": 10.420979817708334,
+			"activeRgb": 15.385959966168594,
+			"activePixels": 3547,
+			"formalIndependentDecoderAccepted": false,
+			"artifact": {
+				"path": "C:/tmps/rocut-stylized-f6XU4z/droplets-pipeline-dqLwDm/production.webm",
+				"sha256": "ebbbac31d0cc3433118190c9ceadb592a49506cfaf2ce9c3806344202f04c740"
+			},
+			"independentExpectedRgba": {
+				"path": "C:/tmps/rocut-stylized-f6XU4z/droplets-pipeline-dqLwDm/expected.rgba",
+				"sha256": "8e9e463233f562e733925f7996df9aa2eebc8de160a4d0a626d1d3c9190828ed"
+			}
+		},
+		"inputsUnchanged": 1846,
+		"cleanup": {
+			"browserClosed": true,
+			"serverClosed": true,
+			"nativeHandlesGone": true,
+			"nativeReleaseCalls": 1,
+			"errors": []
+		},
+		"evidence": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/droplets-pipeline-dqLwDm/evidence.json",
+			"sha256": "fa3a1cbf4ecbadfdb1fd24eb946e9893e9eea9c486b222636b283eab63a20ba9"
+		}
+	},
+	"codecDiagnosis": {
+		"status": "diagnostic-only-not-acceptance",
+		"observed": "VP9 Profile 0 yuv420p, full-range BT709/sRGB, six correctly ordered 192x128 frames at 30 fps and 0.2 seconds. Default FFmpeg decode also fails the unchanged active-RGB quality gate.",
+		"inference": "Failure is downstream of correct raster rendering in the production encode/color-conversion/reconstruction path. Blue chroma dominates the error; the recorded bitstream does not isolate RGB-to-I420 sampling from encoder decisions.",
+		"controls": "Alternative encodes and chroma reconstruction controls are diagnosis only. No transformed reference, threshold change or diagnostic video is treated as production acceptance.",
+		"evidence": {
+			"path": "C:/tmps/droplets-codec-diagnostic-summary-dqLwDm.json",
+			"sha256": "5206c4cea41d0dfa171051fded1c4c3e1a907017571af179d58c72f986c1c34b"
+		}
+	},
+	"controlledEncodingDiagnosis": {
+		"status": "diagnostic-only-not-acceptance",
+		"bitrates": [222000, 369000, 738000, 4000000],
+		"onlyConfigurationChange": "bitrate",
+		"allSixPreEncodeFramesIdentical": true,
+		"frameMetadataIdenticalExcludingQueueSize": true,
+		"originalVideoFailureReproducedByteForByte": true,
+		"higherBudgets": {
+			"browserSixFramesPassed": true,
+			"defaultFfmpegFailedFrameIndex": 0,
+			"defaultFfmpegActiveRgb": 15.42181489,
+			"firstCompressedPacketIdentical": true,
+			"firstPacketSha256": "1770dc0667cdb73276a5bc105e97a655ec4c768448ca6ae163eaec5f514ddab7",
+			"firstNativeYuvAndDefaultDecodedRgbaIdentical": true
+		},
+		"conclusion": "Bitrate affects later-frame quality but increasing it alone does not pass the unchanged independent decoder gate. RGB-to-I420 sampling and chroma reconstruction remain to be investigated; no production bitrate change was made.",
+		"initializationFailures": "Retained Vite 504 Outdated Optimize Dep failures occurred before any encoder or capability query. Import-only warmup was recorded separately; they are not bitrate failures.",
+		"formalDecoderOrThresholdsChanged": false,
+		"originalFailurePreserved": true,
+		"evidence": {
+			"path": "C:/tmps/droplets-final-diagnostic-4xyF3Z/summary.json",
+			"sha256": "e34817a0598c597eb839a1c3ee542b1f6bc1ef6e7f4dbbb1bfd86a7891a7de80"
+		}
+	},
+	"editor": {
+		"status": "real-editor-ui-history-passed",
+		"backend": "Private Chromium SwiftShader",
+		"transport": "Actual Host staticDir and authenticated URL; attached editor task runner.",
+		"parameterEditsWithUndoRedo": 8,
+		"parameters": [
+			"amount",
+			"count",
+			"radius",
+			"speed",
+			"elongation",
+			"refraction",
+			"highlight",
+			"seed"
+		],
+		"opticalChannels": ["amount", "refraction", "highlight"],
+		"keyframeCreationUi": false,
+		"keyframeScope": "Host-authored channels rendered by the actual editor; three sample times, reverse seeks and reload.",
+		"reopenedRevision": 25,
+		"resourceAvailableAfterReopen": true,
+		"knownNoise": "Two expected graph-editor user-presets HTTP 404 console entries; no external requests. Build warnings are retained in the run evidence.",
+		"cleanup": {
+			"browserClosed": true,
+			"hostClosed": true,
+			"forced": false,
+			"errors": []
+		},
+		"evidence": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/droplets-editor/run-d74IEd/evidence.json",
+			"sha256": "0681581085a78338d39f3f6b3461903a70a8e1c21a96a1b317d0b9fd5d3c818a"
+		}
+	},
+	"initialSameProjectExport": {
+		"status": "preflight-failed-before-export",
+		"source": "The project from the preceding real editor UI run, reopened for export with the same private WASM.",
+		"failure": "No integer full-canvas geometry in the 16 attempted viewport combinations; no export checks completed. Subsequent host diagnostics also report the missing project-before-export.json that this aborted flow never created.",
+		"checksCompleted": 0,
+		"cleanup": {
+			"browserClosed": true,
+			"hostClosed": true,
+			"forced": false,
+			"errors": []
+		},
+		"evidence": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/droplets-editor/run-24IvjD/evidence.json",
+			"sha256": "44465403e66f359a7344012794e87aa947eae0a7d8f7b4da8a35fb882c3b2493"
+		}
+	},
+	"sameProjectExport": {
+		"status": "passed",
+		"source": "The original run-d74IEd UI-edited project and original editor-dist; no project recreation, parameter replay or WASM replacement.",
+		"dimensions": [640, 360],
+		"fps": 30,
+		"frames": 6,
+		"durationSeconds": 0.2,
+		"codec": "vp9",
+		"pixelFormat": "yuv420p",
+		"independentDecoder": "FFmpeg/FFprobe",
+		"meanRgbRange": [5.815814525462963, 6.592309027777778],
+		"effectRgbRange": [8.026839786402627, 10.048656302723549],
+		"thresholds": {
+			"meanRgb": 10,
+			"effectRgb": 15,
+			"effectPixels": 64,
+			"timestamp": 0.0011
+		},
+		"noEffectAndRepeatedFirstRejected": true,
+		"geometry": {
+			"policy": "Select the first complete integer canvas from a predeclared 1440-wide, 1000..1127-high viewport list before pixel references or encoding.",
+			"viewport": [1440, 1028],
+			"fullCanvasBounds": [401, 127, 638, 358],
+			"reference": "All pixels of the complete neutral UI canvas normalized to 640x360; same bounds and filter for baseline and six frames. Not an independent optical solver reference."
+		},
+		"persistence": {
+			"revision": 25,
+			"uiStageChanges": "Only metadata and summary updatedAt; 1600ms disk quiet before the export baseline.",
+			"exportBaselineSha256": "2972e73dff9338f0ca23ae43ec266dabb99a1039534e2c67714664de1a8980fc",
+			"beforeAfterCloseReopenBytesIdentical": true
+		},
+		"cleanup": {
+			"browserClosed": true,
+			"hostClosed": true,
+			"forced": false,
+			"errors": []
+		},
+		"knownNoise": "One optional user-presets 404 and unavailable WebGPU adapter; external requests and page errors zero.",
+		"videoSha256": "266ea42bdd378228b25fdfed4a90418552f439ecf13529ccf846cc59cdb385c8",
+		"evidence": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/droplets-editor/run-9FKfke/evidence.json",
+			"sha256": "eb50cff93d1b896d854eb89673ca584a40548310557ca9186ee41036fff63020"
+		},
+		"geometryAmendment": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/droplets-ui-review-run-d74IEd/geometry-amendment.json",
+			"sha256": "efc63cf0e72ef8bfbabd2f3a98c61ebebee7ff65d4dece93d3ca4f9022442d49"
+		},
+		"independentReview": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/droplets-ui-export-review-run-9FKfke/review.json",
+			"sha256": "ee49109dede35ad6121d68f15bc33fb8ddfecf6fc110d2cbfabd09559b4bb92b"
+		}
+	},
+	"retainedFailures": [
+		{
+			"reason": "Earlier private gate run lacked TypeScript and editor-classic migration links. The later nOdShH gate run passed; this failed run remains retained.",
+			"path": "C:/tmps/rocut-stylized-f6XU4z/droplets-wasm-gates-qn3rsp/evidence.json",
+			"sha256": "2f0203c7be3ffe71256deb1c5b838ed99b386388bf001832e56533b96fdd089a"
+		},
+		{
+			"reason": "First pipeline oracle expected transparent inactive pixels, while production correctly clears opaque black; all 24576 alpha values differed. The owned oracle was corrected without changing production or thresholds.",
+			"path": "C:/tmps/rocut-stylized-f6XU4z/droplets-pipeline-5Pkr7t/evidence.json",
+			"sha256": "b539f8113642195b70538cb06c29201a1d34f8b53f777fc6e5123c5d8309d6c2"
+		},
+		{
+			"reason": "Additive black-composition ordering correction evidence: six CPU tests, 15668 assertions, strict TS/lint/UTF-8 checks; unchanged thresholds and opaque codec references.",
+			"path": "C:/tmps/rocut-droplets-backdrop-fix-ypPEWI/verification.json",
+			"sha256": "d522db886db33077829fae0bba2441e5285ac71b7504545c69e217d98bef2d91"
+		}
+	],
+	"notClaimed": [
+		"Passing the 192x128 production oracle VP9 export; it remains a separate failed check despite the passing 640x360 same-edited-project video.",
+		"Installed Creator Studio/Rocut plugin, Electron runtime or hardware browser WebGPU validation.",
+		"UI creation of optical keyframes, or any effect-layer animation support.",
+		"Alpha-preserving video, all-codec/all-backend coverage, performance or resource/latency bounds.",
+		"Whole current worktree build, shared dependency replacement, commit, push, release or completion of the overall goal."
+	],
+	"isolation": {
+		"artifactsRoot": "C:/tmps",
+		"method": "Private source snapshots and package, real scoped production paths and independent references; manifests retain the consumed inputs and their hashes.",
+		"historicalEvidenceOrSnapshotsRewritten": false,
+		"aggregateOnly": true
+	}
+}

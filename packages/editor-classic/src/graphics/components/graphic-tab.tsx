@@ -28,12 +28,27 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { MinusSignIcon, PlusSignIcon } from "@hugeicons/core-free-icons";
 import { cn } from "../../utils/ui";
 import type { MediaTime } from "../../wasm";
+import { ProgrammaticSourcePanel } from "./programmatic-source-panel";
 
 registerDefaultGraphics();
 
 const DEFAULT_STROKE_WIDTH = 2;
 
 export function GraphicTab({
+	element,
+	trackId,
+}: {
+	element: GraphicElement;
+	trackId: string;
+}) {
+	return element.definitionId === "programmatic" ? (
+		<ProgrammaticSourcePanel element={element} trackId={trackId} />
+	) : (
+		<ParametricGraphicTab element={element} trackId={trackId} />
+	);
+}
+
+function ParametricGraphicTab({
 	element,
 	trackId,
 }: {

@@ -56,11 +56,26 @@ export class SessionPersistenceCoordinator {
 	private readonly listeners = new Set<MutationListener>();
 	private readonly projectRecordListeners = new Set<ProjectRecordListener>();
 	private destroyed = false;
+	readonly listAttachmentHeaders?: ProjectStore["listAttachmentHeaders"];
 
 	constructor(
 		readonly store: ProjectStore,
 		readonly projectMutationArbiter = new ProjectMutationArbiter(),
-	) {}
+	) {
+		const listHeaders = store.listAttachmentHeaders;
+		if (listHeaders) {
+			this.listAttachmentHeaders = async (args) => {
+				this.assertAlive();
+				const headers = await listHeaders.call(store, args);
+				this.assertAlive();
+				return headers.map(({ projectId, key, metadata }) => {
+					const logical = this.attachmentKey({ projectId, key });
+					this.attachmentSnapshots.set(logical, cloneOpaque(metadata));
+					return { projectId, key, metadata: cloneOpaque(metadata) };
+				});
+			};
+		}
+	}
 
 	subscribe(listener: MutationListener): () => void {
 		this.assertAlive();

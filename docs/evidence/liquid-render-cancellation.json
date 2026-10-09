@@ -1,0 +1,538 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "bounded-liquid-video-subset-accepted",
+	"acceptance": {
+		"liquid": "V",
+		"ledger": {
+			"verified": 25,
+			"notAccepted": 10
+		},
+		"definition": "Verified bounded MAC-grid Liquid video subset; not upstream equivalence, Liquid Object, installed runtime or all GPU backends.",
+		"section": "Creator Studio development plan 8.1",
+		"basis": "Historical native/Host/editor/same-project video evidence plus this scoped cancellation and production-pipeline delta.",
+		"historicalUiEvidence": "docs/evidence/liquid-particle-foundation.json#liquidEditorExportVerification",
+		"historicalUiNotRerunOnNewWasm": true,
+		"overallGoalComplete": false
+	},
+	"implementation": {
+		"ownership": "Rust owns replay, physical computation, preparation/admission and request identities; TypeScript transports lifecycle and publishes frames.",
+		"api": [
+			"beginRenderFrameForHandle",
+			"advanceRenderFrameForHandle",
+			"commitRenderFrameForHandle",
+			"cancelRenderFrameForHandle"
+		],
+		"chunks": {
+			"defaultPhysicalSteps": 1,
+			"allowedRange": [
+				1,
+				64
+			],
+			"quotaSharedAcrossPasses": true,
+			"yield": "SessionResources.setTimeout({ handler, ms: 0 }); no microtask-only cancellation",
+			"checkpointClonesPerRequest": 1,
+			"crossRequestCache": false
+		},
+		"preparation": "CPU replay has no live GPU_RUNTIME/Compositor mutable borrow, encoder/render pass or surface; prepared frame/pass/params/dimensions bind owner generation and an aggregate 8 MiB admission.",
+		"cancellation": "Typed AbortError with code RENDER_CANCELLED. Mutation/new request/dispose invalidates old identity; late old cancellation cannot remove a replacement; failed/incomplete requests cannot publish.",
+		"queue": "Cancellation reaches output.cancel promptly while actual renderAndCapture and encoder work retain the render lock until settlement; close blocks admission, aborts and truly drains before native release.",
+		"publication": "renderToCanvas replaces the entire frame with copy, restores the prior composite mode in finally, and does not touch the target on cancellation.",
+		"compatibility": "Old synchronous API drives the same preparation. New async path requires matching private WASM APIs; no uninterruptible fallback."
+	},
+	"nativeTests": {
+		"timeReplay": 18,
+		"effectsLiquid": 45,
+		"preparedEffectsIncludedInLiquid": 3,
+		"syncChunkBitwiseParity": true,
+		"independentThreadStepsBeforeCancellation": {
+			"generic": 1,
+			"liquid": 2
+		},
+		"memoryAndOriginalEventBudgetRegressions": true,
+		"standaloneRustcIsRepeatNotAdditionalTests": true,
+		"additionalCompositorAndRegistryRuns": "Earlier session-reported 6 prepared-compositor and 5 registry tests have no independently retained final logs; not included in this count."
+	},
+	"typescriptTests": {
+		"boundaryAndSessionTimers": {
+			"pass": 18,
+			"expectCalls": 74
+		},
+		"legacySession": {
+			"pass": 21,
+			"expectCalls": 248
+		},
+		"heldEncoderCancellation": {
+			"pass": 3,
+			"expectCalls": 18
+		},
+		"canvasPublication": {
+			"pass": 6,
+			"expectCalls": 28
+		},
+		"priorTextureCache": {
+			"pass": 4,
+			"expectCalls": 19,
+			"rerunThisBatch": false
+		},
+		"counting": "Do not sum the earlier 15 boundary tests with their later 18-test replacement; wrapper runs and repeats are not additional tests.",
+		"nativeBoundaryDoubles": true
+	},
+	"wasm": {
+		"path": "C:/tmps/rocut-stylized-f6XU4z/rocut-three-resources-7uVU9v/rust/wasm/pkg",
+		"bytes": 9132014,
+		"packageHashes": {
+			"opencut_wasm.js": "a06ccc17ba7bfe15ead5baaa977fae97d456e85bd1a3d5695bfb1183e1db5219",
+			"opencut_wasm_bg.js": "13065d718606b129fb2f92f89bcf72d22ca075f99289b358edfe49e62f9c8124",
+			"opencut_wasm_bg.wasm": "75047aecea9be1edba673c8387e17c52d4687d82ca397951e32bbe2f2dd36b4f",
+			"opencut_wasm.d.ts": "721a193a3bc2dce4e46cf334a4c529809fca0680ec619509fc74054800d69d87",
+			"package.json": "60502f95b49df31dd41e5be0ada1826e0693b30a525d3b49da73f4e106a1a4b4"
+		},
+		"build": {
+			"exit": 0,
+			"closed": true,
+			"elapsedMs": 396115,
+			"offline": true,
+			"locked": true,
+			"noInstall": true
+		},
+		"gates": [
+			"source",
+			"paths",
+			"api",
+			"init"
+		],
+		"abiControls": {
+			"negative": 27,
+			"positive": 2
+		},
+		"toolchainCallControls": 8,
+		"publicJavascriptExports": 110,
+		"stableBinaryExports": 127,
+		"newPublicAndStableExports": 4,
+		"removedPublicAndStableExports": 0,
+		"lowLevelDeclarations": 132,
+		"adjacentInternalDelta": "No matching previous 106-JS/123-stable declaration package was found; full adjacent internal glue/import delta is not claimed.",
+		"canonicalGateSourceAligned": true,
+		"sharedPackageReplaced": false
+	},
+	"boundary": {
+		"directory": "C:/tmps/rocut-stylized-f6XU4z/liquid-cancellation-LcFprY",
+		"inputHashesVerified": 448,
+		"backend": "Chromium SwiftShader WebGL",
+		"placements": [
+			"layer",
+			"outgoing",
+			"incoming",
+			"scene",
+			"multiple"
+		],
+		"chunkSizes": [
+			1,
+			5,
+			64
+		],
+		"syncChunkPixels": "byte-identical",
+		"singlePassAdvances": [
+			23,
+			5,
+			1
+		],
+		"threePassAdvances": [
+			69,
+			14,
+			2
+		],
+		"actualDriver": {
+			"advancesAtAbort": 2,
+			"commits": 0,
+			"cancellations": 1,
+			"timersAfterCancel": {
+				"created": 2,
+				"released": 2,
+				"live": 0
+			},
+			"timersAfterRecovery": {
+				"created": 70,
+				"released": 70,
+				"live": 0
+			}
+		},
+		"mutations": [
+			"resize",
+			"upload",
+			"sync-render",
+			"new-request"
+		],
+		"noLiquidFastPath": true,
+		"disposedRequestRejected": true,
+		"consoleErrors": 0,
+		"pageErrors": 0,
+		"externalRequests": 0,
+		"browserClosed": true,
+		"serverClosed": true,
+		"limits": [
+			"Resize and upload use unchanged dimensions/content: entry invalidation only.",
+			"Transition sides use symmetric inputs: not a side-swapping counterexample.",
+			"Synchronous/chunk equality is the same algorithm, not an independent numerical solver oracle."
+		]
+	},
+	"productionPipeline": {
+		"directory": "C:/tmps/rocut-stylized-f6XU4z/liquid-cancellation-axdtya",
+		"snapshot": "C:/tmps/rocut-stylized-f6XU4z/rocut-liquid-pipeline-RxptCj",
+		"manifestSha256": "47839d09314da6cb475823cd3ec1b081f521a935702eb26a593a784a55d38ad7",
+		"inputHashesVerified": 1834,
+		"realComponents": [
+			"CanvasRenderer",
+			"WasmCompositor",
+			"SceneExporter",
+			"Liquid WASM",
+			"VP9 encoder"
+		],
+		"cancelledCaptureCallbacks": 0,
+		"cancelledPreviewSentinelRetained": true,
+		"recoveredCanvasExactlyNativeAndTransparentControl": true,
+		"cancelledExportEvents": {
+			"cancelled": 1,
+			"complete": 0,
+			"progress": 0,
+			"error": 0
+		},
+		"recoveryExportEvents": {
+			"cancelled": 0,
+			"complete": 1,
+			"progress": 4,
+			"error": 0
+		},
+		"timerCounts": {
+			"created": 216,
+			"released": 216,
+			"live": 0
+		},
+		"nativeReleaseCalls": 1,
+		"nativeHandleGone": true,
+		"rejectedAfterClose": true,
+		"consoleErrors": 0,
+		"pageErrors": 0,
+		"externalRequests": 0,
+		"browserClosed": true,
+		"serverClosed": true,
+		"fixtureOwnedResourceRegistry": true,
+		"notWholeSessionUi": true,
+		"video": {
+			"width": 96,
+			"height": 64,
+			"fps": 30,
+			"frames": 3,
+			"codec": "vp9",
+			"pixelFormat": "yuv420p",
+			"bytes": 3680,
+			"sha256": "8ad61295126c82426e8df1f2ee0f13a1e0938cabe99802487a429086a1a310db",
+			"decodedSha256": "0f3d11df1568a3b9843ba2118e1bf6eff3c43a19f663305b97e4d933e41bce07",
+			"referenceSha256": "395ab498f7e9eaf87e883aa3fcec2d7123cee0ebfff26f1b1f581574a0089a16",
+			"baselineSha256": "ffe03de760ad66e4ef709359e6a0d538ada7db52c15a470afeb21dda3aae92ce",
+			"thresholds": {
+				"meanRgba": 10,
+				"activeRgb": 15,
+				"activePixels": 64,
+				"timestamp": 0.0011
+			},
+			"metrics": [
+				{
+					"frame": 0,
+					"meanRgba": 7.195068359375,
+					"activeRgb": 11.342867357883447,
+					"activePixels": 2797,
+					"baselineCounterfactualActiveRgb": 48.161601716124416,
+					"timestamp": 0
+				},
+				{
+					"frame": 1,
+					"meanRgba": 8.9473876953125,
+					"activeRgb": 10.621516164994427,
+					"activePixels": 4186,
+					"baselineCounterfactualActiveRgb": 53.126931039974515,
+					"timestamp": 0.033
+				},
+				{
+					"frame": 2,
+					"meanRgba": 9.077433268229166,
+					"activeRgb": 10.705040650406504,
+					"activePixels": 4100,
+					"baselineCounterfactualActiveRgb": 52.59447154471545,
+					"timestamp": 0.067
+				}
+			],
+			"reference": "Recovered production renderer frames, not an independent solver oracle."
+		},
+		"counterfactuals": {
+			"staleBaseline": "rejected on all three frames",
+			"repeatedFirstReferenceOrDecodedFrame": "rejected",
+			"anySingleReferenceRepeatedForEntireVideo": "rejected",
+			"decodedZeroOneOne": "accepted by existing lossy thresholds",
+			"decodedZeroTwoOne": "accepted by existing lossy thresholds",
+			"strictPerFrameTemporalImageIdentity": false,
+			"videoAlphaFidelity": false
+		}
+	},
+	"publicationBug": {
+		"failedRun": "C:/tmps/rocut-stylized-f6XU4z/liquid-cancellation-v0x45l",
+		"cause": "Default source-over mixed the old preview target into 199 non-opaque native pixels.",
+		"nonOpaquePixels": 199,
+		"transparentPixels": 27,
+		"partiallyTransparentPixels": 172,
+		"opaqueUnchangedPixels": 5945,
+		"changedBytes": 787,
+		"independentDiagnosis": "Recovered and fresh native exactly equal transparent-copy control; failed target exactly equals magenta source-over control.",
+		"fix": "Full-frame copy publication with finally restoration; six narrow tests and exact real-browser pixel recovery verified."
+	},
+	"verification": {
+		"strictTypeScript": {
+			"diagnostics": 0,
+			"sourceFiles": 685,
+			"implementationFiles": 422,
+			"allImplementationsInsideFrozenSnapshot": true,
+			"publicPrivateWasmDeclarations": true,
+			"skipLibCheck": true
+		},
+		"explicitFixtureRunnerLint": {
+			"files": 11,
+			"errors": 0,
+			"warnings": 0,
+			"ignored": false
+		},
+		"productionTestsLint": "Covered by scoped owner reports; no suppressions added.",
+		"wholeWorktreeGates": "Not all green: remaining unrelated resource-boundary timers (8), unkeyed-compositor match (1), and headless-semantic-fixture migration import at the port boundary remain recorded.",
+		"sourceFreeze": "Current CPU, timer, publication and unchanged earlier TS paths matched their final records. Full Rust and pipeline consumption hashes are in the independent reviews.",
+		"browserSnapshotTests": "Frozen browser snapshots contain an earlier cancellation unit-test file not imported by the browser. The final 18-test revision is verified separately by timer-v2.",
+		"syntaxChecks": [
+			"script/probe-liquid-cancellation.mjs",
+			"script/fixtures/liquid-cancellation-decode.mjs"
+		]
+	},
+	"retainedFailures": [
+		{
+			"directory": "liquid-cancellation-yihsvj",
+			"reason": "Probe optimizer omitted eventemitter3 CJS interoperability; no render occurred."
+		},
+		{
+			"directory": "liquid-cancellation-EDQXXy",
+			"reason": "Fixture omitted normal registerDefaultEffects bootstrap; fixed by invoking the actual bootstrap."
+		},
+		{
+			"directory": "liquid-cancellation-gNEYpe",
+			"reason": "Actual preview target restoration failed with source-over."
+		},
+		{
+			"directory": "liquid-cancellation-v0x45l",
+			"reason": "Same preview failure with retained independent RGBA diagnostics."
+		}
+	],
+	"notClaimed": [
+		"Single-solver-step interruption or a wall-clock cancellation latency bound.",
+		"Cancellation after GPU work has already committed.",
+		"Cross-request checkpoint caching or long-project performance.",
+		"Installed Elftia/Electron Liquid acceptance or full runtime packing/release.",
+		"Hardware WebGPU, real GPU mapping failure/timeout/device-loss.",
+		"Entire new-WASM UI suite; historical UI evidence uses its original package.",
+		"Strict decoded per-frame temporal image identity or alpha-preserving master video.",
+		"Whole concurrent worktree/audio/MV/Offthread/Agent validation or all-process resource-zero proof."
+	],
+	"artifacts": [
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/liquid-cancel-core-24f63e1f/evidence-v2.json",
+			"sha256": "0a51738f8fb1a6ccfc41a15f2190b89901577229c30caa461d6a29966ebc4eb0"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/liquid-cancel-ts-19f397c29d/verification.json",
+			"sha256": "b85c5096596553f3a03428853d20bbea4fd445586ca9d82a9a300c30606616c2"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/liquid-cancel-timer-v2-k7x9Wq/verification-v2.json",
+			"sha256": "6d0ec0fbd9654055952a45b2dc093b97487562eac2717e84a63754e22f7e7831"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/liquid-cancel-ts-19f397c29d/canvas-publication-fix.json",
+			"sha256": "6cb83b3169096fb2ac10583e854be312ea318b010c817bea265b952998771970"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/liquid-wasm-gates-E9mcij/final-evidence.json",
+			"sha256": "173ebd8eee546c2ca3350862e35960c39453a66622f75f0c9356f61960005f86"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/liquid-cancellation-LcFprY/evidence.json",
+			"sha256": "2dddb724db6e049616d5e6a869da9d0669e8c5b747606d693445c52a942550b3"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/liquid-cancellation-axdtya/evidence.json",
+			"sha256": "677798ccf9620f7209031903df17b38f413dd389ba652b281deef9ae40bc3273"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/liquid-cancellation-axdtya/independent-decode.json",
+			"sha256": "ab3368feb57361586af8268ca594d3a0303628170e75db6979b8d9766e901e85"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/liquid-cancellation-diagnosis-v0x45l.json",
+			"sha256": "bd3d3a2ceffe07c8e78bd6c036a6cf704ac602881921d7123cd7ff8c64fbbe3d"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/rocut-three-resources-7uVU9v/private-build-result.json",
+			"sha256": "d1999a3b1e57af6a2d73fc33640527d47233b98b2d0d47e5f9958f8b1fa759c6"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/liquid-pipeline-rxptcj-typecheck.json",
+			"sha256": "1d3f1fc6e5e7354d36ec8926f1a713992fbb250253a94812d8a7bf27fb57e7ec"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/liquid-pipeline-rxptcj-lint.json",
+			"sha256": "a1888f8be2fc6be228c6b459f1ba44feeb35ef43b239f8c258408bee3409dcf8"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/liquid-cancellation-review-axdtya.json",
+			"sha256": "a321ae3edef3df90855f25e88b09982c1522f2f380e20cd8787ebcea0bfa4faf"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/liquid-cancellation-scope-review-v1-m7Qk2.json",
+			"sha256": "86ccac9766e2dfe18ad413e76de0a3ab1250d7794d9dc0517751788b5b42818a"
+		}
+	],
+	"currentSourceHashes": [
+		{
+			"path": "rust/crates/time/src/replay.rs",
+			"sha256": "1f522b63a462e2dc44d6c40d7df97e7f0cdf09d83c601c5b806ea27d0534d11a"
+		},
+		{
+			"path": "rust/crates/time/src/replay/job.rs",
+			"sha256": "eac1d736fb1641ada8264f5e9a78b354986cb4f41106beb695ade0a25dc16331"
+		},
+		{
+			"path": "rust/crates/time/src/replay/tests.rs",
+			"sha256": "c0129752c0d2be352c8b0a2ab0dcb0a20c52c58f58cd2e712cab930fcc9495de"
+		},
+		{
+			"path": "rust/crates/time/src/replay/replay_test_model.rs",
+			"sha256": "8237dbfbe7e70679318f2b406372ac9e8e29311229a49dca9a1e982f0b69303c"
+		},
+		{
+			"path": "rust/crates/time/src/replay/job_tests.rs",
+			"sha256": "c0528b8ecf81f915df08774d0dd284f1aa674444cc172a0f35543a5604a70a3e"
+		},
+		{
+			"path": "rust/crates/effects/src/liquid_replay.rs",
+			"sha256": "6ce20fa5c015cbbf694481177db850dfbd1234ab3b5338e2af261755dd9a5021"
+		},
+		{
+			"path": "rust/crates/effects/src/liquid_replay_tests.rs",
+			"sha256": "cc1563a720a135ce1850303552ac7972ae7850bb7bc1e75a2cc6dcf6b45fdd48"
+		},
+		{
+			"path": "rust/crates/effects/src/liquid_replay_job_tests.rs",
+			"sha256": "5a42ce8410bcf517b9a619fd827c52c57653fa0f9449daab54688990af3ca6e5"
+		},
+		{
+			"path": "packages/editor-classic/src/services/renderer/compositor/render-request.ts",
+			"sha256": "ac33ec5b586eab83e3a2d45af8092431fbd7d8e96cf2ced98bdcb3bcb54bcc7d"
+		},
+		{
+			"path": "packages/editor-classic/src/services/renderer/compositor/wasm-compositor.ts",
+			"sha256": "debda1ac4025298857a857de140b7212e3767c6b0972347ad62e1c6823a6682c"
+		},
+		{
+			"path": "packages/editor-classic/src/services/renderer/__tests__/liquid-render-cancellation.test.ts",
+			"sha256": "94e053967bd94e6182d2aa95c3d4a01626e85db64c741e8a9c3a038141167151"
+		},
+		{
+			"path": "packages/editor-classic/src/services/renderer/canvas-renderer.ts",
+			"sha256": "1b2ba54b1a72bf01e075d4c35fef986dc600eb0d5ac161f31bff3d5be083db77"
+		},
+		{
+			"path": "packages/editor-classic/src/services/renderer/__tests__/canvas-renderer-publication.test.ts",
+			"sha256": "230dd58f82d8dfa89760a802647468a8c6224fa3f018e591f699ce19e770ee69"
+		},
+		{
+			"path": "script/fixtures/liquid-cancellation-pipeline.ts",
+			"sha256": "9af4db2939d2ad553a876a5b4bc20fab13b826979f9c8347541e939e77d12432"
+		},
+		{
+			"path": "script/fixtures/liquid-cancellation-pipeline-support.ts",
+			"sha256": "6568ee452c678e22ef98f9d234b5b3fea175a1745f364459d3682aebb579fb4c"
+		},
+		{
+			"path": "script/fixtures/liquid-cancellation-pipeline-export.ts",
+			"sha256": "ac36c04a9f67b7a72cfc98b3068ded3f88bfba54d63c54da3099d9d255d94bf2"
+		},
+		{
+			"path": "script/fixtures/liquid-cancellation-pipeline-diagnostics.ts",
+			"sha256": "164fcdeeac540c5cba248cd9c2ef99271f6ba952f28472d73aa28059dec894e1"
+		},
+		{
+			"path": "packages/editor-classic/src/services/renderer/scene-exporter.ts",
+			"sha256": "53695e216c29912ca827b664e5b242050e7340de461c1b21a911c9584828b165"
+		},
+		{
+			"path": "script/probe-liquid-cancellation.mjs",
+			"sha256": "3445d5af098ada667462926e9f0e5362ad901d0c294b8901e7eb09babe37f6d5"
+		},
+		{
+			"path": "script/fixtures/liquid-cancellation-browser.ts",
+			"sha256": "6f1c69c8ed75bae9b382d560463474d276d56a4e9bfe093a91b95cdcb74f8207"
+		},
+		{
+			"path": "script/fixtures/liquid-cancellation-cases.ts",
+			"sha256": "d8a99f61015b62fd36f4ae192b1b5dd83f431f6fe835edd0da40d8962741afd6"
+		},
+		{
+			"path": "script/fixtures/liquid-cancellation-driver.ts",
+			"sha256": "ab3e5bc97d1e8ebe62ee9da26e344b19d2313983b732de9a7b6d4607f6bb42ec"
+		},
+		{
+			"path": "script/fixtures/liquid-cancellation-decode.mjs",
+			"sha256": "91d85030c12c059907f22825c065aef19c004c7858f846c0c85b85cdcd63edf4"
+		},
+		{
+			"path": "script/wasm-api-surface-contract.mjs",
+			"sha256": "5cdc31a2929d0b3d18f3f138e746cf2c58d0ce4409d08092cac8835b08d98343"
+		},
+		{
+			"path": "script/check-wasm-source.mjs",
+			"sha256": "17131584391eefd6a0ca5a201fe5b8447ad974e22ef21ed8a5e32982a6d841b9"
+		},
+		{
+			"path": "script/wasm-toolchain-wiring.mjs",
+			"sha256": "f026d5b0afc53f67ca311f041589e79debd72157dfe747ca5dff77454e4e7592"
+		},
+		{
+			"path": "script/wasm-toolchain-wiring.test.mjs",
+			"sha256": "e7159212bc40b55eb77be19e46addccae7b6c06c53929130b16f350616cfbdec"
+		},
+		{
+			"path": "packages/editor-classic/src/core/managers/renderer-manager.ts",
+			"sha256": "47a38990bd5dccb45f48a0ae8a4b108bb9548e296f967f7f4364f118d507628f"
+		},
+		{
+			"path": "packages/editor-classic/src/preview/components/index.tsx",
+			"sha256": "e35d3b553443bc44e1866a2b30243434321690a6d253dfdf017b5b8f63f60dc1"
+		},
+		{
+			"path": "packages/editor-classic/src/editor/session/__tests__/wasm-test-mock.ts",
+			"sha256": "3eceb79f44dd514bd1aa1507f285d0195768b3a8822a43e04cec426e7c64dba2"
+		},
+		{
+			"path": "packages/editor-classic/src/editor/session/__tests__/session-state-isolation.test.ts",
+			"sha256": "aa769223d3932e63fd8d0b3916216665ac0f77733d0fed54295e1ac2c04aaf27"
+		},
+		{
+			"path": "packages/editor-classic/src/services/renderer/__tests__/scene-exporter-cancel.test.ts",
+			"sha256": "914dc48ce78d9484dd2cac172042d4450bbe5418e45e659f1e76466f1bc1a58b"
+		}
+	],
+	"isolation": {
+		"artifactRoot": "C:/tmps/rocut-stylized-f6XU4z",
+		"sharedDependencyReplacement": false,
+		"existingElftiaRestart": false,
+		"gitWrites": false,
+		"installation": false,
+		"release": false,
+		"historicalArtifactsModified": false
+	}
+}

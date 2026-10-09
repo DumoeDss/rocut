@@ -4,13 +4,13 @@ import type {
 	LibraryAudioElement,
 	RetimeConfig,
 	SceneTracks,
+	GraphicElement,
 } from "../timeline";
 import { shouldMaintainPitch } from "../retime/rate";
 import type { MediaAsset } from "./types";
 import { applyAudioMasteringToBuffer } from "./audio-mastering";
 import type { AudioCapableElement } from "../timeline/audio-state";
 import {
-	hasAnimatedVolume,
 	isElementMuted,
 	resolveEffectiveAudioGain,
 } from "../timeline/audio-state";
@@ -18,17 +18,22 @@ import { doesElementHaveEnabledAudio } from "../timeline/audio-separation";
 import { canElementHaveAudio, hasMediaId } from "../timeline/element-utils";
 import { canTrackHaveAudio } from "../timeline";
 import { mediaSupportsAudio } from "./media-utils";
-import { getSourceTimeAtClipTime, renderRetimedBuffer } from "../retime";
+import { renderRetimedBuffer } from "../retime";
 import { Input, ALL_FORMATS, BlobSource, AudioBufferSink } from "mediabunny";
 import { TICKS_PER_SECOND } from "../wasm";
 import type { SessionResources } from "../editor/session/resources";
 import { computeRmsBuckets, type SampleBucket } from "./waveform-summary";
+import { collectProgrammaticAudio } from "./programmatic-audio";
+import type { ProgrammaticAudioRuntime } from "./programmatic-audio-runtime";
+import { planAudioSampleWindow } from "opencut-wasm";
+import { mixAudioChannels } from "./audio-mix";
+export { mixAudioChannels } from "./audio-mix";
 
 const MAX_AUDIO_CHANNELS = 2;
 const EXPORT_SAMPLE_RATE = 44100;
 
 export interface CollectedAudioElement {
-	timelineElement: AudioCapableElement;
+	timelineElement: AudioCapableElement | GraphicElement;
 	buffer: AudioBuffer;
 	startTime: number;
 	duration: number;
@@ -379,10 +384,12 @@ interface AudioMixSource {
 }
 
 export interface AudioClipSource {
-	timelineElement: AudioCapableElement;
+	timelineElement: AudioCapableElement | GraphicElement;
 	id: string;
 	sourceKey: string;
-	file: File;
+	file?: File;
+	/** Prepared source PCM for programmatic clips; regular media keeps file IO. */
+	buffer?: AudioBuffer;
 	startTime: number;
 	duration: number;
 	trimStart: number;
@@ -659,6 +666,8 @@ export async function createTimelineAudioBuffer({
 	sampleRate = EXPORT_SAMPLE_RATE,
 	audioContext,
 	resources,
+	programmaticAudio,
+	signal = new AbortController().signal,
 }: {
 	tracks: SceneTracks;
 	mediaAssets: MediaAsset[];
@@ -668,7 +677,10 @@ export async function createTimelineAudioBuffer({
 	sampleRate?: number;
 	audioContext?: AudioContext;
 	resources: SessionResources;
+	programmaticAudio?: ProgrammaticAudioRuntime;
+	signal?: AbortSignal;
 }): Promise<AudioBuffer | null> {
+	signal.throwIfAborted();
 	const contextHandle = audioContext
 		? null
 		: resources.createAudioContext({ request: { sampleRate } });
@@ -684,13 +696,25 @@ export async function createTimelineAudioBuffer({
 			mediaAssets,
 			audioContext: context,
 		});
+		signal.throwIfAborted();
+		audioElements.push(
+			...(await collectProgrammaticAudio({
+				tracks,
+				runtime: programmaticAudio,
+				audioContext: context,
+				sampleRate,
+				signal,
+			})),
+		);
 
 		if (audioElements.length === 0) return null;
 
 		const outputChannels = 2;
 		const outputStartTime = startTime / TICKS_PER_SECOND;
-		const durationSeconds = duration / TICKS_PER_SECOND;
-		const outputLength = Math.ceil(durationSeconds * sampleRate);
+		const window = planAudioSampleWindow({ startTime, duration, sampleRate });
+		if (!window) throw new Error("Invalid timeline audio range");
+		const outputLength = window.outputLength;
+		if (outputLength === 0) return null;
 		const outputBuffer = context.createBuffer(
 			outputChannels,
 			outputLength,
@@ -698,6 +722,7 @@ export async function createTimelineAudioBuffer({
 		);
 
 		for (const element of audioElements) {
+			signal.throwIfAborted();
 			if (element.muted) continue;
 
 			const renderedBuffer = shouldMaintainPitch({
@@ -856,75 +881,4 @@ export function extractRmsRange({
 			}),
 		),
 	});
-}
-
-export function mixAudioChannels({
-	element,
-	buffer,
-	trimStart,
-	retime,
-	outputBuffer,
-	outputLength,
-	sampleRate,
-	outputStartTime,
-}: {
-	element: CollectedAudioElement;
-	buffer: AudioBuffer;
-	trimStart: number;
-	retime?: RetimeConfig;
-	outputBuffer: AudioBuffer;
-	outputLength: number;
-	sampleRate: number;
-	/** Absolute timeline time represented by output sample zero, in seconds. */
-	outputStartTime: number;
-}): void {
-	const { startTime, duration: elementDuration } = element;
-	const outputEndTime = outputStartTime + outputLength / sampleRate;
-	const overlapStartTime = Math.max(startTime, outputStartTime);
-	const overlapEndTime = Math.min(startTime + elementDuration, outputEndTime);
-	if (overlapEndTime <= overlapStartTime) return;
-
-	const outputStartSample = Math.max(
-		0,
-		Math.ceil((overlapStartTime - outputStartTime) * sampleRate),
-	);
-	const outputEndSample = Math.min(
-		outputLength,
-		Math.ceil((overlapEndTime - outputStartTime) * sampleRate),
-	);
-
-	const outputChannels = 2;
-	for (let channel = 0; channel < outputChannels; channel++) {
-		const outputData = outputBuffer.getChannelData(channel);
-		const sourceChannel = Math.min(channel, buffer.numberOfChannels - 1);
-		const sourceData = buffer.getChannelData(sourceChannel);
-
-		for (
-			let outputIndex = outputStartSample;
-			outputIndex < outputEndSample;
-			outputIndex++
-		) {
-			const timelineTime = outputStartTime + outputIndex / sampleRate;
-			const clipTime = timelineTime - startTime;
-			const sourceTime =
-				trimStart + getSourceTimeAtClipTime({ clipTime, retime });
-			const sourceIndex = sourceTime * buffer.sampleRate;
-			if (sourceIndex < 0) continue;
-			if (sourceIndex >= sourceData.length) break;
-
-			const lowerIndex = Math.floor(sourceIndex);
-			const upperIndex = Math.min(sourceData.length - 1, lowerIndex + 1);
-			const fraction = sourceIndex - lowerIndex;
-			const gain = hasAnimatedVolume({ element: element.timelineElement })
-				? resolveEffectiveAudioGain({
-						element: element.timelineElement,
-						localTime: clipTime,
-					})
-				: element.volume;
-			outputData[outputIndex] +=
-				(sourceData[lowerIndex] * (1 - fraction) +
-					sourceData[upperIndex] * fraction) *
-				gain;
-		}
-	}
 }

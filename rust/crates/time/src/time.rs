@@ -1,7 +1,9 @@
 mod frame_rate;
+mod audio_clock;
 mod clip_export;
 mod frame_grid;
 mod media_time;
+pub mod replay;
 mod source_span;
 mod strict_object;
 mod timecode;
@@ -10,6 +12,11 @@ mod transition_api;
 mod transition_graph;
 mod transition_reconcile;
 mod video_time;
+
+pub use audio_clock::{
+    AudioClipSampleTimesOptions, AudioMixWindow, AudioMixWindowOptions, AudioSampleWindow,
+    AudioSampleWindowOptions, audio_clip_sample_times, plan_audio_mix_window, plan_audio_sample_window,
+};
 
 pub use clip_export::{
     ClipExportOptions, ClipExportPlan, ExportClipCandidate, ExportClipRef,

@@ -1,0 +1,15 @@
+<!doctype html>
+<html><head><style>
+html,body { margin:0; background:transparent }
+#root { width:64px; height:64px; background:#28c81e }
+</style><script src="gsap.js"></script></head><body>
+<div id="root" data-composition-id="root" data-start="0" data-duration="0.24" data-width="64" data-height="64">
+  <audio id="loop" src="loop.wav" loop data-start="0" data-duration="0.24" data-media-start="0.04" data-volume="0.5" data-track-index="0"></audio>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const timeline = gsap.timeline({paused:true});
+for (let frame = 0; frame < 6; frame++)
+  timeline.set('#root', {backgroundColor:`rgb(${40 + frame * 30},${200 - frame * 20},30)`}, frame / 25);
+window.__timelines.root = timeline;
+</script></body></html>

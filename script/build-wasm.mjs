@@ -40,7 +40,7 @@
  * `check-wasm-api-surface` leg. After: the non-bundler entry is emitted and the
  * generated `package.json` gains its `exports` conditions (see `emitSyncEntry`).
  *
- *   node script/build-wasm.mjs [extra wasm-pack args]
+ *   node script/build-wasm.mjs [--out-dir <absolute-private-directory>] [extra wasm-pack args]
  */
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -49,6 +49,7 @@ import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 
 import { assertToolchain } from "./wasm-toolchain.mjs";
+import { isInvokedScript, packageDirectoryArguments } from "./wasm-package-directory.mjs";
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const CARGO_HOME = process.env.CARGO_HOME ?? join(homedir(), ".cargo");
@@ -80,46 +81,56 @@ const REMAPS = [
 	["/crates/", "/opencut/rust/crates/"],
 ];
 
-const flags = REMAPS.map(([from, to]) => `--remap-path-prefix=${from}=${to}`);
-// Preserve anything the caller already set; ours go last so they win on conflict.
-const rustflags = [process.env.RUSTFLAGS, ...flags].filter(Boolean).join(" ");
+export function buildWasm(argv, { run = spawnSync, assertPins = assertToolchain, emit = emitSyncEntry } = {}) {
+	const { pkgDir, remaining } = packageDirectoryArguments(argv, "--out-dir", REPO_ROOT);
+	const flags = REMAPS.map(([from, to]) => `--remap-path-prefix=${from}=${to}`);
+	// Preserve anything the caller already set; ours go last so they win on conflict.
+	const rustflags = [process.env.RUSTFLAGS, ...flags].filter(Boolean).join(" ");
 
-if (!existsSync(join(REPO_ROOT, "rust", "wasm", "Cargo.toml"))) {
-	console.error(`build-wasm: no crate at ${join(REPO_ROOT, "rust", "wasm")}`);
-	process.exit(2);
+	if (!existsSync(join(REPO_ROOT, "rust", "wasm", "Cargo.toml"))) {
+		console.error(`build-wasm: no crate at ${join(REPO_ROOT, "rust", "wasm")}`);
+		return 2;
+	}
+
+	const args = ["build", "rust/wasm", "--target", "bundler", "--out-dir", pkgDir, ...remaining];
+
+	if (process.env.OPENCUT_WASM_ALLOW_UNPINNED === "1") {
+		console.log("build-wasm: toolchain pins BYPASSED (OPENCUT_WASM_ALLOW_UNPINNED=1)");
+	} else {
+		console.log("build-wasm: pinned toolchain");
+		assertPins();
+	}
+
+	console.log(`build-wasm: wasm-pack ${args.join(" ")}`);
+	for (const [from, to] of REMAPS) console.log(`  remapping ${from}  ->  ${to}`);
+	if (!process.env.CARGO_TARGET_DIR) {
+		console.log("  note: CARGO_TARGET_DIR is unset, so the Rust build directory lands beside the checkout.");
+	}
+
+	const result = run("wasm-pack", args, {
+		cwd: REPO_ROOT,
+		stdio: "inherit",
+		env: { ...process.env, RUSTFLAGS: rustflags },
+		// wasm-pack is a native executable; no shell is needed, even on Windows.
+		// This also preserves spaces/metacharacters in a private absolute output path.
+		shell: false,
+	});
+
+	if (result.error) {
+		console.error(`build-wasm: could not run wasm-pack — ${result.error.message}`);
+		console.error("Install it with: script/setup-rust   (or script/setup-rust.ps1 on Windows)");
+		return 2;
+	}
+	if (result.status !== 0) return result.status ?? 1;
+
+	emit(pkgDir);
+	return 0;
 }
 
-const args = ["build", "rust/wasm", "--target", "bundler", "--out-dir", "pkg", ...process.argv.slice(2)];
-
-if (process.env.OPENCUT_WASM_ALLOW_UNPINNED === "1") {
-	console.log("build-wasm: toolchain pins BYPASSED (OPENCUT_WASM_ALLOW_UNPINNED=1)");
-} else {
-	console.log("build-wasm: pinned toolchain");
-	assertToolchain();
+if (isInvokedScript(import.meta.url)) {
+	try { process.exitCode = buildWasm(process.argv.slice(2)); }
+	catch (error) { console.error(`build-wasm: ${error.message}`); process.exitCode = 2; }
 }
-
-console.log(`build-wasm: wasm-pack ${args.join(" ")}`);
-for (const [from, to] of REMAPS) console.log(`  remapping ${from}  ->  ${to}`);
-if (!process.env.CARGO_TARGET_DIR) {
-	console.log("  note: CARGO_TARGET_DIR is unset, so the Rust build directory lands beside the checkout.");
-}
-
-const result = spawnSync("wasm-pack", args, {
-	cwd: REPO_ROOT,
-	stdio: "inherit",
-	env: { ...process.env, RUSTFLAGS: rustflags },
-	shell: process.platform === "win32",
-});
-
-if (result.error) {
-	console.error(`build-wasm: could not run wasm-pack — ${result.error.message}`);
-	console.error("Install it with: script/setup-rust   (or script/setup-rust.ps1 on Windows)");
-	process.exit(2);
-}
-if (result.status !== 0) process.exit(result.status ?? 1);
-
-emitSyncEntry();
-process.exit(0);
 
 /**
  * Emits the non-bundler entry and the `exports` conditions that route to it.
@@ -151,14 +162,12 @@ process.exit(0);
  * export block) plus this literal template, and the manifest is re-serialised with a fixed key
  * order, so a rebuild on the same pins reproduces both exactly.
  */
-function emitSyncEntry() {
-	const pkgDir = join(REPO_ROOT, "rust", "wasm", "pkg");
+export function emitSyncEntry(pkgDir) {
 	const bundlerEntry = join(pkgDir, "opencut_wasm.js");
 	const wrapper = readFileSync(bundlerEntry, "utf8");
 	const exportBlock = wrapper.match(/export \{([\s\S]*?)\} from/)?.[1];
 	if (exportBlock === undefined) {
-		console.error("build-wasm: opencut_wasm.js carries no `export { … } from` block to mirror");
-		process.exit(2);
+		throw Error("opencut_wasm.js carries no `export { … } from` block to mirror");
 	}
 
 	const source = `/* @ts-self-types="./opencut_wasm.d.ts" */
@@ -186,10 +195,13 @@ instance.exports.__wbindgen_start();
 export {${exportBlock}} from "./opencut_wasm_bg.js";
 `;
 	writeFileSync(join(pkgDir, SYNC_ENTRY), source, "utf8");
+	// Rust MV geometry carries an upstream MIT notice even when distributed
+	// independently of editor-classic. Keep the producer notice in the package.
+	writeFileSync(join(pkgDir, "NOTICE"), readFileSync(join(REPO_ROOT, "rust", "wasm", "NOTICE")));
 
 	const manifestPath = join(pkgDir, "package.json");
 	const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-	manifest.files = [...manifest.files.filter((name) => name !== SYNC_ENTRY), SYNC_ENTRY];
+	manifest.files = [...manifest.files.filter((name) => name !== SYNC_ENTRY && name !== "NOTICE"), SYNC_ENTRY, "NOTICE"];
 	manifest.sideEffects = [
 		...manifest.sideEffects.filter((name) => name !== `./${SYNC_ENTRY}`),
 		`./${SYNC_ENTRY}`,

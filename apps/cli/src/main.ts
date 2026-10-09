@@ -105,6 +105,12 @@ export const USAGE_LINES: readonly string[] = [
 	"  rocut editing catalog [--target <id|auto>] [--project <dir>]",
 	"  rocut capabilities [--target <id|auto>] [--project <dir>]",
 	"  rocut media import <spec.json> [--target <id|auto>] [--project <dir>]",
+	"  rocut resource import <spec.json> [--target <id|auto>] [--project <dir>]",
+	"  rocut programmatic compile|rebuild <spec.json> [--target <id|auto>] [--project <dir>]",
+	"  rocut programmatic revise <spec.json> [--target <id|auto>] [--project <dir>]",
+	"  rocut programmatic audio-import <spec.json> [--target <id|auto>] [--project <dir>]",
+	"  rocut programmatic sequence-import <spec.json> [--target <id|auto>] [--project <dir>]",
+	"  rocut programmatic sequence-restore <spec.json> [--target <id|auto>] [--project <dir>]",
 	"  rocut task list|start <spec.json>|get <id>|cancel <id> [--target <id|auto>] [--project <dir>]",
 	"  rocut scenes list|plan <spec.json> [--target <id|auto>] [--project <dir>]",
 	"  rocut motion-text catalog [--target <id|auto>] [--project <dir>]",
@@ -276,6 +282,8 @@ async function runCli(argv: readonly string[]): Promise<void> {
 		}
 		case "capabilities":
 		case "media":
+		case "resource":
+		case "programmatic":
 		case "editing":
 		case "task":
 		case "scenes": {

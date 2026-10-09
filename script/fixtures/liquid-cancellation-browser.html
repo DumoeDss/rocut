@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Liquid cancellation fixture</title>
+	</head>
+	<body>
+		<script type="module">
+			import { runLiquidCancellation } from "./liquid-cancellation-browser.ts";
+			globalThis.__liquidCancellation = await runLiquidCancellation();
+		</script>
+	</body>
+</html>

@@ -1,6 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+	useCallback,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
+import { isRenderCancelledError } from "../../services/renderer/compositor/render-request";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { useEditor, useEditorInstance } from "../../editor/use-editor";
 import { useEditorSession } from "../../editor/session/editor-session-provider";
@@ -168,6 +176,7 @@ function RenderTreeController() {
 					: sequence,
 		);
 		const renderTree = buildScene({
+			programmaticFrames: editor.renderer.programmaticFrames,
 			tracks,
 			mediaAssets,
 			motionTextSequences,
@@ -218,6 +227,12 @@ function PreviewCanvas({
 	const lastPreviewRevisionRef = useRef(-1);
 	const lastSceneRef = useRef<RootNode | null>(null);
 	const renderingRef = useRef(false);
+	const renderRequestRef = useRef<{
+		controller: AbortController;
+		frame: number;
+		tree: RootNode;
+		revision: number;
+	} | null>(null);
 	const { width: nativeWidth, height: nativeHeight } = usePreviewSize();
 	const viewportSize = useContainerSize({ containerRef: viewportRef });
 	const editor = useEditorInstance();
@@ -275,8 +290,9 @@ function PreviewCanvas({
 		if (!mount || !renderer) return;
 		let outputCanvas: HTMLCanvasElement | null = null;
 		let cancelled = false;
+		const controller = new AbortController();
 		void renderer
-			.getOutputCanvas()
+			.getOutputCanvas({ signal: controller.signal })
 			.then((canvas) => {
 				if (cancelled) return;
 				try {
@@ -294,20 +310,68 @@ function PreviewCanvas({
 				mount.appendChild(canvas);
 			})
 			.catch((error: unknown) => {
-				if (!cancelled && !(error instanceof SessionActivityGenerationError)) {
+				if (
+					!cancelled &&
+					!(error instanceof SessionActivityGenerationError) &&
+					!isRenderCancelledError(error)
+				) {
 					console.error("Failed to mount preview canvas:", error);
 				}
 			});
 		return () => {
 			cancelled = true;
+			controller.abort();
 			if (outputCanvas?.parentElement === mount) {
 				mount.removeChild(outputCanvas);
 			}
 		};
 	}, [activityGeneration, activityLifecycle, renderer]);
 
+	useLayoutEffect(() => {
+		const cancel = () => renderRequestRef.current?.controller.abort();
+		const cancelIfStale = () => {
+			const request = renderRequestRef.current;
+			if (!request || !renderer) return;
+			const ticksPerFrame = Math.round(
+				(TICKS_PER_SECOND * renderer.fps.denominator) / renderer.fps.numerator,
+			);
+			const time = Math.min(
+				editor.playback.getCurrentTime(),
+				editor.timeline.getLastFrameTime(),
+			);
+			if (
+				Math.floor(time / ticksPerFrame) !== request.frame ||
+				rendererManager.getRenderTree() !== request.tree ||
+				rendererManager.getPreviewRevision() !== request.revision
+			)
+				cancel();
+		};
+		const detach = [
+			editor.playback.onUpdate(cancelIfStale),
+			editor.playback.onSeek(cancelIfStale),
+			rendererManager.subscribe(cancelIfStale),
+			activityLifecycle.subscribeActivityLifecycle({ onSuspend: cancel }),
+		];
+		return () => {
+			cancel();
+			for (const unsubscribe of detach) unsubscribe();
+		};
+	}, [
+		activityLifecycle,
+		editor.playback,
+		editor.timeline,
+		renderer,
+		rendererManager,
+	]);
+
 	const render = useCallback(() => {
-		if (isDegraded || !renderer || !renderTree || renderingRef.current) return;
+		if (isDegraded || !renderer || !renderTree) return;
+		// A manager publication can precede React's next committed render.
+		if (
+			rendererManager.getRenderTree() !== renderTree ||
+			rendererManager.getPreviewRevision() !== previewRevision
+		)
+			return;
 
 		const renderTime = Math.min(
 			editor.playback.getCurrentTime(),
@@ -317,6 +381,17 @@ function PreviewCanvas({
 			(TICKS_PER_SECOND * renderer.fps.denominator) / renderer.fps.numerator,
 		);
 		const frame = Math.floor(renderTime / ticksPerFrame);
+		if (renderingRef.current) {
+			const pending = renderRequestRef.current;
+			if (
+				pending &&
+				(pending.frame !== frame ||
+					pending.tree !== renderTree ||
+					pending.revision !== previewRevision)
+			)
+				pending.controller.abort();
+			return;
+		}
 
 		if (
 			frame === lastFrameRef.current &&
@@ -327,27 +402,53 @@ function PreviewCanvas({
 		}
 
 		renderingRef.current = true;
-		lastSceneRef.current = renderTree;
-		lastFrameRef.current = frame;
-		lastPreviewRevisionRef.current = previewRevision;
+		const request = {
+			controller: new AbortController(),
+			frame,
+			tree: renderTree,
+			revision: previewRevision,
+		};
+		renderRequestRef.current = request;
 		void measurePreviewSubmission({
-			render: () => renderer.render({ node: renderTree, time: renderTime }),
+			render: () =>
+				renderer.render({
+					node: renderTree,
+					time: renderTime,
+					signal: request.controller.signal,
+				}),
 			time: renderTime,
 			width: renderer.width,
 			height: renderer.height,
 		})
-			.then(() => publishResourceIssues(renderTree))
+			.then(() => {
+				if (
+					request.controller.signal.aborted ||
+					renderRequestRef.current !== request
+				)
+					return;
+				lastSceneRef.current = renderTree;
+				lastFrameRef.current = frame;
+				lastPreviewRevisionRef.current = previewRevision;
+				publishResourceIssues(renderTree);
+			})
 			.catch((error: unknown) => {
-				if (!(error instanceof SessionActivityGenerationError)) {
+				if (
+					!(error instanceof SessionActivityGenerationError) &&
+					!isRenderCancelledError(error)
+				) {
 					console.error("Failed to render preview frame:", error);
 				}
 			})
 			.finally(() => {
-				renderingRef.current = false;
+				if (renderRequestRef.current === request) {
+					renderRequestRef.current = null;
+					renderingRef.current = false;
+				}
 			});
 	}, [
 		isDegraded,
 		renderer,
+		rendererManager,
 		renderTree,
 		previewRevision,
 		publishResourceIssues,

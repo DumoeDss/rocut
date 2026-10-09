@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Private saved particle project export probe</title>
+	</head>
+	<body>
+		<script type="module">
+			let probe;
+			try {
+				// The bundler entry completes its WASM initialization before modules that
+				// read TICKS_PER_SECOND are evaluated.
+				await import("opencut-wasm");
+				probe = await import("./particle-project-export-probe.ts");
+				const { runParticleProjectExportProbe } = probe;
+				const { project, baseUrl, clipId, variant } =
+					globalThis.__particleProjectBoot;
+				globalThis.__particleProjectResult =
+					await runParticleProjectExportProbe(
+						project,
+						baseUrl,
+						clipId,
+						variant,
+					);
+			} catch (error) {
+				globalThis.__particleProjectResult = {
+					error: String(error),
+					stack: error?.stack,
+					partial: probe?.particleProjectProgress,
+				};
+			}
+		</script>
+	</body>
+</html>

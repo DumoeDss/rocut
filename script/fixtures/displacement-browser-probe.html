@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Rocut Displacement input distortion</title>
+	</head>
+	<body>
+		<script type="module">
+			import { runDisplacementProbe } from "./displacement-browser-probe.ts";
+			runDisplacementProbe()
+				.then((result) => (globalThis.__stylizedResult = result))
+				.catch(
+					(error) =>
+						(globalThis.__stylizedResult = {
+							error: String(error),
+							stack: error.stack,
+						}),
+				);
+		</script>
+	</body>
+</html>

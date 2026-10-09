@@ -30,6 +30,7 @@ import { getElementFontFamilies } from "../../timeline/element-utils";
 import { getRaisedProjectFpsForImportedMedia } from "../../fps/utils";
 import type { MediaAsset } from "../../media/types";
 import type { MotionTextSequence } from "@opencut/editor-contracts";
+import type { ProjectAttachment } from "@opencut/editor-ports";
 import { resolveMediaTimeRange, type MediaTimeRange } from "../../wasm";
 
 export interface MigrationState {
@@ -518,25 +519,40 @@ export class ProjectManager {
 			);
 			if (creationFailure) throw creationFailure.reason;
 
-			await Promise.all(
-				duplicationPlans.map(async ({ sourceProjectId, newProjectId }) => {
-					const sourceAttachments =
-						await this.editor.persistence.listAttachments({
+			for (const { sourceProjectId, newProjectId } of duplicationPlans) {
+				const persistence = this.editor.persistence;
+				const sourceAttachments: Array<{
+					key: string;
+					attachment?: ProjectAttachment;
+				}> = persistence.listAttachmentHeaders
+					? (
+							await persistence.listAttachmentHeaders({
+								projectId: sourceProjectId,
+							})
+						).map(({ key }) => ({ key }))
+					: (
+							await persistence.listAttachments({ projectId: sourceProjectId })
+						).map((attachment) => ({ key: attachment.key, attachment }));
+				// Finish each durable copy before loading the next body. Also avoid
+				// late writes racing rollback when any attachment fails to copy.
+				for (const source of sourceAttachments) {
+					const attachment =
+						source.attachment ??
+						(await persistence.loadAttachment({
 							projectId: sourceProjectId,
-						});
-
-					await Promise.all(
-						sourceAttachments.map((attachment) =>
-							this.editor.persistence.saveAttachment({
-								projectId: newProjectId,
-								key: attachment.key,
-								metadata: attachment.metadata,
-								body: attachment.body,
-							}),
-						),
-					);
-				}),
-			);
+							key: source.key,
+						}));
+					if (!attachment) {
+						throw new Error("Source project attachment body is missing");
+					}
+					await persistence.saveAttachment({
+						projectId: newProjectId,
+						key: attachment.key,
+						metadata: attachment.metadata,
+						body: attachment.body,
+					});
+				}
+			}
 
 			for (const { newProject } of duplicationPlans) {
 				this.updateMetadata(newProject);
@@ -766,6 +782,7 @@ export class ProjectManager {
 		const { canvasSize, background } = this.active.settings;
 
 		const scene = buildScene({
+			programmaticFrames: this.editor.renderer.programmaticFrames,
 			tracks,
 			mediaAssets,
 			motionTextSequences: this.active.motionTextSequences,

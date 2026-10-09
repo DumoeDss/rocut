@@ -1,0 +1,678 @@
+{
+  "version": 1,
+  "date": "2026-10-07",
+  "status": "native-host-browser-creator-attached-editor-export-verified",
+  "authoring": {
+    "artifacts": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/reveal-editor/run-y9TLQ8",
+    "evidenceSha256": "66db06c7af3f4b25c6fba14b80ecd3092e64fde080439367ed006c8306cba436",
+    "sourceManifestSha256": "078bf8b47df6d8841f93c101e9498ffc6cdc86cf9ff8baf16380c4e17e0d0368",
+    "wasmSha256": "6f65b1811b0d991c777cc53a9d862886dd45a45b36b6653d99be849a3e1441b0",
+    "templates": {
+      "templates.mjs": "780fd5c361d6ec69ca1847b56c8e98596d6c7fb0a03241d229b2d003573f9a88",
+      "scene.ts": "52afe6cb7ab401dd0045aa72f12914a1066e1e34e657d71e815e9e8f50896e68",
+      "spatial.mjs": "26c77701439bfb57102454f2e9360f8210012c454936689b6425f94bc17c12a1",
+      "wave.mjs": "8d202bf65882c11f78e1f195fc944988540d1e4edfcbb69f0164fa4c1017c329",
+      "reveal.mjs": "fa10caca7e0827b94c0b80213f247fcaadc74b1c9a5b9c54364d02ed523b3e2d"
+    },
+    "backend": "private-chromium-swiftshader",
+    "browser": "154.0.8037.98",
+    "checks": [
+      {
+        "name": "persisted reveal project loaded by actual attached editor",
+        "pass": true
+      },
+      {
+        "name": "two effects, explicit progress animation, UI parameter edits and undo/redo checked against visible pixels",
+        "pass": true
+      },
+      {
+        "name": "reload preserves sources, all effects, animations, and four preview samples",
+        "pass": true
+      },
+      {
+        "name": "120-frame four-second export with independent decoder and four edited-preview comparisons",
+        "pass": true
+      }
+    ],
+    "edits": [
+      {
+        "index": 0,
+        "key": "glow",
+        "value": 0,
+        "originalValue": 0.75
+      },
+      {
+        "index": 1,
+        "key": "cellSize",
+        "value": 20,
+        "originalValue": 12
+      }
+    ],
+    "export": {
+      "width": 640,
+      "height": 360,
+      "fps": "30/1",
+      "durationSeconds": 4,
+      "frames": 120,
+      "codec": "vp9",
+      "sha256": "b6551bc2110973e09742a26c9bfaa3c86d3854a2b8e35957bbd44a3cfa52d0dc",
+      "metrics": [
+        {
+          "index": 0,
+          "frame": 15,
+          "localTicks": 60000,
+          "timelineTicks": 60000,
+          "screenshotBounds": {
+            "x": 379.53125,
+            "y": 105.828125,
+            "width": 680.9375,
+            "height": 382.140625
+          },
+          "meanRgbError": 1.0477719907407408,
+          "activeError": 1.232206524433259,
+          "activePixels": 17483,
+          "contrastRatio": 0.9960519676617128
+        },
+        {
+          "index": 0,
+          "frame": 45,
+          "localTicks": 180000,
+          "timelineTicks": 180000,
+          "screenshotBounds": {
+            "x": 379.53125,
+            "y": 105.828125,
+            "width": 680.9375,
+            "height": 382.140625
+          },
+          "meanRgbError": 1.4563136574074074,
+          "activeError": 3.267189494802116,
+          "activePixels": 5483,
+          "contrastRatio": 0.9982321327806846
+        },
+        {
+          "index": 1,
+          "frame": 75,
+          "localTicks": 60000,
+          "timelineTicks": 300000,
+          "screenshotBounds": {
+            "x": 379.53125,
+            "y": 105.828125,
+            "width": 680.9375,
+            "height": 382.140625
+          },
+          "meanRgbError": 3.227505787037037,
+          "activeError": 3.375741374394069,
+          "activePixels": 46760,
+          "contrastRatio": 1.0179872142542588
+        },
+        {
+          "index": 1,
+          "frame": 105,
+          "localTicks": 180000,
+          "timelineTicks": 420000,
+          "screenshotBounds": {
+            "x": 379.53125,
+            "y": 105.828125,
+            "width": 680.9375,
+            "height": 382.140625
+          },
+          "meanRgbError": 3.1083738425925924,
+          "activeError": 4.884666084604454,
+          "activePixels": 19471,
+          "contrastRatio": 1.002189589259903
+        }
+      ]
+    },
+    "gates": {
+      "meanRgbErrorLessThan": 15,
+      "activeErrorLessThan": 15,
+      "activePixelsGreaterThan": 500,
+      "contrastRatio": [
+        0.8,
+        1.2
+      ]
+    },
+    "expectedHttpFailures": [
+      {
+        "path": "/api/library/graph-editor-presets/user-presets",
+        "status": 404
+      },
+      {
+        "path": "/api/library/graph-editor-presets/user-presets",
+        "status": 404
+      }
+    ],
+    "expectedFrameCancellations": [
+      "Failed to render preview frame: AbortError: Programmatic frame cancelled"
+    ],
+    "externalRequests": [],
+    "visualInspection": "Four-frame contact sheet inspected: actual Laser reveal progress and distinct character-cell reveal visible. Both UI edits and history operations passed visible-pixel assertions.",
+    "scope": "Dedicated reveal mode; the earlier full fusion helper-extraction regression remains separately recorded. No install/Electron or zero-console-error claim."
+  },
+  "scope": "Laser scan reveal and Decrypt Reveal character-domain video subsets; not installed, Electron, P7-wide or release acceptance",
+  "implementation": {
+    "laser": "Four-direction scan with explicit progress, revealed-side line/glow, source-alpha coverage and premultiplied amount mixing. Progress 0 transparent at amount 1; progress 1 and amount 0 preserve the input.",
+    "decryptReveal": "Full-frame brightness glyphs with seeded per-cell reveal inside an animated circular region; preserves source alpha and glyph gutters. Progress 1 restores only the chosen region; radius 0 does not decrypt.",
+    "time": "Explicit numeric keyframes on clip effects; fixed inputs/parameters do not depend on the frame clock or prior seeks. Direction/seed are discrete and non-keyframable.",
+    "layerBoundary": "Effect layers support static parameters only; their animations must be rejected by the Host."
+  },
+  "validation": {
+    "native": {
+      "effectModuleTests": 14,
+      "revealContracts": 6,
+      "catalogRegression": 4,
+      "realGpuTests": 8,
+      "editorValidationTests": 9,
+      "backend": "native Vulkan",
+      "gpuExecution": "Serial after one concurrent adapter-unavailable result"
+    },
+    "frontend": "Final reveal frontend and Host tests: 2 tests / 630 assertions passed; two existing wave transport tests also passed. New frontend lint passed.",
+    "host": "Four effect variants (animated clip effects and static layers), 132 invalid transactions with HTTP 409 and revision/track/clip rollback, three real Host restarts and a final valid update passed.",
+    "typecheck": "spatial-probe and final spatial-regression (including reveal Host/editor fixtures) passed",
+    "creator": "Package-copy test and skill quick_validate passed after reveal guidance routing",
+    "wasm": {
+      "rustc": "1.88.0",
+      "wasmPack": "0.13.1",
+      "bytes": 6979468,
+      "sha256": "6f65b1811b0d991c777cc53a9d862886dd45a45b36b6653d99be849a3e1441b0",
+      "sourceGate": "passed",
+      "pathGate": "passed",
+      "apiGate": "passed",
+      "initGate": "passed",
+      "publicJsExports": 87,
+      "stableBinaryExports": 104,
+      "compilerTrampolines": 3,
+      "imports": 612,
+      "newPublicExports": 0,
+      "scope": "Private producer only; four private linked dependency files were replaced via new-file rename, not overwritten in place. No shared dependency reinstall."
+    }
+  },
+  "browser": {
+    "artifacts": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/reveal-effects/run-nhluxC",
+    "evidenceSha256": "4f194fa8d1176d224d65161335bae16d975df5a749a2bb8b0bb6e0d0efa5d8dd",
+    "ok": true,
+    "errors": [],
+    "externalRequests": [],
+    "backend": "private Chromium WebGPU/SwiftShader, no Host/Electron",
+    "sourceCommit": "e791be658f63384b6b7c064c1a92dd1912246ada",
+    "sourceWorktreeClean": false,
+    "sourceManifestSha256": "a5646082cf9adbe38be88a8a2b7d07f0591d24d6e57e33bd96e8288e06b0fdb0",
+    "wasmSha256": "6f65b1811b0d991c777cc53a9d862886dd45a45b36b6653d99be849a3e1441b0",
+    "browser": "154.0.8037.98",
+    "captures": 65,
+    "laser": {
+      "directions": [
+        {
+          "direction": 0,
+          "visible": 115200,
+          "hiddenPixels": 115200
+        },
+        {
+          "direction": 1,
+          "visible": 115200,
+          "hiddenPixels": 115200
+        },
+        {
+          "direction": 2,
+          "visible": 115200,
+          "hiddenPixels": 115200
+        },
+        {
+          "direction": 3,
+          "visible": 115200,
+          "hiddenPixels": 115200
+        }
+      ],
+      "alpha": [
+        {
+          "expected": "bounded",
+          "maximum": 0,
+          "holes": 47120,
+          "partial": 5440
+        },
+        {
+          "expected": "half",
+          "maximum": 0.5,
+          "holes": 47120,
+          "partial": 183280
+        }
+      ],
+      "timeline": {
+        "0": "6d9201cded9f88e2eee40b70a48222c0f4cd43b3843d90a9c174f04459d1abfa",
+        "12000": "e874757ff8a9bc4c2c9b2971835f8d3d1a0b342032ec3d756e33cd29c03bdafe",
+        "24000": "e85378c5adb828cc4414b9731f48f93e2c811f960559c6eef894c37e597e2f43"
+      },
+      "endpointPixels": 230400
+    },
+    "decrypt": {
+      "ink": 22248,
+      "blackPixels": 157832,
+      "gapPixels": 48772,
+      "regions": [
+        {
+          "centerX": 0.25,
+          "centerY": 0.45,
+          "innerPixels": 23396,
+          "outerPixels": 206924
+        },
+        {
+          "centerX": 0.7,
+          "centerY": 0.55,
+          "innerPixels": 23396,
+          "outerPixels": 206924
+        }
+      ],
+      "sizeDifference": 39024,
+      "seedDifference": 108141,
+      "originalPixels": 75268,
+      "encryptedPixels": 74308,
+      "mixedPixels": 33704,
+      "alpha": {
+        "expected": "preserve",
+        "maximum": 0,
+        "holes": 47120,
+        "partial": 3200
+      },
+      "timeline": {
+        "0": "3d5b07cb1ecf660ef461455442282a4b7eeaf9ae3f97e4185988342ce1939dcc",
+        "12000": "d3a3c5f2924e0f60c3287a850849e0c6d60494325716cc70eaeaca72fd8fd8f7",
+        "24000": "cb9f229673e2874fcc6524ade0433d3143ff7b0b57b675c6e51257f27c943487"
+      }
+    },
+    "exports": [
+      {
+        "name": "laser",
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "frames": 6,
+        "bytes": 20252,
+        "metrics": [
+          {
+            "meanError": 1.5541015625,
+            "regionError": 0.8151915739695846,
+            "regionPixels": 62030
+          },
+          {
+            "meanError": 1.6406195746527779,
+            "regionError": 0.8554489166024954,
+            "regionPixels": 53243
+          },
+          {
+            "meanError": 1.7285655381944445,
+            "regionError": 0.9221711117657277,
+            "regionPixels": 44131
+          },
+          {
+            "meanError": 1.7890570746527779,
+            "regionError": 0.9715873878512247,
+            "regionPixels": 34961
+          },
+          {
+            "meanError": 1.85806640625,
+            "regionError": 1.1097703842549203,
+            "regionPixels": 25608
+          },
+          {
+            "meanError": 1.9096061197916667,
+            "regionError": 1.2388039052926993,
+            "regionPixels": 16866
+          }
+        ]
+      },
+      {
+        "name": "decrypt-reveal",
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "frames": 6,
+        "bytes": 92266,
+        "metrics": [
+          {
+            "meanError": 3.153933376736111,
+            "regionError": 5.06696695704526,
+            "regionPixels": 181602
+          },
+          {
+            "meanError": 3.462785373263889,
+            "regionError": 5.605993917540325,
+            "regionPixels": 155858
+          },
+          {
+            "meanError": 4.399423828125,
+            "regionError": 7.060986454879584,
+            "regionPixels": 129690
+          },
+          {
+            "meanError": 4.604944661458333,
+            "regionError": 7.572450040317488,
+            "regionPixels": 102933
+          },
+          {
+            "meanError": 4.664474826388889,
+            "regionError": 8.364058410309342,
+            "regionPixels": 76539
+          },
+          {
+            "meanError": 4.600759548611111,
+            "regionError": 9.352206499967695,
+            "regionPixels": 51590
+          }
+        ]
+      }
+    ],
+    "checks": [
+      "Laser exact four-direction mask against nonuniform input",
+      "Laser transparent/identity endpoints and hidden-side glow exclusion",
+      "Decrypt ink/palette/5x7 cell geometry",
+      "Decrypt original-inside/characters-outside moving-region oracle",
+      "Decrypt independent per-cell reveal rather than global fade",
+      "source alpha and zero amount",
+      "explicit keyframe endpoints/midpoint",
+      "arbitrary/reverse seek",
+      "trim/JSON/preview parity",
+      "two six-frame production WebM exports"
+    ],
+    "decoded": [
+      {
+        "name": "laser",
+        "ok": true,
+        "decoder": "independent FFmpeg/FFprobe",
+        "metadata": {
+          "streams": [
+            {
+              "index": 0,
+              "codec_name": "vp9",
+              "codec_long_name": "Google VP9",
+              "profile": "Profile 0",
+              "codec_type": "video",
+              "codec_tag_string": "[0][0][0][0]",
+              "codec_tag": "0x0000",
+              "width": 640,
+              "height": 360,
+              "coded_width": 640,
+              "coded_height": 360,
+              "closed_captions": 0,
+              "film_grain": 0,
+              "has_b_frames": 0,
+              "sample_aspect_ratio": "1:1",
+              "display_aspect_ratio": "16:9",
+              "pix_fmt": "yuv420p",
+              "level": -99,
+              "color_range": "pc",
+              "color_space": "bt709",
+              "color_transfer": "iec61966-2-1",
+              "color_primaries": "bt709",
+              "refs": 1,
+              "r_frame_rate": "30/1",
+              "avg_frame_rate": "30/1",
+              "time_base": "1/1000",
+              "start_pts": 0,
+              "start_time": "0.000000",
+              "nb_read_frames": "6",
+              "disposition": {
+                "default": 1,
+                "dub": 0,
+                "original": 0,
+                "comment": 0,
+                "lyrics": 0,
+                "karaoke": 0,
+                "forced": 0,
+                "hearing_impaired": 0,
+                "visual_impaired": 0,
+                "clean_effects": 0,
+                "attached_pic": 0,
+                "timed_thumbnails": 0,
+                "captions": 0,
+                "descriptions": 0,
+                "metadata": 0,
+                "dependent": 0,
+                "still_image": 0
+              }
+            }
+          ],
+          "format": {
+            "filename": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa\\rocut-three-resources-VSD7L2\\.artifacts\\reveal-effects\\run-nhluxC\\laser\\spatial.webm",
+            "nb_streams": 1,
+            "nb_programs": 0,
+            "format_name": "matroska,webm",
+            "format_long_name": "Matroska / WebM",
+            "start_time": "0.000000",
+            "duration": "0.200000",
+            "size": "20252",
+            "bit_rate": "810080",
+            "probe_score": 100,
+            "tags": {
+              "encoder": "Mediabunny"
+            }
+          }
+        },
+        "metrics": [
+          {
+            "frame": 0,
+            "meanRgbaError": 0.9371723090277778,
+            "regionError": 1.3934934450891898,
+            "regionPixels": 62040,
+            "contrastRatio": 0.997380622272634,
+            "activeError": 1.120183782040948,
+            "activePixels": 62030
+          },
+          {
+            "frame": 1,
+            "meanRgbaError": 0.9891438802083333,
+            "regionError": 1.3910661674441445,
+            "regionPixels": 65168,
+            "contrastRatio": 0.9978742955448691,
+            "activeError": 1.1691802991316542,
+            "activePixels": 53243
+          },
+          {
+            "frame": 2,
+            "meanRgbaError": 1.0511046006944444,
+            "regionError": 1.3956185039692282,
+            "regionPixels": 65168,
+            "contrastRatio": 0.9989165990280781,
+            "activeError": 1.2417574947315946,
+            "activePixels": 44131
+          },
+          {
+            "frame": 3,
+            "meanRgbaError": 1.0806575520833333,
+            "regionError": 1.567870734102627,
+            "regionPixels": 65168,
+            "contrastRatio": 1.0001209712032046,
+            "activeError": 1.2925926985307439,
+            "activePixels": 34961
+          },
+          {
+            "frame": 4,
+            "meanRgbaError": 1.1204079861111111,
+            "regionError": 1.780040306080694,
+            "regionPixels": 65168,
+            "contrastRatio": 1.0002068969934805,
+            "activeError": 1.4402790794543372,
+            "activePixels": 25608
+          },
+          {
+            "frame": 5,
+            "meanRgbaError": 1.1366265190972222,
+            "regionError": 1.9796628201980522,
+            "regionPixels": 65168,
+            "contrastRatio": 0.9997196443308467,
+            "activeError": 1.5444681607968695,
+            "activePixels": 16866
+          }
+        ],
+        "videoSha256": "a433a3bd9f71f7f0e8875cae3ffbb826b497855bffb9be7437af85d1463bb1e7",
+        "expectedSha256": "6cb9d009c08daa3a9f03963a2ab0f2182db8509bb84600f58e512a63e6835429"
+      },
+      {
+        "name": "decrypt-reveal",
+        "ok": true,
+        "decoder": "independent FFmpeg/FFprobe",
+        "metadata": {
+          "streams": [
+            {
+              "index": 0,
+              "codec_name": "vp9",
+              "codec_long_name": "Google VP9",
+              "profile": "Profile 0",
+              "codec_type": "video",
+              "codec_tag_string": "[0][0][0][0]",
+              "codec_tag": "0x0000",
+              "width": 640,
+              "height": 360,
+              "coded_width": 640,
+              "coded_height": 360,
+              "closed_captions": 0,
+              "film_grain": 0,
+              "has_b_frames": 0,
+              "sample_aspect_ratio": "1:1",
+              "display_aspect_ratio": "16:9",
+              "pix_fmt": "yuv420p",
+              "level": -99,
+              "color_range": "pc",
+              "color_space": "bt709",
+              "color_transfer": "iec61966-2-1",
+              "color_primaries": "bt709",
+              "refs": 1,
+              "r_frame_rate": "30/1",
+              "avg_frame_rate": "30/1",
+              "time_base": "1/1000",
+              "start_pts": 0,
+              "start_time": "0.000000",
+              "nb_read_frames": "6",
+              "disposition": {
+                "default": 1,
+                "dub": 0,
+                "original": 0,
+                "comment": 0,
+                "lyrics": 0,
+                "karaoke": 0,
+                "forced": 0,
+                "hearing_impaired": 0,
+                "visual_impaired": 0,
+                "clean_effects": 0,
+                "attached_pic": 0,
+                "timed_thumbnails": 0,
+                "captions": 0,
+                "descriptions": 0,
+                "metadata": 0,
+                "dependent": 0,
+                "still_image": 0
+              }
+            }
+          ],
+          "format": {
+            "filename": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa\\rocut-three-resources-VSD7L2\\.artifacts\\reveal-effects\\run-nhluxC\\decrypt-reveal\\spatial.webm",
+            "nb_streams": 1,
+            "nb_programs": 0,
+            "format_name": "matroska,webm",
+            "format_long_name": "Matroska / WebM",
+            "start_time": "0.000000",
+            "duration": "0.200000",
+            "size": "92266",
+            "bit_rate": "3690640",
+            "probe_score": 100,
+            "tags": {
+              "encoder": "Mediabunny"
+            }
+          }
+        },
+        "metrics": [
+          {
+            "frame": 0,
+            "meanRgbaError": 2.716303168402778,
+            "regionError": 4.166269073715882,
+            "regionPixels": 62040,
+            "contrastRatio": 1.076407963002744,
+            "activeError": 4.302017598925122,
+            "activePixels": 181602
+          },
+          {
+            "frame": 1,
+            "meanRgbaError": 2.905437282986111,
+            "regionError": 4.295610319993453,
+            "regionPixels": 65168,
+            "contrastRatio": 1.0291143946321495,
+            "activeError": 4.813576032884634,
+            "activePixels": 155858
+          },
+          {
+            "frame": 2,
+            "meanRgbaError": 3.8748893229166668,
+            "regionError": 5.405812668794501,
+            "regionPixels": 65168,
+            "contrastRatio": 1.0113324443639118,
+            "activeError": 6.347572416274707,
+            "activePixels": 129690
+          },
+          {
+            "frame": 3,
+            "meanRgbaError": 4.077600911458333,
+            "regionError": 5.689581798837875,
+            "regionPixels": 65168,
+            "contrastRatio": 0.9997130905973395,
+            "activeError": 6.8658933481002205,
+            "activePixels": 102933
+          },
+          {
+            "frame": 4,
+            "meanRgbaError": 4.187147352430555,
+            "regionError": 6.038188476962108,
+            "regionPixels": 65168,
+            "contrastRatio": 0.9976245993264602,
+            "activeError": 7.726339948697178,
+            "activePixels": 76539
+          },
+          {
+            "frame": 5,
+            "meanRgbaError": 4.182112630208334,
+            "regionError": 6.660119486046321,
+            "regionPixels": 65168,
+            "contrastRatio": 1.00194638121673,
+            "activeError": 8.947315371195968,
+            "activePixels": 51590
+          }
+        ],
+        "videoSha256": "cbcd245b5ebd0f218e3ae1a057aefdd3c14b6f54a087859be8ff6840f839133c",
+        "expectedSha256": "e5a56457c1c0de2d6a47e8f24a918aced76bbb7ee04ed0abfbb9f92e5e3aa42f"
+      }
+    ],
+    "visualInspection": "Contact sheet inspected: actual hidden-side scan, local glow, full character field, circular original-image aperture and independent per-cell decode are visible."
+  },
+  "failedAttempts": [
+    {
+      "stage": "Native glyph oracle",
+      "observed": "A color value of 0.5 produced channel 127 instead of expected 128, both before and after eliminating the equal-alpha multiply/divide. The test now uses the exact byte-center input 128/255 and retains exact glyph/gutter/alpha comparisons; no video-quality threshold changed."
+    },
+    {
+      "stage": "Native Laser near-zero coverage",
+      "observed": "Additional negative control produced [20,40,60,0]. Shader now clears RGB at coverage <=0.5/255; the unchanged new assertion and all 8 GPU tests pass."
+    },
+    {
+      "stage": "Concurrent native GPU",
+      "observed": "One adapter request returned AdapterUnavailable; serial execution passed. This does not establish cross-GPU or concurrent-device reliability."
+    },
+    {
+      "stage": "Private source gate",
+      "observed": "Old dependency WASM copies correctly failed the source gate. Link-count guard blocked in-place writes; new-file replacements inside the private fixture fixed four destinations and all gates passed."
+    },
+    {
+      "stage": "Host authoring test",
+      "observed": "The first fixture wrongly requested effect-layer progress animations; production correctly rejected them. Fixture adjusted to static layers plus animation-negative controls; production boundary unchanged."
+    },
+    {
+      "stage": "Host reopen assertion",
+      "observed": "The empty canonical Main Track is stored separately and reconstructed in overlay/main/audio order, as documented in scene-state.ts and the existing editor-plane test. Reopen now asserts the same canonical ID with no clips, every full track record by ID, exact authored-track order, clips, sceneState and revision. Atomic rollback still compares the complete unsorted track array."
+    }
+  ],
+  "remaining": [
+    "Two optional preset-library 404s and one exact Programmatic frame cancelled message remain in the passing attached-editor run; no zero-console-error or cancellation-noise fix is claimed.",
+    "The documented Laser/Decrypt video subsets now qualify as V, bringing the current plan to 16 V / 19 N; this is not full upstream equivalence or P7 completion.",
+    "Installed Creator, Electron, transparency-preserving final encoding, full MV, cross-GPU and performance acceptance are not established."
+  ],
+  "installedPluginTested": false,
+  "electronTested": false,
+  "committedOrPublished": false
+}

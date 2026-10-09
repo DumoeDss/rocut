@@ -1,0 +1,12 @@
+<!doctype html>
+<html><head><style>
+html,body { margin:0; background:transparent }
+#root,#picture { width:64px; height:64px }
+</style><script src="gsap.js"></script></head><body>
+<div id="root" data-composition-id="root" data-start="0" data-duration="0.16" data-width="64" data-height="64">
+  <video id="picture" src="audible.webm" playsinline data-start="0" data-duration="0.16" data-volume="0.5" data-track-index="0"></video>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+window.__timelines.root = gsap.timeline({paused:true});
+</script></body></html>

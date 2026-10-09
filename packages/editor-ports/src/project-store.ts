@@ -53,6 +53,9 @@ export interface ProjectAttachment {
 	readonly body: ArrayBuffer;
 }
 
+/** Attachment identity and opaque metadata, without reading binary content. */
+export type ProjectAttachmentHeader = Omit<ProjectAttachment, "body">;
+
 /** A durable opaque value in a caller-selected logical namespace. */
 export interface LibraryRecord {
 	readonly namespace: string;
@@ -136,7 +139,9 @@ export class ProjectStoreError extends Error {
 		scope: ProjectStoreErrorScope;
 		message?: string;
 	}) {
-		super(args.message ?? `Project store ${args.operation} failed: ${args.code}`);
+		super(
+			args.message ?? `Project store ${args.operation} failed: ${args.code}`,
+		);
 		this.name = "ProjectStoreError";
 		this.code = args.code;
 		this.operation = args.operation;
@@ -240,6 +245,16 @@ export interface ProjectStore {
 		projectId: ProjectId;
 		signal?: AbortSignal;
 	}): Promise<readonly ProjectAttachment[]>;
+	/**
+	 * Optional metadata-only enumeration. Implementations must not load bodies or
+	 * delegate to listAttachments. Presence advertises this IO capability; absence
+	 * preserves legacy providers. Returned headers do not prove body integrity.
+	 * Uses the existing list-attachments error operation and project scope.
+	 */
+	listAttachmentHeaders?(args: {
+		projectId: ProjectId;
+		signal?: AbortSignal;
+	}): Promise<readonly ProjectAttachmentHeader[]>;
 	loadAttachment(args: {
 		projectId: ProjectId;
 		key: string;

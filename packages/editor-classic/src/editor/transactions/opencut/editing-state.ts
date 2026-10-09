@@ -37,6 +37,9 @@ export function projectEditingState(element: TimelineElement): ClipEditing {
 				isSourceAudioEnabled: element.isSourceAudioEnabled,
 			}),
 		...(element.type === "graphic" && { definitionId: element.definitionId }),
+		...(element.type === "graphic" && element.programmatic !== undefined && {
+			programmatic: element.programmatic,
+		}),
 		...(element.type === "effect" && { effectType: element.effectType }),
 		...(element.type === "sticker" && {
 			stickerId: element.stickerId,
@@ -69,6 +72,7 @@ export function applyEditingState({
 		"hidden",
 		"isSourceAudioEnabled",
 		"definitionId",
+		"programmatic",
 		"stickerId",
 		"intrinsicWidth",
 		"intrinsicHeight",

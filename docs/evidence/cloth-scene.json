@@ -1,0 +1,404 @@
+{
+  "version": 1,
+  "date": "2026-10-08",
+  "status": "fixture-verified-video-subset",
+  "scope": [
+    "XPBD still-image Cloth with structural, shear and two-edge distance-bending constraints",
+    "Rust simulation/source time/budgets; existing Worker WebGL2 mesh raster",
+    "Creator clothImage -> Host offline persistence -> attached private editor -> native Rocut export"
+  ],
+  "limits": {
+    "ledger": {
+      "verifiedVideoSubsets": 23,
+      "notYetVerified": 12,
+      "total": 35
+    },
+    "dedicatedRecipeParameterUi": false,
+    "hostApplyEntersCommandManagerHistory": false,
+    "installedPluginTested": false,
+    "electronTested": false,
+    "crossGpuReliabilityEstablished": false,
+    "performanceAcceptance": false,
+    "transparentFinalMasterEncoding": false,
+    "liquidImplemented": false,
+    "collisionOrTearing": false,
+    "persistentCrossRequestSimulationCache": false,
+    "notes": [
+      "Declared still-image resource; no arbitrary lower-video capture, collision geometry, tearing or pointer-driven live simulation.",
+      "Dynamic pixel comparisons exclude 1.25 pixels around every triangle edge, including shared diagonals. Initial and zero-force cases are unmasked.",
+      "Independent CPU reference supports 2..12 cells per axis and at most two seconds. Native/Host checks cover the 24-cell, 16-event and 30-second admission boundaries.",
+      "Distance-bending constraints are not a dihedral constitutive material model.",
+      "Agent recipe restoration is revision-checked source replacement. Generic Opacity UI undo/redo is a separate history path.",
+      "Two explicit frame cancellations and two optional library 404s remain in the accepted editor log."
+    ]
+  },
+  "implementation": {
+    "rust": [
+      "rust/crates/editor-api/src/mv_recipe/cloth.rs",
+      "rust/crates/editor-api/src/mv_recipe/cloth_catalog.rs",
+      "rust/crates/editor-api/src/mv_recipe/cloth_model.rs",
+      "rust/crates/editor-api/src/mv_recipe/cloth_constraints.rs",
+      "rust/crates/editor-api/src/mv_recipe/cloth_mesh.rs"
+    ],
+    "contract": "packages/editor-contracts/src/mv-cloth.ts",
+    "worker": "packages/editor-classic/src/services/renderer/programmatic/mv-mesh-renderer.ts",
+    "helper": "resources/agent/skills/html-video/assets/rocut-stylized/cloth-scenes.mjs#clothImage",
+    "semantics": [
+      "120000 ticks/second, fixed 1000-tick steps (120 Hz); execute only complete elapsed steps. No easing or wall-clock state.",
+      "Initial state before span; frozen state after span. Song offset does not advance simulation age; refs remap source age.",
+      "Same-tick impulses retain author order, are consumed in [stepStart, stepEnd), and use rest-space short-side distance for radius.",
+      "Semiimplicit integration with exponential damping, XPBD alpha=compliance/dt^2, multipliers reset per step and accumulated through iterations.",
+      "Pinned inverse mass zero, free inverse mass one; velocities reconstructed after projection. Seed affects gust phase, not initial geometry.",
+      "Stable far-to-near mesh triangles; near plane w>=0.05, source alpha, normal-driven RGB shading, opacity once.",
+      "Replay identity binds all settings/events, seed, source dimensions, step and image resource ID/SHA-256. Replays are request-local."
+    ],
+    "budgets": {
+      "cellsPerAxis": [
+        2,
+        24
+      ],
+      "events": 16,
+      "maxSpanSeconds": 30,
+      "stepTicks": 1000,
+      "maxSteps": 3600,
+      "replayLogicalMemoryBytes": 8388608,
+      "expandedPrimitiveFormula": "4 * columns * rows",
+      "expandedPrimitiveLimit": 4096,
+      "expandedSimulationWorkLimit": 80000000,
+      "initialWork": "4V + 3C + 2E + 24576",
+      "perStepWork": "C*(iterations+2) + V*(8+E) + 2E + 32",
+      "variables": "V=(columns+1)*(rows+1), C=constraint count, E=event count",
+      "independentDagRejection": {
+        "single4x4ThirtySecondWork": 6000982,
+        "repeatedReferences": 32,
+        "totalWork": 192031424,
+        "primitives": 2048
+      }
+    }
+  },
+  "provenance": {
+    "sourceCommit": "e791be658f63384b6b7c064c1a92dd1912246ada",
+    "sourceWorktreeClean": false,
+    "backend": "private-chromium-swiftshader",
+    "browser": "154.0.8037.98",
+    "toolchainLockSha256": "a5f51282b3cd63e4e00f887f5545f8fcb61009a82d0d66616938d03ddc89f88f",
+    "wasm": {
+      "rustVersion": "1.88.0",
+      "wasmPackVersion": "0.13.1",
+      "bytes": 7402314,
+      "sha256": "2e69556105e18106d93d1796b09da95f55b230d65d8779cdcc1e0ed4de0739ad",
+      "sourceGate": true,
+      "pathGate": true,
+      "apiGate": true,
+      "initializationGate": true,
+      "publicJsExports": 87,
+      "stableBinaryExports": 104,
+      "toolchainTrampolines": 3,
+      "imports": 612,
+      "newPublicExports": 0,
+      "consumerRefresh": "bg.js, WASM and WASM declarations updated only in four private dependency copies; shared dependencies untouched."
+    },
+    "artifacts": {
+      "browser": {
+        "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/mesh-scenes/run-aBFZHk/evidence.json",
+        "sha256": "7ed3e49cff7f5d9d17e099b2c795d2b950a1b8a5cdd2bef146215b5e297ee582"
+      },
+      "host": {
+        "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/cloth-persistence/run-iZXCHt/evidence.json",
+        "sha256": "c855f59b7c8985c8b2c5db6befd02184217c5e917cdaa0c3e25c269b55d0ca6d"
+      },
+      "editor": {
+        "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/cloth-editor/run-wnc8qO/evidence.json",
+        "sha256": "459f68c2bd10c4443f0b209d35ebc7c90d817ba46c3a41b5dc06c12affaa6a2a"
+      }
+    },
+    "sourceSnapshots": [
+      {
+        "label": "browser",
+        "storedManifestHashMatches": true,
+        "changed": [
+          {
+            "path": "script/fixtures/cloth-oracle-sampling.ts",
+            "added": false
+          },
+          {
+            "path": "script/fixtures/mesh-scenes-mesh-oracle.d.mts",
+            "added": true
+          }
+        ],
+        "removed": []
+      },
+      {
+        "label": "editor",
+        "storedManifestHashMatches": true,
+        "changed": [
+          {
+            "path": "script/fixtures/cloth-oracle-sampling.ts",
+            "added": false
+          },
+          {
+            "path": "script/fixtures/mesh-scenes-mesh-oracle.d.mts",
+            "added": true
+          }
+        ],
+        "removed": []
+      }
+    ],
+    "postAcceptanceTypeOnlyVerification": {
+      "priorSourceHashMatches": true,
+      "emittedJavaScriptIdentical": true,
+      "addedDeclarationHasNoRuntime": "script/fixtures/mesh-scenes-mesh-oracle.d.mts"
+    },
+    "currentCanonicalVsPrivate": {
+      "files": 34,
+      "differences": [
+        "rust/crates/editor-api/src/programmatic.rs"
+      ],
+      "note": "programmatic.rs intentionally retains frozen audio validation in the private fixture. Canonical concurrent HyperFrames audio/profile changes are preserved; both copies contain the same new Cloth validate(step) and resolve(resources) arguments. This does not claim whole-worktree integration.",
+      "canonicalSha256": {
+        "rust/crates/editor-api/src/mv_recipe/mod.rs": "393ebbbedcd8674c64651a916386979122cd53dcda5e4d90aa9c5ef6087be838",
+        "rust/crates/editor-api/src/mv_recipe/model.rs": "ee7d33c312cc248b1d66cd2b995e02c7245afae2b8f9c7380b5511905d03e8bf",
+        "rust/crates/editor-api/src/mv_recipe/catalog.rs": "f7e9f302d52ac7bb7078cbeb61b497f391262d57340387a9b19cd2e4b29f1d0c",
+        "rust/crates/editor-api/src/mv_recipe/catalog_tests.rs": "7dde6ad52a019ea782a72de2ba2c6dce1da10c4976ea211cfea0fcd01f72626c",
+        "rust/crates/editor-api/src/programmatic_resources.rs": "a64379b5d9718f6c55cb745954eeb082900e0e6a23eacc6e5f420da0a1c428b8",
+        "rust/crates/editor-api/src/programmatic.rs": "46933eafed475ff64b71347f74fa96e0cd7aa2e3cafdb951874cd346229fe7ef",
+        "rust/crates/editor-api/src/mv_recipe/evaluate.rs": "6a2284b5b46f47ea7c84a6638a24b7215a54fc77ae9b499759f41d0ac4c9cd41",
+        "rust/crates/editor-api/src/mv_recipe/generator_evaluate.rs": "411dd94a1ba60b803705c8ecb8c0edec13ac4f9a66d4013a94aff064e0413d7a",
+        "rust/crates/editor-api/src/mv_recipe/validate.rs": "e28322ad64abd38bb982eb5b82890ba1a27433974cf67ca792885794a92d0db3",
+        "packages/editor-contracts/src/mv-recipe-generators.ts": "2cce3464eb756f7d10bd07d0285e0677b15ec278da069791c71e753af1c2e059",
+        "packages/editor-contracts/src/index.ts": "2da08431b831f509ef78c478956e0d827e848b140a1b14e9ea74613081ad8ac7",
+        "packages/editor-classic/src/services/renderer/programmatic/mv-recipe-renderer.ts": "e6ddf75dfebe2572f2b85ff58be7014f5be053d127e99de8e14e9cc2c1b37b5c",
+        "packages/editor-contracts/src/mv-cloth.ts": "8cc667ee4f6d0b053359f581affb39eba9bda7667203c7d7e83046982833953b",
+        "rust/crates/editor-api/src/mv_recipe/cloth.rs": "a02e856e9c9843d50ff6cac7f37c2956e8a079cfc7fe7626903c5aac30c03464",
+        "rust/crates/editor-api/src/mv_recipe/cloth_catalog.rs": "c006f4a44c7a10db4dc4e85a51c2577d47aa3af2e8e4fc5a51e1df4fa8cebd1b",
+        "rust/crates/editor-api/src/mv_recipe/cloth_model.rs": "12b41029e2f8b8a3f750311c01033fd0cc6d91b1984a3428b6d4bbc1dc241b5d",
+        "rust/crates/editor-api/src/mv_recipe/cloth_constraints.rs": "0a2c97cda8e665af087274cc4073324a2e009e8dabc0668c60cb23b17207d813",
+        "rust/crates/editor-api/src/mv_recipe/cloth_mesh.rs": "99bab4b1f1715d4f8272f55377104cd3a49817254136e56b46e495e35c0e9ed2",
+        "rust/crates/editor-api/src/mv_recipe/cloth_tests.rs": "de40478a3fc625b15e6499afa334345f240ecd96cd9179871b123661f0bb95e6",
+        "rust/crates/editor-api/tests/mv_cloth.rs": "b607fb81059da5f884d8b2e4bd91bed24381887a082868f8454a70ff4f378c72",
+        "rust/crates/editor-api/tests/support/cloth.rs": "6c0cfcc4eecca463c61459a52b9bb3440a49c13b358cca380eb0f9cf9f6726fa",
+        "apps/cli/src/__tests__/cloth-persistence.test.ts": "701fb7c62d580493a45b62edf357d467353a5ad5f00c15242f3a431ea878f27a",
+        "script/fixtures/cloth-oracle-physics.ts": "83e8fba570018742998cdc3bf43040fd144c29370a8bf4ab9f227849a3ac7648",
+        "script/fixtures/cloth-oracle-mesh.ts": "d6722baea1c93beea6df4b1299592d441ab2049034f96fc7d14b166874c77c47",
+        "script/fixtures/cloth-oracle-sampling.ts": "7d9871fd98e40eb03d6a0861eef2bbf050e354ca53046e9a4b794e5d372a1124",
+        "script/fixtures/cloth-scenes-checks.ts": "046c7f6754f6979578324d9f61cdc0407b3ce90d73e057d3a9980c769839d00b",
+        "script/fixtures/cloth-editor-host.ts": "5508d51fd5bcca49d7ed1770bef2adcadbaf7c7585799172a4899d71ade02148",
+        "script/fixtures/cloth-editor-checks.mjs": "89b3b702883f54d721f01f85cc7e439f2531cab95b29dffef1d2e5150bc2c0ce",
+        "script/fixtures/cloth-editor-export.mjs": "91ff69d516dedc7b50e50d08c702d97ad447e82384e9877271b9c5a5c0d35139",
+        "script/fixtures/mesh-scenes-mesh-oracle.d.mts": "f1901df5018f71c1949d5ae3d958011581405479efdfade6b054ac03c4ba9eb4",
+        "script/fixtures/mesh-scenes-browser.ts": "f809d7e72a7176cb6874261e2b0e3a4f71f5def8759b7dba132f7dfe3486afb4",
+        "script/probe-mesh-scenes.mjs": "0043a320e020a2e93d4e59ee595014d79dfb0332ef40313b2732a012587a00ce",
+        "script/probe-stylized-fusion.mjs": "5e4e4570818d95f905658d2baa630d161928ec1cb0a8889f4bcd1cdb2d9ee61a",
+        "script/fixtures/spatial-regression.tsconfig.json": "c19bacfebac5163a15961364264fe4a63fac036705bbf1bd8e7c4cb9204bafe6"
+      }
+    }
+  },
+  "verification": {
+    "native": {
+      "passed": 102,
+      "recipeLibrary": 31,
+      "relatedIntegration": 71,
+      "newClothModuleTests": 10,
+      "newClothIntegrationTests": 13,
+      "replayFoundationTestsIncluded": 11,
+      "commands": [
+        "cargo +stable test --offline -p editor-api --lib mv_recipe",
+        "cargo +stable test --offline -p editor-api --test mv_cloth --test mv_shatter --test mv_grid --test mv_hex_float --test mv_bend --test mv_generators --test mv_recipe --test mv_composition --test mv_transitions"
+      ],
+      "warnings": [
+        "Cargo global-cache last-use database could not write on full C drive; test/build targets remained on E.",
+        "Two retained dead-code warnings: replay TICKS_PER_SECOND and ReplayOutput position/executed_steps."
+      ]
+    },
+    "browser": {
+      "mode": "--cloth",
+      "captures": 58,
+      "pixelComparisons": 29,
+      "exportSizePixelComparisons": 12,
+      "maxPremul": 1.4588235294117453,
+      "maxAlpha": 1,
+      "maxMeanPremul": 0.2280982244207742,
+      "minimumCoverage": 0.6123167438271605,
+      "unchangedGates": {
+        "maxPremul": 5,
+        "maxAlpha": 3,
+        "meanPremul": 1.5
+      },
+      "sensitivity": {
+        "gravity": 3174,
+        "wind": 6425,
+        "gust": 3092,
+        "gustFrequency": 2599,
+        "damping": 6827,
+        "stretchCompliance": 7069,
+        "bendCompliance": 3828,
+        "solverIterations": 3190,
+        "perspective": 1978,
+        "shading": 5561,
+        "events": 5828
+      },
+      "rejectedCounterexamples": {
+        "noConstraints": 8069,
+        "ignoreEvents": 5828,
+        "uvRadius": 4237
+      },
+      "transparentPixels": 4128,
+      "partialAlphaPixels": 8360,
+      "checks": [
+        "initial/neutral unmasked seams; contain/cover/stretch; alpha and single opacity",
+        "topCorners/topEdge/leftEdge; constraints/compliance/damping/forces/impulses",
+        "integer and rational source clocks; delayed span; endpoint freeze; seed",
+        "reverse seek/ref, trim, JSON restore, song offset, resource identity, roles, cancellation retry"
+      ],
+      "exports": [
+        {
+          "name": "cloth-events",
+          "ok": true,
+          "codec": "vp9",
+          "width": 384,
+          "height": 216,
+          "frameRate": "30/1",
+          "frames": 6,
+          "sourceFrames": [
+            6,
+            11
+          ],
+          "previewErrorRange": [
+            1.7343810281635803,
+            1.8863630883487654
+          ],
+          "oracleErrorRange": [
+            1.6864968229590147,
+            1.837740962046601
+          ],
+          "finalMotion": 10.218548056520062
+        },
+        {
+          "name": "cloth-wind",
+          "ok": true,
+          "codec": "vp9",
+          "width": 384,
+          "height": 216,
+          "frameRate": "30/1",
+          "frames": 6,
+          "sourceFrames": [
+            6,
+            11
+          ],
+          "previewErrorRange": [
+            1.7662549430941359,
+            1.9484953703703705
+          ],
+          "oracleErrorRange": [
+            1.700197894164388,
+            1.9007140709561035
+          ],
+          "finalMotion": 5.769760320216049
+        }
+      ],
+      "noExternalRequests": true,
+      "noBrowserErrors": true
+    },
+    "host": {
+      "tests": 1,
+      "assertions": 265,
+      "atomicInvalidTransactions": 38,
+      "reopenedRevisions": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "draftPreview": "stage/review/discard leaves committed revision 0",
+      "offlineAttachmentHashVerified": true,
+      "completeSourcesUnrelatedClipsTracksAndProjectVerified": true
+    },
+    "editor": {
+      "authoringMode": {
+        "parameterUi": false,
+        "parameterEntry": "Host full source replacement",
+        "recipeReversal": "revision-checked restore/reapply; Host apply is not local history",
+        "previewHistory": "actual Blending/Opacity input and attached-session undo/redo"
+      },
+      "creatorShots": 2,
+      "parameters": [
+        [
+          "wind[2]"
+        ],
+        [
+          "events[0].radius",
+          "events[0].velocity"
+        ]
+      ],
+      "fourPreviewHashesMatchAfterReload": true,
+      "completeUnrelatedStatePreserved": true,
+      "hostRestart": {
+        "ok": true,
+        "hostReopenedAfterEdits": true,
+        "revision": 15,
+        "clipIds": [
+          "cloth-0",
+          "cloth-1",
+          "cloth-unrelated"
+        ],
+        "authoredTrackIds": [
+          "cloth-shots",
+          "cloth-unrelated-track"
+        ],
+        "comparison": "complete clip and track projections by ID; authored track order; revision"
+      },
+      "export": {
+        "codec": "vp9",
+        "width": 640,
+        "height": 360,
+        "frameRate": "30/1",
+        "seconds": 4,
+        "frames": 120,
+        "bytes": 361962,
+        "meanRgbErrorRange": [
+          0.6442881944444444,
+          1.2587905092592593
+        ],
+        "activeErrorRange": [
+          3.348279281240175,
+          6.4223802268495005
+        ],
+        "unchangedGates": {
+          "meanRgbError": 12,
+          "activeError": 18
+        }
+      },
+      "expectedFrameCancellations": 2,
+      "optionalPreset404": 2,
+      "contactSheetVisuallyInspected": true,
+      "reusedBundle": "Fresh Cloth build from run-8chBQz reused after renderer-manifest and WASM digest equality gates; not old Shatter bundle."
+    },
+    "static": {
+      "spatialProbeTypecheck": true,
+      "spatialRegressionTypecheck": true,
+      "scopedProductionEslint": true,
+      "scopedPrettier": true,
+      "creatorTests": 14,
+      "skillValidation": true
+    }
+  },
+  "retainedFailuresAndCorrections": [
+    "Corrected impulse radius from UV distance to short-side rest-space distance; native and independent browser negative controls cover the distinction.",
+    "Corrected duplicate exact near-plane endpoints; native test retained.",
+    "Initial fixture synchronization omitted resolve(resources); restored the specific argument without importing concurrent audio changes.",
+    "Large nested Rust test JSON exceeded macro recursion; split fixture construction, no recursion limit increase.",
+    "WASM init npx failed writing full C npm cache; used already-cached Bun 1.2.18 with E TEMP/TMP/cache, without installing or cleaning dependencies.",
+    "Host fixture missing editing.name caused restart normalization difference; supplied explicit stable names. Track collection membership compared by ID while complete project (including scene order) remains equal.",
+    "First editor run exported successfully but independent decode lacked ROCUT_FUSION_FFMPEG_DIR because launcher used the wrong variable. Failed run retained; corrected variable and reran full editor acceptance with validated cached bundle.",
+    "Final oracle TypeScript check found nonexistent MvSpan and missing raster declaration; replaced with MvClothScene[\"span\"] and exact d.mts. Emitted runtime JS is unchanged, and final strict tsc passes."
+  ],
+  "operations": {
+    "artifactsOnDrive": "E",
+    "sharedDependenciesReinstalled": false,
+    "installedPluginReplaced": false,
+    "sharedElftiaRestarted": false,
+    "commitPushRelease": false
+  }
+}

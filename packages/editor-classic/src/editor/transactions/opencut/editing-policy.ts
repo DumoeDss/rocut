@@ -35,6 +35,7 @@ export function validateDocumentEditing({
 					JSON.stringify({
 						editing: clip.editing,
 						duration: clip.duration,
+						trimStart: clip.trimStart,
 						trackKind: tracks.get(clip.trackId)?.kind ?? "missing",
 						assetKind: clip.assetId
 							? assets.get(clip.assetId)?.kind

@@ -56,6 +56,8 @@ import { createRequire } from "node:module";
 import { basename, dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
+import { buildParticleSamplerAssets, particleSamplerDefine } from "./pack-particle-sampler.mjs";
+import { buildParticleBrowserBundle } from "./build-particle-browser.mjs";
 
 const MODULE_DIR = dirname(fileURLToPath(import.meta.url));
 export const DEFAULT_REPO_ROOT = resolve(MODULE_DIR, "..");
@@ -154,8 +156,10 @@ function bunVersion(log) {
  * outExtension value here, so the entry is renamed after the build — the
  * rename is part of the deterministic build step, not a post-hoc fix. */
 async function buildOnce({ repoRoot, outDir }) {
+	await buildParticleBrowserBundle({ check: true, repoRoot });
 	rmSync(outDir, { recursive: true, force: true });
 	mkdirSync(outDir, { recursive: true });
+	const wasmSyncEntry = resolveWasmSyncEntry(repoRoot);
 	const result = await build({
 		entryPoints: [join(repoRoot, ENTRY)],
 		bundle: true,
@@ -169,7 +173,8 @@ async function buildOnce({ repoRoot, outDir }) {
 		// The bare specifier would take `default` — the bundler entry, whose ESM
 		// wasm import cannot resolve once bundled. Route it to the declared
 		// `./sync` entry instead; see the header note and BOUNDARIES §17.
-		alias: { [WASM_PACKAGE]: resolveWasmSyncEntry(repoRoot) },
+		alias: { [WASM_PACKAGE]: wasmSyncEntry },
+		define: particleSamplerDefine,
 		external: ["*.wasm"], // no `.wasm` specifier survives the alias; kept as a guard
 		metafile: true,
 		logLevel: "silent",
@@ -182,6 +187,7 @@ async function buildOnce({ repoRoot, outDir }) {
 	rmSync(entryFinal, { force: true });
 	cpSync(entryOut, entryFinal);
 	rmSync(entryOut);
+	await buildParticleSamplerAssets({ repoRoot, outDir, wasmSyncEntry });
 	return { metafile: result.metafile };
 }
 

@@ -11,6 +11,7 @@ import {
 } from "@opencut/editor-ports/in-memory";
 import { HttpProjectStore } from "./http-project-store";
 import { createHttpDraftReview } from "./http-draft-review";
+import { createHttpProgrammaticFrames } from "./http-programmatic-frames";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
 	return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -81,6 +82,7 @@ export function createHostServedEditorHost({
 		},
 		services: {},
 		draftReview: createHttpDraftReview({ base }),
+		programmaticFrames: createHttpProgrammaticFrames({ base }),
 		branding: {
 			logoUrl: browser.assets.resolve({
 				ref: { path: "logos/opencut/svg/logo.svg" },

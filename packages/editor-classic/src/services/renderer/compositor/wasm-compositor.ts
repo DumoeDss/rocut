@@ -8,6 +8,14 @@ import {
 	resizeCompositorForHandle,
 	uploadTextureForHandle,
 } from "opencut-wasm";
+import * as wasmRequestApi from "opencut-wasm";
+import {
+	assertRenderNotAborted,
+	assertRenderFrameRequestApi,
+	CompositorBusyError,
+	RenderCancelledError,
+	renderFrameRequest,
+} from "./render-request";
 import type {
 	GpuResourceHandle,
 	SessionResources,
@@ -52,7 +60,11 @@ export class WasmCompositor {
 	private cache = new Map<string, RenderedCacheEntry | ExternalCacheEntry>();
 	private resource: GpuResourceHandle | null = null;
 	private disposed = false;
+	private closing = false;
+	private closePromise: Promise<void> | null = null;
 	private renderTail: Promise<void> = Promise.resolve();
+	private readonly transactions = new Set<AbortController>();
+	private readonly requests = new Map<AbortController, Promise<void>>();
 
 	constructor(private readonly resources: SessionResources) {}
 
@@ -66,32 +78,50 @@ export class WasmCompositor {
 	 * thumbnail, or export callers cannot interleave texture state and publish a
 	 * frame assembled from each other's work.
 	 */
-	async runExclusive<T>(task: () => Promise<T>): Promise<T> {
-		if (this.disposed) {
-			throw new Error("Cannot render with a disposed session compositor.");
-		}
-
-		const previous = this.renderTail;
-		let release!: () => void;
-		this.renderTail = new Promise<void>((resolve) => {
-			release = resolve;
+	// eslint-disable-next-line opencut/prefer-object-params -- preserves the existing callback API while adding optional request cancellation.
+	async runExclusive<T>(
+		task: (signal: AbortSignal) => Promise<T>,
+		{ signal }: { signal?: AbortSignal } = {},
+	): Promise<T> {
+		this.assertOpen();
+		assertRenderNotAborted(signal);
+		const controller = new AbortController();
+		const abort = () => controller.abort();
+		signal?.addEventListener("abort", abort, { once: true });
+		this.transactions.add(controller);
+		let started = false;
+		let rejectQueued!: (error: unknown) => void;
+		const abortQueued = () => {
+			if (!started) rejectQueued(new RenderCancelledError());
+		};
+		const operation = this.renderTail
+			.then(async () => {
+				started = true;
+				this.assertOpen();
+				assertRenderNotAborted(controller.signal);
+				return task(controller.signal);
+			})
+			.finally(() => {
+				signal?.removeEventListener("abort", abort);
+				controller.signal.removeEventListener("abort", abortQueued);
+				this.transactions.delete(controller);
+			});
+		// The real queue tail, unlike the queued caller's prompt abort result,
+		// always waits for its predecessor. Cancellation never unlocks live work.
+		this.renderTail = operation.then(
+			() => {},
+			() => {},
+		);
+		return new Promise<T>((resolve, reject) => {
+			rejectQueued = reject;
+			operation.then(resolve, reject);
+			controller.signal.addEventListener("abort", abortQueued, { once: true });
+			if (controller.signal.aborted) abortQueued();
 		});
-
-		await previous;
-		try {
-			if (this.disposed) {
-				throw new Error("Cannot render with a disposed session compositor.");
-			}
-			return await task();
-		} finally {
-			release();
-		}
 	}
 
 	ensureInitialized({ width, height }: { width: number; height: number }) {
-		if (this.disposed) {
-			throw new Error("Cannot initialize a disposed session compositor.");
-		}
+		this.assertOpen();
 		if (!this.canvas) {
 			const handle = createCompositor(width, height);
 			if (handle === 0) {
@@ -153,11 +183,53 @@ export class WasmCompositor {
 	}
 
 	render(frame: FrameDescriptor) {
+		this.assertOpen();
 		renderFrameForHandle(this.requireHandle(), frame);
+		this.recordFrameProfile();
+	}
+
+	// eslint-disable-next-line opencut/prefer-object-params -- mirrors render(frame) with optional request lifecycle controls.
+	async renderAsync(
+		frame: FrameDescriptor,
+		{
+			signal,
+			assertCurrent,
+		}: { signal?: AbortSignal; assertCurrent?: () => void } = {},
+	): Promise<void> {
+		this.assertOpen();
+		assertRenderNotAborted(signal);
+		assertRenderFrameRequestApi(wasmRequestApi);
+		const handle = this.requireHandle();
+		const controller = new AbortController();
+		const abort = () => controller.abort();
+		signal?.addEventListener("abort", abort, { once: true });
+		const operation = renderFrameRequest({
+			// The old sync method remains available. This new path intentionally
+			// requires the separately built request API instead of silently falling
+			// back to an uninterruptible synchronous Liquid replay.
+			api: wasmRequestApi,
+			resources: this.resources,
+			handle,
+			frame,
+			signal: controller.signal,
+			assertCurrent,
+		});
+		this.requests.set(controller, operation);
+		try {
+			await operation;
+			this.recordFrameProfile();
+		} finally {
+			signal?.removeEventListener("abort", abort);
+			this.requests.delete(controller);
+		}
+	}
+
+	private recordFrameProfile(): void {
 		if (isRenderPerfEnabled()) {
-			recordWasmFrameProfile(
-				getLastFrameProfile() as Array<{ name: string; durationMs: number }>,
-			);
+			const profile: unknown = getLastFrameProfile();
+			if (Array.isArray(profile) && profile.every(isFrameProfileEntry)) {
+				recordWasmFrameProfile(profile);
+			}
 		}
 	}
 
@@ -254,12 +326,36 @@ export class WasmCompositor {
 
 	dispose(): void {
 		if (this.disposed) return;
+		if (this.transactions.size || this.requests.size) {
+			throw new CompositorBusyError();
+		}
 		this.disposed = true;
 		this.resource?.release();
 		this.resource = null;
 		this.canvas = null;
 		this.initializedSize = null;
 		this.cache.clear();
+	}
+
+	/** Abort callbacks run now, not as another queued compositor transaction. */
+	cancelAndDrain(): Promise<void> {
+		for (const controller of this.transactions) controller.abort();
+		for (const controller of this.requests.keys()) controller.abort();
+		const pending = [this.renderTail, ...this.requests.values()];
+		// Callers retain their typed failure. Lifecycle waits for actual cleanup,
+		// not an abort-vs-work race that could release live GPU resources early.
+		return Promise.allSettled(pending).then(() => {});
+	}
+
+	close(): Promise<void> {
+		if (this.closePromise) return this.closePromise;
+		this.closing = true;
+		this.closePromise = this.cancelAndDrain().then(() => this.dispose());
+		return this.closePromise;
+	}
+
+	private assertOpen(): void {
+		if (this.disposed || this.closing) throw new RenderCancelledError();
 	}
 
 	private requireHandle(): number {
@@ -269,6 +365,19 @@ export class WasmCompositor {
 		}
 		return handle;
 	}
+}
+
+function isFrameProfileEntry(
+	value: unknown,
+): value is { name: string; durationMs: number } {
+	return (
+		typeof value === "object" &&
+		value !== null &&
+		"name" in value &&
+		typeof value.name === "string" &&
+		"durationMs" in value &&
+		typeof value.durationMs === "number"
+	);
 }
 
 function createBackingCanvas({

@@ -1,0 +1,357 @@
+{
+  "version": 1,
+  "date": "2026-10-07",
+  "status": "fixture-verified-not-installed",
+  "implementation": "Declarative glyphRain and particleReveal scenes",
+  "browser": {
+    "ok": true,
+    "glyphs": {
+      "frame0": "ef188f1602e52f9fb4bdab237276f3a0019ea9ef10eb8e80218f79ddb557883a",
+      "frame3": "34db6c2a14795cb8edd4d4ae7a58620856943ae7fccd2bdcf241b5c0cb9f536f",
+      "changedSeed": "4586e114424a3feb052ef1c51959ea35d618e361c658690326b7cccc3dab46a7"
+    },
+    "particles": {
+      "frame0": "d752d6f48e8cfc270acb42b1dd63feb996567f918fa1993414cd1a6d305b4f72",
+      "frame8": "265a4aa6db06eaf32329cf0083764a22da98196f5d04eee06bdbe01b4fe0c241",
+      "frame24": "4011d87dfaa7260b8e70537998a8f444ac3959b1195645d28c88408b20acfe39"
+    },
+    "video": {
+      "width": 384,
+      "height": 216,
+      "fps": {
+        "numerator": 30,
+        "denominator": 1
+      },
+      "frames": 6,
+      "quality": "very_high",
+      "detail": [
+        {
+          "pixels": 2811,
+          "error": 7.347800308312581,
+          "contrastRatio": 1.0291274947284512
+        },
+        {
+          "pixels": 4323,
+          "error": 11.233479836533272,
+          "contrastRatio": 0.9152081977213086
+        },
+        {
+          "pixels": 6558,
+          "error": 12.580766493849751,
+          "contrastRatio": 0.8809995852402542
+        },
+        {
+          "pixels": 9760,
+          "error": 12.391734972677595,
+          "contrastRatio": 0.8621020355104052
+        },
+        {
+          "pixels": 14388,
+          "error": 12.127675840978593,
+          "contrastRatio": 0.8728977389165926
+        },
+        {
+          "pixels": 18400,
+          "error": 12.972590579710145,
+          "contrastRatio": 0.8565230107145422
+        }
+      ],
+      "errors": [
+        1.1465506847993827,
+        1.7265172887731481,
+        2.3470534336419755,
+        2.847490475501543,
+        3.327663845486111,
+        4.040442949459877
+      ],
+      "errorLimit": 10,
+      "motion": 7.417384018132716,
+      "bytes": 7278,
+      "previewExportEqual": true
+    },
+    "descriptors": [
+      {
+        "id": "rain.ttf",
+        "kind": "font",
+        "mimeType": "font/ttf",
+        "font": {
+          "family": "RocutGeneratorFixture",
+          "weight": 500,
+          "style": "normal"
+        },
+        "byteLength": 136704,
+        "sha256": "a9b4c49bb299e05b5f6c481e7fb5e78943d2793249a0c8874ab574a2d1ea6755",
+        "attachmentKey": "programmatic-sha256-a9b4c49bb299e05b5f6c481e7fb5e78943d2793249a0c8874ab574a2d1ea6755"
+      },
+      {
+        "id": "logo.png",
+        "kind": "image",
+        "mimeType": "image/png",
+        "byteLength": 610,
+        "sha256": "e9a4e2ffb4e97667a77340918c74dfd6aa8bfc8f38283faf2485338976d783be",
+        "attachmentKey": "programmatic-sha256-e9a4e2ffb4e97667a77340918c74dfd6aa8bfc8f38283faf2485338976d783be"
+      }
+    ],
+    "captures": 46,
+    "checks": [
+      "integer/fractional drawing clock",
+      "repeat/reverse/ref/trim seek",
+      "seed and geometry parameters",
+      "transparent and partial alpha",
+      "particle full-image endpoint and spatial motion",
+      "in/out direction",
+      "contain/cover/stretch",
+      "output roles and zero opacity",
+      "landscape/portrait",
+      "missing font rejects",
+      "cancellation and recovery",
+      "preview/export equality on dark/light backgrounds",
+      "real WebM encode/decode",
+      "no remaining iframe"
+    ],
+    "externalRequests": [],
+    "browser": "154.0.8037.98",
+    "backend": "private Chromium WebGPU/SwiftShader, no Host/Electron",
+    "sourceCommit": "e791be658f63384b6b7c064c1a92dd1912246ada",
+    "sourceWorktreeClean": false,
+    "sourceManifestSha256": "0989e5bf71d34f090b28ce36fdf5d999184bf4a85b77bf83d719b0e869f1fc59",
+    "wasmSha256": "7e40c1cd3ed55541280b62c341df769b259b2631d801654ff8d19375a59c4c44"
+  },
+  "independentDecode": {
+    "decoder": "ffmpeg 6.0",
+    "bytes": 1990656,
+    "frames": 6,
+    "metrics": [
+      {
+        "meanRgbaError": 1.3168372636959877,
+        "pixels": 2811,
+        "foregroundError": 7.038539072690621,
+        "contrastRatio": 1.0066517115365454
+      },
+      {
+        "meanRgbaError": 1.8798978829089505,
+        "pixels": 4323,
+        "foregroundError": 11.256149279050042,
+        "contrastRatio": 0.8932441671477055
+      },
+      {
+        "meanRgbaError": 2.477695794753086,
+        "pixels": 6558,
+        "foregroundError": 12.804259428687608,
+        "contrastRatio": 0.8623154426028098
+      },
+      {
+        "meanRgbaError": 2.9522810570987654,
+        "pixels": 9760,
+        "foregroundError": 12.6146174863388,
+        "contrastRatio": 0.8438379806150538
+      },
+      {
+        "meanRgbaError": 3.4165189766589505,
+        "pixels": 14388,
+        "foregroundError": 12.30625057918636,
+        "contrastRatio": 0.8551383291208415
+      },
+      {
+        "meanRgbaError": 4.132770302854938,
+        "pixels": 18400,
+        "foregroundError": 13.185670289855073,
+        "contrastRatio": 0.8395579670666143
+      }
+    ],
+    "probe": {
+      "frames": [
+        {
+          "pts_time": "0.000000",
+          "pkt_duration_time": "0.033000"
+        },
+        {
+          "pts_time": "0.033000",
+          "pkt_duration_time": "0.033000"
+        },
+        {
+          "pts_time": "0.067000",
+          "pkt_duration_time": "0.033000"
+        },
+        {
+          "pts_time": "0.100000",
+          "pkt_duration_time": "0.033000"
+        },
+        {
+          "pts_time": "0.133000",
+          "pkt_duration_time": "0.033000"
+        },
+        {
+          "pts_time": "0.167000",
+          "pkt_duration_time": "0.033000"
+        }
+      ],
+      "programs": [],
+      "streams": [
+        {
+          "codec_name": "vp9",
+          "width": 384,
+          "height": 216,
+          "r_frame_rate": "30/1"
+        }
+      ]
+    }
+  },
+  "persistence": {
+    "ok": true,
+    "resources": [
+      {
+        "id": "rain.ttf",
+        "kind": "font",
+        "mimeType": "font/ttf",
+        "font": {
+          "family": "RocutGeneratorFixture",
+          "weight": 500,
+          "style": "normal"
+        },
+        "byteLength": 136704,
+        "sha256": "a9b4c49bb299e05b5f6c481e7fb5e78943d2793249a0c8874ab574a2d1ea6755",
+        "attachmentKey": "programmatic-sha256-a9b4c49bb299e05b5f6c481e7fb5e78943d2793249a0c8874ab574a2d1ea6755"
+      },
+      {
+        "id": "logo.png",
+        "kind": "image",
+        "mimeType": "image/png",
+        "byteLength": 68,
+        "sha256": "7ead7f208bde117a2705599b8ce214033e312e3df3b916d43e404cb0c9001596",
+        "attachmentKey": "programmatic-sha256-7ead7f208bde117a2705599b8ce214033e312e3df3b916d43e404cb0c9001596"
+      }
+    ],
+    "reopenRevision": 1,
+    "editedReopenRevision": 2,
+    "invalidUpdateStatus": 409,
+    "restoredRevision": 3,
+    "scope": "Agent transactions and offline persistence; not attached-editor undo/redo or rendering"
+  },
+  "artifacts": {
+    "browser": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/stylized-generators/run-a2kJX0",
+    "persistence": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/generator-persistence/run-oonQxf"
+  },
+  "checks": {
+    "rust": {
+      "total": 39,
+      "generators": 5,
+      "recipe": 6,
+      "composition": 5,
+      "audio": 7,
+      "post": 3,
+      "sprites": 4,
+      "transitions": 5,
+      "programmatic": 4
+    },
+    "bun": {
+      "tests": 6,
+      "assertions": 51
+    },
+    "scopedFrontendEslint": true,
+    "browserTypecheck": true,
+    "wasmGates": true,
+    "externalRequests": 0
+  },
+  "limits": [
+    "4096 expanded generator primitives; existing 256 complex-operation and raster-surface budgets unchanged",
+    "Glyphs are Unicode scalars; font coverage remains author responsibility; tested explicit IBM Plex Mono and ASCII",
+    "Particle reveal is analytical textured-cell motion, not physics simulation",
+    "192x108 raster acceptance passed; very_high VP9 192x108 failed the additional foreground-contrast criterion (last frame 0.668); final encoded visual acceptance uses 384x216 with unchanged thresholds",
+    "No installed plugin, Electron, attached-editor undo/redo, MP4 or all-GPU acceptance; Creator catalog/templates remain P6"
+  ],
+  "sourceFiles": [
+    {
+      "path": "packages/editor-contracts/src/mv-recipe-generators.ts",
+      "sha256": "55b84e8ede502b99fd86ae8b9227672a2b7f12cd8dbe56ab0828e8398067dfe3"
+    },
+    {
+      "path": "packages/editor-contracts/src/mv-recipe.ts",
+      "sha256": "022af2dc235828f380f05b1047d6cd5e01f9dcca9e992802ce24b267cfd81117"
+    },
+    {
+      "path": "packages/editor-contracts/src/mv-recipe-plan.ts",
+      "sha256": "e4872ad2db6e4164cdcfef01a8ce6bf6b43a39a757061f764e57d3149758c5f2"
+    },
+    {
+      "path": "packages/editor-contracts/src/index.ts",
+      "sha256": "7ea2e4b7b73fbf74eaf54a84488bec0fcebc3d48a8a53f7ae9df9974d788f699"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/generator_model.rs",
+      "sha256": "43e80f1a1cf6a49de0f4d8427828dcb0d261d847de0c139ea1f9c91af7b782e6"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/generators.rs",
+      "sha256": "e36a3fd1fb10f6269fa9580023c8d4f9525a38455b6880a2e8f2d4b7077176a0"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/mod.rs",
+      "sha256": "0aed53de8a24ef9fc80ba2d10756e9df507c27a2f169c89054e6274e52e3b1c9"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/model.rs",
+      "sha256": "89f19af27d4fb595bb0561536cd9de480bf19c575aacb457fb0a2cb85c9870d6"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/evaluate.rs",
+      "sha256": "eed8565ed9689aaa40e16ca9b1e8d88fa2aa341f714c5f8763f42238301ffb5d"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/validate.rs",
+      "sha256": "7f9fa01e851ab32d27f8592c9c75d997e4f98d89c5eb59c258b74a815a3e5302"
+    },
+    {
+      "path": "rust/crates/editor-api/tests/mv_generators.rs",
+      "sha256": "291b6f2c774073bbd081650eea3f05f0af385cae2f7e24b34fba23dbea6fd004"
+    },
+    {
+      "path": "packages/editor-classic/src/services/renderer/programmatic/mv-generator-renderer.ts",
+      "sha256": "92ac45cb6846d492946c98779cb52a6ea76139aa172b2d2f5ee19792312ef647"
+    },
+    {
+      "path": "packages/editor-classic/src/services/renderer/programmatic/mv-recipe-renderer.ts",
+      "sha256": "da61ccf478f52b2977891c6fcf9ddb15eb7656fb14b9a3d9cdc6b9a305d1ed5d"
+    },
+    {
+      "path": "apps/cli/src/__tests__/generator-persistence.test.ts",
+      "sha256": "5547bfd2b49cee63a8d291184d1537ba0b9ac2723f807c6eaa6f0e753d1d42d2"
+    },
+    {
+      "path": "script/probe-stylized-effects.mjs",
+      "sha256": "50faa0d1e3b69d4fecdfa54b9b1cfdfaab5a578d680ad45d199a163ea52e9e19"
+    },
+    {
+      "path": "script/fixtures/generator-browser-assets.ts",
+      "sha256": "9f5bb639573e38f40777da85bf3a1f5a451cf3aefb7e6777482da740333da1f1"
+    },
+    {
+      "path": "script/fixtures/generator-browser-probe.html",
+      "sha256": "677dcf862c8372e45be70b464a4ed8238289b1497d8b6528965bd21635fefa09"
+    },
+    {
+      "path": "script/fixtures/generator-browser-probe.ts",
+      "sha256": "271f5791aae75275977255c16aa1ff83b6cada3177a6a073fe455b8281673b4c"
+    },
+    {
+      "path": "script/fixtures/generator-capture.ts",
+      "sha256": "6c8960d747f2c28ad6d24fff0568daf05a604ddd972c7132366d6743e3aeeb52"
+    },
+    {
+      "path": "script/fixtures/generator-export-probe.ts",
+      "sha256": "ade2355edd4d1a446022579603ccd61580ecacf45d186c539e494fc35c1559d8"
+    },
+    {
+      "path": "script/fixtures/generator-fixture.ts",
+      "sha256": "3247f1d8a6e4787b6e105375cab6d4a10607b9e12da673287220b3270755d5f4"
+    },
+    {
+      "path": "script/fixtures/generator-probe.tsconfig.json",
+      "sha256": "6eac0f365f701b0ed9d60dbc54b9f866cf7b8b3b270c24a94dd6f31bfd53089f"
+    },
+    {
+      "path": "script/fixtures/generator-visual-checks.ts",
+      "sha256": "adaf446382946bdf11cae5d245669fbacc423e9d82d78c0ef09e0c89872703a5"
+    }
+  ]
+}

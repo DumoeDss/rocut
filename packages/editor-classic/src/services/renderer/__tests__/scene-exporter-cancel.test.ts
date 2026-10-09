@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import type { WasmCompositor } from "../compositor/wasm-compositor";
 import type { VideoCache } from "../../video-cache/service";
 import type { RootNode } from "../nodes/root-node";
+import type { MediaTime } from "../../../wasm/media-time";
 
 if (process.env.ROCUT_EXPORT_CANCEL_ISOLATED !== "1") {
 	test("export cancellation integration runs with isolated native mocks", () => {
@@ -23,9 +24,13 @@ if (process.env.ROCUT_EXPORT_CANCEL_ISOLATED !== "1") {
 		cancelledOutputs = 0,
 		finalizedOutputs = 0;
 	let audioBlocked = false;
+	let releaseVideoAdd!: () => void;
+	let renderDrain: Promise<void> = Promise.resolve();
 	let softwareSupported = true,
 		capabilityError = false;
 	const encoderOptions: unknown[] = [];
+	const bitrateRequests: unknown[] = [];
+	const audioOptions: unknown[] = [];
 	class FakeOutput {
 		target = { buffer: new ArrayBuffer(4) };
 		addVideoTrack() {}
@@ -54,11 +59,18 @@ if (process.env.ROCUT_EXPORT_CANCEL_ISOLATED !== "1") {
 			}
 			add() {
 				added++;
-				return blocked ? new Promise<void>(() => {}) : Promise.resolve();
+				return blocked
+					? new Promise<void>((resolve) => {
+							releaseVideoAdd = resolve;
+						})
+					: Promise.resolve();
 			}
 			close() {}
 		},
 		AudioBufferSource: class {
+			constructor(options: unknown) {
+				audioOptions.push(options);
+			}
 			add() {
 				added++;
 				return audioBlocked ? new Promise<void>(() => {}) : Promise.resolve();
@@ -72,6 +84,10 @@ if (process.env.ROCUT_EXPORT_CANCEL_ISOLATED !== "1") {
 	}));
 	mock.module("opencut-wasm", () => ({
 		mediaTimeToSeconds: ({ time }: { time: number }) => time / 120000,
+		resolveVideoExportJson: (request: string) => {
+			bitrateRequests.push(JSON.parse(request));
+			return JSON.stringify({ bitrate: 6_000_000 });
+		},
 	}));
 	mock.module("../../../wasm", () => ({ TICKS_PER_SECOND: 120000 }));
 	mock.module("../../../fps/utils", () => ({ frameRateToFloat: () => 30 }));
@@ -84,10 +100,15 @@ if (process.env.ROCUT_EXPORT_CANCEL_ISOLATED !== "1") {
 			async renderAndCapture({ capture }: { capture: () => Promise<void> }) {
 				if (lockHeld) throw Error("previous export retained the render lock");
 				lockHeld = true;
+				let releaseDrain!: () => void;
+				renderDrain = new Promise<void>((resolve) => {
+					releaseDrain = resolve;
+				});
 				try {
 					await capture();
 				} finally {
 					lockHeld = false;
+					releaseDrain();
 				}
 			}
 		},
@@ -110,9 +131,13 @@ if (process.env.ROCUT_EXPORT_CANCEL_ISOLATED !== "1") {
 	}
 	const options = {
 		rootNode: {} as RootNode,
-		range: { startTime: 0, endTime: 8000, duration: 8000 },
+		range: {
+			startTime: 0 as MediaTime,
+			endTime: 8000 as MediaTime,
+			duration: 8000 as MediaTime,
+		},
 	};
-	test("cancel breaks video backpressure, releases the compositor, and permits a fresh export", async () => {
+	test("cancel returns promptly while the compositor drains the actual encoder before reuse", async () => {
 		const first = exporter();
 		let events = 0;
 		first.on("cancelled", () => events++);
@@ -124,17 +149,34 @@ if (process.env.ROCUT_EXPORT_CANCEL_ISOLATED !== "1") {
 			await Promise.race([cancellation, Bun.sleep(100).then(() => "timeout")]),
 		).toBeNull();
 		expect(await run).toBeNull();
-		expect(lockHeld).toBe(false);
 		expect(events).toBe(1);
 		expect(cancelledOutputs).toBe(1);
+		let drained = false;
+		const observedDrain = renderDrain.then(() => {
+			drained = true;
+		});
+		await Bun.sleep(0);
+		// output.cancel has been called, but native completion is still held.
+		expect(lockHeld).toBe(true);
+		expect(drained).toBe(false);
+		releaseVideoAdd();
+		await observedDrain;
+		expect(lockHeld).toBe(false);
 		blocked = false;
 		expect(await exporter().export(options)).toBeInstanceOf(ArrayBuffer);
 		expect(encoderOptions.at(-1)).toEqual({
 			codec: "avc",
-			bitrate: 3,
+			bitrate: 6_000_000,
 			hardwareAcceleration: "prefer-software",
 		});
 		expect(finalizedOutputs).toBe(1);
+		expect(bitrateRequests.at(-1)).toEqual({
+			codec: "avc",
+			quality: "high",
+			width: 1920,
+			height: 1080,
+			frameRate: { numerator: 30, denominator: 1 },
+		});
 	});
 	test("cancel also breaks a stalled audio add", async () => {
 		audioBlocked = true;
@@ -147,6 +189,7 @@ if (process.env.ROCUT_EXPORT_CANCEL_ISOLATED !== "1") {
 		).toBeNull();
 		expect(await run).toBeNull();
 		expect(cancelledOutputs).toBe(2);
+		expect(audioOptions.at(-1)).toEqual({ codec: "aac", bitrate: 3 });
 	});
 	test("unsupported or failed optional software probes preserve prior codec and quality", async () => {
 		const { resolveExportVideoOptions } =

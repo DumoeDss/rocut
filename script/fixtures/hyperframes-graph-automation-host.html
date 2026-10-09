@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<script src="gsap.js"></script>
+	</head>
+	<body>
+		<div
+			id="root"
+			data-composition-id="root"
+			data-start="0"
+			data-duration="0.32"
+			data-width="64"
+			data-height="64"
+		>
+			<div
+				id="marker"
+				style="width: 16px; height: 16px; background: #e94560"
+			></div>
+			<hf-audio-group
+				id="voice"
+				data-volume="0.5"
+				data-fx-chain='{"version":1,"nodes":[{"id":"bus-gain","type":"gain","params":{"gain":0}}]}'
+				data-automation='{"version":1,"lanes":[{"target":"fx.bus-gain.gain","points":[{"t":0,"v":-12,"viaX":0.3,"viaY":0.7},{"t":0.32,"v":0}]}]}'
+			></hf-audio-group>
+			<audio
+				id="voice-track"
+				src="tone.wav"
+				data-audio-group="voice"
+				data-start="0.08"
+				data-duration="0.16"
+				data-track-index="0"
+				data-fx-chain='{"version":1,"nodes":[{"id":"g","type":"gain","params":{"gain":0}},{"id":"d","type":"delay","params":{"time":20,"feedback":0.01,"mix":0.5}}]}'
+				data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0.5},{"t":0.16,"v":0.5}]},{"target":"fx.g.gain","points":[{"t":0,"v":-12,"curve":0.5},{"t":0.16,"v":0}]},{"target":"fx.d.time","points":[{"t":0,"v":10},{"t":0.16,"v":20}]}]}'
+			></audio>
+		</div>
+		<script>
+			window.__timelines = {
+				root: gsap
+					.timeline({ paused: true })
+					.to("#marker", { x: 32, duration: 0.32, ease: "none" }, 0),
+			};
+		</script>
+	</body>
+</html>

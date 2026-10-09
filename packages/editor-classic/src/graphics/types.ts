@@ -11,6 +11,8 @@ export interface GraphicRenderContext {
 
 export interface GraphicDefinition {
 	id: string;
+	/** Exclude source-backed definitions from the one-click static shape palette. */
+	requiresSource?: boolean;
 	name: string;
 	keywords: string[];
 	params: ParamDefinition[];

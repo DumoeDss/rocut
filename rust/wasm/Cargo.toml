@@ -32,3 +32,4 @@ web-sys = { version = "0.3.93", features = ["OffscreenCanvas", "HtmlCanvasElemen
 [features]
 default = ["wasm"]
 wasm = []
+browser-readback-tests = []

@@ -21,6 +21,8 @@ impl Issue {
 pub struct Request {
     pub editing: Editing,
     pub duration: u64,
+    #[serde(default)]
+    pub trim_start: u64,
     pub track_kind: String,
     pub asset_kind: Option<String>,
     pub has_motion_text: bool,
@@ -45,6 +47,7 @@ pub struct Editing {
     pub masks: Vec<Mask>,
     pub is_source_audio_enabled: Option<bool>,
     pub definition_id: Option<String>,
+    pub programmatic: Option<crate::programmatic::Source>,
     pub sticker_id: Option<String>,
     pub intrinsic_width: Option<f64>,
     pub intrinsic_height: Option<f64>,
@@ -98,6 +101,7 @@ pub struct Param {
     pub max: Option<f64>,
     pub display_multiplier: Option<f64>,
     pub keyframable: Option<bool>,
+    pub required: Option<bool>,
     #[serde(default)]
     pub options: Vec<SelectOption>,
 }

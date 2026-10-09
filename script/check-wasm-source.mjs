@@ -337,8 +337,9 @@ if (workflow === null) {
 }
 // The pin is only enforced if the build path asserts it; a constant nobody reads is documentation.
 const buildScript = readFileSync(join(REPO_ROOT, "script", "build-wasm.mjs"), "utf8");
-if (!buildScript.includes("assertToolchain(")) {
-	pinProblems.push("script/build-wasm.mjs does not call assertToolchain(), so the pins are advisory");
+const { hasEnforcedBuildToolchain } = await import("./wasm-toolchain-wiring.mjs");
+if (!hasEnforcedBuildToolchain(buildScript)) {
+	pinProblems.push("script/build-wasm.mjs does not enforce imported assertToolchain before wasm-pack");
 }
 console.log(`  ${pinProblems.length === 0 ? "PASS" : "FAIL"}  toolchain pins are declared and enforced (rustc ${RUSTC_VERSION}, wasm-pack ${WASM_PACK_ACTION_VERSION})`);
 for (const p of pinProblems) console.log(`          ${p}`);

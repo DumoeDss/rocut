@@ -11,7 +11,14 @@
  * mid-save reopens from the last complete write — the crash-recovery
  * acceptance of S06 C4 rests on this property.
  */
-import { mkdir, readFile, rm, writeFile, readdir } from "node:fs/promises";
+import {
+	mkdir,
+	readFile,
+	rm,
+	writeFile,
+	readdir,
+	lstat,
+} from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { writeAtomic } from "./atomic-file";
@@ -19,6 +26,7 @@ import { ProjectStoreError } from "@opencut/editor-ports";
 import type {
 	LibraryRecord,
 	ProjectAttachment,
+	ProjectAttachmentHeader,
 	ProjectId,
 	ProjectRecord,
 	ProjectStore,
@@ -151,6 +159,100 @@ export class FileProjectStore implements ProjectStore {
 			});
 		}
 		return attachments;
+	}
+
+	async listAttachmentHeaders(args: {
+		readonly projectId: ProjectId;
+		readonly signal?: AbortSignal;
+	}): Promise<readonly ProjectAttachmentHeader[]> {
+		const checkCancellation = () => {
+			if (args.signal?.aborted) {
+				throw storeError(
+					"aborted",
+					"list-attachments",
+					args.projectId,
+					"Attachment metadata listing was cancelled",
+				);
+			}
+		};
+		try {
+			checkCancellation();
+			const project = await this.readWrapper(args.projectId);
+			checkCancellation();
+			if (project === null) return [];
+			if (project.record.id !== args.projectId) {
+				throw storeError(
+					"conflict",
+					"list-attachments",
+					args.projectId,
+					"The project store holds a different project",
+				);
+			}
+			const dir = path.join(this.root, "attachments");
+			let entries;
+			try {
+				// Do not follow an attachment-tree redirect outside this store.
+				if (!(await lstat(dir)).isDirectory()) {
+					throw storeError(
+						"corrupt",
+						"list-attachments",
+						args.projectId,
+						"Attachment metadata directory is not a directory",
+					);
+				}
+				entries = await readdir(dir, { withFileTypes: true });
+			} catch (error) {
+				checkCancellation();
+				if ((error as NodeJS.ErrnoException).code === "ENOENT") return [];
+				throw error;
+			}
+			const headers: ProjectAttachmentHeader[] = [];
+			for (const entry of entries) {
+				checkCancellation();
+				if (!entry.isDirectory()) continue;
+				const metadataPath = path.join(dir, entry.name, "metadata.json");
+				try {
+					// Symlink metadata is not an owned metadata file. Header presence
+					// is deliberately not proof that body.bin exists or is readable.
+					if (!(await lstat(metadataPath)).isFile()) continue;
+					const metadata: unknown = JSON.parse(
+						await readFile(metadataPath, {
+							encoding: "utf8",
+							signal: args.signal,
+						}),
+					);
+					checkCancellation();
+					headers.push({
+						projectId: args.projectId,
+						key: entry.name,
+						metadata,
+					});
+				} catch (error) {
+					checkCancellation();
+					// A concurrently removed attachment is no longer enumerable.
+					if ((error as NodeJS.ErrnoException).code === "ENOENT") continue;
+					throw error;
+				}
+			}
+			checkCancellation();
+			return headers;
+		} catch (error) {
+			checkCancellation();
+			if (error instanceof ProjectStoreError) {
+				throw storeError(
+					error.code,
+					"list-attachments",
+					args.projectId,
+					"Attachment metadata could not be listed",
+				);
+			}
+			throw storeError(
+				error instanceof SyntaxError ? "corrupt" : "unavailable",
+				"list-attachments",
+				args.projectId,
+				"Attachment metadata could not be listed",
+			);
+		}
 	}
 
 	async loadAttachment(args: {

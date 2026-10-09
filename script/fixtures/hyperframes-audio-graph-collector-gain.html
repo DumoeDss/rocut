@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<script src="gsap.js"></script>
+	</head>
+	<body>
+		<div
+			id="root"
+			data-composition-id="root"
+			data-start="0"
+			data-duration="0.72"
+			data-width="64"
+			data-height="64"
+		>
+			<button
+				id="native-play"
+				style="position: fixed; left: 0; top: 0; width: 32px; height: 32px"
+				onclick="window.__player.play()"
+			>
+				play
+			</button>
+			<div id="marker"></div>
+			<hf-audio-group id="voice" data-volume="0.5"></hf-audio-group>
+			<audio
+				id="dom-low"
+				data-probe-case="dom-low"
+				src="tone.wav"
+				loop
+				data-start="0"
+				data-duration="0.72"
+				data-track-index="0"
+			></audio>
+			<audio
+				id="dom-high"
+				data-probe-case="dom-high"
+				src="tone.wav"
+				loop
+				data-start="0"
+				data-duration="0.72"
+				data-track-index="1"
+			></audio>
+			<audio
+				id="routed"
+				data-probe-case="routed"
+				src="tone.wav"
+				loop
+				data-audio-group="voice"
+				data-start="0"
+				data-duration="0.72"
+				data-track-index="2"
+			></audio>
+			<audio
+				id="lane"
+				data-probe-case="lane"
+				src="tone.wav"
+				loop
+				data-start="0.08"
+				data-duration="0.4"
+				data-media-start="0.04"
+				data-volume="0.9"
+				data-fade-in="0.1"
+				data-fade-out="0.2"
+				data-track-index="3"
+				data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0.2,"v":0.75},{"t":0,"v":0.25,"curve":2,"viaX":0.25,"viaY":0.5},{"t":"bad","v":1}]}]}'
+			></audio>
+			<audio
+				id="gsap-volume"
+				data-probe-case="gsap-volume"
+				src="tone.wav"
+				loop
+				data-start="0.08"
+				data-duration="0.4"
+				data-media-start="0.02"
+				data-volume="0.1"
+				data-fade-in="0.1"
+				data-track-index="4"
+			></audio>
+		</div>
+		<script>
+			document.getElementById("dom-low").volume = 0.25;
+			document.getElementById("dom-high").volume = 0.75;
+			document.getElementById("routed").volume = 0.25;
+			window.__timelines = window.__timelines || {};
+			window.__timelines.root = gsap
+				.timeline({ paused: true })
+				.to("#marker", { x: 32, duration: 0.72, ease: "none" }, 0)
+				.fromTo(
+					"#gsap-volume",
+					{ volume: 0.25 },
+					{ volume: 0.75, duration: 0.2, ease: "none" },
+					0.08,
+				);
+		</script>
+	</body>
+</html>

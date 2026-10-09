@@ -1,0 +1,4 @@
+{
+	"extends": "./three-probe.tsconfig.json",
+	"include": ["./peel-*.ts", "../../packages/*/src/types/**/*.d.ts"]
+}

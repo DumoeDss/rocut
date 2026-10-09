@@ -1,0 +1,288 @@
+{
+  "version": 1,
+  "date": "2026-10-07",
+  "status": "fixture-verified-not-installed",
+  "implementation": "Analytical cylindrical A/B Peel; Rust geometry plus one-pass Worker WebGL2 textured mesh",
+  "browser": {
+    "ok": true,
+    "captures": 71,
+    "directionHashes": [
+      "b957b9c4069640b4c93c60f924c33221aeec90e85700970a58ee08a7958fc51e",
+      "6b140c6303c864d12226e3b2f1a742f101ab34addb210120b08341646417523e",
+      "9b01b1f745da1574d416b4f52aa813e3b0cfdc65735ff69dcf225148655c15f6",
+      "8d225ecea8265d02eaeec23e97b8f399f04fbc50e000d6743362d1742a3e2bad"
+    ],
+    "video": {
+      "width": 384,
+      "height": 216,
+      "fps": {
+        "numerator": 30,
+        "denominator": 1
+      },
+      "frames": 6,
+      "quality": "very_high",
+      "detail": [
+        {
+          "pixels": 82944,
+          "error": 2.1837585198045266,
+          "contrastRatio": 0.9990426566835093
+        },
+        {
+          "pixels": 82944,
+          "error": 3.0100871270576133,
+          "contrastRatio": 1.0001088039880044
+        },
+        {
+          "pixels": 82944,
+          "error": 3.444701646090535,
+          "contrastRatio": 1.0007817801749468
+        },
+        {
+          "pixels": 82944,
+          "error": 3.624855324074074,
+          "contrastRatio": 0.9981892253611573
+        },
+        {
+          "pixels": 82944,
+          "error": 3.7867396476337447,
+          "contrastRatio": 1.0006054584003952
+        },
+        {
+          "pixels": 82944,
+          "error": 3.914082593878601,
+          "contrastRatio": 1.001062923568491
+        }
+      ],
+      "errors": [
+        1.637818889853395,
+        2.25756534529321,
+        2.583526234567901,
+        2.7186414930555554,
+        2.8400547357253085,
+        2.9355619454089505
+      ],
+      "errorLimit": 10,
+      "motion": 44.47818709008487,
+      "bytes": 8106,
+      "previewExportEqual": true
+    },
+    "descriptors": [
+      {
+        "id": "from.png",
+        "kind": "image",
+        "mimeType": "image/png",
+        "byteLength": 883,
+        "sha256": "9135df87f1a96e01b0b982d79d5448a9b640ff1299cd87c89308bb2c52008261",
+        "attachmentKey": "programmatic-sha256-9135df87f1a96e01b0b982d79d5448a9b640ff1299cd87c89308bb2c52008261"
+      },
+      {
+        "id": "to.png",
+        "kind": "image",
+        "mimeType": "image/png",
+        "byteLength": 887,
+        "sha256": "30dc82a3dc8d063a439ad9e052cdd826ef532ec6c8630ddb2350f3c46983689a",
+        "attachmentKey": "programmatic-sha256-30dc82a3dc8d063a439ad9e052cdd826ef532ec6c8630ddb2350f3c46983689a"
+      }
+    ],
+    "checks": [
+      "real independently moving A/B textures",
+      "exact first/last handles",
+      "four directions",
+      "reverse seek",
+      "shading/curl/perspective",
+      "not a fade/wipe",
+      "nonzero trim",
+      "rational fps",
+      "transparent alpha unchanged by shading",
+      "selected roles",
+      "portrait/landscape",
+      "cancel/recover",
+      "preview/export same frame",
+      "real video encode/decode",
+      "no leaked iframe"
+    ],
+    "externalRequests": [],
+    "browser": "154.0.8037.98",
+    "backend": "private Chromium WebGPU/SwiftShader, no Host/Electron",
+    "sourceCommit": "e791be658f63384b6b7c064c1a92dd1912246ada",
+    "sourceWorktreeClean": false,
+    "sourceManifestSha256": "ff15d432f1ec96f043b5329db4d543dc6a0644a00b97eabf234aba1bd488356f",
+    "wasmSha256": "15e8c3ea724835ce2d454f302ff94f402b277e6d13539746efcd2dfc0bd08f87"
+  },
+  "independentDecode": {
+    "decoder": "ffmpeg 6.0",
+    "frames": 6,
+    "metrics": [
+      {
+        "meanRgbaError": 2.2187861689814814,
+        "pixels": 82944,
+        "foregroundError": 2.958381558641975,
+        "contrastRatio": 0.9953074592952929
+      },
+      {
+        "meanRgbaError": 2.7441858362268516,
+        "pixels": 82944,
+        "foregroundError": 3.6589144483024687,
+        "contrastRatio": 0.9960076025309762
+      },
+      {
+        "meanRgbaError": 3.0686848958333335,
+        "pixels": 82944,
+        "foregroundError": 4.091579861111112,
+        "contrastRatio": 0.996720059407185
+      },
+      {
+        "meanRgbaError": 3.1697711709104937,
+        "pixels": 82944,
+        "foregroundError": 4.2263615612139915,
+        "contrastRatio": 0.9942843231673558
+      },
+      {
+        "meanRgbaError": 3.2482548466435186,
+        "pixels": 82944,
+        "foregroundError": 4.331006462191358,
+        "contrastRatio": 0.9966114239463991
+      },
+      {
+        "meanRgbaError": 3.2711769386574074,
+        "pixels": 82944,
+        "foregroundError": 4.36156925154321,
+        "contrastRatio": 0.997076616251443
+      }
+    ],
+    "probe": {
+      "frames": [
+        {
+          "pts_time": "0.000000",
+          "pkt_duration_time": "0.033000"
+        },
+        {
+          "pts_time": "0.033000",
+          "pkt_duration_time": "0.033000"
+        },
+        {
+          "pts_time": "0.067000",
+          "pkt_duration_time": "0.033000"
+        },
+        {
+          "pts_time": "0.100000",
+          "pkt_duration_time": "0.033000"
+        },
+        {
+          "pts_time": "0.133000",
+          "pkt_duration_time": "0.033000"
+        },
+        {
+          "pts_time": "0.167000",
+          "pkt_duration_time": "0.033000"
+        }
+      ],
+      "programs": [],
+      "streams": [
+        {
+          "codec_name": "vp9",
+          "width": 384,
+          "height": 216,
+          "r_frame_rate": "30/1"
+        }
+      ]
+    }
+  },
+  "persistence": {
+    "ok": true,
+    "reopened": true,
+    "modifiedReopened": true,
+    "invalidUpdateStatus": 409,
+    "restoredRevision": 3,
+    "scope": "headless Agent persistence and explicit restoration; not attached-editor undo/redo"
+  },
+  "artifacts": {
+    "browser": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/peel-transition/run-SdTNJB",
+    "persistence": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/peel-persistence/run-QofqUp"
+  },
+  "checks": {
+    "rust": 24,
+    "peelSpecificRust": 3,
+    "bunPersistenceTests": 2,
+    "bunAssertions": 25,
+    "frontendEslint": true,
+    "browserTypecheck": true,
+    "wasmGates": true,
+    "opaqueRasterCracks": "all four directions at source frames 7,12,21,35: every alpha byte 255 and all color channels 0/255",
+    "externalRequests": 0
+  },
+  "limits": [
+    "Declarative recipe transition from/to scene IDs, not yet an arbitrary adjacent timeline-clip transition",
+    "Requires Worker WebGL2 for interior frames; exact handles use existing input renderers; no fallback silently changes the effect",
+    "Cylinder fold, not a physical paper simulation, arbitrary corner grab or copied component",
+    "Initial Canvas 2D triangle clipping had visible stripes; replaced with a single shared-edge A/B GPU draw, no tolerance relaxation",
+    "No installed/Electron/all-GPU/MP4 or attached-editor undo-redo acceptance",
+    "ASCII Object and Creator discovery/templates remain pending"
+  ],
+  "sourceFiles": [
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/mod.rs",
+      "sha256": "c5f2198e58efd6732c523fa715aaa5674dc74c5407dfb60805b21ff3d07e25a6"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/transition_peel.rs",
+      "sha256": "4f057bda460ae53d327dd5fbf64d140354ee007452bd0eba20c9cd841903ecdd"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/transition_model.rs",
+      "sha256": "684bb01b30231b2744ec8807ce12968b38deb6099a63f60d1ac5d7aa938a2508"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/transitions.rs",
+      "sha256": "a47ddd8af0c225b6a995574df07f879409737d88e5e66a63c56130b475fd98d3"
+    },
+    {
+      "path": "rust/crates/editor-api/tests/mv_peel.rs",
+      "sha256": "1d04d0499e476a7f8638539881abb0a0fa5b282fb25218290a63951cd52d54bd"
+    },
+    {
+      "path": "packages/editor-contracts/src/mv-recipe-transition.ts",
+      "sha256": "e63f0853a4aa9308a9ee191fa5be9b4680fcef56d08254d22145016645ccc588"
+    },
+    {
+      "path": "packages/editor-classic/src/services/renderer/programmatic/mv-transition-renderer.ts",
+      "sha256": "2f7be1430ab0a29742c3c7b6c54acc80f2ce5b4c9a41d9a3fc71f238e789e04b"
+    },
+    {
+      "path": "script/fixtures/peel-fixture.ts",
+      "sha256": "ccf9b38517803530b43aeb7ee06d36440b25a9f60a8ce315f23303ac6cbb78ca"
+    },
+    {
+      "path": "script/fixtures/peel-browser-probe.ts",
+      "sha256": "ec92a19ea89baadd70d57e2cafd30fd3c15752f4b4af9515dcc47840f75466ba"
+    },
+    {
+      "path": "script/fixtures/peel-browser-probe.html",
+      "sha256": "9a5d0ac666eb3a8103dc3b1d26b6a744aa61d7a0575f73656eef509d92bb179e"
+    },
+    {
+      "path": "script/fixtures/peel-probe.tsconfig.json",
+      "sha256": "274b3826e3c7f652d8bdff09d5b7d4965b6ba9e249c9f795ad210db3ce991b4e"
+    },
+    {
+      "path": "script/fixtures/generator-export-probe.ts",
+      "sha256": "5346e0130ebe150efcad608176727944b7146e3d097d74e34054118617c602ea"
+    },
+    {
+      "path": "script/probe-stylized-effects.mjs",
+      "sha256": "31d856faf73322085cb44c48e5fc833ce560a74aa20abf9c2aa9bdacf655fc81"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/validate.rs",
+      "sha256": "035c69dd20ed0e1043db5d975743d1cf466795dd9821a89cfdf960a338cd0f90"
+    },
+    {
+      "path": "packages/editor-classic/src/services/renderer/programmatic/mv-surface-renderer.ts",
+      "sha256": "c28c7022234aaf08e88e40e470ee262d2cad1be54413c33cc11019e8772a8746"
+    },
+    {
+      "path": "apps/cli/src/__tests__/peel-persistence.test.ts",
+      "sha256": "55580262f232a0a6be1208d4f9beccbb26e9b1ed7da52ff7576fea39484fcea8"
+    }
+  ]
+}

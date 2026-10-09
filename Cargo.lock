@@ -1455,8 +1455,10 @@ name = "editor-api"
 version = "0.1.0"
 dependencies = [
  "bridge",
+ "effects",
  "serde",
  "serde_json",
+ "time",
  "wasm-bindgen",
 ]
 
@@ -1468,7 +1470,9 @@ dependencies = [
  "bytemuck",
  "gpu",
  "serde",
+ "serde_json",
  "thiserror 2.0.18",
+ "time",
  "tsify-next",
  "wasm-bindgen",
  "wgpu",

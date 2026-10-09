@@ -28,6 +28,7 @@ import {
 	type ResolvedGraphicNodeState,
 } from "./nodes/graphic-node";
 import { ImageNode } from "./nodes/image-node";
+import { ProgrammaticNode } from "./nodes/programmatic-node";
 import { StickerNode, loadStickerSource } from "./nodes/sticker-node";
 import { TextNode, type ResolvedTextNodeState } from "./nodes/text-node";
 import { VideoNode } from "./nodes/video-node";
@@ -87,7 +88,9 @@ async function resolveNode({
 		await resolveTransitionTrack({ node, context, resolveNode });
 		return;
 	}
-	if (node instanceof VideoNode) {
+	if (node instanceof ProgrammaticNode) {
+		node.resolved = await node.resolve(context);
+	} else if (node instanceof VideoNode) {
 		node.resolved = await resolveVideoNode({ node, context });
 	} else if (node instanceof ImageNode) {
 		node.resolved = await resolveImageNode({ node, context });
@@ -271,6 +274,7 @@ function resolveTextNode({
 			localTime,
 			width: context.renderer.width,
 			height: context.renderer.height,
+			frameRate: context.frameRate,
 		}),
 		measuredText: measureTextElement({
 			element: node.params,
@@ -290,8 +294,8 @@ function resolveEffectLayerNode({
 }): ResolvedEffectLayerNodeState | null {
 	const time = context.time;
 	if (
-		time < node.params.timeOffset - 1e-6 ||
-		time >= node.params.timeOffset + node.params.duration + 1e-6
+		time < node.params.timeOffset ||
+		time >= node.params.timeOffset + node.params.duration
 	) {
 		return null;
 	}
@@ -302,6 +306,12 @@ function resolveEffectLayerNode({
 		effectParams: node.params.effectParams,
 		width: context.renderer.width,
 		height: context.renderer.height,
+		frame: context.frameRate
+			? {
+					localTime: time - node.params.timeOffset,
+					frameRate: context.frameRate,
+				}
+			: undefined,
 	});
 	if (passes.length === 0) {
 		return null;

@@ -1,0 +1,7 @@
+{
+	"extends": "./three-probe.tsconfig.json",
+	"include": [
+		"./liquid-browser-probe.ts",
+		"../../packages/*/src/types/**/*.d.ts"
+	]
+}

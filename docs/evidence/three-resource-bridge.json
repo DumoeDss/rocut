@@ -1,0 +1,87 @@
+{
+	"phase": "P3",
+	"date": "2026-10-07",
+	"status": "fixture-verified",
+	"installedVerified": false,
+	"source": {
+		"commit": "e791be658f63384b6b7c064c1a92dd1912246ada",
+		"worktreeClean": false,
+		"manifestSha256": "06777bf2a024c4985712a9a660dd6e2a52e3e411608decfc43127c9346af582b",
+		"wasmSha256": "76689ff185d738f5855eff093894ac698d718eabf224ad24ee18375cec4d938d",
+		"toolchainLockSha256": "a5f51282b3cd63e4e00f887f5545f8fcb61009a82d0d66616938d03ddc89f88f"
+	},
+	"toolchain": {
+		"three": "0.185.1",
+		"@elftia/three-assets": "0.1.1",
+		"@noble/hashes": "2.0.1",
+		"esbuild": "0.27.3",
+		"sharedTarballSha256": "dff92efcba5562ccf4e223145119209eef204306bb2da89b3e6f0e8001f5c412"
+	},
+	"artifacts": {
+		"fixture": "C:/Users/Sayo/AppData/Local/Temp/rocut-three-resources-oSn2hb",
+		"render": "C:/Users/Sayo/AppData/Local/Temp/rocut-three-resources-oSn2hb/.artifacts/three-scene/run-swY7U2",
+		"persistence": "C:/Users/Sayo/AppData/Local/Temp/rocut-three-resources-oSn2hb/.artifacts/three-persistence/run-LrJ4oB/evidence.json",
+		"retention": "Local temporary evidence; not published or guaranteed permanent. Source manifest and provenance are included in render directory."
+	},
+	"verification": {
+		"rustFocusedTests": { "passed": 12 },
+		"sharedPackageTests": {
+			"passed": 23,
+			"build": "passed",
+			"standaloneTarballConsumer": "passed",
+			"licenseGate": "passed"
+		},
+		"bunFocusedTests": {
+			"passed": 10,
+			"skipped": 1,
+			"failed": 0,
+			"assertions": 94,
+			"skipReason": "Existing HyperFrames test requires its separate toolchain; Three tests ran."
+		},
+		"realPersistenceTest": { "passed": 1, "assertions": 12 },
+		"cliTypecheck": "passed",
+		"probeTypecheck": "passed",
+		"wasmGates": {
+			"sourceIdentity": "passed after refreshing private stale installed copies",
+			"pathDisclosure": "passed",
+			"apiSurface": "passed",
+			"initAndMigrations": "passed with Bun 1.2.18 and Node 24.14.0, 32 migration steps and negative bundler-entry control"
+		},
+		"resourceBridge": "Worker and HTML copied bytes/descriptors, rejected undeclared IDs, repeat/reverse frame request and alpha passed",
+		"scene": "GLB independent instances and textures, standalone PNG, HDR/EXR equivalence, undersized PMREM environment rejection, props, nonzero trim, repeat/reverse seek, 30 fps and 24000/1001 fps, cancellation and recovery passed",
+		"persistence": "Actual Host restart after author directory moved away; same-ID model replacement changes PNG, survives second restart, explicit restore recovers original PNG. This is not attached-editor undo/redo.",
+		"threeImages": "No eager HTML image decoding; shared bounded loader handles image bytes before decode"
+	},
+	"render": {
+		"browser": "154.0.8037.98",
+		"frameBackend": "private-chromium",
+		"outerCompositor": "Chromium WebGPU with test SwiftShader flag; not a universal GPU result",
+		"width": 320,
+		"height": 180,
+		"fps": 30,
+		"codec": "VP9",
+		"container": "WebM",
+		"encodedBytes": 2124,
+		"decodedFrames": 6,
+		"durationSeconds": 0.2,
+		"previewExportPixelsEqual": true,
+		"decodedRgbaMeanError": 1.455546875,
+		"decodedRgbaMeanErrorLimit": 8,
+		"decodedMotionMean": 4.199058159722222,
+		"halfAlphaPixel": [247, 60, 42, 128],
+		"halfAlphaDarkComposite": [140, 62, 69, 255],
+		"halfAlphaLightComposite": [243, 149, 140, 255],
+		"independentFfprobe": "VP9, 320x180, 30/1, six readable frames, duration 0.200000",
+		"independentFfmpegDecode": "ffmpeg 6.0 -v error -i three.webm -f null - completed exit 0 without diagnostics",
+		"decodedAssetScope": "Original GLB/PNG/HDR/uncompressed EXR fixtures; not the full EXR codec matrix"
+	},
+	"notVerified": [
+		"Electron backend or installed Creator Studio to Rocut E2E",
+		"Actual attached-editor undo/redo",
+		"Full EXR codec matrix through Rocut (shared-package matrix is separate evidence)",
+		"All formats, GPUs, browser-only no-Host Three capture, performance or full MV",
+		"Director full product regression with shared package 0.1.1 (P2 product evidence covers 0.1.0)",
+		"Release, clean installation, installed dependencies or producer package"
+	],
+	"safety": "No shared dependencies replaced, no installed plugin/app modified, no commit/push/release. Budgets are per resource/loader, not aggregate process/GPU quotas."
+}

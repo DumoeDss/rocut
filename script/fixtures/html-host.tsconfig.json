@@ -1,0 +1,16 @@
+{
+	"extends": "../../apps/cli/tsconfig.json",
+	"compilerOptions": { "paths": { "opencut-wasm": ["../../rust/wasm/pkg"] } },
+	"include": [
+		"../../apps/cli/src/programmatic/**/*.ts",
+		"../../apps/cli/src/host.ts",
+		"./html-frame-host.ts",
+		"./prepare-hyperframes-probe.ts",
+		"./hyperframes-media-diagnostic.ts",
+		"./offthread-frame-diagnostic.ts",
+		"./offthread-frame-host.ts",
+		"./hdr-color-diagnostic.ts",
+		"./prepare-remotion-probe.ts"
+	],
+	"exclude": []
+}

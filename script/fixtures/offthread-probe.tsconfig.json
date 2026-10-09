@@ -1,0 +1,4 @@
+{
+	"extends": "./three-probe.tsconfig.json",
+	"include": ["./offthread-browser-probe.ts", "../../packages/*/src/types/**/*.d.ts"]
+}

@@ -1,0 +1,283 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "three-real-native-failure-and-same-grant-recovery-cases-passed",
+	"scope": "Task-isolated Electron v2 native capture transport only; renderer crash is not GPU crash. No Rust sampling, encoded video, installed plugin or shared Elftia acceptance.",
+	"evidence": {
+		"path": "C:/tmps/rocut-stylized-f6XU4z/particle-native-failure-crash-RHSFgM/particle-native-failure-crash-evidence.json",
+		"sha256": "d02381eda53e08add2f965bc567ab68d8ad3cd1cefaafabe4c9213c76c130351"
+	},
+	"agentAudit": {
+		"path": "C:/tmps/rocut-stylized-f6XU4z/particle-native-failure-crash-run-r3-audit.json",
+		"sha256": "39ef0f32e97402b19f414b1c38f155e5c6399448de468adb1b4f4443b506dfbe"
+	},
+	"contract": {
+		"path": "C:/tmps/rocut-stylized-f6XU4z/particle-native-failure-crash-contract-r3.json",
+		"sha256": "66ea73492577a513fe637618b3860aca5419b6f8205ae6bd31ba3a7399029092"
+	},
+	"cases": [
+		{
+			"mode": "renderer-crash",
+			"status": "passed",
+			"failureResponse": {
+				"status": 422,
+				"noPng": true
+			},
+			"oldSessionScreenshot": {
+				"status": 404,
+				"noPng": true
+			},
+			"rendererGoneReasons": ["crashed"],
+			"rootInvalidations": [],
+			"rawScreenshot": {
+				"commandCalls": 0,
+				"injectionReturned": false,
+				"pendingAtInjection": false,
+				"settled": "pending"
+			},
+			"recovery": {
+				"sameGrantSlotReleased": true,
+				"png": {
+					"bytes": 117,
+					"sha256": "466e4586543d16cf95e7fdfc4a4701f3f9c7a4b5e9f9542a7d86d61166924e70",
+					"width": 32,
+					"height": 24
+				}
+			},
+			"nativeOpened": 2,
+			"nativeClosed": 2,
+			"remainingWindows": 0,
+			"closeFailures": 0,
+			"process": {
+				"closed": true,
+				"code": 0,
+				"signal": null,
+				"killAttempted": false,
+				"quarantine": false
+			},
+			"exactTokenScan": {
+				"status": "passed",
+				"publicFiles": 26,
+				"nativeStdoutStderr": true,
+				"excluded": "Private rendezvous/connection and isolated browser profile/cache/temp/crash directories"
+			}
+		},
+		{
+			"mode": "root-reload",
+			"status": "passed",
+			"failureResponse": {
+				"status": 422,
+				"noPng": true
+			},
+			"oldSessionScreenshot": {
+				"status": 404,
+				"noPng": true
+			},
+			"rendererGoneReasons": [],
+			"rootInvalidations": ["contexts-cleared", "root-navigated"],
+			"rawScreenshot": {
+				"commandCalls": 0,
+				"injectionReturned": false,
+				"pendingAtInjection": false,
+				"settled": "pending"
+			},
+			"recovery": {
+				"sameGrantSlotReleased": true,
+				"png": {
+					"bytes": 117,
+					"sha256": "466e4586543d16cf95e7fdfc4a4701f3f9c7a4b5e9f9542a7d86d61166924e70",
+					"width": 32,
+					"height": 24
+				}
+			},
+			"nativeOpened": 2,
+			"nativeClosed": 2,
+			"remainingWindows": 0,
+			"closeFailures": 0,
+			"process": {
+				"closed": true,
+				"code": 0,
+				"signal": null,
+				"killAttempted": false,
+				"quarantine": false
+			},
+			"exactTokenScan": {
+				"status": "passed",
+				"publicFiles": 26,
+				"nativeStdoutStderr": true,
+				"excluded": "Private rendezvous/connection and isolated browser profile/cache/temp/crash directories"
+			}
+		},
+		{
+			"mode": "screenshot-detach",
+			"status": "passed",
+			"failureResponse": {
+				"status": 422,
+				"noPng": true
+			},
+			"oldSessionScreenshot": {
+				"status": 404,
+				"noPng": true
+			},
+			"rendererGoneReasons": [],
+			"rootInvalidations": [],
+			"rawScreenshot": {
+				"commandCalls": 1,
+				"injectionReturned": true,
+				"pendingAtInjection": true,
+				"settled": "rejected"
+			},
+			"recovery": {
+				"sameGrantSlotReleased": true,
+				"png": {
+					"bytes": 117,
+					"sha256": "466e4586543d16cf95e7fdfc4a4701f3f9c7a4b5e9f9542a7d86d61166924e70",
+					"width": 32,
+					"height": 24
+				}
+			},
+			"nativeOpened": 2,
+			"nativeClosed": 2,
+			"remainingWindows": 0,
+			"closeFailures": 0,
+			"process": {
+				"closed": true,
+				"code": 0,
+				"signal": null,
+				"killAttempted": false,
+				"quarantine": false
+			},
+			"exactTokenScan": {
+				"status": "passed",
+				"publicFiles": 28,
+				"nativeStdoutStderr": true,
+				"excluded": "Private rendezvous/connection and isolated browser profile/cache/temp/crash directories"
+			}
+		}
+	],
+	"injectionBoundary": "One task-owned BrowserWindow and exclusive renderer OS PID checked before injection. Screenshot case calls the original Page.captureScreenshot with unchanged arguments and returns its actual Promise; detachment occurs only after a microtask barrier confirms it remains pending. Settled-before-injection cannot pass; no fake rejection or PNG.",
+	"retainedFailures": [
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-native-failure-crash-XMsNvq/particle-native-failure-crash-evidence.json",
+			"sha256": "9c2d34ebc5fe2de91a7b3468f7df8996828c39602d52a48f4a872affeb0b369c",
+			"status": "failed",
+			"observed": "Real renderer crash, HTTP 422 and 1/1 native window close; later request and stop stalled, supervisor killed its own Electron process. Context/reload and screenshot cases not executed.",
+			"rootCause": "Not established for this run; later EPERM does not prove the initial exception or GUI-dialog mechanism."
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-native-failure-crash-TDcaPK/particle-native-failure-crash-evidence.json",
+			"sha256": "463bcc26a1fed1803824592f5f4b2495fe133ee104c68732153d5bd50a93c707",
+			"status": "failed",
+			"observed": "Diagnostic fixture captured snapshot-rename EPERM and exited 1 without forced kill; 1/1 native window closed. Context/reload and screenshot cases not executed.",
+			"diagnosticFile": "C:\\tmps\\rocut-stylized-f6XU4z\\particle-native-failure-crash-TDcaPK\\renderer-crash-VSfeI6/crash-recorder-error.json"
+		}
+	],
+	"fixtureCorrection": "Only new failure fixtures changed: bounded immutable sequential snapshots, unique pending-to-new-final rename, reader requiring newest complete contiguous sequence, and explicit failure/finalization. No production transport or earlier passing fixture was changed.",
+	"staticVerification": {
+		"cpuTests": 20,
+		"strictTypeGraphFiles": 235,
+		"strictDiagnostics": 0,
+		"lint": true,
+		"format": true,
+		"syntax": true,
+		"strictUtf8": true
+	},
+	"independentCoordinatorReview": {
+		"version": 1,
+		"evidence": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-native-failure-crash-RHSFgM/particle-native-failure-crash-evidence.json",
+			"sha256": "d02381eda53e08add2f965bc567ab68d8ad3cd1cefaafabe4c9213c76c130351"
+		},
+		"sourceChecks": [
+			{
+				"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\elftia\\elftia\\scripts\\particle-native-failure-crash-runner.mjs",
+				"sha256": "d5fdfafb41ee1644dc930df674eb414b4dab9f35d9a983bdda72d4d474fe9ff2"
+			},
+			{
+				"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\elftia\\elftia\\scripts\\particle-native-failure-crash-cases.fixture.mjs",
+				"sha256": "5bfaaa9bfeebd9ce5344b139f7df71da06ee7988d3393e5225b688f07e0594c4"
+			},
+			{
+				"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\elftia\\elftia\\scripts\\particle-native-failure-crash-supervisor.fixture.mjs",
+				"sha256": "f6b900fc4723a68bcb1e53fe8089111f3ceff0803188c1e406565aef862897a6"
+			},
+			{
+				"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\elftia\\elftia\\scripts\\particle-native-failure-crash-snapshots.fixture.mjs",
+				"sha256": "9c0be6f1be9e8c6878d8826880da59e4bbc2e88f77572fe4026db9af43f7a099"
+			},
+			{
+				"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\elftia\\elftia\\scripts\\particle-native-failure-client.fixture.mjs",
+				"sha256": "d03f9a59ca86c35e8fd2847d93e4ae039c48b903cd32a56c7b500bf17a170239"
+			},
+			{
+				"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\elftia\\elftia\\scripts\\particle-native-failure-supervisor.fixture.mjs",
+				"sha256": "b2c489105cffbe5119322ab211695b99c76792771d01fca3046648f3bf37f163"
+			}
+		],
+		"recoveryPngs": [
+			{
+				"mode": "renderer-crash",
+				"path": "C:\\tmps\\rocut-stylized-f6XU4z\\particle-native-failure-crash-RHSFgM\\renderer-crash-oFZMB9/same-grant-recovery.png",
+				"sha256": "466e4586543d16cf95e7fdfc4a4701f3f9c7a4b5e9f9542a7d86d61166924e70",
+				"width": 32,
+				"height": 24,
+				"differentBytes": 0
+			},
+			{
+				"mode": "root-reload",
+				"path": "C:\\tmps\\rocut-stylized-f6XU4z\\particle-native-failure-crash-RHSFgM\\root-reload-HBhnMV/same-grant-recovery.png",
+				"sha256": "466e4586543d16cf95e7fdfc4a4701f3f9c7a4b5e9f9542a7d86d61166924e70",
+				"width": 32,
+				"height": 24,
+				"differentBytes": 0
+			},
+			{
+				"mode": "screenshot-detach",
+				"path": "C:\\tmps\\rocut-stylized-f6XU4z\\particle-native-failure-crash-RHSFgM\\screenshot-detach-FVUwYo/same-grant-recovery.png",
+				"sha256": "466e4586543d16cf95e7fdfc4a4701f3f9c7a4b5e9f9542a7d86d61166924e70",
+				"width": 32,
+				"height": 24,
+				"differentBytes": 0
+			}
+		],
+		"buildInputs": [
+			{
+				"mode": "renderer-crash",
+				"inputs": 15,
+				"manifestSha256": "3c2c16bc8d6a32c07d771f98b4bec0d85f88fd6b9e160ab729f3ee1b9aa69bbb",
+				"bundleSha256": "a8b0c0e9ce8e5130ff388e961b824c8f99408a8a05f5c32b311264d6ab87ecab"
+			},
+			{
+				"mode": "root-reload",
+				"inputs": 15,
+				"manifestSha256": "8a00cfcab34fe968fdeb510e176b1449e9f442a5138d21c720a4badf19adb8d5",
+				"bundleSha256": "a8b0c0e9ce8e5130ff388e961b824c8f99408a8a05f5c32b311264d6ab87ecab"
+			},
+			{
+				"mode": "screenshot-detach",
+				"inputs": 15,
+				"manifestSha256": "fa1dd379a0b7e58bd1fa56e20cb2e61c7fcc0923d1e4023a40b769c922e922dc",
+				"bundleSha256": "a8b0c0e9ce8e5130ff388e961b824c8f99408a8a05f5c32b311264d6ab87ecab"
+			}
+		],
+		"scope": "Independent read-only manifests and FFmpeg PNG pixel decode; no repeat of native fault injection."
+	},
+	"scheduling": {
+		"uiConservativeWindowUtc": [
+			"2026-10-08T17:31:58.147Z",
+			"2026-10-08T17:34:10.547Z"
+		],
+		"nativeRunRootCreatedUtc": "2026-10-08T17:34:19.972Z",
+		"nativeEvidenceWrittenUtc": "2026-10-08T17:34:25.699Z",
+		"gapSeconds": 9.425,
+		"actualOverlap": false,
+		"boundary": "Filesystem and lifecycle bounds, not a GPU profiler measurement."
+	},
+	"notCovered": [
+		"GPU-process crash or device loss",
+		"Cross-GPU/backend portability",
+		"Arbitrary material/particle content",
+		"Screenshot cancellation from editor UI",
+		"Performance and installed desktop application"
+	]
+}

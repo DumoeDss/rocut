@@ -77,6 +77,7 @@ export const EXPECTED = {
 	files: [
 		".gitignore",
 		"LICENSE",
+		"NOTICE",
 		"README.md",
 		"opencut_wasm.d.ts",
 		"opencut_wasm.js",
@@ -95,13 +96,13 @@ export const EXPECTED = {
 		".gitignore":
 			"684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1",
 		"package.json":
-			"aff1b5ec12a69cf964733fd5122450d5d5821cca88241eae8fd2dcef2b64fd0f",
+			"60502f95b49df31dd41e5be0ada1826e0693b30a525d3b49da73f4e106a1a4b4",
 		[SYNC_ENTRY]:
-			"3bf1e29cc4caefb2856f7209ed1cf4520117cfccd4bc1343916fefb3cf233ebb",
+			"746f22b8d2b5c78f1c9da873c7d66ec414c70005665711d0f2373fdb900202bb",
 	},
 	/**
-	 * `LICENSE` and `README.md` are the only two files wasm-pack **copies out of the checkout**
-	 * rather than generates, so their bytes carry the *checkout's* line-ending configuration, not a
+	 * `LICENSE` and `README.md` are copied by wasm-pack; `NOTICE` is copied by the
+	 * emission step. Their bytes carry the *checkout's* line-ending configuration, not a
 	 * property of the artifact. They are hashed after normalising CRLF to LF: the pin is on their
 	 * CONTENT.
 	 *
@@ -123,6 +124,7 @@ export const EXPECTED = {
 	 * the root `LICENSE` within a checkout.
 	 */
 	pinnedTextHashes: {
+		NOTICE: "1111d13303b79967e726d09b1ca99d9183dea59e8e8343ceaccfa18a8bc11fe4",
 		LICENSE: "814632368a8331fd1f485f4bd4b7ecb6401e5f2a24fba79cd3e21aff8ca39a6e",
 		"README.md":
 			"c8fe27ab5d2e12963e1f04571549afc9828060f4dfec85e6afaa188d3d90a128",
@@ -138,9 +140,9 @@ export const EXPECTED = {
 		"opencut_wasm_bg.wasm.d.ts":
 			"d19c1b3dc87f095040c7eb1e56eb8c965d587cf7927ca21cc513327cf78ed7c1",
 	},
-	dtsSha: "6b29e42d8c52460fa6b3b144755bcc89374065c95f8d81dbca3f9b1f36c45abc",
+	dtsSha: "721a193a3bc2dce4e46cf334a4c529809fca0680ec619509fc74054800d69d87",
 	wrapperSha:
-		"1ddcda2f59ccdb74e5ffadc856fd5bd6e3959dda79a951844c78741507275f77",
+		"a06ccc17ba7bfe15ead5baaa977fae97d456e85bd1a3d5695bfb1183e1db5219",
 	/**
 	 * The low-level declarations, hashed after normalising the trampoline hashes below and sorted
 	 * by line. Exact-byte hashing of this file cannot hold across build hosts for the reason
@@ -151,39 +153,77 @@ export const EXPECTED = {
 	 * hashing recipe in `script/check-wasm-api-surface.mjs` after a pinned WASM rebuild.
 	 */
 	wasmDtsNormalizedSignature:
-		"e317d980da64b945b76eb79a87658674da834d729f49889aa1f118c7a77d5f96",
-	wasmDtsLineCount: 94,
+		"3d7d8357943a6202bedf4c9ec742dc04f08743095bb9243ece83f0671fd57359",
+	wasmDtsLineCount: 132,
 	wrapperExportSignature:
-		"d94f76e556e473c30a1b3cb71685f2a2fe103206348be14a8f029934caa74666",
-	wrapperExportCount: 72,
+		"de65962d548f8fb4a31cfe84d2abc805dfb28052ffb6ff7a12dc68b574690cb0",
+	wrapperExportCount: 110,
 	bgExportSignature:
-		"ea52a0ee71ac90f7baf2e5390123bc6a31132998a0dd1a435e2378345e3162fa",
-	bgExportCount: 683,
+		"929fe3df8088dd40ce35531395460aee6c80735ef988d526548fe56551e5d1d6",
+	bgExportCount: 723,
 	/**
-	 * The 82 stably-named binary exports, as an exact set. This is the real contract: every export
+	 * The stably-named binary exports, as an exact set. This is the real contract: every export
 	 * a consumer can name is pinned here, and any addition, removal or rename fails.
 	 *
 	 * The remaining 3 are compiler-generated closure trampolines whose names carry a rustc symbol
 	 * hash — see `TRAMPOLINE_EXPORT` for why they are matched by shape and count instead.
 	 */
 	stableWasmExportSignature:
-		"d8de5e36bb4dc6bc03ef99845bc9956b49d6575dfcbad630c07907ea0be682a9",
-	stableWasmExportCount: 89,
+		"9abd51f88648d0a09cf31370a22a3a3455acc1238ea032e0985b80aaa1f64578",
+	stableWasmExportCount: 127,
 	trampolineExportCount: 3,
 	/**
-	 * The whole 85-entry set as recorded on the Windows build machine, kept for diagnosis: on
+	 * The whole export set as recorded on the Windows build machine, kept for diagnosis: on
 	 * failure the gate prints the symmetric difference against it, which is how the host-varying
 	 * trampolines were identified in the first place (CI run 31940776057). It is NOT the
 	 * assertion — `stableWasmExportSignature` is.
 	 */
 	wasmExportsAsRecorded: [
+		"beginRenderFrameForHandle|function",
+		"advanceRenderFrameForHandle|function",
+		"commitRenderFrameForHandle|function",
+		"cancelRenderFrameForHandle|function",
+		"inspectProgrammaticImageBytes|function",
+		"validateImageSequenceImageBytes|function",
+		"validateImageSequenceManifestJson|function",
+		"sampleParticleSurfaceJson|function",
+		"particleTransportPolicyJson|function",
+		"applyHyperframesAudioTrackGainPcm|function",
+		"mixHyperframesAudioBusPcm|function",
+		"mixHyperframesAudioMasterPcm|function",
+		"prepareHyperframesAudioDryTrackPcm|function",
+		"resolveHyperframesAudioDiscoveryJson|function",
+		"resolveHyperframesAudioExecutionPlanJson|function",
+		"resolveHyperframesAudioGraphJson|function",
+		"resolveHyperframesAudioObservationsJson|function",
+		"resolveHyperframesAudioSeekJson|function",
+		"resolveHyperframesBusFaderJson|function",
+		"normalizeHyperframesFxChainJson|function",
+		"resolveProgrammaticAudioSourceJson|function",
+		"resolveVideoExportJson|function",
+		"resolveNativeAudioDecodeJson|function",
+		"mixProgrammaticAudioPcm|function",
+		"programmaticAudioPolicyJson|function",
+		"resolveRemotionAudioFrameJson|function",
+		"resolveHyperframesAudioFrameJson|function",
+		"resolveProgrammaticAudioScheduleJson|function",
+		"resolveProgrammaticAudioRangeJson|function",
+		"resolveStylizedEffectJson|function",
+		"stylizedEffectCatalogJson|function",
 		"planSceneMutationJson|function",
 		"validateClipEditingJson|function",
+		"resolveProgrammaticFrameJson|function",
+		"validateProgrammaticResourcesJson|function",
+		"prepareMvAudioJson|function",
+		"mvRecipeCatalogJson|function",
 		"validateSceneStateJson|function",
 		"planClipExports|function",
 		"normalizeOperationFingerprint|function",
 		"planFrameGrid|function",
 		"isMediaSourceSpanValid|function",
+		"planAudioSampleWindow|function",
+		"planAudioMixWindow|function",
+		"audioClipSampleTimes|function",
 		"evaluateClipTransitions|function",
 		"colorAdjustmentCatalog|function",
 		"normalizeColorAdjustment|function",
@@ -271,8 +311,8 @@ export const EXPECTED = {
 		"wasmruntimegraphicsquery_unavailableReason|function",
 	],
 	wasmImportSignature:
-		"765c3a874c6bbf836f326daa008a2c4185868cdac26b5369c62d766d6d897cb6",
-	wasmImportCount: 612,
+		"4ded767d22588450181f526f4ca778b0d757153aa50a21c698b8fdd2659ceace",
+	wasmImportCount: 614,
 	/**
 	 * The `exports` conditions `emitSyncEntry` writes. Recorded here so the routing that makes the
 	 * artifact initializable outside a bundler is a contract term rather than an incidental

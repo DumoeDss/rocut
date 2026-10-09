@@ -1,0 +1,11 @@
+<!doctype html>
+<html><head><script src="gsap.js"></script></head><body>
+<div id="root" data-composition-id="root" data-start="0" data-duration="0.16" data-width="64" data-height="64">
+  <audio id="fast" src="tone.wav" loop data-start="0" data-duration="0.16" data-media-start="0.04" data-playback-rate="2" data-volume="0.5" data-track-index="0"></audio>
+  <audio id="fade" src="tone.wav" loop data-start="0" data-duration="0.16" data-volume="1.5" data-fade-in="0.08" data-fade-out="0.04" data-track-index="1"></audio>
+  <audio id="envelope" src="tone.wav" loop data-start="0" data-duration="0.16" data-volume="0.1" data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0.1},{"t":0.16,"v":0.9}]}]}' data-track-index="2"></audio>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+window.__timelines.root = gsap.timeline({paused:true});
+</script></body></html>

@@ -3,7 +3,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use compositor::{Compositor, FrameDescriptor, RenderFrameOptions};
+use compositor::{Compositor, FrameDescriptor, FramePreparation, PreparedFrame};
 use gpu::wgpu;
 use js_sys::Object;
 use wasm_bindgen::{JsCast, JsValue, prelude::wasm_bindgen};
@@ -15,7 +15,13 @@ use crate::gpu::{
 use crate::perf;
 use crate::runtime_state::{DEFAULT_COMPOSITOR_HANDLE, HandleRegistry, HandleRegistryError};
 
+#[path = "compositor_requests.rs"]
+mod requests;
+pub use requests::*;
+
 struct CompositorRuntime {
+    owner: u64,
+    generation: u64,
     canvas: web_sys::HtmlCanvasElement,
     compositor: Compositor,
     surface: wgpu::Surface<'static>,
@@ -81,6 +87,8 @@ fn create_runtime(
         .map_err(|error| JsValue::from_str(&error.to_string()))?;
 
     Ok(CompositorRuntime {
+        owner: requests::new_owner()?,
+        generation: 0,
         canvas,
         compositor,
         surface,
@@ -109,6 +117,7 @@ fn reserve_explicit() -> Result<u32, JsValue> {
 }
 
 fn insert_runtime(handle: u32, runtime: CompositorRuntime) {
+    requests::invalidate(handle);
     COMPOSITOR_RUNTIMES.with(|runtimes| {
         runtimes
             .borrow_mut()
@@ -149,9 +158,21 @@ pub(crate) fn live_compositor_handles() -> Vec<u32> {
 }
 
 pub(crate) fn reset_compositor_registry() {
+    requests::reset();
     COMPOSITOR_RUNTIMES.with(|runtimes| {
         runtimes.replace(HandleRegistry::default());
     });
+}
+
+fn invalidate_runtime(handle: u32) -> Result<(), JsValue> {
+    requests::invalidate(handle);
+    with_runtime_mut(handle, |runtime| {
+        runtime.generation = runtime
+            .generation
+            .checked_add(1)
+            .ok_or_else(|| JsValue::from_str("Compositor generation space exhausted"))?;
+        Ok(())
+    })
 }
 
 #[wasm_bindgen(js_name = createCompositor)]
@@ -172,6 +193,7 @@ pub fn init_compositor(width: u32, height: u32) -> Result<(), JsValue> {
 
 #[wasm_bindgen(js_name = resizeCompositorForHandle)]
 pub fn resize_compositor_for_handle(handle: u32, width: u32, height: u32) -> Result<(), JsValue> {
+    invalidate_runtime(handle)?;
     with_gpu_runtime(|gpu_runtime| {
         with_runtime_mut(handle, |runtime| {
             runtime.canvas.set_width(width);
@@ -207,6 +229,7 @@ pub fn get_compositor_canvas() -> Result<web_sys::HtmlCanvasElement, JsValue> {
 
 #[wasm_bindgen(js_name = uploadTextureForHandle)]
 pub fn upload_texture_for_handle(handle: u32, options: JsValue) -> Result<(), JsValue> {
+    invalidate_runtime(handle)?;
     let UploadTextureOptions {
         id,
         source,
@@ -236,6 +259,7 @@ pub fn upload_texture(options: JsValue) -> Result<(), JsValue> {
 
 #[wasm_bindgen(js_name = releaseTextureForHandle)]
 pub fn release_texture_for_handle(handle: u32, id: String) -> Result<(), JsValue> {
+    invalidate_runtime(handle)?;
     with_runtime_mut(handle, |runtime| {
         runtime.compositor.release_texture(&id);
         Ok(())
@@ -249,6 +273,7 @@ pub fn release_texture(id: String) -> Result<(), JsValue> {
 
 #[wasm_bindgen(js_name = renderFrameForHandle)]
 pub fn render_frame_for_handle(handle: u32, options: JsValue) -> Result<(), JsValue> {
+    invalidate_runtime(handle)?;
     perf::reset();
 
     let t_deserialize = perf::now_ms();
@@ -256,31 +281,36 @@ pub fn render_frame_for_handle(handle: u32, options: JsValue) -> Result<(), JsVa
         .map_err(|error| JsValue::from_str(&format!("Invalid frame descriptor: {error}")))?;
     perf::record("wasm.deserialize", perf::now_ms() - t_deserialize);
 
+    // Compatibility entry shares the same CPU algorithm. Preparation completes
+    // before acquiring GPU_RUNTIME, Compositor, encoder or a surface texture.
+    let prepared = FramePreparation::new(frame)
+        .and_then(FramePreparation::complete)
+        .map_err(|error| JsValue::from_str(&error.to_string()))?;
+    render_prepared(handle, prepared)
+}
+
+fn render_prepared(handle: u32, prepared: PreparedFrame) -> Result<(), JsValue> {
+    let (width, height) = prepared.dimensions();
+
     with_gpu_runtime(|gpu_runtime| {
         with_runtime_mut(handle, |runtime| {
-            if runtime.surface_size != (frame.width, frame.height) {
-                runtime.canvas.set_width(frame.width);
-                runtime.canvas.set_height(frame.height);
+            if runtime.surface_size != (width, height) {
+                runtime.canvas.set_width(width);
+                runtime.canvas.set_height(height);
                 let t_surface = perf::now_ms();
                 gpu_runtime
                     .context
-                    .configure_surface(&runtime.surface, frame.width, frame.height)
+                    .configure_surface(&runtime.surface, width, height)
                     .map_err(|error| JsValue::from_str(&error.to_string()))?;
                 perf::record("wasm.surfaceConfigure", perf::now_ms() - t_surface);
-                runtime.surface_size = (frame.width, frame.height);
+                runtime.surface_size = (width, height);
             }
 
             if gpu_runtime.context.supports_surface_rendering() {
                 let t_render = perf::now_ms();
                 let result = runtime
                     .compositor
-                    .render_frame(
-                        &gpu_runtime.context,
-                        RenderFrameOptions {
-                            frame: &frame,
-                            surface: &runtime.surface,
-                        },
-                    )
+                    .render_prepared_frame(&gpu_runtime.context, prepared, &runtime.surface)
                     .map_err(|error| JsValue::from_str(&error.to_string()));
                 perf::record("wasm.renderFrameToSurface", perf::now_ms() - t_render);
                 result
@@ -288,7 +318,7 @@ pub fn render_frame_for_handle(handle: u32, options: JsValue) -> Result<(), JsVa
                 let t_composite = perf::now_ms();
                 let texture = runtime
                     .compositor
-                    .render_frame_to_texture(&gpu_runtime.context, &frame)
+                    .render_prepared_frame_to_texture(&gpu_runtime.context, prepared)
                     .map_err(|error| JsValue::from_str(&error.to_string()))?;
                 perf::record("wasm.compositeToTexture", perf::now_ms() - t_composite);
 
@@ -311,6 +341,7 @@ pub fn render_frame(options: JsValue) -> Result<(), JsValue> {
 
 #[wasm_bindgen(js_name = disposeCompositor)]
 pub fn dispose_compositor(handle: u32) -> Result<(), JsValue> {
+    requests::invalidate(handle);
     COMPOSITOR_RUNTIMES.with(|runtimes| {
         runtimes.borrow_mut().remove(handle);
     });

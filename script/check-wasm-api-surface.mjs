@@ -1,9 +1,11 @@
 #!/usr/bin/env node
+// --pkg-dir <absolute-directory> pins the surface, control children and TS check.
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { packageChildArguments, packageDirectoryArguments } from "./wasm-package-directory.mjs";
 
 import {
 	API_GATE,
@@ -17,7 +19,16 @@ import {
 } from "./wasm-api-surface-contract.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const PKG = join(ROOT, "rust", "wasm", "pkg");
+let selection;
+try { selection = packageDirectoryArguments(process.argv.slice(2), "--pkg-dir", ROOT); }
+catch (error) { console.error(`generated-files: ${error.message}`); process.exit(2); }
+const { pkgDir: PKG, remaining: gateArguments } = selection;
+for (const arg of gateArguments) {
+	if (arg !== "--negative-control" && !arg.startsWith("--fixture-negative=")) {
+		console.error(`generated-files: unknown argument ${arg}`);
+		process.exit(2);
+	}
+}
 const SELF = fileURLToPath(import.meta.url);
 
 const sha = (value) => createHash("sha256").update(value).digest("hex");
@@ -588,7 +599,7 @@ function mutate(surface, control) {
 	return copy;
 }
 
-const fixture = process.argv.find((arg) =>
+const fixture = gateArguments.find((arg) =>
 	arg.startsWith("--fixture-negative="),
 );
 if (fixture) {
@@ -598,18 +609,18 @@ if (fixture) {
 	process.exit(errors.length === 0 ? 0 : 1);
 }
 
-if (process.argv.includes("--negative-control")) {
+if (gateArguments.includes("--negative-control")) {
 	for (const [control, expected] of Object.entries(CONTROLS)) {
 		const result = spawnSync(
 			process.execPath,
-			[SELF, `--fixture-negative=${control}`],
+			packageChildArguments(SELF, PKG, `--fixture-negative=${control}`),
 			{
 				encoding: "utf8",
 			},
 		);
 		const output = `${result.stdout ?? ""}${result.stderr ?? ""}`;
 		if (result.status !== 1 || !output.includes(`${expected}:`)) {
-			console.error(`FAIL ${control}: did not exit 1 for ${expected}`);
+			console.error(`FAIL ${control}: did not exit 1 for ${expected}\n${output}`);
 			process.exit(1);
 		}
 		console.log(`PASS ${control} -> ${expected} (exit 1)`);
@@ -623,7 +634,7 @@ if (process.argv.includes("--negative-control")) {
 	for (const [control, why] of Object.entries(POSITIVE_CONTROLS)) {
 		const result = spawnSync(
 			process.execPath,
-			[SELF, `--fixture-negative=${control}`],
+			packageChildArguments(SELF, PKG, `--fixture-negative=${control}`),
 			{ encoding: "utf8" },
 		);
 		const output = `${result.stdout ?? ""}${result.stderr ?? ""}`;
@@ -640,7 +651,7 @@ if (process.argv.includes("--negative-control")) {
 
 if (!existsSync(PKG)) {
 	console.error(
-		"generated-files: rust/wasm/pkg is absent; run bun run build:wasm",
+		`generated-files: ${PKG} is absent; rebuild the selected package with script/build-wasm.mjs`,
 	);
 	process.exit(2);
 }
@@ -649,9 +660,9 @@ if (!existsSync(PKG)) {
 const absent = EXPECTED.files.filter((name) => !existsSync(join(PKG, name)));
 if (absent.length > 0) {
 	for (const name of absent) {
-		console.error(`generated-files: ${name} is absent from rust/wasm/pkg`);
+		console.error(`generated-files: ${name} is absent from ${PKG}`);
 	}
-	console.error("Rebuild with: bun run build:wasm");
+	console.error(`Rebuild the selected package: ${PKG}`);
 	process.exit(1);
 }
 const errors = validate(loadSurface());
@@ -659,10 +670,11 @@ if (errors.length > 0) {
 	for (const error of errors) console.error(error);
 	process.exit(1);
 }
-const compile = spawnSync(process.execPath, [
-	join(ROOT, "script", "run-wasm-api-contract.mjs"),
-]);
+const compile = spawnSync(process.execPath, packageChildArguments(
+	join(ROOT, "script", "run-wasm-api-contract.mjs"), PKG,
+), { encoding: "utf8" });
 if (compile.status !== 0) {
+	console.error(`${compile.error?.message ?? ""}${compile.stdout ?? ""}${compile.stderr ?? ""}`);
 	console.error("structural-compile: frozen runtime contracts do not compile");
 	process.exit(1);
 }

@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Rocut Droplets native raster verification</title>
+	</head>
+	<body>
+		<script type="module">
+			import { runDropletsProbe } from "./droplets-browser-probe.ts";
+			runDropletsProbe()
+				.then((result) => (globalThis.__dropletsResult = result))
+				.catch((error) => {
+					globalThis.__dropletsResult = {
+						ok: false,
+						failure: String(error),
+						stack: error.stack,
+					};
+				});
+		</script>
+	</body>
+</html>

@@ -9,6 +9,7 @@ import type {
 	VisualNodeParams,
 } from "./nodes/visual-node";
 import type { ResolveContext } from "./resolve-context";
+import type { FrameRate } from "opencut-wasm";
 
 export function resolveEffectPassGroups({
 	effects,
@@ -16,12 +17,14 @@ export function resolveEffectPassGroups({
 	localTime,
 	width,
 	height,
+	frameRate,
 }: {
 	effects: Effect[] | undefined;
 	animations: VisualNodeParams["animations"];
 	localTime: number;
 	width: number;
 	height: number;
+	frameRate?: FrameRate;
 }): EffectPass[][] {
 	return (effects ?? [])
 		.filter((effect) => effect.enabled)
@@ -38,8 +41,10 @@ export function resolveEffectPassGroups({
 				effectParams: resolvedParams,
 				width,
 				height,
+				frame: frameRate ? { localTime, frameRate } : undefined,
 			});
-		});
+		})
+		.filter((passes) => passes.length > 0);
 }
 
 export function resolveVisualState({
@@ -96,6 +101,7 @@ export function resolveVisualState({
 			localTime,
 			width: effectWidth,
 			height: effectHeight,
+			frameRate: context.frameRate,
 		}),
 	};
 }

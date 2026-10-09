@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Droplets production rendering and export probe</title>
+	</head>
+	<body>
+		<script type="module">
+			import { runDropletsPipeline } from "./droplets-pipeline.ts";
+			globalThis.__dropletsPipeline = await runDropletsPipeline();
+		</script>
+	</body>
+</html>

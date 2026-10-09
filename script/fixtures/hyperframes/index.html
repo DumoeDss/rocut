@@ -1,0 +1,24 @@
+<!doctype html>
+<html><head><style>
+html,body { margin:0; background:transparent }
+#root { position:relative; width:64px; height:64px }
+#marker { position:absolute; top:56px; width:8px; height:8px; background:#0000ff }
+@font-face { font-family:'Rocut HF Fixture'; src:url('assets/font.ttf') }
+#asset { position:absolute; left:48px; top:48px; width:8px; height:8px }
+#font-proof { position:absolute; left:56px; top:48px; width:8px; height:8px }
+</style><script src="gsap.js"></script></head><body>
+<div id="root" data-composition-id="root" data-start="0" data-duration="2" data-width="64" data-height="64">
+  <div id="marker"></div>
+  <img id="asset" src="assets/pixel.png" data-start="0" data-duration="2" data-track-index="2">
+  <div id="font-proof"></div>
+  <div id="scene" data-composition-id="scene" data-composition-src="compositions/scene.html" data-start="0.5" data-duration="1" data-track-index="1"></div>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+window.__timelines.root = gsap.timeline({paused:true}).to('#marker', {x:32, duration:2, ease:'none'}, 0);
+const context = document.createElement('canvas').getContext('2d');
+context.font = '20px "Rocut HF Fixture"';
+const loaded = [...document.fonts].some(face => face.family.includes('Rocut HF Fixture') && face.status === 'loaded');
+const monospace = Math.abs(context.measureText('iiii').width - context.measureText('WWWW').width) < .01;
+document.querySelector('#font-proof').style.background = loaded && monospace ? '#00ff00' : '#ff0000';
+</script></body></html>

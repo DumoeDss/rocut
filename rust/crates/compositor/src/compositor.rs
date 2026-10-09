@@ -300,6 +300,16 @@ impl Compositor {
         context: &GpuContext,
         frame: &FrameDescriptor,
     ) -> Result<wgpu::Texture, CompositorError> {
+        let prepared = crate::FramePreparation::new(frame.clone())?.complete()?;
+        self.render_prepared_frame_to_texture(context, prepared)
+    }
+
+    pub fn render_prepared_frame_to_texture(
+        &mut self,
+        context: &GpuContext,
+        mut prepared: crate::PreparedFrame,
+    ) -> Result<wgpu::Texture, CompositorError> {
+        let frame = &prepared.frame;
         self.texture_pool.recycle_frame();
         let mut encoder =
             context
@@ -315,7 +325,11 @@ impl Compositor {
             frame.clear.color,
         );
 
-        scene = self.compose_items(context, &mut encoder, frame, scene)?;
+        scene = self.compose_items(context, &mut encoder, frame, scene, &mut prepared.liquid)?;
+
+        if !prepared.liquid.is_empty() {
+            return Err(effects::EffectsError::InvalidPreparedLiquid.into());
+        }
 
         context.queue().submit([encoder.finish()]);
         Ok(scene)
@@ -326,9 +340,19 @@ impl Compositor {
         context: &GpuContext,
         options: RenderFrameOptions<'_, '_>,
     ) -> Result<(), CompositorError> {
-        let frame = options.frame;
+        let prepared = crate::FramePreparation::new(options.frame.clone())?.complete()?;
+        self.render_prepared_frame(context, prepared, options.surface)
+    }
+
+    pub fn render_prepared_frame(
+        &mut self,
+        context: &GpuContext,
+        mut prepared: crate::PreparedFrame,
+        surface: &wgpu::Surface<'_>,
+    ) -> Result<(), CompositorError> {
+        let frame = &prepared.frame;
         self.texture_pool.recycle_frame();
-        let surface_texture = context.acquire_surface_texture(options.surface)?;
+        let surface_texture = context.acquire_surface_texture(surface)?;
         let surface_view = surface_texture
             .texture
             .create_view(&wgpu::TextureViewDescriptor::default());
@@ -346,14 +370,19 @@ impl Compositor {
             frame.clear.color,
         );
 
-        scene = self.compose_items(context, &mut encoder, frame, scene)?;
+        scene = self.compose_items(context, &mut encoder, frame, scene, &mut prepared.liquid)?;
 
-        context.encode_texture_blit_to_view(
+        if !prepared.liquid.is_empty() {
+            return Err(effects::EffectsError::InvalidPreparedLiquid.into());
+        }
+
+        context.encode_texture_presentation_to_view(
             &mut encoder,
             &scene,
             &surface_view,
+            surface,
             "compositor-present-pass",
-        );
+        )?;
         context.queue().submit([encoder.finish()]);
         surface_texture.present();
         Ok(())
@@ -365,6 +394,7 @@ impl Compositor {
         encoder: &mut wgpu::CommandEncoder,
         frame: &FrameDescriptor,
         layer: &LayerDescriptor,
+        prepared: &mut std::collections::VecDeque<effects::PreparedLiquidPass>,
     ) -> Result<wgpu::Texture, CompositorError> {
         let source = self.textures.get(&layer.texture_id).ok_or_else(|| {
             CompositorError::MissingTexture {
@@ -393,6 +423,7 @@ impl Compositor {
                 frame.width,
                 frame.height,
                 &layer.effect_pass_groups,
+                prepared,
             )?;
         }
 
@@ -445,11 +476,12 @@ impl Compositor {
         width: u32,
         height: u32,
         effect_pass_groups: &[Vec<EffectPassDescriptor>],
+        prepared: &mut std::collections::VecDeque<effects::PreparedLiquidPass>,
     ) -> Result<wgpu::Texture, CompositorError> {
         let mut current = self.copy_texture(context, encoder, source, width, height);
         for group in effect_pass_groups {
             let passes = map_effect_passes(group);
-            current = self.effects.apply_with_encoder(
+            current = self.effects.apply_prepared_with_encoder(
                 context,
                 encoder,
                 ApplyEffectsOptions {
@@ -458,6 +490,7 @@ impl Compositor {
                     height,
                     passes: &passes,
                 },
+                Some(prepared),
             )?;
         }
         Ok(current)
@@ -826,7 +859,7 @@ impl Compositor {
     }
 }
 
-fn map_effect_passes(passes: &[EffectPassDescriptor]) -> Vec<EffectPass> {
+pub(crate) fn map_effect_passes(passes: &[EffectPassDescriptor]) -> Vec<EffectPass> {
     passes
         .iter()
         .map(|pass| EffectPass {

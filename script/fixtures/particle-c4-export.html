@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Private C4 particle export probe</title>
+	</head>
+	<body>
+		<script type="module">
+			try {
+				// The bundler entry completes its WASM initialization before modules that
+				// read TICKS_PER_SECOND are evaluated.
+				await import("opencut-wasm");
+				const { runParticleSceneExportProbe } =
+					await import("./particle-c4-export-probe.ts");
+				const { source, baseUrl } = globalThis.__particleC4Boot;
+				globalThis.__particleC4Result = await runParticleSceneExportProbe(
+					source,
+					baseUrl,
+				);
+			} catch (error) {
+				globalThis.__particleC4Result = {
+					error: String(error),
+					stack: error?.stack,
+				};
+			}
+		</script>
+	</body>
+</html>

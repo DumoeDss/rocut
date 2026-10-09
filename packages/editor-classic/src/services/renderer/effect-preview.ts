@@ -77,6 +77,7 @@ export class EffectPreviewService {
 				effectParams: resolvedParams,
 				width: uniformDimensions?.width ?? size,
 				height: uniformDimensions?.height ?? size,
+				frame: { localTime: 0, frameRate: { numerator: 30, denominator: 1 } },
 			});
 			const result = this.applyGpuEffect({
 				source,

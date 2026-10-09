@@ -66,7 +66,11 @@ export function useTransformHandles({
 
 	useEffect(() => () => controller.destroy(), [controller]);
 
-	const selectedWithBounds = controller.selectedWithBounds;
+	// Event handlers intentionally read committed deps. Rendering must use the
+	// current scene, otherwise selection and bounds lag one commit indefinitely.
+	const selectedWithBounds = controller.getSelectedWithBounds({
+		scene: deps.scene,
+	});
 	const hasVisualSelection = selectedWithBounds !== null;
 
 	return {

@@ -1,0 +1,617 @@
+{
+  "version": 1,
+  "date": "2026-10-08",
+  "status": "fixture-verified-video-subset",
+  "scope": [
+    "Seeded convex Voronoi image Shatter scene, distinct from existing A/B Shatter transition",
+    "Rust geometry/time/budgets; Worker WebGL2 raster and RGB-only refraction",
+    "Creator helper -> Host persistence -> actual private editor -> Rocut export"
+  ],
+  "limits": {
+    "ledger": {
+      "verifiedVideoSubsets": 22,
+      "notYetVerified": 13,
+      "total": 35
+    },
+    "dedicatedRecipeParameterUi": false,
+    "hostApplyEntersCommandManagerHistory": false,
+    "installedPluginTested": false,
+    "electronTested": false,
+    "crossGpuReliabilityEstablished": false,
+    "performanceAcceptance": false,
+    "transparentFinalMasterEncoding": false,
+    "clothImplemented": false,
+    "liquidImplemented": false,
+    "notes": [
+      "Declared still-image resource, not arbitrary lower timeline video or physical collision simulation.",
+      "Dynamic outer color/shadow silhouette edges exclude a 1.25-pixel band; source holes and internal fans are not masked. Initial and neutral full-frame comparisons are unmasked.",
+      "Independent browser geometry oracle covers 4..64 fragments and rejects ambiguous near-coincident cases. Native exact topology tests and Host budget checks cover 512 fragments.",
+      "Default Shatter middle frame covers transparent RGB fallback but no outside fallback; separate direct renderer fixture covers outside fallback.",
+      "Agent recipe restore/reapply uses revision-checked transactions; generic UI Opacity undo/redo is a separate local-history path.",
+      "Two explicit preview cancellations and two optional preset-library 404s remain in the editor log."
+    ]
+  },
+  "implementation": {
+    "rust": [
+      "rust/crates/editor-api/src/mv_recipe/shatter.rs",
+      "rust/crates/editor-api/src/mv_recipe/shatter_geometry.rs",
+      "rust/crates/editor-api/src/mv_recipe/shatter_predicates.rs",
+      "rust/crates/editor-api/src/mv_recipe/generator_evaluate.rs"
+    ],
+    "worker": "packages/editor-classic/src/services/renderer/programmatic/mv-mesh-renderer.ts",
+    "helper": "resources/agent/skills/html-video/assets/rocut-stylized/mesh-scenes.mjs#shatterImage",
+    "semantics": [
+      "Progress 0 is the full fitted image; progress 1 keeps dispersed fragments. Explicit reverse ref can reassemble.",
+      "Seeded convex Voronoi fragments rotate Rx/Ry/Rz around vertex-mean pivots, burst radially and fall with progress squared.",
+      "All source-alpha shadows precede stable far-to-near colored fragments. Refraction shifts RGB only; base UV alpha is retained. Outside or fully transparent shifted samples fall back to base RGB.",
+      "Error-free f64 expansions and exact dyadic Cramer predicates retain incident constraints at degenerate vertices; there is no proximity welding.",
+      "MeshFace.colorOffset is optional. Grid/Hex use None and preserve their previous output."
+    ],
+    "budgets": {
+      "fragments": [
+        4,
+        512
+      ],
+      "expandedPrimitiveChargePerFragment": 8,
+      "expandedPrimitiveLimit": 4096,
+      "zeroShadowStillCharged": true,
+      "minimumHomogeneousDivisorGreaterThan": 0.517
+    }
+  },
+  "provenance": {
+    "sourceCommit": "e791be658f63384b6b7c064c1a92dd1912246ada",
+    "sourceWorktreeClean": false,
+    "backend": "private-chromium-swiftshader",
+    "browser": "154.0.8037.98",
+    "toolchainLockSha256": "a5f51282b3cd63e4e00f887f5545f8fcb61009a82d0d66616938d03ddc89f88f",
+    "wasm": {
+      "rustVersion": "1.88.0",
+      "wasmPackVersion": "0.13.1",
+      "bytes": 7348370,
+      "sha256": "d6649d784f2bf41fb968058b1fc1faa54788bbfcd801071400837e330854f403",
+      "sourceGate": true,
+      "pathGate": true,
+      "apiGate": true,
+      "initializationGate": true,
+      "publicJsExports": 87,
+      "stableBinaryExports": 104,
+      "toolchainTrampolines": 3,
+      "imports": 612,
+      "newPublicExports": 0,
+      "consumerRefresh": "Generated WASM and WASM declarations replaced only in four private fixture dependency copies; shared dependencies untouched."
+    },
+    "artifacts": {
+      "browser": {
+        "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/mesh-scenes/run-P6blfq/evidence.json",
+        "sha256": "7ed82bccd84ce0a7386f06e13ee3244d2c5fb548cd76160eb6fcfa4be2ed6a33"
+      },
+      "host": {
+        "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/shatter-persistence/run-jFdulZ/evidence.json",
+        "sha256": "c1db38481e0d3f65439929e3905653b0e1f07789302dabcea8707e3dd970f1d4"
+      },
+      "editor": {
+        "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/shatter-editor/run-riZrMe/evidence.json",
+        "sha256": "aa9eb8544574760a00ba7b9dbf4fb71d3ebcff5a8d00518681761d9cac512c0a"
+      },
+      "refraction": {
+        "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/mesh-scenes/run-enq4a7/evidence.json",
+        "sha256": "4f86e31ba0b2e1b8c3e12393ec966f413a027aa3f720940a8d4bfc50a1ba0420"
+      }
+    },
+    "sourceSnapshots": [
+      {
+        "label": "mesh",
+        "storedManifestHashMatches": true,
+        "changed": [
+          {
+            "path": "script/probe-stylized-fusion.mjs",
+            "added": false
+          },
+          {
+            "path": "script/fixtures/spatial-regression.tsconfig.json",
+            "added": false
+          },
+          {
+            "path": "script/fixtures/shatter-editor-host.ts",
+            "added": true
+          },
+          {
+            "path": "script/fixtures/shatter-editor-checks.mjs",
+            "added": true
+          },
+          {
+            "path": "script/fixtures/shatter-editor-export.mjs",
+            "added": true
+          },
+          {
+            "path": "apps/cli/src/__tests__/shatter-persistence.test.ts",
+            "added": true
+          }
+        ],
+        "removed": []
+      },
+      {
+        "label": "editor",
+        "storedManifestHashMatches": true,
+        "changed": [
+          {
+            "path": "apps/cli/src/__tests__/shatter-persistence.test.ts",
+            "added": false
+          }
+        ],
+        "removed": []
+      }
+    ],
+    "sourceSnapshotNote": "Saved manifests match their recorded hashes. Changes after browser acceptance add Host/editor probes and typecheck inputs only; the only change after editor acceptance is the separately retested Host persistence test. Production Shatter files are unchanged.",
+    "currentCanonicalMatchesPrivateFixture": {
+      "files": 37,
+      "differences": [],
+      "sha256": {
+        "rust/crates/editor-api/src/mv_recipe/mod.rs": "a5778bdd7d24a4036ea190e468f00571758bd1bbfac276225ac3290d0766172e",
+        "rust/crates/editor-api/src/mv_recipe/model.rs": "506d4c8fd46c4c28c8af38df3920ffec396a0a1ba1f9bddbd88754063b52234e",
+        "rust/crates/editor-api/src/mv_recipe/mesh_model.rs": "0de2c9097c47a315c8b11132314361b8b5c6e312d473fc93a3887a17f831f161",
+        "rust/crates/editor-api/src/mv_recipe/grid.rs": "3429b1c1904d46aa42a22fb2c39b58fcdbede67eba1b00e8289b23e98222ee7e",
+        "rust/crates/editor-api/src/mv_recipe/hex_float.rs": "517cf18405999f6ff72d29dbd0496012c67620c3e686d6cc54561b210742256a",
+        "rust/crates/editor-api/src/mv_recipe/catalog.rs": "866bc3bb361a9e4a34414d98ad630dfb1f91ea21099e06e90bdcdf736277a753",
+        "rust/crates/editor-api/src/mv_recipe/catalog_tests.rs": "766eb2c4d0bae5db2839a21155a0b108ba69693d9c413118c0cd9b40b120c71d",
+        "rust/crates/editor-api/src/mv_recipe/validate.rs": "699e9f68e7c7b5393aa6a516df97af1cf5ad3a84cc815f1a558eeb54c28a37a8",
+        "rust/crates/editor-api/src/mv_recipe/evaluate.rs": "8cc1cb26bbe94abf83f254ec597041c7c17dfd0e6841355b8c93b35ef08a2a11",
+        "rust/crates/editor-api/src/mv_recipe/generator_evaluate.rs": "7016d74d8c267469404d1ed5f3d49d6add53f2b44af58247d44f418c81192fc3",
+        "rust/crates/editor-api/src/mv_recipe/shatter.rs": "668be18816d9c65866799d1bd01c5f314906d0893e65228729ea5b22f1545ded",
+        "rust/crates/editor-api/src/mv_recipe/shatter_geometry.rs": "984ceed5cf8265c10c2b87f29de58437bb21d301622667cb54e695faeef0cd24",
+        "rust/crates/editor-api/src/mv_recipe/replay.rs": "447d5f84d16103a56f3659c3459d84c21f73b76c608e11c921c7cf88be97349b",
+        "rust/crates/editor-api/src/mv_recipe/replay_tests.rs": "45cda37fdb8c345575ea8e20b327cb3055df3ff407108ad4638bcd6f906ddf02",
+        "rust/crates/editor-api/src/mv_recipe/replay_test_model.rs": "7df4e69f791de22b0c699ac1209bfa18127a0acf6a261ff4687dc1734e53b3db",
+        "rust/crates/editor-api/tests/mv_shatter.rs": "1d36edf86df210c374603903560c66957d3d5aea96667366ab9c8951626260e1",
+        "packages/editor-contracts/src/mv-mesh.ts": "7f04c06fdd931338e22543868e4ba5a87bed6808d63a1944d44fd4f7cde6042e",
+        "packages/editor-contracts/src/mv-shatter.ts": "04a2f4dee9f970504e868264d508921f4bcd419d9070038ac38354f4feb586d4",
+        "packages/editor-contracts/src/mv-glyph-rain.ts": "d082658344a03e947b270a7bd8b1a21eb3af5e72457e347470b5b99a2cffe072",
+        "packages/editor-contracts/src/mv-recipe-generators.ts": "be2617e4bfd67041cdaa4dae7f1cbb730aee57e4e3b6c852ed7e86d22a3b7d75",
+        "packages/editor-contracts/src/index.ts": "210c50886f693d512e3bdbbf12de22ec3efb8b3ff4086d7658b365a19a5d5cd6",
+        "packages/editor-classic/src/services/renderer/programmatic/mv-mesh-renderer.ts": "6d07fbd15c5202c79c3eb940d13fb099b1225ea950b1b94589d5f5a6b0231e0e",
+        "packages/editor-classic/src/services/renderer/programmatic/mv-recipe-renderer.ts": "4ab77db05bf77c60d0bbbda9a83875e4d55396e358b85559fe9a8a3ecab2fb1d",
+        "apps/cli/src/__tests__/stylized-catalog.test.ts": "7a6162ba3ae6101232aa363ac4d126373de888d586b12715e90a42db905a13b0",
+        "script/fixtures/mesh-refraction-checks.ts": "3c3c68abf81e6b436f64b70b4d9900c144ce30ac8c06e4967c9be4e7830355ec",
+        "script/fixtures/mesh-scenes-browser.ts": "3cbfad53367b4a5c031ca8849cd31ebc83af39866dad2ccea8acac69e2268739",
+        "script/fixtures/shatter-scenes-checks.ts": "3ea4d762b7942d05bbb98c52b71b4553799c6db30081b54f3368814be675b6a5",
+        "script/fixtures/shatter-oracle.ts": "12cc550a3a598f75c3323354ece0c30e5d4531878c4007f064cd01d7c20b7e62",
+        "script/fixtures/shatter-oracle-geometry.ts": "a3d2a1bb1e84dfb2814cc724e5c18251b7a658bdde2a8aa65849c800867f39bd",
+        "script/probe-mesh-scenes.mjs": "5bd240051efa9b0526fd29139d35915df98a57670bdbce79034c5dd067c3bdea",
+        "script/fixtures/shatter-editor-host.ts": "cb780e4bd7e3e7703c53a2b13263033976f836d5e5f8e3e2c046507880b1ce2f",
+        "script/fixtures/shatter-editor-checks.mjs": "ad0bebbad6da1eeeaea40220ab6bd9ff3f4d75fbbf1ec698b9c90360dc27a94f",
+        "script/fixtures/shatter-editor-export.mjs": "de733bdd304820eaa2c24c4e542f29c1f7c3b11f04e2a12c7cd8e9a3aa7c7ec7",
+        "script/probe-stylized-fusion.mjs": "f4fb1cad4c649b3150df42bee4c86ea1188307f344ea9bf6b1f1021fe05fcfd5",
+        "script/fixtures/spatial-regression.tsconfig.json": "dc3437ff47266b63dbb716de4a3114fe294a03b72d601c07a6c09d5fd780315b",
+        "rust/crates/editor-api/src/mv_recipe/shatter_predicates.rs": "83b009eff4bfefb8b122bd1257331c603fe8aefd37350bc44527b9d92bf6c2b0",
+        "apps/cli/src/__tests__/shatter-persistence.test.ts": "0a042ce975cba4f091454d5516c9bb66759b0235c82e93b436c58ef934d3735e"
+      }
+    }
+  },
+  "verification": {
+    "native": {
+      "finalRecipeLibraryPassed": 21,
+      "finalShatterIntegrationPassed": 10,
+      "replayFoundationIncludedInLibrary": 11,
+      "earlierRelatedRegressionPassed": 51,
+      "note": "The 51 related regressions ran earlier in this batch, not in the final 31-test invocation."
+    },
+    "browser": {
+      "ok": true,
+      "captures": 204,
+      "snapshots": 151,
+      "comparisonCounts": {
+        "shatter": 28,
+        "bend": 26,
+        "grid": 28,
+        "hex": 9
+      },
+      "pixelGates": {
+        "dynamic": {
+          "maxPremul": 5,
+          "maxAlpha": 3,
+          "meanPremul": 1.5
+        },
+        "neutral": {
+          "maxPremul": 2,
+          "maxAlpha": 1,
+          "meanPremul": 0.4
+        }
+      },
+      "shatterPixelMetrics": {
+        "maxPremul": 1.5921568627450995,
+        "maxAlpha": 1,
+        "maxMeanPremul": 0.18083387547400986,
+        "minimumCoverage": 0.5952449845679012
+      },
+      "independentOracle": "Bisector-pair intersections/halfplanes, inverse ray-plane texture sampling and nearest-site ownership; no Rust render-plan input.",
+      "counterexamplesRejectedByActualPixelGate": {
+        "rectangles": 6208,
+        "noRefraction": 1496,
+        "shiftAlpha": 321,
+        "reverseDepth": 74,
+        "shadowsAfterColor": 7986,
+        "affineUv": 2287
+      },
+      "sensitivity": {
+        "center": 7608,
+        "spread": 8293,
+        "spin": 7961,
+        "gravity": 7656,
+        "depth": 5109,
+        "perspective": 1282,
+        "refraction": 1496,
+        "shading": 4552,
+        "shadow": 6433,
+        "fragments": 9088
+      },
+      "geometry": {
+        "fragmentCount": 12,
+        "vertices": 61,
+        "triangles": 74,
+        "nonAxisEdges": 48,
+        "colorSamples": 8784,
+        "shadowSamples": 9751,
+        "refractionSamples": 7902,
+        "transparentFallback": 82,
+        "outsideFallback": 0,
+        "maskedPixels": 4654
+      },
+      "frameHashes": {
+        "0": "d5c1dd6994d4bd9e5480ab1e4881afbf6052829ac3ed81b540785bb8818f81bf",
+        "6": "2e08d41aef24c98f00cd2619f17c39af232870c2db866d40660e8afcf0017acf",
+        "12": "96360d3339a7879067a0adab8d00a769ea4bbaefa09909e5450c2f13d5751ae4",
+        "18": "331a1e13041ac2cd6f9bff9aceaa7c1f3a2cde017e2bb12308a7a557dbac67f0",
+        "24": "4b2ac50729278e95ac81cfd47183ede13764d50c1662758c5b29d07e9ae6aa55"
+      },
+      "alphaInvariant": true,
+      "cancelledRetry": true,
+      "sourceTimeChecks": [
+        "seek 0/6/12/18/24",
+        "trim",
+        "30000/1001 fps",
+        "JSON restore",
+        "reverse ref",
+        "seed",
+        "roles",
+        "zero opacity"
+      ],
+      "directRefraction": {
+        "renders": 22,
+        "variants": [
+          {
+            "name": "missing offset",
+            "changedPixels": 0,
+            "emptyFallback": 0,
+            "outsideFallback": 0
+          },
+          {
+            "name": "undefined offset",
+            "changedPixels": 0,
+            "emptyFallback": 0,
+            "outsideFallback": 0
+          },
+          {
+            "name": "zero offset",
+            "changedPixels": 0,
+            "emptyFallback": 0,
+            "outsideFallback": 0
+          },
+          {
+            "name": "positive offset and transparent fallback",
+            "changedPixels": 5968,
+            "emptyFallback": 376,
+            "outsideFallback": 840
+          },
+          {
+            "name": "negative fractional offset",
+            "changedPixels": 6284,
+            "emptyFallback": 481,
+            "outsideFallback": 419
+          },
+          {
+            "name": "outside fallback",
+            "changedPixels": 0,
+            "emptyFallback": 0,
+            "outsideFallback": 7936
+          },
+          {
+            "name": "half opacity",
+            "changedPixels": 5848,
+            "emptyFallback": 376,
+            "outsideFallback": 840
+          },
+          {
+            "name": "shaded color",
+            "changedPixels": 5968,
+            "emptyFallback": 376,
+            "outsideFallback": 840
+          },
+          {
+            "name": "source B",
+            "changedPixels": 6720,
+            "emptyFallback": 192,
+            "outsideFallback": 1024
+          },
+          {
+            "name": "triangle",
+            "changedPixels": 3159,
+            "emptyFallback": 269,
+            "outsideFallback": 36
+          },
+          {
+            "name": "perspective quad",
+            "changedPixels": 6953,
+            "emptyFallback": 336,
+            "outsideFallback": 404
+          }
+        ],
+        "alphaInvariant": true,
+        "inputsUnchanged": true,
+        "zeroOffsetCompatible": true
+      },
+      "independentDecode": {
+        "exports": [
+          {
+            "name": "shatter",
+            "ok": true,
+            "videoSha256": "4334660f5e538d0148b663285a5a8d5ea9701324caf5acbc8eec1b06a8972128"
+          },
+          {
+            "name": "bend",
+            "ok": true,
+            "videoSha256": "2021ce09f1148cf9577bc98fe46952b8db3713fd02f3cc2504024f7a87322b61"
+          },
+          {
+            "name": "bend-back",
+            "ok": true,
+            "videoSha256": "b3f8cdf5080c849c661ec3d6dc532928c9063b985c0daab522961d5a96ba6ca6"
+          },
+          {
+            "name": "grid",
+            "ok": true,
+            "videoSha256": "084b580ea91f799b990663e756377697d3f7af3c7417f50a88f757021d90eecf"
+          },
+          {
+            "name": "hex-float",
+            "ok": true,
+            "videoSha256": "d478eaa6b40500e3c0f35f7a9922885bcf8b342f422282d517633e8df54e33c3"
+          }
+        ],
+        "format": "384x216 / 30 fps / 6 frames / VP9 for each of five exports",
+        "shatter": {
+          "previewRgbaError": [
+            1.7393904320987654,
+            2.666187427662037
+          ],
+          "oracleRgbaError": [
+            1.5396127623234261,
+            2.280218059865574
+          ],
+          "detailRgbError": [
+            2.3279719170203483,
+            4.437329137794441
+          ],
+          "contrastRatio": [
+            0.9790865151828211,
+            0.9950293877357331
+          ],
+          "oracleCoverage": [
+            0.8598451967592593,
+            0.8724802276234568
+          ],
+          "detailPixels": [
+            29873,
+            50422
+          ]
+        }
+      },
+      "errors": [],
+      "externalRequests": []
+    },
+    "host": {
+      "passed": 1,
+      "assertions": 119,
+      "invalidAtomicTransactions": 18,
+      "invalidCases": [
+        "missing image resource",
+        "undeclared image",
+        "image bound to a video",
+        "missing required center",
+        "unknown settings field",
+        "legacy transition fields on scene",
+        "refraction overflow",
+        "perspective overflow",
+        "spin is radians",
+        "too few fragments",
+        "noninteger fragments",
+        "fragment primitive overflow",
+        "expanded primitive budget",
+        "mesh raster budget",
+        "out of range center",
+        "invalid fit",
+        "zero span",
+        "invalid role"
+      ],
+      "dryRun": {
+        "mechanism": "manual draft stage/review/discard",
+        "committedRevision": 0,
+        "operationCount": 3
+      },
+      "reopenedRevisions": [
+        1,
+        2,
+        4,
+        5
+      ],
+      "originalInputUnavailable": true,
+      "maximumFragments": 512,
+      "maximumChargedPrimitives": 4096,
+      "coexistence": [
+        "scene.kind:shatter",
+        "transition.style.kind:shatter"
+      ],
+      "resourceAttachmentsPreserved": true,
+      "revisionCheckedRestoreAndReapply": true
+    },
+    "editor": {
+      "ok": true,
+      "checks": [
+        {
+          "name": "persisted shatter project loaded by actual attached editor",
+          "pass": true
+        },
+        {
+          "name": "two Creator Shatter sources: source seek, parameter replacement, full restore/reapply and unrelated clips preserved",
+          "pass": true
+        },
+        {
+          "name": "real Blending/Opacity input plus attached-session undo/redo/restore preserves full generator sources and every other clip",
+          "pass": true
+        },
+        {
+          "name": "disk save and editor reload preserve full Shatter sources, unrelated clips and four edited preview samples",
+          "pass": true
+        },
+        {
+          "name": "120-frame four-second VP9 export independently decoded against four edited preview samples",
+          "pass": true
+        }
+      ],
+      "authoringMode": {
+        "parameterUi": false,
+        "parameterEntry": "Host recipe replacement",
+        "recipeReversal": "revision-checked restore/reapply; Host apply is not local history",
+        "previewHistory": "actual Blending/Opacity input and attached-session undo/redo"
+      },
+      "sourceParameterEdits": [
+        {
+          "index": 0,
+          "key": "spread",
+          "from": 0.35,
+          "to": 0.8
+        },
+        {
+          "index": 1,
+          "key": "refraction",
+          "from": 0.065,
+          "to": 0.08
+        }
+      ],
+      "sourceUnavailableBeforeReopen": true,
+      "fullUnrelatedClipAndTrackPreserved": true,
+      "saveReloadPreviewHashMatches": 4,
+      "finalRestart": {
+        "ok": true,
+        "hostReopenedAfterEdits": true,
+        "revision": 15,
+        "clipIds": [
+          "shatter-0",
+          "shatter-1",
+          "shatter-unrelated"
+        ],
+        "authoredTrackIds": [
+          "shatter-shots",
+          "shatter-unrelated-track"
+        ],
+        "comparison": "complete clip and track projections by ID; authored track order; revision"
+      },
+      "export": {
+        "status": "completed",
+        "format": "640x360 / 30 fps / 4 seconds / 120 frames / VP9",
+        "outputPath": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa\\rocut-three-resources-VSD7L2\\.artifacts\\shatter-editor\\run-riZrMe\\project\\exports\\b6e6807c57971378.webm",
+        "meanRgbError": [
+          0.7679571759259259,
+          2.3369328703703705
+        ],
+        "activeError": [
+          5.413274182324287,
+          6.961345808524714
+        ],
+        "detailEnergyRatio": [
+          0.9926164135200783,
+          0.9984484872283749
+        ],
+        "gates": {
+          "meanRgbError": 12,
+          "activeError": 18
+        }
+      },
+      "retainedCancellations": [
+        "Failed to render preview frame: AbortError: Programmatic frame cancelled",
+        "Failed to render preview frame: AbortError: Programmatic frame cancelled"
+      ],
+      "retainedOptionalHttpFailures": [
+        {
+          "path": "/api/library/graph-editor-presets/user-presets",
+          "status": 404
+        },
+        {
+          "path": "/api/library/graph-editor-presets/user-presets",
+          "status": 404
+        }
+      ],
+      "externalRequests": [],
+      "contactSheetsVisuallyInspected": true
+    },
+    "static": {
+      "privateSpatialProbeTypes": true,
+      "privateSpatialRegressionTypes": true,
+      "scopedEslint": true,
+      "scopedRustfmt": true,
+      "creatorHelperAndPackageTestsPassed": 9,
+      "skillValidation": true,
+      "wholeCanonicalWorkspaceClean": false,
+      "wholeCanonicalWorkspaceNote": "Other-session changes and stale shared WASM declarations prevent claiming a clean full-workspace typecheck; scoped private fixture checks passed."
+    }
+  },
+  "boundedReplayFoundation": {
+    "implemented": true,
+    "productionEffectConsumer": false,
+    "testsPassed": 11,
+    "files": [
+      "rust/crates/editor-api/src/mv_recipe/replay.rs",
+      "rust/crates/editor-api/src/mv_recipe/replay_tests.rs",
+      "rust/crates/editor-api/src/mv_recipe/replay_test_model.rs"
+    ],
+    "scope": [
+      "Integer 120000 ticks/s and complete fixed steps with explicit remainder",
+      "Opaque identity-bound checkpoints, full source-age work budget and checked live-memory accounting",
+      "Identity heap measured before clone, checkpoint and scratch accounted, state/event cursor validated",
+      "Cancellation checked after identity publication copy; partial output never published"
+    ],
+    "deadCodeWarnings": 19,
+    "note": "Foundation only. No Cloth or Liquid model, rendering, catalog or authoring acceptance is implied."
+  },
+  "retainedFailuresAndCorrections": [
+    {
+      "kind": "production topology",
+      "detail": "Exact degenerate bisector vertices lost incident-site tags under floating comparisons. Exact-constraint predicate fallback fixed internal edge pairing; tiny distinct vertices remain distinct."
+    },
+    {
+      "kind": "native test assumption",
+      "detail": "A test incorrectly expected catalog.transitions.shatter. Replaced with actual legacy A/B/new generator validation and seek coexistence checks."
+    },
+    {
+      "kind": "Host test receipt",
+      "artifact": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/shatter-persistence/run-i2kLQQ",
+      "detail": "Initial test expected applied:true. Corrected to actual accepted envelope plus TransactionResult.revision and proper draft outcome types; final 119 assertions pass."
+    },
+    {
+      "kind": "editor fixture IDs",
+      "artifact": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/shatter-editor/run-K6vbzN/evidence.json",
+      "detail": "Initial fixture reused shatter-unrelated as track and clip IDs. Changed track ID to shatter-unrelated-track without weakening validation."
+    },
+    {
+      "kind": "private generated consumer",
+      "detail": "WASM source gate initially rejected stale private dependency copies. Refreshed generated files in private consumers, then reran all gates successfully."
+    }
+  ],
+  "operations": {
+    "sharedDependenciesReinstalled": false,
+    "installedPluginReplaced": false,
+    "sharedElftiaRestarted": false,
+    "commit": false,
+    "push": false,
+    "release": false
+  }
+}

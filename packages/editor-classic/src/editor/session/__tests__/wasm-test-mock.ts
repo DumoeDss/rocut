@@ -413,6 +413,34 @@ class MockRuntimeGpuQuery {
 	}
 }
 
+let nextFrameRequest = 1;
+const frameRequests = new Map<
+	number,
+	{ handle: number; frame: { width: number; height: number } }
+>();
+function renderMockFrame({
+	handle,
+	frame,
+}: {
+	handle: number;
+	frame: { width: number; height: number };
+}) {
+	const canvas = compositorCanvases.get(handle);
+	if (canvas)
+		canvas.content = `handle:${handle}:frame:${compositorRenderCalls.length + 1}`;
+	compositorRenderCalls.push({
+		handle,
+		width: frame.width,
+		height: frame.height,
+	});
+	compositorOperations.push({
+		kind: "render",
+		handle,
+		width: frame.width,
+		height: frame.height,
+	});
+}
+
 mock.module("opencut-wasm", () => ({
 	evaluateClipTransitions,
 	isMediaSourceSpanValid,
@@ -545,26 +573,34 @@ mock.module("opencut-wasm", () => ({
 		textureReleases.push({ handle, id });
 	},
 	renderFrame: () => {},
-	// eslint-disable-next-line opencut/prefer-object-params -- mirrors the positional wasm-bindgen API
+	// No-Liquid boundary compatibility only; solver cancellation has separate tests.
+	// eslint-disable-next-line opencut/prefer-object-params -- mirrors wasm-bindgen.
 	renderFrameForHandle: (
 		handle: number,
 		frame: { width: number; height: number },
+	) => renderMockFrame({ handle, frame }),
+	// eslint-disable-next-line opencut/prefer-object-params -- mirrors wasm-bindgen.
+	beginRenderFrameForHandle: (
+		handle: number,
+		frame: { width: number; height: number },
 	) => {
-		const canvas = compositorCanvases.get(handle);
-		if (canvas) {
-			canvas.content = `handle:${handle}:frame:${compositorRenderCalls.length + 1}`;
-		}
-		compositorRenderCalls.push({
-			handle,
-			width: frame.width,
-			height: frame.height,
-		});
-		compositorOperations.push({
-			kind: "render",
-			handle,
-			width: frame.width,
-			height: frame.height,
-		});
+		const request = nextFrameRequest++;
+		frameRequests.set(request, { handle, frame });
+		return request;
+	},
+	advanceRenderFrameForHandle: () => true,
+	// eslint-disable-next-line opencut/prefer-object-params -- mirrors wasm-bindgen.
+	commitRenderFrameForHandle: (handle: number, request: number) => {
+		const entry = frameRequests.get(request);
+		if (!entry || entry.handle !== handle)
+			throw Error("Invalid test frame request");
+		frameRequests.delete(request);
+		renderMockFrame(entry);
+	},
+	// eslint-disable-next-line opencut/prefer-object-params -- mirrors wasm-bindgen.
+	cancelRenderFrameForHandle: (handle: number, request: number) => {
+		if (frameRequests.get(request)?.handle === handle)
+			frameRequests.delete(request);
 	},
 	resizeCompositor: () => {},
 	// eslint-disable-next-line opencut/prefer-object-params -- mirrors the positional wasm-bindgen API

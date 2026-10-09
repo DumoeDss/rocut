@@ -177,6 +177,8 @@ interface BaseParamDefinition<TKey extends string = string> {
 	label: string;
 	group?: ParamGroup;
 	keyframable?: boolean;
+	/** Effect authoring requires this field unless explicitly false. */
+	required?: boolean;
 	dependencies?: Array<{ param: string; equals: ParamValue }>;
 }
 

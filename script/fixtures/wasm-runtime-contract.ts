@@ -2,6 +2,7 @@ import {
 	WasmRuntimeGpuResourceQuery,
 	WasmRuntimeGraphicsQuery,
 	evaluateClipTransitions,
+	inspectProgrammaticImageBytes,
 	type ClipTransitionsOptions,
 	type ClipTransitionsEvaluation,
 } from "opencut-wasm";
@@ -25,6 +26,10 @@ interface RuntimeGpuResourceQuery {
 
 const graphics: RuntimeGraphicsQuery = new WasmRuntimeGraphicsQuery();
 const resources: RuntimeGpuResourceQuery = new WasmRuntimeGpuResourceQuery();
+
+const inspectImage: (input: Uint8Array) => string = inspectProgrammaticImageBytes;
+// @ts-expect-error Image admission consumes owned bytes, not an unchecked URL/string.
+inspectProgrammaticImageBytes("image.png");
 
 const backend: "webgl" | "webgpu" | null = graphics.selectedBackend();
 const capacity: number = graphics.concurrentCompositorInstances();
@@ -57,4 +62,4 @@ transitions({
 	frameRate: { numerator: 30, denominator: 1 },
 });
 
-export { backend, capacity, handles, index, progress };
+export { backend, capacity, handles, index, progress, inspectImage };

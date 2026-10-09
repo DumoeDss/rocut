@@ -2,6 +2,8 @@
  * Use read + expectedRevision when editing a collection; [] / {} explicitly clear it.
  * Provider catalogues supply supported parameter keys, units and ranges.
  */
+import { isProgrammaticSource, type ProgrammaticSource } from "./programmatic";
+
 export type EditingValue = number | string | boolean;
 export type EditingParams = Readonly<Record<string, EditingValue>>;
 
@@ -87,6 +89,7 @@ export interface ClipEditing {
 	readonly masks?: readonly EditingMask[];
 	readonly isSourceAudioEnabled?: boolean;
 	readonly definitionId?: string;
+	readonly programmatic?: ProgrammaticSource;
 	readonly stickerId?: string;
 	readonly intrinsicWidth?: number;
 	readonly intrinsicHeight?: number;
@@ -129,12 +132,14 @@ export function isClipEditing(value: unknown): value is ClipEditing {
 		"masks",
 		"isSourceAudioEnabled",
 		"definitionId",
+		"programmatic",
 		"stickerId",
 		"intrinsicWidth",
 		"intrinsicHeight",
 		"effectType",
 	];
 	if (Object.keys(value).some((key) => !fields.includes(key))) return false;
+	if (value.programmatic !== undefined && !isProgrammaticSource(value.programmatic)) return false;
 	for (const key of ["name", "definitionId", "stickerId", "effectType"])
 		if (value[key] !== undefined && typeof value[key] !== "string")
 			return false;

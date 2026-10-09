@@ -1,0 +1,20 @@
+{
+	"extends": "../../apps/vite-example/tsconfig.json",
+	"compilerOptions": {
+		"paths": { "opencut-wasm": ["../../rust/wasm/pkg"] }
+	},
+	"include": [
+		"./programmatic-browser-probe.ts",
+		"./mv-recipe-browser-probe.ts",
+		"./mv-recipe-export-probe.ts",
+		"./mv-transition-browser-probe.ts",
+		"./mv-post-browser-probe.ts",
+		"./mv-composition-browser-probe.ts",
+		"./mv-sprite-browser-probe.ts",
+		"./mv-audio-browser-probe.ts",
+		"./html-frame-browser-probe.ts",
+		"../../apps/vite-example/src",
+		"../../packages/*/src/types/**/*.d.ts",
+		"../../packages/editor-classic/src/editor/transactions/opencut/__tests__/programmatic.test.ts"
+	]
+}

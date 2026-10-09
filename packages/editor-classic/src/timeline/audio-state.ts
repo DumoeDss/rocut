@@ -8,6 +8,7 @@ export type AudioCapableElement = Extract<
 	TimelineElement,
 	{ type: "audio" | "video" }
 >;
+type AudioGainElement = Pick<TimelineElement, "params" | "animations" | "duration">;
 
 export function clampDb(value: number): number {
 	if (!Number.isFinite(value)) {
@@ -24,7 +25,7 @@ export function dBToLinear(db: number): number {
 export function getElementVolume({
 	element,
 }: {
-	element: AudioCapableElement;
+	element: AudioGainElement;
 }): number {
 	const value = element.params.volume;
 	return typeof value === "number" ? value : 0;
@@ -33,7 +34,7 @@ export function getElementVolume({
 export function isElementMuted({
 	element,
 }: {
-	element: AudioCapableElement;
+	element: AudioGainElement;
 }): boolean {
 	return element.params.muted === true;
 }
@@ -41,7 +42,7 @@ export function isElementMuted({
 export function hasAnimatedVolume({
 	element,
 }: {
-	element: AudioCapableElement;
+	element: AudioGainElement;
 }): boolean {
 	return hasKeyframesForPath({
 		animations: element.animations,
@@ -56,7 +57,7 @@ export function resolveEffectiveAudioGain({
 	trackMuted = false,
 	localTime,
 }: {
-	element: AudioCapableElement;
+	element: AudioGainElement;
 	trackMuted?: boolean;
 	localTime: number;
 }): number {
@@ -78,7 +79,7 @@ export function buildWaveformGainSamples({
 	element,
 	count,
 }: {
-	element: AudioCapableElement;
+	element: AudioGainElement;
 	count: number;
 }): number[] {
 	const durationSeconds = element.duration / TICKS_PER_SECOND;
@@ -95,7 +96,7 @@ export function buildAudioGainAutomation({
 	toLocalTime,
 	stepSeconds = DEFAULT_STEP_SECONDS,
 }: {
-	element: AudioCapableElement;
+	element: AudioGainElement;
 	trackMuted?: boolean;
 	fromLocalTime: number;
 	toLocalTime: number;

@@ -68,6 +68,7 @@ const ELEMENT_KEYS = [
 	"intrinsicWidth",
 	"intrinsicHeight",
 	"definitionId",
+	"programmatic",
 	"sequenceId",
 	"effectType",
 ] as const;
@@ -248,7 +249,7 @@ export function encodeProject({
 			const elements = saved[trackIndex].elements as UnknownRecord[];
 			for (const [elementIndex, element] of track.elements.entries()) {
 				const source = element as unknown as UnknownRecord;
-				for (const key of ["params", "animations", "effects", "masks"]) {
+				for (const key of ["params", "animations", "effects", "masks", "programmatic"]) {
 					elements[elementIndex][key] = cloneOpaque(source[key]);
 				}
 			}

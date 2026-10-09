@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "date": "2026-10-07",
+  "status": "source-fixture-verified-not-installed",
+  "discovery": {
+    "endpoint": "editing/catalog",
+    "nativeEffects": [
+      "vhs",
+      "glitch",
+      "retro-dither",
+      "ascii"
+    ],
+    "extensions": "programmatic.mvRecipe.extensions",
+    "generatorNames": [
+      "glyphRain",
+      "particleReveal"
+    ],
+    "transitionParameters": [
+      "peel"
+    ],
+    "resourceKindsAdded": [
+      "model",
+      "environment"
+    ],
+    "availability": "implemented-not-runtime-probed",
+    "numericValidation": "Rust NumberRule values shared by discovery and model validation; suggestions do not become defaults"
+  },
+  "templates": {
+    "ok": true,
+    "templates": [
+      "retroMv",
+      "particleLogo",
+      "asciiThree"
+    ],
+    "originalInputsUnavailable": true,
+    "restarted": true,
+    "archiveRebuilt": true,
+    "sources": [
+      {
+        "file": "templates.mjs",
+        "sha256": "3c7d75a50c9d5e874a3e62e54d0880ba77143ec00cc859fb99a26e84fd5b1a53"
+      },
+      {
+        "file": "scene.ts",
+        "sha256": "17793e3367cba0453a6817a86674b345075e641dcfb638746c7f41095b2217aa"
+      }
+    ],
+    "compiledDocumentSha256": "cbb0bff52245493038d194b1ced34df3c3602dfd097e3b4ac886f46a922b50f2",
+    "scope": "Rust frame validation, real Three compile, transaction, reopen and archived rebuild; template-specific visual/audio/UI E2E pending"
+  },
+  "artifacts": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/creator-stylized/run-sstAzR",
+  "checks": {
+    "rustCatalogAndRegressionTests": 15,
+    "bunTests": 9,
+    "bunAssertions": 93,
+    "frontendEslint": true,
+    "asciiBrowserTypecheck": true,
+    "wasmGates": true,
+    "wasmPublicExports": 78,
+    "stableBinaryExports": 95,
+    "trampolines": 3,
+    "imports": 612,
+    "lowLevelDeclarationLines": 100,
+    "skillValidation": 2,
+    "realAgentCopyStepTests": 1
+  },
+  "pending": [
+    "Template-specific GPU visual and audio integration",
+    "Recoverable 10-second Creator/Rocut E2E with native lyrics, independent audio, Three ASCII and A/B recipe transition",
+    "Attached-editor undo/redo and installed/Electron acceptance",
+    "Intermittent private Chromium frame timeout diagnosis",
+    "35-item coverage matrix and remaining extension scope"
+  ],
+  "sourceFiles": [
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/catalog.rs",
+      "sha256": "505c20658fb4e049bea1b3bbf1487ca347174c2f50f0ea3a71640c162cd60076"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/catalog_tests.rs",
+      "sha256": "a175f6b921b96ce9457187df949d0f8c70467ea16b20a92120300a80b6a44453"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/generators.rs",
+      "sha256": "060ca291942a3266d466cc14043c021c9853f4ce1eaee7dd7d83209f4722eecf"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/generator_model.rs",
+      "sha256": "e73a6c3022f2c02bbe07cd40adec3907c10a3b830fb7860a5c3a787bc46060b6"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/transitions.rs",
+      "sha256": "df58a31082d746938002a8fb581077e8bb8a19b6793ec042ca887c280c88c2a6"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/validate.rs",
+      "sha256": "316aed0e711456ad09df42f1666bbc1c95ad480ff67978e66c41d8ea6553066c"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/mod.rs",
+      "sha256": "7d701600b21ca2a2a277c88276ac9cf0cac6951ab485fc6331016e17dfb8a6c3"
+    },
+    {
+      "path": "rust/crates/editor-api/src/lib.rs",
+      "sha256": "7aca5266f038b1103627bdbf02b81862f9a35db03cde4f05e3864f482183a91e"
+    },
+    {
+      "path": "packages/editor-classic/src/editor/transactions/opencut/mv-recipe-catalog.ts",
+      "sha256": "dfefa95c59de6f3f2ecab25961adfa8cf6ed9782a974b7dcc58ca1a7ab66bc07"
+    },
+    {
+      "path": "packages/editor-classic/src/editor/transactions/opencut/editing-catalog.ts",
+      "sha256": "4647120b86793bc0b0dc7dd43d200850f0e50ebffe6a7d41166be9ee73d90666"
+    },
+    {
+      "path": "script/wasm-api-surface-contract.mjs",
+      "sha256": "542b3b55c875df1244614a3f2d7332fed39fd80ff6945c30a57ecac9edf1b9cf"
+    },
+    {
+      "path": "apps/cli/src/__tests__/stylized-catalog.test.ts",
+      "sha256": "de07d016b6284c2616dee31547faf927731d4dd1f6b013b09097ba3d2e469381"
+    },
+    {
+      "path": "script/fixtures/ascii-three-browser-probe.ts",
+      "sha256": "17b02f8250b0b2c86b81b256d32454c62dc5d6e5cc7cf60ed26926d0c7ce5237"
+    }
+  ]
+}

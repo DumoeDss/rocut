@@ -18,6 +18,12 @@
  * without invalidating reviews. Persistence and resync share one queue slot.
  */
 import { createServer } from "node:http";
+import { createProgrammaticFrameService } from "./programmatic/frame-service";
+import { createProgrammaticAudioService } from "./programmatic/audio-service";
+import type { NativeVideoDecoder } from "./programmatic/video-decoder";
+import { PROGRAMMATIC_RESOURCE_CAPABILITY } from "./programmatic/resource-import";
+import { handleProgrammaticResourceRoute } from "./programmatic/resource-route";
+import { createProgrammaticBuildService } from "./programmatic/engines/build-service";
 import { editingCatalog } from "@opencut/editor-classic/editing";
 import { planSceneEdit } from "./scene-editing";
 import { importLocalMedia, MEDIA_IMPORT_CAPABILITY } from "./media-import";
@@ -129,6 +135,14 @@ export interface StartHostArgs {
 	readonly activitySyncIntervalMs?: number;
 	/** Rust/WASM factory injection used by canonical-source tests. */
 	readonly motionTextCores?: MotionTextFactoryCores;
+	/** Optional isolated Chromium executable; default is ROCUT_HTML_BROWSER_PATH. */
+	readonly htmlBrowserExecutable?: string;
+	/** Desktop-only private rendezvous; never returned to the editor. */
+	readonly htmlFrameConnectionFile?: string;
+	/** Host-only native decoder paths; never supplied by authored JS/Agent requests. */
+	readonly nativeVideoDecoder?: NativeVideoDecoder;
+	/** Preinstalled, pinned compiler dependencies. Never supplied by an Agent request. */
+	readonly engineToolchainDirectory?: string;
 }
 
 export interface RunningHost {
@@ -313,6 +327,20 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 
 	const token = randomBytes(24).toString("hex");
 	const editorTasks = createEditorTaskRegistry();
+	const programmaticFrames = createProgrammaticFrameService(
+		args.htmlBrowserExecutable,
+		args.htmlFrameConnectionFile,
+		{ store: plane.baseStore, projectId: plane.projectId },
+		args.nativeVideoDecoder,
+	);
+	const programmaticBuilds = createProgrammaticBuildService(
+		{ store: plane.baseStore, projectId: plane.projectId }, task => plane.enqueue(task), args.engineToolchainDirectory,
+	);
+	const programmaticAudio = createProgrammaticAudioService({
+		resourceStore: { store: plane.baseStore, projectId: plane.projectId },
+		executable: args.htmlBrowserExecutable, connectionFile: args.htmlFrameConnectionFile, decoder: args.nativeVideoDecoder,
+		toolchainDirectory: args.engineToolchainDirectory,
+	});
 	const server = createServer((request, response) => {
 		void handle(request, response, {
 			token,
@@ -322,6 +350,9 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 			noteActivity,
 			exportRegistry,
 			editorTasks,
+			programmaticFrames,
+			programmaticAudio,
+			programmaticBuilds,
 			motionTextCores: args.motionTextCores,
 			motionTextJournal,
 		});
@@ -359,6 +390,9 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 			return plane.automation();
 		},
 		close: async () => {
+			await programmaticAudio.dispose();
+			await programmaticFrames.dispose();
+			await programmaticBuilds.dispose();
 			editorTasks.dispose();
 			await args.registry.remove(targetId).catch(() => undefined);
 			// Bun 1.2.18 can lose the close callback if active fetch connections
@@ -398,6 +432,8 @@ export function revisionEventWriter(args: {
 }
 
 interface HandleContext {
+	readonly programmaticAudio: ReturnType<typeof createProgrammaticAudioService>;
+	readonly programmaticBuilds: ReturnType<typeof createProgrammaticBuildService>;
 	readonly token: string;
 	readonly plane: HostPlane;
 	readonly staticDir: string | undefined;
@@ -407,6 +443,9 @@ interface HandleContext {
 	/** Attached-pane registry + export job book (see `host-export.ts`). */
 	readonly exportRegistry: ExportRegistry;
 	readonly editorTasks: EditorTaskRegistry;
+	readonly programmaticFrames: ReturnType<
+		typeof createProgrammaticFrameService
+	>;
 	readonly motionTextCores: MotionTextFactoryCores | undefined;
 	readonly motionTextJournal: MotionTextRequestJournal;
 }
@@ -468,6 +507,41 @@ async function handleApi(
 		response.end(JSON.stringify(body));
 	};
 	try {
+		if (
+			request.method === "POST" && route.length === 3 && route[0] === "programmatic" && route[1] === "build"
+		) {
+			await context.programmaticBuilds.handle(route[2], request, response);
+			return;
+		}
+		if (request.method === "POST" && route.length === 2 && route[0] === "programmatic" && route[1] === "audio") {
+			await context.programmaticAudio.handle(request, response);
+			return;
+		}
+		if (request.method === "POST" && route.length === 3 && route[0] === "programmatic" && route[1] === "audio" && route[2] === "identity") {
+			await context.programmaticAudio.handle(request, response, "identity");
+			return;
+		}
+		if (
+			route.length === 2 &&
+			route[0] === "programmatic" &&
+			route[1] === "frame" &&
+			request.method === "POST"
+		) {
+			await context.programmaticFrames.handle(request, response);
+			return;
+		}
+		if (
+			request.method === "POST" && route.length === 3 &&
+			route[0] === "programmatic" && route[1] === "resources"
+		) {
+			const input: unknown = await readJsonBody(request);
+			await handleProgrammaticResourceRoute({
+				action: route[2], input, response,
+				resourceStore: { store: plane.baseStore, projectId: plane.projectId },
+				enqueue: task => plane.enqueue(task),
+			});
+			return;
+		}
 		if (request.method === "GET" && route[0] === "status") {
 			// The readable mirror for panes/agents: identity + idle signals.
 			// `context` stays as is — this is additive surface (S08 R / D4).
@@ -483,6 +557,10 @@ async function handleApi(
 				capabilities: await automation.capabilities(),
 				supportedOperations: await automation.supportedOperations(),
 				mediaImport: MEDIA_IMPORT_CAPABILITY,
+				programmaticResources: PROGRAMMATIC_RESOURCE_CAPABILITY,
+				programmaticBuilds: context.programmaticBuilds.capability,
+				programmaticNativeVideo: context.programmaticFrames.nativeVideoCapability,
+				programmaticNativeAudio: context.programmaticAudio.capability,
 				project: await automation.project(),
 				editing: {
 					version: 1,
@@ -513,7 +591,12 @@ async function handleApi(
 			route[1] === "catalog" &&
 			route.length === 2
 		) {
-			respond(200, editingCatalog());
+			respond(
+				200,
+				editingCatalog({
+					htmlDocumentConfigured: context.programmaticFrames.configured,
+				}),
+			);
 			return;
 		}
 		if (route[0] === "editor-tasks") {
@@ -861,9 +944,11 @@ async function handleApi(
 			}
 		}
 		if (request.method === "GET" && route[0] === "attachments") {
-			const attachments = await plane.baseStore.listAttachments({
-				projectId: plane.projectId,
-			});
+			// This wire route has always returned metadata only. Legacy stores
+			// remain compatible, but this fallback is not a headers capability.
+			const attachments = await (plane.baseStore.listAttachmentHeaders
+				? plane.baseStore.listAttachmentHeaders({ projectId: plane.projectId })
+				: plane.baseStore.listAttachments({ projectId: plane.projectId }));
 			respond(
 				200,
 				attachments.map((attachment) => ({

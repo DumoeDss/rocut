@@ -1,0 +1,21 @@
+<!doctype html>
+<meta charset="utf-8" />
+<script type="module">
+	import { runMvAudioProbe } from "./mv-audio-browser-probe.ts";
+	import { runMvExportProbe } from "./mv-recipe-export-probe.ts";
+	try {
+		const { source, resources, ...result } = await runMvAudioProbe();
+		const exported = await runMvExportProbe(source, resources);
+		globalThis.__programmaticResult = {
+			...result,
+			checks: [...result.checks, ...exported.checks],
+			encodedBytes: exported.encodedBytes,
+		};
+	} catch (error) {
+		globalThis.__programmaticResult = {
+			error: String(error),
+			stack: error.stack,
+		};
+	}
+</script>
+<body></body>

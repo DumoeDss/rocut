@@ -1,0 +1,12 @@
+<template>
+<div data-composition-id="leaf" data-width="64" data-height="64">
+  <style>
+  [data-composition-id="leaf"] { position:absolute; inset:0; background:transparent }
+  #green { position:absolute; top:32px; width:16px; height:16px; background:#00ff00 }
+  </style>
+  <div id="green"></div>
+  <script>
+  window.__timelines.leaf = gsap.timeline({paused:true}).to('#green', {x:32, duration:0.5, ease:'none'}, 0);
+  </script>
+</div>
+</template>

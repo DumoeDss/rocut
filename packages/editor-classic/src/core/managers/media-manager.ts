@@ -2,6 +2,7 @@ import type { EditorCore } from "..";
 import { toast } from "sonner";
 import type { MediaAsset } from "../../media/types";
 import {
+	mediaAttachmentsForHydration,
 	decodePersistedMediaMetadata,
 	isStorageQuotaExceeded,
 	mediaAssetFromAttachment,
@@ -198,10 +199,26 @@ export class MediaManager {
 		this.notify();
 
 		try {
-			const attachments = await this.editor.persistence.listAttachments({
-				projectId,
-				decodeMetadata: decodePersistedMediaMetadata,
-			});
+			const persistence = this.editor.persistence;
+			const attachments = persistence.listAttachmentHeaders
+				? await Promise.all(
+						mediaAttachmentsForHydration(
+							await persistence.listAttachmentHeaders({ projectId }),
+						).map(async ({ key }) => {
+							const attachment = await persistence.loadAttachment({
+								projectId,
+								key,
+								decodeMetadata: decodePersistedMediaMetadata,
+							});
+							if (!attachment) {
+								throw new Error("Persisted media attachment body is missing");
+							}
+							return attachment;
+						}),
+					)
+				: mediaAttachmentsForHydration(
+						await persistence.listAttachments({ projectId }),
+					);
 			const mediaAssets = await Promise.all(
 				attachments.map((attachment) =>
 					mediaAssetFromAttachment({

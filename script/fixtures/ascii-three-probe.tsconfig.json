@@ -1,0 +1,4 @@
+{
+	"extends": "./three-probe.tsconfig.json",
+	"include": ["./ascii-three-*.ts", "../../packages/*/src/types/**/*.d.ts"]
+}

@@ -1,4 +1,5 @@
 import type { EditorCore } from "..";
+import type { ProgrammaticFrameProvider } from "@opencut/editor-ports/host";
 import type { RootNode } from "../../services/renderer/nodes/root-node";
 import type { ExportOptions, ExportResult } from "../../export";
 import {
@@ -11,6 +12,7 @@ import type { SessionResources } from "../../editor/session/resources";
 import { SceneExporter } from "../../services/renderer/scene-exporter";
 import { buildScene } from "../../services/renderer/scene-builder";
 import { createTimelineAudioBuffer } from "../../media/audio";
+import { ProgrammaticAudioRuntime } from "../../media/programmatic-audio-runtime";
 import { formatTimecode } from "opencut-wasm";
 import { downloadBlob } from "../../utils/browser";
 import type { AssetResolver } from "@opencut/editor-ports";
@@ -21,6 +23,8 @@ import { SessionActivityGenerationError } from "../../editor/session/session-res
 import { MotionTextFontRuntime } from "../../services/renderer/motion-text/font-runtime";
 import type { MotionTextSequence } from "@opencut/editor-contracts";
 import { resolveMediaTimeRange } from "../../wasm";
+import { cancelPendingRenderFrames } from "../../services/renderer/cancel-tree";
+import { isRenderCancelledError } from "../../services/renderer/compositor/render-request";
 
 interface RendererActivityLifecycle {
 	getActivityGeneration(): number;
@@ -110,6 +114,8 @@ export class RendererManager {
 	private listeners = new Set<() => void>();
 	private readonly editor: EditorCore;
 	readonly assetResolver: AssetResolver;
+	readonly programmaticFrames?: ProgrammaticFrameProvider;
+	readonly programmaticAudio: ProgrammaticAudioRuntime;
 	readonly motionTextFontRuntime: MotionTextFontRuntime;
 
 	private readonly compositor: WasmCompositor;
@@ -117,9 +123,12 @@ export class RendererManager {
 	private readonly activityLifecycle: RendererActivityLifecycle;
 	private publicationGeneration = 0;
 	private readonly activeExporters = new Set<SceneExporter>();
+	private readonly audioPreparations = new Set<AbortController>();
+	private readonly audioPreparationDrains = new Set<Promise<unknown>>();
 	private previewRevision = 0;
 
 	constructor({
+		programmaticFrames,
 		editor,
 		resources,
 		assetResolver,
@@ -127,12 +136,15 @@ export class RendererManager {
 		videoCache,
 	}: {
 		editor: EditorCore;
+		programmaticFrames?: ProgrammaticFrameProvider;
 		resources: SessionResources;
 		assetResolver: AssetResolver;
 		assetLoader: RuntimeAssetLoader;
 		videoCache: VideoCache;
 	}) {
 		this.editor = editor;
+		this.programmaticFrames = programmaticFrames;
+		this.programmaticAudio = new ProgrammaticAudioRuntime(programmaticFrames);
 		this.assetResolver = assetResolver;
 		this.activityLifecycle = resolveActivityLifecycle(resources);
 		this.compositor = new WasmCompositor(resources);
@@ -194,6 +206,7 @@ export class RendererManager {
 	}
 
 	setRenderTree({ renderTree }: { renderTree: RootNode | null }): void {
+		if (this.renderTree !== renderTree) cancelPendingRenderFrames(this.renderTree);
 		this.renderTree = renderTree;
 		this.notify();
 	}
@@ -432,17 +445,35 @@ export class RendererManager {
 			if (shouldIncludeAudio) {
 				publication.guard.assertCurrent({ token: publication.token });
 				onProgress?.({ progress: 0.05 });
-				audioBuffer = await createTimelineAudioBuffer({
-					tracks,
-					mediaAssets,
-					startTime: exportRange.startTime,
-					duration: exportRange.duration,
-					resources: this.editor.resources,
-				});
+				const preparation = new AbortController();
+				const checkCancel = () => { if (onCancel?.()) preparation.abort(); };
+				const timer = this.editor.resources.setInterval({ handler: checkCancel, ms: 100 });
+				this.audioPreparations.add(preparation);
+				let operation: Promise<AudioBuffer | null> | undefined;
+				let drain: Promise<unknown> | undefined;
+				try {
+					checkCancel();
+					operation = createTimelineAudioBuffer({ tracks, mediaAssets,
+						startTime: exportRange.startTime, duration: exportRange.duration,
+						resources: this.editor.resources, programmaticAudio: this.programmaticAudio,
+						signal: preparation.signal });
+					// The export's await reports failures; lifecycle only waits for cleanup.
+					drain = operation.then(() => {}, () => {});
+					this.audioPreparationDrains.add(drain);
+					audioBuffer = await operation;
+					preparation.signal.throwIfAborted();
+				} catch (error) {
+					if (preparation.signal.aborted) return { success: false, cancelled: true };
+					throw error;
+				} finally {
+					timer.cancel(); this.audioPreparations.delete(preparation);
+					if (drain) this.audioPreparationDrains.delete(drain);
+				}
 				publication.guard.assertCurrent({ token: publication.token });
 			}
 
 			const scene = buildScene({
+				programmaticFrames: this.programmaticFrames,
 				tracks,
 				mediaAssets,
 				motionTextSequences: activeProject.motionTextSequences,
@@ -533,7 +564,7 @@ export class RendererManager {
 	async dispose(): Promise<void> {
 		const results = await Promise.allSettled([this.invalidatePublications()]);
 		const ownerResults = await Promise.allSettled([
-			Promise.resolve().then(() => this.compositor.dispose()),
+			Promise.resolve().then(() => this.compositor.close()),
 			Promise.resolve().then(() => this.motionTextFontRuntime.dispose()),
 			Promise.resolve().then(() => {
 				this.motionTextSequencePreview = null;
@@ -586,20 +617,24 @@ export class RendererManager {
 	}
 
 	private async invalidatePublications(): Promise<void> {
+		const compositorDrain = this.compositor.cancelAndDrain();
+		for (const preparation of this.audioPreparations) preparation.abort();
+		const audioDrain = this.programmaticAudio.invalidate();
+		cancelPendingRenderFrames(this.renderTree);
 		this.publicationGeneration += 1;
 		const exporters = [...this.activeExporters];
 		const results = await Promise.allSettled(
-			exporters.map(async (exporter, exporterIndex) => {
+			[compositorDrain, audioDrain, ...this.audioPreparationDrains, ...exporters.map(async (exporter, exporterIndex) => {
 				try {
 					await exporter.cancel();
 				} catch (cause) {
-					if (cause instanceof SessionActivityGenerationError) return;
+					if (cause instanceof SessionActivityGenerationError || isRenderCancelledError(cause)) return;
 					throw new RendererExporterTerminalError({
 						exporterIndex,
 						cause,
 					});
 				}
-			}),
+			})],
 		);
 		throwRendererLifecycleErrors({
 			results,

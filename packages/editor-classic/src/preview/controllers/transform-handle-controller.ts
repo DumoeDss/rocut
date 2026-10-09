@@ -299,9 +299,18 @@ export class TransformHandleController {
 	}
 
 	get selectedWithBounds(): ElementWithBounds | null {
+		return this.getSelectedWithBounds({ scene: this.deps.scene });
+	}
+
+	/** Render may supply its current snapshot without publishing uncommitted deps to events. */
+	getSelectedWithBounds({
+		scene,
+	}: {
+		scene: SceneReader;
+	}): ElementWithBounds | null {
 		return buildSelectedWithBounds({
-			selectedElements: this.deps.scene.getSelectedElements(),
-			elementsWithBounds: this.getVisibleElementsWithBounds(),
+			selectedElements: scene.getSelectedElements(),
+			elementsWithBounds: this.getVisibleElementsWithBounds(scene),
 		});
 	}
 
@@ -542,12 +551,14 @@ export class TransformHandleController {
 		pointerState.captureTarget.releasePointerCapture(pointerState.pointerId);
 	}
 
-	private getVisibleElementsWithBounds(): ElementWithBounds[] {
+	private getVisibleElementsWithBounds(
+		scene: SceneReader,
+	): ElementWithBounds[] {
 		return getVisibleElementsWithBounds({
-			tracks: this.deps.scene.getTracks(),
-			currentTime: this.deps.scene.getCurrentTime(),
-			canvasSize: this.deps.scene.getCanvasSize(),
-			mediaAssets: this.deps.scene.getMediaAssets(),
+			tracks: scene.getTracks(),
+			currentTime: scene.getCurrentTime(),
+			canvasSize: scene.getCanvasSize(),
+			mediaAssets: scene.getMediaAssets(),
 		});
 	}
 

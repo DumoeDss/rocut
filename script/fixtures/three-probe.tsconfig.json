@@ -1,0 +1,21 @@
+{
+	"extends": "./local-wasm.tsconfig.json",
+	"compilerOptions": {
+		"types": [],
+		"paths": {
+			"opencut-wasm": ["../../rust/wasm/pkg"],
+			"mediabunny": ["../../packages/editor-classic/node_modules/mediabunny"],
+			"@opencut/editor-contracts": ["../../packages/editor-contracts/src"],
+			"@opencut/editor-ports/host": [
+				"../../packages/editor-ports/src/host/index.ts"
+			],
+			"@opencut/editor-ports": ["../../packages/editor-ports/src"]
+		}
+	},
+	"include": [
+		"./three-scene-browser-probe.ts",
+		"./three-scene-export-probe.ts",
+		"./three-resource-browser-probe.ts",
+		"../../packages/*/src/types/**/*.d.ts"
+	]
+}

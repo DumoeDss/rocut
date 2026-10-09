@@ -1,0 +1,802 @@
+{
+  "version": 1,
+  "date": "2026-10-07",
+  "status": "native-host-browser-creator-attached-editor-export-verified",
+  "authoringFollowUp": {
+    "status": "passed-private-attached-editor",
+    "artifacts": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/distortion-editor/run-i8iyAE",
+    "evidenceSha256": "c0492c46c211ca2d73248d5b43df5c1069152b2240d168f9dc27b4da451c37aa",
+    "sourceCommit": "e791be658f63384b6b7c064c1a92dd1912246ada",
+    "sourceWorktreeClean": false,
+    "sourceManifestSha256": "c47310cd9bb5d404be8657ce9c0d1641cde8366c76d3b779491435485054bcc7",
+    "wasmSha256": "07484390feacd7941ad56f9a79ce7550b799993f216d8d0187be22bedcecf0a6",
+    "templates": {
+      "templates.mjs": "9065c27a8f385e5e1d7e2900623076360a6cac246c49256e724ca2c43c2f72fe",
+      "scene.ts": "52afe6cb7ab401dd0045aa72f12914a1066e1e34e657d71e815e9e8f50896e68",
+      "spatial.mjs": "26c77701439bfb57102454f2e9360f8210012c454936689b6425f94bc17c12a1",
+      "wave.mjs": "8d202bf65882c11f78e1f195fc944988540d1e4edfcbb69f0164fa4c1017c329"
+    },
+    "backend": "private-chromium-swiftshader",
+    "browser": "154.0.8037.98",
+    "checks": [
+      {
+        "name": "persisted distortion project loaded by actual attached editor",
+        "pass": true
+      },
+      {
+        "name": "three effects, center/impact time dependence, UI parameter edits and undo/redo checked against visible pixels",
+        "pass": true
+      },
+      {
+        "name": "reload preserves sources, all effects, animations, exact event groups and six preview samples",
+        "pass": true
+      },
+      {
+        "name": "180-frame six-second export with independent decoder and six edited-preview comparisons",
+        "pass": true
+      }
+    ],
+    "edits": [
+      {
+        "index": 0,
+        "key": "displacement",
+        "value": 0.12,
+        "originalValue": 0.075
+      },
+      {
+        "index": 1,
+        "key": "refraction",
+        "value": 0.14,
+        "originalValue": 0.08
+      },
+      {
+        "index": 2,
+        "key": "ringOpacity",
+        "value": 0.2,
+        "originalValue": 0.75
+      }
+    ],
+    "waveBudget": {
+      "maxEvents": 16,
+      "lifetimeSeconds": [
+        0.01,
+        60
+      ],
+      "maxTimeTicks": 9007199254740991,
+      "ticksPerSecond": 120000,
+      "exactEventTime": "age=0 is neutral; globals are keyframable, schedule is not"
+    },
+    "export": {
+      "width": 640,
+      "height": 360,
+      "fps": "30/1",
+      "frames": 180,
+      "durationSeconds": 6,
+      "codec": "vp9",
+      "bytes": 983135,
+      "sha256": "7e7be8f5ffa14668f8b86d792405b0e6e89239c4934f234e7280c79dfae8844b",
+      "decoder": "independent FFmpeg/FFprobe",
+      "metrics": [
+        {
+          "index": 0,
+          "frame": 15,
+          "localTicks": 60000,
+          "timelineTicks": 60000,
+          "screenshotBounds": {
+            "x": 379.53125,
+            "y": 105.828125,
+            "width": 680.9375,
+            "height": 382.140625
+          },
+          "meanRgbError": 1.990457175925926,
+          "activeError": 8.003514739229026,
+          "activePixels": 5880,
+          "contrastRatio": 0.9983944658613098
+        },
+        {
+          "index": 0,
+          "frame": 45,
+          "localTicks": 180000,
+          "timelineTicks": 180000,
+          "screenshotBounds": {
+            "x": 379.53125,
+            "y": 105.828125,
+            "width": 680.9375,
+            "height": 382.140625
+          },
+          "meanRgbError": 1.868732638888889,
+          "activeError": 7.487846275080318,
+          "activePixels": 5499,
+          "contrastRatio": 0.9987167740316033
+        },
+        {
+          "index": 1,
+          "frame": 75,
+          "localTicks": 60000,
+          "timelineTicks": 300000,
+          "screenshotBounds": {
+            "x": 379.53125,
+            "y": 105.828125,
+            "width": 680.9375,
+            "height": 382.140625
+          },
+          "meanRgbError": 1.9154166666666668,
+          "activeError": 9.621583544660467,
+          "activePixels": 4732,
+          "contrastRatio": 0.9989128952662107
+        },
+        {
+          "index": 1,
+          "frame": 105,
+          "localTicks": 180000,
+          "timelineTicks": 420000,
+          "screenshotBounds": {
+            "x": 379.53125,
+            "y": 105.828125,
+            "width": 680.9375,
+            "height": 382.140625
+          },
+          "meanRgbError": 1.9467013888888889,
+          "activeError": 10.289166224110462,
+          "activePixels": 3766,
+          "contrastRatio": 0.9984316328804119
+        },
+        {
+          "index": 2,
+          "frame": 135,
+          "localTicks": 60000,
+          "timelineTicks": 540000,
+          "screenshotBounds": {
+            "x": 379.53125,
+            "y": 105.828125,
+            "width": 680.9375,
+            "height": 382.140625
+          },
+          "meanRgbError": 1.9732407407407409,
+          "activeError": 7.749387755102041,
+          "activePixels": 6125,
+          "contrastRatio": 0.9997208101273306
+        },
+        {
+          "index": 2,
+          "frame": 165,
+          "localTicks": 180000,
+          "timelineTicks": 660000,
+          "screenshotBounds": {
+            "x": 379.53125,
+            "y": 105.828125,
+            "width": 680.9375,
+            "height": 382.140625
+          },
+          "meanRgbError": 1.961591435185185,
+          "activeError": 10.63442860095061,
+          "activePixels": 3226,
+          "contrastRatio": 0.9988710291910537
+        }
+      ]
+    },
+    "gates": {
+      "meanRgbErrorLessThan": 15,
+      "activeErrorLessThan": 15,
+      "activePixelsGreaterThan": 500,
+      "contrastRatio": [
+        0.8,
+        1.2
+      ],
+      "screenshotNormalization": "8x DOM-bound fractional-coordinate normalization, not fitted to exported video"
+    },
+    "visualInspection": "Six-sample contact sheet inspected: visible input deformation at both sample times; displacement, ripple and ring-control edit paths passed pixel/history checks.",
+    "expectedHttpFailures": [
+      {
+        "path": "/api/library/graph-editor-presets/user-presets",
+        "status": 404
+      },
+      {
+        "path": "/api/library/graph-editor-presets/user-presets",
+        "status": 404
+      }
+    ],
+    "expectedFrameCancellations": [],
+    "externalRequests": [],
+    "packageAndSkillValidation": "Real package-copy test and quick_validate passed after guidance routing update",
+    "installedPluginTested": false,
+    "electronTested": false
+  },
+  "abiFollowUp": {
+    "status": "passed-for-frozen-private-source-snapshot",
+    "additionalExport": "resolveHyperframesAudioFrameJson",
+    "oldAbiDeltaProof": {
+      "wrapperOldSetMatches": true,
+      "glueOldSetMatches": true,
+      "stableOldSetMatches": true,
+      "binaryDtsOldMatches": true,
+      "importsSame": true,
+      "wrapperOldBytesMatch": true,
+      "syncOldBytesMatch": true,
+      "publicDtsOldBytesMatch": true
+    },
+    "updatedPins": {
+      "dtsSha": "e6640ceae49ae4efa7a6af8c89ded8b0175900dbe60ec9df2d289999d81ff357",
+      "wrapperSha": "b084ead0bbbb5e049463cae61ef2c193179bda641532efcda0d443c34409f698",
+      "wasmDtsNormalizedSignature": "5796bce734fd68e8a85ec04c50842cc53cbc0234f2021b0f10d7fb36a17ea947",
+      "wasmDtsLineCount": 109,
+      "wrapperExportSignature": "a31cfe9d0416d9ff926b4d363abb404ec797986ec359a819027f7c76dfac4ede",
+      "wrapperExportCount": 87,
+      "bgExportSignature": "f3541f25bfcc76d03e434ee199f5493bd9bce904b0b6382a2396ccd761e33697",
+      "bgExportCount": 698,
+      "stableWasmExportSignature": "0dab2e13c19cded4da87713e270a8057ae7f54125adc64aa971c239a2286d318",
+      "stableWasmExportCount": 104
+    },
+    "syncEntrySha256": "2b83ba05fb4d17122ec7c7dff68e9f73ef5fd4498bc4ec097376eb56fcf720b1",
+    "contractSha256": "afb343cfc64cf35d5a43ddb10eea7b592afcf7f71e3ce9b4bee937e5f8c2080e",
+    "apiGatePassed": true,
+    "negativeControls": 27,
+    "positiveControls": 2,
+    "sourceGatePassed": true,
+    "pathGatePassed": true,
+    "initGatePassed": true,
+    "initScope": "The same unchanged binary passed Bun/Node initialization and the real migration chain in the preceding batch.",
+    "hyperframesContractTests": 3,
+    "notes": [
+      "Only exact generated hash/signature/count metadata was updated; validator code and mutation controls were unchanged.",
+      "Removing the one already-declared new audio export reproduces every old public declaration/wrapper/sync signature and stable/glue export set; imports remain unchanged.",
+      "A native test attempt in the concurrent canonical worktree encountered a transient missing audio envelope module. The existing HyperFrames interface tests passed in the coherent frozen private snapshot; concurrent audio development was not modified.",
+      "This reconciles build/ABI integration, not full native HyperFrames audio acceptance or installed-plugin state."
+    ]
+  },
+  "implementation": {
+    "displacement": "Seeded smooth lattice displacement with circular region, chromatic sampling and explicit numeric keyframes",
+    "waves": "Ripple and Force Field: bounded 16-event clip-local tick schedules; analytic radial refraction, signed superposition before sampling; optional Force Field ring/glow",
+    "waveAuthoring": "eventCount is an integer 0..16; active event groups require Time/X/Y/Amplitude; slot/count fields are non-keyframable; numeric global controls may animate; no wall clock or accumulated simulation"
+  },
+  "validation": {
+    "native": {
+      "waveUniforms": 2,
+      "waveContract": 5,
+      "waveGpu": 4,
+      "stylizedContract": 4,
+      "editorWaveParams": 3,
+      "optionalEffectParams": 3,
+      "gpuBackend": "vulkan",
+      "displacementEarlierBatch": 9
+    },
+    "bun": {
+      "tests": 8,
+      "assertions": 509,
+      "files": [
+        "wave.test.ts",
+        "wave-persistence.test.ts",
+        "displacement-persistence.test.ts",
+        "spatial.test.ts",
+        "stylized-catalog.test.ts"
+      ],
+      "displacementRejectedTransactions": 50,
+      "waveRejectedTransactions": 14
+    },
+    "typechecks": [
+      "spatial-probe.tsconfig.json",
+      "spatial-regression.tsconfig.json"
+    ],
+    "frontendLint": "wave.test.ts passed",
+    "creatorPackageTest": "passed after spatial guidance update",
+    "skillValidator": "passed with python -X utf8"
+  },
+  "fixes": [
+    "Editor authoring rejects fractional displacement seeds without modifying legacy effect rounding semantics.",
+    "Wave schedule validation runs on authored clip effects and effect layers before optional defaults.",
+    "Wave output with alpha rounding to zero in RGBA8 now clears RGB; original native transparent-edge assertion passed unchanged."
+  ],
+  "failedAttempts": [
+    {
+      "stage": "wave GPU",
+      "observed": "A changed pixel was [0,255,0,0] instead of canonical transparent black; fixed the RGBA8 zero-coverage cutoff, all 4 GPU cases then passed."
+    },
+    {
+      "stage": "private WASM compile",
+      "observed": "Concurrent editor-api lib export resolve_hyperframes_audio_frame_json lacked its dependency in the private snapshot; read-only copied its module closure and rebuilt successfully."
+    },
+    {
+      "stage": "WASM source gate",
+      "observed": "Three private dependency copies still held old generated WASM; verified real paths and synchronized only private generated files."
+    },
+    {
+      "stage": "Host diagnostic assertion",
+      "observed": "Missing displacement centerX/cellSize was correctly rejected by the earlier required-field validator; test now checks exact field and required error while retaining HTTP 409, revision and batch rollback checks."
+    }
+  ],
+  "remaining": [
+    "Creator helpers and private attached-editor undo/redo/reload/export are now verified in authoringFollowUp; installed-plugin availability still requires separate acceptance.",
+    "The initial ABI gate failure below is historical. abiFollowUp closes the exact snapshot metadata mismatch with unchanged gate rules; future concurrent source revisions require their own build checks.",
+    "No installed Creator/Electron, release, full MV, cross-GPU or performance acceptance.",
+    "No public WASM ABI was added for these effects: they use the existing catalog/resolver interface.",
+    "This batch's scope audit accepted Glass, Magnify, Displacement, Ripple and Force Field, moving the ledger from 9 to 14 V. Later batches are recorded in the plan; this was not full upstream equivalence or P7 completion."
+  ],
+  "artifacts": {
+    "wave": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/wave-effects/run-AvN5XX",
+    "displacement": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/displacement-effects/run-jWawln"
+  },
+  "browser": {
+    "wave": {
+      "ok": true,
+      "captures": 43,
+      "peakHash": "0549f5b31e2dc9f97493693b27c0672a558a2cd7cee16c78ac1cdf2d067d2a55",
+      "alpha": {
+        "partial": 3795,
+        "transparent": 47492,
+        "blendError": 0.9647058823529449
+      },
+      "interference": {
+        "maximumInterferenceError": 0,
+        "capacity": 16,
+        "rejectedSchedules": 6,
+        "finalSlotHash": "ee602b03fade5f760d45cce505794fc68619cc1bcac6627906faccb0e662beaf"
+      },
+      "coordinateOracle": {
+        "sampleTime": 60000,
+        "displacementPixels": 15.697705078124999,
+        "observations": [
+          {
+            "x": 383,
+            "y": 180,
+            "pixel": [
+              133,
+              90,
+              80,
+              255
+            ],
+            "expected": [
+              133,
+              90,
+              80,
+              255
+            ]
+          },
+          {
+            "x": 257,
+            "y": 180,
+            "pixel": [
+              80,
+              90,
+              80,
+              255
+            ],
+            "expected": [
+              80.30229492187499,
+              90,
+              80,
+              255
+            ]
+          },
+          {
+            "x": 320,
+            "y": 243,
+            "pixel": [
+              107,
+              130,
+              80,
+              255
+            ],
+            "expected": [
+              107,
+              129.697705078125,
+              80,
+              255
+            ]
+          }
+        ]
+      },
+      "video": {
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "frames": 6,
+        "localStart": 60000,
+        "bytes": 67886,
+        "metrics": [
+          {
+            "meanError": 2.0746082899305556,
+            "regionError": 4.082411151060684,
+            "regionPixels": 71479
+          },
+          {
+            "meanError": 2.294431423611111,
+            "regionError": 5.179889083479276,
+            "regionPixels": 57100
+          },
+          {
+            "meanError": 3.079677734375,
+            "regionError": 8.350245715529844,
+            "regionPixels": 42868
+          },
+          {
+            "meanError": 3.2825792100694446,
+            "regionError": 9.21561202169996,
+            "regionPixels": 34593
+          },
+          {
+            "meanError": 3.325900607638889,
+            "regionError": 9.75101219572409,
+            "regionPixels": 27004
+          },
+          {
+            "meanError": 3.3911436631944443,
+            "regionError": 10.667658429988233,
+            "regionPixels": 19830
+          }
+        ]
+      },
+      "checks": [
+        "independent fixed-time coordinate refraction oracle",
+        "finite spatial support",
+        "16-event budget and last-slot rendering",
+        "invalid/incomplete schedules reject in browser ABI",
+        "multi-event superposition and cancellation before sampling",
+        "pre-event/start/after-lifetime identity",
+        "repeat/reverse seeks",
+        "zero strength",
+        "Force Field ring/glow and source refraction",
+        "straight-alpha background parity",
+        "preview parity",
+        "trim-independent timing",
+        "JSON roundtrip",
+        "six-frame production WebM encode/decode with unchanged quality gates"
+      ],
+      "errors": [],
+      "externalRequests": [],
+      "browser": "154.0.8037.98",
+      "backend": "private Chromium WebGPU/SwiftShader, no Host/Electron",
+      "sourceCommit": "e791be658f63384b6b7c064c1a92dd1912246ada",
+      "sourceWorktreeClean": false,
+      "sourceManifestSha256": "3265150faeec978584fb83d97f634f3def98ce5cbd67695d86956509b242b0fc",
+      "wasmSha256": "07484390feacd7941ad56f9a79ce7550b799993f216d8d0187be22bedcecf0a6",
+      "independentDecode": {
+        "ok": true,
+        "decoder": "independent FFmpeg/FFprobe",
+        "metadata": {
+          "streams": [
+            {
+              "index": 0,
+              "codec_name": "vp9",
+              "codec_long_name": "Google VP9",
+              "profile": "Profile 0",
+              "codec_type": "video",
+              "codec_tag_string": "[0][0][0][0]",
+              "codec_tag": "0x0000",
+              "width": 640,
+              "height": 360,
+              "coded_width": 640,
+              "coded_height": 360,
+              "closed_captions": 0,
+              "film_grain": 0,
+              "has_b_frames": 0,
+              "sample_aspect_ratio": "1:1",
+              "display_aspect_ratio": "16:9",
+              "pix_fmt": "yuv420p",
+              "level": -99,
+              "color_range": "pc",
+              "color_space": "bt709",
+              "color_transfer": "iec61966-2-1",
+              "color_primaries": "bt709",
+              "refs": 1,
+              "r_frame_rate": "30/1",
+              "avg_frame_rate": "30/1",
+              "time_base": "1/1000",
+              "start_pts": 0,
+              "start_time": "0.000000",
+              "nb_read_frames": "6",
+              "disposition": {
+                "default": 1,
+                "dub": 0,
+                "original": 0,
+                "comment": 0,
+                "lyrics": 0,
+                "karaoke": 0,
+                "forced": 0,
+                "hearing_impaired": 0,
+                "visual_impaired": 0,
+                "clean_effects": 0,
+                "attached_pic": 0,
+                "timed_thumbnails": 0,
+                "captions": 0,
+                "descriptions": 0,
+                "metadata": 0,
+                "dependent": 0,
+                "still_image": 0
+              }
+            }
+          ],
+          "format": {
+            "filename": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa\\rocut-three-resources-VSD7L2\\.artifacts\\wave-effects\\run-AvN5XX\\spatial.webm",
+            "nb_streams": 1,
+            "nb_programs": 0,
+            "format_name": "matroska,webm",
+            "format_long_name": "Matroska / WebM",
+            "start_time": "0.000000",
+            "duration": "0.200000",
+            "size": "67886",
+            "bit_rate": "2715440",
+            "probe_score": 100,
+            "tags": {
+              "encoder": "Mediabunny"
+            }
+          }
+        },
+        "metrics": [
+          {
+            "frame": 0,
+            "meanRgbaError": 1.9338465711805555,
+            "regionError": 3.12436600042983,
+            "regionPixels": 62040,
+            "contrastRatio": 0.9990081700200583,
+            "activeError": 4.480887160331473,
+            "activePixels": 71479
+          },
+          {
+            "frame": 1,
+            "meanRgbaError": 2.1872265625,
+            "regionError": 4.029012194123905,
+            "regionPixels": 65168,
+            "contrastRatio": 1.0006788913597546,
+            "activeError": 5.7630823117338,
+            "activePixels": 57100
+          },
+          {
+            "frame": 2,
+            "meanRgbaError": 3.0088899739583335,
+            "regionError": 5.670001636795155,
+            "regionPixels": 65168,
+            "contrastRatio": 1.0005696965542346,
+            "activeError": 9.151589375136076,
+            "activePixels": 42868
+          },
+          {
+            "frame": 3,
+            "meanRgbaError": 3.2122515190972223,
+            "regionError": 6.031728251084377,
+            "regionPixels": 65168,
+            "contrastRatio": 1.0052364164384984,
+            "activeError": 10.058374044845296,
+            "activePixels": 34593
+          },
+          {
+            "frame": 4,
+            "meanRgbaError": 3.244486762152778,
+            "regionError": 5.558991120386284,
+            "regionPixels": 65168,
+            "contrastRatio": 1.0040065609366213,
+            "activeError": 10.90881597787982,
+            "activePixels": 27004
+          },
+          {
+            "frame": 5,
+            "meanRgbaError": 3.2792035590277777,
+            "regionError": 5.307369670185777,
+            "regionPixels": 65168,
+            "contrastRatio": 1.004865947248608,
+            "activeError": 11.925382417212976,
+            "activePixels": 19830
+          }
+        ],
+        "videoSha256": "e1d8e5ad8824b429f28041f93f1311958f00571035f094a17bbcc8d2041ee478",
+        "expectedSha256": "ec24c33bb601618e5825aedae24356732ff1c11011af024b8eac06df2452a125"
+      },
+      "visualInspection": "Contact sheet inspected: actual input deformation and the corresponding ring/chromatic changes visible"
+    },
+    "displacement": {
+      "ok": true,
+      "captures": 26,
+      "peakHash": "93c72feaed8b4f393dd413faf46f843202675dd955ee4b726c6c091b3e90e205",
+      "video": {
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "frames": 6,
+        "bytes": 57008,
+        "metrics": [
+          {
+            "meanError": 2.4342664930555555,
+            "regionError": 8.793324234051289,
+            "regionPixels": 30039
+          },
+          {
+            "meanError": 2.573527560763889,
+            "regionError": 9.262262750719245,
+            "regionPixels": 32789
+          },
+          {
+            "meanError": 2.970217013888889,
+            "regionError": 10.703509758093942,
+            "regionPixels": 33801
+          },
+          {
+            "meanError": 3.1981043836805556,
+            "regionError": 11.099348780857186,
+            "regionPixels": 35216
+          },
+          {
+            "meanError": 3.346267361111111,
+            "regionError": 11.401279680666843,
+            "regionPixels": 34071
+          },
+          {
+            "meanError": 3.395009765625,
+            "regionError": 11.358640743938627,
+            "regionPixels": 33587
+          }
+        ]
+      },
+      "checks": [
+        "moving center matches independently specified positions",
+        "reverse seek",
+        "outside circle identity at four trajectory points",
+        "seed pixel difference",
+        "chromatic dispersion pixel difference",
+        "preview parity",
+        "trim-independent effect trajectory",
+        "JSON roundtrip",
+        "zero displacement with nonzero dispersion",
+        "zero amount and zero radius",
+        "production WebM encode/decode with unchanged detail gates"
+      ],
+      "errors": [],
+      "externalRequests": [],
+      "browser": "154.0.8037.98",
+      "backend": "private Chromium WebGPU/SwiftShader, no Host/Electron",
+      "sourceCommit": "e791be658f63384b6b7c064c1a92dd1912246ada",
+      "sourceWorktreeClean": false,
+      "sourceManifestSha256": "3265150faeec978584fb83d97f634f3def98ce5cbd67695d86956509b242b0fc",
+      "wasmSha256": "07484390feacd7941ad56f9a79ce7550b799993f216d8d0187be22bedcecf0a6",
+      "independentDecode": {
+        "ok": true,
+        "decoder": "independent FFmpeg/FFprobe",
+        "metadata": {
+          "streams": [
+            {
+              "index": 0,
+              "codec_name": "vp9",
+              "codec_long_name": "Google VP9",
+              "profile": "Profile 0",
+              "codec_type": "video",
+              "codec_tag_string": "[0][0][0][0]",
+              "codec_tag": "0x0000",
+              "width": 640,
+              "height": 360,
+              "coded_width": 640,
+              "coded_height": 360,
+              "closed_captions": 0,
+              "film_grain": 0,
+              "has_b_frames": 0,
+              "sample_aspect_ratio": "1:1",
+              "display_aspect_ratio": "16:9",
+              "pix_fmt": "yuv420p",
+              "level": -99,
+              "color_range": "pc",
+              "color_space": "bt709",
+              "color_transfer": "iec61966-2-1",
+              "color_primaries": "bt709",
+              "refs": 1,
+              "r_frame_rate": "30/1",
+              "avg_frame_rate": "30/1",
+              "time_base": "1/1000",
+              "start_pts": 0,
+              "start_time": "0.000000",
+              "nb_read_frames": "6",
+              "disposition": {
+                "default": 1,
+                "dub": 0,
+                "original": 0,
+                "comment": 0,
+                "lyrics": 0,
+                "karaoke": 0,
+                "forced": 0,
+                "hearing_impaired": 0,
+                "visual_impaired": 0,
+                "clean_effects": 0,
+                "attached_pic": 0,
+                "timed_thumbnails": 0,
+                "captions": 0,
+                "descriptions": 0,
+                "metadata": 0,
+                "dependent": 0,
+                "still_image": 0
+              }
+            }
+          ],
+          "format": {
+            "filename": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa\\rocut-three-resources-VSD7L2\\.artifacts\\displacement-effects\\run-jWawln\\spatial.webm",
+            "nb_streams": 1,
+            "nb_programs": 0,
+            "format_name": "matroska,webm",
+            "format_long_name": "Matroska / WebM",
+            "start_time": "0.000000",
+            "duration": "0.200000",
+            "size": "57008",
+            "bit_rate": "2280320",
+            "probe_score": 100,
+            "tags": {
+              "encoder": "Mediabunny"
+            }
+          }
+        },
+        "metrics": [
+          {
+            "frame": 0,
+            "meanRgbaError": 1.8599750434027778,
+            "regionError": 5.485229959166129,
+            "regionPixels": 62040,
+            "contrastRatio": 1.0005832201108924,
+            "activeError": 8.5664746940089,
+            "activePixels": 30039
+          },
+          {
+            "frame": 1,
+            "meanRgbaError": 2.0201171875,
+            "regionError": 5.978317579179966,
+            "regionPixels": 65168,
+            "contrastRatio": 1.0016845783522061,
+            "activeError": 8.981680848251955,
+            "activePixels": 32789
+          },
+          {
+            "frame": 2,
+            "meanRgbaError": 2.453650173611111,
+            "regionError": 7.486977248547344,
+            "regionPixels": 65168,
+            "contrastRatio": 1.0062334810815778,
+            "activeError": 10.7387848485745,
+            "activePixels": 33801
+          },
+          {
+            "frame": 3,
+            "meanRgbaError": 2.6917599826388887,
+            "regionError": 8.185612570586791,
+            "regionPixels": 65168,
+            "contrastRatio": 1.0103792130409537,
+            "activeError": 11.280251400878388,
+            "activePixels": 35216
+          },
+          {
+            "frame": 4,
+            "meanRgbaError": 2.793823784722222,
+            "regionError": 8.306464317865618,
+            "regionPixels": 65168,
+            "contrastRatio": 1.0118965103813684,
+            "activeError": 11.674131470556583,
+            "activePixels": 34071
+          },
+          {
+            "frame": 5,
+            "meanRgbaError": 2.7904188368055554,
+            "regionError": 8.22262460103118,
+            "regionPixels": 65168,
+            "contrastRatio": 1.0081586840768992,
+            "activeError": 11.606494576274551,
+            "activePixels": 33587
+          }
+        ],
+        "videoSha256": "eccb3c389a52288f07ee48c3ddfe30af18c9ccf5f1f21d96f9d1629e036282ee",
+        "expectedSha256": "0264683a5e4f423fdbe611924a595fe7e91b8356bcf1acc0d57657a56ff2c3c5"
+      },
+      "visualInspection": "Contact sheet inspected: actual input deformation and the corresponding ring/chromatic changes visible"
+    }
+  },
+  "wasm": {
+    "bytes": 6959804,
+    "sha256": "07484390feacd7941ad56f9a79ce7550b799993f216d8d0187be22bedcecf0a6",
+    "rustc": "1.88.0",
+    "wasmPack": "0.13.1",
+    "sourceGate": "passed",
+    "pathGate": "passed",
+    "initGate": "passed",
+    "apiSurfaceGate": "failed",
+    "observedJsExports": 87,
+    "observedBinaryExports": 107,
+    "observedDeclarationLines": 109,
+    "recordedJsExports": 86,
+    "recordedStableBinaryExports": 103,
+    "recordedTrampolines": 3,
+    "recordedDeclarationLines": 108,
+    "concurrentAdditionalExport": "resolveHyperframesAudioFrameJson",
+    "scope": "Private generated artifact and three private dependency copies only; audio functionality is not accepted by these tests."
+  }
+}

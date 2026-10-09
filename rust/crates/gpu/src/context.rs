@@ -6,6 +6,8 @@ use std::cell::RefCell;
 #[cfg(all(feature = "wasm", target_arch = "wasm32"))]
 use wasm_bindgen::JsCast;
 
+use crate::surface_alpha::{AlphaMode, SurfaceTarget, premultiply_for_surface, select_alpha_mode};
+use crate::surface_presentation::SurfacePresentation;
 use crate::{FULLSCREEN_SHADER_SOURCE, GpuError};
 
 #[cfg(all(feature = "wasm", target_arch = "wasm32"))]
@@ -48,6 +50,7 @@ pub struct GpuContext {
     nearest_sampler: wgpu::Sampler,
     texture_sampler_bind_group_layout: wgpu::BindGroupLayout,
     blit_pipeline: wgpu::RenderPipeline,
+    surface_presentation: SurfacePresentation,
     supports_external_texture_copies: bool,
     /// The HTML canvas that the WebGL context is bound to. Only populated on the WebGL
     /// fallback path. Used by render_texture_via_gl_canvas to output frames on WebGL.
@@ -162,6 +165,8 @@ impl GpuContext {
             cache: None,
         });
 
+        let surface_presentation =
+            SurfacePresentation::new(&device, &texture_sampler_bind_group_layout, texture_format);
         let supports_external_texture_copies = adapter
             .get_downlevel_capabilities()
             .flags
@@ -178,6 +183,7 @@ impl GpuContext {
             nearest_sampler,
             texture_sampler_bind_group_layout,
             blit_pipeline,
+            surface_presentation,
             supports_external_texture_copies,
             #[cfg(all(feature = "wasm", target_arch = "wasm32"))]
             gl_canvas,
@@ -399,7 +405,13 @@ impl GpuContext {
             .create_command_encoder(&wgpu::CommandEncoderDescriptor {
                 label: Some("gpu-surface-blit-encoder"),
             });
-        self.encode_texture_blit_to_view(&mut encoder, texture, &target_view, "gpu-surface-blit");
+        self.encode_texture_presentation_to_view(
+            &mut encoder,
+            texture,
+            &target_view,
+            surface,
+            "gpu-surface-presentation",
+        )?;
         self.queue.submit([encoder.finish()]);
         surface_texture.present();
         Ok(())
@@ -427,17 +439,31 @@ impl GpuContext {
             return Err(GpuError::UnsupportedSurfaceFormat);
         }
 
+        let supported: Vec<_> = caps
+            .alpha_modes
+            .iter()
+            .copied()
+            .map(Self::alpha_mode)
+            .collect();
+        let selected = select_alpha_mode(&supported, self.surface_target())
+            .ok_or(GpuError::UnsupportedSurfaceAlphaMode)?;
+        let alpha_mode = match selected {
+            AlphaMode::Opaque => wgpu::CompositeAlphaMode::Opaque,
+            AlphaMode::PreMultiplied => wgpu::CompositeAlphaMode::PreMultiplied,
+            AlphaMode::PostMultiplied => wgpu::CompositeAlphaMode::PostMultiplied,
+            AlphaMode::Unspecified => caps
+                .alpha_modes
+                .first()
+                .copied()
+                .unwrap_or(wgpu::CompositeAlphaMode::Auto),
+        };
         Ok(wgpu::SurfaceConfiguration {
             usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
             format: self.texture_format,
             width,
             height,
             present_mode: wgpu::PresentMode::Fifo,
-            alpha_mode: caps
-                .alpha_modes
-                .first()
-                .copied()
-                .unwrap_or(wgpu::CompositeAlphaMode::Auto),
+            alpha_mode,
             view_formats: vec![],
             desired_maximum_frame_latency: 2,
         })
@@ -456,6 +482,45 @@ impl GpuContext {
             | wgpu::CurrentSurfaceTexture::Lost
             | wgpu::CurrentSurfaceTexture::Validation => Err(GpuError::UnsupportedSurfaceFormat),
         }
+    }
+
+    fn surface_target(&self) -> SurfaceTarget {
+        if !cfg!(all(feature = "wasm", target_arch = "wasm32")) {
+            SurfaceTarget::Native
+        } else if self.adapter.get_info().backend == wgpu::Backend::Gl {
+            SurfaceTarget::BrowserWebGl
+        } else {
+            SurfaceTarget::BrowserWebGpu
+        }
+    }
+
+    fn alpha_mode(mode: wgpu::CompositeAlphaMode) -> AlphaMode {
+        match mode {
+            wgpu::CompositeAlphaMode::Opaque => AlphaMode::Opaque,
+            wgpu::CompositeAlphaMode::PreMultiplied => AlphaMode::PreMultiplied,
+            wgpu::CompositeAlphaMode::PostMultiplied => AlphaMode::PostMultiplied,
+            _ => AlphaMode::Unspecified,
+        }
+    }
+
+    /// Converts straight textures only at the final presentation boundary.
+    pub fn encode_texture_presentation_to_view(
+        &self,
+        encoder: &mut wgpu::CommandEncoder,
+        texture: &wgpu::Texture,
+        target_view: &wgpu::TextureView,
+        surface: &wgpu::Surface<'_>,
+        label: &'static str,
+    ) -> Result<(), GpuError> {
+        let config = surface
+            .get_configuration()
+            .ok_or(GpuError::UnsupportedSurfaceAlphaMode)?;
+        let premultiply =
+            premultiply_for_surface(Self::alpha_mode(config.alpha_mode), self.surface_target())
+                .ok_or(GpuError::UnsupportedSurfaceAlphaMode)?;
+        self.surface_presentation
+            .encode(self, encoder, texture, target_view, premultiply, label);
+        Ok(())
     }
 
     pub fn encode_texture_blit_to_view(

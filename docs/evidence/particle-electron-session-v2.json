@@ -1,0 +1,514 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "source-integration-and-source-only-electron-video-verified-not-full-project-acceptance",
+	"ledger": {
+		"verified": 23,
+		"notAccepted": 12,
+		"particleObject": "N",
+		"liquid": "N"
+	},
+	"scope": "Actual isolated Electron particle source frames and Rust sampler feeding the production Rocut compositor and encoder in an outer Playwright Chromium browser. Six-frame source-only video; no installed plugin, shared application restart or deployment.",
+	"contract": {
+		"hostApiSourceVersion": "1.74.0",
+		"sdkPackageReleased": false,
+		"descriptor": {
+			"htmlFrameCapture": "v1",
+			"htmlFrameCaptureCapabilities": ["particle-surface-session-v2"]
+		},
+		"connectionVersion": 1,
+		"optionalConnectionCapability": {
+			"particleCaptureSession": {
+				"version": 2,
+				"protocol": "particleSurface-v1",
+				"path": "/v2/particle-capture"
+			}
+		},
+		"legacy": "Ordinary /v1/frame behavior retained. Missing v2 capability rejects particle capture before native window or sampler allocation.",
+		"owner": "Elftia owns grant/window/context/transport; Rocut Rust owns geometry policy, sampling and motion; TypeScript owns platform adapters and rendering.",
+		"authority": "Fixed particle endpoints; grant-owned session, exact Host, immutable root default execution context, no generic CDP passthrough, browser CORS or Cookie authority.",
+		"limits": {
+			"controlBytes": 65536,
+			"expressionBytes": 100663296,
+			"eventOrReplyBytes": 16777216,
+			"eventQueueCount": 8,
+			"eventQueueBytes": 16777216,
+			"logicalRetainedBytes": 67108864,
+			"pngBytes": 80000000,
+			"aggregateV1AndV2Windows": 2,
+			"particleSessionsPerGrant": 1,
+			"nativeAbsoluteFrameMs": 45000,
+			"nativeCleanupMs": 5000
+		},
+		"budgetBoundary": "Logical payload budget excludes process RSS, JavaScript/JSON/IPC copies, allocator overhead and decoded model/GPU allocations.",
+		"deadline": "Frame-service body admission, ordinary HTML and standalone Chromium stay at 15s. A structurally valid explicit Electron particle request may promote once to an absolute 45s from handle entry; expired/cancelled work cannot revive and cleanup is still awaited.",
+		"ownership": "Native slots remain owned until confirmed native destruction and job settlement; uncertain close is failure/quarantine, not silent capacity reuse."
+	},
+	"verification": {
+		"counting": "Suites overlap, especially the unchanged v1 tests and earlier adapter runs. Do not sum the listed counts as unique tests.",
+		"suites": [
+			{
+				"name": "Native implementation, queue and v1",
+				"passed": 14,
+				"evidence": "particle-electron-v2-native-evidence.json",
+				"scope": "CPU/mocked native plus real loopback broker"
+			},
+			{
+				"name": "Independent HTTP lifecycle and v1",
+				"passed": 40,
+				"newTests": 37,
+				"legacyTests": 3,
+				"evidence": "particle-session-independent-review.json",
+				"scope": "CPU/fake-native wire and ownership counterexamples"
+			},
+			{
+				"name": "Final adapter and real worker-core cleanup regression",
+				"passed": 48,
+				"assertions": 273,
+				"evidence": "particle-electron-v2-adapter-cleanup-recovery.json"
+			},
+			{
+				"name": "Outer absolute deadline",
+				"passed": 7,
+				"assertions": 26,
+				"evidence": "particle-frame-service-deadline-evidence.json"
+			},
+			{
+				"name": "Descriptor and no-hardcoded-tool regression",
+				"passed": 36
+			},
+			{
+				"name": "Rocut plugin producer",
+				"passed": 3
+			},
+			{
+				"name": "IPC contracts and plugin tool-host bridge",
+				"files": 6,
+				"passed": 104
+			}
+		],
+		"types": [
+			"plugin-types package tsc --noEmit --incremental false passed",
+			"Isolated SDK backend/renderer smoke passed",
+			"Full desktop tsc --noEmit --incremental false -p packages/desktop/tsconfig.lint.json passed after fixing new test headers union",
+			"Rocut adapter, frame-service transitive graph and source export fixture focused strict checks passed"
+		],
+		"lint": "Owned native/SDK/registration/adapter files passed; launcher passed explicit --no-ignore ESLint, without config weakening",
+		"failurePreservation": [
+			"Initial adapter run without private preload saw stale shared WASM missing an API; fixture preload changed, shared dependency did not",
+			"Initial full desktop typecheck caught new fixture test headers union; corrected before passing rerun",
+			"Existing unrelated quick-locate blank-line formatting remains untouched"
+		]
+	},
+	"runtime": {
+		"electronRoot": "C:/tmps/rocut-stylized-f6XU4z/particle-electron-v2-xMpfFW",
+		"exportRoot": "C:/tmps/rocut-stylized-f6XU4z/particle-c4-export-gayYtC",
+		"sourceProject": "C:/tmps/rocut-stylized-f6XU4z/particle-c4-persistence-AGMhEa/project",
+		"sourceBackend": "elftia-electron-particle-session-v2",
+		"wasmSha256": "328a2a4313812c356f28d74f27cfeaa10cad3a933e2c4f3de5ded20d8d98c221",
+		"frozenWasmBoundary": "Pinned private C3 snapshot; does not certify all current concurrent Rust checkout changes. Shared generated package not replaced.",
+		"media": {
+			"codec": "vp9",
+			"container": "WebM",
+			"width": 320,
+			"height": 240,
+			"frameCount": 6,
+			"rFrameRate": "30/1",
+			"averageFrameRate": "30/1",
+			"durationSeconds": 0.2,
+			"durationToleranceSeconds": 0.001,
+			"ffprobeLogEqualsSavedDecodeMetadata": true,
+			"browserPreviewEqualsExportModeReference": true,
+			"browserDecodedFrameTimestampsWithinOneMs": true,
+			"videoBytes": 20678,
+			"videoSha256": "a3137574f82c4efe7ecab15a50545ff1bc224c73029a2c8a91bddec82d41caa1",
+			"decodedRgbaBytes": 1843200,
+			"decodedRgbaSha256": "e5a26b06a10414f1b4a214cff8c27fc7a95ca177fe628e5412ef6ff7187040b6",
+			"artifactByteLengthsAndHashesIndependentlyVerified": 10
+		},
+		"pixels": {
+			"limits": {
+				"wholeFrameMeanRgbError": 12,
+				"referenceActiveMeanRgbError": 18,
+				"activeMask": "Any reference RGB channel > 8",
+				"thresholdRelaxationAllowed": false
+			},
+			"frames": [
+				{
+					"index": 0,
+					"activePixels": 11159,
+					"meanRgbError": 1.4311588541666667,
+					"activeMeanRgbError": 8.126713863249394,
+					"allBlackCounterfactualActiveMeanRgbError": 118.93042984735789
+				},
+				{
+					"index": 1,
+					"activePixels": 11186,
+					"meanRgbError": 1.5191927083333334,
+					"activeMeanRgbError": 8.654240419572083,
+					"allBlackCounterfactualActiveMeanRgbError": 118.85875201144287
+				},
+				{
+					"index": 2,
+					"activePixels": 11209,
+					"meanRgbError": 1.9491102430555556,
+					"activeMeanRgbError": 11.100930799655039,
+					"allBlackCounterfactualActiveMeanRgbError": 118.85000148690041
+				},
+				{
+					"index": 3,
+					"activePixels": 11268,
+					"meanRgbError": 2.2093272569444444,
+					"activeMeanRgbError": 12.320820021299255,
+					"allBlackCounterfactualActiveMeanRgbError": 118.7938409655662
+				},
+				{
+					"index": 4,
+					"activePixels": 11364,
+					"meanRgbError": 2.464253472222222,
+					"activeMeanRgbError": 13.652088466502406,
+					"allBlackCounterfactualActiveMeanRgbError": 118.85782588290508
+				},
+				{
+					"index": 5,
+					"activePixels": 11491,
+					"meanRgbError": 2.7455946180555557,
+					"activeMeanRgbError": 14.810112261770081,
+					"allBlackCounterfactualActiveMeanRgbError": 118.8468366547733
+				}
+			],
+			"previewExportRgbaEqual": true,
+			"edgeExclusion": false
+		},
+		"inputIntegrity": {
+			"originalAndCopyIndependentlyWalkedAndRehashed": true,
+			"originalAndCopyMatchThePreCaptureCopyManifestExactly": true,
+			"filesPerProject": 11,
+			"directoriesPerProject": 6,
+			"projectJsonSha256": "96672b702d66ea305126147ecdb10fa21f773ea12ba8e77af383b41e2216fa36",
+			"persistedSourceDeepEqualsSelectedClipSource": true,
+			"matchingSourceObjectsInOriginalProject": 1,
+			"sourceJsonSha256": "203721a08cd91130a5a3c0e4c3980e4d1fb20eecff16287fa8685c8349864020",
+			"unconsumedSavedOpacity": 0.85,
+			"exportInputFilesIndependentlyRehashed": 5511,
+			"exportInputChanges": [],
+			"nativeBuildInputsIndependentlyRehashed": 13,
+			"nativeBuildInputChanges": [],
+			"exportRunnerSha256": "e3007c900c93e84b8d8d57035c1ff89864ff125faae6c46ea5015d83fee9cc20",
+			"browserProbeSha256": "5c44e58e5f0df6ca1727e090f43f32fd1849d7dc0a44cb2d5e0b5a85d0004c42"
+		},
+		"lifecycle": {
+			"electronFixtureStatus": "closed",
+			"electronFixtureStopReason": "stop-file",
+			"supervisorStopReason": "control-file",
+			"electronDirectProcessExitCode": 0,
+			"electronDirectProcessClosed": true,
+			"electronForcedKillAttempted": false,
+			"electronSupervisorSourceStable": true,
+			"stdinEnded": true,
+			"stdinEofDidNotTerminateTheRun": true,
+			"nativeFactoryCalls": 18,
+			"nativeOpened": 18,
+			"nativeClosed": 18,
+			"nativeEvaluations": 18,
+			"nativeReplies": 18,
+			"nativeScreenshots": 18,
+			"nativeScreenshotSuccesses": 18,
+			"nativeFactoryFailures": 0,
+			"nativeCloseFailures": 0,
+			"remainingNativeWindows": 0,
+			"unconfirmedNativeCloses": 0,
+			"legacyCaptures": 0,
+			"nativeEvents": {
+				"context-created": 18,
+				"particle-request": 18
+			},
+			"threePrivateGrantConnectionFilesRemoved": true,
+			"hostExitCode": 0,
+			"hostDirectProcessClosed": true,
+			"hostForcedKillAttempted": false,
+			"hostObservedDirectChildren": 18,
+			"hostChildExecutable": "bun.exe",
+			"hostChildrenAllObservedClosed": true,
+			"hostChildTerminationSignal": "SIGKILL",
+			"hostChildrenAllExitZeroClaimed": false,
+			"perFrameChromeChildrenObserved": 0,
+			"outerPlaywrightBrowserClosed": true,
+			"ffprobeAndFfmpegDirectProcessesClosedExitZero": true,
+			"externalRequestsRecordedByOuterBrowser": []
+		},
+		"normalCloseAbortSignals": {
+			"observed": 18,
+			"meaning": "Normal native close abort-controller signals; not 18 capture failures"
+		},
+		"visualInspection": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-c4-export-gayYtC/decoded-frame-5.png",
+			"sha256": "8f1d3fd8dc520ecf829975b3516e16f2e69ea5b1e6eb5086cf8f2ab65725d851",
+			"reviewer": "coordinator",
+			"result": "Decoded final frame visibly contains the expected red/green/blue/yellow textured point quadrants on black. Qualitative visual review only, not an independent geometry or material oracle."
+		}
+	},
+	"legacyPreflight": {
+		"path": "C:/tmps/rocut-stylized-f6XU4z/particle-electron-v2-1vdWYy/native-preflight.json",
+		"scope": "Separate narrow preflight in the failed-export native fixture, not part of the successful 18-capture video run",
+		"v2CapabilityProbeStatus": 200,
+		"legacyGrantV2DeniedStatus": 403,
+		"legacyPng": {
+			"width": 16,
+			"height": 16,
+			"bytes": 120,
+			"sha256": "c4f1c105dfce1053cf44a71c77bfd95fdca81b815a16bb7e89df9df4ebedf3a6"
+		}
+	},
+	"fixes": [
+		{
+			"finding": "Expired phase started native side effect before checking remaining budget",
+			"resolution": "Accept a thunk, check absolute deadline before invoking native work",
+			"evidence": "particle-session-independent-review.json"
+		},
+		{
+			"finding": "Fixture/supervisor treated stdin EOF as explicit stop; retained evidence does not identify which process observed the causative EOF",
+			"resolution": "EOF is observed but only explicit data/stop-file controls termination",
+			"evidence": "particle-electron-fixture-eof-fix.json"
+		},
+		{
+			"finding": "Normal Rust worker disposal misclassified as active capture failure",
+			"resolution": "Set disposal-started before broker dispose; suppress only intentional-disposal failure-to-abort bridge while still awaiting and propagating disposal errors",
+			"evidence": "particle-electron-v2-adapter-cleanup-recovery.json"
+		},
+		{
+			"finding": "Outer 15s route truncated otherwise valid v2 particle capture",
+			"resolution": "One bounded Electron-particle-only promotion to absolute 45s; ordinary paths/body unchanged",
+			"evidence": "particle-frame-service-deadline-evidence.json"
+		}
+	],
+	"retainedFailures": [
+		{
+			"root": "C:/tmps/rocut-stylized-f6XU4z/particle-electron-v2-m8EpYI",
+			"classification": "Premature stop-signal startup attempt, zero native captures; not capture acceptance even though its old supervisor lifecycle record says passed",
+			"nativeScreenshots": 0,
+			"remainingWindows": 0,
+			"modifiedByReviewer": false
+		},
+		{
+			"root": "C:/tmps/rocut-stylized-f6XU4z/particle-c4-export-j0OxWo",
+			"classification": "Failed export; failure.json exists and no passed evidence.json exists. The coordinator diagnosed normal worker disposal being mistaken for operation abort and subsequently fixed that lifecycle issue.",
+			"modifiedByReviewer": false
+		},
+		{
+			"root": "C:/tmps/rocut-stylized-f6XU4z/particle-electron-v2-1vdWYy",
+			"classification": "Native lifecycle companion to the failed export, one screenshot only; not six-frame export acceptance",
+			"nativeOpened": 1,
+			"nativeClosed": 1,
+			"nativeScreenshots": 1,
+			"remainingWindows": 0,
+			"stopReason": "stop-file",
+			"electronExitCode": 0,
+			"modifiedByReviewer": false
+		}
+	],
+	"redaction": {
+		"publicTextArtifactsInspected": 27,
+		"scope": "Export/native top-level non-private JSON/log/JS bundles and export editor text assets; private rendezvous files, registries and browser profiles are not public artifacts",
+		"knownHostTokenAndEditorUrlExactMatchScan": "No matches",
+		"literalBearerCredentialOrTokenizedLoopbackUrlScan": "No matches",
+		"publicJsonCredentialKeys": [],
+		"nativeGrantTokensAvailableForExactMatchAtReviewTime": false,
+		"nativeGrantTokenExactMatchScan": "Not established: connection files had been correctly removed at shutdown, and the coordinator has no reliable pre-shutdown exact-scan record. Tokens were not recovered and the run was not repeated.",
+		"nativeRedactionClaim": "Limited to structural/public-field review and the inspected source's sanitized diagnostics; not an exact-match audit of the deleted native grant values"
+	},
+	"nativeFailureVerification": {
+		"date": "2026-10-09",
+		"status": "five-real-native-transport-failure-and-recovery-cases-passed",
+		"evidence": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-native-failure-7To620/particle-native-failure-evidence.json",
+			"sha256": "976130953053c05f65f5e62230361c73467e93aa1dbb7a33682ebd73148833fb"
+		},
+		"scope": "Real isolated Electron native transport failures and recovery only; not Rust particle computation, video export, installed-plugin or full editor acceptance",
+		"cases": [
+			{
+				"name": "cancel-in-flight-evaluate",
+				"status": "passed"
+			},
+			{
+				"name": "same-grant-cancel-recovery",
+				"status": "passed"
+			},
+			{
+				"name": "revoke-in-flight-evaluate",
+				"status": "passed"
+			},
+			{
+				"name": "shared-capacity-revoke-recovery",
+				"status": "passed"
+			},
+			{
+				"name": "secondary-grant-recovery",
+				"status": "passed"
+			}
+		],
+		"nativeOpened": 4,
+		"nativeClosed": 4,
+		"remainingWindows": 0,
+		"nativeCloseFailures": 0,
+		"supervisorAndElectronClosedExitZero": true,
+		"forcedKill": false,
+		"scriptTests": {
+			"passed": 7,
+			"scope": "Client/PNG/denial/token-scan helper tests, not seven additional live native cases"
+		},
+		"scriptSourceHashes": [
+			{
+				"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\elftia\\elftia\\scripts\\probe-electron-particle-failures.mjs",
+				"sha256": "e7e45b9a16088dbc6f8821b2f4bd9735146b5ac691e1379e4f8a8ea2f9eb4487"
+			},
+			{
+				"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\elftia\\elftia\\scripts\\particle-native-failure-client.fixture.mjs",
+				"sha256": "d03f9a59ca86c35e8fd2847d93e4ae039c48b903cd32a56c7b500bf17a170239"
+			},
+			{
+				"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\elftia\\elftia\\scripts\\particle-native-failure-cases.fixture.mjs",
+				"sha256": "18afa14075da66e0fd1d297280a0cee699e0b658a818fde46c7ffcf3735df456"
+			},
+			{
+				"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\elftia\\elftia\\scripts\\particle-native-failure-supervisor.fixture.mjs",
+				"sha256": "b2c489105cffbe5119322ab211695b99c76792771d01fca3046648f3bf37f163"
+			},
+			{
+				"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\elftia\\elftia\\scripts\\probe-electron-particle-fixture.mjs",
+				"sha256": "277482b13ebea32adcd0d77482ef77d9a34f8e5e12e5c77da7ad2c3887e427b0"
+			}
+		],
+		"independentCoordinatorReadback": {
+			"harnessSourcesRehashed": 5,
+			"nativeBuildInputsRehashed": 13,
+			"pngChecks": [
+				{
+					"path": "C:\\tmps\\rocut-stylized-f6XU4z\\particle-native-failure-7To620\\particle-electron-v2-VoB4g7/cancel-recovery.png",
+					"sha256": "466e4586543d16cf95e7fdfc4a4701f3f9c7a4b5e9f9542a7d86d61166924e70",
+					"width": 32,
+					"height": 24,
+					"pixels": 768,
+					"expectedRgba": [21, 63, 91, 255],
+					"differentBytes": 0,
+					"ffmpegExitCode": 0
+				},
+				{
+					"path": "C:\\tmps\\rocut-stylized-f6XU4z\\particle-native-failure-7To620\\particle-electron-v2-VoB4g7/shared-slot-recovery.png",
+					"sha256": "466e4586543d16cf95e7fdfc4a4701f3f9c7a4b5e9f9542a7d86d61166924e70",
+					"width": 32,
+					"height": 24,
+					"pixels": 768,
+					"expectedRgba": [21, 63, 91, 255],
+					"differentBytes": 0,
+					"ffmpegExitCode": 0
+				},
+				{
+					"path": "C:\\tmps\\rocut-stylized-f6XU4z\\particle-native-failure-7To620\\particle-electron-v2-VoB4g7/secondary-recovery.png",
+					"sha256": "466e4586543d16cf95e7fdfc4a4701f3f9c7a4b5e9f9542a7d86d61166924e70",
+					"width": 32,
+					"height": 24,
+					"pixels": 768,
+					"expectedRgba": [21, 63, 91, 255],
+					"differentBytes": 0,
+					"ffmpegExitCode": 0
+				}
+			],
+			"scope": "Read-only artifact checks plus new FFmpeg PNG decode; not a second Electron launch"
+		},
+		"tokenScan": {
+			"status": "passed",
+			"exactCredentials": 3,
+			"inspected": [
+				"particle-electron-v2-VoB4g7\\build-manifest.json",
+				"particle-electron-v2-VoB4g7\\cancel-recovery.png",
+				"particle-electron-v2-VoB4g7\\electron-counts.json",
+				"particle-electron-v2-VoB4g7\\electron-fixture.cjs",
+				"particle-electron-v2-VoB4g7\\revoke-primary",
+				"particle-electron-v2-VoB4g7\\secondary-recovery.png",
+				"particle-electron-v2-VoB4g7\\shared-slot-recovery.png",
+				"particle-electron-v2-VoB4g7\\stop",
+				"particle-electron-v2-VoB4g7\\stop-supervisor",
+				"particle-electron-v2-VoB4g7\\supervisor-evidence.json"
+			],
+			"capturedSupervisorStdoutStderr": true,
+			"evidenceRecord": true,
+			"excluded": "Private rendezvous/connection files and isolated browser profile/cache/temp/crash directories"
+		},
+		"notCovered": [
+			"renderer destruction / root context loss",
+			"screenshot-stage failure injection"
+		],
+		"notParticleOrVideoAcceptance": true
+	},
+	"nativeCrashFollowup": {
+		"evidence": "particle-native-failure-recovery.json",
+		"status": "renderer-crash-root-context-loss-and-screenshot-detach-recovery-passed",
+		"scope": "Separate real native transport run with three same-grant recoveries; does not alter the original source-only video or its redaction boundary. Renderer crash is not GPU-process crash."
+	},
+	"notExecuted": [
+		"Attached-editor parameter/history/reload acceptance for Particle Object",
+		"Complete saved-project timeline/clip-opacity export; the observed saved opacity 0.85 was not consumed here",
+		"Full 121-frame motion and long-engine performance",
+		"GPU-process crash and device loss; renderer/root-context/screenshot transport failures are covered in nativeCrashFollowup",
+		"Independent FFprobe per-frame timestamp enumeration; current per-frame timestamp checks are browser-side",
+		"Exact public-artifact scan for deleted native grant token values",
+		"Arbitrary descendant-process tree absence",
+		"Transparent-video alpha, audio and selected WebGPU/GPU portability",
+		"Complete runtime pack, plugin install, release and shared Elftia application acceptance"
+	],
+	"artifacts": [
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-electron-v2-seam-proposal.json",
+			"sha256": "9e8094f25d46756f4d56935af5dc37b07baefa4f3c6f2a3a86038a290e2e9a2a"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-electron-v2-wire-contract.json",
+			"sha256": "2cec42962eea266e20ddf127c12ca88c0d29e8b3c037d1afa6449f4e187e4c88"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-electron-v2-native-evidence.json",
+			"sha256": "2117262e49256a8ed1eb217428e8824c293c5a5c789327063a90652b140319ed"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-session-independent-review.json",
+			"sha256": "55e899f9cb357ff627dfc16b4ba9fd83a0cf0078f19c3e2f8dcaf676a6fa9383"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-electron-v2-adapter-verification.json",
+			"sha256": "6a60b4803bf50fff83ae95561583255fe3cab19cb52ec61c465221f8583fcb8b"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-electron-v2-adapter-cleanup-recovery.json",
+			"sha256": "6e1051a145d158bd170b3d7343094ccffd04578c761d4a147f599231f9f44635"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-frame-service-deadline-evidence.json",
+			"sha256": "926929f63ff802eae8819e68355243111f489f1196d32bb90e0068b1ce35c4eb"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-electron-fixture-eof-fix.json",
+			"sha256": "dd6b5036ef937bba6f89a0a25c0e697f4edf6127d72540bc2088fdfdc757c809"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-electron-v2-final-independent-review.json",
+			"sha256": "4364762dd021000c33c394aa13bf3879ccff7c47617c97c759874a2b3d93fdd7"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-c4-export-gayYtC/evidence.json",
+			"sha256": "358e8880b143364ca73454af31649ea80127acd9fb071dc53371a602131224be"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-electron-v2-xMpfFW/build-manifest.json",
+			"sha256": "4a3e8359c88b89894d14c1b67878795dd07d50e68e796eebd27ede5abf97ef81"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-electron-v2-xMpfFW/supervisor-evidence.json",
+			"sha256": "dd1a245fc2add907da011d461a1e8b633c856d94422e46ed7bb2a4c8a878beec"
+		},
+		{
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-electron-v2-xMpfFW/electron-counts.json",
+			"sha256": "9e9f3bfd557d42f8b8f834efac9a29649c11b1084c30bced619aae0141aee13f"
+		}
+	]
+}

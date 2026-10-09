@@ -5,6 +5,7 @@ import { TICKS_PER_SECOND } from "../../wasm";
 import { clampRetimeRate, shouldMaintainPitch } from "../../retime/rate";
 import type { AudioClipSource } from "../../media/audio";
 import { collectAudioClips } from "../../media/audio";
+import { collectProgrammaticAudio, programmaticAudioClips } from "../../media/programmatic-audio";
 import {
 	buildAudioGainAutomation,
 	hasAnimatedVolume,
@@ -45,6 +46,7 @@ export class AudioManager {
 	private preparedClipBuffers = new Map<string, Promise<AudioBuffer | null>>();
 	private decodedBuffers = new Map<string, Promise<AudioBuffer | null>>();
 	private playbackSessionId = 0;
+	private preparation: AbortController | null = null;
 	private lastIsPlaying = false;
 	private lastVolume = 1;
 	private playbackLatencyCompensationSeconds = 0;
@@ -180,6 +182,8 @@ export class AudioManager {
 
 		this.stopPlayback();
 		const sessionId = this.playbackSessionId;
+		const preparation = new AbortController();
+		this.preparation = preparation;
 		this.playbackLatencyCompensationSeconds = 0;
 
 		const tracks = this.editor.scenes.getActiveScene().tracks;
@@ -197,6 +201,15 @@ export class AudioManager {
 				if (sessionId !== this.playbackSessionId) return;
 			}
 			const clips = await collectAudioClips({ tracks, mediaAssets });
+			preparation.signal.throwIfAborted();
+			clips.push(...programmaticAudioClips(await collectProgrammaticAudio({
+				tracks, runtime: this.editor.renderer?.programmaticAudio, audioContext, signal: preparation.signal,
+			})));
+			// Finish source rendering and clip trimming before the preview clock runs.
+			for (const clip of clips) if (clip.buffer) {
+				await this.getPreparedClipBuffer({ clip });
+				preparation.signal.throwIfAborted();
+			}
 			if (sessionId !== this.playbackSessionId) return;
 			this.clips = clips;
 		} catch (error) {
@@ -262,6 +275,8 @@ export class AudioManager {
 	}
 
 	private stopPlayback(): void {
+		this.preparation?.abort();
+		this.preparation = null;
 		this.playbackClockState = "idle";
 		this.playbackSessionId += 1;
 		if (this.scheduleTimer) this.scheduleTimer.cancel();
@@ -530,6 +545,7 @@ export class AudioManager {
 		clip: AudioClipSource;
 	}): boolean {
 		return (
+			clip.buffer !== undefined ||
 			this.hasCurveRetime({ clip }) ||
 			hasAnimatedVolume({ element: clip.timelineElement }) ||
 			shouldMaintainPitch({
@@ -565,7 +581,7 @@ export class AudioManager {
 		clipGain.gain.cancelScheduledValues(startTimestamp);
 		clipGain.gain.setValueAtTime(clip.volume, startTimestamp);
 
-		if (!hasAnimatedVolume({ element: clip.timelineElement })) {
+		if (clip.timelineElement.type === "graphic" || !hasAnimatedVolume({ element: clip.timelineElement })) {
 			return;
 		}
 
@@ -649,6 +665,7 @@ export class AudioManager {
 	}: {
 		clip: AudioClipSource;
 	}): Promise<AudioBuffer | null> {
+		if (clip.buffer) return clip.buffer;
 		const existing = this.decodedBuffers.get(clip.sourceKey);
 		if (existing) {
 			return existing;
@@ -664,6 +681,7 @@ export class AudioManager {
 	}: {
 		clip: AudioClipSource;
 	}): Promise<AudioBuffer | null> {
+		if (!clip.file) throw new Error("Audio clip has no media file");
 		const audioContext = this.ensureAudioContext();
 		if (!audioContext) {
 			return null;
@@ -751,6 +769,7 @@ export class AudioManager {
 		clip: AudioClipSource;
 		sessionId: number;
 	}): Promise<AudioBufferSink | null> {
+		if (!clip.file) throw new Error("Audio clip has no media file");
 		if (sessionId !== this.playbackSessionId) return null;
 		const existingSink = this.sinks.get(clip.sourceKey);
 		if (existingSink) return existingSink;

@@ -1,0 +1,14 @@
+{
+	"extends": "./stylized-probe.tsconfig.json",
+	"include": [
+		"./spatial-browser-probe.ts",
+		"./magnify-browser-probe.ts",
+		"./displacement-browser-probe.ts",
+		"./wave-browser-probe.ts",
+		"./reveal-effects.ts",
+		"./sweep-scroll.ts",
+		"./mesh-scenes-browser.ts",
+		"./spatial-encoding-probe.ts",
+		"../../packages/*/src/types/**/*.d.ts"
+	]
+}

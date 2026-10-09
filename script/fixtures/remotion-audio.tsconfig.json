@@ -1,0 +1,8 @@
+{
+  "extends": "./html-host.tsconfig.json",
+  "include": [
+    "../../apps/cli/src/programmatic/**/*.ts",
+    "./remotion-audio-diagnostic.ts"
+  ],
+  "exclude": []
+}

@@ -68,6 +68,7 @@ export type {
 	MigrationOutcome,
 	MigrationProgress,
 	ProjectAttachment,
+	ProjectAttachmentHeader,
 	ProjectRecord,
 	ProjectStore,
 	ProjectStoreCapacity,

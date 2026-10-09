@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Full final UI particle project export</title>
+	</head>
+	<body>
+		<script type="module">
+			let probe;
+			try {
+				await import("opencut-wasm");
+				probe = await import("./particle-editor-export-probe.ts");
+				const { project, baseUrl } = globalThis.__particleEditorExportBoot;
+				globalThis.__particleEditorExportResult =
+					await probe.exportFinalUiProject(project, baseUrl);
+			} catch (error) {
+				globalThis.__particleEditorExportResult = {
+					error: String(error),
+					stack: error?.stack,
+					causes:
+						error instanceof AggregateError
+							? [...error.errors].map(String)
+							: [],
+					phase: probe?.editorExportProgress.phase,
+				};
+			}
+		</script>
+	</body>
+</html>

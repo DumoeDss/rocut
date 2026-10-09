@@ -1,0 +1,513 @@
+{
+  "version": 1,
+  "date": "2026-10-07",
+  "status": "circular-video-subset-authoring-and-attached-editor-verified",
+  "previousEvidence": "spatial-effects.json",
+  "scope": "Native Magnify HUD and explicit pulse keyframes, four Creator spatial templates, real Host persistence and private attached-editor video export; not full Glass/Magnify equivalence or installed/Electron acceptance",
+  "ledger": {
+    "verifiedVideoSubsets": 9,
+    "notFullyVerified": 26,
+    "change": 0,
+    "note": "Glass and Magnify remain N pending explicit full-scope review; their circular video subsets now have template and attached-editor evidence."
+  },
+  "implementation": {
+    "magnify": "Shares the native lens optical sampler; premultiplied circular HUD is composited after optics.",
+    "parameters": {
+      "hud": {
+        "min": 0,
+        "max": 1,
+        "default": 0.8
+      },
+      "pulse": {
+        "min": 0,
+        "max": 1,
+        "default": 0
+      },
+      "lineWidth": {
+        "min": 0.5,
+        "max": 8,
+        "default": 1.5
+      }
+    },
+    "timing": "Numeric, keyframable clip-local parameters with explicit static fallbacks. Effective zoom is min(8, zoom * (1 + 0.35 * pulse)). No seed, event queue, wall-clock accumulation or spring simulation.",
+    "templates": [
+      "glassImage",
+      "magnifyImage",
+      "asciiSpotlight",
+      "ditherSpotlight"
+    ],
+    "templateReturn": "{ source, effects, animations } with complete static parameter fallbacks and explicit ticks/keyframes"
+  },
+  "checks": {
+    "native": {
+      "passedTests": 14,
+      "breakdown": {
+        "magnifyGpu": 2,
+        "spatialContract": 5,
+        "spatialGpu": 3,
+        "stylizedContract": 4
+      },
+      "backend": "vulkan"
+    },
+    "bun": {
+      "passedTests": 12,
+      "assertions": 213,
+      "files": [
+        "spatial.test.ts",
+        "stylized.test.ts",
+        "stylized-catalog.test.ts",
+        "spatial-compatibility.test.ts",
+        "spatial-persistence.test.ts"
+      ]
+    },
+    "typechecks": [
+      "script/fixtures/spatial-probe.tsconfig.json",
+      "script/fixtures/spatial-regression.tsconfig.json"
+    ],
+    "scopedFrontendLint": true,
+    "creatorSkillValidator": "passed with Python -X utf8",
+    "creatorPackageCopy": "Passed the real agent-copy step; packaged template import exercises four spatial helpers, declared resources, trajectories and the four existing exports. No full Creator build or dist mutation.",
+    "scope": "Focused batches reported by the implementation session; not one full-suite execution."
+  },
+  "wasm": {
+    "fullGatePassed": true,
+    "bytes": 6897861,
+    "sha256": "b8b04c78109627546fa87ec91871a8edfc2d79df9fdc4ab95c7c8e9210423e78",
+    "publicJsExports": 86,
+    "stableBinaryExports": 103,
+    "trampolines": 3,
+    "imports": 612,
+    "declarationLines": 108,
+    "publicApiChanged": false,
+    "scope": "Private pinned build and private dependency copies only; later native Displacement/wave work is not included in this tested binary."
+  },
+  "magnifyBrowser": {
+    "ok": true,
+    "captures": 22,
+    "peakHash": "cd181eda230e7b9f944f92058992d9001a48c4730fbebb3161cf43eca8a58ccd",
+    "video": {
+      "width": 640,
+      "height": 360,
+      "fps": 30,
+      "frames": 6,
+      "bytes": 51427,
+      "metrics": [
+        {
+          "meanError": 2.1195160590277777,
+          "regionError": 5.273269435569755,
+          "regionPixels": 39125
+        },
+        {
+          "meanError": 2.053039279513889,
+          "regionError": 4.511668795433401,
+          "regionPixels": 42278
+        },
+        {
+          "meanError": 2.6446354166666666,
+          "regionError": 6.7011881606127774,
+          "regionPixels": 44214
+        },
+        {
+          "meanError": 2.5331065538194446,
+          "regionError": 5.007015129746174,
+          "regionPixels": 49417
+        },
+        {
+          "meanError": 2.9385677083333333,
+          "regionError": 6.680388745066418,
+          "regionPixels": 47126
+        },
+        {
+          "meanError": 3.0421907552083334,
+          "regionError": 7.235152445678762,
+          "regionPixels": 44289
+        }
+      ]
+    },
+    "checks": [
+      "shared lens optics",
+      "native HUD pixel difference",
+      "explicit pulse keyframe pixel difference",
+      "moving center matches independently specified positions",
+      "reverse seek",
+      "outside circle identity",
+      "preview parity",
+      "trim and JSON roundtrip",
+      "zero amount",
+      "production WebM encode/decode"
+    ],
+    "errors": [],
+    "externalRequests": [],
+    "browser": "154.0.8037.98",
+    "backend": "private Chromium WebGPU/SwiftShader, no Host/Electron",
+    "sourceCommit": "e791be658f63384b6b7c064c1a92dd1912246ada",
+    "sourceWorktreeClean": false,
+    "sourceManifestSha256": "a3808b441267b301ff551ad536ea03f420158cf086e869de36d636a0d90ffad0",
+    "wasmSha256": "b8b04c78109627546fa87ec91871a8edfc2d79df9fdc4ab95c7c8e9210423e78",
+    "independentDecode": {
+      "ok": true,
+      "decoder": "independent FFmpeg/FFprobe",
+      "videoSha256": "1c240e41075338804d57c426486851eb2f4ff9802d79ae4b210b9a35414f2525",
+      "expectedSha256": "6eeeedbfd25baf0ee81efe1f989afb3639c05a04136a4af1d808ef73d6c269de",
+      "metrics": [
+        {
+          "frame": 0,
+          "meanRgbaError": 1.626047092013889,
+          "regionError": 4.326719320868257,
+          "regionPixels": 62040,
+          "contrastRatio": 1.0010791454857246,
+          "activeError": 5.6399062832800855,
+          "activePixels": 39125
+        },
+        {
+          "frame": 1,
+          "meanRgbaError": 1.6186447482638888,
+          "regionError": 4.098141214502005,
+          "regionPixels": 65168,
+          "contrastRatio": 1.0023325500499005,
+          "activeError": 4.977663717930524,
+          "activePixels": 42278
+        },
+        {
+          "frame": 2,
+          "meanRgbaError": 2.1961577690972223,
+          "regionError": 6.184200834765529,
+          "regionPixels": 65168,
+          "contrastRatio": 1.009043599116327,
+          "activeError": 7.173270909666622,
+          "activePixels": 44214
+        },
+        {
+          "frame": 3,
+          "meanRgbaError": 1.9836371527777779,
+          "regionError": 4.603097634831001,
+          "regionPixels": 65168,
+          "contrastRatio": 1.0086191117541459,
+          "activeError": 4.961760797566289,
+          "activePixels": 49417
+        },
+        {
+          "frame": 4,
+          "meanRgbaError": 2.408738064236111,
+          "regionError": 6.235054014240118,
+          "regionPixels": 65168,
+          "contrastRatio": 1.005866063269425,
+          "activeError": 7.070463579906351,
+          "activePixels": 47126
+        },
+        {
+          "frame": 5,
+          "meanRgbaError": 2.4585340711805554,
+          "regionError": 6.426574392339798,
+          "regionPixels": 65168,
+          "contrastRatio": 1.0047235283383933,
+          "activeError": 7.617662775557513,
+          "activePixels": 44289
+        }
+      ]
+    },
+    "independentTrajectoryOracle": [
+      {
+        "ticks": 0,
+        "centerX": 0.2,
+        "centerY": 0.35,
+        "pulse": 0
+      },
+      {
+        "ticks": 8000,
+        "centerX": 0.4,
+        "centerY": 0.45,
+        "pulse": 1
+      },
+      {
+        "ticks": 20000,
+        "centerX": 0.7,
+        "centerY": 0.6,
+        "pulse": 0
+      }
+    ],
+    "activeErrorUpperBound": 15,
+    "visualInspection": "Six-frame contact sheet inspected; movement, HUD and pulse are visible."
+  },
+  "creatorTemplates": {
+    "spatial": {
+      "ok": true,
+      "templates": [
+        "glassImage",
+        "magnifyImage",
+        "asciiSpotlight",
+        "ditherSpotlight"
+      ],
+      "sources": [
+        {
+          "file": "templates.mjs",
+          "sha256": "bc2782f1139f717589981deb2931ba0ca5939b4633380538511d9d9cfcc7a52f"
+        },
+        {
+          "file": "spatial.mjs",
+          "sha256": "d075b0412acb0c53dedc27918670c813811e9bea4c08e0b37022b768cc5120b9"
+        }
+      ],
+      "originalInputUnavailable": true,
+      "restarts": 2,
+      "invalidUpdatesRejected": 5,
+      "checks": [
+        "live catalog matches required fields",
+        "four real transactions",
+        "trajectory and pulse keyframes",
+        "reopen",
+        "HUD edit persistence",
+        "invalid update atomicity"
+      ],
+      "scope": "Agent/source persistence only; no attached-editor rendering or export in this probe"
+    },
+    "existingRegression": {
+      "ok": true,
+      "templates": [
+        "retroMv",
+        "particleLogo",
+        "asciiThree",
+        "ditheredThree"
+      ],
+      "originalInputsUnavailable": true,
+      "restarted": true,
+      "archiveRebuilt": true,
+      "sources": [
+        {
+          "file": "templates.mjs",
+          "sha256": "bc2782f1139f717589981deb2931ba0ca5939b4633380538511d9d9cfcc7a52f"
+        },
+        {
+          "file": "scene.ts",
+          "sha256": "52afe6cb7ab401dd0045aa72f12914a1066e1e34e657d71e815e9e8f50896e68"
+        }
+      ],
+      "compiledDocumentSha256": "cbb0bff52245493038d194b1ced34df3c3602dfd097e3b4ac886f46a922b50f2",
+      "scope": "Rust frame validation, real Three compile, transaction, reopen and archived rebuild; template-specific visual/audio/UI E2E pending"
+    }
+  },
+  "attachedEditor": {
+    "ok": true,
+    "backend": "private-chromium-swiftshader",
+    "browser": "154.0.8037.98",
+    "editorTransport": "actual Host staticDir and authenticated URL, no Vite HTTP proxy",
+    "agentTransport": "direct authenticated Host HTTP and actual attached-editor task runner",
+    "checks": [
+      {
+        "name": "persisted spatial project loaded by actual attached editor",
+        "pass": true
+      },
+      {
+        "name": "four template trajectories, UI edits and undo/redo checked against visible pixels",
+        "pass": true
+      },
+      {
+        "name": "reload preserves all modified effects, keyframes and actual preview pixels",
+        "pass": true
+      },
+      {
+        "name": "240-frame export with independent decoder and four edited-preview comparisons",
+        "pass": true
+      }
+    ],
+    "edits": [
+      {
+        "template": "glassImage",
+        "parameter": "zoom",
+        "from": 1.2,
+        "to": 1.8,
+        "beforeSha256": "83287f5bc37556aa1c0fe2c650d24ad2c956e7b0cae32901e7c3c6735ce54edb",
+        "editedSha256": "c2c589919b10132a70439cbde7c2dbb45ff8845e4cbae3b1c2ec7ccc054b15f9"
+      },
+      {
+        "template": "magnifyImage",
+        "parameter": "hud",
+        "from": 0.8,
+        "to": 0.2,
+        "beforeSha256": "0db6d54df72181c1a5189fddd9caf2ffa8a996a1e0f0a152a6c7a871ce086cdc",
+        "editedSha256": "342aa4bed7e8e8095f2487d9b05239406371dc7e54c14c97a26f65d8accd3dca"
+      },
+      {
+        "template": "asciiSpotlight",
+        "parameter": "cellSize",
+        "from": 12,
+        "to": 20,
+        "beforeSha256": "b0774a65bd4b2cfcb3eba863deac9f470ccee70392b718bd572d14ca1f78b6b8",
+        "editedSha256": "1cfcbf6891e16eede45a0a80f785ab2ab3db0a644ef8dc842a66321fb919c133"
+      },
+      {
+        "template": "ditherSpotlight",
+        "parameter": "levels",
+        "from": 4,
+        "to": 8,
+        "beforeSha256": "d130df6b8b309cf807c1a6172661c5d7563e082c9e7259dc0caedabf06748ec2",
+        "editedSha256": "0127b70650fb990a35e30ffed6acf9716cd77f5a4b2e724add793e009bb65b4a"
+      }
+    ],
+    "video": {
+      "codec": "vp9",
+      "width": 640,
+      "height": 360,
+      "fps": 30,
+      "frames": 240,
+      "durationSeconds": 8,
+      "bytes": 1131620,
+      "includeAudio": false,
+      "sha256": "14d5b61df8b135bde69308b64321f2ab8ea2b623e6cca3d0314570ad4bf81230"
+    },
+    "independentDecode": {
+      "decoder": "independent FFmpeg/FFprobe",
+      "metrics": [
+        {
+          "index": 0,
+          "frame": 30,
+          "screenshotBounds": {
+            "x": 379.53125,
+            "y": 105.828125,
+            "width": 680.9375,
+            "height": 382.140625
+          },
+          "meanRgbError": 1.5705208333333334,
+          "activeError": 6.7674715351393795,
+          "activePixels": 3396,
+          "contrastRatio": 0.9984205707903004
+        },
+        {
+          "index": 1,
+          "frame": 90,
+          "screenshotBounds": {
+            "x": 379.53125,
+            "y": 105.828125,
+            "width": 680.9375,
+            "height": 382.140625
+          },
+          "meanRgbError": 1.6215914351851852,
+          "activeError": 6.35663732090454,
+          "activePixels": 3862,
+          "contrastRatio": 0.9985169126862409
+        },
+        {
+          "index": 2,
+          "frame": 150,
+          "screenshotBounds": {
+            "x": 379.53125,
+            "y": 105.828125,
+            "width": 680.9375,
+            "height": 382.140625
+          },
+          "meanRgbError": 1.8603298611111112,
+          "activeError": 5.011528938409161,
+          "activePixels": 8616,
+          "contrastRatio": 1.000980216681565
+        },
+        {
+          "index": 3,
+          "frame": 210,
+          "screenshotBounds": {
+            "x": 379.53125,
+            "y": 105.828125,
+            "width": 680.9375,
+            "height": 382.140625
+          },
+          "meanRgbError": 2.0292824074074076,
+          "activeError": 11.154940967168042,
+          "activePixels": 2061,
+          "contrastRatio": 0.9992516354911786
+        }
+      ],
+      "limits": {
+        "meanRgbErrorUpperBound": 15,
+        "activeErrorUpperBound": 15,
+        "activePixelsLowerBound": 500,
+        "contrastRatio": [
+          0.8,
+          1.2
+        ]
+      },
+      "screenshotNormalization": "Validate outward-rounded PNG size against recorded fractional DOM bounds; 8x bilinear upsample, crop measured content rectangle, then scale to 320x180. Transform is measured from DOM only, never fitted to encoded pixels.",
+      "filter": "scale=iw*8:ih*8:flags=bilinear,crop=5448:3057:4:7,scale=320:180",
+      "thresholdsRelaxed": false
+    },
+    "visualInspection": "Four-tile contact sheet inspected: glass optics, edited faint HUD, local ASCII and local dither remain visible.",
+    "externalRequests": [],
+    "retainedConsoleErrors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to render preview frame: AbortError: Programmatic frame cancelled",
+      "Failed to render preview frame: AbortError: Programmatic frame cancelled",
+      "Failed to render preview frame: AbortError: Programmatic frame cancelled",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "expectedHttpFailures": [
+      {
+        "path": "/api/library/graph-editor-presets/user-presets",
+        "status": 404
+      },
+      {
+        "path": "/api/library/graph-editor-presets/user-presets",
+        "status": 404
+      }
+    ],
+    "expectedFrameCancellations": [
+      "Failed to render preview frame: AbortError: Programmatic frame cancelled",
+      "Failed to render preview frame: AbortError: Programmatic frame cancelled",
+      "Failed to render preview frame: AbortError: Programmatic frame cancelled"
+    ],
+    "cancellationScope": "Only the exact typed cancellation message is classified after pixel/history/reload/export postconditions pass. The three messages remain known preview cancellation noise; no production logging fix or zero-error claim.",
+    "installedPluginTested": false,
+    "electronTested": false
+  },
+  "retainedFailures": [
+    {
+      "run": "magnify-effects/run-bsQ8Dh",
+      "status": "not-accepted-for-trajectory",
+      "reason": "Initial probe lacked centerX/centerY static fallbacks and did not prove center movement; visual inspection found a stationary center."
+    },
+    {
+      "run": "magnify-effects/run-NW7dqe",
+      "status": "negative-control-rejected",
+      "reason": "Independent position checks rejected the missing static-fallback fixture: Magnify trajectory did not reach 0.2,0.35. Explicit static fallbacks were then added; final run-TBF5hL passed."
+    },
+    {
+      "run": "spatial-editor/run-5qfIfH",
+      "status": "initial-checker-failed-retained-media-replay-passed",
+      "reason": "Naively scaling the outward-rounded screenshot produced active error 15.62811547426932 for Glass. Geometry-only normalization of the same retained screenshots/video passed, with unchanged quality thresholds.",
+      "replayReport": "spatial-editor/run-5qfIfH/aligned-preview-decode.json",
+      "replayReportSha256": "14863ac6b1b1d99977bed9be36af5efbda13caf281fd575eddb04a3c6710e683"
+    },
+    {
+      "run": "spatial-editor/run-abY9D4",
+      "status": "native-readback-attempt-rejected",
+      "reason": "WebGPU canvas readback differed from visible preview by 70.49558449074074; cleared-buffer readback was discarded, not accepted as evidence."
+    }
+  ],
+  "provenance": {
+    "sourceCommit": "e791be658f63384b6b7c064c1a92dd1912246ada",
+    "sourceWorktreeClean": false,
+    "magnifyManifestSha256": "a3808b441267b301ff551ad536ea03f420158cf086e869de36d636a0d90ffad0",
+    "attachedEditorManifestSha256": "507aa1afedd8dca27adbfbe8412a186ce6a44c89a7d0cf46f6a40ab68b03a993",
+    "toolchainLockSha256": "a5f51282b3cd63e4e00f887f5545f8fcb61009a82d0d66616938d03ddc89f88f",
+    "templates": {
+      "templates.mjs": "bc2782f1139f717589981deb2931ba0ca5939b4633380538511d9d9cfcc7a52f",
+      "scene.ts": "52afe6cb7ab401dd0045aa72f12914a1066e1e34e657d71e815e9e8f50896e68",
+      "spatial.mjs": "d075b0412acb0c53dedc27918670c813811e9bea4c08e0b37022b768cc5120b9"
+    },
+    "spatialDecoderSha256": "861521c598ba397d06846d927acfa63deb8c7999b5f1d276c092c8ed7303c4fc",
+    "editorDecoderSha256": "732222f4f4bae95a987a14c874d026529ee5c6a95595dfcb1988798816fe0d83",
+    "editorBuildReuse": "Prior private editor-dist reused only after renderer manifest and WASM hash checks."
+  },
+  "artifacts": {
+    "root": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts",
+    "magnify": "magnify-effects/run-TBF5hL",
+    "spatialTemplates": "spatial-templates/run-u295NG",
+    "existingTemplateRegression": "creator-stylized/run-Mo9AO3",
+    "attachedEditor": "spatial-editor/run-VMoc7p"
+  },
+  "remaining": [
+    "Full Glass coverage, Magnify stateful spring/impulse events and custom HUD semantics are not completed by explicit pulse keyframes.",
+    "Displacement, Ripple and Force Field are separate native integration work; this evidence does not establish their browser/Host/editor availability.",
+    "No installed Creator-to-Rocut UI, Electron, complete MV, cross-GPU, full codec matrix or performance acceptance.",
+    "Default WGL initialization failure, DX12 no-adapter result and earlier intermittent ASCII capture timeout remain unresolved.",
+    "The original fusion scenario was not rerun after extraction into stylized-fusion-run.mjs; this run verifies the new --spatial mode only.",
+    "No commit/push, release, shared dependency update, installed-plugin replacement or shared-app restart."
+  ]
+}

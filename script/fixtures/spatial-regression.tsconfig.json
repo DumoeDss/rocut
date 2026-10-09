@@ -1,0 +1,28 @@
+{
+	"extends": "./spatial-probe.tsconfig.json",
+	"compilerOptions": { "types": ["bun", "node"] },
+	"include": [
+		"./spatial-templates-probe.ts",
+		"./spatial-editor-host.ts",
+		"./distortion-editor-host.ts",
+		"./reveal-editor-host.ts",
+		"./sweep-scroll-editor-host.ts",
+		"./mesh-scenes-editor-host.ts",
+		"./shatter-editor-host.ts",
+		"./cloth-editor-host.ts",
+		"../../packages/editor-classic/src/effects/__tests__/spatial.test.ts",
+		"../../packages/editor-classic/src/effects/__tests__/wave.test.ts",
+		"../../packages/editor-classic/src/effects/__tests__/reveal.test.ts",
+		"../../apps/cli/src/__tests__/wave-persistence.test.ts",
+		"../../apps/cli/src/__tests__/reveal-persistence.test.ts",
+		"../../apps/cli/src/__tests__/sweep-scroll-persistence.test.ts",
+		"../../apps/cli/src/__tests__/mesh-scenes-persistence.test.ts",
+		"../../apps/cli/src/__tests__/shatter-persistence.test.ts",
+		"../../apps/cli/src/__tests__/cloth-persistence.test.ts",
+		"../../apps/cli/src/__tests__/displacement-persistence.test.ts",
+		"../../apps/cli/src/__tests__/spatial-compatibility.test.ts",
+		"../../packages/editor-classic/src/services/renderer/__tests__/export-video-bitrate.test.ts",
+		"../../packages/editor-classic/src/services/renderer/__tests__/scene-exporter-cancel.test.ts",
+		"../../packages/*/src/types/**/*.d.ts"
+	]
+}

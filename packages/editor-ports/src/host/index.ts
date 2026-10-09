@@ -18,6 +18,9 @@
 
 import type { EditorHostPorts } from "..";
 import type { DraftReviewPort } from "./draft-review";
+import type { ProgrammaticFrameProvider } from "./programmatic-frames";
+export type { ProgrammaticFrameProvider, ProgrammaticAudioData, ProgrammaticAudioIdentity } from "./programmatic-frames";
+export { isProgrammaticAudioIdentity } from "./programmatic-frames";
 export type {
 	DraftReviewDocument,
 	DraftReviewItem,
@@ -89,6 +92,8 @@ export interface EditorHostLinks {
  * port-bearing runtime code receives the complete Host through its session.
  */
 export interface EditorHostBase {
+	/** Absent on hosts without an isolated DOM rasterizer. Never a global singleton. */
+	programmaticFrames?: ProgrammaticFrameProvider;
 	/** Present only when this host supports reviewable agent drafts. */
 	draftReview?: DraftReviewPort;
 	/** The project the editor should open. Was `useParams().project_id`. */

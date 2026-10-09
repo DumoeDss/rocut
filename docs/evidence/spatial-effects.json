@@ -1,0 +1,419 @@
+{
+  "version": 1,
+  "date": "2026-10-07",
+  "status": "implemented-pixel-and-export-verified-authoring-ui-pending",
+  "implementation": "Native lens with shared circular region; optional local ASCII/retro-dither and existing numeric effect-keyframe trajectories",
+  "catalog": {
+    "lens": [
+      "amount",
+      "zoom",
+      "refraction",
+      "dispersion",
+      "centerX",
+      "centerY",
+      "radius",
+      "feather"
+    ],
+    "localStyling": [
+      "local",
+      "centerX",
+      "centerY",
+      "radius",
+      "feather"
+    ],
+    "radiusUnit": "fraction of shorter image side",
+    "centerUnit": "normalized width/height, upper-left origin",
+    "featherUnit": "fraction of radius"
+  },
+  "native": {
+    "passedTests": 21,
+    "breakdown": {
+      "spatialContract": 3,
+      "spatialGpu": 3,
+      "existingStylizedContract": 4,
+      "existingAsciiGpu": 2,
+      "existingMonoDitherGpu": 2,
+      "existingStylizedGpu": 1,
+      "library": 6
+    },
+    "gpuBackendForSpatial": "vulkan",
+    "failedAttempts": [
+      "Default backend enumeration hit a WGL instance-thread stack overflow before spatial assertions. Process exited 0xc00000fd.",
+      "An explicit dx12 diagnostic had no available adapter. Vulkan ran all three spatial GPU tests successfully."
+    ],
+    "checks": [
+      "coordinate-ramp pixel oracle for zoom",
+      "circular bounds on non-square images",
+      "outside-region exact identity",
+      "zero-radius and neutral identity",
+      "feather and half-strength blend",
+      "refraction and dispersion affect real input sampling",
+      "premultiplied interpolation rejects hidden transparent RGB",
+      "outside-texture samples are transparent",
+      "older raw ASCII/dither passes default to full-frame",
+      "malformed uniforms rejected"
+    ],
+    "scope": "Initial P7b native pixel/GPU evidence, before the compatibility/export follow-up below."
+  },
+  "typescript": {
+    "passedTests": 10,
+    "assertions": 138,
+    "scope": "Initial P7b checks before the follow-up; current integrated results are recorded under followUp.",
+    "scopedBrowserTypecheck": true,
+    "scopedFrontendLint": true,
+    "persistence": "Explicit lens params and centerX animation survive Host restart; invalid radius update rejected without mutation",
+    "initialPersistenceFailure": "Fixture omitted a display name and reopen filled the normal name default. Fixture now declares the name; exact readback passed."
+  },
+  "wasm": {
+    "fullGatePassed": true,
+    "bytes": 6893716,
+    "sha256": "c9f5cb938b7145399c77ba0b20ac7db8477a2a406bfe59ea226b0a26c2fa4798",
+    "publicJsExports": 86,
+    "stableBinaryExports": 103,
+    "trampolines": 3,
+    "imports": 612,
+    "declarationLines": 108,
+    "negativeControls": 27,
+    "positiveControls": 2,
+    "scope": "Private pinned build and private dependency copies only; includes seven existing parallel audio APIs plus video export policy. This is not audio feature acceptance."
+  },
+  "browser": {
+    "status": "passed",
+    "browser": "154.0.8037.98",
+    "backend": "private Chromium WebGPU/SwiftShader, no Host/Electron",
+    "errors": [],
+    "externalRequests": [],
+    "captures": 32,
+    "checks": [
+      "real input refraction/magnification/dispersion",
+      "three explicit keyframe trajectories",
+      "circular region/outside identity",
+      "reverse seek",
+      "preview/export",
+      "trim/JSON roundtrip",
+      "zero amount",
+      "layer alpha",
+      "real WebM encode/decode"
+    ],
+    "alpha": {
+      "partial": 11776,
+      "transparent": 54544,
+      "blendError": 0.9803921568627345
+    },
+    "video": {
+      "width": 640,
+      "height": 360,
+      "fps": 30,
+      "frames": 6,
+      "bytes": 55126,
+      "metrics": [
+        {
+          "meanError": 2.2768934461805554,
+          "regionError": 6.347403403403403,
+          "regionPixels": 41625
+        },
+        {
+          "meanError": 2.346201171875,
+          "regionError": 6.818206636388455,
+          "regionPixels": 40293
+        },
+        {
+          "meanError": 2.854900173611111,
+          "regionError": 8.305093704223863,
+          "regionPixels": 44146
+        },
+        {
+          "meanError": 2.915815972222222,
+          "regionError": 7.841815446413352,
+          "regionPixels": 44977
+        },
+        {
+          "meanError": 3.1763346354166666,
+          "regionError": 8.459409286372107,
+          "regionPixels": 45967
+        },
+        {
+          "meanError": 3.3849717881944446,
+          "regionError": 9.36227507512803,
+          "regionPixels": 45367
+        }
+      ]
+    },
+    "requiredActiveErrorUpperBound": 15,
+    "visualInspection": "Six-tile contact sheet inspected after the fixed export: local magnification, ASCII/dither boundaries and refracted/dispersion sampling remain visible"
+  },
+  "independentDecode": {
+    "ok": true,
+    "videoSha256": "2013132530d66b961af17228d264aee77e7e445d64b4c1793b3c28dfc44f138f",
+    "expectedSha256": "853088c4ec81ca84889e021dca47aead5ea818a693ff58b7a6f5a2708cecdec4",
+    "metrics": [
+      {
+        "frame": 0,
+        "meanRgbaError": 1.832783203125,
+        "regionError": 5.34941435632925,
+        "regionPixels": 62040,
+        "contrastRatio": 1.002551825398722,
+        "activeError": 6.941069069069069,
+        "activePixels": 41625
+      },
+      {
+        "frame": 1,
+        "meanRgbaError": 1.9230381944444443,
+        "regionError": 5.5094422620509045,
+        "regionPixels": 65168,
+        "contrastRatio": 1.003016112750318,
+        "activeError": 7.416871416871417,
+        "activePixels": 40293
+      },
+      {
+        "frame": 2,
+        "meanRgbaError": 2.438505859375,
+        "regionError": 7.272884442262051,
+        "regionPixels": 65168,
+        "contrastRatio": 1.0054917538008836,
+        "activeError": 8.856989685739743,
+        "activePixels": 44146
+      },
+      {
+        "frame": 3,
+        "meanRgbaError": 2.456617838541667,
+        "regionError": 6.763483100090023,
+        "regionPixels": 65168,
+        "contrastRatio": 1.000718618152543,
+        "activeError": 8.240574812311477,
+        "activePixels": 44977
+      },
+      {
+        "frame": 4,
+        "meanRgbaError": 2.7095713975694444,
+        "regionError": 7.596893158196251,
+        "regionPixels": 65168,
+        "contrastRatio": 1.0029500881971039,
+        "activeError": 9.111710574977701,
+        "activePixels": 45967
+      },
+      {
+        "frame": 5,
+        "meanRgbaError": 2.884721137152778,
+        "regionError": 8.301656232097553,
+        "regionPixels": 65168,
+        "contrastRatio": 1.0079502305033337,
+        "activeError": 10.17708172607108,
+        "activePixels": 45367
+      }
+    ],
+    "scope": "FFmpeg 6.0; full circular ROI and exact active-pixel mask gates both pass; thresholds unchanged"
+  },
+  "provenance": {
+    "sourceCommit": "e791be658f63384b6b7c064c1a92dd1912246ada",
+    "sourceWorktreeClean": false,
+    "sourceManifestSha256": "a8baf22d00fcd548da855cfde70b2457ae4197d2ff72db6622b4c91811cd11a6",
+    "decoderSha256": "861521c598ba397d06846d927acfa63deb8c7999b5f1d276c092c8ed7303c4fc"
+  },
+  "artifacts": {
+    "initialRun": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/spatial-effects/run-PbQxQB",
+    "retainedFailure": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/spatial-effects/run-1tKDgE",
+    "independentReport": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/spatial-effects/run-6kKq85/independent-region-decode.json",
+    "failedIndependentReport": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/spatial-effects/run-1tKDgE/independent-region-decode.json",
+    "encodingDiagnostic": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/spatial-encoding/run-Xr1GPD",
+    "acceptedRun": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/spatial-effects/run-6kKq85",
+    "asciiPersistence": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/ascii-three-persistence/run-1raMh5",
+    "creatorTemplates": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/creator-stylized/run-QM4K2h",
+    "intermediateAcceptedRun": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/spatial-effects/run-B3cveT"
+  },
+  "subsequentEvidence": {
+    "path": "magnify-spatial-authoring.json",
+    "scope": "Later native Magnify HUD/pulse, four Creator spatial templates and attached-editor edit/undo/redo/reload/240-frame export acceptance. Historical results and status above retain their original snapshot."
+  },
+  "remaining": [
+    "Full Glass coverage and Magnify stateful spring/impulse events remain incomplete; neither ledger row is promoted by the verified circular video subset.",
+    "Creator spatial guidance/templates and four-template attached-editor edit/undo/redo/reload/export now pass; see subsequentEvidence for exact scope, hashes and retained failures.",
+    "Three known typed preview-cancellation messages remain in the successful attached-editor log; they were not fixed or described as zero console errors.",
+    "No installed plugin, Electron, full MV, cross-GPU or performance acceptance.",
+    "Default WGL initialization failure and earlier ASCII capture timeout are unresolved; Vulkan success does not fix them.",
+    "No commit/push, release, shared dependency update, installed-plugin replacement or shared-app restart."
+  ],
+  "failedAttempt": {
+    "wasm": {
+      "fullGatePassed": true,
+      "bytes": 6774201,
+      "sha256": "56691bb4d3c69764689f17682ff0e6c0c43351419a38cb96d88207522d43a7b3",
+      "publicJsExports": 78,
+      "stableBinaryExports": 95,
+      "trampolines": 3,
+      "imports": 612,
+      "declarationLines": 100,
+      "scope": "Private fixture build and copies only"
+    },
+    "browser": {
+      "status": "failed-at-encoded-active-pixel-quality-gate",
+      "browser": "154.0.8037.98",
+      "backend": "private Chromium WebGPU/SwiftShader, no Host/Electron",
+      "errors": [],
+      "externalRequests": [],
+      "checksReachedBeforeExportFailure": [
+        "moving lens, local ASCII and local dither each change actual input pixels",
+        "repeat/reverse seek",
+        "exact outside circular-region identity",
+        "preview parity",
+        "trim-independent trajectory and JSON roundtrip",
+        "amount zero identity",
+        "glass optics and layer-alpha composite check"
+      ],
+      "browserActiveErrorLastFrame": 16.122644212753762,
+      "requiredActiveErrorUpperBound": 15,
+      "sample": {
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "frames": 6,
+        "quality": "very_high",
+        "codec": "vp9"
+      },
+      "visualInspection": "Six-tile contact sheet inspected: input, magnify, local ASCII, local dither, centered refraction/dispersion and shifted refraction/dispersion"
+    },
+    "independentDecode": {
+      "ok": false,
+      "videoSha256": "df810d9da7ec9869e24239d16cb19f6e32cb5fbbb13a6ca6ae72dcc20c347157",
+      "expectedSha256": "853088c4ec81ca84889e021dca47aead5ea818a693ff58b7a6f5a2708cecdec4",
+      "metrics": [
+        {
+          "frame": 0,
+          "meanRgbaError": 2.262279730902778,
+          "regionError": 5.9039060820975715,
+          "regionPixels": 62040,
+          "contrastRatio": 1.003596973111036,
+          "activeError": 7.567735735735735,
+          "activePixels": 41625
+        },
+        {
+          "frame": 1,
+          "meanRgbaError": 3.595268012152778,
+          "regionError": 10.540423725345773,
+          "regionPixels": 65168,
+          "contrastRatio": 1.0055212274030034,
+          "activeError": 13.242531787986334,
+          "activePixels": 40293
+        },
+        {
+          "frame": 2,
+          "meanRgbaError": 4.161491970486111,
+          "regionError": 10.94972992879941,
+          "regionPixels": 65168,
+          "contrastRatio": 1.0074828786366197,
+          "activeError": 12.901485978344583,
+          "activePixels": 44146
+        },
+        {
+          "frame": 3,
+          "meanRgbaError": 4.423649088541667,
+          "regionError": 10.706809067845159,
+          "regionPixels": 65168,
+          "contrastRatio": 1.0028210433619593,
+          "activeError": 12.922086103267596,
+          "activePixels": 44977
+        },
+        {
+          "frame": 4,
+          "meanRgbaError": 5.085414496527778,
+          "regionError": 12.581195269662002,
+          "regionPixels": 65168,
+          "contrastRatio": 1.0035726492327819,
+          "activeError": 14.895163921944004,
+          "activePixels": 45967
+        },
+        {
+          "frame": 5,
+          "meanRgbaError": 5.355767144097222,
+          "regionError": 13.65264649316638,
+          "regionPixels": 65168,
+          "contrastRatio": 1.0151172530235568,
+          "activeError": 16.567034775644558,
+          "activePixels": 45367
+        }
+      ],
+      "scope": "FFmpeg 6.0; both full circular ROI and exact active-pixel mask are evaluated. The active mask confirms last-frame quality failure."
+    },
+    "provenance": {
+      "sourceCommit": "e791be658f63384b6b7c064c1a92dd1912246ada",
+      "sourceWorktreeClean": false,
+      "sourceManifestSha256": "d17d380b68a46670dd92a4f3affd433f994a437506441e0fc4bb74977ac8a3f7",
+      "decoderSha256": "861521c598ba397d06846d927acfa63deb8c7999b5f1d276c092c8ed7303c4fc"
+    }
+  },
+  "followUp": {
+    "nativeTests": 23,
+    "nativeBreakdown": {
+      "editing": 5,
+      "optionalEffectParams": 3,
+      "videoExport": 3,
+      "spatialContract": 4,
+      "stylizedContract": 4,
+      "programmatic": 4
+    },
+    "bunTests": 21,
+    "bunTestFiles": [
+      "ascii-three-persistence.test.ts",
+      "spatial-persistence.test.ts",
+      "spatial-compatibility.test.ts",
+      "spatial.test.ts",
+      "stylized.test.ts",
+      "export-video-bitrate.test.ts",
+      "scene-exporter-cancel.test.ts",
+      "agent-editing.test.ts"
+    ],
+    "scope": "Final integrated WASM: 21 Bun cases / 194 assertions in one run across eight files. The cancellation wrapper also runs three isolated child cases. Earlier native GPU evidence remains historical; unchanged shaders were not rerun here.",
+    "typechecks": [
+      "script/fixtures/spatial-probe.tsconfig.json",
+      "script/fixtures/spatial-regression.tsconfig.json"
+    ],
+    "scopedFrontendLint": true,
+    "creatorTemplates": [
+      "retroMv",
+      "particleLogo",
+      "asciiThree",
+      "ditheredThree"
+    ],
+    "creatorTemplateChecks": [
+      "real compile",
+      "transaction",
+      "Host restart",
+      "original input unavailable",
+      "archived rebuild"
+    ],
+    "compatibility": "Only additive ASCII/retro-dither region controls are required:false. Legacy clip effects and effect layers persist, reopen and accept local controls; missing original controls and malformed optional values fail without changing project revision. Animated effect parameters require a static fallback.",
+    "fixtureCorrections": [
+      "Distinct track/clip IDs respect the shared entity namespace.",
+      "Explicit display names avoid normal reopen defaults changing the comparison.",
+      "Revision and range values use their declared branded types."
+    ],
+    "bunAssertions": 194,
+    "snapshotReconciliation": "Read-only copies of the concurrently added audio source API and its Source/build/resource dependency closure were included; current scoped canonical sources matched the private fixture byte-for-byte at final verification."
+  },
+  "encodingPolicy": {
+    "owner": "rust/crates/editor-api/src/video_export.rs",
+    "api": "resolveVideoExportJson",
+    "legacyPresets": "low/medium/high retain the previous resolution curve and codec efficiency; audio presets remain unchanged",
+    "veryHigh": "max(previous resolution curve, width * height * rational fps * 0.5 for AVC or 0.3 for VP9), rounded upward to 1000 bps",
+    "vp9SampleBitrate": 2074000,
+    "fileSizeConsequence": "very_high output can be larger, especially for detailed/high-frame-rate scenes",
+    "diagnosis": {
+      "identicalReferencePixels": true,
+      "legacyReplayReproducesFailure": true,
+      "requestedBitrates": [
+        893000,
+        1500000,
+        2000000,
+        4000000
+      ],
+      "browserLastFrameActiveErrors": [
+        16.122644212753762,
+        11.37180476263951,
+        9.688451958472017,
+        7.28672823858752
+      ],
+      "fixedProductionLastFrameBrowserError": 9.36227507512803,
+      "fixedProductionLastFrameFfmpegError": 10.17708172607108
+    }
+  }
+}

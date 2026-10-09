@@ -5,8 +5,10 @@ edition = "2024"
 
 [dependencies]
 bridge = { version = "0.1.0", path = "../bridge" }
+effects = { version = "0.1.0", path = "../effects" }
 serde = { version = "1.0.228", features = ["derive"] }
-serde_json = "1.0"
+serde_json = { version = "1.0", features = ["float_roundtrip"] }
+time = { version = "0.1.0", path = "../time" }
 wasm-bindgen = { version = "0.2.116", optional = true }
 
 [features]

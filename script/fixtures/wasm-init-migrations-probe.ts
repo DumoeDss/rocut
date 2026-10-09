@@ -7,6 +7,9 @@
  * `src/wasm`, whose module body calls `TICKS_PER_SECOND()` at evaluation time), so a wasm module
  * that will not initialize takes the whole chain down with it. TypeScript source, so bun only.
  */
+import { createRequire } from "node:module";
+import { pathToFileURL } from "node:url";
+
 const report: {
 	runtime: string;
 	currentProjectVersion: number | null;
@@ -22,7 +25,9 @@ const report: {
 };
 
 try {
-	const chain = await import("@opencut/editor-classic/storage/migrations");
+	// Resolve the public export from its actual consumer, not accidental root hoisting.
+	const consumer = createRequire(new URL("../../apps/cli/package.json", import.meta.url));
+	const chain = await import(pathToFileURL(consumer.resolve("@opencut/editor-classic/storage/migrations")).href);
 	report.currentProjectVersion = chain.CURRENT_PROJECT_VERSION;
 	report.transformers = chain.migrations.length;
 	report.firstTransformer = chain.migrations[0]?.constructor.name ?? null;

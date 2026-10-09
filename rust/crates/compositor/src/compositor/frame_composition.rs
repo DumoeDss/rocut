@@ -11,6 +11,7 @@ impl Compositor {
         encoder: &mut wgpu::CommandEncoder,
         frame: &FrameDescriptor,
         mut scene: wgpu::Texture,
+        prepared: &mut std::collections::VecDeque<effects::PreparedLiquidPass>,
     ) -> Result<wgpu::Texture, CompositorError> {
         for item in &frame.items {
             scene = match item {
@@ -20,6 +21,7 @@ impl Compositor {
                     frame,
                     &scene,
                     std::slice::from_ref(layer),
+                    prepared,
                 )?,
                 FrameItemDescriptor::SceneEffect { effect_pass_groups } => self
                     .apply_effect_groups(
@@ -29,6 +31,7 @@ impl Compositor {
                         frame.width,
                         frame.height,
                         effect_pass_groups,
+                        prepared,
                     )?,
                 FrameItemDescriptor::Transition {
                     outgoing,
@@ -40,8 +43,10 @@ impl Compositor {
                     }
                     // Composite each picture against the SAME backdrop, not against
                     // each other. This preserves clip blend modes, masks and alpha.
-                    let from = self.compose_layers(context, encoder, frame, &scene, outgoing)?;
-                    let to = self.compose_layers(context, encoder, frame, &scene, incoming)?;
+                    let from =
+                        self.compose_layers(context, encoder, frame, &scene, outgoing, prepared)?;
+                    let to =
+                        self.compose_layers(context, encoder, frame, &scene, incoming, prepared)?;
                     self.blend_textures(
                         context,
                         encoder,
@@ -68,10 +73,11 @@ impl Compositor {
         frame: &FrameDescriptor,
         base: &wgpu::Texture,
         layers: &[LayerDescriptor],
+        prepared: &mut std::collections::VecDeque<effects::PreparedLiquidPass>,
     ) -> Result<wgpu::Texture, CompositorError> {
         let mut scene = base.clone();
         for layer in layers {
-            let texture = self.render_layer(context, encoder, frame, layer)?;
+            let texture = self.render_layer(context, encoder, frame, layer, prepared)?;
             scene = self.blend_texture(
                 context,
                 encoder,

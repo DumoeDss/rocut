@@ -62,6 +62,23 @@ authority, project format and runtime list/read/decide protocol are unchanged.
 Consumers that only implement transport forwarding need no runtime migration.
 Do not cast an unvalidated unknown payload to bypass the boundary.
 
+### Additive programmatic picture transport (development tree)
+
+`EditorHostBase.programmaticFrames` optionally supplies a session-owned
+`ProgrammaticFrameProvider<Request = unknown, Resource = unknown>`. It returns an alpha-preserving PNG
+Blob and observes AbortSignal; it does not encode video or own timeline semantics.
+Hosts without this capability omit it and receive an explicit unavailable error
+when rendering HTML source clips. The payload remains generic so ports does not
+depend on editor-contracts; Classic and the Tool Host refine/revalidate requests.
+Existing host members and implementations remain unchanged. This additive API is
+not a published SDK patch; release versioning is still pending.
+
+Optional `loadResource({resource,signal})` supplies declared project-attachment
+bytes as a MIME-typed Blob. Classic verifies size/digest before Worker use;
+the platform validates ownership and metadata before reading. This is not a
+filesystem path or network-fetch API. Hosts may omit resource support and reject
+asset-backed sources explicitly while retaining self-contained Canvas support.
+
 ### Export inventory
 
 7 export entries (measurement: this manifest's `exports` map read at `0.3.0`, the

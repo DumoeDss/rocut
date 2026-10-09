@@ -1,0 +1,521 @@
+{
+  "version": 1,
+  "date": "2026-10-08",
+  "status": "fixture-verified-video-subsets",
+  "scope": [
+    "Bend straight-hinge A/B recipe transition",
+    "Grid radial rigid textured tiles",
+    "Hex Float regular pointy hexagonal textured tiles",
+    "Creator helper -> Host persistence -> real editor -> Rocut export"
+  ],
+  "limits": {
+    "ledger": {
+      "verifiedVideoSubsets": 21,
+      "notYetVerified": 14,
+      "total": 35
+    },
+    "dedicatedRecipeParameterUi": false,
+    "hostApplyEntersCommandManagerHistory": false,
+    "installedPluginTested": false,
+    "electronTested": false,
+    "crossGpuReliabilityEstablished": false,
+    "performanceAcceptance": false,
+    "transparentFinalMasterEncoding": false,
+    "notes": [
+      "Generators consume declared images, not arbitrary lower timeline video.",
+      "Bend composes recipe nodes, not native adjacent-clip handles.",
+      "Agent restore/reapply uses revision-checked source transactions; UI opacity undo is a separate attached-session check.",
+      "Grid tilt uses degrees; Hex tilt and Bend angle use radians.",
+      "Existing optional library 404 and explicit preview cancellation logs remain; successful verification does not mean error-free logs."
+    ]
+  },
+  "implementation": {
+    "rust": [
+      "rust/crates/editor-api/src/mv_recipe/mesh_model.rs",
+      "rust/crates/editor-api/src/mv_recipe/transition_bend.rs",
+      "rust/crates/editor-api/src/mv_recipe/grid.rs",
+      "rust/crates/editor-api/src/mv_recipe/hex_float.rs",
+      "rust/crates/editor-api/src/mv_recipe/validate.rs"
+    ],
+    "worker": "packages/editor-classic/src/services/renderer/programmatic/mv-mesh-renderer.ts",
+    "raster": "Rust owns geometry, time, depth order and shading. Worker triangle raster uses local highp rational UV planes at gl_FragCoord, with positive homogeneous divisors, premultiplied texture filtering and ONE/ONE_MINUS_SRC_ALPHA.",
+    "fixes": [
+      "Subpixel coverage-vertex snapping no longer changes texture UV interpolation; static holes and neutral shared edges are checked without exclusion masks.",
+      "Bend clip:null endpoints retain the direct image path; edge-on clipped A/B uses shared mesh coverage.",
+      "Raster budget includes retained parent output and completed from surfaces during right-child recursion; the 67,108,864-pixel cap was not relaxed.",
+      "Renderer releases the acquired output on failure."
+    ],
+    "budgets": {
+      "expandedPrimitives": 4096,
+      "gridPerTile": 2,
+      "hexPerTile": 4,
+      "bendDrawingOperations": 4,
+      "meshExtraRasterSurfaces": 4,
+      "rasterPixels": 67108864
+    }
+  },
+  "wasm": {
+    "sha256": "0dfafa0370437269ac51eac24cc847bf1c72633a6ba09bc5ff6a083a8d1f3e97",
+    "bytes": 7266634,
+    "rustc": "1.88.0",
+    "wasmPack": "0.13.1",
+    "gates": [
+      "source",
+      "paths",
+      "API surface",
+      "init"
+    ],
+    "publicJsExports": 87,
+    "stableBinaryExports": 104,
+    "compilerTrampolines": 3,
+    "imports": 612,
+    "newPublicExports": 0,
+    "privateGeneratedCopiesOnly": true
+  },
+  "validation": {
+    "native": {
+      "passed": 51,
+      "newIntegrationTests": 27,
+      "relatedRegressionTests": 24,
+      "suites": [
+        "mv_bend",
+        "mv_grid",
+        "mv_hex_float",
+        "mv_recipe",
+        "mv_composition",
+        "mv_transitions",
+        "mv_peel",
+        "mv_generators"
+      ]
+    },
+    "host": {
+      "tests": 2,
+      "assertions": 333,
+      "evidence": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/mesh-scenes-persistence/run-DNTaD1/evidence.json",
+      "reopenedRevisions": [
+        1,
+        2,
+        4
+      ],
+      "originalInputUnavailable": true,
+      "invalidAtomicTransactions": [
+        {
+          "name": "missing image",
+          "status": 409
+        },
+        {
+          "name": "undeclared hex image",
+          "status": 409
+        },
+        {
+          "name": "missing grid field",
+          "status": 409
+        },
+        {
+          "name": "unknown hex field",
+          "status": 409
+        },
+        {
+          "name": "grid tilt is degrees",
+          "status": 409
+        },
+        {
+          "name": "hex tilt is radians",
+          "status": 409
+        },
+        {
+          "name": "invalid grid gap",
+          "status": 409
+        },
+        {
+          "name": "invalid hex perspective",
+          "status": 409
+        },
+        {
+          "name": "grid primitive overflow",
+          "status": 409
+        },
+        {
+          "name": "hex primitive overflow",
+          "status": 409
+        },
+        {
+          "name": "expanded grid budget",
+          "status": 409
+        },
+        {
+          "name": "expanded hex budget",
+          "status": 409
+        },
+        {
+          "name": "hex extreme aspect budget",
+          "status": 409
+        },
+        {
+          "name": "mesh raster budget",
+          "status": 409
+        },
+        {
+          "name": "missing bend field",
+          "status": 409
+        },
+        {
+          "name": "bend angle is radians",
+          "status": 409
+        },
+        {
+          "name": "bend invalid direction",
+          "status": 409
+        },
+        {
+          "name": "bend missing side",
+          "status": 409
+        },
+        {
+          "name": "zero span",
+          "status": 409
+        },
+        {
+          "name": "invalid role",
+          "status": 409
+        }
+      ],
+      "maximumPrimitives": {
+        "grid": 4096,
+        "hexFloat": 4096
+      }
+    },
+    "types": {
+      "targetedConfigs": [
+        "script/fixtures/spatial-probe.tsconfig.json",
+        "script/fixtures/spatial-regression.tsconfig.json"
+      ],
+      "passed": true,
+      "negativeTypeChecks": 5,
+      "productionEslint": true,
+      "formatting": true,
+      "strictUtf8NoBom": true,
+      "wholeWorktreeTypecheck": "Not clean: existing/missing baseline declarations including bun:test, generated content collections and inert; canonical generated WASM declaration is older. Final targeted checks use the coherent private snapshot, not a claim that all concurrent work builds."
+    },
+    "creator": {
+      "helperTests": 7,
+      "realAgentResourceCopyTests": 1,
+      "skillQuickValidation": true,
+      "helper": "resources/agent/skills/html-video/assets/rocut-stylized/mesh-scenes.mjs",
+      "guide": "resources/agent/skills/html-video/references/rocut-mesh-scenes.md"
+    },
+    "browser": {
+      "evidence": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/mesh-scenes/run-cfwxdz/evidence.json",
+      "sourceManifestSha256": "b4ec8ceac30a0b4475dc65f414b35d1a1daf17b1ff13d3069930804e5928d03d",
+      "browser": "154.0.8037.98",
+      "backend": "private Chromium canvas-worker WebGL2 mesh; native Rocut export; no Host/Electron",
+      "externalRequests": [],
+      "captures": 154,
+      "snapshots": 95,
+      "sourceChecks": [
+        {
+          "label": "PNG a lossless coverage",
+          "pixels": 20736,
+          "coverage": 1,
+          "maxPremul": 0,
+          "maxAlpha": 0,
+          "meanPremul": 0,
+          "meanAlpha": 0
+        },
+        {
+          "label": "PNG b lossless coverage",
+          "pixels": 20736,
+          "coverage": 1,
+          "maxPremul": 0,
+          "maxAlpha": 0,
+          "meanPremul": 0,
+          "meanAlpha": 0
+        }
+      ],
+      "groups": [
+        {
+          "name": "bend",
+          "comparisons": 26,
+          "maxAlpha": 1,
+          "maxPremul": 1.7568627450980472,
+          "opaqueCrackFrames": 14,
+          "fractionalEdgeOn": {
+            "hinge": 0.37,
+            "pixelBoundary": 71.04,
+            "frame": 12,
+            "fullFrameExact": true
+          }
+        },
+        {
+          "name": "grid",
+          "comparisons": 28,
+          "maxAlpha": 1,
+          "maxPremul": 1.4823529411764724,
+          "transparent": 4128,
+          "partial": 8360,
+          "controlSensitivity": {
+            "center": 11043,
+            "wavelength": 14451,
+            "cycles": 13643,
+            "lift": 9159,
+            "tilt": 10105,
+            "gap": 9809,
+            "perspective": 9119,
+            "shading": 7851,
+            "density": 13457
+          },
+          "depthSensitive": 1364,
+          "perspectiveSensitive": 1952,
+          "completeUvSensitive": 4996
+        },
+        {
+          "name": "hex",
+          "comparisons": 9,
+          "maxAlpha": 1,
+          "maxPremul": 1.4431372549019557,
+          "transparent": 4128,
+          "partial": 8360,
+          "depthSensitive": 243,
+          "perspectiveSensitive": 752
+        }
+      ],
+      "exports": [
+        {
+          "name": "bend",
+          "ok": true,
+          "width": 384,
+          "height": 216,
+          "fps": 30,
+          "frames": 6,
+          "videoSha256": "2021ce09f1148cf9577bc98fe46952b8db3713fd02f3cc2504024f7a87322b61",
+          "oracleSha256": "d96ea04581077d6fbbee52a11abf235ffe6580a2e89739350ac1e27790ac71fa",
+          "maskSha256": "764c2f95132146eba7df794cb56f9b990a9402a78f9c58f634101f33cfaa24a3",
+          "previewErrorRange": [
+            2.045729648919753,
+            2.5088282455632718
+          ],
+          "oracleErrorRange": [
+            2.0316994144596614,
+            2.504286904120327
+          ],
+          "detailErrorRange": [
+            2.9686473350234768,
+            3.691160476169192
+          ]
+        },
+        {
+          "name": "bend-back",
+          "ok": true,
+          "width": 384,
+          "height": 216,
+          "fps": 30,
+          "frames": 6,
+          "videoSha256": "b3f8cdf5080c849c661ec3d6dc532928c9063b985c0daab522961d5a96ba6ca6",
+          "oracleSha256": "715a1f4f92104a0cac91019d2d20631fa7d6cc06ad198402188b16a7be3ba1f2",
+          "maskSha256": "202946516b7351e6ad1a68f94caf4f5e05df8a2835b8d24ac6e89b500e059e4a",
+          "previewErrorRange": [
+            2.250910252700617,
+            2.656687041859568
+          ],
+          "oracleErrorRange": [
+            2.241201279813845,
+            2.6363291123857673
+          ],
+          "detailErrorRange": [
+            3.278824981017464,
+            3.697561108389134
+          ]
+        },
+        {
+          "name": "grid",
+          "ok": true,
+          "width": 384,
+          "height": 216,
+          "fps": 30,
+          "frames": 6,
+          "videoSha256": "084b580ea91f799b990663e756377697d3f7af3c7417f50a88f757021d90eecf",
+          "oracleSha256": "2cb870cb27ce126f2065dfb67bf7b7b3d3845aafeac387673fc4ba93f9a603ce",
+          "maskSha256": "89585da8896d36ec0a4332aa0012ab62ff0530c6fcd9e9bb41cded86a2182b9f",
+          "previewErrorRange": [
+            1.7314422984182098,
+            2.7157298900462963
+          ],
+          "oracleErrorRange": [
+            1.5547972471493152,
+            2.4731984632658306
+          ],
+          "detailErrorRange": [
+            2.434647756462808,
+            4.3210398733551
+          ]
+        },
+        {
+          "name": "hex-float",
+          "ok": true,
+          "width": 384,
+          "height": 216,
+          "fps": 30,
+          "frames": 6,
+          "videoSha256": "d478eaa6b40500e3c0f35f7a9922885bcf8b342f422282d517633e8df54e33c3",
+          "oracleSha256": "3f42dcf698eeb4ec73f44d50c1a24ad5c6af48a3ba1f1a3f746f2a68d8f0eb92",
+          "maskSha256": "8320d5286bedb61289b27eeda3424b319a3665275bbc0a520ee692b432a8fefc",
+          "previewErrorRange": [
+            2.005539882330247,
+            3.5127344955632718
+          ],
+          "oracleErrorRange": [
+            1.7070482786718273,
+            2.9874770328447084
+          ],
+          "detailErrorRange": [
+            2.453930316169181,
+            4.516338095355589
+          ]
+        }
+      ],
+      "contactSheetVisuallyInspected": true,
+      "oracleCorrections": [
+        "Reference textures decode a fresh copy of the declared PNG for each fit, matching Worker input lifetime; PNG identity coverage has zero error. Reusing a previously drawn bitmap changed Chromium fractional downsampling (alpha 64 vs 96 in a standalone reproducer).",
+        "Grid neutral mid-span reference separates finite hard mesh coverage from fractional Canvas texture-clip antialiasing. Pixel-center exterior RGBA is cleared; full-frame comparison mask, holes, shared edges and original numeric gates are unchanged. Endpoints and Hex perimeter behavior are not changed."
+      ]
+    },
+    "editor": {
+      "evidence": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/mesh-scenes-editor/run-TvwYc7/evidence.json",
+      "sourceManifestSha256": "ef6f05f096589b8d126414d8c18c436e3406a161de182f6200174ac6817a5bc1",
+      "wasmSha256": "0dfafa0370437269ac51eac24cc847bf1c72633a6ba09bc5ff6a083a8d1f3e97",
+      "toolchainLockSha256": "a5f51282b3cd63e4e00f887f5545f8fcb61009a82d0d66616938d03ddc89f88f",
+      "reusedVerifiedRendererBuild": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa\\rocut-three-resources-VSD7L2\\.artifacts\\mesh-scenes-editor\\run-Useb9T\\temp\\editor-dist",
+      "checks": [
+        {
+          "name": "persisted mesh-scenes project loaded by actual attached editor",
+          "pass": true
+        },
+        {
+          "name": "three Creator meshes: source seek, parameter replacement, full inverse restore/reapply and unrelated clips preserved",
+          "pass": true
+        },
+        {
+          "name": "real Blending/Opacity input plus attached-session undo/redo/restore preserves full generator sources and every other clip",
+          "pass": true
+        },
+        {
+          "name": "disk save and editor reload preserve all mesh recipes and six edited preview samples",
+          "pass": true
+        },
+        {
+          "name": "180-frame six-second export independently decoded against six edited preview samples",
+          "pass": true
+        }
+      ],
+      "authoringMode": {
+        "parameterUi": false,
+        "parameterEntry": "Host recipe replacement",
+        "recipeReversal": "revision-checked restore/reapply; Host apply is not local history",
+        "previewHistory": "actual Blending/Opacity input and attached-session undo/redo"
+      },
+      "export": {
+        "codec": "vp9",
+        "width": 640,
+        "height": 360,
+        "fps": 30,
+        "seconds": 6,
+        "frames": 180,
+        "meanRgbErrorRange": [
+          0.7385127314814814,
+          0.814375
+        ],
+        "activeErrorRange": [
+          4.599376333497456,
+          6.725180255130338
+        ],
+        "gates": {
+          "meanRgbError": 12,
+          "activeError": 18
+        }
+      },
+      "restart": {
+        "ok": true,
+        "hostReopenedAfterEdits": true,
+        "revision": 22,
+        "clipIds": [
+          "mesh-scenes-0",
+          "mesh-scenes-1",
+          "mesh-scenes-2"
+        ],
+        "authoredTrackIds": [
+          "mesh-scenes-shots"
+        ],
+        "comparison": "complete clip and track projections by ID; authored track order; revision"
+      },
+      "expectedHttpFailures": [
+        {
+          "path": "/api/library/graph-editor-presets/user-presets",
+          "status": 404
+        },
+        {
+          "path": "/api/library/graph-editor-presets/user-presets",
+          "status": 404
+        }
+      ],
+      "expectedFrameCancellations": [
+        "Failed to render preview frame: AbortError: Programmatic frame cancelled",
+        "Failed to render preview frame: AbortError: Programmatic frame cancelled",
+        "Failed to render preview frame: AbortError: Programmatic frame cancelled"
+      ],
+      "externalRequests": [],
+      "contactSheetVisuallyInspected": true
+    }
+  },
+  "retainedFailures": [
+    {
+      "runs": [
+        "run-nQVQfM",
+        "run-OTV7M7"
+      ],
+      "parent": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/mesh-scenes",
+      "reason": "Bend static-alpha edges shifted by raster coverage quantization; 13,608 pixels matched the 129.6/129.625 UV drift prediction exactly."
+    },
+    {
+      "runs": [
+        "run-glD7A3"
+      ],
+      "parent": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/mesh-scenes",
+      "reason": "Initial identity-only fix left the same problem in neutral Grid; final local rational UV planes cover all mesh triangles."
+    },
+    {
+      "runs": [
+        "run-QxLW1R",
+        "run-43hvEU"
+      ],
+      "parent": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/mesh-scenes",
+      "reason": "Reference reused a warmed image instead of a fresh decoded declared PNG."
+    },
+    {
+      "runs": [
+        "run-hFshAn"
+      ],
+      "parent": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/mesh-scenes",
+      "reason": "Neutral Grid reference conflated texture clip antialiasing and finite hard geometry coverage."
+    },
+    {
+      "runs": [
+        "run-Useb9T"
+      ],
+      "parent": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/mesh-scenes-editor",
+      "reason": "Screenshot helper asserted canvas presence while the real preview was in its loading state. Presence now shares the existing bounded pixel-stability poll; no timeout, pixel gate or render behavior was relaxed."
+    }
+  ],
+  "commands": {
+    "browser": "node script/probe-mesh-scenes.mjs <absolute Chromium> <absolute FFmpeg directory>",
+    "editor": "ROCUT_FUSION_FFMPEG_DIR=<absolute FFmpeg directory>; node script/probe-stylized-fusion.mjs <Creator templates> <read-only Three toolchain> <absolute Chromium> --mesh-scenes",
+    "fixture": "Use the source-manifest-verified E: private fixture. Any cached editor distribution must pass source and WASM digest checks."
+  },
+  "release": {
+    "committed": false,
+    "pushed": false,
+    "published": false,
+    "installed": false,
+    "sharedDependenciesReplaced": false,
+    "sharedElftiaRestarted": false
+  }
+}

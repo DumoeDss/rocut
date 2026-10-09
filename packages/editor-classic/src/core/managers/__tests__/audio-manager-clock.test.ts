@@ -106,7 +106,7 @@ if (process.env.OPENCUT_AUDIO_CLOCK_TEST_ISOLATED !== "1") {
 				getTotalDuration: () => 24_000_000,
 			},
 			media: { subscribe: () => () => {}, getAssets: () => [] },
-			scenes: { getActiveScene: () => ({ tracks: {} }) },
+			scenes: { getActiveScene: () => ({ tracks: { main: { elements: [] }, overlay: [], audio: [] } }) },
 		};
 		const manager = new AudioManager(editor as never);
 		return {

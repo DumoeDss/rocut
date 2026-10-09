@@ -1436,7 +1436,8 @@ if (process.env.OPENCUT_SESSION_STATE_TEST_ISOLATED !== "1") {
 		});
 
 		test("suspend rejects an in-flight real renderer generation and resume renders freshly", async () => {
-			const { RootNode } = await import("../../../services/renderer/nodes/root-node");
+			const { RootNode } =
+				await import("../../../services/renderer/nodes/root-node");
 			const ownedRuntime = runtime();
 			const session = await createEditorSession({
 				host: createInMemoryHost({ projectId: "suspend-render" }),
@@ -1452,7 +1453,10 @@ if (process.env.OPENCUT_SESSION_STATE_TEST_ISOLATED !== "1") {
 			const compositor = (
 				renderer as unknown as {
 					compositor: {
-						runExclusive<T>(task: () => Promise<T>): Promise<T>;
+						runExclusive<T>(
+							task: (signal: AbortSignal) => Promise<T>,
+							options?: { signal?: AbortSignal },
+						): Promise<T>;
 					};
 				}
 			).compositor;
@@ -1463,26 +1467,41 @@ if (process.env.OPENCUT_SESSION_STATE_TEST_ISOLATED !== "1") {
 			});
 			let entered = false;
 			let first = true;
-			compositor.runExclusive = <T>(task: () => Promise<T>) =>
-				originalRunExclusive(async () => {
+			// eslint-disable-next-line opencut/prefer-object-params -- preserves the compositor's callback and optional cancellation arguments.
+			compositor.runExclusive = <T>(
+				task: (signal: AbortSignal) => Promise<T>,
+				options?: { signal?: AbortSignal },
+			) =>
+				originalRunExclusive(async (signal) => {
 					if (first) {
 						first = false;
 						entered = true;
 						await firstGate;
 					}
-					return task();
-				});
+					return task(signal);
+				}, options);
 
 			const operationStart = wasmTestControl.operations().length;
 			const staleRender = renderer.render({ node: tree, time: 0 });
+			const staleResult = staleRender.then(
+				() => null,
+				(error) => error,
+			);
 			for (let index = 0; index < 4 && !entered; index += 1) {
 				await Promise.resolve();
 			}
 			expect(entered).toBe(true);
-			await session.suspend();
-			expect(session.state).toBe("suspended");
+			let suspended = false;
+			const suspending = session.suspend().then(() => {
+				suspended = true;
+			});
+			await new Promise((resolve) => setTimeout(resolve, 0));
+			expect(suspended).toBe(false);
+			expect(wasmTestControl.operations().slice(operationStart)).toEqual([]);
 			releaseFirst();
-			await expect(staleRender).rejects.toThrow(/stale.*suspended/i);
+			await suspending;
+			expect(session.state).toBe("suspended");
+			expect((await staleResult)?.message).toMatch(/stale.*suspended/i);
 			expect(wasmTestControl.operations().slice(operationStart)).toEqual([]);
 
 			await session.resume();
@@ -1755,7 +1774,8 @@ if (process.env.OPENCUT_SESSION_STATE_TEST_ISOLATED !== "1") {
 		});
 
 		test("disposal during the first queued render rejects stale work without touching B", async () => {
-			const { RootNode } = await import("../../../services/renderer/nodes/root-node");
+			const { RootNode } =
+				await import("../../../services/renderer/nodes/root-node");
 			const runtimeA = runtime();
 			const runtimeB = runtime();
 			const sessionA = await createEditorSession({
@@ -1788,7 +1808,10 @@ if (process.env.OPENCUT_SESSION_STATE_TEST_ISOLATED !== "1") {
 			const compositorA = (
 				rendererA as unknown as {
 					compositor: {
-						runExclusive<T>(task: () => Promise<T>): Promise<T>;
+						runExclusive<T>(
+							task: (signal: AbortSignal) => Promise<T>,
+							options?: { signal?: AbortSignal },
+						): Promise<T>;
 					};
 				}
 			).compositor;
@@ -1798,22 +1821,37 @@ if (process.env.OPENCUT_SESSION_STATE_TEST_ISOLATED !== "1") {
 				releaseFirst = resolve;
 			});
 			let entered = false;
-			compositorA.runExclusive = <T>(task: () => Promise<T>) =>
-				originalRunExclusive(async () => {
+			// eslint-disable-next-line opencut/prefer-object-params -- preserves the compositor's callback and optional cancellation arguments.
+			compositorA.runExclusive = <T>(
+				task: (signal: AbortSignal) => Promise<T>,
+				options?: { signal?: AbortSignal },
+			) =>
+				originalRunExclusive(async (signal) => {
 					entered = true;
 					await firstGate;
-					return task();
-				});
+					return task(signal);
+				}, options);
 			const staleRender = rendererA.render({ node: tree, time: 0 });
+			const staleResult = staleRender.then(
+				() => null,
+				(error) => error,
+			);
 			for (let index = 0; index < 4 && !entered; index += 1) {
 				await Promise.resolve();
 			}
 			expect(entered).toBe(true);
-			const reportA = await sessionA.dispose();
-			expect(reportA.gpuResource).toEqual({ created: 0, released: 0 });
+			let disposed = false;
+			const disposing = sessionA.dispose().then((report) => {
+				disposed = true;
+				return report;
+			});
+			await new Promise((resolve) => setTimeout(resolve, 0));
+			expect(disposed).toBe(false);
 			expect(runtimeB.runtimeGpu.liveHandles()).toEqual([handleB]);
 			releaseFirst();
-			await expect(staleRender).rejects.toThrow(/disposed/i);
+			const reportA = await disposing;
+			expect(reportA.gpuResource).toEqual({ created: 0, released: 0 });
+			expect((await staleResult)?.message).toMatch(/disposed/i);
 			await rendererB.render({ node: tree, time: 1 });
 			expect(editorB.renderer.getCompositorHandle()).toBe(handleB);
 			await sessionB.dispose();

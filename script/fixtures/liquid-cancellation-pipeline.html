@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Liquid production cancellation probe</title>
+	</head>
+	<body>
+		<script type="module">
+			import { runLiquidCancellationPipeline } from "./liquid-cancellation-pipeline.ts";
+			globalThis.__liquidCancellation = await runLiquidCancellationPipeline();
+		</script>
+	</body>
+</html>

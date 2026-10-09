@@ -1,0 +1,2674 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "particle-static-glb-and-liquid-video-subsets-accepted",
+	"ledger": {
+		"verified": 25,
+		"notAccepted": 10,
+		"liquid": "V",
+		"particleObject": "V"
+	},
+	"currentMilestones": {
+		"liquidRendering": "Native/WASM gates, WebGL raw texture and RGBA8 presentation, timeline and synthetic six-frame decode verified",
+		"liquidAuthoring": "Real Host persistence, editor parameter/history/reload and same edited project official six-frame export with independent decode verified",
+		"liquidCancellation": "New private WASM: task-yielded physical-step cancellation, genuine production preview/export recovery and close drain verified; see liquid-render-cancellation.json for limits",
+		"particlePublication": "Real Rust policy getter, standalone package and current-source canonical ABI gates verified",
+		"particleTransport": "C2 production Chromium capture now uses the real particle broker and byte-bound Rust worker; transport-seam negatives remain separately identified",
+		"notIntegrated": [
+			"Single-solver-step interruption, fixed cancellation latency and cross-request checkpoint caching (physical-step-boundary cancellation is verified)",
+			"Installed plugin/full runtime pack, GPU-process/device-loss and selected WebGPU acceptance",
+			"Broader material, image/SVG shape and interaction inputs; particle-specific authoring UI"
+		],
+		"history": "Earlier verification sections, boundaries and notExecuted arrays describe their original runs. Later named sections and currentMilestones record closure; C7 accepts only the explicit static GLB Particle video subset. Liquid render-cancellation evidence now closes section 8.1 for the bounded grid-fluid video subset, also V; the historical UI was not rerun on the new WASM.",
+		"particleCompilation": "C1 explicit Rust/TS capability, exact sampler execution bytes and full policy archive identity verified; real compile/archive/rebuild passed on pinned Bun 1.2.18",
+		"particleCapture": "C2 actual compile/archive/rebuild and Three/Rust/Chromium GPU PNG chain verified; two same-frame PNGs identical, next pose moves particles; cleanup, cancellation and worker crash fail closed",
+		"particleMaterialMotion": "C3 frozen Rust/WASM motion, base-color nearest texture evaluation, Host-owned time/seed and genuine Chromium PNG verified",
+		"particleCreator": "C3 particleThree template/material/motion and C4 archives/persistence verified; C7 real Chromium editor generic opacity/history/reload and the same saved project complete121-frame video passed after additive UI-reference geometry correction.",
+		"particleElectron": "C5 optional capture-session v2, actual Electron source frames with Rust sampling, six-frame source-only Rocut video and independent FFmpeg/artifact review verified",
+		"particleSavedProjectVideo": "C6 bounded windows verified saved canvas/opacity/start/trim with negative controls; C7 complete121-frame1920x1080 same-UI-project video decoded, six predeclared UI frames compared by fixed gates.",
+		"particleNativeRecovery": "Real native cancellation/revocation plus renderer/root-context/screenshot-stage failure recovery verified in separate isolated fixtures; not GPU-process/device-loss or installed UI acceptance."
+	},
+	"liquidCancellationVerification": {
+		"date": "2026-10-09",
+		"status": "bounded-liquid-video-subset-accepted",
+		"evidence": "docs/evidence/liquid-render-cancellation.json",
+		"wasmSha256": "75047aecea9be1edba673c8387e17c52d4687d82ca397951e32bbe2f2dd36b4f",
+		"scope": "Request-local physical-step cancellation, preparation, preview/capture/export recovery, tracked timer/native-handle release and copy-mode publication; combines earlier Host/UI evidence without claiming a full new-WASM UI rerun.",
+		"boundaryInputs": 448,
+		"pipelineInputs": 1834,
+		"video": {
+			"width": 96,
+			"height": 64,
+			"fps": 30,
+			"frames": 3,
+			"codec": "vp9",
+			"sha256": "8ad61295126c82426e8df1f2ee0f13a1e0938cabe99802487a429086a1a310db"
+		},
+		"trackedTimers": {
+			"created": 216,
+			"released": 216,
+			"live": 0
+		},
+		"nativeReleaseCalls": 1,
+		"independentReviews": [
+			"C:/tmps/rocut-stylized-f6XU4z/liquid-cancellation-review-axdtya.json",
+			"C:/tmps/rocut-stylized-f6XU4z/liquid-cancellation-scope-review-v1-m7Qk2.json"
+		],
+		"limits": [
+			"Lossy thresholds do not reject every adjacent-frame substitution or swap.",
+			"VP9 yuv420p does not certify alpha-preserving video.",
+			"No single-solver-step interruption, latency bound, hardware WebGPU, whole-process resource-zero or installed runtime claim."
+		]
+	},
+	"particleEditorProjectVerification": {
+		"date": "2026-10-09",
+		"status": "static-glb-video-subset-accepted",
+		"evidence": "docs/evidence/particle-editor-project-export.json",
+		"nativeFaultEvidence": "docs/evidence/particle-native-failure-recovery.json",
+		"videoSha256": "556833f49da3930c5300f929890daba3a1475027307337afadb47fc6b1459451",
+		"frameCount": 121,
+		"pixelComparedFrames": [0, 15, 30, 60, 75, 120],
+		"uiRevision": 7,
+		"opacity": 0.55,
+		"originalFailedVideoRunRetained": true,
+		"scope": "Actual Chromium editor generic opacity/history/reload; same saved project with Electron v2 source capture and Rocut composition/encoding; additive fixed-gate independent decode against integer-aligned full visible UI.",
+		"notInstalledPlugin": true
+	},
+	"particleElectronCaptureVerification": {
+		"date": "2026-10-09",
+		"status": "source-only-electron-video-verified-not-full-project",
+		"evidence": "docs/evidence/particle-electron-session-v2.json",
+		"independentReview": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-electron-v2-final-independent-review.json",
+			"sha256": "4364762dd021000c33c394aa13bf3879ccff7c47617c97c759874a2b3d93fdd7"
+		},
+		"sourceVideo": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-c4-export-gayYtC/evidence.json",
+			"sha256": "358e8880b143364ca73454af31649ea80127acd9fb071dc53371a602131224be"
+		},
+		"nativeOpenedAndClosed": 18,
+		"video": {
+			"width": 320,
+			"height": 240,
+			"frameRate": "30/1",
+			"frames": 6,
+			"seconds": 0.2,
+			"sha256": "a3137574f82c4efe7ecab15a50545ff1bc224c73029a2c8a91bddec82d41caa1"
+		},
+		"scope": "Optional v2 source capture and source-only video. Saved clip opacity, complete project/editor UI and installation remain pending.",
+		"history": "Earlier Electron notExecuted statements refer to their original runs; this section closes only the explicitly recorded source-only scope."
+	},
+	"particleSavedProjectVideoVerification": {
+		"date": "2026-10-09",
+		"status": "saved-project-semantics-bounded-range-video-verified",
+		"evidence": "docs/evidence/particle-saved-project-export.json",
+		"ranges": [
+			{
+				"variant": "original",
+				"startTime": 0,
+				"endTime": 24000
+			},
+			{
+				"variant": "timing",
+				"startTime": 236000,
+				"endTime": 260000
+			}
+		],
+		"dimensions": [
+			1920,
+			1080
+		],
+		"frameRate": "30/1",
+		"framesPerRun": 6,
+		"consumed": [
+			"saved canvas",
+			"active scene tracks",
+			"clip opacity0.85",
+			"startTime",
+			"trimStart/trimEnd"
+		],
+		"negativeControls": [
+			"opacity-ignored",
+			"placement-ignored",
+			"trim-ignored"
+		],
+		"nativeOpenedAndClosed": [
+			19,
+			16
+		],
+		"notWhole121FrameExport": true,
+		"notAttachedEditor": true,
+		"summary": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-project-export-verification-summary.json",
+			"sha256": "a9de7f6c51bc348b5e31daa1f5d61c51b108978f455c43e517bdf8e8999c4b8f"
+		},
+		"history": "Earlier source-only sections retain their original scopes. This later section establishes canonical saved-project rendering semantics only for the two bounded windows, without closing full-duration/editor/installation gaps."
+	},
+	"isolation": {
+		"fixture": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2",
+		"nativeTarget": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/cargo",
+		"sharedInstallationChanged": false,
+		"canonicalWholeWorktreeBuilt": false,
+		"frozenAudioSeams": [
+			"rust/crates/time/src/time.rs",
+			"rust/crates/editor-api/src/lib.rs",
+			"rust/crates/editor-api/src/programmatic.rs"
+		],
+		"note": "The private fixture preserves earlier audio code in these overlapping files. Replay and Particle registration seams are applied separately; this does not verify concurrent audio changes. A concurrent light_leak module declaration was also left untouched and outside this fixture.",
+		"concurrentModuleSeams": [
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/mod.rs",
+				"difference": "Canonical has an additional mod light_leak declaration from concurrent work; the frozen fixture omits it. Both contain the same use time::replay migration seam."
+			}
+		]
+	},
+	"creatorAuthoringVerification": {
+		"date": "2026-10-08",
+		"status": "helper-and-agent-copy-verified-not-runtime-acceptance",
+		"command": "node --test scripts/tests/liquid-templates.test.cjs scripts/tests/stylized-package.test.cjs",
+		"passed": 13,
+		"helperTests": 12,
+		"realAgentCopyTests": 1,
+		"contract": [
+			"Returns source/effects/animations with complete image resource preserved",
+			"Up to sixteen complete ordered seven-field impulses; event times relative to startTicks",
+			"Only six optical keyframe fields; physics and schedule remain static",
+			"Global parameter ranges and replay budgets remain owned by Rust",
+			"Packaged helper, guide, routed skill and relative links verified after actual copy step"
+		],
+		"skillValidation": {
+			"command": "python -B -X utf8 C:/Users/Sayo/.codex/skills/.system/skill-creator/scripts/quick_validate.py resources/agent/skills/html-video",
+			"passed": true,
+			"retainedFailure": "Initial Python invocation used Windows GBK read_text default and failed decoding UTF-8; rerun enabled UTF-8 mode. Source bytes were not recoded."
+		},
+		"temporaryStorage": "Creator existing E-drive .artifacts; package test removed only its own newly-created validated fixture",
+		"strictUtf8NoBom": true,
+		"sourceSha256": {
+			"resources/agent/skills/html-video/SKILL.md": "056fcbbf3925d7791411966a0c3e5257c3eb7d6656d1206b0729f5a6e9c605d2",
+			"resources/agent/skills/html-video/templates/index.md": "5816c4e7f2d256c439ef40f9611e547c89cee12e79d92dce8e3e43d4f6776820",
+			"resources/agent/skills/html-video/references/rocut-liquid.md": "f9873abe842b7cd04bf4641c29b16b4bd7617409266ad9f189e75d1dce01695f",
+			"resources/agent/skills/html-video/assets/rocut-stylized/templates.mjs": "138acce5f6e3ec481f9c97513fa2fea502d61b7362f36cddb4c4f76aa345298c",
+			"resources/agent/skills/html-video/assets/rocut-stylized/liquid.mjs": "4419b403355525e57721d594e99d8bce06a187093299eb27523abb5f74e9880d",
+			"scripts/tests/liquid-templates.test.cjs": "d16582840df9088b02f822130b8a83b37bc7f2be97185fc9592031fc8b338b65",
+			"scripts/tests/stylized-package.test.cjs": "5549153805c2deae12b7e382fe0c0d32221361f61fdc0fe8c6982df9660a854f"
+		}
+	},
+	"threeGeometryExtractionVerification": {
+		"date": "2026-10-08",
+		"status": "static-three-geometry-cpu-verified-not-runtime-integration",
+		"threeVersion": "0.185.1",
+		"toolchain": "C:/Users/Sayo/AppData/Local/Temp/rocut-three-resources-oSn2hb/.artifacts/three-toolchain/run-YuITk9",
+		"runtimeDependencyAdded": false,
+		"verification": {
+			"command": "bun test apps/cli/src/__tests__/three-surface-extract.test.ts apps/cli/src/__tests__/three-surface-extract-boundary.test.ts",
+			"passed": 18,
+			"failed": 0,
+			"assertions": 121,
+			"toolchainEnvironment": "ROCUT_TEST_THREE_TOOLCHAIN points to the read-only pinned toolchain; TEMP/TMP and Bun caches point to Rocut E-drive .artifacts/liquid-oracle-cpu",
+			"strictTypecheck": "node node_modules/typescript/bin/tsc --ignoreConfig --strict --target ES2022 --module esnext --moduleResolution bundler --noEmit --skipLibCheck apps/cli/src/programmatic/engines/three-surface-extract.ts",
+			"typecheckPassed": true,
+			"verifiedBy": "mesh_sampling_review subagent; independent counterexamples from particle_surface"
+		},
+		"behavior": [
+			"Indexed/non-indexed static BufferGeometry, hierarchy world matrices, inverse-transpose normals and mirrored corner association",
+			"Normalized/interleaved CPU attributes, UV and linear RGBA vertex colors",
+			"Effective draw/group intersections with stable primitive and material references",
+			"Bounded objects, groups, source buffers and predicted JS working allocation before triangle extraction"
+		],
+		"reviewFixes": [
+			"Mirrored triangles without normals previously disagreed with normal-bearing geometry; consistently reorder corners and all attributes",
+			"A valid drawElements start offset of 1 was previously rejected; require complete effective triangle count, not aligned start",
+			"Sparse morph influence arrays previously skipped holes; inspect every slot and reject any nonzero/invalid value"
+		],
+		"boundaries": {
+			"runtimeConnected": false,
+			"rustRoundTripTested": true,
+			"materialTextureEvaluation": false,
+			"sourceGeometry": "Static base BufferGeometry; no camera culling, skinning, instancing, active morphs, displacement or custom vertex shader evaluation",
+			"materialHooks": "Shader/RawShader materials and detectable instance/subclass onBeforeCompile overrides are rejected; fixed Three base prototypes remain trusted",
+			"maxWorkingBytes": 33554432,
+			"maxGeometryBytes": 33554432,
+			"maxObjects": 4096,
+			"reservedBytesPerTriangle": 8192,
+			"workingMemoryExclusions": "Caller-owned decoded model and GPU allocations; logical estimate is not a measured V8 heap guarantee",
+			"conservativeLimits": "Finite transforms whose determinant overflows are rejected; unsupported mesh kinds may be rejected before material invisibility is considered"
+		},
+		"strictUtf8NoBom": true,
+		"sourceSha256": {
+			"apps/cli/src/programmatic/engines/three-surface-extract.ts": "a27e4743bfa31b4d518a55f71f28e923ed00d271f9de05cb34aa467c8ee18c12",
+			"apps/cli/src/programmatic/engines/three-surface-types.ts": "29e396df1726208aa872292767f2f58149dd9e567a06f736c13384b6f73d6afc",
+			"apps/cli/src/programmatic/engines/three-surface-vertices.ts": "d1180ca9fc6e0ae671c4e1b0930eb59bde862107c26a4612e470ec09dd0d2cfb",
+			"apps/cli/src/__tests__/three-surface-extract.test.ts": "5181e112cd4b3b5a9e8dc24a64d3dc3249dc85914976f761491516130e89154a",
+			"apps/cli/src/__tests__/three-surface-extract-boundary.test.ts": "cb09b4838bf257b3c38a5429c84fade8a5d2b93e06c6b47f872985da8016ce6b"
+		}
+	},
+	"particleBufferVerification": {
+		"date": "2026-10-08",
+		"status": "cpu-transfer-adapter-verified-not-runtime-integration",
+		"verification": {
+			"command": "bun test apps/cli/src/__tests__/three-particle-buffers.test.ts",
+			"passed": 14,
+			"failed": 0,
+			"assertions": 236,
+			"strictTypecheck": "node node_modules/typescript/bin/tsc --ignoreConfig --noEmit --strict --skipLibCheck --target ES2022 --module ESNext --moduleResolution bundler --types bun,node apps/cli/src/programmatic/engines/three-particle-buffers.ts apps/cli/src/__tests__/three-particle-buffers.test.ts",
+			"typecheckPassed": true,
+			"formattingPassed": true,
+			"verifiedBy": "particle_surface subagent",
+			"independentReview": {
+				"reviewer": "mesh_sampling_review",
+				"additionalCpuAssertions": 61,
+				"result": "No confirmed blocking issue; manually exercised Float32 threshold neighbors, optional masks, integer associations and invalid tail samples"
+			}
+		},
+		"behavior": [
+			"Preserves input sample order and triangle/primitive/material u32 associations without Float32 index conversion",
+			"Position/normal/UV/color use Float32; barycentrics remain Float64",
+			"Independent UV/color/material presence masks distinguish absence from real zero and u32::MAX",
+			"Rejects Float32 overflow; caller must explicitly choose reject or counted allow-zero underflow policy",
+			"Validates the complete sample array before allocating any of the eleven output TypedArrays"
+		],
+		"boundaries": {
+			"maxSamples": 65536,
+			"maxAllocationBytes": 8388608,
+			"payloadBytesPerSample": 87,
+			"fixedLogicalReservationBytes": 4096,
+			"allocationExclusions": "Existing input JSON/JS samples, bridge/CDP copies, allocator/GC overhead and later GPU copies; not a strict process heap ceiling",
+			"input": "Already-parsed ordinary Rust JSON data, not arbitrary accessors/proxies or shared mutable objects",
+			"rustOwns": "Sampling, animation, normal/geometry invariants and material evaluation policy; this adapter only validates transport shape and numeric representability",
+			"runtimeConnected": false,
+			"gpuDrawTested": false
+		},
+		"strictUtf8NoBom": true,
+		"sourceSha256": {
+			"apps/cli/src/programmatic/engines/three-particle-buffers.ts": "7ad1b99a450403e37698ed344e5eed9b46bd439c8f3e16538949504ce6f92811",
+			"apps/cli/src/__tests__/three-particle-buffers.test.ts": "ee5ca6347beb3248fa162ae7eff118570b3ed646b912e2b21b2967ec57ab6fb7"
+		}
+	},
+	"nativeVerification": {
+		"uniquePassingTests": 107,
+		"suites": [
+			{
+				"name": "shared replay",
+				"command": "cargo +stable test --offline -p time --lib replay",
+				"passed": 11
+			},
+			{
+				"name": "Cloth replay regression",
+				"command": "cargo +stable test --offline -p editor-api --lib mv_recipe::cloth",
+				"passed": 10
+			},
+			{
+				"name": "Liquid core, contracts, replay and independent oracle",
+				"command": "cargo +stable test --offline -p effects --lib liquid",
+				"passed": 37
+			},
+			{
+				"name": "stylized catalog regression",
+				"command": "cargo +stable test --offline -p effects --test stylized_contract",
+				"passed": 4
+			},
+			{
+				"name": "Liquid clip/layer authoring and keyframe contracts",
+				"command": "cargo +stable test --offline -p editor-api --test liquid_params",
+				"passed": 2
+			},
+			{
+				"name": "Particle sampling and bounded bridge, including determinant fix",
+				"passed": 35,
+				"mode": "standalone rustc --test of actual private production modules with existing serde/serde_json/bridge dependencies",
+				"artifact": ".artifacts/liquid-native-small/particle-tests.exe",
+				"crateRoot": "rust/crates/editor-api/src/particle_surface_native_check.rs",
+				"note": "The original 29 tests passed through Cargo before the determinant fix. All 35 later passed in the small actual-module test crate; the same 35 have now passed through full editor-api Cargo integration in the frozen fixture. These are not additional unique tests.",
+				"cargoRerun": {
+					"command": "cargo +stable test --offline --locked -p editor-api --lib particle_surface",
+					"passed": 35,
+					"failed": 0,
+					"filtered": 20,
+					"compileSeconds": 15.41,
+					"scope": "Frozen private fixture; not the concurrent canonical whole worktree"
+				}
+			},
+			{
+				"name": "Liquid native raster and reference regressions",
+				"passed": 8,
+				"gpuTests": 6,
+				"cpuTests": 2,
+				"backend": "native Vulkan",
+				"mode": "rustc --test of effects/tests/liquid.rs against the same effects/gpu/wgpu libraries compiled by Cargo in this run; --include-ignored --test-threads=1",
+				"artifact": ".artifacts/liquid-native-small/liquid-tests.exe",
+				"tolerances": {
+					"rgbBytes": 2,
+					"alphaBytes": 1,
+					"identityBytes": 0
+				}
+			}
+		],
+		"liquid-tests.exeSha256": "cd298203c715175d332f98b0da1c7343eda16dc99dffbdefaba013dd5d4dad3b",
+		"particle-tests.exeSha256": "085d8127b061de4132d71c57bd4a1d2b80655255ca370aae4b4121e9396068a7"
+	},
+	"independentFluidOracle": {
+		"fixture": "rust/crates/effects/src/liquid-oracle-state.json",
+		"generator": "script/fixtures/liquid-native-oracle.ts",
+		"sources": [
+			{
+				"name": "liquid-oracle.ts",
+				"sha256": "7557705c63d25451c8cd3994ef4f238b1ec2c1e958f45c48436770c1ba2768bb"
+			},
+			{
+				"name": "liquid-oracle-grid.ts",
+				"sha256": "b50bfc5f9181e3d295174657edfacab654e1a07be7170e0ae959e84f91adc481"
+			},
+			{
+				"name": "liquid-oracle-operators.ts",
+				"sha256": "b309fe0dacca0ffd78b5e2dd4ee5ec25c87765aef7ea5555dae7f2b229ca5b40"
+			}
+		],
+		"cases": 7,
+		"maxObservedAbsoluteError": 3.552713678800501e-15,
+		"absoluteTolerance": 2e-11,
+		"relativeTolerance": 1e-11,
+		"rejectedControls": ["noProjection", "ignoreEvents", "uvRadius"],
+		"regeneratedByteForByte": true
+	},
+	"fixes": [
+		"Shared replay moved from editor-api/mv_recipe to time::replay without changing replay algorithms.",
+		"Validate all Liquid event payloads before replay, including zero-step and future events.",
+		"Use an unfiltered Rgba32Float data texture rather than a fragment storage buffer, preserving the existing WebGL2-level device limits. WebGL scene rendering and video now pass; direct canvas presentation has a separate alpha failure recorded below.",
+		"Reject positive Particle triangle determinants lost to underflow rather than silently treating them as degenerate; exact integer product comparison distinguishes genuine zero.",
+		"Independent optical oracle now uses constant-preserving affine-difference bilinear interpolation; the acceptance tolerances were not changed."
+	],
+	"retainedFailures": [
+		{
+			"stage": "native GPU DX12",
+			"result": "All six test entries failed with AdapterUnavailable before shader execution; Vulkan used for actual raster validation."
+		},
+		{
+			"stage": "first Vulkan run",
+			"result": "Five GPU tests passed, half-amount test failed at (65,27). Four source alphas were all 1/255 but reference weighted accumulation drifted upward by 8.67e-19; half-amount drift 4.34e-19 crossed the inclusive half-unorm threshold. Independent arithmetic proved the oracle defect. Fixed interpolation and two CPU regressions; final 8/8 passed."
+		},
+		{
+			"stage": "initial standalone Particle test crate",
+			"result": "Path-attribute module resolution did not find nested modules; moved the private diagnostic crate root beside the actual production modules, with normal mod declarations. Final 35/35 passed."
+		},
+		{
+			"stage": "temporary cache cleanup",
+			"result": "Tool policy rejected the recursive deletion request. No files were deleted; no alternate deletion mechanism attempted."
+		}
+	],
+	"boundaries": {
+		"liquid": {
+			"gridPerAxis": [8, 64],
+			"maxEvents": 16,
+			"maxDurationTicks": 3600000,
+			"stepTicks": 1000,
+			"maxReplayWork": 80000000,
+			"maxReplayLogicalBytes": 8388608,
+			"memoryExclusions": "Whole-frame source/output textures, raster shader work, allocator bookkeeping and other process memory; enclosing renderer must budget output dimensions.",
+			"crossRequestCache": false,
+			"inFlightRendererCancellation": false
+		},
+		"particle": {
+			"maxTriangles": 262144,
+			"maxSamples": 65536,
+			"maxInputAllocationBytes": 67108864,
+			"maxOutputBytes": 67108864,
+			"maxRustWorkingBytes": 201326592,
+			"excludedCopies": "JS-side and bridge transport allocations outside the Rust function; allocator metadata and fragmentation.",
+			"modelExtraction": true,
+			"modelExtractionRuntimeConnected": false,
+			"gpuBufferConversion": true,
+			"gpuBufferRuntimeConnected": false,
+			"materialTextureEvaluation": false,
+			"reassemblyAnimation": false
+		}
+	},
+	"notExecuted": [
+		"Liquid genuinely selected WebGPU backend; WebGL raw-texture, presentation and lifecycle acceptance passed separately",
+		"Real browser mapping-failure and callback-timeout injection",
+		"Creator Liquid helper runtime authoring acceptance; Particle material/animation recipe, saved project and final video acceptance",
+		"Whole-worktree integration after concurrent audio changes",
+		"Installed Elftia/Electron, release and cross-GPU acceptance",
+		"Concurrent light_leak integration"
+	],
+	"environment": {
+		"observations": [
+			{
+				"stage": "Previous native foundation record",
+				"freeEBytes": 586964992,
+				"largeBuildsNotStarted": true
+			},
+			{
+				"stage": "Before the fresh WASM build in this continuation",
+				"freeEBytes": 8338173952,
+				"largeBuildsStarted": true
+			},
+			{
+				"stage": "After WASM gates and CPU roundtrip, during parallel browser work",
+				"freeEBytes": 83595264,
+				"largeBuildsNotStarted": true
+			},
+			{
+				"stage": "User cleared space and authorized C:/tmps for new test artifacts",
+				"freeEBytes": 3469103104,
+				"freeCBytes": 48170274816,
+				"artifactRoot": "C:/tmps/rocut-stylized-f6XU4z",
+				"largeBuildsStarted": true
+			},
+			{
+				"stage": "After presentation WASM rebuild and native GPU/compositor verification",
+				"freeEApproxGiB": 2.59,
+				"freeCApproxGiB": 44.2
+			}
+		],
+		"lastObservedFreeEBytes": 2764877824,
+		"lastObservedFreeCBytes": 47365509120,
+		"newLargeBuildsDeferred": false,
+		"note": "Disk blocker cleared by user cleanup; new temporary files and browser evidence use the task-owned C directory. Existing E Cargo caches are reused. No old caches or other session files were deleted."
+	},
+	"checks": {
+		"strictUtf8": true,
+		"oracleTypecheck": true,
+		"oracleFormatting": true
+	},
+	"sourceSha256": {
+		"rust/crates/effects/src/liquid_catalog.rs": "0b1c5db9ab75bcc59d72a8d49161917e0fdac2e70c0c77c371036e6a486135ad",
+		"rust/crates/effects/src/liquid_params.rs": "5a3a68fe74bdeabd9c43c4308a4beba705b728ec9cb8a016534ee68736b6b0b4",
+		"rust/crates/effects/src/liquid_pass.rs": "9307003ed996e8e2a261d0c34a5da8c172509901b2dbdd2e545a5f255c450aa4",
+		"rust/crates/effects/src/liquid_pipeline.rs": "66e53af74d852d7c35283cd19e86a2473ff7d4d3958fce6362fa685d15da1181",
+		"rust/crates/effects/src/liquid_replay.rs": "01846bce4c39808d091bfcddf60050d177565892310c62c233dc19b15d19cdb8",
+		"rust/crates/effects/src/liquid_sim.rs": "67dbcf212720b092971ee5ac3bbab80a37fc3d1ef0e253e6e23f750669fa7ae3",
+		"rust/crates/effects/src/shaders/liquid.wgsl": "f7aacdb77171efc6c5a859152c90de9d2147b4a68a251f072e146b790e41ffeb",
+		"rust/crates/effects/src/effects.rs": "3905a0d8d514432ac6ed0b4618dbda705074625d43770b3bdd9cedea0f4535cc",
+		"rust/crates/effects/src/pipeline.rs": "525f9af1d777033418d6e0eef2c5c75bf4944f358708f222e4c7adee32f07b41",
+		"rust/crates/effects/src/stylized.rs": "01d38660acfbb1f5536946c952731f91935a7d23bcd0ac7e80897d89c1ef5ee7",
+		"rust/crates/effects/src/stylized_catalog.rs": "9942bd17bd56333299e7e390efa0a7841a0b695850ecc37544170892e1402bba",
+		"rust/crates/editor-api/src/effect_params.rs": "edcc62cb43551dc7bc03f181bfada09b7a2a7de9c9dd09b74eded5e7a6b60034",
+		"rust/crates/editor-api/src/particle_surface.rs": "2954d7b8f6ea19e772aead6d73930d14494517d26d30ea3ffdc4bacaf1abb524",
+		"rust/crates/editor-api/src/particle_surface/numeric.rs": "36c6227f84ba7cae384a5c3c78297b14fd184f472dffff595eaf6f3dacd2b850",
+		"rust/crates/editor-api/src/particle_surface/tests.rs": "6e7b2cf7d0c85c6300b7a98009a5f026ea7b29992137d0ac6070241247f7f444",
+		"rust/crates/effects/src/liquid_sim/forces.rs": "c15843915d67d1d40f6fa5b1cfd83d19de6d6704a725e17c2bec664c449e4975",
+		"rust/crates/effects/src/liquid_sim/grid.rs": "fdba6d328a914de697557a043c5f842e92d617ad55b51731f12f434ecd41fa72",
+		"rust/crates/effects/src/liquid_sim/solve.rs": "b4e0354c55dee88675c334064622bd94faae458f27a56f44769f02a4b0fb9556",
+		"rust/crates/effects/src/liquid_sim/tests.rs": "ed63194405f0663045e7c1ebdf6091dafda520a9c188215fa60a51679a1fa1b7",
+		"rust/crates/effects/src/liquid_sim/transport.rs": "1f32b0d2100169db7ac088878c962b356556d13ada0b8f6a6bf1fb2a753752a3",
+		"rust/crates/effects/src/liquid_sim/validation.rs": "81e008bef97e8e357c335b0d80e3ecc512d0d9624da46d93e94855c24f2acc33",
+		"rust/crates/effects/src/liquid_sim/tests/behavior.rs": "9d989b1017ef9f933c831328183bb82b67d3de85111fc6373dacf3e9e1970dd8",
+		"rust/crates/effects/src/liquid_sim/tests/numerics.rs": "7cafefc7d8866b7fe1401bed7ce739e3c7db5abc4ab6b1a952b84f79e0ed111e",
+		"rust/crates/effects/src/liquid_sim/tests/sampling.rs": "267b194148a3969405b01bebc23fa0be2d50a7d004ed329daa0485e3f0d6d96f",
+		"rust/crates/effects/src/liquid_contract_tests.rs": "9602076650eaf4fe4a6df87aa009374ef703ce5919f97ddb102fac915b380ae9",
+		"rust/crates/effects/src/liquid_replay_tests.rs": "2aeb43297a34b0e7d4da9d3a03a7815ed759c69c683361b57a5008872a2ac6b3",
+		"rust/crates/effects/src/liquid_oracle_tests.rs": "cba20dcf2307d1f228e8abbad4a7c1b4f4410bc4c7226905a0a0f84e453fd527",
+		"rust/crates/effects/src/liquid-oracle-state.json": "e34772681d24faa8cc1d3d8bd831236ff60d24df09fe3eabea3d14065990d3f9",
+		"rust/crates/effects/tests/stylized_contract.rs": "ccd9bcb85ce6ffcee7da78c30048c2fd42bdb8c6195433c01c92739ba6ef59eb",
+		"rust/crates/editor-api/tests/liquid_params.rs": "194ce2fde1d76d89f2240c542287dd191ce84ae3d72f807bcf58da9d50cebd45",
+		"rust/crates/editor-api/src/particle_surface_bridge.rs": "ba228945eefe85c346b9f2d988b43043ca4bf9e23f9542c0544cea01d5bc5b86",
+		"rust/crates/editor-api/src/particle_surface_bridge/tests.rs": "12b99979de9b5606afb415e47bd14327c685e4b6cf60c4a45fafabd554dc6057",
+		"script/fixtures/liquid-native-oracle.ts": "56d75c2aab9b42d43916746431172caf11708483496889abef9bbee03b953ff4",
+		"script/fixtures/liquid-oracle.ts": "7557705c63d25451c8cd3994ef4f238b1ec2c1e958f45c48436770c1ba2768bb",
+		"script/fixtures/liquid-oracle-grid.ts": "b50bfc5f9181e3d295174657edfacab654e1a07be7170e0ae959e84f91adc481",
+		"script/fixtures/liquid-oracle-operators.ts": "b309fe0dacca0ffd78b5e2dd4ee5ec25c87765aef7ea5555dae7f2b229ca5b40",
+		"rust/crates/editor-api/src/particle_surface/numeric_tests.rs": "8c1b4045dd835a93566e00d8a6aa67dfad8d6941735455f40774fb347accb5e5",
+		"rust/crates/effects/tests/liquid.rs": "3caa4e2755b53e027ab65c38cb42be9b1c111d37809c647b2fc5be1ecb78bd11",
+		"rust/crates/effects/tests/support/liquid.rs": "d0bba790065ee82e293d5c2a404c7e10d22d37db8a751ed60d25a49a8e953358",
+		"rust/crates/effects/tests/support/liquid_fixture.rs": "d0358782eea1abff69b59bc01832ffa06f677b8d723a34110ecc6315ed191b7c",
+		"rust/crates/time/src/replay.rs": "1191e8eb813928067fe5c32dd7c026610632db0e6c34e0cb3d9a6befc92782b4",
+		"rust/crates/time/src/replay/tests.rs": "45cda37fdb8c345575ea8e20b327cb3055df3ff407108ad4638bcd6f906ddf02",
+		"rust/crates/time/src/replay/replay_test_model.rs": "7df4e69f791de22b0c699ac1209bfa18127a0acf6a261ff4687dc1734e53b3db",
+		"rust/crates/editor-api/src/mv_recipe/mod.rs": "7851d1980180f0a1fb6a4035107c0d90257856f88d53fcecb5b1f8cc88ecce24"
+	},
+	"validatedPrivateSourceSha256": {
+		"rust/crates/effects/src/liquid_catalog.rs": "0b1c5db9ab75bcc59d72a8d49161917e0fdac2e70c0c77c371036e6a486135ad",
+		"rust/crates/effects/src/liquid_params.rs": "5a3a68fe74bdeabd9c43c4308a4beba705b728ec9cb8a016534ee68736b6b0b4",
+		"rust/crates/effects/src/liquid_pass.rs": "9307003ed996e8e2a261d0c34a5da8c172509901b2dbdd2e545a5f255c450aa4",
+		"rust/crates/effects/src/liquid_pipeline.rs": "66e53af74d852d7c35283cd19e86a2473ff7d4d3958fce6362fa685d15da1181",
+		"rust/crates/effects/src/liquid_replay.rs": "01846bce4c39808d091bfcddf60050d177565892310c62c233dc19b15d19cdb8",
+		"rust/crates/effects/src/liquid_sim.rs": "67dbcf212720b092971ee5ac3bbab80a37fc3d1ef0e253e6e23f750669fa7ae3",
+		"rust/crates/effects/src/shaders/liquid.wgsl": "f7aacdb77171efc6c5a859152c90de9d2147b4a68a251f072e146b790e41ffeb",
+		"rust/crates/effects/src/effects.rs": "3905a0d8d514432ac6ed0b4618dbda705074625d43770b3bdd9cedea0f4535cc",
+		"rust/crates/effects/src/pipeline.rs": "525f9af1d777033418d6e0eef2c5c75bf4944f358708f222e4c7adee32f07b41",
+		"rust/crates/effects/src/stylized.rs": "01d38660acfbb1f5536946c952731f91935a7d23bcd0ac7e80897d89c1ef5ee7",
+		"rust/crates/effects/src/stylized_catalog.rs": "9942bd17bd56333299e7e390efa0a7841a0b695850ecc37544170892e1402bba",
+		"rust/crates/editor-api/src/effect_params.rs": "edcc62cb43551dc7bc03f181bfada09b7a2a7de9c9dd09b74eded5e7a6b60034",
+		"rust/crates/editor-api/src/particle_surface.rs": "2954d7b8f6ea19e772aead6d73930d14494517d26d30ea3ffdc4bacaf1abb524",
+		"rust/crates/editor-api/src/particle_surface/numeric.rs": "36c6227f84ba7cae384a5c3c78297b14fd184f472dffff595eaf6f3dacd2b850",
+		"rust/crates/editor-api/src/particle_surface/tests.rs": "6e7b2cf7d0c85c6300b7a98009a5f026ea7b29992137d0ac6070241247f7f444",
+		"rust/crates/effects/src/liquid_sim/forces.rs": "c15843915d67d1d40f6fa5b1cfd83d19de6d6704a725e17c2bec664c449e4975",
+		"rust/crates/effects/src/liquid_sim/grid.rs": "fdba6d328a914de697557a043c5f842e92d617ad55b51731f12f434ecd41fa72",
+		"rust/crates/effects/src/liquid_sim/solve.rs": "b4e0354c55dee88675c334064622bd94faae458f27a56f44769f02a4b0fb9556",
+		"rust/crates/effects/src/liquid_sim/tests.rs": "ed63194405f0663045e7c1ebdf6091dafda520a9c188215fa60a51679a1fa1b7",
+		"rust/crates/effects/src/liquid_sim/transport.rs": "1f32b0d2100169db7ac088878c962b356556d13ada0b8f6a6bf1fb2a753752a3",
+		"rust/crates/effects/src/liquid_sim/validation.rs": "81e008bef97e8e357c335b0d80e3ecc512d0d9624da46d93e94855c24f2acc33",
+		"rust/crates/effects/src/liquid_sim/tests/behavior.rs": "9d989b1017ef9f933c831328183bb82b67d3de85111fc6373dacf3e9e1970dd8",
+		"rust/crates/effects/src/liquid_sim/tests/numerics.rs": "7cafefc7d8866b7fe1401bed7ce739e3c7db5abc4ab6b1a952b84f79e0ed111e",
+		"rust/crates/effects/src/liquid_sim/tests/sampling.rs": "267b194148a3969405b01bebc23fa0be2d50a7d004ed329daa0485e3f0d6d96f",
+		"rust/crates/effects/src/liquid_contract_tests.rs": "9602076650eaf4fe4a6df87aa009374ef703ce5919f97ddb102fac915b380ae9",
+		"rust/crates/effects/src/liquid_replay_tests.rs": "2aeb43297a34b0e7d4da9d3a03a7815ed759c69c683361b57a5008872a2ac6b3",
+		"rust/crates/effects/src/liquid_oracle_tests.rs": "cba20dcf2307d1f228e8abbad4a7c1b4f4410bc4c7226905a0a0f84e453fd527",
+		"rust/crates/effects/src/liquid-oracle-state.json": "e34772681d24faa8cc1d3d8bd831236ff60d24df09fe3eabea3d14065990d3f9",
+		"rust/crates/effects/tests/stylized_contract.rs": "ccd9bcb85ce6ffcee7da78c30048c2fd42bdb8c6195433c01c92739ba6ef59eb",
+		"rust/crates/editor-api/tests/liquid_params.rs": "194ce2fde1d76d89f2240c542287dd191ce84ae3d72f807bcf58da9d50cebd45",
+		"rust/crates/editor-api/src/particle_surface_bridge.rs": "ba228945eefe85c346b9f2d988b43043ca4bf9e23f9542c0544cea01d5bc5b86",
+		"rust/crates/editor-api/src/particle_surface_bridge/tests.rs": "12b99979de9b5606afb415e47bd14327c685e4b6cf60c4a45fafabd554dc6057",
+		"rust/crates/editor-api/src/particle_surface/numeric_tests.rs": "8c1b4045dd835a93566e00d8a6aa67dfad8d6941735455f40774fb347accb5e5",
+		"rust/crates/effects/tests/liquid.rs": "3caa4e2755b53e027ab65c38cb42be9b1c111d37809c647b2fc5be1ecb78bd11",
+		"rust/crates/effects/tests/support/liquid.rs": "d0bba790065ee82e293d5c2a404c7e10d22d37db8a751ed60d25a49a8e953358",
+		"rust/crates/effects/tests/support/liquid_fixture.rs": "d0358782eea1abff69b59bc01832ffa06f677b8d723a34110ecc6315ed191b7c",
+		"rust/crates/time/src/replay.rs": "1191e8eb813928067fe5c32dd7c026610632db0e6c34e0cb3d9a6befc92782b4",
+		"rust/crates/time/src/replay/tests.rs": "45cda37fdb8c345575ea8e20b327cb3055df3ff407108ad4638bcd6f906ddf02",
+		"rust/crates/time/src/replay/replay_test_model.rs": "7df4e69f791de22b0c699ac1209bfa18127a0acf6a261ff4687dc1734e53b3db",
+		"rust/crates/editor-api/src/mv_recipe/mod.rs": "82e7dd1b5b3fc7dbc9933c2d40bc53d4bdb4dbff2b26289078cba50e82b02db9"
+	},
+	"particleProcessVerification": {
+		"status": "real-private-process-and-cpu-bridge-integration-verified-not-browser-or-packaged",
+		"command": "bun test apps/cli/src/__tests__/particle-sampler-worker.test.ts apps/cli/src/__tests__/particle-sampler-worker-real.test.ts apps/cli/src/__tests__/particle-sampler-worker-integration.test.ts",
+		"passed": 19,
+		"failed": 0,
+		"assertions": 145,
+		"runtimes": ["Node 24.14.0", "Bun 1.4.2"],
+		"strictTypecheckPassed": true,
+		"formattingPassed": true,
+		"mjsSyntaxPassed": true,
+		"strictUtf8NoBom": true,
+		"behavior": [
+			"Fixed host-owned process entry, current trusted executable and narrow particleSurface IPC operation",
+			"Public factory resolves opencut-wasm/sync with no environment module fallback or page-supplied path",
+			"Explicit frozen queue/request/response/lifetime budgets; queued plus active requests share the pending limit",
+			"Accepted request abort stops the whole capture, rejects all pending work and prevents reuse",
+			"Termination resolves only on real process close, not kill dispatch or an AbortSignal",
+			"Both runtimes tested for actual WASM success/error, initialization failures/timeouts, crash, and OS termination of a synchronous WASM busy loop"
+		],
+		"integration": {
+			"tests": 2,
+			"client": true,
+			"broker": true,
+			"fixedProcess": true,
+			"actualRustWasm": true,
+			"cdp": "Explicit fake transport; no real browser",
+			"scenarios": [
+				"Sequential two-request flow with maxInFlight=1 and deferred CDP reply acknowledgement",
+				"Rust structured error remains verbatim and fails both client and broker frame"
+			],
+			"confirmedProcessClose": true
+		},
+		"logicalMemoryBound": "maxPendingRequests * maxRequestBytes + maxResponseBytes; IPC/UTF-16/allocator/WASM memory and caller-retained results are excluded",
+		"retainedFailures": [
+			{
+				"stage": "Bun thread implementation",
+				"result": "terminate did not confirm exit within five seconds after entering a synchronous WASM busy loop. Replaced with capture-private process implementation; timeout was never considered successful termination."
+			},
+			{
+				"stage": "Response-limit rejection test",
+				"result": "Runtime can close the failed process before delivering its internal failure message. Test now requires fail-closed behavior and exit code 1 rather than one scheduling-dependent error string."
+			}
+		],
+		"boundaries": {
+			"packRuntimeSidecarIntegrated": false,
+			"productionDriverConnected": false,
+			"realBrowserOrGpu": false,
+			"electronCaptureSessionV2": false,
+			"testWasmModule": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/rust/wasm/pkg/opencut_wasm_sync.js",
+			"testWasmSha256": "57f7e0c54a292f65887687ef35d29d6da2fdefced80f38dfc4661c33e2b5e21b"
+		},
+		"sourceSha256": {
+			"apps/cli/src/programmatic/particle-sampler-worker.ts": "55e27e620b0feeeaf69eea6d743ab6820ae0a7d1fc23b66393b8201622beb951",
+			"apps/cli/src/programmatic/particle-sampler-worker-core.ts": "42e9104c754ac75c3eb3781a704c9bfae6371d254c42c3a7c44104b7adb3c42b",
+			"apps/cli/src/programmatic/particle-sampler-worker-process.ts": "926a59303fb80782502be4455ad94d0c490f72a763aab687103b0863087c5a35",
+			"apps/cli/src/programmatic/particle-sampler-worker-entry.mjs": "7be334837286035c98c0f02382e3f9a3f5754b38e33c24429f690b81bda9eb40",
+			"apps/cli/src/__tests__/particle-sampler-worker.test.ts": "279baba70a4ffbd3f6923689ee86639405d0c17e16b24a4bb4bc5e6de82dce88",
+			"apps/cli/src/__tests__/particle-sampler-worker-real.test.ts": "6331ec8cca8b161f9ee2efd6bc9b0b02d79acac6d16d9b85073b0d0be495c265",
+			"apps/cli/src/__tests__/particle-sampler-worker-integration.test.ts": "a776df14d76c1b98bee7d1de27158ac4245d0c91fe1eeb84307fe86bcf66923a",
+			"apps/cli/src/__tests__/particle-sampler-worker-test-support.ts": "7b7f83a3279117b807ac9ae809706cc758ad2de3d858fe511cfbb9b9fcc484b2",
+			"apps/cli/src/__tests__/particle-sampler-worker-node-support.mjs": "11f4b3663aace4a4b02889bf1e4ce764688e187feb8ae0e04969ad7f86d6a6f9",
+			"apps/cli/src/__tests__/particle-sampler-worker-init-support.mjs": "7b8b8f90afa3955252db87561af7673b2c87db8346374bc55d8408ae1aea1af5",
+			"apps/cli/src/__tests__/particle-sampler-worker-crash-support.mjs": "5d8b209836f7b3a5911331e322266e85e0491ce2d4c10d34e84d3d071991e6f2",
+			"apps/cli/src/__tests__/particle-sampler-worker-blocking-support.mjs": "36b3a7a444f96d8d3bf15fb5f35b509cb2a398409603f8d293738aa7c53d400e"
+		}
+	},
+	"particleBridgeVerification": {
+		"status": "protocol-client-broker-cpu-verified-not-browser-runtime-wired",
+		"verification": {
+			"passed": 62,
+			"failed": 0,
+			"assertions": 2650,
+			"files": 7,
+			"protocolTests": 15,
+			"brokerTests": 19,
+			"clientTests": 12,
+			"independentClientReviewTests": 9,
+			"realWasmRoundtripTests": 7,
+			"realWasmRoundtripAlreadyCountedSeparately": true,
+			"strictTypecheckPassed": true,
+			"formattingPassed": true,
+			"repoEslint": "Not covered: all five requested apps/cli paths reported ignored because no matching configuration. No rules or scope were changed."
+		},
+		"contract": [
+			"Explicit immutable identity and execution-context ownership; no authorization inferred from correlation strings",
+			"Fixed operation and CDP binding; strict encoded-envelope byte limits and single-use ids",
+			"Frame failure propagation, bounded deadlines and idempotent cleanup",
+			"Client awaits asynchronous send acknowledgement before successful check; driver must await check and race failure",
+			"Rust structured errors retained verbatim; late/unknown/cross-frame replies cannot produce successful frames",
+			"Host keeps active/tasks until reply acknowledgement; sampler admission is released before delivery so sequential page calls are not falsely rejected"
+		],
+		"retainedFailures": [
+			{
+				"stage": "Independent client/broker review",
+				"result": "Two counterexamples failed: check returned before asynchronous send acknowledgement, and sequential sampling with maxInFlight=1 raced previous CDP reply acknowledgement. Both have passing regressions, including never-settling send, reentrant abort and disposal during check."
+			},
+			{
+				"stage": "Initial client strict typecheck",
+				"result": "Seven test expressions accessed message on string|Error. Replaced with a helper that rejects unexpected successful results; final strict typecheck passed."
+			}
+		],
+		"boundaries": {
+			"browserRuntimeConnected": false,
+			"electronCaptureSessionV2": false,
+			"realProcessSamplerConnectedToBroker": true,
+			"rustPublishedTransportPolicy": false,
+			"pendingReplyLogicalBound": "maxRequests multiplied by maxResponseBytes, not maxInFlight; excludes JS/CDP/allocator extra copies",
+			"workerTermination": "Broker requires an actual terminating owner; fake sampler/CDP lifecycle tests do not prove process or WASM termination"
+		},
+		"sourceSha256": {
+			"apps/cli/src/programmatic/particle-protocol.ts": "893bb1d1737ac55ba66a1aec34bf8f9ea60898de349938102b132be4330a2c39",
+			"apps/cli/src/programmatic/particle-protocol-types.ts": "e612fca6a0f62d7b6eff5a3d2ba93baed33f29e19b309537cd44694872e8723f",
+			"apps/cli/src/__tests__/particle-protocol.test.ts": "309a914304f3ccd1abc9c9e6685b141031828a74730d6e4f1479e39332cbd5d7",
+			"apps/cli/src/__tests__/particle-protocol-response.test.ts": "868deb1d5ac993bf6da553a9cf4f7b28528badb904fb6421b59277f27690634c",
+			"apps/cli/src/__tests__/particle-protocol-test-support.ts": "7ba458f67763b9e6d39550d5dfb906afc04ffac324346fd48e121f4d32dce9c2",
+			"apps/cli/src/programmatic/particle-broker.ts": "2fef4d0648c6910acfdb3e84aed65056033e588a19614825bb6523e1921ef017",
+			"apps/cli/src/__tests__/particle-broker.test.ts": "d44c9080482e5c84e6a7c7220fc5789767757dc94cadab612a035372f774186d",
+			"apps/cli/src/__tests__/particle-broker-lifecycle.test.ts": "c9e2c5cbec76a76ad20316d8b71d45e89ceee64d7f7f6531ecbbc265e0e72034",
+			"apps/cli/src/__tests__/particle-broker-test-support.ts": "89ef69a4814457a1962f18944f43ffc663135c9ad39a40d194663996d9f9f177",
+			"apps/cli/src/programmatic/particle-client.ts": "fc331744cb6375a159a492640ea4606bc742fc9b329e826321e3ac1ee01853dd",
+			"apps/cli/src/__tests__/particle-client.test.ts": "6666f06bde7149f0ffaa5396198c7e644446eea05ed1fdbc90b389c4407d1031",
+			"apps/cli/src/__tests__/particle-client-review.test.ts": "b7918f79795dbaa8667ee8c85b6f38ae215c84719b3a1f2f5d3d0006757bbf0b"
+		}
+	},
+	"liquidSurfacePresentationCorrection": {
+		"status": "native-default-wasm-and-webgl-raw-presentation-verified-same-project-export-pending",
+		"behavior": [
+			"Dedicated final-presentation premultiplication; internal straight textures and generic blit unchanged",
+			"WebGPU explicitly uses PreMultiplied as supported by pinned wgpu 29.0.1 configure despite incomplete capabilities reporting",
+			"WebGL final canvas presentation premultiplies exactly once",
+			"Native capability order and Auto/Inherit fallback retained",
+			"Compositor final surface call uses the presentation path; internal copy call remains generic blit"
+		],
+		"policyVerification": {
+			"command": "rustc +1.88.0 --edition 2024 --test -C debuginfo=0 rust/crates/gpu/src/surface_alpha.rs -o <owned fixture>/.artifacts/liquid-effects/surface-alpha-unit-v3.exe",
+			"passed": 6,
+			"failed": 0,
+			"artifact": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/liquid-effects/surface-alpha-unit-v3.exe",
+			"artifactSha256": "98b39f152be7171bab549eae12b601cc90c946648c931dadcdb469d424576e53"
+		},
+		"independentReview": {
+			"reviewer": "mesh_sampling_review",
+			"fixedFindings": [
+				"Initial WebGPU policy would reject Opaque-only reported capabilities, while the actual pinned backend supports explicit PreMultiplied and panics on PostMultiplied. Corrected policy without changing pixel thresholds.",
+				"Initial native policy narrowed Auto/Inherit behavior. Restored the original native selection/fallback."
+			],
+			"finalSourceReview": "No additional confirmed production blocker found; not a runtime acceptance result"
+		},
+		"unresolvedLowAlphaBoundary": {
+			"status": "Resolved for tested WebGL: raw texture and RGBA8 presentation verified separately; historical direct canvas-versus-raw failures retained",
+			"case": "93x62, 120 fps, localTicks=10000, current independent optical oracle",
+			"premultiplyToEightBitThenUnpremultiply": {
+				"rgbBytesOverOriginalTolerance": 12,
+				"maxRgbByteError": 105
+			},
+			"example": {
+				"straight": [134, 0, 32, 41],
+				"premultipliedRed": 22,
+				"reconstructedRed": 137,
+				"redError": 3
+			},
+			"note": "An 8-bit premultiplied canvas roundtrip is not lossless straight RGB. The diagnostic passed all 192 raw comparisons against the independent CPU oracle, 166 canvas comparisons against an independent quantizer and 332 black/white comparisons against independent CPU composites. Existing RGB2/alpha1 and black-white gates remain unchanged; no low-alpha pixels were excluded. This result is WebGL-only."
+		},
+		"formattingPassed": true,
+		"strictUtf8NoBom": true,
+		"canonicalSourceSha256": {
+			"rust/crates/gpu/src/context.rs": "826290739907c747c037c029c071074c4e6d1a5928116df6b594aece32bfbae9",
+			"rust/crates/gpu/src/lib.rs": "3cb6f344c644b6d577b3dd24f55eb1a3f9eddbce854a44c44f4b808f179be33d",
+			"rust/crates/gpu/src/surface_alpha.rs": "1cb7cb0986ddb729c264e01d30d1860bb31dbdb110e71cb5e7bb7db6311da8d1",
+			"rust/crates/gpu/src/surface_presentation.rs": "0d3f75aad10f60341635a94480d959202ee1deac7869ee758721713b7901106b",
+			"rust/crates/gpu/src/surface_presentation_tests.rs": "8ae3c826410fab1bb27b13eeebf5f138ba261133e2f8fad7c7a40228a4cb749f",
+			"rust/crates/gpu/src/shaders/surface_presentation.wgsl": "c4dca6323baae94de84512cdc71ac941c572e0d69ef6293d31882dd2898a804f",
+			"rust/crates/compositor/src/compositor.rs": "32e58c8603e7f0f794bd1fea00ad64b46953bc6b96a48c31dbe2500879397f06"
+		},
+		"privateSnapshotUpdated": true,
+		"freshWasmEvidenceAppliesTo": "freshWasmVerification retains the earlier pre-presentation baseline; this correction has a distinct wasmRebuild record",
+		"notExecuted": [
+			"Feature-gated raw-texture WebGPU browser probe; WebGL completed",
+			"Host/editor/installed Electron acceptance"
+		],
+		"nativeVerification": {
+			"artifact": "C:/tmps/rocut-stylized-f6XU4z/native-surface/run-mesh-review-20261008/evidence.json",
+			"artifactSha256": "48f0b8abe677a6e5162589eee338f76b26cf0b44a45a9bc0e1d5d9458b78cf8e",
+			"source7Sha256": "85a97f76e2d51b1cf420bee7eace1fe7e36b395069729b9405306038bbdc2551",
+			"passed": 11,
+			"failed": 0,
+			"runs": [
+				{
+					"command": "cargo +stable test --offline --locked -p gpu --lib surface_alpha::tests -- --nocapture",
+					"exitCode": 0,
+					"passed": 6
+				},
+				{
+					"command": "cargo +stable test --offline --locked -p gpu --lib surface_presentation_tests::presentation_converts_once_and_internal_blit_preserves_straight_hidden_rgb -- --ignored --exact --nocapture",
+					"exitCode": 0,
+					"passed": 1
+				},
+				{
+					"command": "cargo +stable test --offline --locked -p compositor --lib --test scene_effect_wire --test transition_wire -- --nocapture",
+					"exitCode": 0,
+					"passed": 4
+				}
+			],
+			"scope": "Native GPU surface correction; not browser or WebGPU canvas acceptance",
+			"launcherNote": "Initial gpu-policy run compiled in 52.96s and printed six passing tests, but Start-Process -Wait waited on persistent compiler-service descendants after cargo exited. Only the owned launcher was interrupted. The launcher was corrected to Process.WaitForExit, and gpu-policy-exit repeated the cached test with recorded exitCode 0. Initial stdout/stderr are retained; no shared compiler-service process was terminated."
+		},
+		"wasmRebuild": {
+			"command": "node script/build-wasm.mjs --mode no-install -- --offline --locked",
+			"offline": true,
+			"exitCode": 0,
+			"bytes": 7535108,
+			"sha256": "c2fc05acffb5e14a5a08856127103498586358f391c03b4e4654b3ee370737a3",
+			"gates": {
+				"passed": 4,
+				"negativeControlsPassed": 27,
+				"positiveControlsPassed": 2,
+				"runtimeVersions": ["Bun 1.4.2", "Bun 1.2.18", "Node v24.14.0"],
+				"pinnedBunSupplement": "Runtime init was additionally run with the existing absolute Bun 1.2.18 executable; no package installation or npx invocation was needed.",
+				"publicJsExports": 88,
+				"stableWasmExports": 105,
+				"trampolineExports": 3,
+				"wasmImports": 612
+			},
+			"privateDependencyCopies": [
+				{
+					"relative": "node_modules/opencut-wasm",
+					"files": 11,
+					"parity": true
+				},
+				{
+					"relative": "apps/web/node_modules/opencut-wasm",
+					"files": 11,
+					"parity": true
+				},
+				{
+					"relative": "packages/editor-classic/node_modules/opencut-wasm",
+					"files": 11,
+					"parity": true
+				}
+			],
+			"previousPackageArchive": "C:/tmps/rocut-stylized-f6XU4z/wasm-before-presentation-6k6apG",
+			"copySafety": "Producer/destination physical parent and device/inode identity revalidated before same-parent staged binary rename. All eleven files match in every private copy with nlink=1; no shared/canonical dependency replaced."
+		}
+	},
+	"liquidBrowserVerification": {
+		"date": "2026-10-08",
+		"status": "webgl-scene-and-video-pass-direct-raster-failed",
+		"evidenceFile": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/.artifacts/liquid-effects/run-3WRxfN/evidence.json",
+		"evidenceSha256": "8a723caa0c50151b75c7e227721bcceb7e48520dfec283ed21a2dc00e21f8831",
+		"wasmSha256": "57f7e0c54a292f65887687ef35d29d6da2fdefced80f38dfc4661c33e2b5e21b",
+		"sourceManifestSha256": "af1e2b4b23381f94f5a0f2b870f5523a89bf032929aa9834725ee80430a6aeca",
+		"browser": "153.0.8010.12",
+		"thresholds": {
+			"directRgb": 2,
+			"directAlpha": 1,
+			"identity": 0,
+			"compositeRgb": 3,
+			"inferredAlpha": 0.00784313725490196,
+			"exportMeanRgba": 10,
+			"exportActiveRgb": 15,
+			"exportActivePixels": 2000
+		},
+		"oracleCpu": {
+			"passed": 3,
+			"failed": 0,
+			"assertions": 89,
+			"typecheckPassed": true
+		},
+		"webgl": {
+			"selectedBackend": "webgl",
+			"sceneChecks": 25,
+			"scenePassed": true,
+			"sceneMaxRgb": 1,
+			"sceneInferredAlphaError": 0.0039215686274510775,
+			"directRasterPassed": false,
+			"directFirstFailure": {
+				"name": "93x62 120/1 t10000",
+				"maxRgb": 223,
+				"maxAlpha": 0,
+				"failures": 269,
+				"changed": 293,
+				"first": "byte 2: 48 vs 32"
+			},
+			"video": {
+				"width": 640,
+				"height": 360,
+				"fps": 30,
+				"frames": 6,
+				"browserDecodePassed": true,
+				"independentDecodePassed": true,
+				"maxIndependentMeanRgba": 6.273055555555556,
+				"maxIndependentActiveRgb": 9.83997215510144,
+				"expectedSha256": "44bb0a71005825341e8fb38842c521a04800ad7087808f914e0cd933bc79e4c2"
+			}
+		},
+		"webgpu": {
+			"requested": true,
+			"adapterPresent": false,
+			"selectedBackend": "webgl",
+			"accepted": false,
+			"forcedSwiftShaderRerun": "Prepared but not executed because free E storage returned to about 80 MiB"
+		},
+		"diagnosis": {
+			"scope": "Direct canvas presentation; not the Rust fluid solver",
+			"evidence": "Oracle edge RGBA [0,1,32,169], observed blue 48 with alpha 169; round(32*255/169)=48. Straight shader output enters a premultiplied WebGL canvas without conversion.",
+			"independentReviewer": "mesh_sampling_review",
+			"opaqueSceneLimit": "Scene checks composite against opaque backgrounds before presentation, masking the direct canvas alpha mismatch.",
+			"fixStatus": "Historical pre-correction run. The rebuilt correction, retained direct-canvas failures and separate successful raw/presentation proof are recorded in liquidSurfacePresentationCorrection, liquidCorrectedBrowserVerification and liquidReadbackDiagnosticVerification."
+		},
+		"retainedFailures": [
+			{
+				"run": "run-jwa4XZ",
+				"reason": "WebGPU fell back to WebGL and was rejected. First direct-raster probe incorrectly sent legal empty zero-amount passes to an API requiring nonempty passes; corrected without changing thresholds."
+			},
+			{
+				"run": "run-3WRxfN",
+				"reason": "WebGPU adapter unavailable; direct WebGL raster alpha presentation failed. Scene and independent video decode passed. No ENOSPC."
+			}
+		],
+		"boundaries": [
+			"No Host persistence/reopen, attached editor or installed Electron acceptance",
+			"No edge exclusion or threshold relaxation",
+			"Probe launch refinement and additional transparent zero-state diagnostics were prepared after this run; the run source manifest remains the executed-source authority"
+		],
+		"latestProbeSourceSha256": {
+			"script/probe-liquid-effects.mjs": "0c22332773bec28e323fab3539c279e8183290163d77d4290ad2d7bfc166662c",
+			"script/fixtures/liquid-browser-cases.ts": "1c8681a7b125020485499984fffa2a6454f7687c2835ea1c1e3b28bb586a47ee",
+			"script/fixtures/liquid-browser-oracle.ts": "15ccafd746b6df946b86a9cabfe3069811d12a5ef1a24d2d52cfa5076c675cf5",
+			"script/fixtures/liquid-browser-oracle.test.ts": "9c2dbdf9ecadf7d7acd071186a0dd0b64d8c748fe6b1cad4c724c7993bc4fb7f",
+			"script/fixtures/liquid-browser-probe.html": "c8f09bec088037a212824ef3b53be6554e32799caa08947ee17bfd07d45acddc",
+			"script/fixtures/liquid-browser-probe.ts": "15172a36e81be4d78e3977c29681f5d6f067fd7122559a7cc3126930b52f725a",
+			"script/fixtures/liquid-browser-raster.ts": "41f7baa1845c77dd7dc21dc2458666c908a73a18597c2f9f424ce9fc457e5604",
+			"script/fixtures/liquid-browser-timeline.ts": "054edead875678ca20546a09e3e55a5facf4a4ba391661ea42538f154702f5a9",
+			"script/fixtures/liquid-browser-scene.ts": "fd79f81a466b983abd22ba691dae1d4f7795c4282c66fff309a22fa852d28a86",
+			"script/fixtures/liquid-export-probe.ts": "c1303a1382a330b46c6f4b87838c39a1ab07cc261d7377432ea3ed3179db0523"
+		}
+	},
+	"freshWasmVerification": {
+		"date": "2026-10-08",
+		"status": "private-frozen-fixture-verified",
+		"command": "node script/build-wasm.mjs --mode no-install -- --offline --locked",
+		"rustc": "1.88.0",
+		"wasmPack": "0.13.1",
+		"wasmBindgen": "0.2.116",
+		"wasmOpt": "117",
+		"offline": true,
+		"wasmSha256": "57f7e0c54a292f65887687ef35d29d6da2fdefced80f38dfc4661c33e2b5e21b",
+		"wasmBytes": 7526434,
+		"publicJsExports": 88,
+		"stableWasmExports": 105,
+		"trampolineExports": 3,
+		"wasmImports": 612,
+		"privateBaselineDelta": {
+			"added": ["sampleParticleSurfaceJson|function"],
+			"removed": [],
+			"importsChanged": false
+		},
+		"canonicalAbiContractChanged": false,
+		"canonicalPublicJsExportsAtInspection": 101,
+		"canonicalAbiContractSha256": "0c732c9ad63fdb8f0abf6824b60afb1f477a98376e01240d81ec18bacdc1d7fd",
+		"privateAbiContractSha256": "c664e5725a371093ba3661c96a25df6d5808588c8e3b99fdfab723e13c17636d",
+		"gates": {
+			"command": "bun run check:wasm",
+			"passed": 4,
+			"rustInputs": 184,
+			"sourceParity": true,
+			"pathLeakCheck": true,
+			"exactApiSurface": true,
+			"runtimeInit": true,
+			"runtimeVersions": ["Bun 1.2.18", "Node 24.14.0"],
+			"migrationCount": 32
+		},
+		"apiSurfaceControls": {
+			"command": "node script/check-wasm-api-surface.mjs --negative-control",
+			"negativePassed": 27,
+			"positivePassed": 2
+		},
+		"privateDependencyCopies": [
+			"node_modules/opencut-wasm",
+			"apps/web/node_modules/opencut-wasm",
+			"packages/editor-classic/node_modules/opencut-wasm"
+		],
+		"copySafety": "Validated contained real parents and identities; staged individual files and detached hardlinks rather than overwriting shared inodes. All eleven producer files matched in each private copy. No canonical/shared installation changed.",
+		"retainedInitialFailure": "Exact ABI gate first rejected the single expected new public export. Only the frozen private expected metadata was updated after inspecting the export/declaration/import delta; canonical metadata with concurrent exports was not replaced."
+	},
+	"liquidCorrectedBrowserVerification": {
+		"status": "historical-corrected-webgl-direct-canvas-run-raw-proof-now-recorded-in-liquidReadbackDiagnosticVerification",
+		"evidenceFile": "C:/tmps/rocut-stylized-f6XU4z/liquid-effects/run-NvjJsO/evidence.json",
+		"evidenceSha256": "5c0f8dd631c9bb46fab7d178fe4dd2840b15ba34c31f4ad5426126384f66fbe5",
+		"wasmSha256": "c2fc05acffb5e14a5a08856127103498586358f391c03b4e4654b3ee370737a3",
+		"sourceManifestSha256": "3a10fbbaa218e484c8cc1ba479a67739c5c8148bbef82ce7cfe52381c1e2ae26",
+		"thresholds": {
+			"directRgb": 2,
+			"directAlpha": 1,
+			"identity": 0,
+			"compositeRgb": 3,
+			"inferredAlpha": 0.00784313725490196,
+			"exportMeanRgba": 10,
+			"exportActiveRgb": 15,
+			"exportActivePixels": 2000
+		},
+		"webgl": {
+			"selectedBackend": "webgl",
+			"canvasVersusRawOracle": {
+				"comparisons": 170,
+				"failedComparisons": 75,
+				"maxRgb": 105,
+				"maxAlpha": 0,
+				"opaqueFailedBytes": 0,
+				"firstFailure": {
+					"name": "93x62 120/1 t10000",
+					"maxRgb": 105,
+					"maxAlpha": 0,
+					"failures": 12,
+					"opaqueFailures": 0,
+					"changed": 108,
+					"first": "byte 208: 137 vs 134",
+					"firstPixel": {
+						"index": 52,
+						"actual": [137, 0, 31, 41],
+						"expected": [134, 0, 32, 41]
+					}
+				},
+				"interpretation": "Canvas drawImage/getImageData is a premultiplied eight-bit presentation roundtrip, not raw GPU texture readback. Failure remains recorded with unchanged thresholds."
+			},
+			"blackWhite": {
+				"comparisons": 14,
+				"maxRgb": 0,
+				"maxInferredAlphaError": 1.1102230246251565e-16,
+				"passed": true
+			},
+			"timeline": {
+				"checks": 25,
+				"passed": true
+			},
+			"video": {
+				"width": 640,
+				"height": 360,
+				"fps": 30,
+				"frames": 6,
+				"browserDecodePassed": true,
+				"independentDecodePassed": true,
+				"maxIndependentMeanRgba": 6.273055555555556,
+				"maxIndependentActiveRgb": 9.83997215510144,
+				"expectedSha256": "44bb0a71005825341e8fb38842c521a04800ad7087808f914e0cd933bc79e4c2"
+			}
+		},
+		"webgpu": {
+			"adapterPresent": false,
+			"selectedBackend": "webgl",
+			"accepted": false,
+			"diagnosticRuns": [
+				"C:/tmps/rocut-stylized-f6XU4z/webgpu-adapter/run-6Pxyac",
+				"C:/tmps/rocut-stylized-f6XU4z/webgpu-adapter/run-ms81dV"
+			],
+			"scope": "Four explicit configurations and three adapter selections each returned null. ANGLE SwiftShader is active; a WebGPU adapter is unavailable in this Chromium/environment. This does not establish an omitted backend or cross-machine support."
+		},
+		"quantizationReference": {
+			"testsPassed": 4,
+			"assertions": 10,
+			"colorAlphaPairsChecked": 65536,
+			"typecheckPassed": true,
+			"formattingPassed": true,
+			"repoEslint": "Both new script paths ignored: no matching configuration; no lint coverage claimed.",
+			"files": [
+				"script/fixtures/liquid-surface-quantization.ts",
+				"script/fixtures/liquid-surface-quantization.test.ts"
+			],
+			"sourceSha256": {
+				"script/fixtures/liquid-surface-quantization.ts": "0dddeb08e5b5fd62d7752320cb8dccffec55c4e8b5030633aecd9d331cbcfa06",
+				"script/fixtures/liquid-surface-quantization.test.ts": "9e09d884e8361fdda981b3eb762b7cc92dfa42253821073a04d7c9515293b563"
+			}
+		},
+		"notAccepted": [
+			"Browser raw texture comparison was absent in this run; later passed in liquidReadbackDiagnosticVerification",
+			"Real WebGPU selection",
+			"Host persistence and attached editor",
+			"Installed Electron"
+		]
+	},
+	"particlePackagingVerification": {
+		"status": "helper-and-standalone-factory-verified-full-runtime-pack-not-run",
+		"evidenceFile": "C:/tmps/rocut-stylized-f6XU4z/particle-pack/run-04P2gM/evidence.json",
+		"evidenceSha256": "042473d05f76e7926006f3150fe4dd1f40a243667e83ad7cee32868e3dfdc862",
+		"runtime": "v24.14.0",
+		"wasmSha256": "c2fc05acffb5e14a5a08856127103498586358f391c03b4e4654b3ee370737a3",
+		"scenariosPassed": 7,
+		"scenarios": [
+			{
+				"name": "success",
+				"mode": "success",
+				"runtime": "v24.14.0",
+				"standalone": true,
+				"processClosed": true,
+				"processNotStarted": false,
+				"samples": 2,
+				"deterministicReply": true,
+				"rustError": "sampleCount"
+			},
+			{
+				"name": "cancel",
+				"mode": "cancel",
+				"runtime": "v24.14.0",
+				"standalone": true,
+				"processClosed": true,
+				"processNotStarted": false,
+				"activeRejected": true,
+				"queuedRejected": true,
+				"started": 1,
+				"resultsBeforeClose": 0
+			},
+			{
+				"name": "missing-worker",
+				"mode": "missing",
+				"runtime": "v24.14.0",
+				"standalone": true,
+				"processClosed": true,
+				"processNotStarted": false,
+				"initializationRejected": true,
+				"samplerRejected": true
+			},
+			{
+				"name": "missing-module",
+				"mode": "missing",
+				"runtime": "v24.14.0",
+				"standalone": true,
+				"processClosed": true,
+				"processNotStarted": false,
+				"initializationRejected": true,
+				"samplerRejected": true
+			},
+			{
+				"name": "missing-wasm",
+				"mode": "missing",
+				"runtime": "v24.14.0",
+				"standalone": true,
+				"processClosed": true,
+				"processNotStarted": false,
+				"initializationRejected": true,
+				"samplerRejected": true
+			},
+			{
+				"name": "corrupt-wasm",
+				"mode": "missing",
+				"runtime": "v24.14.0",
+				"standalone": true,
+				"processClosed": true,
+				"processNotStarted": false,
+				"initializationRejected": true,
+				"samplerRejected": true
+			},
+			{
+				"name": "invalid-literal",
+				"mode": "invalid",
+				"runtime": "v24.14.0",
+				"standalone": true,
+				"processClosed": false,
+				"processNotStarted": true,
+				"initializationRejected": true,
+				"samplerRejected": true
+			}
+		],
+		"deterministic": true,
+		"outputIdentityRechecked": true,
+		"sourceSha256": {
+			"script/pack-runtime.mjs": "49c9d0e412e811ecba0e3c4ddc9161fb6c1fa250b17b86f06eea35cf8847589d",
+			"script/pack-particle-sampler.mjs": "175f6a992d25f705b1056e2218fbc30185f1cdbf46cb9f160c64d5768da3647d",
+			"script/pack-particle-sampler-fixture.mjs": "d45a767bf839955dd6edc195c6b5fa9a4a19dfcbe782774f9d28f70ef365e3e1",
+			"script/__tests__/pack-particle-sampler.test.mjs": "e2d63d89bf9bb5dbc666864a33482fc6381b826733d718fbc8415f87909e3a13",
+			"apps/cli/src/programmatic/particle-sampler-worker.ts": "6c0890cd7c9d862239aaff12aa3da0efbcad86860436d75e865845fab8f2e87f",
+			"apps/cli/src/programmatic/particle-sampler-worker-core.ts": "42e9104c754ac75c3eb3781a704c9bfae6371d254c42c3a7c44104b7adb3c42b",
+			"apps/cli/src/programmatic/particle-sampler-worker-process.ts": "926a59303fb80782502be4455ad94d0c490f72a763aab687103b0863087c5a35",
+			"apps/cli/src/programmatic/particle-sampler-worker-entry.mjs": "7be334837286035c98c0f02382e3f9a3f5754b38e33c24429f690b81bda9eb40"
+		},
+		"artifacts": [
+			{
+				"file": "opencut_wasm_bg.wasm",
+				"sha256": "c2fc05acffb5e14a5a08856127103498586358f391c03b4e4654b3ee370737a3"
+			},
+			{
+				"file": "particle-pack-fixture.mjs",
+				"sha256": "75e88691cbb8122967ef0562572786e2e334241d18067ac400e6586109c68e8a"
+			},
+			{
+				"file": "particle-sampler-wasm.mjs",
+				"sha256": "6324867557fb155cf2067ecd72f79759b74969d33bbab5f8f69b4428a5827f9a"
+			},
+			{
+				"file": "particle-sampler-worker-entry.mjs",
+				"sha256": "7be334837286035c98c0f02382e3f9a3f5754b38e33c24429f690b81bda9eb40"
+			}
+		],
+		"workerRegression": {
+			"passed": 19,
+			"assertions": 145,
+			"strictTypecheckPassed": true,
+			"formattingPassed": true,
+			"strictUtf8NoBom": true,
+			"log": "C:/tmps/rocut-stylized-f6XU4z/particle-pack/run-04P2gM/worker-regression-and-format.log"
+		},
+		"boundaries": [
+			"pack-runtime source seam wired; full canonical runtime pack not executed",
+			"No dependencies installed or installed plugin replaced",
+			"No browser driver or Electron capture-session v2 wired"
+		],
+		"retainedFailure": "First worker regression had 18 pass and one helper rejection due to hardcoded E-only TEMP. Two test-only guards now require an explicit absolute TEMP; final 19 passed with task-owned C temporary directories."
+	},
+	"particleNativePolicyVerification": {
+		"status": "native-policy-prepared-not-wasm-exported-or-runtime-enforced",
+		"evidenceFile": "C:/tmps/rocut-stylized-f6XU4z/particle-policy-475c4fd48dcc/source-verification.json",
+		"evidenceSha256": "9b655cbf1a50ac48a75df8cbfdf43aefe3b338266ee7c4cb1f57d5bbdab17821",
+		"testLog": "C:/tmps/rocut-stylized-f6XU4z/particle-policy-475c4fd48dcc/native-tests-and-policy.log",
+		"privateCrateTestsPassed": 42,
+		"newPolicyTests": 7,
+		"repeatedSurfaceBridgeTests": 35,
+		"fullEditorApiCrateRun": false,
+		"wasmExportAdded": false,
+		"runtimeEnforcement": false,
+		"strictUtf8": true,
+		"sourceSnapshotsByteEqual": true,
+		"policyJsonSha256": "ac384e674e3f388ae11a674bd72c09786bc53cab2187cc4c3467ff0856635ba7",
+		"logicalFrameReservationBytes": 44056576,
+		"logicalFramePayloadBudgetBytes": 67108864,
+		"policy": {
+			"version": 1,
+			"operation": "particleSurface",
+			"surfaceVersion": 1,
+			"transportVersion": 1,
+			"kernel": {
+				"maxTriangles": 262144,
+				"maxSamples": 65536,
+				"maxInputJsonBytes": 67108864,
+				"maxOutputJsonBytes": 67108864,
+				"maxWorkingBytes": 201326592,
+				"maxJsonTokenBytes": 256
+			},
+			"hostDefaults": {
+				"maxTriangles": 16384,
+				"maxSamples": 4096,
+				"maxRequestJsonBytes": 2097152,
+				"maxResponseJsonBytes": 4194304,
+				"maxRequestEnvelopeBytes": 4198400,
+				"maxResponseEnvelopeBytes": 8392704,
+				"maxRequestsPerFrame": 2,
+				"maxInFlight": 1,
+				"maxFrameRetainedPayloadBytes": 67108864,
+				"requestTimeoutMs": 15000,
+				"frameTimeoutMs": 30000,
+				"process": {
+					"maxPendingRequests": 1,
+					"initTimeoutMs": 5000,
+					"terminationTimeoutMs": 5000
+				},
+				"cleanupTimeoutMs": 5000
+			}
+		},
+		"sourceSha256": {
+			"rust/crates/editor-api/src/particle_surface.rs": "9eb4fef0c1812902dba886bf593742a096751cbb4fd04a13205d46e8d269668f",
+			"rust/crates/editor-api/src/particle_surface/numeric.rs": "36c6227f84ba7cae384a5c3c78297b14fd184f472dffff595eaf6f3dacd2b850",
+			"rust/crates/editor-api/src/particle_surface/numeric_tests.rs": "8c1b4045dd835a93566e00d8a6aa67dfad8d6941735455f40774fb347accb5e5",
+			"rust/crates/editor-api/src/particle_surface/tests.rs": "6e7b2cf7d0c85c6300b7a98009a5f026ea7b29992137d0ac6070241247f7f444",
+			"rust/crates/editor-api/src/particle_surface_bridge.rs": "c07fcee0379345c80bcdcd2cae464407d481754fb3b11ffe625f6eada5b00592",
+			"rust/crates/editor-api/src/particle_surface_bridge/tests.rs": "12b99979de9b5606afb415e47bd14327c685e4b6cf60c4a45fafabd554dc6057",
+			"rust/crates/editor-api/src/particle_transport_policy.rs": "8c9ef12c75817f953857547d00b11166158ef1b94742c186da0fde9e3d08c670",
+			"rust/crates/editor-api/src/particle_transport_policy/tests.rs": "369fe13d408393028eed6f7fa9a81e116db60ce365cdf9ef7c24ddf89cdd4933"
+		},
+		"scope": "Kernel limits reference existing Rust constants; host defaults distinguish raw JSON, escaped envelopes, per-frame reply tails and process deadlines. No whole-process memory bound or driver integration is claimed."
+	},
+	"particleWasmPolicyVerification": {
+		"status": "canonical-wasm-getter-abi-and-standalone-package-verified",
+		"evidenceFile": "C:/tmps/rocut-stylized-f6XU4z/particle-policy-wasm-a7a762bc72dc/phase-a-evidence.json",
+		"evidenceSha256": "d3eb417658f4977f75b10d132c4b75eccaacc9f2d9d17cf8b4bed1d02e4e907e",
+		"wasmPackage": "C:/tmps/rocut-stylized-f6XU4z/particle-policy-wasm-a7a762bc72dc/pkg",
+		"wasmSha256": "282d64a83ffc3426dc72cc3950dc330656f601842e6ab85d04096d432496d2d9",
+		"policyJsonSha256": "ac384e674e3f388ae11a674bd72c09786bc53cab2187cc4c3467ff0856635ba7",
+		"testsPassed": 2,
+		"abi": {
+			"oldPublic": 88,
+			"newPublic": 89,
+			"oldStable": 105,
+			"newStable": 106,
+			"trampolines": 3,
+			"imports": 612,
+			"onlyAdded": "particleTransportPolicyJson"
+		},
+		"gates": {
+			"typecheck": true,
+			"pathsAndNegativeControls": true,
+			"formatting": true,
+			"strictUtf8": true
+		},
+		"packageEvidence": "C:/tmps/rocut-stylized-f6XU4z/particle-policy-wasm-a7a762bc72dc/policy-pack-7KJiCO/evidence.json",
+		"packageEvidenceSha256": "52513bebf6944908497cfbc19c48c017c40a265816cabe7c88d57590dbba34ca",
+		"sourceSha256": {
+			"rust/crates/editor-api/src/particle_transport_policy.rs": "617999793edfc89ebfb218781df27609875000e6ae05de95daa27bfc7315f541",
+			"rust/crates/editor-api/src/particle_transport_policy/tests.rs": "369fe13d408393028eed6f7fa9a81e116db60ce365cdf9ef7c24ddf89cdd4933",
+			"script/pack-particle-sampler.mjs": "938e7fbf2930e700ea4c122075ef4c6b9f40bde026e55710cc55d1ace810c931",
+			"script/pack-particle-policy-fixture.mjs": "19ec928b234575515e7606732634f1bc9d2499e2d5acbda5595c40f635149fa5",
+			"script/__tests__/pack-particle-policy.test.mjs": "db7a9dbcc6b6672ea75e300ab2e7f4f3588368b053d6497578a5ee97d1d1c60f",
+			"script/__tests__/particle-policy-abi.test.mjs": "fbe3f7de4ff4d2191299d4a3fd471a4ccfd179cdedb1862d0a7a2815d9fc936f"
+		},
+		"behavior": [
+			"Standalone packaged sync module exposes the actual Rust policy getter",
+			"Missing getter in old WASM is rejected at packaging/runtime; no TypeScript policy fallback",
+			"Private JavaScript and stable binary API add only particleTransportPolicyJson; no removed exports",
+			"Default Liquid 1aa26 package/dependency copies and diagnostic 021f package remain unchanged"
+		],
+		"canonicalPreExisting": {
+			"packagePublicExports": 77,
+			"contractPublicExports": 104,
+			"matching": false,
+			"sharedPackageChanged": false,
+			"contractChanged": false
+		},
+		"boundaries": [
+			"Current-source Rust snapshot and canonical ABI metadata verified; this is not whole-worktree TypeScript/app integration",
+			"Shared checkout generated WASM remains the pre-existing 77-export package; no shared dependency or installed plugin update",
+			"Production Three frame driver, material texture sampling and point animation are not wired",
+			"Transport budget enforcement has separate runtime tests; getter tests alone do not establish it"
+		],
+		"canonicalVerification": {
+			"evidenceFile": "C:/tmps/rocut-stylized-f6XU4z/particle-canonical-wasm-qPej1p/canonical-evidence.json",
+			"evidenceSha256": "81b69faf940c0a17bafc84ab195c82918e09a4a6083ee013321fb6dbeb660c87",
+			"package": "C:/tmps/rocut-stylized-f6XU4z/particle-canonical-wasm-qPej1p/snapshot/rust/wasm/pkg",
+			"wasmSha256": "10dc0a0b1ee925475334e3cbd1f4098cd1f9427f221139e230717a3b4dc7a6c7",
+			"wasmBytes": 8233083,
+			"sourceSnapshot": {
+				"fileCount": 351,
+				"bytes": 2687690,
+				"sha256": "42da02c24f881a2fd7a26902d3814ade34bb3e76b9e9b9aabdf4b0f2fbf2641d",
+				"originalManifestPreserved": true,
+				"frozenFilesUnchangedExceptApprovedContract": true,
+				"currentSourceDrift": [
+					{
+						"path": "script/wasm-api-surface-contract.mjs",
+						"before": "4ec0f168b20835169d2d7762936b1564d674c97fa7010f8fc1d84c42a7a68d3b",
+						"current": "a31f70eb7ad4f3856da4a8bab5a5df809a69b8ff4e2ceaebb2b37e8d1dc10670"
+					}
+				]
+			},
+			"contract": {
+				"beforeSha256": "4ec0f168b20835169d2d7762936b1564d674c97fa7010f8fc1d84c42a7a68d3b",
+				"afterSha256": "a31f70eb7ad4f3856da4a8bab5a5df809a69b8ff4e2ceaebb2b37e8d1dc10670",
+				"onlyApprovedTokenDelta": true,
+				"oldArrayOrderPreserved": true,
+				"publicExports": [104, 105],
+				"stableWasmExports": [121, 122],
+				"trampolines": 3,
+				"imports": 612,
+				"added": ["particleTransportPolicyJson"],
+				"removed": []
+			},
+			"gates": {
+				"source": true,
+				"paths": true,
+				"api": true,
+				"apiNegativeControls": 27,
+				"apiPositiveControls": 2,
+				"init": true,
+				"node": "24.14.0",
+				"bun": "1.2.18",
+				"migrationTransformers": 32,
+				"getterTypecheck": true,
+				"standalonePack": true,
+				"policyPack": true,
+				"prettier": true,
+				"strictUtf8": true
+			},
+			"initHarnessCorrection": "Initial init attempt omitted existing public migration facade; exact canonical facade copied and hash-recorded, then original gate passed. No product or gate code changed.",
+			"sharedGeneratedPackageStillOldExports": 77,
+			"sharedDependenciesOrPluginReplaced": false,
+			"fullCanonicalRuntimePackExecuted": false
+		}
+	},
+	"liquidHostPersistenceVerification": {
+		"status": "host-persistence-verified-editor-history-verified-separately",
+		"evidenceFile": "C:/tmps/rocut-stylized-f6XU4z/liquid-persistence-AWjLrn/evidence.json",
+		"evidenceSha256": "63e51760b2f18250901b63112250bcc8bce502ab3b3aa1ff7e77e4f4cc00d0e0",
+		"command": "bun test apps/cli/src/__tests__/liquid-persistence.test.ts",
+		"runtime": "Bun 1.2.18",
+		"passed": 1,
+		"failed": 0,
+		"assertions": 421,
+		"strictTypecheckPassed": true,
+		"formattingPassed": true,
+		"strictUtf8NoBom": true,
+		"reopens": 3,
+		"rejectedAtomicBatches": 122,
+		"opticalChannels": [
+			"amount",
+			"refraction",
+			"dyeOpacity",
+			"colorR",
+			"colorG",
+			"colorB"
+		],
+		"wasmSha256": "1aa26bf553b83c754d4f23651b3c769f5cde9fe296fb383c4a73010ef8aeacbf",
+		"testSource": "apps/cli/src/__tests__/liquid-persistence.test.ts",
+		"testSourceSha256": "eb237a0d39f3bd4a608c138bc01db465855a9cc1704187dfe502ce5796ad99fc",
+		"behavior": [
+			"Real Host api/apply and FileProjectStore; complete clip/track data and revision survive reopening",
+			"Attached effect retains six optical animation channels; static effect layer persists",
+			"Physical and impulse edits plus optical edits survive reopening",
+			"Each invalid batch first changes an unrelated sentinel; rejection keeps complete memory projection, revision and project.json bytes unchanged",
+			"Unordered Host projection arrays compared by id; authored track stacking order compared exactly"
+		],
+		"retainedFailure": {
+			"artifactDirectory": "C:/tmps/rocut-stylized-f6XU4z/liquid-persistence-SRLYpy",
+			"reason": "Initial reopen assertion compared incidental Host projection array order. Full data matched; final assertions sort by id and separately preserve authored track order."
+		},
+		"boundaries": [
+			"Real editor undo/redo, pixel rendering and export not exercised by this Host test",
+			"No claim of UI-authored optical keyframes; current Effects tab has no keyframe-creation controls",
+			"Installed Elftia/Electron not exercised"
+		]
+	},
+	"particleTransportEnforcementVerification": {
+		"status": "transport-policy-enforced-through-real-process-rust-chain-not-three-driver",
+		"evidenceFile": "C:/tmps/rocut-stylized-f6XU4z/particle-policy-b-mesh-20261008.json",
+		"evidenceSha256": "426fe8c48893532865dde5ed2a50bb95309425dbb334a991fcbd5fe640384a20",
+		"uniqueBehaviorTestsPassed": 95,
+		"combinedSingleGreenRun": false,
+		"verification": [
+			{
+				"kind": "strict-typecheck",
+				"command": "node node_modules/.bun/typescript@6.0.3/node_modules/typescript/lib/tsc.js --ignoreConfig --noEmit --strict --module esnext --moduleResolution bundler --target es2022 --skipLibCheck --types node,bun <all scoped particle TS source/test paths>",
+				"exitCode": 0
+			},
+			{
+				"kind": "format-and-encoding",
+				"checks": [
+					"Prettier scoped source/tests check",
+					"strict UTF8 decoding, no BOM/U+FFFD",
+					"git diff --check scoped directories",
+					"node --check worker entry"
+				],
+				"exitCode": 0
+			},
+			{
+				"kind": "combined-suite-with-collection-error",
+				"files": 14,
+				"passed": 88,
+				"assertions": 915,
+				"exitCode": 1,
+				"collectionErrors": 1,
+				"reason": "particle-wasm-roundtrip required explicit ROCUT_TEST_THREE_TOOLCHAIN alongside the supplied new WASM; no behavioral test failed in the other 13 files"
+			},
+			{
+				"kind": "resolved-collection-rerun",
+				"command": "bun test apps/cli/src/__tests__/particle-wasm-roundtrip.test.ts",
+				"threeToolchain": "C:/Users/Sayo/AppData/Local/Temp/rocut-three-resources-oSn2hb/.artifacts/three-toolchain/run-YuITk9",
+				"passed": 7,
+				"failed": 0,
+				"assertions": 2204,
+				"exitCode": 0
+			},
+			{
+				"kind": "final-affected-rerun",
+				"files": [
+					"particle-policy.test.ts",
+					"particle-policy-bootstrap.test.ts",
+					"particle-sampler-worker-integration.test.ts"
+				],
+				"passed": 9,
+				"failed": 0,
+				"assertions": 255,
+				"exitCode": 0
+			}
+		],
+		"canonicalVerification": {
+			"createdAt": "2026-10-08T11:53:37.139Z",
+			"kind": "independent-complete-canonical-artifact-chain-run",
+			"command": "bun test apps/cli/src/__tests__/particle-sampler-worker-integration.test.ts",
+			"environment": {
+				"ROCUT_PARTICLE_WASM_MODULE": "C:/tmps/rocut-stylized-f6XU4z/particle-canonical-wasm-qPej1p/snapshot/rust/wasm/pkg/opencut_wasm_sync.js",
+				"TEMP": "C:/tmps/rocut-stylized-f6XU4z",
+				"TMP": "C:/tmps/rocut-stylized-f6XU4z"
+			},
+			"binary": "C:/tmps/rocut-stylized-f6XU4z/particle-canonical-wasm-qPej1p/snapshot/rust/wasm/pkg/opencut_wasm_bg.wasm",
+			"wasmSha256": "10dc0a0b1ee925475334e3cbd1f4098cd1f9427f221139e230717a3b4dc7a6c7",
+			"passed": 2,
+			"failed": 0,
+			"assertions": 23,
+			"exitCode": 0,
+			"sourceDigest": "8b14a67afe0aac8d0f47570c9f8215bc76029dbc16cdc1e155ffc42c346ae28e",
+			"sourceFingerprintsUnchanged": true,
+			"notes": [
+				"Only the minimal client/broker/real-process/Rust chain was rerun.",
+				"Earlier 282d64 artifact runs remain separately recorded and were not overwritten or combined into this run.",
+				"No source edits, builds, shared dependency changes or Three driver work were performed."
+			]
+		},
+		"sourceDigest": "8b14a67afe0aac8d0f47570c9f8215bc76029dbc16cdc1e155ffc42c346ae28e",
+		"sourceDigestDefinition": "SHA256 of sorted UTF8 path + space + sha256 + newline",
+		"sourceSha256": {
+			"apps/cli/src/programmatic/particle-broker-deadline.ts": "b2b430a7ec7553639613e1f42d477320b2e2c889f5f08b1ba82a7c300fde1157",
+			"apps/cli/src/programmatic/particle-broker-host.ts": "5d7cd80c0b1b3ce970acbd578db8680121c8c1502f241c20c98325c001119013",
+			"apps/cli/src/programmatic/particle-broker.ts": "1218ecf6791b4d459b7ec2ceab23a25e1ec4b694d016d376bff2d78193427823",
+			"apps/cli/src/programmatic/particle-client.ts": "f6624294d5fdf2170cfc2ab88e16726120731406d29f1752b0b6663a514b3bee",
+			"apps/cli/src/programmatic/particle-policy-types.ts": "e57d9490f9fdd7144b06aac360d9043a866d14c11db9e6fe4d1848a33f4e490d",
+			"apps/cli/src/programmatic/particle-policy.ts": "cf1949525ff3c6a705f105468c11a6d03e732eda263c282f27998ee1570b0405",
+			"apps/cli/src/programmatic/particle-protocol-error.ts": "a59f94146ed985aafe35c6e8b9ecdaa8de0f3e0f2f0b8c41f5334fcfd96584bf",
+			"apps/cli/src/programmatic/particle-protocol-types.ts": "781b7ffb1141acb7630e55072dda6d8a49e974b1936cfab98359ba476ae94628",
+			"apps/cli/src/programmatic/particle-protocol.ts": "72ee3250dc18f7579962098b17d6b9ff431978de97629e29c9b0d2e9efca0972",
+			"apps/cli/src/programmatic/particle-sampler-worker-bootstrap.ts": "166d0e6e09404df9fca9f08925fcff678ca4662bbd9d5c63375f7961a5671b34",
+			"apps/cli/src/programmatic/particle-sampler-worker-core.ts": "c99f6adea964c02931f6bfc11c2fe65a0dbbee60038f488e2f9b3d69c7792e99",
+			"apps/cli/src/programmatic/particle-sampler-worker-entry.mjs": "7a870044878f445d75657591cd6ec702e05ff254f61908cc0444637ee1a1f5e8",
+			"apps/cli/src/programmatic/particle-sampler-worker-policy.ts": "b4d6b94b6fd06d51eb20802ac6561ed7c245236c209c4a522b84312b0732d66a",
+			"apps/cli/src/programmatic/particle-sampler-worker-process.ts": "4d2a52d791cc4b7236cb176ce2f696bda68e7f4860f256c243da50b76c37a59a",
+			"apps/cli/src/programmatic/particle-sampler-worker.ts": "b319f743a1f8be5fa4269d77e0e81520c5b99026cfef95bd15e07787747193ba"
+		},
+		"coverage": [
+			"strict full Rust policy JSON schema and cross-field relationships",
+			"deep-frozen full published and explicitly narrowed effective snapshots",
+			"raw JSON and complete escaped envelope budgets",
+			"whole-frame admission reservations retained through CDP reply tails",
+			"host request/frame deadlines and uncertain-cleanup ownership retention",
+			"private process getter discovery, infinite synchronous WASM getter interruption, abort and confirmed close",
+			"real client/broker/process/Rust success and structured-error chain",
+			"Node/Bun actual process success, cancellation, initialization failure and close"
+		],
+		"independentReview": {
+			"reviewer": "particle_surface",
+			"confirmedBlockers": 0,
+			"sourceFilesReadOnlyChecked": 7,
+			"parentCounterexamples": {
+				"evidenceFile": "C:/tmps/rocut-stylized-f6XU4z/particle-policy-review-lK51bB/evidence.json",
+				"evidenceSha256": "540b4dbf810b2b514f52493465394c5bd3df842ff95e68c2ee9c67f32e96f951",
+				"malformedPoliciesRejected": 17,
+				"wideningsRejected": 2,
+				"deepFrozenObjects": 4,
+				"logicalFrameReservationBytes": 44056576
+			}
+		},
+		"fixedReviewFinding": "Broker disposal clears active request timers immediately, including when reply acknowledgement never settles; uncertain cleanup still retains ownership and reservation",
+		"boundaries": [
+			"Three frame-driver integration",
+			"browser/CDP/GPU end-to-end capture",
+			"sampler binary identity in compilation/capture keys",
+			"shared installed WASM dependency synchronization",
+			"new package release or deployment"
+		]
+	},
+	"liquidEditorVerification": {
+		"status": "real-editor-authoring-history-reload-verified-export-verified-separately",
+		"evidenceFile": "C:/tmps/rocut-stylized-f6XU4z/liquid-editor/run-2oK7jH/evidence.json",
+		"evidenceSha256": "ef4492e04783ec7c6820bd41a4ea744782fc0d0e5e3a9b7f8608b6df709d2de3",
+		"sourceManifestSha256": "3524386f35c14b65fe6cd38c6a826639f0231a3ebd130e6ebb404bde81699ae2",
+		"wasmSha256": "1aa26bf553b83c754d4f23651b3c769f5cde9fe296fb383c4a73010ef8aeacbf",
+		"backend": "private Chromium SwiftShader",
+		"keyframeSamples": [
+			{
+				"localTicks": 4000,
+				"sha256": "c9bb32711466aeaf47c78e34e93a147b789925b32723ee70f6e9a762646230e3"
+			},
+			{
+				"localTicks": 12000,
+				"sha256": "eaa6ecf028bd530a181cc5bb56cf3fe0d837223906336213d129584f79f33fd3"
+			},
+			{
+				"localTicks": 24000,
+				"sha256": "c6ebdc24942069d0fbe253b4467328385940ab0ec0d6ec06e267a388875b016b"
+			}
+		],
+		"keyframeCreationUi": false,
+		"parameterEdits": [
+			{
+				"key": "viscosity",
+				"value": 0.001,
+				"completeClipRestored": true,
+				"originalPixelSha256": "815891f37cda9cbf367a3e77208beff4cf32cc9cf644e3cbe1075b9c754e665e",
+				"editedPixelSha256": "42e280df2a313b93c2af087051800c2a7787ce010182048094064004e13144e5"
+			},
+			{
+				"key": "refraction",
+				"value": 0.1,
+				"completeClipRestored": true,
+				"originalPixelSha256": "42e280df2a313b93c2af087051800c2a7787ce010182048094064004e13144e5",
+				"editedPixelSha256": "ac676a8a0b9d1d93e759fc4662f1328f720affaab524e023c6577d6f6802b006"
+			},
+			{
+				"key": "event0Radius",
+				"value": 0.55,
+				"completeClipRestored": true,
+				"originalPixelSha256": "ac676a8a0b9d1d93e759fc4662f1328f720affaab524e023c6577d6f6802b006",
+				"editedPixelSha256": "7634f0ac71e495c90970da78d3d29b2ffb31c15375b758ae07cee828742e2072"
+			}
+		],
+		"historyScope": "actual Effects textbox plus attached-session history.undo/history.redo",
+		"selectionOverlayChecks": 13,
+		"handlesPerCheck": 8,
+		"hostRestart": {
+			"ok": true,
+			"clips": 6,
+			"tracks": 3,
+			"revision": 10,
+			"authoredTrackIds": ["liquid-shots", "liquid-sentinel"]
+		},
+		"errors": [],
+		"externalRequests": [],
+		"httpFailures": [
+			{
+				"path": "/api/library/graph-editor-presets/user-presets",
+				"status": 404
+			},
+			{
+				"path": "/api/library/graph-editor-presets/user-presets",
+				"status": 404
+			}
+		],
+		"consoleErrors": [
+			"Failed to load resource: the server responded with a status of 404 (Not Found)",
+			"Failed to load resource: the server responded with a status of 404 (Not Found)"
+		],
+		"warnings": [
+			"No available adapters.",
+			"Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: [URL redacted]",
+			"No available adapters."
+		],
+		"editorDist": "C:/tmps/rocut-stylized-f6XU4z/liquid-editor/run-BCvoK5/temp/editor-dist",
+		"originalBuildWarnings": [
+			"countries-data.ts is both statically and dynamically imported; chunk remains shared",
+			"chunk-size advisory above 500 kB"
+		],
+		"sourceSha256": {
+			"script/fixtures/liquid-editor-host.ts": "720ea1c374108e4b87589a071f273009832ac2526b1016c8afe7767799d17945",
+			"script/fixtures/liquid-editor-checks.mjs": "db0454c4a60d8d97f0409ce3effda15045da337dd64b2304bd20547523614aa3",
+			"script/probe-liquid-editor.mjs": "f0874a768ebdab82968906bc6e76223e5681ba27856d63247fea844a6b0466d6"
+		},
+		"retainedFailures": [
+			{
+				"run": "run-BCvoK5",
+				"reason": "First undo restored complete project but full screenshot differed: selected handles were absent in baseline"
+			},
+			{
+				"run": "run-ErqloT",
+				"reason": "Unified selection alone still allowed stale committed-time overlay state; all differences within outer five pixels, no interior difference. No crop or threshold change accepted"
+			},
+			{
+				"run": "run-775564",
+				"reason": "Viscosity edit/undo/redo passed; Escape cleared selection during refraction interaction"
+			},
+			{
+				"run": "run-3pz7e2",
+				"reason": "Tab moved focus to another numeric field and kept the native focus lock active; final script uses component-supported Enter/blur and checks focus lock release"
+			}
+		],
+		"normalization": "Seek before selecting target and opening Effects; require eight visible handles at stable DOM positions before whole screenshot comparison. No production rendering, crop or hash tolerance change",
+		"boundaries": [
+			"Same-project official export and independent decode verified in liquidEditorExportVerification",
+			"Six optical channels authored through Host; no claim of keyframe-creation UI",
+			"Generic overlay committed-state timing hook was not changed",
+			"Installed plugin/Electron and real WebGPU adapter not tested"
+		]
+	},
+	"liquidReadbackDiagnosticVerification": {
+		"status": "webgl-raw-presentation-lifecycle-and-default-regression-verified",
+		"feature": "browser-readback-tests",
+		"defaultBuild": {
+			"wasmSha256": "1aa26bf553b83c754d4f23651b3c769f5cde9fe296fb383c4a73010ef8aeacbf",
+			"bytes": 7535157,
+			"archive": "C:/tmps/rocut-stylized-f6XU4z/wasm-default-readback-seam-0wXXXP",
+			"fourGatesPassed": true,
+			"rustInputs": 192,
+			"publicJsExports": 88,
+			"stableWasmExports": 105,
+			"trampolineExports": 3,
+			"wasmImports": 612,
+			"runtimeInit": ["Bun 1.2.18", "Node v24.14.0"],
+			"privateDependencyParity": "11 files matched in each of three physical copies; no shared/canonical dependency writes"
+		},
+		"diagnosticBuild": {
+			"artifact": "C:/tmps/rocut-stylized-f6XU4z/liquid-readback-build-1c3872e19ae7459982bb577aa4caa54a/pkg",
+			"wasmSha256": "021fbdeb90f3c3b3b8b29a0f0132f04556b9068f7db9aa4f8b6bf120ad920012",
+			"bytes": 7562026,
+			"addedPublicJsExports": ["applyEffectPassesReadback"],
+			"removedPublicJsExports": [],
+			"defaultHashUnchanged": true,
+			"syncedIntoDependencies": false,
+			"abiEvidence": "C:/tmps/rocut-stylized-f6XU4z/liquid-readback-build-1c3872e19ae7459982bb577aa4caa54a/abi-comparison.json",
+			"abiEvidenceSha256": "205489cc21977020f2cc8eb2afd59ec0bccf30d5e28251d850cb265f0f31d82e",
+			"offline": true,
+			"locked": true
+		},
+		"cpuVerification": {
+			"readbackStateTestsPassed": 6,
+			"oracleAndQuantizerTestsPassed": 7,
+			"oracleAndQuantizerAssertions": 99,
+			"typecheckPassed": true,
+			"formattingPassed": true
+		},
+		"sourceSha256": {
+			"rust/wasm/Cargo.toml": "6736213cbf8424fb6226594e0afaee5f01a18d8d40d9c619c1329034dcc07cdb",
+			"rust/wasm/src/effects.rs": "1a8b67f2aad8a2d8d7a9dc4fc9da62af5906184eb7922cb1f41eac8441ecae4d",
+			"rust/wasm/src/effects_readback.rs": "bd4769f9fc70fe4526458b2875632096e1c3380b29fc76dd05d9fd08c7c139a2",
+			"rust/wasm/src/effects_readback_state.rs": "692164965cffa030140b8839677bcd35b2ca33803fb79f3e33bd65531b238417",
+			"rust/wasm/src/effects_readback_wait.rs": "9c813fd41038e7c6386aebffa4f53233935581756bb15cb413e3158b33431b8e",
+			"rust/wasm/src/effects_readback_tests.rs": "f05350132ba91a924b7e8baa19f4b8c9bfb6fa09464ab954ece2b94148cf71b1",
+			"rust/wasm/src/gpu.rs": "171365d0e69d16df10c152daf9139cabd7a8f82fe675e71c39692c82079603b5",
+			"rust/wasm/src/wasm.rs": "0333bce61291ef8c0ff803d36f817e2e73411016c7c337efe3627289955bd7d4",
+			"script/fixtures/liquid-browser-readback.ts": "372e91f94a663299c91e15b18d5ddc8dc9282d05731d60586406b144ee3a0766",
+			"script/fixtures/liquid-browser-readback-capture.ts": "f41656ed559ae14dec162948948ffd3056a4189484ca3708be47544b5225cb9e",
+			"script/fixtures/liquid-browser-probe.ts": "5914c0d906cf2e73c848924e2cd069b21dc58956f06e985762e733f4f8029a41",
+			"script/fixtures/liquid-probe.tsconfig.json": "645452ccadfb0f4b781167b1935d0c13efc9162cd7a6c4d10b20faebe85f961b",
+			"script/probe-liquid-effects.mjs": "e93f3e04e3f05ac12fd2f958eb755234d3c4a53999f52c32bf81c06e55463936",
+			"script/fixtures/liquid-surface-quantization.ts": "0dddeb08e5b5fd62d7752320cb8dccffec55c4e8b5030633aecd9d331cbcfa06",
+			"script/fixtures/liquid-surface-quantization.test.ts": "9e09d884e8361fdda981b3eb762b7cc92dfa42253821073a04d7c9515293b563",
+			"script/fixtures/liquid-browser-readback-lifecycle.ts": "79b00cefe5a747736512ed0fad8e39b797cf90d4460d37532646232500d9c8d0",
+			"script/liquid-diagnostic-wasm.mjs": "18e9534399846f0c587ba86767fbb9b0f36e14b8de22d9016e56a7d2fef4012e"
+		},
+		"boundaries": [
+			"WebGL-only: WebGPU adapter remains unavailable; no fallback accepted",
+			"Real mapping failure and callback-timeout injection not yet exercised in browser",
+			"Diagnostic build stays separate from default production package and dependencies",
+			"Raw staging cap is 64 MiB; not a whole-process memory bound",
+			"Same-project real-editor export and installed Electron acceptance remain pending; separate Liquid Host persistence and editor UI/history tests passed"
+		],
+		"retainedFailures": [
+			{
+				"artifact": "C:/tmps/rocut-stylized-f6XU4z/liquid-readback/run-uy1F8h",
+				"stage": "module loading before initialize/lifecycle/raw",
+				"error": "WebAssembly.instantiate(): BufferSource argument is empty",
+				"observation": "WASM resource returned 404 during cross-drive diagnostic package loading; the launcher timed out after 180 seconds. This is not a GPU mapping timeout."
+			}
+		],
+		"browserVerification": {
+			"evidenceFile": "C:/tmps/rocut-stylized-f6XU4z/liquid-readback/run-4MEpxB/evidence.json",
+			"evidenceSha256": "2e7c79e1472c2d0573467a82cd16098cf00971cb067f6ed7d946b01fe81b9016",
+			"sourceManifestSha256": "cc89be050df47b0cce940959d30095b4e95ba4734aa30a633b6a30507d1bbdf3",
+			"requestedBackend": "webgl",
+			"selectedBackend": "webgl",
+			"passed": true,
+			"raw": {
+				"comparisons": 192,
+				"failed": 0,
+				"maxRgb": 1,
+				"maxAlpha": 0
+			},
+			"rawExactReverseComparisons": 26,
+			"gpuCaptures": 162,
+			"amountZeroBypasses": [
+				"93 amount-zero identity",
+				"93 transparent amount 0",
+				"62 amount-zero identity",
+				"62 transparent amount 0"
+			],
+			"surface": {
+				"comparisons": 166,
+				"failed": 0,
+				"maxRgb": 1,
+				"maxAlpha": 0
+			},
+			"independentCpuComposites": {
+				"comparisons": 332,
+				"failed": 0,
+				"maxRgb": 1,
+				"maxAlpha": 0
+			},
+			"inferredAlpha": {
+				"comparisons": 166,
+				"maxError": 1.1102230246251565e-16
+			},
+			"rejectedSolverCounterexamples": 6,
+			"textureFormats": ["rgba8unorm"],
+			"lifecycle": {
+				"passed": 7,
+				"total": 7,
+				"checks": [
+					"pending readback rejects synchronous disposal",
+					"first pending readback completes",
+					"pending readback rejects concurrent readback",
+					"successful readback releases disposal guard",
+					"invalid dimensions reject before allocation",
+					"invalid dimensions release guard for next valid readback",
+					"reinitialization preserves requested backend"
+				]
+			},
+			"timelineChecks": 25,
+			"browserVideoFrames": 6,
+			"independentFfmpeg": {
+				"frames": 6,
+				"maxMeanRgbaError": 6.273055555555556,
+				"maxActiveRgbError": 9.83997215510144,
+				"minActivePixels": 144744,
+				"timestamps": [0, 0.033, 0.067, 0.1, 0.133, 0.167]
+			},
+			"errors": [],
+			"externalRequests": [],
+			"videoFile": "C:/tmps/rocut-stylized-f6XU4z/liquid-readback/run-4MEpxB/webgl/liquid.webm",
+			"videoSha256": "eb59ddc238232ca3eb743aa532592937ee2df36caaa722a758be3ca99f287fac",
+			"contactSheetReviewed": true,
+			"scope": "Synthetic fixture at 640x360/30fps, not real editor authoring acceptance"
+		},
+		"defaultProductionRegression": {
+			"evidenceFile": "C:/tmps/rocut-stylized-f6XU4z/liquid-effects/run-CCC8hb/evidence.json",
+			"evidenceSha256": "6d0551a6b414b88a97c938126806cef3c7991d1e397c5c5cd1902101d5f37a43",
+			"wasmSha256": "1aa26bf553b83c754d4f23651b3c769f5cde9fe296fb383c4a73010ef8aeacbf",
+			"mode": "production-surface",
+			"diagnosticWasmSha256": null,
+			"selectedBackend": "webgl",
+			"ok": false,
+			"retainedDirectCanvasVersusRaw": {
+				"comparisons": 170,
+				"failed": 75,
+				"maxRgb": 105,
+				"maxAlpha": 0,
+				"opaqueFailures": 0
+			},
+			"previousEvidence": "C:/tmps/rocut-stylized-f6XU4z/liquid-effects/run-NvjJsO/evidence.json",
+			"equalObjects": ["raster", "timeline", "video", "decoded.metrics"],
+			"byteEqualArtifacts": [
+				"liquid.webm",
+				"expected.rgba",
+				"baseline.rgba",
+				"contact-sheet.png"
+			],
+			"sceneAndVideoPassed": true,
+			"errors": [],
+			"externalRequests": []
+		},
+		"routingFix": {
+			"source": "script/liquid-diagnostic-wasm.mjs",
+			"scope": "Diagnostic Vite GET/HEAD for one exact validated binary URL, serving captured bytes; no request-derived filesystem paths or query-bearing module interception",
+			"crossDriveBinary404Resolved": true,
+			"defaultLoaderUnchanged": true,
+			"unitVerification": {
+				"command": "node --test script/__tests__/liquid-diagnostic-wasm.test.mjs",
+				"nodeTestsPassed": 6,
+				"subtestScenarios": 5,
+				"failed": 0,
+				"skipped": 0,
+				"artifactDirectory": "C:/tmps/rocut-stylized-f6XU4z/liquid-route-GxXsel",
+				"sourceSha256": "ee3311da6af7200c421fae62ae24e792043957428e582e75d18c337ef304027c",
+				"scenarios": [
+					"Exact GET bytes and binary headers",
+					"HEAD content length without body",
+					"Original URL preserves Vite query module routing",
+					"Other methods and unrelated or traversal-like paths pass through without headers",
+					"Already-captured bytes remain stable after the private fixture file changes"
+				],
+				"formattingAndSyntaxPassed": true
+			}
+		}
+	},
+	"particleProtocolVerification": {
+		"status": "transport-contract-tested-not-runtime-wired",
+		"passed": 15,
+		"failed": 0,
+		"assertions": 199,
+		"typecheckPassed": true,
+		"formattingPassed": true,
+		"strictUtf8NoBom": true,
+		"behavior": [
+			"Strict version/operation/identity/single-use request correlation envelopes",
+			"Explicit six-field transport budgets including encoded UTF-8 envelope size",
+			"Response count and source triangle/primitive/material/optional attribute associations",
+			"Preserves structured Rust error JSON; no repeated sampling or normal mathematics"
+		],
+		"boundaries": [
+			"Policy is caller-supplied; no Rust-published transport capability policy yet",
+			"No browser driver or Electron capture-session integration"
+		],
+		"sourceSha256": {
+			"apps/cli/src/programmatic/particle-protocol.ts": "fec62dfd4e12585ad32ed1098f8f927174273b109a2fe4c92b521ca02df54df8",
+			"apps/cli/src/programmatic/particle-protocol-types.ts": "e612fca6a0f62d7b6eff5a3d2ba93baed33f29e19b309537cd44694872e8723f",
+			"apps/cli/src/__tests__/particle-protocol.test.ts": "309a914304f3ccd1abc9c9e6685b141031828a74730d6e4f1479e39332cbd5d7",
+			"apps/cli/src/__tests__/particle-protocol-response.test.ts": "868deb1d5ac993bf6da553a9cf4f7b28528badb904fb6421b59277f27690634c",
+			"apps/cli/src/__tests__/particle-protocol-test-support.ts": "7ba458f67763b9e6d39550d5dfb906afc04ffac324346fd48e121f4d32dce9c2"
+		}
+	},
+	"particleWasmRoundTripVerification": {
+		"status": "real-three-rust-wasm-buffer-cpu-verified-not-gpu-or-host",
+		"command": "bun test apps/cli/src/__tests__/particle-wasm-roundtrip.test.ts",
+		"passed": 7,
+		"failed": 0,
+		"assertions": 2204,
+		"threeVersion": "0.185.1",
+		"wasmModule": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.tmp-rocut-stylized-c7a11f465c39454486461ff96915f3fa/rocut-three-resources-VSD7L2/rust/wasm/pkg/opencut_wasm_sync.js",
+		"wasmSha256": "57f7e0c54a292f65887687ef35d29d6da2fdefced80f38dfc4661c33e2b5e21b",
+		"typecheckPassed": true,
+		"formattingPassed": true,
+		"strictUtf8NoBom": true,
+		"behavior": [
+			"Repeat and different seed determinism",
+			"Eight-to-one world-area distribution with the larger triangle rotated edge-on",
+			"Mirrored normals and UV association, with and without source normals",
+			"Mixed UV/color/material presence including missing material and real zero",
+			"Rust sampleCount/allDegenerate/numericRange structured error text retained",
+			"Input JSON unchanged"
+		],
+		"boundaries": [
+			"Actual pinned Three and built Rust WASM; no mocked sampler",
+			"CPU transport and buffer conversion only; no GPU draw, browser, broker or Host integration"
+		],
+		"sourceSha256": {
+			"apps/cli/src/__tests__/particle-wasm-roundtrip.test.ts": "8a410d72962cfba0fb057270da5ebcc990523bcc1096c76e30ada0491c44ad93",
+			"apps/cli/src/__tests__/particle-wasm-roundtrip-support.ts": "02d06002026b1b38c67696423150b61b05cb1ba888a09fcba8e3e664166b9372"
+		}
+	},
+	"liquidEditorExportVerification": {
+		"status": "verified-isolated-same-project-export",
+		"evidenceFile": "C:/tmps/rocut-stylized-f6XU4z/liquid-editor/run-xZh0NN/evidence.json",
+		"evidenceSha256": "fbbc1f035278d8c90980490fdd397e68bd6804d1c84961d72c73c30b77dc2d60",
+		"sourceUiEvidenceSha256": "ef4492e04783ec7c6820bd41a4ea744782fc0d0e5e3a9b7f8608b6df709d2de3",
+		"sourceManifestSha256": "8b0143339376fba932b1f890abe804a6742488b0836bfdb587649cc3c8c33cec",
+		"wasmSha256": "1aa26bf553b83c754d4f23651b3c769f5cde9fe296fb383c4a73010ef8aeacbf",
+		"backend": "private Chromium SwiftShader",
+		"browser": "153.0.8010.12",
+		"sourceRun": "C:/tmps/rocut-stylized-f6XU4z/liquid-editor/run-2oK7jH",
+		"projectRecreated": false,
+		"parametersReapplied": false,
+		"editorDist": "C:/tmps/rocut-stylized-f6XU4z/liquid-editor/run-BCvoK5/temp/editor-dist",
+		"export": {
+			"format": "webm",
+			"quality": "very_high",
+			"includeAudio": false,
+			"range": {
+				"startTime": 4000,
+				"endTime": 28000
+			},
+			"width": 640,
+			"height": 360,
+			"frames": 6,
+			"frameRate": "30/1",
+			"durationSeconds": 0.2,
+			"codec": "vp9",
+			"outputPath": "C:\\tmps\\rocut-stylized-f6XU4z\\liquid-editor\\run-2oK7jH\\project\\exports\\a2227977d4afa1b4.webm",
+			"sha256": "79189a8b07ede43e76de14569344d2cf136e6fe597fe508e9d0fdcf9e5b928eb"
+		},
+		"reference": {
+			"kind": "actual unselected UI screenshots at 100% zoom, normalized using measured complete canvas bounds",
+			"canvasBounds": {
+				"x": 401,
+				"y": 117.90625,
+				"width": 638,
+				"height": 358
+			},
+			"normalizationFilter": "scale=iw*8:ih*8:flags=bilinear,crop=5104:2864:0:7,scale=640:360:flags=bicubic",
+			"background": {
+				"project": {
+					"type": "color",
+					"color": "#203040"
+				},
+				"preview": "actual neutral UI screenshot at 100% zoom; full measured canvas rectangle normalized to 640x360; matching project/CSS background and opaque alpha verified before export",
+				"probePoint": {
+					"x": 3,
+					"y": 3,
+					"expectedRgb": [32, 48, 64],
+					"screenshotSamplingTolerance": 2
+				},
+				"mount": "rgb(32, 48, 64)"
+			},
+			"allPixelsAlpha255": true,
+			"allFramesSelectionHandles": 0,
+			"preflightActivePixels": [126262, 126560, 126297, 126243, 126266, 126312],
+			"previewHashes": [
+				{
+					"frame": 0,
+					"ticks": 4000,
+					"sha256": "aebd85c9af900cb421a79ea46be2453b9712b1a2548115ec5a53d35d6f74b633"
+				},
+				{
+					"frame": 1,
+					"ticks": 8000,
+					"sha256": "124c81a4bffd5fb5713248a6a2a4851872f4d333d6c0db0d0ddb78cf75f4d6fa"
+				},
+				{
+					"frame": 2,
+					"ticks": 12000,
+					"sha256": "51a2b3ca7cd86b7cbdf2ca50a8d57b441d62876f0ecec31a5de85b8e9131f3cd"
+				},
+				{
+					"frame": 3,
+					"ticks": 16000,
+					"sha256": "12ab1857e770a58c03e0a8eefef1f0898ce34516b20561d0c833719927143848"
+				},
+				{
+					"frame": 4,
+					"ticks": 20000,
+					"sha256": "2f2cab89d02055c512955ac77af541f1b9526f94f6ad4adcc944c363a6802310"
+				},
+				{
+					"frame": 5,
+					"ticks": 24000,
+					"sha256": "09898bbe374d080d0ebca97728822c48ba1a92940ffaa376204a8827505d0725"
+				}
+			]
+		},
+		"decoder": "independent FFmpeg/FFprobe",
+		"thresholds": {
+			"meanRgb": 10,
+			"activeRgb": 15,
+			"activePixels": 2000,
+			"progression": 0.25
+		},
+		"metrics": [
+			{
+				"frame": 0,
+				"ticks": 4000,
+				"meanRgbError": 5.868259548611111,
+				"activeRgbError": 8.842808340329368,
+				"activePixels": 126262
+			},
+			{
+				"frame": 1,
+				"ticks": 8000,
+				"meanRgbError": 6.356008391203703,
+				"activeRgbError": 9.26650600505689,
+				"activePixels": 126560
+			},
+			{
+				"frame": 2,
+				"ticks": 12000,
+				"meanRgbError": 6.925305266203703,
+				"activeRgbError": 9.883565458139676,
+				"activePixels": 126297
+			},
+			{
+				"frame": 3,
+				"ticks": 16000,
+				"meanRgbError": 7.00515769675926,
+				"activeRgbError": 9.9522164925316,
+				"activePixels": 126243
+			},
+			{
+				"frame": 4,
+				"ticks": 20000,
+				"meanRgbError": 6.954688946759259,
+				"activeRgbError": 9.82271817697031,
+				"activePixels": 126266
+			},
+			{
+				"frame": 5,
+				"ticks": 24000,
+				"meanRgbError": 7.006681134259259,
+				"activeRgbError": 9.875353621719762,
+				"activePixels": 126312
+			}
+		],
+		"progression": 29.00326533564815,
+		"persistence": {
+			"initialSha256": "974205c3464c61c6ebcb6ece633ecf6f19176494fd303a5c9665a8fa1b1d1e71",
+			"exportBaselineSha256": "24c52009a79438f8f6b0469af44319e41dc673349e525f97d5cf37c2b8ecae93",
+			"uiStageChanges": [
+				{
+					"pointer": "/record/data/metadata/updatedAt",
+					"before": "2026-10-08T12:10:34.103Z",
+					"after": "2026-10-08T12:18:33.049Z"
+				},
+				{
+					"pointer": "/summary/updatedAt",
+					"before": "2026-10-08T12:10:34.103Z",
+					"after": "2026-10-08T12:18:33.049Z"
+				}
+			],
+			"uiPersistenceQuietMs": 1600,
+			"mechanism": "timeline view changes mark SaveManager dirty; its 800ms debounce calls saveCurrentProject, updating metadata and summary timestamps without a transaction revision",
+			"afterExportSha256": "24c52009a79438f8f6b0469af44319e41dc673349e525f97d5cf37c2b8ecae93",
+			"exportStageChanges": [],
+			"projectBytesUnchangedByExport": true,
+			"postCloseSha256": "24c52009a79438f8f6b0469af44319e41dc673349e525f97d5cf37c2b8ecae93",
+			"postReopenSha256": "24c52009a79438f8f6b0469af44319e41dc673349e525f97d5cf37c2b8ecae93",
+			"rawSnapshotsRetained": 5,
+			"hostReopened": true,
+			"revision": 10,
+			"clips": 6,
+			"tracks": 3,
+			"authoredTrackIds": ["liquid-shots", "liquid-sentinel"]
+		},
+		"errors": [],
+		"externalRequests": [],
+		"httpFailures": [
+			{
+				"path": "/api/library/graph-editor-presets/user-presets",
+				"status": 404
+			}
+		],
+		"consoleErrors": [
+			"Failed to load resource: the server responded with a status of 404 (Not Found)"
+		],
+		"warnings": [
+			"No available adapters.",
+			"Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: [URL redacted]"
+		],
+		"originalBuildWarnings": [
+			"countries-data.ts is both statically and dynamically imported; chunk remains shared",
+			"chunk-size advisory above 500 kB"
+		],
+		"sourceSha256": {
+			"script/probe-liquid-editor.mjs": "c41fa98ab8b9167bc0b494fdf34e3728393c747c3d52bf6c359b607c77b62d5d",
+			"script/fixtures/liquid-editor-export-host.ts": "ac8c969eb6ea7d0eeb12814d6fb7978b5bec08896c46c4131d5e1685ade25071",
+			"script/fixtures/liquid-editor-export-checks.mjs": "c6604f12df20c8973c6663a24f3af7305a7bdc31ad7956b04d5005e870357412",
+			"script/fixtures/liquid-editor-export-decode.mjs": "a5500dae6f45e7a46b09f94548858552d03c3298af37630790547f0031d79c25",
+			"script/fixtures/liquid-editor-export-persistence.mjs": "d34d359e4abc22d72a51ff2cf8799ca6221c7ddd3ca8008ad71f7f5004ce3d22"
+		},
+		"retainedFailures": [
+			{
+				"run": "run-UQC925",
+				"reason": "Native canvas.toDataURL returned an all-zero RGBA image while the actual UI was visible. Preflight rejected the reference before export; changed to full actual UI screenshots, no production rendering change."
+			},
+			{
+				"run": "run-KE4pou",
+				"evidenceSha256": "f124756c09a83a0f95ca6a5083770e01a0e2286c3fd286cdfabb30f1d3715bca",
+				"reason": "Video/decode passed but whole-run project hash differed because the baseline preceded UI view persistence. That run remains failed. Final run retains five raw snapshots, observes the 800ms debounce over 1600ms quiet time and establishes a pre-export baseline; only two UI-stage timestamp pointers changed, and all export/close/reopen bytes then matched exactly."
+			}
+		],
+		"review": {
+			"contactSheetInspected": true,
+			"contactSheetSha256": "8c5b00dc8c674da8135f5ff6c3a685bf694c0a234ad19815cb8f91c540fe4918",
+			"videoIdenticalToPriorDecodedRun": true
+		},
+		"boundaries": [
+			"Six-frame short range only, not a long-project or performance acceptance",
+			"No raw canvas readback claim; exact full measured UI canvas resampling is recorded",
+			"No installed Elftia/Electron, selected WebGPU, cross-GPU or transparent-master acceptance",
+			"Liquid remains N until the planned remaining scope is deliberately accepted"
+		]
+	},
+	"particleRuntimeIdentityVerification": {
+		"status": "C1-verified-C2-rendering-not-integrated",
+		"capability": {
+			"declaration": "build.capabilities: [\"particle-surface-v1\"]",
+			"threeOnly": true,
+			"absentLegacyCompatible": true,
+			"rejects": [
+				"null",
+				"empty array",
+				"unknown value",
+				"duplicate value",
+				"wrong engine",
+				"author-supplied identity fields"
+			],
+			"threeReviseSupported": false
+		},
+		"contractAndWasm": {
+			"file": "C:/tmps/rocut-stylized-f6XU4z/particle-c1-ANA2Cu/contract-and-gates-evidence.json",
+			"sha256": "0381d3ea911e33c5dba1723031c9e3f60a22ec69dc0154a80d810571685a7ad1"
+		},
+		"wasmSha256": "da14d6685fd4769c4895bbf9a673cdf8632a27e2687f313038b4543161812957",
+		"sourceSnapshotSha256": "bbb3b499881ea6a7023825df5c6b84ac56b21b8fbd5dfc4e893abd4a079a1ffc",
+		"nativeTests": {
+			"passed": 5,
+			"newTests": 2
+		},
+		"contractAndCaptureTests": {
+			"runtime": "Bun 1.2.18",
+			"passed": 7,
+			"assertions": 23
+		},
+		"sampler": {
+			"file": "C:/tmps/rocut-stylized-f6XU4z/particle-c1-sampler-identity-evidence.json",
+			"sha256": "cb1879d9fb1f3e98307468867f97e066281c6895ec8c96118378e720da7ab660"
+		},
+		"samplerBehavior": [
+			"Fixed Host-owned source-sync or packed-sidecar closure; no page path selection",
+			"Actual captured module/glue/WASM/worker entry bytes execute in memory; disk mutation after capture cannot replace them",
+			"Complete effective and published Rust policy plus layout/runtime/execution hashes bind the archive",
+			"Expected code identity checked before spawn; full identity checked against the actual child getter",
+			"Bun 1.2.18 uses memory Blob modules for long-source compatibility; Node uses data modules",
+			"Node/Bun source/packed actual ready/sample/close checked against final da14 binary"
+		],
+		"compiler": {
+			"file": "C:/tmps/rocut-stylized-f6XU4z/particle-c1-ANA2Cu/particle-surface-c1-evidence.json",
+			"sha256": "a0d34583b183afe881c2b2d098ac4a6dcc3e3f854f7d5d272cd40feae2bc00b2"
+		},
+		"compilerTests": {
+			"runtime": "Bun 1.2.18",
+			"passed": 10,
+			"assertions": 88
+		},
+		"realCompileRebuild": {
+			"file": "C:/tmps/rocut-stylized-f6XU4z/particle-c1-ANA2Cu/compile-harness-env-safe/compile-evidence.json",
+			"sha256": "13c939fa40957652ece7fc49a0a0b4562848a90aad0e3af99749814a6200d202"
+		},
+		"compileBehavior": [
+			"explicit capability compile",
+			"content-addressed archive integrity",
+			"full sampler/policy/adapter identity",
+			"real fixed Bun1.2.18 sampler ready and actual close",
+			"rebuild source/lock/document equality",
+			"ordinary lock byte parity",
+			"ordinary compiled driver output equality",
+			"self-consistent changed archived runtime identity rejection",
+			"all recorded material unchanged during execution"
+		],
+		"ordinaryLockSha256": "ff9f2aae7ecc06a8ffa1924758cc6deaab58b38ddde1168acf5a4c098c91b246",
+		"particleLockSha256": "fad4b80982177bb581e097d610072bee917cddc5030d3913e020d3256fc47fd6",
+		"independentRealRustABA": {
+			"file": "C:/tmps/rocut-stylized-f6XU4z/liquid-c1-readonly-review-20261008/real-aba-vinn0b/evidence.json",
+			"sha256": "131f98aa32b5f8e190b08576db01348b81ed3597b5dba850ed65611f3c17cf71"
+		},
+		"windowsPreloadBoundary": {
+			"failure": {
+				"file": "C:/tmps/rocut-stylized-f6XU4z/liquid-c1-readonly-review-20261008/windows-env-evidence.json",
+				"sha256": "1715b14306de0784c7bda06a0d820d4a18560ab55f047eadce1f8e0845608a3a"
+			},
+			"regression": {
+				"file": "C:/tmps/rocut-stylized-f6XU4z/liquid-c1-readonly-review-20261008/windows-env-regression-evidence.json",
+				"sha256": "fe07b0b00d9449c5ee5a53d8d9eb7a3a89edbdc23a56e672458610aba44b5a55"
+			},
+			"fix": "Filter NODE_OPTIONS and BUN_OPTIONS by case-insensitive key comparison before starting the byte-bound child",
+			"targetedTests": {
+				"passed": 2,
+				"assertions": 23
+			},
+			"actualNodeMarkerCases": ["NODE_OPTIONS", "node_options", "nOdE_oPtIoNs"],
+			"childPreloadRanAfterFix": false,
+			"productionProcessSha256": "bafccfda7c7b8996285fe98e61c03cdfed1f37f5e9b68727d9299d98b5792918"
+		},
+		"captureBoundary": "Until C2 is integrated, renderHtmlPng explicitly rejects particle declarations for Chromium and PNG-only Electron; ordinary sources retain existing admission",
+		"checks": {
+			"focusedStrictTypes": true,
+			"prettier": true,
+			"strictUtf8": true,
+			"wasmFourGates": true,
+			"eslintCoverage": "No matching CLI configuration; not claimed as lint coverage"
+		},
+		"memoryBoundary": "Bootstrapped source/base64/IPC/Blob copies are additional to the B logical frame payload reservation. No peak RSS or performance acceptance claim.",
+		"remaining": [
+			"Production page client/CDP binding and Three geometry-to-GPU capture sequence",
+			"Capture-time sampler/archive identity enforcement and render cache identity",
+			"Real material/texture evaluation and reversible particle animation",
+			"Electron capture-session v2 and dual-host video acceptance",
+			"Full runtime pack, installed plugin and release"
+		],
+		"sharedDependenciesChanged": false,
+		"ledgerPromotion": false,
+		"independentReview": {
+			"file": "C:/tmps/rocut-stylized-f6XU4z/liquid-c1-readonly-review-20261008/review-report.json",
+			"sha256": "3f3703b4ba14775e424d6ab00f8223f787f7007b30e85c05544abf075e08b704",
+			"status": "No unresolved blockers in the nine-file C1 review scope after the Windows environment fix",
+			"scopeSha256": "565210dca18c4a705b5a2c43903305e147f80dfa6f11436d1f03271e8d7abaf7"
+		}
+	},
+	"particleChromiumCaptureVerification": {
+		"status": "C2-chromium-foundation-verified-particle-object-remains-N",
+		"browser": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-c2-56VMcJ/evidence.json",
+			"sha256": "6d4536e8a591e2cb437efc1716656d9310b79a0f623ee12f60b91fb20644185f"
+		},
+		"sourceManifest": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-c2-56VMcJ/source-manifest.json",
+			"sha256": "f9821d5182ea6db27757702f41bb47af510d7c01781c614815f78bc3db5d97f5"
+		},
+		"sourceStability": {
+			"stable": true,
+			"changed": []
+		},
+		"adapterSha256": "fba5d4e97899c00fe3467c2df01eeb82ff308fea51605211bf5c0caffb67799b",
+		"samplerWasmSha256": "da14d6685fd4769c4895bbf9a673cdf8632a27e2687f313038b4543161812957",
+		"runtime": {
+			"bun": "1.2.18",
+			"chromium": "153",
+			"three": "0.185.1"
+		},
+		"actualChecks": [
+			"real compile/archive/rebuild",
+			"real Three/Rust particle PNG and pose ordering",
+			"ordinary Three capture spawns no sampler and retains C1 lock bytes",
+			"Electron v1 rejects before transport or worker",
+			"stale browser adapter",
+			"stale sampler runtime before worker spawn",
+			"real sampling dispatch cancel",
+			"real sampling dispatch worker-crash",
+			"forgot-await",
+			"geometry-error",
+			"rust-error",
+			"cleanup-error"
+		],
+		"images": [
+			{
+				"sha256": "1bb753380df3b49b94db17df133d3531d3c6775d19cdf858acf037c75824dc26",
+				"path": "C:\\tmps\\rocut-stylized-f6XU4z\\particle-c2-56VMcJ\\frame-0-a.png",
+				"pixels": {
+					"activePixels": 4261,
+					"centroidX": 99.20441210983337,
+					"minX": 52,
+					"maxX": 147
+				}
+			},
+			{
+				"sha256": "1bb753380df3b49b94db17df133d3531d3c6775d19cdf858acf037c75824dc26",
+				"path": "C:\\tmps\\rocut-stylized-f6XU4z\\particle-c2-56VMcJ\\frame-0-b.png",
+				"pixels": {
+					"activePixels": 4261,
+					"centroidX": 99.20441210983337,
+					"minX": 52,
+					"maxX": 147
+				}
+			},
+			{
+				"sha256": "854ba30bc18b2e303d51b42bebf3ad59f223d3618a4c41261c3bd8908c40219a",
+				"path": "C:\\tmps\\rocut-stylized-f6XU4z\\particle-c2-56VMcJ\\frame-1.png",
+				"pixels": {
+					"activePixels": 4261,
+					"centroidX": 219.20441210983338,
+					"minX": 172,
+					"maxX": 267
+				}
+			}
+		],
+		"imageAssertions": {
+			"unchangedThresholds": true,
+			"minActivePixelsExclusive": 2500,
+			"minCentroidShiftExclusive": 100,
+			"actualCentroidShift": 120,
+			"sameFramePngBytesEqual": true
+		},
+		"nativeLifecycle": {
+			"directChildrenObserved": 36,
+			"allReceivedClose": true,
+			"samplerDispatchFaults": 2,
+			"observation": "Actual native spawn forwarding wrapper; negative tests explicitly abort only their own capture or terminate their own sampler. No sampler algorithm or browser implementation mocked."
+		},
+		"compileTests": {
+			"tests": 11,
+			"assertions": 97,
+			"runtime": "pinned Bun 1.2.18 and real C1 WASM",
+			"files": [
+				"apps/cli/src/__tests__/three-particle-provenance.test.ts",
+				"apps/cli/src/__tests__/three-particle-build-source.test.ts"
+			]
+		},
+		"hostTests": {
+			"tests": 16,
+			"assertions": 74,
+			"runInSeparateBatches": true,
+			"evidence": {
+				"path": "C:/tmps/rocut-stylized-f6XU4z/particle-c2-host-mesh-evidence.json",
+				"sha256": "70b97508aed7e967073dd64669e081ced993c60a0ae2c9e270b6f00b2d5d0db6"
+			}
+		},
+		"pageTests": {
+			"tests": 19,
+			"assertions": 128,
+			"runInSeparateBatches": true,
+			"evidence": {
+				"path": "C:/tmps/rocut-stylized-f6XU4z/particle-page-c2/page-evidence.json",
+				"sha256": "1de49bc770c2aa994c89e8d6453c1b890f4ec3fbeb5431c0f6b086e540576900"
+			}
+		},
+		"strictAssetCleanupTests": {
+			"tests": 10,
+			"assertions": 42,
+			"evidence": {
+				"path": "C:/tmps/rocut-stylized-f6XU4z/three-particle-assets-cleanup-evidence.json",
+				"sha256": "21d53776d5b37f5bf96b8f26bc1eeff2ff69205b95f135aed1569e720b5fa1aa"
+			}
+		},
+		"independentReview": {
+			"initialTests": 20,
+			"initialAssertions": 105,
+			"affectedRuntimeTestsRerun": 2,
+			"affectedRuntimeAssertions": 14,
+			"otherEighteenNotRerun": true,
+			"unresolvedBlockersInReviewedScope": [],
+			"initial": {
+				"path": "C:/tmps/rocut-stylized-f6XU4z/liquid-c2-boundary-review-20261008.json",
+				"sha256": "d585580b04e3ca3be69a08f45200b8e491499e981233710c3f27223a79c750bf"
+			},
+			"final": {
+				"path": "C:/tmps/rocut-stylized-f6XU4z/liquid-c2-integration-review-final-20261008.json",
+				"sha256": "f916847faf008d25287d2421030761f41e003c73d158b95d8567d70c8894cbf6"
+			}
+		},
+		"finalFormattingOnly": {
+			"path": "apps/cli/src/programmatic/engines/three-assets-driver.ts",
+			"testedSourceSha256": "fb88cff787a331f9e23714afb03139c98b17a0e2c77a256f4901ff7907826fb8",
+			"currentSourceSha256": "ba07491da26e8774c37b478dd9c1573b0f56385d1ac5b5324138284c39440274",
+			"change": "Function signature line wrapping only, after the browser run and independent scope snapshot; original manifests are preserved.",
+			"legacyAssetsBytes": 2521,
+			"legacyAssetsSha256": "e72eb6a1df7515ca50e56627768d8bead3a376aed034a08a76751a422053c300",
+			"strictAssetsBytes": 3850,
+			"strictAssetsSha256": "f20421188699876d7db297ad20732a090425d9d928a920c4631d983978471d11",
+			"mainLayerCheck": {
+				"path": "C:/tmps/rocut-stylized-f6XU4z/particle-c2-identity-after-format.ts",
+				"sha256": "3d17dfae2759ed517691864d07435a93baf1ac07fc4e8562994933f2ed1261cf"
+			},
+			"adapterDigestUnchanged": true,
+			"behaviorNotRerunForFormatting": true
+		},
+		"verification": {
+			"focusedStrictTypeScript": true,
+			"generatedBundleCheck": true,
+			"syntaxChecks": true,
+			"legacyThreeDriverAndLockBytesUnchanged": true,
+			"fullRuntimePackExecuted": false,
+			"fullWorktreeTestsExecuted": false,
+			"sharedWasmReplacement": false
+		},
+		"retainedRuns": [
+			{
+				"path": "C:/tmps/rocut-stylized-f6XU4z/particle-c2-3S59Z7",
+				"status": "failed",
+				"reason": "Bun named native imports did not observe the first preload mutation; replaced the observation seam with a direct native forwarding wrapper."
+			},
+			{
+				"path": "C:/tmps/rocut-stylized-f6XU4z/particle-c2-m3mETD",
+				"status": "failed",
+				"reason": "Orthographic Points fixture used 0.035-pixel size; active pixels 1043 failed the unchanged >2500 threshold. Authored test scene corrected to explicit 2-pixel points; production shader and threshold unchanged."
+			},
+			{
+				"path": "C:/tmps/rocut-stylized-f6XU4z/particle-c2-NNVavn",
+				"status": "failed",
+				"reason": "Positive PNG checks passed; forgotten-await failed closed but generic cleanup hid the exact cause. Bounded nested error propagation added and original failure retained."
+			},
+			{
+				"path": "C:/tmps/rocut-stylized-f6XU4z/particle-c2-wMSOWx",
+				"status": "passed-pre-review-snapshot",
+				"checks": 10,
+				"reason": "Preserved earlier green runtime snapshot. Later review closed pending-stage ownership, strict asset cleanup and shared-bootstrap adapter identity; final acceptance uses 56VMcJ."
+			}
+		],
+		"fixedByReview": [
+			"Late createScene ownership and unsettled compileAsync/author stages cannot produce successful cleanup acknowledgement",
+			"All resource lease disposal errors propagate and pending loads/instances remain owned until settlement",
+			"Shared HTML/resource/media bootstrap bytes participate in adapter identity",
+			"Post-worker mutable resource/frame identity is rechecked immediately before expression serialization",
+			"Bounded nested cleanup and Rust structured errors survive the page/Host boundary"
+		],
+		"notClaimed": [
+			"Particle material texture evaluation or reversible point animation",
+			"Creator particle template or editor saved-project/video acceptance",
+			"Real Chromium GPU/screenshot-stage fault injection; these cancellation/context cases have transport-seam tests",
+			"Real browser Offthread decode plus particle sampling in one frame; independent channel isolation is tested at transport seam",
+			"Electron capture-session v2, installed plugin, full runtime pack, release or cross-GPU acceptance"
+		],
+		"harnessLauncher": {
+			"path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/script/probe-three-particles.mjs",
+			"sha256": "02f7af087c2e69123c2c7c1624ee1dcdf92b86ad5cc70a391e4c19b327d9ce90"
+		},
+		"noLedgerPromotion": true
+	},
+	"particleMaterialMotionVerification": {
+		"version": 1,
+		"date": "2026-10-08",
+		"status": "C3 isolated development-chain verification passed; Particle Object remains N",
+		"supersedesForCurrentStatus": [
+			"Historical particle.materialTextureEvaluation/reassemblyAnimation flags and C2 notClaimed entries only; historical run evidence remains unchanged"
+		],
+		"summary": {
+			"rust": "Independent RNG and stateless scatter/hold/return/drift; original surface attributes preserved; motionPosition and size paired by the production constructor",
+			"host": "Frozen seed/sourceTime before worker startup, broker validates author requests against the mapped frame, snapshot before await and combined material/buffer limits",
+			"material": "Base-color nearest-base-level linear RGBA and alpha admission; restricted Three materials, UV0 and decoded RGBA8 inputs; not lighting/PBR/all glTF",
+			"creator": "particleThree helper plus particle-scene.ts and skill routing; template only assembles a compile spec"
+		},
+		"aggregate": {
+			"file": "C:/tmps/rocut-stylized-f6XU4z/particle-c3-consolidated-evidence.json",
+			"sha256": "c0be4e4961fff149a843afbbffa1e4c9504e176037286e8c9a1eed8c30c13d5c",
+			"referencedArtifacts": 31,
+			"globalTestTotal": null,
+			"testCounting": "Overlapping batches preserved separately; parent-only tool results explicitly marked in the aggregate"
+		},
+		"privateWasm": {
+			"path": "C:/tmps/rocut-stylized-f6XU4z/particle-c3-wasm-2GzosH/snapshot/rust/wasm/pkg/opencut_wasm_bg.wasm",
+			"bytes": 8624363,
+			"sha256": "328a2a4313812c356f28d74f27cfeaa10cad3a933e2c4f3de5ded20d8d98c221",
+			"abi": {
+				"javascriptExports": 105,
+				"stableWasmExports": 122,
+				"newExports": 0
+			},
+			"gates": "Source, paths, API and init passed in stages for the frozen snapshot; retained initial NOTICE pin and fixture dependency failures",
+			"snapshotIntegrity": "366/366 frozen Rust and manifest inputs unchanged; 8/8 C3 particle Rust files match current source. One deliberate script NOTICE checksum correction is recorded without replacing the original manifest.",
+			"concurrentWorktreeDifferences": [
+				{
+					"path": "rust/crates/editor-api/src/mv_recipe/type_card_tests.rs",
+					"snapshotSha256": "d1b11131a2f9664388c4fcbe5ff2ea8d0f5474f2bc1931cc89e122936fa7c24e",
+					"snapshotBytes": 6158,
+					"currentSha256": "5c4e599137d00091ce4a5e2de4bb7663a5d2a3d7cd37a3baaf94bb0f15344b0f",
+					"currentBytes": 6740
+				},
+				{
+					"path": "rust/crates/editor-api/src/programmatic.rs",
+					"snapshotSha256": "4aed9c79d4bcc6d0f0a4e4f3242e4fb3da36ee1baa2a836fe14de51667fe21e8",
+					"snapshotBytes": 14601,
+					"currentSha256": "63357f344804521419f5f4a94eb90c8e36ba7f68ac90419ec8cae42473a3b528",
+					"currentBytes": 14686
+				},
+				{
+					"path": "rust/wasm/NOTICE",
+					"snapshotSha256": "b1444d6aaa7fe79d05d3601b69440e686974c4fd468bb9bbf45dfa469dd597be",
+					"snapshotBytes": 15823,
+					"currentSha256": "156e3c3e742d15aca9ad0e8c07dd321bacfb72a2f183a8b6d497d489f54966ca",
+					"currentBytes": 16212
+				}
+			]
+		},
+		"chromium": {
+			"directory": "C:/tmps/rocut-stylized-f6XU4z/particle-c3-txjiz4",
+			"evidenceSha256": "cff17f7fcb1b426741eeea2d9596a0f8cc2ec3d5f2cc8cdd41d4a469788973d0",
+			"checks": 11,
+			"directChildrenClosed": 34,
+			"sourceStable": true,
+			"scatterHorizontalVarianceRatio": 2.997329601,
+			"restReturnReversePngIdentical": true,
+			"scope": "Real Three/Rust/Chromium texture, size, scatter/return, duplicate and reverse-seek PNG; invalid UV and actual Rust motion rejected. Injected SecurityError is not real cross-origin taint."
+		},
+		"creatorGlb": {
+			"directory": "C:/tmps/rocut-stylized-f6XU4z/particle-c3-creator-IaSRGq",
+			"evidenceSha256": "40d8f2d5e59e9b3ca1f714925c89133f4067735322023e98d9de38e02a1d8739",
+			"checks": 4,
+			"directChildrenClosed": 15,
+			"sourceStable": true,
+			"restAndReturnActivePixels": 8120,
+			"scatterActivePixels": 10585,
+			"restReturnPngSha256": "86888925fc7203b0659f20d3abf8e619f7a79c56f5c811f1348adb2e9322aeec",
+			"archiveRebuild": "Original private author directory absent during archive-only rebuild; restored in finally, same PNG",
+			"store": "InMemoryProjectStore; no durable editor or final video claim"
+		},
+		"independentReview": {
+			"file": "C:/tmps/rocut-stylized-f6XU4z/particle-c3-creator-independent-review.json",
+			"sha256": "ec23b2de5b7c3a62447ed7f286815277eff4f07ae45f997dd58437511852b43d",
+			"launcherCorrection": "Separate persistent 5-test/31-assertion regression covers direct harness close after timeout/error and output forwarding; does not prove descendant-tree cleanup. Original GPU run manifests remain unchanged."
+		},
+		"creatorTemplate": {
+			"file": "C:/tmps/rocut-stylized-f6XU4z/particle-creator-template/template-evidence.json",
+			"sha256": "8c71ea96d6890bf43c328587941d7b7f69563c0c40db172069f089bc5835c5ec",
+			"focusedTests": 9,
+			"regressionTests": 39
+		},
+		"notClaimed": [
+			"Durable Host project/UI/save-reopen and actual video export (C4 next)",
+			"Electron capture-session v2 or installed plugin acceptance",
+			"Particle pointer spring/swirl trajectories, SVG/image shapes or all dynamic meshes/materials",
+			"Full runtime pack, whole concurrent worktree, release or cross-GPU/performance certification",
+			"Real GPU/screenshot-stage fault injection or whole descendant cleanup after hard timeout"
+		],
+		"noLedgerPromotion": true
+	},
+	"particleHostPersistenceVerification": {
+		"version": 1,
+		"date": "2026-10-08",
+		"status": "C4 persistent Host/source path passed; source video verification follows separately",
+		"scope": "Real private startHost/FileProjectStore/API apply, two authoring revisions and archive rebuild; no UI/Electron or full project export",
+		"run": {
+			"directory": "C:/tmps/rocut-stylized-f6XU4z/particle-c4-persistence-AGMhEa",
+			"evidenceSha256": "69fdd4b0c02d8e4cdac4114b530d63ea50c5373f4a4860843ecf272fac2eb8b1",
+			"checks": 4,
+			"hostsOpened": 3,
+			"hostsClosed": 3,
+			"directChildrenClosed": 8,
+			"launcherClosed": true,
+			"sourceManifestEntries": 5257,
+			"sourceStable": true
+		},
+		"independentReview": {
+			"file": "C:/tmps/rocut-stylized-f6XU4z/particle-c4-persistence-verification.json",
+			"sha256": "78749b7c402a2e564662b2af0ce6caf556d5041e5be66566d83926b5d98455b6"
+		},
+		"project": {
+			"clipId": "particle-model",
+			"revisionSequence": [
+				0,
+				1,
+				2
+			],
+			"finalBytes": 3730,
+			"finalSha256": "96672b702d66ea305126147ecdb10fa21f773ea12ba8e77af383b41e2216fa36",
+			"reopenByteIdentity": true,
+			"importCompileRebuildDoNotMutateProject": true,
+			"projectSnapshotsVerified": 8,
+			"uniqueAttachmentsVerified": 5,
+			"initialAndRevisedSourceRebuildWithoutAuthor": true,
+			"authorRestored": true,
+			"updatedParameters": {
+				"scatterDistance": 0.75,
+				"size": 3.25
+			},
+			"clipOpacity": 0.85
+		},
+		"runtime": {
+			"wasmSha256": "328a2a4313812c356f28d74f27cfeaa10cad3a933e2c4f3de5ded20d8d98c221",
+			"bun": "1.2.18",
+			"fixtureTotalSignalMs": 180000,
+			"launcherTimeoutMs": 240000
+		},
+		"notClaimed": [
+			"Attached-editor UI parameter/history/reload acceptance",
+			"Six-frame source encoding, full saved-project export or independent video decode",
+			"Electron capture-session v2, installed plugin, cross-GPU or performance acceptance"
+		],
+		"noLedgerPromotion": true
+	},
+	"particleSourceVideoVerification": {
+		"version": 1,
+		"date": "2026-10-08",
+		"status": "C4 isolated persisted-source rendering/encoding and independent decode passed; no ledger promotion",
+		"scope": "Exact copy of retained FileProjectStore -> actual persisted particle source -> real Host private Chromium frames -> CanvasRenderer/SceneExporter -> six-frame WebM -> independent FFmpeg decode. Not attached-editor or full-project/clip-opacity export.",
+		"run": {
+			"directory": "C:/tmps/rocut-stylized-f6XU4z/particle-c4-export-7k8GuH",
+			"evidenceSha256": "7edaa94aeed7f8366844fe9a5420a1222f5d4c2384171dd08fa0b1b31edac99c",
+			"sourceStable": true,
+			"generatedVirtualModules": "Explicit Vite WASM helper code hash recorded separately from actual disk files; final bundle files also hashed"
+		},
+		"video": {
+			"file": "C:/tmps/rocut-stylized-f6XU4z/particle-c4-export-7k8GuH/particle.webm",
+			"bytes": 20572,
+			"sha256": "4381cf6107246cb2a8929ad21ad516f2b0b4dd1457acc4f895b3e5fea365b2ae",
+			"codec": "vp9",
+			"width": 320,
+			"height": 240,
+			"frames": 6,
+			"frameRate": {
+				"numerator": 30,
+				"denominator": 1
+			},
+			"durationSeconds": 0.2
+		},
+		"reference": {
+			"source": "Actual reopened C4 FileProjectStore programmatic source; synthetic source-only timeline on opaque black, not saved clip editing semantics",
+			"previewExportRgbaIdentical": true,
+			"allSixFramesCompared": true,
+			"thresholds": {
+				"meanRgbError": 12,
+				"activeMeanRgbError": 18,
+				"activeChannelThreshold": 8
+			},
+			"mask": "Active pixels selected only from reference RGB; whole-frame RGB mean is unmasked; no edge exclusion or threshold widening",
+			"frames": [
+				{
+					"index": 0,
+					"activePixels": 11161,
+					"meanRgbError": 1.4376215277777777,
+					"activeMeanRgbError": 8.165994683869426
+				},
+				{
+					"index": 1,
+					"activePixels": 11186,
+					"meanRgbError": 1.5357204861111111,
+					"activeMeanRgbError": 8.75871625245843
+				},
+				{
+					"index": 2,
+					"activePixels": 11204,
+					"meanRgbError": 1.9925260416666666,
+					"activeMeanRgbError": 11.342556229917886
+				},
+				{
+					"index": 3,
+					"activePixels": 11267,
+					"meanRgbError": 2.2373177083333333,
+					"activeMeanRgbError": 12.386615780598207
+				},
+				{
+					"index": 4,
+					"activePixels": 11350,
+					"meanRgbError": 2.4618402777777777,
+					"activeMeanRgbError": 13.620763582966227
+				},
+				{
+					"index": 5,
+					"activePixels": 11507,
+					"meanRgbError": 2.7880208333333334,
+					"activeMeanRgbError": 14.940702760638452
+				}
+			]
+		},
+		"independentReview": {
+			"file": "C:/tmps/rocut-stylized-f6XU4z/particle-c4-export-independent-review.json",
+			"sha256": "9037fdca9be5f814e5497d82778e20f183f1f430669c20f006f12b4d3eecc7c9",
+			"artifactHashesVerified": 10,
+			"frameErrorsRecomputed": 6,
+			"blackCounterfactualActiveErrorMinimum": 118.72,
+			"publicTextArtifactsCheckedForCapabilityLeak": 23
+		},
+		"project": {
+			"sourceDirectory": "C:/tmps/rocut-stylized-f6XU4z/particle-c4-persistence-AGMhEa/project",
+			"revision": 2,
+			"projectSha256": "96672b702d66ea305126147ecdb10fa21f773ea12ba8e77af383b41e2216fa36",
+			"files": 11,
+			"directories": 6,
+			"sourceUnchanged": true,
+			"exactCopyUnchanged": true,
+			"clipId": "particle-model",
+			"savedClipOpacity": 0.85,
+			"savedClipOpacityAppliedByThisProbe": false
+		},
+		"lifecycle": {
+			"hostGracefulExitCode": 0,
+			"hostClosed": true,
+			"observedDirectChildren": 36,
+			"observedDirectChildrenClosed": true,
+			"childExitSemantics": "18 Chromium SIGTERM and 18 Bun SIGKILL are renderer/sampler disposal, not 36 exit-code-zero completions",
+			"playwrightBrowserClosed": true,
+			"ffprobeClosed": true,
+			"ffmpegClosed": true,
+			"descendantTreeNotInferred": true,
+			"externalRequests": []
+		},
+		"retainedFailures": [
+			{
+				"directory": "C:/tmps/rocut-stylized-f6XU4z/particle-c4-export-zPAR2z",
+				"failureSha256": "e726478550294de44f7665a10a186f11e4e59888c877d4072ed055bf81d7e04c",
+				"phase": "Vite build; no Host or browser started",
+				"cause": "Source-manifest hook treated explicit virtual /__vite-plugin-wasm-helper as a disk file",
+				"fix": "Record this exact generated module code separately, keep actual file reads strict; no catch-all ENOENT suppression",
+				"originalAndCopyUnchanged": true
+			}
+		],
+		"visualInspection": {
+			"file": "C:/tmps/rocut-stylized-f6XU4z/particle-c4-export-7k8GuH/decoded-frame0.png",
+			"sha256": "6df2578c1a60caad1c73e84b9caf911ef2e315b623136c9380fe5c2f0cfff2b2",
+			"observation": "Decoded first frame visibly retains four colored point-cloud quadrants on black"
+		},
+		"notClaimed": [
+			"Saved clip opacity/effects/timeline placement or complete project export",
+			"Attached-editor UI parameter/history/reload acceptance",
+			"Electron capture-session v2, installed plugin or full runtime pack",
+			"Full-duration motion/video, long-project performance, audio or cross-GPU acceptance"
+		],
+		"noLedgerPromotion": true
+	}
+}
