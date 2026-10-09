@@ -4,7 +4,7 @@ import { resolveCanvasResources } from "../../services/renderer/programmatic/res
 
 /** File picker classification; the Host independently admits build revisions. */
 export const isAuthorTextFile = (id: string) =>
-	/\.(?:html?|css|[cm]?js|tsx?|jsx|json|svg)$/i.test(id);
+	/\.(?:html?|css|[cm]?js|tsx?|jsx|json|svg|txt|csv|srt|vtt|lrc)$/i.test(id);
 
 export async function loadAuthorText({
 	source,
