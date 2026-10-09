@@ -70,6 +70,7 @@ export function editingCatalog({
 			params: "replace",
 			animations: "replace",
 			effects: "ordered-replace",
+			masterEffects: "update-project.patch.masterEffects; ordered-replace; [] clears; complete-scene post including backdrop; scene-timeline clock",
 			masks: "ordered-replace",
 			keyTime: "element-relative-ticks",
 			volume: "dB",

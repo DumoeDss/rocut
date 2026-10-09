@@ -230,6 +230,9 @@ export function encodeProject({
 	// Recursive overlay would resurrect deleted animation channels/parameters or
 	// retain the other background variant after switching color <-> blur.
 	encoded.settings.background = cloneOpaque(project.settings.background);
+	// Ordered complete replacement: removing an effect/parameter must not restore
+	// a retained provider value. Legacy records without the field remain valid.
+	encoded.settings.masterEffects = cloneOpaque(project.settings.masterEffects);
 	for (const [sceneIndex, scene] of project.scenes.entries()) {
 		const savedTracks = record(
 			encoded.scenes[sceneIndex].tracks,

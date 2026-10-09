@@ -37,6 +37,7 @@ const PROJECT_PATCH_KEYS = new Set([
 	"canvasHeight",
 	"sceneState",
 	"background",
+	"masterEffects",
 ]);
 const FRAME_RATE_KEYS = ["numerator", "denominator"] as const;
 

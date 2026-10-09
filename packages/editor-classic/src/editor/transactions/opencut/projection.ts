@@ -67,6 +67,10 @@ function projectProjection(draft: OpenCutProjectDraft): Project {
 		},
 		canvasWidth: project.settings.canvasSize.width,
 		canvasHeight: project.settings.canvasSize.height,
+		masterEffects:
+			project.settings.masterEffects === undefined
+				? []
+				: cloneOpaque(project.settings.masterEffects),
 		background:
 			project.settings.background.type === "blur"
 				? {
@@ -304,6 +308,7 @@ export function diffOpenCutProjection({
 		"canvasHeight",
 		"sceneState",
 		"background",
+		"masterEffects",
 	]) as ProjectPatch;
 	if (Object.keys(projectPatch).length > 0) {
 		operations.push({

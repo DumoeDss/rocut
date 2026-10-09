@@ -2,6 +2,7 @@ import type { FrameRate } from "opencut-wasm";
 import type { MotionTextSequence } from "@opencut/editor-contracts";
 import type { TScene } from "../timeline/types";
 import type { MediaTime } from "../wasm";
+import type { Effect } from "../effects/types";
 
 export type TBackground =
 	| {
@@ -34,6 +35,8 @@ export interface TProjectSettings {
 	lastCustomCanvasSize?: TCanvasSize | null;
 	originalCanvasSize?: TCanvasSize | null;
 	background: TBackground;
+	/** Optional additive field: omitted legacy projects have no master post. */
+	masterEffects?: Effect[];
 }
 
 export interface TTimelineViewState {

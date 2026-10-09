@@ -482,6 +482,7 @@ export class RendererManager {
 				duration,
 				canvasSize,
 				background: activeProject.settings.background,
+				masterEffects: activeProject.settings.masterEffects,
 				assetResolver: this.assetResolver,
 			});
 

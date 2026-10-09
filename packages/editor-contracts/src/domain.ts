@@ -12,6 +12,7 @@
  * the seam.
  */
 import type { MotionTextClipContent } from "./motion-text";
+import type { EditingEffect } from "./editing";
 
 // ---------------------------------------------------------------------------
 // MediaTime — branded integer at fixed 120,000 ticks/sec
@@ -187,6 +188,9 @@ export interface Project {
 	readonly frameRate: FrameRate;
 	readonly canvasWidth: number;
 	readonly canvasHeight: number;
+	/** Ordered post-processing of the complete scene, including its backdrop.
+	 * Time-dependent effects use scene timeline time. [] explicitly clears it. */
+	readonly masterEffects?: readonly EditingEffect[];
 	/** Native project backdrop; strings use the renderer's color/gradient syntax. */
 	readonly background?:
 		| { readonly type: "color"; readonly color: string }

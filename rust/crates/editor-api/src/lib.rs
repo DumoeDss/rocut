@@ -2,6 +2,8 @@
 //! by the provider; rules are independent of a browser, CLI or React session.
 mod animation;
 mod effect_params;
+mod effect_stack;
+pub use effect_stack::validate_master_effects_json;
 mod model;
 mod image_sequence;
 pub use image_sequence::{validate_image_sequence_manifest_json, validate_image_sequence_image_bytes};
@@ -276,31 +278,7 @@ fn validate(request: &Request) -> Vec<Issue> {
             "Effects require a visual element",
         ));
     }
-    let mut effect_ids = BTreeSet::new();
-    for effect in &e.effects {
-        let path = format!("editing.effects.{}", effect.id);
-        effect_params::validate(&effect.kind, &effect.params, &format!("{path}.params"), &mut issues);
-        unique_id(&effect.id, &mut effect_ids, &path, &mut issues);
-        match request.catalog.effects.get(&effect.kind) {
-            None => issues.push(Issue::new(&path, "Unknown effect type")),
-            Some(params) => {
-                validate_params(
-                    &effect.params,
-                    params,
-                    &format!("{path}.params"),
-                    &mut issues,
-                );
-                for param in params {
-                    if param.required != Some(false) && !effect.params.contains_key(&param.key) {
-                        issues.push(Issue::new(
-                            &format!("{path}.params.{}", param.key),
-                            "Required effect parameter missing; use catalog defaults",
-                        ));
-                    }
-                }
-            }
-        }
-    }
+    effect_stack::validate(&e.effects, &request.catalog.effects, "editing.effects", &mut issues);
     if !matches!(kind, "video" | "image" | "graphic") && !e.masks.is_empty() {
         issues.push(Issue::new(
             "editing.masks",

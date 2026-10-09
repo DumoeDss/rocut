@@ -21,6 +21,7 @@ const PROJECT_PATCH_KEYS = [
 	"canvasHeight",
 	"sceneState",
 	"background",
+	"masterEffects",
 ] as const satisfies readonly (keyof ProjectPatch)[];
 
 interface EntityRepair {

@@ -27,6 +27,7 @@ import {
 import type { AssetResolver } from "@opencut/editor-ports";
 import type { ProgrammaticFrameProvider } from "@opencut/editor-ports/host";
 import type { MotionTextFontRuntime } from "./motion-text/font-runtime";
+import type { Effect } from "../../effects/types";
 
 const PREVIEW_MAX_IMAGE_SIZE = 2048;
 
@@ -284,6 +285,7 @@ export type BuildSceneParams = {
 	motionTextProjectId?: string;
 	duration: number;
 	background: TBackground;
+	masterEffects?: readonly Effect[];
 	isPreview?: boolean;
 	assetResolver: AssetResolver;
 };
@@ -299,6 +301,7 @@ export function buildScene({
 	motionTextProjectId,
 	duration,
 	background,
+	masterEffects = [],
 	isPreview,
 	assetResolver,
 }: BuildSceneParams) {
@@ -346,5 +349,18 @@ export function buildScene({
 			rootNode.add(node);
 	}
 
+	// The master stack sees the complete picture once, including background and
+	// all engines/layers. Its effect clock is scene time, not source trim time.
+	for (const effect of masterEffects) {
+		if (!effect.enabled) continue;
+		rootNode.add(
+			new EffectLayerNode({
+				effectType: effect.type,
+				effectParams: { ...effect.params },
+				timeOffset: 0,
+				duration,
+			}),
+		);
+	}
 	return rootNode;
 }

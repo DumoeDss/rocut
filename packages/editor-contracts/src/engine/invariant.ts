@@ -1,6 +1,6 @@
 import type { Asset, Clip, Marker, Project, Track } from "..";
 import { validateFrameRate } from "..";
-import { isClipEditing } from "../editing";
+import { isClipEditing, isEditingEffect } from "../editing";
 import type { MotionTextClipContent, MotionTextSequence } from "../motion-text";
 import { validateMotionTextSequence } from "../motion-text";
 import type { ProjectId } from "@opencut/editor-ports";
@@ -38,6 +38,12 @@ export function isValidProject(
 	if (value.sceneState !== undefined && !isSceneState(value.sceneState))
 		return false;
 	if (value.background !== undefined && !isProjectBackground(value.background))
+		return false;
+	if (
+		value.masterEffects !== undefined &&
+		(!Array.isArray(value.masterEffects) ||
+			!value.masterEffects.every(isEditingEffect))
+	)
 		return false;
 	if (
 		!isNonEmptyString(value.id) ||

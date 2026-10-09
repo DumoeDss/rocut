@@ -105,6 +105,17 @@ const scalar = (value: unknown): boolean =>
 const params = (value: unknown): boolean =>
 	record(value) && Object.values(value).every(scalar);
 
+/** Transport shape only; Rust validates IDs, types, parameters and stack bounds. */
+export function isEditingEffect(value: unknown): value is EditingEffect {
+	return (
+		record(value) &&
+		typeof value.id === "string" &&
+		typeof value.type === "string" &&
+		typeof value.enabled === "boolean" &&
+		params(value.params)
+	);
+}
+
 /** Transport shape check only. Rust/provider policy owns key, range and lane semantics. */
 export function isClipEditing(value: unknown): value is ClipEditing {
 	if (
@@ -158,14 +169,7 @@ export function isClipEditing(value: unknown): value is ClipEditing {
 	if (
 		value.effects !== undefined &&
 		(!Array.isArray(value.effects) ||
-			!value.effects.every(
-				(effect) =>
-					record(effect) &&
-					typeof effect.id === "string" &&
-					typeof effect.type === "string" &&
-					typeof effect.enabled === "boolean" &&
-					params(effect.params),
-			))
+			!value.effects.every(isEditingEffect))
 	)
 		return false;
 	if (

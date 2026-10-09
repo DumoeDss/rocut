@@ -317,6 +317,10 @@ function applyPublicDocument({
 	project.metadata = { ...project.metadata, name: document.project.name };
 	project.settings = {
 		...project.settings,
+		masterEffects: (document.project.masterEffects ?? []).map((effect) => ({
+			...effect,
+			params: { ...effect.params },
+		})),
 		...(document.project.background && {
 			background: cloneOpaque(document.project.background),
 		}),
@@ -518,7 +522,9 @@ export function createOpenCutTransactionDocumentAdapter({
 					canonical(previous.project?.sceneState) !==
 						canonical(document.project?.sceneState) ||
 					canonical(previous.project?.background) !==
-						canonical(document.project?.background);
+						canonical(document.project?.background) ||
+					canonical(previous.project?.masterEffects) !==
+						canonical(document.project?.masterEffects);
 				if (topologyChanged && !validateEditing)
 					throw new Error(
 						"Scene editing requires the runtime editing provider",

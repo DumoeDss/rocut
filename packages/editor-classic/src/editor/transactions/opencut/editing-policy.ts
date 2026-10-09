@@ -3,7 +3,10 @@ import type {
 	TransactionEngineIssue,
 	TransactionPlacementPolicy,
 } from "@opencut/editor-contracts/engine";
-import { validateClipEditingJson } from "opencut-wasm";
+import {
+	validateClipEditingJson,
+	validateMasterEffectsJson,
+} from "opencut-wasm";
 import { editingCatalog } from "./editing-catalog";
 import { parseEditingIssues, validateSceneState } from "./scene-policy";
 import type { Project } from "@opencut/editor-contracts";
@@ -19,14 +22,35 @@ export function validateDocumentEditing({
 	previousProject?: Project | null;
 }): TransactionEngineIssue[] {
 	const sceneIssues = validateSceneState({ document, previousProject });
+	const project = document.project;
 	const tracks = new Map(document.tracks.map((track) => [track.id, track]));
 	const assets = new Map(document.assets.map((asset) => [asset.id, asset]));
 	const candidates = document.clips.filter(
 		(clip) =>
 			clip.editing && (!ids || ids.has(clip.id) || ids.has(clip.trackId)),
 	);
-	if (!candidates.length) return sceneIssues;
+	const hasMaster =
+		project?.masterEffects !== undefined &&
+		(!Array.isArray(project.masterEffects) || project.masterEffects.length > 0);
+	if (!candidates.length && !hasMaster) return sceneIssues;
 	const catalog = editingCatalog();
+	if (project && hasMaster) {
+		sceneIssues.push(
+			...parseEditingIssues(
+				validateMasterEffectsJson(
+					JSON.stringify({
+						effects: project.masterEffects,
+						catalog: catalog.effects,
+					}),
+				),
+			).map((issue) => ({
+				code: "provider:master-effects" as const,
+				message: `${issue.path}: ${issue.message}`,
+				entityIds: [project.id],
+			})),
+		);
+	}
+	if (!candidates.length) return sceneIssues;
 	return [
 		...sceneIssues,
 		...candidates.flatMap((clip) => {

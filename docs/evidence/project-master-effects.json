@@ -1,0 +1,54 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "authoring-transactions-and-renderer-wiring-verified-browser-export-pending",
+	"contract": {
+		"publicField": "Project.masterEffects",
+		"nativeField": "TProject.settings.masterEffects",
+		"mutation": "update-project.patch.masterEffects",
+		"clear": [],
+		"semantics": "Ordered complete replacement, including disabled entries; omitted legacy native field means identity master",
+		"rendering": "After the complete active-scene picture including backdrop, once per enabled effect, using scene timeline time",
+		"validation": "Shared Rust effect policy checks even disabled entries, registered types/required parameters/IDs/ranges/integer seeds/schedules; master request limit 1 MiB and 256 entries",
+		"migration": "Optional additive settings field, no destructive migration or legacy schema rewrite"
+	},
+	"privateBuild": {
+		"source": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/scene-transition-source-CxlEd4",
+		"baseline": "scene-transition-source-tCxnpu",
+		"overrides": [
+			"rust/crates/editor-api/src/lib.rs",
+			"rust/crates/editor-api/src/effect_stack.rs",
+			"rust/crates/editor-api/tests/master_effects.rs"
+		],
+		"inputFiles": 553,
+		"sourceManifestSha256": "7993fe9837cf99645b376c4d6568c227495fa8d32ccf230fa3a67423555da057",
+		"artifact": "web-scene-transition-htZyXl",
+		"wasmSha256": "6a0691fc7dd3e78415d0145c15a64de9462bd939d842b6ae6a750682dd1dac9a",
+		"wasmBytes": 9913713,
+		"scope": "Frozen accepted baseline plus master-validator changes; excludes concurrent Thread and fractional-duration implementations; private web-target, not redistribution package"
+	},
+	"checks": {
+		"nativeMasterTests": 4,
+		"nativeSceneRegressionTests": 3,
+		"nativeClipEditingRegressionTests": 5,
+		"nativeOptionalEffectRegressionTests": 3,
+		"newBunTests": 5,
+		"checksInclude": [
+			"Real private-WASM Agent transaction validation, atomic rejection, persistence, detached reads, reopen and explicit clear",
+			"UI command shared revision, undo/redo preserving unrelated Agent rename",
+			"Codec full replacement and nested parameter removal without restoring retained fields",
+			"Production buildScene/resolveRenderTree/frame descriptor placement after backdrop, ordered and disabled effects",
+			"Original Agent editing, project edits and projection comparison regressions"
+		],
+		"strictScopedTypes": "passed",
+		"wasmNativePathPrivacy": "passed",
+		"lint": "New and affected scoped files passed except 17 pre-existing diagnostics in domain.ts and draft/inverse.ts; identical diagnostics reproduced from HEAD, not suppressed",
+		"retainedRegressionAndFix": "Adding a clone for an omitted empty master broke the borrowed-projection zero-clone regression; omitted stacks now use a fresh empty literal and both ownership tests pass"
+	},
+	"remaining": [
+		"Actual browser GPU and independently decoded master-post export acceptance",
+		"Independent Electron export-renderer entry must pass project.settings.masterEffects into buildScene",
+		"Installed-plugin acceptance and full-song export",
+		"Dedicated author UI, master parameter animation and arbitrary persisted nested groups"
+	]
+}

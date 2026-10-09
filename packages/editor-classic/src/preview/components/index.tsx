@@ -185,6 +185,7 @@ function RenderTreeController() {
 			duration,
 			canvasSize: { width, height },
 			background: activeProject.settings.background,
+			masterEffects: activeProject.settings.masterEffects,
 			isPreview: true,
 			assetResolver: editor.renderer.assetResolver,
 		});
@@ -196,6 +197,7 @@ function RenderTreeController() {
 		activeProject?.metadata.id,
 		activeProject?.motionTextSequences,
 		activeProject?.settings.background,
+		activeProject?.settings.masterEffects,
 		motionTextSequencePreview,
 		width,
 		height,

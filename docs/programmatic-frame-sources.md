@@ -4009,3 +4009,27 @@ fixtures for the already committed resident-image admission policy: Afterimage
 fonts lacked required descriptors and Ember expected unused declared images to
 be omitted. Tests now match that policy and retain missing/invalid-font negative
 controls; production admission was not weakened.
+
+### Project master-post authoring checkpoint (2026-10-09)
+
+`Project.masterEffects` is now an Agent-visible ordered effect stack. A normal
+`update-project` operation can replace it; `[]` clears it. Native projects store
+the stack as the optional additive `settings.masterEffects` field, and old
+projects without it retain an identity master. The effects use the same catalog
+and Rust parameter/ID validation as clip effects; disabled entries are validated
+too. Use `expectedRevision` when replacing the stack.
+
+The active scene's complete composition, including its backdrop and all native
+or programmatic layers, receives the enabled effects once in authored order.
+Effect time is scene timeline time, independent of source trim. Editor preview,
+the normal editor export path and thumbnail generation pass the same settings.
+The separate Electron export renderer still needs its corresponding argument
+wiring by the Electron session; this checkpoint does not claim installed support.
+
+Real private-WASM transaction tests cover atomic invalid-input rejection,
+save/reopen, clear, UI undo/redo and unrelated Agent edits. Codec tests cover
+detached ownership and removal without resurrection of retained parameters.
+Production scene building/resolution verifies final-pass ordering; real GPU and
+independently decoded video acceptance is still pending. See
+[master-post evidence](evidence/project-master-effects.json) for build hashes,
+checks and remaining nested-group/UI/animation work.

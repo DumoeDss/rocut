@@ -568,6 +568,7 @@ async function handleApi(
 					mutation: "update-clip.patch.editing",
 					trackMute: "update-track.patch.muted",
 					background: "update-project.patch.background",
+					masterEffects: "update-project.patch.masterEffects",
 					trackOrder: "reorder-tracks",
 				},
 				editorTasks: {

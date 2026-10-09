@@ -789,6 +789,7 @@ export class ProjectManager {
 			motionTextFontRuntime: this.editor.renderer.motionTextFontRuntime,
 			motionTextProjectId: this.active.metadata.id,
 			duration: duration || 1,
+			masterEffects: this.active.settings.masterEffects,
 			canvasSize,
 			background,
 			isPreview: true,

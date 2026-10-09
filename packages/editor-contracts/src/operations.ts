@@ -30,6 +30,7 @@ export type ProjectPatch = Partial<
 		| "canvasHeight"
 		| "sceneState"
 		| "background"
+		| "masterEffects"
 	>
 >;
 
