@@ -22,6 +22,10 @@
  */
 import { randomBytes } from "node:crypto";
 import { createExportOutputWriter } from "./host-export-output";
+import {
+	supportsHighChromaProtocol,
+	supportsQuantizerProtocol,
+} from "./host-export-protocol";
 
 /** Containers the editor's exporter supports (`editor-classic/src/export`). */
 export const EXPORT_FORMATS = Object.freeze(["mp4", "webm"] as const);
@@ -52,6 +56,8 @@ export interface ExportOptions {
 	readonly format: ExportFormat;
 	readonly quality: ExportQuality;
 	readonly includeAudio?: boolean;
+	readonly videoChroma?: "420" | "444";
+	readonly videoQuantizer?: number;
 	readonly range?: {
 		readonly startTime: number;
 		readonly endTime: number;
@@ -81,7 +87,7 @@ export interface SurfaceStream {
 
 export interface ExportRegistry {
 	/** Register an attached pane; returns the detach function. */
-	attachSurface(stream: SurfaceStream): () => void;
+	attachSurface(stream: SurfaceStream, protocol?: unknown): () => void;
 	/** How many panes are attached right now — 0 means "cannot render". */
 	surfaceCount(): number;
 	start(options: ExportOptions): ExportJob;
@@ -105,6 +111,16 @@ export class NoSurfaceAttachedError extends Error {
 	}
 }
 
+export class NoCompatibleExportSurfaceError extends Error {
+	readonly code = "no-compatible-export-surface";
+	constructor(
+		message = "WebM 4:4:4 requires an attached editor pane declaring export protocol 2; update or reopen the editor pane.",
+	) {
+		super(message);
+		this.name = "NoCompatibleExportSurfaceError";
+	}
+}
+
 /** A job that has neither progressed nor settled within this window is dead. */
 export const EXPORT_STALE_MS = 10 * 60 * 1000;
 
@@ -118,20 +134,26 @@ export function createExportRegistry(args: {
 	const newId = args.newId ?? (() => randomBytes(8).toString("hex"));
 	const noteActivity = args.noteActivity ?? (() => {});
 	const surfaces = new Set<SurfaceStream>();
+	const highChromaSurfaces = new Set<SurfaceStream>();
+	const quantizerSurfaces = new Set<SurfaceStream>();
+	const targets = new Map<string, SurfaceStream>();
 	const jobs = new Map<string, ExportJob>();
+	const selectedFeature = (options: ExportOptions) =>
+		options.videoQuantizer === undefined ? "4:4:4" : "VP9 quantizer";
 	const writeOutput = createExportOutputWriter({
 		projectDir: args.projectDir,
 		now,
 		noteActivity,
 	});
 
-	const send = (frame: unknown): void => {
+	const send = (frame: unknown, target?: SurfaceStream): void => {
 		const chunk = `data: ${JSON.stringify(frame)}\n\n`;
-		for (const surface of surfaces) {
+		for (const surface of target ? [target] : surfaces) {
 			try {
 				surface.write(chunk);
 				surface.flush?.();
-			} catch {
+			} catch (error) {
+				if (target) throw error;
 				// A dead stream is dropped on its own close callback; a write
 				// that throws here must not abort the remaining fan-out.
 			}
@@ -153,6 +175,7 @@ export function createExportRegistry(args: {
 				"the editor pane stopped reporting before the export finished " +
 				"(closed, reloaded, or the render died)";
 			job.updatedAt = now();
+			targets.delete(job.id);
 		}
 	};
 
@@ -172,16 +195,30 @@ export function createExportRegistry(args: {
 			return job;
 		}
 		mutate(job);
+		if (job.status !== "pending" && job.status !== "running")
+			targets.delete(id);
 		job.updatedAt = now();
 		noteActivity();
 		return job;
 	};
 
 	return {
-		attachSurface(stream) {
+		attachSurface(stream, protocol) {
 			surfaces.add(stream);
+			if (supportsHighChromaProtocol(protocol)) highChromaSurfaces.add(stream);
+			if (supportsQuantizerProtocol(protocol)) quantizerSurfaces.add(stream);
 			return () => {
 				surfaces.delete(stream);
+				highChromaSurfaces.delete(stream);
+				quantizerSurfaces.delete(stream);
+				for (const [id, target] of targets) {
+					if (target !== stream) continue;
+					settle(id, (job) => {
+						job.status = "failed";
+						job.error = `The selected ${selectedFeature(job.options)} editor pane disconnected; export was not reassigned.`;
+					});
+					targets.delete(id);
+				}
 			};
 		},
 		surfaceCount() {
@@ -189,6 +226,22 @@ export function createExportRegistry(args: {
 		},
 		start(options) {
 			if (surfaces.size === 0) throw new NoSurfaceAttachedError();
+			const target =
+				options.videoQuantizer !== undefined
+					? [...quantizerSurfaces].find(
+							(surface) =>
+								options.videoChroma !== "444" ||
+								highChromaSurfaces.has(surface),
+						)
+					: options.videoChroma === "444"
+						? highChromaSurfaces.values().next().value
+						: undefined;
+			if (options.videoQuantizer !== undefined && !target)
+				throw new NoCompatibleExportSurfaceError(
+					"Explicit VP9 quantizer requires an attached editor pane declaring export protocol 3 and the requested chroma support.",
+				);
+			if (options.videoChroma === "444" && !target)
+				throw new NoCompatibleExportSurfaceError();
 			const at = now();
 			const job: ExportJob = {
 				id: newId(),
@@ -200,7 +253,14 @@ export function createExportRegistry(args: {
 				updatedAt: at,
 			};
 			jobs.set(job.id, job);
-			send({ command: "export.start", jobId: job.id, options });
+			if (target) targets.set(job.id, target);
+			try {
+				send({ command: "export.start", jobId: job.id, options }, target);
+			} catch {
+				job.status = "failed";
+				job.error = `The selected ${selectedFeature(options)} editor pane could not receive the export command.`;
+				targets.delete(job.id);
+			}
 			noteActivity();
 			return job;
 		},
@@ -228,7 +288,9 @@ export function createExportRegistry(args: {
 			) {
 				return job;
 			}
-			return writeOutput(job, bytes);
+			const result = await writeOutput(job, bytes);
+			targets.delete(id);
+			return result;
 		},
 		fail(id, error) {
 			return settle(id, (job) => {
@@ -252,7 +314,23 @@ export function createExportRegistry(args: {
 			}
 			job.cancelRequested = true;
 			job.updatedAt = now();
-			send({ command: "export.cancel", jobId: job.id });
+			const target = targets.get(job.id);
+			if (
+				(job.options.videoChroma === "444" ||
+					job.options.videoQuantizer !== undefined) &&
+				!target
+			) {
+				job.status = "failed";
+				job.error = `The selected ${selectedFeature(job.options)} editor pane is no longer available.`;
+				return job;
+			}
+			try {
+				send({ command: "export.cancel", jobId: job.id }, target);
+			} catch {
+				job.status = "failed";
+				job.error = `The selected ${selectedFeature(job.options)} editor pane could not receive cancellation.`;
+				targets.delete(job.id);
+			}
 			noteActivity();
 			return job;
 		},
@@ -279,6 +357,20 @@ export function parseExportOptions(raw: unknown): ExportOptions | string {
 	) {
 		return "includeAudio must be a boolean when present";
 	}
+	if (
+		body.videoChroma !== undefined &&
+		body.videoChroma !== "420" &&
+		body.videoChroma !== "444"
+	)
+		return "videoChroma must be 420 or 444 when present";
+	if (body.videoChroma === "444" && format !== "webm")
+		return "videoChroma 444 requires webm format";
+	if (
+		body.videoQuantizer !== undefined &&
+		(typeof body.videoQuantizer !== "number" ||
+			!Number.isFinite(body.videoQuantizer))
+	)
+		return "videoQuantizer must be numeric when present";
 	let range: ExportOptions["range"];
 	if (body.range !== undefined) {
 		if (typeof body.range !== "object" || body.range === null) {
@@ -301,6 +393,12 @@ export function parseExportOptions(raw: unknown): ExportOptions | string {
 	return {
 		format: format as ExportFormat,
 		quality: quality as ExportQuality,
+		...(body.videoQuantizer === undefined
+			? {}
+			: { videoQuantizer: body.videoQuantizer as number }),
+		...(body.videoChroma === undefined
+			? {}
+			: { videoChroma: body.videoChroma }),
 		...(body.includeAudio === undefined
 			? {}
 			: { includeAudio: body.includeAudio as boolean }),

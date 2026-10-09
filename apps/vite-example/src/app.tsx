@@ -204,6 +204,12 @@ function HostServedSync({ projectId }: { projectId: string }) {
 					options: {
 						format: options.format,
 						quality: options.quality,
+						...(options.videoQuantizer === undefined
+							? {}
+							: { videoQuantizer: options.videoQuantizer }),
+						...(options.videoChroma === undefined
+							? {}
+							: { videoChroma: options.videoChroma }),
 						...(options.includeAudio === undefined
 							? {}
 							: { includeAudio: options.includeAudio }),

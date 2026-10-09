@@ -45,9 +45,15 @@ describe("export routes (host)", () => {
 			const listed = (await (await fetch(`${api}/export`)).json()) as {
 				surfaces: number;
 				jobs: unknown[];
+				protocol: unknown;
 			};
 			expect(listed.surfaces).toBe(0);
 			expect(listed.jobs).toEqual([]);
+			expect(listed.protocol).toEqual({
+				version: 3,
+				videoQuantizer: true,
+				videoChroma: ["420", "444"],
+			});
 
 			const started = await fetch(`${api}/export`, {
 				method: "POST",
@@ -88,6 +94,17 @@ describe("export routes (host)", () => {
 			expect(((await response.json()) as { error: string }).error).toContain(
 				"format must be one of",
 			);
+			for (const options of [
+				{ format: "mp4", videoChroma: "444" },
+				{ format: "webm", videoChroma: "422" },
+			]) {
+				const response = await fetch(`${api}/export`, {
+					method: "POST",
+					headers: { "content-type": "application/json" },
+					body: JSON.stringify(options),
+				});
+				expect(response.status).toBe(400);
+			}
 		} finally {
 			await host.close();
 		}

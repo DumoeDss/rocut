@@ -46,9 +46,11 @@ import {
 import {
 	createExportRegistry,
 	NoSurfaceAttachedError,
+	NoCompatibleExportSurfaceError,
 	parseExportOptions,
 	type ExportRegistry,
 } from "./host-export";
+import { EXPORT_PROTOCOL, surfaceExportProtocol } from "./host-export-protocol";
 import {
 	classifyEntry,
 	normalizeProjectKey,
@@ -840,10 +842,13 @@ async function handleApi(
 			// what makes this pane "a renderer this host can direct" — and the
 			// attached count is what lets `POST export` refuse up front when
 			// there is no pane to render with.
-			const detach = context.exportRegistry.attachSurface({
-				write: (chunk) => response.write(chunk),
-				...flush,
-			});
+			const detach = context.exportRegistry.attachSurface(
+				{
+					write: (chunk) => response.write(chunk),
+					...flush,
+				},
+				surfaceExportProtocol(url.searchParams),
+			);
 			request.once("close", () => {
 				detachTasks();
 				unsubscribe();
@@ -865,7 +870,10 @@ async function handleApi(
 				try {
 					respond(202, context.exportRegistry.start(options));
 				} catch (error) {
-					if (error instanceof NoSurfaceAttachedError) {
+					if (
+						error instanceof NoSurfaceAttachedError ||
+						error instanceof NoCompatibleExportSurfaceError
+					) {
 						// 409, not 500: nothing is broken — the precondition
 						// (a pane to render with) is simply not met.
 						respond(409, { error: error.message, code: error.code });
@@ -877,6 +885,7 @@ async function handleApi(
 			}
 			if (request.method === "GET" && route.length === 1) {
 				respond(200, {
+					protocol: EXPORT_PROTOCOL,
 					surfaces: context.exportRegistry.surfaceCount(),
 					jobs: context.exportRegistry.list(),
 				});

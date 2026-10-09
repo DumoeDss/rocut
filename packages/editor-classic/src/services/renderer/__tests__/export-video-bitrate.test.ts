@@ -1,5 +1,8 @@
 import { expect, test } from "bun:test";
-import { resolveExportVideoBitrate } from "../export-video-bitrate";
+import {
+	resolveExportVideoBitrate,
+	resolveExportVideoPlan,
+} from "../export-video-bitrate";
 
 test("video export passes codec, resolution and rational frame rate through the Rust policy", () => {
 	const request = {
@@ -31,4 +34,28 @@ test("video export passes codec, resolution and rational frame rate through the 
 			frameRate: { numerator: 7, denominator: 3 },
 		}),
 	).toThrow("tick");
+});
+
+test("explicit high-chroma preserves the Rust codec plan without changing compatible exports", () => {
+	const request = {
+		codec: "vp9" as const,
+		quality: "very_high" as const,
+		width: 192,
+		height: 128,
+		frameRate: { numerator: 30, denominator: 1 },
+	};
+	expect(resolveExportVideoPlan(request)).toEqual({ bitrate: 222_000 });
+	expect(resolveExportVideoPlan({ ...request, videoChroma: "420" })).toEqual({
+		bitrate: 222_000,
+	});
+	expect(resolveExportVideoPlan({ ...request, videoChroma: "444" })).toEqual({
+		bitrate: 369_000,
+		fullCodecString: "vp09.01.11.08.03.01.13.01.01",
+	});
+	expect(resolveExportVideoBitrate({ ...request, videoChroma: "444" })).toBe(
+		369_000,
+	);
+	expect(() =>
+		resolveExportVideoPlan({ ...request, codec: "avc", videoChroma: "444" }),
+	).toThrow("VP9");
 });

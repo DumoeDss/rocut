@@ -1,0 +1,345 @@
+{
+	"schemaVersion": 1,
+	"passed": true,
+	"run": {
+		"sessionId": 63029,
+		"exitCode": 0,
+		"artifactDirectory": "C:/Users/Sayo/AppData/Local/Temp/rocut-vp9-quantizer-editor-Gk2Y5L",
+		"browser": "151.0.7922.34",
+		"entry": "script/probe-vp9-quantizer-editor.mjs"
+	},
+	"scope": {
+		"pipeline": "Real buildScene -> CanvasRenderer -> actual Rust WASM resolver -> SceneExporter -> native VP9 adapter or default CanvasSource -> ExportOutputLifetime plus companion audio -> WebM -> independent FFmpeg and Chromium decoders",
+		"width": 96,
+		"height": 64,
+		"frameRate": {
+			"numerator": 30,
+			"denominator": 1
+		},
+		"firstSceneFrame": 12,
+		"frameCount": 6,
+		"videoDurationSeconds": 0.2,
+		"quality": "very_high",
+		"explicitNativeVideoChroma": "444",
+		"originalInteriorRgbMaeLimitExclusive": 3,
+		"claimsExcluded": [
+			"Full MV or whole-song export acceptance",
+			"RGB lossless output",
+			"Actual encoded sRGB/full-range bitstream",
+			"Installed Electron or user application acceptance",
+			"q-controlled actual bitstream level bitrate/CPB compliance"
+		]
+	},
+	"identities": {
+		"sourceIdentityJsonSha256": "5efebd74ab70a0a967f8492858874da6ad1155da97eea43effa80fa24b6b6b8b",
+		"verificationJsonSha256": "e1d0c3aab36ffbb884589dee738ebdca7c0b9f17e63420183ac4aeb1df2615cb",
+		"cancellationJsonSha256": "0cdb6df20bf54ee0c544d76768603cbab3b66f55132ab45b01163267bf3703a8",
+		"privateRustSourceManifest": {
+			"sha256": "7de4d72a6f6eb8345b1c196a9002da0391696c0150bda14febe1a1e195f0a6a2",
+			"verifiedFiles": 614,
+			"videoExportSources": [
+				{
+					"path": "rust/crates/editor-api/tests/video_export.rs",
+					"sha256": "8f4d78c40026bce7235f81dea6a56732b84d1305812dba8fb5f1b8451850b63d"
+				},
+				{
+					"path": "rust/crates/editor-api/src/video_export.rs",
+					"sha256": "24f106c81d581f0f48095af0409e1b6ac39dd426b1b0a113d289c2ec11cbcf60"
+				},
+				{
+					"path": "rust/crates/editor-api/src/video_export/vp9.rs",
+					"sha256": "a06c00b9ea0b918133039768158564be473309ccb861704325e127897ece0ec1"
+				},
+				{
+					"path": "rust/crates/editor-api/src/video_export/quantizer.rs",
+					"sha256": "2ed2ece440fab8a5e22e7d3a3487698354e1d797f21fc5756808f7e135b976f8"
+				},
+				{
+					"path": "rust/crates/editor-api/examples/vp9-quantizer-policy.rs",
+					"sha256": "48444f719897828bd9e932e7cdaa0004eae8b565b1ee6b9075aa5413bc48d0f5"
+				}
+			]
+		},
+		"privateWasm": [
+			{
+				"path": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-flame-integrated-UoOQ5J\\wasm\\opencut_wasm.js",
+				"sha256": "05c1f4c54590dbbf200d134f776f93d1e9c753ab61e3c4d8afa953195f06298f"
+			},
+			{
+				"path": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-flame-integrated-UoOQ5J\\wasm\\opencut_wasm_bg.wasm",
+				"sha256": "9dd8bc0521bea902b246093ea0d74216a248b578c76bf136d5f312b0b3fde7b6"
+			}
+		],
+		"servedBundles": [
+			{
+				"path": "assets/opencut_wasm_bg-D7jdgQM9.wasm",
+				"sha256": "9dd8bc0521bea902b246093ea0d74216a248b578c76bf136d5f312b0b3fde7b6"
+			},
+			{
+				"path": "assets/vp9-quantizer-editor-browser-CYDO-LC2.js",
+				"sha256": "eeecc7b6c8cd54906ab2103c64a0bbc247ef66fcaccdc1f6246a71c6e3630b8e"
+			},
+			{
+				"path": "script/fixtures/vp9-quantizer-editor-browser.html",
+				"sha256": "3d8be0923ff276a33f44a7970c64b5133853b1c9e7fc5bdff943ad7bb142fd14"
+			}
+		],
+		"binaries": [
+			{
+				"path": "E:/Software/ffmpeg-6.0-full_build/bin/ffmpeg.exe",
+				"sha256": "3fe23ab1bdb8f686bef34000dc93534caa689c4efa073295d2f705732d002a6f"
+			},
+			{
+				"path": "E:/Software/ffmpeg-6.0-full_build/bin/ffprobe.exe",
+				"sha256": "4e3882e55e03493cc5a12b395b70490b0dcab4dcc160d458ca7b5990ce7c4098"
+			},
+			{
+				"path": "C:\\Users\\Sayo\\AppData\\Local\\ms-playwright\\chromium-1234\\chrome-win64\\chrome.exe",
+				"sha256": "409805a16d6416087e6b2f778df1cf8f7bbb267d6b99f6b5bb0a618eace234f2"
+			},
+			{
+				"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-flame-core-20261009-a-target/debug/examples/vp9-quantizer-policy.exe",
+				"sha256": "214beb451cfc7a5e4b522967a72eadef070acd5ad8e983ab135285911a9e58e2"
+			}
+		],
+		"selectedTrackedSources": [
+			{
+				"path": "packages/editor-classic/src/services/renderer/export-vp9-quantizer-source.ts",
+				"sha256": "52f7f922092d1f480b0adcc7e594c0bb1e16bd4b7546bb609ee8dbc6e702766d"
+			},
+			{
+				"path": "packages/editor-classic/src/services/renderer/export-vp9-quantizer-platform.ts",
+				"sha256": "ec38065812b8c461df39bd984aed6098309f44fb0e57896c268937db7d3409aa"
+			},
+			{
+				"path": "packages/editor-classic/src/services/renderer/export-vp9-quantizer-writes.ts",
+				"sha256": "10f0314c7262cfc3ba74ea2c6f2f03bea87dd8be3fbf8c4ad4eb3062a8590560"
+			},
+			{
+				"path": "script/probe-vp9-quantizer-editor.mjs",
+				"sha256": "5a6b36095e52ced863a7fb36e283dfac7b55a0ca2f7eee00d7f6eb218694ace6"
+			},
+			{
+				"path": "script/fixtures/vp9-quantizer-editor-identities.mjs",
+				"sha256": "ec61be887619de492d2bf61e46c2a68601c9eac201c2fa57431455963b6bc78b"
+			},
+			{
+				"path": "script/fixtures/vp9-quantizer-editor-assertions.test.mjs",
+				"sha256": "b2df1c0cbc92441f064afd74118e246f365b66e797ec37e9f7e51cfb4351e7bd"
+			},
+			{
+				"path": "script/fixtures/vp9-quantizer-editor-browser.mjs",
+				"sha256": "6cfe9abf14a6fedc99b18f3539398841bc8d336c0ba088719779db3ad1352946"
+			},
+			{
+				"path": "script/fixtures/vp9-quantizer-editor-browser.html",
+				"sha256": "507d104b67ac613dba80995829a8772ddfb12496f9f4cbdeb7fc9f0abaae990d"
+			},
+			{
+				"path": "script/fixtures/vp9-quantizer-editor-trace.mjs",
+				"sha256": "67fb7c799fc23fef7f5c9e96de4cc86edee9a0f51e0ec53b8d1d1c0d395f4f54"
+			},
+			{
+				"path": "script/fixtures/vp9-quantizer-editor-assertions.mjs",
+				"sha256": "95e402b6b8944576fc87d57c8eff59f2a7c093d5a4f4483c38b8a2f08d2843ee"
+			},
+			{
+				"path": "script/fixtures/vp9-quantizer-editor-io.mjs",
+				"sha256": "246dbc6cbfd8a7e70a75c8cad05367cdbc22b1ffd1cf18c9e8999ad87d1c7966"
+			},
+			{
+				"path": "packages/editor-classic/src/services/renderer/scene-exporter.ts",
+				"sha256": "1d11fde33ff89053c9e513b059379f8d9d26f7c66a2e14fae0fffae23ad2de77"
+			},
+			{
+				"path": "packages/editor-classic/src/services/renderer/export-output-lifetime.ts",
+				"sha256": "8084a42edb8cb2a342031aefcbe42b96ce207d571f7da791b785133cd21d9034"
+			},
+			{
+				"path": "packages/editor-classic/src/services/renderer/export-video-bitrate.ts",
+				"sha256": "fcea377d67e90ebecc96a8b2f00d4a99456c25cf7777886319393fbcbfec93af"
+			},
+			{
+				"path": "packages/editor-classic/src/services/renderer/export-video-native-plan.ts",
+				"sha256": "a707e6e17072be9920e757a04f17ea75d96d66bb4457ef2cb35d846b9f44b537"
+			}
+		],
+		"fullTrackedSourceCount": 51,
+		"frozenOriginalInputs": {
+			"encoder-inputs-raw.json": "3767c360b44c6bb69b8508291a53e9c01021f47737158440c0cf9aa66de3ff8a",
+			"master-effects.webm": "2389638c47f03e1b3ded4e3a391e79d8d1d3b574b53fa18918bb916f5b671ca6",
+			"decoded.rgb": "fb3da766f59a81396f880fb756260e6cf257fd52544fd4c94805e3f1cdc3e74a"
+		},
+		"stability": "Runner verified named source files, all 614 private Rust snapshot files, served bundle bytes, private WASM, tools and frozen original inputs unchanged before/after the combined run."
+	},
+	"cases": [
+		{
+			"name": "baseline",
+			"videoQuantizer": null,
+			"configuredCodec": "vp09.00.10.08",
+			"pixelFormat": "yuv420p",
+			"actualEncodedColorSpace": "smpte170m",
+			"actualEncodedColorRange": "tv",
+			"ffmpegPassed": false,
+			"chromiumPassed": false,
+			"ffmpegInteriorRgbMae": [
+				3.213105963105963, 4.02970827970828, 10.73938223938224,
+				12.248069498069498, 12.40015015015015, 12.626876876876876
+			],
+			"chromiumInteriorRgbMae": [
+				3.5, 4.231123981123981, 10.898434148434148, 12.387494637494637,
+				12.603603603603604, 12.841913341913342
+			],
+			"packetPayloadSha256": [
+				"26ff0b802ee5f8f1c3350b28d6d3b0fe4eb81b6c22d141e0441fed8bb07b8dc0",
+				"316d4ce17a45ae10ec8c618b9d19f537b1f5dffcd6d599d26692eaa5a7e4f4ae",
+				"bb0023ecc9109bb506c81601ba4598869459687eaa709f5406e60e11ee3e48b6",
+				"4ee3c183cd9f9a1e00456b86e6943ef659a45ca699a3419c9711bc9d22fae32c",
+				"eb3138c42d9301ac572dc27b373027c5dc720111bafcd8a4676e0e282ea5a2e6",
+				"7d4ea9f6266ef3786b0ae878f2fe9c36702818c2a9b1b4b561b4485ab7e21e5d"
+			],
+			"ffmpegRgbSha256": "fb3da766f59a81396f880fb756260e6cf257fd52544fd4c94805e3f1cdc3e74a",
+			"chromiumRgbSha256": "8a739a1f8e6d1501d621da85d36b58a2ff5dabf7d88ba1de20fac7357a5b7ba4"
+		},
+		{
+			"name": "profile1-q0",
+			"videoQuantizer": 0,
+			"configuredCodec": "vp09.01.10.08.03.01.13.01.01",
+			"pixelFormat": "yuv444p",
+			"actualEncodedColorSpace": "smpte170m",
+			"actualEncodedColorRange": "tv",
+			"ffmpegPassed": true,
+			"chromiumPassed": true,
+			"ffmpegInteriorRgbMae": [
+				0.9693264693264694, 0.9752252252252253, 0.9832689832689833,
+				0.9761904761904762, 0.9766194766194766, 0.9784427284427284
+			],
+			"chromiumInteriorRgbMae": [
+				1.0868725868725868, 1.0947018447018446, 1.1007078507078507,
+				1.0926640926640927, 1.0897683397683398, 1.092878592878593
+			],
+			"packetPayloadSha256": [
+				"7c4ac71d90899ef0bd21219526926865a76818a00c4aea57ba8474881e07aa91",
+				"754b437d9e501b6e46c7d0379684c344bb2374cf6238a71fd56485551880486e",
+				"0647a6deca7d20679a30c9763fff67364277eed69c7334324a4635af23a872c9",
+				"0120deec59a08002f5ac41e345c69316c7bdfefb3509d434f81db75234f66fe4",
+				"b84ae96d1a58bd38c4c700782706f25aeac905062d907a4559b63d1f5a13db3e",
+				"30cc395c933737a956340059981e0f89ac7022a8cf129718e167d409bd488069"
+			],
+			"ffmpegRgbSha256": "9f602172e689a3315591992fddc78512ebdeaf3d4c8790ecc89805a4908e4171",
+			"chromiumRgbSha256": "16fe9608c13cfa331202abf8151f221ad009ca9e55b1a6cfb9f885e1392ebc5f"
+		},
+		{
+			"name": "profile1-q63",
+			"videoQuantizer": 63,
+			"configuredCodec": "vp09.01.10.08.03.01.13.01.01",
+			"pixelFormat": "yuv444p",
+			"actualEncodedColorSpace": "smpte170m",
+			"actualEncodedColorRange": "tv",
+			"ffmpegPassed": false,
+			"chromiumPassed": false,
+			"ffmpegInteriorRgbMae": [
+				3.488845988845989, 3.5641355641355643, 3.585371085371085,
+				3.659373659373659, 3.5406477906477907, 3.536894036894037
+			],
+			"chromiumInteriorRgbMae": [
+				3.591162591162591, 3.651222651222651, 3.6795366795366795,
+				3.7533247533247533, 3.628807378807379, 3.635993135993136
+			],
+			"packetPayloadSha256": [
+				"30bf5ee7fb545a6ae51da98021490553eaedcab2fd7e18f712154089d00cc933",
+				"d49202d57b9b27fe698603b90eac0f3952732a89d3a32b4ad2063ce2e14e8856",
+				"10ed8cc6cf0056d7e89b2213ecabea488d54290db7257ba246d9528e86b8d085",
+				"e72e9e20e0b861e3fb7d9e57abbb42641d79f0123fa039e2bd4961ed3d233f82",
+				"9ffece26d6facb0fd5cb8ac6f43279e2509f0bff4dd9047bd2f6313f244efc04",
+				"ae1baf399d4601a22817ce51b4e850fc662969e9a428dd4f45750e665c745328"
+			],
+			"ffmpegRgbSha256": "56f5d98b16a27dbc52acd1ba0a272663fbdde499903ed7ddc86cfa1bcbdf233d",
+			"chromiumRgbSha256": "83f175e79c48805b1f035273e5431ae88eef69aea56e6697b4ed98a57c1057b1"
+		},
+		{
+			"name": "profile1-q0-repeat",
+			"videoQuantizer": 0,
+			"configuredCodec": "vp09.01.10.08.03.01.13.01.01",
+			"pixelFormat": "yuv444p",
+			"actualEncodedColorSpace": "smpte170m",
+			"actualEncodedColorRange": "tv",
+			"ffmpegPassed": true,
+			"chromiumPassed": true,
+			"ffmpegInteriorRgbMae": [
+				0.9693264693264694, 0.9752252252252253, 0.9832689832689833,
+				0.9761904761904762, 0.9766194766194766, 0.9784427284427284
+			],
+			"chromiumInteriorRgbMae": [
+				1.0868725868725868, 1.0947018447018446, 1.1007078507078507,
+				1.0926640926640927, 1.0897683397683398, 1.092878592878593
+			],
+			"packetPayloadSha256": [
+				"7c4ac71d90899ef0bd21219526926865a76818a00c4aea57ba8474881e07aa91",
+				"754b437d9e501b6e46c7d0379684c344bb2374cf6238a71fd56485551880486e",
+				"0647a6deca7d20679a30c9763fff67364277eed69c7334324a4635af23a872c9",
+				"0120deec59a08002f5ac41e345c69316c7bdfefb3509d434f81db75234f66fe4",
+				"b84ae96d1a58bd38c4c700782706f25aeac905062d907a4559b63d1f5a13db3e",
+				"30cc395c933737a956340059981e0f89ac7022a8cf129718e167d409bd488069"
+			],
+			"ffmpegRgbSha256": "9f602172e689a3315591992fddc78512ebdeaf3d4c8790ecc89805a4908e4171",
+			"chromiumRgbSha256": "16fe9608c13cfa331202abf8151f221ad009ca9e55b1a6cfb9f885e1392ebc5f"
+		}
+	],
+	"invariants": {
+		"allSixNativeBgraBytesColorAndTimingExactlyMatchFrozenOriginal": true,
+		"allSixBuildSceneCanvasPixelsExactlyMatchFrozenOriginal": true,
+		"actualWasmNativePlanExactlyMatchesPrivateRustExample": true,
+		"nativeConfigureExactlyExecutesActualRustNativeConfig": true,
+		"defaultCanvasPacketPayloadsAndFfmpegRgbExactlyMatchOriginal": true,
+		"defaultConfigureComparison": "Same JSON serialization semantics as the original freeze. Four observed explicit undefined optional keys are retained as ownKeys/undefinedKeys metadata in browser-evidence.json; CPU regressions reject any defined config-value change.",
+		"nativePublicPacketOriginalSecondsPreserved": true,
+		"containerTimingResolutionSeconds": 0.001,
+		"outputLifetimeOwnsAllSixFrameAdds": true,
+		"nativeCloseSettlesBeforeOutputFinalize": true
+	},
+	"repeat": {
+		"packetPayloadsExact": true,
+		"ffmpegRgbExact": true,
+		"chromiumRgbExact": true
+	},
+	"companionAudio": {
+		"sampleRate": 48000,
+		"channels": 1,
+		"frames": 9600,
+		"bitrate": 192000,
+		"frequency": 997,
+		"amplitude": 0.125,
+		"inputFloat32Sha256": "7ce9acc137484345c3d93db51dd32a7a0059a31e921b02e1936fa61495f51312",
+		"unshiftedCorrelation": 0.9999874516541348,
+		"bestLagSamples": 0,
+		"onsetDifferenceSamples": 0,
+		"activeEndDifferenceSamples": 48,
+		"completeDecodedSamples": 10248,
+		"retainedTailPaddingSamples": 648,
+		"retainedTailRms": 0.0005799610878641692,
+		"decodedPcmSha256": "346439158e1466a1b036dba707c7d3f48d633d5cf782b9d9dd607c38b6739cfb",
+		"decodedPcmExactAcrossAllFourCases": true,
+		"oracleShifted": false,
+		"tailCropped": false
+	},
+	"cancellation": {
+		"trigger": "Real SceneExporter.cancel after first frame progress",
+		"cancelledEventCount": 1,
+		"completeEventCount": 0,
+		"bufferPublished": false,
+		"outputFinalizeCalled": false,
+		"outputCancelCalls": 1,
+		"outputLifetimeCancelObserved": true,
+		"nativeAdapterCancelObserved": true
+	},
+	"limitations": [
+		"FFprobe reports actual smpte170m/tv for both default and native streams despite the complete Rust codec request ending .01.13.01.01; configure pass-through is not proof of encoded sRGB/full-range.",
+		"Six 96x64 frames from scene frames 12 through 17 are a short 0.2-second export. Companion audio is a fixed 48kHz mono 997Hz tone, not a song.",
+		"Default and q63 are expected failing quality controls. Only explicit q0 and its repeat pass the unchanged <3 six-frame decoded interior gates."
+	],
+	"retainedEarlierFixtureFailure": {
+		"artifactDirectory": "C:/Users/Sayo/AppData/Local/Temp/rocut-vp9-quantizer-editor-inqGRp",
+		"reason": "Initial comparison treated JavaScript explicit undefined optional keys as unequal to absent fields in the frozen JSON. No source pixels or policy gates were relaxed."
+	}
+}

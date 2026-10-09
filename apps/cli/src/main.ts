@@ -15,6 +15,12 @@ import { fileURLToPath } from "node:url";
 import { startHost } from "./host";
 import { runAgentCli } from "./agent-cli";
 import type { ExportJob } from "./host-export";
+import {
+	parseVideoChromaFlag,
+	parseVideoQuantizerFlag,
+	requireQuantizerHost,
+	requireHighChromaHost,
+} from "./host-export-protocol";
 import { ensureHost } from "./ensure";
 import { CliRequestError, request } from "./host-request";
 import {
@@ -120,7 +126,7 @@ export const USAGE_LINES: readonly string[] = [
 	"  rocut motion-text vary <sequence-id> <variation.json> [--apply] [--target <id|auto>] [--project <dir>]",
 	"  rocut verify <tick> [--target <id|auto>] [--project <dir>]",
 	"  rocut apply <ops.json> [--target <id|auto>] [--project <dir>]",
-	"  rocut export [--out <file>] [--format mp4|webm] [--quality low|medium|high|very_high] [--no-audio] [--start-time <ticks> --end-time <ticks>] [--target <id|auto>] [--project <dir>]",
+	"  rocut export [--out <file>] [--format mp4|webm] [--quality low|medium|high|very_high] [--video-chroma 420|444] [--video-quantizer <number>] [--no-audio] [--start-time <ticks> --end-time <ticks>] [--target <id|auto>] [--project <dir>]",
 	"  rocut draft begin [--target <id|auto>] [--project <dir>]",
 	"  rocut draft stage <ops.json> --draft <id> [--target <id|auto>] [--project <dir>]",
 	"  rocut draft approve|reject|discard --draft <id> [--target <id|auto>] [--project <dir>]",
@@ -438,12 +444,28 @@ async function runCli(argv: readonly string[]): Promise<void> {
 			return;
 		}
 		case "export": {
+			const format = flag(args, "format") ?? "mp4";
+			const videoQuantizer = parseVideoQuantizerFlag(
+				args.flags.get("video-quantizer"),
+			);
+			const videoChroma = parseVideoChromaFlag(
+				args.flags.get("video-chroma"),
+				format,
+			);
 			// The host cannot rasterize (no canvas / WebGL / WebCodecs in Node),
 			// so it directs the ATTACHED editor pane and writes what the pane
 			// returns. With no pane open the host answers 409 up front rather
 			// than accepting a job that could never run — that error is the
 			// honest one to surface, not a hang.
 			const resolved = await resolveTarget(args, registry);
+			if (videoQuantizer !== undefined)
+				await requireQuantizerHost(() =>
+					request(resolved.secret, "GET", "export"),
+				);
+			if (videoChroma === "444")
+				await requireHighChromaHost(() =>
+					request(resolved.secret, "GET", "export"),
+				);
 			const startTime = flag(args, "start-time");
 			const endTime = flag(args, "end-time");
 			if ((startTime === undefined) !== (endTime === undefined)) {
@@ -452,7 +474,9 @@ async function runCli(argv: readonly string[]): Promise<void> {
 				);
 			}
 			const started = (await request(resolved.secret, "POST", "export", {
-				format: flag(args, "format") ?? "mp4",
+				format,
+				...(videoQuantizer === undefined ? {} : { videoQuantizer }),
+				...(videoChroma === undefined ? {} : { videoChroma }),
 				quality: flag(args, "quality") ?? "high",
 				...(args.flags.has("no-audio") ? { includeAudio: false } : {}),
 				...(startTime === undefined || endTime === undefined
@@ -503,6 +527,12 @@ async function runCli(argv: readonly string[]): Promise<void> {
 						jobId: job.id,
 						status: job.status,
 						format: job.options.format,
+						...(job.options.videoQuantizer === undefined
+							? {}
+							: { videoQuantizer: job.options.videoQuantizer }),
+						...(job.options.videoChroma === undefined
+							? {}
+							: { videoChroma: job.options.videoChroma }),
 						hostPath: job.outputPath,
 						...(out === undefined ? {} : { outputPath: resolve(out) }),
 					},

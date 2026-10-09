@@ -3,6 +3,9 @@ use serde::Deserialize;
 use serde_json::json;
 use time::FrameRate;
 
+mod quantizer;
+mod vp9;
+
 #[derive(Deserialize)]
 #[serde(rename_all = "snake_case")]
 enum Quality {
@@ -20,6 +23,31 @@ enum Codec {
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "lowercase")]
+enum Format {
+    Mp4,
+    Webm,
+}
+
+#[derive(Default)]
+enum VideoChroma {
+    #[default]
+    Yuv420,
+    Yuv444,
+}
+
+impl<'de> Deserialize<'de> for VideoChroma {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        // A string-only decoder also rejects externally tagged enum objects.
+        match String::deserialize(deserializer)?.as_str() {
+            "420" => Ok(Self::Yuv420),
+            "444" => Ok(Self::Yuv444),
+            _ => Err(serde::de::Error::custom("videoChroma must be 420 or 444")),
+        }
+    }
+}
+
+#[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct Request {
     width: u32,
@@ -27,9 +55,15 @@ struct Request {
     frame_rate: FrameRate,
     quality: Quality,
     codec: Codec,
+    #[serde(default)]
+    video_chroma: VideoChroma,
+    #[serde(default)]
+    format: Option<Format>,
+    #[serde(default, deserialize_with = "quantizer::deserialize")]
+    video_quantizer: Option<u8>,
 }
 
-fn bitrate(request: Request) -> Result<u32, &'static str> {
+fn bitrate(request: &Request) -> Result<u32, &'static str> {
     if request.width == 0 || request.height == 0 {
         return Err("Export dimensions must be positive integers");
     }
@@ -39,6 +73,9 @@ fn bitrate(request: Request) -> Result<u32, &'static str> {
         .is_none_or(|ticks| ticks <= 0)
     {
         return Err("Export frame rate must use an integral positive tick interval");
+    }
+    if matches!(request.video_chroma, VideoChroma::Yuv444) && !matches!(request.codec, Codec::Vp9) {
+        return Err("4:4:4 export requires the VP9 codec");
     }
     let pixels = f64::from(request.width) * f64::from(request.height);
     let efficiency = match request.codec {
@@ -54,7 +91,17 @@ fn bitrate(request: Request) -> Result<u32, &'static str> {
     // Preserve the existing presets' resolution curve. Very-high additionally
     // budgets detail per frame, so rapid motion is not starved at small sizes.
     let baseline = 3_000_000.0 * (pixels / (1920.0 * 1080.0)).powf(0.95) * efficiency * factor;
-    let requested = if matches!(request.quality, Quality::VeryHigh) {
+    let requested = if matches!(request.quality, Quality::VeryHigh)
+        && matches!(request.video_chroma, VideoChroma::Yuv444)
+    {
+        // Keep the baseline curve, but do not discount 4:4:4 detail per frame.
+        // Round the rational budget before converting to avoid float boundaries.
+        let samples = u128::from(request.width)
+            * u128::from(request.height)
+            * u128::from(request.frame_rate.numerator);
+        let divisor = 2 * u128::from(request.frame_rate.denominator) * 1000;
+        baseline.max((samples.div_ceil(divisor) * 1000) as f64)
+    } else if matches!(request.quality, Quality::VeryHigh) {
         baseline.max(pixels * request.frame_rate.as_f64().unwrap() * 0.5 * efficiency)
     } else {
         baseline
@@ -66,11 +113,28 @@ fn bitrate(request: Request) -> Result<u32, &'static str> {
     Ok(rounded as u32)
 }
 
+fn resolve(request: Request) -> Result<serde_json::Value, &'static str> {
+    if let Some(quantizer) = request.video_quantizer {
+        if !matches!(request.codec, Codec::Vp9) || !matches!(request.format, Some(Format::Webm)) {
+            return Err("Explicit video quantizer requires VP9 and WebM format");
+        }
+        return quantizer::plan(&request, quantizer, bitrate(&request)?);
+    }
+    let bitrate = bitrate(&request)?;
+    if matches!(request.video_chroma, VideoChroma::Yuv444) {
+        let codec =
+            vp9::full_codec_string(request.width, request.height, request.frame_rate, bitrate)?;
+        Ok(json!({"bitrate":bitrate,"fullCodecString":codec}))
+    } else {
+        Ok(json!({"bitrate":bitrate}))
+    }
+}
+
 #[export]
 pub fn resolve_video_export_json(input: String) -> String {
     match serde_json::from_str::<Request>(&input) {
-        Ok(request) => match bitrate(request) {
-            Ok(bitrate) => json!({"bitrate":bitrate}).to_string(),
+        Ok(request) => match resolve(request) {
+            Ok(response) => response.to_string(),
             Err(error) => json!({"error":error}).to_string(),
         },
         Err(error) => json!({"error":format!("Invalid video export request: {error}")}).to_string(),

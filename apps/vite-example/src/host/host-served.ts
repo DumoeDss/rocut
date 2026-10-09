@@ -12,6 +12,11 @@ import {
 import { HttpProjectStore } from "./http-project-store";
 import { createHttpDraftReview } from "./http-draft-review";
 import { createHttpProgrammaticFrames } from "./http-programmatic-frames";
+import {
+	advertiseExportProtocol,
+	isHostExportOptions,
+	type HostExportOptions,
+} from "./host-export-protocol";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
 	return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -99,40 +104,7 @@ export function createHostServedEditorHost({
 	};
 }
 
-/** Export options the host relays from the CLI; mirrors `ExportOptions`. */
-export interface HostExportOptions {
-	readonly format: "mp4" | "webm";
-	readonly quality: "low" | "medium" | "high" | "very_high";
-	readonly includeAudio?: boolean;
-	readonly range?: {
-		readonly startTime: number;
-		readonly endTime: number;
-	};
-}
-
-function isHostExportOptions(
-	value: Record<string, unknown>,
-): value is Record<string, unknown> & HostExportOptions {
-	const { format, quality, includeAudio, range } = value;
-	if (format !== "mp4" && format !== "webm") return false;
-	if (
-		quality !== "low" &&
-		quality !== "medium" &&
-		quality !== "high" &&
-		quality !== "very_high"
-	) {
-		return false;
-	}
-	if (includeAudio !== undefined && typeof includeAudio !== "boolean") {
-		return false;
-	}
-	return (
-		range === undefined ||
-		(isRecord(range) &&
-			typeof range.startTime === "number" &&
-			typeof range.endTime === "number")
-	);
-}
+export type { HostExportOptions } from "./host-export-protocol";
 
 /**
  * A command the host directs at THIS pane. The host process has no canvas, no
@@ -199,6 +171,7 @@ export function subscribeHostEvents(handlers: {
 	readonly onCommand?: (command: HostCommand) => void;
 }): () => void {
 	const url = new URL("api/events", location.href);
+	if (handlers.onCommand) advertiseExportProtocol(url.searchParams);
 	if (handlers.editorTaskSurface)
 		url.searchParams.set("editorTaskSurface", handlers.editorTaskSurface);
 	const source = new EventSource(url.toString());

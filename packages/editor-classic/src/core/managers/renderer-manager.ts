@@ -410,7 +410,15 @@ export class RendererManager {
 			return { success: false, error: RASTERIZER_UNAVAILABLE_ERROR };
 		}
 
-		const { format, quality, fps, includeAudio, range } = options;
+		const {
+			format,
+			quality,
+			fps,
+			includeAudio,
+			range,
+			videoChroma,
+			videoQuantizer,
+		} = options;
 		// Audio is opt-OUT: the UI checkbox and the CLI's --no-audio both map
 		// to an explicit false, while an absent flag must keep the documented
 		// default (include). A bare truthiness check silently dropped audio
@@ -492,6 +500,8 @@ export class RendererManager {
 				fps: exportFps,
 				format,
 				quality,
+				videoChroma,
+				videoQuantizer,
 				shouldIncludeAudio,
 				audioBuffer: audioBuffer || undefined,
 				compositor: this.compositor,

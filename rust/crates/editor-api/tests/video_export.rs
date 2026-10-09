@@ -71,3 +71,173 @@ fn rejects_invalid_policy_inputs_instead_of_coercing_them() {
     }
     assert!(resolve(&request("avc", "very_high", u32::MAX, u32::MAX))["error"].is_string());
 }
+
+#[test]
+fn explicit_420_preserves_default_bitrates_and_response_shape() {
+    for codec in ["avc", "vp9"] {
+        for quality in ["low", "medium", "high", "very_high"] {
+            let mut r = request(codec, quality, 192, 128);
+            let expected = resolve(&r);
+            r["videoChroma"] = json!("420");
+            assert_eq!(resolve(&r), expected);
+            assert_eq!(resolve(&r).as_object().unwrap().len(), 1);
+        }
+    }
+    assert_eq!(
+        resolve(&request("vp9", "very_high", 192, 128)),
+        json!({"bitrate":222000})
+    );
+}
+
+#[test]
+fn vp9_444_uses_explicit_profile_and_full_detail_budget() {
+    let mut r = request("vp9", "very_high", 192, 128);
+    r["videoChroma"] = json!("444");
+    assert_eq!(
+        resolve(&r),
+        json!({"bitrate":369000,"fullCodecString":"vp09.01.11.08.03.01.13.01.01"})
+    );
+    r["frameRate"] = json!({"numerator":30000,"denominator":1001});
+    assert_eq!(resolve(&r)["bitrate"], json!(369000));
+    r["width"] = json!(1920);
+    r["height"] = json!(1080);
+    assert_eq!(
+        resolve(&r),
+        json!({"bitrate":31073000,"fullCodecString":"vp09.01.50.08.03.01.13.01.01"})
+    );
+    r["frameRate"] = json!({"numerator":30,"denominator":1});
+    assert_eq!(resolve(&r)["bitrate"], json!(31104000));
+    r["frameRate"]["numerator"] = json!(1);
+    assert_eq!(resolve(&r)["bitrate"], json!(7200000));
+}
+
+#[test]
+fn selecting_444_does_not_promote_quality() {
+    for (quality, bitrate) in [("low", 134000), ("medium", 224000), ("high", 447000)] {
+        let mut r = request("vp9", quality, 640, 360);
+        r["videoChroma"] = json!("444");
+        assert_eq!(
+            resolve(&r),
+            json!({"bitrate":bitrate,"fullCodecString":"vp09.01.21.08.03.01.13.01.01"})
+        );
+    }
+}
+
+#[test]
+fn chroma_requires_an_exact_supported_string_and_vp9() {
+    for invalid in [
+        json!(null),
+        json!(444),
+        json!(true),
+        json!(false),
+        json!([]),
+        json!(["444"]),
+        json!({}),
+        json!({"444":null}),
+        json!({"420":null}),
+        json!("422"),
+        json!(" 444"),
+        json!(""),
+    ] {
+        let mut r = request("vp9", "very_high", 192, 128);
+        r["videoChroma"] = invalid;
+        assert!(resolve(&r)["error"].is_string(), "{r}");
+    }
+    let mut r = request("avc", "very_high", 192, 128);
+    r["videoChroma"] = json!("444");
+    assert_eq!(
+        resolve(&r),
+        json!({"error":"4:4:4 export requires the VP9 codec"})
+    );
+}
+
+#[test]
+fn vp9_444_rejects_unsupported_levels_instead_of_using_the_highest() {
+    for (width, height, fps, quality) in [
+        (16833, 1, 1, "low"),
+        (1, 16833, 1, "low"),
+        (8192, 4353, 1, "low"),
+        (8192, 4352, 150, "low"),
+        (8192, 4352, 30, "very_high"),
+    ] {
+        let mut r = request("vp9", quality, width, height);
+        r["videoChroma"] = json!("444");
+        r["frameRate"]["numerator"] = json!(fps);
+        assert_eq!(
+            resolve(&r),
+            json!({"error":"4:4:4 export exceeds supported VP9 input level limits"}),
+            "{r}"
+        );
+    }
+}
+
+#[test]
+fn explicit_quantizer_has_a_native_plan_without_quality_promotion() {
+    for quantizer in [0, 32, 63] {
+        let mut r = request("vp9", "low", 96, 64);
+        r["format"] = json!("webm");
+        r["videoQuantizer"] = json!(quantizer);
+        let plan = resolve(&r);
+        assert_eq!(plan["kind"], "vp9Quantizer");
+        assert_eq!(plan["quantizer"], quantizer);
+        assert_eq!(
+            plan["bitrate"],
+            resolve(&request("vp9", "low", 96, 64))["bitrate"]
+        );
+        assert_eq!(plan["keyFrameIntervalFrames"], 60);
+        assert_eq!(plan["nativeConfig"]["alpha"], "discard");
+        assert_eq!(plan["nativeConfig"]["bitrateMode"], "quantizer");
+        assert_eq!(
+            plan["nativeConfig"]["codec"],
+            "vp09.00.10.08.01.01.13.01.01"
+        );
+        r["videoChroma"] = json!("444");
+        assert_eq!(
+            resolve(&r)["nativeConfig"]["codec"],
+            "vp09.01.10.08.03.01.13.01.01"
+        );
+        r["frameRate"] = json!({"numerator":30000,"denominator":1001});
+        assert_eq!(resolve(&r)["keyFrameIntervalFrames"], 60);
+    }
+}
+
+#[test]
+fn quantizer_rejects_null_coercion_and_wrong_container_without_fallback() {
+    let mut base = request("vp9", "very_high", 96, 64);
+    base["format"] = json!("webm");
+    for invalid in [
+        json!(null),
+        json!(-1),
+        json!(64),
+        json!(256),
+        json!(0.0),
+        json!(0.5),
+        json!("0"),
+        json!(true),
+        json!([]),
+        json!({"0":null}),
+    ] {
+        let mut r = base.clone();
+        r["videoQuantizer"] = invalid;
+        assert!(resolve(&r)["error"].is_string(), "{r}");
+    }
+    base["videoQuantizer"] = json!(0);
+    for (codec, format) in [
+        ("avc", json!("webm")),
+        ("vp9", json!("mp4")),
+        ("vp9", json!(null)),
+    ] {
+        let mut r = base.clone();
+        r["codec"] = json!(codec);
+        r["format"] = format;
+        assert!(resolve(&r)["error"].is_string(), "{r}");
+    }
+    let mut absent = base.clone();
+    absent.as_object_mut().unwrap().remove("format");
+    assert!(resolve(&absent)["error"].is_string());
+    absent.as_object_mut().unwrap().remove("videoQuantizer");
+    assert_eq!(
+        resolve(&absent),
+        resolve(&request("vp9", "very_high", 96, 64))
+    );
+}

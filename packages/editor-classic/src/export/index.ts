@@ -14,12 +14,17 @@ export const EXPORT_FORMAT_VALUES = ["mp4", "webm"] as const;
 
 export type ExportFormat = (typeof EXPORT_FORMAT_VALUES)[number];
 export type ExportQuality = (typeof EXPORT_QUALITY_VALUES)[number];
+export type ExportVideoChroma = "420" | "444";
 
 export interface ExportOptions {
 	format: ExportFormat;
 	quality: ExportQuality;
 	fps?: FrameRate;
 	includeAudio?: boolean;
+	/** WebM 4:4:4 is opt-in; absent/420 keeps the compatible default encoding. */
+	videoChroma?: ExportVideoChroma;
+	/** Explicit native VP9 control; Rust admits the value and WebM combination. */
+	videoQuantizer?: number;
 	/** Optional strict half-open timeline interval `[startTime, endTime)`. */
 	range?: MediaTimeRange;
 }

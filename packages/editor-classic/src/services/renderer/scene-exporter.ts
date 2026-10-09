@@ -18,7 +18,7 @@ import { TICKS_PER_SECOND } from "../../wasm";
 import type { ResolvedMediaTimeRange } from "../../wasm";
 import { frameRateToFloat } from "../../fps/utils";
 import type { RootNode } from "./nodes/root-node";
-import type { ExportFormat, ExportQuality } from "../../export";
+import type { ExportFormat, ExportOptions, ExportQuality } from "../../export";
 import {
 	CanvasRenderer,
 	type RendererPublicationGuard,
@@ -31,7 +31,8 @@ import {
 	waitForExportOperation,
 } from "./export-cancellation";
 import { resolveExportVideoOptions } from "./export-video-options";
-import { resolveExportVideoBitrate } from "./export-video-bitrate";
+import { resolveExportVideoPlan } from "./export-video-bitrate";
+import { ExportOutputLifetime } from "./export-output-lifetime";
 import { cancelPendingRenderFrames } from "./cancel-tree";
 import {
 	assertRenderNotAborted,
@@ -44,6 +45,8 @@ type ExportParams = {
 	fps: FrameRate;
 	format: ExportFormat;
 	quality: ExportQuality;
+	videoChroma?: ExportOptions["videoChroma"];
+	videoQuantizer?: ExportOptions["videoQuantizer"];
 	shouldIncludeAudio?: boolean;
 	audioBuffer?: AudioBuffer;
 	compositor: WasmCompositor;
@@ -69,6 +72,8 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 	private renderer: CanvasRenderer;
 	private format: ExportFormat;
 	private quality: ExportQuality;
+	private readonly videoChroma: ExportOptions["videoChroma"];
+	private readonly videoQuantizer: ExportOptions["videoQuantizer"];
 	private shouldIncludeAudio: boolean;
 	private audioBuffer?: AudioBuffer;
 	private readonly publicationGuard?: RendererPublicationGuard;
@@ -85,6 +90,8 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 		fps,
 		format,
 		quality,
+		videoChroma,
+		videoQuantizer,
 		shouldIncludeAudio,
 		audioBuffer,
 		compositor,
@@ -103,6 +110,8 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 
 		this.format = format;
 		this.quality = quality;
+		this.videoChroma = videoChroma;
+		this.videoQuantizer = videoQuantizer;
 		this.shouldIncludeAudio = shouldIncludeAudio ?? false;
 		this.audioBuffer = audioBuffer;
 		this.publicationGuard = publicationGuard;
@@ -129,7 +138,10 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 				.catch((error: unknown) => {
 					// Startup (including a queued compositor acquisition) precedes the
 					// output transaction, but still owns a request-scoped cancellation.
-					if (isRenderCancelledError(error)) {
+					if (
+						isRenderCancelledError(error) ||
+						error instanceof ExportCancelledError
+					) {
 						this.emit("cancelled");
 						return null;
 					}
@@ -169,27 +181,59 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 			format: outputFormat,
 			target: new BufferTarget(),
 		});
+		const outputLifetime = new ExportOutputLifetime(output);
 
 		const outputCanvas = await this.renderer.getOutputCanvas({
 			signal: this.cancellation.signal,
 		});
 		this.assertPublicationCurrent();
 		const codec = this.format === "webm" ? "vp9" : "avc";
-		const bitrate = resolveExportVideoBitrate({
+		const plan = resolveExportVideoPlan({
 			codec,
 			quality: this.quality,
 			frameRate: fps,
 			width: outputCanvas.width,
 			height: outputCanvas.height,
+			...(this.videoChroma === undefined
+				? {}
+				: { videoChroma: this.videoChroma }),
+			...(this.videoQuantizer === undefined
+				? {}
+				: { videoQuantizer: this.videoQuantizer, format: this.format }),
 		});
-		const videoOptions = await resolveExportVideoOptions({
-			codec,
-			bitrate,
-			width: outputCanvas.width,
-			height: outputCanvas.height,
-		});
+		const quantizerSource = plan.native
+			? new (
+					await import("./export-vp9-quantizer-source")
+				).ExportVp9QuantizerSource({
+					options: {
+						config: plan.native.config,
+						quantizer: plan.native.quantizer,
+						signal: this.cancellation.signal,
+					},
+				})
+			: undefined;
+		const videoOptions = quantizerSource
+			? undefined
+			: await resolveExportVideoOptions({
+					codec,
+					...plan,
+					width: outputCanvas.width,
+					height: outputCanvas.height,
+					videoChroma: this.videoChroma,
+					frameRate: fpsFloat,
+					signal: this.cancellation.signal,
+				});
 		this.assertPublicationCurrent();
-		const videoSource = new CanvasSource(outputCanvas, videoOptions);
+		const canvasSource = videoOptions
+			? new CanvasSource(outputCanvas, {
+					...videoOptions,
+					onEncodedSample: (sample) => {
+						outputLifetime.markVideoInitialized();
+						videoOptions?.onEncodedSample?.(sample);
+					},
+				})
+			: undefined;
+		const videoSource = quantizerSource?.source ?? canvasSource!;
 
 		output.addVideoTrack(videoSource, { frameRate: fpsFloat });
 
@@ -224,6 +268,11 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 			await output.start();
 			outputStarted = true;
 			this.assertPublicationCurrent();
+			if (quantizerSource) {
+				await quantizerSource.initialize();
+				outputLifetime.markVideoInitialized();
+				this.assertPublicationCurrent();
+			}
 
 			if (audioSource && this.audioBuffer) {
 				const source = audioSource;
@@ -238,7 +287,8 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 
 			for (let i = 0; i < frameCount; i++) {
 				if (this.isCancelled) {
-					await output.cancel();
+					quantizerSource?.cancel();
+					await outputLifetime.cancel();
 					outputSettled = true;
 					this.emit("cancelled");
 					return null;
@@ -249,8 +299,8 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 				const timeSeconds = mediaTimeToSeconds({ time: outputTimeTicks });
 				await waitForExportOperation({
 					signal: this.cancellation.signal,
-					// Cancellation can start output.cancel promptly, while the actual
-					// compositor transaction keeps owning the canvas until add settles.
+					// The real capture owns both native add and any deferred cleanup;
+					// aborting this UI waiter must not release the compositor early.
 					operation: () =>
 						this.renderer.renderAndCapture({
 							node: rootNode,
@@ -259,7 +309,19 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 							capture: () => {
 								assertRenderNotAborted(this.cancellation.signal);
 								this.assertPublicationCurrent();
-								return videoSource.add(timeSeconds, 1 / fpsFloat);
+								return outputLifetime.addVideoFrame(() =>
+									quantizerSource
+										? quantizerSource.add({
+												canvas: outputCanvas,
+												timing: {
+													timestamp: timeSeconds,
+													duration: 1 / fpsFloat,
+													keyFrame:
+														i % plan.native!.keyFrameIntervalFrames === 0,
+												},
+											})
+										: canvasSource!.add(timeSeconds, 1 / fpsFloat),
+								);
 							},
 						}),
 				});
@@ -269,13 +331,15 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 			}
 
 			if (this.isCancelled) {
-				await output.cancel();
+				quantizerSource?.cancel();
+				await outputLifetime.cancel();
 				outputSettled = true;
 				this.emit("cancelled");
 				return null;
 			}
 
-			videoSource.close();
+			if (quantizerSource) await quantizerSource.close();
+			else videoSource.close();
 			await output.finalize();
 			outputSettled = true;
 			this.assertPublicationCurrent();
@@ -290,9 +354,10 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 			this.emit("complete", buffer);
 			return buffer;
 		} catch (error) {
+			quantizerSource?.cancel();
 			if (outputStarted && !outputSettled) {
 				try {
-					await output.cancel();
+					await outputLifetime.cancel();
 				} catch (cancelError) {
 					throw new AggregateError(
 						[error, cancelError],

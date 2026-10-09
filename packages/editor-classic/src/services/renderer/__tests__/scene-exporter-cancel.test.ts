@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-type-assertion -- isolated native encoder and renderer doubles exercise cancellation ownership without a GPU. */
 import { expect, mock, test } from "bun:test";
 import { fileURLToPath } from "node:url";
+import type { VideoEncodingConfig, VideoSample } from "mediabunny";
 import type { WasmCompositor } from "../compositor/wasm-compositor";
 import type { VideoCache } from "../../video-cache/service";
 import type { RootNode } from "../nodes/root-node";
 import type { MediaTime } from "../../../wasm/media-time";
+import { ExportCancelledError } from "../export-cancellation";
 
 if (process.env.ROCUT_EXPORT_CANCEL_ISOLATED !== "1") {
 	test("export cancellation integration runs with isolated native mocks", () => {
@@ -24,6 +26,10 @@ if (process.env.ROCUT_EXPORT_CANCEL_ISOLATED !== "1") {
 		cancelledOutputs = 0,
 		finalizedOutputs = 0;
 	let audioBlocked = false;
+	let policyProvidesChroma = true;
+	let deferVideoInitialization = false;
+	let cleanupBlocked = false;
+	let releaseOutputCancel!: () => void;
 	let releaseVideoAdd!: () => void;
 	let renderDrain: Promise<void> = Promise.resolve();
 	let softwareSupported = true,
@@ -31,6 +37,39 @@ if (process.env.ROCUT_EXPORT_CANCEL_ISOLATED !== "1") {
 	const encoderOptions: unknown[] = [];
 	const bitrateRequests: unknown[] = [];
 	const audioOptions: unknown[] = [];
+	let policyProvidesQuantizer = true;
+	let blockQuantizerClose = false;
+	const quantizerTimings: unknown[] = [];
+	const quantizerLifecycle: string[] = [];
+	mock.module("../export-vp9-quantizer-source", () => ({
+		ExportVp9QuantizerSource: class {
+			source = { close() {} };
+			private readonly signal?: AbortSignal;
+			constructor({ options }: { options: { signal?: AbortSignal } }) {
+				this.signal = options.signal;
+			}
+			async initialize() {
+				quantizerLifecycle.push("initialize");
+			}
+			async add({ timing }: { timing: unknown }) {
+				quantizerTimings.push(timing);
+			}
+			async close() {
+				quantizerLifecycle.push("close");
+				if (blockQuantizerClose)
+					await new Promise<void>((_, reject) =>
+						this.signal?.addEventListener(
+							"abort",
+							() => reject(new ExportCancelledError()),
+							{ once: true },
+						),
+					);
+			}
+			cancel() {
+				quantizerLifecycle.push("cancel");
+			}
+		},
+	}));
 	class FakeOutput {
 		target = { buffer: new ArrayBuffer(4) };
 		addVideoTrack() {}
@@ -38,8 +77,13 @@ if (process.env.ROCUT_EXPORT_CANCEL_ISOLATED !== "1") {
 		async start() {}
 		async cancel() {
 			cancelledOutputs++;
+			if (cleanupBlocked)
+				await new Promise<void>((resolve) => {
+					releaseOutputCancel = resolve;
+				});
 		}
 		async finalize() {
+			quantizerLifecycle.push("finalize");
 			finalizedOutputs++;
 		}
 	}
@@ -53,15 +97,24 @@ if (process.env.ROCUT_EXPORT_CANCEL_ISOLATED !== "1") {
 		WebMOutputFormat: class {},
 		BufferTarget: class {},
 		CanvasSource: class {
+			private readonly onEncodedSample?: VideoEncodingConfig["onEncodedSample"];
 			// eslint-disable-next-line opencut/prefer-object-params -- matches the third-party CanvasSource constructor used by production.
-			constructor(_canvas: unknown, options: unknown) {
-				encoderOptions.push(options);
+			constructor(_canvas: unknown, options: VideoEncodingConfig) {
+				const { onEncodedSample, ...encoding } = options;
+				this.onEncodedSample = onEncodedSample;
+				encoderOptions.push(encoding);
 			}
 			add() {
 				added++;
+				if (!deferVideoInitialization)
+					this.onEncodedSample?.({} as VideoSample);
 				return blocked
 					? new Promise<void>((resolve) => {
-							releaseVideoAdd = resolve;
+							releaseVideoAdd = () => {
+								if (deferVideoInitialization)
+									this.onEncodedSample?.({} as VideoSample);
+								resolve();
+							};
 						})
 					: Promise.resolve();
 			}
@@ -85,8 +138,37 @@ if (process.env.ROCUT_EXPORT_CANCEL_ISOLATED !== "1") {
 	mock.module("opencut-wasm", () => ({
 		mediaTimeToSeconds: ({ time }: { time: number }) => time / 120000,
 		resolveVideoExportJson: (request: string) => {
-			bitrateRequests.push(JSON.parse(request));
-			return JSON.stringify({ bitrate: 6_000_000 });
+			const input = JSON.parse(request) as {
+				videoChroma?: string;
+				videoQuantizer?: number;
+			};
+			bitrateRequests.push(input);
+			if (input.videoQuantizer !== undefined && policyProvidesQuantizer)
+				return JSON.stringify({
+					kind: "vp9Quantizer",
+					bitrate: 6_000_000,
+					quantizer: input.videoQuantizer,
+					keyFrameIntervalFrames: 2,
+					nativeConfig: {
+						codec: "vp09.01.41.08.03.01.13.01.01",
+						width: 1920,
+						height: 1080,
+						displayWidth: 1920,
+						displayHeight: 1080,
+						bitrate: 6_000_000,
+						framerate: 30,
+						alpha: "discard",
+						bitrateMode: "quantizer",
+						latencyMode: "quality",
+						hardwareAcceleration: "prefer-software",
+					},
+				});
+			return JSON.stringify({
+				bitrate: 6_000_000,
+				...(input.videoChroma === "444" && policyProvidesChroma
+					? { fullCodecString: "vp09.01.41.08.03.01.13.01.01" }
+					: {}),
+			});
 		},
 	}));
 	mock.module("../../../wasm", () => ({ TICKS_PER_SECOND: 120000 }));
@@ -137,6 +219,31 @@ if (process.env.ROCUT_EXPORT_CANCEL_ISOLATED !== "1") {
 			duration: 8000 as MediaTime,
 		},
 	};
+	function highChromaExporter() {
+		return new SceneExporter({
+			width: 1920,
+			height: 1080,
+			fps: { numerator: 30, denominator: 1 },
+			format: "webm",
+			quality: "very_high",
+			videoChroma: "444",
+			compositor: {} as WasmCompositor,
+			videoCache: {} as VideoCache,
+		});
+	}
+	function quantizerExporter() {
+		return new SceneExporter({
+			width: 1920,
+			height: 1080,
+			fps: { numerator: 30, denominator: 1 },
+			format: "webm",
+			quality: "very_high",
+			videoChroma: "444",
+			videoQuantizer: 0,
+			compositor: {} as WasmCompositor,
+			videoCache: {} as VideoCache,
+		});
+	}
 	test("cancel returns promptly while the compositor drains the actual encoder before reuse", async () => {
 		const first = exporter();
 		let events = 0;
@@ -210,5 +317,187 @@ if (process.env.ROCUT_EXPORT_CANCEL_ISOLATED !== "1") {
 			codec: "avc",
 			bitrate: 8_000_000,
 		});
+	});
+	test("high-chroma uses its Rust plan without falling back to the optional compatibility probe", async () => {
+		const original = Object.getOwnPropertyDescriptor(
+			globalThis,
+			"VideoEncoder",
+		);
+		const seen: VideoEncoderConfig[] = [];
+		Object.defineProperty(globalThis, "VideoEncoder", {
+			configurable: true,
+			value: {
+				isConfigSupported: async (config: VideoEncoderConfig) => {
+					seen.push(config);
+					return { supported: true, config };
+				},
+			},
+		});
+		try {
+			blocked = false;
+			capabilityError = true;
+			expect(await highChromaExporter().export(options)).toBeInstanceOf(
+				ArrayBuffer,
+			);
+			expect(seen).toHaveLength(1);
+			expect(seen[0]?.framerate).toBe(30);
+			expect(seen[0]?.codec).toBe("vp09.01.41.08.03.01.13.01.01");
+			expect(encoderOptions.at(-1)).toEqual({
+				codec: "vp9",
+				bitrate: 6_000_000,
+				fullCodecString: "vp09.01.41.08.03.01.13.01.01",
+				hardwareAcceleration: "prefer-software",
+			});
+			expect(bitrateRequests.at(-1)).toMatchObject({
+				videoChroma: "444",
+				quality: "very_high",
+			});
+		} finally {
+			if (original) Object.defineProperty(globalThis, "VideoEncoder", original);
+			else Reflect.deleteProperty(globalThis, "VideoEncoder");
+		}
+	});
+	test("old WASM policy cannot silently discard a high-chroma export request", async () => {
+		const before = encoderOptions.length;
+		policyProvidesChroma = false;
+		try {
+			await expect(highChromaExporter().export(options)).rejects.toThrow(
+				"4:4:4 codec plan",
+			);
+			expect(encoderOptions).toHaveLength(before);
+		} finally {
+			policyProvidesChroma = true;
+		}
+	});
+	test("cancelling a pending high-chroma query settles startup once and ignores late support", async () => {
+		const original = Object.getOwnPropertyDescriptor(
+			globalThis,
+			"VideoEncoder",
+		);
+		let release!: () => void;
+		let started!: () => void;
+		const queryStarted = new Promise<void>((resolve) => {
+			started = resolve;
+		});
+		Object.defineProperty(globalThis, "VideoEncoder", {
+			configurable: true,
+			value: {
+				isConfigSupported: (config: VideoEncoderConfig) =>
+					new Promise<VideoEncoderSupport>((resolve) => {
+						release = () => resolve({ supported: true, config });
+						started();
+					}),
+			},
+		});
+		try {
+			const before = encoderOptions.length;
+			const beforeFinalized = finalizedOutputs;
+			const next = highChromaExporter();
+			let cancelled = 0,
+				completed = 0;
+			next.on("cancelled", () => cancelled++);
+			next.on("complete", () => completed++);
+			const pending = next.export(options);
+			await queryStarted;
+			expect(await next.cancel()).toBeNull();
+			expect(await next.cancel()).toBeNull();
+			expect(await pending).toBeNull();
+			release();
+			await Bun.sleep(0);
+			expect(cancelled).toBe(1);
+			expect(completed).toBe(0);
+			expect(finalizedOutputs).toBe(beforeFinalized);
+			expect(encoderOptions).toHaveLength(before);
+		} finally {
+			if (original) Object.defineProperty(globalThis, "VideoEncoder", original);
+			else Reflect.deleteProperty(globalThis, "VideoEncoder");
+		}
+	});
+	test("first initialization cancellation returns promptly but retains the capture lock through delayed cleanup", async () => {
+		blocked = true;
+		deferVideoInitialization = true;
+		cleanupBlocked = true;
+		const beforeAdded = added;
+		const beforeCancelled = cancelledOutputs;
+		const beforeFinalized = finalizedOutputs;
+		const next = exporter();
+		let events = 0;
+		next.on("cancelled", () => events++);
+		const run = next.export(options);
+		while (added === beforeAdded) await Promise.resolve();
+		expect(
+			await Promise.race([next.cancel(), Bun.sleep(100).then(() => "timeout")]),
+		).toBeNull();
+		expect(await next.cancel()).toBeNull();
+		expect(await run).toBeNull();
+		expect(events).toBe(1);
+		expect(cancelledOutputs).toBe(beforeCancelled);
+		expect(lockHeld).toBe(true);
+		releaseVideoAdd();
+		while (cancelledOutputs === beforeCancelled) await Promise.resolve();
+		expect(lockHeld).toBe(true);
+		releaseOutputCancel();
+		await renderDrain;
+		expect(lockHeld).toBe(false);
+		expect(cancelledOutputs).toBe(beforeCancelled + 1);
+		expect(finalizedOutputs).toBe(beforeFinalized);
+		blocked = false;
+		deferVideoInitialization = false;
+		cleanupBlocked = false;
+	});
+	test("explicit quantizer executes Rust cadence and awaits native close before finalize", async () => {
+		const beforeCanvas = encoderOptions.length;
+		quantizerTimings.length = 0;
+		quantizerLifecycle.length = 0;
+		const extended = {
+			...options,
+			range: {
+				startTime: 0 as MediaTime,
+				endTime: 16000 as MediaTime,
+				duration: 16000 as MediaTime,
+			},
+		};
+		expect(await quantizerExporter().export(extended)).toBeInstanceOf(
+			ArrayBuffer,
+		);
+		expect(encoderOptions.length).toBe(beforeCanvas);
+		expect(quantizerTimings).toEqual(
+			[0, 1, 2, 3].map((i) => ({
+				timestamp: i / 30,
+				duration: 1 / 30,
+				keyFrame: i % 2 === 0,
+			})),
+		);
+		expect(quantizerLifecycle).toEqual(["initialize", "close", "finalize"]);
+		expect(bitrateRequests.at(-1)).toMatchObject({
+			format: "webm",
+			videoQuantizer: 0,
+			videoChroma: "444",
+		});
+	});
+	test("an old Rust response cannot silently omit the explicit quantizer", async () => {
+		policyProvidesQuantizer = false;
+		try {
+			await expect(quantizerExporter().export(options)).rejects.toThrow(
+				"requested VP9 quantizer plan",
+			);
+		} finally {
+			policyProvidesQuantizer = true;
+		}
+	});
+	test("cancel while native close is pending aborts the adapter and cancels Output without finalizing", async () => {
+		blockQuantizerClose = true;
+		quantizerLifecycle.length = 0;
+		const beforeCancelled = cancelledOutputs,
+			beforeFinalized = finalizedOutputs;
+		const next = quantizerExporter();
+		const run = next.export(options);
+		while (!quantizerLifecycle.includes("close")) await Promise.resolve();
+		await next.cancel();
+		expect(await run).toBeNull();
+		expect(cancelledOutputs).toBe(beforeCancelled + 1);
+		expect(finalizedOutputs).toBe(beforeFinalized);
+		expect(quantizerLifecycle.at(-1)).toBe("cancel");
+		blockQuantizerClose = false;
 	});
 }
