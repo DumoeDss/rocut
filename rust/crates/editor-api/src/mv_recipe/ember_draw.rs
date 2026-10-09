@@ -63,6 +63,16 @@ pub(super) struct Draw {
     pub clip: Option<Clip>,
 }
 impl Draw {
+    pub fn grain(&mut self, transform: Matrix, rect: [f64; 4], gray: Vec<u8>, opacity: f64) {
+        self.commands.push(Command::Grain {
+            transform,
+            rect,
+            size: [256, 256],
+            gray,
+            opacity,
+            fill_history: None,
+        });
+    }
     pub fn new(width: f64, height: f64) -> Self {
         Self {
             commands: Vec::new(),

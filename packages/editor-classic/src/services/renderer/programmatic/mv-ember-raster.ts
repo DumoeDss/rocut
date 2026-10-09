@@ -92,6 +92,15 @@ function mvEmberGrain(ctx, command, make) {
     pixels.data[index*4+3] = 255;
   }
   target.putImageData(pixels,0,0);
+  if (command.fillHistory !== undefined) {
+    // Canvas paint history can affect a later pattern despite identical public
+    // state. Rust supplies the reference assignment, never a synthetic primer.
+    const matrix = ctx.getTransform();
+    try {
+      ctx.setTransform(...command.fillHistory.transform);
+      ctx.fillStyle = mvEmberStyle(ctx,command.fillHistory.style);
+    } finally { ctx.setTransform(matrix); }
+  }
   const pattern = ctx.createPattern(tile,'repeat');
   if (!pattern) throw Error('Ember grain pattern unavailable');
   ctx.globalCompositeOperation = 'overlay'; ctx.globalAlpha = command.opacity;

@@ -9,6 +9,8 @@ use super::{
 #[path = "kanji_slam_test_support.rs"]
 mod support;
 use support::*;
+#[path = "kanji_slam_history_tests.rs"]
+mod history_tests;
 #[test]
 fn glyph_padding_preserves_original_binary64_ceil_and_gradient_geometry() {
     use super::{

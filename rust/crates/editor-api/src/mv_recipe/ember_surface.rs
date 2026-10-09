@@ -4,6 +4,9 @@
 use super::plan::{Command, PaintKind, Plan};
 use std::collections::{BTreeMap, BTreeSet};
 
+#[path = "ember_paint_history.rs"]
+mod paint_history;
+
 const MAX_SURFACES: usize = 64;
 const MAX_COMMANDS: usize = 4096;
 // The full Plan/JSON/JS numeric payload remains owned until frame completion,
@@ -94,12 +97,19 @@ impl Plan {
                         )?)
                         .ok_or("Surface budget overflow")?;
                 }
-                Command::Grain { size, gray, .. } => {
+                Command::Grain {
+                    size,
+                    gray,
+                    fill_history,
+                    ..
+                } => {
                     let cost = allocation(*size)?;
                     if gray.len() as u64 != cost / 2 {
                         return Err("Grain bytes must match the declared tile dimensions".into());
                     }
-                    pixels = pixels.checked_add(cost).ok_or("Surface budget overflow")?;
+                    pixels = pixels
+                        .checked_add(cost + paint_history::payload(fill_history.as_ref())?)
+                        .ok_or("Surface budget overflow")?;
                 }
                 _ => {}
             }
@@ -280,6 +290,7 @@ fn retained_payload(commands: &[Command]) -> Result<u64, String> {
                 gray.len() as u64 * GRAY_PAYLOAD_PIXELS_PER_BYTE
             }
             Command::RectBatch { rects, .. } => rects.len() as u64 * RECT_PAYLOAD_PIXELS,
+            Command::Grain { fill_history, .. } => paint_history::payload(fill_history.as_ref())?,
             _ => 0,
         };
         total = total.checked_add(cost).ok_or("Surface budget overflow")?;

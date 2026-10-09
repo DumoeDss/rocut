@@ -13,6 +13,13 @@ pub struct BlitRaster {
     pub smoothing: bool,
     pub smoothing_quality: &'static str,
 }
+/// Reference paint-state assignment before the next pattern, not another draw
+/// or authoring parameter. Gradient creation must use its original Canvas CTM.
+#[derive(Serialize)]
+pub struct FillHistory {
+    pub transform: Matrix,
+    pub style: Style,
+}
 #[derive(Serialize)]
 #[serde(untagged)]
 pub enum TextFill {
@@ -98,6 +105,8 @@ pub enum Command {
         size: [u32; 2],
         gray: Vec<u8>,
         opacity: f64,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        fill_history: Option<FillHistory>,
     },
     Surface {
         id: &'static str,

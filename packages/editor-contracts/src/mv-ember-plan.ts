@@ -2,6 +2,8 @@ import type { MvDrawComposite, MvDrawPaint } from "./mv-draw-paint";
 import type { MvEmberDrawingSpace, MvEmberPathStep } from "./mv-ember-path";
 import type { MvEmberText } from "./mv-ember-text";
 import type { MvEmberPixels } from "./mv-ember-pixels";
+import type { MvConvergeStyle } from "./mv-converge-plan";
+import type { MvConvergeTransform } from "./mv-converge-transform";
 
 export type MvEmberRect = readonly [number, number, number, number];
 export type MvEmberComposite = MvDrawComposite;
@@ -37,6 +39,13 @@ export type MvEmberDraw = MvEmberDrawingSpace &
 				readonly size: readonly [number, number];
 				readonly gray: readonly number[];
 				readonly opacity: number;
+				/** Replay a real prior fillStyle assignment in its creation CTM.
+				 * No draw, extra surface or authoring/effect parameter is implied;
+				 * omitted history preserves the previous raster contract. */
+				readonly fillHistory?: {
+					readonly transform: MvConvergeTransform;
+					readonly style: MvConvergeStyle;
+				};
 		  }
 		| {
 				readonly kind: "image";

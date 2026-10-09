@@ -27,6 +27,7 @@ fn grain(size: [u32; 2], gray: Vec<u8>) -> Command {
         size,
         gray,
         opacity: 0.2,
+        fill_history: None,
     }
 }
 

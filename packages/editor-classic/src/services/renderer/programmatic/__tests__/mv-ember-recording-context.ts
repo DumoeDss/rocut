@@ -62,8 +62,18 @@ export function createEmberRecordingContext({
 			this.state.clip = saved.clip;
 			this.record({ op: "restore" });
 		}
-		setTransform(...args: number[]) {
-			this.state.transform = [["setTransform", ...args]];
+		getTransform() {
+			this.record({ op: "getTransform" });
+			return {
+				transform: this.state.transform.map((operation) => [...operation]),
+			};
+		}
+		setTransform(...args: (number | { transform: unknown[][] })[]) {
+			const snapshot = args[0];
+			this.state.transform =
+				args.length === 1 && snapshot && typeof snapshot === "object"
+					? snapshot.transform.map((operation) => [...operation])
+					: [["setTransform", ...args]];
 			this.record({ op: "setTransform", args });
 		}
 		step({ op, args }: { op: string; args: number[] }) {

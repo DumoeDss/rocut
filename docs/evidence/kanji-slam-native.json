@@ -1,0 +1,58 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "native-pixels-and-default-export-verified",
+	"implementation": {
+		"contract": "Optional Grain.fillHistory carries the actual preceding vignette style and its creation transform",
+		"behavior": "Replay that fill assignment before the grain pattern without an extra draw, then restore the grain transform",
+		"validation": "Finite geometry/matrix/radius/color checks, at most 16 gradient stops, retained payload charged to legacy and live-peak budgets",
+		"otherRecipes": "Existing grain producers omit fillHistory and keep prior behavior",
+		"diagnosis": "Paired controls establish persistent Canvas paint-history sensitivity; no specific browser or Skia bug is claimed proven"
+	},
+	"privateBuild": {
+		"directory": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/web-scene-transition-KpO0zH",
+		"wasmSha256": "c41fcea74e584c425e8aa2df1c1ce328a084f01f2247388df7285680de9ee26d",
+		"provenance": "See scene-transition-crossfade.json for the frozen source build manifest"
+	},
+	"checks": {
+		"nativeMvRecipeTests": 165,
+		"scopedBunTests": 24,
+		"scopedBunAssertions": 9390,
+		"scopedTypesLintUtf8AndDiff": "passed",
+		"report": "C:/Users/Sayo/AppData/Local/Temp/rocut-kanji-slam-native-UpKZCK/verification.json",
+		"reportSha256": "76aaee3e89330d5d32ec50bd10f89a1dab4c3d4c603f73d5746013dd6931ceb3",
+		"browserVersion": "151.0.7922.34",
+		"pixelObservations": 104,
+		"pixelMaxChannelError": 2,
+		"pixelWorstMae": 0.00005690586419753086,
+		"negativeControls": 16,
+		"exactRepeatChecks": 14,
+		"exactGpuPreviewExportChecks": 13,
+		"unchangedOriginalAndThresholds": true,
+		"diagnosticInjection": false,
+		"errors": [],
+		"defaultExport": {
+			"codec": "vp9",
+			"pixelFormat": "yuv420p",
+			"width": 1920,
+			"height": 1080,
+			"fps": 30,
+			"frames": 12,
+			"bytes": 786133,
+			"sha256": "365dcf7af2e01413cfb9140f7b4a6009a4de54a0e9eecdd87904b863713e726b",
+			"independentDecodePassed": true,
+			"worstMae": 3.0415827546296295,
+			"maeLimitExclusive": 4,
+			"worstForegroundMae": 3.3175756483715606,
+			"foregroundMaeLimitExclusive": 8,
+			"timestampsPassed": true
+		}
+	},
+	"retainedPriorFailure": "rocut-kanji-slam-native-Y96gmN/verification.json failed the unchanged pixel gate before fill-history correction and did not run export",
+	"scope": {
+		"images": "Synthetic character and sky fixtures, not original reference-film artwork",
+		"groupMasterPostTested": false,
+		"installedElectronTested": false,
+		"fullSongTested": false
+	}
+}

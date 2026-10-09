@@ -1,4 +1,4 @@
-use super::{draw::Draw, math::*, plan::Command};
+use super::{draw::Draw, math::*};
 
 pub(super) fn draw(d: &mut Draw, t: f64, opacity: f64) {
     if opacity <= 0.0 {
@@ -15,11 +15,10 @@ pub(super) fn draw(d: &mut Draw, t: f64, opacity: f64) {
         .collect();
     let ox = (rnd(q, 1.0) * 256.0).floor();
     let oy = (rnd(q, 2.0) * 256.0).floor();
-    d.commands.push(Command::Grain {
-        transform: [1.0, 0.0, 0.0, 1.0, -ox, -oy],
-        rect: [ox, oy, d.width, d.height],
-        size: [256, 256],
+    d.grain(
+        [1.0, 0.0, 0.0, 1.0, -ox, -oy],
+        [ox, oy, d.width, d.height],
         gray,
         opacity,
-    });
+    );
 }

@@ -63,6 +63,15 @@ pub(super) struct Draw {
     pub height: f64,
 }
 impl Draw {
+    pub fn grain(&mut self, transform: Matrix, rect: [f64; 4], gray: Vec<u8>, opacity: f64) {
+        self.commands.push(Command::Grain {
+            transform,
+            rect,
+            size: [256, 256],
+            gray,
+            opacity,
+        });
+    }
     pub fn transform(&self, local: Matrix) -> Matrix {
         let sx = self.width / 1920.0;
         let sy = self.height / 1080.0;

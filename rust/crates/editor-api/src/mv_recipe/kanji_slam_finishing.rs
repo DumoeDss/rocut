@@ -60,24 +60,7 @@ pub(super) fn draw(
     } else if !s.rekick {
         glow(d, g.x, g.y, 1100.0, HI, 0.3 * (-c.elapsed * 14.0).exp());
     }
-    let vignette = Style::Radial {
-        from: [960.0, 540.0, 1080.0 * 0.35],
-        to: [960.0, 540.0, 1080.0 * 1.05],
-        stops: stops(&[
-            (0.0, [0.0; 4]),
-            (
-                1.0,
-                if a.night() {
-                    rgba(rgb(0x02040c), 0.6)
-                } else if a.fire {
-                    rgba(rgb(0x0a0204), 0.6)
-                } else {
-                    rgba(rgb(0x140610), 0.45)
-                },
-            ),
-        ]),
-    };
-    d.rect(FRAME, fill(vignette, "source-over"));
+    d.rect(FRAME, fill(vignette(a), "source-over"));
     let mut rng = Rng::new(4242.0);
     let gray = (0..65536)
         .map(|_| ((rng.next() * 0.6 + rng.next() * 0.4) * 255.0).floor() as u8)
@@ -96,6 +79,32 @@ pub(super) fn draw(
         size: [256, 256],
         gray,
         opacity: 0.1,
+        // Original filmGrain inherits the vignette's gradient assignment.
+        // Per-command isolation must replay that history before the pattern.
+        fill_history: Some(FillHistory {
+            transform: d.identity(),
+            style: vignette(a),
+        }),
     });
     Ok(())
+}
+
+fn vignette(a: &KanjiSlam) -> Style {
+    Style::Radial {
+        from: [960.0, 540.0, 1080.0 * 0.35],
+        to: [960.0, 540.0, 1080.0 * 1.05],
+        stops: stops(&[
+            (0.0, [0.0; 4]),
+            (
+                1.0,
+                if a.night() {
+                    rgba(rgb(0x02040c), 0.6)
+                } else if a.fire {
+                    rgba(rgb(0x0a0204), 0.6)
+                } else {
+                    rgba(rgb(0x140610), 0.45)
+                },
+            ),
+        ]),
+    }
 }
