@@ -49,7 +49,31 @@
 			"videoSha256": "c498a5fc587c1591ac6696808c6b79852ac56e970935ebf35f7b152fac49ddbf",
 			"errors": [],
 			"exitCode": 0
+		},
+		{
+			"name": "VerticalTicker",
+			"inputPropsScope": "Original bundled WeChat reference PNGs supplied through the original columns props; not arbitrary remote images or every props combination",
+			"dimensions": [1080, 1920],
+			"fps": 30,
+			"exportedFrames": 300,
+			"decodedFrames": 300,
+			"durationSeconds": 10,
+			"bytes": 6834408,
+			"meanMae": 0.02863567175232489,
+			"worstFrameMae": 0.07542405535469801,
+			"repeatPixelsExact": true,
+			"rebuiltPixelsExact": true,
+			"wasm": {
+				"artifact": "web-scene-transition-1ST2Rf",
+				"sha256": "992ffb5b51a1d138a0f5ed6cf3d2743c3b84aa57dbbd1c537cbae871e802c84a"
+			},
+			"report": "C:/Users/Sayo/AppData/Local/Temp/rocut-remotion-presets-fX2zyd/verification.json",
+			"reportSha256": "a98c6efdea79f82f9574664740df85546f53bd34a3839ae563942342d9964525",
+			"nativeResultsSha256": "9000859120158d7e5d6c1f4652cbb62b01a723a71f37e62ec613723dfa37ee8f",
+			"videoSha256": "e99d850d5712183b50946edb923f33dcb1319a26648ec3a827a3fdd7a5888b22",
+			"errors": [],
+			"exitCode": 0
 		}
 	],
-	"remainingFullRangePresets": ["VerticalTicker", "VinylPlayer"]
+	"remainingFullRangePresets": ["VinylPlayer"]
 }
