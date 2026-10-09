@@ -114,6 +114,7 @@ export const USAGE_LINES: readonly string[] = [
 	"  rocut resource import <spec.json> [--target <id|auto>] [--project <dir>]",
 	"  rocut programmatic compile|rebuild <spec.json> [--target <id|auto>] [--project <dir>]",
 	"  rocut programmatic revise <spec.json> [--target <id|auto>] [--project <dir>]",
+	"  rocut programmatic inspect|compile-inspected <spec.json> [--target <id|auto>] [--project <dir>]",
 	"  rocut programmatic audio-import <spec.json> [--target <id|auto>] [--project <dir>]",
 	"  rocut programmatic sequence-import <spec.json> [--target <id|auto>] [--project <dir>]",
 	"  rocut programmatic sequence-restore <spec.json> [--target <id|auto>] [--project <dir>]",

@@ -1,0 +1,132 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "standalone-native-discovery-and-snapshot-compile-passed",
+	"scope": "Pinned native Remotion registration/async metadata discovery and real immutable archive saving; no timeline apply, frame export, installed Electron or complete ecosystem acceptance",
+	"runtime": {
+		"remotion": "4.0.440",
+		"react": "18.3.1",
+		"toolchainDirectory": "C:/Users/Sayo/AppData/Local/Temp/rocut-media-toolchain-YbloF9",
+		"wasmDirectory": "C:/Users/Sayo/AppData/Local/Temp/rocut-flame-integrated-UoOQ5J/wasm",
+		"wasmSha256": "9dd8bc0521bea902b246093ea0d74216a248b578c76bf136d5f312b0b3fde7b6",
+		"browserExecutable": "C:/Users/Sayo/AppData/Local/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-win64/chrome-headless-shell.exe",
+		"browserSha256": "ce4635cd0e5dc0e21494542a701f347e91c1f1d821970578d97ed8df4ced50ef",
+		"browserIdentityBeforeAndAfterDiscoveryMatched": true
+	},
+	"checks": [
+		{
+			"file": "apps/cli/src/__tests__/remotion-inspection-browser.test.ts",
+			"exitCode": 0,
+			"testsPassed": 2,
+			"assertions": 5,
+			"coverage": [
+				"Nested Folder and multiple Composition discovery",
+				"Async calculateMetadata and default/input props merging",
+				"Reinspection of captured source after author-file mutation",
+				"Metadata rejection and external-network denial"
+			]
+		},
+		{
+			"file": "apps/cli/src/__tests__/remotion-inspection-compile.test.ts",
+			"exitCode": 0,
+			"testsPassed": 1,
+			"assertions": 23,
+			"coverage": [
+				"Actual FileProjectStore and real compiler; not a stubbed compile callback",
+				"Original archive inputs survive author source mutation and directory rename",
+				"Resolved geometry, original input props and pinned toolchain receipt",
+				"Saved document/archive readable with original input digests",
+				"Inspection saves nothing; compile prepares attachments but does not apply project record or timeline",
+				"Consumed receipt cannot compile twice"
+			]
+		}
+	],
+	"cpuChecks": {
+		"exitCode": 0,
+		"testsPassed": 6,
+		"assertions": 35,
+		"files": [
+			"apps/cli/src/__tests__/remotion-inspection.test.ts",
+			"apps/cli/src/__tests__/remotion-inspection-cli.test.ts",
+			"apps/cli/src/__tests__/remotion-inspection-capability.test.ts"
+		],
+		"coverage": "Real source snapshot, Rust admission, fractional FPS, metadata changes, receipt invalidation, cancellation/supersession, authenticated CLI routes, standalone availability and explicit Electron/unconfigured 503"
+	},
+	"identity": {
+		"sourceManifestTiming": "Sampled after the successful tests, under worker freeze; not an automated before/after source-identity proof",
+		"sourceFiles": [
+			{
+				"path": "apps/cli/src/programmatic/remotion-inspection-driver.ts",
+				"sha256": "909c2aee5339569f6c135a502fcadba644fac0dc4002dd0db83ec2b06ebe00b9"
+			},
+			{
+				"path": "apps/cli/src/programmatic/remotion-inspection-project.ts",
+				"sha256": "fce36d807acc81cd85be4ea8032610150a8461f9589e65949f5831eb2e7ed4d0"
+			},
+			{
+				"path": "apps/cli/src/programmatic/remotion-inspection-service.ts",
+				"sha256": "eb6d7089ecb7e18089ab86f5a185a530f3227eef693ad5adc22c3e2e79d5db40"
+			},
+			{
+				"path": "apps/cli/src/programmatic/remotion-inspection-snapshot.ts",
+				"sha256": "23628e20ea9389e76f79febe5e0981634fcdca75cada0efa192d481a3b10982f"
+			},
+			{
+				"path": "apps/cli/src/programmatic/remotion-inspection-types.ts",
+				"sha256": "86aa9891af418d6b8ce7b99990387d93894effe68c7045f9ed6d16dc19eb93d7"
+			},
+			{
+				"path": "apps/cli/src/programmatic/engines/build-service.ts",
+				"sha256": "60c35c4d199067cf27461f468f18a1cd242d4e4516970bb2a38317fdc0e03524"
+			},
+			{
+				"path": "apps/cli/src/programmatic/engines/compile-project.ts",
+				"sha256": "475c628154486c05e9d985634fdf823143af268a5daa063e21e25a34dc5acfba"
+			},
+			{
+				"path": "apps/cli/src/agent-cli.ts",
+				"sha256": "0ab2dcde002bdee947747082e52847b50aebd0ea59dc11f783d2ae9d15cab8ce"
+			},
+			{
+				"path": "apps/cli/src/host.ts",
+				"sha256": "23c1c7f4cd721c27286f10d8ddc7d0dfa13cf5930581936d85ceef15c5dcf790"
+			},
+			{
+				"path": "apps/cli/src/main.ts",
+				"sha256": "09192721da3d71b5b8776eafa87e6139fafed92ce302eda483bb428ddca62f26"
+			},
+			{
+				"path": "apps/cli/src/__tests__/remotion-inspection.test.ts",
+				"sha256": "32a6375b946ad7263b9908306e974b804fcf96d709e5037c488b8ab154c0d119"
+			},
+			{
+				"path": "apps/cli/src/__tests__/remotion-inspection-cli.test.ts",
+				"sha256": "caaa0127aaa40a263a5c642714e35bcbfcb5e31a1a1691c70d0e6c79f838fc18"
+			},
+			{
+				"path": "apps/cli/src/__tests__/remotion-inspection-browser.test.ts",
+				"sha256": "48bb99c901ea7bc4b6743c0301f39789ffa43dd81b54841efe27b6aa8a7f2aa9"
+			},
+			{
+				"path": "apps/cli/src/__tests__/remotion-inspection-compile.test.ts",
+				"sha256": "c5c5cf61603baa1e77780b0dc80dd023812d17c15274ef19937aecaf5f204976"
+			},
+			{
+				"path": "apps/cli/src/__tests__/remotion-inspection-capability.test.ts",
+				"sha256": "54c28f2f8d11860b04cf285b4bdd5328cafcf1cc0f92622a06d8caad627d70da"
+			},
+			{
+				"path": "docs/remotion-inspection-preflight.md",
+				"sha256": "df6f5046a9167d7417db69854b0260579a4a41e0a1587b80414e454cae20f1f4"
+			}
+		]
+	},
+	"limits": {
+		"electronInspectionImplemented": false,
+		"frameDriverFingerprintChanged": false,
+		"runtimeReturnedPropsPinned": false,
+		"metadataStability": "rechecked-before-compile; runtime-geometry-checked; runtime-props-not-pinned",
+		"wholeMvTested": false,
+		"completeRemotionEcosystem": false
+	}
+}

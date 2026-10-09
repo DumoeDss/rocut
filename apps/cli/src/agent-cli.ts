@@ -66,6 +66,8 @@ export async function runAgentCli({
 					"compile",
 					"rebuild",
 					"revise",
+					"inspect",
+					"compile-inspected",
 					"audio-import",
 					"sequence-import",
 					"sequence-restore",
@@ -74,7 +76,7 @@ export async function runAgentCli({
 				args.positional.length !== 2
 			)
 				throw Error(
-					"usage: rocut programmatic compile|rebuild|revise|audio-import|sequence-import|sequence-restore <spec.json>",
+					"usage: rocut programmatic compile|rebuild|revise|inspect|compile-inspected|audio-import|sequence-import|sequence-restore <spec.json>",
 				);
 			const input = JSON.parse(
 				new TextDecoder("utf-8", { fatal: true }).decode(

@@ -337,6 +337,7 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 	);
 	const programmaticBuilds = createProgrammaticBuildService(
 		{ store: plane.baseStore, projectId: plane.projectId }, task => plane.enqueue(task), args.engineToolchainDirectory,
+		{ executable: args.htmlBrowserExecutable, connectionFile: args.htmlFrameConnectionFile },
 	);
 	const programmaticAudio = createProgrammaticAudioService({
 		resourceStore: { store: plane.baseStore, projectId: plane.projectId },

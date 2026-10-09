@@ -19,17 +19,22 @@ import { runCompilerChild } from "./compiler-process";
 import { HYPERFRAMES_GRAPH_PROFILE, hasHyperframesGraphProfile } from "../hyperframes-graph-provenance";
 import { assertCurrentThreeParticleAdapter, assertThreeParticleCompileIdentity, hasThreeParticleCapability, loadThreeParticleRuntime, parseThreeParticleArchive } from "../three-particle-provenance";
 import { isBuildTextInput, parseBuildRevisionInput, reviseBuildArchive } from "./build-revision";
+import type { PreparedRemotionCompile } from "../remotion-inspection-types";
 
-export async function compileProgrammaticProject({ action, input, toolchainDirectory, context, signal, enqueue }: {
+export async function compileProgrammaticProject({ action, input, toolchainDirectory, context, signal, enqueue, prepared }: {
 	action: "compile" | "rebuild" | "revise"; input: unknown; toolchainDirectory: string;
 	context: ProgrammaticResourceStore; signal: AbortSignal;
 	enqueue: <T>(task: () => Promise<T>) => Promise<T>;
+	prepared?: PreparedRemotionCompile;
 }) {
 	let source: ProgrammaticSource, inputs: ResolvedProgrammaticResource[];
 	let parsed: ReturnType<typeof parseCompileInput> | undefined;
 	let revision: ReturnType<typeof parseBuildRevisionInput> | undefined;
 	signal.throwIfAborted();
-	if (action === "compile") { parsed = parseCompileInput(input); source = parsed.source; }
+	if (prepared) {
+		if (action !== "compile" || prepared.source.build?.engine !== "remotion") throw Error("Invalid prepared compilation");
+		validateBuildSource(prepared.source); source = prepared.source;
+	} else if (action === "compile") { parsed = parseCompileInput(input); source = parsed.source; }
 	else if (action === "revise") { revision = parseBuildRevisionInput(input); source = revision.source; }
 	else { validateBuildSource(input); source = input; }
 	if (!source.build || source.build.engineVersion !== ENGINE_VERSIONS[source.build.engine]) throw Error("No compatible build archive");
@@ -45,12 +50,13 @@ export async function compileProgrammaticProject({ action, input, toolchainDirec
 	const particleRuntime = hasThreeParticleCapability(source) ? await loadThreeParticleRuntime(signal, threeArchive?.particle?.samplerIdentity) : undefined;
 	const toolchain = await loadEngineToolchain(toolchainDirectory, source.build.engine, signal,
 		hasHyperframesGraphProfile(source) ? HYPERFRAMES_GRAPH_PROFILE : undefined, particleRuntime, source.audio?.timing);
+	if (prepared && prepared.toolchainLockSha256 !== toolchain.lock.resource.sha256) throw Error("Inspected toolchain changed; inspect again");
 	if (source.build.engine === "three") {
 		const currentParticle = parseThreeParticleArchive(source, toolchain.lock.body);
 		if (threeArchive?.particle) assertThreeParticleCompileIdentity(threeArchive.particle, currentParticle);
 	}
 	if (action === "compile") {
-		inputs = await snapshotSourceFiles(parsed!.sourceDirectory, source, signal);
+		inputs = prepared?.inputs ?? await snapshotSourceFiles(parsed!.sourceDirectory, source, signal);
 	} else {
 		const archived = threeArchive?.inputs ?? await loadProgrammaticResources(context, [...source.build.inputs, source.build.toolchainLock], signal);
 		const previousLock = threeArchive?.lock ?? archived.pop()!;
