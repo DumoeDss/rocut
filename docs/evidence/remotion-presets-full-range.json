@@ -1,0 +1,55 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"scope": "Additional full-range standalone native Remotion -> ProgrammaticNode/buildScene -> SceneExporter -> independent FFmpeg decode; not installed Electron or exhaustive prop/media support",
+	"priorAccepted": ["ProceduralFish", "ClaudeTyper"],
+	"wasm": {
+		"artifact": "web-scene-transition-KpO0zH",
+		"sha256": "c41fcea74e584c425e8aa2df1c1ce328a084f01f2247388df7285680de9ee26d"
+	},
+	"rangeMode": "full",
+	"gate": "Every decoded frame sampled RGB MAE < 8; exact reverse/repeat/archive-rebuild RGBA; actual frame count, dimensions, rational frame rate and duration",
+	"presets": [
+		{
+			"name": "RulerProgress",
+			"inputProps": {},
+			"dimensions": [1080, 1080],
+			"fps": 30,
+			"exportedFrames": 181,
+			"decodedFrames": 181,
+			"durationSeconds": 6.033,
+			"bytes": 1916794,
+			"meanMae": 0.2693851346429525,
+			"worstFrameMae": 0.36587385960035057,
+			"repeatPixelsExact": true,
+			"rebuiltPixelsExact": true,
+			"report": "C:/Users/Sayo/AppData/Local/Temp/rocut-remotion-presets-4Kvk7O/verification.json",
+			"reportSha256": "aa6ef26836144657637d88ef7668c194ce1fcf5e61441eef9cf7a28a01f815c1",
+			"nativeResultsSha256": "4a7871c75cbe095adb8a72622a192fa5f97090518e733c9a057b023d21073f62",
+			"videoSha256": "6ffd8afd263730d0baa411499b0ecc87eae0a29d3882ca251b55b59165486794",
+			"errors": [],
+			"exitCode": 0
+		},
+		{
+			"name": "WeChatChat",
+			"inputProps": {},
+			"dimensions": [390, 791],
+			"fps": 30,
+			"exportedFrames": 160,
+			"decodedFrames": 160,
+			"durationSeconds": 5.333,
+			"bytes": 430972,
+			"meanMae": 1.3046047556069873,
+			"worstFrameMae": 1.4799507723958045,
+			"repeatPixelsExact": true,
+			"rebuiltPixelsExact": true,
+			"report": "C:/Users/Sayo/AppData/Local/Temp/rocut-remotion-presets-DHvzNb/verification.json",
+			"reportSha256": "a9d83dde5a4b6a31ca726472b7968a99aa555f8fe60d108643bc262d27ec04fc",
+			"nativeResultsSha256": "ba97dd9a5193863b85471c2abad07d837fa2500037863e392802b8ca7f9f1c82",
+			"videoSha256": "c498a5fc587c1591ac6696808c6b79852ac56e970935ebf35f7b152fac49ddbf",
+			"errors": [],
+			"exitCode": 0
+		}
+	],
+	"remainingFullRangePresets": ["VerticalTicker", "VinylPlayer"]
+}

@@ -2223,13 +2223,19 @@ sampled RGB MAE < 8 gate. Reverse/repeated/rebuilt RGBA comparisons remain exact
 | --- | ---: | ---: | ---: | ---: |
 | ProceduralFish | 90/90 | 3 s | 0.523023 / 0.658698 | 433,475 |
 | ClaudeTyper | 34/34 | 1.133 s | 0.064733 / 0.070369 | 90,972 |
+| RulerProgress | 181/181 | 6.033 s | 0.269385 / 0.365874 | 1,916,794 |
+| WeChatChat | 160/160 | 5.333 s | 1.304605 / 1.479951 | 430,972 |
 
-Both full runs exited 0 with no errors. Reports are
+The first two full runs exited 0 with no errors. Reports are
 `rocut-remotion-presets-wd1fKF/verification.json` and
 `rocut-remotion-presets-PkcHPW/verification.json` in the private test artifacts.
 These are standalone native Remotion → ProgrammaticNode/buildScene →
-SceneExporter checks, not installed Electron acceptance. The other four presets'
-full-duration exports and broader props/media coverage remain pending.
+SceneExporter checks, not installed Electron acceptance. The subsequent Ruler
+and WeChat runs also exited 0 with no errors, exact reverse/repeat/rebuild RGBA
+and every original decoded-frame gate passing. Their reports and source artifact
+hash are recorded in [full-range evidence](evidence/remotion-presets-full-range.json).
+VerticalTicker and VinylPlayer full-duration exports and broader props/media
+coverage remain pending.
 
 ## Remaining work
 
