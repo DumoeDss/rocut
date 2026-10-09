@@ -2,7 +2,8 @@
 //! allocation. This is not a process RSS, driver or persistent texture-pool cap.
 //! Liquid's existing aggregate preparation admission remains independently active.
 use crate::{
-    CompositorError, EffectPassDescriptor, FrameDescriptor, FrameItemDescriptor, LayerDescriptor,
+    CompositorError, EffectPassDescriptor, FrameDescriptor, FrameItemDescriptor,
+    IsolatedGroupDescriptor, LayerDescriptor,
 };
 
 pub const MAX_GROUP_DEPTH: usize = 8;
@@ -70,6 +71,27 @@ impl Budget {
         self.targets(2 + mask_targets + u64::from(!layer.effect_pass_groups.is_empty()))?;
         self.effects(&layer.effect_pass_groups)
     }
+
+    fn group(
+        &mut self,
+        group: &IsolatedGroupDescriptor,
+        depth: usize,
+        groups: &mut usize,
+    ) -> Result<(), CompositorError> {
+        *groups += 1;
+        if depth > MAX_GROUP_DEPTH || *groups > MAX_GROUPS {
+            return Err(invalid("group depth or count limit exceeded"));
+        }
+        if !group.opacity.is_finite() || !(0.0..=1.0).contains(&group.opacity) {
+            return Err(invalid("opacity must be finite and between zero and one"));
+        }
+        // Transparent initial target + parent blend; optional post copy and
+        // once-only opacity. Zero opacity never skips child admission/preparation.
+        self.targets(
+            2 + u64::from(group.opacity != 1.0) + u64::from(!group.effect_pass_groups.is_empty()),
+        )?;
+        self.effects(&group.effect_pass_groups)
+    }
 }
 
 fn invalid(message: &'static str) -> CompositorError {
@@ -78,11 +100,12 @@ fn invalid(message: &'static str) -> CompositorError {
 
 pub(crate) fn validate(frame: &FrameDescriptor) -> Result<(), CompositorError> {
     // Keep the historical non-group path unchanged.
-    if !frame
-        .items
-        .iter()
-        .any(|item| matches!(item, FrameItemDescriptor::Group(_)))
-    {
+    if !frame.items.iter().any(|item| {
+        matches!(
+            item,
+            FrameItemDescriptor::Group(_) | FrameItemDescriptor::SceneTransition(_)
+        )
+    }) {
         return Ok(());
     }
     let pixels = u64::from(frame.width) * u64::from(frame.height);
@@ -114,22 +137,24 @@ pub(crate) fn validate(frame: &FrameDescriptor) -> Result<(), CompositorError> {
         match item {
             FrameItemDescriptor::Group(group) => {
                 let child_depth = *depth + 1;
-                groups += 1;
-                if child_depth > MAX_GROUP_DEPTH || groups > MAX_GROUPS {
-                    return Err(invalid("group depth or count limit exceeded"));
-                }
-                if !group.opacity.is_finite() || !(0.0..=1.0).contains(&group.opacity) {
-                    return Err(invalid("opacity must be finite and between zero and one"));
-                }
-                // Transparent initial target + parent blend; optional post copy
-                // and once-only opacity target. Group opacity zero never skips
-                // child admission, preparation or target accounting.
-                budget.targets(
-                    2 + u64::from(group.opacity != 1.0)
-                        + u64::from(!group.effect_pass_groups.is_empty()),
-                )?;
-                budget.effects(&group.effect_pass_groups)?;
+                budget.group(group, child_depth, &mut groups)?;
                 pending.push((group.items.iter(), child_depth));
+            }
+            FrameItemDescriptor::SceneTransition(transition) => {
+                if !transition.progress.is_finite() || !(0.0..=1.0).contains(&transition.progress) {
+                    return Err(CompositorError::InvalidTransitionProgress(
+                        transition.progress,
+                    ));
+                }
+                // Branch descriptors are full groups even without a wire `type`.
+                // They each consume group/item/depth budget at every endpoint.
+                items = items.saturating_add(2);
+                let child_depth = *depth + 1;
+                budget.group(&transition.outgoing, child_depth, &mut groups)?;
+                budget.group(&transition.incoming, child_depth, &mut groups)?;
+                budget.targets(1)?;
+                pending.push((transition.incoming.items.iter(), child_depth));
+                pending.push((transition.outgoing.items.iter(), child_depth));
             }
             FrameItemDescriptor::Transition {
                 outgoing, incoming, ..

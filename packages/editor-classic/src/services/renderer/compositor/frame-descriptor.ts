@@ -9,6 +9,8 @@ import { ColorNode } from "../nodes/color-node";
 import { EffectLayerNode } from "../nodes/effect-layer-node";
 import { IsolatedGroupNode } from "../nodes/isolated-group-node";
 import { collectIsolatedGroup } from "./collect-isolated-group";
+import { SceneTransitionNode } from "../nodes/scene-transition-node";
+import { collectSceneTransition } from "./collect-scene-transition";
 import { GraphicNode } from "../nodes/graphic-node";
 import { ProgrammaticNode } from "../nodes/programmatic-node";
 import { ImageNode } from "../nodes/image-node";
@@ -86,6 +88,14 @@ async function collectNode({
 	items: FrameItemDescriptor[];
 	textures: Map<string, TextureUploadDescriptor>;
 }): Promise<void> {
+	if (node instanceof SceneTransitionNode) {
+		await collectSceneTransition({
+			node,
+			context: { renderer, path, items, textures },
+			collectNode,
+		});
+		return;
+	}
 	if (node instanceof IsolatedGroupNode) {
 		await collectIsolatedGroup({
 			node,

@@ -30,6 +30,40 @@ impl Compositor {
                 FrameItemDescriptor::Group(group) => {
                     self.compose_group(context, encoder, frame, &scene, group, prepared)?
                 }
+                FrameItemDescriptor::SceneTransition(transition) => {
+                    // Both complete pictures see the same parent. Branch-local
+                    // post only sees its isolated group, never that backdrop.
+                    // Endpoints still consume/validate both branches and FIFO.
+                    let from = self.compose_group(
+                        context,
+                        encoder,
+                        frame,
+                        &scene,
+                        &transition.outgoing,
+                        prepared,
+                    )?;
+                    let to = self.compose_group(
+                        context,
+                        encoder,
+                        frame,
+                        &scene,
+                        &transition.incoming,
+                        prepared,
+                    )?;
+                    self.blend_textures(
+                        context,
+                        encoder,
+                        &from,
+                        &to,
+                        BlendUniformBuffer {
+                            blend_mode: 17,
+                            progress: transition.progress,
+                            _padding: [0; 2],
+                        },
+                        frame.width,
+                        frame.height,
+                    )?
+                }
                 FrameItemDescriptor::Layer(layer) => self.compose_layers(
                     context,
                     encoder,

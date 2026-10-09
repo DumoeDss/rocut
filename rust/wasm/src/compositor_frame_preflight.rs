@@ -1,7 +1,7 @@
 //! Check the recursive JS wire shape before serde visits it. Rust compositor
 //! admission remains authoritative for opacity, dimensions, effects and targets.
-//! Flat legacy frames keep their old item-count semantics; only grouped frames
-//! gain the shared expanded-tree limits. No GPU or resource work happens here.
+//! Flat legacy frames keep their old item-count semantics; grouped frames and
+//! scene transitions gain expanded-tree limits. No GPU/resource work happens here.
 use compositor::{MAX_GROUP_DEPTH, MAX_GROUP_EFFECT_PASSES, MAX_GROUP_FRAME_ITEMS, MAX_GROUPS};
 use js_sys::{Object, Reflect};
 use wasm_bindgen::JsValue;
@@ -54,10 +54,48 @@ impl Effects {
 
 struct Cursor {
     owner: JsValue,
-    items: JsValue,
-    length: u32,
-    next: u32,
+    children: Children,
     depth: usize,
+}
+
+enum Children {
+    Items {
+        items: JsValue,
+        length: u32,
+        next: u32,
+    },
+    // Branches are untagged group descriptors, not arrays or frame-item enums.
+    // Keep the transition on the ancestor path until both branches finish.
+    Branches {
+        next: usize,
+    },
+}
+
+impl Cursor {
+    fn next(&mut self) -> Result<Option<(JsValue, bool)>> {
+        match &mut self.children {
+            Children::Items {
+                items,
+                length,
+                next,
+            } => {
+                if *next == *length {
+                    return Ok(None);
+                }
+                let value = item(items, *next)?;
+                *next += 1;
+                Ok(Some((value, false)))
+            }
+            Children::Branches { next } => {
+                let Some(side) = ["outgoing", "incoming"].get(*next) else {
+                    return Ok(None);
+                };
+                let value = property(&self.owner, side)?;
+                *next += 1;
+                Ok(Some((value, true)))
+            }
+        }
+    }
 }
 
 fn property(value: &JsValue, key: &str) -> Result<JsValue> {
@@ -84,7 +122,13 @@ fn item(items: &JsValue, index: u32) -> Result<JsValue> {
 fn kind(item: &JsValue) -> Result<&'static str> {
     let value = property(item, "type")?;
     // Do not copy an arbitrarily long caller-owned discriminator into Rust.
-    for kind in ["group", "layer", "transition", "sceneEffect"] {
+    for kind in [
+        "group",
+        "layer",
+        "transition",
+        "sceneEffect",
+        "sceneTransition",
+    ] {
         if value == JsValue::from_str(kind) {
             return Ok(kind);
         }
@@ -100,7 +144,10 @@ pub(super) fn validate(frame: &JsValue) -> Result<()> {
     // It never visits any children or copies an entire caller-owned array.
     let mut grouped = false;
     for index in 0..root_length {
-        if kind(&item(&root_items, index)?)? == "group" {
+        if matches!(
+            kind(&item(&root_items, index)?)?,
+            "group" | "sceneTransition"
+        ) {
             grouped = true;
             break;
         }
@@ -113,26 +160,26 @@ pub(super) fn validate(frame: &JsValue) -> Result<()> {
     }
     let mut pending = vec![Cursor {
         owner: frame.clone(),
-        items: root_items,
-        length: root_length,
-        next: 0,
+        children: Children::Items {
+            items: root_items,
+            length: root_length,
+            next: 0,
+        },
         depth: 0,
     }];
     let (mut groups, mut expanded) = (0usize, 0usize);
     let mut effects = Effects::default();
     while let Some(cursor) = pending.last_mut() {
-        if cursor.next == cursor.length {
+        let Some((value, is_branch)) = cursor.next()? else {
             pending.pop();
             continue;
-        }
-        let value = item(&cursor.items, cursor.next)?;
-        cursor.next += 1;
+        };
         let depth = cursor.depth;
         expanded = expanded.saturating_add(1);
         if expanded > MAX_GROUP_FRAME_ITEMS {
             return Err("group preflight expanded frame item limit exceeded");
         }
-        match kind(&value)? {
+        match if is_branch { "group" } else { kind(&value)? } {
             "group" => {
                 effects.visit(&value)?;
                 if pending
@@ -156,10 +203,28 @@ pub(super) fn validate(frame: &JsValue) -> Result<()> {
                 // participates in identity checks, and popping removes it.
                 pending.push(Cursor {
                     owner: value,
-                    items: children,
-                    length,
-                    next: 0,
+                    children: Children::Items {
+                        items: children,
+                        length,
+                        next: 0,
+                    },
                     depth: child_depth,
+                });
+            }
+            "sceneTransition" => {
+                if pending
+                    .iter()
+                    .any(|ancestor| Object::is(&ancestor.owner, &value))
+                {
+                    return Err("group preflight ancestor cycle detected");
+                }
+                // Both branches are expanded, even at progress 0 or 1. Each
+                // contributes one item, one group and one depth level; siblings
+                // may alias but never share an admission/preparation shortcut.
+                pending.push(Cursor {
+                    owner: value,
+                    children: Children::Branches { next: 0 },
+                    depth,
                 });
             }
             "transition" => {

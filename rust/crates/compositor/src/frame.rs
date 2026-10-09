@@ -25,6 +25,9 @@ pub enum FrameItemDescriptor {
     Layer(LayerDescriptor),
     /// An isolated transparent composition; effects never read its parent backdrop.
     Group(IsolatedGroupDescriptor),
+    /// Crossfade complete isolated scene pictures over a shared parent backdrop.
+    /// Separate from legacy layer-list transitions, whose wire stays unchanged.
+    SceneTransition(Box<SceneTransitionDescriptor>),
     Transition {
         outgoing: Vec<LayerDescriptor>,
         incoming: Vec<LayerDescriptor>,
@@ -44,6 +47,14 @@ pub struct IsolatedGroupDescriptor {
     /// Applied once after the entire group's post chain, not to each child.
     pub opacity: f32,
     pub blend_mode: BlendMode,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct SceneTransitionDescriptor {
+    pub outgoing: IsolatedGroupDescriptor,
+    pub incoming: IsolatedGroupDescriptor,
+    pub progress: f32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

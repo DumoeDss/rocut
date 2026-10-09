@@ -56,7 +56,7 @@
 	"remaining": [
 		"Persisted project group schema, serialization and migrations",
 		"Editing commands, Agent APIs, skill guidance and group/master UI",
-		"Transitions between whole grouped scene trees; current transition branches remain layer lists",
+		"At this checkpoint transitions were layer lists; subsequent whole-tree crossfade acceptance is recorded in scene-transition-crossfade.json",
 		"Installed Elftia/Electron and full-song multi-engine authoring/export acceptance"
 	]
 }

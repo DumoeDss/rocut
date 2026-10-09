@@ -20,14 +20,21 @@ export type FrameLayerDescriptor = {
 	mask: LayerMaskDescriptor | null;
 };
 
+export type FrameGroupDescriptor = {
+	items: FrameItemDescriptor[];
+	effectPassGroups: EffectPass[][];
+	opacity: number;
+	blendMode: BlendMode;
+};
+
 export type FrameItemDescriptor =
 	| FrameLayerDescriptor
+	| ({ type: "group" } & FrameGroupDescriptor)
 	| {
-			type: "group";
-			items: FrameItemDescriptor[];
-			effectPassGroups: EffectPass[][];
-			opacity: number;
-			blendMode: BlendMode;
+			type: "sceneTransition";
+			outgoing: FrameGroupDescriptor;
+			incoming: FrameGroupDescriptor;
+			progress: number;
 	  }
 	| {
 			type: "transition";

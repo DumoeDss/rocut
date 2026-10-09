@@ -1,0 +1,67 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "resolved-renderer-crossfade-verified",
+	"scope": "Crossfade complete isolated scene pictures, not persisted project groups or all reference transition styles",
+	"semantics": [
+		"Each branch recursively renders on transparent storage, applies branch post, opacity once and blend mode over the same parent backdrop",
+		"Crossfade the two complete premultiplied pictures using the existing blend mode 17",
+		"Validate, prepare and render both branches even at progress endpoints or zero opacity",
+		"Keep the legacy layer-list transition wire unchanged",
+		"Charge untagged branches as groups, expanded items and depth; preserve child-before-post and outgoing-before-incoming Liquid FIFO"
+	],
+	"admission": {
+		"maxDepth": 8,
+		"maxGroups": 64,
+		"maxExpandedFrameItems": 4096,
+		"maxEffectGroups": 4096,
+		"maxEffectPasses": 4096,
+		"maxTransportBytes": 8388608,
+		"maxReservedTransientTargetBytes": 268435456,
+		"plainDataBoundary": "Not a sandbox for malicious getters or mutating Proxies; not a process RSS or driver-memory cap"
+	},
+	"privateBuild": {
+		"sourceDirectory": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/scene-transition-source-tCxnpu",
+		"sourceManifestSha256": "c5079a9290ea810ca50eddb72e3840ef1a64b7cdd42b28f0b7ee76ac1583a968",
+		"inputFiles": 551,
+		"directory": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/web-scene-transition-KpO0zH",
+		"wasmSha256": "c41fcea74e584c425e8aa2df1c1ce328a084f01f2247388df7285680de9ee26d",
+		"wasmBytes": 9811844,
+		"rustc": "1.88.0",
+		"wasmPack": "0.13.1",
+		"snapshotBytesUnchangedAfterBuildAndTests": true,
+		"sharedDependenciesReplaced": false,
+		"scope": "Private web-target build from byte-verified source snapshot, not canonical bundler/sync packaging or a release gate"
+	},
+	"checks": {
+		"nativeCompositorLib": 10,
+		"groupWire": 7,
+		"sceneEffectWireRegression": 2,
+		"sceneTransitionWire": 4,
+		"groupGpuRegression": 5,
+		"sceneTransitionGpuVulkan": 4,
+		"typescriptDescriptorTests": 5,
+		"typescriptDescriptorAssertions": 32,
+		"scopedTypesLintRustfmtAndDiff": "passed",
+		"retainedFailure": "Default GPU probing crashed at the new executable's startup in wgpu-hal WGL Instance Thread (0xc00000fd); all four new GPU tests subsequently passed with WGPU_BACKEND=vulkan. Default probing is not claimed repaired.",
+		"browser": {
+			"version": "151.0.7922.34",
+			"sceneTransitionReport": "C:/Users/Sayo/AppData/Local/Temp/rocut-scene-transition-wsoZm9/verification.json",
+			"sceneTransitionReportSha256": "b2376c2b766e0f1613cf78caaac86da0cecc6e4566751bb29e37867e56fed805",
+			"sceneTransitionPassed": 102,
+			"groupRegressionReport": "C:/Users/Sayo/AppData/Local/Temp/rocut-group-preflight-91x28p/verification.json",
+			"groupRegressionReportSha256": "13cf5b869dd601d58220cb2d75f87ad6b20e00a0be6dc265580a0aca80232869",
+			"groupRegressionPassed": 62,
+			"errors": [],
+			"actualPublicWasmEntries": true,
+			"mockAdmission": false,
+			"coverage": "Real GPU pixels, both begin/sync entries, depth/cycle/alias/count/pass/transport boundaries, stale request invalidation, missing inactive-branch textures, last-canvas preservation and recovery"
+		}
+	},
+	"remaining": [
+		"Persisted project group/master schema, migrations and serialization",
+		"Editing commands, Agent APIs, skills and authoring UI",
+		"Additional whole-scene transition styles beyond crossfade",
+		"Installed Electron and full-song multi-engine authoring/export acceptance"
+	]
+}

@@ -20,6 +20,7 @@ enum PassLocation {
     Scene(usize),
     Group(Vec<usize>),
     Nested(Vec<usize>, Box<PassLocation>),
+    SceneBranch(Vec<usize>, usize, Box<PassLocation>),
 }
 
 struct PassSpec {
@@ -65,6 +66,19 @@ pub(crate) fn frame_memory(frame: &FrameDescriptor) -> u64 {
                             as u64,
                     );
                     pending.push(&group.items);
+                    &[]
+                }
+                FrameItemDescriptor::SceneTransition(transition) => {
+                    bytes = bytes.saturating_add(
+                        std::mem::size_of::<crate::SceneTransitionDescriptor>() as u64,
+                    );
+                    for group in [&transition.outgoing, &transition.incoming] {
+                        bytes = bytes.saturating_add(
+                            (group.items.capacity() * std::mem::size_of::<FrameItemDescriptor>())
+                                as u64,
+                        );
+                        pending.push(&group.items);
+                    }
                     &[]
                 }
                 FrameItemDescriptor::Layer(layer) => std::slice::from_ref(layer),
@@ -139,7 +153,7 @@ fn visit_groups(
 fn visit_item_groups(
     items: &[FrameItemDescriptor],
     ancestors: &[usize],
-    visit: &mut impl FnMut(PassLocation, &[Vec<EffectPassDescriptor>]),
+    visit: &mut dyn FnMut(PassLocation, &[Vec<EffectPassDescriptor>]),
 ) {
     let location = |local| {
         if ancestors.is_empty() {
@@ -150,6 +164,23 @@ fn visit_item_groups(
     };
     for (index, item) in items.iter().enumerate() {
         match item {
+            FrameItemDescriptor::SceneTransition(transition) => {
+                let mut path = ancestors.to_vec();
+                path.push(index);
+                for (side, group) in [&transition.outgoing, &transition.incoming]
+                    .into_iter()
+                    .enumerate()
+                {
+                    let mut branch = |local, groups: &[Vec<EffectPassDescriptor>]| {
+                        visit(
+                            PassLocation::SceneBranch(path.clone(), side, Box::new(local)),
+                            groups,
+                        );
+                    };
+                    visit_item_groups(&group.items, &[], &mut branch);
+                    branch(PassLocation::Group(vec![]), &group.effect_pass_groups);
+                }
+            }
             FrameItemDescriptor::Group(group) => {
                 let mut path = ancestors.to_vec();
                 path.push(index);

@@ -177,3 +177,63 @@ fn invalid_nested_liquid_is_rejected_before_replay_even_in_an_invisible_group() 
     frame.items = vec![FrameItemDescriptor::Group(group)];
     assert!(FramePreparation::new(frame).is_err());
 }
+
+#[test]
+fn scene_transition_consumes_each_branch_children_then_post_including_endpoints() {
+    let branch = crate::IsolatedGroupDescriptor {
+        items: vec![FrameItemDescriptor::SceneEffect {
+            effect_pass_groups: vec![vec![pass()]],
+        }],
+        opacity: 0.0,
+        blend_mode: crate::BlendMode::Normal,
+        effect_pass_groups: vec![vec![pass()]],
+    };
+    for progress in [0.0, 0.5, 1.0] {
+        let mut descriptor = frame();
+        descriptor.items = vec![FrameItemDescriptor::SceneTransition(Box::new(
+            crate::SceneTransitionDescriptor {
+                outgoing: branch.clone(),
+                incoming: branch.clone(),
+                progress,
+            },
+        ))];
+        let preparation = FramePreparation::new(descriptor).unwrap();
+        assert_eq!(
+            preparation
+                .specs
+                .iter()
+                .map(|s| s.location.clone())
+                .collect::<Vec<_>>(),
+            vec![
+                PassLocation::SceneBranch(vec![0], 0, Box::new(PassLocation::Scene(0))),
+                PassLocation::SceneBranch(vec![0], 0, Box::new(PassLocation::Group(vec![]))),
+                PassLocation::SceneBranch(vec![0], 1, Box::new(PassLocation::Scene(0))),
+                PassLocation::SceneBranch(vec![0], 1, Box::new(PassLocation::Group(vec![]))),
+            ]
+        );
+        assert_eq!(preparation.complete().unwrap().liquid.len(), 4);
+    }
+}
+
+#[test]
+fn malformed_inactive_scene_branch_liquid_is_rejected_before_any_preparation() {
+    let mut invalid = pass();
+    invalid.uniforms.clear();
+    let branch = crate::IsolatedGroupDescriptor {
+        items: vec![],
+        opacity: 1.0,
+        blend_mode: crate::BlendMode::Normal,
+        effect_pass_groups: vec![],
+    };
+    let mut descriptor = frame();
+    let mut incoming = branch.clone();
+    incoming.effect_pass_groups = vec![vec![invalid]];
+    descriptor.items = vec![FrameItemDescriptor::SceneTransition(Box::new(
+        crate::SceneTransitionDescriptor {
+            outgoing: branch,
+            incoming,
+            progress: 0.0,
+        },
+    ))];
+    assert!(FramePreparation::new(descriptor).is_err());
+}

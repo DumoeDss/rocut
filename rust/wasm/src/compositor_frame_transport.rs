@@ -66,10 +66,11 @@ pub(super) fn validate(frame: &JsValue) -> Result<()> {
                 {
                     return Err("group preflight transport ancestor cycle detected");
                 }
-                // Every group adds one object and one items array; the extra
-                // sixteen levels exceed all fixed frame/pass/uniform schema
-                // nesting. Deep unknown metadata must not recurse inside serde.
-                if pending.len() >= MAX_GROUP_DEPTH * 2 + 16 {
+                // Every group adds an object and an items array, and a scene
+                // transition may add one record before its branch group. The
+                // extra sixteen cover fixed frame/pass/uniform schema nesting.
+                // Deep unknown metadata must not recurse inside serde.
+                if pending.len() >= MAX_GROUP_DEPTH * 3 + 16 {
                     return Err("group preflight transport nesting limit exceeded");
                 }
                 let (keys, length, slots, container) = if is_array(&value)? {
