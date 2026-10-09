@@ -9,7 +9,7 @@ export function sourceReadOnlyReason(
 		return "The generated HTML is read-only. Edit its archived author files below, then recompile to update this clip.";
 	}
 	if (source.recipe) {
-		return "This source is an MV recipe, not inline code. Update editing.programmatic.recipe through the Agent transaction entry, preserving the source resources. This panel does not edit recipes.";
+		return "This source is an MV recipe, not inline code. Edit its recipe parameters below and Apply to update the clip while preserving source resources.";
 	}
 	if (source.documentId) {
 		return "The HTML lives in a content-addressed document attachment. Import the updated HTML with the Agent host's programmatic/resources/import endpoint, then replace editing.programmatic with its documentId and resources. This panel does not overwrite attachments.";

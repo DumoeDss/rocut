@@ -19,6 +19,7 @@ import {
 import { ProgrammaticSourceCommand } from "./programmatic-source-command";
 import { ProgrammaticSourceFields } from "./programmatic-source-fields";
 import { ProgrammaticBuildEditor } from "./programmatic-build-editor";
+import { ProgrammaticRecipeEditor } from "./programmatic-recipe-editor";
 
 export function ProgrammaticSourcePanel({
 	element,
@@ -119,6 +120,10 @@ function SourceEditor({
 							scope={{ projectId, sceneId, trackId, elementId }}
 						/>
 					)}
+					<ProgrammaticRecipeEditor
+						source={source}
+						scope={{ projectId, sceneId, trackId, elementId }}
+					/>
 					{conflict && state.dirty && (
 						<p className="text-destructive text-xs" role="alert">
 							The source changed outside this draft. Your edits are retained.
