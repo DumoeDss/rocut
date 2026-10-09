@@ -41,6 +41,19 @@
 			]
 		}
 	],
+	"hostHttpCliCheck": {
+		"file": "apps/cli/src/__tests__/remotion-inspection-host.test.ts",
+		"exitCode": 0,
+		"testsPassed": 1,
+		"assertions": 21,
+		"coverage": [
+			"Actual authenticated Host and runAgentCli inspect/compile-inspected requests, not a fake HTTP server",
+			"Normal response close and intervening context GET do not invalidate the receipt",
+			"Author directory mutation/rename followed by original immutable archive saving",
+			"Consumed receipt returns 422; project record and timeline remain unchanged",
+			"Host close cleans up the dedicated target registry"
+		]
+	},
 	"cpuChecks": {
 		"exitCode": 0,
 		"testsPassed": 6,
@@ -114,6 +127,10 @@
 			{
 				"path": "apps/cli/src/__tests__/remotion-inspection-capability.test.ts",
 				"sha256": "54c28f2f8d11860b04cf285b4bdd5328cafcf1cc0f92622a06d8caad627d70da"
+			},
+			{
+				"path": "apps/cli/src/__tests__/remotion-inspection-host.test.ts",
+				"sha256": "4e3ec4aa4e946bb4cf14b38c40fca3a8d26d6be0f0b2d4053ada344e3a5019ea"
 			},
 			{
 				"path": "docs/remotion-inspection-preflight.md",
