@@ -50,6 +50,8 @@ pub(super) fn draw(d: &mut Draw, label: &Label, metrics: &Context) -> Result<(),
             jsround(position[1]),
         ];
     }
+    let mut operations = d.operations.clone();
+    operations.extend_from_slice(&label.operations);
     d.commands.push(Command::Text {
         font: label.font.clone(),
         text,
@@ -57,7 +59,7 @@ pub(super) fn draw(d: &mut Draw, label: &Label, metrics: &Context) -> Result<(),
         tracking: label.tracking,
         position,
         transform: IDENTITY,
-        operations: label.operations.clone(),
+        operations: operations.clone(),
         fill: TextFill::Color { color: label.color },
         opacity: label.opacity,
         composite: "source-over",
@@ -65,7 +67,7 @@ pub(super) fn draw(d: &mut Draw, label: &Label, metrics: &Context) -> Result<(),
         baseline: label.baseline,
     });
     if label.hud {
-        let previous = std::mem::replace(&mut d.operations, label.operations.clone());
+        let previous = std::mem::replace(&mut d.operations, operations);
         let mut prefix = String::new();
         for ch in label.text.chars() {
             if ch == 'Ō' {

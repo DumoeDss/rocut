@@ -51,11 +51,18 @@ export type MvEmberDraw = MvEmberDrawingSpace &
 		  }
 		| MvEmberText
 	);
-/** Surface definitions are flat and ordered. Children may blit only previously
- * completed surfaces, never themselves or future surfaces. No frame reuse. */
+/** Surface lifecycle operations are root-only and frame-owned. Drawing children
+ * may sample only other completed live surfaces, never their own target. */
 export type MvEmberCommand =
 	| MvEmberSurfaceDraw
 	| { readonly kind: "releaseSurface"; readonly surface: string }
+	| {
+			/** Append in place without clearing, copying, resizing or reallocating.
+			 * The target is unavailable for sampling until all children complete. */
+			readonly kind: "appendSurface";
+			readonly surface: string;
+			readonly commands: readonly MvEmberSurfaceDraw[];
+	  }
 	| {
 			readonly kind: "surface";
 			readonly id: string;

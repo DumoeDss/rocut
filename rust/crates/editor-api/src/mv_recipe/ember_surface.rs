@@ -1,5 +1,5 @@
-//! Flat topologically ordered surfaces: a child may sample an earlier completed
-//! surface, never itself, a future surface or recursively create another one.
+//! Flat ordered lifetimes: append mutates one live surface without allocating.
+//! Drawing may sample other completed surfaces, never its target or future IDs.
 //! Charge all frame-owned allocations, including grain tiles and their readback.
 use super::plan::{Command, PaintKind, Plan};
 use std::collections::{BTreeMap, BTreeSet};
@@ -23,11 +23,12 @@ fn allocation(size: [u32; 2]) -> Result<u64, String> {
 impl Plan {
     pub(super) fn validate_surfaces(&self, admitted_pixels: u64) -> Result<u64, String> {
         validate_batches(&self.commands)?;
-        if self
-            .commands
-            .iter()
-            .any(|c| matches!(c, Command::ReleaseSurface { .. }))
-        {
+        if self.commands.iter().any(|c| {
+            matches!(
+                c,
+                Command::ReleaseSurface { .. } | Command::AppendSurface { .. }
+            )
+        }) {
             return self.validate_live_surfaces(admitted_pixels);
         }
         let mut ready = BTreeSet::new();
@@ -39,7 +40,9 @@ impl Plan {
                 return Err("Drawing surface graph exceeds command budget".into());
             }
             match command {
-                Command::Surface { .. } | Command::ReleaseSurface { .. } => {
+                Command::Surface { .. }
+                | Command::ReleaseSurface { .. }
+                | Command::AppendSurface { .. } => {
                     return Err("Nested surface definitions are forbidden".into());
                 }
                 Command::Blit { surface, .. } | Command::SurfacePatternRect { surface, .. }
@@ -134,8 +137,8 @@ impl Plan {
         Ok(total)
     }
 
-    // Only explicit releases opt into live-peak accounting. The historical
-    // no-release contract above deliberately keeps its conservative sum budget.
+    // Explicit releases/appends opt into live-peak accounting. The historical
+    // immutable no-release contract above keeps its conservative sum budget.
     fn validate_live_surfaces(&self, admitted: u64) -> Result<u64, String> {
         let mut seen = BTreeSet::new();
         let mut ready = BTreeMap::new();
@@ -174,6 +177,18 @@ impl Plan {
                     }
                     ready.insert(*id, pixels);
                 }
+                Command::AppendSurface { surface, commands } => {
+                    // Keep its backing in live, but unpublish its sampling ID.
+                    let pixels = ready
+                        .remove(surface)
+                        .ok_or("Append requires a completed live surface")?;
+                    for child in commands {
+                        count += 1;
+                        let temporary = inspect_live(child, &ready, &mut retained_grain)?;
+                        peak = peak.max(live + retained_grain + temporary);
+                    }
+                    ready.insert(*surface, pixels);
+                }
                 _ => {
                     let temporary = inspect_live(command, &ready, &mut retained_grain)?;
                     peak = peak.max(live + retained_grain + temporary);
@@ -193,7 +208,9 @@ impl Plan {
 fn validate_batches(commands: &[Command]) -> Result<(), String> {
     let (mut count, mut commands_count) = (0usize, 0usize);
     for command in commands.iter().flat_map(|command| {
-        let children = if let Command::Surface { commands, .. } = command {
+        let children = if let Command::Surface { commands, .. }
+        | Command::AppendSurface { commands, .. } = command
+        {
             commands.as_slice()
         } else {
             &[]
@@ -249,7 +266,9 @@ fn validate_batches(commands: &[Command]) -> Result<(), String> {
 fn retained_payload(commands: &[Command]) -> Result<u64, String> {
     let mut total = 0u64;
     for command in commands.iter().flat_map(|command| {
-        let children = if let Command::Surface { commands, .. } = command {
+        let children = if let Command::Surface { commands, .. }
+        | Command::AppendSurface { commands, .. } = command
+        {
             commands.as_slice()
         } else {
             &[]
@@ -325,7 +344,9 @@ fn inspect_live(
     retained: &mut u64,
 ) -> Result<u64, String> {
     match command {
-        Command::Surface { .. } | Command::ReleaseSurface { .. } => {
+        Command::Surface { .. }
+        | Command::ReleaseSurface { .. }
+        | Command::AppendSurface { .. } => {
             Err("Nested surface lifecycle operations are forbidden".into())
         }
         Command::Blit {
@@ -385,3 +406,7 @@ mod tests;
 #[cfg(test)]
 #[path = "ember_surface_primitives_tests.rs"]
 mod primitives_tests;
+
+#[cfg(test)]
+#[path = "ember_surface_append_tests.rs"]
+mod append_tests;

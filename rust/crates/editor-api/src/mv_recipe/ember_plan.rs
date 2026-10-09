@@ -104,6 +104,10 @@ pub enum Command {
         size: [u32; 2],
         commands: Vec<Command>,
     },
+    AppendSurface {
+        surface: &'static str,
+        commands: Vec<Command>,
+    },
     ReleaseSurface {
         surface: &'static str,
     },

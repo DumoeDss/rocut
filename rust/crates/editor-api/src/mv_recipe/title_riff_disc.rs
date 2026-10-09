@@ -9,6 +9,7 @@ use super::{
     palette::Palette,
     plan::*,
     raster::*,
+    recording::{DESIGN_SIZE, Recording},
     state::State,
 };
 use crate::{mv_font_metrics, mv_image_dimensions};
@@ -28,6 +29,7 @@ pub(super) fn draw(
     p: &Palette,
     images: &mv_image_dimensions::Context,
     mask: Option<[u32; 2]>,
+    recording: &mut Recording,
 ) -> Result<(), String> {
     let t = c.time;
     let x = s.x;
@@ -36,6 +38,8 @@ pub(super) fn draw(
     if radius < 1.0 {
         return Ok(());
     }
+    recording.save(&[]);
+    d.operations = recording.operations();
     d.clip = Some(Clip {
         transform: IDENTITY,
         operations: d.operations.clone(),
@@ -68,9 +72,27 @@ pub(super) fn draw(
                 [-2.0, 2.0],
                 [2.0, 2.0],
             ] {
-                images::mask_sprite(d, "title-rim", size, [x + dx, bottom + dy], h, sway, alpha);
+                images::mask_sprite(
+                    d,
+                    "title-rim",
+                    size,
+                    [x + dx, bottom + dy],
+                    h,
+                    sway,
+                    alpha,
+                    recording,
+                )?;
             }
-            images::mask_sprite(d, "title-sky-cutout", size, [x, bottom], h, sway, alpha);
+            images::mask_sprite(
+                d,
+                "title-sky-cutout",
+                size,
+                [x, bottom],
+                h,
+                sway,
+                alpha,
+                recording,
+            )?;
         }
         blit(
             d,
@@ -82,6 +104,7 @@ pub(super) fn draw(
             0.0,
             "low",
         );
+        recording.surface("disc-halftone", 0, DESIGN_SIZE)?;
     } else {
         let bi = c.recap_index();
         let final_beat = a.cues.exit as usize;
@@ -108,20 +131,21 @@ pub(super) fn draw(
         } else {
             1.0 + 0.07 * (1.0 - ease(clamp((t - c.cues[bi]) / 0.46), Easing::Out))
         };
-        let count = d.operations.len();
-        d.operations.extend([
+        recording.save(&[
             Operation::Translate { offset: [x, y] },
             Operation::Scale {
                 factors: [zoom, zoom],
             },
             Operation::Translate { offset: [-x, -y] },
         ]);
+        d.operations = recording.operations();
         if final_frame {
-            images::cover(d, bg, view, images)?;
+            images::cover(d, bg, view, images, recording)?;
         } else {
-            d.operations.push(Operation::Translate {
+            recording.transform(Operation::Translate {
                 offset: [x - 960.0, y - 540.0],
             });
+            d.operations = recording.operations();
             images::cover(
                 d,
                 bg,
@@ -130,9 +154,11 @@ pub(super) fn draw(
                     ..view
                 },
                 images,
+                recording,
             )?;
         }
-        d.operations.truncate(count);
+        recording.restore();
+        d.operations = recording.operations();
         if !final_frame {
             if let Some(character) = &item.character {
                 let qt = (t * 12.0 + 1e-6).floor() / 12.0;
@@ -149,6 +175,7 @@ pub(super) fn draw(
                     1.0 + 0.012 * (qt * 2.1).sin(),
                     1.0,
                     images,
+                    recording,
                 )?;
             }
         }
@@ -166,7 +193,11 @@ pub(super) fn draw(
             ),
         );
     }
+    // The original restore checks the image-recording threshold before popping
+    // the disc clip. Do not rewrite that already-created clip when it flushes.
+    recording.restore();
     d.clip = None;
+    d.operations = recording.operations();
     d.path(
         circle(x, y, radius),
         vec![source_stroke(solid(rgba(p.hi, 0.9)), 2.0)],
@@ -182,21 +213,25 @@ pub(super) fn recap(
     images: &mv_image_dimensions::Context,
     labels: &[Label],
     fonts: &mv_font_metrics::Context,
+    recording: &mut Recording,
 ) -> Result<(), String> {
     let panels = panels(a, c, s);
     let panel_labels: Vec<_> = labels.iter().filter(|v| v.layer == 1).collect();
-    let base = d.operations.clone();
+    recording.save(&[]); // recapPanels' shared alpha scope
     for (i, panel) in panels.iter().enumerate() {
         let item = &a.recap.as_ref().expect("validated recap")[panel.item];
         let size = images.image(&item.bg)?;
         let alpha = (1.0 - s.exit) * if panel.lit { 1.0 } else { 0.42 };
-        d.operations = base.clone();
-        d.operations.push(Operation::Translate {
-            offset: panel.position,
-        });
-        d.operations.push(Operation::Scale {
-            factors: [panel.scale, panel.scale],
-        });
+        recording.save(&[
+            Operation::Translate {
+                offset: panel.position,
+            },
+            Operation::Scale {
+                factors: [panel.scale, panel.scale],
+            },
+        ]);
+        recording.save(&[]); // panel clip retains its creation-time matrix
+        d.operations = recording.operations();
         d.clip = Some(Clip {
             transform: IDENTITY,
             operations: d.operations.clone(),
@@ -216,6 +251,7 @@ pub(super) fn recap(
             alpha,
             "low",
         );
+        recording.resource(&item.bg, [size.width, size.height])?;
         if let Some(character) = &item.character {
             images::sprite(
                 d,
@@ -227,21 +263,28 @@ pub(super) fn recap(
                 1.0,
                 alpha,
                 images,
+                recording,
             )?;
         }
+        recording.access(); // next fillRect, also when no character is present
+        d.operations = recording.operations();
         let mut flash = fill(
             solid(rgba(p.core, 0.8 * hit(c.time, panel.beat, 18.0))),
             "lighter",
         );
         flash.opacity = alpha;
         d.rect([-116.0, -65.0, 232.0, 130.0], flash);
+        recording.restore();
         d.clip = None;
+        d.operations = recording.operations();
         let mut border = source_stroke(solid(rgba(p.hi, if panel.lit { 0.95 } else { 0.6 })), 1.5);
         border.opacity = alpha;
         d.rect([-116.0, -65.0, 232.0, 130.0], border);
-        d.operations = base.clone();
+        recording.restore();
+        d.operations = recording.operations();
         super::text::draw(d, panel_labels[i], fonts)?;
     }
-    d.operations = base;
+    recording.restore();
+    d.operations = recording.operations();
     Ok(())
 }

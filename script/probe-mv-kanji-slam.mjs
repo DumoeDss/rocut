@@ -174,15 +174,19 @@ try {
 		JSON.stringify(
 			{
 				passed: report.passed,
-				violations: report.violations,
+				violations: report.violations ?? report.progress?.violations,
 				error: report.error,
 				decodeError: report.decodeError,
 				exportTested: report.exportTested,
 				exportedBytes: report.exportedBytes,
 				decodePassed: report.decoded?.passed,
 				progress: report.progress?.current,
-				samples: Object.keys(report.observations ?? {}).length,
-				negatives: Object.keys(report.negatives ?? {}).length,
+				samples: Object.keys(
+					report.observations ?? report.progress?.observations ?? {},
+				).length,
+				negatives: Object.keys(
+					report.negatives ?? report.progress?.negatives ?? {},
+				).length,
 				artifacts,
 				errors,
 			},

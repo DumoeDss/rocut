@@ -3,6 +3,8 @@
 mod image_budget;
 #[path = "kanji_slam_public_negatives.rs"]
 mod negatives;
+#[path = "kanji_slam_stream_budget_tests.rs"]
+mod stream_budget;
 #[path = "kanji_slam_public_support.rs"]
 mod support;
 use serde_json::{Value, json};

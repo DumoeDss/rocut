@@ -1,6 +1,13 @@
 use super::{
-    clock::Clock, draw::*, glyph_art::Art, glyphs, math::*, palette::rgb, plan::*, raster::*,
-    state::State,
+    clock::Clock,
+    draw::*,
+    glyph_art::Art,
+    glyphs,
+    math::*,
+    palette::rgb,
+    plan::*,
+    raster::*,
+    state::{Glyph, State},
 };
 const SIZE: [u32; 2] = [480, 270];
 fn noise() -> Vec<u8> {
@@ -28,7 +35,36 @@ fn noise() -> Vec<u8> {
         })
         .collect()
 }
-pub(super) fn prepare(out: &mut Vec<Command>, c: &Clock, s: &State, arts: &[Art]) {
+pub(super) fn begin_silhouette(out: &mut Vec<Command>) {
+    surface(out, "ks-flame-silhouette", SIZE, Draw::new(1920.0, 1080.0));
+}
+pub(super) fn append_silhouette(out: &mut Vec<Command>, s: &State, glyph: &Glyph, art: &Art) {
+    let mut d = Draw::new(1920.0, 1080.0);
+    d.operations.push(Operation::Scale {
+        factors: [0.25, 0.25],
+    });
+    d.operations.extend(s.camera(1.0));
+    glyphs::transform(&mut d, glyph, art, s.glyph_scale);
+    all(
+        &mut d,
+        art.ids[1],
+        art.size,
+        [
+            -(art.size[0] as f64) / 2.0,
+            -(art.size[1] as f64) / 2.0,
+            art.size[0] as f64,
+            art.size[1] as f64,
+        ],
+        "source-over",
+        1.0,
+        0.0,
+    );
+    append(out, "ks-flame-silhouette", d);
+}
+pub(super) fn prepare(out: &mut Vec<Command>, c: &Clock) {
+    let mut d = Draw::new(1920.0, 1080.0);
+    d.rect([0.0, 0.0, 480.0, 270.0], fill(solid([1.0; 4]), "source-in"));
+    append(out, "ks-flame-silhouette", d);
     let mut d = Draw::new(1920.0, 1080.0);
     d.commands.push(Command::AlphaPixels {
         size: [128, 128],
@@ -36,37 +72,6 @@ pub(super) fn prepare(out: &mut Vec<Command>, c: &Clock, s: &State, arts: &[Art]
         position: [0, 0],
     });
     surface(out, "ks-flame-noise", [128, 128], d);
-    let mut d = Draw::new(1920.0, 1080.0);
-    d.operations.push(Operation::Scale {
-        factors: [0.25, 0.25],
-    });
-    d.operations.extend(s.camera(1.0));
-    for glyph in &s.glyphs {
-        let art = arts
-            .iter()
-            .find(|g| g.ch == glyph.ch)
-            .expect("prepared fire glyph");
-        let count = d.operations.len();
-        glyphs::transform(&mut d, glyph, art, s.glyph_scale);
-        all(
-            &mut d,
-            art.ids[1],
-            art.size,
-            [
-                -(art.size[0] as f64) / 2.0,
-                -(art.size[1] as f64) / 2.0,
-                art.size[0] as f64,
-                art.size[1] as f64,
-            ],
-            "source-over",
-            1.0,
-            0.0,
-        );
-        d.operations.truncate(count);
-    }
-    d.operations.clear();
-    d.rect([0.0, 0.0, 480.0, 270.0], fill(solid([1.0; 4]), "source-in"));
-    surface(out, "ks-flame-silhouette", SIZE, d);
     let tq = quant(c.time, 12.0);
     let amt = 0.9 + 0.35 * c.pulse(5.0);
     for (id, color, n, step, erode, alpha) in [

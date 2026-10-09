@@ -92,7 +92,7 @@ pub(super) fn work(commands: &[Command]) -> (usize, usize) {
     for command in commands {
         count += 1;
         match command {
-            Command::Surface { commands, .. } => {
+            Command::Surface { commands, .. } | Command::AppendSurface { commands, .. } => {
                 let (c, s) = work(commands);
                 count += c;
                 steps += s;

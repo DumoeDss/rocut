@@ -2210,6 +2210,27 @@ blocked during rendering and are not automatically offline. The completed
 matrix does not prove every prop combination, full-duration exports,
 cross-machine determinism, installed UI or performance acceptance.
 
+### Full-duration preset follow-up (2026-10-09)
+
+The same runner now accepts `ROCUT_TEST_PRESET_RANGE=full` (default: `smoke`).
+It uses the source's rational frame rate through native frame-to-tick conversion,
+captures every frame after archive rebuild, checks every requested source index,
+and independently decodes every encoded video frame. Frame count, dimensions,
+frame rate and duration are checked; every frame must satisfy the original
+sampled RGB MAE < 8 gate. Reverse/repeated/rebuilt RGBA comparisons remain exact.
+
+| Preset | Exported/decoded frames | Duration | Mean / worst-frame MAE | Bytes |
+| --- | ---: | ---: | ---: | ---: |
+| ProceduralFish | 90/90 | 3 s | 0.523023 / 0.658698 | 433,475 |
+| ClaudeTyper | 34/34 | 1.133 s | 0.064733 / 0.070369 | 90,972 |
+
+Both full runs exited 0 with no errors. Reports are
+`rocut-remotion-presets-wd1fKF/verification.json` and
+`rocut-remotion-presets-PkcHPW/verification.json` in the private test artifacts.
+These are standalone native Remotion → ProgrammaticNode/buildScene →
+SceneExporter checks, not installed Electron acceptance. The other four presets'
+full-duration exports and broader props/media coverage remain pending.
+
 ## Remaining work
 
 The Peel recipe transition is verified separately below. It does not
@@ -3793,6 +3814,26 @@ original snapshot. No intermediate observer is installed. This excludes these
 realm/cache/final-readback histories, not every possible recording-lifecycle
 cause; no production matrix-copy workaround is justified by this control.
 
+The later private `title-oracle-pinning-6Pii4M/verification.json` establishes a
+causal recording-limit difference without changing the reference source. Default
+and explicit 32MiB original renders are exact. Raising only the isolated test
+browser's pinned-image recording threshold to 64MiB makes both complete original
+frames equal the fixed default-native captures exactly. Independent bitmap
+canaries confirm the threshold change (five full-size images flush at 32MiB;
+nine at 64MiB); fully transparent image draws still count in this tested path.
+Every metadata-observed original render equals its unobserved baseline.
+
+The trace identifies four full-size image snapshots plus distinct 192x320 rim
+and cutout canvases: 33,669,120 bytes, crossing 33,554,432 after disc halftone.
+The subsequent `restore()` is the inferred flush boundary from Chromium's
+implementation and the observed order, not a directly observed internal event.
+This is not a relaxed gate or a production browser-flag change. A source-size,
+generation and scope-aware reference-recording ledger has now been implemented
+with strict greater-than threshold checks and six unit tests. It tracks original
+main-canvas source versions, not native scratch releases or frame-number special
+cases. The original default oracle and complete intro/outro gate remain
+authoritative; their post-correction browser/export reruns are still pending.
+
 ### HyperFrames variable-rate native preparation oracle (2026-10-09)
 
 `script/fixtures/hyperframes-variable-rate-*` extracts unchanged preparation
@@ -3931,3 +3972,40 @@ pixels also differ independently: `default/0` has max 23 / MAE 0.21429 and
 and 13 native repeat checks are exact. Both the raster differences and the
 generic geometry rejection require investigation; the original thresholds and
 samples remain unchanged. The 12-frame export has not run.
+
+The subsequent `appendSurface` lifecycle correction keeps a live canvas in place
+while drawing additional root-level batches. No copy, clear, resize or new canvas
+is introduced by append. Its target is temporarily unavailable for sampling;
+self/future/released references and nested lifecycle commands remain invalid.
+Rust retains all serialized payload costs from frame start and accounts for the
+actual live scratch peak. Existing plans without append keep their prior trace
+and conservative budgeting behavior. Cancellation and exceptions still release
+all frame-owned scratch surfaces.
+
+Kanji now prepares glyph art in original draw order, appends to the same glyph
+layer/fire silhouette and releases each source after its last use. The 40Mi
+envelope and glyph resolution are unchanged. Rust surface checks pass 101 tests
+and Kanji checks 34 tests; shared raster/release/cancellation checks pass 20 tests
+with 3,792 assertions. Scoped TypeScript and affected renderer lint pass.
+
+The real-font retry `rocut-kanji-slam-native-h5XJK8/verification.json` reaches all
+three variants, five explicit branches and eight boundary cases without the
+generic-budget exception: 104 observations, 16 effective negative controls,
+14 exact native repeat checks and nine exact original-default controls. The 84
+observations shared with the first run have identical error statistics; this is
+not an assertion that all corresponding raw pixel buffers were compared. Native
+versus original pixels still fail the unchanged gate, including glyph texture
+differences; the export remains correctly unexecuted.
+
+The following transparent layer diagnostic found an independent geometry error:
+the original binary64 expression `Math.ceil(1500 * 0.07)` is 106, while native
+glyph bounds and gradients hardcoded 105. Native code now preserves the original
+operation order and shares the computed pad. Two regression tests cover the
+sprite dimensions, position, gradient and halftone lattice; Kanji's 36 tests pass.
+This is not yet a claim that the full browser pixel gate or export passes.
+
+The combined MV recipe check now passes 155 tests. Five old failures were stale
+fixtures for the already committed resident-image admission policy: Afterimage
+fonts lacked required descriptors and Ember expected unused declared images to
+be omitted. Tests now match that policy and retain missing/invalid-font negative
+controls; production admission was not weakened.

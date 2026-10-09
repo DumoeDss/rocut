@@ -16,6 +16,25 @@ fn chars(word: &str) -> BTreeSet<char> {
     word.chars().collect()
 }
 
+// The producer appends in authored order and releases each character at its
+// last occurrence. Repeated interleaved letters retain their real overlap.
+fn stream_peak(word: &str, ink: &BTreeMap<char, u64>, copies: u64) -> u64 {
+    let word: Vec<_> = word.chars().collect();
+    let mut active = BTreeSet::new();
+    let (mut live, mut peak) = (0, 0);
+    for (index, ch) in word.iter().enumerate() {
+        if active.insert(*ch) {
+            live += copies * ink[ch];
+            peak = peak.max(live);
+        }
+        if !word[index + 1..].contains(ch) {
+            active.remove(ch);
+            live -= copies * ink[ch];
+        }
+    }
+    peak
+}
+
 pub(super) fn static_floor(a: &KanjiSlam) -> u64 {
     let live = a
         .glyphs
@@ -60,30 +79,20 @@ pub(super) fn validate(
     }
     for (index, word) in a.glyphs.iter().enumerate() {
         let live = chars(word);
-        // Previous ghosts only ever come from the immediate previous word;
-        // rekicks have no ghosts. Check the union even if this shot is hidden.
-        let ghost = if index == 0 {
-            BTreeSet::new()
-        } else {
-            chars(&a.glyphs[index - 1])
-        };
+        // Previous ghosts are appended/released before live glyph art. Check
+        // every authored word even when its shot is not the requested sample.
+        let ghost = index
+            .checked_sub(1)
+            .map_or(0, |i| stream_peak(&a.glyphs[i], &ink, 2));
         let payload =
             live.len() as u64 * RECT_PAYLOAD_PER_GLYPH + if a.fire { NOISE_PAYLOAD } else { 0 };
-        let glyphs = live
-            .iter()
-            .map(|c| 2 * ink[c] * (3 + u64::from(a.fire)))
-            .sum::<u64>()
-            + ghost.iter().map(|c| 2 * ink[c]).sum::<u64>();
-        // The largest text glow is inside its105px-padded art dimensions.
-        // It is temporary, so max it against flame/layer construction rather
-        // than charging all filters or completed surfaces forever.
-        let blur = if a.fire {
-            live.iter().map(|c| 2 * ink[c]).max().unwrap_or(0)
-        } else {
-            0
-        };
+        // Largest glow scratch fits inside the105px-padded art. It exists while
+        // fill/line/edge are live, before shadow allocation; four final surfaces
+        // therefore also bound that temporary (three surfaces + one filter).
+        let glyphs = stream_peak(word, &ink, 2 * (3 + u64::from(a.fire))).max(ghost);
         let fire = if a.fire { FIRE_SURFACES } else { 0 };
-        let preparation = character + glyphs + blur.max(fire).max(2 * FRAME + fire);
+        let layer = 2 * FRAME + if a.fire { 2 * 480 * 270 } else { 0 };
+        let preparation = character + (layer + glyphs).max(2 * FRAME + fire);
         let composition = character + 4 * FRAME;
         let finishing = 4 * FRAME + GRAIN;
         let peak = mask_peak
@@ -93,7 +102,9 @@ pub(super) fn validate(
             .max(finishing)
             + payload;
         if peak > limit {
-            return Err("kanjiSlam measured whole-source scratch exceeds40Mi envelope".into());
+            return Err(format!(
+                "kanjiSlam measured whole-source scratch exceeds40Mi envelope: word={index}, peak={peak}, limit={limit}, glyphs={glyphs}, character={character}, payload={payload}"
+            ));
         }
     }
     Ok(())

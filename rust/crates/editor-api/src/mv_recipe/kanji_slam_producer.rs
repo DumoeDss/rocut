@@ -28,34 +28,11 @@ impl KanjiSlam {
         // Original character buffers precede glyph art; dependencies retain
         // their canvas sizes and every later layer samples the same surfaces.
         character::prepare(&mut commands, self, &c, &character);
-        let arts = glyphs::prepare(&mut commands, self, &s, fonts)?;
+        glyphs::stream(&mut commands, self, &c, &s, fonts)?;
         if self.fire {
-            fire::prepare(&mut commands, &c, &s, &arts);
+            fire::prepare(&mut commands, &c);
         }
         let mut glyph_layer = Draw::new(1920.0, 1080.0);
-        glyph_layer.operations = s.camera(1.0);
-        if !s.previous.is_empty() {
-            glyphs::word(
-                &mut glyph_layer,
-                self,
-                &s.previous,
-                &arts,
-                1.02 + c.elapsed * 0.12,
-                0.85 * (-c.elapsed * 5.5).exp(),
-                0.0,
-                0.0,
-            );
-        }
-        glyphs::word(
-            &mut glyph_layer,
-            self,
-            &s.glyphs,
-            &arts,
-            s.glyph_scale,
-            0.0,
-            s.smear,
-            s.burn,
-        );
         glyph_layer.operations = s.camera(1.15);
         character.draw(
             &mut glyph_layer,
@@ -69,8 +46,7 @@ impl KanjiSlam {
         if self.fire {
             fire::draw(&mut glyph_layer);
         }
-        surface(&mut commands, "ks-glyph-layer", [1920, 1080], glyph_layer);
-        glyphs::release_all(&mut commands, self, &arts);
+        append(&mut commands, "ks-glyph-layer", glyph_layer);
         if self.fire {
             fire::release_all(&mut commands);
         }

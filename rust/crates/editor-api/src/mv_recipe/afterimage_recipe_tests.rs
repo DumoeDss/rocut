@@ -4,8 +4,12 @@ use serde_json::{Value, json};
 
 fn resources() -> Vec<Resource> {
     [("image","image","image/png"),("font","font","font/woff2")].into_iter().map(|(id,kind,mime)| {
-        serde_json::from_value(json!({"id":id,"kind":kind,"mimeType":mime,"byteLength":1,
-            "sha256":"ab".repeat(32),"attachmentKey":format!("programmatic-sha256-{}","ab".repeat(32))})).unwrap()
+        let mut value = json!({"id":id,"kind":kind,"mimeType":mime,"byteLength":1,
+            "sha256":"ab".repeat(32),"attachmentKey":format!("programmatic-sha256-{}","ab".repeat(32))});
+        if kind == "font" {
+            value["font"] = json!({"family":"Afterimage Fixture","style":"normal","weight":400});
+        }
+        serde_json::from_value(value).unwrap()
     }).collect()
 }
 fn recipe() -> Value {
@@ -17,6 +21,28 @@ fn errors(value: Value, resources: &[Resource], size: u32) -> Vec<crate::model::
     serde_json::from_value::<Recipe>(value)
         .unwrap()
         .validate(resources, 240, size, size, 2000)
+}
+#[test]
+fn resident_image_measurement_still_rejects_missing_or_invalid_font_descriptors() {
+    for missing in [true, false] {
+        let mut invalid = serde_json::to_value(resources()).unwrap();
+        if missing {
+            invalid[1].as_object_mut().unwrap().remove("font");
+        } else {
+            invalid[1]["font"]["family"] = json!("");
+        }
+        let invalid: Vec<Resource> = serde_json::from_value(invalid).unwrap();
+        let issues = errors(recipe(), &invalid, 640);
+        assert!(
+            issues
+                .iter()
+                .any(|issue| issue.message.contains(if missing {
+                    "Resource kind, MIME type and font descriptor do not match"
+                } else {
+                    "Font family/style/weight must identify a valid unique face"
+                }))
+        );
+    }
 }
 #[test]
 fn declarations_span_duration_and_raster_peak_are_enforced() {

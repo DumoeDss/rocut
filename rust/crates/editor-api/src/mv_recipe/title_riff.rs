@@ -41,6 +41,8 @@ mod producer;
 mod producer_tests;
 #[path = "title_riff_raster.rs"]
 mod raster;
+#[path = "title_riff_recording.rs"]
+mod recording;
 #[cfg(test)]
 #[path = "title_riff_sampling_tests.rs"]
 mod sampling_tests;

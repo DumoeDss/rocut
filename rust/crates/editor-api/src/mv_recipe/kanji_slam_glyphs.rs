@@ -1,5 +1,7 @@
 use super::{
+    clock::Clock,
     draw::*,
+    fire,
     glyph_art::{self, Art},
     model::KanjiSlam,
     plan::*,
@@ -7,28 +9,70 @@ use super::{
     state::{Glyph, State},
 };
 use crate::mv_font_metrics::Context;
-pub(super) fn prepare(
+pub(super) fn stream(
     out: &mut Vec<Command>,
     a: &KanjiSlam,
+    c: &Clock,
     s: &State,
     fonts: &Context,
-) -> Result<Vec<Art>, String> {
-    let mut chars = Vec::new();
-    // Keep original allocation/cache order: previous ghost before live word.
-    for glyph in s.previous.iter().chain(&s.glyphs) {
-        if !chars.contains(&glyph.ch) {
-            chars.push(glyph.ch);
+) -> Result<(), String> {
+    surface(
+        out,
+        "ks-glyph-layer",
+        [1920, 1080],
+        Draw::new(1920.0, 1080.0),
+    );
+    if a.fire {
+        fire::begin_silhouette(out);
+    }
+    let mut next_id = 0;
+    for (ghost, glyphs) in [(true, &s.previous), (false, &s.glyphs)] {
+        let mut arts: Vec<Art> = Vec::new();
+        for (index, glyph) in glyphs.iter().enumerate() {
+            let art_index = if let Some(index) = arts.iter().position(|a| a.ch == glyph.ch) {
+                index
+            } else {
+                let mut art = glyph_art::geometry(glyph.ch, next_id, a, fonts)?;
+                next_id += 1;
+                art.live = !ghost;
+                art.ghost = ghost;
+                glyph_art::emit(out, a, &art);
+                arts.push(art);
+                arts.len() - 1
+            };
+            let mut d = Draw::new(1920.0, 1080.0);
+            d.operations = s.camera(1.0);
+            word(
+                &mut d,
+                a,
+                std::slice::from_ref(glyph),
+                &arts,
+                if ghost {
+                    1.02 + c.elapsed * 0.12
+                } else {
+                    s.glyph_scale
+                },
+                if ghost {
+                    0.85 * (-c.elapsed * 5.5).exp()
+                } else {
+                    0.0
+                },
+                if ghost { 0.0 } else { s.smear },
+                if ghost { 0.0 } else { s.burn },
+            );
+            append(out, "ks-glyph-layer", d);
+            if a.fire && !ghost {
+                fire::append_silhouette(out, s, glyph, &arts[art_index]);
+            }
+            // Keep repeated letters only until their final original-order use.
+            // No redraw/cache expansion for words such as AABAA.
+            if !glyphs[index + 1..].iter().any(|g| g.ch == glyph.ch) {
+                release_all(out, a, std::slice::from_ref(&arts[art_index]));
+                arts.remove(art_index);
+            }
         }
     }
-    let mut arts = Vec::new();
-    for (i, ch) in chars.into_iter().enumerate() {
-        let mut art = glyph_art::geometry(ch, i, a, fonts)?;
-        art.live = s.glyphs.iter().any(|g| g.ch == ch);
-        art.ghost = s.previous.iter().any(|g| g.ch == ch);
-        glyph_art::emit(out, a, &art);
-        arts.push(art);
-    }
-    Ok(arts)
+    Ok(())
 }
 pub(super) fn transform(d: &mut Draw, g: &Glyph, art: &Art, scale: f64) {
     let sc = (g.scale * 1080.0 / art.ink_h) * scale;

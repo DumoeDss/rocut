@@ -4,6 +4,7 @@ use super::{
     palette::{Palette, rgb},
     plan::*,
     raster::*,
+    recording::Recording,
 };
 use crate::mv_image_dimensions::Context;
 
@@ -28,21 +29,27 @@ pub(super) fn image(
         smoothing_quality: quality,
     });
 }
-pub(super) fn cover(d: &mut Draw, id: &str, view: View, images: &Context) -> Result<(), String> {
+pub(super) fn cover(
+    d: &mut Draw,
+    id: &str,
+    view: View,
+    images: &Context,
+    recording: &mut Recording,
+) -> Result<(), String> {
     let size = images.image(id)?;
     let scale = (1920.0 / size.width as f64).max(1080.0 / size.height as f64) * view.zoom;
     let width = size.width as f64 * scale;
     let height = size.height as f64 * scale;
-    let count = d.operations.len();
-    d.operations.push(Operation::Translate {
+    recording.save(&[Operation::Translate {
         offset: [
             960.0 + view.x * ((width - 1920.0) / 2.0).max(0.0),
             540.0 + view.y * ((height - 1080.0) / 2.0).max(0.0),
         ],
-    });
+    }]);
     if view.rot != 0.0 {
-        d.operations.push(Operation::Rotate { radians: view.rot });
+        recording.transform(Operation::Rotate { radians: view.rot });
     }
+    d.operations = recording.operations();
     image(
         d,
         id,
@@ -51,7 +58,9 @@ pub(super) fn cover(d: &mut Draw, id: &str, view: View, images: &Context) -> Res
         1.0,
         "high",
     );
-    d.operations.truncate(count);
+    recording.resource(id, [size.width, size.height])?;
+    recording.restore();
+    d.operations = recording.operations();
     Ok(())
 }
 pub(super) fn sprite(
@@ -64,15 +73,18 @@ pub(super) fn sprite(
     breathe: f64,
     opacity: f64,
     images: &Context,
+    recording: &mut Recording,
 ) -> Result<(), String> {
     let size = images.image(id)?;
     let width = size.width as f64 * height / size.height as f64;
-    let count = d.operations.len();
-    d.operations.push(Operation::Translate { offset: pos });
-    d.operations.push(Operation::Rotate { radians: rotation });
-    d.operations.push(Operation::Scale {
-        factors: [1.0, breathe],
-    });
+    recording.save(&[
+        Operation::Translate { offset: pos },
+        Operation::Rotate { radians: rotation },
+        Operation::Scale {
+            factors: [1.0, breathe],
+        },
+    ]);
+    d.operations = recording.operations();
     image(
         d,
         id,
@@ -81,7 +93,9 @@ pub(super) fn sprite(
         opacity,
         "high",
     );
-    d.operations.truncate(count);
+    recording.resource(id, [size.width, size.height])?;
+    recording.restore();
+    d.operations = recording.operations();
     Ok(())
 }
 pub(super) fn mask_sprite(
@@ -92,14 +106,17 @@ pub(super) fn mask_sprite(
     height: f64,
     rotation: f64,
     opacity: f64,
-) {
+    recording: &mut Recording,
+) -> Result<(), String> {
     let width = size[0] as f64 * height / size[1] as f64;
-    let count = d.operations.len();
-    d.operations.push(Operation::Translate { offset: pos });
-    d.operations.push(Operation::Rotate { radians: rotation });
-    d.operations.push(Operation::Scale {
-        factors: [1.0, 1.0],
-    });
+    recording.save(&[
+        Operation::Translate { offset: pos },
+        Operation::Rotate { radians: rotation },
+        Operation::Scale {
+            factors: [1.0, 1.0],
+        },
+    ]);
+    d.operations = recording.operations();
     blit(
         d,
         id,
@@ -110,7 +127,10 @@ pub(super) fn mask_sprite(
         0.0,
         "high",
     );
-    d.operations.truncate(count);
+    recording.surface(id, 0, size)?;
+    recording.restore();
+    d.operations = recording.operations();
+    Ok(())
 }
 pub(super) fn masks(
     out: &mut Vec<Command>,

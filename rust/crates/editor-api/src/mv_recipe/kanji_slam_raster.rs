@@ -26,6 +26,12 @@ pub(super) fn surface(out: &mut Vec<Command>, id: &'static str, size: [u32; 2], 
 pub(super) fn release(out: &mut Vec<Command>, id: &'static str) {
     out.push(Command::ReleaseSurface { surface: id });
 }
+pub(super) fn append(out: &mut Vec<Command>, id: &'static str, draw: Draw) {
+    out.push(Command::AppendSurface {
+        surface: id,
+        commands: draw.commands,
+    });
+}
 pub(super) fn blit(
     d: &mut Draw,
     id: &'static str,

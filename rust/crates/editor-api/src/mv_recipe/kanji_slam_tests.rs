@@ -10,6 +10,89 @@ use super::{
 mod support;
 use support::*;
 #[test]
+fn glyph_padding_preserves_original_binary64_ceil_and_gradient_geometry() {
+    use super::{
+        glyph_art,
+        plan::{Style, TextFill},
+    };
+    let a = settings("default");
+    let s = sample(4.0);
+    let (fonts, _) = facts(&a, &s);
+    let mut art = glyph_art::geometry('\u{6551}', 0, &a, &fonts).unwrap();
+    // Synthetic bounds prove transport arithmetic, not browser font metrics.
+    assert_eq!(art.size, [1037, 1352]);
+    assert_eq!(art.position, [106.0, 1156.0]);
+    assert_eq!(art.bounds, [106.0, 106.0, 1500.0 * 0.55, 1140.0]);
+    art.live = true;
+    let mut commands = Vec::new();
+    glyph_art::emit(&mut commands, &a, &art);
+    let Command::Surface { commands, .. } = &commands[0] else {
+        panic!("expected glyph fill surface");
+    };
+    let Command::Text {
+        font_size,
+        fill: TextFill::Style {
+            style: Style::Linear { from, to, .. },
+        },
+        ..
+    } = &commands[0]
+    else {
+        panic!("expected glyph fill gradient");
+    };
+    assert_eq!(*font_size, 1500.0);
+    assert_eq!(*from, [0.0, 106.0]);
+    assert_eq!(*to, [0.0, 1246.0]);
+    let Command::CircleBatch { circles, .. } = &commands[1] else {
+        panic!("expected one combined halftone path");
+    };
+    assert_eq!(circles.len(), 3509);
+    assert_eq!(circles[0], [0.0, 0.0, 7.9799999999999995]);
+    assert_eq!(circles.last().unwrap()[..2], [80.0, 1344.0]);
+}
+#[test]
+fn captured_1500px_ink_bounds_keep_original_sprite_and_halftone_dimensions() {
+    use super::glyph_art;
+    use crate::mv_font_metrics::Context;
+    use serde_json::json;
+    let a = settings("default");
+    let mut requests = Vec::new();
+    a.static_requests(&resources(), &mut requests).unwrap();
+    requests.retain(|r| r.resource.id == a.fonts.monument);
+    assert_eq!(requests.len(), 1);
+    requests[0].bounds.retain(|b| b.text == "\u{6551}");
+    assert_eq!(requests[0].bounds.len(), 1);
+    let r = &requests[0];
+    let b = &r.bounds[0];
+    // Captured Zen Old Mincho bounds are fixed transport regression inputs;
+    // this does not replace independent browser/font/pixel acceptance.
+    let measured = serde_json::from_value(json!({
+        "resource":r.resource,"glyphs":[],"advances":[],"bounds":[{
+            "version":b.version,"text":b.text,"fontSizePx":b.font_size_px,
+            "letterSpacingPx":b.letter_spacing_px,"align":b.align,"baseline":b.baseline,
+            "left":-46.875,"right":1476.5625,"ascent":1265.625,"descent":117.1875
+        }]
+    }))
+    .unwrap();
+    let fonts = Context::new(&requests, &[measured]).unwrap();
+    let mut art = glyph_art::geometry('\u{6551}', 0, &a, &fonts).unwrap();
+    assert_eq!(art.size, [1642, 1595]);
+    assert_eq!(art.position, [59.125, 1371.625]);
+    art.live = true;
+    let mut commands = Vec::new();
+    glyph_art::emit(&mut commands, &a, &art);
+    let Command::Surface { commands, .. } = &commands[0] else {
+        panic!("expected glyph fill surface");
+    };
+    let Command::CircleBatch { circles, .. } = &commands[1] else {
+        panic!("expected one combined halftone path");
+    };
+    assert_eq!(circles.len(), 6540);
+    assert_eq!(circles[0], [0.0, 0.0, 7.9799999999999995]);
+    let last = circles.last().unwrap();
+    assert_eq!(last[..2], [152.0, 1584.0]);
+    assert!((last[2] - 0.3060501491032803).abs() < 1e-12);
+}
+#[test]
 fn original_shot_tolerance_end_exclusion_and_two_frame_anticipation() {
     let a = settings("default");
     let c = Clock::new(&a, &sample(4.0)).unwrap();

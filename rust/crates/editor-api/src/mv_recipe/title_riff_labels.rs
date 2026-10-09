@@ -18,6 +18,7 @@ pub(super) struct Label {
     pub color: Color,
     pub align: &'static str,
     pub baseline: &'static str,
+    // Label-local operations; the live canvas base is inherited at draw time.
     pub operations: Vec<Operation>,
     pub hud: bool,
     pub layer: u8,
@@ -142,7 +143,7 @@ pub(super) fn labels(a: &TitleRiff, c: &Clock, s: &State, hi: Color, glow: Color
         for n in 0..4 {
             let angle = rot + n as f64 * std::f64::consts::FRAC_PI_2;
             let radius = s.radius * 1.34 + 32.0;
-            let mut ops = s.camera.clone();
+            let mut ops = Vec::new();
             ops.push(Operation::Translate {
                 offset: [s.x + angle.cos() * radius, s.y + angle.sin() * radius],
             });
@@ -173,7 +174,7 @@ pub(super) fn labels(a: &TitleRiff, c: &Clock, s: &State, hi: Color, glow: Color
             hi,
             (if panel.lit { 0.8 } else { 0.4 }) * fade * fade,
             "left",
-            s.camera.clone(),
+            Vec::new(),
             1,
         ));
     }

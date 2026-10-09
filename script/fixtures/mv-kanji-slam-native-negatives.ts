@@ -76,7 +76,7 @@ export async function kanjiSlamNegativeControls(
 			mutate: (data) => {
 				const commands = data.commands.flatMap<MvEmberCommand>((command) => {
 					if (command.kind === "releaseSurface") return [command];
-					if (command.kind === "surface")
+					if (command.kind === "surface" || command.kind === "appendSurface")
 						return [{ ...command, commands: command.commands.filter(keep) }];
 					return keep(command) ? [command] : [];
 				});

@@ -150,12 +150,27 @@ fn monument_scratch_copies_camera_ctm_before_local_glyph_transforms() {
                                 ]
                             ));
                             glyphs += 1;
-                        } else {
-                            assert!(
-                                !operations
-                                    .iter()
-                                    .any(|op| matches!(op, Operation::CopyTransform))
-                            );
+                        } else if operations
+                            .iter()
+                            .any(|op| matches!(op, Operation::CopyTransform))
+                        {
+                            // At the alpha-zero silhouette entry the main canvas
+                            // already exceeds its pin budget. Ring labels inherit
+                            // the reconstructed camera; fixed-screen type does not.
+                            assert_eq!(*id, "title-front");
+                            assert!(!outro && time == 6.5);
+                            assert_eq!(*font_size, 13.0);
+                            assert!(matches!(
+                                operations.as_slice(),
+                                [
+                                    Operation::Translate { .. },
+                                    Operation::Scale { .. },
+                                    Operation::Translate { .. },
+                                    Operation::CopyTransform,
+                                    Operation::Translate { .. },
+                                    Operation::Rotate { .. },
+                                ]
+                            ));
                         }
                     }
                 }

@@ -90,7 +90,7 @@ fn strict_author_fields_and_whip_extrema_reject_before_rendering() {
     assert!(!model.valid(0, &span, 4000));
 }
 #[test]
-fn fonts_collect_whole_normalized_scalar_prefixes_and_images_only_for_real_collapse() {
+fn fonts_collect_whole_normalized_scalar_prefixes_and_all_resident_images() {
     let mut settings = author("breathe");
     settings["hud"]["title"] = json!("😀Ōō");
     let recipe = recipe(settings);
@@ -103,12 +103,11 @@ fn fonts_collect_whole_normalized_scalar_prefixes_and_images_only_for_real_colla
     }
     assert!(!texts.contains(&"Ō"));
     assert!(!texts.contains(&"ō"));
-    assert!(
-        recipe
-            .image_dimension_requests(&resources())
-            .unwrap()
-            .is_empty()
-    );
+    // Both raster backends retain all declared images, even when this mode
+    // does not sample one directly. Admission must measure that resident set.
+    let resident = recipe.image_dimension_requests(&resources()).unwrap();
+    assert_eq!(resident.len(), 1);
+    assert_eq!(resident[0].resource.id, "fixture-image");
     let collapse = super::test_support::recipe(author("collapse"));
     assert!(
         collapse

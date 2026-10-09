@@ -93,7 +93,7 @@ export async function diagnoseTitleRiffRaster(
 					plan,
 					"commands",
 					plan.commands.map((command) =>
-						command.kind === "surface"
+						command.kind === "surface" || command.kind === "appendSurface"
 							? { ...command, commands: command.commands.map(modify) }
 							: command.kind === "releaseSurface"
 								? command

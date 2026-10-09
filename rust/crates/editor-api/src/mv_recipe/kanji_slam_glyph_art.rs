@@ -23,7 +23,9 @@ pub(super) fn geometry(
     fonts: &Context,
 ) -> Result<Art, String> {
     let m = fonts.bounds(&a.fonts.monument, &ink_request(ch))?;
-    let pad = 105.0;
+    // Preserve the original binary64 expression: ceil(1500 * 0.07) is 106,
+    // not 105. Simplifying it shifts the texture lattice and sprite geometry.
+    let pad = (1500.0_f64 * 0.07).ceil();
     let w = (m.left + m.right + 2.0 * pad).ceil();
     let h = (m.ascent + m.descent + 2.0 * pad).ceil();
     if !(1.0..=4096.0).contains(&w) || !(1.0..=4096.0).contains(&h) || m.ascent + m.descent <= 0.0 {
@@ -97,6 +99,7 @@ fn stroke_text(
 pub(super) fn emit(out: &mut Vec<Command>, a: &KanjiSlam, g: &Art) {
     let w = g.size[0] as f64;
     let h = g.size[1] as f64;
+    let pad = g.bounds[0];
     let rect = [0.0, 0.0, w, h];
     if g.ghost {
         let mut d = Draw::new(1920.0, 1080.0);
@@ -133,8 +136,8 @@ pub(super) fn emit(out: &mut Vec<Command>, a: &KanjiSlam, g: &Art) {
         a,
         g,
         linear(
-            [0.0, 105.0],
-            [0.0, h - 105.0],
+            [0.0, pad],
+            [0.0, h - pad],
             &[
                 (0.0, css(top, 1.0)),
                 (0.5, css(mid, 1.0)),

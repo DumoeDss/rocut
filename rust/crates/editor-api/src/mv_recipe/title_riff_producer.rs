@@ -1,6 +1,19 @@
 use super::{
-    Sample, clock::Clock, disc, draw::*, ease::hit, glyphs, images, labels, model::TitleRiff,
-    ornaments, palette::palette, particles, plan::*, raster::*, state::State, textures,
+    Sample,
+    clock::Clock,
+    disc,
+    draw::*,
+    ease::hit,
+    glyphs, images, labels,
+    model::TitleRiff,
+    ornaments,
+    palette::palette,
+    particles,
+    plan::*,
+    raster::*,
+    recording::{DESIGN_SIZE, Recording},
+    state::State,
+    textures,
 };
 use crate::{mv_font_metrics, mv_image_dimensions};
 
@@ -26,6 +39,20 @@ impl TitleRiff {
         let p = palette(self.outro());
         let items = glyphs::layouts(self, &clock, &state);
         let labels = labels::labels(self, &clock, &state, p.hi, p.glow);
+        // Original main-canvas history, not the native surface allocation graph.
+        // paper is pinned before entering the camera; each monument rewrites
+        // the same scratch canvas, yielding a distinct captured generation.
+        let mut recording = Recording::new();
+        recording.surface("paper", 0, DESIGN_SIZE)?;
+        recording.access(); // background's closing restore
+        recording.save(&state.camera);
+        if state.lock < 0.999 {
+            for generation in 0..items.len() {
+                recording.save_identity();
+                recording.surface("monument-scratch", generation as u64, DESIGN_SIZE)?;
+                recording.restore();
+            }
+        }
         let mut out = Vec::new();
         textures::paper(&mut out);
         textures::background(
@@ -81,7 +108,7 @@ impl TitleRiff {
             0.0,
             "low",
         );
-        front.operations = state.camera.clone();
+        front.operations = recording.operations();
         let glow = 0.5 + 0.5 * clock.pulse + hit(clock.time, clock.at(self.cues.sun), 3.0);
         let r = state.radius * 2.6;
         front.rect(
@@ -99,14 +126,32 @@ impl TitleRiff {
                 "lighter",
             ),
         );
-        disc::draw(&mut front, self, &clock, &state, &p, decoded, mask)?;
+        disc::draw(
+            &mut front,
+            self,
+            &clock,
+            &state,
+            &p,
+            decoded,
+            mask,
+            &mut recording,
+        )?;
         ornaments::rings(&mut front, self, &clock, &state, &p, &labels, fonts)?;
         if self.outro() {
             disc::recap(
-                &mut front, self, &clock, &state, &p, decoded, &labels, fonts,
+                &mut front,
+                self,
+                &clock,
+                &state,
+                &p,
+                decoded,
+                &labels,
+                fonts,
+                &mut recording,
             )?;
         }
         particles::draw(&mut front, self, &clock, &state, &p);
+        recording.restore(); // original main camera, before screen-fixed type
         front.operations.clear();
         ornaments::lockup(&mut front, self, &clock, &p, &labels, fonts)?;
         super::grain::draw(&mut front, clock.time, self.grain);

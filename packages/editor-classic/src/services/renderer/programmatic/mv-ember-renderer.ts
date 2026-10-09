@@ -67,6 +67,15 @@ function* drawMvEmberSteps(ctx, data, assets, createSurface) {
       } else throw Error('Unsupported Ember draw command');
     } finally { target.restore(); }
   };
+  function* children(target, commands) {
+    for (const child of commands) {
+      if (child.kind === 'surface') throw Error('Nested Ember scratch operations are not supported');
+      if (child.kind === 'releaseSurface') throw Error('Ember scratch release is only allowed at the root');
+      if (child.kind === 'appendSurface') throw Error('Ember scratch append is only allowed at the root');
+      draw(target,child);
+      yield;
+    }
+  }
   ctx.save();
   try {
     initialize(ctx);
@@ -77,19 +86,26 @@ function* drawMvEmberSteps(ctx, data, assets, createSurface) {
         surface.width = 1; surface.height = 1; scratch.delete(command.surface);
         yield; continue;
       }
+      if (command.kind === 'appendSurface') {
+        const surface = scratch.get(command.surface);
+        if (!surface) throw Error('Append requires a completed live Ember scratch surface');
+        const target = surface.getContext('2d');
+        if (!target) throw Error('Ember scratch surface requires Canvas2D');
+        // Same owned canvas/context; no copy, clear, resize or state reset.
+        // Unpublish while drawing so self-blits/patterns cannot sample it.
+        scratch.delete(command.surface);
+        yield* children(target,command.commands);
+        scratch.set(command.surface,surface);
+        yield; continue;
+      }
       if (command.kind !== 'surface') { draw(ctx,command); yield; continue; }
       if (seen.has(command.id)) throw Error('Duplicate Ember scratch surface');
       seen.add(command.id);
       const surface = make(command.size), target = surface.getContext('2d');
       if (!target) throw Error('Ember scratch surface requires Canvas2D');
       initialize(target);
-      // Flat DAG: only earlier, fully drawn surfaces are available for sampling.
-      for (const child of command.commands) {
-        if (child.kind === 'surface') throw Error('Nested Ember scratch operations are not supported');
-        if (child.kind === 'releaseSurface') throw Error('Ember scratch release is only allowed at the root');
-        draw(target,child);
-        yield;
-      }
+      // Only earlier, fully drawn surfaces are available for sampling.
+      yield* children(target,command.commands);
       scratch.set(command.id,surface);
       yield;
     }
