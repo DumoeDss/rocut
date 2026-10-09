@@ -1,0 +1,17 @@
+{
+	"extends": "../../apps/cli/tsconfig.json",
+	"compilerOptions": {
+		"allowImportingTsExtensions": true,
+		"paths": {
+			"@opencut/editor-contracts": ["../../packages/editor-contracts/src"]
+		}
+	},
+	"include": [
+		"./mv-flame-oracle.ts",
+		"./mv-flame-oracle-contract.ts",
+		"./mv-flame-oracle-assets.ts",
+		"./mv-flame-oracle-browser.ts",
+		"./mv-thread-reference.ts"
+	],
+	"exclude": []
+}

@@ -1,0 +1,244 @@
+{
+	"version": 1,
+	"scope": "Independent whole-original Flame oracle helper only",
+	"status": "original-oracle-accepted-native-integration-pending",
+	"command": "node script/probe-mv-flame-oracle.mjs <absolute vocaloid-style-mv-pipeline checkout>",
+	"verification": {
+		"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-flame-original-MP1xIf/verification.json",
+		"sha256": "928073658e39c1d09fb7fea26b737c6a692a4f4d2a0613a312c775fa77d7404a",
+		"exitCode": 0,
+		"browser": "151.0.7922.34",
+		"externalRequests": [],
+		"errors": []
+	},
+	"sourceInputs": [
+		{
+			"path": "script/probe-mv-flame-oracle.mjs",
+			"sha256": "c54b2d8d56b0fec29c6103cad44755730477d9f5f1a1e3530d461923c37ab1e2"
+		},
+		{
+			"path": "script/browser-probe-toolchain.mjs",
+			"sha256": "795ee858ba116ac7134f9b32e60d4908c90f6467d270bb8602c6c6b419d170d0"
+		},
+		{
+			"path": "script/fixtures/mv-flame-oracle.ts",
+			"sha256": "50f77b187042198bccd51bcd175b04ff1d5bea586cc8b540aa4da8e9544d41d2"
+		},
+		{
+			"path": "script/fixtures/mv-flame-oracle-contract.ts",
+			"sha256": "7e1b861f4d74ae0340f36cf59e76d4149236ada8b4bc3373c536adc6b0d5ef4f"
+		},
+		{
+			"path": "script/fixtures/mv-flame-oracle-assets.ts",
+			"sha256": "aa56205f9810a2e1b8dca94f8a85961266f66a2b548464b3dc06b5c1e098a73e"
+		},
+		{
+			"path": "script/fixtures/mv-flame-oracle-browser.ts",
+			"sha256": "37b3fc79bd8e00772f2579d53d7ecc6698fd384f4c74fce626550f67fe313d36"
+		},
+		{
+			"path": "script/fixtures/mv-flame-oracle-browser.html",
+			"sha256": "53c6e87320ce67f903e75487dea28f7ab9f3565ee0922ab26ae55655cb3ce1a9"
+		},
+		{
+			"path": "script/fixtures/mv-flame-oracle.tsconfig.json",
+			"sha256": "8de11d96afb89f43ed453d031574abe265a1895506f43a5745679303ac867753"
+		},
+		{
+			"path": "script/fixtures/mv-thread-reference.ts",
+			"sha256": "255a8a6b45d71fa8d0ffc05924235e1b8bf7460e240d8d06e761a50cb67aa5af"
+		},
+		{
+			"path": "script/fixtures/mv-thread-contract.ts",
+			"sha256": "e738c36f01ae26fde7b6f4ee43a1b77b44f7de75141a23594160762e3341a271"
+		},
+		{
+			"path": "script/fixtures/mv-kanji-slam-reference-realm.ts",
+			"sha256": "590dec9f573e6ef78d8b33595a139fae549c8223208d89693f27b0433005b9e2"
+		},
+		{
+			"path": "script/fixtures/mv-kanji-slam-reference-contract.ts",
+			"sha256": "3f647b8822bd5e9c677c66b2f8a5c8adcc947f6f347ae49c93218484a6a81eaa"
+		}
+	],
+	"originalSources": [
+		{
+			"id": "core/util.js",
+			"sha256": "1e6be8d7551fdb3ded2a6dde027fab9630837fcc47c34ac3c1dc622664dedd48"
+		},
+		{
+			"id": "core/assets.js",
+			"sha256": "ca6f66a75af8ce87607e2e8ff708343209cacffc35cc04a6130e53b2548d3baa"
+		},
+		{
+			"id": "core/draw.js",
+			"sha256": "4e7b4cd7efd46bf7dd69046a6fc0bd15131c1c66a7bc64e7823d557ba4fd11ec"
+		},
+		{
+			"id": "scenes/dark.js",
+			"sha256": "4b20e29e78b30ae67c350e4622ae60933137b00cbcedbe858ed7c652536a55bd"
+		}
+	],
+	"imageInputs": [
+		{
+			"id": "assets/char/flame_hands.png",
+			"kind": "image",
+			"mimeType": "image/png",
+			"byteLength": 72884,
+			"sha256": "7d6b0205d6535fc57c3b79ae025576977408b3672faaaae0686ddb91f519d8b2",
+			"attachmentKey": "programmatic-sha256-7d6b0205d6535fc57c3b79ae025576977408b3672faaaae0686ddb91f519d8b2"
+		},
+		{
+			"id": "assets/char/bust_calm.png",
+			"kind": "image",
+			"mimeType": "image/png",
+			"byteLength": 72884,
+			"sha256": "7d6b0205d6535fc57c3b79ae025576977408b3672faaaae0686ddb91f519d8b2",
+			"attachmentKey": "programmatic-sha256-7d6b0205d6535fc57c3b79ae025576977408b3672faaaae0686ddb91f519d8b2"
+		}
+	],
+	"observations": [
+		{
+			"mode": "breathe",
+			"time": 5.4,
+			"sha256": "1ffd614ea09f77673b327057eaaa7eeb9253d2734476fa6391d6372476d787bb",
+			"repeat": false,
+			"prepared": true
+		},
+		{
+			"mode": "breathe",
+			"time": 4.003,
+			"sha256": "2d4ead7799d91a4ab80440be00306d9c68e2016e2bfa8d8e6baf17ee678e150e",
+			"repeat": false,
+			"prepared": true
+		},
+		{
+			"mode": "breathe",
+			"time": 7.98,
+			"sha256": "e75b62fd64351ae41c34c0f5586414970600304205758911f57ae5ae74d47441",
+			"repeat": false,
+			"prepared": true
+		},
+		{
+			"mode": "breathe",
+			"time": 5.6,
+			"sha256": "87c362fa1665f689bd632454dd0b557d6e402356dd33ada84dd4aa0f4223ba10",
+			"repeat": false,
+			"prepared": true
+		},
+		{
+			"mode": "breathe",
+			"time": 4.003,
+			"sha256": "2d4ead7799d91a4ab80440be00306d9c68e2016e2bfa8d8e6baf17ee678e150e",
+			"repeat": true,
+			"prepared": true
+		},
+		{
+			"mode": "grow",
+			"time": 5.4,
+			"sha256": "b7df4a3a333639658f9e0e0267e548ca15ef51988eb746961ff73f39b0ae91d8",
+			"repeat": false,
+			"prepared": true
+		},
+		{
+			"mode": "grow",
+			"time": 4.003,
+			"sha256": "5ec7ada6aee8d4a3fcfd98715cc65caecd0d51f8e1e37a5b9432c967c4108536",
+			"repeat": false,
+			"prepared": true
+		},
+		{
+			"mode": "grow",
+			"time": 7.98,
+			"sha256": "573fdd530b123ecab94be0ecc20513e66ccf04f8f753554daae9ed3275561bf7",
+			"repeat": false,
+			"prepared": true
+		},
+		{
+			"mode": "grow",
+			"time": 5.6,
+			"sha256": "c979193654ccc2378497589ee5682ede760b58d5529cf1eb2dd3a1e15a8f6dcd",
+			"repeat": false,
+			"prepared": true
+		},
+		{
+			"mode": "grow",
+			"time": 4.003,
+			"sha256": "5ec7ada6aee8d4a3fcfd98715cc65caecd0d51f8e1e37a5b9432c967c4108536",
+			"repeat": true,
+			"prepared": true
+		},
+		{
+			"mode": "dark",
+			"time": 5.4,
+			"sha256": "53842d7326cc598e8aa2d90e4b4af228fdadd63345ad17243292a96b008ca6d0",
+			"repeat": false,
+			"prepared": false
+		},
+		{
+			"mode": "dark",
+			"time": 4.003,
+			"sha256": "c3efcd9562a3bb76fa8f2f6f0a4b554563ffdeb3eafd158a74fb7fa3d6c0e0fd",
+			"repeat": false,
+			"prepared": false
+		},
+		{
+			"mode": "dark",
+			"time": 7.98,
+			"sha256": "65ae575a951977946c4358810db3afa95ff0f3b82df8340acb94ad2091a40708",
+			"repeat": false,
+			"prepared": false
+		},
+		{
+			"mode": "dark",
+			"time": 5.6,
+			"sha256": "f094bbae771f89ca883893b7612d3b0bc93f3371bb80d30f4c30c230b848b608",
+			"repeat": false,
+			"prepared": false
+		},
+		{
+			"mode": "dark",
+			"time": 4.003,
+			"sha256": "c3efcd9562a3bb76fa8f2f6f0a4b554563ffdeb3eafd158a74fb7fa3d6c0e0fd",
+			"repeat": true,
+			"prepared": false
+		}
+	],
+	"checks": {
+		"modes": ["breathe", "grow", "dark"],
+		"observationCount": 15,
+		"fullSceneDimensions": [1920, 1080],
+		"preparedDimensions": [960, 1600],
+		"preparedHash": "b21ecf2fb975285abbd6348b0ad6fff5803b40803bdab01929acb6d3bca14b0c",
+		"originalDiffusionAndFeathering": true,
+		"randomSeekRepeatsExact": true,
+		"changedLandmarksRequireFreshRealm": true,
+		"sourceHashesStableBeforeAfter": true,
+		"sourceScriptsUnmodified": true,
+		"nativeExpectedPixelsUsed": false
+	},
+	"staticChecks": {
+		"strictUtf8Files": 7,
+		"noBom": true,
+		"formattedFiles": 7,
+		"typedLintFiles": 5,
+		"lintErrors": 0,
+		"lintWarnings": 0,
+		"typeRoots": 5,
+		"typeFiles": 258,
+		"typeDiagnostics": 0,
+		"nodeSyntaxExitCode": 0
+	},
+	"limitations": [
+		"Synthetic PNG markers, not reference-film artwork",
+		"Prepared canvas is the original debug output AFTER diffusion and feathering",
+		"This proves the independent oracle harness, not Rocut's native Flame producer, binary bridge or export fidelity",
+		"No installed Electron or full MV end-to-end acceptance"
+	],
+	"remaining": [
+		"Native Rust/WASM preprocessing compared against original prepared pixels",
+		"Native complete scene pixel parity for all three modes and parameter variants",
+		"Owner residency, concurrent leases, cancellation and realm disposal integration",
+		"1080p real export with independent decode against whole-original scene frames"
+	]
+}
