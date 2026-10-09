@@ -2218,7 +2218,7 @@ adjacent timeline-clip transition implementation.
 
 - HyperFrames compile/archive/rebuild and the pinned native nested timeline/visibility subset are verified; full media, complex imports/ESM and complete engine coverage remain unfinished.
 - Native Remotion composition/frame/metadata/readiness, declared assets and Html5Video are implemented; native OffthreadVideo has the standalone bridge, tagged PQ/HLG-to-SDR mapping and short Rocut export checks above. Declared native audio now joins editor preview/final mixing. The six bundled presets passed the sampled/short-export matrix above. Electron native media/audio, broader HDR/mastering/codec coverage, richer ecosystem dependencies/Three.js and full-duration/prop coverage still require individual verification.
-- HyperFrames native video, source PCM, Host transport and nine-frame SceneExporter soundtrack export are verified above. Continuous gain envelopes and opt-in grouped/FX soundtrack execution, including bounded FX automation, are implemented; variable rate, participating fallback history and fractional clip/trim/loop phase remain unsupported. See [native audio graph integration](hyperframes-native-audio-graph.md) for actual Host/Rust/PCM evidence and pinned preview/export differences. Its compiler inlines declared local image/font/video/audio/subcomposition paths; generic HTML still does not automatically resolve relative paths.
+- HyperFrames native video, source PCM, Host transport and nine-frame SceneExporter soundtrack export are verified above. Continuous gain envelopes and opt-in grouped/FX soundtrack execution, including bounded FX automation and native variable-rate preparation, are implemented. The variable-rate PCM/FX matrices below pass; variable-loop behavior, participating fallback history and fractional clip/trim/loop phase remain separate gaps. See [native audio graph integration](hyperframes-native-audio-graph.md) for actual Host/Rust/PCM evidence and pinned preview/export differences. Its compiler inlines declared local image/font/video/audio/subcomposition paths; generic HTML still does not automatically resolve relative paths.
 - Inline Canvas/HTML and existing archived HyperFrames/Remotion text/props editors are verified above; full author-project file management and recipe parameter UI remain missing. All 13 transition mechanisms, five spatial post effects, five color finishing effects and the reference light-leak overlay with amount curves, recipe-composite post and explicit camera/sprite/post audio responses have behavior checks. Full coverage of 24 scenes, richer particle scenes/audio styling and arbitrary grouped or whole-timeline post remain unfinished. Native lyric-between-layers now has the isolated mixed-engine acceptance below, not installed/full-MV acceptance.
 - No installed Creator→Rocut UI E2E, full MV E2E, cross-machine font/pixel guarantee, MP4/format matrix or performance acceptance was performed for this new source type.
 
@@ -3775,6 +3775,24 @@ renderer routing, passes. Diagnostic document construction is covered by two
 tests / ten assertions; its default remains byte-identical to production and
 invalid batch sizes or stale/ambiguous source anchors fail before realm allocation.
 
+The later isolated `title-ring-matrices-sQVGOP/verification.json` rejects the
+scratch-identity explanation: nonuniform, large-area A-to-A/A-to-B redraws of
+the same source are exact to matching immutable-source controls. Explicit
+matrix flattening and destination readback remain positive controls. The
+original arc observer runs **after arc construction, before stroke**; its
+`beforeRing` name must not be interpreted as a pre-arc snapshot. Neither the
+source-identity experiment nor the two passing mutated frames justifies an
+unconditional foreground matrix-copy change. Production parity is still open.
+
+The isolated `title-oracle-life-riMbI1/verification.json` subsequently compares
+27 original draws across fresh realms, the public probe's warm order, repeated
+renders and repeated final-canvas readbacks. Every original-to-original comparison
+is exact. The fixed native capture still differs at 255 (max 3, 220 changed
+channels) and 374 (max 5, 1,358 changed channels) against every corresponding
+original snapshot. No intermediate observer is installed. This excludes these
+realm/cache/final-readback histories, not every possible recording-lifecycle
+cause; no production matrix-copy workaround is justified by this control.
+
 ### HyperFrames variable-rate native preparation oracle (2026-10-09)
 
 `script/fixtures/hyperframes-variable-rate-*` extracts unchanged preparation
@@ -3800,6 +3818,51 @@ track/bus/master effects and mix, then final crop. Video audio/no-audio,
 variable-loop, fractional sample phase and participating fallback histories
 remain separate requirements; they are not erased by preparation-stage success.
 
+### Variable-rate production PCM and native FX checkpoint (2026-10-09)
+
+The Rust graph now plans per-lane native rate preparation from canonical zero
+for the complete clip; the Host performs bounded FFmpeg IO. Native intermediate
+48kHz stereo PCM16 is explicitly converted to the requested graph sample rate.
+Existing native FX, fader, bus/master and final crop remain downstream. Constant
+rate decoder semantics are unchanged. Rate-specific curves use the native
+0.1-to-10 bounds and the native atempo decomposition tolerance.
+
+`rocut-hf-rate-production-bLCbAO/verification.json` under the private Windows
+temp directory passes all 18 preparation cases: five rate curves at 48k/44.1k,
+plus MP4/WebM with and without audio. All 14 audible cases have zero maximum/RMS
+sample error against independently parsed original prepared PCM; all 4 silent
+video cases report `hasAudio=false`. The expanded unchanged-function extraction
+has SHA256 `50549e28c052dac76250024559546c4b135c9737421bfa30a681bc81a2fdb1a3`;
+this is a new closure including video, not the earlier audio-only oracle hash.
+
+`rocut-hf-rate-production-80KR5x/verification.json` additionally passes 10 native
+nonlinear FX-to-Rust mix cases at both rates, all with zero sample error, and
+10 crops exactly equal to the corresponding full-output slices. The audible
+wrong-order controls differ by max 0.02445-to-0.02529, proving that applying the
+fader before nonlinear FX is detected. Repeat, source mutation and geometry
+rejection checks pass. These reports use private `web-title-riff-rect-jiixtv`,
+whose audio implementation matches this checkpoint; it predates the subsequent
+general MV image-admission fix and is not a final whole-repository artifact.
+
+This verifies trusted graph declarations, actual Host FFmpeg, native browser FX
+and Rust mixing. The subsequent real compile/archive → browser collection →
+Host HTTP → `ProgrammaticAudioRuntime` gate also passes at the editor's default
+44.1 kHz using private `web-title-riff-rect-U60hQ1`:
+
+- WAV: `rocut-hf-rate-host-nxj141/verification.json`.
+- Audible MP4: `rocut-hf-rate-host-uBriNa/verification.json`.
+- Silent MP4: `rocut-hf-rate-host-RL7ee6/verification.json`.
+
+Both audible cases contain 58,653 PCM frames. Their independent native FX/fader
+expected hashes match the recorded Host PCM hashes exactly, documented in each
+directory's `verification-exact-hash.json`; maximum and RMS error are zero.
+Each 4,851-frame crop from sample 16,317 equals its full-output slice exactly.
+Silent media returns `hasAudio=false` and the editor returns `null`; its requested
+crop is exactly zero. Two editor loads reuse one full render, and stale identity
+requests are rejected. This adds actual public consumer evidence, not Electron
+transport, full native public mixer, continuous MediaElement preview or an
+encoded variable-rate video export.
+
 ### Complete original kanjiSlam oracle (2026-10-09)
 
 `script/probe-mv-kanji-slam-reference.mjs` and `mv-kanji-slam-reference-*`
@@ -3824,7 +3887,47 @@ with independent character warp, glyph print/stroke/fire, sky, impacts,
 particles and HUD. Four scene tests and 13 shared surface tests pass; these
 are synthetic platform-fact tests, not native pixel acceptance. The shared
 adapter now supports explicit text stroke, alpha pixels, repeated surfaces,
-image source rectangles and ordered rectangle batches. Public wiring is being
-integrated separately. `probe-mv-kanji-slam.mjs` and the native fixtures provide
+image source rectangles and ordered rectangle batches. Public wiring is now
+connected. `probe-mv-kanji-slam.mjs` and the native fixtures provide
 the forthcoming real-font pixel/export gate; their six lightweight tests / 116
 assertions do not mean that browser pixels or export have passed.
+
+### Shared resident-image admission and Kanji public wiring (2026-10-09)
+
+Kanji catalog/evaluation, font/image discovery and native raster routing are
+connected. Hidden leaves preflight at a clamped mapped clock without changing
+visible sampling; static font discovery no longer emits invalid empty requests.
+The two-stage Kanji scratch model charges known producer lifetimes before facts
+and verifies dimension-dependent masks/warps against the same final envelope.
+
+All declared images, including ordinary scene inputs and unused declarations,
+now participate in Rust verified-dimension discovery and the joint raster
+budget. This matches the existing renderer's all-declared-image residency rather
+than changing its loading policy. IDs shared by multiple nodes are charged once;
+encoded transport copies remain charged. Discovery defers only unknown decoded
+dimensions while charging known buffers, plan and encoded copies. It cannot
+issue a render plan without all image facts. Final admission uses actual decoded
+sizes under the unchanged 67,108,864 pixel-unit joint cap; the independent 128MiB
+decoder cap remains. This also preserves legitimate 2800x2800 scenes with small
+images while rejecting the same canvas with excessive decoded-image memory.
+
+Measurement workers now close decoded image surfaces **before** publishing
+facts, preventing the next render phase from overlapping their retained images.
+The lifecycle test exercises the actual fixed worker and asserts only 1x1 font
+measurement canvas allocation, all closes before reply, and no render scratch.
+Scoped verification passes: 11 public Kanji cases, 5 image-fact unit cases, 4 public
+image protocol cases, 4 unchanged sprite regressions and 7 decoder/measurement
+lifecycle tests. Cloth 13, Ember 6 and recipe 6 integration tests also passed after
+their old fixtures adopted the explicit deferred-discovery/facts handshake.
+Scoped strict TS includes the new lifecycle test. Real Kanji pixels/export and
+installed acceptance remain pending; modeled allocation is not an RSS claim.
+
+The first real-font public run, `rocut-kanji-slam-native-M6ivNm/verification.json`,
+does **not** pass. Its retained progress includes actual comparisons for three
+default variants and four control branches before `generic-kana-layout/0`
+rejects measured whole-source scratch above the 40Mi envelope. The earlier
+pixels also differ independently: `default/0` has max 23 / MAE 0.21429 and
+`night/131` max 89 / MAE 0.30529. Nine original implicit/explicit-default checks
+and 13 native repeat checks are exact. Both the raster differences and the
+generic geometry rejection require investigation; the original thresholds and
+samples remain unchanged. The 12-frame export has not run.

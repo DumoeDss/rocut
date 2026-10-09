@@ -2,12 +2,20 @@ import { expect, test } from "bun:test";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import * as wasm from "opencut-wasm";
+import { variableRateGraphFixture } from "../../../../script/fixtures/hyperframes-variable-rate-production-fixture";
+import { nativeAudioWav } from "../../../../script/fixtures/native-audio-fixture";
 import { startHost } from "../host";
 import { TargetRegistry } from "../target-registry";
 
 test("HTML capability is explicit, authenticated, unavailable without a browser and Rust-validated before launch", async () => {
 	const parent = path.resolve(tmpdir());
 	const root = await mkdtemp(path.join(parent, "rocut-html-route-"));
+	if (
+		path.dirname(root) !== parent ||
+		!path.basename(root).startsWith("rocut-html-route-")
+	)
+		throw Error("Invalid route fixture cleanup root");
 	const options = {
 		projectRoot: path.join(root, "project"),
 		registry: new TargetRegistry(path.join(root, "registry")),
@@ -31,7 +39,43 @@ test("HTML capability is explicit, authenticated, unavailable without a browser 
 		).not.toContain("fx-automation");
 		expect(
 			context.programmaticNativeAudio.hyperframesGraph.unsupported,
-		).toContain("variable-rate");
+		).toContain("variable-rate-loop");
+		expect(
+			context.programmaticNativeAudio.hyperframesGraph.unsupported,
+		).not.toContain("variable-rate");
+		const rate = {
+			target: "rate" as const,
+			points: [
+				{ t: 0, v: 0.5 },
+				{ t: 0.2, v: 2 },
+			],
+		};
+		const fixture = variableRateGraphFixture(
+			nativeAudioWav({ seconds: 4, sample: () => 0 }),
+			"audio/wav",
+			{
+				id: "capability-rate",
+				channels: 2,
+				sampleRate: 48000,
+				duration: 0.2,
+				mediaStart: 0.1,
+				rate,
+			},
+			rate,
+			44100,
+		);
+		const resolve = () =>
+			JSON.parse(
+				wasm.resolveHyperframesAudioExecutionPlanJson(
+					JSON.stringify(fixture.request),
+				),
+			);
+		expect(resolve().error).toBeUndefined();
+		expect(
+			resolve().plan.decodedSources[0].ratePreparation.nativeSampleRate,
+		).toBe(48000);
+		fixture.request.graph.snapshot.tracks[0].native.loop = true;
+		expect(resolve().error).toContain("variable-rate loop");
 		expect(
 			(
 				await fetch(api("programmatic/audio/identity"), {
@@ -96,11 +140,6 @@ test("HTML capability is explicit, authenticated, unavailable without a browser 
 		}
 	} finally {
 		await host.close();
-		if (
-			path.dirname(root) !== parent ||
-			!path.basename(root).startsWith("rocut-html-route-")
-		)
-			throw Error("Invalid route fixture cleanup root");
 		await rm(root, { recursive: true, force: true });
 	}
 });

@@ -8,9 +8,11 @@ chain now has an explicit production Host route selected by
 FFmpeg, private Chromium and HTTP PCM transport. Omit the profile to retain the
 legacy collector/cache behavior (including its rejection of groups/FX).
 The graph profile requires an archived DSP identity and a freshly checked Host
-runtime identity. Bounded native FX/preset automation is supported in this profile;
-rate automation, fractional clip/trim/loop sample phases
-and participating fallback gain histories remain unsupported.
+runtime identity. Bounded native FX/preset automation and native variable-rate
+preparation are implemented in this profile. The variable-rate preparation and
+downstream native FX/Rust mix matrices pass; see the 2026-10-09 checkpoint below
+for the precise coverage. Variable-loop behavior, fractional clip/trim/loop sample
+phases and participating fallback gain histories remain separate gaps.
 This is source-level standalone Host acceptance, not installed-plugin acceptance.
 Electron adaptation and shared installations are outside this workstream.
 
@@ -540,9 +542,10 @@ and `hyperframes-graph-editor.webm` (12,545 bytes; SHA-256
 `8a0b3acea53e6886308fd0aaf4675f398c8589b7128a74f67caabebf0e5bf23f`).
 
 Still required: installed UI playback/synchronization acceptance for this graph
-profile; participating fallback history and fractional clip/trim/loop phase support;
-rate automation and installed
-Electron/full-MV acceptance. These remain explicit gaps, not silent approximations.
+profile; participating fallback history, variable-loop behavior and fractional
+clip/trim/loop phase support; installed Electron/full-MV acceptance. Variable-rate
+preparation has since been implemented; see the 2026-10-09 checkpoint below.
+The remaining gaps are not replaced with silent approximations.
 
 ### Native FX automation acceptance (2026-10-08)
 
@@ -593,7 +596,8 @@ The differential report is in private
 `tmp/rocut-fx-automation-rust-zAml9S/verification.json`; new artifacts are under
 `.tmp-probe/hf-automation-20261008-b935e1/`. No shared WASM, installed plugin or
 Electron process was replaced. Installed playback/full-MV and the remaining
-rate/fallback/fractional-phase gaps still require separate work.
+loop/fallback/fractional-phase gaps still require separate work. The later
+variable-rate checkpoint below supersedes the earlier rate-automation gap.
 
 The new private canonical release has no public API delta. Its measured NOTICE
 digest is recorded; API validation passes all 27 negative/two positive controls,
@@ -652,3 +656,53 @@ change subsequent values. This Node control-function probe is not browser PCM.
 Sparse matching snapshots cannot certify arbitrary fallback history. A future
 restricted authoring proof or explicitly distinct engine-export semantic needs
 its own implementation and acceptance; neither is silently substituted here.
+
+### Native variable-rate preparation checkpoint (2026-10-09)
+
+The graph profile now plans variable-rate preparation in Rust, per participating
+lane from canonical zero through the complete clip. Host FFmpeg performs the
+bounded media IO. The native intermediate is stereo PCM16 at 48 kHz and is
+explicitly converted to the requested graph rate before native FX, the post-FX
+fader, bus/master processing and the final crop. Rate bounds remain 0.1 to 10;
+the native atempo decomposition tolerance is preserved. The existing constant-rate
+decoder path is unchanged. Variable-rate loops still fail admission rather than
+being approximated by repeated prepared output.
+
+The independent oracle extracts unchanged functions from the pinned engine;
+only process selection and IO transport are adapted. Its expanded preparation
+closure includes video audio extraction, with SHA-256
+`50549e28c052dac76250024559546c4b135c9737421bfa30a681bc81a2fdb1a3`.
+
+Private standalone verification:
+
+- `rocut-hf-rate-production-bLCbAO/verification.json`: 18 preparation cases,
+  including five curves at 48/44.1 kHz and MP4/WebM with or without audio.
+  All 14 audible cases match the independently prepared native PCM with zero
+  maximum/RMS error; all four silent videos report `hasAudio=false`.
+- `rocut-hf-rate-production-80KR5x/verification.json`: 10 native nonlinear FX
+  to actual Rust mix cases at both rates have zero sample error. Ten crops
+  equal complete-output slices byte-for-byte; repeat, source-mutation and
+  geometry-rejection checks pass. Audible wrong-order controls differ by
+  maximum 0.02445 to 0.02529, so pre-FX fader substitution is detected.
+
+The real compile/archive → browser graph collection → Host HTTP → editor
+`ProgrammaticAudioRuntime` consumer subsequently passes at its default 44.1 kHz:
+
+| Input       | Private report directory    | Result                                     |
+| ----------- | --------------------------- | ------------------------------------------ |
+| WAV         | `rocut-hf-rate-host-nxj141` | Native expected and Host PCM hashes equal  |
+| Audible MP4 | `rocut-hf-rate-host-uBriNa` | Native expected and Host PCM hashes equal  |
+| Silent MP4  | `rocut-hf-rate-host-RL7ee6` | `hasAudio=false`, editor `null`, zero crop |
+
+Each directory retains `verification.json`. The two audible directories also
+retain `verification-exact-hash.json`: independently recomputed native FX/fader
+output matches all 58,653 recorded Host PCM frames, establishing zero maximum/RMS
+sample error. Each 4,851-frame crop at sample 16,317 equals its full-output slice;
+the silent crop is all zero. Two editor loads use one full PCM render, and stale
+identity requests are rejected. The Host matrix uses private
+`web-title-riff-rect-U60hQ1`; no shared binary or installation is replaced.
+
+These checks do not establish full upstream `processCompositionAudio`
+equivalence, continuous MediaElement preview, Electron transport, installed UI
+or encoded variable-rate/full-MV export. Fractional sample phase, variable-loop
+and participating fallback histories remain open requirements.
