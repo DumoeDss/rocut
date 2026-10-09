@@ -1,0 +1,31 @@
+{
+	"version": 1,
+	"date": "2026-10-10",
+	"status": "verified-checkpoint",
+	"scope": "Native Rust Heart shatter library tests and full unchanged original Canvas-call trace; not pixels or production resource admission",
+	"native": {
+		"session": 66846,
+		"exitCode": 0,
+		"passedTests": 15,
+		"privateSource": "E:/Elftia-private-tests/rocut-ink-20261009-F0U4dW/heart-native-c818dfa6bd/source",
+		"heartSourceFiles": 17,
+		"heartSourceAggregateSha256": "cbdf9f6a65736e26d6b3c071468c48e962d56257081dcfaab93355ffc7684779",
+		"aggregateDefinition": "SHA256 of JSON.stringify(sorted path/sha256 objects) for the 17 heart*.rs files in the tested private snapshot; not its outdated pre-overlay source-manifest"
+	},
+	"originalTrace": {
+		"entry": "node script/fixtures/mv-heart-scene-oracle.mjs",
+		"artifact": "E:/Elftia-private-tests/rocut-ink-20261009-F0U4dW/temp/heart-shatter-trace-20261010-a.json",
+		"artifactSha256": "d09b71d3ae09f37688268932e871cb75dfbc47f77f75fc7260d3a0a08ed49e97",
+		"frames": 14,
+		"numericAssertions": 114531,
+		"tolerance": 1e-8,
+		"pixelParity": false
+	},
+	"limitations": [
+		"Shatter only; gather, burn, sun and skyShatter are not accepted by this checkpoint",
+		"Heart is registered only in the dedicated private Rust test copy; no production dispatch, WASM owner or public scene acceptance",
+		"Native shadow, resizing and prepared-image pixels still need independent browser parity",
+		"The earlier unrestricted Cargo command failed while linking unrelated integration tests; this passing result is the subsequent --lib -j1 command",
+		"No installed Electron, final export, whole MV or performance acceptance"
+	]
+}
