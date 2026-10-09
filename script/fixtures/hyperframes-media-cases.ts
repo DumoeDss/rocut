@@ -11,6 +11,39 @@ export const hyperframesMediaCases: Record<string, readonly (readonly [number, n
 };
 
 /** Generated into an isolated project by the preparation script. */
+export const hyperframesMediaAdmissionNegatives = [
+	{
+		entryFile: "media-audible.html",
+		reason:
+			"HyperFrames video must be explicitly muted or declare a native soundtrack, without autoplay",
+	},
+	{
+		entryFile: "media-autoplay.html",
+		reason:
+			"HyperFrames video must be explicitly muted or declare a native soundtrack, without autoplay",
+	},
+	// Audio is supported with an explicit declaration; this fixture deliberately
+	// has none, so it must reject that missing contract, not claim audio unsupported.
+	{
+		entryFile: "media-audio.html",
+		reason:
+			"HyperFrames audio requires an explicit native soundtrack declaration",
+	},
+] as const;
+
+export async function expectHyperframesMediaAdmissionRejection(
+	run: () => Promise<unknown>,
+	reason: string,
+): Promise<void> {
+	try {
+		await run();
+	} catch (error) {
+		if (String(error).includes(reason)) return;
+		throw error;
+	}
+	throw Error(`HyperFrames expected failure: ${reason}`);
+}
+
 export function hyperframesMediaVariants(html: string): Record<string, string> {
 	const rootVideo = 'src="assets/fast.webm"';
 	const ramp = JSON.stringify({ version: 1, lanes: [{ target: "rate", points: [{ t: 0, v: 1 }, { t: .2, v: 4 }] }] });

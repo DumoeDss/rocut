@@ -5,6 +5,15 @@ import { fileURLToPath } from "node:url";
 import { mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import {
+	resolveHtmlProbeWasmBinding,
+	assertHtmlProbeWasmIdentity,
+	createHtmlProbeWasmPlugin,
+	HTML_PRIVATE_WASM_ID,
+	resolveHtmlProbeArtifactDirectory,
+	snapshotHtmlProbeSources,
+	saveHtmlProbeEvidence,
+} from "./html-probe-wasm-binding.mjs";
+import {
 	chromium,
 	createServer,
 	build,
@@ -13,6 +22,12 @@ import {
 } from "./browser-probe-toolchain.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const wasmBinding = resolveHtmlProbeWasmBinding(
+	process.env.ROCUT_TEST_WASM_DIRECTORY,
+);
+const artifactDirectory = resolveHtmlProbeArtifactDirectory(
+	process.env.ROCUT_PROBE_ARTIFACTS,
+);
 const classicRequire = createRequire(
 	new URL("../packages/editor-classic/package.json", import.meta.url),
 );
@@ -44,6 +59,18 @@ const resultKey = ditherThree
 			: threeResources
 				? "__threeResourceResult"
 				: "__htmlResult";
+const sourceInputs =
+	!threeScene && !threeResources
+		? snapshotHtmlProbeSources(root, [
+				"script/probe-html-frames.mjs",
+				"script/html-probe-wasm-binding.mjs",
+				"script/fixtures/local-wasm-preload.mjs",
+				`script/fixtures/${fixture}`,
+				`script/fixtures/${fixture.replace(/\.html$/, ".ts")}`,
+				"script/fixtures/hyperframes-browser-probe.ts",
+				"script/fixtures/remotion-browser-probe.ts",
+			])
+		: undefined;
 const privateTemp = await mkdtemp(join(tmpdir(), "rocut-frame-probe-"));
 const executablePath =
 	process.env.ROCUT_PROBE_BROWSER_PATH || chromium.executablePath();
@@ -81,7 +108,7 @@ const host = spawn(
 	},
 );
 const exited = new Promise((resolve) => host.once("exit", resolve));
-let server, browser;
+let server, browser, hostWasmIdentity;
 try {
 	const editorUrl = await new Promise((resolve, reject) => {
 		let text = "";
@@ -100,8 +127,17 @@ try {
 			for (const line of text.split("\n")) {
 				try {
 					const value = JSON.parse(line);
+					if (value.wasmIdentity) hostWasmIdentity = value.wasmIdentity;
 					if (value.editorUrl) {
 						clearTimeout(deadline);
+						if (wasmBinding) {
+							try {
+								assertHtmlProbeWasmIdentity(wasmBinding, hostWasmIdentity);
+							} catch (error) {
+								reject(error);
+								return;
+							}
+						}
 						resolve(value.editorUrl);
 					}
 				} catch {}
@@ -113,13 +149,19 @@ try {
 		cacheDir: join(privateTemp, "vite-cache"),
 		configFile: false,
 		logLevel: "error",
-		plugins: [wasm(), topLevelAwait()],
+		plugins: [
+			...(wasmBinding ? [createHtmlProbeWasmPlugin(wasmBinding)] : []),
+			wasm(),
+			topLevelAwait(),
+		],
 		optimizeDeps: {
 			entries: [`script/fixtures/${fixture}`],
 		},
 		resolve: {
 			alias: {
-				"opencut-wasm": join(root, "rust/wasm/pkg/opencut_wasm.js"),
+				"opencut-wasm": wasmBinding
+					? HTML_PRIVATE_WASM_ID
+					: join(root, "rust/wasm/pkg/opencut_wasm.js"),
 				mediabunny: mediabunnyEntry,
 			},
 		},
@@ -127,6 +169,7 @@ try {
 			host: "127.0.0.1",
 			hmr: false,
 			port: 0,
+			...(wasmBinding ? { fs: { allow: [root, wasmBinding.directory] } } : {}),
 			proxy: {
 				"/api": {
 					target: new URL(editorUrl).origin,
@@ -243,10 +286,18 @@ try {
 		}),
 	]);
 	const result = await page.evaluate((key) => globalThis[key], resultKey);
+	if (wasmBinding) {
+		assertHtmlProbeWasmIdentity(
+			wasmBinding,
+			await page.evaluate(() => globalThis.__htmlProbeWasmIdentity),
+		);
+		assertHtmlProbeWasmIdentity(wasmBinding, hostWasmIdentity);
+		result.wasmIdentity = wasmBinding.identity;
+	}
 	if (result.error || errors.length || externalRequests.length)
 		throw Error(redact(JSON.stringify({ result, errors, externalRequests })));
-	if (threeScene && process.env.ROCUT_PROBE_ARTIFACTS) {
-		const artifacts = process.env.ROCUT_PROBE_ARTIFACTS;
+	if (threeScene && artifactDirectory) {
+		const artifacts = artifactDirectory;
 		if (styledThree)
 			await writeFile(
 				join(artifacts, "expected.rgba"),
@@ -294,6 +345,19 @@ try {
 			) + "\n",
 			{ flag: "wx" },
 		);
+	}
+	if (!threeScene && !threeResources && artifactDirectory) {
+		await saveHtmlProbeEvidence({
+			directory: artifactDirectory,
+			result,
+			binding: wasmBinding,
+			browser: browser.version(),
+			frameBackend: process.env.ELFTIA_HTML_FRAME_CONNECTION_FILE
+				? "external-host-connection"
+				: "private-chromium",
+			root,
+			sourceInputs,
+		});
 	}
 	console.log(JSON.stringify(result, null, 2));
 } finally {

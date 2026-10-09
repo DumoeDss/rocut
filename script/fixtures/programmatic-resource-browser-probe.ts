@@ -8,16 +8,30 @@ import { resolveCanvasResources } from "../../packages/editor-classic/src/servic
 import { resolveProgrammaticFrame } from "../../packages/editor-classic/src/services/renderer/programmatic/frame";
 import { ProgrammaticNode } from "../../packages/editor-classic/src/services/renderer/nodes/programmatic-node";
 import { buildTransformFromParams } from "../../packages/editor-classic/src/rendering";
+import { RenderResidencyDomain } from "../../packages/editor-classic/src/services/renderer/render-residency-domain";
+import { ImagePreprocessOwner } from "../../packages/editor-classic/src/services/renderer/programmatic/image-preprocess-owner";
 
 const provider = createHttpProgrammaticFrames({ base: "/api" });
 const signal = () => new AbortController().signal;
-const equal = (actual: unknown, expected: unknown) => {
+const equal = ({
+	actual,
+	expected,
+}: {
+	actual: unknown;
+	expected: unknown;
+}) => {
 	if (JSON.stringify(actual) !== JSON.stringify(expected))
 		throw Error(
 			`Resource probe mismatch: ${JSON.stringify({ actual, expected })}`,
 		);
 };
-async function rejected(run: () => Promise<unknown>, pattern: RegExp) {
+async function rejected({
+	run,
+	pattern,
+}: {
+	run: () => Promise<unknown>;
+	pattern: RegExp;
+}) {
 	try {
 		await run();
 	} catch (error) {
@@ -146,10 +160,22 @@ c.fillStyle='red';c.fillRect(0,0,Math.round(c.measureText('iiii').width),16);
 				const out = new OffscreenCanvas(64, 64),
 					c = out.getContext("2d")!;
 				c.drawImage(bitmap, 0, 0);
-				equal([...c.getImageData(time ? 24 : 8, 16, 1, 1).data], color);
-				equal([...c.getImageData(time ? 8 : 24, 16, 1, 1).data], [0, 0, 0, 0]);
-				equal([...c.getImageData(40, 56, 1, 1).data], [255, 0, 0, 255]);
-				equal([...c.getImageData(55, 56, 1, 1).data], [0, 0, 0, 0]);
+				equal({
+					actual: [...c.getImageData(time ? 24 : 8, 16, 1, 1).data],
+					expected: color,
+				});
+				equal({
+					actual: [...c.getImageData(time ? 8 : 24, 16, 1, 1).data],
+					expected: [0, 0, 0, 0],
+				});
+				equal({
+					actual: [...c.getImageData(40, 56, 1, 1).data],
+					expected: [255, 0, 0, 255],
+				});
+				equal({
+					actual: [...c.getImageData(55, 56, 1, 1).data],
+					expected: [0, 0, 0, 0],
+				});
 			} finally {
 				bitmap.close();
 			}
@@ -165,8 +191,13 @@ c.fillStyle='red';c.fillRect(0,0,Math.round(c.measureText('iiii').width),16);
 		opacity: 1,
 		transform: buildTransformFromParams({ params: {} }),
 	});
+	const residency = new RenderResidencyDomain({
+		preprocessor: new ImagePreprocessOwner(),
+	});
+	const scope = residency.tree({});
 	const context = {
 		renderer: { width: 64, height: 64 },
+		rasterResidency: scope,
 		time: 8000,
 		frameRate: source.frameRate,
 		videoCache: {
@@ -175,32 +206,43 @@ c.fillStyle='red';c.fillRect(0,0,Math.round(c.measureText('iiii').width),16);
 			},
 		},
 	};
-	const initial = await node.resolve(context);
-	if (!initial) throw Error("Missing resource-backed node");
-	equal((await node.resolve(context))?.sourceVersion, initial.sourceVersion);
-	node.params.source = { ...source, resources: [second.resource, font] };
-	const replacement = await node.resolve(context);
-	if (!replacement || replacement.sourceVersion === initial.sourceVersion)
-		throw Error("Resource replacement reused stale cached frame");
-	const checkCanvas = new OffscreenCanvas(64, 64),
-		check = checkCanvas.getContext("2d")!;
-	check.drawImage(replacement.source, 0, 0);
-	equal([...check.getImageData(24, 16, 1, 1).data], [0, 0, 255, 255]);
-	node.cancelPendingFrames();
+	try {
+		const initial = await node.resolve(context);
+		if (!initial) throw Error("Missing resource-backed node");
+		equal({
+			actual: (await node.resolve(context))?.sourceVersion,
+			expected: initial.sourceVersion,
+		});
+		node.params.source = { ...source, resources: [second.resource, font] };
+		const replacement = await node.resolve(context);
+		if (!replacement || replacement.sourceVersion === initial.sourceVersion)
+			throw Error("Resource replacement reused stale cached frame");
+		const checkCanvas = new OffscreenCanvas(64, 64),
+			check = checkCanvas.getContext("2d")!;
+		check.drawImage(replacement.source, 0, 0);
+		equal({
+			actual: [...check.getImageData(24, 16, 1, 1).data],
+			expected: [0, 0, 255, 255],
+		});
+	} finally {
+		node.cancelPendingFrames();
+		scope.close();
+		await residency.disposeAndDrain();
+	}
 	// A valid manifest pointing to damaged bytes must fail in the host, not render
 	// a cached/default image. This fixture owns both content-addressed attachments.
 	await first.put(new Uint8Array(first.body.byteLength).buffer);
-	await rejected(
-		() =>
+	await rejected({
+		run: () =>
 			resolveCanvasResources({
 				resources: source.resources!,
 				provider,
 				signal: signal(),
 			}),
-		/integrity mismatch/,
-	);
-	await rejected(
-		() =>
+		pattern: /integrity mismatch/,
+	});
+	await rejected({
+		run: () =>
 			provider.renderPng({
 				request: {
 					source: { ...source, runtime: "html-document", code: htmlCode },
@@ -211,8 +253,8 @@ c.fillStyle='red';c.fillRect(0,0,Math.round(c.measureText('iiii').width),16);
 				},
 				signal: signal(),
 			}),
-		/integrity mismatch/,
-	);
+		pattern: /integrity mismatch/,
+	});
 	await first.put(first.body);
 	const wrongProvider = {
 		renderPng: provider.renderPng,
@@ -222,28 +264,28 @@ c.fillStyle='red';c.fillRect(0,0,Math.round(c.measureText('iiii').width),16);
 			});
 		},
 	};
-	await rejected(
-		() =>
+	await rejected({
+		run: () =>
 			resolveCanvasResources({
 				resources: [first.resource],
 				provider: wrongProvider,
 				signal: signal(),
 			}),
-		/digest mismatch/,
-	);
-	await rejected(
-		() =>
+		pattern: /digest mismatch/,
+	});
+	await rejected({
+		run: () =>
 			resolveCanvasResources({ resources: [first.resource], signal: signal() }),
-		/cannot load/,
-	);
-	await rejected(
-		() =>
+		pattern: /cannot load/,
+	});
+	await rejected({
+		run: () =>
 			resolveCanvasResources({
 				resources: [first.resource],
 				provider,
 				signal: AbortSignal.abort(),
 			}),
-		/abort/i,
-	);
+		pattern: /abort/i,
+	});
 	return "project image/font bridge: real Worker + DOM pixels, no font fallback, seek/replacement, host/browser integrity and abort";
 }

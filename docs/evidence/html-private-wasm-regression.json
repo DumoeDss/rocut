@@ -1,0 +1,78 @@
+{
+	"version": 1,
+	"status": "verified-checkpoint",
+	"date": "2026-10-09",
+	"scope": "HyperFrames and Remotion private Chromium regression against the Flame bridge freeze f; not Electron acceptance or complete engine ecosystem compatibility",
+	"browser": "151.0.7922.34",
+	"frameBackend": "private-chromium",
+	"electronTested": false,
+	"wasmBinding": "explicit-private",
+	"wasm": {
+		"directory": "C:/Users/Sayo/AppData/Local/Temp/rocut-flame-integrated-UoOQ5J/wasm",
+		"binarySha256": "9dd8bc0521bea902b246093ea0d74216a248b578c76bf136d5f312b0b3fde7b6",
+		"hostAndBrowserActualBytesMatched": true,
+		"sharedDependencyCopiesModified": false
+	},
+	"runs": [
+		{
+			"engine": "hyperframes",
+			"entry": "script/probe-hyperframes.mjs",
+			"session": 21301,
+			"exitCode": 0,
+			"passed": true,
+			"evidence": "C:/Users/Sayo/AppData/Local/Temp/rocut-html-bridge-hf-20261009-b/evidence.json",
+			"evidenceSha256": "cdbee2daba7f6960e8743657d6e2f956586e17a4a0fef0bc0621a56115783198",
+			"recordedSourceInputs": 7,
+			"checks": 11
+		},
+		{
+			"engine": "remotion",
+			"entry": "script/probe-remotion.mjs",
+			"session": 75405,
+			"exitCode": 0,
+			"passed": true,
+			"evidence": "C:/Users/Sayo/AppData/Local/Temp/rocut-html-bridge-remotion-20261009-b/evidence.json",
+			"evidenceSha256": "0b17b2353264df9d16b6fcd6475e1375d6d7989c3120c2b4039a2b92d0606c01",
+			"recordedSourceInputs": 7,
+			"checks": 11
+		}
+	],
+	"verifiedBehavior": [
+		"Native runtime nesting, alpha, resources and random seek",
+		"Real Worker and DOM image/font pixels, no silent font fallback, replacement and integrity failures",
+		"Authenticated host isolation and quantized animation timing",
+		"Watchdog, abort and subsequent capture recovery",
+		"Rocut GPU preview/export parity and independent WebM decode",
+		"SceneExporter cancellation without success publication and fresh-source recovery",
+		"Native video decoded source frames through GPU composition and export"
+	],
+	"productionCheckpoint": [
+		{
+			"manifest": "C:/Users/Sayo/AppData/Local/Temp/rocut-flame-bridge-freeze-20261009-f.json",
+			"sha256": "5704349858009523123af912ea538d3f5a4ecb7675cfcc4a8de148dc40c0611f",
+			"files": 43,
+			"mismatchesAfterBothRuns": 0
+		},
+		{
+			"manifest": "C:/Users/Sayo/AppData/Local/Temp/rocut-flame-scene-freeze-20261009-b.json",
+			"sha256": "03f6bb90584a0e9c112af96f1ac2d930a45f71739a5b5d949638a4e9af2020a7",
+			"files": 27,
+			"mismatchesAfterBothRuns": 0
+		}
+	],
+	"additionalFixtureIdentity": {
+		"script/fixtures/programmatic-resource-browser-probe.ts": "a4e0364e07b7e53ad553718017e2708902fff762a66c7fbb3fb01d1bb346033e",
+		"script/fixtures/hyperframes-media-cases.ts": "b8839312069c99ae981c99d70a6410c205d5216ad16e8d49d0e7de7306ca9fee",
+		"script/fixtures/hyperframes-video-browser-probe.ts": "a1106be6675eccae47a433030ed3809c776be3010d1f2b1e9d7fd1c8a6cba773"
+	},
+	"cpuChecks": {
+		"privateWasmBinding": { "tests": 9, "passed": 9, "skipped": 0 },
+		"hyperframesMediaAdmission": { "tests": 2, "assertions": 13, "passed": 2 }
+	},
+	"limitations": [
+		"The seven recorded entry/fixture inputs are not a complete loaded dependency graph",
+		"The separate 43-file and 27-file manifests establish only their enumerated production scopes",
+		"Later RendererManager, Ink or Remotion metadata changes require their own applicable regression evidence",
+		"Existing Remotion runtime returned-props pinning remains a separate unfinished requirement"
+	]
+}

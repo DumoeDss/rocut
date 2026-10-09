@@ -1,7 +1,7 @@
 import type { ProgrammaticSource } from "@opencut/editor-contracts";
 import { createHttpProgrammaticFrames } from "../../apps/vite-example/src/host/http-programmatic-frames";
 import { readNativeVideoFrame } from "./remotion-video-browser-probe";
-import { hyperframesMediaCases } from "./hyperframes-media-cases";
+import { hyperframesMediaCases, hyperframesMediaAdmissionNegatives, expectHyperframesMediaAdmissionRejection } from "./hyperframes-media-cases";
 
 export let hyperframesVideoSource: ProgrammaticSource | undefined;
 
@@ -50,8 +50,8 @@ export async function runHyperframesVideoProbe(spec: Record<string, unknown>) {
 		try { await run(); } catch (error) { if (match.test(String(error))) return; throw error; }
 		throw Error(`HyperFrames expected failure: ${match}`);
 	};
-	for (const entryFile of ["media-audible.html", "media-autoplay.html", "media-audio.html"])
-		await rejected(() => compile(entryFile), /muted|not supported/);
+	for (const { entryFile, reason } of hyperframesMediaAdmissionNegatives)
+		await expectHyperframesMediaAdmissionRejection(() => compile(entryFile), reason);
 	await rejected(() => compile("media.html", { files: (spec.files as string[]).filter(f => f !== "assets/fast.webm") }), /undeclared|Undeclared/);
 	const corrupt = await compile("media-corrupt.html");
 	await rejected(() => render(corrupt, 1), /decode failed/);
