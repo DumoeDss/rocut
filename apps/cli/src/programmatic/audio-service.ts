@@ -68,14 +68,20 @@ export function createProgrammaticAudioService({
 				identity: "programmatic/audio/identity",
 				history: "canonical-from-zero",
 				fxAutomation: "native-parameters-and-preset-mix-v1",
+				timing: {
+					selection: "source.audio.timing",
+					default: "sample-aligned",
+					optionalModes: ["native-exporter"],
+					nativeExporter: "final-track-trim-and-ms-placement-v1",
+				},
 				requires: [
 					"archived-dsp-identity",
 					"normalized-volume-envelope",
-					"sample-aligned-clip-trim-loop",
+					"sample-aligned-scalar-trim-duration-and-loop-tiles",
 				],
 				unsupported: [
 					"participating-fallback-gain-history",
-					"fractional-sample-phase",
+					"webaudio-fractional-start-phase",
 				],
 			},
 			electron: "requires-native-audio-analysis-transport",

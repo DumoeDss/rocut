@@ -12,6 +12,7 @@ mod mix;
 mod range;
 mod schedule;
 mod source;
+mod timing;
 pub(crate) use source::{AudioSettings, deserialize_audio};
 pub use source::resolve_programmatic_audio_source_json;
 pub use decode::resolve_native_audio_decode_json;

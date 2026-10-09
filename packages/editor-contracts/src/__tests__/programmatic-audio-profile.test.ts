@@ -76,4 +76,38 @@ describe("programmatic audio profile transport contract", () => {
 		);
 		expect(isProgrammaticSource(source(null))).toBe(false);
 	});
+
+	test("native exporter timing is explicit, graph-only and strict", () => {
+		const audio = {
+			version: 1,
+			mode: "native",
+			profile: "hyperframes-graph-v1",
+		};
+		expect(
+			isProgrammaticSource(source({ ...audio, timing: "native-exporter" })),
+		).toBe(true);
+		expect(
+			isProgrammaticSource(
+				source({ version: 1, mode: "native", timing: "native-exporter" }),
+			),
+		).toBe(false);
+		for (const timing of [
+			null,
+			"",
+			"sample-aligned",
+			"native-exporter-ms",
+			1,
+			true,
+			{},
+		]) {
+			expect(isProgrammaticSource(source({ ...audio, timing }))).toBe(false);
+		}
+		for (const field of ["timingRevision", "mixerSha256", "placement"]) {
+			expect(
+				isProgrammaticSource(
+					source({ ...audio, timing: "native-exporter", [field]: 1 }),
+				),
+			).toBe(false);
+		}
+	});
 });

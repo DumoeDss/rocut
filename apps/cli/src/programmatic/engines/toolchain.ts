@@ -19,14 +19,17 @@ import { HYPERFRAMES_AUDIO_BOOTSTRAP } from "../hyperframes-audio-bootstrap";
 import { HYPERFRAMES_AUDIO_GRAPH_BOOTSTRAP } from "../hyperframes-audio-graph-bootstrap";
 import { loadHyperframesFxRuntime } from "../hyperframes-fx-runtime";
 import { HYPERFRAMES_GRAPH_PROFILE, hyperframesGraphCompileIdentity } from "../hyperframes-graph-provenance";
+import { hyperframesGraphTimingIdentity, type HyperframesGraphTiming } from "../hyperframes-graph-timing";
 import { getThreeParticleAdapterHash, threeParticleCompileIdentity, type ThreeParticleRuntime } from "../three-particle-provenance";
 
-export async function loadEngineToolchain(directory: string, engine: keyof typeof ENGINE_VERSIONS, signal: AbortSignal, audioProfile?: typeof HYPERFRAMES_GRAPH_PROFILE, particleRuntime?: ThreeParticleRuntime) {
+export async function loadEngineToolchain(directory: string, engine: keyof typeof ENGINE_VERSIONS, signal: AbortSignal, audioProfile?: typeof HYPERFRAMES_GRAPH_PROFILE, particleRuntime?: ThreeParticleRuntime, audioTiming?: HyperframesGraphTiming) {
 	if (!isAbsolute(directory)) throw Error("Engine toolchain path must be absolute");
 	if (audioProfile !== undefined && (audioProfile !== HYPERFRAMES_GRAPH_PROFILE || engine !== "hyperframes"))
 		throw Error("Graph audio toolchain identity requires the HyperFrames graph profile");
 	if (particleRuntime !== undefined && engine !== "three")
 		throw Error("Particle toolchain identity requires an explicit Three capability");
+	if (hyperframesGraphTimingIdentity(audioTiming) && audioProfile !== HYPERFRAMES_GRAPH_PROFILE)
+		throw Error("Native exporter timing requires the HyperFrames graph profile");
 	const root = await realpath(directory);
 	const core = join(root, "node_modules/@hyperframes/core");
 	const readJson = async (path: string) => JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(
@@ -71,7 +74,7 @@ export async function loadEngineToolchain(directory: string, engine: keyof typeo
 	if (audioProfile === HYPERFRAMES_GRAPH_PROFILE) {
 		const runtime = await loadHyperframesFxRuntime({ toolchainDirectory: root, signal });
 		if (runtime.packageLockSha256 !== resourceDigest(lockBytes)) throw Error("Graph toolchain lock changed during compilation admission");
-		audioGraph = hyperframesGraphCompileIdentity(runtime);
+		audioGraph = hyperframesGraphCompileIdentity(runtime, audioTiming);
 	}
 	const threeParticle = particleRuntime ? threeParticleCompileIdentity(particleRuntime, adapter.sha256) : undefined;
 	const body = new TextEncoder().encode(JSON.stringify({ version: 1, packages, ...(adapter ? { adapter } : {}), ...(audioGraph ? { audioGraph } : {}), ...(threeParticle ? { threeParticle } : {}) })).buffer;

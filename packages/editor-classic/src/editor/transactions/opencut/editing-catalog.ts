@@ -70,7 +70,8 @@ export function editingCatalog({
 			params: "replace",
 			animations: "replace",
 			effects: "ordered-replace",
-			masterEffects: "update-project.patch.masterEffects; ordered-replace; [] clears; complete-scene post including backdrop; scene-timeline clock",
+			masterEffects:
+				"update-project.patch.masterEffects; ordered-replace; [] clears; complete-scene post including backdrop; scene-timeline clock",
 			masks: "ordered-replace",
 			keyTime: "element-relative-ticks",
 			volume: "dB",
@@ -138,7 +139,7 @@ export function editingCatalog({
 				"fresh-worker-or-isolated-browser-per-frame; no-network-or-host-access",
 			audio: {
 				declaration:
-					"source.audio={version:1,mode:'native',muted?,volumeDb?,profile?}",
+					"source.audio={version:1,mode:'native',muted?,volumeDb?,profile?,timing?}",
 				legacy:
 					"omitted-profile: native Remotion/HyperFrames gain-only source soundtrack",
 				hyperframesGraph:
@@ -147,8 +148,10 @@ export function editingCatalog({
 					"graph PCM requires current Host runtime identity; stale/missing identity never reuses cached audio",
 				fxAutomation:
 					"graph-only native parameter/preset lanes; track-local and bus-global clocks; probe hyperframesGraph.fxAutomation",
+				timing:
+					"graph-only timing:'native-exporter' selects final track trim and millisecond placement, not whole-exporter equivalence; omission keeps sample-aligned starts; probe hyperframesGraph.timing and explicitly recompile",
 				limits:
-					"graph requires normalized gain envelopes and sample-aligned clip/trim/loop; participating fallback/rate automation not supported; native no-op parameters stay no-op",
+					"graph requires normalized gain and complete history; native rate lanes, nonloop fractional trim and measured prepared duration supported; scalar trim/duration and loop tiles must align; fallback gain history and WebAudio fractional start phase unsupported; native no-op parameters stay no-op",
 			},
 			unsupported: [
 				"unconfigured-engine-toolchain",

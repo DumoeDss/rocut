@@ -82,6 +82,8 @@ pub(super) struct PreparedTrack {
     pub resolved_bus_instance_id: Option<String>,
     pub decoded_source_id: String,
     pub start_sample: u64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub output_trim_frames: Option<u64>,
     pub source_start_sample: u64,
     pub source_period_frames: u64,
     pub r#loop: bool,

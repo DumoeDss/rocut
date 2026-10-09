@@ -114,12 +114,17 @@ pub(super) fn prepare(request: &ExecutionRequest) -> Result<ExecutionPlan, Strin
             bus.as_deref(),
             graph.sample_rate,
             admitted.canonical.output_frames,
+            graph.timing,
         )?;
         let (index, source_start, source_period) = if let Some(points) =
             super::rate_lane::admit(track)?
         {
-            let rate_preparation =
-                super::rate_prepare::prepare(native, &points, graph.sample_rate)?;
+            let rate_preparation = super::rate_prepare::prepare_with_timing(
+                native,
+                &points,
+                graph.sample_rate,
+                graph.timing,
+            )?;
             let frames = rate_preparation.graph_max_frames;
             let index = decoded_sources.len();
             let id = format!("dry#{index}");
@@ -221,6 +226,8 @@ pub(super) fn prepare(request: &ExecutionRequest) -> Result<ExecutionPlan, Strin
             // Full native history precedes FX, even when canonical output ends
             // mid-clip. Final mixing alone clips it to the composition/crop.
             decoded_sources[index].max_frames
+        } else if graph.timing.native_exporter() {
+            participation.clip_frames
         } else {
             participation.input_frames
         };
@@ -229,6 +236,12 @@ pub(super) fn prepare(request: &ExecutionRequest) -> Result<ExecutionPlan, Strin
             resolved_bus_instance_id: bus,
             decoded_source_id: decoded_sources[index].id.clone(),
             start_sample: participation.start_sample,
+            output_trim_frames: super::export_timing::trim_frames(
+                graph.timing,
+                native,
+                automation.tail_seconds,
+                graph.sample_rate,
+            )?,
             source_start_sample: source_start,
             source_period_frames: source_period,
             // A variable-rate loop is already materialized across the full
@@ -314,7 +327,9 @@ pub(super) fn prepare(request: &ExecutionRequest) -> Result<ExecutionPlan, Strin
         execution_ready: false,
         pcm_geometry_ready,
         state_policy: "canonical-composition-from-zero",
-        sample_phase_policy: if decoded_sources
+        sample_phase_policy: if graph.timing.native_exporter() {
+            "native-exporter-trim-and-ms-placement-v1"
+        } else if decoded_sources
             .iter()
             .any(|source| source.preparation_key.is_some())
         {

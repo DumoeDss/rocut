@@ -1,5 +1,6 @@
 use super::snapshot::Snapshot;
 use crate::programmatic_audio::range::Rate;
+use crate::programmatic_audio::timing::{AudioTiming, deserialize_timing};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -11,6 +12,8 @@ pub(super) const SEMANTICS_PROFILE: &str = "rocut-hyperframes-0.8.139-audio-grap
 pub(super) struct GraphRequest {
     pub version: u32,
     pub semantics_profile: String,
+    #[serde(default, deserialize_with = "deserialize_timing")]
+    pub timing: AudioTiming,
     pub frame_rate: Rate,
     pub sample_rate: u32,
     pub first_frame: u32,

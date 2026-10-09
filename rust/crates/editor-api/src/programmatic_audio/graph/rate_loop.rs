@@ -5,6 +5,7 @@
 use super::model::NativeClip;
 use super::participation::sample_aligned;
 use crate::programmatic_audio::MAX_PCM_BYTES;
+use crate::programmatic_audio::timing::AudioTiming;
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
@@ -32,10 +33,25 @@ fn filter(period: u64, source: u64, repeats: u32, mono: bool) -> String {
     )
 }
 
+#[cfg(test)]
 pub(super) fn prepare(
     native: &NativeClip,
     consumed_seconds: f64,
     graph_rate: u32,
+) -> Result<SourceLoop, String> {
+    prepare_with_timing(
+        native,
+        consumed_seconds,
+        graph_rate,
+        AudioTiming::SampleAligned,
+    )
+}
+
+pub(super) fn prepare_with_timing(
+    native: &NativeClip,
+    consumed_seconds: f64,
+    graph_rate: u32,
+    timing: AudioTiming,
 ) -> Result<SourceLoop, String> {
     let period = native.source_duration - native.media_start;
     if !period.is_finite() || period <= 0.0 {
@@ -45,10 +61,12 @@ pub(super) fn prepare(
     }
     for rate in [graph_rate, 48000] {
         sample_aligned(period * f64::from(rate), "variable-rate loop period")?;
-        sample_aligned(
-            native.start * f64::from(rate),
-            "variable-rate loop clip start",
-        )?;
+        if !timing.native_exporter() {
+            sample_aligned(
+                native.start * f64::from(rate),
+                "variable-rate loop clip start",
+            )?;
+        }
     }
     let period_frames = sample_aligned(period * 48000.0, "native variable-rate loop period")?;
     // FFmpeg's input -t at a 48k canonical source rounds to the nearest frame.

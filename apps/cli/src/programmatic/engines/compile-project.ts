@@ -44,7 +44,7 @@ export async function compileProgrammaticProject({ action, input, toolchainDirec
 	}
 	const particleRuntime = hasThreeParticleCapability(source) ? await loadThreeParticleRuntime(signal, threeArchive?.particle?.samplerIdentity) : undefined;
 	const toolchain = await loadEngineToolchain(toolchainDirectory, source.build.engine, signal,
-		hasHyperframesGraphProfile(source) ? HYPERFRAMES_GRAPH_PROFILE : undefined, particleRuntime);
+		hasHyperframesGraphProfile(source) ? HYPERFRAMES_GRAPH_PROFILE : undefined, particleRuntime, source.audio?.timing);
 	if (source.build.engine === "three") {
 		const currentParticle = parseThreeParticleArchive(source, toolchain.lock.body);
 		if (threeArchive?.particle) assertThreeParticleCompileIdentity(threeArchive.particle, currentParticle);

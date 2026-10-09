@@ -2,10 +2,12 @@
 //! admission and valid observed facts; only their full gain history is optional.
 use super::snapshot::{Bus, Track};
 use super::topology::audible_media;
+use crate::programmatic_audio::timing::AudioTiming;
 
 pub(super) struct Participation {
     pub start_sample: u64,
     pub input_frames: u64,
+    pub clip_frames: u64,
     pub audible_media: bool,
     pub muted: bool,
     pub requires_pcm: bool,
@@ -27,8 +29,9 @@ pub(super) fn participation(
     bus_instance_id: Option<&str>,
     sample_rate: u32,
     canonical_frames: u64,
+    timing: AudioTiming,
 ) -> Result<Participation, String> {
-    let start_sample = sample_aligned(track.native.start * f64::from(sample_rate), "clip start")?;
+    let start_sample = super::export_timing::start_sample(timing, track.native.start, sample_rate)?;
     let frames = if super::rate_lane::admit(track)?.is_some()
         && super::rate_prepare::observed_pcm(&track.native, sample_rate)
     {
@@ -49,6 +52,7 @@ pub(super) fn participation(
     Ok(Participation {
         start_sample,
         input_frames,
+        clip_frames: frames,
         audible_media,
         muted,
         requires_pcm: input_frames > 0 && !muted && !bus_hidden,

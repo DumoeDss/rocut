@@ -34,6 +34,15 @@ test("HTML capability is explicit, authenticated, unavailable without a browser 
 		expect(context.programmaticNativeAudio.hyperframesGraph.fxAutomation).toBe(
 			"native-parameters-and-preset-mix-v1",
 		);
+		expect(context.programmaticNativeAudio.hyperframesGraph.timing).toEqual({
+			selection: "source.audio.timing",
+			default: "sample-aligned",
+			optionalModes: ["native-exporter"],
+			nativeExporter: "final-track-trim-and-ms-placement-v1",
+		});
+		expect(
+			context.programmaticNativeAudio.hyperframesGraph.unsupported,
+		).toContain("webaudio-fractional-start-phase");
 		expect(
 			context.programmaticNativeAudio.hyperframesGraph.unsupported,
 		).not.toContain("fx-automation");

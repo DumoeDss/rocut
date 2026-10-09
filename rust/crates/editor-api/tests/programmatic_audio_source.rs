@@ -194,3 +194,23 @@ fn legacy_native_audio_keeps_its_existing_version_admission() {
         assert_eq!(plan(s), legacy);
     }
 }
+
+#[test]
+fn native_export_timing_requires_the_graph_profile_and_survives_source_admission() {
+    let mut s = hyperframes_source();
+    s["audio"]["timing"] = json!("native-exporter");
+    assert!(plan(s.clone()).get("error").is_some());
+    s["audio"]["profile"] = json!("hyperframes-graph-v1");
+    let mut selected = plan(s.clone());
+    assert_eq!(selected["plan"]["timing"], "native-exporter");
+    selected["plan"].as_object_mut().unwrap().remove("timing");
+    let mut default = s.clone();
+    default["audio"].as_object_mut().unwrap().remove("timing");
+    assert_eq!(selected, plan(default));
+    assert_eq!(frame(s.clone())["frame"]["index"], 0);
+    for timing in [Value::Null, json!("sample-aligned"), json!(1), json!({})] {
+        s["audio"]["timing"] = timing;
+        assert!(plan(s.clone()).get("error").is_some());
+        assert!(frame(s.clone()).get("error").is_some());
+    }
+}

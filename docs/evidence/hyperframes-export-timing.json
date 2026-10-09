@@ -1,0 +1,351 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "explicit-native-exporter-final-track-timing-verified",
+	"scope": "Compatibility-additive final track trim and millisecond placement in graph-v1. Real Host graph IO/native FX/Rust assembly verified; NOT whole original exporter bit-exact or installed-editor acceptance.",
+	"declaration": {
+		"version": 1,
+		"mode": "native",
+		"profile": "hyperframes-graph-v1",
+		"timing": "native-exporter"
+	},
+	"semantics": [
+		"Preserve full preparation and track FX/gain history before the terminal timing operation, including measured fractional-duration PCM and FX tails",
+		"Original format6(end-start+tail) is parsed as integer microseconds and rescaled to the trim sample boundary before placement",
+		"All admitted starts use original JS Math.round(start*1000), then the actual FFmpeg 6 float32 millisecond-to-sample delay rule, including already sample-aligned starts",
+		"Bus and master share final track assembly; Rocut canonical source length and output crop remain unchanged",
+		"Timing requires graph-v1 and pinned HyperFrames 0.8.139; null, unknown, standalone legacy-native selection and caller-invented identity fields are rejected",
+		"Explicit mode binds source declaration, portable compile lock, runtime identity and the shared preview/export source cache; switching an existing archive requires explicit compile",
+		"Omitted timing preserves old sample-aligned geometry, source response shape and compile-lock bytes; trim does not lower full-history capacities or global working-set limits"
+	],
+	"privateBuild": {
+		"wasm": {
+			"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/web-scene-transition-oi8DXV/opencut_wasm_bg.wasm",
+			"bytes": 10070962,
+			"sha256": "f38a61f8c0246ddeaa69a3e37937734ed5829d23e3e2c8926f227c6590afb4d9"
+		},
+		"glue": {
+			"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/web-scene-transition-oi8DXV/opencut_wasm.js",
+			"bytes": 165861,
+			"sha256": "1e4b1d40757cab5b035bb4300a05c7e8656782b469c864602d1b4a471da6b1dc"
+		},
+		"verification": {
+			"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/web-scene-transition-oi8DXV/verification.json",
+			"bytes": 581,
+			"sha256": "62cfd052b5cc3c0c18f7c48f9fb79a20f6cd29d6899626d281d8f4989a31e8af"
+		},
+		"sourceManifest": {
+			"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/scene-transition-source-NGdgpa/source-manifest.json",
+			"bytes": 170055,
+			"sha256": "7167e75313e61570460fedcd1266ebbd143e700eb0f5228206aa2020f721f22a"
+		},
+		"audioInputManifest": {
+			"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-export-timing-freeze-20261009-6f7c42.json",
+			"bytes": 5866,
+			"sha256": "be7d27de6b609b85dbe929d101edfbe5aefd4470ef7bba5ced142e3b534dcc70"
+		},
+		"frozenFilesVerifiedAfterExecution": 30,
+		"privateRustFilesMatchBothNativeAndWasmSnapshots": 16,
+		"productionChangedToFitOracle": false
+	},
+	"postBuildFixtureCorrection": {
+		"reason": "Replace unused destructured timing identity values with an explicit identity assertion, then format the test; no production or DSP behavior changed",
+		"finalTestManifest": {
+			"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-export-timing-freeze-20261009-6f7c42-lint.json",
+			"bytes": 5866,
+			"sha256": "520cb2dba933251ca27433b273d5fcff32cdcbfb675da0750a228e4136eb974a"
+		},
+		"changedTest": {
+			"path": "apps/cli/src/__tests__/hyperframes-graph-timing.test.ts",
+			"bytes": 4109,
+			"sha256": "832523b8b6d36fde3ce346e5a9895bfebbad1d0f6759531a5ac16d319aa0b70b"
+		},
+		"unchangedFiles": 29,
+		"unchangedProductionFiles": 20,
+		"productionAggregateSha256": "480fa5c6727d6624324814fc69e7b14449dcd5c25cc180fa90c841930e13d1de",
+		"finalTestsAggregateSha256": "0132def425d9f69c05066e9b06661505b428f677d54f6a43343c1504c585caee",
+		"aggregateAlgorithm": "SHA256 of JSON.stringify(sorted {path,bytes,sha256} manifest entries)",
+		"archiveRerun": {
+			"passed": 2,
+			"failed": 0,
+			"assertions": 18,
+			"privateWasm": "web-scene-transition-oi8DXV"
+		},
+		"dspOrWasmRebuilt": false,
+		"buildEvidenceBinding": "privateBuild.audioInputManifest remains the historical execution freeze; finalTestManifest records only the subsequent test assertion and formatting correction"
+	},
+	"originalFilterOracle": {
+		"verification": {
+			"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-export-timing-native-XKc7RJ/verification.json",
+			"bytes": 8369,
+			"sha256": "60f02608b2ef8292faf5a5e4c21339a683df287c6b8e9554f35a26111e043c56"
+		},
+		"mixerSha256": "bbe78eb851b4e5d6d2e94b0f6ec84b5de26b2fe5218cbe348d9e9cd89320ae78",
+		"declarationsSha256": "613b88614282dae8a6d6c0a083945e895cfbb46072fc820624f45e01cdc8bfe2",
+		"ffmpegVersion": "ffmpeg version 6.0-full_build-www.gyan.dev Copyright (c) 2000-2023 the FFmpeg developers",
+		"ffmpegSha256": "3fe23ab1bdb8f686bef34000dc93534caa689c4efa073295d2f705732d002a6f",
+		"cases": 18,
+		"sampleRates": [44100, 48000],
+		"starts": [
+			0,
+			0.00049,
+			0.0004999999999999999,
+			0.0005,
+			0.00051,
+			"1/sampleRate",
+			0.015,
+			3.05
+		],
+		"float32Counterexample": {
+			"sampleRate": 44100,
+			"start": 3.05,
+			"inputFrames": 4411,
+			"duration": 0.10000520833333335,
+			"filter": "[0:a]atrim=0:0.100005,volume=1,adelay=3050|3050,apad,asetpts=N/SR/TB,atrim=0:3.2[a0]",
+			"first": 134504,
+			"last": 138913,
+			"retainedFrames": 4410,
+			"float32Prediction": 134504,
+			"exactRationalPrediction": 134505,
+			"pcmSha256": "273fe07bb5ba0ed3c9b2446781e80e8d170aa3a1296d47968cc4d8650bef5943"
+		},
+		"sixDecimalBeforeRescale": [
+			{
+				"sampleRate": 44100,
+				"case": "format6-before-rescale",
+				"filter": "[0:a]atrim=0:0.000031,volume=1,adelay=0|0,apad,asetpts=N/SR/TB,atrim=0:0.1[a0]",
+				"retainedFrames": 1,
+				"pcmSha256": "f894a19e9b30c1d5ffd1fab590e7758130191ad24c064654eaf78771fff7e58d"
+			},
+			{
+				"sampleRate": 48000,
+				"case": "format6-before-rescale",
+				"filter": "[0:a]atrim=0:0.000031,volume=1,adelay=0|0,apad,asetpts=N/SR/TB,atrim=0:0.1[a0]",
+				"retainedFrames": 1,
+				"pcmSha256": "fcf6de5bc6a5eb54549a6f431f8c648cb8e5e4726bfc2a10fdea713ce54f0b85"
+			}
+		],
+		"largeDelayPolicy": "Rust covers negative/nonfinite/out-of-policy inputs and bounded 86400-second arithmetic. No giant FFmpeg delay buffer was allocated."
+	},
+	"hostGraphOracle": {
+		"verification": {
+			"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-export-timing-production-mMst4S/verification.json",
+			"bytes": 8217,
+			"sha256": "14c6748205f306970305aa4558644a075d114b4a39ce7ddd5b857de2985d9a62"
+		},
+		"sampleRate": 44100,
+		"sourceRate": 44100,
+		"nativePreparationRate": 48000,
+		"nativePreparedFrames": 24001,
+		"graphDryFrames": 22051,
+		"nativeFx": {
+			"frames": 37487,
+			"tailSeconds": 0.35000000000000003,
+			"sha256": "657bbee5641041b8b1b1cd3e9521a32a7a21810fe56d935d73cf7793663ed7c1",
+			"wrongOrder": {
+				"maximum": 0.026900000870227814,
+				"rms": 0.008022142466297065
+			}
+		},
+		"mixerSha256": "bbe78eb851b4e5d6d2e94b0f6ec84b5de26b2fe5218cbe348d9e9cd89320ae78",
+		"browser": {
+			"protocolVersion": "1.3",
+			"product": "Chrome/151.0.7922.34",
+			"revision": "@782af9cb30a53f54487e5d2e44738645a8ec457c",
+			"userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+			"jsVersion": "15.1.206.8"
+		},
+		"cases": [
+			{
+				"start": 0.00051,
+				"duration": 0.5000052083333333,
+				"mediaStart": 0.10000566893424037,
+				"filter": "[0:a]atrim=0:0.850005,volume=1,adelay=1|1,apad,asetpts=N/SR/TB,atrim=0:0.91[a0]",
+				"nativeFrames": 24001,
+				"graphDryFrames": 22051,
+				"maximumError": 0,
+				"pcmSha256": "6e9259ec1ed487452a474b6376a44a9a9e8c3dfc69555d43d4e3d6c015496ac4",
+				"cropExact": true,
+				"repeatExact": true,
+				"wrongPlacement": {
+					"maximum": 0.15493373572826385,
+					"rms": 0.03774836879674844,
+					"leftFrames": 40131,
+					"rightFrames": 40131
+				},
+				"boundary": "Real Host graph IO and original native prepare/FX/filter; browser author collection and editor export are separate acceptance."
+			},
+			{
+				"start": 0.000022675736961451248,
+				"duration": 0.5000052083333333,
+				"mediaStart": 0.10000566893424037,
+				"filter": "[0:a]atrim=0:0.850005,volume=1,adelay=0|0,apad,asetpts=N/SR/TB,atrim=0:0.91[a0]",
+				"nativeFrames": 24001,
+				"graphDryFrames": 22051,
+				"maximumError": 0,
+				"pcmSha256": "2536f755f0f9563a82ee01899fea3170f00018d5a006c0ea8a7ebd8da5b4083e",
+				"cropExact": true,
+				"repeatExact": true,
+				"wrongPlacement": {
+					"maximum": 0.12981083616614342,
+					"rms": 0.03288786396158654,
+					"leftFrames": 40131,
+					"rightFrames": 40131
+				},
+				"boundary": "Real Host graph IO and original native prepare/FX/filter; browser author collection and editor export are separate acceptance."
+			},
+			{
+				"start": 3.05,
+				"duration": 0.5000052083333333,
+				"mediaStart": 0.10000566893424037,
+				"filter": "[0:a]atrim=0:0.850005,volume=1,adelay=3050|3050,apad,asetpts=N/SR/TB,atrim=0:3.96[a0]",
+				"nativeFrames": 24001,
+				"graphDryFrames": 22051,
+				"maximumError": 0,
+				"pcmSha256": "38990dc6b1cc0d4d6e96acfbd87fbfe2ac6c2d7c7483ee26ff74d0367ecefb31",
+				"cropExact": true,
+				"repeatExact": true,
+				"wrongPlacement": {
+					"maximum": 0.12981083616614342,
+					"rms": 0.0157655370881146,
+					"leftFrames": 174636,
+					"rightFrames": 174636
+				},
+				"boundary": "Real Host graph IO and original native prepare/FX/filter; browser author collection and editor export are separate acceptance."
+			}
+		],
+		"maxPcmError": 0,
+		"canonicalCropByteExact": true,
+		"repeatByteExact": true,
+		"expectedUsesProductionTimingOrMixer": false,
+		"expectedRoute": "Original pinned prepareAudioTrack -> actual graph-rate resample -> independently bundled original FX -> explicit constant post-FX gain -> original hash-checked buildTrackInputFilter -> actual FFmpeg",
+		"actualRoute": "Real Host decoder/preparation/FX IO -> frozen Rust/WASM planning, fader, terminal trim/placement and canonical assembly"
+	},
+	"checks": {
+		"uniqueBunTestsPassed": 10,
+		"sourceContractTests": 4,
+		"originalJavaScriptFilterTests": 1,
+		"originalFfmpegTests": 1,
+		"newPrivateWasmTests": {
+			"passed": 4,
+			"assertions": 27,
+			"files": [
+				"script/fixtures/hyperframes-export-timing-production.test.ts",
+				"apps/cli/src/__tests__/hyperframes-graph-timing.test.ts",
+				"packages/editor-classic/src/media/__tests__/programmatic-audio-export-timing.test.ts"
+			]
+		},
+		"strictTypes": {
+			"roots": 13,
+			"reachableFiles": 366,
+			"diagnostics": 0,
+			"privateWasmDeclarations": true
+		},
+		"frontendCanonicalEslint": {
+			"files": 3,
+			"errors": 0,
+			"warnings": 0
+		},
+		"explicitRecommendedLint": {
+			"scopeFiles": 14,
+			"newUnusedVariableErrorsCorrected": 3,
+			"remainingBaselineErrors": 3,
+			"baselineReproducedInHeadByMainSession": true,
+			"baselineLocations": [
+				"apps/cli/src/programmatic/engines/compile-project.ts:103 no-unsafe-finally",
+				"apps/cli/src/programmatic/hyperframes-graph-identity.ts:41 no-control-regex (HEAD:40)",
+				"apps/cli/src/programmatic/hyperframes-graph-identity.ts:132 no-control-regex (HEAD:131)"
+			],
+			"postCorrectionIndependentRerun": "Main session confirmed only the same three HEAD baseline errors remain; no new errors"
+		},
+		"rustfmtStrictUtf8NoBomAndDiff": "passed"
+	},
+	"nativeChecks": {
+		"integration": {
+			"verification": {
+				"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/scene-transition-native-elPb8D/verification.json",
+				"bytes": 505,
+				"sha256": "88e0ba402a5944e8af8f5b6499994a4bb185b7e8dadc1185d7a86c662dce08a4"
+			},
+			"exitCode": 0,
+			"timingIntegrationPassed": 5,
+			"sourceContractPassed": 8
+		},
+		"library": {
+			"verification": {
+				"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/scene-transition-native-odbdvY/verification.json",
+				"bytes": 418,
+				"sha256": "969f0089fffa72a3642fe2ba21bdc8e66ec5deafed4b0a5c9366e45d65fcbc6f"
+			},
+			"exitCode": 0,
+			"passed": 375,
+			"failed": 0,
+			"existingIgnored": 1,
+			"timingUnitTestsPassed": 3,
+			"countsSource": "Main session Cargo stdout; verification JSON binds exact command, exit and snapshot"
+		},
+		"snapshotDifference": "NGdgpa differs from uRZP8C only in a Fall test correction; all 16 audio Rust production/test files were independently byte-checked against both snapshots"
+	},
+	"supplementalMainSessionVerification": {
+		"files": [
+			{
+				"path": "apps/cli/src/programmatic/audio-service.ts",
+				"bytes": 6670,
+				"sha256": "dd677c8c2b498fddb2eba39858beffb8d51539bfcb7d01e668f20bfc3e8041a1"
+			},
+			{
+				"path": "packages/editor-classic/src/editor/transactions/opencut/editing-catalog.ts",
+				"bytes": 8121,
+				"sha256": "6c917e78a3bdc744777362b4f6e888aebd6c0c44703bb110e36ebb0532c0e0c7"
+			},
+			{
+				"path": "apps/cli/src/__tests__/host-programmatic.test.ts",
+				"bytes": 5153,
+				"sha256": "bf47623938729e9665e44c3b56905d7b2602cb3f4e7c5635f08f99f4ffe03718"
+			}
+		],
+		"hostCapabilityTestsPassed": 1,
+		"hostCapabilityAssertions": 27,
+		"strictTypeRoots": 3,
+		"strictTypeReachableFiles": 817,
+		"strictTypeDiagnostics": 0,
+		"canonicalCatalogLintDiagnostics": 0,
+		"explicitCliRecommendedLintErrors": 0,
+		"explicitCliRecommendedLintWarnings": 0,
+		"scope": "Discovery/guidance only; outside the frozen timing source manifest"
+	},
+	"retainedSetupFailure": {
+		"kind": "Uninitialized stale shared WASM was selected for an initial archive test",
+		"error": "wasm.validateProgrammaticResourcesJson is not a function",
+		"correction": "Use existing isolated-web-wasm-preload with the explicit private artifact; no shared WASM/dependency replacement",
+		"timingAlgorithmChangedForFailure": false
+	},
+	"reproduction": {
+		"runner": "bun test --preload ./script/fixtures/isolated-web-wasm-preload.mjs",
+		"tests": [
+			"script/fixtures/hyperframes-export-timing-filter.test.ts",
+			"script/fixtures/hyperframes-export-timing-ffmpeg.test.ts",
+			"script/fixtures/hyperframes-export-timing-production.test.ts",
+			"apps/cli/src/__tests__/hyperframes-graph-timing.test.ts",
+			"packages/editor-classic/src/media/__tests__/programmatic-audio-export-timing.test.ts",
+			"packages/editor-contracts/src/__tests__/programmatic-audio-profile.test.ts"
+		],
+		"environment": {
+			"ROCUT_TEST_EXPORT_TIMING": "1",
+			"ROCUT_TEST_WASM_DIRECTORY": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/web-scene-transition-oi8DXV",
+			"ROCUT_TEST_HYPERFRAMES_TOOLCHAIN": "C:/Users/Sayo/AppData/Local/Temp/rocut-media-toolchain-YbloF9",
+			"ROCUT_TEST_HYPERFRAMES_ENGINE_DIRECTORY": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-engine-inspect-67d1b402/package",
+			"ROCUT_TEST_HYPERFRAMES_ARCHIVE": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-engine-inspect-67d1b402/hyperframes-engine-0.8.139.tgz",
+			"ROCUT_TEST_FFMPEG": "E:/Software/ffmpeg-6.0-full_build/bin/ffmpeg.exe",
+			"ROCUT_TEST_FFPROBE": "E:/Software/ffmpeg-6.0-full_build/bin/ffprobe.exe"
+		}
+	},
+	"remaining": [
+		"WebAudio fractional-phase scheduling is distinct and not replaced by integer-millisecond exporter timing",
+		"Scalar fractional duration/trim and fractional loop tile/trim/duration retain their existing fail-closed gates",
+		"Participating fallback author-gain history remains unsupported",
+		"Graph precision/FX behavior and the source-loop extension remain graph semantics; original full exporter PCM16/clamp/loop omission is not claimed equivalent",
+		"This mode still needs authored HTML/compile/archive/actual collector/editor/SceneExporter acceptance; the existing aligned-placement duration-editor result is not relabeled as this mode",
+		"Installed Electron and full-song/full-MV acceptance"
+	]
+}

@@ -1,4 +1,5 @@
 use super::range::{Rate, resolve_range};
+use super::timing::{AudioTiming, deserialize_timing};
 use crate::programmatic::Source;
 use bridge::export;
 use serde::Deserialize;
@@ -10,6 +11,8 @@ pub(crate) struct AudioSettings {
     mode: String,
     #[serde(default, deserialize_with = "deserialize_profile")]
     profile: Option<AudioProfile>,
+    #[serde(default, deserialize_with = "deserialize_timing")]
+    timing: AudioTiming,
     #[serde(default)]
     pub muted: bool,
     #[serde(default)]
@@ -42,6 +45,7 @@ impl AudioSettings {
     pub fn valid(&self) -> bool {
         self.version == 1
             && self.mode == "native"
+            && (!self.timing.native_exporter() || self.profile.is_some())
             && self.volume_db.is_finite()
             && (-60.0..=20.0).contains(&self.volume_db)
     }
@@ -90,6 +94,9 @@ pub fn resolve_programmatic_audio_source_json(input: String) -> String {
         // graph request only from this Rust-admitted field, never by inference.
         if let Some(profile) = settings.profile() {
             plan["profile"] = serde_json::json!(profile);
+        }
+        if settings.timing.native_exporter() {
+            plan["timing"] = serde_json::json!("native-exporter");
         }
         Ok(plan)
     })();

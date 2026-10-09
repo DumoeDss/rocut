@@ -32,6 +32,8 @@ export interface ProgrammaticSource {
 		readonly mode: "native";
 		/** Explicit pinned HyperFrames graph semantics; omission preserves legacy native audio. */
 		readonly profile?: "hyperframes-graph-v1";
+		/** Graph-only final trim + millisecond placement; omission keeps sample-aligned timing. */
+		readonly timing?: "native-exporter";
 		readonly muted?: boolean;
 		readonly volumeDb?: number;
 	};
@@ -83,12 +85,22 @@ export function isProgrammaticSource(
 		(source.audio === undefined ||
 			(isRecord(source.audio) &&
 				Object.keys(source.audio).every((key) =>
-					["version", "mode", "profile", "muted", "volumeDb"].includes(key),
+					[
+						"version",
+						"mode",
+						"profile",
+						"timing",
+						"muted",
+						"volumeDb",
+					].includes(key),
 				) &&
 				source.audio.version === 1 &&
 				source.audio.mode === "native" &&
 				(source.audio.profile === undefined ||
 					source.audio.profile === "hyperframes-graph-v1") &&
+				(source.audio.timing === undefined ||
+					(source.audio.timing === "native-exporter" &&
+						source.audio.profile === "hyperframes-graph-v1")) &&
 				(source.audio.muted === undefined ||
 					typeof source.audio.muted === "boolean") &&
 				(source.audio.volumeDb === undefined ||

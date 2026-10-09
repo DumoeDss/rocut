@@ -12,6 +12,7 @@ import {
 	verifyHyperframesGraphArchive,
 } from "./hyperframes-graph-provenance";
 import type { ProgrammaticResourceStore } from "./resources";
+import { hyperframesGraphTimingIdentity } from "./hyperframes-graph-timing";
 import type { NativeVideoDecoder } from "./video-decoder";
 
 export interface HyperframesGraphIdentity {
@@ -174,6 +175,7 @@ export async function prepareHyperframesGraphIdentity({
 				sessionNonce,
 				provenance,
 				decoderIdentity,
+				...hyperframesGraphTimingIdentity(compileIdentity.timing),
 			}),
 		),
 	});

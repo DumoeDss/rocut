@@ -9,6 +9,9 @@ mod discovery;
 mod dry;
 mod execution;
 mod execution_model;
+mod export_timing;
+#[cfg(test)]
+mod export_timing_tests;
 mod facts;
 mod fader;
 mod fader_model;

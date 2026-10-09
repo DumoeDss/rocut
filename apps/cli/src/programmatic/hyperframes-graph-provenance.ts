@@ -1,4 +1,8 @@
 import type { ProgrammaticSource } from "@opencut/editor-contracts";
+import {
+	hyperframesGraphTimingIdentity,
+	type HyperframesGraphTiming,
+} from "./hyperframes-graph-timing";
 import { HYPERFRAMES_FX_ADAPTER } from "./hyperframes-fx-executor";
 import {
 	assertHyperframesFxRuntime,
@@ -27,6 +31,9 @@ export interface HyperframesGraphCompileIdentity {
 	readonly packageIntegrity: string;
 	readonly adapterVersion: 1;
 	readonly adapterSha256: string;
+	readonly timing?: "native-exporter";
+	readonly timingRevision?: 1;
+	readonly mixerSha256?: string;
 }
 
 export function hasHyperframesGraphProfile(
@@ -40,6 +47,7 @@ export function hasHyperframesGraphProfile(
 
 export function hyperframesGraphCompileIdentity(
 	runtime: HyperframesFxRuntime,
+	timing?: HyperframesGraphTiming,
 ): HyperframesGraphCompileIdentity {
 	assertHyperframesFxRuntime(runtime);
 	return Object.freeze({
@@ -53,6 +61,7 @@ export function hyperframesGraphCompileIdentity(
 		packageIntegrity: runtime.packageIntegrity,
 		adapterVersion: HYPERFRAMES_FX_ADAPTER.version,
 		adapterSha256: HYPERFRAMES_FX_ADAPTER.sha256,
+		...hyperframesGraphTimingIdentity(timing),
 	});
 }
 
@@ -79,7 +88,10 @@ export async function verifyHyperframesGraphArchive({
 		throw Error(
 			"HyperFrames graph identity requires an explicitly declared compiled graph source",
 		);
-	const expected = hyperframesGraphCompileIdentity(runtime);
+	const expected = hyperframesGraphCompileIdentity(
+		runtime,
+		source.audio?.timing,
+	);
 	const resource = source.build.toolchainLock;
 	if (resource.byteLength > 4 * 1024 * 1024)
 		throw Error("HyperFrames graph archive lock exceeds the identity limit");

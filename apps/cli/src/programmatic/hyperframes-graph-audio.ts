@@ -88,6 +88,9 @@ export async function renderHyperframesGraphAudioRange(
 			const graph = {
 				version: 1,
 				semanticsProfile: "rocut-hyperframes-0.8.139-audio-graph-v1",
+				...(source.audio?.timing === undefined
+					? {}
+					: { timing: source.audio.timing }),
 				frameRate: source.frameRate,
 				durationFrames: source.durationFrames,
 				firstFrame,

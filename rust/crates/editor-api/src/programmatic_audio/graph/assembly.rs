@@ -15,6 +15,7 @@ fn add_track(
         .as_ref()
         .ok_or("Missing HyperFrames actual assembly geometry")?
         .expected_output_frames
+        .min(track.output_trim_frames.unwrap_or(u64::MAX))
         .min((output.len() as u64 / 2).saturating_sub(track.start_sample));
     let fader = track
         .fader

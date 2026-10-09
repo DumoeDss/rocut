@@ -5,6 +5,7 @@ use super::participation::sample_aligned;
 use super::rate_clock::RateClock;
 use super::rate_lane::{MAX_RATE, MIN_RATE};
 use crate::programmatic_audio::envelope::Point;
+use crate::programmatic_audio::timing::AudioTiming;
 use crate::programmatic_audio::{MAX_PCM_BYTES, MAX_SECONDS};
 use serde::Serialize;
 
@@ -134,10 +135,20 @@ fn ramp(clock: &RateClock, duration: f64, slices: usize, mono: bool) -> String {
     parts.join(";")
 }
 
+#[cfg(test)]
 pub(super) fn prepare(
     native: &NativeClip,
     points: &[Point],
     sample_rate: u32,
+) -> Result<RatePreparation, String> {
+    prepare_with_timing(native, points, sample_rate, AudioTiming::SampleAligned)
+}
+
+pub(super) fn prepare_with_timing(
+    native: &NativeClip,
+    points: &[Point],
+    sample_rate: u32,
+    timing: AudioTiming,
 ) -> Result<RatePreparation, String> {
     if !super::facts::seconds(native.media_start) {
         return Err("Invalid HyperFrames variable-rate media trim".into());
@@ -194,7 +205,9 @@ pub(super) fn prepare(
     let slices = (native.duration / 0.25).ceil().clamp(1.0, 240.0) as usize;
     let source_loop = native
         .r#loop
-        .then(|| super::rate_loop::prepare(native, source_duration, sample_rate))
+        .then(|| {
+            super::rate_loop::prepare_with_timing(native, source_duration, sample_rate, timing)
+        })
         .transpose()?;
     Ok(RatePreparation {
         profile: "hyperframes-0.8.139-exporter-prepare-s16-48k-v1",

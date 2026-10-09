@@ -29,6 +29,7 @@ fn admit(graph: &Value, snapshot: &Value) -> Result<(Snapshot, Vec<Participation
         .map_err(|error| format!("Invalid HyperFrames observation graph: {error}"))?;
     // Complete source, clock, track, topology, FX and canonical-buffer admission.
     let sample_rate = request.sample_rate;
+    let timing = request.timing;
     let plan = plan(request)?;
     let snapshot: Snapshot = serde_json::from_value(snapshot.clone())
         .map_err(|error| format!("Invalid HyperFrames observation snapshot: {error}"))?;
@@ -43,6 +44,7 @@ fn admit(graph: &Value, snapshot: &Value) -> Result<(Snapshot, Vec<Participation
                 admitted.resolved_bus_instance_id.as_deref(),
                 sample_rate,
                 plan.render_frames,
+                timing,
             )
         })
         .collect::<Result<Vec<_>, _>>()?;
