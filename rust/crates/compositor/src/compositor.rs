@@ -16,6 +16,7 @@ use crate::{
 };
 
 mod frame_composition;
+mod group_composition;
 
 const LAYER_SHADER_SOURCE: &str = include_str!("shaders/layer.wgsl");
 const BLEND_SHADER_SOURCE: &str = include_str!("shaders/blend.wgsl");
@@ -45,6 +46,8 @@ pub enum CompositorError {
     MissingTexture { texture_id: String },
     #[error("Transition progress must be finite and between zero and one, got {0}")]
     InvalidTransitionProgress(f32),
+    #[error("Invalid isolated composition group: {message}")]
+    InvalidGroup { message: &'static str },
     #[error("Failed to apply effects: {0}")]
     Effects(#[from] effects::EffectsError),
     #[error("Failed to present frame: {0}")]
@@ -300,6 +303,7 @@ impl Compositor {
         context: &GpuContext,
         frame: &FrameDescriptor,
     ) -> Result<wgpu::Texture, CompositorError> {
+        crate::group_admission::validate(frame)?;
         let prepared = crate::FramePreparation::new(frame.clone())?.complete()?;
         self.render_prepared_frame_to_texture(context, prepared)
     }
@@ -340,6 +344,7 @@ impl Compositor {
         context: &GpuContext,
         options: RenderFrameOptions<'_, '_>,
     ) -> Result<(), CompositorError> {
+        crate::group_admission::validate(options.frame)?;
         let prepared = crate::FramePreparation::new(options.frame.clone())?.complete()?;
         self.render_prepared_frame(context, prepared, options.surface)
     }

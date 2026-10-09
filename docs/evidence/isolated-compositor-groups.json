@@ -1,0 +1,62 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "renderer-foundation-verified",
+	"scope": "Resolved renderer transport and native isolated group composition; not authored project groups",
+	"semantics": [
+		"Start each group on transparent offscreen storage and recursively compose children",
+		"Apply group post-processing, then group opacity once, then blend into the parent",
+		"Child scene effects cannot read or change the parent or sibling backdrop",
+		"Empty and zero-opacity groups still validate and prepare their descendants",
+		"Liquid preparation follows child-before-group-post and outgoing-before-incoming render order"
+	],
+	"admission": {
+		"maxDepth": 8,
+		"maxGroups": 64,
+		"maxExpandedFrameItems": 4096,
+		"maxEffectGroups": 4096,
+		"maxEffectPasses": 4096,
+		"maxTransportBytes": 8388608,
+		"maxReservedTransientTargetBytes": 268435456,
+		"entireGroupedRequestIncludingRootSiblings": true,
+		"flatHistoricalAdmissionUnchanged": true,
+		"boundary": "Conservative plain-data transport and transient allocation reservations, not JS heap/process RSS/GPU driver/persistent texture pool caps. Reflect.ownKeys itself allocates a JS key list. Not an arbitrary getter or mutating Proxy sandbox."
+	},
+	"privateBuild": {
+		"directory": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/web-isolated-groups-RP3BEN",
+		"wasmSha256": "19ba3f57ad0c9b16a06a3f3bffd0d0743a439a750dd7cd7d72fab199f1c2c304",
+		"inputsSha256": "f4bd71ad0516d6ccf24ea37c80871489a0d894aa4038baac2f54ddabe62a2d2e",
+		"inputFiles": 530,
+		"changedInputsDuringBuild": [],
+		"rustc": "1.88.0",
+		"wasmPack": "0.13.1",
+		"scope": "Exact Rust/Cargo input bytes before and after this private build, not cross-machine reproducibility or renderer-bundle provenance",
+		"sharedDependenciesReplaced": false
+	},
+	"checks": {
+		"nativeCompositorLib": 8,
+		"groupWire": 7,
+		"sceneEffectWireRegression": 2,
+		"nativeGpu": 5,
+		"typescriptDescriptorTests": 2,
+		"typescriptDescriptorAssertions": 12,
+		"scopedTypesAndLint": "passed",
+		"browser": {
+			"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-group-preflight-pAvxMw/verification.json",
+			"sha256": "f93bba1b88992253cf3a4dab89c906755b2c3081c014064720fa12a8b5ba641d",
+			"version": "151.0.7922.34",
+			"passed": 62,
+			"errors": [],
+			"actualPublicWasmEntries": true,
+			"mockAdmission": false,
+			"actualNestedGroupGpuPixels": true,
+			"coverage": "Depth/count/effect/transport boundaries, cycles versus legal aliases, transition branch totals, invalid-new request invalidation, flat-frame compatibility, recovery and once-only nested opacity"
+		}
+	},
+	"remaining": [
+		"Persisted project group schema, serialization and migrations",
+		"Editing commands, Agent APIs, skill guidance and group/master UI",
+		"Transitions between whole grouped scene trees; current transition branches remain layer lists",
+		"Installed Elftia/Electron and full-song multi-engine authoring/export acceptance"
+	]
+}

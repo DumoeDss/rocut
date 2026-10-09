@@ -18,6 +18,8 @@ enum PassLocation {
     Outgoing(usize, usize),
     Incoming(usize, usize),
     Scene(usize),
+    Group(Vec<usize>),
+    Nested(Vec<usize>, Box<PassLocation>),
 }
 
 struct PassSpec {
@@ -48,43 +50,56 @@ fn budget_error() -> EffectsError {
     }
 }
 
-fn frame_memory(frame: &FrameDescriptor) -> u64 {
+pub(crate) fn frame_memory(frame: &FrameDescriptor) -> u64 {
     use crate::frame::EffectUniformValueDescriptor;
     let mut bytes = 8192u64.saturating_add(
         (frame.items.capacity() * std::mem::size_of::<FrameItemDescriptor>()) as u64,
     );
-    for item in &frame.items {
-        let layers: &[crate::LayerDescriptor] = match item {
-            FrameItemDescriptor::Layer(layer) => std::slice::from_ref(layer),
-            FrameItemDescriptor::Transition {
-                outgoing, incoming, ..
-            } => {
-                bytes = bytes.saturating_add(
-                    ((outgoing.capacity() + incoming.capacity())
-                        * std::mem::size_of::<crate::LayerDescriptor>()) as u64,
-                );
-                for layer in incoming {
+    let mut pending = vec![frame.items.as_slice()];
+    while let Some(items) = pending.pop() {
+        for item in items {
+            let layers: &[crate::LayerDescriptor] = match item {
+                FrameItemDescriptor::Group(group) => {
                     bytes = bytes.saturating_add(
-                        layer.texture_id.capacity() as u64
-                            + layer
-                                .mask
-                                .as_ref()
-                                .map_or(0, |mask| mask.texture_id.capacity())
-                                as u64,
+                        (group.items.capacity() * std::mem::size_of::<FrameItemDescriptor>())
+                            as u64,
                     );
+                    pending.push(&group.items);
+                    &[]
                 }
-                outgoing
+                FrameItemDescriptor::Layer(layer) => std::slice::from_ref(layer),
+                FrameItemDescriptor::Transition {
+                    outgoing, incoming, ..
+                } => {
+                    bytes = bytes.saturating_add(
+                        ((outgoing.capacity() + incoming.capacity())
+                            * std::mem::size_of::<crate::LayerDescriptor>())
+                            as u64,
+                    );
+                    for layer in incoming {
+                        bytes = bytes.saturating_add(
+                            layer.texture_id.capacity() as u64
+                                + layer
+                                    .mask
+                                    .as_ref()
+                                    .map_or(0, |mask| mask.texture_id.capacity())
+                                    as u64,
+                        );
+                    }
+                    outgoing
+                }
+                FrameItemDescriptor::SceneEffect { .. } => &[],
+            };
+            for layer in layers {
+                bytes = bytes.saturating_add(
+                    layer.texture_id.capacity() as u64
+                        + layer
+                            .mask
+                            .as_ref()
+                            .map_or(0, |mask| mask.texture_id.capacity())
+                            as u64,
+                );
             }
-            FrameItemDescriptor::SceneEffect { .. } => &[],
-        };
-        for layer in layers {
-            bytes = bytes.saturating_add(
-                layer.texture_id.capacity() as u64
-                    + layer
-                        .mask
-                        .as_ref()
-                        .map_or(0, |mask| mask.texture_id.capacity()) as u64,
-            );
         }
     }
     visit_groups(frame, |_, groups| {
@@ -118,26 +133,49 @@ fn visit_groups(
     frame: &FrameDescriptor,
     mut visit: impl FnMut(PassLocation, &[Vec<EffectPassDescriptor>]),
 ) {
-    for (index, item) in frame.items.iter().enumerate() {
+    visit_item_groups(&frame.items, &[], &mut visit);
+}
+
+fn visit_item_groups(
+    items: &[FrameItemDescriptor],
+    ancestors: &[usize],
+    visit: &mut impl FnMut(PassLocation, &[Vec<EffectPassDescriptor>]),
+) {
+    let location = |local| {
+        if ancestors.is_empty() {
+            local
+        } else {
+            PassLocation::Nested(ancestors.to_vec(), Box::new(local))
+        }
+    };
+    for (index, item) in items.iter().enumerate() {
         match item {
-            FrameItemDescriptor::Layer(layer) => {
-                visit(PassLocation::Layer(index), &layer.effect_pass_groups)
+            FrameItemDescriptor::Group(group) => {
+                let mut path = ancestors.to_vec();
+                path.push(index);
+                // GPU consumes descendants first, then the group's own post.
+                visit_item_groups(&group.items, &path, visit);
+                visit(PassLocation::Group(path), &group.effect_pass_groups);
             }
+            FrameItemDescriptor::Layer(layer) => visit(
+                location(PassLocation::Layer(index)),
+                &layer.effect_pass_groups,
+            ),
             FrameItemDescriptor::SceneEffect { effect_pass_groups } => {
-                visit(PassLocation::Scene(index), effect_pass_groups)
+                visit(location(PassLocation::Scene(index)), effect_pass_groups)
             }
             FrameItemDescriptor::Transition {
                 outgoing, incoming, ..
             } => {
                 for (layer_index, layer) in outgoing.iter().enumerate() {
                     visit(
-                        PassLocation::Outgoing(index, layer_index),
+                        location(PassLocation::Outgoing(index, layer_index)),
                         &layer.effect_pass_groups,
                     );
                 }
                 for (layer_index, layer) in incoming.iter().enumerate() {
                     visit(
-                        PassLocation::Incoming(index, layer_index),
+                        location(PassLocation::Incoming(index, layer_index)),
                         &layer.effect_pass_groups,
                     );
                 }
@@ -147,11 +185,13 @@ fn visit_groups(
 }
 
 impl FramePreparation {
-    pub fn new(frame: FrameDescriptor) -> Result<Self, EffectsError> {
+    pub fn new(frame: FrameDescriptor) -> Result<Self, crate::CompositorError> {
+        crate::group_admission::validate(&frame)?;
         if frame.width == 0 || frame.height == 0 {
             return Err(EffectsError::LiquidSimulation {
                 message: "Invalid frame dimensions".into(),
-            });
+            }
+            .into());
         }
         let mut specs = VecDeque::new();
         let mut admission = Ok(frame_memory(&frame));
@@ -216,7 +256,7 @@ impl FramePreparation {
         // aggregate limits CPU Liquid state, transport and retained raster only.
         let admitted = admission?;
         if !specs.is_empty() && admitted > LIQUID_REQUEST_MEMORY_LIMIT {
-            return Err(budget_error());
+            return Err(budget_error().into());
         }
         Ok(Self {
             frame,

@@ -131,3 +131,49 @@ fn groups_and_non_liquid_passes_do_not_shift_prepared_identity() {
     assert!(!prepared.liquid[0].matches(&second, [64, 48]));
     assert!(prepared.liquid[1].matches(&second, [64, 48]));
 }
+
+#[test]
+fn isolated_groups_prepare_children_then_group_post_without_skipping_zero_opacity() {
+    let children = frame().items;
+    let group = crate::IsolatedGroupDescriptor {
+        items: children,
+        opacity: 0.0,
+        blend_mode: crate::BlendMode::Normal,
+        effect_pass_groups: vec![vec![pass()]],
+    };
+    let mut frame = frame();
+    frame.items = vec![FrameItemDescriptor::Group(group)];
+    let preparation = FramePreparation::new(frame).unwrap();
+    assert_eq!(
+        preparation
+            .specs
+            .iter()
+            .map(|spec| spec.location.clone())
+            .collect::<Vec<_>>(),
+        vec![
+            PassLocation::Nested(vec![0], Box::new(PassLocation::Layer(0))),
+            PassLocation::Nested(vec![0], Box::new(PassLocation::Outgoing(1, 0))),
+            PassLocation::Nested(vec![0], Box::new(PassLocation::Incoming(1, 0))),
+            PassLocation::Nested(vec![0], Box::new(PassLocation::Scene(2))),
+            PassLocation::Group(vec![0]),
+        ]
+    );
+    assert_eq!(preparation.complete().unwrap().liquid.len(), 5);
+}
+
+#[test]
+fn invalid_nested_liquid_is_rejected_before_replay_even_in_an_invisible_group() {
+    let mut invalid = pass();
+    invalid.uniforms.clear();
+    let group = crate::IsolatedGroupDescriptor {
+        items: vec![FrameItemDescriptor::SceneEffect {
+            effect_pass_groups: vec![vec![invalid]],
+        }],
+        opacity: 0.0,
+        blend_mode: crate::BlendMode::Normal,
+        effect_pass_groups: vec![],
+    };
+    let mut frame = frame();
+    frame.items = vec![FrameItemDescriptor::Group(group)];
+    assert!(FramePreparation::new(frame).is_err());
+}

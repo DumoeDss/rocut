@@ -7,6 +7,8 @@ import { createCanvasSurface } from "../canvas-utils";
 import { BlurBackgroundNode } from "../nodes/blur-background-node";
 import { ColorNode } from "../nodes/color-node";
 import { EffectLayerNode } from "../nodes/effect-layer-node";
+import { IsolatedGroupNode } from "../nodes/isolated-group-node";
+import { collectIsolatedGroup } from "./collect-isolated-group";
 import { GraphicNode } from "../nodes/graphic-node";
 import { ProgrammaticNode } from "../nodes/programmatic-node";
 import { ImageNode } from "../nodes/image-node";
@@ -84,6 +86,14 @@ async function collectNode({
 	items: FrameItemDescriptor[];
 	textures: Map<string, TextureUploadDescriptor>;
 }): Promise<void> {
+	if (node instanceof IsolatedGroupNode) {
+		await collectIsolatedGroup({
+			node,
+			context: { renderer, path, items, textures },
+			collectNode,
+		});
+		return;
+	}
 	if (node instanceof TransitionTrackNode) {
 		await collectTransitionTrack({
 			node,

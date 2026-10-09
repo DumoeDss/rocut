@@ -23,6 +23,8 @@ pub struct CanvasClearDescriptor {
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum FrameItemDescriptor {
     Layer(LayerDescriptor),
+    /// An isolated transparent composition; effects never read its parent backdrop.
+    Group(IsolatedGroupDescriptor),
     Transition {
         outgoing: Vec<LayerDescriptor>,
         incoming: Vec<LayerDescriptor>,
@@ -32,6 +34,16 @@ pub enum FrameItemDescriptor {
         #[serde(rename = "effectPassGroups")]
         effect_pass_groups: Vec<Vec<EffectPassDescriptor>>,
     },
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct IsolatedGroupDescriptor {
+    pub items: Vec<FrameItemDescriptor>,
+    pub effect_pass_groups: Vec<Vec<EffectPassDescriptor>>,
+    /// Applied once after the entire group's post chain, not to each child.
+    pub opacity: f32,
+    pub blend_mode: BlendMode,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

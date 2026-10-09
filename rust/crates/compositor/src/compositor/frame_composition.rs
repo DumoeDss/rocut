@@ -10,11 +10,26 @@ impl Compositor {
         context: &GpuContext,
         encoder: &mut wgpu::CommandEncoder,
         frame: &FrameDescriptor,
+        scene: wgpu::Texture,
+        prepared: &mut std::collections::VecDeque<effects::PreparedLiquidPass>,
+    ) -> Result<wgpu::Texture, CompositorError> {
+        self.compose_item_list(context, encoder, frame, &frame.items, scene, prepared)
+    }
+
+    pub(super) fn compose_item_list(
+        &mut self,
+        context: &GpuContext,
+        encoder: &mut wgpu::CommandEncoder,
+        frame: &FrameDescriptor,
+        items: &[FrameItemDescriptor],
         mut scene: wgpu::Texture,
         prepared: &mut std::collections::VecDeque<effects::PreparedLiquidPass>,
     ) -> Result<wgpu::Texture, CompositorError> {
-        for item in &frame.items {
+        for item in items {
             scene = match item {
+                FrameItemDescriptor::Group(group) => {
+                    self.compose_group(context, encoder, frame, &scene, group, prepared)?
+                }
                 FrameItemDescriptor::Layer(layer) => self.compose_layers(
                     context,
                     encoder,

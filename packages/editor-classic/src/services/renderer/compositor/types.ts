@@ -23,6 +23,13 @@ export type FrameLayerDescriptor = {
 export type FrameItemDescriptor =
 	| FrameLayerDescriptor
 	| {
+			type: "group";
+			items: FrameItemDescriptor[];
+			effectPassGroups: EffectPass[][];
+			opacity: number;
+			blendMode: BlendMode;
+	  }
+	| {
 			type: "transition";
 			outgoing: Omit<FrameLayerDescriptor, "type">[];
 			incoming: Omit<FrameLayerDescriptor, "type">[];

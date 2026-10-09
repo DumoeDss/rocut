@@ -18,6 +18,8 @@ use crate::runtime_state::{DEFAULT_COMPOSITOR_HANDLE, HandleRegistry, HandleRegi
 #[path = "compositor_requests.rs"]
 mod requests;
 pub use requests::*;
+#[path = "compositor_frame_preflight.rs"]
+mod frame_preflight;
 
 struct CompositorRuntime {
     owner: u64,
@@ -277,6 +279,8 @@ pub fn render_frame_for_handle(handle: u32, options: JsValue) -> Result<(), JsVa
     perf::reset();
 
     let t_deserialize = perf::now_ms();
+    frame_preflight::validate(&options)
+        .map_err(|error| JsValue::from_str(&format!("Invalid frame descriptor: {error}")))?;
     let frame: FrameDescriptor = serde_wasm_bindgen::from_value(options)
         .map_err(|error| JsValue::from_str(&format!("Invalid frame descriptor: {error}")))?;
     perf::record("wasm.deserialize", perf::now_ms() - t_deserialize);
@@ -284,7 +288,7 @@ pub fn render_frame_for_handle(handle: u32, options: JsValue) -> Result<(), JsVa
     // Compatibility entry shares the same CPU algorithm. Preparation completes
     // before acquiring GPU_RUNTIME, Compositor, encoder or a surface texture.
     let prepared = FramePreparation::new(frame)
-        .and_then(FramePreparation::complete)
+        .and_then(|preparation| preparation.complete().map_err(Into::into))
         .map_err(|error| JsValue::from_str(&error.to_string()))?;
     render_prepared(handle, prepared)
 }

@@ -69,13 +69,17 @@ pub fn begin_render_frame_for_handle(handle: u32, options: JsValue) -> Result<u3
     // Invalidate before parsing too: an invalid newer frame must not publish the old one.
     super::invalidate_runtime(handle)?;
     let owner = identity(handle)?;
+    super::frame_preflight::validate(&options).map_err(|value| {
+        error("RENDER_FAILED", &format!("Invalid frame descriptor: {value}"))
+    })?;
     let frame: FrameDescriptor = serde_wasm_bindgen::from_value(options).map_err(|value| {
         error(
             "RENDER_FAILED",
             &format!("Invalid frame descriptor: {value}"),
         )
     })?;
-    let preparation = FramePreparation::new(frame).map_err(preparation_error)?;
+    let preparation = FramePreparation::new(frame)
+        .map_err(|value| error("RENDER_FAILED", &value.to_string()))?;
     REQUESTS.with(|requests| {
         requests
             .borrow_mut()
