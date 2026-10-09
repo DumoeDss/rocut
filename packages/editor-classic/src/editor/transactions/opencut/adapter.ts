@@ -511,8 +511,9 @@ export function createOpenCutTransactionDocumentAdapter({
 						.filter(
 							(clip) =>
 								clip.editing &&
-								canonical(oldClips.get(clip.id)?.editing) !==
-									canonical(clip.editing),
+								(canonical(oldClips.get(clip.id)?.editing) !==
+									canonical(clip.editing) ||
+									oldClips.get(clip.id)?.duration !== clip.duration),
 						)
 						.map((clip) => clip.id),
 				);
