@@ -12,6 +12,8 @@ fn add_track(
 ) -> Result<(), String> {
     let frames = track
         .fx_stage
+        .as_ref()
+        .ok_or("Missing HyperFrames actual assembly geometry")?
         .expected_output_frames
         .min((output.len() as u64 / 2).saturating_sub(track.start_sample));
     let fader = track
@@ -65,7 +67,12 @@ pub fn mix_hyperframes_audio_bus_pcm(input: Vec<u8>) -> Result<Vec<u8>, String> 
             continue;
         }
         let id = track.instance_id.clone();
-        let count = track.fx_stage.max_output_bytes;
+        let count = track
+            .fx_stage
+            .as_ref()
+            .ok_or("Missing HyperFrames actual assembly geometry")?
+            .expected_output_frames
+            * 8;
         let pcm = assembly_wire::take(&mut input, BufferKind::TrackPostFx, &id, count)?;
         add_track(
             &mut output,
@@ -97,7 +104,12 @@ pub fn mix_hyperframes_audio_master_pcm(input: Vec<u8>) -> Result<Vec<u8>, Strin
             continue;
         }
         let id = track.instance_id.clone();
-        let count = track.fx_stage.max_output_bytes;
+        let count = track
+            .fx_stage
+            .as_ref()
+            .ok_or("Missing HyperFrames actual assembly geometry")?
+            .expected_output_frames
+            * 8;
         let pcm = assembly_wire::take(&mut input, BufferKind::TrackPostFx, &id, count)?;
         add_track(
             &mut output,

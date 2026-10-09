@@ -18,6 +18,8 @@ pub(super) struct RatePreparation {
     pub native_sample_rate: u32,
     pub native_max_frames: u64,
     pub native_max_bytes: u64,
+    pub graph_max_frames: u64,
+    pub observed_pcm: bool,
     pub stereo_filter: String,
     pub mono_filter: String,
     pub resample_filter: String,
@@ -25,6 +27,27 @@ pub(super) struct RatePreparation {
     pub clock_cells: usize,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source_loop: Option<super::rate_loop::SourceLoop>,
+}
+
+/// Only this newly characterized nonloop path preserves measured native length.
+/// Aligned clips and the independent source-loop extension keep their contract.
+pub(super) fn observed_pcm(native: &NativeClip, sample_rate: u32) -> bool {
+    !native.r#loop
+        && [sample_rate, 48000]
+            .into_iter()
+            .any(|rate| sample_aligned(native.duration * f64::from(rate), "clip duration").is_err())
+}
+
+fn parameter_number(value: f64) -> String {
+    // JS String, unlike toFixed filter parameters, keeps tiny values in exponent
+    // notation. Preserve native FFmpeg's acceptance/rejection of those strings.
+    if value == 0.0 {
+        "0".into()
+    } else if value < 1e-6 {
+        format!("{:e}", value)
+    } else {
+        value.to_string()
+    }
 }
 
 /// Number(value.toFixed(6)).toString() for admitted nonnegative bounded values.
@@ -122,6 +145,7 @@ pub(super) fn prepare(
     // Nonloop preparation forwards the original fractional trim to FFmpeg.
     // Its time-parser/source-sample rounding must not be replaced with ours.
     // The independent source-loop extension still requires aligned tile phase.
+    let observed_pcm = observed_pcm(native, sample_rate);
     for sr in [sample_rate, 48000] {
         if native.r#loop {
             sample_aligned(
@@ -129,19 +153,33 @@ pub(super) fn prepare(
                 "variable-rate media trim",
             )?;
         }
-        sample_aligned(
-            native.duration * f64::from(sr),
-            "variable-rate clip duration",
-        )?;
+        if !observed_pcm {
+            sample_aligned(
+                native.duration * f64::from(sr),
+                "variable-rate clip duration",
+            )?;
+        }
     }
-    let frames = sample_aligned(
-        native.duration * f64::from(sample_rate),
-        "variable-rate clip duration",
-    )?;
-    let native_frames = sample_aligned(
-        native.duration * 48000.0,
-        "native rate preparation duration",
-    )?;
+    if !super::facts::seconds(native.duration) {
+        return Err("Invalid HyperFrames variable-rate clip duration".into());
+    }
+    let native_frames = if observed_pcm {
+        (native.duration * 48000.0).ceil() as u64
+    } else {
+        sample_aligned(
+            native.duration * 48000.0,
+            "native rate preparation duration",
+        )?
+    };
+    // Capacity is deliberately not the semantic duration or measured PCM count.
+    let frames = if observed_pcm {
+        ((native_frames + 1) * u64::from(sample_rate)).div_ceil(48000) + 1
+    } else {
+        sample_aligned(
+            native.duration * f64::from(sample_rate),
+            "variable-rate clip duration",
+        )?
+    };
     if frames > MAX_PCM_BYTES / 8 || native_frames > MAX_PCM_BYTES / 8 {
         return Err("HyperFrames full-clip rate preparation exceeds the PCM safety budget".into());
     }
@@ -163,26 +201,22 @@ pub(super) fn prepare(
         media_start_seconds: if source_loop.is_some() {
             "0".into()
         } else {
-            // JS String uses exponential notation below 1e-6 and normalizes
-            // negative zero. Preserve that native IO parameter, not just f64.
-            if native.media_start == 0.0 {
-                "0".into()
-            } else if native.media_start < 1e-6 {
-                format!("{:e}", native.media_start)
-            } else {
-                native.media_start.to_string()
-            }
+            parameter_number(native.media_start)
         },
-        source_duration_seconds: source_duration.to_string(),
-        duration_seconds: native.duration.to_string(),
+        source_duration_seconds: parameter_number(source_duration),
+        duration_seconds: parameter_number(native.duration),
         native_sample_rate: 48000,
         native_max_frames: native_frames + 1,
         native_max_bytes: (native_frames + 1) * 4,
+        graph_max_frames: frames,
+        observed_pcm,
         stereo_filter: ramp(&clock, native.duration, slices, false),
         mono_filter: ramp(&clock, native.duration, slices, true),
-        resample_filter: format!(
-            "aresample={sample_rate},apad=whole_len={frames},atrim=end_sample={frames}"
-        ),
+        resample_filter: if observed_pcm {
+            format!("aresample={sample_rate}")
+        } else {
+            format!("aresample={sample_rate},apad=whole_len={frames},atrim=end_sample={frames}")
+        },
         slices,
         clock_cells: 2 + (points.len() - 1) * 48,
         source_loop,

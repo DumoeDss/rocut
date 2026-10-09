@@ -11,7 +11,10 @@ pub(super) fn estimate(
     crop_frames: u64,
     encoded_bytes: u64,
 ) -> Result<WorkingSet, String> {
-    let decoded = sources.iter().map(|source| source.pcm_bytes).sum::<u64>();
+    let decoded = sources
+        .iter()
+        .map(|source| source.max_pcm_bytes)
+        .sum::<u64>();
     if decoded > MAX_PCM_BYTES {
         return Err("HyperFrames complete tempo-adjusted dry-PCM exceeds its budget".into());
     }
@@ -24,6 +27,7 @@ pub(super) fn estimate(
                 recipe.stereo_filter.len() as u64
                     + recipe.mono_filter.len() as u64
                     + recipe.resample_filter.len() as u64
+                    + 2 * source.preparation_key.as_ref().map_or(0, String::len) as u64
                     + recipe.source_loop.as_ref().map_or(0, |source_loop| {
                         (source_loop.stereo_filter.len() + source_loop.mono_filter.len()) as u64
                     })
@@ -35,7 +39,7 @@ pub(super) fn estimate(
             .filter_map(|source| {
                 source.rate_preparation.as_ref().map(|recipe| {
                     2 * recipe.native_max_bytes
-                        + 2 * source.pcm_bytes
+                        + 2 * source.max_pcm_bytes
                         + recipe.clock_cells as u64 * 16
                         + recipe
                             .source_loop
@@ -50,7 +54,7 @@ pub(super) fn estimate(
     // not turn an otherwise excessive full-history graph into an admitted one.
     let retained_tracks = tracks
         .iter()
-        .map(|track| track.fx_stage.max_output_bytes)
+        .map(|track| track.fx_stage.as_ref().unwrap().max_output_bytes)
         .sum::<u64>();
     let retained_buses = buses
         .iter()
@@ -60,14 +64,14 @@ pub(super) fn estimate(
         + tracks
             .iter()
             .filter(|track| track.resolved_bus_instance_id.is_none())
-            .map(|track| track.fx_stage.max_output_bytes)
+            .map(|track| track.fx_stage.as_ref().unwrap().max_output_bytes)
             .sum::<u64>();
     let mut assembly_input = master_input;
     for bus in buses {
         let input = tracks
             .iter()
             .filter(|track| track.resolved_bus_instance_id.as_deref() == Some(&bus.instance_id))
-            .map(|track| track.fx_stage.max_output_bytes)
+            .map(|track| track.fx_stage.as_ref().unwrap().max_output_bytes)
             .sum::<u64>();
         assembly_input = assembly_input.max(input);
     }
@@ -81,7 +85,7 @@ pub(super) fn estimate(
     let mut automation_bytes = 0;
     for stage in tracks
         .iter()
-        .map(|track| &track.fx_stage)
+        .map(|track| track.fx_stage.as_ref().unwrap())
         .chain(buses.iter().map(|bus| &bus.fx_stage))
     {
         // Native scheduling allocates Float32 curves; reserve three copies
@@ -147,7 +151,7 @@ pub(super) fn estimate(
     // dry/gain kernels, not only the later native FX transport stage.
     let largest_track = tracks
         .iter()
-        .map(|track| track.fx_stage.expected_output_frames * 8)
+        .map(|track| track.fx_stage.as_ref().unwrap().expected_output_frames * 8)
         .max()
         .unwrap_or(0);
     // Full decoded source already persists above. Dry preparation additionally

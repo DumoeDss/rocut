@@ -94,6 +94,10 @@ fn variable_rate_fractional_placement_duration_and_fallback_still_require_eviden
     input = variable_request(48000);
     input["graph"]["snapshot"]["tracks"][0]["native"]["duration"] = json!(1.13 + 0.5 / 48000.0);
     input["graph"]["snapshot"]["tracks"][0]["native"]["end"] = json!(1.13 + 0.5 / 48000.0);
+    let pending = prepared(&input);
+    assert_eq!(pending["pcmGeometryReady"], false);
+    assert!(pending["decodedSources"][0]["frames"].is_null());
+    input["graph"]["snapshot"]["tracks"][0]["native"]["loop"] = json!(true);
     rejected(&input, "fractional-sample");
     input = variable_request(48000);
     let track = &mut input["graph"]["snapshot"]["tracks"][0];

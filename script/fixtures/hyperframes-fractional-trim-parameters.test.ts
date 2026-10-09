@@ -48,7 +48,7 @@ native(
 				assert.equal(result.plan.tracks[0].sourceStartSample, 0);
 			}
 			track.native.mediaStart = testCase.mediaStart;
-			for (const kind of ["start", "duration", "loop"] as const) {
+			for (const kind of ["start", "loop"] as const) {
 				const invalid = structuredClone(request),
 					clip = invalid.graph.snapshot.tracks[0].native;
 				if (kind === "loop") {

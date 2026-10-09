@@ -20,18 +20,27 @@ pub fn prepare_hyperframes_audio_dry_track_pcm(input: Vec<u8>) -> Result<Vec<u8>
         .iter()
         .find(|source| source.id == track.decoded_source_id)
         .ok_or("Missing HyperFrames decoded source plan")?;
-    if envelope.manifest.buffer_id != source.id || envelope.bytes.len() as u64 != source.pcm_bytes {
+    let stage = track
+        .fx_stage
+        .as_ref()
+        .ok_or("Missing HyperFrames actual dry geometry")?;
+    let frames = source
+        .frames
+        .ok_or("Missing HyperFrames actual decoded geometry")?;
+    if envelope.manifest.buffer_id != source.id
+        || Some(envelope.bytes.len() as u64) != source.pcm_bytes
+    {
         return Err("HyperFrames dry PCM does not match the checked decoded source".into());
     }
-    let mut output = vec![0u8; track.fx_stage.input_frames as usize * 8];
-    for frame in 0..track.fx_stage.input_frames {
+    let mut output = vec![0u8; stage.input_frames as usize * 8];
+    for frame in 0..stage.input_frames {
         let source_index = track.source_start_sample
             + if track.r#loop {
                 frame % track.source_period_frames
             } else {
                 frame
             };
-        if source_index < source.frames {
+        if source_index < frames {
             let from = source_index as usize * 8;
             let to = frame as usize * 8;
             output[to..to + 8].copy_from_slice(&envelope.bytes[from..from + 8]);
@@ -52,8 +61,12 @@ pub fn apply_hyperframes_audio_track_gain_pcm(input: Vec<u8>) -> Result<Vec<u8>,
         .iter()
         .find(|track| track.instance_id == envelope.manifest.instance_id)
         .ok_or("Unknown HyperFrames post-FX track instance")?;
+    let stage = track
+        .fx_stage
+        .as_ref()
+        .ok_or("Missing HyperFrames actual FX geometry")?;
     if envelope.manifest.buffer_id != track.instance_id
-        || envelope.bytes.len() as u64 != track.fx_stage.expected_output_frames * 8
+        || envelope.bytes.len() as u64 != stage.expected_output_frames * 8
     {
         return Err("HyperFrames post-FX PCM does not match the checked track stage".into());
     }

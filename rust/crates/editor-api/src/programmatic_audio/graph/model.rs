@@ -28,7 +28,7 @@ pub(super) struct Source {
     pub byte_length: u64,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub(super) struct NativeClip {
     pub start: f64,

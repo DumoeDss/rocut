@@ -38,6 +38,9 @@ pub(super) fn read(input: &[u8]) -> Result<Envelope<'_>, String> {
         return Err("Invalid HyperFrames stereo PCM byte count".into());
     }
     let plan = prepare(&manifest.request)?;
+    if !plan.pcm_geometry_ready {
+        return Err("HyperFrames decoded PCM geometry must be finalized before execution".into());
+    }
     if bytes
         .chunks_exact(4)
         .any(|value| !f32::from_le_bytes(value.try_into().unwrap()).is_finite())

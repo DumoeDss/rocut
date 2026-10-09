@@ -30,6 +30,7 @@ mod pcm;
 mod plan;
 mod plan_model;
 mod rate_clock;
+mod rate_geometry;
 mod rate_lane;
 mod rate_loop;
 #[cfg(test)]

@@ -12,6 +12,8 @@ pub(super) struct ExecutionRequest {
     pub graph: GraphRequest,
     #[serde(default)]
     pub fader_observations: Vec<FaderObservation>,
+    #[serde(default)]
+    pub decoded_source_observations: Option<Vec<super::rate_geometry::Observation>>,
 }
 
 #[derive(Serialize)]
@@ -21,6 +23,7 @@ pub(super) struct ExecutionPlan {
     pub semantics_profile: &'static str,
     pub stage: &'static str,
     pub execution_ready: bool,
+    pub pcm_geometry_ready: bool,
     pub state_policy: &'static str,
     pub sample_phase_policy: &'static str,
     pub sample_rate: u32,
@@ -44,8 +47,12 @@ pub(super) struct DecodedSource {
     pub sample_rate: u32,
     pub channels: u32,
     pub source_sample: u64,
-    pub frames: u64,
-    pub pcm_bytes: u64,
+    pub frames: Option<u64>,
+    pub pcm_bytes: Option<u64>,
+    pub max_frames: u64,
+    pub max_pcm_bytes: u64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub preparation_key: Option<String>,
     pub gain_applied: bool,
     pub required: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -82,7 +89,7 @@ pub(super) struct PreparedTrack {
     pub audible_media: bool,
     pub requires_pcm: bool,
     pub fader: Option<GainEnvelope>,
-    pub fx_stage: FxStage,
+    pub fx_stage: Option<FxStage>,
 }
 
 #[derive(Serialize)]

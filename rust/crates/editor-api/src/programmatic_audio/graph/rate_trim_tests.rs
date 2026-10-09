@@ -54,7 +54,7 @@ fn fractional_nonloop_trim_preserves_original_parameter_and_complete_recipe() {
 }
 
 #[test]
-fn fractional_trim_does_not_relax_loop_duration_or_timing_safety() {
+fn fractional_trim_does_not_relax_loop_phase_or_invalid_timing() {
     let points = points();
     for sample_rate in [44100, 48000] {
         let mut clip = native();
@@ -67,7 +67,7 @@ fn fractional_trim_does_not_relax_loop_duration_or_timing_safety() {
                 .unwrap_err()
                 .contains("media trim")
         );
-        clip.r#loop = false;
+        clip.media_start = 0.1;
         clip.duration += 0.25 / f64::from(sample_rate);
         assert!(
             prepare(&clip, &points, sample_rate)

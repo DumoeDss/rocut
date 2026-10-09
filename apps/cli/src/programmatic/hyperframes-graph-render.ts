@@ -34,7 +34,12 @@ export async function renderHyperframesGraphStages({
 	signal.throwIfAborted();
 	// Stabilize graph evidence across awaits and repeated Rust kernel admission.
 	const evidenceJson = JSON.stringify(request);
-	const evidence: unknown = JSON.parse(evidenceJson);
+	let evidence: unknown = JSON.parse(evidenceJson);
+	// Observations are produced only by this run's immutable source snapshot/IO.
+	if (
+		Object.prototype.hasOwnProperty.call(evidence, "decodedSourceObservations")
+	)
+		throw Error("HyperFrames decoder observations must be collected by Host");
 	const response = JSON.parse(
 		kernels.resolveHyperframesAudioExecutionPlanJson(evidenceJson),
 	) as {
@@ -43,7 +48,7 @@ export async function renderHyperframesGraphStages({
 	};
 	if (response.error || !response.plan)
 		throw Error(response.error ?? "Missing HyperFrames graph stage plan");
-	const plan = response.plan;
+	let plan = response.plan;
 	const supplied = new Map(sources.map((source) => [source.id, source]));
 	if (supplied.size !== sources.length || supplied.size !== plan.sources.length)
 		throw Error("HyperFrames source set disagrees with Rust admission");
@@ -73,47 +78,94 @@ export async function renderHyperframesGraphStages({
 		}),
 	);
 	const decoded = new Map<string, { pcm: Buffer; hasAudio: boolean }>();
+	const observations: {
+		decodedSourceId: string;
+		preparationKey: string;
+		nativeFrames: number;
+		frames: number;
+	}[] = [];
 	for (const input of plan.decodedSources) {
 		signal.throwIfAborted();
 		if (!input.required) continue;
 		const source = sourceMap.get(input.resourceId);
 		if (!source)
 			throw Error("HyperFrames graph references an unadmitted source");
-		const result = input.ratePreparation
-			? await prepareHyperframesRateAudio({
-					decoder,
-					body: source.body,
-					mimeType: source.mimeType,
-					sampleRate: input.sampleRate,
-					frames: input.frames,
-					recipe: input.ratePreparation,
-					signal,
-				})
-			: await decodeNativeAudioSegment({
-					decoder,
-					body: source.body,
-					request: {
+		const result: { pcm: Buffer; hasAudio: boolean; nativeFrames?: number } =
+			input.ratePreparation
+				? await prepareHyperframesRateAudio({
+						decoder,
+						body: source.body,
 						mimeType: source.mimeType,
-						audioStreamIndex: 0,
 						sampleRate: input.sampleRate,
-						sourceSample: input.sourceSample,
 						frames: input.frames,
-						playbackRate: input.playbackRate,
-						toneFrequency: 1,
-					},
-					signal,
-				});
+						recipe: input.ratePreparation,
+						signal,
+					})
+				: await decodeNativeAudioSegment({
+						decoder,
+						body: source.body,
+						request: {
+							mimeType: source.mimeType,
+							audioStreamIndex: 0,
+							sampleRate: input.sampleRate,
+							sourceSample: input.sourceSample,
+							frames: input.maxFrames,
+							playbackRate: input.playbackRate,
+							toneFrequency: 1,
+						},
+						signal,
+					});
 		// A real video without an audio stream contributes silence, not a fabricated
 		// soundtrack. Its admitted geometry still governs the graph's dry buffer.
-		const pcm = result.hasAudio ? result.pcm : Buffer.alloc(input.pcmBytes);
-		if (pcm.length !== input.pcmBytes)
-			throw Error("HyperFrames decoded PCM disagrees with Rust geometry");
+		const observed = input.ratePreparation?.observedPcm;
+		const pcm =
+			result.hasAudio || observed
+				? result.pcm
+				: Buffer.alloc(input.maxPcmBytes);
+		if (observed) {
+			if (
+				input.preparationKey === undefined ||
+				result.nativeFrames === undefined
+			)
+				throw Error("Missing HyperFrames native preparation observation");
+			observations.push({
+				decodedSourceId: input.id,
+				preparationKey: input.preparationKey,
+				nativeFrames: result.nativeFrames,
+				frames: pcm.length / 8,
+			});
+		}
 		decoded.set(input.id, { pcm, hasAudio: result.hasAudio });
+	}
+	if (!plan.pcmGeometryReady) {
+		evidence = {
+			...(evidence as Record<string, unknown>),
+			decodedSourceObservations: observations,
+		};
+		const finalized = JSON.parse(
+			kernels.resolveHyperframesAudioExecutionPlanJson(
+				JSON.stringify(evidence),
+			),
+		) as {
+			plan?: HyperframesGraphStagePlan;
+			error?: string;
+		};
+		if (finalized.error || !finalized.plan?.pcmGeometryReady)
+			throw Error(
+				finalized.error ?? "Missing finalized HyperFrames PCM geometry",
+			);
+		plan = finalized.plan;
+	}
+	for (const input of plan.decodedSources) {
+		if (input.required && decoded.get(input.id)?.pcm.length !== input.pcmBytes)
+			throw Error("HyperFrames decoded PCM disagrees with Rust geometry");
 	}
 	const tracks = new Map<string, HyperframesGraphPcmBuffer>();
 	for (const track of plan.tracks) {
 		signal.throwIfAborted();
 		if (!track.requiresPcm) continue;
+		if (!track.fxStage)
+			throw Error("Missing finalized HyperFrames FX geometry");
 		const source = decoded.get(track.decodedSourceId);
 		if (!source) throw Error("Missing HyperFrames decoded buffer");
 		const dry = kernels.prepareHyperframesAudioDryTrackPcm(

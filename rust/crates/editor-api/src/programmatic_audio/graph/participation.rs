@@ -29,10 +29,18 @@ pub(super) fn participation(
     canonical_frames: u64,
 ) -> Result<Participation, String> {
     let start_sample = sample_aligned(track.native.start * f64::from(sample_rate), "clip start")?;
-    let frames = sample_aligned(
-        track.native.duration * f64::from(sample_rate),
-        "clip duration",
-    )?;
+    let frames = if super::rate_lane::admit(track)?.is_some()
+        && super::rate_prepare::observed_pcm(&track.native, sample_rate)
+    {
+        // Participation is based on the declaration, never the decoder's later
+        // observation. A short/empty decode cannot bypass complete gain history.
+        (track.native.duration * f64::from(sample_rate)).ceil() as u64
+    } else {
+        sample_aligned(
+            track.native.duration * f64::from(sample_rate),
+            "clip duration",
+        )?
+    };
     let input_frames = frames.min(canonical_frames.saturating_sub(start_sample));
     let audible_media = audible_media(track);
     let muted = track.authored_muted || track.ancestor_hidden || !audible_media;

@@ -213,6 +213,10 @@ fn rate_prepare_keeps_phase_and_full_history_budget_gates() {
     let points = points(json!([{"t":0,"v":0.5},{"t":1,"v":2}]));
     let mut clip = native(1.0);
     clip.duration = 1.0 + 0.25 / 48000.0;
+    let observed = prepare(&clip, &points, 48000).unwrap();
+    assert!(observed.observed_pcm);
+    assert_eq!(observed.resample_filter, "aresample=48000");
+    clip.r#loop = true;
     assert!(
         prepare(&clip, &points, 48000)
             .unwrap_err()

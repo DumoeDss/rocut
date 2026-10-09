@@ -1,0 +1,200 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "bounded-nonloop-variable-rate-duration-verified",
+	"scope": "Preserve original fractional duration and actual native/graph PCM length through complete FX history and final crop; trusted graph declarations, real source/FFmpeg/native FX",
+	"implementation": [
+		"Rust admits full capacities and working-set/observation-payload bounds before decoder IO",
+		"Pending measured sources expose null actual frames/pcmBytes/track FX stage and cannot execute PCM kernels",
+		"Host preserves original source sample rate through original PCM16/48k preparation; graph resampling has no pad/trim",
+		"Rust finalizes geometry from bounded source-SHA/exact-clip-key-bound observations; Host rejects caller-prefilled observations",
+		"Actual complete PCM drives track FX; capacity remains independently reserved; placement/crop stays last",
+		"Actual empty input remains participating and requires complete fader evidence; only its verified empty post-FX descriptor is admitted"
+	],
+	"privateBuild": {
+		"directory": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/web-scene-transition-1ST2Rf",
+		"wasmSha256": "992ffb5b51a1d138a0f5ed6cf3d2743c3b84aa57dbbd1c537cbae871e802c84a",
+		"wasmBytes": 9986473,
+		"sourceManifest": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/scene-transition-source-JeXUmF/source-manifest.json",
+		"sourceManifestSha256": "4fc50838d1581293ade98d5bf8dcebb8760ee31308975d603d6fc06c0b2e822a",
+		"audioInputManifest": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-duration-source-20261009-aeddb882/manifest.json",
+		"audioInputFilesDigest": "7c9f9a4940b48dad0ebca4ecd5ef9adc7c8df1196ef60fed421f7bda9ad1efe7",
+		"postBuildFixture": {
+			"path": "script/fixtures/hyperframes-fractional-duration-tiny.test.ts",
+			"sha256": "7d445e0f269772a5eca2cd3e917182735fdf6267917caa0722ca9111efa2b0aa",
+			"productionSourceChangedAfterBuild": false
+		}
+	},
+	"checks": {
+		"uniqueBunTestsPassed": 8,
+		"scopedTypesExplicitRecommendedLintRustfmtUtf8AndDiff": "passed",
+		"productionReport": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-fractional-duration-IgNqct/verification.json",
+		"productionReportSha256": "a31a42e4733695bd749d6c7cd7d7ac56bb502487df240f5e62f842cc87d5bd6b",
+		"pcmCases": 12,
+		"statefulSaturateDelayCases": 4,
+		"maxPcmError": 0,
+		"rmsPcmError": 0,
+		"cropByteExact": true,
+		"deterministicRepeat": true,
+		"sourceIdentityGeometryTamperingAndCallerObservationsRejected": true,
+		"roundedDurationNegativeMaximumErrors": [0.8052978515625, 0.73681640625],
+		"preFxGainNegativeMaximumErrors": [
+			0.029093362390995026, 0.028768226504325867, 0.027769960463047028,
+			0.026900000870227814
+		],
+		"sameDurationDifferentSourceRates": {
+			"durationExpression": "0.5 + 0.25 / 48000",
+			"sourceRates": [48000, 44100],
+			"nativeFrames": [24000, 24001],
+			"graph48000Frames": [24000, 24001],
+			"graph44100Frames": [22050, 22051],
+			"graphCapacity48000": 24003,
+			"graphCapacity44100": 22053
+		},
+		"tinyIo": {
+			"report": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-duration-tiny-XTNmoX/verification.json",
+			"sha256": "4697cbff01c717d3fcc9726c4fecf07b95f58d8c5ac04210c3cb2b291c3a5a00",
+			"cases": 6,
+			"successfulRealEmptyPreparations": 4,
+			"successfulRealEmptyFxAndMasterGraphs": 4,
+			"independentOriginalEmptyFxRootCalls": 2,
+			"originalEmptyFxRuntimeSha256": "eec4e4349b87ee1542b88a32a4a5dd1428a2bc50fda7ad124c27083d126eb426",
+			"successfulEmptyDurations": [0.000001, 0.00001],
+			"graphSampleRates": [48000, 44100],
+			"emptyNativeFrames": 0,
+			"emptyGraphFrames": 0,
+			"emptyFxOutputFrames": 0,
+			"matchedNativeFailures": 2,
+			"rejectedDuration": 1e-7,
+			"originalRejectedSourceSpan": "1.9999999999999996e-7",
+			"hostError": "Native audio decoder failed (exit 1)",
+			"failedInputConvertedToSilence": false
+		}
+	},
+	"nativeChecks": {
+		"reportRoot": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326",
+		"finalDuration": {
+			"report": "scene-transition-native-hb8oVC/verification.json",
+			"sha256": "d4e7930620ce3cacec095e5d48185d0b94f51818b8bcccf38ce00fedcb14ba1f",
+			"exitCode": 0,
+			"passed": 8
+		},
+		"preGoldenFixSourceManifestSha256": "16855df89cd1720ed21e5820e4465ba3e922a51fd2ebd5fc4f584899cbf379c7",
+		"sourceDifference": "Final JeXUmF changes only the duration test golden and adds explicit fixture/JSON/recipe bit checks; production sources match P4BM2B",
+		"editorApiLib": {
+			"report": "scene-transition-native-xZJzK9/verification.json",
+			"sha256": "dbd2f52cdcdf60e968baa8e53f3448f1a9aa0427416df91db8140bff47bb5917",
+			"exitCode": 0,
+			"passed": 322,
+			"intentionallyIgnored": 1
+		},
+		"assemblyRateAndFailedDurationBatch": {
+			"report": "scene-transition-native-IMoixW/verification.json",
+			"sha256": "7c7253a32ffe04cb90072ee5089aca096274caf69648117c0722dea50937fa9d",
+			"exitCode": 101,
+			"assemblyPassed": 9,
+			"ratePassed": 4,
+			"durationPassed": 7,
+			"durationFailed": 1,
+			"overallBatchPassed": false
+		},
+		"loopTrimMaster": {
+			"report": "scene-transition-native-Grywud/verification.json",
+			"sha256": "16c203503a7574d0ce48800ff7580ace95c251e18095bd5f18fbdbca97c31a9b",
+			"exitCode": 0,
+			"loopPassed": 4,
+			"trimPassed": 3,
+			"masterPassed": 4
+		}
+	},
+	"sameBinaryRegressions": [
+		{
+			"kind": "fractional-trim-parameters",
+			"recipes": 22,
+			"remainingStartAndLoopGateNegatives": 4
+		},
+		{
+			"kind": "fractional-trim-native-io",
+			"report": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-fractional-trim-io-neEFIz/verification.json",
+			"sha256": "fd1401f6190d1186a2289617d2db74a141a10055d34c92f2e2db40f7965dbac0",
+			"cases": 14
+		},
+		{
+			"kind": "fractional-trim",
+			"report": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-fractional-trim-DlRNwU/verification.json",
+			"sha256": "de05d7163d7967d0541ec988af8a550260dba40b4eaa9a29f68086a0414a91bb",
+			"pcmCases": 8,
+			"graphCases": 2
+		},
+		{
+			"kind": "aligned-variable-rate",
+			"report": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-rate-production-ACD0me/verification.json",
+			"sha256": "4f66c0efc83a7995a3a3ba68cc6a204a50ddae09a16456b47d0a85a8d103bd51",
+			"pcmCases": 18,
+			"graphCases": 10
+		},
+		{
+			"kind": "aligned-loop",
+			"report": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-rate-loop-production-4dxLvd/verification.json",
+			"sha256": "afd08704f058b9f3935aaba51b0f6276ff1087759a4728ee6821d3ea7d367eeb",
+			"pcmCases": 10,
+			"graphCases": 2
+		},
+		{
+			"kind": "aligned-loop-eof-boundary",
+			"report": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-rate-loop-boundary-ZRQDMX/verification.json",
+			"sha256": "4b01531e4523dca434824aae764dc3f07dcc69ef377bc80693fc65388bd1be96",
+			"cases": 7
+		}
+	],
+	"retainedFailuresAndCorrections": [
+		{
+			"kind": "compile-inference",
+			"report": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/scene-transition-native-PuSMSE/verification.json",
+			"sha256": "caca10b6f53d50a0514ec69319eebf0af1b0c6b5367f2c6f143a8122a4c09822",
+			"exitCode": 101,
+			"correction": "Annotate execution wrapper result as Result<ExecutionPlan, String>; no timing or geometry change"
+		},
+		{
+			"kind": "incorrect-handwritten-duration-golden",
+			"failedReport": "scene-transition-native-IMoixW/verification.json",
+			"originalWrongExpected": "0.10000520833333334",
+			"independentV8StringAndProduction": "0.10000520833333335",
+			"expression": "0.1 + 0.25 / 48000",
+			"binary64Bits": "3fb999f0fb38a94e",
+			"jsonRoundtripPreserved": true,
+			"productionChangedToFitWrongGolden": false,
+			"correction": "Correct the JS String golden and assert original fixture, serde JSON roundtrip and parsed recipe IEEE-754 bits; final duration8 passes"
+		},
+		{
+			"kind": "missing-test-environment",
+			"report": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-rate-loop-production-rHJUxk/verification.json",
+			"sha256": "26e0f6435667d7800a7992472dea58500f4d6afea66d0953dc218a45992d2d27",
+			"status": "failed-before-media-io",
+			"correction": "Set ROCUT_TEST_LOOP_EVIDENCE to the retained independent rocut-hf-rate-loop-oracle-A9DgQH directory; rerun only the failed test"
+		}
+	],
+	"reproduction": {
+		"runnerPrefix": "bun test --preload ./script/fixtures/isolated-web-wasm-preload.mjs",
+		"tests": [
+			"script/fixtures/hyperframes-fractional-duration-production.test.ts",
+			"script/fixtures/hyperframes-fractional-duration-tiny.test.ts"
+		],
+		"environment": {
+			"ROCUT_TEST_WASM_DIRECTORY": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/web-scene-transition-1ST2Rf",
+			"ROCUT_TEST_FRACTIONAL_DURATION": "1",
+			"ROCUT_TEST_RATE_PREPARATION_ONLY": "0",
+			"ROCUT_TEST_HYPERFRAMES_TOOLCHAIN": "C:/Users/Sayo/AppData/Local/Temp/rocut-media-toolchain-YbloF9",
+			"ROCUT_TEST_HYPERFRAMES_ARCHIVE": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-engine-inspect-67d1b402/hyperframes-engine-0.8.139.tgz",
+			"ROCUT_TEST_FFMPEG": "E:/Software/ffmpeg-6.0-full_build/bin/ffmpeg.exe",
+			"ROCUT_TEST_FFPROBE": "E:/Software/ffmpeg-6.0-full_build/bin/ffprobe.exe"
+		}
+	},
+	"remaining": [
+		"Fractional clip start/placement; integer-millisecond native-exporter adelay is not a substitute",
+		"Fractional loop trim/period/duration and scalar fractional duration/trim",
+		"Participating fallback author-gain histories",
+		"Browser author collection and encoded media acceptance for this new duration slice",
+		"Installed Electron and full-song/full-MV acceptance"
+	]
+}

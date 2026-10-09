@@ -18,6 +18,8 @@ export interface HyperframesRatePreparation {
 	nativeSampleRate: 48000;
 	nativeMaxFrames: number;
 	nativeMaxBytes: number;
+	graphMaxFrames: number;
+	observedPcm: boolean;
 	stereoFilter: string;
 	monoFilter: string;
 	resampleFilter: string;
@@ -58,11 +60,14 @@ export async function prepareHyperframesRateAudio({
 	body: Uint8Array;
 	mimeType: string;
 	sampleRate: number;
-	frames: number;
+	frames: number | null;
 	recipe: HyperframesRatePreparation;
 	signal: AbortSignal;
-}): Promise<{ pcm: Buffer; hasAudio: boolean }> {
+}): Promise<{ pcm: Buffer; hasAudio: boolean; nativeFrames: number }> {
 	signal.throwIfAborted();
+	const decodeFrames = recipe.observedPcm ? recipe.graphMaxFrames : frames;
+	if (decodeFrames === null)
+		throw Error("Missing admitted native rate decode capacity");
 	if (!isAbsolute(decoder.ffmpeg) || !isAbsolute(decoder.ffprobe))
 		throw Error(
 			"Native rate decoder paths must be host-configured absolute paths",
@@ -78,7 +83,7 @@ export async function prepareHyperframesRateAudio({
 					version: 1,
 					mimeType,
 					sampleRate,
-					frames,
+					frames: decodeFrames,
 					sourceSample: 0,
 					audioStreamIndex: 0,
 					playbackRate: 1,
@@ -158,7 +163,7 @@ export async function prepareHyperframesRateAudio({
 			(stream) => stream.codec_type === "audio",
 		);
 		if (!audio.length && mimeType.startsWith("video/"))
-			return { pcm: Buffer.alloc(0), hasAudio: false };
+			return { pcm: Buffer.alloc(0), hasAudio: false, nativeFrames: 0 };
 		const stream = audio[0];
 		if (!stream) throw Error("Native rate audio stream does not exist");
 		validate({
@@ -238,7 +243,11 @@ export async function prepareHyperframesRateAudio({
 				"Native rate preparation returned incomplete stereo s16 samples",
 			);
 		if (!prepared.length)
-			return { pcm: Buffer.alloc(checked.outputBytes), hasAudio: true };
+			return {
+				pcm: Buffer.alloc(recipe.observedPcm ? 0 : checked.outputBytes),
+				hasAudio: true,
+				nativeFrames: 0,
+			};
 		const pcmPath = join(root, "prepared.s16le");
 		await writeFile(pcmPath, prepared, { flag: "wx" });
 		const pcm = await runNativeMediaProcess({
@@ -277,9 +286,13 @@ export async function prepareHyperframesRateAudio({
 				"pipe:1",
 			],
 		});
-		if (pcm.length !== checked.outputBytes)
+		if (
+			pcm.length % 8 ||
+			pcm.length > checked.outputBytes ||
+			(!recipe.observedPcm && pcm.length !== checked.outputBytes)
+		)
 			throw Error("Native rate graph conversion disagrees with Rust geometry");
-		return { pcm, hasAudio: true };
+		return { pcm, hasAudio: true, nativeFrames: prepared.length / 4 };
 	} finally {
 		await removeRatePreparation(root, parent);
 	}

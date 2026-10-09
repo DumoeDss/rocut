@@ -61,12 +61,24 @@ pub(super) fn read(input: &[u8]) -> Result<Input<'_>, String> {
         return Err("Invalid HyperFrames assembly version/buffer count".into());
     }
     let plan = prepare(&manifest.request)?;
+    if !plan.pcm_geometry_ready {
+        return Err("HyperFrames decoded PCM geometry must be finalized before assembly".into());
+    }
     let mut offset = 4 + header;
     let mut buffers = HashMap::new();
     for descriptor in &manifest.buffers {
         let count = descriptor.byte_length;
         if descriptor.instance_id.len() > 256
-            || count == 0
+            || (count == 0
+                && !plan.tracks.iter().any(|track| {
+                    descriptor.kind == BufferKind::TrackPostFx
+                        && descriptor.instance_id == track.instance_id
+                        && track.requires_pcm
+                        && track
+                            .fx_stage
+                            .as_ref()
+                            .is_some_and(|stage| stage.expected_output_frames == 0)
+                }))
             || count > MAX_PCM_BYTES
             || count % 8 != 0
             || count > (input.len() - offset) as u64

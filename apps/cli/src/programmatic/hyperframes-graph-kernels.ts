@@ -11,6 +11,7 @@ export interface HyperframesGraphKernels {
 }
 
 export interface HyperframesGraphStagePlan {
+	pcmGeometryReady: boolean;
 	sampleRate: number;
 	channels: 2;
 	renderFrames: number;
@@ -24,8 +25,11 @@ export interface HyperframesGraphStagePlan {
 		sampleRate: number;
 		channels: 2;
 		sourceSample: number;
-		frames: number;
-		pcmBytes: number;
+		frames: number | null;
+		pcmBytes: number | null;
+		maxFrames: number;
+		maxPcmBytes: number;
+		preparationKey?: string;
 		required: boolean;
 		ratePreparation?: HyperframesRatePreparation;
 	}[];
@@ -34,7 +38,7 @@ export interface HyperframesGraphStagePlan {
 		resolvedBusInstanceId: string | null;
 		decodedSourceId: string;
 		requiresPcm: boolean;
-		fxStage: HyperframesFxStage;
+		fxStage: HyperframesFxStage | null;
 	}[];
 	buses: {
 		instanceId: string;

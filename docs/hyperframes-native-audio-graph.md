@@ -849,8 +849,8 @@ acceptable substitute for those semantics.
 The next bounded slice is now accepted: nonloop variable-rate `mediaStart`
 preserves its fractional value and original JavaScript string formatting, while
 preparation and stateful FX retain full-clip history before the final crop.
-Duration, placement and loop alignment restrictions remain unchanged. Host
-production transport was not modified.
+At that checkpoint, duration, placement and loop alignment restrictions remained
+unchanged. Host production transport was not modified.
 
 The private `web-scene-transition-KpO0zH` build passes 22 parameter recipes,
 six remaining-gate negatives, eight real-source PCM cases at 48/44.1 kHz and
@@ -866,5 +866,72 @@ These rejected exponent-form inputs are not claimed as supported audio.
 
 Reports, hashes, native checks and remaining scope are recorded in
 [fractional trim evidence](evidence/hyperframes-fractional-trim.json).
-This is not fractional duration/start/loop support, browser author-collection
-acceptance, installed Electron or full-song export acceptance.
+That trim-only checkpoint did not establish fractional duration/start/loop support,
+browser author-collection acceptance, installed Electron or full-song export acceptance.
+
+### Nonloop fractional-duration acceptance (2026-10-09)
+
+The next bounded slice preserves nonloop variable-rate fractional duration through
+original native preparation, graph-rate conversion, complete track FX and final
+mix/crop. It does not round the authored duration or force decoded PCM to its
+declared coverage. The existing floating-point alignment tolerance is unchanged;
+aligned clips and the separately characterized source-loop path retain their
+previous geometry contract.
+
+Rust now admits conservative native/graph PCM capacities before decoder IO. For a
+participating measured-duration source, actual `frames`, `pcmBytes` and track
+`fxStage` are initially `null`; PCM/assembly kernels cannot execute that pending
+plan. Host retains the immutable, SHA-256-checked original source and runs native
+stereo PCM16/48 kHz preparation followed by an **unpadded, untrimmed** graph-rate
+conversion. It reports actual native and graph frame counts, bound to the source
+identity and exact Rust-generated clip/preparation key. Rust rejects missing,
+duplicate, stale, foreign, inert or over-capacity observations before resolving
+actual FX geometry. Host does not accept caller-prefilled decoder observations.
+
+The full capacity-based working-set and final observation-payload checks precede
+IO; muted tracks, small crops and empty results cannot bypass full-history
+reservations. FX retains
+the entire actual prepared clip, including samples beyond canonical composition
+coverage; only final mixing applies placement/cropping. Post-FX buffers are
+validated against actual output length, separately from their capacity bound.
+
+The same authored duration `0.5 + 0.25 / 48000` retains this observed difference:
+
+| Original source rate | Native prepared frames | Graph rate | Actual graph frames | Graph capacity |
+| -------------------- | ---------------------- | ---------- | ------------------- | -------------- |
+| 48 kHz               | 24,000                 | 48 kHz     | 24,000              | 24,003         |
+| 48 kHz               | 24,000                 | 44.1 kHz   | 22,050              | 22,053         |
+| 44.1 kHz             | 24,001                 | 48 kHz     | 24,001              | 24,003         |
+| 44.1 kHz             | 24,001                 | 44.1 kHz   | 22,051              | 22,053         |
+
+Private build `web-scene-transition-1ST2Rf` passes 12 independent real-source PCM
+cases and four saturate-plus-delay graph cases at both graph rates. Maximum/RMS
+errors are zero, crops are byte-identical and repeated renders are deterministic.
+Rounding duration before preparation produces maximum errors 0.805298 and 0.736816;
+pre-FX gain is also an observable wrong-order control. Existing aligned, loop and
+fractional-trim production regressions pass on the same binary.
+
+Real tiny-duration IO distinguishes successful emptiness from failure. For the
+tested rate-2 lane, original preparation at `1e-6` and `1e-5` seconds succeeds with
+zero native frames; graph conversion at 48/44.1 kHz also returns zero. Four real
+Host/Rust/native-FX runs preserve zero input/output and **no FX tail**, while
+retaining the pre-IO capacity and required fader history. Independent invocation
+of the unchanged native FX root returns its original two empty channel arrays.
+At `1e-7` seconds, the original source-span argument uses exponential notation
+and FFmpeg rejects it; Host likewise exits 1 at both rates, without silent fallback.
+
+Retained failed checks are not reported as passing runs: an initial Rust wrapper
+needed an explicit `Result<ExecutionPlan, String>` type; one test incorrectly
+hardcoded `0.10000520833333334`. V8 `String(0.1 + 0.25 / 48000)` actually produces
+`0.10000520833333335`, with bits `0x3fb999f0fb38a94e`, matching production. The
+test now checks original fixture, serde JSON roundtrip and recipe bits against
+that independent golden value; all eight duration tests pass. A loop regression
+invocation missing `ROCUT_TEST_LOOP_EVIDENCE` was corrected and rerun alone.
+
+Exact reports, hashes, failed-run provenance and commands are recorded in
+[fractional duration evidence](evidence/hyperframes-fractional-duration.json).
+Fractional clip start, scalar fractional duration/trim, fractional loop
+trim/period/duration and participating fallback gain histories remain unsupported.
+The new duration slice is validated with trusted graph declarations and real WAV
+sources, not browser author collection, installed Electron, encoded video or
+full-song/full-MV export acceptance.

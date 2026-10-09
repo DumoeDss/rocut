@@ -120,19 +120,26 @@ pub(super) fn prepare(request: &ExecutionRequest) -> Result<ExecutionPlan, Strin
         {
             let rate_preparation =
                 super::rate_prepare::prepare(native, &points, graph.sample_rate)?;
-            let frames = sample_aligned(native.duration * sr, "variable-rate full clip")?;
+            let frames = rate_preparation.graph_max_frames;
             let index = decoded_sources.len();
+            let id = format!("dry#{index}");
+            let preparation_key = rate_preparation
+                .observed_pcm
+                .then(|| super::rate_geometry::key(&id, track, graph.sample_rate));
             // Per-clip canonical preparation: source hash or mean rate cannot
             // identify the native slice grid, trim, curve or atempo history.
             decoded_sources.push(DecodedSource {
-                id: format!("dry#{index}"),
+                id,
                 resource_id: track.resource_id.clone(),
                 playback_rate: 1.0,
                 sample_rate: graph.sample_rate,
                 channels: 2,
                 source_sample: 0,
-                frames,
-                pcm_bytes: frames * 8,
+                frames: Some(frames),
+                pcm_bytes: Some(frames * 8),
+                max_frames: frames,
+                max_pcm_bytes: frames * 8,
+                preparation_key,
                 gain_applied: false,
                 required: false,
                 rate_preparation: Some(rate_preparation),
@@ -177,15 +184,18 @@ pub(super) fn prepare(request: &ExecutionRequest) -> Result<ExecutionPlan, Strin
                     sample_rate: graph.sample_rate,
                     channels: 2,
                     source_sample: 0,
-                    frames: decoded_frames,
-                    pcm_bytes: decoded_frames * 8,
+                    frames: Some(decoded_frames),
+                    pcm_bytes: Some(decoded_frames * 8),
+                    max_frames: decoded_frames,
+                    max_pcm_bytes: decoded_frames * 8,
+                    preparation_key: None,
                     gain_applied: false,
                     required: false,
                     rate_preparation: None,
                 });
                 index
             };
-            if decoded_sources[index].frames != decoded_frames {
+            if decoded_sources[index].frames != Some(decoded_frames) {
                 return Err(
                     "HyperFrames tracks disagree on the same decoded source duration".into(),
                 );
@@ -207,6 +217,13 @@ pub(super) fn prepare(request: &ExecutionRequest) -> Result<ExecutionPlan, Strin
         )?;
         let fx_chain = chain(track.attributes.fx_chain.as_deref(), &mut fx_nodes)?;
         let automation = admit_fx_automation(track.attributes.automation.as_deref(), &fx_chain)?;
+        let stage_frames = if decoded_sources[index].preparation_key.is_some() {
+            // Full native history precedes FX, even when canonical output ends
+            // mid-clip. Final mixing alone clips it to the composition/crop.
+            decoded_sources[index].max_frames
+        } else {
+            participation.input_frames
+        };
         tracks.push(PreparedTrack {
             instance_id: track.instance_id.clone(),
             resolved_bus_instance_id: bus,
@@ -221,12 +238,12 @@ pub(super) fn prepare(request: &ExecutionRequest) -> Result<ExecutionPlan, Strin
             audible_media: participation.audible_media,
             requires_pcm,
             fader,
-            fx_stage: stage(
+            fx_stage: Some(stage(
                 fx_chain,
                 automation,
-                participation.input_frames,
+                stage_frames,
                 graph.sample_rate,
-            )?,
+            )?),
         });
     }
     let mut buses = Vec::new();
@@ -284,13 +301,27 @@ pub(super) fn prepare(request: &ExecutionRequest) -> Result<ExecutionPlan, Strin
         admitted.crop.output_frames,
         admitted.budget.encoded_source_bytes,
     )?;
+    // Never let small/empty observations reduce pre-IO admission or budgets.
+    let pcm_geometry_ready = super::rate_geometry::finalize(
+        &mut decoded_sources,
+        &mut tracks,
+        request.decoded_source_observations.as_deref(),
+    )?;
     Ok(ExecutionPlan {
         version: 1,
         semantics_profile: SEMANTICS_PROFILE,
         stage: "dry-and-fader-kernels-prepared",
         execution_ready: false,
+        pcm_geometry_ready,
         state_policy: "canonical-composition-from-zero",
-        sample_phase_policy: "sample-aligned-clip-local-strict-v1",
+        sample_phase_policy: if decoded_sources
+            .iter()
+            .any(|source| source.preparation_key.is_some())
+        {
+            "sample-aligned-placement-measured-nonloop-duration-v1"
+        } else {
+            "sample-aligned-clip-local-strict-v1"
+        },
         sample_rate: graph.sample_rate,
         channels: 2,
         render_frames: admitted.canonical.output_frames,
@@ -306,13 +337,20 @@ pub(super) fn prepare(request: &ExecutionRequest) -> Result<ExecutionPlan, Strin
 
 #[bridge::export]
 pub fn resolve_hyperframes_audio_execution_plan_json(input: String) -> String {
-    let result = (|| {
+    let result: Result<ExecutionPlan, String> = (|| {
         if input.len() > MAX_EXECUTION_JSON {
             return Err("HyperFrames execution payload exceeds its limit".into());
         }
         let request: ExecutionRequest = serde_json::from_str(&input)
             .map_err(|error| format!("Invalid HyperFrames execution JSON: {error}"))?;
-        prepare(&request)
+        let plan = prepare(&request)?;
+        if !plan.pcm_geometry_ready
+            && input.len() + super::rate_geometry::observation_json_capacity(&plan)
+                > MAX_EXECUTION_JSON
+        {
+            return Err("HyperFrames finalized observation payload would exceed its limit".into());
+        }
+        Ok(plan)
     })();
     match result {
         Ok(plan) => serde_json::json!({"plan":plan}).to_string(),
