@@ -131,4 +131,21 @@ function mvEmberRectBatch(ctx, command) {
   ctx.fillStyle = mvEmberStyle(ctx,spec.style);
   for (const rect of command.rects) ctx.fillRect(...rect);
 }
+function mvEmberFilteredRect(ctx, command) {
+  const spec = command.paint, identity = [1,0,0,1,0,0];
+  if (!Array.isArray(command.transform) || command.transform.length !== 6
+    || command.transform.some((v,i) => v !== identity[i])
+    || (command.operations !== undefined && (!Array.isArray(command.operations) || command.operations.length !== 0))
+    || command.clip != null || !Array.isArray(command.rect) || command.rect.length !== 4
+    || command.rect.some((v,i) => !Number.isFinite(v) || Math.abs(v) > (i < 2 ? 1000000 : 8192))
+    || spec.kind !== 'fill' || !['source-over','lighter'].includes(spec.composite)
+    || !Number.isFinite(spec.opacity) || spec.opacity < 0 || spec.opacity > 1
+    || !Number.isFinite(command.blurPx) || command.blurPx < 0 || command.blurPx > 16)
+    throw Error('Invalid native identity filtered fillRect');
+  ctx.setTransform(...identity);
+  ctx.globalCompositeOperation = spec.composite; ctx.globalAlpha = spec.opacity;
+  ctx.fillStyle = mvEmberStyle(ctx,spec.style);
+  ctx.filter = command.blurPx === 0 ? 'none' : 'blur(' + command.blurPx + 'px)';
+  ctx.fillRect(...command.rect);
+}
 `;

@@ -28,6 +28,22 @@ export type MvEmberDraw = MvEmberDrawingSpace &
 				readonly paint: MvDrawPaint;
 		  }
 		| {
+				/** Direct filtered fillRect: identity transform only, no operations
+				 * or clip. Does not blur existing target contents. Rust charges
+				 * target lifetime and filter scratch independently. */
+				readonly kind: "filteredRect";
+				readonly transform: readonly [1, 0, 0, 1, 0, 0];
+				readonly operations?: readonly [];
+				readonly clip?: null;
+				readonly rect: MvEmberRect;
+				readonly paint: MvDrawPaint & {
+					readonly kind: "fill";
+					readonly composite: "source-over" | "lighter";
+				};
+				/** Finite CSS pixel sigma in [0,16]. */
+				readonly blurPx: number;
+		  }
+		| {
 				/** Ordered independent fillRect calls, never a merged path. */
 				readonly kind: "rectBatch";
 				readonly rects: readonly MvEmberRect[];

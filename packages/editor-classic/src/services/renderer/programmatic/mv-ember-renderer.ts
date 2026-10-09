@@ -25,6 +25,7 @@ function* drawMvEmberSteps(ctx, data, assets, createSurface) {
     try {
       if (command.kind === 'grayPixels') { mvEmberGrayPixels(target,command); return; }
       if (command.kind === 'alphaPixels') { mvEmberPixels(target,command,true); return; }
+      if (command.kind === 'filteredRect') { mvEmberFilteredRect(target,command); return; }
       if (command.clip) {
         mvEmberTransform(target,command.clip);
         mvEmberPath(target,command.clip.path); target.clip('nonzero');

@@ -1,0 +1,4 @@
+{
+	"extends": "./three-probe.tsconfig.json",
+	"include": ["./mv-fall-filtered-rect-browser.ts"]
+}

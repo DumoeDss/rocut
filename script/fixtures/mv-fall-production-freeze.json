@@ -1,0 +1,178 @@
+{
+  "version": 1,
+  "date": "2026-10-09",
+  "status": "production-frozen-awaiting-private-rust-wasm-and-full-scene-acceptance",
+  "sourceBase": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/scene-transition-source-JeXUmF",
+  "scope": "Exact Fall and filtered-fillRect overlay only; preserve all other concurrent work.",
+  "files": [
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/fall.rs",
+      "sha256": "fdba9b5d7548f9dbc4c90a013f3b44a13cde46d7d611437b2200835dbae427f9"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/fall_background.rs",
+      "sha256": "10f58050efb1268e2de4154ffcfc2be7d73d25511183b4fe46bc3fd54fa43c3f"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/fall_budget.rs",
+      "sha256": "6a802c2a6e9c16b9ec3cd8f734c08b7df20c3ce6ccc98a43f7d93f69e766e912"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/fall_character.rs",
+      "sha256": "6e1f1d9937ec4ab8603467e26b6d73aa0af5751b48abf29dcad63e470e3daec7"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/fall_clock.rs",
+      "sha256": "3669d69edc69a4e7463e5525dfb035e6fcbe2cef7dc7fdaf044fb327459af786"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/fall_finishing.rs",
+      "sha256": "7bdf1bca7b6a6891c20c6c14b442e1f6a0e77120c94ffa888ffad8aed0b03da7"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/fall_geometry.rs",
+      "sha256": "51303c848a0b707a9a49a02104e5de9692e03db02b4a5465a53f09f8686ecfcb"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/fall_model.rs",
+      "sha256": "354aabe95fbfb6f24684da218313556135f66da71d012fc7f4aeb23a9d59c6d5"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/fall_producer.rs",
+      "sha256": "1f75dc8b676b48ca14d6787b27011df8613650af294e927c502d8f95213d83ee"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/fall_ribbon.rs",
+      "sha256": "e896a55004966da8e1a64068499d4b58269757fb5b9c5a6621059ae8d69665c2"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/fall_streaks.rs",
+      "sha256": "70c878394ecb402e32118ff6abe149b0d22828e20e8cad2721e6af8b8e5764f8"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/fall_validate.rs",
+      "sha256": "5382954fa7e76022b62212f2908f20ba337f2182ff3ef70a87e35d73d5f3d82a"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/fall_catalog.rs",
+      "sha256": "0333dcc71617f3de49750049b5454a40b479341e1b467f22bd92628d89fa0da9"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/fall_tests.rs",
+      "sha256": "00b6cf7a7315818423e27d38b3465a1905bd6f075b05d8caf021543bf7d5dd71"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/fall_public_tests.rs",
+      "sha256": "b7872d11f57ca761de41cf5e8832be47c0a92d338a1ffd485d687611dc76cbd9"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/fall_filtered_rect.rs",
+      "sha256": "63c99ab746be4e58a6f6d41051288c77a9e2268d0e1feb71e59549735a539e4c"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/fall_filtered_rect_tests.rs",
+      "sha256": "fec9fedd2b6dd72092629d3f2e33e5a583fd5356e1ef1fb2f750f5e9ca838022"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/mod.rs",
+      "sha256": "44cb7a6230a2aea45668d6c6dee922a88509fb9eed9cd90076f38ec6e89407f4"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/model.rs",
+      "sha256": "354b95b7d8902e15a5f270aeccc62d65aca4bdfd52e6ce13b5633ece3f9dbee6"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/catalog.rs",
+      "sha256": "381db2a0a1436f374ed873d7a330a4aeb6b444a0da8ff0d809004f258c4328d5"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/catalog_tests.rs",
+      "sha256": "8b2f29373183a1543993d8c806f07406bf1bf5ed4fe6782981b5f0ecf1fe87c1"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/validate.rs",
+      "sha256": "ea992d0c46f29682d2f4d05f89e5c69ace4221320499ccb7b4e7323b77fda753"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/evaluate.rs",
+      "sha256": "bdb6f0f8371ffb21983b3d2175bd7cb2eba53c42adbb69955839089a14d5cf44"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/image_dimensions.rs",
+      "sha256": "51e37d7d86043b92545069eee4eb02f36b10f90fc560bd6585b969640a84f53f"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/native_scene_evaluate.rs",
+      "sha256": "a08f888cb2ac5f61e191de9600c5723478d9bd15212f0880541d991ec259dfdf"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/ember_plan.rs",
+      "sha256": "6f847266a24e53980474d6b12dc9b584aaf89803688217fa8ef441026494145f"
+    },
+    {
+      "path": "rust/crates/editor-api/src/mv_recipe/ember_surface.rs",
+      "sha256": "0ffa480be4236fcaa205b896e996869497ade97edd10924a9d1588458958216d"
+    },
+    {
+      "path": "packages/editor-contracts/src/mv-fall.ts",
+      "sha256": "51de08b22c90eb1f2e3f4c13bd0ba7fa36d03f82c85a52550237f6bcb8e0c56f"
+    },
+    {
+      "path": "packages/editor-contracts/src/index.ts",
+      "sha256": "a44f4f6777b1ce950276c466171da9efb2219739ea380a95135197ee47942a72"
+    },
+    {
+      "path": "packages/editor-contracts/src/mv-recipe.ts",
+      "sha256": "e255fd730b25d8af0aa9538eb070d8785bd599039af2456bf3c0b4270d0fe4c2"
+    },
+    {
+      "path": "packages/editor-contracts/src/mv-recipe-plan.ts",
+      "sha256": "cd5e5cd0a9d68a06d81b4eb2d73e0f50136d1ad407bd74211ffa4fa212d004f4"
+    },
+    {
+      "path": "packages/editor-contracts/src/mv-ember-plan.ts",
+      "sha256": "7643748b2b65ffc02eb2e432ec0ececef79ebd65e4d5dfa92cfc361b41a19338"
+    },
+    {
+      "path": "packages/editor-classic/src/services/renderer/programmatic/canvas-runtime.ts",
+      "sha256": "bc50ace66ab9d8bc29b48a33f277a0c38c2cc8dc059a2d5a0b6c0cee8df4a17d"
+    },
+    {
+      "path": "packages/editor-classic/src/services/renderer/programmatic/canvas-runtime.test.ts",
+      "sha256": "8ff87405e8ead1e2ab43fa11098a7d0b7c3172653250c97664a5e7fcadaedcfd"
+    },
+    {
+      "path": "packages/editor-classic/src/services/renderer/programmatic/mv-recipe-renderer.ts",
+      "sha256": "ea239116c138e2abd739d8240698bd10e88e40cdb300681c01d4ec7e0687c35f"
+    },
+    {
+      "path": "packages/editor-classic/src/services/renderer/programmatic/mv-ember-raster.ts",
+      "sha256": "199376afab5367970bd210217e03c46fad65aca903863a09a17152d8bba0b9fb"
+    },
+    {
+      "path": "packages/editor-classic/src/services/renderer/programmatic/mv-ember-renderer.ts",
+      "sha256": "fdb403b3f8a37690b9681e9a5eadd272b156cff3fcf88aec92e058ce882ce28a"
+    },
+    {
+      "path": "packages/editor-classic/src/services/renderer/programmatic/__tests__/mv-ember-filtered-rect.test.ts",
+      "sha256": "b771100b158108277bc7d6229558b583124ddca21f77c0481d660a7e381f9f6d"
+    }
+  ],
+  "verified": {
+    "filteredRectBrowser": "C:/Users/Sayo/AppData/Local/Temp/rocut-fall-filtered-rect-hOZaho/verification.json",
+    "filteredRectOriginalAndExistingTargetAndZeroBlur": "full64x512 max0 / MAE0",
+    "unitTests": 7,
+    "assertions": 76,
+    "fixtureTypecheck": "filteredRect only: zero diagnostics",
+    "productionLint": "filteredRect contract/replay/test and MvFall contract passed before final routing additions",
+    "strictUtf8Files": 38,
+    "rustfmt": "17 new Rust files parsed; not compilation"
+  },
+  "pending": [
+    "Private Rust compile and tests",
+    "Private WASM build",
+    "Full Fall pixel parity and omission controls",
+    "Full Fall SceneExporter/GPU/FFmpeg decode",
+    "Thread exact regression after additive native command"
+  ]
+}

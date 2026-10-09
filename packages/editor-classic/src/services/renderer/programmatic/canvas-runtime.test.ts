@@ -100,6 +100,8 @@ if (process.env.ROCUT_CANVAS_ROUTING_ISOLATED !== "1") {
 		["solid", "ember"],
 		["kanjiSlam"],
 		["thread"],
+		["fall"],
+		["solid", "fall"],
 		["solid", "thread"],
 		["solid", "kanjiSlam"],
 		["solid", "titleRiff", "kanjiSlam"],
@@ -153,7 +155,7 @@ if (process.env.ROCUT_CANVAS_ROUTING_ISOLATED !== "1") {
 			});
 		});
 
-	for (const kind of ["titleRiff", "kanjiSlam", "thread"])
+	for (const kind of ["titleRiff", "kanjiSlam", "thread", "fall"])
 		test(`failed ${kind} admission never falls back to author code or another rasterizer`, async () => {
 			calls.length = 0;
 			admissionError = Error("invalid native resources");

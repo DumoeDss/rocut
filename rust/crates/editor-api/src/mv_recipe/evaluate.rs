@@ -193,7 +193,7 @@ impl Recipe {
             return Ok(generator);
         }
         Ok(match scene {
-            Scene::Thread { .. } | Scene::TitleRiff { .. } | Scene::KanjiSlam { .. } | Scene::Ember { .. } => unreachable!("native scene already resolved"),
+            Scene::Fall { .. } | Scene::Thread { .. } | Scene::TitleRiff { .. } | Scene::KanjiSlam { .. } | Scene::Ember { .. } => unreachable!("native scene already resolved"),
             Scene::Converge { role, settings, span } => PlanNode::Converge {
                 role: *role,
                 data: settings.plan(&super::converge::Sample {

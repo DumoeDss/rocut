@@ -96,6 +96,12 @@ impl Recipe {
                 );
             }
             let valid = match &n.scene {
+                Scene::Fall {settings,span:s,..} => {
+                    uses_audio |= settings.uses_audio();
+                    afterimage_scratch=afterimage_scratch.max(settings.scratch_pixels(images)?);
+                    settings.valid((self.song_start_seconds*120000.0).round() as u64,s,step)
+                        &&settings.resources_valid(resources)&&span(s,frames)
+                }
                 Scene::Thread {settings,span:s,..} => {
                     uses_audio |= settings.uses_audio();
                     afterimage_scratch=afterimage_scratch.max(settings.scratch_pixels(images)?);
@@ -356,6 +362,7 @@ impl Recipe {
             .get(id)
             .ok_or_else(|| format!("Unknown MV input node: {id}"))?;
         work.drawing += match node {
+            Scene::Fall { .. } => 16,
             Scene::Thread { .. } => 16,
             Scene::KanjiSlam { .. } => 16,
             Scene::TitleRiff { .. } => 16,
@@ -374,6 +381,16 @@ impl Recipe {
         // Keep the existing complex-operation budget. Simple glyphs/image cells
         // have a separate finite expanded-DAG budget, including shared inputs.
         let primitive_cost = match node {
+            Scene::Fall {settings,span,..} => {
+                work.plan_pixels+=settings.plan_pixels();
+                let ticks=u64::from(span.duration_frames).checked_mul(step).ok_or("MV simulation duration overflow")?;
+                let cost=settings.sim_work(ticks).ok_or("MV simulation work overflow")?;
+                work.simulation=work.simulation.checked_add(cost).ok_or("MV expanded simulation work overflow")?;
+                if work.simulation>super::cloth::MAX_SIMULATION_WORK {
+                    return Err("MV graph exceeds 80000000 expanded simulation work units".into());
+                }
+                settings.work()
+            }
             Scene::Thread {settings,..} => {
                 work.plan_pixels+=settings.plan_pixels();
                 settings.work()

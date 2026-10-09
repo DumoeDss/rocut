@@ -28,13 +28,18 @@ export async function renderProgrammaticCanvas({
 	resources = [],
 	provider,
 }: ProgrammaticRenderRequest): Promise<ImageBitmap> {
-	// Native Ember/titleRiff/kanjiSlam/thread need HTMLCanvas clip coverage, including internal
+	// Native Ember/titleRiff/kanjiSlam/thread/fall need HTMLCanvas clip coverage, including internal
 	// surfaces. Keep authored JavaScript on the separate, terminable Worker.
 	// A mixed recipe uses one backend for all its frames to avoid switching
 	// raster semantics as references/transitions activate different children.
 	if (
 		source.recipe?.nodes.some(
-			(node) => node.scene.kind === "ember" || node.scene.kind === "titleRiff" || node.scene.kind === "kanjiSlam" || node.scene.kind === "thread",
+			(node) =>
+				node.scene.kind === "ember" ||
+				node.scene.kind === "titleRiff" ||
+				node.scene.kind === "kanjiSlam" ||
+				node.scene.kind === "thread" ||
+				node.scene.kind === "fall",
 		)
 	) {
 		const ticket = await prepareMvNativeRasterTicket({

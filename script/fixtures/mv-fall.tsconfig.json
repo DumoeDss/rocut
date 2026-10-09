@@ -1,0 +1,7 @@
+{
+	"extends": "./three-probe.tsconfig.json",
+	"include": [
+		"./mv-fall-native-browser.ts",
+		"../../packages/*/src/types/**/*.d.ts"
+	]
+}

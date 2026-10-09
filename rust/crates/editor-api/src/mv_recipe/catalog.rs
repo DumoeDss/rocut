@@ -7,6 +7,8 @@ use serde_json::{Value, json};
 mod kanji_slam;
 #[path = "thread_catalog.rs"]
 mod thread;
+#[path = "fall_catalog.rs"]
+mod fall;
 
 #[derive(Clone, Copy, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -73,6 +75,7 @@ pub fn mv_recipe_catalog_json() -> String {
     // This describes authoring support in this binary, never health or an
     // installation's verification status. Suggestions are NOT implicit defaults.
     let generators = json!({
+            "fall":fall::entry(),
             "thread":thread::entry(),
             "kanjiSlam":kanji_slam::entry(),
             "titleRiff":super::title_riff::catalog_entry(),

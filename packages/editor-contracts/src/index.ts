@@ -158,6 +158,7 @@ export type {
 	MvPostAudio,
 } from "./mv-recipe-audio";
 export type { MvThread, MvThreadScene } from "./mv-thread";
+export type { MvFall, MvFallScene } from "./mv-fall";
 export type {
 	ProgrammaticResource,
 	ProgrammaticResourceLimits,

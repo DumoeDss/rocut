@@ -99,6 +99,16 @@ pub enum Command {
         rect: [f64; 4],
         paint: Paint,
     },
+    /// Direct fillRect under a Canvas filter, not a post-blur of the target.
+    /// First contract deliberately admits only identity/no-operation/no-clip.
+    FilteredRect {
+        transform: Matrix,
+        operations: Vec<Operation>,
+        clip: Option<Clip>,
+        rect: [f64; 4],
+        paint: Paint,
+        blur_px: f64,
+    },
     Grain {
         transform: Matrix,
         rect: [f64; 4],

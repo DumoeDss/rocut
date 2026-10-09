@@ -12,6 +12,7 @@ import type { MvEmberScene } from "./mv-ember";
 import type { MvTitleRiffScene } from "./mv-title-riff";
 import type { MvKanjiSlamScene } from "./mv-kanji-slam";
 import type { MvThreadScene } from "./mv-thread";
+import type { MvFallScene } from "./mv-fall";
 import type {
 	MvAudioBinding,
 	MvCameraAudio,
@@ -63,6 +64,7 @@ export interface MvSprite extends MvSpriteStyle {
 	readonly breathe?: MvOscillation;
 }
 export type MvScene =
+	| MvFallScene
 	| MvThreadScene
 	| MvKanjiSlamScene
 	| MvTitleRiffScene

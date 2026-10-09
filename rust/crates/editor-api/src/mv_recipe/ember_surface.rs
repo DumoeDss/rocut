@@ -4,6 +4,8 @@
 use super::plan::{Command, PaintKind, Plan};
 use std::collections::{BTreeMap, BTreeSet};
 
+#[path = "fall_filtered_rect.rs"]
+mod filtered_rect;
 #[path = "ember_paint_history.rs"]
 mod paint_history;
 
@@ -60,6 +62,11 @@ impl Plan {
                 } => {
                     pixels = pixels
                         .checked_add(filter_pixels(raster, destination_rect)?)
+                        .ok_or("Surface budget overflow")?;
+                }
+                Command::FilteredRect { .. } => {
+                    pixels = pixels
+                        .checked_add(filtered_rect::cost(command)?)
                         .ok_or("Surface budget overflow")?;
                 }
                 Command::GrayPixels { size, gray, .. }
@@ -387,6 +394,7 @@ fn inspect_live(
             raster_bounds,
             ..
         } => text_filter_pixels(*width, cap, join, *blur_px, raster_bounds),
+        Command::FilteredRect { .. } => filtered_rect::cost(command),
         Command::RectBatch { .. } => Ok(0),
         Command::GrayPixels { size, gray, .. }
         | Command::AlphaPixels {

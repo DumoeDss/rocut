@@ -1,0 +1,888 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "native-fall-original-parity-and-export-subset-passed",
+	"scope": [
+		"Complete Fall scene from unchanged reference dark.js; Rust owns scene geometry, timing, validation and resource admission.",
+		"TypeScript replays the native-scene raster protocol. The only added primitive is bounded direct filtered fillRect; existing Rect behavior is unchanged.",
+		"Private Chromium full-frame parity and production SceneExporter export with independent FFmpeg decode; not installed Electron or a full MV."
+	],
+	"implementation": {
+		"sceneKind": "fall",
+		"contract": "packages/editor-contracts/src/mv-fall.ts",
+		"rustEntry": "rust/crates/editor-api/src/mv_recipe/fall.rs",
+		"canvasSize": {
+			"width": 1920,
+			"height": 1080
+		},
+		"scalePolicy": "Preserve native scene resolution and Canvas operation order; output scaling is final-only.",
+		"args": ["char", "freeze", "pulse", "vp", "speed", "h"],
+		"clockInputs": ["manual songTicks or reviewed analysis beats"],
+		"defaults": {
+			"vp": [1040, 84],
+			"speed": 1,
+			"h": 940
+		},
+		"resources": "Character is an explicitly declared, fingerprinted image resource; the oracle binds original default assets/char/fall.png to the same synthetic marker, not bundled film artwork.",
+		"layers": [
+			"Abyss gradients and quarter-sized blurred cone.",
+			"Full-clock dawn square/glows and two lagged rings per pulse.",
+			"150 plus 26 perspective streaks and 40 stretched bokeh.",
+			"Lit character, warm/cold inner rims and four 31-strip rim passes.",
+			"Catmull ribbon with 111 arc-length samples, nine fibres and original dual soft glows.",
+			"60 foreground motes, seven blurred 64x512 streak sprites and vignette."
+		],
+		"noGrain": "The original Fall body has no grain; none was added.",
+		"timeSemantics": [
+			"held(t) subtracts each interval's clamped elapsed length in original order; overlaps are neither sorted nor merged.",
+			"Camera, beat, bob and distance use held time; hair and ribbon use floor(held*12+1e-6)/12; dawn pulses/rings use full time.",
+			"The first selected freeze controls held kick and default pulse, unlike Thread's last-stop rule.",
+			"Distance retains repeated binary64 tau += 1/120 midpoint integration, the fractional last step and tau < held-1e-9; no closed-form substitute or state cache."
+		],
+		"imageWarp": "Body followed by 30 hair strips uses original rounded y0/y1 and height+1; blur 5 applies separately to all 62 warm/cold blurred blits, not to a combined warped image.",
+		"overrides": "Explicit freeze:[] overrides reviewed global stops; explicit pulse:[] suppresses default pulse. Null values are rejected.",
+		"reviewedStops": "Reuses reviewed mv_audio stops; select kind=stop with strict open overlap, retaining source order and overlaps. Gap events are ignored."
+	},
+	"budgets": {
+		"commands": 1024,
+		"pathSteps": 12000,
+		"serializedPlanBytes": 1048576,
+		"rasterPixelUnits": 67108864,
+		"expandedSimulationWork": 80000000,
+		"simulationCharge": "(ceil(durationTicks/1000)+1)*64 + 3*4096+64, charged per expanded DAG reference.",
+		"imageBounds": {
+			"widthMax": 4096,
+			"heightMax": 4096,
+			"heightMin": 3
+		},
+		"authorBounds": {
+			"speed": [0, 8],
+			"h": [1, 8192],
+			"freezeEvents": 4096,
+			"pulseEvents": 64
+		},
+		"filteredRect": {
+			"identityOnly": true,
+			"noOperationsOrClip": true,
+			"fillOnly": true,
+			"composites": ["source-over", "lighter"],
+			"blurPx": [0, 16],
+			"spriteFilterPixelUnits": 85120,
+			"spriteBackingAndCopyPixelUnits": 65536,
+			"combinedSpritePixelUnits": 150656
+		},
+		"scope": "Conservative logical surface/filter/image lifetime envelopes; not measured Skia internal allocations, RSS or performance acceptance.",
+		"productionBudgetsIncreased": false
+	},
+	"provenance": {
+		"reference": {
+			"root": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/vocaloid-style-mv-pipeline",
+			"scripts": [
+				{
+					"id": "core/util.js",
+					"sha256": "1e6be8d7551fdb3ded2a6dde027fab9630837fcc47c34ac3c1dc622664dedd48"
+				},
+				{
+					"id": "core/assets.js",
+					"sha256": "ca6f66a75af8ce87607e2e8ff708343209cacffc35cc04a6130e53b2548d3baa"
+				},
+				{
+					"id": "core/draw.js",
+					"sha256": "4e7b4cd7efd46bf7dd69046a6fc0bd15131c1c66a7bc64e7823d557ba4fd11ec"
+				},
+				{
+					"id": "scenes/dark.js",
+					"sha256": "4b20e29e78b30ae67c350e4622ae60933137b00cbcedbe858ed7c652536a55bd"
+				}
+			]
+		},
+		"oracle": "Complete unchanged util.js/assets.js/draw.js/dark.js executed in an isolated iframe; calls original SCENES.fall, never native scene math as its expected result.",
+		"privateWasm": {
+			"directory": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/web-scene-transition-oi8DXV",
+			"files": {
+				"opencut_wasm_bg.wasm": {
+					"byteLength": 10070962,
+					"sha256": "f38a61f8c0246ddeaa69a3e37937734ed5829d23e3e2c8926f227c6590afb4d9"
+				},
+				"opencut_wasm.js": {
+					"byteLength": 165861,
+					"sha256": "1e4b1d40757cab5b035bb4300a05c7e8656782b469c864602d1b4a471da6b1dc"
+				},
+				"verification.json": {
+					"byteLength": 581,
+					"sha256": "62cfd052b5cc3c0c18f7c48f9fb79a20f6cd29d6899626d281d8f4989a31e8af"
+				}
+			},
+			"sourceManifestSha256": "7167e75313e61570460fedcd1266ebbd143e700eb0f5228206aa2020f721f22a",
+			"scope": "Exact private WASM/glue/build-report files; producer source-manifest digest, not a claim over the current whole workspace"
+		},
+		"servedBundle": {
+			"scope": "Every file in this run's private served web directory",
+			"files": {
+				"assets/mv-fall-native-browser-CPO5OMtu.js": {
+					"byteLength": 2190069,
+					"sha256": "e63bfc688a9a2ebdaefab56ff4d27a54b5ebf5a7e6a5c79092c8b821634b777d"
+				},
+				"assets/opencut_wasm_bg-DJ_4zKKr.wasm": {
+					"byteLength": 10070962,
+					"sha256": "f38a61f8c0246ddeaa69a3e37937734ed5829d23e3e2c8926f227c6590afb4d9"
+				},
+				"script/fixtures/mv-fall-native-browser.html": {
+					"byteLength": 237,
+					"sha256": "4de3296419b3576f1f94e3cc8a7486be8846323e2a980b8cd4551ea6135c4fdb"
+				}
+			}
+		},
+		"privateProducerDirectory": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/scene-transition-source-NGdgpa",
+		"currentOwnedRustVsPrivateProducer": {
+			"files": 27,
+			"allExactByteHashesMatch": true
+		},
+		"browser": "151.0.7922.34",
+		"marker": {
+			"id": "fall-char",
+			"kind": "image",
+			"mimeType": "image/png",
+			"byteLength": 72423,
+			"sha256": "7cf15730e8d4a1c89e8c1c4ab408879efd1ef8f6bdbf9e5685c378c1f2e7e3fe",
+			"attachmentKey": "programmatic-sha256-7cf15730e8d4a1c89e8c1c4ab408879efd1ef8f6bdbf9e5685c378c1f2e7e3fe",
+			"width": 960,
+			"height": 1600,
+			"description": "Synthetic transparent character with hair/top-strip detail, alpha body, rim edges and original ribbon landmark."
+		}
+	},
+	"verification": {
+		"formal": {
+			"command": "node script/probe-mv-fall.mjs",
+			"exitCode": 0,
+			"evidence": {
+				"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-fall-native-yFdnfu/verification.json",
+				"bytes": 59916,
+				"sha256": "8eef1ab7ae44ae6e907784f0880d5ab430fbcd48e2ae9ef26fbb4023df4db5ce"
+			},
+			"passed": true,
+			"inputIdentityStable": true,
+			"browserErrors": 0,
+			"violations": []
+		},
+		"pixelParity": {
+			"width": 1920,
+			"height": 1080,
+			"namedObservations": 105,
+			"uniqueSceneSamples": 93,
+			"nonmonotonicRepeatObservations": 9,
+			"originalImplicitDefaultObservations": 3,
+			"allMaxChannel": 0,
+			"allMae": 0,
+			"thresholds": {
+				"maxChannelAtMost": 2,
+				"maeLessThan": 0.025,
+				"repeatMax": 0
+			},
+			"coverage": [
+				"defaults",
+				"reviewed stops/gaps",
+				"explicit empty freeze",
+				"explicit empty pulse",
+				"overlapping unsorted freezes",
+				"explicit placement/speed/height/pulses and fractional freeze end",
+				"empty beats",
+				"speed zero",
+				"strict global overlap boundaries"
+			],
+			"sampling": "Complete native-resolution frames; no acceptance crop, mask or downsampling."
+		},
+		"omissionNegatives": {
+			"case": "default",
+			"sourceFrame": 170,
+			"detected": 8,
+			"measurements": {
+				"controlled": {
+					"max": 0,
+					"mae": 0,
+					"changed": 0
+				},
+				"soft-cone": {
+					"max": 28,
+					"mae": 0.3590610532407407,
+					"changed": 809466
+				},
+				"character-lighting": {
+					"max": 114,
+					"mae": 3.4169844714506175,
+					"changed": 722194
+				},
+				"warm-rim": {
+					"max": 175,
+					"mae": 0.2577418499228395,
+					"changed": 160663
+				},
+				"cold-rim": {
+					"max": 104,
+					"mae": 0.15486665702160493,
+					"changed": 138074
+				},
+				"per-strip-rim-blur": {
+					"max": 52,
+					"mae": 0.24609628182870372,
+					"changed": 227670
+				},
+				"ribbon-glows": {
+					"max": 101,
+					"mae": 0.16720317322530864,
+					"changed": 233921
+				},
+				"frayed-fibres": {
+					"max": 152,
+					"mae": 0.006809293016975308,
+					"changed": 2046
+				},
+				"near-streak-sprite": {
+					"max": 34,
+					"mae": 1.6167406925154322,
+					"changed": 2009087
+				}
+			},
+			"note": "Frayed-fibre omission is rejected by max-channel 152; its MAE alone is below the positive MAE limit."
+		},
+		"gpu": {
+			"observations": 13,
+			"sequence": [9, 1, 4, 0, 5, 6, 11, 8, 7, 2, 3, 10, 1],
+			"previewVsExportMax": 0,
+			"previewVsExportMae": 0,
+			"gpuVsOriginalMax": 0,
+			"gpuVsOriginalMae": 0
+		},
+		"export": {
+			"route": "Production CanvasRenderer + SceneExporter",
+			"quality": "very_high",
+			"video": {
+				"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-fall-native-yFdnfu/fall.webm",
+				"bytes": 340593,
+				"sha256": "86f4efc0bbc270f4f926e06e1fddfcee8a6aeedc215488114a54c0e052a92044"
+			},
+			"width": 1920,
+			"height": 1080,
+			"fps": 30,
+			"frames": 12,
+			"bytes": 340593,
+			"codec": "vp9",
+			"pixelFormat": "yuv420p",
+			"colorSpace": "smpte170m",
+			"colorRange": "tv",
+			"colorClaim": "Observed smpte170m/tv; not a BT.709 or full-range claim.",
+			"clips": [
+				{
+					"id": "default-fall",
+					"label": "default",
+					"start": 1,
+					"duration": 2,
+					"trimSourceFrame": 177
+				},
+				{
+					"id": "reviewed-hold",
+					"label": "reviewed-stops",
+					"start": 3,
+					"duration": 2,
+					"trimSourceFrame": 83
+				},
+				{
+					"id": "explicit-pulses",
+					"label": "explicit-placement",
+					"start": 6,
+					"duration": 2,
+					"trimSourceFrame": 151
+				},
+				{
+					"id": "overlap-release",
+					"label": "overlapping-unsorted",
+					"start": 8,
+					"duration": 2,
+					"trimSourceFrame": 167
+				}
+			],
+			"blankFrames": [0, 5, 10, 11],
+			"sourceFrameRate": 60,
+			"sourceSampling": "Odd 60fps trims; successive 30fps output frames advance two source frames.",
+			"independentDecodeTested": true,
+			"thresholds": {
+				"rgbMaeLessThan": 4,
+				"foregroundMaeLessThan": 8
+			},
+			"worstRgbMae": {
+				"frame": 2,
+				"value": 1.7076893647119342
+			},
+			"worstForegroundMae": {
+				"frame": 2,
+				"value": 2.094139599170698
+			},
+			"worstDecodedMaxChannel": {
+				"frame": 2,
+				"value": 89,
+				"note": "Lossy-codec diagnostic, not the native RGBA parity gate."
+			},
+			"decodeFrames": [
+				{
+					"frame": 0,
+					"mae": 0.0001234567901234568,
+					"foreground": 0,
+					"foregroundMae": 0,
+					"max": 1,
+					"qualityPassed": true
+				},
+				{
+					"frame": 1,
+					"mae": 1.6267856224279835,
+					"foreground": 949570,
+					"foregroundMae": 1.9637762355592532,
+					"max": 79,
+					"qualityPassed": true
+				},
+				{
+					"frame": 2,
+					"mae": 1.7076893647119342,
+					"foreground": 940550,
+					"foregroundMae": 2.094139599170698,
+					"max": 89,
+					"qualityPassed": true
+				},
+				{
+					"frame": 3,
+					"mae": 1.6766187628600824,
+					"foreground": 909922,
+					"foregroundMae": 2.0514417719320996,
+					"max": 66,
+					"qualityPassed": true
+				},
+				{
+					"frame": 4,
+					"mae": 1.6734976208847736,
+					"foreground": 909922,
+					"foregroundMae": 2.023730971812236,
+					"max": 66,
+					"qualityPassed": true
+				},
+				{
+					"frame": 5,
+					"mae": 0.0001234567901234568,
+					"foreground": 0,
+					"foregroundMae": 0,
+					"max": 1,
+					"qualityPassed": true
+				},
+				{
+					"frame": 6,
+					"mae": 1.4348083847736626,
+					"foreground": 1183808,
+					"foregroundMae": 1.5980260312483106,
+					"max": 64,
+					"qualityPassed": true
+				},
+				{
+					"frame": 7,
+					"mae": 1.5632926633230453,
+					"foreground": 1171946,
+					"foregroundMae": 1.7880402908211357,
+					"max": 68,
+					"qualityPassed": true
+				},
+				{
+					"frame": 8,
+					"mae": 1.6311821630658436,
+					"foreground": 1060166,
+					"foregroundMae": 1.8560376393885485,
+					"max": 67,
+					"qualityPassed": true
+				},
+				{
+					"frame": 9,
+					"mae": 1.6840579989711935,
+					"foreground": 1105953,
+					"foregroundMae": 1.918614383552767,
+					"max": 71,
+					"qualityPassed": true
+				},
+				{
+					"frame": 10,
+					"mae": 0.000009162808641975309,
+					"foreground": 0,
+					"foregroundMae": 0,
+					"max": 2,
+					"qualityPassed": true
+				},
+				{
+					"frame": 11,
+					"mae": 0.0000014467592592592592,
+					"foreground": 0,
+					"foregroundMae": 0,
+					"max": 2,
+					"qualityPassed": true
+				}
+			]
+		},
+		"threadRegression": {
+			"command": "node script/probe-mv-thread.mjs --browser-only",
+			"exitCode": 0,
+			"evidence": {
+				"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-thread-native-XWYSe7/verification.json",
+				"bytes": 24081,
+				"sha256": "a0d214bf7d9d1f356efa01911f55b2bebe2684633383f35c21ff8af35d59e814"
+			},
+			"wasmSha256": "f38a61f8c0246ddeaa69a3e37937734ed5829d23e3e2c8926f227c6590afb4d9",
+			"observations": 71,
+			"allMaxChannel": 0,
+			"allMae": 0,
+			"nonmonotonicRepeats": 7,
+			"omissionNegativesDetected": 5,
+			"controlledReplayExact": true,
+			"inputIdentityStable": true,
+			"exportRetested": false
+		},
+		"filteredRect": {
+			"command": "node script/probe-mv-fall-filtered-rect.mjs",
+			"evidence": {
+				"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-fall-filtered-rect-hOZaho/verification.json",
+				"bytes": 2219,
+				"sha256": "61ed87d1e49f11aad615654cbbc34885359f4ba9eb1f69d2311fc29125fd4712"
+			},
+			"fullSpriteSize": [64, 512],
+			"originalAndExistingTargetAndZeroBlur": "max0 / MAE0",
+			"omitBlurAndWholeTargetBlurNegativesDetected": true,
+			"explicitReplayCanvasAllocations": 0
+		},
+		"priorIncompleteAttempt": {
+			"evidence": {
+				"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-fall-native-e194gj/verification.json",
+				"bytes": 12611,
+				"sha256": "5b9b6b7cd13d018a4e459c64011f29a0613e47071a973067ac8a0dc4ead4f745"
+			},
+			"passed": false,
+			"reason": "300000ms wall-clock timeout at global-open-overlap-boundaries/168; 101 completed observations exact0, no violations or page errors; no export.",
+			"remedy": "Only runner wall-clock timeout increased to 900000ms with bounded 30-second progress. Production source and every pixel/negative/resource gate remained frozen."
+		},
+		"supportingChecks": {
+			"combinedPrivateRustLib": {
+				"evidence": {
+					"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/scene-transition-native-odbdvY/verification.json",
+					"bytes": 418,
+					"sha256": "969f0089fffa72a3642fe2ba21bdc8e66ec5deafed4b0a5c9366e45d65fcbc6f"
+				},
+				"exitCode": 0,
+				"passed": 375,
+				"failed": 0,
+				"ignored": 1,
+				"countsSource": "Parent-reported final combined private editor-api --lib run; one existing environment-dependent test ignored."
+			},
+			"assertionCorrection": "Initial Rust failure was JSON f64 vs integer equality in a test. Corrected to as_f64()==Some(5.0), preserving total 62 and strengthening warm/cold counts to 31 each; no production change.",
+			"sourceAndExportAdapter": {
+				"tests": 4,
+				"assertions": 183,
+				"passed": true
+			},
+			"filteredPrimitiveAndOldRectAndRouting": {
+				"tests": 7,
+				"assertions": 76,
+				"passed": true
+			},
+			"evidenceIdentityNodeTests": {
+				"tests": 3,
+				"passed": true
+			},
+			"progressReporterTests": {
+				"tests": 2,
+				"passed": true,
+				"coverage": [
+					"bounded metadata",
+					"30-second interval",
+					"single-flight",
+					"stop prevents late output"
+				]
+			},
+			"fixtureTypecheck": {
+				"diagnostics": 0,
+				"scope": "Full Fall browser import graph using previously accepted private Thread WASM declarations, not shared stale declarations or runtime proof."
+			},
+			"finalProductionEslint": {
+				"passed": true,
+				"files": 11,
+				"scope": "All five owned contract files and six owned renderer/test files; diagnostic only, no fix or source rewrite."
+			},
+			"fixtureEslintClaim": false
+		},
+		"environment": {
+			"ROCUT_TEST_MV_REFERENCE": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/vocaloid-style-mv-pipeline",
+			"ROCUT_TEST_WASM_DIRECTORY": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/web-scene-transition-oi8DXV",
+			"ROCUT_TEST_FFMPEG": "E:/Software/ffmpeg-6.0-full_build/bin/ffmpeg.exe",
+			"ROCUT_TEST_FFPROBE": "E:/Software/ffmpeg-6.0-full_build/bin/ffprobe.exe"
+		}
+	},
+	"limits": {
+		"installedPluginTested": false,
+		"installedElectronTested": false,
+		"groupMasterPostTested": false,
+		"fullSongOrFullMvAccepted": false,
+		"originalFilmArtworkAccepted": false,
+		"dedicatedFallParameterUiAccepted": false,
+		"crossBrowserOrCrossGpuReliabilityEstablished": false,
+		"performanceAcceptance": false,
+		"referenceChanged": false,
+		"thresholdsWeakened": false,
+		"productionBudgetsIncreased": false,
+		"sharedWasmOrDependenciesUpdated": false,
+		"note": "Formal acceptance covers this complete scene and 12-frame export subset using synthetic artwork. It does not accept a complete MV or installed-host integration."
+	},
+	"checkpoint": {
+		"root": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut",
+		"hashAlgorithm": "SHA-256 over exact current file bytes",
+		"scope": "Explicit Fall/filteredRect owned paths only; not a blanket dirty-worktree staging instruction.",
+		"productionFreeze": {
+			"path": "script/fixtures/mv-fall-production-freeze.json",
+			"bytes": 7567,
+			"sha256": "f56bcecdce90dae708226c876e6087ac9edbc8ccdf05c2edde5223ddd36418cf"
+		},
+		"implementationDirectoryFiles": 38,
+		"implementationFilesExcludingColocatedTests": 32,
+		"colocatedTestFiles": 6,
+		"fixtureFilesExcludingFreeze": 27,
+		"fixtureAndFreezeFiles": 28,
+		"totalSourceFixtureAndFreezeFiles": 66,
+		"newEvidenceFile": "docs/evidence/mv-fall.json",
+		"totalWithThisEvidence": 67,
+		"sharedNarrativeDocument": "docs/programmatic-frame-sources.md is parent-owned and not edited here.",
+		"implementationAndColocatedTests": [
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/fall.rs",
+				"bytes": 1039,
+				"sha256": "fdba9b5d7548f9dbc4c90a013f3b44a13cde46d7d611437b2200835dbae427f9"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/fall_background.rs",
+				"bytes": 3455,
+				"sha256": "10f58050efb1268e2de4154ffcfc2be7d73d25511183b4fe46bc3fd54fa43c3f"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/fall_budget.rs",
+				"bytes": 4422,
+				"sha256": "6a802c2a6e9c16b9ec3cd8f734c08b7df20c3ce6ccc98a43f7d93f69e766e912"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/fall_character.rs",
+				"bytes": 5512,
+				"sha256": "6e1f1d9937ec4ab8603467e26b6d73aa0af5751b48abf29dcad63e470e3daec7"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/fall_clock.rs",
+				"bytes": 4804,
+				"sha256": "3669d69edc69a4e7463e5525dfb035e6fcbe2cef7dc7fdaf044fb327459af786"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/fall_finishing.rs",
+				"bytes": 3022,
+				"sha256": "7bdf1bca7b6a6891c20c6c14b442e1f6a0e77120c94ffa888ffad8aed0b03da7"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/fall_geometry.rs",
+				"bytes": 3118,
+				"sha256": "51303c848a0b707a9a49a02104e5de9692e03db02b4a5465a53f09f8686ecfcb"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/fall_model.rs",
+				"bytes": 1132,
+				"sha256": "354aabe95fbfb6f24684da218313556135f66da71d012fc7f4aeb23a9d59c6d5"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/fall_producer.rs",
+				"bytes": 2104,
+				"sha256": "1f75dc8b676b48ca14d6787b27011df8613650af294e927c502d8f95213d83ee"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/fall_ribbon.rs",
+				"bytes": 5063,
+				"sha256": "e896a55004966da8e1a64068499d4b58269757fb5b9c5a6621059ae8d69665c2"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/fall_streaks.rs",
+				"bytes": 3588,
+				"sha256": "70c878394ecb402e32118ff6abe149b0d22828e20e8cad2721e6af8b8e5764f8"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/fall_validate.rs",
+				"bytes": 1958,
+				"sha256": "5382954fa7e76022b62212f2908f20ba337f2182ff3ef70a87e35d73d5f3d82a"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/fall_catalog.rs",
+				"bytes": 2580,
+				"sha256": "0333dcc71617f3de49750049b5454a40b479341e1b467f22bd92628d89fa0da9"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/fall_tests.rs",
+				"bytes": 7150,
+				"sha256": "00b6cf7a7315818423e27d38b3465a1905bd6f075b05d8caf021543bf7d5dd71"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/fall_public_tests.rs",
+				"bytes": 4669,
+				"sha256": "b7872d11f57ca761de41cf5e8832be47c0a92d338a1ffd485d687611dc76cbd9"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/fall_filtered_rect.rs",
+				"bytes": 2438,
+				"sha256": "63c99ab746be4e58a6f6d41051288c77a9e2268d0e1feb71e59549735a539e4c"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/fall_filtered_rect_tests.rs",
+				"bytes": 4561,
+				"sha256": "fec9fedd2b6dd72092629d3f2e33e5a583fd5356e1ef1fb2f750f5e9ca838022"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/mod.rs",
+				"bytes": 1083,
+				"sha256": "44cb7a6230a2aea45668d6c6dee922a88509fb9eed9cd90076f38ec6e89407f4"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/model.rs",
+				"bytes": 9773,
+				"sha256": "354b95b7d8902e15a5f270aeccc62d65aca4bdfd52e6ce13b5633ece3f9dbee6"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/catalog.rs",
+				"bytes": 9433,
+				"sha256": "381db2a0a1436f374ed873d7a330a4aeb6b444a0da8ff0d809004f258c4328d5"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/catalog_tests.rs",
+				"bytes": 6637,
+				"sha256": "8b2f29373183a1543993d8c806f07406bf1bf5ed4fe6782981b5f0ecf1fe87c1"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/validate.rs",
+				"bytes": 21895,
+				"sha256": "ea992d0c46f29682d2f4d05f89e5c69ace4221320499ccb7b4e7323b77fda753"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/evaluate.rs",
+				"bytes": 16726,
+				"sha256": "bdb6f0f8371ffb21983b3d2175bd7cb2eba53c42adbb69955839089a14d5cf44"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/image_dimensions.rs",
+				"bytes": 1474,
+				"sha256": "51e37d7d86043b92545069eee4eb02f36b10f90fc560bd6585b969640a84f53f"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/native_scene_evaluate.rs",
+				"bytes": 6640,
+				"sha256": "a08f888cb2ac5f61e191de9600c5723478d9bd15212f0880541d991ec259dfdf"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/ember_plan.rs",
+				"bytes": 5209,
+				"sha256": "6f847266a24e53980474d6b12dc9b584aaf89803688217fa8ef441026494145f"
+			},
+			{
+				"path": "rust/crates/editor-api/src/mv_recipe/ember_surface.rs",
+				"bytes": 16540,
+				"sha256": "0ffa480be4236fcaa205b896e996869497ade97edd10924a9d1588458958216d"
+			},
+			{
+				"path": "packages/editor-contracts/src/mv-fall.ts",
+				"bytes": 811,
+				"sha256": "51de08b22c90eb1f2e3f4c13bd0ba7fa36d03f82c85a52550237f6bcb8e0c56f"
+			},
+			{
+				"path": "packages/editor-contracts/src/index.ts",
+				"bytes": 7064,
+				"sha256": "a44f4f6777b1ce950276c466171da9efb2219739ea380a95135197ee47942a72"
+			},
+			{
+				"path": "packages/editor-contracts/src/mv-recipe.ts",
+				"bytes": 3586,
+				"sha256": "e255fd730b25d8af0aa9538eb070d8785bd599039af2456bf3c0b4270d0fe4c2"
+			},
+			{
+				"path": "packages/editor-contracts/src/mv-recipe-plan.ts",
+				"bytes": 3604,
+				"sha256": "cd5e5cd0a9d68a06d81b4eb2d73e0f50136d1ad407bd74211ffa4fa212d004f4"
+			},
+			{
+				"path": "packages/editor-contracts/src/mv-ember-plan.ts",
+				"bytes": 4530,
+				"sha256": "7643748b2b65ffc02eb2e432ec0ececef79ebd65e4d5dfa92cfc361b41a19338"
+			},
+			{
+				"path": "packages/editor-classic/src/services/renderer/programmatic/canvas-runtime.ts",
+				"bytes": 2162,
+				"sha256": "bc50ace66ab9d8bc29b48a33f277a0c38c2cc8dc059a2d5a0b6c0cee8df4a17d"
+			},
+			{
+				"path": "packages/editor-classic/src/services/renderer/programmatic/canvas-runtime.test.ts",
+				"bytes": 5167,
+				"sha256": "8ff87405e8ead1e2ab43fa11098a7d0b7c3172653250c97664a5e7fcadaedcfd"
+			},
+			{
+				"path": "packages/editor-classic/src/services/renderer/programmatic/mv-recipe-renderer.ts",
+				"bytes": 7247,
+				"sha256": "ea239116c138e2abd739d8240698bd10e88e40cdb300681c01d4ec7e0687c35f"
+			},
+			{
+				"path": "packages/editor-classic/src/services/renderer/programmatic/mv-ember-raster.ts",
+				"bytes": 8300,
+				"sha256": "199376afab5367970bd210217e03c46fad65aca903863a09a17152d8bba0b9fb"
+			},
+			{
+				"path": "packages/editor-classic/src/services/renderer/programmatic/mv-ember-renderer.ts",
+				"bytes": 6721,
+				"sha256": "fdb403b3f8a37690b9681e9a5eadd272b156cff3fcf88aec92e058ce882ce28a"
+			},
+			{
+				"path": "packages/editor-classic/src/services/renderer/programmatic/__tests__/mv-ember-filtered-rect.test.ts",
+				"bytes": 3599,
+				"sha256": "b771100b158108277bc7d6229558b583124ddca21f77c0481d660a7e381f9f6d"
+			}
+		],
+		"fixturesAndFreeze": [
+			{
+				"path": "script/fixtures/mv-fall.tsconfig.json",
+				"bytes": 138,
+				"sha256": "465a68c4d63d80273ecbfea638125ff3b45d9219c02ffadb7226d0ae4c281fc4"
+			},
+			{
+				"path": "script/fixtures/mv-fall-artifacts.mjs",
+				"bytes": 1636,
+				"sha256": "8902b421fceb8c90d8f364630592bbd7b0d26fba49be18089fbebfbf5a561697"
+			},
+			{
+				"path": "script/fixtures/mv-fall-capture.ts",
+				"bytes": 1312,
+				"sha256": "850deb07c7c962b062f4ec878c74b5ad828a2ac9477c29cdd2ee3c9db0827208"
+			},
+			{
+				"path": "script/fixtures/mv-fall-cases.ts",
+				"bytes": 2540,
+				"sha256": "f70c0e11499471e784a2ce87a49dffacbfc1fca871fecf31e90aee946792259c"
+			},
+			{
+				"path": "script/fixtures/mv-fall-contract.ts",
+				"bytes": 1724,
+				"sha256": "609bc2c75467006e7b7a1693b47cac8fc66b7b6c35aae8471d83aed8d3a7aa66"
+			},
+			{
+				"path": "script/fixtures/mv-fall-evidence.mjs",
+				"bytes": 2403,
+				"sha256": "4e3acc0f26e164553278af1b6efc1a3ae41c95a9a0d8a319ae01566a7fd722a4"
+			},
+			{
+				"path": "script/fixtures/mv-fall-evidence.test.mjs",
+				"bytes": 1588,
+				"sha256": "8bcaae95725fb49ec00e540f9da4a3a85cb95f88bb797690881c5b8507ffb670"
+			},
+			{
+				"path": "script/fixtures/mv-fall-export.ts",
+				"bytes": 5135,
+				"sha256": "a11249b1617d5664ae8b7956cd0438de9ffdae357e9e296f41183e4f7b12ed69"
+			},
+			{
+				"path": "script/fixtures/mv-fall-export-scene.ts",
+				"bytes": 3383,
+				"sha256": "2f59453207c0f236f743380e06d50ae53d8852876032189abf5e085e3b132798"
+			},
+			{
+				"path": "script/fixtures/mv-fall-export-support.test.ts",
+				"bytes": 846,
+				"sha256": "db4a3c29e33982ac758f2eb1f1db99f78757eff51964e4fd4060190a2a106aea"
+			},
+			{
+				"path": "script/fixtures/mv-fall-export-support.ts",
+				"bytes": 989,
+				"sha256": "983fdbed37fad6b6794e88c764e21dff187c1b17cf8d09c3e48df1e99b6347ec"
+			},
+			{
+				"path": "script/fixtures/mv-fall-filtered-rect.ts",
+				"bytes": 4595,
+				"sha256": "1dc7d98101daf9f3a5ff8018f217bc3d692374ebdd7f9761588380e7e224de91"
+			},
+			{
+				"path": "script/fixtures/mv-fall-filtered-rect.tsconfig.json",
+				"bytes": 98,
+				"sha256": "44a813a935684ea3027d12e527a045257ec372c553491b5cf2e6aea5387ac2f3"
+			},
+			{
+				"path": "script/fixtures/mv-fall-filtered-rect-browser.html",
+				"bytes": 207,
+				"sha256": "6013096f24fbe5d02f352353caab67d7f4f00214dd54c65c22828bbd00c41cb0"
+			},
+			{
+				"path": "script/fixtures/mv-fall-filtered-rect-browser.ts",
+				"bytes": 337,
+				"sha256": "ee087679c8222857082b4da33495803bda8109ce85feb282724160d9830de65a"
+			},
+			{
+				"path": "script/fixtures/mv-fall-filtered-rect-reference.mjs",
+				"bytes": 999,
+				"sha256": "5cd5f53752d42d13631d7dccf1406292e1462f30b7172f565ea6de8078d6d9ff"
+			},
+			{
+				"path": "script/fixtures/mv-fall-native-browser.html",
+				"bytes": 210,
+				"sha256": "311619c2338f8d78eab8286e6af1d747533ed6607b0715d2f783def2f3b36b75"
+			},
+			{
+				"path": "script/fixtures/mv-fall-native-browser.ts",
+				"bytes": 4177,
+				"sha256": "170cf5802d8f0429b31f4debdc6c205e16286c7d00fa1d58aff00e824a068ff0"
+			},
+			{
+				"path": "script/fixtures/mv-fall-negatives.ts",
+				"bytes": 2822,
+				"sha256": "48cd370c8d26399b6997e6e957464e5f4613080784d6b7002ce9ebd7a559f5b5"
+			},
+			{
+				"path": "script/fixtures/mv-fall-oracle.ts",
+				"bytes": 4774,
+				"sha256": "91b217269a6f17d93219b66dfe31a1b3e335a31ff071f85cbce816cc717451e4"
+			},
+			{
+				"path": "script/fixtures/mv-fall-production-freeze.json",
+				"bytes": 7567,
+				"sha256": "f56bcecdce90dae708226c876e6087ac9edbc8ccdf05c2edde5223ddd36418cf"
+			},
+			{
+				"path": "script/fixtures/mv-fall-progress.mjs",
+				"bytes": 1227,
+				"sha256": "ccc2281163b5a80d76167ce4a9c6cc93f148e3b3743342eb4cd5e9cc4324ff56"
+			},
+			{
+				"path": "script/fixtures/mv-fall-progress.test.mjs",
+				"bytes": 1532,
+				"sha256": "f8286c11cd67d07b1034a189750ebd9a1ca9f2a36d49f5310cc3aec0f4bd9c4c"
+			},
+			{
+				"path": "script/fixtures/mv-fall-reference.ts",
+				"bytes": 1259,
+				"sha256": "a9667409236536776874f8a4808640a51f96c044ddfe831be10528fcfc0b7838"
+			},
+			{
+				"path": "script/fixtures/mv-fall-source.test.ts",
+				"bytes": 3397,
+				"sha256": "40d98fc865731ce46581a6df15578252d00c222e998352c715e782667f86aa2e"
+			},
+			{
+				"path": "script/fixtures/mv-fall-source.ts",
+				"bytes": 4777,
+				"sha256": "51cced07e6683aee79e5acae19054fba1920bdea699ae5af1978612fdcf583d5"
+			},
+			{
+				"path": "script/probe-mv-fall.mjs",
+				"bytes": 6104,
+				"sha256": "ebc02382e40bde0d16ec7264ee4fee50ed76f8961267599807045a506fca1c83"
+			},
+			{
+				"path": "script/probe-mv-fall-filtered-rect.mjs",
+				"bytes": 3322,
+				"sha256": "2033bbd17b3e95120d793be6b9910cadfdb9c87bb9622cd36033aa19dbd486c4"
+			}
+		]
+	}
+}
