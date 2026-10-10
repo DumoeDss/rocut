@@ -1,0 +1,12 @@
+{
+	"extends": "./three-probe.tsconfig.json",
+	"compilerOptions": {
+		"types": ["bun", "node"],
+		"noEmit": true,
+		"allowImportingTsExtensions": true
+	},
+	"include": [
+		"./mv-heart-owner-provider*.ts",
+		"../../packages/*/src/types/**/*.d.ts"
+	]
+}

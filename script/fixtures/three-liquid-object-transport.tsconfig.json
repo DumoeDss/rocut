@@ -1,0 +1,9 @@
+{
+	"extends": "../../apps/cli/tsconfig.json",
+	"compilerOptions": { "types": ["node", "bun"] },
+	"include": [
+		"../../apps/cli/src/programmatic/engines/three-liquid-object-transport.ts",
+		"../../apps/cli/src/programmatic/engines/three-liquid-object-transport-codec.ts"
+	],
+	"exclude": []
+}

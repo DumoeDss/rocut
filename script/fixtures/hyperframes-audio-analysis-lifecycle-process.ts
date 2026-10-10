@@ -10,17 +10,23 @@ export interface OwnedLifecycleBrowser {
 	profile: string;
 }
 
+/** CIM reports native Windows separators even when configuration uses slash paths. */
+export function lifecycleBrowserInventoryScript(executable: string, parentPid: number) {
+	assert.ok(Number.isSafeInteger(parentPid) && parentPid > 0);
+	const quotedExecutable = resolve(executable).replace(/'/g, "''");
+	return [
+		"[Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false)",
+		`$lifecycleChildren = @(Get-CimInstance Win32_Process -Filter 'ParentProcessId = ${parentPid}' | Where-Object { $_.ExecutablePath -eq '${quotedExecutable}' } | Select-Object ProcessId, CommandLine)`,
+		"ConvertTo-Json -InputObject $lifecycleChildren -Compress",
+	].join("\n");
+}
+
 /** Read only; restrict OS observation to this test process's direct Chromium children. */
 export function ownedLifecycleBrowsers(
 	executable: string,
 ): OwnedLifecycleBrowser[] {
 	assert.equal(process.platform, "win32");
-	const quotedExecutable = executable.replace(/'/g, "''");
-	const script = [
-		"[Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false)",
-		`$lifecycleChildren = @(Get-CimInstance Win32_Process -Filter 'ParentProcessId = ${process.pid}' | Where-Object { $_.ExecutablePath -eq '${quotedExecutable}' } | Select-Object ProcessId, CommandLine)`,
-		"ConvertTo-Json -InputObject $lifecycleChildren -Compress",
-	].join("\n");
+	const script = lifecycleBrowserInventoryScript(executable, process.pid);
 	const raw = execFileSync(
 		"powershell.exe",
 		["-NoLogo", "-NoProfile", "-NonInteractive", "-Command", script],

@@ -1,0 +1,13 @@
+{
+	"extends": "./three-probe.tsconfig.json",
+	"compilerOptions": {
+		"types": ["bun", "node"],
+		"noEmit": true,
+		"allowImportingTsExtensions": true
+	},
+	"include": [
+		"./mv-night-native-browser.ts",
+		"../../packages/editor-classic/src/services/renderer/programmatic/mv-night-native.ts",
+		"../../packages/*/src/types/**/*.d.ts"
+	]
+}

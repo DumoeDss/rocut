@@ -7,8 +7,8 @@ export type SurfaceMutation =
 	| "prematureRelease";
 const mutations: Record<SurfaceMutation, readonly [string, string]> = {
 	omitBlur: [
-		"target.filter = r.blurPx === 0 ? 'none' : 'blur(' + r.blurPx + 'px)';",
-		"target.filter = 'none';",
+		"target.filter = mvOrderedBlitFilter(r);",
+		"target.filter = mvOrderedBlitFilter({ ...r, blurPx: 0 });",
 	],
 	wrongSmoothing: [
 		"target.imageSmoothingEnabled = r.smoothing;",

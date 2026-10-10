@@ -69,6 +69,23 @@ const sourceInputs =
 				`script/fixtures/${fixture.replace(/\.html$/, ".ts")}`,
 				"script/fixtures/hyperframes-browser-probe.ts",
 				"script/fixtures/remotion-browser-probe.ts",
+				"script/fixtures/remotion-pinned-build-probe.ts",
+				"script/fixtures/remotion-video-browser-probe.ts",
+				"apps/cli/src/programmatic/engines/compile-project.ts",
+				"apps/cli/src/programmatic/engines/remotion-compiler-child.ts",
+				"apps/cli/src/programmatic/engines/remotion-driver.ts",
+				"apps/cli/src/programmatic/engines/toolchain.ts",
+				"apps/cli/src/programmatic/remotion-inspection-driver.ts",
+				"apps/cli/src/programmatic/remotion-inspection-project.ts",
+				"apps/cli/src/programmatic/remotion-inspection-service.ts",
+				"apps/cli/src/programmatic/remotion-inspection-snapshot.ts",
+				"apps/cli/src/programmatic/remotion-metadata-archive.ts",
+				"apps/cli/src/programmatic/remotion-metadata-contract.ts",
+				"apps/cli/src/programmatic/remotion-metadata-json.ts",
+				"apps/cli/src/programmatic/remotion-metadata-lifetime.ts",
+				"apps/cli/src/programmatic/remotion-metadata-policy.ts",
+				"apps/cli/src/programmatic/remotion-metadata-receipt.ts",
+				"apps/cli/src/programmatic/remotion-metadata-validation.ts",
 			])
 		: undefined;
 const privateTemp = await mkdtemp(join(tmpdir(), "rocut-frame-probe-"));

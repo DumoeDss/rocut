@@ -12,6 +12,7 @@ import type {
 } from "@opencut/editor-contracts";
 import { compileProgrammaticProject } from "../../apps/cli/src/programmatic/engines/compile-project";
 import { renderHtmlPng } from "../../apps/cli/src/programmatic/html-rasterizer";
+import { createProgrammaticAudioService } from "../../apps/cli/src/programmatic/audio-service";
 import {
 	describeResource,
 	saveResourceBytes,
@@ -21,6 +22,7 @@ import {
 	resourceDigest,
 } from "../../apps/cli/src/programmatic/resources";
 import { FileProjectStore } from "../../apps/cli/src/file-store";
+import { nativeAudioWav } from "./native-audio-fixture";
 import { CURRENT_PROJECT_VERSION } from "../../packages/editor-classic/src/services/storage/migrations/version";
 
 const toolchainDirectory = process.argv[2],
@@ -45,6 +47,16 @@ const context = {
 	}),
 	projectId: "mixed-engine-lyrics",
 };
+const audioService = createProgrammaticAudioService({
+	resourceStore: context,
+	executable,
+	decoder: {
+		ffmpeg: process.env.ROCUT_TEST_FFMPEG!,
+		ffprobe: process.env.ROCUT_TEST_FFPROBE!,
+	},
+	connectionFile: "",
+	toolchainDirectory,
+});
 const sources: Record<string, ProgrammaticSource> = {};
 const archived: Record<string, boolean> = {};
 for (const engine of ["hyperframes", "remotion"] as const) {
@@ -68,6 +80,15 @@ for (const engine of ["hyperframes", "remotion"] as const) {
 			join(directory, "gsap.js"),
 		);
 		files.push("gsap.js");
+		await writeFile(
+			join(directory, "hf.wav"),
+			nativeAudioWav({
+				seconds: 1,
+				sample: (frame, channel) =>
+					Math.sin((frame * 220 * 2 * Math.PI) / 48000) * (channel ? 0.125 : 0.25),
+			}),
+		);
+		files.push("hf.wav");
 	}
 	const compiled = await compileProgrammaticProject({
 		action: "compile",
@@ -83,6 +104,15 @@ for (const engine of ["hyperframes", "remotion"] as const) {
 			durationFrames: 25,
 			seed: 11,
 			...(engine === "remotion" ? { compositionId: "MixedLyrics" } : {}),
+			...(engine === "hyperframes"
+				? {
+						audio: {
+							version: 1,
+							mode: "native",
+							profile: "hyperframes-graph-v1",
+						},
+					}
+				: {}),
 		},
 		toolchainDirectory,
 		context,
@@ -294,10 +324,24 @@ const server = createServer(async (request, response) => {
 				executable,
 				request: input,
 				resourceStore: context,
+				nativeVideoDecoder: {
+					ffmpeg: process.env.ROCUT_TEST_FFMPEG!,
+					ffprobe: process.env.ROCUT_TEST_FFPROBE!,
+				},
 				connectionFile: "",
 				signal: controller.signal,
 			});
 			response.writeHead(200, { "content-type": "image/png" }).end(png);
+			return;
+		}
+		if (request.url === "/api/programmatic/audio/identity") {
+			await audioService.handle(request, response, "identity");
+			counts.audioIdentities = (counts.audioIdentities ?? 0) + 1;
+			return;
+		}
+		if (request.url === "/api/programmatic/audio") {
+			counts.audioRenders = (counts.audioRenders ?? 0) + 1;
+			await audioService.handle(request, response, "render");
 			return;
 		}
 		response.writeHead(404).end();

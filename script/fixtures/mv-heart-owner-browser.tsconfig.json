@@ -1,0 +1,4 @@
+{
+	"extends": "./mv-heart-owner-provider.tsconfig.json",
+	"include": ["./mv-heart-owner-*.ts", "../../packages/*/src/types/**/*.d.ts"]
+}

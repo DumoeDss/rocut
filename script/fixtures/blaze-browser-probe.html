@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Rocut Blaze native raster verification</title>
+	</head>
+	<body>
+		<script type="module">
+			import { runBlazeProbe } from "./blaze-browser-probe.ts";
+			runBlazeProbe()
+				.then((result) => {
+					globalThis.__blazeResult = result;
+				})
+				.catch((error) => {
+					globalThis.__blazeResult = {
+						ok: false,
+						failure: String(error),
+						stack: error.stack,
+					};
+				});
+		</script>
+	</body>
+</html>

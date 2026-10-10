@@ -1,6 +1,7 @@
 import type { ProgrammaticSource } from "@opencut/editor-contracts";
 import { createHttpProgrammaticFrames } from "../../apps/vite-example/src/host/http-programmatic-frames";
 import { runRemotionVideoProbe } from "./remotion-video-browser-probe";
+import { compilePinnedRemotionProbe } from "./remotion-pinned-build-probe";
 
 export async function runRemotionSourceProbe(): Promise<ProgrammaticSource | undefined> {
 	const spec = Reflect.get(globalThis, "__engineBuildSpec");
@@ -22,7 +23,7 @@ export async function runRemotionSourceProbe(): Promise<ProgrammaticSource | und
 		if (JSON.stringify(actual) !== JSON.stringify(expected)) throw Error(`Remotion ${label}: ${JSON.stringify({ actual, expected })}`);
 	};
 	console.log("HTML probe: preparing native Remotion through production API");
-	const source = await compile();
+	const source = await compilePinnedRemotionProbe({ spec });
 	for (const frame of [30, 15, 0, 23, 22, 31, 45, 30]) {
 		console.log(`HTML probe: Remotion requested frame ${frame}`);
 		const bitmap = await createImageBitmap(await render(source, frame));

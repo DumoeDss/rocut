@@ -1,0 +1,11 @@
+{
+  "extends": "../../apps/cli/tsconfig.json",
+  "compilerOptions": {
+    "types": ["node", "bun"],
+    "paths": {
+      "opencut-wasm": ["C:/Users/Sayo/AppData/Local/Temp/rocut-native-delivery-20261010-74652f9b/wasm/opencut_wasm.d.ts"]
+    }
+  },
+  "include": ["./hyperframes-history-functional-*.ts"],
+  "exclude": []
+}

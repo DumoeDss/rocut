@@ -1,0 +1,6 @@
+{
+ "extends": "../../apps/cli/tsconfig.json",
+ "compilerOptions": { "types": ["node", "bun"] },
+ "include": ["liquid-object-capture-probe.ts", "liquid-object-capture-probe-types.ts", "liquid-object-capture-probe-pixels.d.mts"],
+ "exclude": []
+}

@@ -1,0 +1,40 @@
+import assert from "node:assert/strict";
+import { readFileSync, mkdirSync } from "node:fs";
+import { join, isAbsolute } from "node:path";
+import { spawnSync } from "node:child_process";
+import test from "node:test";
+const directory = process.env.ROCUT_TEST_NIGHT_TEMP;
+assert.ok(directory && isAbsolute(directory) && directory.replaceAll("\\", "/").startsWith("E:/Elftia-private-tests/"), "Explicit E: private test directory required");
+test("actual Night Rust pre-copy bounds, exact reflection and owner-ID/range/reservation negatives", () => {
+    const output = join(directory, "night-owner-lightweight");
+    mkdirSync(output, { recursive: true });
+    const executable = join(output, process.platform === "win32" ? "night.exe" : "night");
+    const options = { encoding: "utf8", timeout: 30000, env: { ...process.env, TEMP: directory, TMP: directory } };
+    const compile = spawnSync("rustc", ["--edition=2021", "--test", "rust/crates/editor-api/src/mv_night_transport.rs", "-o", executable], options);
+    assert.equal(compile.status, 0, compile.stderr);
+    const run = spawnSync(executable, [], options);
+    assert.equal(run.status, 0, run.stderr); assert.match(run.stdout, /4 passed/);
+});
+test("Night WASM reference adapter performs encoded admission/reservation before native decode/copy", () => {
+    const wasm = readFileSync("rust/wasm/src/mv_night_owner.rs", "utf8");
+    const core = readFileSync("rust/crates/editor-api/src/mv_night_owner.rs", "utf8");
+    assert.match(wasm, /bytes: js_sys::Uint8Array/);
+    assert.match(wasm, /\.inspect_with\(/);
+    assert.match(wasm, /\.prepare_lut_with\(/);
+    assert.match(wasm, /check_reflection\(id, rgba\.length\(\)/);
+    assert.match(wasm, /check_lut_row\(rgba\.length\(\)/);
+    assert.doesNotMatch(wasm, /serde_json::|script\/fixtures|bytes: &\[u8\]/);
+    assert.ok(core.indexOf("let _temporary = self.reserve(") < core.indexOf("let owned = copy()?"));
+    assert.match(core, /actual native decoder disagrees with byte-proven geometry/);
+    assert.match(core, /row_pixels\(atlas_id, "P4"\)/);
+    assert.match(core, /build_reference_post_plan\(/);
+    assert.match(core, /release lease before session disposal/);
+});
+test("production adapter always executes Train scene AND mandatory original GL post", () => {
+    const source = readFileSync("packages/editor-classic/src/services/renderer/programmatic/mv-night-native.ts", "utf8");
+    assert.doesNotMatch(source, /script\/fixtures|scene-only|Math\.random|prepare_reflection_mask/);
+    assert.ok(source.indexOf("native.prepare(metadata, packet)") < source.indexOf("await createImageBitmap("));
+    assert.ok(source.indexOf("native.bindDecoded(") < source.indexOf("native.bindReflection("));
+    assert.match(source, /renderTrainScene\(/); assert.match(source, /renderReferencePost\(/);
+    assert.match(source, /readLutAtlasRow\(/); assert.match(source, /native\.releaseFrame\(/);
+});

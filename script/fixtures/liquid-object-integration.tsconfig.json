@@ -1,0 +1,18 @@
+{
+	"extends": "../../apps/cli/tsconfig.json",
+	"compilerOptions": { "types": ["node", "bun"] },
+	"include": [
+		"../../apps/cli/src/programmatic/three-capability.ts",
+		"../../apps/cli/src/programmatic/three-liquid-object-*.ts",
+		"../../apps/cli/src/programmatic/liquid-object-*.ts",
+		"../../apps/cli/src/programmatic/engines/three-liquid-object-*.ts",
+		"../../apps/cli/src/programmatic/engines/three-build-profile.ts",
+		"../../apps/cli/src/programmatic/engines/three-toolchain-profile.ts",
+		"../../apps/cli/src/programmatic/engines/compile-project.ts",
+		"../../apps/cli/src/programmatic/html-rasterizer.ts",
+		"../../apps/cli/src/__tests__/three-liquid-object-*.ts",
+		"../../apps/cli/src/__tests__/liquid-object-broker*.ts",
+		"../../packages/editor-contracts/src/__tests__/programmatic-build-capabilities.test.ts"
+	],
+	"exclude": []
+}

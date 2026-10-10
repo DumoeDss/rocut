@@ -1,5 +1,6 @@
 import type { ProgrammaticSource } from "@opencut/editor-contracts";
 import { createHttpProgrammaticFrames } from "../../apps/vite-example/src/host/http-programmatic-frames";
+import { compilePinnedRemotionProbe } from "./remotion-pinned-build-probe";
 
 export let remotionVideoSource: ProgrammaticSource | undefined;
 
@@ -28,7 +29,7 @@ export async function runRemotionVideoProbe(spec: Record<string, unknown>) {
 	const render = (source: ProgrammaticSource, frame: number) => provider.renderPng({
 		request: { source, clipStart: 0, clipDuration: 240000, trimStart: 0, timelineTime: frame * 4000 }, signal: new AbortController().signal,
 	});
-	const source = await compile();
+	const source = await compilePinnedRemotionProbe({ spec: { ...spec, inputProps: { mode: "video" } } });
 	for (const frame of [23, 5, 6, 24, 25, 4, 0, 8, 15, 16, 23]) {
 		const bitmap = await createImageBitmap(await render(source, frame));
 		try {

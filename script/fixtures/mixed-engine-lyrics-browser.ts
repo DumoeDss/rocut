@@ -8,6 +8,8 @@ import {
 	encodeProject,
 	decodeProject,
 } from "../../packages/editor-classic/src/editor/persistence/project-codec";
+import { createTimelineAudioBuffer } from "../../packages/editor-classic/src/media/audio";
+import { ProgrammaticAudioRuntime } from "../../packages/editor-classic/src/media/programmatic-audio-runtime";
 import { createHttpProgrammaticFrames } from "../../apps/vite-example/src/host/http-programmatic-frames";
 import { buildScene } from "../../packages/editor-classic/src/services/renderer/scene-builder";
 import { CanvasRenderer } from "../../packages/editor-classic/src/services/renderer/canvas-renderer";
@@ -56,6 +58,18 @@ async function run() {
 		loadProjectFont: async () => null,
 	});
 	const provider = createHttpProgrammaticFrames({ base: "/api" });
+	const programmaticAudio = new ProgrammaticAudioRuntime(provider);
+	const audioResources = {
+		createAudioContext: ({ request }: { request?: { sampleRate?: number } }) => {
+			const context = new AudioContext({
+				...(request?.sampleRate ? { sampleRate: request.sampleRate } : {}),
+			});
+			return {
+				context,
+				close: async () => void (await context.close()),
+			};
+		},
+	} as unknown as SessionResources;
 	await initializeGpu();
 	const compositor = new WasmCompositor({
 		trackGpuResource: ({
@@ -144,6 +158,20 @@ async function run() {
 			"Saved/reopened native composition pixels differ",
 		);
 		const videos = [];
+		const exportRange = {
+			startTime: ticks(48000),
+			endTime: ticks(76800),
+			duration: ticks(28800),
+		};
+		const audioBuffer = await createTimelineAudioBuffer({
+			tracks: reloaded.scenes[0].tracks,
+			mediaAssets: [],
+			startTime: exportRange.startTime,
+			duration: exportRange.duration,
+			resources: audioResources,
+			programmaticAudio,
+		});
+		check(audioBuffer, "Native HyperFrames audio was not mixed into the export");
 		for (const foreground of [false, true]) {
 			const variant = decodeProject(JSON.parse(JSON.stringify(loaded)));
 			variant.scenes[0].tracks.overlay[0].hidden = !foreground;
@@ -151,14 +179,11 @@ async function run() {
 				...params,
 				format: "webm",
 				quality: "very_high",
-				shouldIncludeAudio: false,
+				shouldIncludeAudio: true,
+				audioBuffer,
 			}).export({
 				rootNode: scene(variant),
-				range: {
-					startTime: ticks(48000),
-					endTime: ticks(76800),
-					duration: ticks(28800),
-				},
+				range: exportRange,
 			});
 			check(bytes, "Mixed engine export produced no artifact");
 			videos.push({ foreground, bytes: [...new Uint8Array(bytes)] });
@@ -192,6 +217,7 @@ async function run() {
 		};
 	} finally {
 		fonts.dispose();
+		await programmaticAudio.invalidate();
 		compositor.dispose();
 		disposeGpu();
 	}

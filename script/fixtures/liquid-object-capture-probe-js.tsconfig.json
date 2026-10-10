@@ -1,0 +1,6 @@
+{
+ "extends": "../../apps/cli/tsconfig.json",
+ "compilerOptions": { "types": ["node", "bun"], "allowJs": true },
+ "include": ["liquid-object-capture-probe-pixels.mjs", "../probe-liquid-object-project.mjs", "../probe-liquid-object-capture.mjs"],
+ "exclude": []
+}

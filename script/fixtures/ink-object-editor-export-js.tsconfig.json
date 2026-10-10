@@ -1,0 +1,7 @@
+{
+ "extends": "../../apps/cli/tsconfig.json",
+ "compilerOptions": { "types": ["node", "bun"], "allowJs": true },
+ "include": ["ink-object-editor-export-build.mjs", "../probe-ink-object-editor-export.mjs"],
+ "exclude": []
+}
+

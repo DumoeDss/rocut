@@ -1,0 +1,15 @@
+{
+	"extends": "./three-probe.tsconfig.json",
+	"compilerOptions": {
+		"types": ["bun", "node"],
+		"noEmit": true,
+		"allowImportingTsExtensions": true
+	},
+	"include": [
+		"./remotion-browser-probe.ts",
+		"./remotion-video-browser-probe.ts",
+		"./remotion-pinned-build-probe.ts",
+		"./remotion-pinned-build-probe.test.ts",
+		"../../packages/*/src/types/**/*.d.ts"
+	]
+}

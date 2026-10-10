@@ -57,23 +57,28 @@ const fail = (message) => failures.push(message);
  * `npm-prefix.js` — measured, not theoretical.
  */
 const quoteIfNeeded = (part) => (/\s/.test(part) ? `"${part}"` : part);
+const PROBE_TIMEOUT_MS = 30_000;
 
 function runProbe({ label, command, args }) {
 	const invocation = [...command, ...args];
-	// `npx`/`bun` are `.cmd` shims on Windows and need a shell; passing one string rather than
-	// command+args keeps node's DEP0190 warning out of every run.
+	// Native executables never need cmd.exe. Only actual batch entries and the
+	// extensionless Windows npx shim use a shell; arguments stay separate otherwise.
+	const shell = process.platform === "win32" &&
+		(/\.(?:cmd|bat)$/i.test(invocation[0]) || /(?:^|[\\/])npx$/i.test(invocation[0]));
+	const options = { cwd: ROOT, encoding: "utf8", shell, windowsHide: true,
+		timeout: PROBE_TIMEOUT_MS, stdio: ["ignore", "pipe", "pipe"] };
 	const result =
-		process.platform === "win32"
-			? spawnSync(invocation.map(quoteIfNeeded).join(" "), {
-					cwd: ROOT,
-					encoding: "utf8",
-					shell: true,
-				})
-			: spawnSync(invocation[0], invocation.slice(1), {
-					cwd: ROOT,
-					encoding: "utf8",
-				});
+		shell ? spawnSync(invocation.map(quoteIfNeeded).join(" "), options)
+			: spawnSync(invocation[0], invocation.slice(1), options);
 	const output = `${result.stdout ?? ""}${result.stderr ?? ""}`;
+	// Partial JSON from a timed-out/crashed child is not initialization evidence,
+	// including when it looks like the expected bundler negative-control error.
+	if (result.error || result.status !== 0 || result.signal) {
+		const reason = result.error?.code ?? result.signal ?? `exit ${result.status}`;
+		fail(`${label}: probe launch failed (${reason})`);
+		console.log(`  FAIL  ${label} -> probe launch failed (${reason})`);
+		return null;
+	}
 	// The probes print exactly one JSON line; npx and bun both prepend chatter, so take the last
 	// line that parses rather than assuming position.
 	const parsed = output

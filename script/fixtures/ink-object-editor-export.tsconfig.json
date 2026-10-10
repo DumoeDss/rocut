@@ -1,0 +1,5 @@
+{
+ "extends": "./liquid-object-project.tsconfig.json",
+ "include": ["ink-object-editor-export-browser.ts", "ink-object-editor-export-host.ts"]
+}
+

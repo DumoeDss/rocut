@@ -1,0 +1,14 @@
+{
+  "extends":"../../apps/cli/tsconfig.json",
+  "compilerOptions":{
+    "types":["node","bun"],
+    "paths":{
+      "@opencut/editor-contracts":["../../packages/editor-contracts/src"],
+      "@opencut/editor-ports":["../../packages/editor-ports/src"],
+      "@opencut/editor-ports/host":["../../packages/editor-ports/src/host/index.ts"],
+      "opencut-wasm":["C:/Users/Sayo/AppData/Local/Temp/rocut-native-delivery-20261010-74652f9b/wasm/opencut_wasm.d.ts"]
+    }
+  },
+  "include":["./remotion-produced-functional-author.ts","./remotion-produced-functional-run.ts","./remotion-produced-functional-driver.ts"],
+  "exclude":[]
+}

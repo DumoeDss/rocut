@@ -1,0 +1,7 @@
+{
+	"extends": "./three-probe.tsconfig.json",
+	"include": [
+		"./mv-title-riff-chroma-browser.ts",
+		"../../packages/*/src/types/**/*.d.ts"
+	]
+}

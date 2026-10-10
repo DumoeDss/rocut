@@ -57,6 +57,7 @@ import { basename, dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
 import { buildParticleSamplerAssets, particleSamplerDefine } from "./pack-particle-sampler.mjs";
+import { buildLiquidObjectAssets, liquidObjectDefine } from "./pack-liquid-object.mjs";
 import { buildParticleBrowserBundle } from "./build-particle-browser.mjs";
 
 const MODULE_DIR = dirname(fileURLToPath(import.meta.url));
@@ -174,7 +175,7 @@ async function buildOnce({ repoRoot, outDir }) {
 		// wasm import cannot resolve once bundled. Route it to the declared
 		// `./sync` entry instead; see the header note and BOUNDARIES §17.
 		alias: { [WASM_PACKAGE]: wasmSyncEntry },
-		define: particleSamplerDefine,
+		define: { ...particleSamplerDefine, ...liquidObjectDefine },
 		external: ["*.wasm"], // no `.wasm` specifier survives the alias; kept as a guard
 		metafile: true,
 		logLevel: "silent",
@@ -188,6 +189,7 @@ async function buildOnce({ repoRoot, outDir }) {
 	cpSync(entryOut, entryFinal);
 	rmSync(entryOut);
 	await buildParticleSamplerAssets({ repoRoot, outDir, wasmSyncEntry });
+	await buildLiquidObjectAssets({ repoRoot, outDir, wasmSyncEntry });
 	return { metafile: result.metafile };
 }
 

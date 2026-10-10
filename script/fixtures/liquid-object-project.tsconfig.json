@@ -1,0 +1,7 @@
+{
+ "extends": "../../apps/cli/tsconfig.json",
+ "compilerOptions": { "types": ["node", "bun"], "allowJs": true,
+  "paths": { "opencut-wasm": ["C:/tmps/liquid-object-wasm-development-35IsB3/pkg/opencut_wasm.d.ts"] } },
+ "include": ["liquid-object-project-*.ts", "liquid-object-capture-probe*.ts", "liquid-object-capture-probe*.mts", "liquid-object-capture-probe-pixels.mjs", "../probe-liquid-object-project.mjs", "../probe-liquid-object-capture.mjs"],
+ "exclude": []
+}

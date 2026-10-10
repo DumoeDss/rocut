@@ -1,0 +1,4 @@
+{
+	"extends": "./three-probe.tsconfig.json",
+	"include": ["./high-chroma-entry.ts", "../../packages/*/src/types/**/*.d.ts"]
+}

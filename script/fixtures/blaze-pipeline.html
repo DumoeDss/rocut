@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Blaze production rendering and export probe</title>
+	</head>
+	<body>
+		<script type="module">
+			import { runBlazePipeline } from "./blaze-pipeline.ts";
+			globalThis.__blazePipeline = await runBlazePipeline();
+		</script>
+	</body>
+</html>

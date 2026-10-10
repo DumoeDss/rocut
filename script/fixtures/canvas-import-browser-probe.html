@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Canvas import Result regression</title></head>
+<body>
+<script type="module">
+import * as wasm from "opencut-wasm";
+import { runCanvasImportBrowserProbe } from "./canvas-import-browser-probe.mjs";
+const query = new URL(location.href).searchParams;
+runCanvasImportBrowserProbe(wasm, { backend: query.get("backend") ?? "webgl", diagnostic: query.get("diagnostic") === "1" })
+  .then((result) => { globalThis.__canvasImportResult = result; })
+  .catch((error) => { globalThis.__canvasImportResult = { ok: false, failure: String(error) }; });
+</script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+{
+ "extends": "./liquid-object-project.tsconfig.json",
+ "include": ["liquid-object-editor-export-browser.ts", "liquid-object-editor-export-host.ts"]
+}

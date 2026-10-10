@@ -9,7 +9,14 @@ export async function buildNativeAudioExportProbe(root, isolated, output, fixtur
   await build({ root, base, configFile: false, logLevel: "error",
     plugins: [{ name: "native-audio-isolated-wasm", enforce: "pre",
       resolveId(id) { if (id === "opencut-wasm") return "\0native-audio-wasm"; },
-      load(id) { if (id === "\0native-audio-wasm") return `import init from ${JSON.stringify(entry)}; await init(); export * from ${JSON.stringify(entry)};`; },
+      // The current private bundler build has no default init export and its
+      // sync entry needs node:fs. Reuse the existing wasm()/TLA plugins: point
+      // resolution at the real bundler entry so its relative binary import and
+      // __wbindgen_start run exactly as generated.
+      resolveId(id, importer) {
+        if (id !== "opencut-wasm") return undefined;
+        return this.resolve(entry, importer, { skipSelf: true }).then((resolved) => resolved?.id ?? entry);
+      },
       generateBundle() {
         for (const id of this.getModuleIds()) if (/[/\\]node_modules[/\\]opencut-wasm[/\\]/.test(id))
           throw Error("Audio fixture resolved a shared stale WASM instead of its isolated build");

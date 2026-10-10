@@ -1,0 +1,22 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><script src="gsap.js"></script></head>
+<body>
+  <div id="root" data-composition-id="root" data-start="0" data-duration="0.8" data-width="64" data-height="64">
+    <div id="marker"></div>
+    <audio id="dynamic-dom" src="tone.wav" data-start="0" data-duration="0.8" data-volume="0.5" data-fade-in="0.12" data-fade-out="0.16" loop></audio>
+    <audio id="fractional-loop" src="tone.wav" data-start="0" data-duration="0.8" data-media-start="0.0123" data-volume="0.6" loop></audio>
+    <audio id="inert-history" src="tone.wav" data-start="0" data-duration="0.8" data-volume="0.4" muted loop></audio>
+  </div>
+  <script>
+    // Animate a plain authored object, not media.volume: the original runtime
+    // must take its native DOM fallback branch, not a normalized GSAP lane.
+    const authored = {level:0.25};
+    const element = document.getElementById('dynamic-dom');
+    element.volume = authored.level;
+    window.__timelines = window.__timelines || {};
+    window.__timelines.root = gsap.timeline({paused:true})
+      .to('#marker',{x:32,duration:0.8,ease:'none'},0)
+      .to(authored,{level:0.75,duration:0.4,ease:'none',onUpdate(){element.volume=authored.level;}},0.08)
+      .to(authored,{level:0.2,duration:0.16,ease:'none',onUpdate(){element.volume=authored.level;}},0.6);
+  </script>
+</body></html>

@@ -28,6 +28,13 @@ export function verifyMixedEngineLyrics({ artifact, ffmpeg, ffprobe }) {
 		assert.equal(video?.width, 96);
 		assert.equal(video?.height, 96);
 		assert.equal(video?.r_frame_rate, "25/1");
+		const audio = metadata.streams.find(
+			(stream) => stream.codec_type === "audio",
+		);
+		assert.ok(audio, `Mixed export is missing the native audio track`);
+		assert.equal(audio?.codec_name, "opus");
+		assert.equal(audio?.sample_rate, "48000");
+		assert.equal(audio?.channels, 2);
 		writeFileSync(
 			join(artifact, name + ".ffprobe.json"),
 			JSON.stringify(metadata, null, 2),
@@ -173,5 +180,56 @@ export function verifyMixedEngineLyrics({ artifact, ffmpeg, ffprobe }) {
 		changedGlyphPixels > 20,
 		`Native SYNC/BEAT cue transition missing ${changedGlyphPixels}`,
 	);
-	return result;
+	// Independent PCM oracle: the HyperFrames <audio> declared a 220 Hz source
+	// with asymmetric per-channel amplitude. Measure both from the mixed export.
+	const mixedPcm = execFileSync(
+		ffmpeg,
+		[
+			"-v", "error",
+			"-i", join(artifact, "with-foreground.webm"),
+			"-map", "0:a:0",
+			"-f", "f32le",
+			"-ac", "2",
+			"-ar", "48000",
+			"pipe:1",
+		],
+		native,
+	);
+	writeFileSync(join(artifact, "mixed-audio.f32"), mixedPcm);
+	const channelFrequency = (channel) => {
+		const first = 1000, last = mixedPcm.length / 8 - 1000;
+		let crossings = 0;
+		for (let i = first + 1; i < last; i++)
+			if (mixedPcm.readFloatLE((i - 1) * 8 + channel * 4) <= 0
+				&& mixedPcm.readFloatLE(i * 8 + channel * 4) > 0) crossings++;
+		return (crossings * 48000) / (last - first);
+	};
+	const channelPeak = (channel) => {
+		let peak = 0;
+		for (let i = 2000; i < mixedPcm.length / 8 - 2000; i++)
+			peak = Math.max(peak, Math.abs(mixedPcm.readFloatLE(i * 8 + channel * 4)));
+		return peak;
+	};
+	const frequencies = [channelFrequency(0), channelFrequency(1)];
+	const peaks = [channelPeak(0), channelPeak(1)];
+	for (const frequency of frequencies)
+		assert.ok(
+			Math.abs(frequency - 220) <= 4,
+			`Native HyperFrames audio frequency drifted: ${frequencies}`,
+		);
+	assert.ok(
+		peaks[0] > 0.02 && peaks[1] > 0.01 && peaks[1] < peaks[0],
+		`Native audio channel amplitudes lost asymmetry: ${peaks}`,
+	);
+	return {
+		...result,
+		nativeAudio: {
+			codec: "opus",
+			sampleRate: 48000,
+			channels: 2,
+			samples: mixedPcm.length / 8,
+			frequencies,
+			peaks,
+		},
+	};
 }
