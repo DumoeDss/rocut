@@ -1,6 +1,8 @@
 import { launchFrameBrowser } from "./chromium-process";
 import { isAbsolute } from "node:path";
 import { HYPERFRAMES_FX_BOOTSTRAP } from "./hyperframes-fx-bootstrap";
+import { HYPERFRAMES_LOOP_SOURCE_BOOTSTRAP } from "./hyperframes-loop-source-bootstrap";
+import { HYPERFRAMES_LOOP_SOURCE_OWNER_REVISION } from "./hyperframes-loop-source-owner";
 import {
 	createHyperframesFxTarget,
 	HYPERFRAMES_FX_TARGET_POLICY,
@@ -20,7 +22,7 @@ export const HYPERFRAMES_FX_CHUNK_BYTES = 65536;
 export const HYPERFRAMES_FX_ADAPTER = Object.freeze({
 	version: 1 as const,
 	sha256: hyperframesFxDigest(
-		`rocut-native-fx-cdp-v1\n${HYPERFRAMES_FX_CHUNK_BYTES}\n${JSON.stringify(HYPERFRAMES_FX_TARGET_POLICY)}\n${HYPERFRAMES_FX_BOOTSTRAP}`,
+		`rocut-native-fx-cdp-v1\n${HYPERFRAMES_FX_CHUNK_BYTES}\n${JSON.stringify(HYPERFRAMES_FX_TARGET_POLICY)}\n${HYPERFRAMES_FX_BOOTSTRAP}\nnative-loop-owner-${HYPERFRAMES_LOOP_SOURCE_OWNER_REVISION}\n${HYPERFRAMES_LOOP_SOURCE_BOOTSTRAP}`,
 	),
 });
 

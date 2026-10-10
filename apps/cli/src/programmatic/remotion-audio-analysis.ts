@@ -5,9 +5,13 @@ import { launchFrameBrowser } from "./chromium-process";
 import { resolveHtmlDocumentCode } from "./document-resource";
 import { htmlAudioAnalysisExpression } from "./html-document";
 import { loadProgrammaticResources, type ProgrammaticResourceStore } from "./resources";
+import type {NativeAudioAnalysisConfig} from "./remotion-audio-bootstrap";
+import {attachRemotionProducedCaptureBroker} from "./remotion-produced-capture-broker";
+import {attachOffthreadBroker} from "./offthread-broker";
+import type {NativeVideoDecoder} from "./video-decoder";
 
 interface AudioPolicy {
-	version: 1; maxSources: number; maxAssetsPerFrame: number; maxSourceBytes: number;
+	version: 1; maxSources: number; maxAssetsPerFrame: number; maxSourceBytes: number;maxObservationBytes:number;
 	maxTotalBytes: number; maxSeconds: number; mimeTypes: string[];
 }
 export interface NativeAudioSource { id: string; src: string; mimeType: string; body: Buffer }
@@ -45,18 +49,21 @@ export function admitNativeAudioSources(code: string, resources: readonly Resolv
 interface AnalysisOptions {
 	executable: string; request: ProgrammaticFrameRequest;
 	resourceStore: ProgrammaticResourceStore; signal: AbortSignal;
+	decoder?:NativeVideoDecoder;
 }
 type FrameTiming = Omit<ProgrammaticFrameRequest, "source">;
 interface AudioAnalyzer {
 	sources: NativeAudioSource[];
 	frame(request: FrameTiming): Promise<{ frameIndex: number; assets: NativeAudioObservation[] }>;
+	producedFrames(scan:NonNullable<NativeAudioAnalysisConfig["remotionProduced"]>):Promise<{frames:RemotionProducedFrame[];pictures:Map<number,Buffer>}>;
 }
+export interface RemotionProducedFrame {frameIndex:number;assets:NativeAudioObservation[];produced:unknown[]}
 
-/** One private process per bounded job, a fresh isolated target per frame.
- * No authored state or native component identity leaks between frame documents.
+/** One private process per bounded job. Legacy frame() uses fresh targets;
+ * producedFrames() preserves one root and native IDs through the canonical scan.
  * Electron's PNG-only service is neither changed nor silently bypassed.
  */
-export async function withRemotionAudioAnalyzer<T>({ executable, request, resourceStore, signal }: AnalysisOptions,
+export async function withRemotionAudioAnalyzer<T>({ executable, request, resourceStore, signal,decoder }: AnalysisOptions,
 	consume: (analyzer: AudioAnalyzer) => Promise<T>): Promise<T> {
 	signal.throwIfAborted();
 	const source = JSON.parse(JSON.stringify(request.source)) as ProgrammaticFrameRequest["source"];
@@ -88,7 +95,49 @@ export async function withRemotionAudioAnalyzer<T>({ executable, request, resour
 	const browser = await launchFrameBrowser(executable, lifetime).finally(() => clearTimeout(startTimer));
 	let busy = false;
 	try {
-		return await consume({ sources, async frame(timing) {
+		return await consume({ sources, async producedFrames(scan) {
+			lifetime.throwIfAborted();if(busy)throw Error("Native audio frames must be collected serially");busy=true;
+			// Full-source scan may legitimately exceed a single-frame deadline.
+			// Every native frame still owns its independent 8s driver watchdog.
+			const timer=setTimeout(()=>controller.abort(),Math.min(24*60*60*1000,30000+scan.frames.length*8000));
+			let targetId:unknown,capture:Awaited<ReturnType<typeof attachRemotionProducedCaptureBroker>>|undefined;
+			let video:Awaited<ReturnType<typeof attachOffthreadBroker>>|undefined;
+			try {
+				const target=await browser.send("Target.createTarget",{url:"about:blank"});targetId=target.targetId;
+				const attached=await browser.send("Target.attachToTarget",{targetId,flatten:true}),session=String(attached.sessionId);
+				const send=(method:string,params={})=>browser.send(method,params,session);
+				await send("Network.enable");await send("Network.setBlockedURLs",{urls:["http://*","https://*","file://*","ftp://*","ws://*","wss://*"]});
+				await send("Page.enable");await send("Runtime.enable");
+				await send("Emulation.setDeviceMetricsOverride",{width:source.width,height:source.height,deviceScaleFactor:1,mobile:false});
+				capture=await attachRemotionProducedCaptureBroker({browser,session,durationFrames:source.durationFrames,limits,signal:lifetime});
+				const videoLimits=scan.frames[0]?.videoLimits as {maxBytes:number;maxDimension:number;maxElements:number}|undefined;
+				if(decoder && videoLimits)video=await attachOffthreadBroker({browser,session,decoder,code,resources,signal:lifetime,
+					limits:{...videoLimits,maxElements:scan.frames.length*videoLimits.maxElements}});
+				const result=await send("Runtime.evaluate",{expression:htmlAudioAnalysisExpression(code,scan.frames[0],resources,
+					{limits,engine:"remotion",sources:sources.map(({id,src})=>({id,src})),remotionProduced:scan}),awaitPromise:true,returnByValue:true});
+				if(result.exceptionDetails)throw Error("Native produced analysis failed: "+JSON.stringify(result.exceptionDetails).slice(0,1200));
+				await capture.check();await video?.check();lifetime.throwIfAborted();
+				const raw=(result.result as {value?:{version:number;profile:string;frames:{frameIndex:number;assets:unknown;produced:unknown[]}[]}})?.value;
+				if(raw?.version!==1 || raw.profile!==scan.profile || raw.frames?.length!==scan.frames.length)throw Error("Incomplete native produced scan");
+				return {frames:raw.frames.map((item,index)=>{
+					if(item.frameIndex!==index || !Array.isArray(item.produced))throw Error("Native produced scan clock changed");
+					return {frameIndex:index,assets:normalize(index,item.assets),produced:item.produced};
+				}),pictures:capture.take()};
+			} catch(error) {
+				// A failed continuous realm must not retain pending CDP operations
+				// until the full-source deadline or be reused as a fresh frame.
+				controller.abort(error);throw error;
+			} finally {
+				try {await capture?.dispose();}
+				finally {
+					try {await video?.dispose();}
+					finally {
+						try {if(targetId && !lifetime.aborted)await browser.send("Target.closeTarget",{targetId});}
+						finally {clearTimeout(timer);busy=false;}
+					}
+				}
+			}
+		}, async frame(timing) {
 			lifetime.throwIfAborted();
 			if (busy) throw Error("Native audio frames must be collected serially");
 			const mapped = map(timing);

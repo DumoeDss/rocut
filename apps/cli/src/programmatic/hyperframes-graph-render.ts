@@ -11,6 +11,7 @@ import {
 } from "./hyperframes-graph-kernels";
 import type { NativeAudioSource } from "./remotion-audio-analysis";
 import type { NativeVideoDecoder } from "./video-decoder";
+import type { HyperframesLoopSourceOwner } from "./hyperframes-loop-source-owner";
 
 /** Internal execution seam, not a Host capability or an alternate exporter.
  * Rust supplies all geometry/order/fader/placement/crop decisions. IO runs the
@@ -23,6 +24,7 @@ export async function renderHyperframesGraphStages({
 	executor,
 	decoder,
 	signal,
+	loopSourceOwner,
 }: {
 	request: unknown;
 	sources: readonly NativeAudioSource[];
@@ -30,6 +32,7 @@ export async function renderHyperframesGraphStages({
 	executor: HyperframesFxExecutor;
 	decoder: NativeVideoDecoder;
 	signal: AbortSignal;
+	loopSourceOwner?: HyperframesLoopSourceOwner;
 }) {
 	signal.throwIfAborted();
 	// Stabilize graph evidence across awaits and repeated Rust kernel admission.
@@ -100,6 +103,7 @@ export async function renderHyperframesGraphStages({
 						frames: input.frames,
 						recipe: input.ratePreparation,
 						signal,
+						loopSourceOwner,
 					})
 				: await decodeNativeAudioSegment({
 						decoder,

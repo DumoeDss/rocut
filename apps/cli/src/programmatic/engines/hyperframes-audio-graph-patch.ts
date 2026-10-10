@@ -13,7 +13,8 @@ patched = patched.replace(graphHook,
 const graphGainLocals = 'C=js.get(r),D=$s(r.volume),H,F=rf(r,e.timeSeconds-n.start);';
 const graphGainRoute = 'else e.isWebAudioRouted?.(r)?H=E:';
 const graphGainFade = 'let I=n.fades??bm;';
-for (const shape of [graphGainLocals, graphGainRoute, graphGainFade, 'function _s(e,t=Dn)'])
+const graphGainApplied = 'r.volume=k,js.set(r,k),e.onElementVolume?.(r,k,H),';
+for (const shape of [graphGainLocals, graphGainRoute, graphGainFade, graphGainApplied, 'function _s(e,t=Dn)'])
   if (patched.split(shape).length !== 2)
     throw Error('Pinned HyperFrames resolved author-gain hook changed; review the adapter');
 patched = patched.replace(graphGainLocals, graphGainLocals.replace('H,F=', 'H,rocutGraphRouted=null,F='));
@@ -23,4 +24,6 @@ patched = patched.replace(graphGainFade,
   'source:F!==null?"normalized-volume-lane":n.volumeKeyframes?.length?"normalized-GSAP":"fallback",'+
   'points:F!==null?_s(r.getAttribute(kt)||"")?.points??[]:n.volumeKeyframes?.length?n.volumeKeyframes.map(p=>({t:p.time,v:p.volume})):null,'+
   'fades:n.fades??bm,fallback:F!==null||n.volumeKeyframes?.length?null:{routed:rocutGraphRouted,previousRuntimeVolume:C??null,currentElementVolume:D,baselineGain:E}});'+graphGainFade);
+patched = patched.replace(graphGainApplied,
+  'r.volume=k,js.set(r,k),window.rocutHyperframesAudioGraph?.collectAppliedAuthorGain(r,n,e.timeSeconds,H,k),e.onElementVolume?.(r,k,H),');
 `;

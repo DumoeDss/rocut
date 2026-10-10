@@ -186,25 +186,17 @@ wasmOnly(
 				JSON.stringify({ packages: entries }),
 			);
 			for (const engine of ["hyperframes", "remotion"] as const) {
-				const result = await loadEngineToolchain(directory, engine, signal());
+				const result = await loadEngineToolchain({ directory:directory, engine:engine, signal:signal() });
 				const lock = JSON.parse(new TextDecoder().decode(result.lock.body));
 				expect(lock.audioGraph).toBeUndefined();
 				expect(Object.keys(lock)).toEqual(["version", "packages", "adapter"]);
 			}
 			await expect(
-				loadEngineToolchain(
-					directory,
-					"hyperframes",
-					signal(),
-					HYPERFRAMES_GRAPH_PROFILE,
+				loadEngineToolchain({ directory:directory, engine:"hyperframes", signal:signal(), audioProfile:HYPERFRAMES_GRAPH_PROFILE }
 				),
 			).rejects.toThrow();
 			await expect(
-				loadEngineToolchain(
-					directory,
-					"remotion",
-					signal(),
-					HYPERFRAMES_GRAPH_PROFILE,
+				loadEngineToolchain({ directory:directory, engine:"remotion", signal:signal(), audioProfile:HYPERFRAMES_GRAPH_PROFILE }
 				),
 			).rejects.toThrow("requires the HyperFrames");
 		} finally {
@@ -220,16 +212,9 @@ native(
 			toolchainDirectory: toolchain!,
 			signal: signal(),
 		});
-		const legacy = await loadEngineToolchain(
-			toolchain!,
-			"hyperframes",
-			signal(),
+		const legacy = await loadEngineToolchain({ directory:toolchain!, engine:"hyperframes", signal:signal() }
 		);
-		const graph = await loadEngineToolchain(
-			toolchain!,
-			"hyperframes",
-			signal(),
-			HYPERFRAMES_GRAPH_PROFILE,
+		const graph = await loadEngineToolchain({ directory:toolchain!, engine:"hyperframes", signal:signal(), audioProfile:HYPERFRAMES_GRAPH_PROFILE }
 		);
 		const lock = JSON.parse(new TextDecoder().decode(graph.lock.body));
 		expect(lock.audioGraph).toEqual(hyperframesGraphCompileIdentity(runtime));
@@ -331,11 +316,7 @@ native(
 			55000,
 		);
 		try {
-			const graph = await loadEngineToolchain(
-				toolchain!,
-				"hyperframes",
-				controller.signal,
-				HYPERFRAMES_GRAPH_PROFILE,
+			const graph = await loadEngineToolchain({ directory:toolchain!, engine:"hyperframes", signal:controller.signal, audioProfile:HYPERFRAMES_GRAPH_PROFILE }
 			);
 			const stored = await archive(graph.lock);
 			const native = await nativeFxFixture(wasmDirectory!);

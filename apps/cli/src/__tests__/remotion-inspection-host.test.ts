@@ -27,6 +27,15 @@ import type { InspectedComposition } from "../programmatic/remotion-inspection-t
 const executable = process.env.ROCUT_TEST_BROWSER_EXECUTABLE;
 const toolchainDirectory = process.env.ROCUT_ENGINE_TOOLCHAIN_DIR;
 
+async function cleanupHostFixture(root: string, parent: string) {
+	if (
+		dirname(root) !== parent ||
+		!basename(root).startsWith("rocut-inspection-host-")
+	)
+		throw Error("Unsafe Host inspection fixture cleanup");
+	await rm(root, { recursive: true, force: true });
+}
+
 interface Receipt {
 	revision: string;
 	inputs: ProgrammaticResource[];
@@ -144,7 +153,7 @@ registerRoot(()=> <Composition id="HostExample" component={Scene} width={64} hei
 			}>("compile-inspected", selection);
 			expect(result.inspectionRevision).toBe(receipt.revision);
 			expect(result.metadataStability).toBe(
-				"rechecked-before-compile; runtime-geometry-checked; runtime-props-not-pinned",
+				"rechecked-before-compile; runtime-geometry-and-props-pinned-v1",
 			);
 			expect(result.source).toMatchObject({
 				width: 80,
@@ -199,12 +208,7 @@ registerRoot(()=> <Composition id="HostExample" component={Scene} width={64} hei
 			expect(await registry.list()).toEqual([]);
 		} finally {
 			if (!closed) await host.close();
-			if (
-				dirname(root) !== parent ||
-				!basename(root).startsWith("rocut-inspection-host-")
-			)
-				throw Error("Unsafe Host inspection fixture cleanup");
-			await rm(root, { recursive: true, force: true });
+			await cleanupHostFixture(root, parent);
 		}
 	},
 	60000,

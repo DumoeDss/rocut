@@ -9,12 +9,16 @@ import {
 import { createNativeAudioSlots } from "./audio-job-slots";
 import type { ProgrammaticResourceStore } from "./resources";
 import type { NativeVideoDecoder } from "./video-decoder";
+import { writeRemotionArtifactOutputs } from "./remotion-artifact-output";
+import { writeRemotionProducedOutputs } from "./remotion-produced-output";
+import * as wasm from "opencut-wasm";
 
 /** Auth/project scoping is supplied by the owning Host router. No Electron
  * fallback: its owner must implement the native analysis result transport.
  */
 export function createProgrammaticAudioService({
 	resourceStore,
+	projectDir,
 	executable = process.env.ROCUT_HTML_BROWSER_PATH,
 	connectionFile = process.env.ELFTIA_HTML_FRAME_CONNECTION_FILE,
 	toolchainDirectory = process.env.ROCUT_ENGINE_TOOLCHAIN_DIR,
@@ -27,6 +31,7 @@ export function createProgrammaticAudioService({
 		: undefined,
 }: {
 	resourceStore: ProgrammaticResourceStore;
+	projectDir?: string;
 	executable?: string;
 	connectionFile?: string;
 	decoder?: NativeVideoDecoder;
@@ -59,6 +64,14 @@ export function createProgrammaticAudioService({
 			engines: ["remotion", "hyperframes"],
 			format: "stereo-f32le",
 			sampleRates: [44100, 48000],
+			remotionProduced: {
+				configured: configured && !!projectDir && isAbsolute(projectDir),
+				endpoint: "programmatic/produced",
+				history: "persistent-native-root-canonical-from-zero",
+				outputs: ["native-mixed-wav-f32le", "text", "binary", "exact-frame-png"],
+				destination: "host-owned-project-exports/programmatic",
+				unsupported: ["active-css-animation-thumbnail"],
+			},
 			hyperframesGraph: {
 				profile: "hyperframes-graph-v1",
 				configured: graphConfigured,
@@ -76,11 +89,10 @@ export function createProgrammaticAudioService({
 				},
 				requires: [
 					"archived-dsp-identity",
-					"normalized-volume-envelope",
-					"sample-aligned-scalar-trim-duration-and-loop-tiles",
+					"normalized-volume-envelope-or-native-author-write-history",
+					"full-history-native-prepare-and-resolved-decoder-geometry",
 				],
 				unsupported: [
-					"participating-fallback-gain-history",
 					"webaudio-fractional-start-phase",
 				],
 			},
@@ -94,7 +106,7 @@ export function createProgrammaticAudioService({
 		async handle(
 			request: IncomingMessage,
 			response: ServerResponse,
-			action: "render" | "identity" = "render",
+			action: "render" | "identity" | "produced" = "render",
 		) {
 			const error = (status: number, message: string) => {
 				if (!response.destroyed)
@@ -110,6 +122,10 @@ export function createProgrammaticAudioService({
 					503,
 					"Native programmatic audio rendering is unavailable on this host",
 				);
+				return;
+			}
+			if (action === "produced" && !projectDir) {
+				error(503, "Native produced outputs require a Host-owned project destination");
 				return;
 			}
 			const controller = new AbortController();
@@ -175,6 +191,31 @@ export function createProgrammaticAudioService({
 				}
 				const { result, identity } = outcome;
 				controller.signal.throwIfAborted();
+				const artifacts = "artifacts" in result ? result.artifacts : [];
+				if (artifacts.length && !projectDir)
+					throw Error("Native artifacts require a Host-owned project destination");
+				if (outcome.kind === "produced") {
+					const output = await writeRemotionProducedOutputs({
+						projectDir: projectDir!, artifacts,
+						soundtrack: outcome.result, signal: controller.signal,
+						encodeAudioWav: (packet) => {
+							const encode = (wasm as unknown as Record<string, unknown>)["encodeRemotionProducedAudioWav"];
+							if (typeof encode !== "function")
+								throw Error("Remotion soundtrack output requires rebuilt WASM export encodeRemotionProducedAudioWav");
+							return encode(packet) as Uint8Array;
+						},
+					});
+					controller.signal.throwIfAborted();
+					response.writeHead(200, { "content-type": "application/json", "cache-control": "no-store" }).end(JSON.stringify({
+						version: 1, output: output ?? null, hasAudio: result.hasAudio,
+						sampleRate: result.sampleRate, frames: result.frames,
+					}));
+					return;
+				}
+				const output = projectDir
+					? await writeRemotionArtifactOutputs({ projectDir, artifacts, signal: controller.signal })
+					: undefined;
+				controller.signal.throwIfAborted();
 				response
 					.writeHead(200, {
 						"content-type": "application/vnd.rocut.audio-pcm",
@@ -192,6 +233,7 @@ export function createProgrammaticAudioService({
 						"x-rocut-frames": result.frames,
 						"x-rocut-sample-origin": result.sampleOrigin,
 						"x-rocut-has-audio": result.hasAudio ? "1" : "0",
+						...(output ? { "x-rocut-artifact-directory": output.directory } : {}),
 					})
 					.end(result.pcm);
 			} catch (cause) {

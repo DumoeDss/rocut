@@ -10,6 +10,7 @@ import {
 } from "./particle-sampler-identity";
 import { createParticleSamplerWorker } from "./particle-sampler-worker";
 import { getThreeParticleAdapterHash } from "./three-particle-adapter";
+import { threeBuildCapability } from "./three-capability";
 export { getThreeParticleAdapterHash } from "./three-particle-adapter";
 import {
 	loadProgrammaticResource,
@@ -66,17 +67,7 @@ function object(
 export function hasThreeParticleCapability(
 	source: ProgrammaticSource,
 ): boolean {
-	const capabilities = source.build?.capabilities;
-	if (capabilities === undefined) return false;
-	if (
-		source.runtime !== "html-document" ||
-		source.build?.engine !== "three" ||
-		!Array.isArray(capabilities) ||
-		capabilities.length !== 1 ||
-		capabilities[0] !== THREE_PARTICLE_CAPABILITY
-	)
-		throw Error("Invalid explicit Three particle capability");
-	return true;
+	return threeBuildCapability(source) === THREE_PARTICLE_CAPABILITY;
 }
 
 function material(value: Record<string, unknown>) {
@@ -212,6 +203,7 @@ export function parseThreeParticleArchive(
 	}
 	if (Object.hasOwn(lock, "threeParticle") !== declared) throw recompile();
 	if (!declared) return undefined;
+	if (Object.hasOwn(lock, "threeLiquidObject")) throw recompile();
 	const identity = snapshotThreeParticleCompileIdentity(lock.threeParticle);
 	const adapter = object(lock.adapter, ["id", "version", "sha256"]);
 	if (

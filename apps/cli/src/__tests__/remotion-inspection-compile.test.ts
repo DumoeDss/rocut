@@ -34,9 +34,9 @@ test.skipIf(!executable || !toolchainDirectory)(
 			const recordBefore = await fixture.readRecord();
 			const headersBefore = await fixture.headers();
 			const clipsBefore = await fixture.host.automation.clips();
-			const receipt = await session.perform(
-				"inspect",
-				{
+			const receipt = await session.perform({
+				action: "inspect",
+				input: {
 					version: 1,
 					sourceDirectory: fixture.author,
 					entryFile: fixture.entryFile,
@@ -44,9 +44,15 @@ test.skipIf(!executable || !toolchainDirectory)(
 					seed: 7,
 					inputProps: fixture.spec.inputProps,
 				},
-				new AbortController().signal,
-			);
-			if (!("revision" in receipt)) throw Error("Expected inspection receipt");
+				signal: new AbortController().signal,
+			});
+			if (
+				!("revision" in receipt) ||
+				!receipt.revision ||
+				!receipt.inputs ||
+				!receipt.toolchainLockSha256
+			)
+				throw Error("Expected inspection receipt");
 			expect(receipt.compositions).toMatchObject([
 				{
 					id: "Rocut",
@@ -73,16 +79,16 @@ test.skipIf(!executable || !toolchainDirectory)(
 				compositionId: "Rocut",
 				frameRate: { numerator: 30, denominator: 1 },
 			};
-			const result = await session.perform(
-				"compile-inspected",
-				selection,
-				new AbortController().signal,
-			);
+			const result = await session.perform({
+				action: "compile-inspected",
+				input: selection,
+				signal: new AbortController().signal,
+			});
 			if (!("source" in result) || !result.source.build)
 				throw Error("Expected saved compiled source");
 			expect(result.inspectionRevision).toBe(receipt.revision);
 			expect(result.metadataStability).toBe(
-				"rechecked-before-compile; runtime-geometry-checked; runtime-props-not-pinned",
+				"rechecked-before-compile; runtime-geometry-and-props-pinned-v1",
 			);
 			expect(result.source).toMatchObject({
 				width: 80,
@@ -124,7 +130,7 @@ test.skipIf(!executable || !toolchainDirectory)(
 			});
 			expect(
 				JSON.parse(new TextDecoder().decode(lock.body)).adapter,
-			).toMatchObject({ id: "rocut-remotion-html", version: 1 });
+			).toMatchObject({ id: "rocut-remotion-html", version: 2 });
 			const document = await loadProgrammaticResource({
 				...fixture.context,
 				resource: result.source.resources!.find(
@@ -135,6 +141,7 @@ test.skipIf(!executable || !toolchainDirectory)(
 				document.body,
 			);
 			expect(html).toContain("__rocutRenderRemotionFrame");
+			expect(html).toContain('id="rocut-remotion-metadata-receipt"');
 			expect(html).not.toContain(fixture.author);
 			expect(html).not.toContain("changed source must never execute");
 			expect(await fixture.readRecord()).toBe(recordBefore);
@@ -142,11 +149,11 @@ test.skipIf(!executable || !toolchainDirectory)(
 			const headersAfter = await fixture.headers();
 			expect(headersAfter.length).toBeGreaterThan(headersBefore.length);
 			await expect(
-				session.perform(
-					"compile-inspected",
-					selection,
-					new AbortController().signal,
-				),
+				session.perform({
+					action: "compile-inspected",
+					input: selection,
+					signal: new AbortController().signal,
+				}),
 			).rejects.toThrow("revision unavailable");
 			expect(await fixture.headers()).toEqual(headersAfter);
 			expect(await fixture.readRecord()).toBe(recordBefore);

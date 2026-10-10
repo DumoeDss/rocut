@@ -1,6 +1,10 @@
+import { THREE_LIQUID_OBJECT_COMPILER_MODULES } from "./three-liquid-object-compiler-plugin";
+
 /** Static, browser-only bundling entry; all source reads stay in the declared
  * snapshot or the host-configured dependency tree. No author module execution. */
-export const REMOTION_COMPILER_CHILD = String.raw`
+export const REMOTION_COMPILER_CHILD =
+	THREE_LIQUID_OBJECT_COMPILER_MODULES +
+	String.raw`
 (async () => {
   const fs = await import('node:fs/promises');
   const path = await import('node:path');
@@ -8,6 +12,8 @@ export const REMOTION_COMPILER_CHILD = String.raw`
   for await (const chunk of process.stdin) { input += chunk; if (input.length > 1000000) throw Error('Compiler config too large'); }
   const config = JSON.parse(input);
   const isThree = config.engine === 'three';
+  if(config.liquidObject && (!isThree || config.liquidObject.version!==1 || typeof config.liquidObject.runtime!=='string'))
+    throw Error('Invalid Host Liquid compiler profile');
   const {build} = await import(config.compilerEntry);
   const dependencies = await fs.realpath(path.join(config.toolchainRoot, 'node_modules'));
   const allowed = new Set(config.files.map(file => path.resolve(config.project,file)));
@@ -38,11 +44,13 @@ export const REMOTION_COMPILER_CHILD = String.raw`
     + (config.mediaWrapper ?? '');
   let reads = 0;
   const result = await build({
-    stdin:{contents:config.driver,resolveDir:config.project,loader:'tsx',sourcefile:'rocut-remotion-driver.tsx'},
+    ...(config.liquidObject ? {entryPoints:['rocut:liquid-driver'],absWorkingDir:config.project}
+      : {stdin:{contents:config.driver,resolveDir:config.project,loader:'tsx',sourcefile:'rocut-remotion-driver.tsx'}}),
     bundle:true,write:false,metafile:true,outfile:'bundle.js',platform:'browser',format:'iife',target:'chrome120',jsx:'automatic',
     tsconfigRaw:{compilerOptions:{jsx:'react-jsx'}},nodePaths:[dependencies],logLevel:'silent',
     define:{'process.env.NODE_ENV':'"production"'},legalComments:'inline',minify:true,
     plugins:[{name:'rocut-declared-inputs',setup(api) {
+      if(config.liquidObject) installLiquidObjectCompilerModules(api,{driver:config.driver,runtime:config.liquidObject.runtime,project:config.project});
       api.onResolve({filter:/^rocut:entry$/}, () => ({path:path.resolve(config.project,config.entryFile)}));
       if (!isThree) api.onResolve({filter:/^remotion$/}, () => ({path:'remotion',namespace:'rocut-native'}));
       api.onLoad({filter:/.*/,namespace:'rocut-native'}, () => ({contents:wrapper,loader:'js',resolveDir:dependencies}));
@@ -98,13 +106,23 @@ export const REMOTION_COMPILER_CHILD = String.raw`
   const css = result.outputFiles.find(file => file.path.endsWith('.css'))?.text ?? '';
   if (!js) throw Error('Remotion compiler emitted no browser entry');
   const safe = value => JSON.stringify(value).replace(/</g,'\\u003c');
-  const globals = config.environment + '\nwindow.__rocutRemotionSpec='+safe(config.spec)+';window.remotion_inputProps='+safe(JSON.stringify(config.spec.inputProps ?? {}))
+  if (!isThree && !config.inspection && (!config.remotionMetadata || !config.metadataPolicySource || !config.metadataLifetimeSource))
+    throw Error('Remotion compiled metadata policy missing');
+  const metadataGlobals = isThree || config.inspection ? 'window.__rocutRemotionSpec='+safe(config.spec)+';'
+    : config.metadataPolicySource+'\n'+config.metadataLifetimeSource+'\n'+
+      (config.remotionMetadata.profile === 'metadata-pinned-v1' ? 'const rocutPinnedMarker=document.getElementById("rocut-remotion-metadata-receipt");if(!rocutPinnedMarker || document.querySelectorAll("script#rocut-remotion-metadata-receipt").length!==1 || rocutCanonicalRemotionMetadataJson(JSON.parse(rocutPinnedMarker.textContent))!==rocutCanonicalRemotionMetadataJson('+safe(config.remotionMetadata)+'))throw Error("Remotion compiled pinned metadata marker missing or changed");' : '')+
+      'const rocutCompiledMetadataPolicy=rocutCreateRemotionMetadataPolicy({spec:'+safe(config.spec)+',policy:'+safe(config.remotionMetadata)+',canonical:rocutCanonicalRemotionMetadataJson,validation:rocutRemotionMetadataValidation});'+
+      'Object.defineProperty(window,"__rocutRemotionSpec",{value:rocutCompiledMetadataPolicy.spec,writable:false,configurable:false});'+
+      'Object.defineProperty(window,"__rocutRemotionMetadataPolicy",{value:rocutCompiledMetadataPolicy,writable:false,configurable:false});'+
+      'Object.defineProperty(window,"__rocutRemotionLifetimeFactory",{value:rocutCreateRemotionMetadataLifetime,writable:false,configurable:false});';
+  const globals = config.environment + '\n'+metadataGlobals+'Object.defineProperty(window,"remotion_inputProps",{value:'+safe(JSON.stringify(config.spec.inputProps ?? {}))+',writable:false,configurable:false});'
     + ';window.__rocutRemotionAssets='+safe(urls)+';window.remotion_staticFiles='+safe(staticFiles)+';';
-  const script = isThree ? 'window.__rocutThreeSpec='+safe(config.spec)+';\n'+js : globals + '\nwindow.rocut={ready:null, async renderFrame(frame){await this.ready; return window.__rocutRenderRemotionFrame(frame)}};'
+  const script = isThree ? 'window.__rocutThreeSpec='+safe(config.spec)+';\n'+js : globals + '\nwindow.rocut={ready:null, async renderFrame(frame){await this.ready; return window.__rocutRenderRemotionFrame(frame)}, async renderProducedFrames(scan){await this.ready; return window.__rocutRenderRemotionProducedFrames(scan)}};'
     + 'window.rocut.ready=(async()=>{await new Promise(resolve=>document.addEventListener("DOMContentLoaded",resolve,{once:true}));'
     + 'void document.body.offsetHeight; await Promise.all([...document.fonts].map(face=>face.load()));\n'+js+'\n})();window.rocut.ready.catch(()=>{});';
   const html='<!doctype html><html><head><style>html,body{margin:0;width:100%;height:100%;background:transparent}'+css.replace(/<\/style/gi,'<\\/style')
-    + '</style></head><body>'+(isThree ? '<script type="application/json" id="rocut-runtime-notices">'+safe(config.runtimeNotices)+'</script>' : '')
+    + '</style></head><body>'+(isThree ? '<script type="application/json" id="rocut-runtime-notices">'+safe(config.runtimeNotices)+'</script>'
+      : !config.inspection && config.remotionMetadata?.profile === 'metadata-pinned-v1' ? '<script type="application/json" id="rocut-remotion-metadata-receipt">'+safe(config.remotionMetadata)+'</script>' : '')
     + '<script>'+script.replace(/<\/script/gi,'<\\/script')+'</script></body></html>';
   if (Buffer.byteLength(html) > 20000000) throw Error('Compiler output transport limit exceeded');
   await fs.writeFile(config.outputFile,html,{encoding:'utf8',flag:'wx'});

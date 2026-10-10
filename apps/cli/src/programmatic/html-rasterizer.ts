@@ -27,6 +27,8 @@ import {
 	htmlBrowserException,
 } from "./particle-capture-frame";
 import { particleDeadline } from "./particle-broker-deadline";
+import { hasThreeLiquidObjectCapability } from "./three-liquid-object-provenance";
+import { captureThreeLiquidObjectPng } from "./liquid-object-capture";
 import {
 	PARTICLE_PAGE_CLEANUP_NAME,
 	PARTICLE_PAGE_CHECK_NAME,
@@ -89,6 +91,17 @@ export async function renderHtmlPng({
 	// Three's shared loader must preflight image dimensions before any bitmap decode.
 	// The default DOM image bridge would otherwise decode these resources eagerly.
 	const code = resolveHtmlDocumentCode(source, resources);
+	if (hasThreeLiquidObjectCapability(source))
+		return captureThreeLiquidObjectPng({
+			executable,
+			connectionFile,
+			source,
+			mappedFrame: mapped.frame,
+			code,
+			resources,
+			resourceStore,
+			signal,
+		});
 	const particleArchive = particleEnabled
 		? await loadThreeParticleArchive({
 				source,

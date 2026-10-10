@@ -1,0 +1,6 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": { "types": ["node", "bun"] },
+	"include": ["./hyperframes-native-prepare-args.ts", "./hyperframes-rate-prepare.ts", "../__tests__/hyperframes-native-prepare-args.test.ts"],
+	"exclude": []
+}

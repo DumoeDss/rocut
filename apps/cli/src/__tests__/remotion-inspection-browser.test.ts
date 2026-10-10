@@ -64,12 +64,19 @@ registerRoot(()=> <><Folder name="Examples"><Composition id="First" component={P
 				input: undefined,
 				prepared: snapshot,
 			});
-			assertInspectionMetadataUnchanged(snapshot, current, "First");
+			assertInspectionMetadataUnchanged({
+				previous: snapshot,
+				current: current,
+				compositionId: "First",
+			});
 			expect(
-				selectInspectedComposition(snapshot, {
-					revision: snapshot.revision,
-					compositionId: "Second",
-					frameRate: { numerator: 24, denominator: 1 },
+				selectInspectedComposition({
+					snapshot: snapshot,
+					input: {
+						revision: snapshot.revision,
+						compositionId: "Second",
+						frameRate: { numerator: 24, denominator: 1 },
+					},
 				}).source.durationFrames,
 			).toBe(48);
 		} finally {

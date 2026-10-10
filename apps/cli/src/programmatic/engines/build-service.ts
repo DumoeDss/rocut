@@ -4,6 +4,7 @@ import type { ProgrammaticResourceStore } from "../resources";
 import { compileProgrammaticProject } from "./compile-project";
 import { ENGINE_VERSIONS } from "./engine-versions";
 import { createRemotionInspectionSession } from "../remotion-inspection-service";
+import { threeLiquidObjectCapability } from "./three-liquid-object-capability";
 
 export function createProgrammaticBuildService(
 	context: ProgrammaticResourceStore,
@@ -22,11 +23,13 @@ export function createProgrammaticBuildService(
 		capability: {
 			version: 1, configured, engines: configured ? Object.entries(ENGINE_VERSIONS).map(([engine, version]) => ({ engine, version })) : [],
 			availability: configured ? "configured-not-health-probed" : "unavailable",
+			threeLiquidObject: threeLiquidObjectCapability({ toolchainConfigured: configured,
+				executable: inspectionExecutable, connectionFile: inspectionConnection }),
 			compile: "programmatic/build/compile", rebuild: "programmatic/build/rebuild",
 			revise: "programmatic/build/revise", reviseScope: "existing-text-files-and-input-props",
 			reviseEngines: ["hyperframes", "remotion"],
 			remotionInspection: { configured: !!inspection, inspect: "programmatic/build/inspect", compile: "programmatic/build/compile-inspected",
-				scope: "host-session-single-snapshot; no-project-mutation", metadataStability: "rechecked-before-compile; runtime-geometry-checked; runtime-props-not-pinned" },
+				scope: "host-session-single-snapshot; no-project-mutation", metadataStability: "compile-inspected-runtime-geometry-and-props-pinned-v1; direct-compile-legacy-unpinned" },
 			mutation: "prepares-source; attach-via-editing-transaction", downloads: false,
 		},
 		async dispose() {
@@ -59,7 +62,7 @@ export function createProgrammaticBuildService(
 				}
 				const input = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(Buffer.concat(chunks)));
 				const result = action === "inspect" || action === "compile-inspected"
-					? await inspection!.perform(action, input, controller.signal)
+					? await inspection!.perform({ action:action, input:input, signal:controller.signal })
 					: await compileProgrammaticProject({ action, input, toolchainDirectory: toolchainDirectory!, context, signal: controller.signal, enqueue });
 				controller.signal.throwIfAborted();
 				json(200, result);

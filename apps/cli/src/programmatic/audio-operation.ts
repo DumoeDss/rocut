@@ -33,7 +33,7 @@ export async function performProgrammaticAudio({
 	sessionNonce,
 	signal,
 }: {
-	action: "render" | "identity";
+	action: "render" | "identity" | "produced";
 	input: unknown;
 	resourceStore: ProgrammaticResourceStore;
 	executable: string;
@@ -47,6 +47,8 @@ export async function performProgrammaticAudio({
 	const keys =
 		action === "identity"
 			? ["source", "sampleRate"]
+			: action === "produced"
+				? ["source", "firstFrame", "frameCount", "sampleRate"]
 			: [
 					"source",
 					"firstFrame",
@@ -62,6 +64,18 @@ export async function performProgrammaticAudio({
 	)
 		throw Error("Invalid native audio request");
 	const input = untrusted as Input;
+	if (action === "produced") {
+		// The renderer admits the source/range and complete canonical scan in
+		// Rust before browser IO. Artifact-only sources need no audio declaration;
+		// observed audio still requires explicit native mode in that consumer.
+		return {
+			kind: "produced" as const,
+			result: await renderRemotionAudioRange({
+				...input, resourceStore, executable, decoder, signal,
+			}),
+			identity: undefined,
+		};
+	}
 	const policy = JSON.parse(
 		wasm.resolveProgrammaticAudioSourceJson(
 			JSON.stringify({ source: input.source, sampleRate: input.sampleRate }),

@@ -362,7 +362,7 @@ test.skipIf(!process.env.ROCUT_TEST_THREE_TOOLCHAIN)(
 	async () => {
 		const directory = process.env.ROCUT_TEST_THREE_TOOLCHAIN!;
 		const signal = new AbortController().signal;
-		const ordinary = await loadEngineToolchain(directory, "three", signal);
+		const ordinary = await loadEngineToolchain({ directory:directory, engine:"three", signal:signal });
 		const legacy = JSON.parse(new TextDecoder().decode(ordinary.lock.body));
 		expect(Object.keys(legacy)).toEqual(["version", "packages", "adapter"]);
 		expect(legacy.adapter).toEqual({
@@ -370,12 +370,7 @@ test.skipIf(!process.env.ROCUT_TEST_THREE_TOOLCHAIN)(
 			version: 1,
 			sha256: hash(THREE_FRAME_DRIVER + "\n" + REMOTION_COMPILER_CHILD),
 		});
-		const admitted = await loadEngineToolchain(
-			directory,
-			"three",
-			signal,
-			undefined,
-			runtime(),
+		const admitted = await loadEngineToolchain({ directory:directory, engine:"three", signal:signal, audioProfile:undefined, particleRuntime:runtime() }
 		);
 		const lock = JSON.parse(new TextDecoder().decode(admitted.lock.body));
 		const { threeParticle, adapter, ...withoutParticle } = lock;
@@ -396,15 +391,10 @@ test.skipIf(!process.env.ROCUT_TEST_THREE_TOOLCHAIN)(
 				?.identityHash,
 		).toBe(threeParticle.identityHash);
 		await expect(
-			loadEngineToolchain(directory, "remotion", signal, undefined, runtime()),
+			loadEngineToolchain({ directory:directory, engine:"remotion", signal:signal, audioProfile:undefined, particleRuntime:runtime() }),
 		).rejects.toThrow("explicit Three capability");
 		await expect(
-			loadEngineToolchain(
-				directory,
-				"hyperframes",
-				signal,
-				undefined,
-				runtime(),
+			loadEngineToolchain({ directory:directory, engine:"hyperframes", signal:signal, audioProfile:undefined, particleRuntime:runtime() }
 			),
 		).rejects.toThrow("explicit Three capability");
 	},

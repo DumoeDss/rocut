@@ -22,6 +22,22 @@ import {
 	REMOTION_INSPECTION_DRIVER,
 	remotionInspectionExpression,
 } from "./remotion-inspection-driver";
+import { readRemotionMetadataAdapter } from "./remotion-metadata-archive";
+
+async function cleanupInspectionStaging({
+	staging,
+	parent,
+}: {
+	staging: string;
+	parent: string;
+}) {
+	if (
+		dirname(staging) !== parent ||
+		!basename(staging).startsWith("rocut-remotion-inspect-")
+	)
+		throw Error("Unsafe inspection cleanup");
+	await rm(staging, { recursive: true, force: true });
+}
 
 export async function inspectRemotionProject({
 	input,
@@ -39,11 +55,15 @@ export async function inspectRemotionProject({
 	const parsed = prepared
 		? { source: prepared.source, sourceDirectory: "", frameRates: undefined }
 		: parseRemotionInspection(input);
-	const toolchain = await loadEngineToolchain(
-		toolchainDirectory,
-		"remotion",
-		signal,
-	);
+	const toolchain = await loadEngineToolchain({
+		directory: toolchainDirectory,
+		engine: "remotion",
+		signal: signal,
+		audioProfile: undefined,
+		particleRuntime: undefined,
+		audioTiming: undefined,
+		remotionMetadataProfile: "metadata-pinned-v1",
+	});
 	if (
 		prepared &&
 		prepared.toolchainLockSha256 !== toolchain.lock.resource.sha256
@@ -87,6 +107,7 @@ export async function inspectRemotionProject({
 				mediaWrapper: REMOTION_MEDIA_WRAPPER,
 				spec: { inputProps: source.build!.inputProps },
 				nativeAudio: false,
+				inspection: true,
 			},
 			signal,
 			REMOTION_COMPILER_CHILD,
@@ -106,33 +127,58 @@ export async function inspectRemotionProject({
 			});
 			if (typeof attached.sessionId !== "string")
 				throw Error("No inspection browser session");
-			const send = (method: string, params = {}) =>
-				browser.send(method, params, attached.sessionId as string);
-			await send("Network.enable");
-			await send("Network.setBlockedURLs", {
-				urls: [
-					"http://*",
-					"https://*",
-					"file://*",
-					"ftp://*",
-					"ws://*",
-					"wss://*",
-				],
+			const sessionId = attached.sessionId;
+			const send = ({
+				method,
+				params = {},
+			}: {
+				method: string;
+				params?: Record<string, unknown>;
+			}) => browser.send(method, params, sessionId);
+			await send({ method: "Network.enable" });
+			await send({
+				method: "Network.setBlockedURLs",
+				params: {
+					urls: [
+						"http://*",
+						"https://*",
+						"file://*",
+						"ftp://*",
+						"ws://*",
+						"wss://*",
+					],
+				},
 			});
-			await send("Runtime.enable");
-			const reply = await send("Runtime.evaluate", {
-				expression: remotionInspectionExpression(code),
-				awaitPromise: true,
-				returnByValue: true,
-				timeout: 15000,
+			await send({ method: "Runtime.enable" });
+			const reply = await send({
+				method: "Runtime.evaluate",
+				params: {
+					expression: remotionInspectionExpression(code),
+					awaitPromise: true,
+					returnByValue: true,
+					timeout: 15000,
+				},
 			});
 			if (reply.exceptionDetails)
 				throw Error(
 					`Remotion inspection failed: ${JSON.stringify(reply.exceptionDetails).slice(0, 2000)}`,
 				);
-			compositions = JSON.parse(
-				JSON.stringify((reply.result as { value?: unknown })?.value),
-			);
+			const isRecord = (value: unknown): value is Record<string, unknown> =>
+				!!value && typeof value === "object" && !Array.isArray(value);
+			if (!isRecord(reply.result))
+				throw Error("Expected inspection browser result");
+			const inspected: unknown = JSON.parse(JSON.stringify(reply.result.value));
+			const isComposition = (value: unknown): value is InspectedComposition =>
+				isRecord(value) &&
+				typeof value.id === "string" &&
+				typeof value.width === "number" &&
+				typeof value.height === "number" &&
+				typeof value.fps === "number" &&
+				typeof value.durationFrames === "number" &&
+				isRecord(value.props);
+			if (!Array.isArray(inspected) || !inspected.every(isComposition))
+				throw Error("Expected inspected composition records");
+			compositions = inspected;
 			if (!Array.isArray(compositions) || !compositions.length)
 				throw Error("Expected inspected compositions");
 		} finally {
@@ -143,18 +189,20 @@ export async function inspectRemotionProject({
 			source,
 			inputs,
 			toolchainLockSha256: toolchain.lock.resource.sha256!,
+			metadataAdapter: readRemotionMetadataAdapter({
+				lock: toolchain.lock.body,
+				profile: "metadata-pinned-v1",
+			}),
 			compositions,
 		};
-		admitInspectedCompositions(snapshot, parsed.frameRates);
+		admitInspectedCompositions({
+			snapshot: snapshot,
+			frameRates: parsed.frameRates,
+		});
 		snapshot.revision = inspectionRevision(snapshot);
 		signal.throwIfAborted();
 		return snapshot;
 	} finally {
-		if (
-			dirname(staging) !== parent ||
-			!basename(staging).startsWith("rocut-remotion-inspect-")
-		)
-			throw Error("Unsafe inspection cleanup");
-		await rm(staging, { recursive: true, force: true });
+		await cleanupInspectionStaging({ staging, parent });
 	}
 }

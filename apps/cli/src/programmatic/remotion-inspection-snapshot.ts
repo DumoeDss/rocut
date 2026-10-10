@@ -6,13 +6,18 @@ import type {
 	PreparedRemotionCompile,
 	RemotionInspectionSnapshot,
 } from "./remotion-inspection-types";
+import { createRemotionMetadataReceipt } from "./remotion-metadata-receipt";
+import { remotionReceiptBinding } from "./remotion-metadata-archive";
+import { canonicalRemotionMetadataJson } from "./remotion-metadata-json";
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+	!!value && typeof value === "object" && !Array.isArray(value);
 
 /** Placeholder geometry only admits a source manifest; native metadata is checked
  * against Rust source policy separately before a composition can be selected. */
 export function parseRemotionInspection(input: unknown) {
-	if (!input || typeof input !== "object" || Array.isArray(input))
+	if (!isRecord(input))
 		throw Error("Expected Remotion inspection specification");
-	const spec = input as Record<string, unknown>;
+	const spec = input;
 	if (
 		Object.keys(spec).some(
 			(key) =>
@@ -29,10 +34,7 @@ export function parseRemotionInspection(input: unknown) {
 	)
 		throw Error("Unknown Remotion inspection field");
 	const { frameRates, ...sourceSpec } = spec;
-	if (
-		frameRates !== undefined &&
-		(!frameRates || typeof frameRates !== "object" || Array.isArray(frameRates))
-	)
+	if (frameRates !== undefined && !isRecord(frameRates))
 		throw Error("Expected explicit frame rate map");
 	return {
 		...parseCompileInput({
@@ -44,7 +46,7 @@ export function parseRemotionInspection(input: unknown) {
 			frameRate: { numerator: 30, denominator: 1 },
 			durationFrames: 1,
 		}),
-		frameRates: frameRates as Record<string, unknown> | undefined,
+		frameRates,
 	};
 }
 
@@ -53,22 +55,28 @@ export function inspectionRevision(
 ): string {
 	return createHash("sha256")
 		.update(
-			JSON.stringify({
+			canonicalRemotionMetadataJson({
 				source: snapshot.source,
 				inputs: snapshot.inputs.map((input) => input.resource),
 				toolchainLockSha256: snapshot.toolchainLockSha256,
+				metadataAdapter: snapshot.metadataAdapter,
 				compositions: snapshot.compositions,
 			}),
 		)
 		.digest("hex");
 }
 
-function compositionSource(
-	snapshot: RemotionInspectionSnapshot,
-	composition: InspectedComposition,
-	frameRate: unknown,
+function compositionSource({
+	snapshot,
+	composition,
+	frameRate,
 	checkFps = true,
-) {
+}: {
+	snapshot: RemotionInspectionSnapshot;
+	composition: InspectedComposition;
+	frameRate: unknown;
+	checkFps?: boolean;
+}) {
 	const source = {
 		...snapshot.source,
 		width: composition.width,
@@ -95,10 +103,13 @@ function compositionSource(
 	return source;
 }
 
-export function admitInspectedCompositions(
-	snapshot: RemotionInspectionSnapshot,
-	frameRates?: Record<string, unknown>,
-) {
+export function admitInspectedCompositions({
+	snapshot,
+	frameRates,
+}: {
+	snapshot: RemotionInspectionSnapshot;
+	frameRates?: Record<string, unknown>;
+}) {
 	for (const composition of snapshot.compositions) {
 		const rate =
 			frameRates?.[composition.id] ??
@@ -107,23 +118,25 @@ export function admitInspectedCompositions(
 				: undefined);
 		// Rust validates geometry/duration/props even when the caller still needs to
 		// supply an exact fractional rate. Never round or approximate native FPS.
-		compositionSource(
+		compositionSource({
 			snapshot,
 			composition,
-			rate ?? snapshot.source.frameRate,
-			rate !== undefined,
-		);
+			frameRate: rate ?? snapshot.source.frameRate,
+			checkFps: rate !== undefined,
+		});
 		composition.admission = rate ? "accepted" : "requires-explicit-frame-rate";
 	}
 }
 
-export function selectInspectedComposition(
-	snapshot: RemotionInspectionSnapshot | undefined,
-	input: unknown,
-): PreparedRemotionCompile {
-	if (!input || typeof input !== "object" || Array.isArray(input))
-		throw Error("Expected inspected composition selection");
-	const spec = input as Record<string, unknown>;
+export function selectInspectedComposition({
+	snapshot,
+	input,
+}: {
+	snapshot: RemotionInspectionSnapshot | undefined;
+	input: unknown;
+}): PreparedRemotionCompile {
+	if (!isRecord(input)) throw Error("Expected inspected composition selection");
+	const spec = input;
 	if (
 		Object.keys(spec).some(
 			(key) => !["revision", "compositionId", "frameRate"].includes(key),
@@ -148,26 +161,63 @@ export function selectInspectedComposition(
 	if (!composition)
 		throw Error("Composition was not present in inspected revision");
 	return {
-		source: compositionSource(snapshot, composition, spec.frameRate),
+		source: compositionSource({
+			snapshot,
+			composition,
+			frameRate: spec.frameRate,
+		}),
 		inputs: snapshot.inputs,
 		toolchainLockSha256: snapshot.toolchainLockSha256,
+		metadataReceipt: createRemotionMetadataReceipt({
+			binding: {
+				...remotionReceiptBinding({
+					source: compositionSource({
+						snapshot,
+						composition,
+						frameRate: spec.frameRate,
+					}),
+					adapter: snapshot.metadataAdapter,
+					inspectionRevision: snapshot.revision,
+				}),
+				toolchainLockSha256: snapshot.toolchainLockSha256,
+			},
+			returnedProps: composition.props,
+		}),
 	};
 }
 
-export function assertInspectionMetadataUnchanged(
-	previous: RemotionInspectionSnapshot,
-	current: RemotionInspectionSnapshot,
-	compositionId: string,
-) {
+export function assertInspectionMetadataUnchanged({
+	previous,
+	current,
+	compositionId,
+}: {
+	previous: RemotionInspectionSnapshot;
+	current: RemotionInspectionSnapshot;
+	compositionId: string;
+}) {
 	const metadata = (snapshot: RemotionInspectionSnapshot) => {
 		const selected = snapshot.compositions.find(
 			(item) => item.id === compositionId,
 		);
 		if (!selected)
 			throw Error("Selected composition disappeared during preflight");
-		const { admission: _admission, ...receipt } = selected;
-		return JSON.stringify(receipt);
+		return canonicalRemotionMetadataJson({
+			id: selected.id,
+			width: selected.width,
+			height: selected.height,
+			fps: selected.fps,
+			durationFrames: selected.durationFrames,
+			props: selected.props,
+		});
 	};
 	if (metadata(previous) !== metadata(current))
 		throw Error("Native composition metadata/props changed; inspect again");
+	if (
+		canonicalRemotionMetadataJson(previous.metadataAdapter) !==
+			canonicalRemotionMetadataJson(current.metadataAdapter) ||
+		previous.toolchainLockSha256 !== current.toolchainLockSha256
+	)
+		throw Error(
+			"Inspected Remotion metadata adapter/toolchain changed; inspect again",
+		);
 }

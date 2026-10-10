@@ -3,6 +3,11 @@ import type { ProgrammaticFrameRequest } from "@opencut/editor-contracts";
 import { launchFrameBrowser } from "./chromium-process";
 import { resolveHtmlDocumentCode } from "./document-resource";
 import { collectHyperframesAudioSnapshot } from "./hyperframes-audio-analysis-frame";
+import type {
+	HyperframesNativeHistoryCapture,
+	HyperframesNativeHistoryResult,
+	HyperframesNativeHistoryScan,
+} from "./hyperframes-native-history-capture";
 import {
 	admitNativeAudioSources,
 	type NativeAudioObservation,
@@ -32,6 +37,8 @@ interface AudioAnalyzer {
 }
 interface AudioGraphAnalyzer {
 	sources: NativeAudioSource[];
+	/** One fresh authored realm for the complete Rust canonical write scan. */
+	history(graph: unknown, seeks: NativeSeek[]): Promise<HyperframesNativeHistoryResult>;
 	/** Browser output is untrusted; the caller must admit it in Rust before PCM work. */
 	frame(
 		request: FrameTiming,
@@ -44,6 +51,7 @@ interface AudioGraphAnalyzer {
 }
 interface RawAudioAnalyzer {
 	sources: NativeAudioSource[];
+	history(graph: unknown, seeks: NativeSeek[]): Promise<HyperframesNativeHistoryResult>;
 	normalize(frameIndex: number, assets: unknown): NativeAudioObservation[];
 	frame(request: FrameTiming): Promise<{ frameIndex: number; value: unknown }>;
 	seek(
@@ -78,6 +86,7 @@ export async function withHyperframesAudioGraphAnalyzer<T>(
 	return withHyperframesAudioCollection(options, true, (analyzer) =>
 		consume({
 			sources: analyzer.sources,
+			history: (graph, seeks) => analyzer.history(graph, seeks),
 			async frame(timing) {
 				const result = await analyzer.frame(timing);
 				return { frameIndex: result.frameIndex, snapshot: result.value };
@@ -176,13 +185,16 @@ async function withHyperframesAudioCollection<T>(
 		clearTimeout(startTimer),
 	);
 	let busy = false;
-	const collect = async (resolveFrame: () => ReturnType<typeof map>) => {
+	const collect = async (
+		resolveFrame: () => ReturnType<typeof map>,
+		hyperframesNativeHistory?: HyperframesNativeHistoryCapture,
+	) => {
 		lifetime.throwIfAborted();
 		if (busy)
 			throw Error("HyperFrames audio frames must be collected serially");
 		const mapped = resolveFrame();
 		busy = true;
-		const timer = setTimeout(() => controller.abort(), 15000);
+		const timer = setTimeout(() => controller.abort(), hyperframesNativeHistory ? 60000 : 15000);
 		try {
 			const value = await collectHyperframesAudioSnapshot(browser, {
 				width: source.width,
@@ -194,6 +206,7 @@ async function withHyperframesAudioCollection<T>(
 				analysis: {
 					engine: "hyperframes",
 					hyperframesGraph,
+					...(hyperframesNativeHistory ? { hyperframesNativeHistory } : {}),
 					limits,
 					sources: browserSources,
 				},
@@ -212,6 +225,25 @@ async function withHyperframesAudioCollection<T>(
 		return await consume({
 			sources,
 			normalize,
+			async history(graph, seeks) {
+				if (!hyperframesGraph) throw Error("Native history requires graph collection");
+				const mapped = JSON.parse(wasm.resolveHyperframesAudioSeekJson(JSON.stringify({
+					source,
+					graph: { ...(graph as object), sources: admittedSources },
+					nativeHistoryScan: true,
+				}))) as { error?: string; nativeHistoryScan?: HyperframesNativeHistoryScan };
+				if (mapped.error || !mapped.nativeHistoryScan?.frames.length)
+					throw Error(mapped.error ?? "Missing Rust native history frame mapping");
+				const scan = mapped.nativeHistoryScan;
+				const result = await collect(() => scan.frames[0], {
+					scan,
+					observationTimes: seeks.map(seek => seek.time),
+				});
+				const value = result.value as HyperframesNativeHistoryResult | undefined;
+				if (!Array.isArray(value?.observations) || !Array.isArray(value?.fallbackHistories))
+					throw Error("Native history collector returned an incomplete envelope");
+				return value;
+			},
 			frame: (timing) => collect(() => map(timing)),
 			seek: (graph, seek) => collect(() => mapSeek(graph, seek)),
 		});

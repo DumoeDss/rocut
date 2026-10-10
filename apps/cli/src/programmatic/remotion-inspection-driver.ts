@@ -1,10 +1,15 @@
-/** Separate discovery bundle: never enters the archived frame-driver identity. */
+import { canonicalRemotionMetadataJson } from "./remotion-metadata-json";
+import { REMOTION_METADATA_LIFETIME_SOURCE } from "./remotion-metadata-lifetime";
+/** Separate discovery bundle: strict JSON and bounded metadata use the same
+ * adapter helpers as painting, before any structured-clone/JSON transport. */
 export const REMOTION_INSPECTION_DRIVER = String.raw`
 import React from 'react';
 import {createRoot} from 'react-dom/client';
 import {flushSync} from 'react-dom';
 import {Internals, getInputProps} from 'remotion';
 import 'rocut:entry';
+const rocutInspectionCanonicalJson = (${canonicalRemotionMetadataJson.toString()});
+${REMOTION_METADATA_LIFETIME_SOURCE}
 let failure;
 class Boundary extends React.Component {
   state = {failed:false};
@@ -14,16 +19,18 @@ class Boundary extends React.Component {
 }
 const paint = () => new Promise(resolve => requestAnimationFrame(resolve));
 window.__rocutInspectRemotion = async () => {
-  const controller=new AbortController(), deadline=performance.now()+8000;
+  const deadline=performance.now()+8000;
   const check=()=>{
     if(failure) throw failure;
     if(window.remotion_cancelledError) throw Error(String(window.remotion_cancelledError).slice(0,1000));
-    if(performance.now()>deadline) {controller.abort();throw Error('Remotion inspection timed out');}
+    if(performance.now()>deadline) throw Error('Remotion inspection timed out');
   };
-  const timer=setTimeout(()=>controller.abort(),8000);
+  const lifetime=rocutCreateRemotionMetadataLifetime({timeoutMs:8000,check});
+  const teardown=()=>lifetime.abort(Error('Remotion inspection realm torn down'));
+  addEventListener('pagehide',teardown,{once:true});
   let root;
   try {
-    while(!Internals.getRoot()) {check();await paint();}
+    while(!Internals.getRoot()) {lifetime.check();await lifetime.wait(paint());}
     const Root=Internals.getRoot(), mount=document.createElement('div');
     document.body.appendChild(mount);root=createRoot(mount);
     flushSync(()=>root.render(<Boundary><Internals.RemotionRootContexts numberOfAudioTags={0}
@@ -34,7 +41,7 @@ window.__rocutInspectRemotion = async () => {
     </Internals.RemotionRootContexts></Boundary>));
     let previous='', stable=0, compositions=[];
     while(stable<2 || window.remotion_delayRenderHandles.length) {
-      await paint();check();
+      await lifetime.wait(paint());lifetime.check();
       compositions=Internals.compositionsRef.current?.getCompositions() ?? [];
       const ids=JSON.stringify(compositions.map(c=>c.id));
       stable=ids===previous ? stable+1 : 0;previous=ids;
@@ -42,17 +49,18 @@ window.__rocutInspectRemotion = async () => {
     if(!compositions.length) throw Error('No registered Remotion compositions');
     const results=[];
     for(const c of compositions) {
-      const metadata=await Internals.resolveVideoConfig({compositionId:c.id,
+      const metadata=await lifetime.wait(Internals.resolveVideoConfig({compositionId:c.id,
         compositionWidth:c.width,compositionHeight:c.height,compositionFps:c.fps,
         compositionDurationInFrames:c.durationInFrames,calculateMetadata:c.calculateMetadata,
-        signal:controller.signal,defaultProps:c.defaultProps ?? {},
-        inputProps:{...c.defaultProps,...getInputProps()}});
-      check();
+        signal:lifetime.signal,defaultProps:c.defaultProps ?? {},
+        inputProps:{...c.defaultProps,...getInputProps()}}));
+      lifetime.check();
+      rocutInspectionCanonicalJson(metadata.props);
       results.push({id:c.id,width:metadata.width,height:metadata.height,fps:metadata.fps,
         durationFrames:metadata.durationInFrames,props:metadata.props});
     }
-    check();return results;
-  } finally {clearTimeout(timer);controller.abort();root?.unmount();}
+    lifetime.check();rocutInspectionCanonicalJson(results);return results;
+  } finally {lifetime.finish();removeEventListener('pagehide',teardown);root?.unmount();}
 };
 `;
 

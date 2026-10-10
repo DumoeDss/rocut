@@ -2,6 +2,10 @@ import type {
 	ProgrammaticSource,
 	ResolvedProgrammaticResource,
 } from "@opencut/editor-contracts";
+import type {
+	RemotionMetadataAdapterIdentity,
+	RemotionMetadataReceipt,
+} from "./remotion-metadata-contract";
 
 export interface InspectedComposition {
 	id: string;
@@ -18,10 +22,11 @@ export interface RemotionInspectionSnapshot {
 	source: ProgrammaticSource;
 	inputs: ResolvedProgrammaticResource[];
 	toolchainLockSha256: string;
+	metadataAdapter: RemotionMetadataAdapterIdentity;
 	compositions: InspectedComposition[];
 }
 
 export type PreparedRemotionCompile = Pick<
 	RemotionInspectionSnapshot,
 	"source" | "inputs" | "toolchainLockSha256"
->;
+> & { metadataReceipt: RemotionMetadataReceipt };

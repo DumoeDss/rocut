@@ -44,19 +44,9 @@ test.skipIf(!directory || !process.env.ROCUT_TEST_WASM_DIRECTORY)(
 			toolchainDirectory: directory!,
 			signal,
 		});
-		const old = await loadEngineToolchain(
-			directory!,
-			"hyperframes",
-			signal,
-			"hyperframes-graph-v1",
+		const old = await loadEngineToolchain({ directory:directory!, engine:"hyperframes", signal:signal, audioProfile:"hyperframes-graph-v1" }
 		);
-		const selected = await loadEngineToolchain(
-			directory!,
-			"hyperframes",
-			signal,
-			"hyperframes-graph-v1",
-			undefined,
-			"native-exporter",
+		const selected = await loadEngineToolchain({ directory:directory!, engine:"hyperframes", signal:signal, audioProfile:"hyperframes-graph-v1", particleRuntime:undefined, audioTiming:"native-exporter" }
 		);
 		const oldLock = JSON.parse(new TextDecoder().decode(old.lock.body));
 		const newLock = JSON.parse(new TextDecoder().decode(selected.lock.body));
@@ -120,13 +110,7 @@ test.skipIf(!directory || !process.env.ROCUT_TEST_WASM_DIRECTORY)(
 			}),
 		).rejects.toThrow("explicitly recompile");
 		await expect(
-			loadEngineToolchain(
-				directory!,
-				"hyperframes",
-				signal,
-				undefined,
-				undefined,
-				"native-exporter",
+			loadEngineToolchain({ directory:directory!, engine:"hyperframes", signal:signal, audioProfile:undefined, particleRuntime:undefined, audioTiming:"native-exporter" }
 			),
 		).rejects.toThrow("requires the HyperFrames graph profile");
 	},

@@ -20,6 +20,7 @@ export async function collectHyperframesAudioSnapshot(
 	browser: Awaited<ReturnType<typeof launchFrameBrowser>>,
 	options: CollectionFrame,
 ): Promise<unknown> {
+	options.signal.throwIfAborted();
 	let targetId: unknown;
 	try {
 		const target = await browser.send("Target.createTarget", {
@@ -51,6 +52,8 @@ export async function collectHyperframesAudioSnapshot(
 			mobile: false,
 		});
 		await send("Runtime.enable");
+		// Cancellation during target setup must not start authored execution.
+		options.signal.throwIfAborted();
 		const result = await send("Runtime.evaluate", {
 			expression: htmlAudioAnalysisExpression(
 				options.code,

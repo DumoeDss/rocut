@@ -1,7 +1,9 @@
 /** Wrap only the native element ref, never reimplement Sequence/trim/rate/loop
  * timing. The upstream rendering component still owns seek and delayRender.
  */
-export const REMOTION_MEDIA_WRAPPER = String.raw`
+import { REMOTION_MEDIA_METADATA_LEASE_SOURCE } from "./remotion-media-metadata-lease";
+
+export const REMOTION_MEDIA_WRAPPER = REMOTION_MEDIA_METADATA_LEASE_SOURCE + String.raw`
 import React from 'react';
 export const Html5Video = React.forwardRef((props, ref) => {
   const {durations, setDurations} = React.useContext(NativeDurationsContext);
@@ -12,21 +14,16 @@ export const Html5Video = React.forwardRef((props, ref) => {
   React.useLayoutEffect(() => {
     if (durations[props.src] !== undefined) return;
     const handle = nativeDelayRender('Rocut native video metadata');
-    const controller = new AbortController(), video = document.createElement('video');
+    const video = document.createElement('video');
     video.muted = true; video.preload = 'metadata'; video.src = props.src;
     const media = window.rocutRemotionAudio?.analysisOnly ? window.rocutRemotionAudio : window.rocutMedia;
-    media.metadata(video, controller.signal).then(duration => {
-      setDurations({type:'got-duration',src:props.src,durationInSeconds:duration});
-      nativeContinueRender(handle);
-    }).catch(error => { if (!controller.signal.aborted) nativeCancelRender(error); });
-    return () => {
-      controller.abort(); video.removeAttribute('src'); video.load();
-      nativeContinueRender(handle);
-    };
+    return rocutNativeMediaMetadataLease({element:video,read:(element,signal)=>media.metadata(element,signal),
+      apply:duration=>setDurations({type:'got-duration',src:props.src,durationInSeconds:duration}),
+      release:()=>nativeContinueRender(handle),cancel:nativeCancelRender});
   }, [props.src, setDurations]);
   const attach = React.useCallback(video => {
     if (window.rocutRemotionAudio?.enabled) window.rocutRemotionAudio.registerElement(video);
-    if (!window.rocutRemotionAudio?.analysisOnly) window.rocutMedia.registerNative(video);
+    if (!window.rocutRemotionAudio?.analysisOnly || window.rocutRemotionAudio?.producedEnabled) window.rocutMedia.registerNative(video);
     if (typeof ref === 'function') ref(video);
     else if (ref) ref.current = video;
   }, [ref]);
@@ -41,13 +38,11 @@ const AnalyzedAudio = React.forwardRef((props, ref) => {
   React.useLayoutEffect(() => {
     if (durations[props.src] !== undefined) return;
     const handle = nativeDelayRender('Rocut native audio metadata');
-    const controller = new AbortController(), audio = document.createElement('audio');
+    const audio = document.createElement('audio');
     audio.muted = true; audio.preload = 'metadata'; audio.src = props.src;
-    window.rocutRemotionAudio.metadata(audio, controller.signal).then(duration => {
-      setDurations({type:'got-duration',src:props.src,durationInSeconds:duration});
-      nativeContinueRender(handle);
-    }).catch(error => { if (!controller.signal.aborted) nativeCancelRender(error); });
-    return () => { controller.abort(); audio.removeAttribute('src'); audio.load(); nativeContinueRender(handle); };
+    return rocutNativeMediaMetadataLease({element:audio,read:(element,signal)=>window.rocutRemotionAudio.metadata(element,signal),
+      apply:duration=>setDurations({type:'got-duration',src:props.src,durationInSeconds:duration}),
+      release:()=>nativeContinueRender(handle),cancel:nativeCancelRender});
   }, [props.src, setDurations]);
   const attach = React.useCallback(audio => {
     window.rocutRemotionAudio.registerElement(audio);
@@ -63,7 +58,7 @@ export const Html5Audio = React.forwardRef((props, ref) => React.createElement(
 ));
 export const Audio = Html5Audio;
 export function OffthreadVideo(props) {
-  if (window.rocutRemotionAudio?.analysisOnly) return React.createElement(NativeOffthreadVideo, props);
+  if (window.rocutRemotionAudio?.analysisOnly && !window.rocutRemotionAudio?.producedEnabled) return React.createElement(NativeOffthreadVideo, props);
   if (!window.rocutOffthread?.available) throw Error('Remotion OffthreadVideo requires the native frame bridge on this backend');
   if (!props.muted && !window.rocutRemotionAudio?.enabled) throw Error('OffthreadVideo must be explicitly muted; use Rocut audio tracks');
   return React.createElement(NativeOffthreadVideo, props);

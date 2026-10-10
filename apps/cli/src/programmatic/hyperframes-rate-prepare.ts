@@ -8,10 +8,15 @@ import {
 } from "./hyperframes-rate-loop-source";
 import { runNativeMediaProcess } from "./native-media-process";
 import type { NativeVideoDecoder } from "./video-decoder";
+import { hyperframesNativePreparationOutputArgs } from "./hyperframes-native-prepare-args";
+import type { HyperframesLoopSourceOwner } from "./hyperframes-loop-source-owner";
 
 /** Rust-owned exporter preparation recipe, never accepted from authored JS. */
 export interface HyperframesRatePreparation {
 	profile: "hyperframes-0.8.139-exporter-prepare-s16-48k-v1";
+	/** Absent only for the previously published ramp preparation receipt. */
+	preparationKind?: "scalar" | "ramp";
+	outputDurationRequired?: boolean;
 	mediaStartSeconds: string;
 	sourceDurationSeconds: string;
 	durationSeconds: string;
@@ -55,6 +60,7 @@ export async function prepareHyperframesRateAudio({
 	frames,
 	recipe,
 	signal,
+	loopSourceOwner,
 }: {
 	decoder: NativeVideoDecoder;
 	body: Uint8Array;
@@ -63,6 +69,7 @@ export async function prepareHyperframesRateAudio({
 	frames: number | null;
 	recipe: HyperframesRatePreparation;
 	signal: AbortSignal;
+	loopSourceOwner?: HyperframesLoopSourceOwner;
 }): Promise<{ pcm: Buffer; hasAudio: boolean; nativeFrames: number }> {
 	signal.throwIfAborted();
 	const decodeFrames = recipe.observedPcm ? recipe.graphMaxFrames : frames;
@@ -185,6 +192,8 @@ export async function prepareHyperframesRateAudio({
 					channels: stream.channels!,
 					recipe: recipe.sourceLoop,
 					signal,
+					body,
+					owner: loopSourceOwner,
 				})
 			: sourcePath;
 		const nativeInputArgs = recipe.sourceLoop
@@ -193,12 +202,10 @@ export async function prepareHyperframesRateAudio({
 		const nativeChannels = recipe.sourceLoop ? 2 : stream.channels;
 		// A 240-slice graph can exceed Windows' command-line bound. Transport the
 		// exact Rust-generated graph in a private file; do not rewrite its filters.
+		const nativeFilter = nativeChannels === 1 ? recipe.monoFilter : recipe.stereoFilter;
+		const scalar = recipe.preparationKind === "scalar";
 		const graphPath = join(root, "native.filter");
-		await writeFile(
-			graphPath,
-			nativeChannels === 1 ? recipe.monoFilter : recipe.stereoFilter,
-			{ flag: "wx" },
-		);
+		if (!scalar) await writeFile(graphPath, nativeFilter, { flag: "wx" });
 		const prepared = await runNativeMediaProcess({
 			executable: decoder.ffmpeg,
 			media: "audio",
@@ -226,13 +233,7 @@ export async function prepareHyperframesRateAudio({
 				"pcm_s16le",
 				"-ar",
 				"48000",
-				"-filter_complex_script",
-				graphPath,
-				"-map",
-				"[out]",
-				...(nativeChannels === 1 ? [] : ["-ac", "2"]),
-				"-t",
-				recipe.durationSeconds,
+				...hyperframesNativePreparationOutputArgs(recipe, nativeChannels!, graphPath),
 				"-f",
 				"s16le",
 				"pipe:1",

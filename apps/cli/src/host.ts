@@ -341,6 +341,7 @@ export async function startHost(args: StartHostArgs): Promise<RunningHost> {
 	);
 	const programmaticAudio = createProgrammaticAudioService({
 		resourceStore: { store: plane.baseStore, projectId: plane.projectId },
+		projectDir: resolvedProject,
 		executable: args.htmlBrowserExecutable, connectionFile: args.htmlFrameConnectionFile, decoder: args.nativeVideoDecoder,
 		toolchainDirectory: args.engineToolchainDirectory,
 	});
@@ -518,6 +519,10 @@ async function handleApi(
 		}
 		if (request.method === "POST" && route.length === 2 && route[0] === "programmatic" && route[1] === "audio") {
 			await context.programmaticAudio.handle(request, response);
+			return;
+		}
+		if (request.method === "POST" && route.length === 2 && route[0] === "programmatic" && route[1] === "produced") {
+			await context.programmaticAudio.handle(request, response, "produced");
 			return;
 		}
 		if (request.method === "POST" && route.length === 3 && route[0] === "programmatic" && route[1] === "audio" && route[2] === "identity") {

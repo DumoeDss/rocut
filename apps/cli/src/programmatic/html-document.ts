@@ -2,11 +2,20 @@ import type { ResolvedProgrammaticResource } from "@opencut/editor-contracts";
 import { htmlResourceBootstrap } from "./html-resources";
 import { HTML_MEDIA_BOOTSTRAP } from "./html-media";
 import { OFFTHREAD_BOOTSTRAP } from "./offthread-bootstrap";
-import { REMOTION_AUDIO_BOOTSTRAP, type NativeAudioAnalysisConfig } from "./remotion-audio-bootstrap";
+import {
+	REMOTION_AUDIO_BOOTSTRAP,
+	type NativeAudioAnalysisConfig,
+} from "./remotion-audio-bootstrap";
 import { HYPERFRAMES_AUDIO_BOOTSTRAP } from "./hyperframes-audio-bootstrap";
 import { HYPERFRAMES_AUDIO_GRAPH_BOOTSTRAP } from "./hyperframes-audio-graph-bootstrap";
+import { HYPERFRAMES_NATIVE_HISTORY_CAPTURE } from "./hyperframes-native-history-capture";
+import { REMOTION_PRODUCED_THUMBNAIL_CAPTURE } from "./remotion-produced-thumbnail-capture";
 import { particleCaptureExpression } from "./particle-page-bootstrap";
 import type { ParticlePageConfig } from "./particle-page-contract";
+import {
+	liquidObjectCaptureExpression,
+	type LiquidObjectPageConfig,
+} from "./liquid-object-page-capture";
 
 /** Evaluated in an opaque-origin sandbox before any authored script executes.
  * No network, host bridge, storage, navigation, popup or nested browsing context.
@@ -31,6 +40,20 @@ addEventListener('DOMContentLoaded', async () => {
     await author?.ready;
     void document.body?.offsetHeight;
     await document.fonts.ready;
+    if (nativeAudioAnalysis && audioAnalysis.remotionProduced) {
+      if (typeof author?.renderProducedFrames !== 'function')
+        throw Error('Native Remotion produced assets require a matching compiled continuous-frame driver');
+      const assets = await author.renderProducedFrames(audioAnalysis.remotionProduced);
+      checkHtmlMedia(true);
+      if (failures.length) throw Error(failures[0]);
+      parent.postMessage({ tag: 'rocut-html-frame', ok: true, assets }, '*');
+      return;
+    }
+    if (nativeAudioAnalysis && audioAnalysis.hyperframesNativeHistory) {
+      const assets = await captureHyperframesNativeHistory(author, random);
+      parent.postMessage({ tag: 'rocut-html-frame', ok: true, assets }, '*');
+      return;
+    }
     if (typeof author?.renderFrame === 'function') await author.renderFrame({ ...frame, random });
     // React/native engines may mount media only inside the frame hook.
     checkHtmlMedia(true);
@@ -81,27 +104,111 @@ addEventListener('DOMContentLoaded', async () => {
 }, { once: true });
 `;
 
-export function htmlCaptureExpression(code: string, frame: unknown, resources: readonly ResolvedProgrammaticResource[] = [], eagerImages = true, nativeVideoBridge = false, soundtrack?: NativeAudioAnalysisConfig, particle?: ParticlePageConfig): string {
-	return htmlExpression(code, frame, resources, eagerImages, nativeVideoBridge, soundtrack ? { ...soundtrack, mode: "picture" } : null, particle);
+export function htmlCaptureExpression(
+	code: string,
+	frame: unknown,
+	resources: readonly ResolvedProgrammaticResource[] = [],
+	eagerImages = true,
+	nativeVideoBridge = false,
+	soundtrack?: NativeAudioAnalysisConfig,
+	particle?: ParticlePageConfig,
+): string {
+	return htmlExpression({
+		code,
+		frame,
+		resources,
+		eagerImages,
+		nativeVideoBridge,
+		analysis: soundtrack ? { ...soundtrack, mode: "picture" } : null,
+		particle,
+	});
+}
+
+export function htmlLiquidObjectCaptureExpression({
+	code,
+	frame,
+	resources,
+	config,
+}: {
+	code: string;
+	frame: unknown;
+	resources: readonly ResolvedProgrammaticResource[];
+	config: LiquidObjectPageConfig;
+}): string {
+	return htmlExpression({
+		code,
+		frame,
+		resources,
+		eagerImages: false,
+		nativeVideoBridge: false,
+		analysis: null,
+		liquid: config,
+	});
 }
 
 /** Internal analysis only; Electron's PNG-only contract is deliberately unchanged. */
-export function htmlAudioAnalysisExpression(code: string, frame: unknown, resources: readonly ResolvedProgrammaticResource[], analysis: NativeAudioAnalysisConfig): string {
-	return htmlExpression(code, frame, resources, true, false, analysis);
+export function htmlAudioAnalysisExpression(
+	code: string,
+	frame: unknown,
+	resources: readonly ResolvedProgrammaticResource[],
+	analysis: NativeAudioAnalysisConfig,
+): string {
+	return htmlExpression({
+		code,
+		frame,
+		resources,
+		eagerImages: true,
+		nativeVideoBridge: !!analysis.remotionProduced,
+		analysis,
+	});
 }
 
-function htmlExpression(code: string, frame: unknown, resources: readonly ResolvedProgrammaticResource[], eagerImages: boolean, nativeVideoBridge: boolean, analysis: NativeAudioAnalysisConfig | null, particle?: ParticlePageConfig): string {
+function htmlExpression({
+	code,
+	frame,
+	resources,
+	eagerImages,
+	nativeVideoBridge,
+	analysis,
+	particle,
+	liquid,
+}: {
+	code: string;
+	frame: unknown;
+	resources: readonly ResolvedProgrammaticResource[];
+	eagerImages: boolean;
+	nativeVideoBridge: boolean;
+	analysis: NativeAudioAnalysisConfig | null;
+	particle?: ParticlePageConfig;
+	liquid?: LiquidObjectPageConfig;
+}): string {
+	if (particle && liquid)
+		throw Error("HTML capture requires one native Three profile");
 	// Native JSON modules use connect-src in Chromium. data: adds only in-memory
 	// bytes; network/blob connections, workers and nested frames stay forbidden.
 	const csp =
 		"default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' data:; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; media-src data:; connect-src data:; worker-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'";
 	// Expose only the selected engine's registry. Authored code cannot register
 	// Remotion assets to bypass HyperFrames media checks, or vice versa.
-	const audioBootstrap = analysis?.engine === "hyperframes"
-		? `const nativeAudioHandled = true;const nativeAudioAnalysis = audioAnalysis.mode !== 'picture';${analysis.hyperframesGraph ? HYPERFRAMES_AUDIO_GRAPH_BOOTSTRAP : ""}${HYPERFRAMES_AUDIO_BOOTSTRAP}const nativeAudioBridge = window.rocutHyperframesAudio;`
-		: `${REMOTION_AUDIO_BOOTSTRAP}const nativeAudioBridge = window.rocutRemotionAudio;`;
-	const bootstrap = `const frame=${JSON.stringify(frame).replace(/</g, "\\u003c")};const nativeVideoBridge=${nativeVideoBridge};const audioAnalysis=${JSON.stringify(analysis).replace(/</g, "\\u003c")};${audioBootstrap}${htmlResourceBootstrap(resources, eagerImages)}${HTML_MEDIA_BOOTSTRAP}${OFFTHREAD_BOOTSTRAP}${BOOTSTRAP}`;
-	if (particle) return particleCaptureExpression({ config: particle, bootstrap, code, csp });
+	const audioBootstrap =
+		analysis?.engine === "hyperframes"
+			? `const nativeAudioHandled = true;const nativeAudioAnalysis = audioAnalysis.mode !== 'picture';${analysis.hyperframesGraph ? HYPERFRAMES_AUDIO_GRAPH_BOOTSTRAP : ""}${HYPERFRAMES_AUDIO_BOOTSTRAP}const nativeAudioBridge = window.rocutHyperframesAudio;`
+			: `${REMOTION_AUDIO_BOOTSTRAP}const nativeAudioBridge = window.rocutRemotionAudio;`;
+	const bootstrap = `const frame=${JSON.stringify(frame).replace(/</g, "\\u003c")};const nativeVideoBridge=${nativeVideoBridge};const audioAnalysis=${JSON.stringify(analysis).replace(/</g, "\\u003c")};${audioBootstrap}${htmlResourceBootstrap(resources, eagerImages)}${HTML_MEDIA_BOOTSTRAP}${OFFTHREAD_BOOTSTRAP}${analysis?.hyperframesNativeHistory ? HYPERFRAMES_NATIVE_HISTORY_CAPTURE : ""}${analysis?.remotionProduced ? REMOTION_PRODUCED_THUMBNAIL_CAPTURE : ""}${BOOTSTRAP}`;
+	if (particle)
+		return particleCaptureExpression({
+			config: particle,
+			bootstrap,
+			code,
+			csp,
+		});
+	if (liquid)
+		return liquidObjectCaptureExpression({
+			config: liquid,
+			bootstrap,
+			code,
+			csp,
+		});
 	const document = `<meta http-equiv="Content-Security-Policy" content="${csp}"><script>${bootstrap}</script>${code}`;
 	// A posted audio snapshot is complete without another rendering turn. Only
 	// picture capture needs the outer compositor paint barrier.
@@ -114,8 +221,17 @@ function htmlExpression(code: string, frame: unknown, resources: readonly Resolv
     Object.defineProperty(window, '__rocutNativeFrameReply', {value:reply => {
       iframe.contentWindow?.postMessage({tag:'rocut-native-frame-reply',reply}, '*');
     }});
+    Object.defineProperty(window, '__rocutProducedCaptureReply', {value:reply => {
+      iframe.contentWindow?.postMessage({tag:'rocut-produced-capture-reply',reply}, '*');
+    }});
     addEventListener('message', event => {
       if (event.source !== iframe.contentWindow) return;
+      if (event.data?.tag === 'rocut-produced-capture-request') {
+        if (typeof window.__rocutProducedCaptureRequest === 'function' && typeof event.data.payload === 'string')
+          window.__rocutProducedCaptureRequest(event.data.payload);
+        else reject(Error('Native produced capture transport is unavailable'));
+        return;
+      }
       if (event.data?.tag === 'rocut-native-frame-request') {
         if (typeof window.__rocutNativeFrameRequest === 'function' && typeof event.data.payload === 'string')
           window.__rocutNativeFrameRequest(event.data.payload);

@@ -6,7 +6,8 @@
 export const HYPERFRAMES_AUDIO_GRAPH_BOOTSTRAP = String.raw`
 (() => {
   const registered = new Map(), captured = new Map(), clips = new Map();
-  let frameTime = null, failure;
+  let frameTime = null, failure, nativeHistory = null, nativeHistoryWrites = 0;
+  const pendingNativeWrites = new Set();
   const fail = message => { failure ??= Error(message); throw failure; };
   const healthy = () => { if (failure) throw failure; };
   const number = (value, field) => {
@@ -51,6 +52,25 @@ export const HYPERFRAMES_AUDIO_GRAPH_BOOTSTRAP = String.raw`
     return result;
   };
   Object.defineProperty(window, 'rocutHyperframesAudioGraph', { value: Object.freeze({
+    beginNativeHistory(scan) {
+      healthy();
+      if (nativeHistory || scan?.profile !== 'hyperframes-native-sync-all-author-writes-v1'
+          || scan.canonicalStart !== 0 || !Number.isFinite(scan.canonicalEnd) || scan.canonicalEnd <= 0
+          || !Array.isArray(scan.times) || scan.times.length < 2 || scan.times.length > 32768
+          || scan.times[0] !== 0 || scan.times.at(-1) !== scan.canonicalEnd
+          || scan.times.some((time, i) => !Number.isFinite(time) || time < 0 || time > scan.canonicalEnd
+            || (i > 0 && time <= scan.times[i - 1]))) fail('Invalid native history scan');
+      nativeHistory = {scan:copy(scan), histories:new Map(), cursor:0};
+      nativeHistoryWrites = 0;
+    },
+    endNativeHistory() {
+      healthy();
+      if (!nativeHistory || nativeHistory.cursor !== nativeHistory.scan.times.length || pendingNativeWrites.size)
+        fail('Native history canonical scan is incomplete');
+      const result = [...nativeHistory.histories.values()].map(value => copy(value));
+      nativeHistory = null;
+      return result;
+    },
     registerMedia(element, declaration) {
       healthy();
       if (!(element instanceof HTMLMediaElement)) fail('Expected native graph media element');
@@ -67,7 +87,10 @@ export const HYPERFRAMES_AUDIO_GRAPH_BOOTSTRAP = String.raw`
     },
     begin(frame) {
       healthy();
+      if (pendingNativeWrites.size) fail('Native author write callback was omitted');
       frameTime = number(frame?.time, 'requested time');
+      if (nativeHistory && frameTime !== nativeHistory.scan.times[nativeHistory.cursor++])
+        fail('Native history renderer deviated from the Rust canonical scan');
       captured.clear();
       clips.clear();
     },
@@ -108,6 +131,31 @@ export const HYPERFRAMES_AUDIO_GRAPH_BOOTSTRAP = String.raw`
           : !Array.isArray(gain.points) || gain.points.length === 0 || gain.fallback !== null))
         fail('Missing native resolved author gain envelope facts');
       track.resolvedAuthorGain = {...copy(gain), state:'observed', observedAt};
+      if (nativeHistory && gain.source === 'fallback') {
+        if (pendingNativeWrites.has(element)) fail('Native author write callback was omitted');
+        pendingNativeWrites.add(element);
+      }
+    },
+    collectAppliedAuthorGain(element, clip, observedAt, appliedAuthorGain, effectiveElementVolume) {
+      healthy();
+      // Native startup may sync before the driver's first requested frame.
+      // Like collectTrack/collectResolvedAuthorGain, those are not scan writes.
+      if (!nativeHistory || frameTime === null) return;
+      const track = captured.get(element);
+      if (!track || clips.get(element) !== clip || clip.el !== element
+          || observedAt !== frameTime || track.resolvedAuthorGain.state !== 'observed')
+        fail('Native author write lacks matching resolved branch facts');
+      if (track.resolvedAuthorGain.source !== 'fallback') return;
+      if (!pendingNativeWrites.delete(element)) fail('Duplicate native author write callback');
+      if (++nativeHistoryWrites > 32768) fail('Native author write history exceeds its budget');
+      let history = nativeHistory.histories.get(track.instanceId);
+      if (!history) {
+        history = {profile:nativeHistory.scan.profile, instanceId:track.instanceId, resourceId:track.resourceId,
+          canonicalStart:0, canonicalEnd:nativeHistory.scan.canonicalEnd, events:[]};
+        nativeHistory.histories.set(track.instanceId, history);
+      }
+      history.events.push({sequence:history.events.length, appliedAuthorGain:number(appliedAuthorGain,'applied author gain'),
+        effectiveElementVolume:number(effectiveElementVolume,'effective element volume'), gain:copy(track.resolvedAuthorGain)});
     },
     snapshot() {
       healthy();

@@ -1,6 +1,8 @@
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { runNativeMediaProcess } from "./native-media-process";
+import type { HyperframesLoopSourceOwner } from "./hyperframes-loop-source-owner";
+import { hyperframesFloatWav } from "./hyperframes-loop-source-wav";
 
 /** Geometry, filters, finite repetition and reservations are Rust-owned. */
 export interface HyperframesRateSourceLoop {
@@ -13,6 +15,15 @@ export interface HyperframesRateSourceLoop {
 	workingSetBytes: number;
 	stereoFilter: string;
 	monoFilter: string;
+	nativeBufferClock?: {
+		profile: "hyperframes-0.8.139-native-buffer-loop-clock-v1";
+		sampleRate: 48000;
+		outputFrames: number;
+		maxSourceFrames: number;
+		periodSeconds: number;
+		durationSeconds: number;
+		segments: readonly { elapsedSeconds: number; mediaStartSeconds: number; durationSeconds: number }[];
+	};
 }
 
 /** Bounded IO only. A separate canonical stereo float WAV is intentional:
@@ -27,6 +38,8 @@ export async function materializeHyperframesRateLoop({
 	channels,
 	recipe,
 	signal,
+	body,
+	owner,
 }: {
 	ffmpeg: string;
 	root: string;
@@ -35,9 +48,20 @@ export async function materializeHyperframesRateLoop({
 	channels: number;
 	recipe: HyperframesRateSourceLoop;
 	signal: AbortSignal;
+	body?: Uint8Array;
+	owner?: HyperframesLoopSourceOwner;
 }) {
 	if (!Number.isSafeInteger(recipe.maxWavBytes) || recipe.maxWavBytes < 44)
 		throw Error("Invalid admitted source-loop WAV bound");
+	if (recipe.nativeBufferClock) {
+		if (!owner || !body) throw Error("Fractional HyperFrames loop requires its native source-clock owner");
+		const pcm = await owner.materialize({ body, recipe, signal });
+		signal.throwIfAborted();
+		const wav = hyperframesFloatWav(pcm, recipe.sourceFrames, recipe.maxWavBytes);
+		const path = join(root, "loop-source.wav");
+		await writeFile(path, wav, { flag: "wx" });
+		return path;
+	}
 	const wav = await runNativeMediaProcess({
 		executable: ffmpeg,
 		media: "audio",
