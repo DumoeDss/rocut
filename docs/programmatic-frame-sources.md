@@ -4350,3 +4350,25 @@ identity (ddade5ea...) matches the same checkpoint used by the Tunnel and
 Night rechecks. Full identity chain and resource inventory are preserved in
 docs/evidence/mv-lut-atlas-native-recheck-20261010.json. Scope remains the
 atlas seam only - no full GL post, movie, or export acceptance claim.
+
+### Tunnel frame-4 grain diagnosis: scene logic exact, only grain phase differs (2026-10-10)
+
+The dedicated frame4-grain-diagnostic probe now completes end-to-end after
+repairing a real fixture bug: encodeTunnelDiagnosticChunk rejected the retained
+RGBA buffers because page.evaluate runs the helper in Playwright's isolated
+utility world, whose Uint8ClampedArray constructor differs from the page realm,
+so a cross-realm instanceof check failed on the exact same bytes. The check is
+now structural (length + subarray), and the artifact chunk roundtrip test still
+passes.
+
+The diagnosis itself is conclusive. With grain omitted on both sides, native
+and the unchanged original agree bit-for-bit (scene max 0, post max 0).
+The original's own grain effect peaks at channel delta 6 (scene) / 5 (post),
+and the native grain effect has exactly the same magnitudes - the failing
+full-frame parity at defaults/4 was never a scene-logic divergence, only two
+independent grain implementations at equal strength with different random
+phase. Full retained buffers, both native root plans, and the identity chain
+are preserved under docs/evidence/mv-tunnel-frame4-grain-diagnosis-20261010/.
+The follow-up decision (pin a shared grain phase in the native producer or
+gate on grain-tolerant parity) belongs to the consolidated pixel phase; no
+threshold was relaxed here.

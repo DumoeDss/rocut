@@ -23,9 +23,14 @@ export function encodeTunnelDiagnosticChunk({
 	length,
 }) {
 	const bytes = globalThis.__tunnelNativeDiagnostic?.[owner]?.rgba?.[layer];
+	// Playwright may evaluate this helper in an isolated utility world whose
+	// Uint8ClampedArray constructor differs from the page realm; a cross-realm
+	// instanceof would reject the exact same retained buffer. Validate the
+	// value structurally instead of by realm-specific identity.
 	if (
-		!(bytes instanceof Uint8ClampedArray) ||
+		typeof bytes?.length !== "number" ||
 		bytes.length !== length ||
+		typeof bytes.subarray !== "function" ||
 		!Number.isSafeInteger(offset) ||
 		!Number.isSafeInteger(count) ||
 		offset < 0 ||

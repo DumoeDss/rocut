@@ -1,0 +1,1309 @@
+{
+  "diagnosticComplete": true,
+  "mode": "frame4-grain-diagnostic",
+  "fullMatrixTested": false,
+  "metadata": {
+    "frame": {
+      "time": 12.316666666666666,
+      "shotStart": 12.25,
+      "duration": 6,
+      "beats": [
+        0,
+        0.5,
+        1,
+        1.5,
+        2,
+        2.5,
+        3,
+        3.5,
+        4,
+        4.5,
+        5,
+        5.5,
+        6,
+        6.5,
+        7,
+        7.5,
+        8,
+        8.5,
+        9,
+        9.5,
+        10,
+        10.5,
+        11,
+        11.5,
+        12,
+        12.5,
+        13,
+        13.5,
+        14,
+        14.5,
+        15,
+        15.5,
+        16,
+        16.5,
+        17,
+        17.5,
+        18,
+        18.5,
+        19,
+        19.5,
+        20,
+        20.5,
+        21,
+        21.5,
+        22,
+        22.5,
+        23,
+        23.5,
+        24,
+        24.5,
+        25,
+        25.5,
+        26,
+        26.5,
+        27,
+        27.5,
+        28,
+        28.5,
+        29,
+        29.5,
+        30
+      ],
+      "bpm": 120,
+      "downbeatIndex0": 1,
+      "args": {}
+    },
+    "songTicks": 1478000,
+    "index": 4,
+    "width": 1920,
+    "height": 1080,
+    "format": "rgba8",
+    "originalApplied": {
+      "grain": 1
+    },
+    "nativeApplied": {
+      "grain": 1
+    },
+    "normal": {
+      "scene": {
+        "max": 6,
+        "mae": 0.014601658950617285,
+        "changed": 121100,
+        "first": {
+          "x": 220,
+          "y": 0,
+          "channel": 2,
+          "a": 8,
+          "b": 7,
+          "delta": 1
+        },
+        "maximum": {
+          "x": 992,
+          "y": 663,
+          "channel": 2,
+          "a": 20,
+          "b": 26,
+          "delta": -6
+        },
+        "bbox": {
+          "x0": 0,
+          "y0": 0,
+          "x1": 1919,
+          "y1": 1079
+        }
+      },
+      "post": {
+        "max": 3,
+        "mae": 0.012333140432098766,
+        "changed": 102292,
+        "first": {
+          "x": 215,
+          "y": 0,
+          "channel": 0,
+          "a": 2,
+          "b": 3,
+          "delta": -1
+        },
+        "maximum": {
+          "x": 992,
+          "y": 664,
+          "channel": 2,
+          "a": 28,
+          "b": 31,
+          "delta": -3
+        },
+        "bbox": {
+          "x0": 0,
+          "y0": 0,
+          "x1": 1919,
+          "y1": 1079
+        }
+      }
+    },
+    "omitted": {
+      "scene": {
+        "max": 0,
+        "mae": 0,
+        "changed": 0,
+        "first": null,
+        "maximum": null,
+        "bbox": null
+      },
+      "post": {
+        "max": 0,
+        "mae": 0,
+        "changed": 0,
+        "first": null,
+        "maximum": null,
+        "bbox": null
+      }
+    },
+    "originalGrainEffect": {
+      "scene": {
+        "max": 6,
+        "mae": 0.15447446469907408,
+        "changed": 1052393,
+        "first": {
+          "x": 8,
+          "y": 0,
+          "channel": 2,
+          "a": 6,
+          "b": 5,
+          "delta": 1
+        },
+        "maximum": {
+          "x": 993,
+          "y": 84,
+          "channel": 2,
+          "a": 76,
+          "b": 70,
+          "delta": 6
+        },
+        "bbox": {
+          "x0": 0,
+          "y0": 0,
+          "x1": 1919,
+          "y1": 1079
+        }
+      },
+      "post": {
+        "max": 5,
+        "mae": 0.08565694926697531,
+        "changed": 693303,
+        "first": {
+          "x": 10,
+          "y": 0,
+          "channel": 2,
+          "a": 7,
+          "b": 6,
+          "delta": 1
+        },
+        "maximum": {
+          "x": 999,
+          "y": 543,
+          "channel": 0,
+          "a": 87,
+          "b": 82,
+          "delta": 5
+        },
+        "bbox": {
+          "x0": 0,
+          "y0": 0,
+          "x1": 1919,
+          "y1": 1079
+        }
+      }
+    },
+    "nativeGrainEffect": {
+      "scene": {
+        "max": 6,
+        "mae": 0.1540088493441358,
+        "changed": 1050014,
+        "first": {
+          "x": 8,
+          "y": 0,
+          "channel": 2,
+          "a": 6,
+          "b": 5,
+          "delta": 1
+        },
+        "maximum": {
+          "x": 1156,
+          "y": 129,
+          "channel": 0,
+          "a": 77,
+          "b": 71,
+          "delta": 6
+        },
+        "bbox": {
+          "x0": 0,
+          "y0": 0,
+          "x1": 1919,
+          "y1": 1079
+        }
+      },
+      "post": {
+        "max": 5,
+        "mae": 0.08535361207561729,
+        "changed": 690895,
+        "first": {
+          "x": 10,
+          "y": 0,
+          "channel": 2,
+          "a": 7,
+          "b": 6,
+          "delta": 1
+        },
+        "maximum": {
+          "x": 999,
+          "y": 543,
+          "channel": 0,
+          "a": 87,
+          "b": 82,
+          "delta": 5
+        },
+        "bbox": {
+          "x0": 0,
+          "y0": 0,
+          "x1": 1919,
+          "y1": 1079
+        }
+      }
+    },
+    "scope": "frame4 diagnosis only; normal production and original captures retained; no acceptance decision"
+  },
+  "proofs": {
+    "production": {
+      "planKind": "tunnel",
+      "runtime": "renderProgrammaticCanvas",
+      "pendingMetricRequestsBefore": 3,
+      "pendingMetricRequestsAfter": 0,
+      "fontHashes": {
+        "Shippori Mincho B1|800": "bee99a242f32128e8d6a4acff2b3f1742cd42ea90748758e6e10456871887e76",
+        "DotGothic16|400": "3ad9af88726d42b40f7f365f0dcac785af73cf20ea6f1d5b44e57cc21150b8f1",
+        "Zen Old Mincho|900": "84a80d8bca79d7d9478935045b216ed003ad40fdea5fd9116d524eb26e872cdc",
+        "Noto Serif JP|400": "2fd527ba12b6a44ec30d796d633360da0aeba6c5d4af1304ce12bb4dc15a7dfc",
+        "Noto Serif JP|800": "2fd527ba12b6a44ec30d796d633360da0aeba6c5d4af1304ce12bb4dc15a7dfc",
+        "Noto Serif JP|900": "2fd527ba12b6a44ec30d796d633360da0aeba6c5d4af1304ce12bb4dc15a7dfc"
+      },
+      "sourceIdentity": "c1a0635c5d17e70b6d37d455799120971822d34f837da746a1896eea841ec097",
+      "postBackend": "controlled-reference-post-v1",
+      "controlApplications": {}
+    },
+    "omitted": {
+      "planKind": "tunnel",
+      "runtime": "renderProgrammaticCanvas",
+      "pendingMetricRequestsBefore": 3,
+      "pendingMetricRequestsAfter": 0,
+      "fontHashes": {
+        "Shippori Mincho B1|800": "bee99a242f32128e8d6a4acff2b3f1742cd42ea90748758e6e10456871887e76",
+        "DotGothic16|400": "3ad9af88726d42b40f7f365f0dcac785af73cf20ea6f1d5b44e57cc21150b8f1",
+        "Zen Old Mincho|900": "84a80d8bca79d7d9478935045b216ed003ad40fdea5fd9116d524eb26e872cdc",
+        "Noto Serif JP|400": "2fd527ba12b6a44ec30d796d633360da0aeba6c5d4af1304ce12bb4dc15a7dfc",
+        "Noto Serif JP|800": "2fd527ba12b6a44ec30d796d633360da0aeba6c5d4af1304ce12bb4dc15a7dfc",
+        "Noto Serif JP|900": "2fd527ba12b6a44ec30d796d633360da0aeba6c5d4af1304ce12bb4dc15a7dfc"
+      },
+      "sourceIdentity": "c1a0635c5d17e70b6d37d455799120971822d34f837da746a1896eea841ec097",
+      "postBackend": "controlled-reference-post-v1",
+      "controlApplications": {
+        "grain": 1
+      }
+    }
+  },
+  "provenance": {
+    "original": {
+      "frame": {
+        "time": 12.316666666666666,
+        "shotStart": 12.25,
+        "duration": 6,
+        "beats": [
+          0,
+          0.5,
+          1,
+          1.5,
+          2,
+          2.5,
+          3,
+          3.5,
+          4,
+          4.5,
+          5,
+          5.5,
+          6,
+          6.5,
+          7,
+          7.5,
+          8,
+          8.5,
+          9,
+          9.5,
+          10,
+          10.5,
+          11,
+          11.5,
+          12,
+          12.5,
+          13,
+          13.5,
+          14,
+          14.5,
+          15,
+          15.5,
+          16,
+          16.5,
+          17,
+          17.5,
+          18,
+          18.5,
+          19,
+          19.5,
+          20,
+          20.5,
+          21,
+          21.5,
+          22,
+          22.5,
+          23,
+          23.5,
+          24,
+          24.5,
+          25,
+          25.5,
+          26,
+          26.5,
+          27,
+          27.5,
+          28,
+          28.5,
+          29,
+          29.5,
+          30
+        ],
+        "bpm": 120,
+        "downbeatIndex0": 1,
+        "args": {}
+      },
+      "cacheIdentity": "e40cff1bb3f4a6ffcc5ff4054e05c8431a00a0e41c83a85bab7dcf653d5d062d",
+      "scripts": [
+        {
+          "id": "core/util.js",
+          "sha256": "1e6be8d7551fdb3ded2a6dde027fab9630837fcc47c34ac3c1dc622664dedd48"
+        },
+        {
+          "id": "core/assets.js",
+          "sha256": "ca6f66a75af8ce87607e2e8ff708343209cacffc35cc04a6130e53b2548d3baa"
+        },
+        {
+          "id": "core/draw.js",
+          "sha256": "4e7b4cd7efd46bf7dd69046a6fc0bd15131c1c66a7bc64e7823d557ba4fd11ec"
+        },
+        {
+          "id": "scenes/typo.js",
+          "sha256": "ac339c33e218db842066b05f2a1a465a1e88e32a542f2a6b1d3d4dc917b92554"
+        }
+      ],
+      "postScript": {
+        "id": "core/gl.js",
+        "sha256": "7633204593dd3f3552cf2af68518a15562d49c77e5275cd7265a347a329421d9"
+      },
+      "mainScript": {
+        "id": "core/main.js",
+        "sha256": "3f5e6ff5eb2b7a49e552f1a8da3b3cab0c48e454c226dd943d70abdd51543dd2"
+      },
+      "resolvedPost": {
+        "zoomBlur": 0.009176210203518862,
+        "zoomCenter": [
+          0.5086807899622112,
+          0.5180274915128763
+        ],
+        "bloom": 0.420003061323578,
+        "bloomThreshold": 0.7200024490588623,
+        "ca": 1.2,
+        "vignette": 0.2,
+        "boil": 0.6,
+        "boilSeed": 147,
+        "grainSeed": 295,
+        "glitchSeed": 93
+      },
+      "mainFunctions": [
+        {
+          "name": "stateFor",
+          "start": 4194,
+          "end": 4612,
+          "sha256": "c6225ab03c7624ad93685da7831ad065057e7399aa5d72bbe836a821da3b2a6c"
+        },
+        {
+          "name": "postFor",
+          "start": 6289,
+          "end": 7252,
+          "sha256": "8a73cc134b4903ec65627fe80116e25882cb40752f827030f8df41da489b6c9c"
+        }
+      ],
+      "fonts": [
+        {
+          "role": "main",
+          "family": "Shippori Mincho B1",
+          "weight": 800,
+          "sha256": "bee99a242f32128e8d6a4acff2b3f1742cd42ea90748758e6e10456871887e76",
+          "text": "暗闇の果てでまだ遅くないあたに会光残　・",
+          "glyphs": [
+            {
+              "codePoint": 26263,
+              "glyphId": 5126
+            },
+            {
+              "codePoint": 38343,
+              "glyphId": 13083
+            },
+            {
+              "codePoint": 12398,
+              "glyphId": 15243
+            },
+            {
+              "codePoint": 26524,
+              "glyphId": 5325
+            },
+            {
+              "codePoint": 12390,
+              "glyphId": 15235
+            },
+            {
+              "codePoint": 12391,
+              "glyphId": 15236
+            },
+            {
+              "codePoint": 12414,
+              "glyphId": 15259
+            },
+            {
+              "codePoint": 12384,
+              "glyphId": 15229
+            },
+            {
+              "codePoint": 36933,
+              "glyphId": 12224
+            },
+            {
+              "codePoint": 12367,
+              "glyphId": 15211
+            },
+            {
+              "codePoint": 12394,
+              "glyphId": 15239
+            },
+            {
+              "codePoint": 12356,
+              "glyphId": 15198
+            },
+            {
+              "codePoint": 12354,
+              "glyphId": 15196
+            },
+            {
+              "codePoint": 12383,
+              "glyphId": 15228
+            },
+            {
+              "codePoint": 12395,
+              "glyphId": 15240
+            },
+            {
+              "codePoint": 20250,
+              "glyphId": 817
+            },
+            {
+              "codePoint": 20809,
+              "glyphId": 1251
+            },
+            {
+              "codePoint": 27531,
+              "glyphId": 6060
+            },
+            {
+              "codePoint": 12288,
+              "glyphId": 15944
+            },
+            {
+              "codePoint": 12539,
+              "glyphId": 15938
+            }
+          ],
+          "requestedFamily": "Shippori Mincho B1",
+          "fallback": false
+        },
+        {
+          "role": "main",
+          "family": "DotGothic16",
+          "weight": 400,
+          "sha256": "3ad9af88726d42b40f7f365f0dcac785af73cf20ea6f1d5b44e57cc21150b8f1",
+          "text": "AT HENDOFRKSILWYUZ—G·",
+          "glyphs": [
+            {
+              "codePoint": 65,
+              "glyphId": 34
+            },
+            {
+              "codePoint": 84,
+              "glyphId": 53
+            },
+            {
+              "codePoint": 32,
+              "glyphId": 1
+            },
+            {
+              "codePoint": 72,
+              "glyphId": 41
+            },
+            {
+              "codePoint": 69,
+              "glyphId": 38
+            },
+            {
+              "codePoint": 78,
+              "glyphId": 47
+            },
+            {
+              "codePoint": 68,
+              "glyphId": 37
+            },
+            {
+              "codePoint": 79,
+              "glyphId": 48
+            },
+            {
+              "codePoint": 70,
+              "glyphId": 39
+            },
+            {
+              "codePoint": 82,
+              "glyphId": 51
+            },
+            {
+              "codePoint": 75,
+              "glyphId": 44
+            },
+            {
+              "codePoint": 83,
+              "glyphId": 52
+            },
+            {
+              "codePoint": 73,
+              "glyphId": 42
+            },
+            {
+              "codePoint": 76,
+              "glyphId": 45
+            },
+            {
+              "codePoint": 87,
+              "glyphId": 56
+            },
+            {
+              "codePoint": 89,
+              "glyphId": 58
+            },
+            {
+              "codePoint": 85,
+              "glyphId": 54
+            },
+            {
+              "codePoint": 90,
+              "glyphId": 59
+            },
+            {
+              "codePoint": 8212,
+              "glyphId": 138
+            },
+            {
+              "codePoint": 71,
+              "glyphId": 40
+            },
+            {
+              "codePoint": 183,
+              "glyphId": 117
+            }
+          ],
+          "requestedFamily": "DotGothic16",
+          "fallback": false
+        },
+        {
+          "role": "main",
+          "family": "Noto Serif JP",
+          "weight": 400,
+          "sha256": "2fd527ba12b6a44ec30d796d633360da0aeba6c5d4af1304ce12bb4dc15a7dfc",
+          "text": "Ō",
+          "glyphs": [
+            {
+              "codePoint": 332,
+              "glyphId": 208
+            }
+          ],
+          "requestedFamily": "DotGothic16",
+          "fallback": true
+        },
+        {
+          "role": "main",
+          "family": "Zen Old Mincho",
+          "weight": 900,
+          "sha256": "84a80d8bca79d7d9478935045b216ed003ad40fdea5fd9116d524eb26e872cdc",
+          "text": "残光",
+          "glyphs": [
+            {
+              "codePoint": 27531,
+              "glyphId": 3100
+            },
+            {
+              "codePoint": 20809,
+              "glyphId": 658
+            }
+          ],
+          "requestedFamily": "Zen Old Mincho",
+          "fallback": false
+        }
+      ],
+      "sfntFaces": [
+        {
+          "family": "Shippori Mincho B1",
+          "weight": 800,
+          "descriptor": {
+            "weight": "800",
+            "style": "normal"
+          },
+          "byteLength": 15088060,
+          "sfnt": {
+            "families": [
+              "Shippori Mincho B1 ExtraBold",
+              "Shippori Mincho B1",
+              "しっぽり明朝B1 ExtraBold",
+              "しっぽり明朝B1"
+            ],
+            "staticWeight": 800,
+            "weightRange": null
+          },
+          "sha256": "bee99a242f32128e8d6a4acff2b3f1742cd42ea90748758e6e10456871887e76"
+        },
+        {
+          "family": "DotGothic16",
+          "weight": 400,
+          "descriptor": {
+            "weight": "400",
+            "style": "normal"
+          },
+          "byteLength": 2069236,
+          "sfnt": {
+            "families": [
+              "DotGothic16",
+              "ドットゴシック16"
+            ],
+            "staticWeight": 400,
+            "weightRange": null
+          },
+          "sha256": "3ad9af88726d42b40f7f365f0dcac785af73cf20ea6f1d5b44e57cc21150b8f1"
+        },
+        {
+          "family": "Zen Old Mincho",
+          "weight": 900,
+          "descriptor": {
+            "weight": "900",
+            "style": "normal"
+          },
+          "byteLength": 5416348,
+          "sfnt": {
+            "families": [
+              "Zen Old Mincho Black",
+              "Zen Old Mincho"
+            ],
+            "staticWeight": 900,
+            "weightRange": null
+          },
+          "sha256": "84a80d8bca79d7d9478935045b216ed003ad40fdea5fd9116d524eb26e872cdc"
+        },
+        {
+          "family": "Noto Serif JP",
+          "weight": 400,
+          "descriptor": {
+            "weight": "400",
+            "style": "normal"
+          },
+          "byteLength": 13574352,
+          "sfnt": {
+            "families": [
+              "Noto Serif JP ExtraLight",
+              "Noto Serif JP"
+            ],
+            "staticWeight": 200,
+            "weightRange": [
+              200,
+              900
+            ]
+          },
+          "sha256": "2fd527ba12b6a44ec30d796d633360da0aeba6c5d4af1304ce12bb4dc15a7dfc"
+        },
+        {
+          "family": "Noto Serif JP",
+          "weight": 800,
+          "descriptor": {
+            "weight": "800",
+            "style": "normal"
+          },
+          "byteLength": 13574352,
+          "sfnt": {
+            "families": [
+              "Noto Serif JP ExtraLight",
+              "Noto Serif JP"
+            ],
+            "staticWeight": 200,
+            "weightRange": [
+              200,
+              900
+            ]
+          },
+          "sha256": "2fd527ba12b6a44ec30d796d633360da0aeba6c5d4af1304ce12bb4dc15a7dfc"
+        },
+        {
+          "family": "Noto Serif JP",
+          "weight": 900,
+          "descriptor": {
+            "weight": "900",
+            "style": "normal"
+          },
+          "byteLength": 13574352,
+          "sfnt": {
+            "families": [
+              "Noto Serif JP ExtraLight",
+              "Noto Serif JP"
+            ],
+            "staticWeight": 200,
+            "weightRange": [
+              200,
+              900
+            ]
+          },
+          "sha256": "2fd527ba12b6a44ec30d796d633360da0aeba6c5d4af1304ce12bb4dc15a7dfc"
+        }
+      ],
+      "renderer": "ANGLE (AMD, AMD Radeon(TM) Graphics (0x00001638) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "scope": "complete-original-tunnel+original-main-stateFor/postFor+dedicated-tunnel-post-through-full-original-gl; no section/globalFX/timeline/export"
+    },
+    "omitted": {
+      "frame": {
+        "time": 12.316666666666666,
+        "shotStart": 12.25,
+        "duration": 6,
+        "beats": [
+          0,
+          0.5,
+          1,
+          1.5,
+          2,
+          2.5,
+          3,
+          3.5,
+          4,
+          4.5,
+          5,
+          5.5,
+          6,
+          6.5,
+          7,
+          7.5,
+          8,
+          8.5,
+          9,
+          9.5,
+          10,
+          10.5,
+          11,
+          11.5,
+          12,
+          12.5,
+          13,
+          13.5,
+          14,
+          14.5,
+          15,
+          15.5,
+          16,
+          16.5,
+          17,
+          17.5,
+          18,
+          18.5,
+          19,
+          19.5,
+          20,
+          20.5,
+          21,
+          21.5,
+          22,
+          22.5,
+          23,
+          23.5,
+          24,
+          24.5,
+          25,
+          25.5,
+          26,
+          26.5,
+          27,
+          27.5,
+          28,
+          28.5,
+          29,
+          29.5,
+          30
+        ],
+        "bpm": 120,
+        "downbeatIndex0": 1,
+        "args": {}
+      },
+      "cacheIdentity": "e40cff1bb3f4a6ffcc5ff4054e05c8431a00a0e41c83a85bab7dcf653d5d062d",
+      "scripts": [
+        {
+          "id": "core/util.js",
+          "sha256": "1e6be8d7551fdb3ded2a6dde027fab9630837fcc47c34ac3c1dc622664dedd48"
+        },
+        {
+          "id": "core/assets.js",
+          "sha256": "ca6f66a75af8ce87607e2e8ff708343209cacffc35cc04a6130e53b2548d3baa"
+        },
+        {
+          "id": "core/draw.js",
+          "sha256": "4e7b4cd7efd46bf7dd69046a6fc0bd15131c1c66a7bc64e7823d557ba4fd11ec"
+        },
+        {
+          "id": "scenes/typo.js",
+          "sha256": "ac339c33e218db842066b05f2a1a465a1e88e32a542f2a6b1d3d4dc917b92554"
+        }
+      ],
+      "postScript": {
+        "id": "core/gl.js",
+        "sha256": "7633204593dd3f3552cf2af68518a15562d49c77e5275cd7265a347a329421d9"
+      },
+      "mainScript": {
+        "id": "core/main.js",
+        "sha256": "3f5e6ff5eb2b7a49e552f1a8da3b3cab0c48e454c226dd943d70abdd51543dd2"
+      },
+      "resolvedPost": {
+        "zoomBlur": 0.009176210203518862,
+        "zoomCenter": [
+          0.5086807899622112,
+          0.5180274915128763
+        ],
+        "bloom": 0.420003061323578,
+        "bloomThreshold": 0.7200024490588623,
+        "ca": 1.2,
+        "vignette": 0.2,
+        "boil": 0.6,
+        "boilSeed": 147,
+        "grainSeed": 295,
+        "glitchSeed": 93
+      },
+      "mainFunctions": [
+        {
+          "name": "stateFor",
+          "start": 4194,
+          "end": 4612,
+          "sha256": "c6225ab03c7624ad93685da7831ad065057e7399aa5d72bbe836a821da3b2a6c"
+        },
+        {
+          "name": "postFor",
+          "start": 6289,
+          "end": 7252,
+          "sha256": "8a73cc134b4903ec65627fe80116e25882cb40752f827030f8df41da489b6c9c"
+        }
+      ],
+      "fonts": [
+        {
+          "role": "main",
+          "family": "Shippori Mincho B1",
+          "weight": 800,
+          "sha256": "bee99a242f32128e8d6a4acff2b3f1742cd42ea90748758e6e10456871887e76",
+          "text": "暗闇の果てでまだ遅くないあたに会光残　・",
+          "glyphs": [
+            {
+              "codePoint": 26263,
+              "glyphId": 5126
+            },
+            {
+              "codePoint": 38343,
+              "glyphId": 13083
+            },
+            {
+              "codePoint": 12398,
+              "glyphId": 15243
+            },
+            {
+              "codePoint": 26524,
+              "glyphId": 5325
+            },
+            {
+              "codePoint": 12390,
+              "glyphId": 15235
+            },
+            {
+              "codePoint": 12391,
+              "glyphId": 15236
+            },
+            {
+              "codePoint": 12414,
+              "glyphId": 15259
+            },
+            {
+              "codePoint": 12384,
+              "glyphId": 15229
+            },
+            {
+              "codePoint": 36933,
+              "glyphId": 12224
+            },
+            {
+              "codePoint": 12367,
+              "glyphId": 15211
+            },
+            {
+              "codePoint": 12394,
+              "glyphId": 15239
+            },
+            {
+              "codePoint": 12356,
+              "glyphId": 15198
+            },
+            {
+              "codePoint": 12354,
+              "glyphId": 15196
+            },
+            {
+              "codePoint": 12383,
+              "glyphId": 15228
+            },
+            {
+              "codePoint": 12395,
+              "glyphId": 15240
+            },
+            {
+              "codePoint": 20250,
+              "glyphId": 817
+            },
+            {
+              "codePoint": 20809,
+              "glyphId": 1251
+            },
+            {
+              "codePoint": 27531,
+              "glyphId": 6060
+            },
+            {
+              "codePoint": 12288,
+              "glyphId": 15944
+            },
+            {
+              "codePoint": 12539,
+              "glyphId": 15938
+            }
+          ],
+          "requestedFamily": "Shippori Mincho B1",
+          "fallback": false
+        },
+        {
+          "role": "main",
+          "family": "DotGothic16",
+          "weight": 400,
+          "sha256": "3ad9af88726d42b40f7f365f0dcac785af73cf20ea6f1d5b44e57cc21150b8f1",
+          "text": "AT HENDOFRKSILWYUZ—G·",
+          "glyphs": [
+            {
+              "codePoint": 65,
+              "glyphId": 34
+            },
+            {
+              "codePoint": 84,
+              "glyphId": 53
+            },
+            {
+              "codePoint": 32,
+              "glyphId": 1
+            },
+            {
+              "codePoint": 72,
+              "glyphId": 41
+            },
+            {
+              "codePoint": 69,
+              "glyphId": 38
+            },
+            {
+              "codePoint": 78,
+              "glyphId": 47
+            },
+            {
+              "codePoint": 68,
+              "glyphId": 37
+            },
+            {
+              "codePoint": 79,
+              "glyphId": 48
+            },
+            {
+              "codePoint": 70,
+              "glyphId": 39
+            },
+            {
+              "codePoint": 82,
+              "glyphId": 51
+            },
+            {
+              "codePoint": 75,
+              "glyphId": 44
+            },
+            {
+              "codePoint": 83,
+              "glyphId": 52
+            },
+            {
+              "codePoint": 73,
+              "glyphId": 42
+            },
+            {
+              "codePoint": 76,
+              "glyphId": 45
+            },
+            {
+              "codePoint": 87,
+              "glyphId": 56
+            },
+            {
+              "codePoint": 89,
+              "glyphId": 58
+            },
+            {
+              "codePoint": 85,
+              "glyphId": 54
+            },
+            {
+              "codePoint": 90,
+              "glyphId": 59
+            },
+            {
+              "codePoint": 8212,
+              "glyphId": 138
+            },
+            {
+              "codePoint": 71,
+              "glyphId": 40
+            },
+            {
+              "codePoint": 183,
+              "glyphId": 117
+            }
+          ],
+          "requestedFamily": "DotGothic16",
+          "fallback": false
+        },
+        {
+          "role": "main",
+          "family": "Noto Serif JP",
+          "weight": 400,
+          "sha256": "2fd527ba12b6a44ec30d796d633360da0aeba6c5d4af1304ce12bb4dc15a7dfc",
+          "text": "Ō",
+          "glyphs": [
+            {
+              "codePoint": 332,
+              "glyphId": 208
+            }
+          ],
+          "requestedFamily": "DotGothic16",
+          "fallback": true
+        },
+        {
+          "role": "main",
+          "family": "Zen Old Mincho",
+          "weight": 900,
+          "sha256": "84a80d8bca79d7d9478935045b216ed003ad40fdea5fd9116d524eb26e872cdc",
+          "text": "残光",
+          "glyphs": [
+            {
+              "codePoint": 27531,
+              "glyphId": 3100
+            },
+            {
+              "codePoint": 20809,
+              "glyphId": 658
+            }
+          ],
+          "requestedFamily": "Zen Old Mincho",
+          "fallback": false
+        }
+      ],
+      "sfntFaces": [
+        {
+          "family": "Shippori Mincho B1",
+          "weight": 800,
+          "descriptor": {
+            "weight": "800",
+            "style": "normal"
+          },
+          "byteLength": 15088060,
+          "sfnt": {
+            "families": [
+              "Shippori Mincho B1 ExtraBold",
+              "Shippori Mincho B1",
+              "しっぽり明朝B1 ExtraBold",
+              "しっぽり明朝B1"
+            ],
+            "staticWeight": 800,
+            "weightRange": null
+          },
+          "sha256": "bee99a242f32128e8d6a4acff2b3f1742cd42ea90748758e6e10456871887e76"
+        },
+        {
+          "family": "DotGothic16",
+          "weight": 400,
+          "descriptor": {
+            "weight": "400",
+            "style": "normal"
+          },
+          "byteLength": 2069236,
+          "sfnt": {
+            "families": [
+              "DotGothic16",
+              "ドットゴシック16"
+            ],
+            "staticWeight": 400,
+            "weightRange": null
+          },
+          "sha256": "3ad9af88726d42b40f7f365f0dcac785af73cf20ea6f1d5b44e57cc21150b8f1"
+        },
+        {
+          "family": "Zen Old Mincho",
+          "weight": 900,
+          "descriptor": {
+            "weight": "900",
+            "style": "normal"
+          },
+          "byteLength": 5416348,
+          "sfnt": {
+            "families": [
+              "Zen Old Mincho Black",
+              "Zen Old Mincho"
+            ],
+            "staticWeight": 900,
+            "weightRange": null
+          },
+          "sha256": "84a80d8bca79d7d9478935045b216ed003ad40fdea5fd9116d524eb26e872cdc"
+        },
+        {
+          "family": "Noto Serif JP",
+          "weight": 400,
+          "descriptor": {
+            "weight": "400",
+            "style": "normal"
+          },
+          "byteLength": 13574352,
+          "sfnt": {
+            "families": [
+              "Noto Serif JP ExtraLight",
+              "Noto Serif JP"
+            ],
+            "staticWeight": 200,
+            "weightRange": [
+              200,
+              900
+            ]
+          },
+          "sha256": "2fd527ba12b6a44ec30d796d633360da0aeba6c5d4af1304ce12bb4dc15a7dfc"
+        },
+        {
+          "family": "Noto Serif JP",
+          "weight": 800,
+          "descriptor": {
+            "weight": "800",
+            "style": "normal"
+          },
+          "byteLength": 13574352,
+          "sfnt": {
+            "families": [
+              "Noto Serif JP ExtraLight",
+              "Noto Serif JP"
+            ],
+            "staticWeight": 200,
+            "weightRange": [
+              200,
+              900
+            ]
+          },
+          "sha256": "2fd527ba12b6a44ec30d796d633360da0aeba6c5d4af1304ce12bb4dc15a7dfc"
+        },
+        {
+          "family": "Noto Serif JP",
+          "weight": 900,
+          "descriptor": {
+            "weight": "900",
+            "style": "normal"
+          },
+          "byteLength": 13574352,
+          "sfnt": {
+            "families": [
+              "Noto Serif JP ExtraLight",
+              "Noto Serif JP"
+            ],
+            "staticWeight": 200,
+            "weightRange": [
+              200,
+              900
+            ]
+          },
+          "sha256": "2fd527ba12b6a44ec30d796d633360da0aeba6c5d4af1304ce12bb4dc15a7dfc"
+        }
+      ],
+      "renderer": "ANGLE (AMD, AMD Radeon(TM) Graphics (0x00001638) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "scope": "complete-original-tunnel+original-main-stateFor/postFor+dedicated-tunnel-post-through-full-original-gl; no section/globalFX/timeline/export"
+    }
+  },
+  "transportBoundary": {
+    "checks": 1
+  },
+  "files": [
+    {
+      "file": "original-scene.rgba",
+      "byteLength": 8294400,
+      "sha256": "66bc6e870e4a435e6decac2aa7d6e7698813223e103ee8a28236648014dba189"
+    },
+    {
+      "file": "original-post.rgba",
+      "byteLength": 8294400,
+      "sha256": "373391571d49ed4cb172d9a6d2b68ef4a0dd4437ff7cef33fbba088d6a861b49"
+    },
+    {
+      "file": "production-scene.rgba",
+      "byteLength": 8294400,
+      "sha256": "90c54e4841f5c299fd3cc671e4a743984c2346dffb3afb356262044f6122d90f"
+    },
+    {
+      "file": "production-post.rgba",
+      "byteLength": 8294400,
+      "sha256": "ed37740c71f694c54b136872cfeae69f3d3fb4175722fc3dc8304784a7e51d66"
+    },
+    {
+      "file": "originalOmitted-scene.rgba",
+      "byteLength": 8294400,
+      "sha256": "badaab728ac92838fac003bb1977e0dd8e26d25822be99fde01540d82ef432c5"
+    },
+    {
+      "file": "originalOmitted-post.rgba",
+      "byteLength": 8294400,
+      "sha256": "bd4bfe672a1b67e59f46a87203f3568a00b65d2435ed5853f3e71aaa1248ec6c"
+    },
+    {
+      "file": "nativeOmitted-scene.rgba",
+      "byteLength": 8294400,
+      "sha256": "badaab728ac92838fac003bb1977e0dd8e26d25822be99fde01540d82ef432c5"
+    },
+    {
+      "file": "nativeOmitted-post.rgba",
+      "byteLength": 8294400,
+      "sha256": "bd4bfe672a1b67e59f46a87203f3568a00b65d2435ed5853f3e71aaa1248ec6c"
+    }
+  ]
+}
