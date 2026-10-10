@@ -198,16 +198,14 @@ pub(super) fn finish(d: &mut Draw, a: &Tunnel, c: &Clock, cam: &Camera, g: f64, 
             );
         }
     }
+    let vignette = |g: f64| Style::Radial {
+        from: [960.0, 540.0, 1080.0 * 0.3],
+        to: [960.0, 540.0, 1080.0 * 1.05],
+        stops: stops(&[(0.0, [0.0; 4]), (1.0, css(rgb(0x030206), 0.6 * (1.0 - g)))]),
+    };
     d.rect(
         [0.0, 0.0, 1920.0, 1080.0],
-        fill(
-            Style::Radial {
-                from: [960.0, 540.0, 1080.0 * 0.3],
-                to: [960.0, 540.0, 1080.0 * 1.05],
-                stops: stops(&[(0.0, [0.0; 4]), (1.0, css(rgb(0x030206), 0.6 * (1.0 - g)))]),
-            },
-            "source-over",
-        ),
+        fill(vignette(g), "source-over"),
     );
     let mut rng = Rng::new(4242.0);
     let gray = (0..65536)
@@ -215,8 +213,8 @@ pub(super) fn finish(d: &mut Draw, a: &Tunnel, c: &Clock, cam: &Camera, g: f64, 
         .collect();
     let f = (c.t * 24.0 + 1e-6).floor();
     // filmGrain resets the target CTM, so translations and extents are physical pixels.
-    d.grain(
-        [
+    d.commands.push(Command::Grain {
+        transform: [
             1.0,
             0.0,
             0.0,
@@ -224,10 +222,17 @@ pub(super) fn finish(d: &mut Draw, a: &Tunnel, c: &Clock, cam: &Camera, g: f64, 
             -(rnd(f, 1.0) * 256.0).trunc(),
             -(rnd(f, 2.0) * 256.0).trunc(),
         ],
-        [0.0, 0.0, 2176.0, 1336.0],
+        rect: [0.0, 0.0, 2176.0, 1336.0],
+        size: [256, 256],
         gray,
-        0.07,
-    );
+        opacity: 0.07,
+        // Original filmGrain inherits the vignette's gradient assignment.
+        // Per-command isolation must replay that history before the pattern.
+        fill_history: Some(FillHistory {
+            transform: d.identity(),
+            style: vignette(g),
+        }),
+    });
     if a.fade_in > 0.0 && c.lt < a.fade_in {
         d.commands.push(Command::Rect {
             transform: [1.0, 0.0, 0.0, 1.0, 0.0, 0.0],
