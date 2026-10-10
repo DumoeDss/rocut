@@ -18,11 +18,19 @@ export function renderWetFloor({
 	plan,
 	image,
 	fonts,
+	onSurface,
 }: {
 	readonly canvas: HTMLCanvasElement;
 	readonly plan: MvWetFloorPlan;
 	readonly image: BoundImage;
 	readonly fonts: readonly BoundFont[];
+	/** Optional fixture-only diagnostics: invoked with the completed surface
+	 * canvas before the retained surfaces are released. Production callers
+	 * omit it, which preserves the existing behavior exactly. */
+	readonly onSurface?: (surface: {
+		readonly id: string;
+		readonly canvas: HTMLCanvasElement;
+	}) => void;
 }): void {
 	if (plan.version !== 1 || plan.profile !== "night-wet-floor-v1")
 		throw Error("Unsupported wetFloor native plan");
@@ -240,6 +248,7 @@ export function renderWetFloor({
 				target.width = target.height = 1;
 				throw error;
 			}
+		onSurface?.({ id: surface.id, canvas: target });
 			surfaces.set(surface.id, target);
 		}
 		const ctx = canvas.getContext("2d");

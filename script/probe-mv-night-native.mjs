@@ -23,7 +23,12 @@ const nodePaths = ["script/probe-mv-night-native.mjs", "script/browser-probe-too
 const nodeSources = await Promise.all(nodePaths.map(async path => ({ path, sha256: nightHash(await nightActual(join(root, path))) })));
 const [{ chromium, createServer }, { buildNightNative }, { nightCompiledCheckpoint }, { fallWasmIdentity, fallServedIdentity }] = await Promise.all([import("./browser-probe-toolchain.mjs"), import("./fixtures/mv-night-native-build.mjs"), import("./fixtures/mv-night-native-identities.mjs"), import("./fixtures/mv-fall-evidence.mjs")]);
 const wasmIdentity = await fallWasmIdentity(isolated);
-const rustOptions = { root, directory: rustSource, manifestSha256: wasmIdentity.sourceManifestSha256 };
+// Frozen-source identity reads normally use the live worktree. While another
+// workstream holds uncommitted Rust edits (e.g. import reordering without
+// semantic change), ROCUT_TEST_IDENTITY_ROOT can point identity reads at the
+// checkpoint source snapshot so the compiled-input freeze stays meaningful.
+const identityRoot = process.env.ROCUT_TEST_IDENTITY_ROOT || root;
+const rustOptions = { root: identityRoot, directory: rustSource, manifestSha256: wasmIdentity.sourceManifestSha256 };
 const rustIdentity = await nightCompiledCheckpoint(rustOptions);
 const glue = await readFile(join(isolated, "opencut_wasm.js"), "utf8");
 const owner = glue.match(/export class MvNightOwner[\s\S]*?(?=\nexport class |\nexport function |$)/);

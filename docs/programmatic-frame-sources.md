@@ -4430,3 +4430,22 @@ the puddle right side (x>1440) plus the left screen edge - consistent with a
 reflection-content or satellite-puddle divergence near the boundary rather
 than a geometry or op-availability problem. Details in
 docs/evidence/mv-night-count-parity-finding-20261010.json.
+
+### Night count surface dump and operation bisection (2026-10-11)
+
+A renderer-level onSurface diagnostic hook plus an oracle-realm Z.canvas
+capture now dump both sides of the count case surface-by-surface. Result:
+count-asphalt and count-reflection are bit-identical (0 mismatched pixels,
+anchor probes agree), which moves the 21,302-pixel final-frame divergence
+entirely into the post-surface composition. A progressive
+operation-bisection fixture then renders plan.operations.slice(0, k) at
+checkpoints: the vignette fillRect (op 1188) collapses the divergence from
+about 1.32M to about 21.8K pixels, proving the vignette masks most of it.
+Anchor probes plus an independent oracle time-scan show a persistent warm
+glow region differs between the sides (oracle near (300,120), native
+extending to (1800,900)) and is stable across t=98.9..101.0 - a persistent
+element, not a drop transient. Both the surface-dump pairing and the
+bisection tooling are retained in the fixture for the next consolidated
+pass. The probe also gained ROCUT_TEST_IDENTITY_ROOT so frozen-source
+identity checks can read the checkpoint snapshot while another workstream
+holds uncommitted Rust edits.

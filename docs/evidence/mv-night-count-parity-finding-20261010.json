@@ -27,6 +27,18 @@
         "the divergence is therefore bound to the composition of reflection content and satellite puddle darkening near the puddle boundary, not to the puddle path constants (already numerically cross-checked) nor to filter op availability (already implemented)"
       ]
     },
+    "surfaceDumpComparison": {
+      "recordedAt": "2026-10-11T04:35:00Z",
+      "tooling": "renderWetFloor onSurface hook captures every completed native surface; the oracle side patches Z.canvas in the iframe realm to capture the original countWorld canvases; same-size surfaces are paired by creation order",
+      "result": "count-asphalt: 0 mismatched pixels; count-reflection: 0 mismatched pixels (bit-identical, 5 anchor probes per surface agree)",
+      "implication": "the 21,302-pixel final-frame divergence is NOT in surface construction; it is in the post-surface composition (camera transform, puddle clip, reflection placement, ripple re-draws, glints, drops, rain, vignette or HUD ordering)"
+    },
+    "operationBisection": {
+      "recordedAt": "2026-10-11T04:35:00Z",
+      "tooling": "fixture renders plan.operations.slice(0,k) and counts final-frame mismatches at each checkpoint",
+      "result": "ops 0..1176 stay around 1.32M mismatched (progressively drawn, naturally incomplete); ops 1188 (the vignette fillRect, radial gradient count-g4 rgba(2,3,8,0.62)) collapses the count to 21,760; full plan 21,302",
+      "implication": "the vignette darkening masks most of the divergence; the true divergent element is before op 1188 and survives only partially (21,302 px) after vignette; anchor evidence shows a persistent warm glow region differs between the sides: oracle has it near (300,120) while native extends a warm region to (1800,900) where the oracle stays dark, and an independent oracle time scan shows the (300,120) warm value is stable from t=98.9 to t=101.0 (persistent element, not a drop transient)"
+    },
     "status": "open; queued for consolidated pixel acceptance with surface-level dump tooling",
     "nonGoals": "not a threshold relaxation; scene gate remains"
   },

@@ -235,16 +235,17 @@ async function gate(data: Input) {
                 };
                 try {
                     let max: number, sceneMax: number, postPasses = 0;
+                    let wetFloorSurfaces: unknown;
                     if (item.binding.scene === "wetFloor") {
                         const background = imageCanvases.find(i => i.resourceId === item.binding.settings.bg); if (!background) throw Error("Actual background unavailable");
-                        const result = await compareWetFloorPixels({ references: data.references, background, fontBytes: instanceFontBytes, settings: item.binding.settings, beats: mappedBeats, ...sample,
+                        const result = await compareWetFloorPixels({ references: data.references, background, fontBytes: instanceFontBytes, settings: item.binding.settings, beats: mappedBeats, surfaceDiagnostics: item.binding.settings.mode === "count", ...sample,
                             evaluateNativePlan: async ({ sampledRgba }) => {
                                 if (item.binding.scene !== "wetFloor") throw Error("WetFloor binding changed");
                                 if (item.binding.settings.mode === "fall") session.owner.bindReflection(session.prepared.sessionId, new Uint8Array(sampledRgba));
                                 const frame = evaluate(); if (frame.scene.profile !== "night-wet-floor-v1") throw Error("Actual native WetFloor frame missing"); return frame.scene;
                             },
                         });
-                        sceneMax = result.maxChannelError; max = parity({ actual, expected: result.originalRgba });
+                        sceneMax = result.maxChannelError; max = parity({ actual, expected: result.originalRgba }); wetFloorSurfaces = result.surfaceDiagnostics;
                     } else {
                         const sceneResult = await compareTrainScenePixels({ references: data.references, images: imageCanvases, fontBytes: instanceFontBytes, settings: item.binding.settings, beats: mappedBeats, ...sample,
                             evaluateNativePlan: async () => { const frame = evaluate(); if (frame.scene.profile !== "night-train-v1") throw Error("Actual native Train scene missing"); return frame.scene; },
@@ -261,6 +262,7 @@ async function gate(data: Input) {
                         } finally { originalScene.width = originalScene.height = 1; }
                     }
                     results.push({ name: item.name, songTicks: sample.songTicks, maxChannelError: max, sceneMaxChannelError: sceneMax, postPasses, actualRgbaSha256: await digest(actual.buffer), postGatePassed: item.binding.scene === "train",
+                        surfaceDiagnostics: wetFloorSurfaces,
                         fontResources: session.prepared.fontResources, fontBindings: session.prepared.fontBindings, fontInstanceBytes: session.prepared.fontInstanceBytes, physicalEncodedBytes: session.prepared.physicalEncodedBytes });
                 } finally {
                     if (oracleFrame !== undefined) session.owner.releaseFrame(oracleFrame);
