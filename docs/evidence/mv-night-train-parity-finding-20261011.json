@@ -1,0 +1,24 @@
+{
+  "recordedAt": "2026-10-11T04:55:00Z",
+  "context": "post-fix recheck on checkpoint 1b1906ee499e using the diagnostic case skip (wet-floor fall/count skipped; the full gate remains the acceptance authority)",
+  "checkpoint": {
+    "source": "C:/Users/Sayo/AppData/Local/Temp/rocut-mv-native-checkpoint-20261011/source",
+    "wasmSha256Prefix": "1b1906ee499e",
+    "identityRoot": "same checkpoint snapshot via ROCUT_TEST_IDENTITY_ROOT while another workstream holds uncommitted Rust edits"
+  },
+  "finding": {
+    "case": "train-moving (first train case; frozen and exit variants not yet re-reached)",
+    "sceneGate": "passed before the complete-frame check (the throw is from the complete-frame parity)",
+    "postGate": "15 original GL bloom passes executed (postGatePassed asserted earlier in the same case)",
+    "failure": "complete frame 32,189 changed samples, max channel error 25, mae 0.0066, alpha bit-identical",
+    "distribution": "rowBands concentrate at y 540-900 (14,240 + 13,753 in two bands) and colBands at x 480-1600 - the central train/bloom region; histogram has a long tail from delta 1 (24,572) to 25",
+    "maximum": "(616,785) native 112 vs oracle 137 - a bloom-edge luminance difference, not a geometry shift",
+    "analysis": [
+      "the train scene itself passed the scene-level gate before the complete-frame comparison, and the post pipeline executed all 15 original bloom passes",
+      "the divergence is therefore inside the scene+post composite sampling (bloom blur edges / GL resampling), the same pixel-tail family as the wet-floor shimmer band and the tunnel glyph edges",
+      "alpha is bit-identical across all changed samples, so coverage/compositing structure agrees and only RGB sampling inside soft-edged post bands differs"
+    ],
+    "status": "open; queued for the consolidated pixel-acceptance phase with the wet-floor count and tunnel glyph findings"
+  },
+  "scope": "not an installed Electron/full-movie/export acceptance claim; diagnostic skip used, full gate unchanged"
+}

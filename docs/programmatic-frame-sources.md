@@ -4449,3 +4449,18 @@ bisection tooling are retained in the fixture for the next consolidated
 pass. The probe also gained ROCUT_TEST_IDENTITY_ROOT so frozen-source
 identity checks can read the checkpoint snapshot while another workstream
 holds uncommitted Rust edits.
+
+### Night train complete-frame finding (2026-10-11)
+
+With the wet-floor cases diagnostically skipped (ROCUT_TEST_NIGHT_SKIP,
+fixture-level only; the full gate remains the acceptance authority), the
+probe reaches the train cases on the current checkpoint. train-moving passes
+its scene-level gate and executes all 15 original GL bloom passes, but the
+complete frame differs in 32,189 samples (max 25, mae 0.0066, alpha
+bit-identical), concentrated in the central train/bloom region
+y 540-900 / x 480-1600 with a delta histogram tailing from 1 to 25. The
+maximum point (616,785) is a bloom-edge luminance difference (native 112 vs
+oracle 137). This is the same post-composite pixel-tail family as the
+wet-floor shimmer band and the tunnel glyph edges - queued for the
+consolidated pixel-acceptance phase. Details in
+docs/evidence/mv-night-train-parity-finding-20261011.json.

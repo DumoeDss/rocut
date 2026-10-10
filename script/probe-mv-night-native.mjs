@@ -47,6 +47,10 @@ try {
     page.on("pageerror", e => errors.push(e.message));
     await page.route("**/*", route => { const url = new URL(route.request().url()); if (/^https?:$/.test(url.protocol) && url.origin !== origin) { external.push(url.origin); return route.abort(); } return route.continue(); });
     await page.addInitScript(input => { globalThis.__nightInput = input; }, data);
+    // Diagnostic-only case skip (comma-separated name prefixes); the full gate
+    // remains the acceptance authority and never sets this.
+    const skip = process.env.ROCUT_TEST_NIGHT_SKIP;
+    if (skip) await page.addInitScript(value => { globalThis.__nightSkip = value; }, skip);
     await page.goto(origin + "/script/fixtures/mv-night-native-browser.html", { waitUntil: "commit" });
     await page.waitForFunction(() => globalThis.__nightResult !== undefined, undefined, { timeout: 180000 });
     const result = await page.evaluate(() => globalThis.__nightResult);

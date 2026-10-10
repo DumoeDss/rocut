@@ -199,6 +199,8 @@ async function gate(data: Input) {
     function reject(operation: () => unknown): void { try { operation(); } catch { negativeCount++; return; } throw Error("Night negative gate unexpectedly accepted"); }
     try {
         for (const item of cases) {
+            const skipList = (globalThis as { __nightSkip?: string }).__nightSkip;
+            if (skipList && skipList.split(",").some(prefix => item.name.startsWith(prefix.trim()))) continue;
             const ids = new Set(Object.values(item.binding.settings.fonts));
             const fontInstances = data.fontInstances.filter(i => ids.has(i.id));
             const physicalIds = new Set(fontInstances.map(i => i.resourceId));
