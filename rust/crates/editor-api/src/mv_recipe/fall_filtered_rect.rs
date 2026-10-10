@@ -31,6 +31,7 @@ pub(super) fn cost(command: &Command) -> Result<u64, String> {
     super::filter_pixels(
         &BlitRaster {
             blur_px: *blur_px,
+            contrast: None,
             smoothing: true,
             smoothing_quality: "low",
         },

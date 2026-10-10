@@ -41,6 +41,22 @@ impl MvHeartOwner {
             )
             .map_err(error)
     }
+    #[wasm_bindgen(js_name = prepareSky)]
+    pub fn prepare_sky(
+        &mut self,
+        metadata: String,
+        encoded: js_sys::Uint8Array,
+        rgba: js_sys::Uint8Array,
+    ) -> Result<u32, JsValue> {
+        self.owner
+            .prepare_sky_with(
+                &metadata,
+                encoded.length() as usize,
+                rgba.length() as usize,
+                || Ok((encoded.to_vec(), rgba.to_vec())),
+            )
+            .map_err(error)
+    }
     #[wasm_bindgen(js_name = manifestJson)]
     pub fn manifest_json(&mut self, session: u32) -> Result<String, JsValue> {
         self.owner.manifest_json(session).map_err(error)

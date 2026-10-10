@@ -7,10 +7,22 @@ use serde_json::{Value, json};
 mod kanji_slam;
 #[path = "thread_catalog.rs"]
 mod thread;
+#[path="tunnel_catalog.rs"]
+mod tunnel;
 #[path = "fall_catalog.rs"]
 mod fall;
 #[path = "flame_catalog.rs"]
 mod flame;
+#[path = "ink_catalog.rs"]
+mod ink;
+#[path = "road_recipe_catalog.rs"]
+mod road;
+#[path = "heart_recipe_catalog.rs"]
+mod heart_owner;
+#[path = "memories_recipe_catalog.rs"]
+mod memories_owner;
+#[path = "night_recipe_catalog.rs"]
+mod night;
 
 #[derive(Clone, Copy, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -76,10 +88,16 @@ pub fn mv_recipe_catalog_json() -> String {
     use super::{generator_model, transition_model};
     // This describes authoring support in this binary, never health or an
     // installation's verification status. Suggestions are NOT implicit defaults.
+    let mut native_owner_scenes = heart_owner::entries();
+    native_owner_scenes["memories"] = memories_owner::entry();
+    native_owner_scenes["night"] = night::entry();
     let generators = json!({
             "flame":flame::entry(),
+            "ink":ink::entry(),
+            "road":road::entry(),
             "fall":fall::entry(),
             "thread":thread::entry(),
+            "tunnel":tunnel::entry(),
             "kanjiSlam":kanji_slam::entry(),
             "titleRiff":super::title_riff::catalog_entry(),
             "ember":super::ember::catalog_entry(),
@@ -153,6 +171,11 @@ pub fn mv_recipe_catalog_json() -> String {
         "simulationWorkBudget": super::cloth::MAX_SIMULATION_WORK,
         "budgetScope":"expanded-recipe-DAG-including-repeated-inputs; existing-operation-and-raster-caps-also-apply",
         "generators":generators,
+        "referenceScenes":{"burst":super::burst::catalog_entry(),"illustNative":super::illust_native::catalog_entry(),
+            "freeze":super::meta_reference::Freeze::catalog_entry(),"rewind":super::meta_reference::Rewind::catalog_entry(),
+            "melt":super::meta_reference::Melt::catalog_entry(),"panelsNative":super::meta_reference::Panels::catalog_entry(),
+            "jz":super::jz::catalog_entry(),"layers":super::layers::catalog_entry()},
+        "nativeOwnerScenes":native_owner_scenes,
         "transitionParameters":{
             "bend":super::transition_bend::catalog_entry(),
             "peel":{

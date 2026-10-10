@@ -205,6 +205,11 @@ pub(crate) fn definitions() -> Vec<Definition> {
     .chain(std::iter::once(crate::liquid_catalog::definition()))
     .chain(std::iter::once(crate::droplets::definition()))
     .chain(std::iter::once(crate::clouds::definition()))
+    .chain(std::iter::once(crate::blaze::definition()))
+    .chain(std::iter::once(crate::flame_wrap::definition()))
+    .chain(std::iter::once(crate::bubble::definition()))
+    .chain(std::iter::once(crate::frost::definition()))
+    .chain(std::iter::once(crate::canvas::definition()))
     .collect()
 }
 

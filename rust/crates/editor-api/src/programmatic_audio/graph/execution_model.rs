@@ -14,6 +14,8 @@ pub(super) struct ExecutionRequest {
     pub fader_observations: Vec<FaderObservation>,
     #[serde(default)]
     pub decoded_source_observations: Option<Vec<super::rate_geometry::Observation>>,
+    #[serde(default)]
+    pub fallback_histories: Vec<super::fader::history::NativeFallbackHistory>,
 }
 
 #[derive(Serialize)]
@@ -91,7 +93,21 @@ pub(super) struct PreparedTrack {
     pub audible_media: bool,
     pub requires_pcm: bool,
     pub fader: Option<GainEnvelope>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub native_gain_history: Option<super::fader::history::NativeGainHistory>,
     pub fx_stage: Option<FxStage>,
+}
+
+impl PreparedTrack {
+    pub fn gain_at(&self, time: f64) -> Result<f64, String> {
+        if let Some(history) = &self.native_gain_history {
+            return Ok(history.evaluate(time));
+        }
+        self.fader
+            .as_ref()
+            .map(|fader| fader.evaluate(time))
+            .ok_or_else(|| "Missing complete HyperFrames track gain history".into())
+    }
 }
 
 #[derive(Serialize)]

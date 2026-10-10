@@ -21,12 +21,33 @@ pub(super) fn span(s: &Span, frames: u32) -> bool {
             .is_some_and(|v| v <= frames)
 }
 
-#[derive(Default)]
+#[derive(Clone, Default)]
 struct ExpandedWork {
+    jz_requests: usize,
+    memories_requests: usize,
+    night_requests: usize,
+    heart_requests: usize,
+    road_commands: u64,
+    tunnel_commands: u64,
     drawing: u32,
     primitives: u32,
     simulation: u64,
     plan_pixels: u64,
+}
+
+impl ExpandedWork {
+    fn merge_peak(&mut self, other: &Self) {
+        self.jz_requests = self.jz_requests.max(other.jz_requests);
+        self.memories_requests = self.memories_requests.max(other.memories_requests);
+        self.night_requests = self.night_requests.max(other.night_requests);
+        self.heart_requests = self.heart_requests.max(other.heart_requests);
+        self.road_commands = self.road_commands.max(other.road_commands);
+        self.tunnel_commands = self.tunnel_commands.max(other.tunnel_commands);
+        self.drawing = self.drawing.max(other.drawing);
+        self.primitives = self.primitives.max(other.primitives);
+        self.simulation = self.simulation.max(other.simulation);
+        self.plan_pixels = self.plan_pixels.max(other.plan_pixels);
+    }
 }
 
 impl Recipe {
@@ -52,6 +73,20 @@ impl Recipe {
         step: u64,
         images: Option<&crate::mv_image_dimensions::Context>,
     ) -> Result<(), String> {
+        self.raster_reservation(resources, frames, width, height, step, images)
+            .map(|_| ())
+    }
+    /// The same whole-source admission used by validation, exposed to the
+    /// native host ledger without reimplementing graph policy in TypeScript.
+    pub(super) fn raster_reservation(
+        &self,
+        resources: &[Resource],
+        frames: u32,
+        width: u32,
+        height: u32,
+        step: u64,
+        images: Option<&crate::mv_image_dimensions::Context>,
+    ) -> Result<u64, String> {
         if width == 0 || height == 0 || width > 4096 || height > 4096 {
             return Err("MV recipe dimensions must be 1..4096".into());
         }
@@ -96,6 +131,63 @@ impl Recipe {
                 );
             }
             let valid = match &n.scene {
+                Scene::Jz { settings, span: s, .. } => {
+                    width == 1920 && height == 1080 && span(s, frames) && super::jz::valid(settings, resources)
+                }
+                Scene::PanelsNative { settings, bpm, span: s, .. } => {
+                    width == 1920 && height == 1080 && span(s, frames)
+                        && range(*bpm, 1.0, 1000.0) && settings.validate().is_ok()
+                }
+                Scene::Freeze { settings, span: s, .. } => {
+                    width == 1920 && height == 1080 && span(s, frames) && settings.validate().is_ok()
+                }
+                Scene::Melt { settings, span: s, .. } => {
+                    width == 1920 && height == 1080 && span(s, frames) && settings.validate().is_ok()
+                }
+                Scene::Rewind { settings, span: s, .. } => {
+                    uses_audio = true;
+                    width == 1920 && height == 1080 && span(s, frames) && settings.validate(resources).is_ok()
+                }
+                Scene::IllustNative { settings, bpm, span: s } => {
+                    uses_audio = true;
+                    afterimage_scratch = afterimage_scratch.max(super::illust_native::scratch_pixels(settings, images)?);
+                    width == 1920 && height == 1080 && span(s, frames)
+                        && range(*bpm, 1.0, 1000.0) && super::illust_native::valid(settings, resources)
+                }
+                Scene::Burst { settings, bpm, span: s, .. } => {
+                    uses_audio = true;
+                    afterimage_scratch = afterimage_scratch.max(super::burst::scratch_pixels(settings, images)?);
+                    width == 1920 && height == 1080 && span(s, frames)
+                        && range(*bpm, 1.0, 1000.0) && super::burst::valid(settings, resources)
+                }
+                Scene::Night { settings, span: s, .. } => {
+                    uses_audio |= settings.uses_audio();
+                    span(s, frames) && settings.validate(width, height, resources).is_ok()
+                }
+                Scene::Memories { span: s, .. } => {
+                    uses_audio = true;
+                    width == 1920 && height == 1080 && span(s, frames)
+                        && super::memories_recipe::valid(&n.scene, resources,
+                            (self.song_start_seconds * 120000.0).round() as u64, step)
+                }
+                Scene::HeartShatter { span:s,.. } | Scene::HeartShatterBurn { span:s,.. }
+                | Scene::HeartGather { span:s,.. } | Scene::SunBloom { span:s,.. } | Scene::SkyShatter { span:s,.. } => {
+                    uses_audio=true;
+                    width==1920 && height==1080 && span(s,frames)
+                        && super::heart_recipe::valid(&n.scene, resources, (self.song_start_seconds*120000.0).round() as u64, step)
+                }
+                Scene::Road {role,settings,span:s} => {
+                    uses_audio=true;
+                    afterimage_scratch=afterimage_scratch.max(settings.scratch_pixels());
+                    width==1920 && height==1080 && *role!=Role::Foreground
+                        && settings.valid((self.song_start_seconds*120000.0).round() as u64,s,step)
+                        && settings.resources_valid(resources) && span(s,frames)
+                }
+                Scene::Tunnel{settings,span:s,..} => {
+                    uses_audio|=settings.uses_audio();
+                    settings.valid((self.song_start_seconds*120000.0).round() as u64,s,step)
+                        &&settings.resources_valid(resources)&&span(s,frames)
+                },
                 Scene::Flame {settings,span:s,..} => {
                     uses_audio |= settings.uses_audio();
                     afterimage_scratch=afterimage_scratch.max(settings.scratch_pixels(images)?);
@@ -103,6 +195,12 @@ impl Recipe {
                         &&settings.resources_valid(resources)&&span(s,frames)
                 }
                 Scene::Fall {settings,span:s,..} => {
+                    uses_audio |= settings.uses_audio();
+                    afterimage_scratch=afterimage_scratch.max(settings.scratch_pixels(images)?);
+                    settings.valid((self.song_start_seconds*120000.0).round() as u64,s,step)
+                        &&settings.resources_valid(resources)&&span(s,frames)
+                }
+                Scene::Ink {settings,span:s,..} => {
                     uses_audio |= settings.uses_audio();
                     afterimage_scratch=afterimage_scratch.max(settings.scratch_pixels(images)?);
                     settings.valid((self.song_start_seconds*120000.0).round() as u64,s,step)
@@ -211,6 +309,7 @@ impl Recipe {
                 } => settings.valid() && image(&settings.image) && span(s, frames),
                 Scene::Ref { time_map, .. } => super::reference::valid_map(time_map, frames),
                 Scene::Sequence { items } => super::reference::valid_sequence(items, frames),
+                Scene::Layers { items } => super::layers::valid(items),
                 Scene::Panels {
                     panels,
                     collapse,
@@ -342,11 +441,12 @@ impl Recipe {
             + light_leak_scratch
             + if decorated { 5 } else { 0 }
             + if surface { 4 } else { 0 };
-        if u64::from(width) * u64::from(height) * (largest_surfaces + scratch)
-            + afterimage_scratch + image_scratch + largest_plan_pixels > 67_108_864 {
+        let pixels = u64::from(width) * u64::from(height) * (largest_surfaces + scratch)
+            + afterimage_scratch + image_scratch + largest_plan_pixels;
+        if pixels > 67_108_864 {
             return Err("MV recipe exceeds the temporary raster surface budget".into());
         }
-        Ok(())
+        Ok(pixels * 4)
     }
     fn walk<'a>(
         &self,
@@ -368,9 +468,15 @@ impl Recipe {
             .get(id)
             .ok_or_else(|| format!("Unknown MV input node: {id}"))?;
         work.drawing += match node {
+            Scene::Jz { .. } | Scene::PanelsNative { .. } => 16,
+            Scene::Freeze { .. } | Scene::Rewind { .. } | Scene::Melt { .. } => 16,
+            Scene::IllustNative { .. } | Scene::Burst { .. } | Scene::Night { .. } | Scene::Memories { .. } => 16,
+            Scene::Road {..} => 16,
+            Scene::Tunnel{..}=>16,
             Scene::Flame { .. } => 16,
             Scene::Fall { .. } => 16,
             Scene::Thread { .. } => 16,
+            Scene::Ink { .. } => 16,
             Scene::KanjiSlam { .. } => 16,
             Scene::TitleRiff { .. } => 16,
             Scene::Ember { .. } => 16,
@@ -380,6 +486,7 @@ impl Recipe {
             Scene::Illust { sprites, .. } => 1 + sprites.iter().map(Sprite::work).sum::<u32>(),
             Scene::Transition { style, .. } => style.work(),
             Scene::Panels { panels, .. } => 1 + panels.len() as u32 * 2,
+            Scene::Layers { items } => 1 + items.len() as u32,
             _ => 1,
         };
         if work.drawing > 256 {
@@ -388,6 +495,69 @@ impl Recipe {
         // Keep the existing complex-operation budget. Simple glyphs/image cells
         // have a separate finite expanded-DAG budget, including shared inputs.
         let primitive_cost = match node {
+            Scene::Jz { settings, .. } => {
+                work.jz_requests += 1;
+                if work.jz_requests > super::jz::MAX_OWNER_SESSIONS { return Err("JIZURA expanded native session capability exceeded".into()); }
+                work.plan_pixels = work.plan_pixels.checked_add(super::jz::plan_bytes_bound(settings) * 3)
+                    .ok_or("JIZURA expanded request residency overflow")?;
+                super::jz::expanded_work(settings)
+            }
+            Scene::PanelsNative { settings, .. } => {
+                work.plan_pixels = work.plan_pixels.checked_add(settings.plan_bytes_bound()? * 3)
+                    .ok_or("PanelsNative expanded plan residency overflow")?;
+                u32::try_from(settings.expanded_work()?).map_err(|_| "PanelsNative expanded work overflow")?
+            }
+            Scene::Freeze { .. } | Scene::Rewind { .. } | Scene::Melt { .. } => {
+                use super::meta_reference::{self as meta, Kind};
+                let kind = match node { Scene::Freeze { .. } => Kind::Freeze,
+                    Scene::Rewind { .. } => Kind::Rewind, _ => Kind::Melt };
+                work.plan_pixels = work.plan_pixels.checked_add(meta::plan_bytes_bound(kind) * 3)
+                    .ok_or("Meta expanded plan residency overflow")?;
+                match node { Scene::Freeze { settings, .. } => u32::try_from(settings.expanded_work()?).map_err(|_| "Freeze work overflow")?,
+                    Scene::Melt { settings, .. } => u32::try_from(settings.expanded_work()?).map_err(|_| "Melt work overflow")?,
+                    _ => meta::expanded_work(kind) as u32 }
+            }
+            Scene::IllustNative { settings, .. } => {
+                work.plan_pixels = work.plan_pixels.checked_add(super::illust_native::plan_bytes_bound(settings) * 3)
+                    .ok_or("IllustNative expanded plan residency overflow")?;
+                super::illust_native::expanded_work(settings)
+            }
+            Scene::Burst { settings, .. } => {
+                // The leaf enforces this serialization ceiling before publish;
+                // charge expanded mapped occurrences and in-flight JSON copies.
+                work.plan_pixels = work.plan_pixels.checked_add(super::burst::plan_bytes_bound(settings) * 3)
+                    .ok_or("Burst expanded plan residency overflow")?;
+                super::burst::expanded_work(settings)
+            }
+            Scene::Night { .. } => {
+                work.night_requests += 1;
+                if work.night_requests > 16 { return Err("Night expanded frame exceeds drawing budget".into()); }
+                0
+            }
+            Scene::Memories { .. } => {
+                work.memories_requests += 1;
+                if work.memories_requests > super::memories_recipe::MAX_OWNER_SESSIONS {
+                    return Err("Memories expanded requests exceed native owner sessions".into());
+                }
+                0
+            }
+            Scene::HeartShatter {..} | Scene::HeartShatterBurn {..} | Scene::HeartGather {..} | Scene::SunBloom {..} | Scene::SkyShatter {..} => {
+                work.heart_requests=work.heart_requests.checked_add(1).ok_or("Heart expanded request count overflow")?;
+                if work.heart_requests>crate::mv_heart_owner::MAX_OWNER_SESSIONS { return Err("Heart expanded requests exceed live owner session capability".into()); }
+                0
+            }
+            Scene::Road {settings,..} => {
+                work.road_commands=work.road_commands.checked_add(16384).ok_or("Road expanded command work overflow")?;
+                if work.road_commands>16384 { return Err("MV graph exceeds 16384 expanded Road commands".into()); }
+                work.plan_pixels=work.plan_pixels.checked_add(settings.plan_pixels()).ok_or("Road expanded plan bytes overflow")?;
+                0
+            }
+            Scene::Tunnel{..}=> {
+                work.tunnel_commands=work.tunnel_commands.checked_add(32768).ok_or("Tunnel expanded command work overflow")?;
+                if work.tunnel_commands>32768 {return Err("MV graph exceeds 32768 expanded Tunnel commands".into());}
+                work.plan_pixels+=65536;
+                0
+            },
             Scene::Flame {settings,..} => {
                 work.plan_pixels+=settings.plan_pixels();
                 settings.work()
@@ -400,6 +570,10 @@ impl Recipe {
                 if work.simulation>super::cloth::MAX_SIMULATION_WORK {
                     return Err("MV graph exceeds 80000000 expanded simulation work units".into());
                 }
+                settings.work()
+            }
+            Scene::Ink {settings,..} => {
+                work.plan_pixels+=settings.plan_pixels();
                 settings.work()
             }
             Scene::Thread {settings,..} => {
@@ -462,24 +636,52 @@ impl Recipe {
         // Drawing B retains both the transition output and completed A. Panels
         // retain one output; refs/sequences only remap the child clock.
         let inputs: Vec<(&str, u64)> = match node {
+            Scene::PanelsNative { settings, .. } => {
+                let pixels = dimensions[0] as u64 * dimensions[1] as u64;
+                let inputs = settings.inputs();
+                // Native focus/speed lines sit between background and subject.
+                // Both completed role phases remain live until panel replay.
+                let retained = 2 + inputs.len() as u64 * 2 + super::meta_reference::scratch_pixels(super::meta_reference::Kind::Panels).div_ceil(pixels);
+                inputs.into_iter().map(|input| (input, retained)).collect()
+            }
+            Scene::Freeze { input, .. } | Scene::Melt { input, .. } | Scene::Rewind { input, .. } => {
+                use super::meta_reference::{self as meta, Kind};
+                let kind = match node { Scene::Freeze { .. } => Kind::Freeze,
+                    Scene::Rewind { .. } => Kind::Rewind, _ => Kind::Melt };
+                let pixels = dimensions[0] as u64 * dimensions[1] as u64;
+                let retained = 2 + meta::scratch_pixels(kind).div_ceil(pixels);
+                if matches!(node, Scene::Rewind { settings, .. } if settings.follow != Some(false)) {
+                    // Every possible local source is checked. Only one selected
+                    // shot is live, so alternative residency/work use maxima.
+                    let mut candidates = vec![(input.as_str(), retained)];
+                    candidates.extend(nodes.iter().filter(|(key, scene)| **key != id && **key != input.as_str()
+                        && !scene.is_reference_wrapper()).map(|(key, _)| (*key, retained)));
+                    candidates
+                } else { vec![(input.as_str(), retained)] }
+            }
             Scene::Transition { from, to, .. } => vec![(from, 1), (to, 2)],
             Scene::Ref { input, .. } => vec![(input, 0)],
             Scene::Sequence { items } => items.iter().map(|s| (s.input.as_str(), 0)).collect(),
+            Scene::Layers { items } => items.iter().map(|s| (s.input.as_str(), 1)).collect(),
             Scene::Panels { panels, .. } => panels.iter().map(|s| (s.input.as_str(), 1)).collect(),
             _ => vec![],
         };
+        let alternatives = matches!(node, Scene::Rewind { settings, .. } if settings.follow != Some(false));
+        let base = work.clone();
         for (input, retained) in inputs {
+            let mut branch = if alternatives { base.clone() } else { work.clone() };
             self.walk(
                 input,
                 nodes,
                 stack,
                 depth + 1,
                 largest,
-                work,
+                &mut branch,
                 dimensions,
                 step,
                 live_surfaces + retained,
             )?;
+            if alternatives { work.merge_peak(&branch); } else { *work = branch; }
         }
         stack.remove(id);
         Ok(())

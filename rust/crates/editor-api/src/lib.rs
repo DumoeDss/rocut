@@ -1,7 +1,15 @@
 //! Shared validation for the agent-visible editing surface. Registries are supplied
 //! by the provider; rules are independent of a browser, CLI or React session.
 mod animation;
+mod animation_boundary;
+mod animation_bridge;
+mod animation_numeric;
+pub use animation_bridge::{
+    inspect_scalar_animation_domains_json, sample_scalar_animation_batch_json,
+};
 mod effect_params;
+mod effect_layer_animation;
+pub use effect_layer_animation::resolve_effect_layer_params_json;
 mod effect_stack;
 pub use effect_stack::validate_master_effects_json;
 mod model;
@@ -9,8 +17,16 @@ mod image_sequence;
 pub use image_sequence::{validate_image_sequence_manifest_json, validate_image_sequence_image_bytes};
 mod mv_audio;
 mod mv_font_metrics;
+mod mv_reference_post;
+pub use mv_reference_post::{ReferencePostPlan,build_reference_post_plan};
 mod mv_image_dimensions;
 pub mod mv_image_preprocess;
+pub mod mv_heart_owner;
+pub mod mv_jz_owner;
+pub mod mv_lut_atlas;
+pub mod mv_lut_atlas_bridge;
+pub mod mv_memories_owner;
+pub mod mv_night_owner;
 pub use mv_image_dimensions::inspect_programmatic_image_bytes;
 pub use mv_audio::prepare_mv_audio_json;
 mod mv_recipe;
@@ -20,7 +36,31 @@ mod particle_surface_bridge;
 pub use particle_surface_bridge::sample_particle_surface_json;
 mod particle_transport_policy;
 pub use particle_transport_policy::particle_transport_policy_json;
+mod glass_object_params;
+pub use glass_object_params::{
+    GlassObjectParams, GlassObjectParamsError, parse_glass_object_params_json,
+    resolve_glass_object_params_json,
+};
+mod liquid_object_params;
+pub use liquid_object_params::{
+    LiquidObjectError, LiquidObjectParams, evaluate_liquid_object_frame_json,
+    parse_liquid_object_params_json, resolve_liquid_object_params_json,
+};
+mod liquid_object_transport;
+pub use liquid_object_transport::{
+    LiquidObjectTransportError, LiquidObjectTransportFrame, LiquidObjectTransportIdentity,
+    LiquidObjectTransportPolicy, LiquidObjectTransportReservation, LiquidObjectTransportSession,
+    LiquidObjectTransportTotals, liquid_object_transport_policy, liquid_object_transport_policy_json,
+};
+mod ink_object_params;
+pub use ink_object_params::{
+    InkObjectParams, InkObjectParamsError, parse_ink_object_params_json,
+    resolve_ink_object_params_json,
+};
 mod programmatic;
+mod programmatic_tunnel_fonts;
+pub use programmatic_tunnel_fonts::{validate_tunnel_frame_transport_lengths, tunnel_frame_transport_error_json};
+pub use programmatic::resolve_programmatic_frame_tunnel_bytes;
 mod programmatic_audio;
 pub use programmatic_audio::{
     normalize_hyperframes_fx_chain_json,
@@ -37,6 +77,10 @@ pub use programmatic_audio::{
     resolve_programmatic_audio_source_json,
     resolve_hyperframes_audio_frame_json,
     resolve_remotion_audio_frame_json,
+    resolve_remotion_produced_assets_json,
+    resolve_remotion_produced_frames_json,
+    prepare_remotion_inline_audio_sources_json, mix_remotion_produced_audio_pcm,
+    encode_remotion_produced_audio_wav,
 };
 mod programmatic_build;
 mod programmatic_resources;
@@ -250,12 +294,6 @@ fn validate(request: &Request) -> Vec<Issue> {
                     }
                 }
             }
-        }
-        if !e.animations.is_empty() {
-            issues.push(Issue::new(
-                "editing.animations",
-                "The current effect-layer renderer does not animate layer parameters",
-            ));
         }
     }
     if kind == "graphic" {

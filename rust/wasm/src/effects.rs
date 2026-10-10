@@ -1,6 +1,6 @@
 #![cfg(target_arch = "wasm32")]
 
-use effects::{ApplyEffectsOptions, EffectPass, UniformValue};
+use effects::{ApplyEffectsOptions, EffectPass, UniformValue, validate_effects_input};
 use gpu::wgpu;
 use js_sys::Object;
 use serde::Deserialize;
@@ -20,7 +20,7 @@ pub(crate) struct ApplyEffectPassesOptions {
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct EffectPassInput {
+pub(crate) struct EffectPassInput {
     shader: String,
     uniforms: Vec<EffectUniformInput>,
 }
@@ -53,29 +53,55 @@ pub(crate) fn apply_effect_passes_to_texture(
         passes,
     } = options;
 
+    let effect_passes = map_effect_passes(passes);
+    validate_mapped_effect_passes(runtime, width, height, &effect_passes)?;
     let source_texture = import_canvas_texture(
         &runtime.context,
         &source,
         width,
         height,
         "effects-input-texture",
-    );
-    let effect_passes = map_effect_passes(passes);
+    )?;
+    apply_mapped_effect_passes(runtime, &source_texture, width, height, &effect_passes)
+}
+
+pub(crate) fn validate_mapped_effect_passes(
+    runtime: &GpuRuntime,
+    width: u32,
+    height: u32,
+    passes: &[EffectPass],
+) -> Result<(), JsValue> {
+    validate_effects_input(
+        width,
+        height,
+        runtime.context.device().limits().max_texture_dimension_2d,
+        passes,
+    )
+    .map_err(|error| JsValue::from_str(&error.to_string()))
+}
+
+pub(crate) fn apply_mapped_effect_passes(
+    runtime: &GpuRuntime,
+    source: &wgpu::Texture,
+    width: u32,
+    height: u32,
+    passes: &[EffectPass],
+) -> Result<wgpu::Texture, JsValue> {
     runtime
         .effects
         .apply(
             &runtime.context,
             ApplyEffectsOptions {
-                source: &source_texture,
+                source,
                 width,
                 height,
-                passes: &effect_passes,
+                passes,
             },
         )
         .map_err(|error| JsValue::from_str(&error.to_string()))
 }
 
-fn map_effect_passes(effect_passes: Vec<EffectPassInput>) -> Vec<EffectPass> {
+pub(crate) fn map_effect_passes(effect_passes: Vec<EffectPassInput>) -> Vec<EffectPass> {
     effect_passes
         .into_iter()
         .map(|pass| EffectPass {

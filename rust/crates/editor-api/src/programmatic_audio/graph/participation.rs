@@ -32,8 +32,9 @@ pub(super) fn participation(
     timing: AudioTiming,
 ) -> Result<Participation, String> {
     let start_sample = super::export_timing::start_sample(timing, track.native.start, sample_rate)?;
-    let frames = if super::rate_lane::admit(track)?.is_some()
-        && super::rate_prepare::observed_pcm(&track.native, sample_rate)
+    let frames = if (super::rate_lane::admit(track)?.is_some()
+        && super::rate_prepare::observed_pcm(&track.native, sample_rate))
+        || super::rate_prepare::needs_scalar_preparation(&track.native, sample_rate)
     {
         // Participation is based on the declaration, never the decoder's later
         // observation. A short/empty decode cannot bypass complete gain history.

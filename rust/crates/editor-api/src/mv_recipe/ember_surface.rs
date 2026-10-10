@@ -8,6 +8,13 @@ use std::collections::{BTreeMap, BTreeSet};
 mod filtered_rect;
 #[path = "ember_paint_history.rs"]
 mod paint_history;
+#[path = "ember_blit_filter.rs"]
+mod blit_filter;
+#[path = "ember_ordered_primitives.rs"]
+mod ordered_primitives;
+#[cfg(test)]
+#[path = "ember_ordered_primitives_tests.rs"]
+mod ordered_primitives_tests;
 
 const MAX_SURFACES: usize = 64;
 const MAX_COMMANDS: usize = 4096;
@@ -27,6 +34,7 @@ fn allocation(size: [u32; 2]) -> Result<u64, String> {
 
 impl Plan {
     pub(super) fn validate_surfaces(&self, admitted_pixels: u64) -> Result<u64, String> {
+        ordered_primitives::validate(&self.commands)?;
         validate_prepared_patches(&self.commands)?;
         validate_batches(&self.commands)?;
         if self.commands.iter().any(|c| {
@@ -368,6 +376,7 @@ fn text_filter_pixels(
     filter_pixels(
         &super::plan::BlitRaster {
             blur_px: blur,
+            contrast: None,
             smoothing: true,
             smoothing_quality: "low",
         },
@@ -376,23 +385,7 @@ fn text_filter_pixels(
 }
 
 fn filter_pixels(raster: &super::plan::BlitRaster, rect: &[f64; 4]) -> Result<u64, String> {
-    if !raster.blur_px.is_finite()
-        || !(0.0..=16.0).contains(&raster.blur_px)
-        || !["low", "medium", "high"].contains(&raster.smoothing_quality)
-        || rect.iter().any(|v| !v.is_finite())
-    {
-        return Err("Invalid explicit blit raster settings".into());
-    }
-    if raster.blur_px == 0.0 {
-        return Ok(0);
-    }
-    let pad = (6.0 * raster.blur_px).ceil();
-    let width = rect[2].abs().ceil() + pad;
-    let height = rect[3].abs().ceil() + pad;
-    if width > 8192.0 || height > 8192.0 {
-        return Err("Filtered blit exceeds bounded scratch dimensions".into());
-    }
-    Ok(2 * width as u64 * height as u64)
+    blit_filter::cost(raster, rect)
 }
 fn inspect_live(
     command: &Command,

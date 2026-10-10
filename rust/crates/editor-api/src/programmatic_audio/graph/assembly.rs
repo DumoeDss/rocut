@@ -17,12 +17,8 @@ fn add_track(
         .expected_output_frames
         .min(track.output_trim_frames.unwrap_or(u64::MAX))
         .min((output.len() as u64 / 2).saturating_sub(track.start_sample));
-    let fader = track
-        .fader
-        .as_ref()
-        .ok_or("Missing complete HyperFrames assembly track fader")?;
     for frame in 0..frames {
-        let gain = fader.evaluate(frame as f64 / f64::from(sample_rate)) as f32;
+        let gain = track.gain_at(frame as f64 / f64::from(sample_rate))? as f32;
         for channel in 0..2 {
             let index = frame as usize * 2 + channel;
             let value = f32::from_le_bytes(bytes[index * 4..index * 4 + 4].try_into().unwrap());

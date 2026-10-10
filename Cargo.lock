@@ -1456,9 +1456,12 @@ version = "0.1.0"
 dependencies = [
  "bridge",
  "effects",
+ "motion-text",
  "serde",
  "serde_json",
+ "sha2",
  "time",
+ "ttf-parser 0.25.1",
  "wasm-bindgen",
 ]
 

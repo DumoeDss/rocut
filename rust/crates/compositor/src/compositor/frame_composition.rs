@@ -1,6 +1,7 @@
 use super::{
-    BlendUniformBuffer, Compositor, CompositorError, FrameDescriptor, FrameItemDescriptor,
-    GpuContext, LayerDescriptor, wgpu,
+    BlendUniformBuffer, CompositionScope, Compositor, CompositorError, FrameDescriptor,
+    FrameItemDescriptor, FrameTraversalCursor, GpuContext, LayerDescriptor, LayerListPosition,
+    PassLocation, wgpu,
 };
 
 impl Compositor {
@@ -11,9 +12,17 @@ impl Compositor {
         encoder: &mut wgpu::CommandEncoder,
         frame: &FrameDescriptor,
         scene: wgpu::Texture,
-        prepared: &mut std::collections::VecDeque<effects::PreparedLiquidPass>,
+        prepared: &mut FrameTraversalCursor<'_>,
     ) -> Result<wgpu::Texture, CompositorError> {
-        self.compose_item_list(context, encoder, frame, &frame.items, scene, prepared)
+        self.compose_item_list(
+            context,
+            encoder,
+            frame,
+            &frame.items,
+            scene,
+            &CompositionScope::default(),
+            prepared,
+        )
     }
 
     pub(super) fn compose_item_list(
@@ -23,23 +32,31 @@ impl Compositor {
         frame: &FrameDescriptor,
         items: &[FrameItemDescriptor],
         mut scene: wgpu::Texture,
-        prepared: &mut std::collections::VecDeque<effects::PreparedLiquidPass>,
+        scope: &CompositionScope,
+        prepared: &mut FrameTraversalCursor<'_>,
     ) -> Result<wgpu::Texture, CompositorError> {
-        for item in items {
+        for (index, item) in items.iter().enumerate() {
             scene = match item {
-                FrameItemDescriptor::Group(group) => {
-                    self.compose_group(context, encoder, frame, &scene, group, prepared)?
-                }
+                FrameItemDescriptor::Group(group) => self.compose_group(
+                    context,
+                    encoder,
+                    frame,
+                    &scene,
+                    group,
+                    &scope.group(index),
+                    prepared,
+                )?,
                 FrameItemDescriptor::SceneTransition(transition) => {
                     // Both complete pictures see the same parent. Branch-local
                     // post only sees its isolated group, never that backdrop.
-                    // Endpoints still consume/validate both branches and FIFO.
+                    // Endpoints still consume/validate both branches' local cursor.
                     let from = self.compose_group(
                         context,
                         encoder,
                         frame,
                         &scene,
                         &transition.outgoing,
+                        &scope.branch(index, 0),
                         prepared,
                     )?;
                     let to = self.compose_group(
@@ -48,6 +65,7 @@ impl Compositor {
                         frame,
                         &scene,
                         &transition.incoming,
+                        &scope.branch(index, 1),
                         prepared,
                     )?;
                     self.blend_textures(
@@ -70,6 +88,8 @@ impl Compositor {
                     frame,
                     &scene,
                     std::slice::from_ref(layer),
+                    scope,
+                    LayerListPosition::Single(index),
                     prepared,
                 )?,
                 FrameItemDescriptor::SceneEffect { effect_pass_groups } => self
@@ -80,6 +100,7 @@ impl Compositor {
                         frame.width,
                         frame.height,
                         effect_pass_groups,
+                        &scope.item(PassLocation::Scene(index)),
                         prepared,
                     )?,
                 FrameItemDescriptor::Transition {
@@ -92,10 +113,26 @@ impl Compositor {
                     }
                     // Composite each picture against the SAME backdrop, not against
                     // each other. This preserves clip blend modes, masks and alpha.
-                    let from =
-                        self.compose_layers(context, encoder, frame, &scene, outgoing, prepared)?;
-                    let to =
-                        self.compose_layers(context, encoder, frame, &scene, incoming, prepared)?;
+                    let from = self.compose_layers(
+                        context,
+                        encoder,
+                        frame,
+                        &scene,
+                        outgoing,
+                        scope,
+                        LayerListPosition::Outgoing(index),
+                        prepared,
+                    )?;
+                    let to = self.compose_layers(
+                        context,
+                        encoder,
+                        frame,
+                        &scene,
+                        incoming,
+                        scope,
+                        LayerListPosition::Incoming(index),
+                        prepared,
+                    )?;
                     self.blend_textures(
                         context,
                         encoder,
@@ -122,11 +159,14 @@ impl Compositor {
         frame: &FrameDescriptor,
         base: &wgpu::Texture,
         layers: &[LayerDescriptor],
-        prepared: &mut std::collections::VecDeque<effects::PreparedLiquidPass>,
+        scope: &CompositionScope,
+        list: LayerListPosition,
+        prepared: &mut FrameTraversalCursor<'_>,
     ) -> Result<wgpu::Texture, CompositorError> {
         let mut scene = base.clone();
-        for layer in layers {
-            let texture = self.render_layer(context, encoder, frame, layer, prepared)?;
+        for (index, layer) in layers.iter().enumerate() {
+            let location = scope.item(list.layer(index));
+            let texture = self.render_layer(context, encoder, frame, layer, &location, prepared)?;
             scene = self.blend_texture(
                 context,
                 encoder,

@@ -43,6 +43,22 @@ fn discovers_clips_wholly_between_picture_frames_without_rounding() {
     assert_eq!(plan["stage"], "gain-discovery-only");
     assert_eq!(plan["executionReady"], false);
     assert_eq!(plan["historyComplete"], false);
+    let scan = &plan["nativeHistoryScan"];
+    let times = scan["times"].as_array().unwrap();
+    assert_eq!(scan["canonicalStart"].as_f64(), Some(0.0));
+    assert_eq!(scan["canonicalEnd"].as_f64(), Some(1.0));
+    assert_eq!(times.first().unwrap().as_f64(), Some(0.0));
+    assert_eq!(times.last().unwrap().as_f64(), Some(1.0));
+    assert!(
+        times
+            .iter()
+            .any(|candidate| candidate.as_f64() == Some(time))
+    );
+    assert!(
+        times
+            .windows(2)
+            .all(|pair| pair[0].as_f64() < pair[1].as_f64())
+    );
 }
 
 #[test]

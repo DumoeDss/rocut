@@ -10,6 +10,8 @@ pub struct Plan {
 #[serde(rename_all = "camelCase")]
 pub struct BlitRaster {
     pub blur_px: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub contrast: Option<f64>,
     pub smoothing: bool,
     pub smoothing_quality: &'static str,
 }
@@ -36,6 +38,14 @@ pub struct Clip {
 #[derive(Clone, Serialize)]
 #[serde(tag = "kind", rename_all = "camelCase")]
 pub enum Step {
+    Ellipse {
+        center: [f64; 2],
+        radii: [f64; 2],
+        rotation: f64,
+        start: f64,
+        end: f64,
+        anticlockwise: bool,
+    },
     Rect {
         rect: [f64; 4],
     },
@@ -61,6 +71,15 @@ pub enum Step {
     rename_all_fields = "camelCase"
 )]
 pub enum Command {
+    GradientRect {
+        transform: Matrix,
+        operations: Vec<Operation>,
+        clip: Option<Clip>,
+        style_transform: Matrix,
+        style_operations: Vec<Operation>,
+        rect: [f64; 4],
+        paint: Paint,
+    },
     PreparedPatch {
         request: crate::mv_image_preprocess::Request,
         patch_key: String,

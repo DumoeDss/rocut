@@ -75,11 +75,7 @@ pub fn apply_hyperframes_audio_track_gain_pcm(input: Vec<u8>) -> Result<Vec<u8>,
         let gain = if track.muted {
             0.0
         } else {
-            track
-                .fader
-                .as_ref()
-                .ok_or("Missing complete HyperFrames post-FX fader")?
-                .evaluate(frame as f64 / f64::from(envelope.plan.sample_rate)) as f32
+            track.gain_at(frame as f64 / f64::from(envelope.plan.sample_rate))? as f32
         };
         for channel in samples.chunks_exact(4) {
             let sample = f32::from_le_bytes(channel.try_into().unwrap()) * gain;

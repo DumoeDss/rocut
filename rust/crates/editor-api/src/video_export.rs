@@ -91,21 +91,25 @@ fn bitrate(request: &Request) -> Result<u32, &'static str> {
     // Preserve the existing presets' resolution curve. Very-high additionally
     // budgets detail per frame, so rapid motion is not starved at small sizes.
     let baseline = 3_000_000.0 * (pixels / (1920.0 * 1080.0)).powf(0.95) * efficiency * factor;
-    let requested = if matches!(request.quality, Quality::VeryHigh)
-        && matches!(request.video_chroma, VideoChroma::Yuv444)
-    {
-        // Keep the baseline curve, but do not discount 4:4:4 detail per frame.
-        // Round the rational budget before converting to avoid float boundaries.
-        let samples = u128::from(request.width)
-            * u128::from(request.height)
-            * u128::from(request.frame_rate.numerator);
-        let divisor = 2 * u128::from(request.frame_rate.denominator) * 1000;
-        baseline.max((samples.div_ceil(divisor) * 1000) as f64)
-    } else if matches!(request.quality, Quality::VeryHigh) {
-        baseline.max(pixels * request.frame_rate.as_f64().unwrap() * 0.5 * efficiency)
-    } else {
-        baseline
-    };
+    let requested =
+        if matches!(request.quality, Quality::VeryHigh) && matches!(request.codec, Codec::Vp9) {
+            // VP9 very-high keeps the full 0.5 bits/pixel/frame detail budget for
+            // both chroma modes; compression efficiency discounts only the baseline.
+            // Round the rational budget before converting to avoid float boundaries.
+            let samples = u128::from(request.width)
+                * u128::from(request.height)
+                * u128::from(request.frame_rate.numerator);
+            let divisor = 2 * u128::from(request.frame_rate.denominator) * 1000;
+            let detail_budget = samples.div_ceil(divisor) * 1000;
+            if detail_budget > u128::from(u32::MAX) {
+                return Err("Export bitrate exceeds the supported numeric range");
+            }
+            baseline.max(detail_budget as f64)
+        } else if matches!(request.quality, Quality::VeryHigh) {
+            baseline.max(pixels * request.frame_rate.as_f64().unwrap() * 0.5 * efficiency)
+        } else {
+            baseline
+        };
     let rounded = (requested / 1000.0).ceil() * 1000.0;
     if !rounded.is_finite() || rounded > f64::from(u32::MAX) {
         return Err("Export bitrate exceeds the supported numeric range");

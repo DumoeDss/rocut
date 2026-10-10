@@ -9,20 +9,13 @@ use crate::compositor::map_effect_passes;
 use crate::{EffectPassDescriptor, FrameDescriptor, FrameItemDescriptor};
 
 #[cfg(test)]
+#[path = "canvas_frame_preflight_tests.rs"]
+mod canvas_preflight_tests;
+#[cfg(test)]
 #[path = "prepared_frame_tests.rs"]
 mod tests;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-enum PassLocation {
-    Layer(usize),
-    Outgoing(usize, usize),
-    Incoming(usize, usize),
-    Scene(usize),
-    Group(Vec<usize>),
-    Nested(Vec<usize>, Box<PassLocation>),
-    SceneBranch(Vec<usize>, usize, Box<PassLocation>),
-}
-
+pub(super) use crate::effect_positions::{PassLocation, visit_groups};
 struct PassSpec {
     location: PassLocation,
     group: usize,
@@ -36,13 +29,18 @@ pub struct FramePreparation {
     frame: FrameDescriptor,
     specs: VecDeque<PassSpec>,
     active: Option<LiquidPreparation>,
+    active_position: Option<crate::effect_positions::EffectPassPosition>,
     prepared: VecDeque<PreparedLiquidPass>,
+    prepared_positions: Vec<crate::effect_positions::EffectPassPosition>,
+    canvas: crate::canvas_frame_state::CanvasFrameState,
     failed: bool,
 }
 
 pub struct PreparedFrame {
     pub(crate) frame: FrameDescriptor,
     pub(crate) liquid: VecDeque<PreparedLiquidPass>,
+    pub(crate) liquid_positions: Vec<crate::effect_positions::EffectPassPosition>,
+    pub(crate) canvas: crate::canvas_frame_state::CanvasFrameState,
 }
 
 fn budget_error() -> EffectsError {
@@ -143,78 +141,6 @@ pub(crate) fn frame_memory(frame: &FrameDescriptor) -> u64 {
     bytes
 }
 
-fn visit_groups(
-    frame: &FrameDescriptor,
-    mut visit: impl FnMut(PassLocation, &[Vec<EffectPassDescriptor>]),
-) {
-    visit_item_groups(&frame.items, &[], &mut visit);
-}
-
-fn visit_item_groups(
-    items: &[FrameItemDescriptor],
-    ancestors: &[usize],
-    visit: &mut dyn FnMut(PassLocation, &[Vec<EffectPassDescriptor>]),
-) {
-    let location = |local| {
-        if ancestors.is_empty() {
-            local
-        } else {
-            PassLocation::Nested(ancestors.to_vec(), Box::new(local))
-        }
-    };
-    for (index, item) in items.iter().enumerate() {
-        match item {
-            FrameItemDescriptor::SceneTransition(transition) => {
-                let mut path = ancestors.to_vec();
-                path.push(index);
-                for (side, group) in [&transition.outgoing, &transition.incoming]
-                    .into_iter()
-                    .enumerate()
-                {
-                    let mut branch = |local, groups: &[Vec<EffectPassDescriptor>]| {
-                        visit(
-                            PassLocation::SceneBranch(path.clone(), side, Box::new(local)),
-                            groups,
-                        );
-                    };
-                    visit_item_groups(&group.items, &[], &mut branch);
-                    branch(PassLocation::Group(vec![]), &group.effect_pass_groups);
-                }
-            }
-            FrameItemDescriptor::Group(group) => {
-                let mut path = ancestors.to_vec();
-                path.push(index);
-                // GPU consumes descendants first, then the group's own post.
-                visit_item_groups(&group.items, &path, visit);
-                visit(PassLocation::Group(path), &group.effect_pass_groups);
-            }
-            FrameItemDescriptor::Layer(layer) => visit(
-                location(PassLocation::Layer(index)),
-                &layer.effect_pass_groups,
-            ),
-            FrameItemDescriptor::SceneEffect { effect_pass_groups } => {
-                visit(location(PassLocation::Scene(index)), effect_pass_groups)
-            }
-            FrameItemDescriptor::Transition {
-                outgoing, incoming, ..
-            } => {
-                for (layer_index, layer) in outgoing.iter().enumerate() {
-                    visit(
-                        location(PassLocation::Outgoing(index, layer_index)),
-                        &layer.effect_pass_groups,
-                    );
-                }
-                for (layer_index, layer) in incoming.iter().enumerate() {
-                    visit(
-                        location(PassLocation::Incoming(index, layer_index)),
-                        &layer.effect_pass_groups,
-                    );
-                }
-            }
-        }
-    }
-}
-
 impl FramePreparation {
     pub fn new(frame: FrameDescriptor) -> Result<Self, crate::CompositorError> {
         crate::group_admission::validate(&frame)?;
@@ -226,61 +152,63 @@ impl FramePreparation {
         }
         let mut specs = VecDeque::new();
         let mut admission = Ok(frame_memory(&frame));
-        visit_groups(&frame, |location, groups| {
-            for (group, passes) in groups.iter().enumerate() {
-                for (pass_index, descriptor) in passes.iter().enumerate() {
-                    if descriptor.shader != "liquid" || admission.is_err() {
-                        continue;
-                    }
-                    let transport_bytes =
-                        descriptor
-                            .uniforms
-                            .iter()
-                            .fold(0usize, |sum, (key, value)| {
-                                let values = match value {
-                                    crate::frame::EffectUniformValueDescriptor::Vector(values) => {
-                                        values.len().saturating_mul(4)
-                                    }
-                                    _ => 4,
-                                };
-                                sum.saturating_add(key.len())
-                                    .saturating_add(values)
-                                    .saturating_add(64)
-                            });
-                    if admission
-                        .as_ref()
-                        .is_ok_and(|used| *used > LIQUID_REQUEST_MEMORY_LIMIT)
-                        || descriptor.uniforms.len() > 128
-                        || transport_bytes > 8192
-                        || descriptor.uniforms.iter().any(|(key, value)| {
-                            key.len() > 128
-                                || matches!(value,
-                                crate::frame::EffectUniformValueDescriptor::Vector(values)
-                                if values.len() > 112)
-                        })
-                    {
-                        admission = Err(budget_error());
-                        continue;
-                    }
-                    let pass = map_effect_passes(std::slice::from_ref(descriptor)).remove(0);
-                    admission = admission
-                        .as_ref()
-                        .copied()
-                        .map_err(|_| budget_error())
-                        .and_then(|used| {
-                            used.checked_add(LiquidPreparation::memory_budget(&pass)?)
-                                .filter(|bytes| *bytes <= LIQUID_REQUEST_MEMORY_LIMIT)
-                                .ok_or_else(budget_error)
-                        });
-                    if admission.is_ok() {
-                        specs.push_back(PassSpec {
-                            location: location.clone(),
-                            group,
-                            pass_index,
-                            pass,
-                        });
-                    }
+        crate::effect_positions::visit_passes(&frame, |position, descriptor| {
+            if descriptor.shader == "canvas" && admission.is_ok() {
+                if let Err(error) = crate::canvas_descriptor::validate(descriptor) {
+                    admission = Err(error);
+                    return;
                 }
+                return;
+            }
+            if descriptor.shader != "liquid" || admission.is_err() {
+                return;
+            }
+            let transport_bytes = descriptor
+                .uniforms
+                .iter()
+                .fold(0usize, |sum, (key, value)| {
+                    let values = match value {
+                        crate::frame::EffectUniformValueDescriptor::Vector(values) => {
+                            values.len().saturating_mul(4)
+                        }
+                        _ => 4,
+                    };
+                    sum.saturating_add(key.len())
+                        .saturating_add(values)
+                        .saturating_add(64)
+                });
+            if admission
+                .as_ref()
+                .is_ok_and(|used| *used > LIQUID_REQUEST_MEMORY_LIMIT)
+                || descriptor.uniforms.len() > 128
+                || transport_bytes > 8192
+                || descriptor.uniforms.iter().any(|(key, value)| {
+                    key.len() > 128
+                        || matches!(value,
+                    crate::frame::EffectUniformValueDescriptor::Vector(values)
+                    if values.len() > 112)
+                })
+            {
+                admission = Err(budget_error());
+                return;
+            }
+            let pass = map_effect_passes(std::slice::from_ref(descriptor)).remove(0);
+            admission = admission
+                .as_ref()
+                .copied()
+                .map_err(|_| budget_error())
+                .and_then(|used| {
+                    used.checked_add(LiquidPreparation::memory_budget(&pass)?)
+                        .filter(|bytes| *bytes <= LIQUID_REQUEST_MEMORY_LIMIT)
+                        .ok_or_else(budget_error)
+                });
+            if admission.is_ok() {
+                specs.push_back(PassSpec {
+                    location: position.location,
+                    group: position.group,
+                    pass_index: position.pass_index,
+                    pass,
+                });
             }
         });
         // Ordinary frames retain the original admission semantics. The request
@@ -289,11 +217,29 @@ impl FramePreparation {
         if !specs.is_empty() && admitted > LIQUID_REQUEST_MEMORY_LIMIT {
             return Err(budget_error().into());
         }
+        crate::canvas_frame_admission::validate(&frame, admitted)?;
+        let prepared_positions = Vec::with_capacity(specs.len());
+        let mut canvas_base = admitted
+            .checked_add(
+                (prepared_positions.capacity()
+                    * std::mem::size_of::<crate::effect_positions::EffectPassPosition>())
+                    as u64,
+            )
+            .ok_or_else(budget_error)?;
+        for spec in &specs {
+            canvas_base = canvas_base
+                .checked_add(crate::canvas_frame_state::location_bytes(&spec.location))
+                .ok_or_else(budget_error)?;
+        }
+        let canvas = crate::canvas_frame_state::CanvasFrameState::new(&frame, canvas_base)?;
         Ok(Self {
             frame,
             specs,
             active: None,
+            active_position: None,
             prepared: VecDeque::new(),
+            prepared_positions,
+            canvas,
             failed: false,
         })
     }
@@ -308,8 +254,10 @@ impl FramePreparation {
         if result.is_err() {
             self.failed = true;
             self.active = None;
+            self.active_position = None;
             self.specs.clear();
             self.prepared.clear();
+            self.prepared_positions.clear();
         }
         result
     }
@@ -323,7 +271,11 @@ impl FramePreparation {
                 };
                 // Location belongs to the frozen graph; consumption order is identical
                 // to frame_composition, including both sides of a transition.
-                let _location = (spec.location, spec.group, spec.pass_index);
+                self.active_position = Some(crate::effect_positions::EffectPassPosition {
+                    location: spec.location,
+                    group: spec.group,
+                    pass_index: spec.pass_index,
+                });
                 self.active = Some(LiquidPreparation::new(
                     spec.pass,
                     [self.frame.width, self.frame.height],
@@ -340,6 +292,8 @@ impl FramePreparation {
             if ready {
                 self.prepared
                     .push_back(self.active.take().unwrap().finish()?);
+                self.prepared_positions
+                    .push(self.active_position.take().unwrap());
             } else {
                 return Ok(false);
             }
@@ -356,6 +310,8 @@ impl FramePreparation {
         Ok(PreparedFrame {
             frame: self.frame,
             liquid: self.prepared,
+            liquid_positions: self.prepared_positions,
+            canvas: self.canvas,
         })
     }
 
@@ -366,6 +322,37 @@ impl FramePreparation {
 }
 
 impl PreparedFrame {
+    pub(crate) fn traversal_cursor(
+        &self,
+    ) -> Result<crate::canvas_frame_state::FrameTraversalCursor<'_>, EffectsError> {
+        crate::canvas_frame_state::FrameTraversalCursor::new(self)
+    }
+    pub fn canvas_ready(&self) -> bool {
+        self.canvas.ready()
+    }
+    pub fn begin_canvas_preparation(
+        &mut self,
+        ticket: crate::canvas_frame_state::CanvasCaptureTicket,
+        captured: Vec<u8>,
+    ) -> Result<(), EffectsError> {
+        self.canvas.begin(ticket, captured)
+    }
+    pub fn canvas_minimum_step_work(&self) -> Option<NonZeroU64> {
+        self.canvas.minimum()
+    }
+    /// Canvas quota counts work visits, unlike the Liquid step quota.
+    pub fn advance_canvas(&mut self, quota: NonZeroU64) -> Result<bool, EffectsError> {
+        self.canvas.advance(quota)
+    }
+    pub fn finalize_canvas(&self) -> Result<(), EffectsError> {
+        if self.canvas_ready() {
+            Ok(())
+        } else {
+            Err(EffectsError::CanvasPreparation {
+                message: "Canvas frame is not ready".into(),
+            })
+        }
+    }
     pub fn dimensions(&self) -> (u32, u32) {
         (self.frame.width, self.frame.height)
     }

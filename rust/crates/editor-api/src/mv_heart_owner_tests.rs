@@ -30,11 +30,16 @@ fn tiny_png(width: u32, height: u32) -> Vec<u8> {
         rows.push(0);
         rows.extend(std::iter::repeat_n(255, width as usize * 4));
     }
-    let length = rows.len() as u16;
-    let mut zlib = vec![0x78, 0x01, 0x01];
-    zlib.extend_from_slice(&length.to_le_bytes());
-    zlib.extend_from_slice(&(!length).to_le_bytes());
-    zlib.extend_from_slice(&rows);
+    let mut zlib = vec![0x78, 0x01];
+    let blocks = rows.chunks(65535);
+    let block_count = blocks.len();
+    for (index, block) in blocks.enumerate() {
+        zlib.push(if index + 1 == block_count { 1 } else { 0 });
+        let length = block.len() as u16;
+        zlib.extend_from_slice(&length.to_le_bytes());
+        zlib.extend_from_slice(&(!length).to_le_bytes());
+        zlib.extend_from_slice(block);
+    }
     let (mut a, mut b) = (1u32, 0u32);
     for value in rows {
         a = (a + value as u32) % 65521;
@@ -80,9 +85,17 @@ fn actual_owner_identity_binary_budget_replacement_and_cancellation() {
     let baseline = diagnostics(&owner);
     let (metadata, encoded, rgba) = input(64 * 1024 * 1024);
     let prepared: PrepareInput = serde_json::from_value(metadata.clone()).unwrap();
+    let discovery =
+        heart::Session::discover(prepared.binding.clone(), &rgba, 64 * 1024 * 1024).unwrap();
+    let mut replaced_rgba = rgba.clone();
+    replaced_rgba[0] ^= 1;
+    assert!(
+        discovery.finish(&replaced_rgba, 64 * 1024 * 1024).is_err(),
+        "Opaque discovery must reject replaced source pixels"
+    );
     assert_eq!(
         super::metadata(&prepared, encoded.len(), rgba.len()).unwrap(),
-        2 * (encoded.len() + rgba.len()) as u64 + 64 * 1024 + 9 * 16 * 1024,
+        2 * (encoded.len() + rgba.len()) as u64 + 64 * 1024,
         "The private immutable packet and inbound WASM copy must both be reserved"
     );
     let a = owner
@@ -340,6 +353,65 @@ fn actual_owner_identity_binary_budget_replacement_and_cancellation() {
     }
     assert!(Owner::new().is_err());
     drop(owners);
+    // Ordinary source dimensions are retained exactly; no resizing/fallback.
+    for (width, height) in [(1024u32, 1024u32), (1920, 1080)] {
+        let large_encoded = tiny_png(width, height);
+        let large_rgba = vec![255; width as usize * height as usize * 4];
+        let mut large = replace_encoded(&metadata, &large_encoded);
+        large["ceilingBytes"] = json!(MAX_OWNER_BYTES);
+        large["binding"]["decodedWidth"] = json!(width);
+        large["binding"]["decodedHeight"] = json!(height);
+        large["binding"]["decodedRgbaSha256"] = json!(hash(&large_rgba));
+        large["decodedLayout"]["source"]["length"] = json!(large_rgba.len());
+        let id = owner
+            .prepare(&large.to_string(), &large_encoded, &large_rgba)
+            .unwrap();
+        let manifest: Value = serde_json::from_str(&owner.manifest_json(id).unwrap()).unwrap();
+        assert_eq!(manifest["images"].as_array().unwrap().len(), 1);
+        assert_eq!(manifest["images"][0]["image"]["width"], width);
+        assert_eq!(manifest["images"][0]["image"]["height"], height);
+        owner.cancel(id).unwrap();
+        assert_eq!(
+            diagnostics(&owner)["globalReservedBytes"],
+            baseline["globalReservedBytes"]
+        );
+    }
+    // Missing character fails at the production dispatch and revokes the lease.
+    let (metadata, encoded, rgba) = input(64 * 1024 * 1024);
+    let id = owner
+        .prepare(&metadata.to_string(), &encoded, &rgba)
+        .unwrap();
+    let mut gather: Value = serde_json::from_str(&frame("heart")).unwrap();
+    gather["scene"] =
+        json!({"kind":"heartGather", "settings":{"heart":"heart", "char":"character"}});
+    assert!(
+        owner
+            .frame_json(id, &gather.to_string())
+            .unwrap_err()
+            .contains("admitted character")
+    );
+    assert!(!owner.cancel(id).unwrap());
+
+    let mut character = metadata["binding"].clone();
+    character.as_object_mut().unwrap().remove("algorithm");
+    character["source"]["id"] = json!("character");
+    let mut source_binding = metadata["binding"].clone();
+    source_binding.as_object_mut().unwrap().remove("algorithm");
+    let sky = json!({"source":metadata["source"], "binding":source_binding,
+        "character":character, "settings":{"bg":"heart","char":"character"},
+        "ceilingBytes":1024,
+        "encodedLayout":{"source":{"offset":0,"length":encoded.len()},"character":{"offset":encoded.len(),"length":encoded.len()}},
+        "decodedLayout":{"source":{"offset":0,"length":rgba.len()},"character":{"offset":rgba.len(),"length":rgba.len()}}});
+    let copied = std::cell::Cell::new(false);
+    assert!(
+        owner
+            .prepare_sky_with(&sky.to_string(), encoded.len() * 2, rgba.len() * 2, || {
+                copied.set(true);
+                Ok((Vec::<u8>::new(), Vec::<u8>::new()))
+            })
+            .is_err()
+    );
+    assert!(!copied.get());
     owner.dispose().unwrap();
 }
 
@@ -363,4 +435,13 @@ fn packet_ranges_reject_gap_overlap_trailing_and_overflow() {
     assert_eq!(bg.unwrap(), &[3, 4]);
     assert!(layout.split(&[0; 5], true).is_err());
     assert!(layout.split(&[0; 4], false).is_err());
+    let layout: Layout = serde_json::from_value(json!({"source":{"offset":0,"length":2},
+        "background":{"offset":2,"length":2}, "character":{"offset":4,"length":2}}))
+    .unwrap();
+    let packet = [1, 2, 3, 4, 5, 6];
+    let (source, bg) = layout.split(&packet, true).unwrap();
+    assert_eq!(source, &[1, 2]);
+    assert_eq!(bg.unwrap(), &[3, 4]);
+    assert_eq!(character_bytes(&layout, &packet).unwrap().unwrap(), &[5, 6]);
+    assert!(layout.validate(7, true).is_err());
 }

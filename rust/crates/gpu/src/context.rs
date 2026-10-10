@@ -10,6 +10,103 @@ use crate::surface_alpha::{AlphaMode, SurfaceTarget, premultiply_for_surface, se
 use crate::surface_presentation::SurfacePresentation;
 use crate::{FULLSCREEN_SHADER_SOURCE, GpuError};
 
+#[cfg(any(test, all(feature = "wasm", target_arch = "wasm32")))]
+#[derive(Debug, PartialEq)]
+struct CanvasImportLayout {
+    bytes_per_row: u32,
+    pixel_bytes: usize,
+}
+
+#[cfg(any(test, all(feature = "wasm", target_arch = "wasm32")))]
+fn canvas_import_layout(
+    width: u32,
+    height: u32,
+    canvas_width: u32,
+    canvas_height: u32,
+    max_texture_dimension: u32,
+) -> Result<CanvasImportLayout, &'static str> {
+    if width == 0 || height == 0 {
+        return Err("Canvas texture import requires nonzero width and height");
+    }
+    if width > max_texture_dimension || height > max_texture_dimension {
+        return Err("Canvas texture import exceeds the device texture dimension limit");
+    }
+    if width > canvas_width || height > canvas_height {
+        return Err("Canvas texture import rectangle exceeds the source canvas dimensions");
+    }
+    let bytes_per_row = width
+        .checked_mul(4)
+        .ok_or("Canvas texture import row byte count overflows")?;
+    let pixel_bytes = usize::try_from(bytes_per_row)
+        .ok()
+        .and_then(|row| {
+            usize::try_from(height)
+                .ok()
+                .and_then(|height| row.checked_mul(height))
+        })
+        .ok_or("Canvas texture import pixel byte count overflows")?;
+    Ok(CanvasImportLayout {
+        bytes_per_row,
+        pixel_bytes,
+    })
+}
+
+#[cfg(test)]
+mod canvas_import_tests {
+    use super::canvas_import_layout;
+
+    #[test]
+    fn accepts_nonempty_subrectangles_and_checked_rgba_layout() {
+        let layout = canvas_import_layout(192, 128, 256, 256, 8192).unwrap();
+        assert_eq!(layout.bytes_per_row, 768);
+        assert_eq!(layout.pixel_bytes, 98304);
+        assert!(canvas_import_layout(8192, 1, 8192, 1, 8192).is_ok());
+    }
+
+    #[test]
+    fn rejects_empty_dimensions_before_import() {
+        for (width, height) in [(0, 128), (192, 0), (0, 0)] {
+            assert_eq!(
+                canvas_import_layout(width, height, 256, 256, 8192),
+                Err("Canvas texture import requires nonzero width and height")
+            );
+        }
+    }
+
+    #[test]
+    fn rejects_each_device_limit_and_source_rectangle_axis() {
+        for (width, height) in [(8193, 1), (1, 8193)] {
+            assert_eq!(
+                canvas_import_layout(width, height, 16384, 16384, 8192),
+                Err("Canvas texture import exceeds the device texture dimension limit")
+            );
+        }
+        for (width, height) in [(257, 128), (192, 257)] {
+            assert_eq!(
+                canvas_import_layout(width, height, 256, 256, 8192),
+                Err("Canvas texture import rectangle exceeds the source canvas dimensions")
+            );
+        }
+    }
+
+    #[test]
+    fn rejects_row_byte_overflow() {
+        assert_eq!(
+            canvas_import_layout(u32::MAX, 1, u32::MAX, 1, u32::MAX),
+            Err("Canvas texture import row byte count overflows")
+        );
+    }
+
+    #[cfg(target_pointer_width = "32")]
+    #[test]
+    fn rejects_total_byte_overflow_on_32_bit_targets() {
+        assert_eq!(
+            canvas_import_layout(65536, 65536, 65536, 65536, 65536),
+            Err("Canvas texture import pixel byte count overflows")
+        );
+    }
+}
+
 #[cfg(all(feature = "wasm", target_arch = "wasm32"))]
 #[derive(Debug)]
 struct WebDisplay;
@@ -575,10 +672,52 @@ impl GpuContext {
         width: u32,
         height: u32,
         label: &'static str,
-    ) -> wgpu::Texture {
+    ) -> Result<wgpu::Texture, wasm_bindgen::JsValue> {
+        use wasm_bindgen::JsValue;
+
+        let layout = canvas_import_layout(
+            width,
+            height,
+            canvas.width(),
+            canvas.height(),
+            self.device.limits().max_texture_dimension_2d,
+        )
+        .map_err(JsValue::from_str)?;
+
+        // Acquire and validate fallback pixels before allocating a GPU texture.
+        // Browser context/read exceptions must return normally, releasing the
+        // caller's GPU_RUNTIME borrow rather than trapping inside it.
+        let fallback_pixels = if self.supports_external_texture_copies {
+            None
+        } else {
+            let ctx: web_sys::OffscreenCanvasRenderingContext2d = canvas
+                .get_context("2d")?
+                .ok_or_else(|| {
+                    JsValue::from_str("Canvas texture import requires an available 2d context")
+                })?
+                .dyn_into()
+                .map_err(|_| {
+                    JsValue::from_str("Canvas texture import returned an incompatible 2d context")
+                })?;
+            let image_data = ctx.get_image_data(0.0, 0.0, width as f64, height as f64)?;
+            let mut bytes = image_data.data().to_vec();
+            if bytes.len() != layout.pixel_bytes {
+                return Err(JsValue::from_str(
+                    "Canvas texture import readback has an unexpected RGBA byte count",
+                ));
+            }
+            if self.texture_format == wgpu::TextureFormat::Bgra8Unorm {
+                for pixel in bytes.chunks_exact_mut(4) {
+                    pixel.swap(0, 2);
+                }
+            }
+            Some(bytes)
+        };
         let texture = self.create_render_texture(width, height, label);
 
         if self.supports_external_texture_copies {
+            // wgpu exposes this operation as (), not Result. The preflight and
+            // fallback Result do not make external-copy/device exceptions safe.
             self.queue.copy_external_image_to_texture(
                 &wgpu::CopyExternalImageSourceInfo {
                     source: wgpu::ExternalImageSource::OffscreenCanvas(canvas.clone()),
@@ -599,28 +738,7 @@ impl GpuContext {
                     depth_or_array_layers: 1,
                 },
             );
-        } else {
-            let ctx: web_sys::OffscreenCanvasRenderingContext2d = canvas
-                .get_context("2d")
-                .ok()
-                .flatten()
-                .expect("Failed to get 2d context for texture import")
-                .unchecked_into();
-            let image_data = ctx
-                .get_image_data(0.0, 0.0, width as f64, height as f64)
-                .expect("Failed to read pixel data from canvas");
-            let rgba_bytes = image_data.data();
-
-            let pixel_bytes = if self.texture_format == wgpu::TextureFormat::Bgra8Unorm {
-                let mut bytes = rgba_bytes.to_vec();
-                for pixel in bytes.chunks_exact_mut(4) {
-                    pixel.swap(0, 2);
-                }
-                bytes
-            } else {
-                rgba_bytes.to_vec()
-            };
-
+        } else if let Some(pixel_bytes) = fallback_pixels {
             self.queue.write_texture(
                 wgpu::TexelCopyTextureInfo {
                     texture: &texture,
@@ -631,7 +749,7 @@ impl GpuContext {
                 &pixel_bytes,
                 wgpu::TexelCopyBufferLayout {
                     offset: 0,
-                    bytes_per_row: Some(width * 4),
+                    bytes_per_row: Some(layout.bytes_per_row),
                     rows_per_image: Some(height),
                 },
                 wgpu::Extent3d {
@@ -642,7 +760,7 @@ impl GpuContext {
             );
         }
 
-        texture
+        Ok(texture)
     }
 
     #[cfg(all(feature = "wasm", target_arch = "wasm32"))]

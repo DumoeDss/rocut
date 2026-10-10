@@ -13,6 +13,8 @@ use serde::Serialize;
 #[serde(rename_all = "camelCase")]
 pub(super) struct RatePreparation {
     pub profile: &'static str,
+    pub preparation_kind: &'static str,
+    pub output_duration_required: bool,
     pub media_start_seconds: String,
     pub source_duration_seconds: String,
     pub duration_seconds: String,
@@ -30,13 +32,89 @@ pub(super) struct RatePreparation {
     pub source_loop: Option<super::rate_loop::SourceLoop>,
 }
 
-/// Only this newly characterized nonloop path preserves measured native length.
-/// Aligned clips and the independent source-loop extension keep their contract.
+/// Preserve measured native length independently of declared coverage. Loop
+/// source trim/period still have their separate source-domain phase admission.
 pub(super) fn observed_pcm(native: &NativeClip, sample_rate: u32) -> bool {
-    !native.r#loop
-        && [sample_rate, 48000]
-            .into_iter()
-            .any(|rate| sample_aligned(native.duration * f64::from(rate), "clip duration").is_err())
+    [sample_rate, 48000]
+        .into_iter()
+        .any(|rate| sample_aligned(native.duration * f64::from(rate), "clip duration").is_err()
+            || (native.r#loop && (sample_aligned(native.media_start * f64::from(rate), "loop trim").is_err()
+                || sample_aligned((native.source_duration - native.media_start) * f64::from(rate), "loop period").is_err())))
+}
+
+/// A scalar clip with fractional source facts needs the pinned exporter's
+/// prepareAudioTrack, not a crop of a generally tempo-adjusted source buffer.
+/// Loops retain their separate source-domain phase admission.
+pub(super) fn needs_scalar_preparation(native: &NativeClip, sample_rate: u32) -> bool {
+    [sample_rate, 48000].into_iter().any(|rate| {
+        sample_aligned(native.duration * f64::from(rate), "clip duration").is_err()
+            || sample_aligned(native.media_start * f64::from(rate), "media trim").is_err()
+            || (native.r#loop && sample_aligned((native.source_duration - native.media_start) * f64::from(rate), "loop period").is_err())
+            || sample_aligned(
+                native.media_start / native.playback_rate * f64::from(rate),
+                "tempo-adjusted media trim",
+            ).is_err()
+    })
+}
+
+pub(super) fn prepare_scalar(
+    native: &NativeClip,
+    sample_rate: u32,
+    timing: AudioTiming,
+) -> Result<RatePreparation, String> {
+    if !super::facts::seconds(native.media_start)
+        || !super::facts::seconds(native.duration)
+        || !native.playback_rate.is_finite()
+        || !(MIN_RATE..=MAX_RATE).contains(&native.playback_rate)
+    {
+        return Err("Invalid HyperFrames native scalar preparation".into());
+    }
+    let source_duration = native.duration * native.playback_rate;
+    if !source_duration.is_finite() || source_duration > MAX_SECONDS * MAX_RATE {
+        return Err("HyperFrames scalar source span exceeds its safety bound".into());
+    }
+    // Native -ss/-t and atempo determine actual output. Do not force duration
+    // geometry before running the original full-clip preparation.
+    // Rate one has no native output -t. Reserve source trim endpoint
+    // quantization before knowing source metadata: decode.rs admits >=1000 Hz,
+    // so two source samples plus conversion rounding occupy at most 98 frames
+    // at 48 kHz. This is capacity only; no silence/padding is added to PCM.
+    let endpoint_capacity = if native.playback_rate == 1.0 { 2 * (48000 / 1000) + 2 } else { 1 };
+    let native_max_frames = (native.duration * 48000.0).ceil() as u64 + endpoint_capacity;
+    let graph_max_frames = (native_max_frames * u64::from(sample_rate)).div_ceil(48000) + 1;
+    if native_max_frames > MAX_PCM_BYTES / 8 || graph_max_frames > MAX_PCM_BYTES / 8 {
+        return Err("HyperFrames scalar preparation exceeds the PCM safety budget".into());
+    }
+    let stereo_filter = tempo(native.playback_rate);
+    let mono_filter = format!(
+        "pan=stereo|FL=FL+FC|FR=FR+FC{}{}",
+        if stereo_filter.is_empty() { "" } else { "," },
+        stereo_filter,
+    );
+    let source_loop = if native.r#loop {
+        // Reuse the admitted source-domain extension, before native scalar
+        // preparation/FX; duration is not rounded to the loop tile geometry.
+        Some(super::rate_loop::prepare_with_timing(native, source_duration, sample_rate, timing)?)
+    } else { None };
+    Ok(RatePreparation {
+        profile: "hyperframes-0.8.139-exporter-prepare-s16-48k-v1",
+        preparation_kind: "scalar",
+        output_duration_required: native.playback_rate != 1.0,
+        media_start_seconds: if source_loop.is_some() { "0".into() } else { parameter_number(native.media_start) },
+        source_duration_seconds: parameter_number(source_duration),
+        duration_seconds: parameter_number(native.duration),
+        native_sample_rate: 48000,
+        native_max_frames,
+        native_max_bytes: native_max_frames * 4,
+        graph_max_frames,
+        observed_pcm: true,
+        stereo_filter,
+        mono_filter,
+        resample_filter: format!("aresample={sample_rate}"),
+        slices: 0,
+        clock_cells: 0,
+        source_loop,
+    })
 }
 
 fn parameter_number(value: f64) -> String {
@@ -155,15 +233,10 @@ pub(super) fn prepare_with_timing(
     }
     // Nonloop preparation forwards the original fractional trim to FFmpeg.
     // Its time-parser/source-sample rounding must not be replaced with ours.
-    // The independent source-loop extension still requires aligned tile phase.
+    // The independent source-loop extension still requires aligned tile phase;
+    // its full clip's fractional duration now uses measured PCM geometry.
     let observed_pcm = observed_pcm(native, sample_rate);
     for sr in [sample_rate, 48000] {
-        if native.r#loop {
-            sample_aligned(
-                native.media_start * f64::from(sr),
-                "variable-rate media trim",
-            )?;
-        }
         if !observed_pcm {
             sample_aligned(
                 native.duration * f64::from(sr),
@@ -211,6 +284,8 @@ pub(super) fn prepare_with_timing(
         .transpose()?;
     Ok(RatePreparation {
         profile: "hyperframes-0.8.139-exporter-prepare-s16-48k-v1",
+        preparation_kind: "ramp",
+        output_duration_required: true,
         media_start_seconds: if source_loop.is_some() {
             "0".into()
         } else {

@@ -1,9 +1,9 @@
 use super::{
+    Session,
     draw::*,
     plan::{Command, HeartCommand},
-    Session,
 };
-pub fn build(session: &Session, progress: f64, heat: f64, burn: bool) -> Command {
+pub fn build(session: &Session, progress: f64, heat: f64, burn: bool, id: String) -> Command {
     let mut d = Draw::new();
     let passes = if burn {
         [
@@ -73,8 +73,8 @@ pub fn build(session: &Session, progress: f64, heat: f64, burn: bool) -> Command
         1.0,
         "destination-in",
     );
-    Command::Heart(HeartCommand::Surface {
-        id: "heart-cracks",
+    Command::Heart(HeartCommand::OwnedSurface {
+        id,
         size: [size[0] + 40, size[1] + 40],
         commands: d.commands,
     })

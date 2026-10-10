@@ -157,6 +157,7 @@ fn append_filters_and_expanded_work_keep_the_same_limits() {
     if let Command::Blit { raster, .. } = &mut filtered {
         *raster = Some(BlitRaster {
             blur_px: 2.0,
+            contrast: None,
             smoothing: true,
             smoothing_quality: "low",
         });

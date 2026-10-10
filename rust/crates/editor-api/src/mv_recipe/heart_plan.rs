@@ -48,6 +48,27 @@ pub enum HeartCommand {
         surface: &'static str,
         commands: Vec<Command>,
     },
+    /// Same native wire protocol, but IDs may be unique per produced layer.
+    #[serde(rename = "surface")]
+    OwnedSurface {
+        id: String,
+        size: [u32; 2],
+        commands: Vec<Command>,
+    },
+    #[serde(rename = "blit")]
+    OwnedBlit {
+        surface: String,
+        source_rect: [f64; 4],
+        destination_rect: [f64; 4],
+        transform: Matrix,
+        operations: Vec<Operation>,
+        composite: &'static str,
+        opacity: f64,
+        clip: Option<native::Clip>,
+        raster: Option<native::BlitRaster>,
+    },
+    #[serde(rename = "releaseSurface")]
+    OwnedReleaseSurface { surface: String },
     ShadowPath {
         transform: Matrix,
         operations: Vec<Operation>,

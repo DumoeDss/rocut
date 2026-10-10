@@ -33,7 +33,7 @@ fn lower_presets_preserve_existing_bitrates() {
 
 #[test]
 fn very_high_budgets_detail_per_pixel_and_rational_frame_rate() {
-    for (codec, bitrate) in [("avc", 3456000), ("vp9", 2074000)] {
+    for (codec, bitrate) in [("avc", 3456000), ("vp9", 3456000)] {
         assert_eq!(
             resolve(&request(codec, "very_high", 640, 360)),
             json!({"bitrate":bitrate})
@@ -41,13 +41,95 @@ fn very_high_budgets_detail_per_pixel_and_rational_frame_rate() {
     }
     let mut r = request("vp9", "very_high", 1920, 1080);
     r["frameRate"] = json!({"numerator":30000,"denominator":1001});
-    assert_eq!(resolve(&r), json!({"bitrate":18644000}));
+    assert_eq!(resolve(&r), json!({"bitrate":31073000}));
     r["frameRate"] = json!({"numerator":30,"denominator":1});
-    assert_eq!(resolve(&r), json!({"bitrate":18663000}));
+    assert_eq!(resolve(&r), json!({"bitrate":31104000}));
     r["frameRate"]["numerator"] = json!(60);
-    assert_eq!(resolve(&r), json!({"bitrate":37325000}));
+    assert_eq!(resolve(&r), json!({"bitrate":62208000}));
     r["frameRate"]["numerator"] = json!(1);
     assert_eq!(resolve(&r), json!({"bitrate":7200000}));
+}
+
+#[test]
+fn vp9_very_high_420_has_the_full_detail_budget_without_a_size_exception() {
+    for (width, height, fps, bitrate) in [
+        (192, 128, 24, 295000),
+        (192, 128, 30, 369000),
+        (640, 360, 24, 2765000),
+        (1280, 720, 60, 27648000),
+    ] {
+        let mut r = request("vp9", "very_high", width, height);
+        r["frameRate"]["numerator"] = json!(fps);
+        assert_eq!(resolve(&r), json!({"bitrate":bitrate}));
+        r["videoChroma"] = json!("420");
+        assert_eq!(resolve(&r), json!({"bitrate":bitrate}));
+        r["videoChroma"] = json!("444");
+        assert_eq!(resolve(&r)["bitrate"], bitrate);
+    }
+}
+
+#[test]
+fn vp9_detail_budget_rounds_exact_rationals_before_float_conversion() {
+    for (width, bitrate) in [(1000, 1199000), (1001, 1200000), (1002, 1202000)] {
+        let mut r = request("vp9", "very_high", width, 40);
+        r["frameRate"] = json!({"numerator":60000,"denominator":1001});
+        assert_eq!(resolve(&r), json!({"bitrate":bitrate}));
+        r["frameRate"] = json!({"numerator":60000000,"denominator":1001000});
+        assert_eq!(resolve(&r), json!({"bitrate":bitrate}));
+    }
+}
+
+#[test]
+fn vp9_detail_budget_rejects_overflow_at_the_exact_rounded_boundary() {
+    let mut r = request("vp9", "very_high", 8589934, 1);
+    r["frameRate"]["numerator"] = json!(1000);
+    assert_eq!(resolve(&r), json!({"bitrate":4294967000_u32}));
+    r["width"] = json!(8589935);
+    assert_eq!(
+        resolve(&r),
+        json!({"error":"Export bitrate exceeds the supported numeric range"})
+    );
+    r["width"] = json!(u32::MAX);
+    r["height"] = json!(u32::MAX);
+    r["frameRate"] = json!({"numerator":u32::MAX,"denominator":u32::MAX});
+    assert_eq!(
+        resolve(&r),
+        json!({"error":"Export bitrate exceeds the supported numeric range"})
+    );
+}
+
+#[test]
+fn avc_very_high_preserves_its_baseline_and_frame_detail_budgets() {
+    for (numerator, denominator, bitrate) in [
+        (1, 1, 12000000),
+        (24, 1, 24884000),
+        (30000, 1001, 31073000),
+        (60, 1, 62208000),
+    ] {
+        let mut r = request("avc", "very_high", 1920, 1080);
+        r["frameRate"] = json!({"numerator":numerator,"denominator":denominator});
+        assert_eq!(resolve(&r), json!({"bitrate":bitrate}));
+    }
+}
+
+#[test]
+fn explicit_quantizer_remains_authoritative_with_the_full_detail_budget() {
+    for quantizer in [0, 32, 63] {
+        let mut r = request("vp9", "very_high", 192, 128);
+        r["frameRate"]["numerator"] = json!(24);
+        r["format"] = json!("webm");
+        r["videoQuantizer"] = json!(quantizer);
+        for chroma in ["420", "444"] {
+            r["videoChroma"] = json!(chroma);
+            let plan = resolve(&r);
+            assert_eq!(plan["kind"], "vp9Quantizer");
+            assert_eq!(plan["quantizer"], quantizer);
+            assert_eq!(plan["bitrate"], 295000);
+            assert_eq!(plan["nativeConfig"]["bitrate"], 295000);
+            assert_eq!(plan["nativeConfig"]["bitrateMode"], "quantizer");
+            assert_eq!(plan["keyFrameIntervalFrames"], 48);
+        }
+    }
 }
 
 #[test]
@@ -85,7 +167,7 @@ fn explicit_420_preserves_default_bitrates_and_response_shape() {
     }
     assert_eq!(
         resolve(&request("vp9", "very_high", 192, 128)),
-        json!({"bitrate":222000})
+        json!({"bitrate":369000})
     );
 }
 

@@ -82,6 +82,7 @@ fn gray_pixels_and_filter_scratch_are_charged_and_invalid_raster_rejects() {
     if let Command::Blit { raster, .. } = &mut filtered {
         *raster = Some(BlitRaster {
             blur_px: 2.0,
+            contrast: None,
             smoothing: true,
             smoothing_quality: "low",
         });
@@ -94,6 +95,7 @@ fn gray_pixels_and_filter_scratch_are_charged_and_invalid_raster_rejects() {
     if let Command::Blit { raster, .. } = &mut filtered {
         *raster = Some(BlitRaster {
             blur_px: f64::NAN,
+            contrast: None,
             smoothing: true,
             smoothing_quality: "low",
         });

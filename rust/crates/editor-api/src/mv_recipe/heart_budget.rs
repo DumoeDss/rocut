@@ -1,9 +1,11 @@
 //! Joint session + serialized plan + native scratch residency. No silent quality reductions.
 use super::{
-    plan::{native, Command, HeartCommand},
     BackgroundFact, Plan, Session,
+    plan::{Command, HeartCommand, native},
 };
-use std::collections::BTreeMap;
+#[path = "heart_surface_lifetime.rs"]
+mod lifetime;
+use lifetime::Lifetimes;
 const MAX: u64 = 256 * 1024 * 1024;
 fn add(total: &mut u64, cost: u64) -> Result<(), String> {
     *total = total.checked_add(cost).ok_or("Heart budget overflow")?;
@@ -15,15 +17,9 @@ fn image_bytes(size: [u32; 2]) -> Result<u64, String> {
     }
     Ok(size[0] as u64 * size[1] as u64 * 8)
 }
-fn sample_surface(surface: &str, ready: &BTreeMap<&'static str, u64>) -> Result<(), String> {
-    if !ready.contains_key(surface) {
-        return Err("Heart sampled an unavailable surface".into());
-    }
-    Ok(())
-}
 fn inspect(
     command: &Command,
-    ready: &BTreeMap<&'static str, u64>,
+    ready: &Lifetimes,
     target: Option<&str>,
     count: &mut usize,
     shadow_cost: &mut u64,
@@ -33,9 +29,12 @@ fn inspect(
         return Err("Heart command graph exceeds limits".into());
     }
     match command {
-        Command::Heart(HeartCommand::Surface { .. } | HeartCommand::AppendSurface { .. }) => {
-            return Err("Nested Heart surfaces are forbidden".into())
-        }
+        Command::Heart(
+            HeartCommand::Surface { .. }
+            | HeartCommand::OwnedSurface { .. }
+            | HeartCommand::AppendSurface { .. }
+            | HeartCommand::OwnedReleaseSurface { .. },
+        ) => return Err("Nested Heart surfaces are forbidden".into()),
         Command::Heart(HeartCommand::PreparedImage { image, .. }) => {
             if image.width == 0 || image.height == 0 {
                 return Err("Invalid Heart prepared image dimensions".into());
@@ -49,8 +48,7 @@ fn inspect(
                 return Err("Invalid Heart shadow primitive".into());
             }
             let bytes = target
-                .and_then(|v| ready.get(v))
-                .copied()
+                .and_then(|v| ready.bytes(v).ok())
                 .ok_or("Heart shadow must render into an admitted surface")?;
             *shadow_cost = (*shadow_cost).max(bytes * 2);
         }
@@ -61,8 +59,9 @@ fn inspect(
             if Some(*surface) == target {
                 return Err("Heart surface feedback is forbidden".into());
             }
-            sample_surface(surface, ready)?;
+            ready.sample(surface, target)?;
         }
+        Command::Heart(HeartCommand::OwnedBlit { surface, .. }) => ready.sample(surface, target)?,
         Command::Native(
             native::Command::Surface { .. }
             | native::Command::AppendSurface { .. }
@@ -121,7 +120,7 @@ pub fn validate(
         &mut resident,
         json.len() as u64 * 12 + 1920 * 1080 * 8 + 1024 * 1024,
     )?;
-    let mut ready = BTreeMap::new();
+    let mut ready = Lifetimes::default();
     let mut live = 0u64;
     let mut peak = 0u64;
     let mut count = 0usize;
@@ -130,11 +129,18 @@ pub fn validate(
         match command {
             Command::Heart(HeartCommand::Surface { id, size, commands }) => {
                 count += 1;
-                if ready.len() >= 64 || ready.contains_key(id) {
-                    return Err("Heart surface lifetime collision".into());
-                }
                 let bytes = image_bytes(*size)?;
-                ready.insert(*id, bytes);
+                ready.create(id, bytes)?;
+                add(&mut live, bytes)?;
+                for c in commands {
+                    inspect(c, &ready, Some(id), &mut count, &mut shadow)?;
+                }
+                peak = peak.max(live + shadow);
+            }
+            Command::Heart(HeartCommand::OwnedSurface { id, size, commands }) => {
+                count += 1;
+                let bytes = image_bytes(*size)?;
+                ready.create(id, bytes)?;
                 add(&mut live, bytes)?;
                 for c in commands {
                     inspect(c, &ready, Some(id), &mut count, &mut shadow)?;
@@ -142,7 +148,7 @@ pub fn validate(
                 peak = peak.max(live + shadow);
             }
             Command::Heart(HeartCommand::AppendSurface { surface, commands }) => {
-                sample_surface(surface, &ready)?;
+                ready.sample(surface, None)?;
                 for c in commands {
                     inspect(c, &ready, Some(surface), &mut count, &mut shadow)?;
                 }
@@ -150,11 +156,13 @@ pub fn validate(
             Command::Native(native::Command::ReleaseSurface { surface }) => {
                 count += 1;
                 live = live
-                    .checked_sub(
-                        ready
-                            .remove(surface)
-                            .ok_or("Heart released an unavailable surface")?,
-                    )
+                    .checked_sub(ready.release(surface)?)
+                    .ok_or("Heart lifetime underflow")?;
+            }
+            Command::Heart(HeartCommand::OwnedReleaseSurface { surface }) => {
+                count += 1;
+                live = live
+                    .checked_sub(ready.release(surface)?)
                     .ok_or("Heart lifetime underflow")?;
             }
             c => inspect(c, &ready, None, &mut count, &mut shadow)?,
@@ -163,9 +171,7 @@ pub fn validate(
             return Err("Heart command graph exceeds limits".into());
         }
     }
-    if !ready.is_empty() {
-        return Err("Heart producer leaked a scratch surface".into());
-    }
+    ready.finish()?;
     add(&mut resident, peak)?;
     if resident > MAX {
         return Err("Heart joint residency exceeds 256 MiB".into());

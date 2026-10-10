@@ -51,15 +51,19 @@ fn rate_loop_keeps_unmodified_full_native_ramp_after_canonical_source_stage() {
 }
 
 #[test]
-fn rate_loop_preserves_both_native_and_graph_fractional_phase_gates() {
+fn rate_loop_keeps_fractional_period_in_native_source_clock_without_integer_tiles() {
     for period in [0.25 + 1.0 / 44100.0, 0.25 + 1.0 / 48000.0] {
         let mut clip = native();
         clip.source_duration = clip.media_start + period;
-        assert!(
-            rate_loop::prepare(&clip, 1.0, 44100)
-                .unwrap_err()
-                .contains("fractional-sample")
-        );
+        let prepared = rate_loop::prepare(&clip, 1.0, 44100).unwrap();
+        assert_eq!(prepared.period_frames, 0);
+        assert!(prepared.stereo_filter.is_empty());
+        let clock = prepared.native_buffer_clock.unwrap();
+        assert_eq!(clock.period_seconds, clip.source_duration - clip.media_start);
+        for (index, segment) in clock.segments.iter().enumerate() {
+            assert_eq!(segment.elapsed_seconds, -(index as f64 * clock.period_seconds));
+            assert_eq!(segment.media_start_seconds, clip.media_start);
+        }
     }
     let mut clip = native();
     clip.start = 1.0 / 44100.0;

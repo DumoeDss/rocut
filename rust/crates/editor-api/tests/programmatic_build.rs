@@ -91,6 +91,9 @@ fn particle_capability_rejects_malformed_unknown_and_duplicate_declarations() {
         json!(["Particle-surface-v1"]),
         json!(["particle-surface-v1", "particle-surface-v1"]),
         json!(["particle-surface-v1", "unknown"]),
+        json!(["liquid-object-v2"]),
+        json!(["liquid-object-v1", "liquid-object-v1"]),
+        json!(["particle-surface-v1", "liquid-object-v1"]),
     ] {
         let mut s = source();
         s["build"]["engine"] = json!("three");
@@ -98,6 +101,21 @@ fn particle_capability_rejects_malformed_unknown_and_duplicate_declarations() {
         s["build"]["capabilities"] = capabilities.clone();
         assert!(!valid(s), "accepted capabilities {capabilities}");
     }
+}
+
+#[test]
+fn liquid_object_capability_is_explicit_and_three_only() {
+    let mut s = source();
+    s["build"]["engine"] = json!("three");
+    s["build"]["engineVersion"] = json!("0.185.1");
+    s["build"]["capabilities"] = json!(["liquid-object-v1"]);
+    assert!(valid(s.clone()));
+    assert!(valid(serde_json::from_str(&s.to_string()).unwrap()));
+    s["build"]["engine"] = json!("hyperframes");
+    assert!(!valid(s.clone()));
+    s["build"]["engine"] = json!("remotion");
+    s["build"]["compositionId"] = json!("Intro");
+    assert!(!valid(s));
 }
 
 fn valid(source: Value) -> bool {

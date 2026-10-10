@@ -17,6 +17,8 @@ struct Request {
     version: u32,
     graph: Value,
     observations: Vec<Value>,
+    #[serde(default, rename = "fallbackHistories")]
+    fallback_histories: Vec<Value>,
 }
 
 fn admit(graph: &Value, snapshot: &Value) -> Result<(Snapshot, Vec<Participation>), String> {
@@ -82,6 +84,7 @@ impl Envelopes {
         snapshot: &Snapshot,
         raw: &Value,
         participation: &[Participation],
+        history_ids: &std::collections::BTreeSet<String>,
     ) -> Result<(), String> {
         for ((track, raw_track), participation) in snapshot
             .tracks
@@ -95,7 +98,7 @@ impl Envelopes {
             let Some(envelope) = observed_envelope(
                 track,
                 &track.resolved_author_gain,
-                participation.requires_pcm,
+                participation.requires_pcm && !history_ids.contains(&track.instance_id),
             )?
             else {
                 continue;
@@ -134,14 +137,41 @@ fn collect(request: Request) -> Result<Value, String> {
     let baseline = &request.graph["snapshot"];
     let (snapshot, participation) = admit(&request.graph, baseline)?;
     let expected = declarations(baseline);
+    let graph: GraphRequest = serde_json::from_value(request.graph.clone())
+        .map_err(|error| format!("Invalid HyperFrames observation graph: {error}"))?;
+    let duration = f64::from(graph.duration_frames) * f64::from(graph.frame_rate.denominator)
+        / f64::from(graph.frame_rate.numerator);
+    let mut history_ids = std::collections::BTreeSet::new();
+    let mut events = 0usize;
+    if request.fallback_histories.len() > 256 {
+        return Err("Excessive HyperFrames native fallback histories".into());
+    }
+    for raw in &request.fallback_histories {
+        let history: super::fader::history::NativeFallbackHistory =
+            serde_json::from_value(raw.clone())
+                .map_err(|error| format!("Invalid native fallback history: {error}"))?;
+        let track = snapshot
+            .tracks
+            .iter()
+            .find(|track| track.instance_id == history.instance_id)
+            .ok_or("Unknown native fallback history instance")?;
+        if !history_ids.insert(history.instance_id.clone()) {
+            return Err("Duplicate native fallback history instance".into());
+        }
+        events += history.events.len();
+        if events > 32768 {
+            return Err("Native fallback history exceeds its write budget".into());
+        }
+        super::fader::history::resolve(track, &history, duration)?;
+    }
     let mut envelopes = Envelopes::default();
-    envelopes.observe(&snapshot, baseline, &participation)?;
+    envelopes.observe(&snapshot, baseline, &participation, &history_ids)?;
     for raw in request.observations {
         let (snapshot, participation) = admit(&request.graph, &raw)?;
         if declarations(&raw) != expected {
             return Err("HyperFrames static declarations changed across native snapshots".into());
         }
-        envelopes.observe(&snapshot, &raw, &participation)?;
+        envelopes.observe(&snapshot, &raw, &participation, &history_ids)?;
     }
     let facts: Vec<Value> = envelopes
         .facts
@@ -152,7 +182,7 @@ fn collect(request: Request) -> Result<Value, String> {
     // executable capability; the existing execution preparation decides that.
     Ok(
         json!({"version":1,"stage":"stable-native-observations","executionReady":false,
-        "faderObservations":facts}),
+        "faderObservations":facts,"fallbackHistories":request.fallback_histories}),
     )
 }
 

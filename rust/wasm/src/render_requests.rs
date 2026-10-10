@@ -10,7 +10,8 @@ struct Request<P> {
     id: u32,
     owner: u64,
     generation: u64,
-    payload: P,
+    // None reserves an in-flight request while its payload is outside the store.
+    payload: Option<P>,
 }
 
 pub(crate) struct RenderRequests<P> {
@@ -51,7 +52,7 @@ impl<P> RenderRequests<P> {
                 id,
                 owner,
                 generation,
-                payload,
+                payload: Some(payload),
             },
         );
         Ok(id)
@@ -71,23 +72,71 @@ impl<P> RenderRequests<P> {
         if request.id != id {
             return Err(RequestError::Cancelled);
         }
-        let request = self.pending.remove(&handle).unwrap();
         if request.owner != owner || request.generation != generation {
+            self.pending.remove(&handle);
             return Err(RequestError::Cancelled);
         }
-        Ok(request.payload)
+        self.pending
+            .get_mut(&handle)
+            .unwrap()
+            .payload
+            .take()
+            .ok_or(RequestError::Cancelled)
     }
 
-    pub fn restore(&mut self, handle: u32, id: u32, owner: u64, generation: u64, payload: P) {
-        self.pending.insert(
-            handle,
-            Request {
-                id,
-                owner,
-                generation,
-                payload,
-            },
-        );
+    /// Restore only the still-current in-flight reservation. A rejected payload
+    /// is dropped; cancellation or replacement can never be undone by a callback.
+    pub fn restore(
+        &mut self,
+        handle: u32,
+        id: u32,
+        owner: u64,
+        generation: u64,
+        payload: P,
+    ) -> Result<(), RequestError> {
+        let request = self
+            .pending
+            .get_mut(&handle)
+            .ok_or(RequestError::Cancelled)?;
+        if request.id != id
+            || request.owner != owner
+            || request.generation != generation
+            || request.payload.is_some()
+        {
+            return Err(RequestError::Cancelled);
+        }
+        request.payload = Some(payload);
+        Ok(())
+    }
+
+    /// Poll cancellation identity without borrowing a payload or storing a waker.
+    pub fn is_in_flight(&self, handle: u32, id: u32, owner: u64, generation: u64) -> bool {
+        self.pending.get(&handle).is_some_and(|request| {
+            request.id == id
+                && request.owner == owner
+                && request.generation == generation
+                && request.payload.is_none()
+        })
+    }
+
+    /// Retire a taken terminal payload without consuming a newer or ready request.
+    pub fn finish(
+        &mut self,
+        handle: u32,
+        id: u32,
+        owner: u64,
+        generation: u64,
+    ) -> Result<(), RequestError> {
+        let request = self.pending.get(&handle).ok_or(RequestError::Cancelled)?;
+        if request.id != id
+            || request.owner != owner
+            || request.generation != generation
+            || request.payload.is_some()
+        {
+            return Err(RequestError::Cancelled);
+        }
+        self.pending.remove(&handle);
+        Ok(())
     }
 
     pub fn cancel(&mut self, handle: u32, id: u32) {
@@ -177,7 +226,7 @@ mod tests {
         let mut requests = RenderRequests::default();
         let id = requests.begin(1, 1, 0, Payload(drops.clone())).unwrap();
         let payload = requests.take(1, id, 1, 0).unwrap();
-        requests.restore(1, id, 1, 0, payload);
+        requests.restore(1, id, 1, 0, payload).unwrap();
         assert_eq!(drops.get(), 0);
         requests.cancel(1, id);
         assert_eq!(drops.get(), 1);
@@ -185,3 +234,7 @@ mod tests {
         assert_eq!(drops.get(), 1);
     }
 }
+
+#[cfg(test)]
+#[path = "render_requests_inflight_tests.rs"]
+mod inflight_tests;

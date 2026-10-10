@@ -18,8 +18,11 @@ use crate::runtime_state::{DEFAULT_COMPOSITOR_HANDLE, HandleRegistry, HandleRegi
 #[path = "compositor_requests.rs"]
 mod requests;
 pub use requests::*;
+#[path = "compositor_capture.rs"]
+mod capture;
 #[path = "compositor_frame_preflight.rs"]
 mod frame_preflight;
+use capture::capture_next;
 
 struct CompositorRuntime {
     owner: u64,
@@ -246,7 +249,7 @@ pub fn upload_texture_for_handle(handle: u32, options: JsValue) -> Result<(), Js
             width,
             height,
             "compositor-upload-texture",
-        );
+        )?;
         with_runtime_mut(handle, |runtime| {
             runtime.compositor.upsert_texture(id, texture);
             Ok(())

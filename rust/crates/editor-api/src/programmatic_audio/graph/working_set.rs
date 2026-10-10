@@ -20,20 +20,37 @@ pub(super) fn estimate(
     }
     // Full native s16 preparation and explicit graph-rate conversion coexist
     // with retained dry PCM. Byte transport keeps chunks plus its joined copy.
-    let rate_preparation_bytes = sources
-        .iter()
-        .filter_map(|source| {
-            source.rate_preparation.as_ref().map(|recipe| {
-                recipe.stereo_filter.len() as u64
-                    + recipe.mono_filter.len() as u64
-                    + recipe.resample_filter.len() as u64
-                    + 2 * source.preparation_key.as_ref().map_or(0, String::len) as u64
-                    + recipe.source_loop.as_ref().map_or(0, |source_loop| {
-                        (source_loop.stereo_filter.len() + source_loop.mono_filter.len()) as u64
-                    })
-            })
+    let native_loop_encoded_bytes = if sources.iter().any(|source| {
+        source.rate_preparation.as_ref().is_some_and(|recipe| {
+            recipe
+                .source_loop
+                .as_ref()
+                .is_some_and(|source_loop| source_loop.native_buffer_clock.is_some())
         })
-        .sum::<u64>()
+    }) {
+        2 * encoded_bytes
+    } else {
+        0
+    };
+    let rate_preparation_bytes = native_loop_encoded_bytes
+        + sources
+            .iter()
+            .filter_map(|source| {
+                source.rate_preparation.as_ref().map(|recipe| {
+                    recipe.stereo_filter.len() as u64
+                        + recipe.mono_filter.len() as u64
+                        + recipe.resample_filter.len() as u64
+                        + 2 * source.preparation_key.as_ref().map_or(0, String::len) as u64
+                        + recipe.source_loop.as_ref().map_or(0, |source_loop| {
+                            (source_loop.stereo_filter.len() + source_loop.mono_filter.len()) as u64
+                                + source_loop
+                                    .native_buffer_clock
+                                    .as_ref()
+                                    .map_or(0, |clock| clock.segments.len() as u64 * 32)
+                        })
+                })
+            })
+            .sum::<u64>()
         + sources
             .iter()
             .filter_map(|source| {
@@ -162,6 +179,11 @@ pub(super) fn estimate(
     // Caller-owned encoded bytes stay alive while the host keeps its immutable
     // Buffer.from snapshot for identity verification and decoding.
     let known = 2 * encoded_bytes
+        + tracks
+            .iter()
+            .filter_map(|track| track.native_gain_history.as_ref())
+            .map(|history| history.events.len() as u64 * 16 * 3)
+            .sum::<u64>()
         + rate_preparation_bytes
         + decoded
         + mixes

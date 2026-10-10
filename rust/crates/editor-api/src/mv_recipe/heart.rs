@@ -19,14 +19,64 @@ mod cracks;
 mod draw;
 #[path = "heart_embers.rs"]
 mod embers;
+#[path = "heart_figure.rs"]
+mod figure;
+#[path = "heart_gather.rs"]
+mod gather;
+#[path = "heart_gather_layers.rs"]
+mod gather_layers;
+#[path = "heart_gather_motion.rs"]
+mod gather_motion;
 #[path = "heart_glitter.rs"]
 mod glitter;
 #[path = "heart_layers.rs"]
 mod layers;
 #[path = "heart_producer.rs"]
 mod producer;
+#[path = "heart_rebirth_contract.rs"]
+mod rebirth_contract;
+#[path = "heart_rebirth_draw.rs"]
+mod rebirth_draw;
+#[path = "heart_rebirth_bridge.rs"]
+mod rebirth_bridge;
+#[cfg(test)]
+#[path = "heart_rebirth_tests.rs"]
+mod rebirth_tests;
 #[path = "converge_math.rs"]
 mod seeded;
+#[path = "heart_sky.rs"]
+mod sky;
+#[path = "heart_sky_background.rs"]
+mod sky_background;
+#[path = "heart_sky_budget.rs"]
+mod sky_budget;
+#[path = "heart_sky_geometry.rs"]
+mod sky_geometry;
+#[path = "heart_sky_layers.rs"]
+mod sky_layers;
+#[path = "heart_sky_motion.rs"]
+mod sky_motion;
+#[path = "heart_sky_night_data.rs"]
+mod sky_night_data;
+#[path = "heart_sky_plan.rs"]
+mod sky_plan;
+#[path = "heart_sky_producer.rs"]
+mod sky_producer;
+#[path = "heart_sky_sprites.rs"]
+mod sky_sprites;
+#[cfg(test)]
+#[path = "heart_sky_tests.rs"]
+mod sky_tests;
+#[path = "heart_sky_validation.rs"]
+mod sky_validation;
+#[path = "heart_sun.rs"]
+mod sun;
+#[path = "heart_sun_background.rs"]
+mod sun_background;
+#[path = "heart_sun_layers.rs"]
+mod sun_layers;
+#[path = "heart_sun_motion.rs"]
+mod sun_motion;
 #[cfg(test)]
 #[path = "heart_tests.rs"]
 mod tests;
@@ -35,6 +85,9 @@ mod timing;
 use crate::programmatic_resources::Resource;
 pub use admission::Admission as PreparationAdmission;
 pub use plan::prepared::{Binding, PreparedImage};
+pub use rebirth_contract::{Gather as HeartGather, Sun as SunBloom};
+pub use sky::{Args as SkyShatter, Session as SkySession};
+pub use sky_plan::Plan as SkyPlan;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -100,6 +153,29 @@ pub struct Session {
     body_image: PreparedImage,
     chip_images: Vec<PreparedImage>,
 }
+/// Opaque discovery bound to the complete validated source binding.
+pub struct SessionPreparation {
+    binding: Binding,
+    discovery: components::Discovery,
+}
+impl SessionPreparation {
+    pub fn actual_parts(&self) -> usize {
+        self.discovery.parts()
+    }
+    pub fn finish(self, rgba: &[u8], max_bytes: usize) -> Result<Session, String> {
+        // A caller cannot replace pixels between discovery and derived allocation.
+        self.binding.validate_source(rgba)?;
+        let admission =
+            admission::inspect_parts(&self.binding, max_bytes, self.actual_parts() as u64)?;
+        let body = components::finish(
+            self.discovery,
+            rgba,
+            admission.component_budget_bytes as usize,
+        )
+        .map_err(|e| format!("Heart component preparation: {e:?}"))?;
+        Session::from_body(self.binding, body)
+    }
+}
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Plan {
@@ -117,16 +193,37 @@ impl Session {
     }
     /// Encoded source bytes must already have been hash-admitted by the resource owner.
     pub fn prepare(binding: Binding, rgba: &[u8], max_bytes: usize) -> Result<Self, String> {
+        Self::discover(binding, rgba, max_bytes)?.finish(rgba, max_bytes)
+    }
+    pub fn discover(
+        binding: Binding,
+        rgba: &[u8],
+        max_bytes: usize,
+    ) -> Result<SessionPreparation, String> {
+        Self::discover_with_metadata(binding, rgba, max_bytes, 0)
+    }
+    pub fn discover_with_metadata(
+        binding: Binding,
+        rgba: &[u8],
+        max_bytes: usize,
+        per_part: usize,
+    ) -> Result<SessionPreparation, String> {
         // Reserve all phases and external owners before the first large allocation.
         let component_budget = admission::reserve(&binding, rgba.len(), max_bytes)?;
         binding.validate_source(rgba)?;
-        let body = components::prepare(
+        let discovery = components::discover_with_metadata(
             binding.decoded_width as usize,
             binding.decoded_height as usize,
             rgba,
             component_budget,
+            per_part
+                .checked_add(2048)
+                .ok_or("Heart metadata budget overflow")?,
         )
         .map_err(|e| format!("Heart component preparation: {e:?}"))?;
+        Ok(SessionPreparation { binding, discovery })
+    }
+    fn from_body(binding: Binding, body: components::Prepared) -> Result<Self, String> {
         let glass = shards::build(&body, 10_000_000)
             .map_err(|e| format!("Heart fracture preparation: {e:?}"))?;
         let body_image = binding.image(

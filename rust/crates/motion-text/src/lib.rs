@@ -1,4 +1,6 @@
 mod audio;
+mod attachment;
+pub use attachment::validate_sequence_attachment;
 mod factory;
 mod font;
 #[cfg(test)]

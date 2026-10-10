@@ -19,7 +19,10 @@ struct Seek {
 struct Request {
     source: Value,
     graph: Value,
-    seek: Seek,
+    #[serde(default)]
+    seek: Option<Seek>,
+    #[serde(default, rename = "nativeHistoryScan")]
+    native_history_scan: bool,
 }
 
 fn descriptor(request: Request) -> Result<Value, String> {
@@ -65,10 +68,32 @@ fn descriptor(request: Request) -> Result<Value, String> {
     let duration = plan["compositionSeconds"]
         .as_f64()
         .ok_or("Missing native seek composition clock")?;
-    if !request.seek.time.is_finite() || request.seek.time < 0.0 || request.seek.time >= duration {
+    if request.native_history_scan {
+        if request.seek.is_some() {
+            return Err("Native history scan cannot also request a discovery seek".into());
+        }
+        let mut scan = plan["nativeHistoryScan"].clone();
+        let frames = scan["times"]
+            .as_array()
+            .ok_or("Missing native history scan times")?
+            .iter()
+            .map(|time| {
+                let mut mapped = frame.clone();
+                native_frame_clock(&mut mapped, time.as_f64().unwrap());
+                mapped
+            })
+            .collect::<Vec<_>>();
+        scan["frames"] = json!(frames);
+        return Ok(json!({"nativeHistoryScan":scan}));
+    }
+    let requested_seek = request.seek.ok_or("Missing native discovery seek")?;
+    if !requested_seek.time.is_finite()
+        || requested_seek.time < 0.0
+        || requested_seek.time >= duration
+    {
         return Err("Native seek time must be finite and inside the composition".into());
     }
-    let seek = serde_json::to_value(&request.seek).map_err(|error| error.to_string())?;
+    let seek = serde_json::to_value(&requested_seek).map_err(|error| error.to_string())?;
     if !plan["seeks"]
         .as_array()
         .is_some_and(|seeks| seeks.contains(&seek))
@@ -77,19 +102,25 @@ fn descriptor(request: Request) -> Result<Value, String> {
             "Native seek time and instance identities must match a discovery candidate".into(),
         );
     }
+    native_frame_clock(&mut frame, requested_seek.time);
+    Ok(json!({"frame":frame,"seek":seek}))
+}
+
+fn native_frame_clock(frame: &mut Value, time: f64) {
     let numerator = frame["frameRate"]["numerator"].as_u64().unwrap();
     let denominator = frame["frameRate"]["denominator"].as_u64().unwrap();
     let frames = frame["durationFrames"].as_u64().unwrap();
-    let index = ((request.seek.time * numerator as f64 / denominator as f64).floor() as u64)
-        .min(frames - 1);
+    let index = ((time * numerator as f64 / denominator as f64).floor() as u64).min(frames - 1);
     let picture_ticks = index * (120_000 * denominator / numerator);
     frame["index"] = json!(index);
     frame["sourceTime"] = json!(picture_ticks);
     frame["timelineTime"] = json!(picture_ticks);
+    if frame.get("sampleTime").is_some() {
+        frame["sampleTime"] = json!(picture_ticks);
+    }
     // The pinned driver's renderSeek consumes this exact native f64 value.
     // Never reconstruct it from index, integer ticks, or the audio sample grid.
-    frame["time"] = json!(request.seek.time);
-    Ok(json!({"frame":frame,"seek":seek}))
+    frame["time"] = json!(time);
 }
 
 /// Validate a discovery candidate and recover its render context without

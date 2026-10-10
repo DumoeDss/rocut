@@ -28,6 +28,8 @@ pub struct Build {
 enum BuildCapability {
     #[serde(rename = "particle-surface-v1")]
     ParticleSurface,
+    #[serde(rename = "liquid-object-v1")]
+    LiquidObject,
 }
 
 fn optional_capabilities<'de, D: serde::Deserializer<'de>>(
@@ -108,7 +110,7 @@ impl Build {
         if let Some(capabilities) = &self.capabilities {
             if self.engine != "three" || capabilities.len() != 1 {
                 issue(
-                    "capabilities require exactly one particle-surface-v1 declaration on a Three build",
+                    "capabilities require exactly one supported declaration on a Three build",
                 );
             }
         }

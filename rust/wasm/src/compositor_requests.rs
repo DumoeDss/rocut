@@ -64,13 +64,91 @@ fn identity(handle: u32) -> Result<(u64, u64), JsValue> {
         .map_err(|_| cancelled())
 }
 
+fn is_current(handle: u32, request: u32, owner: (u64, u64)) -> bool {
+    identity(handle).is_ok_and(|current| current == owner)
+        && REQUESTS.with(|requests| {
+            requests
+                .borrow()
+                .is_in_flight(handle, request, owner.0, owner.1)
+        })
+}
+
+async fn advance_preparation(
+    handle: u32,
+    request: u32,
+    owner: (u64, u64),
+    preparation: Preparation,
+    max_steps: u32,
+) -> Result<(Preparation, bool), JsValue> {
+    if !is_current(handle, request, owner) {
+        return Err(cancelled());
+    }
+    let mut frame = match preparation {
+        Preparation::Ready(frame) => frame,
+        Preparation::Pending(mut pending) => {
+            let quota = NonZeroU64::new(u64::from(max_steps)).unwrap();
+            if !pending.advance(quota).map_err(preparation_error)? {
+                return Ok((Preparation::Pending(pending), false));
+            }
+            pending.finish().map_err(preparation_error)?
+        }
+    };
+    if frame.canvas_ready() {
+        frame.finalize_canvas().map_err(preparation_error)?;
+        return Ok((Preparation::Ready(frame), true));
+    }
+    if let Some(minimum) = frame.canvas_minimum_step_work() {
+        let work = minimum
+            .get()
+            .checked_mul(u64::from(max_steps))
+            .and_then(NonZeroU64::new)
+            .ok_or_else(|| error("RENDER_FAILED", "Canvas chunk quota overflow"))?;
+        // Exactly one bounded CPU chunk, not an entire graph loop.
+        let ready = frame.advance_canvas(work).map_err(preparation_error)?;
+        if ready {
+            frame.finalize_canvas().map_err(preparation_error)?;
+        }
+        return Ok((Preparation::Ready(frame), ready));
+    }
+    if !is_current(handle, request, owner) {
+        return Err(cancelled());
+    }
+    let capture = super::capture_next(handle, &frame)?;
+    if !is_current(handle, request, owner) {
+        return Err(cancelled());
+    }
+    match capture {
+        Some((ticket, readback)) => {
+            // Borrow-free await; the real reservation/owner/generation predicate
+            // is checked by readback before/after each MapWait poll and unpack.
+            let rgba = readback
+                .finish_rgba(|| is_current(handle, request, owner))
+                .await?;
+            if !is_current(handle, request, owner) {
+                return Err(cancelled());
+            }
+            frame
+                .begin_canvas_preparation(ticket, rgba)
+                .map_err(preparation_error)?;
+            Ok((Preparation::Ready(frame), false))
+        }
+        None => {
+            frame.finalize_canvas().map_err(preparation_error)?;
+            Ok((Preparation::Ready(frame), true))
+        }
+    }
+}
+
 #[wasm_bindgen(js_name = beginRenderFrameForHandle)]
 pub fn begin_render_frame_for_handle(handle: u32, options: JsValue) -> Result<u32, JsValue> {
     // Invalidate before parsing too: an invalid newer frame must not publish the old one.
     super::invalidate_runtime(handle)?;
     let owner = identity(handle)?;
     super::frame_preflight::validate(&options).map_err(|value| {
-        error("RENDER_FAILED", &format!("Invalid frame descriptor: {value}"))
+        error(
+            "RENDER_FAILED",
+            &format!("Invalid frame descriptor: {value}"),
+        )
     })?;
     let frame: FrameDescriptor = serde_wasm_bindgen::from_value(options).map_err(|value| {
         error(
@@ -78,8 +156,8 @@ pub fn begin_render_frame_for_handle(handle: u32, options: JsValue) -> Result<u3
             &format!("Invalid frame descriptor: {value}"),
         )
     })?;
-    let preparation = FramePreparation::new(frame)
-        .map_err(|value| error("RENDER_FAILED", &value.to_string()))?;
+    let preparation =
+        FramePreparation::new(frame).map_err(|value| error("RENDER_FAILED", &value.to_string()))?;
     REQUESTS.with(|requests| {
         requests
             .borrow_mut()
@@ -89,13 +167,14 @@ pub fn begin_render_frame_for_handle(handle: u32, options: JsValue) -> Result<u3
 }
 
 #[wasm_bindgen(js_name = advanceRenderFrameForHandle)]
-pub fn advance_render_frame_for_handle(
+pub async fn advance_render_frame_for_handle(
     handle: u32,
     request: u32,
     max_steps: u32,
 ) -> Result<bool, JsValue> {
     let owner = identity(handle)?;
-    // Remove while doing CPU work: no RefCell/runtime/GPU borrow crosses replay.
+    // Take the payload, retaining its in-flight identity. No RefCell/runtime/GPU
+    // borrow crosses replay, and late restore cannot replace a newer request.
     let preparation = REQUESTS.with(|requests| {
         requests
             .borrow_mut()
@@ -103,30 +182,31 @@ pub fn advance_render_frame_for_handle(
             .map_err(request_error)
     })?;
     if !(1..=64).contains(&max_steps) {
+        REQUESTS.with(|requests| requests.borrow_mut().cancel(handle, request));
         return Err(error(
             "RENDER_FAILED",
             "Step quota must be between 1 and 64",
         ));
     }
-    let quota = NonZeroU64::new(u64::from(max_steps)).unwrap();
-    let (preparation, ready) = match preparation {
-        Preparation::Ready(frame) => (Preparation::Ready(frame), true),
-        Preparation::Pending(mut pending) => {
-            if pending.advance(quota).map_err(preparation_error)? {
-                (
-                    Preparation::Ready(pending.finish().map_err(preparation_error)?),
-                    true,
-                )
-            } else {
-                (Preparation::Pending(pending), false)
-            }
+    let result = advance_preparation(handle, request, owner, preparation, max_steps).await;
+    let (preparation, ready) = match result {
+        Ok(next) => next,
+        Err(error) => {
+            REQUESTS.with(|requests| requests.borrow_mut().cancel(handle, request));
+            return Err(error);
         }
     };
-    REQUESTS.with(|requests| {
-        requests
-            .borrow_mut()
-            .restore(handle, request, owner.0, owner.1, preparation)
-    });
+    if !is_current(handle, request, owner) {
+        REQUESTS.with(|requests| requests.borrow_mut().cancel(handle, request));
+        return Err(cancelled());
+    }
+    REQUESTS
+        .with(|requests| {
+            requests
+                .borrow_mut()
+                .restore(handle, request, owner.0, owner.1, preparation)
+        })
+        .map_err(request_error)?;
     Ok(ready)
 }
 
@@ -139,6 +219,12 @@ pub fn commit_render_frame_for_handle(handle: u32, request: u32) -> Result<(), J
             .take(handle, request, owner.0, owner.1)
             .map_err(request_error)
     })?;
+    REQUESTS.with(|requests| {
+        requests
+            .borrow_mut()
+            .finish(handle, request, owner.0, owner.1)
+            .map_err(request_error)
+    })?;
     let Preparation::Ready(frame) = preparation else {
         // Invalid commit is terminal, never retains a partially prepared frame.
         return Err(error(
@@ -146,6 +232,7 @@ pub fn commit_render_frame_for_handle(handle: u32, request: u32) -> Result<(), J
             "Render request has not completed CPU preparation",
         ));
     };
+    frame.finalize_canvas().map_err(preparation_error)?;
     // Last cancellation/owner check is above. Synchronous GPU commit is not retractable.
     crate::perf::reset();
     super::render_prepared(handle, frame)

@@ -217,11 +217,10 @@ fn rate_prepare_keeps_phase_and_full_history_budget_gates() {
     assert!(observed.observed_pcm);
     assert_eq!(observed.resample_filter, "aresample=48000");
     clip.r#loop = true;
-    assert!(
-        prepare(&clip, &points, 48000)
-            .unwrap_err()
-            .contains("fractional-sample")
-    );
+    let looped = prepare(&clip, &points, 48000).unwrap();
+    assert!(looped.observed_pcm);
+    assert!(looped.source_loop.is_some());
+    assert_eq!(looped.duration_seconds, clip.duration.to_string());
     assert!(
         prepare(&native(3600.0), &points, 48000)
             .unwrap_err()

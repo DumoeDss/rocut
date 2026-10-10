@@ -23,6 +23,9 @@ pub struct Admission {
     pub component_budget_bytes: u64,
 }
 pub fn inspect(binding: &Binding, max_bytes: usize) -> Result<Admission, String> {
+    inspect_parts(binding, max_bytes, 0)
+}
+pub fn inspect_parts(binding: &Binding, max_bytes: usize, parts: u64) -> Result<Admission, String> {
     if let Some(issue) =
         crate::programmatic_resources::validate(std::slice::from_ref(&binding.source)).first()
     {
@@ -36,7 +39,6 @@ pub fn inspect(binding: &Binding, max_bytes: usize) -> Result<Admission, String>
     }
     let decoded =
         crate::image_sequence::decoded_image_bytes(binding.decoded_width, binding.decoded_height)?;
-    let parts = 1 + decoded / 4 / 50;
     let identity = parts
         .checked_mul(IDENTITY_BYTES)
         .ok_or("Heart preparation budget overflow")?;
@@ -58,7 +60,7 @@ pub fn inspect(binding: &Binding, max_bytes: usize) -> Result<Admission, String>
         native_source_bytes: decoded,
         fracture_bytes: FRACTURE_BYTES,
         identity_bytes: identity,
-        max_parts: parts,
+        max_parts: 1 + decoded / 4 / 50,
         component_budget_bytes: component_budget,
     })
 }

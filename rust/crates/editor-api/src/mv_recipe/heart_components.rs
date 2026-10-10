@@ -40,6 +40,25 @@ pub struct Prepared {
     pub top: Vec<[f64; 2]>,
 }
 
+/// Discovery is private to Rust preparation; it contains no derived image bytes.
+pub struct Discovery {
+    width: usize,
+    height: usize,
+    labels: Vec<Option<usize>>,
+    components: Vec<Component>,
+    main: usize,
+    charge: usize,
+}
+impl Discovery {
+    pub fn parts(&self) -> usize {
+        1 + self
+            .components
+            .iter()
+            .filter(|c| c.label != self.main && c.count >= 50)
+            .count()
+    }
+}
+
 impl Prepared {
     /// JS Math.round semantics (including negative half coordinates).
     pub fn alpha_at(&self, x: f64, y: f64) -> u8 {
@@ -62,12 +81,21 @@ impl Prepared {
 
 /// Caller supplies a session byte ceiling covering all allocations in this function.
 /// Native decoded/encoded buffers outside this function must be charged separately.
-pub fn prepare(
+pub fn discover(
     width: usize,
     height: usize,
     rgba: &[u8],
     max_bytes: usize,
-) -> Result<Prepared, Error> {
+) -> Result<Discovery, Error> {
+    discover_with_metadata(width, height, rgba, max_bytes, 0)
+}
+pub fn discover_with_metadata(
+    width: usize,
+    height: usize,
+    rgba: &[u8],
+    max_bytes: usize,
+    per_part: usize,
+) -> Result<Discovery, Error> {
     if width == 0 || height == 0 {
         return Err(Error::InvalidDimensions);
     }
@@ -76,12 +104,9 @@ pub fn prepare(
     if rgba.len() != bytes {
         return Err(Error::InvalidPixels);
     }
-    // Labels, stack, worst-case component records, body, and contour capacity.
-    let per_pixel = std::mem::size_of::<Option<usize>>()
-        + std::mem::size_of::<usize>()
-        + std::mem::size_of::<Component>()
-        // Rust body plus provider upload and admitted native body bitmap.
-        + 12;
+    // Discovery labels and stack are exact-sized. Component growth is admitted
+    // before allocation, including simultaneous old/new vector storage.
+    let per_pixel = std::mem::size_of::<Option<usize>>() + std::mem::size_of::<usize>();
     let mut charge = n
         .checked_mul(per_pixel)
         .and_then(|v| v.checked_add(14 * 16))
@@ -91,7 +116,9 @@ pub fn prepare(
     }
     let mut labels = vec![None; n];
     let mut stack = Vec::with_capacity(n);
-    let mut components = Vec::with_capacity(n);
+    let mut components: Vec<Component> = Vec::new();
+    let mut metadata_charge = per_part;
+    let mut qualifying = 0usize;
     for p0 in 0..n {
         if labels[p0].is_some() || rgba[p0 * 4 + 3] < 32 {
             continue;
@@ -126,6 +153,48 @@ pub fn prepare(
                 }
             }
         }
+        if components.len() == components.capacity() {
+            let old = components.capacity();
+            let next = old.checked_mul(2).unwrap_or(usize::MAX).max(1).min(n);
+            let cost = next
+                .checked_mul(std::mem::size_of::<Component>())
+                .ok_or(Error::BudgetExceeded)?;
+            if charge
+                .checked_add(cost)
+                .and_then(|v| v.checked_add(metadata_charge))
+                .ok_or(Error::BudgetExceeded)?
+                > max_bytes
+            {
+                return Err(Error::BudgetExceeded);
+            }
+            components
+                .try_reserve_exact(next - old)
+                .map_err(|_| Error::BudgetExceeded)?;
+            charge = charge
+                .checked_sub(old * std::mem::size_of::<Component>())
+                .and_then(|v| {
+                    v.checked_add(components.capacity() * std::mem::size_of::<Component>())
+                })
+                .ok_or(Error::BudgetExceeded)?;
+            if charge > max_bytes {
+                return Err(Error::BudgetExceeded);
+            }
+        }
+        if count >= 50 {
+            // Every qualifying component except the eventual main is a chip;
+            // max(1, qualifying) is therefore the exact published-part count.
+            qualifying += 1;
+            metadata_charge = qualifying
+                .checked_mul(per_part)
+                .ok_or(Error::BudgetExceeded)?;
+            if charge
+                .checked_add(metadata_charge)
+                .ok_or(Error::BudgetExceeded)?
+                > max_bytes
+            {
+                return Err(Error::BudgetExceeded);
+            }
+        }
         components.push(Component {
             label,
             count,
@@ -141,6 +210,55 @@ pub fn prepare(
             main = index;
         }
     }
+    // Stack is no longer live during body/crop preparation.
+    charge -= stack.capacity() * std::mem::size_of::<usize>();
+    drop(stack);
+    Ok(Discovery {
+        width,
+        height,
+        labels,
+        components,
+        main,
+        charge,
+    })
+}
+
+pub fn finish(discovery: Discovery, rgba: &[u8], max_bytes: usize) -> Result<Prepared, Error> {
+    let parts = discovery.parts();
+    let Discovery {
+        width,
+        height,
+        labels,
+        components,
+        main,
+        mut charge,
+    } = discovery;
+    let bytes = width
+        .checked_mul(height)
+        .and_then(|n| n.checked_mul(4))
+        .ok_or(Error::BudgetExceeded)?;
+    if rgba.len() != bytes {
+        return Err(Error::InvalidPixels);
+    }
+    charge = charge
+        .checked_add(bytes.checked_mul(3).ok_or(Error::BudgetExceeded)?)
+        .and_then(|v| v.checked_add((parts - 1).checked_mul(std::mem::size_of::<Chip>())?))
+        .ok_or(Error::BudgetExceeded)?;
+    // Admit all crops before allocating body or any derived raster.
+    for component in &components {
+        if component.label == main || component.count < 50 {
+            continue;
+        }
+        let [x0, y0, x1, y1] = component.bounds;
+        let crop = (x1 - x0 + 5)
+            .checked_mul(y1 - y0 + 5)
+            .and_then(|v| v.checked_mul(12))
+            .ok_or(Error::BudgetExceeded)?;
+        charge = charge.checked_add(crop).ok_or(Error::BudgetExceeded)?;
+    }
+    if charge > max_bytes {
+        return Err(Error::BudgetExceeded);
+    }
     let mut body_rgba = rgba.to_vec();
     for (p, label) in labels.iter().enumerate() {
         if label.is_some() && *label != Some(main) {
@@ -149,18 +267,7 @@ pub fn prepare(
     }
     let scale = 610.0 / height as f64;
     let display_size = [(width as f64 * scale + 0.5).floor() as usize, 610];
-    charge = charge
-        .checked_add(
-            components
-                .len()
-                .checked_mul(std::mem::size_of::<Chip>())
-                .ok_or(Error::BudgetExceeded)?,
-        )
-        .ok_or(Error::BudgetExceeded)?;
-    if charge > max_bytes {
-        return Err(Error::BudgetExceeded);
-    }
-    let mut chips = Vec::with_capacity(components.len());
+    let mut chips = Vec::with_capacity(parts - 1);
     for component in &components {
         if component.label == main || component.count < 50 {
             continue;
@@ -172,13 +279,6 @@ pub fn prepare(
             .checked_mul(ph)
             .and_then(|v| v.checked_mul(4))
             .ok_or(Error::BudgetExceeded)?;
-        charge = charge
-            // Rust crop, provider upload and admitted native crop bitmap.
-            .checked_add(crop_bytes.checked_mul(3).ok_or(Error::BudgetExceeded)?)
-            .ok_or(Error::BudgetExceeded)?;
-        if charge > max_bytes {
-            return Err(Error::BudgetExceeded);
-        }
         let mut crop = vec![0; crop_bytes];
         for yy in 0..ph {
             for xx in 0..pw {
@@ -233,9 +333,42 @@ pub fn prepare(
     Ok(result)
 }
 
+pub fn prepare(
+    width: usize,
+    height: usize,
+    rgba: &[u8],
+    max_bytes: usize,
+) -> Result<Prepared, Error> {
+    finish(discover(width, height, rgba, max_bytes)?, rgba, max_bytes)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn actual_parts_and_two_phase_budget_fail_closed() {
+        let rgba = vec![255; 100 * 100 * 4];
+        let discovery = discover_with_metadata(100, 100, &rgba, 1_000_000, 16 * 1024).unwrap();
+        assert_eq!(discovery.parts(), 1);
+        assert_eq!(discovery.components.capacity(), 1);
+        assert_eq!(
+            finish(discovery, &rgba, 1).unwrap_err(),
+            Error::BudgetExceeded
+        );
+        // Twenty independent >=50-pixel stripes: reject metadata in discovery,
+        // before allocating body, crops, fracture or image descriptors.
+        let mut fragmented = vec![0; 50 * 40 * 4];
+        for y in (0..40).step_by(2) {
+            for x in 0..50 {
+                fragmented[(y * 50 + x) * 4 + 3] = 255;
+            }
+        }
+        assert!(matches!(
+            discover_with_metadata(50, 40, &fragmented, 200_000, 16 * 1024),
+            Err(Error::BudgetExceeded)
+        ));
+    }
 
     #[test]
     fn threshold_connectivity_tie_and_ghost_pixels() {

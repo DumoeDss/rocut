@@ -7,7 +7,7 @@ use crate::{
     effects::{apply_effect_passes_to_texture, parse_apply_effect_passes_options},
     effects_readback_state::{ReadbackGuard, ReadbackLayout},
     effects_readback_wait::MapWait,
-    gpu::{render_texture_to_canvas, with_gpu_runtime},
+    gpu::{GpuRuntime, render_texture_to_canvas, with_gpu_runtime},
 };
 
 struct ReadbackBuffer(wgpu::Buffer);
@@ -19,7 +19,7 @@ impl Drop for ReadbackBuffer {
     }
 }
 
-struct ReadbackJob {
+pub(crate) struct ReadbackJob {
     buffer: ReadbackBuffer,
     device: wgpu::Device,
     layout: ReadbackLayout,
@@ -29,7 +29,7 @@ struct ReadbackJob {
 }
 
 impl ReadbackJob {
-    async fn finish(self) -> Result<JsValue, JsValue> {
+    pub(crate) async fn finish(self) -> Result<JsValue, JsValue> {
         MapWait::start(&self.device, &self.buffer.0, self.webgl)?.await?;
         let rgba = {
             let mapped = self.buffer.0.slice(..).get_mapped_range();
@@ -87,53 +87,63 @@ fn prepare(options: JsValue) -> Result<(ReadbackGuard, ReadbackJob), JsValue> {
         )
         .map_err(JsValue::from_str)?;
         let output = apply_effect_passes_to_texture(runtime, options)?;
-        let bgra = match output.format() {
-            wgpu::TextureFormat::Rgba8Unorm => false,
-            wgpu::TextureFormat::Bgra8Unorm => true,
-            _ => {
-                return Err(JsValue::from_str(
-                    "Diagnostic readback requires linear RGBA8/BGRA8.",
-                ));
-            }
-        };
-        let buffer = ReadbackBuffer(context.device().create_buffer(&wgpu::BufferDescriptor {
-            label: Some("diagnostic-effect-readback"),
-            size: layout.buffer_size,
-            usage: wgpu::BufferUsages::COPY_DST | wgpu::BufferUsages::MAP_READ,
-            mapped_at_creation: false,
-        }));
-        let mut encoder =
-            context
-                .device()
-                .create_command_encoder(&wgpu::CommandEncoderDescriptor {
-                    label: Some("diagnostic-effect-readback-copy"),
-                });
-        encoder.copy_texture_to_buffer(
-            output.as_image_copy(),
-            wgpu::TexelCopyBufferInfo {
-                buffer: &buffer.0,
-                layout: wgpu::TexelCopyBufferLayout {
-                    offset: 0,
-                    bytes_per_row: Some(layout.stride),
-                    rows_per_image: Some(layout.height),
-                },
-            },
-            wgpu::Extent3d {
-                width: layout.width,
-                height: layout.height,
-                depth_or_array_layers: 1,
-            },
-        );
-        context.queue().submit([encoder.finish()]);
-        let canvas = render_texture_to_canvas(context, &output, layout.width, layout.height)?;
-        Ok(ReadbackJob {
-            buffer,
-            device: context.device().clone(),
-            layout,
-            bgra,
-            webgl: context.adapter().get_info().backend == wgpu::Backend::Gl,
-            canvas,
-        })
+        prepare_texture_readback(runtime, &output, layout)
     })?;
     Ok((guard, job))
+}
+
+pub(crate) fn linear_texture_bgra(format: wgpu::TextureFormat) -> Result<bool, JsValue> {
+    match format {
+        wgpu::TextureFormat::Rgba8Unorm => Ok(false),
+        wgpu::TextureFormat::Bgra8Unorm => Ok(true),
+        _ => Err(JsValue::from_str(
+            "Diagnostic readback requires linear RGBA8/BGRA8.",
+        )),
+    }
+}
+
+pub(crate) fn prepare_texture_readback(
+    runtime: &GpuRuntime,
+    output: &wgpu::Texture,
+    layout: ReadbackLayout,
+) -> Result<ReadbackJob, JsValue> {
+    let context = &runtime.context;
+    let bgra = linear_texture_bgra(output.format())?;
+    let buffer = ReadbackBuffer(context.device().create_buffer(&wgpu::BufferDescriptor {
+        label: Some("diagnostic-effect-readback"),
+        size: layout.buffer_size,
+        usage: wgpu::BufferUsages::COPY_DST | wgpu::BufferUsages::MAP_READ,
+        mapped_at_creation: false,
+    }));
+    let mut encoder = context
+        .device()
+        .create_command_encoder(&wgpu::CommandEncoderDescriptor {
+            label: Some("diagnostic-effect-readback-copy"),
+        });
+    encoder.copy_texture_to_buffer(
+        output.as_image_copy(),
+        wgpu::TexelCopyBufferInfo {
+            buffer: &buffer.0,
+            layout: wgpu::TexelCopyBufferLayout {
+                offset: 0,
+                bytes_per_row: Some(layout.stride),
+                rows_per_image: Some(layout.height),
+            },
+        },
+        wgpu::Extent3d {
+            width: layout.width,
+            height: layout.height,
+            depth_or_array_layers: 1,
+        },
+    );
+    context.queue().submit([encoder.finish()]);
+    let canvas = render_texture_to_canvas(context, output, layout.width, layout.height)?;
+    Ok(ReadbackJob {
+        buffer,
+        device: context.device().clone(),
+        layout,
+        bgra,
+        webgl: context.adapter().get_info().backend == wgpu::Backend::Gl,
+        canvas,
+    })
 }

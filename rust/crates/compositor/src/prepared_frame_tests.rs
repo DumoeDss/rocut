@@ -237,3 +237,31 @@ fn malformed_inactive_scene_branch_liquid_is_rejected_before_any_preparation() {
     ))];
     assert!(FramePreparation::new(descriptor).is_err());
 }
+
+#[test]
+fn repeated_traversals_borrow_the_same_immutable_prepared_liquid_states() {
+    let prepared = FramePreparation::new(frame()).unwrap().complete().unwrap();
+    let mut passes = Vec::new();
+    crate::effect_positions::visit_passes(&prepared.frame, |_, descriptor| {
+        if descriptor.shader == "liquid" {
+            passes.push(
+                crate::compositor::map_effect_passes(std::slice::from_ref(descriptor)).remove(0),
+            );
+        }
+    });
+    let pointers: Vec<_> = prepared
+        .liquid
+        .iter()
+        .map(|state| state as *const _)
+        .collect();
+    for _ in 0..3 {
+        let mut cursor = prepared.liquid.iter();
+        for (index, pass) in passes.iter().enumerate() {
+            let state = cursor.next().unwrap();
+            assert!(state.matches(pass, [64, 48]));
+            assert_eq!(state as *const _, pointers[index]);
+        }
+        assert!(cursor.next().is_none());
+        assert_eq!(prepared.liquid.len(), 4);
+    }
+}

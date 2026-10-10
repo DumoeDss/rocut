@@ -10,6 +10,7 @@ use crate::{EffectPass, UniformValue};
 
 const GAUSSIAN_BLUR_SHADER_ID: &str = "gaussian-blur";
 const COLOR_ADJUSTMENT_SHADER_ID: &str = "color-adjustment";
+pub(crate) const EFFECT_FRAGMENT_ENTRY_POINT: &str = "fragment_main";
 const COLOR_ADJUSTMENT_SHADER_SOURCE: &str = include_str!("shaders/color_adjustment.wgsl");
 const GAUSSIAN_BLUR_SHADER_SOURCE: &str = include_str!("shaders/gaussian_blur.wgsl");
 
@@ -20,20 +21,42 @@ pub struct ApplyEffectsOptions<'a> {
     pub passes: &'a [EffectPass],
 }
 
+enum LiquidPreparedInput<'a, 'b> {
+    Owned(&'a mut std::collections::VecDeque<crate::PreparedLiquidPass>),
+    Borrowed(&'a mut dyn Iterator<Item = &'b crate::PreparedLiquidPass>),
+}
+
 pub struct EffectPipeline {
     liquid: crate::liquid_pipeline::LiquidPipeline,
+    flame_wrap: crate::flame_wrap::gpu_pipeline::FlameWrapPipeline,
     uniform_bind_group_layout: wgpu::BindGroupLayout,
     pipelines: HashMap<String, wgpu::RenderPipeline>,
 }
 
 #[derive(Debug, Error)]
 pub enum EffectsError {
+    #[error(
+        "Invalid output dimensions: {width}x{height}; each dimension must be in 1..={maximum} (device max_texture_dimension_2d)"
+    )]
+    InvalidInputDimensions {
+        width: u32,
+        height: u32,
+        maximum: u32,
+    },
     #[error("Render preparation was cancelled")]
     Cancelled,
     #[error("Prepared Liquid pass does not match the frame")]
     InvalidPreparedLiquid,
     #[error("Liquid simulation failed: {message}")]
     LiquidSimulation { message: String },
+    #[error("Bubble work budget exceeded: {message}")]
+    BubbleWorkBudget { message: String },
+    #[error("Frost work budget exceeded: {message}")]
+    FrostWorkBudget { message: String },
+    #[error("Canvas preparation failed: {message}")]
+    CanvasPreparation { message: String },
+    #[error("Canvas pass {pass_index} requires ordered input capture before material preparation")]
+    CanvasSourceRequired { pass_index: usize },
     #[error("At least one effect pass is required")]
     MissingEffectPasses,
     #[error("Unknown effect shader '{shader}'")]
@@ -119,6 +142,9 @@ impl EffectPipeline {
             ("force-field", include_str!("shaders/force_field.wgsl")),
             ("droplets", include_str!("shaders/droplets.wgsl")),
             ("clouds", include_str!("shaders/clouds.wgsl")),
+            ("blaze", include_str!("shaders/blaze.wgsl")),
+            ("bubble", include_str!("shaders/bubble.wgsl")),
+            ("frost", include_str!("shaders/frost.wgsl")),
         ]
         .into_iter()
         .map(|(id, source)| {
@@ -164,7 +190,7 @@ impl EffectPipeline {
                         },
                         fragment: Some(wgpu::FragmentState {
                             module: &shader_module,
-                            entry_point: Some("fragment_main"),
+                            entry_point: Some(EFFECT_FRAGMENT_ENTRY_POINT),
                             targets: &[Some(wgpu::ColorTargetState {
                                 format: context.texture_format(),
                                 blend: None,
@@ -185,6 +211,7 @@ impl EffectPipeline {
 
         Self {
             liquid: crate::liquid_pipeline::LiquidPipeline::new(context),
+            flame_wrap: crate::flame_wrap::gpu_pipeline::FlameWrapPipeline::new(context),
             uniform_bind_group_layout,
             pipelines,
         }
@@ -233,23 +260,83 @@ impl EffectPipeline {
         &self,
         context: &GpuContext,
         encoder: &mut wgpu::CommandEncoder,
+        options: ApplyEffectsOptions<'_>,
+        prepared: Option<&mut std::collections::VecDeque<crate::PreparedLiquidPass>>,
+    ) -> Result<wgpu::Texture, EffectsError> {
+        self.apply_liquid_input_with_encoder(
+            context,
+            encoder,
+            options,
+            prepared.map(LiquidPreparedInput::Owned),
+        )
+    }
+
+    /// Request-local iteration leaves immutable Liquid material available when
+    /// compositor traversal restarts at a Canvas capture boundary. No payload clone.
+    pub fn apply_borrowed_prepared_with_encoder<'b>(
+        &self,
+        context: &GpuContext,
+        encoder: &mut wgpu::CommandEncoder,
+        options: ApplyEffectsOptions<'_>,
+        prepared: &mut dyn Iterator<Item = &'b crate::PreparedLiquidPass>,
+    ) -> Result<wgpu::Texture, EffectsError> {
+        self.apply_liquid_input_with_encoder(
+            context,
+            encoder,
+            options,
+            Some(LiquidPreparedInput::Borrowed(prepared)),
+        )
+    }
+
+    fn apply_liquid_input_with_encoder(
+        &self,
+        context: &GpuContext,
+        encoder: &mut wgpu::CommandEncoder,
         ApplyEffectsOptions {
             source,
             width,
             height,
             passes,
         }: ApplyEffectsOptions<'_>,
-        mut prepared: Option<&mut std::collections::VecDeque<crate::PreparedLiquidPass>>,
+        mut prepared: Option<LiquidPreparedInput<'_, '_>>,
     ) -> Result<wgpu::Texture, EffectsError> {
         let mut current_texture: Option<wgpu::Texture> = None;
 
-        for pass in passes {
+        for (pass_index, pass) in passes.iter().enumerate() {
+            if pass.shader == "canvas" {
+                crate::decode_canvas_pass(pass).map_err(|error| {
+                    EffectsError::CanvasPreparation {
+                        message: error.to_string(),
+                    }
+                })?;
+                return Err(EffectsError::CanvasSourceRequired { pass_index });
+            }
             let input_texture = current_texture.as_ref().unwrap_or(source);
+            if pass.shader == "flame_wrap" {
+                current_texture = Some(self.flame_wrap.apply_with_encoder(
+                    context,
+                    encoder,
+                    input_texture,
+                    width,
+                    height,
+                    pass,
+                )?);
+                continue;
+            }
             if pass.shader == "liquid" {
                 if let Some(prepared) = prepared.as_mut() {
-                    let state = prepared
-                        .pop_front()
-                        .ok_or(EffectsError::InvalidPreparedLiquid)?;
+                    let owned;
+                    let state = match prepared {
+                        LiquidPreparedInput::Owned(queue) => {
+                            owned = queue
+                                .pop_front()
+                                .ok_or(EffectsError::InvalidPreparedLiquid)?;
+                            &owned
+                        }
+                        LiquidPreparedInput::Borrowed(iterator) => {
+                            iterator.next().ok_or(EffectsError::InvalidPreparedLiquid)?
+                        }
+                    };
                     current_texture = Some(self.liquid.apply_prepared(
                         context,
                         encoder,
@@ -257,7 +344,7 @@ impl EffectPipeline {
                         width,
                         height,
                         pass,
-                        &state,
+                        state,
                     )?);
                     continue;
                 }
@@ -270,6 +357,30 @@ impl EffectPipeline {
                     pass,
                 )?);
                 continue;
+            }
+            // Validate this pass before allocating its output or GPU uniforms.
+            let packed_uniforms = pack_effect_uniforms(pass, width, height)?;
+            let pipeline = self.pipelines.get(&pass.shader).ok_or_else(|| {
+                EffectsError::UnknownEffectShader {
+                    shader: pass.shader.clone(),
+                }
+            })?;
+            if pass.shader == "bubble" {
+                crate::bubble::validate_device_dimensions(
+                    width,
+                    height,
+                    context.device().limits().max_texture_dimension_2d,
+                )?;
+            }
+            if pass.shader == "frost" {
+                let maximum = context.device().limits().max_texture_dimension_2d;
+                if width > maximum || height > maximum {
+                    return Err(EffectsError::InvalidInputDimensions {
+                        width,
+                        height,
+                        maximum,
+                    });
+                }
             }
             let output_texture =
                 context.create_render_texture(width, height, "effects-pass-output");
@@ -297,7 +408,7 @@ impl EffectPipeline {
                     .device()
                     .create_buffer_init(&wgpu::util::BufferInitDescriptor {
                         label: Some("effects-uniform-buffer"),
-                        contents: &pack_effect_uniforms(pass, width, height)?,
+                        contents: &packed_uniforms,
                         usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
                     });
             let uniform_bind_group =
@@ -311,12 +422,6 @@ impl EffectPipeline {
                             resource: uniform_buffer.as_entire_binding(),
                         }],
                     });
-            let pipeline = self.pipelines.get(&pass.shader).ok_or_else(|| {
-                EffectsError::UnknownEffectShader {
-                    shader: pass.shader.clone(),
-                }
-            })?;
-
             {
                 let mut render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                     label: Some("effects-render-pass"),
@@ -348,11 +453,25 @@ impl EffectPipeline {
     }
 }
 
-fn pack_effect_uniforms(
+pub(crate) fn pack_effect_uniforms(
     pass: &EffectPass,
     width: u32,
     height: u32,
 ) -> Result<Vec<u8>, EffectsError> {
+    if pass.shader == "flame_wrap" {
+        return Ok(bytemuck::bytes_of(&crate::flame_wrap::pack_uniforms(pass, width, height)?).to_vec());
+    }
+    if pass.shader == "frost" {
+        return Ok(bytemuck::bytes_of(&crate::frost::pack_uniforms(pass, width, height)?).to_vec());
+    }
+    if pass.shader == "bubble" {
+        return Ok(
+            bytemuck::bytes_of(&crate::bubble::pack_uniforms(pass, width, height)?).to_vec(),
+        );
+    }
+    if pass.shader == "blaze" {
+        return Ok(bytemuck::bytes_of(&crate::blaze::pack_uniforms(pass, width, height)?).to_vec());
+    }
     if pass.shader == COLOR_ADJUSTMENT_SHADER_ID {
         return Ok(bytemuck::bytes_of(&pack_color_uniforms(pass, width, height)?).to_vec());
     }

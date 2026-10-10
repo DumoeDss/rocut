@@ -1,4 +1,7 @@
-use super::{Compositor, CompositorError, FrameDescriptor, GpuContext, LayerDescriptor, wgpu};
+use super::{
+    CompositionScope, Compositor, CompositorError, FrameDescriptor, FrameTraversalCursor,
+    GpuContext, LayerDescriptor, wgpu,
+};
 use crate::{IsolatedGroupDescriptor, QuadTransformDescriptor};
 
 impl Compositor {
@@ -9,14 +12,22 @@ impl Compositor {
         frame: &FrameDescriptor,
         parent: &wgpu::Texture,
         group: &IsolatedGroupDescriptor,
-        prepared: &mut std::collections::VecDeque<effects::PreparedLiquidPass>,
+        scope: &CompositionScope,
+        prepared: &mut FrameTraversalCursor<'_>,
     ) -> Result<wgpu::Texture, CompositorError> {
         let transparent =
             self.create_cleared_texture(context, encoder, frame.width, frame.height, [0.0; 4]);
         // sceneEffect inside the child list can only see this group's earlier
         // children. It cannot modify or sample the parent or adjacent groups.
-        let mut current =
-            self.compose_item_list(context, encoder, frame, &group.items, transparent, prepared)?;
+        let mut current = self.compose_item_list(
+            context,
+            encoder,
+            frame,
+            &group.items,
+            transparent,
+            scope,
+            prepared,
+        )?;
         if !group.effect_pass_groups.is_empty() {
             current = self.apply_effect_groups(
                 context,
@@ -25,6 +36,7 @@ impl Compositor {
                 frame.width,
                 frame.height,
                 &group.effect_pass_groups,
+                &scope.group_post(),
                 prepared,
             )?;
         }

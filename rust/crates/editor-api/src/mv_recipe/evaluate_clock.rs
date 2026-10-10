@@ -1,5 +1,8 @@
 use super::super::model::*;
 use std::cell::RefCell;
+#[cfg(test)]
+#[path = "evaluate_clock_tests.rs"]
+mod tests;
 
 #[derive(Clone, Copy)]
 pub(in crate::mv_recipe) struct Clock<'a> {
@@ -17,6 +20,8 @@ pub(in crate::mv_recipe) struct Clock<'a> {
     pub(in crate::mv_recipe) resources: &'a [crate::programmatic_resources::Resource],
     pub(super) sequences: Option<&'a crate::image_sequence::Context<'a>>,
     pub(super) fonts: Option<&'a crate::mv_font_metrics::Context>,
+    pub(super) tunnel_fonts: Option<&'a crate::mv_recipe::tunnel_context::Context>,
+    pub(super) night_traversal: Option<&'a RefCell<crate::mv_recipe::night_recipe::Traversal>>,
     pub(super) images: Option<&'a crate::mv_image_dimensions::Context>,
     pub(super) font_requests: Option<&'a RefCell<Vec<crate::mv_font_metrics::Request>>>,
 }
@@ -66,6 +71,8 @@ impl<'a> Clock<'a> {
             resources,
             sequences,
             fonts,
+            tunnel_fonts: None,
+            night_traversal: None,
             images,
             font_requests,
         })
@@ -117,11 +124,11 @@ impl<'a> Clock<'a> {
             .image(id)
     }
     pub(in crate::mv_recipe) fn elapsed(self, span: &Span) -> Result<u64, String> {
-        self.frame
-            .saturating_sub(u64::from(span.start_frame))
-            .min(u64::from(span.duration_frames))
-            .checked_mul(self.step)
-            .ok_or_else(|| "MV simulation source time overflow".into())
+        let start = u64::from(span.start_frame).checked_mul(self.step)
+            .ok_or("MV simulation span start overflow")?;
+        let duration = u64::from(span.duration_frames).checked_mul(self.step)
+            .ok_or("MV simulation span duration overflow")?;
+        Ok(self.source_ticks.saturating_sub(start).min(duration))
     }
     pub(super) fn remap(self, frame: u64) -> Self {
         Self {
@@ -130,6 +137,23 @@ impl<'a> Clock<'a> {
             sequence_source_ticks: frame * self.step,
             ..self
         }
+    }
+    /// Native meta wrappers can freeze/reverse at an exact song tick. Structural
+    /// frame intervals use the containing source frame; continuous leaf clocks
+    /// keep the unrounded tick rather than quantizing through a frame number.
+    pub(super) fn remap_song_ticks(self, song_ticks: i64) -> Result<Self, String> {
+        let song_ticks = u64::try_from(song_ticks).map_err(|_| "MV reference precedes supported song domain")?;
+        let source_ticks = song_ticks.checked_sub(self.song_start_ticks)
+            .ok_or("MV reference precedes this authored source domain")?;
+        Ok(Self {
+            frame: source_ticks / self.step,
+            source_ticks,
+            sequence_source_ticks: source_ticks,
+            ..self
+        })
+    }
+    pub(super) fn source_frame(self) -> f64 {
+        self.source_ticks as f64 / self.step as f64
     }
     pub(super) fn song_seconds(self) -> f64 {
         (self.song_start_ticks + self.source_ticks) as f64 / 120_000.0
@@ -141,7 +165,7 @@ impl<'a> Clock<'a> {
     }
     pub(super) fn drawing(self, rate: Option<u32>) -> (f64, f64) {
         match rate {
-            None => (self.song_seconds(), self.frame as f64),
+            None => (self.song_seconds(), self.source_frame()),
             Some(q) => {
                 let sample = self.sample(q);
                 let local_numerator = i128::from(sample) * 120_000

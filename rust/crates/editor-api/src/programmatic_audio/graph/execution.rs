@@ -51,7 +51,10 @@ fn stage(
 }
 
 pub(super) fn prepare(request: &ExecutionRequest) -> Result<ExecutionPlan, String> {
-    if request.version != 1 || request.fader_observations.len() > 256 {
+    if request.version != 1
+        || request.fader_observations.len() > 256
+        || request.fallback_histories.len() > 256
+    {
         return Err("Invalid or excessive HyperFrames execution request".into());
     }
     let graph = &request.graph;
@@ -73,6 +76,19 @@ pub(super) fn prepare(request: &ExecutionRequest) -> Result<ExecutionPlan, Strin
     let composition_duration = f64::from(graph.duration_frames)
         * f64::from(graph.frame_rate.denominator)
         / f64::from(graph.frame_rate.numerator);
+    let mut history_ids = HashSet::new();
+    let mut history_events = 0usize;
+    for history in &request.fallback_histories {
+        if !ids.contains(history.instance_id.as_str())
+            || !history_ids.insert(history.instance_id.as_str())
+        {
+            return Err("Unknown or duplicate HyperFrames native fallback history".into());
+        }
+        history_events += history.events.len();
+        if history_events > 32768 {
+            return Err("HyperFrames native fallback history exceeds its event budget".into());
+        }
+    }
     let mut fader_points = 0usize;
     for fact in graph
         .snapshot
@@ -116,15 +132,25 @@ pub(super) fn prepare(request: &ExecutionRequest) -> Result<ExecutionPlan, Strin
             admitted.canonical.output_frames,
             graph.timing,
         )?;
-        let (index, source_start, source_period) = if let Some(points) =
-            super::rate_lane::admit(track)?
-        {
-            let rate_preparation = super::rate_prepare::prepare_with_timing(
+        let native_preparation = match super::rate_lane::admit(track)? {
+            Some(points) => Some(super::rate_prepare::prepare_with_timing(
                 native,
                 &points,
                 graph.sample_rate,
                 graph.timing,
-            )?;
+            )?),
+            None if super::rate_prepare::needs_scalar_preparation(native, graph.sample_rate) => {
+                Some(super::rate_prepare::prepare_scalar(
+                    native,
+                    graph.sample_rate,
+                    graph.timing,
+                )?)
+            }
+            None => None,
+        };
+        let (index, source_start, source_period) = if let Some(rate_preparation) =
+            native_preparation
+        {
             let frames = rate_preparation.graph_max_frames;
             let index = decoded_sources.len();
             let id = format!("dry#{index}");
@@ -211,6 +237,15 @@ pub(super) fn prepare(request: &ExecutionRequest) -> Result<ExecutionPlan, Strin
         decoded_sources[index].required |= requires_pcm;
         // Inert tracks need no complete history, but every supplied gain fact
         // still needs native clock, fades, normalization and branch validation.
+        let mut native_gain_history = request
+            .fallback_histories
+            .iter()
+            .find(|history| history.instance_id == track.instance_id)
+            .map(|history| super::fader::history::resolve(track, history, composition_duration))
+            .transpose()?;
+        if native_gain_history.is_some() && !requires_pcm {
+            native_gain_history = None;
+        }
         let fader = resolve_fader(
             track,
             request
@@ -218,7 +253,7 @@ pub(super) fn prepare(request: &ExecutionRequest) -> Result<ExecutionPlan, Strin
                 .iter()
                 .filter(|fact| fact.instance_id == track.instance_id)
                 .map(|fact| &fact.resolved_author_gain),
-            requires_pcm,
+            requires_pcm && native_gain_history.is_none(),
         )?;
         let fx_chain = chain(track.attributes.fx_chain.as_deref(), &mut fx_nodes)?;
         let automation = admit_fx_automation(track.attributes.automation.as_deref(), &fx_chain)?;
@@ -251,6 +286,7 @@ pub(super) fn prepare(request: &ExecutionRequest) -> Result<ExecutionPlan, Strin
             audible_media: participation.audible_media,
             requires_pcm,
             fader,
+            native_gain_history,
             fx_stage: Some(stage(
                 fx_chain,
                 automation,
@@ -329,6 +365,13 @@ pub(super) fn prepare(request: &ExecutionRequest) -> Result<ExecutionPlan, Strin
         state_policy: "canonical-composition-from-zero",
         sample_phase_policy: if graph.timing.native_exporter() {
             "native-exporter-trim-and-ms-placement-v1"
+        } else if decoded_sources.iter().any(|source| {
+            source.rate_preparation.as_ref().is_some_and(|recipe| {
+                recipe.observed_pcm
+                    && (recipe.preparation_kind == "scalar" || recipe.source_loop.is_some())
+            })
+        }) {
+            "sample-aligned-placement-measured-native-preparation-v1"
         } else if decoded_sources
             .iter()
             .any(|source| source.preparation_key.is_some())

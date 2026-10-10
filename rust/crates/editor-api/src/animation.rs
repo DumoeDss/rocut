@@ -1,7 +1,7 @@
 use crate::{model::*, validate_value};
 use serde::Deserialize;
 use serde_json::Value;
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -101,11 +101,38 @@ fn channel(value: &Value, param: &Param, path: &str, issues: &mut Vec<Issue>) {
 }
 
 pub fn validate(request: &Request, definitions: &[Param], issues: &mut Vec<Issue>) {
+    // Native effect schemas cannot be promoted or range-widened by a host catalog.
+    let attached_params: BTreeMap<_, _> = request
+        .editing
+        .effects
+        .iter()
+        .filter_map(|effect| {
+            crate::effect_layer_animation::native_params(&effect.kind)
+                .map(|params| (effect.id.as_str(), params))
+        })
+        .collect();
+    // Standalone effect paths use the native catalog, never caller-provided flags.
+    let layer_params = if request.editing.kind == "effect" {
+        request
+            .editing
+            .effect_type
+            .as_deref()
+            .and_then(crate::effect_layer_animation::native_params)
+    } else {
+        None
+    };
     if request.duration == 0 {
         issues.push(Issue::new("duration", "Clip duration must be positive"));
     }
     for (property, value) in &request.editing.animations {
         let path = format!("editing.animations.{property}");
+        if request.editing.kind == "effect" && !property.starts_with("params.") {
+            issues.push(Issue::new(
+                &path,
+                "Effect layer animations require params.<key> paths",
+            ));
+            continue;
+        }
         let param = if let Some(tail) = property.strip_prefix("effects.") {
             tail.split_once(".params.").and_then(|(id, key)| {
                 request
@@ -120,17 +147,31 @@ pub fn validate(request: &Request, definitions: &[Param], issues: &mut Vec<Issue
                                 "Animated effect parameter requires a static fallback",
                             ));
                         }
-                        request.catalog.effects.get(&effect.kind)
+                        attached_params
+                            .get(effect.id.as_str())
+                            .or_else(|| request.catalog.effects.get(&effect.kind))
                     })
                     .and_then(|params| params.iter().find(|param| param.key == key))
             })
         } else if let Some(key) = property.strip_prefix("params.") {
-            request
-                .editing
-                .definition_id
-                .as_ref()
-                .and_then(|id| request.catalog.graphics.get(id))
-                .and_then(|params| params.iter().find(|param| param.key == key))
+            if request.editing.kind == "effect" {
+                if !request.editing.params.contains_key(key) {
+                    issues.push(Issue::new(
+                        &path,
+                        "Animated effect parameter requires a static fallback",
+                    ));
+                }
+                layer_params
+                    .as_ref()
+                    .and_then(|params| params.iter().find(|param| param.key == key))
+            } else {
+                request
+                    .editing
+                    .definition_id
+                    .as_ref()
+                    .and_then(|id| request.catalog.graphics.get(id))
+                    .and_then(|params| params.iter().find(|param| param.key == key))
+            }
         } else {
             definitions.iter().find(|param| param.key == *property)
         };
@@ -138,6 +179,15 @@ pub fn validate(request: &Request, definitions: &[Param], issues: &mut Vec<Issue
             issues.push(Issue::new(&path, "Unknown animation property"));
             continue;
         };
+        if request.editing.kind == "effect"
+            && (param.kind != "number" || param.keyframable != Some(true))
+        {
+            issues.push(Issue::new(
+                &path,
+                "Effect layer parameter is not a keyframable numeric field",
+            ));
+            continue;
+        }
         if param.keyframable == Some(false) {
             issues.push(Issue::new(&path, "Parameter is not keyframable"));
             continue;

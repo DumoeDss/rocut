@@ -3,6 +3,8 @@ use super::fader_model::{GainSource, ResolvedAuthorGain};
 use super::snapshot::Track;
 use super::volume_lane::{envelope, max_gain, validate_points};
 use crate::programmatic_audio::envelope::{GainEnvelope, Point};
+#[path = "fader_history.rs"]
+pub(super) mod history;
 
 pub(super) fn observed_envelope(
     track: &Track,

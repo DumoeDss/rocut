@@ -12,4 +12,5 @@ pub enum Operation {
     // Preserve a reference setTransform(other.getTransform()) boundary after
     // replaying the source CTM, before applying destination-local operations.
     CopyTransform,
+    CopyScaledTransform { scale: f64, offset: [f64; 2] },
 }

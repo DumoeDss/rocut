@@ -5,6 +5,8 @@ use std::cell::RefCell;
 mod clock;
 #[path = "native_scene_evaluate.rs"]
 mod native_scene;
+#[path = "meta_evaluate.rs"]
+mod meta;
 pub(super) use clock::Clock;
 
 pub(super) fn lerp(a: f64, b: f64, p: f64) -> f64 {
@@ -95,14 +97,27 @@ impl Recipe {
         fonts: Option<&crate::mv_font_metrics::Context>,
         images: Option<&crate::mv_image_dimensions::Context>,
     ) -> Result<Plan, String> {
-        let clock = Clock::new(self, index, step, seed, width, height, audio, resources,
+        self.resolve_with_tunnel_resources(index,step,seed,width,height,audio,resources,
+            sequence_source_ticks,sequences,fonts,images,None)
+    }
+    pub(crate) fn resolve_with_tunnel_resources(
+        &self,index:u64,step:u64,seed:u32,width:u32,height:u32,
+        audio:Option<&crate::mv_audio::Data>,resources:&[crate::programmatic_resources::Resource],
+        sequence_source_ticks:u64,sequences:Option<&crate::image_sequence::Context<'_>>,
+        fonts:Option<&crate::mv_font_metrics::Context>,images:Option<&crate::mv_image_dimensions::Context>,
+        tunnel_fonts:Option<&super::tunnel_context::Context>,
+    )->Result<Plan,String> {
+        let mut clock = Clock::new(self, index, step, seed, width, height, audio, resources,
             sequence_source_ticks, sequences, fonts, images, None)?;
+        clock.tunnel_fonts=tunnel_fonts;
+        let night_traversal = RefCell::new(super::night_recipe::Traversal::default());
+        clock.night_traversal = Some(&night_traversal);
         // Resource/audio facts belong to the complete authored source, not only
         // a currently visible branch. Black/stopped frames must not hide errors.
         for node in &self.nodes {
-            native_scene::preflight(&node.scene, clock)?;
+            native_scene::preflight(&node.scene, clock, &node.id)?;
         }
-        Ok(Plan {
+        let mut plan = Plan {
             version: 1,
             song_seconds: clock.song_seconds(),
             // Canonical compositing order, independent of selection-list order.
@@ -161,7 +176,12 @@ impl Recipe {
                     })
                 })
                 .collect::<Result<Vec<_>, String>>()?,
-        })
+        };
+        super::road_recipe::admit_plan(&plan,resources,images)?;
+        super::heart_recipe::admit(&mut plan,self,super::heart_recipe::HostContext {
+            resources,width,height,step,images,sequences,
+        })?;
+        Ok(plan)
     }
     pub fn sampled_font_metric_requests(
         &self, index: u64, step: u64, seed: u32, width: u32, height: u32,
@@ -183,17 +203,23 @@ impl Recipe {
             .find(|n| n.id == id)
             .expect("validated MV node")
             .scene;
+        if let Some(mapped) = meta::resolve(self, scene, id, clock)? {
+            return Ok(mapped);
+        }
         if native_scene::collect_font_requests(scene, clock)? {
             return Ok(PlanNode::Empty);
         }
-        if let Some(native) = native_scene::resolve(scene, clock)? {
+        if let Some(native) = native_scene::resolve(scene, clock, id)? {
             return Ok(native);
         }
         if let Some(generator) = super::generator_evaluate::resolve(scene, clock)? {
             return Ok(generator);
         }
         Ok(match scene {
-            Scene::Flame { .. } | Scene::Fall { .. } | Scene::Thread { .. } | Scene::TitleRiff { .. } | Scene::KanjiSlam { .. } | Scene::Ember { .. } => unreachable!("native scene already resolved"),
+            Scene::PanelsNative { .. } | Scene::Freeze { .. } | Scene::Rewind { .. } | Scene::Melt { .. } => unreachable!("meta scene already resolved"),
+            Scene::Jz { .. } => unreachable!("JIZURA owner request already resolved"),
+            Scene::HeartShatter {..} | Scene::HeartShatterBurn {..} | Scene::HeartGather {..} | Scene::SunBloom {..} | Scene::SkyShatter {..} => unreachable!("Heart owner request already resolved"),
+            Scene::IllustNative { .. } | Scene::Burst { .. } | Scene::Night { .. } | Scene::Memories { .. } | Scene::Road { .. } | Scene::Tunnel { .. } | Scene::Ink { .. } | Scene::Flame { .. } | Scene::Fall { .. } | Scene::Thread { .. } | Scene::TitleRiff { .. } | Scene::KanjiSlam { .. } | Scene::Ember { .. } => unreachable!("native scene already resolved"),
             Scene::Converge { role, settings, span } => PlanNode::Converge {
                 role: *role,
                 data: settings.plan(&super::converge::Sample {
@@ -256,6 +282,12 @@ impl Recipe {
                     None => PlanNode::Empty,
                 }
             }
+            Scene::Layers { items } => PlanNode::Layers {
+                items: items.iter().map(|item| Ok(super::layers::ItemPlan {
+                    roles: item.roles.clone(),
+                    input: Box::new(self.node(&item.input, clock)?),
+                })).collect::<Result<Vec<_>, String>>()?,
+            },
             Scene::Panels {
                 panels,
                 collapse,
@@ -263,7 +295,7 @@ impl Recipe {
             } => {
                 let grow = collapse
                     .as_ref()
-                    .map_or(0.0, |c| progress(clock.frame as f64, &c.span, c.easing));
+                    .map_or(0.0, |c| progress(clock.source_frame(), &c.span, c.easing));
                 let hero = collapse.as_ref().map(|c| c.hero);
                 let order = (0..panels.len())
                     .filter(|i| Some(*i) != hero)
@@ -314,7 +346,7 @@ impl Recipe {
                 background,
                 sprites,
             } => {
-                let p = progress(clock.frame as f64, motion, *easing);
+                let p = progress(clock.source_frame(), motion, *easing);
                 PlanNode::Illust {
                     background: background
                         .as_ref()
@@ -368,7 +400,7 @@ impl Recipe {
                         clock,
                     );
                 }
-                let p = progress(clock.frame as f64, span, *easing);
+                let p = progress(clock.source_frame(), span, *easing);
                 // Do not retain/capture an inactive side at exact endpoints.
                 if p <= 0.0 {
                     return self.node(from, clock);

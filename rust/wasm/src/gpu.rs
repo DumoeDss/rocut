@@ -247,10 +247,9 @@ pub(crate) fn unavailable_reason() -> String {
 
 #[wasm_bindgen(js_name = disposeGpu)]
 pub fn dispose_gpu() -> Result<(), JsValue> {
-    #[cfg(feature = "browser-readback-tests")]
     if crate::effects_readback_state::ReadbackGuard::is_active() {
         return Err(JsValue::from_str(
-            "Cannot dispose GPU while a diagnostic readback is pending.",
+            "Cannot dispose GPU while a GPU readback is pending.",
         ));
     }
     let handles = live_compositor_handles();
@@ -370,7 +369,7 @@ pub(crate) fn import_canvas_texture(
     width: u32,
     height: u32,
     label: &'static str,
-) -> wgpu::Texture {
+) -> Result<wgpu::Texture, JsValue> {
     context.import_offscreen_canvas_texture(canvas, width, height, label)
 }
 

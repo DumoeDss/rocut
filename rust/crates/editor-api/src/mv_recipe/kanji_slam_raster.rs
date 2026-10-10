@@ -52,6 +52,7 @@ pub(super) fn blit(
         clip: d.clip.clone(),
         raster: Some(BlitRaster {
             blur_px: blur,
+            contrast: None,
             smoothing: true,
             smoothing_quality: "low",
         }),

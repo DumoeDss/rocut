@@ -22,18 +22,18 @@ pub(super) fn hash(values: &[f64]) -> u32 {
     }
     h
 }
-pub(super) fn rnd(i: f64, seed: f64) -> f64 {
+pub(in crate::mv_recipe) fn rnd(i: f64, seed: f64) -> f64 {
     f64::from(hash(&[i, seed])) / 4_294_967_296.0
 }
-pub(super) fn rnds(i: f64, seed: f64) -> f64 {
+pub(in crate::mv_recipe) fn rnds(i: f64, seed: f64) -> f64 {
     rnd(i, seed) * 2.0 - 1.0
 }
-pub(super) fn noise(x: f64, seed: f64) -> f64 {
+pub(in crate::mv_recipe) fn noise(x: f64, seed: f64) -> f64 {
     let i = x.floor();
     let f = x - i;
     lerp(rnds(i, seed), rnds(i + 1.0, seed), f * f * (3.0 - 2.0 * f))
 }
-pub(super) struct Rng(u32);
+pub(in crate::mv_recipe) struct Rng(u32);
 impl Rng {
     pub fn new(seed: f64) -> Self {
         Self(hash(&[seed]))

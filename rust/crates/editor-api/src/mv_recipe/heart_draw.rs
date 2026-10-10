@@ -1,5 +1,5 @@
 use super::plan::{
-    native, Command, HeartCommand, Operation, Paint, PaintKind, Quadratic, Step, Stop, Style,
+    Command, HeartCommand, Operation, Paint, PaintKind, Quadratic, Step, Stop, Style, native,
 };
 pub type Color = crate::mv_recipe::model::Color;
 pub const ID: [f64; 6] = [1.0, 0.0, 0.0, 1.0, 0.0, 0.0];
@@ -78,6 +78,31 @@ pub struct Draw {
     pub operations: Vec<Operation>,
 }
 impl Draw {
+    /// Command position is monotonic in one frame. Distinct layer stems avoid
+    /// collision with the static body/background surface names.
+    pub fn surface_id(&self, stem: &str) -> String {
+        format!("{stem}-{}", self.commands.len())
+    }
+    pub fn blit_owned(
+        &mut self,
+        surface: &str,
+        size: [u32; 2],
+        rect: [f64; 4],
+        opacity: f64,
+        composite: &'static str,
+    ) {
+        self.commands.push(Command::Heart(HeartCommand::OwnedBlit {
+            surface: surface.to_owned(),
+            source_rect: [0.0, 0.0, size[0] as f64, size[1] as f64],
+            destination_rect: rect,
+            transform: ID,
+            operations: self.operations.clone(),
+            composite,
+            opacity,
+            clip: None,
+            raster: None,
+        }));
+    }
     pub fn new() -> Self {
         Self {
             commands: Vec::new(),
@@ -272,18 +297,10 @@ pub fn inv(a: f64, b: f64, t: f64) -> f64 {
     ((t - a) / (b - a)).clamp(0.0, 1.0)
 }
 pub fn decay(t: f64, k: f64) -> f64 {
-    if t < 0.0 {
-        0.0
-    } else {
-        (-t * k).exp()
-    }
+    if t < 0.0 { 0.0 } else { (-t * k).exp() }
 }
 pub fn burst(t: f64, k: f64) -> f64 {
-    if t <= 0.0 {
-        0.0
-    } else {
-        1.0 - (-t / k).exp()
-    }
+    if t <= 0.0 { 0.0 } else { 1.0 - (-t / k).exp() }
 }
 pub fn smooth(a: f64, b: f64, t: f64) -> f64 {
     let k = inv(a, b, t);

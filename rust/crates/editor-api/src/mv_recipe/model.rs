@@ -60,6 +60,27 @@ pub struct Node {
     deny_unknown_fields
 )]
 pub enum Scene {
+    Jz { role: Role, settings: super::jz::Args, span: Span },
+    PanelsNative { role: Role, settings: super::meta_reference::Panels, bpm: f64, span: Span },
+    Freeze { role: Role, input: String, span: Span, settings: super::meta_reference::Freeze },
+    Rewind { role: Role, input: String, span: Span, settings: super::meta_reference::Rewind },
+    Melt { role: Role, input: String, span: Span, settings: super::meta_reference::Melt },
+    IllustNative { settings: super::illust_native::Args, bpm: f64, span: Span },
+    Burst { role: Role, settings: super::burst::Args, bpm: f64, span: Span },
+    Night { role: Role, settings: super::night_recipe::Night, span: Span },
+    Memories { role: Role, settings: super::memories::model::Args, bpm: f64, span: Span },
+    HeartShatter { role: Role, settings: super::heart::HeartShatter, bpm: f64, span: Span },
+    HeartShatterBurn { role: Role, settings: super::heart::HeartBurn, bpm: f64, span: Span },
+    HeartGather { role: Role, settings: super::heart::HeartGather, bpm: f64, span: Span },
+    SunBloom { role: Role, settings: super::heart::SunBloom, bpm: f64, span: Span },
+    SkyShatter { role: Role, settings: super::heart::SkyShatter, bpm: f64, span: Span },
+    Road { role: Role, settings: super::road_recipe::Road, span: Span },
+    Tunnel { role: Role, settings: super::tunnel::Tunnel, span: Span },
+    Ink {
+        role: Role,
+        settings: super::ink::Ink,
+        span: Span,
+    },
     Flame {
         role: Role,
         settings: super::flame::Flame,
@@ -164,6 +185,9 @@ pub enum Scene {
     /// Explicit intervals, not an inferred BPM or a Blender image sequence.
     Sequence {
         items: Vec<super::reference::SequenceItem>,
+    },
+    Layers {
+        items: Vec<super::layers::Item>,
     },
     Panels {
         panels: Vec<super::panel_model::Panel>,
@@ -294,6 +318,22 @@ pub struct Plan {
 #[derive(Serialize)]
 #[serde(tag = "kind", rename_all = "camelCase")]
 pub enum PlanNode {
+    PanelsNative { role: Role, inputs: Vec<Option<Box<PlanNode>>>, data: super::meta_reference::PanelsPlan },
+    JzOwnerRequest { role: Role, #[serde(rename = "nodeId")] node_id: String, request: super::jz::Request },
+    Freeze { role: Role, input: Box<PlanNode>, data: super::meta_reference::FreezePlan },
+    Rewind { role: Role, input: Option<Box<PlanNode>>, data: super::meta_reference::RewindPlan },
+    Melt { role: Role, input: Box<PlanNode>, data: super::meta_reference::MeltPlan },
+    IllustNative { data: super::illust_native::Plan },
+    Burst { role: Role, data: super::burst::Plan },
+    NightOwnerRequest { role: Role, #[serde(rename = "nodeId")] node_id: String, request: super::night_recipe::PreparationRequest },
+    MemoriesOwnerRequest { role: Role, #[serde(rename = "nodeId")] node_id: String, request: super::memories_recipe::Request },
+    HeartOwnerRequest { role: Role, #[serde(rename = "nodeId")] node_id: String, request: super::heart_recipe::Request },
+    Road { role: Role, data: super::road::plan::Plan, #[serde(rename = "nativePost")] native_post: super::road_recipe::NativePost },
+    Tunnel { role: Role, data: super::tunnel::Plan, #[serde(rename = "nativePost")] native_post: super::tunnel::NativePost },
+    Ink {
+        role: Role,
+        data: super::ink::Plan,
+    },
     Flame {
         role: Role,
         data: super::flame::Plan,
@@ -376,6 +416,9 @@ pub enum PlanNode {
     },
     Panels {
         panels: Vec<super::panel_model::PanelPlan>,
+    },
+    Layers {
+        items: Vec<super::layers::ItemPlan>,
     },
     Solid {
         role: Role,

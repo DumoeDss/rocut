@@ -6,8 +6,11 @@ edition = "2024"
 [dependencies]
 bridge = { version = "0.1.0", path = "../bridge" }
 effects = { version = "0.1.0", path = "../effects" }
+motion-text = { version = "0.1.0", path = "../motion-text" }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = { version = "1.0", features = ["float_roundtrip"] }
+sha2 = "0.10"
+ttf-parser = "0.25.1"
 time = { version = "0.1.0", path = "../time" }
 wasm-bindgen = { version = "0.2.116", optional = true }
 

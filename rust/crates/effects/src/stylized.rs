@@ -17,6 +17,21 @@ struct Request {
 // a held video frame may still carry an animated effect. Transition handles pass
 // signed local times; Euclidean flooring preserves the same rational frame grid.
 fn resolve(r: Request) -> Result<Value, String> {
+    if r.effect_type == "canvas" {
+        return crate::canvas::resolve(&r.params, r.local_time, r.frame_rate);
+    }
+    if r.effect_type == "frost" {
+        return crate::frost::resolve(&r.params, r.local_time, r.frame_rate);
+    }
+    if r.effect_type == "bubble" {
+        return crate::bubble::resolve(&r.params, r.local_time, r.frame_rate);
+    }
+    if r.effect_type == "blaze" {
+        return crate::blaze::resolve(&r.params, r.local_time, r.frame_rate);
+    }
+    if r.effect_type == "flame-wrap" {
+        return crate::flame_wrap::resolve(&r.params, r.local_time, r.frame_rate);
+    }
     if r.effect_type == "clouds" {
         return crate::clouds::resolve(&r.params, r.local_time, r.frame_rate);
     }

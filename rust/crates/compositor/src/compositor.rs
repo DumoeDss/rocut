@@ -15,8 +15,15 @@ use crate::{
     texture_store::TextureStore,
 };
 
+mod canvas_graph_preflight;
+mod composition_scope;
 mod frame_composition;
+mod frame_execution;
 mod group_composition;
+
+use crate::canvas_frame_state::{FrameTraversalCursor, FrameTraversalPass};
+use crate::effect_positions::{EffectPassPosition, PassLocation};
+use composition_scope::{CompositionScope, LayerListPosition};
 
 const LAYER_SHADER_SOURCE: &str = include_str!("shaders/layer.wgsl");
 const BLEND_SHADER_SOURCE: &str = include_str!("shaders/blend.wgsl");
@@ -52,6 +59,11 @@ pub enum CompositorError {
     Effects(#[from] effects::EffectsError),
     #[error("Failed to present frame: {0}")]
     Gpu(#[from] gpu::GpuError),
+    #[error("Canvas input capture is required before this frame can continue")]
+    CanvasCaptureRequired {
+        ticket: crate::CanvasCaptureTicket,
+        input: wgpu::Texture,
+    },
 }
 
 #[repr(C)]
@@ -296,110 +308,14 @@ impl Compositor {
         self.textures.remove(id);
     }
 
-    /// Composites all frame items into a texture and returns it.
-    /// Used on backends that cannot surface-render to an arbitrary canvas (e.g. WebGL).
-    pub fn render_frame_to_texture(
-        &mut self,
-        context: &GpuContext,
-        frame: &FrameDescriptor,
-    ) -> Result<wgpu::Texture, CompositorError> {
-        crate::group_admission::validate(frame)?;
-        let prepared = crate::FramePreparation::new(frame.clone())?.complete()?;
-        self.render_prepared_frame_to_texture(context, prepared)
-    }
-
-    pub fn render_prepared_frame_to_texture(
-        &mut self,
-        context: &GpuContext,
-        mut prepared: crate::PreparedFrame,
-    ) -> Result<wgpu::Texture, CompositorError> {
-        let frame = &prepared.frame;
-        self.texture_pool.recycle_frame();
-        let mut encoder =
-            context
-                .device()
-                .create_command_encoder(&wgpu::CommandEncoderDescriptor {
-                    label: Some("compositor-frame-encoder"),
-                });
-        let mut scene = self.create_cleared_texture(
-            context,
-            &mut encoder,
-            frame.width,
-            frame.height,
-            frame.clear.color,
-        );
-
-        scene = self.compose_items(context, &mut encoder, frame, scene, &mut prepared.liquid)?;
-
-        if !prepared.liquid.is_empty() {
-            return Err(effects::EffectsError::InvalidPreparedLiquid.into());
-        }
-
-        context.queue().submit([encoder.finish()]);
-        Ok(scene)
-    }
-
-    pub fn render_frame(
-        &mut self,
-        context: &GpuContext,
-        options: RenderFrameOptions<'_, '_>,
-    ) -> Result<(), CompositorError> {
-        crate::group_admission::validate(options.frame)?;
-        let prepared = crate::FramePreparation::new(options.frame.clone())?.complete()?;
-        self.render_prepared_frame(context, prepared, options.surface)
-    }
-
-    pub fn render_prepared_frame(
-        &mut self,
-        context: &GpuContext,
-        mut prepared: crate::PreparedFrame,
-        surface: &wgpu::Surface<'_>,
-    ) -> Result<(), CompositorError> {
-        let frame = &prepared.frame;
-        self.texture_pool.recycle_frame();
-        let surface_texture = context.acquire_surface_texture(surface)?;
-        let surface_view = surface_texture
-            .texture
-            .create_view(&wgpu::TextureViewDescriptor::default());
-        let mut encoder =
-            context
-                .device()
-                .create_command_encoder(&wgpu::CommandEncoderDescriptor {
-                    label: Some("compositor-frame-encoder"),
-                });
-        let mut scene = self.create_cleared_texture(
-            context,
-            &mut encoder,
-            frame.width,
-            frame.height,
-            frame.clear.color,
-        );
-
-        scene = self.compose_items(context, &mut encoder, frame, scene, &mut prepared.liquid)?;
-
-        if !prepared.liquid.is_empty() {
-            return Err(effects::EffectsError::InvalidPreparedLiquid.into());
-        }
-
-        context.encode_texture_presentation_to_view(
-            &mut encoder,
-            &scene,
-            &surface_view,
-            surface,
-            "compositor-present-pass",
-        )?;
-        context.queue().submit([encoder.finish()]);
-        surface_texture.present();
-        Ok(())
-    }
-
     fn render_layer(
         &mut self,
         context: &GpuContext,
         encoder: &mut wgpu::CommandEncoder,
         frame: &FrameDescriptor,
         layer: &LayerDescriptor,
-        prepared: &mut std::collections::VecDeque<effects::PreparedLiquidPass>,
+        location: &PassLocation,
+        prepared: &mut FrameTraversalCursor<'_>,
     ) -> Result<wgpu::Texture, CompositorError> {
         let source = self.textures.get(&layer.texture_id).ok_or_else(|| {
             CompositorError::MissingTexture {
@@ -428,6 +344,7 @@ impl Compositor {
                 frame.width,
                 frame.height,
                 &layer.effect_pass_groups,
+                location,
                 prepared,
             )?;
         }
@@ -481,22 +398,57 @@ impl Compositor {
         width: u32,
         height: u32,
         effect_pass_groups: &[Vec<EffectPassDescriptor>],
-        prepared: &mut std::collections::VecDeque<effects::PreparedLiquidPass>,
+        location: &PassLocation,
+        prepared: &mut FrameTraversalCursor<'_>,
     ) -> Result<wgpu::Texture, CompositorError> {
         let mut current = self.copy_texture(context, encoder, source, width, height);
-        for group in effect_pass_groups {
-            let passes = map_effect_passes(group);
-            current = self.effects.apply_prepared_with_encoder(
-                context,
-                encoder,
-                ApplyEffectsOptions {
+        for (group_index, group) in effect_pass_groups.iter().enumerate() {
+            if group.is_empty() {
+                return Err(effects::EffectsError::MissingEffectPasses.into());
+            }
+            for (pass_index, descriptor) in group.iter().enumerate() {
+                let pass = map_effect_passes(std::slice::from_ref(descriptor)).remove(0);
+                let position = EffectPassPosition {
+                    location: location.clone(),
+                    group: group_index,
+                    pass_index,
+                };
+                let options = ApplyEffectsOptions {
                     source: &current,
                     width,
                     height,
-                    passes: &passes,
-                },
-                Some(prepared),
-            )?;
+                    passes: std::slice::from_ref(&pass),
+                };
+                current = match prepared.next(&position, &pass)? {
+                    FrameTraversalPass::Ordinary => {
+                        self.effects.apply_with_encoder(context, encoder, options)?
+                    }
+                    FrameTraversalPass::Liquid(state) => {
+                        self.effects.apply_borrowed_prepared_with_encoder(
+                            context,
+                            encoder,
+                            options,
+                            &mut std::iter::once(state),
+                        )?
+                    }
+                    FrameTraversalPass::Canvas(state) => {
+                        if !state.matches(&pass, [width, height]) {
+                            return Err(effects::EffectsError::CanvasPreparation {
+                                message: "Canvas frame dimensions/pass identity mismatch".into(),
+                            }
+                            .into());
+                        }
+                        self.effects
+                            .apply_canvas_prepared_with_encoder(context, encoder, &pass, state)?
+                    }
+                    FrameTraversalPass::NeedCapture(ticket) => {
+                        return Err(CompositorError::CanvasCaptureRequired {
+                            ticket,
+                            input: current,
+                        });
+                    }
+                };
+            }
         }
         Ok(current)
     }

@@ -33,13 +33,34 @@ fn catalog_is_versioned_and_every_default_resolves() {
             "force-field",
             "liquid",
             "droplets",
-            "clouds"
+            "clouds",
+            "blaze",
+            "flame-wrap",
+            "bubble",
+            "frost",
+            "canvas"
         ]
     );
     for definition in catalog.as_array().unwrap() {
         assert_eq!(definition["version"], 1);
         let mut r = request();
         r["effectType"] = definition["id"].clone();
+        if matches!(definition["id"].as_str(), Some("bubble" | "canvas")) {
+            r["params"] = Value::Object(
+                definition["fields"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .filter(|field| field["required"] != false)
+                    .map(|field| {
+                        (
+                            field["key"].as_str().unwrap().to_owned(),
+                            field["default"].clone(),
+                        )
+                    })
+                    .collect(),
+            );
+        }
         let result = resolve(&r);
         if matches!(definition["id"].as_str(), Some("ripple" | "force-field")) {
             assert_eq!(
@@ -49,8 +70,42 @@ fn catalog_is_versioned_and_every_default_resolves() {
             );
             continue;
         }
-        assert_eq!(result["passes"][0]["shader"], definition["id"]);
+        let shader = if definition["id"] == "flame-wrap" {
+            json!("flame_wrap")
+        } else {
+            definition["id"].clone()
+        };
+        assert_eq!(result["passes"][0]["shader"], shader);
         for field in definition["fields"].as_array().unwrap() {
+            if definition["id"] == "canvas" {
+                let key = field["key"].as_str().unwrap();
+                if field["required"] == false {
+                    assert!(result["passes"][0]["uniforms"].get(key).is_none());
+                } else {
+                    let bits = field["default"].as_f64().unwrap().to_bits();
+                    let words: [f64; 4] = std::array::from_fn(|index| {
+                        ((bits >> (index * 16)) & 65535) as f64
+                    });
+                    assert_eq!(result["passes"][0]["uniforms"][key], json!(words));
+                }
+                continue;
+            }
+            if definition["id"] == "frost"
+                && (matches!(field["key"].as_str(), Some("holdTicks" | "recoveryTicks"))
+                    || field["required"] == false)
+            {
+                assert!(result["passes"][0]["uniforms"]
+                    .get(field["key"].as_str().unwrap()).is_none());
+                continue;
+            }
+            if definition["id"] == "bubble" && field["keyframable"] == false {
+                assert!(
+                    result["passes"][0]["uniforms"]
+                        .get(field["key"].as_str().unwrap())
+                        .is_none()
+                );
+                continue;
+            }
             if definition["id"] == "liquid"
                 && (field["key"] == "startTicks" || field["required"] == false)
             {

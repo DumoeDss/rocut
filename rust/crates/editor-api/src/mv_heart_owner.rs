@@ -10,365 +10,16 @@ use std::{
     sync::Mutex,
 };
 
-pub const MAX_OWNER_BYTES: u64 = 256 * 1024 * 1024;
-pub const MAX_GLOBAL_BYTES: u64 = 256 * 1024 * 1024;
-pub const MAX_OWNERS: u32 = 8;
-pub const MAX_OWNER_SESSIONS: usize = 4;
-pub const MAX_GLOBAL_SESSIONS: u32 = 16;
-const MAX_INPUT_JSON: usize = 64 * 1024;
-const MAX_OUTPUT_JSON: usize = 16 * 1024 * 1024;
-const METADATA_RESERVATION: u64 = 64 * 1024;
-// Full validated bindings repeated in image records plus temporary manifest
-// clones/serialization and provider metadata copies. Reserved before preparation.
-const IMAGE_METADATA_RESERVATION: u64 = 16 * 1024;
-const DECODER: &str = "canvas2d-srgb-unpremultiplied-rgba8-v1";
-
-struct Global {
-    next_owner: u32,
-    owners: u32,
-    sessions: u32,
-    bytes: u64,
-}
-static GLOBAL: Mutex<Global> = Mutex::new(Global {
-    next_owner: 1,
-    owners: 0,
-    sessions: 0,
-    bytes: 0,
-});
-fn global() -> Result<std::sync::MutexGuard<'static, Global>, String> {
-    GLOBAL
-        .lock()
-        .map_err(|_| "Heart owner budget lock poisoned".into())
-}
-struct Reservation {
-    bytes: u64,
-    active: bool,
-}
-impl Reservation {
-    fn new(bytes: u64) -> Result<Self, String> {
-        let mut state = global()?;
-        let total = state
-            .bytes
-            .checked_add(bytes)
-            .ok_or("Heart global reservation overflow")?;
-        if total > MAX_GLOBAL_BYTES || state.sessions >= MAX_GLOBAL_SESSIONS {
-            return Err("Heart global session/reservation capability exhausted".into());
-        }
-        state.bytes = total;
-        state.sessions += 1;
-        Ok(Self {
-            bytes,
-            active: true,
-        })
-    }
-    fn transfer(&mut self) {
-        self.active = false;
-    }
-}
-impl Drop for Reservation {
-    fn drop(&mut self) {
-        if self.active {
-            if let Ok(mut state) = global() {
-                state.bytes -= self.bytes;
-                state.sessions -= 1;
-            }
-        }
-    }
-}
-fn hash(bytes: &[u8]) -> String {
-    format!("{:x}", Sha256::digest(bytes))
-}
-fn parse<T: serde::de::DeserializeOwned>(json: &str) -> Result<T, String> {
-    if json.len() > MAX_INPUT_JSON {
-        return Err("Heart owner metadata input exceeds 64 KiB".into());
-    }
-    serde_json::from_str(json).map_err(|e| format!("Heart owner metadata: {e}"))
-}
-fn json<T: Serialize>(value: &T) -> Result<String, String> {
-    let output = serde_json::to_string(value).map_err(|e| e.to_string())?;
-    if output.len() > MAX_OUTPUT_JSON {
-        return Err("Heart owner metadata output exceeds 16 MiB".into());
-    }
-    Ok(output)
-}
-
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-struct Range {
-    offset: usize,
-    length: usize,
-}
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-struct Layout {
-    source: Range,
-    background: Option<Range>,
-}
-impl Layout {
-    fn validate(&self, length: usize, background: bool) -> Result<(), String> {
-        if self.source.offset != 0
-            || self.source.length == 0
-            || self.background.is_some() != background
-        {
-            return Err("Heart packet layout/source/background mismatch".into());
-        }
-        let end = if let Some(range) = &self.background {
-            if range.offset != self.source.length || range.length == 0 {
-                return Err("Heart packet gap/overlap/empty background".into());
-            }
-            range
-                .offset
-                .checked_add(range.length)
-                .ok_or("Heart packet range overflow")?
-        } else {
-            self.source.length
-        };
-        if end != length {
-            return Err("Heart packet trailing/missing bytes".into());
-        }
-        Ok(())
-    }
-    fn split<'a>(
-        &self,
-        bytes: &'a [u8],
-        background: bool,
-    ) -> Result<(&'a [u8], Option<&'a [u8]>), String> {
-        if self.source.offset != 0
-            || self.source.length == 0
-            || self.background.is_some() != background
-        {
-            return Err("Heart packet layout/source/background mismatch".into());
-        }
-        let source = bytes
-            .get(..self.source.length)
-            .ok_or("Heart packet source range exceeds bytes")?;
-        let end = if let Some(range) = &self.background {
-            if range.offset != self.source.length || range.length == 0 {
-                return Err("Heart packet gap/overlap/empty background".into());
-            }
-            range
-                .offset
-                .checked_add(range.length)
-                .ok_or("Heart packet range overflow")?
-        } else {
-            self.source.length
-        };
-        if end != bytes.len() {
-            return Err("Heart packet trailing/missing bytes".into());
-        }
-        Ok((
-            source,
-            self.background
-                .as_ref()
-                .map(|range| &bytes[range.offset..end]),
-        ))
-    }
-}
-
-#[derive(Clone, Deserialize, Serialize, PartialEq)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct BackgroundBinding {
-    pub source: Resource,
-    pub decoded_width: u32,
-    pub decoded_height: u32,
-    pub decoded_rgba_sha256: String,
-    pub decoder: String,
-}
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-struct PrepareInput {
-    source: Resource,
-    binding: heart::Binding,
-    background: Option<BackgroundBinding>,
-    ceiling_bytes: u64,
-    encoded_layout: Layout,
-    decoded_layout: Layout,
-}
-fn metadata(input: &PrepareInput, encoded_len: usize, decoded_len: usize) -> Result<u64, String> {
-    if input.source != input.binding.source {
-        return Err("Heart declared source differs from native binding".into());
-    }
-    input
-        .encoded_layout
-        .validate(encoded_len, input.background.is_some())?;
-    input
-        .decoded_layout
-        .validate(decoded_len, input.background.is_some())?;
-    if encoded_len > 32 * 1024 * 1024 || decoded_len > 128 * 1024 * 1024 {
-        return Err("Heart binary packet exceeds hard limits".into());
-    }
-    let resources: Vec<_> = std::iter::once(input.source.clone())
-        .chain(input.background.as_ref().map(|b| b.source.clone()))
-        .collect();
-    if let Some(issue) = crate::programmatic_resources::validate(&resources).first() {
-        return Err(issue.message.clone());
-    }
-    let valid_sha = |sha: &str| {
-        sha.len() == 64
-            && sha
-                .bytes()
-                .all(|c| c.is_ascii_digit() || (b'a'..=b'f').contains(&c))
-    };
-    if input.source.kind != "image"
-        || input.binding.decoder != DECODER
-        || input.binding.algorithm != "heart-components-v1"
-        || !valid_sha(&input.binding.decoded_rgba_sha256)
-    {
-        return Err("Heart source/native decoder/algorithm identity malformed".into());
-    }
-    if input.encoded_layout.source.length as u64 != input.source.byte_length()
-        || input.decoded_layout.source.length as u64
-            != crate::image_sequence::decoded_image_bytes(
-                input.binding.decoded_width,
-                input.binding.decoded_height,
-            )?
-    {
-        return Err("Heart source packet dimensions/length mismatch".into());
-    }
-    let mut bg_charge = 0;
-    if let Some(bg) = &input.background {
-        let rgba = crate::image_sequence::decoded_image_bytes(bg.decoded_width, bg.decoded_height)?;
-        if bg.source.kind != "image"
-            || bg.source.id == input.source.id
-            || bg.decoder != DECODER
-            || !valid_sha(&bg.decoded_rgba_sha256)
-            || input
-                .encoded_layout
-                .background
-                .as_ref()
-                .map(|r| r.length as u64)
-                != Some(bg.source.byte_length())
-            || input
-                .decoded_layout
-                .background
-                .as_ref()
-                .map(|r| r.length as u64)
-                != Some(rgba)
-        {
-            return Err("Heart background native decoder/packet identity malformed".into());
-        }
-        bg_charge = rgba
-            .checked_mul(2)
-            .and_then(|n| n.checked_add(bg.source.byte_length()))
-            .ok_or("Heart background budget overflow")?;
-    }
-    // Platform snapshots/readback/backing are charged by Heart admission and
-    // bg_charge. The provider's immutable packet and inbound WASM copy are
-    // distinct from those caller snapshots and must both remain reserved.
-    bg_charge
-        .checked_add(
-            (encoded_len as u64)
-                .checked_mul(2)
-                .ok_or("Heart encoded packet budget overflow")?,
-        )
-        .and_then(|n| n.checked_add((decoded_len as u64).checked_mul(2)?))
-        .and_then(|n| n.checked_add(METADATA_RESERVATION))
-        .and_then(|n| {
-            n.checked_add(
-                (1 + input.decoded_layout.source.length as u64 / 4 / 50)
-                    .checked_mul(IMAGE_METADATA_RESERVATION)?,
-            )
-        })
-        .ok_or("Heart binary copy budget overflow".into())
-}
-fn encoded(resource: &Resource, bytes: &[u8], dimensions: [u32; 2]) -> Result<(), String> {
-    if let Some(issue) =
-        crate::programmatic_resources::validate(std::slice::from_ref(resource)).first()
-    {
-        return Err(issue.message.clone());
-    }
-    if resource.kind != "image"
-        || resource.byte_length() != bytes.len() as u64
-        || resource.sha256() != hash(bytes)
-    {
-        return Err("Heart encoded source descriptor/length/SHA mismatch".into());
-    }
-    let actual = crate::image_sequence::inspect_encoded_image(resource.mime_type(), bytes)?;
-    if actual != (dimensions[0], dimensions[1]) {
-        return Err("Heart encoded MIME/header dimensions differ from native binding".into());
-    }
-    Ok(())
-}
-fn background(
-    binding: &BackgroundBinding,
-    encoded_bytes: &[u8],
-    rgba: &[u8],
-) -> Result<u64, String> {
-    encoded(
-        &binding.source,
-        encoded_bytes,
-        [binding.decoded_width, binding.decoded_height],
-    )?;
-    let length =
-        crate::image_sequence::decoded_image_bytes(binding.decoded_width, binding.decoded_height)?;
-    if binding.decoder != DECODER
-        || length != rgba.len() as u64
-        || binding.decoded_rgba_sha256 != hash(rgba)
-    {
-        return Err("Heart background native decoder identity mismatch".into());
-    }
-    // Platform encoded snapshot + platform decoded readback and native backing.
-    length
-        .checked_mul(2)
-        .and_then(|n| n.checked_add(encoded_bytes.len() as u64))
-        .ok_or("Heart background budget overflow".into())
-}
-
-#[derive(Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Identity {
-    pub owner_id: u32,
-    pub session_id: u32,
-    pub binding: heart::Binding,
-    pub background: Option<BackgroundBinding>,
-    pub images_manifest_sha256: String,
-}
-#[derive(Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Image {
-    pub index: u32,
-    pub byte_length: u64,
-    pub image: heart::PreparedImage,
-}
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Manifest {
-    pub identity: Identity,
-    pub images: Vec<Image>,
-    pub reserved_bytes: u64,
-}
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Frame {
-    pub identity: Identity,
-    pub plan: heart::Plan,
-}
-#[derive(Deserialize)]
-#[serde(
-    tag = "kind",
-    content = "settings",
-    rename_all = "camelCase",
-    deny_unknown_fields
-)]
-enum Scene {
-    HeartShatter(heart::HeartShatter),
-    HeartBurn(heart::HeartBurn),
-}
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-struct FrameInput {
-    scene: Scene,
-    shot_start_ticks: u64,
-    shot_end_ticks: u64,
-    song_ticks: u64,
-    beats: Vec<u64>,
-    bpm: f64,
-}
+include!("mv_heart_owner_budget.rs");
+include!("mv_heart_owner_protocol.rs");
+include!("mv_heart_owner_output.rs");
+include!("mv_heart_owner_sky.rs");
 struct Entry {
     session: heart::Session,
     identity: Identity,
     images: Vec<Image>,
     reserved_bytes: u64,
+    frame_extra: u64,
     uploaded: BTreeSet<u32>,
 }
 /// Separate from source JSON: construction and session lookup require this live object.
@@ -376,6 +27,7 @@ pub struct Owner {
     id: u32,
     next_session: u32,
     entries: BTreeMap<u32, Entry>,
+    sky_entries: BTreeMap<u32, SkyEntry>,
     reserved_bytes: u64,
     disposed: bool,
 }
@@ -414,6 +66,7 @@ impl Owner {
             id,
             next_session: 1,
             entries: BTreeMap::new(),
+            sky_entries: BTreeMap::new(),
             reserved_bytes: 0,
             disposed: false,
         })
@@ -428,7 +81,7 @@ impl Owner {
     pub fn diagnostic_json(&self) -> Result<String, String> {
         let state = global()?;
         json(
-            &serde_json::json!({"ownerId":self.id,"disposed":self.disposed,"sessions":self.entries.len(),"reservedBytes":self.reserved_bytes,"globalOwners":state.owners,"globalSessions":state.sessions,"globalReservedBytes":state.bytes,"metric":"conservative Rust capability reservation including stated provider copies; not measured whole-renderer resident memory"}),
+            &serde_json::json!({"ownerId":self.id,"disposed":self.disposed,"sessions":self.entries.len()+self.sky_entries.len(),"reservedBytes":self.reserved_bytes,"globalOwners":state.owners,"globalSessions":state.sessions,"globalReservedBytes":state.bytes,"metric":"conservative Rust capability reservation including stated provider copies; not measured whole-renderer resident memory"}),
         )
     }
     /// Metadata admission precedes component/fracture/crop allocations. Binary
@@ -457,7 +110,7 @@ impl Owner {
         let input: PrepareInput = parse(input)?;
         if input.ceiling_bytes == 0
             || input.ceiling_bytes > MAX_OWNER_BYTES
-            || self.entries.len() >= MAX_OWNER_SESSIONS
+            || self.entries.len() + self.sky_entries.len() >= MAX_OWNER_SESSIONS
         {
             return Err("Heart session ceiling/capability exceeded".into());
         }
@@ -498,6 +151,17 @@ impl Owner {
                 [input.binding.decoded_width, input.binding.decoded_height],
             )?;
             input.binding.validate_source(source_rgba)?;
+            match (
+                &input.character,
+                character_bytes(&input.encoded_layout, encoded_packet)?,
+                character_bytes(&input.decoded_layout, decoded_packet)?,
+            ) {
+                (Some(binding), Some(bytes), Some(rgba)) => {
+                    background(binding, bytes, rgba)?;
+                }
+                (None, None, None) => {}
+                _ => return Err("Heart character binary admission incomplete".into()),
+            }
             match (&input.background, bg_encoded, bg_rgba) {
                 (Some(binding), Some(bytes), Some(rgba)) => {
                     background(binding, bytes, rgba)?;
@@ -505,11 +169,19 @@ impl Owner {
                 (None, None, None) => {}
                 _ => return Err("Heart background binary admission incomplete".into()),
             }
-            let session = heart::Session::prepare(
+            let discovery = heart::Session::discover_with_metadata(
                 input.binding.clone(),
                 source_rgba,
                 preparation_ceiling as usize,
+                IMAGE_METADATA_RESERVATION as usize,
             )?;
+            let image_metadata = (discovery.actual_parts() as u64)
+                .checked_mul(IMAGE_METADATA_RESERVATION)
+                .ok_or("Heart actual image metadata budget overflow")?;
+            let final_ceiling = preparation_ceiling
+                .checked_sub(image_metadata)
+                .ok_or("Heart actual image metadata exceeds joint ceiling")?;
+            let session = discovery.finish(source_rgba, final_ceiling as usize)?;
             let images: Vec<Image> = session
                 .images()
                 .iter()
@@ -526,6 +198,7 @@ impl Owner {
                 session_id,
                 binding: input.binding,
                 background: input.background,
+                character: input.character,
                 images_manifest_sha256: hash(images_json.as_bytes()),
             };
             let entry = Entry {
@@ -533,6 +206,12 @@ impl Owner {
                 identity,
                 images,
                 reserved_bytes: input.ceiling_bytes,
+                frame_extra: (encoded_len as u64)
+                    .checked_add(decoded_len as u64)
+                    .and_then(|v| v.checked_mul(2))
+                    .and_then(|v| v.checked_add(METADATA_RESERVATION))
+                    .and_then(|v| v.checked_add(image_metadata))
+                    .ok_or("Heart retained copy budget overflow")?,
                 uploaded: BTreeSet::new(),
             };
             // Bound the first metadata publication before retaining the session.
@@ -554,6 +233,9 @@ impl Owner {
         }
     }
     pub fn manifest_json(&mut self, session: u32) -> Result<String, String> {
+        if self.sky_entries.contains_key(&session) {
+            return self.sky_manifest_json(session);
+        }
         let result = (|| {
             self.check()?;
             let entry = self
@@ -610,6 +292,9 @@ impl Owner {
         result
     }
     pub fn frame_json(&mut self, session: u32, input: &str) -> Result<String, String> {
+        if self.sky_entries.contains_key(&session) {
+            return self.sky_frame_json(session, input);
+        }
         let result = (|| {
             self.check()?;
             let entry = self
@@ -621,6 +306,18 @@ impl Owner {
             if let Some(bg) = &entry.identity.background {
                 resources.push(bg.source.clone());
             }
+            if let Some(character) = &entry.identity.character {
+                resources.push(character.source.clone());
+            }
+            let character = entry
+                .identity
+                .character
+                .as_ref()
+                .map(|c| heart::BackgroundFact {
+                    resource: &c.source,
+                    width: c.decoded_width,
+                    height: c.decoded_height,
+                });
             let sample =
                 heart::Sample {
                     shot_start_ticks: input.shot_start_ticks,
@@ -640,10 +337,25 @@ impl Owner {
             let plan = match input.scene {
                 Scene::HeartShatter(settings) => entry.session.frame(&settings, &sample)?,
                 Scene::HeartBurn(settings) => entry.session.burn_frame(&settings, &sample)?,
+                Scene::HeartGather(settings) => entry.session.gather_frame(
+                    &settings,
+                    &sample,
+                    character
+                        .as_ref()
+                        .ok_or("Gather requires admitted character")?,
+                )?,
+                Scene::SunBloom(settings) => entry.session.sun_frame(
+                    &settings,
+                    &sample,
+                    character
+                        .as_ref()
+                        .ok_or("Sun requires admitted character")?,
+                )?,
+                Scene::SkyShatter(_) => return Err("Sky requires a retained Sky session".into()),
             };
             if plan
                 .raster_budget_bytes
-                .checked_add(METADATA_RESERVATION)
+                .checked_add(entry.frame_extra)
                 .ok_or("Heart frame budget overflow")?
                 > entry.reserved_bytes
             {
@@ -660,6 +372,13 @@ impl Owner {
         result
     }
     pub fn cancel(&mut self, session: u32) -> Result<bool, String> {
+        if let Some(entry) = self.sky_entries.remove(&session) {
+            let mut state = global()?;
+            state.bytes -= entry.reserved_bytes;
+            state.sessions -= 1;
+            self.reserved_bytes -= entry.reserved_bytes;
+            return Ok(true);
+        }
         if let Some(entry) = self.entries.remove(&session) {
             let mut state = global()?;
             state.bytes -= entry.reserved_bytes;
@@ -676,9 +395,10 @@ impl Owner {
         }
         let mut state = global()?;
         state.bytes -= self.reserved_bytes;
-        state.sessions -= self.entries.len() as u32;
+        state.sessions -= (self.entries.len() + self.sky_entries.len()) as u32;
         state.owners -= 1;
         self.entries.clear();
+        self.sky_entries.clear();
         self.reserved_bytes = 0;
         self.disposed = true;
         Ok(())
