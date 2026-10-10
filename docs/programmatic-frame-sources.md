@@ -4464,3 +4464,16 @@ oracle 137). This is the same post-composite pixel-tail family as the
 wet-floor shimmer band and the tunnel glyph edges - queued for the
 consolidated pixel-acceptance phase. Details in
 docs/evidence/mv-night-train-parity-finding-20261011.json.
+
+Follow-up 7x7 neighborhood matrices taken from both sides in one probe run
+complete the count-case picture: at (1800,900) the native diagonal bright
+boundary sits one pixel earlier than the oracle (antialiasing samples on
+opposite sides of the same puddle edge), and at (300,120) both sides hold
+the identical warm speckle cluster displaced by one to three pixels. All
+content exists on both sides at matching brightness; the divergence is a
+systematic ~1px sub-pixel displacement of edge sampling - the same
+pixel-tail family as fall shimmer, tunnel glyph edges and train bloom
+edges, now with bit-identical surfaces and glow positions as supporting
+evidence. The remaining suspect is floating-point evaluation order inside
+the camera/clip composition (the 1+0.006*dec(t-last,9) zoom nudge at ULP
+level) flipping edge samples across the same geometric boundary.

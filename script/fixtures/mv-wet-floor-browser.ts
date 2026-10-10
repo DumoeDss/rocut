@@ -462,6 +462,23 @@ export async function compareWetFloorPixels({
 				const offset = (y * 1920 + x) * 4;
 				anchors.push({ x, y, a: [0, 1, 2, 3].map(k => actual[offset + k]), b: [0, 1, 2, 3].map(k => expected[offset + k]) });
 			}
+		const grids: Array<{ x: number; y: number; native: string[]; oracle: string[] }> = [];
+		if (settings.mode === "count")
+			for (const [cx, cy] of [[300, 120], [1800, 900]] as const) {
+				const read = (data: Uint8ClampedArray) => {
+					const rows: string[] = [];
+					for (let y = cy - 3; y <= cy + 3; y++) {
+						const cells: string[] = [];
+						for (let x = cx - 3; x <= cx + 3; x++) {
+							const o = (y * 1920 + x) * 4;
+							cells.push(data[o] + "," + data[o + 1] + "," + data[o + 2]);
+						}
+						rows.push(cells.join(" "));
+					}
+					return rows;
+				};
+				grids.push({ x: cx, y: cy, native: read(actual), oracle: read(expected) });
+			}
 		let heatMap = "";
 		if (settings.mode === "count") {
 			const shades = " .:-=+*#%@";
@@ -526,7 +543,7 @@ export async function compareWetFloorPixels({
 		}
 		if (mismatchedPixels)
 			throw Error(
-`wetFloor ${settings.mode} pixel mismatch: ${mismatchedPixels} pixels, max channel error ${max}: ${JSON.stringify({ samples, rowBands, colBands, surfaceComparison, anchors, opBisect: opBisect ? opBisect.filter((_, i) => i % 3 === 0 || opBisect[i].ops >= 1180) : undefined, opDump, glowOps })}`,
+`wetFloor ${settings.mode} pixel mismatch: ${mismatchedPixels} pixels, max channel error ${max}: ${JSON.stringify({ samples, rowBands, colBands, surfaceComparison, anchors, grids, opBisect: opBisect ? opBisect.filter((_, i) => i % 3 === 0 || opBisect[i].ops >= 1180) : undefined, opDump, glowOps })}`,
 			);
 		if (surfaceDiagnostics && settings.mode === "count") {
 			return {

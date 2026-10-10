@@ -39,6 +39,15 @@
       "result": "ops 0..1176 stay around 1.32M mismatched (progressively drawn, naturally incomplete); ops 1188 (the vignette fillRect, radial gradient count-g4 rgba(2,3,8,0.62)) collapses the count to 21,760; full plan 21,302",
       "implication": "the vignette darkening masks most of the divergence; the true divergent element is before op 1188 and survives only partially (21,302 px) after vignette; anchor evidence shows a persistent warm glow region differs between the sides: oracle has it near (300,120) while native extends a warm region to (1800,900) where the oracle stays dark, and an independent oracle time scan shows the (300,120) warm value is stable from t=98.9 to t=101.0 (persistent element, not a drop transient)"
     },
+    "neighborhoodMatrices": {
+      "recordedAt": "2026-10-11T05:20:00Z",
+      "tooling": "7x7 RGB grids around both divergent anchors, captured from both the native plan render and the unchanged oracle frame in the same probe run",
+      "result": [
+        "(1800,900): the native diagonal bright boundary sits one pixel-row/col earlier than the oracle (native reaches 212,186,144 at matrix row 3 while the oracle only at row 7) - the puddle-edge antialiasing samples fall on opposite sides of the same diagonal edge",
+        "(300,120): both sides contain the same warm speckle cluster (98-102 peak values) but displaced by roughly one to three pixels - the native center is (80,74,69) where the oracle center reads (83,76,66), and the surrounding speckles shift together"
+      ],
+      "interpretation": "all scene content exists on both sides at matching brightness; the divergence is a systematic ~1px sub-pixel displacement of edge sampling, the same pixel-tail family as the wet-floor fall shimmer band, the tunnel glyph edges and the train bloom edges. Combined with bit-identical surfaces, bit-identical glow positions ((376.48,144.74) glint agrees on both sides) and zero alpha differences, the remaining suspect is floating-point evaluation order inside the camera/clip composition (zoom nudge factor 1+0.006*dec(t-last,9) at ULP level) flipping edge samples across the same geometric boundary"
+    },
     "status": "open; queued for consolidated pixel acceptance with surface-level dump tooling",
     "nonGoals": "not a threshold relaxation; scene gate remains"
   },
