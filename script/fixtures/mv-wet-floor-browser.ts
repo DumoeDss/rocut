@@ -267,6 +267,9 @@ export async function compareWetFloorPixels({
 			b: number;
 			d: number;
 		}> = [];
+		const histogram = new Map<number, number>();
+		const rowChanged = new Uint32Array(1080), colChanged = new Uint32Array(1920), chanDelta = [0, 0, 0, 0];
+		let changedSamples = 0, deltaTotal = 0;
 		for (let offset = 0; offset < actual.length; offset += 4) {
 			let mismatch = false;
 			for (let channel = 0; channel < 4; channel++) {
@@ -275,6 +278,10 @@ export async function compareWetFloorPixels({
 				);
 				max = Math.max(max, error);
 				sum += error;
+				if (error > 0) {
+					changedSamples++; deltaTotal += error; chanDelta[channel] += error;
+					histogram.set(error, (histogram.get(error) ?? 0) + 1);
+				}
 				if (error > maxChannelError) mismatch = true;
 				if (
 					error > 0 &&
@@ -292,11 +299,17 @@ export async function compareWetFloorPixels({
 					});
 				}
 			}
-			if (mismatch) mismatchedPixels++;
+			if (mismatch) {
+				mismatchedPixels++;
+				rowChanged[(offset / 4 / 1920) | 0]++;
+				colChanged[((offset / 4) | 0) % 1920]++;
+			}
 		}
+		const band = (arr: Uint32Array) => { const out: number[] = []; for (let b = 0; b < 12; b++) { let s = 0; for (let i = Math.floor(b * arr.length / 12); i < Math.floor((b + 1) * arr.length / 12); i++) s += arr[i]; out.push(s); } return out; };
+		const rowBands = band(rowChanged), colBands = band(colChanged);
 		if (mismatchedPixels)
 			throw Error(
-				`wetFloor ${settings.mode} pixel mismatch: ${mismatchedPixels} pixels, max channel error ${max}: ${JSON.stringify(samples)}`,
+				`wetFloor ${settings.mode} pixel mismatch: ${mismatchedPixels} pixels, max channel error ${max}: ${JSON.stringify({ samples, histogram, rowBands, colBands, chanDelta })}`,
 			);
 		return {
 			mode: settings.mode,

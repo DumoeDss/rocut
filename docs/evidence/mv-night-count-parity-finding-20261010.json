@@ -15,6 +15,18 @@
       "both sides implement the same filter op and the same puddle path constants; the divergence is inside the count surface composition (surface byte dump comparison required)",
       "this is the first time the count case executes at all - previously wet-floor fall failed earlier in the sequence"
     ],
+    "spatialDistribution": {
+      "recordedAt": "2026-10-11T00:00:00Z",
+      "rowBands": [157, 3159, 0, 0, 0, 0, 0, 255, 650, 10353, 6728, 0],
+      "colBands": [1022, 2082, 0, 0, 0, 255, 0, 0, 0, 734, 11537, 5460],
+      "chanDelta": { "r": 0, "g": 0, "b": 0, "a": 0 },
+      "interpretation": [
+        "all 21,302 changed pixels are RGB-only (alpha bit-identical), so both surfaces settle on the same alpha coverage of the puddle/margin geometry",
+        "rowBands concentrate at bands 0-1 (y<180, above the puddle top edge where the wet-margin patch lives) and bands 9-10 (y 810-990, inside the lower puddle body)",
+        "colBands concentrate at bands 9-11 (x>1440, the puddle right side, which the reflection plate crop 820x430 at x852 does not cover) and bands 0-1 (x<320, the left screen edge)",
+        "the divergence is therefore bound to the composition of reflection content and satellite puddle darkening near the puddle boundary, not to the puddle path constants (already numerically cross-checked) nor to filter op availability (already implemented)"
+      ]
+    },
     "status": "open; queued for consolidated pixel acceptance with surface-level dump tooling",
     "nonGoals": "not a threshold relaxation; scene gate remains"
   },

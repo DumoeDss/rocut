@@ -4423,5 +4423,10 @@ pixels with max channel error 186 concentrated in a band where the oracle
 shows the blur(30px) wet-margin dark patch and native does not. Both sides
 implement the same filter op and puddle geometry, so the divergence is
 inside the count surface composition; a surface-level dump comparison is the
-queued next step. Details in
+queued next step. Spatial banding of the failing pixels shows the change is
+RGB-only (alpha bit-identical across all 21,302 pixels), concentrated above
+the puddle top edge (y<180) and in its lower body (y 810-990), and skewed to
+the puddle right side (x>1440) plus the left screen edge - consistent with a
+reflection-content or satellite-puddle divergence near the boundary rather
+than a geometry or op-availability problem. Details in
 docs/evidence/mv-night-count-parity-finding-20261010.json.
