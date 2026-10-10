@@ -24,11 +24,24 @@
   "recheck": {
     "tunnel": {
       "probe": "script/probe-mv-tunnel-native.mjs --browser-only",
-      "beforeFix": { "changedPixels": 121100, "sceneMax": 6, "mae": 0.0146 },
-      "afterFix": { "changedPixels": 22, "sceneMax": 6, "mae": 0.0000042 },
+      "beforeFix": {
+        "changedPixels": 121100,
+        "sceneMax": 6,
+        "mae": 0.0146
+      },
+      "afterFix": {
+        "changedPixels": 22,
+        "sceneMax": 6,
+        "mae": 0.0000042
+      },
       "improvement": "changed pixels -99.98%, mae -3464x",
       "residual": "22 scattered pixels: one 3-channel cluster at (992,663) delta 4-6 plus ~19 single-delta glyph-edge samples; candidate sources are the crossbuck strokeRect-vs-path stroke antialiasing and glyph subpixel rounding",
-      "status": "classified, next in pixel acceptance queue"
+      "status": "classified, next in pixel acceptance queue",
+      "recheck20261011": {
+        "probe": "script/probe-mv-tunnel-native.mjs --browser-only with ROCUT_TEST_CURRENT_SOURCE_SCOPE=compiled-snapshot while another workstream holds uncommitted Rust edits",
+        "result": "failed only on the already-classified residual: defaults-all-layers-complete-forward-seek repeat 4/4 reports scene max 6 / 22 changed pixels (mae 0.0000042) and post max 3 / 30 changed pixels - the same (992,663) cluster plus single-delta glyph-edge samples recorded above",
+        "implication": "no regression and no new divergence class; the gate threshold max<=2 fails exactly on the documented pixel-tail residue queued for the consolidated pixel-acceptance phase"
+      }
     },
     "lutAtlas": {
       "probe": "script/probe-mv-lut-atlas.mjs --browser-only",
