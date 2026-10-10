@@ -4338,3 +4338,15 @@ filed for the consolidated pixel acceptance phase - plausible sources are the
 synthetic dedicated fixtures diverging from original-artwork thresholds or
 in-flight parallel-session changes compiled into this checkpoint; it does not
 block ongoing feature development.
+
+### LUT atlas native recheck passes on the rebuilt checkpoint (2026-10-10)
+
+The original 256x16 LUT atlas browser-only probe passes end-to-end on the
+restored checkpoint environment: exact native resource admission of the
+palette JSON plus every referenced LUT/duotone PNG, byte-identical atlas
+reconstruction (atlasSha256 9cd4341b...), all 15 original rows bound, and the
+P4 alias resolved to row 6 with the pinned row source sha256. The WASM
+identity (ddade5ea...) matches the same checkpoint used by the Tunnel and
+Night rechecks. Full identity chain and resource inventory are preserved in
+docs/evidence/mv-lut-atlas-native-recheck-20261010.json. Scope remains the
+atlas seam only - no full GL post, movie, or export acceptance claim.

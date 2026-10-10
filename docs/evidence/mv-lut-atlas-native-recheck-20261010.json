@@ -1,0 +1,255 @@
+{
+  "result": {
+    "status": "passed",
+    "profile": "original-lut-atlas-v1",
+    "atlasSha256": "9cd4341bfe67eadc9d49b494fbe0b9d80fc8339125eef79f77ab46ebf9a4d2b1",
+    "paletteSha256": "cb0f9478c5f044ade0e4bf7f7716cb73b812b8d6429b8cb83aa70479aefec899",
+    "usedRows": 15,
+    "requiredAlias": "P4",
+    "requiredRow": 6,
+    "rowSourceSha256": "69860d423c2d3954c4c447725af2bd35a8e13e9941ab6fe5f339ffeabd21acfe",
+    "maxChannelError": 0,
+    "mismatchedChannels": 0,
+    "sample": {
+      "row": 6,
+      "rect": [
+        0,
+        6,
+        256,
+        1
+      ],
+      "atlasSha256": "9cd4341bfe67eadc9d49b494fbe0b9d80fc8339125eef79f77ab46ebf9a4d2b1",
+      "sourceResource": {
+        "id": "assets/style/luts/P4_hotarubi.png",
+        "kind": "image",
+        "attachmentKey": "programmatic-sha256-69860d423c2d3954c4c447725af2bd35a8e13e9941ab6fe5f339ffeabd21acfe",
+        "mimeType": "image/png",
+        "byteLength": 230,
+        "sha256": "69860d423c2d3954c4c447725af2bd35a8e13e9941ab6fe5f339ffeabd21acfe"
+      }
+    },
+    "post": {
+      "lutA": 6,
+      "lutB": 6,
+      "lutMix": 0.18
+    },
+    "rowPixelSha256": "58954aa84ce64970b2de6eb4b5966e04fb8bbcffa09d9cb2277f3290a6f91825",
+    "nativeRowByteLength": 1024,
+    "negativeCount": 8,
+    "scope": "real resource bytes/native plan/exact atlas pixels/P4 resolution/row binding; not full movie/post GL/export"
+  },
+  "wasmIdentity": {
+    "directory": "C:/Users/Sayo/AppData/Local/Temp/rocut-mv-native-checkpoint-20261010/wasm",
+    "files": {
+      "opencut_wasm_bg.wasm": {
+        "byteLength": 15066383,
+        "sha256": "ddade5ea1caedb1d5b721b58171ee4360d5ec3d2e9ca21cfb39d16e2939b8657"
+      },
+      "opencut_wasm.js": {
+        "byteLength": 212790,
+        "sha256": "51264192e7e2d9a118942219c9ee0abeb6bda615980e8fec57b3e82a6eff6eff"
+      },
+      "verification.json": {
+        "byteLength": 841,
+        "sha256": "b039a24b2acaaeec7779cc919b99593a10f43d2bcccad6ba8412e4ec51c5c8dd"
+      }
+    },
+    "sourceManifestSha256": "ebe69380c0558edc0c42d8f51036b7456b2c21e368ee1e16952f2bfa9a2a5152",
+    "scope": "Exact private WASM/glue/build-report files; producer source-manifest digest, not a claim over the current whole workspace"
+  },
+  "rustIdentity": {
+    "manifestSha256": "ebe69380c0558edc0c42d8f51036b7456b2c21e368ee1e16952f2bfa9a2a5152",
+    "verifiedCompiledSnapshotFiles": 1979,
+    "currentFrozenSources": [
+      {
+        "path": "rust/wasm/src/mv_lut_atlas.rs",
+        "origin": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut",
+        "sha256": "1b82aaf5f13b85762147a6ee9797b9add81d8451a9a41e4871b8c20765125b52"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_lut_atlas.rs",
+        "origin": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut",
+        "sha256": "19b164a2afece536d1978b93234536b7f12323e3d491c35c126c8e717cf1d7ed"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_lut_atlas_transport.rs",
+        "origin": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut",
+        "sha256": "decf104a2983b7da95b2249635a3e79ad0e47bc543d2ad4cf6603d359b5f1ffd"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_lut_atlas_layout.rs",
+        "origin": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut",
+        "sha256": "e08cbabf88976bb7a77920f2b99db13ae40b1f3f2613e5c2ae1b8ced2568a17b"
+      },
+      {
+        "path": "rust/crates/editor-api/src/mv_lut_atlas_bridge.rs",
+        "origin": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut",
+        "sha256": "aeb0396b67ab9f60249822a0e459ab89b12b8c4ffab5490322f0c9529dd109c8"
+      }
+    ],
+    "scope": "Entire hash-pinned compiled snapshot + five current frozen LUT Rust production inputs only; not current shared registry/whole-worktree green"
+  },
+  "browserIdentity": {
+    "byteLength": 4508160,
+    "sha256": "9b07943f834485b43c9d54caea2951c78715f9f07070a80ab6658465ebd3e711"
+  },
+  "servedIdentity": {
+    "scope": "Every file in this run's private served web directory",
+    "files": {
+      "assets/mv-lut-atlas-native-browser-B3SoqSg8.js": {
+        "byteLength": 184085,
+        "sha256": "14855225622f61fb3f3b387033f159c2c1ff5dfd2a8f68409b04e9258a9d65e7"
+      },
+      "assets/opencut_wasm_bg-DoFJWKPV.wasm": {
+        "byteLength": 15066383,
+        "sha256": "ddade5ea1caedb1d5b721b58171ee4360d5ec3d2e9ca21cfb39d16e2939b8657"
+      },
+      "script/fixtures/mv-lut-atlas-native-browser.html": {
+        "byteLength": 187,
+        "sha256": "623556e720b5aab6ad4f2f62abab65b84b700554fe5ddeae40ed695e516859d1"
+      }
+    }
+  },
+  "sources": [
+    {
+      "path": "packages/editor-classic/src/services/renderer/programmatic/mv-lut-atlas.ts",
+      "sha256": "419da452eca5ff44894eeaf98d662ee6b495ef5f38e339de817b503c22ab4ad5"
+    },
+    {
+      "path": "packages/editor-contracts/src/programmatic-resources.ts",
+      "sha256": "01ce52b43ed32d3c4ab47552f28be091b24919c062c25b4df6c7ba172942d043"
+    },
+    {
+      "path": "script/fixtures/mv-lut-atlas-browser.ts",
+      "sha256": "5a8ddb3a710cd923d6118506e291edba906e8000c3ba12abb156451fe846cdd7"
+    },
+    {
+      "path": "script/fixtures/mv-lut-atlas-native-browser.html",
+      "sha256": "ef575b4cf420db6e9ffc90ea197b686b638f9429eb5893a8f5d15f3f3635aff6"
+    },
+    {
+      "path": "script/fixtures/mv-lut-atlas-native-browser.ts",
+      "sha256": "8e0a8fa9191cb494d5c00074d956d81c0f376c316ba975f5de98bef16ffa36d5"
+    }
+  ],
+  "nodeSources": [
+    {
+      "path": "script/probe-mv-lut-atlas.mjs",
+      "sha256": "1b2a4038d5463e40f2cae781aa0fe338657195e1f7ab8046aad60c680c9a0700"
+    },
+    {
+      "path": "script/browser-probe-toolchain.mjs",
+      "sha256": "795ee858ba116ac7134f9b32e60d4908c90f6467d270bb8602c6c6b419d170d0"
+    },
+    {
+      "path": "script/fixtures/mv-lut-atlas-native-build.mjs",
+      "sha256": "ae8725910bc1d7d7b637e94e0e34c787625f4ae2775d865163beec1f86ef23e2"
+    },
+    {
+      "path": "script/fixtures/mv-lut-atlas-native-identities.mjs",
+      "sha256": "9aab8e3c410de27108b4afa38d844a92849f609f39cd75e19b9376dd9e5665e1"
+    },
+    {
+      "path": "script/fixtures/mv-fall-evidence.mjs",
+      "sha256": "4e3acc0f26e164553278af1b6efc1a3ae41c95a9a0d8a319ae01566a7fd722a4"
+    },
+    {
+      "path": "script/fixtures/mv-tunnel-native-identities.mjs",
+      "sha256": "1fbf9fbadaaa02499aa57e89b5ee38d7c9a9030899bc67db1bc36622218a8d3b"
+    }
+  ],
+  "resources": [
+    {
+      "id": "assets/style/palettes.json",
+      "kind": "analysis",
+      "mimeType": "application/json",
+      "byteLength": 5715,
+      "sha256": "cb0f9478c5f044ade0e4bf7f7716cb73b812b8d6429b8cb83aa70479aefec899",
+      "attachmentKey": "programmatic-sha256-cb0f9478c5f044ade0e4bf7f7716cb73b812b8d6429b8cb83aa70479aefec899"
+    },
+    {
+      "id": "assets/style/luts/P1_oumagatoki.png",
+      "kind": "image",
+      "mimeType": "image/png",
+      "byteLength": 219,
+      "sha256": "025349106b2a514a4b26e4840382cf6d5b05cc7dfe298b045f5d104ce5d26a8e",
+      "attachmentKey": "programmatic-sha256-025349106b2a514a4b26e4840382cf6d5b05cc7dfe298b045f5d104ce5d26a8e"
+    },
+    {
+      "id": "assets/style/luts/P1_oumagatoki_duo.png",
+      "kind": "image",
+      "mimeType": "image/png",
+      "byteLength": 184,
+      "sha256": "f13c9300074dc0ee40c7533efe40f2ab998926f8bf4b7caa796ae8f0d5eed8d4",
+      "attachmentKey": "programmatic-sha256-f13c9300074dc0ee40c7533efe40f2ab998926f8bf4b7caa796ae8f0d5eed8d4"
+    },
+    {
+      "id": "assets/style/luts/P2_zansho.png",
+      "kind": "image",
+      "mimeType": "image/png",
+      "byteLength": 237,
+      "sha256": "41323c5069956bf280e4fa57c563ea6e4cbbe2e4d31c141f560f1e506b6dfad6",
+      "attachmentKey": "programmatic-sha256-41323c5069956bf280e4fa57c563ea6e4cbbe2e4d31c141f560f1e506b6dfad6"
+    },
+    {
+      "id": "assets/style/luts/P2_zansho_duo.png",
+      "kind": "image",
+      "mimeType": "image/png",
+      "byteLength": 176,
+      "sha256": "049763052d02da0df0aa7e227ffc8a24121593eebaf86dd0b1b23e34e9a92566",
+      "attachmentKey": "programmatic-sha256-049763052d02da0df0aa7e227ffc8a24121593eebaf86dd0b1b23e34e9a92566"
+    },
+    {
+      "id": "assets/style/luts/P3_fumikiri.png",
+      "kind": "image",
+      "mimeType": "image/png",
+      "byteLength": 118,
+      "sha256": "ecafcd7632a2cf031fca0e67907e9b9b90a12fc97361175accd00a913128dd2f",
+      "attachmentKey": "programmatic-sha256-ecafcd7632a2cf031fca0e67907e9b9b90a12fc97361175accd00a913128dd2f"
+    },
+    {
+      "id": "assets/style/luts/P3_fumikiri_duo.png",
+      "kind": "image",
+      "mimeType": "image/png",
+      "byteLength": 190,
+      "sha256": "6c65ba8b4035e787c27c0825e7363977d725fc89c5ff8e002a72d4263922b318",
+      "attachmentKey": "programmatic-sha256-6c65ba8b4035e787c27c0825e7363977d725fc89c5ff8e002a72d4263922b318"
+    },
+    {
+      "id": "assets/style/luts/P4_hotarubi.png",
+      "kind": "image",
+      "mimeType": "image/png",
+      "byteLength": 230,
+      "sha256": "69860d423c2d3954c4c447725af2bd35a8e13e9941ab6fe5f339ffeabd21acfe",
+      "attachmentKey": "programmatic-sha256-69860d423c2d3954c4c447725af2bd35a8e13e9941ab6fe5f339ffeabd21acfe"
+    },
+    {
+      "id": "assets/style/luts/P4_hotarubi_duo.png",
+      "kind": "image",
+      "mimeType": "image/png",
+      "byteLength": 174,
+      "sha256": "2ad9d050acffcffbc02d933e053eda24f23c4dfff2fd22f25030c2675953fc90",
+      "attachmentKey": "programmatic-sha256-2ad9d050acffcffbc02d933e053eda24f23c4dfff2fd22f25030c2675953fc90"
+    },
+    {
+      "id": "assets/style/luts/P5_taishoku.png",
+      "kind": "image",
+      "mimeType": "image/png",
+      "byteLength": 182,
+      "sha256": "b3ca38796aa77a485e7847ab2f35fc2a8850c31562a43dc66a28a89704abcb83",
+      "attachmentKey": "programmatic-sha256-b3ca38796aa77a485e7847ab2f35fc2a8850c31562a43dc66a28a89704abcb83"
+    },
+    {
+      "id": "assets/style/luts/P5_taishoku_duo.png",
+      "kind": "image",
+      "mimeType": "image/png",
+      "byteLength": 174,
+      "sha256": "bc1f388343cda7ffe650f9701a5506e2f06dd4123588f72782d251228d4cf11b",
+      "attachmentKey": "programmatic-sha256-bc1f388343cda7ffe650f9701a5506e2f06dd4123588f72782d251228d4cf11b"
+    }
+  ],
+  "referenceSha256": "3f5e6ff5eb2b7a49e552f1a8da3b3cab0c48e454c226dd943d70abdd51543dd2",
+  "paletteSha256": "cb0f9478c5f044ade0e4bf7f7716cb73b812b8d6429b8cb83aa70479aefec899",
+  "browserExecuted": true,
+  "scope": "Exact native resource admission + original 256x16 atlas pixels + P4 resolve + row pixel binding/negatives only; no full GL post/movie/export claim"
+}
