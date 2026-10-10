@@ -4477,3 +4477,12 @@ edges, now with bit-identical surfaces and glow positions as supporting
 evidence. The remaining suspect is floating-point evaluation order inside
 the camera/clip composition (the 1+0.006*dec(t-last,9) zoom nudge at ULP
 level) flipping edge samples across the same geometric boundary.
+level) flipping edge samples across the same geometric boundary.
+A follow-up camera verification closes the remaining arithmetic suspect: the
+admitted plan's head ops carry rotate(-0.009293205787121998) and
+scale(1.0320927132992188), bit-identical to the oracle countCam values at
+17 significant digits (including the nudge factor). With surfaces, glow
+positions, drop sets and now the camera transform all exonerated, the
+residual divergence concentrates on opposite-side antialiasing of the
+puddle-clip diagonal and the reflection/asphalt boundary inside it -
+grouped with the other sub-pixel findings for the consolidated phase.

@@ -41,7 +41,21 @@ try {
         Z.imgSync = () => bgCanvas;
         Z.scratch = [Z.canvas(1920, 1080), Z.canvas(1920, 1080), Z.canvas(1920, 1080)];
         const scene = Z.SCENES.wetFloor;
+        const t = 99.23;
+        const p = Math.max(0, Math.min(1, (t - 97) / 4.5));
+        const e = -(Math.cos(Math.PI * p) - 1) / 2;
+        const rot = -0.03 + (0.012 - -0.03) * e;
+        const zoom = (1.0 + (1.06 - 1.0) * e) * (1 + 0.006 * Math.exp(-9 * (t - 99.13)));
         const out = [];
+        const glowCalls = [];
+        const protoDraw = CanvasRenderingContext2D.prototype.drawImage;
+        CanvasRenderingContext2D.prototype.drawImage = function (source, ...rest) {
+            if (source && source.width === 128 && source.height === 128) {
+                const m = this.getTransform();
+                glowCalls.push({ m: [m.a, m.b, m.c, m.d, m.e, m.f], rest: rest.map(v => typeof v === 'number' ? Math.round(v * 100) / 100 : v) });
+            }
+            return protoDraw.call(this, source, ...rest);
+        };
         for (const t of scans) {
             const canvas = doc.createElement('canvas');
             canvas.width = 1920; canvas.height = 1080;
@@ -54,14 +68,22 @@ try {
             }
             out.push({ t: t, rows: rows });
         }
-        return out;
+        CanvasRenderingContext2D.prototype.drawImage = protoDraw;
+        return { frames: out, glowCalls: glowCalls, camera: { rot: rot, zoom: zoom } };
     }, {
         util: util, draw: draw, night: night,
         scans: [98.9, 99.0, 99.1, 99.23, 99.4, 99.6, 99.8, 100.0, 100.2, 100.4, 100.6, 100.8, 101.0],
         anchors: [[300, 120], [1800, 900], [1700, 850], [100, 86]],
     });
-    for (const row of result) {
+    for (const row of result.frames) {
         const fmt = k => row.rows[k].slice(0, 3).join(',');
         console.log('t=' + row.t + '  (300,120)=' + fmt('300,120') + '  (1800,900)=' + fmt('1800,900') + '  (1700,850)=' + fmt('1700,850') + '  (100,86)=' + fmt('100,86'));
     }
+    console.log('ORACLE camera:', JSON.stringify(result.camera));
+    const near = result.glowCalls.filter(c => {
+        const cx = c.rest[0] + c.rest[2] / 2, cy = c.rest[1] + c.rest[3] / 2;
+        return Math.hypot(cx - 300, cy - 120) < 200 || Math.hypot(cx - 1800, cy - 900) < 200;
+    });
+    console.log('glow calls near anchor regions: ' + near.length + ' of ' + result.glowCalls.length);
+    for (const c of near.slice(0, 24)) console.log(JSON.stringify(c));
 } finally { await browser.close(); }

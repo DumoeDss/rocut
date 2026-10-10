@@ -502,10 +502,12 @@ export async function compareWetFloorPixels({
 			surfaceComparison = buildSurfaceComparison(surfaceDumps, oracleSurfaces);
 		}
 		let opDump: unknown[] | undefined;
+		let headOps: unknown[] | undefined;
 		let glowOps: unknown[] | undefined;
 		let opBisect: Array<{ ops: number; mismatched: number }> | undefined;
 		if (surfaceDiagnostics && settings.mode === "count") {
 			opDump = plan.operations.slice(1160, 1205).map((operation, index) => ({ index: 1160 + index, ...operation }));
+			headOps = plan.operations.slice(0, 10).map((operation, index) => ({ index, ...operation }));
 			glowOps = plan.operations
 				.map((operation, index) => ({ operation, index }))
 				.filter(({ operation }) => operation.op === "drawImage" && operation.image.kind === "surface" && String(operation.image.id).startsWith("glow-"))
@@ -543,7 +545,7 @@ export async function compareWetFloorPixels({
 		}
 		if (mismatchedPixels)
 			throw Error(
-`wetFloor ${settings.mode} pixel mismatch: ${mismatchedPixels} pixels, max channel error ${max}: ${JSON.stringify({ samples, rowBands, colBands, surfaceComparison, anchors, grids, opBisect: opBisect ? opBisect.filter((_, i) => i % 3 === 0 || opBisect[i].ops >= 1180) : undefined, opDump, glowOps })}`,
+`wetFloor ${settings.mode} pixel mismatch: ${mismatchedPixels} pixels, max channel error ${max}: ${JSON.stringify({ samples, rowBands, colBands, surfaceComparison, anchors, grids, headOps, opBisect: opBisect ? opBisect.filter((_, i) => i % 3 === 0 || opBisect[i].ops >= 1180) : undefined, opDump, glowOps })}`,
 			);
 		if (surfaceDiagnostics && settings.mode === "count") {
 			return {

@@ -48,6 +48,12 @@
       ],
       "interpretation": "all scene content exists on both sides at matching brightness; the divergence is a systematic ~1px sub-pixel displacement of edge sampling, the same pixel-tail family as the wet-floor fall shimmer band, the tunnel glyph edges and the train bloom edges. Combined with bit-identical surfaces, bit-identical glow positions ((376.48,144.74) glint agrees on both sides) and zero alpha differences, the remaining suspect is floating-point evaluation order inside the camera/clip composition (zoom nudge factor 1+0.006*dec(t-last,9) at ULP level) flipping edge samples across the same geometric boundary"
     },
+    "cameraVerification": {
+      "recordedAt": "2026-10-11T05:25:00Z",
+      "nativeOps": "head ops of the admitted plan: translate(960,566), rotate(-0.009293205787121998), scale(1.0320927132992188), translate(-960,-566)",
+      "oracle": "countCam recomputed in the oracle realm: rot=-0.009293205787121998 zoom=1.0320927132992188 (including the dec(t-last,9) nudge with last=99.13)",
+      "result": "bit-identical at 17 significant digits; the camera transform is fully exonerated. Combined with bit-identical surfaces, glow positions and the same drop set (the drop3 impact glow cluster at (770,690) exists on both sides), the remaining divergence concentrates on opposite-side antialiasing of the puddle clip diagonal and the reflection/asphalt boundary inside it"
+    },
     "status": "open; queued for consolidated pixel acceptance with surface-level dump tooling",
     "nonGoals": "not a threshold relaxation; scene gate remains"
   },
