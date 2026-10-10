@@ -20,5 +20,9 @@
     ],
     "status": "open; queued for the consolidated pixel-acceptance phase with the wet-floor count and tunnel glyph findings"
   },
+  "siblings": {
+    "train-frozen": "scene gate passed, 15 post passes executed; complete frame 7,445 changed samples, max 12, concentrated y 540-810, maximum (408,682) native 40 vs oracle 28 - same bloom-edge family, open for the consolidated phase",
+    "train-exit": "passed the full case including scene gate, all 15 post passes and the complete-frame parity (probe exit 1 comes only from the diagnostic case-skip reducing result.cases.length, not from a pixel failure)"
+  },
   "scope": "not an installed Electron/full-movie/export acceptance claim; diagnostic skip used, full gate unchanged"
 }
