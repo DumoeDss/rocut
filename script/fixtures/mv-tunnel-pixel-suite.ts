@@ -58,6 +58,43 @@ export function tunnelPixelDifference({
 	}
 	return { max, mae: total / a.length, changed };
 }
+export function tunnelPixelSamples({
+	a,
+	b,
+	limit = 24,
+}: {
+	a: Uint8ClampedArray;
+	b: Uint8ClampedArray;
+	limit?: number;
+}) {
+	if (a.length !== 1920 * 1080 * 4 || b.length !== a.length)
+		throw Error("Tunnel native full-frame RGBA required");
+	const samples: Array<{
+		x: number;
+		y: number;
+		c: number;
+		a: number;
+		b: number;
+		d: number;
+	}> = [];
+	let max = 0;
+	for (let i = 0; i < a.length && samples.length < limit; i++) {
+		const d = Math.abs(a[i]! - b[i]!);
+		if (d > max) max = d;
+		if (d > 0) {
+			const pixel = (i / 4) | 0;
+			samples.push({
+				x: pixel % 1920,
+				y: (pixel / 1920) | 0,
+				c: i % 4,
+				a: a[i]!,
+				b: b[i]!,
+				d,
+			});
+		}
+	}
+	return { max, samples };
+}
 const accepted = (v: ReturnType<typeof tunnelPixelDifference>) =>
 	v.max <= 2 && v.mae < 0.025;
 function admitNative({
@@ -160,7 +197,18 @@ export async function verifyTunnelPixelMatrix({
 				});
 			if (!accepted(scene) || !accepted(post))
 				throw Error(
-					`Tunnel full-frame parity failed ${key}: ${JSON.stringify({ scene, post })}`,
+					`Tunnel full-frame parity failed ${key}: ${JSON.stringify({
+						scene,
+						post,
+						sceneSamples: tunnelPixelSamples({
+							a: actual.pixels,
+							b: expected.pixels,
+						}).samples,
+						postSamples: tunnelPixelSamples({
+							a: actual.postPixels,
+							b: expected.postPixels,
+						}).samples,
+					})}`,
 				);
 			const hashes = {
 				native: await typeCardReferenceDigest(actual.pixels.slice().buffer),

@@ -1,0 +1,51 @@
+{
+  "recordedAt": "2026-10-10T22:45:00Z",
+  "change": {
+    "file": "rust/crates/editor-api/src/mv_recipe/tunnel_layers.rs",
+    "commit": "c4c6068d",
+    "summary": "tunnel grain now carries fill_history replaying the vignette gradient assignment before the pattern, matching the original filmGrain paint-state sequence"
+  },
+  "rootCause": {
+    "classification": "Canvas paint-state history, not noise data",
+    "evidence": [
+      "the grain tile bytes in the Rust plan are byte-identical to the reference Z.rng(4242) stream (65536 samples, mismatch 0)",
+      "the per-frame tile offsets are identical (-27,-148 for frame index 4, seed 295)",
+      "a Chromium experiment proved translate() and setTransform() pattern draws are bit-identical on the same tile/offset",
+      "the reference filmGrain runs right after the vignette gradient fillStyle assignment; kanji_slam already models this with FillHistory, tunnel omitted it",
+      "replaying the vignette gradient assignment before the pattern (FillHistory) removed 99.98% of the failing pixels"
+    ]
+  },
+  "checkpoint": {
+    "source": "C:/Users/Sayo/AppData/Local/Temp/rocut-mv-native-checkpoint-20261011/source",
+    "wasm": "C:/Users/Sayo/AppData/Local/Temp/rocut-mv-native-checkpoint-20261011/wasm",
+    "wasmSha256Prefix": "1b1906ee499e",
+    "sourceManifestSha256Prefix": "3eeba6a69b27"
+  },
+  "recheck": {
+    "tunnel": {
+      "probe": "script/probe-mv-tunnel-native.mjs --browser-only",
+      "beforeFix": { "changedPixels": 121100, "sceneMax": 6, "mae": 0.0146 },
+      "afterFix": { "changedPixels": 22, "sceneMax": 6, "mae": 0.0000042 },
+      "improvement": "changed pixels -99.98%, mae -3464x",
+      "residual": "22 scattered pixels: one 3-channel cluster at (992,663) delta 4-6 plus ~19 single-delta glyph-edge samples; candidate sources are the crossbuck strokeRect-vs-path stroke antialiasing and glyph subpixel rounding",
+      "status": "classified, next in pixel acceptance queue"
+    },
+    "lutAtlas": {
+      "probe": "script/probe-mv-lut-atlas.mjs --browser-only",
+      "status": "passed",
+      "atlasSha256": "9cd4341bfe67eadc9d49b494fbe0b9d80fc8339125eef79f77ab46ebf9a4d2b1",
+      "note": "grain fix does not affect the atlas seam"
+    },
+    "night": {
+      "probe": "script/probe-mv-night-native.mjs --browser-only --dedicated-native-fixtures",
+      "beforeFix": "complete-frame max=2 over 70672 pixels (previously classified as shimmer resampling rounding)",
+      "afterFix": "wetFloor fall scene gate fails with only 2 pixels at max channel 106",
+      "interpretation": "the fix removed the previous failure mode and surfaced the next independent small difference (likely a float boundary in coverMap or ellipse geometry); queued for the consolidated pixel phase"
+    }
+  },
+  "toolingChange": {
+    "file": "script/fixtures/mv-tunnel-pixel-suite.ts",
+    "summary": "tunnelPixelSamples records the first failing sample coordinates on parity failure; threshold unchanged"
+  },
+  "scope": "not an installed Electron/full-movie/export acceptance claim"
+}
