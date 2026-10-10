@@ -1,0 +1,221 @@
+{
+	"date": "2026-10-10",
+	"status": "Static object subset implemented; Liquid Object remains N; ledger 27 V / 8 N and 13 delivery work packages unchanged",
+	"executionEvidenceBoundary": "Initial geometry/params CPU execution below had tool output but no original full-run receipt; artifact hashes are not reconstructed execution proof. Later async, shared WASM and transport sections each link their own actual receipts and retain their distinct verification boundaries.",
+	"retainedArtifacts": [
+		{
+			"path": "C:/tmps/liquid-native-409f2f2c/native-final.exe",
+			"sha256": "b189535094d6ca1927b8c67bcd8926b6b3032958c79d2fc32a1132caf0f5190d"
+		},
+		{
+			"path": "C:/tmps/liquid-native-409f2f2c/tests-final.exe",
+			"sha256": "2ee03de80e731a89903d72b4595666064419dc5969f49c64180bb7e23a5580e2"
+		},
+		{
+			"path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/scripts/tests/liquid-object-native-cli.rs",
+			"sha256": "75226b15b37723f5ff1275788b5d9cf045b6e0df4cb071c7896230deae260c7c"
+		},
+		{
+			"path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/scripts/tests/liquid-object-native.test.mjs",
+			"sha256": "1cfdedc4353cf97240472ae58ca1d5e3e788cea0e6fce40ef8bac51f13c429f3"
+		}
+	],
+	"implementation": {
+		"rust": "Strict version-1 enabled/amount/frequency/speed/twist DTO and bounded String-to-String frame evaluator. Analytic rest-space wave/bulge/twist uses absolute time and explicit seed, not accumulated dt or history-dependent simulation.",
+		"geometry": "Adapter clones owned geometry, retains borrowed rest positions, requests Rust evaluation, validates all mesh results before committing, recomputes vertex normals and bounds and removes stale tangents. Disabled/zero amount restores original geometry including authored normals/bounds; materials/maps and nonmesh nodes preserved.",
+		"supportedSubset": "Static non-interleaved Float32 xyz meshes without morph targets. Skinned/instanced or malformed geometry rejected before replacement; not a fluid solver, stateful flow field, Liquid background filter or verified dispersion effect.",
+		"policy": "Evaluator preserves the per-request 12000000-byte/100000-vertex bounds. Rust-owned whole-frame policy/session, fixed worker and Host codec are wired in the development tree; real private WASM owner and fixed-sidecar factory execution are verified.",
+		"hostBoundary": "Scene requires host-injected capability and refuses authored-prop evaluator injection. Explicit liquid-object-v1 selects a private generated driver and archived worker/adapter identity; real compile/archive/Rust worker/Chromium capture passes on a diagnostic GLB. Electron is explicitly unavailable."
+	},
+	"reportedToolExecution": {
+		"native": {
+			"passed": 7,
+			"effectsGeometryTests": 4,
+			"editorApiTests": 3,
+			"method": "Isolated rustc --edition=2024 --test scripts/tests/liquid-object-native-cli.rs using existing cached native serde/serde_json rlibs, then tests-final.exe; CLI built from same source without --test",
+			"scope": "Seek/seed/time, exact disable/zero restore, invalid geometry/time/control and vertex budget, degenerate geometry; strict params/defaults/ranges/unknown/duplicates, integer frame seed and absolute time"
+		},
+		"creatorCpu": {
+			"passed": 4,
+			"actualThreeVersion": "0.185.1",
+			"command": "Set LIQUID_NATIVE_CLI to retained native-final.exe and LIQUID_THREE_MODULE to actual installed Three 0.185.1; node --test scripts/tests/liquid-object-native.test.mjs",
+			"nativeAuthorAndReplayTests": 2,
+			"actualThreeGeometryTests": 2,
+			"scope": "Actual native Rust JSON -> authoring DTO/replay; actual Three normals/restoration/seek/sharing/bounds/cleanup, unsupported geometry rejection and forced second-mesh failure with no partial commit. Not GPU pixels."
+		},
+		"rawExecutionReceiptAvailable": false,
+		"rawExecutionReceiptSha256": null,
+		"testsRerunForThisArchive": false
+	},
+	"registration": {
+		"sourcePresent": [
+			"effects/src/effects.rs public liquid_object module",
+			"editor-api/src/lib.rs LiquidObject types/parser/resolver/frame evaluator re-export",
+			"rust/wasm/src/wasm.rs resolve_liquid_object_params_json and evaluate_liquid_object_frame_json wrappers"
+		],
+		"newWasmBuilt": true,
+		"boundary": "Both exports built and actually executed in frozen private shared development snapshot; production host evaluator capability/scene GPU behavior are separate."
+	},
+	"sharedWasm": {
+		"receipt": "object-shared-wasm-runtime.json",
+		"buildProvenance": "object-shared-wasm-build-provenance.json",
+		"wasmSha256": "5d40cb7ae4e0fed4d7c7b81d1ef7617b5d874ec5dd6fbead2da03fbc8d021560",
+		"actualApiCalls": 18,
+		"params": {
+			"export": "resolveLiquidObjectParamsJson",
+			"calls": 6,
+			"accepted": 1,
+			"rejected": 5
+		},
+		"frame": {
+			"export": "evaluateLiquidObjectFrameJson",
+			"calls": 12,
+			"accepted": 5,
+			"rejected": 7
+		},
+		"checks": "Deterministic reverse seek, changed absolute time, finite/deformed positions, exact disabled/zero restoration, invalid seed/time/geometry/unknown fields",
+		"boundary": "Actual String APIs only, not production Liquid driver/Host/GPU. Successful immutable snapshot build; three unrelated live files drifted. Not current HEAD consistency, full ABI, encoded export or installation."
+	},
+	"transportAdmission": {
+		"productionSelectable": true,
+		"selectionBoundary": "Development-tree explicit liquid-object-v1 only. Discovery reports configured-not-health-probed, not verified backend health. Shared installed WASM copies are not replaced, Electron unavailable; release wrapper, GPU and complete project export remain separate gates.",
+		"rust": "Opaque session binds a trusted Host-created frame; checked cumulative mesh/vertex/request/encoded/retained reservations, monotonic IDs, one pending request and persistent terminal rejection; no admission refund or deserialized session state.",
+		"codec": "Host consumes bounded JSON text, obtains actual persistent Rust reservations before encoding escaped envelopes, counts exact UTF-8 bytes, correlates responses and rejects late/aborted replies. It never inspects author getters/proxies for metadata.",
+		"nativeTests": { "passed": 7, "failed": 0 },
+		"hostNativeTests": { "passed": 6, "failed": 0, "skipped": 0 },
+		"behaviorReceipt": {
+			"path": "C:/tmps/liquid-transport-ceb80c11/transport-final-receipt.json",
+			"sha256": "03cc09e53a7cb116c07665eb4923782e99f6c437cb6ede0bdcc7cac1929d4bf6"
+		},
+		"quality": {
+			"prettier": "passed",
+			"strictScopedTypecheck": "passed",
+			"projectEslintZeroWarnings": "passed without rule relaxation",
+			"hostTestsAfterSourceQualityFix": "same six Host cases passed; not six additional independent cases",
+			"receipt": "C:/tmps/liquid-transport-ceb80c11/transport-finalquality-receipt.json",
+			"sha256": "27f258397630daa0e430432ae07ba938b7d39dc2ae26ce59a662e34be5166a0a"
+		},
+		"wasmOwner": {
+			"source": "../../rust/wasm/src/liquid_object_transport.rs",
+			"typecheck": "Real policy/session plus actual wasm-bindgen macro compiled to wasm32 metadata with cached compiled dependencies; before/after input hashes unchanged",
+			"receipt": "C:/tmps/liquid-transport-wasm-check-D3ikqQ/evidence.json",
+			"sha256": "73852a69efcef010d5e3767e946db0f05eb4c3abbb0e3a1417392d77f21d67ab",
+			"preCopyBoundary": "8192 UTF-16 units is a coarse pre-copy bound, not exact UTF-8 bytes. At most about 24576 UTF-8 bytes are converted before Rust's 8192-byte control limit rejects and terminates the same session.",
+			"linkedPackageBuilt": true,
+			"runtimeOwnerExecuted": true,
+			"runtimeEvidence": "developmentIntegration.privateWasm below; original metadata-only receipt retained above"
+		},
+		"privateModule": {
+			"source": "../../apps/cli/src/programmatic/engines/three-liquid-object-compiler-plugin.ts",
+			"actualEsbuildTests": { "passed": 4, "expectations": 11 },
+			"scope": "Generated driver namespace/static-import/identity required; author entry/re-export/dynamic import/require, nested or near-matching names and runtime self-claim denied",
+			"strictTypecheckAndProjectLint": "passed",
+			"sharedCompilerSelectsModule": true,
+			"sharedCompilerEvidence": "developmentIntegration.integrationQuality below; actual shared child bundles installed Three 0.185.1 and denies private author imports"
+		},
+		"independentReview": "No reproducible defect found in current session, codec, owner and namespace gate; no duplicated green checks",
+		"remaining": "Real compile/archive/Rust worker/Chromium model capture and dedicated HeadlessHost/FileProjectStore persistence/formal rasterizer frames pass. Formal pack helper and source wiring are complete; full wrapper execution remains unverified. UI history/reload, same-project Rocut production encoded export, Electron adapter, installation and whole-frame performance are not verified."
+	},
+	"developmentIntegration": {
+		"date": "2026-10-10",
+		"explicitProfile": "three-liquid-object-v1",
+		"capability": "liquid-object-v1",
+		"chromiumCaptureEvidence": "liquid-object-chromium-capture.json",
+		"productionExportEvidence": "liquid-object-editor-export.json",
+		"controlledHostAndRasterizer": {
+			"receipt": "C:/tmps/liquid-object-project-VnYDFE/evidence.json",
+			"receiptSha256": "2db8336bc8b72e7a5530e94498bb55a83c4222cb86f40fdf837d1beb2890e0eb",
+			"scope": "Actual dedicated HeadlessHost/FileProjectStore import/compile/apply/close/reopen, followed by formal renderHtmlPng Liquid dispatch from persisted project resources",
+			"completeProjectSha256": "5103b73d585b46abba879bf8e233636c5f0e78cb2455c232b6a6716fac627ecf",
+			"completeProjectBytesUnchanged": true,
+			"graphAndRevisionUnchanged": true,
+			"originalInputAndAuthorUnavailable": true,
+			"archivedAttachmentsReadableAndHashEqual": 5,
+			"hostOpened": 2,
+			"hostClosed": 2,
+			"formalRasterizerPngFrames": 4,
+			"frameIndices": [23, 24, 25, 26],
+			"firstLastMotion": { "meanRgb": 0.599419, "changedPixels": 458 },
+			"ownedDirectChildren": 11,
+			"allObservedActualClose": true,
+			"consoleErrors": 0,
+			"runtimeExceptions": 0,
+			"consumedSourceCreatorWasmPinsUnchanged": true,
+			"externalDiagnosticCodec": "FFV1 16864-byte external encoding with four exact RGBA independently decoded frames; not Rocut project export",
+			"boundary": "This historical rasterizer receipt does not include UI history or production compositor/encoder export. The subsequent same-project four-frame production export is recorded separately in productionExportEvidence."
+		},
+		"privateWasm": {
+			"directory": "C:/tmps/liquid-object-wasm-development-35IsB3/pkg",
+			"sha256": "7f7dba6b40fa79618d1e2f7fedab82e1731dee9c26564796f597bf31758b349c",
+			"bytes": 18502141,
+			"builds": 1,
+			"receipt": "C:/tmps/liquid-object-wasm-development-35IsB3/evidence.json",
+			"receiptSha256": "0688f82056cd79b82d450f8c99348ffc2a71ab46d83b6b09688d3860a32e214d",
+			"checks": "Actual opaque owner open/reserve/evaluate/settle/close, terminal replay and oversized pre-copy termination; seven actual Rust frame capability contracts; same-child fixed worker confirmed close",
+			"boundary": "Frozen private source build and actual new runtime; canonical pkg and ABI baseline unchanged. Historical shared four-interface matrix is not rerun or cumulatively counted."
+		},
+		"fixedWorker": {
+			"tests": { "passed": 8, "failed": 0, "skipped": 0 },
+			"receipt": "C:/tmps/liquid-fixed-worker-0945c9e2/fixed-worker-receipt.json",
+			"receiptSha256": "15f5b49dba03a063cb79f9aa326965275418b6429ad4580603e9cf151b4ba21e",
+			"checks": "Fixed byte closure, private environment, actual lifecycle/close, cancellation, synchronous evaluator loop and bootstrap timeout; old module missing exports fails closed"
+		},
+		"packedFactory": {
+			"receipt": "C:/tmps/liquid-object-packed-acceptance-9HwhTX/evidence.json",
+			"receiptSha256": "6fdd52355cd527b79b7685391a9c9c2b9375abf58c3fbf5dda7f63641c3e4952",
+			"checks": "Actual esbuild define substitution, fixed-sidecar production factory, expectedIdentity replay, invalid fixed module literal rejection and actual process termination",
+			"boundary": "Isolated factory bundle, not complete pack-runtime wrapper, browser GPU or installation"
+		},
+		"formalPackHelper": {
+			"source": "../../script/pack-liquid-object.mjs",
+			"wrapper": "../../script/pack-runtime.mjs",
+			"receipt": "C:/tmps/liquid-object-pack-helper-PQkDIu/evidence.json",
+			"receiptSha256": "c6455e9c74fde8929b2fbcb1541bdaecc3ba6032dde96224c40860b4feee13dd",
+			"checks": "Actual helper-built fixed sidecar consumed by production worker factory, owner/evaluator/close/termination, identity replay, old package missing exports and invalid module literal rejection",
+			"safety": "Fixed paths, exclusive wx writes and output directory identity guard; same shared WASM sibling owned by main packer",
+			"boundary": "pack-runtime import/define/helper invocation wired, but complete wrapper output, smoke and determinism gates not run; no release claim"
+		},
+		"integrationQuality": {
+			"receipt": "C:/tmps/liquid-integration-quality-SevXYN/receipt.json",
+			"receiptSha256": "61552be02fa94da09c5012cc85e370e29efde14aa937cfc81968b99af7a53940",
+			"tests": { "passed": 34, "failed": 0, "skipped": 0, "expectations": 258 },
+			"browserProtocol": { "passed": 11, "failed": 0, "skipped": 0 },
+			"strictScopedTypes": "passed against actual private WASM declarations",
+			"newDomainProjectLint": "passed with zero warnings and no rule relaxation",
+			"selectedInputDrift": 0,
+			"newDomainPassed": true,
+			"allGatesPassed": false,
+			"legacySharedLint": "11 existing positional API/type assertion errors in html-document, html-rasterizer and three-particle-provenance; recorded, not suppressed or called green",
+			"retainedFailure": "C:/tmps/liquid-integration-quality-aKWJXA/receipt.json",
+			"corrections": "Removed unnecessary deprecated baseUrl, routed all real installed wrapper entry paths to the private real sync WASM without editing dependency copies, and supplied actual platform Event to shared-compiler VM fixture",
+			"boundary": "Selected source pins, not complete build graph freeze. Behavior/protocol/compiler/native worker verification is not actual GPU/project export verification."
+		},
+		"creatorAuthorEntry": {
+			"source": "../../../../elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/liquid-object.mjs",
+			"reference": "../../../../elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/references/rocut-liquid-object.md",
+			"helperTests": { "passed": 5 },
+			"checks": "Explicit capability, settings whitelist, pre-await deep snapshot, complete normalized finite parameter envelope, resource IDs and no alternate props clock/seed/liquid object",
+			"boundary": "Helper behavior uses explicit resolver envelope double; not actual Rust resolver or installed author workflow"
+		}
+	},
+	"files": [
+		"../../rust/crates/effects/src/liquid_object.rs",
+		"../../rust/crates/effects/src/liquid_object_tests.rs",
+		"../../rust/crates/effects/src/effects.rs",
+		"../../rust/crates/editor-api/src/liquid_object_params.rs",
+		"../../rust/crates/editor-api/src/liquid_object_params_tests.rs",
+		"../../rust/crates/editor-api/src/lib.rs",
+		"../../rust/wasm/src/wasm.rs",
+		"../../../../elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/liquid-object.mjs",
+		"../../../../elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/liquid-object-scene.ts",
+		"../../../../elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/liquid-object-geometry.mjs"
+	],
+	"notVerified": [
+		"Current HEAD/release WASM consistency, full ABI certification and complete packed runtime wrapper",
+		"Arbitrary controlled GLB models/materials and textured normal/bounds coverage beyond the diagnostic GLB",
+		"Whole-frame performance and fault-injected Chromium worker/GPU integration",
+		"Attached editor UI history/reload and complete-duration production export beyond the four verified same-project frames",
+		"Installed user entry/discovery, complete packaging or installation state",
+		"Hardware/WebGPU and other hosts"
+	]
+}

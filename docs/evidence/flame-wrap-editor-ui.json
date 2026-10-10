@@ -1,0 +1,86 @@
+{
+  "date": "2026-10-10",
+  "status": "UI/history/reload checks passed within a full run that later failed in export admission harness; Flame Wrap remains N",
+  "rawReceipts": [
+    {
+      "path": "C:/tmps/flame-wrap-editor-Ku4efn/flame-wrap-editor-evidence.json",
+      "sha256": "692dec035f14f8b749394a2320b0d96eb3132804849e2c50a5a8dd5eed12fe55"
+    },
+    {
+      "path": "C:/tmps/flame-wrap-editor-Ku4efn/evidence.json",
+      "sha256": "2288d295d3755e8c2b7bf0e71b1efebc3226651b42bb4bd6b2145e8e0aec5d97"
+    }
+  ],
+  "scope": "Actual production textboxes, attached-session history tasks, real Host graph/record and full presentation-boundary copied pixels. Observation only, not raw native GPU bytes, hardware acceptance or UI-created animation channels.",
+  "ui": {
+    "ok": true,
+    "historyCycles": 10,
+    "revisionBefore": 1,
+    "revisionAfter": 31,
+    "nineControls": ["amount", "boundaryWidth", "flameHeight", "flameOpacity", "sparkOpacity", "refraction", "speed", "wind", "seed"],
+    "extraCycle": "Restore speed from 0 to 0.75 after validating zero speed",
+    "mechanism": "Visible production textbox fill + Enter, followed by attached-session undo/redo",
+    "everyCompleteClipUndoRedo": true,
+    "otherClipsTracksProjectUnchanged": true,
+    "animationChannelsCreatedByUI": false
+  },
+  "presentation": {
+    "frames": 6,
+    "width": 192,
+    "height": 128,
+    "scope": "production-presentation-boundary-copy",
+    "actualContextPreserveDrawingBuffer": false,
+    "observerChangesContextFlagsOrSize": false,
+    "observerIssuesRenderCallsOrRawGpuReadback": false,
+    "earlyDiffersFromLate": true,
+    "reverseEarlyEqualsEarly": true,
+    "hashes": {
+      "early": "a608b810c4045236510c03f0e3d8d54128a6507cd90412a2571d7540c31dc936",
+      "late": "e289aa6b95d4d0a1c298613a1f8a7428cee9d9a7f3545f3354e29d2d6f1836e5",
+      "reverseEarly": "a608b810c4045236510c03f0e3d8d54128a6507cd90412a2571d7540c31dc936",
+      "disabledBaseline": "6c86352e7bd68874868f5d2f625242ce78aaaa644129ec603a94491533093f6d",
+      "beforeReload": "a4d1208bf927ad446bd20eacd73ddb7bcaa7884096462fbfa22f55074b7a40a9",
+      "afterReload": "a4d1208bf927ad446bd20eacd73ddb7bcaa7884096462fbfa22f55074b7a40a9"
+    }
+  },
+  "reload": {
+    "completeGraphUnchanged": true,
+    "revision": 31,
+    "completeProjectBytesIdentical": true,
+    "pixelsIdentical": true,
+    "projectSha256": "1a697a1ccbb8d4365955bbd589d1d49f893460c1e5af317603675b8192b15620",
+    "explicitUiReseekTicks": 40000,
+    "mechanism": "Actual playhead textbox fill + Enter after reload",
+    "playheadAutomaticallyRetained": false,
+    "boundary": "Playhead is session state; comparisons use explicit UI re-seek, not automatic retention. This is browser reload, not completed final Host close/reopen verification."
+  },
+  "lifecycleAndInputs": {
+    "bundle": { "ok": true, "code": 0, "signal": null, "closeObserved": true, "forced": false, "spawnError": null },
+    "bundleInputValidation": { "ok": true, "liveInputsVerifiedDuringBuild": 585, "snapshotFilesVerified": 585 },
+    "bundlePinScope": "Same-buffer build inputs plus enumerated dynamic helpers/config; not complete external/dynamic dependency closure",
+    "productionBuildReceipt": "C:/tmps/effect-editor-build-C0e9vP/build-evidence.json",
+    "productionBuildReceiptSha256": "c388f1940f842291c451cf639e3c3f4acc3861462f45488e4b1bca6b412d748c",
+    "productionTextModules": 4163,
+    "productionBuildWarnings": 54,
+    "preflightFilesVerified": 4173,
+    "runtimePins": 19,
+    "inputsUnchanged": true,
+    "browserVersion": "151.0.7922.34",
+    "browserClosed": true,
+    "hostClosed": true,
+    "hostExit": { "code": 0, "signal": null },
+    "finalHostVerifyExecuted": false
+  },
+  "console": {
+    "messages": 12,
+    "errorMessages": 12,
+    "abortRelatedMessages": 10,
+    "pageErrors": 0,
+    "httpFailures": 2,
+    "httpFailureStatuses": [404, 404],
+    "externalRequests": 0,
+    "boundary": "Console is not clean. These counts belong only to Ku4efn, not the first failed UI run."
+  },
+  "remaining": ["Export harness HTTP 202 expectation correction and independent decode", "Final Host close/reopen verification", "Hardware/WebGPU", "Installation state"],
+  "retainedFullRunFailure": "flame-wrap-editor-retained-export-admission-failure.json"
+}

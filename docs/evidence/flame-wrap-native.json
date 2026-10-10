@@ -1,0 +1,201 @@
+{
+	"schemaVersion": 1,
+	"recordedAt": "2026-10-10T02:41:12Z",
+	"effect": "flame-wrap",
+	"status": "native-contracts-and-retained-presentation-reviewed-production-host-export-pending",
+	"overallGoalComplete": false,
+	"scope": "Aggregation of already executed real Rust native tests, public contracts, and offline review of retained GPU presentation bytes. No new GPU, WASM, editor, Host or encoded-export execution in this review.",
+	"resultRecordKind": "Native exits and test results were observed in session tool output. Executables remain available and are hashed below; no durable native stdout log or pre-test source snapshot was captured. Current source hashes must not be substituted for a frozen source manifest of earlier executions.",
+	"accounting": {
+		"nativeCaseExecutions": 23,
+		"distinctNativeTestCases": 22,
+		"nativeGroups": [9, 3, 4, 7],
+		"newSharedClockTestCases": 3,
+		"repeatedCase": "flame_wrap::tests::clock_and_authoring_share_floor_frame_and_exact_period was executed in both the original nine-case native group and the seven-case shared-clock group.",
+		"offlineReceiptTests": 5,
+		"offlineReceiptTestsAreNewGpuExecutions": false,
+		"retainedGpuFrameCount": 29
+	},
+	"dependencyRecipes": [
+		{
+			"path": "C:/tmps/canvas-integration-native-r2-F1mkga/effects-tests-compile.json",
+			"sha256": "b2186e961dfb501516fb441123ef11f1f8bfd5fa042d7c95d3bf3f0d488b9563",
+			"usage": "Reuse the args/dependency pins with only the output executable path changed. The recipe's earlier compile result is not the result of a FlameWrap invocation."
+		},
+		{
+			"path": "C:/tmps/canvas-integration-native-r2-F1mkga/effects-rlib.json",
+			"sha256": "9474188af3b0193835bbe7431e27e4127a11070d7dc35f2b9ea52cb5a5a42890",
+			"usage": "Reuse the args/dependency pins with only the output rlib path changed."
+		},
+		{
+			"path": "C:/tmps/canvas-clock-sol-20261010/libtime.rlib",
+			"sha256": "f9093d7e4826dc68e7ad6195123a8cd2d11c38ea3a6578b94b0ec5c58784fc79",
+			"scope": "Fresh actual workspace time crate used by all real native groups."
+		}
+	],
+	"nativeGroups": [
+		{
+			"id": "original-real-flame-wrap-native",
+			"binary": "C:/tmps/flame-wrap-effects-real.exe",
+			"binarySha256": "ea8473d4d9b9f249a55938d007746a1fad96f1a71b0a99cf6e4388eaaff48061",
+			"testSource": "rust/crates/effects/src/flame_wrap/tests.rs",
+			"filter": "flame_wrap::",
+			"compileExit": 0,
+			"compileWarnings": 0,
+			"testExit": 0,
+			"passed": 9,
+			"filtered": 173,
+			"usesActualEffectsRsAndPipeline": true,
+			"containsSharedClockRefactor": false,
+			"scope": [
+				"Alpha >= 0.5 topology, interior holes and fully opaque canvas boundary",
+				"Directional boundary/plume support, transparent RGB poison and premultiplied linear sampling",
+				"Neutral exact source and independent half-white-over-black linear-optics numeric control",
+				"Memory/work admission crossings and off-canvas alpha support",
+				"Signed floor frames, periodic phase, speed zero and strict forged uniforms",
+				"Naga WGSL validation against actual fragment entry points, 48-byte layout and auxiliary mask binding"
+			]
+		},
+		{
+			"id": "flame-wrap-public-contract",
+			"binary": "C:/tmps/flame-wrap-public-contract.exe",
+			"binarySha256": "151889701ca6495eca131d3b857b8c5e1fb733716b11d0716ae46fe817d46c1d",
+			"testSource": "rust/crates/effects/tests/flame_wrap_contract.rs",
+			"compileExit": 0,
+			"compileWarnings": 0,
+			"testExit": 0,
+			"passed": 3,
+			"containsSharedClockRefactor": false,
+			"scope": [
+				"Registered public catalog/default resolver",
+				"Signed clock, neutral elision and malformed author transport",
+				"Actual public pass admission for raw uniforms and work budget"
+			]
+		},
+		{
+			"id": "generic-public-catalog-contract",
+			"binary": "C:/tmps/flame-wrap-generic-contract.exe",
+			"binarySha256": "3c72e9ed3866686f878df531f95efe7e089467a86b981341208908be867d646a",
+			"testSource": "rust/crates/effects/tests/stylized_contract.rs",
+			"compileExit": 0,
+			"compileWarnings": 0,
+			"testExit": 0,
+			"passed": 4,
+			"containsSharedClockRefactor": false,
+			"scope": [
+				"20-effect catalog order and defaults",
+				"FlameWrap shader mapping",
+				"Canvas required fields and exact f64 wire words",
+				"Existing generic signed time/rate/type validation"
+			]
+		},
+		{
+			"id": "shared-clock-real-native",
+			"binary": "C:/tmps/stylized-shared-clock-real.exe",
+			"binarySha256": "31c83921c116b9a47ec8915ac4f04a0ca71c256c5b95d569adaa620220bd64b8",
+			"compileExit": 0,
+			"compileWarnings": 0,
+			"testExit": 0,
+			"passed": 7,
+			"containsSharedClockRefactor": true,
+			"tests": [
+				"stylized_clock::tests::shared_phase_preserves_signed_binary_rational_golden_values",
+				"stylized_clock::tests::both_resolvers_keep_speed_and_safe_tick_admission_strict",
+				"stylized_clock::tests::both_resolvers_use_shared_phase_on_signed_floor_frames_and_frozen_speed",
+				"blaze::tests::blaze_phase_matches_independent_binary_rational_golden_vectors",
+				"blaze::tests::blaze_signed_local_frame_grid_is_bounded_and_random_access",
+				"blaze::uniform_tests::blaze_static_time_is_invariant_and_seed_changes_only_seeded_data",
+				"flame_wrap::tests::clock_and_authoring_share_floor_frame_and_exact_period"
+			],
+			"scope": "The original exact Blaze phase algorithm and comments now have one shared Rust owner. Both effects use thin reexports. Positive/negative golden values, both actual resolvers, floor/seek/static behavior, subnormal speed and strict speed/tick rejection passed."
+		}
+	],
+	"publicRlib": {
+		"path": "C:/tmps/libeffects_flame_wrap.rlib",
+		"sha256": "271a65a153a487f3d61307312ab14693151d929de84901a6ece173bcbe26e44c",
+		"containsSharedClockRefactor": false,
+		"finalCompileExit": 0,
+		"finalWarnings": 8,
+		"finalWarningScope": "Existing Canvas unused exports/lighting/simulation and Liquid unused simulation/domain/pressure. No final FlameWrap warning.",
+		"retainedInitialWarnings": "First production rlib compile had 14 warnings including six unused CPU-reference seam warnings. Those CPU-only seams were gated with cfg(test); the final eight pre-existing warnings were not suppressed."
+	},
+	"retainedFailures": [
+		{
+			"kind": "standalone-harness-module-path",
+			"scope": "The initial isolated harness failed to resolve FlameWrap nested modules. Explicit relative path attributes corrected the harness import seam.",
+			"claim": "Not a GPU or public production test failure."
+		},
+		{
+			"kind": "standalone-cached-dependency-pin",
+			"scope": "Initial isolated harness selected a wgpu artifact incompatible with its gpu artifact; corrected matching pins compiled.",
+			"claim": "Not a shader runtime result."
+		},
+		{
+			"kind": "generic-json-number-representation",
+			"testExit": 101,
+			"passed": 3,
+			"failed": 1,
+			"actual": [0.0, 0.0, 0.0, 16368.0],
+			"expectedIntegerRepresentation": [0, 0, 0, 16368],
+			"correction": "Exact expected u16 words were represented as f64 values without changing their numeric values or weakening the assertion.",
+			"after": "Only generic test recompiled; 4/4 passed against the unchanged actual rlib.",
+			"failureBinaryRetained": false,
+			"failureRecord": "Observed session output; the same executable path was replaced on successful recompilation."
+		}
+	],
+	"retainedGpu": {
+		"receipt": "C:/tmps/flame-wrap-capture-webgl-wiTqp1/evidence.json",
+		"receiptSha256": "449908501d38aec2a713f05d574425ff7cc86523e6933724410e9f6ee768c4af",
+		"frames": "C:/tmps/flame-wrap-capture-webgl-wiTqp1/frames.json",
+		"framesSha256": "4e6567ebfbc5e3079024edb97ccb2bdcac08ff538b2e4d129ef770e06c5abe3f",
+		"frozenWasm": "C:/tmps/flame-wrap-fast-wasm-yqkoZk/pkg/opencut_wasm_bg.wasm",
+		"frozenWasmSha256": "5ea1d3aa587e85b83ebd14b85888f9a4d6b6660d7626aabeb5e8bfb568788427",
+		"containsSharedClockRefactor": false,
+		"frameCount": 29,
+		"scope": "Previously executed real webgl frozen WASM compositor presentation captures at 96x64. Direct-effects raw readback was unavailable. This receipt does not verify the newer shared-clock WASM, editor/Host or encoded export.",
+		"preservedBudgetFixtureFailure": "docs/evidence/flame-wrap-retained-budget-fixture-failure.json"
+	},
+	"offlineReview": {
+		"testSource": "script/fixtures/flame-wrap-checks.test.mjs",
+		"testSourceSha256": "cb8df3556e4d80bc1653c6fff0acfbbb0cc161eff6b19c92425535aa9ae95b67",
+		"command": ["node", "--test", "script/fixtures/flame-wrap-checks.test.mjs"],
+		"testExit": 0,
+		"passed": 5,
+		"scope": "CPU posthoc invariants over the retained frame bytes. Procedural flame/noise/ray/phase rendering is not reproduced as an oracle.",
+		"positiveControls": [
+			"Receipt SHA-256, 29 frame lengths and presentation-only scope agree",
+			"Refraction changes 1687 visible RGB channels by more than one byte while both source and output alpha exceed 16",
+			"Late phase differs from early phase, and reverse seek returns exactly to early bytes",
+			"Eight spark phases contain more than one distinct presentation image",
+			"Refraction cannot emit alpha farther than displacement plus bilinear footprint"
+		],
+		"mutantsRejected": [
+			"No-op refraction",
+			"Time-frozen flame",
+			"Static sparkle stamp",
+			"One distant alpha speck"
+		],
+		"liveFixture": {
+			"path": "script/fixtures/flame-wrap-capture-probe.mjs",
+			"sha256": "2b039c6dd9912702b5b26e06f795e287a484f0b4f4dffca7232f6a7f8c061071",
+			"syntaxCheckExit": 0,
+			"newPositiveControlsExecutedLiveInThisReview": false,
+			"change": "The three temporal/refraction positive controls were added for the next root-owned live run; all old checks and thresholds were preserved."
+		}
+	},
+	"acceptanceGaps": [
+		"Retained GPU binary predates the shared-clock refactor; native seven-case clock verification is not a new-WASM verification.",
+		"Single axis-aligned rectangle with one rectangular hole does not establish irregular, moving, disconnected, rotated or soft-alpha source topology. A source-presence-gated rectangle-specific implementation could still pass these fixtures.",
+		"Presence and conservative support checks do not establish flame pixel appearance or an independent procedural pixel oracle.",
+		"Canvas import clears hidden RGB for fully transparent pixels, so retained GPU fixtures do not themselves establish poison immunity or half-alpha linear optics; native numeric controls cover their own CPU reference seam.",
+		"Boundary width/flame height scaling and production dimensions/performance remain unmeasured. A logical work admission cap is not a performance result.",
+		"Direct oversized-effects rejection and unchanged separate compositor Canvas do not alone prove production Host transaction atomicity or export admission."
+	],
+	"nextMinimalProductionPlan": [
+		"Use the root-owned fresh shared-clock private WASM with frozen hashes; rerun the existing 29-frame fixture once with the three added positive controls, without treating old receipt bytes as new binary evidence.",
+		"Through the real Host create one short project with a textured RGBA image containing a hole, one FlameWrap effect and two distinct sample ticks. Add a second asymmetric/disconnected source case so output must follow source topology rather than a fixed rectangle.",
+		"Read back persisted effect controls/order and save-reload state. Submit one invalid seed/phase or rejected work edit through the production authority and verify project/history unchanged, then render a valid recovery frame.",
+		"Invoke the production export path for the same project. Independently decode selected early/late frames, compare disabled output to baseline and active output to owning Host frame captures within a declared codec tolerance; require time change, hole/exterior fire, non-no-op refraction, and deterministic reverse seek before claiming the export/Host subset.",
+		"For alpha assertions retain an alpha-bearing PNG frame or supported alpha codec artifact; an opaque encoded video must not be used as proof of retained hole alpha. Record actual export job, binary/source hashes, output hash, decode command and whole-frame comparison scope."
+	]
+}

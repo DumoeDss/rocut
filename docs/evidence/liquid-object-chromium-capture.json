@@ -1,0 +1,61 @@
+{
+	"date": "2026-10-10",
+	"status": "passed-private-packed-production-Chromium-capture-subset",
+	"archiveKind": "selected immutable receipt projection; full source pins and PNG captures remain at original private roots",
+	"original": {
+		"path": "C:/tmps/liquid-object-capture-zfDK09/evidence.json",
+		"sha256": "8186906c3e4b27f5012193a2f660762cf1208d91da498a85a6ddc7115515bdcf"
+	},
+	"scope": "Actual compileProgrammaticProject, archive/resource attachments, actual Rust mapped frame, fixed same-child WASM owner/evaluator and captureThreeLiquidObjectPng; not full HeadlessHost/editor/export or release acceptance",
+	"wasmSha256": "7f7dba6b40fa79618d1e2f7fedab82e1731dee9c26564796f597bf31758b349c",
+	"threeVersion": "0.185.1",
+	"captures": 4,
+	"dimensions": { "width": 192, "height": 128 },
+	"model": "Diagnostic curved static GLB, imported through real project resource bytes",
+	"visibility": { "changedPixels": 4864, "totalPixels": 24576 },
+	"amountSensitivity": { "meanRgb": 3.796875, "changedPixels": 1627 },
+	"mappedTimeSensitivity": {
+		"meanRgb": 3.4616834852430554,
+		"changedPixels": 2180
+	},
+	"lateThenReverse": {
+		"meanRgb": 0,
+		"changedPixels": 0,
+		"samePngSha256": "7d8289837781e00d99cee5993e25163f16acf4568cd6347c7d9389723804943e"
+	},
+	"lifecycle": {
+		"ownedDirectChildren": 13,
+		"chromiumProcesses": 4,
+		"nativeWorkerProcesses": 6,
+		"compilerProcesses": 2,
+		"esbuildServiceProcesses": 1,
+		"allObservedActualClose": true,
+		"captureReturnsAfterProductionCleanup": true
+	},
+	"quality": {
+		"consoleErrors": 0,
+		"runtimeExceptionEvents": 0,
+		"bundledSourcePins": 102,
+		"sourceUnchanged": true,
+		"creatorAndWasmPinsUnchanged": true,
+		"productionSourceModified": false
+	},
+	"retainedHarnessFailures": [
+		{
+			"path": "C:/tmps/liquid-object-capture-0kDveb/evidence.json",
+			"cause": "Fixture emitted Windows absolute external import instead of file URL; failed before compiler/worker/GPU capture"
+		},
+		{
+			"path": "C:/tmps/liquid-object-capture-y7JuOU/evidence.json",
+			"cause": "Fixture submitted incomplete mapped frame without Rust resourceLimits; fixed to call actual resolveProgrammaticFrameJson"
+		}
+	],
+	"notVerified": [
+		"Attached editor author UI/history/reload and complete-duration export; later actual Host persistence and four-frame production export are recorded separately",
+		"Arbitrary models/materials, textured normal and full bounds coverage",
+		"Electron, other hosts, hardware/WebGPU and installed runtime",
+		"Complete pack-runtime wrapper smoke/determinism and release ABI certification"
+	],
+	"subsequentEvidence": ["liquid-object-implementation.json#/developmentIntegration/controlledHostAndRasterizer", "liquid-object-editor-export.json"],
+	"ledger": "Liquid Object stays N; total 27 V / 8 N and 13 delivery work packages unchanged"
+}

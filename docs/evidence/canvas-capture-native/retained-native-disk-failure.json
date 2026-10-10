@@ -1,0 +1,955 @@
+{
+  "recordedAt": "2026-10-09T20:56:44.138Z",
+  "root": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut",
+  "output": "C:/tmps/canvas-integration-native-root-PpQ3n2",
+  "status": "failed",
+  "failure": "effects-tests-compile failed: rustc-LLVM ERROR: IO failure on output stream: no space on device\r\n\n",
+  "sourceFiles": [
+    {
+      "path": "rust/crates/compositor/src/blend_mode.rs",
+      "bytes": 1112,
+      "sha256": "a7169b86bdc1cdd006075f6411de45a73db7475eab7fe30c4bfa8ad43f8c410e"
+    },
+    {
+      "path": "rust/crates/compositor/src/canvas_capture_budget.rs",
+      "bytes": 7372,
+      "sha256": "6e54712da6e91f1c06236706650c28e49c04804e5b0ceecacbdbb5057c48b798"
+    },
+    {
+      "path": "rust/crates/compositor/src/canvas_capture_budget_tests.rs",
+      "bytes": 5399,
+      "sha256": "8c38024c2284bb88fcc575769e550c27f442570fd86b4852eb54387ba784b709"
+    },
+    {
+      "path": "rust/crates/compositor/src/canvas_descriptor.rs",
+      "bytes": 781,
+      "sha256": "4641a91b554b270c4c5327e2d10f5b1fd0daacd067a102390aeec497ba9ea18a"
+    },
+    {
+      "path": "rust/crates/compositor/src/canvas_frame_admission.rs",
+      "bytes": 2682,
+      "sha256": "26f6ba5f6ed2855291cc1f9354c5bb4689c6ad9a962a251011b590918e9d5a6d"
+    },
+    {
+      "path": "rust/crates/compositor/src/canvas_frame_preflight_tests.rs",
+      "bytes": 3996,
+      "sha256": "a94795cabf6c57e63193e74867e573f5c15daace6a50ee82122d4789cff559bf"
+    },
+    {
+      "path": "rust/crates/compositor/src/canvas_frame_state.rs",
+      "bytes": 10799,
+      "sha256": "0e3031fcfa31da239bae17a48ddb67d9b8aeb67ddf43715291f1677260aa7ccf"
+    },
+    {
+      "path": "rust/crates/compositor/src/canvas_frame_state_tests.rs",
+      "bytes": 5405,
+      "sha256": "7b536927375827764b7137fbe76687dacee696c54a38db4044f98b8067a82e34"
+    },
+    {
+      "path": "rust/crates/compositor/src/compositor.rs",
+      "bytes": 33313,
+      "sha256": "7e40fc4799de08240b9cfcd11e879500b6546ce7af6576d272a2dcdfd4377f98"
+    },
+    {
+      "path": "rust/crates/compositor/src/compositor/canvas_graph_preflight.rs",
+      "bytes": 5310,
+      "sha256": "830d988f1a4c00e7b168bc1f116ae4951c8b2cbd21638a47ce17af22962da617"
+    },
+    {
+      "path": "rust/crates/compositor/src/compositor/canvas_graph_preflight_tests.rs",
+      "bytes": 3375,
+      "sha256": "f6b2de4602db04b435fa779716a73b2dd2edaae0ca2d28a7f189c8bd8efbddef"
+    },
+    {
+      "path": "rust/crates/compositor/src/compositor/composition_scope.rs",
+      "bytes": 3003,
+      "sha256": "fda2d05ec59d8b58c136c9d14822df9832a744540ef909b766e0d0ab4284bdd8"
+    },
+    {
+      "path": "rust/crates/compositor/src/compositor/frame_composition.rs",
+      "bytes": 6627,
+      "sha256": "ed9b1de393600570d259e35e122dc98e5491e691412e3d0d84ff3b52ac3ae12e"
+    },
+    {
+      "path": "rust/crates/compositor/src/compositor/frame_execution.rs",
+      "bytes": 5946,
+      "sha256": "980bf281e376182470eb1b72035de36a1b4680608d7633f7c7a246a8d8d1cc77"
+    },
+    {
+      "path": "rust/crates/compositor/src/compositor/group_composition.rs",
+      "bytes": 2986,
+      "sha256": "e39309c5bb5aebf627284e732d207b5563376d8f35c86492d10656045e518e12"
+    },
+    {
+      "path": "rust/crates/compositor/src/effect_positions.rs",
+      "bytes": 3988,
+      "sha256": "8b363607e5a3483b5b5097025864c5f1c552e24d88702ac47e67f8010959795f"
+    },
+    {
+      "path": "rust/crates/compositor/src/effect_positions_tests.rs",
+      "bytes": 3465,
+      "sha256": "4999659e2f8c2125a51b173b1e5ab811fe098db053ea67ce720b9d956bc26014"
+    },
+    {
+      "path": "rust/crates/compositor/src/frame.rs",
+      "bytes": 3242,
+      "sha256": "7abd55648b558c93ad96309a4940fa7e96902bcd62e9e3fe1e1c7902f058158e"
+    },
+    {
+      "path": "rust/crates/compositor/src/group_admission.rs",
+      "bytes": 7619,
+      "sha256": "5cdfd6ac06166172631870972c17a659af97fa96c9a5870cf91856007d9425e4"
+    },
+    {
+      "path": "rust/crates/compositor/src/lib.rs",
+      "bytes": 853,
+      "sha256": "75049df7deb6a5f55625c4417f74f9a4df7b0ae7caf68f2ad4496cf6edf0d8cd"
+    },
+    {
+      "path": "rust/crates/compositor/src/prepared_frame.rs",
+      "bytes": 13787,
+      "sha256": "c4b486be78a981ed7fd31ef0d208ef95a1a648a86721673c8b138df029846ab1"
+    },
+    {
+      "path": "rust/crates/compositor/src/prepared_frame_tests.rs",
+      "bytes": 9689,
+      "sha256": "4cb4c0b0f9b4cdf7a8f153e01d90dbd982f1960c209888132cbe95fe6e71dd0e"
+    },
+    {
+      "path": "rust/crates/compositor/src/shaders/blend.wgsl",
+      "bytes": 4932,
+      "sha256": "91c7a398879bca2150c1a83654de6bfc3bf3f47f251466ce33750ea1ddcd9049"
+    },
+    {
+      "path": "rust/crates/compositor/src/shaders/layer.wgsl",
+      "bytes": 1434,
+      "sha256": "70660ba61981424f86524149c41114f9381445c4721346c5fbdae08bd00defeb"
+    },
+    {
+      "path": "rust/crates/compositor/src/shaders/mask.wgsl",
+      "bytes": 833,
+      "sha256": "468d79e070ddb1b98810273933887f890c6a822282d0d7b2ba0ed5973238f444"
+    },
+    {
+      "path": "rust/crates/compositor/src/texture_pool.rs",
+      "bytes": 939,
+      "sha256": "7b8506a5f41ef31ef6ef8f6dad865f69b6322e8c8f76e2be382ef3007970a818"
+    },
+    {
+      "path": "rust/crates/compositor/src/texture_store.rs",
+      "bytes": 752,
+      "sha256": "73ca1bf3cb442b8a5fce96aec45e3475bdc2006aaba833248cd2e565d8f5a9f5"
+    },
+    {
+      "path": "rust/crates/effects/src/adjustment.rs",
+      "bytes": 4891,
+      "sha256": "160929c14f448a64d004dd41e59e03434dcfbf0f693080662214b033048530f6"
+    },
+    {
+      "path": "rust/crates/effects/src/blaze.rs",
+      "bytes": 2038,
+      "sha256": "0d47fc9e0e9a350f8d96e28e1e5bdf6afe514ed208b1908eddab843f54726a8d"
+    },
+    {
+      "path": "rust/crates/effects/src/blaze/catalog.rs",
+      "bytes": 1606,
+      "sha256": "2f9cf1bd37786e6f0de1117e739b32aba8942ea5b782342ce68659db404b454b"
+    },
+    {
+      "path": "rust/crates/effects/src/blaze/clock.rs",
+      "bytes": 1063,
+      "sha256": "f5770307abd20c5a89ab1e1e2c392705b8a266c6d026580646af5ad7996524e3"
+    },
+    {
+      "path": "rust/crates/effects/src/blaze/field.rs",
+      "bytes": 1232,
+      "sha256": "0d771d3b8de1efd3e0f73bd60d22e4dbf6194b48496b092ab2e521415e8bc2fa"
+    },
+    {
+      "path": "rust/crates/effects/src/blaze/tests.rs",
+      "bytes": 8519,
+      "sha256": "40aff47b535269716fff3f2f14f948cbeb31dd72a7e7fee880055f9db772c875"
+    },
+    {
+      "path": "rust/crates/effects/src/blaze/uniform_tests.rs",
+      "bytes": 4557,
+      "sha256": "b20218a9d9c8dced8778495d9e8ebbf06d4ed28536d1eca73551b413750f8cb8"
+    },
+    {
+      "path": "rust/crates/effects/src/blaze/uniforms.rs",
+      "bytes": 2493,
+      "sha256": "32ecdd40d03896e8da6716d6a5610d7e7a144161d8dd0e067af188c28c46ac96"
+    },
+    {
+      "path": "rust/crates/effects/src/bubble.rs",
+      "bytes": 2712,
+      "sha256": "12cbb4bd22b8a55868726efb8cfff34952a5d7b3aa65bfef74ab1df0c60b7833"
+    },
+    {
+      "path": "rust/crates/effects/src/bubble/catalog.rs",
+      "bytes": 4601,
+      "sha256": "ac192c080f8000e2028faea91a443d2f1eb3a09c6f8e898fc4b893d512df443a"
+    },
+    {
+      "path": "rust/crates/effects/src/bubble/params.rs",
+      "bytes": 3629,
+      "sha256": "540d240afc35ef821165f2cf210be07e8955844d02f3956b6cd0c7634c06c492"
+    },
+    {
+      "path": "rust/crates/effects/src/bubble/shader_numerics_tests.rs",
+      "bytes": 5098,
+      "sha256": "fbbc20941e88afe90fa2f1828e64b8906cbdd7e4b5f8c2ba6c204eb1b329e2fd"
+    },
+    {
+      "path": "rust/crates/effects/src/bubble/tests.rs",
+      "bytes": 13792,
+      "sha256": "af67fef64eb86622f028d62604a1df037f330884719c66b60c91f23e27059e80"
+    },
+    {
+      "path": "rust/crates/effects/src/bubble/trajectory.rs",
+      "bytes": 6115,
+      "sha256": "b7d91287cd5aa833689fe395f1a06eea0c8e212f58b2cb45557116f66ae782c1"
+    },
+    {
+      "path": "rust/crates/effects/src/bubble/uniform_tests.rs",
+      "bytes": 6652,
+      "sha256": "48bc529020d7ed27d9fdb521c9be05bff99279896a0dadb94d3a52c0a735cd49"
+    },
+    {
+      "path": "rust/crates/effects/src/bubble/uniforms.rs",
+      "bytes": 7257,
+      "sha256": "7ae4b8f4b33227cba56794a6a2e323ebe9b53e97f2abe0d2ae0158e0ae19ff4b"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas.rs",
+      "bytes": 2391,
+      "sha256": "17928321b83a5808da5cc64e819ccd5e6c1dc4aa05e0bf75a4b169a1a65f28fe"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/CLOCK-SOURCE-ADDENDUM.md",
+      "bytes": 4503,
+      "sha256": "30ae3c4d3161b247e63a7d016675de51991546573f488abb9df10067d4aa6564"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/CPU-RECEIPT.md",
+      "bytes": 4367,
+      "sha256": "ba4074a3292e44964c6f3958b29b9f6506d22e438255f363db67eea933400ec7"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/FRESH-TIME-INTEGRATION-RECEIPT.md",
+      "bytes": 2766,
+      "sha256": "c7621cf57367c0bcaf7a82c62b91b024823674e1e203456b21cef132e6f9218e"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/READONLY-TIME-METADATA-RECEIPT.md",
+      "bytes": 2335,
+      "sha256": "b0b01da4d1d50b7b24a46f5efc292748eba48a7e0b6d41a5363772964bca604d"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/REPLAY-JOB-RECEIPT.md",
+      "bytes": 3584,
+      "sha256": "7e3635b39d1d36dbaa599c00b0259891a02d952db4658eb6d647dd4841f0febc"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/SOURCE-IDENTITY-RECEIPT.md",
+      "bytes": 3819,
+      "sha256": "b259be9181af0aef6a9a6f4300857171a246cbb40d2b2b79baecb9138f7d3c88"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/catalog.rs",
+      "bytes": 3902,
+      "sha256": "b42724654892fe5810f50875a7c7f33c7c7f392741d4f8fdab22c045b79c0708"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/catalog_tests.rs",
+      "bytes": 10626,
+      "sha256": "c831a0c0c95c03dd831f7f7d5949ccbf0b19c58c2954e76e2b6507ded028ead6"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/clock.rs",
+      "bytes": 3342,
+      "sha256": "7b302108c47f508524455d97eea1a9e350aa734a277b826a89c4d28daa72bfd4"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/contract.rs",
+      "bytes": 5337,
+      "sha256": "8e4a89c662949d84b1eccf9fcc3c16daeb634f846a19ea140e770f3791852390"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/deposition.rs",
+      "bytes": 3980,
+      "sha256": "116b5cd598c7b24633c41a9de235e1fba8272dfc777d90641a451f3adfbe6dbb"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/gpu_admission.rs",
+      "bytes": 3725,
+      "sha256": "ab28d616540cfab78c8eb52483d215946eba50ab125abc0fe874d66b0fc039d2"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/gpu_admission_tests.rs",
+      "bytes": 2347,
+      "sha256": "46afe2f3bba7198051172b35b852452e345032d8846bc8842ae9d0a2a8bff473"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/gpu_pipeline.rs",
+      "bytes": 11880,
+      "sha256": "b01a68f64f33a4e627d7f90a6741e545f84d796c5cb8cbeaa91c1dcde5d023fb"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/lighting.rs",
+      "bytes": 1866,
+      "sha256": "a7e6a4a9c76115c6d26bded80ec87b07b32f634d18a235adffa285f0d6b1c240"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/params.rs",
+      "bytes": 3526,
+      "sha256": "c9279f99443b9438153beb7c25aaa501bbcef264245444ece8aa13b16656eb9a"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/pass.rs",
+      "bytes": 3284,
+      "sha256": "bda4b6f6294592b3a1ad636b0f1db09fb7189aed790dadd4c31d5a01fafa7cd2"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/prepared.rs",
+      "bytes": 6056,
+      "sha256": "9abc99f696f49745d73f484ac65b6f2dd6e3cccc3f50d02b622f3a289fe081b5"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/prepared_budget.rs",
+      "bytes": 4324,
+      "sha256": "64e01128c3d88bf51316335b8fecab45e587bda30fee72d0bf56dcf1848d961a"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/prepared_tests.rs",
+      "bytes": 8611,
+      "sha256": "d5c7de0c87a77272983a24a919fb58ed0e00bf974813f19062d5d7de1c8185b4"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/raster.rs",
+      "bytes": 6840,
+      "sha256": "b24f230a8293db1b8f98646e65377e8bbea3d83f10653456a890e6a96e09f218"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/raster_tests.rs",
+      "bytes": 3789,
+      "sha256": "eaa2f77c5699f6615ff8ba163a6f256581d6c48df522cbfa026f6b8444f6757e"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/registration_tests.rs",
+      "bytes": 4389,
+      "sha256": "f9c6d4ed9a139b3ddbe9026c9b3ca3136810e5c791b84c1a095ab24f035d0570"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/renderer_bridge.rs",
+      "bytes": 5756,
+      "sha256": "d0f8766d0ee883b75a9da1b9fb239c14c758147e0a5b426529d7c82557819d3d"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/replay.rs",
+      "bytes": 5542,
+      "sha256": "5c65bf298346b188fbd1477120403529b5c1ba284be0cd9b2d7f1bfb3bcc5bef"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/replay_tests.rs",
+      "bytes": 6004,
+      "sha256": "a20e2d4d1411aca4c4cd4c62571d68a976f6331d9f7dc25d7d8408f01bb31f5a"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/resolve.rs",
+      "bytes": 1445,
+      "sha256": "8ca5db361cd3f064bb695acda9485d4fa347c44177e6e4c77ba65f1741331efc"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/simulation.rs",
+      "bytes": 7243,
+      "sha256": "9492e3cef44fe0e09d3bf3e72e78e8da41e5498221512b2049c6c34bb079b9df"
+    },
+    {
+      "path": "rust/crates/effects/src/canvas/tests.rs",
+      "bytes": 11688,
+      "sha256": "451fbf3926a3cdfea88fb8b501f0dee9fd7de8f0a28576b1a1f60c1c8104a7f1"
+    },
+    {
+      "path": "rust/crates/effects/src/clouds.rs",
+      "bytes": 1996,
+      "sha256": "764547e5bcaab80c6bd4c99a403f48e1f057b72957eeb6d28c6efb86e9787319"
+    },
+    {
+      "path": "rust/crates/effects/src/clouds/catalog.rs",
+      "bytes": 1726,
+      "sha256": "06a5337f560711fdcf2a991b079dae57de2a941dacbc7849715d9176de24846c"
+    },
+    {
+      "path": "rust/crates/effects/src/clouds/clock.rs",
+      "bytes": 2376,
+      "sha256": "80f167622ddc0323cd46318e68844f7ecfcc620ae7d8c55ac0f8e05477ef02c4"
+    },
+    {
+      "path": "rust/crates/effects/src/clouds/field.rs",
+      "bytes": 543,
+      "sha256": "b0888a2efa76491e98f7f058d0f02a4924dbb74e73013d30c6d77cfdebc72082"
+    },
+    {
+      "path": "rust/crates/effects/src/clouds/tests.rs",
+      "bytes": 6174,
+      "sha256": "c4afdb57fb0d54d997573caa7a009039137cb2886dab46b14af1085fbe3442f2"
+    },
+    {
+      "path": "rust/crates/effects/src/clouds/uniform_tests.rs",
+      "bytes": 2851,
+      "sha256": "2b409918fc406538088267db95bb93e1cc8a456647fba2504cc20090e937c95c"
+    },
+    {
+      "path": "rust/crates/effects/src/clouds/uniforms.rs",
+      "bytes": 2490,
+      "sha256": "236f1461fb469b9bfbef1b66edf9ed60c47def058711c129a26b69f2ac8cb69f"
+    },
+    {
+      "path": "rust/crates/effects/src/color_uniforms.rs",
+      "bytes": 3047,
+      "sha256": "c7aaa1cf7b0402a0eb167eaa282f304dc28af64700c9ac53d8191eff1dc76e1d"
+    },
+    {
+      "path": "rust/crates/effects/src/decrypt_reveal.rs",
+      "bytes": 7032,
+      "sha256": "f05e997586d5883a2b72b799c53180c909c507a437ca9790fcae16e5d6dfd3ce"
+    },
+    {
+      "path": "rust/crates/effects/src/displacement.rs",
+      "bytes": 7452,
+      "sha256": "5815034619a332c3cb81dfdc45edd66f5c8881ce702af5c488508c1cd6e66500"
+    },
+    {
+      "path": "rust/crates/effects/src/droplets.rs",
+      "bytes": 2177,
+      "sha256": "2a560c970e6ee0382efbc1e3d44f5a8cd308cbc2c5b7e1dbafbe6ddcd65b5828"
+    },
+    {
+      "path": "rust/crates/effects/src/droplets/catalog.rs",
+      "bytes": 1297,
+      "sha256": "952a9aeff4f425eae06a7bd1513a35caa44964d8d1ee88a11bf9a8e5e35d41c9"
+    },
+    {
+      "path": "rust/crates/effects/src/droplets/geometry.rs",
+      "bytes": 2139,
+      "sha256": "63561bb8b442409021fb9a702faaf23edb914eab06a59528fb7c31aa549da224"
+    },
+    {
+      "path": "rust/crates/effects/src/droplets/tests.rs",
+      "bytes": 8433,
+      "sha256": "8165f8b2174612658a1a861f12325085c20e0df1816115bd9395b30412b7c7e2"
+    },
+    {
+      "path": "rust/crates/effects/src/droplets/uniforms.rs",
+      "bytes": 2259,
+      "sha256": "8e797789c54819425453aaf2e719c2c5eac18474103d1093b0192373235bc8a4"
+    },
+    {
+      "path": "rust/crates/effects/src/effects.rs",
+      "bytes": 2076,
+      "sha256": "1567052efd718dad459b63186236384f8959b16b17c1f7b4ef4fa0978392a3c6"
+    },
+    {
+      "path": "rust/crates/effects/src/frost.rs",
+      "bytes": 2108,
+      "sha256": "bf29c6173e4da940bc3fa67c08b175c5a70f0fef4878e58bc94f2dce026ead54"
+    },
+    {
+      "path": "rust/crates/effects/src/frost/catalog.rs",
+      "bytes": 3454,
+      "sha256": "147c6e9a8e31fea0a7139a83670d2ab560ef2a0754085b686f207ea8542d8c84"
+    },
+    {
+      "path": "rust/crates/effects/src/frost/params.rs",
+      "bytes": 3120,
+      "sha256": "32087c1fd8c11e29a92d5bb3ee069b92e26d157929b41c8fc95e273a9d3978de"
+    },
+    {
+      "path": "rust/crates/effects/src/frost/shader_tests.rs",
+      "bytes": 3657,
+      "sha256": "3c212a1750435af9eec0e378b070f9b13dcf5780feacb741a76e74037c71c707"
+    },
+    {
+      "path": "rust/crates/effects/src/frost/strokes.rs",
+      "bytes": 1596,
+      "sha256": "be2670890a2e579deb12e0f8ca019163ceece8d988119eccb87b658fd9ca66a9"
+    },
+    {
+      "path": "rust/crates/effects/src/frost/tests.rs",
+      "bytes": 7498,
+      "sha256": "64eb267be22a2a784e4030c97f5c97d70e6363457d40abae2eea615e1128cad3"
+    },
+    {
+      "path": "rust/crates/effects/src/frost/uniform_tests.rs",
+      "bytes": 6008,
+      "sha256": "2d4db800c61d9ec0e901ed4ecfc369dc3cca9c849ea9d6aa88243ec6fa3bcd3b"
+    },
+    {
+      "path": "rust/crates/effects/src/frost/uniforms.rs",
+      "bytes": 5257,
+      "sha256": "65fda2f85c7a560bc6bf7a2d4bf5960967605d4b68394a3c1b5a465f682435d3"
+    },
+    {
+      "path": "rust/crates/effects/src/input_preflight.rs",
+      "bytes": 1175,
+      "sha256": "c4d1125a41972daa34a1b03bef7dcc3b3ba7b19a9a7660d4265f0fe22880053a"
+    },
+    {
+      "path": "rust/crates/effects/src/input_preflight_tests.rs",
+      "bytes": 4991,
+      "sha256": "c1623d8e32ba97229976780bb261e1948ac6fba72bbafa8aafff9b27d712d150"
+    },
+    {
+      "path": "rust/crates/effects/src/laser.rs",
+      "bytes": 7040,
+      "sha256": "139babf2067d3c789fdedc86f18cf993cd74fff8015bdbb6df64afc2e35ea370"
+    },
+    {
+      "path": "rust/crates/effects/src/liquid-oracle-state.json",
+      "bytes": 51711,
+      "sha256": "e34772681d24faa8cc1d3d8bd831236ff60d24df09fe3eabea3d14065990d3f9"
+    },
+    {
+      "path": "rust/crates/effects/src/liquid_catalog.rs",
+      "bytes": 7099,
+      "sha256": "0b1c5db9ab75bcc59d72a8d49161917e0fdac2e70c0c77c371036e6a486135ad"
+    },
+    {
+      "path": "rust/crates/effects/src/liquid_contract_tests.rs",
+      "bytes": 13100,
+      "sha256": "9602076650eaf4fe4a6df87aa009374ef703ce5919f97ddb102fac915b380ae9"
+    },
+    {
+      "path": "rust/crates/effects/src/liquid_oracle_tests.rs",
+      "bytes": 4342,
+      "sha256": "cba20dcf2307d1f228e8abbad4a7c1b4f4410bc4c7226905a0a0f84e453fd527"
+    },
+    {
+      "path": "rust/crates/effects/src/liquid_params.rs",
+      "bytes": 4975,
+      "sha256": "5a3a68fe74bdeabd9c43c4308a4beba705b728ec9cb8a016534ee68736b6b0b4"
+    },
+    {
+      "path": "rust/crates/effects/src/liquid_pass.rs",
+      "bytes": 3574,
+      "sha256": "9307003ed996e8e2a261d0c34a5da8c172509901b2dbdd2e545a5f255c450aa4"
+    },
+    {
+      "path": "rust/crates/effects/src/liquid_pipeline.rs",
+      "bytes": 8931,
+      "sha256": "48a2faacb36951e0d53604fcda3ef27e93598d72359d3bba00047b906cfa1a84"
+    },
+    {
+      "path": "rust/crates/effects/src/liquid_prepared.rs",
+      "bytes": 5158,
+      "sha256": "0252cc0767efc18aafe73fac0889737b850595267ec180ed55b7acf650b1e2d4"
+    },
+    {
+      "path": "rust/crates/effects/src/liquid_prepared_tests.rs",
+      "bytes": 2757,
+      "sha256": "ccece9d2f0d12526cd42230e4839c57a50d8f95b556257259de2a3f53de1130a"
+    },
+    {
+      "path": "rust/crates/effects/src/liquid_replay.rs",
+      "bytes": 9401,
+      "sha256": "6ce20fa5c015cbbf694481177db850dfbd1234ab3b5338e2af261755dd9a5021"
+    },
+    {
+      "path": "rust/crates/effects/src/liquid_replay_job_tests.rs",
+      "bytes": 7275,
+      "sha256": "5a42ce8410bcf517b9a619fd827c52c57653fa0f9449daab54688990af3ca6e5"
+    },
+    {
+      "path": "rust/crates/effects/src/liquid_replay_tests.rs",
+      "bytes": 7117,
+      "sha256": "cc1563a720a135ce1850303552ac7972ae7850bb7bc1e75a2cc6dcf6b45fdd48"
+    },
+    {
+      "path": "rust/crates/effects/src/liquid_sim.rs",
+      "bytes": 5930,
+      "sha256": "67dbcf212720b092971ee5ac3bbab80a37fc3d1ef0e253e6e23f750669fa7ae3"
+    },
+    {
+      "path": "rust/crates/effects/src/liquid_sim/forces.rs",
+      "bytes": 3609,
+      "sha256": "c15843915d67d1d40f6fa5b1cfd83d19de6d6704a725e17c2bec664c449e4975"
+    },
+    {
+      "path": "rust/crates/effects/src/liquid_sim/grid.rs",
+      "bytes": 4235,
+      "sha256": "fdba6d328a914de697557a043c5f842e92d617ad55b51731f12f434ecd41fa72"
+    },
+    {
+      "path": "rust/crates/effects/src/liquid_sim/solve.rs",
+      "bytes": 4468,
+      "sha256": "b4e0354c55dee88675c334064622bd94faae458f27a56f44769f02a4b0fb9556"
+    },
+    {
+      "path": "rust/crates/effects/src/liquid_sim/tests.rs",
+      "bytes": 3487,
+      "sha256": "ed63194405f0663045e7c1ebdf6091dafda520a9c188215fa60a51679a1fa1b7"
+    },
+    {
+      "path": "rust/crates/effects/src/liquid_sim/tests/behavior.rs",
+      "bytes": 5199,
+      "sha256": "9d989b1017ef9f933c831328183bb82b67d3de85111fc6373dacf3e9e1970dd8"
+    },
+    {
+      "path": "rust/crates/effects/src/liquid_sim/tests/numerics.rs",
+      "bytes": 4188,
+      "sha256": "7cafefc7d8866b7fe1401bed7ce739e3c7db5abc4ab6b1a952b84f79e0ed111e"
+    },
+    {
+      "path": "rust/crates/effects/src/liquid_sim/tests/sampling.rs",
+      "bytes": 2450,
+      "sha256": "267b194148a3969405b01bebc23fa0be2d50a7d004ed329daa0485e3f0d6d96f"
+    },
+    {
+      "path": "rust/crates/effects/src/liquid_sim/transport.rs",
+      "bytes": 1430,
+      "sha256": "1f32b0d2100169db7ac088878c962b356556d13ada0b8f6a6bf1fb2a753752a3"
+    },
+    {
+      "path": "rust/crates/effects/src/liquid_sim/validation.rs",
+      "bytes": 2990,
+      "sha256": "81e008bef97e8e357c335b0d80e3ecc512d0d9624da46d93e94855c24f2acc33"
+    },
+    {
+      "path": "rust/crates/effects/src/pass_preflight.rs",
+      "bytes": 720,
+      "sha256": "be325da1334791848bad57543a679fceac007f33d7a130cdd6303608f1d0af02"
+    },
+    {
+      "path": "rust/crates/effects/src/pipeline.rs",
+      "bytes": 22411,
+      "sha256": "de41ce1ad742a1df5acbf0f30aa27b72e936bf880657117db41057e03073f846"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/ascii.wgsl",
+      "bytes": 2984,
+      "sha256": "30e90a66800a444dc0291f76a773a654a219c111bc20778f047cd0e9b51062cc"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/blaze.wgsl",
+      "bytes": 5542,
+      "sha256": "beb84d5bc16bbd3cd8b1e113115e81e8aa97f80e1d71767d35fe1d91a62589a7"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/bubble.wgsl",
+      "bytes": 7504,
+      "sha256": "d08fa3de5c00007309e92e55ff3461775e6f45dba0ee267ee446f45375a6d83f"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/canvas.wgsl",
+      "bytes": 3478,
+      "sha256": "464804015baa82786b2f0c5668cee60eb0da42afe6d6311ee34cbf59aec7d41e"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/clouds.wgsl",
+      "bytes": 3840,
+      "sha256": "3fabc92795f6df0a3d8f7a6a832dd8a71f309f42a152b18da8239b2e13ccff30"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/color_adjustment.wgsl",
+      "bytes": 1781,
+      "sha256": "dab2a296caefa6a1ed6c12857a49754755660a5e64da05eccedfaa942c1d9932"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/decrypt-reveal.wgsl",
+      "bytes": 3529,
+      "sha256": "9c27a85c465d3ea1e00d1b315f82dfad75cb012cd5e2ad4038780d3dfeea0998"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/displacement.wgsl",
+      "bytes": 2403,
+      "sha256": "cd47aba102e867f72aefacec833a5ba313c0a12ae8c913d7e5d8975734561539"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/droplets.wgsl",
+      "bytes": 2868,
+      "sha256": "1ee4634148575b72ca05fa1e604484a568116662136b63ee83f5a82b383ee8f8"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/force_field.wgsl",
+      "bytes": 122,
+      "sha256": "5fa826af548f751281b49211a1d0b764f1d0d04732edd1a33297d40b4f53e3d3"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/frost.wgsl",
+      "bytes": 4813,
+      "sha256": "1ce2e76e5179810f8f7d4dd577169ba16c3c987e74d68673ac9b84ecb2c59ae1"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/gaussian_blur.wgsl",
+      "bytes": 1123,
+      "sha256": "6b1d4e86bcd3507351a23ebe704e2844508d8e410b518c626bd1087a0e9611ac"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/glitch.wgsl",
+      "bytes": 1897,
+      "sha256": "091f31973c9baaf9f84f6a18e644deeb9839ea29de71afb967bdf210e95c8adb"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/laser.wgsl",
+      "bytes": 2202,
+      "sha256": "79120458adc888e39cc42d457a38365e6dff79da6fa9ba3e49c89a9318d1c6ca"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/lens.wgsl",
+      "bytes": 994,
+      "sha256": "83fdbc909eebac2ee6b6e8b3fa983e370d8a0f5151359fdda874761999840a67"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/lens_sampling.wgsl",
+      "bytes": 1598,
+      "sha256": "ecc428c3c9b6e6b7994a5015bace6e3879941c08f6e84120f096b326bae02626"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/liquid.wgsl",
+      "bytes": 2519,
+      "sha256": "f7aacdb77171efc6c5a859152c90de9d2147b4a68a251f072e146b790e41ffeb"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/magnify.wgsl",
+      "bytes": 2355,
+      "sha256": "02113b2d0118339ad0c8dace6c046fa36ec17e1fee4879bfc7d1b320950d79ff"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/mono_dither.wgsl",
+      "bytes": 1603,
+      "sha256": "e40f47c07c52de64f997308ac9a7555635d9aa80520a67df228918a697dc9576"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/retro_dither.wgsl",
+      "bytes": 1376,
+      "sha256": "a92b9e67b8281f7864b76aa6762d8bbee9417623b1f5e7794fa5c5d6638f9f07"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/ripple.wgsl",
+      "bytes": 123,
+      "sha256": "3df58df2dc5b6abe46b53d350d7df47739d06eb77c25d9db43358e609f254956"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/spatial_region.wgsl",
+      "bytes": 546,
+      "sha256": "48d8df6dff3436c39660c4111edfa5f0df2d2f84192275c8dca7a5702d04bbdb"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/vhs.wgsl",
+      "bytes": 1675,
+      "sha256": "b08d195fe345acacafb59597891e90f6fde8ce1c48206e47ebab62535da6c512"
+    },
+    {
+      "path": "rust/crates/effects/src/shaders/wave_common.wgsl",
+      "bytes": 3843,
+      "sha256": "c0990131923825c8cd87171bfbaa63da953b5316c472e2f77b74d0c544bf8b32"
+    },
+    {
+      "path": "rust/crates/effects/src/stylized.rs",
+      "bytes": 3914,
+      "sha256": "8c7f8e80f89261c01d3e1a8a5c00e0f1bc2ac284443f8bdccbf559ac02974cb9"
+    },
+    {
+      "path": "rust/crates/effects/src/stylized_catalog.rs",
+      "bytes": 6758,
+      "sha256": "6014223da4a524a2fac07b065ff12ddf1881189f80b22065e9ee8593a46dc29a"
+    },
+    {
+      "path": "rust/crates/effects/src/stylized_uniforms.rs",
+      "bytes": 5063,
+      "sha256": "df9ae7da60bcdf4c3dc9d65daaa0158ccf5908024945bff37900178684cba893"
+    },
+    {
+      "path": "rust/crates/effects/src/types.rs",
+      "bytes": 258,
+      "sha256": "53df7f93d9406553da18c722f75480b2862d5e0dadf0e8d432001940abb6008d"
+    },
+    {
+      "path": "rust/crates/effects/src/wave_catalog.rs",
+      "bytes": 4591,
+      "sha256": "b44180177e58d072e568ecdc4b9870ced678738bcd9686c469d86336c9ff27c7"
+    },
+    {
+      "path": "rust/crates/effects/src/wave_events.rs",
+      "bytes": 4382,
+      "sha256": "fecc6e23ab2a5fe8c6d8de8d49dcd228409e308281dfc50a1595f8a61fcfdcf0"
+    },
+    {
+      "path": "rust/crates/effects/src/wave_uniforms.rs",
+      "bytes": 5836,
+      "sha256": "680fe6c4341739b8009fe8d05495ca54e6f9d4b111ba4ac2af412036ba0f324b"
+    },
+    {
+      "path": "rust/crates/masks/src/feather.rs",
+      "bytes": 12031,
+      "sha256": "6b1b9761803c077140996d98cc891920833db7063dbf908fa07b5ed1509524d0"
+    },
+    {
+      "path": "rust/crates/masks/src/masks.rs",
+      "bytes": 150,
+      "sha256": "2cddd6b79f6cfa501fb02d4e854fc64ce9c99d6296b244a6f356ebcfede32ec4"
+    },
+    {
+      "path": "rust/crates/masks/src/sdf.rs",
+      "bytes": 12499,
+      "sha256": "3859e193835cbe8db1082e3ea1e707948495f6f629db4ec60e6706fdbed245b7"
+    },
+    {
+      "path": "rust/crates/masks/src/shaders/jfa_distance.wgsl",
+      "bytes": 1821,
+      "sha256": "8a81ae1094638c09859fe7b13d83d667a1dfad6ac5847ed673552f824f45e2c2"
+    },
+    {
+      "path": "rust/crates/masks/src/shaders/jfa_init.wgsl",
+      "bytes": 1147,
+      "sha256": "9df8f19926bcf530f6b650ffbadb4d8d811cc661e90f7a6f16a1a3ffbe0e2583"
+    },
+    {
+      "path": "rust/crates/masks/src/shaders/jfa_step.wgsl",
+      "bytes": 2385,
+      "sha256": "b4bbc05ffb37431531295925687ab13ce7b0b9c882a5b73549361994342141dc"
+    }
+  ],
+  "reusedBinaryDependencies": [
+    {
+      "path": "target/debug/deps/bridge-118dca6e8ce5bf1f.dll",
+      "bytes": 1544192,
+      "sha256": "5f63d0e0965d420db23855c8e99bfa3dcd93ae936d9792acd4fa8e0e89616f42"
+    },
+    {
+      "path": "target/debug/deps/libserde-b5fb49d33599b962.rlib",
+      "bytes": 1281316,
+      "sha256": "8e09d05de35ef947f2538d94f4b4e43282906ab2484c1e6d335cf53fc82c68c1"
+    },
+    {
+      "path": "target/debug/deps/libserde_json-1c978f7cdef065e1.rlib",
+      "bytes": 5743408,
+      "sha256": "3d31146a24ae15418e8a43708b871a65f72d88492e46005d2e38e3c90b274da5"
+    },
+    {
+      "path": "target/debug/deps/libbytemuck-42b80fff130b57f2.rlib",
+      "bytes": 582200,
+      "sha256": "b686d5239e2ffb18e7eb631cb829e4692c28c016a03918b7905c39e9acf792be"
+    },
+    {
+      "path": "target/debug/deps/libthiserror-d6354eebc27f7d2a.rlib",
+      "bytes": 31252,
+      "sha256": "b040e7b766d69d413010525c69426761bc1fa683b1506e813222db25c73a9072"
+    },
+    {
+      "path": "target/debug/deps/libgpu-b67b729b914cc718.rlib",
+      "bytes": 12341010,
+      "sha256": "ec50bbb8ccbb8fd75f8c754dd83b2f6d600c39e46e47c9c4135e70d0cceacc44"
+    },
+    {
+      "path": "target/debug/deps/libwgpu-20cf31688ee1f01c.rlib",
+      "bytes": 34187576,
+      "sha256": "1c2243643f0b237abb2dc39c8ffd59e5092a17efd445370308ef4ff1d3e7cdae"
+    },
+    {
+      "path": "C:/tmps/canvas-clock-sol-20261010/libtime.rlib",
+      "bytes": 4883268,
+      "sha256": "f9093d7e4826dc68e7ad6195123a8cd2d11c38ea3a6578b94b0ec5c58784fc79"
+    }
+  ],
+  "beforeAfterEqual": true,
+  "runs": [
+    {
+      "name": "effects-rlib",
+      "command": "rustc",
+      "args": [
+        "rust/crates/effects/src/effects.rs",
+        "--crate-name",
+        "effects",
+        "--crate-type",
+        "rlib",
+        "--edition=2024",
+        "-C",
+        "debuginfo=0",
+        "-L",
+        "dependency=target/debug/deps",
+        "-L",
+        "dependency=C:/tmps/canvas-clock-sol-20261010",
+        "-L",
+        "dependency=C:/tmps/canvas-integration-native-root-PpQ3n2",
+        "--extern",
+        "bridge=E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\target\\debug\\deps\\bridge-118dca6e8ce5bf1f.dll",
+        "--extern",
+        "serde=E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\target\\debug\\deps\\libserde-b5fb49d33599b962.rlib",
+        "--extern",
+        "serde_json=E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\target\\debug\\deps\\libserde_json-1c978f7cdef065e1.rlib",
+        "--extern",
+        "bytemuck=E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\target\\debug\\deps\\libbytemuck-42b80fff130b57f2.rlib",
+        "--extern",
+        "thiserror=E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\target\\debug\\deps\\libthiserror-d6354eebc27f7d2a.rlib",
+        "--extern",
+        "gpu=E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\target\\debug\\deps\\libgpu-b67b729b914cc718.rlib",
+        "--extern",
+        "wgpu=E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\target\\debug\\deps\\libwgpu-20cf31688ee1f01c.rlib",
+        "--extern",
+        "time=C:/tmps/canvas-clock-sol-20261010/libtime.rlib",
+        "-o",
+        "C:\\tmps\\canvas-integration-native-root-PpQ3n2\\libeffects.rlib"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "summary": null,
+      "warnings": [
+        "warning: unused import: `ReplayEstimate`",
+        "warning: unused imports: `rebuild` and `shade`",
+        "warning: function `weave` is never used",
+        "warning: function `shade` is never used",
+        "warning: function `rebuild` is never used",
+        "warning: function `shade` is never used",
+        "warning: function `simulate` is never used",
+        "warning: methods `domain` and `pressure` are never used",
+        "warning: 8 warnings emitted"
+      ]
+    },
+    {
+      "name": "effects-tests-compile",
+      "command": "rustc",
+      "args": [
+        "rust/crates/effects/src/effects.rs",
+        "--crate-name",
+        "effects",
+        "--test",
+        "--edition=2024",
+        "-C",
+        "debuginfo=0",
+        "-L",
+        "dependency=target/debug/deps",
+        "-L",
+        "dependency=C:/tmps/canvas-clock-sol-20261010",
+        "-L",
+        "dependency=C:/tmps/canvas-integration-native-root-PpQ3n2",
+        "-C",
+        "link-arg=/DEBUG:NONE",
+        "--extern",
+        "bridge=E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\target\\debug\\deps\\bridge-118dca6e8ce5bf1f.dll",
+        "--extern",
+        "serde=E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\target\\debug\\deps\\libserde-b5fb49d33599b962.rlib",
+        "--extern",
+        "serde_json=E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\target\\debug\\deps\\libserde_json-1c978f7cdef065e1.rlib",
+        "--extern",
+        "bytemuck=E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\target\\debug\\deps\\libbytemuck-42b80fff130b57f2.rlib",
+        "--extern",
+        "thiserror=E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\target\\debug\\deps\\libthiserror-d6354eebc27f7d2a.rlib",
+        "--extern",
+        "gpu=E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\target\\debug\\deps\\libgpu-b67b729b914cc718.rlib",
+        "--extern",
+        "wgpu=E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\target\\debug\\deps\\libwgpu-20cf31688ee1f01c.rlib",
+        "--extern",
+        "time=C:/tmps/canvas-clock-sol-20261010/libtime.rlib",
+        "-o",
+        "C:\\tmps\\canvas-integration-native-root-PpQ3n2\\effects-tests.exe"
+      ],
+      "exitCode": 101,
+      "signal": null,
+      "summary": null,
+      "warnings": null
+    }
+  ],
+  "scope": "Actual complete effects/masks/compositor source compile with explicit reused binary dependencies. Targeted CPU tests only, no GPU/WASM/runtime/installation claim."
+}

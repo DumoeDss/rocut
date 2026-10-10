@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "date": "2026-10-10",
+  "status": "functional-pass",
+  "scope": "Native full history admission and Host HTTP PCM delivery; no pixel/MAE/encoded-video/installed-plugin acceptance",
+  "command": "node script/fixtures/hyperframes-history-functional-driver.mjs --execute",
+  "wasmSha256": "e5835503cc9959654b1d50db785b5d57d1489f55694b2b7093aa74387b418c7f",
+  "engine": "@hyperframes/core 0.8.139",
+  "report": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-history-functional-VLGzFp/verification.json",
+  "checks": [
+    "Cancellation releases the analyzer's owned private browser and retry rebuilds history",
+    "Rust discovery includes the actual non-grid clip start 0.1s in the canonical scan",
+    "All four fallback histories satisfy sequence/time/previousRuntimeVolume invariants",
+    "Fractional scalar trim/duration and fractional source loop retain their native recipes",
+    "Host HTTP delivers audible stereo f32le PCM at 44100 and 48000 from identity-gated graph renders",
+    "44100 crop/reseek twice retains exact canonical history PCM samples",
+    "Native-exporter timing renders frames 5..11 with sampleOrigin 9600 at 48000 after a real recompile of the timing lock"
+  ],
+  "fixtureIssuesFixed": [
+    "Fixed dry-source lookup followed a stale dry# ordinal instead of the prepared track's decodedSourceId",
+    "Graph renders now refresh the per-service identity per sample rate instead of assuming one identity",
+    "native-exporter timing required its own real compiled toolchain lock; second real compile of the same author input supplies it"
+  ],
+  "sharedRuntimeChanged": false
+}

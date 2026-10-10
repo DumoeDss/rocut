@@ -1,0 +1,74 @@
+{
+  "scope": "Actual ReactDOM and jsdom author UI events with explicit editor/catalog/playhead/keyframe observation transport doubles. Not Rust, Host, persistence, undo/history or GPU admission.",
+  "workspace": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut",
+  "implementation": {
+    "groups": [
+      "Boundary",
+      "Optics",
+      "Timing and seed"
+    ],
+    "controls": 9,
+    "keyframeToggles": 7,
+    "staticControls": [
+      "speed",
+      "seed"
+    ],
+    "rawInput": "Existing raw numeric field reused through shared EffectParamField; author input is not snapped, clamped or evaluated as an expression. Rust remains final admission."
+  },
+  "verification": [
+    {
+      "command": "$env:FLAME_WRAP_UI_TEST_DEPENDENCIES = 'E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia'; bun test packages/editor-classic/src/effects/__tests__/flame-wrap-authoring-dom.test.tsx",
+      "exitCode": 0,
+      "testsPassed": 2,
+      "assertions": 25,
+      "behaviors": [
+        "nine grouped controls",
+        "pixel decimal precision without snap",
+        "zero amount and speed",
+        "no speed or seed keyframe toggle",
+        "exact outgoing keyframe transport",
+        "fractional seed draft remains visible without clamp",
+        "raw expression text retained",
+        "failed save preserves complete draft",
+        "cross-edit resubmits complete draft",
+        "correction"
+      ]
+    },
+    {
+      "command": "$env:FROST_UI_TEST_DEPENDENCIES = 'E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia'; bun test packages/editor-classic/src/effects/__tests__/frost-authoring-dom.test.tsx",
+      "exitCode": 0,
+      "testsPassed": 1,
+      "assertions": 22
+    },
+    {
+      "command": "$env:CANVAS_UI_TEST_DEPENDENCIES = 'E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia'; bun test packages/editor-classic/src/effects/__tests__/canvas-authoring-dom.test.tsx",
+      "exitCode": 0,
+      "testsPassed": 1,
+      "assertions": 22
+    },
+    {
+      "check": "ESLint using existing Elftia binary and Rocut configuration on four affected files",
+      "exitCode": 0
+    },
+    {
+      "check": "Prettier --check on four affected files",
+      "exitCode": 0
+    },
+    {
+      "check": "Strict UTF-8 decode, no BOM or replacement characters on four affected files",
+      "exitCode": 0
+    }
+  ],
+  "iterations": [
+    "Initial overly precise decimal display expectation corrected for IEEE double string representation.",
+    "ESLint no-loss-of-precision rejected that literal; fixture changed to 8.12345678901234 with independent numeric and string expectations. Final tests and lint passed."
+  ],
+  "notRun": [
+    "WASM build",
+    "whole build",
+    "Elftia",
+    "GPU",
+    "Rust admission",
+    "Host/history acceptance"
+  ]
+}

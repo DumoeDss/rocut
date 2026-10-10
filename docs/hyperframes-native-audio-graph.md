@@ -11,9 +11,11 @@ The graph profile requires an archived DSP identity and a freshly checked Host
 runtime identity. Bounded native FX/preset automation and native variable-rate
 preparation, including bounded source-domain loops, are implemented in this
 profile. The variable-rate preparation and downstream native FX/Rust mix matrices
-pass; see the 2026-10-09 checkpoints below for precise coverage. Fractional
-clip/trim/loop sample phases and participating fallback gain histories remain
-separate gaps.
+pass; see the 2026-10-09 checkpoints below for precise coverage. The 2026-10-10
+full native-history functional run passes fractional clip start, scalar
+fractional trim/duration, fractional loop phase and all participating fallback
+gain histories through identity-gated Host HTTP PCM with exact crop/reseek; see
+[history functional evidence](evidence/hyperframes-history-functional.json).
 This is source-level standalone Host acceptance, not installed-plugin acceptance.
 Electron adaptation and shared installations are outside this workstream.
 
@@ -931,7 +933,9 @@ invocation missing `ROCUT_TEST_LOOP_EVIDENCE` was corrected and rerun alone.
 Exact reports, hashes, failed-run provenance and commands are recorded in
 [fractional duration evidence](evidence/hyperframes-fractional-duration.json).
 Fractional clip start, scalar fractional duration/trim, fractional loop
-trim/period/duration and participating fallback gain histories remain unsupported.
+trim/period/duration and participating fallback gain histories now pass the full
+native-history functional gate (2026-10-10); pixel/encoded-video/installed
+acceptance remains separate.
 The authored follow-up `rocut-hf-fractional-duration-editor-XdlZiS` also passes
 real HTML compilation, archive rebuild and browser collection with complete gain
 history. It uses an original 44.1 kHz WAV, fractional trim/duration, rate automation,
@@ -946,3 +950,34 @@ separately, not mistaken for extra source duration. A first run failed solely on
 the test shell's favicon 404; adding the data favicon retains the console-error
 gate, and both runs' video bytes are identical. This completes this single
 authored/exported duration case, not installed Electron or full-song/MV acceptance.
+
+### Development-first integration checkpoint (2026-10-10)
+
+The unsupported list above describes its dated acceptance checkpoint, not the
+current development backlog. Scalar fractional trim/duration and fractional
+source-loop trim/period now have native preparation, owned full-history PCM and
+actual decoded-geometry plumbing. Participating fallback gains now collect the
+original applied author writes, including repeated writes at one clock instant.
+Rust supplies the complete canonical scan and validates the event histories;
+the host renders it in one continuous authored realm and retains only requested
+discovery snapshots. These additions still await consolidated runtime acceptance.
+
+The `native-exporter` audio timing profile retains native millisecond placement.
+The default graph profile intentionally retains its sample-aligned placement
+contract; no new arbitrary sample-phase profile is introduced by this checkpoint.
+Archives carry the changed adapter fingerprint and must be explicitly recompiled.
+
+An initial native startup sync before the first requested frame is not a scan
+event. Its applied-gain callback now follows the same not-yet-begun behavior as
+the track and resolved-gain collectors. Three CPU checks cover this boundary and
+continuous scan/sparse snapshot transport; the scoped CLI history integration
+typecheck also passes. No new WASM, browser, PCM oracle, encoded-video or installed
+Electron acceptance is claimed here. Heavy validation follows feature development.
+
+The subsequent consolidated private build now includes these history changes
+and the analysis-frame pre/setup cancellation checkpoints. It is pinned,
+offline/locked, development-only and has SHA256
+`b43964be4e8c26dabbde121abcf57009a32fecb6f741e1f71380553b224db052`.
+Generated declarations are used by the Host integration typecheck. This updates
+the build/ABI status only, not the dated browser, PCM-oracle, export or installed
+acceptance above. No shared runtime was replaced.

@@ -99,3 +99,7 @@ apps/vite-example/tests/.pw-output-probe/
 apps/vite-example/tests/c3-artifacts/
 apps/vite-example/tests/.pw-output-c3/
 apps/vite-example/tests/.pw-output-c5-storage/
+# Native-scene probe outputs and machine-local rasen evidence stay untracked.
+.artifacts/
+.rasen/
+rasen/

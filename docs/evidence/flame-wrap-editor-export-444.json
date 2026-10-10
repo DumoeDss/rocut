@@ -1,0 +1,176 @@
+{
+  "date": "2026-10-10",
+  "status": "Explicit VP9 4:4:4 production UI/history/reload/export/decode/final Host reopen passed; default 4:2:0 parity remains unresolved, Flame Wrap stays N",
+  "rawReceipts": [
+    {
+      "path": "C:\\tmps\\flame-wrap-editor-yzZdHw\\evidence.json",
+      "sha256": "cfbc86931028547a77f1e81e2b7064b8b8d6710f84a66de86d36c1a8218b8754"
+    },
+    {
+      "path": "C:\\tmps\\flame-wrap-editor-yzZdHw\\flame-wrap-editor-export-evidence.json",
+      "sha256": "c11b24c07c6f16fe32eeb2e46a750902552b9478da44140cb85bfde22e0d3559"
+    }
+  ],
+  "scope": "Real production Vite editor, private actual Host, parameter UI/history/reload and same-project VP9 444 export. Browser WebGL SwiftShader; not Electron, alpha master, installed plugin or hardware acceptance.",
+  "ok": true,
+  "stage": "full-444",
+  "ui": {
+    "historyCycles": 10,
+    "revisionAfter": 31,
+    "frames": 6,
+    "animationChannelsCreatedByUI": false,
+    "reload": {
+      "completeGraphUnchanged": true,
+      "completeProjectBytesIdentical": true,
+      "pixelsIdentical": true,
+      "playheadAutomaticallyRetained": false,
+      "comparison": "same saved project after explicit UI re-seek",
+      "sha256": "86f4aa549d8b99b29dda66921676bb6f100e22d1c36501c7077e056e4f5d9ce5"
+    },
+    "reloadSeek": {
+      "ticks": 40000,
+      "timecode": "00:00:00:08",
+      "mechanism": "actual playhead textbox fill + Enter"
+    }
+  },
+  "export": {
+    "format": "explicit opaque WebM VP9 4:4:4 (not default 4:2:0 or alpha master)",
+    "range": {
+      "startTime": 20000,
+      "endTime": 85000
+    },
+    "thresholds": {
+      "meanRgb": 4,
+      "activeRgb": 6,
+      "activePixels": 48,
+      "activeDelta": 16,
+      "timestamp": 0.0011
+    },
+    "sensitivity": {
+      "thresholds": {
+        "meanRgb": 4,
+        "activeRgb": 6,
+        "activePixels": 48,
+        "activeDelta": 16,
+        "timestamp": 0.0011
+      },
+      "noEffect": [
+        {
+          "meanRgb": 12.721421983506945,
+          "activeRgb": 34.92191673858546,
+          "activePixels": 8111
+        },
+        {
+          "meanRgb": 12.551161024305555,
+          "activeRgb": 34.52154195011338,
+          "activePixels": 8085
+        },
+        {
+          "meanRgb": 12.41012912326389,
+          "activeRgb": 34.41972831765935,
+          "activePixels": 7975
+        }
+      ],
+      "shifted": [
+        {
+          "meanRgb": 4.906982421875,
+          "activeRgb": 12.580939464924176,
+          "activePixels": 8111
+        },
+        {
+          "meanRgb": 4.862521701388889,
+          "activeRgb": 12.494001236858379,
+          "activePixels": 8085
+        },
+        {
+          "meanRgb": 4.908447265625,
+          "activeRgb": 12.784367816091954,
+          "activePixels": 7975
+        }
+      ],
+      "frozenLate": {
+        "meanRgb": 6.204494900173611,
+        "activeRgb": 16.45692789968652,
+        "activePixels": 7975
+      }
+    },
+    "metrics": [
+      {
+        "ticks": 20000,
+        "frameIndex": 0,
+        "meanRgb": 1.2179633246527777,
+        "activeRgb": 2.0818641351251386,
+        "activePixels": 8111
+      },
+      {
+        "ticks": 40000,
+        "frameIndex": 4,
+        "meanRgb": 2.081393771701389,
+        "activeRgb": 4.339270253555968,
+        "activePixels": 8085
+      },
+      {
+        "ticks": 80000,
+        "frameIndex": 12,
+        "meanRgb": 1.8345947265625,
+        "activeRgb": 3.587377220480669,
+        "activePixels": 7975
+      }
+    ],
+    "revision": 31,
+    "projectSha256": "86f4aa549d8b99b29dda66921676bb6f100e22d1c36501c7077e056e4f5d9ce5",
+    "videoSha256": "d54d1b5583614cbf724cf55a414a5459ed658124a348efdc62c8988384589b07",
+    "outputPath": "C:\\tmps\\flame-wrap-editor-yzZdHw\\project\\exports\\3ab9603ff750daa6.webm",
+    "unchangedGraphRevisionAndPersistedBytes": true,
+    "unchangedSourceAssetFiles": [
+      {
+        "bodyPath": "C:\\tmps\\flame-wrap-editor-yzZdHw\\project\\attachments\\programmatic-sha256-0c74c6b4f8c39ea11a6722966f2f4a209f1e24b7066da6257de8a3bf4a905a6d\\body.bin",
+        "metadataPath": "C:\\tmps\\flame-wrap-editor-yzZdHw\\project\\attachments\\programmatic-sha256-0c74c6b4f8c39ea11a6722966f2f4a209f1e24b7066da6257de8a3bf4a905a6d\\metadata.json",
+        "sha256": "0c74c6b4f8c39ea11a6722966f2f4a209f1e24b7066da6257de8a3bf4a905a6d",
+        "metadataSha256": "47bcb3134e08c28fe9e8d438e1c496c414af8aacc176819a0edd77fc68726f41"
+      }
+    ],
+    "stream": {
+      "codec_name": "vp9",
+      "width": 192,
+      "height": 128,
+      "pix_fmt": "yuv444p",
+      "r_frame_rate": "24/1",
+      "nb_read_frames": "13"
+    },
+    "frameCount": 13,
+    "duration": "0.542000"
+  },
+  "finalHostVerification": {
+    "hostClosed": true,
+    "reopened": true,
+    "ready": true,
+    "verified": true,
+    "browserTested": false,
+    "gpuTested": false,
+    "exportTested": false
+  },
+  "lifecycle": {
+    "inputsUnchanged": true,
+    "browserClosed": true,
+    "hostClosed": true,
+    "hostExit": {
+      "code": 0,
+      "signal": null
+    },
+    "pinnedInputs": 24,
+    "preflightFiles": 4173
+  },
+  "diagnostics": {
+    "pageErrors": 0,
+    "consoleErrors": 12,
+    "httpFailures": 2,
+    "externalRequests": 0
+  },
+  "notVerified": [
+    "Default VP9 4:2:0 meets the fixed pixel parity threshold",
+    "UI-created animation channels",
+    "Installation state/Electron/hardware GPU/alpha master",
+    "Complete external or dynamic dependency closure"
+  ]
+}

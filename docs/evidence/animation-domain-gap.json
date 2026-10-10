@@ -1,0 +1,170 @@
+{
+  "recordedAt": "2026-10-10",
+  "status": "reproduced-not-fixed",
+  "scope": "Generic numeric animation admission and sampling; not Blaze-specific",
+  "design": {
+    "path": "C:/tmps/animation-domain-design-H9dOeO/animation-domain-design.md",
+    "sha256": "0e79fe11606191fd3168aed199ece25b300add3ebc31170f52445ff25c7f0da7"
+  },
+  "actualSampler": {
+    "path": "C:/tmps/animation-domain-design-H9dOeO/sampler-results.json",
+    "sha256": "e0e944fb570fbef92244b70289b82bbdb214c763c93b636420a09c13dd39bc05",
+    "scope": "Actual TS sampler modules executed with safe integer ticks and a mediaTime identity boundary stub",
+    "constantBezier": {
+      "keys": [[0, 1], [120000, 1]],
+      "firstObservedOvershootTick": 205,
+      "value": 1.0000000000000002,
+      "interiorIntegerTicksChecked": 119999,
+      "overshootingSamples": 1300
+    }
+  },
+  "publicApiReproduction": {
+    "path": "C:/tmps/animation-domain-design-H9dOeO/public-boundary-results.json",
+    "sha256": "9a45b38dfde62c1ff25e12fec04039f16e37179e2756759656551e4b2f41220e",
+    "wasmSha256": "02b001624eb49ed233ee7484624a8d98f63e8d720dfbbb9592c747915fe37b58",
+    "calls": 4,
+    "effects": ["blaze", "clouds"],
+    "result": "Constant boundary Bezier admitted; actual sampled amount at tick 205 rejected by strict native resolver"
+  },
+  "sourceBackedDesignFindings": [
+    "Normal clip guarantees require the closed local-time domain [0,duration], including transition endpoint sampling",
+    "Low-level parameter helpers without duration cannot inherit a clip-domain guarantee",
+    "Finite safe extrapolation and out-of-bounds control points with an in-bounds curve must remain valid",
+    "Initial direct unstaged adapter selected clips by editing only; duration-only omission was subsequently reproduced and narrowly fixed below",
+    "Mathematical extrema alone do not repair a mismatched floating-point runtime evaluator"
+  ],
+  "nextImplementation": {
+    "state": "runtime-batched-admission-pending",
+    "firstScope": "Explicit sampling and tri-state inspection are registered and tested through real private WASM; the editor-side scalar-animation transport exposes sampleScalarAnimationBatch and inspectScalarAnimationDomain; a differential CPU probe compares the production TS evaluator with the installed WASM batch core across 5 channels and 80 samples; ScalarBatchResolver now batches transform, opacity, and effect-param scalar channels into one core call per resolveVisualState, preserving linear/hold behavior and discrete fallbacks; scoped strict tsc, ESLint, and behavior tests are green, and 205/208 renderer/effect tests pass with only pre-existing jsdom environment failures; tri-state admission wiring at authoring boundaries remains pending",
+    "constraints": [
+      "No effect-specific clamp or business epsilon",
+      "Preserve current ordinary linear and hold behavior",
+      "Do not reject legal constant boundary curves to hide numerical error",
+      "No rewrite of existing project data",
+      "Keep published acceptance evidence and thresholds unchanged"
+    ]
+  },
+  "numericKernel": {
+    "verification": {
+      "path": "C:/tmps/animation-domain-design-H9dOeO/numeric-kernel-verification.json",
+      "sha256": "2b4f6902754aa6b7b5cd0f2e2a3cdb8f7397c47dedf439db83a5adcddc529444"
+    },
+    "scope": "Initial frozen five-file revision, before bridge registration; this historical evidence does not describe the later integration below",
+    "contractTests": 16,
+    "independentReview": {
+      "path": "C:/tmps/animation-numeric-review-El8iIE/review.json",
+      "sha256": "e4798d5b1819f1abe495709c3741a7a79e259735891a28dd25fa5bb4d505f5aa",
+      "cases": 480,
+      "safeCertificatesSpotChecked": 312,
+      "actualViolationWitnessesReplayed": 168,
+      "samplesPerSafeCase": 401,
+      "unresolved": 0,
+      "limitation": "Finite spot-checks support review; they do not prove soundness over all inputs"
+    },
+    "compatibilityBudgetProbe": {
+      "path": "C:/tmps/animation-numeric-wiring-kLnQp5/budget-results.json",
+      "sha256": "ac6525af15d08f801b626fa165c765596fdbf4ee4a11f28dd2e0b1aebd62ee95",
+      "finding": "Default 4096 nodes leaves ordinary legal full-range Bezier presets Unresolved; some near-boundary curves remain Unresolved at the 65536 hard cap",
+      "consequence": "Unresolved must not be translated to ordinary invalid-range or treated as a safety certificate; do not enable strict admission from these CPU results"
+    }
+  },
+  "nativeIntegration": {
+    "path": "C:/tmps/animation-integration-r2-XPsWCG/evidence.json",
+    "sha256": "d0bfd7c005dcc04af306ca373903271ba2d544cc10a682f48b0580c084fb352e",
+    "numericContractTestsPerMode": 16,
+    "boundaryContractTestsPerMode": 31,
+    "modes": ["debug", "optimized"],
+    "warningsDenied": true,
+    "sampleModelIntervalUnchanged": true,
+    "exports": ["sample_scalar_animation_batch_json", "inspect_scalar_animation_domains_json"],
+    "semantics": "scalar-f64-v1; all four identical Bezier controls take an exact constant branch, unlike the legacy TS evaluator. Other operations retain their order; not a blanket legacy bit-parity claim",
+    "budgetRegression": "Ordinary Smooth now proves safe with one node; a near-boundary Smooth remains unresolved at 4096. Multi-segment tests continue to enforce item and cumulative request exhaustion without changing budgets",
+    "retainedFailures": [
+      "C:/tmps/animation-integration-9PbWSK/evidence.json",
+      "C:/tmps/animation-integration-r2-OfAgNK/evidence.json",
+      "C:/tmps/animation-integration-r2-C262jT/evidence.json"
+    ]
+  },
+  "tightCertificate": {
+    "prototypeManifest": "C:/tmps/animation-numeric-wiring-kLnQp5/prototype-manifest.json",
+    "sha256": "0ca651b19efde5f05a39fcb0f315776cb9de145a3919b74837f3f5908fef905e",
+    "proof": "C:/tmps/animation-numeric-wiring-kLnQp5/tight-bound-proof.md",
+    "proofSha256": "15fad8b7feb22b4a2ed11437fb0b402a9472be44c5263207c80acbdcbead5a95",
+    "change": "Outward blossom hull over reachable dyadic progress plus conservative actual-Bernstein rounding error; original interval/leaf fallback and total node budget retained",
+    "unresolvedPolicy": "Unresolved remains neither Safe nor invalid-range; legal near-boundary curves still require an explicit product policy"
+  },
+  "boundaryIndependentAudit": {
+    "path": "C:/tmps/animation-boundary-audit-DODoFL/manifest.json",
+    "sha256": "128db38a70655ea23298bd89e6ffaf3da34134088e810adf880df9dfd0747513",
+    "independentTestsPerMode": 9,
+    "reusedSerializerTestsPerMode": 2,
+    "modes": ["debug", "optimized"],
+    "result": "No blocking defect reproduced; includes 1152 item-budget positions per mode and 65536-sample UTF-8 output",
+    "contractEdges": ["Integer token -0 is rejected; ordinary JSON.stringify emits 0", "JSON value depth counts root as zero, including empty containers"]
+  },
+  "privateWasm": {
+    "build": {
+      "path": "C:/tmps/rocut-animation-source-e9536a/private-build-result.json",
+      "sha256": "ad263571ff4f6c9256d1231f6bd14243d167a1563edce8cbb98cc15c5ff3f31e"
+    },
+    "snapshotManifestSha256": "d49b9f9fd0ef59f77ee8dd322bac9e2a004b59c64e0eebd85eec5598da4a7ca8",
+    "snapshotFiles": 3923,
+    "overlays": 19,
+    "scope": "Frozen Blaze source baseline plus animation numeric/boundary/bridge only; baseline lib registration is patched narrowly, excluding later unrelated master-effect changes",
+    "wasmSha256": "df4f2b1377b94e357bfa90ff02f5a8fb9e059a3d685796fb54716df6f94ef2bd",
+    "toolchain": "rustc 1.88.0, wasm-pack 0.13.1, offline locked no-install release build",
+    "sourceAndCanonicalPackageUnchanged": true,
+    "gates": {
+      "path": "C:/tmps/animation-wasm-checks-1P4K7j/evidence.json",
+      "sha256": "9f8d3270a42d112372905dc8cf723a9f973e10ac112b08c6d327fc8093384af0",
+      "passed": ["source", "paths", "init", "exact public JS and stable binary export delta"],
+      "addedOnly": ["inspectScalarAnimationDomainsJson", "sampleScalarAnimationBatchJson"]
+    },
+    "roundtrip": {
+      "path": "C:/tmps/animation-scalar-roundtrip-QLzpoK/handoff.json",
+      "sha256": "21e296e43c04a9747b51dc2c6f45dd66e84b8fd6b4c5b95d371c64cea1209e0c",
+      "reportSha256": "b017440c6e78545838e802b3797673dd3c3d5ea2b984fe65e90d4a32d919dc1a",
+      "requests": 54,
+      "passed": 54,
+      "sampleRequests": 40,
+      "inspectionRequests": 14,
+      "bitIdenticalSamples": 65717,
+      "rootRehashedRequestResultCheckArtifacts": 216,
+      "unchangedInputs": 41,
+      "reference": "Independent JS arithmetic plus explicit scalar-f64-v1 constant-control semantics; actual generated WASM bindings, no API substitute",
+      "limitation": "Finite cases and independent safe-range spot checks are not proof of general runtime migration or production domain admission"
+    },
+    "retainedFailures": [
+      "C:/tmps/rocut-animation-source-Ta3Yqa/private-build-result.json: current lib had an unrelated effect_stack registration absent from the old frozen baseline",
+      "C:/tmps/animation-integration-9PbWSK/derive-wasm-snapshot-r2.mjs: orchestration syntax error before any derived snapshot; r3 fixes only script quoting"
+    ]
+  },
+  "durationOnlyAdapterFix": {
+    "path": "C:/tmps/animation-duration-adapter-fix-HA3iyB/handoff.json",
+    "sha256": "2fab81c34e748030bc44c3ee5b1bb20e5a8c261fbeb31a7cc4daaaa6408f77ef",
+    "change": "Direct unstaged candidate selection now includes duration changes as well as editing changes",
+    "regression": "One Bun test containing nine isolated behavior checks; observed red before the patch, green afterward",
+    "checks": ["targeted ESLint", "strict syntactic/semantic diagnostics for both changed files", "UTF-8", "diff check"],
+    "semantics": "Duration-only shrink/extension invoke the existing validation provider; missing provider and rejected inputs cannot create receipts. Unchanged clips remain unselected",
+    "limitation": "Real adapter, editing policy and normal engine with observation doubles at WASM/catalog/summary boundaries; no Rust numerical-domain proof",
+    "otherContextRisksNotFixed": ["trimStart", "trackKind", "assetKind", "hasMotionText", "hasAdjustment"]
+  },
+  "directAdapterContextFix": {
+    "path": "C:/tmps/adapter-context-validation-sol-9DbVab/handoff.json",
+    "sha256": "58d78e0fff18bd18f9950925d9feceaaf192e39fe1f73463e799776dfb1bcb8a",
+    "sourceBeforeSha256": "c641b65ae392b44c33de4c2ac968eb7916f3beca870b55036160da3319627bb6",
+    "sourceAfterSha256": "0dda46517c517e16310522dc58512d2f9f372c2c9f58838046dfd76e983602fa",
+    "change": "Direct unstaged candidates compare the effective fields actually serialized by editing-policy: editing, duration, trimStart, resolved trackKind, resolved assetKind, hasMotionText and hasAdjustment. Reference IDs with the same effective kind, unrelated metadata, start and trimEnd are not overselected",
+    "reproduction": "Nine context-only changes previously skipped the per-clip provider and generated receipts; real adapter/policy request capture and the old-source red regression are retained",
+    "verification": "Thirty-six new isolated behavior checks plus nine existing duration checks pass in two child-isolated Bun tests; targeted ESLint/Prettier/diff and syntactic/semantic TypeScript 6.0.3 diagnostics for the two task files pass",
+    "atomicity": "Missing provider and rejected candidates cannot publish receipts; normal-engine paths with/without placement policy retain store and draft, with zero saves",
+    "scope": "Real adapter, projection, codec, editing-policy request serialization and ordinary transaction engine with observation doubles for WASM/catalog/unrelated summary. No numerical-domain safety proof, real Rust provider, durable user storage, Host, browser or GPU acceptance"
+  },
+  "notVerified": [
+    "Canonical full ABI pin refresh and its negative-control gate",
+    "Production fix",
+    "Real WASM and durable-store acceptance of direct adapter validation-context invalidation beyond duration/editing",
+    "General nonconstant boundary floating-point guarantee",
+    "Import/load/export preflight coverage"
+  ]
+}

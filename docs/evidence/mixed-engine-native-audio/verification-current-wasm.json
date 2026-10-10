@@ -1,0 +1,137 @@
+{
+  "passed": true,
+  "artifact": "C:\\Users\\Sayo\\AppData\\Local\\Temp\\rocut-mixed-engine-lyrics-7zgxHU",
+  "counts": {
+    "frames": {
+      "hyperframes": 14,
+      "remotion": 14
+    },
+    "resources": 16,
+    "fontLoads": 2,
+    "saves": 1,
+    "reloads": 1,
+    "audioIdentities": 1,
+    "audioRenders": 1
+  },
+  "frames": [
+    {
+      "frame": 0,
+      "sourceFrame": 10,
+      "baselineLyrics": 312,
+      "occludedLyrics": 84,
+      "visibleLyrics": 145,
+      "outsideChanged": 0
+    },
+    {
+      "frame": 1,
+      "sourceFrame": 11,
+      "baselineLyrics": 312,
+      "occludedLyrics": 84,
+      "visibleLyrics": 145,
+      "outsideChanged": 0
+    },
+    {
+      "frame": 2,
+      "sourceFrame": 12,
+      "baselineLyrics": 312,
+      "occludedLyrics": 84,
+      "visibleLyrics": 145,
+      "outsideChanged": 0
+    },
+    {
+      "frame": 3,
+      "sourceFrame": 13,
+      "baselineLyrics": 300,
+      "occludedLyrics": 63,
+      "visibleLyrics": 140,
+      "outsideChanged": 0
+    },
+    {
+      "frame": 4,
+      "sourceFrame": 14,
+      "baselineLyrics": 300,
+      "occludedLyrics": 63,
+      "visibleLyrics": 140,
+      "outsideChanged": 0
+    },
+    {
+      "frame": 5,
+      "sourceFrame": 15,
+      "baselineLyrics": 301,
+      "occludedLyrics": 63,
+      "visibleLyrics": 140,
+      "outsideChanged": 0
+    }
+  ],
+  "changedGlyphPixels": 281,
+  "decodedFrames": 6,
+  "canvas": [
+    96,
+    96
+  ],
+  "fps": 25,
+  "nativeAudio": {
+    "codec": "opus",
+    "sampleRate": 48000,
+    "channels": 2,
+    "samples": 12168,
+    "frequencies": [
+      221.87254130605822,
+      221.87254130605822
+    ],
+    "peaks": [
+      0.1004749983549118,
+      0.05026663839817047
+    ]
+  },
+  "archived": {
+    "hyperframes": true,
+    "remotion": true
+  },
+  "reloadedPixelsExact": true,
+  "fontLoads": 2,
+  "fontState": {
+    "generation": 1,
+    "cachedFonts": 1,
+    "loadedFaces": 1,
+    "pendingLoads": 0,
+    "disposed": false
+  },
+  "sequence": {
+    "engine": {
+      "catalogHash": "sha256:9ec6f3be1a297152ccd377456348900fe0f4cc3b7629d21ec319976740f33d12",
+      "id": "jizura",
+      "plannerVersion": 1,
+      "tokenizerVersion": "unicode-v1",
+      "version": "0.9.0"
+    },
+    "compositionMode": "overlay",
+    "font": {
+      "builtinPath": "motion-text/fonts/ibm-plex-mono-medium.ttf",
+      "contentDigest": "sha256:a9b4c49bb299e05b5f6c481e7fb5e78943d2793249a0c8874ab574a2d1ea6755",
+      "family": "IBM Plex Mono",
+      "id": "mono",
+      "source": "builtin",
+      "style": "normal",
+      "supportedLanguages": [
+        "en"
+      ],
+      "weight": 500
+    },
+    "cuts": [
+      {
+        "text": "SYNC",
+        "startTime": 0,
+        "duration": 60000,
+        "fontId": "mono"
+      },
+      {
+        "text": "BEAT",
+        "startTime": 60000,
+        "duration": 60000,
+        "fontId": "mono"
+      }
+    ]
+  },
+  "scope": "relocated/rebuilt HyperFrames + Remotion archives -> real project codec/FileProjectStore reopen -> native JIZURA/Rust factory + real font -> mvRecipe foreground role -> buildScene/SceneExporter -> independent FFmpeg occlusion/pixel/time checks; private WASM/Chromium; not installed/Electron"
+}

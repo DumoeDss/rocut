@@ -1,0 +1,105 @@
+{
+  "recordedAt": "2026-10-09",
+  "status": "passed-scoped-ui-authored-production-export",
+  "scope": "A fresh private project repeats the actual UI parameter edits and history sequence, then uses the attached editor production export protocol for six independent jobs",
+  "evidence": {
+    "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-editor-export-WASVYH/evidence.json",
+    "sha256": "6f4eb0546cb4e7206815446aca7738a95e5d554c8f34c1e912b88f70374e0fbd"
+  },
+  "outerSourceGuard": {
+    "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-ui-export-run-AyRtcc/run.json",
+    "sha256": "4fb7ce0fb00bc8134d474e3a763b5212d219f6159cb5291238d33f416e201edf",
+    "sourceFiles": 3993,
+    "wasmPackageFiles": 11,
+    "editorDistFiles": 350,
+    "checkedInputs": 4361,
+    "changedInputs": 0,
+    "priorSuccessfulUiProjectUnchanged": true
+  },
+  "fixtureHandoff": {
+    "path": "C:/tmps/blaze-editor-export-fixtures-Ejf8Ev/handoff.json",
+    "sha256": "5a4b8f11da6ddc7deef6f5d7915a56af39f307aa8604a5b09f80b91f85db5bf2",
+    "newFiles": 14,
+    "staticTests": 10,
+    "assertions": 99
+  },
+  "snapshot": {
+    "path": "C:/tmps/rocut-stylized-f6XU4z/rocut-blaze-derived-AKK6cQ/fixture-source.json",
+    "sha256": "9a5fad30b38e03bee63810f5560981ed7aa94cd67dab0a8903f1d4cb0c3dfcf4",
+    "overlays": 88,
+    "editorRebuilt": false,
+    "wasmSha256": "02b001624eb49ed233ee7484624a8d98f63e8d720dfbbb9592c747915fe37b58"
+  },
+  "uiAndPersistence": {
+    "actualParameterEditsWithUndoRedo": 10,
+    "hostAuthoredAnimatedChannels": 7,
+    "seekSequencesBeforeAndAfterReload": 2,
+    "exportReadOnlyStages": 13,
+    "revision": 31,
+    "projectSha256": "de31c2d39d9fd730bb3642410a7a283043932427401e9554667fa51de2a2fd09",
+    "fullClipTrackContextAndProjectBytesPreserved": true,
+    "hostReopenVerified": true,
+    "allowedProjectWrites": "Six new exports/<jobId>.webm files only; every existing project file remains byte-identical",
+    "browserAndHostClosedNormally": true,
+    "forcedTermination": false,
+    "externalRequests": 0
+  },
+  "independentExpected": {
+    "source": "Hash-bound imported PNG decoded through an isolated ImageBitmap/OffscreenCanvas 2D path without the editor preview or any effect",
+    "pngSha256": "0bbc9c7ccfafc4c3de2f24fd1e8ee1597ed9ef36ad2bd9421664bb8d7c4e5090",
+    "canonicalRgbaSha256": "144cf1bd833cc079d5095f961fe54c5a0530669fdabde71a0794dff2cb65aa2f",
+    "oracle": "Frozen independent Blaze CPU reference plus final UI parameters, explicit seven-channel interpolation and black source-over",
+    "thresholds": {"meanRgba": 10, "activeRgb": 15, "minimumActivePixels": 64, "timestampSeconds": 0.0011},
+    "disabledCriterion": "Whole-image mean RGBA only; no active-effect mask is invented"
+  },
+  "export": {
+    "width": 192,
+    "height": 128,
+    "fps": "30/1",
+    "format": "webm",
+    "codec": "vp9",
+    "quality": "very_high",
+    "audio": false,
+    "framesPerJob": 6,
+    "secondsPerJob": 0.2,
+    "totalFrames": 36,
+    "ranges": [[4000, 28000], [124000, 148000], [244000, 268000]],
+    "chroma": "Three default requests omit videoChroma; three separate requests explicitly select 444; no fallback or promotion",
+    "decoding": "Independent FFmpeg default RGBA conversion without filters, scaling or chroma override",
+    "maxFrameOrPacketTimeErrorSeconds": 0.00033333333333335213,
+    "jobs": [
+      {"id": "default-static", "profile": "Profile 0", "pixelFormat": "yuv420p", "maxMeanRgba": 3.3501688639322915, "maxActiveRgb": 5.103299266067632},
+      {"id": "default-animated", "profile": "Profile 0", "pixelFormat": "yuv420p", "maxMeanRgba": 4.586873372395833, "maxActiveRgb": 7.035288079045297},
+      {"id": "default-disabled", "profile": "Profile 0", "pixelFormat": "yuv420p", "maxMeanRgba": 1.3065694173177083},
+      {"id": "444-static", "profile": "Profile 1", "pixelFormat": "yuv444p", "maxMeanRgba": 2.249298095703125, "maxActiveRgb": 3.4121224592450328},
+      {"id": "444-animated", "profile": "Profile 1", "pixelFormat": "yuv444p", "maxMeanRgba": 3.1689249674479165, "maxActiveRgb": 4.679798109414432},
+      {"id": "444-disabled", "profile": "Profile 1", "pixelFormat": "yuv444p", "maxMeanRgba": 0.6155802408854166}
+    ]
+  },
+  "negativeControls": {
+    "noEffect": "All six frames rejected in each enabled segment",
+    "staticOldUiParameters": "All six expected frames rejected",
+    "staticWrongSeed": "All six expected frames rejected",
+    "animatedRepeatedFirst": "Four of five later frames rejected, both expected-first and each chroma decoded-first; this is a whole-sequence rejection gate, not a five-of-five claim"
+  },
+  "retainedDiagnostics": [
+    "Two known optional graph-editor user-preset 404 responses",
+    "Two No available adapters warnings and one Canvas2D readback performance warning",
+    "First outer orchestration preflight rejected Windows backslash spelling before deriving or launching a browser; C:/tmps/rocut-stylized-f6XU4z/blaze-ui-export-run-xbxVhX/derivation.json is retained. R2 normalizes only that argument and preserves all acceptance gates"
+  ],
+  "independentAudit": {
+    "path": "C:/tmps/blaze-ui-export-audit-1jb8Gf/executed-HIvHvR/handoff.json",
+    "sha256": "ed56e397c1ffabcf0189ae70b38fa2160c08692c4329b8531a482255d1ada3da",
+    "reviewSha256": "74b698549247d3ea8d22989f08c3bba1415c3a7845474df25636a327c18f33a2",
+    "framesRecomputed": 36,
+    "unchangedInputs": 4523,
+    "result": "Independent expected/decoded errors, negative controls, six separate requests and full project persistence passed; original RAW failure remains unchanged",
+    "reranBrowserGpuOrCodec": false
+  },
+  "notClaimed": [
+    "Export dialog button interaction or UI keyframe creation controls",
+    "Installed plugin, Electron, audio or long-project performance acceptance",
+    "Closure of the generic animation-domain and floating-point sampling gap",
+    "Reclassification of the previously failed transparent Canvas RAW case"
+  ]
+}

@@ -1,0 +1,55 @@
+{
+	"ok": false,
+	"artifacts": "C:\\tmps\\canvas-capture-webgpu-zO9r06",
+	"startedAt": "2026-10-10T02:09:33.746Z",
+	"backend": "webgpu",
+	"scope": "Private explicit browser initialization of real generated glue/binary, no Vite or production TS renderer. Presentation pixels only.",
+	"frozen": [
+		{
+			"route": "/wasm-glue.mjs",
+			"path": "C:\\tmps\\canvas-whole-wasm-r1-90tvPd\\pkg\\opencut_wasm_bg.js",
+			"bytes": 167861,
+			"sha256": "f51ed4724db0fb725b9eb7ef18174d9e27051dc6dfcb46a6e6e4d7ca6b8f1cda"
+		},
+		{
+			"route": "/wasm.wasm",
+			"path": "C:\\tmps\\canvas-whole-wasm-r1-90tvPd\\pkg\\opencut_wasm_bg.wasm",
+			"bytes": 12417715,
+			"sha256": "a3ab8becce91cd32d25f58f5b573b1051ff44d59579f64e3c4f3163733938de4"
+		},
+		{
+			"route": "/probe.mjs",
+			"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\fixtures\\canvas-capture-probe.mjs",
+			"bytes": 9474,
+			"sha256": "315014024557e1ae5e4993b2dc5a224922d38be68ae4a8ae409de94d38ece0b3"
+		}
+	],
+	"console": [
+		{
+			"type": "warning",
+			"text": "No available adapters."
+		},
+		{
+			"type": "error",
+			"text": "panicked at /cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\wgpu-29.0.1\\src\\backend\\wgpu_core.rs:1409:26:\nwgpu error: Validation Error\n\nCaused by:\n  In Device::create_render_pipeline, label = 'frost'\n    Error matching ShaderStages(FRAGMENT) shader requirements against the pipeline\n      Unable to find entry point 'fragment_main'\n\n\n\nStack:\n\nError\n    at __wbg_new_227d7c05414eb861 (http://127.0.0.1:63504/wasm-glue.mjs:3225:17)\n    at wasm://wasm/02f5eace:wasm-function[4450]:0x84c19c\n    at wasm://wasm/02f5eace:wasm-function[5404]:0x8e8375\n    at wasm://wasm/02f5eace:wasm-function[7983]:0x99c90b\n    at wasm://wasm/02f5eace:wasm-function[1545]:0x518c03\n    at wasm://wasm/02f5eace:wasm-function[786]:0x2b1253\n    at wasm://wasm/02f5eace:wasm-function[8044]:0x9a5d98\n    at wasm://wasm/02f5eace:wasm-function[1146]:0x43910d\n    at wasm://wasm/02f5eace:wasm-function[684]:0x187160\n    at wasm://wasm/02f5eace:wasm-function[3736]:0x7bd837\n\n"
+		}
+	],
+	"pageErrors": [
+		"RuntimeError: unreachable"
+	],
+	"externalRequests": [],
+	"httpErrors": [],
+	"loadedWasm": [
+		{
+			"bytes": 12417715,
+			"sha256": "a3ab8becce91cd32d25f58f5b573b1051ff44d59579f64e3c4f3163733938de4"
+		}
+	],
+	"browserClosed": true,
+	"serverClosed": true,
+	"origin": "http://127.0.0.1:63504",
+	"browserVersion": "151.0.7922.34",
+	"failure": "page.waitForFunction: Timeout 240000ms exceeded.\n    at E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\probe-canvas-capture.mjs:64:13",
+	"inputsUnchanged": true,
+	"finishedAt": "2026-10-10T02:13:35.015Z"
+}

@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "date": "2026-10-10",
+  "status": "functional-pass",
+  "scope": "Rerun of the mixed-engine native-lyric occlusion gate against the current private WASM build; not installed/Electron/full-MV acceptance",
+  "command": "node script/probe-mixed-engine-lyrics.mjs C:/Users/Sayo/AppData/Local/Temp/rocut-media-toolchain-YbloF9",
+  "wasmSha256": "e5835503cc9959654b1d50db785b5d57d1489f55694b2b7093aa74387b418c7f",
+  "report": "C:/Users/Sayo/AppData/Local/Temp/rocut-mixed-engine-lyrics-8gWmm5/verification.json",
+  "counts": {
+    "hyperframesFrames": 14,
+    "remotionFrames": 14,
+    "resources": 16,
+    "fontLoads": 2,
+    "saves": 1,
+    "reloads": 1
+  },
+  "layerOrderTopToBottom": ["foreground", "lyrics", "remotion", "hyperframes"],
+  "occlusion": {
+    "baselineLyricsPerFrame": [310, 309, 309, 301, 301, 301],
+    "occludedPerFrame": [83, 83, 83, 64, 64, 64],
+    "visiblePerFrame": [143, 143, 143, 140, 140, 140],
+    "outsideChangedMax": 1,
+    "changedGlyphPixelsSyncToBeat": 277,
+    "decodedFrames": 6,
+    "canvas": [96, 96],
+    "fps": 25
+  },
+  "fixtureIssuesFixed": [
+    "Isolated Bun preload now binds the generated sync entry namespace; the bundler entry has no default init in this build",
+    "Browser probe resolution points opencut-wasm at the real private bundler entry so its relative binary import and __wbindgen_start run as generated"
+  ],
+  "sharedRuntimeChanged": false
+}

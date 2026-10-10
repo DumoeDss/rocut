@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-10",
+  "status": "native authoring CPU chain passed; Glass Object remains N",
+  "rawReceipt": {
+    "path": "C:/tmps/glass-native-authoring-INqp9b/final-evidence.json",
+    "sha256": "1ba1eeac75d1c27db72d4474a5ff1141f12ef0e3a896d13facd91f03b1ce07fb"
+  },
+  "verification": {
+    "ok": true,
+    "testsPassed": 4,
+    "testsFailed": 0,
+    "actualNativeResolverCalls": 30,
+    "scope": "Actual native Rust resolver -> actual Creator glassObjectThree helper -> normalized scene input DTO",
+    "inputsUnchanged": true,
+    "nativeCli": "C:/tmps/glass-native-authoring-INqp9b/glass-object-native-cli-final.exe",
+    "pins": {
+      "cli": "2b5dd6b33344549e64b5fec12b13b3591d8bfa2a365fcdedfaa0bec210ce6bb7",
+      "helper": "5f8e9fe1a570949b0546d6a9fbc5d82ac1d8924b8dc46f1678e70ebb5d780b40",
+      "cliFixture": "5078b26c25b943c78f5d95c016f3036a172428b01ad520b62995133e6bb25c74",
+      "rustModule": "eaf2e32a2a8c86f467d5943705fb2e6aab6a2cf69240b8833d69f031efef65a3"
+    },
+    "countBoundary": "Four native-chain tests and thirty actual resolver calls are independent of the six helper transport-double tests; not a combined count of real native cases."
+  },
+  "notVerified": [
+    "Scene execution and real controlled asset loading",
+    "New Glass WASM wrapper build or actual private-WASM resolver execution",
+    "Target Three 0.185.1 or GPU pixels",
+    "Host, editor history, persistence and reload",
+    "Encoded export and independent decode",
+    "Packaging, installation state or release"
+  ]
+}

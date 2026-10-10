@@ -1,0 +1,46 @@
+{
+	"date": "2026-10-10",
+	"status": "diagnostic-complete-default-420-parity-still-failed",
+	"archiveKind": "Selected immutable receipt projection; original video, RGBA and complete pins remain at the private root",
+	"original": {
+		"path": "C:/tmps/flame-wrap-preencode-GmHJXw/evidence.json",
+		"sha256": "83469e6a122c0a53fc8bff08c2059b968159eb7005ba37e0a4d19bd2f7caf1f1"
+	},
+	"scope": "Actual retained editor UI export, unchanged default VP9 4:2:0, very_high quality, no audio, range 20000..85000 ticks; observer clones one actual VideoEncoder.encode input without altering encode arguments or return value",
+	"wasmSha256": "75ef560f97061951ca38a6579fb30018daeed35f782c2c1fcc492fc6cd39b8fe",
+	"target": {
+		"frameIndex": 4,
+		"ticks": 40000,
+		"nativeTimestampMicroseconds": 166666,
+		"width": 192,
+		"height": 128,
+		"matches": 1,
+		"observerCompleteAfterCopyAndCloneRelease": true
+	},
+	"preencode": {
+		"readback": "Actual native VideoFrame clone copyTo RGBA/srgb; records conversion, not raw GPU readback",
+		"sha256": "a4d1208bf927ad446bd20eacd73ddb7bcaa7884096462fbfa22f55074b7a40a9",
+		"liveAndRetainedPreviewByteExact": true,
+		"meanRgb": 0,
+		"activeRgb": 0
+	},
+	"encoded": {
+		"sha256": "d5efe1bf0135b850fb57ca1944ff93df876050bee94f3259e6b9e8622b272cd7",
+		"sameHashAsRetainedFailedVideo": true,
+		"targetDecodedMeanRgb": 2.9849175347222223,
+		"targetDecodedActiveRgb": 6.354277468563183,
+		"predeclaredMeanThreshold": 4,
+		"predeclaredActiveThreshold": 6,
+		"parityPassed": false
+	},
+	"conclusion": "Target-frame render and timing mismatch are excluded by exact preencode parity. Remaining divergence occurs after encoder input; this does not by itself separate RGB/YUV conversion, chroma subsampling and VP9 quantization or make the original failure acceptable.",
+	"lifecycle": {
+		"browserAndHostClosed": true,
+		"projectRawBytesAndInputPinsUnchanged": true,
+		"pageErrors": 0,
+		"externalRequests": 0,
+		"retainedConsole": "One optional resource 404 and one Canvas2D readback advisory; not a zero-console-error claim"
+	},
+	"next": "One same-input explicit low-quantizer 4:2:0 control through the existing production encoder, retaining its actual color/range configuration as a confounding factor; no threshold relaxation or claim that explicit export fixes the default policy",
+	"ledger": "Flame Wrap remains N; original default 420 failure retained"
+}

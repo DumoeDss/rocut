@@ -1,0 +1,125 @@
+{
+  "recordedAt": "2026-10-09",
+  "status": "partial-not-full-effect-acceptance",
+  "ledger": { "verified": 27, "notYetVerified": 8, "blaze": "N" },
+  "productionWasmSha256": "02b001624eb49ed233ee7484624a8d98f63e8d720dfbbb9592c747915fe37b58",
+  "productionRaster": {
+    "ok": false,
+    "evidence": {
+      "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-raster-od1jXg/evidence.json",
+      "sha256": "98377cf34237fb9cf7d79aa3a103c24a086ed723a0b033d45e3e53524dc3ba43"
+    },
+    "rawFrames": {
+      "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-raster-od1jXg/raw-frames.json",
+      "sha256": "cdba5868989c5af669f25dbbbd2fee805258c59d8a5438ecaba2fb7572e00e1e"
+    },
+    "backend": "WebGL / SwiftShader",
+    "frames": 356,
+    "sources": 10,
+    "negativePairs": 31,
+    "failure": {
+      "case": "96x256-transparent parameter-amount",
+      "straightRgbMean": 1.6610118276784944,
+      "fixedStraightRgbMeanMaximum": 1.5,
+      "straightRgbMaximum": 8,
+      "alphaMean": 0,
+      "alphaMaximum": 0
+    },
+    "independentAudit": {
+      "path": "C:/tmps/blaze-raw-audit-FqtEEm/executed-0XOQZB/review.json",
+      "sha256": "19f28a67b0fbeccd945a4b140adc7bea77877a2a5512d24a2ed0c7a69f06a409",
+      "ok": false,
+      "regeneratedExpectedAndReferences": 387,
+      "expectedAndReferenceBytesExact": true,
+      "negativePairsRegeneratedAndRejected": 31,
+      "exactRelationshipsPassed": 45,
+      "sensitivityRelationshipsPassed": 96,
+      "bypassesPassed": 27
+    },
+    "browserAndServerClosed": true,
+    "gpuDisposedAndQueryFreed": true,
+    "inputsUnchanged": true,
+    "originalVerdictAndThresholdsPreserved": true
+  },
+  "observationDiagnosis": {
+    "path": "C:/tmps/blaze-alpha-diagnostic-R7pQzr/diagnosis.json",
+    "sha256": "8d957bc0bef02c3f6bb93e3301c0b22aacfab41cae530d9e34f68db36b213d0e",
+    "failedFrameAlphaExact": true,
+    "integerPremultipliedRgbChannelsExact": 73728,
+    "fixedQuantizationModelStraightMean": 0.069196,
+    "fixedQuantizationModelStraightMaximum": 1,
+    "scope": "Diagnostic observation model only; not a replacement oracle or relaxed acceptance gate."
+  },
+  "directTextureDiagnostic": {
+    "ok": true,
+    "evidence": {
+      "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-texture-diagnostic-owxsg3/evidence.json",
+      "sha256": "78d6009bcffb45ee0cfd3b6faab304f68ea44d506fd7ea14e1e00b07deee2f8a"
+    },
+    "build": {
+      "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-readback-build-zgu4rL/build-result.json",
+      "sha256": "e4fd52f9177a8bb4d2d173df942da20336c3a270801ecd3ed041a93c8841f9ca",
+      "feature": "browser-readback-tests",
+      "diagnosticWasmSha256": "8bf2e3021e6b24cd2e1b50009bd11f9ddcaf6f2f202f723a001158193cbf0f7e",
+      "sourceInputsUnchanged": 474,
+      "productionPackageUnchanged": true
+    },
+    "frames": 356,
+    "trueGpuTextureReadbacksPassingOriginalPixelGates": 329,
+    "fixtureBypassesPassingOriginalPixelGates": 27,
+    "sameCallCanvasExactWithOriginalProduction": 356,
+    "canvasStillFailsOriginalCase": true,
+    "browserAndServerClosed": true,
+    "gpuDisposedAndQueryFreed": true,
+    "independentAudit": {
+      "path": "C:/tmps/blaze-texture-audit-czKD0R/review.json",
+      "sha256": "cc8d2569bf721a94f13eac256593935bf0d162af5539806827becc73b782b4a6",
+      "ok": true,
+      "textureRowsByteExactWithExpectedIncludingBypasses": 155,
+      "originalFailedCaseTextureByteExactWithExpected": true,
+      "repeatAndSensitivityRelationsPassed": 141
+    },
+    "scope": "Uses original frozen sources, parameters and expected RGBA. Diagnostic build separates pre-presentation texture from same-call Canvas. Does not turn the original production Canvas run into a pass.",
+    "earlierDiagnosticFailurePreserved": {
+      "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-texture-diagnostic-1TonMt/evidence.json",
+      "canvasMismatches": 121,
+      "cause": "Diagnostic source prepared by re-uploading canonical readback instead of original blazeSource plus original Canvas context options. Rerun restored original input construction and checked canonical source bytes; thresholds and expected frames were unchanged."
+    }
+  },
+  "host": {
+    "ok": true,
+    "evidence": {
+      "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-host-kDZbVA/fixture/evidence.json",
+      "sha256": "69f1c8a6b5cb799ecf0a09ff3e6202a5db2eb781a6ab49c78eb7ff27fd0de83e"
+    },
+    "run": {
+      "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-host-kDZbVA/run.json",
+      "sha256": "c25817b5ffb17b21f4c0f0745a727ecf113aac125fce85df639e04d8f8c105a8"
+    },
+    "invalidTransactionsAtomicallyRejected": 147,
+    "states": ["static", "animated", "disabled"],
+    "checkedPerRejection": ["HTTP 409", "accepted:false", "sentinel", "all clips and tracks", "revision", "project.json bytes"],
+    "closeReopenCycles": 2,
+    "reopenedProjectBytesExact": true,
+    "resourceByteChecks": 3,
+    "authorDirectoryMovedBeforeReopen": true,
+    "positiveControlAccepted": true,
+    "hostClosed": true,
+    "warning": "Bun reports unsupported wildcard sideEffects; process exits successfully.",
+    "earlierFailurePreserved": {
+      "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-host-JgMl9g/run.json",
+      "sha256": "200a61bfb1d76b0b805e8d544f3c4eea16a42ac2da2e44c6b6c92ecd9466cb76",
+      "cause": "Fixture expected a field-specific message for null; outer clip-shape admission rejects before Rust parameter validation. R2 corrects only this expectation and records responses plus full before/after state before assertions."
+    },
+    "scope": "Real Creator helper, HTTP Host and WASM admission/persistence only; no UI, rendering or disabled-pixel acceptance."
+  },
+  "notClosedByThisRecord": [
+    "Original production Canvas RAW failure",
+    "Independent non-Blaze Canvas calibration",
+    "Production animation/render/export pipeline",
+    "Real editor UI interactions",
+    "General animation curve-domain admission gap",
+    "Installed plugin, Electron and hardware GPU acceptance",
+    "P8 runtime pack, installation and release"
+  ]
+}

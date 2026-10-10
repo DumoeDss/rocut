@@ -1,0 +1,498 @@
+{
+  "recordedAt": "2026-10-09",
+  "status": "production-pipeline-verified-not-full-effect-acceptance",
+  "independentReproduction": {
+    "path": "C:/tmps/blaze-pipeline-audit-mFoyvK/executed-fGrQWw/review.json",
+    "sha256": "964a7fad8b27ac4c4ac1f60f38f9bc5e7698a5c35294c66a8200943a1b83608c",
+    "ok": true,
+    "scope": "Independently regenerates expected frames and recalculates stored RAW/decoded metrics; no browser or codec rerun",
+    "previewCapturesPerMode": 28,
+    "decodedFramesPerMode": 6,
+    "disabledExactPerMode": 6,
+    "offsetAndTrimExactPerMode": 2,
+    "allSevenWrongStaticAnimationChannelsRejected": true,
+    "maximumTimestampErrorMilliseconds": 0.46666666666668,
+    "originalFailedRawEvidenceUnchanged": true
+  },
+  "ledger": {
+    "verified": 27,
+    "notYetVerified": 8,
+    "blaze": "N"
+  },
+  "sourceSnapshot": "C:/tmps/rocut-stylized-f6XU4z/rocut-blaze-derived-t9VIad",
+  "sourceManifestSha256": "87a8e8b759a4cfb8377b79c56dfb11506067d9e9c8af007d8bee4960edaec639",
+  "wasmSha256": "02b001624eb49ed233ee7484624a8d98f63e8d720dfbbb9592c747915fe37b58",
+  "contract": {
+    "version": 1,
+    "width": 192,
+    "height": 128,
+    "frames": 6,
+    "frameRate": {
+      "numerator": 30000,
+      "denominator": 1001
+    },
+    "frameTicks": 4004,
+    "clipOffset": 12012,
+    "localTicks": [
+      48048,
+      52052,
+      56056,
+      60060,
+      64064,
+      68068
+    ],
+    "timelineTicks": [
+      60060,
+      64064,
+      68068,
+      72072,
+      76076,
+      80080
+    ],
+    "exportStart": 60060,
+    "exportEnd": 84084,
+    "durationTicks": 24024,
+    "durationSeconds": 0.2002,
+    "keyframeLocalTicks": [
+      48048,
+      68068
+    ],
+    "trimStart": 16016,
+    "trimEnd": 8008,
+    "quality": "very_high",
+    "codec": "vp9",
+    "mimeType": "video/webm",
+    "staticParams": {
+      "scale": 0.11,
+      "speed": 0.5,
+      "seed": 31415
+    },
+    "animated": {
+      "amount": [
+        0.8,
+        1
+      ],
+      "flameOpacity": [
+        0.75,
+        1
+      ],
+      "sparkOpacity": [
+        1,
+        0.35
+      ],
+      "smokeOpacity": [
+        0.5,
+        0.8
+      ],
+      "refraction": [
+        0.065,
+        0.025
+      ],
+      "height": [
+        0.85,
+        1.25
+      ],
+      "wind": [
+        0.37,
+        -0.5
+      ]
+    },
+    "reference": "Independent blazeExpected on canonical blazeSource holes-gradient RGBA, then source-over black ColorNode; never production-rendered expected pixels",
+    "thresholds": {
+      "exportMeanRgba": 10,
+      "exportActiveRgb": 15,
+      "exportMinimumActivePixels": 64,
+      "exportTimestampSeconds": 0.0011
+    }
+  },
+  "runs": [
+    {
+      "requestedVideoChroma": "default",
+      "ok": true,
+      "browserEvidence": {
+        "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-pipeline-default-nzlQYN/evidence.json",
+        "sha256": "06d4225b3a9a229e59165fd24d731af1e1fa8c1b9b9a5187d416bfb474974cdb"
+      },
+      "independentDecode": {
+        "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-pipeline-default-nzlQYN/independent-decode.json",
+        "sha256": "f970de307cf42956b13f81fdf974c1905701971a1539268d3da3187f97e58ecc"
+      },
+      "video": {
+        "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-pipeline-default-nzlQYN/production.webm",
+        "sha256": "e233b1352ed5d216525a5c8ac2c9112a4b8d1d29a28faba7bfff7f5e1b0da6b8"
+      },
+      "stream": {
+        "codec": "vp9",
+        "profile": "Profile 0",
+        "pixelFormat": "yuv420p",
+        "width": 192,
+        "height": 128,
+        "frameRate": "30000/1001",
+        "frames": "6"
+      },
+      "fullFrameMeanRgba": [
+        2.1419576009114585,
+        2.7950236002604165,
+        4.857065836588542,
+        6.249104817708333,
+        7.440816243489583,
+        8.475850423177084
+      ],
+      "activeRgb": [
+        3.304081765510058,
+        4.128286140089418,
+        6.91874883286648,
+        8.893607380421583,
+        10.384586278657792,
+        11.624415278478883
+      ],
+      "baselineRejectedFrames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "repeatedExpectedFirstRejectedFrames": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "repeatedDecodedFirstRejectedFrames": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "timing": {
+        "frameTiming": [
+          {
+            "index": 0,
+            "timestamp": 0,
+            "duration": 0.033,
+            "expectedTimestamp": 0,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 60060,
+            "localTicks": 48048
+          },
+          {
+            "index": 1,
+            "timestamp": 0.033,
+            "duration": 0.033,
+            "expectedTimestamp": 0.03336666666666667,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 64064,
+            "localTicks": 52052
+          },
+          {
+            "index": 2,
+            "timestamp": 0.067,
+            "duration": 0.033,
+            "expectedTimestamp": 0.06673333333333334,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 68068,
+            "localTicks": 56056
+          },
+          {
+            "index": 3,
+            "timestamp": 0.1,
+            "duration": 0.033,
+            "expectedTimestamp": 0.10010000000000001,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 72072,
+            "localTicks": 60060
+          },
+          {
+            "index": 4,
+            "timestamp": 0.133,
+            "duration": 0.033,
+            "expectedTimestamp": 0.13346666666666668,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 76076,
+            "localTicks": 64064
+          },
+          {
+            "index": 5,
+            "timestamp": 0.167,
+            "duration": 0.033,
+            "expectedTimestamp": 0.16683333333333333,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 80080,
+            "localTicks": 68068
+          }
+        ],
+        "packetTiming": [
+          {
+            "index": 0,
+            "timestamp": 0,
+            "duration": 0.033,
+            "expectedTimestamp": 0,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 60060,
+            "localTicks": 48048
+          },
+          {
+            "index": 1,
+            "timestamp": 0.033,
+            "duration": 0.033,
+            "expectedTimestamp": 0.03336666666666667,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 64064,
+            "localTicks": 52052
+          },
+          {
+            "index": 2,
+            "timestamp": 0.067,
+            "duration": 0.033,
+            "expectedTimestamp": 0.06673333333333334,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 68068,
+            "localTicks": 56056
+          },
+          {
+            "index": 3,
+            "timestamp": 0.1,
+            "duration": 0.033,
+            "expectedTimestamp": 0.10010000000000001,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 72072,
+            "localTicks": 60060
+          },
+          {
+            "index": 4,
+            "timestamp": 0.133,
+            "duration": 0.033,
+            "expectedTimestamp": 0.13346666666666668,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 76076,
+            "localTicks": 64064
+          },
+          {
+            "index": 5,
+            "timestamp": 0.167,
+            "duration": 0.033,
+            "expectedTimestamp": 0.16683333333333333,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 80080,
+            "localTicks": 68068
+          }
+        ],
+        "frameEnd": 0.2,
+        "packetEnd": 0.2,
+        "formatDuration": 0.2,
+        "expectedDuration": 0.20020000000000002
+      },
+      "previewCaptures": {
+        "filename": "captures.json",
+        "bytes": 68409,
+        "sha256": "268e6839adf18dd6d849920b0bbadf3ffc3eb392231c173bbff4b5a9f2c01558"
+      },
+      "browserAndServerClosed": true,
+      "nativeHandlesGone": true,
+      "postRunInputsUnchanged": true,
+      "externalRequests": [],
+      "pageErrors": []
+    },
+    {
+      "requestedVideoChroma": "444",
+      "ok": true,
+      "browserEvidence": {
+        "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-pipeline-444-NkTge1/evidence.json",
+        "sha256": "5cdd69fad5d252be610945b886f76ffb7b22b1357ebbc5c46a072f9ad2bf3ec2"
+      },
+      "independentDecode": {
+        "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-pipeline-444-NkTge1/independent-decode.json",
+        "sha256": "0c76e9240eef3731e116aaa1cdc4dc1bb5636d6a2c687dc518a608077c7d9341"
+      },
+      "video": {
+        "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-pipeline-444-NkTge1/production.webm",
+        "sha256": "e022cb9b8bbc7c72f2a4620f2d754fcc575a6c40a1ca4e079bbea784c238f918"
+      },
+      "stream": {
+        "codec": "vp9",
+        "profile": "Profile 1",
+        "pixelFormat": "yuv444p",
+        "width": 192,
+        "height": 128,
+        "frameRate": "30000/1001",
+        "frames": "6"
+      },
+      "fullFrameMeanRgba": [
+        0.9732564290364584,
+        1.5163167317708333,
+        3.5590108235677085,
+        4.510355631510417,
+        5.606964111328125,
+        6.201761881510417
+      ],
+      "activeRgb": [
+        1.3964151639433198,
+        2.1216691505216096,
+        4.984407096171802,
+        6.316459137621663,
+        7.734860602308102,
+        8.449957933703518
+      ],
+      "baselineRejectedFrames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "repeatedExpectedFirstRejectedFrames": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "repeatedDecodedFirstRejectedFrames": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "timing": {
+        "frameTiming": [
+          {
+            "index": 0,
+            "timestamp": 0,
+            "duration": 0.033,
+            "expectedTimestamp": 0,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 60060,
+            "localTicks": 48048
+          },
+          {
+            "index": 1,
+            "timestamp": 0.033,
+            "duration": 0.033,
+            "expectedTimestamp": 0.03336666666666667,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 64064,
+            "localTicks": 52052
+          },
+          {
+            "index": 2,
+            "timestamp": 0.067,
+            "duration": 0.033,
+            "expectedTimestamp": 0.06673333333333334,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 68068,
+            "localTicks": 56056
+          },
+          {
+            "index": 3,
+            "timestamp": 0.1,
+            "duration": 0.033,
+            "expectedTimestamp": 0.10010000000000001,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 72072,
+            "localTicks": 60060
+          },
+          {
+            "index": 4,
+            "timestamp": 0.133,
+            "duration": 0.033,
+            "expectedTimestamp": 0.13346666666666668,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 76076,
+            "localTicks": 64064
+          },
+          {
+            "index": 5,
+            "timestamp": 0.167,
+            "duration": 0.033,
+            "expectedTimestamp": 0.16683333333333333,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 80080,
+            "localTicks": 68068
+          }
+        ],
+        "packetTiming": [
+          {
+            "index": 0,
+            "timestamp": 0,
+            "duration": 0.033,
+            "expectedTimestamp": 0,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 60060,
+            "localTicks": 48048
+          },
+          {
+            "index": 1,
+            "timestamp": 0.033,
+            "duration": 0.033,
+            "expectedTimestamp": 0.03336666666666667,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 64064,
+            "localTicks": 52052
+          },
+          {
+            "index": 2,
+            "timestamp": 0.067,
+            "duration": 0.033,
+            "expectedTimestamp": 0.06673333333333334,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 68068,
+            "localTicks": 56056
+          },
+          {
+            "index": 3,
+            "timestamp": 0.1,
+            "duration": 0.033,
+            "expectedTimestamp": 0.10010000000000001,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 72072,
+            "localTicks": 60060
+          },
+          {
+            "index": 4,
+            "timestamp": 0.133,
+            "duration": 0.033,
+            "expectedTimestamp": 0.13346666666666668,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 76076,
+            "localTicks": 64064
+          },
+          {
+            "index": 5,
+            "timestamp": 0.167,
+            "duration": 0.033,
+            "expectedTimestamp": 0.16683333333333333,
+            "expectedDuration": 0.03336666666666667,
+            "timelineTicks": 80080,
+            "localTicks": 68068
+          }
+        ],
+        "frameEnd": 0.2,
+        "packetEnd": 0.2,
+        "formatDuration": 0.2,
+        "expectedDuration": 0.20020000000000002
+      },
+      "previewCaptures": {
+        "filename": "captures.json",
+        "bytes": 68409,
+        "sha256": "268e6839adf18dd6d849920b0bbadf3ffc3eb392231c173bbff4b5a9f2c01558"
+      },
+      "browserAndServerClosed": true,
+      "nativeHandlesGone": true,
+      "postRunInputsUnchanged": true,
+      "externalRequests": [],
+      "pageErrors": []
+    }
+  ],
+  "nonClaims": [
+    "No installed plugin, Electron, hardware GPU or performance acceptance",
+    "No UI or editor history acceptance",
+    "Original transparent Canvas RAW failure remains recorded in blaze-gpu-host.json",
+    "Six-frame black-composited video subset only; not arbitrary alpha encoding or all codecs"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "effect": "flame-wrap",
+  "stage": "private-production-editor-build",
+  "ok": true,
+  "sourceEvidence": {
+    "path": "C:/tmps/effect-editor-build-6SYLJ9/build-evidence.json",
+    "sha256": "63ad660b1a62c1982929db1f6b9a4e63e34be4a0b50e9142b3ce597bf58c8cea"
+  },
+  "startedAt": "2026-10-10T03:35:38.805Z",
+  "finishedAt": "2026-10-10T03:36:21.222Z",
+  "editorDist": "C:/tmps/effect-editor-build-6SYLJ9/editor-dist",
+  "wasmSha256": "75ef560f97061951ca38a6579fb30018daeed35f782c2c1fcc492fc6cd39b8fe",
+  "emittedWasm": "assets/opencut_wasm_bg-DJYZ2_iX.wasm",
+  "pinning": {
+    "textModules": 4147,
+    "explicitFrozenFiles": 9,
+    "inputsUnchanged": true,
+    "sameBufferTextModules": true,
+    "sameBufferWasm": true,
+    "scope": "Text-module loader returns the exact buffer it hashes; emitted private WASM matches the supplied binary. Non-text assets and dynamic dependencies are not a complete source closure."
+  },
+  "warnings": {
+    "total": 54,
+    "byCode": { "THIS_IS_UNDEFINED": 8, "CIRCULAR_DEPENDENCY": 45, "PLUGIN_WARNING": 1 },
+    "disposition": "Retained build warnings; successful build does not resolve their causes."
+  },
+  "scope": "Normal private Vite production editor with private WASM alias; no shared output or dependency replacement.",
+  "uiAcceptance": false,
+  "gpuAcceptance": false,
+  "exportAcceptance": false,
+  "installedRuntimeAcceptance": false,
+  "ledger": { "verified": 27, "notVerified": 8, "changed": false }
+}

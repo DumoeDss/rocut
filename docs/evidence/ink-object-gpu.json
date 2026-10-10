@@ -1,0 +1,530 @@
+{
+  "date": "2026-10-10",
+  "status": "passed-diagnostic-Ink-WebGL-subset",
+  "archiveKind": "selected immutable run projection; full raw JSON/PNG captures retained at original private roots",
+  "original": {
+    "path": "C:/tmps/ink-object-gpu-run-MGWjbU/gpu-run.json",
+    "sha256": "bd78e0fc86c2e87f2d410371d24b07b92abcdda4de75ae55192c8b97a6a80a7b"
+  },
+  "preparation": {
+    "path": "C:\\tmps\\ink-object-gpu-5EAfx3\\preparation.json",
+    "sha256": "74ffdc76e6b7df514af4b31830914b5a04ce6b89812c1ded00520262337df9a9"
+  },
+  "failedAttempt": {
+    "original": {
+      "path": "C:/tmps/ink-object-gpu-run-UxqkYh/gpu-run.json",
+      "sha256": "bdb5f3f68bb24685e24f01b9f284fcffed8c8271d4db00eab6e72d4c427bc58b"
+    },
+    "failure": {
+      "name": "AssertionError",
+      "message": "Error: Ink pixel gate normalMap failed: {\"mean\":0.368368700265252,\"changed\":0,\"pixels\":3016}\n    at acceptInkGpu (http://127.0.0.1:63486/ink-gpu.js:40834:13)\n    at runInkObjectGpu (http://127.0.0.1:63486/ink-gpu.js:40967:5)"
+    },
+    "browserClosed": true,
+    "serverClosed": true,
+    "inputsUnchanged": true,
+    "shaderErrors": [],
+    "allRecordedGlStagesClean": true,
+    "completedReadbacks": 11,
+    "boundary": "Actual original normal texture sensitivity was below unchanged independent threshold; no production shader error or source defect asserted"
+  },
+  "fixtureCorrection": {
+    "beforeNormalRgb": [
+      [
+        80,
+        128,
+        245
+      ],
+      [
+        176,
+        128,
+        245
+      ]
+    ],
+    "afterNormalRgb": [
+      [
+        16,
+        16,
+        192
+      ],
+      [
+        240,
+        240,
+        192
+      ]
+    ],
+    "normalTextureScale": 0.8,
+    "scope": "Only owned diagnostic tangent-space texture contrast increased; source and thresholds unchanged"
+  },
+  "source": {
+    "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/ink-object-scene.ts",
+    "bytes": 7926,
+    "sha256": "6424af41aab9763ef81a63bf92b69cd397ccad117d21eadc92947c1e2a6e567b"
+  },
+  "productionSourceModified": false,
+  "wasm": {
+    "path": "C:\\tmps\\object-wasm-development-5aSyix\\pkg\\opencut_wasm_bg.wasm",
+    "bytes": 18284725,
+    "sha256": "5d40cb7ae4e0fed4d7c7b81d1ef7617b5d874ec5dd6fbead2da03fbc8d021560"
+  },
+  "actualResolver": [
+    {
+      "name": "base",
+      "input": {
+        "version": 1,
+        "contourWidth": 4,
+        "inkDensity": 0.85,
+        "paperTexture": 0.65,
+        "paperScale": 12,
+        "seed": 19
+      },
+      "response": {
+        "ok": true,
+        "params": {
+          "contourWidth": 4,
+          "inkColor": "#182026",
+          "inkDensity": 0.85,
+          "paperColor": "#f2ead8",
+          "paperScale": 12,
+          "paperTexture": 0.65,
+          "seed": 19,
+          "version": 1
+        },
+        "version": 1
+      }
+    },
+    {
+      "name": "inkColor",
+      "input": {
+        "version": 1,
+        "contourWidth": 4,
+        "inkDensity": 0.85,
+        "paperTexture": 0.65,
+        "paperScale": 12,
+        "seed": 19,
+        "inkColor": "#bc1832"
+      },
+      "response": {
+        "ok": true,
+        "params": {
+          "contourWidth": 4,
+          "inkColor": "#bc1832",
+          "inkDensity": 0.85,
+          "paperColor": "#f2ead8",
+          "paperScale": 12,
+          "paperTexture": 0.65,
+          "seed": 19,
+          "version": 1
+        },
+        "version": 1
+      }
+    },
+    {
+      "name": "density",
+      "input": {
+        "version": 1,
+        "contourWidth": 4,
+        "inkDensity": 0.15,
+        "paperTexture": 0.65,
+        "paperScale": 12,
+        "seed": 19
+      },
+      "response": {
+        "ok": true,
+        "params": {
+          "contourWidth": 4,
+          "inkColor": "#182026",
+          "inkDensity": 0.15,
+          "paperColor": "#f2ead8",
+          "paperScale": 12,
+          "paperTexture": 0.65,
+          "seed": 19,
+          "version": 1
+        },
+        "version": 1
+      }
+    },
+    {
+      "name": "paperTexture",
+      "input": {
+        "version": 1,
+        "contourWidth": 4,
+        "inkDensity": 0.85,
+        "paperTexture": 0,
+        "paperScale": 12,
+        "seed": 19
+      },
+      "response": {
+        "ok": true,
+        "params": {
+          "contourWidth": 4,
+          "inkColor": "#182026",
+          "inkDensity": 0.85,
+          "paperColor": "#f2ead8",
+          "paperScale": 12,
+          "paperTexture": 0,
+          "seed": 19,
+          "version": 1
+        },
+        "version": 1
+      }
+    },
+    {
+      "name": "paperScale",
+      "input": {
+        "version": 1,
+        "contourWidth": 4,
+        "inkDensity": 0.85,
+        "paperTexture": 0.65,
+        "paperScale": 64,
+        "seed": 19
+      },
+      "response": {
+        "ok": true,
+        "params": {
+          "contourWidth": 4,
+          "inkColor": "#182026",
+          "inkDensity": 0.85,
+          "paperColor": "#f2ead8",
+          "paperScale": 64,
+          "paperTexture": 0.65,
+          "seed": 19,
+          "version": 1
+        },
+        "version": 1
+      }
+    },
+    {
+      "name": "seed",
+      "input": {
+        "version": 1,
+        "contourWidth": 4,
+        "inkDensity": 0.85,
+        "paperTexture": 0.65,
+        "paperScale": 12,
+        "seed": 41
+      },
+      "response": {
+        "ok": true,
+        "params": {
+          "contourWidth": 4,
+          "inkColor": "#182026",
+          "inkDensity": 0.85,
+          "paperColor": "#f2ead8",
+          "paperScale": 12,
+          "paperTexture": 0.65,
+          "seed": 41,
+          "version": 1
+        },
+        "version": 1
+      }
+    },
+    {
+      "name": "contour",
+      "input": {
+        "version": 1,
+        "contourWidth": 0,
+        "inkDensity": 0.85,
+        "paperTexture": 0.65,
+        "paperScale": 12,
+        "seed": 19
+      },
+      "response": {
+        "ok": true,
+        "params": {
+          "contourWidth": 0,
+          "inkColor": "#182026",
+          "inkDensity": 0.85,
+          "paperColor": "#f2ead8",
+          "paperScale": 12,
+          "paperTexture": 0.65,
+          "seed": 19,
+          "version": 1
+        },
+        "version": 1
+      }
+    }
+  ],
+  "assets": [
+    {
+      "path": "C:\\tmps\\ink-object-gpu-5EAfx3\\ink-model.glb",
+      "bytes": 25304,
+      "sha256": "72eb7f7d3e832c3d7dd1e04e76cfb3a5cb2b175a72826acf8a4b8ae37254babb",
+      "kind": "model",
+      "mimeType": "model/gltf-binary"
+    },
+    {
+      "path": "C:\\tmps\\ink-object-gpu-5EAfx3\\ink-environment.hdr",
+      "bytes": 8239,
+      "sha256": "c0189db833bcd32f4d2b3c30309eff76fe009695741652fa710c136a2448ba56",
+      "kind": "environment",
+      "mimeType": "image/vnd.radiance"
+    }
+  ],
+  "browserVersion": "151.0.7922.34",
+  "launch": {
+    "headless": true,
+    "args": [
+      "--no-proxy-server",
+      "--use-angle=swiftshader",
+      "--enable-unsafe-swiftshader",
+      "--disable-webgpu"
+    ]
+  },
+  "result": {
+    "ok": true,
+    "width": 256,
+    "height": 192,
+    "threeRevision": "185",
+    "diagnostic": {
+      "contextAttributes": {
+        "alpha": false,
+        "antialias": false,
+        "depth": true,
+        "desynchronized": false,
+        "failIfMajorPerformanceCaveat": false,
+        "powerPreference": "default",
+        "premultipliedAlpha": true,
+        "preserveDrawingBuffer": true,
+        "stencil": false,
+        "xrCompatible": false
+      },
+      "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "threeRevision": "185",
+      "stageCount": 46,
+      "allGlStagesClean": true,
+      "shaderErrors": []
+    },
+    "shaderErrors": [],
+    "metrics": {
+      "inkColor": {
+        "mean": 20.3262599469496,
+        "changed": 3016,
+        "pixels": 3016
+      },
+      "density": {
+        "mean": 53.73574270557029,
+        "changed": 3016,
+        "pixels": 3016
+      },
+      "paperTexture": {
+        "mean": 25.184902740937222,
+        "changed": 2990,
+        "pixels": 3016
+      },
+      "paperScale": {
+        "mean": 6.972148541114058,
+        "changed": 2604,
+        "pixels": 3016
+      },
+      "seed": {
+        "mean": 14.307913351016799,
+        "changed": 2714,
+        "pixels": 3016
+      },
+      "map": {
+        "mean": 32.230216622458,
+        "changed": 3016,
+        "pixels": 3016
+      },
+      "normalMap": {
+        "mean": 1.9967948717948718,
+        "changed": 1058,
+        "pixels": 3016
+      },
+      "contour": {
+        "mean": 10.893267463235293,
+        "changed": 1470,
+        "pixels": 17408
+      },
+      "motion": {
+        "mean": 18.316202475685234,
+        "changed": 2279,
+        "pixels": 3016
+      },
+      "reverseSeek": {
+        "mean": 0,
+        "changed": 0,
+        "pixels": 3016
+      }
+    },
+    "captures": [
+      {
+        "name": "base",
+        "time": 0,
+        "sha256": "f16bcbfdea0226916ec1d1158e1713d1df5105b1612b6985cc35f801b7e73d29"
+      },
+      {
+        "name": "inkColor",
+        "time": 0,
+        "sha256": "29f610da3dde182ddbb27f3f189c6a0da808538c025154e8bcb2f916f8d52236"
+      },
+      {
+        "name": "density",
+        "time": 0,
+        "sha256": "96193a3ce2df08c4ddae254351cb3f96140a437da3430cd42582740fc8830748"
+      },
+      {
+        "name": "paperTexture",
+        "time": 0,
+        "sha256": "d4b6f2550d2912f181f4907b3987c4d58f37c0057cddf6fc399341f2323b738d"
+      },
+      {
+        "name": "paperScale",
+        "time": 0,
+        "sha256": "53eb0b27b9ea34fa524f859e524d5c3a521a4df2e554744150dcf21b1e924132"
+      },
+      {
+        "name": "seed",
+        "time": 0,
+        "sha256": "7b45db65951968f6fb865dbd4d0646cf507dabcaf186ad632356053384166d0d"
+      },
+      {
+        "name": "contour",
+        "time": 0,
+        "sha256": "33ac0dfa189ac8c43a5b3e73946ebe5fac90e20a9fa613368e36f6f810d90c35"
+      },
+      {
+        "name": "map",
+        "time": 0,
+        "sha256": "023d7eeedcb8cb5aaaec127188330150a7553a5585faa2d0d2a457e882bd70cf"
+      },
+      {
+        "name": "normalMap",
+        "time": 0,
+        "sha256": "1a43618adbfe84d37ea1977fb4a82377c3626644029f999aa6f989ce105e5108"
+      },
+      {
+        "name": "late",
+        "time": 0.75,
+        "sha256": "d28c13b2f0b44523bb08899ba706fa4aef6c0808cb4c1c2a3dff0c15ee84fb63"
+      },
+      {
+        "name": "reverse",
+        "time": 0,
+        "sha256": "f16bcbfdea0226916ec1d1158e1713d1df5105b1612b6985cc35f801b7e73d29"
+      }
+    ],
+    "cleanup": [
+      {
+        "name": "base",
+        "owned": 2,
+        "disposed": 2,
+        "borrowedUntouched": true,
+        "contoursRemoved": true
+      },
+      {
+        "name": "inkColor",
+        "owned": 2,
+        "disposed": 2,
+        "borrowedUntouched": true,
+        "contoursRemoved": true
+      },
+      {
+        "name": "density",
+        "owned": 2,
+        "disposed": 2,
+        "borrowedUntouched": true,
+        "contoursRemoved": true
+      },
+      {
+        "name": "paperTexture",
+        "owned": 2,
+        "disposed": 2,
+        "borrowedUntouched": true,
+        "contoursRemoved": true
+      },
+      {
+        "name": "paperScale",
+        "owned": 2,
+        "disposed": 2,
+        "borrowedUntouched": true,
+        "contoursRemoved": true
+      },
+      {
+        "name": "seed",
+        "owned": 2,
+        "disposed": 2,
+        "borrowedUntouched": true,
+        "contoursRemoved": true
+      },
+      {
+        "name": "contour",
+        "owned": 2,
+        "disposed": 2,
+        "borrowedUntouched": true,
+        "contoursRemoved": true
+      },
+      {
+        "name": "map",
+        "owned": 2,
+        "disposed": 2,
+        "borrowedUntouched": true,
+        "contoursRemoved": true
+      },
+      {
+        "name": "normalMap",
+        "owned": 2,
+        "disposed": 2,
+        "borrowedUntouched": true,
+        "contoursRemoved": true
+      },
+      {
+        "name": "late",
+        "owned": 2,
+        "disposed": 2,
+        "borrowedUntouched": true,
+        "contoursRemoved": true
+      },
+      {
+        "name": "reverse",
+        "owned": 2,
+        "disposed": 2,
+        "borrowedUntouched": true,
+        "contoursRemoved": true
+      }
+    ],
+    "negativeControlRejected": true,
+    "resourceDecode": {
+      "meshes": 1,
+      "baseColorTexture": [
+        32,
+        32
+      ],
+      "normalTexture": [
+        32,
+        32
+      ],
+      "environment": [
+        64,
+        32
+      ]
+    },
+    "scope": "Actual Ink source and real static mapped/normal-bearing diagnostic GLB/HDR, WebGL2 GLSL/render/readback; not formal Host/editor/export/installation, hardware/WebGPU or general model support"
+  },
+  "existingCpuRegression": {
+    "passed": 7,
+    "failed": 0,
+    "threeVersion": "0.185.1",
+    "scope": "Same existing seven scene cases unchanged: groups/sharing/maps/material state/hidden/layers/alphaHash/unsupported/abort/absolute seek; not seven new unique cases"
+  },
+  "independentMetricCpuTests": {
+    "passed": 2,
+    "failed": 0
+  },
+  "browserClosed": true,
+  "serverClosed": true,
+  "pageErrors": [],
+  "consoleErrors": [],
+  "externalRequests": [],
+  "inputsUnchanged": true,
+  "buildInputs": {
+    "count": 10,
+    "validation": {
+      "ok": true,
+      "liveInputsVerifiedDuringBuild": 11,
+      "snapshotFilesVerified": 11
+    },
+    "fullInventory": "Retained in preparation receipt"
+  },
+  "boundary": "Actual Ink source and real static mapped/normal-bearing diagnostic GLB/HDR, WebGL2 GLSL/render/readback; not formal Host/editor/export/installation, hardware/WebGPU or general model support"
+}

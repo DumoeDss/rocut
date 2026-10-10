@@ -1,0 +1,245 @@
+{
+	"ok": true,
+	"artifacts": "C:\\tmps\\canvas-capture-webgl-btb17P",
+	"startedAt": "2026-10-10T02:32:23.312Z",
+	"backend": "webgl",
+	"kind": "canvas",
+	"scope": "Private explicit browser initialization of real generated glue/binary, no Vite or production TS renderer. Presentation pixels only.",
+	"frozen": [
+		{
+			"route": "/wasm-glue.mjs",
+			"path": "C:\\tmps\\flame-wrap-fast-wasm-yqkoZk\\pkg\\opencut_wasm_bg.js",
+			"bytes": 183410,
+			"sha256": "a80de5a40f849d376a727538f3c96b832ac20957cd9b0cb38390db3d3e9eed6f"
+		},
+		{
+			"route": "/wasm.wasm",
+			"path": "C:\\tmps\\flame-wrap-fast-wasm-yqkoZk\\pkg\\opencut_wasm_bg.wasm",
+			"bytes": 16310001,
+			"sha256": "5ea1d3aa587e85b83ebd14b85888f9a4d6b6660d7626aabeb5e8bfb568788427"
+		},
+		{
+			"route": "/probe.mjs",
+			"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\fixtures\\canvas-capture-probe.mjs",
+			"bytes": 7381,
+			"sha256": "5f7243d06fddd7b34fd28007209dcb8cf3e5d4ce2773312a32e862bcb74f9239"
+		},
+		{
+			"route": "/canvas-capture-support.mjs",
+			"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\fixtures\\canvas-capture-support.mjs",
+			"bytes": 4417,
+			"sha256": "02c6cda846b2e345411fae0d9c7219cddc7f56be57e0a618e970fc10f0c1ff61"
+		},
+		{
+			"route": "/runner-source.mjs",
+			"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\probe-canvas-capture.mjs",
+			"bytes": 6769,
+			"sha256": "be4522159605f1ff56d0bbad38cab9ffb7cb70e9a7e32bc2d80a6291068b49f6"
+		},
+		{
+			"route": "/server-source.mjs",
+			"path": "file:///E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/script/canvas-capture-server.mjs",
+			"bytes": 1858,
+			"sha256": "f0eeba36f5f3cd343e6d4c5567627b7b2ad435d59eca8857072d2d1d154e516f"
+		}
+	],
+	"console": [],
+	"pageErrors": [],
+	"externalRequests": [],
+	"httpErrors": [],
+	"loadedWasm": [
+		{
+			"bytes": 16310001,
+			"sha256": "5ea1d3aa587e85b83ebd14b85888f9a4d6b6660d7626aabeb5e8bfb568788427"
+		}
+	],
+	"wasmResponses": [
+		{
+			"url": "http://127.0.0.1:63697/wasm.wasm",
+			"status": 200
+		}
+	],
+	"browserClosed": true,
+	"serverClosed": true,
+	"origin": "http://127.0.0.1:63697",
+	"browserVersion": "151.0.7922.34",
+	"checks": {
+		"ok": true,
+		"scope": "Real frozen WASM request/compositor capture and presentation Canvas. Not editor/Host, encoded export, native output bytes or an independent full material oracle.",
+		"backend": "webgl",
+		"checks": [
+			{
+				"id": "selected-backend",
+				"passed": true,
+				"detail": "webgl"
+			},
+			{
+				"id": "source-upload-and-presentation",
+				"passed": true,
+				"detail": {
+					"max": 0,
+					"mean": 0,
+					"tolerance": 1
+				}
+			},
+			{
+				"id": "full-resolution-neutral-not-grid-upscale",
+				"passed": true,
+				"detail": {
+					"max": 0,
+					"mean": 0,
+					"tolerance": 2
+				}
+			},
+			{
+				"id": "material-and-stroke-visible",
+				"passed": true,
+				"detail": {
+					"max": 121,
+					"mean": 7.163167317708333,
+					"minimumMean": 3
+				}
+			},
+			{
+				"id": "reverse-seek-bit-exact",
+				"passed": true,
+				"detail": {
+					"max": 0,
+					"mean": 0,
+					"tolerance": 0
+				}
+			},
+			{
+				"id": "capture-reads-prefix-independent-gray",
+				"passed": true,
+				"detail": {
+					"max": 0,
+					"mean": 0,
+					"tolerance": 2
+				}
+			},
+			{
+				"id": "wrong-original-input-negative-sensitive",
+				"passed": true,
+				"detail": {
+					"max": 185,
+					"mean": 31.370402018229168,
+					"minimumMean": 15
+				}
+			},
+			{
+				"id": "paint-prefix-vs-pretransformed-metamorphic",
+				"passed": true,
+				"detail": {
+					"max": 0,
+					"mean": 0,
+					"tolerance": 3
+				}
+			},
+			{
+				"id": "paint-prefix-not-original",
+				"passed": true,
+				"detail": {
+					"max": 178,
+					"mean": 26.445719401041668,
+					"minimumMean": 5
+				}
+			},
+			{
+				"id": "nested-capture-independent-gray",
+				"passed": true,
+				"detail": {
+					"max": 0,
+					"mean": 0,
+					"tolerance": 2
+				}
+			},
+			{
+				"id": "both-branches-capture-independent-blend",
+				"passed": true,
+				"detail": {
+					"max": 1,
+					"mean": 0.0333251953125,
+					"tolerance": 3
+				}
+			},
+			{
+				"id": "incoming-branch-not-ignored",
+				"passed": true,
+				"detail": {
+					"max": 46,
+					"mean": 7.827962239583333,
+					"minimumMean": 3
+				}
+			},
+			{
+				"id": "consecutive-pass-input-position-metamorphic",
+				"passed": true,
+				"detail": {
+					"max": 0,
+					"mean": 0,
+					"tolerance": 2
+				}
+			},
+			{
+				"id": "consecutive-second-pass-not-skipped",
+				"passed": true,
+				"detail": {
+					"max": 106,
+					"mean": 5.0443115234375,
+					"minimumMean": 3
+				}
+			},
+			{
+				"id": "inactive-resource-rejected-before-capture",
+				"passed": true,
+				"detail": {
+					"message": "Texture 'missing' is not available"
+				}
+			},
+			{
+				"id": "resource-rejection-recovery",
+				"passed": true,
+				"detail": {
+					"max": 0,
+					"mean": 0,
+					"tolerance": 0
+				}
+			},
+			{
+				"id": "replacement-rejects-old-pending-request",
+				"passed": true,
+				"detail": {
+					"name": "AbortError",
+					"code": "RENDER_CANCELLED",
+					"message": "Render request is no longer current"
+				}
+			},
+			{
+				"id": "replacement-owner-publishes-own-source",
+				"passed": true,
+				"detail": {
+					"max": 0,
+					"mean": 0,
+					"tolerance": 2
+				}
+			},
+			{
+				"id": "old-request-cannot-commit",
+				"passed": true,
+				"detail": "AbortError"
+			}
+		],
+		"failure": null,
+		"disposed": true,
+		"loadedWasm": {
+			"bytes": 16310001,
+			"sha256": "5ea1d3aa587e85b83ebd14b85888f9a4d6b6660d7626aabeb5e8bfb568788427"
+		},
+		"currentCase": "resource-recovery"
+	},
+	"frameCount": 13,
+	"rawReceiptSha256": "50e842595aa073d9d527af3f67df2b92d4c1090cc6fd8c7030fc3c6fe192bb92",
+	"inputsUnchanged": true,
+	"finishedAt": "2026-10-10T02:32:25.864Z"
+}

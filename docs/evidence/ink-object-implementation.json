@@ -1,0 +1,149 @@
+{
+	"date": "2026-10-10",
+	"status": "Static object subset implemented; Ink Object remains N; ledger 27 V / 8 N and 13 delivery work packages unchanged",
+	"rawReceipt": {
+		"path": "C:/tmps/ink-object-native-a4db86ce/implementation-receipt.json",
+		"sha256": "18a99b9a526c7fb53697f9f43e5f454bd73a9fe173007df1cfb9537457b8dddd"
+	},
+	"postReviewReceipt": {
+		"path": "C:/tmps/ink-object-native-a4db86ce/scene-review-fix-receipt.json",
+		"sha256": "97570c35e752463a2c323772adc209e9c9586a8f8f126b9d0c9e40e42bea485b",
+		"previousReceiptPreserved": true
+	},
+	"implementation": {
+		"rustAuthority": "Version-1 strict parameter normalization: contourWidth, inkDensity, paperTexture, paperScale, seed, inkColor and paperColor; complete DTO or structured failure, no JS optical range/clamp duplicate.",
+		"scene": "Actual standard/physical material lighting and borrowed texture luminance feed ink-density shading with seeded multi-scale paper grain; BackSide inverted hull supplies viewport-pixel contours. Not ASCII.",
+		"author": "inkObjectThree requires injected Rust String resolver and complete success envelope; retains model/environment descriptors and IDs and fixes author engine/entry identity; frame clocks cannot be provided in inputProps.",
+		"ownershipAndTime": "Borrowed geometry/maps are not disposed. Cloned fill and contour materials are owned; assignments restored and added hulls removed on disposal/cancellation. Parent transforms use absolute Rust mapped-frame time.",
+		"supportedSubset": "Static normal-bearing opaque standard/physical mesh GLB; skinned, instanced, morph, alpha-cut/alphaHash/transparent, displacement and custom shaders explicitly rejected. Hidden material groups/single materials and source mesh camera layers retained in contour visibility. No white fallback."
+	},
+	"verification": {
+		"isolatedRustNative": {
+			"passed": 5,
+			"failed": 0,
+			"method": "rustc 1.88.0 --test using existing native serde rlibs, not full Cargo/WASM build"
+		},
+		"initialCreatorUniqueTests": {
+			"passed": 7,
+			"failed": 0,
+			"skipped": 0,
+			"sceneCpu": 4,
+			"helperTransportDouble": 2,
+			"actualNativeRustHelperChain": 1,
+			"actualNativeResolverCalls": 11
+		},
+		"initialTargetThreeCpu": {
+			"actualVersion": "0.185.1",
+			"passed": 4,
+			"failed": 0,
+			"scope": "Actual Three objects and shader/uniform wiring only; same four scene cases rerun after the earlier 0.170.0 execution, not additional unique cases"
+		},
+		"postReviewTargetThreeCpu": {
+			"actualVersion": "0.185.1",
+			"passed": 7,
+			"failed": 0,
+			"skipped": 0,
+			"originalCases": 4,
+			"newRegressionCases": 3,
+			"scope": "Own regression tests now reject alphaHash and preserve hidden-material/layer contour exclusion; review defect-demonstration tests are not counted as product green. Rust/helper unchanged and not rerun."
+		},
+		"text": "Seven owned implementation/test files passed formatting and strict UTF-8/no BOM checks; scoped diff check passed"
+	},
+	"reviewCorrections": [
+		"Original alphaHash acceptance contradicted opaque contour contract; now explicit rejection restores borrowed state",
+		"Original hidden material contour remained visible; now hidden contour material preserves each material group and single-mesh visibility",
+		"Original default contour layer could draw a camera-excluded mesh; now copies mesh layers.mask"
+	],
+	"registration": {
+		"publicRustSource": "editor-api/src/lib.rs re-exports InkObjectParams, InkObjectParamsError, parse_ink_object_params_json and resolve_ink_object_params_json",
+		"wasmWrapperSource": "rust/wasm/src/wasm.rs contains resolve_ink_object_params_json -> editor_api resolver",
+		"newWasmBuilt": true,
+		"boundary": "Built and actually executed only in the frozen private shared development snapshot; not current HEAD/release certification."
+	},
+	"sharedWasm": {
+		"receipt": "object-shared-wasm-runtime.json",
+		"buildProvenance": "object-shared-wasm-build-provenance.json",
+		"wasmSha256": "5d40cb7ae4e0fed4d7c7b81d1ef7617b5d874ec5dd6fbead2da03fbc8d021560",
+		"export": "resolveInkObjectParamsJson",
+		"actualApiCalls": 7,
+		"accepted": 2,
+		"rejected": 5,
+		"boundary": "Actual String API defaults/fractional coefficient/integer seed/negative controls only. Immutable snapshot build passed; three unrelated live files drifted. Not current HEAD consistency, full ABI, Ink controlled Host/browser/GPU or encoded export."
+	},
+	"diagnosticGpu": {
+		"receipt": "ink-object-gpu.json",
+		"status": "Passed actual Three0.185.1 WebGL2 GLSL/render/readback on static curved GLB with real embedded base-color and normal PNGs/HDR",
+		"sourceSha256": "6424af41aab9763ef81a63bf92b69cd397ccad117d21eadc92947c1e2a6e567b",
+		"productionSourceModified": false,
+		"captures": 11,
+		"checks": "Ink color/density, seeded paper/scale, contour ring, borrowed base-color/normal map sensitivity, absolute motion and exact reverse seek, independent no-op negative rejection, shader/GL errors and owned material/contour cleanup",
+		"fixtureCorrection": "Original weak tangent-space normal contrast failed the unchanged independent pixel gate; preserved original failure, increased only owned diagnostic normal texture contrast, then same short matrix passed",
+		"existingSceneCpuCasesRerun": {
+			"passed": 7,
+			"failed": 0,
+			"actualThreeVersion": "0.185.1",
+			"boundary": "Same existing seven cases unchanged, not seven additional unique tests"
+		},
+		"boundary": "Actual diagnostic static mapped/normal-bearing mesh only; not formal controlled Ink Host/editor/history/export/installation, hardware/WebGPU or general model support. Original failure/source/threshold pins remain preserved."
+	},
+	"controlledHostPersistence": {
+		"receipt": "C:/tmps/ink-object-host-P3xegw/evidence.json",
+		"receiptSha256": "f613865970a38aa4e95f1cd52cbba86a47a06adcee55af9f7af5a3f92e5a7d68",
+		"hostReceipt": "C:/tmps/ink-object-host-P3xegw/ink-object-host-evidence.json",
+		"hostReceiptSha256": "48eee1baa0f4a31c01676b42b5ddfc2021b98d5158e97db6628ce331ce029501",
+		"scope": "Actual HeadlessHost/FileProjectStore import, injected real WASM resolver/Creator helper, controlled Three compile, apply, close and reopen; source input moved to same owned fixture backup",
+		"wasmSha256": "7f7dba6b40fa79618d1e2f7fedab82e1731dee9c26564796f597bf31758b349c",
+		"threeVersion": "0.185.1",
+		"revision": 1,
+		"completeProjectBytesUnchanged": true,
+		"archivedAttachmentsReadableAndHashEqual": 5,
+		"assets": "Diagnostic embedded base-color/normal GLB plus HDR; compiled HTML, scene and toolchain lock also retained",
+		"toolchainClosure": { "files": 1393, "bytes": 35554159, "unchanged": true },
+		"hostOpened": 2,
+		"hostClosed": 2,
+		"browserStarted": false,
+		"gpuStarted": false,
+		"deleted": [],
+		"earlierPassedRunPreserved": "C:/tmps/ink-object-host-ohA7Ns/evidence.json",
+		"boundary": "Controlled CPU Host persistence subset; same persisted-project formal frames separately verified below. Not UI history/reload, encoded export, arbitrary models or installed runtime",
+		"persistedProjectFrameRoute": {
+			"directory": "C:/tmps/ink-object-project-UxDlvp",
+			"frameReceipt": "C:/tmps/ink-object-project-UxDlvp/frame-evidence.json",
+			"frameReceiptSha256": "13bf9d619696b3f4dc3bdbbbbd15d6daee88d5d5cbee5bc7c9b56cb1b65a037d",
+			"auditReceipt": "C:/tmps/ink-object-project-UxDlvp/audit-evidence.json",
+			"auditReceiptSha256": "7c6fe52d74d9ae0c8e05c3d7fa384b7e2e5318b0cffb954ae2ba5c0fc148093e",
+			"route": "Formal Host programmatic frame from unchanged persisted project and actual archived resources",
+			"staticFrames": 3,
+			"visiblePixels": 5690,
+			"totalPixels": 24576,
+			"lateThenReverseExact": true,
+			"projectGraphRevisionAndAttachmentsUnchanged": true,
+			"ownedChromiumClosed": 4,
+			"ownedEsbuildClosed": 1,
+			"cdpSocketsClosed": 4,
+			"ownedProfilesRemoved": 4,
+			"hostClosed": true,
+			"retainedFixtureFailure": "Original evidence.json remains ok=false due solely to counting four Chromium plus one esbuild as four total children; immutable read-only audit verifies kinds separately without rerunning GPU",
+			"retainedFailureSha256": "400c65efdf969208ce3c3b156bbd92045c039654f781d2e559bc15b11227b1ca",
+			"fourthFrameBoundary": "Derived request metadata does not change compile-time baked inputProps. Not runtime props update or original-project motion sensitivity acceptance."
+		}
+	},
+	"files": [
+		"../../rust/crates/editor-api/src/ink_object_params.rs",
+		"../../rust/crates/editor-api/src/ink_object_params_tests.rs",
+		"../../rust/crates/editor-api/src/lib.rs",
+		"../../rust/wasm/src/wasm.rs",
+		"../../../../elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/ink-object.mjs",
+		"../../../../elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/ink-object-scene.ts",
+		"../../../../elftia/elftia-plugin-creator-studio/scripts/tests/ink-object-templates.test.cjs",
+		"../../../../elftia/elftia-plugin-creator-studio/scripts/tests/ink-object-scene.test.cjs"
+	],
+	"notVerified": [
+		"Current HEAD/release WASM consistency and full ABI certification",
+		"General controlled Ink models/materials beyond the separately verified diagnostic GLB/HDR Host and loader subset",
+		"General model/visual support beyond diagnostic GPU contour/density/paper/seed/map/normal checks",
+		"Native/hardware GPU bytes, WebGPU and cross-device behavior",
+		"UI history/reload, runtime props updates or animated-project sensitivity, encoded export and independent decode",
+		"Shared user entry/discovery, packaging or installation state"
+	]
+}

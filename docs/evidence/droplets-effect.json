@@ -3,13 +3,27 @@
 	"date": "2026-10-09",
 	"status": "in-progress",
 	"acceptance": {
-		"droplets": "N",
+		"droplets": "V",
 		"overallGoalComplete": false,
-		"definition": "Independent seeded lens effect; native, authoring, persistence, raster, preview, actual editor history and its 640x360 same-project video checks have passed. The separate 192x128 production oracle video acceptance remains open.",
-		"blocking": [
-			"The 192x128 production six-frame VP9 decode exceeds the unchanged quality gates on frame 5. Passing 640x360 same-project export does not supersede it."
-		],
+		"definition": "Finite seeded droplet video subset. Native, authoring, persistence, raster, preview, actual editor history and 640x360 same-project export passed. The original 192x128 oracle passes explicit WebM 444/very_high production export and independent default FFmpeg decode. Real option controls and attached Host export also passed; default/explicit 420 retain the historical stress-fixture quality failure.",
+		"blocking": [],
+		"scopeBoundary": "Scoped video acceptance only; not all encoder qualities, transparent masters, installed/Electron/runtime-pack acceptance, long-project performance or universal resource-safe encoder cancellation.",
 		"history": "Each evidence record describes its own frozen inputs and scope. Later results must be appended explicitly; diagnostic encodes do not replace failed production runs."
+	},
+	"explicitHighChromaProduction": {
+		"status": "scoped-production-oracle-and-real-ui-host-passed",
+		"featureEvidence": "high-fidelity-webm.json",
+		"review": {
+			"path": "C:/tmps/high-chroma-formal-review-VuwUrL/review.json",
+			"sha256": "c6e656e57a0ca6b3b839bc15ce5db4565f13589cedf16ba3ab6286d25e495928"
+		},
+		"scope": "Original 192x128 Droplets references, six frames, unchanged 10/15/64 and 0.0011-second gates; real unmodified SceneExporter with explicit WebM videoChroma 444 and very_high quality. Default FFmpeg independent decode passes all frames; maximum active RGB 13.623720.",
+		"default420": "Original failed video reproduced byte-for-byte for both absent and explicit 420 options; historical failures remain authoritative for that path.",
+		"realUiAndHostReview": {
+			"path": "C:/tmps/high-chroma-ui-v2-review-Bizql0/review.json",
+			"sha256": "5f1246d41e33cb96fadb475a672ed4638f3db2397341e3f72f005ea07a7001af"
+		},
+		"ledgerPromoted": true
 	},
 	"nativeTests": {
 		"cpu": {
@@ -198,6 +212,49 @@
 			"path": "C:/tmps/droplets-final-diagnostic-4xyF3Z/summary.json",
 			"sha256": "e34817a0598c597eb839a1c3ee542b1f6bc1ef6e7f4dbbb1bfd86a7891a7de80"
 		}
+	},
+	"chromaRepresentationDiagnosis": {
+		"status": "diagnostic-only-not-production-acceptance",
+		"cpu": {
+			"metadataOnlySitingRepairRejected": true,
+			"firstProductionFrameEqualsOpticalReference": true,
+			"fixedBt709FullBoxDefaultDecodeFirstActiveRgb": 15.435166327223353,
+			"scope": "This is the error baseline of one fixed RGB-to-I420 conversion and reconstruction path, not a lower bound for every possible 4:2:0 implementation.",
+			"evidence": {
+				"path": "C:/tmps/droplets-seam-diagnostic-7mkcL5/handoff-v2.json",
+				"sha256": "7db155f1bc90d5b6cb576d1776d2e54e36190f7aca9d054926981a768eb879ff"
+			}
+		},
+		"profileControl": {
+			"fullProfileZeroReproducesOriginalVideoBytes": true,
+			"profileOnePixelFormat": "yuv444p",
+			"bitrate": 222000,
+			"browserAndDefaultFfmpegStillFailLastFrame": true,
+			"evidence": {
+				"path": "C:/tmps/droplets-profile-encoding-s31bUV/diagnostic.json",
+				"sha256": "a98bea5e7a0fe279b57c8028892fea605ae8c90672aadcd7e0cf9142892d8eb6"
+			}
+		},
+		"singleBudgetFollowup": {
+			"profile": 1,
+			"pixelFormat": "yuv444p",
+			"bitrate": 369000,
+			"onlyChangeFromProfileOneControl": "bitrate",
+			"allSixPreEncodeFramesAndMetadataUnchanged": true,
+			"browserPassedFrames": 6,
+			"defaultFfmpegPassedFrames": 6,
+			"baselineRejectedFrames": 6,
+			"repeatedFirstRejectedSubsequentFrames": 5,
+			"frameAndPacketTimingPassed": true,
+			"durationSeconds": 0.2,
+			"evidence": {
+				"path": "C:/tmps/droplets-profile-budget-FxFGPd/diagnostic.json",
+				"sha256": "3e9a59212c6fc1cdec3de1a3f817eda131d943a0adefccb6f3e0c81001510ab5"
+			}
+		},
+		"productionDefaultsChanged": false,
+		"formalDecoderOrThresholdsChanged": false,
+		"conclusion": "The controlled profile and bitrate experiments separate chroma representation loss from later-frame budget loss. A higher-fidelity path works on the recorded Chromium, but a production codec policy and compatibility decision plus unchanged formal end-to-end acceptance are still required. Droplets remains N."
 	},
 	"editor": {
 		"status": "real-editor-ui-history-passed",

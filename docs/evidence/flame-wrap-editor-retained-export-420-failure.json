@@ -1,0 +1,90 @@
+{
+  "date": "2026-10-10",
+  "status": "Retained default 4:2:0 export parity failure; not accepted",
+  "rawReceipts": [
+    {
+      "path": "C:\\tmps\\flame-wrap-editor-nl0MSk\\evidence.json",
+      "sha256": "0a105c217fe321ead446096ac6f0fdf9a0acb0158968033841dc169f5ecb8929"
+    },
+    {
+      "path": "C:/tmps/flame-wrap-retained-decode-H48DLs/evidence.json",
+      "sha256": "d6b07ab289a1a91b86d692cb33a721269f7a77933866dccdcefc675e801e47fd"
+    }
+  ],
+  "binaryReadFailure": {
+    "actualTextLength": 65758,
+    "expectedRawByteLength": 73728,
+    "cause": "Node execFile defaults to UTF-8 text when encoding is omitted",
+    "fix": "Explicit buffer encoding and Buffer.isBuffer; exact all-byte regression passed"
+  },
+  "thresholds": {
+    "meanRgb": 4,
+    "activeRgb": 6,
+    "activePixels": 48,
+    "activeDelta": 16,
+    "timestamp": 0.0011
+  },
+  "independentlyDecodedMetrics": [
+    {
+      "ticks": 20000,
+      "frameIndex": 0,
+      "meanRgb": 2.315890842013889,
+      "activeRgb": 4.513048123946904,
+      "activePixels": 8111
+    },
+    {
+      "ticks": 40000,
+      "frameIndex": 4,
+      "meanRgb": 2.9849175347222223,
+      "activeRgb": 6.354277468563183,
+      "activePixels": 8085
+    },
+    {
+      "ticks": 80000,
+      "frameIndex": 12,
+      "meanRgb": 2.6158582899305554,
+      "activeRgb": 5.3810658307210035,
+      "activePixels": 7975
+    }
+  ],
+  "chromaOnlyDiagnostic": [
+    {
+      "ticks": 20000,
+      "meanRgb": 1.8204616970486112,
+      "activeRgb": 3.72325648296552,
+      "activePixels": 8111
+    },
+    {
+      "ticks": 40000,
+      "meanRgb": 1.8164876302083333,
+      "activeRgb": 3.717584003298289,
+      "activePixels": 8085
+    },
+    {
+      "ticks": 80000,
+      "meanRgb": 1.8193630642361112,
+      "activeRgb": 3.7426541274817136,
+      "activePixels": 7975
+    }
+  ],
+  "failure": "Error: Export pixel parity rejected: [{\"ticks\":40000,\"frameIndex\":4,\"meanRgb\":2.9849175347222223,\"activeRgb\":6.354277468563183,\"activePixels\":8085}]\n    at decodeFlameWrapExport (file:///E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/script/fixtures/flame-wrap-editor-export-decode.mjs:120:17)\n    at async file:///E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/script/probe-flame-wrap-retained-export.mjs:92:20",
+  "rawInputPins": [
+    {
+      "path": "C:\\tmps\\flame-wrap-editor-nl0MSk\\flame-wrap-editor-expected-frames.json",
+      "sha256": "3c55a547be86b56a6ee00b23f2df3043b4fad83fb487097b9aad0b6a844dd0a2"
+    },
+    {
+      "path": "C:/tmps/flame-wrap-editor-nl0MSk/project/exports/03449aa16ce792ef.webm",
+      "sha256": "d5efe1bf0135b850fb57ca1944ff93df876050bee94f3259e6b9e8622b272cd7"
+    },
+    {
+      "path": "C:\\tmps\\flame-wrap-editor-nl0MSk\\evidence.json",
+      "sha256": "0a105c217fe321ead446096ac6f0fdf9a0acb0158968033841dc169f5ecb8929"
+    }
+  ],
+  "scope": "13 frames independently decoded as VP9/yuv420p; same UI project source captures. Raw failure happened after output/project/source validation, before final Host verify. Diagnostic chroma-only roundtrip does not prove the production renderer is correct.",
+  "notVerified": [
+    "Default 4:2:0 pixel parity pass",
+    "Final Host verify for this failed run"
+  ]
+}

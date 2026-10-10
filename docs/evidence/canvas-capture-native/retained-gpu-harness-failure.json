@@ -1,0 +1,186 @@
+{
+	"ok": false,
+	"artifacts": "C:\\tmps\\canvas-capture-webgl-qyMYJr",
+	"startedAt": "2026-10-10T02:20:38.293Z",
+	"backend": "webgl",
+	"scope": "Private explicit browser initialization of real generated glue/binary, no Vite or production TS renderer. Presentation pixels only.",
+	"frozen": [
+		{
+			"route": "/wasm-glue.mjs",
+			"path": "C:\\tmps\\canvas-whole-wasm-r1-vGO5kF\\pkg\\opencut_wasm_bg.js",
+			"bytes": 183410,
+			"sha256": "dc386fd0f8178e85db51ceadbe1ac8d91f88791c28cf10baff32bd834adc0072"
+		},
+		{
+			"route": "/wasm.wasm",
+			"path": "C:\\tmps\\canvas-whole-wasm-r1-vGO5kF\\pkg\\opencut_wasm_bg.wasm",
+			"bytes": 13217799,
+			"sha256": "48bed343e23cb68ec7742fee522a71bf79bd4ad2a6f0f9d75b383ec02d83c911"
+		},
+		{
+			"route": "/probe.mjs",
+			"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\fixtures\\canvas-capture-probe.mjs",
+			"bytes": 6446,
+			"sha256": "ba95a43a18c28531d01c3d3e21b7d8beb698f9fa2142c4ada6343bbe4c577c17"
+		},
+		{
+			"route": "/canvas-capture-support.mjs",
+			"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\fixtures\\canvas-capture-support.mjs",
+			"bytes": 4417,
+			"sha256": "02c6cda846b2e345411fae0d9c7219cddc7f56be57e0a618e970fc10f0c1ff61"
+		},
+		{
+			"route": "/runner-source.mjs",
+			"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\probe-canvas-capture.mjs",
+			"bytes": 6451,
+			"sha256": "97589306b90728f53257a7b15884eb7ad4ade1b547378ced749bfc827f387e47"
+		},
+		{
+			"route": "/server-source.mjs",
+			"path": "file:///E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/script/canvas-capture-server.mjs",
+			"bytes": 1742,
+			"sha256": "3ece728760f3d2d0cff9f4b72df8fa39c8824d0df4be79303af7744fe813527c"
+		}
+	],
+	"console": [],
+	"pageErrors": [],
+	"externalRequests": [],
+	"httpErrors": [],
+	"loadedWasm": [
+		{
+			"bytes": 13217799,
+			"sha256": "48bed343e23cb68ec7742fee522a71bf79bd4ad2a6f0f9d75b383ec02d83c911"
+		}
+	],
+	"browserClosed": true,
+	"serverClosed": true,
+	"origin": "http://127.0.0.1:63855",
+	"browserVersion": "151.0.7922.34",
+	"checks": {
+		"ok": false,
+		"scope": "Real frozen WASM request/compositor capture and presentation Canvas. Not editor/Host, encoded export, native output bytes or an independent full material oracle.",
+		"backend": "webgl",
+		"checks": [
+			{
+				"id": "selected-backend",
+				"passed": true,
+				"detail": "webgl"
+			},
+			{
+				"id": "source-upload-and-presentation",
+				"passed": true,
+				"detail": {
+					"max": 0,
+					"mean": 0,
+					"tolerance": 1
+				}
+			},
+			{
+				"id": "full-resolution-neutral-not-grid-upscale",
+				"passed": true,
+				"detail": {
+					"max": 0,
+					"mean": 0,
+					"tolerance": 2
+				}
+			},
+			{
+				"id": "material-and-stroke-visible",
+				"passed": true,
+				"detail": {
+					"max": 121,
+					"mean": 7.163167317708333,
+					"minimumMean": 3
+				}
+			},
+			{
+				"id": "reverse-seek-bit-exact",
+				"passed": true,
+				"detail": {
+					"max": 0,
+					"mean": 0,
+					"tolerance": 0
+				}
+			},
+			{
+				"id": "capture-reads-prefix-independent-gray",
+				"passed": true,
+				"detail": {
+					"max": 0,
+					"mean": 0,
+					"tolerance": 2
+				}
+			},
+			{
+				"id": "wrong-original-input-negative-sensitive",
+				"passed": true,
+				"detail": {
+					"max": 185,
+					"mean": 31.370402018229168,
+					"minimumMean": 15
+				}
+			},
+			{
+				"id": "paint-prefix-vs-pretransformed-metamorphic",
+				"passed": true,
+				"detail": {
+					"max": 0,
+					"mean": 0,
+					"tolerance": 3
+				}
+			},
+			{
+				"id": "paint-prefix-not-original",
+				"passed": true,
+				"detail": {
+					"max": 178,
+					"mean": 26.445719401041668,
+					"minimumMean": 5
+				}
+			},
+			{
+				"id": "nested-capture-independent-gray",
+				"passed": true,
+				"detail": {
+					"max": 0,
+					"mean": 0,
+					"tolerance": 2
+				}
+			},
+			{
+				"id": "both-branches-capture-independent-blend",
+				"passed": true,
+				"detail": {
+					"max": 1,
+					"mean": 0.0333251953125,
+					"tolerance": 3
+				}
+			},
+			{
+				"id": "incoming-branch-not-ignored",
+				"passed": true,
+				"detail": {
+					"max": 46,
+					"mean": 7.827962239583333,
+					"minimumMean": 3
+				}
+			},
+			{
+				"id": "consecutive-pass-position-not-collapsed",
+				"passed": true,
+				"detail": {
+					"max": 0,
+					"mean": 0,
+					"tolerance": 2
+				}
+			}
+		],
+		"failure": "TypeError: Cannot read properties of undefined (reading 'match')\n    at run (http://127.0.0.1:63855/probe.mjs:170:30)",
+		"disposed": true,
+		"currentCase": "missing-inactive-resource"
+	},
+	"frameCount": 11,
+	"rawReceiptSha256": "426359202cd958a5179e92ea29921f7d2393797307d07f3e1261358f6ee39c50",
+	"inputsUnchanged": true,
+	"finishedAt": "2026-10-10T02:20:41.189Z"
+}

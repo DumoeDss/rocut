@@ -1,0 +1,364 @@
+{
+	"ok": false,
+	"artifacts": "C:\\tmps\\flame-wrap-capture-webgl-HHWI17",
+	"startedAt": "2026-10-10T02:28:57.837Z",
+	"backend": "webgl",
+	"kind": "flame-wrap",
+	"scope": "Private explicit browser initialization of real generated glue/binary, no Vite or production TS renderer. Presentation pixels only.",
+	"frozen": [
+		{
+			"route": "/wasm-glue.mjs",
+			"path": "C:\\tmps\\flame-wrap-fast-wasm-yqkoZk\\pkg\\opencut_wasm_bg.js",
+			"bytes": 183410,
+			"sha256": "a80de5a40f849d376a727538f3c96b832ac20957cd9b0cb38390db3d3e9eed6f"
+		},
+		{
+			"route": "/wasm.wasm",
+			"path": "C:\\tmps\\flame-wrap-fast-wasm-yqkoZk\\pkg\\opencut_wasm_bg.wasm",
+			"bytes": 16310001,
+			"sha256": "5ea1d3aa587e85b83ebd14b85888f9a4d6b6660d7626aabeb5e8bfb568788427"
+		},
+		{
+			"route": "/probe.mjs",
+			"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\fixtures\\flame-wrap-capture-probe.mjs",
+			"bytes": 13196,
+			"sha256": "12cee818cec5595e682eb3b6a66fc934c8c057f34c6af6d084a39066a0c992ca"
+		},
+		{
+			"route": "/canvas-capture-support.mjs",
+			"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\fixtures\\canvas-capture-support.mjs",
+			"bytes": 4417,
+			"sha256": "02c6cda846b2e345411fae0d9c7219cddc7f56be57e0a618e970fc10f0c1ff61"
+		},
+		{
+			"route": "/runner-source.mjs",
+			"path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\probe-canvas-capture.mjs",
+			"bytes": 7030,
+			"sha256": "804d49879e587f49d97fd19319b210d7c159322c15de452f68eae9537f56a6b1"
+		},
+		{
+			"route": "/server-source.mjs",
+			"path": "file:///E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/script/canvas-capture-server.mjs",
+			"bytes": 1858,
+			"sha256": "f0eeba36f5f3cd343e6d4c5567627b7b2ad435d59eca8857072d2d1d154e516f"
+		}
+	],
+	"console": [],
+	"pageErrors": [],
+	"externalRequests": [],
+	"httpErrors": [],
+	"loadedWasm": [],
+	"responseBodyErrors": [
+		"Error: response.body: Protocol error (Network.getResponseBody): Request content was evicted from inspector cache\nResponse body is not available for a response that was navigated away from. Read response.body() before triggering any navigation."
+	],
+	"browserClosed": true,
+	"serverClosed": true,
+	"origin": "http://127.0.0.1:64112",
+	"browserVersion": "151.0.7922.34",
+	"checks": {
+		"ok": false,
+		"scope": "Real frozen WASM compositor requests and presentation Canvas captures. Optional direct-effects raw readback is separate. Not editor/Host, encoded export or an independent flame pixel oracle.",
+		"backend": "webgl",
+		"checks": [
+			{
+				"id": "selected-backend",
+				"passed": true,
+				"detail": "webgl"
+			},
+			{
+				"id": "transparent-baseline-source",
+				"passed": true,
+				"detail": {
+					"maximum": 0,
+					"changedBytes": 0,
+					"mean": 0,
+					"tolerance": 1
+				}
+			},
+			{
+				"id": "transparent-neutral-source",
+				"passed": true,
+				"detail": {
+					"maximum": 0,
+					"changedBytes": 0,
+					"mean": 0,
+					"tolerance": 1
+				}
+			},
+			{
+				"id": "transparent-neutral-channels-source",
+				"passed": true,
+				"detail": {
+					"maximum": 0,
+					"changedBytes": 0,
+					"mean": 0,
+					"tolerance": 1
+				}
+			},
+			{
+				"id": "hole-baseline-source",
+				"passed": true,
+				"detail": {
+					"maximum": 0,
+					"changedBytes": 0,
+					"mean": 0,
+					"tolerance": 1
+				}
+			},
+			{
+				"id": "hole-neutral-source",
+				"passed": true,
+				"detail": {
+					"maximum": 0,
+					"changedBytes": 0,
+					"mean": 0,
+					"tolerance": 1
+				}
+			},
+			{
+				"id": "hole-neutral-channels-source",
+				"passed": true,
+				"detail": {
+					"maximum": 0,
+					"changedBytes": 0,
+					"mean": 0,
+					"tolerance": 1
+				}
+			},
+			{
+				"id": "opaque-baseline-source",
+				"passed": true,
+				"detail": {
+					"maximum": 0,
+					"changedBytes": 0,
+					"mean": 0,
+					"tolerance": 1
+				}
+			},
+			{
+				"id": "opaque-neutral-source",
+				"passed": true,
+				"detail": {
+					"maximum": 0,
+					"changedBytes": 0,
+					"mean": 0,
+					"tolerance": 1
+				}
+			},
+			{
+				"id": "opaque-neutral-channels-source",
+				"passed": true,
+				"detail": {
+					"maximum": 0,
+					"changedBytes": 0,
+					"mean": 0,
+					"tolerance": 1
+				}
+			},
+			{
+				"id": "transparent-source-no-flame",
+				"passed": true,
+				"detail": {
+					"maximum": 0,
+					"changedBytes": 0,
+					"mean": 0,
+					"tolerance": 0
+				}
+			},
+			{
+				"id": "flame-visible-outside",
+				"passed": true,
+				"detail": {
+					"visiblePixels": 2132,
+					"maximumAlpha": 220
+				}
+			},
+			{
+				"id": "flame-visible-hole",
+				"passed": true,
+				"detail": {
+					"visiblePixels": 192,
+					"maximumAlpha": 219
+				}
+			},
+			{
+				"id": "same-tick-repeat-bit-exact",
+				"passed": true,
+				"detail": {
+					"maximum": 0,
+					"changedBytes": 0,
+					"mean": 0,
+					"tolerance": 0
+				}
+			},
+			{
+				"id": "reverse-seek-bit-exact",
+				"passed": true,
+				"detail": {
+					"maximum": 0,
+					"changedBytes": 0,
+					"mean": 0,
+					"tolerance": 0
+				}
+			},
+			{
+				"id": "seed-changes-output",
+				"passed": true,
+				"detail": {
+					"maximum": 140,
+					"changedBytes": 10861,
+					"mean": 7.5511474609375
+				}
+			},
+			{
+				"id": "wind-changes-output",
+				"passed": true,
+				"detail": {
+					"maximum": 255,
+					"changedBytes": 8444,
+					"mean": 13.965616861979166
+				}
+			},
+			{
+				"id": "fully-opaque-has-canvas-boundary-flame",
+				"passed": true,
+				"detail": {
+					"boundaryChanged": 2304,
+					"middleChanged": 0
+				}
+			},
+			{
+				"id": "sparks-visible-outside-over-cycle",
+				"passed": true,
+				"detail": {
+					"outside": 50,
+					"hole": 25
+				}
+			},
+			{
+				"id": "sparks-visible-hole-over-cycle",
+				"passed": true,
+				"detail": {
+					"outside": 50,
+					"hole": 25
+				}
+			},
+			{
+				"id": "transparent-source-no-sparks",
+				"passed": true,
+				"detail": {
+					"maximum": 0,
+					"changedBytes": 0,
+					"mean": 0,
+					"tolerance": 0
+				}
+			},
+			{
+				"id": "transparent-refraction-no-alpha",
+				"passed": true,
+				"detail": {
+					"maximum": 0,
+					"changedBytes": 0,
+					"mean": 0,
+					"tolerance": 0
+				}
+			},
+			{
+				"id": "refraction-no-alpha-beyond-displacement-support",
+				"passed": true,
+				"detail": {
+					"visiblePixels": 0,
+					"maximumAlpha": 0
+				}
+			},
+			{
+				"id": "invalid-author-parameter",
+				"passed": true,
+				"detail": {
+					"name": "Error",
+					"message": "Invalid Flame Wrap parameter seed"
+				}
+			},
+			{
+				"id": "invalid-pass-before-publication",
+				"passed": true,
+				"detail": {
+					"name": "RenderFrameError",
+					"message": "GPU commit failed: JsValue(\"Failed to apply effects: Uniform 'phase' for shader 'flame_wrap' must be a number\")"
+				}
+			},
+			{
+				"id": "pass-work-budget-rejected",
+				"passed": false,
+				"detail": {
+					"message": "Canvas texture import rectangle exceeds the source canvas dimensions"
+				}
+			},
+			{
+				"id": "work-rejection-does-not-publish-compositor",
+				"passed": true,
+				"detail": {
+					"maximum": 0,
+					"changedBytes": 0,
+					"mean": 0,
+					"tolerance": 0
+				}
+			},
+			{
+				"id": "negative-recovery-bit-exact",
+				"passed": true,
+				"detail": {
+					"maximum": 0,
+					"changedBytes": 0,
+					"mean": 0,
+					"tolerance": 0
+				}
+			}
+		],
+		"negatives": [
+			{
+				"id": "invalid-author-parameter",
+				"error": {
+					"name": "Error",
+					"message": "Invalid Flame Wrap parameter seed"
+				}
+			},
+			{
+				"id": "invalid-pass-before-publication",
+				"error": {
+					"name": "RenderFrameError",
+					"message": "GPU commit failed: JsValue(\"Failed to apply effects: Uniform 'phase' for shader 'flame_wrap' must be a number\")"
+				}
+			},
+			{
+				"id": "pass-work-budget-rejected",
+				"error": {
+					"message": "Canvas texture import rectangle exceeds the source canvas dimensions"
+				}
+			}
+		],
+		"failure": null,
+		"disposed": true,
+		"currentCase": "after-negative-recovery",
+		"rawReadback": {
+			"available": false,
+			"scope": "Optional direct-effects raw readback; compositor frame captures remain presentation-only."
+		},
+		"refractionBoundaryAlpha": {
+			"visiblePixels": 168,
+			"maximumAlpha": 255
+		},
+		"workNegative": {
+			"scope": "Direct pass admission with declared oversized dimensions and intentionally tiny source. Does not prove allocation behavior for a legitimate large source.",
+			"width": 4096,
+			"height": 2560,
+			"sourceWidth": 1,
+			"sourceHeight": 1
+		},
+		"cleanupFailures": []
+	},
+	"frameCount": 29,
+	"rawReceiptSha256": "ee533924ef74ee39ff6144971400be5a3d90496d6ffd1bdbaf36ff32a1037a37",
+	"inputsUnchanged": true,
+	"finishedAt": "2026-10-10T02:29:00.822Z"
+}

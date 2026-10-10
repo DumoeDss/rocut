@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-09T03:42:19.421Z",
+  "status": "cpu-and-authoring-verified-awaiting-visual-acceptance",
+  "overallGoalComplete": false,
+  "ledger": {
+    "verifiedSubsets": 27,
+    "pendingEntries": 8
+  },
+  "effect": "blaze",
+  "evidence": [
+    {
+      "path": "C:/tmps/blaze-native-nhTVXG/verification.json",
+      "sha256": "245f0549b31da692adee47a686b80405ac091f459fe54f04cc03fd7919fe3984"
+    },
+    {
+      "path": "C:/tmps/blaze-native-nhTVXG/contract.json",
+      "sha256": "3d3e1fb0efe5e26fb3d76e7e27c8b751fc23fb904d69d8e069c4ceea8b46fd99"
+    },
+    {
+      "path": "C:/tmps/blaze-contract-review-ZqWEIl/review.json",
+      "sha256": "255c4af38626e71a219cd64ff53a8dc9b07f9d5b94bd85a3e76620dc3dce1efb"
+    }
+  ],
+  "checks": [
+    {
+      "command": "cargo test -p effects --lib blaze --offline",
+      "passed": 12,
+      "provenance": "native handoff"
+    },
+    {
+      "command": "cargo test -p effects --test blaze_contract --test stylized_contract --offline",
+      "passed": 6,
+      "newBlazeCases": 2,
+      "existingRegressionCases": 4,
+      "provenance": "native handoff"
+    },
+    {
+      "command": "cargo test --manifest-path Cargo.toml --locked --offline --jobs 2 -p editor-api --test blaze_params --test clouds_params --test droplets_params",
+      "passed": 9,
+      "newBlazeCases": 4,
+      "existingRegressionCases": 5,
+      "provenance": "root command result 959f82",
+      "warnings": "Existing effects/editor-api dead-code warnings retained"
+    },
+    {
+      "command": "node --test scripts/tests/blaze-templates.test.cjs",
+      "passed": 10,
+      "provenance": "root command result a000ed"
+    },
+    {
+      "command": "node --test scripts/tests/stylized-package.test.cjs",
+      "passed": 1,
+      "scope": "Real isolated agent-copy, not plugin build/install"
+    },
+    {
+      "command": "python -X utf8 quick_validate.py resources/agent/skills/html-video",
+      "passed": true
+    },
+    {
+      "command": "independent Creator helper contract review",
+      "checksPassed": 114,
+      "provenance": "independent review"
+    }
+  ],
+  "sources": [
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/blaze.mjs",
+      "sha256": "37448dac8d6ae265c025f1d70a8f2d7c973666de9177e93210463c74e23b92f4"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/templates.mjs",
+      "sha256": "bc56ee2ff32e175aa070836f965d782a2234cc4d86314de6e00ab7bd5068404e"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/references/rocut-blaze.md",
+      "sha256": "5fc7261c1a56704f2f90659acb153cfa412c4b9b40922b49faa9435ae76a6029"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/SKILL.md",
+      "sha256": "8189f05398f2c3aa600fbdf3fd873b67879b8d64cbed7e5470ecc47703739c11"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/templates/index.md",
+      "sha256": "e789e16eb49ee911c2b2ab07caa9276bc4bbbe8e3266e4bf56a1116f0ea3f0ab"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/scripts/tests/blaze-templates.test.cjs",
+      "sha256": "dcc88ce74a7780fe0db81e3bf3c077f23c9abfc10dbae09f688c6c0dd959e994"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/scripts/tests/stylized-package.test.cjs",
+      "sha256": "1d5f7f2159f1695cf4deb5c7e0b2a5a9923cdbecabbc8082f47584a5d72d8972"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/crates/editor-api/src/effect_params.rs",
+      "sha256": "a827c01240da20c0c8e6d9d4d70f47875eaf04941d54bd94060de676fd22dfe5"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/rust/crates/editor-api/tests/blaze_params.rs",
+      "sha256": "695517992a12b040944e18139a8a0de4ecb6c18cf1cfa1afb7268c5a08b0bd9e"
+    }
+  ],
+  "resolvedCommandFailure": {
+    "command": "cargo test --manifest-path rust/Cargo.toml ...",
+    "reason": "Incorrect manifest location; command failed before tests. Corrected to root Cargo.toml with no production edit."
+  },
+  "nativeSnapshot": {
+    "path": "C:/tmps/rocut-stylized-f6XU4z/rocut-blaze-source-9eYAcV",
+    "manifestSha256": "32c74996e941b270feec637eb2c61b4d731875808651b2f70d63166670795aeb",
+    "files": 3905,
+    "overlays": 21
+  },
+  "knownLimits": [
+    "No GPU, production video, Host persistence, editor UI or installed-plugin acceptance is claimed.",
+    "Authoring helper emits linear segments with default hold. Custom Bezier or linear extrapolation can leave the legal parameter range; the generic curve-domain policy is separately tracked.",
+    "Build/gate progress is separate from this CPU/authoring record.",
+    "Historical 4:4:4 snapshots, thresholds and video evidence remain unchanged."
+  ]
+}

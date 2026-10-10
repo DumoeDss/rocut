@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "effect": "flame-wrap",
+  "scope": "Actual fresh private WASM validateClipEditingJson in Node. No GPU initialization, Host HTTP mutation, encoded export, full Cargo build or native editor-api test execution.",
+  "status": "fresh-wasm-admission-passed-host-rerun-pending",
+  "package": {
+    "path": "C:/tmps/flame-wrap-fast-wasm-jLCBT8/pkg",
+    "wasmBytes": 16254168,
+    "wasmSha256": "75ef560f97061951ca38a6579fb30018daeed35f782c2c1fcc492fc6cd39b8fe",
+    "glueSha256": "a4048158b9277c8b8858925f35c12e4ffc9e8e33e1aedb19855d82c50d018ffe",
+    "identityMeasuredByCompanion": true,
+    "buildSourcePinLimitation": "Root reported 890 before/after build pins matched at build completion. The Rust integration test then changed to remove an unsupported standalone editing.hidden fixture field. That test is not compiled into the WASM runtime. Do not claim all current workspace files still match the build pins.",
+    "integrationTestSha256AtBuild": "d7925f6281efb7d9aeea27001f6af9447fe050f5bfe3c019b1c171355dc4a330",
+    "currentIntegrationTestSha256": "54a6ace986e9b50e30962b9883d5f24aa8ef56b3700d85eb01aaf70251598aae"
+  },
+  "command": {
+    "environment": {
+      "FLAME_WRAP_WASM_PKG": "C:/tmps/flame-wrap-fast-wasm-jLCBT8/pkg"
+    },
+    "argv": [
+      "node",
+      "--test",
+      "script/fixtures/flame-wrap-admission-wasm.test.mjs"
+    ]
+  },
+  "companion": {
+    "path": "script/fixtures/flame-wrap-admission-wasm.test.mjs",
+    "sha256": "2c2c069534fd03cd020be1638522d642df0f1c54ddf57f1e4d2994ec961c903f",
+    "testExit": 0,
+    "passed": 3,
+    "failed": 0,
+    "resultSource": "Observed actual Node test output in the session",
+    "checks": [
+      "Native catalog and integer seed endpoints 0/65535 are admitted for attached effects and standalone effect layers, including widened caller catalogs.",
+      "Fractional seed 0.5 produces a seed integer issue for both shapes, with attached enabled/disabled, neutral amount, and forged caller min/max/step/keyframable flags.",
+      "Both actual animation paths reject seed/speed animation despite forged keyframable flags, while amount animation is positively admitted."
+    ],
+    "visibilityScope": "Attached enabled true/false is exercised. Standalone track visibility/mute is outside validateClipEditingJson; the standalone request has no editing.hidden property. Repeated standalone iterations are not claimed as disabled-track coverage."
+  },
+  "retainedFirstCompanionFailure": {
+    "testExit": 1,
+    "passed": 1,
+    "failed": 2,
+    "fractionalSeedNegativePassed": true,
+    "cause": "Fixture incorrectly supplied editing.hidden for a standalone effect; real API rejects that property even when false.",
+    "actualIssue": {
+      "path": "editing.hidden",
+      "message": "This element uses track visibility/mute"
+    },
+    "correction": "Only Rust and Node test helpers removed the unsupported standalone visibility property. Runtime validators and the fresh binary did not change.",
+    "oldNodeTestSha256": "e5336653cd7eca40a09a65bdf2bb1406e5d1aac478716b1d6d808415898e4520"
+  },
+  "retainedRealHostRedEvidence": {
+    "path": "C:/tmps/flame-wrap-host-drYjDk/evidence.json",
+    "sha256": "89c57a860955b38791b905e92f1018f5b6dd8959ae9d2140721ab60b0a49b76f",
+    "ok": false,
+    "gap": {
+      "label": "fractional-seed",
+      "status": 200,
+      "accepted": true,
+      "projectSha256Before": "7043e51c4c5d13408912a0ef7ec82ff1d5b10e542830c3a12a9583591018aa63",
+      "projectSha256After": "f1998409607c38ef9d2046e5357eb20b3d3e86bc80f407ebd24b06ce724ff20f"
+    },
+    "newCompanionProvesHostFix": false
+  },
+  "rustIntegrationTest": {
+    "path": "rust/crates/editor-api/tests/flame_wrap_admission.rs",
+    "executed": false,
+    "scope": "Source regression test using the actual editor_api public entry. It was formatted and strictly decoded as UTF-8; no old native editor-api rlib or facade was used to claim it ran.",
+    "nativeCostContext": "Existing cached editor_api rlibs range from about 67 MB to 245 MB. This review avoided a fresh full native editor-api dependency build and used the root-approved actual new WASM public API instead."
+  },
+  "remaining": [
+    "Root-owned real Host HTTP replay against this fresh package, including invalid seed atomic rejection and unchanged project/history.",
+    "Standalone disabled track behavior through the actual Host/track surface, not an unsupported editing.hidden field.",
+    "Rust integration test execution if required by later native verification; currently unexecuted."
+  ]
+}

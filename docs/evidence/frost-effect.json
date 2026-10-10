@@ -1,0 +1,323 @@
+{
+	"recordedAt": "2026-10-10",
+	"status": "private-production-ui-history-reload-host-reopen-and-export-parity-verified-optical-runtime-gates-pending",
+	"ledger": "N; overall 27 V / 8 N unchanged",
+	"scope": "Native Frost input filter plus explicitly timestamped capsule melting strokes and deterministic recovery. No current installed-runtime capability claim.",
+	"nativeStage": {
+		"handoff": "C:/tmps/frost-native-sol-20261009/handoff.json",
+		"handoffSha256": "139f8adda9bcf81624c2a6a3eff281fadfe0b2e8aa2dd65d1da79e3ad26ba258",
+		"sourcePaths": 18,
+		"effectsFocusedTests": 15,
+		"publicContractTests": 2,
+		"catalogRegressionTests": 1,
+		"editorAdmissionTests": 2,
+		"checks": "Focused Rust/Naga, strict UTF-8/no-BOM/no-replacement and scoped diff checks passed. Shared-file before/after snapshots contain preserved unrelated session edits; apply only the recorded task diffs.",
+		"admission": "Frost-only numeric/type and full schedule validation at editor-api effect_params before defaults. Standalone, attached, disabled and amount-zero cases covered; forged empty caller catalog is not native authority.",
+		"scope": "CPU source and shader contracts only; not actual generated WASM, GPU pixels or production rendering"
+	},
+	"contract": {
+		"path": "C:/tmps/frost-native-sol-20261009/contract.json",
+		"effectType": "frost",
+		"ticksPerSecond": 120000,
+		"clock": "Frame-floor clip-local ticks on the existing rational MediaTime grid; authored stamps remain unsnapped. Validate before negative-time or neutral bypass; no source trim, wall-clock accumulation or mutable cache.",
+		"strokes": "At most sixteen immutable seven-field capsule strokes: timestamp, from/to XY, radius and strength. Inactive slots forbidden; complete safe-integer time endpoints required.",
+		"recovery": "Zero before stamp, strength during hold, then linear recovery to zero. Overlapping melt takes maximum, not sum. Capsule center has a full plateau through 0.6 radius and a smooth skirt ending at radius.",
+		"texture": "Seeded jittered neighboring crystal cells modulate true input refraction, nine-tap scatter and tint; this is not a generic color overlay or the Bubble frost parameter.",
+		"alpha": "Premultiply texels before manual bilinear sampling, transparent-black out-of-bounds, then preserve original source alpha. Neutral native no-pass retains raw input bytes; full melt is premultiplied visual identity only. Active alpha-zero output is RGBA0, including full melt. The imprecise original frozen contract wording is retained as history, not adopted as a poisoned hidden-RGB identity promise.",
+		"seed": "Spatially stable 24-bit integer seed, default 17",
+		"uniformBytes": 576,
+		"budget": {
+			"maxDimension": 8192,
+			"maxPixels": 8388608,
+			"maxCapsuleEvaluations": 64000000,
+			"maxBilinearEvaluations": 100000000,
+			"texelLoadUpperBound": "pixels + 4 * bilinear evaluations; no separate 100-million texel-load limit",
+			"note": "Actual native preflight independently admits 4K seven active capsules (58060800 evaluations) and rejects eight (66355200). 4K blur requires 74649600 bilinear evaluations, with 306892800 texel loads as an upper bound. The pixel cap implies at most 75497472 nine-tap bilinear evaluations, so the 100-million bilinear guard is currently unreachable. These are operation bounds, not GPU timings."
+		},
+		"limits": "A bounded deterministic video effect; no physical ice-growth simulation claim. None of these CPU results upgrade the ledger."
+	},
+	"independentNativeCpuAudit": {
+		"path": "C:/tmps/frost-independent-sol-v7Y8dV/handoff.json",
+		"sha256": "67b084413e7c1ae4c863663a062d38af91680a89cf9edde0e85937dbda682929",
+		"actualNativeChecks": 246,
+		"independentOracleAndBudgetTests": 7,
+		"actualNagaLayoutHashAndPackTests": 3,
+		"frozenExpectedCases": 10,
+		"pixelFixtures": "C:/tmps/frost-independent-sol-v7Y8dV/pixel-fixtures.json",
+		"pixelFixturesSha256": "1a3bbda4f676894fecb8562f62904bd696a03311d04fe097798fb56baa3a4c2f",
+		"scope": "Actual author-confirmed CPU rlibs and existing test binary, eighteen frozen/current source hashes, strict admission, scalar samples, budget boundaries and independent f64/BigInt optical expected fixtures. No whole build or GPU execution; not a generated WASM receipt."
+	},
+	"creatorAuthoring": {
+		"path": "C:/tmps/frost-authoring-sol-dr3G3t/handoff.json",
+		"sha256": "2dce93dca2e8d2990b90d69b72c185af6753beea1a75a9125d979ce879aa6da0",
+		"helperTests": 7,
+		"neighborAndPackagingTests": 19,
+		"skillValidation": "Official quick_validate with explicit Python UTF-8 mode, forty reference links, JSON/JS syntax, strict UTF-8 and scoped diff checks passed. Initial default-GBK validation failure is retained.",
+		"transport": "frostImage assembles imported image source, effects and animations. Strokes is the only schedule entry: zero to sixteen complete seven-field capsules, unsorted and duplicate timestamps legal, safe endpoints checked. Nine optical scalars may animate; seed/hold/recovery/strokes are static. Rust retains numeric/rendering authority.",
+		"scope": "Authoring, skill routing and real agent-copy packaging only; not installed-runtime, GPU, Host, persistence or export acceptance. Independent forward-test details are recorded separately; complete graphic source admission is still unproven."
+	},
+	"creatorForwardTest": {
+		"firstPass": "C:/tmps/frost-forward-independent-sol-20261009/handoff.json",
+		"firstPassSha256": "11af91bb87abd1d9f4e72554c8e77c7ff1fc8c177606c0ee09fbc544c71b5831",
+		"addon": "C:/tmps/frost-forward-independent-sol-addon-20261009/handoff.json",
+		"addonSha256": "0bace99612e622f224bb46733ab932090b4304096d364eed7ce74d62a87d2748",
+		"helperBadInputsRejected": 14,
+		"nativeNegativeControlsRejected": 5,
+		"result": "Actual helper keeps duplicate unsnapped 12001-tick strokes and 30000/1001 fps, deep-clones complete resource and preserves neighboring effects/animations/masks in an update example. The first synthetic resource was correctly reported incomplete (bytes instead of byteLength and no attachmentKey), not repaired by guessing. Addon uses an exact complete image descriptor from retained QNGdCL Host reopen data; actual CPU resolver and attached effects/animations admission pass.",
+		"fullGraphicSourceAdmissionPassed": false,
+		"scope": "Incomplete caller catalog still produced Unknown graphic definition and Unknown opacity parameter in full graphic admission. These two issues remain recorded; attached admission success is not a whole-source success. No new Frost resource load, HTTP availability, Host, GPU or export acceptance."
+	},
+	"creatorCompleteSourceCpuRetest": {
+		"recordedAt": "2026-10-09",
+		"recordKind": "stdout-only; no new frozen handoff",
+		"reviewer": "/root/bubble_authoring_sol",
+		"fullGraphicSourceAdmissionPassed": true,
+		"nativeIssues": [],
+		"negativeControlsRejected": 6,
+		"runner": "C:/tmps/frost-independent-sol-v7Y8dV/native-runner.exe",
+		"runnerSha256": "51cd987e83459b2dd8c7a3662da141b9b8e3df536e38ac14155b0e0a0b9ff41d",
+		"runnerSource": "C:/tmps/frost-independent-sol-v7Y8dV/native-runner.rs",
+		"runnerSourceSha256": "b5f0201c9ebae331b3d430ef146813dd92753442d2fa378096ce1df37191c9c0",
+		"actualCatalog": {
+			"builtinElementRegistry": "packages/editor-classic/src/params/registry.ts",
+			"builtinElementRegistrySha256": "4a98373ccee1975b879f019976f8c53d33c0c1b5a8e1cc8324d99c7c3b2abc2f",
+			"graphicDefinition": "packages/editor-classic/src/graphics/definitions/programmatic.ts",
+			"graphicDefinitionSha256": "1e1cd59a8bdc608dc807236dbdc120667bef7a5dff086778485b7c59b60490f0",
+			"nativeCatalogStdoutBytes": 79583,
+			"nativeCatalogStdoutSha256": "978cb5c0f405fee5c77aa72f9bbecc77e83746aa5f6e0f0db2a477daa0e35147",
+			"mapping": "Use the actual graphic built-in parameters, including opacity, actual programmatic definition with its empty params, and actual native C Frost fields. An empty graphics map is not a complete caller catalog."
+		},
+		"resourceEvidence": {
+			"path": "C:/tmps/bubble-production-ui-QNGdCL/evidence.json",
+			"sha256": "6df7f88f09eba4183f84198945fe1925ba6fad26c33a54221b8d372a359a1b10",
+			"jsonPath": "hostRestart.snapshot.clips[0].editing.programmatic.resources[0]"
+		},
+		"request": {
+			"durationTicks": 360360,
+			"trackKind": "graphic",
+			"sourceJsonBytes": 775,
+			"helperInputSha256": "15033ca6be21885d3339d3be32bce25510618bf93804aa244f5053b51a39e578",
+			"completeRequestSha256": "f8d0e1c24ae40ead25f8cec97da2835c84a2869ca8a16cdb33f6e2c656391814",
+			"completeSourceSha256": "c935864a4e225eb1c0b4da1f38647fdc47fe2edec2b59913406948424e48d3ae",
+			"hashEncoding": "JSON.stringify construction order, UTF-8 without trailing newline",
+			"preserved": "30000/1001 fps, duplicate unsnapped 12001-tick strokes, complete source/effects/animations and complete recorded resource; input unchanged and resource deep-cloned"
+		},
+		"negativeControls": [
+			{
+				"case": "missing definition",
+				"path": "editing.definitionId",
+				"message": "Unknown graphic definition"
+			},
+			{
+				"case": "opacity 1.1",
+				"path": "editing.params.opacity",
+				"message": "Invalid parameter type, option or range"
+			},
+			{
+				"case": "partial stroke",
+				"path": "editing.effects.template-frost.params",
+				"message": "Missing active Frost stroke field stroke1Strength"
+			},
+			{
+				"case": "static hold animation",
+				"path": "editing.animations.effects.template-frost.params.holdTicks",
+				"message": "Parameter is not keyframable"
+			},
+			{
+				"case": "disabled unsafe schedule",
+				"path": "editing.effects.template-frost.params",
+				"message": "Frost stroke hold/recovery endpoint exceeds safe ticks"
+			},
+			{
+				"case": "missing attachmentKey",
+				"path": "editing",
+				"message": "Invalid editing schema: missing field `attachmentKey` at line 1 column 417"
+			}
+		],
+		"scope": "Actual existing native CPU complete-source structural admission, not a mock or an attached-only check. Prior false handoffs remain unchanged; no helper code fix was needed. No new frozen receipt, current WASM, HTTP resource load, decode, GPU, Host, UI, history or export is proved. Root independently checked the recorded resource and runner/registry source pins."
+	},
+	"gpuTransportPreparation": {
+		"path": "C:/tmps/frost-gpu-transport-sol-20261009/handoff.json",
+		"sha256": "2ea10f0d21aaa5d231e095706d96a4cab118a282f3f4922732a044604f7c92cb",
+		"cpuTests": 6,
+		"actualNativeResolverCases": 10,
+		"actualPackedActivePasses": 8,
+		"runnerExecuted": false,
+		"scope": "Mechanical oracle-DTO to native-flat-DTO mapping and future runner only. Frozen authored RGBA/expected bytes unchanged. Raw diagnostic input and production Canvas input are explicitly different; compiled raw API, matching fresh double packages and precommitted gates are still pending."
+	},
+	"rawDiagnosticSource": {
+		"path": "C:/tmps/frost-rawdiag-sol-6Th831/handoff.json",
+		"sha256": "b53604d100c3a98962241a0da2a19bcca7df25079badb98338014455c79d6356",
+		"sourcePaths": 6,
+		"cpuTests": 9,
+		"sourceMutationControls": 12,
+		"api": "applyEffectPassesRgbaReadback({rgba: Uint8Array, width, height, passes})",
+		"scope": "Feature-only diagnostic source. Exact raw layout and RGBA/BGRA transport plus existing readback state tests pass; shared native pass mapping/preflight/effects.apply and readback guard/MapWait/RAII are retained. Complete pre-allocation effect-specific admission is limited to existing Bubble/Frost checks; generic unknown shader rejection can occur after raw upload in the pipeline. Default-package absence is only source-gated here, not a new actual ABI result. Full wasm32 type compilation, matching default/diagnostic packages and real JS/GPU execution are not performed."
+	},
+	"rawDiagnosticIndependentCpuReview": {
+		"directory": "C:/tmps/frost-rawdiag-independent-sol-20261009",
+		"runnerSource": "C:/tmps/frost-rawdiag-independent-sol-20261009/independent.rs",
+		"runnerSourceSha256": "a0836515132ebdcf00a97f1edaebcec2e8d5f26d676790eb44cb0300f0e46a39",
+		"runner": "C:/tmps/frost-rawdiag-independent-sol-20261009/independent.exe",
+		"runnerSha256": "23fbb8f86e14af2837a58219214751d5e9b87d9d0d613f29b7c73896e3e0ebe6",
+		"actualCpuTests": 13,
+		"rootRerunExitCode": 0,
+		"result": "Actual layout/channel-encode/unpack and guard pending/drop functions passed thirteen independent CPU tests, including the original nine and four added checks. Root reran the exact pinned binary successfully without new files.",
+		"freezeComplete": false,
+		"reason": "C drive exhausted during audit script creation; audit.mjs is zero bytes and no handoff is claimed. Only the reviewer-owned newly generated PDB (3002368 bytes) was removed; all old artifacts retained and further writes/cleanup stopped.",
+		"scope": "Source and CPU review only. Generic unknown shader is not guaranteed rejected before allocation; serde pass-vector allocation precedes pixel preflight. wasm32 typing, actual ABI, real JS rejection and GPU error cleanup remain unexecuted."
+	},
+	"rawDiagnosticIndependentFreezeSupplement": {
+		"path": "C:/tmps/frost-rawdiag-independent-sol-20261010-r2/handoff.json",
+		"sha256": "a09f70d1a1bef55b1d875397c7f9f9eb4743826e25b8f939d9f9bdf1eb8b9b2c",
+		"sourcePinsUnchanged": 6,
+		"dependencyPinsUnchanged": 5,
+		"priorUniqueCpuTests": 13,
+		"newTestsExecutedDuringSupplement": 0,
+		"scope": "Small subsequent receipt binds the already observed thirteen-test execution and unchanged source/dependency pins. The original failed freeze and zero-byte audit.mjs are retained; this does not turn them into a successful historical handoff or prove new wasm32/JS/GPU execution."
+	},
+	"uiNumericTransport": {
+		"path": "C:/tmps/frost-ui-transport-independent-sol-20261010-r1/handoff.json",
+		"sha256": "eca8ba3393bcdfd5cdaf873e8ffb632caa0bffb499e054050c5170318e03a990",
+		"fixedPaths": [
+			"Optical controls retain precise finite numeric values and invalid text without expression evaluation, snapping or clamping",
+			"Existing Frost animation channels use identity coercion; invalid drafts remain visible in base params",
+			"First keyframe toggle and standalone/attached animation targets preserve raw Frost values"
+		],
+		"jointUniqueTests": 11,
+		"jointAssertions": 410,
+		"jointFailures": 0,
+		"rootTypeChecking": {
+			"ownedSourceFiles": 5,
+			"ownedDiagnostics": 0,
+			"dependencyDiagnostics": 17,
+			"fullGraphPassed": false,
+			"scope": "Strict web dependency closure after loading Bun and EyeDropper ambient roots. Existing WASM declaration and soundtouch dependency diagnostics remain. The auditor's narrower test-root closure reports two dependency diagnostics and is not this broader result."
+		},
+		"scope": "Actual in-memory-transpiled components/hooks/target source with local dependency observations plus existing TS/time seams. Not actual DOM, current Frost WASM admission, native failed-save rollback, Host, history or export. Other effects retain their default coercion."
+	},
+	"gpuPreOutputPolicy": {
+		"path": "docs/evidence/frost-gpu-preoutput-gates.json",
+		"sha256": "c89453eb3919c2dbd2a5df4f7bacd99c90918a8ad7a7b9759505835c14c7182a",
+		"runtimeAuthorized": false,
+		"activeNativeFrames": 8,
+		"resolverFixtures": 2,
+		"scope": "Fixed raw-native, premultiplied presentation, source-ingress and fidelity gates plus alpha/hidden-RGB/plateau/equivalence invariants, recorded before any production Frost GPU output. A strict initial policy, not a demonstrated bound for every GPU or authorization to run a built artifact."
+	},
+	"offlineGpuArtifactChecker": {
+		"path": "script/frost-gpu-invariants.mjs",
+		"sha256": "5b2eb2e2506c2da2b1a10fb5956ac3f007f4e215daf22995d176b456bcd3e98a",
+		"testPath": "script/frost-gpu-invariants.test.mjs",
+		"testSha256": "fe443e19b67cfce0481b4fa2a19ec51ac5c31ee4d3054656fcc8e7ef38556956",
+		"uniqueTests": 15,
+		"failures": 0,
+		"independentPostFixReview": {
+			"path": "C:/tmps/frost-gpu-invariants-independent-sol-20261010-r3/handoff.json",
+			"sha256": "ba71b756095dd9530b6c31f68d3f00299185a6e789d5f03da053cb0bcf5229d8",
+			"independentControls": 20,
+			"failures": 0,
+			"scope": "Fresh independent gate-Proxy red replay, parent/nested get traps, honest-descriptor invalid gates and descriptor side effects mutating original gates now reject or preserve the trusted original policy. Original typed-array red also rejects. No production GPU output or runtime proof; no repeat of the fifteen author tests."
+		},
+		"retainedRedReceipts": [
+			{
+				"path": "C:/tmps/frost-gpu-invariants-independent-sol-20261010-r1/handoff.json",
+				"sha256": "75011a3b64ddf813b0112ef8cb9b253c45b0627bdba21c0ce5c6392b638f1ba7",
+				"finding": "Caller typed-array methods concealed actual hidden RGB; replaced with intrinsic internal-slot byte snapshots"
+			},
+			{
+				"path": "C:/tmps/frost-gpu-invariants-independent-sol-20261010-r2/handoff.json",
+				"sha256": "fc9319dc6da401f733a778a53c6fb7707b911e1ebe54bd3df614c777b5e978bb",
+				"finding": "Proxy gate get values changed after validation and accepted a +32 red-channel error; replaced with validated frozen descriptor-value snapshots"
+			}
+		],
+		"scope": "Offline actual-byte SHA, strict numeric gate snapshots and artifact invariant checking only. All successful results remain partial with runtimeAccepted=false and runtimeAuthorized=false; caller identities cannot prove real GPU execution."
+	},
+	"productionEditorLive": {
+		"recordedAt": "2026-10-10",
+		"root": "C:/tmps/frost-editor-live-20261010c",
+		"receipt": "C:/tmps/frost-editor-live-20261010c/frost-editor-run-evidence.json",
+		"receiptSha256": "2f6337a81a6310482092087acf2016b4c3893397c1e5496316f976b51d3b1ea6",
+		"hostLifecycle": "C:/tmps/frost-editor-live-20261010c/host-lifecycle.json",
+		"hostLifecycleSha256": "6849faa12ec5417ea2233261dde7fc5831c078f2b4c05325c341916251132b00",
+		"bundleClosure": "C:/tmps/frost-editor-live-20261010c/editor-closure.json",
+		"bundleClosureSha256": "a2b8515eb262169370254b058f651d5d295b771f89d9f45991a5e1d51e98e67f",
+		"actualHostTextInputs": 579,
+		"build": "C:/tmps/effect-editor-build-C0e9vP/build-evidence.json",
+		"wasmSha256": "75ef560f97061951ca38a6579fb30018daeed35f782c2c1fcc492fc6cd39b8fe",
+		"browser": "Chromium 151.0.7922.34; headless SwiftShader; WebGPU disabled",
+		"uiFields": [
+			"coverage",
+			"refraction",
+			"seed",
+			"stroke0Radius",
+			"recoveryTicks"
+		],
+		"completeClipCommitUndoRedo": true,
+		"neighborsTracksProjectUnchanged": true,
+		"publicationCaptures": 6,
+		"earlyLateDiffer": true,
+		"reverseSeekPixelsIdentical": true,
+		"reloadGraphProjectBytesAndExplicitReseekPixelsIdentical": true,
+		"hostCloseReopenGraphAndProjectBytesIdentical": true,
+		"hostClosed": true,
+		"consoleErrors": "Two 404 entries and five preview AbortError entries retained; no page errors or external requests. Not a clean-console claim.",
+		"retainedPreparationFailures": [
+			"C:/tmps/frost-editor-live-20261010a/frost-editor-run-evidence.json",
+			"C:/tmps/frost-editor-live-20261010b/frost-editor-run-evidence.json"
+		],
+		"scope": "Actual private Creator import, formal Host apply, production DOM/history and presentation-boundary copies. Five controls and one preauthored stroke only; no UI-created stroke, animation toggle, raw native GPU readback, independent optical pixel oracle or installed Elftia/Electron acceptance. Ledger unchanged."
+	},
+	"productionExportParity": {
+		"receipt": "C:/tmps/frost-editor-live-20261010c/frost-editor-export-retry-run-evidence.json",
+		"receiptSha256": "b7def61e5ac259ee3a4ac18b844d1bfb27551412e136e6f6c8432a5e6dc3172e",
+		"sameAuthoredProject": true,
+		"default420Receipt": "C:/tmps/frost-editor-live-20261010c/frost-export-420-retry/frost-editor-export-evidence.json",
+		"default420ReceiptSha256": "f1bf693f04b8c5b06056b0fde70c1ee7fdf356115ff7172695fda8a83c53066c",
+		"explicit444Receipt": "C:/tmps/frost-editor-live-20261010c/frost-export-444-retry/frost-editor-export-evidence.json",
+		"explicit444ReceiptSha256": "411a107fa48b1d7e0ae84821bc8420ab9378efb9f298f50ebea828c14f636867",
+		"output": "Two opaque WebM VP9 tasks; 192x128, 24 fps, thirteen frames. Independent FFprobe metadata and FFmpeg binary RGB decoding of frames 0/4/12.",
+		"unchangedThresholds": {
+			"meanRgb": 4,
+			"activeRgb": 6,
+			"activePixels": 48,
+			"activeDelta": 16,
+			"timestamp": 0.0011
+		},
+		"default420MeanRgb": [
+			1.3591172960069444, 1.4005669487847223, 1.3402506510416667
+		],
+		"default420ActiveRgb": [
+			5.58590657165479, 5.632620744259699, 5.126382306477093
+		],
+		"explicit444MeanRgb": [
+			0.7198757595486112, 0.7432454427083334, 0.6907823350694444
+		],
+		"explicit444ActiveRgb": [
+			3.733174980205859, 3.7624703087885987, 2.7914691943127963
+		],
+		"frozenPreviewFrames": "C:/tmps/frost-editor-live-20261010c/frost-editor-expected-frames.json",
+		"frozenPreviewFramesSha256": "5bcec4e72d5c81c87a06661c8e9298b976117a62de66ad69925584583c77e765",
+		"referenceCorrection": "Original capture bytes retained. Frost disabledClipId classifies baseline; original frames have label/clipId rather than Flame-specific role tags.",
+		"missingEffectAndShiftNegativeControlsRejected": true,
+		"encodedFrozenTimeNegativeControl": "notDemonstrated; existing threshold accepts frozen early against late. No threshold lowered. Live early/late difference and reverse seek are separate verified evidence.",
+		"independentOpticalOracle": false,
+		"projectGraphRevisionBytesAndAttachmentsUnchanged": true,
+		"postExportHostCloseReopen": "C:/tmps/frost-editor-export-host-final/verified.json",
+		"postExportHostCloseReopenSha256": "d2c658e27498dba1b850510f99fa181cc929b8f70ab13e7ac07fd87785472f5e",
+		"hostAndBrowserClosed": true,
+		"retainedFailures": [
+			"C:/tmps/frost-editor-export-host-20261010/bundle-input-validation-failure.json",
+			"C:/tmps/frost-editor-live-20261010c/frost-editor-export-run-evidence.json",
+			"C:/tmps/frost-reference-cpu-FF3ooY/frost-export-sensitivity.json"
+		],
+		"scope": "Actual production encoding and decoded-video parity against frozen production presentation copies, not an independent optical oracle, alpha master, raw-native GPU gate, hardware/installed runtime or ledger upgrade. Host lifecycle exportTested=false denotes that helper did not itself drive export; the separate browser export receipt above does."
+	},
+	"notVerified": [
+		"Fresh matching default and diagnostic WASM packages and canonical gates",
+		"Actual browser/GPU texture pixels, alpha and rejection recovery",
+		"Installed runtime Creator resource loading and broader authoring integration",
+		"Broader editor controls, UI stroke creation, animation controls and resource withdrawal",
+		"Independent production optical pixel oracle, encoded frozen-time rejection and alpha-master export",
+		"Installed Elftia/Electron, hardware backend, performance and release"
+	]
+}

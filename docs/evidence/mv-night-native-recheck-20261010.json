@@ -1,0 +1,33 @@
+{
+  "recordedAt": "2026-10-10T13:22:13Z",
+  "probe": "script/probe-mv-night-native.mjs --browser-only --dedicated-native-fixtures",
+  "mode": "dedicated-native-fixtures",
+  "checkpoint": {
+    "source": "C:/Users/Sayo/AppData/Local/Temp/rocut-mv-native-checkpoint-20261010/source",
+    "wasm": "C:/Users/Sayo/AppData/Local/Temp/rocut-mv-native-checkpoint-20261010/wasm",
+    "wasmSha256Prefix": "ddade5ea1cae",
+    "sourceManifestSha256Prefix": "ebe69380c055",
+    "manifestEntries": 1979,
+    "identityChains": [
+      "fallWasmIdentity ok",
+      "tunnelRustIdentity native-scene 697 current matches",
+      "nightCompiledCheckpoint 31 frozen Night/LUT sources"
+    ]
+  },
+  "fixtureFix": {
+    "file": "script/fixtures/mv-wet-floor-browser.ts",
+    "change": "initialize originalEngine.scratch with three 1920x1080 canvases (same as train fixture) because the isolated oracle realm never loads main.js which allocates Z.scratch; without it drawPlateShimmer crashed with TypeError reading '0'",
+    "verifiedBy": "bun test script/fixtures/mv-wet-floor-renderer.test.mjs 3 pass"
+  },
+  "finding": {
+    "stageReached": "oracle draw + native render + full-frame pixel compare",
+    "failure": "Night complete frame pixel mismatch: maxChannelError=2 (gate requires <=1)",
+    "case": "first wet-floor complete-frame compare after fixture fix",
+    "classification": "central-acceptance pixel finding, not an environment failure",
+    "suspectedSources": [
+      "synthetic dedicated fixtures vs original artwork thresholds",
+      "in-flight parallel-session Rust/renderer changes compiled into this checkpoint"
+    ]
+  },
+  "scope": "not an installed Electron/full-movie/export acceptance claim"
+}

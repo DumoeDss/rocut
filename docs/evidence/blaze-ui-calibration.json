@@ -1,0 +1,422 @@
+{
+  "recordedAt": "2026-10-09",
+  "status": "ui-and-observation-calibration-verified-not-full-goal-completion",
+  "ledger": {
+    "verified": 27,
+    "notYetVerified": 8,
+    "blaze": "N"
+  },
+  "ui": {
+    "ok": true,
+    "evidence": {
+      "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-editor-v7XcKo/evidence.json",
+      "sha256": "778e9db9aab14506b59e2d9b51f93c17e5fc6ba29ae73492c6b4988ff86c7b43"
+    },
+    "buildReceipt": {
+      "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-private-editor-build-Qc6kbd/receipt.json",
+      "sha256": "f12e6eac23210930f984020c81e5d53c9bf15a47194eb342cc2d303de52ceb2e"
+    },
+    "sourceManifestSha256": "b0c273cb2a7014a7fcdb8a72ef4e8c482a4254b4543e2c108c9888a733f5518e",
+    "editorSourceManifestSha256": "87a8e8b759a4cfb8377b79c56dfb11506067d9e9c8af007d8bee4960edaec639",
+    "wasmSha256": "02b001624eb49ed233ee7484624a8d98f63e8d720dfbbb9592c747915fe37b58",
+    "parameters": [
+      {
+        "key": "amount",
+        "label": "Amount",
+        "value": 0.9,
+        "originalUiValue": "0.75",
+        "beforeRevision": 1,
+        "afterRevision": 4,
+        "completeClipRestoredByUndo": true,
+        "completeClipRestoredByRedo": true,
+        "otherClipsAndTracksUnchanged": true,
+        "inputMechanism": "visible textbox.fill + Enter",
+        "historyScope": "attached-session"
+      },
+      {
+        "key": "flameOpacity",
+        "label": "Flame opacity",
+        "value": 0.55,
+        "originalUiValue": "0.63",
+        "beforeRevision": 4,
+        "afterRevision": 7,
+        "completeClipRestoredByUndo": true,
+        "completeClipRestoredByRedo": true,
+        "otherClipsAndTracksUnchanged": true,
+        "inputMechanism": "visible textbox.fill + Enter",
+        "historyScope": "attached-session"
+      },
+      {
+        "key": "sparkOpacity",
+        "label": "Spark opacity",
+        "value": 0.65,
+        "originalUiValue": "0.88",
+        "beforeRevision": 7,
+        "afterRevision": 10,
+        "completeClipRestoredByUndo": true,
+        "completeClipRestoredByRedo": true,
+        "otherClipsAndTracksUnchanged": true,
+        "inputMechanism": "visible textbox.fill + Enter",
+        "historyScope": "attached-session"
+      },
+      {
+        "key": "smokeOpacity",
+        "label": "Smoke opacity",
+        "value": 0.45,
+        "originalUiValue": "0.38",
+        "beforeRevision": 10,
+        "afterRevision": 13,
+        "completeClipRestoredByUndo": true,
+        "completeClipRestoredByRedo": true,
+        "otherClipsAndTracksUnchanged": true,
+        "inputMechanism": "visible textbox.fill + Enter",
+        "historyScope": "attached-session"
+      },
+      {
+        "key": "refraction",
+        "label": "Heat refraction (short-side fraction)",
+        "value": 0.05,
+        "originalUiValue": "0.031",
+        "beforeRevision": 13,
+        "afterRevision": 16,
+        "completeClipRestoredByUndo": true,
+        "completeClipRestoredByRedo": true,
+        "otherClipsAndTracksUnchanged": true,
+        "inputMechanism": "visible textbox.fill + Enter",
+        "historyScope": "attached-session"
+      },
+      {
+        "key": "height",
+        "label": "Emission height (short-side fraction)",
+        "value": 1.1,
+        "originalUiValue": "0.875",
+        "beforeRevision": 16,
+        "afterRevision": 19,
+        "completeClipRestoredByUndo": true,
+        "completeClipRestoredByRedo": true,
+        "otherClipsAndTracksUnchanged": true,
+        "inputMechanism": "visible textbox.fill + Enter",
+        "historyScope": "attached-session"
+      },
+      {
+        "key": "scale",
+        "label": "Noise scale (short-side fraction)",
+        "value": 0.2,
+        "originalUiValue": "0.125",
+        "beforeRevision": 19,
+        "afterRevision": 22,
+        "completeClipRestoredByUndo": true,
+        "completeClipRestoredByRedo": true,
+        "otherClipsAndTracksUnchanged": true,
+        "inputMechanism": "visible textbox.fill + Enter",
+        "historyScope": "attached-session"
+      },
+      {
+        "key": "speed",
+        "label": "Rise cycles per second",
+        "value": 0.75,
+        "originalUiValue": "0.5",
+        "beforeRevision": 22,
+        "afterRevision": 25,
+        "completeClipRestoredByUndo": true,
+        "completeClipRestoredByRedo": true,
+        "otherClipsAndTracksUnchanged": true,
+        "inputMechanism": "visible textbox.fill + Enter",
+        "historyScope": "attached-session"
+      },
+      {
+        "key": "wind",
+        "label": "Rise drift (short-side fraction)",
+        "value": 0.25,
+        "originalUiValue": "-0.375",
+        "beforeRevision": 25,
+        "afterRevision": 28,
+        "completeClipRestoredByUndo": true,
+        "completeClipRestoredByRedo": true,
+        "otherClipsAndTracksUnchanged": true,
+        "inputMechanism": "visible textbox.fill + Enter",
+        "historyScope": "attached-session"
+      },
+      {
+        "key": "seed",
+        "label": "Seed",
+        "value": 27182,
+        "originalUiValue": "31415",
+        "beforeRevision": 28,
+        "afterRevision": 31,
+        "completeClipRestoredByUndo": true,
+        "completeClipRestoredByRedo": true,
+        "otherClipsAndTracksUnchanged": true,
+        "inputMechanism": "visible textbox.fill + Enter",
+        "historyScope": "attached-session"
+      }
+    ],
+    "seekSequences": [
+      {
+        "stage": "before-edits",
+        "samples": 5,
+        "parametersUnchanged": true,
+        "keyframesCreatedBy": "Creator helper then real Host transaction",
+        "pixelInterpolationVerified": false
+      },
+      {
+        "stage": "after-reload",
+        "samples": 5,
+        "parametersUnchanged": true,
+        "keyframesCreatedBy": "Creator helper then real Host transaction",
+        "pixelInterpolationVerified": false
+      }
+    ],
+    "readOnlyReload": {
+      "stage": "after-readonly-reload",
+      "byteIdentical": true,
+      "sha256": "3a714a9a84a64942ff97000ce68b94ad563ed90c57ed73c666cb96c7262270bf"
+    },
+    "finalProjectSha256": "3a714a9a84a64942ff97000ce68b94ad563ed90c57ed73c666cb96c7262270bf",
+    "hostReopen": {
+      "byteIdentical": true,
+      "resourceStillAvailable": true,
+      "revision": 31
+    },
+    "cleanup": {
+      "browserClosed": true,
+      "hostClosed": true,
+      "forced": false,
+      "errors": []
+    },
+    "knownOptionalHttpFailures": [
+      {
+        "status": 404,
+        "path": "/api/library/graph-editor-presets/user-presets"
+      },
+      {
+        "status": 404,
+        "path": "/api/library/graph-editor-presets/user-presets"
+      }
+    ],
+    "warnings": [
+      "No available adapters.",
+      "No available adapters."
+    ],
+    "externalRequests": [],
+    "scope": {
+      "width": 192,
+      "height": 128,
+      "frameRate": 30,
+      "ticksPerFrame": 4000,
+      "staticId": "blaze-static",
+      "animatedId": "blaze-animated",
+      "disabledId": "blaze-disabled",
+      "effectId": "template-blaze",
+      "quietMs": 1600,
+      "finalTicks": 24000,
+      "keyframeUiCreationTested": false,
+      "parameterControlsTested": "Actual Effects textboxes committed with Enter",
+      "historyTested": "Attached editor session history through supported editor-task API",
+      "renderingPixelCorrectnessTested": false,
+      "disabledPixelsTested": false,
+      "videoExportTested": false,
+      "installedPluginTested": false,
+      "electronTested": false
+    },
+    "priorFixtureFailure": {
+      "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-editor-iU4Slp/evidence.json",
+      "sha256": "120be060bf6df56e34b701bfe48a0f31625c28a80ce8b249f903e507fb2350c0",
+      "reason": "Fixture expected synchronous HTTP 200 for editor task submission; actual protocol returns 202 then polling returns terminal task. R2 preserves strict identity and success/failure checks.",
+      "cleanup": {
+        "browserClosed": true,
+        "hostClosed": true,
+        "forced": false,
+        "errors": []
+      }
+    }
+  },
+  "calibration": {
+    "scope": "No Blaze shader/oracle used. Synthetic RGBA ladders, real zero-amount VHS identity pass, independently analytic color-adjustment gray levels. Measurement contracts unchanged.",
+    "runs": [
+      {
+        "evidence": {
+          "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-alpha-calibration-ObfSLn/evidence.json",
+          "sha256": "26939f7f895c49a3365617c69c1af9f48f9dcbd95f36abea63181d9c7b170be5"
+        },
+        "ok": true,
+        "nativeReadback": false,
+        "emptyStackRejection": {
+          "attempted": true,
+          "rejected": true,
+          "matched": true,
+          "error": "At least one effect pass is required"
+        },
+        "grayMeasurements": [
+          {
+            "id": "C--32-returned",
+            "referenceId": "C--32-analytic",
+            "alphaDifferences": 0,
+            "integerPremultipliedDifferences": 0,
+            "straightMean": 1.6,
+            "straightMaximum": 7
+          },
+          {
+            "id": "C--32-copy",
+            "referenceId": "C--32-returned",
+            "alphaDifferences": 0,
+            "integerPremultipliedDifferences": 0,
+            "straightMean": 0,
+            "straightMaximum": 0
+          },
+          {
+            "id": "C--36-returned",
+            "referenceId": "C--36-analytic",
+            "alphaDifferences": 0,
+            "integerPremultipliedDifferences": 0,
+            "straightMean": 1.1,
+            "straightMaximum": 3
+          },
+          {
+            "id": "C--36-copy",
+            "referenceId": "C--36-returned",
+            "alphaDifferences": 0,
+            "integerPremultipliedDifferences": 0,
+            "straightMean": 0,
+            "straightMaximum": 0
+          },
+          {
+            "id": "C--40-returned",
+            "referenceId": "C--40-analytic",
+            "alphaDifferences": 0,
+            "integerPremultipliedDifferences": 0,
+            "straightMean": 1.9,
+            "straightMaximum": 6
+          },
+          {
+            "id": "C--40-copy",
+            "referenceId": "C--40-returned",
+            "alphaDifferences": 0,
+            "integerPremultipliedDifferences": 0,
+            "straightMean": 0,
+            "straightMaximum": 0
+          }
+        ],
+        "browserClosed": true,
+        "serverClosed": true,
+        "gpuDisposed": true,
+        "queryFreed": true,
+        "postRunVerification": {
+          "ok": true,
+          "files": 17,
+          "failures": []
+        }
+      },
+      {
+        "evidence": {
+          "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-alpha-calibration-nM2Yxi/evidence.json",
+          "sha256": "3c9bf8dcf06c0ce0bddb3ad6fd04d3ed9678c9ff569b5a4aa254eb6e8f6cb4fc"
+        },
+        "ok": true,
+        "nativeReadback": true,
+        "emptyStackRejection": {
+          "attempted": true,
+          "rejected": true,
+          "matched": true,
+          "error": "At least one effect pass is required"
+        },
+        "grayMeasurements": [
+          {
+            "id": "C--32-native-texture",
+            "referenceId": "C--32-analytic",
+            "alphaDifferences": 0,
+            "integerPremultipliedDifferences": 0,
+            "straightMean": 0,
+            "straightMaximum": 0
+          },
+          {
+            "id": "C--32-returned",
+            "referenceId": "C--32-native-texture",
+            "alphaDifferences": 0,
+            "integerPremultipliedDifferences": 0,
+            "straightMean": 1.6,
+            "straightMaximum": 7
+          },
+          {
+            "id": "C--32-copy",
+            "referenceId": "C--32-returned",
+            "alphaDifferences": 0,
+            "integerPremultipliedDifferences": 0,
+            "straightMean": 0,
+            "straightMaximum": 0
+          },
+          {
+            "id": "C--36-native-texture",
+            "referenceId": "C--36-analytic",
+            "alphaDifferences": 0,
+            "integerPremultipliedDifferences": 0,
+            "straightMean": 0,
+            "straightMaximum": 0
+          },
+          {
+            "id": "C--36-returned",
+            "referenceId": "C--36-native-texture",
+            "alphaDifferences": 0,
+            "integerPremultipliedDifferences": 0,
+            "straightMean": 1.1,
+            "straightMaximum": 3
+          },
+          {
+            "id": "C--36-copy",
+            "referenceId": "C--36-returned",
+            "alphaDifferences": 0,
+            "integerPremultipliedDifferences": 0,
+            "straightMean": 0,
+            "straightMaximum": 0
+          },
+          {
+            "id": "C--40-native-texture",
+            "referenceId": "C--40-analytic",
+            "alphaDifferences": 0,
+            "integerPremultipliedDifferences": 0,
+            "straightMean": 0,
+            "straightMaximum": 0
+          },
+          {
+            "id": "C--40-returned",
+            "referenceId": "C--40-native-texture",
+            "alphaDifferences": 0,
+            "integerPremultipliedDifferences": 0,
+            "straightMean": 1.9,
+            "straightMaximum": 6
+          },
+          {
+            "id": "C--40-copy",
+            "referenceId": "C--40-returned",
+            "alphaDifferences": 0,
+            "integerPremultipliedDifferences": 0,
+            "straightMean": 0,
+            "straightMaximum": 0
+          }
+        ],
+        "browserClosed": true,
+        "serverClosed": true,
+        "gpuDisposed": true,
+        "queryFreed": true,
+        "postRunVerification": {
+          "ok": true,
+          "files": 17,
+          "failures": []
+        }
+      }
+    ],
+    "originalProductionCanvasFailureStillPreserved": true,
+    "previousFixtureFailure": {
+      "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-alpha-calibration-tkwKqQ/evidence.json",
+      "sha256": "2fac313943f50f60bd9967569486bce6666bfb8cf21d14e66a3f314ea4b6a2dc",
+      "reason": "Empty raw pass stack is rejected by the API. R2 explicitly verifies that rejection and uses an actual zero-amount VHS pass to measure identity presentation."
+    }
+  },
+  "stillOpen": [
+    "Original Canvas straight-RGB gate remains a failed historical run; diagnostics do not rewrite its verdict",
+    "General animation curve-domain and floating-point boundary admission defects",
+    "Same-editor-project video export acceptance",
+    "Installed plugin/Electron/hardware GPU/performance acceptance",
+    "Remaining P7 effects and P8 runtime pack/installation/release"
+  ]
+}

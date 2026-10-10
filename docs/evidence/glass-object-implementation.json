@@ -1,0 +1,107 @@
+{
+  "date": "2026-10-10",
+  "status": "implementation-initial; Glass Object remains N; ledger remains 27 V / 8 N",
+  "implementation": {
+    "rust": "Single version-1 normalization authority for transmission, ior, thickness, roughness, dispersion, attenuationDistance, environmentIntensity and color; complete DTO or structured failure.",
+    "scene": "Physical transmission materials; preserved borrowed maps/colors/shared multi-materials and nonmesh nodes; absolute Rust mapped-frame transforms; owned-resource cleanup restores borrowed model assignments.",
+    "helper": "Mandatory injected Rust String-to-String resolver; envelope and complete DTO transport checks without duplicate optical ranges/clamp; rejects inputProps.glass bypass and independent time/wall-clock/seed inputs; controlled resource roles and fixed engine/entry identity.",
+    "resources": "model/environment/background use model/environment/image descriptors; original descriptor references and IDs are retained. Tests use actual Three objects with in-memory model and texture assets, not actual GLB/environment/background loading.",
+    "backdropCorrection": "Read-only review found fixed world z=-2 backdrop in front of the model for reverse cameras. Corrected to transformed model bounding sphere plus camera direction, with camera quaternion orientation; reverse/side/default camera CPU geometry regression passes. This is not a GPU transmission-pixel result."
+  },
+  "verification": {
+    "rust": {
+      "command": "C:/tmps/glass-object-rust-cya8Z9/glass-object-tests.exe",
+      "exitCode": 0,
+      "testsPassed": 6,
+      "testsFailed": 0,
+      "boundary": "Executed existing isolated native test executable without rebuilding; not current full-workspace Cargo, WASM execution or complete author-to-Rust chain."
+    },
+    "creatorCpu": {
+      "command": "$env:GLASS_THREE_MODULE = 'E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/director/node_modules/three/build/three.module.js'; node --test scripts/tests/glass-object-scene.test.cjs scripts/tests/glass-object-templates.test.cjs",
+      "exitCode": 0,
+      "testsPassed": 11,
+      "testsFailed": 0,
+      "testsSkipped": 0,
+      "scene": {
+        "testsPassed": 5,
+        "actualThreeVersion": "0.170.0",
+        "actualThreeRevision": "170",
+        "boundary": "Actual Three CPU objects only; in-memory asset API doubles; no browser/GPU/GLB decode claim."
+      },
+      "helper": {
+        "testsPassed": 6,
+        "boundary": "Explicit recorded resolver-envelope transport double; not Rust execution or business-schema validation."
+      }
+    },
+    "postShaderFixCreatorCpu": {
+      "actualThreeVersion": "0.185.1",
+      "before": { "testsPassed": 4, "testsFailed": 1, "reason": "Standard upgrade lost intrinsic PHYSICAL define" },
+      "after": { "testsPassed": 5, "testsFailed": 0 },
+      "boundary": "Same five existing scene cases with added intrinsic define/default assertions, not five additional unique tests; actual GPU diagnostic subset is separately archived."
+    },
+    "text": "Owned implementation/test and evidence files passed strict UTF-8/no BOM, JSON syntax and scoped diff checks."
+  },
+  "runtimeBoundary": {
+    "rustAndWasmExportSource": "Public Rust re-export and resolveGlassObjectParamsJson wrapper were built and actually executed in the frozen private development snapshot; not current HEAD release certification.",
+    "sharedWasm": {
+      "receipt": "object-shared-wasm-runtime.json",
+      "buildProvenance": "object-shared-wasm-build-provenance.json",
+      "wasmSha256": "5d40cb7ae4e0fed4d7c7b81d1ef7617b5d874ec5dd6fbead2da03fbc8d021560",
+      "export": "resolveGlassObjectParamsJson",
+      "actualApiCalls": 6,
+      "accepted": 2,
+      "rejected": 4,
+      "hostAdditionalResolverCalls": 5,
+      "hostReceipt": "glass-object-host.json",
+      "boundary": "Successful immutable snapshot build and actual String API/controlled Three compile/Host apply/reopen only. Three unrelated live files drifted; not current HEAD consistency, full ABI certification, browser/GPU transmission pixels or encoded export."
+    },
+    "priorPrivateWasm": {
+      "path": "C:/tmps/flame-wrap-fast-wasm-jLCBT8/pkg/opencut_wasm_bg.wasm",
+      "sha256": "75ef560f97061951ca38a6579fb30018daeed35f782c2c1fcc492fc6cd39b8fe",
+      "glassBindingExportPresent": false,
+      "bindingCheck": "Bounded rg for resolveGlassObjectParamsJson in this pkg's *.js and *.d.ts returned no matches; binary SHA-256 read-only check matched.",
+      "buildRecord": "canvas-capture-native/flame-wrap-admission-development-build.json"
+    },
+    "targetThreeVersion": "0.185.1",
+    "targetThreeGpuVerified": true,
+    "targetThreeGpuBoundary": {
+      "receipt": "glass-object-gpu.json",
+      "subset": "Actual corrected Glass source, real curved diagnostic GLB/HDR/detailed PNG decoding and WebGL2 compile/render/readback; transmission background negative control, roughness/thickness/ior sensitivity, absolute reverse seek, cleanup",
+      "sourceSha256": "f2c1b59af471f13d1b9a136d232d79eaaa3c7a8a93bb340a442d8bcb9b719c59",
+      "boundary": "Not the earlier tiny Host project's GPU acceptance: Host compiled-source receipt retains pre-fix source hash; corrected GPU source is a separately pinned layer. Not dispersion/sorting/general models, editor/history, encoded export or hardware/WebGPU certification."
+    },
+    "gpuCounterexample": {
+      "receipt": "glass-object-gpu-counterexample.json",
+      "status": "Actual Three0.185.1 first render failed with GL INVALID_OPERATION 1282 and fragment shader missing material.ior",
+      "rootCause": "Standard-material copy resets MeshPhysicalMaterial.defines to STANDARD-only, removing PHYSICAL and shader IOR declaration",
+      "boundary": "Real WebGL2 counterexample using new optical diagnostic GLB/PNG fixtures, not the earlier tiny Host project's GPU acceptance. Source unchanged in this receipt; owned browser/server closed; optical matrix not accepted."
+    },
+    "shaderCorrection": "Preserve actual MeshPhysicalMaterial constructor intrinsic defines around Standard.copy; avoids Physical.copy(Standard) undefined defaults and does not hardcode version fields. Original GPU failure receipt remains unchanged; corrected diagnostic GPU matrix passed separately.",
+    "completeAuthorRustChain": {
+      "status": "Actual native Rust resolver -> actual Creator helper -> complete normalized DTO passed; excludes scene execution and WASM",
+      "testsPassed": 4,
+      "resolverCalls": 30,
+      "inputsUnchanged": true,
+      "receipt": "glass-object-native-authoring.json",
+      "boundary": "Separate from six helper transport-double tests; not a combined count of real Rust cases."
+    }
+  },
+  "files": [
+    "../../rust/crates/editor-api/src/glass_object_params.rs",
+    "../../rust/crates/editor-api/src/glass_object_params_tests.rs",
+    "../../rust/crates/editor-api/src/lib.rs",
+    "../../rust/wasm/src/wasm.rs",
+    "../../../../elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/glass-object-scene.ts",
+    "../../../../elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/glass-object.mjs",
+    "../../../../elftia/elftia-plugin-creator-studio/scripts/tests/glass-object-scene.test.cjs",
+    "../../../../elftia/elftia-plugin-creator-studio/scripts/tests/glass-object-templates.test.cjs"
+  ],
+  "notVerified": [
+    "Browser-side GLB/environment/background decode and sampled optical pixels (Host import and controlled compilation are verified separately)",
+    "GPU dispersion, transmission sorting, complex/multimaterial real models and general visual support beyond the separately verified diagnostic optical subset",
+    "Real encoded export and independent decode",
+    "Editor history/UI acceptance (controlled Host apply/FileProjectStore reopen and exact persisted bytes are verified separately)",
+    "Hardware/WebGPU or other-host behavior",
+    "Packaging, installation state, release and offline installation recovery"
+  ]
+}

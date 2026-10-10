@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-09T03:47:09.261Z",
+  "status": "native-api-verified-visual-acceptance-pending",
+  "overallGoalComplete": false,
+  "effect": "blaze",
+  "snapshot": {
+    "path": "C:/tmps/rocut-stylized-f6XU4z/rocut-blaze-source-9eYAcV",
+    "manifestSha256": "32c74996e941b270feec637eb2c61b4d731875808651b2f70d63166670795aeb",
+    "files": 3905,
+    "overlays": 21
+  },
+  "wasm": {
+    "path": "C:/tmps/rocut-stylized-f6XU4z/rocut-blaze-source-9eYAcV/rust/wasm/pkg/opencut_wasm_bg.wasm",
+    "sha256": "02b001624eb49ed233ee7484624a8d98f63e8d720dfbbb9592c747915fe37b58",
+    "privateBuildExit": 0,
+    "privateBuildElapsedMs": 286504,
+    "sharedDependencyChanged": false
+  },
+  "evidence": [
+    {
+      "path": "C:/tmps/rocut-stylized-f6XU4z/blaze-wasm-gates-qpKqU4/evidence.json",
+      "sha256": "b7e0d6cdf091b6c42e939a0ac7f01bf67d7916785d4db69da4de1233e0b124e8"
+    },
+    {
+      "path": "C:/tmps/blaze-public-api-review-Fg2t0I/review.json",
+      "sha256": "8b47f20e028bd924c9af98d823b3cbea9ca39c259b273fb071dc8730a3d4673d"
+    },
+    {
+      "path": "C:/tmps/blaze-public-api-review-Fg2t0I/public-api-calls.json",
+      "sha256": "cdce94b5c4238bcffe687e8584085cfcb6b1efbb299b9a842d8bf9e214fb64b8"
+    },
+    {
+      "path": "C:/tmps/blaze-oracle-f0fafdf06643/handoff.json",
+      "sha256": "992769537b5776f5a8fdfaf2b665bba096ab917e7236f4ccb2a7f264d6abe60f"
+    },
+    {
+      "path": "C:/tmps/blaze-contract-review-ZqWEIl/gpu-gate-plan.json",
+      "sha256": "d3dd4dfba2fdd80d11b045186c8242f9a20e3981b409c692cbc14e5cab407b26"
+    }
+  ],
+  "checks": {
+    "wasmGates": [
+      "source",
+      "paths",
+      "api",
+      "init",
+      "negative-controls"
+    ],
+    "allWasmGatesPassed": true,
+    "actualPublicApiCalls": 86,
+    "apiChecksMatchedExpected": 82,
+    "oracleTestsPassed": 18,
+    "oracleAssertions": 98415,
+    "gpuExecuted": false
+  },
+  "knownGap": {
+    "kind": "shared-animation-curve-domain-admission",
+    "confirmedWithActualNewWasm": true,
+    "affectedControls": "Blaze and existing Clouds amount",
+    "admission": "Bezier tangents and linear extrapolation with in-range endpoints are accepted",
+    "sampling": "Actual TS interpolation can produce values near or equal to 2",
+    "runtime": "Strict native resolver rejects out-of-range amount",
+    "linearHelper": "Linear segments with default hold stay in the admitted range",
+    "proposedFollowUp": "Shared curve-domain validation or an explicit cross-effect error policy; no effect-specific silent clamp"
+  },
+  "adoptedRawGate": {
+    "status": "frozen-before-first-gpu-run-not-yet-executed",
+    "fullFrame": true,
+    "premultipliedRgb": {
+      "meanAbsoluteErrorMax": 0.5,
+      "maxChannelErrorMax": 4
+    },
+    "alpha": {
+      "meanAbsoluteErrorMax": 0.35,
+      "maxChannelErrorMax": 3
+    },
+    "straightRgb": {
+      "bothAlphaAtLeast": 16,
+      "meanAbsoluteErrorMax": 1.5,
+      "maxChannelErrorMax": 8
+    },
+    "bypassAndRepeatedFrames": "byte-exact at the tested raw seam only",
+    "scopeLimits": [
+      "No cropping or transparent-hole exclusions",
+      "CPU oracle must reject ineffective disabled/seed/time/alpha negative controls",
+      "Raw owning-stack bypass does not prove production timeline enabled:false"
+    ]
+  },
+  "remaining": [
+    "Actual GPU pixel comparison",
+    "Host persistence and atomic rejection",
+    "Real editor controls/history/reload",
+    "Production export and independent decode",
+    "Installed-plugin acceptance"
+  ],
+  "ledger": {
+    "verifiedSubsets": 27,
+    "pendingEntries": 8
+  }
+}

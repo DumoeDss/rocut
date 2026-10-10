@@ -1,0 +1,25 @@
+{
+  "status": "request-boundary-regression-pass",
+  "execution": {
+    "exit": 0,
+    "stdout": "bun test v1.4.2 (744846f84)\n",
+    "stderr": "\npackages\\editor-classic\\src\\services\\renderer\\compositor\\render-request.async.test.ts:\n(pass) async advance must resolve ready before commit [0.95ms]\n(pass) abort during async advance cancels immediately and late true cannot commit [0.50ms]\n(pass) replacement identity after await prevents commit and drains old request [0.15ms]\n(pass) async rejection is terminal and cancels only this request [0.11ms]\n(pass) false async chunk yields a task and old synchronous API still works [1.78ms]\n\npackages\\editor-classic\\src\\services\\renderer\\__tests__\\liquid-render-cancellation.test.ts:\n(pass) task completion self-releases its tracked session timer [2.85ms]\n(pass) abort cancels and releases its tracked session timer before it fires [0.27ms]\n(pass) compositor completion and close leave no live replay timers [7.78ms]\n(pass) a real timer task cancels between chunks before replay completes or publishes [1.36ms]\n(pass) immediate-ready no-Liquid boundary does not wait for another task; sync API remains [0.23ms]\n(pass) old request finally cancels only its own id, leaving its replacement alive [5.78ms]\n(pass) reset/reused owner id cannot turn old finally into an ABA cancellation [4.67ms]\n(pass) abort reaches native cancellation while the exclusive transaction is held [4.61ms]\n(pass) cancelled render never reaches canvas capture, encoder or target draw [3.90ms]\n(pass) pre-commit publication guard invalidation cancels and never commits [0.20ms]\n(pass) post-commit abort cannot recall GPU work but still prevents capture and target draw [0.58ms]\n(pass) close cancels queued and active work, drains resolve, then releases exactly once [3.27ms]\n(pass) ordinary native failures remain distinct from typed cancellation [0.29ms]\n(pass) out-of-contract chunk sizes are rejected before entering WASM [0.19ms]\n(pass) queued cancellation returns without waiting for an unrelated lock owner [3.11ms]\n(pass) all descriptor placements are delivered intact to the Rust-owned boundary [0.16ms]\n(pass) SceneExporter propagates cancel into actual CanvasRenderer before encoder.add [4.14ms]\n(pass) export cancel returns promptly but compositor close waits for the actual encoder task [4.05ms]\n\n 23 pass\n 0 fail\n 86 expect() calls\nRan 23 tests across 2 files. [313.00ms]\n",
+    "error": null,
+    "before": {
+      "packages/editor-classic/src/services/renderer/compositor/render-request.ts": "7250f4c17e1691dd6254cf068341dbcb985aeef4004275ad8cd46227e17789b0",
+      "packages/editor-classic/src/services/renderer/compositor/render-request.async.test.ts": "ce7cc9192840a74f01558007b5302a0d95cc82a487ac8490a9d87f59b429b65a",
+      "packages/editor-classic/src/services/renderer/__tests__/liquid-render-cancellation.test.ts": "7b6f179cec57a1702d84540a95900a2d7654a312ed3d93863fc652d29c0e4ca3"
+    },
+    "after": {
+      "packages/editor-classic/src/services/renderer/compositor/render-request.ts": "7250f4c17e1691dd6254cf068341dbcb985aeef4004275ad8cd46227e17789b0",
+      "packages/editor-classic/src/services/renderer/compositor/render-request.async.test.ts": "ce7cc9192840a74f01558007b5302a0d95cc82a487ac8490a9d87f59b429b65a",
+      "packages/editor-classic/src/services/renderer/__tests__/liquid-render-cancellation.test.ts": "7b6f179cec57a1702d84540a95900a2d7654a312ed3d93863fc652d29c0e4ca3"
+    }
+  },
+  "beforeAfterEqual": true,
+  "passed": 23,
+  "failed": 0,
+  "expectCalls": 86,
+  "scope": "Actual Bun async request and isolated existing cancellation-boundary suites. Tests exercise TS boundary and mocked/native-reservation seam, not newly generated WASM binding, live GPU or installed runtime."
+}
+

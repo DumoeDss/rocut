@@ -2225,6 +2225,8 @@ sampled RGB MAE < 8 gate. Reverse/repeated/rebuilt RGBA comparisons remain exact
 | ClaudeTyper | 34/34 | 1.133 s | 0.064733 / 0.070369 | 90,972 |
 | RulerProgress | 181/181 | 6.033 s | 0.269385 / 0.365874 | 1,916,794 |
 | WeChatChat | 160/160 | 5.333 s | 1.304605 / 1.479951 | 430,972 |
+| VerticalTicker | 300/300 | 10 s | 0.028636 / 0.075424 | 6,834,408 |
+| VinylPlayer | 300/300 | 10 s | 0.520086 / 0.569610 | 3,663,881 |
 
 The first two full runs exited 0 with no errors. Reports are
 `rocut-remotion-presets-wd1fKF/verification.json` and
@@ -2234,18 +2236,26 @@ SceneExporter checks, not installed Electron acceptance. The subsequent Ruler
 and WeChat runs also exited 0 with no errors, exact reverse/repeat/rebuild RGBA
 and every original decoded-frame gate passing. Their reports and source artifact
 hash are recorded in [full-range evidence](evidence/remotion-presets-full-range.json).
-VerticalTicker and VinylPlayer full-duration exports and broader props/media
-coverage remain pending.
+VerticalTicker and VinylPlayer also passed full-duration standalone exports,
+with exact repeat/rebuild pixels and every original decoded-frame gate passing.
+All six fixed presets now have full-range evidence. The latter two cases use
+declared/localized original assets and the recorded props; broader props/media
+coverage and installed Electron acceptance remain unverified.
 
-## Remaining work
+## Earlier remaining-work checkpoint (superseded in part by later entries)
+
+This list records the earlier development/acceptance boundary. The latest
+[development-first integration](#development-first-mv-and-native-engine-integration-2026-10-10)
+below supersedes its scene, audio-history and grouped/master-post development
+status; it does not retroactively extend earlier pixel/export evidence.
 
 The Peel recipe transition is verified separately below. It does not
 change the reference project's count of 13 mechanisms or imply a general
 adjacent timeline-clip transition implementation.
 
 - HyperFrames compile/archive/rebuild and the pinned native nested timeline/visibility subset are verified; full media, complex imports/ESM and complete engine coverage remain unfinished.
-- Native Remotion composition/frame/metadata/readiness, declared assets and Html5Video are implemented; native OffthreadVideo has the standalone bridge, tagged PQ/HLG-to-SDR mapping and short Rocut export checks above. Declared native audio now joins editor preview/final mixing. The six bundled presets passed the sampled/short-export matrix above. Electron native media/audio, broader HDR/mastering/codec coverage, richer ecosystem dependencies/Three.js and full-duration/prop coverage still require individual verification.
-- HyperFrames native video, source PCM, Host transport and nine-frame SceneExporter soundtrack export are verified above. Continuous gain envelopes and opt-in grouped/FX soundtrack execution, including bounded FX automation, aligned variable-rate loops and nonloop fractional trim/duration preparation, are implemented. The real-source PCM/FX matrices pass; fractional clip start, scalar fractional trim/duration, fractional loop phase and participating fallback gain histories remain gaps. The new fractional-duration slice still needs browser author-collection and encoded-media acceptance. See [native audio graph integration](hyperframes-native-audio-graph.md) and [fractional-duration evidence](evidence/hyperframes-fractional-duration.json) for actual Host/Rust/PCM checks and pinned preview/export differences. Its compiler inlines declared local image/font/video/audio/subcomposition paths; generic HTML still does not automatically resolve relative paths.
+- Native Remotion composition/frame/metadata/readiness, declared assets and Html5Video are implemented; native OffthreadVideo has the standalone bridge, tagged PQ/HLG-to-SDR mapping and short Rocut export checks above. Declared native audio now joins editor preview/final mixing. The six bundled presets passed both the sampled/short-export and full-range matrices above. Electron native media/audio, broader HDR/mastering/codec coverage, richer ecosystem dependencies/Three.js and arbitrary prop/media combinations still require individual verification.
+- HyperFrames native video, source PCM, Host transport and nine-frame SceneExporter soundtrack export are verified above. Continuous gain envelopes and opt-in grouped/FX soundtrack execution, including bounded FX automation, aligned variable-rate loops and nonloop fractional trim/duration preparation, are implemented. The real-source PCM/FX matrices pass. The full native-history functional gate now also passes in one run: Rust discovery adds each active track's actual start to the canonical scan (here 0.1s), all four real fallback histories admit with sequence/time/previousRuntimeVolume invariants, fractional scalar trim/duration and the fractional source loop retain native recipes, Host HTTP delivers audible identity-gated stereo f32le PCM at 44100/48000, crop/reseek stays sample-exact, and native-exporter timing renders from sampleOrigin 9600 after a real timing-lock recompile. The fractional-duration slice passes one real authored HTML/archive/browser/Host/editor/WebM case with independent decoded audio, not installed/full-MV acceptance. See [native audio graph integration](hyperframes-native-audio-graph.md), [history functional evidence](evidence/hyperframes-history-functional.json) and [fractional-duration evidence](evidence/hyperframes-fractional-duration.json) for actual Host/Rust/PCM checks and pinned preview/export differences. Its compiler inlines declared local image/font/video/audio/subcomposition paths; generic HTML still does not automatically resolve relative paths.
 - Inline Canvas/HTML and existing archived HyperFrames/Remotion text/props editors are verified above; full author-project file management and recipe parameter UI remain missing. All 13 transition mechanisms, five spatial post effects, five color finishing effects and the reference light-leak overlay with amount curves, recipe-composite post and explicit camera/sprite/post audio responses have behavior checks. Full coverage of 24 scenes, richer particle scenes/audio styling and arbitrary grouped or whole-timeline post remain unfinished. Native lyric-between-layers now has the isolated mixed-engine acceptance below, not installed/full-MV acceptance.
 - No installed Creator→Rocut UI E2E, full MV E2E, cross-machine font/pixel guarantee, MP4/format matrix or performance acceptance was performed for this new source type.
 
@@ -2272,6 +2282,60 @@ Evidence is in private
 This closes the short mixed-engine/native-lyric occlusion check only, not
 installed UI/full-MV acceptance, arbitrary whole-timeline post, cross-machine
 font identity or long-timeline performance.
+
+Rerun 2026-10-10 against the current private WASM build
+(`e5835503…18c7f`, including the native-history discovery fix) passes the same
+gate: identical layer order, 14+14 archived engine frame requests, one
+save/reload with exact pixels, 301–310 glyph pixels of which 64–83 occluded and
+140–143 visible, outside damage ≤1 pixel, and 277 glyph pixels change on the
+SYNC→BEAT cue transition. Two fixture loaders were corrected for the new
+Bundler-shaped private package (preload binds the generated sync entry; the
+browser probe resolves the real bundler entry); production layer semantics are
+unchanged. See [rerun evidence](evidence/mixed-engine-lyrics-rerun.json).
+
+Native audio mixing 2026-10-10: the same mixed-engine fixture now declares a
+HyperFrames `<audio>` source (220 Hz, asymmetric channel amplitude) and compiles
+it with `audio: { mode: "native", profile: "hyperframes-graph-v1" }`. The
+browser side wires `ProgrammaticAudioRuntime` through the same HTTP
+identity/render endpoints into `createTimelineAudioBuffer`, and both
+SceneExporter variants mix the resulting buffer into the WebM audio track
+(`shouldIncludeAudio: true`). Independent FFmpeg decode of the exported WebM
+finds an Opus 48 kHz stereo track at 221.87 Hz with peaks 0.1005/0.0503,
+matching the authored source after the 0.4 element gain; one identity and one
+render request serve both exports. The Host's HTML rasterizer path passes the
+native decoder so audio-declaring sources render frames again. See [native
+audio mixed-engine evidence](evidence/mixed-engine-native-audio/verification.json).
+
+The JIZURA subtree owner's Rust unit gate
+(`mv_jz_owner::tests::actual_sequence_domain_and_native_frame_lifetime_are_enforced`)
+was repaired in the same pass: its fixture declared legacy free-form attachment
+keys while the shared resource validator now requires canonical
+`programmatic-sha256-<digest>` keys, so the fixture was aligned to the real
+contract. The full `editor-api` lib suite passes again (627 tests).
+
+2026-10-10 workspace resync: the shared `opencut-wasm` runtime copies (root,
+editor-classic, apps/cli, apps/web) were rebuilt from the current Rust tree and
+re-synchronized, restoring `resolveProgrammaticFrameJson` and the current
+`resolveVideoExportJson` contract for bun tests; `check-wasm-init` passes with
+matching export counts across runtimes. Two follow-ups landed with it. First,
+`runMvNativeRaster` moved owner preparation (Night/JZ/Heart/Memories) behind
+the realm's `ready` message instead of awaiting it before the message loop was
+registered — the previous ordering dropped the handshake when the iframe loaded
+during preparation. Owner-free recipes keep a fully synchronous ready→render
+path via a new `hasMvNativeOwnerPlan` sync probe. All 158 programmatic renderer
+tests pass. Second, the frontend export bitrate expectations were aligned to the
+current Rust policy (vp9 very-high 640×360@30 = 3,456,000; NTSC = 3,453,000;
+192×128 = 369,000 for both 420 and 444 chroma), matching the authoritative
+`video_export.rs` gates.
+
+Post-fix regression: the mixed-engine probe was re-run twice after the runtime
+change — once against the previous private WASM build and once against the
+current `rust/wasm/pkg` build — and both pass with identical metrics (four-layer
+occlusion 310/83/143/±1 pixels, 14+14 engine frame requests, one identity and
+one render serving both exports, 220 Hz track at 221.87 Hz decoded). This
+confirms the ready→owner→render ordering change did not disturb the JZ owner
+handshake in a real browser; see
+[current-WASM evidence](evidence/mixed-engine-native-audio/verification-current-wasm.json).
 
 ## A/B Peel — P5 subset, 2026-10-07
 
@@ -3838,7 +3902,7 @@ generation and scope-aware reference-recording ledger has now been implemented
 with strict greater-than threshold checks and six unit tests. It tracks original
 main-canvas source versions, not native scratch releases or frame-number special
 cases. The original default oracle and complete intro/outro gate remain
-authoritative; their post-correction browser/export reruns are still pending.
+authoritative; the later post-correction results are recorded below.
 
 ### HyperFrames variable-rate native preparation oracle (2026-10-09)
 
@@ -4016,6 +4080,49 @@ fonts lacked required descriptors and Ember expected unused declared images to
 be omitted. Tests now match that policy and retain missing/invalid-font negative
 controls; production admission was not weakened.
 
+### titleRiff post-ledger pixels and high-fidelity export (2026-10-09)
+
+`rocut-title-recording-mNz324/verification.json` passes all 24 added branch and
+recording-limit samples plus the repeated nonmonotonic sample with exact RGBA
+equality. Coverage includes zero/one/two monuments, disabled and alpha-zero
+silhouettes, 184x255/256/257 threshold boundaries, larger decoded sprites and
+outro nested cover/recap scopes. No reference source or threshold was changed.
+
+The unchanged full probe `rocut-title-riff-native-bJ2PCi/verification.json`
+passes 37 pixel observations and six negative controls. Thirteen GPU checks
+(12 export frames plus repeat) match preview and the original exactly. However,
+the default VP9 4:2:0 video's frame 2 has decoded RGB MAE 4.663927, exceeding the
+unchanged threshold 4; the report deliberately remains failed at video QA.
+
+The separate `script/probe-mv-title-riff-chroma.mjs` uses the existing public
+`videoChroma: "444"` export option without modifying that default probe. Report
+`rocut-title-chroma-c15WV2/verification.json` confirms actual VP9 `yuv444p`,
+699,599 bytes, 12 decoded frames and all original video gates passing. Worst RGB
+MAE is 3.514981 and foreground MAE 3.520764; all 12 original PNG hashes equal the
+4:2:0 run's references. This production 4:4:4 route also increases the bitrate
+budget, so the improvement is not attributed to chroma sampling alone. The
+fixture reports `smpte170m/tv` metadata and makes no BT.709/full-range claim.
+This establishes the tested standalone high-fidelity export path, not default
+4:2:0 fidelity, installed Electron, arbitrary props or full-song acceptance.
+
+### Kanji padding correction and remaining grain boundary (2026-10-09)
+
+The corrected full probe `rocut-kanji-slam-native-Y96gmN/verification.json`
+finishes 104 observations, 16 negatives and 14 repeat checks without runtime
+errors. Padding correction reduces default frame 0 max error from 23 to 1 and
+default frame 131 from 57 to 1. Nonetheless full-frame +/-1 grain differences
+still exceed the unchanged MAE gate, and generic-kana frame 48 reaches max 3.
+The formal pixel gate remains failed and its video export is not executed.
+
+Private paired diagnostics preserve observed/unobserved baseline comparisons.
+They confirm matching glyph dimensions, positions, halftone-circle hashes and
+grain bytes; removing grain on both sides yields exact pictures for three
+representative cases, and max 2 / MAE 0.000037857 for generic-kana frame 48.
+Batch sizes, equivalent transform API sequences, removing the finishing copy,
+delaying grain-tile cleanup and pattern/state ordering do not improve output.
+These negative controls narrow investigation to the actual grain blend stage;
+they do not justify relaxing the gate or changing those production paths.
+
 ### Project master-post authoring checkpoint (2026-10-09)
 
 `Project.masterEffects` is now an Agent-visible ordered effect stack. A normal
@@ -4035,7 +4142,199 @@ wiring by the Electron session; this checkpoint does not claim installed support
 Real private-WASM transaction tests cover atomic invalid-input rejection,
 save/reopen, clear, UI undo/redo and unrelated Agent edits. Codec tests cover
 detached ownership and removal without resurrection of retained parameters.
-Production scene building/resolution verifies final-pass ordering; real GPU and
-independently decoded video acceptance is still pending. See
+Production scene building/resolution verifies final-pass ordering. The subsequent
+private browser probe passes 27 checks, and six complete 96x64 GPU frames match
+independent alpha/color/grain arithmetic byte-for-byte. However, the default VP9
+4:2:0 export fails the unchanged decoded-interior MAE < 3 gate on all six frames
+(3.213106 through 12.626877). GPU correctness does not establish encoded-video
+fidelity. An unchanged-input encoder trace now proves all actual encoded inputs
+match the GPU and independent oracle exactly, in the right order. Observed and
+unobserved video and decoded RGB hashes are identical. This case is downstream
+of application frame delivery, with encoding/color conversion/decoding still
+under diagnosis. A separate 4:4:4 run passes only one of six unchanged gates; it
+does not fix the default export. See
 [master-post evidence](evidence/project-master-effects.json) for build hashes,
 checks and remaining nested-group/UI/animation work.
+
+### Complete Thread scene and reviewed stops (2026-10-09)
+
+Native `thread` ports the complete original `dark.js` scene: nebula/dust,
+landmark-placed lit hand/rim, tapered Catmull ribbon with frayed fibres and both
+glows, light/motes/bokeh and vignette. Rust owns geometry, timing and admission;
+TypeScript replays existing raster operations. This is not the XPBD Cloth scene.
+Reviewed `rocut-mv-audio/1.stops` preserves original source seconds, order and
+overlaps. Authored `settings.stops`, including `[]`, overrides global evidence;
+otherwise strict open shot overlap selects only `kind=stop`. No detector,
+fingerprint/review gate or resource budget is relaxed.
+
+`rocut-thread-native-qWYtkO` passes 71 full-1080p observations, seven nonmonotonic
+repeats, five omitted-layer negatives and 13 GPU checks; all native/GPU errors
+are zero. Its production 1920x1080/30 fps VP9/yuv420p export independently decodes
+12/12 passing frames: worst RGB MAE 1.702362 (<4), foreground MAE 1.713163 (<8).
+Color metadata is smpte170m/tv, not BT.709/full range. The fixture uses a verified
+synthetic transparent hand marker, not the original film artwork. See
+[Thread evidence](evidence/mv-thread.json) for the exact 56-file checkpoint and
+source/WASM/bundle identities. This is standalone scene/export acceptance, not
+installed Electron, original-artwork, grouped/master-post or full-song/MV proof.
+
+### Remotion archived data and caption files (2026-10-09)
+
+Declared `public/` JSON, TXT, CSV, SRT, VTT and LRC files now work through native
+`getStaticFiles()` and `fetch(staticFile(...))`. Bytes, Unicode, newlines and
+inventory sizes survive compile/archive/rebuild; direct JSON imports still yield
+objects. Known archived text files can be revised. Strict UTF-8, declared-input
+membership, existing resource budgets and network-denying CSP remain in force.
+
+The production compiler/revision tests pass 33 assertions. The isolated native
+browser follow-up passes seven complete 32x32 RGBA checks with zero error,
+including reverse/repeat, rebuilding after moving author files, a visible JSON
+revision, and recovery after undeclared-file/network negative controls. See
+[static-data evidence](evidence/remotion-static-data.json) for identities and
+commands. This adds the data bridge, not third-party caption/parser packages,
+installed Electron or a new encoded-video/full-MV acceptance claim.
+
+### Development-first MV and native-engine integration (2026-10-10)
+
+Development now includes the native Illust/Burst leaves, Freeze/Rewind/Melt and
+Panels styles, explicit same-clock `layers` composition, and a JIZURA
+attachment-backed recipe leaf. Blender `imageSequence` backgrounds and native
+subject/graphics overlays can now share a subtree sampled by ref/panels; role
+masks do not bypass expanded graph/owner admission. The JIZURA
+leaf reuses the existing MotionText engine rather than introducing another lyrics
+implementation. It binds a declared sequence attachment and physical fonts, with
+a full source-domain check and a dedicated owner lease. External timeline lyrics
+are still not implicitly read into a recipe subtree.
+
+Panels replay receives two genuine child phases: `background`, then the combined
+`subject`/`graphics`/`foreground`. Native focus/speed lines paint between them under
+the same panel transform and clip. Whole-graph raster admission charges both
+retained phase canvases. A flat owner with already-composited internal artwork
+cannot be automatically separated into new character layers.
+
+Remotion now has an exclusive continuous-frame analysis entry, driven by complete
+Rust-mapped source frame contexts. Its compiled author proxy exposes that entry
+without an extra initial single-frame render. This preserves the persistent React
+root needed for inline-audio/Artifact identities across frames. The owned consumer
+chain now prepares native inline s16-stereo/48 kHz history, applies native tone
+preparation before final crop/mix, and receives actual text/binary/thumbnail bytes.
+Empty and whitespace text and empty binary files are valid fulfilled artifacts.
+Thumbnail capture pauses the same root until Host-owned exact-frame PNG receipt;
+active CSS animations remain explicitly unsupported for this continuous thumbnail
+path. Ordinary picture registration does not claim artifact delivery.
+
+`rocut programmatic produced <spec.json>` posts the closed
+`{source,firstFrame,frameCount,sampleRate}` request to the authenticated Host.
+Artifact-only sources need no audio declaration; observed media/inline audio still
+requires `source.audio.mode: "native"`. The Host exclusively creates a dedicated
+`exports/programmatic/remotion-<run>` directory under its project, validates parent
+containment, and returns relative output metadata, not file bytes for a frontend
+to save. Native audio rendering also consumes its artifact outputs; its PCM
+transport remains a separate soundtrack, not a per-source master or second exporter.
+
+The produced route also delivers its actual native mixed soundtrack as an owned
+stereo IEEE_FLOAT WAV with a fact chunk. Rust validates and losslessly packs the
+existing f32 PCM; it does not clamp, resample or run another encoder. `output.audio`
+returns its project-relative path, SHA256, byte length, sample rate/count/origin
+and requested source-frame range separately from author `artifacts`. The WAV and
+artifacts share one exclusive run directory. Silent artifact-free jobs return
+`output: null`; the native audio endpoint still returns PCM plus author artifacts,
+without creating a duplicate WAV or repeating the main song.
+
+At this checkpoint, the editor-api offline locked library/test compilation and
+scoped native-renderer/history/produced-public TypeScript checks passed. The Panels
+leaf/root-phase, HyperFrames history/startup and Remotion document/thumbnail CPU
+checks pass 14 tests; JIZURA/Layers replay adds seven passing tests and the produced
+CLI route adds one. Selected Layers-related, Meta, produced DTO and inline PCM Rust
+checks pass 24 tests, including the final empty-artifact addition. The subsequent
+WAV increment adds two passing Rust tests and four output checks, including actual
+generated Rust WAV bytes reaching the owned Host filesystem. New focused checks
+also cover JZ incompatible-owner cleanup, HyperFrames pre/setup cancellation and
+Remotion capture disposal/late completion. Public CLI/Host and renderer TypeScript
+integration were checked with real generated declarations, not an ABI stub.
+
+The pinned rustc 1.88.0 / wasm-pack 0.13.1 offline locked private build is complete.
+Its development WASM SHA256 is
+`b43964be4e8c26dabbde121abcf57009a32fecb6f741e1f71380553b224db052`.
+It uses `--dev`, disabled incremental compilation and `CARGO_PROFILE_DEV_DEBUG=0`;
+it is not a release/API-surface baseline update. Six real exports cold-load,
+JZ dispose/free and five invalid-input controls pass. Neither shared WASM nor an
+installed plugin was replaced. New browser pixel, full PCM/video, installed-plugin
+and full-MV acceptance remain scheduled after feature development.
+
+An over-broad initial Cargo test invocation attempted unrelated integration
+executables and failed while writing PDB files with E: almost full. The corrected
+`--lib` WAV test selection passes. Private-cache cleanup was rejected by the tool
+policy and deleted nothing; the later WASM build used a separate C: temporary
+directory. This failure is not reported as a passing full Rust suite or a source
+permission problem.
+
+### Development-first author entry and produced functional acceptance (2026-10-10)
+
+Creator now ships a pure author-data helper for constructing a Recipe source,
+splitting explicit output roles with independent deep clones, and wrapping any
+complete programmatic source into the existing graphic editing shape. The wrapper
+also preserves formally compiled HyperFrames/Remotion documents, archives,
+resources and audio declarations. It does not evaluate code, import files,
+invent facts, synthesize beats or duplicate Rust admission. Six CPU helper tests
+and one real official agent-copy test pass; package fixtures were cleaned up.
+
+The new real Remotion produced functional smoke passes through the owned Host and
+private Chromium with the above private generated WASM. It compiles/archives a
+source, makes the live author unusable, scans all eight frames on the persistent
+root, crops frames 3–4, and delivers the exact 3200-frame stereo 48 kHz float WAV,
+eleven deduplicated artifacts and a real Sequence-local Thumbnail PNG. Empty
+binary and whitespace text survive. Cancellation publishes no run, and a fresh
+retry publishes a distinct directory with identical soundtrack and thumbnail
+bytes. See [functional evidence](evidence/remotion-produced-functional.json).
+
+The author uses real native inline registration rather than `@remotion/media`
+decoding, which is not installed in the pinned toolchain. No media decoder,
+pixel parity, encoded-video, installed-plugin or full-MV claim is inferred from
+this smoke. The initial fixture selected shared stale WASM through a transitive
+Bun resolution path; it was corrected by binding the actual private generated
+namespace before Host imports, not by modifying shared dependencies or stubbing
+exports. Browser/PCM and mixed-scene functional checks are scheduled separately.
+
+### Native checkpoint environment restored and Tunnel recheck finding (2026-10-10)
+
+The private compiled-source checkpoint environment that Night/Tunnel probes
+require was rebuilt from the current worktree by a new generalized helper
+script/fixtures/mv-native-checkpoint-build.mjs (replacing the Flame-only
+frozen-baseline helper): it snapshots rust/ + workspace manifests (1979 files),
+writes source-manifest.json, builds the web-target WASM with path remapping,
+and emits verification.json in one pass. Both identity chains
+(fallWasmIdentity, tunnelRustIdentity native-scene scope with 697 current
+matches, nightCompiledCheckpoint with 31 frozen Night/LUT sources) validate
+against the fresh artifact, unblocking browser rechecks without the deleted
+2026-10-09 acceptance environment.
+
+The first Tunnel browser-only recheck on that checkpoint recorded a real
+repeat-visit drift, not an environment failure: case
+defaults-all-layers-complete-forward-seek-repeat/4/4 differs from the oracle
+with scene max channel error 6 (MAE 0.0146, 121119 changed pixels) and post max
+3 (MAE 0.0123, 102309 changed) on the second visit of the repeat pair. The full
+identity chain (WASM ddade5ea..., snapshot ebe69380..., served bundle, fonts,
+reference sources) was stable during the run and is preserved in the failure
+artifact docs/evidence/mv-tunnel-native-recheck-20261010.json. Per the agreed
+agile policy this is filed as a central-acceptance finding for the consolidated
+pixel phase; suspected sources are the reference scene's inherent re-visit
+grain/boil semantics or in-flight parallel-session Rust changes compiled into
+this checkpoint. It is not a regression gate for ongoing feature development.
+
+### Night recheck finding and wet-floor oracle fixture repair (2026-10-10)
+
+The Night browser-only recheck on the rebuilt checkpoint first crashed inside
+the unchanged reference oracle: drawFall reaches drawPlateShimmer, which reads
+Z.scratch[0]/[1]; those canvases are allocated by main.js, which the isolated
+oracle realm deliberately never loads. The wet-floor fixture had never
+initialized them (the train fixture does). The fixture now allocates the same
+three 1920x1080 scratch canvases, verified by the wet-floor renderer tests
+(3 pass); the reference sources are untouched. With the oracle running, the
+gate proceeds to the full-frame pixel compare and records a real finding:
+complete-frame maxChannelError 2 against the gate's limit of 1. Both the
+environment restoration details and the finding are preserved in
+docs/evidence/mv-night-native-recheck-20261010.json. As with Tunnel, this is
+filed for the consolidated pixel acceptance phase - plausible sources are the
+synthetic dedicated fixtures diverging from original-artwork thresholds or
+in-flight parallel-session changes compiled into this checkpoint; it does not
+block ongoing feature development.

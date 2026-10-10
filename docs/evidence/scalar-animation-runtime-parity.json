@@ -1,0 +1,24 @@
+{
+  "schema": "elftia-evidence/1",
+  "id": "scalar-animation-runtime-parity",
+  "title": "TS scalar evaluator vs Rust scalar-f64-v1 differential probe",
+  "recordedAt": "2026-10-10T12:58:21.852Z",
+  "status": "verified",
+  "scope": "Differential runtime parity probe: production TS scalar evaluator vs installed opencut-wasm scalar-f64-v1 batch sampling; CPU only; not admission wiring or production resolve migration",
+  "source": {
+    "path": "C:/tmps/scalar-runtime-parity-iEuMBI/evidence.json",
+    "sha256": "8a7dbeee2fabcc5b94394cf8ed62d049d28529126774e7465cd43f5fe8735d42"
+  },
+  "cases": {
+    "total": 5,
+    "samples": 80,
+    "exactMatch": ["rampLinear", "easedBezier", "holdStep", "extrapolatingEdges"],
+    "divergent": {
+      "id": "constantBoundaryBezier",
+      "maxDelta": 1.1102230246251565e-16,
+      "overshootSamples": 2,
+      "interpretation": "TS evaluator undershoots a constant boundary curve at interior samples; the Rust evaluator returns the exact constant. This is the known reproduced defect direction, not a new regression."
+    }
+  },
+  "probe": "script/probe-scalar-animation-runtime-parity.mjs"
+}

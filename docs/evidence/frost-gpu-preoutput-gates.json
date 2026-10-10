@@ -1,0 +1,113 @@
+{
+	"version": 1,
+	"recordedAt": "2026-10-10",
+	"status": "pre-output-acceptance-policy; no GPU execution",
+	"runtimeAuthorized": false,
+	"scope": "Only the pinned 64x48 independent Frost fixture. This is a test specification, not a runnable GPU config or runtime receipt. Tolerances are strict initial acceptance policies, not proven all-device WGSL error bounds.",
+	"fixture": {
+		"path": "C:/tmps/frost-independent-sol-v7Y8dV/pixel-fixtures.json",
+		"sha256": "1a3bbda4f676894fecb8562f62904bd696a03311d04fe097798fb56baa3a4c2f",
+		"oracle": "C:/tmps/frost-independent-sol-v7Y8dV/oracle.mjs",
+		"oracleSha256": "fd3c3e16942c243df1af581da7d570f2edfb03cde9696686cbabd81afecabece",
+		"sourceSha256": "577662c959e5969630dc4cda0bb0d9f0edfe284caffa1e717a18338bbe4f11a0",
+		"width": 64,
+		"height": 48,
+		"rgbaBytes": 12288,
+		"alphaHistogram": { "0": 109, "96": 424, "255": 2539 },
+		"ticksPerSecond": 120000,
+		"frameRate": { "numerator": 30, "denominator": 1 },
+		"activeCases": [
+			"static-ice",
+			"before-stamp",
+			"stamp-full",
+			"hold-end",
+			"recover-half",
+			"recovered",
+			"restamped",
+			"seed-variant"
+		],
+		"resolverEmptyCases": ["negative-handle", "neutral"],
+		"nativeGpuFrameCount": 8,
+		"emptyPassesAreGpuFrames": false
+	},
+	"comparator": {
+		"path": "C:/tmps/frost-gpu-transport-sol-20261009/metrics.mjs",
+		"sha256": "8ce73861629eec44885013a5d36a2b688279e52d6ffd3ce1c4ecd19c3e8a925b",
+		"rawRgb": "abs(actualRGB - expectedRGB)",
+		"premultipliedRgb": "abs(actualRGB * actualAlpha / 255 - expectedRGB * expectedAlpha / 255); own alpha for each array, no intermediate rounding",
+		"meanDenominator": 9216,
+		"coverage": "All pixels and RGB channels; no edge, transparent-pixel or activity exclusions. Alpha compared independently as raw bytes. Returned native bytes already use RGBA order, even for BGRA storage."
+	},
+	"gates": {
+		"reason": "Chosen before any production output using unchanged independent f64/BigInt expectations and hypothetical 8-bit premultiply/unpremultiply quantization. Do not tune thresholds against future production frames.",
+		"native": { "maxRgbError": 2, "meanRgbError": 0.15, "maxAlphaError": 0 },
+		"presentation": {
+			"maxRgbError": 5,
+			"meanRgbError": 0.5,
+			"maxAlphaError": 0
+		},
+		"source": {
+			"mode": "premultiplied",
+			"maxRgbError": 1,
+			"meanRgbError": 0.1,
+			"maxAlphaError": 0
+		},
+		"presentationFidelity": {
+			"mode": "premultiplied",
+			"maxRgbError": 1,
+			"meanRgbError": 0.1,
+			"maxAlphaError": 0
+		}
+	},
+	"hardInvariantsBeforeScalarGates": {
+		"identity": "Pin original fixture/expected/source, source manifest, completed matching default/diagnostic build receipts, packages, actual delivered WASM response hash/size, resolver and raster API observations, selected backend and format. Namespace import or caller booleans are insufficient. Missing runtime identity leaves runtime acceptance unproved.",
+		"dimensionsAndLayout": "Exact 64x48 dimensions and 12288-byte RGBA arrays; no missing, inherited, nonnumeric or nonfinite metrics/gates; no silent channel swap or length repair.",
+		"alpha": "Every source and output alpha byte equals the authored source alpha byte.",
+		"transparentActiveNative": "All 109 authored-alpha-zero pixels in every active native frame are exactly RGBA0. Premultiplied error alone cannot detect hidden RGB leaks.",
+		"sourceOpaque": "All 2539 opaque pixels remain RGB-byte-identical through Canvas source ingress.",
+		"plateau": {
+			"cases": ["stamp-full", "hold-end"],
+			"fromPixels": [12.8, 24],
+			"toPixels": [51.2, 24],
+			"radiusPixels": 5.76,
+			"interiorMarginPixels": 0.000001,
+			"samplePosition": "pixel centers",
+			"expectedPixels": 568,
+			"expectedPositiveAlphaPixels": 459,
+			"expectedTransparentPixels": 109,
+			"rule": "Independently defined positive-alpha full-melt plateau equals original source RGBA exactly. Transparent plateau pixels equal RGBA0, not authored poison RGB."
+		},
+		"nativeExactEquivalenceGroups": [
+			["static-ice", "before-stamp", "recovered"],
+			["stamp-full", "hold-end"]
+		],
+		"emptyCases": "Both bypass cases require zero actual native resolver passes and exact original source/expected fixture bytes; they are not GPU readback evidence.",
+		"defaultDiagnosticCanonicalPair": "For each matching case, default canvasRgba equals diagnostic canvasRgba bytewise.",
+		"presentationFidelityPairs": [
+			["rawCanvasRgba", "nativeRgba"],
+			["canvasRgba", "canonicalNativeRgba"]
+		],
+		"doNotRequire": "Canonical-ingress Canvas and raw-ingress Canvas need not be byte-identical. Their inputs differ honestly."
+	},
+	"preOutputRationale": {
+		"recordKind": "Independent stdout-only mathematical/quantization analysis, not production measurements",
+		"sourceQuantizationAssumption": "Nearest 8-bit premultiply/unpremultiply. Partial-alpha premultiplied error <= 0.5 + 96/(2*255) = 0.6882352941; whole-frame mean <= 424/3072 * 0.6882352941 = 0.09499080882. This is conditional on the stated model, not a browser guarantee.",
+		"hypotheticalActiveOracleSourceQuantization": {
+			"maxRawRgbError": 1,
+			"largestMeanRawRgbError": 0.05653211805555555
+		},
+		"hypotheticalActiveSourceAndPresentationQuantization": {
+			"maxPremultipliedRgbError": 1,
+			"largestMeanPremultipliedRgbError": 0.042607485702614266
+		},
+		"negativeSensitivity": "Wrong stamp/recovery/seed, R/B swap, ignored effect, premultiplied RGB returned as straight, alpha +1 and global one-channel +1 fail their relevant gates. A sparse hidden-RGB leak may pass scalar gates and must fail the exact transparent-pixel invariant.",
+		"limitation": "No universal whole-shader f32/trigonometric error proof. Hard invariants and artifact fidelity checks are mandatory in addition to the scalar policies. Frozen expectations remain unchanged."
+	},
+	"requiredBeforeRuntimeAcceptance": [
+		"Fresh matching default and diagnostic WASM, actual raw API and default ABI absence",
+		"Full source/package/build/runtime/backend provenance checks",
+		"Serial real GPU execution and separate hard-invariant artifact audit",
+		"Rejection recovery and resource cleanup",
+		"Host/editor persistence/history and independent encoded-video validation"
+	]
+}

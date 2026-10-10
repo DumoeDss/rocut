@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-09",
+  "status": "cpu-verified",
+  "overallGoalComplete": false,
+  "scope": "First video-add lifecycle cancellation in sequential SceneExporter exports; no browser resource reclamation claim",
+  "implementation": {
+    "helper": "packages/editor-classic/src/services/renderer/export-output-lifetime.ts",
+    "integration": "packages/editor-classic/src/services/renderer/scene-exporter.ts",
+    "dependencyVersion": "mediabunny 1.48.1",
+    "dependencyModified": false
+  },
+  "evidence": [
+    {
+      "path": "C:/tmps/high-chroma-cancel-fix-a237b89fdcaa/handoff.json",
+      "sha256": "6291d420caffcbb3f754d6f6c00405c45e2d7ca27285218b5c123749c53da22d",
+      "purpose": "Implementation validation; 8 real-library and 7 exporter CPU scenarios, targeted lint/format/types"
+    },
+    {
+      "path": "C:/tmps/high-chroma-cancel-review-strict-kAPDJF/review.json",
+      "sha256": "c02173ad08e81e2b11b649a34587c1380aa0755a10f244057d38c29f12dfbec4",
+      "purpose": "Independent 15-scenario lifecycle review, including preserved old leak control"
+    },
+    {
+      "path": "C:/tmps/high-chroma-cancel-0d24dd95d3c8/report.json",
+      "sha256": "c936924214860c0a589f8d0eabcaba9c9c7712ba547c885de0ff2fc6c3259a2a",
+      "purpose": "Immutable original negative control"
+    }
+  ],
+  "sources": [
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\packages\\editor-classic\\src\\services\\renderer\\export-output-lifetime.ts",
+      "sha256": "8084a42edb8cb2a342031aefcbe42b96ce207d571f7da791b785133cd21d9034"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\packages\\editor-classic\\src\\services\\renderer\\scene-exporter.ts",
+      "sha256": "df6ed93753c6df73f3318ea11d91fc1ed2004821be7ffeb0605a71e9ab693ebf"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\packages\\editor-classic\\src\\services\\renderer\\__tests__\\export-output-lifetime.test.ts",
+      "sha256": "034e2b6027cfa6493dff24ec9c243aa7d433990ba25512e108fc1ad8d17c4439"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\packages\\editor-classic\\src\\services\\renderer\\__tests__\\export-output-lifetime-native-fixture.ts",
+      "sha256": "b0f430a11256e0e230126397406a1b5064ac504b36e2c974680fd8cf53b41b8a"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\packages\\editor-classic\\src\\services\\renderer\\__tests__\\scene-exporter-cancel.test.ts",
+      "sha256": "31dd57c8c398332bab2a500a65690180e4ec2a85dadc655892cb320b7b545199"
+    }
+  ],
+  "verified": {
+    "independentCases": 15,
+    "sourceInputsUnchanged": true,
+    "unhandledRejections": 0,
+    "uncaughtExceptions": 0,
+    "actualPublicMediabunny": true,
+    "actualSceneExporter": true,
+    "actualCompositorRunExclusive": true,
+    "lateSuccessRejectUnsupported": true,
+    "callbackCancellationReentry": true,
+    "captureHeldUntilRealDrain": true,
+    "exactlyOncePublicCleanup": true,
+    "oldLeakNegativeControlPreserved": true
+  },
+  "testSeams": [
+    "VideoEncoder",
+    "VideoFrame",
+    "OffscreenCanvas",
+    "CanvasRenderer pixel path",
+    "WASM time conversion and constants",
+    "video bitrate/options preflight",
+    "render perf diagnostics"
+  ],
+  "limitations": [
+    "No real browser codec or physical resource reclamation measurement",
+    "No pixel/bitstream/WASM/Electron verification",
+    "CPU CanvasRenderer seam uses actual compositor.runExclusive but does not render pixels",
+    "Only sequential frame submission used by production is covered",
+    "Cancelled terminal may precede deferred cleanup; late cleanup errors remain observed on capture rather than creating a second terminal event",
+    "Permanently pending native capability queries cannot be forcibly aborted through the public API; a 50ms observation retains the actual drain and lock.",
+    "Audio startup, output.start and output.finalize are outside this fix.",
+    "Frozen 4:4:4 export evidence was not rerun or rewritten; the new lifecycle source is separately CPU-verified."
+  ],
+  "remaining": [
+    "Real browser codec cancellation/resource lifecycle acceptance",
+    "Blaze and the remaining 8 N effect entries",
+    "P8 runtime pack, installed-plugin acceptance and release"
+  ],
+  "ledger": {
+    "verifiedSubsets": 27,
+    "pendingEntries": 8
+  }
+}

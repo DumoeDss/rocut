@@ -1,0 +1,1914 @@
+{
+  "date": "2026-10-10",
+  "status": "passed-frozen-snapshot-runtime",
+  "archiveKind": "selected immutable receipt projection; full raw receipt retained at original path",
+  "original": {
+    "path": "C:/tmps/object-wasm-runtime-yB218D/evidence.json",
+    "sha256": "18617b42b5f5b42e0ced054146573010f9b47ae6c200694c1d29b5ee5f891f96"
+  },
+  "scope": "Frozen private development snapshot only; not current HEAD release consistency, full ABI certification, browser/GPU pixels, encoded export or installation",
+  "package": {
+    "path": "C:/tmps/object-wasm-development-5aSyix/pkg",
+    "wasmSha256": "5d40cb7ae4e0fed4d7c7b81d1ef7617b5d874ec5dd6fbead2da03fbc8d021560",
+    "files": [
+      {
+        "path": "C:\\tmps\\object-wasm-development-5aSyix\\pkg\\.gitignore",
+        "bytes": 1,
+        "sha256": "684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1"
+      },
+      {
+        "path": "C:\\tmps\\object-wasm-development-5aSyix\\pkg\\LICENSE",
+        "bytes": 1060,
+        "sha256": "814632368a8331fd1f485f4bd4b7ecb6401e5f2a24fba79cd3e21aff8ca39a6e"
+      },
+      {
+        "path": "C:\\tmps\\object-wasm-development-5aSyix\\pkg\\NOTICE",
+        "bytes": 17150,
+        "sha256": "1111d13303b79967e726d09b1ca99d9183dea59e8e8343ceaccfa18a8bc11fe4"
+      },
+      {
+        "path": "C:\\tmps\\object-wasm-development-5aSyix\\pkg\\README.md",
+        "bytes": 2649,
+        "sha256": "c8fe27ab5d2e12963e1f04571549afc9828060f4dfec85e6afaa188d3d90a128"
+      },
+      {
+        "path": "C:\\tmps\\object-wasm-development-5aSyix\\pkg\\opencut_wasm.d.ts",
+        "bytes": 41854,
+        "sha256": "05582f14e88ccc278ea5b76252868ce6c0d555897431a15a678f24e5d2a64264"
+      },
+      {
+        "path": "C:\\tmps\\object-wasm-development-5aSyix\\pkg\\opencut_wasm.js",
+        "bytes": 3448,
+        "sha256": "cba295ef8f1f0a38532dee0dfe0b294095be6a52efd45361e2783eeec45a8f8f"
+      },
+      {
+        "path": "C:\\tmps\\object-wasm-development-5aSyix\\pkg\\opencut_wasm_bg.js",
+        "bytes": 190116,
+        "sha256": "5de456a60c34d9a6cdad29b13d277e0374bcabc6f60569ea85933c54bddc2d17"
+      },
+      {
+        "path": "C:\\tmps\\object-wasm-development-5aSyix\\pkg\\opencut_wasm_bg.wasm",
+        "bytes": 18284725,
+        "sha256": "5d40cb7ae4e0fed4d7c7b81d1ef7617b5d874ec5dd6fbead2da03fbc8d021560"
+      },
+      {
+        "path": "C:\\tmps\\object-wasm-development-5aSyix\\pkg\\opencut_wasm_bg.wasm.d.ts",
+        "bytes": 17104,
+        "sha256": "7d7001adf29fc82fcf46f9f912c210d618db15cb6bc0e9c579020a177d0e0659"
+      },
+      {
+        "path": "C:\\tmps\\object-wasm-development-5aSyix\\pkg\\opencut_wasm_sync.js",
+        "bytes": 4545,
+        "sha256": "fe9670e0607d7e0aefcaf35f32a78cb6b5dcd8b4e097876791eb851aaaf09d70"
+      },
+      {
+        "path": "C:\\tmps\\object-wasm-development-5aSyix\\pkg\\package.json",
+        "bytes": 843,
+        "sha256": "60502f95b49df31dd41e5be0ada1826e0693b30a525d3b49da73f4e106a1a4b4"
+      }
+    ]
+  },
+  "gates": {
+    "ok": true,
+    "calls": 31,
+    "results": [
+      {
+        "name": "resolveGlassObjectParamsJson",
+        "input": {
+          "version": 1
+        },
+        "response": {
+          "ok": true,
+          "params": {
+            "attenuationDistance": 1000,
+            "color": "#ffffff",
+            "dispersion": 0,
+            "environmentIntensity": 1,
+            "ior": 1.5,
+            "roughness": 0.1,
+            "thickness": 0.5,
+            "transmission": 1,
+            "version": 1
+          },
+          "version": 1
+        }
+      },
+      {
+        "name": "resolveGlassObjectParamsJson",
+        "input": {
+          "version": 1,
+          "roughness": 0.123456789012345,
+          "ior": 1.625,
+          "dispersion": 0.125
+        },
+        "response": {
+          "ok": true,
+          "params": {
+            "attenuationDistance": 1000,
+            "color": "#ffffff",
+            "dispersion": 0.125,
+            "environmentIntensity": 1,
+            "ior": 1.625,
+            "roughness": 0.123456789012345,
+            "thickness": 0.5,
+            "transmission": 1,
+            "version": 1
+          },
+          "version": 1
+        }
+      },
+      {
+        "name": "resolveGlassObjectParamsJson",
+        "input": {
+          "version": 1,
+          "ior": 9
+        },
+        "response": {
+          "error": {
+            "code": "range",
+            "message": "Glass Object requires a finite value within the declared range",
+            "path": "ior"
+          },
+          "ok": false,
+          "version": 1
+        }
+      },
+      {
+        "name": "resolveGlassObjectParamsJson",
+        "input": {
+          "version": 1,
+          "frameTime": 1
+        },
+        "response": {
+          "error": {
+            "code": "json",
+            "message": "Glass Object requires a strict versioned parameter object",
+            "path": "params"
+          },
+          "ok": false,
+          "version": 1
+        }
+      },
+      {
+        "name": "resolveGlassObjectParamsJson",
+        "input": "{\"version\":1,\"roughness\":1e999}",
+        "response": {
+          "error": {
+            "code": "json",
+            "message": "Glass Object requires a strict versioned parameter object",
+            "path": "params"
+          },
+          "ok": false,
+          "version": 1
+        }
+      },
+      {
+        "name": "resolveGlassObjectParamsJson",
+        "input": "{\"version\":1,\"ior\":1.5,\"ior\":1.6}",
+        "response": {
+          "error": {
+            "code": "json",
+            "message": "Glass Object requires a strict versioned parameter object",
+            "path": "params"
+          },
+          "ok": false,
+          "version": 1
+        }
+      },
+      {
+        "name": "resolveInkObjectParamsJson",
+        "input": {
+          "version": 1
+        },
+        "response": {
+          "ok": true,
+          "params": {
+            "contourWidth": 2,
+            "inkColor": "#182026",
+            "inkDensity": 0.85,
+            "paperColor": "#f2ead8",
+            "paperScale": 32,
+            "paperTexture": 0.15,
+            "seed": 19,
+            "version": 1
+          },
+          "version": 1
+        }
+      },
+      {
+        "name": "resolveInkObjectParamsJson",
+        "input": {
+          "version": 1,
+          "contourWidth": 1.125,
+          "seed": 65535
+        },
+        "response": {
+          "ok": true,
+          "params": {
+            "contourWidth": 1.125,
+            "inkColor": "#182026",
+            "inkDensity": 0.85,
+            "paperColor": "#f2ead8",
+            "paperScale": 32,
+            "paperTexture": 0.15,
+            "seed": 65535,
+            "version": 1
+          },
+          "version": 1
+        }
+      },
+      {
+        "name": "resolveInkObjectParamsJson",
+        "input": {
+          "version": 1,
+          "seed": 1.5
+        },
+        "response": {
+          "error": {
+            "code": "json",
+            "message": "Ink Object requires a strict versioned parameter object",
+            "path": "params"
+          },
+          "ok": false,
+          "version": 1
+        }
+      },
+      {
+        "name": "resolveInkObjectParamsJson",
+        "input": {
+          "version": 1,
+          "seed": -1
+        },
+        "response": {
+          "error": {
+            "code": "json",
+            "message": "Ink Object requires a strict versioned parameter object",
+            "path": "params"
+          },
+          "ok": false,
+          "version": 1
+        }
+      },
+      {
+        "name": "resolveInkObjectParamsJson",
+        "input": {
+          "version": 1,
+          "inkDensity": 2
+        },
+        "response": {
+          "error": {
+            "code": "range",
+            "message": "Ink Object requires a finite value in range",
+            "path": "inkDensity"
+          },
+          "ok": false,
+          "version": 1
+        }
+      },
+      {
+        "name": "resolveInkObjectParamsJson",
+        "input": {
+          "version": 1,
+          "time": 1
+        },
+        "response": {
+          "error": {
+            "code": "json",
+            "message": "Ink Object requires a strict versioned parameter object",
+            "path": "params"
+          },
+          "ok": false,
+          "version": 1
+        }
+      },
+      {
+        "name": "resolveInkObjectParamsJson",
+        "input": "{\"version\":1,\"seed\":1,\"seed\":2}",
+        "response": {
+          "error": {
+            "code": "json",
+            "message": "Ink Object requires a strict versioned parameter object",
+            "path": "params"
+          },
+          "ok": false,
+          "version": 1
+        }
+      },
+      {
+        "name": "resolveLiquidObjectParamsJson",
+        "input": {
+          "version": 1
+        },
+        "response": {
+          "ok": true,
+          "params": {
+            "amount": 0.35,
+            "enabled": true,
+            "frequency": 4,
+            "speed": 1,
+            "twist": 0.5,
+            "version": 1
+          },
+          "version": 1
+        }
+      },
+      {
+        "name": "resolveLiquidObjectParamsJson",
+        "input": {
+          "version": 1,
+          "amount": 2
+        },
+        "response": {
+          "error": {
+            "code": "range",
+            "message": "finite parameter outside declared range",
+            "path": "amount"
+          },
+          "ok": false,
+          "version": 1
+        }
+      },
+      {
+        "name": "resolveLiquidObjectParamsJson",
+        "input": {
+          "version": 1,
+          "seed": 19
+        },
+        "response": {
+          "error": {
+            "code": "json",
+            "message": "strict versioned Liquid Object parameters required",
+            "path": "params"
+          },
+          "ok": false,
+          "version": 1
+        }
+      },
+      {
+        "name": "resolveLiquidObjectParamsJson",
+        "input": {
+          "version": 1,
+          "time": 1
+        },
+        "response": {
+          "error": {
+            "code": "json",
+            "message": "strict versioned Liquid Object parameters required",
+            "path": "params"
+          },
+          "ok": false,
+          "version": 1
+        }
+      },
+      {
+        "name": "resolveLiquidObjectParamsJson",
+        "input": "{\"version\":1,\"speed\":1e999}",
+        "response": {
+          "error": {
+            "code": "json",
+            "message": "strict versioned Liquid Object parameters required",
+            "path": "params"
+          },
+          "ok": false,
+          "version": 1
+        }
+      },
+      {
+        "name": "resolveLiquidObjectParamsJson",
+        "input": "{\"version\":1,\"amount\":0.2,\"amount\":0.3}",
+        "response": {
+          "error": {
+            "code": "json",
+            "message": "strict versioned Liquid Object parameters required",
+            "path": "params"
+          },
+          "ok": false,
+          "version": 1
+        }
+      },
+      {
+        "name": "evaluateLiquidObjectFrameJson",
+        "input": {
+          "version": 1,
+          "params": {
+            "amount": 0.35,
+            "enabled": true,
+            "frequency": 4,
+            "speed": 1,
+            "twist": 0.5,
+            "version": 1
+          },
+          "time": 0.25,
+          "seed": 19,
+          "positions": [
+            -1,
+            -1,
+            -1,
+            1,
+            1,
+            1,
+            1,
+            -1,
+            0,
+            -1,
+            1,
+            0
+          ]
+        },
+        "response": {
+          "frame": {
+            "positions": [
+              -1.0622778162465794,
+              -0.9599907092845827,
+              -1.0172534053318125,
+              0.9168410752613628,
+              0.9373507440560552,
+              0.957421159928309,
+              1.0542180555523912,
+              -0.945534877440071,
+              -0.022825118677915507,
+              -0.9309028165781629,
+              0.9311209833720144,
+              -0.020155191949229923
+            ],
+            "restore": false
+          },
+          "ok": true,
+          "version": 1
+        }
+      },
+      {
+        "name": "evaluateLiquidObjectFrameJson",
+        "input": {
+          "version": 1,
+          "params": {
+            "amount": 0.35,
+            "enabled": true,
+            "frequency": 4,
+            "speed": 1,
+            "twist": 0.5,
+            "version": 1
+          },
+          "time": 0.75,
+          "seed": 19,
+          "positions": [
+            -1,
+            -1,
+            -1,
+            1,
+            1,
+            1,
+            1,
+            -1,
+            0,
+            -1,
+            1,
+            0
+          ]
+        },
+        "response": {
+          "frame": {
+            "positions": [
+              -1.0658415390081306,
+              -0.9924263425171517,
+              -0.9457225619765596,
+              0.8729573207424872,
+              0.9300495048448854,
+              0.9838341725547712,
+              1.0248906224145515,
+              -0.9732837323547344,
+              -0.06120054194316872,
+              -0.9319110572137125,
+              0.9335710772586258,
+              -0.055648339927186305
+            ],
+            "restore": false
+          },
+          "ok": true,
+          "version": 1
+        }
+      },
+      {
+        "name": "evaluateLiquidObjectFrameJson",
+        "input": {
+          "version": 1,
+          "params": {
+            "amount": 0.35,
+            "enabled": true,
+            "frequency": 4,
+            "speed": 1,
+            "twist": 0.5,
+            "version": 1
+          },
+          "time": 0.25,
+          "seed": 19,
+          "positions": [
+            -1,
+            -1,
+            -1,
+            1,
+            1,
+            1,
+            1,
+            -1,
+            0,
+            -1,
+            1,
+            0
+          ]
+        },
+        "response": {
+          "frame": {
+            "positions": [
+              -1.0622778162465794,
+              -0.9599907092845827,
+              -1.0172534053318125,
+              0.9168410752613628,
+              0.9373507440560552,
+              0.957421159928309,
+              1.0542180555523912,
+              -0.945534877440071,
+              -0.022825118677915507,
+              -0.9309028165781629,
+              0.9311209833720144,
+              -0.020155191949229923
+            ],
+            "restore": false
+          },
+          "ok": true,
+          "version": 1
+        }
+      },
+      {
+        "name": "evaluateLiquidObjectFrameJson",
+        "input": {
+          "version": 1,
+          "params": {
+            "amount": 0.35,
+            "enabled": false,
+            "frequency": 4,
+            "speed": 1,
+            "twist": 0.5,
+            "version": 1
+          },
+          "time": 0.25,
+          "seed": 19,
+          "positions": [
+            -1,
+            -1,
+            -1,
+            1,
+            1,
+            1,
+            1,
+            -1,
+            0,
+            -1,
+            1,
+            0
+          ]
+        },
+        "response": {
+          "frame": {
+            "positions": [
+              -1,
+              -1,
+              -1,
+              1,
+              1,
+              1,
+              1,
+              -1,
+              0,
+              -1,
+              1,
+              0
+            ],
+            "restore": true
+          },
+          "ok": true,
+          "version": 1
+        }
+      },
+      {
+        "name": "evaluateLiquidObjectFrameJson",
+        "input": {
+          "version": 1,
+          "params": {
+            "amount": 0,
+            "enabled": true,
+            "frequency": 4,
+            "speed": 1,
+            "twist": 0.5,
+            "version": 1
+          },
+          "time": 0.25,
+          "seed": 19,
+          "positions": [
+            -1,
+            -1,
+            -1,
+            1,
+            1,
+            1,
+            1,
+            -1,
+            0,
+            -1,
+            1,
+            0
+          ]
+        },
+        "response": {
+          "frame": {
+            "positions": [
+              -1,
+              -1,
+              -1,
+              1,
+              1,
+              1,
+              1,
+              -1,
+              0,
+              -1,
+              1,
+              0
+            ],
+            "restore": true
+          },
+          "ok": true,
+          "version": 1
+        }
+      },
+      {
+        "name": "evaluateLiquidObjectFrameJson",
+        "input": {
+          "version": 1,
+          "params": {
+            "amount": 0.35,
+            "enabled": true,
+            "frequency": 4,
+            "speed": 1,
+            "twist": 0.5,
+            "version": 1
+          },
+          "time": 0.25,
+          "seed": 1.5,
+          "positions": [
+            -1,
+            -1,
+            -1,
+            1,
+            1,
+            1,
+            1,
+            -1,
+            0,
+            -1,
+            1,
+            0
+          ]
+        },
+        "response": {
+          "error": {
+            "code": "json",
+            "message": "strict frame request required",
+            "path": "request"
+          },
+          "ok": false,
+          "version": 1
+        }
+      },
+      {
+        "name": "evaluateLiquidObjectFrameJson",
+        "input": {
+          "version": 1,
+          "params": {
+            "amount": 0.35,
+            "enabled": true,
+            "frequency": 4,
+            "speed": 1,
+            "twist": 0.5,
+            "version": 1
+          },
+          "time": 0.25,
+          "seed": -1,
+          "positions": [
+            -1,
+            -1,
+            -1,
+            1,
+            1,
+            1,
+            1,
+            -1,
+            0,
+            -1,
+            1,
+            0
+          ]
+        },
+        "response": {
+          "error": {
+            "code": "json",
+            "message": "strict frame request required",
+            "path": "request"
+          },
+          "ok": false,
+          "version": 1
+        }
+      },
+      {
+        "name": "evaluateLiquidObjectFrameJson",
+        "input": {
+          "version": 1,
+          "params": {
+            "amount": 0.35,
+            "enabled": true,
+            "frequency": 4,
+            "speed": 1,
+            "twist": 0.5,
+            "version": 1
+          },
+          "time": -1,
+          "seed": 19,
+          "positions": [
+            -1,
+            -1,
+            -1,
+            1,
+            1,
+            1,
+            1,
+            -1,
+            0,
+            -1,
+            1,
+            0
+          ]
+        },
+        "response": {
+          "error": {
+            "code": "geometry",
+            "message": "absolute frame time must be finite seconds within 0..86400",
+            "path": "frame"
+          },
+          "ok": false,
+          "version": 1
+        }
+      },
+      {
+        "name": "evaluateLiquidObjectFrameJson",
+        "input": {
+          "version": 1,
+          "params": {
+            "amount": 0.35,
+            "enabled": true,
+            "frequency": 4,
+            "speed": 1,
+            "twist": 0.5,
+            "version": 1
+          },
+          "time": 86401,
+          "seed": 19,
+          "positions": [
+            -1,
+            -1,
+            -1,
+            1,
+            1,
+            1,
+            1,
+            -1,
+            0,
+            -1,
+            1,
+            0
+          ]
+        },
+        "response": {
+          "error": {
+            "code": "geometry",
+            "message": "absolute frame time must be finite seconds within 0..86400",
+            "path": "frame"
+          },
+          "ok": false,
+          "version": 1
+        }
+      },
+      {
+        "name": "evaluateLiquidObjectFrameJson",
+        "input": {
+          "version": 1,
+          "params": {
+            "amount": 0.35,
+            "enabled": true,
+            "frequency": 4,
+            "speed": 1,
+            "twist": 0.5,
+            "version": 1
+          },
+          "time": 0.25,
+          "seed": 19,
+          "positions": [
+            -1,
+            -1,
+            -1,
+            1,
+            1,
+            1,
+            1,
+            -1,
+            0,
+            -1,
+            1,
+            0
+          ],
+          "dt": 0.1
+        },
+        "response": {
+          "error": {
+            "code": "json",
+            "message": "strict frame request required",
+            "path": "request"
+          },
+          "ok": false,
+          "version": 1
+        }
+      },
+      {
+        "name": "evaluateLiquidObjectFrameJson",
+        "input": {
+          "version": 1,
+          "params": {
+            "amount": 0.35,
+            "enabled": true,
+            "frequency": 4,
+            "speed": 1,
+            "twist": 0.5,
+            "version": 1
+          },
+          "time": 0.25,
+          "seed": 19,
+          "positions": [
+            1,
+            2
+          ]
+        },
+        "response": {
+          "error": {
+            "code": "geometry",
+            "message": "positions must contain 1..100000 xyz vertices",
+            "path": "frame"
+          },
+          "ok": false,
+          "version": 1
+        }
+      },
+      {
+        "name": "evaluateLiquidObjectFrameJson",
+        "input": {
+          "version": 1,
+          "params": {
+            "amount": 0.35,
+            "enabled": true,
+            "frequency": 4,
+            "speed": 1,
+            "twist": 0.5,
+            "version": 1
+          },
+          "time": 0.25,
+          "seed": 19,
+          "positions": [
+            1000001,
+            0,
+            0
+          ]
+        },
+        "response": {
+          "error": {
+            "code": "geometry",
+            "message": "rest positions must be finite and within +/-1000000",
+            "path": "frame"
+          },
+          "ok": false,
+          "version": 1
+        }
+      }
+    ]
+  },
+  "wasmExports": [
+    {
+      "name": "memory",
+      "kind": "memory"
+    },
+    {
+      "name": "createCompositor",
+      "kind": "function"
+    },
+    {
+      "name": "initCompositor",
+      "kind": "function"
+    },
+    {
+      "name": "resizeCompositorForHandle",
+      "kind": "function"
+    },
+    {
+      "name": "resizeCompositor",
+      "kind": "function"
+    },
+    {
+      "name": "getCompositorCanvasForHandle",
+      "kind": "function"
+    },
+    {
+      "name": "getCompositorCanvas",
+      "kind": "function"
+    },
+    {
+      "name": "uploadTextureForHandle",
+      "kind": "function"
+    },
+    {
+      "name": "uploadTexture",
+      "kind": "function"
+    },
+    {
+      "name": "releaseTextureForHandle",
+      "kind": "function"
+    },
+    {
+      "name": "releaseTexture",
+      "kind": "function"
+    },
+    {
+      "name": "renderFrameForHandle",
+      "kind": "function"
+    },
+    {
+      "name": "renderFrame",
+      "kind": "function"
+    },
+    {
+      "name": "disposeCompositor",
+      "kind": "function"
+    },
+    {
+      "name": "__wbg_mvimagepreprocessowner_free",
+      "kind": "function"
+    },
+    {
+      "name": "mvimagepreprocessowner_new",
+      "kind": "function"
+    },
+    {
+      "name": "mvimagepreprocessowner_request",
+      "kind": "function"
+    },
+    {
+      "name": "mvimagepreprocessowner_key",
+      "kind": "function"
+    },
+    {
+      "name": "mvimagepreprocessowner_admit",
+      "kind": "function"
+    },
+    {
+      "name": "mvimagepreprocessowner_begin",
+      "kind": "function"
+    },
+    {
+      "name": "mvimagepreprocessowner_step",
+      "kind": "function"
+    },
+    {
+      "name": "mvimagepreprocessowner_take",
+      "kind": "function"
+    },
+    {
+      "name": "mvimagepreprocessowner_dispose",
+      "kind": "function"
+    },
+    {
+      "name": "__wbg_mvjzowner_free",
+      "kind": "function"
+    },
+    {
+      "name": "mvjzowner_new",
+      "kind": "function"
+    },
+    {
+      "name": "mvjzowner_prepare",
+      "kind": "function"
+    },
+    {
+      "name": "mvjzowner_preparedJson",
+      "kind": "function"
+    },
+    {
+      "name": "mvjzowner_frame",
+      "kind": "function"
+    },
+    {
+      "name": "mvjzowner_finishFrame",
+      "kind": "function"
+    },
+    {
+      "name": "mvjzowner_checkText",
+      "kind": "function"
+    },
+    {
+      "name": "mvjzowner_release",
+      "kind": "function"
+    },
+    {
+      "name": "mvjzowner_dispose",
+      "kind": "function"
+    },
+    {
+      "name": "__wbg_mvlutatlasowner_free",
+      "kind": "function"
+    },
+    {
+      "name": "mvlutatlasowner_new",
+      "kind": "function"
+    },
+    {
+      "name": "mvlutatlasowner_prepare",
+      "kind": "function"
+    },
+    {
+      "name": "mvlutatlasowner_sample",
+      "kind": "function"
+    },
+    {
+      "name": "mvlutatlasowner_resolveParameters",
+      "kind": "function"
+    },
+    {
+      "name": "mvlutatlasowner_bindRow",
+      "kind": "function"
+    },
+    {
+      "name": "mvlutatlasowner_rowPixels",
+      "kind": "function"
+    },
+    {
+      "name": "mvlutatlasowner_dispose",
+      "kind": "function"
+    },
+    {
+      "name": "mvlutatlasowner_clear",
+      "kind": "function"
+    },
+    {
+      "name": "__wbg_mvmemoriesowner_free",
+      "kind": "function"
+    },
+    {
+      "name": "__wbg_mvmemoriesstage_free",
+      "kind": "function"
+    },
+    {
+      "name": "__wbg_mvmemoriesoutput_free",
+      "kind": "function"
+    },
+    {
+      "name": "__wbg_mvmemoriespreparation_free",
+      "kind": "function"
+    },
+    {
+      "name": "mvmemoriesowner_sourceRequestsJson",
+      "kind": "function"
+    },
+    {
+      "name": "mvmemoriesowner_reserve",
+      "kind": "function"
+    },
+    {
+      "name": "mvmemoriesowner_sourceAdmissionJson",
+      "kind": "function"
+    },
+    {
+      "name": "mvmemoriesowner_prepareReserved",
+      "kind": "function"
+    },
+    {
+      "name": "mvmemoriesowner_new",
+      "kind": "function"
+    },
+    {
+      "name": "mvmemoriesowner_capabilityJson",
+      "kind": "function"
+    },
+    {
+      "name": "mvmemoriesowner_diagnosticJson",
+      "kind": "function"
+    },
+    {
+      "name": "mvmemoriesowner_measurementRequestsJson",
+      "kind": "function"
+    },
+    {
+      "name": "mvmemoriesowner_prepare",
+      "kind": "function"
+    },
+    {
+      "name": "mvmemoriesowner_beginStage",
+      "kind": "function"
+    },
+    {
+      "name": "mvmemoriesowner_acceptStage",
+      "kind": "function"
+    },
+    {
+      "name": "mvmemoriesowner_cancelStage",
+      "kind": "function"
+    },
+    {
+      "name": "mvmemoriesowner_preparedJson",
+      "kind": "function"
+    },
+    {
+      "name": "mvmemoriesowner_preparedBytes",
+      "kind": "function"
+    },
+    {
+      "name": "mvmemoriesowner_frame",
+      "kind": "function"
+    },
+    {
+      "name": "mvmemoriesowner_finishFrame",
+      "kind": "function"
+    },
+    {
+      "name": "mvmemoriesowner_cancel",
+      "kind": "function"
+    },
+    {
+      "name": "mvmemoriesowner_dispose",
+      "kind": "function"
+    },
+    {
+      "name": "mvmemoriesstage_json",
+      "kind": "function"
+    },
+    {
+      "name": "mvmemoriesstage_bytes",
+      "kind": "function"
+    },
+    {
+      "name": "mvmemoriesoutput_json",
+      "kind": "function"
+    },
+    {
+      "name": "mvmemoriesoutput_bytes",
+      "kind": "function"
+    },
+    {
+      "name": "applyMaskFeather",
+      "kind": "function"
+    },
+    {
+      "name": "__wbg_mvnightowner_free",
+      "kind": "function"
+    },
+    {
+      "name": "mvnightowner_new",
+      "kind": "function"
+    },
+    {
+      "name": "mvnightowner_preflight",
+      "kind": "function"
+    },
+    {
+      "name": "mvnightowner_prepare",
+      "kind": "function"
+    },
+    {
+      "name": "mvnightowner_bindDecoded",
+      "kind": "function"
+    },
+    {
+      "name": "mvnightowner_bindReflection",
+      "kind": "function"
+    },
+    {
+      "name": "mvnightowner_prepareLut",
+      "kind": "function"
+    },
+    {
+      "name": "mvnightowner_bindLutRow",
+      "kind": "function"
+    },
+    {
+      "name": "mvnightowner_evaluate",
+      "kind": "function"
+    },
+    {
+      "name": "mvnightowner_releaseFrame",
+      "kind": "function"
+    },
+    {
+      "name": "mvnightowner_diagnostic",
+      "kind": "function"
+    },
+    {
+      "name": "mvnightowner_dispose",
+      "kind": "function"
+    },
+    {
+      "name": "mvnightowner_clear",
+      "kind": "function"
+    },
+    {
+      "name": "beginRenderFrameForHandle",
+      "kind": "function"
+    },
+    {
+      "name": "advanceRenderFrameForHandle",
+      "kind": "function"
+    },
+    {
+      "name": "commitRenderFrameForHandle",
+      "kind": "function"
+    },
+    {
+      "name": "applyEffectPasses",
+      "kind": "function"
+    },
+    {
+      "name": "initializeGpu",
+      "kind": "function"
+    },
+    {
+      "name": "disposeGpu",
+      "kind": "function"
+    },
+    {
+      "name": "__wbg_wasmruntimegraphicsquery_free",
+      "kind": "function"
+    },
+    {
+      "name": "wasmruntimegraphicsquery_selectedBackend",
+      "kind": "function"
+    },
+    {
+      "name": "wasmruntimegraphicsquery_concurrentCompositorInstances",
+      "kind": "function"
+    },
+    {
+      "name": "wasmruntimegraphicsquery_unavailableReason",
+      "kind": "function"
+    },
+    {
+      "name": "__wbg_wasmruntimegpuresourcequery_free",
+      "kind": "function"
+    },
+    {
+      "name": "wasmruntimegpuresourcequery_new",
+      "kind": "function"
+    },
+    {
+      "name": "wasmruntimegpuresourcequery_liveHandles",
+      "kind": "function"
+    },
+    {
+      "name": "wasmruntimegpuresourcequery_release",
+      "kind": "function"
+    },
+    {
+      "name": "wasmruntimegraphicsquery_new",
+      "kind": "function"
+    },
+    {
+      "name": "cancelRenderFrameForHandle",
+      "kind": "function"
+    },
+    {
+      "name": "resolveGlassObjectParamsJson",
+      "kind": "function"
+    },
+    {
+      "name": "resolveLiquidObjectParamsJson",
+      "kind": "function"
+    },
+    {
+      "name": "evaluateLiquidObjectFrameJson",
+      "kind": "function"
+    },
+    {
+      "name": "resolveInkObjectParamsJson",
+      "kind": "function"
+    },
+    {
+      "name": "__wbg_mvheartowner_free",
+      "kind": "function"
+    },
+    {
+      "name": "mvheartowner_new",
+      "kind": "function"
+    },
+    {
+      "name": "mvheartowner_capabilityJson",
+      "kind": "function"
+    },
+    {
+      "name": "mvheartowner_diagnosticJson",
+      "kind": "function"
+    },
+    {
+      "name": "mvheartowner_prepare",
+      "kind": "function"
+    },
+    {
+      "name": "mvheartowner_prepareSky",
+      "kind": "function"
+    },
+    {
+      "name": "mvheartowner_manifestJson",
+      "kind": "function"
+    },
+    {
+      "name": "mvheartowner_imageBytes",
+      "kind": "function"
+    },
+    {
+      "name": "mvheartowner_frameJson",
+      "kind": "function"
+    },
+    {
+      "name": "mvheartowner_cancel",
+      "kind": "function"
+    },
+    {
+      "name": "mvheartowner_dispose",
+      "kind": "function"
+    },
+    {
+      "name": "getLastFrameProfile",
+      "kind": "function"
+    },
+    {
+      "name": "resolveProgrammaticFrameTunnelJson",
+      "kind": "function"
+    },
+    {
+      "name": "normalizeOperationFingerprint",
+      "kind": "function"
+    },
+    {
+      "name": "validateImageSequenceManifestJson",
+      "kind": "function"
+    },
+    {
+      "name": "sampleParticleSurfaceJson",
+      "kind": "function"
+    },
+    {
+      "name": "resolveHyperframesAudioDiscoveryJson",
+      "kind": "function"
+    },
+    {
+      "name": "programmaticAudioPolicyJson",
+      "kind": "function"
+    },
+    {
+      "name": "resolveRemotionAudioFrameJson",
+      "kind": "function"
+    },
+    {
+      "name": "resolveEffectLayerParamsJson",
+      "kind": "function"
+    },
+    {
+      "name": "validateMasterEffectsJson",
+      "kind": "function"
+    },
+    {
+      "name": "mvRecipeCatalogJson",
+      "kind": "function"
+    },
+    {
+      "name": "validateSceneStateJson",
+      "kind": "function"
+    },
+    {
+      "name": "planSceneMutationJson",
+      "kind": "function"
+    },
+    {
+      "name": "validateImageSequenceImageBytes",
+      "kind": "function"
+    },
+    {
+      "name": "resolveNativeAudioDecodeJson",
+      "kind": "function"
+    },
+    {
+      "name": "resolveProgrammaticAudioRangeJson",
+      "kind": "function"
+    },
+    {
+      "name": "sampleScalarAnimationBatchJson",
+      "kind": "function"
+    },
+    {
+      "name": "inspectScalarAnimationDomainsJson",
+      "kind": "function"
+    },
+    {
+      "name": "particleTransportPolicyJson",
+      "kind": "function"
+    },
+    {
+      "name": "resolveProgrammaticFrameJson",
+      "kind": "function"
+    },
+    {
+      "name": "resolveHyperframesAudioFrameJson",
+      "kind": "function"
+    },
+    {
+      "name": "resolveProgrammaticAudioScheduleJson",
+      "kind": "function"
+    },
+    {
+      "name": "validateProgrammaticResourcesJson",
+      "kind": "function"
+    },
+    {
+      "name": "prepareMvAudioJson",
+      "kind": "function"
+    },
+    {
+      "name": "inspectProgrammaticImageBytes",
+      "kind": "function"
+    },
+    {
+      "name": "mixHyperframesAudioBusPcm",
+      "kind": "function"
+    },
+    {
+      "name": "mixHyperframesAudioMasterPcm",
+      "kind": "function"
+    },
+    {
+      "name": "resolveHyperframesBusFaderJson",
+      "kind": "function"
+    },
+    {
+      "name": "prepareHyperframesAudioDryTrackPcm",
+      "kind": "function"
+    },
+    {
+      "name": "applyHyperframesAudioTrackGainPcm",
+      "kind": "function"
+    },
+    {
+      "name": "resolveHyperframesAudioExecutionPlanJson",
+      "kind": "function"
+    },
+    {
+      "name": "normalizeHyperframesFxChainJson",
+      "kind": "function"
+    },
+    {
+      "name": "resolveHyperframesAudioObservationsJson",
+      "kind": "function"
+    },
+    {
+      "name": "resolveHyperframesAudioGraphJson",
+      "kind": "function"
+    },
+    {
+      "name": "resolveHyperframesAudioSeekJson",
+      "kind": "function"
+    },
+    {
+      "name": "mixProgrammaticAudioPcm",
+      "kind": "function"
+    },
+    {
+      "name": "resolveProgrammaticAudioSourceJson",
+      "kind": "function"
+    },
+    {
+      "name": "resolveVideoExportJson",
+      "kind": "function"
+    },
+    {
+      "name": "resolveRemotionProducedAssetsJson",
+      "kind": "function"
+    },
+    {
+      "name": "validateClipEditingJson",
+      "kind": "function"
+    },
+    {
+      "name": "createMotionTextSequence",
+      "kind": "function"
+    },
+    {
+      "name": "restyleMotionTextSequence",
+      "kind": "function"
+    },
+    {
+      "name": "mutateMotionTextSequence",
+      "kind": "function"
+    },
+    {
+      "name": "createMotionTextVariationCandidate",
+      "kind": "function"
+    },
+    {
+      "name": "MOTION_TEXT_PLAN_VERSION",
+      "kind": "function"
+    },
+    {
+      "name": "tokenizeMotionText",
+      "kind": "function"
+    },
+    {
+      "name": "mapMotionTextClipTime",
+      "kind": "function"
+    },
+    {
+      "name": "mapMotionTextSequenceTimeToTimeline",
+      "kind": "function"
+    },
+    {
+      "name": "planMotionTextSequence",
+      "kind": "function"
+    },
+    {
+      "name": "importJizuraMotionTextProject",
+      "kind": "function"
+    },
+    {
+      "name": "duplicateMotionTextSequence",
+      "kind": "function"
+    },
+    {
+      "name": "inspectMotionTextFont",
+      "kind": "function"
+    },
+    {
+      "name": "inspectMotionTextFontCoverage",
+      "kind": "function"
+    },
+    {
+      "name": "MOTION_TEXT_SCHEMA_VERSION",
+      "kind": "function"
+    },
+    {
+      "name": "parseMotionTextSource",
+      "kind": "function"
+    },
+    {
+      "name": "analyzeMotionTextAudio",
+      "kind": "function"
+    },
+    {
+      "name": "resolveMotionTextBeatGrid",
+      "kind": "function"
+    },
+    {
+      "name": "snapMotionTextTimeToBeat",
+      "kind": "function"
+    },
+    {
+      "name": "resolveMotionTextAudioClipBinding",
+      "kind": "function"
+    },
+    {
+      "name": "assessMotionTextAudioSync",
+      "kind": "function"
+    },
+    {
+      "name": "createMotionTextPresetPreview",
+      "kind": "function"
+    },
+    {
+      "name": "normalizeColorAdjustment",
+      "kind": "function"
+    },
+    {
+      "name": "colorAdjustmentCatalog",
+      "kind": "function"
+    },
+    {
+      "name": "resolveStylizedEffectJson",
+      "kind": "function"
+    },
+    {
+      "name": "stylizedEffectCatalogJson",
+      "kind": "function"
+    },
+    {
+      "name": "TICKS_PER_SECOND",
+      "kind": "function"
+    },
+    {
+      "name": "mediaTimeFromSeconds",
+      "kind": "function"
+    },
+    {
+      "name": "mediaTimeToSeconds",
+      "kind": "function"
+    },
+    {
+      "name": "mediaTimeFromFrame",
+      "kind": "function"
+    },
+    {
+      "name": "mediaTimeToFrame",
+      "kind": "function"
+    },
+    {
+      "name": "roundToFrame",
+      "kind": "function"
+    },
+    {
+      "name": "floorToFrame",
+      "kind": "function"
+    },
+    {
+      "name": "isFrameAligned",
+      "kind": "function"
+    },
+    {
+      "name": "lastFrameTime",
+      "kind": "function"
+    },
+    {
+      "name": "snappedSeekTime",
+      "kind": "function"
+    },
+    {
+      "name": "mediaTimeAdd",
+      "kind": "function"
+    },
+    {
+      "name": "mediaTimeSub",
+      "kind": "function"
+    },
+    {
+      "name": "mediaTimeMin",
+      "kind": "function"
+    },
+    {
+      "name": "mediaTimeMax",
+      "kind": "function"
+    },
+    {
+      "name": "mediaTimeClamp",
+      "kind": "function"
+    },
+    {
+      "name": "validateMediaTimeRange",
+      "kind": "function"
+    },
+    {
+      "name": "evaluateClipTransitions",
+      "kind": "function"
+    },
+    {
+      "name": "planFrameGrid",
+      "kind": "function"
+    },
+    {
+      "name": "isMediaSourceSpanValid",
+      "kind": "function"
+    },
+    {
+      "name": "guessTimecodeFormat",
+      "kind": "function"
+    },
+    {
+      "name": "formatTimecode",
+      "kind": "function"
+    },
+    {
+      "name": "parseTimecode",
+      "kind": "function"
+    },
+    {
+      "name": "resolveVideoSourceTime",
+      "kind": "function"
+    },
+    {
+      "name": "planVideoFreezeFrame",
+      "kind": "function"
+    },
+    {
+      "name": "planAudioSampleWindow",
+      "kind": "function"
+    },
+    {
+      "name": "planAudioMixWindow",
+      "kind": "function"
+    },
+    {
+      "name": "audioClipSampleTimes",
+      "kind": "function"
+    },
+    {
+      "name": "planClipExports",
+      "kind": "function"
+    },
+    {
+      "name": "wasm_bindgen__convert__closures_____invoke__hf7fc07325ff431aa",
+      "kind": "function"
+    },
+    {
+      "name": "wasm_bindgen__convert__closures_____invoke__h6e68ca372e8bf468",
+      "kind": "function"
+    },
+    {
+      "name": "wasm_bindgen__convert__closures_____invoke__h755062247edbbf0a",
+      "kind": "function"
+    },
+    {
+      "name": "wasm_bindgen__convert__closures_____invoke__hda92ba54d0ef34af",
+      "kind": "function"
+    },
+    {
+      "name": "__wbindgen_malloc",
+      "kind": "function"
+    },
+    {
+      "name": "__wbindgen_realloc",
+      "kind": "function"
+    },
+    {
+      "name": "__wbindgen_exn_store",
+      "kind": "function"
+    },
+    {
+      "name": "__externref_table_alloc",
+      "kind": "function"
+    },
+    {
+      "name": "__wbindgen_externrefs",
+      "kind": "table"
+    },
+    {
+      "name": "__wbindgen_free",
+      "kind": "function"
+    },
+    {
+      "name": "__wbindgen_destroy_closure",
+      "kind": "function"
+    },
+    {
+      "name": "__externref_table_dealloc",
+      "kind": "function"
+    },
+    {
+      "name": "__wbindgen_start",
+      "kind": "function"
+    }
+  ],
+  "jsExports": [
+    "MOTION_TEXT_PLAN_VERSION",
+    "MOTION_TEXT_SCHEMA_VERSION",
+    "MvHeartOwner",
+    "MvImagePreprocessOwner",
+    "MvJzOwner",
+    "MvLutAtlasOwner",
+    "MvMemoriesOutput",
+    "MvMemoriesOwner",
+    "MvMemoriesPreparation",
+    "MvMemoriesStage",
+    "MvNightOwner",
+    "TICKS_PER_SECOND",
+    "WasmRuntimeGpuResourceQuery",
+    "WasmRuntimeGraphicsQuery",
+    "advanceRenderFrameForHandle",
+    "analyzeMotionTextAudio",
+    "applyEffectPasses",
+    "applyHyperframesAudioTrackGainPcm",
+    "applyMaskFeather",
+    "assessMotionTextAudioSync",
+    "audioClipSampleTimes",
+    "beginRenderFrameForHandle",
+    "cancelRenderFrameForHandle",
+    "colorAdjustmentCatalog",
+    "commitRenderFrameForHandle",
+    "createCompositor",
+    "createMotionTextPresetPreview",
+    "createMotionTextSequence",
+    "createMotionTextVariationCandidate",
+    "disposeCompositor",
+    "disposeGpu",
+    "duplicateMotionTextSequence",
+    "evaluateClipTransitions",
+    "evaluateLiquidObjectFrameJson",
+    "floorToFrame",
+    "formatTimecode",
+    "getCompositorCanvas",
+    "getCompositorCanvasForHandle",
+    "getLastFrameProfile",
+    "guessTimecodeFormat",
+    "importJizuraMotionTextProject",
+    "initCompositor",
+    "initializeGpu",
+    "inspectMotionTextFont",
+    "inspectMotionTextFontCoverage",
+    "inspectProgrammaticImageBytes",
+    "inspectScalarAnimationDomainsJson",
+    "isFrameAligned",
+    "isMediaSourceSpanValid",
+    "lastFrameTime",
+    "mapMotionTextClipTime",
+    "mapMotionTextSequenceTimeToTimeline",
+    "mediaTimeAdd",
+    "mediaTimeClamp",
+    "mediaTimeFromFrame",
+    "mediaTimeFromSeconds",
+    "mediaTimeMax",
+    "mediaTimeMin",
+    "mediaTimeSub",
+    "mediaTimeToFrame",
+    "mediaTimeToSeconds",
+    "mixHyperframesAudioBusPcm",
+    "mixHyperframesAudioMasterPcm",
+    "mixProgrammaticAudioPcm",
+    "mutateMotionTextSequence",
+    "mvRecipeCatalogJson",
+    "normalizeColorAdjustment",
+    "normalizeHyperframesFxChainJson",
+    "normalizeOperationFingerprint",
+    "parseMotionTextSource",
+    "parseTimecode",
+    "particleTransportPolicyJson",
+    "planAudioMixWindow",
+    "planAudioSampleWindow",
+    "planClipExports",
+    "planFrameGrid",
+    "planMotionTextSequence",
+    "planSceneMutationJson",
+    "planVideoFreezeFrame",
+    "prepareHyperframesAudioDryTrackPcm",
+    "prepareMvAudioJson",
+    "programmaticAudioPolicyJson",
+    "releaseTexture",
+    "releaseTextureForHandle",
+    "renderFrame",
+    "renderFrameForHandle",
+    "resizeCompositor",
+    "resizeCompositorForHandle",
+    "resolveEffectLayerParamsJson",
+    "resolveGlassObjectParamsJson",
+    "resolveHyperframesAudioDiscoveryJson",
+    "resolveHyperframesAudioExecutionPlanJson",
+    "resolveHyperframesAudioFrameJson",
+    "resolveHyperframesAudioGraphJson",
+    "resolveHyperframesAudioObservationsJson",
+    "resolveHyperframesAudioSeekJson",
+    "resolveHyperframesBusFaderJson",
+    "resolveInkObjectParamsJson",
+    "resolveLiquidObjectParamsJson",
+    "resolveMotionTextAudioClipBinding",
+    "resolveMotionTextBeatGrid",
+    "resolveNativeAudioDecodeJson",
+    "resolveProgrammaticAudioRangeJson",
+    "resolveProgrammaticAudioScheduleJson",
+    "resolveProgrammaticAudioSourceJson",
+    "resolveProgrammaticFrameJson",
+    "resolveProgrammaticFrameTunnelJson",
+    "resolveRemotionAudioFrameJson",
+    "resolveRemotionProducedAssetsJson",
+    "resolveStylizedEffectJson",
+    "resolveVideoExportJson",
+    "resolveVideoSourceTime",
+    "restyleMotionTextSequence",
+    "roundToFrame",
+    "sampleParticleSurfaceJson",
+    "sampleScalarAnimationBatchJson",
+    "snapMotionTextTimeToBeat",
+    "snappedSeekTime",
+    "stylizedEffectCatalogJson",
+    "tokenizeMotionText",
+    "uploadTexture",
+    "uploadTextureForHandle",
+    "validateClipEditingJson",
+    "validateImageSequenceImageBytes",
+    "validateImageSequenceManifestJson",
+    "validateMasterEffectsJson",
+    "validateMediaTimeRange",
+    "validateProgrammaticResourcesJson",
+    "validateSceneStateJson"
+  ],
+  "runtimePins": {
+    "count": 1427,
+    "afterCompared": true,
+    "drift": [],
+    "inventoryScope": "Full private pkg, canonical pkg, Three tree, Creator and GPU-free fixtures; full inventory in original receipt"
+  },
+  "buildProvenance": "object-shared-wasm-build-provenance.json",
+  "hostReceipt": "glass-object-host.json"
+}

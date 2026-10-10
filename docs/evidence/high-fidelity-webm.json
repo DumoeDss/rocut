@@ -1,0 +1,154 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "in-progress",
+	"scope": "Explicit WebM VP9 Profile 1 4:4:4 export; default compatibility remains unchanged",
+	"acceptance": {
+		"productionSceneExporter": "passed for two six-frame fixtures",
+		"independentDefaultFfmpeg": "passed for the same two explicit 444 fixtures",
+		"defaultAndExplicit420": "historical output and quality failure preserved byte-for-byte",
+		"realEditorAndHostExport": "passed with two byte-identical six-frame Profile 1 yuv444p outputs and unchanged project bytes",
+		"droplets": "V for the scoped finite-droplet video subset; original stress fixture requires explicit 444 and very_high",
+		"overallGoalComplete": false
+	},
+	"contract": {
+		"field": "videoChroma",
+		"values": ["420", "444"],
+		"default": "420",
+		"highChromaContainer": "webm",
+		"qualityIndependent": true,
+		"hostProtocol": { "version": 2, "videoChroma": ["420", "444"] },
+		"paneDeclaration": { "exportProtocol": "2", "exportVideoChroma": "444" },
+		"capabilityProbeDeadlineMs": 10000,
+		"silentDowngrade": false,
+		"targetDisconnectReassignment": false
+	},
+	"inputs": {
+		"nativeSource": "C:/tmps/rocut-stylized-f6XU4z/rocut-high-chroma-source-1cG5Ni",
+		"nativeSourceManifestSha256": "d2f724737c55f03e7e704aed454019cb09e8f7123fcc1139b9f1ee837e4a8f3d",
+		"integrationSnapshot": "C:/tmps/rocut-stylized-f6XU4z/rocut-high-chroma-derived-ElkGJp",
+		"integrationManifestSha256": "ee84f311feeca1b8e2c5cf95e64a459e3d00450cd2294206084badcf5b2f5096",
+		"wasmSha256": "19a0bfeabce8ca64c96e04593bbb15e2ba864576d1e3547f28568b91f71c5fd9",
+		"sharedDependenciesReplaced": false
+	},
+	"cpu": {
+		"rustLevelTests": 3,
+		"rustVideoExportTests": 8,
+		"rendererTests": 8,
+		"realWasmAdapterTests": 2,
+		"realWasmAdapterAssertions": 11,
+		"hostCliPaneUiTests": 40,
+		"hostCliPaneUiAssertions": 183,
+		"fixtureReferenceTests": 4,
+		"fixtureReferenceAssertions": 65,
+		"fixtureNegativeControlTests": 12,
+		"hostCliPaneUiEvidence": {
+			"path": "C:/tmps/high-chroma-authoring-WVdL4q/verification.json",
+			"sha256": "5e884c19547090f5df70c43266f415c60eec6ccabb4dd8478b337c7643993b21"
+		},
+		"fixtureHandoff": {
+			"path": "C:/tmps/high-chroma-contract-nc3vTP/handoff.json",
+			"sha256": "9107d83dbfbb5f9d3867ece65d41c74d426efa6166b0a6392efa00677e429604"
+		},
+		"rendererStaticEvidence": "C:/tmps/high-chroma-renderer-static-T4Ee4N/evidence.json",
+		"wasmGates": "C:/tmps/rocut-stylized-f6XU4z/high-chroma-wasm-gates-7YBKxC/evidence.json"
+	},
+	"formalReview": {
+		"path": "C:/tmps/high-chroma-formal-review-VuwUrL/review.json",
+		"sha256": "c6e656e57a0ca6b3b839bc15ce5db4565f13589cedf16ba3ab6286d25e495928",
+		"droplets444": {
+			"browserEvidence": "C:/tmps/rocut-stylized-f6XU4z/high-chroma-444-GdRPIi/evidence.json",
+			"independentDecode": "C:/tmps/rocut-stylized-f6XU4z/high-chroma-444-GdRPIi/independent-decode.json",
+			"dimensions": [192, 128],
+			"fps": 30,
+			"frames": 6,
+			"maxMeanRgba": 6.690399,
+			"maxActiveRgb": 13.62372,
+			"accepted": true
+		},
+		"larger444": {
+			"browserEvidence": "C:/tmps/rocut-stylized-f6XU4z/high-chroma-444-7Swveu/evidence.json",
+			"independentDecode": "C:/tmps/rocut-stylized-f6XU4z/high-chroma-444-7Swveu/independent-decode.json",
+			"dimensions": [640, 360],
+			"fps": 24,
+			"frames": 6,
+			"maxMeanRgba": 0.75,
+			"maxActiveRgb": 1,
+			"accepted": true
+		},
+		"default420": "C:/tmps/rocut-stylized-f6XU4z/high-chroma-default-TX8KoW/independent-decode.json",
+		"explicit420": "C:/tmps/rocut-stylized-f6XU4z/high-chroma-420-lsA4gj/independent-decode.json",
+		"thresholds": {
+			"meanRgba": 10,
+			"activeRgb": 15,
+			"minimumActivePixels": 64,
+			"timestampSeconds": 0.0011
+		},
+		"allInputsUnchanged": true,
+		"allBrowsersAndServersClosed": true,
+		"encoderOrSceneExporterInterception": false
+	},
+	"knownExistingCancellationRisk": {
+		"path": "C:/tmps/high-chroma-cancel-0d24dd95d3c8/report.json",
+		"sha256": "c936924214860c0a589f8d0eabcaba9c9c7712ba547c885de0ff2fc6c3259a2a",
+		"description": "Mediabunny 1.48.1 can create an encoder after first-frame capability resolution arrives later than output.cancel; repeated public close/cancel cannot close that late instance. Reproduced with the real library and CPU WebCodecs stubs, not introduced by the explicit 444 preflight.",
+		"fixed": false,
+		"boundary": "The new preflight cancellation and deadline tests do not establish resource-safe cancellation for every downstream encoding stage."
+	},
+	"initialRealEditorAttempt": {
+		"path": "C:/tmps/rocut-stylized-f6XU4z/high-chroma-ui/run-a0WaVK/evidence.json",
+		"sha256": "e2f78846e22591bc3331d9cbdb206f8f1f420b725699ce972f76bb4f07952a8b",
+		"status": "stopped-before-export",
+		"passedScope": "Real protocol-2 pane attached; visible format reset, 420 default, 444 selection and independent medium-quality controls checked.",
+		"reason": "A test reused the existing-project persistence guard for a new project. First-open thumbnail and timelineViewState initialization exceeded that guard's allowed metadata differences; no Export click or Host export request had occurred.",
+		"browserAndHostClosed": true,
+		"retainedWarnings": "Optional preset-library 404, existing build warnings and Bun sideEffects warning retained.",
+		"closeRecordBoundary": "Generic afterExport-labelled fields in the initial closed.json describe only session-close persistence; this run did not export a video."
+	},
+	"realEditorAndHost": {
+		"path": "C:/tmps/rocut-stylized-f6XU4z/high-chroma-ui/run-FfLBAW/evidence.json",
+		"sha256": "668e0e14e047e6cc05f969faaa82a4579ce5697004063abf2826e5834fccc930",
+		"independentReview": {
+			"path": "C:/tmps/high-chroma-ui-v2-review-Bizql0/review.json",
+			"sha256": "5f1246d41e33cb96fadb475a672ed4638f3db2397341e3f72f005ea07a7001af",
+			"assertions": 121
+		},
+		"fixtureHandoff": {
+			"path": "C:/tmps/high-chroma-ui-authoring-jsxaPc/handoff-v2.json",
+			"sha256": "f1efc23f80d332d78c25991fea9052092b83533adb6f4bbe1a2519b6f7f39756",
+			"cpuTests": 11,
+			"cpuAssertions": 97
+		},
+		"dimensions": [640, 360],
+		"fps": 30,
+		"frames": 6,
+		"quality": "medium",
+		"uiAndHostVideoSha256": "20be20b48aaa67786e8a45d21f2e9e5ff4294919dc1dce6121e980b4d7cc423d",
+		"projectBaselineThroughReopenSha256": "de36231655c4980426bf79eeee6da0da12d0dd14773b4f77beda50c6dfda0c32",
+		"sourceManifestSha256": "22639c129cbd20bc703878d7ded16dcd008617bda474b91fa24f2d3560b39829",
+		"sourceFilesVerified": 3892,
+		"bundleManifest": {
+			"path": "C:/tmps/high-chroma-ui-build-review-7obqtE/editor-dist-byte-manifest.json",
+			"sha256": "a92f7b336db533f6147e42b026d86199f5e8b2a511abbfa09578d6f254cbef69",
+			"files": 350,
+			"bytes": 171456772,
+			"boundary": "Frozen after the first failed UI fixture and before the successful reuse; identical after reuse. Not a claim about pre-first-run bytes."
+		},
+		"browserAndHostClosed": true,
+		"pixelFidelityTested": false,
+		"retainedWarnings": "One optional preset-library 404, no WebGPU adapter and Canvas readback hint; earlier build warnings remain in the reused build's initial evidence.",
+		"firstOpenBoundary": "New-project thumbnail, view state and two synchronized timestamps were validated separately before a 1600 ms stable export baseline. No post-baseline field or byte difference was allowed."
+	},
+	"retainedAttempts": [
+		"Initial renderer cancellation fixture awaited a Bun rejection matcher before triggering abort, causing a timeout. Test order was corrected; production cancellation was unchanged.",
+		"C:/tmps/high-chroma-renderer-static-yeWvN4/evidence.json records a checker invocation from the wrong working directory failing to resolve Bun declarations. Explicit project cwd fixed the checker; no dependencies were installed."
+	],
+	"notClaimed": [
+		"Installed Elftia, Electron, runtime pack or release acceptance",
+		"Hardware encoding, WebGPU hardware or long-project performance",
+		"Lossless output, transparent video masters or universal player compatibility",
+		"Default 420 pixel-quality acceptance for the original Droplets stress fixture",
+		"Full VP9 level or decoder conformance based on input-level admission",
+		"Completion of the whole development plan"
+	]
+}

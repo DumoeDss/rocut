@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "effect": "flame-wrap",
+  "stage": "retained-production-editor-ui-first-run",
+  "ok": false,
+  "sourceEvidence": {
+    "path": "C:/tmps/flame-wrap-editor-xFMheb/evidence.json",
+    "sha256": "71949589dbe7ac9b822a959ae185d9d4264e5f63b736368ced62889ae2455cd3"
+  },
+  "uiDetailEvidence": {
+    "path": "C:/tmps/flame-wrap-editor-xFMheb/flame-wrap-editor-evidence.json",
+    "sha256": "5be0fd523f3c939a82586d22e4cd7b10761bd98d21bc4cd6c797ae5ea6f4c07b"
+  },
+  "buildEvidence": "flame-wrap-editor-production-build.json",
+  "startedAt": "2026-10-10T03:39:03.351Z",
+  "finishedAt": "2026-10-10T03:39:17.716Z",
+  "browserVersion": "151.0.7922.34",
+  "wasmSha256": "75ef560f97061951ca38a6579fb30018daeed35f782c2c1fcc492fc6cd39b8fe",
+  "observedProgress": {
+    "nineControlsCommitted": true,
+    "attachedSessionHistoryCycles": 10,
+    "additionalSpeedZeroToMotionCycle": true,
+    "completeClipUndoRedoChecked": true,
+    "otherClipsTracksProjectUnchanged": true,
+    "initialRevision": 1,
+    "lastObservedRevision": 31,
+    "seekTicks": 20000,
+    "capturedFrames": 0
+  },
+  "failure": {
+    "message": "Empty presentation frame",
+    "location": "script/fixtures/flame-wrap-editor-controls.mjs:187",
+    "pageErrorCount": 77,
+    "uniquePageError": "SecurityError reading Navigator.serviceWorker in a sandboxed context lacking allow-same-origin",
+    "httpFailureCount": 1,
+    "httpFailureStatuses": [404],
+    "externalRequestCount": 0,
+    "causality": "ServiceWorker sandbox errors were observed alongside empty presentation capture; their causal relationship remains to be diagnosed."
+  },
+  "lifecycle": { "browserClosed": true, "hostClosed": true, "hostExitCode": 0, "inputsUnchanged": true },
+  "remaining": [
+    "Diagnose the empty production presentation frame and sandbox serviceWorker errors",
+    "Complete presentation seek/repeat/reload checks and final persisted editor-state verification",
+    "Run same-project encoded export and independent decode comparison"
+  ],
+  "scope": "Real production Vite editor, actual private Host, visible textbox commits and attached-session history. First capture failed; no complete UI/reload/export acceptance. No Electron, hardware, alpha-master or installed-plugin acceptance.",
+  "ledger": { "verified": 27, "notVerified": 8, "changed": false }
+}

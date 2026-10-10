@@ -1,0 +1,31 @@
+{
+	"status": "whole-wasm-build-pass-with-unrelated-source-drift",
+	"originalReceipt": "C:/tmps/canvas-whole-wasm-r1-vGO5kF/handoff.json",
+	"originalReceiptSha256": "1625e97fc7addc26947dbbff2d37f8650d73c0f820e027016c26f19e7e6ddd88",
+	"startedAt": "2026-10-10T02:15:22.358Z",
+	"finishedAt": "2026-10-10T02:20:13.677Z",
+	"packageDirectory": "C:/tmps/canvas-whole-wasm-r1-vGO5kF/pkg",
+	"exitCode": 0,
+	"rustVersion": "1.88.0",
+	"wasmPackVersion": "0.13.1",
+	"lockedOffline": true,
+	"optimized": true,
+	"canonicalPackageUnchanged": true,
+	"allSourcePinsBeforeAfterEqual": false,
+	"driftPaths": [
+		"rust/crates/editor-api/src/mv_recipe/catalog.rs",
+		"rust/crates/editor-api/src/mv_recipe/road_recipe_tests.rs",
+		"rust/crates/editor-api/src/mv_recipe/road_recipe.rs",
+		"rust/crates/editor-api/src/mv_recipe/road_recipe_catalog.rs",
+		"rust/crates/editor-api/src/mv_recipe/road_recipe_post.rs"
+	],
+	"canvasRuntimePinCount": 271,
+	"canvasRuntimePinsBeforeAfterEqual": true,
+	"canvasRuntimeManifestSha256": "3fdf1255161510eb9f344487d77c9df9cd30c517178db1f9efbbac1d2b39c7cd",
+	"canvasRuntimeSelection": "Workspace Cargo config/toolchain/build scripts, rust/wasm, and actual effects/compositor/gpu/masks/time crates. Excludes editor-api; therefore this is not a globally frozen complete project snapshot.",
+	"warningCounts": { "effects": 8, "compositor": 2, "editorApi": 116, "wasm": 1 },
+	"wasm": { "bytes": 13217799, "sha256": "48bed343e23cb68ec7742fee522a71bf79bd4ad2a6f0f9d75b383ec02d83c911" },
+	"buildLog": { "bytes": 38418, "sha256": "2a36e435854dbdc7a483b93a6089d2a81be5783cbb19b7a3641e966fce7c7bd6" },
+	"frostFix": "Rename fs_main to fragment_main to match ordinary EffectPipeline. Naga test now compares actual entry-point name/stage to the real pipeline constant. Actual effects.rs targeted native test passes, 1 passed and 172 filtered, no test compilation warnings; not 173 executed tests.",
+	"scope": "The loaded artifact passed the isolated WebGL Canvas capture probe. Other-session MV edits changed during build; no global source-consistency or current MV catalog claim is made. Not installed package, Electron, WebGPU/hardware, full-frame scheduler, native output oracle or encoded export acceptance."
+}

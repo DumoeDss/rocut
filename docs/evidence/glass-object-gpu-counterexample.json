@@ -1,0 +1,149 @@
+{
+  "date": "2026-10-10",
+  "status": "confirmed-production-shader-counterexample-not-acceptance",
+  "archiveKind": "selected unchanged GPU failure receipt projection",
+  "original": {
+    "path": "C:/tmps/glass-object-gpu-run-A1JTSg/gpu-run.json",
+    "sha256": "89564408cedb103a0185b4a65a669b908278aab98c84d2181d5a3b6418dae95f"
+  },
+  "scope": "Actual frozen Glass source and Three0.185.1 WebGL2 compile/render with curved GLB/detailed diagnostic PNG; not original tiny Host project GPU acceptance or user full visual support",
+  "sourceSha256": "2a687e43962af1f1610d7f68f2b8832aadc741b75add049ea85d0720b0965e85",
+  "browserVersion": "151.0.7922.34",
+  "diagnostic": {
+    "stages": [
+      {
+        "name": "renderer-initialized-before-load",
+        "errors": [],
+        "contextLost": false,
+        "programs": []
+      },
+      {
+        "name": "GLB-decoded-before-environment",
+        "errors": [],
+        "contextLost": false,
+        "programs": []
+      },
+      {
+        "name": "all-assets-decoded-before-createScene",
+        "errors": [],
+        "contextLost": false,
+        "programs": []
+      },
+      {
+        "name": "base:before-compileAsync",
+        "errors": [],
+        "contextLost": false,
+        "programs": []
+      },
+      {
+        "name": "base:after-compileAsync-before-render",
+        "errors": [],
+        "contextLost": false,
+        "programs": [
+          {
+            "id": 0,
+            "name": "EquirectangularToCubeUV"
+          },
+          {
+            "id": 1,
+            "name": "PMREMGGXConvolution"
+          },
+          {
+            "id": 2,
+            "name": ""
+          },
+          {
+            "id": 3,
+            "name": ""
+          }
+        ]
+      },
+      {
+        "name": "base:after-render",
+        "errors": [
+          1282
+        ],
+        "contextLost": false,
+        "programs": [
+          {
+            "id": 0,
+            "name": "EquirectangularToCubeUV"
+          },
+          {
+            "id": 1,
+            "name": "PMREMGGXConvolution"
+          },
+          {
+            "id": 2,
+            "name": "",
+            "runnable": false,
+            "programLog": "Fragment shader is not compiled.\n\u0000",
+            "vertexLog": "",
+            "fragmentLog": "ERROR: 0:1839: 'ior' :  no such field in structure\nERROR: 0:1837: 'getIBLVolumeRefraction' : no matching overloaded function found\nERROR: 0:1837: '=' : dimension mismatch\nERROR: 0:1837: '=' : cannot convert from 'const mediump float' to 'highp 4-component vector of float'\n\u0000"
+          },
+          {
+            "id": 3,
+            "name": ""
+          },
+          {
+            "id": 4,
+            "name": ""
+          }
+        ]
+      }
+    ],
+    "contextAttributes": {
+      "alpha": false,
+      "antialias": false,
+      "depth": true,
+      "desynchronized": false,
+      "failIfMajorPerformanceCaveat": false,
+      "powerPreference": "default",
+      "premultipliedAlpha": true,
+      "preserveDrawingBuffer": true,
+      "stencil": false,
+      "xrCompatible": false
+    },
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "threeRevision": "185",
+    "assets": [
+      "curved optical-model.glb",
+      "64x32 optical-environment.hdr",
+      "128x128 optical-dark.png",
+      "128x128 optical-light.png"
+    ],
+    "firstFrame": {
+      "time": 0,
+      "width": 256,
+      "height": 192
+    }
+  },
+  "firstRenderError": {
+    "code": 1282,
+    "name": "INVALID_OPERATION"
+  },
+  "sourceCause": {
+    "file": "Creator rocut-stylized/glass-object-scene.ts",
+    "branch": "MeshStandardMaterial.prototype.copy.call(material, original)",
+    "threeStandardCopy": "Three0.185.1 MeshStandardMaterial.js:412 resets defines to STANDARD-only",
+    "threeShaderGuard": "ShaderLib/meshphysical.glsl.js:65-68 defines IOR only under PHYSICAL",
+    "observedCpu": {
+      "revision": "185",
+      "before": {
+        "STANDARD": "",
+        "PHYSICAL": ""
+      },
+      "after": {
+        "STANDARD": ""
+      },
+      "isMeshPhysicalMaterial": true,
+      "physicalDefineLost": true
+    },
+    "boundary": "CPU actual Three reproduction complements real program diagnostics; no source patch or threshold relaxation applied in this receipt"
+  },
+  "browserClosed": true,
+  "serverClosed": true,
+  "inputsUnchanged": true,
+  "opticalAcceptance": false,
+  "productionSourceModified": false
+}

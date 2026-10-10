@@ -1,0 +1,278 @@
+{
+  "date": "2026-10-10",
+  "status": "passed-glass-host-no-gpu",
+  "archiveKind": "selected immutable receipt projection",
+  "original": {
+    "path": "C:\\tmps\\glass-object-host-Gz59Xa\\evidence.json",
+    "sha256": "f23fd32cac7e8f2c5c6f7b124af5a6e16029c9d9fc7a3207137ab306a4c0a5a1"
+  },
+  "scope": "Actual private WASM resolver, real imported GLB/HDR/PNG, production controlled Three compile, Host apply/FileProjectStore reopen. No browser/GPU scene capture or pixel acceptance.",
+  "inputValidation": {
+    "ok": true,
+    "liveInputsVerifiedDuringBuild": 585,
+    "snapshotFilesVerified": 585
+  },
+  "packagePin": {
+    "path": "C:\\tmps\\object-wasm-development-5aSyix\\pkg\\opencut_wasm_bg.wasm",
+    "bytes": 18284725,
+    "sha256": "5d40cb7ae4e0fed4d7c7b81d1ef7617b5d874ec5dd6fbead2da03fbc8d021560"
+  },
+  "creatorPins": [
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/glass-object.mjs",
+      "bytes": 4338,
+      "sha256": "5f8e9fe1a570949b0546d6a9fbc5d82ac1d8924b8dc46f1678e70ebb5d780b40"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\elftia\\elftia-plugin-creator-studio\\resources\\agent\\skills\\html-video\\assets\\rocut-stylized\\glass-object-scene.ts",
+      "bytes": 5958,
+      "sha256": "2a687e43962af1f1610d7f68f2b8832aadc741b75add049ea85d0720b0965e85"
+    }
+  ],
+  "toolchainVersions": {
+    "three": "0.185.1",
+    "@elftia/three-assets": "0.1.1",
+    "@noble/hashes": "2.0.1",
+    "esbuild": "0.27.3"
+  },
+  "resolver": {
+    "ok": true,
+    "valid": {
+      "ok": true,
+      "params": {
+        "attenuationDistance": 1000,
+        "color": "#ffffff",
+        "dispersion": 0.125,
+        "environmentIntensity": 1,
+        "ior": 1.625,
+        "roughness": 0.123456789012345,
+        "thickness": 0.5,
+        "transmission": 1,
+        "version": 1
+      },
+      "version": 1
+    },
+    "rejected": [
+      {
+        "error": {
+          "code": "range",
+          "message": "Glass Object requires a finite value within the declared range",
+          "path": "ior"
+        },
+        "ok": false,
+        "version": 1
+      },
+      {
+        "error": {
+          "code": "json",
+          "message": "Glass Object requires a strict versioned parameter object",
+          "path": "params"
+        },
+        "ok": false,
+        "version": 1
+      },
+      {
+        "error": {
+          "code": "json",
+          "message": "Glass Object requires a strict versioned parameter object",
+          "path": "params"
+        },
+        "ok": false,
+        "version": 1
+      },
+      {
+        "error": {
+          "code": "json",
+          "message": "Glass Object requires a strict versioned parameter object",
+          "path": "params"
+        },
+        "ok": false,
+        "version": 1
+      }
+    ],
+    "resolverCalls": 5,
+    "scope": "Actual explicitly loaded WASM parameter resolver only; not scene render or GPU"
+  },
+  "resources": [
+    {
+      "id": "glass-model.glb",
+      "kind": "model",
+      "mimeType": "model/gltf-binary",
+      "byteLength": 1316,
+      "sha256": "cd71153d67a57e6a66fb274769a56be641f0f492f3c49d292512a7f2816e396f",
+      "attachmentKey": "programmatic-sha256-cd71153d67a57e6a66fb274769a56be641f0f492f3c49d292512a7f2816e396f"
+    },
+    {
+      "id": "glass-environment.hdr",
+      "kind": "environment",
+      "mimeType": "image/vnd.radiance",
+      "byteLength": 8239,
+      "sha256": "c0189db833bcd32f4d2b3c30309eff76fe009695741652fa710c136a2448ba56",
+      "attachmentKey": "programmatic-sha256-c0189db833bcd32f4d2b3c30309eff76fe009695741652fa710c136a2448ba56"
+    },
+    {
+      "id": "glass-background.png",
+      "kind": "image",
+      "mimeType": "image/png",
+      "byteLength": 84,
+      "sha256": "644f4ccf52dc2516162ef07800fea7c7e6d0decf5b80eb74b8fd1656722a1d68",
+      "attachmentKey": "programmatic-sha256-644f4ccf52dc2516162ef07800fea7c7e6d0decf5b80eb74b8fd1656722a1d68"
+    }
+  ],
+  "compiledSource": {
+    "version": 1,
+    "runtime": "html-document",
+    "code": "",
+    "documentId": "_rocut/compiled.html",
+    "width": 192,
+    "height": 128,
+    "frameRate": {
+      "numerator": 24,
+      "denominator": 1
+    },
+    "durationFrames": 49,
+    "seed": 19,
+    "resources": [
+      {
+        "id": "_rocut/compiled.html",
+        "kind": "document",
+        "mimeType": "text/html",
+        "byteLength": 849859,
+        "sha256": "0ba8f9018bdea33a8dfb7ce2ab4e751a9620896eb1229a861fae8cf97f5b01dc",
+        "attachmentKey": "programmatic-sha256-0ba8f9018bdea33a8dfb7ce2ab4e751a9620896eb1229a861fae8cf97f5b01dc"
+      },
+      {
+        "id": "glass-model.glb",
+        "kind": "model",
+        "mimeType": "model/gltf-binary",
+        "byteLength": 1316,
+        "sha256": "cd71153d67a57e6a66fb274769a56be641f0f492f3c49d292512a7f2816e396f",
+        "attachmentKey": "programmatic-sha256-cd71153d67a57e6a66fb274769a56be641f0f492f3c49d292512a7f2816e396f"
+      },
+      {
+        "id": "glass-environment.hdr",
+        "kind": "environment",
+        "mimeType": "image/vnd.radiance",
+        "byteLength": 8239,
+        "sha256": "c0189db833bcd32f4d2b3c30309eff76fe009695741652fa710c136a2448ba56",
+        "attachmentKey": "programmatic-sha256-c0189db833bcd32f4d2b3c30309eff76fe009695741652fa710c136a2448ba56"
+      },
+      {
+        "id": "glass-background.png",
+        "kind": "image",
+        "mimeType": "image/png",
+        "byteLength": 84,
+        "sha256": "644f4ccf52dc2516162ef07800fea7c7e6d0decf5b80eb74b8fd1656722a1d68",
+        "attachmentKey": "programmatic-sha256-644f4ccf52dc2516162ef07800fea7c7e6d0decf5b80eb74b8fd1656722a1d68"
+      }
+    ],
+    "build": {
+      "version": 1,
+      "engine": "three",
+      "engineVersion": "0.185.1",
+      "entryFile": "glass-object-scene.ts",
+      "inputProps": {
+        "scale": 1,
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "rotationSpeed": [
+          0,
+          0,
+          0
+        ],
+        "camera": {
+          "position": [
+            0,
+            0,
+            4
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 37,
+          "near": 0.1,
+          "far": 100
+        },
+        "modelId": "glass-model.glb",
+        "environmentId": "glass-environment.hdr",
+        "backgroundId": "glass-background.png",
+        "glass": {
+          "attenuationDistance": 1000,
+          "color": "#ffffff",
+          "dispersion": 0.125,
+          "environmentIntensity": 1,
+          "ior": 1.625,
+          "roughness": 0.125,
+          "thickness": 0.5,
+          "transmission": 1,
+          "version": 1
+        }
+      },
+      "inputs": [
+        {
+          "id": "glass-object-scene.ts",
+          "kind": "source",
+          "mimeType": "application/octet-stream",
+          "byteLength": 5958,
+          "sha256": "2a687e43962af1f1610d7f68f2b8832aadc741b75add049ea85d0720b0965e85",
+          "attachmentKey": "programmatic-source-sha256-2a687e43962af1f1610d7f68f2b8832aadc741b75add049ea85d0720b0965e85"
+        }
+      ],
+      "toolchainLock": {
+        "id": "_rocut/toolchain-lock.json",
+        "kind": "source",
+        "mimeType": "application/octet-stream",
+        "byteLength": 5341,
+        "sha256": "9fd77319fc39c3ca21bfef9c232c8f8f0db48e3da96e5617f819ea2c7cc4c152",
+        "attachmentKey": "programmatic-source-sha256-9fd77319fc39c3ca21bfef9c232c8f8f0db48e3da96e5617f819ea2c7cc4c152"
+      }
+    }
+  },
+  "applyAccepted": true,
+  "revision": 1,
+  "projectSha256": "f76711ffc26d8a166a69b43f5498503491eb832ef07fd3ff024056448522fca0",
+  "projectBytesUnchanged": true,
+  "attachments": [
+    {
+      "id": "_rocut/compiled.html",
+      "sha256": "0ba8f9018bdea33a8dfb7ce2ab4e751a9620896eb1229a861fae8cf97f5b01dc",
+      "bytes": 849859
+    },
+    {
+      "id": "glass-model.glb",
+      "sha256": "cd71153d67a57e6a66fb274769a56be641f0f492f3c49d292512a7f2816e396f",
+      "bytes": 1316
+    },
+    {
+      "id": "glass-environment.hdr",
+      "sha256": "c0189db833bcd32f4d2b3c30309eff76fe009695741652fa710c136a2448ba56",
+      "bytes": 8239
+    },
+    {
+      "id": "glass-background.png",
+      "sha256": "644f4ccf52dc2516162ef07800fea7c7e6d0decf5b80eb74b8fd1656722a1d68",
+      "bytes": 84
+    },
+    {
+      "id": "glass-object-scene.ts",
+      "sha256": "2a687e43962af1f1610d7f68f2b8832aadc741b75add049ea85d0720b0965e85",
+      "bytes": 5958
+    },
+    {
+      "id": "_rocut/toolchain-lock.json",
+      "sha256": "9fd77319fc39c3ca21bfef9c232c8f8f0db48e3da96e5617f819ea2c7cc4c152",
+      "bytes": 5341
+    }
+  ],
+  "hostReopened": true,
+  "originalInputUnavailable": true,
+  "fixtureCorrections": [
+    "ID-canonical comparison for Host map enumeration; fields/membership/duplicate IDs still checked",
+    "Exact kind-dependent programmatic-source-sha256 namespace for source inputs/toolchain lock; byte length and SHA-256 remain checked"
+  ]
+}

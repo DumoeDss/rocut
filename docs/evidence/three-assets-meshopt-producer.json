@@ -1,0 +1,31 @@
+{
+  "schema": "elftia-evidence/1",
+  "id": "three-assets-meshopt-producer",
+  "title": "Director three-assets Meshopt producer acceptance (fixed local decoder)",
+  "capturedAt": "2026-10-09T00:00:00Z",
+  "status": "verified",
+  "scope": "Shared producer actual fixed local decoder and plain model regression only; not consumer/provenance/bundled browser acceptance",
+  "source": {
+    "path": "C:/tmps/meshopt-producer-hJMDEe/evidence.json",
+    "sha256": "5dce32b45c435a9699f86186c4226c1d57850c721a81efafe421a353a493ab0b",
+    "projection": "subset; full inputs/outputs retained in source receipt"
+  },
+  "toolchain": { "three": "0.185.1", "node": "C:/nvm4w/nodejs/node.exe" },
+  "gpuExecuted": false,
+  "consumerClosureDecoder": {
+    "path": "three/addons/libs/meshopt_decoder.module.js",
+    "sha256": "d428e73a000057c6c94bfcedc3412d0c2dc14ca8800e88553aab05113ad2bf19"
+  },
+  "producer": {
+    "implementation": [
+      "director/src/meshopt.ts",
+      "director/src/model.ts",
+      "director/src/glb.ts",
+      "director/src/glb-validation.ts"
+    ],
+    "publicApiUnchanged": true,
+    "decoder": "fixed Three 0.185.1 addon with embedded WASM; no author decoder, URL, worker, or dependency install",
+    "tests": "11/11 passed: real EXT/KHR GLB independent geometry, TRIANGLES/INDICES/OCTAHEDRAL vectors, 22-scene zero decoder calls and decoded allocation, corrupt stream, cancellation, 6 plain-model regressions",
+    "rejected": ["compressed image views", "Draco", "KTX2", "external glTF"]
+  }
+}

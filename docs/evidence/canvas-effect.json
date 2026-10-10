@@ -1,0 +1,265 @@
+{
+	"recordedAt": "2026-10-10",
+	"status": "production-capture-integrated-private-wasm-webgl-verified-host-export-pending",
+	"ledger": "N; overall 27 V / 8 N unchanged",
+	"scope": "Deterministic Rust woven substrate and explicitly authored multi-bristle painting over a frozen premultiplied linear RGBA material grid. Production ordered capture, owner/generation predicates, private source preparation and immutable traversal are connected. Native targeted tests, TS async boundaries, pinned WASM build and isolated real WebGL capture/presentation checks pass. Full ABI baseline reconciliation and production Host/export acceptance remain incomplete.",
+	"contract": {
+		"version": 1,
+		"ticksPerSecond": 120000,
+		"anchoredStepTicks": 6000,
+		"gridSideRange": [8, 128],
+		"maximumDurationTicks": 7200000,
+		"maximumStrokes": 16,
+		"bristlesPerStrokeRange": [2, 32],
+		"maximumCellBristleVisits": 80000000,
+		"workFormula": "cells * (ceil(durationTicks / 6000) + 2 * strokeCount + 1) * (8 + sum(bristleCounts))",
+		"time": "Stateless rebuild on shared rational frame-floor, anchored steps split at exact authored start/end and final target residue. Author events are unsnapped. Negative time and zero opacity cannot bypass complete schedule/source/budget admission.",
+		"source": "Exact configured-grid premultiplied linear RGBA with finite channels 0 <= RGB <= alpha <= 1. Frozen image input, not implicit video history or full-resolution source ownership.",
+		"material": "Actual source pigment sampled for separately seeded bristle trails; conservative symmetric wet-neighbour diffusion, exponential wetness decay, woven substrate and pigment-ridge normals. Transparent holes block deposition and flux; output keeps input alpha.",
+		"identity": "Owned complete input snapshot and complete static CanvasConfig, compared with exact f64 to_bits including signed zero. Lighting is part of static rebuild identity. This does not establish resource attachment identity or video temporal sampling.",
+		"memory": "Two six-f64 material cell arrays cost 96 bytes/cell; owned four-f64 source snapshot adds 32. The earlier core ReplayEstimate covers 128 payload bytes/cell plus CanvasState and scratch Vec headers, not the full owned job. CanvasReplayJob::estimate additionally includes the owned stroke schedule and all job/Vec headers; memory_bytes checks actual capacities. Caller source, output, allocator metadata and stack remain excluded; not measured process peak RSS or hardware performance."
+	},
+	"initialCpuStage": {
+		"receipt": "rust/crates/effects/src/canvas/CPU-RECEIPT.md",
+		"receiptSha256": "ba4074a3292e44964c6f3958b29b9f6506d22e438255f363db67eea933400ec7",
+		"uniqueAuthorTests": 9,
+		"independentReceipt": "C:/tmps/canvas-independent-sol-20261010-r1/handoff.json",
+		"independentReceiptSha256": "3bc510e4519e34bdc0a275cf941ed6a45407284adf6a0795df9a2d1c381e42c2",
+		"uniqueIndependentControls": 9,
+		"scope": "Historical initial source pins. Real Rust CPU maximum wet-flux positivity/conservation, holes, drying retention, off-grid causality and seek, strict DTO/premultiplication, budget and zero-allocation rejection. Initial copied clock and unbound state identity are superseded by subsequent source changes, not relabelled as already solved."
+	},
+	"sourceIdentityStage": {
+		"receipt": "rust/crates/effects/src/canvas/SOURCE-IDENTITY-RECEIPT.md",
+		"receiptSha256": "b259be9181af0aef6a9a6f4300857171a246cbb40d2b2b79baecb9138f7d3c88",
+		"uniqueMaterialAndIdentityTests": 13,
+		"retainedRed": "One-bit valid same-grid source substitution was accepted by the previous shade implementation; regression failed before the narrow fix.",
+		"scope": "Owned input and exact static-config binding plus corrected logical memory estimate. The receipt's seventeen-test run used an existing actual time rlib and retains its historical source/build-provenance limitation."
+	},
+	"sharedTimeStage": {
+		"receipt": "C:/tmps/canvas-clock-sol-20261010/CLOCK-RECEIPT.md",
+		"receiptSha256": "30f30e084270936a2913f4be81ea5f9c6bcb425d03e0d60cc96f299cf2cfa4d3",
+		"sourceAddendum": "rust/crates/effects/src/canvas/CLOCK-SOURCE-ADDENDUM.md",
+		"sourceAddendumSha256": "30ae3c4d3161b247e63a7d016675de51991546573f488abb9df10067d4aa6564",
+		"freshLibrary": "C:/tmps/canvas-clock-sol-20261010/libtime.rlib",
+		"freshLibrarySha256": "f9093d7e4826dc68e7ad6195123a8cd2d11c38ea3a6578b94b0ec5c58784fc79",
+		"currentTimeSourceFiles": 16,
+		"timeSourceManifestSha256": "8846d55f9ec4edfb658ba0ab8b523f9e4604b5fd38024f084dc235e7f827bf89",
+		"uniqueClockTests": 4,
+		"scope": "Real current time crate was directly compiled with rustc; existing bridge/serde/num_traits binaries reused and pinned, not rebuilt or fully transitive source-proven. Canvas invokes actual FrameRate and MediaTime APIs. JS-safe ticks and bounded rate numerator/denominator remain narrower Canvas authoring policy, not shared API restrictions. Root checked fresh library and recomputed the sixteen-source manifest."
+	},
+	"freshTimeIntegratedCpuRecheck": {
+		"receipt": "rust/crates/effects/src/canvas/FRESH-TIME-INTEGRATION-RECEIPT.md",
+		"receiptSha256": "c7621cf57367c0bcaf7a82c62b91b024823674e1e203456b21cef132e6f9218e",
+		"runner": "C:/tmps/canvas-fresh-time-sol-31604567/canvas-tests.exe",
+		"runnerSha256": "43aa03b1c189d28cf2386b745c0e95b5151298fb4760ca8fb430df100c0e57da",
+		"passed": 17,
+		"failed": 0,
+		"ignored": 0,
+		"newUniqueCases": 0,
+		"scope": "The same thirteen material/identity and four clock tests re-executed against the freshly compiled actual time crate. Not a whole effects-crate/Cargo/WASM build, runtime or seventeen additional tests."
+	},
+	"sourceIdentityIndependentReview": {
+		"receipt": "C:/tmps/canvas-identity-independent-sol-20261010-r1/handoff.json",
+		"receiptSha256": "c4e68a0760b139db48d003d96d5fa2bb9a9ee51d9996c73dbb75203b4d523af5",
+		"totalExecutedTests": 21,
+		"reusedAuthorTests": 17,
+		"newIndependentTests": 4,
+		"failed": 0,
+		"scope": "Actual fresh time binary and actual Canvas Rust source. Independent allocator/one-bit/config/source/signed-zero controls and owned snapshot/clone checks pass; shade identity rejection allocates zero output bytes, negative empty-schedule replay allocates exactly 128 payload bytes/cell. Source pins were captured after execution, not an invented before/after guarantee.",
+		"historicalFinding": "At those source pins, public sampled_ticks could be mutated to arbitrary values without shade rejection. The subsequent read-only metadata source change is recorded separately, not retroactively attributed to this audit."
+	},
+	"readOnlyTimeMetadata": {
+		"receipt": "rust/crates/effects/src/canvas/READONLY-TIME-METADATA-RECEIPT.md",
+		"receiptSha256": "b0b01da4d1d50b7b24a46f5efc292748eba48a7e0b6d41a5363772964bca604d",
+		"runner": "C:/tmps/canvas-readonly-sol-556132a1/canvas-tests.exe",
+		"runnerSha256": "2437385de4ffcd13deacbb2f2cb40b84d615312c924d9e9712e0bf32ef58fb47",
+		"currentSimulationSha256": "05e5ec37bd668b7c22aa53cc064f45e3c52c77a98a61c83df66bfcceb97a3839",
+		"currentTestsSha256": "451fbf3926a3cdfea88fb8b501f0dee9fd7de8f0a28576b1a1f60c1c8104a7f1",
+		"sameSuiteRecheckPassed": 17,
+		"newNumericCases": 0,
+		"callerWriteNegative": "Compilation rejected with E0616; no executable emitted. Three unused re-export warnings from the minimal wrapper are recorded rather than suppressed.",
+		"independentPostFixReview": {
+			"receipt": "C:/tmps/canvas-readonly-independent-sol-20261010-r1/handoff.json",
+			"receiptSha256": "98f2fc5ace1f7a111a193952eced93d1ceac637a607f704f16711f256b247b72",
+			"legalCallerCases": 3,
+			"forbiddenCallerWriteRejected": true,
+			"scope": "Actual external caller reads accessor, compares to real native floor and shades for rational, negative and integer-rate cases. External assignment compilation fails E0616. Relevant simulation/tests/time pins match before and after. Minimal wrappers retain seven legal-caller dead-code/unused warnings and three forbidden-caller unused imports; no whole numerical-suite rerun."
+		},
+		"scope": "Private sampled_ticks with a read-only accessor prevents external Rust callers from changing sampled-time metadata. No numerical model changes or renderer-scheduling acceptance; old audit findings and binaries remain unchanged."
+	},
+	"nativeRegistrationAndTransportStage": {
+		"requiredStaticFields": 14,
+		"optionalSlotFields": 176,
+		"catalogFieldCount": 190,
+		"keyframableFields": 0,
+		"passTransport": "Every authored f64 and sampledTicks uses four exact 16-bit words in the shared Vector<f32>, least-significant word first. Strict decode rejects wrong shape, fractional/nonfinite/out-of-range words, word signed zero, unknown fields, invalid schedule and unsafe sampled ticks.",
+		"timeBoundary": "sampledTicks is already floored by the real shared clock. A downstream replay must not resnap it with a different rate.",
+		"authoritativeAdmission": "editor-api/effect_params.rs has a Canvas-specific complete numeric admission branch before optional defaults. That source change is not a fresh editor-api build/runtime acceptance."
+	},
+	"rasterAndGpuSourceStage": {
+		"receipt": "C:/tmps/canvas-clock-sol-20261010/RASTER-RECEIPT.md",
+		"receiptSha256": "60a58d7f99cc2e2b9625d3bc78b55df50ac33f689af588f923789efe92473fa0",
+		"localNativeAndNagaChecks": 9,
+		"independentReceipt": "C:/tmps/canvas-raster-independent-sol-20261010-r1/handoff.json",
+		"independentReceiptSha256": "b18ec3130639d8f4cc6fd26ea3725ace56db076d7dde72066a72f6da03c0c31b",
+		"newIndependentControls": 6,
+		"sourceSampling": "Straight sRGB8 is linearized and premultiplied before four-tap rectangular grid-center interpolation. The full-resolution source is kept for shader output, not replaced with an enlarged shaded grid.",
+		"gpuSource": "64-byte uniforms, two unfiltered RGBA32Float material textures, manual bilinear lookup, woven/ridge lighting and premultiplied-linear composition to straight sRGB. Device/shape/finite/layout/format checks precede GPU resource allocation and queue writes. Pipeline source compiles natively but is not instantiated by production rendering.",
+		"identityBoundary": "raster_payload binds the sampled grid, not every full-resolution source byte. Independent modification of an unsampled pixel was accepted. Texture metadata does not prove contents; capture barrier must bind complete source and graph/pass location. Heterogeneous full-resolution output is not universally equal to CPU grid shading."
+	},
+	"incrementalReplayStage": {
+		"receipt": "rust/crates/effects/src/canvas/REPLAY-JOB-RECEIPT.md",
+		"receiptSha256": "7e3635b39d1d36dbaa599c00b0259891a02d952db4658eb6d647dd4841f0febc",
+		"localWrapperTestsPassed": 34,
+		"newAuthorReplayTests": 5,
+		"independentReceipt": "C:/tmps/canvas-replay-independent-sol-20261010-r1/handoff.json",
+		"independentReceiptSha256": "e58886ee4417a155c3d70f82dd5f4da8985581c1c0f912edb2ef5af7a5ef0e47",
+		"newIndependentControls": 3,
+		"scope": "Owned source/config/schedule, full rejection before replay allocation, NonZero work budget, too-small quota leaves progress unchanged, incomplete finish rejects and drop cancels unpublished work. Physical steps remain indivisible; upper layer must yield/cancel between calls. Synchronous rebuild shares this same job, so bit equality across batches is not an independent numerical oracle."
+	},
+	"actualEffectsCrateNativeStage": {
+		"receipt": "C:/tmps/canvas-effects-registration-root-06c1a190/handoff.json",
+		"receiptSha256": "e4c46feaee9d709357ebbebdbf9c78ee39bc957e29f32706dd19a80bd85d3d74",
+		"runnerSha256": "b08de0de0ea6e213b97fce34c5be2b35a8c515b73de13d62cf17e027dc551b98",
+		"sourceFiles": 116,
+		"sourceManifestSha256": "a2dead1d046f4ea507909e1cc5de828d50954ba49305843a82a5837304adce4b",
+		"sourceAndExplicitDependencyPinsUnchangedAcrossBuildAndRun": true,
+		"canvasTestsPassed": 40,
+		"newPublicRegistrationTests": 4,
+		"relatedInputPreflightTestsPassed": 8,
+		"newInputPreflightTests": 0,
+		"failed": 0,
+		"ignored": 0,
+		"compilerWarnings": 3,
+		"scope": "Actual effects.rs compiled directly with rustc --test, including real production GPU types; no module stubs or wrapper exclusions. Matching existing bridge/serde/serde_json/bytemuck/thiserror/gpu/wgpu binaries and the freshly compiled real time binary were reused, not a fresh Cargo/transitive/WASM build. Forty Canvas tests include earlier tests and CPU GPU-admission controls; they are not forty new independent cases. Three warnings identify the unconnected Canvas GPU pipeline.",
+		"pipelineBoundary": "A valid Canvas pass now gets CanvasSourceRequired with its local pass index after strict decode rather than generic uniform handling. This structured refusal is source-compiled only; it neither captures input nor completes rendering."
+	},
+	"fullSourcePreparationStage": {
+		"nativeReceipt": "C:/tmps/canvas-integration-native-root-0f1T3B/handoff.json",
+		"nativeReceiptSha256": "6011e0af9aec58ad0ecbb915f4b538ad5e7e40ab9b1d5d63b989dc333e00309b",
+		"ownedPreparationTestsPassed": 6,
+		"uploadAdmissionTestPassed": 1,
+		"independentReceipt": "C:/tmps/canvas-prepared-review-sol-20261010-r1/handoff.json",
+		"independentReceiptSha256": "a096441a4aa6b109dd35fd44cf46cbfec6744b3374c73023953eb54cfa024f19",
+		"independentAdditionalControls": 2,
+		"sourcePolicy": "CanvasPreparation owns the complete RGBA byte Vec, raw pass and dimensions; PreparedCanvasPass exposes read-only accessors. Exact pass-key/word-bit/dimension matching and a private RGBA8 upload prevent caller source substitution. This is not proof that compositor selected the correct preceding-effect output or graph revision.",
+		"budget": "96 MiB owned CPU logical preparation charge and 82 million logical work include source Vec capacity, conservative map charge, full replay peak, decoder/grid/payload transients and headers. The original replay cap remains 80 million. CPU preparation excludes caller copies/readback/GPU/allocator metadata and is not measured RSS.",
+		"gpuBridge": "Dedicated apply_canvas_prepared_with_encoder accepts no external texture and uploads the private complete source after exact match and device/layout/payload checks. Pure CPU helper independently lowers each required pipeline limit, including RGBA8/BGRA8's 8 color-attachment bytes/sample. Source compiles in actual effects crate; no shader creation or GPU render was executed."
+	},
+	"frameAdmissionAndBorrowedTraversalStage": {
+		"receipt": "C:/tmps/canvas-integration-native-root-0f1T3B/handoff.json",
+		"receiptSha256": "6011e0af9aec58ad0ecbb915f4b538ad5e7e40ab9b1d5d63b989dc333e00309b",
+		"sourceFilesPinnedBeforeAndAfter": 155,
+		"explicitBinaryDependenciesPinnedBeforeAndAfter": 8,
+		"beforeAfterEqual": true,
+		"aggregateBudgetTestsPassed": 6,
+		"positionTestsPassed": 2,
+		"canvasFramePreflightTestsPassed": 4,
+		"preparedFrameTestsPassed": 11,
+		"limits": "Canvas frames charge retained frame transport and all Liquid estimates, every Canvas preparation peak and four tight plus two padded capture charges per occurrence. Checked totals are capped at 256 MiB, 328 million logical Canvas work and 64 Canvas occurrences; padded staging per capture is capped at 64 MiB. This conservative charge is not global device/pool memory or process RSS.",
+		"admission": "All Canvas occurrences, including inactive group/transition branches and identical parameters, count separately before replay. Raw Canvas fields are bounded before mapping; all other passes in Canvas frames use the same CPU decoder/packer as execution, and empty pass groups are rejected. Device limits and live source/mask availability are not established by this CPU admission.",
+		"liquid": "Compositor now creates a local borrowed VecDeque iterator per traversal; effects uses references to immutable prepared material, without cloning payload or permanently popping it. Legacy owned API remains intact. CPU repeat traversal checks exact state pointers and parameter/dimension match. Full positional GPU traversal/capture identity is still pending.",
+		"compileScope": "Actual complete effects, masks and compositor sources compiled directly with rustc, not a stub facade. Reused explicit dependency binaries are pinned, not a fresh Cargo/transitive build. Targeted tests include earlier rechecks and are not all new cases. Effects rlib emitted 8 unused/dead-code warnings; test runners compiled without warnings. GPU and whole WASM were not executed."
+	},
+	"requestReservationAndCapturePollStage": {
+		"requestIdentityReceipt": "C:/tmps/canvas-reentry-fix-sol-20261010-r1/handoff.json",
+		"requestIdentityReceiptSha256": "6c6d7ad17e4614cbf8fae216952ef0ab08081312009c5f05fea692ad0b24a03c",
+		"requestTestsReexecuted": 9,
+		"capturePollTestsPassed": 4,
+		"nativeExecutionReceipt": "C:/tmps/canvas-integration-native-root-0f1T3B/handoff.json",
+		"nativeExecutionReceiptSha256": "6011e0af9aec58ad0ecbb915f4b538ad5e7e40ab9b1d5d63b989dc333e00309b",
+		"narrowWasmReceipt": "C:/tmps/canvas-capture-wasm-current-1VjgOp/handoff.json",
+		"narrowWasmReceiptSha256": "33d35a6a1b66fd090cb745b077ead01e34c50dcbec05808327f48d1a6b00d1f1",
+		"requestPolicy": "Taken payload leaves an exact handle/id/owner/generation in-flight reservation. Restore/finish only match the current reservation; cancel/replacement/invalidate cannot resurrect or overwrite a newer request. Synchronous advance/commit callers clean terminal reservations.",
+		"capturePolicy": "CanvasCaptureReadback copies/submits synchronously and retains only independent staging buffer/device/layout/guard across await. finish_rgba requires a caller current-identity predicate, checked before map, before and after every MapWait poll and before/after unpack; cancellation drops mapper/buffer/guard. Production guard blocks dispose during readback. BGRA is swapped exactly once.",
+		"typecheckScope": "Historical narrow stage: actual capture, mapper, state and poll modules passed wasm32 metadata compilation with before/after source and explicit dependency pins unchanged. 15 unused/dead-code warnings remain visible. This was not a whole WASM/ABI build or a live request/GPU test. At those source pins the production request state machine had not yet supplied the identity predicate or invoked this capture utility; subsequent source integration is recorded separately."
+	},
+	"productionCaptureSourceIntegration": {
+		"policy": "Execute the real ordered prefix, synchronously submit and copy its output into independent staging, then release compositor borrows before awaiting raw readback. The actual request handle/id/owner/generation in-flight predicate is supplied to capture polling and checked before replay/publication. PreparedFrame binds exact descriptor bits and nested pass position to private complete source bytes; ordinary and Liquid descriptors remain borrowed, not copied.",
+		"preflight": "Before the first capture, check all graph resources/masks including inactive branches, every Canvas upload device limit, counts and checked aggregate bounds. Actual retained Vec capacities must fit the precharged shape; stale visitor counts return errors rather than panicking. Drop the constructor aggregate ledger before final re-admission to avoid an uncharged overlapping ledger.",
+		"scope": "Production source is connected and subsequently exercised by private WASM WebGL receipts below. Per-request frozen source does not establish video-history painting. CPU checks alone do not establish GPU contents, backend choice or installed capabilities."
+	},
+	"integratedNativeRegressionStage": {
+		"receipt": "docs/evidence/canvas-capture-native/native-integration.json",
+		"receiptSha256": "c5ad58ff384d45b7653124408a6377963d4d9b6c087e30e26eca7d1ba6d117c5",
+		"passed": 98,
+		"failed": 0,
+		"sourceFilesPinnedBeforeAndAfter": 164,
+		"explicitBinaryDependenciesPinnedBeforeAndAfter": 8,
+		"beforeAfterEqual": true,
+		"scope": "Actual complete effects, masks and compositor were directly compiled with pinned real dependencies, without stub facades. Includes Canvas 47, aggregate budget 6, position 2, frame preflight 4, PreparedFrame 11, frozen frame state 10, graph resource preflight 3, runtime scope 2, capture polling 4 and request reservation 9. Re-executed historical tests are not 98 new cases. Eight effects rlib unused/dead-code warnings remain; test runners compiled without warnings. No live GPU or whole WASM executed in this stage."
+	},
+	"currentCompositorNativeRecheck": {
+		"receipt": "docs/evidence/canvas-capture-native/native-current-compositor.json",
+		"receiptSha256": "961dd56ac3701f98a3e8a69374e388fadde787d2612b9a0c10858caa48692474",
+		"passed": 38,
+		"failed": 0,
+		"beforeAfterEqual": true,
+		"scope": "After rustfmt, the current actual compositor was compiled again against the prior stage's newly compiled effects/masks after checking their source pins. All 38 targeted compositor tests pass. These are a subset of the 98 above, not 38 additional cases. Five related Rust files pass rustfmt check."
+	},
+	"asyncRequestBoundaryRegression": {
+		"receipt": "docs/evidence/canvas-capture-native/request-boundary.json",
+		"receiptSha256": "ee78cf1d6bd2114d0076d05f61f725d5a12f2c38d0aef2901ad8662495c6ad46",
+		"passed": 23,
+		"failed": 0,
+		"expectCalls": 86,
+		"beforeAfterEqual": true,
+		"retainedFinding": "Unconditionally awaiting the old synchronous boolean introduced a microtask and broke four existing cancellation cases. The fix awaits only Promise-returning advance calls; the old assertions remain unchanged.",
+		"scope": "Actual Bun execution of five async tests and eighteen isolated existing cancellation-boundary cases; three files have matching before/after hashes. This verifies TS transport/cancellation seams, not a new WASM Promise binding, live GPU or installed runtime."
+	},
+	"retainedNativeDiskFailure": {
+		"receipt": "docs/evidence/canvas-capture-native/retained-native-disk-failure.json",
+		"receiptSha256": "d5da874818aec748877f0b282a8462fbdfcc46019dd8dde5af279ed71d885e57",
+		"scope": "Prior LLVM no-space failure is retained. Later successful native runs do not overwrite or relabel it. Archived JSON files contain execution-time metadata; absolute temporary paths within them are historical paths and do not guarantee that logs/binaries survive user cleanup."
+	},
+	"wholeWasmBuildStage": {
+		"receipt": "docs/evidence/canvas-capture-native/whole-wasm-summary.json",
+		"status": "complete-pinned-build-pass-private-binding-pass-api-surface-drift",
+		"scope": "Actual entire WASM and editor-api compile under pinned Rust/wasm-pack. Generated advance Promise rejects an invalid owner; explicit private sync entry initializes under Node/Bun with matching transition/time probes. Canonical package remains unchanged. The complete ABI surface gate fails on recorded baseline deltas and is not labeled green."
+	},
+	"liveCanvasCaptureStage": {
+		"receipt": "docs/evidence/canvas-capture-native/live-gpu-webgl.json",
+		"receiptSha256": "16df2ec43df1606f5e9902a9865928977d3a2a9879e1df9d8da279673143ab10",
+		"buildReceipt": "docs/evidence/canvas-capture-native/current-gpu-build-summary.json",
+		"backend": "webgl",
+		"frames": 13,
+		"sourceAndLoadedBinaryPinsUnchanged": true,
+		"checks": "Full-resolution neutral high-frequency source, visible painting, reverse seek bit identity, independent grayscale prefix capture, painted prefix/pretransformed-source metamorphism, nested group capture, two transition branches, distinct consecutive Canvas pass-position/input metamorphism, unavailable inactive resource rejection/recovery and pending-request replacement/stale commit refusal.",
+		"scope": "Actual generated WASM and compositor begin/advance/commit, with asynchronous ordered source capture. Frozen fetched binary hash matches the retained artifact; no external network, console/page errors, and owned browser/server closed. Captured output is presentation Canvas, not native pre-presentation bytes. Painting/consecutive checks are metamorphic, not an independent full material oracle. Pending replacement occurs before awaiting its result, not a demonstrated cancellation during a later MapWait poll. Build source drift is explicitly limited by the accompanying receipt; no globally frozen current-project claim.",
+		"retainedFailures": [
+			"docs/evidence/canvas-capture-native/retained-gpu-initialization-failure.json",
+			"docs/evidence/canvas-capture-native/retained-gpu-harness-failure.json"
+		],
+		"retainedFindings": "Initial GPU initialization panicked because Frost's fs_main did not match pipeline fragment_main; fixed and covered by real native Naga regression. A subsequent fixture assumed thrown failures had Error.message and failed after 11 successful frames; normalized string/Error failures and reran. These failed runs were retained, not relabeled green."
+	},
+	"sharedClockDevelopmentRegression": {
+		"receipt": "docs/evidence/canvas-capture-native/shared-clock-gpu-regression.json",
+		"receiptSha256": "f4913481c1ab2621d355c5de878b8a55aa9859f159b70e606ccd2aa62272cddc",
+		"buildReceipt": "docs/evidence/canvas-capture-native/shared-clock-development-build.json",
+		"buildReceiptSha256": "3aed391bce9946396d4e26d42bef96005afef042b94dcec63485346420c017e3",
+		"wasmSha256": "faa66f8c9eb7290c961adfe622b1cf09d66f97f87819081b98ff311798eb3c01",
+		"frames": 13,
+		"checksPassed": 19,
+		"sourceFilesPinnedBeforeAndAfter": 889,
+		"beforeAfterEqual": true,
+		"canonicalUnchanged": true,
+		"scope": "Final shared-clock source compiled with pinned release compiler and --no-opt --locked --offline; generated private glue/binary exercised by the same Canvas capture regressions. The browser hashes the exact fetched buffer and compiles that buffer. Output is presentation Canvas. This is not final optimized release, reconciled ABI, production TS renderer/Host/history or encoded export. Earlier optimized and development runs remain distinct historical evidence."
+	},
+	"admissionFixGpuRegression": {
+		"receipt": "docs/evidence/canvas-capture-native/admission-fixed-gpu-regression.json",
+		"buildReceipt": "docs/evidence/canvas-capture-native/flame-wrap-admission-development-build.json",
+		"wasmSha256": "75ef560f97061951ca38a6579fb30018daeed35f782c2c1fcc492fc6cd39b8fe",
+		"frames": 13,
+		"checksPassed": 19,
+		"scope": "Same Canvas live regressions re-executed after the Flame Wrap Host integer-seed fix. No new Canvas numerical cases or production TS renderer/Host/export claim. Build-time source pins agree; subsequent uncompiled Rust test-fixture correction is separately documented."
+	},
+	"notVerified": [
+		"Current installed editing catalog admission, installed package routing and real migration-chain initialization",
+		"Production renderer/Host graph revision ownership, cancellation during real pending GPU mapping and resource withdrawal races",
+		"Resource attachment/replay ownership and explicit video-history source sampling",
+		"Full-resolution production renderer scheduling and reconciled WASM ABI surface gate",
+		"Installed capability discovery, real Host/editor integration of locally verified authoring helper and controls",
+		"Undo/redo, persistence, resource withdrawal and encoded export",
+		"Installed Electron/browser/hardware runtime and release"
+	]
+}

@@ -1,0 +1,39 @@
+{
+	"schema": "flame-wrap-admission-native-v1",
+	"ok": true,
+	"recordedDate": "2026-10-10",
+	"fixture": "rust/crates/editor-api/tests/flame_wrap_admission.rs",
+	"fixtureSha256": "6f60caa2ba293cff6bcefc4208603d19088cb8b32f822c5267a9526742c6f47b",
+	"result": { "passed": 3, "failed": 0, "ignored": 0, "seconds": 1.38 },
+	"tests": [
+		"integer_seed_endpoints_are_admitted_for_attached_and_standalone_effect_layers",
+		"fractional_and_nonfinite_seed_are_rejected_even_when_disabled_neutral_or_catalog_is_forged",
+		"seed_and_speed_remain_static_under_both_animation_paths_and_forged_flags"
+	],
+	"method": "rustc native compilation of current real effects and editor-api crate sources, then integration fixture compilation and execution; no stubs",
+	"isolatedOutput": "C:/tmps/flame-wrap-admission-native-20261010",
+	"runCommand": "C:/tmps/flame-wrap-admission-native-20261010/flame_wrap_admission.exe --nocapture",
+	"fullCommandsReceipt": {
+		"path": "C:/tmps/flame-wrap-admission-native-20261010/evidence.json",
+		"sha256": "5325fb9b31349c957a34038a0c8a7cb8757a4b5c6f212ead532cf554608ec0f7"
+	},
+	"outputsSha256": {
+		"effectsRlib": "badb0f26319bc1e139ddde7b1094c484386b1e06d50248a47cde4ae9a0051581",
+		"editorApiRlib": "20a96446c06d92150b42f2b1d86d7ce3bdcbdc96e50283f45a6d05538a6b2856",
+		"testBinary": "4729cdba98244e10bac4b07fd0d74f0161b42cb5e0045c2b131df3a5f68242bf"
+	},
+	"dependencyScope": {
+		"rebuilt": ["effects", "editor-api", "integration fixture"],
+		"reused": "Existing target/debug/deps bridge/serde/serde_json/bytemuck/thiserror/gpu/wgpu/sha2/ttf-parser and their cached transitive dependencies; existing C:/tmps/canvas-clock-sol-20261010/libtime.rlib",
+		"limitation": "Cached transitive crates were not rebuilt or independently provenance-audited. This is targeted native behavior evidence, not a clean whole-workspace build."
+	},
+	"boundary": "The real validate_clip_editing_json adapter is stateless. Tests prove rejection, caller input immutability and subsequent valid admission, not Host transaction rollback. Standalone visibility belongs to its track and is not claimed as clip editing support. Nonfinite JSON overflow literals are rejected at schema parsing; null and NaN/Infinity strings are rejected as nonnumbers.",
+	"notExecuted": [
+		"WASM rebuild",
+		"GPU",
+		"browser",
+		"Host mutation",
+		"full Cargo suite"
+	],
+	"warnings": { "effects": 8, "editorApi": 126, "fixture": 0 }
+}

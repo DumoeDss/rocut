@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "date": "2026-10-10",
+  "status": "functional-pass",
+  "scope": "Native produced registration and owned consumer; not @remotion/media decoding, pixel parity, encoded video or installed-plugin acceptance",
+  "command": "ROCUT_RUN_REMOTION_PRODUCED_FUNCTIONAL=1 bun script/fixtures/remotion-produced-functional-run.ts",
+  "wasmSha256": "b43964be4e8c26dabbde121abcf57009a32fecb6f741e1f71380553b224db052",
+  "toolchainLockSha256": "cff6e6e89b5b3336db1e3da9053ccf6340e362143f326ba524d074d137fffa3f",
+  "canonicalFrames": 8,
+  "requestedCrop": { "firstFrame": 3, "frameCount": 2 },
+  "soundtrack": {
+    "format": "wav-f32le",
+    "channels": 2,
+    "sampleRate": 48000,
+    "frames": 3200,
+    "sampleOrigin": 4800,
+    "byteLength": 25656,
+    "sha256": "442ceb91c2b15d1ca2d410d77b667c9e37dfaa1dfca3ae381c930f9849105c1b",
+    "exactSamplesChecked": true,
+    "retryByteIdentical": true
+  },
+  "thumbnail": {
+    "collectionFrame": 2,
+    "nativeLocalFrame": 0,
+    "width": 64,
+    "height": 32,
+    "byteLength": 1316,
+    "sha256": "ab8912f79d86af24c93d9405b901d9a01fe3f6c9dd6cd1fbd403a700b87df976"
+  },
+  "checks": [
+    "Formal compile and immutable archive; live author replaced with a throw before produced",
+    "Persistent React root across the full eight-frame canonical history before cropping",
+    "Stable native inline identity and same-ID overwrite history",
+    "Owned WAV and eleven deduplicated author artifacts, including empty binary and whitespace text",
+    "Actual PNG receipt for Sequence-local Thumbnail",
+    "Client cancellation publishes no output transaction; subsequent retry gets an exclusive new directory"
+  ],
+  "initialFixtureFailure": "Bun runtime resolver missed a transitive workspace package entry and selected shared stale WASM; corrected by binding the actual private sync namespace before Host imports. No fake ABI or shared package edits.",
+  "retainedReport": "C:/Users/Sayo/AppData/Local/Temp/remotion-produced-functional-lu16Ft/remotion-produced-functional-report.json",
+  "sharedRuntimeChanged": false
+}

@@ -1,0 +1,84 @@
+{
+  "startedAt": "2026-10-10T02:46:27.501Z",
+  "recordedAt": "2026-10-10T02:47:45.860Z",
+  "status": "whole-wasm-built",
+  "exit": 0,
+  "pkg": "C:\\tmps\\flame-wrap-fast-wasm-jLCBT8\\pkg",
+  "args": [
+    "script/build-wasm.mjs",
+    "--out-dir",
+    "C:\\tmps\\flame-wrap-fast-wasm-jLCBT8\\pkg",
+    "--no-opt",
+    "--",
+    "--locked",
+    "--offline"
+  ],
+  "sourceFiles": 890,
+  "beforeAfterEqual": true,
+  "canonicalUnchanged": true,
+  "log": {
+    "path": "C:/tmps/flame-wrap-fast-wasm-jLCBT8/build.log",
+    "bytes": 41571,
+    "sha256": "f5ed2ebf395a5a5d989ffd9f640eb75b781b35c0aa257d5531529b88cfc8700a"
+  },
+  "artifacts": [
+    {
+      "path": "C:/tmps/flame-wrap-fast-wasm-jLCBT8/pkg/.gitignore",
+      "bytes": 1,
+      "sha256": "684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1"
+    },
+    {
+      "path": "C:/tmps/flame-wrap-fast-wasm-jLCBT8/pkg/LICENSE",
+      "bytes": 1060,
+      "sha256": "814632368a8331fd1f485f4bd4b7ecb6401e5f2a24fba79cd3e21aff8ca39a6e"
+    },
+    {
+      "path": "C:/tmps/flame-wrap-fast-wasm-jLCBT8/pkg/NOTICE",
+      "bytes": 17150,
+      "sha256": "1111d13303b79967e726d09b1ca99d9183dea59e8e8343ceaccfa18a8bc11fe4"
+    },
+    {
+      "path": "C:/tmps/flame-wrap-fast-wasm-jLCBT8/pkg/README.md",
+      "bytes": 2649,
+      "sha256": "c8fe27ab5d2e12963e1f04571549afc9828060f4dfec85e6afaa188d3d90a128"
+    },
+    {
+      "path": "C:/tmps/flame-wrap-fast-wasm-jLCBT8/pkg/opencut_wasm.d.ts",
+      "bytes": 41068,
+      "sha256": "926cc37397b04c9213f9d74f63b7cf0850ec7067e898e84d58dcb4cb6299ce2d"
+    },
+    {
+      "path": "C:/tmps/flame-wrap-fast-wasm-jLCBT8/pkg/opencut_wasm.js",
+      "bytes": 3282,
+      "sha256": "119d52ede5fe402d59a73fbec8032480090e5b3c6c45f19a04372c31bf603bc2"
+    },
+    {
+      "path": "C:/tmps/flame-wrap-fast-wasm-jLCBT8/pkg/opencut_wasm_bg.js",
+      "bytes": 183410,
+      "sha256": "a4048158b9277c8b8858925f35c12e4ffc9e8e33e1aedb19855d82c50d018ffe"
+    },
+    {
+      "path": "C:/tmps/flame-wrap-fast-wasm-jLCBT8/pkg/opencut_wasm_bg.wasm",
+      "bytes": 16254168,
+      "sha256": "75ef560f97061951ca38a6579fb30018daeed35f782c2c1fcc492fc6cd39b8fe"
+    },
+    {
+      "path": "C:/tmps/flame-wrap-fast-wasm-jLCBT8/pkg/opencut_wasm_bg.wasm.d.ts",
+      "bytes": 15901,
+      "sha256": "113243dba38f12f7ee20d422e570fa1995e462f377f362b6a6dff9be298a84ac"
+    },
+    {
+      "path": "C:/tmps/flame-wrap-fast-wasm-jLCBT8/pkg/opencut_wasm_sync.js",
+      "bytes": 4379,
+      "sha256": "aa6ec8a9259d83bc1e5ab4d18a7e3fcbca9b71a198f19f9ebbffcd699b75c2e6"
+    },
+    {
+      "path": "C:/tmps/flame-wrap-fast-wasm-jLCBT8/pkg/package.json",
+      "bytes": 843,
+      "sha256": "60502f95b49df31dd41e5be0ada1826e0693b30a525d3b49da73f4e106a1a4b4"
+    }
+  ],
+  "scope": "Private development WASM: pinned release compiler, --no-opt skips wasm-opt only, --locked --offline. Uses existing target cache, no canonical package/dependency update. Not a final optimized release or Host/GPU acceptance. Build-time before/after pins agree. Subsequent correction of the uncompiled Rust integration-test fixture's standalone visibility shape is not attributed to this binary's build pins. Current runtime behavior is validated by actual private WASM API and real Host.",
+  "rawReceipt": "C:/tmps/flame-wrap-fast-wasm-jLCBT8/handoff.json",
+  "fix": "Rust effect_params integer-seed admission includes flame-wrap; runtime shader and shared phase unchanged."
+}

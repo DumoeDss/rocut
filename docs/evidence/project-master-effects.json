@@ -1,7 +1,7 @@
 {
 	"version": 1,
 	"date": "2026-10-09",
-	"status": "authoring-transactions-and-renderer-wiring-verified-browser-export-pending",
+	"status": "authoring-and-full-frame-gpu-verified-default-video-fidelity-failed",
 	"contract": {
 		"publicField": "Project.masterEffects",
 		"nativeField": "TProject.settings.masterEffects",
@@ -27,6 +27,31 @@
 		"wasmBytes": 9913713,
 		"scope": "Frozen accepted baseline plus master-validator changes; excludes concurrent Thread and fractional-duration implementations; private web-target, not redistribution package"
 	},
+	"combinedBuild": {
+		"source": "C:/Users/Sayo/AppData/Local/Temp/rocut-converge-build-e268d326/scene-transition-source-JeXUmF",
+		"sourceManifestSha256": "4fc50838d1581293ade98d5bf8dcebb8760ee31308975d603d6fc06c0b2e822a",
+		"inputFiles": 573,
+		"artifact": "web-scene-transition-1ST2Rf",
+		"wasmSha256": "992ffb5b51a1d138a0f5ed6cf3d2743c3b84aa57dbbd1c537cbae871e802c84a",
+		"wasmBytes": 9986473,
+		"scope": "Accepted master baseline plus frozen HyperFrames fractional-duration and Thread/stops sources; private web-target, not a redistributed or installed plugin",
+		"nativeLibrary": {
+			"passed": 322,
+			"failed": 0,
+			"ignored": 1,
+			"ignoredReason": "Existing complete native Chromium bus oracle requires its dedicated evidence environment",
+			"report": "scene-transition-native-xZJzK9/verification.json",
+			"source": "scene-transition-source-P4BM2B",
+			"laterChange": "Only the fractional-duration test golden was corrected before JeXUmF; production Rust remained identical"
+		},
+		"nativeMasterTests": 4,
+		"nativeMasterReport": "scene-transition-native-Grywud/verification.json",
+		"wasmPathPrivacy": "passed",
+		"strictImportGraphTypes": "passed, including master transaction/command/codec/rendering, Thread browser fixture and fractional-duration production fixture",
+		"masterBunTests": 5,
+		"masterBunAssertions": 33,
+		"masterBunFailed": 0
+	},
 	"checks": {
 		"nativeMasterTests": 4,
 		"nativeSceneRegressionTests": 3,
@@ -45,8 +70,95 @@
 		"lint": "New and affected scoped files passed except 17 pre-existing diagnostics in domain.ts and draft/inverse.ts; identical diagnostics reproduced from HEAD, not suppressed",
 		"retainedRegressionAndFix": "Adding a clone for an omitted empty master broke the borrowed-projection zero-clone regression; omitted stacks now use a fresh empty literal and both ownership tests pass"
 	},
+	"browserAcceptance": {
+		"artifact": "C:/Users/Sayo/AppData/Local/Temp/rocut-master-effects-J0hYcv",
+		"browserChecksPassed": 27,
+		"pageErrors": [],
+		"browserEvidenceSha256": "3fc183a884602730b836d7051228333ac700a88e7c31ca2c1cc53ee166aea6fc",
+		"gpuOnlyDiagnostic": "C:/Users/Sayo/AppData/Local/Temp/rocut-master-effects-cz1Kio",
+		"gpuAccuracySha256": "8d1e061cbf77fc46fb957847404ec65fd4ee35d696af09bbf1477b0861b244d2",
+		"sceneFrames": [12, 13, 14, 15, 16, 17],
+		"dimensions": [96, 64],
+		"fullRgbaMaximumError": 0,
+		"fullRgbaMeanAbsoluteError": 0,
+		"oracle": "Independent sRGB/alpha-over/exposure/contrast/uint32-grain arithmetic; complete GPU frames, not only selected points",
+		"scope": "Standalone native recipe plus Canvas worker and backdrop through buildScene/CanvasRenderer; no installed Electron claim",
+		"defaultVideo": {
+			"passed": false,
+			"codec": "vp9",
+			"pixelFormat": "yuv420p",
+			"colorSpace": "smpte170m",
+			"colorRange": "tv",
+			"quality": "very_high",
+			"videoChroma": "omitted-default",
+			"frames": 6,
+			"fps": 30,
+			"durationSeconds": 0.2,
+			"bytes": 5652,
+			"unchangedDecodedInteriorMaeLimitExclusive": 3,
+			"decodedInteriorMae": [
+				3.213105963105963, 4.02970827970828, 10.73938223938224,
+				12.248069498069498, 12.40015015015015, 12.626876876876876
+			],
+			"gpuToDecodeErrorsEqualIndependentCpuToDecodeErrors": true,
+			"diagnosis": "Subsequent actual VideoEncoder input tracing proves all six inputs and timestamps correct while encoded bytes and decoded RGB remain identical. This case is downstream of application frame delivery; codec/color-conversion/decoder causes still require controlled isolation."
+		},
+		"supplemental444": {
+			"artifact": "C:/Users/Sayo/AppData/Local/Temp/rocut-master-effects-WRmfpd",
+			"verificationSha256": "2f8ce13bfc9504b4274f87d5db70f92bbbd84db4a4071de159ae2f403d3d607c",
+			"sourceIdentitySha256": "dc3815a483cd9486f939ccc4c1cac19910eff96863d8fba76b6344b33bb51ff7",
+			"passed": false,
+			"pixelFormat": "yuv444p",
+			"colorSpace": "smpte170m",
+			"colorRange": "tv",
+			"productionBitrate": 93000,
+			"bytes": 9107,
+			"videoSha256": "3910ca1751577481e34cdac4c553cca7c225eafcf17c8281d19ac789306661a6",
+			"fullGpuRgbaMaximumError": 0,
+			"decodedInteriorMae": [
+				2.1233376233376235, 3.5413985413985416, 10.374410124410124,
+				12.14114114114114, 12.072501072501073, 11.532818532818533
+			],
+			"decodedFramesPassingOriginalGate": 1,
+			"scope": "Same six source frames/noise/dimensions; explicit 444 also changes native bitrate policy. Neither a default fix nor evidence that chroma alone explains the discrepancy."
+		},
+		"actualEncoderInputDiagnostic": {
+			"artifact": "C:/Users/Sayo/AppData/Local/Temp/rocut-master-effects-tu2Trq",
+			"verificationSha256": "77483131c956d68387fbd8d34d9c51e35569c9252c8307817403e6a05b3a38e5",
+			"sourceIdentitySha256": "6154fc9a253e80dd41b5b74fe12162d903432518d194c52362a389811d29dab1",
+			"encoderInputsSha256": "74852cdf7f06fa394c033205fc6da19b7b9d6eea7a0a89d8a5bd4f9130175c1b",
+			"encoderInputsRawSha256": "3767c360b44c6bb69b8508291a53e9c01021f47737158440c0cf9aa66de3ff8a",
+			"observedEncodedBytesIdenticalToOriginal": true,
+			"observedDecodedRgbIdenticalToOriginal": true,
+			"decodedRgbSha256": "fb3da766f59a81396f880fb756260e6cf257fd52544fd4c94805e3f1cdc3e74a",
+			"timestampsMicroseconds": [0, 33333, 66666, 100000, 133333, 166666],
+			"durationMicroseconds": 33333,
+			"inputFormat": "BGRA",
+			"inputColorSpace": {
+				"fullRange": true,
+				"matrix": "rgb",
+				"primaries": "bt709",
+				"transfer": "iec61966-2-1"
+			},
+			"nearestGpuAndOracleFrames": [12, 13, 14, 15, 16, 17],
+			"everyDiagonalFullRgbaMaximumError": 0,
+			"actualConfiguration": {
+				"codec": "vp09.00.10.08",
+				"width": 96,
+				"height": 64,
+				"bitrate": 56000,
+				"framerate": 30,
+				"hardwareAcceleration": "prefer-software",
+				"alpha": "discard"
+			},
+			"latencyModeAndBitrateModeExplicitlySet": false,
+			"productionConfigurationChanged": false,
+			"gateResult": "Original decoded fidelity still fails all six frames; trace is diagnostic, not video acceptance",
+			"scope": "Native encode called first with unchanged arguments, then clone/copy without an await; complete input and output identity controls exclude this observed application-frame lifecycle as the cause. Different metadata alone does not prove an incorrect color conversion."
+		}
+	},
 	"remaining": [
-		"Actual browser GPU and independently decoded master-post export acceptance",
+		"Default video export fails all six independent decoded-frame fidelity gates despite exact actual encoder inputs; isolate codec/color-conversion/decoder causes and fix the export-chain discrepancy",
 		"Independent Electron export-renderer entry must pass project.settings.masterEffects into buildScene",
 		"Installed-plugin acceptance and full-song export",
 		"Dedicated author UI, master parameter animation and arbitrary persisted nested groups"

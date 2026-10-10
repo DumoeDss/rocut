@@ -1,0 +1,40 @@
+{
+	"version": 1,
+	"date": "2026-10-09",
+	"status": "verified-checkpoint",
+	"scope": "Full original Ink versus Rust producer/native Canvas replay in private Chromium at 1920x1080; no real-export, installed Electron or whole-MV claim",
+	"entry": "script/probe-mv-ink-native.mjs --browser-only",
+	"session": 27441,
+	"exitCode": 0,
+	"browser": "151.0.7922.34",
+	"evidence": "E:/Elftia-private-tests/rocut-ink-20261009-F0U4dW/temp/rocut-ink-native-vRBovb/verification.json",
+	"evidenceSha256": "86252d70afb5d77fa34419f1154a687f3d8aea6734937d07a4d0c4efb0ac3691",
+	"wasm": {
+		"directory": "E:/Elftia-private-tests/rocut-ink-20261009-F0U4dW/wasm",
+		"binarySha256": "1400a5ed4c7dab1b165f5ffd3836bd9cbc64411fc65023f4e4f697c87900c3cd",
+		"sourceManifestSha256": "fc6b2b56dd066cb90e9fb68165430e788f12455a2a54c136fecfb2ba718fb766",
+		"snapshotFiles": 636,
+		"currentMatchingRustSources": 262,
+		"sharedDependencyCopiesModified": false
+	},
+	"results": {
+		"passed": true,
+		"observations": 408,
+		"repeats": 48,
+		"pixelSensitiveControls": 11,
+		"separatePixelEquivalentStructuralControls": 1,
+		"violations": [],
+		"pageErrors": [],
+		"externalRequests": [],
+		"sourceIdentityStable": true,
+		"recordedLoadedInputs": 80
+	},
+	"thresholds": { "maxChannelAtMost": 2, "maeLessThan": 0.025, "repeatMax": 0 },
+	"controlBoundary": "The contact-gradient creation-CTM mutation is pixel-equivalent in this Chromium; its exact-zero check and separate CPU call-order checks are not counted among the 11 pixel-sensitive negatives. A wrong stop-color pairing supplies the observable gradient control.",
+	"environment": "The first b build failed because C: had no free space. A fresh private target/output and process-local TEMP/TMP on E: completed without deleting files or changing persistent environment.",
+	"limitations": [
+		"The 636-file snapshot, 262 selected current Rust sources and 80 loaded fixture/render inputs establish their enumerated scopes, not a whole-project dependency or installation identity",
+		"Synthetic declared character markers test source changes, dimensions and partial alpha; this does not grant or validate original artwork",
+		"Actual SceneExporter encoding and independent video decoding remain a separate gate"
+	]
+}

@@ -1,0 +1,125 @@
+{
+  "date": "2026-10-10",
+  "scope": "Frozen private development snapshot only; not current HEAD release consistency, full ABI certification, browser/GPU pixels, encoded export or installation",
+  "archiveKind": "selected immutable receipt projection; neither original receipt modified",
+  "failed": {
+    "original": {
+      "path": "C:/tmps/object-wasm-development-6jQYhS/evidence.json",
+      "sha256": "2cdbf7083f8588496a44ec048c9313e7ef8508184d0ca7dac604409cf9a492dd"
+    },
+    "command": {
+      "command": "C:\\nvm4w\\nodejs\\node.exe",
+      "args": [
+        "script/build-wasm.mjs",
+        "--out-dir",
+        "C:\\tmps\\object-wasm-development-6jQYhS\\pkg",
+        "--no-opt",
+        "--",
+        "--locked",
+        "--offline"
+      ],
+      "cwd": "C:\\tmps\\object-wasm-development-6jQYhS\\source",
+      "code": 1,
+      "signal": null,
+      "reason": null,
+      "durationMs": 156886,
+      "log": "C:\\tmps\\object-wasm-development-6jQYhS\\build.log"
+    },
+    "sourceFileCount": 954,
+    "sourceBytes": 5777373,
+    "compileErrors": 37,
+    "firstIndependentCauses": [
+      {
+        "code": "E0432",
+        "file": "rust/crates/editor-api/src/mv_recipe/meta_paper.rs:2",
+        "symbol": "super::math::Rng"
+      },
+      {
+        "code": "E0425",
+        "file": "rust/crates/editor-api/src/mv_recipe/meta_rewind.rs:268/274",
+        "symbol": "t/ts"
+      },
+      {
+        "code": "E0603",
+        "file": "rust/crates/editor-api/src/mv_recipe/illust_native_fx.rs:201/260",
+        "symbol": "private converge_math::noise/rnd"
+      }
+    ],
+    "canonicalUnchanged": true,
+    "snapshotDrift": [
+      "Cargo.lock"
+    ],
+    "liveDriftCount": 12,
+    "boundary": "Actual frozen-source compile failure and live drift are separately recorded; no assertion that live drift caused the compile errors"
+  },
+  "successful": {
+    "original": {
+      "path": "C:/tmps/object-wasm-development-5aSyix/evidence.json",
+      "sha256": "a008a425109af9616a714641657ed2218facc23641a7a0232753284649ccf501"
+    },
+    "command": {
+      "command": "C:\\nvm4w\\nodejs\\node.exe",
+      "args": [
+        "script/build-wasm.mjs",
+        "--out-dir",
+        "C:\\tmps\\object-wasm-development-5aSyix\\pkg",
+        "--no-opt",
+        "--",
+        "--locked",
+        "--offline"
+      ],
+      "cwd": "C:\\tmps\\object-wasm-development-5aSyix\\source",
+      "code": 0,
+      "signal": null,
+      "reason": null,
+      "durationMs": 225794,
+      "log": "C:\\tmps\\object-wasm-development-5aSyix\\build.log"
+    },
+    "sourceFileCount": 957,
+    "sourceBytes": 5813340,
+    "targetCache": {
+      "path": "C:\\tmps\\object-wasm-development-6jQYhS\\target",
+      "reused": true,
+      "source": "explicit root authorization after prior compile errors repaired"
+    },
+    "metadata": {
+      "command": "cargo",
+      "args": [
+        "metadata",
+        "--format-version",
+        "1",
+        "--no-deps",
+        "--offline"
+      ],
+      "cwd": "C:\\tmps\\object-wasm-development-5aSyix\\source",
+      "code": 0,
+      "signal": null,
+      "reason": null,
+      "durationMs": 191,
+      "log": "C:\\tmps\\object-wasm-development-5aSyix\\metadata.log"
+    },
+    "metadataDrift": [],
+    "snapshotDrift": [],
+    "canonicalUnchanged": true,
+    "liveDrift": [
+      {
+        "path": "rust\\crates\\editor-api\\src\\mv_jz_owner_tests.rs",
+        "bytes": 5074,
+        "sha256": "830e29e74664016ba57fe0fc9f306231891720c77e3757eecba5b87370ec1325"
+      },
+      {
+        "path": "rust\\crates\\editor-api\\src\\mv_recipe\\meta_catalog.rs",
+        "bytes": 6361,
+        "sha256": "609bf68638b41c6784a8a62b90ba74a23ef21415cbc454169421104c48ec0403"
+      },
+      {
+        "path": "rust\\crates\\editor-api\\src\\mv_recipe\\meta_reference_tests.rs",
+        "bytes": 6747,
+        "sha256": "88a2111e2940a2a6cfe50d7bdbd27f0f0c640a1476afee0f1ce83cfbac5eb22a"
+      }
+    ],
+    "boundary": "Build exit 0; original orchestrator receipt ok:false solely due live drift before runtime; separate authorized runtime receipt later passed against its immutable pkg"
+  },
+  "toolAcquisitionBoundary": "Formal wasm-pack stdout says Installing wasm-bindgen; no separate external install command invoked; no cache-only acquisition inference",
+  "noBrowserOrGpu": true
+}

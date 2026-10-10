@@ -1,0 +1,48 @@
+{
+	"status": "whole-wasm-build-and-generated-binding-pass",
+	"startedAt": "2026-10-10T01:50:13.987Z",
+	"finishedAt": "2026-10-10T01:53:52.218Z",
+	"originalReceipt": "C:/tmps/canvas-whole-wasm-r1-90tvPd/handoff.json",
+	"originalReceiptSha256": "c917e31314536202f965d468bf759f2fba6cf2ce5ef8f65347ad7f6d2f6e9773",
+	"packageDirectory": "C:/tmps/canvas-whole-wasm-r1-90tvPd/pkg",
+	"command": "node script/build-wasm.mjs --out-dir C:/tmps/canvas-whole-wasm-r1-90tvPd/pkg -- --locked --offline",
+	"rustVersion": "1.88.0",
+	"wasmPackVersion": "0.13.1",
+	"exitCode": 0,
+	"sourceConfigAndScriptPins": 862,
+	"sourcePinsBeforeAfterEqual": true,
+	"sourceManifestSha256": "0ea9e602de3d5d7ac7c763a39c4df685bbee04db9c5d758ddf6e1725e3c76a51",
+	"canonicalPackageUnchanged": true,
+	"warningCounts": { "effects": 8, "compositor": 2, "editorApi": 371, "wasm": 1 },
+	"buildLog": { "bytes": 93496, "sha256": "2858ccb9546e85de58bbcb02807ec927d8a0cd9a1824f2463ede7c5f98f3879b" },
+	"wasm": { "bytes": 12417715, "sha256": "a3ab8becce91cd32d25f58f5b573b1051ff44d59579f64e3c4f3163733938de4" },
+	"declarationSha256": "7ee8d9a67ddefe4df910485c62ba9231e635e6b7c72a106c009f35ccbe188ce4",
+	"glueSha256": "f51ed4724db0fb725b9eb7ef18174d9e27051dc6dfcb46a6e6e4d7ca6b8f1cda",
+	"syncEntrySha256": "a27584f3d41265364b6d19e1c9086e1ceed19575b215ec5dceeb28124735de14",
+	"generatedBinding": {
+		"originalReceipt": "C:/tmps/canvas-whole-wasm-r1-90tvPd/binding-negative.json",
+		"runtime": "node v24.14.0",
+		"ticksPerSecond": 120000,
+		"advanceDeclarationReturnsPromise": true,
+		"actualAdvanceReturnsPromise": true,
+		"invalidOwnerRejected": "AbortError: Render request is no longer current",
+		"artifactHashesBeforeAfterEqual": true
+	},
+	"privateEntryInitialization": {
+		"commandSpecifier": "file:///C:/tmps/canvas-whole-wasm-r1-90tvPd/pkg/opencut_wasm_sync.js",
+		"runtimes": ["node v24.14.0", "bun 1.4.2"],
+		"exports": 119,
+		"ticksPerSecond": 120000,
+		"mediaTimeFromSeconds2": 240000,
+		"roundToFrame": 12000,
+		"transitionGraphChecksPerRuntime": 14,
+		"errors": null,
+		"scope": "Explicit private sync entry only; not installed package routing or migration-chain acceptance."
+	},
+	"apiSurfaceGate": {
+		"command": "node script/check-wasm-api-surface.mjs --pkg-dir C:/tmps/canvas-whole-wasm-r1-90tvPd/pkg",
+		"exitCode": 1,
+		"finding": "Recorded baseline differs: generated hashes, declarations, wrapper/glue, imports and exports. Binary exports observed 177 versus recorded 130, including MV owners and scalar-animation APIs. No gate or recorded baseline was relaxed."
+	},
+	"scope": "Pinned real complete WASM build using existing target cache. No canonical package/dependency sync, installation, release or running Elftia mutation. Build and explicit entry initialization are not valid live capture/material, Host/UI/history/persistence or encoded-export acceptance. Original absolute paths describe execution-time artifacts and may not survive user cleanup."
+}

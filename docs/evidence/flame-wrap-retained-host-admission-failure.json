@@ -1,0 +1,291 @@
+{
+  "rawRun": "C:/tmps/flame-wrap-host-drYjDk/run.json",
+  "rawRunSha256": "9694d4a8aaf3a1a913091726f25bd8c51aba077d2dabb49f3a70b0cbd799d059",
+  "rawEvidence": "C:/tmps/flame-wrap-host-drYjDk/evidence.json",
+  "rawEvidenceSha256": "89c57a860955b38791b905e92f1018f5b6dd8959ae9d2140721ab60b0a49b76f",
+  "ok": false,
+  "checks": [
+    {
+      "label": "bundle",
+      "code": 0
+    },
+    {
+      "label": "host",
+      "code": 1
+    }
+  ],
+  "beforeAfterPin": true,
+  "sourceFilesBundled": 571,
+  "pinned": [
+    {
+      "path": "C:\\tmps\\flame-wrap-fast-wasm-FCc5ra\\pkg\\opencut_wasm_sync.js",
+      "sha256": "aa6ec8a9259d83bc1e5ab4d18a7e3fcbca9b71a198f19f9ebbffcd699b75c2e6"
+    },
+    {
+      "path": "C:\\tmps\\flame-wrap-fast-wasm-FCc5ra\\pkg\\opencut_wasm_bg.js",
+      "sha256": "a4048158b9277c8b8858925f35c12e4ffc9e8e33e1aedb19855d82c50d018ffe"
+    },
+    {
+      "path": "C:\\tmps\\flame-wrap-fast-wasm-FCc5ra\\pkg\\opencut_wasm_bg.wasm",
+      "sha256": "faa66f8c9eb7290c961adfe622b1cf09d66f97f87819081b98ff311798eb3c01"
+    },
+    {
+      "path": "C:\\tmps\\flame-wrap-fast-wasm-FCc5ra\\pkg\\package.json",
+      "sha256": "60502f95b49df31dd41e5be0ada1826e0693b30a525d3b49da73f4e106a1a4b4"
+    },
+    {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/flame-wrap.mjs",
+      "sha256": "ed95f37ef6511a3bf748f8ddb7f59ca44c38c335a7277be0266b0c3a1f410b54"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\elftia\\elftia-plugin-creator-studio\\resources\\agent\\skills\\html-video\\assets\\rocut-stylized\\spatial.mjs",
+      "sha256": "26c77701439bfb57102454f2e9360f8210012c454936689b6425f94bc17c12a1"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\probe-flame-wrap-host.mjs",
+      "sha256": "0534185309c21ad3bc668aba31c43551f66694437e0a9335dae27ad3842c9ec9"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\fixtures\\flame-wrap-host-build.mjs",
+      "sha256": "9ae19f78182e050db953329e175427569c450c4ad356cbbc947bf3a8990624b3"
+    },
+    {
+      "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\fixtures\\flame-wrap-host.mjs",
+      "sha256": "9dcd9367d26929fc8da4d63198d5cd569cb2b88bb834fd141e349f00d4eb8d48"
+    },
+    {
+      "path": "C:\\tmps\\flame-wrap-host-drYjDk\\host.mjs",
+      "sha256": "5c14f735066c07f9f68b8d3c4079acafdf7f749e26130141650cbbb134ccf248"
+    }
+  ],
+  "hostClosed": true,
+  "reopens": [
+    {
+      "label": "static-nine-and-seven-animated-author-moved",
+      "revision": 1,
+      "projectSha256": "7043e51c4c5d13408912a0ef7ec82ff1d5b10e542830c3a12a9583591018aa63"
+    },
+    {
+      "label": "after-atomic-rejections-and-recovery",
+      "revision": 4,
+      "projectSha256": "9b13b7f9f1f418017823d8b8ec16e81eb406d8d30e623fd8568f708046f253a1"
+    }
+  ],
+  "rejected": [
+    {
+      "label": "range-amount",
+      "revision": 1,
+      "projectSha256": "7043e51c4c5d13408912a0ef7ec82ff1d5b10e542830c3a12a9583591018aa63",
+      "memoryUnchanged": true,
+      "diskUnchanged": true
+    },
+    {
+      "label": "range-boundaryWidth",
+      "revision": 1,
+      "projectSha256": "7043e51c4c5d13408912a0ef7ec82ff1d5b10e542830c3a12a9583591018aa63",
+      "memoryUnchanged": true,
+      "diskUnchanged": true
+    },
+    {
+      "label": "range-flameHeight",
+      "revision": 1,
+      "projectSha256": "7043e51c4c5d13408912a0ef7ec82ff1d5b10e542830c3a12a9583591018aa63",
+      "memoryUnchanged": true,
+      "diskUnchanged": true
+    },
+    {
+      "label": "range-flameOpacity",
+      "revision": 1,
+      "projectSha256": "7043e51c4c5d13408912a0ef7ec82ff1d5b10e542830c3a12a9583591018aa63",
+      "memoryUnchanged": true,
+      "diskUnchanged": true
+    },
+    {
+      "label": "range-sparkOpacity",
+      "revision": 1,
+      "projectSha256": "7043e51c4c5d13408912a0ef7ec82ff1d5b10e542830c3a12a9583591018aa63",
+      "memoryUnchanged": true,
+      "diskUnchanged": true
+    },
+    {
+      "label": "range-refraction",
+      "revision": 1,
+      "projectSha256": "7043e51c4c5d13408912a0ef7ec82ff1d5b10e542830c3a12a9583591018aa63",
+      "memoryUnchanged": true,
+      "diskUnchanged": true
+    },
+    {
+      "label": "range-speed",
+      "revision": 1,
+      "projectSha256": "7043e51c4c5d13408912a0ef7ec82ff1d5b10e542830c3a12a9583591018aa63",
+      "memoryUnchanged": true,
+      "diskUnchanged": true
+    },
+    {
+      "label": "range-wind",
+      "revision": 1,
+      "projectSha256": "7043e51c4c5d13408912a0ef7ec82ff1d5b10e542830c3a12a9583591018aa63",
+      "memoryUnchanged": true,
+      "diskUnchanged": true
+    },
+    {
+      "label": "range-seed",
+      "revision": 1,
+      "projectSha256": "7043e51c4c5d13408912a0ef7ec82ff1d5b10e542830c3a12a9583591018aa63",
+      "memoryUnchanged": true,
+      "diskUnchanged": true
+    },
+    {
+      "label": "unknown-field",
+      "revision": 3,
+      "projectSha256": "cd478a8d207fd25bcda738037a43c63f1d8de4b8b0c4bed82f59e100cb1e489f",
+      "memoryUnchanged": true,
+      "diskUnchanged": true
+    },
+    {
+      "label": "wrong-type",
+      "revision": 3,
+      "projectSha256": "cd478a8d207fd25bcda738037a43c63f1d8de4b8b0c4bed82f59e100cb1e489f",
+      "memoryUnchanged": true,
+      "diskUnchanged": true
+    },
+    {
+      "label": "static-animation-speed",
+      "revision": 3,
+      "projectSha256": "cd478a8d207fd25bcda738037a43c63f1d8de4b8b0c4bed82f59e100cb1e489f",
+      "memoryUnchanged": true,
+      "diskUnchanged": true
+    },
+    {
+      "label": "static-animation-seed",
+      "revision": 3,
+      "projectSha256": "cd478a8d207fd25bcda738037a43c63f1d8de4b8b0c4bed82f59e100cb1e489f",
+      "memoryUnchanged": true,
+      "diskUnchanged": true
+    },
+    {
+      "label": "animated-out-of-range",
+      "revision": 3,
+      "projectSha256": "cd478a8d207fd25bcda738037a43c63f1d8de4b8b0c4bed82f59e100cb1e489f",
+      "memoryUnchanged": true,
+      "diskUnchanged": true
+    }
+  ],
+  "admissionGaps": [
+    {
+      "label": "fractional-seed",
+      "status": 200,
+      "accepted": true,
+      "projectSha256Before": "7043e51c4c5d13408912a0ef7ec82ff1d5b10e542830c3a12a9583591018aa63",
+      "projectSha256After": "f1998409607c38ef9d2046e5357eb20b3d3e86bc80f407ebd24b06ce724ff20f"
+    }
+  ],
+  "animationChannels": [
+    "amount",
+    "boundaryWidth",
+    "flameHeight",
+    "flameOpacity",
+    "sparkOpacity",
+    "refraction",
+    "wind"
+  ],
+  "catalog": [
+    {
+      "key": "amount",
+      "label": "Amount",
+      "type": "number",
+      "default": 1,
+      "keyframable": true,
+      "min": 0,
+      "max": 1,
+      "step": 0.01
+    },
+    {
+      "key": "boundaryWidth",
+      "label": "Boundary width (pixels)",
+      "type": "number",
+      "default": 8,
+      "keyframable": true,
+      "min": 1,
+      "max": 32,
+      "step": 0.1
+    },
+    {
+      "key": "flameHeight",
+      "label": "Flame height (pixels)",
+      "type": "number",
+      "default": 32,
+      "keyframable": true,
+      "min": 1,
+      "max": 128,
+      "step": 0.1
+    },
+    {
+      "key": "flameOpacity",
+      "label": "Flame opacity",
+      "type": "number",
+      "default": 0.85,
+      "keyframable": true,
+      "min": 0,
+      "max": 1,
+      "step": 0.01
+    },
+    {
+      "key": "sparkOpacity",
+      "label": "Spark opacity",
+      "type": "number",
+      "default": 0.6,
+      "keyframable": true,
+      "min": 0,
+      "max": 1,
+      "step": 0.01
+    },
+    {
+      "key": "refraction",
+      "label": "Heat refraction (pixels)",
+      "type": "number",
+      "default": 2,
+      "keyframable": true,
+      "min": 0,
+      "max": 16,
+      "step": 0.1
+    },
+    {
+      "key": "speed",
+      "label": "Cycles per second",
+      "type": "number",
+      "default": 1,
+      "keyframable": false,
+      "min": 0,
+      "max": 4,
+      "step": 0.01
+    },
+    {
+      "key": "wind",
+      "label": "Rise drift",
+      "type": "number",
+      "default": 0,
+      "keyframable": true,
+      "min": -1,
+      "max": 1,
+      "step": 0.01
+    },
+    {
+      "key": "seed",
+      "label": "Seed",
+      "type": "number",
+      "default": 0,
+      "keyframable": false,
+      "min": 0,
+      "max": 65535,
+      "step": 1
+    }
+  ],
+  "error": "Host admitted invalid DTOs: fractional-seed\n\n1 !== 0\n",
+  "httpRequests": 131,
+  "gpuTested": false,
+  "browserTested": false,
+  "exportTested": false,
+  "perFrameWorkBudgetGate": "GPU uniform admission requires frame execution; HTTP editing persistence alone cannot establish it",
+  "scope": "Retained red real Host acceptance: fractional Flame Wrap seed was erroneously committed before the Rust admission fix. Other passing checks and later recovery do not relabel this run green."
+}

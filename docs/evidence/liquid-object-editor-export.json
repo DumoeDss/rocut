@@ -1,0 +1,57 @@
+{
+	"date": "2026-10-10",
+	"status": "passed-private-same-project-production-export-subset",
+	"archiveKind": "Selected immutable receipt projection; original artifacts and complete input pins remain at the private root",
+	"original": {
+		"path": "C:/tmps/liquid-object-editor-export-m6TJ3m/evidence.json",
+		"sha256": "87a4497bd6d8588e5ba2a2ab471debb32b97bdfa17e49b85272b43a64b06a54d"
+	},
+	"scope": "Actual persisted project decodeProject -> buildScene -> CanvasRenderer/WasmCompositor -> SceneExporter.export; FFmpeg only independently decodes the produced video",
+	"project": {
+		"path": "C:/tmps/liquid-object-project-VnYDFE/project/project.json",
+		"sha256": "5103b73d585b46abba879bf8e233636c5f0e78cb2455c232b6a6716fac627ecf",
+		"projectAndAttachmentsUnchanged": true,
+		"sourcePersistenceEvidence": "liquid-object-implementation.json#/developmentIntegration/controlledHostAndRasterizer"
+	},
+	"wasmSha256": "7f7dba6b40fa79618d1e2f7fedab82e1731dee9c26564796f597bf31758b349c",
+	"privateBrowserGlue": "Built from the same complete private WASM package; not an old editor bundle with a replaced binary",
+	"video": {
+		"codec": "VP9",
+		"container": "WebM",
+		"width": 192,
+		"height": 128,
+		"frameRate": 30,
+		"frameIndices": [23, 24, 25, 26],
+		"bytes": 2193,
+		"sha256": "3af3487ba96de9fda294e63c3c934b9d2cbba0f325411c0effc6f2ca978a0db0"
+	},
+	"comparison": {
+		"reference": "The four formal renderHtmlPng frames from the same persisted project",
+		"compositorRgbaMeanAndMax": 0,
+		"decodedMeanRgb": [1.6010064019097223, 1.6853434244791667, 1.7470974392361112, 1.7264946831597223],
+		"decodedActiveMeanRgb": [1.1925712719298245, 1.4919884963023828, 1.7516420361247949, 1.605700225548493],
+		"predeclaredThresholds": {
+			"directMean": 2,
+			"directMax": 8,
+			"decodedMean": 3,
+			"decodedActiveMean": 6,
+			"visiblePixels": 200,
+			"timestampToleranceSeconds": 0.001
+		}
+	},
+	"lifecycle": {
+		"browserClosed": true,
+		"hostClosed": true,
+		"observedChildren": 18,
+		"allObservedActualClose": true,
+		"hostSourcePinsUnchanged": true,
+		"runtimeErrors": 0,
+		"externalRequests": 0
+	},
+	"notVerified": [
+		"Attached editor author UI, transaction history and UI reload",
+		"Complete 61-frame duration, arbitrary model/material coverage or performance",
+		"Electron, hardware/WebGPU, installed runtime and complete release packaging"
+	],
+	"ledger": "Liquid Object remains N; total 27 V / 8 N and 13 delivery work packages unchanged"
+}

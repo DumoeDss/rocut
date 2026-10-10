@@ -1,0 +1,82 @@
+{
+  "recordedAt": "2026-10-10",
+  "status": "native-private-wasm-webgl-author-ui-and-real-host-persistence-verified-editor-history-export-pending",
+  "ledger": "N; overall 27 V / 8 N unchanged",
+  "scope": "Alpha-boundary Flame Wrap with GPU mask prepass and optical pass. Rust owns validation and phase; Creator supplies authoring DSL and UI transports exact values. This is not installed/full-editor/encoded-export acceptance.",
+  "contract": {
+    "id": "flame-wrap",
+    "shader": "flame_wrap",
+    "controls": 9,
+    "keyframable": [
+      "amount",
+      "boundaryWidth",
+      "flameHeight",
+      "flameOpacity",
+      "sparkOpacity",
+      "refraction",
+      "wind"
+    ],
+    "static": [
+      "speed",
+      "seed"
+    ],
+    "seed": "Integer 0..65535, enforced at Host editing admission and native render resolution.",
+    "boundary": "Eight-neighbour alpha >= 0.5, transparent holes and canvas exterior, directional distance rather than exact Euclidean SDF.",
+    "color": "sRGB to linear premultiplied compositing and back to straight sRGB.",
+    "budget": "Per-frame axes <=8192, pixels <=16777216, logical loads <=4000000000. Not driver/RSS or performance acceptance."
+  },
+  "native": {
+    "receipt": "docs/evidence/flame-wrap-native.json",
+    "scope": "Includes actual native module/public-contract checks and shared phase tests; distinguishes historical rlib/binary and duplicate executions."
+  },
+  "wasm": {
+    "buildReceipt": "docs/evidence/canvas-capture-native/flame-wrap-admission-development-build.json",
+    "sha256": "75ef560f97061951ca38a6579fb30018daeed35f782c2c1fcc492fc6cd39b8fe",
+    "buildTimeSourcePins": 890,
+    "buildBeforeAfterEqual": true,
+    "canonicalUnchanged": true,
+    "optimizedRelease": false,
+    "admissionReceipt": "docs/evidence/flame-wrap-admission-wasm.json",
+    "actualWasmApiTestsPassed": 3,
+    "rustIntegrationTestsRun": false,
+    "scope": "Pinned release compiler with --no-opt --locked --offline. Correction of the uncompiled Rust integration-test fixture after this build is separately recorded; no current-all-source equality claim."
+  },
+  "authoring": {
+    "helper": "Creator resources/agent/skills/html-video/assets/rocut-stylized/flame-wrap.mjs",
+    "helperTestsPassed": 5,
+    "packagingTest": "Creator scripts/tests/stylized-package.test.cjs plus support/recent-stylized-package.cjs",
+    "realAgentCopyTestPassed": 1,
+    "uiReceipt": "docs/evidence/flame-wrap-author-ui.json",
+    "uiTestsPassed": 2,
+    "uiAssertions": 25,
+    "scope": "Actual helper/export/copy plus jsdom ReactDOM controls. Editor/catalog/keyframe observation transport doubles are explicit; UI history not verified."
+  },
+  "gpu": {
+    "receipt": "docs/evidence/flame-wrap-admission-fixed-live-gpu.json",
+    "frames": 29,
+    "checksPassed": 31,
+    "backend": "webgl SwiftShader",
+    "wasmSha256": "75ef560f97061951ca38a6579fb30018daeed35f782c2c1fcc492fc6cd39b8fe",
+    "scope": "Exact fetched buffer hashed and compiled, actual WASM/compositor presentation Canvas. Positive controls prove visible refraction and time-varying flame/sparks. No independent full shader oracle or native pre-presentation-byte claim.",
+    "priorSharedClockReceipt": "docs/evidence/flame-wrap-shared-clock-live-gpu.json"
+  },
+  "host": {
+    "receipt": "docs/evidence/flame-wrap-host-persistence.json",
+    "actualBundledSourceFiles": 571,
+    "reopens": 2,
+    "atomicRejectedBatches": 15,
+    "scope": "Actual HeadlessHost HTTP, Creator helper, nine static controls, seven animation channels, detached author resource load, FileProjectStore memory/byte invariance and recovery. GPU work budget requires frame execution and is not claimed from Host apply."
+  },
+  "retainedFailures": [
+    "docs/evidence/flame-wrap-retained-budget-fixture-failure.json",
+    "docs/evidence/flame-wrap-retained-host-admission-failure.json",
+    "docs/evidence/flame-wrap-admission-wasm.json"
+  ],
+  "notVerified": [
+    "Real production editor parameter undo/redo and same-project reload/render/export chain",
+    "Encoded video and independently decoded native-frame comparison; alpha master separately",
+    "Irregular, disconnected and moving source topology",
+    "Hardware WebGPU, resource-withdrawal/cancellation races and cross-host acceptance",
+    "Full WASM ABI baseline reconciliation, final optimized build and P8 installation/upgrade/rollback"
+  ]
+}

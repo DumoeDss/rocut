@@ -1,0 +1,1039 @@
+{
+  "date": "2026-10-10",
+  "status": "passed-corrected-source-diagnostic-WebGL-subset",
+  "archiveKind": "selected immutable GPU receipt projection; PNG captures and full receipt retained in private root",
+  "original": {
+    "path": "C:/tmps/glass-object-gpu-run-FMTXpK/gpu-run.json",
+    "sha256": "f6f94b97d0f0b20cf692f8b4c220730721d593df6259804a9ec21ad907226eb3"
+  },
+  "preparation": {
+    "path": "C:\\tmps\\glass-object-gpu-leRXRl\\preparation.json",
+    "sha256": "d806c9e134b2d6774c82fde2e8220f6d443fc7b631d3eb3ba514946756e6b31c"
+  },
+  "priorCounterexample": "glass-object-gpu-counterexample.json",
+  "sourceLineage": {
+    "priorCounterexampleSha256": "2a687e43962af1f1610d7f68f2b8832aadc741b75add049ea85d0720b0965e85",
+    "correctedSourceExplicitPin": "f2c1b59af471f13d1b9a136d232d79eaaa3c7a8a93bb340a442d8bcb9b719c59"
+  },
+  "source": {
+    "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/elftia/elftia-plugin-creator-studio/resources/agent/skills/html-video/assets/rocut-stylized/glass-object-scene.ts",
+    "bytes": 6085,
+    "sha256": "f2c1b59af471f13d1b9a136d232d79eaaa3c7a8a93bb340a442d8bcb9b719c59"
+  },
+  "wasm": {
+    "path": "C:\\tmps\\object-wasm-development-5aSyix\\pkg\\opencut_wasm_bg.wasm",
+    "bytes": 18284725,
+    "sha256": "5d40cb7ae4e0fed4d7c7b81d1ef7617b5d874ec5dd6fbead2da03fbc8d021560"
+  },
+  "sourceFix": {
+    "method": "Preserve actual new MeshPhysicalMaterial constructor intrinsic defines around Standard.copy; no Physical.copy(Standard), hardcoded version macros or threshold relaxation",
+    "cpuRegression": {
+      "before": {
+        "passed": 4,
+        "failed": 1,
+        "reason": "missing constructor PHYSICAL"
+      },
+      "after": {
+        "passed": 5,
+        "failed": 0,
+        "threeVersion": "0.185.1"
+      },
+      "scope": "Same five scene cases with added intrinsic defines/defaults assertions; includes maps/colors/shared multi-materials/absolute seek/abort/restoration, not five new unique cases"
+    }
+  },
+  "assets": [
+    {
+      "path": "C:\\tmps\\glass-object-gpu-leRXRl\\optical-model.glb",
+      "bytes": 24668,
+      "sha256": "dcfc5676b1946add4eb3eb1803e4f30dd270f8d2064d54c83b225c696e5ccfe1",
+      "kind": "model",
+      "mimeType": "model/gltf-binary"
+    },
+    {
+      "path": "C:\\tmps\\glass-object-gpu-leRXRl\\optical-environment.hdr",
+      "bytes": 8239,
+      "sha256": "c0189db833bcd32f4d2b3c30309eff76fe009695741652fa710c136a2448ba56",
+      "kind": "environment",
+      "mimeType": "image/vnd.radiance"
+    },
+    {
+      "path": "C:\\tmps\\glass-object-gpu-leRXRl\\optical-dark.png",
+      "bytes": 671,
+      "sha256": "59bdbc0ca18cce546d20721b9027129250895f92bdec8d5276006ce7b4894f7e",
+      "kind": "image",
+      "mimeType": "image/png"
+    },
+    {
+      "path": "C:\\tmps\\glass-object-gpu-leRXRl\\optical-light.png",
+      "bytes": 669,
+      "sha256": "53d9824ac375e6539c5dc6ec7c25db50ad8f380b35d8d0c2386ee76398e4070c",
+      "kind": "image",
+      "mimeType": "image/png"
+    }
+  ],
+  "actualResolverCalls": 5,
+  "params": {
+    "base": {
+      "attenuationDistance": 1000,
+      "color": "#ffffff",
+      "dispersion": 0,
+      "environmentIntensity": 0.2,
+      "ior": 1.5,
+      "roughness": 0.02,
+      "thickness": 0.4,
+      "transmission": 1,
+      "version": 1
+    },
+    "opaque": {
+      "attenuationDistance": 1000,
+      "color": "#ffffff",
+      "dispersion": 0,
+      "environmentIntensity": 0.2,
+      "ior": 1.5,
+      "roughness": 0.02,
+      "thickness": 0.4,
+      "transmission": 0,
+      "version": 1
+    },
+    "roughness": {
+      "attenuationDistance": 1000,
+      "color": "#ffffff",
+      "dispersion": 0,
+      "environmentIntensity": 0.2,
+      "ior": 1.5,
+      "roughness": 0.85,
+      "thickness": 0.4,
+      "transmission": 1,
+      "version": 1
+    },
+    "thickness": {
+      "attenuationDistance": 1000,
+      "color": "#ffffff",
+      "dispersion": 0,
+      "environmentIntensity": 0.2,
+      "ior": 1.5,
+      "roughness": 0.02,
+      "thickness": 2,
+      "transmission": 1,
+      "version": 1
+    },
+    "ior": {
+      "attenuationDistance": 1000,
+      "color": "#ffffff",
+      "dispersion": 0,
+      "environmentIntensity": 0.2,
+      "ior": 2.3,
+      "roughness": 0.02,
+      "thickness": 0.4,
+      "transmission": 1,
+      "version": 1
+    }
+  },
+  "browserVersion": "151.0.7922.34",
+  "launch": {
+    "headless": true,
+    "args": [
+      "--no-proxy-server",
+      "--use-angle=swiftshader",
+      "--enable-unsafe-swiftshader",
+      "--disable-webgpu"
+    ]
+  },
+  "result": {
+    "ok": true,
+    "width": 256,
+    "height": 192,
+    "threeRevision": "185",
+    "renderer": "WebKit WebGL",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "diagnostic": {
+      "stages": [
+        {
+          "name": "renderer-initialized-before-load",
+          "errors": [],
+          "contextLost": false,
+          "programs": []
+        },
+        {
+          "name": "GLB-decoded-before-environment",
+          "errors": [],
+          "contextLost": false,
+          "programs": []
+        },
+        {
+          "name": "all-assets-decoded-before-createScene",
+          "errors": [],
+          "contextLost": false,
+          "programs": []
+        },
+        {
+          "name": "base:before-compileAsync",
+          "errors": [],
+          "contextLost": false,
+          "programs": []
+        },
+        {
+          "name": "base:after-compileAsync-before-render",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 2
+            },
+            {
+              "id": 3
+            }
+          ]
+        },
+        {
+          "name": "base:after-render",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 2
+            },
+            {
+              "id": 3
+            },
+            {
+              "id": 4
+            }
+          ]
+        },
+        {
+          "name": "base:after-readPixels",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 2
+            },
+            {
+              "id": 3
+            },
+            {
+              "id": 4
+            }
+          ]
+        },
+        {
+          "name": "light:before-compileAsync",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            }
+          ]
+        },
+        {
+          "name": "light:after-compileAsync-before-render",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 5
+            },
+            {
+              "id": 6
+            }
+          ]
+        },
+        {
+          "name": "light:after-render",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 5
+            },
+            {
+              "id": 6
+            },
+            {
+              "id": 7
+            }
+          ]
+        },
+        {
+          "name": "light:after-readPixels",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 5
+            },
+            {
+              "id": 6
+            },
+            {
+              "id": 7
+            }
+          ]
+        },
+        {
+          "name": "opaqueDark:before-compileAsync",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            }
+          ]
+        },
+        {
+          "name": "opaqueDark:after-compileAsync-before-render",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 8
+            },
+            {
+              "id": 9
+            }
+          ]
+        },
+        {
+          "name": "opaqueDark:after-render",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 8
+            },
+            {
+              "id": 9
+            }
+          ]
+        },
+        {
+          "name": "opaqueDark:after-readPixels",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 8
+            },
+            {
+              "id": 9
+            }
+          ]
+        },
+        {
+          "name": "opaqueLight:before-compileAsync",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            }
+          ]
+        },
+        {
+          "name": "opaqueLight:after-compileAsync-before-render",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 10
+            },
+            {
+              "id": 11
+            }
+          ]
+        },
+        {
+          "name": "opaqueLight:after-render",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 10
+            },
+            {
+              "id": 11
+            }
+          ]
+        },
+        {
+          "name": "opaqueLight:after-readPixels",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 10
+            },
+            {
+              "id": 11
+            }
+          ]
+        },
+        {
+          "name": "roughness:before-compileAsync",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            }
+          ]
+        },
+        {
+          "name": "roughness:after-compileAsync-before-render",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 12
+            },
+            {
+              "id": 13
+            }
+          ]
+        },
+        {
+          "name": "roughness:after-render",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 12
+            },
+            {
+              "id": 13
+            },
+            {
+              "id": 14
+            }
+          ]
+        },
+        {
+          "name": "roughness:after-readPixels",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 12
+            },
+            {
+              "id": 13
+            },
+            {
+              "id": 14
+            }
+          ]
+        },
+        {
+          "name": "thickness:before-compileAsync",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            }
+          ]
+        },
+        {
+          "name": "thickness:after-compileAsync-before-render",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 15
+            },
+            {
+              "id": 16
+            }
+          ]
+        },
+        {
+          "name": "thickness:after-render",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 15
+            },
+            {
+              "id": 16
+            },
+            {
+              "id": 17
+            }
+          ]
+        },
+        {
+          "name": "thickness:after-readPixels",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 15
+            },
+            {
+              "id": 16
+            },
+            {
+              "id": 17
+            }
+          ]
+        },
+        {
+          "name": "ior:before-compileAsync",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            }
+          ]
+        },
+        {
+          "name": "ior:after-compileAsync-before-render",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 18
+            },
+            {
+              "id": 19
+            }
+          ]
+        },
+        {
+          "name": "ior:after-render",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 18
+            },
+            {
+              "id": 19
+            },
+            {
+              "id": 20
+            }
+          ]
+        },
+        {
+          "name": "ior:after-readPixels",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 18
+            },
+            {
+              "id": 19
+            },
+            {
+              "id": 20
+            }
+          ]
+        },
+        {
+          "name": "late:before-compileAsync",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            }
+          ]
+        },
+        {
+          "name": "late:after-compileAsync-before-render",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 21
+            },
+            {
+              "id": 22
+            }
+          ]
+        },
+        {
+          "name": "late:after-render",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 21
+            },
+            {
+              "id": 22
+            },
+            {
+              "id": 23
+            }
+          ]
+        },
+        {
+          "name": "late:after-readPixels",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 21
+            },
+            {
+              "id": 22
+            },
+            {
+              "id": 23
+            }
+          ]
+        },
+        {
+          "name": "reverse:before-compileAsync",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            }
+          ]
+        },
+        {
+          "name": "reverse:after-compileAsync-before-render",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 24
+            },
+            {
+              "id": 25
+            }
+          ]
+        },
+        {
+          "name": "reverse:after-render",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 24
+            },
+            {
+              "id": 25
+            },
+            {
+              "id": 26
+            }
+          ]
+        },
+        {
+          "name": "reverse:after-readPixels",
+          "errors": [],
+          "contextLost": false,
+          "programs": [
+            {
+              "id": 0
+            },
+            {
+              "id": 1
+            },
+            {
+              "id": 24
+            },
+            {
+              "id": 25
+            },
+            {
+              "id": 26
+            }
+          ]
+        }
+      ],
+      "contextAttributes": {
+        "alpha": false,
+        "antialias": false,
+        "depth": true,
+        "desynchronized": false,
+        "failIfMajorPerformanceCaveat": false,
+        "powerPreference": "default",
+        "premultipliedAlpha": true,
+        "preserveDrawingBuffer": true,
+        "stencil": false,
+        "xrCompatible": false
+      },
+      "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "threeRevision": "185",
+      "assets": [
+        "curved optical-model.glb",
+        "64x32 optical-environment.hdr",
+        "128x128 optical-dark.png",
+        "128x128 optical-light.png"
+      ],
+      "firstFrame": {
+        "time": 0,
+        "width": 256,
+        "height": 192
+      }
+    },
+    "shaderErrors": [],
+    "programCount": 2,
+    "metrics": {
+      "backgroundTransmission": {
+        "mean": 136.375,
+        "changed": 728,
+        "pixels": 728
+      },
+      "backgroundOpaque": {
+        "mean": 0,
+        "changed": 0,
+        "pixels": 728
+      },
+      "roughness": {
+        "mean": 7.843406593406593,
+        "changed": 728,
+        "pixels": 728
+      },
+      "thickness": {
+        "mean": 10.249084249084248,
+        "changed": 637,
+        "pixels": 728
+      },
+      "ior": {
+        "mean": 16.252289377289376,
+        "changed": 728,
+        "pixels": 728
+      },
+      "motion": {
+        "mean": 7.7239010989010985,
+        "changed": 593,
+        "pixels": 728
+      },
+      "reverseSeek": {
+        "mean": 0,
+        "changed": 0,
+        "pixels": 728
+      }
+    },
+    "captures": [
+      {
+        "name": "base",
+        "time": 0,
+        "sha256": "bc35f1e0e3715f663f82c4cbf713847f40b26b5a21ec728540c3d20b32cd265e"
+      },
+      {
+        "name": "light",
+        "time": 0,
+        "sha256": "9f27b0f66a3ef11c184ebcdd0980d5521cd4a75244a300b9b0a0d90e1c807791"
+      },
+      {
+        "name": "opaqueDark",
+        "time": 0,
+        "sha256": "a89a79d126ab496148954fb56abbd8b7e19c5703626296b3101e47dd68e463c9"
+      },
+      {
+        "name": "opaqueLight",
+        "time": 0,
+        "sha256": "1ab9832bf9464cae8261347bde0e3e41842b42ffc7a15b64bcc62a233e476333"
+      },
+      {
+        "name": "roughness",
+        "time": 0,
+        "sha256": "5c54c63d196277aa9383d8cb5fe4d4022f05b9f782a7e042dcce8b77f865227e"
+      },
+      {
+        "name": "thickness",
+        "time": 0,
+        "sha256": "b1e7e1c7e96436e1336aac58818c2180dfe4822c307a00e731455ea25b534caa"
+      },
+      {
+        "name": "ior",
+        "time": 0,
+        "sha256": "1418acba2cdefa66c1a38767b9bc06c0829bbdbe5f32de2e77e37e3afd1d619b"
+      },
+      {
+        "name": "late",
+        "time": 0.75,
+        "sha256": "1df0c3a7fe653c521b114722d495155164ef443791028b222fead79a92deab3d"
+      },
+      {
+        "name": "reverse",
+        "time": 0,
+        "sha256": "bc35f1e0e3715f663f82c4cbf713847f40b26b5a21ec728540c3d20b32cd265e"
+      }
+    ],
+    "cleanup": [
+      {
+        "name": "base",
+        "owned": 3,
+        "disposed": 3,
+        "borrowedUntouched": true
+      },
+      {
+        "name": "light",
+        "owned": 3,
+        "disposed": 3,
+        "borrowedUntouched": true
+      },
+      {
+        "name": "opaqueDark",
+        "owned": 3,
+        "disposed": 3,
+        "borrowedUntouched": true
+      },
+      {
+        "name": "opaqueLight",
+        "owned": 3,
+        "disposed": 3,
+        "borrowedUntouched": true
+      },
+      {
+        "name": "roughness",
+        "owned": 3,
+        "disposed": 3,
+        "borrowedUntouched": true
+      },
+      {
+        "name": "thickness",
+        "owned": 3,
+        "disposed": 3,
+        "borrowedUntouched": true
+      },
+      {
+        "name": "ior",
+        "owned": 3,
+        "disposed": 3,
+        "borrowedUntouched": true
+      },
+      {
+        "name": "late",
+        "owned": 3,
+        "disposed": 3,
+        "borrowedUntouched": true
+      },
+      {
+        "name": "reverse",
+        "owned": 3,
+        "disposed": 3,
+        "borrowedUntouched": true
+      }
+    ],
+    "negativeControlRejected": true,
+    "resourceDecode": {
+      "modelMeshes": 1,
+      "environment": [
+        64,
+        32
+      ],
+      "backgrounds": [
+        [
+          128,
+          128
+        ],
+        [
+          128,
+          128
+        ]
+      ]
+    },
+    "scope": "Actual Glass source with curved GLB and detailed dark/light PNG optical diagnostic fixtures; not GPU acceptance of earlier tiny Host project or user visual full support. Real WebGL2 compile/render/pixels only; no editor/history/encoded export or hardware cross-device certification"
+  },
+  "pageErrors": [],
+  "consoleErrors": [],
+  "externalRequests": [],
+  "browserClosed": true,
+  "serverClosed": true,
+  "inputsUnchanged": true,
+  "buildInputs": {
+    "count": 10,
+    "validation": {
+      "ok": true,
+      "liveInputsVerifiedDuringBuild": 11,
+      "snapshotFilesVerified": 11
+    },
+    "fullInventory": "Retained in preparation receipt, not duplicated here"
+  },
+  "boundary": "Curved GLB and detailed128x128 dark/light PNG optical diagnostic fixtures; not original tiny Host project GPU acceptance, editor/UI/history, encoded export, hardware/WebGPU, installation or all user visual support. Host receipt pins pre-fix source; this GPU receipt pins corrected source separately."
+}

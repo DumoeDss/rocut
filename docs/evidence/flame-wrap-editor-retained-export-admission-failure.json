@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-10",
+  "status": "retained full-run harness failure after successful UI/history/reload; not product export-admission failure",
+  "rawReceipt": {
+    "path": "C:/tmps/flame-wrap-editor-Ku4efn/evidence.json",
+    "sha256": "2288d295d3755e8c2b7bf0e71b1efebc3226651b42bb4bd6b2145e8e0aec5d97"
+  },
+  "actualRunOk": false,
+  "failure": {
+    "stage": "Export POST admission in shared blaze-editor-control.mjs request helper",
+    "actualHttpStatus": 202,
+    "harnessExpectedHttpStatus": 200,
+    "responseTaskStatus": "pending",
+    "assertion": "202 !== 200",
+    "classification": "Product correctly accepted asynchronous export with HTTP 202; shared harness expected 200 and stopped before polling/completion/decode.",
+    "encodedOutputIndependentlyDecoded": false,
+    "finalHostVerifyExecuted": false
+  },
+  "completedBeforeFailure": "flame-wrap-editor-ui.json",
+  "cleanup": {
+    "bundleCloseObserved": true,
+    "bundleExitCode": 0,
+    "browserClosed": true,
+    "hostClosed": true,
+    "hostExitCode": 0,
+    "hostExitSignal": null,
+    "inputsUnchanged": true,
+    "boundary": "Observed process closure and unchanged pinned inputs do not establish final Host project close/reopen verification."
+  },
+  "retainedDiagnostics": {
+    "productionBuildWarnings": 54,
+    "consoleErrorMessages": 12,
+    "abortRelatedConsoleMessages": 10,
+    "pageErrors": 0,
+    "http404Failures": 2,
+    "externalRequests": 0
+  },
+  "notVerified": ["Completed export and independent decode", "Final Host close/reopen check", "Native GPU byte capture", "Hardware/WebGPU", "Installation state"]
+}
