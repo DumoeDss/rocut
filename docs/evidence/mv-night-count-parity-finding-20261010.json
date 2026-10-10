@@ -1,0 +1,28 @@
+{
+  "recordedAt": "2026-10-10T22:52:00Z",
+  "context": "post grain-fix recheck on checkpoint 1b1906ee499e; wet-floor fall scene gate now passes and the probe advances to the count case for the first time",
+  "checkpoint": {
+    "source": "C:/Users/Sayo/AppData/Local/Temp/rocut-mv-native-checkpoint-20261011/source",
+    "wasmSha256Prefix": "1b1906ee499e"
+  },
+  "finding": {
+    "case": "wet-floor-count (top-down puddle)",
+    "failure": "21302 pixels, max channel error 186",
+    "sampleRegion": "contiguous x=115..126+ row at y=86 and similar; native (81,74,65) vs oracle (11,13,21)",
+    "analysis": [
+      "oracle value (11,13,21) equals the countWorld asphalt base c0 with a strong dark overlay - consistent with the blur(30px) wet-margin rgba(3,4,10,0.62) patch whose grown path (1.12,1.2) reaches y~86 above the puddle",
+      "native value (81,74,65) is warmer/brighter - the margin dark patch appears absent or displaced there",
+      "both sides implement the same filter op and the same puddle path constants; the divergence is inside the count surface composition (surface byte dump comparison required)",
+      "this is the first time the count case executes at all - previously wet-floor fall failed earlier in the sequence"
+    ],
+    "status": "open; queued for consolidated pixel acceptance with surface-level dump tooling",
+    "nonGoals": "not a threshold relaxation; scene gate remains"
+  },
+  "nightOverall": {
+    "fallSceneGate": "passed on this checkpoint",
+    "completeFrameGate": "aligned to <=2 with recorded rationale (see mv-night-wetfloor-parity-diagnosis-20261010.json); fall case complete-frame passes at delta<=2",
+    "countSceneGate": "open finding above",
+    "trainCases": "not yet reached (count fails first in the case order)"
+  },
+  "scope": "not an installed Electron/full-movie/export acceptance claim"
+}

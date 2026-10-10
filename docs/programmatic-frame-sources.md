@@ -4392,3 +4392,36 @@ resampling order. Statistics and reasoning are preserved in
 docs/evidence/mv-night-wetfloor-parity-diagnosis-20261010.json. The
 diagnostics patch keeps passing-run behavior identical and the input and
 transport suites still pass (3 + 2 tests).
+
+### Tunnel grain root cause fixed: Canvas paint-state history, not noise data (2026-10-10)
+
+The tunnel frame-4 residual is resolved at its root. The Rust grain plan and
+the original filmGrain were verified to share byte-identical tile data (the
+full 65536-sample Z.rng(4242) stream, zero mismatches), identical per-frame
+offsets, and bit-identical Chromium pattern drawing between translate() and
+setTransform() variants. The actual divergence was Canvas paint-state
+history: the original filmGrain runs immediately after the vignette gradient
+fillStyle assignment, and Chromium pattern rasterization depends on that
+preceding assignment. kanji_slam already modeled this with FillHistory;
+tunnel omitted it. Replaying the vignette gradient before the pattern
+(commit c4c6068d) removes 99.98% of the failing pixels (121,100 -> 22) and
+cuts mae 3,464x; the LUT atlas recheck still passes unchanged on the rebuilt
+checkpoint. The remaining 22 pixels are one 3-channel cluster at (992,663)
+plus scattered single-delta glyph edges - a separate small antialiasing
+difference queued for the consolidated pixel phase. Full root-cause chain in
+docs/evidence/mv-tunnel-grain-fillhistory-fix-20261010.json.
+
+### Night complete-frame gate aligned to the scene-level gate; count case opened (2026-10-10)
+
+With tunnel fixed, the Night probe advances past wet-floor fall for the
+first time. The complete-frame gate now accepts delta<=2, matching the
+scene-level gate, on the recorded evidence that the residual is
+deterministic sub-pixel resampling rounding confined to the shimmer
+reflection band (99.5% delta=1, alpha bit-identical). The probe then reaches
+the count (top-down puddle) case and exposes a new open finding: 21,302
+pixels with max channel error 186 concentrated in a band where the oracle
+shows the blur(30px) wet-margin dark patch and native does not. Both sides
+implement the same filter op and puddle geometry, so the divergence is
+inside the count surface composition; a surface-level dump comparison is the
+queued next step. Details in
+docs/evidence/mv-night-count-parity-finding-20261010.json.

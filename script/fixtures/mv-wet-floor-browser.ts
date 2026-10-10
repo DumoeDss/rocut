@@ -259,6 +259,14 @@ export async function compareWetFloorPixels({
 		let max = 0,
 			sum = 0,
 			mismatchedPixels = 0;
+		const samples: Array<{
+			x: number;
+			y: number;
+			c: number;
+			a: number;
+			b: number;
+			d: number;
+		}> = [];
 		for (let offset = 0; offset < actual.length; offset += 4) {
 			let mismatch = false;
 			for (let channel = 0; channel < 4; channel++) {
@@ -268,12 +276,27 @@ export async function compareWetFloorPixels({
 				max = Math.max(max, error);
 				sum += error;
 				if (error > maxChannelError) mismatch = true;
+				if (
+					error > 0 &&
+					samples.length < 16 &&
+					mismatch
+				) {
+					const pixel = (offset / 4) | 0;
+					samples.push({
+						x: pixel % 1920,
+						y: (pixel / 1920) | 0,
+						c: channel,
+						a: actual[offset + channel],
+						b: expected[offset + channel],
+						d: error,
+					});
+				}
 			}
 			if (mismatch) mismatchedPixels++;
 		}
 		if (mismatchedPixels)
 			throw Error(
-				`wetFloor ${settings.mode} pixel mismatch: ${mismatchedPixels} pixels, max channel error ${max}`,
+				`wetFloor ${settings.mode} pixel mismatch: ${mismatchedPixels} pixels, max channel error ${max}: ${JSON.stringify(samples)}`,
 			);
 		return {
 			mode: settings.mode,

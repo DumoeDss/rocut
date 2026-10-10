@@ -46,11 +46,13 @@ try {
     await page.waitForFunction(() => globalThis.__nightResult !== undefined, undefined, { timeout: 180000 });
     const result = await page.evaluate(() => globalThis.__nightResult);
     assert.equal(errors.length, 0, errors.join("\n")); assert.equal(external.length, 0, external.join("\n"));
+    const evidence = { result, wasmIdentity, rustIdentity, browserIdentity, servedIdentity, sources, nodeSources, browserExecuted: true,
+        references: [...data.references, data.main, data.gl].map(({ id, sha256 }) => ({ id, sha256 })), scope: result.scope };
+    // Persist evidence even when a later assertion fails so parity diagnostics remain inspectable.
+    await writeFile(join(artifact, "evidence.json"), JSON.stringify(evidence, null, 2), "utf8");
     assert.equal(result.status, "passed", result.error); assert.equal(result.mode, mode); assert.equal(result.cases.length, 5); assert.equal(result.lutMaxChannelError, 0); assert.ok(result.negativeCount >= 25);
     for (const item of result.cases) { assert.ok(item.maxChannelError <= 1); if (item.name.startsWith("train-")) { assert.equal(item.postGatePassed, true); assert.equal(item.postPasses, 15); } }
     assert.deepEqual(await fallWasmIdentity(isolated), wasmIdentity, "WASM changed during gate"); assert.deepEqual(await nightCompiledCheckpoint(rustOptions), rustIdentity, "Frozen snapshot/current leaves changed"); assert.deepEqual(await fallServedIdentity(web), servedIdentity, "Served bundle changed");
     for (const { path, sha256 } of [...sources, ...nodeSources]) assert.equal(nightHash(await nightActual(join(root, path))), sha256, "Loaded launcher/frontend source changed: " + path);
-    const evidence = { result, wasmIdentity, rustIdentity, browserIdentity, servedIdentity, sources, nodeSources, browserExecuted: true,
-        references: [...data.references, data.main, data.gl].map(({ id, sha256 }) => ({ id, sha256 })), scope: result.scope };
-    await writeFile(join(artifact, "evidence.json"), JSON.stringify(evidence, null, 2), "utf8"); console.log(JSON.stringify({ artifact, ...evidence }, null, 2));
+    console.log(JSON.stringify({ artifact, ...evidence }, null, 2));
 } finally { if (browser) await browser.close(); if (server) await server.close(); }
