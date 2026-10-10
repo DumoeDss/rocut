@@ -4477,7 +4477,6 @@ edges, now with bit-identical surfaces and glow positions as supporting
 evidence. The remaining suspect is floating-point evaluation order inside
 the camera/clip composition (the 1+0.006*dec(t-last,9) zoom nudge at ULP
 level) flipping edge samples across the same geometric boundary.
-level) flipping edge samples across the same geometric boundary.
 A follow-up camera verification closes the remaining arithmetic suspect: the
 admitted plan's head ops carry rotate(-0.009293205787121998) and
 scale(1.0320927132992188), bit-identical to the oracle countCam values at
@@ -4486,3 +4485,18 @@ positions, drop sets and now the camera transform all exonerated, the
 residual divergence concentrates on opposite-side antialiasing of the
 puddle-clip diagonal and the reflection/asphalt boundary inside it -
 grouped with the other sub-pixel findings for the consolidated phase.
+
+### Night count drawImage-arity experiment: last semantic suspect closed (2026-10-11)
+
+Because the native plan emits drawImage(surface, 0, 0) while the oracle
+uses drawImage(surface, 0, 0, w, h), an about:blank Chromium experiment
+replayed both arities over the count surfaces twice: once flat, once inside
+the full clip+reflection transform chain (translate, rotate, scale, clip,
+drawImage, restore). Both variants produced bit-identical output for the
+2-argument and 4-argument forms (0 differing pixels). drawImage arity is
+excluded; with surfaces, camera transform, glow positions, drop sets and
+arity all verified equal, the remaining suspect is only Chromium's
+rasterization of the 140-point puddle clip polyline under the accumulated
+transform - the mathematical inputs are identical and the divergence is
+edge-sample side flipping, matching the other sub-pixel findings queued for
+the consolidated pixel-acceptance phase.

@@ -54,6 +54,13 @@
       "oracle": "countCam recomputed in the oracle realm: rot=-0.009293205787121998 zoom=1.0320927132992188 (including the dec(t-last,9) nudge with last=99.13)",
       "result": "bit-identical at 17 significant digits; the camera transform is fully exonerated. Combined with bit-identical surfaces, glow positions and the same drop set (the drop3 impact glow cluster at (770,690) exists on both sides), the remaining divergence concentrates on opposite-side antialiasing of the puddle clip diagonal and the reflection/asphalt boundary inside it"
     },
+    "drawImageArityVerification": {
+      "recordedAt": "2026-10-11T06:40:00Z",
+      "motivation": "the native plan emits drawImage(surface, 0, 0) while the oracle count composition uses drawImage(surface, 0, 0, w, h); the last remaining semantic difference between the two draw paths",
+      "tooling": "about:blank Chromium experiment replaying both arities over the same captured count surfaces twice: flat (bare drawImage), and inside the full clip+reflection transform chain (translate, rotate, scale, translate, clip path, drawImage, restore)",
+      "result": "both experiments produced bit-identical output for the 2-argument and 4-argument forms (0 differing pixels in flat and transform-chain variants)",
+      "implication": "drawImage arity is excluded as a divergence source. With surfaces, camera transform, glow positions, drop sets and draw arity all verified equal, the remaining suspect is Chromium rasterization of the 140-point puddle clip polyline under the accumulated transform: identical mathematical inputs, opposite-side edge-sample flipping - the same sub-pixel pixel-tail family as fall shimmer, tunnel glyph edges and train bloom edges, queued for the consolidated pixel-acceptance phase"
+    },
     "status": "open; queued for consolidated pixel acceptance with surface-level dump tooling",
     "nonGoals": "not a threshold relaxation; scene gate remains"
   },
