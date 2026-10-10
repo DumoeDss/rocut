@@ -52,6 +52,12 @@ export interface LooksPixelEffectDraw extends LooksScreenEffectDraw {
 
 const scratchByCanvas = new WeakMap<object, LooksScratchSurface>();
 
+export function disposeLooksScreenEffectScratch(canvas: object): void {
+	const scratch = scratchByCanvas.get(canvas);
+	if (scratch) scratch.canvas.width = scratch.canvas.height = 1;
+	scratchByCanvas.delete(canvas);
+}
+
 export function looksEffectProgress(options: LooksScreenEffectDraw): number {
 	const seconds = options.frame.localTime / 120_000;
 	const cycle = seconds * 0.68 + options.effectIndex * 0.173;

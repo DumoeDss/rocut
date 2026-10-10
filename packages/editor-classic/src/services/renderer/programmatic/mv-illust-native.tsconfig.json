@@ -1,0 +1,1 @@
+{"extends":"./mv-memories-owner.tsconfig.json","include":["./mv-illust-native*.ts","../../../../../editor-contracts/src/mv-illust-native.ts"]}

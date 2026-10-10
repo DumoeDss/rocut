@@ -78,6 +78,7 @@ export function nativeTestRealm(
 	runInNewContext(source, {
 		parent,
 		ArrayBuffer,
+		ImageBitmap: TestNativeBitmap,
 		Blob,
 		setTimeout(callback: () => void, delay: number) {
 			yields++;
@@ -96,8 +97,10 @@ export function nativeTestRealm(
 			}
 		},
 		FontFace: class {
+			status = "unloaded";
 			async load() {
 				await options.loadFont?.();
+				this.status = "loaded";
 				return this;
 			}
 		},

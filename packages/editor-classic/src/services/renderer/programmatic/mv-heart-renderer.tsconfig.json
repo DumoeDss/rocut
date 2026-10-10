@@ -1,0 +1,8 @@
+{
+	"extends": "./mv-heart-owner-provider.tsconfig.json",
+	"include": [
+		"./mv-heart-renderer*.ts",
+		"../../../../../editor-contracts/src/mv-heart.ts",
+		"../../../../../editor-contracts/src/mv-heart-plan.ts"
+	]
+}

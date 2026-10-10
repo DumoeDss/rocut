@@ -7,6 +7,7 @@ import type {
 	TScene,
 } from "../../timeline/types";
 import { cloneOpaque, overlayOpaque } from "./opaque-value";
+import { EDITING_NAME_SHAPE_KEY } from "./editing-name-shape";
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -43,6 +44,7 @@ function pick(source: UnknownRecord, keys: readonly string[]): UnknownRecord {
 
 const TRACK_KEYS = ["id", "name", "type", "elements", "muted", "hidden"];
 const ELEMENT_KEYS = [
+	EDITING_NAME_SHAPE_KEY,
 	"id",
 	"name",
 	"type",
@@ -252,7 +254,14 @@ export function encodeProject({
 			const elements = saved[trackIndex].elements as UnknownRecord[];
 			for (const [elementIndex, element] of track.elements.entries()) {
 				const source = element as unknown as UnknownRecord;
-				for (const key of ["params", "animations", "effects", "masks", "programmatic"]) {
+				for (const key of [
+					EDITING_NAME_SHAPE_KEY,
+					"params",
+					"animations",
+					"effects",
+					"masks",
+					"programmatic",
+				]) {
 					elements[elementIndex][key] = cloneOpaque(source[key]);
 				}
 			}

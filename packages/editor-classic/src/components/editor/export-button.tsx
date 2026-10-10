@@ -21,6 +21,7 @@ import {
 	EXPORT_QUALITY_VALUES,
 	type ExportFormat,
 	type ExportQuality,
+	type ExportVideoChroma,
 } from "../../export";
 import {
 	Section,
@@ -30,7 +31,12 @@ import {
 } from "../section";
 import { useEditor, useEditorInstance } from "../../editor/use-editor";
 import { useEditorSession } from "../../editor/session/editor-session-provider";
-import { DEFAULT_EXPORT_OPTIONS } from "../../export/defaults";
+import {
+	DEFAULT_EXPORT_OPTIONS,
+	DEFAULT_VIDEO_CHROMA,
+	selectedVideoChroma,
+} from "../../export/defaults";
+import { ExportVideoChromaControl } from "./export-video-chroma";
 import { TICKS_PER_SECOND } from "../../wasm";
 
 function isExportFormat(value: string): value is ExportFormat {
@@ -119,6 +125,8 @@ export function ExportOptions({
 	const [quality, setQuality] = useState<ExportQuality>(
 		DEFAULT_EXPORT_OPTIONS.quality,
 	);
+	const [videoChroma, setVideoChroma] =
+		useState<ExportVideoChroma>(DEFAULT_VIDEO_CHROMA);
 	const [shouldIncludeAudio, setShouldIncludeAudio] = useState<boolean>(
 		DEFAULT_EXPORT_OPTIONS.includeAudio ?? true,
 	);
@@ -130,6 +138,7 @@ export function ExportOptions({
 			options: {
 				format,
 				quality,
+				...selectedVideoChroma(videoChroma),
 				fps: activeProject.settings.fps,
 				includeAudio: shouldIncludeAudio,
 				...(exportRange ? { range: exportRange } : {}),
@@ -191,6 +200,8 @@ export function ExportOptions({
 												onValueChange={(value) => {
 													if (isExportFormat(value)) {
 														setFormat(value);
+														if (value !== "webm")
+															setVideoChroma(DEFAULT_VIDEO_CHROMA);
 													}
 												}}
 											>
@@ -244,6 +255,20 @@ export function ExportOptions({
 											</RadioGroup>
 										</SectionContent>
 									</Section>
+
+									{format === "webm" && (
+										<Section>
+											<SectionHeader>
+												<SectionTitle>Color sampling</SectionTitle>
+											</SectionHeader>
+											<SectionContent>
+												<ExportVideoChromaControl
+													value={videoChroma}
+													onChange={setVideoChroma}
+												/>
+											</SectionContent>
+										</Section>
+									)}
 
 									<Section collapsible defaultOpen={exportRange !== null}>
 										<SectionHeader>

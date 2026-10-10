@@ -12,7 +12,7 @@ test("video export passes codec, resolution and rational frame rate through the 
 		height: 360,
 		frameRate: { numerator: 30, denominator: 1 },
 	};
-	expect(resolveExportVideoBitrate(request)).toBe(2_074_000);
+	expect(resolveExportVideoBitrate(request)).toBe(3_456_000);
 	expect(resolveExportVideoBitrate({ ...request, codec: "avc" })).toBe(
 		3_456_000,
 	);
@@ -21,7 +21,7 @@ test("video export passes codec, resolution and rational frame rate through the 
 			...request,
 			frameRate: { numerator: 30000, denominator: 1001 },
 		}),
-	).toBe(2_072_000);
+	).toBe(3_453_000);
 	expect(resolveExportVideoBitrate({ ...request, quality: "high" })).toBe(
 		447_000,
 	);
@@ -44,9 +44,9 @@ test("explicit high-chroma preserves the Rust codec plan without changing compat
 		height: 128,
 		frameRate: { numerator: 30, denominator: 1 },
 	};
-	expect(resolveExportVideoPlan(request)).toEqual({ bitrate: 222_000 });
+	expect(resolveExportVideoPlan(request)).toEqual({ bitrate: 369_000 });
 	expect(resolveExportVideoPlan({ ...request, videoChroma: "420" })).toEqual({
-		bitrate: 222_000,
+		bitrate: 369_000,
 	});
 	expect(resolveExportVideoPlan({ ...request, videoChroma: "444" })).toEqual({
 		bitrate: 369_000,

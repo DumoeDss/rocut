@@ -35,26 +35,54 @@ export async function renderProgrammaticCanvas({
 	provider,
 	imagePreprocessOwner,
 }: ProgrammaticRenderRequest): Promise<ImageBitmap> {
-	// Native Ember/titleRiff/kanjiSlam/thread/fall need HTMLCanvas clip coverage, including internal
+	// Native MV scenes need HTMLCanvas clip coverage, including internal
 	// surfaces. Keep authored JavaScript on the separate, terminable Worker.
 	// A mixed recipe uses one backend for all its frames to avoid switching
 	// raster semantics as references/transitions activate different children.
 	if (
 		source.recipe?.nodes.some(
 			(node) =>
+                node.scene.kind === "jz" || node.scene.kind === "panelsNative" ||
+                node.scene.kind === "freeze" || node.scene.kind === "rewind" || node.scene.kind === "melt" ||
+                node.scene.kind === "burst" ||
+                node.scene.kind === "illustNative" ||
+				node.scene.kind === "night" ||
+				node.scene.kind === "memories" ||
 				node.scene.kind === "ember" ||
 				node.scene.kind === "titleRiff" ||
 				node.scene.kind === "kanjiSlam" ||
 				node.scene.kind === "thread" ||
 				node.scene.kind === "fall" ||
-				Reflect.get(node.scene, "kind") === "flame",
+				node.scene.kind === "flame" ||
+				node.scene.kind === "ink" ||
+				node.scene.kind === "tunnel" ||
+				node.scene.kind === "road" ||
+				node.scene.kind === "heartShatter" ||
+				node.scene.kind === "heartShatterBurn" ||
+				node.scene.kind === "heartGather" ||
+				node.scene.kind === "sunBloom" ||
+				node.scene.kind === "skyShatter",
 		)
 	) {
 		const deadline = new AbortController();
 		const flame = source.recipe.nodes.some(
-			(node) => Reflect.get(node.scene, "kind") === "flame",
+			(node) => node.scene.kind === "flame",
 		);
-		const timer = flame
+		const ownerPreparation =
+			flame ||
+			source.recipe.nodes.some((node) =>
+				[
+                    "jz",
+					"night",
+					"memories",
+					"heartShatter",
+					"heartShatterBurn",
+					"heartGather",
+					"sunBloom",
+					"skyShatter",
+				].includes(node.scene.kind),
+			);
+		const timer = ownerPreparation
 			? setTimeout(
 					() =>
 						deadline.abort(
@@ -63,7 +91,7 @@ export async function renderProgrammaticCanvas({
 					5000,
 				)
 			: undefined;
-		const linked = flame
+		const linked = ownerPreparation
 			? AbortSignal.any([...(signal ? [signal] : []), deadline.signal])
 			: signal;
 		const ownsPreprocessor = flame && !imagePreprocessOwner;
@@ -84,7 +112,7 @@ export async function renderProgrammaticCanvas({
 				signal: linked,
 			});
 			admissionPending = preparation;
-			const ticket = flame
+			const ticket = ownerPreparation
 				? await awaitImagePreprocessDeadline({
 						promise: preparation,
 						signal: linked!,

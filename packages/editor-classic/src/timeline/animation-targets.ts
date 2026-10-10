@@ -3,12 +3,8 @@ import type {
 	AnimationPath,
 	NumericSpec,
 } from "../animation/types";
-import {
-	parseEffectParamPath,
-} from "../animation/effect-param-channel";
-import {
-	parseGraphicParamPath,
-} from "../animation/graphic-param-channel";
+import { parseEffectParamPath } from "../animation/effect-param-channel";
+import { parseGraphicParamPath } from "../animation/graphic-param-channel";
 import { effectsRegistry, registerDefaultEffects } from "../effects";
 import { getGraphicDefinition } from "../graphics";
 import {
@@ -21,9 +17,7 @@ import {
 	type ParamValue,
 	type ParamValues,
 } from "../params";
-import {
-	getElementParam,
-} from "../params/registry";
+import { getElementParam } from "../params/registry";
 import type { TimelineElement } from ".";
 import { isVisualElement } from "./element-utils";
 
@@ -51,10 +45,12 @@ function buildParamDescriptor({
 	param,
 	baseParams,
 	setParams,
+	coerceValue = ({ value }) => coerceParamValue({ param, value }),
 }: {
 	param: ParamDefinition;
 	baseParams: ParamValues;
 	setParams: (params: ParamValues) => TimelineElement;
+	coerceValue?: AnimationPathDescriptor["coerceValue"];
 }): AnimationPathDescriptor | null {
 	if (param.keyframable === false) {
 		return null;
@@ -64,10 +60,10 @@ function buildParamDescriptor({
 		channelLayout: getParamChannelLayout({ param }),
 		defaultInterpolation: getParamDefaultInterpolation({ param }),
 		numericRanges: paramNumericRanges({ param }),
-		coerceValue: ({ value }) => coerceParamValue({ param, value }),
+		coerceValue,
 		getBaseValue: () => baseParams[param.key] ?? param.default,
 		setBaseValue: ({ value }) => {
-			const coercedValue = coerceParamValue({ param, value });
+			const coercedValue = coerceValue({ value });
 			if (coercedValue === null) {
 				return setParams(baseParams);
 			}
@@ -109,6 +105,21 @@ function buildGraphicParamDescriptor({
 	element: TimelineElement;
 	paramKey: string;
 }): AnimationPathDescriptor | null {
+	if (element.type === "effect") {
+		registerDefaultEffects();
+		const definition = effectsRegistry.get(element.effectType);
+		const param = definition.params.find(
+			(candidate) => candidate.key === paramKey,
+		);
+		if (!param || param.type !== "number") return null;
+		return buildParamDescriptor({
+			param,
+			baseParams: element.params,
+			setParams: (params) => ({ ...element, params }),
+			coerceValue:
+				element.effectType === "frost" ? ({ value }) => value : undefined,
+		});
+	}
 	if (element.type !== "graphic") {
 		return null;
 	}
@@ -116,7 +127,9 @@ function buildGraphicParamDescriptor({
 	const definition = getGraphicDefinition({
 		definitionId: element.definitionId,
 	});
-	const param = definition.params.find((candidate) => candidate.key === paramKey);
+	const param = definition.params.find(
+		(candidate) => candidate.key === paramKey,
+	);
 	if (!param) {
 		return null;
 	}
@@ -144,14 +157,18 @@ function buildEffectParamDescriptor({
 		return null;
 	}
 
-	const effect = element.effects?.find((candidate) => candidate.id === effectId);
+	const effect = element.effects?.find(
+		(candidate) => candidate.id === effectId,
+	);
 	if (!effect) {
 		return null;
 	}
 
 	registerDefaultEffects();
 	const definition = effectsRegistry.get(effect.type);
-	const param = definition.params.find((candidate) => candidate.key === paramKey);
+	const param = definition.params.find(
+		(candidate) => candidate.key === paramKey,
+	);
 	if (!param) {
 		return null;
 	}
@@ -159,6 +176,7 @@ function buildEffectParamDescriptor({
 	return buildParamDescriptor({
 		param,
 		baseParams: effect.params,
+		coerceValue: effect.type === "frost" ? ({ value }) => value : undefined,
 		setParams: (params) => ({
 			...element,
 			effects:

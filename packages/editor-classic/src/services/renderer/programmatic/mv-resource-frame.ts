@@ -7,6 +7,8 @@ import type {
 import { resolveProgrammaticFrame, type ProgrammaticFrame } from "./frame";
 import { runProgrammaticSandbox } from "./sandbox-runtime";
 import { canonicalMvResourceRequest } from "./mv-canonical-frame";
+import { prepareTunnelFontPacket } from "./mv-tunnel-font-packet";
+import type { TunnelFontPacket } from "./mv-tunnel-font-packet";
 
 async function readRecipeResource({
 	declared,
@@ -68,6 +70,8 @@ export async function resolveMvResourceFrame({
 		!binding &&
 		!sequences.length &&
 		!frame.fontMetricRequests?.length &&
+		!frame.tunnelFontByteRequests?.length &&
+		!frame.tunnelFontMetricRequests?.length &&
 		!frame.imageDimensionRequests?.length
 	)
 		return frame;
@@ -98,9 +102,34 @@ export async function resolveMvResourceFrame({
 		trimStart: frame.sampleTime ?? frame.sourceTime,
 		timelineTime: 0,
 	};
-	const pending = resolveProgrammaticFrame(evaluation);
+	let pending = resolveProgrammaticFrame(evaluation);
 	if (!pending || pending.index !== frame.index)
 		throw Error("Invalid resource-discovery recipe frame");
+	let tunnelFontPacket: TunnelFontPacket | undefined;
+	if (pending.tunnelFontByteRequests?.length) {
+		if (!pending.tunnelFontLimits)
+			throw Error("Tunnel font bytes require Rust native limits");
+		const prepared = await prepareTunnelFontPacket({
+			requests: pending.tunnelFontByteRequests,
+			limits: pending.tunnelFontLimits,
+			resources,
+			signal,
+		});
+		resources = prepared.resources;
+		tunnelFontPacket = prepared.packet;
+		pending = resolveProgrammaticFrame({ ...evaluation, tunnelFontPacket });
+		if (!pending || pending.index !== frame.index)
+			throw Error("Invalid Tunnel native byte-admission frame");
+	}
+	const tunnelFontMeasurements = pending.tunnelFontMetricRequests?.length
+		? await runProgrammaticSandbox({
+				source,
+				frame: pending,
+				resources,
+				operation: "measure-tunnel-fonts",
+				signal,
+			})
+		: undefined;
 	const measurements =
 		pending.imageDimensionRequests?.length && !frame.imageDimensions
 			? await runProgrammaticSandbox({
@@ -127,6 +156,8 @@ export async function resolveMvResourceFrame({
 			: undefined);
 	const evaluated = resolveProgrammaticFrame({
 		...evaluation,
+		...(tunnelFontPacket ? { tunnelFontPacket } : {}),
+		...(tunnelFontMeasurements ? { tunnelFontMeasurements } : {}),
 		...(fontMetrics ? { fontMetrics } : {}),
 		...(imageDimensions ? { imageDimensions } : {}),
 	});
@@ -138,6 +169,9 @@ export async function resolveMvResourceFrame({
 		timelineTime: frame.timelineTime,
 		fontMetricRequests: undefined,
 		fontMetrics,
+		tunnelFontByteRequests: undefined,
+		tunnelFontMetricRequests: undefined,
+		tunnelFontMeasurements,
 		imageDimensionRequests: undefined,
 		imageDimensions,
 		...(sequences.length

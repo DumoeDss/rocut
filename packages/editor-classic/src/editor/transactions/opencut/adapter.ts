@@ -95,6 +95,28 @@ function canonical(value: unknown, seen = new Set<object>()): string {
 	}
 }
 
+/** Compare only the effective per-clip fields serialized by editing-policy. */
+function clipEditingValidationInput({
+	clip,
+	tracks,
+	assets,
+}: {
+	clip: Clip | undefined;
+	tracks: ReadonlyMap<Track["id"], Track>;
+	assets: ReadonlyMap<Asset["id"], Asset>;
+}) {
+	if (!clip) return undefined;
+	return {
+		editing: clip.editing,
+		duration: clip.duration,
+		trimStart: clip.trimStart,
+		trackKind: tracks.get(clip.trackId)?.kind ?? "missing",
+		assetKind: clip.assetId ? assets.get(clip.assetId)?.kind : undefined,
+		hasMotionText: clip.content?.kind === "motion-text",
+		hasAdjustment: clip.adjustment !== undefined,
+	};
+}
+
 export function digestOpenCutProject(draft: OpenCutProjectDraft): string {
 	return canonical(
 		encodeProject({ project: draft.project, retained: undefined }),
@@ -506,14 +528,37 @@ export function createOpenCutTransactionDocumentAdapter({
 					);
 				}
 				const oldClips = new Map(previous.clips.map((clip) => [clip.id, clip]));
+				const oldTracks = new Map(
+					previous.tracks.map((track) => [track.id, track]),
+				);
+				const oldAssets = new Map(
+					previous.assets.map((asset) => [asset.id, asset]),
+				);
+				const nextTracks = new Map(
+					document.tracks.map((track) => [track.id, track]),
+				);
+				const nextAssets = new Map(
+					document.assets.map((asset) => [asset.id, asset]),
+				);
 				const changed = new Set(
 					document.clips
 						.filter(
 							(clip) =>
 								clip.editing &&
-								(canonical(oldClips.get(clip.id)?.editing) !==
-									canonical(clip.editing) ||
-									oldClips.get(clip.id)?.duration !== clip.duration),
+								canonical(
+									clipEditingValidationInput({
+										clip: oldClips.get(clip.id),
+										tracks: oldTracks,
+										assets: oldAssets,
+									}),
+								) !==
+									canonical(
+										clipEditingValidationInput({
+											clip,
+											tracks: nextTracks,
+											assets: nextAssets,
+										}),
+									),
 						)
 						.map((clip) => clip.id),
 				);

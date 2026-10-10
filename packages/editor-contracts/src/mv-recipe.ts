@@ -12,8 +12,19 @@ import type { MvEmberScene } from "./mv-ember";
 import type { MvTitleRiffScene } from "./mv-title-riff";
 import type { MvKanjiSlamScene } from "./mv-kanji-slam";
 import type { MvThreadScene } from "./mv-thread";
+import type { MvTunnelScene } from "./mv-tunnel";
 import type { MvFallScene } from "./mv-fall";
 import type { MvFlameScene } from "./mv-flame";
+import type { MvInkScene } from "./mv-ink";
+import type { MvRoadScene } from "./mv-road";
+import type { MvHeartRecipeScene } from "./mv-heart-recipe";
+import type { MvNightScene } from "./mv-night";
+import type { MvMemoriesRecipeScene } from "./mv-memories-recipe";
+import type { MvBurstScene } from "./mv-burst";
+import type { MvIllustNativeScene } from "./mv-illust-native";
+import type { MvJzScene } from "./mv-jz";
+import type { MvLayersScene } from "./mv-layers";
+import type { MvMetaFreezeScene, MvMetaRewindScene, MvMetaMeltScene, MvMetaPanelsScene } from "./mv-meta";
 import type {
 	MvAudioBinding,
 	MvCameraAudio,
@@ -65,6 +76,17 @@ export interface MvSprite extends MvSpriteStyle {
 	readonly breathe?: MvOscillation;
 }
 export type MvScene =
+    | MvLayersScene
+    | MvJzScene
+    | MvMetaFreezeScene | MvMetaRewindScene | MvMetaMeltScene | MvMetaPanelsScene
+    | MvIllustNativeScene
+    | MvBurstScene
+	| MvNightScene
+	| MvMemoriesRecipeScene
+	| MvHeartRecipeScene
+	| MvRoadScene
+	| MvTunnelScene
+	| MvInkScene
 	| MvFallScene
 	| MvFlameScene
 	| MvThreadScene

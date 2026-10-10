@@ -1,48 +1,56 @@
 import type { ElementAnimations } from "../animation/types";
 import { resolveAnimationPathValueAtTime } from "../animation";
+import type { ScalarBatchResolver } from "../animation/scalar-batch-resolver";
 import type { Transform } from "./index";
 
 export function resolveTransformAtTime({
 	baseTransform,
 	animations,
 	localTime,
+	scalarBatch,
 }: {
 	baseTransform: Transform;
 	animations: ElementAnimations | undefined;
 	localTime: number;
+	scalarBatch?: ScalarBatchResolver;
 }): Transform {
 	const safeLocalTime = Math.max(0, localTime);
+	const sample = ({
+		propertyPath,
+		fallbackValue,
+	}: {
+		propertyPath: string;
+		fallbackValue: number;
+	}): number =>
+		scalarBatch && scalarBatch.has({ path: propertyPath })
+			? scalarBatch.sample({ path: propertyPath, fallbackValue })
+			: resolveAnimationPathValueAtTime({
+					animations,
+					propertyPath,
+					localTime: safeLocalTime,
+					fallbackValue,
+				});
 	return {
 		position: {
-			x: resolveAnimationPathValueAtTime({
-				animations,
+			x: sample({
 				propertyPath: "transform.positionX",
-				localTime: safeLocalTime,
 				fallbackValue: baseTransform.position.x,
 			}),
-			y: resolveAnimationPathValueAtTime({
-				animations,
+			y: sample({
 				propertyPath: "transform.positionY",
-				localTime: safeLocalTime,
 				fallbackValue: baseTransform.position.y,
 			}),
 		},
-		scaleX: resolveAnimationPathValueAtTime({
-			animations,
+		scaleX: sample({
 			propertyPath: "transform.scaleX",
-			localTime: safeLocalTime,
 			fallbackValue: baseTransform.scaleX,
 		}),
-		scaleY: resolveAnimationPathValueAtTime({
-			animations,
+		scaleY: sample({
 			propertyPath: "transform.scaleY",
-			localTime: safeLocalTime,
 			fallbackValue: baseTransform.scaleY,
 		}),
-		rotate: resolveAnimationPathValueAtTime({
-			animations,
+		rotate: sample({
 			propertyPath: "transform.rotate",
-			localTime: safeLocalTime,
 			fallbackValue: baseTransform.rotate,
 		}),
 	};

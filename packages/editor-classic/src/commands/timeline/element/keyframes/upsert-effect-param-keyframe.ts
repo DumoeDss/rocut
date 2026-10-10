@@ -7,6 +7,8 @@ import {
 	buildEffectParamPath,
 	upsertPathKeyframe,
 } from "../../../../animation";
+import { admitScalarChannel } from "../../../../animation/scalar-admission";
+import type { ScalarAnimationChannel } from "../../../../animation/types";
 import { updateElementInSceneTracks } from "../../../../timeline";
 import { isVisualElement } from "../../../../timeline/element-utils";
 import { resolveAnimationTarget } from "../../../../timeline/animation-targets";
@@ -97,6 +99,28 @@ export class UpsertEffectParamKeyframeCommand extends Command {
 					channelLayout: target.channelLayout,
 					coerceValue: target.coerceValue,
 				});
+				const spec =
+					target.numericRanges?.[
+						target.channelLayout.kind === "leaf"
+							? "value"
+							: Object.keys(target.numericRanges)[0]
+					];
+				const channel = animations?.[propertyPath];
+				const admission = admitScalarChannel({
+					channel:
+						channel && !Array.isArray(channel) && "keys" in channel
+							? (channel as ScalarAnimationChannel)
+							: undefined,
+					fallbackValue:
+						typeof this.value === "number"
+							? this.value
+							: Number(target.getBaseValue() ?? 0),
+					domain: { start: 0, end: element.duration },
+					spec,
+				});
+				if (admission.kind === "rejected") {
+					throw new RangeError(admission.reason);
+				}
 				return { ...element, animations };
 			},
 		});

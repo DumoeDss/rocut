@@ -1,0 +1,9 @@
+{
+	"extends": "../../../../../../script/fixtures/three-probe.tsconfig.json",
+	"compilerOptions": {
+		"noEmit": true,
+		"types": ["node"],
+		"allowImportingTsExtensions": true
+	},
+	"include": ["./mv-memories-owner*.ts"]
+}

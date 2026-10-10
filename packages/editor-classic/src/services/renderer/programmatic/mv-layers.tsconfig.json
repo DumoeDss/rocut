@@ -1,0 +1,1 @@
+{"extends":"./mv-memories-owner.tsconfig.json","include":["./mv-layers*.ts","./mv-recipe-renderer.ts","./mv-*-native-transport.ts","../../../../../editor-contracts/src/mv-layers.ts"]}

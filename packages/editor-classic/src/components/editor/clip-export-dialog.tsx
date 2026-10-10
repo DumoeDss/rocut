@@ -10,9 +10,15 @@ import {
 	getExportMimeType,
 	type ExportFormat,
 	type ExportQuality,
+	type ExportVideoChroma,
 } from "../../export";
 import { prepareClipExports } from "../../export/clip-export-plan";
 import { runClipExportBatch } from "../../export/clip-export-batch";
+import {
+	DEFAULT_VIDEO_CHROMA,
+	selectedVideoChroma,
+} from "../../export/defaults";
+import { ExportVideoChromaControl } from "./export-video-chroma";
 import { TICKS_PER_SECOND } from "../../wasm";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
@@ -52,6 +58,8 @@ export function ClipExportDialog({
 	);
 	const [format, setFormat] = useState<ExportFormat>("mp4");
 	const [quality, setQuality] = useState<ExportQuality>("high");
+	const [videoChroma, setVideoChroma] =
+		useState<ExportVideoChroma>(DEFAULT_VIDEO_CHROMA);
 	const [includeAudio, setIncludeAudio] = useState(true);
 	const [running, setRunning] = useState(false);
 	const [status, setStatus] = useState("");
@@ -90,7 +98,13 @@ export function ClipExportDialog({
 		setError(null);
 		const result = await runClipExportBatch({
 			clips: clips.filter((_, itemIndex) => selected.has(itemIndex)),
-			options: { format, quality, includeAudio, fps: prepared.plan.fps },
+			options: {
+				format,
+				quality,
+				includeAudio,
+				fps: prepared.plan.fps,
+				...selectedVideoChroma(videoChroma),
+			},
 			signal: abort.signal,
 			assertCurrent: prepared.plan.assertCurrent,
 			render: (options) => editor.project.export({ options }),
@@ -217,7 +231,10 @@ export function ClipExportDialog({
 									const next = EXPORT_FORMAT_VALUES.find(
 										(value) => value === event.target.value,
 									);
-									if (next) setFormat(next);
+									if (next) {
+										setFormat(next);
+										if (next !== "webm") setVideoChroma(DEFAULT_VIDEO_CHROMA);
+									}
 								}}
 								className="rounded border bg-background p-2"
 							>
@@ -244,6 +261,14 @@ export function ClipExportDialog({
 								<option value="very_high">Very high</option>
 							</select>
 						</label>
+						{format === "webm" && (
+							<div className="col-span-2">
+								<ExportVideoChromaControl
+									value={videoChroma}
+									onChange={setVideoChroma}
+								/>
+							</div>
+						)}
 						<label
 							htmlFor={`${controlId}-audio`}
 							className="col-span-2 flex items-center gap-2"

@@ -2,29 +2,17 @@
 
 import { useState } from "react";
 import type { ParamValues } from "../../params";
+import type { ElementAnimations } from "../../animation/types";
 import type { Effect } from "../types";
 import type { EffectElement, VisualElement } from "../../timeline";
-import { effectsRegistry } from "..";
 import { useEditorInstance } from "../../editor/use-editor";
 import { useElementPreview } from "../../timeline/hooks/use-element-preview";
-import {
-	Section,
-	SectionContent,
-	SectionHeader,
-	SectionTitle,
-	SectionFields,
-} from "../../components/section";
-import { PropertyParamField } from "../../components/editor/panels/properties/components/property-param-field";
+import { SectionTitle } from "../../components/section";
+import { EffectSection } from "./effect-section";
 import { Button } from "../../components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-	Delete02Icon,
-	ViewIcon,
-	ViewOffSlashIcon,
-	MagicWand05Icon,
-} from "@hugeicons/core-free-icons";
+import { MagicWand05Icon } from "@hugeicons/core-free-icons";
 import { cn } from "../../utils/ui";
-import { Separator } from "../../components/ui/separator";
 import { useAssetsPanelStore } from "../../editor/use-session-store";
 
 export function StandaloneEffectTab({
@@ -47,12 +35,6 @@ export function StandaloneEffectTab({
 		enabled: true,
 	};
 
-	const previewParam = (key: string) => (value: number | string | boolean) => {
-		previewUpdates({
-			params: { ...(renderElement as EffectElement).params, [key]: value },
-		});
-	};
-
 	return (
 		<div className="flex flex-col h-full">
 			<div className="border-b px-3.5 h-11 shrink-0 flex items-center">
@@ -61,7 +43,11 @@ export function StandaloneEffectTab({
 			<EffectSection
 				effect={effect}
 				renderParams={(renderElement as EffectElement).params}
-				previewParam={previewParam}
+				element={renderElement as EffectElement}
+				trackId={trackId}
+				previewParams={({ params, animations }) =>
+					previewUpdates({ params, ...(animations ? { animations } : {}) })
+				}
 				onCommit={commit}
 			/>
 		</div>
@@ -95,18 +81,24 @@ export function ClipEffectsTab({
 		);
 	};
 
-	const buildPreviewParam =
+	const buildPreviewParams =
 		(effectId: string) =>
-		(key: string) =>
-		(value: number | string | boolean) => {
+		({
+			params,
+			animations,
+		}: {
+			params: ParamValues;
+			animations?: ElementAnimations;
+		}) => {
 			const updatedEffects = (
 				(renderElement as VisualElement).effects ?? []
 			).map((existing) =>
-				existing.id !== effectId
-					? existing
-					: { ...existing, params: { ...existing.params, [key]: value } },
+				existing.id !== effectId ? existing : { ...existing, params },
 			);
-			previewUpdates({ effects: updatedEffects });
+			previewUpdates({
+				effects: updatedEffects,
+				...(animations ? { animations } : {}),
+			});
 		};
 
 	const handleDragStart = ({ index }: { index: number }) => setDragIndex(index);
@@ -177,7 +169,9 @@ export function ClipEffectsTab({
 								<EffectSection
 									effect={effect}
 									renderParams={getRenderParams({ effectId: effect.id })}
-									previewParam={buildPreviewParam(effect.id)}
+									element={renderElement as VisualElement}
+									trackId={trackId}
+									previewParams={buildPreviewParams(effect.id)}
 									onCommit={commit}
 									onToggle={() =>
 										editor.timeline.toggleClipEffect({
@@ -227,83 +221,5 @@ function EmptyView() {
 				Open effects
 			</Button>
 		</div>
-	);
-}
-
-function EffectSection({
-	effect,
-	renderParams,
-	previewParam,
-	onCommit,
-	onToggle,
-	onRemove,
-}: {
-	effect: Effect;
-	renderParams: ParamValues;
-	previewParam: (key: string) => (value: number | string | boolean) => void;
-	onCommit: () => void;
-	onToggle?: () => void;
-	onRemove?: () => void;
-}) {
-	const definition = effectsRegistry.get(effect.type);
-
-	return (
-		<Section
-			sectionKey={onToggle ? `clip-effect:${effect.id}` : undefined}
-			showTopBorder={false}
-		>
-			<SectionHeader
-				className={cn(onToggle && "cursor-move")}
-				trailing={
-					onToggle && (
-						<div className="flex items-center gap-1">
-							<Button
-								variant={effect.enabled ? "secondary" : "ghost"}
-								size="icon"
-								aria-label={`Toggle ${definition.name}`}
-								onClick={onToggle}
-							>
-								<HugeiconsIcon
-									icon={effect.enabled ? ViewIcon : ViewOffSlashIcon}
-								/>
-							</Button>
-							<Button
-								variant="ghost"
-								size="icon"
-								aria-label={`Remove ${definition.name}`}
-								onClick={onRemove}
-							>
-								<HugeiconsIcon icon={Delete02Icon} />
-							</Button>
-						</div>
-					)
-				}
-			>
-				<SectionTitle
-					className={cn(onToggle && !effect.enabled && "text-muted-foreground")}
-				>
-					{definition.name}
-				</SectionTitle>
-			</SectionHeader>
-			<SectionContent
-				className={cn("p-0", onToggle && !effect.enabled && "opacity-50")}
-			>
-				<SectionFields>
-					{definition.params.map((param) => (
-						<div key={param.key} className="flex flex-col gap-3.5">
-							<div className="px-4">
-								<PropertyParamField
-									param={param}
-									value={renderParams[param.key] ?? param.default}
-									onPreview={previewParam(param.key)}
-									onCommit={onCommit}
-								/>
-							</div>
-							<Separator />
-						</div>
-					))}
-				</SectionFields>
-			</SectionContent>
-		</Section>
 	);
 }

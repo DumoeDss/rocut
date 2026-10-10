@@ -4,6 +4,8 @@ import {
 	type CommandResult,
 } from "../../../base-command";
 import { upsertPathKeyframe } from "../../../../animation";
+import { admitScalarChannel } from "../../../../animation/scalar-admission";
+import type { ScalarAnimationChannel } from "../../../../animation/types";
 import { updateElementInSceneTracks } from "../../../../timeline";
 import type { SceneTracks } from "../../../../timeline";
 import { resolveAnimationTarget } from "../../../../timeline/animation-targets";
@@ -78,19 +80,39 @@ export class UpsertKeyframeCommand extends Command {
 					a: ZERO_MEDIA_TIME,
 					b: minMediaTime({ a: this.time, b: element.duration }),
 				});
-				return {
-					...element,
-					animations: upsertPathKeyframe({
-						animations: element.animations,
-						propertyPath: this.propertyPath,
-						time: boundedTime,
-						value: this.value,
-						interpolation: this.interpolation,
-						keyframeId: this.keyframeId,
-						channelLayout: target.channelLayout,
-						coerceValue: target.coerceValue,
-					}),
-				};
+				const animations = upsertPathKeyframe({
+					animations: element.animations,
+					propertyPath: this.propertyPath,
+					time: boundedTime,
+					value: this.value,
+					interpolation: this.interpolation,
+					keyframeId: this.keyframeId,
+					channelLayout: target.channelLayout,
+					coerceValue: target.coerceValue,
+				});
+				const spec =
+					target.numericRanges?.[
+						target.channelLayout.kind === "leaf"
+							? "value"
+							: Object.keys(target.numericRanges)[0]
+					];
+				const channel = animations?.[this.propertyPath];
+				const admission = admitScalarChannel({
+					channel:
+						channel && !Array.isArray(channel) && "keys" in channel
+							? (channel as ScalarAnimationChannel)
+							: undefined,
+					fallbackValue:
+						typeof this.value === "number"
+							? this.value
+							: Number(target.getBaseValue() ?? 0),
+					domain: { start: 0, end: element.duration },
+					spec,
+				});
+				if (admission.kind === "rejected") {
+					throw new RangeError(admission.reason);
+				}
+				return { ...element, animations };
 			},
 		});
 

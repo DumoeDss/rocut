@@ -17,9 +17,54 @@ import type { MvConvergePlan } from "./mv-converge-plan";
 import type { MvEmberPlan } from "./mv-ember-plan";
 import type { MvTitleRiffPlan } from "./mv-title-riff-plan";
 import type { MvFlamePlan } from "./mv-flame";
+import type { MvInkPlan } from "./mv-ink";
+import type { MvTunnelPlan, MvTunnelNativePost } from "./mv-tunnel";
+import type { MvRoadPlan } from "./mv-road-plan";
+import type { MvRoadNativePost } from "./mv-road";
+import type { MvHeartRecipeRequestNode } from "./mv-heart-recipe";
+import type { MvNightPreparationRequest } from "./mv-night";
+import type { MvMemoriesRecipeRequestNode } from "./mv-memories-recipe";
+import type { MvBurstPlanNode } from "./mv-burst";
+import type { MvIllustNativePlanNode } from "./mv-illust-native";
+import type { MvJzRequestNode } from "./mv-jz";
+import type { MvLayersPlanNode } from "./mv-layers";
+import type { MvMetaFreezePlan, MvMetaRewindPlan, MvMetaMeltPlan, MvMetaPanelsPlan } from "./mv-meta";
 
 /** Internal raster transport, produced exclusively by Rust frame evaluation. */
 export type MvPlanNode =
+    | MvLayersPlanNode
+    | { readonly kind: "panelsNative"; readonly role: MvRole; readonly inputs: readonly (MvPlanNode | null)[]; readonly data: MvMetaPanelsPlan }
+    | MvJzRequestNode
+    | { readonly kind: "freeze"; readonly role: MvRole; readonly input: MvPlanNode; readonly data: MvMetaFreezePlan }
+    | { readonly kind: "rewind"; readonly role: MvRole; readonly input: MvPlanNode | null; readonly data: MvMetaRewindPlan }
+    | { readonly kind: "melt"; readonly role: MvRole; readonly input: MvPlanNode; readonly data: MvMetaMeltPlan }
+    | MvIllustNativePlanNode
+    | MvBurstPlanNode
+	| MvMemoriesRecipeRequestNode
+	| {
+			readonly kind: "nightOwnerRequest";
+			readonly role: MvRole;
+			readonly nodeId: string;
+			readonly request: MvNightPreparationRequest;
+	  }
+	| MvHeartRecipeRequestNode
+	| {
+			readonly kind: "road";
+			readonly role: Exclude<MvRole, "foreground">;
+			readonly data: MvRoadPlan;
+			readonly nativePost: MvRoadNativePost;
+	  }
+	| {
+			readonly kind: "tunnel";
+			readonly role: MvRole;
+			readonly data: MvTunnelPlan;
+			readonly nativePost: MvTunnelNativePost;
+	  }
+	| {
+			readonly kind: "ink";
+			readonly role: MvRole;
+			readonly data: MvInkPlan;
+	  }
 	| {
 			readonly kind: "flame";
 			readonly role: MvRole;

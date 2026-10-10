@@ -6,3 +6,4 @@ export * from "./motion-text-font";
 export * from "./motion-text-factory";
 export * from "./motion-text-identity";
 export * from "./motion-text-time";
+export * from "./scalar-animation";

@@ -74,6 +74,7 @@ function buildTrackNodes({
 				nodes.push(
 					new EffectLayerNode({
 						effectType: element.effectType,
+						animations: element.animations,
 						effectParams: element.adjustment
 							? { ...element.adjustment }
 							: element.params,

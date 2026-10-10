@@ -36,9 +36,10 @@ export class SaveManager {
 			this.editor.scenes.subscribe(() => {
 				this.markDirty();
 			}),
-			this.editor.timeline.subscribe(() => {
-				this.markDirty();
-			}),
+			// Timeline notifications also describe transient preview overlays and
+			// discarded/rejected drafts. Committed track updates already publish
+			// through ScenesManager; saving UI-only notifications would rewrite
+			// updatedAt even though no authored content was accepted.
 		];
 	}
 

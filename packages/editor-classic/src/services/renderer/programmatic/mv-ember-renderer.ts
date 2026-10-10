@@ -1,4 +1,6 @@
 import { MV_EMBER_RASTER_SOURCE } from "./mv-ember-raster";
+import { MV_TUNNEL_FONT_STACK_SOURCE } from "./mv-tunnel-font-stack";
+import { MV_HEART_RASTER_SOURCE } from "./mv-heart-raster";
 
 /** Replay a Rust frame plan. Scratch surfaces are private to this call; decoded
  * attachment images/fonts remain owned by the sandbox resource lifecycle.
@@ -7,6 +9,8 @@ import { MV_EMBER_RASTER_SOURCE } from "./mv-ember-raster";
  */
 export const MV_EMBER_RENDERER_SOURCE =
 	MV_EMBER_RASTER_SOURCE +
+	MV_TUNNEL_FONT_STACK_SOURCE +
+	MV_HEART_RASTER_SOURCE +
 	String.raw`
 function* drawMvEmberSteps(ctx, data, assets, createSurface) {
   const allocated = [], scratch = new Map();
@@ -36,10 +40,17 @@ function* drawMvEmberSteps(ctx, data, assets, createSurface) {
         if (command.kind === 'path') mvEmberPath(target,command.path);
         else mvEmberCirclePath(target,command.circles);
         for (const spec of command.paints) mvEmberPaint(target,spec);
-      } else if (command.kind === 'rect') mvEmberPaint(target,command.paint,command.rect);
+      } else if (command.kind === 'shadowPath') mvHeartShadowPath(target,command);
+      else if (command.kind === 'preparedImage') mvHeartPreparedImage(target,command,assets);
+      else if (command.kind === 'rect') mvEmberPaint(target,command.paint,command.rect);
+      else if (command.kind === 'gradientRect') mvGradientRect(target,command);
       else if (command.kind === 'rectBatch') mvEmberRectBatch(target,command);
       else if (command.kind === 'grain') mvEmberGrain(target,command,make);
       else if (command.kind === 'text' || command.kind === 'textStroke') mvEmberText(target,command,assets);
+      else if (command.kind === 'stackText') {
+        if (!assets.tunnelFonts) throw Error('Tunnel requires its byte-admitted loaded font stack');
+        assets.tunnelFonts.draw(target,command);
+      }
       else if (command.kind === 'image') {
         if (assets.descriptor(command.image).kind !== 'image') throw Error('Ember image requires a declared image');
         target.globalCompositeOperation = command.composite; target.globalAlpha = command.opacity;
@@ -60,9 +71,7 @@ function* drawMvEmberSteps(ctx, data, assets, createSurface) {
         target.globalCompositeOperation = command.composite; target.globalAlpha = command.opacity;
         if (command.raster) {
           const r = command.raster;
-          if (!Number.isFinite(r.blurPx) || r.blurPx < 0 || r.blurPx > 16 || typeof r.smoothing !== 'boolean'
-            || !['low','medium','high'].includes(r.smoothingQuality)) throw Error('Invalid native blit raster settings');
-          target.filter = r.blurPx === 0 ? 'none' : 'blur(' + r.blurPx + 'px)';
+          target.filter = mvOrderedBlitFilter(r);
           target.imageSmoothingEnabled = r.smoothing; target.imageSmoothingQuality = r.smoothingQuality;
         }
         target.drawImage(source,...command.sourceRect,...command.destinationRect);

@@ -16,20 +16,34 @@ import { resolveCanvasSequenceImages } from "./image-sequence-resources";
 import { canonicalMvResourceRequest } from "./mv-canonical-frame";
 import { resolveMvResourceFrame } from "./mv-resource-frame";
 import type { ImagePreprocessPatch } from "./image-preprocess-patches";
+import type { HeartNativeFramePacket } from "./mv-heart-native-transport";
+import type { NightNativeFramePacket } from "./mv-night-native-transport";
+import type { MemoriesNativeFramePacket } from "./mv-memories-native-transport";
+import type { JzNativeFramePacket } from "./mv-jz-native-transport";
 
 export interface MvNativeRasterInput {
 	width: number;
 	height: number;
 	frame: Pick<
 		ProgrammaticFrame,
-		"imageDecodeLimits" | "sequenceImages" | "sequenceLimits"
+		| "imageDecodeLimits"
+		| "sequenceImages"
+		| "sequenceLimits"
+		| "tunnelFontStacks"
 	> & { recipePlan: MvRecipePlan };
 	resources: readonly ResolvedProgrammaticResource[];
 	sequenceImages: readonly ResolvedSequenceImage[];
 	imageAdmissions: readonly ImageDecodeAdmission[];
 	/** Private binary side channel, never part of frame.recipePlan. */
 	preparedPatches?: readonly ImagePreprocessPatch[];
+	/** Actual live-owner output and transferables, never authored Recipe fields. */
+	heartFrames?: readonly HeartNativeFramePacket[];
+	nightFrames?: readonly NightNativeFramePacket[];
+	memoriesFrames?: readonly MemoriesNativeFramePacket[];
+	jzFrames?: readonly JzNativeFramePacket[];
 	rasterByteLimit?: number;
+	/** Private diagnostic only; never an authored ProgrammaticSource field. */
+	nativePostMode?: "scene-only";
 }
 
 const ticketKind = Symbol("native-mv-admission");
@@ -48,12 +62,14 @@ export async function prepareMvNativeRasterTicket({
 	resources = [],
 	provider,
 	signal,
+	diagnosticNativePostMode,
 }: {
 	source: ProgrammaticSource;
 	frame: ProgrammaticFrame;
 	resources?: readonly ResolvedProgrammaticResource[];
 	provider?: ProgrammaticFrameProvider;
 	signal?: AbortSignal;
+	diagnosticNativePostMode?: "scene-only";
 }): Promise<MvNativeRasterTicket> {
 	signal?.throwIfAborted();
 	source = structuredClone(source);
@@ -62,6 +78,7 @@ export async function prepareMvNativeRasterTicket({
 	frame = canonicalMvResourceRequest(source, {
 		...structuredClone(frame),
 		fontMetrics: undefined,
+		tunnelFontMeasurements: undefined,
 		imageDimensions: undefined,
 	});
 	resources = snapshotImageResources(resources);
@@ -69,6 +86,8 @@ export async function prepareMvNativeRasterTicket({
 	if (
 		!frame.recipePlan ||
 		frame.fontMetricRequests?.length ||
+		frame.tunnelFontByteRequests?.length ||
+		frame.tunnelFontMetricRequests?.length ||
 		frame.imageDimensionRequests?.length
 	)
 		throw Error("Native MV rasterization requires a resource-complete plan");
@@ -96,10 +115,14 @@ export async function prepareMvNativeRasterTicket({
 			imageDecodeLimits: frame.imageDecodeLimits,
 			sequenceImages: frame.sequenceImages,
 			sequenceLimits: frame.sequenceLimits,
+			tunnelFontStacks: frame.tunnelFontStacks,
 		},
 		resources,
 		sequenceImages,
 		imageAdmissions,
+		...(diagnosticNativePostMode
+			? { nativePostMode: diagnosticNativePostMode }
+			: {}),
 	});
 	return ticket;
 }

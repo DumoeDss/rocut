@@ -8,7 +8,7 @@ export interface RenderFrameRequestApi {
 		handle: number,
 		request: number,
 		maxSteps: number,
-	): boolean;
+	): boolean | Promise<boolean>;
 	commitRenderFrameForHandle(handle: number, request: number): void;
 	cancelRenderFrameForHandle(handle: number, request: number): void;
 }
@@ -141,7 +141,12 @@ export async function renderFrameRequest({
 	signal?.addEventListener("abort", cancel, { once: true });
 	try {
 		check();
-		while (!api.advanceRenderFrameForHandle(handle, request, maxSteps)) {
+		while (true) {
+			const step = api.advanceRenderFrameForHandle(handle, request, maxSteps);
+			// Preserve the legacy synchronous path's task/microtask timing.
+			const ready = typeof step === "boolean" ? step : await step;
+			check();
+			if (ready) break;
 			await yieldRenderTask({ resources, signal });
 			check();
 		}

@@ -2,6 +2,7 @@ import type {
 	ProgrammaticSource,
 	ResolvedProgrammaticResource,
 	ResolvedSequenceImage,
+	MvTunnelMeasurement,
 } from "@opencut/editor-contracts";
 import { PROGRAMMATIC_SANDBOX_DOCUMENT } from "./sandbox-document";
 import type { ProgrammaticFrame } from "./frame";
@@ -23,7 +24,11 @@ interface SandboxRequest {
 	resources: readonly ResolvedProgrammaticResource[];
 	sequenceImages?: readonly ResolvedSequenceImage[];
 	imageAdmissions?: readonly ImageDecodeAdmission[];
-	operation: "render" | "measure-fonts" | "measure-resources";
+	operation:
+		| "render"
+		| "measure-fonts"
+		| "measure-resources"
+		| "measure-tunnel-fonts";
 }
 
 /** One private realm per operation, with the same cancellation and watchdog
@@ -36,13 +41,19 @@ export function runProgrammaticSandbox(
 	request: SandboxRequest & { operation: "measure-fonts" },
 ): Promise<readonly FontMeasurement[]>;
 export function runProgrammaticSandbox(
+	request: SandboxRequest & { operation: "measure-tunnel-fonts" },
+): Promise<readonly MvTunnelMeasurement[]>;
+export function runProgrammaticSandbox(
 	request: SandboxRequest & { operation: "measure-resources" },
 ): Promise<ResourceMeasurements>;
 export async function runProgrammaticSandbox({
 	signal,
 	...request
 }: SandboxRequest): Promise<
-	ImageBitmap | readonly FontMeasurement[] | ResourceMeasurements
+	| ImageBitmap
+	| readonly FontMeasurement[]
+	| readonly MvTunnelMeasurement[]
+	| ResourceMeasurements
 > {
 	signal?.throwIfAborted();
 	request = {
@@ -54,6 +65,10 @@ export async function runProgrammaticSandbox({
 	};
 	const imageAdmissions = await prepareImageAdmissions({
 		...request,
+		operation:
+			request.operation === "measure-tunnel-fonts"
+				? "measure-fonts"
+				: request.operation,
 		sequenceImages: request.sequenceImages ?? [],
 		signal,
 	});
@@ -132,6 +147,20 @@ export async function runProgrammaticSandbox({
 				return;
 			}
 			const metrics: unknown = Reflect.get(data, "fontMetrics");
+			const tunnelMetrics: unknown = Reflect.get(
+				data,
+				"tunnelFontMeasurements",
+			);
+			if (
+				!settled &&
+				request.operation === "measure-tunnel-fonts" &&
+				Array.isArray(tunnelMetrics)
+			) {
+				settled = true;
+				cleanup();
+				resolve(tunnelMetrics);
+				return;
+			}
 			const imageDimensions: unknown = Reflect.get(data, "imageDimensions");
 			if (
 				!settled &&

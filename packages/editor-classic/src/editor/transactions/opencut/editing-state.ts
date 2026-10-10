@@ -2,6 +2,11 @@
 import type { ClipEditing } from "@opencut/editor-contracts";
 import type { TimelineElement } from "../../../timeline/types";
 import { cloneOpaque } from "../../persistence/opaque-value";
+import {
+	EDITING_NAME_SHAPE_KEY,
+	editingNameOmissionMarker,
+	omittedEditingName,
+} from "../../persistence/editing-name-shape";
 
 // Native animation helpers retain optional keys with undefined values. The
 // transaction wire removes them; normalize only this JSON editing payload so
@@ -18,7 +23,7 @@ function omitUndefined(value: unknown): void {
 export function projectEditingState(element: TimelineElement): ClipEditing {
 	const editing = cloneOpaque({
 		type: element.type,
-		name: element.name,
+		...(!omittedEditingName({ element }) && { name: element.name }),
 		params: element.params,
 		...(element.animations !== undefined && { animations: element.animations }),
 		...("hidden" in element &&
@@ -37,9 +42,10 @@ export function projectEditingState(element: TimelineElement): ClipEditing {
 				isSourceAudioEnabled: element.isSourceAudioEnabled,
 			}),
 		...(element.type === "graphic" && { definitionId: element.definitionId }),
-		...(element.type === "graphic" && element.programmatic !== undefined && {
-			programmatic: element.programmatic,
-		}),
+		...(element.type === "graphic" &&
+			element.programmatic !== undefined && {
+				programmatic: element.programmatic,
+			}),
 		...(element.type === "effect" && { effectType: element.effectType }),
 		...(element.type === "sticker" && {
 			stickerId: element.stickerId,
@@ -65,6 +71,16 @@ export function applyEditingState({
 	// A complete editing object replaces the exposed state. Absent optional
 	// collections mean none, so deletion survives serialization and history.
 	const next = { ...element };
+	// Preserve optional wire shape without changing the native display name.
+	// Explicit names, including the empty string, remove any previous omission.
+	Reflect.deleteProperty(next, EDITING_NAME_SHAPE_KEY);
+	if (!Object.hasOwn(editing, "name")) {
+		Reflect.set(
+			next,
+			EDITING_NAME_SHAPE_KEY,
+			editingNameOmissionMarker({ element }),
+		);
+	}
 	for (const field of [
 		"animations",
 		"effects",

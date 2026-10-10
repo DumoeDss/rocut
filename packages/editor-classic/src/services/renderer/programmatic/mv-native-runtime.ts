@@ -19,6 +19,7 @@ import {
 	hasFlamePlan,
 	imagePreprocessRasterBytes,
 } from "./image-preprocess-binding";
+import { hasMvNativeOwnerPlan, prepareMvNativeOwners } from "./mv-native-owners";
 
 /** Only fresh canonical Rust admission can create a ticket. No source code,
  * caller-supplied frame or Worker message can select this DOM-backed seam.
@@ -90,14 +91,47 @@ export async function runMvNativeRaster({
 			releasePreparation();
 		}
 	}
+	// Owners are prepared inside the message loop after "ready": awaiting them
+	// here would defer onmessage registration and drop the realm's first
+	// handshake message when the iframe loads during preparation.
 	const requestId = crypto.randomUUID();
 	let realmStarted = false;
+	const needsOwners = hasMvNativeOwnerPlan(input.frame.recipePlan);
+	let owners: Awaited<ReturnType<typeof prepareMvNativeOwners>> | undefined;
+	let prepareOwners: (() => Promise<void>) | undefined;
+	let completeRealmRemoval: (() => void) | undefined;
+	let realmRemoval: Promise<void> | undefined;
 	const releaseOwner = () => {
 		releaseResidency?.();
 		releaseResidency = undefined;
 		releasePatches?.();
 		releasePatches = undefined;
 		if (ownsPreprocessor) imagePreprocessOwner?.dispose();
+		completeRealmRemoval?.();
+	};
+	prepareOwners = async () => {
+		realmRemoval ??= new Promise<void>((resolve) => {
+			completeRealmRemoval = resolve;
+		});
+		owners = await prepareMvNativeOwners({
+			plan: input.frame.recipePlan,
+			input: {
+				resources: input.resources,
+				imageAdmissions: input.imageAdmissions,
+				imageDecodeLimits: input.frame.imageDecodeLimits,
+			},
+			signal,
+		});
+		if (owners) {
+			input.heartFrames = owners.heartFrames;
+			input.nightFrames = owners.nightFrames;
+			input.memoriesFrames = owners.memoriesFrames;
+			input.jzFrames = owners.jzFrames;
+			input.rasterByteLimit = Math.min(
+				input.rasterByteLimit ?? owners.rasterByteLimit,
+				owners.rasterByteLimit,
+			);
+		}
 	};
 	return new Promise<ImageBitmap>((resolve, reject) => {
 		const iframe = document.createElement("iframe");
@@ -188,17 +222,31 @@ export async function runMvNativeRaster({
 				!(bitmap instanceof ImageBitmap)
 			) {
 				started = true;
-				const request: MvNativeRequest = {
-					protocol: MV_NATIVE_PROTOCOL,
-					requestId,
-					type: "render",
-					input,
+				const sendRender = () => {
+					const request: MvNativeRequest = {
+						protocol: MV_NATIVE_PROTOCOL,
+						requestId,
+						type: "render",
+						input,
+					};
+					try {
+						channel.port1.postMessage(request, owners?.transfers ?? []);
+					} catch (error) {
+						fail(error);
+					}
 				};
-				try {
-					channel.port1.postMessage(request);
-				} catch (error) {
-					fail(error);
+				if (!needsOwners) {
+					sendRender();
+					return;
 				}
+				void (async () => {
+					try {
+						await prepareOwners?.();
+						sendRender();
+					} catch (error) {
+						fail(error);
+					}
+				})();
 				return;
 			}
 			if (bitmap instanceof ImageBitmap) {
@@ -246,7 +294,11 @@ export async function runMvNativeRaster({
 		} catch (error) {
 			fail(error);
 		}
-	}).finally(() => {
+	}).finally(async () => {
 		if (!realmStarted) releaseOwner();
+		if (realmRemoval) {
+			await realmRemoval;
+			if (owners) await owners.dispose();
+		}
 	});
 }

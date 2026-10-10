@@ -62,6 +62,10 @@ test("typed blit raster settings apply only to that command, including clipped b
 test("malformed typed blit raster settings never draw or leak private surfaces", () => {
 	const valid = { blurPx: 2, smoothing: true, smoothingQuality: "high" };
 	const invalid = [
+		...[-1, 32.01, NaN, Infinity, "14", null].map((contrast) => ({
+			...valid,
+			contrast,
+		})),
 		...[-1, 16.01, NaN, Infinity, "2", undefined].map((blurPx) => ({
 			...valid,
 			blurPx,
@@ -96,4 +100,29 @@ test("malformed typed blit raster settings never draw or leak private surfaces",
 		expect(io.canvases).toHaveLength(3);
 		expectReleased(value);
 	}
+});
+
+test("production blit applies blur then contrast once and restores legacy filter state", () => {
+	const value = extendedFixture();
+	value.io.draw({
+		commands: [
+			surface("source"),
+			{
+				...blit("source"),
+				raster: {
+					blurPx: 4,
+					contrast: 14,
+					smoothing: true,
+					smoothingQuality: "low",
+				},
+			},
+			blit("source"),
+		],
+	});
+	const draws = value.io.events.filter((event) => event.op === "drawImage");
+	expect(draws.map((event) => event.state.filter)).toEqual([
+		"blur(4px) contrast(14)",
+		"none",
+	]);
+	expectReleased(value);
 });

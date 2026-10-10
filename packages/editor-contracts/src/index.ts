@@ -9,7 +9,10 @@
  * T1/T3 connect the real engine behind these types at the seam.
  */
 export { isProgrammaticResource } from "./programmatic-resources";
-export type { ProgrammaticBuild } from "./programmatic-build";
+export type {
+	ProgrammaticBuild,
+	ProgrammaticBuildCapability,
+} from "./programmatic-build";
 export { encodeImageSequenceImageRequest } from "./image-sequence-image";
 export { IMAGE_SEQUENCE_RESOURCE_CAPABILITY } from "./image-sequence-capability";
 export type {
@@ -44,7 +47,11 @@ export type {
 	MvTimePoint,
 } from "./mv-recipe-composition";
 export type { MvRecipePlan } from "./mv-recipe-plan";
-export type { MvTitleRiff, MvTitleRiffRecap, MvTitleRiffScene } from "./mv-title-riff";
+export type {
+	MvTitleRiff,
+	MvTitleRiffRecap,
+	MvTitleRiffScene,
+} from "./mv-title-riff";
 export type { MvTitleRiffPlan } from "./mv-title-riff-plan";
 export type {
 	MvEmber,
@@ -98,6 +105,20 @@ export type {
 	MvConvergeGradientStop,
 } from "./mv-converge-plan";
 export type { MvAsciiSweep, MvAsciiSweepPlan } from "./mv-ascii-sweep";
+export type { ReferencePostPlan } from "./mv-reference-post";
+export type {
+	MvTunnel,
+	MvTunnelScene,
+	MvTunnelPlan,
+	MvTunnelFontStack,
+	MvTunnelBoundStack,
+	MvTunnelFontLimits,
+	MvTunnelMetricRequest,
+	MvTunnelMeasurement,
+	MvTunnelStackText,
+	MvTunnelPost,
+	MvTunnelNativePost,
+} from "./mv-tunnel";
 export type {
 	MvTypeCard,
 	MvTypeCardQuiet,
@@ -160,6 +181,10 @@ export type {
 export type { MvThread, MvThreadScene } from "./mv-thread";
 export type { MvFall, MvFallScene } from "./mv-fall";
 export type { MvFlame, MvFlameScene, MvFlamePlan } from "./mv-flame";
+export type { MvInk, MvInkScene, MvInkPlan } from "./mv-ink";
+export type { MvRoad, MvRoadScene, MvRoadNativePost } from "./mv-road";
+export type { MvRoadPlan, MvRoadCommand, MvRoadAction } from "./mv-road-plan";
+export type { MvGradientRect } from "./mv-gradient-rect";
 export type {
 	ProgrammaticResource,
 	ProgrammaticResourceLimits,
@@ -311,3 +336,70 @@ export type {
 	MvImagePreprocessRequest,
 	MvPreparedPatchCommand,
 } from "./mv-image-preprocess";
+export type { MvHeartBinding, MvHeartPreparedImage } from "./mv-heart-prepared";
+export type {
+	MvHeartRecipeScene,
+	MvHeartRecipeRequest,
+	MvHeartRecipeRequestNode,
+} from "./mv-heart-recipe";
+export type {
+	MvNight,
+	MvNightScene,
+	MvNightPreparationRequest,
+	MvNightFontInstance,
+} from "./mv-night";
+export type { MvMemories } from "./mv-memories";
+export type {
+	MvMemoriesRecipeScene,
+	MvMemoriesRecipeRequestNode,
+} from "./mv-memories-recipe";
+export type {
+	MvBurst,
+	MvBurstScene,
+	MvBurstPlan,
+	MvBurstPlanNode,
+} from "./mv-burst";
+export type {
+	MvIllustNative,
+	MvIllustNativeScene,
+	MvIllustNativePlan,
+	MvIllustNativePlanNode,
+} from "./mv-illust-native";
+export type { MvJz, MvJzScene, MvJzRequest, MvJzRequestNode } from "./mv-jz";
+export type { MvLayersScene, MvLayersPlanNode } from "./mv-layers";
+export type {
+	MvMetaPanels,
+	MvMetaPanelsScene,
+	MvMetaPanelsPlan,
+} from "./mv-meta";
+export type {
+	MvMetaFreeze,
+	MvMetaFreezeScene,
+	MvMetaFreezePlan,
+	MvMetaRewind,
+	MvMetaRewindScene,
+	MvMetaRewindPlan,
+	MvMetaMelt,
+	MvMetaMeltScene,
+	MvMetaMeltPlan,
+} from "./mv-meta";
+export type {
+	MvHeartOwnerScene,
+	MvHeartOwnerFrameInput,
+	MvHeartShatterSettings,
+	MvHeartBurnSettings,
+	MvHeartGatherSettings,
+	MvHeartSunSettings,
+	MvHeartSkySettings,
+} from "./mv-heart";
+export type {
+	MvHeartOwnerIdentity,
+	MvHeartOwnerFrame,
+	MvHeartSkyOwnerIdentity,
+	MvHeartSkyOwnerFrame,
+	MvHeartNativeOwnerFrame,
+	MvHeartOwnerCommand,
+	MvHeartSkyCommand,
+	MvHeartPlan,
+	MvHeartBackgroundBinding,
+} from "./mv-heart-plan";

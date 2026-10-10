@@ -14,4 +14,11 @@ export type MvConvergeTransformOp =
 	| { readonly kind: "rotate"; readonly radians: number }
 	| { readonly kind: "scale"; readonly factors: readonly [number, number] }
 	/** Copy the replayed CTM through Canvas's DOMMatrix setTransform overload. */
-	| { readonly kind: "copyTransform" };
+	| { readonly kind: "copyTransform" }
+	/** Read the native CTM, then scale its entries and offset its translation.
+	 * Keeps the original getTransform/setTransform precision boundary. */
+	| {
+			readonly kind: "copyScaledTransform";
+			readonly scale: number;
+			readonly offset: readonly [number, number];
+	  };

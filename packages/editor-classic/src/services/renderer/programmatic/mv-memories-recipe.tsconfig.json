@@ -1,0 +1,4 @@
+{
+  "extends": "./mv-memories-owner.tsconfig.json",
+  "include": ["./mv-memories-*.ts"]
+}

@@ -1,5 +1,8 @@
-import { effectsRegistry, resolveEffectPasses } from "../../effects";
-import { buildDefaultParamValues } from "../../params/registry";
+import {
+	buildDefaultEffectInstance,
+	effectsRegistry,
+	resolveEffectPasses,
+} from "../../effects";
 import type { ParamValues } from "../../params";
 import { gpuRenderer } from "./gpu-renderer";
 import type { AssetResolver } from "@opencut/editor-ports";
@@ -70,7 +73,7 @@ export class EffectPreviewService {
 			const resolvedParams =
 				Object.keys(params).length > 0
 					? params
-					: buildDefaultParamValues(definition.params);
+					: buildDefaultEffectInstance({ effectType }).params;
 
 			const passes = resolveEffectPasses({
 				definition,

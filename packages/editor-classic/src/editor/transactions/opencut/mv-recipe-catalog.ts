@@ -1,10 +1,13 @@
 import { mvRecipeCatalogJson } from "opencut-wasm";
+import { mvRecipeSceneKinds } from "./mv-recipe-scene-discovery";
 
 export function getMvRecipeCatalog() {
 	const extensions: {
 		version: number;
 		availability: string;
 		generators: Record<string, unknown>;
+		nativeOwnerScenes?: Record<string, unknown>;
+		referenceScenes?: Record<string, unknown>;
 		transitionParameters: Record<string, unknown>;
 		finishing: {
 			effects: Record<string, unknown>;
@@ -24,16 +27,7 @@ export function getMvRecipeCatalog() {
 		version: 1,
 		contract:
 			"source.recipe; canvas-worker with empty code; Rust-validated parameters, no expressions",
-		scenes: [
-			"solid",
-			"illust",
-			"transition",
-			"ref",
-			"sequence",
-			"panels",
-			"imageSequence",
-			...Object.keys(extensions.generators),
-		],
+		scenes: mvRecipeSceneKinds(extensions),
 		extensions,
 		postStages: extensions.postStages,
 		finishing: extensions.finishing,

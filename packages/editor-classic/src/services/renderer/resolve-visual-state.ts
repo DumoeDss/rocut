@@ -1,5 +1,6 @@
 import { getElementLocalTime } from "../../animation";
 import { resolveEffectParamsAtTime } from "../../animation/effect-param-channel";
+import { ScalarBatchResolver } from "../../animation/scalar-batch-resolver";
 import { effectsRegistry, resolveEffectPasses } from "../../effects";
 import type { Effect, EffectPass } from "../../effects/types";
 import { resolveOpacityAtTime } from "../../animation/values";
@@ -15,6 +16,7 @@ export function resolveEffectPassGroups({
 	effects,
 	animations,
 	localTime,
+	scalarBatch,
 	width,
 	height,
 	frameRate,
@@ -22,6 +24,7 @@ export function resolveEffectPassGroups({
 	effects: Effect[] | undefined;
 	animations: VisualNodeParams["animations"];
 	localTime: number;
+	scalarBatch?: ScalarBatchResolver;
 	width: number;
 	height: number;
 	frameRate?: FrameRate;
@@ -34,6 +37,7 @@ export function resolveEffectPassGroups({
 				params: effect.params,
 				animations,
 				localTime,
+				scalarBatch,
 			});
 			const definition = effectsRegistry.get(effect.type);
 			return resolveEffectPasses({
@@ -70,15 +74,34 @@ export function resolveVisualState({
 			elementStartTime: params.timeOffset,
 			elementDuration: params.duration,
 		});
+	const safeLocalTime = Math.max(0, localTime);
+	const scalarPaths = [
+		"transform.positionX",
+		"transform.positionY",
+		"transform.scaleX",
+		"transform.scaleY",
+		"transform.rotate",
+		"opacity",
+	];
+	for (const effect of params.effects ?? []) {
+		for (const paramKey of Object.keys(effect.params ?? {})) {
+			scalarPaths.push(`effects.${effect.id}.params.${paramKey}`);
+		}
+	}
+	const scalarBatch = new ScalarBatchResolver({ time: safeLocalTime });
+	scalarBatch.plan({ animations: params.animations, paths: scalarPaths });
+	scalarBatch.execute();
 	const transform = resolveTransformAtTime({
 		baseTransform: params.transform,
 		animations: params.animations,
-		localTime,
+		localTime: safeLocalTime,
+		scalarBatch,
 	});
 	const opacity = resolveOpacityAtTime({
 		baseOpacity: params.opacity,
 		animations: params.animations,
-		localTime,
+		localTime: safeLocalTime,
+		scalarBatch,
 	});
 	const containScale = Math.min(
 		context.renderer.width / sourceWidth,
@@ -98,7 +121,8 @@ export function resolveVisualState({
 		effectPasses: resolveEffectPassGroups({
 			effects: params.effects,
 			animations: params.animations,
-			localTime,
+			localTime: safeLocalTime,
+			scalarBatch,
 			width: effectWidth,
 			height: effectHeight,
 			frameRate: context.frameRate,

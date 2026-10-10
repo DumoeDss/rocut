@@ -5,6 +5,7 @@ import type { MvEmberPixels } from "./mv-ember-pixels";
 import type { MvConvergeStyle } from "./mv-converge-plan";
 import type { MvConvergeTransform } from "./mv-converge-transform";
 import type { MvPreparedPatchCommand } from "./mv-image-preprocess";
+import type { MvGradientRect } from "./mv-gradient-rect";
 
 export type MvEmberRect = readonly [number, number, number, number];
 export type MvEmberComposite = MvDrawComposite;
@@ -97,6 +98,7 @@ export type MvEmberCommand =
 	  };
 export type MvEmberSurfaceDraw =
 	| MvEmberDraw
+	| MvGradientRect
 	| MvPreparedPatchCommand
 	| MvEmberPixels
 	| (MvEmberDrawingSpace & {
@@ -117,6 +119,8 @@ export type MvEmberSurfaceDraw =
 			readonly opacity: number;
 			readonly raster?: {
 				readonly blurPx: number;
+				/** Ordered after blur in the same native drawImage filter chain. */
+				readonly contrast?: number;
 				readonly smoothing: boolean;
 				readonly smoothingQuality: "low" | "medium" | "high";
 			};

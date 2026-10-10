@@ -1,7 +1,11 @@
+import { MV_ORDERED_RASTER_SOURCE } from "./mv-ordered-raster";
+
 /** Canvas primitives only. Native operation order and gradient creation CTMs
  * are part of the reference image, not interchangeable flattened matrices.
  */
-export const MV_EMBER_RASTER_SOURCE = String.raw`
+export const MV_EMBER_RASTER_SOURCE =
+	MV_ORDERED_RASTER_SOURCE +
+	String.raw`
 function mvEmberCss(color) {
   return 'rgba(' + color.slice(0,3).map(value => value * 255).join(',') + ',' + color[3] + ')';
 }
@@ -12,6 +16,7 @@ function mvEmberTransform(ctx, command) {
     else if (operation.kind === 'rotate') ctx.rotate(operation.radians);
     else if (operation.kind === 'scale') ctx.scale(...operation.factors);
     else if (operation.kind === 'copyTransform') ctx.setTransform(ctx.getTransform());
+    else if (operation.kind === 'copyScaledTransform') mvCopyScaledTransform(ctx,operation);
     else throw Error('Unsupported Ember transform operation');
   }
 }
@@ -20,6 +25,7 @@ function mvEmberPath(ctx, steps) {
   for (const step of steps) {
     if (step.kind === 'moveTo') ctx.moveTo(...step.point);
     else if (step.kind === 'lineTo') ctx.lineTo(...step.point);
+    else if (step.kind === 'quadraticCurveTo') ctx.quadraticCurveTo(...step.control,...step.point);
     else if (step.kind === 'rect') ctx.rect(...step.rect);
     else if (step.kind === 'close') ctx.closePath();
     else if (step.kind === 'arc') ctx.arc(...step.center,step.radius,step.start,step.end,step.anticlockwise ?? false);

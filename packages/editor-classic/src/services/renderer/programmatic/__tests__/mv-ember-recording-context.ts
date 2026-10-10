@@ -107,6 +107,9 @@ export function createEmberRecordingContext({
 		lineTo(...args: number[]) {
 			this.path({ op: "lineTo", args });
 		}
+		quadraticCurveTo(...args: number[]) {
+			this.path({ op: "quadraticCurveTo", args });
+		}
 		rect(...args: number[]) {
 			this.path({ op: "rect", args });
 		}

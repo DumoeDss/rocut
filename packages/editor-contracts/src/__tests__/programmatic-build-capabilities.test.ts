@@ -37,6 +37,17 @@ test("explicit particle capability survives a portable JSON roundtrip", () => {
 	expect(isProgrammaticBuild(JSON.parse(JSON.stringify(declared)))).toBe(true);
 });
 
+test("explicit Liquid capability survives a portable JSON roundtrip", () => {
+	const capabilities: NonNullable<ProgrammaticBuild["capabilities"]> = [
+		"liquid-object-v1",
+	];
+	const declared = { ...build(), capabilities };
+	expect(isProgrammaticBuild(declared)).toBe(true);
+	expect(isProgrammaticBuild(JSON.parse(JSON.stringify(declared)))).toBe(true);
+	for (const engine of ["hyperframes", "remotion"])
+		expect(isProgrammaticBuild({ ...declared, engine })).toBe(false);
+});
+
 test("malformed, empty, duplicate and unknown capabilities fail closed", () => {
 	for (const capabilities of [
 		null,
@@ -51,6 +62,9 @@ test("malformed, empty, duplicate and unknown capabilities fail closed", () => {
 		["Particle-surface-v1"],
 		["particle-surface-v1", "particle-surface-v1"],
 		["particle-surface-v1", "unknown"],
+		["liquid-object-v2"],
+		["liquid-object-v1", "liquid-object-v1"],
+		["particle-surface-v1", "liquid-object-v1"],
 	])
 		expect(isProgrammaticBuild({ ...build(), capabilities })).toBe(false);
 });

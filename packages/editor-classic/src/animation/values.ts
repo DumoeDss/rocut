@@ -4,16 +4,22 @@ import type {
 	ElementAnimations,
 } from "./types";
 import { resolveAnimationPathValueAtTime } from "./resolve";
+import type { ScalarBatchResolver } from "./scalar-batch-resolver";
 
 export function resolveOpacityAtTime({
 	baseOpacity,
 	animations,
 	localTime,
+	scalarBatch,
 }: {
 	baseOpacity: number;
 	animations: ElementAnimations | undefined;
 	localTime: number;
+	scalarBatch?: ScalarBatchResolver;
 }): number {
+	if (scalarBatch && scalarBatch.has({ path: "opacity" })) {
+		return scalarBatch.sample({ path: "opacity", fallbackValue: baseOpacity });
+	}
 	return resolveAnimationPathValueAtTime({
 		animations,
 		propertyPath: "opacity",

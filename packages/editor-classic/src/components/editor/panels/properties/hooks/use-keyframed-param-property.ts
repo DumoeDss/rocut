@@ -7,7 +7,10 @@ import {
 	hasKeyframesForPath,
 	upsertPathKeyframe,
 } from "../../../../../animation";
-import type { AnimationPath, ElementAnimations } from "../../../../../animation/types";
+import type {
+	AnimationPath,
+	ElementAnimations,
+} from "../../../../../animation/types";
 import {
 	coerceParamValue,
 	getParamChannelLayout,
@@ -35,6 +38,7 @@ export function useKeyframedParamProperty({
 	isPlayheadWithinElementRange,
 	resolvedValue,
 	buildBaseUpdates,
+	coerceValue = ({ value }) => coerceParamValue({ param, value }),
 }: {
 	param: ParamDefinition;
 	trackId: string;
@@ -49,6 +53,7 @@ export function useKeyframedParamProperty({
 	}: {
 		value: number | string | boolean;
 	}) => Partial<TimelineElement>;
+	coerceValue?: Parameters<typeof upsertPathKeyframe>[0]["coerceValue"];
 }): KeyframedParamPropertyResult {
 	const editor = useEditorInstance();
 	const resolvedPropertyPath =
@@ -83,11 +88,7 @@ export function useKeyframedParamProperty({
 								time: localTime,
 								value,
 								channelLayout: getParamChannelLayout({ param }),
-								coerceValue: ({ value: nextValue }) =>
-									coerceParamValue({
-										param,
-										value: nextValue,
-									}),
+								coerceValue,
 							}),
 						},
 					},

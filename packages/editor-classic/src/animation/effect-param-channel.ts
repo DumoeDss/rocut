@@ -5,6 +5,7 @@ import type {
 import type { ParamValues } from "../params";
 import { removeElementKeyframe } from "./keyframes";
 import { resolveAnimationPathValueAtTime } from "./resolve";
+import type { ScalarBatchResolver } from "./scalar-batch-resolver";
 
 export const EFFECT_PARAM_PATH_PREFIX = "effects.";
 export const EFFECT_PARAM_PATH_SUFFIX = ".params.";
@@ -59,18 +60,23 @@ export function resolveEffectParamsAtTime({
 	params,
 	animations,
 	localTime,
+	scalarBatch,
 }: {
 	effectId: string;
 	params: ParamValues;
 	animations: ElementAnimations | undefined;
 	localTime: number;
+	scalarBatch?: ScalarBatchResolver;
 }): ParamValues {
 	const safeLocalTime = Math.max(0, localTime);
 	const resolved: ParamValues = {};
 
 	for (const [paramKey, staticValue] of Object.entries(params)) {
 		const path = buildEffectParamPath({ effectId, paramKey });
-		resolved[paramKey] = animations?.[path]
+		resolved[paramKey] =
+			scalarBatch && scalarBatch.has({ path }) && typeof staticValue === "number"
+				? scalarBatch.sample({ path, fallbackValue: staticValue })
+				: animations?.[path]
 			? resolveAnimationPathValueAtTime({
 					animations,
 					propertyPath: path,

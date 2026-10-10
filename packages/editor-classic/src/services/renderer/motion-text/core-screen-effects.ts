@@ -65,6 +65,15 @@ const CORE_SCREEN_EFFECTS = new Set([
 
 const scratchByCanvas = new WeakMap<object, ScratchSurfaces>();
 
+/** Private native embeddings retire surfaces before releasing their owner lease. */
+export function disposeCoreScreenEffectScratch(canvas: object): void {
+	const scratch = scratchByCanvas.get(canvas);
+	if (scratch) for (const surface of [scratch.source, scratch.work, scratch.tiny]) {
+		surface.width = surface.height = 1;
+	}
+	scratchByCanvas.delete(canvas);
+}
+
 export function drawCoreScreenEffect(options: CoreScreenEffectDraw): boolean {
 	if (!CORE_SCREEN_EFFECTS.has(options.effect)) return false;
 	// Shake is composed into the content transform in runtime.ts. Treating it as

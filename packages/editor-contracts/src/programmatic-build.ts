@@ -3,7 +3,9 @@ import {
 	type ProgrammaticResource,
 } from "./programmatic-resources";
 
-export type ProgrammaticBuildCapability = "particle-surface-v1";
+export type ProgrammaticBuildCapability =
+	| "particle-surface-v1"
+	| "liquid-object-v1";
 
 /** Immutable original files and toolchain provenance. Not loaded for painting. */
 export interface ProgrammaticBuild {
@@ -51,7 +53,8 @@ export function isProgrammaticBuild(
 			(b.engine === "three" &&
 				Array.isArray(b.capabilities) &&
 				b.capabilities.length === 1 &&
-				b.capabilities[0] === "particle-surface-v1")) &&
+				(b.capabilities[0] === "particle-surface-v1" ||
+					b.capabilities[0] === "liquid-object-v1"))) &&
 		Array.isArray(b.inputs) &&
 		b.inputs.every(isProgrammaticResource) &&
 		isProgrammaticResource(b.toolchainLock)

@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"target": "ES2022",
+		"lib": ["DOM", "DOM.Iterable", "ESNext"],
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"strict": true,
+		"noEmit": true,
+		"skipLibCheck": true,
+		"types": ["bun", "node"],
+		"paths": {
+			"@opencut/editor-contracts": ["../../../../../editor-contracts/src"]
+		}
+	},
+	"include": ["./mv-heart-owner-provider*.ts"]
+}

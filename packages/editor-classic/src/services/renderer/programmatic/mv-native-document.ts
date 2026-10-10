@@ -3,6 +3,12 @@ import { SEQUENCE_IMAGE_DECODER_SOURCE } from "./sequence-image-decoder";
 import { IMAGE_DIMENSIONS_WORKER_SOURCE } from "./image-dimensions-worker";
 import { MV_NATIVE_CONNECT, MV_NATIVE_PROTOCOL } from "./mv-native-protocol";
 import { IMAGE_PREPROCESS_RENDERER_SOURCE } from "./image-preprocess-renderer";
+import { MV_REFERENCE_POST_SOURCE } from "./mv-reference-post";
+import { MV_ROAD_REFERENCE_POST_SOURCE } from "./mv-road-reference-post";
+import { MV_HEART_NATIVE_FRAMES_SOURCE } from "./mv-heart-native-transport";
+import { MV_NIGHT_NATIVE_FRAMES_SOURCE } from "./mv-night-native-transport";
+import { MV_MEMORIES_NATIVE_FRAMES_SOURCE } from "./mv-memories-native-transport";
+import { MV_JZ_NATIVE_FRAMES_SOURCE } from "./mv-jz-native-transport";
 
 /** Fixed interpreter only. Project text never enters this document/script.
  * Unlike the authored Worker broker, this CSP cannot eval, spawn Workers,
@@ -16,6 +22,7 @@ export const MV_NATIVE_DOCUMENT = `<!doctype html>
 (() => {
   const nativeCreateImageBitmap = globalThis.createImageBitmap.bind(globalThis);
   let disposed = false, started = false, iterator;
+  let tunnelFonts;
   const bitmaps = new Set(), faces = new Set(), canvases = new Set();
   let rasterBytes=0, rasterByteLimit;
   const check = () => { if (disposed) throw Error('Native MV frame cancelled'); };
@@ -42,6 +49,7 @@ export const MV_NATIVE_DOCUMENT = `<!doctype html>
     return canvas;
   }
   const cleanup = () => {
+    if (tunnelFonts) { tunnelFonts.dispose(); tunnelFonts=undefined; }
     if (iterator) { try { iterator.return(); } finally { iterator = undefined; } }
     for (const bitmap of bitmaps) bitmap.close(); bitmaps.clear();
     for (const face of faces) document.fonts.delete(face); faces.clear();
@@ -65,6 +73,12 @@ export const MV_NATIVE_DOCUMENT = `<!doctype html>
   ${IMAGE_DIMENSIONS_WORKER_SOURCE}
   ${IMAGE_PREPROCESS_RENDERER_SOURCE}
   ${MV_RECIPE_RENDERER_SOURCE}
+  ${MV_REFERENCE_POST_SOURCE}
+  ${MV_ROAD_REFERENCE_POST_SOURCE}
+  ${MV_HEART_NATIVE_FRAMES_SOURCE}
+  ${MV_NIGHT_NATIVE_FRAMES_SOURCE}
+  ${MV_MEMORIES_NATIVE_FRAMES_SOURCE}
+  ${MV_JZ_NATIVE_FRAMES_SOURCE}
   addEventListener('message', function connect(event) {
     const message = event.data;
     if (event.source !== parent || !message || message.type !== ${JSON.stringify(MV_NATIVE_CONNECT)}
@@ -80,15 +94,20 @@ export const MV_NATIVE_DOCUMENT = `<!doctype html>
       try {
         check();
         if (!input || typeof input !== 'object' || Array.isArray(input)
-          || Object.keys(input).some(k => !['width','height','frame','resources','sequenceImages','imageAdmissions','preparedPatches','rasterByteLimit'].includes(k)))
+          || Object.keys(input).some(k => !['width','height','frame','resources','sequenceImages','imageAdmissions','preparedPatches','heartFrames','nightFrames','memoriesFrames','jzFrames','rasterByteLimit','nativePostMode'].includes(k))
+          || (input.nativePostMode !== undefined && input.nativePostMode !== 'scene-only'))
           throw Error('Invalid native MV payload');
         const {width,height,frame,resources,sequenceImages,imageAdmissions} = input;
-        if(input.preparedPatches!==undefined){
-          if(!Array.isArray(input.preparedPatches)||!Number.isSafeInteger(input.rasterByteLimit)||input.rasterByteLimit<1)throw Error('Invalid preprocessing raster residency');
+        if(input.preparedPatches!==undefined||input.heartFrames!==undefined||input.nightFrames!==undefined||input.memoriesFrames!==undefined||input.jzFrames!==undefined){
+          if((input.preparedPatches!==undefined&&!Array.isArray(input.preparedPatches))||!Number.isSafeInteger(input.rasterByteLimit)||input.rasterByteLimit<1)throw Error('Invalid native owner raster residency');
           rasterByteLimit=input.rasterByteLimit;
         }
         if (!frame || !frame.recipePlan || !Array.isArray(resources) || !Array.isArray(sequenceImages))
           throw Error('Missing admitted native MV inputs');
+        const heartFrames=mvHeartNativeFrames(frame.recipePlan,input.heartFrames,bitmaps,check);
+        const nightFrames=mvNightNativeFrames(frame.recipePlan,input.nightFrames,bitmaps,check);
+        const memoriesFrames=mvMemoriesNativeFrames(frame.recipePlan,input.memoriesFrames,bitmaps,check);
+        const jzFrames=mvJzNativeFrames(frame.recipePlan,input.jzFrames,bitmaps,check);
         const resourceBytes = new Map(), descriptors = new Map();
         for (const {resource,body} of resources) {
           check();
@@ -102,7 +121,31 @@ export const MV_NATIVE_DOCUMENT = `<!doctype html>
         const budget = createMvImageDecodeBudget(frame.imageDecodeLimits);
         imageAssets = await decodeMvDeclaredImages(frame,resources,imageAdmissions,'render',budget); check();
         sequenceAssets = await decodeMvSequenceImages(frame,sequenceImages,budget); check();
+        if (frame.tunnelFontStacks?.length) {
+          tunnelFonts=await mvTunnelFontStacks({
+            bytes(id) { if (!resourceBytes.has(id)) throw Error('Unknown native Tunnel bytes'); return resourceBytes.get(id).slice(0); },
+            descriptor(id) { if (!descriptors.has(id)) throw Error('Unknown native Tunnel descriptor'); return descriptors.get(id); }
+          },{add(face){check();document.fonts.add(face);faces.add(face);},delete(face){document.fonts.delete(face);faces.delete(face);}});
+          for (const bound of frame.tunnelFontStacks) { await tunnelFonts.load(bound.fontStack); check(); }
+        }
         const assets = Object.freeze({
+          check,
+          tunnelFonts,heartFrames,nightFrames,memoriesFrames,jzFrames,nativePostMode:input.nativePostMode,
+          referencePost: input.nativePostMode === 'scene-only' ? undefined : Object.freeze({
+            applyRoad(ctx,request) {
+              applyRoadReferencePost({ctx,request,createSurface,check,renderReferencePost,
+                releaseSurface(canvas){canvas.width=canvas.height=1;canvases.delete(canvas);}});
+            },
+            apply(ctx,nativePost) {
+              check();
+              if (!nativePost.plan || nativePost.plan.songTicks !== nativePost.songTicks || nativePost.plan.profile !== nativePost.profile) throw Error('Tunnel native post receipt mismatch');
+              const output=createSurface(width,height);
+              try {
+                renderReferencePost({canvas:output,scene:ctx.canvas,plan:nativePost.plan});check();
+                ctx.save();try {ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=1;ctx.globalCompositeOperation='copy';ctx.filter='none';ctx.drawImage(output,0,0);}finally{ctx.restore();}
+              } finally {output.width=output.height=1;canvases.delete(output);}
+            }
+          }),
           preparedPatch:createMvPreparedPatches(input.preparedPatches||[]),
           image(id) { if (!imageAssets.images.has(id)) throw Error('Unknown native image'); return imageAssets.images.get(id); },
           sequenceImage(key) { if (!sequenceAssets.images.has(key)) throw Error('Unknown native sequence image'); return sequenceAssets.images.get(key); },

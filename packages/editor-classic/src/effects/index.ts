@@ -44,7 +44,9 @@ export function buildDefaultEffectInstance({
 	effectType: string;
 }): Effect {
 	const definition = effectsRegistry.get(effectType);
-	const params: ParamValues = buildDefaultParamValues(definition.params);
+	const params: ParamValues = buildDefaultParamValues(
+		definition.params.filter((param) => param.required !== false),
+	);
 
 	return {
 		id: generateUUID(),
