@@ -51,7 +51,30 @@ function fromPixels(bytes: Uint8ClampedArray<ArrayBufferLike>): HTMLCanvasElemen
 }
 function parity({ actual, expected }: { actual: Uint8ClampedArray; expected: Uint8ClampedArray }): number {
     if (actual.length !== expected.length) throw Error("Night frame readback lengths differ");
-    let max = 0; for (let i = 0; i < actual.length; i++) max = Math.max(max, Math.abs(actual[i] - expected[i]));
+    let max = 0;
+    for (let i = 0; i < actual.length; i++) {
+        const d = Math.abs(actual[i] - expected[i]);
+        if (d > max) max = d;
+    }
+    if (max > 1) {
+        const W = 1920, H = 1080, rowChanged = new Uint32Array(H), colChanged = new Uint32Array(W), chanDelta = [0, 0, 0, 0];
+        let changed = 0, total = 0;
+        const hist = new Map<number, number>();
+        let maximum: { x: number; y: number; c: number; a: number; b: number } | null = null, first: typeof maximum = null;
+        for (let i = 0; i < actual.length; i++) {
+            const delta = Math.abs(actual[i] - expected[i]);
+            if (!delta) continue;
+            changed++; total += delta;
+            const pixel = (i / 4) | 0, x = pixel % W, y = (pixel / W) | 0, c = i % 4;
+            rowChanged[y]++; colChanged[x]++; chanDelta[c] += delta;
+            hist.set(delta, (hist.get(delta) ?? 0) + 1);
+            const point = { x, y, c, a: actual[i], b: expected[i] };
+            if (!first) first = point;
+            if (!maximum || delta > Math.abs(maximum.a - maximum.b)) maximum = point;
+        }
+        const band = (arr) => { const n = arr.length; const out = []; for (let b = 0; b < 12; b++) { let s = 0; for (let i = Math.floor(b * n / 12); i < Math.floor((b + 1) * n / 12); i++) s += arr[i]; out.push(s); } return out; };
+        (globalThis.__nightParityDiagnostics ??= []).push({ max, mae: total / actual.length, changed, first, maximum, hist: [...hist.entries()].sort((a, b) => a[0] - b[0]).slice(0, 12), chanDelta, rowBands: band(rowChanged), colBands: band(colChanged) });
+    }
     if (max > 1) throw Error("Night complete frame pixel mismatch: " + max); return max;
 }
 /** Explicit dedicated fixture only. Native Canvas encodes a real PNG, which

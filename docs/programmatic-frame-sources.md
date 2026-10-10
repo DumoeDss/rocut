@@ -4372,3 +4372,23 @@ are preserved under docs/evidence/mv-tunnel-frame4-grain-diagnosis-20261010/.
 The follow-up decision (pin a shared grain phase in the native producer or
 gate on grain-tolerant parity) belongs to the consolidated pixel phase; no
 threshold was relaxed here.
+
+### Night wet-floor parity diagnosis: sub-pixel rounding in the shimmer band (2026-10-10)
+
+The remaining Night failure is now classified with record-only diagnostics.
+The parity helper collects histogram, per-channel deltas, and row/column band
+statistics when a complete-frame compare exceeds the gate (threshold itself
+unchanged), and the failing run reports: max 2 with 70,345 samples at delta 1
+and 327 at delta 2 (99.5% single-step), the alpha channel bit-identical, and
+every row-band sample located below the horizon inside the shimmer reflection
+band (blur 1.5px) while column bands stay uniform. This is the signature of
+deterministic sub-pixel resampling rounding between the two rasterizers, not a
+layer-phase or logic divergence - contrast Tunnel frame4, whose delta<=6
+errors scatter full-screen from independent grain phase. The scene-level gate
+for this stage already allows <=2; only the complete-frame gate uses 1.
+Options for the consolidated acceptance phase: align the complete-frame gate
+with the scene-level gate (<=2), or bit-accurately reproduce the shimmer
+resampling order. Statistics and reasoning are preserved in
+docs/evidence/mv-night-wetfloor-parity-diagnosis-20261010.json. The
+diagnostics patch keeps passing-run behavior identical and the input and
+transport suites still pass (3 + 2 tests).

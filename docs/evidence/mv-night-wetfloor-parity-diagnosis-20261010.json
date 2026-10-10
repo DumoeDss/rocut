@@ -1,0 +1,48 @@
+{
+  "recordedAt": "2026-10-10T15:40:00Z",
+  "probe": "script/probe-mv-night-native.mjs --browser-only --dedicated-native-fixtures (record-only parity diagnostics patch)",
+  "mode": "dedicated-native-fixtures",
+  "purpose": "classify the wet-floor complete-frame max=2 failure recorded in mv-night-native-recheck-20261010.json",
+  "checkpoint": {
+    "source": "C:/Users/Sayo/AppData/Local/Temp/rocut-mv-native-checkpoint-20261010/source",
+    "wasm": "C:/Users/Sayo/AppData/Local/Temp/rocut-mv-native-checkpoint-20261010/wasm",
+    "wasmSha256Prefix": "ddade5ea1cae",
+    "sourceManifestSha256Prefix": "ebe69380c055",
+    "identityChains": [
+      "fallWasmIdentity ok",
+      "tunnelRustIdentity native-scene 697 current matches",
+      "nightCompiledCheckpoint 31 frozen Night/LUT sources"
+    ]
+  },
+  "diagnosticPatch": {
+    "file": "script/fixtures/mv-night-native-browser.ts",
+    "change": "parity() records max/mae/histogram/channel-deltas/row-col band statistics into globalThis.__nightParityDiagnostics when max>1; gate threshold unchanged (still <=1)",
+    "behaviorChange": "none for passing runs; failing runs additionally collect statistics before throwing"
+  },
+  "rawLog": "C:/Users/Sayo/AppData/Local/Temp/night-wfdiag.log (UTF-16, JSON payload between first { and last })",
+  "finding": {
+    "case": "first wet-floor complete-frame compare",
+    "max": 2,
+    "mae": 0.00856,
+    "changedPixels": 70672,
+    "histogram": { "delta1": 70345, "delta2": 327 },
+    "channelDeltas": { "r": 18817, "g": 26256, "b": 25926, "a": 0 },
+    "firstDiff": { "x": 183, "y": 269, "channel": "b", "actual": 104, "expected": 103 },
+    "maxDiff": { "x": 304, "y": 602, "channel": "b", "actual": 58, "expected": 60 },
+    "rowBands12": [0, 0, 1, 11, 0, 0, 1562, 12048, 12116, 13400, 14135, 17399],
+    "colBands12": [5087, 5030, 6122, 5948, 5190, 3074, 3603, 4378, 7031, 8141, 6716, 10352],
+    "classification": "deterministic sub-pixel resampling rounding, not a layer-phase or logic divergence",
+    "reasoning": [
+      "alpha channel is bit-identical (0 delta), ruling out compositing order or layer visibility divergence",
+      "99.5% of changed samples are delta=1 and the rest delta=2, the signature of nearest-tie rounding in one resampling stage",
+      "all row-band mass sits below the horizon in the shimmer reflection band (shimmer applies blur(1.5px)); the sky and plate are clean",
+      "column bands are uniform, ruling out a misaligned LUT row or text glyph column artifact",
+      "contrast with Tunnel frame4: that failure is delta<=6 scattered full-screen (independent grain phase), a different class"
+    ]
+  },
+  "decisionOptions": [
+    "align the complete-frame gate with the existing scene-level gate (<=2) with this evidence as rationale",
+    "bit-accurately reproduce the shimmer resampling order (deferred; not required for feature-complete acceptance)"
+  ],
+  "scope": "not an installed Electron/full-movie/export acceptance claim"
+}
