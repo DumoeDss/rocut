@@ -27,6 +27,17 @@ import {
 } from "./fixtures/particle-editor-export-contract.mjs";
 import { buildEditorExport } from "./fixtures/particle-editor-export-build.mjs";
 import { verifyEditorExport } from "./fixtures/particle-editor-export-verify.mjs";
+import {
+	admitParticleAuthority,
+	admitParticleCompileBaseline,
+	assertParticleAuthorityRuntime,
+	parseParticleAuthoritySelection,
+} from "./fixtures/particle-editor-export-authority.mjs";
+import {
+	particleAuthorityPaths,
+	writeParticleAuthorityContext,
+} from "./fixtures/particle-editor-export-authority-stage.mjs";
+import { installParticleAuthorityBrowserObserver } from "./fixtures/particle-editor-export-authority-browser.mjs";
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const required = [
@@ -47,16 +58,23 @@ for (let index = 0; index < args.length; index += 2) {
 		value = args[index + 1];
 	assert.ok(
 		args[index]?.startsWith("--") &&
-			[...required, "electron-connection-file", "mode"].includes(key) &&
+			[
+				...required,
+				"electron-connection-file",
+				"mode",
+				"authority",
+				"authority-receipt",
+				"compile-baseline-receipt",
+			].includes(key) &&
 			!options[key] &&
 			value,
 		"Unknown, duplicate or malformed option",
 	);
 	assert.ok(
-		key === "mode" || isAbsolute(value),
+		key === "mode" || key === "authority" || isAbsolute(value),
 		"Every tool/input/output path must be explicit and absolute",
 	);
-	options[key] = key === "mode" ? value : resolve(value);
+	options[key] = key === "mode" || key === "authority" ? value : resolve(value);
 }
 assert.ok(
 	required.every((key) => options[key]),
@@ -64,6 +82,37 @@ assert.ok(
 );
 options.mode ??= "build-only";
 assert.ok(["build-only", "run"].includes(options.mode));
+const selection = parseParticleAuthoritySelection(options);
+assert.equal(
+	Boolean(options["compile-baseline-receipt"]),
+	selection.kind === "new-authority",
+	"New authority requires a separately approved compile baseline",
+);
+const authorityPaths =
+	selection.kind === "new-authority"
+		? particleAuthorityPaths(options)
+		: undefined;
+const authority = authorityPaths
+	? await admitParticleAuthority({ selection, paths: authorityPaths })
+	: undefined;
+const baseline = authority
+	? await admitParticleCompileBaseline({
+			authority,
+			receiptPath: options["compile-baseline-receipt"],
+		})
+	: undefined;
+if (authority) {
+	assert.ok(
+		!options["electron-connection-file"],
+		"New authority does not admit an unobserved Electron capture lane",
+	);
+	assertParticleAuthorityRuntime({
+		authority,
+		name: "node",
+		executable: process.execPath,
+		version: process.version,
+	});
+}
 assert.ok(inside("C:/tmps", options["artifacts-root"]));
 await plain(options["artifacts-root"], true);
 for (const key of ["sampler-dir", "toolchain"]) await plain(options[key], true);
@@ -74,6 +123,15 @@ const root = await mkdtemp(
 );
 await mkdir(join(root, "temp"));
 await mkdir(join(root, "ui"));
+const authorityContextPath = authority
+	? await writeParticleAuthorityContext({
+			authority,
+			root,
+			selection,
+			paths: authorityPaths,
+			baselineReceiptPath: options["compile-baseline-receipt"],
+		})
+	: undefined;
 console.log(
 	JSON.stringify({
 		root,
@@ -109,6 +167,8 @@ const formatError = (error) => ({
 		: {}),
 });
 let admitted,
+	browserPage,
+	browserWasmObservation,
 	copiedManifest,
 	host,
 	browser,
@@ -151,6 +211,19 @@ try {
 		EDITOR_EXPORT_CONTRACT,
 	);
 	admitted = await loadEditorExportHandoff(options.handoff);
+	if (authority) {
+		assert.deepEqual(admitted.handoff.authority, {
+			laneId: authority.laneId,
+			authorityReceiptSha256: authority.authorityReceiptSha256,
+			baselineReceiptSha256: baseline.baselineReceiptSha256,
+		});
+		assert.equal(
+			admitted.handoff.final.sourceSha256,
+			baseline.metadata.sourceSha256,
+			"UI must preserve the truly compiled source",
+		);
+		await authority.assertUnchanged();
+	}
 	assert.ok(
 		!inside(admitted.handoff.project, root),
 		"Export artifact root must remain outside the saved UI project",
@@ -206,8 +279,15 @@ try {
 		root,
 		"bun-version",
 	);
-	assert.equal(version.output.trim(), "1.2.18");
-	await buildEditorExport({ repo, root, options, sources });
+	if (authority)
+		assertParticleAuthorityRuntime({
+			authority,
+			name: "bun",
+			executable: options.bun,
+			version: version.output.trim(),
+		});
+	else assert.equal(version.output.trim(), "1.2.18");
+	await buildEditorExport({ repo, root, options, sources, authority });
 	if (options.mode === "run") {
 		host = startPrivateHost({
 			executable: options.bun,
@@ -220,6 +300,7 @@ try {
 				options.ffprobe,
 				"particle-model",
 				options["electron-connection-file"] ?? "",
+				...(authority ? [authorityContextPath] : []),
 			],
 			cwd: repo,
 			env: environment,
@@ -248,6 +329,11 @@ try {
 			],
 		});
 		const page = await browser.newPage();
+		browserPage = page;
+		if (authority)
+			await page.addInitScript(installParticleAuthorityBrowserObserver, {
+				expectedWasmSha256: authority.metadata.nativeAuthority.wasmSha256,
+			});
 		page.on("pageerror", (error) => errors.push(redact(error.message)));
 		await page.route("**/*", async (route) => {
 			const url = new URL(route.request().url());
@@ -297,6 +383,15 @@ try {
 		}
 		assert.deepEqual(errors, []);
 		assert.deepEqual(externalRequests, []);
+		if (authority) {
+			browserWasmObservation = await page.evaluate(() =>
+				globalThis.__particleAuthorityWasmObservation.assertConsumed(),
+			);
+			await writeJson(
+				join(root, "particle-browser-authority.json"),
+				browserWasmObservation,
+			);
+		}
 		assert.equal(result.frameCount, 121);
 		assert.equal(result.width, 1920);
 		assert.equal(result.height, 1080);
@@ -327,6 +422,26 @@ try {
 	failure = error;
 } finally {
 	const cleanup = [];
+	if (authority && browserPage) {
+		try {
+			browserWasmObservation = await browserPage.evaluate(() =>
+				globalThis.__particleAuthorityWasmObservation.snapshot(),
+			);
+			await writeJson(join(root, "particle-browser-authority-final.json"), {
+				...browserWasmObservation,
+				diagnosticOnly:
+					Boolean(failure) || !browserWasmObservation.actualBytesVerified,
+			});
+			if (!failure)
+				assert.equal(
+					browserWasmObservation.actualBytesVerified,
+					true,
+					"Actual WASM proof must remain valid through final browser snapshot",
+				);
+		} catch (error) {
+			cleanup.push(error);
+		}
+	}
 	try {
 		if (browser) {
 			await browser.close();
@@ -342,6 +457,7 @@ try {
 		cleanup.push(error);
 	}
 	try {
+		if (authority) await authority.assertUnchanged();
 		if (admitted) {
 			assert.equal(
 				hash(
@@ -417,6 +533,13 @@ if (failure) {
 		browserClosed,
 		hostLifecycle,
 		artifactsRetained: true,
+		...(authority
+			? {
+					authorityReceiptSha256: authority.authorityReceiptSha256,
+					baselineReceiptSha256: baseline.baselineReceiptSha256,
+					browserWasmObservation,
+				}
+			: {}),
 	});
 	await credentialScan();
 	throw Error(redact(failure));
@@ -465,6 +588,28 @@ await writeJson(join(root, "evidence.json"), {
 	artifacts,
 	originalInputsUnmodified: true,
 	artifactsRetained: true,
+	...(authority
+		? {
+				authority: {
+					laneId: authority.laneId,
+					authorityReceiptSha256: authority.authorityReceiptSha256,
+					baselineReceiptSha256: baseline.baselineReceiptSha256,
+					nativeWasmSha256: authority.metadata.nativeAuthority.wasmSha256,
+					actualExecutionObserved: options.mode === "run",
+					browserWasmObservation,
+					...(host
+						? {
+								hostActualWasmObservation: await readJson(
+									join(root, "host-actual-wasm-authority-final.json"),
+								),
+								archivedParticleIdentity: await readJson(
+									join(root, "host-archived-particle-authority.json"),
+								),
+							}
+						: {}),
+				},
+			}
+		: {}),
 	processBoundary:
 		"Observed direct Host/FFmpeg children plus awaited browser.close only; no arbitrary descendant shutdown inference",
 });

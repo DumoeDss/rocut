@@ -39,7 +39,7 @@ try{
  const temp=join(root,'temp');await mkdir(temp);for(const key of ['TEMP','TMP','TMPDIR'])process.env[key]=temp;
  report.nativePackage=await Promise.all(['opencut_wasm.js','opencut_wasm_bg.js','opencut_wasm_bg.wasm','opencut_wasm_sync.js'].map(name=>pin(join(pkg,name))));
  const input=join(root,'input');await mkdir(input);
- await writeFile(join(input,'index.html'),'<!doctype html><meta charset="utf-8"><title>Private Glass production export</title><script type="module">await import("opencut-wasm");globalThis.__glassExportRun=(await import('+JSON.stringify(join(repo,'script/fixtures/glass-object-editor-export-browser.ts').replaceAll('\\','/'))+')).runGlassEditorExport;</script>',{flag:'wx'});
+ await writeFile(join(input,'index.html'),'<!doctype html><meta charset="utf-8"><title>Private Glass production export</title><script type="module">const runtime=await import("opencut-wasm");if(typeof runtime.default==="function")await runtime.default();globalThis.__glassExportRun=(await import('+JSON.stringify(join(repo,'script/fixtures/glass-object-editor-export-browser.ts').replaceAll('\\','/'))+')).runGlassEditorExport;</script>',{flag:'wx'});
  const classicRequire=createRequire(join(repo,'packages/editor-classic/package.json'));
  const mediabunny=join(dirname(classicRequire.resolve('mediabunny')),'../modules/src/index.js');
  report.bundleBuild={startedAt:new Date().toISOString()};await persist();

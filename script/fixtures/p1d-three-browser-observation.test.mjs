@@ -14,13 +14,13 @@ async function fixture(operation) {
 	try { return await operation(directory, (name, bytes) => writeFile(join(directory, name), bytes, { flag: "wx" })); }
 	finally { assert.equal(await realpath(directory), directory); await rm(directory, { recursive: true }); }
 }
-test("PNG and raw samples exist before the unchanged failing oracle; evidence remains failed", () => fixture(async (directory, write) => {
+test("PNG and raw samples exist before the failing independent oracle; evidence remains failed", () => fixture(async (directory, write) => {
 	const attempt = context(), evidence = { passed: false, attempts: [attempt] };
 	const colorMismatch = { ...image, pixels: Buffer.from(image.pixels) };
 	colorMismatch.pixels.set([230, 110, 90, 255], (32 * 64 + 32) * 4);
 	colorMismatch.pixels.set([230, 110, 90, 255], (32 * 64 + 50) * 4);
-	// CPU-only predicted default-ACES green, not an observed failed screenshot.
-	colorMismatch.pixels.set([147, 228, 89, 255], (16 * 64 + 16) * 4);
+	// Deliberately wrong synthetic color; neither expected values nor bytes come from a screenshot.
+	colorMismatch.pixels.set([0, 0, 255, 255], (16 * 64 + 16) * 4);
 	let originalError, cleaned = false;
 	await assert.rejects(withP1dCleanup(async () => {
 		await preserveP1dCapture({ png, name: "failed", write, decode: () => colorMismatch, attempt, validate: async decoded => {

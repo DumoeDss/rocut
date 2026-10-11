@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
+import { P1D_SVG_COLOR_RGBA } from "./p1d-three-browser-color-reference.mjs";
 
 export const P1D_TIMES = [0.75, 0, 0.25, 0.75];
 export const P1D_SUPPORTED_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#00ff00"/></svg>';
@@ -34,7 +35,9 @@ export function checkP1dPixels(image, time, { svg = false, lit = false } = {}) {
 	}
 	if (svg) {
 		const [red, green, blue, alpha] = pixel(16, 16);
-		assert(alpha === 255 && green > 180 && red < 5 && blue < 5, "Known independent green SVG interior");
+		// MeshBasic is unlit, not tone-map exempt. The old pure-green expectation was incorrect.
+		assert(alpha === 255 && [red, green, blue].every((channel, i) => Math.abs(channel - P1D_SVG_COLOR_RGBA[i]) < 5),
+			"Known independent green SVG interior under fixed ACES/exposure1+sRGB8");
 	} else assert.equal(pixel(16, 16)[3], 0, "No SVG in ordinary model case");
 	return { rgbaSha256: createHash("sha256").update(image.pixels).digest("hex"),
 		pixels: { corner: pixel(2, 2), model: pixel(32, 32), left: pixel(20, 32), right: pixel(50, 32), svg: pixel(16, 16) } };
