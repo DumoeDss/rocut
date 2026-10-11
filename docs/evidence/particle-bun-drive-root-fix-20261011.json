@@ -1,0 +1,30 @@
+{
+  "schema": "rocut-isolated-fix-verification/v1",
+  "sourceCommitBefore": "4d7148d3fb96b1bfa598c67afe6e24bf7c2eb4bb",
+  "rootCause": "Bun 1.4.2 realpath of an absolute Windows drive-root ancestor returns a bare drive; path.resolve then expands it to the drive current directory.",
+  "fixScope": "Accept the bare-drive representation only when the expected ancestor is the matching absolute drive root. Retain lstat non-link and all other canonical path checks.",
+  "authorityAnchorChanged": false,
+  "baselineAnchorApproved": false,
+  "originalFailure": {
+    "root": "C:/tmps/rocut-particle-authority-20261011-b8POXh/particle-authority-compile-fYP99K",
+    "exitCode": 1,
+    "closed": true,
+    "timedOut": false,
+    "rawOutputRetained": false,
+    "retained": true
+  },
+  "candidatePatchSha256": "ab19bf43abc7cd16997aaa63bedcb8dd8507b6ffa192ed86df4c3ed6f1aa2e4d",
+  "verification": {
+    "nodeFocusedAndAuthorityTests": { "pass": 19, "fail": 0, "skip": 0 },
+    "bunFocusedTests": { "pass": 3, "fail": 0 },
+    "productionBunReadOnlyCompileAdmission": "passed",
+    "hostBodyImportedByAdmission": false,
+    "hostCreatedByAdmission": false,
+    "browserLaunchedByAdmission": false,
+    "gpuCalledByAdmission": false,
+    "focusedJsLint": "passed",
+    "prettier": "passed",
+    "wholeRepositoryGate": "not claimed",
+    "realCompileAfterFix": "pending"
+  }
+}

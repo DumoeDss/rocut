@@ -31,6 +31,16 @@ const samePath = (a, b) =>
 	process.platform === "win32"
 		? resolve(a).toLowerCase() === resolve(b).toLowerCase()
 		: resolve(a) === resolve(b);
+function sameRealPath(actual, expected) {
+	// Bun 1.4.2 returns bare "E:" for realpath("E:\\"). Only a matching
+	// absolute drive-root ancestor may use that representation; not a cwd path.
+	if (process.platform === "win32" && /^[a-z]:$/i.test(actual))
+		return (
+			/^[a-z]:\\$/i.test(expected) &&
+			actual.toLowerCase() === expected.slice(0, 2).toLowerCase()
+		);
+	return samePath(actual, expected);
+}
 const freeze = (value) => {
 	if (value && typeof value === "object") {
 		for (const child of Object.values(value)) freeze(child);
@@ -86,7 +96,7 @@ async function plain(path, directory) {
 		const stat = await lstat(current);
 		assert.equal(stat.isSymbolicLink(), false, "Redirected path rejected");
 		assert.ok(
-			samePath(await realpath(current), current),
+			sameRealPath(await realpath(current), current),
 			"Redirected parent rejected",
 		);
 		if (dirname(current) === current) break;
