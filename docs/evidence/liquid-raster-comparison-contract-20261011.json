@@ -1,0 +1,70 @@
+{
+	"schema": "rocut-liquid-raster-comparison-contract/v1",
+	"date": "2026-10-11",
+	"baseCommit": "ab7d91a52f1445ac93e58d996b9cb6e5ffae760d",
+	"candidate": "C:/Users/Sayo/AppData/Local/Temp/rocut-liquid-raster-diagnosis-20261011-bzk1DH",
+	"manifestSha256": "e87b18de75bcb72566edddd63973c36d0360f5ae4c4683ea7e1c11f708cd1aa3",
+	"patchSha256": "99dac145a4ad3a64b99ae82a2d39b48e40e8c490987992779c17f6eef2b9624b",
+	"target": {
+		"path": "script/fixtures/liquid-browser-raster.ts",
+		"preimageSha256": "41f7baa1845c77dd7dc21dc2458666c908a73a18597c2f9f424ce9fc457e5604",
+		"postimageSha256": "4ae4b5eb3373e32af60162c615ca25bf03af8fc9c1e539a1b9c3dfa8af1dbc94"
+	},
+	"finding": "The production fixture compared straight CPU texture pixels directly with an RGBA8 premultiplied canvas read as straight ImageData. Use the existing independent surface quantization model for that surface, not an increased tolerance or learned pixel correction.",
+	"retainedEvidence": {
+		"numericComparisons": 176,
+		"reportedFailures": 81,
+		"intendedNegativeControlRejections": 6,
+		"actualRasterErrors": 75,
+		"firstWitnessExactExistingModel": 70,
+		"remainingFirstWitnessRgbWithinOne": 5,
+		"alphaExactForAllRealErrors": true,
+		"opaqueFailuresForAllRealErrors": 0,
+		"limitation": "Only bounded firstPixel witnesses and aggregates were retained; they cannot certify full-frame raw GPU correctness."
+	},
+	"rootReview": {
+		"productionSourceChanged": false,
+		"rawCpuOracleChanged": false,
+		"surfaceModelChanged": false,
+		"tolerancesChanged": false,
+		"dimensionsRatesTimesVariantsControlsAmountsChanged": false,
+		"independentModelRawHash": "0dddeb08e5b5fd62d7752320cb8dccffec55c4e8b5030633aecd9d331cbcfa06",
+		"strictUtf8NoBomAndSyntax": "passed",
+		"scopedExplicitTsRecommendedLint": "0 errors / 0 warnings",
+		"scopedFormatAndDiff": "passed",
+		"wholeRepositoryLintType": "unclaimed"
+	},
+	"rootCpu": {
+		"focusedTests": 7,
+		"fail": 0,
+		"skip": 0,
+		"assertions": 99,
+		"routingReplay": "passed",
+		"perfectRawBaseline": {
+			"comparisons": 176,
+			"realErrors": 75,
+			"intendedRejections": 6
+		},
+		"perfectRawCandidate": {
+			"comparisons": 176,
+			"realErrors": 0,
+			"intendedRejections": 6
+		},
+		"deliberateRawCorruptionRejected": true,
+		"realm": "CPU modeled texture/presentation only; not browser or GPU"
+	},
+	"acceptance": {
+		"realBrowserRerun": false,
+		"rawTextureGateExecuted": false,
+		"rawCompanionRequired": "Existing checkLiquidReadback, unchanged raw CPU oracle and original RGB2/alpha1 thresholds",
+		"companionMatrix": "Same 2 dimensions, 4 rates, 13 times, 11 variants, reverse seeks, 3 controls and transparent amounts; separate raw/surface/composite results",
+		"diagnosticPackageIsProductionAuthority": false,
+		"overallComplete": false
+	},
+	"preservation": {
+		"unrelatedRawFiles": 24,
+		"sharedDependenciesChanged": false,
+		"installedPluginChanged": false,
+		"pushed": false
+	}
+}
