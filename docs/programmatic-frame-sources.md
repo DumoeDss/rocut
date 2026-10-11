@@ -4500,3 +4500,29 @@ rasterization of the 140-point puddle clip polyline under the accumulated
 transform - the mathematical inputs are identical and the divergence is
 edge-sample side flipping, matching the other sub-pixel findings queued for
 the consolidated pixel-acceptance phase.
+
+### Tunnel full-matrix intermittent nondeterminism record (2026-10-11)
+
+With the consolidated gates realigned (Night complete-frame fall<=2, count<=200,
+train<=25 evidence-backed; tunnel classified-residue <=6), the tunnel full
+matrix was re-run for verification. Instead of passing, it surfaced an
+intermittent defect that no isolated reproduction can trigger: identical-code
+runs failed at different visits (6, 7, 15, 18 across four runs) and magnitudes
+(max 10-165, including one structural alpha 90-vs-255 cluster), while every
+isolation attempt - clean single-render diagnosis, grain-omitted both-sides
+render, 18-frame native-only pre-roll, alternating oracle+native pre-roll, and
+back-to-back same-frame repeat - came back bit-exact or within the classified
+glyph-edge residue. The pinned wasm identity (1b1906ee...) and a clean pin
+worktree at the pinned commit both reproduce it, excluding checkpoint drift
+and workspace contamination. A document.fonts.ready settle wait was added
+(deterministic pipeline hardening) but did not change the failure
+distribution, excluding the font-race hypothesis. Conclusion: an intermittent
+timing/resource-pressure-dependent divergence in the native raster pipeline
+(per-frame iframe realm lifecycle, 250ms dispose grace timer racing the next
+realm's font decode, createImageBitmap transfer ordering, or
+measurement-sandbox float drift), NOT a deterministic pixel bug. The gate
+stays at <=6; the finding is filed as an independent acceptance-phase defect
+with full evidence in mv-tunnel-intermittent-nondeterminism-20261011.json.
+Tooling added for this investigation and retained for the acceptance phase:
+magnitude-sorted failing-sample capture, parameterized diagnostic frame index,
+pre-roll injection, matrix cap, and a same-frame repeat probe.
