@@ -6,6 +6,44 @@ export const HTML_MEDIA_BOOTSTRAP = String.raw`
 const managedVideos = new WeakSet();
 
 let nativeFrame;
+function nativeTimeoutError(scope) {
+  const message = 'HTML native video presentation timed out';
+  try {
+    const number = value => Number.isFinite(value) ? value : null;
+    const videos = scope.videos.map((video, ordinal) => {
+      const state = scope.states.get(video);
+      const observed = state?.observe(), callback = observed?.lastCallback;
+      const nativeSeek = observed ? {target: number(observed.target), landed: Boolean(observed.landed),
+        callbackCount: number(observed.callbackCount), assignmentStartedAt: number(observed.assignmentStartedAt),
+        sameSource: Boolean(observed.sameSource), lastCallback: callback ? {mediaTime: number(callback.mediaTime),
+          presentationTime: number(callback.presentationTime), presentedFrames: number(callback.presentedFrames)} : null} : null;
+      return {ordinal, currentTime: number(video.currentTime), duration: number(video.duration),
+        readyState: number(video.readyState), networkState: number(video.networkState),
+        seeking: Boolean(video.seeking), paused: Boolean(video.paused), errorCode: number(video.error?.code),
+        nativeSeek};
+    });
+    const stages = ['begin-native-frame', 'native-audio-prepare', 'media-metadata-and-initial-zero',
+      'runtime-readiness', 'native-render-seek', 'upstream-seek-completion', 'native-seek-drain',
+      'media-settle', 'gpu-reseek', 'gpu-upstream-seek-completion', 'gpu-native-seek-drain', 'final-media-check'];
+    const stage = stages.includes(scope.stage) ? scope.stage : 'unknown';
+    return Error(message + ' ' + JSON.stringify({stage, videos}));
+  } catch {
+    // Observers must never replace the original failure with a diagnostic error.
+    return Error(message + ' {"diagnosticUnavailable":true}');
+  }
+}
+function observeNativeCallback(state, metadata) {
+  try {
+    const number = key => {
+      const descriptor = Object.getOwnPropertyDescriptor(metadata, key);
+      return descriptor && Object.hasOwn(descriptor, 'value') && Number.isFinite(descriptor.value)
+        ? descriptor.value : null;
+    };
+    state.callbackCount++;
+    state.lastCallback = {mediaTime: number('mediaTime'),
+      presentationTime: number('presentationTime'), presentedFrames: number('presentedFrames')};
+  } catch { /* Diagnostic getters cannot affect presentation admission. */ }
+}
 function beginNativeFrame({videos, deadline, signal}) {
   if (nativeFrame) throw Error('HTML native frame fence is already active');
   if (!Number.isFinite(deadline) || deadline <= performance.now())
@@ -22,10 +60,10 @@ function beginNativeFrame({videos, deadline, signal}) {
   let rejectFailure;
   const failureWait = new Promise((_resolve, reject) => { rejectFailure = reject; });
   failureWait.catch(() => {});
-  const scope = {deadline, signal, states: new Map(), presentations: new Map(), jobs: new Set(), failed: false, closed: false, failure: undefined,
+  const scope = {deadline, signal, videos: [...videos], stage: 'begin-native-frame', states: new Map(), presentations: new Map(), jobs: new Set(), failed: false, closed: false, failure: undefined,
     failureWait, rejectFailure, timer: undefined, aborted: undefined};
   scope.aborted = () => failNativeFrame(scope, signal.reason ?? Error('HTML native video frame aborted'));
-  scope.timer = setTimeout(() => failNativeFrame(scope, Error('HTML native video presentation timed out')),
+  scope.timer = setTimeout(() => failNativeFrame(scope, nativeTimeoutError(scope)),
     deadline - performance.now());
   signal?.addEventListener('abort', scope.aborted, {once: true});
   nativeFrame = scope;
@@ -72,7 +110,11 @@ function nativeSeek(video, seconds) {
   previous?.finish(undefined, true);
   let resolve, reject, callback, timer, assignmentStartedAt, finished = false, landed = false;
   const promise = new Promise((yes, no) => { resolve = yes; reject = no; });
-  const state = {target: seconds, promise, presentation: undefined, finish, ownsSource};
+  const state = {target: seconds, promise, presentation: undefined, finish, ownsSource,
+    callbackCount: 0, lastCallback: null,
+    observe: () => ({target: seconds, landed, callbackCount: state.callbackCount,
+      lastCallback: state.lastCallback, assignmentStartedAt: Number.isFinite(assignmentStartedAt) ? assignmentStartedAt : null,
+      sameSource: ownsSource()})};
   const assignedSource = video.currentSrc || video.src;
   const assignedSrc = video.src, assignedSrcAttribute = video.getAttribute('src');
   const assignedSources = [...video.querySelectorAll('source')].map(element => ({element,
@@ -129,6 +171,7 @@ function nativeSeek(video, seconds) {
     callback = video.requestVideoFrameCallback((_now, metadata) => {
       if (finished) return;
       callback = undefined;
+      observeNativeCallback(state, metadata);
       try {
         checkVideo(video, false);
         scope.signal?.throwIfAborted();
@@ -169,7 +212,7 @@ function nativeSeek(video, seconds) {
   video.addEventListener('seeked', seeked);
   for (const type of ['error', 'abort', 'emptied']) video.addEventListener(type, badMedia);
   scope.signal?.addEventListener('abort', aborted, {once: true});
-  timer = setTimeout(() => finish(Error('HTML native video presentation timed out')), scope.deadline - performance.now());
+  timer = setTimeout(() => finish(nativeTimeoutError(scope)), scope.deadline - performance.now());
   try {
     arm(); // Must precede the native assignment, including paused/initial-zero seeks.
     assignmentStartedAt = performance.now();

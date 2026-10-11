@@ -11,9 +11,9 @@ import { parseHfRemotionAuthorityCommand, selectHfRemotionCases, validateHfRemot
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const command = parseHfRemotionAuthorityCommand(process.argv.slice(2));
-const expectedWasmSha256 = "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12";
+const expectedWasmSha256 = "362d29a7dba0b29fcf00965a5eba5342e70acd334c7171e2b73ca8ff06eb75be";
 const toolchain = "C:/Users/Sayo/AppData/Local/Temp/rocut-media-toolchain-YbloF9";
-const wasmDirectory = "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4/browser-pkg-v2-sntQBC";
+const wasmDirectory = "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-lf-preparation-20261011-9ad208e4/browser-pkg-lf-v1";
 const browserExecutable = "C:/Users/Sayo/AppData/Local/ms-playwright/chromium-1243/chrome-win64/chrome.exe";
 const ffmpeg = "E:/Software/ffmpeg-6.0-full_build/bin/ffmpeg.exe";
 const ffprobe = "E:/Software/ffmpeg-6.0-full_build/bin/ffprobe.exe";

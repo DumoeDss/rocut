@@ -38,12 +38,14 @@ window.rocut = {
     const checkNative = () => { if (nativeScope) window.rocutMedia.assertNativeFrame(nativeScope); };
     try {
     const nativeWork = (async () => {
+    if (nativeScope) nativeScope.stage = 'native-audio-prepare';
     const nativeAudio = window.rocutHyperframesAudio;
     if (nativeAudio?.enabled) await nativeAudio.prepare();
     checkNative();
     // Metadata must be real before native caches derive natural clip duration.
     // Every fresh capture starts from a decoded frame, including hidden clips.
     if (videos.length) {
+      nativeScope.stage = 'media-metadata-and-initial-zero';
       window.rocutMedia.check();
       await Promise.all(videos.map(async video => {
         await window.rocutMedia.metadata(video);
@@ -52,6 +54,7 @@ window.rocut = {
         checkNative();
       }));
     }
+    if (nativeScope) nativeScope.stage = 'runtime-readiness';
     while (!window.__playerReady || !window.__renderReady) {
       if (performance.now() > deadline) throw Error('HyperFrames runtime readiness timed out');
       await new Promise(resolve => requestAnimationFrame(resolve));
@@ -66,24 +69,32 @@ window.rocut = {
     // The upstream public __player intentionally does not expose _timeline.
     if (!id || typeof window.__timelines?.[id]?.totalTime !== 'function')
       throw Error('HyperFrames root timeline was not registered');
+    if (nativeScope) nativeScope.stage = 'native-render-seek';
     player.pause();
     if (nativeAudio?.enabled) nativeAudio.begin(frame);
     player.renderSeek(frame.time, {exact: true, suppressEvents: false});
+    if (nativeScope) nativeScope.stage = 'upstream-seek-completion';
     await window.__hfWaitForSeekCompletion();
     checkNative();
+    if (nativeScope) nativeScope.stage = 'native-seek-drain';
     if (nativeScope) await window.rocutMedia.drainNativeFrame(nativeScope);
     checkNative();
     // Upstream's media barrier has a soft timeout/error path. Do not treat its
     // completion alone as proof that the requested pictures were decoded.
+    if (nativeScope) nativeScope.stage = 'media-settle';
     await Promise.all(videos.map(video => window.rocutMedia.settle(video)));
     checkNative();
     if (videos.length && typeof window.__hfReseekGpu === 'function') {
+      nativeScope.stage = 'gpu-reseek';
       window.__hfReseekGpu(frame.time);
+      nativeScope.stage = 'gpu-upstream-seek-completion';
       await window.__hfWaitForSeekCompletion();
       checkNative();
+      nativeScope.stage = 'gpu-native-seek-drain';
       await window.rocutMedia.drainNativeFrame(nativeScope);
       checkNative();
     }
+    if (nativeScope) nativeScope.stage = 'final-media-check';
     window.rocutMedia.check(true);
     if (player.isPlaying() || Math.abs(player.getTime() - frame.time) > 1e-7)
       throw Error('HyperFrames native runtime did not seek to the requested time');
