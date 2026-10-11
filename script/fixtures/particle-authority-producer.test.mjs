@@ -21,6 +21,7 @@ import {
 	writeParticleCompileBootstrap,
 } from "./particle-authority-compile-context.mjs";
 import { admitParticleAuthorityHostContext } from "./particle-editor-export-authority-stage.mjs";
+import { baselineState } from "./particle-authority-baseline-topology-fixture.mjs";
 
 const path = process.platform === "win32" ? "C:/tmps/fixture" : "/tmp/fixture";
 const tools = ["bun", "wasm-sync", "sampler-dir", "toolchain", "chromium"];
@@ -92,58 +93,6 @@ test("compile-only parser cannot authorize browser or accept baseline/expected h
 	])
 		assert.throws(() => parseParticleAuthorityPrepareOptions(args));
 });
-function baselineState() {
-	const source = {
-		width: 320,
-		height: 240,
-		durationFrames: 121,
-		frameRate: { numerator: 30, denominator: 1 },
-		build: {
-			inputProps: {
-				rotationSpeed: [0, 0, 0],
-				motion: {
-					scatterDistance: 0.75,
-					size: 3.25,
-					driftAmplitude: 0,
-					scatterStartTicks: 0,
-					scatterDurationTicks: 120000,
-					holdDurationTicks: 120000,
-					returnDurationTicks: 120000,
-				},
-			},
-		},
-	};
-	return {
-		source,
-		state: {
-			revision: 2,
-			tracks: [{ id: "particle-track" }],
-			clips: [
-				{
-					id: "particle-model",
-					trackId: "particle-track",
-					startTime: 0,
-					duration: 484000,
-					trimStart: 0,
-					trimEnd: 0,
-					editing: {
-						params: { opacity: 0.85 },
-						programmatic: structuredClone(source),
-					},
-				},
-			],
-		},
-		record: {
-			data: {
-				metadata: { duration: 484000 },
-				settings: {
-					canvasSize: { width: 1920, height: 1080 },
-					fps: { numerator: 30, denominator: 1 },
-				},
-			},
-		},
-	};
-}
 test("baseline assertion distinguishes source dimensions from saved canvas and exact revision", () => {
 	assertParticleBaselineState(baselineState());
 	assert.deepEqual(PARTICLE_BASELINE_CONTRACT, {
@@ -160,6 +109,29 @@ test("baseline assertion distinguishes source dimensions from saved canvas and e
 		},
 		(v) => {
 			v.state.clips[0].editing.params.opacity = 0.55;
+		},
+		(v) => {
+			v.state.clips[0].editing.type = "video";
+			v.record.data.scenes[0].tracks.overlay[0].elements[0].type = "video";
+		},
+		(v) => {
+			v.state.clips[0].editing.name = "Unexpected";
+			v.record.data.scenes[0].tracks.overlay[0].elements[0].name = "Unexpected";
+		},
+		(v) => {
+			v.state.clips[0].editing.definitionId = "Unexpected";
+			v.record.data.scenes[0].tracks.overlay[0].elements[0].definitionId =
+				"Unexpected";
+		},
+		(v) => {
+			v.state.clips[0].editing.effects.push({ id: "unexpected" });
+			v.record.data.scenes[0].tracks.overlay[0].elements[0].effects.push({
+				id: "unexpected",
+			});
+		},
+		(v) => {
+			v.state.clips[0].editing.params.unexpected = true;
+			v.record.data.scenes[0].tracks.overlay[0].elements[0].params.unexpected = true;
 		},
 		(v) => {
 			v.source.width = 1920;

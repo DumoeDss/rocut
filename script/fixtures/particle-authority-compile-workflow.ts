@@ -11,6 +11,7 @@ import {
 import { loadThreeParticleRuntime } from "../../apps/cli/src/programmatic/three-particle-provenance";
 import type { ParticleCompileSession } from "./particle-authority-compile-session";
 import type { ParticleCompileInputs } from "./particle-authority-compile-inputs";
+import { captureParticleBaselineTopology } from "./particle-authority-baseline-topology.mjs";
 
 export async function compileParticleBaseline(
 	session: ParticleCompileSession,
@@ -69,6 +70,25 @@ export async function compileParticleBaseline(
 	);
 	assert.ok(context.programmaticResources.kinds.includes("model"));
 	const base = await checkpoint("baseline", 0);
+	const baselineBytes = await readFile(join(root, "baseline-project.json"));
+	assert.equal(hash(baselineBytes), base.sha256);
+	const baselineTopology = captureParticleBaselineTopology({
+		state: {
+			clips: await session.host!.automation.clips(),
+			tracks: await session.host!.automation.tracks(),
+			revision: await revision(),
+		},
+		record: JSON.parse(
+			new TextDecoder("utf8", { fatal: true }).decode(baselineBytes),
+		).record,
+		sceneState: (await session.host!.automation.project()).sceneState,
+	});
+	const baselineTopologyPath = join(root, "baseline-topology.json");
+	await writeFile(
+		baselineTopologyPath,
+		JSON.stringify(baselineTopology, null, 2) + "\n",
+		{ flag: "wx" },
+	);
 	const model = threeModel();
 	await writeFile(join(root, "model.glb"), model, { flag: "wx" });
 	const imported = await json("programmatic/resources/import", {
@@ -292,6 +312,8 @@ export async function compileParticleBaseline(
 		state,
 		source: second,
 		record: wrapper.record,
+		sceneState: (await session.host!.automation.project()).sceneState,
+		baselineTopology,
 	});
 	await writeFile(
 		join(root, "initial-state.json"),
@@ -308,6 +330,11 @@ export async function compileParticleBaseline(
 		baselineFullStateSha256: hash(
 			await readFile(join(root, "initial-state.json")),
 		),
+		baselineTopology: {
+			path: baselineTopologyPath,
+			sha256: hash(await readFile(baselineTopologyPath)),
+			systemMainTrackPreserved: true,
+		},
 		contract: PARTICLE_BASELINE_CONTRACT,
 		compileCount: 2,
 		applyCount: 2,

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { isAbsolute, resolve } from "node:path";
 import { parseParticleAuthoritySelection } from "./particle-editor-export-authority.mjs";
 import { readParticleAuthoredRecipe } from "./particle-authority-authored-recipe.mjs";
+import { assertParticleBaselineTopology } from "./particle-authority-baseline-topology.mjs";
 export const PARTICLE_BASELINE_CONTRACT = Object.freeze({
 	frameCount: 121,
 	fps: Object.freeze({ numerator: 30, denominator: 1 }),
@@ -62,10 +63,21 @@ export function particleClosureFiles(manifest) {
 	}));
 	return files.sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
 }
-export function assertParticleBaselineState({ state, source, record }) {
+export function assertParticleBaselineState({
+	state,
+	source,
+	record,
+	sceneState,
+	baselineTopology,
+}) {
+	assertParticleBaselineTopology({
+		state,
+		record,
+		sceneState,
+		baselineTopology,
+	});
 	assert.equal(state.revision, 2);
 	assert.equal(state.clips.length, 1);
-	assert.equal(state.tracks.length, 1);
 	const clip = state.clips[0];
 	assert.equal(clip.id, "particle-model");
 	assert.equal(clip.trackId, "particle-track");
@@ -73,7 +85,11 @@ export function assertParticleBaselineState({ state, source, record }) {
 	assert.equal(clip.duration, 484000);
 	assert.equal(clip.trimStart, 0);
 	assert.equal(clip.trimEnd, 0);
-	assert.equal(clip.editing.params.opacity, 0.85);
+	assert.equal(clip.editing.type, "graphic");
+	assert.equal(clip.editing.name, "Private particle fixture");
+	assert.equal(clip.editing.definitionId, "programmatic");
+	assert.deepEqual(clip.editing.effects, []);
+	assert.deepEqual(clip.editing.params, { opacity: 0.85 });
 	assert.deepEqual(clip.editing.programmatic, source);
 	assert.equal(source.durationFrames, 121);
 	assert.equal(source.width, 320);
