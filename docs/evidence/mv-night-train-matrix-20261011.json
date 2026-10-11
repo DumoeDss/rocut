@@ -1,0 +1,25 @@
+{
+  "recordedAt": "2026-10-11T12:45:00Z",
+  "context": "complete the train case matrix on the same clean checkpoint (1b1906ee) used for the moving-case segment isolation",
+  "runs": {
+    "trainFrozen": {
+      "artifact": "E:/Elftia-private-tests/rocut-night-native-jk1sNA/evidence.json",
+      "skip": "wet-floor-fall,wet-floor-count,train-moving",
+      "result": "complete-frame failed at max 12 / 7445 changed pixels (same as the 2026-10-11 record, no regression); the thrown error is the complete-frame parity, not the train scene mismatch, so the scene-level comparison passed first; 15 post passes gate held before parity; alpha bit-identical (chanDelta a=0); rowBands y540-810 same bloom region as train-moving; histogram delta1=4440 decaying to delta12=2",
+      "implication": "train-frozen belongs to the same bloom-threshold amplification family as train-moving; segment-isolation conclusion carries over"
+    },
+    "trainExit": {
+      "artifact": "E:/Elftia-private-tests/rocut-night-native-81bRVZ/evidence.json",
+      "skip": "wet-floor-fall,wet-floor-count,train-moving,train-frozen",
+      "result": "status passed with maxChannelError=0 and sceneMaxChannelError=0 at 15 post passes - the exit frame is bit-exact end to end (probe exit 1 comes only from the 1!==5 diagnostic-skip case-count assertion)",
+      "implication": "the same engine, same GL chain and same fixtures produce a fully bit-exact frame when the frame content does not place bright edges at the bloom threshold boundary - the residue is content-dependent edge-sample flipping, not a systematic pipeline defect"
+    }
+  },
+  "checkpoint": {
+    "source": "C:/Users/Sayo/AppData/Local/Temp/rocut-mv-native-checkpoint-20261011/source",
+    "wasm": "C:/Users/Sayo/AppData/Local/Temp/rocut-mv-native-checkpoint-20261011/wasm",
+    "wasmSha256Prefix": "1b1906ee499e"
+  },
+  "scope": "not an installed Electron/full-movie/export acceptance claim; diagnostic skips used, full gates unchanged"
+}
+
