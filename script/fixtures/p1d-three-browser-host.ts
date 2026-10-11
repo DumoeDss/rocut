@@ -15,6 +15,7 @@ import { captureHtmlBrowserFrame } from "../../apps/cli/src/programmatic/particl
 import { pinInkHostToolchain } from "./ink-object-host-toolchain.mjs";
 import { pngPixels } from "./liquid-object-capture-probe-pixels.mjs";
 import { P1D_TIMES, P1D_SUPPORTED_SVG, checkP1dPose, checkP1dPixels, checkP1dSequence } from "./p1d-three-browser-oracle.mjs";
+import { p1dError, preserveP1dCapture, withP1dCleanup } from "./p1d-three-browser-observation.mjs";
 import { threeRevisionDigest as hash } from "../../apps/cli/src/__tests__/programmatic-three-build-revision-fixture";
 
 const root = resolve(import.meta.dirname, "../.."), mode = process.argv[2], group = resolve(process.argv[3]);
@@ -132,37 +133,50 @@ if (mode === "--prepare") {
 } else if (mode === "--run") {
 	assert.equal(process.env.ROCUT_BROWSER_WINDOW_AUTHORIZED, "1");
 	const prepared = await parse(join(group, "case-plan.json"));
-	const evidence: any = { version: 1, passed: false, browserTested: true, exportTested: false, cases: [], scope: "Small real glTF/animation and bounded legal SVG rectangle only; not arbitrary SVG or codecs" };
+	const evidence: any = { version: 2, passed: false, browserTested: true, exportTested: false, cases: [], attempts: [], cleanupErrors: [], scope: "Small real glTF/animation and bounded legal SVG rectangle only; not arbitrary SVG or codecs" };
+	const captureWrite = (name: string, bytes: string | Buffer) => write(join(group, "frames", name), bytes);
+	let primaryError: unknown;
 	try {
 		for (const item of prepared.cases) {
+			evidence.activeCase = item.id; evidence.activeStage = "host-open";
 			const current = await open(item.projectId ?? item.id, plan.browserExecutable);
-			const saved = await current.record();
-			try {
+			await withP1dCleanup(async () => {
+				evidence.activeStage = "project-record";
+				const saved = await current.record();
+				evidence.activeStage = "source-identity";
 				assert.equal(hash(saved), item.id === "ordinary" ? item.reopenedProjectBytesSha256 : prepared.cases.find((value: any) => value.id === "legal-feature").reopenedProjectBytesSha256);
 				const frames: any[] = [], resources = await loadProgrammaticResources(current.context, item.source.resources, new AbortController().signal);
 				const code = resolveHtmlDocumentCode(item.source, resources);
 				for (const time of P1D_TIMES) {
+					evidence.activeStage = "frame-map";
 					const request = { source: item.source, clipStart: 0, clipDuration: 120000, trimStart: 0, timelineTime: time * 120000 };
 					const mapped = JSON.parse(wasm.resolveProgrammaticFrameJson(JSON.stringify(request))); assert(!mapped.error && mapped.frame);
 					const frame = mapped.frame;
+					const attempt: any = { id: item.id, kind: "http", requestedTime: time, frame, source: item.source, passed: false, stage: "http-capture" };
+					evidence.attempts.push(attempt);
 					const response = await fetch(new URL("api/programmatic/frame", current.host.editorUrl), { method: "POST", body: JSON.stringify(request) });
+					attempt.responseStatus = response.status;
 					if (item.expected === "unsupported-svg-negative") {
-						assert.equal(response.status, 422); const error = await response.text(); assert.match(error, /Unsupported SVG attribute or reference/);
+						const error = await response.text(); attempt.responseBody = error; attempt.stage = "rejection-assertions";
+						assert.equal(response.status, 422); assert.match(error, /Unsupported SVG attribute or reference/);
+						attempt.passed = true; attempt.stage = "complete";
 						frames.push({ requestedTime: time, frame, expectedRejection: error }); break;
 					}
-					if (!response.ok) throw Error(`Host frame: ${response.status} ${await response.text()}`);
-					assert.equal(response.status, 200);
+					if (!response.ok) { attempt.responseBody = await response.text(); throw Error(`Host frame: ${response.status} ${attempt.responseBody}`); }
 					const png = Buffer.from(await response.arrayBuffer());
-					const checked = checkP1dPixels(pngPixels(png), frame.time, { svg: item.id === "legal-feature", lit: item.id === "legal-feature" });
-					await write(join(group, "frames", `${item.id}-${frames.length}.png`), png);
+					const checked = await preserveP1dCapture({ png, name: `${item.id}-${frames.length}`, write: captureWrite, decode: pngPixels, attempt,
+						validate: (image: any) => { assert.equal(response.status, 200); return checkP1dPixels(image, frame.time, { svg: item.id === "legal-feature", lit: item.id === "legal-feature" }); } });
 					let observation;
 					if (item.id === "legal-feature") {
 						const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 30000);
-						const browser = await launchFrameBrowser(plan.browserExecutable, controller.signal);
-						try {
-							const target = await browser.send("Target.createTarget", { url: "about:blank" });
-							const attached = await browser.send("Target.attachToTarget", { targetId: target.targetId, flatten: true });
-							const send = (method: string, params: Record<string, unknown> = {}) => browser.send(method, params, String(attached.sessionId));
+						let browser: Awaited<ReturnType<typeof launchFrameBrowser>> | undefined;
+						const directAttempt: any = { id: item.id, kind: "direct", requestedTime: time, frame, source: item.source, passed: false, stage: "browser-launch" };
+						evidence.attempts.push(directAttempt);
+						await withP1dCleanup(async () => {
+							const activeBrowser = browser = await launchFrameBrowser(plan.browserExecutable, controller.signal); directAttempt.stage = "direct-capture";
+							const target = await activeBrowser.send("Target.createTarget", { url: "about:blank" });
+							const attached = await activeBrowser.send("Target.attachToTarget", { targetId: target.targetId, flatten: true });
+							const send = (method: string, params: Record<string, unknown> = {}) => activeBrowser.send(method, params, String(attached.sessionId));
 							await send("Page.enable"); await send("Runtime.enable"); await send("Network.enable");
 							await send("Network.setBlockedURLs", { urls: ["http://*", "https://*", "file://*", "ws://*", "wss://*"] });
 							await send("Emulation.setDeviceMetricsOverride", { width: 64, height: 64, deviceScaleFactor: 1, mobile: false });
@@ -170,22 +184,39 @@ if (mode === "--prepare") {
 							await send("Runtime.evaluate", { expression: "window.__p1d=[];addEventListener('message',e=>{if(e.source===document.querySelector('iframe')?.contentWindow&&e.data?.tag==='p1d-observation')window.__p1d.push(e.data.observation)});" });
 							const directPng = await captureHtmlBrowserFrame({ send, expression: htmlCaptureExpression(code, frame, resources, false), signal: controller.signal,
 								failures: [], check: async () => {}, beforeEvaluate() {} });
-							const observed = await send("Runtime.evaluate", { expression: "window.__p1d", returnByValue: true });
-							assert(!observed.exceptionDetails); const observations = (observed.result as any).value;
-							assert.equal(observations.length, 1); observation = observations[0]; checkP1dPose(observation, frame);
-							const directChecked = checkP1dPixels(pngPixels(directPng), frame.time, { svg: true, lit: true });
-							assert.equal(directChecked.rgbaSha256, checked.rgbaSha256, "Real HTTP Host and production capture seam pixels agree after independent gates");
-							await write(join(group, "frames", `${item.id}-${frames.length}-observed.png`), directPng);
-						} finally { clearTimeout(timer); await browser.close(); }
+							await preserveP1dCapture({ png: directPng, name: `${item.id}-${frames.length}-observed`, write: captureWrite, decode: pngPixels, attempt: directAttempt,
+								observe: () => send("Runtime.evaluate", { expression: "window.__p1d", returnByValue: true }),
+								validate: (image: any, observed: any) => {
+									directAttempt.stage = "pose-assertions";
+									assert(!observed.exceptionDetails); const observations = observed.result.value;
+									assert.equal(observations.length, 1); observation = observations[0]; checkP1dPose(observation, frame);
+									directAttempt.stage = "pixel-assertions";
+									const directChecked = checkP1dPixels(image, frame.time, { svg: true, lit: true });
+									directAttempt.stage = "parity-assertions";
+									assert.equal(directChecked.rgbaSha256, checked.rgbaSha256, "Real HTTP Host and production capture seam pixels agree after independent gates");
+									return directChecked;
+								} });
+						}, async () => { clearTimeout(timer); await browser?.close(); }, (error: string) => evidence.cleanupErrors.push({ id: item.id, kind: "browser", error }));
 					}
 					frames.push({ requestedTime: time, frame, ...checked, observation });
 				}
+				evidence.activeStage = "sequence-assertions";
 				if (item.expected !== "unsupported-svg-negative") checkP1dSequence(frames);
+				evidence.activeStage = "project-identity";
 				assert.deepEqual(await current.record(), saved); evidence.cases.push({ id: item.id, passed: true, projectBytesUnchanged: true, frames });
-			} finally { await current.host.close(); }
+				evidence.activeStage = "host-close";
+			}, () => current.host.close(), (error: string) => evidence.cleanupErrors.push({ id: item.id, kind: "host", error }));
 		}
 		evidence.passed = true;
-	} catch (error) { evidence.error = String(error instanceof Error ? error.stack : error); throw error; }
-	finally { await write(join(group, "browser-evidence.json"), JSON.stringify(evidence, null, 2) + "\n"); }
+	} catch (error) {
+		primaryError = error; evidence.error = p1dError(error);
+		const lastAttempt = evidence.attempts.at(-1);
+		if (lastAttempt && !lastAttempt.passed && !lastAttempt.error) lastAttempt.error = evidence.error;
+		evidence.failedContext = { id: evidence.activeCase, stage: lastAttempt && !lastAttempt.passed ? `${lastAttempt.kind}:${lastAttempt.stage}` : evidence.activeStage };
+		throw error;
+	} finally {
+		try { await write(join(group, "browser-evidence.json"), JSON.stringify(evidence, null, 2) + "\n"); }
+		catch (error) { if (!primaryError) throw error; console.error(JSON.stringify({ evidencePersistenceError: p1dError(error), primaryError: evidence.error })); }
+	}
 	console.log(JSON.stringify({ passed: evidence.passed, group, cases: evidence.cases.length }));
 } else throw Error("Explicit --prepare or --run required");

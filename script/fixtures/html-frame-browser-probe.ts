@@ -71,6 +71,7 @@ async function rejected(run: () => Promise<unknown>, match: RegExp) {
 
 export async function runHtmlFrameProbe() {
 	Reflect.set(globalThis, "__htmlProbeStarted", true);
+	Reflect.set(globalThis, "__htmlProbeStartedAt", Date.now());
 	const phase = (name: string) => {
 		Reflect.set(globalThis, "__htmlProbePhase", name);
 		console.log(`HTML probe: phase ${name}`);
@@ -231,9 +232,11 @@ export async function runHtmlFrameProbe() {
 	try {
 		phase("native-engine-exports");
 		const nativeEncodedBytes = nativeSource ? await runNativeEngineExportProbe(nativeSource, params) : undefined;
+		if (remotionVideoSource || hyperframesVideoSource) phase("native-video-export-started");
 		const nativeVideoEncodedBytes = remotionVideoSource
 			? await runNativeEngineExportProbe(remotionVideoSource, params, { indices: [40, 42], startTime: 88000, frameTicks: 4000 })
 			: hyperframesVideoSource ? await runNativeEngineExportProbe(hyperframesVideoSource, { ...params, fps: hyperframesVideoSource.frameRate }, { indices: [16, 18], startTime: 26400, frameTicks: 1200 }) : undefined;
+		if (remotionVideoSource || hyperframesVideoSource) phase("native-video-export-completed");
 		phase("gpu-alpha-preview-export");
 		const renderer = new CanvasRenderer(params);
 		const preview = await renderer.renderAndCapture({

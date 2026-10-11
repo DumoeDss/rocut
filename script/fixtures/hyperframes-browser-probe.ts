@@ -66,6 +66,18 @@ export async function runNativeEngineExportProbe(
 	params: ConstructorParameters<typeof CanvasRenderer>[0],
 	nativeVideo?: { indices: readonly [number, number]; startTime: number; frameTicks: number },
 ): Promise<number> {
+	const videoStartedAt = Date.now();
+	const checkpoint = (step: string) => {
+		if (!nativeVideo) return;
+		const name = `native-video-${step}`;
+		const now = Date.now();
+		const probeStartedAt: unknown = Reflect.get(globalThis, "__htmlProbeStartedAt");
+		Reflect.set(globalThis, "__htmlProbePhase", name);
+		console.log(`HTML probe: phase ${name} ${JSON.stringify({
+			videoElapsedMs: now - videoStartedAt,
+			probeElapsedMs: typeof probeStartedAt === "number" ? now - probeStartedAt : null,
+		})}`);
+	};
 	const tracks = {
 		main: { id: "main", name: "Main", type: "video", elements: [] }, audio: [],
 		overlay: [{ id: "native-track", name: "Native", type: "graphic", elements: [{
@@ -81,10 +93,16 @@ export async function runNativeEngineExportProbe(
 	const renderer = new CanvasRenderer(params);
 	const capture = (canvas: OffscreenCanvas | HTMLCanvasElement) => nativeVideo ? readNativeVideoFrame(canvas) : pixel(canvas, 8, 40);
 	const captureTime = nativeVideo ? nativeVideo.startTime + nativeVideo.frameTicks : 92000;
+	checkpoint("preview-capture-started");
 	const preview = await renderer.renderAndCapture({ node: scene(true), time: captureTime, capture });
+	checkpoint("preview-capture-completed");
+	checkpoint("export-capture-started");
 	const exported = await renderer.renderAndCapture({ node: scene(false), time: captureTime, capture });
+	checkpoint("export-capture-completed");
 	equal(preview, nativeVideo ? nativeVideo.indices[1] : [0, 255, 0, 255], "native GPU frame");
 	equal(preview, exported, "native preview/export parity");
+	checkpoint("capture-parity-verified");
+	checkpoint("webm-encode-started");
 	const bytes = await new SceneExporter({ ...params, format: "webm", quality: "high" }).export({
 		rootNode: scene(false), range: {
 			startTime: mediaTime({ ticks: nativeVideo?.startTime ?? 88000 }),
@@ -93,22 +111,31 @@ export async function runNativeEngineExportProbe(
 		},
 	});
 	if (!bytes) throw Error("Native HyperFrames export produced no video");
+	checkpoint("webm-bytes-produced");
 	const input = new Input({ source: new BufferSource(bytes), formats: ALL_FORMATS });
 	try {
+		checkpoint("primary-video-track-started");
 		const video = await input.getPrimaryVideoTrack();
 		if (!video) throw Error("Native export has no video track");
+		checkpoint("primary-video-track-completed");
 		const sink = new CanvasSink(video);
+		checkpoint("first-decoded-frame-started");
 		const before = await sink.getCanvas(0);
+		checkpoint("first-decoded-frame-completed");
 		const first = before && pixel(before.canvas, 8, 40);
 		const firstIndex = nativeVideo && before ? readNativeVideoFrame(before.canvas) : null;
+		checkpoint("second-decoded-frame-started");
 		const after = await sink.getCanvas(nativeVideo ? nativeVideo.frameTicks * 1.2 / 120000 : 0.04);
+		checkpoint("second-decoded-frame-completed");
 		const second = after && pixel(after.canvas, 8, 40);
 		if (nativeVideo) {
 			if (firstIndex !== nativeVideo.indices[0] || !after || readNativeVideoFrame(after.canvas) !== nativeVideo.indices[1])
 				throw Error(`Native video WebM lost exact source frames ${nativeVideo.indices.join(" → ")}`);
 		} else if (!first || !second || first[1] > 20 || second[1] < 220 || second[2] > 25)
 			throw Error(`Native WebM lost nested visibility: ${JSON.stringify({ first, second })}`);
+		checkpoint("decoded-parity-verified");
 	} finally { input.dispose(); }
+	checkpoint("export-completed");
 	console.log(`HTML probe: native ${source.build?.engine ?? "HyperFrames"} Rocut WebM encode/decode passed`);
 	return bytes.byteLength;
 }

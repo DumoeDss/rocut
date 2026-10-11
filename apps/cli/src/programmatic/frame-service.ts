@@ -5,7 +5,11 @@ import type { ProgrammaticFrameRequest } from "@opencut/editor-contracts";
 import { renderHtmlPng } from "./html-rasterizer";
 import type { ProgrammaticResourceStore } from "./resources";
 import type { NativeVideoDecoder } from "./video-decoder";
-import { createProgrammaticFrameDeadline } from "./frame-service-deadline";
+import {
+	createProgrammaticFrameDeadline,
+	type FrameRouteClock,
+} from "./frame-service-deadline";
+import { createNativeFrameSlots } from "./frame-job-slots";
 import { ELECTRON_NATIVE_VIDEO_PROTOCOL } from "./electron-native-video-server";
 
 /** Prefer the desktop's scoped connection; explicit Chromium is CLI fallback.
@@ -16,6 +20,7 @@ export function createProgrammaticFrameService(
 	resourceStore?: ProgrammaticResourceStore,
 	nativeVideoDecoder: NativeVideoDecoder | undefined = process.env.ROCUT_NATIVE_FFMPEG_PATH && process.env.ROCUT_NATIVE_FFPROBE_PATH
 		? { ffmpeg: process.env.ROCUT_NATIVE_FFMPEG_PATH, ffprobe: process.env.ROCUT_NATIVE_FFPROBE_PATH } : undefined,
+	options: { renderFrame?: typeof renderHtmlPng; clock?: FrameRouteClock } = {},
 ) {
 	const configured =
 		connectionFile ? isAbsolute(connectionFile) : (!!executable &&
@@ -27,7 +32,10 @@ export function createProgrammaticFrameService(
 				return false;
 			}
 		})());
-	const active = new Set<AbortController>();
+	// Route owners include queued replacements; native admission is separate.
+	const controllers = new Set<AbortController>();
+	const slots = createNativeFrameSlots();
+	const renderFrame = options.renderFrame ?? renderHtmlPng;
 	const electronNativeVideo = !!connectionFile && (() => {
 		try {
 			if (statSync(connectionFile).size > 4096) return false;
@@ -56,11 +64,11 @@ export function createProgrammaticFrameService(
 		},
 		async dispose() {
 			disposed = true;
-			for (const controller of active) controller.abort();
+			for (const controller of controllers) controller.abort();
 			await Promise.all(drains);
 		},
 		async handle(request: IncomingMessage, response: ServerResponse) {
-			const startedAt = performance.now();
+			const startedAt = options.clock?.now() ?? performance.now();
 			const error = (status: number, message: string) => {
 				if (!response.destroyed)
 					response
@@ -77,32 +85,34 @@ export function createProgrammaticFrameService(
 				);
 				return;
 			}
-			if (active.size >= 2) {
-				error(
-					429,
-					"HTML rasterizer busy; retry after the active frame finishes",
-				);
-				return;
-			}
 			const controller = new AbortController();
+			let release: (() => void) | null = null;
 			let drained!: () => void;
 			const drain = new Promise<void>((resolve) => {
 				drained = resolve;
 			});
 			drains.add(drain);
-			active.add(controller);
-			controller.signal.addEventListener(
-				"abort",
-				() => {
-					if (!request.complete) request.destroy();
-				},
-				{ once: true },
-			);
+			controllers.add(controller);
+			const stopBody = () => {
+				if (!request.complete) request.destroy();
+			};
+			controller.signal.addEventListener("abort", stopBody, { once: true });
 			const abort = () => controller.abort();
 			request.once("aborted", abort);
 			response.once("close", abort);
-			const deadline = createProgrammaticFrameDeadline({ controller, startedAt });
+			const deadline = createProgrammaticFrameDeadline({
+				controller, startedAt, clock: options.clock,
+			});
 			try {
+				release = await slots.acquire(controller.signal);
+				if (!release) {
+					error(
+						429,
+						"HTML rasterizer busy; retry after the active frame finishes",
+					);
+					return;
+				}
+				controller.signal.throwIfAborted();
 				let size = 0;
 				const chunks: Buffer[] = [];
 				for await (const chunk of request) {
@@ -119,7 +129,7 @@ export function createProgrammaticFrameService(
 				) as ProgrammaticFrameRequest;
 				deadline.acceptParsed(input, !!connectionFile);
 				controller.signal.throwIfAborted();
-				const png = await renderHtmlPng({
+				const png = await renderFrame({
 					executable,
 					connectionFile,
 					request: input,
@@ -146,11 +156,14 @@ export function createProgrammaticFrameService(
 				);
 			} finally {
 				deadline.dispose();
-				active.delete(controller);
-				drains.delete(drain);
-				drained();
 				request.removeListener("aborted", abort);
 				response.removeListener("close", abort);
+				controller.signal.removeEventListener("abort", stopBody);
+				controllers.delete(controller);
+				drains.delete(drain);
+				drained();
+				// renderFrame includes native cleanup; abort alone never frees a slot.
+				release?.();
 			}
 		},
 	};

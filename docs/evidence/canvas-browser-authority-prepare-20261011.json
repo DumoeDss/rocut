@@ -1,0 +1,45 @@
+{
+  "schema": "rocut-canvas-authority-preparation/v1",
+  "status": "implemented-cpu-verified-browser-pending",
+  "workspace": "isolated acceptance/20261011-6fa23f6b worktree",
+  "modes": ["default", "generators", "spatial", "magnify", "displacement", "wave"],
+  "entry": "script/probe-canvas-browser-authority.mjs",
+  "commands": {
+    "prepare": "node script/probe-canvas-browser-authority.mjs --prepare",
+    "run": "ROCUT_BROWSER_WINDOW_AUTHORIZED=1 node script/probe-canvas-browser-authority.mjs --run <fresh-group>"
+  },
+  "authorityWasmSha256": "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+  "browserSha256": "9b07943f834485b43c9d54caea2951c78715f9f07070a80ab6658465ebd3e711",
+  "implementation": [
+    "Existing six probe modes, fixtures, references, GPU flags and correctness gates are unchanged.",
+    "Reuses tested actual Response.clone and successful WASM instantiation witness, not URL or file-only identity.",
+    "Pins raw unified fixture source and HEAD, explicit helper inputs, WASM closure, full Chromium closure and actual resolved runtime package dependency graph before and after each case.",
+    "Prepare does not launch a browser; run requires separately allocated exclusive browser/GPU window.",
+    "Fresh group and attempt receipts; first failed mode stops without retry, cap, skip or silent promotion. Failure logs and after-failure identity are retained.",
+    "Unit fixture cleanup unlinks only known created files and removes only empty directories; no recursive cleanup of unrelated entries."
+  ],
+  "cpuVerification": {
+    "unitTests": { "passed": 5, "failed": 0, "skipped": 0 },
+    "controls": ["parent escape and absolute-path rejection", "raw source drift and wrong HEAD", "empty or duplicate manifest rejection", "package or executable drift rejection", "actual cyclic toolchain resolution, unavailable optional dependency and missing required dependency"],
+    "javascriptSyntax": "passed",
+    "focusedRecommendedEslint": "passed for five new JS files",
+    "prettier": "formatted",
+    "strictUtf8": "passed for five new JS files"
+  },
+  "historicalCpuPrepare": {
+    "group": ".artifacts/canvas-browser-authority/run-w64jrG",
+    "browserLaunched": false,
+    "runtimePackages": 55,
+    "toolchainManifestSha256": "2314e4934d9f4eeaa59ad99af0805d26da050b442bbf8240e713cf3ce59dca7d",
+    "boundary": "CPU preparation only, not an acceptance result. Later helper/test edits supersede this plan; create a fresh plan after unified save and manifest refresh."
+  },
+  "files": [
+    { "path": "script/probe-canvas-browser-authority.mjs", "bytes": 10255, "sha256": "0158d3e04789334cca0e9cb9491981342ef32eea91bc66eac5b1a8e6ad8e92eb" },
+    { "path": "script/fixtures/frozen-attempt-identity.mjs", "bytes": 4899, "sha256": "b8a56623a470af2f6e52cf3ff4f041e6aa3f0766d2279d7085f2e6a979397f8b" },
+    { "path": "script/fixtures/probe-toolchain-closure.mjs", "bytes": 3098, "sha256": "acc30181cd3165bdd9c2defbffae628eb51b62fe0157816dba5deebdc4833703" },
+    { "path": "script/__tests__/frozen-attempt-identity.test.mjs", "bytes": 4098, "sha256": "bd9e1026d0e3bca2a89d6818e36243edb0ed01209fb9b95dde89f7e3288a6aac" },
+    { "path": "script/__tests__/probe-toolchain-closure.test.mjs", "bytes": 2485, "sha256": "bbce0368383aab34d6ed59bb0903ae4162b6c548494d9d1f53893c02c2cdae16" }
+  ],
+  "browserAcceptance": "not-run",
+  "limitations": ["Standalone Chromium WebGPU/SwiftShader only, not installed Electron or all hardware", "No Host Bun identity claim for this browser-only six-mode lane", "Does not replace pending MV, model, Particle, object exports or epkg/E2E acceptance"]
+}
