@@ -15,7 +15,18 @@ function nativeTimeoutError(scope) {
       const observed = state?.observe(), callback = observed?.lastCallback;
       const nativeSeek = observed ? {target: number(observed.target), landed: Boolean(observed.landed),
         callbackCount: number(observed.callbackCount), assignmentStartedAt: number(observed.assignmentStartedAt),
-        sameSource: Boolean(observed.sameSource), lastCallback: callback ? {mediaTime: number(callback.mediaTime),
+        sameSource: Boolean(observed.sameSource), armCount: number(observed.armCount),
+        initialZero: {previousAtCreation: Boolean(observed.previousAtCreation),
+          currentTimeRead: Boolean(observed.initialCurrentTimeRead), currentTime: number(observed.initialCurrentTime),
+          seekingRead: Boolean(observed.initialSeekingRead), seeking: observed.initialSeekingRead ? Boolean(observed.initialSeeking) : null,
+          eligible: Boolean(observed.initialZeroNoop)},
+        callbackGate: observed.callbackGate ? {reason: ['not-reached','landing','seeking','ready-state','source','target',
+          'media-time','ownership','freshness','accepted'].includes(observed.callbackGate.reason) ? observed.callbackGate.reason : 'unknown',
+          landed: Boolean(observed.callbackGate.landed), initialZeroNoop: Boolean(observed.callbackGate.initialZeroNoop),
+          seekingRead: Boolean(observed.callbackGate.seekingRead),
+          seeking: observed.callbackGate.seekingRead ? Boolean(observed.callbackGate.seeking) : null,
+          readyStateRead: Boolean(observed.callbackGate.readyStateRead), readyState: number(observed.callbackGate.readyState)} : null,
+        lastCallback: callback ? {mediaTime: number(callback.mediaTime),
           presentationTime: number(callback.presentationTime), presentedFrames: number(callback.presentedFrames)} : null} : null;
       return {ordinal, currentTime: number(video.currentTime), duration: number(video.duration),
         readyState: number(video.readyState), networkState: number(video.networkState),
@@ -109,12 +120,15 @@ function nativeSeek(video, seconds) {
   if (previous?.target === seconds && previous.promise) return previous.promise;
   previous?.finish(undefined, true);
   let resolve, reject, callback, timer, assignmentStartedAt, finished = false, landed = false, initialZeroNoop = false;
+  let initialCurrentTime, initialSeeking, initialCurrentTimeRead = false, initialSeekingRead = false;
   const promise = new Promise((yes, no) => { resolve = yes; reject = no; });
   const state = {target: seconds, promise, presentation: undefined, finish, ownsSource,
-    callbackCount: 0, lastCallback: null,
+    callbackCount: 0, lastCallback: null, armCount: 0, callbackGate: null,
     observe: () => ({target: seconds, landed, callbackCount: state.callbackCount,
       lastCallback: state.lastCallback, assignmentStartedAt: Number.isFinite(assignmentStartedAt) ? assignmentStartedAt : null,
-      sameSource: ownsSource()})};
+      sameSource: ownsSource(), armCount: state.armCount, previousAtCreation: Boolean(previous),
+      initialCurrentTimeRead, initialCurrentTime, initialSeekingRead, initialSeeking, initialZeroNoop,
+      callbackGate: state.callbackGate})};
   const assignedSource = video.currentSrc || video.src;
   const assignedSrc = video.src, assignedSrcAttribute = video.getAttribute('src');
   const assignedSources = [...video.querySelectorAll('source')].map(element => ({element,
@@ -168,27 +182,39 @@ function nativeSeek(video, seconds) {
   }
   function arm() {
     if (finished) return;
+    state.armCount++;
     callback = video.requestVideoFrameCallback((_now, metadata) => {
       if (finished) return;
       callback = undefined;
       observeNativeCallback(state, metadata);
+      state.callbackGate = {reason: 'not-reached', landed: false, initialZeroNoop: false,
+        seekingRead: false, seeking: undefined, readyStateRead: false, readyState: undefined};
       try {
         checkVideo(video, false);
         scope.signal?.throwIfAborted();
-        if ((!landed && !initialZeroNoop) || video.seeking || video.readyState < 2) { arm(); return; }
+        state.callbackGate.landed = landed; state.callbackGate.initialZeroNoop = initialZeroNoop;
+        state.callbackGate.reason = 'landing';
+        if ((!landed && !initialZeroNoop) ||
+            (state.callbackGate.reason = 'seeking', state.callbackGate.seekingRead = true, state.callbackGate.seeking = video.seeking) ||
+            (state.callbackGate.reason = 'ready-state', state.callbackGate.readyStateRead = true, state.callbackGate.readyState = video.readyState) < 2) { arm(); return; }
+        state.callbackGate.reason = 'source';
         if (!ownsSource()) throw Error('HTML native video source changed before presentation (sameSource false)');
         // The target is the upstream decoder command, never learned from pixels
         // or the browser cursor. mediaTime is evidence of presentation, not an
         // exact-frame oracle: source PTS/variable-frame-rate selection is native.
+        state.callbackGate.reason = 'target';
         if (video.currentTime !== seconds) throw Error('HTML native video seek target changed before presentation');
+        state.callbackGate.reason = 'media-time';
         if (!Number.isFinite(metadata.mediaTime) || metadata.mediaTime < 0)
           throw Error('HTML native video callback omitted presentation metadata');
+        state.callbackGate.reason = 'ownership';
         if (!Number.isFinite(metadata.presentationTime) || metadata.presentationTime < 0 ||
             !Number.isSafeInteger(metadata.presentedFrames) || metadata.presentedFrames < 0)
           throw Error('HTML native video callback omitted presentation ownership');
         const previousPresentation = scope.presentations.get(video);
         // A callback can be delivered after seeked yet describe a submission
         // from before this assignment. Cursor/seeked alone do not own it.
+        state.callbackGate.reason = 'freshness';
         if (metadata.presentationTime < assignmentStartedAt ||
             previousPresentation && metadata.presentedFrames <= previousPresentation.presentedFrames) {
           arm(); return;
@@ -197,6 +223,7 @@ function nativeSeek(video, seconds) {
           presentationTime: metadata.presentationTime, presentedFrames: metadata.presentedFrames};
         scope.presentations.set(video, presentation);
         managedVideos.add(video);
+        state.callbackGate.reason = 'accepted';
         finish(undefined, false, presentation);
       } catch (error) { finish(error); }
     });
@@ -217,7 +244,9 @@ function nativeSeek(video, seconds) {
     // Only the first, already-paused-at-zero command may have no seeked event
     // or present its initial picture before that event. It still needs this
     // assignment's fresh source-owned callback and all presentation fences.
-    initialZeroNoop = !previous && seconds === 0 && video.currentTime === 0 && !video.seeking;
+    initialZeroNoop = !previous && seconds === 0 &&
+      (initialCurrentTimeRead = true, initialCurrentTime = video.currentTime) === 0 &&
+      !(initialSeekingRead = true, initialSeeking = video.seeking);
     arm(); // Must precede the native assignment, including paused/initial-zero seeks.
     assignmentStartedAt = performance.now();
     video.currentTime = seconds;

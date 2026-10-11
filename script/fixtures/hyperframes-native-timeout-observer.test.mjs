@@ -24,6 +24,63 @@ function submit(f, metadata) {
 	callback(0, metadata);
 }
 
+test("Zero timeout distinguishes initial admission from callback-time seeking without a second frame", async () => {
+	for (const mode of ["eligible", "pre-seeking", "pre-current"]) {
+		const f = controlled();
+		if (mode === "pre-seeking") f.video.seeking = true;
+		if (mode === "pre-current") f.video._time = 0.1;
+		const result = f.context.rocutMedia
+			.nativeSeek(f.video, 0)
+			.catch((error) => error);
+		// Native assignment leaves seeking true. The only fresh callback is
+		// delivered now, before a later seeking=false state without seeked.
+		submit(f, { mediaTime: 0, presentationTime: 1, presentedFrames: 1 });
+		f.video.seeking = false;
+		f.fire(1);
+		const error = await result,
+			data = snapshot(error),
+			seek = data.videos[0].nativeSeek;
+		assert.equal(seek.callbackCount, 1);
+		assert.equal(seek.armCount, 2);
+		assert.equal(seek.initialZero.previousAtCreation, false);
+		assert.equal(seek.initialZero.currentTimeRead, true);
+		assert.equal(seek.initialZero.eligible, mode === "eligible");
+		assert.equal(seek.initialZero.seekingRead, mode !== "pre-current");
+		assert.equal(
+			seek.callbackGate.reason,
+			mode === "eligible" ? "seeking" : "landing",
+		);
+		assert.equal(seek.callbackGate.seekingRead, mode === "eligible");
+		assert.equal(seek.callbackGate.readyStateRead, false);
+		assert.equal(data.videos[0].seeking, false);
+		assert(!error.message.includes("data:") && !error.message.includes("AQID"));
+		f.close();
+	}
+});
+
+test("Later zero snapshot records previous state and skipped initial DOM reads", async () => {
+	const f = controlled();
+	const first = f.context.rocutMedia.nativeSeek(f.video, 0.18);
+	f.video.land();
+	submit(f, { mediaTime: 0.18, presentationTime: 0, presentedFrames: 1 });
+	await first;
+	const result = f.context.rocutMedia
+		.nativeSeek(f.video, 0)
+		.catch((error) => error);
+	f.video.seeking = false;
+	submit(f, { mediaTime: 0, presentationTime: 1, presentedFrames: 2 });
+	f.fire(1);
+	const seek = snapshot(await result).videos[0].nativeSeek;
+	assert.equal(seek.initialZero.previousAtCreation, true);
+	assert.equal(seek.initialZero.currentTimeRead, false);
+	assert.equal(seek.initialZero.currentTime, null);
+	assert.equal(seek.initialZero.seekingRead, false);
+	assert.equal(seek.initialZero.seeking, null);
+	assert.equal(seek.initialZero.eligible, false);
+	assert.equal(seek.callbackGate.reason, "landing");
+	f.close();
+});
+
 test("Callback diagnostics preserve the first getter fault without extra reads", async () => {
 	for (const property of ["mediaTime", "presentationTime", "presentedFrames"]) {
 		const f = controlled();

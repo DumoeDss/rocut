@@ -1,0 +1,47 @@
+{
+	"schema": "rocut-focused-integration-evidence/v1",
+	"date": "2026-10-12",
+	"baseCommit": "ec7d1c610c24bedec74c1b813636bd984313dcf1",
+	"purpose": "Distinguish initial-zero eligibility from the actual callback-time rejection gate; not an admission fix.",
+	"delivery": {
+		"directory": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-zero-gate-observation-20261012-6a95d04e",
+		"manifestSha256": "c1935a03b69891ea4a8b353e46afe8163735ed9f262804ff3de738edb34fa584",
+		"focusedPatchSha256": "a8a3d71bde96dab7db58257b7b7bd625ce643fa6632f950fb8a72216c28122b3",
+		"regressionPatchSha256": "bcbd50a29bf075459195e2e2f61133017b35c0ff0ec261142d39fbae600a7780"
+	},
+	"integratedFiles": [
+		{
+			"path": "apps/cli/src/programmatic/html-media.ts",
+			"sha256": "52bffe06012d5015f12a052ec93e0bc410fafd54dc7bcddb2d54230cb5cf85bd"
+		},
+		{
+			"path": "script/fixtures/hyperframes-native-timeout-observer.test.mjs",
+			"sha256": "74f50fc8a325a4901e9a06de128e28227dfd45a9de717f832861638b56b437a6"
+		}
+	],
+	"rootVerification": {
+		"hyperframesTests": { "pass": 73, "fail": 0, "skip": 0 },
+		"externalABAndGetterTests": { "pass": 10, "fail": 0, "skip": 0 },
+		"focusedSyntaxAndEmbeddedJavascriptLint": "pass",
+		"strictUtf8AndBomCheck": "pass",
+		"originalDirtyRawFilesPreserved": 24
+	},
+	"originalBrowserFailure": {
+		"receiptSha256": "d446ff2c91566383ef9b7b1401704e16b138f3f9d9f0a5a0765693a24d4b5979",
+		"scope": "hyperframes-basic, 1/4",
+		"status": "retained failed; callback-time state was not established by the old timeout snapshot"
+	},
+	"boundaries": {
+		"newNativeGetterConsumption": false,
+		"newTimerSeekOrFrameCallback": false,
+		"admissionDeadlineOrPixelOracleChanged": false,
+		"browserRerunCompleted": false,
+		"wholeRepositoryLintOrTypecheckClaimed": false,
+		"installedPluginChanged": false
+	},
+	"limitations": [
+		"Primitive caching and observer allocation can still have timing overhead; this is attribution evidence, not a root-cause or fix claim.",
+		"Initial eligibility describes the created state, not a subsequent coalescing caller.",
+		"A fresh scoped browser trace and the remaining final-source acceptance gates are still required."
+	]
+}
