@@ -1,0 +1,44 @@
+{
+	"schema": "particle-three-authority-source-approval/v1",
+	"sourceParent": "1066b5c6f7e0c3d96dcbd03446850e4456a7a961",
+	"approvedAuthorityReceiptSha256": "321f18c7b7468707e8a01ee74bdd8385ec16e27a305c7b467f6262a9789e97bb",
+	"previousAuthorityReceiptSha256": "dc6f43e9ee493d50f79beb1bdee0606cadb74c3e98258dde2a74d2b0a1d9bd7b",
+	"baselineReceiptSha256": null,
+	"approvedBy": "root after independent read-only review",
+	"proposal": {
+		"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-particle-three-authority-20261011-522zrg/particle-authority-three.proposed.json",
+		"sha256": "321f18c7b7468707e8a01ee74bdd8385ec16e27a305c7b467f6262a9789e97bb",
+		"byteLength": 361487
+	},
+	"independentReview": {
+		"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-particle-three-authority-20261011-522zrg/particle-authority-three-independent-review.json",
+		"sha256": "b350e212f4a2cb6b8b6e14df062a5ff41cb90685e16474b1dc533ec62b0f3e3e"
+	},
+	"scope": "Replace only the first authority with a separately reviewed complete private Three toolchain. All WASM, sampler, browser and executable identities remain unchanged. Does not approve compile baseline, UI, export or installed Electron.",
+	"changedReceiptFields": ["toolchain", "parentReceipts"],
+	"copiedToolchain": {
+		"fileCount": 1446,
+		"byteLength": 45976692,
+		"closureSha256": "a1136be9f8d8307903528c5bb96320b0c7a480154b572c777140efee1afdd351",
+		"sourceAndCopyExactEquality": true,
+		"noLinksOrRedirectedAncestors": true,
+		"versions": {
+			"three": "0.185.1",
+			"@elftia/three-assets": "0.1.1",
+			"@noble/hashes": "2.0.1",
+			"esbuild": "0.27.3"
+		},
+		"originalApprovedToolchainChanged": false,
+		"sharedDependenciesModified": false
+	},
+	"retainedFailure": {
+		"root": "C:/tmps/rocut-particle-authority-20261011-b8POXh/particle-authority-compile-2Sukeh",
+		"sha256": "3023192fe1996ece6095d8e1fc3119fbe58263d4f47ed555e7c91cf7b419bf19",
+		"cause": "Approved media toolchain lacked Three; real packed sampler init and awaited close passed"
+	},
+	"limitations": [
+		"Previous missing historical C4 subreceipts remain unauthenticated",
+		"A fresh real compile and independently reviewed baseline are still required"
+	],
+	"timeoutsAndPixelGatesChanged": false
+}
