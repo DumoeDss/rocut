@@ -1,0 +1,32 @@
+{
+  "recordedAt": "2026-10-11T10:35:00Z",
+  "context": "consolidated pixel acceptance pre-work: attribute the train bloom-edge family with a segment-isolated rerun on the same clean checkpoint used for the wet-floor count attribution",
+  "probe": "script/probe-mv-night-native.mjs --browser-only --dedicated-native-fixtures (diagnostic skip wet-floor-fall,wet-floor-count; ROCUT_TEST_CURRENT_SOURCE_SCOPE=compiled-snapshot)",
+  "checkpoint": {
+    "source": "C:/Users/Sayo/AppData/Local/Temp/rocut-mv-native-checkpoint-20261011/source",
+    "wasm": "C:/Users/Sayo/AppData/Local/Temp/rocut-mv-native-checkpoint-20261011/wasm",
+    "wasmSha256Prefix": "1b1906ee499e"
+  },
+  "artifact": "E:/Elftia-private-tests/rocut-night-native-IAzSwc/evidence.json",
+  "finding": {
+    "case": "train-moving (first train case; probe stopped there by the complete-frame gate)",
+    "completeFrame": {
+      "max": 25,
+      "changed": 32189,
+      "mae": 0.00656,
+      "histogramHead": "delta1=24572, delta2=3658, tail to 25",
+      "chanDelta": "r20368/g17340/b16676/a0 (alpha bit-identical)",
+      "rowBands": "concentrated y540-900 (4183+14240+13753), same central train/bloom region as the 2026-10-11 record",
+      "maximum": "(616,785) native 112 vs oracle 137 - bloom-edge luminance, unchanged"
+    },
+    "segmentIsolation": {
+      "sceneLevel": "compareTrainScenePixels completed without its train-scene-pixel-mismatch throw before the complete-frame parity ran - native scene canvas matches the oracle scene canvas within tolerance (gate threshold 1, mismatchedPixels=0)",
+      "glLevel": "compareReferencePostPixels ran to completion feeding the SAME oracle scene canvas to both renderers (native GL port vs archived core/gl.js in an isolated iframe); its reference-post-pixel-mismatch throw did not fire - both GL paths agree on identical scene input at threshold 1, all 15 bloom passes executed (drawPasses gate passed before parity)",
+      "completeFrame": "the failing comparison is native full chain (native scene -> native GL -> compositor) vs oracle full chain (oracle scene -> original gl.js) - each segment individually agrees while the end-to-end composition shows delta up to 25"
+    },
+    "mechanism": "scene-level sub-LSB deltas (each <=1) flip pixels across the bloom bright-pass threshold (0.72) and accumulate through the three-level downsample/upsample chain, amplifying ~1 LSB edges into 10-25 luminance steps at bloom boundaries - deterministic, alpha-preserving, same-family as wet-floor count/fall, tunnel glyph edges and the previously recorded train-frozen (7445px max12) / train-exit (passing) siblings",
+    "conclusion": "train bloom family is now segment-attributed: no scene-logic or GL-port defect remains; residue is end-to-end resampling amplification queued for the consolidated pixel-acceptance decision (threshold alignment or bit-exact reproduction, same options as the wet-floor family)"
+  },
+  "scope": "not an installed Electron/full-movie/export acceptance claim; diagnostic skip used, full gate unchanged"
+}
+
