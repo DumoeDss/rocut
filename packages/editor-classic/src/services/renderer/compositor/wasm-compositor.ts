@@ -14,6 +14,7 @@ import {
 	assertRenderNotAborted,
 	assertRenderFrameRequestApi,
 	CompositorBusyError,
+	normalizeRenderCancellation,
 	RenderCancelledError,
 	renderFrameRequest,
 } from "./render-request";
@@ -101,6 +102,12 @@ export class WasmCompositor {
 				this.assertOpen();
 				assertRenderNotAborted(controller.signal);
 				return task(controller.signal);
+			})
+			.catch((error: unknown) => {
+				throw normalizeRenderCancellation({
+					error,
+					signal: controller.signal,
+				});
 			})
 			.finally(() => {
 				signal?.removeEventListener("abort", abort);
