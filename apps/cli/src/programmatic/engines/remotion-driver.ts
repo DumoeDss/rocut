@@ -1,6 +1,8 @@
+import { REMOTION_READINESS_OBSERVATION_SOURCE } from "../remotion-readiness-observation";
+
 /** Browser-only entry for the pinned Remotion runtime. Esbuild bundles this with
  * the declared author entry; no authored React code runs in the compiler host. */
-export const REMOTION_FRAME_DRIVER = String.raw`
+export const REMOTION_FRAME_DRIVER = REMOTION_READINESS_OBSERVATION_SOURCE + String.raw`
 import React from 'react';
 import {createRoot} from 'react-dom/client';
 import {flushSync} from 'react-dom';
@@ -42,6 +44,8 @@ const assets = {renderAssets:[], unregisterRenderAsset:id => {
   else failure = Error('Remotion media/artifact output requires an asset adapter; use Rocut tracks');
 }};
 window.__rocutRenderRemotionFrame = async (frame, producedScan = null) => {
+  readinessDiagnostic.frameIndex = frame.index;
+  observeReadiness({ kind: 'frame-enter' });
   if (producedScan && (producedScan.profile !== 'remotion-4.0.440-native-produced-frames-v1'
       || producedScan.canonicalStartFrame !== 0 || producedScan.canonicalEndFrameExclusive !== spec.durationFrames
       || !Array.isArray(producedScan.frames) || producedScan.frames.length !== spec.durationFrames
@@ -59,6 +63,7 @@ window.__rocutRenderRemotionFrame = async (frame, producedScan = null) => {
   lifetime.check();
   window.remotion_initialFrame = frame.index;
   boot = delayRender('Rocut composition initialization');
+  observeReadiness({ kind: 'boot-acquired', extra: { handle: boot } });
   while (!Internals.getRoot()) { lifetime.check(); await lifetime.wait(paint()); }
   const Root = Internals.getRoot();
   mount = document.createElement('div');
@@ -102,13 +107,16 @@ window.__rocutRenderRemotionFrame = async (frame, producedScan = null) => {
   lifetime.check();
   continueRender(boot);
   bootReleased=true;
+  observeReadiness({ kind: 'boot-released', extra: { handle: boot } });
   const settle = async () => {
     let stable = 0;
     while (stable < 2) {
       await lifetime.wait(paint()); lifetime.check();
       stable = window.remotion_renderReady && window.remotion_delayRenderHandles.length === 0 ? stable + 1 : 0;
+      observeReadiness({ kind: 'settle-turn', extra: { stable } });
     }
     window.rocutMedia.check(true);lifetime.check();
+    observeReadiness({ kind: 'settle-done' });
   };
   await settle();
   if (producedScan) {

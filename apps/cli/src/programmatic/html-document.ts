@@ -97,7 +97,8 @@ addEventListener('DOMContentLoaded', async () => {
     await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     checkHtmlMedia(true);
     if (failures.length) throw Error(failures[0]);
-    parent.postMessage({ tag: 'rocut-html-frame', ok: true }, '*');
+    window.__rocutRemotionReadinessObserve?.({kind:'html-ready-before-message'});
+    parent.postMessage({ tag: 'rocut-html-frame', ok: true, readinessDiagnostic:window.__rocutRemotionReadinessTrace }, '*');
   } catch (error) {
     parent.postMessage({ tag: 'rocut-html-frame', error: String(error).slice(0, 1000) }, '*');
   }
@@ -239,7 +240,7 @@ function htmlExpression({
         return;
       }
       if (event.data?.tag !== 'rocut-html-frame') return;
-      if (event.data.ok) ${analysis && analysis.mode !== "picture" ? "resolve(event.data.assets)" : "requestAnimationFrame(() => requestAnimationFrame(() => resolve(true)))"};
+      if (event.data.ok) ${analysis && analysis.mode !== "picture" ? "resolve(event.data.assets)" : "requestAnimationFrame(() => requestAnimationFrame(() => resolve(event.data.readinessDiagnostic ? {readinessDiagnostic:event.data.readinessDiagnostic} : true)))"};
       else reject(Error(event.data.error));
     });
     iframe.srcdoc = ${JSON.stringify(document)};

@@ -1,3 +1,4 @@
+import { printRemotionReadinessObservation } from "./remotion-readiness-observation";
 import { raceParticleCapture } from "./particle-capture";
 
 export function htmlBrowserException(stage: string, details: unknown): Error {
@@ -67,5 +68,6 @@ export async function captureHtmlBrowserFrame(options: {
 	await check();
 	if (typeof png.data !== "string")
 		throw Error("HTML frame browser returned no PNG");
+	printRemotionReadinessObservation({ evaluation: result.result });
 	return Buffer.from(png.data, "base64");
 }

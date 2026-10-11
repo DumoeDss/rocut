@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 import { createRequire } from "node:module";
 import { createServer } from "node:http";
+import { nativeAudioServerObservation } from "./native-audio-diagnostic-observations.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { compileProgrammaticProject } from "../../apps/cli/src/programmatic/engines/compile-project";
 import { FileProjectStore } from "../../apps/cli/src/file-store";
@@ -103,7 +104,30 @@ try {
     }, toolchainDirectory, context, signal: AbortSignal.timeout(30000), enqueue: task => task() })).source;
     audioService = createProgrammaticAudioService({ resourceStore: context, executable, connectionFile: "",
       decoder: { ffmpeg, ffprobe } });
-    server = createServer(async (request, response) => {
+let diagnosticHttpFailureCount = 0;
+server = createServer(async (request, response) => {
+	const diagnosticUrl = request.url,
+		diagnosticMethod = request.method;
+	response.once("finish", () => {
+		if (response.statusCode >= 400) {
+			diagnosticHttpFailureCount++;
+			if (diagnosticHttpFailureCount <= 64)
+				console.log(
+					JSON.stringify({
+						nativeAudioFixtureHttpFailure: nativeAudioServerObservation({
+							server: "fixture",
+							url: diagnosticUrl,
+							method: diagnosticMethod,
+							status: response.statusCode,
+						}),
+					}),
+				);
+			else if (diagnosticHttpFailureCount === 65)
+				console.log(
+					JSON.stringify({ nativeAudioFixtureHttpFailureLimit: true }),
+				);
+		}
+	});
       if (request.url === "/api/pcm") { response.writeHead(200, { "content-type": "application/octet-stream" }).end(exportPcm); return; }
       if (request.url === "/api/editor-source") { response.writeHead(200, { "content-type": "application/json" }).end(JSON.stringify(editorSource)); return; }
       if (request.url === "/api/programmatic/audio") { await audioService!.handle(request, response); return; }

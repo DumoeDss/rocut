@@ -71,6 +71,7 @@ const sourceInputs =
 				"script/probe-html-frames.mjs",
 				"script/html-probe-wasm-binding.mjs",
 				"script/fixtures/html-probe-failure.mjs",
+				"script/fixtures/html-probe-native-exports.ts",
 				"script/fixtures/local-wasm-preload.mjs",
 				`script/fixtures/${fixture}`,
 				`script/fixtures/${fixture.replace(/\.html$/, ".ts")}`,
@@ -81,6 +82,7 @@ const sourceInputs =
 				"apps/cli/src/programmatic/engines/compile-project.ts",
 				"apps/cli/src/programmatic/engines/remotion-compiler-child.ts",
 				"apps/cli/src/programmatic/engines/remotion-driver.ts",
+				"apps/cli/src/programmatic/remotion-readiness-observation.ts",
 				"apps/cli/src/programmatic/engines/toolchain.ts",
 				"apps/cli/src/programmatic/remotion-inspection-driver.ts",
 				"apps/cli/src/programmatic/remotion-inspection-project.ts",
@@ -134,6 +136,7 @@ const host = spawn(
 const exited = new Promise((resolve) => host.once("exit", resolve));
 let server, browser, page, hostWasmIdentity;
 const consolePhases = [];
+const consoleEpoch = performance.now();
 try {
 	const editorUrl = await new Promise((resolve, reject) => {
 		let text = "";
@@ -288,7 +291,11 @@ try {
 	page.on("console", (message) => {
 		if (message.text().startsWith("HTML probe:")) {
 			const phase = redact(message.text());
-			consolePhases.push(phase);
+			// Retained by the existing failure writer even if page evaluation stalls.
+			consolePhases.push(JSON.stringify({
+				message: phase,
+				nodeElapsedMs: performance.now() - consoleEpoch,
+			}));
 			console.log(phase);
 		}
 	});

@@ -11,8 +11,18 @@ import {
 	writeJson,
 } from "../particle-c4-export-support.mjs";
 import { frozenParticleFiles } from "./particle-editor-contract.mjs";
+import {
+	stageParticleAuthority,
+	writeParticleAuthorityBootstrap,
+} from "./particle-editor-export-authority-stage.mjs";
 
-export async function buildParticleEditor({ repo, root, options, sources }) {
+export async function buildParticleEditor({
+	repo,
+	root,
+	options,
+	sources,
+	authority,
+}) {
 	async function remember(path) {
 		const bytes = await readFile(path),
 			entry = { path: resolve(path), bytes: bytes.length, sha256: hash(bytes) };
@@ -25,23 +35,33 @@ export async function buildParticleEditor({ repo, root, options, sources }) {
 		sources.set(entry.path, entry);
 		return bytes;
 	}
-	const wasmDirectory = dirname(options["wasm-sync"]);
-	assert.equal(
-		hash(await remember(join(wasmDirectory, "opencut_wasm_bg.wasm"))),
-		frozenParticleFiles["opencut_wasm_bg.wasm"],
-	);
-	for (const [name, digest] of Object.entries(frozenParticleFiles)) {
+	let syncEntry = options["wasm-sync"],
+		bundlerEntry = join(dirname(syncEntry), "opencut_wasm.js");
+	if (authority) {
+		({ wasmSync: syncEntry, bundlerEntry } = await stageParticleAuthority({
+			authority,
+			root,
+			remember,
+		}));
+	} else {
+		const wasmDirectory = dirname(syncEntry);
 		assert.equal(
-			hash(await remember(join(options["sampler-dir"], name))),
-			digest,
-			`Frozen C3 sidecar required: ${name}`,
+			hash(await remember(join(wasmDirectory, "opencut_wasm_bg.wasm"))),
+			frozenParticleFiles["opencut_wasm_bg.wasm"],
 		);
-		await copyFile(
-			join(options["sampler-dir"], name),
-			join(root, name),
-			constants.COPYFILE_EXCL,
-		);
-		assert.equal(hash(await remember(join(root, name))), digest);
+		for (const [name, digest] of Object.entries(frozenParticleFiles)) {
+			assert.equal(
+				hash(await remember(join(options["sampler-dir"], name))),
+				digest,
+				`Frozen C3 sidecar required: ${name}`,
+			);
+			await copyFile(
+				join(options["sampler-dir"], name),
+				join(root, name),
+				constants.COPYFILE_EXCL,
+			);
+			assert.equal(hash(await remember(join(root, name))), digest);
+		}
 	}
 	for (const path of [
 		"script/probe-particle-editor.mjs",
@@ -67,16 +87,35 @@ export async function buildParticleEditor({ repo, root, options, sources }) {
 	])
 		await remember(join(repo, path));
 	for (const path of [
-		options["wasm-sync"],
-		join(wasmDirectory, "opencut_wasm.js"),
-		join(wasmDirectory, "opencut_wasm_bg.js"),
+		syncEntry,
+		bundlerEntry,
+		join(dirname(syncEntry), "opencut_wasm_bg.js"),
 		join(options.toolchain, "package-lock.json"),
 	])
 		await remember(path);
+	if (authority) {
+		for (const name of [
+			"authority",
+			"authority-identity",
+			"authority-stage",
+			"authority-browser",
+		])
+			await remember(
+				join(repo, `script/fixtures/particle-editor-export-${name}.mjs`),
+			);
+		for (const name of [
+			"particle-editor-authority-references.mjs",
+			"particle-editor-integer-geometry.mjs",
+		])
+			await remember(join(repo, "script/fixtures", name));
+		await remember(join(root, "particle-authority-context.json"));
+	}
+	const hostOutput = join(root, authority ? "host-body.mjs" : "host.mjs");
 	const bundled = await buildHost({
 		absWorkingDir: repo,
 		entryPoints: [join(repo, "script/fixtures/particle-editor-host.ts")],
-		outfile: join(root, "host.mjs"),
+		outfile: hostOutput,
+		metafile: Boolean(authority),
 		bundle: true,
 		platform: "node",
 		format: "esm",
@@ -92,7 +131,7 @@ export async function buildParticleEditor({ repo, root, options, sources }) {
 				name: "particle-editor-private-host",
 				setup(api) {
 					api.onResolve({ filter: /^opencut-wasm(?:\/sync)?$/ }, () => ({
-						path: pathToFileURL(options["wasm-sync"]).href,
+						path: pathToFileURL(syncEntry).href,
 						external: true,
 					}));
 					api.onResolve({ filter: /^node:child_process$/ }, ({ importer }) =>
@@ -123,10 +162,14 @@ export async function buildParticleEditor({ repo, root, options, sources }) {
 		],
 	});
 	assert.equal(bundled.outputFiles.length, 1);
-	await writeFile(join(root, "host.mjs"), bundled.outputFiles[0].contents, {
+	await writeFile(hostOutput, bundled.outputFiles[0].contents, {
 		flag: "wx",
 	});
-	await remember(join(root, "host.mjs"));
+	await remember(hostOutput);
+	if (authority) {
+		await writeJson(join(root, "host-build-metafile.json"), bundled.metafile);
+		await writeParticleAuthorityBootstrap({ root, authority, remember });
+	}
 	const generatedModules = new Map(),
 		warnings = [];
 	await buildBrowser({
@@ -139,7 +182,7 @@ export async function buildParticleEditor({ repo, root, options, sources }) {
 		cacheDir: join(root, "vite-cache"),
 		logLevel: "error",
 		resolve: {
-			alias: { "opencut-wasm": join(wasmDirectory, "opencut_wasm.js") },
+			alias: { "opencut-wasm": bundlerEntry },
 		},
 		plugins: [
 			{
@@ -174,8 +217,11 @@ export async function buildParticleEditor({ repo, root, options, sources }) {
 	assert.equal(wasmFiles.length, 1);
 	assert.equal(
 		hash(await readFile(join(root, "editor/assets", wasmFiles[0]))),
-		frozenParticleFiles["opencut_wasm_bg.wasm"],
+		authority
+			? authority.metadata.nativeAuthority.wasmSha256
+			: frozenParticleFiles["opencut_wasm_bg.wasm"],
 	);
+	if (authority) await authority.assertUnchanged();
 	await writeJson(
 		join(root, "browser-build-manifest.json"),
 		await treeManifest(join(root, "editor")),

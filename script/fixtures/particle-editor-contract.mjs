@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { isAbsolute, resolve } from "node:path";
+import { parseParticleAuthoritySelection } from "./particle-editor-export-authority.mjs";
 
 export const frozenParticleFiles = {
 	"particle-sampler-wasm.mjs":
@@ -29,11 +30,21 @@ export function parseParticleEditorOptions(args) {
 			"Expected option/value pairs",
 		);
 		assert.ok(
-			[...required, "mode"].includes(name) && !options[name],
+			[
+				...required,
+				"mode",
+				"authority",
+				"authority-receipt",
+				"compile-baseline-receipt",
+				"ffmpeg",
+				"ffprobe",
+			].includes(name) && !options[name],
 			"Unknown or repeated option",
 		);
 		if (name === "mode") {
 			assert.ok(["build-only", "run"].includes(value));
+			options[name] = value;
+		} else if (name === "authority") {
 			options[name] = value;
 		} else {
 			assert.ok(isAbsolute(value), `--${name} must be absolute`);
@@ -43,6 +54,22 @@ export function parseParticleEditorOptions(args) {
 	assert.ok(
 		required.every((name) => options[name]),
 		"Missing explicit tool or project path",
+	);
+	const selection = parseParticleAuthoritySelection(options);
+	assert.equal(
+		Boolean(options["compile-baseline-receipt"]),
+		selection.kind === "new-authority",
+		"New lane requires an independent baseline receipt",
+	);
+	assert.equal(
+		Boolean(options.ffmpeg),
+		selection.kind === "new-authority",
+		"Only new authority uses ffmpeg closure admission",
+	);
+	assert.equal(
+		Boolean(options.ffprobe),
+		selection.kind === "new-authority",
+		"Only new authority uses ffprobe closure admission",
 	);
 	// Running a build-only validation can never accidentally open a browser.
 	options.mode ??= "build-only";

@@ -1,0 +1,54 @@
+{
+  "schema": "acceptance-integration-cpu/v1",
+  "date": "2026-10-11",
+  "workspace": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.worktrees/rocut-acceptance-20261011-6fa23f6b/_others/rocut",
+  "parentSourceCommit": "4083b0c7d238f7d659011985d5cc4d94a16ee0ba",
+  "status": "integrated-cpu-verified-browser-not-yet-rerun",
+  "changes": [
+    "Particle compile-only producer and separate authority/UI baseline lanes",
+    "Particle authored recipe independent raw-byte admission and parse-to-copy drift guard",
+    "Particle compile-host and UI launcher responsibility splits with unchanged workflow/cleanup",
+    "Liquid probe cancellable real-timer resource port",
+    "Remotion bounded passive readiness and network diagnostics",
+    "HyperFrames synchronous phase/export-promise diagnostics with original 180000ms watchdog"
+  ],
+  "integrationVerification": {
+    "nodeVersion": "24.14.0",
+    "bunVersion": "1.4.2",
+    "nodeTests": {
+      "pass": 45,
+      "fail": 0,
+      "skip": 0,
+      "groups": {
+        "particle-producer-session-launcher": 20,
+        "particle-authored-recipe": 6,
+        "html-phase-liquid-network-diagnostics": 19
+      }
+    },
+    "bunTests": {
+      "pass": 4,
+      "fail": 0
+    },
+    "strictUtf8Files": 40,
+    "splitRawPostimagesVerified": 5,
+    "guardAndLauncherRawPostimagesVerified": 9,
+    "diffWhitespaceCheck": "pass",
+    "initialCollectionFailure": "Authored recipe test initially rejected missing ROCUT_CPU_CREATOR_ROOT; rerun with explicit read-only Creator root passed all 6 tests",
+    "scope": "Targeted integrated tests; not whole-repository type/lint/build or real compile/UI/export approval"
+  },
+  "retainedLimitations": [
+    "Both Particle authority registry anchors remain null",
+    "Proposed Particle authority still needs independent schema/closure review",
+    "Liquid raster gate remains unverified after timer fix; WebGPU adapter absent in prior run",
+    "Previous Remotion console404 and HyperFrames timeout remain failures until original gates pass",
+    "Tunnel pattern ordering candidate rejected and original production order restored",
+    "Existing Rust/desktop line-ending diffs preserved unstaged",
+    "Installed Electron, vendor/dist packaging, epkg and full E2E not executed"
+  ],
+  "candidatePatches": {
+    "particleCompileSplit": "07df97d74a957ccf780155c58658dac7d9339f9d389663ea1a3ae0c4e0c999bb",
+    "particleLauncherSplit": "999fe6e9380018b1da29f813c33ea433ccc51aabb066b3387b4194f79abb9a53",
+    "authoredRecipeGuard": "45bbcfd0e5e535185878978e3b5fed4c91749a04a7d4ceb0e2c45875337b6ab5",
+    "authoredRecipeProducerTest": "a224d45848b00c85ca79962ccee81f36cda3d029ccea2d38431362188c532ba7"
+  }
+}
