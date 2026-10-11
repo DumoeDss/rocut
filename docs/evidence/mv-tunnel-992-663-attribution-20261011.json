@@ -1,0 +1,23 @@
+{
+  "recordedAt": "2026-10-11T12:40:00Z",
+  "context": "tunnel (992,663) cluster final attribution: isolated single-pixel round-cap subpixel coverage flip on dust streak i=111",
+  "method": {
+    "step1": "ran probe --frame4-grain-diagnostic against the pinned checkpoint (pin worktree 4a8ba714, wasm 1b1906ee) to export the frame-4 native tunnel plan (native-production-root-plan.json, 1037 commands) plus full production/original scene+post RGBA",
+    "step2": "offline plan scan located the only command whose geometry covers (992,663): command #921, a 2-step round-cap stroke moveTo(991.6900309800626,662.98506332182) lineTo(991.4140788370827,661.0836154143727), width 1.256313863813919, color #B9A6F0 family, composite lighter",
+    "step3": "independently recomputed all 240 reference dust streaks (typo.js 835-848 formulas: Z.hash/FNV rng, travel, vp, roll incl. beat-damp term) in Node: 212 visible streaks, matched 212/212 to plan commands with endpoint deviation under 0.01px; streak i=111 lands at a=(991.690,662.985) z=10.957 w=1.2563 exactly",
+    "step4": "local RGBA diff (985..1000 x 655..670) shows exactly ONE differing pixel: (992,663) native (11,7,20) vs original (16,11,26); clean single-render diagnostic (frame4-diagnostic.json metadata.normal) confirms scene changed=3 channels all at that single pixel, bbox 992..992 x 663..663"
+  },
+  "finding": {
+    "geometry": "IDENTICAL - Rust plan endpoints match reference formula recomputation for every visible streak (212/212 within 0.01px); no ULP drift, no segment-count mismatch, no transform-order error",
+    "raster": "the (992,663) pixel center (992.5,663.5) sits 0.31px/0.015px from the streak round-cap endpoint circle edge; the two Canvas rasterizer paths (native runtime vs oracle reference page) estimate this sub-pixel cap coverage differently, producing a single-pixel delta 5/4/6 (native darker)",
+    "family": "same rasterizer-edge-flip family as wet-floor shimmer/count and train bloom-threshold cases; NOT a geometry/serialization/producer defect",
+    "probeMatrixContext": "the 22-sample matrix residue additionally contains 13 glyph-edge delta-1 samples in the text-ring region (x137-271/y432-759, previously classified) plus seek-history fill state; the clean single-render diagnostic isolates the true frame-4 scene delta to this ONE pixel"
+  },
+  "artifacts": {
+    "artifactDir": "C:/Users/Sayo/AppData/Local/Temp/rocut-tunnel-native-7E72eW",
+    "plan": "native-production-root-plan.json (1037 commands; command #921 = the culprit stroke)",
+    "recomputeScript": "E:/Elftia-private-tests/recompute-tunnel-dust.cjs (212/212 match)",
+    "localDiffScript": "E:/Elftia-private-tests/tunnel-local-diff.cjs (single-pixel map)"
+  },
+  "scope": "frame-4 diagnosis only; not an installed Electron/full-movie/export acceptance claim; no production code changed"
+}
