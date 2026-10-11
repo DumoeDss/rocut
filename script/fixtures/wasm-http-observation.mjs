@@ -2,6 +2,45 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 
 const MAX_BINARY_BYTES = 15 * 1024 * 1024;
+// Classify only explicit transport clues. Never retain raw errors, URLs or headers.
+// These are diagnostic categories, not proof of a particular browser root cause.
+export function classifyWasmBodyProtocolFailure(error) {
+	if (error?.type === "closed") return "protocol-session-closed";
+	if (error?.type === "crashed") return "protocol-target-crashed";
+	const message =
+		typeof error?.message === "string" ? error.message.slice(0, 2048) : "";
+	if (
+		/session closed|session has been closed|target.*closed|browser.*closed|session already detached/i.test(
+			message,
+		)
+	)
+		return "protocol-session-closed";
+	if (/target crashed|page crashed/i.test(message))
+		return "protocol-target-crashed";
+	if (
+		/evicted.*(?:inspector|buffer)|(?:inspector|buffer).*evicted/i.test(message)
+	)
+		return "protocol-body-evicted";
+	if (
+		/no resource with given identifier|no data found for resource with given identifier/i.test(
+			message,
+		)
+	)
+		return "protocol-request-not-found";
+	if (
+		/method.*not found|wasn't found|unknown method|not implemented|not supported/i.test(
+			message,
+		)
+	)
+		return "protocol-command-unavailable";
+	if (
+		/request is not intercepted|invalid interception|interception.*(?:id|state)|captured after headers received/i.test(
+			message,
+		)
+	)
+		return "protocol-interception-state";
+	return "protocol-other";
+}
 /** Node-only original-response evidence. No Response.body() fallback/refetch.
  * Call drain after the original pixel/export checks, before closing context. */
 export async function observeProbeWasmHttp(session, expected) {
@@ -65,29 +104,37 @@ export async function observeProbeWasmHttp(session, expected) {
 		if (!entry || entry.started || entry.settled) return;
 		entry.started = true;
 		void (async () => {
+			let failureStage = "cdp-get-response-body";
 			try {
 				// Exact original request ID only. Never loadNetworkResource/fetch URL.
 				const result = await session.send("Network.getResponseBody", {
 					requestId: event.requestId,
 				});
+				failureStage = "body-shape";
 				assert.ok(
-					typeof result.body === "string" &&
+					result &&
+						typeof result.body === "string" &&
 						typeof result.base64Encoded === "boolean",
 				);
+				failureStage =
+					result.body.length === 0 ? "body-empty" : "body-encoded-limit";
 				assert.ok(
 					result.body.length > 0 &&
 						result.body.length <= Math.ceil(MAX_BINARY_BYTES / 3) * 4,
 				);
+				failureStage = "body-decode";
 				const bytes = Buffer.from(
 					result.body,
 					result.base64Encoded ? "base64" : "utf8",
 				);
+				failureStage = "body-noncanonical-base64";
 				if (result.base64Encoded)
 					assert.equal(
 						bytes.toString("base64"),
 						result.body,
 						"Noncanonical base64 body",
 					);
+				failureStage = "body-decoded-limit";
 				assert.ok(bytes.length > 0 && bytes.length <= MAX_BINARY_BYTES);
 				settle(entry, {
 					status: entry.status,
@@ -95,11 +142,16 @@ export async function observeProbeWasmHttp(session, expected) {
 					sha256: createHash("sha256").update(bytes).digest("hex"),
 					bodyAvailable: true,
 				});
-			} catch {
+			} catch (error) {
 				settle(entry, {
 					status: entry.status,
 					bodyAvailable: false,
 					reason: "body-unavailable",
+					failureStage,
+					failureCategory:
+						failureStage === "cdp-get-response-body"
+							? classifyWasmBodyProtocolFailure(error)
+							: failureStage,
 				});
 			}
 		})();
@@ -158,7 +210,7 @@ export async function observeProbeWasmHttp(session, expected) {
 				);
 				remove();
 				return Object.freeze({
-					profile: "cdp-original-request-body-v2",
+					profile: "cdp-original-request-body-v3-categories",
 					overflow,
 					invalidEvent,
 					lateResponse,

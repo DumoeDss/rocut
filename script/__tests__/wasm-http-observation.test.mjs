@@ -3,7 +3,10 @@ import { createHash } from "node:crypto";
 import { EventEmitter } from "node:events";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { observeProbeWasmHttp } from "../fixtures/wasm-http-observation.mjs";
+import {
+	observeProbeWasmHttp,
+	classifyWasmBodyProtocolFailure,
+} from "../fixtures/wasm-http-observation.mjs";
 
 const bytes = Buffer.from([0, 97, 115, 109]);
 const expected = {
@@ -11,6 +14,100 @@ const expected = {
 	byteLength: bytes.length,
 	sha256: createHash("sha256").update(bytes).digest("hex"),
 };
+
+test("protocol failure categories are bounded allowlist clues; raw URL/secret/unknown strings never survive", async () => {
+	const cases = [
+		["No resource with given identifier found", "protocol-request-not-found"],
+		[
+			"No data found for resource with given identifier",
+			"protocol-request-not-found",
+		],
+		[
+			"Request content was evicted from inspector cache",
+			"protocol-body-evicted",
+		],
+		["Internal server error, session closed.", "protocol-session-closed"],
+		[
+			"Target page, context or browser has been closed",
+			"protocol-session-closed",
+		],
+		["Page crashed.", "protocol-target-crashed"],
+		["'Network.getResponseBody' wasn't found", "protocol-command-unavailable"],
+		[
+			"Can only get response body on requests captured after headers received",
+			"protocol-interception-state",
+		],
+		[
+			"Unknown error https://secret.invalid/intercept?token=CPU_SECRET",
+			"protocol-other",
+		],
+	];
+	for (const [message, category] of cases) {
+		assert.equal(classifyWasmBodyProtocolFailure(Error(message)), category);
+		const f = await fixture(async () => {
+			throw Error(message);
+		});
+		f.response();
+		f.finish();
+		const result = await f.observed.drain();
+		assert.equal(result.ok, false);
+		assert.equal(result.records[0].failureCategory, category);
+		assert.equal(result.records[0].failureStage, "cdp-get-response-body");
+		assert.equal(f.calls.length, 2);
+		assert(!JSON.stringify(result).includes("CPU_SECRET"));
+		assert(!JSON.stringify(result).includes("https://"));
+	}
+	assert.equal(
+		classifyWasmBodyProtocolFailure({ type: "closed", message: "" }),
+		"protocol-session-closed",
+	);
+	assert.equal(
+		classifyWasmBodyProtocolFailure({ type: "crashed", message: "" }),
+		"protocol-target-crashed",
+	);
+	assert.equal(classifyWasmBodyProtocolFailure(null), "protocol-other");
+});
+
+test("body validation failures are distinguished from protocol rejection without refetch", async () => {
+	for (const [body, category] of [
+		[undefined, "body-shape"],
+		[{ body: "abc", base64Encoded: "true" }, "body-shape"],
+		[{ body: "", base64Encoded: true }, "body-empty"],
+		[{ body: "YQ", base64Encoded: true }, "body-noncanonical-base64"],
+		[
+			{ body: "a".repeat((15 * 1024 * 1024 * 4) / 3 + 1), base64Encoded: true },
+			"body-encoded-limit",
+		],
+		[
+			{ body: "a".repeat(15 * 1024 * 1024 + 1), base64Encoded: false },
+			"body-decoded-limit",
+		],
+	]) {
+		const f = await fixture(async () => body);
+		f.response();
+		f.finish();
+		const result = await f.observed.drain();
+		assert.equal(result.ok, false);
+		assert.equal(result.records[0].failureCategory, category);
+		assert.equal(f.calls.length, 2);
+	}
+});
+
+test("production terminal stamp remains separate from mandatory original-body gate and unchanged browser/oracle code", async () => {
+	const probe = await readFile(
+		new URL("../probe-liquid-effects.mjs", import.meta.url),
+		"utf8",
+	);
+	assert(
+		probe.includes(
+			"wasmInitializationStamp: globalThis.__htmlProbeWasmIdentity ?? null",
+		),
+	);
+	assert(probe.includes("attempt.wasmHttp.ok"));
+	assert(
+		!probe.includes("attempt.wasmInitializationStamp || attempt.wasmHttp"),
+	);
+});
 async function fixture(
 	body = async () => ({ body: bytes.toString("base64"), base64Encoded: true }),
 ) {
@@ -63,7 +160,7 @@ test("exact original request ID is read once only after loadingFinished, with bo
 			params: { requestId: "original-request" },
 		},
 	]);
-	assert.equal(result.profile, "cdp-original-request-body-v2");
+	assert.equal(result.profile, "cdp-original-request-body-v3-categories");
 	assert.equal(result.records[0].sha256, expected.sha256);
 	assert.equal(Object.isFrozen(result.records[0]), true);
 	assert.equal(JSON.stringify(result).includes(expected.url), false);

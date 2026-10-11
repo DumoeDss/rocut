@@ -336,7 +336,10 @@ try {
 			});
 			Object.assign(
 				attempt,
-				await page.evaluate(() => globalThis.__liquidResult),
+				await page.evaluate(() => ({
+					...globalThis.__liquidResult,
+					wasmInitializationStamp: globalThis.__htmlProbeWasmIdentity ?? null,
+				})),
 			);
 			const media = await page.evaluate(() => globalThis.__liquidMedia),
 				sheet = await page.evaluate(() => globalThis.__liquidSheet);
