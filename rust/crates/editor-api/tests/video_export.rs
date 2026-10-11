@@ -284,6 +284,58 @@ fn explicit_quantizer_has_a_native_plan_without_quality_promotion() {
 }
 
 #[test]
+fn default_420_webm_very_high_uses_the_native_quantizer_plan() {
+    let mut r = request("vp9", "very_high", 192, 128);
+    r["frameRate"]["numerator"] = json!(24);
+    r["format"] = json!("webm");
+    let plan = resolve(&r);
+    assert_eq!(plan["kind"], "vp9Quantizer");
+    assert_eq!(plan["default"], true);
+    assert_eq!(plan["quantizer"], 8);
+    assert_eq!(plan["bitrate"], 295000);
+    assert_eq!(plan["nativeConfig"]["bitrateMode"], "quantizer");
+    r["videoQuantizer"] = json!(8);
+    let mut explicit = resolve(&r);
+    explicit.as_object_mut().unwrap().remove("default");
+    let mut expected = plan.clone();
+    expected.as_object_mut().unwrap().remove("default");
+    assert_eq!(explicit, expected);
+}
+
+#[test]
+fn default_quantizer_plan_is_limited_to_420_webm_very_high_vp9() {
+    let mut r = request("vp9", "very_high", 192, 128);
+    r["format"] = json!("webm");
+    // AVC keeps the bitrate response.
+    let mut avc = r.clone();
+    avc["codec"] = json!("avc");
+    assert_eq!(resolve(&avc), json!({"bitrate":369000}));
+    // Lower qualities keep the bitrate response.
+    for quality in ["low", "medium", "high"] {
+        let mut lower = r.clone();
+        lower["quality"] = json!(quality);
+        assert_eq!(
+            resolve(&lower),
+            json!({"bitrate":resolve(&request("vp9", quality, 192, 128))["bitrate"]})
+        );
+    }
+    // MP4 keeps the bitrate response.
+    let mut mp4 = r.clone();
+    mp4["format"] = json!("mp4");
+    assert_eq!(resolve(&mp4), json!({"bitrate":369000}));
+    // Explicit 4:4:4 keeps the full-codec-string response.
+    let mut chroma = request("vp9", "very_high", 192, 128);
+    chroma["format"] = json!("webm");
+    chroma["videoChroma"] = json!("444");
+    assert!(resolve(&chroma)["fullCodecString"].is_string());
+    assert!(resolve(&chroma)["kind"].is_null());
+    // Absent format (non-WebM callers) keeps the bitrate response.
+    let mut absent = request("vp9", "very_high", 192, 128);
+    absent.as_object_mut().unwrap().remove("format");
+    assert_eq!(resolve(&absent), json!({"bitrate":369000}));
+}
+
+#[test]
 fn quantizer_rejects_null_coercion_and_wrong_container_without_fallback() {
     let mut base = request("vp9", "very_high", 96, 64);
     base["format"] = json!("webm");

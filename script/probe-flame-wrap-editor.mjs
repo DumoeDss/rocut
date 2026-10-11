@@ -12,13 +12,19 @@ import { createFlameWrapEditorPage } from "./fixtures/flame-wrap-editor-browser.
 import { prepareFlameWrapEditorInputs } from "./fixtures/flame-wrap-editor-inputs.mjs";
 import { bundleFlameWrapEditorHost } from "./fixtures/flame-wrap-editor-bundle.mjs";
 
-const [pkg, creator, buildReceipt, stage = "full"] = process.argv.slice(2);
+const [pkg, creator, buildReceipt, stage = "full", quantizerArg] = process.argv.slice(2);
+const quantizer =
+	quantizerArg === undefined ? undefined : Number(quantizerArg);
+if (quantizer !== undefined && !Number.isInteger(quantizer))
+	throw new Error("quantizer stage requires an integer VP9 quantizer");
+assert(
+	["ui-only", "full", "full-444", "full-420-quantizer"].includes(stage),
+);
 assert.equal(
 	process.argv.length,
-	stage === "full" ? 5 : 6,
-	"Expected private-pkg Creator/flame-wrap.mjs production-build-evidence.json [ui-only|full-444]",
+	quantizer === undefined ? 6 : 7,
+	"Expected private-pkg Creator/flame-wrap.mjs production-build-evidence.json [ui-only|full|full-444] [quantizer]",
 );
-assert(["full", "ui-only", "full-444"].includes(stage));
 const workspace = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const root = await mkdtemp("C:/tmps/flame-wrap-editor-");
 const temp = join(root, "temp");
@@ -58,6 +64,7 @@ const artifacts = {
 	usePresentationObserver: true,
 	projectPath: join(root, "project/project.json"),
 	videoChroma: stage === "full-444" ? "444" : "420",
+	...(stage === "full-420-quantizer" ? { videoQuantizer: quantizer } : {}),
 };
 const configPath = join(root, "config.json");
 await writeFile(
@@ -88,7 +95,7 @@ const report = {
 	preflight: inputs.validation,
 	wasmSha256: build.wasmSha256,
 	stage,
-	scope: `Real production Vite editor, private actual Host, parameter UI/history/reload${stage !== "ui-only" ? ` and same-project VP9 ${artifacts.videoChroma} export` : "; export not executed"}. Browser WebGL SwiftShader; not Electron, alpha master, installed plugin or hardware acceptance.`,
+	scope: `Real production Vite editor, private actual Host, parameter UI/history/reload${stage !== "ui-only" ? ` and same-project VP9 ${artifacts.videoQuantizer !== undefined ? "4:2:0 quantizer " + artifacts.videoQuantizer : artifacts.videoChroma} export` : "; export not executed"}. Browser WebGL SwiftShader; not Electron, alpha master, installed plugin or hardware acceptance.`,
 	console: [],
 	pageErrors: [],
 	httpFailures: [],

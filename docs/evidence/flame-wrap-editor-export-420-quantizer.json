@@ -1,0 +1,126 @@
+{
+	"schema": "elftia-evidence/1",
+	"id": "flame-wrap-editor-export-420-quantizer",
+	"title": "Flame Wrap editor export with explicit low VP9 quantizer over default 4:2:0 (controlled parity experiment)",
+	"capturedAt": "2026-10-10T19:57:27.981Z",
+	"status": "verified",
+	"scope": "Same retained production editor/Host chain and project family as the failed default 4:2:0 run; explicit native VP9 quantizer policy only. Confirms divergence sits in encoder quantization policy, not renderer or timing. Default-policy failure remains open and unchanged.",
+	"source": {
+		"path": "C:/tmps/flame-wrap-editor-uLnFoV/evidence.json",
+		"sha256": "b68dbc6e40490f47abc0a624a7888a540852820806f63d9e804a2f63e0bcea3c",
+		"projection": "subset; full receipt, video, project and pins retained at source root"
+	},
+	"ok": true,
+	"stage": "full-420-quantizer",
+	"wasmSha256": "75ef560f97061951ca38a6579fb30018daeed35f782c2c1fcc492fc6cd39b8fe",
+	"browserVersion": "151.0.7922.34",
+	"buildReceipt": "C:/tmps/effect-editor-build-C0e9vP/build-evidence.json",
+	"ui": {
+		"ok": true,
+		"scope": "Actual production editor textboxes, attached-session history tasks, real Host graph/record and full presentation canvas pixels. Not raw native pixels or UI-created animation channels.",
+		"uiHistoryEntries": 10,
+		"seeks": 5,
+		"frames": 6,
+		"reloadVerified": true,
+		"reloadSeekVerified": true
+	},
+	"export": {
+		"ok": true,
+		"format": "explicit opaque WebM VP9 4:2:0 native quantizer control (not the default quality policy)",
+		"range": {
+			"startTime": 20000,
+			"endTime": 85000
+		},
+		"thresholds": {
+			"meanRgb": 4,
+			"activeRgb": 6,
+			"activePixels": 48,
+			"activeDelta": 16,
+			"timestamp": 0.0011
+		},
+		"metrics": [
+			{
+				"ticks": 20000,
+				"frameIndex": 0,
+				"meanRgb": 1.8975287543402777,
+				"activeRgb": 3.7603254839107385,
+				"activePixels": 8111
+			},
+			{
+				"ticks": 40000,
+				"frameIndex": 4,
+				"meanRgb": 1.9501274956597223,
+				"activeRgb": 3.869676355390641,
+				"activePixels": 8085
+			},
+			{
+				"ticks": 80000,
+				"frameIndex": 12,
+				"meanRgb": 1.9482828776041667,
+				"activeRgb": 3.860815047021944,
+				"activePixels": 7975
+			}
+		],
+		"pixFmt": "yuv420p",
+		"codec": "vp9",
+		"frames": "13",
+		"videoSha256": "c1ab67ebfcc21f26cc1b2eab7e9ec68f3118b5a1e48eb6918ed1189255726868",
+		"videoBytes": 54087,
+		"outputPath": "C:\\tmps\\flame-wrap-editor-uLnFoV\\project\\exports\\6d22af463e3083d5.webm",
+		"projectSha256": "13679eba445a3ee2935192914e808c831ceefe88b375a309c6669e1525acad92",
+		"revision": 31,
+		"unchangedGraphRevisionAndPersistedBytes": true,
+		"unchangedSourceAssetFiles": [
+			{
+				"bodyPath": "C:\\tmps\\flame-wrap-editor-uLnFoV\\project\\attachments\\programmatic-sha256-0c74c6b4f8c39ea11a6722966f2f4a209f1e24b7066da6257de8a3bf4a905a6d\\body.bin",
+				"metadataPath": "C:\\tmps\\flame-wrap-editor-uLnFoV\\project\\attachments\\programmatic-sha256-0c74c6b4f8c39ea11a6722966f2f4a209f1e24b7066da6257de8a3bf4a905a6d\\metadata.json",
+				"sha256": "0c74c6b4f8c39ea11a6722966f2f4a209f1e24b7066da6257de8a3bf4a905a6d",
+				"metadataSha256": "47bcb3134e08c28fe9e8d438e1c496c414af8aacc176819a0edd77fc68726f41"
+			}
+		]
+	},
+	"comparison": {
+		"failedDefault420": {
+			"ticks40000": {
+				"meanRgb": 2.9849175347222223,
+				"activeRgb": 6.354277468563183
+			},
+			"thresholds": {
+				"meanRgb": 4,
+				"activeRgb": 6
+			},
+			"receipt": "flame-wrap-editor-retained-export-420-failure.json"
+		},
+		"explicitQuantizer8": {
+			"ticks40000": {
+				"meanRgb": 1.9501274956597223,
+				"activeRgb": 3.869676355390641
+			}
+		},
+		"deltaActiveRgbAtFailingFrame": "2.484601"
+	},
+	"lifecycle": {
+		"browserClosed": true,
+		"hostClosed": true,
+		"hostExit": {
+			"code": 0,
+			"signal": null
+		},
+		"hostVerification": {
+			"hostClosed": true,
+			"reopened": true,
+			"ready": true,
+			"verified": true,
+			"browserTested": false,
+			"gpuTested": false,
+			"exportTested": false
+		},
+		"inputsUnchanged": true,
+		"externalRequests": 0,
+		"pageErrors": 0,
+		"httpFailures": 2,
+		"retainedConsole": "Two optional preset 404s, ten preview AbortError cancellation logs from the UI history flow, one Canvas2D readback advisory; retained, not a zero-console claim"
+	},
+	"interpretation": "Same renderer, same project family, same thresholds and failing frame: the only changed input is the encoder quantization policy. Explicit VP9 quantizer 8 (4:2:0, native quantizer path) passes all three reference frames including the previously failing ticks=40000. The default-quality 4:2:0 failure is therefore attributable to encoder quantization configuration, not pre-encode pixels, timing or the Flame Wrap renderer. Default policy remains unfixed; this does not relax any threshold or substitute for fixing it.",
+	"boundary": "Explicit quantizer path acceptance only; the default 4:2:0 quality policy failure, Electron host, hardware GPU, installed plugin and alpha master remain outside this evidence."
+}

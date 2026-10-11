@@ -87,6 +87,9 @@ async function exportSameProject({ page, request, artifacts, expectedFrames }) {
 		includeAudio: false,
 		range,
 		...(artifacts.videoChroma === "444" ? { videoChroma: "444" } : {}),
+		...(artifacts.videoQuantizer === undefined
+			? {}
+			: { videoQuantizer: artifacts.videoQuantizer }),
 	});
 	let finished;
 	const exportDeadline = Date.now() + 90000;
@@ -120,9 +123,11 @@ async function exportSameProject({ page, request, artifacts, expectedFrames }) {
 	const evidence = {
 		ok: true,
 		format:
-			artifacts.videoChroma === "444"
-				? "explicit opaque WebM VP9 4:4:4 (not default 4:2:0 or alpha master)"
-				: "default opaque WebM VP9 4:2:0 (not alpha master)",
+			artifacts.videoQuantizer !== undefined
+				? "explicit opaque WebM VP9 4:2:0 native quantizer control (not the default quality policy)"
+				: artifacts.videoChroma === "444"
+					? "explicit opaque WebM VP9 4:4:4 (not default 4:2:0 or alpha master)"
+					: "default opaque WebM VP9 4:2:0 (not alpha master)",
 		range,
 		thresholds,
 		sensitivity,
