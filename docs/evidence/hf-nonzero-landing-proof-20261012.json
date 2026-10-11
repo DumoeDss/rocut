@@ -1,0 +1,31 @@
+{
+	"schema": "rocut-hf-nonzero-landing-proof/v1",
+	"baseCommit": "afbce436a88149e5e9a6484d66a2feee8fd8bb33",
+	"candidateManifestSha256": "a9cce49de4ac2c4cb0ed37dd13e546f9d83fe4d5d889ff057122b62d5673ad53",
+	"productionSha256": "6562769f7a18312ae6f1c0fd11b0791678d6bc84c8d447618333e705def213a2",
+	"regressionSha256": "ceaa3061d513f806bbbae674079a5909ef2b748717cdbcd66eda3b46496507db",
+	"observedFailureReceiptSha256": "a32f9e77fadec132cd5bd3f148ce7b5c404cc0e2d2421d88a0930abe33486f04",
+	"historicalCallbackSeeking": "unknown: the historical landing gate did not read it",
+	"change": "Retain immutable validated nonzero callback primitives only when the callback itself is nonseeking and ready, and wait for seeked before presentation admission. Events revalidate the original scope, deadline, media, source, target and freshness guards.",
+	"semanticDelta": "Pre-landing nonzero callbacks now read seeking; eligible nonseeking ready callbacks read source and metadata before seeked, so previously unread getter faults may become terminal earlier. This is an active change, not passive observation.",
+	"unchanged": [
+		"nonzero requires seeked",
+		"later-zero behavior",
+		"rejected-callback rearm",
+		"absolute deadline",
+		"no extra seek/timer/RAF",
+		"pixel/export gates"
+	],
+	"verification": {
+		"newDurableTests": 27,
+		"combinedRootCpuTestsIncludingExternalAB": 149,
+		"fail": 0,
+		"skip": 0,
+		"externalBaselineREDCandidateGREEN": true,
+		"nodeRecommendedLint": true,
+		"prettier": true,
+		"strictUtf8": true
+	},
+	"browserFixValidated": false,
+	"acceptance": false
+}

@@ -110,6 +110,7 @@ test("production terminal stamp remains separate from mandatory original-body ga
 });
 async function fixture(
 	body = async () => ({ body: bytes.toString("base64"), base64Encoded: true }),
+	options = {},
 ) {
 	const session = new EventEmitter(),
 		calls = [];
@@ -123,7 +124,7 @@ async function fixture(
 		);
 		return body(params);
 	};
-	const observed = await observeProbeWasmHttp(session, expected);
+	const observed = await observeProbeWasmHttp(session, expected, options);
 	return {
 		session,
 		calls,
@@ -151,8 +152,8 @@ test("exact original request ID is read once only after loadingFinished, with bo
 		{
 			method: "Network.enable",
 			params: {
-				maxTotalBufferSize: 15 * 1024 * 1024,
-				maxResourceBufferSize: 15 * 1024 * 1024,
+				maxTotalBufferSize: 40 * 1024 * 1024,
+				maxResourceBufferSize: 20 * 1024 * 1024,
 			},
 		},
 		{
@@ -160,7 +161,7 @@ test("exact original request ID is read once only after loadingFinished, with bo
 			params: { requestId: "original-request" },
 		},
 	]);
-	assert.equal(result.profile, "cdp-original-request-body-v3-categories");
+	assert.equal(result.profile, "cdp-original-request-body-v4-bounded-cache");
 	assert.equal(result.records[0].sha256, expected.sha256);
 	assert.equal(Object.isFrozen(result.records[0]), true);
 	assert.equal(JSON.stringify(result).includes(expected.url), false);

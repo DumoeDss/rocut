@@ -2,6 +2,19 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 
 const MAX_BINARY_BYTES = 15 * 1024 * 1024;
+// Chromium retains binary response content as one-byte base64 text. The
+// protocol's per-resource cache bound is not the decoded binary admission gate.
+const MAX_CACHED_BASE64_BYTES = Math.ceil(MAX_BINARY_BYTES / 3) * 4;
+export const WASM_HTTP_BUFFER_PROFILES = Object.freeze({
+	"legacy-15mib": Object.freeze({
+		total: MAX_BINARY_BYTES,
+		resource: MAX_BINARY_BYTES,
+	}),
+	"base64-plus-peer": Object.freeze({
+		total: 2 * MAX_CACHED_BASE64_BYTES,
+		resource: MAX_CACHED_BASE64_BYTES,
+	}),
+});
 // Classify only explicit transport clues. Never retain raw errors, URLs or headers.
 // These are diagnostic categories, not proof of a particular browser root cause.
 export function classifyWasmBodyProtocolFailure(error) {
@@ -43,7 +56,13 @@ export function classifyWasmBodyProtocolFailure(error) {
 }
 /** Node-only original-response evidence. No Response.body() fallback/refetch.
  * Call drain after the original pixel/export checks, before closing context. */
-export async function observeProbeWasmHttp(session, expected) {
+export async function observeProbeWasmHttp(session, expected, options = {}) {
+	const totalBufferProfile = options.totalBufferProfile ?? "base64-plus-peer";
+	assert.ok(
+		Object.hasOwn(WASM_HTTP_BUFFER_PROFILES, totalBufferProfile),
+		"Unknown bounded HTTP cache profile",
+	);
+	const buffers = WASM_HTTP_BUFFER_PROFILES[totalBufferProfile];
 	assert.match(expected.sha256, /^[a-f0-9]{64}$/);
 	assert.ok(
 		Number.isSafeInteger(expected.byteLength) &&
@@ -185,8 +204,8 @@ export async function observeProbeWasmHttp(session, expected) {
 	};
 	try {
 		await session.send("Network.enable", {
-			maxTotalBufferSize: MAX_BINARY_BYTES,
-			maxResourceBufferSize: MAX_BINARY_BYTES,
+			maxTotalBufferSize: buffers.total,
+			maxResourceBufferSize: buffers.resource,
 		});
 	} catch (error) {
 		remove();
@@ -210,7 +229,12 @@ export async function observeProbeWasmHttp(session, expected) {
 				);
 				remove();
 				return Object.freeze({
-					profile: "cdp-original-request-body-v3-categories",
+					profile: "cdp-original-request-body-v4-bounded-cache",
+					transportCache: Object.freeze({
+						profile: totalBufferProfile,
+						maxTotalBufferSize: buffers.total,
+						maxResourceBufferSize: buffers.resource,
+					}),
 					overflow,
 					invalidEvent,
 					lateResponse,
