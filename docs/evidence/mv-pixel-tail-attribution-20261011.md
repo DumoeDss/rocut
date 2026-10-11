@@ -11,7 +11,7 @@
 | train-moving | 32189px max25 | 通过 | GL 段同输入一致（15 passes 全执行） | scene <=1 LSB 经 bloom 阈值 0.72 翻转 + 三层 downsample 放大 | mv-night-train-segment-isolation-20261011.json
 | train-frozen | 7445px max12 | 通过（error 为 complete-frame，非 scene） | 同 moving 机理；y540-810 同区；alpha 逐位一致 | 同上 | 本轮 jk1sNA evidence + mv-night-train-parity-finding-20261011.json
 | train-exit | **0 差异** | **0** | 15 passes | 无残差——同引擎同链不同帧内容完全 bit-exact | 本轮 81bRVZ evidence
-| tunnel | 22px（(992,663) 簇 delta4-6 + 19 个 delta1） | 已归因 | crossbuck strokeRect 已实验排除；干净单渲染诊断把帧4 scene 真实残差隔离为单像素 (992,663)：dust streak i=111 的 round-cap 端点 (991.690,662.985) 亚像素覆盖翻转；几何端点 212/212 与参考复算一致（<0.01px），差异纯来自两条 Canvas 光栅管线对 cap 边界的不同估计；其余 delta1 为字形边缘族+seek fill-history | 同 rasterizer-edge-flip 族（与 wet-floor/train 同类），非几何/序列化/producer 缺陷 | mv-tunnel-992-663-attribution-20261011.json + mv-tunnel-crossbuck-exclusion-20261011.json |
+| tunnel | 22px（(992,663) 簇 delta4-6 + 19 个 delta1） | 已归因 | crossbuck strokeRect 已实验排除；干净单渲染诊断把帧4 scene 真实残差隔离为单像素 (992,663)：dust streak i=111 的 round-cap 端点 (991.690,662.985) 亚像素覆盖翻转；几何端点 212/212 与参考复算一致（<0.01px），差异纯来自两条 Canvas 光栅管线对 cap 边界的不同估计；其余 delta1 为字形边缘族+seek fill-history | 同 rasterizer-edge-flip 族（与 wet-floor/train 同类），非几何/序列化/producer 缺陷 | mv-tunnel-992-663-attribution-20261011.json + mv-tunnel-crossbuck-exclusion-20261011.json；2026-10-11 下午补充：完整矩阵复跑暴露偶发时序非确定性（失败点漂移于 visit 6/7/15/18，幅度 10-165，单帧/预滚/背靠背隔离均 bit-exact），归档为独立缺陷：mv-tunnel-intermittent-nondeterminism-20261011.json |
 
 ## 统一机理
 
