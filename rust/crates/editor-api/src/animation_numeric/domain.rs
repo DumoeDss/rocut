@@ -233,7 +233,32 @@ impl Check {
                 Some(index),
             );
         }
-        if let Some(values) = tight_range(lower, upper, curve.y) {
+        let hull = Interval {
+            lo: curve.y.into_iter().fold(f64::INFINITY, f64::min),
+            hi: curve.y.into_iter().fold(f64::NEG_INFINITY, f64::max),
+        };
+        let original = bernstein_range(
+            Interval {
+                lo: lower,
+                hi: upper,
+            },
+            curve.y,
+        )
+        .filter(|values| values.finite());
+        // A finite original expression plus the corrected evaluator is always
+        // inside the control hull. Do not hide original arithmetic overflow.
+        if original.is_some() {
+            if let Some(displayed) = self.display_range(hull) {
+                if self.fits(displayed) {
+                    self.include(hull, displayed);
+                    return Ok(());
+                }
+            }
+        }
+        // Existing tighter certificates cover only the original expression.
+        // Use them only when its enclosure proves correction cannot trigger.
+        let original_only = original.is_some_and(|v| v.lo >= hull.lo && v.hi <= hull.hi);
+        if let Some(values) = tight_range(lower, upper, curve.y).filter(|_| original_only) {
             if let Some(displayed) = self.display_range(values) {
                 if self.fits(displayed) {
                     self.include(values, displayed);
@@ -241,13 +266,7 @@ impl Check {
                 }
             }
         }
-        if let Some(values) = bernstein_range(
-            Interval {
-                lo: lower,
-                hi: upper,
-            },
-            curve.y,
-        ) {
+        if let Some(values) = original.filter(|_| original_only) {
             if values.finite() {
                 if let Some(displayed) = self.display_range(values) {
                     if self.fits(displayed) {

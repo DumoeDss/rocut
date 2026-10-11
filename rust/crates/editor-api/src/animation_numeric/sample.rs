@@ -50,7 +50,9 @@ impl<'a> ValidatedChannel<'a> {
         })
     }
 
-    /// Follows the existing scalar operation order; no value clamp or epsilon.
+    /// Follows the existing scalar operation order, except finite Bezier
+    /// roundoff outside the control hull is reevaluated by bounded interpolation.
+    /// No value clamp or epsilon is applied.
     pub fn sample(&self, time: f64) -> Result<f64, NumericIssue> {
         if !time.is_finite() {
             return Err(NumericIssue::new(IssueKind::NonFiniteTime, None));
@@ -189,5 +191,91 @@ impl Curve {
 
 pub(crate) fn bernstein(u: f64, p: [f64; 4]) -> f64 {
     let mt = 1.0 - u;
-    mt * mt * mt * p[0] + 3.0 * mt * mt * u * p[1] + 3.0 * mt * u * u * p[2] + u * u * u * p[3]
+    // Preserve scalar-f64-v1 operation order unless finite rounding has escaped
+    // the controls' convex hull: that cannot be a genuine Bezier overshoot.
+    let value =
+        mt * mt * mt * p[0] + 3.0 * mt * mt * u * p[1] + 3.0 * mt * u * u * p[2] + u * u * u * p[3];
+    let lo = p.into_iter().fold(f64::INFINITY, f64::min);
+    let hi = p.into_iter().fold(f64::NEG_INFINITY, f64::max);
+    if !value.is_finite() || (value >= lo && value <= hi) {
+        return value;
+    }
+    if !(0.0..=1.0).contains(&u) || p.iter().any(|v| !v.is_finite()) {
+        return value;
+    }
+    let a = bounded_mix(p[0], p[1], u);
+    let b = bounded_mix(p[1], p[2], u);
+    let c = bounded_mix(p[2], p[3], u);
+    bounded_mix(bounded_mix(a, b, u), bounded_mix(b, c, u), u)
+}
+
+fn bounded_mix(a: f64, b: f64, u: f64) -> f64 {
+    if a == b {
+        return a;
+    }
+    // Opposite signs cannot overflow this weighted sum. Same signs use the
+    // nearer endpoint, keeping the rounded result between the two operands.
+    if (a <= 0.0 && b >= 0.0) || (b <= 0.0 && a >= 0.0) {
+        return a * (1.0 - u) + b * u;
+    }
+    if u <= 0.5 {
+        a + (b - a) * u
+    } else {
+        b + (a - b) * (1.0 - u)
+    }
+}
+
+#[cfg(test)]
+mod boundary_tests {
+    use super::{bernstein, bounded_mix};
+
+    #[test]
+    fn dyadic_bounded_interpolation_handles_extremes_and_subnormals() {
+        let tiny = f64::from_bits(1);
+        for (a, b) in [
+            (f64::MAX, f64::MAX.next_down()),
+            (-f64::MAX, (-f64::MAX).next_up()),
+            (-f64::MAX, f64::MAX),
+            (tiny, tiny.next_up()),
+            (-tiny, (-tiny).next_down()),
+            (-tiny, tiny),
+            (0.0, tiny),
+            (1.0, 1.0_f64.next_down()),
+            (-1.0, (-1.0_f64).next_up()),
+        ] {
+            for (a, b) in [(a, b), (b, a)] {
+                for n in [0, 1, 17, 524287, 524288, 524289, 1048575, 1048576] {
+                    let u = n as f64 / 1048576.0;
+                    let value = bounded_mix(a, b, u);
+                    assert!(
+                        value.is_finite() && value >= a.min(b) && value <= a.max(b),
+                        "a={a:?} b={b:?} u={u:?} value={value:?}"
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn finite_hull_escape_is_corrected_but_original_overflow_is_preserved() {
+        // These dyadic inversion outputs reproduce the finite rounding defect.
+        for (a, b, n) in [
+            (1.0, 1.0_f64.next_down(), 3583),
+            (0.08, 0.08_f64.next_down(), 35),
+            (0.1, 0.1_f64.next_up(), 35),
+            (-1.0, (-1.0_f64).next_up(), 3583),
+        ] {
+            let p = [a, a, b, b];
+            let u = n as f64 / 2097152.0;
+            let mt = 1.0 - u;
+            let original = mt * mt * mt * p[0]
+                + 3.0 * mt * mt * u * p[1]
+                + 3.0 * mt * u * u * p[2]
+                + u * u * u * p[3];
+            assert!(original < a.min(b) || original > a.max(b));
+            let value = bernstein(u, p);
+            assert!(value.is_finite() && value >= a.min(b) && value <= a.max(b));
+        }
+        assert!(!bernstein(2.0, [f64::MAX; 4]).is_finite());
+    }
 }
