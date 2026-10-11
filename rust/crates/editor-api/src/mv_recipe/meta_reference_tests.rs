@@ -35,13 +35,15 @@ fn rewind_child_discovery_has_no_font_requirement() {
         start_ticks: 120000,
         is_reference: false,
     }];
-    assert!(a
-        .child_sample("child", "rewind", &s, &candidates)
-        .unwrap()
-        .is_some());
-    assert!(a
-        .plan("child", "rewind", &s, &candidates, &[], None, 1920, 1080)
-        .is_err());
+    assert!(
+        a.child_sample("child", "rewind", &s, &candidates)
+            .unwrap()
+            .is_some()
+    );
+    assert!(
+        a.plan("child", "rewind", &s, &candidates, &[], None, 1920, 1080)
+            .is_err()
+    );
     let a: Rewind = serde_json::from_str(r#"{"osd":false}"#).unwrap();
     assert_eq!(
         serde_json::to_value(a.child_sample("child", "rewind", &s, &candidates).unwrap()).unwrap(),

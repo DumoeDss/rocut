@@ -1,7 +1,7 @@
 use super::{
+    Sample, Session,
     draw::*,
     plan::{Frame, Operation, Plan},
-    Sample, Session,
 };
 pub fn frame(s: &Session, sample: &Sample<'_>) -> Result<Frame, String> {
     s.stage.idle()?;

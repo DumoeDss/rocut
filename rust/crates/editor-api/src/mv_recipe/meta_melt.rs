@@ -1,7 +1,7 @@
 use super::{
-    child,
-    math::{noise, Rng},
-    rnd, ChildSample, Sample,
+    ChildSample, Sample, child,
+    math::{Rng, noise},
+    rnd,
 };
 use serde::{Deserialize, Serialize};
 #[derive(Deserialize)]

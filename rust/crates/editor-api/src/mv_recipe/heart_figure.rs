@@ -1,7 +1,7 @@
 //! Original glass.js integer-row wind warp, shading, local light and directional rim.
 use super::{
     draw::*,
-    plan::{native, Command, HeartCommand, Operation},
+    plan::{Command, HeartCommand, Operation, native},
 };
 pub struct Image<'a> {
     pub id: &'a str,

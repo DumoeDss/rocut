@@ -1,4 +1,4 @@
-use super::{draw::*, rebirth_draw::*, Session};
+use super::{Session, draw::*, rebirth_draw::*};
 pub fn particles(
     d: &mut Draw,
     session: &Session,

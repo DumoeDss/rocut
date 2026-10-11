@@ -1,4 +1,4 @@
-use super::math::{rgba, H, W};
+use super::math::{H, W, rgba};
 use serde::Serialize;
 #[derive(Clone, Serialize)]
 #[serde(tag = "kind", rename_all = "camelCase")]

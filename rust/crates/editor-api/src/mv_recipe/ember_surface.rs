@@ -4,17 +4,17 @@
 use super::plan::{Command, PaintKind, Plan};
 use std::collections::{BTreeMap, BTreeSet};
 
-#[path = "fall_filtered_rect.rs"]
-mod filtered_rect;
-#[path = "ember_paint_history.rs"]
-mod paint_history;
 #[path = "ember_blit_filter.rs"]
 mod blit_filter;
+#[path = "fall_filtered_rect.rs"]
+mod filtered_rect;
 #[path = "ember_ordered_primitives.rs"]
 mod ordered_primitives;
 #[cfg(test)]
 #[path = "ember_ordered_primitives_tests.rs"]
 mod ordered_primitives_tests;
+#[path = "ember_paint_history.rs"]
+mod paint_history;
 
 const MAX_SURFACES: usize = 64;
 const MAX_COMMANDS: usize = 4096;
@@ -90,8 +90,10 @@ impl Plan {
                         .checked_add(cost + gray.len() as u64 * GRAY_PAYLOAD_PIXELS_PER_BYTE)
                         .ok_or("Surface budget overflow")?;
                 }
-                Command::PreparedPatch {request,..} => {
-                    pixels=pixels.checked_add(patch_pixels(request)?).ok_or("Surface budget overflow")?;
+                Command::PreparedPatch { request, .. } => {
+                    pixels = pixels
+                        .checked_add(patch_pixels(request)?)
+                        .ok_or("Surface budget overflow")?;
                 }
                 Command::RectBatch { rects, .. } => {
                     pixels = pixels
@@ -305,7 +307,7 @@ fn retained_payload(commands: &[Command]) -> Result<u64, String> {
         std::iter::once(command).chain(children)
     }) {
         let cost = match command {
-            Command::PreparedPatch {request,..} => patch_pixels(request)?,
+            Command::PreparedPatch { request, .. } => patch_pixels(request)?,
             Command::GrayPixels { gray, .. } | Command::AlphaPixels { alpha: gray, .. } => {
                 gray.len() as u64 * GRAY_PAYLOAD_PIXELS_PER_BYTE
             }
@@ -318,34 +320,65 @@ fn retained_payload(commands: &[Command]) -> Result<u64, String> {
     Ok(total)
 }
 
-fn patch_pixels(request:&crate::mv_image_preprocess::Request)->Result<u64,String> {
+fn patch_pixels(request: &crate::mv_image_preprocess::Request) -> Result<u64, String> {
     request.patch_key()?;
-    Ok(3*u64::from(request.roi.width)*u64::from(request.roi.height)+5120)
+    Ok(3 * u64::from(request.roi.width) * u64::from(request.roi.height) + 5120)
 }
 
-fn validate_prepared_patches(commands:&[Command])->Result<(),String> {
+fn validate_prepared_patches(commands: &[Command]) -> Result<(), String> {
     for command in commands {
         match command {
-            Command::PreparedPatch{..}=>return Err("Prepared patch requires a full image-sized surface".into()),
-            Command::AppendSurface{commands,..} if commands.iter().any(|c|matches!(c,Command::PreparedPatch{..}))=>
-                return Err("Prepared patch cannot mutate a previously published surface".into()),
-            Command::Surface{size,commands,..}=> {
-                for (index,c) in commands.iter().enumerate() {
-                    if let Command::PreparedPatch{request,patch_key}=c {
-                        if *size != [request.binding.width,request.binding.height] || patch_key != &request.patch_key()? {
-                            return Err("Prepared patch surface dimensions or opaque identity mismatch".into());
+            Command::PreparedPatch { .. } => {
+                return Err("Prepared patch requires a full image-sized surface".into());
+            }
+            Command::AppendSurface { commands, .. }
+                if commands
+                    .iter()
+                    .any(|c| matches!(c, Command::PreparedPatch { .. })) =>
+            {
+                return Err("Prepared patch cannot mutate a previously published surface".into());
+            }
+            Command::Surface { size, commands, .. } => {
+                for (index, c) in commands.iter().enumerate() {
+                    if let Command::PreparedPatch { request, patch_key } = c {
+                        if *size != [request.binding.width, request.binding.height]
+                            || patch_key != &request.patch_key()?
+                        {
+                            return Err(
+                                "Prepared patch surface dimensions or opaque identity mismatch"
+                                    .into(),
+                            );
                         }
-                        let Some(Command::Image{image,source_rect:None,destination_rect,transform,operations,clip:None,composite,opacity,..})=index.checked_sub(1).and_then(|i|commands.get(i)) else {
+                        let Some(Command::Image {
+                            image,
+                            source_rect: None,
+                            destination_rect,
+                            transform,
+                            operations,
+                            clip: None,
+                            composite,
+                            opacity,
+                            ..
+                        }) = index.checked_sub(1).and_then(|i| commands.get(i))
+                        else {
                             return Err("Prepared patch requires the immediately preceding declared image draw".into());
                         };
-                        if image != &request.binding.resource.id || *destination_rect != [0.0,0.0,size[0] as f64,size[1] as f64]
-                            || *transform != [1.0,0.0,0.0,1.0,0.0,0.0] || !operations.is_empty() || *composite != "source-over" || *opacity != 1.0 {
-                            return Err("Prepared patch requires exact identity source image placement".into());
+                        if image != &request.binding.resource.id
+                            || *destination_rect != [0.0, 0.0, size[0] as f64, size[1] as f64]
+                            || *transform != [1.0, 0.0, 0.0, 1.0, 0.0, 0.0]
+                            || !operations.is_empty()
+                            || *composite != "source-over"
+                            || *opacity != 1.0
+                        {
+                            return Err(
+                                "Prepared patch requires exact identity source image placement"
+                                    .into(),
+                            );
                         }
                     }
                 }
             }
-            _=>{}
+            _ => {}
         }
     }
     Ok(())

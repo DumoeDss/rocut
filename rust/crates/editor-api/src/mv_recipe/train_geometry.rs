@@ -214,9 +214,5 @@ pub fn lamp_levels(beats: &[f64], bpm: f64, downbeat: i64, t: f64) -> [f64; 2] {
     let on = i.rem_euclid(2);
     let env = sat(ph / 0.045) * (1.0 - 0.25 * ph) * (1.0 - 0.55 * smooth(0.8, 1.0, ph));
     let tail = 0.34 * dec(ph, 9.0) + 0.035;
-    if on == 0 {
-        [env, tail]
-    } else {
-        [tail, env]
-    }
+    if on == 0 { [env, tail] } else { [tail, env] }
 }

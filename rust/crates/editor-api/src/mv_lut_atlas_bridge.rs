@@ -9,8 +9,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::{BTreeMap, BTreeSet};
 pub use transport::{
-    lengths as validate_transport_lengths, row_bytes as validate_row_lengths,
-    session_id as validate_session_id, MAX_METADATA_CHARS,
+    MAX_METADATA_CHARS, lengths as validate_transport_lengths, row_bytes as validate_row_lengths,
+    session_id as validate_session_id,
 };
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

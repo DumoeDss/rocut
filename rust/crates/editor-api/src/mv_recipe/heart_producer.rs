@@ -1,7 +1,7 @@
 use super::{
+    HeartShatter, Plan, Sample, Session,
     draw::*,
     plan::{Command, Operation},
-    HeartShatter, Plan, Sample, Session,
 };
 fn pulse(beats: &[f64], t: f64, k: f64) -> f64 {
     let count = beats.partition_point(|v| *v <= t);
@@ -68,7 +68,7 @@ pub fn break_frame(
         _ => {
             return Err(
                 "Heart background dimensions must match the explicit background binding".into(),
-            )
+            );
         }
     }
     let beats: Vec<f64> = s.beats.iter().map(|v| *v as f64 / 120000.0).collect();

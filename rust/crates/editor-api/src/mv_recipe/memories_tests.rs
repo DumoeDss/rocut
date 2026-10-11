@@ -43,24 +43,30 @@ fn session() -> Session {
 fn font_metadata_and_scalar_metrics_are_admitted_before_fields() {
     let (a, r, mut f) = input();
     f.caption.widths.remove("😀");
-    assert!(Session::prepare(a, r, f, 256 * 1024 * 1024)
-        .err()
-        .unwrap()
-        .contains("Unicode scalar"));
+    assert!(
+        Session::prepare(a, r, f, 256 * 1024 * 1024)
+            .err()
+            .unwrap()
+            .contains("Unicode scalar")
+    );
     let (a, r, mut f) = input();
     f.date.widths.clear();
-    assert!(Session::prepare(a, r, f, 256 * 1024 * 1024)
-        .err()
-        .unwrap()
-        .contains("full-string"));
+    assert!(
+        Session::prepare(a, r, f, 256 * 1024 * 1024)
+            .err()
+            .unwrap()
+            .contains("full-string")
+    );
     let (a, mut r, mut f) = input();
     let bad = resource("caption.woff2", Some(500));
     r[1] = bad.clone();
     f.caption.resource = bad;
-    assert!(Session::prepare(a, r, f, 256 * 1024 * 1024)
-        .err()
-        .unwrap()
-        .contains("normal font"));
+    assert!(
+        Session::prepare(a, r, f, 256 * 1024 * 1024)
+            .err()
+            .unwrap()
+            .contains("normal font")
+    );
     let (a, r, mut f) = input();
     f.images.push(ImageFact {
         resource: r[0].clone(),

@@ -1,7 +1,7 @@
 use super::{
-    draw::*,
-    plan::{common::native, Command, MemoryCommand, Operation},
     Photo, Session,
+    draw::*,
+    plan::{Command, MemoryCommand, Operation, common::native},
 };
 pub fn draw(d: &mut Draw, s: &Session, p: &Photo, k: f64) -> Result<(), String> {
     let chars: Vec<char> = p.caption.chars().collect();

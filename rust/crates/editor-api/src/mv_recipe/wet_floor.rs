@@ -19,5 +19,5 @@ mod prepare;
 mod producer;
 pub use fonts::{Admission, Stack};
 pub use model::{Image, Sample, Settings};
-pub use prepare::{prepare_reflection_mask, ReflectionMask};
-pub use producer::{produce, Plan};
+pub use prepare::{ReflectionMask, prepare_reflection_mask};
+pub use producer::{Plan, produce};

@@ -8,9 +8,9 @@ mod stops;
 pub use import::prepare_mv_audio_json;
 pub use onsets::StrongOnsets;
 pub use sampling::{Channel, Signal};
-pub use stops::{Stop, StopKind};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
+pub use stops::{Stop, StopKind};
 
 pub const SCHEMA: &str = "rocut-mv-audio/1";
 pub const CREATOR_SCHEMA: &str = "creator-mv-audio/1";

@@ -1,7 +1,7 @@
 //! Original sky shardSprites base/glow/dark variants; no Heart mask is applied.
 use super::{
     draw::*,
-    plan::{native, Command, HeartCommand, Shadow},
+    plan::{Command, HeartCommand, Shadow, native},
     sky_geometry::Piece,
 };
 pub enum Variant {

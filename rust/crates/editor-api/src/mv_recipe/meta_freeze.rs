@@ -1,4 +1,4 @@
-use super::{child, crack, inv, out_cubic, out_expo, rnd, ChildSample, Sample};
+use super::{ChildSample, Sample, child, crack, inv, out_cubic, out_expo, rnd};
 use serde::{Deserialize, Serialize};
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

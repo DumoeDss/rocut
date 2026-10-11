@@ -109,9 +109,7 @@ impl Build {
         }
         if let Some(capabilities) = &self.capabilities {
             if self.engine != "three" || capabilities.len() != 1 {
-                issue(
-                    "capabilities require exactly one supported declaration on a Three build",
-                );
+                issue("capabilities require exactly one supported declaration on a Three build");
             }
         }
         if self.inputs.is_empty() || !self.inputs.iter().any(|r| r.id == self.entry_file) {

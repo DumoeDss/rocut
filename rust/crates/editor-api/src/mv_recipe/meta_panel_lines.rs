@@ -1,6 +1,6 @@
 //! Original 12/24fps focus wedges and quantized streaming speed-line paths.
 use super::super::{
-    math::{hash, Rng},
+    math::{Rng, hash},
     rnd,
 };
 use crate::mv_recipe::model::Color;

@@ -165,16 +165,25 @@ impl<'a> Context<'a> {
     /// exact sampled leaves. Storage closure size is not a raster working set.
     pub(crate) fn selected_residency_bytes(&self) -> Result<u64, String> {
         let mut seen = BTreeSet::new();
-        self.selected.borrow().values().try_fold(0u64, |total, image| {
-            if !seen.insert(image.resource.attachment_key().to_owned()) {
-                return Ok(total);
-            }
-            u64::from(image.width)
-                .checked_mul(u64::from(image.height))
-                .and_then(|n| n.checked_mul(8))
-                .and_then(|n| image.resource.byte_length().checked_mul(3).and_then(|b| n.checked_add(b)))
-                .and_then(|n| total.checked_add(n))
-                .ok_or_else(|| "Image sequence native residency overflow".into())
-        })
+        self.selected
+            .borrow()
+            .values()
+            .try_fold(0u64, |total, image| {
+                if !seen.insert(image.resource.attachment_key().to_owned()) {
+                    return Ok(total);
+                }
+                u64::from(image.width)
+                    .checked_mul(u64::from(image.height))
+                    .and_then(|n| n.checked_mul(8))
+                    .and_then(|n| {
+                        image
+                            .resource
+                            .byte_length()
+                            .checked_mul(3)
+                            .and_then(|b| n.checked_add(b))
+                    })
+                    .and_then(|n| total.checked_add(n))
+                    .ok_or_else(|| "Image sequence native residency overflow".into())
+            })
     }
 }

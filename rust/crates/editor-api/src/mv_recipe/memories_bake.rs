@@ -1,7 +1,7 @@
 use super::{
+    Session,
     draw::*,
     plan::{Command, MemoryCommand, Operation, Plan},
-    Session,
 };
 fn plan(d: Draw) -> Plan {
     Plan {

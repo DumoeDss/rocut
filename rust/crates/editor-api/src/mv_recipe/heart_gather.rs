@@ -1,11 +1,11 @@
 //! Complete original drawGather ordered plan, using retained Rust Heart preparation.
 use super::{
+    BackgroundFact, Plan, Sample, Session,
     draw::*,
     figure::{self, Figure, Image, Light, Rim, Wave},
-    plan::{native, Command, Operation},
+    plan::{Command, Operation, native},
     rebirth_contract::{self, Gather},
     rebirth_draw::*,
-    BackgroundFact, Plan, Sample, Session,
 };
 pub fn frame(
     session: &Session,

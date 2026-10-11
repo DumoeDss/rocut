@@ -1,6 +1,6 @@
 use super::{
     canvas::Canvas,
-    count::{camera, Drop, CX, CY},
+    count::{CX, CY, Drop, camera},
     math::*,
     model::{Sample, Settings},
 };

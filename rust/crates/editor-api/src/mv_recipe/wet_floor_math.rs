@@ -12,11 +12,7 @@ pub fn smooth(a: f64, b: f64, x: f64) -> f64 {
     k * k * (3.0 - 2.0 * k)
 }
 pub fn dec(x: f64, k: f64) -> f64 {
-    if x < 0.0 {
-        0.0
-    } else {
-        (-x * k).exp()
-    }
+    if x < 0.0 { 0.0 } else { (-x * k).exp() }
 }
 pub fn out_cubic(x: f64) -> f64 {
     1.0 - (1.0 - x).powi(3)

@@ -203,10 +203,7 @@ pub(super) fn finish(d: &mut Draw, a: &Tunnel, c: &Clock, cam: &Camera, g: f64, 
         to: [960.0, 540.0, 1080.0 * 1.05],
         stops: stops(&[(0.0, [0.0; 4]), (1.0, css(rgb(0x030206), 0.6 * (1.0 - g)))]),
     };
-    d.rect(
-        [0.0, 0.0, 1920.0, 1080.0],
-        fill(vignette(g), "source-over"),
-    );
+    d.rect([0.0, 0.0, 1920.0, 1080.0], fill(vignette(g), "source-over"));
     let mut rng = Rng::new(4242.0);
     let gray = (0..65536)
         .map(|_| ((rng.next() * 0.6 + rng.next() * 0.4) * 255.0).trunc() as u8)

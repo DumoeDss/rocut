@@ -85,12 +85,34 @@ fn visit(
         }
         PlanNode::Ref { input, .. } => visit(input, retained, source, images, peak)?,
         PlanNode::Layers { items } => {
-            for item in items { visit(&item.input, retained + 1, source, images, peak)?; }
+            for item in items {
+                visit(&item.input, retained + 1, source, images, peak)?;
+            }
         }
-        PlanNode::Freeze { input, data, .. } => visit(input, retained + 2 + data.scratch_pixels.div_ceil(1920 * 1080), source, images, peak)?,
-        PlanNode::Melt { input, data, .. } => visit(input, retained + 2 + data.scratch_pixels.div_ceil(1920 * 1080), source, images, peak)?,
+        PlanNode::Freeze { input, data, .. } => visit(
+            input,
+            retained + 2 + data.scratch_pixels.div_ceil(1920 * 1080),
+            source,
+            images,
+            peak,
+        )?,
+        PlanNode::Melt { input, data, .. } => visit(
+            input,
+            retained + 2 + data.scratch_pixels.div_ceil(1920 * 1080),
+            source,
+            images,
+            peak,
+        )?,
         PlanNode::Rewind { input, data, .. } => {
-            if let Some(input) = input { visit(input, retained + 2 + data.scratch_pixels.div_ceil(1920 * 1080), source, images, peak)?; }
+            if let Some(input) = input {
+                visit(
+                    input,
+                    retained + 2 + data.scratch_pixels.div_ceil(1920 * 1080),
+                    source,
+                    images,
+                    peak,
+                )?;
+            }
         }
         PlanNode::Panels { panels } => {
             for panel in panels {
@@ -98,8 +120,11 @@ fn visit(
             }
         }
         PlanNode::PanelsNative { inputs, data, .. } => {
-            let retained = retained + 2 + inputs.len() as u64 * 2 + data.scratch_pixels.div_ceil(1920 * 1080);
-            for input in inputs.iter().flatten() { visit(input, retained, source, images, peak)?; }
+            let retained =
+                retained + 2 + inputs.len() as u64 * 2 + data.scratch_pixels.div_ceil(1920 * 1080);
+            for input in inputs.iter().flatten() {
+                visit(input, retained, source, images, peak)?;
+            }
         }
         PlanNode::Transition { from, to, .. } => {
             visit(from, retained + 1, source, images, peak)?;

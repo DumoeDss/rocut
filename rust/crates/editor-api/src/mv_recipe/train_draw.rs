@@ -1,7 +1,7 @@
 use super::{
-    art::{stops, Art, ARM, LAMPS},
+    art::{ARM, Art, LAMPS, stops},
     canvas::{Canvas, Op, Surface},
-    geometry::{self, Geometry, G, P, R, WH},
+    geometry::{self, G, Geometry, P, R, WH},
     math::*,
     model::{Image, Sample, Settings, View},
 };

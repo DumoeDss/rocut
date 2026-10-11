@@ -1,6 +1,6 @@
 use super::plan::{
-    common::{self, native},
     Command, MemoryCommand, Operation, Paint, PaintKind, Step, Stop, Style,
+    common::{self, native},
 };
 pub type Color = crate::mv_recipe::model::Color;
 pub const ID: [f64; 6] = [1.0, 0.0, 0.0, 1.0, 0.0, 0.0];

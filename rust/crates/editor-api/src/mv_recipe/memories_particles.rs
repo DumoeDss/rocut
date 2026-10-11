@@ -1,8 +1,8 @@
 use super::{
+    Photo,
     draw::*,
     motion::{self, Burn, Pose},
     plan::Operation,
-    Photo,
 };
 pub fn dust(d: &mut Draw, p: &Photo, pose: Pose, land: f64, t: f64, win: f64) {
     let a = t - land;

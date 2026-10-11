@@ -1,4 +1,4 @@
-use super::{draw::*, motion::Timing, Sample};
+use super::{Sample, draw::*, motion::Timing};
 pub fn finish(d: &mut Draw, t: f64, timing: &Timing, win: f64, s: &Sample<'_>) {
     let beats: Vec<f64> = s.beats.iter().map(|v| *v as f64 / 120000.0).collect();
     let count = beats.partition_point(|v| *v <= t);

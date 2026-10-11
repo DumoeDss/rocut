@@ -1,6 +1,6 @@
 use super::{
     math::TAU,
-    plan::{color, Action as A, Draw, Style},
+    plan::{Action as A, Draw, Style, color},
 };
 fn shape(d: &mut Draw, r: f64) {
     d.a(A::BeginPath);

@@ -1,5 +1,5 @@
 use editor_api::validate_clip_editing_json;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 fn request(attached: bool, enabled: bool, forged_catalog: bool) -> Value {
     let catalog: Value = serde_json::from_str(&effects::stylized_effect_catalog_json()).unwrap();

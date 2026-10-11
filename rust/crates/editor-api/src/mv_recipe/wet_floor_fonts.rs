@@ -4,7 +4,7 @@ use crate::programmatic_resources::Resource;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
-use ttf_parser::{name_id, Face, Tag};
+use ttf_parser::{Face, Tag, name_id};
 #[derive(Clone, Serialize)]
 pub struct Stack {
     pub role: String,

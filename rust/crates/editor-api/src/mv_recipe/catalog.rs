@@ -3,26 +3,26 @@
 use bridge::export;
 use serde::Serialize;
 use serde_json::{Value, json};
-#[path = "kanji_slam_catalog.rs"]
-mod kanji_slam;
-#[path = "thread_catalog.rs"]
-mod thread;
-#[path="tunnel_catalog.rs"]
-mod tunnel;
 #[path = "fall_catalog.rs"]
 mod fall;
 #[path = "flame_catalog.rs"]
 mod flame;
-#[path = "ink_catalog.rs"]
-mod ink;
-#[path = "road_recipe_catalog.rs"]
-mod road;
 #[path = "heart_recipe_catalog.rs"]
 mod heart_owner;
+#[path = "ink_catalog.rs"]
+mod ink;
+#[path = "kanji_slam_catalog.rs"]
+mod kanji_slam;
 #[path = "memories_recipe_catalog.rs"]
 mod memories_owner;
 #[path = "night_recipe_catalog.rs"]
 mod night;
+#[path = "road_recipe_catalog.rs"]
+mod road;
+#[path = "thread_catalog.rs"]
+mod thread;
+#[path = "tunnel_catalog.rs"]
+mod tunnel;
 
 #[derive(Clone, Copy, Serialize)]
 #[serde(rename_all = "camelCase")]

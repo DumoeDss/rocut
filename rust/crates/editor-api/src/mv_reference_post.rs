@@ -1,6 +1,6 @@
 //! Controlled original compositor policy. Platform code executes this bounded plan.
 use serde::Serialize;
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 use std::collections::BTreeMap;
 
 pub const PROFILE: &str = "tunnel-original-gl-v1";

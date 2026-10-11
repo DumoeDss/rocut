@@ -5,7 +5,7 @@ mod geometry;
 mod lines;
 #[path = "meta_paper.rs"]
 mod paper;
-use super::{child, inv, out_cubic, out_expo, rnds, ChildSample, Sample};
+use super::{ChildSample, Sample, child, inv, out_cubic, out_expo, rnds};
 use crate::mv_recipe::model::Color;
 use serde::{Deserialize, Serialize};
 #[derive(Deserialize)]

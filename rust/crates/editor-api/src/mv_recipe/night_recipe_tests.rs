@@ -34,9 +34,11 @@ fn public_request_contains_only_physical_sources_and_owner_instance_metadata() {
     let metadata: Value = serde_json::from_str(&request.metadata).unwrap();
     assert_eq!(metadata["beats"], json!([0.0, 0.5, 1.0]));
     assert_eq!(metadata["resources"].as_array().unwrap().len(), 4);
-    assert!(settings
-        .request("wet", 1280, 720, &resources(), None)
-        .is_err());
+    assert!(
+        settings
+            .request("wet", 1280, 720, &resources(), None)
+            .is_err()
+    );
 }
 #[test]
 fn role_loss_duplicate_role_family_override_and_unknown_author_fields_fail_closed() {
@@ -57,9 +59,11 @@ fn role_loss_duplicate_role_family_override_and_unknown_author_fields_fail_close
     let mut bad = author();
     bad["fontInstances"][0]["resourceId"] = json!("bg");
     let settings: Night = serde_json::from_value(bad).unwrap();
-    assert!(settings
-        .request("wet", 1920, 1080, &resources(), None)
-        .is_err());
+    assert!(
+        settings
+            .request("wet", 1920, 1080, &resources(), None)
+            .is_err()
+    );
 }
 #[test]
 fn native_context_never_admits_fake_sfnt_or_copies_a_wrong_packet_length() {
@@ -72,12 +76,14 @@ fn native_context_never_admits_fake_sfnt_or_copies_a_wrong_packet_length() {
         .unwrap();
     let mut context = Context::new().unwrap();
     let copied = Cell::new(false);
-    assert!(context
-        .inspect(&request, 5, || {
-            copied.set(true);
-            Ok(vec![0; 5])
-        })
-        .is_err());
+    assert!(
+        context
+            .inspect(&request, 5, || {
+                copied.set(true);
+                Ok(vec![0; 5])
+            })
+            .is_err()
+    );
     assert!(!copied.get());
     assert!(context.inspect(&request, 4, || Ok(vec![0; 4])).is_err());
     assert!(context.frame(&request, 60000, 0, 120000).is_err());
@@ -113,16 +119,18 @@ fn same_source_node_has_distinct_mapped_occurrences() {
     assert_ne!(a.occurrence_id, b.occurrence_id);
     assert_ne!(a.song_ticks, b.song_ticks);
     assert_eq!(a.metadata, b.metadata);
-    assert!(traversal
-        .issue(
-            settings
-                .request("wet", 1920, 1080, &resources(), None)
-                .unwrap(),
-            0,
-            120000,
-            0
-        )
-        .is_err());
+    assert!(
+        traversal
+            .issue(
+                settings
+                    .request("wet", 1920, 1080, &resources(), None)
+                    .unwrap(),
+                0,
+                120000,
+                0
+            )
+            .is_err()
+    );
 }
 #[test]
 fn train_requests_all_six_instances_one_variable_source_and_mandatory_p4() {

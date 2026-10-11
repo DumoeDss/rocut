@@ -10,14 +10,14 @@ use crate::{
     programmatic_resources::Resource,
 };
 use serde::Serialize;
+#[path = "heart_recipe_host.rs"]
+mod host;
 #[cfg(test)]
 #[path = "heart_recipe_tests.rs"]
 mod tests;
 #[path = "heart_recipe_validation.rs"]
 mod validation;
-#[path = "heart_recipe_host.rs"]
-mod host;
-pub(super) use host::{admit, Context as HostContext};
+pub(super) use host::{Context as HostContext, admit};
 pub(super) use validation::valid;
 
 #[derive(Serialize)]

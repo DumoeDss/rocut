@@ -44,7 +44,9 @@ fn normalize(r: NativeRequest) -> Result<Vec<Observation>, String> {
                 || (envelope.duration - (asset.end - asset.start)).abs() > 1e-7
                 || (envelope.evaluate(asset.time) - asset.volume).abs() > 1e-7
             {
-                return Err("HyperFrames gain envelope disagrees with its native observation".into());
+                return Err(
+                    "HyperFrames gain envelope disagrees with its native observation".into(),
+                );
             }
         }
         if !time.is_finite()
@@ -98,8 +100,8 @@ fn normalize(r: NativeRequest) -> Result<Vec<Observation>, String> {
             if native.muted || !native.in_window || native.source_time >= native.source_duration {
                 return None;
             }
-        output.source_time = native.source_time;
-        output.gain_envelope = native.gain_envelope;
+            output.source_time = native.source_time;
+            output.gain_envelope = native.gain_envelope;
             Some(output)
         })
         .collect())

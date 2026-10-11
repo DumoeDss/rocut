@@ -20,11 +20,13 @@ fn publication_binary_extraction_retries_failed_copy_then_consumes_once() {
         ticket.lease.clone(),
     )
     .unwrap();
-    assert!(output
-        .bytes(0, |_| -> Result<(), String> {
-            Err("native upload rejected".into())
-        })
-        .is_err());
+    assert!(
+        output
+            .bytes(0, |_| -> Result<(), String> {
+                Err("native upload rejected".into())
+            })
+            .is_err()
+    );
     assert_eq!(output.remaining(), 1);
     assert_eq!(
         output.bytes(0, |b| Ok(b.to_vec())).unwrap(),
@@ -72,18 +74,22 @@ fn malformed_metadata_never_invokes_binary_copy() {
 
 #[test]
 fn binary_ranges_reject_overflow_and_truncation() {
-    assert!(Range {
-        offset: usize::MAX,
-        length: 2
-    }
-    .bytes(&[])
-    .is_err());
-    assert!(Range {
-        offset: 1,
-        length: 2
-    }
-    .bytes(&[1, 2])
-    .is_err());
+    assert!(
+        Range {
+            offset: usize::MAX,
+            length: 2
+        }
+        .bytes(&[])
+        .is_err()
+    );
+    assert!(
+        Range {
+            offset: 1,
+            length: 2
+        }
+        .bytes(&[1, 2])
+        .is_err()
+    );
     assert_eq!(
         Range {
             offset: 1,

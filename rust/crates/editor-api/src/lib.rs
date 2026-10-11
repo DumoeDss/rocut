@@ -7,28 +7,30 @@ mod animation_numeric;
 pub use animation_bridge::{
     inspect_scalar_animation_domains_json, sample_scalar_animation_batch_json,
 };
-mod effect_params;
 mod effect_layer_animation;
+mod effect_params;
 pub use effect_layer_animation::resolve_effect_layer_params_json;
 mod effect_stack;
 pub use effect_stack::validate_master_effects_json;
-mod model;
 mod image_sequence;
-pub use image_sequence::{validate_image_sequence_manifest_json, validate_image_sequence_image_bytes};
+mod model;
+pub use image_sequence::{
+    validate_image_sequence_image_bytes, validate_image_sequence_manifest_json,
+};
 mod mv_audio;
 mod mv_font_metrics;
 mod mv_reference_post;
-pub use mv_reference_post::{ReferencePostPlan,build_reference_post_plan};
+pub use mv_reference_post::{ReferencePostPlan, build_reference_post_plan};
+pub mod mv_heart_owner;
 mod mv_image_dimensions;
 pub mod mv_image_preprocess;
-pub mod mv_heart_owner;
 pub mod mv_jz_owner;
 pub mod mv_lut_atlas;
 pub mod mv_lut_atlas_bridge;
 pub mod mv_memories_owner;
 pub mod mv_night_owner;
-pub use mv_image_dimensions::inspect_programmatic_image_bytes;
 pub use mv_audio::prepare_mv_audio_json;
+pub use mv_image_dimensions::inspect_programmatic_image_bytes;
 mod mv_recipe;
 pub use mv_recipe::mv_recipe_catalog_json;
 mod particle_surface;
@@ -50,7 +52,8 @@ mod liquid_object_transport;
 pub use liquid_object_transport::{
     LiquidObjectTransportError, LiquidObjectTransportFrame, LiquidObjectTransportIdentity,
     LiquidObjectTransportPolicy, LiquidObjectTransportReservation, LiquidObjectTransportSession,
-    LiquidObjectTransportTotals, liquid_object_transport_policy, liquid_object_transport_policy_json,
+    LiquidObjectTransportTotals, liquid_object_transport_policy,
+    liquid_object_transport_policy_json,
 };
 mod ink_object_params;
 pub use ink_object_params::{
@@ -59,33 +62,29 @@ pub use ink_object_params::{
 };
 mod programmatic;
 mod programmatic_tunnel_fonts;
-pub use programmatic_tunnel_fonts::{validate_tunnel_frame_transport_lengths, tunnel_frame_transport_error_json};
 pub use programmatic::resolve_programmatic_frame_tunnel_bytes;
+pub use programmatic_tunnel_fonts::{
+    tunnel_frame_transport_error_json, validate_tunnel_frame_transport_lengths,
+};
 mod programmatic_audio;
 pub use programmatic_audio::{
-    normalize_hyperframes_fx_chain_json,
-    resolve_hyperframes_audio_graph_json,
-    resolve_hyperframes_audio_discovery_json,
-    resolve_hyperframes_bus_fader_json,
-    apply_hyperframes_audio_track_gain_pcm, prepare_hyperframes_audio_dry_track_pcm,
-    resolve_hyperframes_audio_execution_plan_json,
-    mix_hyperframes_audio_bus_pcm, mix_hyperframes_audio_master_pcm,
-    resolve_hyperframes_audio_seek_json,
-    resolve_hyperframes_audio_observations_json,
-    mix_programmatic_audio_pcm, programmatic_audio_policy_json, resolve_native_audio_decode_json,
-    resolve_programmatic_audio_range_json, resolve_programmatic_audio_schedule_json,
-    resolve_programmatic_audio_source_json,
-    resolve_hyperframes_audio_frame_json,
-    resolve_remotion_audio_frame_json,
-    resolve_remotion_produced_assets_json,
+    apply_hyperframes_audio_track_gain_pcm, encode_remotion_produced_audio_wav,
+    mix_hyperframes_audio_bus_pcm, mix_hyperframes_audio_master_pcm, mix_programmatic_audio_pcm,
+    mix_remotion_produced_audio_pcm, normalize_hyperframes_fx_chain_json,
+    prepare_hyperframes_audio_dry_track_pcm, prepare_remotion_inline_audio_sources_json,
+    programmatic_audio_policy_json, resolve_hyperframes_audio_discovery_json,
+    resolve_hyperframes_audio_execution_plan_json, resolve_hyperframes_audio_frame_json,
+    resolve_hyperframes_audio_graph_json, resolve_hyperframes_audio_observations_json,
+    resolve_hyperframes_audio_seek_json, resolve_hyperframes_bus_fader_json,
+    resolve_native_audio_decode_json, resolve_programmatic_audio_range_json,
+    resolve_programmatic_audio_schedule_json, resolve_programmatic_audio_source_json,
+    resolve_remotion_audio_frame_json, resolve_remotion_produced_assets_json,
     resolve_remotion_produced_frames_json,
-    prepare_remotion_inline_audio_sources_json, mix_remotion_produced_audio_pcm,
-    encode_remotion_produced_audio_wav,
 };
 mod programmatic_build;
 mod programmatic_resources;
-pub use programmatic_resources::validate_programmatic_resources_json;
 pub use programmatic::resolve_programmatic_frame_json;
+pub use programmatic_resources::validate_programmatic_resources_json;
 mod scenes;
 pub use scenes::{plan_scene_mutation_json, validate_scene_state_json};
 mod video_export;
@@ -276,7 +275,10 @@ fn validate(request: &Request) -> Vec<Issue> {
         .unwrap_or_default();
     if kind == "effect" {
         effect_params::validate(
-            e.effect_type.as_deref().unwrap_or_default(), &e.params, "editing.params", &mut issues,
+            e.effect_type.as_deref().unwrap_or_default(),
+            &e.params,
+            "editing.params",
+            &mut issues,
         );
         if let Some(params) = e
             .effect_type
@@ -317,7 +319,12 @@ fn validate(request: &Request) -> Vec<Issue> {
             "Effects require a visual element",
         ));
     }
-    effect_stack::validate(&e.effects, &request.catalog.effects, "editing.effects", &mut issues);
+    effect_stack::validate(
+        &e.effects,
+        &request.catalog.effects,
+        "editing.effects",
+        &mut issues,
+    );
     if !matches!(kind, "video" | "image" | "graphic") && !e.masks.is_empty() {
         issues.push(Issue::new(
             "editing.masks",

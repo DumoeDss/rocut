@@ -10,7 +10,9 @@ impl Recipe {
         resources: &[Resource],
     ) -> Result<Vec<Request>, String> {
         let native_ids = self.nodes.iter().flat_map(|node| match &node.scene {
-            super::model::Scene::IllustNative { settings, .. } => super::illust_native::image_ids(settings),
+            super::model::Scene::IllustNative { settings, .. } => {
+                super::illust_native::image_ids(settings)
+            }
             super::model::Scene::Burst { settings, .. } => super::burst::image_ids(settings),
             super::model::Scene::Flame { settings, .. } => vec![settings.image()],
             super::model::Scene::Fall { settings, .. } => vec![settings.image.as_str()],

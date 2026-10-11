@@ -124,9 +124,11 @@ impl<'a> Clock<'a> {
             .image(id)
     }
     pub(in crate::mv_recipe) fn elapsed(self, span: &Span) -> Result<u64, String> {
-        let start = u64::from(span.start_frame).checked_mul(self.step)
+        let start = u64::from(span.start_frame)
+            .checked_mul(self.step)
             .ok_or("MV simulation span start overflow")?;
-        let duration = u64::from(span.duration_frames).checked_mul(self.step)
+        let duration = u64::from(span.duration_frames)
+            .checked_mul(self.step)
             .ok_or("MV simulation span duration overflow")?;
         Ok(self.source_ticks.saturating_sub(start).min(duration))
     }
@@ -142,8 +144,10 @@ impl<'a> Clock<'a> {
     /// frame intervals use the containing source frame; continuous leaf clocks
     /// keep the unrounded tick rather than quantizing through a frame number.
     pub(super) fn remap_song_ticks(self, song_ticks: i64) -> Result<Self, String> {
-        let song_ticks = u64::try_from(song_ticks).map_err(|_| "MV reference precedes supported song domain")?;
-        let source_ticks = song_ticks.checked_sub(self.song_start_ticks)
+        let song_ticks =
+            u64::try_from(song_ticks).map_err(|_| "MV reference precedes supported song domain")?;
+        let source_ticks = song_ticks
+            .checked_sub(self.song_start_ticks)
             .ok_or("MV reference precedes this authored source domain")?;
         Ok(Self {
             frame: source_ticks / self.step,

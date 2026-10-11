@@ -1,7 +1,7 @@
 use super::{
+    BackgroundFact, Sample,
     rebirth_contract::Clock,
     sky::{self, Args, Session},
-    BackgroundFact, Sample,
 };
 pub fn inspect(
     session: &Session,

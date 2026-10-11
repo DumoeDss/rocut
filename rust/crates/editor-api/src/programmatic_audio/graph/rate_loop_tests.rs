@@ -59,9 +59,15 @@ fn rate_loop_keeps_fractional_period_in_native_source_clock_without_integer_tile
         assert_eq!(prepared.period_frames, 0);
         assert!(prepared.stereo_filter.is_empty());
         let clock = prepared.native_buffer_clock.unwrap();
-        assert_eq!(clock.period_seconds, clip.source_duration - clip.media_start);
+        assert_eq!(
+            clock.period_seconds,
+            clip.source_duration - clip.media_start
+        );
         for (index, segment) in clock.segments.iter().enumerate() {
-            assert_eq!(segment.elapsed_seconds, -(index as f64 * clock.period_seconds));
+            assert_eq!(
+                segment.elapsed_seconds,
+                -(index as f64 * clock.period_seconds)
+            );
             assert_eq!(segment.media_start_seconds, clip.media_start);
         }
     }

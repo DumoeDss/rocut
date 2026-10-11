@@ -19,7 +19,10 @@ fn legacy_and_mixed_metrics_stay_unchanged_without_scaling_or_fallback() {
         align: TextAlign::Left,
         baseline: TextBaseline::Alphabetic,
     };
-    assert_eq!(c.bounds("font", &native_request).unwrap().right, exact.right);
+    assert_eq!(
+        c.bounds("font", &native_request).unwrap().right,
+        exact.right
+    );
     assert_eq!(
         (exact.left, exact.right, exact.ascent, exact.descent),
         (-2.0, 52.0, 80.0, -3.0)

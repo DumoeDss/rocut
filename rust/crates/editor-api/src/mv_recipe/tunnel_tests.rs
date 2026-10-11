@@ -243,7 +243,11 @@ fn public_binary_frame_three_phase_admission_and_node_binding() {
     let evaluated = resolve(&input, &packed);
     assert!(evaluated.get("error").is_none(), "{evaluated}");
     assert_eq!(evaluated["frame"]["recipePlan"]["root"]["kind"], "tunnel");
-    assert!(evaluated["frame"]["recipePlan"]["root"].get("native_post").is_none());
+    assert!(
+        evaluated["frame"]["recipePlan"]["root"]
+            .get("native_post")
+            .is_none()
+    );
     assert_eq!(
         evaluated["frame"]["recipePlan"]["root"]["nativePost"]["songTicks"],
         468000

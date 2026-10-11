@@ -1,7 +1,7 @@
 //! Heart's original radial fracture, including shared jagged cell boundaries.
 #[path = "converge_math.rs"]
 mod seeded;
-use seeded::{hash, Rng, TAU};
+use seeded::{Rng, TAU, hash};
 
 pub type Point = [f64; 2];
 pub type Path = Vec<Point>;

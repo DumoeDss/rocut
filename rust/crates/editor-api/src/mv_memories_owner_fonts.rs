@@ -1,8 +1,8 @@
 //! Byte admission and cmap coverage, before accepting any native font metrics.
-use super::protocol::{hash, Font};
+use super::protocol::{Font, hash};
 use serde::Deserialize;
 use std::collections::BTreeMap;
-use ttf_parser::{name_id, Face, Tag};
+use ttf_parser::{Face, Tag, name_id};
 #[derive(Deserialize)]
 struct Descriptor {
     family: String,

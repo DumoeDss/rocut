@@ -1,7 +1,7 @@
 use super::{
+    Session,
     draw::*,
     plan::{Command, MemoryCommand, Operation, Plan},
-    Session,
 };
 pub fn print(s: &Session, slot: usize) -> Result<Plan, String> {
     let p = s.photos.get(slot).ok_or("Memories photo slot missing")?;

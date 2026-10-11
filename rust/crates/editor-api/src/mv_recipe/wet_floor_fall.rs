@@ -2,7 +2,7 @@ use super::{
     canvas::{Canvas, Op, Surface},
     math::*,
     model::{Image, Sample, Settings, View},
-    prepare::{mask_surfaces, ReflectionMask},
+    prepare::{ReflectionMask, mask_surfaces},
 };
 use sha2::{Digest, Sha256};
 const SPOTS: [[f64; 2]; 7] = [

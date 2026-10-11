@@ -7,7 +7,7 @@ use crate::{
     programmatic_resources::{self, Resource},
 };
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use std::collections::BTreeSet;
 #[derive(Deserialize)]
 #[serde(tag = "scene", rename_all = "camelCase", deny_unknown_fields)]

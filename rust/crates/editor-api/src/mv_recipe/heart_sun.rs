@@ -1,11 +1,11 @@
 //! Complete original drawSun ordered native plan. Explicit images, no bundled fallback.
 use super::{
+    BackgroundFact, Plan, Sample, Session,
     draw::*,
     figure::{self, Figure, Image, Light, Rim, Wave},
-    plan::{native, Command, Operation},
+    plan::{Command, Operation, native},
     rebirth_contract::{self, Sun},
     rebirth_draw::*,
-    BackgroundFact, Plan, Sample, Session,
 };
 pub fn frame(
     session: &Session,

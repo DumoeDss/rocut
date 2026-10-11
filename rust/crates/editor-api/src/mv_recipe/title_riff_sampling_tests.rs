@@ -64,7 +64,7 @@ fn transition_and_panel_visibility_share_exact_resource_traversal() {
         "mix",
         vec![
             json!({"id":"black","scene":{"kind":"solid","role":"graphics","color":[0,0,0,1]}}),
-        json!({"id":"mix","scene":{"kind":"transition","from":"black","to":"title","span":{"startFrame":300,"durationFrames":60},"easing":"linear","style":{"kind":"xfade"}}}),
+            json!({"id":"mix","scene":{"kind":"transition","from":"black","to":"title","span":{"startFrame":300,"durationFrames":60},"easing":"linear","style":{"kind":"xfade"}}}),
         ],
     );
     assert_eq!(requests(&transition, 300), static_requests(&transition));

@@ -1,4 +1,4 @@
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 pub(super) fn entry() -> Value {
     let mut tear = json!({"requires":["native-html-canvas-2d","reviewed-whole-song-analysis","native-reference-post-backend"],
         "renderCapability":"connected scene/foreground producer; required road-original-gl-v1 post backend fails closed when absent",

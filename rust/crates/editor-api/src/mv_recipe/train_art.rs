@@ -1,6 +1,6 @@
 use super::{
     canvas::{Canvas, Op, Surface},
-    geometry::{Car, Geometry, G, P, R, WH},
+    geometry::{Car, G, Geometry, P, R, WH},
     math::*,
     model::Image,
 };

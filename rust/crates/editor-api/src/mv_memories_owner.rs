@@ -3,8 +3,8 @@ use crate::mv_recipe::memories;
 use std::{
     collections::{BTreeMap, BTreeSet},
     sync::{
-        atomic::{AtomicU32, Ordering},
         Arc, Mutex,
+        atomic::{AtomicU32, Ordering},
     },
 };
 #[path = "mv_memories_owner_admission.rs"]

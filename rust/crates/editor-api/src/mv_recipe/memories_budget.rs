@@ -1,9 +1,9 @@
 use super::{
-    plan::{
-        common::{self, native},
-        Command, Frame, MemoryCommand, Raster,
-    },
     Session,
+    plan::{
+        Command, Frame, MemoryCommand, Raster,
+        common::{self, native},
+    },
 };
 use std::collections::BTreeMap;
 const MAX: u64 = 256 * 1024 * 1024;

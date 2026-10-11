@@ -1,4 +1,4 @@
-use super::{model, NativeFacts};
+use super::{NativeFacts, model};
 use crate::programmatic_resources::Resource;
 use std::collections::BTreeSet;
 

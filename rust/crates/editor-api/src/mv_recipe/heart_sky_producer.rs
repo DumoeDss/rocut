@@ -1,12 +1,12 @@
 //! Complete original drawSkyShatter layer ordering, including foreground-after-character.
 use super::{
+    BackgroundFact, Sample,
     draw::*,
     figure::{self, Figure, Image, Rim, Wave},
     plan::Operation,
     rebirth_draw::*,
     sky::{self, Args, Session},
     sky_plan::{self, Plan},
-    BackgroundFact, Sample,
 };
 fn camera(d: &mut Draw, par: f64, shake: [f64; 2], zoom: f64, p: f64) {
     d.operations = vec![

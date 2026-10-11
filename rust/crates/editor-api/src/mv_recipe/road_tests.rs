@@ -44,8 +44,8 @@ fn complete_tear_frames_and_clock_negatives_are_budgeted() {
         assert!(p.raster_budget_bytes > 0 && p.raster_budget_bytes <= 256 * 1024 * 1024);
         assert!(p.commands.len() <= 16384);
     }
-    assert!(s
-        .frame(&model::Sample {
+    assert!(
+        s.frame(&model::Sample {
             song_ticks: 0,
             shot_start_ticks: 0,
             shot_end_ticks: 874800,
@@ -55,7 +55,8 @@ fn complete_tear_frames_and_clock_negatives_are_budgeted() {
             downbeats: &[],
             resources: &[]
         })
-        .is_err());
+        .is_err()
+    );
 }
 #[test]
 fn malformed_native_graph_and_nonfinite_actions_fail_before_replay() {
@@ -107,14 +108,16 @@ fn malformed_native_graph_and_nonfinite_actions_fail_before_replay() {
             C::Release { surface: "huge" },
         ],
     ] {
-        assert!(budget::frame(
-            &Plan {
-                commands,
-                raster_budget_bytes: 0
-            },
-            &s
-        )
-        .is_err());
+        assert!(
+            budget::frame(
+                &Plan {
+                    commands,
+                    raster_budget_bytes: 0
+                },
+                &s
+            )
+            .is_err()
+        );
     }
 }
 #[test]

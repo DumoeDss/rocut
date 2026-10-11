@@ -23,27 +23,117 @@ fn suggested(parameters: &Value) -> Value {
 }
 fn valid(kind: &str, settings: Value) -> bool {
     match kind {
-        "road" => serde_json::from_value::<super::road_recipe::Road>(settings).is_ok_and(|v|
-            v.valid(0, &super::model::Span { start_frame: 0, duration_frames: 60 }, 4000)),
-        "tunnel" => serde_json::from_value::<super::tunnel::Tunnel>(settings).is_ok_and(|v|v.valid(0,&super::model::Span{start_frame:0,duration_frames:60},4000)),
-        "ink" => serde_json::from_value::<super::ink::Ink>(settings).is_ok_and(|v|
-            v.valid(0, &super::model::Span { start_frame: 0, duration_frames: 60 }, 4000)),
-        "flame" => serde_json::from_value::<super::flame::Flame>(settings).is_ok_and(|v|
-            v.valid(0, &super::model::Span { start_frame: 0, duration_frames: 60 }, 4000)),
-        "fall" => serde_json::from_value::<super::fall::Fall>(settings).is_ok_and(|v|
-            v.valid(0, &super::model::Span { start_frame: 0, duration_frames: 60 }, 4000)),
-        "thread" => serde_json::from_value::<super::thread::Thread>(settings).is_ok_and(|v|
-            v.valid(0, &super::model::Span { start_frame: 0, duration_frames: 60 }, 4000)),
-        "kanjiSlam" => serde_json::from_value::<super::kanji_slam::KanjiSlam>(settings).is_ok_and(|v|
-            v.valid(0, &super::model::Span { start_frame: 0, duration_frames: 60 }, 4000)),
-        "titleRiff" => serde_json::from_value::<super::title_riff::TitleRiff>(settings).is_ok_and(|v|
-            v.valid(0, &super::model::Span { start_frame: 0, duration_frames: 60 }, 4000)),
-        "ember" => serde_json::from_value::<super::ember::Ember>(settings).is_ok_and(|v|
-            v.valid(0, &super::model::Span { start_frame: 0, duration_frames: 60 }, 4000)),
-        "converge" => serde_json::from_value::<super::converge::Converge>(settings).is_ok_and(|v|
-            v.valid(0, &super::model::Span { start_frame: 0, duration_frames: 60 }, 4000)),
-        "typeCard" => serde_json::from_value::<super::type_card::TypeCard>(settings).is_ok_and(|v| v.valid()),
-        "afterimage" => serde_json::from_value::<super::afterimage::Afterimage>(settings).is_ok_and(|v| v.valid()),
+        "road" => serde_json::from_value::<super::road_recipe::Road>(settings).is_ok_and(|v| {
+            v.valid(
+                0,
+                &super::model::Span {
+                    start_frame: 0,
+                    duration_frames: 60,
+                },
+                4000,
+            )
+        }),
+        "tunnel" => serde_json::from_value::<super::tunnel::Tunnel>(settings).is_ok_and(|v| {
+            v.valid(
+                0,
+                &super::model::Span {
+                    start_frame: 0,
+                    duration_frames: 60,
+                },
+                4000,
+            )
+        }),
+        "ink" => serde_json::from_value::<super::ink::Ink>(settings).is_ok_and(|v| {
+            v.valid(
+                0,
+                &super::model::Span {
+                    start_frame: 0,
+                    duration_frames: 60,
+                },
+                4000,
+            )
+        }),
+        "flame" => serde_json::from_value::<super::flame::Flame>(settings).is_ok_and(|v| {
+            v.valid(
+                0,
+                &super::model::Span {
+                    start_frame: 0,
+                    duration_frames: 60,
+                },
+                4000,
+            )
+        }),
+        "fall" => serde_json::from_value::<super::fall::Fall>(settings).is_ok_and(|v| {
+            v.valid(
+                0,
+                &super::model::Span {
+                    start_frame: 0,
+                    duration_frames: 60,
+                },
+                4000,
+            )
+        }),
+        "thread" => serde_json::from_value::<super::thread::Thread>(settings).is_ok_and(|v| {
+            v.valid(
+                0,
+                &super::model::Span {
+                    start_frame: 0,
+                    duration_frames: 60,
+                },
+                4000,
+            )
+        }),
+        "kanjiSlam" => {
+            serde_json::from_value::<super::kanji_slam::KanjiSlam>(settings).is_ok_and(|v| {
+                v.valid(
+                    0,
+                    &super::model::Span {
+                        start_frame: 0,
+                        duration_frames: 60,
+                    },
+                    4000,
+                )
+            })
+        }
+        "titleRiff" => {
+            serde_json::from_value::<super::title_riff::TitleRiff>(settings).is_ok_and(|v| {
+                v.valid(
+                    0,
+                    &super::model::Span {
+                        start_frame: 0,
+                        duration_frames: 60,
+                    },
+                    4000,
+                )
+            })
+        }
+        "ember" => serde_json::from_value::<super::ember::Ember>(settings).is_ok_and(|v| {
+            v.valid(
+                0,
+                &super::model::Span {
+                    start_frame: 0,
+                    duration_frames: 60,
+                },
+                4000,
+            )
+        }),
+        "converge" => {
+            serde_json::from_value::<super::converge::Converge>(settings).is_ok_and(|v| {
+                v.valid(
+                    0,
+                    &super::model::Span {
+                        start_frame: 0,
+                        duration_frames: 60,
+                    },
+                    4000,
+                )
+            })
+        }
+        "typeCard" => {
+            serde_json::from_value::<super::type_card::TypeCard>(settings).is_ok_and(|v| v.valid())
+        }
+        "afterimage" => serde_json::from_value::<super::afterimage::Afterimage>(settings)
+            .is_ok_and(|v| v.valid()),
         "cloth" => serde_json::from_value::<super::cloth::Cloth>(settings).is_ok_and(|v| v.valid()),
         "shatter" => {
             serde_json::from_value::<super::shatter::Shatter>(settings).is_ok_and(|v| v.valid())
@@ -74,13 +164,18 @@ fn valid(kind: &str, settings: Value) -> bool {
 }
 
 fn entries<'a>(catalog: &'a Value, group: &str) -> Vec<(&'a str, &'a Value)> {
-    catalog[group].as_object().unwrap().iter().flat_map(|(kind, entry)| {
-        let variants = entry.get("variants").and_then(Value::as_object);
-        match variants {
-            Some(values) => values.values().map(|v| (kind.as_str(), v)).collect(),
-            None => vec![(kind.as_str(), entry)],
-        }
-    }).collect()
+    catalog[group]
+        .as_object()
+        .unwrap()
+        .iter()
+        .flat_map(|(kind, entry)| {
+            let variants = entry.get("variants").and_then(Value::as_object);
+            match variants {
+                Some(values) => values.values().map(|v| (kind.as_str(), v)).collect(),
+                None => vec![(kind.as_str(), entry)],
+            }
+        })
+        .collect()
 }
 
 #[test]
@@ -145,17 +240,33 @@ fn every_numeric_and_enum_catalog_bound_is_enforced_by_validation() {
 
 #[test]
 fn heart_catalog_advertises_pending_native_owner_instead_of_ready_draws() {
-    let c:Value=serde_json::from_str(&mv_recipe_catalog_json()).unwrap();
-    let entries=c["nativeOwnerScenes"].as_object().unwrap();
-    assert_eq!(entries.len(),7);
-    for kind in ["heartShatter","heartShatterBurn","heartGather","sunBloom","skyShatter"] {
-        let entry=&entries[kind];
-        assert!(entry["renderCapability"].as_str().unwrap().contains("pending"));
-        assert_eq!(entry["sceneParameters"]["bpm"]["required"],true);
-        assert_eq!(entry["limits"]["ownerBytes"],268435456u64);
-        assert_eq!(entry["limits"]["ownerSessions"],4);
+    let c: Value = serde_json::from_str(&mv_recipe_catalog_json()).unwrap();
+    let entries = c["nativeOwnerScenes"].as_object().unwrap();
+    assert_eq!(entries.len(), 7);
+    for kind in [
+        "heartShatter",
+        "heartShatterBurn",
+        "heartGather",
+        "sunBloom",
+        "skyShatter",
+    ] {
+        let entry = &entries[kind];
+        assert!(
+            entry["renderCapability"]
+                .as_str()
+                .unwrap()
+                .contains("pending")
+        );
+        assert_eq!(entry["sceneParameters"]["bpm"]["required"], true);
+        assert_eq!(entry["limits"]["ownerBytes"], 268435456u64);
+        assert_eq!(entry["limits"]["ownerSessions"], 4);
         assert!(entry["parameters"].get("binding").is_none());
         assert!(entry["parameters"].get("decodedWidth").is_none());
     }
-    assert!(entries["skyShatter"]["transport"].as_str().unwrap().contains("independent Sky"));
+    assert!(
+        entries["skyShatter"]["transport"]
+            .as_str()
+            .unwrap()
+            .contains("independent Sky")
+    );
 }

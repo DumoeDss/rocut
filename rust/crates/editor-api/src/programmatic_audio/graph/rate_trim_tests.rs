@@ -103,7 +103,10 @@ fn scalar_fractional_preparation_keeps_native_parameters_and_output_filter_polic
             let prepared = prepare_scalar(&clip, sample_rate, SampleAligned).unwrap();
             assert_eq!(prepared.preparation_kind, "scalar");
             assert_eq!(prepared.media_start_seconds, clip.media_start.to_string());
-            assert_eq!(prepared.source_duration_seconds, (clip.duration * rate).to_string());
+            assert_eq!(
+                prepared.source_duration_seconds,
+                (clip.duration * rate).to_string()
+            );
             assert_eq!(prepared.duration_seconds, clip.duration.to_string());
             assert_eq!(prepared.output_duration_required, rate != 1.0);
             assert!(prepared.observed_pcm);
@@ -111,7 +114,11 @@ fn scalar_fractional_preparation_keeps_native_parameters_and_output_filter_polic
             assert_eq!(prepared.slices, 0);
             assert_eq!(prepared.clock_cells, 0);
             assert_eq!(prepared.resample_filter, format!("aresample={sample_rate}"));
-            assert!(prepared.mono_filter.starts_with("pan=stereo|FL=FL+FC|FR=FR+FC"));
+            assert!(
+                prepared
+                    .mono_filter
+                    .starts_with("pan=stereo|FL=FL+FC|FR=FR+FC")
+            );
             assert!(!prepared.stereo_filter.contains("asplit"));
             assert!(!prepared.resample_filter.contains("apad"));
         }
@@ -136,6 +143,12 @@ fn scalar_loop_fractional_duration_retains_raw_source_materialization_before_pre
         // Fractional period chooses original native scheduling instead of aloop.
         clip.source_duration += 0.25 / 48000.0;
         let fractional = prepare_scalar(&clip, sample_rate, SampleAligned).unwrap();
-        assert!(fractional.source_loop.unwrap().native_buffer_clock.is_some());
+        assert!(
+            fractional
+                .source_loop
+                .unwrap()
+                .native_buffer_clock
+                .is_some()
+        );
     }
 }

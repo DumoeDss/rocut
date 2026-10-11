@@ -60,21 +60,37 @@ impl Recipe {
         for node in &self.nodes {
             if let Scene::Rewind { settings, .. } = &node.scene {
                 for request in settings.font_requests(resources)? {
-                    if let Some(existing) = requests.iter_mut().find(|r| r.resource.id == request.resource.id) {
+                    if let Some(existing) = requests
+                        .iter_mut()
+                        .find(|r| r.resource.id == request.resource.id)
+                    {
                         for glyph in request.glyphs {
-                            if !existing.glyphs.contains(&glyph) { existing.glyphs.push(glyph); }
+                            if !existing.glyphs.contains(&glyph) {
+                                existing.glyphs.push(glyph);
+                            }
                         }
-                        for advance in request.advances { existing.advances.push(advance); }
-                    } else { requests.push(request); }
+                        for advance in request.advances {
+                            existing.advances.push(advance);
+                        }
+                    } else {
+                        requests.push(request);
+                    }
                 }
             }
             if let Scene::Burst { settings, .. } = &node.scene {
                 for request in crate::mv_recipe::burst::font_requests(settings, resources)? {
-                    if let Some(existing) = requests.iter_mut().find(|r| r.resource.id == request.resource.id) {
+                    if let Some(existing) = requests
+                        .iter_mut()
+                        .find(|r| r.resource.id == request.resource.id)
+                    {
                         for glyph in request.glyphs {
-                            if !existing.glyphs.contains(&glyph) { existing.glyphs.push(glyph); }
+                            if !existing.glyphs.contains(&glyph) {
+                                existing.glyphs.push(glyph);
+                            }
                         }
-                    } else { requests.push(request); }
+                    } else {
+                        requests.push(request);
+                    }
                 }
             }
             if let Scene::KanjiSlam { settings, .. } = &node.scene {

@@ -1,6 +1,6 @@
 use super::{
-    plan::{Action, Command, Plan},
     Session,
+    plan::{Action, Command, Plan},
 };
 use std::collections::BTreeMap;
 fn add(t: &mut u64, n: u64) -> Result<(), String> {

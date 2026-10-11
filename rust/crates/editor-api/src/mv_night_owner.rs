@@ -17,12 +17,12 @@ use crate::{
 use budget::{OwnerLease, Reservation};
 pub use protocol::{DecodedImage, FontInstance, Frame, Prepared};
 use protocol::{Prepare, Sample, Settings};
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 pub use transport::{
-    lengths as validate_transport_lengths, reflection as validate_reflection_length,
-    session_id as validate_session_id, MAX_GLOBAL_BYTES, MAX_METADATA_CHARS, MAX_OWNER_BYTES,
+    MAX_GLOBAL_BYTES, MAX_METADATA_CHARS, MAX_OWNER_BYTES, lengths as validate_transport_lengths,
+    reflection as validate_reflection_length, session_id as validate_session_id,
 };
 enum Admission {
     WetFloor {
@@ -581,8 +581,16 @@ impl Owner {
                 )
             }
         };
-        let mut frame = Frame {session_id:id,frame_id,scene,post_required:post.is_some(),post,lut,reserved_bytes:reservation.0,
-            scope:"native admitted transcript: WetFloor scene/reflection only (timeline GL post excluded); Train scene plus mandatory original P4 GL post; not executed-pixel/movie/export acceptance"};
+        let mut frame = Frame {
+            session_id: id,
+            frame_id,
+            scene,
+            post_required: post.is_some(),
+            post,
+            lut,
+            reserved_bytes: reservation.0,
+            scope: "native admitted transcript: WetFloor scene/reflection only (timeline GL post excluded); Train scene plus mandatory original P4 GL post; not executed-pixel/movie/export acceptance",
+        };
         bounded_serialization(&frame)?;
         self.next_frame = frame_id;
         self.frame = Some((frame_id, id, reservation));

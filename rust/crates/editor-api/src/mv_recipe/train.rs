@@ -17,4 +17,4 @@ mod model;
 mod producer;
 pub use fonts::{Admission, Stack};
 pub use model::{Image, Sample, Settings};
-pub use producer::{produce, Plan};
+pub use producer::{Plan, produce};

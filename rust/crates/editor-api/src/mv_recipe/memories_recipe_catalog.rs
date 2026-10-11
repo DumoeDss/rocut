@@ -1,4 +1,4 @@
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 pub(super) fn entry() -> Value {
     json!({
         "requires":["native-memories-owner","reviewed-whole-song-analysis","native-html-canvas-2d","physical-caption-and-date-fonts"],

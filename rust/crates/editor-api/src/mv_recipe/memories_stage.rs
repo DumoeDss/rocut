@@ -1,5 +1,5 @@
 //! Owner-only, non-serializable single-flight native preparation capabilities.
-use super::{plan, Session};
+use super::{Session, plan};
 use std::sync::atomic::{AtomicU64, Ordering};
 fn scratch_bytes(commands: &[plan::Command], count: &mut usize) -> Result<u64, String> {
     let mut bytes = 0u64;

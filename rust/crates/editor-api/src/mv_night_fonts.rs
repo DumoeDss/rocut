@@ -6,7 +6,7 @@ use crate::programmatic_resources::{self, Resource};
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
-use ttf_parser::{name_id, Face, Tag};
+use ttf_parser::{Face, Tag, name_id};
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Descriptor {

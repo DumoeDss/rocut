@@ -47,17 +47,9 @@ pub fn glass_dust(
             rect: [x - size / 2.0, y - size / 2.0, size, size],
             alpha,
             color: if burn {
-                if i % 3 != 0 {
-                    "#FFB060"
-                } else {
-                    "#FF6A2A"
-                }
+                if i % 3 != 0 { "#FFB060" } else { "#FF6A2A" }
             } else {
-                if i % 4 != 0 {
-                    "#FFE3B0"
-                } else {
-                    "#FFFFFF"
-                }
+                if i % 4 != 0 { "#FFE3B0" } else { "#FFFFFF" }
             },
             sparkle_radius: if tw > 0.85 && i % 3 == 0 {
                 Some(14.0 * tw)

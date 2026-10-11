@@ -5,12 +5,14 @@ fn malformed_and_oversized_requests_never_invoke_binary_copy() {
     let mut owner = Owner::new().unwrap();
     let called = Cell::new(false);
     for (metadata, length) in [("{}", 1), ("{}", transport::MAX_ENCODED_BYTES + 1), ("", 1)] {
-        assert!(owner
-            .inspect_with(metadata, length, || {
-                called.set(true);
-                Ok(Vec::<u8>::new())
-            })
-            .is_err());
+        assert!(
+            owner
+                .inspect_with(metadata, length, || {
+                    called.set(true);
+                    Ok(Vec::<u8>::new())
+                })
+                .is_err()
+        );
     }
     assert!(!called.get());
     assert_eq!(owner.diagnostic()["reservedBytes"], 0);
@@ -24,12 +26,14 @@ fn closed_scope_and_ranges_fail_before_copy() {
         json!({"binding":binding,"resources":[],"fontInstances":[],"byteLayout":[],"decodedImages":[],"beats":[]})
             .to_string();
     let called = Cell::new(false);
-    assert!(owner
-        .inspect_with(&metadata, 1, || {
-            called.set(true);
-            Ok(vec![0])
-        })
-        .is_err());
+    assert!(
+        owner
+            .inspect_with(&metadata, 1, || {
+                called.set(true);
+                Ok(vec![0])
+            })
+            .is_err()
+    );
     assert!(!called.get());
     assert_eq!(owner.diagnostic()["reservedBytes"], 0);
 }
@@ -88,12 +92,14 @@ fn exact_physical_scope_layout_and_roles_are_checked_before_copy() {
     negatives.push(v);
     for value in negatives {
         let called = Cell::new(false);
-        assert!(owner
-            .inspect_with(&value.to_string(), 4, || {
-                called.set(true);
-                Ok(vec![0; 4])
-            })
-            .is_err());
+        assert!(
+            owner
+                .inspect_with(&value.to_string(), 4, || {
+                    called.set(true);
+                    Ok(vec![0; 4])
+                })
+                .is_err()
+        );
         assert!(!called.get());
         assert_eq!(owner.diagnostic()["reservedBytes"], 0);
     }
@@ -102,16 +108,20 @@ fn exact_physical_scope_layout_and_roles_are_checked_before_copy() {
 fn stale_ids_and_missing_original_p4_cannot_produce_a_frame() {
     let mut owner = Owner::new().unwrap();
     assert!(owner.bind_decoded(1, "[]").is_err());
-    assert!(owner
-        .bind_reflection(1, &vec![0; transport::REFLECTION_BYTES])
-        .is_err());
+    assert!(
+        owner
+            .bind_reflection(1, &vec![0; transport::REFLECTION_BYTES])
+            .is_err()
+    );
     assert!(owner.bind_lut_row(&[0; 1024]).is_err());
-    assert!(owner
-        .evaluate(
-            1,
-            r#"{"songTicks":1,"shotStartTicks":0,"shotEndTicks":120000}"#
-        )
-        .is_err());
+    assert!(
+        owner
+            .evaluate(
+                1,
+                r#"{"songTicks":1,"shotStartTicks":0,"shotEndTicks":120000}"#
+            )
+            .is_err()
+    );
     assert!(owner.release_frame(1).is_err());
     assert!(owner.dispose(1).is_err());
     owner.clear().unwrap();

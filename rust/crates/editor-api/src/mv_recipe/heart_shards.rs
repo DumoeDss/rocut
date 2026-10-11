@@ -125,11 +125,7 @@ pub fn build(
         let dy = pivot[1] - impact[1];
         let distance = {
             let d = dx.hypot(dy);
-            if d == 0.0 {
-                1.0
-            } else {
-                d
-            }
+            if d == 0.0 { 1.0 } else { d }
         };
         let angle = dy.atan2(dx) + range(&mut r, -0.25, 0.25);
         distance_max = distance_max.max(distance);

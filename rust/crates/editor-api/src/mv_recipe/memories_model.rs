@@ -65,14 +65,30 @@ pub fn select(a: &Args) -> Result<Selection, String> {
     }
     // The same closed author policy applies before source loading and during
     // owner preparation; invalid schedules must not wait for the first frame.
-    if a.caption_font.is_empty() || a.date_font.is_empty()
-        || a.photos.iter().any(|p| p.bg.is_empty() || p.view.as_ref().is_some_and(|v|
-            [v.x, v.y, v.zoom.unwrap_or(1.0)].iter().any(|v| !v.is_finite() || v.abs() > 16.0)
-                || v.zoom.unwrap_or(1.0) < 0.0))
-        || a.drop_beats.as_ref().is_some_and(|v| v.is_empty() || v.len() > 16 || v.iter().any(|v| *v > 21600))
-        || a.burn_beats.as_ref().is_some_and(|v| v.is_empty() || v.len() > 16 || v.iter().any(|v| !v.is_finite() || !(0.0..=21600.0).contains(v)))
-        || a.push_at.is_some_and(|v| !v.is_finite() || v.abs() > 21600.0)
-        || a.end_zoom.is_some_and(|v| !v.is_finite() || !(0.01..=16.0).contains(&v))
+    if a.caption_font.is_empty()
+        || a.date_font.is_empty()
+        || a.photos.iter().any(|p| {
+            p.bg.is_empty()
+                || p.view.as_ref().is_some_and(|v| {
+                    [v.x, v.y, v.zoom.unwrap_or(1.0)]
+                        .iter()
+                        .any(|v| !v.is_finite() || v.abs() > 16.0)
+                        || v.zoom.unwrap_or(1.0) < 0.0
+                })
+        })
+        || a.drop_beats
+            .as_ref()
+            .is_some_and(|v| v.is_empty() || v.len() > 16 || v.iter().any(|v| *v > 21600))
+        || a.burn_beats.as_ref().is_some_and(|v| {
+            v.is_empty()
+                || v.len() > 16
+                || v.iter()
+                    .any(|v| !v.is_finite() || !(0.0..=21600.0).contains(v))
+        })
+        || a.push_at
+            .is_some_and(|v| !v.is_finite() || v.abs() > 21600.0)
+        || a.end_zoom
+            .is_some_and(|v| !v.is_finite() || !(0.01..=16.0).contains(&v))
     {
         return Err("Memories authored resources, crop or schedule exceed bounds".into());
     }

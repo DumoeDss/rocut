@@ -9,35 +9,36 @@ mod envelope;
 mod graph;
 mod hyperframes;
 mod mix;
-mod range;
 mod produced;
+mod range;
 pub use produced::resolve_remotion_produced_assets_json;
 mod produced_frames;
 pub use produced_frames::resolve_remotion_produced_frames_json;
 mod produced_pcm;
-pub use produced_pcm::{prepare_remotion_inline_audio_sources_json, mix_remotion_produced_audio_pcm};
+pub use produced_pcm::{
+    mix_remotion_produced_audio_pcm, prepare_remotion_inline_audio_sources_json,
+};
 mod produced_wav;
 pub use produced_wav::encode_remotion_produced_audio_wav;
 mod schedule;
 mod source;
 mod timing;
-pub(crate) use source::{AudioSettings, deserialize_audio};
-pub use source::resolve_programmatic_audio_source_json;
 pub use decode::resolve_native_audio_decode_json;
-pub use hyperframes::resolve_hyperframes_audio_frame_json;
-pub use graph::{normalize_hyperframes_fx_chain_json, resolve_hyperframes_audio_graph_json};
 pub use graph::resolve_hyperframes_audio_discovery_json;
 pub use graph::resolve_hyperframes_bus_fader_json;
 pub use graph::{
-    apply_hyperframes_audio_track_gain_pcm, prepare_hyperframes_audio_dry_track_pcm,
-    resolve_hyperframes_audio_execution_plan_json,
-    mix_hyperframes_audio_bus_pcm, mix_hyperframes_audio_master_pcm,
+    apply_hyperframes_audio_track_gain_pcm, mix_hyperframes_audio_bus_pcm,
+    mix_hyperframes_audio_master_pcm, prepare_hyperframes_audio_dry_track_pcm,
+    resolve_hyperframes_audio_execution_plan_json, resolve_hyperframes_audio_observations_json,
     resolve_hyperframes_audio_seek_json,
-    resolve_hyperframes_audio_observations_json,
 };
+pub use graph::{normalize_hyperframes_fx_chain_json, resolve_hyperframes_audio_graph_json};
+pub use hyperframes::resolve_hyperframes_audio_frame_json;
 pub use mix::mix_programmatic_audio_pcm;
 pub use range::resolve_programmatic_audio_range_json;
 pub use schedule::resolve_programmatic_audio_schedule_json;
+pub use source::resolve_programmatic_audio_source_json;
+pub(crate) use source::{AudioSettings, deserialize_audio};
 
 const MAX_SOURCES: usize = 64;
 const MAX_ASSETS: usize = 64;

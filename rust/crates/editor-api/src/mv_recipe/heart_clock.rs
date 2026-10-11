@@ -27,11 +27,7 @@ fn inv(a: f64, b: f64, t: f64) -> f64 {
     ((t - a) / (b - a)).clamp(0.0, 1.0)
 }
 fn decay(x: f64, k: f64) -> f64 {
-    if x < 0.0 {
-        0.0
-    } else {
-        (-x * k).exp()
-    }
+    if x < 0.0 { 0.0 } else { (-x * k).exp() }
 }
 fn out_expo(v: f64) -> f64 {
     if v == 1.0 {

@@ -1,6 +1,6 @@
 //! Original Heart shardSprites Canvas recipe, including native shadow strokes.
 //! This is scratch-sprite construction, not the complete scene producer.
-use super::plan::{self, native, Command, HeartCommand, Paint, PaintKind, Shadow, Style};
+use super::plan::{self, Command, HeartCommand, Paint, PaintKind, Shadow, Style, native};
 use native::{Clip, Step};
 type Color = crate::mv_recipe::model::Color;
 const IDENTITY: [f64; 6] = [1.0, 0.0, 0.0, 1.0, 0.0, 0.0];

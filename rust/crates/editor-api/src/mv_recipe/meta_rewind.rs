@@ -1,4 +1,4 @@
-use super::{child, inv, rnd, rnds, ChildSample, Sample};
+use super::{ChildSample, Sample, child, inv, rnd, rnds};
 use crate::{
     mv_font_metrics::{AdvanceRequest, Context, Request},
     programmatic_resources::Resource,

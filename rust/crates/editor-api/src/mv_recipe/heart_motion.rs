@@ -40,11 +40,7 @@ pub struct Ember {
     pub color: &'static str,
 }
 fn burst(x: f64, k: f64) -> f64 {
-    if x <= 0.0 {
-        0.0
-    } else {
-        1.0 - (-x / k).exp()
-    }
+    if x <= 0.0 { 0.0 } else { 1.0 - (-x / k).exp() }
 }
 
 /// Only after the break; caller validates song clock and passes the original pulse(t,7).

@@ -1,7 +1,7 @@
 //! Original skyBuild night and ground rasters expressed as executable native commands.
 use super::{
     draw::*,
-    plan::{native, Command as Heart, HeartCommand, Stop, Style},
+    plan::{Command as Heart, HeartCommand, Stop, Style, native},
     sky_geometry, sky_night_data,
     sky_plan::{self, Command, SkyCommand},
 };

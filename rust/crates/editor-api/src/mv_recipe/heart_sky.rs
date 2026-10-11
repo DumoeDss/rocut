@@ -1,5 +1,5 @@
 //! Retained original skyBuild preparation, bound to one explicit admitted source descriptor.
-use super::{sky_geometry, sky_night_data, sky_plan, BackgroundFact, Sample};
+use super::{BackgroundFact, Sample, sky_geometry, sky_night_data, sky_plan};
 use crate::programmatic_resources::Resource;
 use serde::{Deserialize, Serialize};
 #[derive(Deserialize, Serialize)]

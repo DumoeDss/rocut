@@ -20,46 +20,113 @@ fn add(a: u64, b: u64) -> Result<u64, String> {
         .ok_or_else(|| "Heart native host residency overflow".into())
 }
 #[derive(Default)]
-struct Requests { heart: usize, memories: usize, night: usize, jz: usize, jz_peak: u64 }
+struct Requests {
+    heart: usize,
+    memories: usize,
+    night: usize,
+    jz: usize,
+    jz_peak: u64,
+}
 impl Requests {
-    fn total(&self) -> usize { self.heart + self.memories + self.night + self.jz }
-    fn append(&mut self, other: Self) { self.heart += other.heart; self.memories += other.memories; self.night += other.night; self.jz += other.jz; self.jz_peak = self.jz_peak.max(other.jz_peak); }
+    fn total(&self) -> usize {
+        self.heart + self.memories + self.night + self.jz
+    }
+    fn append(&mut self, other: Self) {
+        self.heart += other.heart;
+        self.memories += other.memories;
+        self.night += other.night;
+        self.jz += other.jz;
+        self.jz_peak = self.jz_peak.max(other.jz_peak);
+    }
 }
 fn requests(node: &PlanNode) -> Requests {
     match node {
-        PlanNode::JzOwnerRequest { request, .. } => Requests { jz: 1, jz_peak: request.resident_bytes, ..Requests::default() },
-        PlanNode::HeartOwnerRequest { .. } => Requests { heart: 1, ..Requests::default() },
-        PlanNode::MemoriesOwnerRequest { .. } => Requests { memories: 1, ..Requests::default() },
-        PlanNode::NightOwnerRequest { .. } => Requests { night: 1, ..Requests::default() },
-        PlanNode::Ref { input, .. } | PlanNode::Freeze { input, .. } | PlanNode::Melt { input, .. } => requests(input),
-        PlanNode::Rewind { input, .. } => input.as_ref().map_or_else(Requests::default, |n| requests(n)),
-        PlanNode::Panels { panels } => panels.iter().fold(Requests::default(), |mut sum, p| { sum.append(requests(&p.input)); sum }),
-        PlanNode::Layers { items } => items.iter().fold(Requests::default(), |mut sum, p| { sum.append(requests(&p.input)); sum }),
-        PlanNode::PanelsNative { inputs, .. } => inputs.iter().flatten().fold(Requests::default(), |mut sum, input| { sum.append(requests(input)); sum }),
-        PlanNode::Transition { from, to, .. } => { let mut sum = requests(from); sum.append(requests(to)); sum },
+        PlanNode::JzOwnerRequest { request, .. } => Requests {
+            jz: 1,
+            jz_peak: request.resident_bytes,
+            ..Requests::default()
+        },
+        PlanNode::HeartOwnerRequest { .. } => Requests {
+            heart: 1,
+            ..Requests::default()
+        },
+        PlanNode::MemoriesOwnerRequest { .. } => Requests {
+            memories: 1,
+            ..Requests::default()
+        },
+        PlanNode::NightOwnerRequest { .. } => Requests {
+            night: 1,
+            ..Requests::default()
+        },
+        PlanNode::Ref { input, .. }
+        | PlanNode::Freeze { input, .. }
+        | PlanNode::Melt { input, .. } => requests(input),
+        PlanNode::Rewind { input, .. } => input
+            .as_ref()
+            .map_or_else(Requests::default, |n| requests(n)),
+        PlanNode::Panels { panels } => panels.iter().fold(Requests::default(), |mut sum, p| {
+            sum.append(requests(&p.input));
+            sum
+        }),
+        PlanNode::Layers { items } => items.iter().fold(Requests::default(), |mut sum, p| {
+            sum.append(requests(&p.input));
+            sum
+        }),
+        PlanNode::PanelsNative { inputs, .. } => {
+            inputs
+                .iter()
+                .flatten()
+                .fold(Requests::default(), |mut sum, input| {
+                    sum.append(requests(input));
+                    sum
+                })
+        }
+        PlanNode::Transition { from, to, .. } => {
+            let mut sum = requests(from);
+            sum.append(requests(to));
+            sum
+        }
         _ => Requests::default(),
     }
 }
-fn bind(node: &mut PlanNode, reservation: &Reservation, counts: &Requests,
-    night: Option<&super::super::night_recipe::HostReservation>, jz: Option<&super::super::jz::HostReservation>) {
+fn bind(
+    node: &mut PlanNode,
+    reservation: &Reservation,
+    counts: &Requests,
+    night: Option<&super::super::night_recipe::HostReservation>,
+    jz: Option<&super::super::jz::HostReservation>,
+) {
     match node {
         PlanNode::JzOwnerRequest { request, .. } => request.host = jz.cloned(),
         PlanNode::HeartOwnerRequest { request, .. } => {
-            let mut own = reservation.clone(); own.max_live_sessions = counts.heart;
+            let mut own = reservation.clone();
+            own.max_live_sessions = counts.heart;
             request.reservation.host = Some(own)
         }
         PlanNode::MemoriesOwnerRequest { request, .. } => {
             request.reservation.host = Some(super::super::memories_recipe::HostReservation {
                 recipe_reservation_bytes: reservation.recipe_reservation_bytes,
                 session_ceiling_bytes: reservation.session_ceiling_bytes,
-                max_live_sessions: counts.memories, raster_byte_limit: reservation.raster_byte_limit,
+                max_live_sessions: counts.memories,
+                raster_byte_limit: reservation.raster_byte_limit,
             });
         }
         PlanNode::NightOwnerRequest { request, .. } => request.host = night.cloned(),
-        PlanNode::Ref { input, .. } | PlanNode::Freeze { input, .. } | PlanNode::Melt { input, .. } => bind(input, reservation, counts, night, jz),
-        PlanNode::Rewind { input, .. } => { if let Some(input) = input { bind(input, reservation, counts, night, jz); } },
-        PlanNode::PanelsNative { inputs, .. } => inputs.iter_mut().flatten().for_each(|n| bind(n, reservation, counts, night, jz)),
-        PlanNode::Layers { items } => items.iter_mut().for_each(|p| bind(&mut p.input, reservation, counts, night, jz)),
+        PlanNode::Ref { input, .. }
+        | PlanNode::Freeze { input, .. }
+        | PlanNode::Melt { input, .. } => bind(input, reservation, counts, night, jz),
+        PlanNode::Rewind { input, .. } => {
+            if let Some(input) = input {
+                bind(input, reservation, counts, night, jz);
+            }
+        }
+        PlanNode::PanelsNative { inputs, .. } => inputs
+            .iter_mut()
+            .flatten()
+            .for_each(|n| bind(n, reservation, counts, night, jz)),
+        PlanNode::Layers { items } => items
+            .iter_mut()
+            .for_each(|p| bind(&mut p.input, reservation, counts, night, jz)),
         PlanNode::Panels { panels } => panels
             .iter_mut()
             .for_each(|p| bind(&mut p.input, reservation, counts, night, jz)),
@@ -81,13 +148,19 @@ fn native_post_bytes(node: &PlanNode) -> Result<u64, String> {
             },
         ),
         PlanNode::Tunnel { native_post, .. } => Ok(native_post.plan.allocation_bytes),
-        PlanNode::Ref { input, .. } | PlanNode::Freeze { input, .. } | PlanNode::Melt { input, .. } => native_post_bytes(input),
+        PlanNode::Ref { input, .. }
+        | PlanNode::Freeze { input, .. }
+        | PlanNode::Melt { input, .. } => native_post_bytes(input),
         PlanNode::Rewind { input, .. } => input.as_ref().map_or(Ok(0), |n| native_post_bytes(n)),
-        PlanNode::Layers { items } => items.iter().try_fold(0, |peak, p| native_post_bytes(&p.input).map(|bytes| peak.max(bytes))),
+        PlanNode::Layers { items } => items.iter().try_fold(0, |peak, p| {
+            native_post_bytes(&p.input).map(|bytes| peak.max(bytes))
+        }),
         PlanNode::Panels { panels } => panels.iter().try_fold(0, |peak, p| {
             native_post_bytes(&p.input).map(|bytes| peak.max(bytes))
         }),
-        PlanNode::PanelsNative { inputs, .. } => inputs.iter().flatten().try_fold(0, |peak, n| native_post_bytes(n).map(|bytes| peak.max(bytes))),
+        PlanNode::PanelsNative { inputs, .. } => inputs.iter().flatten().try_fold(0, |peak, n| {
+            native_post_bytes(n).map(|bytes| peak.max(bytes))
+        }),
         PlanNode::Transition { from, to, .. } => {
             Ok(native_post_bytes(from)?.max(native_post_bytes(to)?))
         }
@@ -133,7 +206,8 @@ pub(in crate::mv_recipe) fn admit(
     }
     if counts.heart > crate::mv_heart_owner::MAX_OWNER_SESSIONS
         || counts.memories > super::super::memories_recipe::MAX_OWNER_SESSIONS
-        || counts.jz > super::super::jz::MAX_OWNER_SESSIONS {
+        || counts.jz > super::super::jz::MAX_OWNER_SESSIONS
+    {
         return Err("Expanded native graph exceeds owner session capability".into());
     }
     // Resolution follows source validation. u32::MAX avoids inventing a second
@@ -175,7 +249,10 @@ pub(in crate::mv_recipe) fn admit(
     // before Heart/Memories prepare. Final packets and their in-flight copies
     // remain in this caller-owned ledger until the fixed realm is destroyed.
     let retained_night_bytes = bitmap_bytes * counts.night as u64;
-    outer = add(outer, bitmap_bytes * (counts.night + counts.memories + counts.jz) as u64 * 3)?;
+    outer = add(
+        outer,
+        bitmap_bytes * (counts.night + counts.memories + counts.jz) as u64 * 3,
+    )?;
     outer = add(
         outer,
         json_bytes(plan)?
@@ -188,34 +265,57 @@ pub(in crate::mv_recipe) fn admit(
     // JIZURA finishes each private replay/lease before the next occurrence and
     // before Heart/Memories prepare. Only its final bitmap packets remain live.
     let jz = if counts.jz > 0 {
-        let available = crate::mv_heart_owner::MAX_OWNER_BYTES.checked_sub(outer)
+        let available = crate::mv_heart_owner::MAX_OWNER_BYTES
+            .checked_sub(outer)
             .filter(|available| counts.jz_peak <= *available)
             .ok_or("JIZURA preparation and retained graph exceed joint256MiB budget")?;
-        Some(super::super::jz::HostReservation { recipe_reservation_bytes: outer,
-            session_ceiling_bytes: available, max_live_sessions: counts.jz,
-            raster_byte_limit: crate::mv_heart_owner::MAX_OWNER_BYTES })
-    } else { None };
+        Some(super::super::jz::HostReservation {
+            recipe_reservation_bytes: outer,
+            session_ceiling_bytes: available,
+            max_live_sessions: counts.jz,
+            raster_byte_limit: crate::mv_heart_owner::MAX_OWNER_BYTES,
+        })
+    } else {
+        None
+    };
     let available = if small_count > 0 {
-        crate::mv_heart_owner::MAX_OWNER_BYTES.checked_sub(outer)
+        crate::mv_heart_owner::MAX_OWNER_BYTES
+            .checked_sub(outer)
             .filter(|n| *n >= small_count as u64)
             .ok_or("Native graph consumes joint256MiB small-owner budget")?
-    } else { 0 };
+    } else {
+        0
+    };
     let night = if counts.night > 0 {
         let peak = add(outer, crate::mv_night_owner::MAX_OWNER_BYTES)?;
         if peak > crate::mv_night_owner::MAX_GLOBAL_BYTES {
             return Err("Night preparation and retained graph exceed native global budget".into());
         }
         Some(super::super::night_recipe::HostReservation {
-            recipe_reservation_bytes: outer, retained_bitmap_bytes: retained_night_bytes,
-            preparation_peak_bytes: peak, raster_byte_limit: crate::mv_heart_owner::MAX_OWNER_BYTES,
+            recipe_reservation_bytes: outer,
+            retained_bitmap_bytes: retained_night_bytes,
+            preparation_peak_bytes: peak,
+            raster_byte_limit: crate::mv_heart_owner::MAX_OWNER_BYTES,
         })
-    } else { None };
+    } else {
+        None
+    };
     let reservation = Reservation {
         recipe_reservation_bytes: outer,
-        session_ceiling_bytes: if small_count > 0 { available / small_count as u64 } else { 0 },
+        session_ceiling_bytes: if small_count > 0 {
+            available / small_count as u64
+        } else {
+            0
+        },
         max_live_sessions: small_count,
         raster_byte_limit: crate::mv_heart_owner::MAX_OWNER_BYTES,
     };
-    bind(&mut plan.root, &reservation, &counts, night.as_ref(), jz.as_ref());
+    bind(
+        &mut plan.root,
+        &reservation,
+        &counts,
+        night.as_ref(),
+        jz.as_ref(),
+    );
     Ok(())
 }

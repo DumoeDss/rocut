@@ -3,10 +3,10 @@ use std::cell::RefCell;
 
 #[path = "evaluate_clock.rs"]
 mod clock;
-#[path = "native_scene_evaluate.rs"]
-mod native_scene;
 #[path = "meta_evaluate.rs"]
 mod meta;
+#[path = "native_scene_evaluate.rs"]
+mod native_scene;
 pub(super) use clock::Clock;
 
 pub(super) fn lerp(a: f64, b: f64, p: f64) -> f64 {
@@ -48,7 +48,6 @@ pub(super) fn progress(frame: f64, span: &Span, e: Ease) -> f64 {
     )
 }
 
-
 impl Recipe {
     /// Call only after validation. References explicitly replace the child
     /// clock. The outer post clock and native song/audio timeline stay unchanged.
@@ -64,8 +63,18 @@ impl Recipe {
         sequence_source_ticks: u64,
         sequences: Option<&crate::image_sequence::Context<'_>>,
     ) -> Result<Plan, String> {
-        self.resolve_with_fonts(index, step, seed, width, height, audio, resources,
-            sequence_source_ticks, sequences, None)
+        self.resolve_with_fonts(
+            index,
+            step,
+            seed,
+            width,
+            height,
+            audio,
+            resources,
+            sequence_source_ticks,
+            sequences,
+            None,
+        )
     }
     pub fn resolve_with_fonts(
         &self,
@@ -80,8 +89,19 @@ impl Recipe {
         sequences: Option<&crate::image_sequence::Context<'_>>,
         fonts: Option<&crate::mv_font_metrics::Context>,
     ) -> Result<Plan, String> {
-        self.resolve_with_resources(index, step, seed, width, height, audio, resources,
-            sequence_source_ticks, sequences, fonts, None)
+        self.resolve_with_resources(
+            index,
+            step,
+            seed,
+            width,
+            height,
+            audio,
+            resources,
+            sequence_source_ticks,
+            sequences,
+            fonts,
+            None,
+        )
     }
     pub fn resolve_with_resources(
         &self,
@@ -97,19 +117,52 @@ impl Recipe {
         fonts: Option<&crate::mv_font_metrics::Context>,
         images: Option<&crate::mv_image_dimensions::Context>,
     ) -> Result<Plan, String> {
-        self.resolve_with_tunnel_resources(index,step,seed,width,height,audio,resources,
-            sequence_source_ticks,sequences,fonts,images,None)
+        self.resolve_with_tunnel_resources(
+            index,
+            step,
+            seed,
+            width,
+            height,
+            audio,
+            resources,
+            sequence_source_ticks,
+            sequences,
+            fonts,
+            images,
+            None,
+        )
     }
     pub(crate) fn resolve_with_tunnel_resources(
-        &self,index:u64,step:u64,seed:u32,width:u32,height:u32,
-        audio:Option<&crate::mv_audio::Data>,resources:&[crate::programmatic_resources::Resource],
-        sequence_source_ticks:u64,sequences:Option<&crate::image_sequence::Context<'_>>,
-        fonts:Option<&crate::mv_font_metrics::Context>,images:Option<&crate::mv_image_dimensions::Context>,
-        tunnel_fonts:Option<&super::tunnel_context::Context>,
-    )->Result<Plan,String> {
-        let mut clock = Clock::new(self, index, step, seed, width, height, audio, resources,
-            sequence_source_ticks, sequences, fonts, images, None)?;
-        clock.tunnel_fonts=tunnel_fonts;
+        &self,
+        index: u64,
+        step: u64,
+        seed: u32,
+        width: u32,
+        height: u32,
+        audio: Option<&crate::mv_audio::Data>,
+        resources: &[crate::programmatic_resources::Resource],
+        sequence_source_ticks: u64,
+        sequences: Option<&crate::image_sequence::Context<'_>>,
+        fonts: Option<&crate::mv_font_metrics::Context>,
+        images: Option<&crate::mv_image_dimensions::Context>,
+        tunnel_fonts: Option<&super::tunnel_context::Context>,
+    ) -> Result<Plan, String> {
+        let mut clock = Clock::new(
+            self,
+            index,
+            step,
+            seed,
+            width,
+            height,
+            audio,
+            resources,
+            sequence_source_ticks,
+            sequences,
+            fonts,
+            images,
+            None,
+        )?;
+        clock.tunnel_fonts = tunnel_fonts;
         let night_traversal = RefCell::new(super::night_recipe::Traversal::default());
         clock.night_traversal = Some(&night_traversal);
         // Resource/audio facts belong to the complete authored source, not only
@@ -177,20 +230,47 @@ impl Recipe {
                 })
                 .collect::<Result<Vec<_>, String>>()?,
         };
-        super::road_recipe::admit_plan(&plan,resources,images)?;
-        super::heart_recipe::admit(&mut plan,self,super::heart_recipe::HostContext {
-            resources,width,height,step,images,sequences,
-        })?;
+        super::road_recipe::admit_plan(&plan, resources, images)?;
+        super::heart_recipe::admit(
+            &mut plan,
+            self,
+            super::heart_recipe::HostContext {
+                resources,
+                width,
+                height,
+                step,
+                images,
+                sequences,
+            },
+        )?;
         Ok(plan)
     }
     pub fn sampled_font_metric_requests(
-        &self, index: u64, step: u64, seed: u32, width: u32, height: u32,
+        &self,
+        index: u64,
+        step: u64,
+        seed: u32,
+        width: u32,
+        height: u32,
         audio: Option<&crate::mv_audio::Data>,
         resources: &[crate::programmatic_resources::Resource],
     ) -> Result<Vec<crate::mv_font_metrics::Request>, String> {
         let requests = RefCell::new(self.font_metric_requests(resources)?);
-        let clock = Clock::new(self, index, step, seed, width, height, audio, resources,
-            index.checked_mul(step).ok_or("MV source time overflow")?, None, None, None, Some(&requests))?;
+        let clock = Clock::new(
+            self,
+            index,
+            step,
+            seed,
+            width,
+            height,
+            audio,
+            resources,
+            index.checked_mul(step).ok_or("MV source time overflow")?,
+            None,
+            None,
+            None,
+            Some(&requests),
+        )?;
         // Reuse the exact structural graph, including reference/sequence maps,
         // transition endpoints and hidden/collapsed panels. No parallel clock.
         self.node(&self.root, clock)?;
@@ -216,39 +296,110 @@ impl Recipe {
             return Ok(generator);
         }
         Ok(match scene {
-            Scene::PanelsNative { .. } | Scene::Freeze { .. } | Scene::Rewind { .. } | Scene::Melt { .. } => unreachable!("meta scene already resolved"),
+            Scene::PanelsNative { .. }
+            | Scene::Freeze { .. }
+            | Scene::Rewind { .. }
+            | Scene::Melt { .. } => unreachable!("meta scene already resolved"),
             Scene::Jz { .. } => unreachable!("JIZURA owner request already resolved"),
-            Scene::HeartShatter {..} | Scene::HeartShatterBurn {..} | Scene::HeartGather {..} | Scene::SunBloom {..} | Scene::SkyShatter {..} => unreachable!("Heart owner request already resolved"),
-            Scene::IllustNative { .. } | Scene::Burst { .. } | Scene::Night { .. } | Scene::Memories { .. } | Scene::Road { .. } | Scene::Tunnel { .. } | Scene::Ink { .. } | Scene::Flame { .. } | Scene::Fall { .. } | Scene::Thread { .. } | Scene::TitleRiff { .. } | Scene::KanjiSlam { .. } | Scene::Ember { .. } => unreachable!("native scene already resolved"),
-            Scene::Converge { role, settings, span } => PlanNode::Converge {
+            Scene::HeartShatter { .. }
+            | Scene::HeartShatterBurn { .. }
+            | Scene::HeartGather { .. }
+            | Scene::SunBloom { .. }
+            | Scene::SkyShatter { .. } => unreachable!("Heart owner request already resolved"),
+            Scene::IllustNative { .. }
+            | Scene::Burst { .. }
+            | Scene::Night { .. }
+            | Scene::Memories { .. }
+            | Scene::Road { .. }
+            | Scene::Tunnel { .. }
+            | Scene::Ink { .. }
+            | Scene::Flame { .. }
+            | Scene::Fall { .. }
+            | Scene::Thread { .. }
+            | Scene::TitleRiff { .. }
+            | Scene::KanjiSlam { .. }
+            | Scene::Ember { .. } => unreachable!("native scene already resolved"),
+            Scene::Converge {
+                role,
+                settings,
+                span,
+            } => PlanNode::Converge {
                 role: *role,
                 data: settings.plan(&super::converge::Sample {
-                    shot_start_ticks: u64::from(span.start_frame).checked_mul(clock.step)
-                        .and_then(|v| v.checked_add(clock.song_start_ticks)).ok_or("Converge shot start overflow")?,
-                    song_ticks: clock.song_start_ticks.checked_add(clock.source_ticks).ok_or("Converge song time overflow")?,
-                    width: clock.width, height: clock.height, seed: clock.seed, analysis: clock.audio,
+                    shot_start_ticks: u64::from(span.start_frame)
+                        .checked_mul(clock.step)
+                        .and_then(|v| v.checked_add(clock.song_start_ticks))
+                        .ok_or("Converge shot start overflow")?,
+                    song_ticks: clock
+                        .song_start_ticks
+                        .checked_add(clock.source_ticks)
+                        .ok_or("Converge song time overflow")?,
+                    width: clock.width,
+                    height: clock.height,
+                    seed: clock.seed,
+                    analysis: clock.audio,
                 })?,
             },
-            Scene::TypeCard { role, settings, span } => PlanNode::TypeCard {
+            Scene::TypeCard {
+                role,
+                settings,
+                span,
+            } => PlanNode::TypeCard {
                 role: *role,
                 data: settings.plan(&super::type_card::Sample {
                     elapsed_ticks: clock.elapsed(span)?,
-                    duration_ticks: u64::from(span.duration_frames).checked_mul(clock.step).ok_or("TypeCard duration overflow")?,
-                    shot_start_ticks: u64::from(span.start_frame).checked_mul(clock.step)
-                        .and_then(|v| v.checked_add(clock.song_start_ticks)).ok_or("TypeCard shot start overflow")?,
-                    song_ticks: clock.song_start_ticks.checked_add(clock.source_ticks).ok_or("TypeCard song time overflow")?,
-                    width: clock.width, height: clock.height, seed: clock.seed, fonts: clock.fonts, analysis: clock.audio,
+                    duration_ticks: u64::from(span.duration_frames)
+                        .checked_mul(clock.step)
+                        .ok_or("TypeCard duration overflow")?,
+                    shot_start_ticks: u64::from(span.start_frame)
+                        .checked_mul(clock.step)
+                        .and_then(|v| v.checked_add(clock.song_start_ticks))
+                        .ok_or("TypeCard shot start overflow")?,
+                    song_ticks: clock
+                        .song_start_ticks
+                        .checked_add(clock.source_ticks)
+                        .ok_or("TypeCard song time overflow")?,
+                    width: clock.width,
+                    height: clock.height,
+                    seed: clock.seed,
+                    fonts: clock.fonts,
+                    analysis: clock.audio,
                 })?,
             },
-            Scene::Afterimage { role, settings, span } => PlanNode::Afterimage {
+            Scene::Afterimage {
+                role,
+                settings,
+                span,
+            } => PlanNode::Afterimage {
                 role: *role,
-                data: settings.plan(clock.elapsed(span)? as f64 / 120_000.0,
-                    u64::from(span.duration_frames).checked_mul(clock.step).ok_or("MV afterimage duration overflow")? as f64 / 120_000.0,
-                    clock.sample(24), clock.seed, clock.width, clock.height),
+                data: settings.plan(
+                    clock.elapsed(span)? as f64 / 120_000.0,
+                    u64::from(span.duration_frames)
+                        .checked_mul(clock.step)
+                        .ok_or("MV afterimage duration overflow")? as f64
+                        / 120_000.0,
+                    clock.sample(24),
+                    clock.seed,
+                    clock.width,
+                    clock.height,
+                ),
             },
-            Scene::ImageSequence { sequence, origin_source_ticks, rate, role, view } => PlanNode::ImageSequence {
-                image_key: clock.sequences.ok_or("Missing image sequence manifest context")?
-                    .sample(sequence, clock.sequence_source_ticks, *origin_source_ticks, *rate)?,
+            Scene::ImageSequence {
+                sequence,
+                origin_source_ticks,
+                rate,
+                role,
+                view,
+            } => PlanNode::ImageSequence {
+                image_key: clock
+                    .sequences
+                    .ok_or("Missing image sequence manifest context")?
+                    .sample(
+                        sequence,
+                        clock.sequence_source_ticks,
+                        *origin_source_ticks,
+                        *rate,
+                    )?,
                 role: *role,
                 view: *view,
             },
@@ -283,10 +434,15 @@ impl Recipe {
                 }
             }
             Scene::Layers { items } => PlanNode::Layers {
-                items: items.iter().map(|item| Ok(super::layers::ItemPlan {
-                    roles: item.roles.clone(),
-                    input: Box::new(self.node(&item.input, clock)?),
-                })).collect::<Result<Vec<_>, String>>()?,
+                items: items
+                    .iter()
+                    .map(|item| {
+                        Ok(super::layers::ItemPlan {
+                            roles: item.roles.clone(),
+                            input: Box::new(self.node(&item.input, clock)?),
+                        })
+                    })
+                    .collect::<Result<Vec<_>, String>>()?,
             },
             Scene::Panels {
                 panels,

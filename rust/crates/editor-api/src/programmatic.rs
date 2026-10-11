@@ -221,7 +221,7 @@ struct FrameRequest {
     sequence_manifests: Option<Vec<crate::image_sequence::ManifestInput>>,
     #[serde(default, deserialize_with = "deserialize_font_metrics")]
     font_metrics: Option<Vec<crate::mv_font_metrics::Measurement>>,
-    #[serde(default, deserialize_with="deserialize_tunnel_font_measurements")]
+    #[serde(default, deserialize_with = "deserialize_tunnel_font_measurements")]
     tunnel_font_measurements: Option<Vec<crate::mv_recipe::tunnel_context::Measured>>,
     #[serde(default, deserialize_with = "deserialize_image_dimensions")]
     image_dimensions: Option<Vec<crate::mv_image_dimensions::Measurement>>,
@@ -238,7 +238,9 @@ fn deserialize_font_metrics<'de, D: serde::Deserializer<'de>>(
 ) -> Result<Option<Vec<crate::mv_font_metrics::Measurement>>, D::Error> {
     Vec::deserialize(d).map(Some)
 }
-fn deserialize_tunnel_font_measurements<'de,D:serde::Deserializer<'de>>(d:D)->Result<Option<Vec<crate::mv_recipe::tunnel_context::Measured>>,D::Error> {
+fn deserialize_tunnel_font_measurements<'de, D: serde::Deserializer<'de>>(
+    d: D,
+) -> Result<Option<Vec<crate::mv_recipe::tunnel_context::Measured>>, D::Error> {
     Vec::deserialize(d).map(Some)
 }
 
@@ -272,13 +274,13 @@ struct Frame {
     sequence_limits: Option<crate::image_sequence::FrameLimits>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     font_metric_requests: Vec<crate::mv_font_metrics::Request>,
-    #[serde(skip_serializing_if="Vec::is_empty")]
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     tunnel_font_byte_requests: Vec<crate::programmatic_resources::Resource>,
-    #[serde(skip_serializing_if="Vec::is_empty")]
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     tunnel_font_metric_requests: Vec<crate::mv_recipe::tunnel_context::Request>,
-    #[serde(skip_serializing_if="Vec::is_empty")]
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     tunnel_font_stacks: Vec<crate::mv_recipe::tunnel_context::BoundStack>,
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     tunnel_font_limits: Option<crate::programmatic_tunnel_fonts::Limits>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     image_dimension_requests: Vec<crate::mv_image_dimensions::Request>,
@@ -288,16 +290,22 @@ struct Frame {
 
 #[export]
 pub fn resolve_programmatic_frame_json(input: String) -> String {
-    resolve_programmatic_frame(input,None)
+    resolve_programmatic_frame(input, None)
 }
 /// Native binary boundary; never accepts authored admission/descriptors.
-pub fn resolve_programmatic_frame_tunnel_bytes(input:String,layout:String,bytes:&[u8])->String {
-    if let Err(error) = crate::validate_tunnel_frame_transport_lengths(input.len(), layout.len(), bytes.len()) {
+pub fn resolve_programmatic_frame_tunnel_bytes(
+    input: String,
+    layout: String,
+    bytes: &[u8],
+) -> String {
+    if let Err(error) =
+        crate::validate_tunnel_frame_transport_lengths(input.len(), layout.len(), bytes.len())
+    {
         return serde_json::json!({"error":error}).to_string();
     }
-    resolve_programmatic_frame(input,Some((&layout,bytes)))
+    resolve_programmatic_frame(input, Some((&layout, bytes)))
 }
-fn resolve_programmatic_frame(input:String,packet:Option<(&str,&[u8])>)->String {
+fn resolve_programmatic_frame(input: String, packet: Option<(&str, &[u8])>) -> String {
     let result = (|| -> Result<Option<Frame>, String> {
         let r: FrameRequest = serde_json::from_str(&input).map_err(|e| e.to_string())?;
         let issues = r.source.validate();
@@ -337,21 +345,52 @@ fn resolve_programmatic_frame(input:String,packet:Option<(&str,&[u8])>)->String 
         if r.font_metrics.is_some() && (r.defer_recipe || r.source.recipe.is_none()) {
             return Err("Font measurements require a nondeferred MV recipe".into());
         }
-        if r.tunnel_font_measurements.is_some() && (r.defer_recipe || r.source.recipe.is_none() || packet.is_none()) {
-            return Err("Tunnel measurements require native font bytes and a nondeferred recipe".into());
+        if r.tunnel_font_measurements.is_some()
+            && (r.defer_recipe || r.source.recipe.is_none() || packet.is_none())
+        {
+            return Err(
+                "Tunnel measurements require native font bytes and a nondeferred recipe".into(),
+            );
         }
-        let requested_tunnel_fonts=r.source.recipe.as_ref().map(|recipe|recipe.tunnel_font_byte_requests(&r.source.resources)).transpose()?.unwrap_or_default();
-        let tunnel_font_limits=(!requested_tunnel_fonts.is_empty()).then(crate::programmatic_tunnel_fonts::limits);
-        if r.tunnel_font_measurements.is_some() && requested_tunnel_fonts.is_empty() { return Err("Unexpected Tunnel measurements without a Tunnel scene".into()); }
-        let admitted=if let Some((layout,bytes))=packet {
-            let fonts=crate::programmatic_tunnel_fonts::packet(layout,bytes,&requested_tunnel_fonts)?;
-            Some(crate::mv_recipe::tunnel_context::Admitted::new(r.source.recipe.as_ref().ok_or("Tunnel byte packet requires a recipe")?,&r.source.resources,&fonts)?)
-        } else {None};
-        let tunnel_font_metric_requests=admitted.as_ref().map(|a|a.requests()).unwrap_or_default();
-        let tunnel_fonts=if let Some(measured)=&r.tunnel_font_measurements {
-            Some(admitted.as_ref().ok_or("Tunnel missing byte admission")?.bind(measured)?)
-        } else {None};
-        let tunnel_font_stacks=admitted.as_ref().map(|a|a.stacks()).unwrap_or_default();
+        let requested_tunnel_fonts = r
+            .source
+            .recipe
+            .as_ref()
+            .map(|recipe| recipe.tunnel_font_byte_requests(&r.source.resources))
+            .transpose()?
+            .unwrap_or_default();
+        let tunnel_font_limits =
+            (!requested_tunnel_fonts.is_empty()).then(crate::programmatic_tunnel_fonts::limits);
+        if r.tunnel_font_measurements.is_some() && requested_tunnel_fonts.is_empty() {
+            return Err("Unexpected Tunnel measurements without a Tunnel scene".into());
+        }
+        let admitted = if let Some((layout, bytes)) = packet {
+            let fonts =
+                crate::programmatic_tunnel_fonts::packet(layout, bytes, &requested_tunnel_fonts)?;
+            Some(crate::mv_recipe::tunnel_context::Admitted::new(
+                r.source
+                    .recipe
+                    .as_ref()
+                    .ok_or("Tunnel byte packet requires a recipe")?,
+                &r.source.resources,
+                &fonts,
+            )?)
+        } else {
+            None
+        };
+        let tunnel_font_metric_requests =
+            admitted.as_ref().map(|a| a.requests()).unwrap_or_default();
+        let tunnel_fonts = if let Some(measured) = &r.tunnel_font_measurements {
+            Some(
+                admitted
+                    .as_ref()
+                    .ok_or("Tunnel missing byte admission")?
+                    .bind(measured)?,
+            )
+        } else {
+            None
+        };
+        let tunnel_font_stacks = admitted.as_ref().map(|a| a.stacks()).unwrap_or_default();
         if r.image_dimensions.is_some() && (r.defer_recipe || r.source.recipe.is_none()) {
             return Err("Image dimensions require a nondeferred MV recipe".into());
         }
@@ -363,25 +402,46 @@ fn resolve_programmatic_frame(input:String,packet:Option<(&str,&[u8])>)->String 
                 if r.defer_recipe && r.analysis.is_none() && recipe.audio.is_some() {
                     recipe.font_metric_requests(&r.source.resources)
                 } else {
-                    recipe.sampled_font_metric_requests(index, step, r.source.seed,
-                        r.source.width, r.source.height, r.analysis.as_ref(), &r.source.resources)
+                    recipe.sampled_font_metric_requests(
+                        index,
+                        step,
+                        r.source.seed,
+                        r.source.width,
+                        r.source.height,
+                        r.analysis.as_ref(),
+                        &r.source.resources,
+                    )
                 }
             })
             .transpose()?
             .unwrap_or_default();
-        let image_dimension_requests = r.source.recipe.as_ref()
+        let image_dimension_requests = r
+            .source
+            .recipe
+            .as_ref()
             .map(|recipe| recipe.image_dimension_requests(&r.source.resources))
-            .transpose()?.unwrap_or_default();
+            .transpose()?
+            .unwrap_or_default();
         let defer_recipe = r.defer_recipe
             || (!requested_tunnel_fonts.is_empty() && tunnel_fonts.is_none())
             || (!font_metric_requests.is_empty() && r.font_metrics.is_none())
             || (!image_dimension_requests.is_empty() && r.image_dimensions.is_none());
-        let images = r.image_dimensions.as_ref()
-            .map(|measured| crate::mv_image_dimensions::Context::new(&image_dimension_requests, measured))
+        let images = r
+            .image_dimensions
+            .as_ref()
+            .map(|measured| {
+                crate::mv_image_dimensions::Context::new(&image_dimension_requests, measured)
+            })
             .transpose()?;
         if let (Some(recipe), Some(images)) = (&r.source.recipe, images.as_ref()) {
-            recipe.check_with_images(&r.source.resources, r.source.duration_frames,
-                r.source.width, r.source.height, step, Some(images))?;
+            recipe.check_with_images(
+                &r.source.resources,
+                r.source.duration_frames,
+                r.source.width,
+                r.source.height,
+                step,
+                Some(images),
+            )?;
         }
         let fonts = r
             .font_metrics
@@ -434,20 +494,36 @@ fn resolve_programmatic_frame(input:String,packet:Option<(&str,&[u8])>)->String 
             time: source_time as f64 / 120_000.0,
             timeline_time: r.timeline_time,
             source_time,
-            sample_time: (has_sequences || !font_metric_requests.is_empty()
-                || !image_dimension_requests.is_empty() || !requested_tunnel_fonts.is_empty()
-                || r.source.recipe.as_ref().is_some_and(|recipe| recipe.audio.is_some()))
-                .then_some(sample_time),
+            sample_time: (has_sequences
+                || !font_metric_requests.is_empty()
+                || !image_dimension_requests.is_empty()
+                || !requested_tunnel_fonts.is_empty()
+                || r.source
+                    .recipe
+                    .as_ref()
+                    .is_some_and(|recipe| recipe.audio.is_some()))
+            .then_some(sample_time),
             frame_rate: r.source.frame_rate,
             duration_frames: r.source.duration_frames,
             seed: r.source.seed,
             font_metric_requests,
-            tunnel_font_byte_requests: if packet.is_none(){requested_tunnel_fonts}else{Vec::new()},
-            tunnel_font_metric_requests: if tunnel_fonts.is_none(){tunnel_font_metric_requests}else{Vec::new()},
+            tunnel_font_byte_requests: if packet.is_none() {
+                requested_tunnel_fonts
+            } else {
+                Vec::new()
+            },
+            tunnel_font_metric_requests: if tunnel_fonts.is_none() {
+                tunnel_font_metric_requests
+            } else {
+                Vec::new()
+            },
             tunnel_font_stacks,
             tunnel_font_limits,
             image_dimension_requests,
-            image_decode_limits: r.source.resources.iter()
+            image_decode_limits: r
+                .source
+                .resources
+                .iter()
                 .any(|resource| matches!(resource.kind.as_str(), "image" | "imageSequence"))
                 .then(crate::image_sequence::frame_limits),
             recipe_plan,

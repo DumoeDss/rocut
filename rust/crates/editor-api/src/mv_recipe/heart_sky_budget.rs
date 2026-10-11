@@ -1,9 +1,9 @@
 //! Sky-specific complete graph/lifetime admission; original star raster has >4096 commands.
 use super::{
-    plan::{self, native, HeartCommand},
+    BackgroundFact,
+    plan::{self, HeartCommand, native},
     sky::Session,
     sky_plan::{Command, Plan, SkyCommand},
-    BackgroundFact,
 };
 use std::collections::BTreeMap;
 const MAX: u64 = 256 * 1024 * 1024;

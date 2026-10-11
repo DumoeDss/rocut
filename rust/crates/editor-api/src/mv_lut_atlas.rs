@@ -340,7 +340,7 @@ impl RowPixels {
 mod tests {
     use super::*;
     // Actual original P4_hotarubi.png encoded bytes, not a generated ramp.
-    const PNG_HEX:&str="89504e470d0a1a0a0000000d4948445200000100000000010802000000be3be720000000ad49444154789c754ecb0ec3200c8b83e88ebbedffff94c97910a0ad5a19c7760ce8df9f8808401422826f62717e0f622ae96f6228597c2fdc95f990e72b5c5a5688ae823c28c5ec70122598dc8cbd242f0aab7a6ea3f1b9758cf3a235326b4efd70df6276ee3d2f8bb1a22aaa30bc9146de4adc33e6fadfd6c0a29755e2a012e3884c0be24aa33b14601250d81bf854341b8dd08a408edc35a465b1a30472413e5a7841ba13959e2389a1f3fe07292b07d7326c00140000000049454e44ae426082";
+    const PNG_HEX: &str = "89504e470d0a1a0a0000000d4948445200000100000000010802000000be3be720000000ad49444154789c754ecb0ec3200c8b83e88ebbedffff94c97910a0ad5a19c7760ce8df9f8808401422826f62717e0f622ae96f6228597c2fdc95f990e72b5c5a5688ae823c28c5ec70122598dc8cbd242f0aab7a6ea3f1b9758cf3a235326b4efd70df6276ee3d2f8bb1a22aaa30bc9146de4adc33e6fadfd6c0a29755e2a012e3884c0be24aa33b14601250d81bf854341b8dd08a408edc35a465b1a30472413e5a7841ba13959e2389a1f3fe07292b07d7326c00140000000049454e44ae426082";
     fn resource_for(id: &str, kind: &str, mime: &str, body: &[u8]) -> Resource {
         serde_json::from_value(serde_json::json!({"id":id,"kind":kind,"attachmentKey":format!("test/{id}"),"mimeType":mime,"byteLength":body.len(),"sha256":digest(body)})).unwrap()
     }
@@ -439,11 +439,13 @@ mod tests {
         assert_eq!(p["lutA"], 0);
         assert_eq!(p["lutB"], 0);
         assert_eq!(p["lutMix"], 0.18);
-        assert!(plan
-            .resolve_post_parameters(&serde_json::json!({"lutA":"absent"}))
-            .is_err());
-        assert!(plan
-            .resolve_post_parameters(&serde_json::json!({"lutA":15}))
-            .is_err());
+        assert!(
+            plan.resolve_post_parameters(&serde_json::json!({"lutA":"absent"}))
+                .is_err()
+        );
+        assert!(
+            plan.resolve_post_parameters(&serde_json::json!({"lutA":15}))
+                .is_err()
+        );
     }
 }

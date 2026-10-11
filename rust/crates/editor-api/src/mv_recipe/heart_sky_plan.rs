@@ -1,5 +1,5 @@
 //! Sky transport adds the original CSS-filtered Milky Way stroke, not a shadow substitute.
-use super::plan::{self, native, Matrix, Operation, Paint};
+use super::plan::{self, Matrix, Operation, Paint, native};
 use serde::Serialize;
 #[derive(Serialize)]
 #[serde(untagged)]

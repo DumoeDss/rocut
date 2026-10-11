@@ -35,11 +35,16 @@ pub(super) struct RatePreparation {
 /// Preserve measured native length independently of declared coverage. Loop
 /// source trim/period still have their separate source-domain phase admission.
 pub(super) fn observed_pcm(native: &NativeClip, sample_rate: u32) -> bool {
-    [sample_rate, 48000]
-        .into_iter()
-        .any(|rate| sample_aligned(native.duration * f64::from(rate), "clip duration").is_err()
-            || (native.r#loop && (sample_aligned(native.media_start * f64::from(rate), "loop trim").is_err()
-                || sample_aligned((native.source_duration - native.media_start) * f64::from(rate), "loop period").is_err())))
+    [sample_rate, 48000].into_iter().any(|rate| {
+        sample_aligned(native.duration * f64::from(rate), "clip duration").is_err()
+            || (native.r#loop
+                && (sample_aligned(native.media_start * f64::from(rate), "loop trim").is_err()
+                    || sample_aligned(
+                        (native.source_duration - native.media_start) * f64::from(rate),
+                        "loop period",
+                    )
+                    .is_err()))
+    })
 }
 
 /// A scalar clip with fractional source facts needs the pinned exporter's
@@ -49,11 +54,17 @@ pub(super) fn needs_scalar_preparation(native: &NativeClip, sample_rate: u32) ->
     [sample_rate, 48000].into_iter().any(|rate| {
         sample_aligned(native.duration * f64::from(rate), "clip duration").is_err()
             || sample_aligned(native.media_start * f64::from(rate), "media trim").is_err()
-            || (native.r#loop && sample_aligned((native.source_duration - native.media_start) * f64::from(rate), "loop period").is_err())
+            || (native.r#loop
+                && sample_aligned(
+                    (native.source_duration - native.media_start) * f64::from(rate),
+                    "loop period",
+                )
+                .is_err())
             || sample_aligned(
                 native.media_start / native.playback_rate * f64::from(rate),
                 "tempo-adjusted media trim",
-            ).is_err()
+            )
+            .is_err()
     })
 }
 
@@ -79,7 +90,11 @@ pub(super) fn prepare_scalar(
     // quantization before knowing source metadata: decode.rs admits >=1000 Hz,
     // so two source samples plus conversion rounding occupy at most 98 frames
     // at 48 kHz. This is capacity only; no silence/padding is added to PCM.
-    let endpoint_capacity = if native.playback_rate == 1.0 { 2 * (48000 / 1000) + 2 } else { 1 };
+    let endpoint_capacity = if native.playback_rate == 1.0 {
+        2 * (48000 / 1000) + 2
+    } else {
+        1
+    };
     let native_max_frames = (native.duration * 48000.0).ceil() as u64 + endpoint_capacity;
     let graph_max_frames = (native_max_frames * u64::from(sample_rate)).div_ceil(48000) + 1;
     if native_max_frames > MAX_PCM_BYTES / 8 || graph_max_frames > MAX_PCM_BYTES / 8 {
@@ -94,13 +109,24 @@ pub(super) fn prepare_scalar(
     let source_loop = if native.r#loop {
         // Reuse the admitted source-domain extension, before native scalar
         // preparation/FX; duration is not rounded to the loop tile geometry.
-        Some(super::rate_loop::prepare_with_timing(native, source_duration, sample_rate, timing)?)
-    } else { None };
+        Some(super::rate_loop::prepare_with_timing(
+            native,
+            source_duration,
+            sample_rate,
+            timing,
+        )?)
+    } else {
+        None
+    };
     Ok(RatePreparation {
         profile: "hyperframes-0.8.139-exporter-prepare-s16-48k-v1",
         preparation_kind: "scalar",
         output_duration_required: native.playback_rate != 1.0,
-        media_start_seconds: if source_loop.is_some() { "0".into() } else { parameter_number(native.media_start) },
+        media_start_seconds: if source_loop.is_some() {
+            "0".into()
+        } else {
+            parameter_number(native.media_start)
+        },
         source_duration_seconds: parameter_number(source_duration),
         duration_seconds: parameter_number(native.duration),
         native_sample_rate: 48000,
