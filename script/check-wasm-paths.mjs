@@ -23,18 +23,31 @@
  * when it in fact carries 169 rooted at `/home/heart/`.
  *
  *   node script/check-wasm-paths.mjs
+ *   node script/check-wasm-paths.mjs --pkg-dir <absolute-private-package>
  *   node script/check-wasm-paths.mjs --file <some.wasm>   # negative control
  */
 import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join, relative } from "node:path";
+import { packageDirectoryArguments } from "./wasm-package-directory.mjs";
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const DEFAULT_TARGET = join(REPO_ROOT, "rust", "wasm", "pkg", "opencut_wasm_bg.wasm");
 const rel = (p) => relative(REPO_ROOT, p).replaceAll("\\", "/") || p;
 
-const fileIndex = process.argv.indexOf("--file");
-const target = fileIndex === -1 ? DEFAULT_TARGET : process.argv[fileIndex + 1];
+let target, negativeControl = false;
+try {
+	const argv = process.argv.slice(2);
+	const { pkgDir, remaining } = packageDirectoryArguments(argv, "--pkg-dir", REPO_ROOT);
+	if (remaining.length === 0) target = join(pkgDir, "opencut_wasm_bg.wasm");
+	else if (remaining.length === 2 && remaining[0] === "--file" && remaining[1]) {
+		if (argv.some((arg) => arg === "--pkg-dir" || arg.startsWith("--pkg-dir="))) throw Error("--file and --pkg-dir cannot be combined");
+		target = remaining[1];
+		negativeControl = true;
+	} else throw Error(`Unknown or incomplete arguments: ${remaining.join(" ")}`);
+} catch (error) {
+	console.error(`check-wasm-paths: ${error.message}`);
+	process.exit(2);
+}
 
 if (!target || !existsSync(target)) {
 	console.error(`check-wasm-paths: no artifact at ${target ?? "<unset>"}`);
@@ -48,10 +61,14 @@ if (!target || !existsSync(target)) {
  * path shape — a remapped `/cargo\registry\...` path is fine and expected.
  */
 const DISCLOSURES = [
+	// eslint-disable-next-line no-control-regex -- Binary paths stop at ASCII control delimiters.
 	{ name: "Windows user-profile path", re: /[A-Za-z]:\\Users\\[A-Za-z0-9_.-]+\\[^\x00-\x1f"]{0,180}/g },
 	{ name: "any Windows drive-letter path", re: /[A-Za-z]:\\[A-Za-z0-9_.\\-]{4,200}/g },
+	// eslint-disable-next-line no-control-regex -- Binary paths stop at ASCII control delimiters.
 	{ name: "POSIX home-directory path", re: /\/home\/[A-Za-z0-9_.-]+\/[^\x00-\x1f"]{0,180}/g },
+	// eslint-disable-next-line no-control-regex -- Binary paths stop at ASCII control delimiters.
 	{ name: "macOS home-directory path", re: /\/Users\/[A-Za-z0-9_.-]+\/[^\x00-\x1f"]{0,180}/g },
+	// eslint-disable-next-line no-control-regex -- Binary paths stop at ASCII control delimiters.
 	{ name: "POSIX root home-directory path", re: /\/root\/[^\x00-\x1f"]{0,180}/g },
 ];
 
@@ -126,11 +143,16 @@ const SOURCE_FILE_SUFFIX = /\.(?:c|cc|cpp|h|hpp|lock|rs|toml)(?:$|[^A-Za-z0-9])/
  * matches them at all. A local Windows run is therefore structurally blind to it — which is why
  * it took a CI run to surface, and why the controls below now carry it.
  */
+// The pinned 2026-10-11 Windows binary joins the application error literal
+// "Invalid or incomplete HyperFrames native fallback history identity/coverage"
+// with /rustc/<40-hex compiler commit>/library/core/src/num/f64.rs. Split only
+// this exact already-sanctioned virtual root, judging its prefix separately.
+// A real /workspace/checkout/rustc/<hash>/library/... must still be rejected.
 function splitAtSanctionedRoots(path) {
 	const fragments = [];
 	let rest = path;
 	while (rest.length > 0) {
-		const cut = [/(?!^)\/cargo(?:\/|$)/, /(?!^)\/opencut(?:\/|$)/, /(?!^)\/wasm(?:\/|$)/, /(?!^)\/crates(?:\/|$)/]
+		const cut = [/(?!^)\/cargo(?:\/|$)/, /(?!^)\/opencut(?:\/|$)/, /(?!^)\/wasm(?:\/|$)/, /(?!^)\/crates(?:\/|$)/, /(?!^)\/rustc\/[0-9a-f]{40}\/library\//]
 			.map((root) => rest.search(root))
 			.filter((at) => at > 0)
 			.sort((a, b) => a - b)[0];
@@ -209,6 +231,9 @@ const POSIX_NEGATIVE_CONTROLS = [
 	// is the hole the adjacency fix could have opened, so it is asserted rather than reasoned.
 	"/workspace/checkout/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs",
 	"/builds/ci/opencut/rust/wasm/src/gpu.rs",
+	"/workspace/checkout/rustc/6b00bc3880198600130e1cf62b8f8a93494488cc/library/core/src/num/f64.rs",
+	"/home/alice/checkout/rustc/6b00bc3880198600130e1cf62b8f8a93494488cc/library/core/src/num/f64.rs",
+	"/coverage/rustc/not-a-compiler-commit/library/core/src/num/f64.rs",
 ];
 for (const control of POSIX_NEGATIVE_CONTROLS) {
 	const rejected = unremappedPosixPaths(control).includes(control);
@@ -225,6 +250,7 @@ const POSIX_REMAP_CONTROLS = [
 	// `/` laid immediately before a remapped `/cargo` path, read as one token because the data
 	// section has no string boundaries. Committed verbatim so the fix is proved on the real string.
 	"/from_iter/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/parking_lot_core-0.9.12/src/parking_lot.rs",
+	"Invalid or incomplete HyperFrames native fallback history identity/coverage/rustc/6b00bc3880198600130e1cf62b8f8a93494488cc/library/core/src/num/f64.rs",
 ];
 const remapControlFindings = POSIX_REMAP_CONTROLS.flatMap(unremappedPosixPaths);
 const remapControlsOk = remapControlFindings.length === 0;
@@ -238,7 +264,7 @@ if (!remapControlsOk) findings.push(`POSIX scanner rejected intentional sanction
  * their absence means the binary was not produced by `script/build-wasm.mjs`,
  * even though every disclosure pattern above would be satisfied.
  */
-if (fileIndex === -1) {
+if (!negativeControl) {
 	/**
 	 * `/cargo` must be present on every platform: dependency sources always
 	 * embed as absolute remapped paths. The WORKSPACE roots are
@@ -247,7 +273,9 @@ if (fileIndex === -1) {
 	 * forms (see REMAPPED_ROOTS). Vacuity protection requires at least ONE
 	 * workspace-root form — which one depends on where the artifact was built.
 	 */
+	// eslint-disable-next-line no-control-regex -- Count complete binary paths, not control bytes.
 	const cargoCount = (text.match(/\/cargo[\\/][^\x00-\x1f"]{0,120}/g) ?? []).length;
+	// eslint-disable-next-line no-control-regex -- Same intentional delimiter as the disclosure scan.
 	const opencutCount = (text.match(/\/opencut[\\/][^\x00-\x1f"]{0,120}/g) ?? []).length;
 	const workspaceRelativeCount = (text.match(/\/(?:wasm|crates)[\\/][A-Za-z0-9._+@=-]+[\\/]/g) ?? []).length;
 	const cargoOk = cargoCount > 0;
