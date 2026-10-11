@@ -44,7 +44,14 @@ export function fixture({
 		paused = true;
 		src = "data:video/webm;base64,AQID";
 		currentSrc = this.src;
+		sources = [];
 		presentedMarker = 0;
+		getAttribute(name) {
+			return name === "src" && this.src ? this.src : null;
+		}
+		querySelectorAll(selector) {
+			return selector === "source" ? this.sources : [];
+		}
 		get currentTime() {
 			return this._time;
 		}

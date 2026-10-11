@@ -81,13 +81,33 @@ export const REMOTION_COMPILER_CHILD =
         // CJS internal would create a second, disconnected Remotion context.
         if (!isThree && real === upstream) {
           let native = new TextDecoder('utf-8',{fatal:true}).decode(body);
+          const nativePackage = JSON.parse(await fs.readFile(path.join(dependencies,'remotion/package.json'),'utf8'));
+          if (nativePackage.version !== '4.0.440') throw Error('Pinned Remotion composition commit version changed');
+          const renderingBranch = '  if (environment.isRendering && video && video.component === lazy && video.id === id) {';
+          const innerStart = native.indexOf('var InnerComposition = ');
+          const branchStart = native.indexOf(renderingBranch, innerStart);
+          const branchEnd = native.indexOf('\n  return null;\n};\nvar Composition = ', branchStart);
+          if (innerStart < 0 || native.split('var InnerComposition = ').length !== 2
+              || branchStart < innerStart || branchEnd < 0 || native.split(renderingBranch).length !== 2)
+            throw Error('Pinned Remotion composition commit branch changed');
+          const branch = native.slice(branchStart,branchEnd);
+          const content = 'children: /* @__PURE__ */ jsx22(Comp, {\n          ...resolved.result.props ?? {}\n        })';
+          const fallback = 'fallback: /* @__PURE__ */ jsx22(Fallback, {}),';
+          if (branch.split(content).length !== 2 || branch.split(fallback).length !== 2)
+            throw Error('Pinned Remotion composition commit Suspense seam changed');
+          native = native.slice(0,branchStart) + branch.replace(content,
+            'children: jsx22(RocutCompositionCommit, {id, children: jsx22(Comp, {\n          ...resolved.result.props ?? {}\n        })})') + native.slice(branchEnd);
           const start = native.indexOf('var OffthreadVideoForRendering = ');
           const end = native.indexOf('\n// ', start + 1);
           if (start < 0 || end < 0) throw Error('Pinned Remotion Offthread component seam changed');
           const component = native.slice(start, end), fetchSeam = 'const res = await fetch(actualSrc, {';
           if (component.split(fetchSeam).length !== 2) throw Error('Pinned Remotion Offthread fetch seam changed');
           native = native.slice(0,start) + component.replace(fetchSeam, 'const res = await window.rocutOffthread.fetch(actualSrc, {') + native.slice(end);
-          return {contents:native+'\nexport {DurationsContext as __rocutDurationsContext};',loader:'js',resolveDir:path.dirname(real)};
+          const commit = '\nimport {createContext as rocutCreateContext, useContext as rocutUseContext, useLayoutEffect as rocutUseLayoutEffect} from "react";\n'
+            + 'const RocutCompositionCommitContext=rocutCreateContext(null);\n'
+            + 'function RocutCompositionCommit({children,id}) {const commit=rocutUseContext(RocutCompositionCommitContext);rocutUseLayoutEffect(()=>commit?.(id),[commit,id]);return children;}\n'
+            + 'export {RocutCompositionCommitContext as __rocutCompositionCommitContext};\n';
+          return {contents:native+commit+'\nexport {DurationsContext as __rocutDurationsContext};',loader:'js',resolveDir:path.dirname(real)};
         }
         if (/^(video|audio)\//.test(mime[ext] ?? '')) return {contents:'export default '+JSON.stringify('data:'+mime[ext]+';base64,'+body.toString('base64')),loader:'js'};
         if (mime[ext]) return {contents:body,loader:'dataurl'};

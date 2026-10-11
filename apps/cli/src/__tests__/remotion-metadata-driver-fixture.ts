@@ -23,6 +23,9 @@ export function metadataDriverFixture({
 	inspection = false,
 	props = { color: "red", list: [1, 2] },
 	timeoutMs = 80,
+	nativeCommit = "immediate",
+	paint = (callback: () => void) => queueMicrotask(callback),
+	now = () => performance.now(),
 	resolve = async () => ({
 		width: 64,
 		height: 32,
@@ -34,6 +37,9 @@ export function metadataDriverFixture({
 	inspection?: boolean;
 	props?: Record<string, unknown>;
 	timeoutMs?: number;
+	nativeCommit?: "immediate" | "manual";
+	paint?: (callback: () => void) => unknown;
+	now?: () => number;
 	resolve?: (input: Record<string, unknown>) => Promise<Metadata>;
 } = {}) {
 	const inputProps = { supplied: 3 };
@@ -94,6 +100,24 @@ export function metadataDriverFixture({
 		rocutMedia: { check() {} },
 	};
 	const passthrough = ({ children }: { children: unknown }) => children;
+	let notifyCommit: ((id: string) => () => void) | undefined;
+	let nativeCleanup: (() => void) | undefined;
+	let rejectNative: ((error: Error) => void) | undefined;
+	const commit = (id = "Main") => {
+		nativeCleanup = notifyCommit?.(id);
+	};
+	const NativeCompositionCommitContext = {
+		Provider: ({
+			value,
+			children,
+		}: {
+			value: typeof notifyCommit;
+			children: unknown;
+		}) => {
+			notifyCommit = value;
+			return children;
+		},
+	};
 	const Manager = (parameters: {
 		children: unknown;
 		currentCompositionMetadata: unknown;
@@ -119,6 +143,7 @@ export function metadataDriverFixture({
 		useContext: () => ({
 			setCanvasContent: () => {
 				state.selections++;
+				if (nativeCommit === "immediate") commit();
 			},
 		}),
 		useLayoutEffect: (callback: () => void) => callback(),
@@ -150,6 +175,14 @@ export function metadataDriverFixture({
 					typeof instance.render !== "function"
 				)
 					throw Error("Invalid fixture component");
+				if (
+					"componentDidCatch" in instance &&
+					typeof instance.componentDidCatch === "function"
+				) {
+					const catchNative = instance.componentDidCatch;
+					rejectNative = (error) =>
+						Reflect.apply(catchNative, instance, [error]);
+				}
 				visit(instance.render());
 			} else visit(node.type(node.parameters));
 		}
@@ -181,6 +214,7 @@ export function metadataDriverFixture({
 			createRoot: () => ({
 				render: visit,
 				unmount: () => {
+					nativeCleanup?.();
 					state.unmounts++;
 				},
 			}),
@@ -188,6 +222,7 @@ export function metadataDriverFixture({
 		"react-dom": { flushSync: (callback: () => void) => callback() },
 		remotion: {
 			Internals,
+			__rocutCompositionCommitContext: NativeCompositionCommitContext,
 			getInputProps: () => inputProps,
 			delayRender: () => 1,
 			continueRender: () => {
@@ -225,14 +260,16 @@ export function metadataDriverFixture({
 		"requestAnimationFrame",
 		"addEventListener",
 		"removeEventListener",
+		"performance",
 		code,
 	)(
 		(name: string) => modules[name],
 		window,
 		document,
-		(callback: () => void) => queueMicrotask(callback),
+		paint,
 		(name: string, callback: () => void) => listeners.set(name, callback),
 		(name: string) => listeners.delete(name),
+		{ now },
 	);
 	return {
 		state,
@@ -240,6 +277,9 @@ export function metadataDriverFixture({
 		spec,
 		receipt,
 		listeners,
+		commit,
+		uncommit: () => nativeCleanup?.(),
+		rejectNative: (error: Error) => rejectNative?.(error),
 		run: () => {
 			const method =
 				window[

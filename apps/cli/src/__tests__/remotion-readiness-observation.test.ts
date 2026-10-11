@@ -36,9 +36,12 @@ async function settle({
 	const execute = new Function(
 		"window",
 		"lifetime",
-		"paint",
+		"paintTurn",
 		"observeReadiness",
-		`${REMOTION_FRAME_DRIVER.slice(start, end)} return settle();`,
+		"model",
+		`let compositionCommitted=model.committed;
+const paint=async()=>{await paintTurn();compositionCommitted=model.committed;};
+${REMOTION_FRAME_DRIVER.slice(start, end)} return settle();`,
 	);
 	await execute(
 		model.window,
@@ -49,19 +52,21 @@ async function settle({
 			onTurn(model);
 		},
 		() => {},
+		model,
 	);
 	return model;
 }
 
-test("native idle is not a React commit acknowledgement in the actual settle predicate", async () => {
+test("native idle cannot pass before the selected content commits in the actual settle predicate", async () => {
 	const model = await settle({
 		onTurn(model) {
 			model.window.remotion_delayRenderHandles = [];
 			model.window.remotion_renderReady = true;
+			if (model.turns === 5) model.committed = true;
 		},
 	});
-	expect(model.turns).toBe(2);
-	expect(model.committed).toBe(false);
+	expect(model.turns).toBe(6);
+	expect(model.committed).toBe(true);
 });
 
 test("an outstanding handle blocks; release and commit before second idle turn passes", async () => {
@@ -74,7 +79,7 @@ test("an outstanding handle blocks; release and commit before second idle turn p
 			if (model.turns === 4) model.committed = true;
 		},
 	});
-	expect(model.turns).toBe(4);
+	expect(model.turns).toBe(5);
 	expect(model.committed).toBe(true);
 });
 
@@ -97,7 +102,7 @@ JSON.stringify(window.__rocutRemotionReadinessTrace)`,
 	expect(scope.remotion_delayRenderHandles.length).toBe(0);
 });
 
-test("diagnostics remain after screenshot; original timers and native idle predicate stay unchanged", async () => {
+test("diagnostics remain after screenshot; original timers and native idle checks stay present", async () => {
 	const capture = await readFile(
 		new URL("../programmatic/particle-capture-frame.ts", import.meta.url),
 		"utf8",

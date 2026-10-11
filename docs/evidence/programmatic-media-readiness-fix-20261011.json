@@ -1,0 +1,145 @@
+{
+	"schema": "rocut-programmatic-media-readiness-integration/v1",
+	"date": "2026-10-11",
+	"baseCommit": "b9a80017884c9d90612a968285f00bc622e7660d",
+	"scope": "Isolated worktree production readiness fixes and focused CPU regressions; not browser/Electron/full acceptance",
+	"hyperframes": {
+		"candidate": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-source-ownership-20261011-QOFEbR",
+		"manifestSha256": "e9d45d4e5f4ab18e9f2ebcb8fdbf7743d5390663337b59e422d319936f843c78",
+		"patchSha256": "903a137a483d196726110380611cb971fd61889eb777e01655eb4a0db7b32dd7",
+		"independentReview": "C:/Users/Sayo/AppData/Local/Temp/hf-lifecycle-independent-review-20261011-aBQpEi/independent-review.json",
+		"independentReviewSha256": "7ed06dba47c40d9a331b55cbb328ba7f695a925070e52f3b5b841e1890c01c4d",
+		"integratedCpu": {
+			"pass": 58,
+			"fail": 0,
+			"skip": 0
+		},
+		"independentAdditionalCpu": {
+			"pass": 40,
+			"fail": 0
+		},
+		"behavior": "Healthy abort/emptied retain frozen source ownership and must still prove native presentation; true error, source mutation, abort and deadline remain terminal",
+		"causalLimit": "Original Chrome failure receipt did not record exact event; CPU diagnosis is not proof of the observed browser event",
+		"formattingDelta": "Two newly added tests were formatted under R .prettierrc.json after exact patch replay; production postimage remains exact"
+	},
+	"remotion": {
+		"candidate": "C:/Users/Sayo/AppData/Local/Temp/rocut-remotion-commit-fence-20261011-b88cef34",
+		"patchSha256": "a3c2eb446dae17819e8ff9c0060000e4a4614252aaf5994173c826786a15cd68",
+		"authorReportSha256": "311421458c1a6751d64b07f5a5b681c6b46337cb888cc4cb378d9f9544e0d833",
+		"integratedCpu": {
+			"pass": 22,
+			"fail": 0,
+			"skip": 0,
+			"assertions": 189
+		},
+		"independentReview": "C:/Users/Sayo/AppData/Local/Temp/remotion-commit-independent-review-20261011-iKQjhD/independent-review.json",
+		"independentReviewSha256": "76b38311b57b27c4727495c9842560a53a8d25f5327abb843a2aeac2afb0acd9",
+		"independentAdditionalCpu": {
+			"pass": 6,
+			"fail": 0,
+			"assertions": 23
+		},
+		"pinnedNativeCpu": {
+			"remotion": "4.0.440",
+			"react": "18.3.1",
+			"toolchain": "C:/Users/Sayo/AppData/Local/Temp/rocut-media-toolchain-YbloF9",
+			"realm": "React/ReactDOM/linkedom CPU, not browser"
+		},
+		"behavior": "Keep boot through selected native Suspense content layout commit, then preserve original native handles/media/errors and two RAF stable turns; empty legal output and same-root produced scans remain supported",
+		"seamDrift": "Exact version, native rendering branch, child/fallback uniqueness fail closed"
+	},
+	"invariants": {
+		"deadlineMs": 8000,
+		"pixelOracleChanged": false,
+		"authoredBrowserFixtureChanged": false,
+		"mediaTimingFormulaChanged": false,
+		"nativeAudioFlowChanged": false,
+		"wasmChanged": false,
+		"sharedDependenciesChanged": false,
+		"originalDirtyPathsPreserved": 24,
+		"installedPluginChanged": false,
+		"pushed": false
+	},
+	"checks": {
+		"productionSyntax": "passed",
+		"scopedEmbeddedJsLint": "passed",
+		"scopedRemotionTypescriptLint": "passed",
+		"scopedFormat": "passed",
+		"wholeRepositoryTypecheckOrLint": false
+	},
+	"integratedFiles": [
+		{
+			"path": "apps/cli/src/__tests__/remotion-commit-compiler-fixture.ts",
+			"bytes": 3204,
+			"sha256": "327d4117a4573be4ab4d4dd2b02d6a3de9124e4d753e5b893598bbff3b327e62"
+		},
+		{
+			"path": "apps/cli/src/__tests__/remotion-commit-compiler.test.ts",
+			"bytes": 1806,
+			"sha256": "207f41b81a01bc2682c690547a23151e4fc73a9e616044d04cb83ad3149fc93f"
+		},
+		{
+			"path": "apps/cli/src/__tests__/remotion-commit-native-cpu.test.ts",
+			"bytes": 4830,
+			"sha256": "f79d462eee66a19212b86869940dec6c377eadc5e13a2f5aaf1f6d8792f75858"
+		},
+		{
+			"path": "apps/cli/src/__tests__/remotion-composition-commit.test.ts",
+			"bytes": 4882,
+			"sha256": "e7fa64b2529ec5f0196558ff61081787ba5b4b049c25e9c9642d8a63c0ffeb2b"
+		},
+		{
+			"path": "apps/cli/src/__tests__/remotion-metadata-driver-fixture.ts",
+			"bytes": 8026,
+			"sha256": "5082346615ff4ec13459cd2c9823938a1e4f0c5c07f099d24c17648c4f05a62f"
+		},
+		{
+			"path": "apps/cli/src/__tests__/remotion-readiness-observation.test.ts",
+			"bytes": 3604,
+			"sha256": "de39a0a5d897dba82c6d99f0923db1af19a471b666cdd77104a7a4790a2d0381"
+		},
+		{
+			"path": "apps/cli/src/programmatic/engines/remotion-compiler-child.ts",
+			"bytes": 13768,
+			"sha256": "50aac52fc5407ece63cab00524aefde672d8190c339ba188cbb11801a23b57de"
+		},
+		{
+			"path": "apps/cli/src/programmatic/engines/remotion-driver.ts",
+			"bytes": 11556,
+			"sha256": "09e3ba26cf9e8a6ad9a330695db2343fb2498916e6b0c9db6ad3eeb12e3aa3c9"
+		},
+		{
+			"path": "apps/cli/src/programmatic/html-media.ts",
+			"bytes": 15375,
+			"sha256": "bfcf8ca5a130799357bdb953d1aa5d93c38ac982ca74ac09b357bc57a7c21294"
+		},
+		{
+			"path": "script/fixtures/hyperframes-native-seek-fence.test.mjs",
+			"bytes": 8992,
+			"sha256": "7293c4a57ed7f4983816aaed913ff3ade9712f6bb104715045ed436e37b4b5e7"
+		},
+		{
+			"path": "script/fixtures/hyperframes-native-seek-media-events.test.mjs",
+			"bytes": 6607,
+			"sha256": "5a97c817842f109cc98c9b55dcd28df98f9cb02e08ac422c1ac9c662bc4712ab"
+		},
+		{
+			"path": "script/fixtures/hyperframes-native-seek-source-ownership.test.mjs",
+			"bytes": 7332,
+			"sha256": "6b39dfc4fc125d8436bb2621369b2aeab9bae475a4227de26b2a37f5be30b0f8"
+		},
+		{
+			"path": "script/fixtures/hyperframes-native-seek-test-fixture.mjs",
+			"bytes": 6305,
+			"sha256": "f1fec67b5b696788ca0d20bea293dbd889d0ea9710421938ad5f9df32179585a"
+		}
+	],
+	"pending": [
+		"Fresh full-four real Chromium run from frozen committed source",
+		"Changed Particle/Three adapter provenance and authority approval",
+		"Particle real baseline, UI and full export",
+		"Liquid/Tunnel remaining parity checks",
+		"Clean source-bound delivery, epkg and installed Electron E2E"
+	],
+	"overallComplete": false
+}

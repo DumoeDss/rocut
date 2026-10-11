@@ -91,11 +91,12 @@ await check(
 		const f = fixture();
 		f.begin();
 		f.context.rocutMedia.nativeSeek(f.video, 0.18);
+		f.video.error = { code: 3 };
 		f.video.emit("error");
 		await Promise.resolve();
 		await assert.rejects(
 			f.context.rocutMedia.drainNativeFrame(),
-			/decode failed or aborted/,
+			/decode failed.*event error.*mediaErrorCode 3/,
 		);
 		assert.equal(f.callbacks.size, 0);
 		assert.equal(f.liveListeners(), 0);
@@ -266,6 +267,7 @@ await check(
 		const f = fixture();
 		f.begin();
 		const first = f.context.rocutMedia.nativeSeek(f.video, 0.1);
+		f.video.error = { code: 3 };
 		f.video.emit("error");
 		await assert.rejects(first, /decode failed/);
 		const count = f.log.length;

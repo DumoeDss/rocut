@@ -59,6 +59,10 @@ function nativeSeek(video, seconds) {
     if (performance.now() >= scope.deadline) throw Error('HTML native video frame deadline expired');
   } catch (error) { failNativeFrame(scope, error); throw error; }
   const previous = scope.states.get(video);
+  if (previous && !previous.ownsSource()) {
+    const error = Error('HTML native video source changed during seek (sameSource false)');
+    failNativeFrame(scope, error); throw error;
+  }
   // Same native command may be issued repeatedly by renderSeek. Reuse only
   // this frame's pending command or a callback-proven paused presentation.
   if (previous?.target === seconds && video.currentTime === seconds &&
@@ -68,8 +72,39 @@ function nativeSeek(video, seconds) {
   previous?.finish(undefined, true);
   let resolve, reject, callback, timer, assignmentStartedAt, finished = false, landed = false;
   const promise = new Promise((yes, no) => { resolve = yes; reject = no; });
-  const state = {target: seconds, promise, presentation: undefined, finish};
-  const badMedia = () => finish(Error('HTML native video decode failed or aborted'));
+  const state = {target: seconds, promise, presentation: undefined, finish, ownsSource};
+  const assignedSource = video.currentSrc || video.src;
+  const assignedSrc = video.src, assignedSrcAttribute = video.getAttribute('src');
+  const assignedSources = [...video.querySelectorAll('source')].map(element => ({element,
+    src: element.src, attributes: ['src', 'type', 'media'].map(name => element.getAttribute(name))}));
+  const ownsAssignedSource = assignedSrcAttribute !== null ? assignedSrc === assignedSource
+    : assignedSources.some(source => source.src === assignedSource);
+  function ownsSource() {
+    const sources = [...video.querySelectorAll('source')];
+    const stableMarkup = video.src === assignedSrc && video.getAttribute('src') === assignedSrcAttribute
+      && sources.length === assignedSources.length && sources.every((element, index) => {
+        const source = assignedSources[index];
+        return element === source.element && element.src === source.src
+          && ['src', 'type', 'media'].every((name, index) => element.getAttribute(name) === source.attributes[index]);
+      });
+    // load() may clear currentSrc without changing declared candidates. Empty
+    // selection owns the original resource only while its markup stays frozen.
+    return stableMarkup && ownsAssignedSource && (!video.currentSrc || video.currentSrc === assignedSource);
+  }
+  const badMedia = event => {
+    const sameSource = ownsSource();
+    const diagnostic = ' (event ' + event.type + ', mediaErrorCode ' + (video.error?.code ?? 'none')
+      + ', readyState ' + video.readyState + ', networkState ' + video.networkState
+      + ', sameSource ' + sameSource + ')';
+    try {
+      checkVideo(video, false);
+      if (event.type === 'error') throw Error('HTML native video decode failed without MediaError');
+      if (!sameSource) throw Error('HTML native video source changed during seek');
+      // load() queues abort/emptied even for a healthy same-source reload.
+      // Neither event proves a decode failure or a presented frame. Continue
+      // waiting under the original deadline and unchanged presentation fence.
+    } catch (error) { finish(Error(error.message + diagnostic)); }
+  };
   const aborted = () => finish(scope.signal.reason ?? Error('HTML native video frame aborted'));
   const seeked = () => { landed = true; };
   function finish(error, superseded = false, presentation) {
@@ -98,6 +133,7 @@ function nativeSeek(video, seconds) {
         checkVideo(video, false);
         scope.signal?.throwIfAborted();
         if (!landed || video.seeking || video.readyState < 2) { arm(); return; }
+        if (!ownsSource()) throw Error('HTML native video source changed before presentation (sameSource false)');
         // The target is the upstream decoder command, never learned from pixels
         // or the browser cursor. mediaTime is evidence of presentation, not an
         // exact-frame oracle: source PTS/variable-frame-rate selection is native.
