@@ -12,7 +12,7 @@ export const CANONICAL_PARTICLE_WASM_SHA256 =
 const trustedLane = Object.freeze({
 	laneId: PARTICLE_AUTHORITY_LANE,
 	authorityReceiptSha256:
-		"321f18c7b7468707e8a01ee74bdd8385ec16e27a305c7b467f6262a9789e97bb",
+		"74e94ea13acab78af2faaa094f59b42753492d2b55649591edd98bd9f0535d17",
 	baselineReceiptSha256: null,
 });
 const HASH = /^[a-f0-9]{64}$/;

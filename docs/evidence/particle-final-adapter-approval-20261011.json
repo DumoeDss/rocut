@@ -1,0 +1,37 @@
+{
+	"schema": "particle-final-adapter-source-approval/v1",
+	"sourceParent": "eb476959adca18b8781f22a1cc955d74f55e5887",
+	"approvedAuthorityReceiptSha256": "74e94ea13acab78af2faaa094f59b42753492d2b55649591edd98bd9f0535d17",
+	"previousAuthorityReceiptSha256": "321f18c7b7468707e8a01ee74bdd8385ec16e27a305c7b467f6262a9789e97bb",
+	"baselineReceiptSha256": null,
+	"approvedBy": "root after independent read-only review",
+	"proposal": {
+		"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-particle-final-adapter-20261011-TJGOHc/particle-authority-final.proposed.json",
+		"sha256": "74e94ea13acab78af2faaa094f59b42753492d2b55649591edd98bd9f0535d17"
+	},
+	"provenance": {
+		"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-particle-final-adapter-20261011-TJGOHc/provenance.json",
+		"sha256": "4c7704ae1807d93a3a274bd10a47c2d14f3488a84480fc8c34db3a42baed178a"
+	},
+	"independentReview": {
+		"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-particle-final-adapter-20261011-TJGOHc/independent-review.json",
+		"sha256": "3438e971036329a9722a9c9f342944aaf09f86a3e8e7a0b8f9692bf89b40af76"
+	},
+	"adapterSha256": "3c440c5290a8b2894aef5aa2060d1b4f37b3c916ddbd4721f3c16bed8b170a04",
+	"canonicalMaterialBytes": 96319,
+	"declaredRawInputs": 24,
+	"changedReceiptFields": [
+		"productionIdentity.adapterSha256",
+		"parentReceipts"
+	],
+	"pureNodeBunAndDirectSourceEqual": true,
+	"scope": "Approve only the first authority anchor from independently reproduced final-source adapter material. Keep the second baseline anchor null. WASM, packed sampler, private Three toolchain, browser and executable identities are unchanged. No baseline, UI, export or installed Electron acceptance is implied.",
+	"expectedSourceChanges": [
+		"Shared canonical HTML readiness diagnostics",
+		"Native video presentation and lifecycle fence"
+	],
+	"retainedFailure": "C:/tmps/rocut-particle-authority-20261011-b8POXh/particle-authority-compile-OK3oCo",
+	"timeoutOrPixelGatesChanged": false,
+	"adapterFormulaOrArchiveAssertionChanged": false,
+	"sharedDependenciesOrInstalledPluginChanged": false
+}
