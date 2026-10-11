@@ -1,9 +1,11 @@
 import { THREE_LIQUID_OBJECT_COMPILER_MODULES } from "./three-liquid-object-compiler-plugin";
+import { REMOTION_NATIVE_VIDEO_PATCH_SOURCE } from "./remotion-native-video-patch";
 
 /** Static, browser-only bundling entry; all source reads stay in the declared
  * snapshot or the host-configured dependency tree. No author module execution. */
 export const REMOTION_COMPILER_CHILD =
 	THREE_LIQUID_OBJECT_COMPILER_MODULES +
+	REMOTION_NATIVE_VIDEO_PATCH_SOURCE +
 	String.raw`
 (async () => {
   const fs = await import('node:fs/promises');
@@ -83,6 +85,7 @@ export const REMOTION_COMPILER_CHILD =
           let native = new TextDecoder('utf-8',{fatal:true}).decode(body);
           const nativePackage = JSON.parse(await fs.readFile(path.join(dependencies,'remotion/package.json'),'utf8'));
           if (nativePackage.version !== '4.0.440') throw Error('Pinned Remotion composition commit version changed');
+          native = rocutPatchNativeVideoObservation(native);
           const renderingBranch = '  if (environment.isRendering && video && video.component === lazy && video.id === id) {';
           const innerStart = native.indexOf('var InnerComposition = ');
           const branchStart = native.indexOf(renderingBranch, innerStart);

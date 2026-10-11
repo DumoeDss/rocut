@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import { dirname, resolve, join, basename } from "node:path";
 import { pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
+import { createRequire } from "node:module";
 import { REMOTION_COMPILER_CHILD } from "../programmatic/engines/remotion-compiler-child";
 
 export const nativeCommitFixtureSource = `var OffthreadVideoForRendering = async () => {
@@ -24,12 +25,42 @@ var InnerComposition = () => {
 var Composition = () => {};
 `;
 
+export const nativeCommitToolchain =
+	process.env.ROCUT_TEST_REMOTION_COMMIT_TOOLCHAIN;
+
+/** Keep unrelated fail-closed native guards genuine instead of mocking them.
+ * The small composition fixture remains independently mutable for its controls. */
+export async function pinnedNativeCommitFixtureSource() {
+	if (!nativeCommitToolchain)
+		throw Error("Missing private pinned CPU toolchain");
+	const pinnedRequire = createRequire(
+		join(nativeCommitToolchain, "package.json"),
+	);
+	if (pinnedRequire("remotion/package.json").version !== "4.0.440")
+		throw Error("Native commit CPU fixture requires Remotion 4.0.440");
+	const body = await readFile(
+		join(nativeCommitToolchain, "node_modules/remotion/dist/esm/index.mjs"),
+	);
+	const source = new TextDecoder("utf-8", { fatal: true }).decode(body);
+	const marker = "var roundTo6Commas = ";
+	const start = source.indexOf(marker);
+	const end = source.indexOf("\nvar VideoForRendering = ", start);
+	if (start < 0 || end < start || source.split(marker).length !== 2)
+		throw Error("Pinned native video fixture section changed");
+	return (
+		source.slice(start, end) +
+		"\nvar VideoForRendering = () => {};\n" +
+		nativeCommitFixtureSource
+	);
+}
+
 /** Capture the genuine compiler onLoad seam without executing authored code or
  * any browser entry. Every fake package/output remains in this owned CPU root. */
 export async function captureNativeCommitSeam({
-	native = nativeCommitFixtureSource,
+	native,
 	version = "4.0.440",
 }: { native?: string; version?: string } = {}) {
+	native ??= await pinnedNativeCommitFixtureSource();
 	const parent = resolve(tmpdir());
 	const root = await mkdtemp(join(parent, "rocut-native-commit-cpu-"));
 	try {

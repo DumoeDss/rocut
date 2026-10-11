@@ -1,0 +1,147 @@
+{
+  "schema": "rocut-media-initial-zero-and-passive-native-observation/v1",
+  "date": "2026-10-11",
+  "baseSourceCommit": "26cb09279362b33758e32a981ec95ed708e43219",
+  "hyperframes": {
+    "firstFailureReceipt": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-JgZPNR/receipt.json",
+    "firstFailureReceiptSha256": "cb0be208bc36f3988f6cd994cb0b3843c601513ffd887b33d4d9b57e0a52957e",
+    "stage": "media-metadata-and-initial-zero",
+    "candidateManifestSha256": "12a37d97048bf3eb6498e5188678f4fb27587b736540f64818af4f4dc5d3710e",
+    "patchSha256": "b1cf08ecd6e0396037cf677f6da127100067023a9df204f8271f791f9807c784",
+    "change": "Only the first command in the native frame, target zero, already at zero and not seeking before assignment, may accept a source-owned fresh rVFC before seeked. All presentation, target, ownership and counter gates remain.",
+    "cpu": {
+      "pass": 71,
+      "fail": 0,
+      "skip": 0
+    },
+    "negativeControls": [
+      "readiness alone",
+      "stale presentation",
+      "missing ownership",
+      "source replacement",
+      "nonadvancing counter",
+      "no callback deadline",
+      "nonzero no-op",
+      "movement to zero",
+      "active seek",
+      "later zero command",
+      "closure"
+    ],
+    "browserExecutedAfterIntegration": false
+  },
+  "remotion": {
+    "change": "Passive bounded observer at pinned native seek/readiness points. No native behavior fix or new seeks/callbacks/timers/getter reads.",
+    "manifestSha256": "4f410fb688da153865c25ef747e305f17a2d9aeaecce3642c02dce1deab3664e",
+    "patchSha256": "407f0fed190425e9cd2aaa3d7a088fc8b223bcec0eb71287fe220dee6fd7bd57",
+    "independentReviewSha256": "af4c412a89d6e8b598fae8042ffa96503f7feb8d7bd4148ce4cbe6777fedff1a",
+    "independentBoundaryTests": 5,
+    "independentFullNativeRestoration": true,
+    "durablePatchSha256": "c16da8f541ec820e51e694da8f319a32ffec1258b440a91f4de5b473a152342d",
+    "fixtureMaintenancePatchSha256": "99aeea0778442f46592c0615a822c292dd7a00c102e747a7418da2dd39c19bae",
+    "initialRootCpu": {
+      "pass": 16,
+      "fail": 2,
+      "reason": "Old composition-only synthetic compiler fixture lacks the new exact native section. Resolved by pinned real section, not a weakened production guard."
+    },
+    "cpu": {
+      "pass": 18,
+      "fail": 0,
+      "skip": 0,
+      "assertions": 143,
+      "toolchainExplicit": true
+    },
+    "traceBounds": {
+      "events": 128,
+      "videos": 8,
+      "sourceUrls": false,
+      "immutable": true
+    },
+    "nativeToolchain": "C:/Users/Sayo/AppData/Local/Temp/rocut-media-toolchain-YbloF9",
+    "nativeVersion": "4.0.440",
+    "nativeSha256": "e312924dd3872d60b7dc301475338579f0626b629125f6604c798e7da85744af",
+    "thirdAttemptFailOpenChanged": false,
+    "actualFrameFiveCauseEstablished": false,
+    "browserExecutedAfterIntegration": false
+  },
+  "plumbingCpu": {
+    "pass": 12,
+    "fail": 0,
+    "skip": 0
+  },
+  "static": {
+    "passed": true,
+    "files": [
+      {
+        "path": "apps/cli/src/programmatic/html-media.ts",
+        "sha256": "914c712f46901d9a3589875a090c980cb3437ed9c83ab01055ae5e4915d4f968"
+      },
+      {
+        "path": "script/fixtures/hyperframes-native-seek-initial-zero.test.mjs",
+        "sha256": "ac6681c07fb03888f0a5df7762b6be1c9d1ce613e595fcb8d4804fcd0c61f5e1"
+      },
+      {
+        "path": "apps/cli/src/programmatic/engines/remotion-compiler-child.ts",
+        "sha256": "9d2a20444a9531c1d6971e7f036ea81b8c386b47ea3e3c233cdbef1f5a127797"
+      },
+      {
+        "path": "apps/cli/src/programmatic/engines/remotion-native-video-patch.ts",
+        "sha256": "9a7a9648d4e98779b62dba706ac4adbbe43b3240e226eba254640eea9e014c7b"
+      },
+      {
+        "path": "apps/cli/src/programmatic/remotion-native-video-observation.ts",
+        "sha256": "a66cd46afdf71697a7ba61c3590bac96110ae8e3b0eb0a60d9856adbd6242317"
+      },
+      {
+        "path": "apps/cli/src/programmatic/remotion-readiness-observation.ts",
+        "sha256": "c4fbcfd52e8617d44db87961a848396ff957c9dcc6c6d650da240b60fe751604"
+      },
+      {
+        "path": "apps/cli/src/__tests__/remotion-native-video-observation.test.ts",
+        "sha256": "c255cd1bfdd5ec71c18121ad07eccb0e5ec59d9fce92d0eb4a37a325c8d99060"
+      }
+    ],
+    "preservedDirtyFiles": 24,
+    "embeddedLint": [
+      {
+        "file": "html-media.js",
+        "errors": 0,
+        "warnings": 0,
+        "messages": []
+      },
+      {
+        "file": "remotion-native-video-patch.js",
+        "errors": 0,
+        "warnings": 0,
+        "messages": []
+      },
+      {
+        "file": "remotion-native-video-observation.js",
+        "errors": 0,
+        "warnings": 0,
+        "messages": []
+      },
+      {
+        "file": "initial-zero.test.mjs",
+        "errors": 0,
+        "warnings": 0,
+        "messages": []
+      }
+    ],
+    "wholeRepositoryTypecheck": false
+  },
+  "invariants": {
+    "deadlineMs": 8000,
+    "pixelOracleChanged": false,
+    "pixelToleranceChanged": false,
+    "originalDirtyRawFilesPreserved": 24,
+    "sharedDependenciesChanged": false,
+    "installedPluginChanged": false
+  },
+  "limitations": [
+    "These are CPU/static integration gates, not browser acceptance.",
+    "The original raw Rust/desktop dirty inputs are preserved and are not the WASM build inputs.",
+    "Root lint does not cover all CLI/script TS; embedded JS was explicitly checked. Whole-repository lint/typecheck was not claimed.",
+    "Final four-case media acceptance, scene parity, package and installed Electron E2E remain."
+  ]
+}
+

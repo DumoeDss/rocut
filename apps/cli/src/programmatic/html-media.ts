@@ -108,7 +108,7 @@ function nativeSeek(video, seconds) {
     return previous.promise ?? Promise.resolve(previous.presentation);
   if (previous?.target === seconds && previous.promise) return previous.promise;
   previous?.finish(undefined, true);
-  let resolve, reject, callback, timer, assignmentStartedAt, finished = false, landed = false;
+  let resolve, reject, callback, timer, assignmentStartedAt, finished = false, landed = false, initialZeroNoop = false;
   const promise = new Promise((yes, no) => { resolve = yes; reject = no; });
   const state = {target: seconds, promise, presentation: undefined, finish, ownsSource,
     callbackCount: 0, lastCallback: null,
@@ -175,7 +175,7 @@ function nativeSeek(video, seconds) {
       try {
         checkVideo(video, false);
         scope.signal?.throwIfAborted();
-        if (!landed || video.seeking || video.readyState < 2) { arm(); return; }
+        if ((!landed && !initialZeroNoop) || video.seeking || video.readyState < 2) { arm(); return; }
         if (!ownsSource()) throw Error('HTML native video source changed before presentation (sameSource false)');
         // The target is the upstream decoder command, never learned from pixels
         // or the browser cursor. mediaTime is evidence of presentation, not an
@@ -214,6 +214,10 @@ function nativeSeek(video, seconds) {
   scope.signal?.addEventListener('abort', aborted, {once: true});
   timer = setTimeout(() => finish(nativeTimeoutError(scope)), scope.deadline - performance.now());
   try {
+    // Only the first, already-paused-at-zero command may have no seeked event
+    // or present its initial picture before that event. It still needs this
+    // assignment's fresh source-owned callback and all presentation fences.
+    initialZeroNoop = !previous && seconds === 0 && video.currentTime === 0 && !video.seeking;
     arm(); // Must precede the native assignment, including paused/initial-zero seeks.
     assignmentStartedAt = performance.now();
     video.currentTime = seconds;
