@@ -27,6 +27,10 @@ export async function decodeElectronParticleEvent(
 	response: Response,
 	after: number,
 	session: string,
+	profile: { kind: string; binding: string; maxRawBytes?: number } = {
+		kind: "particle-request",
+		binding: PARTICLE_BINDING_NAME,
+	},
 ): Promise<ElectronParticleEvent | undefined> {
 	if (response.status === 204) {
 		if (
@@ -53,11 +57,12 @@ export async function decodeElectronParticleEvent(
 		throw particleTransportError("event sequence skipped or replayed");
 	}
 	const kind = response.headers.get(PARTICLE_EVENT_KIND);
-	if (kind === "particle-request") {
+	if (kind === profile.kind) {
 		const context = headerInteger(response.headers.get(PARTICLE_EVENT_CONTEXT));
 		const bytes = await readParticleBody(
 			response,
-			ELECTRON_PARTICLE_LIMITS.maxParticleEventOrReplyRawBytes,
+			profile.maxRawBytes ??
+				ELECTRON_PARTICLE_LIMITS.maxParticleEventOrReplyRawBytes,
 		);
 		let payload: string;
 		try {
@@ -73,7 +78,7 @@ export async function decodeElectronParticleEvent(
 				sessionId: session,
 				method: "Runtime.bindingCalled",
 				params: {
-					name: PARTICLE_BINDING_NAME,
+					name: profile.binding,
 					executionContextId: context,
 					payload,
 				},

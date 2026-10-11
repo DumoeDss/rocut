@@ -18,6 +18,7 @@ import {
 } from "./build-source";
 import { snapshotSourceFiles } from "./source-snapshot";
 import { loadEngineToolchain } from "./toolchain";
+import { selectThreeAssetDriver } from "./three-asset-features";
 import { hyperframesFrameDriver } from "./hyperframes-driver";
 import { ENGINE_VERSIONS } from "./engine-versions";
 import { REMOTION_ENVIRONMENT, REMOTION_FRAME_DRIVER } from "./remotion-driver";
@@ -277,7 +278,14 @@ export async function compileProgrammaticProject({
 					source.build!.engine === "hyperframes"
 						? hyperframesFrameDriver(source.frameRate)
 						: source.build!.engine === "three"
-							? threeProfile!.driver
+							? selectThreeAssetDriver({
+									driver: threeProfile!.driver,
+									modelFeatures: !!toolchain.threeFeatures,
+									nativeProfile: !!(
+										threeProfile!.particleRuntime || threeProfile!.liquidRuntime
+									),
+									resources: source.resources ?? [],
+								})
 							: REMOTION_FRAME_DRIVER,
 				liquidObject: threeProfile?.liquidCompiler,
 				environment: REMOTION_ENVIRONMENT,

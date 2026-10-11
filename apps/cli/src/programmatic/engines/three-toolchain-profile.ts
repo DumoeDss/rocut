@@ -11,10 +11,12 @@ import {
 import { resourceDigest } from "../resources";
 import { THREE_FRAME_DRIVER } from "./three-driver";
 import { REMOTION_COMPILER_CHILD } from "./remotion-compiler-child";
+import { THREE_MODEL_FEATURE_DRIVER } from "./three-asset-features";
 
 export function threeToolchainProfile(options: {
 	particleRuntime?: ThreeParticleRuntime;
 	liquidRuntime?: ThreeLiquidObjectRuntime;
+	modelFeatures?: boolean;
 }) {
 	const { particleRuntime, liquidRuntime } = options;
 	if (particleRuntime && liquidRuntime)
@@ -28,7 +30,11 @@ export function threeToolchainProfile(options: {
 				? getThreeParticleAdapterHash()
 				: resourceDigest(
 						new TextEncoder().encode(
-							THREE_FRAME_DRIVER + "\n" + REMOTION_COMPILER_CHILD,
+							(options.modelFeatures
+								? THREE_MODEL_FEATURE_DRIVER
+								: THREE_FRAME_DRIVER) +
+								"\n" +
+								REMOTION_COMPILER_CHILD,
 						).buffer,
 					),
 	};

@@ -1,6 +1,7 @@
 import { Button } from "../../components/ui/button";
 import { Textarea } from "../../components/ui/textarea";
 import type { RecipeDraftSnapshot } from "./programmatic-recipe-draft";
+import { ProgrammaticRecipeGeneratorFields } from "./programmatic-recipe-generator-fields";
 
 export function ProgrammaticRecipeFields({
 	id,
@@ -10,6 +11,7 @@ export function ProgrammaticRecipeFields({
 	onEdit,
 	onApply,
 	onDiscard,
+	generators = {},
 }: {
 	id: string;
 	state: RecipeDraftSnapshot;
@@ -18,9 +20,17 @@ export function ProgrammaticRecipeFields({
 	onEdit: (text: string) => void;
 	onApply: () => void;
 	onDiscard: () => void;
+	generators?: Record<string, unknown>;
 }) {
 	return (
 		<div className="flex min-w-0 flex-col gap-3 text-sm">
+			<ProgrammaticRecipeGeneratorFields
+				id={id}
+				text={state.text}
+				generators={generators}
+				disabled={!!readOnly || state.pending || conflict}
+				onEdit={onEdit}
+			/>
 			<p className="text-muted-foreground text-xs">
 				Edit the complete recipe JSON: scenes, settings, post effects, amounts
 				and audio bindings. Resources and source provenance are preserved. Rust

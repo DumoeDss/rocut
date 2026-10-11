@@ -3,6 +3,7 @@ import { resolveAnimationTarget } from "../timeline/animation-targets";
 import type { TimelineElement } from "../timeline";
 
 export interface ProjectAnimationAdmissionIssue {
+	readonly kind: "rejected" | "unresolved";
 	readonly elementId: string;
 	readonly propertyPath: string;
 	readonly reason: string;
@@ -11,8 +12,9 @@ export interface ProjectAnimationAdmissionIssue {
 /**
  * Check every scalar channel of every element against its declared bounds.
  *
- * Returns only provable violations; admitted and unresolved channels are not
- * issues, mirroring the authoring-command admission semantics. Channels whose
+ * Returns diagnostics without changing stored channels. Proven violations and
+ * unresolved inspection remain distinct, so a legacy or unsupported channel
+ * cannot prevent reopening the project or be reported as proven safe. Channels whose
  * parameter declares no numeric range are skipped without a core round-trip.
  */
 export function collectProjectAnimationAdmissionIssues({
@@ -25,26 +27,40 @@ export function collectProjectAnimationAdmissionIssues({
 		const animations = element.animations;
 		if (!animations) continue;
 		for (const propertyPath of Object.keys(animations)) {
-			const target = resolveAnimationTarget({ element, path: propertyPath });
-			if (!target) continue;
-			const spec = target.numericRanges?.[
-				target.channelLayout.kind === "leaf"
-					? "value"
-					: Object.keys(target.numericRanges)[0]
-			];
-			if (!spec) continue;
-			const admission = admitAnimationsChannel({
-				animations,
-				propertyPath,
-				fallbackValue: Number(target.getBaseValue() ?? 0),
-				duration: element.duration,
-				spec,
-			});
-			if (admission.kind === "rejected") {
+			try {
+				const target = resolveAnimationTarget({ element, path: propertyPath });
+				if (!target) continue;
+				const spec =
+					target.numericRanges?.[
+						target.channelLayout.kind === "leaf"
+							? "value"
+							: Object.keys(target.numericRanges)[0]
+					];
+				if (!spec) continue;
+				const admission = admitAnimationsChannel({
+					animations,
+					propertyPath,
+					fallbackValue: Number(target.getBaseValue() ?? 0),
+					duration: element.duration,
+					spec,
+				});
+				if (admission.kind !== "admitted") {
+					issues.push({
+						kind: admission.kind,
+						elementId: element.id,
+						propertyPath,
+						reason: admission.reason,
+					});
+				}
+			} catch (error) {
 				issues.push({
+					kind: "unresolved",
 					elementId: element.id,
 					propertyPath,
-					reason: admission.reason,
+					reason:
+						error instanceof Error
+							? error.message
+							: "Animation inspection failed.",
 				});
 			}
 		}

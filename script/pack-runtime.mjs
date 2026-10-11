@@ -52,13 +52,13 @@ import {
 	writeFileSync,
 } from "node:fs";
 import { spawnSync } from "node:child_process";
-import { createRequire } from "node:module";
 import { basename, dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
 import { buildParticleSamplerAssets, particleSamplerDefine } from "./pack-particle-sampler.mjs";
 import { buildLiquidObjectAssets, liquidObjectDefine } from "./pack-liquid-object.mjs";
 import { buildParticleBrowserBundle } from "./build-particle-browser.mjs";
+import { resolveRuntimeWasmPackage } from "./runtime-wasm-package-closure.mjs";
 
 const MODULE_DIR = dirname(fileURLToPath(import.meta.url));
 export const DEFAULT_REPO_ROOT = resolve(MODULE_DIR, "..");
@@ -77,20 +77,16 @@ const WASM_SYNC_SUBPATH = "opencut-wasm/sync";
 const SURFACE_DIST = "apps/vite-example/dist";
 
 /**
- * Resolve the declared `./sync` subpath through normal package resolution, so
- * the bundle links the same file an installed consumer would get rather than a
- * hardcoded path into `rust/wasm/pkg`. `check-wasm-source` already asserts the
- * resolved package is the self-built artifact, so resolution is the honest way
- * in and a literal path would bypass that gate.
+ * Resolve the canonical producer's declared `./sync` entry. The main bundle,
+ * fixed worker sidecars and shared binary must all use this same package,
+ * even when a previously installed node_modules copy is stale.
  */
 function resolveWasmSyncEntry(repoRoot) {
-	const require = createRequire(join(repoRoot, "package.json"));
 	try {
-		return require.resolve(WASM_SYNC_SUBPATH);
+		return resolveRuntimeWasmPackage({ repoRoot }).wasmSyncEntry;
 	} catch (error) {
 		throw new Error(
-			`cannot resolve \`${WASM_SYNC_SUBPATH}\` from ${repoRoot} — run \`bun run build:wasm\` ` +
-				`then \`bun install\` (BOUNDARIES §17 declares this subpath): ${error.message}`,
+			`cannot resolve canonical \`${WASM_SYNC_SUBPATH}\` from ${repoRoot}: ${error.message}`,
 		);
 	}
 }
@@ -157,10 +153,10 @@ function bunVersion(log) {
  * outExtension value here, so the entry is renamed after the build — the
  * rename is part of the deterministic build step, not a post-hoc fix. */
 async function buildOnce({ repoRoot, outDir }) {
+	const wasmSyncEntry = resolveWasmSyncEntry(repoRoot);
 	await buildParticleBrowserBundle({ check: true, repoRoot });
 	rmSync(outDir, { recursive: true, force: true });
 	mkdirSync(outDir, { recursive: true });
-	const wasmSyncEntry = resolveWasmSyncEntry(repoRoot);
 	const result = await build({
 		entryPoints: [join(repoRoot, ENTRY)],
 		bundle: true,
@@ -174,7 +170,7 @@ async function buildOnce({ repoRoot, outDir }) {
 		// The bare specifier would take `default` — the bundler entry, whose ESM
 		// wasm import cannot resolve once bundled. Route it to the declared
 		// `./sync` entry instead; see the header note and BOUNDARIES §17.
-		alias: { [WASM_PACKAGE]: wasmSyncEntry },
+		alias: { [WASM_PACKAGE]: wasmSyncEntry, [WASM_SYNC_SUBPATH]: wasmSyncEntry },
 		define: { ...particleSamplerDefine, ...liquidObjectDefine },
 		external: ["*.wasm"], // no `.wasm` specifier survives the alias; kept as a guard
 		metafile: true,

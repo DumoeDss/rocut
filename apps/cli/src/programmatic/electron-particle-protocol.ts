@@ -13,7 +13,9 @@ export const ELECTRON_PARTICLE_LIMITS = Object.freeze({
 	sessionTimeoutMs: 45000,
 	cleanupTimeoutMs: 5000,
 });
-export type ElectronParticleLimits = typeof ELECTRON_PARTICLE_LIMITS;
+export type ElectronParticleLimits = {
+	readonly [K in keyof typeof ELECTRON_PARTICLE_LIMITS]: number;
+};
 export const PARTICLE_SESSION_PATH = "/v2/particle-capture";
 export const PARTICLE_EVENT_SEQUENCE = "x-elftia-event-sequence";
 export const PARTICLE_EVENT_KIND = "x-elftia-event-kind";
@@ -51,12 +53,15 @@ export function rootFrame(value: unknown): asserts value is string {
 	if (typeof value !== "string" || !value || value.length > 256)
 		throw particleTransportError("invalid root frame identity");
 }
-export function transportLimits(value: unknown): ElectronParticleLimits {
-	const record = exactObject(value, Object.keys(ELECTRON_PARTICLE_LIMITS));
-	for (const [key, expected] of Object.entries(ELECTRON_PARTICLE_LIMITS))
+export function transportLimits(
+	value: unknown,
+	limits: ElectronParticleLimits = ELECTRON_PARTICLE_LIMITS,
+): ElectronParticleLimits {
+	const record = exactObject(value, Object.keys(limits));
+	for (const [key, expected] of Object.entries(limits))
 		if (record[key] !== expected)
 			throw particleTransportError("unsupported transport limits");
-	return ELECTRON_PARTICLE_LIMITS;
+	return limits;
 }
 /** Admission only: never replace or silently narrow the archived Rust policy. */
 export function assertElectronParticlePolicyFit(

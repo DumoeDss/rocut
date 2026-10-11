@@ -15,6 +15,7 @@ fn valid(resources: Value) -> bool {
 fn model_and_environment_manifests_keep_existing_attachment_limits() {
     for (kind, mime) in [
         ("model", "model/gltf-binary"),
+        ("model", "image/svg+xml"),
         ("environment", "image/vnd.radiance"),
         ("environment", "image/x-exr"),
     ] {

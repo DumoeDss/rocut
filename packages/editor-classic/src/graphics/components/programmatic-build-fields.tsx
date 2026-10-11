@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
 import type { BuildDraftSnapshot } from "./programmatic-build-draft";
 import { isAuthorTextFile } from "./programmatic-build-text";
+import type { AuthorFileOperation } from "./programmatic-build-file-state";
 
 export function ProgrammaticBuildFields({
 	id,
@@ -14,6 +17,7 @@ export function ProgrammaticBuildFields({
 	onApply,
 	onDiscard,
 	onCancel,
+	onFiles,
 }: {
 	id: string;
 	state: BuildDraftSnapshot;
@@ -25,10 +29,12 @@ export function ProgrammaticBuildFields({
 	onApply: () => void;
 	onDiscard: () => void;
 	onCancel: () => void;
+	onFiles: (operation: AuthorFileOperation) => void;
 }) {
+	const [path, setPath] = useState("");
 	const build = state.baseline.build;
 	if (!build) return null;
-	const files = build.inputs.filter((item) => isAuthorTextFile(item.id));
+	const files = state.fileIds.filter(isAuthorTextFile).map((id) => ({ id }));
 	const selected = state.files[state.selectedId];
 	const busy = state.phase === "compiling" || state.phase === "saving";
 	return (
@@ -56,9 +62,51 @@ export function ProgrammaticBuildFields({
 				))}
 			</select>
 			<p className="text-muted-foreground text-xs">
-				{files.length} text files; {build.inputs.length - files.length} binary
+				{files.length} text files; {state.fileIds.length - files.length} binary
 				files retained in the archive.
 			</p>
+			<p className="text-muted-foreground text-xs">
+				Entry file: {state.entryFile}
+			</p>
+			<label htmlFor={`${id}-path`}>New source path</label>
+			<Input
+				id={`${id}-path`}
+				value={path}
+				onChange={(event) => setPath(event.target.value)}
+				placeholder="src/scene.tsx"
+				disabled={busy || state.conflict || !canCompile}
+			/>
+			<div className="flex flex-wrap gap-2">
+				<Button
+					size="sm"
+					variant="outline"
+					disabled={busy || state.conflict || !canCompile || !path}
+					onClick={() => onFiles({ op: "add", id: path })}
+				>
+					Add file
+				</Button>
+				<Button
+					size="sm"
+					variant="outline"
+					disabled={busy || state.conflict || !canCompile || !path || !selected}
+					onClick={() => onFiles({ op: "rename", id: path })}
+				>
+					Rename file
+				</Button>
+				<Button
+					size="sm"
+					variant="outline"
+					disabled={
+						busy ||
+						state.conflict ||
+						!canCompile ||
+						state.selectedId === state.entryFile
+					}
+					onClick={() => onFiles({ op: "delete" })}
+				>
+					Delete file
+				</Button>
+			</div>
 			{selected && (
 				<>
 					<label htmlFor={`${id}-code`}>Author code</label>

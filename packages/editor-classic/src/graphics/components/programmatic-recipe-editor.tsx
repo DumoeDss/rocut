@@ -1,6 +1,7 @@
 import { useEffect, useId, useMemo, useSyncExternalStore } from "react";
 import type { ProgrammaticSource } from "@opencut/editor-contracts";
 import { useEditorInstance } from "../../editor/use-editor";
+import { getMvRecipeCatalog } from "../../editor/transactions/opencut/mv-recipe-catalog";
 import { sourceFingerprint } from "./programmatic-source-draft";
 import {
 	getRecipeDraft,
@@ -37,6 +38,10 @@ export function ProgrammaticRecipeEditor({
 		draft.getSnapshot,
 		draft.getSnapshot,
 	);
+	const generators = useMemo(
+		() => getMvRecipeCatalog().extensions.generators,
+		[],
+	);
 	useEffect(() => draft.refresh(source), [draft, source]);
 	if (!source.recipe && !state.dirty) return null;
 	const conflict =
@@ -44,6 +49,7 @@ export function ProgrammaticRecipeEditor({
 		sourceFingerprint(source) !== sourceFingerprint(state.baseline);
 	return (
 		<ProgrammaticRecipeFields
+			generators={generators}
 			id={id}
 			state={state}
 			readOnly={recipeReadOnlyReason(source)}

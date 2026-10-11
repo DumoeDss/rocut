@@ -10,9 +10,9 @@ export function threeLiquidObjectCapability(options: {
 }) {
 	const configured =
 		options.toolchainConfigured &&
-		!!options.executable &&
-		isAbsolute(options.executable) &&
-		!options.connectionFile;
+		(options.connectionFile
+			? isAbsolute(options.connectionFile)
+			: !!options.executable && isAbsolute(options.executable));
 	return Object.freeze({
 		capability: THREE_LIQUID_OBJECT_CAPABILITY,
 		profile: THREE_LIQUID_OBJECT_PROFILE,
@@ -21,7 +21,12 @@ export function threeLiquidObjectCapability(options: {
 			? "configured-not-health-probed"
 			: "unavailable",
 		capture: configured ? "configured-not-health-probed" : "unavailable",
-		electron: "unavailable",
+		electron:
+			options.toolchainConfigured &&
+			!!options.connectionFile &&
+			isAbsolute(options.connectionFile)
+				? "configured-not-health-probed"
+				: "unavailable",
 		scope: "static-model-rest-space; no-source-audio-or-offthread-video",
 	});
 }

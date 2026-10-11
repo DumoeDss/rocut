@@ -101,6 +101,95 @@ async function fixture() {
 	return { source, revised, provider, reads, requests, blobs };
 }
 
+test("multi-file drafts submit additions, deletions and renamed entry through the existing transaction", async () => {
+	const f = await fixture();
+	const draft = new ProgrammaticBuildDraft(f.source);
+	await draft.load(f.provider);
+	draft.changeFiles({ op: "rename", id: "src/main.tsx" });
+	expect(draft.getSnapshot().entryFile).toBe("src/main.tsx");
+	draft.changeFiles({ op: "add", id: "src/scene.tsx" });
+	draft.edit({ code: "export const scene = 1;" });
+	draft.select("empty.css");
+	draft.changeFiles({ op: "delete" });
+	const revisedFiles = {
+		...f.revised,
+		build: {
+			...f.revised.build!,
+			entryFile: "src/main.tsx",
+			inputs: ["src/main.tsx", "src/scene.tsx"].map((id) => ({
+				...f.source.build!.inputs[0],
+				id,
+			})),
+		},
+	};
+	const provider = {
+		...f.provider,
+		reviseBuild: async ({ request }: { request: unknown }) => {
+			f.requests.push(request);
+			return { source: revisedFiles };
+		},
+	};
+	let commits = 0;
+	await draft.apply({
+		provider,
+		commit: async () => {
+			commits++;
+		},
+	});
+	expect(f.requests).toEqual([
+		{
+			source: f.source,
+			entryFile: "src/main.tsx",
+			changes: [
+				{ op: "delete", id: "index.tsx" },
+				{ op: "delete", id: "empty.css" },
+				{ op: "add", id: "src/main.tsx", code: "\ufeffexport default 1;" },
+				{ op: "add", id: "src/scene.tsx", code: "export const scene = 1;" },
+			],
+		},
+	]);
+	expect(commits).toBe(1);
+	expect(draft.getSnapshot().dirty).toBe(false);
+});
+
+test("file operations retain draft protections and deleting a newly added file restores clean state", async () => {
+	const f = await fixture();
+	const draft = new ProgrammaticBuildDraft(f.source);
+	draft.changeFiles({ op: "delete" });
+	expect(draft.getSnapshot().error).toContain("entry file");
+	draft.changeFiles({ op: "add", id: "../unsafe.ts" });
+	expect(draft.getSnapshot().error).toContain("portable");
+	draft.changeFiles({ op: "add", id: "new.ts" });
+	expect(draft.getSnapshot().dirty).toBe(true);
+	draft.changeFiles({ op: "delete" });
+	expect(draft.getSnapshot().dirty).toBe(false);
+	draft.changeFiles({ op: "add", id: "new.ts" });
+	draft.refresh({ ...f.source, seed: 9 });
+	draft.changeFiles({ op: "add", id: "late.ts" });
+	expect(draft.getSnapshot().fileIds).not.toContain("late.ts");
+	draft.discard();
+	expect(draft.getSnapshot().fileIds).toEqual(
+		f.source.build!.inputs.map((item) => item.id),
+	);
+});
+
+test("a compiler that drops newly authored files cannot report a successful apply", async () => {
+	const f = await fixture();
+	const draft = new ProgrammaticBuildDraft(f.source);
+	draft.changeFiles({ op: "add", id: "new.ts" });
+	let commits = 0;
+	await draft.apply({
+		provider: f.provider,
+		commit: async () => {
+			commits++;
+		},
+	});
+	expect(commits).toBe(0);
+	expect(draft.getSnapshot().error).toContain("different author file set");
+	expect(draft.getSnapshot().dirty).toBe(true);
+	expect(draft.getSnapshot().fileIds).toContain("new.ts");
+});
+
 test("author file loading verifies actual bytes, retains BOM/empty files and only reads selected input", async () => {
 	const f = await fixture();
 	const draft = new ProgrammaticBuildDraft(f.source);

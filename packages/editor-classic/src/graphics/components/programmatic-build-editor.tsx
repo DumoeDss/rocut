@@ -65,6 +65,7 @@ export function ProgrammaticBuildEditor({
 			onApply={() => void apply()}
 			onDiscard={() => draft.discard()}
 			onCancel={() => draft.cancel()}
+			onFiles={(operation) => draft.changeFiles(operation)}
 		/>
 	);
 }

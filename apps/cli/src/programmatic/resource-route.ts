@@ -3,6 +3,10 @@ import { importProgrammaticResource } from "./resource-import";
 import { importMvAudio } from "./audio-import";
 import { importImageSequence } from "./image-sequence-import";
 import {
+	restoreModelSource,
+	ModelRestoreIncompleteError,
+} from "./model-restore";
+import {
 	restoreImageSequenceSource,
 	ImageSequenceRestoreIncompleteError,
 } from "./image-sequence-restore";
@@ -39,9 +43,10 @@ export async function handleProgrammaticResourceRoute({
 		action === "restore-image-sequence-source";
 	const onClose = () => {
 		if (!response.writableEnded)
-			cancellation.abort(Error(`Image sequence ${action} cancelled`));
+			cancellation.abort(Error(`Resource ${action} cancelled`));
 	};
-	if (sequenceOperation) response.once("close", onClose);
+	const modelRestore = action === "restore-model-source";
+	if (sequenceOperation || modelRestore) response.once("close", onClose);
 	try {
 		if (sequenceOperation) {
 			const operation =
@@ -52,6 +57,17 @@ export async function handleProgrammaticResourceRoute({
 				200,
 				await enqueue(async () =>
 					operation({
+						...resourceStore,
+						input,
+						signal: cancellation.signal,
+					}),
+				),
+			);
+		} else if (modelRestore) {
+			json(
+				200,
+				await enqueue(() =>
+					restoreModelSource({
 						...resourceStore,
 						input,
 						signal: cancellation.signal,
@@ -88,11 +104,17 @@ export async function handleProgrammaticResourceRoute({
 		json(422, {
 			error:
 				error instanceof Error ? error.message : "Programmatic resource failed",
-			...(error instanceof ImageSequenceRestoreIncompleteError
-				? { code: error.code, incomplete: true, directory: error.directory }
+			...(error instanceof ImageSequenceRestoreIncompleteError ||
+			error instanceof ModelRestoreIncompleteError
+				? {
+						code: error.code,
+						status: "incomplete",
+						incomplete: true,
+						directory: error.directory,
+					}
 				: {}),
 		});
 	} finally {
-		if (sequenceOperation) response.off("close", onClose);
+		if (sequenceOperation || modelRestore) response.off("close", onClose);
 	}
 }

@@ -1,11 +1,26 @@
 import { describe, expect, test } from "bun:test";
-import { admitAnimationsChannel, admitScalarChannel } from "../scalar-admission";
+import {
+	admitAnimationsChannel,
+	admitScalarChannel,
+} from "../scalar-admission";
 import type { ScalarAnimationChannel } from "../types";
 
 const ramp: ScalarAnimationChannel = {
 	keys: [
-		{ id: "a", time: 0, value: 0, segmentToNext: "linear", tangentMode: "flat" },
-		{ id: "b", time: 100000, value: 1, segmentToNext: "linear", tangentMode: "flat" },
+		{
+			id: "a",
+			time: 0,
+			value: 0,
+			segmentToNext: "linear",
+			tangentMode: "flat",
+		},
+		{
+			id: "b",
+			time: 100000,
+			value: 1,
+			segmentToNext: "linear",
+			tangentMode: "flat",
+		},
 	],
 };
 
@@ -54,8 +69,20 @@ describe("admitScalarChannel", () => {
 		const outOfBounds = admitScalarChannel({
 			channel: {
 				keys: [
-					{ id: "a", time: 0, value: 0, segmentToNext: "linear", tangentMode: "flat" },
-					{ id: "b", time: 100000, value: 5, segmentToNext: "linear", tangentMode: "flat" },
+					{
+						id: "a",
+						time: 0,
+						value: 0,
+						segmentToNext: "linear",
+						tangentMode: "flat",
+					},
+					{
+						id: "b",
+						time: 100000,
+						value: 5,
+						segmentToNext: "linear",
+						tangentMode: "flat",
+					},
 				],
 			},
 			fallbackValue: 0.5,
@@ -97,6 +124,24 @@ describe("admitScalarChannel", () => {
 });
 
 describe("admitAnimationsChannel", () => {
+	test("legacy numeric keys cannot bypass bounded admission", () => {
+		const channel = structuredClone(ramp);
+		channel.keys[1].value = 5;
+		for (const key of channel.keys)
+			Reflect.deleteProperty(key, "segmentToNext");
+		const before = structuredClone(channel);
+		expect(
+			admitAnimationsChannel({
+				animations: { opacity: channel },
+				propertyPath: "opacity",
+				fallbackValue: 0,
+				duration: 100000,
+				spec: { min: 0, max: 1 },
+			}).kind,
+		).toBe("rejected");
+		expect(channel).toEqual(before);
+	});
+
 	test("reads channels from element animations by property path", () => {
 		const admitted = admitAnimationsChannel({
 			animations: { opacity: ramp },
@@ -111,8 +156,20 @@ describe("admitAnimationsChannel", () => {
 			animations: {
 				"transform.rotate": {
 					keys: [
-						{ id: "a", time: 0, value: 0, segmentToNext: "linear", tangentMode: "flat" },
-						{ id: "b", time: 100000, value: 720, segmentToNext: "linear", tangentMode: "flat" },
+						{
+							id: "a",
+							time: 0,
+							value: 0,
+							segmentToNext: "linear",
+							tangentMode: "flat",
+						},
+						{
+							id: "b",
+							time: 100000,
+							value: 720,
+							segmentToNext: "linear",
+							tangentMode: "flat",
+						},
 					],
 				},
 			},

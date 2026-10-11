@@ -11,6 +11,7 @@ import {
 } from "./resources";
 import { resolveHtmlDocumentCode } from "./document-resource";
 import { attachOffthreadBroker } from "./offthread-broker";
+import { createElectronNativeVideoServer } from "./electron-native-video-server";
 import type { NativeVideoDecoder } from "./video-decoder";
 import { admitNativeAudioSources } from "./remotion-audio-analysis";
 import type { NativeAudioAnalysisConfig } from "./remotion-audio-bootstrap";
@@ -146,21 +147,38 @@ export async function renderHtmlPng({
 			signal,
 		});
 	}
-	if (connectionFile)
-		return captureElectronPng({
-			connectionFile,
-			width: source.width,
-			height: source.height,
-			expression: htmlCaptureExpression(
-				code,
-				mapped.frame,
-				resources,
-				source.build?.engine !== "three",
-				false,
-				soundtrack,
-			),
-			signal,
-		});
+	if (connectionFile) {
+		const nativeFrames = nativeVideoDecoder
+			? await createElectronNativeVideoServer({
+					decoder: nativeVideoDecoder,
+					code,
+					resources,
+					limits: mapped.frame.videoLimits,
+					signal,
+				})
+			: undefined;
+		try {
+			const png = await captureElectronPng({
+				connectionFile,
+				width: source.width,
+				height: source.height,
+				expression: htmlCaptureExpression(
+					code,
+					mapped.frame,
+					resources,
+					source.build?.engine !== "three",
+					!!nativeFrames,
+					soundtrack,
+				),
+				signal,
+				...(nativeFrames ? { nativeVideo: nativeFrames.callback } : {}),
+			});
+			await nativeFrames?.check();
+			return png;
+		} finally {
+			await nativeFrames?.dispose();
+		}
+	}
 	if (!executable) throw Error("No HTML frame backend configured");
 	const browser = await launchFrameBrowser(executable, signal);
 	let nativeFrames:

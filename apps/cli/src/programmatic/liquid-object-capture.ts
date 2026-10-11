@@ -28,6 +28,8 @@ import {
 import { attachLiquidObjectFrame } from "./liquid-object-frame-host";
 import type { ProgrammaticResourceStore } from "./resources";
 import type { LiquidObjectPageConfig } from "./liquid-object-page-capture";
+import { pinElectronScopedConnection } from "./electron-particle-transport";
+import { captureElectronLiquidObjectPng } from "./liquid-object-electron-capture";
 
 /** Explicit Liquid capability only; ordinary Three keeps the existing route. */
 export async function captureThreeLiquidObjectPng(options: {
@@ -41,10 +43,6 @@ export async function captureThreeLiquidObjectPng(options: {
 	signal: AbortSignal;
 }): Promise<Buffer> {
 	const { source, code, resources, signal } = options;
-	if (options.connectionFile)
-		throw Error(
-			"Electron Liquid Object capture requires a dedicated Host adapter; it is not available on this backend yet",
-		);
 	if (!options.resourceStore)
 		throw Error(
 			"Three Liquid capture requires its verified archive resource store",
@@ -64,6 +62,38 @@ export async function captureThreeLiquidObjectPng(options: {
 	if (!archive)
 		throw Error("Three Liquid capture requires its explicit archived identity");
 	assertCurrentThreeLiquidObjectAdapter(archive);
+	if (options.connectionFile) {
+		const mapped = options.mappedFrame as {
+			index?: unknown;
+			time?: unknown;
+			seed?: unknown;
+		};
+		if (
+			!mapped ||
+			typeof mapped.index !== "number" ||
+			typeof mapped.time !== "number" ||
+			typeof mapped.seed !== "number"
+		)
+			throw Error("Liquid capture requires a trusted Rust mapped frame");
+		return captureElectronLiquidObjectPng({
+			connection: await pinElectronScopedConnection(
+				options.connectionFile,
+				signal,
+				"liquidObject-v1",
+			),
+			width: source.width,
+			height: source.height,
+			code,
+			resources,
+			frame: options.mappedFrame as {
+				index: number;
+				time: number;
+				seed: number;
+			},
+			archive,
+			signal,
+		});
+	}
 	if (!options.executable)
 		throw Error("No Liquid Object frame backend configured");
 	const browser = await launchFrameBrowser(options.executable, signal);

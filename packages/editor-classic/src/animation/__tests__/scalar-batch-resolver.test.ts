@@ -4,8 +4,20 @@ import { ScalarBatchResolver } from "../scalar-batch-resolver";
 
 const ramp = {
 	keys: [
-		{ id: "a", time: 0, value: 0, segmentToNext: "linear", tangentMode: "flat" },
-		{ id: "b", time: 100, value: 1, segmentToNext: "linear", tangentMode: "flat" },
+		{
+			id: "a",
+			time: 0,
+			value: 0,
+			segmentToNext: "linear",
+			tangentMode: "flat",
+		},
+		{
+			id: "b",
+			time: 100,
+			value: 1,
+			segmentToNext: "linear",
+			tangentMode: "flat",
+		},
 	],
 } as const;
 
@@ -31,6 +43,19 @@ const constantBoundary = {
 } as const;
 
 describe("ScalarBatchResolver", () => {
+	test("legacy numeric keys use the Rust linear default without rewriting author data", () => {
+		const channel = structuredClone(ramp);
+		for (const key of channel.keys)
+			Reflect.deleteProperty(key, "segmentToNext");
+		const before = structuredClone(channel);
+		const resolver = new ScalarBatchResolver({ time: 25 });
+		resolver.plan({ animations: { opacity: channel }, paths: ["opacity"] });
+		resolver.execute();
+		expect(resolver.has({ path: "opacity" })).toBe(true);
+		expect(resolver.sample({ path: "opacity", fallbackValue: -1 })).toBe(0.25);
+		expect(channel).toEqual(before);
+	});
+
 	test("batches multiple scalar channels into one core call", () => {
 		let calls = 0;
 		const core = (input: string): string => {
@@ -69,7 +94,9 @@ describe("ScalarBatchResolver", () => {
 		).toBe(19);
 		expect(resolver.sample({ path: "opacity", fallbackValue: -1 })).toBe(7);
 		expect(resolver.sample({ path: "discrete", fallbackValue: 0.5 })).toBe(0.5);
-		expect(resolver.sample({ path: "missing", fallbackValue: 0.25 })).toBe(0.25);
+		expect(resolver.sample({ path: "missing", fallbackValue: 0.25 })).toBe(
+			0.25,
+		);
 	});
 
 	test("rejects reads before execute and duplicate planning is idempotent", () => {

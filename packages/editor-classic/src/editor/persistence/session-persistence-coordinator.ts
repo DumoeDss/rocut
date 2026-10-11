@@ -138,10 +138,10 @@ export class SessionPersistenceCoordinator {
 					// diagnostic log instead of failing the whole load path,
 					// which would leave the editor without a preview UI.
 					console.warn(
-						`Project ${args.id} loaded with animation channels outside their declared bounds: ${admissionIssues
+						`Project ${args.id} loaded with animation admission diagnostics: ${admissionIssues
 							.map(
 								(issue) =>
-									`${issue.elementId}/${issue.propertyPath} (${issue.reason})`,
+									`${issue.elementId}/${issue.propertyPath} (${issue.kind}: ${issue.reason})`,
 							)
 							.join("; ")}`,
 					);

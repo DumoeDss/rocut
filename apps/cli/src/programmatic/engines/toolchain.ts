@@ -40,6 +40,8 @@ import {
 	type RemotionMetadataProfile,
 } from "../remotion-metadata-policy";
 import { REMOTION_METADATA_LIFETIME_SOURCE } from "../remotion-metadata-lifetime";
+import { loadThreeAssetCodecClosure } from "./three-codec-closure";
+import { loadThreeAssetFeatureClosure } from "./three-asset-features";
 
 export async function loadEngineToolchain({
 	directory,
@@ -130,6 +132,28 @@ export async function loadEngineToolchain({
 		)
 			throw Error(`Configured toolchain must pin ${name} ${version}`);
 	}
+	const assetManifest =
+		engine === "three"
+			? await readJson(
+					join(root, "node_modules/@elftia/three-assets/package.json"),
+				)
+			: undefined;
+	const threeCodecs =
+		engine === "three"
+			? await loadThreeAssetCodecClosure({
+					assetRoot: join(root, "node_modules/@elftia/three-assets"),
+					manifest: assetManifest!,
+					signal,
+				})
+			: undefined;
+	const threeFeatures =
+		engine === "three"
+			? await loadThreeAssetFeatureClosure({
+					assetRoot: join(root, "node_modules/@elftia/three-assets"),
+					manifest: assetManifest!,
+					signal,
+				})
+			: undefined;
 	if (
 		engine === "three" &&
 		Object.keys(lockedPackages).some((path) =>
@@ -161,7 +185,11 @@ export async function loadEngineToolchain({
 	// A dependency-only lock cannot reproduce a scene after the Host's adapter changes.
 	const threeProfile =
 		engine === "three"
-			? threeToolchainProfile({ particleRuntime, liquidRuntime })
+			? threeToolchainProfile({
+					particleRuntime,
+					liquidRuntime,
+					modelFeatures: !!threeFeatures,
+				})
 			: undefined;
 	const adapter =
 		engine === "three"
@@ -226,9 +254,13 @@ export async function loadEngineToolchain({
 			...(threeProfile?.threeLiquidObject
 				? { threeLiquidObject: threeProfile.threeLiquidObject }
 				: {}),
+			...(threeCodecs ? { threeAssetCodecs: threeCodecs.identity } : {}),
+			...(threeFeatures ? { threeAssetFeatures: threeFeatures } : {}),
 		}),
 	).buffer;
-	const runtimeNotices =
+	const runtimeNotices:
+		| { name: string; version: string; license: string }[]
+		| undefined =
 		engine === "three"
 			? await Promise.all(
 					(["three", "@elftia/three-assets", "@noble/hashes"] as const).map(
@@ -248,8 +280,11 @@ export async function loadEngineToolchain({
 					),
 				)
 			: undefined;
+	if (runtimeNotices && threeCodecs)
+		runtimeNotices.push(...threeCodecs.notices);
 	return {
 		root,
+		threeFeatures,
 		runtimeNotices,
 		compilerEntry: pathToFileURL(
 			engine === "hyperframes"

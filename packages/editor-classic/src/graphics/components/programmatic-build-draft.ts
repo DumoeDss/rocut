@@ -10,6 +10,10 @@ import {
 } from "./programmatic-build-draft-state";
 import { compileBuildDraft } from "./programmatic-build-draft-operations";
 import { getCachedBuildDraft } from "./programmatic-build-draft-cache";
+import {
+	changeBuildFiles,
+	type AuthorFileOperation,
+} from "./programmatic-build-file-state";
 export type { BuildDraftSnapshot } from "./programmatic-build-draft-state";
 
 /** UI drafts only. Compilation/admission belongs to the Host and Rust. */
@@ -64,6 +68,7 @@ export class ProgrammaticBuildDraft {
 		}
 	}
 	select(id: string) {
+		if (!this.state.fileIds.includes(id)) return;
 		if (this.state.phase === "compiling" || this.state.phase === "saving")
 			return;
 		this.cancel();
@@ -72,6 +77,20 @@ export class ProgrammaticBuildDraft {
 	edit(patch: { code?: string; inputProps?: string }) {
 		const next = editBuildDraft({ state: this.state, patch });
 		if (next !== this.state) this.publish(next);
+	}
+	changeFiles(operation: AuthorFileOperation) {
+		if (
+			this.state.phase === "compiling" ||
+			this.state.phase === "saving" ||
+			this.state.conflict
+		)
+			return;
+		this.cancel();
+		try {
+			this.publish(changeBuildFiles(this.state, operation));
+		} catch (error) {
+			this.publish(failedBuildDraft({ state: this.state, error }));
+		}
 	}
 	discard() {
 		if (this.state.phase === "saving") return;
@@ -93,6 +112,7 @@ export class ProgrammaticBuildDraft {
 	async load(provider?: ProgrammaticFrameProvider) {
 		const submitted = this.state;
 		if (
+			!submitted.fileIds.includes(submitted.selectedId) ||
 			submitted.files[submitted.selectedId] ||
 			submitted.conflict ||
 			submitted.phase

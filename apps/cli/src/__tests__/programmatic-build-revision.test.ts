@@ -114,7 +114,7 @@ for (const engine of ["hyperframes", "remotion"] as const) {
 				).json();
 				expect(capability.programmaticBuilds).toMatchObject({
 					revise: "programmatic/build/revise",
-					reviseScope: "existing-text-files-and-input-props",
+					reviseScope: "text-file-add-delete-rename-replace-entry-and-input-props",
 				});
 				expect(
 					(
