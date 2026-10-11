@@ -12,7 +12,10 @@ import { WasmCompositor } from "../../packages/editor-classic/src/services/rende
 import { SceneExporter } from "../../packages/editor-classic/src/services/renderer/scene-exporter";
 import { mediaTime } from "../../packages/editor-classic/src/wasm/media-time";
 
-export async function runThreeSceneExportProbe(source: ProgrammaticSource) {
+export async function runThreeSceneExportProbe(
+	source: ProgrammaticSource,
+	options: { assertScenePixels?: boolean } = {},
+) {
 	await initializeGpu();
 	const compositor = new WasmCompositor({
 		trackGpuResource: ({ handle, label }) => ({
@@ -96,7 +99,8 @@ export async function runThreeSceneExportProbe(source: ProgrammaticSource) {
 			capture,
 		});
 		const halfAlphaLight = pixel(light, 220, 76);
-		for (const [actual, expected] of [
+		if (options.assertScenePixels !== false)
+			for (const [actual, expected] of [
 			[halfAlphaDark, [140, 62, 69, 255]],
 			[halfAlphaLight, [243, 149, 140, 255]],
 		])

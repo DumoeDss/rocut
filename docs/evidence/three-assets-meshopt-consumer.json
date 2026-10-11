@@ -1,0 +1,72 @@
+{
+	"schema": "elftia-evidence/1",
+	"id": "three-assets-meshopt-consumer",
+	"title": "Three-assets Meshopt consumer closure (pinned toolchain package + fixed decoder)",
+	"capturedAt": "2026-10-10T14:15:37.372Z",
+	"status": "verified",
+	"scope": "Consumer closure in Node against the actual pinned toolchain installation: package dist, fixed local decoder and real KHR_meshopt_compression GLB decoded with exact geometry; corrupt payload rejection; not browser render, provenance manifest, or editor acceptance",
+	"source": {
+		"path": "C:/tmps/meshopt-consumer-receipt/consumer-closure-evidence.json",
+		"sha256": "24ed67450b3245f970c1fad1d4969ec712325ee5fc9c0364fd32c5f0b70fd073",
+		"projection": "full receipt retained; no frame or model bytes embedded"
+	},
+	"ok": true,
+	"gpuExecuted": false,
+	"toolchain": {
+		"directory": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/.artifacts/three-toolchain/run-n853Pe",
+		"three": "0.185.1",
+		"@elftia/three-assets": "0.1.1"
+	},
+	"decoder": {
+		"path": "three/addons/libs/meshopt_decoder.module.js",
+		"sha256": "d428e73a000057c6c94bfcedc3412d0c2dc14ca8800e88553aab05113ad2bf19"
+	},
+	"packageArchive": {
+		"builtFrom": "director/packages/three-assets working tree (meshopt-capable src)",
+		"archive": "C:/tmps/elftia-three-assets-0.1.1.tgz",
+		"archiveSha256": "96f8f1f2c92e13c86c44b6c0e92051ca2c19297aef13a310767a7718040f2beb",
+		"installedVia": "script/prepare-three-toolchain.mjs"
+	},
+	"fixture": {
+		"glb": "C:/tmps/meshopt-consumer-probe-0p7ncv/model.glb",
+		"bytes": 728,
+		"sha256": "7c339a55d43ee5e119920a6cf5c2ded7d2bcd1a1d43e6031c91cabc1786a020e",
+		"extension": "KHR_meshopt_compression",
+		"vectorSource": "upstream meshoptimizer decoder test vectors"
+	},
+	"results": {
+		"positionsExact": true,
+		"decodedPositions": [
+			0,
+			0,
+			0,
+			300,
+			0,
+			0,
+			0,
+			300,
+			0,
+			300,
+			300,
+			0
+		],
+		"expectedPositions": [
+			0,
+			0,
+			0,
+			300,
+			0,
+			0,
+			0,
+			300,
+			0,
+			300,
+			300,
+			0
+		],
+		"disposeOk": true,
+		"corruptRejected": true,
+		"corruptError": "AssetError: Invalid GLB chunk size"
+	},
+	"boundary": "Node execution of the pinned consumer package and decoder only; browser scene bundling, WebGL render, editor persistence, provenance closure and installed-runtime acceptance remain separate"
+}

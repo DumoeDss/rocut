@@ -1,0 +1,5 @@
+<!doctype html>
+<html><body><script type="module">
+import { runMeshoptThreeProbe } from './meshopt-three-browser-probe.ts';
+runMeshoptThreeProbe().then(result => globalThis.__meshoptThreeResult = result, error => globalThis.__meshoptThreeResult = { error: String(error), stack: error.stack });
+</script></body></html>

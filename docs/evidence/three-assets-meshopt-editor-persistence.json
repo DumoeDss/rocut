@@ -1,0 +1,23 @@
+{
+  "ok": true,
+  "scope": "Editor persistence acceptance for Meshopt: a real Host imported the upstream KHR_meshopt_compression GLB (SHA 15de7046) and environment through programmatic/resources/import, compiled the real three scene through programmatic/build/compile on the freshly installed toolchain (run-3Hn5Nw), applied a graphic clip referencing the compiled source to a project, then closed the Host and reopened it. Project snapshot (project/clips/tracks) deep-equal after reopen; project.json bytes byte-identical; the imported Meshopt GLB resource survived the reopen and re-reads with its exact sha256. The persisted build identity pins engine three, engineVersion, toolchainLock sha256 0c84ed51, compiled document id and 4 embedded resources. Browser WebGL decode, install-state and Node consumer closures are archived separately.",
+  "result": {
+    "ok": true,
+    "projectReopenedByteIdentical": true,
+    "resourceSurvivedReopen": true,
+    "glbSha256": "15de7046fdb642a224a2c9a56368a31befc8e154d4b18acde62dfcaa9416c6b8",
+    "clipCount": 1,
+    "engine": "three",
+    "toolchainLock": "0c84ed51edd9f4191002ed73ea454cb434baeef99edea70f2c087f02a960515e",
+    "documentBytes": null,
+    "artifacts": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\.artifacts\\meshopt-persistence\\run-Ded5Yb",
+    "toolchainLockSha256": "94269418afedb44eafcb1691bba2ca90b4ca13f01aa336754d43fd83e1a7a7ca",
+    "meshoptDecoderSha256": "d428e73a000057c6c94bfcedc3412d0c2dc14ca8800e88553aab05113ad2bf19",
+    "finishedAt": "2026-10-10T23:25:16.954Z",
+    "documentId": "_rocut/compiled.html",
+    "embeddedResources": 4,
+    "engineVersion": "0.185.1"
+  },
+  "artifactsRun": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/.artifacts/meshopt-persistence/run-Ded5Yb",
+  "finishedAt": "2026-10-10T23:25:55.170Z"
+}

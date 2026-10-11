@@ -125,6 +125,94 @@ export function threeModel(scale = 1) {
 	]);
 }
 
+
+// KHR_meshopt_compression GLB built from the fixed upstream meshoptimizer
+// decoder test vectors (ATTRIBUTES v1 stream), matching the shared producer
+// and consumer acceptance fixtures. Decoded positions are [0,0,0],[300,0,0],
+// [0,300,0],[300,300,0] under KHR_mesh_quantization.
+const meshoptVertexV1 = Buffer.from([
+	0xa1,0xee,0xaa,0xee,0,0x4b,0x4b,0x4b,0,0,0x4b,0,
+	0,0x7d,0x7d,0x7d,0,0,0x7d,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0x62,0,0x62,
+]);
+export function meshoptModel(extension = "KHR_meshopt_compression") {
+	if (extension !== "KHR_meshopt_compression" && extension !== "EXT_meshopt_compression")
+		throw Error(`Unsupported meshopt extension fixture: ${extension}`);
+	const encoded = extension === "EXT_meshopt_compression"
+		? Buffer.from([
+			0xa0,1,0x3f,0,0,0,0x58,0x57,0x58,1,0x26,0,
+			0,0,1,0x0c,0,0,0,0x58,1,8,0,0,
+			0,0,0,0,0,1,0x3f,0,0,0,0x17,0x18,
+			0x17,1,0x26,0,0,0,1,0x0c,0,0,0,0x17,
+			1,8,0,0,0,0,0,0,0,0,0,0,
+			0,0,0,0,0,0,0,0,0,0,0,0,
+			0,0,0,0,0,0,0,0,0,0,0,0,
+			0
+		])
+		: meshoptVertexV1;
+	const json = {
+		asset: { version: "2.0", generator: "Rocut meshopt fixture" },
+		scene: 0,
+		scenes: [{ nodes: [0] }],
+		nodes: [{ mesh: 0 }],
+		extensionsUsed: [extension, "KHR_mesh_quantization"],
+		extensionsRequired: [extension, "KHR_mesh_quantization"],
+		buffers: [
+			{ byteLength: Math.ceil(encoded.length / 4) * 4 },
+			{ byteLength: 48 },
+		],
+		bufferViews: [
+			{
+				buffer: 1,
+				byteOffset: 0,
+				byteLength: 48,
+				byteStride: 12,
+				extensions: {
+					[extension]: {
+						buffer: 0,
+						byteOffset: 0,
+						byteLength: encoded.length,
+						byteStride: 12,
+						count: 4,
+						mode: "ATTRIBUTES",
+					},
+				},
+			},
+		],
+		accessors: [{
+			bufferView: 0,
+			componentType: 5123,
+			count: 4,
+			type: "VEC3",
+			min: [0, 0, 0],
+			max: [300, 300, 0],
+		}],
+		meshes: [{ primitives: [{ mode: 5, attributes: { POSITION: 0 } }] }],
+	};
+	const text = Buffer.from(JSON.stringify(json));
+	const jsonChunk = Buffer.alloc(Math.ceil(text.length / 4) * 4, 32);
+	text.copy(jsonChunk);
+	const bin = encoded;
+	const binChunk = Buffer.alloc(Math.ceil(bin.length / 4) * 4);
+	bin.copy(binChunk);
+	return Buffer.concat([
+		u32(0x46546c67),
+		u32(2),
+		u32(28 + jsonChunk.length + binChunk.length),
+		u32(jsonChunk.length),
+		u32(0x4e4f534a),
+		jsonChunk,
+		u32(binChunk.length),
+		u32(0x004e4942),
+		binChunk,
+	]);
+}
+
+export function meshoptExpectedPositions() {
+	return [0, 0, 0, 300, 0, 0, 0, 300, 0, 300, 300, 0];
+}
+
 export function threeEnvironment(exr: boolean, width = 64, height = 32) {
 	if (!exr)
 		return Buffer.concat([

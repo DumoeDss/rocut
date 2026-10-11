@@ -1,0 +1,121 @@
+{
+  "ok": true,
+  "scope": "Real pinned-toolchain browser bundle: KHR_meshopt_compression v1 and EXT_meshopt_compression v0 ATTRIBUTES streams decoded by the fixed three/addons decoder (SHA d428e73a) inside a real production WebGL scene; deterministic seek, property updates, EXT parity, and the full Rocut compositor VP8 WebM encode/decode loop executed in the browser. Node consumer closure and editor persistence/install-state acceptance remain separate.",
+  "browser": "151.0.7922.34",
+  "frameBackend": "private-chromium",
+  "artifactsRun": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/.artifacts/meshopt-three/run-l2xAKL",
+  "provenance": {
+    "toolchainDirectory": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\.artifacts\\three-toolchain\\run-n853Pe",
+    "toolchainLockSha256": "3e28680e60e72d67d572b3d3e77601870910de3de9ad35934674aa7b6bfc61b1",
+    "wasmSha256": "ddade5ea1caedb1d5b721b58171ee4360d5ec3d2e9ca21cfb39d16e2939b8657",
+    "meshoptDecoderSha256": "d428e73a000057c6c94bfcedc3412d0c2dc14ca8800e88553aab05113ad2bf19",
+    "inputs": [
+      {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\probe-meshopt-three.mjs",
+        "bytes": 3240,
+        "sha256": "dd8270a7cf2292273a187c4c39218da9d0e7dde591b2bc693b2143899ffd2c2d"
+      },
+      {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\probe-html-frames.mjs",
+        "bytes": 12287,
+        "sha256": "c57b286fe3093a62bc254978b6d25d7869e02df82d8e151060ceb1034ec61124"
+      },
+      {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\fixtures\\prepare-meshopt-three-probe.ts",
+        "bytes": 3009,
+        "sha256": "f13b71ffbf0630e5cb161b168e9e03d2b1a24f9409c70a97200319579107db81"
+      },
+      {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\fixtures\\three-assets.ts",
+        "bytes": 7511,
+        "sha256": "086d1e3e4c4ea9f2abe23264ea056c9857e86473a0d80ab948b57e6821aa3202"
+      },
+      {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\fixtures\\meshopt-three-browser-probe.html",
+        "bytes": 318,
+        "sha256": "44db23480dec6ac89396d68c56c1be0a954261bf54f476646c17a55ecd5529c6"
+      },
+      {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\script\\fixtures\\meshopt-three-browser-probe.ts",
+        "bytes": 4076,
+        "sha256": "d19570874754623b98e9df48aa690e8390c51b6c44f314b319c75089cdfa0db6"
+      },
+      {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\.artifacts\\three-toolchain\\run-n853Pe\\package-lock.json",
+        "bytes": 15174,
+        "sha256": "3e28680e60e72d67d572b3d3e77601870910de3de9ad35934674aa7b6bfc61b1"
+      },
+      {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\.artifacts\\three-toolchain\\run-n853Pe\\node_modules\\three\\package.json",
+        "bytes": 3826,
+        "sha256": "1d5c438acdc1fe5a52fb8ede2e417afd91fec91d22275c40f7b739591b24e4df"
+      },
+      {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\.artifacts\\three-toolchain\\run-n853Pe\\node_modules\\three\\examples\\jsm\\libs\\meshopt_decoder.module.js",
+        "bytes": 29256,
+        "sha256": "d428e73a000057c6c94bfcedc3412d0c2dc14ca8800e88553aab05113ad2bf19"
+      },
+      {
+        "path": "E:\\AI\\ChatAI\\Agents\\VibeCodingProjects\\elftia\\_others\\rocut\\rust\\wasm\\pkg\\opencut_wasm_bg.wasm",
+        "bytes": 15066383,
+        "sha256": "ddade5ea1caedb1d5b721b58171ee4360d5ec3d2e9ca21cfb39d16e2939b8657"
+      }
+    ]
+  },
+  "result": {
+    "ok": true,
+    "frames": [
+      {
+        "index": 15,
+        "hash": "9ffa70445b143d0f5adee8d7ab0a28b8e829136470c96e67ad9dbc37d073aa17"
+      },
+      {
+        "index": 0,
+        "hash": "1021d37f3728e1c224ad6fcf8066349f33841dd49939623f7a04a4427a354e6f"
+      },
+      {
+        "index": 15,
+        "hash": "9ffa70445b143d0f5adee8d7ab0a28b8e829136470c96e67ad9dbc37d073aa17"
+      }
+    ],
+    "center": [
+      107,
+      207,
+      125,
+      255
+    ],
+    "corner": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "extParity": true,
+    "decodedScope": "KHR_meshopt_compression v1 + EXT_meshopt_compression v0 ATTRIBUTES streams in a real browser WebGL bundle",
+    "width": 320,
+    "height": 180,
+    "fps": 30,
+    "encodedBytes": 1183,
+    "decodedFrames": 6,
+    "meanRgbaError": 0.6199782986111111,
+    "decodedMotionMean": 1.0155381944444444,
+    "halfAlphaDark": [
+      32,
+      64,
+      96,
+      255
+    ],
+    "halfAlphaLight": [
+      238,
+      238,
+      238,
+      255
+    ],
+    "previewExportEqual": true,
+    "externalRequests": [],
+    "browser": "151.0.7922.34",
+    "frameBackend": "private-chromium",
+    "electronTested": false
+  },
+  "finishedAt": "2026-10-10T23:07:00.046Z"
+}
