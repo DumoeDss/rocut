@@ -1,0 +1,7 @@
+{
+	"extends": "./mv-memories-owner.tsconfig.json",
+	"compilerOptions": {
+		"types": ["node", "bun"]
+	},
+	"include": ["./sandbox*.ts"]
+}

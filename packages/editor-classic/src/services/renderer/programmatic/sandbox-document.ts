@@ -17,6 +17,7 @@ const WORKER_SOURCE =
 	`onmessage = async ({data}) => {
   const {source, frame, resources = [], sequenceImages = [], imageAdmissions = [], operation = 'render'} = data;
   const send = postMessage.bind(self);
+  send({sandboxStage:"worker-started"});
   const resourceBytes = new Map();
   const descriptors = new Map();
   let sequenceAssets;
@@ -125,9 +126,12 @@ addEventListener("message", function connect(event) {
   port.onmessage = ({data}) => {
     if (data === "dispose") { cleanup(); port.close(); return; }
     if (worker) return;
+    try {
     url = URL.createObjectURL(new Blob([${JSON.stringify(WORKER_SOURCE)}], {type:"text/javascript"}));
     worker = new Worker(url);
     worker.onmessage = ({data}) => {
+      if (!data || typeof data !== "object") { port.postMessage({error:"Invalid worker result"}); cleanup(); return; }
+      if (data.sandboxStage === "worker-started" && Object.keys(data).length === 1) { port.postMessage({sandboxStage:"worker-started"}); return; }
       if (data.bitmap instanceof ImageBitmap) port.postMessage({bitmap:data.bitmap}, [data.bitmap]);
       else if (Array.isArray(data.fontMetrics) && Array.isArray(data.imageDimensions)) port.postMessage({fontMetrics:data.fontMetrics,imageDimensions:data.imageDimensions});
       else if (Array.isArray(data.fontMetrics)) port.postMessage({fontMetrics:data.fontMetrics});
@@ -137,6 +141,7 @@ addEventListener("message", function connect(event) {
     };
     worker.onerror = () => { port.postMessage({error:"Programmatic Worker failed"}); cleanup(); };
     worker.postMessage(data);
+    } catch { port.postMessage({error:"Programmatic Worker startup failed"}); cleanup(); }
   };
   port.postMessage("ready");
 });

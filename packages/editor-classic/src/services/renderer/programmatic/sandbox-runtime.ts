@@ -16,6 +16,11 @@ import type {
 	ImageDecodeAdmission,
 	ResourceMeasurements,
 } from "./image-dimensions-contract";
+import {
+	sandboxFailure,
+	type ProgrammaticSandboxOperation,
+	type ProgrammaticSandboxPhase,
+} from "./sandbox-failure";
 
 interface SandboxRequest {
 	signal?: AbortSignal;
@@ -24,11 +29,7 @@ interface SandboxRequest {
 	resources: readonly ResolvedProgrammaticResource[];
 	sequenceImages?: readonly ResolvedSequenceImage[];
 	imageAdmissions?: readonly ImageDecodeAdmission[];
-	operation:
-		| "render"
-		| "measure-fonts"
-		| "measure-resources"
-		| "measure-tunnel-fonts";
+	operation: ProgrammaticSandboxOperation;
 }
 
 /** One private realm per operation, with the same cancellation and watchdog
@@ -99,10 +100,19 @@ export async function runProgrammaticSandbox({
 		iframe.setAttribute("aria-hidden", "true");
 		const channel = new MessageChannel();
 		let settled = false;
+		let connected = false;
+		let dispatched = false;
+		let phase: ProgrammaticSandboxPhase = "iframe-load";
+		const failure = (message: string) =>
+			sandboxFailure({ ...request, phase, message });
 		const cleanup = () => {
 			clearTimeout(timer);
 			signal?.removeEventListener("abort", abort);
-			channel.port1.postMessage("dispose");
+			try {
+				channel.port1.postMessage("dispose");
+			} catch {
+				// Removing the realm still terminates its Worker if the port failed.
+			}
 			channel.port1.close();
 			channel.port2.close();
 			iframe.remove();
@@ -116,17 +126,34 @@ export async function runProgrammaticSandbox({
 		const abort = () =>
 			fail(signal?.reason ?? new DOMException("Frame cancelled", "AbortError"));
 		const timer = setTimeout(
-			() => fail(Error("Programmatic frame timed out after 5000 ms")),
+			() => fail(failure("Programmatic frame timed out after 5000 ms")),
 			5000,
 		);
 		signal?.addEventListener("abort", abort, { once: true });
 		channel.port1.onmessage = ({ data }: MessageEvent<unknown>) => {
 			if (data === "ready") {
-				if (!settled) channel.port1.postMessage(request);
+				if (!settled && connected && !dispatched) {
+					dispatched = true;
+					phase = "worker-start";
+					try {
+						channel.port1.postMessage(request);
+					} catch {
+						fail(failure("Programmatic request dispatch failed"));
+					}
+				}
 				return;
 			}
 			if (!data || typeof data !== "object") {
-				fail(Error("Invalid programmatic frame response"));
+				fail(failure("Invalid programmatic frame response"));
+				return;
+			}
+			if (
+				!settled &&
+				dispatched &&
+				Reflect.get(data, "sandboxStage") === "worker-started" &&
+				Object.keys(data).length === 1
+			) {
+				phase = "worker-result";
 				return;
 			}
 			const bitmap: unknown = Reflect.get(data, "bitmap");
@@ -138,7 +165,7 @@ export async function runProgrammaticSandbox({
 					bitmap.height !== request.source.height
 				) {
 					bitmap.close();
-					fail(Error("Invalid programmatic frame dimensions or operation"));
+					fail(failure("Invalid programmatic frame dimensions or operation"));
 					return;
 				}
 				settled = true;
@@ -185,16 +212,24 @@ export async function runProgrammaticSandbox({
 				return;
 			}
 			fail(
-				Error(
+				failure(
 					`Programmatic frame failed: ${String(Reflect.get(data, "error")).slice(0, 2000)}`,
 				),
 			);
 		};
 		iframe.onload = () => {
-			if (!settled)
-				iframe.contentWindow?.postMessage("rocut-frame-v1", "*", [
+			if (settled || connected) return;
+			connected = true;
+			phase = "sandbox-ready";
+			try {
+				if (!iframe.contentWindow)
+					throw Error("Missing programmatic sandbox window");
+				iframe.contentWindow.postMessage("rocut-frame-v1", "*", [
 					channel.port2,
 				]);
+			} catch {
+				fail(failure("Programmatic sandbox connection failed"));
+			}
 		};
 		iframe.srcdoc = PROGRAMMATIC_SANDBOX_DOCUMENT;
 		try {
