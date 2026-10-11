@@ -11,12 +11,20 @@ export const CANONICAL_PARTICLE_WASM_SHA256 =
 // or digest computed from the inputs being admitted can configure this registry.
 const trustedLane = Object.freeze({
 	laneId: PARTICLE_AUTHORITY_LANE,
-	authorityReceiptSha256: null,
+	authorityReceiptSha256:
+		"dc6f43e9ee493d50f79beb1bdee0606cadb74c3e98258dde2a74d2b0a1d9bd7b",
 	baselineReceiptSha256: null,
 });
 const HASH = /^[a-f0-9]{64}$/;
 const MAX_RECEIPT = 4 * 1024 * 1024;
 const MAX_FILE = 256 * 1024 * 1024;
+// Exact immutable browser file from the independently frozen browser closure.
+// No other role, path, length or digest can use this exception.
+const frozenBrowserDll = Object.freeze({
+	path: "chrome.dll",
+	byteLength: 301124096,
+	sha256: "0b69d34d08e1112d5e7de94e389d20e209a890e931863c734378b39b7394da13",
+});
 const admittedAuthorities = new WeakSet();
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const samePath = (a, b) =>
@@ -44,7 +52,7 @@ function keys(value, expected) {
 function digest(value) {
 	assert.match(value, HASH, "SHA256 required");
 }
-function fileEntry(entry) {
+function fileEntry(entry, role = "ordinary") {
 	keys(entry, ["path", "byteLength", "sha256"]);
 	assert.ok(
 		typeof entry.path === "string" &&
@@ -59,8 +67,12 @@ function fileEntry(entry) {
 	);
 	assert.ok(
 		Number.isSafeInteger(entry.byteLength) &&
-			entry.byteLength > 0 &&
-			entry.byteLength <= MAX_FILE,
+			entry.byteLength >= 0 &&
+			(entry.byteLength <= MAX_FILE ||
+				(role === "browser" &&
+					entry.path === frozenBrowserDll.path &&
+					entry.byteLength === frozenBrowserDll.byteLength &&
+					entry.sha256 === frozenBrowserDll.sha256)),
 	);
 	digest(entry.sha256);
 }
@@ -127,11 +139,17 @@ export function parseParticleAuthoritySelection(options) {
 		receiptPath: resolve(path),
 	});
 }
-async function captureClosure(description, required, captures, exact = false) {
+async function captureClosure(
+	description,
+	required,
+	captures,
+	exact = false,
+	role = "ordinary",
+) {
 	keys(description, ["root", "files", "closureSha256"]);
 	const root = await plain(description.root, true);
 	assert.ok(Array.isArray(description.files) && description.files.length > 0);
-	description.files.forEach(fileEntry);
+	description.files.forEach((entry) => fileEntry(entry, role));
 	const paths = description.files.map((entry) => entry.path);
 	assert.deepEqual(paths, [...paths].sort(), "Closure files must be sorted");
 	assert.equal(
@@ -290,7 +308,7 @@ export async function admitParticleAuthority({ selection, paths }) {
 		["package-lock.json"],
 		captures,
 	);
-	await captureClosure(receipt.browser, [], captures);
+	await captureClosure(receipt.browser, [], captures, false, "browser");
 	assert.ok(samePath(paths.wasmSync, join(sync, "opencut_wasm_sync.js")));
 	assert.ok(samePath(paths.samplerDirectory, packed));
 	assert.ok(samePath(paths.toolchain, toolchain));
@@ -398,7 +416,7 @@ export async function admitParticleAuthority({ selection, paths }) {
 			for (const pkg of Object.values(metadata.packages))
 				await captureClosure(pkg, [], fresh);
 			await captureClosure(metadata.toolchain, [], fresh);
-			await captureClosure(metadata.browser, [], fresh);
+			await captureClosure(metadata.browser, [], fresh, false, "browser");
 			for (const runtime of Object.values({
 				...metadata.runtime,
 				...metadata.executables,

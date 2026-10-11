@@ -19,7 +19,7 @@ const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const wasm = Buffer.from([0, 97, 115, 109, 1, 0, 0, 0]);
 const clone = (value) => structuredClone(value);
 let serial = 0;
-async function fixture(change = () => {}) {
+async function fixture(change = () => {}, scaledBrowser = false) {
 	const root = await mkdtemp(join(tmpdir(), "particle-authority-cpu-fixture-"));
 	const captures = new Map();
 	async function closure(name, files) {
@@ -64,9 +64,11 @@ async function fixture(change = () => {}) {
 		"particle-sampler-worker-entry.mjs": worker,
 	});
 	const toolchain = await closure("toolchain", {
+		"empty.js": Buffer.alloc(0),
 		"package-lock.json": Buffer.from("{}"),
 	});
 	const browser = await closure("browser", {
+		...(scaledBrowser ? { "chrome.dll": Buffer.alloc(256, 100) } : {}),
 		"chrome.exe": Buffer.from("fixture chrome"),
 	});
 	const ffmpegPath = join(root, "ffmpeg.fixture"),
@@ -150,16 +152,16 @@ async function fixture(change = () => {}) {
 		raw = JSON.stringify(receipt);
 	await writeFile(receiptPath, raw, { flag: "wx" });
 	// This is an isolated simulated review registry for synthetic CPU fixtures.
-	// It cannot modify the candidate's unconfigured production registry. The
+	// It cannot modify the candidate's fixed production registry. The
 	// canonical test binary replacement is explicit; this is not native acceptance.
 	const source = new TextDecoder("utf8", { fatal: true }).decode(
 		await readFile(
 			new URL("./particle-editor-export-authority.mjs", import.meta.url),
 		),
 	);
-	const testSource = source
+	let testSource = source
 		.replace(
-			"authorityReceiptSha256: null",
+			/authorityReceiptSha256:\s*(?:null|"[a-f0-9]{64}")/,
 			`authorityReceiptSha256: "${hash(raw)}"`,
 		)
 		.replace(
@@ -175,6 +177,16 @@ async function fixture(change = () => {}) {
 				).href,
 			),
 		);
+	if (scaledBrowser) {
+		// Synthetic CPU policy scale; production cap and frozen DLL pin never change.
+		testSource = testSource
+			.replace("const MAX_FILE = 256 * 1024 * 1024", "const MAX_FILE = 128")
+			.replace("byteLength: 301124096", "byteLength: 256")
+			.replace(
+				"0b69d34d08e1112d5e7de94e389d20e209a890e931863c734378b39b7394da13",
+				hash(Buffer.alloc(256, 100)),
+			);
+	}
 	const testModule = await import(
 		`data:text/javascript;base64,${Buffer.from(testSource).toString("base64")}#fixture${serial++}`
 	);
@@ -219,17 +231,14 @@ test("no authority flags preserve a legacy selection; paired fixed lane only", (
 	])
 		assert.throws(() => parseParticleAuthoritySelection(options));
 });
-test("production unconfigured trust anchor rejects before opening any receipt or executable", async () => {
+test("production fixed trust anchor rejects an arbitrary receipt before executable admission", async () => {
+	const f = await fixture();
 	await assert.rejects(
 		admitParticleAuthority({
-			selection: {
-				kind: "new-authority",
-				laneId: PARTICLE_AUTHORITY_LANE,
-				receiptPath: "missing",
-			},
-			paths: {},
+			selection: f.selection,
+			paths: f.paths,
 		}),
-		/independently configured/,
+		/Receipt is not independently approved/,
 	);
 });
 test("isolated trusted fixture admits complete closure and immutable expectations", async () => {
@@ -400,4 +409,78 @@ test("compile baseline is a second independent anchor, not auto-approved by auth
 		}),
 		/Compile baseline is not independently configured/,
 	);
+});
+
+test("ordinary closure admits an empty file only with its declared empty-content SHA", async () => {
+	const f = await fixture(),
+		authority = await f.admit(),
+		entry = f.receipt.toolchain.files.find((file) => file.path === "empty.js");
+	assert.equal(entry.byteLength, 0);
+	assert.equal(
+		entry.sha256,
+		"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+	);
+	assert.equal(
+		authority.readCapturedFile(join(f.paths.toolchain, "empty.js")).length,
+		0,
+	);
+	await authority.assertUnchanged();
+	await writeFile(join(f.paths.toolchain, "empty.js"), "changed");
+	await assert.rejects(authority.assertUnchanged(), /Closure length changed/);
+});
+
+test("self-consistent empty-file description with wrong content SHA rejects", async () => {
+	const f = await fixture((receipt) => {
+		const entry = receipt.toolchain.files.find(
+			(file) => file.path === "empty.js",
+		);
+		entry.sha256 = "0".repeat(64);
+		receipt.toolchain.closureSha256 = hash(
+			JSON.stringify(receipt.toolchain.files),
+		);
+	});
+	await assert.rejects(f.admit(), /Closure bytes changed/);
+});
+
+test("ordinary closure still rejects negative, fractional and over-cap byte lengths", async () => {
+	for (const byteLength of [-1, 0.5, 256 * 1024 * 1024 + 1]) {
+		const f = await fixture((receipt) => {
+			receipt.toolchain.files.find(
+				(file) => file.path === "empty.js",
+			).byteLength = byteLength;
+			receipt.toolchain.closureSha256 = hash(
+				JSON.stringify(receipt.toolchain.files),
+			);
+		});
+		await assert.rejects(f.admit());
+	}
+});
+
+test("sampler identity role still rejects zero bytes with self-consistent identity digests", async () => {
+	const { assertParticleReceiptSamplerIdentity } =
+		await import("./particle-editor-export-authority-identity.mjs");
+	const f = await fixture(),
+		identity = clone(f.receipt.productionIdentity.packedSidecar);
+	identity.files[0].bytes = 0;
+	identity.closureHash = hash(JSON.stringify(identity.files));
+	const { identityHash: ignored, ...unsigned } = identity;
+	assert.equal(typeof ignored, "string");
+	identity.identityHash = hash(JSON.stringify(unsigned));
+	assert.throws(() =>
+		assertParticleReceiptSamplerIdentity(identity, "packed-sidecar", {
+			name: "bun",
+			version: "1.4.2",
+		}),
+	);
+});
+
+test("browser-only exact exception is reapplied by assertUnchanged and rejects byte drift", async () => {
+	const f = await fixture(() => {}, true),
+		authority = await f.admit();
+	await authority.assertUnchanged();
+	const path = join(f.receipt.browser.root, "chrome.dll"),
+		bytes = await readFile(path);
+	bytes[0] ^= 1;
+	await writeFile(path, bytes);
+	await assert.rejects(authority.assertUnchanged(), /Closure bytes changed/);
 });

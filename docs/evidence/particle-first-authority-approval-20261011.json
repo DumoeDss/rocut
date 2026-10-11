@@ -1,0 +1,108 @@
+{
+  "schema": "particle-first-authority-approval/v1",
+  "approvedAuthorityReceiptSha256": "dc6f43e9ee493d50f79beb1bdee0606cadb74c3e98258dde2a74d2b0a1d9bd7b",
+  "baselineReceiptSha256": null,
+  "approvedBy": "root after independent review and integrated targeted regression checks",
+  "sourceParent": "eb75f59b4345aeeddc424443bc0e133996525c6b",
+  "independentReviewManifest": {
+    "path": "C:/Users/Sayo/AppData/Local/Temp/rocut-particle-producer-candidate-20261011-6ud5XF/zero-closure-incremental/closure-policy-candidate-manifest.json",
+    "sha256": "1106fa518cf8c7c83223d3cf76dac9a3c989541d5124d8ff8301af9225357639"
+  },
+  "proposal": {
+    "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.worktrees/rocut-acceptance-20261011-6fa23f6b/particle-authority.proposed.json",
+    "sha256": "dc6f43e9ee493d50f79beb1bdee0606cadb74c3e98258dde2a74d2b0a1d9bd7b",
+    "byteLength": 888148,
+    "changed": false,
+    "assembly": {
+      "path": "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/.worktrees/rocut-acceptance-20261011-6fa23f6b/particle-authority-assembly.mjs",
+      "sha256": "7506de6e4cabe10e64134b4c5b7b8dd8e9da6322fa6c426039c25269bfca8f33",
+      "executedByReviewer": false
+    }
+  },
+  "independentAudit": {
+    "rawParentReceiptsVerified": 5,
+    "packageReviewReferencedReceiptsVerified": 10,
+    "closures": [
+      {
+        "name": "sourceSync",
+        "files": 11,
+        "empty": 0
+      },
+      {
+        "name": "bundler",
+        "files": 11,
+        "empty": 0
+      },
+      {
+        "name": "packedSampler",
+        "files": 3,
+        "empty": 0
+      },
+      {
+        "name": "toolchain",
+        "files": 4097,
+        "empty": 13
+      },
+      {
+        "name": "browser",
+        "files": 308,
+        "empty": 0
+      }
+    ],
+    "allClosureListsSortedUniqueComplete": true,
+    "allActualByteLengthsAndSha256Verified": true,
+    "rootAndAncestorRedirectsObserved": false,
+    "exeFilesShaVerified": 5,
+    "samplerIdentityDigestsVerified": true,
+    "actualBunDiscoveryIdentityMatches": true,
+    "packedBunIdentityHash": "77b1a314c449fea5b7045e658c9c505fe9312e612b88322b26f9d032077d4ea7",
+    "sourceSyncCompatibilityOnly": true,
+    "nativeCanonicalPackageFilesMatch": 11,
+    "nativeSourceCommit": "d21c45bb06ae93a96490464abf421f646d77a4af",
+    "nativeFixtureSourceSha256": "d6cb235399f0090d037eb1c6d8c10241c8042d1d2b16913e56c6dc7a08e207c0",
+    "nativeFixtureMeaning": "Raw original frozen native source/source-manifest.json, not later frontend fixture epoch",
+    "creatorPrivateLfPinsVerified": true,
+    "creatorProvenanceSha256": "b730ef52b2e9398c55256fddce9534547274e9a3ac0c07b6eafe26a7893daf9c"
+  },
+  "policy": {
+    "ordinaryClosureByteLength": "Safe integer >= 0, <= unchanged 256*1024*1024 cap",
+    "emptyContents": "Actual byte length and SHA still checked; canonical empty hash e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "identityRoleBytes": "Remain safe integer > 0 and <= original 64 MiB identity cap; identity implementation untouched",
+    "browserOnlyException": {
+      "path": "chrome.dll",
+      "byteLength": 301124096,
+      "sha256": "0b69d34d08e1112d5e7de94e389d20e209a890e931863c734378b39b7394da13",
+      "matchRequiresAllThree": true,
+      "otherClosuresExcluded": true,
+      "sourceSnapshot": {
+        "path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-BB3DjR/before.json",
+        "sha256": "72790dbc538823479151d00a0b5ca038fbd6e13a31f22750e17d9039ada692a7",
+        "browserClosureSha256": "76af6da06c3800acb9a2800759ec57435788be826ad5499935263077aa441966"
+      },
+      "bindingReceipt": {
+        "path": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-BB3DjR/receipt.json",
+        "sha256": "23937fc3f44dea2c4f71a7d83de1f483261d1cb1a56a99f8285caad37dac7dcf",
+        "browserClosureSha256": "76af6da06c3800acb9a2800759ec57435788be826ad5499935263077aa441966"
+      },
+      "actualBytesStreamedShaVerified": true,
+      "assertUnchangedUsesSameRolePolicy": true
+    },
+    "cliOrEnvironmentOverridesAdded": false,
+    "timeoutPixelOrGateThresholdsChanged": false
+  },
+  "nativeEvidence": {
+    "successfulVerifyReceipt": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4/verify-jtSrL3/evidence.json",
+    "sha256": "9e4d8bafe3648cb6340ff2365dafd1d8ddacacc96c78c4d5484953d36fa26a15",
+    "successful": true,
+    "originalRootEvidence": "Original nativeRoot/evidence.json is failed path-disclosure evidence, not the successful authority receipt"
+  },
+  "approvalScope": "First raw authority admission only. Does not approve compile baseline, UI references, export, video/pixels, installed plugin or Electron.",
+  "limitations": [
+    "CPU browser descriptor tests validate real fixed tuple; full closure lifecycle test uses an explicitly scaled synthetic tuple/cap in an isolated test module, not production anchors.",
+    "Native gate evidence is retained parent evidence, not rerun by this reviewer.",
+    "Original C4 run subreceipts/template-evidence are missing and not authenticated; retained independently fixed top-level C4 receipt remains verified.",
+    "No new real compile/apply/reopen/archive/baseline receipt yet; no final UI/export/video/pixel acceptance.",
+    "Source-sync discovery is compatibility-only; final production compile/archive/UI Host must remain packed+Bun1.4.2 and compare the approved identity.",
+    "Only root may separately configure first anchor; second baseline needs an independent reviewed real producer receipt."
+  ]
+}

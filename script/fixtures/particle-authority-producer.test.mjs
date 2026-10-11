@@ -203,8 +203,9 @@ test("compile context is a distinct stage and cannot be reused as UI admission",
 	const selection = {
 		kind: "new-authority",
 		laneId: PARTICLE_AUTHORITY_LANE,
-		receiptPath: join(root, "missing-authority.json"),
+		receiptPath: join(root, "unapproved-authority.json"),
 	};
+	await writeFile(selection.receiptPath, "{}\n", { flag: "wx" });
 	const path = await writeParticleCompileContext({
 		authority,
 		root,
@@ -229,7 +230,7 @@ test("compile context is a distinct stage and cannot be reused as UI admission",
 			executable: "",
 			version: "",
 		}),
-		/not independently configured/,
+		/Receipt is not independently approved/,
 	);
 	await writeParticleCompileBootstrap({ authority, root, remember: readFile });
 	const source = await readFile(join(root, "host.mjs"), "utf8");
