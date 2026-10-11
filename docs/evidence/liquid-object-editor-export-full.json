@@ -1,0 +1,100 @@
+{
+  "archiveKind": "projection",
+  "date": "2026-10-11T06:55:24.941Z",
+  "probe": {
+    "script": "script/probe-liquid-object-editor-export-full.mjs",
+    "witnessRoot": "C:/tmps/liquid-object-editor-export-full-PaFu8o",
+    "observedChildren": 250,
+    "unrefEsbuildServiceWitnessed": 1,
+    "blockingChildren": 0
+  },
+  "scope": "actual persisted Liquid Object project decodeProject/buildScene/CanvasRenderer/WasmCompositor/SceneExporter.export; all 61 clip frames 0..60; capability liquid-object-v1 baked props; not editor UI/history/installed",
+  "thresholds": {
+    "directMean": 2,
+    "directMax": 8,
+    "decodedMean": 3,
+    "decodedActiveMean": 6,
+    "visiblePixels": 200,
+    "timestampToleranceSeconds": 0.001
+  },
+  "comparison": {
+    "thresholds": {
+      "directMean": 2,
+      "directMax": 8,
+      "decodedMean": 3,
+      "decodedActiveMean": 6,
+      "visiblePixels": 200,
+      "timestampToleranceSeconds": 0.001
+    },
+    "decodedMeanRange": [
+      1.5463731553819444,
+      1.6798095703125
+    ],
+    "decodedActiveMeanRange": [
+      1.0089034997602904,
+      1.4521369309070626
+    ],
+    "allFramesPass": true
+  },
+  "lifecycle": {
+    "browserClosed": true,
+    "hostClosed": true,
+    "observedChildren": 250,
+    "unrefEsbuildServiceWitnessed": 1,
+    "blockingChildren": 0,
+    "esbuildWitnessReceipt": {
+      "pids": [
+        52700
+      ],
+      "receipt": "C:\\tmps\\liquid-object-editor-export-full-PaFu8o\\esbuild-exit-witness.json",
+      "note": "detached witness observes the unref esbuild service daemon exiting after parent exit"
+    },
+    "hostSourcePinsUnchanged": true,
+    "projectTreeUnchanged": true,
+    "runtimeErrors": 0,
+    "externalRequests": 0
+  },
+  "video": {
+    "bytes": 43944,
+    "sha256": "7146bbeb2f5f5f4668ce9849b79781797156312f909962d556d14504a382573a",
+    "codec": "vp9",
+    "width": 192,
+    "height": 128,
+    "frameRate": "30/1",
+    "frameCount": 61
+  },
+  "project": {
+    "sha256": "0de4214268e7c12394bcca3fe5eaac6639a7c8ce73b0adaed833716feff6dbd8",
+    "schemaVersion": 32,
+    "clipTimingTicks": 244000,
+    "durationFrames": 61,
+    "canvas": "192x128",
+    "fps": "30/1"
+  },
+  "notVerified": [
+    "editor UI history",
+    "installed-plugin distribution",
+    "cross-host Electron capture"
+  ],
+  "original": {
+    "ok": true,
+    "stage": "complete",
+    "frameWindow": {
+      "startFrame": 0,
+      "frameCount": 61
+    },
+    "decodedFrameCount": 61,
+    "decodedMeanRange": [
+      1.5463731553819444,
+      1.6798095703125
+    ],
+    "decodedActiveMeanRange": [
+      1.0089034997602904,
+      1.4521369309070626
+    ]
+  },
+  "status": "passed-liquid-object-editor-export-full-duration",
+  "wasmSha256": {
+    "pkg": "5dbd6c3cd9920fd19486ff5172d24af2d302e9d5bc5973864a8b108b7570faf5"
+  }
+}

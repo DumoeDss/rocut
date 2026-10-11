@@ -1,0 +1,92 @@
+{
+  "date": "2026-10-11T05:30:13.325Z",
+  "status": "passed-glass-object-editor-export",
+  "archiveKind": "projection",
+  "original": {
+    "path": "C:/tmps/glass-object-editor-export-3aPNES/evidence.json",
+    "sha256": "413fdf303f9b7d4f45c0a7e1e719edd6dcc58c552ada8cb8e26ba85850908a5b"
+  },
+  "scope": "actual persisted edited Glass project decodeProject/buildScene/CanvasRenderer/WasmCompositor/SceneExporter.export; frames 8..11 only; edited transmission 0.35 baked props; not editor UI/history/installed/full duration",
+  "project": {
+    "projectJsonSha256": "e99c6f8b76fc764cfded758cc89174fe0676b053e4a7812bb4f96acd0a452b86",
+    "buildIdentity": {
+      "engine": "three",
+      "engineVersion": "0.185.1",
+      "toolchainLockSha256": "0c84ed51edd9f4191002ed73ea454cb434baeef99edea70f2c087f02a960515e",
+      "durationFrames": 49
+    },
+    "projectUnchanged": true
+  },
+  "wasmSha256": "5dbd6c3cd9920fd19486ff5172d24af2d302e9d5bc5973864a8b108b7570faf5",
+  "video": {
+    "path": "C:\\tmps\\glass-object-editor-export-3aPNES\\production.webm",
+    "bytes": 1527,
+    "sha256": "6d3731c9458b2a81f795b74b058d06548548bab5d255fde1a405265f8e7752da"
+  },
+  "probe": {
+    "width": 192,
+    "height": 128,
+    "codec": "vp9",
+    "frameRate": "24/1",
+    "frames": "4",
+    "timestampsSeconds": [
+      "0.000000",
+      "0.042000",
+      "0.083000",
+      "0.125000"
+    ]
+  },
+  "comparison": {
+    "thresholds": {
+      "directMean": 2,
+      "directMax": 8,
+      "decodedMean": 3,
+      "decodedActiveMean": 6,
+      "visiblePixels": 200,
+      "timestampToleranceSeconds": 0.001
+    },
+    "decodedComparisons": [
+      {
+        "mean": 1.7651638454861112,
+        "activeMean": 2.0783012134189867
+      },
+      {
+        "mean": 1.7714029947916667,
+        "activeMean": 2.0925053533190576
+      },
+      {
+        "mean": 1.7707655164930556,
+        "activeMean": 2.091648822269807
+      },
+      {
+        "mean": 1.7707655164930556,
+        "activeMean": 2.091648822269807
+      }
+    ]
+  },
+  "lifecycle": {
+    "browserClosed": true,
+    "hostClosed": true,
+    "observedChildren": 11,
+    "unrefEsbuildServiceWitnessed": 1,
+    "blockingChildren": 0,
+    "esbuildWitnessReceipt": {
+      "pids": [
+        24748
+      ],
+      "receipt": "C:\\tmps\\glass-object-editor-export-3aPNES\\esbuild-exit-witness.json",
+      "note": "detached witness observes the unref esbuild service daemon exiting after parent exit"
+    },
+    "hostSourcePinsUnchanged": true,
+    "runtimeErrors": 0,
+    "externalRequests": 0
+  },
+  "notVerified": [
+    "attached editor UI/history (archived separately)",
+    "full 49-frame duration export",
+    "generic models beyond this GLB/HDR fixture",
+    "install-state acceptance",
+    "Electron or cross-host capture",
+    "hardware GPU (SwiftShader software rasterizer only)"
+  ]
+}

@@ -1,0 +1,442 @@
+{
+  "ok": true,
+  "mode": "real-editor-ui-history",
+  "sourceManifestSha256": "3b7cb2fb2eaa5bbce19891e5a8eb8b0c18e08757b5b0bc215f74d913c38a8f98",
+  "wasmSha256": "ddade5ea1caedb1d5b721b58171ee4360d5ec3d2e9ca21cfb39d16e2939b8657",
+  "backend": "private Chromium SwiftShader",
+  "installedPluginTested": false,
+  "electronTested": false,
+  "checks": [
+    {
+      "name": "real Glass archived-source Input props UI edit with recompile-apply, undo/redo, disk save and editor reload",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to render preview frame: AbortError: signal is aborted without reason\n    at AbortSignal.a ([URL redacted]\n    at X ([URL redacted]\n    at U ([URL redacted]\n    at [URL redacted]\n    at Set.forEach (<anonymous>)\n    at OZe.notifySeek ([URL redacted]\n    at OZe.seek ([URL redacted]\n    at onTimeChange ([URL redacted]\n    at k ([URL redacted]\n    at _ ([URL redacted]",
+    "Failed to render preview frame: AbortError: signal is aborted without reason\n    at AbortSignal.a ([URL redacted]\n    at X ([URL redacted]\n    at U ([URL redacted]\n    at [URL redacted]\n    at Set.forEach (<anonymous>)\n    at OZe.notifySeek ([URL redacted]\n    at OZe.seek ([URL redacted]\n    at onTimeChange ([URL redacted]\n    at k ([URL redacted]\n    at _ ([URL redacted]",
+    "Failed to render preview frame: AbortError: signal is aborted without reason\n    at AbortSignal.a ([URL redacted]\n    at X ([URL redacted]\n    at U ([URL redacted]\n    at [URL redacted]\n    at Set.forEach (<anonymous>)\n    at OZe.notifySeek ([URL redacted]\n    at OZe.seek ([URL redacted]\n    at onTimeChange ([URL redacted]\n    at k ([URL redacted]\n    at _ ([URL redacted]",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to render preview frame: AbortError: signal is aborted without reason\n    at AbortSignal.a ([URL redacted]\n    at X ([URL redacted]\n    at U ([URL redacted]\n    at [URL redacted]\n    at Set.forEach (<anonymous>)\n    at OZe.notifySeek ([URL redacted]\n    at OZe.seek ([URL redacted]\n    at onTimeChange ([URL redacted]\n    at k ([URL redacted]\n    at _ ([URL redacted]"
+  ],
+  "warnings": [
+    "No available adapters.",
+    "No available adapters."
+  ],
+  "buildWarnings": [
+    {
+      "code": "THIS_IS_UNDEFINED",
+      "message": "node_modules/mediabunny/dist/modules/src/sample.js (8:31): The 'this' keyword is equivalent to 'undefined' at the top level of an ES module, and has been rewritten"
+    },
+    {
+      "code": "THIS_IS_UNDEFINED",
+      "message": "node_modules/mediabunny/dist/modules/src/sample.js (8:39): The 'this' keyword is equivalent to 'undefined' at the top level of an ES module, and has been rewritten"
+    },
+    {
+      "code": "THIS_IS_UNDEFINED",
+      "message": "node_modules/mediabunny/dist/modules/src/sample.js (30:26): The 'this' keyword is equivalent to 'undefined' at the top level of an ES module, and has been rewritten"
+    },
+    {
+      "code": "THIS_IS_UNDEFINED",
+      "message": "node_modules/mediabunny/dist/modules/src/sample.js (30:34): The 'this' keyword is equivalent to 'undefined' at the top level of an ES module, and has been rewritten"
+    },
+    {
+      "code": "THIS_IS_UNDEFINED",
+      "message": "node_modules/mediabunny/dist/modules/src/hls/hls-segmented-input.js (8:31): The 'this' keyword is equivalent to 'undefined' at the top level of an ES module, and has been rewritten"
+    },
+    {
+      "code": "THIS_IS_UNDEFINED",
+      "message": "node_modules/mediabunny/dist/modules/src/hls/hls-segmented-input.js (8:39): The 'this' keyword is equivalent to 'undefined' at the top level of an ES module, and has been rewritten"
+    },
+    {
+      "code": "THIS_IS_UNDEFINED",
+      "message": "node_modules/mediabunny/dist/modules/src/hls/hls-segmented-input.js (30:26): The 'this' keyword is equivalent to 'undefined' at the top level of an ES module, and has been rewritten"
+    },
+    {
+      "code": "THIS_IS_UNDEFINED",
+      "message": "node_modules/mediabunny/dist/modules/src/hls/hls-segmented-input.js (30:34): The 'this' keyword is equivalent to 'undefined' at the top level of an ES module, and has been rewritten"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/onnxruntime-common/dist/esm/tensor-impl.js -> node_modules/onnxruntime-common/dist/esm/tensor-factory-impl.js -> node_modules/onnxruntime-common/dist/esm/tensor-impl.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/onnxruntime-common/dist/esm/tensor-impl.js -> node_modules/onnxruntime-common/dist/esm/tensor-utils-impl.js -> node_modules/onnxruntime-common/dist/esm/tensor-impl.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/isobmff/isobmff-demuxer.js -> node_modules/mediabunny/dist/modules/src/isobmff/isobmff-reader.js -> node_modules/mediabunny/dist/modules/src/reader.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/isobmff/isobmff-demuxer.js -> node_modules/mediabunny/dist/modules/src/reader.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/isobmff/isobmff-demuxer.js -> node_modules/mediabunny/dist/modules/src/aes.js -> node_modules/mediabunny/dist/modules/src/reader.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/matroska/ebml.js -> node_modules/mediabunny/dist/modules/src/reader.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/matroska/matroska-demuxer.js -> node_modules/mediabunny/dist/modules/src/reader.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/id3.js -> node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/mp3/mp3-demuxer.js -> node_modules/mediabunny/dist/modules/src/id3.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/mp3/mp3-demuxer.js -> node_modules/mediabunny/dist/modules/src/mp3/mp3-reader.js -> node_modules/mediabunny/dist/modules/src/reader.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/mp3/mp3-demuxer.js -> node_modules/mediabunny/dist/modules/src/reader.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/id3.js -> node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/id3.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/ogg/ogg-demuxer.js -> node_modules/mediabunny/dist/modules/src/reader.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/ogg/ogg-demuxer.js -> node_modules/mediabunny/dist/modules/src/ogg/ogg-reader.js -> node_modules/mediabunny/dist/modules/src/reader.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/wave/wave-demuxer.js -> node_modules/mediabunny/dist/modules/src/reader.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/id3.js -> node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/wave/wave-demuxer.js -> node_modules/mediabunny/dist/modules/src/id3.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/adts/adts-reader.js -> node_modules/mediabunny/dist/modules/src/reader.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/id3.js -> node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/adts/adts-demuxer.js -> node_modules/mediabunny/dist/modules/src/id3.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/adts/adts-demuxer.js -> node_modules/mediabunny/dist/modules/src/reader.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/reader.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/flac/flac-demuxer.js -> node_modules/mediabunny/dist/modules/src/reader.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/flac/flac-demuxer.js -> node_modules/mediabunny/dist/modules/src/flac/flac-misc.js -> node_modules/mediabunny/dist/modules/src/reader.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/mpeg-ts/mpeg-ts-demuxer.js -> node_modules/mediabunny/dist/modules/src/reader.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/hls/hls-demuxer.js -> node_modules/mediabunny/dist/modules/src/reader.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/hls/hls-demuxer.js -> node_modules/mediabunny/dist/modules/src/hls/hls-segmented-input.js -> node_modules/mediabunny/dist/modules/src/input.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/hls/hls-demuxer.js -> node_modules/mediabunny/dist/modules/src/hls/hls-segmented-input.js -> node_modules/mediabunny/dist/modules/src/reader.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/hls/hls-demuxer.js -> node_modules/mediabunny/dist/modules/src/hls/hls-segmented-input.js -> node_modules/mediabunny/dist/modules/src/source.js -> node_modules/mediabunny/dist/modules/src/input.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/input-format.js -> node_modules/mediabunny/dist/modules/src/hls/hls-demuxer.js -> node_modules/mediabunny/dist/modules/src/hls/hls-segmented-input.js -> node_modules/mediabunny/dist/modules/src/input-format.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/custom-coder.js -> node_modules/mediabunny/dist/modules/src/decode.js -> node_modules/mediabunny/dist/modules/src/custom-coder.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/custom-coder.js -> node_modules/mediabunny/dist/modules/src/encode.js -> node_modules/mediabunny/dist/modules/src/custom-coder.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/input-track.js -> node_modules/mediabunny/dist/modules/src/media-sink.js -> node_modules/mediabunny/dist/modules/src/input.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/input-track.js -> node_modules/mediabunny/dist/modules/src/media-sink.js -> node_modules/mediabunny/dist/modules/src/input-track.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/reader.js -> node_modules/mediabunny/dist/modules/src/input.js -> node_modules/mediabunny/dist/modules/src/reader.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/isobmff/isobmff-muxer.js -> node_modules/mediabunny/dist/modules/src/isobmff/isobmff-boxes.js -> node_modules/mediabunny/dist/modules/src/isobmff/isobmff-muxer.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/output-format.js -> node_modules/mediabunny/dist/modules/src/isobmff/isobmff-muxer.js -> node_modules/mediabunny/dist/modules/src/output-format.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/output-format.js -> node_modules/mediabunny/dist/modules/src/matroska/matroska-muxer.js -> node_modules/mediabunny/dist/modules/src/output-format.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/mediabunny/dist/modules/src/output.js -> node_modules/mediabunny/dist/modules/src/output-format.js -> node_modules/mediabunny/dist/modules/src/hls/hls-muxer.js -> node_modules/mediabunny/dist/modules/src/output.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/culori/src/modes.js -> node_modules/culori/src/converter.js -> node_modules/culori/src/modes.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: node_modules/culori/src/parse.js -> node_modules/culori/src/modes.js -> node_modules/culori/src/converter.js -> node_modules/culori/src/_prepare.js -> node_modules/culori/src/parse.js"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: packages/editor-classic/src/timeline/element-utils.ts -> packages/editor-classic/src/timeline/index.ts -> packages/editor-classic/src/timeline/element-utils.ts"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: packages/editor-classic/src/timeline/index.ts -> packages/editor-classic/src/timeline/scenes.ts -> packages/editor-classic/src/timeline/index.ts"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: packages/editor-classic/src/editor/runtime/session-stores.ts -> packages/editor-classic/src/preview/preview-store.ts -> packages/editor-classic/src/guides/index.ts -> packages/editor-classic/src/guides/registry.tsx -> packages/editor-classic/src/guides/definitions/grid.tsx -> packages/editor-classic/src/editor/use-session-store.ts -> packages/editor-classic/src/editor/runtime/session-stores.ts"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: packages/editor-classic/src/guides/index.ts -> packages/editor-classic/src/guides/preview-overlay.tsx -> packages/editor-classic/src/guides/index.ts"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: packages/editor-classic/src/editor/runtime/session-core-owner.ts -> packages/editor-classic/src/core/index.ts -> packages/editor-classic/src/core/managers/scenes-manager.ts -> packages/editor-classic/src/timeline/bookmarks/index.ts -> packages/editor-classic/src/timeline/bookmarks/hooks/use-bookmark-drag.ts -> packages/editor-classic/src/editor/use-editor.ts -> packages/editor-classic/src/editor/runtime/session-core-owner.ts"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: packages/editor-classic/src/components/ui/popover.tsx -> packages/editor-classic/src/components/ui/use-overlay-open-change.ts -> packages/editor-classic/src/editor/runtime/session-stores.ts -> packages/editor-classic/src/editor/runtime/session-core-owner.ts -> packages/editor-classic/src/core/index.ts -> packages/editor-classic/src/core/managers/scenes-manager.ts -> packages/editor-classic/src/timeline/bookmarks/index.ts -> packages/editor-classic/src/timeline/bookmarks/components/bookmarks.tsx -> packages/editor-classic/src/components/ui/popover.tsx"
+    },
+    {
+      "code": "CIRCULAR_DEPENDENCY",
+      "message": "Circular dependency: packages/editor-classic/src/components/ui/color-picker.tsx -> packages/editor-classic/src/components/ui/popover.tsx -> packages/editor-classic/src/components/ui/use-overlay-open-change.ts -> packages/editor-classic/src/editor/runtime/session-stores.ts -> packages/editor-classic/src/editor/runtime/session-core-owner.ts -> packages/editor-classic/src/core/index.ts -> packages/editor-classic/src/core/managers/scenes-manager.ts -> packages/editor-classic/src/timeline/bookmarks/index.ts -> packages/editor-classic/src/timeline/bookmarks/components/bookmarks.tsx -> packages/editor-classic/src/components/ui/color-picker.tsx"
+    },
+    {
+      "code": "PLUGIN_WARNING",
+      "message": "[plugin vite:reporter] \n(!) E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/packages/editor-classic/src/stickers/providers/countries-data.ts is dynamically imported by E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/packages/editor-classic/src/stickers/providers/flags.ts but also statically imported by E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/packages/editor-classic/src/stickers/providers/flags.ts, dynamic import will not move module into another chunk.\n"
+    }
+  ],
+  "externalRequests": [],
+  "httpFailures": [
+    {
+      "path": "/api/library/graph-editor-presets/user-presets",
+      "status": 404
+    },
+    {
+      "path": "/api/library/graph-editor-presets/user-presets",
+      "status": 404
+    }
+  ],
+  "editorDist": "C:\\tmps\\glass-editor\\run-urrqis\\temp\\editor-dist",
+  "browser": "151.0.7922.34",
+  "editorTransport": "actual Host staticDir and authenticated URL; attached editor task runner",
+  "authoring": {
+    "source": "Host-authored archived Three glass source rendered by actual editor",
+    "parameterEdits": "actual Input props JSON edit with recompile-apply, attached-session undo and redo"
+  },
+  "uiHistory": [
+    {
+      "key": "transmission",
+      "before": {
+        "name": "glass-before-transmission",
+        "sha256": "3691e8d8d40db95bfb549d3c9b40350985a8063ced87cf7f48d85173aa0e9620",
+        "bytes": 26947
+      },
+      "edited": {
+        "name": "glass-edited-transmission",
+        "sha256": "9f6587db3d07b70004cbeff8562726d16894ac687e5cdd48c7cc7ff5b93ca24f",
+        "bytes": 18798
+      },
+      "status": {
+        "revision": 2,
+        "canUndo": true,
+        "canRedo": false,
+        "count": 1,
+        "scope": "attached-session"
+      },
+      "completeClipRestored": true
+    }
+  ],
+  "expectedConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to render preview frame: AbortError: signal is aborted without reason\n    at AbortSignal.a ([URL redacted]\n    at X ([URL redacted]\n    at U ([URL redacted]\n    at [URL redacted]\n    at Set.forEach (<anonymous>)\n    at OZe.notifySeek ([URL redacted]\n    at OZe.seek ([URL redacted]\n    at onTimeChange ([URL redacted]\n    at k ([URL redacted]\n    at _ ([URL redacted]",
+    "Failed to render preview frame: AbortError: signal is aborted without reason\n    at AbortSignal.a ([URL redacted]\n    at X ([URL redacted]\n    at U ([URL redacted]\n    at [URL redacted]\n    at Set.forEach (<anonymous>)\n    at OZe.notifySeek ([URL redacted]\n    at OZe.seek ([URL redacted]\n    at onTimeChange ([URL redacted]\n    at k ([URL redacted]\n    at _ ([URL redacted]",
+    "Failed to render preview frame: AbortError: signal is aborted without reason\n    at AbortSignal.a ([URL redacted]\n    at X ([URL redacted]\n    at U ([URL redacted]\n    at [URL redacted]\n    at Set.forEach (<anonymous>)\n    at OZe.notifySeek ([URL redacted]\n    at OZe.seek ([URL redacted]\n    at onTimeChange ([URL redacted]\n    at k ([URL redacted]\n    at _ ([URL redacted]",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to render preview frame: AbortError: signal is aborted without reason\n    at AbortSignal.a ([URL redacted]\n    at X ([URL redacted]\n    at U ([URL redacted]\n    at [URL redacted]\n    at Set.forEach (<anonymous>)\n    at OZe.notifySeek ([URL redacted]\n    at OZe.seek ([URL redacted]\n    at onTimeChange ([URL redacted]\n    at k ([URL redacted]\n    at _ ([URL redacted]"
+  ],
+  "hostRestart": {
+    "ok": true,
+    "hostReopenedAfterEdits": true,
+    "clips": [
+      {
+        "id": "glass-object",
+        "trackId": "glass-shots",
+        "startTime": 0,
+        "duration": 245000,
+        "trimStart": 0,
+        "trimEnd": 0,
+        "editing": {
+          "type": "graphic",
+          "name": "Glass Object authoring",
+          "params": {},
+          "effects": [],
+          "definitionId": "programmatic",
+          "programmatic": {
+            "version": 1,
+            "runtime": "html-document",
+            "code": "",
+            "documentId": "_rocut/compiled.html",
+            "width": 192,
+            "height": 128,
+            "frameRate": {
+              "numerator": 24,
+              "denominator": 1
+            },
+            "durationFrames": 49,
+            "seed": 19,
+            "resources": [
+              {
+                "id": "_rocut/compiled.html",
+                "kind": "document",
+                "mimeType": "text/html",
+                "byteLength": 882042,
+                "sha256": "0c569b92de4d0354f73531f3ac9734a8290f9a9f15b41a19160798f21dbf0db0",
+                "attachmentKey": "programmatic-sha256-0c569b92de4d0354f73531f3ac9734a8290f9a9f15b41a19160798f21dbf0db0"
+              },
+              {
+                "id": "optical-model.glb",
+                "kind": "model",
+                "mimeType": "model/gltf-binary",
+                "byteLength": 24668,
+                "sha256": "dcfc5676b1946add4eb3eb1803e4f30dd270f8d2064d54c83b225c696e5ccfe1",
+                "attachmentKey": "programmatic-sha256-dcfc5676b1946add4eb3eb1803e4f30dd270f8d2064d54c83b225c696e5ccfe1"
+              },
+              {
+                "id": "optical-environment.hdr",
+                "kind": "environment",
+                "mimeType": "image/vnd.radiance",
+                "byteLength": 8239,
+                "sha256": "c0189db833bcd32f4d2b3c30309eff76fe009695741652fa710c136a2448ba56",
+                "attachmentKey": "programmatic-sha256-c0189db833bcd32f4d2b3c30309eff76fe009695741652fa710c136a2448ba56"
+              }
+            ],
+            "build": {
+              "version": 1,
+              "engine": "three",
+              "engineVersion": "0.185.1",
+              "entryFile": "glass-object-scene.ts",
+              "inputProps": {
+                "scale": 1,
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "rotationSpeed": [
+                  0,
+                  0,
+                  0
+                ],
+                "camera": {
+                  "position": [
+                    0,
+                    0,
+                    4
+                  ],
+                  "target": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "fov": 37,
+                  "near": 0.1,
+                  "far": 100
+                },
+                "modelId": "optical-model.glb",
+                "environmentId": "optical-environment.hdr",
+                "glass": {
+                  "attenuationDistance": 1000,
+                  "color": "#ffffff",
+                  "dispersion": 0.05,
+                  "environmentIntensity": 1,
+                  "ior": 1.5,
+                  "roughness": 0.05,
+                  "thickness": 0.5,
+                  "transmission": 0.35,
+                  "version": 1
+                }
+              },
+              "inputs": [
+                {
+                  "id": "glass-object-scene.ts",
+                  "kind": "source",
+                  "mimeType": "application/octet-stream",
+                  "byteLength": 6085,
+                  "sha256": "f2c1b59af471f13d1b9a136d232d79eaaa3c7a8a93bb340a442d8bcb9b719c59",
+                  "attachmentKey": "programmatic-source-sha256-f2c1b59af471f13d1b9a136d232d79eaaa3c7a8a93bb340a442d8bcb9b719c59"
+                }
+              ],
+              "toolchainLock": {
+                "id": "_rocut/toolchain-lock.json",
+                "kind": "source",
+                "mimeType": "application/octet-stream",
+                "byteLength": 5341,
+                "sha256": "0c84ed51edd9f4191002ed73ea454cb434baeef99edea70f2c087f02a960515e",
+                "attachmentKey": "programmatic-source-sha256-0c84ed51edd9f4191002ed73ea454cb434baeef99edea70f2c087f02a960515e"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "tracks": [
+      {
+        "id": "174d99c4-6033-4cd1-b870-33b7bec1efa0",
+        "kind": "video",
+        "name": "Main Track",
+        "muted": false,
+        "hidden": false,
+        "sceneId": "5b19008b-aeb1-4156-86a3-6bb7c4365bf5"
+      },
+      {
+        "id": "glass-shots",
+        "kind": "graphic",
+        "name": "Glass shot",
+        "hidden": false,
+        "sceneId": "5b19008b-aeb1-4156-86a3-6bb7c4365bf5"
+      }
+    ],
+    "revision": 4,
+    "authoredTrackIds": [
+      "glass-shots"
+    ]
+  }
+}

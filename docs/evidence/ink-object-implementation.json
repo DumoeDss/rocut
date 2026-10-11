@@ -1,6 +1,6 @@
 {
 	"date": "2026-10-10",
-	"status": "Static object subset implemented; Ink Object remains N; ledger 27 V / 8 N and 13 delivery work packages unchanged",
+	"status": "Static object subset implemented plus real persisted-project production export (frame range) and independent WebM decode verified; Ink Object remains N pending UI history, runtime props/motion and full-duration export; ledger 27 V / 8 N and 13 delivery work packages unchanged",
 	"rawReceipt": {
 		"path": "C:/tmps/ink-object-native-a4db86ce/implementation-receipt.json",
 		"sha256": "18a99b9a526c7fb53697f9f43e5f454bd73a9fe173007df1cfb9537457b8dddd"
@@ -98,7 +98,11 @@
 		"completeProjectBytesUnchanged": true,
 		"archivedAttachmentsReadableAndHashEqual": 5,
 		"assets": "Diagnostic embedded base-color/normal GLB plus HDR; compiled HTML, scene and toolchain lock also retained",
-		"toolchainClosure": { "files": 1393, "bytes": 35554159, "unchanged": true },
+		"toolchainClosure": {
+			"files": 1393,
+			"bytes": 35554159,
+			"unchanged": true
+		},
 		"hostOpened": 2,
 		"hostClosed": 2,
 		"browserStarted": false,
@@ -126,6 +130,87 @@
 			"retainedFixtureFailure": "Original evidence.json remains ok=false due solely to counting four Chromium plus one esbuild as four total children; immutable read-only audit verifies kinds separately without rerunning GPU",
 			"retainedFailureSha256": "400c65efdf969208ce3c3b156bbd92045c039654f781d2e559bc15b11227b1ca",
 			"fourthFrameBoundary": "Derived request metadata does not change compile-time baked inputProps. Not runtime props update or original-project motion sensitivity acceptance."
+		},
+		"realProjectProductionExport": {
+			"receipt": "docs/evidence/ink-object-editor-export.json",
+			"sourceReceipt": "C:/tmps/ink-object-editor-export-GmbuzP/evidence.json",
+			"sourceReceiptBytes": 3432021,
+			"preparationReceipt": "C:/tmps/ink-object-editor-export-preparation-eUXz0S/evidence.json",
+			"route": "decodeProject -> buildScene -> CanvasRenderer/WasmCompositor -> SceneExporter.export on the real persisted Ink project",
+			"project": "C:/tmps/ink-object-host-P3xegw",
+			"ok": true,
+			"stage": "complete",
+			"output": {
+				"container": "WebM",
+				"bytes": 3506,
+				"sha256": "c9f77c43fe2180eadb78f3c4a55d6efbafd82fc5ff8ea411b8a13c8d13073224",
+				"width": 192,
+				"height": 128,
+				"frames": 4,
+				"frameRate": "24/1",
+				"rangeMicros": {
+					"start": 30000,
+					"end": 50000,
+					"duration": 20000
+				}
+			},
+			"gates": {
+				"directMeanMax": 2,
+				"directMaxMax": 8,
+				"decodedMeanMax": 3,
+				"decodedActiveMeanMax": 6,
+				"timestampToleranceSeconds": 0.001,
+				"visiblePixelsMin": 200
+			},
+			"measured": {
+				"directMeanPerFrame": [
+					0,
+					0,
+					0,
+					0
+				],
+				"directMaxPerFrame": [
+					0,
+					0,
+					0,
+					0
+				],
+				"decodedMeanPerFrame": [
+					2.0708,
+					2.0718,
+					2.0729,
+					2.0737
+				],
+				"decodedActiveMeanPerFrame": [
+					2.1921,
+					2.195,
+					2.2015,
+					2.2065
+				],
+				"decodedMaxPerFrame": [
+					12,
+					11,
+					11,
+					11
+				],
+				"timestampsExactWithinTolerance": true
+			},
+			"independence": "FFmpeg decode of the produced WebM compared against renderer output; VP9 192x128 24fps stream probed, no programs errors",
+			"invariants": {
+				"projectUnchanged": true,
+				"formalEvidenceUnchanged": true,
+				"hostSourcesUnchanged": true,
+				"errors": 0,
+				"externalRequests": 0,
+				"browserClosed": true,
+				"hostClosed": true
+			},
+			"hostSourcesDigest": {
+				"count": 5311,
+				"totalBytes": 9857520,
+				"aggregateSha256": "cf76574fa39c679033eec46c518ab78b8a06ba849c173806c86727a45fde8560"
+			},
+			"boundary": "Bounded frame window of the actual persisted project with compile-time baked props; not UI history, runtime props/motion sensitivity, full-duration export or installed runtime"
 		}
 	},
 	"files": [
@@ -143,7 +228,8 @@
 		"General controlled Ink models/materials beyond the separately verified diagnostic GLB/HDR Host and loader subset",
 		"General model/visual support beyond diagnostic GPU contour/density/paper/seed/map/normal checks",
 		"Native/hardware GPU bytes, WebGPU and cross-device behavior",
-		"UI history/reload, runtime props updates or animated-project sensitivity, encoded export and independent decode",
-		"Shared user entry/discovery, packaging or installation state"
+		"Shared user entry/discovery, packaging or installation state",
+		"UI history/reload and runtime props updates or animated-project sensitivity beyond the baked static-props frame window",
+		"Full-duration encoded export beyond the verified bounded frame range"
 	]
 }

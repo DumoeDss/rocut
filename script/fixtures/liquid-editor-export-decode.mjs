@@ -55,6 +55,7 @@ export async function decodeLiquidEditorExport(
 	artifacts,
 	directory,
 	references,
+	options,
 ) {
 	const run = (name, args, encoding) =>
 		execFileSync(join(directory, name), args, {
@@ -85,10 +86,14 @@ export async function decodeLiquidEditorExport(
 	assert.equal(track.codec_name, "vp9");
 	assert.equal(track.width, 640);
 	assert.equal(track.height, 360);
-	assert.equal(track.nb_read_frames, "6");
+	const expectedFrames = options?.expectedFrames ?? 6;
+	const expectedDuration = options?.durationSeconds ?? 0.2;
+	assert.equal(track.nb_read_frames, String(expectedFrames));
 	assert.equal(track.r_frame_rate, "30/1");
-	assert(Math.abs(Number(metadata.format.duration) - 0.2) < 0.01);
-	assert.equal(metadata.frames.length, 6);
+	assert(
+		Math.abs(Number(metadata.format.duration) - expectedDuration) < 0.01,
+	);
+	assert.equal(metadata.frames.length, expectedFrames);
 	metadata.frames.forEach((frame, index) =>
 		assert(
 			Math.abs(Number(frame.best_effort_timestamp_time) - index / 30) < 0.0011,

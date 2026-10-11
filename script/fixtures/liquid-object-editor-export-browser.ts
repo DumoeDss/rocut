@@ -17,7 +17,7 @@ function record(value: unknown): Record<string,unknown> {
  return Object.fromEntries(Object.entries(value));
 }
 /** Actual production renderer/compositor/encoder; no direct FFmpeg encoding. */
-export async function runLiquidEditorExport(options: { project: unknown; base: string }) {
+export async function runLiquidEditorExport(options: { project: unknown; base: string; window?: { startFrame: number; frameCount: number } }) {
  const wrapper=record(options.project),saved=record(wrapper.record);
  check(wrapper.wrapperVersion===1 && saved.schemaVersion===32,"Actual FileProjectStore schema32 project required");
  const project=decodeProject(saved.data),scene=project.scenes.find(value=>value.id===project.currentSceneId);
@@ -29,7 +29,9 @@ export async function runLiquidEditorExport(options: { project: unknown; base: s
  check(project.settings.canvasSize.width===192 && project.settings.canvasSize.height===128,"Saved canvas changed");
  check(project.settings.fps.numerator===30 && project.settings.fps.denominator===1,"Saved frame rate changed");
  const url=new URL(options.base);check(["localhost","127.0.0.1"].includes(url.hostname) && url.protocol==="http:","Private Host API only");
- const range=resolveMediaTimeRange({range:{startTime:mediaTime({ticks:23*4000}),endTime:mediaTime({ticks:27*4000})},timelineDuration:project.metadata.duration});
+ const frameWindow=options.window ?? {startFrame:23,frameCount:4};
+ check(Number.isInteger(frameWindow.startFrame)&&frameWindow.startFrame>=0&&Number.isInteger(frameWindow.frameCount)&&frameWindow.frameCount>0&&frameWindow.startFrame+frameWindow.frameCount<=clip.programmatic.durationFrames,"Export frame window out of clip bounds");
+ const range=resolveMediaTimeRange({range:{startTime:mediaTime({ticks:frameWindow.startFrame*4000}),endTime:mediaTime({ticks:(frameWindow.startFrame+frameWindow.frameCount)*4000})},timelineDuration:project.metadata.duration});
  const videoCache=new VideoCache(),runtimeGpu=new WasmRuntimeGpuResourceQuery();let id=0;
  const resources=createSessionResources({runtimeGpu,nextId:({scope})=>`${scope}:liquid-export:${++id}`,
   runtimeResources:new BrowserRuntimeResourceHost(({request,url})=>new Worker(url,{type:request.type,name:request.name}))});
@@ -49,15 +51,15 @@ export async function runLiquidEditorExport(options: { project: unknown; base: s
   await exporter.drainRasterResidency();
   const renderer=new CanvasRenderer(params),referenceNode=make();nodes.push(referenceNode);
   try{
-   for(let index=0;index<4;index++){
-    const rgba=await renderer.renderAndCapture({node:referenceNode,time:mediaTime({ticks:(23+index)*4000}),capture(canvas){
+   for(let index=0;index<frameWindow.frameCount;index++){
+    const rgba=await renderer.renderAndCapture({node:referenceNode,time:mediaTime({ticks:(frameWindow.startFrame+index)*4000}),capture(canvas){
      const copy=new OffscreenCanvas(192,128),context=copy.getContext("2d",{colorSpace:"srgb",willReadFrequently:true});check(context,"sRGB readback context missing");
      try{context.drawImage(canvas,0,0);const image=context.getImageData(0,0,192,128,{colorSpace:"srgb"});check(image.colorSpace==="srgb","Non-sRGB reference");return new Uint8Array(image.data);}
      finally{copy.width=copy.height=0;}
     }});check(rgba.length===192*128*4,"Reference shape mismatch");references.push(rgba);
    }
   }finally{await renderer.retireTree(referenceNode);}
-  result={ok:true,video:new Uint8Array(encoded),references,width:192,height:128,frameCount:4,frameRate:project.settings.fps,range,
+  result={ok:true,video:new Uint8Array(encoded),references,width:192,height:128,frameCount:frameWindow.frameCount,frameRate:project.settings.fps,range,
    projectId:project.metadata.id,clipId:clip.id,source:clip.programmatic,
    scope:"actual persisted project decodeProject/buildScene/CanvasRenderer/WasmCompositor/SceneExporter.export; bounded timeline window; not attached editor UI/history/install acceptance"};
  }catch(error){primary=error;}

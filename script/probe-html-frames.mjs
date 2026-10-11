@@ -40,12 +40,15 @@ const threeResources = process.argv.includes("--three-resources");
 const asciiThree = process.argv.includes("--ascii-three");
 const ditherThree = process.argv.includes("--dither-three");
 const styledThree = asciiThree || ditherThree;
-const threeScene = process.argv.includes("--three-scene") || styledThree;
+const meshoptThree = process.argv.includes("--meshopt-three");
+const threeScene = process.argv.includes("--three-scene") || styledThree || meshoptThree;
 const fixture = ditherThree
 	? "dither-three-browser-probe.html"
 	: asciiThree
 		? "ascii-three-browser-probe.html"
-		: threeScene
+		: meshoptThree
+			? "meshopt-three-browser-probe.html"
+			: threeScene
 			? "three-scene-browser-probe.html"
 			: threeResources
 				? "three-resource-browser-probe.html"
@@ -54,7 +57,9 @@ const resultKey = ditherThree
 	? "__ditherThreeResult"
 	: asciiThree
 		? "__asciiThreeResult"
-		: threeScene
+		: meshoptThree
+			? "__meshoptThreeResult"
+			: threeScene
 			? "__threeSceneResult"
 			: threeResources
 				? "__threeResourceResult"
@@ -331,7 +336,9 @@ try {
 					? "dither-three.webm"
 					: asciiThree
 						? "ascii-three.webm"
-						: "three.webm",
+						: meshoptThree
+							? "meshopt-three.webm"
+							: "three.webm",
 			),
 			Buffer.from(
 				await page.evaluate(() => globalThis.__threeVideoBase64),
@@ -340,9 +347,19 @@ try {
 			{ flag: "wx" },
 		);
 		await writeFile(
-			join(artifacts, styledThree ? "contact-sheet.png" : "three.png"),
+			join(
+				artifacts,
+				styledThree
+					? "contact-sheet.png"
+					: meshoptThree
+						? "meshopt-three.png"
+						: "three.png",
+			),
 			Buffer.from(
-				await page.evaluate(() => globalThis.__threePreviewBase64),
+				await page.evaluate(
+					(key) => globalThis[key],
+				meshoptThree ? "__meshoptPreviewBase64" : "__threePreviewBase64",
+					),
 				"base64",
 			),
 			{ flag: "wx" },

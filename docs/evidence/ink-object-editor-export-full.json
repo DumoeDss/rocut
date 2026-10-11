@@ -1,0 +1,97 @@
+{
+  "archiveKind": "projection",
+  "date": "2026-10-11T07:11:07.417Z",
+  "probe": {
+    "script": "script/probe-ink-object-editor-export-full.mjs",
+    "witnessRoot": "C:/tmps/ink-object-editor-export-full-ebn7ez",
+    "observedChildren": 103,
+    "unrefEsbuildServiceWitnessed": 1,
+    "blockingChildren": 0
+  },
+  "scope": "actual persisted Ink Object project decodeProject/buildScene/CanvasRenderer/WasmCompositor/SceneExporter.export; all 49 clip frames 0..48; three engine ink-object static baked props; not editor UI/history/installed",
+  "thresholds": {
+    "decodedMean": 3,
+    "decodedActiveMean": 6,
+    "visiblePixels": 200,
+    "timestampToleranceSeconds": 0.001
+  },
+  "comparison": {
+    "thresholds": {
+      "decodedMean": 3,
+      "decodedActiveMean": 6,
+      "visiblePixels": 200,
+      "timestampToleranceSeconds": 0.001
+    },
+    "decodedMeanRange": [
+      1.9472927517361112,
+      2.0276014539930554
+    ],
+    "decodedActiveMeanRange": [
+      1.7012302284710017,
+      2.025951962507323
+    ],
+    "allFramesPass": true
+  },
+  "lifecycle": {
+    "browserClosed": true,
+    "hostClosed": true,
+    "observedChildren": 103,
+    "unrefEsbuildServiceWitnessed": 1,
+    "blockingChildren": 0,
+    "esbuildWitnessReceipt": {
+      "pids": [
+        42372
+      ],
+      "receipt": "C:\\tmps\\ink-object-editor-export-full-ebn7ez\\esbuild-exit-witness.json",
+      "note": "detached witness observes the unref esbuild service daemon exiting after parent exit"
+    },
+    "hostSourcePinsUnchanged": true,
+    "projectTreeUnchanged": true,
+    "runtimeErrors": 0,
+    "externalRequests": 0
+  },
+  "video": {
+    "bytes": 11232,
+    "sha256": "a62a5182d2c4c29bb5673d7530ef64ceeb266bc091ba7412ce1d79be7d1f00b0",
+    "codec": "vp9",
+    "width": 192,
+    "height": 128,
+    "frameRate": "24/1",
+    "frameCount": 49
+  },
+  "project": {
+    "sha256": "faedbf67683e8a35cda78832a69d2dd07b556a3c181caafa0d2baadd726b59ec",
+    "schemaVersion": 32,
+    "clipTimingTicks": 245000,
+    "durationFrames": 49,
+    "canvas": "192x128",
+    "fps": "24/1"
+  },
+  "notVerified": [
+    "editor UI history",
+    "installed-plugin distribution",
+    "cross-host Electron capture",
+    "non-fixture models"
+  ],
+  "original": {
+    "ok": true,
+    "stage": "complete",
+    "frameWindow": {
+      "startFrame": 0,
+      "frameCount": 49
+    },
+    "decodedFrameCount": 49,
+    "decodedMeanRange": [
+      1.9472927517361112,
+      2.0276014539930554
+    ],
+    "decodedActiveMeanRange": [
+      1.7012302284710017,
+      2.025951962507323
+    ]
+  },
+  "status": "passed-ink-object-editor-export-full-duration",
+  "wasmSha256": {
+    "pkg": "5dbd6c3cd9920fd19486ff5172d24af2d302e9d5bc5973864a8b108b7570faf5"
+  }
+}

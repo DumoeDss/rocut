@@ -1,0 +1,356 @@
+{
+  "schema": "elftia-evidence/1",
+  "id": "ink-object-editor-export",
+  "title": "Ink Object real-project production export (CanvasRenderer/WasmCompositor + SceneExporter)",
+  "capturedAt": "2026-10-10T14:01:25.387Z",
+  "status": "verified",
+  "scope": "Real persisted project decode->buildScene->render/export frame range only; UI history and full-duration export remain open",
+  "source": {
+    "path": "C:/tmps/ink-object-editor-export-GmbuzP/evidence.json",
+    "projection": "subset; full receipt with raw frame data, host bundle, and per-file host source manifest (5311 entries) retained at source path",
+    "productionSha256": "c9f77c43fe2180eadb78f3c4a55d6efbafd82fc5ff8ea411b8a13c8d13073224",
+    "productionBytes": 3506
+  },
+  "ok": true,
+  "stage": "complete",
+  "thresholds": {
+    "directMean": 2,
+    "directMax": 8,
+    "decodedMean": 3,
+    "decodedActiveMean": 6,
+    "visiblePixels": 200,
+    "timestampToleranceSeconds": 0.001
+  },
+  "scopeNote": "actual persisted project decodeProject/buildScene/CanvasRenderer/WasmCompositor/SceneExporter.export; 6..9 only; static original baked props, no motion/runtime-props update claim; not editor UI/history/installed/full duration",
+  "preparation": {
+    "path": "C:\\tmps\\ink-object-editor-export-preparation-eUXz0S\\evidence.json",
+    "bytes": 364293,
+    "sha256": "9d5cd7b679f5a56d65fb20b8fa13c62a5a1094f6431341a7dde4f8097df65e65"
+  },
+  "nativePackage": [
+    {
+      "path": "C:\\tmps\\liquid-object-wasm-development-35IsB3\\pkg\\opencut_wasm_sync.js",
+      "bytes": 4741,
+      "sha256": "3ea9403a7e21fb5c1228062c356fad1843cc461822c57342b942aa3e96b84c17"
+    },
+    {
+      "path": "C:\\tmps\\liquid-object-wasm-development-35IsB3\\pkg\\opencut_wasm_bg.wasm",
+      "bytes": 18502141,
+      "sha256": "7f7dba6b40fa79618d1e2f7fedab82e1731dee9c26564796f597bf31758b349c"
+    }
+  ],
+  "hostBundle": {
+    "path": "C:\\tmps\\ink-object-editor-export-GmbuzP\\host.mjs",
+    "bytes": 2050592,
+    "sha256": "707ced9c9011760b6f6f79acda7d7de9e75a5ee233e3677ae2df9a5743941c42"
+  },
+  "projectUnchanged": true,
+  "formalReceipt": {
+    "path": "C:/tmps/ink-object-project-UxDlvp/frame-evidence.json",
+    "bytes": 17448,
+    "sha256": "13bf9d619696b3f4dc3bdbbbbd15d6daee88d5d5cbee5bc7c9b56cb1b65a037d"
+  },
+  "formalFrame": {
+    "path": "C:/tmps/ink-object-project-UxDlvp/frame-0.png",
+    "bytes": 11713,
+    "sha256": "c921bb5752e978bb418ac0afb011113bcbdf61fcfd195f4645ae8ccf10de51d7"
+  },
+  "formalEvidenceUnchanged": true,
+  "video": {
+    "path": "C:\\tmps\\ink-object-editor-export-GmbuzP\\production.webm",
+    "bytes": 3506,
+    "sha256": "c9f77c43fe2180eadb78f3c4a55d6efbafd82fc5ff8ea411b8a13c8d13073224"
+  },
+  "production": {
+    "ok": true,
+    "width": 192,
+    "height": 128,
+    "frameCount": 4,
+    "frameRate": {
+      "numerator": 24,
+      "denominator": 1
+    },
+    "range": {
+      "startTime": 30000,
+      "endTime": 50000,
+      "duration": 20000
+    },
+    "projectId": "project",
+    "clipId": "ink-object",
+    "source": {
+      "version": 1,
+      "runtime": "html-document",
+      "code": "",
+      "documentId": "_rocut/compiled.html",
+      "width": 192,
+      "height": 128,
+      "frameRate": {
+        "numerator": 24,
+        "denominator": 1
+      },
+      "durationFrames": 49,
+      "seed": 19,
+      "resources": [
+        {
+          "id": "_rocut/compiled.html",
+          "kind": "document",
+          "mimeType": "text/html",
+          "byteLength": 851582,
+          "sha256": "7e61f1105c6f398a888e06cb6bbaabff855bce993f828edb35103245fab092e2",
+          "attachmentKey": "programmatic-sha256-7e61f1105c6f398a888e06cb6bbaabff855bce993f828edb35103245fab092e2"
+        },
+        {
+          "id": "ink-model.glb",
+          "kind": "model",
+          "mimeType": "model/gltf-binary",
+          "byteLength": 25304,
+          "sha256": "72eb7f7d3e832c3d7dd1e04e76cfb3a5cb2b175a72826acf8a4b8ae37254babb",
+          "attachmentKey": "programmatic-sha256-72eb7f7d3e832c3d7dd1e04e76cfb3a5cb2b175a72826acf8a4b8ae37254babb"
+        },
+        {
+          "id": "ink-environment.hdr",
+          "kind": "environment",
+          "mimeType": "image/vnd.radiance",
+          "byteLength": 8239,
+          "sha256": "c0189db833bcd32f4d2b3c30309eff76fe009695741652fa710c136a2448ba56",
+          "attachmentKey": "programmatic-sha256-c0189db833bcd32f4d2b3c30309eff76fe009695741652fa710c136a2448ba56"
+        }
+      ],
+      "build": {
+        "version": 1,
+        "engine": "three",
+        "engineVersion": "0.185.1",
+        "entryFile": "ink-object-scene.ts",
+        "inputProps": {
+          "scale": 1,
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "rotationSpeed": [
+            0,
+            0,
+            0
+          ],
+          "modelId": "ink-model.glb",
+          "environmentId": "ink-environment.hdr",
+          "camera": {
+            "position": [
+              0,
+              0,
+              4
+            ],
+            "target": [
+              0,
+              0,
+              0
+            ],
+            "fov": 37,
+            "near": 0.1,
+            "far": 100
+          },
+          "ink": {
+            "contourWidth": 4,
+            "inkColor": "#182026",
+            "inkDensity": 0.85,
+            "paperColor": "#f2ead8",
+            "paperScale": 12,
+            "paperTexture": 0.65,
+            "seed": 19,
+            "version": 1
+          }
+        },
+        "inputs": [
+          {
+            "id": "ink-object-scene.ts",
+            "kind": "source",
+            "mimeType": "application/octet-stream",
+            "byteLength": 7926,
+            "sha256": "6424af41aab9763ef81a63bf92b69cd397ccad117d21eadc92947c1e2a6e567b",
+            "attachmentKey": "programmatic-source-sha256-6424af41aab9763ef81a63bf92b69cd397ccad117d21eadc92947c1e2a6e567b"
+          }
+        ],
+        "toolchainLock": {
+          "id": "_rocut/toolchain-lock.json",
+          "kind": "source",
+          "mimeType": "application/octet-stream",
+          "byteLength": 5341,
+          "sha256": "e469391f1a65bc7ffff2939daf5eed6e39bea58b6ffcf9856c6706d2d5bd137c",
+          "attachmentKey": "programmatic-source-sha256-e469391f1a65bc7ffff2939daf5eed6e39bea58b6ffcf9856c6706d2d5bd137c"
+        }
+      }
+    },
+    "scope": "actual persisted project decodeProject/buildScene/CanvasRenderer/WasmCompositor/SceneExporter.export; static original baked props, no motion/runtime-props claim; bounded timeline window; not attached editor UI/history/install acceptance"
+  },
+  "directComparisons": [
+    {
+      "mean": 0,
+      "max": 0,
+      "activeMean": 0
+    },
+    {
+      "mean": 0,
+      "max": 0,
+      "activeMean": 0
+    },
+    {
+      "mean": 0,
+      "max": 0,
+      "activeMean": 0
+    },
+    {
+      "mean": 0,
+      "max": 0,
+      "activeMean": 0
+    }
+  ],
+  "probe": {
+    "frames": [
+      {
+        "best_effort_timestamp_time": "0.000000"
+      },
+      {
+        "best_effort_timestamp_time": "0.042000"
+      },
+      {
+        "best_effort_timestamp_time": "0.083000"
+      },
+      {
+        "best_effort_timestamp_time": "0.125000"
+      }
+    ],
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "vp9",
+        "width": 192,
+        "height": 128,
+        "r_frame_rate": "24/1",
+        "nb_read_frames": "4"
+      }
+    ]
+  },
+  "decoded": {
+    "path": "C:\\tmps\\ink-object-editor-export-GmbuzP\\decoded.rgba",
+    "bytes": 393216,
+    "sha256": "95867a3d744a14118c2cb8c4e7050b8d72fecabf77bc25fd3708b1dc5bb3e59b"
+  },
+  "decodedComparisons": [
+    {
+      "mean": 2.07080078125,
+      "max": 12,
+      "activeMean": 2.192091388400703
+    },
+    {
+      "mean": 2.071750217013889,
+      "max": 11,
+      "activeMean": 2.19502050380785
+    },
+    {
+      "mean": 2.0728895399305554,
+      "max": 11,
+      "activeMean": 2.2014645577035736
+    },
+    {
+      "mean": 2.07373046875,
+      "max": 11,
+      "activeMean": 2.2065026362038664
+    }
+  ],
+  "cleanup": [
+    {
+      "name": "browser",
+      "closed": true
+    },
+    {
+      "name": "Host",
+      "closed": true
+    }
+  ],
+  "processes": [
+    {
+      "executable": "esbuild.exe",
+      "pid": 50664,
+      "closed": true,
+      "code": 0,
+      "signal": null
+    },
+    {
+      "executable": "chrome.exe",
+      "pid": 53980,
+      "closed": true,
+      "code": 0,
+      "signal": null
+    },
+    {
+      "executable": "chrome.exe",
+      "pid": 36248,
+      "closed": true,
+      "code": null,
+      "signal": "SIGTERM"
+    },
+    {
+      "executable": "chrome.exe",
+      "pid": 52184,
+      "closed": true,
+      "code": null,
+      "signal": "SIGTERM"
+    },
+    {
+      "executable": "chrome.exe",
+      "pid": 66652,
+      "closed": true,
+      "code": null,
+      "signal": "SIGTERM"
+    },
+    {
+      "executable": "chrome.exe",
+      "pid": 28860,
+      "closed": true,
+      "code": null,
+      "signal": "SIGTERM"
+    },
+    {
+      "executable": "chrome.exe",
+      "pid": 26912,
+      "closed": true,
+      "code": null,
+      "signal": "SIGTERM"
+    },
+    {
+      "executable": "chrome.exe",
+      "pid": 40492,
+      "closed": true,
+      "code": null,
+      "signal": "SIGTERM"
+    },
+    {
+      "executable": "chrome.exe",
+      "pid": 43668,
+      "closed": true,
+      "code": null,
+      "signal": "SIGTERM"
+    },
+    {
+      "executable": "chrome.exe",
+      "pid": 46004,
+      "closed": true,
+      "code": null,
+      "signal": "SIGTERM"
+    }
+  ],
+  "errors": [],
+  "externalRequests": [],
+  "hostSourcesDigest": {
+    "count": 5311,
+    "totalBytes": 9857520,
+    "aggregateSha256": "cf76574fa39c679033eec46c518ab78b8a06ba849c173806c86727a45fde8560"
+  },
+  "hostSourcesAfterDigest": {
+    "count": 5311,
+    "totalBytes": 9857520,
+    "aggregateSha256": "cf76574fa39c679033eec46c518ab78b8a06ba849c173806c86727a45fde8560"
+  },
+  "hostSourcesUnchanged": true
+}

@@ -1,0 +1,1435 @@
+{
+  "ok": true,
+  "mode": "real-editor-ui-history",
+  "sourceManifestSha256": "fcc4933b206ba159f50af485df251759ed254adf3678ff71071ed1c3541dae49",
+  "wasmSha256": "5dbd6c3cd9920fd19486ff5172d24af2d302e9d5bc5973864a8b108b7570faf5",
+  "backend": "private Chromium SwiftShader",
+  "installedPluginTested": false,
+  "electronTested": false,
+  "checks": [
+    {
+      "name": "six optical channels, reverse seeks, three real Liquid parameter UI edits with undo/redo, disk save and editor reload",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to render preview frame: AbortError: signal is aborted without reason\n    at AbortSignal.a ([URL redacted]\n    at X ([URL redacted]\n    at [URL redacted]\n    at U6 ([URL redacted]\n    at H1 ([URL redacted]\n    at kD ([URL redacted]\n    at tc ([URL redacted]\n    at kD ([URL redacted]\n    at tc ([URL redacted]\n    at kD ([URL redacted]",
+    "Failed to render preview frame: AbortError: signal is aborted without reason\n    at AbortSignal.a ([URL redacted]\n    at X ([URL redacted]\n    at [URL redacted]\n    at U6 ([URL redacted]\n    at H1 ([URL redacted]\n    at kD ([URL redacted]\n    at tc ([URL redacted]\n    at kD ([URL redacted]\n    at tc ([URL redacted]\n    at kD ([URL redacted]",
+    "Failed to render preview frame: AbortError: signal is aborted without reason\n    at AbortSignal.a ([URL redacted]\n    at X ([URL redacted]\n    at [URL redacted]\n    at U6 ([URL redacted]\n    at H1 ([URL redacted]\n    at kD ([URL redacted]\n    at tc ([URL redacted]\n    at kD ([URL redacted]\n    at tc ([URL redacted]\n    at kD ([URL redacted]",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "warnings": [
+    "No available adapters.",
+    "No available adapters."
+  ],
+  "buildWarnings": [],
+  "externalRequests": [],
+  "httpFailures": [
+    {
+      "path": "/api/library/graph-editor-presets/user-presets",
+      "status": 404
+    },
+    {
+      "path": "/api/library/graph-editor-presets/user-presets",
+      "status": 404
+    }
+  ],
+  "reusedEditorDist": "C:/tmps/effect-editor-build-BbUNcg/editor-dist",
+  "editorDist": "C:/tmps/effect-editor-build-BbUNcg/editor-dist",
+  "browser": "151.0.7922.34",
+  "editorTransport": "actual Host staticDir and authenticated URL; attached editor task runner",
+  "selectionOverlays": [
+    {
+      "phase": "before-viscosity",
+      "handles": [
+        {
+          "x": 369.53125,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 711,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 710,
+          "y": 70.828125,
+          "width": 20,
+          "height": 20
+        }
+      ]
+    },
+    {
+      "phase": "edited-viscosity",
+      "handles": [
+        {
+          "x": 369.53125,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 711,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 710,
+          "y": 70.828125,
+          "width": 20,
+          "height": 20
+        }
+      ]
+    },
+    {
+      "phase": "undone-viscosity",
+      "handles": [
+        {
+          "x": 369.53125,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 711,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 710,
+          "y": 70.828125,
+          "width": 20,
+          "height": 20
+        }
+      ]
+    },
+    {
+      "phase": "redone-viscosity",
+      "handles": [
+        {
+          "x": 369.53125,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 711,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 710,
+          "y": 70.828125,
+          "width": 20,
+          "height": 20
+        }
+      ]
+    },
+    {
+      "phase": "before-refraction",
+      "handles": [
+        {
+          "x": 369.53125,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 711,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 710,
+          "y": 70.828125,
+          "width": 20,
+          "height": 20
+        }
+      ]
+    },
+    {
+      "phase": "edited-refraction",
+      "handles": [
+        {
+          "x": 369.53125,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 711,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 710,
+          "y": 70.828125,
+          "width": 20,
+          "height": 20
+        }
+      ]
+    },
+    {
+      "phase": "undone-refraction",
+      "handles": [
+        {
+          "x": 369.53125,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 711,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 710,
+          "y": 70.828125,
+          "width": 20,
+          "height": 20
+        }
+      ]
+    },
+    {
+      "phase": "redone-refraction",
+      "handles": [
+        {
+          "x": 369.53125,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 711,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 710,
+          "y": 70.828125,
+          "width": 20,
+          "height": 20
+        }
+      ]
+    },
+    {
+      "phase": "before-event0Radius",
+      "handles": [
+        {
+          "x": 369.53125,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 711,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 710,
+          "y": 70.828125,
+          "width": 20,
+          "height": 20
+        }
+      ]
+    },
+    {
+      "phase": "edited-event0Radius",
+      "handles": [
+        {
+          "x": 369.53125,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 711,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 710,
+          "y": 70.828125,
+          "width": 20,
+          "height": 20
+        }
+      ]
+    },
+    {
+      "phase": "undone-event0Radius",
+      "handles": [
+        {
+          "x": 369.53125,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 711,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 710,
+          "y": 70.828125,
+          "width": 20,
+          "height": 20
+        }
+      ]
+    },
+    {
+      "phase": "redone-event0Radius",
+      "handles": [
+        {
+          "x": 369.53125,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 711,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 710,
+          "y": 70.828125,
+          "width": 20,
+          "height": 20
+        }
+      ]
+    },
+    {
+      "phase": "reloaded",
+      "handles": [
+        {
+          "x": 369.53125,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 95.828125,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 1052.46875,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 369.53125,
+          "y": 287.90625,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 711,
+          "y": 479.96875,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "x": 710,
+          "y": 70.828125,
+          "width": 20,
+          "height": 20
+        }
+      ]
+    }
+  ],
+  "authoring": {
+    "keyframes": "Host-authored six optical channels rendered by actual editor",
+    "keyframeCreationUi": false,
+    "parameterEdits": "actual Effects textbox with attached-session undo and redo"
+  },
+  "keyframeSamples": [
+    {
+      "local": 4000,
+      "timelineTicks": 124000,
+      "name": "liquid-keyframes-4000",
+      "sha256": "c9bb32711466aeaf47c78e34e93a147b789925b32723ee70f6e9a762646230e3",
+      "bytes": 182657,
+      "bounds": {
+        "x": 379.53125,
+        "y": 105.828125,
+        "width": 680.9375,
+        "height": 382.140625
+      }
+    },
+    {
+      "local": 12000,
+      "timelineTicks": 132000,
+      "name": "liquid-keyframes-12000",
+      "sha256": "eaa6ecf028bd530a181cc5bb56cf3fe0d837223906336213d129584f79f33fd3",
+      "bytes": 217559,
+      "bounds": {
+        "x": 379.53125,
+        "y": 105.828125,
+        "width": 680.9375,
+        "height": 382.140625
+      }
+    },
+    {
+      "local": 24000,
+      "timelineTicks": 144000,
+      "name": "liquid-keyframes-24000",
+      "sha256": "c6ebdc24942069d0fbe253b4467328385940ab0ec0d6ec06e267a388875b016b",
+      "bytes": 239408,
+      "bounds": {
+        "x": 379.53125,
+        "y": 105.828125,
+        "width": 680.9375,
+        "height": 382.140625
+      }
+    }
+  ],
+  "uiHistory": [
+    {
+      "key": "viscosity",
+      "value": 0.001,
+      "before": {
+        "name": "liquid-before-viscosity",
+        "sha256": "815891f37cda9cbf367a3e77208beff4cf32cc9cf644e3cbe1075b9c754e665e",
+        "bytes": 217881,
+        "bounds": {
+          "x": 379.53125,
+          "y": 105.828125,
+          "width": 680.9375,
+          "height": 382.140625
+        }
+      },
+      "edited": {
+        "name": "liquid-edited-viscosity",
+        "sha256": "42e280df2a313b93c2af087051800c2a7787ce010182048094064004e13144e5",
+        "bytes": 220084,
+        "bounds": {
+          "x": 379.53125,
+          "y": 105.828125,
+          "width": 680.9375,
+          "height": 382.140625
+        }
+      },
+      "status": {
+        "revision": 2,
+        "canUndo": true,
+        "canRedo": false,
+        "count": 1,
+        "scope": "attached-session"
+      },
+      "completeClipRestored": true
+    },
+    {
+      "key": "refraction",
+      "value": 0.1,
+      "before": {
+        "name": "liquid-before-refraction",
+        "sha256": "42e280df2a313b93c2af087051800c2a7787ce010182048094064004e13144e5",
+        "bytes": 220084,
+        "bounds": {
+          "x": 379.53125,
+          "y": 105.828125,
+          "width": 680.9375,
+          "height": 382.140625
+        }
+      },
+      "edited": {
+        "name": "liquid-edited-refraction",
+        "sha256": "ac676a8a0b9d1d93e759fc4662f1328f720affaab524e023c6577d6f6802b006",
+        "bytes": 179081,
+        "bounds": {
+          "x": 379.53125,
+          "y": 105.828125,
+          "width": 680.9375,
+          "height": 382.140625
+        }
+      },
+      "status": {
+        "revision": 5,
+        "canUndo": true,
+        "canRedo": false,
+        "count": 2,
+        "scope": "attached-session"
+      },
+      "completeClipRestored": true
+    },
+    {
+      "key": "event0Radius",
+      "value": 0.55,
+      "before": {
+        "name": "liquid-before-event0Radius",
+        "sha256": "ac676a8a0b9d1d93e759fc4662f1328f720affaab524e023c6577d6f6802b006",
+        "bytes": 179081,
+        "bounds": {
+          "x": 379.53125,
+          "y": 105.828125,
+          "width": 680.9375,
+          "height": 382.140625
+        }
+      },
+      "edited": {
+        "name": "liquid-edited-event0Radius",
+        "sha256": "7634f0ac71e495c90970da78d3d29b2ffb31c15375b758ae07cee828742e2072",
+        "bytes": 185702,
+        "bounds": {
+          "x": 379.53125,
+          "y": 105.828125,
+          "width": 680.9375,
+          "height": 382.140625
+        }
+      },
+      "status": {
+        "revision": 8,
+        "canUndo": true,
+        "canRedo": false,
+        "count": 3,
+        "scope": "attached-session"
+      },
+      "completeClipRestored": true
+    }
+  ],
+  "expectedConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to render preview frame: AbortError: signal is aborted without reason\n    at AbortSignal.a ([URL redacted]\n    at X ([URL redacted]\n    at [URL redacted]\n    at U6 ([URL redacted]\n    at H1 ([URL redacted]\n    at kD ([URL redacted]\n    at tc ([URL redacted]\n    at kD ([URL redacted]\n    at tc ([URL redacted]\n    at kD ([URL redacted]",
+    "Failed to render preview frame: AbortError: signal is aborted without reason\n    at AbortSignal.a ([URL redacted]\n    at X ([URL redacted]\n    at [URL redacted]\n    at U6 ([URL redacted]\n    at H1 ([URL redacted]\n    at kD ([URL redacted]\n    at tc ([URL redacted]\n    at kD ([URL redacted]\n    at tc ([URL redacted]\n    at kD ([URL redacted]",
+    "Failed to render preview frame: AbortError: signal is aborted without reason\n    at AbortSignal.a ([URL redacted]\n    at X ([URL redacted]\n    at [URL redacted]\n    at U6 ([URL redacted]\n    at H1 ([URL redacted]\n    at kD ([URL redacted]\n    at tc ([URL redacted]\n    at kD ([URL redacted]\n    at tc ([URL redacted]\n    at kD ([URL redacted]",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "hostRestart": {
+    "ok": true,
+    "hostReopenedAfterEdits": true,
+    "clips": [
+      {
+        "id": "liquid-0",
+        "trackId": "liquid-shots",
+        "startTime": 0,
+        "duration": 120000,
+        "trimStart": 0,
+        "trimEnd": 0,
+        "editing": {
+          "type": "graphic",
+          "name": "Static Liquid controls",
+          "params": {},
+          "effects": [
+            {
+              "id": "fluid",
+              "type": "liquid",
+              "enabled": true,
+              "params": {
+                "columns": 12,
+                "rows": 8,
+                "viscosity": 0.001,
+                "velocityDamping": 0.5,
+                "dyeDissipation": 0.25,
+                "pressureIterations": 40,
+                "diffusionIterations": 8,
+                "vorticity": 1.5,
+                "amount": 1,
+                "refraction": 0.1,
+                "dyeOpacity": 0.5,
+                "colorR": 0.125,
+                "colorG": 0.75,
+                "colorB": 1,
+                "startTicks": 2500,
+                "durationTicks": 24500,
+                "eventCount": 3,
+                "event0Time": 0,
+                "event0X": 0.5,
+                "event0Y": 0.5,
+                "event0Radius": 0.55,
+                "event0VelocityX": 2,
+                "event0VelocityY": -1,
+                "event0Dye": 0.75,
+                "event1Time": 8000,
+                "event1X": 0.25,
+                "event1Y": 0.75,
+                "event1Radius": 0.25,
+                "event1VelocityX": -1,
+                "event1VelocityY": 2,
+                "event1Dye": 0.5,
+                "event2Time": 24499,
+                "event2X": 0.75,
+                "event2Y": 0.25,
+                "event2Radius": 0.375,
+                "event2VelocityX": 3,
+                "event2VelocityY": 3,
+                "event2Dye": 1
+              }
+            }
+          ],
+          "definitionId": "programmatic",
+          "programmatic": {
+            "version": 1,
+            "runtime": "canvas-worker",
+            "width": 640,
+            "height": 360,
+            "frameRate": {
+              "numerator": 30,
+              "denominator": 1
+            },
+            "durationFrames": 60,
+            "seed": 7,
+            "code": "const pixels=(function liquidSource(width, height, holes = !1) {\n  const data = new Uint8ClampedArray(width * height * 4);\n  for (let y = 0;y < height; y++)\n    for (let x = 0;x < width; x++) {\n      const i = (y * width + x) * 4;\n      data.set([\n        Math.floor(255 * x / (width - 1)),\n        Math.floor(255 * y / (height - 1)),\n        (Math.floor(x / 11) + Math.floor(y / 7)) % 2 ? 224 : 32,\n        holes ? [0, 1, 96, 255][(Math.floor(x / 11) + Math.floor(y / 9)) % 4] : 255\n      ], i);\n      if (data[i + 3] === 0)\n        data.set([255, 0, 255], i);\n    }\n  return data;\n})(640,360,true);canvas.getContext('2d').putImageData(new ImageData(pixels,640,360),0,0);"
+          }
+        }
+      },
+      {
+        "id": "liquid-1",
+        "trackId": "liquid-shots",
+        "startTime": 120000,
+        "duration": 120000,
+        "trimStart": 0,
+        "trimEnd": 0,
+        "editing": {
+          "type": "graphic",
+          "name": "Six optical channels",
+          "params": {},
+          "animations": {
+            "effects.fluid.params.amount": {
+              "keys": [
+                {
+                  "id": "amount-0",
+                  "time": 0,
+                  "value": 0.25,
+                  "segmentToNext": "linear",
+                  "tangentMode": "auto"
+                },
+                {
+                  "id": "amount-1",
+                  "time": 24000,
+                  "value": 0.75,
+                  "segmentToNext": "linear",
+                  "tangentMode": "auto"
+                }
+              ]
+            },
+            "effects.fluid.params.refraction": {
+              "keys": [
+                {
+                  "id": "refraction-0",
+                  "time": 0,
+                  "value": 0.125,
+                  "segmentToNext": "linear",
+                  "tangentMode": "auto"
+                },
+                {
+                  "id": "refraction-1",
+                  "time": 24000,
+                  "value": 0.25,
+                  "segmentToNext": "linear",
+                  "tangentMode": "auto"
+                }
+              ]
+            },
+            "effects.fluid.params.dyeOpacity": {
+              "keys": [
+                {
+                  "id": "dyeOpacity-0",
+                  "time": 0,
+                  "value": 0.25,
+                  "segmentToNext": "linear",
+                  "tangentMode": "auto"
+                },
+                {
+                  "id": "dyeOpacity-1",
+                  "time": 24000,
+                  "value": 0.75,
+                  "segmentToNext": "linear",
+                  "tangentMode": "auto"
+                }
+              ]
+            },
+            "effects.fluid.params.colorR": {
+              "keys": [
+                {
+                  "id": "colorR-0",
+                  "time": 0,
+                  "value": 0.125,
+                  "segmentToNext": "linear",
+                  "tangentMode": "auto"
+                },
+                {
+                  "id": "colorR-1",
+                  "time": 24000,
+                  "value": 0.875,
+                  "segmentToNext": "linear",
+                  "tangentMode": "auto"
+                }
+              ]
+            },
+            "effects.fluid.params.colorG": {
+              "keys": [
+                {
+                  "id": "colorG-0",
+                  "time": 0,
+                  "value": 0.75,
+                  "segmentToNext": "linear",
+                  "tangentMode": "auto"
+                },
+                {
+                  "id": "colorG-1",
+                  "time": 24000,
+                  "value": 0.25,
+                  "segmentToNext": "linear",
+                  "tangentMode": "auto"
+                }
+              ]
+            },
+            "effects.fluid.params.colorB": {
+              "keys": [
+                {
+                  "id": "colorB-0",
+                  "time": 0,
+                  "value": 1,
+                  "segmentToNext": "linear",
+                  "tangentMode": "auto"
+                },
+                {
+                  "id": "colorB-1",
+                  "time": 24000,
+                  "value": 0.25,
+                  "segmentToNext": "linear",
+                  "tangentMode": "auto"
+                }
+              ]
+            }
+          },
+          "effects": [
+            {
+              "id": "fluid",
+              "type": "liquid",
+              "enabled": true,
+              "params": {
+                "columns": 12,
+                "rows": 8,
+                "viscosity": 0.0078125,
+                "velocityDamping": 0.5,
+                "dyeDissipation": 0.25,
+                "pressureIterations": 40,
+                "diffusionIterations": 8,
+                "vorticity": 1.5,
+                "amount": 1,
+                "refraction": 0.25,
+                "dyeOpacity": 0.5,
+                "colorR": 0.125,
+                "colorG": 0.75,
+                "colorB": 1,
+                "startTicks": 2500,
+                "durationTicks": 24500,
+                "eventCount": 3,
+                "event0Time": 0,
+                "event0X": 0.5,
+                "event0Y": 0.5,
+                "event0Radius": 0.375,
+                "event0VelocityX": 2,
+                "event0VelocityY": -1,
+                "event0Dye": 0.75,
+                "event1Time": 8000,
+                "event1X": 0.25,
+                "event1Y": 0.75,
+                "event1Radius": 0.25,
+                "event1VelocityX": -1,
+                "event1VelocityY": 2,
+                "event1Dye": 0.5,
+                "event2Time": 24499,
+                "event2X": 0.75,
+                "event2Y": 0.25,
+                "event2Radius": 0.375,
+                "event2VelocityX": 3,
+                "event2VelocityY": 3,
+                "event2Dye": 1
+              }
+            }
+          ],
+          "definitionId": "programmatic",
+          "programmatic": {
+            "version": 1,
+            "runtime": "canvas-worker",
+            "width": 640,
+            "height": 360,
+            "frameRate": {
+              "numerator": 30,
+              "denominator": 1
+            },
+            "durationFrames": 60,
+            "seed": 7,
+            "code": "const pixels=(function liquidSource(width, height, holes = !1) {\n  const data = new Uint8ClampedArray(width * height * 4);\n  for (let y = 0;y < height; y++)\n    for (let x = 0;x < width; x++) {\n      const i = (y * width + x) * 4;\n      data.set([\n        Math.floor(255 * x / (width - 1)),\n        Math.floor(255 * y / (height - 1)),\n        (Math.floor(x / 11) + Math.floor(y / 7)) % 2 ? 224 : 32,\n        holes ? [0, 1, 96, 255][(Math.floor(x / 11) + Math.floor(y / 9)) % 4] : 255\n      ], i);\n      if (data[i + 3] === 0)\n        data.set([255, 0, 255], i);\n    }\n  return data;\n})(640,360,true);canvas.getContext('2d').putImageData(new ImageData(pixels,640,360),0,0);"
+          }
+        }
+      },
+      {
+        "id": "liquid-reference-12000",
+        "trackId": "liquid-shots",
+        "startTime": 360000,
+        "duration": 120000,
+        "trimStart": 0,
+        "trimEnd": 0,
+        "editing": {
+          "type": "graphic",
+          "name": "Static optical reference 12000",
+          "params": {},
+          "effects": [
+            {
+              "id": "fluid",
+              "type": "liquid",
+              "enabled": true,
+              "params": {
+                "columns": 12,
+                "rows": 8,
+                "viscosity": 0.0078125,
+                "velocityDamping": 0.5,
+                "dyeDissipation": 0.25,
+                "pressureIterations": 40,
+                "diffusionIterations": 8,
+                "vorticity": 1.5,
+                "amount": 0.5,
+                "refraction": 0.1875,
+                "dyeOpacity": 0.5,
+                "colorR": 0.5,
+                "colorG": 0.5,
+                "colorB": 0.625,
+                "startTicks": 2500,
+                "durationTicks": 24500,
+                "eventCount": 3,
+                "event0Time": 0,
+                "event0X": 0.5,
+                "event0Y": 0.5,
+                "event0Radius": 0.375,
+                "event0VelocityX": 2,
+                "event0VelocityY": -1,
+                "event0Dye": 0.75,
+                "event1Time": 8000,
+                "event1X": 0.25,
+                "event1Y": 0.75,
+                "event1Radius": 0.25,
+                "event1VelocityX": -1,
+                "event1VelocityY": 2,
+                "event1Dye": 0.5,
+                "event2Time": 24499,
+                "event2X": 0.75,
+                "event2Y": 0.25,
+                "event2Radius": 0.375,
+                "event2VelocityX": 3,
+                "event2VelocityY": 3,
+                "event2Dye": 1
+              }
+            }
+          ],
+          "definitionId": "programmatic",
+          "programmatic": {
+            "version": 1,
+            "runtime": "canvas-worker",
+            "width": 640,
+            "height": 360,
+            "frameRate": {
+              "numerator": 30,
+              "denominator": 1
+            },
+            "durationFrames": 60,
+            "seed": 7,
+            "code": "const pixels=(function liquidSource(width, height, holes = !1) {\n  const data = new Uint8ClampedArray(width * height * 4);\n  for (let y = 0;y < height; y++)\n    for (let x = 0;x < width; x++) {\n      const i = (y * width + x) * 4;\n      data.set([\n        Math.floor(255 * x / (width - 1)),\n        Math.floor(255 * y / (height - 1)),\n        (Math.floor(x / 11) + Math.floor(y / 7)) % 2 ? 224 : 32,\n        holes ? [0, 1, 96, 255][(Math.floor(x / 11) + Math.floor(y / 9)) % 4] : 255\n      ], i);\n      if (data[i + 3] === 0)\n        data.set([255, 0, 255], i);\n    }\n  return data;\n})(640,360,true);canvas.getContext('2d').putImageData(new ImageData(pixels,640,360),0,0);"
+          }
+        }
+      },
+      {
+        "id": "liquid-reference-24000",
+        "trackId": "liquid-shots",
+        "startTime": 480000,
+        "duration": 120000,
+        "trimStart": 0,
+        "trimEnd": 0,
+        "editing": {
+          "type": "graphic",
+          "name": "Static optical reference 24000",
+          "params": {},
+          "effects": [
+            {
+              "id": "fluid",
+              "type": "liquid",
+              "enabled": true,
+              "params": {
+                "columns": 12,
+                "rows": 8,
+                "viscosity": 0.0078125,
+                "velocityDamping": 0.5,
+                "dyeDissipation": 0.25,
+                "pressureIterations": 40,
+                "diffusionIterations": 8,
+                "vorticity": 1.5,
+                "amount": 0.75,
+                "refraction": 0.25,
+                "dyeOpacity": 0.75,
+                "colorR": 0.875,
+                "colorG": 0.25,
+                "colorB": 0.25,
+                "startTicks": 2500,
+                "durationTicks": 24500,
+                "eventCount": 3,
+                "event0Time": 0,
+                "event0X": 0.5,
+                "event0Y": 0.5,
+                "event0Radius": 0.375,
+                "event0VelocityX": 2,
+                "event0VelocityY": -1,
+                "event0Dye": 0.75,
+                "event1Time": 8000,
+                "event1X": 0.25,
+                "event1Y": 0.75,
+                "event1Radius": 0.25,
+                "event1VelocityX": -1,
+                "event1VelocityY": 2,
+                "event1Dye": 0.5,
+                "event2Time": 24499,
+                "event2X": 0.75,
+                "event2Y": 0.25,
+                "event2Radius": 0.375,
+                "event2VelocityX": 3,
+                "event2VelocityY": 3,
+                "event2Dye": 1
+              }
+            }
+          ],
+          "definitionId": "programmatic",
+          "programmatic": {
+            "version": 1,
+            "runtime": "canvas-worker",
+            "width": 640,
+            "height": 360,
+            "frameRate": {
+              "numerator": 30,
+              "denominator": 1
+            },
+            "durationFrames": 60,
+            "seed": 7,
+            "code": "const pixels=(function liquidSource(width, height, holes = !1) {\n  const data = new Uint8ClampedArray(width * height * 4);\n  for (let y = 0;y < height; y++)\n    for (let x = 0;x < width; x++) {\n      const i = (y * width + x) * 4;\n      data.set([\n        Math.floor(255 * x / (width - 1)),\n        Math.floor(255 * y / (height - 1)),\n        (Math.floor(x / 11) + Math.floor(y / 7)) % 2 ? 224 : 32,\n        holes ? [0, 1, 96, 255][(Math.floor(x / 11) + Math.floor(y / 9)) % 4] : 255\n      ], i);\n      if (data[i + 3] === 0)\n        data.set([255, 0, 255], i);\n    }\n  return data;\n})(640,360,true);canvas.getContext('2d').putImageData(new ImageData(pixels,640,360),0,0);"
+          }
+        }
+      },
+      {
+        "id": "liquid-reference-4000",
+        "trackId": "liquid-shots",
+        "startTime": 240000,
+        "duration": 120000,
+        "trimStart": 0,
+        "trimEnd": 0,
+        "editing": {
+          "type": "graphic",
+          "name": "Static optical reference 4000",
+          "params": {},
+          "effects": [
+            {
+              "id": "fluid",
+              "type": "liquid",
+              "enabled": true,
+              "params": {
+                "columns": 12,
+                "rows": 8,
+                "viscosity": 0.0078125,
+                "velocityDamping": 0.5,
+                "dyeDissipation": 0.25,
+                "pressureIterations": 40,
+                "diffusionIterations": 8,
+                "vorticity": 1.5,
+                "amount": 0.3333333333333333,
+                "refraction": 0.14583333333333334,
+                "dyeOpacity": 0.3333333333333333,
+                "colorR": 0.25,
+                "colorG": 0.6666666666666666,
+                "colorB": 0.875,
+                "startTicks": 2500,
+                "durationTicks": 24500,
+                "eventCount": 3,
+                "event0Time": 0,
+                "event0X": 0.5,
+                "event0Y": 0.5,
+                "event0Radius": 0.375,
+                "event0VelocityX": 2,
+                "event0VelocityY": -1,
+                "event0Dye": 0.75,
+                "event1Time": 8000,
+                "event1X": 0.25,
+                "event1Y": 0.75,
+                "event1Radius": 0.25,
+                "event1VelocityX": -1,
+                "event1VelocityY": 2,
+                "event1Dye": 0.5,
+                "event2Time": 24499,
+                "event2X": 0.75,
+                "event2Y": 0.25,
+                "event2Radius": 0.375,
+                "event2VelocityX": 3,
+                "event2VelocityY": 3,
+                "event2Dye": 1
+              }
+            }
+          ],
+          "definitionId": "programmatic",
+          "programmatic": {
+            "version": 1,
+            "runtime": "canvas-worker",
+            "width": 640,
+            "height": 360,
+            "frameRate": {
+              "numerator": 30,
+              "denominator": 1
+            },
+            "durationFrames": 60,
+            "seed": 7,
+            "code": "const pixels=(function liquidSource(width, height, holes = !1) {\n  const data = new Uint8ClampedArray(width * height * 4);\n  for (let y = 0;y < height; y++)\n    for (let x = 0;x < width; x++) {\n      const i = (y * width + x) * 4;\n      data.set([\n        Math.floor(255 * x / (width - 1)),\n        Math.floor(255 * y / (height - 1)),\n        (Math.floor(x / 11) + Math.floor(y / 7)) % 2 ? 224 : 32,\n        holes ? [0, 1, 96, 255][(Math.floor(x / 11) + Math.floor(y / 9)) % 4] : 255\n      ], i);\n      if (data[i + 3] === 0)\n        data.set([255, 0, 255], i);\n    }\n  return data;\n})(640,360,true);canvas.getContext('2d').putImageData(new ImageData(pixels,640,360),0,0);"
+          }
+        }
+      },
+      {
+        "id": "liquid-unrelated",
+        "trackId": "liquid-sentinel",
+        "startTime": 0,
+        "duration": 240000,
+        "trimStart": 0,
+        "trimEnd": 0,
+        "editing": {
+          "type": "graphic",
+          "name": "Untouched source",
+          "params": {
+            "opacity": 0.7
+          },
+          "definitionId": "programmatic",
+          "programmatic": {
+            "version": 1,
+            "runtime": "canvas-worker",
+            "width": 640,
+            "height": 360,
+            "frameRate": {
+              "numerator": 30,
+              "denominator": 1
+            },
+            "durationFrames": 60,
+            "seed": 7,
+            "code": "const pixels=(function liquidSource(width, height, holes = !1) {\n  const data = new Uint8ClampedArray(width * height * 4);\n  for (let y = 0;y < height; y++)\n    for (let x = 0;x < width; x++) {\n      const i = (y * width + x) * 4;\n      data.set([\n        Math.floor(255 * x / (width - 1)),\n        Math.floor(255 * y / (height - 1)),\n        (Math.floor(x / 11) + Math.floor(y / 7)) % 2 ? 224 : 32,\n        holes ? [0, 1, 96, 255][(Math.floor(x / 11) + Math.floor(y / 9)) % 4] : 255\n      ], i);\n      if (data[i + 3] === 0)\n        data.set([255, 0, 255], i);\n    }\n  return data;\n})(640,360,true);canvas.getContext('2d').putImageData(new ImageData(pixels,640,360),0,0);"
+          }
+        }
+      }
+    ],
+    "tracks": [
+      {
+        "id": "7ddc2af5-8a6d-49e9-9898-076a07328553",
+        "kind": "video",
+        "name": "Main Track",
+        "muted": false,
+        "hidden": false,
+        "sceneId": "06ef5969-2e1b-4799-9eb1-feed04317268"
+      },
+      {
+        "id": "liquid-sentinel",
+        "kind": "graphic",
+        "name": "Unrelated hidden sentinel",
+        "hidden": true,
+        "sceneId": "06ef5969-2e1b-4799-9eb1-feed04317268"
+      },
+      {
+        "id": "liquid-shots",
+        "kind": "graphic",
+        "name": "Liquid shots",
+        "hidden": false,
+        "sceneId": "06ef5969-2e1b-4799-9eb1-feed04317268"
+      }
+    ],
+    "revision": 10,
+    "authoredTrackIds": [
+      "liquid-shots",
+      "liquid-sentinel"
+    ]
+  }
+}
