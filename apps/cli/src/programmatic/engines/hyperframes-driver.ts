@@ -34,21 +34,30 @@ window.rocut = {
       throw Error('HyperFrames bundle FPS differs from source; recompile the bundle');
     const deadline = performance.now() + 8000;
     const videos = [...document.querySelectorAll('video')];
+    const nativeScope = videos.length ? window.rocutMedia.beginNativeFrame({videos, deadline}) : undefined;
+    const checkNative = () => { if (nativeScope) window.rocutMedia.assertNativeFrame(nativeScope); };
+    try {
+    const nativeWork = (async () => {
     const nativeAudio = window.rocutHyperframesAudio;
     if (nativeAudio?.enabled) await nativeAudio.prepare();
+    checkNative();
     // Metadata must be real before native caches derive natural clip duration.
     // Every fresh capture starts from a decoded frame, including hidden clips.
     if (videos.length) {
       window.rocutMedia.check();
       await Promise.all(videos.map(async video => {
         await window.rocutMedia.metadata(video);
-        await window.rocutMedia.seek(video, 0);
+        checkNative();
+        await window.rocutMedia.nativeSeek(video, 0);
+        checkNative();
       }));
     }
     while (!window.__playerReady || !window.__renderReady) {
       if (performance.now() > deadline) throw Error('HyperFrames runtime readiness timed out');
       await new Promise(resolve => requestAnimationFrame(resolve));
+      checkNative();
     }
+    checkNative();
     const player = window.__player;
     if (typeof player?.renderSeek !== 'function' || typeof window.__hfWaitForSeekCompletion !== 'function')
       throw Error('Incompatible HyperFrames native runtime');
@@ -61,22 +70,37 @@ window.rocut = {
     if (nativeAudio?.enabled) nativeAudio.begin(frame);
     player.renderSeek(frame.time, {exact: true, suppressEvents: false});
     await window.__hfWaitForSeekCompletion();
+    checkNative();
+    if (nativeScope) await window.rocutMedia.drainNativeFrame(nativeScope);
+    checkNative();
     // Upstream's media barrier has a soft timeout/error path. Do not treat its
     // completion alone as proof that the requested pictures were decoded.
     await Promise.all(videos.map(video => window.rocutMedia.settle(video)));
+    checkNative();
     if (videos.length && typeof window.__hfReseekGpu === 'function') {
       window.__hfReseekGpu(frame.time);
       await window.__hfWaitForSeekCompletion();
+      checkNative();
+      await window.rocutMedia.drainNativeFrame(nativeScope);
+      checkNative();
     }
     window.rocutMedia.check(true);
     if (player.isPlaying() || Math.abs(player.getTime() - frame.time) > 1e-7)
       throw Error('HyperFrames native runtime did not seek to the requested time');
+    })();
+    if (nativeScope) await window.rocutMedia.waitNativeFrame(nativeWork, nativeScope);
+    else await nativeWork;
+    } finally {
+      if (nativeScope) window.rocutMedia.endNativeFrame(nativeScope);
+    }
   }
 };
 })();`;
 
 /** Precedes upstream HTML so render config exists before native runtime boots. */
-export function hyperframesFrameDriver(frameRate: ProgrammaticSource["frameRate"]): string {
+export function hyperframesFrameDriver(
+	frameRate: ProgrammaticSource["frameRate"],
+): string {
 	const rate = JSON.stringify(frameRate).replace(/</g, "\\u003c");
 	return `<script>${HYPERFRAMES_FRAME_DRIVER.replace("__ROCUT_FRAME_RATE__", rate)}</script>`;
 }

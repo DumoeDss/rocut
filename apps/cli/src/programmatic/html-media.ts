@@ -4,6 +4,157 @@
  */
 export const HTML_MEDIA_BOOTSTRAP = String.raw`
 const managedVideos = new WeakSet();
+
+let nativeFrame;
+function beginNativeFrame({videos, deadline, signal}) {
+  if (nativeFrame) throw Error('HTML native frame fence is already active');
+  if (!Number.isFinite(deadline) || deadline <= performance.now())
+    throw Error('HTML native video frame deadline expired');
+  signal?.throwIfAborted();
+  for (const video of videos) {
+    // Native audio prepare registers authored gain/mute state before forcing
+    // the browser silent. Preserve that ordering; readiness is checked later.
+    if (!(video instanceof HTMLVideoElement)) throw Error('Expected a video element');
+    if (typeof video.requestVideoFrameCallback !== 'function' ||
+        typeof video.cancelVideoFrameCallback !== 'function')
+      throw Error('HTML native video requires requestVideoFrameCallback');
+  }
+  let rejectFailure;
+  const failureWait = new Promise((_resolve, reject) => { rejectFailure = reject; });
+  failureWait.catch(() => {});
+  const scope = {deadline, signal, states: new Map(), presentations: new Map(), jobs: new Set(), failed: false, closed: false, failure: undefined,
+    failureWait, rejectFailure, timer: undefined, aborted: undefined};
+  scope.aborted = () => failNativeFrame(scope, signal.reason ?? Error('HTML native video frame aborted'));
+  scope.timer = setTimeout(() => failNativeFrame(scope, Error('HTML native video presentation timed out')),
+    deadline - performance.now());
+  signal?.addEventListener('abort', scope.aborted, {once: true});
+  nativeFrame = scope;
+  return scope;
+}
+function failNativeFrame(scope, error) {
+  if (!scope.failed) { scope.failed = true; scope.failure = error; scope.rejectFailure(error); }
+  for (const state of scope.states.values()) if (state.promise) state.finish(error);
+}
+function assertNativeFrame(scope = nativeFrame) {
+  if (!scope || scope.closed || scope !== nativeFrame) throw Error('HTML native frame fence is closed or replaced');
+  if (scope.failed) throw scope.failure;
+  scope.signal?.throwIfAborted();
+  if (performance.now() >= scope.deadline) throw Error('HTML native video frame deadline expired');
+}
+async function waitNativeFrame(operation, scope = nativeFrame) {
+  assertNativeFrame(scope);
+  const result = await Promise.race([operation, scope.failureWait]);
+  assertNativeFrame(scope);
+  return result;
+}
+function nativeSeek(video, seconds) {
+  const scope = nativeFrame;
+  if (!scope) throw Error('HTML native video seek requires an active frame fence');
+  assertNativeFrame(scope);
+  try {
+    if (!Number.isFinite(seconds) || seconds < 0 || seconds >= video.duration)
+      throw Error('HTML native video seek target is outside the source');
+    scope.signal?.throwIfAborted();
+    checkVideo(video, false);
+    if (performance.now() >= scope.deadline) throw Error('HTML native video frame deadline expired');
+  } catch (error) { failNativeFrame(scope, error); throw error; }
+  const previous = scope.states.get(video);
+  // Same native command may be issued repeatedly by renderSeek. Reuse only
+  // this frame's pending command or a callback-proven paused presentation.
+  if (previous?.target === seconds && video.currentTime === seconds &&
+      !video.seeking && video.readyState >= 2 && video.paused && previous.presentation)
+    return previous.promise ?? Promise.resolve(previous.presentation);
+  if (previous?.target === seconds && previous.promise) return previous.promise;
+  previous?.finish(undefined, true);
+  let resolve, reject, callback, timer, assignmentStartedAt, finished = false, landed = false;
+  const promise = new Promise((yes, no) => { resolve = yes; reject = no; });
+  const state = {target: seconds, promise, presentation: undefined, finish};
+  const badMedia = () => finish(Error('HTML native video decode failed or aborted'));
+  const aborted = () => finish(scope.signal.reason ?? Error('HTML native video frame aborted'));
+  const seeked = () => { landed = true; };
+  function finish(error, superseded = false, presentation) {
+    if (finished) return;
+    finished = true;
+    if (callback !== undefined) video.cancelVideoFrameCallback(callback);
+    clearTimeout(timer);
+    video.removeEventListener('seeked', seeked);
+    for (const type of ['error', 'abort', 'emptied']) video.removeEventListener(type, badMedia);
+    scope.signal?.removeEventListener('abort', aborted);
+    state.promise = undefined;
+    if (error !== undefined) {
+      if (!scope.failed) { scope.failed = true; scope.failure = error; scope.rejectFailure(error); }
+      reject(error);
+    } else {
+      state.presentation = superseded ? undefined : presentation;
+      resolve(presentation);
+    }
+  }
+  function arm() {
+    if (finished) return;
+    callback = video.requestVideoFrameCallback((_now, metadata) => {
+      if (finished) return;
+      callback = undefined;
+      try {
+        checkVideo(video, false);
+        scope.signal?.throwIfAborted();
+        if (!landed || video.seeking || video.readyState < 2) { arm(); return; }
+        // The target is the upstream decoder command, never learned from pixels
+        // or the browser cursor. mediaTime is evidence of presentation, not an
+        // exact-frame oracle: source PTS/variable-frame-rate selection is native.
+        if (video.currentTime !== seconds) throw Error('HTML native video seek target changed before presentation');
+        if (!Number.isFinite(metadata.mediaTime) || metadata.mediaTime < 0)
+          throw Error('HTML native video callback omitted presentation metadata');
+        if (!Number.isFinite(metadata.presentationTime) || metadata.presentationTime < 0 ||
+            !Number.isSafeInteger(metadata.presentedFrames) || metadata.presentedFrames < 0)
+          throw Error('HTML native video callback omitted presentation ownership');
+        const previousPresentation = scope.presentations.get(video);
+        // A callback can be delivered after seeked yet describe a submission
+        // from before this assignment. Cursor/seeked alone do not own it.
+        if (metadata.presentationTime < assignmentStartedAt ||
+            previousPresentation && metadata.presentedFrames <= previousPresentation.presentedFrames) {
+          arm(); return;
+        }
+        const presentation = {target: seconds, mediaTime: metadata.mediaTime,
+          presentationTime: metadata.presentationTime, presentedFrames: metadata.presentedFrames};
+        scope.presentations.set(video, presentation);
+        managedVideos.add(video);
+        finish(undefined, false, presentation);
+      } catch (error) { finish(error); }
+    });
+  }
+  scope.states.set(video, state);
+  scope.jobs.add(promise);
+  // Observe asynchronous native failures even when upstream catches a setter
+  // error or calls this synchronous patch point without awaiting its promise.
+  void promise.then(() => scope.jobs.delete(promise), error => {
+    scope.jobs.delete(promise);
+    if (!scope.failed) { scope.failed = true; scope.failure = error; scope.rejectFailure(error); }
+  });
+  video.addEventListener('seeked', seeked);
+  for (const type of ['error', 'abort', 'emptied']) video.addEventListener(type, badMedia);
+  scope.signal?.addEventListener('abort', aborted, {once: true});
+  timer = setTimeout(() => finish(Error('HTML native video presentation timed out')), scope.deadline - performance.now());
+  try {
+    arm(); // Must precede the native assignment, including paused/initial-zero seeks.
+    assignmentStartedAt = performance.now();
+    video.currentTime = seconds;
+  } catch (error) { finish(error); }
+  return promise;
+}
+async function drainNativeFrame(scope = nativeFrame) {
+  assertNativeFrame(scope);
+  while (scope.jobs.size) await Promise.all([...scope.jobs]);
+  assertNativeFrame(scope);
+}
+function endNativeFrame(scope = nativeFrame) {
+  if (!scope || scope.closed) return;
+  scope.closed = true;
+  if (nativeFrame === scope) nativeFrame = undefined;
+  clearTimeout(scope.timer);
+  scope.signal?.removeEventListener('abort', scope.aborted);
+  failNativeFrame(scope, Error('HTML native video frame fence closed'));
+}
+
 const mediaPaint = () => new Promise(resolve => requestAnimationFrame(resolve));
 function checkVideo(video, ready) {
   if (!(video instanceof HTMLVideoElement)) throw Error('Expected a video element');
@@ -42,6 +193,7 @@ function checkHtmlMedia(ready = false) {
   for (const video of videos) checkVideo(video, ready);
 }
 Object.defineProperty(window, 'rocutMedia', {value:Object.freeze({
+  beginNativeFrame, nativeSeek, assertNativeFrame, drainNativeFrame, waitNativeFrame, endNativeFrame,
   registerNative(video) { if (video) managedVideos.add(video); },
   check: checkHtmlMedia,
   async settle(video) {

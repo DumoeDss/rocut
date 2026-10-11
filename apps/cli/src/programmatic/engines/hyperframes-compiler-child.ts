@@ -59,12 +59,14 @@ export const HYPERFRAMES_COMPILER_CHILD = String.raw`
       throw Error('Pinned HyperFrames exact-media patch no longer matches; review the adapter');
     // Decimal nested starts can produce 0.079999999999... instead of 0.08.
     // Chromium truncates media time to microseconds, selecting the prior frame.
-    // Normalize only native decoder assignments, not the upstream time mapping.
-    const decoderTime = /(\b[\w$]+\.currentTime=)([\w$]+)(}catch\([\w$]+\){[\w$]+\("runtime\.media\.site[23]",)/g;
+    // Both pinned assignment sites are shared by audio and video. Fence only
+    // video; audio retains the original normalized currentTime assignment.
+    // Native target arithmetic and both fail-closed match guards stay intact.
+    const decoderTime = /(\b[\w$]+)\.currentTime=([\w$]+)(}catch\([\w$]+\){[\w$]+\("runtime\.media\.site[23]",)/g;
     if ([...code.matchAll(decoderTime)].length !== 2)
       throw Error('Pinned HyperFrames decoder-time patch no longer matches; review the adapter');
     let patched = code.replace(previewTolerance, '$1.forceSync&&$2>0')
-      .replace(decoderTime, '$1Math.round($2*1e6)/1e6$3');
+      .replace(decoderTime, '($1 instanceof HTMLVideoElement?window.rocutMedia.nativeSeek($1,Math.round($2*1e6)/1e6):$1.currentTime=Math.round($2*1e6)/1e6)$3');
     if (config.nativeAudio) {
       ${HYPERFRAMES_AUDIO_GRAPH_PATCH}
       // This exact pinned native sync point follows source-time loop mapping,
