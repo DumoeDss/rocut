@@ -4,15 +4,15 @@ import { lstat, readFile, readdir, realpath } from "node:fs/promises";
 import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { assertParticleReceiptSamplerIdentity as samplerIdentity } from "./particle-editor-export-authority-identity.mjs";
 
-export const PARTICLE_AUTHORITY_LANE = "new-084cf-20261011";
+export const PARTICLE_AUTHORITY_LANE = "new-362d-lf-20261012";
 export const CANONICAL_PARTICLE_WASM_SHA256 =
-	"084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12";
+	"362d29a7dba0b29fcf00965a5eba5342e70acd334c7171e2b73ca8ff06eb75be";
 // Only a separately reviewed source change may fill either slot. No option/env
 // or digest computed from the inputs being admitted can configure this registry.
 const trustedLane = Object.freeze({
 	laneId: PARTICLE_AUTHORITY_LANE,
 	authorityReceiptSha256:
-		"74e94ea13acab78af2faaa094f59b42753492d2b55649591edd98bd9f0535d17",
+		"d68e93311d15addc374cca14a528b061b4d5c7ace4f42ca22cbf2185e521cbeb",
 	baselineReceiptSha256: null,
 });
 const HASH = /^[a-f0-9]{64}$/;

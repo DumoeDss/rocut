@@ -165,7 +165,7 @@ async function fixture(change = () => {}, scaledBrowser = false) {
 			`authorityReceiptSha256: "${hash(raw)}"`,
 		)
 		.replace(
-			"084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12",
+			"362d29a7dba0b29fcf00965a5eba5342e70acd334c7171e2b73ca8ff06eb75be",
 			hash(wasm),
 		)
 		.replace(

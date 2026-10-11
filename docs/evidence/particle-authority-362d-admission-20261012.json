@@ -1,0 +1,57 @@
+{
+	"schema": "particle-authority-independent-admission/v1",
+	"sourceBaseCommit": "c69de88a135bef2713f9c876cbf4ac4d5f01d166",
+	"laneId": "new-362d-lf-20261012",
+	"canonicalWasmSha256": "362d29a7dba0b29fcf00965a5eba5342e70acd334c7171e2b73ca8ff06eb75be",
+	"nativeSourceCommit": "ab7d91a52f1445ac93e58d996b9cb6e5ffae760d",
+	"authorityReceipt": {
+		"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-particle-cleanlf-combined-prep-20261012-712bc405/discovery-run-pI6Fdo/combined-authority.proposed.json",
+		"sha256": "d68e93311d15addc374cca14a528b061b4d5c7ace4f42ca22cbf2185e521cbeb"
+	},
+	"runnerAudit": {
+		"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-particle-registry-candidate-20261012-687bf492/ACTUAL-WORKER-AUDIT-pI6Fdo.json",
+		"sha256": "905a52610a685a99deda2a494472a3e0adceeb29e0d756320bec02aadabddc27",
+		"directParentReceipts": 13,
+		"completeClosures": 5,
+		"closureFiles": {
+			"sourceSync": 11,
+			"bundler": 11,
+			"packedSampler": 3,
+			"toolchain": 1446,
+			"browser": 308
+		},
+		"executablePins": 5,
+		"actualWorkerReceipts": 4,
+		"directHarnessesClosedWithoutTimeout": 4,
+		"observedSamplerChildrenClosed": 10
+	},
+	"review": {
+		"reviewer": "root",
+		"producerAuditIsNotSelfApproval": true,
+		"rawProposalAndAuditHashesRechecked": true,
+		"proposalAndFixedRegistryContractRead": true,
+		"productionRuntime": "bun@1.4.2",
+		"policyHash": "ac384e674e3f388ae11a674bd72c09786bc53cab2187cc4c3467ff0856635ba7",
+		"sourceSyncIdentityHash": "20ae2aefdfd620ad2a6e221cb233c7efa40d807358875d5a998a7de06e1b188f",
+		"packedIdentityHash": "06d5a2baf1186387f435c96e3797f1aa13ec05b048ba22dad547f8ffa33af643",
+		"adapterSha256": "e0a11b72b104691ed5e38ea0f04286ad36c6a7dffdf8365a785d0dd97fcae8fb",
+		"registryDecision": "Admit fixed authority raw SHA for compile-only preparation; keep baseline null",
+		"gateOrPolicyRelaxation": false
+	},
+	"validation": {
+		"authorityAndProducerTestsPassed": 24,
+		"authoredRecipeTestsPassed": 6,
+		"skipped": 0,
+		"threeChangedJsFilesRecommendedLintPassed": true,
+		"scopedPrettierPassed": true
+	},
+	"baselineReceiptSha256": null,
+	"realCompileExecutedAtAdmission": false,
+	"browserOrExportAccepted": false,
+	"limitations": [
+		"Only observed sampler-child shutdown is established; unknown descendants are not inferred.",
+		"Runtime/policy negative workers were tested in packed lanes; sampleCount negatives were tested in all four lanes.",
+		"Historical transitive unknown artifacts are outside this admission.",
+		"UI/export still require separate real compile and independent baseline admission."
+	]
+}

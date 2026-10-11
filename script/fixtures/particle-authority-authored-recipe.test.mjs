@@ -56,7 +56,7 @@ async function fixture() {
 		"--" + name,
 		name === "creator-root" ? creator : output,
 	]);
-	args.push("--authority", "new-084cf-20261011");
+	args.push("--authority", "new-362d-lf-20261012");
 	return { root, creator, directory, output, args };
 }
 
