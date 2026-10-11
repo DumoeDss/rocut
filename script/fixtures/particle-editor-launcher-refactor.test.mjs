@@ -46,13 +46,14 @@ test("launcher closure records every extracted source and rejects changed input 
 	});
 	const sources = new Map();
 	await remember({ repo: "C:/external-projection", sources });
-	assert.equal(sources.size, 4);
+	assert.equal(sources.size, 5);
 	assert.deepEqual(
 		[...sources.keys()].map((path) => path.split(/[\\/]/).at(-1)),
 		[
 			"particle-editor-launcher-preflight.mjs",
 			"particle-editor-launcher-browser-session.mjs",
 			"particle-editor-launcher-handoff.mjs",
+			"particle-editor-launcher-failure.mjs",
 			"particle-editor-launcher-refactor.test.mjs",
 		],
 	);

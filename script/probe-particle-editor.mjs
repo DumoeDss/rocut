@@ -22,6 +22,7 @@ import {
 } from "./fixtures/particle-editor-launcher-preflight.mjs";
 import { runParticleEditorBrowserSession } from "./fixtures/particle-editor-launcher-browser-session.mjs";
 import { finishParticleEditorHandoff } from "./fixtures/particle-editor-launcher-handoff.mjs";
+import { throwParticleEditorFailure } from "./fixtures/particle-editor-launcher-failure.mjs";
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const { options, authority, baseline, root, authorityContextPath, env } =
@@ -280,8 +281,7 @@ if (failure) {
 					stack: redact(error?.stack),
 				}))
 			: [{ stack: redact(failure?.stack) }];
-	await writeJson(join(root, "evidence.json"), evidence);
-	throw Error(`Particle editor failed; retained redacted evidence at ${root}`);
+	await throwParticleEditorFailure({ root, evidence, failure, redact });
 }
 await finishParticleEditorHandoff({
 	options,

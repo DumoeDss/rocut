@@ -91,6 +91,7 @@ export async function rememberParticleLauncherSources({ repo, sources }) {
 		"preflight",
 		"browser-session",
 		"handoff",
+		"failure",
 		"refactor.test",
 	]) {
 		const path = resolve(
