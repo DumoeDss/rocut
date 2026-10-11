@@ -4,6 +4,8 @@ import { execFileSync } from "node:child_process";
 import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveProductionProbeWasm } from "./production-probe-wasm.mjs";
+import { createHtmlProbeWasmPlugin, HTML_PRIVATE_WASM_ID } from "./html-probe-wasm-binding.mjs";
 import {
 	chromium,
 	createServer,
@@ -21,6 +23,7 @@ assert(
 	"Expected absolute private Chromium and FFmpeg-directory paths",
 );
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const wasmBinding = resolveProductionProbeWasm();
 assert(
 	/^e:[\\/]/i.test(root),
 	"Mesh probe artifacts must remain on the authorized E: workspace",
@@ -63,7 +66,7 @@ const evidence = {
 	sourceWorktreeClean: false,
 	sourceManifestSha256: digest(manifestBytes),
 	wasmSha256: digest(
-		await readFile(join(root, "rust/wasm/pkg/opencut_wasm_bg.wasm")),
+		await readFile(join(wasmBinding.directory, "opencut_wasm_bg.wasm")),
 	),
 };
 const entry = "/script/fixtures/mesh-scenes-browser.ts";
@@ -78,6 +81,7 @@ const server = await createServer({
 	cacheDir: join(artifacts, "vite-cache"),
 	logLevel: "error",
 	plugins: [
+		createHtmlProbeWasmPlugin(wasmBinding),
 		wasm(),
 		topLevelAwait(),
 		{
@@ -96,11 +100,11 @@ const server = await createServer({
 	optimizeDeps: { entries: [entry.slice(1)] },
 	resolve: {
 		alias: {
-			"opencut-wasm": join(root, "rust/wasm/pkg/opencut_wasm.js"),
+			"opencut-wasm": HTML_PRIVATE_WASM_ID,
 			mediabunny: join(root, "packages/editor-classic/node_modules/mediabunny"),
 		},
 	},
-	server: { host: "127.0.0.1", port: 0, hmr: false },
+	server: { host: "127.0.0.1", port: 0, hmr: false, fs: { allow: [root, wasmBinding.directory] } },
 });
 
 async function decodeVariant(name) {

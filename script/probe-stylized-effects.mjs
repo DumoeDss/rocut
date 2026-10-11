@@ -2,6 +2,8 @@ import { createHash } from "node:crypto";
 import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveProductionProbeWasm } from "./production-probe-wasm.mjs";
+import { createHtmlProbeWasmPlugin, HTML_PRIVATE_WASM_ID } from "./html-probe-wasm-binding.mjs";
 import {
 	chromium,
 	createServer,
@@ -10,6 +12,7 @@ import {
 } from "./browser-probe-toolchain.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const wasmBinding = resolveProductionProbeWasm();
 const generators = process.argv.includes("--generators");
 const peel = process.argv.includes("--peel");
 const spatial = process.argv.includes("--spatial");
@@ -74,15 +77,15 @@ const server = await createServer({
 	configFile: false,
 	cacheDir: join(artifacts, "vite-cache"),
 	logLevel: "error",
-	plugins: [wasm(), topLevelAwait()],
+	plugins: [createHtmlProbeWasmPlugin(wasmBinding), wasm(), topLevelAwait()],
 	optimizeDeps: { entries: [entry] },
 	resolve: {
 		alias: {
-			"opencut-wasm": join(root, "rust/wasm/pkg/opencut_wasm.js"),
+			"opencut-wasm": HTML_PRIVATE_WASM_ID,
 			mediabunny: join(root, "packages/editor-classic/node_modules/mediabunny"),
 		},
 	},
-	server: { host: "127.0.0.1", port: 0, hmr: false },
+	server: { host: "127.0.0.1", port: 0, hmr: false, fs: { allow: [root, wasmBinding.directory] } },
 });
 let browser;
 try {
@@ -183,7 +186,7 @@ try {
 				sourceWorktreeClean: false,
 				sourceManifestSha256: digest(manifestBytes),
 				wasmSha256: digest(
-					await readFile(join(root, "rust/wasm/pkg/opencut_wasm_bg.wasm")),
+					await readFile(join(wasmBinding.directory, "opencut_wasm_bg.wasm")),
 				),
 			},
 			null,

@@ -1,0 +1,74 @@
+{
+  "schema": "rocut-production-clean-lf-runner-integration/v1",
+  "date": "2026-10-12",
+  "baseSourceCommit": "ce88fc95dedf7b42fa9958c77cf71c3a0ec148ca",
+  "externalManifestSha256": "428e3074677725a5a9b268f8d3b0f4f394150044d0a6ac9bd444cbc4c7dc2a2f",
+  "externalPatchSha256": "e8f55a77a26445408a0789f58851dd000173d4fdc9054a273933aa054849e689",
+  "change": "Route production Canvas/extended/Liquid probes through the existing actual-fetch-hash/awaited web initializer, not the old canonical bundler alias. P1D binds native Bun initSync only, not browser-loaded WASM.",
+  "production": {
+    "sha256": "362d29a7dba0b29fcf00965a5eba5342e70acd334c7171e2b73ca8ff06eb75be",
+    "bytes": 15069189,
+    "jsSha256": "cc62ca83fb09032be1bf5427a156f572587ef21cc6a6c185d4743ac4fe7ddb39",
+    "directory": "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-lf-preparation-20261011-9ad208e4/browser-pkg-lf-v1"
+  },
+  "actualHttp": {
+    "browserLaunched": false,
+    "wrapperStatus": 200,
+    "getStatus": 200,
+    "bodySha256": "362d29a7dba0b29fcf00965a5eba5342e70acd334c7171e2b73ca8ff06eb75be",
+    "bodyBytes": 15069189,
+    "headStatus": 200,
+    "headBodyBytes": 0,
+    "unrelatedStatus": 404,
+    "rootProof": ".artifacts/wave12-production-migration-root/http-proof-post-format.json"
+  },
+  "checks": {
+    "authorCpuPass": 35,
+    "authorSkip": 0,
+    "rootFocusedCpuPass": 9,
+    "rootSkip": 0,
+    "rootSyntaxFiles": 10,
+    "rootFocusedRecommendedLint": true,
+    "strictUtf8": true,
+    "bom": false,
+    "eightExistingPostimagesRawExact": true,
+    "existingGatesUnchanged": true
+  },
+  "formattingDerivative": {
+    "script/production-probe-wasm.mjs": "434b4e27a88974ea6e80bc800505b3d2030e65a1095ecb4b191456cfe0ae8e8a",
+    "script/__tests__/production-probe-wasm.test.mjs": "794977f4ea293887d730faa3ae7c116303a9b8867ac49e9376b328b54e682226"
+  },
+  "boundaries": {
+    "diagnosticLiquidFeaturePackageSeparate": true,
+    "p1dBrowserWasmClaimed": false,
+    "sharedDependenciesChanged": false,
+    "browserGpuExecuted": false,
+    "pixelOracleChanged": false,
+    "timeoutChanged": false,
+    "toleranceChanged": false
+  },
+  "outstandingMedia": [
+    {
+      "sha256": "d446ff2c91566383ef9b7b1401704e16b138f3f9d9f0a5a0765693a24d4b5979",
+      "status": "failed",
+      "sourceCommit": "ce88fc95dedf7b42fa9958c77cf71c3a0ec148ca",
+      "identitiesUnchanged": true,
+      "scope": "1/4"
+    },
+    {
+      "sha256": "4d10bf8b28cf98dfaf67870440d30d0394098535afe48f1a0323539f5cd6a3ee",
+      "status": "failed",
+      "sourceCommit": "ce88fc95dedf7b42fa9958c77cf71c3a0ec148ca",
+      "identitiesUnchanged": true,
+      "frame": 4,
+      "rootCauseEstablished": false,
+      "thirdPresentationMatchedNativeTarget": true
+    }
+  ],
+  "limitations": [
+    "Actual HTTP body hashing is not proof of browser GPU behavior.",
+    "Final four-case media and full effect browser gates are not passed.",
+    "Old 24 native/desktop working-tree dirty inputs remain excluded from staging/build.",
+    "Whole-repository lint/typecheck was not claimed."
+  ]
+}

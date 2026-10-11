@@ -12,6 +12,7 @@ import {
 import { basename, dirname, join, resolve } from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { productionWasmDirectory, productionWasmSha256 } from "./production-probe-wasm.mjs";
 import {
 	assertFrozenAttemptUnchanged,
 	frozenAttemptDigest,
@@ -30,8 +31,7 @@ import {
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const parent = join(root, ".artifacts/extended-effects-browser-authority");
-const authority =
-	"084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12";
+const authority = productionWasmSha256;
 const chrome =
 	"C:/Users/Sayo/AppData/Local/ms-playwright/chromium-1243/chrome-win64/chrome.exe";
 const browserSha =
@@ -40,6 +40,9 @@ const browserVersion = "153.0.8010.12";
 const ffmpegDirectory = "E:/Software/ffmpeg-6.0-full_build/bin";
 const preload = "script/fixtures/extended-effects-browser-pins.mjs";
 const extraSources = [
+	"script/production-probe-wasm.mjs",
+	"script/html-probe-wasm-binding.mjs",
+	"script/fixtures/browser-probe-identity.mjs",
 	"script/probe-extended-effects-browser-authority.mjs",
 	"script/fixtures/extended-effects-case-selection.mjs",
 	"script/__tests__/extended-effects-case-selection.test.mjs",
@@ -98,7 +101,7 @@ async function snapshot() {
 		root,
 		manifestPath: join(root, "fixture-source.json"),
 		extraSources,
-		closures: { wasm: join(root, "rust/wasm/pkg"), browser: dirname(chrome) },
+		closures: { wasm: productionWasmDirectory, browser: dirname(chrome) },
 		executables: [
 			process.execPath,
 			chrome,
@@ -139,7 +142,9 @@ async function snapshot() {
 				resolutions.push({
 					importer: file,
 					name: entry.path,
-					alias: join(root, "rust/wasm/pkg/opencut_wasm.js"),
+					alias: "rocut-html-private-wasm",
+					entry: join(productionWasmDirectory, "opencut_wasm.js"),
+					bootstrap: "html-probe-private-wasm",
 				});
 			} else if (entry.path === "@opencut/editor-contracts") {
 				const actual = await realpath(
@@ -211,14 +216,14 @@ async function snapshot() {
 		"Pinned Chromium differs",
 	);
 	assert.equal(
-		(await pinFile(join(root, "rust/wasm/pkg/opencut_wasm_bg.wasm"))).sha256,
+		(await pinFile(join(productionWasmDirectory, "opencut_wasm_bg.wasm"))).sha256,
 		authority,
-		"Canonical production WASM differs",
+		"Clean-LF production WASM differs",
 	);
 	assert(
 		!/\bapplyEffectPassesReadback\b/.test(
 			new TextDecoder("utf-8", { fatal: true }).decode(
-				await readFile(join(root, "rust/wasm/pkg/opencut_wasm.js")),
+				await readFile(join(productionWasmDirectory, "opencut_wasm.js")),
 			),
 		),
 		"Diagnostic exports cannot be production authority",
@@ -256,6 +261,8 @@ async function invoke(fixed, attempt) {
 	Object.assign(env, {
 		ROCUT_GLASS_BROWSER_PIN_RECEIPT: join(attempt, "browser-pins-export.json"),
 		ROCUT_GLASS_EXPECTED_WASM_SHA256: authority,
+		ROCUT_TEST_WASM_DIRECTORY: productionWasmDirectory,
+		ROCUT_PROBE_WASM_SHA256: authority,
 	});
 	const args = [
 		"--import",

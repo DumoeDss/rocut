@@ -10,19 +10,20 @@ import { pinInkHostToolchain } from "./fixtures/ink-object-host-toolchain.mjs";
 import { resolveRequiredProbeWasmBinding, resolveProbeBrowserExecutable } from "./fixtures/browser-probe-identity.mjs";
 import { snapshotHtmlProbeSources } from "./html-probe-wasm-binding.mjs";
 import { P1D_TIMES, P1D_SVG_CONTRACT } from "./fixtures/p1d-three-browser-oracle.mjs";
+import { productionWasmDirectory, productionWasmSha256 } from "./production-probe-wasm.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), ".."), mode = process.argv[2];
-const expectedWasmSha256 = "084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12";
+const expectedWasmSha256 = productionWasmSha256;
 const featureToolchain = join(root, ".artifacts/p1d-feature-toolchain/run-lCXGLZ");
 const ordinaryToolchain = "E:/AI/ChatAI/Agents/VibeCodingProjects/elftia/_others/rocut/.artifacts/three-toolchain/run-3Hn5Nw";
-const wasmDirectory = "C:/Users/Sayo/AppData/Local/Temp/rocut-wasm-authority-20261011-GVDTX4/browser-pkg-v2-sntQBC";
+const wasmDirectory = productionWasmDirectory;
 const browserExecutable = resolveProbeBrowserExecutable({ configured: "C:/Users/Sayo/AppData/Local/ms-playwright/chromium-1243/chrome-win64/chrome.exe", fallback: "not-permitted" });
 const bun = "C:/Users/Sayo/.bun/bin/bun.exe";
 const binding = resolveRequiredProbeWasmBinding({ directory: wasmDirectory, expectedWasmSha256 });
 const hash = bytes => createHash("sha256").update(bytes).digest("hex");
 const decode = bytes => new TextDecoder("utf-8", { fatal: true }).decode(bytes);
 const readJson = async path => JSON.parse(decode(await readFile(path)));
-const newSources = ["script/probe-p1d-three-assets-browser-authority.mjs", "script/fixtures/p1d-three-browser-host.ts", "script/fixtures/p1d-three-browser-oracle.mjs", "script/fixtures/p1d-three-browser-oracle.test.mjs", "script/fixtures/p1d-three-browser.tsconfig.json"];
+const newSources = ["script/production-probe-wasm.mjs", "script/__tests__/production-probe-wasm.test.mjs", "script/probe-p1d-three-assets-browser-authority.mjs", "script/fixtures/p1d-three-browser-host.ts", "script/fixtures/p1d-three-browser-oracle.mjs", "script/fixtures/p1d-three-browser-oracle.test.mjs", "script/fixtures/p1d-three-browser.tsconfig.json"];
 const readySources = ["script/prepare-p1-d-feature-toolchain.mjs", "script/prepare-p1-d-feature-toolchain.test.mjs", "apps/cli/src/__tests__/p1-d-three-assets-feature-fixture.ts", "apps/cli/src/__tests__/p1-d-three-assets-feature.test.ts", "apps/cli/src/__tests__/p1-d-three-assets-fixture.ts", "apps/cli/src/__tests__/p1-d-three-assets.test.ts"];
 const originalCases = [
 	{ id: "ordinary", artifact: ".artifacts/three-archive-revision/run-2uS2sC", evidence: ".artifacts/three-archive-revision/run-2uS2sC/p1-d-evidence.json", expected: "positive-model-pixels" },

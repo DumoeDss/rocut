@@ -10,6 +10,7 @@ import {
 } from "node:fs/promises";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { productionWasmDirectory, productionWasmSha256 } from "./production-probe-wasm.mjs";
 import {
 	assertFrozenAttemptUnchanged,
 	frozenAttemptDigest,
@@ -29,8 +30,7 @@ const modes = [
 	"displacement",
 	"wave",
 ];
-const authority =
-	"084cf7310df5bfdc1b8e4ce3f64bcff842e1b23b9fd0ca57c1c7dcffc0d1fc12";
+const authority = productionWasmSha256;
 const chrome =
 	"C:/Users/Sayo/AppData/Local/ms-playwright/chromium-1243/chrome-win64/chrome.exe";
 const browserSha =
@@ -38,6 +38,9 @@ const browserSha =
 const preload = "script/fixtures/glass-current-baseline-browser-pins.mjs";
 const entry = "script/probe-stylized-effects.mjs";
 const extraSources = [
+	"script/production-probe-wasm.mjs",
+	"script/html-probe-wasm-binding.mjs",
+	"script/fixtures/browser-probe-identity.mjs",
 	"script/probe-canvas-browser-authority.mjs",
 	"script/fixtures/frozen-attempt-identity.mjs",
 	"script/fixtures/probe-toolchain-closure.mjs",
@@ -53,7 +56,7 @@ const snapshot = async () => {
 		root,
 		manifestPath: join(root, "fixture-source.json"),
 		extraSources,
-		closures: { wasm: join(root, "rust/wasm/pkg"), browser: dirname(chrome) },
+		closures: { wasm: productionWasmDirectory, browser: dirname(chrome) },
 		executables: [process.execPath, chrome],
 	});
 	frozen.toolchain = await pinProbeToolchain([
@@ -106,6 +109,8 @@ async function invoke(mode, attempt) {
 		ROCUT_PROBE_BROWSER_PATH: chrome,
 		ROCUT_GLASS_BROWSER_PIN_RECEIPT: join(attempt, "browser-pins-export.json"),
 		ROCUT_GLASS_EXPECTED_WASM_SHA256: authority,
+		ROCUT_TEST_WASM_DIRECTORY: productionWasmDirectory,
+		ROCUT_PROBE_WASM_SHA256: authority,
 	};
 	for (const key of Object.keys(env)) {
 		if (
@@ -285,7 +290,7 @@ assert.equal(
 	"Browser differs from frozen authority",
 );
 assert.equal(
-	(await pinFile(join(root, "rust/wasm/pkg/opencut_wasm_bg.wasm"))).sha256,
+	(await pinFile(join(productionWasmDirectory, "opencut_wasm_bg.wasm"))).sha256,
 	authority,
 );
 if (process.argv[2] === "--prepare" && process.argv.length === 3) {
