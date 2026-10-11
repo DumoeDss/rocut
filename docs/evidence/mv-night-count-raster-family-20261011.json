@@ -1,0 +1,28 @@
+{
+  "recordedAt": "2026-10-11T09:55:00Z",
+  "context": "fall case gate now passes (sceneMax=1, complete-frame max=2) on checkpoint 1b1906ee; count case re-probed with full diagnostics after tunnel fill_history fix",
+  "probe": "script/probe-mv-night-native.mjs --browser-only --dedicated-native-fixtures (diagnostic skip fall/train; ROCUT_TEST_CURRENT_SOURCE_SCOPE=compiled-snapshot)",
+  "checkpoint": {
+    "source": "C:/Users/Sayo/AppData/Local/Temp/rocut-mv-native-checkpoint-20261011/source",
+    "wasm": "C:/Users/Sayo/AppData/Local/Temp/rocut-mv-native-checkpoint-20261011/wasm",
+    "wasmSha256Prefix": "1b1906ee499e"
+  },
+  "artifact": "E:/Elftia-private-tests/rocut-night-native-rrbRQX/evidence.json",
+  "fallCase": {
+    "status": "scene gate passed (sceneMaxChannelError=1); complete-frame maxChannelError=2; the previously recorded 2px/max106 middle state no longer reproduces",
+    "implication": "fall residue is the already-classified complete-frame delta<=2 shimmer family; no separate fall defect remains"
+  },
+  "countCase": {
+    "failure": "21302 pixels, max channel error 186; first band x=115..126 y=86 native(81,74,65) vs oracle(11,13,21)",
+    "newDecisiveEvidence": {
+      "glintPositions": "all 21 reference wet-glint centers recomputed from Z.rnd(i,81)/rnd(i,82) match the native glow rect centers exactly (e.g. JS glint #2 (383.5,149.7) == native glow rect [376.5,144.7,14,10] center); seeded placement fully exonerated",
+      "warmPatchAt300x120": "oracle warm patch (83,76,66) center is NOT a wet glint (no C8D8FF glow maps there; it sits above the puddle top edge y~286 inside satellite-puddle blur zone of the bit-identical count-asphalt surface); native reads dark 11,13,21 there -> divergence is in post-surface rasterization of the SAME surface bytes under the SAME camera matrix, not in surface content",
+      "puddleDiagonalAt1800x900": "7x7 grids show the same bright boundary on both sides but the native edge row/col advances ~1px earlier; identical-content opposite-side edge-sample flipping under the accumulated camera+clip transform",
+      "opBisectUpdate": "vignette fillRect (op 1188) collapses mismatch 1.32M -> 21760; final 21302; divergence originates before the vignette and survives partially"
+    },
+    "classification": "same-family Chromium canvas rasterization edge-sample flipping (identical mathematical inputs, opposite-side sampling) as fall shimmer, tunnel glyph edges and train bloom edges; surfaces/glints/camera/drawImage-arity all previously bit-verified equal",
+    "status": "confirmed consolidated-pixel-acceptance queue; no per-case code fix indicated before that phase"
+  },
+  "scope": "not an installed Electron/full-movie/export acceptance claim; diagnostic skip used, full gate unchanged"
+}
+
