@@ -46,11 +46,11 @@ export function resolveExportVideoPlan(
 			native,
 		};
 	}
-	if (result.default === true) {
+	if ("default" in result && result.default === true) {
 		// The Rust policy routes the default 4:2:0 WebM very-high preset onto
 		// the quantizer path; the average-bitrate default measurably starved
 		// detail frames (see flame-wrap 4:2:0 evidence).
-		if (result.kind !== "vp9Quantizer")
+		if (!("kind" in result) || result.kind !== "vp9Quantizer")
 			throw new Error(
 				"The default video export policy returned an unsupported native plan",
 			);

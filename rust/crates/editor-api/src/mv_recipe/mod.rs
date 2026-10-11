@@ -28,6 +28,7 @@ mod post;
 mod post_automation;
 mod post_catalog;
 mod post_model;
+mod post_parameter_catalog;
 mod reference;
 use time::replay;
 mod burst;

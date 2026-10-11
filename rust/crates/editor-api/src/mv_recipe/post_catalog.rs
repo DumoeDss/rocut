@@ -3,7 +3,7 @@ use serde_json::{Value, json};
 
 pub fn finishing() -> Value {
     let amount = json!({"type":"number","min":0,"max":1,"required":true});
-    json!({
+    let mut catalog = json!({
         "availability":"implemented-not-runtime-probed",
         "binding":"post[].effects; role or composite stage",
         "alpha":"color finishing preserves input coverage; lightLeak explicitly selects preserve or expand; black fade is not opacity fade",
@@ -45,5 +45,20 @@ pub fn finishing() -> Value {
             "order":"curve replaces static amount -> audio delta -> clamp -> finishing lowering",
             "easings":[Ease::Linear,Ease::InOutSine,Ease::InOutCubic,Ease::InExpo,Ease::OutExpo,Ease::InOutExpo,Ease::InQuad,Ease::OutQuad]
         }
-    })
+    });
+    let effects = catalog["effects"].as_object_mut().unwrap();
+    effects.extend(
+        super::post_parameter_catalog::effects()
+            .as_object()
+            .unwrap()
+            .clone(),
+    );
+    let targets: Vec<_> = effects
+        .iter()
+        .filter(|(_, effect)| effect["parameters"].get("amount").is_some())
+        .map(|(kind, _)| kind.clone())
+        .collect();
+    catalog["automation"]["targetParameter"] = json!("amount");
+    catalog["automation"]["targetEffects"] = json!(targets);
+    catalog
 }

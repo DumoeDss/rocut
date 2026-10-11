@@ -11,6 +11,7 @@ import { ProjectMutationArbiter } from "../transactions/opencut/arbiter";
 import { cloneOpaque, overlayOpaque } from "./opaque-value";
 import { decodeProject, encodeProject } from "./project-codec";
 import { collectProjectAnimationAdmissionIssues } from "../../animation/project-animation-admission";
+import type { TimelineElement } from "../../timeline/types";
 
 type MutationListener = (event: {
 	readonly kind: "project" | "attachment" | "library" | "remove" | "clear";
@@ -122,13 +123,15 @@ export class SessionPersistenceCoordinator {
 				const decoded = decodeProject(record.data);
 				const admissionIssues = decoded.scenes.flatMap((scene) =>
 					collectProjectAnimationAdmissionIssues({
-						elements: scene.tracks.main.elements
-							.concat(
-								scene.tracks.overlay.flatMap((track) => track.elements),
-							)
-							.concat(
-								scene.tracks.audio.flatMap((track) => track.elements),
+						elements: [
+							...scene.tracks.main.elements,
+							...scene.tracks.overlay.flatMap<TimelineElement>(
+								(track) => track.elements,
 							),
+							...scene.tracks.audio.flatMap<TimelineElement>(
+								(track) => track.elements,
+							),
+						],
 					}),
 				);
 				if (admissionIssues.length > 0) {

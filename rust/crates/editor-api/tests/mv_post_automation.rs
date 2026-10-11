@@ -20,9 +20,17 @@ fn discovered_finishing_effects_accept_curves_and_resolve_at_both_stages() {
     assert_eq!(catalog["finishing"]["automation"]["maxKeyframes"], 256);
     assert_eq!(
         catalog["finishing"]["effects"].as_object().unwrap().len(),
-        6
+        15
     );
-    for kind in catalog["finishing"]["effects"].as_object().unwrap().keys() {
+    assert_eq!(
+        catalog["finishing"]["automation"]["targetParameter"],
+        "amount"
+    );
+    let targets = catalog["finishing"]["automation"]["targetEffects"]
+        .as_array()
+        .unwrap();
+    assert_eq!(targets.len(), 13);
+    for kind in targets.iter().map(|kind| kind.as_str().unwrap()) {
         for stage in ["role", "composite"] {
             let mut s = source();
             let mut e = json!({"kind":kind,"amount":0.2});
@@ -34,6 +42,24 @@ fn discovered_finishing_effects_accept_curves_and_resolve_at_both_stages() {
             }
             if kind == "lightLeak" {
                 e["alpha"] = json!("preserve");
+            }
+            match kind {
+                "grain" => e["fps"] = json!(24),
+                "lineBoil" => {
+                    e["fps"] = json!(24);
+                    e["cellSize"] = json!(16);
+                }
+                "glitch" => {
+                    e["fps"] = json!(24);
+                    e["bands"] = json!(8);
+                }
+                "chromaticAberration" | "zoomBlur" => e["center"] = json!([0.5, 0.5]),
+                "bloom" => {
+                    e["threshold"] = json!(0.5);
+                    e["radius"] = json!(8);
+                    e["alpha"] = json!("preserve");
+                }
+                _ => {}
             }
             s["recipe"]["post"][0]["stage"] = json!(stage);
             if stage == "role" {
@@ -199,6 +225,9 @@ fn rejects_ambiguous_targets_invalid_keys_and_unbounded_curves_on_save_and_rende
     let mut grade = s;
     grade["recipe"]["post"][0]["effects"][0] = json!({"kind":"grade","exposure":0,"contrast":1,
         "saturation":1,"lift":[0,0,0],"gain":[1,1,1]});
+    assert!(!valid(&grade));
+    grade["recipe"]["post"][0]["effects"][0] =
+        json!({"kind":"palette","colors":[[0,0,0,1],[1,1,1,1]],"mix":0.5});
     assert!(!valid(&grade));
 }
 

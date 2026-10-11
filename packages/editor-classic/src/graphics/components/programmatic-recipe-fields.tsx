@@ -2,6 +2,8 @@ import { Button } from "../../components/ui/button";
 import { Textarea } from "../../components/ui/textarea";
 import type { RecipeDraftSnapshot } from "./programmatic-recipe-draft";
 import { ProgrammaticRecipeGeneratorFields } from "./programmatic-recipe-generator-fields";
+import { ProgrammaticRecipeTransitionFields } from "./programmatic-recipe-transition-fields";
+import { ProgrammaticRecipePostFields } from "./programmatic-recipe-post-fields";
 
 export function ProgrammaticRecipeFields({
 	id,
@@ -13,6 +15,8 @@ export function ProgrammaticRecipeFields({
 	onDiscard,
 	generators = {},
 	sceneParameters = {},
+	transitionParameters = {},
+	finishing = {},
 }: {
 	id: string;
 	state: RecipeDraftSnapshot;
@@ -23,6 +27,8 @@ export function ProgrammaticRecipeFields({
 	onDiscard: () => void;
 	generators?: Record<string, unknown>;
 	sceneParameters?: Record<string, unknown>;
+	transitionParameters?: Record<string, unknown>;
+	finishing?: Record<string, unknown>;
 }) {
 	return (
 		<div className="flex min-w-0 flex-col gap-3 text-sm">
@@ -35,10 +41,25 @@ export function ProgrammaticRecipeFields({
 				disabled={!!readOnly || state.pending || conflict}
 				onEdit={onEdit}
 			/>
+			<ProgrammaticRecipeTransitionFields
+				id={id}
+				text={state.text}
+				transitionParameters={transitionParameters}
+				disabled={!!readOnly || state.pending || conflict}
+				onEdit={onEdit}
+			/>
+			<ProgrammaticRecipePostFields
+				id={id}
+				text={state.text}
+				durationFrames={state.baseline.durationFrames}
+				finishing={finishing}
+				disabled={!!readOnly || state.pending || conflict}
+				onEdit={onEdit}
+			/>
 			<p className="text-muted-foreground text-xs">
-				Edit the complete recipe JSON: scenes, settings, post effects, amounts
-				and audio bindings. Resources and source provenance are preserved. Rust
-				validates the recipe on Apply.
+				Edit supported scene, transition and post parameters above. Use the
+				complete recipe JSON for other settings and audio bindings. Resources
+				and source provenance are preserved. Rust validates the recipe on Apply.
 			</p>
 			{readOnly && (
 				<p className="text-muted-foreground break-words text-xs">

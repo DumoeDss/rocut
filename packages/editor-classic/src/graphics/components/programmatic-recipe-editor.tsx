@@ -48,6 +48,8 @@ export function ProgrammaticRecipeEditor({
 		<ProgrammaticRecipeFields
 			generators={catalog.generators}
 			sceneParameters={catalog.sceneParameters}
+			transitionParameters={catalog.transitionParameters}
+			finishing={catalog.finishing}
 			id={id}
 			state={state}
 			readOnly={recipeReadOnlyReason(source)}

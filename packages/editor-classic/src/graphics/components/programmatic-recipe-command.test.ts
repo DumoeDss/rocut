@@ -88,6 +88,115 @@ nativeTest(
 );
 
 nativeTest(
+	"structured transition and post edits share one durable recipe transaction",
+	async () => {
+		const { getMvRecipeCatalog } =
+			await import("../../editor/transactions/opencut/mv-recipe-catalog");
+		const { editRecipeTransitionParameter } =
+			await import("./programmatic-recipe-transition-data");
+		const { changePostCurves } =
+			await import("./programmatic-recipe-post-automation-data");
+		const { editPostDraft } = await import("./programmatic-recipe-post-data");
+		const catalog = getMvRecipeCatalog();
+		expect(catalog.post.length).toBe(15);
+		expect(new Set(catalog.post).size).toBe(15);
+		const source: ProgrammaticSource = {
+			...recipeSource,
+			recipe: {
+				...recipeSource.recipe!,
+				nodes: [
+					{
+						id: "a",
+						scene: { kind: "solid", role: "background", color: [1, 0, 0, 1] },
+					},
+					{
+						id: "b",
+						scene: { kind: "solid", role: "background", color: [0, 0, 1, 1] },
+					},
+					{
+						id: "root",
+						scene: {
+							kind: "transition",
+							from: "a",
+							to: "b",
+							span: { startFrame: 0, durationFrames: 90 },
+							easing: "linear",
+							style: {
+								kind: "peel",
+								direction: "left",
+								curl: 0.17,
+								segments: 16,
+								shading: 0.5,
+								perspective: 0.5,
+							},
+						},
+					},
+				],
+				post: [
+					{
+						roles: ["background"],
+						effects: [{ kind: "vignette", amount: 0.2 }],
+					},
+				],
+			},
+		};
+		const h = await setup(source),
+			before = structuredClone(h.current());
+		const text = editRecipeTransitionParameter({
+			text: JSON.stringify(source.recipe),
+			transitionParameters: catalog.extensions.transitionParameters,
+			index: 2,
+			key: "curl",
+			value: 0.25,
+		});
+		if (!text) throw Error("Real catalog did not admit Peel field editing");
+		const recipe = JSON.parse(text);
+		const post = changePostCurves(
+			recipe.post[0],
+			[
+				{
+					effect: 0,
+					keyframes: [
+						{ frame: 0, value: 0.1, easing: "linear" },
+						{ frame: 90, value: 0.8, easing: "inOutSine" },
+					],
+				},
+			],
+			source.durationFrames,
+			catalog.finishing.effects,
+			catalog.postAutomation,
+			false,
+		);
+		if (!post) throw Error("Real catalog did not admit amount authoring");
+		const edited = editPostDraft(text, 0, post, false);
+		if (!edited) throw Error("Post edit did not produce a recipe draft");
+		const history = h.command.getHistoryCount();
+		await h.command.execute({ command: h.recipeCommand({ text: edited }) });
+		expect(h.command.getHistoryCount()).toBe(history + 1);
+		expect(h.current()).toEqual({
+			...before,
+			programmatic: { ...source, recipe: JSON.parse(edited) },
+		});
+		await h.command.undo();
+		expect(h.current()).toEqual(before);
+		await h.command.redo();
+		expect(h.current().programmatic?.recipe).toEqual(JSON.parse(edited));
+		expect(h.fixture.getSaveCount()).toBe(4);
+		const rejected = JSON.parse(edited);
+		rejected.post[0].automation[0].keyframes[1].value = 1.1;
+		const after = structuredClone(h.current()),
+			afterHistory = h.command.getHistoryCount();
+		await expect(
+			h.command.execute({
+				command: h.recipeCommand({ text: JSON.stringify(rejected) }),
+			}),
+		).rejects.toBeDefined();
+		expect(h.current()).toEqual(after);
+		expect(h.command.getHistoryCount()).toBe(afterHistory);
+	},
+);
+
+nativeTest(
 	"invalid JSON, native recipe rejection and storage failure never publish or add history",
 	async () => {
 		const h = await setup(),
