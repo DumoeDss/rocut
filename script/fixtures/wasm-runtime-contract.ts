@@ -1,3 +1,4 @@
+import "./wasm-current-api-contract";
 import {
 	WasmRuntimeGpuResourceQuery,
 	WasmRuntimeGraphicsQuery,

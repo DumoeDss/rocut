@@ -12,11 +12,11 @@ import {
 	BASELINE_DTS_SHA,
 	BUNDLER_ENTRY,
 	CONTROLS,
-	EXPECTED,
 	POSITIVE_CONTROLS,
 	SYNC_ENTRY,
 	TRAMPOLINE_EXPORT,
 } from "./wasm-api-surface-contract.mjs";
+import { EXPECTED } from "./wasm-api-current-contract.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 let selection;
@@ -185,7 +185,7 @@ function validate(surface) {
 		);
 	}
 	if (sha(surface.wrapper) !== EXPECTED.wrapperSha) {
-		fail("wrapper", "wrapper content differs from the recorded C0b output");
+		fail("wrapper", "wrapper content differs from the reviewed current output (historical C0b retained)");
 	}
 	// The low-level d.ts is generated from the binary's export table, so it carries the same
 	// host-varying trampoline hashes. Every other line is still compared verbatim, and the line
@@ -483,11 +483,15 @@ function mutate(surface, control) {
 	if (control === "trampoline-hash-swap") {
 		// POSITIVE control: another build host's symbol hashes, in both the export table and the
 		// declarations. This is exactly what CI observed; it must pass.
-		const swaps = [
-			["h6e68ca372e8bf468", "h276a4a183af50bac"],
-			["h755062247edbbf0a", "h3a4584f6e44c7108"],
-			["hf7fc07325ff431aa", "hc1daa042eeabb391"],
-		];
+		const swaps = copy.wasmExports
+			.filter((entry) => TRAMPOLINE_EXPORT.test(entry.split("|")[0]))
+			.map((entry, index) => [
+				entry.split("|")[0].match(/h[0-9a-f]{16}$/)[0],
+				`h${(index + 1).toString(16).padStart(16, "0")}`,
+			]);
+		if (swaps.length !== EXPECTED.trampolineExportCount) {
+			throw Error("Positive control did not mutate every current trampoline");
+		}
 		for (const [from, to] of swaps) {
 			copy.wasmExports = copy.wasmExports.map((entry) =>
 				entry.replace(from, to),

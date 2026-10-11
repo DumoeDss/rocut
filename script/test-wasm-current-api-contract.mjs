@@ -1,0 +1,116 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import {
+	mkdtempSync,
+	readFileSync,
+	writeFileSync,
+	unlinkSync,
+	rmdirSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { spawnSync } from "node:child_process";
+import { packageDirectoryArguments } from "./wasm-package-directory.mjs";
+import { runContract } from "./run-wasm-api-contract.mjs";
+import { REVIEWED_API_ADDITIONS } from "./fixtures/wasm-current-api-review.mjs";
+import { EXPECTED as HISTORICAL } from "./wasm-api-surface-contract.mjs";
+const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const { pkgDir, remaining } = packageDirectoryArguments(
+	process.argv.slice(2),
+	"--pkg-dir",
+	root,
+);
+assert.deepEqual(remaining, []);
+const source = readFileSync(join(pkgDir, "opencut_wasm.d.ts"), "utf8");
+test("all public additions have explicit provider, consumer and type coverage", () => {
+	const wrapper = readFileSync(join(pkgDir, "opencut_wasm.js"), "utf8");
+	const exports = wrapper
+		.match(/export \{([\s\S]*?)\} from/)[1]
+		.split(",")
+		.map((name) => name.trim())
+		.filter(Boolean);
+	const additions = exports.filter(
+		(name) =>
+			!HISTORICAL.wasmExportsAsRecorded.includes(`${name}|function`) &&
+			!["WasmRuntimeGraphicsQuery", "WasmRuntimeGpuResourceQuery"].includes(
+				name,
+			),
+	);
+	assert.deepEqual(
+		additions.sort(),
+		REVIEWED_API_ADDITIONS.map(([name]) => name).sort(),
+	);
+	const fixture = readFileSync(
+		join(root, "script", "fixtures", "wasm-current-api-contract.ts"),
+		"utf8",
+	);
+	for (const [name, provider, consumer] of REVIEWED_API_ADDITIONS) {
+		assert.ok(readFileSync(join(root, provider)).length > 0, provider);
+		assert.ok(readFileSync(join(root, consumer)).length > 0, consumer);
+		assert.ok(
+			fixture.replace(/\s+/g, "").includes(`type${name}Exact=Assert<Equal<`),
+			name,
+		);
+	}
+});
+test("current additive signatures and original frozen contracts compile", () => {
+	assert.equal(runContract(["--pkg-dir", pkgDir]), 0);
+});
+const controls = [
+	[
+		"removed current function",
+		"export function sampleScalarAnimationBatchJson(input: string): string;",
+		"",
+	],
+	[
+		"changed current binary transport",
+		"encodeRemotionProducedAudioWav(input: Uint8Array): Uint8Array;",
+		"encodeRemotionProducedAudioWav(input: string): Uint8Array;",
+	],
+	[
+		"changed current owner output",
+		"beginStage(session: number, kind: string, slot: number): MvMemoriesStage;",
+		"beginStage(session: number, kind: string, slot: number): number;",
+	],
+	[
+		"any widened current JSON return",
+		"resolveEffectLayerParamsJson(input: string): string;",
+		"resolveEffectLayerParamsJson(input: string): any;",
+	],
+	[
+		"changed current owner ID width",
+		"step(id: bigint, max_pixels: number): boolean;",
+		"step(id: number, max_pixels: number): boolean;",
+	],
+];
+for (const [name, from, to] of controls)
+	test(name, () => {
+		assert.ok(
+			source.includes(from),
+			"negative control must mutate real declaration",
+		);
+		const temporary = mkdtempSync(join(tmpdir(), "rocut-current-api-control-"));
+		const declaration = join(temporary, "opencut_wasm.d.ts");
+		try {
+			writeFileSync(declaration, source.replace(from, to), {
+				encoding: "utf8",
+				flag: "wx",
+			});
+			let output = "";
+			const status = runContract(["--pkg-dir", temporary], (...args) => {
+				const result = spawnSync(...args);
+				output = (result.stdout ?? "") + (result.stderr ?? "");
+				return result;
+			});
+			assert.equal(status, 2, output);
+			assert.match(
+				output,
+				/wasm-current-api-contract\.ts/,
+				"the new fixture, not unrelated errors, must reject drift",
+			);
+		} finally {
+			unlinkSync(declaration);
+			rmdirSync(temporary);
+		}
+	});
