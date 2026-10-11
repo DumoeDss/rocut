@@ -1,0 +1,13 @@
+{
+  "recordedAt": "2026-10-11T11:55:00Z",
+  "context": "consolidated pixel acceptance pre-work: experimentally exclude the crossbuck strokeRect-vs-path candidate for the tunnel (992,663) cluster",
+  "experiment": {
+    "hypothesis": "tunnel cross() emitted the crossbuck rim as beginPath+rect+stroke while the reference typo.js uses ctx.strokeRect; the dedicated strokeRect rasterization path might differ by ~1px in antialiasing and explain the (992,663) delta 4-6 three-channel cluster",
+    "change": "tunnel_geometry.rs cross() stroke switched from d.path([Step::Rect], [stroke_paint]) to d.rect(rect, stroke_paint) (Command::Rect -> JS command.kind=rect -> ctx.strokeRect), applied to the clean pin worktree 4a8ba714; cargo check + 9/9 tunnel unit tests passed; full wasm rebuilt via mv-native-checkpoint-build (wasm 3a60a906, manifest 6d6de82e)",
+    "probe": "script/probe-mv-tunnel-native.mjs --browser-only with the rebuilt checkpoint, ROCUT_TEST_CURRENT_SOURCE_SCOPE=compiled-snapshot",
+    "result": "the (992,663) cluster is byte-for-byte UNCHANGED (r11vs16/g7vs11/b20vs26, delta 5/4/6) and the full residue stays 22 changed pixels at scene max 6 / post max 3 - identical distribution to the 2026-10-11 recheck; no regression, no improvement",
+    "conclusion": "crossbuck strokeRect-vs-path antialiasing is EXCLUDED as the source of the (992,663) cluster; the change was reverted from both the main worktree and the pin worktree (no semantic diff kept); the cluster must come from another primitive near that location or glyph sub-pixel rounding, remaining in the consolidated pixel-acceptance queue with the already-classified glyph-edge delta-1 samples"
+  },
+  "scope": "not an installed Electron/full-movie/export acceptance claim; experiment reverted, full gate unchanged"
+}
+
