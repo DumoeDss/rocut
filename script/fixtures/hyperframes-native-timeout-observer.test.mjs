@@ -24,6 +24,30 @@ function submit(f, metadata) {
 	callback(0, metadata);
 }
 
+test("Parent error cap retains both accepted and unresolved video's cached gates", async () => {
+	const f = controlled(),
+		second = new f.context.HTMLVideoElement();
+	f.scope.videos.push(second);
+	const first = f.context.rocutMedia.nativeSeek(f.video, 0);
+	f.video.seeking = false;
+	submit(f, { mediaTime: 0, presentationTime: 1, presentedFrames: 1 });
+	await first;
+	const pending = f.context.rocutMedia
+		.nativeSeek(second, 0)
+		.catch((error) => error);
+	submit(f, { mediaTime: 0, presentationTime: 1, presentedFrames: 1 });
+	second.seeking = false;
+	f.fire(1);
+	const error = await pending,
+		data = snapshot(error);
+	assert.deepEqual(data.gates, [
+		{ ordinal: 0, eligible: true, gate: "accepted", callbackSeeking: false },
+		{ ordinal: 1, eligible: true, gate: "seeking", callbackSeeking: true },
+	]);
+	assert(error.message.slice(0, 1000).includes(JSON.stringify(data.gates)));
+	f.close();
+});
+
 test("Zero timeout distinguishes initial admission from callback-time seeking without a second frame", async () => {
 	for (const mode of ["eligible", "pre-seeking", "pre-current"]) {
 		const f = controlled();

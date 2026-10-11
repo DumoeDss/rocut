@@ -1,0 +1,38 @@
+{
+	"schema": "rocut-focused-diagnostic-evidence/v1",
+	"date": "2026-10-12",
+	"baseCommit": "85e0910007765829ad53b37e4545dbda582dea57",
+	"retainedBrowserRun": {
+		"group": "C:/Users/Sayo/AppData/Local/Temp/rocut-hf-remotion-browser-20261011-Gl4fNN",
+		"receiptSha256": "a459c303416ec8fcbe8f6de1ea128ca3281d12c5a7008c56ce96b461e6fe71ba",
+		"scope": "1/4",
+		"passed": false,
+		"identitiesUnchanged": true,
+		"stage": "media-metadata-and-initial-zero",
+		"firstVideo": "eligible=true, callback gate accepted, armCount=1",
+		"secondVideo": "callbackCount=1, armCount=2; gate and eligibility were truncated by the existing parent error cap"
+	},
+	"change": "Prepend compact per-video gate facts derived only from the already-built diagnostic snapshot. Preserve the full snapshot and existing 1000-character parent error cap.",
+	"integratedFiles": [
+		{
+			"path": "apps/cli/src/programmatic/html-media.ts",
+			"sha256": "4764bb7c7d1ff5d5f18a9cdcdb2b078a52a730cad1403c0fea3ac7bddefb198d"
+		},
+		{
+			"path": "script/fixtures/hyperframes-native-timeout-observer.test.mjs",
+			"sha256": "40f47a476f0b42f69f2bb2e0bc2aa5f9eb024dd976ef159b10313ee8e5784b5f"
+		}
+	],
+	"verification": {
+		"hyperframesTests": { "pass": 74, "fail": 0, "skip": 0 },
+		"focusedSyntaxEmbeddedLintFormatAndUtf8": "pass",
+		"originalDirtyRawFilesPreserved": 24
+	},
+	"boundaries": {
+		"admissionDeadlinePixelOracleOrErrorCapChanged": false,
+		"extraNativeGetterOrBrowserCommand": false,
+		"rootCauseEstablished": false,
+		"wholeRepositoryLintOrTypecheckClaimed": false,
+		"installedPluginChanged": false
+	}
+}

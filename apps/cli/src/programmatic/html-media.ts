@@ -37,7 +37,13 @@ function nativeTimeoutError(scope) {
       'runtime-readiness', 'native-render-seek', 'upstream-seek-completion', 'native-seek-drain',
       'media-settle', 'gpu-reseek', 'gpu-upstream-seek-completion', 'gpu-native-seek-drain', 'final-media-check'];
     const stage = stages.includes(scope.stage) ? scope.stage : 'unknown';
-    return Error(message + ' ' + JSON.stringify({stage, videos}));
+    // The parent caps error text. Put cached gate facts for every video first
+    // so an accepted first video cannot hide a later unresolved video's gate.
+    const gates = videos.map(({ordinal, nativeSeek}) => ({ordinal,
+      eligible: nativeSeek?.initialZero.eligible ?? null,
+      gate: nativeSeek?.callbackGate?.reason ?? null,
+      callbackSeeking: nativeSeek?.callbackGate?.seeking ?? null}));
+    return Error(message + ' ' + JSON.stringify({stage, gates, videos}));
   } catch {
     // Observers must never replace the original failure with a diagnostic error.
     return Error(message + ' {"diagnosticUnavailable":true}');
