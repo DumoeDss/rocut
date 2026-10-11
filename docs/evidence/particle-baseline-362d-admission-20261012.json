@@ -1,0 +1,53 @@
+{
+	"schema": "particle-baseline-independent-admission/v1",
+	"sourceCommitAtCompileAndReview": "55f26822228e9af26494a3de1ff7dafa98bf0cdc",
+	"reviewer": "root",
+	"laneId": "new-362d-lf-20261012",
+	"authorityReceiptSha256": "d68e93311d15addc374cca14a528b061b4d5c7ace4f42ca22cbf2185e521cbeb",
+	"baselineReceipt": {
+		"path": "C:/tmps/rocut-particle-final-acceptance-20261012-6fa23f6b/particle-authority-compile-MNKBej/baseline-compile-receipt.proposed.json",
+		"sha256": "a2a9e9e643ed31b435dca4dd2a66e2b6b0f8b8104af4ee75796997e7d0eaa221"
+	},
+	"runnerAudit": {
+		"path": "C:/Users/Sayo/AppData/Local/Temp/rocut-particle-registry-candidate-20261012-687bf492/BASELINE-BOUNDED-AUDIT-MNKBej.json",
+		"sha256": "a26e9a77e0f908296e77b6dbacfd7ef4dd71c823512747ed7ea796823859b17c",
+		"sourceInputsRehashed": 5376,
+		"metafileInputsCovered": 5340,
+		"projectFiles": 11,
+		"projectClosureSha256": "cf0f297446bbf2faf9f10d5635a66392dd22c02c9204f99b3be7706498a48dc2"
+	},
+	"rootReview": {
+		"rawHashesRechecked": true,
+		"baselineProducerLifecycleStabilityRead": true,
+		"actualStateTopologyAndWasmObservationsRead": true,
+		"completeBoundedAuditAndLimitationsRead": true,
+		"decision": "Admit only this fixed, independently reviewed compile baseline raw hash",
+		"producerSelfApproved": false,
+		"gateOrPolicyRelaxation": false
+	},
+	"compile": {
+		"compileCount": 2,
+		"applyCount": 2,
+		"reopenCount": 2,
+		"hostsOpenedAndClosed": 3,
+		"observedChildrenClosed": 9,
+		"actualHostAndFinalWasmBytesVerified": true
+	},
+	"contract": {
+		"revision": 2,
+		"frameCount": 121,
+		"fps": { "numerator": 30, "denominator": 1 },
+		"durationTicks": 484000,
+		"width": 1920,
+		"height": 1080,
+		"opacity": 0.85
+	},
+	"syntheticCpuBaselineRemainsUnconfigured": true,
+	"uiExportOrElectronAccepted": false,
+	"limitations": [
+		"Pinned executed assertions establish compile/rebuild behavior; raw HTTP reply transcripts are not retained.",
+		"Historical missing recipe run artifacts remain unauthenticated; unknown descendant shutdown is not inferred.",
+		"This source change updates only a reviewed trust slot and its isolated CPU test setup; production compile inputs were validated before the trust-slot change.",
+		"UI, 121-frame export and installed Electron acceptance remain separate gates."
+	]
+}

@@ -164,6 +164,11 @@ async function fixture(change = () => {}, scaledBrowser = false) {
 			/authorityReceiptSha256:\s*(?:null|"[a-f0-9]{64}")/,
 			`authorityReceiptSha256: "${hash(raw)}"`,
 		)
+		// Synthetic fixtures have no independently reviewed compile baseline.
+		.replace(
+			/baselineReceiptSha256:\s*(?:null|"[a-f0-9]{64}")/,
+			"baselineReceiptSha256: null",
+		)
 		.replace(
 			"362d29a7dba0b29fcf00965a5eba5342e70acd334c7171e2b73ca8ff06eb75be",
 			hash(wasm),

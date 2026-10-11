@@ -13,7 +13,8 @@ const trustedLane = Object.freeze({
 	laneId: PARTICLE_AUTHORITY_LANE,
 	authorityReceiptSha256:
 		"d68e93311d15addc374cca14a528b061b4d5c7ace4f42ca22cbf2185e521cbeb",
-	baselineReceiptSha256: null,
+	baselineReceiptSha256:
+		"a2a9e9e643ed31b435dca4dd2a66e2b6b0f8b8104af4ee75796997e7d0eaa221",
 });
 const HASH = /^[a-f0-9]{64}$/;
 const MAX_RECEIPT = 4 * 1024 * 1024;
